@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 598C224C5FF
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 21:00:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3AB324C601
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 21:00:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbgHTTAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 15:00:42 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:54970 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727005AbgHTTAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 15:00:40 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07KIxfUB002755
-        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 12:00:40 -0700
+        id S1727884AbgHTTAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 15:00:50 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:25076 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727845AbgHTTAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 15:00:48 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07KIwMIs023283
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 12:00:47 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=chng43uzyL2YaJjXvsz8ytRRRynAZL9/PR+2+fssd1Q=;
- b=O3hWEvy9lvvUIqZfSQ5vwrZqrZft1izF/pGbfaVww96vLPdPaX34FfkQxLMBl0rVQrSh
- BOCIdwUSbkDM/YPrHLEwjK3+OWSXUgfkx65z8p8PxfO2T0aWf/b9gEM6EPMd/s/Na1hk
- g4fQON74C15nztQq1xMTkclrwiCcUVtm/yc= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3304m387mv-8
+ bh=BlDbz27g/8/hWGhmVJna5PVLwirSngWJfml16qZ0EFU=;
+ b=DXoyK8K1Iyj78eH8fCfWnWwNqZMnUCy1DSmT2X6PP3n0Gb865nfJMS54UZ4MAifUDUAS
+ TdbhiQ3ls8ODOWmpd03lHnxRu0xBH3a5wQh/K++KEqYJTA5UTSMhSYFYvLofw1aNfOfL
+ q3VhXjlQMxzap1skMa5cNqSFWOEEnIbMn6o= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 3304jjg05r-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 12:00:39 -0700
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 12:00:47 -0700
+Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 20 Aug 2020 12:00:35 -0700
+ 15.1.1979.3; Thu, 20 Aug 2020 12:00:43 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 983D12945825; Thu, 20 Aug 2020 12:00:33 -0700 (PDT)
+        id D803E2945825; Thu, 20 Aug 2020 12:00:39 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
@@ -43,9 +43,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Yuchung Cheng <ycheng@google.com>,
         John Fastabend <john.fastabend@gmail.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v5 bpf-next 04/12] tcp: Add saw_unknown to struct tcp_options_received
-Date:   Thu, 20 Aug 2020 12:00:33 -0700
-Message-ID: <20200820190033.2884430-1-kafai@fb.com>
+Subject: [PATCH v5 bpf-next 05/12] bpf: tcp: Add bpf_skops_established()
+Date:   Thu, 20 Aug 2020 12:00:39 -0700
+Message-ID: <20200820190039.2884750-1-kafai@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200820190008.2883500-1-kafai@fb.com>
 References: <20200820190008.2883500-1-kafai@fb.com>
@@ -55,10 +55,10 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-08-20_03:2020-08-19,2020-08-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- impostorscore=0 mlxscore=0 bulkscore=0 suspectscore=13 spamscore=0
- phishscore=0 lowpriorityscore=0 malwarescore=0 clxscore=1015 adultscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=15
+ lowpriorityscore=0 priorityscore=1501 malwarescore=0 spamscore=0
+ impostorscore=0 bulkscore=0 mlxlogscore=934 phishscore=0 mlxscore=0
+ clxscore=1015 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2008200151
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -66,103 +66,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In a later patch, the bpf prog only wants to be called to handle
-a header option if that particular header option cannot be handled by
-the kernel.  This unknown option could be written by the peer's bpf-prog.
-It could also be a new standard option that the running kernel does not
-support it while a bpf-prog can handle it.
+In tcp_init_transfer(), it currently calls the bpf prog to give it a
+chance to handle the just "ESTABLISHED" event (e.g. do setsockopt
+on the newly established sk).  Right now, it is done by calling the
+general purpose tcp_call_bpf().
 
-This patch adds a "saw_unknown" bit to "struct tcp_options_received"
-and it uses an existing one byte hole to do that.  "saw_unknown" will
-be set in tcp_parse_options() if it sees an option that the kernel
-cannot handle.
+In the later patch, it also needs to pass the just-received skb which
+concludes the 3 way handshake. E.g. the SYNACK received at the active sid=
+e.
+The bpf prog can then learn some specific header options written by the
+peer's bpf-prog and potentially do setsockopt on the newly established sk=
+.
+Thus, instead of reusing the general purpose tcp_call_bpf(), a new functi=
+on
+bpf_skops_established() is added to allow passing the "skb" to the bpf
+prog.  The actual skb passing from bpf_skops_established() to the bpf pro=
+g
+will happen together in a later patch which has the necessary bpf pieces.
+
+A "skb" arg is also added to tcp_init_transfer() such that
+it can then be passed to bpf_skops_established().
+
+Calling the new bpf_skops_established() instead of tcp_call_bpf()
+should be a noop in this patch.
 
 Acked-by: John Fastabend <john.fastabend@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- include/linux/tcp.h  |  2 ++
- net/ipv4/tcp_input.c | 22 ++++++++++++++++------
- 2 files changed, 18 insertions(+), 6 deletions(-)
+ include/net/tcp.h       |  2 +-
+ net/ipv4/tcp_fastopen.c |  2 +-
+ net/ipv4/tcp_input.c    | 32 ++++++++++++++++++++++++++++----
+ 3 files changed, 30 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index 2088d5a079af..29d166263ae7 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -92,6 +92,8 @@ struct tcp_options_received {
- 		smc_ok : 1,	/* SMC seen on SYN packet		*/
- 		snd_wscale : 4,	/* Window scaling received from sender	*/
- 		rcv_wscale : 4;	/* Window scaling to send to receiver	*/
-+	u8	saw_unknown:1,	/* Received unknown option		*/
-+		unused:7;
- 	u8	num_sacks;	/* Number of SACK blocks		*/
- 	u16	user_mss;	/* mss requested by user in ioctl	*/
- 	u16	mss_clamp;	/* Maximal mss, negotiated at connection setup */
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index dda778c782fe..c186dbf731e1 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -394,7 +394,7 @@ void tcp_metrics_init(void);
+ bool tcp_peer_is_proven(struct request_sock *req, struct dst_entry *dst)=
+;
+ void tcp_close(struct sock *sk, long timeout);
+ void tcp_init_sock(struct sock *sk);
+-void tcp_init_transfer(struct sock *sk, int bpf_op);
++void tcp_init_transfer(struct sock *sk, int bpf_op, struct sk_buff *skb)=
+;
+ __poll_t tcp_poll(struct file *file, struct socket *sock,
+ 		      struct poll_table_struct *wait);
+ int tcp_getsockopt(struct sock *sk, int level, int optname,
+diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+index 09b62de04eea..af2814c9342a 100644
+--- a/net/ipv4/tcp_fastopen.c
++++ b/net/ipv4/tcp_fastopen.c
+@@ -295,7 +295,7 @@ static struct sock *tcp_fastopen_create_child(struct =
+sock *sk,
+ 	refcount_set(&req->rsk_refcnt, 2);
+=20
+ 	/* Now finish processing the fastopen child socket. */
+-	tcp_init_transfer(child, BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB);
++	tcp_init_transfer(child, BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB, skb);
+=20
+ 	tp->rcv_nxt =3D TCP_SKB_CB(skb)->seq + 1;
+=20
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 4aaedcf71973..9072d9160df9 100644
+index 9072d9160df9..7b0faa2bfe32 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -3801,7 +3801,7 @@ static void tcp_parse_fastopen_option(int len, cons=
-t unsigned char *cookie,
- 	foc->exp =3D exp_opt;
- }
-=20
--static void smc_parse_options(const struct tcphdr *th,
-+static bool smc_parse_options(const struct tcphdr *th,
- 			      struct tcp_options_received *opt_rx,
- 			      const unsigned char *ptr,
- 			      int opsize)
-@@ -3810,10 +3810,13 @@ static void smc_parse_options(const struct tcphdr=
- *th,
- 	if (static_branch_unlikely(&tcp_have_smc)) {
- 		if (th->syn && !(opsize & 1) &&
- 		    opsize >=3D TCPOLEN_EXP_SMC_BASE &&
--		    get_unaligned_be32(ptr) =3D=3D TCPOPT_SMC_MAGIC)
-+		    get_unaligned_be32(ptr) =3D=3D TCPOPT_SMC_MAGIC) {
- 			opt_rx->smc_ok =3D 1;
-+			return true;
-+		}
- 	}
+@@ -138,6 +138,29 @@ void clean_acked_data_flush(void)
+ EXPORT_SYMBOL_GPL(clean_acked_data_flush);
  #endif
-+	return false;
+=20
++#ifdef CONFIG_CGROUP_BPF
++static void bpf_skops_established(struct sock *sk, int bpf_op,
++				  struct sk_buff *skb)
++{
++	struct bpf_sock_ops_kern sock_ops;
++
++	sock_owned_by_me(sk);
++
++	memset(&sock_ops, 0, offsetof(struct bpf_sock_ops_kern, temp));
++	sock_ops.op =3D bpf_op;
++	sock_ops.is_fullsock =3D 1;
++	sock_ops.sk =3D sk;
++	/* skb will be passed to the bpf prog in a later patch. */
++
++	BPF_CGROUP_RUN_PROG_SOCK_OPS(&sock_ops);
++}
++#else
++static void bpf_skops_established(struct sock *sk, int bpf_op,
++				  struct sk_buff *skb)
++{
++}
++#endif
++
+ static void tcp_gro_dev_warn(struct sock *sk, const struct sk_buff *skb,
+ 			     unsigned int len)
+ {
+@@ -5808,7 +5831,7 @@ void tcp_rcv_established(struct sock *sk, struct sk=
+_buff *skb)
  }
+ EXPORT_SYMBOL(tcp_rcv_established);
 =20
- /* Try to parse the MSS option from the TCP header. Return 0 on failure,=
- clamped
-@@ -3874,6 +3877,7 @@ void tcp_parse_options(const struct net *net,
+-void tcp_init_transfer(struct sock *sk, int bpf_op)
++void tcp_init_transfer(struct sock *sk, int bpf_op, struct sk_buff *skb)
+ {
+ 	struct inet_connection_sock *icsk =3D inet_csk(sk);
+ 	struct tcp_sock *tp =3D tcp_sk(sk);
+@@ -5829,7 +5852,7 @@ void tcp_init_transfer(struct sock *sk, int bpf_op)
+ 		tp->snd_cwnd =3D tcp_init_cwnd(tp, __sk_dst_get(sk));
+ 	tp->snd_cwnd_stamp =3D tcp_jiffies32;
 =20
- 	ptr =3D (const unsigned char *)(th + 1);
- 	opt_rx->saw_tstamp =3D 0;
-+	opt_rx->saw_unknown =3D 0;
+-	tcp_call_bpf(sk, bpf_op, 0, NULL);
++	bpf_skops_established(sk, bpf_op, skb);
+ 	tcp_init_congestion_control(sk);
+ 	tcp_init_buffer_space(sk);
+ }
+@@ -5848,7 +5871,7 @@ void tcp_finish_connect(struct sock *sk, struct sk_=
+buff *skb)
+ 		sk_mark_napi_id(sk, skb);
+ 	}
 =20
- 	while (length > 0) {
- 		int opcode =3D *ptr++;
-@@ -3964,15 +3968,21 @@ void tcp_parse_options(const struct net *net,
- 				 */
- 				if (opsize >=3D TCPOLEN_EXP_FASTOPEN_BASE &&
- 				    get_unaligned_be16(ptr) =3D=3D
--				    TCPOPT_FASTOPEN_MAGIC)
-+				    TCPOPT_FASTOPEN_MAGIC) {
- 					tcp_parse_fastopen_option(opsize -
- 						TCPOLEN_EXP_FASTOPEN_BASE,
- 						ptr + 2, th->syn, foc, true);
--				else
--					smc_parse_options(th, opt_rx, ptr,
--							  opsize);
-+					break;
-+				}
-+
-+				if (smc_parse_options(th, opt_rx, ptr, opsize))
-+					break;
-+
-+				opt_rx->saw_unknown =3D 1;
- 				break;
+-	tcp_init_transfer(sk, BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB);
++	tcp_init_transfer(sk, BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB, skb);
 =20
-+			default:
-+				opt_rx->saw_unknown =3D 1;
- 			}
- 			ptr +=3D opsize-2;
- 			length -=3D opsize;
+ 	/* Prevent spurious tcp_cwnd_restart() on first data
+ 	 * packet.
+@@ -6320,7 +6343,8 @@ int tcp_rcv_state_process(struct sock *sk, struct s=
+k_buff *skb)
+ 		} else {
+ 			tcp_try_undo_spurious_syn(sk);
+ 			tp->retrans_stamp =3D 0;
+-			tcp_init_transfer(sk, BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB);
++			tcp_init_transfer(sk, BPF_SOCK_OPS_PASSIVE_ESTABLISHED_CB,
++					  skb);
+ 			WRITE_ONCE(tp->copied_seq, tp->rcv_nxt);
+ 		}
+ 		smp_mb();
 --=20
 2.24.1
 
