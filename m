@@ -2,82 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51AED24AE7B
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 07:36:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C9CB24AE84
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 07:42:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgHTFgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 01:36:21 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:40418 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbgHTFgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 01:36:20 -0400
-Received: by mail-il1-f199.google.com with SMTP id z5so808645ilp.7
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 22:36:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=VP5Ce8Ed6CyWY66GPRpBDRkGQBnvvNSVs3ZQbdIJXUw=;
-        b=YrAKSNZEyLsTuT0bRLF6xNkhbggwwhrxhWxveEbj2syTkM9t3EnIMf+Nr5vRhm1AZP
-         5XZcVHAeuR8ZhsX6TesMGFkPeTrx1CokmwCcIhsf12EKnj4h9MlnPoucq5dEQdfuZ2NI
-         S3ltLMApaXyCgwCslqEaKzKOfTH0wFEsYfWTgpXHGkOob++TXhGvoD4uL+XcdPSTGUKY
-         xpsbX3bRA+OjWu2tJ3eci06T7tOyg3YYD7euMm1ZSQ18++f6dQhnLjksOsWb99VSCP3Z
-         Plrxu7B3n/mim3jq02hX/Cq+Il20tFKxtdQTWG8Q2I91vonRuxxNI3ehuWzd6Sskj520
-         lVtQ==
-X-Gm-Message-State: AOAM533P175+mbFg8mPPPZZ45RxCVuP7Q39WF9Tac2VhaaDR4sjC5VQu
-        T9ATgr8Q5dxI55o3Vf4Qt4BvRkdJHhvJFN64iGqJqIhS+rZJ
-X-Google-Smtp-Source: ABdhPJxlQjwrzXtmuJX27qbcqny62VqqgXhyaT8kUEtnOBXMJwnBcjSwEsrnTyUoABCiwUcGJtzlD12X/Qs1d7Gwf5SCy+jkr7cN
+        id S1726700AbgHTFma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 01:42:30 -0400
+Received: from mail.zju.edu.cn ([61.164.42.155]:36668 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725768AbgHTFma (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 01:42:30 -0400
+Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 20 Aug 2020 13:42:11
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.192.85.18]
+Date:   Thu, 20 Aug 2020 13:42:11 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   dinghao.liu@zju.edu.cn
+To:     Ajay.Kathat@microchip.com
+Cc:     kjlu@umn.edu, Claudiu.Beznea@microchip.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        Eugen.Hristev@microchip.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH] staging: wilc1000: Fix memleak in wilc_sdio_probe
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.12 build 20200616(0f5d8152)
+ Copyright (c) 2002-2020 www.mailtech.cn zju.edu.cn
+In-Reply-To: <0f59db10-4aec-4ce6-2695-43ddf5017cb2@microchip.com>
+References: <20200819115014.28955-1-dinghao.liu@zju.edu.cn>
+ <0f59db10-4aec-4ce6-2695-43ddf5017cb2@microchip.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-X-Received: by 2002:a02:8e:: with SMTP id 136mr1796202jaa.111.1597901779215;
- Wed, 19 Aug 2020 22:36:19 -0700 (PDT)
-Date:   Wed, 19 Aug 2020 22:36:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000efb4c705ad487f5d@google.com>
-Subject: INFO: task can't die in netdev_run_todo
-From:   syzbot <syzbot+22a310041c3467f85d12@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <3b9f1c74.ba0a.1740a63917b.Coremail.dinghao.liu@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cC_KCgBH_94zDT5fcJftAg--.44373W
+X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgoSBlZdtPnBhAAMsT
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJTRUUUbAIS07vEb7Iv0x
+        C_Xr1lV2xY67kC6x804xWlV2xY67CY07I20VC2zVCF04k26cxKx2IYs7xG6rWj6s0DMIAI
+        bVAFxVCF77xC64kEw24lV2xY67C26IkvcIIF6IxKo4kEV4ylV2xY628lY4IE4IxF12IF4w
+        CS07vE84x0c7CEj48ve4kI8wCS07vE84ACjcxK6xIIjxv20xvE14v26w1j6s0DMIAIbVA2
+        z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UMIAIbVA2z4x0Y4vEx4A2jsIE14v26r
+        xl6s0DMIAIbVA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1lV2xY62AIxVAIcxkEcVAq
+        07x20xvEncxIr21lV2xY6c02F40EFcxC0VAKzVAqx4xG6I80ewCS07vEYx0E2Ix0cI8IcV
+        AFwI0_Jr0_Jr4lV2xY6cIj6I8E87Iv67AKxVWUJVW8JwCS07vEOx8S6xCaFVCjc4AY6r1j
+        6r4UMIAIbVACI402YVCY1x02628vn2kIc2xKxwCS07vE7I0Y64k_MIAIbVCY0x0Ix7I2Y4
+        AK64vIr41lV2xY6xAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCS07vE4x8a6x804xWlV2xY
+        6xC20s026xCaFVCjc4AY6r1j6r4UMIAIbVC20s026c02F40E14v26r1j6r18MIAIbVC20s
+        026x8GjcxK67AKxVWUGVWUWwCS07vEx4CE17CEb7AF67AKxVWUtVW8ZwCS07vEIxAIcVC0
+        I7IYx2IY67AKxVWUJVWUCwCS07vEIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIAIbV
+        CI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCS07vEIxAIcVC2z280aVAFwI0_Jr0_Gr1l
+        V2xY6IIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    4993e4fe Add linux-next specific files for 20200814
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=1181e1a6900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2055bd0d83d5ee16
-dashboard link: https://syzkaller.appspot.com/bug?extid=22a310041c3467f85d12
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145b6aa6900000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+22a310041c3467f85d12@syzkaller.appspotmail.com
-
-INFO: task syz-executor.1:8005 can't die for more than 143 seconds.
-syz-executor.1  D25048  8005      1 0x00004004
-Call Trace:
- context_switch kernel/sched/core.c:3778 [inline]
- __schedule+0x8e5/0x21e0 kernel/sched/core.c:4527
- schedule+0xd0/0x2a0 kernel/sched/core.c:4602
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:4661
- __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
- __mutex_lock+0x3e2/0x10e0 kernel/locking/mutex.c:1103
- netdev_run_todo+0x705/0xac0 net/core/dev.c:10104
- sit_exit_batch_net+0x4ad/0x6c0 net/ipv6/sit.c:1945
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+CgpBamF5LkthdGhhdEBtaWNyb2NoaXAuY29t5YaZ6YGT77yaCj4gVGhhbmtzIGZvciBzdWJtaXR0
+aW5nIHRoZSBwYXRjaC4gVGhlIGNvZGUgY2hhbmdlcyBsb29rcyBva2F5IHRvIG1lLgo+IAo+IFRo
+ZSBkcml2ZXIgaXMgbm93IG1vdmVkIG91dCBvZiBzdGFnaW5nIHNvICdzdGFnaW5nJyBwcmVmaXgg
+aXMgbm90Cj4gcmVxdWlyZWQgaW4gc3ViamVjdC4gRm9yIGZ1dHVyZSBwYXRjaGVzIG9uIHdpbGMg
+ZHJpdmVyLCB0aGUgJ3N0YWdpbmcnCj4gcHJlZml4IGNhbiBiZSByZW1vdmVkLgo+IAo+IEZvciB0
+aGlzIHBhdGNoLCBJIGFtIG5vdCBzdXJlIGlmIEthbGxlIGNhbiBhcHBseSBhcyBpcyBvdGhlcndp
+c2UgcGxlYXNlCj4gc3VibWl0IGEgcGF0Y2ggYnkgcmVtb3ZpbmcgJ3N0YWdpbmcnIGZyb20gc3Vi
+amVjdCBzbyBpdCBjYW4gYmUgYXBwbGllZAo+IGRpcmVjdGx5Lgo+IAo+IFJlZ2FyZHMsCj4gQWph
+eQo+IAoKVGhhbmtzIGZvciB5b3VyIGNvcnJlY3Rpb24uIEknbGwgc2VuZCBhIG5ldyBwYXRjaCBz
+b29uLgoKUmVnYXJkcywKRGluZ2hhbwo=
