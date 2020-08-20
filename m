@@ -2,259 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E63C24BE73
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 15:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A70024BEAD
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 15:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730149AbgHTN0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 09:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
+        id S1728795AbgHTN34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 09:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730426AbgHTNZ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 09:25:57 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853FBC061385
-        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 06:25:57 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id z3so1613180ilh.3
-        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 06:25:57 -0700 (PDT)
+        with ESMTP id S1729035AbgHTN3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 09:29:15 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF12EC061385;
+        Thu, 20 Aug 2020 06:29:14 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id p25so1499514qkp.2;
+        Thu, 20 Aug 2020 06:29:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wPBhf+um4hFujs2wXTsrfA04pkfe3gednCPRBu86Qks=;
-        b=JuMS27bMxEGxNR38HlZkCCviVt2sn9VP7b8swON+XUBYje8LPJ7CzsDbjb8Iypm9TT
-         5Mxgz5bc+U2hAXFmvhyma3AKs1PifGYQoRKF1oBGcoIkAAiIwesHh34TLLuGDnf8lQa2
-         EYpcV3NByHjJKlAojbhA2nn/hkSufhpouRmESnKmZTL2dFMYiAIwClfYk1I673bjxboU
-         mUSNworCPsSVYc6ixFJzWimHlzVQExBPuhYzGRoSXJPr6PyS5qYAWqz225W31Vya+R1S
-         PAFKEn+TmAfi1PTR0PCIqlO0NHziJzZsziji4S/rdbgqPLRCC6tMbsDLuv1vEiOzBL+s
-         Bv2g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NJlPxByGZ4WZhAkynFej/mh+RMtilImvZkFQgBD/C0g=;
+        b=f2thofSJ+Y8TZYCpg+jRj2SZuEOKiFKTf6HceJnlrJx9y/XyqKMbo3wiqU/aszLgYU
+         IQS1xITJxKjcdaLzV3jbjPdNVitJBuqZvG+dSU65YNk+d0X8UpIStqbXp7Plszbi6Pi2
+         GHxoN6irFBO8csBfUitUhv8y/fPkoDqEnZBi8n/jRZfdJAxkhALYtCfgllRzcA3S3cPa
+         pKLC3s7UhPG2PS11+roFpN7FlG+xs6IUA9hBVPePzvTRReQ59qIrHuDHxc86S51qVAum
+         q6vpT/dak14+tGBuBP1G+XQgRm9+uYRnnAcXgJNkkmhEmNJsUrPDY2zrNG4o4xUcEnv8
+         xbkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wPBhf+um4hFujs2wXTsrfA04pkfe3gednCPRBu86Qks=;
-        b=rk8BZvIQQ6QZriXqUyvgjswffZjL7HdWQcHjsnZHGXvMMDIx0pWL5BnbCJGT/SmDVk
-         GXCFj5qOd2EJUoAiNpzTdS2TRCKcdj7VHX1tqNI2Ne/g/YzKYO9/IbovpR+B8wW59pEG
-         xnpnc8qi3xCwA6hg1DfZs/OvUxrhkO00YJHTj3SqHCBKY/d7DMEhdlEOqpx7WjgbiSuo
-         5ptgp2xkOn5fJltgECVipukzzL6dtUZhkBok0bmKW3PYK3xwgiv7MpeJhnYjqNDXs/xP
-         EZEMTnJqrVfHGOHYnynuGw/2BnIwPp9KR0dMU9ksCn3RQsGNNX2BudnJ4iTWRzl+hR9l
-         Y5mA==
-X-Gm-Message-State: AOAM533lH/zBJX/J5NaeAeDF3IwQ9BUuXMxZRLjCxdXsJ2OEnd3FJZM4
-        KqbQeW3yWOLNkOx0HO05UnVQxmiWqFM8N6M8DGg=
-X-Google-Smtp-Source: ABdhPJzD33vbUfqH/4tJB2nD6bqJFoYCqbgDd6G12uIZaAEPaSNFXcOYENJtflXNBGZztMg3AmTfy8YUwLwkFqvk+38=
-X-Received: by 2002:a92:ce07:: with SMTP id b7mr2639953ilo.270.1597929954531;
- Thu, 20 Aug 2020 06:25:54 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NJlPxByGZ4WZhAkynFej/mh+RMtilImvZkFQgBD/C0g=;
+        b=pzIJXOhxR/bqZ+GkSqndd5rsR76lcHy7BuA5dzkj/w6iM0FDwHUfZXOxGRz8jiaQ8u
+         rywgHbxJQflPu2HX3PTDUZ3PtK3/kMFlZ9Q2Nx6uYJhkR4EmFmqwPy4If9qLlJu6gi0K
+         ISav50v3/F8suN3Xgy+A+m1ry4LL7m0/5Rjuvbe64DZkXQLKj6O9hzEiOmxDgBiaRHup
+         DEeqn20twKFf9FAZRVRPnUQ8I47e5PcAdI9Mkq0UHeAf7YFCvvLaQVe4l6nFLat2CcED
+         xeAIoWrCNsYAIo6hvRz0Nz6D/raXPkluMlxJ+l6rg4TF9YD2ySNIJARJvzael4x7af1C
+         fqpQ==
+X-Gm-Message-State: AOAM531cAH1df0cTEfAvhJa3gcvmFBmthvo0rwD6ZUDQKeHh+rw6c5cx
+        4XP1FrnsDr4ZH6UixS20EgbCEZ8tqq33zw==
+X-Google-Smtp-Source: ABdhPJwr9emjU2mlyMIMr5MuZzuOuHkouQmBGDscZorqaDtkl6i1EEJvAM6AhjdGpTxZn7319aoVHA==
+X-Received: by 2002:a05:620a:1285:: with SMTP id w5mr2528506qki.21.1597930153758;
+        Thu, 20 Aug 2020 06:29:13 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:8002:1323:e13e:9d76:7bc8])
+        by smtp.gmail.com with ESMTPSA id g11sm2077970qke.128.2020.08.20.06.29.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Aug 2020 06:29:12 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id A8A27C35FC; Thu, 20 Aug 2020 10:29:10 -0300 (-03)
+Date:   Thu, 20 Aug 2020 10:29:10 -0300
+From:   'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>,
+        "'linux-sctp@vger.kernel.org'" <linux-sctp@vger.kernel.org>
+Subject: Re: [PATCH v2] net: sctp: Fix negotiation of the number of data
+ streams.
+Message-ID: <20200820132910.GK3399@localhost.localdomain>
+References: <3aef12f2fdbb4ee6b885719f5561a997@AcuMS.aculab.com>
+ <1f2ffcb1180e4080aab114683b06efab@AcuMS.aculab.com>
 MIME-Version: 1.0
-References: <1597770557-26617-1-git-send-email-sundeep.lkml@gmail.com>
- <1597770557-26617-2-git-send-email-sundeep.lkml@gmail.com> <20200819083817.00000a02@intel.com>
-In-Reply-To: <20200819083817.00000a02@intel.com>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Thu, 20 Aug 2020 18:55:43 +0530
-Message-ID: <CALHRZupUSrgV0wFAOCiT0KbQDJ-cTeu6NnbxOa8QWtuhZPBcXQ@mail.gmail.com>
-Subject: Re: [PATCH v6 net-next 1/3] octeontx2-af: Support to enable/disable
- HW timestamping
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, sgoutham@marvell.com,
-        Zyta Szpak <zyta@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1f2ffcb1180e4080aab114683b06efab@AcuMS.aculab.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Wed, Aug 19, 2020 at 02:40:52PM +0000, David Laight wrote:
+> 
+> The number of output and input streams was never being reduced, eg when
+> processing received INIT or INIT_ACK chunks.
+> The effect is that DATA chunks can be sent with invalid stream ids
+> and then discarded by the remote system.
+> 
+> Fixes: 2075e50caf5ea ("sctp: convert to genradix")
+> Signed-off-by: David Laight <david.laight@aculab.com>
+> ---
+>  net/sctp/stream.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> This needs backporting to 5.1 and all later kernels.
+> 
+> (Resend without the RE:)
+> 
+> Changes since v1:
+> - Fix 'Fixes' tag.
+> - Improve description.
+>
 
-On Wed, Aug 19, 2020 at 9:08 PM Jesse Brandeburg
-<jesse.brandeburg@intel.com> wrote:
->
-> sundeep.lkml@gmail.com wrote:
->
-> > From: Zyta Szpak <zyta@marvell.com>
-> >
-> > Four new mbox messages ids and handler are added in order to
-> > enable or disable timestamping procedure on tx and rx side.
-> > Additionally when PTP is enabled, the packet parser must skip
-> > over 8 bytes and start analyzing packet data there. To make NPC
-> > profiles work seemlesly PTR_ADVANCE of IKPU is set so that
-> > parsing can be done as before when all data pointers
-> > are shifted by 8 bytes automatically.
-> >
-> > Signed-off-by: Zyta Szpak <zyta@marvell.com>
-> > Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-> > Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
->
->
-> I know these patches are already acked by a couple of people in v4, but
-> I have a few more minor concerns that I'd like you to consider listed
-> below. Up to DaveM whether he wants to apply without the fixes I
-> mention.
->
->
-> > ---
-> >  drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 29 ++++++++++++
-> >  drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  4 ++
-> >  drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  4 ++
-> >  drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  1 +
-> >  .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 54 ++++++++++++++++++++++
-> >  .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 52 +++++++++++++++++++++
-> >  .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    | 27 +++++++++++
-> >  7 files changed, 171 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> > index a4e65da..8f17e26 100644
-> > --- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> > +++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> > @@ -468,6 +468,35 @@ static void cgx_lmac_pause_frm_config(struct cgx *cgx, int lmac_id, bool enable)
-> >       }
-> >  }
-> >
->
-> Generally what I'd like to see is that you have a comment here in
-> kernel doc format, I suppose your driver probably doesn't have any of
-> these, but it is particularly important to describe what each function
-> is meant to do especially when it is a symbol callable from other
-> files/modules. Something like:
->
-> /**
->  * cgx_lmac_ptp_config - enable or disable timestamping
->  * @cgxd: driver context
->  * @lmac_id: ID used to get register offset
->  * @enable: true if timestamping should be enabled, false if not
->  *
->  * Here would be a multi-line description of what this function does
->  * and if it has a return value, what it's for.
->  */
->
-I agree but we have lot of non static functions because of mbox handlers
-and adding kernel doc for all those didn't look good. We try best to use
-proper function names.
+"[PATCH net v2] ..."
+        ^^^-- the tree tag I had mentioned :-)
 
-> > +void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable)
-> > +{
-> > +     struct cgx *cgx = cgxd;
-> > +     u64 cfg;
-> > +
-> > +     if (!cgx)
-> > +             return;
-> > +
-> <snip>
->
-> > +int rvu_mbox_handler_nix_lf_ptp_tx_enable(struct rvu *rvu, struct msg_req *req,
-> > +                                       struct msg_rsp *rsp)
-> > +{
-> > +     struct rvu_hwinfo *hw = rvu->hw;
-> > +     u16 pcifunc = req->hdr.pcifunc;
-> > +     struct rvu_block *block;
-> > +     int blkaddr;
-> > +     int nixlf;
-> > +     u64 cfg;
-> > +
-> > +     blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
-> > +     if (blkaddr < 0)
-> > +             return NIX_AF_ERR_AF_LF_INVALID;
-> > +
-> > +     block = &hw->block[blkaddr];
-> > +     nixlf = rvu_get_lf(rvu, block, pcifunc, 0);
-> > +     if (nixlf < 0)
-> > +             return NIX_AF_ERR_AF_LF_INVALID;
-> > +
-> > +     cfg = rvu_read64(rvu, blkaddr, NIX_AF_LFX_TX_CFG(nixlf));
-> > +     cfg |= BIT_ULL(32);
->
-> I'm not super excited by the magic numbers here, without even a
-> comment, you should make a define for bit 32, and not leave me guessing
-> if this is the "enable" bit or is for something else.
->
-Because of the huge number of registers and bit definitions we are
-avoiding adding macros for simpler cases like the one above.
+Anyhow, the rest looks fine.
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-> > +     rvu_write64(rvu, blkaddr, NIX_AF_LFX_TX_CFG(nixlf), cfg);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +int rvu_mbox_handler_nix_lf_ptp_tx_disable(struct rvu *rvu, struct msg_req *req,
-> > +                                        struct msg_rsp *rsp)
-> > +{
-> > +     struct rvu_hwinfo *hw = rvu->hw;
-> > +     u16 pcifunc = req->hdr.pcifunc;
-> > +     struct rvu_block *block;
-> > +     int blkaddr;
-> > +     int nixlf;
-> > +     u64 cfg;
-> > +
-> > +     blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
-> > +     if (blkaddr < 0)
-> > +             return NIX_AF_ERR_AF_LF_INVALID;
-> > +
-> > +     block = &hw->block[blkaddr];
-> > +     nixlf = rvu_get_lf(rvu, block, pcifunc, 0);
-> > +     if (nixlf < 0)
-> > +             return NIX_AF_ERR_AF_LF_INVALID;
-> > +
-> > +     cfg = rvu_read64(rvu, blkaddr, NIX_AF_LFX_TX_CFG(nixlf));
-> > +     cfg &= ~BIT_ULL(32);
-> > +     rvu_write64(rvu, blkaddr, NIX_AF_LFX_TX_CFG(nixlf), cfg);
-> > +
-> > +     return 0;
-> > +}
-> > +
->
-> Is this and the function above exactly the same 20+ lines of code
-> with a one line difference? Before you passed an "enable" bool to
-> another function, why the difference here?
->
-Agreed. I will modify it.
+Thanks David.
 
-> >  int rvu_mbox_handler_nix_lso_format_cfg(struct rvu *rvu,
-> >                                       struct nix_lso_format_cfg *req,
-> >                                       struct nix_lso_format_cfg_rsp *rsp)
-> > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-> > index 0a21408..8179bbe 100644
-> > --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-> > +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
-> > @@ -27,6 +27,7 @@
-> >  #define NIXLF_PROMISC_ENTRY  2
-> >
-> >  #define NPC_PARSE_RESULT_DMAC_OFFSET 8
-> > +#define NPC_HW_TSTAMP_OFFSET         8
-> >
-> >  static void npc_mcam_free_all_entries(struct rvu *rvu, struct npc_mcam *mcam,
-> >                                     int blkaddr, u16 pcifunc);
-> > @@ -61,6 +62,32 @@ int rvu_npc_get_pkind(struct rvu *rvu, u16 pf)
-> >       return -1;
-> >  }
-> >
-> > +int npc_config_ts_kpuaction(struct rvu *rvu, int pf, u16 pcifunc, bool en)
-> > +{
-> > +     int pkind, blkaddr;
-> > +     u64 val;
-> > +
-> > +     pkind = rvu_npc_get_pkind(rvu, pf);
-> > +     if (pkind < 0) {
-> > +             dev_err(rvu->dev, "%s: pkind not mapped\n", __func__);
-> > +             return -EINVAL;
-> > +     }
-> > +
-> > +     blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, pcifunc);
-> > +     if (blkaddr < 0) {
-> > +             dev_err(rvu->dev, "%s: NPC block not implemented\n", __func__);
-> > +             return -EINVAL;
-> > +     }
-> > +     val = rvu_read64(rvu, blkaddr, NPC_AF_PKINDX_ACTION0(pkind));
-> > +     val &= ~0xff00000ULL; /* Zero ptr advance field */
->
-> Please don't use trailing comments *ever* in a code section, the only
-> place it is marginally ok, is in structure definitions.
->
-Okay will fix it.
-> Also, What's up with the magic number? At least you had a comment.
->
->
-Sure will fix it.
-
-Thanks,
-Sundeep
+> diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+> index bda2536dd740..6dc95dcc0ff4 100644
+> --- a/net/sctp/stream.c
+> +++ b/net/sctp/stream.c
+> @@ -88,12 +88,13 @@ static int sctp_stream_alloc_out(struct sctp_stream *stream, __u16 outcnt,
+>  	int ret;
+>  
+>  	if (outcnt <= stream->outcnt)
+> -		return 0;
+> +		goto out;
+>  
+>  	ret = genradix_prealloc(&stream->out, outcnt, gfp);
+>  	if (ret)
+>  		return ret;
+>  
+> +out:
+>  	stream->outcnt = outcnt;
+>  	return 0;
+>  }
+> @@ -104,12 +105,13 @@ static int sctp_stream_alloc_in(struct sctp_stream *stream, __u16 incnt,
+>  	int ret;
+>  
+>  	if (incnt <= stream->incnt)
+> -		return 0;
+> +		goto out;
+>  
+>  	ret = genradix_prealloc(&stream->in, incnt, gfp);
+>  	if (ret)
+>  		return ret;
+>  
+> +out:
+>  	stream->incnt = incnt;
+>  	return 0;
+>  }
+> -- 
+> 2.25.1
+> 
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
