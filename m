@@ -2,109 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4301F24B033
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 09:35:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0236324B048
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 09:43:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725916AbgHTHe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 03:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39186 "EHLO
+        id S1726325AbgHTHnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 03:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725866AbgHTHe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 03:34:56 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E0C5C061757
-        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 00:34:56 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id mw10so608245pjb.2
-        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 00:34:56 -0700 (PDT)
+        with ESMTP id S1725797AbgHTHnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 03:43:31 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CF7C061757;
+        Thu, 20 Aug 2020 00:43:30 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id i6so822265edy.5;
+        Thu, 20 Aug 2020 00:43:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=ikWq08EvpDCyzI9v3iVFTyQ5+WIbjjvxO2Nm/ZMsk6Q=;
-        b=njnlnfb09DuqkOOmojLuSciF9neE63ZqFQFWPdFNGJdytQ7o3CiHTJlcPJYWVQf0H9
-         upjgtw32rWnILEDsFdDEvta8KXu9/n553PYPg1cAYGnFb4wwXkVfsa09HpsV6XNDPkZE
-         j097UgUeQBePSu9E+j6kZcbOLKxyDTG7eRj+IGajKxKkvO4oH+EYm9+EEHD121AzZ68/
-         FmQIxhU/Bd5S3tAeWNqoOL5da6OhmXv7A7w7OBGr2n9CZEMJSzNVVSN/zQi0Gt3AP3eW
-         9oHcLx41F5NMHGYiL35teZm4Vck/7b1XndN/IrhSbBbOy4vzs2iAfudRzYGzxGUDjp3W
-         S3Ig==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dqghZRBtsmgBcL9zovjVe2f2vLQATQWo8uSmvuxBzHQ=;
+        b=iE8RIxO/pFTAv5ttCWHqtyybVWLleG5KbeeliQ4MWAcj3Et6B9Mt+XJaaOYzns3aBF
+         WbQx68Vkf31i98LizPvX+hHeT6uZs4Q4Qtu8egP9MT8smRjreJG33EFLD210FvYqRIv6
+         VyG/P+c2nTYjIWmCJBuyydQa2XFJObOKoP2r6KiT7Oem/H0j5w0VrvTLItdQdK7o/izy
+         Z6rseArdFHX/+devGGumGlVE1hxFC5w3C5CdfUAec54mwpU8Ec5tG0bmEW5Pmpx2QrZO
+         djC25HjaY4wNtDeVF6KQ9D9bXKivhfrUQKcCqFWMPDm5uY5s8okiQzuepgC/6IUb49yU
+         /FmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ikWq08EvpDCyzI9v3iVFTyQ5+WIbjjvxO2Nm/ZMsk6Q=;
-        b=efVjgxakx+DZewQdpeADAW1RcMgZNAdWRwg8y5MHAJa2ITx/5T10y4eSNH7OE/qmgo
-         GuqFmOCGiqVN0/4A+zQ1sJkFZkzd3yPf1g4j2PMX11w1XgBcqzf/THxJR/etkF2pT+mX
-         9d7LeVdHz8NemvyMSsJiQ1OzS/xIJIKWhRm3gSUdMK0WNfK0NNMm/yQl1eO/zZJdX5rO
-         L+6+BkoYYpdUzrNYuWo20DilrYqfZyr94cYFaVlpy8EJ6II5ixTCWzfyhKk/Dwkdsx3N
-         neUJDMdAostmlezU6xmYqiXOB3xdN8iJfFySsRT0+6R+ZJo6XJs/5IDeCnKWckNY/aTd
-         +fhw==
-X-Gm-Message-State: AOAM5313viT0NLOm1JUqtjrtR2KQvxD/P9dpvRfOy8TCBh2E2LnTUViO
-        Yd2bluOKNRcB9jQ9e/yRaG6yTVZ2bKuwdQ==
-X-Google-Smtp-Source: ABdhPJx1fwYiWtGpMFB5LBMaqvJ4cRLP9FE6ZQB456E48OWfp1J0A6PAtO1DLlT2MYP7uFJgOY8UHw==
-X-Received: by 2002:a17:902:301:: with SMTP id 1mr1693126pld.198.1597908895693;
-        Thu, 20 Aug 2020 00:34:55 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id g10sm1739896pfb.82.2020.08.20.00.34.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Aug 2020 00:34:54 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        tipc-discussion@lists.sourceforge.net,
-        Tuong Lien <tuong.t.lien@dektech.com.au>
-Subject: [PATCH net] tipc: call rcu_read_lock() in tipc_aead_encrypt_done()
-Date:   Thu, 20 Aug 2020 15:34:47 +0800
-Message-Id: <7f24b6b0a0d2cb82b9dfbf5343c01266d2840561.1597908887.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dqghZRBtsmgBcL9zovjVe2f2vLQATQWo8uSmvuxBzHQ=;
+        b=KH87rDbICNp76BtUEpgaNJaxvxQqUNUPpe4q3AxgOXg46Tk1x2AzhIZMRDhk8Iolxd
+         WCcHFlwq8uIF6paVJ5j5diz+J9OwSzHzSVKn2JG+DLbCMqYx0pmukatwjDo+ygAL9jXG
+         pbaLJhDSLLbXZOOFa9sVeUE6e4n+vGrPzt2yFyGxMmjLCgy2BsnL32ud5sF5AUEsXd9i
+         BbDj0jHkxFNEUy/6Ws5LIKk9/NtXDvIDZe/tb4IN5YKJMo9zlOP4e0aPZ9YDzhUahIck
+         HtU9O8n4GaE5/sL1fFdDxbE5QeQoCcajCKJX494PbZMjKiJDgXjXJrpw3YqQs60QyHSJ
+         MzEQ==
+X-Gm-Message-State: AOAM531t/c6Ld8Nc352w02FyOfs0zyRaUJnC601mXnG5lPU0f1pO0p2c
+        3C2YPJ+vhAk9256/r/XsKMtP9GFlEZqvWGXW8No=
+X-Google-Smtp-Source: ABdhPJwMbmcJ4NWOGrV3q85l7RlB6WidpEdoOwK1UBexXU20R7Z2Ht1elpiWU7rI7joz4LZw490sfSv6MHCKZI7tMFA=
+X-Received: by 2002:aa7:c513:: with SMTP id o19mr1640779edq.327.1597909409462;
+ Thu, 20 Aug 2020 00:43:29 -0700 (PDT)
+MIME-Version: 1.0
+References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
+ <20200623134259.8197-1-mzhivich@akamai.com> <1849b74f-163c-8cfa-baa5-f653159fefd4@akamai.com>
+ <CAM_iQpX1+dHB0kJF8gRfuDeAb9TsA9mB9H_Og8n8Hr19+EMLJA@mail.gmail.com>
+ <CAM_iQpWjQiG-zVs+e-V=8LvTFbRwgC4y4eoGERjezfAT0Fmm8g@mail.gmail.com>
+ <7fd86d97-6785-0b5f-1e95-92bc1da9df35@netrounds.com> <500b4843cb7c425ea5449fe199095edd5f7feb0c.camel@redhat.com>
+ <25ca46e4-a8c1-1c88-d6a9-603289ff44c3@akamai.com>
+In-Reply-To: <25ca46e4-a8c1-1c88-d6a9-603289ff44c3@akamai.com>
+From:   Jike Song <albcamus@gmail.com>
+Date:   Thu, 20 Aug 2020 15:43:17 +0800
+Message-ID: <CANE52Ki8rZGDPLZkxY--RPeEG+0=wFeyCD6KKkeG1WREUwramw@mail.gmail.com>
+Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
+To:     Josh Hunt <johunt@akamai.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Jonas Bonn <jonas.bonn@netrounds.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Michael Zhivich <mzhivich@akamai.com>,
+        David Miller <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        kehuan.feng@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-b->media->send_msg() requires rcu_read_lock(), as we can see
-elsewhere in tipc,  tipc_bearer_xmit, tipc_bearer_xmit_skb
-and tipc_bearer_bc_xmit().
+Hi Josh,
 
-Syzbot has reported this issue as:
+On Fri, Jul 3, 2020 at 2:14 AM Josh Hunt <johunt@akamai.com> wrote:
+{snip}
+> Initial results with Cong's patch look promising, so far no stalls. We
+> will let it run over the long weekend and report back on Tuesday.
+>
+> Paolo - I have concerns about possible performance regression with the
+> change as well. If you can gather some data that would be great. If
+> things look good with our low throughput test over the weekend we can
+> also try assessing performance next week.
+>
 
-  net/tipc/bearer.c:466 suspicious rcu_dereference_check() usage!
-  Workqueue: cryptd cryptd_queue_worker
-  Call Trace:
-   tipc_l2_send_msg+0x354/0x420 net/tipc/bearer.c:466
-   tipc_aead_encrypt_done+0x204/0x3a0 net/tipc/crypto.c:761
-   cryptd_aead_crypt+0xe8/0x1d0 crypto/cryptd.c:739
-   cryptd_queue_worker+0x118/0x1b0 crypto/cryptd.c:181
-   process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
-   worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
-   kthread+0x3b5/0x4a0 kernel/kthread.c:291
-   ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:293
+We met possibly the same problem when testing nvidia/mellanox's
+GPUDirect RDMA product, we found that changing NET_SCH_DEFAULT to
+DEFAULT_FQ_CODEL mitigated the problem, having no idea why. Maybe you
+can also have a try?
 
-So fix it by calling rcu_read_lock() in tipc_aead_encrypt_done()
-for b->media->send_msg().
+Besides, our testing is pretty complex, do you have a quick test to
+reproduce it?
 
-Fixes: fc1b6d6de220 ("tipc: introduce TIPC encryption & authentication")
-Reported-by: syzbot+47bbc6b678d317cccbe0@syzkaller.appspotmail.com
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/tipc/crypto.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
-index 001bcb0..c38baba 100644
---- a/net/tipc/crypto.c
-+++ b/net/tipc/crypto.c
-@@ -757,10 +757,12 @@ static void tipc_aead_encrypt_done(struct crypto_async_request *base, int err)
- 	switch (err) {
- 	case 0:
- 		this_cpu_inc(tx->stats->stat[STAT_ASYNC_OK]);
-+		rcu_read_lock();
- 		if (likely(test_bit(0, &b->up)))
- 			b->media->send_msg(net, skb, b, &tx_ctx->dst);
- 		else
- 			kfree_skb(skb);
-+		rcu_read_unlock();
- 		break;
- 	case -EINPROGRESS:
- 		return;
 -- 
-2.1.0
-
+Thanks,
+Jike
