@@ -2,83 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CF5B24B821
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 13:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8DC924B88C
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 13:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728210AbgHTLJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 07:09:36 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53044 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730671AbgHTLJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 07:09:15 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07KB6vmE005005;
-        Thu, 20 Aug 2020 04:09:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=xBc/b7MlULJeQkITKlogoIeCeUWYTBUbK6NFxu4fUFA=;
- b=cf1tGbZZOQ3Cp94IfAOzLvJyfjI62itHIlLC4lU3/gf4A28r45IYYB/LYy9VfJDrsfPY
- 48RZ4ulB/wFyPF237RG/E+8ypqst27ApbWyJiIeOnCEufq0Gis8JK/nEfo3L7A9gE7Fj
- v9o0fBg7ilOOclKeYB1JoGE/kw/eHf0jVTcY7q9bth+Via4ndwi8BlOISVcw4ZjCq8KM
- 0LTwr0sdZiRUglfsDqbUkOwMKu5cQPfA2Z0QgRz4iIjmHRrmddsGrRFLxhdVpYW3vu6U
- jtjKjZgGnvgDXnPdz8a5ubuSxdqA2bihmLWnn3eH+MtdtnJZws36rIHybBClGuLk3LG5 DQ== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3304hhvsur-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 20 Aug 2020 04:09:12 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 20 Aug
- 2020 04:09:10 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 20 Aug 2020 04:09:10 -0700
-Received: from NN-LT0065.marvell.com (NN-LT0065.marvell.com [10.193.54.69])
-        by maili.marvell.com (Postfix) with ESMTP id C1E473F7043;
-        Thu, 20 Aug 2020 04:09:08 -0700 (PDT)
-From:   Dmitry Bogdanov <dbogdanov@marvell.com>
-To:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>
-CC:     Dmitry Bogdanov <dbogdanov@marvell.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>
-Subject: [PATCH net 3/3] net: qed: RDMA personality shouldn't fail VF load
-Date:   Thu, 20 Aug 2020 14:08:32 +0300
-Message-ID: <a356c374d4b5456947242d27d325831f339fd569.1597833340.git.dbogdanov@marvell.com>
-X-Mailer: git-send-email 2.28.0.windows.1
-In-Reply-To: <cover.1597833340.git.dbogdanov@marvell.com>
-References: <cover.1597833340.git.dbogdanov@marvell.com>
+        id S1730146AbgHTLXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 07:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730361AbgHTLXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 07:23:17 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1492C061385
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 04:23:16 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id a5so1668295wrm.6
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 04:23:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=U5n6SRT8Sjz1CPU13WE9d5LyTZiKHzyZjLgHZoxXOTE=;
+        b=aqEEg19xOzHTc3ozUAXeqmBIsz/TxteAu/dHfpFyffdvzCI0suNWh4lVdHYbTteaQs
+         OwOUuXvXjz7P5oYJiISCCLCsgVQFlym97GpZAeY9RzKEc20kmHFwcVWHGY86p2tu/3e4
+         YURoEZWEfJlJorMoUduq5s3XoX4O5Fz2XxKfE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=U5n6SRT8Sjz1CPU13WE9d5LyTZiKHzyZjLgHZoxXOTE=;
+        b=aj2XXBpHtldstgDT1zc3S+FEoz2t1szvA4POIo8jQPolDNVT1Hhre6jCaYqRfVIzio
+         iNgE94UYgiksYjr8GI1yhHdU/9QKIQzSFvCOIijLxbKTHKdKz8YotajkDbfjcPFwL5Xj
+         BSmDoOV7Ge21/zaDPxsoKnvMt6UMl+eAl/eUEETdYau471Q9PtHuINRSbU/DPIhIu6uf
+         4Lb62M+Ry0vvVWsBaYk6SvLDCapTBmtmM+58LXzqISPiAoSQZYwRyGlMP9yX/HbhB1eY
+         C84J6DGaRumY9hfo6I2P/nc2IGpasx9Ae9/WwSS3KIUrickH60ElRroirdbUlBohy7Bw
+         aD/A==
+X-Gm-Message-State: AOAM530g1y2Oa0hJlb9uLflu85R3fJCBxPgQ+ZAOYi20CZ3T5MRWMe/0
+        JOe3lgVF5maKik5uXyAZ+F10TbAAPiJ+PA==
+X-Google-Smtp-Source: ABdhPJwsPZzuqgFAlc6bqa3hO310FDoiF1csyrwZ7PXVpepe+lQQsB6yPf4bw0JUqp4EtOSSb0TOrQ==
+X-Received: by 2002:a5d:6345:: with SMTP id b5mr3010882wrw.204.1597922595213;
+        Thu, 20 Aug 2020 04:23:15 -0700 (PDT)
+Received: from [192.168.0.101] ([79.134.172.106])
+        by smtp.googlemail.com with ESMTPSA id t25sm3478958wmj.18.2020.08.20.04.23.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Aug 2020 04:23:14 -0700 (PDT)
+Subject: Re: [RFC PATCH] net: bridge: Don't reset time stamps on SO_TXTIME
+ enabled sockets
+To:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <20200820105737.5089-1-kurt@linutronix.de>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <5affe98d-bb16-0744-5266-db708fb9dc16@cumulusnetworks.com>
+Date:   Thu, 20 Aug 2020 14:23:12 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-20_02:2020-08-19,2020-08-20 signatures=0
+In-Reply-To: <20200820105737.5089-1-kurt@linutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the assert during VF driver installation when the personality is iWARP
+On 8/20/20 1:57 PM, Kurt Kanzenbach wrote:
+> When using the ETF Qdisc in combination with a bridge and DSA, then all packets
+> gets dropped due to invalid time stamps. The setup looks like this:
+> 
+> Transmit path:
+> 
+> Application -> bridge (br0) -> DSA slave ports (lan0, lan1) -> ETF Qdisc
+>              -> ethernet (eth0)
+> 
+> The user space application uses SO_TXTIME to attach a sending time stamp for
+> each packet using the corresponding interface. That time stamp is then attached
+> to the skb in the kernel. The first network device involved in the chain is the
+> bridge device. However, in br_forward_finish() the time stamp is reset to zero
+> unconditionally. Meaning when the skb arrives at the ETF Qdisc, it's dropped as
+> invalid because the time stamp is zero.
+> 
+> The reset of the time stamp in the bridge code is there for a good reason. See
+> commit 41d1c8839e5f ("net: clear skb->tstamp in bridge forwarding path")
+> Therefore, add a conditional for SO_TXTIME enabled sockets.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> ---
+>   net/bridge/br_forward.c | 9 +++++++++
+>   1 file changed, 9 insertions(+)
+> 
+> RFC, because I don't know if that's the correct way to solve that issue.
+> 
 
-Fixes: 1fe614d10f45 ("qed: Relax VF firmware requirements")
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_sriov.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-index f1f75b6d0421..b8dc5c4591ef 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-@@ -71,6 +71,7 @@ static int qed_sp_vf_start(struct qed_hwfn *p_hwfn, struct qed_vf_info *p_vf)
- 		p_ramrod->personality = PERSONALITY_ETH;
- 		break;
- 	case QED_PCI_ETH_ROCE:
-+	case QED_PCI_ETH_IWARP:
- 		p_ramrod->personality = PERSONALITY_RDMA_AND_ETH;
- 		break;
- 	default:
--- 
-2.17.1
+The new conditionals will be for all forwarded packets, not only the ones that are transmitted through
+the bridge master device. If you'd like to do this please limit it to the bridge dev transmit.
 
+Thanks,
+  Nik
