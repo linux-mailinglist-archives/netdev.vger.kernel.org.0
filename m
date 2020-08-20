@@ -2,111 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39C4224BDC8
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 15:13:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D07324BE05
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 15:17:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728861AbgHTNNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 09:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728821AbgHTNNM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 09:13:12 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A092C061385;
-        Thu, 20 Aug 2020 06:13:07 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id o5so1124847pgb.2;
-        Thu, 20 Aug 2020 06:13:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=y98i18O2foTJlu6H0XakJVtjdpESc2Ki2h/a3V/WzHg=;
-        b=AwjcyWB+fnfZsiELE1LughLq2XItPYPUVGJ9cIYN+lvC2lOWqbERVFNY0MkOTz1XmY
-         e6fRrH9Irc8zjH2kSFr443jAEqAhKvO0g5ARrJZWo//fFwIUjdZaGKrux7bFsGbGKi1C
-         WgjLC3nBad3EqHBaQ8xMhSzWXa1G4ltMPHuSc7xUwY+395qqk3KGpbaOqbMbcIFaV/zy
-         GqZ9txVzPkL0xlz5ZxM0zmMKRYch8GqJf0YgAlxlPYU5leVwiymW+QM/J2YwgwzqzTAq
-         +e1UMxQBflKQBDjIXF/nuBfUB/JJ5YacchBpRTuEP6U09xviEPGqfUOWILLo95oSeaIY
-         iXNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=y98i18O2foTJlu6H0XakJVtjdpESc2Ki2h/a3V/WzHg=;
-        b=McVGNrt5wQ3rbEvQUqPN7NN2Wfov8TfuwYrzMGQFkbggPzfefFOQT0Sk5Ql/mxoFYU
-         LilgL6VyjjtBmrA6MJVtFNywUTXVuukxU6mZenErP/eMMFvX2pABcZeq7eEWB2ROAVnE
-         ihJf3BhrdngYYk9FUmmHgVboZRvxPzQNXmk33nXWdqYa59BYa//jChQxGhCIeEj92gvW
-         njlK+hTNuklmShbPAQJpN7iRT7kHKy3UYKkQHZjexHoXk93oDfjGhfifXFStKRe8iVeH
-         7214fhFIm5dno6oFZjPrjrWOJ0PRM6y3uT+iCvitgSP27HpPUlSZzuZU2M1jssedK5JS
-         WFhg==
-X-Gm-Message-State: AOAM533lhj9zGDocZ7zI1C3hnvLSC/iY0qOeaAURR2zU9HsCd/IGgqH6
-        G9TKj97q/rh4L0hYxR9NRr/lqhNsymg=
-X-Google-Smtp-Source: ABdhPJz58ZOO/VQcLaiqe8bwVjSNTLTElTvKI3954cG/wMh0ryR5800ct+xVhLeNqQAu4pU5wApR/Q==
-X-Received: by 2002:a63:7a19:: with SMTP id v25mr1243261pgc.386.1597929184100;
-        Thu, 20 Aug 2020 06:13:04 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id x136sm2974292pfc.28.2020.08.20.06.13.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Aug 2020 06:13:03 -0700 (PDT)
-Subject: Re: [PATCH net] sctp: not disable bh in the whole
- sctp_get_port_local()
-To:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        linux-sctp@vger.kernel.org
-Cc:     davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-References: <b3da88b999373d2518ac52a9e1d0fcb935109ea8.1597906119.git.lucien.xin@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <661ff148-627d-3b1f-f450-015dafefd137@gmail.com>
-Date:   Thu, 20 Aug 2020 06:13:01 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1729749AbgHTNRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 09:17:19 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:42283 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729713AbgHTNRN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 09:17:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1597929431;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LUsWgJtzCWl4vI3kssiyw/tK9ufRzzCdj6MkZUNtJZM=;
+        b=Cj2yvMpgzcGzFPxOwa8ggc5LLwRgnvpuso72OSxepQvHzMzfQyKmEWoEQ34BK2iJLSinLN
+        bk97dcgGZfl5NeeYv/4EzCYkqIouNuAmO8QIk8HbA5NT3pRgoF7yciA2wPslP1qGuwHfVK
+        MxCflDhwsdmVkC/s40/F6jC7t7t5AQg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-75-eb0KLz7rNeKKTKic23c18g-1; Thu, 20 Aug 2020 09:16:55 -0400
+X-MC-Unique: eb0KLz7rNeKKTKic23c18g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7D9FA1DE07;
+        Thu, 20 Aug 2020 13:16:54 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3103016E25;
+        Thu, 20 Aug 2020 13:16:45 +0000 (UTC)
+Date:   Thu, 20 Aug 2020 15:16:44 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com, echaudro@redhat.com,
+        sameehj@amazon.com, kuba@kernel.org, brouer@redhat.com
+Subject: Re: [PATCH net-next 0/6] mvneta: introduce XDP multi-buffer support
+Message-ID: <20200820151644.00e6c87c@carbon>
+In-Reply-To: <cover.1597842004.git.lorenzo@kernel.org>
+References: <cover.1597842004.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <b3da88b999373d2518ac52a9e1d0fcb935109ea8.1597906119.git.lucien.xin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+General issue (that I think must be resolved/discussed as part of this initial
+patchset).
 
-On 8/19/20 11:48 PM, Xin Long wrote:
-> With disabling bh in the whole sctp_get_port_local(), when
-> snum == 0 and too many ports have been used, the do-while
-> loop will take the cpu for a long time and cause cpu stuck:
-> 
->   [ ] watchdog: BUG: soft lockup - CPU#11 stuck for 22s!
->   [ ] RIP: 0010:native_queued_spin_lock_slowpath+0x4de/0x940
->   [ ] Call Trace:
->   [ ]  _raw_spin_lock+0xc1/0xd0
->   [ ]  sctp_get_port_local+0x527/0x650 [sctp]
->   [ ]  sctp_do_bind+0x208/0x5e0 [sctp]
->   [ ]  sctp_autobind+0x165/0x1e0 [sctp]
->   [ ]  sctp_connect_new_asoc+0x355/0x480 [sctp]
->   [ ]  __sctp_connect+0x360/0xb10 [sctp]
-> 
-> There's no need to disable bh in the whole function of
-> sctp_get_port_local. So fix this cpu stuck by removing
-> local_bh_disable() called at the beginning, and using
-> spin_lock_bh() instead.
-> 
-> The same thing was actually done for inet_csk_get_port() in
-> Commit ea8add2b1903 ("tcp/dccp: better use of ephemeral
-> ports in bind()").
-> 
-> Thanks to Marcelo for pointing the buggy code out.
-> 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Reported-by: Ying Xu <yinxu@redhat.com>
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
+When XDP_REDIRECT'ing a multi-buffer xdp_frame out of another driver's
+ndo_xdp_xmit(), what happens if the remote driver doesn't understand the
+multi-buffer format?
 
+My guess it that it will only send the first part of the packet (in the
+main page). Fortunately we don't leak memory, because xdp_return_frame()
+handle freeing the other segments. I assume this isn't acceptable
+behavior... or maybe it is?
 
-Any reason you chose to not use a cond_resched() then ?
+What are our options for handling this:
 
-Clearly this function needs to yield, not only BH, but to other threads.
+1. Add mb support in ndo_xdp_xmit in every driver?
+
+2. Drop xdp->mb frames inside ndo_xdp_xmit (in every driver without support)?
+
+3. Add core-code check before calling ndo_xdp_xmit()?
+
+--Jesper
+
+On Wed, 19 Aug 2020 15:13:45 +0200 Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+
+> Finalize XDP multi-buffer support for mvneta driver introducing the capability
+> to map non-linear buffers on tx side.
+> Introduce multi-buffer bit (mb) in xdp_frame/xdp_buffer to specify if
+> shared_info area has been properly initialized.
+> Initialize multi-buffer bit (mb) to 0 in all XDP-capable drivers.
+> Add multi-buff support to xdp_return_{buff/frame} utility routines.
+> 
+> Changes since RFC:
+> - squash multi-buffer bit initialization in a single patch
+> - add mvneta non-linear XDP buff support for tx side
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
