@@ -2,60 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AA9324ADE2
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 06:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90B0C24ADE8
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 06:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725819AbgHTEeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 00:34:12 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:40506 "EHLO 1wt.eu"
+        id S1725977AbgHTEht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 00:37:49 -0400
+Received: from verein.lst.de ([213.95.11.211]:40359 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725290AbgHTEeL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Aug 2020 00:34:11 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 07K4XNct021466;
-        Thu, 20 Aug 2020 06:33:23 +0200
-Date:   Thu, 20 Aug 2020 06:33:23 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>, George Spelvin <lkml@sdf.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>, netdev@vger.kernel.org
-Subject: Re: [DRAFT PATCH] random32: make prandom_u32() output unpredictable
-Message-ID: <20200820043323.GA21461@1wt.eu>
-References: <CA+icZUVkaKorjHb4PSh1pKnYVF7696cfqH_Q87HsNpy9Qx9mxQ@mail.gmail.com>
- <20200812032139.GA10119@1wt.eu>
- <CA+icZUXS2OPFuEkDC2oHDd344efkbAoq_oP0agqrvWD5FHDXGA@mail.gmail.com>
- <20200813080646.GB10907@1wt.eu>
- <CA+icZUW8oD6BLnyFUzXHS8fFciLaLQAZnus7GgUdCuSZcMg+MQ@mail.gmail.com>
- <20200814160551.GA11657@1wt.eu>
- <CA+icZUUVv9DYJHr79FnDcd57QCtXKmzEkt1cYvQ1DT8j1G19Ng@mail.gmail.com>
- <20200816150133.GA17475@1wt.eu>
- <CA+icZUW9+iEd8wssWmt9M5bhuLyRDMvTGSmJxvJ4qeQ8o78bPQ@mail.gmail.com>
- <CA+icZUUSQGTbfMCUo9JyAZ_FZzvF98v06pRgH+6iMqgVUYijdQ@mail.gmail.com>
+        id S1725772AbgHTEhs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 00:37:48 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 2D19E68BEB; Thu, 20 Aug 2020 06:37:45 +0200 (CEST)
+Date:   Thu, 20 Aug 2020 06:37:44 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     David Miller <davem@davemloft.net>
+Cc:     hch@lst.de, kuba@kernel.org, colyli@suse.de,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: bypass ->sendpage for slab pages
+Message-ID: <20200820043744.GA4349@lst.de>
+References: <20200819051945.1797088-1-hch@lst.de> <20200819.120709.1311664171016372891.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CA+icZUUSQGTbfMCUo9JyAZ_FZzvF98v06pRgH+6iMqgVUYijdQ@mail.gmail.com>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200819.120709.1311664171016372891.davem@davemloft.net>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 20, 2020 at 05:05:49AM +0200, Sedat Dilek wrote:
-> We have the same defines for K0 and K1 in include/linux/prandom.h and
-> lib/random32.c?
-> More room for simplifications?
+On Wed, Aug 19, 2020 at 12:07:09PM -0700, David Miller wrote:
+> Yes this fixes the problem, but it doesn't in any way deal with the
+> callers who are doing this stuff.
+> 
+> They are all likely using sendpage because they expect that it will
+> avoid the copy, for performance reasons or whatever.
+> 
+> Now it won't.
+> 
+> At least with Coly's patch set, the set of violators was documented
+> and they could switch to allocating non-slab pages or calling
+> sendmsg() or write() instead.
+> 
+> I hear talk about ABIs just doing the right thing, but when their
+> value is increased performance vs. other interfaces it means that
+> taking a slow path silently is bad in the long term.  And that's
+> what this proposed patch here does.
 
-Definitely, I'm not surprized at all. As I said, the purpose was to
-discuss around the proposal, not much more. If we think it's the way
-to go, some major lifting is required. I just don't want to invest
-significant time on this if nobody cares.
+If you look at who uses sendpage outside the networking layer itself
+you see that it is basically block driver and file systems.  These
+have no way to control what memory they get passed and have to deal
+with everything someone throws at them.
 
-Thanks!
-Willy
+So for these callers the requirements are in order of importance:
+
+ (1) just send the damn page without generating weird OOPSes
+ (2) do so as fast as possible
+ (3) do so without requіring pointless boilerplate code
+
+Any I think the current interface fails these requirements really badly.
+Having a helper that just does the right thing would really help all of
+these users, including those currently using raw ->sendpage over
+kernel_sendpage.  If you don't like kernel_sendpage to just do the
+right thing we could just add another helper, e.g.
+kernel_sendpage_or_fallback, but that would seem a little pointless
+to me.
