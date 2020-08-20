@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12CCE24B254
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 11:27:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 854E724B2D1
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 11:37:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728019AbgHTJ15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 05:27:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33672 "EHLO mail.kernel.org"
+        id S1728721AbgHTJhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 05:37:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53168 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727841AbgHTJ1E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Aug 2020 05:27:04 -0400
+        id S1728695AbgHTJhM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 05:37:12 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7609022CF6;
-        Thu, 20 Aug 2020 09:27:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 36E3C2075E;
+        Thu, 20 Aug 2020 09:37:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597915624;
-        bh=tnabjO7JEjY1lDcg7PZdz46k5I4+nn34zgqTPaqIAqg=;
+        s=default; t=1597916231;
+        bh=fYjUzlgWLrjLPQZGD7uGMfTq09k9G2bdCDizIxzhr2c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DM11x6Y8JQpXhK2Rl6i+8PKmW8odDc4Jp9X/RkjG1cIBT7D+S2/MLXPRNfEZnz19F
-         UYw2PfywfCqN0G/T7bapyW7nfL1ir+LzOJI0TinyvB7YHZw+O6sC1KiLZG/nhl9koM
-         XQVmgzqvZ+TYGja8XcQ7NHbNDgWhb+ucUVHGaGPA=
+        b=LByY+ros8UBPcwsCg04o+KHUvcSMFX9blXnpzwuJ4BrccOIih5JKOl6VYjGdEirqQ
+         EhB6xioa56DjRDHuekM1JDBgks8K+qCtgAVI+ImnrX8aBIs93ZE9F1CLkg+k2J7cFj
+         zFH4CGiuq4IyJw5tZ6d/hMzRMLJrM199Drbcqouw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -32,12 +32,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Sargun Dhillon <sargun@sargun.me>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.8 061/232] pidfd: Add missing sock updates for pidfd_getfd()
-Date:   Thu, 20 Aug 2020 11:18:32 +0200
-Message-Id: <20200820091615.744240580@linuxfoundation.org>
+Subject: [PATCH 5.7 055/204] pidfd: Add missing sock updates for pidfd_getfd()
+Date:   Thu, 20 Aug 2020 11:19:12 +0200
+Message-Id: <20200820091609.017231573@linuxfoundation.org>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200820091612.692383444@linuxfoundation.org>
-References: <20200820091612.692383444@linuxfoundation.org>
+In-Reply-To: <20200820091606.194320503@linuxfoundation.org>
+References: <20200820091606.194320503@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -80,7 +80,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  
  struct pid init_struct_pid = {
  	.count		= REFCOUNT_INIT(1),
-@@ -642,10 +643,12 @@ static int pidfd_getfd(struct pid *pid,
+@@ -624,10 +625,12 @@ static int pidfd_getfd(struct pid *pid,
  	}
  
  	ret = get_unused_fd_flags(O_CLOEXEC);
