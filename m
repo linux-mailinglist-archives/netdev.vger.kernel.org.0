@@ -2,121 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84C3A24BAA9
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2166924BAF3
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:22:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730225AbgHTMPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 08:15:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26786 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729792AbgHTMOs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 08:14:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1597925687;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-        bh=xILkwKXiimBRQG7R/yBOZh2vZwlweNle6iIT8qUHOGk=;
-        b=JCWQUNzzT/qjiZ2t3hIgLqUkX7NbgFJa2EEcf0c3bX8eVn9bQVR5xYE5ayItnO4ec1VJwM
-        6QnEWuJjiVupxE+0xRpM9J63LWeWp1IeLsfUyhiO/JsYozzEKc05mV5s0G0TbgIE8SuvWL
-        FLqdNg8aD6G0VLKwhwBeVr/fmbFiG24=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-232-8rgB_toIMCWjnWNOpU1GVw-1; Thu, 20 Aug 2020 08:14:41 -0400
-X-MC-Unique: 8rgB_toIMCWjnWNOpU1GVw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A0A18801AAB;
-        Thu, 20 Aug 2020 12:14:40 +0000 (UTC)
-Received: from [10.36.113.120] (ovpn-113-120.ams2.redhat.com [10.36.113.120])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 241827E306;
-        Thu, 20 Aug 2020 12:14:35 +0000 (UTC)
-Subject: Re: Kernel build error on BTFIDS vmlinux
-To:     Mark Wielaard <mark@klomp.org>, Jiri Olsa <jolsa@redhat.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>, sdf@google.com,
-        andriin@fb.com
-References: <20200818105555.51fc6d62@carbon> <20200818091404.GB177896@krava>
- <20200818105602.GC177896@krava> <20200818134543.GD177896@krava>
- <20200818183318.2c3fe4a2@carbon>
- <c9c4a42ba6b4d36e557a5441e90f7f4961ec3f72.camel@klomp.org>
- <0ddf7bc5-be05-cc06-05d7-2778c53d023b@redhat.com>
- <20200819171820.GG177896@krava>
- <f03e0fec4b29afe24a7a13c43de23e6db6dfce23.camel@klomp.org>
-From:   Nick Clifton <nickc@redhat.com>
-Autocrypt: addr=nickc@redhat.com; prefer-encrypt=mutual; keydata=
- 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
- 6susi2ReUyNJEJaSnjO5z13TQ1U=
-Organization: Red Hat
-Message-ID: <5a4dfcc7-5f6f-d1bb-42a0-363cb59b6d93@redhat.com>
-Date:   Thu, 20 Aug 2020 13:14:34 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1730539AbgHTMUj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Aug 2020 08:20:39 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:21815 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730083AbgHTMUg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 08:20:36 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-118-q-2yRy14OXaDjkU2wgyLYg-1; Thu, 20 Aug 2020 13:20:32 +0100
+X-MC-Unique: q-2yRy14OXaDjkU2wgyLYg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 20 Aug 2020 13:20:25 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 20 Aug 2020 13:20:25 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Jakub Sitnicki' <jakub@cloudflare.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
+Subject: RE: BPF sk_lookup v5 - TCP SYN and UDP 0-len flood benchmarks
+Thread-Topic: BPF sk_lookup v5 - TCP SYN and UDP 0-len flood benchmarks
+Thread-Index: AQHWdtzbHJLXFHCDqUy9ea5Q2RcL9qlA6Vow
+Date:   Thu, 20 Aug 2020 12:20:25 +0000
+Message-ID: <ad210e824dd74c05b1072655fc5dc69c@AcuMS.aculab.com>
+References: <20200717103536.397595-1-jakub@cloudflare.com>
+ <87lficrm2v.fsf@cloudflare.com>
+ <CAADnVQKE6y9h2fwX6OS837v-Uf+aBXnT_JXiN_bbo2gitZQ3tA@mail.gmail.com>
+ <87k0xtsj91.fsf@cloudflare.com>
+In-Reply-To: <87k0xtsj91.fsf@cloudflare.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <f03e0fec4b29afe24a7a13c43de23e6db6dfce23.camel@klomp.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0.001
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Guys,
+From: Jakub Sitnicki
+> Sent: 20 August 2020 11:30
+> Subject: Re: BPF sk_lookup v5 - TCP SYN and UDP 0-len flood benchmarks
+> 
+> On Tue, Aug 18, 2020 at 08:19 PM CEST, Alexei Starovoitov wrote:
+> > On Tue, Aug 18, 2020 at 8:49 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+> >>          :                      rcu_read_lock();
+> >>          :                      run_array = rcu_dereference(net-
+> >bpf.run_array[NETNS_BPF_SK_LOOKUP]);
+> >>     0.01 :   ffffffff817f8624:       mov    0xd68(%r12),%rsi
+> >>          :                      if (run_array) {
+> >>     0.00 :   ffffffff817f862c:       test   %rsi,%rsi
+> >>     0.00 :   ffffffff817f862f:       je     ffffffff817f87a9 <__udp4_lib_lookup+0x2c9>
+> >>          :                      struct bpf_sk_lookup_kern ctx = {
+> >>     1.05 :   ffffffff817f8635:       xor    %eax,%eax
+> >>     0.00 :   ffffffff817f8637:       mov    $0x6,%ecx
+> >>     0.01 :   ffffffff817f863c:       movl   $0x110002,0x40(%rsp)
+> >>     0.00 :   ffffffff817f8644:       lea    0x48(%rsp),%rdi
+> >>    18.76 :   ffffffff817f8649:       rep stos %rax,%es:(%rdi)
+> >>     1.12 :   ffffffff817f864c:       mov    0xc(%rsp),%eax
+> >>     0.00 :   ffffffff817f8650:       mov    %ebp,0x48(%rsp)
+> >>     0.00 :   ffffffff817f8654:       mov    %eax,0x44(%rsp)
+> >>     0.00 :   ffffffff817f8658:       movzwl 0x10(%rsp),%eax
+> >>     1.21 :   ffffffff817f865d:       mov    %ax,0x60(%rsp)
+> >>     0.00 :   ffffffff817f8662:       movzwl 0x20(%rsp),%eax
+> >>     0.00 :   ffffffff817f8667:       mov    %ax,0x62(%rsp)
+> >>          :                      .sport          = sport,
+> >>          :                      .dport          = dport,
+> >>          :                      };
+> >
+> > Such heavy hit to zero init 56-byte structure is surprising.
+> > There are two 4-byte holes in this struct. You can try to pack it and
+> > make sure that 'rep stoq' is used instead of 'rep stos' (8 byte at a time vs 4).
+> 
+> Thanks for the tip. I'll give it a try.
 
->> so when I take empty object and compile like:
->>
->>   $ echo 'int main(int argc, char **argv) { return 0; }' | gcc -c -o ex.o -g -gz=zlib -x c -
->>   $ ld -o ex --compress-debug-sections=zlib ex.o
+You probably don't want to use 'rep stos' in any of its forms.
+The instruction 'setup' time is horrid on most cpu variants.
+For a 48 byte structure six writes of a zero register will be faster.
 
-Thanks Mark.  I have now created a binutils PR for this bug, and I am looking into a fix:
+If gcc is generating the 'rep stos' then the compiler source code for that
+pessimisation needs deleting...
 
-  https://sourceware.org/bugzilla/show_bug.cgi?id=26428
+	David
 
-Cheers
-  Nick
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
