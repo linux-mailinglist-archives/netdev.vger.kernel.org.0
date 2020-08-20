@@ -2,208 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF9224C0E9
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 16:50:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71A1824C133
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 17:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728122AbgHTOuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 10:50:00 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:42432 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726885AbgHTOtk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 10:49:40 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07KEkDj8012255;
-        Thu, 20 Aug 2020 07:49:21 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=N2JYciGo3stDKphKVw7wGi1y0bjU92X5HW8zClleyAc=;
- b=q4J1QYtrkw0uydnVFRM9GNhK9/3qhOrPusD7JsTS+jlkmbH+o8Zn+L1sIgSoKsjo1riJ
- v4qaeVukQndGV1t//u8B4QqkiMwTiTDndMzLUGERZDGnpMFSx0XASIGqgqAey5xUPCuz
- 078owbax8Fp+/3cjhrv2UwWEqCz51Na7xrU= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3304nxxgfw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 20 Aug 2020 07:49:21 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 20 Aug 2020 07:49:20 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HjxTyDlzD9MXyZXnHVqJOW+/pRgOEEIZtn4X2CsvdyWbOqSboN8Ay5n+BA7r8M1w4CineLXzZLoe2/60yR10Z48SEiGh04NZMMhrs5he7NZQ2l1Y/tbYoFNsdhA3eD8HFa0ZDcWhUYyy20QgShD7vVdiOCKVaaEn3+Ma7k7x3OCTMpCRU2nUMZ+BUpv1jRYdcMWMN7qkA1xQj5aIcQqc0xbLMorqCao9Q+fQ9ZIgtAz7EPvgJ9sTRnhRg/NcmvLcCOk8lFsNeoOE5nMpoTrsb6tcCAf8wWxYML092NJkgEVUmHEycNJUHIyw0VoHkrX5pRe1E5LUAwjWObLt/Dxrbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N2JYciGo3stDKphKVw7wGi1y0bjU92X5HW8zClleyAc=;
- b=OHrX+xAuYguWBPrK2e2G5PrYRGRYyeUZSMOWyMuvZSdRK+kp8U9rdr5hEFwpLRDUMv3P9n53Ysrfg9R945v5vtopoBZbIcITEG132/tQVKwQjGJoCWAgKp2csmN4BJOLBO2Kwj+mD8zuuW5+ROv6e78g3Dm5yLzqBCQG3eCx1RHygSjIY5aifgIeWQsuvWUUXX2cUjkxk9DdA/0Yp4YGdoBbRgJxupU/gZlPt4QmwV3gHDlbdD/B7x6mBDv1QcuwiTa/+vXpwqHktgRJCECz58qlXSE1CnzMyyHd0FDWGNQK7X64vEzaAIWbnB/k2NRXO9T8QVzEa6yJIyH4ZC+Gsg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N2JYciGo3stDKphKVw7wGi1y0bjU92X5HW8zClleyAc=;
- b=a0ITvzthAnk+5mbBPVIffzLfsZ3uijfbcgc76C3B+PXeLh9OFwyFNvsoXhIdIDwh2rMNlQurWMyYHnYmROyIfw1hXoJflmWLdRIeESZmgQDvX/xzt3Cd3+pla7yLwLO+lJhrn25/Xvczy46QIILBd8LHb1zDHSqnfpFALx3ZWCI=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2695.namprd15.prod.outlook.com (2603:10b6:a03:150::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Thu, 20 Aug
- 2020 14:49:19 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3305.026; Thu, 20 Aug 2020
- 14:49:19 +0000
-Subject: Re: [PATCH bpf-next 6/6] selftests: bpf: test sockmap update from BPF
-To:     Lorenz Bauer <lmb@cloudflare.com>
-CC:     Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team <kernel-team@cloudflare.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <20200819092436.58232-1-lmb@cloudflare.com>
- <20200819092436.58232-7-lmb@cloudflare.com>
- <1ad29823-1925-01ee-f042-20b422a62a73@fb.com>
- <CACAyw9-ORs29Gt0c02qsco9ah_h88OqQh5cq36SpDCD19x89uw@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <582e57e2-58e6-8a37-7dbc-67a2a1db7ecb@fb.com>
-Date:   Thu, 20 Aug 2020 07:49:14 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
-In-Reply-To: <CACAyw9-ORs29Gt0c02qsco9ah_h88OqQh5cq36SpDCD19x89uw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR06CA0001.namprd06.prod.outlook.com
- (2603:10b6:208:23d::6) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1728393AbgHTPG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 11:06:56 -0400
+Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:19345 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728274AbgHTPGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 11:06:51 -0400
+Received: from localhost.localdomain ([93.22.135.164])
+        by mwinf5d87 with ME
+        id Hr6n2300H3YzEb903r6o4Z; Thu, 20 Aug 2020 17:06:49 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 20 Aug 2020 17:06:49 +0200
+X-ME-IP: 93.22.135.164
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     yhchuang@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] rtw88: switch from 'pci_' to 'dma_' API
+Date:   Thu, 20 Aug 2020 17:06:43 +0200
+Message-Id: <20200820150643.148219-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from 255.255.255.255 (255.255.255.255) by MN2PR06CA0001.namprd06.prod.outlook.com (2603:10b6:208:23d::6) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.24 via Frontend Transport; Thu, 20 Aug 2020 14:49:16 +0000
-X-Originating-IP: [2620:10d:c091:480::1:7ec1]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 60fc5185-03ce-4398-e1b3-08d8451837a1
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2695:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2695E2E59F06E3F87C34B16BD35A0@BYAPR15MB2695.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:257;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nVsqDQ5iPuDYQc/jwoGTFTDO1S27gJOJaHoKtjGQ3jIGZso3ek21ZBhVQQha8EY3BzB5LNSPbpFI/4vteQDEDLe85o5IQ9FQeT3m2XqVxfe26djWZ6+79Lutyi5+ueRRsFgIq+JVZD5T7rOOZZVbp4XHrBWvcCNzfh2Qe0nDkDZUj7LaHsGg98IJb/Je7lKExTyXqmFu+hCpJqJjdqr3LkK57h/prNe4Qlqp5dzY57ThDhuUNnttT+ADNDhh9eDF0OgbtDUw3mGJHTBtuj3nTNZmsOJjznajUJEaA29fldpmfSn8/iuv42+q14Rh+CNJEuSpNfUB27ZiiwhawtNhAgtzLfJtJ7ZjIwSn0AQGPKcuHPVnblzW3UH+PlvCa7Jje/JdR7o8Jpq7gWD6giaXxk52GbbyD+um+erjL4z1JAU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(396003)(376002)(346002)(39860400002)(2906002)(86362001)(186003)(52116002)(54906003)(316002)(36756003)(5660300002)(16576012)(6916009)(110011004)(956004)(31696002)(53546011)(2616005)(66946007)(8676002)(66556008)(66476007)(8936002)(31686004)(478600001)(4326008)(6486002)(7416002)(83380400001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: vSMGNQsY3x8/ubSqS2mGpy4Obp6hbcO9DXa59L7Yk5eZCMXfciAtd6eJVritLoUyOvwqigtJgAc/Vl+VbyQUvb8RcuSG4a3Et+cGWIha/OSxWd7dzU1Vql0HbO/j5JKnFdS3rS+urSYHPQxvtxz6op2U7pl6Xpg3y3ex/cwVFb60/XmGdJI/EJNjno3D3b8iIo9pTUlXmjXHl3G5CIW/UaGSabZA/9r1MSCSw3vG0DjRHJkyF1r02ZoikX2X70iO0qCpJzfPEiDUhVqwrdcfDcbLN7ajXAsYdI/ObbaHeSd/ax1buHFyfObtaKI66dPbWRMIkSvngVNWONuy2YWHi2ljLL748wTV7GY8hGd01I9wF32jHeW5RlRKtixoIIQRkmNeCutgksVFkAD/y5xLLTMG/ADZgSuwPl7yaiGLXO/OuHPO2xwILqbn73zqBuoqtaaP+BhiyCo7By3NAOqwt7pSsSII/pnqHv9wpJV86uUbsHyM8Pka4sYdeXeoZendd1xTyBtXlECfMIW4MVFhj710HybZRrEF7L9jzjxvYzdc2wHOeOtorb2RJQiA3WgRMt4FbHNTk7wIOhz/IZxM6HE2Sd2evZ1/rb95kFHf58rN4N83UTIGLecpbPBrtzLyWK4M76Kw2ata8Aa8+6S7zZICqpENjW0Bbu8z7bGzWXQUfdR/6+Z0wHtI//1ggGZy
-X-MS-Exchange-CrossTenant-Network-Message-Id: 60fc5185-03ce-4398-e1b3-08d8451837a1
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2020 14:49:18.9711
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Pamo3EOtw0EmFwvbWr6x+hudulvzRr6NflH4rgkYn8YA/+c7ZlDogHvgtMx90dQr
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2695
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-20_03:2020-08-19,2020-08-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 spamscore=0 bulkscore=0 mlxlogscore=999 clxscore=1015
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=0
- mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008200123
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The wrappers in include/linux/pci-dma-compat.h should go away.
+
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
+
+When memory is allocated in 'rtw_pci_init_tx_ring()' and
+'rtw_pci_init_rx_ring()' GFP_KERNEL can be used because both functions are
+called from a probe function and no spinlock is taken.
+
+The call chain is:
+  rtw_pci_probe
+    --> rtw_pci_setup_resource
+      --> rtw_pci_init
+        --> rtw_pci_init_trx_ring
+          --> rtw_pci_init_tx_ring
+          --> rtw_pci_init_rx_ring
 
 
-On 8/20/20 4:58 AM, Lorenz Bauer wrote:
-> On Wed, 19 Aug 2020 at 21:46, Yonghong Song <yhs@fb.com> wrote:
->>
->>
->>
->> On 8/19/20 2:24 AM, Lorenz Bauer wrote:
->>> Add a test which copies a socket from a sockmap into another sockmap
->>> or sockhash. This excercises bpf_map_update_elem support from BPF
->>> context. Compare the socket cookies from source and destination to
->>> ensure that the copy succeeded.
->>>
->>> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
->>> ---
->>>    .../selftests/bpf/prog_tests/sockmap_basic.c  | 76 +++++++++++++++++++
->>>    .../selftests/bpf/progs/test_sockmap_copy.c   | 48 ++++++++++++
->>>    2 files changed, 124 insertions(+)
->>>    create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_copy.c
->>>
->>> diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
->>> index 96e7b7f84c65..d30cabc00e9e 100644
->>> --- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
->>> +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
->>> @@ -4,6 +4,7 @@
->>>
->>>    #include "test_progs.h"
->>>    #include "test_skmsg_load_helpers.skel.h"
->>> +#include "test_sockmap_copy.skel.h"
->>>
->>>    #define TCP_REPAIR          19      /* TCP sock is under repair right now */
->>>
->>> @@ -101,6 +102,77 @@ static void test_skmsg_helpers(enum bpf_map_type map_type)
->>>        test_skmsg_load_helpers__destroy(skel);
->>>    }
->>>
->>> +static void test_sockmap_copy(enum bpf_map_type map_type)
->>> +{
->>> +     struct bpf_prog_test_run_attr attr;
->>> +     struct test_sockmap_copy *skel;
->>> +     __u64 src_cookie, dst_cookie;
->>> +     int err, prog, s, src, dst;
->>> +     const __u32 zero = 0;
->>> +     char dummy[14] = {0};
->>> +
->>> +     s = connected_socket_v4();
->>
->> Maybe change variable name to "sk" for better clarity?
-> 
-> Yup!
-> 
->>
->>> +     if (CHECK_FAIL(s == -1))
->>> +             return;
->>> +
->>> +     skel = test_sockmap_copy__open_and_load();
->>> +     if (CHECK_FAIL(!skel)) {
->>> +             close(s);
->>> +             perror("test_sockmap_copy__open_and_load");
->>> +             return;
->>> +     }
->>
->> Could you use CHECK instead of CHECK_FAIL?
->> With CHECK, you can print additional information without perror.
-> 
-> I avoid CHECK because it requires `duration`, which doesn't make sense
-> for most things that I call CHECK_FAIL on here. So either it outputs 0
-> nsec (which is bogus) or it outputs the value from the last
-> bpf_prog_test_run call (which is also bogus). How do other tests
-> handle this? Just ignore it?
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
 
-Just ignore it. You can define a static variable duration in the 
-beginning of file and then use CHECK in the rest of file.
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
 
-> 
->>
->>
->>> +
->>> +     prog = bpf_program__fd(skel->progs.copy_sock_map);
->>> +     src = bpf_map__fd(skel->maps.src);
->>> +     if (map_type == BPF_MAP_TYPE_SOCKMAP)
->>> +             dst = bpf_map__fd(skel->maps.dst_sock_map);
->>> +     else
->>> +             dst = bpf_map__fd(skel->maps.dst_sock_hash);
->>> +
-[...]
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/wireless/realtek/rtw88/pci.c | 33 ++++++++++++------------
+ 1 file changed, 16 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index 3413973bc475..135dd331691c 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -109,7 +109,7 @@ static void rtw_pci_free_tx_ring_skbs(struct rtw_dev *rtwdev,
+ 		tx_data = rtw_pci_get_tx_data(skb);
+ 		dma = tx_data->dma;
+ 
+-		pci_unmap_single(pdev, dma, skb->len, PCI_DMA_TODEVICE);
++		dma_unmap_single(&pdev->dev, dma, skb->len, DMA_TO_DEVICE);
+ 		dev_kfree_skb_any(skb);
+ 	}
+ }
+@@ -125,7 +125,7 @@ static void rtw_pci_free_tx_ring(struct rtw_dev *rtwdev,
+ 	rtw_pci_free_tx_ring_skbs(rtwdev, tx_ring);
+ 
+ 	/* free the ring itself */
+-	pci_free_consistent(pdev, ring_sz, head, tx_ring->r.dma);
++	dma_free_coherent(&pdev->dev, ring_sz, head, tx_ring->r.dma);
+ 	tx_ring->r.head = NULL;
+ }
+ 
+@@ -144,7 +144,7 @@ static void rtw_pci_free_rx_ring_skbs(struct rtw_dev *rtwdev,
+ 			continue;
+ 
+ 		dma = *((dma_addr_t *)skb->cb);
+-		pci_unmap_single(pdev, dma, buf_sz, PCI_DMA_FROMDEVICE);
++		dma_unmap_single(&pdev->dev, dma, buf_sz, DMA_FROM_DEVICE);
+ 		dev_kfree_skb(skb);
+ 		rx_ring->buf[i] = NULL;
+ 	}
+@@ -159,7 +159,7 @@ static void rtw_pci_free_rx_ring(struct rtw_dev *rtwdev,
+ 
+ 	rtw_pci_free_rx_ring_skbs(rtwdev, rx_ring);
+ 
+-	pci_free_consistent(pdev, ring_sz, head, rx_ring->r.dma);
++	dma_free_coherent(&pdev->dev, ring_sz, head, rx_ring->r.dma);
+ }
+ 
+ static void rtw_pci_free_trx_ring(struct rtw_dev *rtwdev)
+@@ -194,7 +194,7 @@ static int rtw_pci_init_tx_ring(struct rtw_dev *rtwdev,
+ 		return -EINVAL;
+ 	}
+ 
+-	head = pci_zalloc_consistent(pdev, ring_sz, &dma);
++	head = dma_alloc_coherent(&pdev->dev, ring_sz, &dma, GFP_KERNEL);
+ 	if (!head) {
+ 		rtw_err(rtwdev, "failed to allocate tx ring\n");
+ 		return -ENOMEM;
+@@ -223,8 +223,8 @@ static int rtw_pci_reset_rx_desc(struct rtw_dev *rtwdev, struct sk_buff *skb,
+ 	if (!skb)
+ 		return -EINVAL;
+ 
+-	dma = pci_map_single(pdev, skb->data, buf_sz, PCI_DMA_FROMDEVICE);
+-	if (pci_dma_mapping_error(pdev, dma))
++	dma = dma_map_single(&pdev->dev, skb->data, buf_sz, DMA_FROM_DEVICE);
++	if (dma_mapping_error(&pdev->dev, dma))
+ 		return -EBUSY;
+ 
+ 	*((dma_addr_t *)skb->cb) = dma;
+@@ -272,7 +272,7 @@ static int rtw_pci_init_rx_ring(struct rtw_dev *rtwdev,
+ 		return -EINVAL;
+ 	}
+ 
+-	head = pci_zalloc_consistent(pdev, ring_sz, &dma);
++	head = dma_alloc_coherent(&pdev->dev, ring_sz, &dma, GFP_KERNEL);
+ 	if (!head) {
+ 		rtw_err(rtwdev, "failed to allocate rx ring\n");
+ 		return -ENOMEM;
+@@ -311,11 +311,11 @@ static int rtw_pci_init_rx_ring(struct rtw_dev *rtwdev,
+ 		if (!skb)
+ 			continue;
+ 		dma = *((dma_addr_t *)skb->cb);
+-		pci_unmap_single(pdev, dma, buf_sz, PCI_DMA_FROMDEVICE);
++		dma_unmap_single(&pdev->dev, dma, buf_sz, DMA_FROM_DEVICE);
+ 		dev_kfree_skb_any(skb);
+ 		rx_ring->buf[i] = NULL;
+ 	}
+-	pci_free_consistent(pdev, ring_sz, head, dma);
++	dma_free_coherent(&pdev->dev, ring_sz, head, dma);
+ 
+ 	rtw_err(rtwdev, "failed to init rx buffer\n");
+ 
+@@ -675,8 +675,7 @@ static void rtw_pci_release_rsvd_page(struct rtw_pci *rtwpci,
+ 
+ 	tx_data = rtw_pci_get_tx_data(prev);
+ 	dma = tx_data->dma;
+-	pci_unmap_single(rtwpci->pdev, dma, prev->len,
+-			 PCI_DMA_TODEVICE);
++	dma_unmap_single(&rtwpci->pdev->dev, dma, prev->len, DMA_TO_DEVICE);
+ 	dev_kfree_skb_any(prev);
+ }
+ 
+@@ -755,9 +754,9 @@ static int rtw_pci_tx_write_data(struct rtw_dev *rtwdev,
+ 	memset(pkt_desc, 0, tx_pkt_desc_sz);
+ 	pkt_info->qsel = rtw_pci_get_tx_qsel(skb, queue);
+ 	rtw_tx_fill_tx_desc(pkt_info, skb);
+-	dma = pci_map_single(rtwpci->pdev, skb->data, skb->len,
+-			     PCI_DMA_TODEVICE);
+-	if (pci_dma_mapping_error(rtwpci->pdev, dma))
++	dma = dma_map_single(&rtwpci->pdev->dev, skb->data, skb->len,
++			     DMA_TO_DEVICE);
++	if (dma_mapping_error(&rtwpci->pdev->dev, dma))
+ 		return -EBUSY;
+ 
+ 	/* after this we got dma mapped, there is no way back */
+@@ -896,8 +895,8 @@ static void rtw_pci_tx_isr(struct rtw_dev *rtwdev, struct rtw_pci *rtwpci,
+ 			break;
+ 		}
+ 		tx_data = rtw_pci_get_tx_data(skb);
+-		pci_unmap_single(rtwpci->pdev, tx_data->dma, skb->len,
+-				 PCI_DMA_TODEVICE);
++		dma_unmap_single(&rtwpci->pdev->dev, tx_data->dma, skb->len,
++				 DMA_TO_DEVICE);
+ 
+ 		/* just free command packets from host to card */
+ 		if (hw_queue == RTW_TX_QUEUE_H2C) {
+-- 
+2.25.1
+
