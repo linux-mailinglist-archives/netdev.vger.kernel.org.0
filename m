@@ -2,113 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63CEA24B0D2
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 10:13:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E16FA24B0FF
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 10:24:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgHTINX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 04:13:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50686 "EHLO mail.kernel.org"
+        id S1726435AbgHTIYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 04:24:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39966 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726435AbgHTIL5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Aug 2020 04:11:57 -0400
+        id S1725824AbgHTIYO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 04:24:14 -0400
 Received: from localhost (unknown [151.48.139.80])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EC1632080C;
-        Thu, 20 Aug 2020 08:11:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4BDF022BED;
+        Thu, 20 Aug 2020 08:24:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597911116;
-        bh=c8IHdpgUofJgH17OfpXZ8mbOL/0v2aSMDySpoG9Nz7I=;
+        s=default; t=1597911853;
+        bh=9qWmb2ne5yGdqdaFQ5lWZ8JwFeZcz4s6tqM9ozd7LSY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oKwgTUmAdkALKJDRRj4Cjyg0AlWIbAJUE2V7l9vNGmse9rVdUg8vZzma7s6YVNjeT
-         yKRbli8jtCRIKTbrnp51ppin3BhdOd5ErjgvzvXYUg9CRI3szsxci+jLNLSvu26YuB
-         YdajDecUojy75S73O27vu6bz8mT93ejIcrmig0HA=
-Date:   Thu, 20 Aug 2020 10:11:51 +0200
+        b=fg2EmKvGKwNBYj14t7gVN8o+kjM2t0ZORI0a6uHDXwMktsLGJIZrs9nZB9CG2sftD
+         zoPbebdEvmiu7R1uyZMnntMWm/c4Ba6k6BVM90x0kBK3dOVC7q9cX4MAfMYCogTok/
+         4tkHKbfqhGBDqHwNu265foqrycFG9fWtvo1OFDwA=
+Date:   Thu, 20 Aug 2020 10:24:08 +0200
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com, echaudro@redhat.com,
-        sameehj@amazon.com, kuba@kernel.org
-Subject: Re: [PATCH net-next 3/6] net: mvneta: update mb bit before passing
- the xdp buffer to eBPF layer
-Message-ID: <20200820081151.GD2282@lore-desk>
-References: <cover.1597842004.git.lorenzo@kernel.org>
- <08f8656e906ff69bd30915a6a37a01d5f0422194.1597842004.git.lorenzo@kernel.org>
- <20200820100215.1b93464f@carbon>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf] bpf: xdp: fix XDP mode when no mode flags specified
+Message-ID: <20200820082408.GE2282@lore-desk>
+References: <20200820052841.1559757-1-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="bjuZg6miEcdLYP6q"
+        protocol="application/pgp-signature"; boundary="KuLpqunXa7jZSBt+"
 Content-Disposition: inline
-In-Reply-To: <20200820100215.1b93464f@carbon>
+In-Reply-To: <20200820052841.1559757-1-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---bjuZg6miEcdLYP6q
+--KuLpqunXa7jZSBt+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-> On Wed, 19 Aug 2020 15:13:48 +0200
-> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> 7f0a838254bd ("bpf, xdp: Maintain info on attached XDP BPF programs in ne=
+t_device")
+> inadvertently changed which XDP mode is assumed when no mode flags are
+> specified explicitly. Previously, driver mode was preferred, if driver
+> supported it. If not, generic SKB mode was chosen. That commit changed de=
+fault
+> to SKB mode always. This patch fixes the issue and restores the original
+> logic.
 >=20
-> > Update multi-buffer bit (mb) in xdp_buff to notify XDP/eBPF layer and
-> > XDP remote drivers if this is a "non-linear" XDP buffer
-> >=20
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  drivers/net/ethernet/marvell/mvneta.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >=20
-> > diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethern=
-et/marvell/mvneta.c
-> > index 832bbb8b05c8..36a3defa63fa 100644
-> > --- a/drivers/net/ethernet/marvell/mvneta.c
-> > +++ b/drivers/net/ethernet/marvell/mvneta.c
-> > @@ -2170,11 +2170,14 @@ mvneta_run_xdp(struct mvneta_port *pp, struct m=
-vneta_rx_queue *rxq,
-> >  	       struct bpf_prog *prog, struct xdp_buff *xdp,
-> >  	       u32 frame_sz, struct mvneta_stats *stats)
-> >  {
-> > +	struct skb_shared_info *sinfo =3D xdp_get_shared_info_from_buff(xdp);
-> >  	unsigned int len, data_len, sync;
-> >  	u32 ret, act;
-> > =20
-> >  	len =3D xdp->data_end - xdp->data_hard_start - pp->rx_offset_correcti=
-on;
-> >  	data_len =3D xdp->data_end - xdp->data;
-> > +
-> > +	xdp->mb =3D !!sinfo->nr_frags;
-> >  	act =3D bpf_prog_run_xdp(prog, xdp);
->=20
-> Reading the memory sinfo->nr_frags could be a performance issue for our
-> baseline case of no-multi-buffer.  As you are reading a cache-line that
-> you don't need to (and driver have not touch yet).
+> Reported-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Fixes: 7f0a838254bd ("bpf, xdp: Maintain info on attached XDP BPF program=
+s in net_device")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-ack, I will rework it in v2 to remove this access.
+Hi Andrii,
+
+Regarding this patch:
+
+Tested-by: Lorenzo Bianconi <lorenzo@kernel.org>
+
+I found another similar issue (not sure if it is related yet), the program =
+removal is failing:
+
+$ip link show dev eth0
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc mq state UP m=
+ode DEFAULT group default qlen 1024
+    link/ether f0:ad:4e:09:6b:57 brd ff:ff:ff:ff:ff:ff
+    prog/xdp id 1 tag 3b185187f1855c4c jited=20
+
+$ip link set dev eth0 xdp off                                              =
+                                                                           =
+                                                                  =20
+Error: XDP program already attached.
 
 Regards,
 Lorenzo
 
+> ---
+>  net/core/dev.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
 >=20
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index b5d1129d8310..d42c9ea0c3c0 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -8742,13 +8742,15 @@ struct bpf_xdp_link {
+>  	int flags;
+>  };
+> =20
+> -static enum bpf_xdp_mode dev_xdp_mode(u32 flags)
+> +static enum bpf_xdp_mode dev_xdp_mode(struct net_device *dev, u32 flags)
+>  {
+>  	if (flags & XDP_FLAGS_HW_MODE)
+>  		return XDP_MODE_HW;
+>  	if (flags & XDP_FLAGS_DRV_MODE)
+>  		return XDP_MODE_DRV;
+> -	return XDP_MODE_SKB;
+> +	if (flags & XDP_FLAGS_SKB_MODE)
+> +		return XDP_MODE_SKB;
+> +	return dev->netdev_ops->ndo_bpf ? XDP_MODE_DRV : XDP_MODE_SKB;
+>  }
+> =20
+>  static bpf_op_t dev_xdp_bpf_op(struct net_device *dev, enum bpf_xdp_mode=
+ mode)
+> @@ -8896,7 +8898,7 @@ static int dev_xdp_attach(struct net_device *dev, s=
+truct netlink_ext_ack *extack
+>  		return -EINVAL;
+>  	}
+> =20
+> -	mode =3D dev_xdp_mode(flags);
+> +	mode =3D dev_xdp_mode(dev, flags);
+>  	/* can't replace attached link */
+>  	if (dev_xdp_link(dev, mode)) {
+>  		NL_SET_ERR_MSG(extack, "Can't replace active BPF XDP link");
+> @@ -8984,7 +8986,7 @@ static int dev_xdp_detach_link(struct net_device *d=
+ev,
+> =20
+>  	ASSERT_RTNL();
+> =20
+> -	mode =3D dev_xdp_mode(link->flags);
+> +	mode =3D dev_xdp_mode(dev, link->flags);
+>  	if (dev_xdp_link(dev, mode) !=3D link)
+>  		return -EINVAL;
+> =20
+> @@ -9080,7 +9082,7 @@ static int bpf_xdp_link_update(struct bpf_link *lin=
+k, struct bpf_prog *new_prog,
+>  		goto out_unlock;
+>  	}
+> =20
+> -	mode =3D dev_xdp_mode(xdp_link->flags);
+> +	mode =3D dev_xdp_mode(xdp_link->dev, xdp_link->flags);
+>  	bpf_op =3D dev_xdp_bpf_op(xdp_link->dev, mode);
+>  	err =3D dev_xdp_install(xdp_link->dev, mode, bpf_op, NULL,
+>  			      xdp_link->flags, new_prog);
+> @@ -9164,7 +9166,7 @@ int bpf_xdp_link_attach(const union bpf_attr *attr,=
+ struct bpf_prog *prog)
+>  int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *ex=
+tack,
+>  		      int fd, int expected_fd, u32 flags)
+>  {
+> -	enum bpf_xdp_mode mode =3D dev_xdp_mode(flags);
+> +	enum bpf_xdp_mode mode =3D dev_xdp_mode(dev, flags);
+>  	struct bpf_prog *new_prog =3D NULL, *old_prog =3D NULL;
+>  	int err;
+> =20
 > --=20
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
+> 2.24.1
 >=20
 
---bjuZg6miEcdLYP6q
+--KuLpqunXa7jZSBt+
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXz4wRQAKCRA6cBh0uS2t
-rAZnAQD1n0h+sVSzJJUmmzYyNKV4sDY19aLV1SX6fSfEySCZRAD+PJnaOgAaSgCY
-yd/VrWsb7Q3N6DqR1U2cVv+tkdaoPA8=
-=ZqCa
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXz4zJgAKCRA6cBh0uS2t
+rMrDAQD2Bejq+yEChqMkqgiNlDx8ObFr5m76n3yNL8Q5TDpvtwEA3NBUJcYKYgUn
+p0jBGjZU6iEyi2dvbFxUAe5rRMzpqQw=
+=e8Rd
 -----END PGP SIGNATURE-----
 
---bjuZg6miEcdLYP6q--
+--KuLpqunXa7jZSBt+--
