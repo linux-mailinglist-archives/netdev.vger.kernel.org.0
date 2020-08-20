@@ -2,92 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 442CF24C4A2
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 19:36:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2521224C4A7
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 19:38:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730473AbgHTRgn convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Aug 2020 13:36:43 -0400
-Received: from wildebeest.demon.nl ([212.238.236.112]:46722 "EHLO
-        gnu.wildebeest.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729122AbgHTRgl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 13:36:41 -0400
-Received: from tarox.wildebeest.org (tarox.wildebeest.org [172.31.17.39])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by gnu.wildebeest.org (Postfix) with ESMTPSA id DE21230278CD;
-        Thu, 20 Aug 2020 19:36:37 +0200 (CEST)
-Received: by tarox.wildebeest.org (Postfix, from userid 1000)
-        id 8569E413CE8D; Thu, 20 Aug 2020 19:36:37 +0200 (CEST)
-Message-ID: <a6f1d7be73ca5d9f767a746927e7872ddcf18244.camel@klomp.org>
-Subject: Re: [PATCH bpf-next] tools/resolve_btfids: Fix sections with wrong
- alignment
-From:   Mark Wielaard <mark@klomp.org>
-To:     Yonghong Song <yhs@fb.com>,
-        =?UTF-8?Q?F=C4=81ng-ru=C3=AC_S=C3=B2ng?= <maskray@google.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Nick Clifton <nickc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Date:   Thu, 20 Aug 2020 19:36:37 +0200
-In-Reply-To: <7029ff8f-77d3-584b-2e7e-388c001cd648@fb.com>
-References: <20200819092342.259004-1-jolsa@kernel.org>
-         <254246ed-1b76-c435-a7bd-0783a29094d9@fb.com>
-         <20200819173618.GH177896@krava>
-         <CAKwvOdnfy4ASdeVqPjMtALXOXgMKdEB8U0UzWDPBKVqdhcPaFg@mail.gmail.com>
-         <2e35cf9e-d815-5cd7-9106-7947e5b9fe3f@fb.com>
-         <CAFP8O3+mqgQr_zVS9pMXSpFsCm0yp5y5Vgx1jmDc+wi-8-HOVQ@mail.gmail.com>
-         <ba7bbec7-9fb5-5f8f-131e-1e0aeff843fa@fb.com>
-         <5ef90a283aa2f68018763258999fa66cd34cb3bb.camel@klomp.org>
-         <7029ff8f-77d3-584b-2e7e-388c001cd648@fb.com>
+        id S1730620AbgHTRi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 13:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730616AbgHTRiK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 13:38:10 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5724DC061385
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 10:38:10 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id 3so2402731wmi.1
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 10:38:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=doI3XfaX+9V/uepR/x4ipWm730OyG7KRakzBs/1UgkI=;
+        b=GoAB/7D9C20IzSHwMtonWI/NjmNJ4EjNrFA49CBAG0LkSh0DXXxmeL7bnZ4atHnlNG
+         qI0A7ykXebdc6FQTyLuySAcp7M3qxse15A4yAf4/MeLCUrvMY4Ykw/iZRJrXHy6SGZqa
+         g582BvOwdszeZne0Z3YkHmXFhfTkb7C5tGMAe7zjrhwGF2nquMVmoHp8buV5tDz/dBp3
+         P6hxc1rkJoOGcarYkgIdp2rPFU8f02g4lGrTPGWrEn+ZOryAvSfQI3eI/PqxYBTT89iJ
+         CYEak1dxZCe0wDfoBtmIw6gbvsLqhUEdjGudaeBtE9Vc8gPwiccK0WjpF6xwQgddqOcJ
+         GGBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=doI3XfaX+9V/uepR/x4ipWm730OyG7KRakzBs/1UgkI=;
+        b=VUjk9fl02UpqDPYc5JFRE7hJHmAJkWN/mTgghPVqiieLB/Oh42oTV7r48mEuIgq5TY
+         vKPhKUlUYaHy+QO6BoCBovsNodKOTbI+WQCdDUowSWvzklTlc8BBZnPepXbGhyqnbqHM
+         tt0bqG0659d5M8PpL1zOWMlGatJNR+zD5E+LcH/RfECMxWvKOg0lCMzEZq5ucnDDxr5b
+         7YwQw9EcA+oEnNJ3JbAt71NCu78SPJCA5DtB/f+S0CTclMB3oyJHA4aPol17kAarY6BT
+         XJomUb7dJz2lEJVHXg00SpBprj5R78g+Ef2o6U6EGvfgDFonY/fug1g0qiY0g9j3RpZ6
+         hpJQ==
+X-Gm-Message-State: AOAM532gktsZD5L92u2ok5wBfAlnqFCB/Me6iiFcth4A7SCljxHzWJmQ
+        xiAQG59mVIyELSNdi8nJ8rLyYbJh6cn5kEZYzwX59g==
+X-Google-Smtp-Source: ABdhPJwyw6qE44nFOkT0sOanR2aurVFqa3JweWtS6G2rJmHinuFlgRrN14qcfF30EA8jwvhQEcsbeCHFA0t2OGIhnxo=
+X-Received: by 2002:a7b:cd97:: with SMTP id y23mr4541192wmj.4.1597945088827;
+ Thu, 20 Aug 2020 10:38:08 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200820171118.1822853-1-edumazet@google.com> <CACSApvYYnrBT=HKeFdwvWzPaDxpYsusA4TQ5OubkgDGqiENMBw@mail.gmail.com>
+In-Reply-To: <CACSApvYYnrBT=HKeFdwvWzPaDxpYsusA4TQ5OubkgDGqiENMBw@mail.gmail.com>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Thu, 20 Aug 2020 10:37:57 -0700
+Message-ID: <CAOFY-A1OX1tLBrGZudZBnANc0Sa-PV9HKitoQazvycQAL2Jpxw@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/3] tcp_mmap: optmizations
+To:     Soheil Hassas Yeganeh <soheil@google.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Mailer: Evolution 3.28.5 (3.28.5-8.el7) 
-Mime-Version: 1.0
-X-Spam-Flag: NO
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00
-        autolearn=ham autolearn_force=no version=3.4.0
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on gnu.wildebeest.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+On Thu, Aug 20, 2020 at 10:32 AM Soheil Hassas Yeganeh
+<soheil@google.com> wrote:
+>
+> On Thu, Aug 20, 2020 at 1:11 PM Eric Dumazet <edumazet@google.com> wrote:
+> >
+> > This series updates tcp_mmap reference tool to use best pratices.
+> >
+> > First patch is using madvise(MADV_DONTNEED) to decrease pressure
+> > on the socket lock.
+> >
+> > Last patches try to use huge pages when available.
+> >
+> > Eric Dumazet (3):
+> >   selftests: net: tcp_mmap: use madvise(MADV_DONTNEED)
+> >   selftests: net: tcp_mmap: Use huge pages in send path
+> >   selftests: net: tcp_mmap: Use huge pages in receive path
+>
+> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+>
+> Thank you for the patches!
+>
 
-On Thu, 2020-08-20 at 08:51 -0700, Yonghong Song wrote:
-> > > Do you think we could skip these .debug_* sections somehow in elf
-> > > parsing in resolve_btfids? resolve_btfids does not need to read
-> > > these sections. This way, no need to change their alignment
-> > > either.
-> > 
-> > The issue is that elfutils libelf will not allow writing out the
-> > section when it notices the sh_addralign field is setup wrongly.
-> 
-> Maybe resolve_btfids can temporarily change sh_addralign to 4/8
-> before elf manipulation (elf_write) to make libelf happy.
-> After all elf_write is done, change back to whatever the
-> original value (1). Does this work?
+Acked-by: Arjun Roy <arjunroy@google.com>
 
-Unfortunately no, because there is no elf_write, elf_update is how you
-write out the ELF image to disc.
+-Arjun
 
-Since the code is using ELF_F_LAYOUT this will not change the actual
-layout of the ELF image if that is what you are worried about.
-
-And the workaround to set sh_addralign correctly before calling
-elf_update is precisely what the fix in elfutils libelf will do itself
-in the next release. Also binutils ld has been fixed to setup
-sh_addralign to 4/8 as appropriate now (in git).
-
-Cheers,
-
-Mark
+> >  tools/testing/selftests/net/tcp_mmap.c | 42 +++++++++++++++++++++-----
+> >  1 file changed, 35 insertions(+), 7 deletions(-)
+> >
+> > --
+> > 2.28.0.297.g1956fa8f8d-goog
+> >
