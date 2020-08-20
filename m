@@ -2,113 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2166924BAF3
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:22:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52DD024BB48
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730539AbgHTMUj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 20 Aug 2020 08:20:39 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:21815 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730083AbgHTMUg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 08:20:36 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-118-q-2yRy14OXaDjkU2wgyLYg-1; Thu, 20 Aug 2020 13:20:32 +0100
-X-MC-Unique: q-2yRy14OXaDjkU2wgyLYg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 20 Aug 2020 13:20:25 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 20 Aug 2020 13:20:25 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Jakub Sitnicki' <jakub@cloudflare.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1729498AbgHTM0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 08:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728324AbgHTM0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 08:26:16 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4242BC061385;
+        Thu, 20 Aug 2020 05:26:14 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id g6so1831167ljn.11;
+        Thu, 20 Aug 2020 05:26:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=eSqfcQbBFm3GesGK6cttjQeofDcApyj4QPCbAu/dN3Q=;
+        b=DFPJl3B781/WFvVelGdirLeJnJ25wfmXAH6jF8BGbpQOmQz5oeVphZSoz9xUStxRvE
+         G4Q730xU+FpPyrHyARHBkycGEBBfel0qIZW1wqzXn/utMCIrCeZkC2DmfB3F47u3QhK7
+         oz+CuMrHDXjfXqERTEgAxv3170I2QM2l4M3+AgeYitjIHURGMDQG6P4tVsinFP5ddyI2
+         P5x7yqXGQQcgKxoovW+uMw1l0pMd8FfVAv1YzG+zTLLCCpaEgkKPVRsnU288AxEttZEf
+         PlVKiMRObvqAIbQ923akmxNzh9VE+PADbGlnNJrHWtczbT+T478AZF0BsYLd4mzIDyBl
+         vREw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eSqfcQbBFm3GesGK6cttjQeofDcApyj4QPCbAu/dN3Q=;
+        b=Sgdyk4xkoSlfm2nd7aKkaTXtJf33/5KNYqi8VPUZQ/lTaesHipyxT6eXCR8VrXTpPS
+         whnklzKcga9zgHxrloWnrXQzPGEcpWWVNauKY7S6u293aAHOtfCm7A6tvWkaAryHKG0C
+         jz19ot3defnSzHRYzRC0ku8DQG2T+Bys7hshGiplZnCqKK8r41tmZd58xhDxWz36GRP8
+         YfvUO66ene7ExvRVOHUBydW0jHyFHvYAqwVTCEjS1oaA/dAzinBSMjg5xEJzVdhvpa9F
+         iSl/z6NpcaKZAagpANXZb9I2jlpyZMs+P52N9nlkx2CUXlmU34BO+cT1pDjaCB0gkved
+         sxxQ==
+X-Gm-Message-State: AOAM532Pd+cXY0pjskfG/SpLwMVMwjP1ITxMSAu55YF0e+NgLW5qXcUD
+        4UWom5Pke1+NBOKhBJ1Yt9xG5o4ZU2hFlg==
+X-Google-Smtp-Source: ABdhPJxuG4DEsCDL907sWu6JlNXh1nMac4n7NDiOXL3yVsSjvk+lIi59nuhn2st5soxGdvOwqun/Yg==
+X-Received: by 2002:a2e:96c3:: with SMTP id d3mr1578582ljj.270.1597926372748;
+        Thu, 20 Aug 2020 05:26:12 -0700 (PDT)
+Received: from wasted.omprussia.ru ([2a00:1fa0:46d7:4a60:acca:c7f9:9bba:62e5])
+        by smtp.gmail.com with ESMTPSA id a17sm415149ljd.123.2020.08.20.05.26.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Aug 2020 05:26:12 -0700 (PDT)
+Subject: Re: [PATCH v2] dt-bindings: net: renesas,ether: Improve schema
+ validation
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: RE: BPF sk_lookup v5 - TCP SYN and UDP 0-len flood benchmarks
-Thread-Topic: BPF sk_lookup v5 - TCP SYN and UDP 0-len flood benchmarks
-Thread-Index: AQHWdtzbHJLXFHCDqUy9ea5Q2RcL9qlA6Vow
-Date:   Thu, 20 Aug 2020 12:20:25 +0000
-Message-ID: <ad210e824dd74c05b1072655fc5dc69c@AcuMS.aculab.com>
-References: <20200717103536.397595-1-jakub@cloudflare.com>
- <87lficrm2v.fsf@cloudflare.com>
- <CAADnVQKE6y9h2fwX6OS837v-Uf+aBXnT_JXiN_bbo2gitZQ3tA@mail.gmail.com>
- <87k0xtsj91.fsf@cloudflare.com>
-In-Reply-To: <87k0xtsj91.fsf@cloudflare.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Rob Herring <robh+dt@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20200819124539.20239-1-geert+renesas@glider.be>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <df7f61fe-3103-168e-0744-d6b20ee42224@gmail.com>
+Date:   Thu, 20 Aug 2020 15:26:11 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0.001
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200819124539.20239-1-geert+renesas@glider.be>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Sitnicki
-> Sent: 20 August 2020 11:30
-> Subject: Re: BPF sk_lookup v5 - TCP SYN and UDP 0-len flood benchmarks
+On 8/19/20 3:45 PM, Geert Uytterhoeven wrote:
+
+>   - Remove pinctrl consumer properties, as they are handled by core
+
+   So you're removing them even from the example?
+
+>     dt-schema,
+>   - Document missing properties,
+>   - Document missing PHY child node,
+>   - Add "additionalProperties: false".
 > 
-> On Tue, Aug 18, 2020 at 08:19 PM CEST, Alexei Starovoitov wrote:
-> > On Tue, Aug 18, 2020 at 8:49 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
-> >>          :                      rcu_read_lock();
-> >>          :                      run_array = rcu_dereference(net-
-> >bpf.run_array[NETNS_BPF_SK_LOOKUP]);
-> >>     0.01 :   ffffffff817f8624:       mov    0xd68(%r12),%rsi
-> >>          :                      if (run_array) {
-> >>     0.00 :   ffffffff817f862c:       test   %rsi,%rsi
-> >>     0.00 :   ffffffff817f862f:       je     ffffffff817f87a9 <__udp4_lib_lookup+0x2c9>
-> >>          :                      struct bpf_sk_lookup_kern ctx = {
-> >>     1.05 :   ffffffff817f8635:       xor    %eax,%eax
-> >>     0.00 :   ffffffff817f8637:       mov    $0x6,%ecx
-> >>     0.01 :   ffffffff817f863c:       movl   $0x110002,0x40(%rsp)
-> >>     0.00 :   ffffffff817f8644:       lea    0x48(%rsp),%rdi
-> >>    18.76 :   ffffffff817f8649:       rep stos %rax,%es:(%rdi)
-> >>     1.12 :   ffffffff817f864c:       mov    0xc(%rsp),%eax
-> >>     0.00 :   ffffffff817f8650:       mov    %ebp,0x48(%rsp)
-> >>     0.00 :   ffffffff817f8654:       mov    %eax,0x44(%rsp)
-> >>     0.00 :   ffffffff817f8658:       movzwl 0x10(%rsp),%eax
-> >>     1.21 :   ffffffff817f865d:       mov    %ax,0x60(%rsp)
-> >>     0.00 :   ffffffff817f8662:       movzwl 0x20(%rsp),%eax
-> >>     0.00 :   ffffffff817f8667:       mov    %ax,0x62(%rsp)
-> >>          :                      .sport          = sport,
-> >>          :                      .dport          = dport,
-> >>          :                      };
-> >
-> > Such heavy hit to zero init 56-byte structure is surprising.
-> > There are two 4-byte holes in this struct. You can try to pack it and
-> > make sure that 'rep stoq' is used instead of 'rep stos' (8 byte at a time vs 4).
-> 
-> Thanks for the tip. I'll give it a try.
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+[...]
 
-You probably don't want to use 'rep stos' in any of its forms.
-The instruction 'setup' time is horrid on most cpu variants.
-For a 48 byte structure six writes of a zero register will be faster.
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
 
-If gcc is generating the 'rep stos' then the compiler source code for that
-pessimisation needs deleting...
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+MBR, Sergei
