@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3625E24B823
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 13:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5E1424B81E
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 13:10:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729430AbgHTLKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 07:10:05 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:62686 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730648AbgHTLJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 07:09:11 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07KB5qX3024748;
-        Thu, 20 Aug 2020 04:09:07 -0700
+        id S1729798AbgHTLJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 07:09:34 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:60442 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730664AbgHTLJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 07:09:13 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07KB6vV8005004;
+        Thu, 20 Aug 2020 04:09:10 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=3qRh+oW4/X46PQ+r5F2ce4Wmqtn+IJ91zXBMFr9FSV8=;
- b=ObSiOVOtGjdQrY79NBjQSej52hNc7MNKuwh1WEDp7hXTs4TvWbEbnm0+nr483j483v1H
- 1AdQ9PJgSam1EwBre2HbQY2zocN7ooOwblpiqXcw30zDutc1E/0r18F231ePYLTtME+S
- knVvPWYqmrcqp9MPrUMhMNlVbNyoeBVue6INJ6zGP7yTIlRfiZTETAReWlbpi4+HAGtY
- JmKkU8U+7KQypkPDcNaY5vFeX5CIcJ++epp/1T5zIXwnp/ZoGb+48fltHdpBhi+pu1sS
- f1Rb+N0AQdKxv6YDhLwvEB0O0sBfbA9VKqwsEny2AL404bmfcWALfw25pAdMW3m19Go3 wQ== 
+ bh=T4CX3VWfG2PeimQF46kq/C3KZZhAOY/QWzVqxBwIC2E=;
+ b=a8kf0VUYDH/uOdCwn0vJAihk4OAcNRmI+SY9I5I/4XB+BPlWNzruvTWgS32hb9nktblp
+ 53s7FgZar2Vp4qIXxOucox0/XVdyO0ukBtxXPYqkd7Old6aGLpITTUQk0Xqs08Fy491Z
+ A7lBSoe98icnJU2opBIMsim92h2e2zTk8wd1ceI41H6id2sKfmuGpcnrjJ1PeoMxYyfo
+ TLMuqXh1/eGk3ZvzCC7zWMGVZ40Pzjm1X9p4njza5OL3NsnpAnwRyDspFR0zh2KOuVE/
+ T97z7s4Rn0kdwsAmv/3oWCrZ0BFkcmczr2byoB8mF5ofL+nEIjiMHmF7lalBkMl7yW5A 0g== 
 Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3304fhw208-1
+        by mx0b-0016f401.pphosted.com with ESMTP id 3304hhvsun-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 20 Aug 2020 04:09:07 -0700
+        Thu, 20 Aug 2020 04:09:10 -0700
 Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
  (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 20 Aug
- 2020 04:09:06 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 20 Aug 2020 04:09:06 -0700
+ 2020 04:09:09 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 20 Aug
+ 2020 04:09:08 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 20 Aug 2020 04:09:08 -0700
 Received: from NN-LT0065.marvell.com (NN-LT0065.marvell.com [10.193.54.69])
-        by maili.marvell.com (Postfix) with ESMTP id 192DB3F704A;
-        Thu, 20 Aug 2020 04:09:03 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 7536A3F703F;
+        Thu, 20 Aug 2020 04:09:06 -0700 (PDT)
 From:   Dmitry Bogdanov <dbogdanov@marvell.com>
 To:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>
 CC:     Dmitry Bogdanov <dbogdanov@marvell.com>,
         Manish Chopra <manishc@marvell.com>,
         Igor Russkikh <irusskikh@marvell.com>,
         Michal Kalderon <michal.kalderon@marvell.com>
-Subject: [PATCH net 1/3] net: qed: Disable aRFS for NPAR and 100G
-Date:   Thu, 20 Aug 2020 14:08:30 +0300
-Message-ID: <ef4c8d8002a50a0d69978e8fca1b8fa8227a4519.1597833340.git.dbogdanov@marvell.com>
+Subject: [PATCH net 2/3] net: qede: Disable aRFS for NPAR and 100G
+Date:   Thu, 20 Aug 2020 14:08:31 +0300
+Message-ID: <3950bbb988b66c9c43c46d46c9632a272cea294c.1597833340.git.dbogdanov@marvell.com>
 X-Mailer: git-send-email 2.28.0.windows.1
 In-Reply-To: <cover.1597833340.git.dbogdanov@marvell.com>
 References: <cover.1597833340.git.dbogdanov@marvell.com>
@@ -58,90 +61,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In CMT and NPAR the PF is unknown when the GFS block processes the
-packet. Therefore cannot use searcher as it has a per PF database,
-and thus ARFS must be disabled.
+In some configurations ARFS cannot be used, so disable it if device
+is not capable.
 
-Fixes: d51e4af5c209 ("qed: aRFS infrastructure support")
+Fixes: e4917d46a653 ("qede: Add aRFS support")
 Signed-off-by: Manish Chopra <manishc@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
 Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed_dev.c  | 11 ++++++++++-
- drivers/net/ethernet/qlogic/qed/qed_l2.c   |  3 +++
- drivers/net/ethernet/qlogic/qed/qed_main.c |  2 ++
- include/linux/qed/qed_if.h                 |  1 +
- 4 files changed, 16 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qede/qede_filter.c |  3 +++
+ drivers/net/ethernet/qlogic/qede/qede_main.c   | 11 +++++------
+ 2 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index b3c9ebaf2280..c78a48ae9ea6 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -4253,7 +4253,8 @@ static int qed_hw_get_nvm_info(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
- 			cdev->mf_bits = BIT(QED_MF_LLH_MAC_CLSS) |
- 					BIT(QED_MF_LLH_PROTO_CLSS) |
- 					BIT(QED_MF_LL2_NON_UNICAST) |
--					BIT(QED_MF_INTER_PF_SWITCH);
-+					BIT(QED_MF_INTER_PF_SWITCH) |
-+					BIT(QED_MF_DISABLE_ARFS);
- 			break;
- 		case NVM_CFG1_GLOB_MF_MODE_DEFAULT:
- 			cdev->mf_bits = BIT(QED_MF_LLH_MAC_CLSS) |
-@@ -4266,6 +4267,14 @@ static int qed_hw_get_nvm_info(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_filter.c b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+index f961f65d9372..c59b72c90293 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_filter.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_filter.c
+@@ -311,6 +311,9 @@ int qede_alloc_arfs(struct qede_dev *edev)
+ {
+ 	int i;
  
- 		DP_INFO(p_hwfn, "Multi function mode is 0x%lx\n",
- 			cdev->mf_bits);
++	if (!edev->dev_info.common.b_arfs_capable)
++		return -EINVAL;
 +
-+		/* In CMT the PF is unknown when the GFS block processes the
-+		 * packet. Therefore cannot use searcher as it has a per PF
-+		 * database, and thus ARFS must be disabled.
-+		 *
-+		 */
-+		if (QED_IS_CMT(cdev))
-+			cdev->mf_bits |= BIT(QED_MF_DISABLE_ARFS);
+ 	edev->arfs = vzalloc(sizeof(*edev->arfs));
+ 	if (!edev->arfs)
+ 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index 140a392a81bb..9e1f41ba766c 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -804,7 +804,7 @@ static void qede_init_ndev(struct qede_dev *edev)
+ 		      NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
+ 		      NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_HW_TC;
+ 
+-	if (!IS_VF(edev) && edev->dev_info.common.num_hwfns == 1)
++	if (edev->dev_info.common.b_arfs_capable)
+ 		hw_features |= NETIF_F_NTUPLE;
+ 
+ 	if (edev->dev_info.common.vxlan_enable ||
+@@ -2274,7 +2274,7 @@ static void qede_unload(struct qede_dev *edev, enum qede_unload_mode mode,
+ 	qede_vlan_mark_nonconfigured(edev);
+ 	edev->ops->fastpath_stop(edev->cdev);
+ 
+-	if (!IS_VF(edev) && edev->dev_info.common.num_hwfns == 1) {
++	if (edev->dev_info.common.b_arfs_capable) {
+ 		qede_poll_for_freeing_arfs_filters(edev);
+ 		qede_free_arfs(edev);
+ 	}
+@@ -2341,10 +2341,9 @@ static int qede_load(struct qede_dev *edev, enum qede_load_mode mode,
+ 	if (rc)
+ 		goto err2;
+ 
+-	if (!IS_VF(edev) && edev->dev_info.common.num_hwfns == 1) {
+-		rc = qede_alloc_arfs(edev);
+-		if (rc)
+-			DP_NOTICE(edev, "aRFS memory allocation failed\n");
++	if (qede_alloc_arfs(edev)) {
++		edev->ndev->features &= ~NETIF_F_NTUPLE;
++		edev->dev_info.common.b_arfs_capable = false;
  	}
  
- 	DP_INFO(p_hwfn, "Multi function mode is 0x%lx\n",
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_l2.c b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-index 4c6ac8862744..07824bf9d68d 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_l2.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_l2.c
-@@ -1980,6 +1980,9 @@ void qed_arfs_mode_configure(struct qed_hwfn *p_hwfn,
- 			     struct qed_ptt *p_ptt,
- 			     struct qed_arfs_config_params *p_cfg_params)
- {
-+	if (test_bit(QED_MF_DISABLE_ARFS, &p_hwfn->cdev->mf_bits))
-+		return;
-+
- 	if (p_cfg_params->mode != QED_FILTER_CONFIG_MODE_DISABLE) {
- 		qed_gft_config(p_hwfn, p_ptt, p_hwfn->rel_pf_id,
- 			       p_cfg_params->tcp,
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index 2558cb680db3..309216ff7a84 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -444,6 +444,8 @@ int qed_fill_dev_info(struct qed_dev *cdev,
- 		dev_info->fw_eng = FW_ENGINEERING_VERSION;
- 		dev_info->b_inter_pf_switch = test_bit(QED_MF_INTER_PF_SWITCH,
- 						       &cdev->mf_bits);
-+		if (!test_bit(QED_MF_DISABLE_ARFS, &cdev->mf_bits))
-+			dev_info->b_arfs_capable = true;
- 		dev_info->tx_switching = true;
- 
- 		if (hw_info->b_wol_support == QED_WOL_SUPPORT_PME)
-diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
-index cd6a5c7e56eb..cdd73afc4c46 100644
---- a/include/linux/qed/qed_if.h
-+++ b/include/linux/qed/qed_if.h
-@@ -623,6 +623,7 @@ struct qed_dev_info {
- #define QED_MFW_VERSION_3_OFFSET	24
- 
- 	u32		flash_size;
-+	bool		b_arfs_capable;
- 	bool		b_inter_pf_switch;
- 	bool		tx_switching;
- 	bool		rdma_supported;
+ 	qede_napi_add_enable(edev);
 -- 
 2.17.1
 
