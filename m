@@ -2,81 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5872024BBEC
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:36:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B576324BB9D
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:32:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730253AbgHTMf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 08:35:57 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:39071 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729515AbgHTJsH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Aug 2020 05:48:07 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 2a71feb8;
-        Thu, 20 Aug 2020 09:21:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=cC4XKmjMItkWu82Ddd4N3/mfNJY=; b=aH3z0j
-        ih2A6UbHCt3IxPb9cGURoW1AdUF79cwHzp+slOvV8CXFkpZjl6EwYEA+JlKT5gjg
-        zXUFARHfV2sFXTmSREd8NhJunCIHY4nLafXpXu1CpMGAdsfYq1ZI7Ulbh+f6nFuU
-        GLpyQGqn20N+3jb0blAVWJ4mBsKgajaVO0bu5fJURP7VRaYN89n0QypNDmBbRufv
-        ee0CyvIMq5UV+mGRrzaGLR7yKNhLsfMBrsRgpAAPY0ix1nrsuR83acVzKS7914El
-        0vW2TT1WjeT+Ulx5s/6fFxHTTSITqe0SO9LaYWBs5aRN38VHZxd5DoUNpQtc1oJx
-        mQHl+eYy/l9WTo+Q==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 18dd5401 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Thu, 20 Aug 2020 09:21:41 +0000 (UTC)
-Received: by mail-io1-f50.google.com with SMTP id z17so385964ioi.6;
-        Thu, 20 Aug 2020 02:48:06 -0700 (PDT)
-X-Gm-Message-State: AOAM533pN3W79s134djddKcgXm3DtAhueZEDHWNsMOx+g89DE9LGy6Z0
-        nvgqpWN0nwu7SaecnD3KF0JrCiBgFDzwFZD/hPw=
-X-Google-Smtp-Source: ABdhPJwxqXuh3zpZ+vXV6pG3wfV26J+WMkYRDPSnD0jh7SwXM3vLbJ0QIOl7CaiQOrNMVRuAQnK6mTMYW9n8YZipXUs=
-X-Received: by 2002:a05:6638:138a:: with SMTP id w10mr2407389jad.36.1597916885689;
- Thu, 20 Aug 2020 02:48:05 -0700 (PDT)
+        id S1729745AbgHTMbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 08:31:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730103AbgHTMbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 08:31:32 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A472C061385;
+        Thu, 20 Aug 2020 05:31:32 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id v12so1857046ljc.10;
+        Thu, 20 Aug 2020 05:31:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sLaFDqmhBKvCa66SIGjGPAggYoHsxbTGhHXTzFaeO7I=;
+        b=RljuvLmGHRDuQE1e9PkIln2c5TnJO/Q3bCV+HDJ3ERWcd5eu5GWH8U8447eR+Q6UKN
+         NE5OiBZgS5s35Mrm8r57nkzmMONIEQNV4wDJGyW+zzOHUr1/Go5eZ9pkW/0nZkHbtjxj
+         OhED3iBZDaRsu7yaihnMLUSLcgTeJvrtYWJzYIFoQQtDH90ihQ1NeM7CtN9Em7OxuXIN
+         jC9Hyh8b25NKF4+MKzbxxSr8vpWFdYH+R02jxcrsTtJpXV4K03Dh4BDaXbEEPDwsIvCx
+         HsqqEmkyAuKsNOJmJdQ8WzxCOc7lU8ogbGogN4vGUE8xMhOHy57wypnssPMdP1ldDlD8
+         d3og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sLaFDqmhBKvCa66SIGjGPAggYoHsxbTGhHXTzFaeO7I=;
+        b=pQEf9UVtefVUcYmIRs4t9sxZ+CNlm2/GQiBgMTFCUt1ac6XGvB1xqCswI3Sum+5naD
+         RLbnKe7Q56r44xtnmWNpQ7/dxSiWkIBLpvXsk9H7EWpPvHX84sxhcyavtVG1t82L3NH9
+         wEY6NEvJGAnHz51/qltpWQdWvwUj+/xkC51KBQAbBXaDNE2VaoRkyg480nizGOHWyQrJ
+         IE8wdILKlKTXN7w3sv3cJ2D0noloA3SDRyPSs3tTj5zCgCQ25J9pk2EOeFhgnP9/mJO4
+         +fRRU5EhATpRsewC0WWJHwFaTyo1m8+OzLDRgU5/LKF5vUaim18IAx24QsqW2meGaiy2
+         s4vg==
+X-Gm-Message-State: AOAM533gEs0zMeeA4DKe3RU0qMU6nTbk5Eiby9HAG2yWnqmuU5G6//27
+        0yBUuFQ4q91JDZaLO6SkjeAfTza03ubMwA==
+X-Google-Smtp-Source: ABdhPJwtTloWdfwP67KjGtYImwnrwLGmvfiVdtdTgpJ7Hs/0RAHkHZhjbJGS3dfCWQwB0iE/od+SpQ==
+X-Received: by 2002:a2e:8215:: with SMTP id w21mr1493576ljg.43.1597926690796;
+        Thu, 20 Aug 2020 05:31:30 -0700 (PDT)
+Received: from wasted.omprussia.ru ([2a00:1fa0:46d7:4a60:acca:c7f9:9bba:62e5])
+        by smtp.gmail.com with ESMTPSA id b16sm430034ljk.24.2020.08.20.05.31.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Aug 2020 05:31:30 -0700 (PDT)
+Subject: Re: [PATCH v3] ravb: Fixed to be able to unload modules
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+References: <20200820094307.3977-1-ashiduka@fujitsu.com>
+ <f5cf5e82-cc35-4141-982a-7abc4794e789@gmail.com>
+Message-ID: <bd5d2d20-eeb0-12fb-4e25-c596f0ff5898@gmail.com>
+Date:   Thu, 20 Aug 2020 15:31:29 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <000000000000a7e38a05a997edb2@google.com> <0000000000005c13f505ad3f5c42@google.com>
-In-Reply-To: <0000000000005c13f505ad3f5c42@google.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 20 Aug 2020 11:47:54 +0200
-X-Gmail-Original-Message-ID: <CAHmME9rd+54EOO-b=wmVxtzbvckET2WSMm-3q8LJmfp38A9ceg@mail.gmail.com>
-Message-ID: <CAHmME9rd+54EOO-b=wmVxtzbvckET2WSMm-3q8LJmfp38A9ceg@mail.gmail.com>
-Subject: Re: WARNING in __cfg80211_connect_result
-To:     syzbot <syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, kvalo@codeaurora.org,
-        leon@kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <f5cf5e82-cc35-4141-982a-7abc4794e789@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 8:42 PM syzbot
-<syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com> wrote:
->
-> syzbot has bisected this issue to:
->
-> commit e7096c131e5161fa3b8e52a650d7719d2857adfd
-> Author: Jason A. Donenfeld <Jason@zx2c4.com>
-> Date:   Sun Dec 8 23:27:34 2019 +0000
->
->     net: WireGuard secure network tunnel
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=175ad8b1900000
-> start commit:   e3ec1e8c net: eliminate meaningless memcpy to data in pskb..
-> git tree:       net-next
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=14dad8b1900000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10dad8b1900000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=3d400a47d1416652
-> dashboard link: https://syzkaller.appspot.com/bug?extid=cc4c0f394e2611edba66
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15d9de91900000
->
-> Reported-by: syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com
-> Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
+On 8/20/20 3:29 PM, Sergei Shtylyov wrote:
 
-Having trouble linking this back to wireguard... Those oopses don't
-have anything to do with it either. Bisection error?
+>    Also, s/Fixed/fix/ in the subject. Nearly missed it. :-)
+
+   And overall, I'd call the patch "ravb: fix module unloading".
+
+MBR, Sergei
