@@ -2,295 +2,759 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E56D24C0CE
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 16:45:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE6624C0D0
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 16:46:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727888AbgHTOpl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 10:45:41 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8396 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727011AbgHTOpa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 10:45:30 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07KEeOOu004539;
-        Thu, 20 Aug 2020 07:45:11 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=sv2Zh4RmHbuRh4lL4RUIqIwFUwVOEf9kSSlgIv8Z1ek=;
- b=gSUqBeit0NTYkZ28u1tnLBPd+nUMuTcwQAQuOZiq/lUEA+Czlt9grcWmsa+vz+gR6fuT
- YoAVr8QYX/qQsVDsbpcqzsfF5aV+IMzrICbDscc9KRUYNGaHzTeBBOVwJx5eenXinIGP
- R5FwbUAnEN6RfnhkwncDMhW/Cz2PFmW9RAg= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3304nxxfwe-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 20 Aug 2020 07:45:11 -0700
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 20 Aug 2020 07:45:10 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cGaZoPNtxhGg8La7Qnt9Z2gSl5GzUI6f+lLman1xSVcPrwqmYBMU5DQZ79b/3j+iGzmEIx3LA05uAuDeQ7tuAinQusGqmxA1I50qQVLbBcz3GQmh+HNpPybJZLV+gnTXqqL3fnXjRGBVonhUccQr1BccU2ayXMGiH2PBrKuxtsEp0E551TeL+ecT3fBiUCRumhkaq7b0LLNU0hJoqDnbjo1ysjOVUqI8I//37ay5+kS9Zrtc79Atuc/1C8xLYhG59ws9i5RT85uGDgH65BQWzbSocD8QyYFry94YeMnB0muWST9HAt+51xDkTzu4gKw2GYC9Fp3pbZ9xCKvAs0ZJHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sv2Zh4RmHbuRh4lL4RUIqIwFUwVOEf9kSSlgIv8Z1ek=;
- b=iFLxnI7yjB76Vxz8sBoufvqlHombdHxPinFWIq45P1RkBazXBDLvjSkq1BNY1jbhYwImK+kPmmZjcW7J/txJM/Vm+gy0ktdDn6D1rttqpsSD2B8oZ6n3p6CKVjQsQ5m1I2WEEijIXfLEAC65WnAjdlV92YPHL7ZAQNcWZOr+icUDUo6Eqk5qwWSQ5DSky0euhPG1RvmcjloqpfZ/CGetMEqAABktUox49hd81+JGDscl1ghgLua23DvLdVYtqDsPmpDhJghvwU8A9TlVGvgj3GqMqd9z+HOHJUopBzcJ4O9s+g9p9PIMn2bbargGBEquovE/VqmG1lVC9js5zVLp5Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sv2Zh4RmHbuRh4lL4RUIqIwFUwVOEf9kSSlgIv8Z1ek=;
- b=aAt134CKoB6yZV0VHRdqPbcMwRuj/1mYpNMP01t0N6G8b350Yk+IIGk4SibbYH7t6/mYs2o6Z5w++6p50cnBz9PPF8Eg+U4cxrII+RuBSETKxE6zIWnCeW5YHWfeg3aE0awX0S02FsxLZaRhyWMdunFfqLZuPz8qnyYSNyHvUAU=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2886.namprd15.prod.outlook.com (2603:10b6:a03:f7::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Thu, 20 Aug
- 2020 14:45:09 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3305.026; Thu, 20 Aug 2020
- 14:45:09 +0000
-Subject: Re: [PATCH bpf-next 5/6] bpf: sockmap: allow update from BPF
-To:     Lorenz Bauer <lmb@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-CC:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20200819092436.58232-1-lmb@cloudflare.com>
- <20200819092436.58232-6-lmb@cloudflare.com>
- <5f3d982f51f22_2c9b2adeefb585bccb@john-XPS-13-9370.notmuch>
- <5f3daa91265a7_1b0e2ab87245e5c05@john-XPS-13-9370.notmuch>
- <CACAyw9_oa5BKq+0gLS6pAuGu6pj9MsRHhEAxFvts167DwpdhLw@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <80223f16-efe3-7a43-cd88-4ec323d2c477@fb.com>
-Date:   Thu, 20 Aug 2020 07:45:02 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
-In-Reply-To: <CACAyw9_oa5BKq+0gLS6pAuGu6pj9MsRHhEAxFvts167DwpdhLw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR16CA0011.namprd16.prod.outlook.com
- (2603:10b6:208:134::24) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1728197AbgHTOqb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 10:46:31 -0400
+Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:54187 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727868AbgHTOqT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 10:46:19 -0400
+Received: from localhost.localdomain ([93.22.135.164])
+        by mwinf5d87 with ME
+        id Hqm82300J3YzEb903qm8Ad; Thu, 20 Aug 2020 16:46:13 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 20 Aug 2020 16:46:13 +0200
+X-ME-IP: 93.22.135.164
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, Larry.Finger@lwfinger.net,
+        straube.linux@gmail.com, zhengbin13@huawei.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] rtlwifi: switch from 'pci_' to 'dma_' API
+Date:   Thu, 20 Aug 2020 16:46:04 +0200
+Message-Id: <20200820144604.144521-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from 255.255.255.255 (255.255.255.255) by MN2PR16CA0011.namprd16.prod.outlook.com (2603:10b6:208:134::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.24 via Frontend Transport; Thu, 20 Aug 2020 14:45:06 +0000
-X-Originating-IP: [2620:10d:c091:480::1:7ec1]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d7303114-593f-4ae6-ac46-08d84517a287
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2886:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB28860A56EE6C99C64EE76EFED35A0@BYAPR15MB2886.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: g54hRtn1HA0D+/wGD5qOXhSsZLmpIYlTCQyux3ZhozcdaPLxtpersK0LwsAIU2cr8ky42aQKpv15ZC1/L47SStdoufBm7gFbxBk+nOwWg6OkH9QerXvmOE/b5zKG1Xkh8MnepH9lnQz112ZEzEWcWJ80HsApmn/B6UOxdRWzsja/Sr2vOKXd4wwYOFL5fWLo+zRg1j2Y9XPDBBlk3W4fHxX+a+bPpdBD6/cFFZApDS6hBQuTG4cTCRPuVzfYtXns/aJ4eDETTxhMwSSvh+PFQzkTJ+TOjjukbGy+O2vdWNRAb+OhZ+LcGBAkTY2xr8fv8w+FyAHNf9T8LKYNQWQn/YU17N3uFIWpXro/QJ5ypvF6di+InN8r/krDs2JxQdkhoR8R0fr7olN7QJpUKbRTnxmngXTmlo8rYIap0gVRrkLORC6mQrdigPBI/lCkNOpAPis2/rvp7ZfRLV/qouiVMLDcoSw1Q0XVjWh32+c45m4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(366004)(396003)(376002)(39860400002)(346002)(54906003)(16576012)(110136005)(15650500001)(2616005)(52116002)(956004)(66946007)(8676002)(110011004)(5660300002)(2906002)(66556008)(66476007)(6486002)(53546011)(83380400001)(36756003)(966005)(86362001)(31686004)(31696002)(4326008)(186003)(7416002)(6666004)(8936002)(316002)(478600001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: KYj78yjKAIvg5BowH82iVqJmCZM0ltvr+TweI9Tco0s4Annxk8tNmWQhDJS48IDk/SQYSJV8Lz1Mjs4mcPRinjG801hUmuuLZeABIqXf90DLhTS9+HhoeRtwmmh5npisGSpumcg7ccMqi9R2cBjsgrZWu9sPIbwXwUHYlOFrfdp41uW5hSCPulImFvRv6eB/gBz4oW+/rRPvaNGVv90AE0poHlk5q+VDEfnfbqwHWyuNmwu38ooKXZQzjxnO7h5sAb3tFf7wOlBqdEXhLP4R9bg9dYg1OXMKRhTEyvYRwHC5vwRiXWiH1/xuReYJ2HVb+BIvZIoRNBIp54kP/Spe/RVV5jYcjpenQHGCGNctFTnk35TO9tUg6YQHfFII4Wb9zNHi43krEXmBzCgvqZZvAiIyW83Yd7ryBKztut0Xx5juFuwUssvpTrD05CUx+RiqbY2MLN4hG/kXUxxRwegj75p6FoOQTYVbPuNVtfumkkN+29dwNsH6zacAOBOVwpAVsKiixMH0fRVoo9eKyuPDD9VUw2dkKLL0DZjUTeUfTftK76orgJVEUmarV3DTc5mLqJ5UPD/e7KpDZ4LZ23a6wRIWWIy/7DcgWfqL02IBkGeIdQmNjYyfd+WcZXpx682zOUtJklTfhz2mmu32H8QtMW9x7Gy1eubUhhcWgTYP8rMObl60RK/ZiuCCsIHiJCcI
-X-MS-Exchange-CrossTenant-Network-Message-Id: d7303114-593f-4ae6-ac46-08d84517a287
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2020 14:45:08.8668
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZgQbRTt6aSp8dhMAXvjGLTaI+Xn6meQf0wCglWXssLL21+ClOCR+GyD++rAaaRHO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2886
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-20_03:2020-08-19,2020-08-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 spamscore=0 bulkscore=0 mlxlogscore=999 clxscore=1015
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=0
- mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008200122
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The wrappers in include/linux/pci-dma-compat.h should go away.
+
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
+
+The only file where some GFP_ flags are updated is 'pci.c'.
+
+When memory is allocated in '_rtl_pci_init_tx_ring()' and
+'_rtl_pci_init_rx_ring()' GFP_KERNEL can be used because both functions are
+called from a probe function and no spinlock is taken.
+
+The call chain is:
+  rtl_pci_probe
+    --> rtl_pci_init
+      --> _rtl_pci_init_trx_ring
+        --> _rtl_pci_init_rx_ring
+        --> _rtl_pci_init_tx_ring
 
 
-On 8/20/20 4:33 AM, Lorenz Bauer wrote:
-> On Wed, 19 Aug 2020 at 23:41, John Fastabend <john.fastabend@gmail.com> wrote:
->>
->> John Fastabend wrote:
->>> Lorenz Bauer wrote:
->>>> Allow calling bpf_map_update_elem on sockmap and sockhash from a BPF
->>>> context. The synchronization required for this is a bit fiddly: we
->>>> need to prevent the socket from changing it's state while we add it
->>>> to the sockmap, since we rely on getting a callback via
->>>> sk_prot->unhash. However, we can't just lock_sock like in
->>>> sock_map_sk_acquire because that might sleep. So instead we disable
->>>> softirq processing and use bh_lock_sock to prevent further
->>>> modification.
->>>>
->>>> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
->>>> ---
->>>>   kernel/bpf/verifier.c |  6 ++++--
->>>>   net/core/sock_map.c   | 24 ++++++++++++++++++++++++
->>>>   2 files changed, 28 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->>>> index 47f9b94bb9d4..421fccf18dea 100644
->>>> --- a/kernel/bpf/verifier.c
->>>> +++ b/kernel/bpf/verifier.c
->>>> @@ -4254,7 +4254,8 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
->>>>                  func_id != BPF_FUNC_map_delete_elem &&
->>>>                  func_id != BPF_FUNC_msg_redirect_map &&
->>>>                  func_id != BPF_FUNC_sk_select_reuseport &&
->>>> -               func_id != BPF_FUNC_map_lookup_elem)
->>>> +               func_id != BPF_FUNC_map_lookup_elem &&
->>>> +               func_id != BPF_FUNC_map_update_elem)
->>>>                      goto error;
->>>>              break;
->>>>      case BPF_MAP_TYPE_SOCKHASH:
->>>> @@ -4263,7 +4264,8 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
->>>>                  func_id != BPF_FUNC_map_delete_elem &&
->>>>                  func_id != BPF_FUNC_msg_redirect_hash &&
->>>>                  func_id != BPF_FUNC_sk_select_reuseport &&
->>>> -               func_id != BPF_FUNC_map_lookup_elem)
->>>> +               func_id != BPF_FUNC_map_lookup_elem &&
->>>> +               func_id != BPF_FUNC_map_update_elem)
->>>
->>> I lost track of a detail here, map_lookup_elem should return
->>> PTR_TO_MAP_VALUE_OR_NULL but if we want to feed that back into
->>> the map_update_elem() we need to return PTR_TO_SOCKET_OR_NULL
->>> and then presumably have a null check to get a PTR_TO_SOCKET
->>> type as expect.
->>>
->>> Can we use the same logic for expected arg (previous patch) on the
->>> ret_type. Or did I miss it:/ Need some coffee I guess.
->>
->> OK, I tracked this down. It looks like we rely on mark_ptr_or_null_reg()
->> to update the reg->tyype to PTR_TO_SOCKET. I do wonder if it would be
->> a bit more straight forward to do something similar to the previous
->> patch and refine it earlier to PTR_TO_SOCKET_OR_NULL, but should be
->> safe as-is for now.
-> 
-> Yes, it took me a while to figure this out as well. I think we can use
-> the same approach, but I wanted to keep this series simple.
-> 
->> I still have the below question though.
->>
->>>
->>>>                      goto error;
->>>>              break;
->>>>      case BPF_MAP_TYPE_REUSEPORT_SOCKARRAY:
->>>> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
->>>> index 018367fb889f..b2c886c34566 100644
->>>> --- a/net/core/sock_map.c
->>>> +++ b/net/core/sock_map.c
->>>> @@ -603,6 +603,28 @@ int sock_map_update_elem_sys(struct bpf_map *map, void *key,
->>>>      return ret;
->>>>   }
->>>>
->>>> +static int sock_map_update_elem(struct bpf_map *map, void *key,
->>>> +                           void *value, u64 flags)
->>>> +{
->>>> +   struct sock *sk = (struct sock *)value;
->>>> +   int ret;
->>>> +
->>>> +   if (!sock_map_sk_is_suitable(sk))
->>>> +           return -EOPNOTSUPP;
->>>> +
->>>> +   local_bh_disable();
->>>> +   bh_lock_sock(sk);
->>>
->>> How do ensure we are not being called from some context which
->>> already has the bh_lock_sock() held? It seems we can call map_update_elem()
->>> from any context, kprobes, tc, xdp, etc.?
-> 
-> Yeah, to be honest I'm not entirely sure.
-> 
-> XDP, TC, sk_lookup are fine I think. We have bpf_sk_lookup_tcp and
-> friends, but these aren't locked, and the BPF doesn't run in a context
-> where there is a locked socket.
-> 
-> As you point out, kprobes / tracing is problematic because the probe
-> _can_ run at a point where an sk is locked. If the tracing program
-> somehow gets a hold of this socket via sk_lookup_* or
-> a sockmap the program could deadlock.
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
 
-Thanks for John to bring this up. I looked at codes a few times
-but somehow missed the potential deadlock issues.
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
 
-kprobes/non-iter tracing/perf_event, freplace of these kprobes etc. 
-programs, may have issues. tracepoint probably not since people
-probably won't add tracepoint inside a spinlock.
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
 
-> 
-> bpf_sock_ops is also problematic since ctx->sk is in various states of
-> locking. For example, BPF_SOCK_OPS_TCP_LISTEN_CB is called with
-> lock_sock held, so unproblematic. BPF_SOCK_OPS_ACTIVE_ESTABLISHED_CB
-> on the other hand is called with the spinlock held.
-> 
-> It seems to me like the only option is to instead only allow updates
-> from "safe" contexts, such as XDP, tc, bpf_iter etc.
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
 
-This should be okay, I think. You can start from small and then
-grows as more use cases emerge.
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
 
-> 
-> Am I missing something?
-> 
-> 
->>>
->>>> +   if (!sock_map_sk_state_allowed(sk))
->>>> +           ret = -EOPNOTSUPP;
->>>> +   else if (map->map_type == BPF_MAP_TYPE_SOCKMAP)
->>>> +           ret = sock_map_update_common(map, *(u32 *)key, sk, flags);
->>>> +   else
->>>> +           ret = sock_hash_update_common(map, key, sk, flags);
->>>> +   bh_unlock_sock(sk);
->>>> +   local_bh_enable();
->>>> +   return ret;
->>>> +}
->>>> +
->>>>   BPF_CALL_4(bpf_sock_map_update, struct bpf_sock_ops_kern *, sops,
->>>>         struct bpf_map *, map, void *, key, u64, flags)
->>>>   {
->>>> @@ -687,6 +709,7 @@ const struct bpf_map_ops sock_map_ops = {
->>>>      .map_free               = sock_map_free,
->>>>      .map_get_next_key       = sock_map_get_next_key,
->>>>      .map_lookup_elem_sys_only = sock_map_lookup_sys,
->>>> +   .map_update_elem        = sock_map_update_elem,
->>>>      .map_delete_elem        = sock_map_delete_elem,
->>>>      .map_lookup_elem        = sock_map_lookup,
->>>>      .map_release_uref       = sock_map_release_progs,
->>>> @@ -1180,6 +1203,7 @@ const struct bpf_map_ops sock_hash_ops = {
->>>>      .map_alloc              = sock_hash_alloc,
->>>>      .map_free               = sock_hash_free,
->>>>      .map_get_next_key       = sock_hash_get_next_key,
->>>> +   .map_update_elem        = sock_map_update_elem,
->>>>      .map_delete_elem        = sock_hash_delete_elem,
->>>>      .map_lookup_elem        = sock_hash_lookup,
->>>>      .map_lookup_elem_sys_only = sock_hash_lookup_sys,
->>>> --
->>>> 2.25.1
->>>>
->>>
->>>
->>
->>
-> 
-> 
-> --
-> Lorenz Bauer  |  Systems Engineer
-> 6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-> 
-> https://urldefense.proofpoint.com/v2/url?u=http-3A__www.cloudflare.com&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=DA8e1B5r073vIqRrFz7MRA&m=1Gk85bZFwViEPzlsGBklXLgdbxI4Q9F505taA25KfBI&s=pcsCdyC4ZCnSqXgJJc4rjmFx1C8Hiz49KCOxDf6gagg&e=
-> 
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/wireless/realtek/rtlwifi/pci.c    | 116 +++++++++---------
+ .../wireless/realtek/rtlwifi/rtl8188ee/hw.c   |   9 +-
+ .../wireless/realtek/rtlwifi/rtl8188ee/trx.c  |  13 +-
+ .../wireless/realtek/rtlwifi/rtl8192ce/trx.c  |  14 +--
+ .../wireless/realtek/rtlwifi/rtl8192de/trx.c  |  12 +-
+ .../wireless/realtek/rtlwifi/rtl8192ee/trx.c  |  13 +-
+ .../wireless/realtek/rtlwifi/rtl8192se/trx.c  |  12 +-
+ .../wireless/realtek/rtlwifi/rtl8723ae/trx.c  |  14 +--
+ .../wireless/realtek/rtlwifi/rtl8723be/hw.c   |   9 +-
+ .../wireless/realtek/rtlwifi/rtl8723be/trx.c  |  13 +-
+ .../wireless/realtek/rtlwifi/rtl8821ae/hw.c   |   9 +-
+ .../wireless/realtek/rtlwifi/rtl8821ae/trx.c  |  13 +-
+ 12 files changed, 115 insertions(+), 132 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/pci.c b/drivers/net/wireless/realtek/rtlwifi/pci.c
+index 25335bd2873b..0049a322665a 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/pci.c
++++ b/drivers/net/wireless/realtek/rtlwifi/pci.c
+@@ -547,11 +547,10 @@ static void _rtl_pci_tx_isr(struct ieee80211_hw *hw, int prio)
+ 		ring->idx = (ring->idx + 1) % ring->entries;
+ 
+ 		skb = __skb_dequeue(&ring->queue);
+-		pci_unmap_single(rtlpci->pdev,
+-				 rtlpriv->cfg->ops->
+-					     get_desc(hw, (u8 *)entry, true,
+-						      HW_DESC_TXBUFF_ADDR),
+-				 skb->len, PCI_DMA_TODEVICE);
++		dma_unmap_single(&rtlpci->pdev->dev,
++				 rtlpriv->cfg->ops->get_desc(hw, (u8 *)entry,
++						true, HW_DESC_TXBUFF_ADDR),
++				 skb->len, DMA_TO_DEVICE);
+ 
+ 		/* remove early mode header */
+ 		if (rtlpriv->rtlhal.earlymode_enable)
+@@ -646,10 +645,10 @@ static int _rtl_pci_init_one_rxdesc(struct ieee80211_hw *hw,
+ remap:
+ 	/* just set skb->cb to mapping addr for pci_unmap_single use */
+ 	*((dma_addr_t *)skb->cb) =
+-		pci_map_single(rtlpci->pdev, skb_tail_pointer(skb),
+-			       rtlpci->rxbuffersize, PCI_DMA_FROMDEVICE);
++		dma_map_single(&rtlpci->pdev->dev, skb_tail_pointer(skb),
++			       rtlpci->rxbuffersize, DMA_FROM_DEVICE);
+ 	bufferaddress = *((dma_addr_t *)skb->cb);
+-	if (pci_dma_mapping_error(rtlpci->pdev, bufferaddress))
++	if (dma_mapping_error(&rtlpci->pdev->dev, bufferaddress))
+ 		return 0;
+ 	rtlpci->rx_ring[rxring_idx].rx_buf[desc_idx] = skb;
+ 	if (rtlpriv->use_new_trx_flow) {
+@@ -773,8 +772,8 @@ static void _rtl_pci_rx_interrupt(struct ieee80211_hw *hw)
+ 		 * AAAAAAttention !!!
+ 		 * We can NOT access 'skb' before 'pci_unmap_single'
+ 		 */
+-		pci_unmap_single(rtlpci->pdev, *((dma_addr_t *)skb->cb),
+-				 rtlpci->rxbuffersize, PCI_DMA_FROMDEVICE);
++		dma_unmap_single(&rtlpci->pdev->dev, *((dma_addr_t *)skb->cb),
++				 rtlpci->rxbuffersize, DMA_FROM_DEVICE);
+ 
+ 		/* get a new skb - if fail, old one will be reused */
+ 		new_skb = dev_alloc_skb(rtlpci->rxbuffersize);
+@@ -1092,10 +1091,10 @@ static void _rtl_pci_prepare_bcn_tasklet(unsigned long data)
+ 	else
+ 		entry = (u8 *)(&ring->desc[ring->idx]);
+ 	if (pskb) {
+-		pci_unmap_single(rtlpci->pdev,
+-				 rtlpriv->cfg->ops->get_desc(
+-				 hw, (u8 *)entry, true, HW_DESC_TXBUFF_ADDR),
+-				 pskb->len, PCI_DMA_TODEVICE);
++		dma_unmap_single(&rtlpci->pdev->dev,
++				 rtlpriv->cfg->ops->get_desc(hw, (u8 *)entry,
++						true, HW_DESC_TXBUFF_ADDR),
++				 pskb->len, DMA_TO_DEVICE);
+ 		kfree_skb(pskb);
+ 	}
+ 
+@@ -1218,9 +1217,9 @@ static int _rtl_pci_init_tx_ring(struct ieee80211_hw *hw,
+ 	/* alloc tx buffer desc for new trx flow*/
+ 	if (rtlpriv->use_new_trx_flow) {
+ 		buffer_desc =
+-		   pci_zalloc_consistent(rtlpci->pdev,
+-					 sizeof(*buffer_desc) * entries,
+-					 &buffer_desc_dma);
++		   dma_alloc_coherent(&rtlpci->pdev->dev,
++				      sizeof(*buffer_desc) * entries,
++				      &buffer_desc_dma, GFP_KERNEL);
+ 
+ 		if (!buffer_desc || (unsigned long)buffer_desc & 0xFF) {
+ 			pr_err("Cannot allocate TX ring (prio = %d)\n",
+@@ -1236,8 +1235,8 @@ static int _rtl_pci_init_tx_ring(struct ieee80211_hw *hw,
+ 	}
+ 
+ 	/* alloc dma for this ring */
+-	desc = pci_zalloc_consistent(rtlpci->pdev,
+-				     sizeof(*desc) * entries, &desc_dma);
++	desc = dma_alloc_coherent(&rtlpci->pdev->dev, sizeof(*desc) * entries,
++				  &desc_dma, GFP_KERNEL);
+ 
+ 	if (!desc || (unsigned long)desc & 0xFF) {
+ 		pr_err("Cannot allocate TX ring (prio = %d)\n", prio);
+@@ -1280,11 +1279,10 @@ static int _rtl_pci_init_rx_ring(struct ieee80211_hw *hw, int rxring_idx)
+ 		struct rtl_rx_buffer_desc *entry = NULL;
+ 		/* alloc dma for this ring */
+ 		rtlpci->rx_ring[rxring_idx].buffer_desc =
+-		    pci_zalloc_consistent(rtlpci->pdev,
+-					  sizeof(*rtlpci->rx_ring[rxring_idx].
+-						 buffer_desc) *
+-						 rtlpci->rxringcount,
+-					  &rtlpci->rx_ring[rxring_idx].dma);
++		    dma_alloc_coherent(&rtlpci->pdev->dev,
++				       sizeof(*rtlpci->rx_ring[rxring_idx].buffer_desc) *
++				       rtlpci->rxringcount,
++				       &rtlpci->rx_ring[rxring_idx].dma, GFP_KERNEL);
+ 		if (!rtlpci->rx_ring[rxring_idx].buffer_desc ||
+ 		    (ulong)rtlpci->rx_ring[rxring_idx].buffer_desc & 0xFF) {
+ 			pr_err("Cannot allocate RX ring\n");
+@@ -1304,10 +1302,10 @@ static int _rtl_pci_init_rx_ring(struct ieee80211_hw *hw, int rxring_idx)
+ 		u8 tmp_one = 1;
+ 		/* alloc dma for this ring */
+ 		rtlpci->rx_ring[rxring_idx].desc =
+-		    pci_zalloc_consistent(rtlpci->pdev,
+-					  sizeof(*rtlpci->rx_ring[rxring_idx].
+-					  desc) * rtlpci->rxringcount,
+-					  &rtlpci->rx_ring[rxring_idx].dma);
++		    dma_alloc_coherent(&rtlpci->pdev->dev,
++				       sizeof(*rtlpci->rx_ring[rxring_idx].desc) *
++				       rtlpci->rxringcount,
++				       &rtlpci->rx_ring[rxring_idx].dma, GFP_KERNEL);
+ 		if (!rtlpci->rx_ring[rxring_idx].desc ||
+ 		    (unsigned long)rtlpci->rx_ring[rxring_idx].desc & 0xFF) {
+ 			pr_err("Cannot allocate RX ring\n");
+@@ -1347,24 +1345,23 @@ static void _rtl_pci_free_tx_ring(struct ieee80211_hw *hw,
+ 		else
+ 			entry = (u8 *)(&ring->desc[ring->idx]);
+ 
+-		pci_unmap_single(rtlpci->pdev,
++		dma_unmap_single(&rtlpci->pdev->dev,
+ 				 rtlpriv->cfg->ops->get_desc(hw, (u8 *)entry,
+-						   true,
+-						   HW_DESC_TXBUFF_ADDR),
+-				 skb->len, PCI_DMA_TODEVICE);
++						true, HW_DESC_TXBUFF_ADDR),
++				 skb->len, DMA_TO_DEVICE);
+ 		kfree_skb(skb);
+ 		ring->idx = (ring->idx + 1) % ring->entries;
+ 	}
+ 
+ 	/* free dma of this ring */
+-	pci_free_consistent(rtlpci->pdev,
+-			    sizeof(*ring->desc) * ring->entries,
+-			    ring->desc, ring->dma);
++	dma_free_coherent(&rtlpci->pdev->dev,
++			  sizeof(*ring->desc) * ring->entries, ring->desc,
++			  ring->dma);
+ 	ring->desc = NULL;
+ 	if (rtlpriv->use_new_trx_flow) {
+-		pci_free_consistent(rtlpci->pdev,
+-				    sizeof(*ring->buffer_desc) * ring->entries,
+-				    ring->buffer_desc, ring->buffer_desc_dma);
++		dma_free_coherent(&rtlpci->pdev->dev,
++				  sizeof(*ring->buffer_desc) * ring->entries,
++				  ring->buffer_desc, ring->buffer_desc_dma);
+ 		ring->buffer_desc = NULL;
+ 	}
+ }
+@@ -1381,25 +1378,25 @@ static void _rtl_pci_free_rx_ring(struct ieee80211_hw *hw, int rxring_idx)
+ 
+ 		if (!skb)
+ 			continue;
+-		pci_unmap_single(rtlpci->pdev, *((dma_addr_t *)skb->cb),
+-				 rtlpci->rxbuffersize, PCI_DMA_FROMDEVICE);
++		dma_unmap_single(&rtlpci->pdev->dev, *((dma_addr_t *)skb->cb),
++				 rtlpci->rxbuffersize, DMA_FROM_DEVICE);
+ 		kfree_skb(skb);
+ 	}
+ 
+ 	/* free dma of this ring */
+ 	if (rtlpriv->use_new_trx_flow) {
+-		pci_free_consistent(rtlpci->pdev,
+-				    sizeof(*rtlpci->rx_ring[rxring_idx].
+-				    buffer_desc) * rtlpci->rxringcount,
+-				    rtlpci->rx_ring[rxring_idx].buffer_desc,
+-				    rtlpci->rx_ring[rxring_idx].dma);
++		dma_free_coherent(&rtlpci->pdev->dev,
++				  sizeof(*rtlpci->rx_ring[rxring_idx].buffer_desc) *
++				  rtlpci->rxringcount,
++				  rtlpci->rx_ring[rxring_idx].buffer_desc,
++				  rtlpci->rx_ring[rxring_idx].dma);
+ 		rtlpci->rx_ring[rxring_idx].buffer_desc = NULL;
+ 	} else {
+-		pci_free_consistent(rtlpci->pdev,
+-				    sizeof(*rtlpci->rx_ring[rxring_idx].desc) *
+-				    rtlpci->rxringcount,
+-				    rtlpci->rx_ring[rxring_idx].desc,
+-				    rtlpci->rx_ring[rxring_idx].dma);
++		dma_free_coherent(&rtlpci->pdev->dev,
++				  sizeof(*rtlpci->rx_ring[rxring_idx].desc) *
++				  rtlpci->rxringcount,
++				  rtlpci->rx_ring[rxring_idx].desc,
++				  rtlpci->rx_ring[rxring_idx].dma);
+ 		rtlpci->rx_ring[rxring_idx].desc = NULL;
+ 	}
+ }
+@@ -1527,13 +1524,10 @@ int rtl_pci_reset_trx_ring(struct ieee80211_hw *hw)
+ 				else
+ 					entry = (u8 *)(&ring->desc[ring->idx]);
+ 
+-				pci_unmap_single(rtlpci->pdev,
+-						 rtlpriv->cfg->ops->
+-							 get_desc(hw, (u8 *)
+-							 entry,
+-							 true,
+-							 HW_DESC_TXBUFF_ADDR),
+-						 skb->len, PCI_DMA_TODEVICE);
++				dma_unmap_single(&rtlpci->pdev->dev,
++						 rtlpriv->cfg->ops->get_desc(hw, (u8 *)entry,
++								true, HW_DESC_TXBUFF_ADDR),
++						 skb->len, DMA_TO_DEVICE);
+ 				dev_kfree_skb_irq(skb);
+ 				ring->idx = (ring->idx + 1) % ring->entries;
+ 			}
+@@ -2172,8 +2166,8 @@ int rtl_pci_probe(struct pci_dev *pdev,
+ 	}
+ 
+ 	if (((struct rtl_hal_cfg *)id->driver_data)->mod_params->dma64 &&
+-	    !pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
+-		if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64))) {
++	    !dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
++		if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+ 			WARN_ONCE(true,
+ 				  "Unable to obtain 64bit DMA for consistent allocations\n");
+ 			err = -ENOMEM;
+@@ -2181,8 +2175,8 @@ int rtl_pci_probe(struct pci_dev *pdev,
+ 		}
+ 
+ 		platform_enable_dma64(pdev, true);
+-	} else if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
+-		if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32))) {
++	} else if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
++		if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32))) {
+ 			WARN_ONCE(true,
+ 				  "rtlwifi: Unable to obtain 32bit DMA for consistent allocations\n");
+ 			err = -ENOMEM;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c
+index 70716631de85..805e997f8c8e 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/hw.c
+@@ -75,11 +75,10 @@ static void _rtl88ee_return_beacon_queue_skb(struct ieee80211_hw *hw)
+ 		struct rtl_tx_desc *entry = &ring->desc[ring->idx];
+ 		struct sk_buff *skb = __skb_dequeue(&ring->queue);
+ 
+-		pci_unmap_single(rtlpci->pdev,
+-				 rtlpriv->cfg->ops->get_desc(
+-				 hw,
+-				 (u8 *)entry, true, HW_DESC_TXBUFF_ADDR),
+-				 skb->len, PCI_DMA_TODEVICE);
++		dma_unmap_single(&rtlpci->pdev->dev,
++				 rtlpriv->cfg->ops->get_desc(hw, (u8 *)entry,
++						true, HW_DESC_TXBUFF_ADDR),
++				 skb->len, DMA_TO_DEVICE);
+ 		kfree_skb(skb);
+ 		ring->idx = (ring->idx + 1) % ring->entries;
+ 	}
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+index a5d2d6ece8db..6efc81bc4503 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/trx.c
+@@ -515,9 +515,9 @@ void rtl88ee_tx_fill_desc(struct ieee80211_hw *hw,
+ 		memset(skb->data, 0, EM_HDR_LEN);
+ 	}
+ 	buf_len = skb->len;
+-	mapping = pci_map_single(rtlpci->pdev, skb->data, skb->len,
+-				 PCI_DMA_TODEVICE);
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	mapping = dma_map_single(&rtlpci->pdev->dev, skb->data, skb->len,
++				 DMA_TO_DEVICE);
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+@@ -674,14 +674,13 @@ void rtl88ee_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	u8 fw_queue = QSLT_BEACON;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev,
+-					    skb->data, skb->len,
+-					    PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+ 	__le16 fc = hdr->frame_control;
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c
+index 8fc3cb824066..21e7804d08d4 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192ce/trx.c
+@@ -361,13 +361,12 @@ void rtl92ce_tx_fill_desc(struct ieee80211_hw *hw,
+ 	bool lastseg = ((hdr->frame_control &
+ 			 cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)) == 0);
+ 
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev,
+-					    skb->data, skb->len,
+-					    PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 
+ 	u8 bw_40 = 0;
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+@@ -528,14 +527,13 @@ void rtl92ce_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	u8 fw_queue = QSLT_BEACON;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev,
+-					    skb->data, skb->len,
+-					    PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+ 	__le16 fc = hdr->frame_control;
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c
+index ab5b05ef168e..020d1bbe39c1 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192de/trx.c
+@@ -508,9 +508,9 @@ void rtl92de_tx_fill_desc(struct ieee80211_hw *hw,
+ 		memset(skb->data, 0, EM_HDR_LEN);
+ 	}
+ 	buf_len = skb->len;
+-	mapping = pci_map_single(rtlpci->pdev, skb->data, skb->len,
+-				 PCI_DMA_TODEVICE);
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	mapping = dma_map_single(&rtlpci->pdev->dev, skb->data, skb->len,
++				 DMA_TO_DEVICE);
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+@@ -664,13 +664,13 @@ void rtl92de_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	struct rtl_ps_ctl *ppsc = rtl_psc(rtlpriv);
+ 	struct rtl_hal *rtlhal = rtl_hal(rtlpriv);
+ 	u8 fw_queue = QSLT_BEACON;
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev,
+-		    skb->data, skb->len, PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+ 	__le16 fc = hdr->frame_control;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/trx.c
+index dc7b515bdc85..ecc624e86e56 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/trx.c
+@@ -675,9 +675,9 @@ void rtl92ee_tx_fill_desc(struct ieee80211_hw *hw,
+ 		skb_push(skb, EM_HDR_LEN);
+ 		memset(skb->data, 0, EM_HDR_LEN);
+ 	}
+-	mapping = pci_map_single(rtlpci->pdev, skb->data, skb->len,
+-				 PCI_DMA_TODEVICE);
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	mapping = dma_map_single(&rtlpci->pdev->dev, skb->data, skb->len,
++				 DMA_TO_DEVICE);
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+@@ -834,13 +834,12 @@ void rtl92ee_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	struct rtl_priv *rtlpriv = rtl_priv(hw);
+ 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
+ 	u8 fw_queue = QSLT_BEACON;
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev,
+-					    skb->data, skb->len,
+-					    PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 	u8 txdesc_len = 40;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c
+index 9eaa5348b556..f61f1a1583c3 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/trx.c
+@@ -328,11 +328,11 @@ void rtl92se_tx_fill_desc(struct ieee80211_hw *hw,
+ 	bool firstseg = (!(hdr->seq_ctrl & cpu_to_le16(IEEE80211_SCTL_FRAG)));
+ 	bool lastseg = (!(hdr->frame_control &
+ 			cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)));
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev, skb->data, skb->len,
+-		    PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 	u8 bw_40 = 0;
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+@@ -500,10 +500,10 @@ void rtl92se_tx_fill_cmddesc(struct ieee80211_hw *hw, u8 *pdesc8,
+ 	struct rtl_tcb_desc *tcb_desc = (struct rtl_tcb_desc *)(skb->cb);
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev, skb->data, skb->len,
+-			PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
+index a04ce15d5538..82b09f7f8739 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
+@@ -362,12 +362,11 @@ void rtl8723e_tx_fill_desc(struct ieee80211_hw *hw,
+ 	bool lastseg = ((hdr->frame_control &
+ 			 cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)) == 0);
+ 
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev,
+-					    skb->data, skb->len,
+-					    PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 	u8 bw_40 = 0;
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+@@ -529,14 +528,13 @@ void rtl8723e_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	u8 fw_queue = QSLT_BEACON;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev,
+-					    skb->data, skb->len,
+-					    PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+ 	__le16 fc = hdr->frame_control;
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723be/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723be/hw.c
+index 979e5bfe5f45..0023c2c413e0 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8723be/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723be/hw.c
+@@ -37,11 +37,10 @@ static void _rtl8723be_return_beacon_queue_skb(struct ieee80211_hw *hw)
+ 		struct rtl_tx_desc *entry = &ring->desc[ring->idx];
+ 		struct sk_buff *skb = __skb_dequeue(&ring->queue);
+ 
+-		pci_unmap_single(rtlpci->pdev,
+-				 rtlpriv->cfg->ops->get_desc(
+-				 hw,
+-				 (u8 *)entry, true, HW_DESC_TXBUFF_ADDR),
+-				 skb->len, PCI_DMA_TODEVICE);
++		dma_unmap_single(&rtlpci->pdev->dev,
++				 rtlpriv->cfg->ops->get_desc(hw, (u8 *)entry,
++						true, HW_DESC_TXBUFF_ADDR),
++				 skb->len, DMA_TO_DEVICE);
+ 		kfree_skb(skb);
+ 		ring->idx = (ring->idx + 1) % ring->entries;
+ 	}
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723be/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723be/trx.c
+index b8081e196cdf..7f03b235f8bd 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8723be/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723be/trx.c
+@@ -442,9 +442,9 @@ void rtl8723be_tx_fill_desc(struct ieee80211_hw *hw,
+ 		memset(skb->data, 0, EM_HDR_LEN);
+ 	}
+ 	buf_len = skb->len;
+-	mapping = pci_map_single(rtlpci->pdev, skb->data, skb->len,
+-				 PCI_DMA_TODEVICE);
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	mapping = dma_map_single(&rtlpci->pdev->dev, skb->data, skb->len,
++				 DMA_TO_DEVICE);
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE, "DMA mapping error\n");
+ 		return;
+ 	}
+@@ -595,11 +595,10 @@ void rtl8723be_tx_fill_cmddesc(struct ieee80211_hw *hw, u8 *pdesc8,
+ 	u8 fw_queue = QSLT_BEACON;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev,
+-					    skb->data, skb->len,
+-					    PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c
+index 198d419ebb9c..11cd0ee302e1 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c
+@@ -33,11 +33,10 @@ static void _rtl8821ae_return_beacon_queue_skb(struct ieee80211_hw *hw)
+ 		struct rtl_tx_desc *entry = &ring->desc[ring->idx];
+ 		struct sk_buff *skb = __skb_dequeue(&ring->queue);
+ 
+-		pci_unmap_single(rtlpci->pdev,
+-				 rtlpriv->cfg->ops->get_desc(
+-				 hw,
+-				 (u8 *)entry, true, HW_DESC_TXBUFF_ADDR),
+-				 skb->len, PCI_DMA_TODEVICE);
++		dma_unmap_single(&rtlpci->pdev->dev,
++				 rtlpriv->cfg->ops->get_desc(hw, (u8 *)entry,
++						true, HW_DESC_TXBUFF_ADDR),
++				 skb->len, DMA_TO_DEVICE);
+ 		kfree_skb(skb);
+ 		ring->idx = (ring->idx + 1) % ring->entries;
+ 	}
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/trx.c
+index cd809c992245..ff2819ddc908 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/trx.c
+@@ -690,9 +690,9 @@ void rtl8821ae_tx_fill_desc(struct ieee80211_hw *hw,
+ 		memset(skb->data, 0, EM_HDR_LEN);
+ 	}
+ 	buf_len = skb->len;
+-	mapping = pci_map_single(rtlpci->pdev, skb->data, skb->len,
+-				 PCI_DMA_TODEVICE);
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	mapping = dma_map_single(&rtlpci->pdev->dev, skb->data, skb->len,
++				 DMA_TO_DEVICE);
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+@@ -834,11 +834,10 @@ void rtl8821ae_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	u8 fw_queue = QSLT_BEACON;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = pci_map_single(rtlpci->pdev,
+-					    skb->data, skb->len,
+-					    PCI_DMA_TODEVICE);
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
+ 
+-	if (pci_dma_mapping_error(rtlpci->pdev, mapping)) {
++	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		RT_TRACE(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			 "DMA mapping error\n");
+ 		return;
+-- 
+2.25.1
+
