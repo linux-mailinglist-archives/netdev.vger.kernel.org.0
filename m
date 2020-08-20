@@ -2,40 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B418424B0CC
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 10:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAE7624B0D7
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 10:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726741AbgHTIMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 04:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726325AbgHTILm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 04:11:42 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B63C061383;
-        Thu, 20 Aug 2020 01:11:42 -0700 (PDT)
+        id S1726851AbgHTIO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 04:14:29 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:45356 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726309AbgHTILo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 04:11:44 -0400
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1597911100;
+        s=2020; t=1597911101;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JhiCVpxUd+5iHlrgSGVNwz4zTp+/zLYPymhLkJ5Tjn4=;
-        b=xLau4CXpLXTL31l/cDkDRLouFxjdl9X87fkp3rUfLKELGH+NfL1DwJPgb7pO1JGcA7n6xa
-        MzKD/7q9kRXe6qzWHU1QYAk6BcY7OwmB1fjFhfsyD2GbDyZ8Y4LeuRtNb+mFHN5+w0dEuy
-        gpwBUFc8aBUhr6+6ZEpgYE6fcty7n1y5Z1+06q92cbPidnSI4mfkuRYCpeSCh1jWH0kKrD
-        rL5XBVNm09R7ihD2roq121rH1QRO0x7HMMJWBzqrOnHQo9sZDEWWfC5fABFzF2QGWG2C6A
-        1IQbiIIMIBrk/qjXYzjGy9HBP+mYXOg4X3BLrj/MkogVq9YAiuGmLYxNgfVcgg==
+        bh=CO4O+UG66HNt+D0j8JhkwKZPdz8JTrsuv8lWpk4iYbA=;
+        b=v73sap398txe+8v7D25Nq4D/mk+amgbMTgOZmiwUzuuaxpuV9IxwMDgkVCACdaBE1pBgdt
+        TvHKNXthtccV4dIK33wyddFnjaow8iBx4m2Rvauf96deZtPqLEK6FAHVF5yzvmwXjkFWB/
+        Y9SpUA5+MsqEe/t8iCr2sNZ+nwhF1fE2LfLwJIq6wjwVMa4vO2tXYZyMzxSmMeuBOnMYc1
+        QDu7LuTIsbkjli+G6CJ1pNbpNyctM8p/DSMi8mXWB09vm7z64gk7KhTjY0vaF2KbRHlZsb
+        ShagSKcDiWcsZHPSDyrw8zoaiig4wWVdxEkrFv7ouWDAhiV05DzClPWHOeh9sw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1597911100;
+        s=2020e; t=1597911101;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JhiCVpxUd+5iHlrgSGVNwz4zTp+/zLYPymhLkJ5Tjn4=;
-        b=zOUy91oN0isyMIvYbRviytLbASH0XyQ4XBI17+id6y7xvMp6OWPoeGthwN5nVfuE9n/COB
-        7VfwYF5Dxvew1yCA==
+        bh=CO4O+UG66HNt+D0j8JhkwKZPdz8JTrsuv8lWpk4iYbA=;
+        b=jrHtvMENWBp0HMRSxxlX+acwu8uOyrthY4xhwmrOOe8xyMzZfeASJt/rJgGdvdgg9Adaas
+        3Tze1Ci/tHeoFoBA==
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>
@@ -47,9 +44,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
-Date:   Thu, 20 Aug 2020 10:11:15 +0200
-Message-Id: <20200820081118.10105-6-kurt@linutronix.de>
+Subject: [PATCH v3 6/8] net: dsa: hellcreek: Add PTP status LEDs
+Date:   Thu, 20 Aug 2020 10:11:16 +0200
+Message-Id: <20200820081118.10105-7-kurt@linutronix.de>
 In-Reply-To: <20200820081118.10105-1-kurt@linutronix.de>
 References: <20200820081118.10105-1-kurt@linutronix.de>
 MIME-Version: 1.0
@@ -59,421 +56,249 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The switch has support for the 802.1Qbv Time Aware Shaper (TAS). Traffic
-schedules may be configured individually on each front port. Each port has eight
-egress queues. The traffic is mapped to a traffic class respectively via the PCP
-field of a VLAN tagged frame.
+The switch has two controllable I/Os which are usually connected to LEDs. This
+is useful to immediately visually see the PTP status.
 
-The TAPRIO Qdisc already implements that. Therefore, this interface can simply
-be reused. Add .port_setup_tc() accordingly.
+These provide two signals:
 
-The activation of a schedule on a port is split into two parts:
+ * is_gm
 
- * Programming the necessary gate control list (GCL)
- * Setup hrtimer for starting the schedule
+   This LED can be activated if the current device is the grand master in that
+   PTP domain.
 
-The hardware supports starting a schedule up to eight seconds in the future. The
-TAPRIO interface provides an absolute base time. Therefore, hrtimers are
-leveraged.
+ * sync_good
+
+   This LED can be activated if the current device is in sync with the network
+   time.
+
+Expose these via the LED framework to be controlled via user space
+e.g. linuxptp.
 
 Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 ---
- drivers/net/dsa/hirschmann/hellcreek.c | 294 +++++++++++++++++++++++++
- drivers/net/dsa/hirschmann/hellcreek.h |  21 ++
- 2 files changed, 315 insertions(+)
+ drivers/net/dsa/hirschmann/hellcreek.h     |   4 +
+ drivers/net/dsa/hirschmann/hellcreek_ptp.c | 149 +++++++++++++++++++++
+ drivers/net/dsa/hirschmann/hellcreek_ptp.h |   3 +
+ 3 files changed, 156 insertions(+)
 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 745ca60342b4..e5b54f42c635 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -22,7 +22,9 @@
- #include <linux/spinlock.h>
- #include <linux/delay.h>
- #include <linux/ktime.h>
-+#include <linux/time.h>
- #include <net/dsa.h>
-+#include <net/pkt_sched.h>
- 
- #include "hellcreek.h"
- #include "hellcreek_ptp.h"
-@@ -153,6 +155,15 @@ static void hellcreek_select_vlan(struct hellcreek *hellcreek, int vid,
- 	hellcreek_write(hellcreek, val, HR_VIDCFG);
- }
- 
-+static void hellcreek_select_tgd(struct hellcreek *hellcreek, int port)
-+{
-+	u16 val = 0;
-+
-+	val |= port << TR_TGDSEL_TDGSEL_SHIFT;
-+
-+	hellcreek_write(hellcreek, val, TR_TGDSEL);
-+}
-+
- static int hellcreek_wait_until_ready(struct hellcreek *hellcreek)
- {
- 	u16 val;
-@@ -958,6 +969,24 @@ static void __hellcreek_setup_tc_identity_mapping(struct hellcreek *hellcreek)
- 	}
- }
- 
-+static void hellcreek_setup_tc_mapping(struct hellcreek *hellcreek,
-+				       struct net_device *netdev)
-+{
-+	int i, j;
-+
-+	/* Setup mapping between traffic classes and port queues. */
-+	for (i = 0; i < netdev_get_num_tc(netdev); ++i) {
-+		for (j = 0; j < netdev->tc_to_txq[i].count; ++j) {
-+			const int queue = j + netdev->tc_to_txq[i].offset;
-+
-+			hellcreek_select_prio(hellcreek, i);
-+			hellcreek_write(hellcreek,
-+					queue << HR_PRTCCFG_PCP_TC_MAP_SHIFT,
-+					HR_PRTCCFG);
-+		}
-+	}
-+}
-+
- static void hellcreek_setup_tc_identity_mapping(struct hellcreek *hellcreek)
- {
- 	unsigned long flags;
-@@ -1081,6 +1110,267 @@ static void hellcreek_phylink_validate(struct dsa_switch *ds, int port,
- 		   __ETHTOOL_LINK_MODE_MASK_NBITS);
- }
- 
-+static void hellcreek_setup_gcl(struct hellcreek *hellcreek, int port,
-+				const struct hellcreek_schedule *schedule)
-+{
-+	size_t i;
-+
-+	for (i = 1; i <= schedule->num_entries; ++i) {
-+		const struct hellcreek_gcl_entry *cur, *initial, *next;
-+		u16 data;
-+		u8 gates;
-+
-+		cur	= &schedule->entries[i - 1];
-+		initial = &schedule->entries[0];
-+		next	= &schedule->entries[i];
-+
-+		if (i == schedule->num_entries)
-+			gates = initial->gate_states ^
-+				cur->gate_states;
-+		else
-+			gates = next->gate_states ^
-+				cur->gate_states;
-+
-+		data = gates;
-+		if (cur->overrun_ignore)
-+			data |= TR_GCLDAT_GCLOVRI;
-+
-+		if (i == schedule->num_entries)
-+			data |= TR_GCLDAT_GCLWRLAST;
-+
-+		/* Gates states */
-+		hellcreek_write(hellcreek, data, TR_GCLDAT);
-+
-+		/* Time intervall */
-+		hellcreek_write(hellcreek,
-+				cur->interval & 0x0000ffff,
-+				TR_GCLTIL);
-+		hellcreek_write(hellcreek,
-+				(cur->interval & 0xffff0000) >> 16,
-+				TR_GCLTIH);
-+
-+		/* Commit entry */
-+		data = ((i - 1) << TR_GCLCMD_GCLWRADR_SHIFT) |
-+			(initial->gate_states <<
-+			 TR_GCLCMD_INIT_GATE_STATES_SHIFT);
-+		hellcreek_write(hellcreek, data, TR_GCLCMD);
-+	}
-+}
-+
-+static void hellcreek_set_cycle_time(struct hellcreek *hellcreek,
-+				     const struct hellcreek_schedule *schedule)
-+{
-+	u32 cycle_time = schedule->cycle_time;
-+
-+	hellcreek_write(hellcreek, cycle_time & 0x0000ffff, TR_CTWRL);
-+	hellcreek_write(hellcreek, (cycle_time & 0xffff0000) >> 16, TR_CTWRH);
-+}
-+
-+static void hellcreek_start_schedule(struct hellcreek *hellcreek,
-+				     ktime_t start_time)
-+{
-+	struct timespec64 ts = ktime_to_timespec64(start_time);
-+
-+	/* Start can be only 8 seconds in the future */
-+	ts.tv_sec %= 8;
-+
-+	/* Start schedule at this point of time */
-+	hellcreek_write(hellcreek, ts.tv_nsec & 0x0000ffff, TR_ESTWRL);
-+	hellcreek_write(hellcreek, (ts.tv_nsec & 0xffff0000) >> 16, TR_ESTWRH);
-+
-+	/* Arm timer, set seconds and switch schedule */
-+	hellcreek_write(hellcreek, TR_ESTCMD_ESTARM | TR_ESTCMD_ESTSWCFG |
-+		     ((ts.tv_sec & TR_ESTCMD_ESTSEC_MASK) <<
-+		      TR_ESTCMD_ESTSEC_SHIFT), TR_ESTCMD);
-+}
-+
-+static struct hellcreek_schedule *hellcreek_taprio_to_schedule(
-+	const struct tc_taprio_qopt_offload *taprio)
-+{
-+	struct hellcreek_schedule *schedule;
-+	size_t i;
-+
-+	/* Allocate some memory first */
-+	schedule = kzalloc(sizeof(*schedule), GFP_KERNEL);
-+	if (!schedule)
-+		return ERR_PTR(-ENOMEM);
-+	schedule->entries = kcalloc(taprio->num_entries,
-+				    sizeof(*schedule->entries),
-+				    GFP_KERNEL);
-+	if (!schedule->entries) {
-+		kfree(schedule);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
-+	/* Construct hellcreek schedule */
-+	schedule->num_entries = taprio->num_entries;
-+	schedule->base_time   = taprio->base_time;
-+
-+	for (i = 0; i < taprio->num_entries; ++i) {
-+		const struct tc_taprio_sched_entry *t = &taprio->entries[i];
-+		struct hellcreek_gcl_entry *k = &schedule->entries[i];
-+
-+		k->interval	  = t->interval;
-+		k->gate_states	  = t->gate_mask;
-+		k->overrun_ignore = 0;
-+
-+		/* Update complete cycle time */
-+		schedule->cycle_time += t->interval;
-+	}
-+
-+	return schedule;
-+}
-+
-+static enum hrtimer_restart hellcreek_set_schedule(struct hrtimer *timer)
-+{
-+	struct hellcreek_port *hellcreek_port =
-+		hrtimer_to_hellcreek_port(timer);
-+	struct hellcreek *hellcreek = hellcreek_port->hellcreek;
-+	struct hellcreek_schedule *schedule;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&hellcreek->reg_lock, flags);
-+
-+	/* First select port */
-+	hellcreek_select_tgd(hellcreek, hellcreek_port->port);
-+
-+	/* Set admin base time and switch schedule */
-+	hellcreek_start_schedule(hellcreek,
-+				 hellcreek_port->current_schedule->base_time);
-+
-+	schedule = hellcreek_port->current_schedule;
-+	hellcreek_port->current_schedule = NULL;
-+
-+	spin_unlock_irqrestore(&hellcreek->reg_lock, flags);
-+
-+	dev_dbg(hellcreek->dev, "ARMed EST timer for port %d\n",
-+		hellcreek_port->port);
-+
-+	/* Free resources */
-+	kfree(schedule->entries);
-+	kfree(schedule);
-+
-+	return HRTIMER_NORESTART;
-+}
-+
-+static int hellcreek_port_set_schedule(struct dsa_switch *ds, int port,
-+				       const struct tc_taprio_qopt_offload *taprio)
-+{
-+	struct net_device *netdev = dsa_to_port(ds, port)->slave;
-+	struct hellcreek *hellcreek = ds->priv;
-+	struct hellcreek_port *hellcreek_port;
-+	struct hellcreek_schedule *schedule;
-+	unsigned long flags;
-+	ktime_t start;
-+	u16 ctrl;
-+
-+	hellcreek_port = &hellcreek->ports[port];
-+
-+	/* Convert taprio data to hellcreek schedule */
-+	schedule = hellcreek_taprio_to_schedule(taprio);
-+	if (IS_ERR(schedule))
-+		return PTR_ERR(schedule);
-+
-+	dev_dbg(hellcreek->dev, "Configure traffic schedule on port %d\n",
-+		port);
-+
-+	/* Cancel an in flight timer */
-+	hrtimer_cancel(&hellcreek_port->cycle_start_timer);
-+
-+	spin_lock_irqsave(&hellcreek->reg_lock, flags);
-+
-+	if (hellcreek_port->current_schedule) {
-+		kfree(hellcreek_port->current_schedule->entries);
-+		kfree(hellcreek_port->current_schedule);
-+	}
-+
-+	hellcreek_port->current_schedule = schedule;
-+
-+	/* First select port */
-+	hellcreek_select_tgd(hellcreek, port);
-+
-+	/* Setup traffic class <-> queue mapping */
-+	hellcreek_setup_tc_mapping(hellcreek, netdev);
-+
-+	/* Enable gating and set the admin state to forward everything in the
-+	 * mean time
-+	 */
-+	ctrl = (0xff << TR_TGDCTRL_ADMINGATESTATES_SHIFT) | TR_TGDCTRL_GATE_EN;
-+	hellcreek_write(hellcreek, ctrl, TR_TGDCTRL);
-+
-+	/* Cancel pending schedule */
-+	hellcreek_write(hellcreek, 0x00, TR_ESTCMD);
-+
-+	/* Setup a new schedule */
-+	hellcreek_setup_gcl(hellcreek, port, schedule);
-+
-+	/* Configure cycle time */
-+	hellcreek_set_cycle_time(hellcreek, schedule);
-+
-+	/* Setup timer for schedule switch: The IP core only allows to set a
-+	 * cycle start timer 8 seconds in the future. This is why we setup the
-+	 * hritmer to base_time - 5 seconds. Then, we have enough time to
-+	 * activate IP core's EST timer.
-+	 */
-+	start = ktime_sub_ns(schedule->base_time, (u64)5 * NSEC_PER_SEC);
-+	hrtimer_start_range_ns(&hellcreek_port->cycle_start_timer, start,
-+			       NSEC_PER_SEC, HRTIMER_MODE_ABS);
-+
-+	spin_unlock_irqrestore(&hellcreek->reg_lock, flags);
-+
-+	return 0;
-+}
-+
-+static int hellcreek_port_del_schedule(struct dsa_switch *ds, int port)
-+{
-+	struct hellcreek *hellcreek = ds->priv;
-+	struct hellcreek_port *hellcreek_port;
-+	unsigned long flags;
-+
-+	hellcreek_port = &hellcreek->ports[port];
-+
-+	dev_dbg(hellcreek->dev, "Remove traffic schedule on port %d\n", port);
-+
-+	/* First cancel timer */
-+	hrtimer_cancel(&hellcreek_port->cycle_start_timer);
-+
-+	spin_lock_irqsave(&hellcreek->reg_lock, flags);
-+
-+	if (hellcreek_port->current_schedule) {
-+		kfree(hellcreek_port->current_schedule->entries);
-+		kfree(hellcreek_port->current_schedule);
-+		hellcreek_port->current_schedule = NULL;
-+	}
-+
-+	/* Then select port */
-+	hellcreek_select_tgd(hellcreek, port);
-+
-+	/* Revert tc mapping */
-+	__hellcreek_setup_tc_identity_mapping(hellcreek);
-+
-+	/* Disable gating and return to regular switching flow */
-+	hellcreek_write(hellcreek, 0xff << TR_TGDCTRL_ADMINGATESTATES_SHIFT,
-+			TR_TGDCTRL);
-+
-+	spin_unlock_irqrestore(&hellcreek->reg_lock, flags);
-+
-+	return 0;
-+}
-+
-+static int hellcreek_port_setup_tc(struct dsa_switch *ds, int port,
-+				   enum tc_setup_type type, void *type_data)
-+{
-+	const struct tc_taprio_qopt_offload *taprio = type_data;
-+
-+	if (type != TC_SETUP_QDISC_TAPRIO)
-+		return -EOPNOTSUPP;
-+
-+	if (taprio->enable)
-+		return hellcreek_port_set_schedule(ds, port, taprio);
-+
-+	return hellcreek_port_del_schedule(ds, port);
-+}
-+
- static const struct dsa_switch_ops hellcreek_ds_ops = {
- 	.get_tag_protocol    = hellcreek_get_tag_protocol,
- 	.setup		     = hellcreek_setup,
-@@ -1104,6 +1394,7 @@ static const struct dsa_switch_ops hellcreek_ds_ops = {
- 	.port_hwtstamp_get   = hellcreek_port_hwtstamp_get,
- 	.port_txtstamp	     = hellcreek_port_txtstamp,
- 	.port_rxtstamp	     = hellcreek_port_rxtstamp,
-+	.port_setup_tc	     = hellcreek_port_setup_tc,
- 	.get_ts_info	     = hellcreek_get_ts_info,
- };
- 
-@@ -1135,6 +1426,9 @@ static int hellcreek_probe(struct platform_device *pdev)
- 		if (!port->counter_values)
- 			return -ENOMEM;
- 
-+		hrtimer_init(&port->cycle_start_timer, CLOCK_TAI,
-+			     HRTIMER_MODE_ABS);
-+		port->cycle_start_timer.function = hellcreek_set_schedule;
- 		port->hellcreek = hellcreek;
- 		port->port	= i;
- 	}
 diff --git a/drivers/net/dsa/hirschmann/hellcreek.h b/drivers/net/dsa/hirschmann/hellcreek.h
-index 1d3de72a48a5..d3d1a1144857 100644
+index d3d1a1144857..c83af1af8d8a 100644
 --- a/drivers/net/dsa/hirschmann/hellcreek.h
 +++ b/drivers/net/dsa/hirschmann/hellcreek.h
-@@ -16,6 +16,7 @@
- #include <linux/ptp_clock_kernel.h>
+@@ -17,6 +17,7 @@
  #include <linux/timecounter.h>
  #include <linux/spinlock.h>
-+#include <linux/hrtimer.h>
+ #include <linux/hrtimer.h>
++#include <linux/leds.h>
  #include <net/dsa.h>
  
  /* Ports:
-@@ -210,6 +211,20 @@ struct hellcreek_counter {
- 	const char *name;
- };
- 
-+struct hellcreek_gcl_entry {
-+	u32 interval;
-+	u8 gate_states;
-+	bool overrun_ignore;
-+};
-+
-+struct hellcreek_schedule {
-+	struct hellcreek_gcl_entry *entries;
-+	size_t num_entries;
-+	ktime_t base_time;
-+	u32 cycle_time;
-+	int port;
-+};
-+
- struct hellcreek;
- 
- /* State flags for hellcreek_port_hwtstamp::state */
-@@ -236,6 +251,8 @@ struct hellcreek_port_hwtstamp {
- 
- struct hellcreek_port {
- 	struct hellcreek *hellcreek;
-+	struct hellcreek_schedule *current_schedule;
-+	struct hrtimer cycle_start_timer;
- 	int port;
- 	u16 ptcfg;		/* ptcfg shadow */
- 	u64 *counter_values;
-@@ -273,4 +290,8 @@ struct hellcreek {
+@@ -280,6 +281,8 @@ struct hellcreek {
+ 	struct ptp_clock_info ptp_clock_info;
+ 	struct hellcreek_port ports[4];
+ 	struct delayed_work overflow_work;
++	struct led_classdev led_is_gm;
++	struct led_classdev led_sync_good;
+ 	spinlock_t reg_lock;	/* Switch IP register lock */
+ 	spinlock_t ptp_lock;	/* PTP IP register lock */
+ 	void __iomem *base;
+@@ -287,6 +290,7 @@ struct hellcreek {
+ 	u8 *vidmbrcfg;		/* vidmbrcfg shadow */
+ 	u64 seconds;		/* PTP seconds */
+ 	u64 last_ts;		/* Used for overflow detection */
++	u16 status_out;		/* ptp.status_out shadow */
  	size_t fdb_entries;
  };
  
-+#define hrtimer_to_hellcreek_port(timer)		\
-+	container_of(timer, struct hellcreek_port,	\
-+		     cycle_start_timer)
+diff --git a/drivers/net/dsa/hirschmann/hellcreek_ptp.c b/drivers/net/dsa/hirschmann/hellcreek_ptp.c
+index 8c2cef2b60fb..579a38d8ad15 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek_ptp.c
++++ b/drivers/net/dsa/hirschmann/hellcreek_ptp.c
+@@ -239,9 +239,148 @@ static void hellcreek_ptp_overflow_check(struct work_struct *work)
+ 			      HELLCREEK_OVERFLOW_PERIOD);
+ }
+ 
++static enum led_brightness hellcreek_get_brightness(struct hellcreek *hellcreek,
++						    int led)
++{
++	return (hellcreek->status_out & led) ? 1 : 0;
++}
 +
- #endif /* _HELLCREEK_H_ */
++static void hellcreek_set_brightness(struct hellcreek *hellcreek, int led,
++				     enum led_brightness b)
++{
++	spin_lock(&hellcreek->ptp_lock);
++
++	if (b)
++		hellcreek->status_out |= led;
++	else
++		hellcreek->status_out &= ~led;
++
++	hellcreek_ptp_write(hellcreek, hellcreek->status_out, STATUS_OUT);
++
++	spin_unlock(&hellcreek->ptp_lock);
++}
++
++static void hellcreek_led_sync_good_set(struct led_classdev *ldev,
++					enum led_brightness b)
++{
++	struct hellcreek *hellcreek = led_to_hellcreek(ldev, led_sync_good);
++
++	hellcreek_set_brightness(hellcreek, STATUS_OUT_SYNC_GOOD, b);
++}
++
++static enum led_brightness hellcreek_led_sync_good_get(struct led_classdev *ldev)
++{
++	struct hellcreek *hellcreek = led_to_hellcreek(ldev, led_sync_good);
++
++	return hellcreek_get_brightness(hellcreek, STATUS_OUT_SYNC_GOOD);
++}
++
++static void hellcreek_led_is_gm_set(struct led_classdev *ldev,
++				    enum led_brightness b)
++{
++	struct hellcreek *hellcreek = led_to_hellcreek(ldev, led_is_gm);
++
++	hellcreek_set_brightness(hellcreek, STATUS_OUT_IS_GM, b);
++}
++
++static enum led_brightness hellcreek_led_is_gm_get(struct led_classdev *ldev)
++{
++	struct hellcreek *hellcreek = led_to_hellcreek(ldev, led_is_gm);
++
++	return hellcreek_get_brightness(hellcreek, STATUS_OUT_IS_GM);
++}
++
++/* There two available LEDs internally called sync_good and is_gm. However, the
++ * user might want to use a different label and specify the default state. Take
++ * those properties from device tree.
++ */
++static int hellcreek_led_setup(struct hellcreek *hellcreek)
++{
++	struct device_node *leds, *led = NULL;
++	const char *label, *state;
++	int ret = -EINVAL;
++
++	leds = of_find_node_by_name(hellcreek->dev->of_node, "leds");
++	if (!leds) {
++		dev_err(hellcreek->dev, "No LEDs specified in device tree!\n");
++		return ret;
++	}
++
++	hellcreek->status_out = 0;
++
++	led = of_get_next_available_child(leds, led);
++	if (!led) {
++		dev_err(hellcreek->dev, "First LED not specified!\n");
++		goto out;
++	}
++
++	ret = of_property_read_string(led, "label", &label);
++	hellcreek->led_sync_good.name = ret ? "sync_good" : label;
++
++	ret = of_property_read_string(led, "default-state", &state);
++	if (!ret) {
++		if (!strcmp(state, "on"))
++			hellcreek->led_sync_good.brightness = 1;
++		else if (!strcmp(state, "off"))
++			hellcreek->led_sync_good.brightness = 0;
++		else if (!strcmp(state, "keep"))
++			hellcreek->led_sync_good.brightness =
++				hellcreek_get_brightness(hellcreek,
++							 STATUS_OUT_SYNC_GOOD);
++	}
++
++	hellcreek->led_sync_good.max_brightness = 1;
++	hellcreek->led_sync_good.brightness_set = hellcreek_led_sync_good_set;
++	hellcreek->led_sync_good.brightness_get = hellcreek_led_sync_good_get;
++
++	led = of_get_next_available_child(leds, led);
++	if (!led) {
++		dev_err(hellcreek->dev, "Second LED not specified!\n");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	ret = of_property_read_string(led, "label", &label);
++	hellcreek->led_is_gm.name = ret ? "is_gm" : label;
++
++	ret = of_property_read_string(led, "default-state", &state);
++	if (!ret) {
++		if (!strcmp(state, "on"))
++			hellcreek->led_is_gm.brightness = 1;
++		else if (!strcmp(state, "off"))
++			hellcreek->led_is_gm.brightness = 0;
++		else if (!strcmp(state, "keep"))
++			hellcreek->led_is_gm.brightness =
++				hellcreek_get_brightness(hellcreek,
++							 STATUS_OUT_IS_GM);
++	}
++
++	hellcreek->led_is_gm.max_brightness = 1;
++	hellcreek->led_is_gm.brightness_set = hellcreek_led_is_gm_set;
++	hellcreek->led_is_gm.brightness_get = hellcreek_led_is_gm_get;
++
++	/* Set initial state */
++	if (hellcreek->led_sync_good.brightness == 1)
++		hellcreek_set_brightness(hellcreek, STATUS_OUT_SYNC_GOOD, 1);
++	if (hellcreek->led_is_gm.brightness == 1)
++		hellcreek_set_brightness(hellcreek, STATUS_OUT_IS_GM, 1);
++
++	/* Register both leds */
++	led_classdev_register(hellcreek->dev, &hellcreek->led_sync_good);
++	led_classdev_register(hellcreek->dev, &hellcreek->led_is_gm);
++
++	ret = 0;
++
++out:
++	of_node_put(leds);
++
++	return ret;
++}
++
+ int hellcreek_ptp_setup(struct hellcreek *hellcreek)
+ {
+ 	u16 status;
++	int ret;
+ 
+ 	/* Set up the overflow work */
+ 	INIT_DELAYED_WORK(&hellcreek->overflow_work,
+@@ -288,6 +427,14 @@ int hellcreek_ptp_setup(struct hellcreek *hellcreek)
+ 	hellcreek_ptp_write(hellcreek, status | PR_CLOCK_STATUS_C_ENA_DRIFT,
+ 			    PR_CLOCK_STATUS_C);
+ 
++	/* LED setup */
++	ret = hellcreek_led_setup(hellcreek);
++	if (ret) {
++		if (hellcreek->ptp_clock)
++			ptp_clock_unregister(hellcreek->ptp_clock);
++		return ret;
++	}
++
+ 	schedule_delayed_work(&hellcreek->overflow_work,
+ 			      HELLCREEK_OVERFLOW_PERIOD);
+ 
+@@ -296,6 +443,8 @@ int hellcreek_ptp_setup(struct hellcreek *hellcreek)
+ 
+ void hellcreek_ptp_free(struct hellcreek *hellcreek)
+ {
++	led_classdev_unregister(&hellcreek->led_is_gm);
++	led_classdev_unregister(&hellcreek->led_sync_good);
+ 	cancel_delayed_work_sync(&hellcreek->overflow_work);
+ 	if (hellcreek->ptp_clock)
+ 		ptp_clock_unregister(hellcreek->ptp_clock);
+diff --git a/drivers/net/dsa/hirschmann/hellcreek_ptp.h b/drivers/net/dsa/hirschmann/hellcreek_ptp.h
+index e0eca1f4a494..0b51392c7e56 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek_ptp.h
++++ b/drivers/net/dsa/hirschmann/hellcreek_ptp.h
+@@ -70,4 +70,7 @@ u64 hellcreek_ptp_gettime_seconds(struct hellcreek *hellcreek, u64 ns);
+ #define dw_overflow_to_hellcreek(dw)				\
+ 	container_of(dw, struct hellcreek, overflow_work)
+ 
++#define led_to_hellcreek(ldev, led)				\
++	container_of(ldev, struct hellcreek, led)
++
+ #endif /* _HELLCREEK_PTP_H_ */
 -- 
 2.20.1
 
