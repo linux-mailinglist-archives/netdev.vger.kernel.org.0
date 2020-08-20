@@ -2,136 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5670324ACD0
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 04:02:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A624C24ACFB
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 04:24:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726795AbgHTCCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 22:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726435AbgHTCCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 22:02:00 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77BBFC061757
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 19:01:59 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id k12so280948otr.1
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 19:01:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a6AI5eeMLSnuHLbo6ZZjQDIfs8rhjaUq4nVIf2nIA4s=;
-        b=YnPCB7GyyenNNj4m6DTSkuaI05qpfHVG/QgzwK6ZW5cfzjXcjHWN5LAYlS6/sxdjkz
-         Q3B6OAL6VkfXwnio6GpcqFThGxYHL16LeanA7XHdVMfn26QoX0g+phi2xhTniJx/oG4b
-         By+2BEurn0lcdeK0Stus91++uccTrtAGABYgjAbl+ipAdepdfWEyi3uEFSsTuQd5UZBx
-         BRrztqVUVKEKekr/BYTkoCsnvAO2Pj7IHdqvtB+4JORdtJ9ivIHukRoFwzuDiHXHnEM+
-         GW1diuJzzXcDmzpqOY7Sm35sNw8MEKZLt3qU+FvbRqjP0SgosGrMRbrNiWiPtlstFAhc
-         xoVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a6AI5eeMLSnuHLbo6ZZjQDIfs8rhjaUq4nVIf2nIA4s=;
-        b=Gwx0VfX3Z/jKUHmJTO1DP0++2c81/80OQ1eIAkbMg4cwXQ6GWAtrN46zOzVGFQcEXV
-         PvbtA7z0JM/d9BSMptDGiGvx/WOWAGPH8EjQwfRNpgovnUQJel8R7XBBhNEqXyJgpipX
-         A3OlWZ/jDRoqcJDtDJ1teIULIdJWNPBRSdFShwlgGuldL2lF1HOYNga1QM8Z6P+xtXMj
-         0NiQR7MIjFvDF5HPZpjuMPk1jwkgLgB4QYmfHjH6j6bnJF4Z/QwEx0UbiKQxtyIn9TzE
-         8Cgae1pFfaUSPQAfJB7WRwHl8XY7pGuNYl3/lmL5EophKsZ4WccWnNl9KX20EcMvEw33
-         JZSQ==
-X-Gm-Message-State: AOAM531MXo662feJb4XUsnOzFegGnG3ZddKPjdiombp27oPG+WR4t+9a
-        8/xmemiggSJUg9YWxTDMfDUORz38gesiPNw+mlmnnQ==
-X-Google-Smtp-Source: ABdhPJy4t5xNUInvTbrdNktpIEEwJa9WXJ3VbyfLmNGHa9Tlogcfk1xfE/pD2NZhBS1V2JSKNp49dZbkVm49zRPUArk=
-X-Received: by 2002:a05:6830:237b:: with SMTP id r27mr528934oth.352.1597888918873;
- Wed, 19 Aug 2020 19:01:58 -0700 (PDT)
+        id S1726796AbgHTCYE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 22:24:04 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:9789 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726578AbgHTCYE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Aug 2020 22:24:04 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id EA9B2982E81175518C99;
+        Thu, 20 Aug 2020 10:24:00 +0800 (CST)
+Received: from [127.0.0.1] (10.174.179.108) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Thu, 20 Aug 2020
+ 10:23:57 +0800
+Subject: Re: [PATCH v2] net: stmmac: Fix signedness bug in
+ stmmac_probe_config_dt()
+To:     Andrew Lunn <andrew@lunn.ch>
+References: <20200818143952.50752-1-yuehaibing@huawei.com>
+ <20200818151500.51548-1-yuehaibing@huawei.com>
+ <20200818170448.GH2330298@lunn.ch>
+CC:     <peppe.cavallaro@st.com>, <alexandre.torgue@st.com>,
+        <joabreu@synopsys.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <mcoquelin.stm32@gmail.com>, <ajayg@nvidia.com>,
+        <netdev@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <07d81dd7-f59a-b7ca-64e9-ac1ab9aa4758@huawei.com>
+Date:   Thu, 20 Aug 2020 10:23:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-References: <cover.1597833138.git.mchehab+huawei@kernel.org> <CALAqxLU3bt6fT4nGHZFSnzyQq4xJo2On=c_Oa9ONED9-jhaFgw@mail.gmail.com>
-In-Reply-To: <CALAqxLU3bt6fT4nGHZFSnzyQq4xJo2On=c_Oa9ONED9-jhaFgw@mail.gmail.com>
-From:   John Stultz <john.stultz@linaro.org>
-Date:   Wed, 19 Aug 2020 19:01:46 -0700
-Message-ID: <CALAqxLW98nVc-=8Q6nx-wRP1z8pzkw1_zNc9M7V3GhnJQqM9rg@mail.gmail.com>
-Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linuxarm@huawei.com, mauro.chehab@huawei.com,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Bogdan Togorean <bogdan.togorean@analog.com>,
-        Liwei Cai <cailiwei@hisilicon.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Xinliang Liu <xinliang.liu@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Wanchun Zheng <zhengwanchun@hisilicon.com>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        linux-media <linux-media@vger.kernel.org>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Rob Clark <robdclark@chromium.org>,
-        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Liuyao An <anliuyao@huawei.com>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>, Wei Xu <xuwei5@hisilicon.com>,
-        Rongrong Zou <zourongrong@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Chen Feng <puck.chen@hisilicon.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200818170448.GH2330298@lunn.ch>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.108]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 19, 2020 at 2:36 PM John Stultz <john.stultz@linaro.org> wrote:
->
-> On Wed, Aug 19, 2020 at 4:46 AM Mauro Carvalho Chehab
-> <mchehab+huawei@kernel.org> wrote:
-> > So, IMO, the best is to keep it on staging for a while, until those
-> > remaining bugs gets solved.
-> >
-> > I added this series, together with the regulator driver and
-> > a few other patches (including a hack to fix a Kernel 5.8
-> > regression at WiFi ) at:
-> >
-> >         https://gitlab.freedesktop.org/mchehab_kernel/hikey-970/-/commits/master
->
-> Sorry, one more small request: Could you create a branch that only has
-> the DRM driver changes in it?
->
-> The reason I ask, is that since the HiKey960 isn't affected by the
-> majority of the problems you listed as motivation for going through
-> staging. So if we can validate that your tree works fine on HiKey960,
-> the series can be cleaned up and submitted properly upstream to enable
-> that SoC, and the outstanding 970 issues can be worked out afterwards
-> against mainline.
+On 2020/8/19 1:04, Andrew Lunn wrote:
+> On Tue, Aug 18, 2020 at 11:15:00PM +0800, YueHaibing wrote:
+>> The "plat->phy_interface" variable is an enum and in this context GCC
+>> will treat it as an unsigned int so the error handling is never
+>> triggered.
+>>
+>> Fixes: b9f0b2f634c0 ("net: stmmac: platform: fix probe for ACPI devices")
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> 
+> Hi YueHaibing
+> 
+> Please take a look at:
+> 
+> commit 0c65b2b90d13c1deaee6449304dd367c5d4eb8ae
+> Author: Andrew Lunn <andrew@lunn.ch>
+> Date:   Mon Nov 4 02:40:33 2019 +0100
+> 
+>     net: of_get_phy_mode: Change API to solve int/unit warnings
+> 
+> You probably want to follow this basic idea.
+> 
 
-Just as a heads up, I tried testing your tree with my HiKey960, and
-after fixing the compat string inconsistency, the drivers seem to load
-properly. However the drm_hwcomposer seems to have some trouble with
-the driver:
-01-01 00:12:41.456   345   345 E hwc-drm-display-compositor: Commit
-test failed for display 0, FIXME
-01-01 00:12:41.456   345   345 E hwc-drm-two: Failed to apply the
-frame composition ret=-22
-01-01 00:12:41.456   351   351 E HWComposer:
-presentAndGetReleaseFences: present failed for display 0: BadParameter
-(4)
+Thanks, will rework following this.
 
-I'll dig in a bit further as to why, but wanted to give you a heads up.
+>     Andrew
+> 
+> .
+> 
 
-thanks
--john
