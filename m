@@ -2,163 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4422424B9C6
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 13:55:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03F3724B9C0
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 13:54:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729386AbgHTLs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 07:48:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33686 "EHLO
+        id S1730554AbgHTLsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 07:48:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730528AbgHTKCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 06:02:44 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B25FC061757;
-        Thu, 20 Aug 2020 03:02:42 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 4E5E323D;
-        Thu, 20 Aug 2020 12:02:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1597917743;
-        bh=UdZW/gWpeBR8Fp2uswR4BNeR1AZf83I2Xerix6/McmU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ItMFiAGpy+m799SAJlmxoBALpCUTcBMW2ZU7dxHv3+rwmOEr6obhEyMEeRR1DmtU5
-         w83NTD2V6detNxAnQkYHTyfm7GYG23NbpofX1u6znoMCAcfcbBJQgrORodryscgxWx
-         WciTsmZ7pXmG36Axz5Ekh/zrHURi1ohdX/kph6gI=
-Date:   Thu, 20 Aug 2020 13:02:05 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     John Stultz <john.stultz@linaro.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        Wanchun Zheng <zhengwanchun@hisilicon.com>,
-        linuxarm@huawei.com, dri-devel <dri-devel@lists.freedesktop.org>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Xiubin Zhang <zhangxiubin1@huawei.com>,
-        Wei Xu <xuwei5@hisilicon.com>,
-        Xinliang Liu <xinliang.liu@linaro.org>,
-        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Bogdan Togorean <bogdan.togorean@analog.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
-        linux-media <linux-media@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Liwei Cai <cailiwei@hisilicon.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Chen Feng <puck.chen@hisilicon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        mauro.chehab@huawei.com, Rob Clark <robdclark@chromium.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Liuyao An <anliuyao@huawei.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Rongrong Zou <zourongrong@gmail.com>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
-Message-ID: <20200820100205.GA5962@pendragon.ideasonboard.com>
-References: <cover.1597833138.git.mchehab+huawei@kernel.org>
- <20200819152120.GA106437@ravnborg.org>
- <20200819153045.GA18469@pendragon.ideasonboard.com>
- <CALAqxLUXnPRec3UYbMKge8yNKBagLOatOeRCagF=JEyPEfWeKA@mail.gmail.com>
- <20200820090326.3f400a15@coco.lan>
+        with ESMTP id S1730433AbgHTKD2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 06:03:28 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514F6C061383;
+        Thu, 20 Aug 2020 03:03:19 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id t6so1404834ljk.9;
+        Thu, 20 Aug 2020 03:03:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=y8UqIuhfzyLzFYWb3BCxHsLpMfuYu0DrhXjB/bVTesk=;
+        b=i1ry6sXZ1liUrPQCcLBFG6+Y3xSM7sDGiX/tqWVg0OgC2aWd7lvDZ03cDz7QCIehGX
+         wcu8FCxGp4n1FmsGkFH04TOE3WXypnzgDk9i0FLueQkrjgEg3uMDJ2xRxyXw7JSPlfLu
+         O2ZeoFVlwLrS1h+79CkH/eoUAP0rhyt7qpTqYynIQsCtaMs9b7iVoz8dIOcA+xahwVk5
+         bXUl6hnbcZf0GXjw5MBai1fV+6m3tQDnkHJz4qYIOOvgBsP4a2Z2o1TFaojJhjKJta31
+         64EdYSeNig8VbhA7xtoCoP6ZTgnssymjG0D5CAWHwc5dYmTtgd5g0zc7RNdM71YfZ4Yz
+         tbPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=y8UqIuhfzyLzFYWb3BCxHsLpMfuYu0DrhXjB/bVTesk=;
+        b=aVSOZ9c66KRjZCf0pg/nnzh9uS8nDgl2CFzQ96eYTQ8lhas1BqBpjmlfquWaja3q2V
+         oSGtHDLeTqr+DdI+xvDbUFh8zF1Kr41VjrqMv9fZPCWLIUY0hF74t/PzXHYCtkGhzD6M
+         TCFPwMBK5voInvRdYm1JEVmCX1ejvkWdxcF3mPdoVbHXFz+fy9y6imm+/9Ue074eFMtw
+         MMecL4fY/fErZkdFLkAIZVUs3d/vp3BsG6WfcxDAbXepuWK+5S78q2sqrp6ZkuFaHnPe
+         AitpLKx8a4M6ZmX/RsXoLq5R7UcX/8wDSoguUxL89PmhZIZFbj0EozKpWaxUHrJijU6O
+         QWeg==
+X-Gm-Message-State: AOAM532K0EsTU068PyxPqpXIHF7SSoUCMLKpCez51KWNi3b8/SkLwyw5
+        H7AW2Y30C7E33kvoesZuaZYQ0igEFM3O5Nmb
+X-Google-Smtp-Source: ABdhPJwNaTCEt/MjEP6qgrQw7SnK+G6UZ7jE/2rQEW2qcgNt2puQBOYVbW0xvgZ4GWcBWdhHHihDhQ==
+X-Received: by 2002:a2e:9b08:: with SMTP id u8mr1182940lji.208.1597917797971;
+        Thu, 20 Aug 2020 03:03:17 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:42ab:a165:4cb2:5f04:a1e8:63b? ([2a00:1fa0:42ab:a165:4cb2:5f04:a1e8:63b])
+        by smtp.gmail.com with ESMTPSA id d6sm351128lji.110.2020.08.20.03.03.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Aug 2020 03:03:17 -0700 (PDT)
+Subject: Re: [PATCH v3] ravb: Fixed to be able to unload modules
+To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+References: <20200820094307.3977-1-ashiduka@fujitsu.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Organization: Brain-dead Software
+Message-ID: <47080d76-8fdd-9222-34c1-3d174ea6bef8@gmail.com>
+Date:   Thu, 20 Aug 2020 13:03:07 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200820090326.3f400a15@coco.lan>
+In-Reply-To: <20200820094307.3977-1-ashiduka@fujitsu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mauro,
+On 20.08.2020 12:43, Yuusuke Ashizuka wrote:
 
-On Thu, Aug 20, 2020 at 09:03:26AM +0200, Mauro Carvalho Chehab wrote:
-> Em Wed, 19 Aug 2020 12:52:06 -0700 John Stultz escreveu:
-> > On Wed, Aug 19, 2020 at 8:31 AM Laurent Pinchart wrote:
-> > > On Wed, Aug 19, 2020 at 05:21:20PM +0200, Sam Ravnborg wrote:  
-> > > > On Wed, Aug 19, 2020 at 01:45:28PM +0200, Mauro Carvalho Chehab wrote:  
-> > > > > This patch series port the out-of-tree driver for Hikey 970 (which
-> > > > > should also support Hikey 960) from the official 96boards tree:
-> > > > >
-> > > > >    https://github.com/96boards-hikey/linux/tree/hikey970-v4.9
-> > > > >
-> > > > > Based on his history, this driver seems to be originally written
-> > > > > for Kernel 4.4, and was later ported to Kernel 4.9. The original
-> > > > > driver used to depend on ION (from Kernel 4.4) and had its own
-> > > > > implementation for FB dev API.
-> > > > >
-> > > > > As I need to preserve the original history (with has patches from
-> > > > > both HiSilicon and from Linaro),  I'm starting from the original
-> > > > > patch applied there. The remaining patches are incremental,
-> > > > > and port this driver to work with upstream Kernel.
-> > > > >  
-> > ...
-> > > > > - Due to legal reasons, I need to preserve the authorship of
-> > > > >   each one responsbile for each patch. So, I need to start from
-> > > > >   the original patch from Kernel 4.4;  
-> > ...
-> > > > I do acknowledge you need to preserve history and all -
-> > > > but this patchset is not easy to review.  
-> > >
-> > > Why do we need to preserve history ? Adding relevant Signed-off-by and
-> > > Co-developed-by should be enough, shouldn't it ? Having a public branch
-> > > that contains the history is useful if anyone is interested, but I don't
-> > > think it's required in mainline.  
-> > 
-> > Yea. I concur with Laurent here. I'm not sure what legal reasoning you
-> > have on this but preserving the "absolute" history here is actively
-> > detrimental for review and understanding of the patch set.
-> > 
-> > Preserving Authorship, Signed-off-by lines and adding Co-developed-by
-> > lines should be sufficient to provide both atribution credit and DCO
-> > history.
+> When this driver is built as a module, I cannot rmmod it after insmoding
+> it.
+> This is because that this driver calls ravb_mdio_init() at the time of
+
+    "That" not needed here at all; perhaps can be fixed while applying...
+
+> probe, and module->refcnt is incremented by alloc_mdio_bitbang() called
+> after that.
+> Therefore, even if ifup is not performed, the driver is in use and rmmod
+> cannot be performed.
 > 
-> I'm not convinced that, from legal standpoint, folding things would
-> be enough. See, there are at least 3 legal systems involved here
-> among the different patch authors:
+> $ lsmod
+> Module                  Size  Used by
+> ravb                   40960  1
+> $ rmmod ravb
+> rmmod: ERROR: Module ravb is in use
 > 
-> 	- civil law;
-> 	- common law;
-> 	- customary law + common law.
+> Call ravb_mdio_init() at open and free_mdio_bitbang() at close, thereby
+> rmmod is possible in the ifdown state.
 > 
-> Merging stuff altogether from different law systems can be problematic,
-> and trying to discuss this with experienced IP property lawyers will
-> for sure take a lot of time and efforts. I also bet that different
-> lawyers will have different opinions, because laws are subject to 
-> interpretation. With that matter I'm not aware of any court rules 
-> with regards to folded patches. So, it sounds to me that folding 
-> patches is something that has yet to be proofed in courts around
-> the globe.
-> 
-> At least for US legal system, it sounds that the Country of
-> origin of a patch is relevant, as they have a concept of
-> "national technology" that can be subject to export regulations.
-> 
-> From my side, I really prefer to play safe and stay out of any such
-> legal discussions.
+> Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
+> Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
+> Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+[...]
 
-Let's be serious for a moment. If you think there are legal issues in
-taking GPL-v2.0-only patches and squashing them while retaining
-authorship information through tags, the Linux kernel if *full* of that.
-You also routinely modify patches that you commit to the media subsystem
-to fix "small issues".
-
-The country of origin argument makes no sense either, the kernel code
-base if full of code coming from pretty much all country on the planet.
-
-Keeping the patches separate make this hard to review. Please squash
-them.
-
--- 
-Regards,
-
-Laurent Pinchart
+MBR, Sergei
