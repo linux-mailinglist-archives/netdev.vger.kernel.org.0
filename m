@@ -2,203 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 099C324ABD3
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 02:14:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EFA824AC77
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 02:58:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728679AbgHTANi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 19 Aug 2020 20:13:38 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:40084 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728393AbgHTANc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 19 Aug 2020 20:13:32 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07K09x8H003971
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 17:13:31 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=9y+etqO9sBJKXPOq7icEU7PZmKHO/+X7lwULsNZesGQ=;
- b=Ak6grs+1XSPF0eYS7DONK4jG6Fk7yQ6C+gSRtAm1hTnYuCNJidjhU40zdf4FmDIFOe3h
- +/RVAEMiYAN7+XB305vOoKYlzc15atY6sRhTwP+ok/pxFtud/16hv+3gQFTfy1nAkVx4
- 3VUCT5/x3hXupmiEfU/BhvOKEQMLuESoCyY= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3318g0hpn1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 19 Aug 2020 17:13:31 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 19 Aug 2020 17:13:29 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 028B637053B6; Wed, 19 Aug 2020 17:13:25 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Yonghong Song <yhs@fb.com>
-Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 3/3] bpftool: implement link_query for bpf iterators
-Date:   Wed, 19 Aug 2020 17:13:25 -0700
-Message-ID: <20200820001325.3741202-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200820001323.3740798-1-yhs@fb.com>
-References: <20200820001323.3740798-1-yhs@fb.com>
+        id S1726751AbgHTA6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 19 Aug 2020 20:58:46 -0400
+Received: from mga03.intel.com ([134.134.136.65]:58520 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726741AbgHTA6p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 19 Aug 2020 20:58:45 -0400
+IronPort-SDR: loICRunhvDHatnWe/lP5VT/PQ9yVn7SNRl7X7uLEYdabi1s0V1Im/UWl7NOzvZJWlM/YhnsMP4
+ b5wPKhVqTTLQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9718"; a="155191456"
+X-IronPort-AV: E=Sophos;i="5.76,332,1592895600"; 
+   d="scan'208";a="155191456"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2020 17:58:45 -0700
+IronPort-SDR: wClf4+WLudkLZJxrUjmzhUul2ouBVI+8BLyu9fgdCzBwnDIcJTi2tuO8lfmWEA4JZNbwah/fae
+ bOVWh5wPo6Og==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,332,1592895600"; 
+   d="scan'208";a="497429600"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.254.62.21]) ([10.254.62.21])
+  by fmsmga006.fm.intel.com with ESMTP; 19 Aug 2020 17:58:44 -0700
+Subject: Re: [net-next v3 1/4] devlink: check flash_update parameter support
+ in net core
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, kuba@kernel.org,
+        corbet@lwn.net, michael.chan@broadcom.com, luobin9@huawei.com,
+        saeedm@mellanox.com, leon@kernel.org, idosch@mellanox.com,
+        danieller@mellanox.com
+References: <20200819002821.2657515-1-jacob.e.keller@intel.com>
+ <20200819002821.2657515-2-jacob.e.keller@intel.com>
+ <20200819.163610.793690736242734635.davem@davemloft.net>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <2eb17b37-3bb2-12ac-2ea5-956537e45e45@intel.com>
+Date:   Wed, 19 Aug 2020 17:58:43 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.1.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-19_13:2020-08-19,2020-08-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 spamscore=0
- lowpriorityscore=0 clxscore=1015 bulkscore=0 priorityscore=1501
- mlxlogscore=999 suspectscore=8 mlxscore=0 adultscore=0 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008190193
-X-FB-Internal: deliver
+In-Reply-To: <20200819.163610.793690736242734635.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The link query for bpf iterators is implemented.
-Besides being shown to the user what bpf iterator
-the link represents, the target_name is also used
-to filter out what additional information should be
-printed out, e.g., whether map_id should be shown or not.
-The following is an example of bpf_iter link dump,
-plain output or pretty output.
 
-  $ bpftool link show
-  11: iter  prog 59  target_name task
-          pids test_progs(1749)
-  34: iter  prog 173  target_name bpf_map_elem  map_id 127
-          pids test_progs_1(1753)
-  $ bpftool -p link show
-  [{
-          "id": 11,
-          "type": "iter",
-          "prog_id": 59,
-          "target_name": "task",
-          "pids": [{
-                  "pid": 1749,
-                  "comm": "test_progs"
-              }
-          ]
-      },{
-          "id": 34,
-          "type": "iter",
-          "prog_id": 173,
-          "target_name": "bpf_map_elem",
-          "map_id": 127,
-          "pids": [{
-                  "pid": 1753,
-                  "comm": "test_progs_1"
-              }
-          ]
-      }
-  ]
 
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- tools/bpf/bpftool/link.c | 44 +++++++++++++++++++++++++++++++++++++---
- 1 file changed, 41 insertions(+), 3 deletions(-)
+On 8/19/2020 4:36 PM, David Miller wrote:
+> From: Jacob Keller <jacob.e.keller@intel.com>
+> Date: Tue, 18 Aug 2020 17:28:15 -0700
+> 
+>> @@ -991,6 +993,12 @@ enum devlink_trap_group_generic_id {
+>>  	}
+>>  
+>>  struct devlink_ops {
+>> +	/**
+>> +	 * @supported_flash_update_params:
+>> +	 * mask of parameters supported by the driver's .flash_update
+>> +	 * implemementation.
+>> +	 */
+>> +	u32 supported_flash_update_params;
+>>  	int (*reload_down)(struct devlink *devlink, bool netns_change,
+>>  			   struct netlink_ext_ack *extack);
+>>  	int (*reload_up)(struct devlink *devlink,
+> 
+> Jakub asked if this gave W=1 warnings.  Then you responded that you didn't
+> see any warnings with allmodconfig nor allyesconfig, but that isn't the
+> question Jakub asked.
+> 
 
-diff --git a/tools/bpf/bpftool/link.c b/tools/bpf/bpftool/link.c
-index a89f09e3c848..e77e1525d20a 100644
---- a/tools/bpf/bpftool/link.c
-+++ b/tools/bpf/bpftool/link.c
-@@ -77,6 +77,22 @@ static void show_link_attach_type_json(__u32 attach_ty=
-pe, json_writer_t *wtr)
- 		jsonw_uint_field(wtr, "attach_type", attach_type);
- }
-=20
-+static bool is_iter_map_target(const char *target_name)
-+{
-+	return strcmp(target_name, "bpf_map_elem") =3D=3D 0 ||
-+	       strcmp(target_name, "bpf_sk_storage_map") =3D=3D 0;
-+}
-+
-+static void show_iter_json(struct bpf_link_info *info, json_writer_t *wt=
-r)
-+{
-+	const char *target_name =3D u64_to_ptr(info->iter.target_name);
-+
-+	jsonw_string_field(wtr, "target_name", target_name);
-+
-+	if (is_iter_map_target(target_name))
-+		jsonw_uint_field(wtr, "map_id", info->iter.map.map_id);
-+}
-+
- static int get_prog_info(int prog_id, struct bpf_prog_info *info)
- {
- 	__u32 len =3D sizeof(*info);
-@@ -128,6 +144,9 @@ static int show_link_close_json(int fd, struct bpf_li=
-nk_info *info)
- 				   info->cgroup.cgroup_id);
- 		show_link_attach_type_json(info->cgroup.attach_type, json_wtr);
- 		break;
-+	case BPF_LINK_TYPE_ITER:
-+		show_iter_json(info, json_wtr);
-+		break;
- 	case BPF_LINK_TYPE_NETNS:
- 		jsonw_uint_field(json_wtr, "netns_ino",
- 				 info->netns.netns_ino);
-@@ -175,6 +194,16 @@ static void show_link_attach_type_plain(__u32 attach=
-_type)
- 		printf("attach_type %u  ", attach_type);
- }
-=20
-+static void show_iter_plain(struct bpf_link_info *info)
-+{
-+	const char *target_name =3D u64_to_ptr(info->iter.target_name);
-+
-+	printf("target_name %s  ", target_name);
-+
-+	if (is_iter_map_target(target_name))
-+		printf("map_id %u  ", info->iter.map.map_id);
-+}
-+
- static int show_link_close_plain(int fd, struct bpf_link_info *info)
- {
- 	struct bpf_prog_info prog_info;
-@@ -204,6 +233,9 @@ static int show_link_close_plain(int fd, struct bpf_l=
-ink_info *info)
- 		printf("\n\tcgroup_id %zu  ", (size_t)info->cgroup.cgroup_id);
- 		show_link_attach_type_plain(info->cgroup.attach_type);
- 		break;
-+	case BPF_LINK_TYPE_ITER:
-+		show_iter_plain(info);
-+		break;
- 	case BPF_LINK_TYPE_NETNS:
- 		printf("\n\tnetns_ino %u  ", info->netns.netns_ino);
- 		show_link_attach_type_plain(info->netns.attach_type);
-@@ -231,7 +263,7 @@ static int do_show_link(int fd)
- {
- 	struct bpf_link_info info;
- 	__u32 len =3D sizeof(info);
--	char raw_tp_name[256];
-+	char buf[256];
- 	int err;
-=20
- 	memset(&info, 0, sizeof(info));
-@@ -245,8 +277,14 @@ static int do_show_link(int fd)
- 	}
- 	if (info.type =3D=3D BPF_LINK_TYPE_RAW_TRACEPOINT &&
- 	    !info.raw_tracepoint.tp_name) {
--		info.raw_tracepoint.tp_name =3D (unsigned long)&raw_tp_name;
--		info.raw_tracepoint.tp_name_len =3D sizeof(raw_tp_name);
-+		info.raw_tracepoint.tp_name =3D (unsigned long)&buf;
-+		info.raw_tracepoint.tp_name_len =3D sizeof(buf);
-+		goto again;
-+	}
-+	if (info.type =3D=3D BPF_LINK_TYPE_ITER &&
-+	    !info.iter.target_name) {
-+		info.iter.target_name =3D (unsigned long)&buf;
-+		info.iter.target_name_len =3D sizeof(buf);
- 		goto again;
- 	}
-=20
---=20
-2.24.1
+Ah, yes I should have been more specific:
 
+> Are you building with W=1 explicitly added to the build?
+>
+
+I did
+
+$ make allyesconfig
+$ make W=1 &>allyes.txt
+$ cat allyes.txt | grep warning | grep devlink
+drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c:917: warning: Function
+parameter or member 'devlink' not described in 'hinic_init_hwdev'
+
+
+
+and
+$ make allmodconfig
+$ make W=1 *>allmod.txt
+$ cat allyes.txt | grep warning | grep devlink
+drivers/net/ethernet/huawei/hinic/hinic_hw_dev.c:917: warning: Function
+parameter or member 'devlink' not described in 'hinic_init_hwdev'
+I also looked at those manually, there's about 15k warnings with W=1 on
+allyesconfig, but none of them appear to be related to the changes in
+this patch.
+
+> The issue is this kerneldoc might not be formatted correctly, and such
+> warnings won't be presented without doing a W=1 build.
+> 
+> Thank you.
+> 
+
+Sure.
+
+I also manually ran:
+
+$ ./scripts/kernel-doc -v -none include/uapi/linux/devlink.h
+include/uapi/linux/devlink.h:232: info: Scanning doc for enum
+devlink_trap_action
+include/uapi/linux/devlink.h:246: info: Scanning doc for enum
+devlink_trap_type
+
+Hope this helps clarify.
+
+Thanks,
+Jake
