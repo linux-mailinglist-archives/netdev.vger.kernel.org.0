@@ -2,144 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A197F24B088
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 09:54:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A75B124B099
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 09:56:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727031AbgHTHyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 03:54:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37076 "EHLO mail.kernel.org"
+        id S1726962AbgHTH4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 03:56:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38296 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727024AbgHTHyK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Aug 2020 03:54:10 -0400
+        id S1725859AbgHTH4L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 03:56:11 -0400
 Received: from localhost (unknown [151.48.139.80])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D30A72076E;
-        Thu, 20 Aug 2020 07:54:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A4AD2208B3;
+        Thu, 20 Aug 2020 07:56:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597910048;
-        bh=cIdaJgtUjYwyU2nbZYKhsp8LoUVCX6b/qB63vi6+X6E=;
+        s=default; t=1597910170;
+        bh=uvOux36cqaVQxjtti8BDUxDmxa6cNM28nB608OciMus=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bD2ecsFFGHqF3Hw9enc8MjGtnqsaxDyEI98IHmDYOWY3Psi3D6uPz6oEbwklT84/u
-         7ONmqoXu3rQLZ5+4YmK86CXwsL/6SKYNrQ9SuGskdrqFB1tm6QT3enKtVAcP0JfIbO
-         cQ59GTYEpP2UWC4Q+WbSoZ4xrg/ESsZn4kii9RuI=
-Date:   Thu, 20 Aug 2020 09:54:03 +0200
+        b=vtMLrYXHk443C3nWtBdPzxGI8G0tdjG99txXDFn09pxMwpsrNqLgkfBJmDaOSjqU0
+         t4Rb1K2fP8bC3Bu8CdZ5XQ/Nzj7ewWUbH12lBrLQb1/UEbUxeDDlO1EiotUlgf+Y1G
+         WsNl4OrGSXnSUTudKTSWl5Ug1Df/AaM0fflMrvFM=
+Date:   Thu, 20 Aug 2020 09:56:05 +0200
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        brouer@redhat.com, echaudro@redhat.com, sameehj@amazon.com
-Subject: Re: [PATCH net-next 6/6] net: mvneta: enable jumbo frames for XDP
-Message-ID: <20200820075403.GB2282@lore-desk>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com, echaudro@redhat.com,
+        sameehj@amazon.com, kuba@kernel.org
+Subject: Re: [PATCH net-next 4/6] xdp: add multi-buff support to
+ xdp_return_{buff/frame}
+Message-ID: <20200820075605.GC2282@lore-desk>
 References: <cover.1597842004.git.lorenzo@kernel.org>
- <3e0d98fafaf955868205272354e36f0eccc80430.1597842004.git.lorenzo@kernel.org>
- <20200819122328.0dab6a53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200819202223.GA179529@lore-desk>
- <20200819141428.24e5183a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <5f3da06d5de6c_1b0e2ab87245e5c01b@john-XPS-13-9370.notmuch>
+ <7ff49193140f3cb5341732612c72bcc2c5fb3372.1597842004.git.lorenzo@kernel.org>
+ <20200820095222.711ccfa7@carbon>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="DBIVS5p969aUjpLe"
+        protocol="application/pgp-signature"; boundary="7gGkHNMELEOhSGF6"
 Content-Disposition: inline
-In-Reply-To: <5f3da06d5de6c_1b0e2ab87245e5c01b@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200820095222.711ccfa7@carbon>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---DBIVS5p969aUjpLe
+--7gGkHNMELEOhSGF6
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-> Jakub Kicinski wrote:
-> > On Wed, 19 Aug 2020 22:22:23 +0200 Lorenzo Bianconi wrote:
-> > > > On Wed, 19 Aug 2020 15:13:51 +0200 Lorenzo Bianconi wrote: =20
-> > > > > Enable the capability to receive jumbo frames even if the interfa=
-ce is
-> > > > > running in XDP mode
-> > > > >=20
-> > > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org> =20
-> > > >=20
-> > > > Hm, already? Is all the infra in place? Or does it not imply
-> > > > multi-buffer.
-> > >=20
-> > > with this series mvneta supports xdp multi-buff on both rx and tx sid=
-es (XDP_TX
-> > > and ndo_xpd_xmit()) so we can remove MTU limitation.
-> >=20
-> > Is there an API for programs to access the multi-buf frames?
+> On Wed, 19 Aug 2020 15:13:49 +0200
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 >=20
-> Hi Lorenzo,
+> > diff --git a/net/core/xdp.c b/net/core/xdp.c
+> > index 884f140fc3be..006b24b5d276 100644
+> > --- a/net/core/xdp.c
+> > +++ b/net/core/xdp.c
+> > @@ -370,19 +370,55 @@ static void __xdp_return(void *data, struct xdp_m=
+em_info *mem, bool napi_direct)
+> > =20
+> >  void xdp_return_frame(struct xdp_frame *xdpf)
+> >  {
+> > +	struct skb_shared_info *sinfo;
+> > +	int i;
+> > +
+> >  	__xdp_return(xdpf->data, &xdpf->mem, false);
+>=20
+> There is a use-after-free race here.  The xdpf->data contains the
+> shared_info (xdp_get_shared_info_from_frame(xdpf)). Thus you cannot
+> free/return the page and use this data area below.
 
-Hi Jakub and John,
-
->=20
-> This is not enough to support multi-buffer in my opinion. I have the
-> same comment as Jakub. We need an API to pull in the multiple
-> buffers otherwise we break the ability to parse the packets and that
-> is a hard requirement to me. I don't want to lose visibility to get
-> jumbo frames.
-
-I have not been so clear in the commit message, sorry for that.
-This series aims to finalize xdp multi-buff support for mvneta driver only.
-Our plan is to work on the helpers/metadata in subsequent series since
-driver support is quite orthogonal. If you think we need the helpers
-in place before removing the mtu constraint, we could just drop last
-patch (6/6) and apply patches from 1/6 to 5/6 since they are preliminary
-to remove the mtu constraint. Do you agree?
-
->=20
-> At minimum we need a bpf_xdp_pull_data() to adjust pointer. In the
-> skmsg case we use this,
->=20
->   bpf_msg_pull_data(u32 start, u32 end, u64 flags)
->=20
-> Where start is the offset into the packet and end is the last byte we
-> want to adjust start/end pointers to. This way we can walk pages if
-> we want and avoid having to linearize the data unless the user actual
-> asks us for a block that crosses a page range. Smart users then never
-> do a start/end that crosses a page boundary if possible. I think the
-> same would apply here.
->=20
-> XDP by default gives you the first page start/end to use freely. If
-> you need to parse deeper into the payload then you call bpf_msg_pull_data
-> with the byte offsets needed.
-
-Our first proposal is described here [0][1]. In particular, we are assuming=
- the
-eBPF layer can access just the first fragment in the non-linear XDP buff and
-we will provide some non-linear xdp metadata (e.g. # of segments in the xdp=
-_buffer
-or buffer total length) to the eBPF program attached to the interface.
-Anyway IMHO this mvneta series is not strictly related to this approach.
+right, thx for pointing this out. I will fix it in v2.
 
 Regards,
 Lorenzo
 
-[0] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-m=
-ulti-buffer01-design.org
-[1] http://people.redhat.com/lbiancon/conference/NetDevConf2020-0x14/add-xd=
-p-on-driver.html (XDP multi-buffers section)
-
 >=20
-> Also we would want performance numbers to see how good/bad this is
-> compared to the base case.
+> > +	if (!xdpf->mb)
+> > +		return;
+> > +
+> > +	sinfo =3D xdp_get_shared_info_from_frame(xdpf);
+> > +	for (i =3D 0; i < sinfo->nr_frags; i++) {
+> > +		struct page *page =3D skb_frag_page(&sinfo->frags[i]);
+> > +
+> > +		__xdp_return(page_address(page), &xdpf->mem, false);
+> > +	}
+> >  }
+> >  EXPORT_SYMBOL_GPL(xdp_return_frame);
+> > =20
+> >  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf)
+> >  {
+> > +	struct skb_shared_info *sinfo;
+> > +	int i;
+> > +
+> >  	__xdp_return(xdpf->data, &xdpf->mem, true);
 >=20
-> Thanks,
-> John
+> Same issue.
+>=20
+> > +	if (!xdpf->mb)
+> > +		return;
+> > +
+> > +	sinfo =3D xdp_get_shared_info_from_frame(xdpf);
+> > +	for (i =3D 0; i < sinfo->nr_frags; i++) {
+> > +		struct page *page =3D skb_frag_page(&sinfo->frags[i]);
+> > +
+> > +		__xdp_return(page_address(page), &xdpf->mem, true);
+> > +	}
+> >  }
+> >  EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
+> > =20
+> >  void xdp_return_buff(struct xdp_buff *xdp)
+> >  {
+> > +	struct skb_shared_info *sinfo;
+> > +	int i;
+> > +
+> >  	__xdp_return(xdp->data, &xdp->rxq->mem, true);
+>=20
+> Same issue.
+>=20
+> > +	if (!xdp->mb)
+> > +		return;
+> > +
+> > +	sinfo =3D xdp_get_shared_info_from_buff(xdp);
+> > +	for (i =3D 0; i < sinfo->nr_frags; i++) {
+> > +		struct page *page =3D skb_frag_page(&sinfo->frags[i]);
+> > +
+> > +		__xdp_return(page_address(page), &xdp->rxq->mem, true);
+> > +	}
+> >  }
+>=20
+>=20
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
 
---DBIVS5p969aUjpLe
+--7gGkHNMELEOhSGF6
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXz4sGQAKCRA6cBh0uS2t
-rAEhAP9eSNft43n7muFkfpERqALkQTKHSjh0mnbMNGC4xDwTlgD/aenDM5dFWyOv
-H9An1MCb3XwD69ZYaF/GGWjnnN3Ungg=
-=+HA3
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXz4skgAKCRA6cBh0uS2t
+rF9wAQCLa2C8/FOuexmBRKh40iDZ7w7W3tK/WQFy3TzgQcZI/wD+K8plPDEmmzpP
+CfYQTRHicawMyB5bHRXZ3FNondqQuwI=
+=VQ6H
 -----END PGP SIGNATURE-----
 
---DBIVS5p969aUjpLe--
+--7gGkHNMELEOhSGF6--
