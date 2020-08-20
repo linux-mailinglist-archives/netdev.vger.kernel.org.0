@@ -2,87 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 080CD24AF56
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 08:39:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DE0424AF59
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 08:40:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726325AbgHTGjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 02:39:14 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:42349 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725778AbgHTGjO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 02:39:14 -0400
-Received: by mail-oi1-f194.google.com with SMTP id j7so1067084oij.9;
-        Wed, 19 Aug 2020 23:39:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e8/T7jMrXbc4A5I5iQeln6XFEc6ytosFSjeoaKLVkDE=;
-        b=QaCO1vhlwOXCatWqQPaWs+3lbT72lbuaLXh69fcbvJky42OR43yawaVAjFdvIbribH
-         FnMtxhJzSl0NpZ5qZVsPaNT0lXI1xCD/+L7UQiTFCOrmqecgg1M48tygHARGIrV0O5Ou
-         Qjx1vFVNlsdSmnRS/nMIJZXDuyefuBYe1YqFmzXD25hoY8qyh4BqTsFzeaMvz8o8XEkU
-         /PvPPIYFC04Y7JH07a2W/kR2jVlkhV94CgE867RCzfSYksYxzK6MCKqxVncVJELWB8YV
-         U8uCZDWWGSBUbOZ8gjedN/7NtZARJbykx6fkxBtbQOn9ntSBIKYT2TQ69pglTH9MSeU4
-         Kh2g==
-X-Gm-Message-State: AOAM530t2ZWRxbx77SbbgkI7uElHBoCtOp0lLl9TObLz0Y2aFeJlm5Ds
-        Z7uNvN29VHLrb5ieDxKQ8EKYZkr3mvzxYHfhuCE=
-X-Google-Smtp-Source: ABdhPJwCabawXvHO5zO2Gqt+jMN8cu0o45gfsmoQbx+UbhVOjYFGLv9Oj83JCeRoei4AoD/4uzXJLtFBzWuiLi9v7wY=
-X-Received: by 2002:aca:b742:: with SMTP id h63mr938378oif.148.1597905553079;
- Wed, 19 Aug 2020 23:39:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200819124539.20239-1-geert+renesas@glider.be> <20200819.130529.1551760851592543597.davem@davemloft.net>
-In-Reply-To: <20200819.130529.1551760851592543597.davem@davemloft.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 20 Aug 2020 08:39:01 +0200
-Message-ID: <CAMuHMdWV76Eg_RRzcuhCVtyWsLOx-FEVKg1bU-0b8zH69TVjYA@mail.gmail.com>
-Subject: Re: [PATCH v2] dt-bindings: net: renesas,ether: Improve schema validation
-To:     David Miller <davem@davemloft.net>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1726701AbgHTGkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 02:40:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60414 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725778AbgHTGkl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 02:40:41 -0400
+Received: from coco.lan (ip5f5ad5a3.dynamic.kabel-deutschland.de [95.90.213.163])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D847220786;
+        Thu, 20 Aug 2020 06:40:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597905640;
+        bh=smEfryQX4LpVGJzthIRWac0/v0EWxUcxXXFygmlh3ss=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uVpRlkTA4U4rKgGuZwZCNYKjnVf9jx9QyQlWzioyqxEFKFORZR+nmJ3A1W5F4jif/
+         BJYtLKuGsdnPxO5hTUeXwINInbRp8ypXBnFZxS/ysUVhzONji7yUZ2lF5OFSGgTyUY
+         312IwaWgMhztAUA9bEhtGh6dl9ki8qovoCmm2Kpk=
+Date:   Thu, 20 Aug 2020 08:40:30 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Sam Ravnborg <sam@ravnborg.org>
+Cc:     John Stultz <john.stultz@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linuxarm@huawei.com, mauro.chehab@huawei.com,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Bogdan Togorean <bogdan.togorean@analog.com>,
+        Liwei Cai <cailiwei@hisilicon.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Rob Herring <robh+dt@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Xinliang Liu <xinliang.liu@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Wanchun Zheng <zhengwanchun@hisilicon.com>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        Xiubin Zhang <zhangxiubin1@huawei.com>,
+        linux-media <linux-media@vger.kernel.org>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        <devicetree@vger.kernel.org>, Rob Clark <robdclark@chromium.org>,
+        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Liuyao An <anliuyao@huawei.com>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>, Wei Xu <xuwei5@hisilicon.com>,
+        Rongrong Zou <zourongrong@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Network Development <netdev@vger.kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Chen Feng <puck.chen@hisilicon.com>
+Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
+Message-ID: <20200820084030.3663de78@coco.lan>
+In-Reply-To: <20200819212551.GA114762@ravnborg.org>
+References: <cover.1597833138.git.mchehab+huawei@kernel.org>
+        <CALAqxLVRsPKv-xmxQfBFaBa9XOmSfrFj3w9_zyfzNJk8+Kfjug@mail.gmail.com>
+        <20200819212551.GA114762@ravnborg.org>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Em Wed, 19 Aug 2020 23:25:51 +0200
+Sam Ravnborg <sam@ravnborg.org> escreveu:
 
-On Wed, Aug 19, 2020 at 10:05 PM David Miller <davem@davemloft.net> wrote:
-> From: Geert Uytterhoeven <geert+renesas@glider.be>
-> Date: Wed, 19 Aug 2020 14:45:39 +0200
->
-> >   - Remove pinctrl consumer properties, as they are handled by core
-> >     dt-schema,
-> >   - Document missing properties,
-> >   - Document missing PHY child node,
-> >   - Add "additionalProperties: false".
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > Reviewed-by: Rob Herring <robh@kernel.org>
-> > ---
-> > v2:
-> >   - Add Reviewed-by.
->
-> Who will take this patch or should it go via my networking tree?
+> Hi John.
+> 
+> > > So, IMO, the best is to keep it on staging for a while, until those
+> > > remaining bugs gets solved.  
+> > 
+> > I'm not sure I see all of these as compelling for pushing it in via
+> > staging. And I suspect in the process of submitting the patches for
+> > review folks may find the cause of some of the problems you list here.  
+> 
+> There is a tendency to forget drivers in staging, and with the almost
+> constant refactoring that happens in the drm drivers we would end up
+> fixing this driver when a bot trigger an error.
+> So IMO we need very good reasons to go in via staging.
 
-Given Rob provided his tag, I think it should go through your networking
-tree.
+My plan is to have this driver upstream for 5.10, and getting it
+out of staging by Kernel 5.11. So, I doubt that the DRM kAPIs would
+change a lot during those 2 Kernel cycles.
 
-Thank you!
+In any case, I'm also fine to have a final patch at the end of this
+series moving it out of staging. The only thing that, IMHO, prevents
+it to be out of staging is the LDI underflow. Right now, if no input
+events reach the driver, DPMS will put the monitor to suspend, and
+it never returns back from life. I bet that, once we discover the
+root cause, the fix would be just a couple of lines, but identifying
+where the problem is can take a while.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks,
+Mauro
