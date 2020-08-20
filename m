@@ -2,99 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03F3724B9C0
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 13:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F39E324B919
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 13:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730554AbgHTLsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 07:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
+        id S1729648AbgHTL3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 07:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730433AbgHTKD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 06:03:28 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 514F6C061383;
-        Thu, 20 Aug 2020 03:03:19 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id t6so1404834ljk.9;
-        Thu, 20 Aug 2020 03:03:19 -0700 (PDT)
+        with ESMTP id S1729997AbgHTKFu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 06:05:50 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D467AC061387
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 03:05:48 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id a26so1829522ejc.2
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 03:05:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=y8UqIuhfzyLzFYWb3BCxHsLpMfuYu0DrhXjB/bVTesk=;
-        b=i1ry6sXZ1liUrPQCcLBFG6+Y3xSM7sDGiX/tqWVg0OgC2aWd7lvDZ03cDz7QCIehGX
-         wcu8FCxGp4n1FmsGkFH04TOE3WXypnzgDk9i0FLueQkrjgEg3uMDJ2xRxyXw7JSPlfLu
-         O2ZeoFVlwLrS1h+79CkH/eoUAP0rhyt7qpTqYynIQsCtaMs9b7iVoz8dIOcA+xahwVk5
-         bXUl6hnbcZf0GXjw5MBai1fV+6m3tQDnkHJz4qYIOOvgBsP4a2Z2o1TFaojJhjKJta31
-         64EdYSeNig8VbhA7xtoCoP6ZTgnssymjG0D5CAWHwc5dYmTtgd5g0zc7RNdM71YfZ4Yz
-         tbPA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Pbe+IJf4ZBxt6yUxRRrQR1l3UQTW2eLx6AT4PE1gQKg=;
+        b=foA95pAMne0k+ZduK2+JsEaA0Kd3Xk6AJeP12ZUtsQO8oCEqpY6AC2jWiQeJjjQrKA
+         n//Z/S/hwU9sUSwrh2bpFx9EjO5w8H5vkm5cyHDHvlSF0L7E3fVBHC7P2Ym9zd8UwQZN
+         UTTFBKoIkLT88Lc8FZLz7dV6a5Tegh0nandB0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=y8UqIuhfzyLzFYWb3BCxHsLpMfuYu0DrhXjB/bVTesk=;
-        b=aVSOZ9c66KRjZCf0pg/nnzh9uS8nDgl2CFzQ96eYTQ8lhas1BqBpjmlfquWaja3q2V
-         oSGtHDLeTqr+DdI+xvDbUFh8zF1Kr41VjrqMv9fZPCWLIUY0hF74t/PzXHYCtkGhzD6M
-         TCFPwMBK5voInvRdYm1JEVmCX1ejvkWdxcF3mPdoVbHXFz+fy9y6imm+/9Ue074eFMtw
-         MMecL4fY/fErZkdFLkAIZVUs3d/vp3BsG6WfcxDAbXepuWK+5S78q2sqrp6ZkuFaHnPe
-         AitpLKx8a4M6ZmX/RsXoLq5R7UcX/8wDSoguUxL89PmhZIZFbj0EozKpWaxUHrJijU6O
-         QWeg==
-X-Gm-Message-State: AOAM532K0EsTU068PyxPqpXIHF7SSoUCMLKpCez51KWNi3b8/SkLwyw5
-        H7AW2Y30C7E33kvoesZuaZYQ0igEFM3O5Nmb
-X-Google-Smtp-Source: ABdhPJwNaTCEt/MjEP6qgrQw7SnK+G6UZ7jE/2rQEW2qcgNt2puQBOYVbW0xvgZ4GWcBWdhHHihDhQ==
-X-Received: by 2002:a2e:9b08:: with SMTP id u8mr1182940lji.208.1597917797971;
-        Thu, 20 Aug 2020 03:03:17 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:42ab:a165:4cb2:5f04:a1e8:63b? ([2a00:1fa0:42ab:a165:4cb2:5f04:a1e8:63b])
-        by smtp.gmail.com with ESMTPSA id d6sm351128lji.110.2020.08.20.03.03.17
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Pbe+IJf4ZBxt6yUxRRrQR1l3UQTW2eLx6AT4PE1gQKg=;
+        b=n+p+jbjSzV1I9l9VkECSVlDdAZAVGvVGV2D9Z9YoaqbwHla6lHaNyZEqj2lbgV9INg
+         qQxe5C46QybtYV/jgSTuK5HpXv5933toS+9D5BQbYmadQpgMSYCcr51wRYyR/75MJaG+
+         ojeril3Gl/PXJHta0UaAlXFsUUt/2btnj82IevcLwEzJjMJWmIqbsQ7qkRpU3e/akObx
+         4KtTNCTikCRoKZPnvtkY/vEVrpwpiWctV0AMy5bf1OgD7IT7Q1QxP3uFa4q0Z0EHjykt
+         K7CL9bLJCZfXLiGTOhPEDr0L552/rRVQIrx8MeZ5usEfy+nb6VXEKz3KgQSotq4ETDU6
+         v4RQ==
+X-Gm-Message-State: AOAM530Jy/3l8Mcov7WDvfEfYX2zffSIvcB0ymZEG5pqPryFLS3LH35b
+        7YvQJ+9/FTfaW4u3bKXq17muDga7CUbodcET
+X-Google-Smtp-Source: ABdhPJzbhvc8dc2iEpmVOIM4PpkeHPA6/6A5G7pOGHkoWTpgbul2v6nYOUokfdi7ygqQ8kyv78pk5Q==
+X-Received: by 2002:a17:907:20e6:: with SMTP id rh6mr2398623ejb.301.1597917947111;
+        Thu, 20 Aug 2020 03:05:47 -0700 (PDT)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
+        by smtp.gmail.com with ESMTPSA id f21sm1015600edv.66.2020.08.20.03.05.45
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Aug 2020 03:03:17 -0700 (PDT)
-Subject: Re: [PATCH v3] ravb: Fixed to be able to unload modules
-To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-References: <20200820094307.3977-1-ashiduka@fujitsu.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Organization: Brain-dead Software
-Message-ID: <47080d76-8fdd-9222-34c1-3d174ea6bef8@gmail.com>
-Date:   Thu, 20 Aug 2020 13:03:07 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        Thu, 20 Aug 2020 03:05:46 -0700 (PDT)
+Received: by mail-wr1-f44.google.com with SMTP id r2so1435428wrs.8
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 03:05:45 -0700 (PDT)
+X-Received: by 2002:a5d:6744:: with SMTP id l4mr2628495wrw.105.1597917944145;
+ Thu, 20 Aug 2020 03:05:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200820094307.3977-1-ashiduka@fujitsu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200819065555.1802761-1-hch@lst.de> <20200819065555.1802761-6-hch@lst.de>
+ <CAAFQd5COLxjydDYrfx47ht8tj-aNPiaVnC+WyQA7nvpW4gs=ww@mail.gmail.com>
+ <20200819135454.GA17098@lst.de> <CAAFQd5BuXP7t3d-Rwft85j=KTyXq7y4s24mQxLr=VoY9krEGZw@mail.gmail.com>
+ <20200820044347.GA4533@lst.de> <20200820052004.GA5305@lst.de>
+In-Reply-To: <20200820052004.GA5305@lst.de>
+From:   Tomasz Figa <tfiga@chromium.org>
+Date:   Thu, 20 Aug 2020 12:05:29 +0200
+X-Gmail-Original-Message-ID: <CAAFQd5CFiA2WBaaPQ9ezvMjYZfNw37c42UEy9Pk7kJyCi1mLzQ@mail.gmail.com>
+Message-ID: <CAAFQd5CFiA2WBaaPQ9ezvMjYZfNw37c42UEy9Pk7kJyCi1mLzQ@mail.gmail.com>
+Subject: Re: [PATCH 05/28] media/v4l2: remove V4L2-FLAG-MEMORY-NON-CONSISTENT
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        nouveau@lists.freedesktop.org, linux-nvme@lists.infradead.org,
+        linux-mips@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        linux-mm@kvack.org,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        linux-scsi@vger.kernel.org,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Pawel Osciak <pawel@osciak.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <linux-arm-kernel@lists.infradead.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>, Joerg
+        Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.08.2020 12:43, Yuusuke Ashizuka wrote:
+On Thu, Aug 20, 2020 at 7:20 AM Christoph Hellwig <hch@lst.de> wrote:
+>
+> On Thu, Aug 20, 2020 at 06:43:47AM +0200, Christoph Hellwig wrote:
+> > On Wed, Aug 19, 2020 at 03:57:53PM +0200, Tomasz Figa wrote:
+> > > > > Could you explain what makes you think it's unused? It's a feature of
+> > > > > the UAPI generally supported by the videobuf2 framework and relied on
+> > > > > by Chromium OS to get any kind of reasonable performance when
+> > > > > accessing V4L2 buffers in the userspace.
+> > > >
+> > > > Because it doesn't do anything except on PARISC and non-coherent MIPS,
+> > > > so by definition it isn't used by any of these media drivers.
+> > >
+> > > It's still an UAPI feature, so we can't simply remove the flag, it
+> > > must stay there as a no-op, until the problem is resolved.
+> >
+> > Ok, I'll switch to just ignoring it for the next version.
+>
+> So I took a deeper look.  I don't really think it qualifies as a UAPI
+> in our traditional sense.  For one it only appeared in 5.9-rc1, so we
+> can trivially expedite the patch into 5.9-rc and not actually make it
+> show up in any released kernel version.  And even as of the current
+> Linus' tree the only user is a test driver.  So I really think the best
+> way to go ahead is to just revert it ASAP as the design wasn't thought
+> out at all.
 
-> When this driver is built as a module, I cannot rmmod it after insmoding
-> it.
-> This is because that this driver calls ravb_mdio_init() at the time of
+The UAPI and V4L2/videobuf2 changes are in good shape and the only
+wrong part is the use of DMA API, which was based on an earlier email
+guidance anyway, and a change to the synchronization part . I find
+conclusions like the above insulting for people who put many hours
+into designing and implementing the related functionality, given the
+complexity of the videobuf2 framework and how ill-defined the DMA API
+was, and would feel better if such could be avoided in future
+communication.
 
-    "That" not needed here at all; perhaps can be fixed while applying...
+That said, we can revert it on the basis of the implementation issues,
+but I feel like we wouldn't get anything by doing so, because as I
+said, the design is sane and most of the implementation is fine as
+well. Instead. I'd suggest simply removing the use of the attribute
+being removed, so that the feature stays no-op until the DMA API
+provides a way to implement it or we just migrate videobuf2 to stop
+using the DMA API as much as possible, like many drivers in the DRM
+subsystem did.
 
-> probe, and module->refcnt is incremented by alloc_mdio_bitbang() called
-> after that.
-> Therefore, even if ifup is not performed, the driver is in use and rmmod
-> cannot be performed.
-> 
-> $ lsmod
-> Module                  Size  Used by
-> ravb                   40960  1
-> $ rmmod ravb
-> rmmod: ERROR: Module ravb is in use
-> 
-> Call ravb_mdio_init() at open and free_mdio_bitbang() at close, thereby
-> rmmod is possible in the ifdown state.
-> 
-> Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
-> Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
-> Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
-[...]
-
-MBR, Sergei
+Best regards,
+Tomasz
