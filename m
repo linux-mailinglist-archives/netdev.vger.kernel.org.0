@@ -2,226 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BE1F24C5F9
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 21:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D49B24C622
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 21:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbgHTTAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 15:00:25 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:42994 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726664AbgHTTAY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 15:00:24 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07KJ0GM1023497
-        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 12:00:23 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=mnRS1F2/4wDAyRY/Q0BMRrCZ5j5BdoxTmEqDe3JRrM0=;
- b=nScexD/S54xYFrqdZjO8h2IGTBdgOjnWHyxxo4sC+/TarghjhwwzFjDa5dVhHDaaWD0U
- KCoQ0VNlCPloXk2zd7yumEKvBoSAjO3bz70Nqy9WN5B+I+uuWiJKhEiSKwtMHHhYOC98
- 3BM36y4TJBxNXogz00jyeCEy5UrPG1+HtpU= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3304ny00h9-16
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 12:00:23 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 20 Aug 2020 12:00:18 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id CED842945825; Thu, 20 Aug 2020 12:00:14 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>, <kernel-team@fb.com>,
-        Lawrence Brakmo <brakmo@fb.com>,
-        Neal Cardwell <ncardwell@google.com>, <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v5 bpf-next 01/12] tcp: Use a struct to represent a saved_syn
-Date:   Thu, 20 Aug 2020 12:00:14 -0700
-Message-ID: <20200820190014.2883694-1-kafai@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200820190008.2883500-1-kafai@fb.com>
-References: <20200820190008.2883500-1-kafai@fb.com>
+        id S1728005AbgHTTGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 15:06:13 -0400
+Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:57632 "EHLO
+        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726772AbgHTTGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 15:06:09 -0400
+X-Greylist: delayed 3036 seconds by postgrey-1.27 at vger.kernel.org; Thu, 20 Aug 2020 15:06:09 EDT
+Received: from pps.filterd (m0122332.ppops.net [127.0.0.1])
+        by mx0a-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07KID7hr012646;
+        Thu, 20 Aug 2020 19:13:30 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=2H2U0bUzfzUQI2EwcnLmDOGu7A2f0Nk6jcVUHu0KIR4=;
+ b=DCpO1J0qltxZE6OUrYuqD2jB8y5SuEslvWabCZf70G2oVyGZeMlv5qLAqH1wcxw0K4J/
+ VaEwr5mXYAgP7eXdJbbNHV4bOJ/s+wsd02Qg6RN5rF/Jiajd84NDq7Oz72bk2vLF5HDg
+ Y8PvRHRGKGFBsh3R4Eo1SN9ju8quTfh3CFtd74PbR8NsKcDH69pRJQZqdoc9vT02o74n
+ 2f/m3RR8hLqJR/DmFWvQVEs9KJZy7qcf0FAmVSMGkV+AUV0E++6xLl+WSInzMp/Ql/RL
+ ujoeOHYdHylLF2IB9r+kHlprLyr4EgvaNUFASc3n+R3kAMw6wsh1in8VriB1fmV1V82q nw== 
+Received: from prod-mail-ppoint8 (a72-247-45-34.deploy.static.akamaitechnologies.com [72.247.45.34] (may be forged))
+        by mx0a-00190b01.pphosted.com with ESMTP id 331cy2tkr6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 20 Aug 2020 19:13:30 +0100
+Received: from pps.filterd (prod-mail-ppoint8.akamai.com [127.0.0.1])
+        by prod-mail-ppoint8.akamai.com (8.16.0.42/8.16.0.42) with SMTP id 07KI5SRP005048;
+        Thu, 20 Aug 2020 14:13:29 -0400
+Received: from prod-mail-relay19.dfw02.corp.akamai.com ([172.27.165.173])
+        by prod-mail-ppoint8.akamai.com with ESMTP id 32xb1yke91-1;
+        Thu, 20 Aug 2020 14:13:29 -0400
+Received: from [0.0.0.0] (prod-ssh-gw01.bos01.corp.akamai.com [172.27.119.138])
+        by prod-mail-relay19.dfw02.corp.akamai.com (Postfix) with ESMTP id AE0D26015C;
+        Thu, 20 Aug 2020 18:13:27 +0000 (GMT)
+Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
+To:     Jike Song <albcamus@gmail.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Jonas Bonn <jonas.bonn@netrounds.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Michael Zhivich <mzhivich@akamai.com>,
+        David Miller <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        kehuan.feng@gmail.com
+References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
+ <20200623134259.8197-1-mzhivich@akamai.com>
+ <1849b74f-163c-8cfa-baa5-f653159fefd4@akamai.com>
+ <CAM_iQpX1+dHB0kJF8gRfuDeAb9TsA9mB9H_Og8n8Hr19+EMLJA@mail.gmail.com>
+ <CAM_iQpWjQiG-zVs+e-V=8LvTFbRwgC4y4eoGERjezfAT0Fmm8g@mail.gmail.com>
+ <7fd86d97-6785-0b5f-1e95-92bc1da9df35@netrounds.com>
+ <500b4843cb7c425ea5449fe199095edd5f7feb0c.camel@redhat.com>
+ <25ca46e4-a8c1-1c88-d6a9-603289ff44c3@akamai.com>
+ <CANE52Ki8rZGDPLZkxY--RPeEG+0=wFeyCD6KKkeG1WREUwramw@mail.gmail.com>
+From:   Josh Hunt <johunt@akamai.com>
+Message-ID: <74921739-d344-38eb-aa19-c078783b6328@akamai.com>
+Date:   Thu, 20 Aug 2020 11:13:27 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
+In-Reply-To: <CANE52Ki8rZGDPLZkxY--RPeEG+0=wFeyCD6KKkeG1WREUwramw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-08-20_03:2020-08-19,2020-08-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- impostorscore=0 spamscore=0 bulkscore=0 mlxlogscore=754 clxscore=1015
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=38
- mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008200151
-X-FB-Internal: deliver
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0 suspectscore=0
+ mlxscore=0 spamscore=0 mlxlogscore=907 malwarescore=0 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2008200146
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-20_03:2020-08-19,2020-08-20 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0
+ lowpriorityscore=0 adultscore=0 impostorscore=0 mlxlogscore=769
+ clxscore=1011 bulkscore=0 phishscore=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008200147
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TCP_SAVE_SYN has both the network header and tcp header.
-The total length of the saved syn packet is currently stored in
-the first 4 bytes (u32) of an array and the actual packet data is
-stored after that.
+Hi Jike
 
-A later patch will add a bpf helper that allows to get the tcp header
-alone from the saved syn without the network header.  It will be more
-convenient to have a direct offset to a specific header instead of
-re-parsing it.  This requires to separately store the network hdrlen.
-The total header length (i.e. network + tcp) is still needed for the
-current usage in getsockopt.  Although this total length can be obtained
-by looking into the tcphdr and then get the (th->doff << 2), this patch
-chooses to directly store the tcp hdrlen in the second four bytes of
-this newly created "struct saved_syn".  By using a new struct, it can
-give a readable name to each individual header length.
+On 8/20/20 12:43 AM, Jike Song wrote:
+> Hi Josh,
+> 
+> 
+> We met possibly the same problem when testing nvidia/mellanox's
+> GPUDirect RDMA product, we found that changing NET_SCH_DEFAULT to
+> DEFAULT_FQ_CODEL mitigated the problem, having no idea why. Maybe you
+> can also have a try?
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- include/linux/tcp.h        |  7 ++++++-
- include/net/request_sock.h |  8 +++++++-
- net/core/filter.c          |  4 ++--
- net/ipv4/tcp.c             |  9 +++++----
- net/ipv4/tcp_input.c       | 16 +++++++++-------
- 5 files changed, 29 insertions(+), 15 deletions(-)
+We also did something similar where we've switched over to using the fq 
+scheduler everywhere for now. We believe the bug is in the nolock code 
+which only pfifo_fast uses atm, but we've been unable to come up with a 
+satisfactory solution.
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index 14b62d7df942..2088d5a079af 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -406,7 +406,7 @@ struct tcp_sock {
- 	 * socket. Used to retransmit SYNACKs etc.
- 	 */
- 	struct request_sock __rcu *fastopen_rsk;
--	u32	*saved_syn;
-+	struct saved_syn *saved_syn;
- };
-=20
- enum tsq_enum {
-@@ -484,6 +484,11 @@ static inline void tcp_saved_syn_free(struct tcp_soc=
-k *tp)
- 	tp->saved_syn =3D NULL;
- }
-=20
-+static inline u32 tcp_saved_syn_len(const struct saved_syn *saved_syn)
-+{
-+	return saved_syn->network_hdrlen + saved_syn->tcp_hdrlen;
-+}
-+
- struct sk_buff *tcp_get_timestamping_opt_stats(const struct sock *sk,
- 					       const struct sk_buff *orig_skb);
-=20
-diff --git a/include/net/request_sock.h b/include/net/request_sock.h
-index b2eb8b4ba697..7d9ed99a77bd 100644
---- a/include/net/request_sock.h
-+++ b/include/net/request_sock.h
-@@ -41,6 +41,12 @@ struct request_sock_ops {
-=20
- int inet_rtx_syn_ack(const struct sock *parent, struct request_sock *req=
-);
-=20
-+struct saved_syn {
-+	u32 network_hdrlen;
-+	u32 tcp_hdrlen;
-+	u8 data[];
-+};
-+
- /* struct request_sock - mini sock to represent a connection request
-  */
- struct request_sock {
-@@ -60,7 +66,7 @@ struct request_sock {
- 	struct timer_list		rsk_timer;
- 	const struct request_sock_ops	*rsk_ops;
- 	struct sock			*sk;
--	u32				*saved_syn;
-+	struct saved_syn		*saved_syn;
- 	u32				secid;
- 	u32				peer_secid;
- };
-diff --git a/net/core/filter.c b/net/core/filter.c
-index b2df52086445..c847b1285acd 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4550,9 +4550,9 @@ static int _bpf_getsockopt(struct sock *sk, int lev=
-el, int optname,
- 			tp =3D tcp_sk(sk);
-=20
- 			if (optlen <=3D 0 || !tp->saved_syn ||
--			    optlen > tp->saved_syn[0])
-+			    optlen > tcp_saved_syn_len(tp->saved_syn))
- 				goto err_clear;
--			memcpy(optval, tp->saved_syn + 1, optlen);
-+			memcpy(optval, tp->saved_syn->data, optlen);
- 			break;
- 		default:
- 			goto err_clear;
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 31f3b858db81..87d3036d8bd8 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3788,20 +3788,21 @@ static int do_tcp_getsockopt(struct sock *sk, int=
- level,
-=20
- 		lock_sock(sk);
- 		if (tp->saved_syn) {
--			if (len < tp->saved_syn[0]) {
--				if (put_user(tp->saved_syn[0], optlen)) {
-+			if (len < tcp_saved_syn_len(tp->saved_syn)) {
-+				if (put_user(tcp_saved_syn_len(tp->saved_syn),
-+					     optlen)) {
- 					release_sock(sk);
- 					return -EFAULT;
- 				}
- 				release_sock(sk);
- 				return -EINVAL;
- 			}
--			len =3D tp->saved_syn[0];
-+			len =3D tcp_saved_syn_len(tp->saved_syn);
- 			if (put_user(len, optlen)) {
- 				release_sock(sk);
- 				return -EFAULT;
- 			}
--			if (copy_to_user(optval, tp->saved_syn + 1, len)) {
-+			if (copy_to_user(optval, tp->saved_syn->data, len)) {
- 				release_sock(sk);
- 				return -EFAULT;
- 			}
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 184ea556f50e..4aaedcf71973 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6599,13 +6599,15 @@ static void tcp_reqsk_record_syn(const struct soc=
-k *sk,
- {
- 	if (tcp_sk(sk)->save_syn) {
- 		u32 len =3D skb_network_header_len(skb) + tcp_hdrlen(skb);
--		u32 *copy;
--
--		copy =3D kmalloc(len + sizeof(u32), GFP_ATOMIC);
--		if (copy) {
--			copy[0] =3D len;
--			memcpy(&copy[1], skb_network_header(skb), len);
--			req->saved_syn =3D copy;
-+		struct saved_syn *saved_syn;
-+
-+		saved_syn =3D kmalloc(struct_size(saved_syn, data, len),
-+				    GFP_ATOMIC);
-+		if (saved_syn) {
-+			saved_syn->network_hdrlen =3D skb_network_header_len(skb);
-+			saved_syn->tcp_hdrlen =3D tcp_hdrlen(skb);
-+			memcpy(saved_syn->data, skb_network_header(skb), len);
-+			req->saved_syn =3D saved_syn;
- 		}
- 	}
- }
---=20
-2.24.1
+> 
+> Besides, our testing is pretty complex, do you have a quick test to
+> reproduce it?
+> 
 
+Unfortunately we don't have a simple test case either. Our current 
+reproducer is complex as well, although it would seem like we should be 
+able to come up with something where you have maybe 2 threads trying to 
+send on the same tx queue running pfifo_fast every few hundred 
+milliseconds and not much else/no other tx traffic on that queue. IIRC 
+we believe the scenario is when one thread is in the process of 
+dequeuing a packet while another is enqueuing, the enqueue-er (word? :)) 
+sees the dequeue is in progress and so does not xmit the packet assuming 
+the dequeue operation will take care of it. However b/c the dequeue is 
+in the process of completing it doesn't and the newly enqueued packet 
+stays in the qdisc until another packet is enqueued pushing both out.
+
+Given that we have a workaround with using fq or any other qdisc not 
+named pfifo_fast this has gotten bumped down in priority for us. I would 
+like to work on a reproducer at some point, but won't likely be for a 
+few weeks :(
+
+Josh
