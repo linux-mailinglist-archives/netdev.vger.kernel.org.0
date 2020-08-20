@@ -2,153 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A75B124B099
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 09:56:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B00C324B0B1
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 10:02:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbgHTH4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 03:56:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38296 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725859AbgHTH4L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Aug 2020 03:56:11 -0400
-Received: from localhost (unknown [151.48.139.80])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1725819AbgHTIC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 04:02:56 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57929 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725834AbgHTICc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 04:02:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1597910551;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kSXsBQ5OEyJkpTqBToWWGkoAkU72idNnOKV54rgMr7Y=;
+        b=ZducRmJG27cUNx/466pBAID52hVXacI1+Eg1J9aSILMRZcnYueYRhHGvOC/kIOWuvR9bI2
+        Y9YamCT++jKYLpuQe4qR+y2Xj3S8xK8DZzn9QDdmjg3OwyXC11E70owvXjdsjtG3ekZm0C
+        K3hzOCbb53UXd4BK2TD4TpROiTRbeGA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-197-bK0Q6Aj_NkCkr_9QLdF8EQ-1; Thu, 20 Aug 2020 04:02:27 -0400
+X-MC-Unique: bK0Q6Aj_NkCkr_9QLdF8EQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A4AD2208B3;
-        Thu, 20 Aug 2020 07:56:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597910170;
-        bh=uvOux36cqaVQxjtti8BDUxDmxa6cNM28nB608OciMus=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vtMLrYXHk443C3nWtBdPzxGI8G0tdjG99txXDFn09pxMwpsrNqLgkfBJmDaOSjqU0
-         t4Rb1K2fP8bC3Bu8CdZ5XQ/Nzj7ewWUbH12lBrLQb1/UEbUxeDDlO1EiotUlgf+Y1G
-         WsNl4OrGSXnSUTudKTSWl5Ug1Df/AaM0fflMrvFM=
-Date:   Thu, 20 Aug 2020 09:56:05 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6D3AE1885D82;
+        Thu, 20 Aug 2020 08:02:25 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.64])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F0A125C88B;
+        Thu, 20 Aug 2020 08:02:16 +0000 (UTC)
+Date:   Thu, 20 Aug 2020 10:02:15 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
         lorenzo.bianconi@redhat.com, echaudro@redhat.com,
-        sameehj@amazon.com, kuba@kernel.org
-Subject: Re: [PATCH net-next 4/6] xdp: add multi-buff support to
- xdp_return_{buff/frame}
-Message-ID: <20200820075605.GC2282@lore-desk>
+        sameehj@amazon.com, kuba@kernel.org, brouer@redhat.com
+Subject: Re: [PATCH net-next 3/6] net: mvneta: update mb bit before passing
+ the xdp buffer to eBPF layer
+Message-ID: <20200820100215.1b93464f@carbon>
+In-Reply-To: <08f8656e906ff69bd30915a6a37a01d5f0422194.1597842004.git.lorenzo@kernel.org>
 References: <cover.1597842004.git.lorenzo@kernel.org>
- <7ff49193140f3cb5341732612c72bcc2c5fb3372.1597842004.git.lorenzo@kernel.org>
- <20200820095222.711ccfa7@carbon>
+        <08f8656e906ff69bd30915a6a37a01d5f0422194.1597842004.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="7gGkHNMELEOhSGF6"
-Content-Disposition: inline
-In-Reply-To: <20200820095222.711ccfa7@carbon>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 19 Aug 2020 15:13:48 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
---7gGkHNMELEOhSGF6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Update multi-buffer bit (mb) in xdp_buff to notify XDP/eBPF layer and
+> XDP remote drivers if this is a "non-linear" XDP buffer
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/marvell/mvneta.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index 832bbb8b05c8..36a3defa63fa 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -2170,11 +2170,14 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
+>  	       struct bpf_prog *prog, struct xdp_buff *xdp,
+>  	       u32 frame_sz, struct mvneta_stats *stats)
+>  {
+> +	struct skb_shared_info *sinfo = xdp_get_shared_info_from_buff(xdp);
+>  	unsigned int len, data_len, sync;
+>  	u32 ret, act;
+>  
+>  	len = xdp->data_end - xdp->data_hard_start - pp->rx_offset_correction;
+>  	data_len = xdp->data_end - xdp->data;
+> +
+> +	xdp->mb = !!sinfo->nr_frags;
+>  	act = bpf_prog_run_xdp(prog, xdp);
 
-> On Wed, 19 Aug 2020 15:13:49 +0200
-> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->=20
-> > diff --git a/net/core/xdp.c b/net/core/xdp.c
-> > index 884f140fc3be..006b24b5d276 100644
-> > --- a/net/core/xdp.c
-> > +++ b/net/core/xdp.c
-> > @@ -370,19 +370,55 @@ static void __xdp_return(void *data, struct xdp_m=
-em_info *mem, bool napi_direct)
-> > =20
-> >  void xdp_return_frame(struct xdp_frame *xdpf)
-> >  {
-> > +	struct skb_shared_info *sinfo;
-> > +	int i;
-> > +
-> >  	__xdp_return(xdpf->data, &xdpf->mem, false);
->=20
-> There is a use-after-free race here.  The xdpf->data contains the
-> shared_info (xdp_get_shared_info_from_frame(xdpf)). Thus you cannot
-> free/return the page and use this data area below.
+Reading the memory sinfo->nr_frags could be a performance issue for our
+baseline case of no-multi-buffer.  As you are reading a cache-line that
+you don't need to (and driver have not touch yet).
 
-right, thx for pointing this out. I will fix it in v2.
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-Regards,
-Lorenzo
-
->=20
-> > +	if (!xdpf->mb)
-> > +		return;
-> > +
-> > +	sinfo =3D xdp_get_shared_info_from_frame(xdpf);
-> > +	for (i =3D 0; i < sinfo->nr_frags; i++) {
-> > +		struct page *page =3D skb_frag_page(&sinfo->frags[i]);
-> > +
-> > +		__xdp_return(page_address(page), &xdpf->mem, false);
-> > +	}
-> >  }
-> >  EXPORT_SYMBOL_GPL(xdp_return_frame);
-> > =20
-> >  void xdp_return_frame_rx_napi(struct xdp_frame *xdpf)
-> >  {
-> > +	struct skb_shared_info *sinfo;
-> > +	int i;
-> > +
-> >  	__xdp_return(xdpf->data, &xdpf->mem, true);
->=20
-> Same issue.
->=20
-> > +	if (!xdpf->mb)
-> > +		return;
-> > +
-> > +	sinfo =3D xdp_get_shared_info_from_frame(xdpf);
-> > +	for (i =3D 0; i < sinfo->nr_frags; i++) {
-> > +		struct page *page =3D skb_frag_page(&sinfo->frags[i]);
-> > +
-> > +		__xdp_return(page_address(page), &xdpf->mem, true);
-> > +	}
-> >  }
-> >  EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
-> > =20
-> >  void xdp_return_buff(struct xdp_buff *xdp)
-> >  {
-> > +	struct skb_shared_info *sinfo;
-> > +	int i;
-> > +
-> >  	__xdp_return(xdp->data, &xdp->rxq->mem, true);
->=20
-> Same issue.
->=20
-> > +	if (!xdp->mb)
-> > +		return;
-> > +
-> > +	sinfo =3D xdp_get_shared_info_from_buff(xdp);
-> > +	for (i =3D 0; i < sinfo->nr_frags; i++) {
-> > +		struct page *page =3D skb_frag_page(&sinfo->frags[i]);
-> > +
-> > +		__xdp_return(page_address(page), &xdp->rxq->mem, true);
-> > +	}
-> >  }
->=20
->=20
->=20
-> --=20
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->=20
-
---7gGkHNMELEOhSGF6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXz4skgAKCRA6cBh0uS2t
-rF9wAQCLa2C8/FOuexmBRKh40iDZ7w7W3tK/WQFy3TzgQcZI/wD+K8plPDEmmzpP
-CfYQTRHicawMyB5bHRXZ3FNondqQuwI=
-=VQ6H
------END PGP SIGNATURE-----
-
---7gGkHNMELEOhSGF6--
