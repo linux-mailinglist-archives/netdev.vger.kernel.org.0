@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C356224C467
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 19:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CBEE24C487
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 19:29:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730542AbgHTRV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 13:21:28 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:4892 "EHLO
+        id S1730652AbgHTR3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 13:29:11 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:19112 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727917AbgHTRVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 13:21:04 -0400
+        by vger.kernel.org with ESMTP id S1730514AbgHTR3H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 13:29:07 -0400
 Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07KHILrm010851;
-        Thu, 20 Aug 2020 10:20:16 -0700
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07KHSLuT026202;
+        Thu, 20 Aug 2020 10:28:26 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
  references : from : message-id : date : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=facebook;
- bh=5WxRxUZnWNhbfX4EfmCF4q0zsNsJkuC7JzpteQdmMHk=;
- b=Iz7u6d/QJK/a9qWMivetiHIJ/ui/wQjkhElxOU3zAmC6psPtSxxEDYnaEkH98xTdmVN7
- gdUepbAcsE00tsHr5y3O7BfDpcKM/c8UGO0rdlgNw/ZgpeZ5CY5pVBXfYB9mtUqNditq
- ugpuIHQkha+et28mgTo1/I9RlsZgv1Z9DCY= 
+ bh=Zg2XBgDn0tUhXGIDQ7YiLJaRKb+R7NUhQXtc7TKc2+Y=;
+ b=SQRH7nbxLVczcb3Odmsb/pAs+sczdXQ6UVXmJ3jGPVaWf/7XDqH5zgG+hZg8+YajWLry
+ p+jmWH8EQGQMCwD0UGnUtN76tND7bSZ+eV1eAN+NiW36Cu6quLMDD3bL3qkTip8DFezU
+ eZC+QPwOckwP0on4Ay9h42DowQLKzNSWjdU= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 3304jjfdvq-1
+        by m0001303.ppops.net with ESMTP id 3304jjff9u-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 20 Aug 2020 10:20:16 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+        Thu, 20 Aug 2020 10:28:26 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 20 Aug 2020 10:20:14 -0700
+ 15.1.1979.3; Thu, 20 Aug 2020 10:28:11 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hgAvlwUO0hs8AJub4b3On2Zly5NhbLsN/eiRwJFN+Es+mBKNDhbUTc362Ow0bb1CS9kdvM40f56Vi+EQcyUzLGU39Zk54lu02PaXEexHlsWjDgYVKUWjEoztlM5IWbuHic/Jxu32bz3FwfiNuhFBebKig3+cgiC44QpWRyCYDDj7MJTC8iCJ9DsnG29yU4wkccyPts2tU6PB//SfJK8b2/8wpRggMwuUu+UJdBznKY/pUhgFuIMARDwYRQ1Ljh6nX17tmMiEQJf4B09lw/zYdOSq9zJc1NTRs9bR+XuEJ1UoCH4oEy4ltC/ipahpy/IZ0y0DV+vWkq3xY3TSlxbBmg==
+ b=MvxAXm7afJ6sRparhOGT91HupiWj5ZP+p+3XucxLZ0wSV678JB0nsr3i/SXfoFZV9T6QrPOKy0zEbxRBJyghX8hHim1Ay83xxOL9vZg7IHbESx8HobUkIYb2PV8HhdxrtoiTSxt+BN/wn2lu3klpXodifjKrUUaWdUL0CqyuEoR/5zaQYKevJZBpbtYGfPpokpd/HJprzB9EvWxdd4FEc2resf1u4goiJkIqrRn5nppXxIydXVJ4gS/dkl0Rs00qwlMzOsatNBdSfgQ/Yf8SnADjatEmRJVwQhxtvP7HUgQEWKrfMNdfi2/iwbSt7x3NLbVXAgKEgHyjmJnSTe0xVw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5WxRxUZnWNhbfX4EfmCF4q0zsNsJkuC7JzpteQdmMHk=;
- b=Ei6fFLBNaWOapJa2RE8uN+boun61E37fa/QvTrce/yoXBdPyHCGiBcyvkgIecZ30VoTXDkEokYX99lXyxGm2lduGN8wOmUXXjVonnz0ZkwPqbggOiYPQV6nYdN8iSSytZ8tjwO8dKMuxdSIcuS0wzYCOoNc1hPrO1JWNgGV0cqW/QEhLaPGlBwvUbvF31KTIeaMp41WLwSdiAqDiBmsYsyyZxXYe2/aPeUWN4oaeDKCQcBnbvb95IemkmJ2ULwtPGPJwfxAwLCG20emt6M24y84ohXiuYKlZqDvGoD+KMAm3laLuYUC1z+ovIdRWVClJ68f14t1mWOpMpU3PQW3OvA==
+ bh=Zg2XBgDn0tUhXGIDQ7YiLJaRKb+R7NUhQXtc7TKc2+Y=;
+ b=P7jO5bVIqotIftLXug+qVpa4jFcvPYU9XFIDZVHwkjBYni6loAMxI24HMtJeSIZAd9GAN8Dk85iiD3Pgnk8VawIo+40rz0vdoZEz1Wklh+mYpvoSWOueJVA0gwZVW9NHnZBvIEI2xJ5ZnOsNywA7kBHfxjH1K/UM+C/VaCMOxnLW8FksdvOAcXbf9jD7i9vKLiuCVqWtG3qbtXIQ6o+TIAq7LE+G5JI7v9RM2j7A19R/R+L87e2R451OQOeLh70MGeOR+XejlVTXaGYR9pEGdQi2kHS8WRcRdeWEWJXaq8pXZbEkVlbSvG5eMR0XlBlCmcUdeo/2YH0UB20DxaRnWg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5WxRxUZnWNhbfX4EfmCF4q0zsNsJkuC7JzpteQdmMHk=;
- b=dQnqXaXYlQHfKjk5DeItOVBc9wLNe6bRIia+3F6bRJmVoFVtoopT1yuBuv8jFJq1b9N+tlEqkPtI38BtX7p79mmEa6z9cf5fc3nzfERFJn0XEoQ8VSFQWBXodzjbtUcvuWeTxkOra95hJdQTdnrRnY6aCvRolebOK2jQ5KekbeM=
+ bh=Zg2XBgDn0tUhXGIDQ7YiLJaRKb+R7NUhQXtc7TKc2+Y=;
+ b=B2Txxpmb3fXE0qWEQZNhJuRTLr2kip2eH6f140x1kUdLwgY7IeFu2n0Guj9wBI+py/C0DrbAQB9UCuvIbom2kjpHmm95mOcOLOmBjxQXvZLui8znO8oeqbrqRO5Z6JVRxNo3qE61nCqARJMCOXqwakpqNB4KSftSYUkDjS9jtpo=
 Authentication-Results: cloudflare.com; dkim=none (message not signed)
  header.d=none;cloudflare.com; dmarc=none action=none header.from=fb.com;
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2407.namprd15.prod.outlook.com (2603:10b6:a02:8d::17) with
+ by BYAPR15MB3095.namprd15.prod.outlook.com (2603:10b6:a03:fe::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.24; Thu, 20 Aug
- 2020 17:20:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Thu, 20 Aug
+ 2020 17:28:10 +0000
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3305.026; Thu, 20 Aug 2020
- 17:20:13 +0000
-Subject: Re: [PATCH bpf-next v1 3/8] bpf: Introduce help function to validate
- ksym's type.
+ 17:28:10 +0000
+Subject: Re: [PATCH bpf-next v1 5/8] bpf/selftests: ksyms_btf to test typed
+ ksyms
 To:     Hao Luo <haoluo@google.com>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-kselftest@vger.kernel.org>
@@ -72,53 +72,53 @@ CC:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Ingo Molnar <mingo@redhat.com>, Andrey Ignatov <rdna@fb.com>,
         Jakub Sitnicki <jakub@cloudflare.com>
 References: <20200819224030.1615203-1-haoluo@google.com>
- <20200819224030.1615203-4-haoluo@google.com>
+ <20200819224030.1615203-6-haoluo@google.com>
 From:   Yonghong Song <yhs@fb.com>
-Message-ID: <d50a1530-9a9f-45b2-5aba-05fe4b895fbc@fb.com>
-Date:   Thu, 20 Aug 2020 10:20:07 -0700
+Message-ID: <29b8358f-64fb-9e82-acb0-20b5922afc81@fb.com>
+Date:   Thu, 20 Aug 2020 10:28:04 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.11.0
-In-Reply-To: <20200819224030.1615203-4-haoluo@google.com>
+In-Reply-To: <20200819224030.1615203-6-haoluo@google.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL0PR02CA0061.namprd02.prod.outlook.com
- (2603:10b6:207:3d::38) To BYAPR15MB4088.namprd15.prod.outlook.com
+X-ClientProxiedBy: MN2PR05CA0053.namprd05.prod.outlook.com
+ (2603:10b6:208:236::22) To BYAPR15MB4088.namprd15.prod.outlook.com
  (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from 255.255.255.255 (255.255.255.255) by BL0PR02CA0061.namprd02.prod.outlook.com (2603:10b6:207:3d::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25 via Frontend Transport; Thu, 20 Aug 2020 17:20:10 +0000
+Received: from 255.255.255.255 (255.255.255.255) by MN2PR05CA0053.namprd05.prod.outlook.com (2603:10b6:208:236::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.10 via Frontend Transport; Thu, 20 Aug 2020 17:28:07 +0000
 X-Originating-IP: [2620:10d:c091:480::1:7ec1]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f480da57-89ab-4ae3-8a04-08d8452d4c75
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2407:
+X-MS-Office365-Filtering-Correlation-Id: 4ff7a7fe-b33b-4502-236a-08d8452e68ea
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3095:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2407DBE8757EAF8A5D1A745BD35A0@BYAPR15MB2407.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <BYAPR15MB3095708F1264BA60C22B1FAAD35A0@BYAPR15MB3095.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:923;
+X-MS-Oob-TLC-OOBClassifiers: OLM:294;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D575INhQv2JNU+vnk4p0sGFLZWR5AOu7lkpPHIuEjaQNi8SQgaREiyzFfJqlmOOnKK+OF0NH7chYeStJmQ/vAFNfbnMJilHYsjFPCYIWNozVJtcHfEGEENxBVKOxY5naAtyIyVwGUfXobYLjsQm7vBlPDwnsRMplkG4CnO0EAvzN0+G6QLlYmZ5QKaMFfjMGnGLkcBEwbT8VzEbEIZ4nRtmTExAW5v7x5/pSNb0oOnZGHY4XsqjvbZd6aee14D2+yUooayE5QAXVOXHd4uva9+y4ZsY9q4LkXG+MqeLYmERUv6bSq3Qpr/ED2SzIvNFLDz5f2FKYhlu0dPuaB1IByo5JVTrAwzma23UIhrWeJhwqOg//EoGAYRzPRib/CoaU/rfP6ip+A73PjAlkbM0vAs4RMUYBSVgtxcDdifmUPnY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39860400002)(366004)(376002)(346002)(136003)(956004)(8676002)(2616005)(316002)(5660300002)(66476007)(54906003)(66556008)(53546011)(36756003)(16576012)(4326008)(186003)(8936002)(86362001)(52116002)(478600001)(31696002)(83380400001)(110011004)(31686004)(6486002)(66946007)(7416002)(2906002)(6666004)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: v8yu9X/yQVMdZkJloyx4tzxbxT5KOoHEEKZSPPxV3h2wfWQ23icEX77QizTpzrIMKBSDdtdNkMJzUzHIBPga07/DLlN4UotjOPH9e4VKOqvVYczecvO0rTvp8naVM7plHZMJMlZmr4ZxDnEF5vBOZfr77/9evpMjRmrISnVipt/iGP6L1DeaVzY77vglkgXm1n377kgi720UyKnyQEf6ynToyYcRTBp22eKGA71CDQXAK3j+E7zQhtmWXI/y6gkHLYaUaPTBe1OBaeX5CjY86E4bvHPRHAbsZ5jkcq35hCpH5J+ISxgD4WlkYTKrNCz3w3sbes/4hE3V1tPegC919akLfPlXh6axQqeCTRBsDAlKiUzgR0VNnfot8NRK/EaXrdXnyxcrVu/ED3hgWiI05g0c1909bJAjcqBgZO18ZVGBm3Oy/2+559cNdiQF6CVrRg8K2A7latBOJFHy6gl+fd5d53Ejbab/6aNAyaHrarvVlL2uxC5lmPqnX029HVlhRG+bJmnZeyuqIfQ2YwnnzfmGF6qb4zT/sec9E/dD5w/694Q/n7qK7r8OQ+L5jUMiZYreQ3ArT8QYWf9BRDxy39+1U/cv39xFJiflvPH9/8nJspcS7sit0quif/1o8gPhD+vW4HbHWjbSgkodU7TViovOzzXzDujSDtCP43Ty5CFZ03N30ym5LIPYvjElNHv5
-X-MS-Exchange-CrossTenant-Network-Message-Id: f480da57-89ab-4ae3-8a04-08d8452d4c75
+X-Microsoft-Antispam-Message-Info: f5gdOHD09VpQxTcq+5mpffkrfbia5STKDaYDpGRA4OUFhOtlPWUyTSf3N/WyI3+8CbFhju2FCizKBmL9Mqq4Tp9qj6EkPfO/n+f1NbQNou4IGekQ6M2p8JiyZJGGPH6Ss6Xt3xUu2qz4dkCnm0Awg4l8C6e5QttF98rq3NxBWnov/BvMn2pLowjSy1URwCdia0rMR/5ThCu3CPrgPsrAR7LC1Aey1jr2Pgf009Z+qcGwhVFL+6J+5QxUPrk0OJGaqZLJSbMbcxVHrWdfCzTOFzqulYIf6OcmC/eZtQq8ulm1cErIvF/xTAV5y5Qzruslz36lBZkWXhgvvpeaqiIoRKdNPinXPcAQgxJguRPzgrFM+LXqSZcAwocrRspEDSLYiWwpkj7iepgk8hN5aA6ne/l9VeRU1caInrIgTUlOcIU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(136003)(366004)(346002)(376002)(396003)(66476007)(7416002)(66556008)(2906002)(5660300002)(66946007)(8936002)(6666004)(36756003)(478600001)(53546011)(54906003)(8676002)(110011004)(86362001)(6486002)(16576012)(316002)(4326008)(956004)(2616005)(52116002)(186003)(31696002)(83380400001)(31686004)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: cCD57vVQfzQ4OvIthHTll3Mk0Mmm4kSDLQsNhvMjBz04FYDyq4bXh8j66cmOoHD+FwllSgTHGNTEyvnPQyE0sxN96syhI6ZpqNMwvXmXTzqeDh6ZLK2iYxa0xqjigWQVcPL4FJNRiryT3fYIq50VS0mT+lTQG0UmqdIKpOSZdUGKi0CD3g49rpQW6BPzIdfx050SNVW3fNdsyDZMmkAjn43gb6KMf7s6MvDo+G0HQrt5CtOyebXw9hABpoeb/veFFThsfBG9j30cxF3dfbpy3x7OzoSA1aw5/PNv2yttfP0ga5O0/5ytXhxamUx51GhP+VPcJsy3bOTr+IfdUFKFLEfdFtPyYEVX75H0yZ5U3oREGHAiBYwjxJ9U/ay/9BbMzJpLMg7vH24qAy21irKXgA2SW+3yc3alNwYwWk5setUZd3XYQWasZZrrg8XHh4NVOtF+FOmHPTDZJ7S208qjHIV13MlxZCBT6E5zkzWWiFv6CHbLKwcJggwkYKIbxfl0XIfjbb48JcTtf6ZQMsBqkLmocyjqyxmaxFCpE5chw4XolURQymZzAZBa5gacs7mNBMyvY7lCU4NnGUErc3Wwzia+VpfXFDEJZaS7CzQWnX6pnthFV3LQYDRO8urUCfdilB/GWYRpXIvlEHkJj4n25a3nOd723m213EnN/eIczss=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ff7a7fe-b33b-4502-236a-08d8452e68ea
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2020 17:20:13.3460
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2020 17:28:10.6181
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: J8+c37FEtKW+Hs6faPeRv1JoGsLEWSmjILGLScvKWRJqc8OnxZiOsqLFU2cNhZ9B
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2407
+X-MS-Exchange-CrossTenant-UserPrincipalName: /hrOfmQAGfpzGy97kG4XImm8BTQPT3cTo7AliMkr6FgX6kAafd06q5UWHKJIy0F6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3095
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-08-20_03:2020-08-19,2020-08-20 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=2
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
  lowpriorityscore=0 priorityscore=1501 malwarescore=0 spamscore=0
- impostorscore=0 bulkscore=0 mlxlogscore=814 phishscore=0 mlxscore=0
+ impostorscore=0 bulkscore=0 mlxlogscore=999 phishscore=0 mlxscore=0
  clxscore=1015 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008200140
+ engine=8.12.0-2006250000 definitions=main-2008200141
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -128,227 +128,133 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 8/19/20 3:40 PM, Hao Luo wrote:
-> For a ksym to be safely dereferenced and accessed, its type defined in
-> bpf program should basically match its type defined in kernel. Implement
-> a help function for a quick matching, which is used by libbpf when
-> resolving the kernel btf_id of a ksym.
+> Selftests for typed ksyms. Tests two types of ksyms: one is a struct,
+> the other is a plain int. This tests two paths in the kernel. Struct
+> ksyms will be converted into PTR_TO_BTF_ID by the verifier while int
+> typed ksyms will be converted into PTR_TO_MEM.
 > 
 > Signed-off-by: Hao Luo <haoluo@google.com>
 > ---
->   tools/lib/bpf/btf.c | 171 ++++++++++++++++++++++++++++++++++++++++++++
->   tools/lib/bpf/btf.h |   2 +
->   2 files changed, 173 insertions(+)
+>   .../selftests/bpf/prog_tests/ksyms_btf.c      | 77 +++++++++++++++++++
+>   .../selftests/bpf/progs/test_ksyms_btf.c      | 23 ++++++
+>   2 files changed, 100 insertions(+)
+>   create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_btf.c
 > 
-> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> index a3d259e614b0..2ff31f244d7a 100644
-> --- a/tools/lib/bpf/btf.c
-> +++ b/tools/lib/bpf/btf.c
-> @@ -1005,6 +1005,177 @@ int btf__get_map_kv_tids(const struct btf *btf, const char *map_name,
->   	return 0;
->   }
->   
-> +/*
-> + * Basic type check for ksym support. Only checks type kind and resolved size.
-> + */
-> +static inline
-> +bool btf_ksym_equal_type(const struct btf *ba, __u32 type_a,
-> +			 const struct btf *bb, __u32 type_b)
-
-"ba" and "bb" is not descriptive. Maybe "btf_a" or "btf_b"?
-or even "btf1" or "btf2" since the number does not carry
-extra meaning compared to letters.
-
-The same for below, may be t1, t2?
-
+> diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+> new file mode 100644
+> index 000000000000..1dad61ba7e99
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+> @@ -0,0 +1,77 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Google */
+> +
+> +#include <test_progs.h>
+> +#include <bpf/libbpf.h>
+> +#include <bpf/btf.h>
+> +#include "test_ksyms_btf.skel.h"
+> +
+> +static int duration;
+> +
+> +static __u64 kallsyms_find(const char *sym)
 > +{
-> +	const struct btf_type *ta, *tb;
+> +	char type, name[500];
+> +	__u64 addr, res = 0;
+> +	FILE *f;
 > +
-> +	ta = btf__type_by_id(ba, type_a);
-> +	tb = btf__type_by_id(bb, type_b);
+> +	f = fopen("/proc/kallsyms", "r");
+> +	if (CHECK(!f, "kallsyms_fopen", "failed to open: %d\n", errno))
+> +		return 0;
+
+could you check whether libbpf API can provide this functionality for 
+you? As far as I know, libbpf does parse /proc/kallsyms.
+
 > +
-> +	/* compare type kind */
-> +	if (btf_kind(ta) != btf_kind(tb))
-> +		return false;
+> +	while (fscanf(f, "%llx %c %499s%*[^\n]\n", &addr, &type, name) > 0) {
+> +		if (strcmp(name, sym) == 0) {
+> +			res = addr;
+> +			goto out;
+> +		}
+> +	}
 > +
-> +	/* compare resolved type size */
-> +	return btf__resolve_size(ba, type_a) == btf__resolve_size(bb, type_b);
+> +	CHECK(false, "not_found", "symbol %s not found\n", sym);
+> +out:
+> +	fclose(f);
+> +	return res;
 > +}
 > +
-> +/*
-> + * Match a ksym's type defined in bpf programs against its type encoded in
-> + * kernel btf.
-> + */
-> +bool btf_ksym_type_match(const struct btf *ba, __u32 id_a,
-> +			 const struct btf *bb, __u32 id_b)
+> +void test_ksyms_btf(void)
 > +{
-> +	const struct btf_type *ta = btf__type_by_id(ba, id_a);
-> +	const struct btf_type *tb = btf__type_by_id(bb, id_b);
-> +	int i;
+> +	__u64 runqueues_addr = kallsyms_find("runqueues");
+> +	__u64 bpf_prog_active_addr = kallsyms_find("bpf_prog_active");
+> +	struct test_ksyms_btf *skel;
+> +	struct test_ksyms_btf__data *data;
+> +	struct btf *btf;
+> +	int percpu_datasec;
+> +	int err;
 > +
-> +	/* compare type kind */
-> +	if (btf_kind(ta) != btf_kind(tb)) {
-> +		pr_warn("%s:mismatched type kind (%d v.s. %d).\n",
-> +			__func__, btf_kind(ta), btf_kind(tb));
-> +		return false;
+> +	btf = libbpf_find_kernel_btf();
+> +	if (CHECK(IS_ERR(btf), "btf_exists", "failed to load kernel BTF: %ld\n",
+> +		  PTR_ERR(btf)))
+> +		return;
+> +
+> +	percpu_datasec = btf__find_by_name_kind(btf, ".data..percpu",
+> +						BTF_KIND_DATASEC);
+> +	if (percpu_datasec < 0) {
+> +		printf("%s:SKIP:no PERCPU DATASEC in kernel btf\n",
+> +		       __func__);
+> +		test__skip();
+> +		return;
 > +	}
 > +
-> +	switch (btf_kind(ta)) {
-> +	case BTF_KIND_INT: { /* compare size and encoding */
-> +		__u32 ea, eb;
+> +	skel = test_ksyms_btf__open_and_load();
+> +	if (CHECK(!skel, "skel_open", "failed to open and load skeleton\n"))
+> +		return;
 > +
-> +		if (ta->size != tb->size) {
-> +			pr_warn("%s:INT size mismatch, (%u v.s. %u)\n",
-> +				__func__, ta->size, tb->size);
-> +			return false;
-> +		}
-> +		ea = *(__u32 *)(ta + 1);
-> +		eb = *(__u32 *)(tb + 1);
-> +		if (ea != eb) {
-> +			pr_warn("%s:INT encoding mismatch (%u v.s. %u)\n",
-> +				__func__, ea, eb);
-> +			return false;
-> +		}
-> +		break;
-> +	}
-> +	case BTF_KIND_ARRAY: { /* compare type and number of elements */
-> +		const struct btf_array *ea, *eb;
+> +	err = test_ksyms_btf__attach(skel);
+> +	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
+> +		goto cleanup;
 > +
-> +		ea = btf_array(ta);
-> +		eb = btf_array(tb);
-> +		if (!btf_ksym_equal_type(ba, ea->type, bb, eb->type)) {
-> +			pr_warn("%s:ARRAY elem type mismatch.\n", __func__);
-> +			return false;
-> +		}
-> +		if (ea->nelems != eb->nelems) {
-> +			pr_warn("%s:ARRAY nelems mismatch (%d v.s. %d)\n",
-> +				__func__, ea->nelems, eb->nelems);
-> +			return false;
-> +		}
-> +		break;
-> +	}
-> +	case BTF_KIND_STRUCT:
-> +	case BTF_KIND_UNION: { /* compare size, vlen and member offset, name */
-> +		const struct btf_member *ma, *mb;
+> +	/* trigger tracepoint */
+> +	usleep(1);
 > +
-> +		if (ta->size != tb->size) {
-> +			pr_warn("%s:STRUCT size mismatch, (%u v.s. %u)\n",
-> +				__func__, ta->size, tb->size);
-> +			return false;
-> +		}
-> +		if (btf_vlen(ta) != btf_vlen(tb)) {
-> +			pr_warn("%s:STRUCT vlen mismatch, (%u v.s. %u)\n",
-> +				__func__, btf_vlen(ta), btf_vlen(tb));
-> +			return false;
-> +		}
+> +	data = skel->data;
+> +	CHECK(data->out__runqueues != runqueues_addr, "runqueues",
+> +	      "got %llu, exp %llu\n", data->out__runqueues, runqueues_addr);
+> +	CHECK(data->out__bpf_prog_active != bpf_prog_active_addr, "bpf_prog_active",
+> +	      "got %llu, exp %llu\n", data->out__bpf_prog_active, bpf_prog_active_addr);
 > +
-> +		ma = btf_members(ta);
-> +		mb = btf_members(tb);
-> +		for (i = 0; i < btf_vlen(ta); i++, ma++, mb++) {
-> +			const char *na, *nb;
+> +cleanup:
+> +	test_ksyms_btf__destroy(skel);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_btf.c b/tools/testing/selftests/bpf/progs/test_ksyms_btf.c
+> new file mode 100644
+> index 000000000000..e04e31117f84
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_ksyms_btf.c
+> @@ -0,0 +1,23 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Google */
 > +
-> +			if (ma->offset != mb->offset) {
-> +				pr_warn("%s:STRUCT field offset mismatch, (%u v.s. %u)\n",
-> +					__func__, ma->offset, mb->offset);
-> +				return false;
-> +			}
-> +			na = btf__name_by_offset(ba, ma->name_off);
-> +			nb = btf__name_by_offset(bb, mb->name_off);
-> +			if (strcmp(na, nb)) {
-> +				pr_warn("%s:STRUCT field name mismatch, (%s v.s. %s)\n",
-> +					__func__, na, nb);
-> +				return false;
-> +			}
-> +		}
-
-I am wondering whether this is too strict and how this can co-work with 
-CO-RE. Forcing users to write almost identical structure definition to 
-the underlying kernel will not be user friendly and may not work cross
-kernel versions even if the field user cares have not changed.
-
-Maybe we can relax the constraint here. You can look at existing
-libbpf CO-RE code.
-
-> +		break;
-> +	}
-> +	case BTF_KIND_ENUM: { /* compare vlen and member value, name */
-> +		const struct btf_enum *ma, *mb;
+> +#include "vmlinux.h"
 > +
-> +		if (btf_vlen(ta) != btf_vlen(tb)) {
-> +			pr_warn("%s:ENUM vlen mismatch, (%u v.s. %u)\n",
-> +				__func__, btf_vlen(ta), btf_vlen(tb));
-> +			return false;
-> +		}
+> +#include <bpf/bpf_helpers.h>
 > +
-> +		ma = btf_enum(ta);
-> +		mb = btf_enum(tb);
-> +		for (i = 0; i < btf_vlen(ta); i++, ma++, mb++) {
-> +			if (ma->val != mb->val) {
-> +				pr_warn("%s:ENUM val mismatch, (%u v.s. %u)\n",
-> +					__func__, ma->val, mb->val);
-> +				return false;
-> +			}
-> +		}
-> +		break;
-> +	}
-> +	case BTF_KIND_PTR: { /* naive compare of ref type for PTR */
-> +		if (!btf_ksym_equal_type(ba, ta->type, bb, tb->type)) {
-> +			pr_warn("%s:PTR ref type mismatch.\n", __func__);
-> +			return false;
-> +		}
-> +		break;
-> +	}
-> +	case BTF_KIND_FUNC_PROTO: { /* naive compare of vlen and param types */
-> +		const struct btf_param *pa, *pb;
+> +__u64 out__runqueues = -1;
+> +__u64 out__bpf_prog_active = -1;
 > +
-> +		if (btf_vlen(ta) != btf_vlen(tb)) {
-> +			pr_warn("%s:FUNC_PROTO vlen mismatch, (%u v.s. %u)\n",
-> +				__func__, btf_vlen(ta), btf_vlen(tb));
-> +			return false;
-> +		}
+> +extern const struct rq runqueues __ksym; /* struct type global var. */
+> +extern const int bpf_prog_active __ksym; /* int type global var. */
 > +
-> +		pa = btf_params(ta);
-> +		pb = btf_params(tb);
-> +		for (i = 0; i < btf_vlen(ta); i++, pa++, pb++) {
-> +			if (!btf_ksym_equal_type(ba, pa->type, bb, pb->type)) {
-> +				pr_warn("%s:FUNC_PROTO params type mismatch.\n",
-> +					__func__);
-> +				return false;
-> +			}
-> +		}
-> +		break;
-> +	}
-> +	case BTF_KIND_FUNC:
-> +	case BTF_KIND_CONST:
-> +	case BTF_KIND_VOLATILE:
-> +	case BTF_KIND_RESTRICT:
-> +	case BTF_KIND_TYPEDEF:
-> +	case BTF_KIND_VAR:
-> +	case BTF_KIND_DATASEC:
-> +		pr_warn("unexpected type for matching ksym types.\n");
-> +		return false;
-> +	default:
-> +		pr_warn("unsupported btf types.\n");
-> +		return false;
-> +	}
+> +SEC("raw_tp/sys_enter")
+> +int handler(const void *ctx)
+> +{
+> +	out__runqueues = (__u64)&runqueues;
+> +	out__bpf_prog_active = (__u64)&bpf_prog_active;
 > +
-> +	return true;
+> +	return 0;
 > +}
 > +
->   struct btf_ext_sec_setup_param {
->   	__u32 off;
->   	__u32 len;
-> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> index 91f0ad0e0325..5ef220e52485 100644
-> --- a/tools/lib/bpf/btf.h
-> +++ b/tools/lib/bpf/btf.h
-> @@ -52,6 +52,8 @@ LIBBPF_API int btf__get_map_kv_tids(const struct btf *btf, const char *map_name,
->   				    __u32 expected_key_size,
->   				    __u32 expected_value_size,
->   				    __u32 *key_type_id, __u32 *value_type_id);
-> +LIBBPF_API bool btf_ksym_type_match(const struct btf *ba, __u32 id_a,
-> +				    const struct btf *bb, __u32 id_b);
->   
->   LIBBPF_API struct btf_ext *btf_ext__new(__u8 *data, __u32 size);
->   LIBBPF_API void btf_ext__free(struct btf_ext *btf_ext);
-
-The new API function should be added to libbpf.map.
+> +char _license[] SEC("license") = "GPL";
+> 
