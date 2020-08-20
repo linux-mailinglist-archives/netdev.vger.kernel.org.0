@@ -2,91 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52DD024BB48
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:26:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E181A24BB7B
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729498AbgHTM0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 08:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728324AbgHTM0Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 08:26:16 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4242BC061385;
-        Thu, 20 Aug 2020 05:26:14 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id g6so1831167ljn.11;
-        Thu, 20 Aug 2020 05:26:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eSqfcQbBFm3GesGK6cttjQeofDcApyj4QPCbAu/dN3Q=;
-        b=DFPJl3B781/WFvVelGdirLeJnJ25wfmXAH6jF8BGbpQOmQz5oeVphZSoz9xUStxRvE
-         G4Q730xU+FpPyrHyARHBkycGEBBfel0qIZW1wqzXn/utMCIrCeZkC2DmfB3F47u3QhK7
-         oz+CuMrHDXjfXqERTEgAxv3170I2QM2l4M3+AgeYitjIHURGMDQG6P4tVsinFP5ddyI2
-         P5x7yqXGQQcgKxoovW+uMw1l0pMd8FfVAv1YzG+zTLLCCpaEgkKPVRsnU288AxEttZEf
-         PlVKiMRObvqAIbQ923akmxNzh9VE+PADbGlnNJrHWtczbT+T478AZF0BsYLd4mzIDyBl
-         vREw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eSqfcQbBFm3GesGK6cttjQeofDcApyj4QPCbAu/dN3Q=;
-        b=Sgdyk4xkoSlfm2nd7aKkaTXtJf33/5KNYqi8VPUZQ/lTaesHipyxT6eXCR8VrXTpPS
-         whnklzKcga9zgHxrloWnrXQzPGEcpWWVNauKY7S6u293aAHOtfCm7A6tvWkaAryHKG0C
-         jz19ot3defnSzHRYzRC0ku8DQG2T+Bys7hshGiplZnCqKK8r41tmZd58xhDxWz36GRP8
-         YfvUO66ene7ExvRVOHUBydW0jHyFHvYAqwVTCEjS1oaA/dAzinBSMjg5xEJzVdhvpa9F
-         iSl/z6NpcaKZAagpANXZb9I2jlpyZMs+P52N9nlkx2CUXlmU34BO+cT1pDjaCB0gkved
-         sxxQ==
-X-Gm-Message-State: AOAM532Pd+cXY0pjskfG/SpLwMVMwjP1ITxMSAu55YF0e+NgLW5qXcUD
-        4UWom5Pke1+NBOKhBJ1Yt9xG5o4ZU2hFlg==
-X-Google-Smtp-Source: ABdhPJxuG4DEsCDL907sWu6JlNXh1nMac4n7NDiOXL3yVsSjvk+lIi59nuhn2st5soxGdvOwqun/Yg==
-X-Received: by 2002:a2e:96c3:: with SMTP id d3mr1578582ljj.270.1597926372748;
-        Thu, 20 Aug 2020 05:26:12 -0700 (PDT)
-Received: from wasted.omprussia.ru ([2a00:1fa0:46d7:4a60:acca:c7f9:9bba:62e5])
-        by smtp.gmail.com with ESMTPSA id a17sm415149ljd.123.2020.08.20.05.26.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Aug 2020 05:26:12 -0700 (PDT)
-Subject: Re: [PATCH v2] dt-bindings: net: renesas,ether: Improve schema
- validation
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20200819124539.20239-1-geert+renesas@glider.be>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <df7f61fe-3103-168e-0744-d6b20ee42224@gmail.com>
-Date:   Thu, 20 Aug 2020 15:26:11 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1729846AbgHTM3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 08:29:47 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:34814 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729347AbgHTM3h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 08:29:37 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 7A43D86F04766B046245;
+        Thu, 20 Aug 2020 20:29:34 +0800 (CST)
+Received: from huawei.com (10.175.104.175) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Thu, 20 Aug 2020
+ 20:29:28 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <martin.varghese@nokia.com>, <pshelar@ovn.org>, <fw@strlen.de>,
+        <dcaratti@redhat.com>, <edumazet@google.com>,
+        <steffen.klassert@secunet.com>, <pabeni@redhat.com>,
+        <shmulik@metanetworks.com>, <kyk.segfault@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] net: Check the expect of skb->data at mac header
+Date:   Thu, 20 Aug 2020 08:28:22 -0400
+Message-ID: <20200820122822.46608-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-In-Reply-To: <20200819124539.20239-1-geert+renesas@glider.be>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.175]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/19/20 3:45 PM, Geert Uytterhoeven wrote:
+skb_mpls_push() and skb_mpls_pop() expect skb->data at mac header. Check
+this assumption or we would get wrong mac_header and network_header.
 
->   - Remove pinctrl consumer properties, as they are handled by core
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ net/core/skbuff.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-   So you're removing them even from the example?
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index e18184ffa9c3..52d2ad54aa97 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -5590,6 +5590,7 @@ static void skb_mod_eth_type(struct sk_buff *skb, struct ethhdr *hdr,
+ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
+ 		  int mac_len, bool ethernet)
+ {
++	int offset = skb->data - skb_mac_header(skb);
+ 	struct mpls_shim_hdr *lse;
+ 	int err;
+ 
+@@ -5600,6 +5601,9 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
+ 	if (skb->encapsulation)
+ 		return -EINVAL;
+ 
++	if (WARN_ONCE(offset, "We got skb with skb->data not at mac header (offset %d)\n", offset))
++		return -EINVAL;
++
+ 	err = skb_cow_head(skb, MPLS_HLEN);
+ 	if (unlikely(err))
+ 		return err;
+@@ -5643,11 +5647,15 @@ EXPORT_SYMBOL_GPL(skb_mpls_push);
+ int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
+ 		 bool ethernet)
+ {
++	int offset = skb->data - skb_mac_header(skb);
+ 	int err;
+ 
+ 	if (unlikely(!eth_p_mpls(skb->protocol)))
+ 		return 0;
+ 
++	if (WARN_ONCE(offset, "We got skb with skb->data not at mac header (offset %d)\n", offset))
++		return -EINVAL;
++
+ 	err = skb_ensure_writable(skb, mac_len + MPLS_HLEN);
+ 	if (unlikely(err))
+ 		return err;
+-- 
+2.19.1
 
->     dt-schema,
->   - Document missing properties,
->   - Document missing PHY child node,
->   - Add "additionalProperties: false".
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-[...]
-
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
-
-MBR, Sergei
