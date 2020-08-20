@@ -2,77 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B576324BB9D
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:32:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1ED524BBCD
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:34:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729745AbgHTMbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 08:31:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
+        id S1729819AbgHTMeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 08:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730103AbgHTMbc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 08:31:32 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A472C061385;
-        Thu, 20 Aug 2020 05:31:32 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id v12so1857046ljc.10;
-        Thu, 20 Aug 2020 05:31:32 -0700 (PDT)
+        with ESMTP id S1729602AbgHTMeJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 08:34:09 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB49C061385
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 05:34:09 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id h22so1283344otq.11
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 05:34:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sLaFDqmhBKvCa66SIGjGPAggYoHsxbTGhHXTzFaeO7I=;
-        b=RljuvLmGHRDuQE1e9PkIln2c5TnJO/Q3bCV+HDJ3ERWcd5eu5GWH8U8447eR+Q6UKN
-         NE5OiBZgS5s35Mrm8r57nkzmMONIEQNV4wDJGyW+zzOHUr1/Go5eZ9pkW/0nZkHbtjxj
-         OhED3iBZDaRsu7yaihnMLUSLcgTeJvrtYWJzYIFoQQtDH90ihQ1NeM7CtN9Em7OxuXIN
-         jC9Hyh8b25NKF4+MKzbxxSr8vpWFdYH+R02jxcrsTtJpXV4K03Dh4BDaXbEEPDwsIvCx
-         HsqqEmkyAuKsNOJmJdQ8WzxCOc7lU8ogbGogN4vGUE8xMhOHy57wypnssPMdP1ldDlD8
-         d3og==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BIs6d/jQFwGlnkZ5L4RtC3BBouLuQNHRbQqNyXKW5UA=;
+        b=XPae7+krQuaIKLfqBwHPdeeqh4BCT2yAY1Kx/KY4xCqMP8r+sRNyl0bTAEA1mCUV/6
+         W6JulKNVZzjnr/6wCrVOicF//Ednj9hvSSv9Y2pP3FVoJpWIRv3zJ9+vZCTYlPkLOo0W
+         BtfK4tT9nkXPhvzon3pOhchSSBcJxqBNfiHZ0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=sLaFDqmhBKvCa66SIGjGPAggYoHsxbTGhHXTzFaeO7I=;
-        b=pQEf9UVtefVUcYmIRs4t9sxZ+CNlm2/GQiBgMTFCUt1ac6XGvB1xqCswI3Sum+5naD
-         RLbnKe7Q56r44xtnmWNpQ7/dxSiWkIBLpvXsk9H7EWpPvHX84sxhcyavtVG1t82L3NH9
-         wEY6NEvJGAnHz51/qltpWQdWvwUj+/xkC51KBQAbBXaDNE2VaoRkyg480nizGOHWyQrJ
-         IE8wdILKlKTXN7w3sv3cJ2D0noloA3SDRyPSs3tTj5zCgCQ25J9pk2EOeFhgnP9/mJO4
-         +fRRU5EhATpRsewC0WWJHwFaTyo1m8+OzLDRgU5/LKF5vUaim18IAx24QsqW2meGaiy2
-         s4vg==
-X-Gm-Message-State: AOAM533gEs0zMeeA4DKe3RU0qMU6nTbk5Eiby9HAG2yWnqmuU5G6//27
-        0yBUuFQ4q91JDZaLO6SkjeAfTza03ubMwA==
-X-Google-Smtp-Source: ABdhPJwtTloWdfwP67KjGtYImwnrwLGmvfiVdtdTgpJ7Hs/0RAHkHZhjbJGS3dfCWQwB0iE/od+SpQ==
-X-Received: by 2002:a2e:8215:: with SMTP id w21mr1493576ljg.43.1597926690796;
-        Thu, 20 Aug 2020 05:31:30 -0700 (PDT)
-Received: from wasted.omprussia.ru ([2a00:1fa0:46d7:4a60:acca:c7f9:9bba:62e5])
-        by smtp.gmail.com with ESMTPSA id b16sm430034ljk.24.2020.08.20.05.31.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Aug 2020 05:31:30 -0700 (PDT)
-Subject: Re: [PATCH v3] ravb: Fixed to be able to unload modules
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-References: <20200820094307.3977-1-ashiduka@fujitsu.com>
- <f5cf5e82-cc35-4141-982a-7abc4794e789@gmail.com>
-Message-ID: <bd5d2d20-eeb0-12fb-4e25-c596f0ff5898@gmail.com>
-Date:   Thu, 20 Aug 2020 15:31:29 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BIs6d/jQFwGlnkZ5L4RtC3BBouLuQNHRbQqNyXKW5UA=;
+        b=JUJ4aWJ0XyL49mz/8DxoJkd1ZLbuVsHlK6UfQETcEwmHv/pr8F5s0VlKGAI2tEI+tK
+         P49lowRM+akuJyH/ucPX+wvnjgJdPp4FlicI1yI6ofCZqx3cNy5QJaSGXJYTIH68gFlw
+         OdDAPBfdG9tWKJTjS7Tplzm28eOksE2iViJe8ARtrf4tQOd2r32IuVw0NYM9bQLmlh9Y
+         YW0ydZzezyM1hq2jrCU+C5UBfLR8Y2Ogjc2N6KBdB4Wyx18llC3x2iJ4i6RNtz3Rg2rI
+         tchVnpKJTGpib/0uRzw4cWizeZQ3q11Cp41mEJYIBQivu4/07KGurlWnyFIQR+h34XGT
+         U/pA==
+X-Gm-Message-State: AOAM53173IqCmgFDU8N71iIPCP+qhj/erdLtdLoli9Z6hPK5SAcoS0ld
+        M3HhenmeMJnfN9+E+duKSd0l9rplqvkl8W9/JZ3//A==
+X-Google-Smtp-Source: ABdhPJzN7dBfvBuuP0F4Tco7q0JAyPALhhyXQWprRuputnZqvXCVX5jNbqueDmKE8m8pQCaVCnop35OD4eN2Ba1w4w4=
+X-Received: by 2002:a9d:6e18:: with SMTP id e24mr1890875otr.132.1597926848493;
+ Thu, 20 Aug 2020 05:34:08 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <f5cf5e82-cc35-4141-982a-7abc4794e789@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200819092436.58232-1-lmb@cloudflare.com> <20200819092436.58232-5-lmb@cloudflare.com>
+ <5d64158b-35ed-d28d-9857-6ee725d287f2@fb.com>
+In-Reply-To: <5d64158b-35ed-d28d-9857-6ee725d287f2@fb.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 20 Aug 2020 13:33:57 +0100
+Message-ID: <CACAyw9_4_PZ1bHd0W-mAN5b0i-ZriTZSxWtoS59baXdRg6wk0g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 4/6] bpf: override the meaning of
+ ARG_PTR_TO_MAP_VALUE for sockmap and sockhash
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/20/20 3:29 PM, Sergei Shtylyov wrote:
+On Wed, 19 Aug 2020 at 21:13, Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 8/19/20 2:24 AM, Lorenz Bauer wrote:
+> > The verifier assumes that map values are simple blobs of memory, and
+> > therefore treats ARG_PTR_TO_MAP_VALUE, etc. as such. However, there are
+> > map types where this isn't true. For example, sockmap and sockhash store
+> > sockets. In general this isn't a big problem: we can just
+> > write helpers that explicitly requests PTR_TO_SOCKET instead of
+> > ARG_PTR_TO_MAP_VALUE.
+> >
+> > The one exception are the standard map helpers like map_update_elem,
+> > map_lookup_elem, etc. Here it would be nice we could overload the
+> > function prototype for different kinds of maps. Unfortunately, this
+> > isn't entirely straight forward:
+> > We only know the type of the map once we have resolved meta->map_ptr
+> > in check_func_arg. This means we can't swap out the prototype
+> > in check_helper_call until we're half way through the function.
+> >
+> > Instead, modify check_func_arg to treat ARG_PTR_TO_MAP_VALUE* to
+> > mean "the native type for the map" instead of "pointer to memory"
+> > for sockmap and sockhash. This means we don't have to modify the
+> > function prototype at all
+> >
+> > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> > ---
+> >   kernel/bpf/verifier.c | 40 ++++++++++++++++++++++++++++++++++++++++
+> >   1 file changed, 40 insertions(+)
+> >
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index b6ccfce3bf4c..47f9b94bb9d4 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -3872,6 +3872,38 @@ static int int_ptr_type_to_size(enum bpf_arg_type type)
+> >       return -EINVAL;
+> >   }
+> >
+> > +static int override_map_arg_type(struct bpf_verifier_env *env,
+> > +                              const struct bpf_call_arg_meta *meta,
+> > +                              enum bpf_arg_type *arg_type)
+> > +{
+> > +     if (!meta->map_ptr) {
+> > +             /* kernel subsystem misconfigured verifier */
+> > +             verbose(env, "invalid map_ptr to access map->type\n");
+> > +             return -EACCES;
+> > +     }
+> > +
+> > +     switch (meta->map_ptr->map_type) {
+> > +     case BPF_MAP_TYPE_SOCKMAP:
+> > +     case BPF_MAP_TYPE_SOCKHASH:
+> > +             switch (*arg_type) {
+> > +             case ARG_PTR_TO_MAP_VALUE:
+> > +                     *arg_type = ARG_PTR_TO_SOCKET;
+> > +                     break;
+> > +             case ARG_PTR_TO_MAP_VALUE_OR_NULL:
+> > +                     *arg_type = ARG_PTR_TO_SOCKET_OR_NULL;
+> > +                     break;
+> > +             default:
+> > +                     verbose(env, "invalid arg_type for sockmap/sockhash\n");
+> > +                     return -EINVAL;
+> > +             }
+> > +             break;
+> > +
+> > +     default:
+> > +             break;
+> > +     }
+> > +     return 0;
+> > +}
+> > +
+> >   static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+> >                         struct bpf_call_arg_meta *meta,
+> >                         const struct bpf_func_proto *fn)
+> > @@ -3904,6 +3936,14 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+> >               return -EACCES;
+> >       }
+> >
+> > +     if (arg_type == ARG_PTR_TO_MAP_VALUE ||
+> > +         arg_type == ARG_PTR_TO_UNINIT_MAP_VALUE ||
+> > +         arg_type == ARG_PTR_TO_MAP_VALUE_OR_NULL) {
+>
+> We probably do not need ARG_PTR_TO_UNINIT_MAP_VALUE here.
+>
+> Do we need ARG_PTR_TO_MAP_VALUE_OR_NULL? bpf_map_update_elem arg type
+> is ARG_PTR_TO_MAP_VALUE.
 
->    Also, s/Fixed/fix/ in the subject. Nearly missed it. :-)
+I did this to be consistent: in a single function definition you
+either get the map specific
+types or the regular semantics. You don't get to mix and match them.
+For the same
+reason I included ARG_PTR_TO_UNINIT_MAP_VALUE: the semantics don't make
+sense for sockmap, so a function using this doesn't make sense either.
 
-   And overall, I'd call the patch "ravb: fix module unloading".
+>
+> > +             err = override_map_arg_type(env, meta, &arg_type);
+> > +             if (err)
+> > +                     return err;
+> > +     }
+> > +
+> >       if (arg_type == ARG_PTR_TO_MAP_KEY ||
+> >           arg_type == ARG_PTR_TO_MAP_VALUE ||
+> >           arg_type == ARG_PTR_TO_UNINIT_MAP_VALUE ||
+> >
 
-MBR, Sergei
+
+
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+
+www.cloudflare.com
