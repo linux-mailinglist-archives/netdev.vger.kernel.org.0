@@ -2,118 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C623924B04E
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 09:47:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80FD924B057
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 09:48:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725838AbgHTHrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 03:47:22 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:58880 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725819AbgHTHrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 03:47:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1597909640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=afYAmefC1IpSW3rtllSNigzU5YzEXsMpfpWcsvn1W1o=;
-        b=cgKJy8PTkQmUk9E8eOaj/dsnO98LUQpbxJ5kH5aFBRUNxi67X61Vx0c2b8TtdxnHyo6YDq
-        PxwGc0SbPhTfgVMfrUzWDF72kflp79bFnBPr+VjeB5EO5jw7JtEBXGu2EE363mZofRCxd5
-        pn/AAC2BAoWLqWhAOnNUfh/Eva4QbOQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-468-bs6FjRRYMdOYKUqEOWOF-Q-1; Thu, 20 Aug 2020 03:47:16 -0400
-X-MC-Unique: bs6FjRRYMdOYKUqEOWOF-Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1725916AbgHTHsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 03:48:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57424 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726387AbgHTHsM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 03:48:12 -0400
+Received: from coco.lan (ip5f5ad5a3.dynamic.kabel-deutschland.de [95.90.213.163])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 22A7E425D5;
-        Thu, 20 Aug 2020 07:47:15 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.64])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 951897E30E;
-        Thu, 20 Aug 2020 07:47:05 +0000 (UTC)
-Date:   Thu, 20 Aug 2020 09:47:04 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, echaudro@redhat.com,
-        sameehj@amazon.com, brouer@redhat.com,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCH net-next 6/6] net: mvneta: enable jumbo frames for XDP
-Message-ID: <20200820094704.17840324@carbon>
-In-Reply-To: <5f3da06d5de6c_1b0e2ab87245e5c01b@john-XPS-13-9370.notmuch>
-References: <cover.1597842004.git.lorenzo@kernel.org>
-        <3e0d98fafaf955868205272354e36f0eccc80430.1597842004.git.lorenzo@kernel.org>
-        <20200819122328.0dab6a53@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200819202223.GA179529@lore-desk>
-        <20200819141428.24e5183a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <5f3da06d5de6c_1b0e2ab87245e5c01b@john-XPS-13-9370.notmuch>
+        by mail.kernel.org (Postfix) with ESMTPSA id DF7492076E;
+        Thu, 20 Aug 2020 07:48:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597909691;
+        bh=g2IqS522aDpDOMRGjJhoBBKmc9vDx5nkutC89s6uJR4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q9mr5rBKWlaN6yOMGAvpVnslZyDPcwewIL7KGeA4ddSFK2LedtABk2YcfI/a2xWSo
+         vj4XxLKWhcOWpuFnRThSQO8Cn4AnL6tc5Bg7GCM7GCId3AAXYo0vPaJOaK7wHu4CUU
+         CDlaI3bQpIBtNGU4ubSBKKXxRpxl+QeouugEhmNw=
+Date:   Thu, 20 Aug 2020 09:48:00 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linuxarm@huawei.com, mauro.chehab@huawei.com,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Bogdan Togorean <bogdan.togorean@analog.com>,
+        Liwei Cai <cailiwei@hisilicon.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Xinliang Liu <xinliang.liu@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Wanchun Zheng <zhengwanchun@hisilicon.com>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        linux-media <linux-media@vger.kernel.org>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Rob Clark <robdclark@chromium.org>,
+        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Liuyao An <anliuyao@huawei.com>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>, Wei Xu <xuwei5@hisilicon.com>,
+        Rongrong Zou <zourongrong@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Chen Feng <puck.chen@hisilicon.com>
+Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
+Message-ID: <20200820094800.3ede7970@coco.lan>
+In-Reply-To: <CALAqxLULQvW3UikCHpEzSDnpeYnBy8wDSsWZNbSrmivQTW3_Sg@mail.gmail.com>
+References: <cover.1597833138.git.mchehab+huawei@kernel.org>
+        <CALAqxLU3bt6fT4nGHZFSnzyQq4xJo2On=c_Oa9ONED9-jhaFgw@mail.gmail.com>
+        <CALAqxLW98nVc-=8Q6nx-wRP1z8pzkw1_zNc9M7V3GhnJQqM9rg@mail.gmail.com>
+        <CALAqxLULQvW3UikCHpEzSDnpeYnBy8wDSsWZNbSrmivQTW3_Sg@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 19 Aug 2020 14:58:05 -0700
-John Fastabend <john.fastabend@gmail.com> wrote:
+Em Wed, 19 Aug 2020 20:28:44 -0700
+John Stultz <john.stultz@linaro.org> escreveu:
 
-> Jakub Kicinski wrote:
-> > On Wed, 19 Aug 2020 22:22:23 +0200 Lorenzo Bianconi wrote:  
-> > > > On Wed, 19 Aug 2020 15:13:51 +0200 Lorenzo Bianconi wrote:    
-> > > > > Enable the capability to receive jumbo frames even if the interface is
-> > > > > running in XDP mode
-> > > > > 
-> > > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>    
-> > > > 
-> > > > Hm, already? Is all the infra in place? Or does it not imply
-> > > > multi-buffer.  
-> > > 
-> > > with this series mvneta supports xdp multi-buff on both rx and tx sides (XDP_TX
-> > > and ndo_xpd_xmit()) so we can remove MTU limitation.  
-> > 
-> > Is there an API for programs to access the multi-buf frames?  
+> On Wed, Aug 19, 2020 at 7:01 PM John Stultz <john.stultz@linaro.org> wrote:
+> >
+> > On Wed, Aug 19, 2020 at 2:36 PM John Stultz <john.stultz@linaro.org> wrote:  
+> > >
+> > > On Wed, Aug 19, 2020 at 4:46 AM Mauro Carvalho Chehab
+> > > <mchehab+huawei@kernel.org> wrote:  
+> > > > So, IMO, the best is to keep it on staging for a while, until those
+> > > > remaining bugs gets solved.
+> > > >
+> > > > I added this series, together with the regulator driver and
+> > > > a few other patches (including a hack to fix a Kernel 5.8
+> > > > regression at WiFi ) at:
+> > > >
+> > > >         https://gitlab.freedesktop.org/mchehab_kernel/hikey-970/-/commits/master  
+> > >
+> > > Sorry, one more small request: Could you create a branch that only has
+> > > the DRM driver changes in it?
+> > >
+> > > The reason I ask, is that since the HiKey960 isn't affected by the
+> > > majority of the problems you listed as motivation for going through
+> > > staging. So if we can validate that your tree works fine on HiKey960,
+> > > the series can be cleaned up and submitted properly upstream to enable
+> > > that SoC, and the outstanding 970 issues can be worked out afterwards
+> > > against mainline.  
+> >
+> > Just as a heads up, I tried testing your tree with my HiKey960, and
+> > after fixing the compat string inconsistency, the drivers seem to load
+> > properly. However the drm_hwcomposer seems to have some trouble with
+> > the driver:
+> > 01-01 00:12:41.456   345   345 E hwc-drm-display-compositor: Commit
+> > test failed for display 0, FIXME
+> > 01-01 00:12:41.456   345   345 E hwc-drm-two: Failed to apply the
+> > frame composition ret=-22
+> > 01-01 00:12:41.456   351   351 E HWComposer:
+> > presentAndGetReleaseFences: present failed for display 0: BadParameter
+> > (4)
+> >
+> > I'll dig in a bit further as to why, but wanted to give you a heads up.  
 > 
-> Hi Lorenzo,
+> Ok, I've mostly gotten it sorted out:
+>   - You're missing a few color formats.
+>   - And I re-discovered a crash that was already fixed in my tree.
 > 
-> This is not enough to support multi-buffer in my opinion. I have the
-> same comment as Jakub. We need an API to pull in the multiple
-> buffers otherwise we break the ability to parse the packets and that
-> is a hard requirement to me. I don't want to lose visibility to get
-> jumbo frames.
-> 
-> At minimum we need a bpf_xdp_pull_data() to adjust pointer. In the
-> skmsg case we use this,
-> 
->   bpf_msg_pull_data(u32 start, u32 end, u64 flags)
-> 
-> Where start is the offset into the packet and end is the last byte we
-> want to adjust start/end pointers to. This way we can walk pages if
-> we want and avoid having to linearize the data unless the user actual
-> asks us for a block that crosses a page range. Smart users then never
-> do a start/end that crosses a page boundary if possible. I think the
-> same would apply here.
-> 
-> XDP by default gives you the first page start/end to use freely. If
-> you need to parse deeper into the payload then you call bpf_msg_pull_data
-> with the byte offsets needed.
+> I'll send those patches in a few here.
 
-I agree that we need a helper like this. (I also think Daniel have
-proposed this before).  This would also be useful for Eric Dumazet /
-Google's header-split use-case[1].  As I understood from his talk[1],
-the NIC HW might not always split the packet correctly (due to HW
-limits). This helper could solve part of this challenge.
+Thank you for the patches! I'll test them with Hikey 970 in order to
+be sure they're compatible also with such SoC.
 
+> 
+> That said even with the patches I've got on top of your series, I
+> still see a few issues:
 
-[1] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+> 1) I'm seeing red-blue swap with your driver.  I need to dig a bit to
+> see what the difference is, I know gralloc has a config option for
+> this, and maybe the version of the driver I'm carrying has it wrong?
 
+There are some settings at adv7535 with regards to the colormap.
+The 4.9 fork of it has some different settings. Maybe it could
+be somehow related to it.
+
+I have here a Hikey 960, but didn't test it yet.
+
+> 2) Performance is noticeably worse. Whereas with my tree, I see close
+> to 60fps (that clk issue we mentioned earlier is why it's not exactly
+> 60) in most tests, but with yours it mostly hovers around 30some fps,
+> occasionally speeding up to 40 and then back down.
+
+That's weird, but it could be due to some settings related to CMA, IOMMU
+and/or AFBC.
+
+> Obviously with some work I suspect we'll be able to sort these out,
+> but I also do feel that the set you're starting with for upstreaming
+> is pretty old. The driver I'm carrying was heavily refactored around
+> 5.0 to share code with the existing kirin driver, in the hopes of
+> making usptreaming easier, and it seems a shame to throw that out and
+> focus your efforts on the older tree.
+> 
+> But to be fair, I've not had time to upstream the driver myself, and
+> it's obviously your choice on how you spend your time.  I am really
+> excited to see your efforts here, regardless of which driver you end
+> up pushing.
+
+On a quick look I've done, besides not having support for Hikey 970,
+the code on your tree seems to have less settings than the original
+one for Hikey 960. Yet, it should take some time to figure out what
+those extra settings are doing.
+
+Once I get this driver merged, and have USB support working fine[1],
+my plan is to compare the version from your tree, and compare
+with the one I have, in order to cleanup some stuff, check performance
+and do some other optimizations.
+
+-
+
+[1] this is a little OOT here: USB has been a challenge. Depending
+on the build, I'm getting an NMI interrupt error when the USB3
+stack is loaded (usually at dwc3). The error is ESR_ELx_AET_UC.
+Unfortunately, it doesn't point to where this error is generated,
+making very hard to debug it.
+
+Thanks,
+Mauro
