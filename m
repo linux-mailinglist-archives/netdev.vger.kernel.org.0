@@ -2,131 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BCCE24C63D
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 21:25:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 028C824C64B
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 21:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727833AbgHTTZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 15:25:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34408 "EHLO mail.kernel.org"
+        id S1727979AbgHTTec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 15:34:32 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45598 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726702AbgHTTZR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Aug 2020 15:25:17 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0D4F5207BB;
-        Thu, 20 Aug 2020 19:25:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597951516;
-        bh=V1aWMg+xtiMStjO4PPnYgGhTjG+MOKqJVN3GZijnzxs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WnYMnWeMLSNQ0QZqzlArCVIYFJGOxo2OL6bvSJY8jeyb3MVKAFLlGWBetHJip9sgi
-         ilO8rk2vesf4geXh/UqCeJsOcNCaH00hXkWdQRSZY0Wl189XVbPeBDMdZ3Dwd7SLv+
-         o03C/D9Mj11g+wifaVMyHN7ukptYMruktcf4lgEY=
-Date:   Thu, 20 Aug 2020 12:25:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Thompson <davthompson@nvidia.com>
-Cc:     David Thompson <dthompson@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Asmaa Mnebhi <Asmaa@mellanox.com>
-Subject: Re: [PATCH net-next v2] Add Mellanox BlueField Gigabit Ethernet
- driver
-Message-ID: <20200820122514.5b552e42@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <MN2PR12MB2975DAA7292C27DEB0B518A8C75A0@MN2PR12MB2975.namprd12.prod.outlook.com>
-References: <1596149638-23563-1-git-send-email-dthompson@mellanox.com>
-        <20200730173059.7440e21c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <MN2PR12MB2975DAA7292C27DEB0B518A8C75A0@MN2PR12MB2975.namprd12.prod.outlook.com>
+        id S1725977AbgHTTeb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 15:34:31 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 6EE0BAC4C;
+        Thu, 20 Aug 2020 19:34:56 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id A05366073E; Thu, 20 Aug 2020 21:34:26 +0200 (CEST)
+Date:   Thu, 20 Aug 2020 21:34:26 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Vishal Kulkarni <vishal@chelsio.com>, davem@davemloft.net,
+        rahul.lakkireddy@chelsio.com
+Subject: Re: [PATCH net-next] ethtool: allow flow-type ether without IP
+ protocol field
+Message-ID: <20200820193426.f2k3kw7t6t66ehvj@lion.mk-sys.cz>
+References: <20200818185503.664-1-vishal@chelsio.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="si3pbal6jvwa2r4l"
+Content-Disposition: inline
+In-Reply-To: <20200818185503.664-1-vishal@chelsio.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Aug 2020 18:51:39 +0000 David Thompson wrote:
-> > > +	for (i = 0; i < priv->rx_q_entries; i++) {
-> > > +		/* Allocate a receive buffer for this RX WQE. The DMA
-> > > +		 * form (dma_addr_t) of the receive buffer address is
-> > > +		 * stored in the RX WQE array (via 'rx_wqe_ptr') where
-> > > +		 * it is accessible by the GigE device. The VA form of
-> > > +		 * the receive buffer is stored in 'rx_buf[]' array in
-> > > +		 * the driver private storage for housekeeping.
-> > > +		 */
-> > > +		priv->rx_buf[i] = dma_alloc_coherent(priv->dev,
-> > > +  
-> > MLXBF_GIGE_DEFAULT_BUF_SZ,  
-> > > +						     &rx_buf_dma,
-> > > +						     GFP_KERNEL);  
-> > 
-> > Do the buffers have to be in coherent memory? That's kinda strange.
-> >   
-> 
-> Yes, the mlxbf_gige silicon block needs to be programmed with the
-> buffer's physical address so that the silicon logic can DMA incoming
-> packet data into the buffer.  The kernel API "dma_alloc_coherent()"
-> meets the driver's requirements in that it returns a CPU-useable address
-> as well as a bus/physical address (used by silicon).
 
-It's highly unusual, all drivers I know use the streaming DMA interface.
-IDK what the performance implications for using coherent mappings on
-your platforms are, but I'd prefer if you took the more common approach.
+--si3pbal6jvwa2r4l
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > > +static void mlxbf_gige_get_ethtool_stats(struct net_device *netdev,
-> > > +					 struct ethtool_stats *estats,
-> > > +					 u64 *data)
-> > > +{
-> > > +	struct mlxbf_gige *priv = netdev_priv(netdev);
-> > > +	unsigned long flags;
-> > > +
-> > > +	spin_lock_irqsave(&priv->lock, flags);  
-> > 
-> > Why do you take a lock around stats?
-> 
-> I wrote the logic with a lock so that it implements an atomic "snapshot"
-> of the driver's statistics.  This is useful since the standard TX/RX stats
-> are being incremented in packet completion logic triggered by the 
-> NAPI framework.  Do you see a disadvantage to using a lock here?
+On Wed, Aug 19, 2020 at 12:25:03AM +0530, Vishal Kulkarni wrote:
+> Set IP protocol mask only when IP protocol field is set.
+> This will allow flow-type ether with vlan rule which don't have
+> protocol field to apply.
+>=20
+> ethtool -N ens5f4 flow-type ether proto 0x8100 vlan 0x600\
+> m 0x1FFF action 3 loc 16
+>=20
+> Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
+> ---
+>  net/ethtool/ioctl.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+> index 441794e0034f..e6f5cf52023c 100644
+> --- a/net/ethtool/ioctl.c
+> +++ b/net/ethtool/ioctl.c
+> @@ -3025,13 +3025,14 @@ ethtool_rx_flow_rule_create(const struct ethtool_=
+rx_flow_spec_input *input)
+>  	case TCP_V4_FLOW:
+>  	case TCP_V6_FLOW:
+>  		match->key.basic.ip_proto =3D IPPROTO_TCP;
+> +		match->mask.basic.ip_proto =3D 0xff;
+>  		break;
+>  	case UDP_V4_FLOW:
+>  	case UDP_V6_FLOW:
+>  		match->key.basic.ip_proto =3D IPPROTO_UDP;
+> +		match->mask.basic.ip_proto =3D 0xff;
+>  		break;
+>  	}
+> -	match->mask.basic.ip_proto =3D 0xff;
+> =20
+>  	match->dissector.used_keys |=3D BIT(FLOW_DISSECTOR_KEY_BASIC);
+>  	match->dissector.offset[FLOW_DISSECTOR_KEY_BASIC] =3D
+> --=20
+> 2.21.1
+>=20
 
-The Linux APIs don't provide any "snapshot" guarantees, and you're
-stalling the datapath to read stats.
+This is certainly correct. We should also handle SCTP_V4_FLOW and
+SCTP_V6_FLOW in the same way as {TCP,UDP}_V{4,6}_FLOW but that is an
+unrelated problem which should be handled separately (and also needs to
+be addressed in the switch statement above this one).
 
-> > > +static const struct net_device_ops mlxbf_gige_netdev_ops = {
-> > > +	.ndo_open		= mlxbf_gige_open,
-> > > +	.ndo_stop		= mlxbf_gige_stop,
-> > > +	.ndo_start_xmit		= mlxbf_gige_start_xmit,
-> > > +	.ndo_set_mac_address	= eth_mac_addr,
-> > > +	.ndo_validate_addr	= eth_validate_addr,
-> > > +	.ndo_do_ioctl		= mlxbf_gige_do_ioctl,
-> > > +	.ndo_set_rx_mode        = mlxbf_gige_set_rx_mode,  
-> > 
-> > You must report standard stats.
-> 
-> Are you referring to the three possible methods that a driver
-> must use the implement support of standard stats reporting:
-> 
-> From include/linux/netdevice.h -->
-> * void (*ndo_get_stats64)(struct net_device *dev,
->  *                         struct rtnl_link_stats64 *storage);
->  * struct net_device_stats* (*ndo_get_stats)(struct net_device *dev);
->  *      Called when a user wants to get the network device usage
->  *      statistics. Drivers must do one of the following:
->  *      1. Define @ndo_get_stats64 to fill in a zero-initialised
->  *         rtnl_link_stats64 structure passed by the caller.
->  *      2. Define @ndo_get_stats to update a net_device_stats structure
->  *         (which should normally be dev->stats) and return a pointer to
->  *         it. The structure may be changed asynchronously only if each
->  *         field is written atomically.
->  *      3. Update dev->stats asynchronously and atomically, and define
->  *         neither operation.
-> 
-> The mlxbf_gige driver has implemented #3 above, as there is logic
-> in the RX and TX completion handlers that increments RX/TX packet
-> and byte counts in the net_device->stats structure.  Is that sufficient
-> for support of standard stats?
+Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
 
-You only update the basic stats. Please take a look at all members,
-some of the hw stats will probably fit there, and other HW errors need
-to be added to the cumulative rx/tx error stats.
+
+--si3pbal6jvwa2r4l
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl8+0D0ACgkQ538sG/LR
+dpWUGgf/WNuwvQXD/5rTb9bLDbgfiBDcZXuit8zOEMw3iswgY09I+LdsFVLsuUNN
+PAO29kH6nfT0WrQT+D5zhV8UF6ZLFFvXZX6Y94jYm/7NcJGIB3WgjwnwLqz3t3Kd
+Jhci3Jueaowo3SsQoSXteu6Z+7m4h4cHcSR51PfV1UBa2GYzcU65Fbtc6DC5uNAg
+ZVu6+tsI43wbCUCE35t/s5uHPDM+SCTRV5C9UN7Ds77x0PGlO4J81q2vsRKkKnLc
+q2LXJTXI8+TfoD1qWO5MX5zPabOCHehFPz0ZJkGUa0db8ng5XfT6hQ1VoUac3iPi
+hSr3J6vhcF7srfEB+HUc7MDZ+J92Lw==
+=JsYk
+-----END PGP SIGNATURE-----
+
+--si3pbal6jvwa2r4l--
