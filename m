@@ -2,89 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E181A24BB7B
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:30:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD1924BB82
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729846AbgHTM3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 08:29:47 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:34814 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729347AbgHTM3h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Aug 2020 08:29:37 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 7A43D86F04766B046245;
-        Thu, 20 Aug 2020 20:29:34 +0800 (CST)
-Received: from huawei.com (10.175.104.175) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Thu, 20 Aug 2020
- 20:29:28 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <martin.varghese@nokia.com>, <pshelar@ovn.org>, <fw@strlen.de>,
-        <dcaratti@redhat.com>, <edumazet@google.com>,
-        <steffen.klassert@secunet.com>, <pabeni@redhat.com>,
-        <shmulik@metanetworks.com>, <kyk.segfault@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] net: Check the expect of skb->data at mac header
-Date:   Thu, 20 Aug 2020 08:28:22 -0400
-Message-ID: <20200820122822.46608-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.19.1
+        id S1730090AbgHTMaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 08:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729936AbgHTM37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 20 Aug 2020 08:29:59 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1D44C061385;
+        Thu, 20 Aug 2020 05:29:56 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id w14so1877576ljj.4;
+        Thu, 20 Aug 2020 05:29:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xTQl+WhOEFyBUEPU2y35AZP/kKPmwXIUhguF6dralO0=;
+        b=psPwQJDMeJ5F2i7CFGRKuG4cazqwYLE5VVeBVXOEj/hC7nLP2YH6a0kOJxtihGIIVW
+         S8CN8Zk0AxWpD1SSZcZIFvE8yHyJUMDTFoXn1vjwIR+x7fOhqB9mLAhICjgARGjp5T+h
+         LPXOFfSIb61HQAwK6kJzM/trNqMvKTmoo7tnFR9FnYFQ8YyCkNdFVlg8+KzhGWJX8dk5
+         MKVuQBiWMJtWtQCZUdicBg6R+L4e+H+57+q3lCc4J6avCfAPNKUM2BXxrHqSVrMrVUeF
+         PQOTmwbgdtBTViwi5JKOpSQf86Xaco99X/n/h/tQp6VbFJpATWvx8zDVhyCd+IoSVxSa
+         GunA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xTQl+WhOEFyBUEPU2y35AZP/kKPmwXIUhguF6dralO0=;
+        b=Gn1WYXgnZrYOGONXwfIK7lx0Gi9qXVh6aLHpWiF1oU3P23nPDOECAz/Stqnu8Aw9+z
+         c3bt+fJIgsKlr/WHye2RzgqJjzbDHiRNSezI+YVmhGYKGQ8jfaYbU5GIYKgwMVhxZQhW
+         NSI4B8irEmh6rmj+QOybJ95Gm7R6mAfA8PzJ/J5+XRlCuL3KGfXRcQNjKV86VS0fIKOO
+         54tWoV8niw5wa+QlLLU73zNUSic7tatbBkfHPexuq9KYr0PSXqrtX1MZk41Fe/NMxaJJ
+         K6ux/W/V2rZl7YRkXahhpiiGvTW0HWK7/euyP0gzd1YicP11A55NMyKxHcREwdKuM9Fw
+         Eclg==
+X-Gm-Message-State: AOAM530BkeyOlGgtGuBYYpjbjx5qAMO4CWsATX9hMIHMML/5NuHJEMMk
+        K36CYbx6qXzY6jdmh0vbQ98bpy5sstQUyQ==
+X-Google-Smtp-Source: ABdhPJxTpdKmSRcDAYXa5l/TzFSzo9SsjV6q6N60RuD50GInEMuO6nJuMqvEwDsc9ZD0kBMV25PGlA==
+X-Received: by 2002:a2e:8999:: with SMTP id c25mr1604603lji.430.1597926593850;
+        Thu, 20 Aug 2020 05:29:53 -0700 (PDT)
+Received: from wasted.omprussia.ru ([2a00:1fa0:46d7:4a60:acca:c7f9:9bba:62e5])
+        by smtp.gmail.com with ESMTPSA id d10sm421918ljg.87.2020.08.20.05.29.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Aug 2020 05:29:53 -0700 (PDT)
+Subject: Re: [PATCH v3] ravb: Fixed to be able to unload modules
+To:     Yuusuke Ashizuka <ashiduka@fujitsu.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+References: <20200820094307.3977-1-ashiduka@fujitsu.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Message-ID: <f5cf5e82-cc35-4141-982a-7abc4794e789@gmail.com>
+Date:   Thu, 20 Aug 2020 15:29:52 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.175]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20200820094307.3977-1-ashiduka@fujitsu.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-skb_mpls_push() and skb_mpls_pop() expect skb->data at mac header. Check
-this assumption or we would get wrong mac_header and network_header.
-
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- net/core/skbuff.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index e18184ffa9c3..52d2ad54aa97 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -5590,6 +5590,7 @@ static void skb_mod_eth_type(struct sk_buff *skb, struct ethhdr *hdr,
- int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
- 		  int mac_len, bool ethernet)
- {
-+	int offset = skb->data - skb_mac_header(skb);
- 	struct mpls_shim_hdr *lse;
- 	int err;
- 
-@@ -5600,6 +5601,9 @@ int skb_mpls_push(struct sk_buff *skb, __be32 mpls_lse, __be16 mpls_proto,
- 	if (skb->encapsulation)
- 		return -EINVAL;
- 
-+	if (WARN_ONCE(offset, "We got skb with skb->data not at mac header (offset %d)\n", offset))
-+		return -EINVAL;
-+
- 	err = skb_cow_head(skb, MPLS_HLEN);
- 	if (unlikely(err))
- 		return err;
-@@ -5643,11 +5647,15 @@ EXPORT_SYMBOL_GPL(skb_mpls_push);
- int skb_mpls_pop(struct sk_buff *skb, __be16 next_proto, int mac_len,
- 		 bool ethernet)
- {
-+	int offset = skb->data - skb_mac_header(skb);
- 	int err;
- 
- 	if (unlikely(!eth_p_mpls(skb->protocol)))
- 		return 0;
- 
-+	if (WARN_ONCE(offset, "We got skb with skb->data not at mac header (offset %d)\n", offset))
-+		return -EINVAL;
-+
- 	err = skb_ensure_writable(skb, mac_len + MPLS_HLEN);
- 	if (unlikely(err))
- 		return err;
--- 
-2.19.1
-
+   Also, s/Fixed/fix/ in the subject. Nearly missed it. :-)
