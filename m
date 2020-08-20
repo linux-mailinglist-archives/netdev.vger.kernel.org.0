@@ -2,133 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B88FB24BCCE
-	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:54:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5872024BBEC
+	for <lists+netdev@lfdr.de>; Thu, 20 Aug 2020 14:36:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730267AbgHTMxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 20 Aug 2020 08:53:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40958 "EHLO mail.kernel.org"
+        id S1730253AbgHTMf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 20 Aug 2020 08:35:57 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:39071 "EHLO mail.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729236AbgHTJnX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 20 Aug 2020 05:43:23 -0400
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C285F20724;
-        Thu, 20 Aug 2020 09:43:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597916602;
-        bh=CnunxCsOvBU/gUFXe+EXz0IAGG4b1qj7pIVDUrpfZWg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LxUe/5zOhpUu0yX3QPQi/2NIS3QBRStNZyzIAXegfpS5FX55TPD3T3rBBxX49W404
-         pxpLHhvfzBFfEL+qweR6QBJe8n8M0SifTa+Y0PGkqpTqM1J2zqQNThqD9utBYHkaWm
-         UJ3W7NW4FCAaIbpLQhWuXnyKqLZ+xGPa//aVByaE=
-Date:   Thu, 20 Aug 2020 10:43:15 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Jianyong Wu <Jianyong.Wu@arm.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
-        "john.stultz@linaro.org" <john.stultz@linaro.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        Suzuki Poulose <Suzuki.Poulose@arm.com>,
-        Steven Price <Steven.Price@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>,
-        Kaly Xin <Kaly.Xin@arm.com>, Justin He <Justin.He@arm.com>,
-        Wei Chen <Wei.Chen@arm.com>, nd <nd@arm.com>
-Subject: Re: [PATCH v13 2/9] arm/arm64: KVM: Advertise KVM UID to guests via
- SMCCC
-Message-ID: <20200820094314.GA18838@willie-the-truck>
-References: <20200619130120.40556-1-jianyong.wu@arm.com>
- <20200619130120.40556-3-jianyong.wu@arm.com>
- <HE1PR0802MB255577943C260898A6C686ABF4720@HE1PR0802MB2555.eurprd08.prod.outlook.com>
- <20200727113821.GB20437@willie-the-truck>
- <HE1PR0802MB25551F426910F76E95523383F4730@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+        id S1729515AbgHTJsH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 20 Aug 2020 05:48:07 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 2a71feb8;
+        Thu, 20 Aug 2020 09:21:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=cC4XKmjMItkWu82Ddd4N3/mfNJY=; b=aH3z0j
+        ih2A6UbHCt3IxPb9cGURoW1AdUF79cwHzp+slOvV8CXFkpZjl6EwYEA+JlKT5gjg
+        zXUFARHfV2sFXTmSREd8NhJunCIHY4nLafXpXu1CpMGAdsfYq1ZI7Ulbh+f6nFuU
+        GLpyQGqn20N+3jb0blAVWJ4mBsKgajaVO0bu5fJURP7VRaYN89n0QypNDmBbRufv
+        ee0CyvIMq5UV+mGRrzaGLR7yKNhLsfMBrsRgpAAPY0ix1nrsuR83acVzKS7914El
+        0vW2TT1WjeT+Ulx5s/6fFxHTTSITqe0SO9LaYWBs5aRN38VHZxd5DoUNpQtc1oJx
+        mQHl+eYy/l9WTo+Q==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 18dd5401 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Thu, 20 Aug 2020 09:21:41 +0000 (UTC)
+Received: by mail-io1-f50.google.com with SMTP id z17so385964ioi.6;
+        Thu, 20 Aug 2020 02:48:06 -0700 (PDT)
+X-Gm-Message-State: AOAM533pN3W79s134djddKcgXm3DtAhueZEDHWNsMOx+g89DE9LGy6Z0
+        nvgqpWN0nwu7SaecnD3KF0JrCiBgFDzwFZD/hPw=
+X-Google-Smtp-Source: ABdhPJwxqXuh3zpZ+vXV6pG3wfV26J+WMkYRDPSnD0jh7SwXM3vLbJ0QIOl7CaiQOrNMVRuAQnK6mTMYW9n8YZipXUs=
+X-Received: by 2002:a05:6638:138a:: with SMTP id w10mr2407389jad.36.1597916885689;
+ Thu, 20 Aug 2020 02:48:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <HE1PR0802MB25551F426910F76E95523383F4730@HE1PR0802MB2555.eurprd08.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <000000000000a7e38a05a997edb2@google.com> <0000000000005c13f505ad3f5c42@google.com>
+In-Reply-To: <0000000000005c13f505ad3f5c42@google.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 20 Aug 2020 11:47:54 +0200
+X-Gmail-Original-Message-ID: <CAHmME9rd+54EOO-b=wmVxtzbvckET2WSMm-3q8LJmfp38A9ceg@mail.gmail.com>
+Message-ID: <CAHmME9rd+54EOO-b=wmVxtzbvckET2WSMm-3q8LJmfp38A9ceg@mail.gmail.com>
+Subject: Re: WARNING in __cfg80211_connect_result
+To:     syzbot <syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, kvalo@codeaurora.org,
+        leon@kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 28, 2020 at 01:07:14AM +0000, Jianyong Wu wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Will Deacon <will@kernel.org>
-> > Sent: Monday, July 27, 2020 7:38 PM
-> > To: Jianyong Wu <Jianyong.Wu@arm.com>
-> > Cc: netdev@vger.kernel.org; yangbo.lu@nxp.com; john.stultz@linaro.org;
-> > tglx@linutronix.de; pbonzini@redhat.com; sean.j.christopherson@intel.com;
-> > maz@kernel.org; richardcochran@gmail.com; Mark Rutland
-> > <Mark.Rutland@arm.com>; Suzuki Poulose <Suzuki.Poulose@arm.com>;
-> > Steven Price <Steven.Price@arm.com>; linux-kernel@vger.kernel.org; linux-
-> > arm-kernel@lists.infradead.org; kvmarm@lists.cs.columbia.edu;
-> > kvm@vger.kernel.org; Steve Capper <Steve.Capper@arm.com>; Kaly Xin
-> > <Kaly.Xin@arm.com>; Justin He <Justin.He@arm.com>; Wei Chen
-> > <Wei.Chen@arm.com>; nd <nd@arm.com>
-> > Subject: Re: [PATCH v13 2/9] arm/arm64: KVM: Advertise KVM UID to guests
-> > via SMCCC
-> > 
-> > On Mon, Jul 27, 2020 at 03:45:37AM +0000, Jianyong Wu wrote:
-> > > > From: Will Deacon <will@kernel.org>
-> > > >
-> > > > We can advertise ourselves to guests as KVM and provide a basic
-> > > > features bitmap for discoverability of future hypervisor services.
-> > > >
-> > > > Cc: Marc Zyngier <maz@kernel.org>
-> > > > Signed-off-by: Will Deacon <will@kernel.org>
-> > > > Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
-> > > > ---
-> > > >  arch/arm64/kvm/hypercalls.c | 29 +++++++++++++++++++----------
-> > > >  1 file changed, 19 insertions(+), 10 deletions(-)
-> > > >
-> > > > diff --git a/arch/arm64/kvm/hypercalls.c
-> > > > b/arch/arm64/kvm/hypercalls.c index 550dfa3e53cd..db6dce3d0e23
-> > > > 100644
-> > > > --- a/arch/arm64/kvm/hypercalls.c
-> > > > +++ b/arch/arm64/kvm/hypercalls.c
-> > > > @@ -12,13 +12,13 @@
-> > > >  int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)  {
-> > > >  	u32 func_id = smccc_get_function(vcpu);
-> > > > -	long val = SMCCC_RET_NOT_SUPPORTED;
-> > > > +	u32 val[4] = {SMCCC_RET_NOT_SUPPORTED};
-> > >
-> > > There is a risk as this u32 value will return here and a u64 value
-> > > will be obtained in guest. For example, The val[0] is initialized as
-> > > -1 of 0xffffffff and the guest get 0xffffffff then it will be compared
-> > > with -1 of 0xffffffffffffffff Also this problem exists for the
-> > > transfer of address in u64 type. So the following assignment to "val"
-> > > should be split into two
-> > > u32 value and assign to val[0] and val[1] respectively.
-> > > WDYT?
-> > 
-> > Yes, I think you're right that this is a bug, but isn't the solution just to make
-> > that an array of 'long'?
-> > 
-> > 	long val [4];
-> > 
-> > That will sign-extend the negative error codes as required, while leaving the
-> > explicitly unsigned UID constants alone.
-> 
-> Ok, that's much better. I will fix it at next version.
-> 
-> By the way, I wonder when will you update this patch set. I see someone like me
-> adopt this patch set as code base and need rebase it every time, so expect your update.
+On Wed, Aug 19, 2020 at 8:42 PM syzbot
+<syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com> wrote:
+>
+> syzbot has bisected this issue to:
+>
+> commit e7096c131e5161fa3b8e52a650d7719d2857adfd
+> Author: Jason A. Donenfeld <Jason@zx2c4.com>
+> Date:   Sun Dec 8 23:27:34 2019 +0000
+>
+>     net: WireGuard secure network tunnel
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=175ad8b1900000
+> start commit:   e3ec1e8c net: eliminate meaningless memcpy to data in pskb..
+> git tree:       net-next
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=14dad8b1900000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10dad8b1900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3d400a47d1416652
+> dashboard link: https://syzkaller.appspot.com/bug?extid=cc4c0f394e2611edba66
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15d9de91900000
+>
+> Reported-by: syzbot+cc4c0f394e2611edba66@syzkaller.appspotmail.com
+> Fixes: e7096c131e51 ("net: WireGuard secure network tunnel")
 
-I'm not working on it, so please feel free to include it along with the
-patches that add an upstream user.
-
-Will
+Having trouble linking this back to wireguard... Those oopses don't
+have anything to do with it either. Bisection error?
