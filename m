@@ -2,152 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4815224D2E1
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 12:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0844424D312
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 12:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728413AbgHUKge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 06:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728284AbgHUKf5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 06:35:57 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0A2C061388
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 03:35:57 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id o18so1716147eje.7
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 03:35:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UfDTMgAoZ6HDZRHxm7H17YcOG20MI+Jb1kNrrrwvdB4=;
-        b=uUtixurF6KTDM6kpP2HNvJvSk9/Kjf3Tgp89eSeGR0liq1fB9l4tFE9fSEiFCEmJGS
-         qfPJ1rLHNYFHiPkkqyA8IcY2zmFf+2k2MJYYr8TAtOyYTvppon5YJNU3DPRUQhodo0Vu
-         GgfH9tYi0sj55bzF/gRqycDLW4yeDMiPuzh0DJIKsQX8/9dHm85Eio0TnFiBMW+45fAs
-         Q++sCkGn0qccLQxJLIoe2PAP8d1/Iijhg1xnrKo8AaX0Z9K+irt0rmouhV6GZkhQ3xD1
-         qjugGKyChHvXEAlaAUSzcIWjzqohu4ZtElkvFc29vfC5LHkBw82CkOvjL/x1WX2ldoEM
-         TxfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UfDTMgAoZ6HDZRHxm7H17YcOG20MI+Jb1kNrrrwvdB4=;
-        b=EdLBSmye8L5pBr1HifIiCmugc2joqHKs9uy+FffbxCDR78dn2z6BH/Z0vCZ39Zg8QB
-         /LMA87av/74GgZAuW1tK8k3sK+dV09wK0M3eARhg4Kcc7Sj5TFZrMx/BRCG+G9s6J1mC
-         rRIKNYU7/ddu3wa70Xr4hm/UWqGjt7g4GxeWhd5slZ23mM7pb/yRjZaupsPU371vE8Ui
-         rgs833JWhNCeAgJ9tCcqG6AAuhZnlEaQCTDHvIlYxwI1X8T89F6s/r7fWGt7N23jBNPU
-         3xAHDG/WdzSDIekfFc0ATTgjgzUpiHRHc7+ACup9jqxhIBXPVGNp4tTbbSLjd856ACXP
-         fHYg==
-X-Gm-Message-State: AOAM530MYnPFXoTTKqoaDxgeC5OlcLk/py2ZfoaK0NgAN7tSUZB+to0C
-        zxCOokQVQKAs6BnrQFgNzuk=
-X-Google-Smtp-Source: ABdhPJx/xuJMa6TwJUt5ZLmBomCMnuO1W69z2G6lpocP8YAbX/RsLQYFGPqo/Z5IMOUaWHEcYXKxwg==
-X-Received: by 2002:a17:906:b108:: with SMTP id u8mr2198268ejy.249.1598006155542;
-        Fri, 21 Aug 2020 03:35:55 -0700 (PDT)
-Received: from skbuf ([86.126.22.216])
-        by smtp.gmail.com with ESMTPSA id be25sm854785edb.18.2020.08.21.03.35.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 03:35:55 -0700 (PDT)
-Date:   Fri, 21 Aug 2020 13:35:52 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Thompson <dthompson@mellanox.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, jiri@mellanox.com,
-        Asmaa Mnebhi <asmaa@mellanox.com>
-Subject: Re: [PATCH net-next v2] Add Mellanox BlueField Gigabit Ethernet
- driver
-Message-ID: <20200821103552.witwag6kgyfue6od@skbuf>
-References: <1596149638-23563-1-git-send-email-dthompson@mellanox.com>
- <20200730173059.7440e21c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200820230439.5duakpmsg7jysdwq@skbuf>
- <20200820171431.194169ee@kicinski-fedora-PC1C0HJN>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200820171431.194169ee@kicinski-fedora-PC1C0HJN>
+        id S1727925AbgHUKrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 06:47:45 -0400
+Received: from mail.katalix.com ([3.9.82.81]:45428 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727103AbgHUKrm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 06:47:42 -0400
+Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id D40C786BAA;
+        Fri, 21 Aug 2020 11:47:39 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1598006859; bh=h8X9KFuMdZyDbnytJUlmciEg2nk1QYZ1AFurefpLmWQ=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
+         rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
+         in@katalix.com>|Subject:=20[PATCH=20net-next=200/9]=20l2tp:=20repl
+         ace=20custom=20logging=20code=20with=20tracepoints|Date:=20Fri,=20
+         21=20Aug=202020=2011:47:19=20+0100|Message-Id:=20<20200821104728.2
+         3530-1-tparkin@katalix.com>;
+        b=jDgLXxuiDRNcybogpn+Xd3M6BO4egYi90dkM5z2oSf57bDLw+FRJYSvF13NvIZhW+
+         x9L/4hpgw3znBcKj4dceBu9oiZUG1XKCn8bw97zjX4NFjzI64hoJWdNAjSqWNpN8xb
+         OBZp+7etfPwkHm+ZeEG440W+i+RQydf9wezdTM2wWmqIZfpBdybTwwhBAVW/ZQYe6W
+         4prOlDQ+A4qRqDANG4Jbik6tlqlwGJboticomgDodOIS2ApgbdaS5Wf5MqJd4ipGXD
+         Qu5pA/b7u/1j40QXKHKxPDy1Ef4znrXX9luDTG/Zn+WQW3MDDTRVnAe7GijwV3ssz0
+         wEPHgylxxoHqQ==
+From:   Tom Parkin <tparkin@katalix.com>
+To:     netdev@vger.kernel.org
+Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
+Subject: [PATCH net-next 0/9] l2tp: replace custom logging code with tracepoints
+Date:   Fri, 21 Aug 2020 11:47:19 +0100
+Message-Id: <20200821104728.23530-1-tparkin@katalix.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 20, 2020 at 05:14:31PM -0700, Jakub Kicinski wrote:
-> On Fri, 21 Aug 2020 02:04:39 +0300 Vladimir Oltean wrote:
-> > On Thu, Jul 30, 2020 at 05:30:59PM -0700, Jakub Kicinski wrote:
-> > > On Thu, 30 Jul 2020 18:53:58 -0400 David Thompson wrote:  
-> > > > +
-> > > > +	/* Tell networking subsystem to poll GigE driver */
-> > > > +	napi_schedule(&priv->napi);  
-> > > 
-> > > _irqoff  
-> > 
-> > Hmm, I wouldn't be so sure about this particular advice. With
-> > PREEMPT_RT, interrupt handlers are force-threaded and run in process
-> > context, therefore with hardirqs enabled. This driver doesn't call
-> > request_irq with IRQF_NO_THREAD, so calling napi_schedule_irqoff would
-> > create a bug that is very, very difficult to find.
-> 
-> Doesn't PREEMPT_RT take a local_lock or some form thereof around the
-> irq threads then? If it doesn't then we probably need one around NAPI.
-> 
-> Regardless even if that's the case this is an existing issue, and not
-> something that changes how the driver API would look.
+The l2tp subsystem implemented custom logging macros for debugging
+purposes which were controlled using a set of debugging flags in each
+tunnel and session structure.
 
-So the thread function is surrounded by local_bh_disable:
+A more standard and easier-to-use approach is to use tracepoints.
 
-/*
- * Interrupts which are not explicitly requested as threaded
- * interrupts rely on the implicit bh/preempt disable of the hard irq
- * context. So we need to disable bh here to avoid deadlocks and other
- * side effects.
- */
-static irqreturn_t
-irq_forced_thread_fn(struct irq_desc *desc, struct irqaction *action)
-{
-	irqreturn_t ret;
+This patchset refactors l2tp to:
 
-	local_bh_disable();
-	ret = action->thread_fn(action->irq, action->dev_id);
-	if (ret == IRQ_HANDLED)
-		atomic_inc(&desc->threads_handled);
+ * remove excessive logging
+ * tweak useful log messages to use the standard pr_* calls for logging
+   rather than the l2tp wrappers
+ * replace debug-level logging with tracepoints
+ * add tracepoints for capturing tunnel and session lifetime events
 
-	irq_finalize_oneshot(desc, action);
-	local_bh_enable();
-	return ret;
-}
+I note that checkpatch.pl warns about the layout of code in the
+newly-added file net/l2tp/trace.h.  When adding this file I followed the
+example(s) of other tracepoint files in the net/ subtree since it seemed
+preferable to adhere to the prevailing style rather than follow
+checkpatch.pl's advice in this instance.  If that's the wrong
+approach please let me know.
 
-but that doesn't really help in the case of napi_schedule_irqoff.
+Tom Parkin (9):
+  l2tp: don't log data frames
+  l2tp: remove noisy logging, use appropriate log levels
+  l2tp: use standard API for warning log messages
+  l2tp: add tracepoint infrastructure to core
+  l2tp: add tracepoint definitions in trace.h
+  l2tp: add tracepoints to l2tp_core.c
+  l2tp: remove custom logging macros
+  l2tp: remove tunnel and session debug flags field
+  docs: networking: add tracepoint info to l2tp.rst
 
-You see, one of these 2 functions ends up being called (from
-napi_schedule or from napi_schedule_irqoff):
+ Documentation/networking/l2tp.rst |  37 ++----
+ include/uapi/linux/if_pppol2tp.h  |   2 +-
+ include/uapi/linux/l2tp.h         |   6 +-
+ net/l2tp/Makefile                 |   2 +
+ net/l2tp/l2tp_core.c              | 178 +++++++------------------
+ net/l2tp/l2tp_core.h              |  23 +---
+ net/l2tp/l2tp_debugfs.c           |   4 +-
+ net/l2tp/l2tp_eth.c               |  11 --
+ net/l2tp/l2tp_ip.c                |  15 ---
+ net/l2tp/l2tp_ip6.c               |  15 ---
+ net/l2tp/l2tp_netlink.c           |  16 +--
+ net/l2tp/l2tp_ppp.c               |  55 ++------
+ net/l2tp/trace.h                  | 211 ++++++++++++++++++++++++++++++
+ 13 files changed, 297 insertions(+), 278 deletions(-)
+ create mode 100644 net/l2tp/trace.h
 
-void raise_softirq(unsigned int nr)
-{
-	unsigned long flags;
+-- 
+2.17.1
 
-	local_irq_save(flags);
-	raise_softirq_irqoff(nr);
-	local_irq_restore(flags);
-}
-
-void __raise_softirq_irqoff(unsigned int nr)
-{
-	trace_softirq_raise(nr);
-	or_softirq_pending(1UL << nr);
-}
-
-And the "or_softirq_pending" function is not hardirq-safe, since it
-doesn't use atomic operations, that's the whole problem right there. It
-really wants to be called under local_irq_save.
-
-#define or_softirq_pending(x)	(__this_cpu_or(local_softirq_pending_ref, (x)))
-
-So the only real (safe) use case for napi_schedule_irqoff is if you were
-already inside an atomic section at the caller site (local_irq_save).
-Otherwise, it's best to just use napi_schedule.
-
-By the way, I tested on a 10G link and there wasn't any performance
-impact on non-RT to speak of. This is because hardirqs are already
-disabled, so local_irq_save() translates to only a check and no action
-being taken.
-
-Hope this helps,
--Vladimir
