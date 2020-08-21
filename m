@@ -2,177 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE20624D91E
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 17:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B5F224D922
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 17:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727924AbgHUPzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 11:55:02 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:46366 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726542AbgHUPzB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 11:55:01 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07LFsxrt078323;
-        Fri, 21 Aug 2020 10:54:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1598025299;
-        bh=CgXFqDnKGzDdJPMI5VzmGoUsG+CqJg7kEhKuYaEozIE=;
-        h=Subject:From:To:References:Date:In-Reply-To;
-        b=JDVtOUEqy3AB4kEdVdsPkhIjSNrFql4HechfsV0uX/79i+16gBPmfw1X7diNX0siT
-         JKK5HJ+2KAwInw3hBwI5RMtQFQxI1uWZ5cnjaWDhQn5A5KjmT+IDLc6HIGsfZaiLv5
-         AF/gangnw1XMFr1qnBpnTJameNM48cjwzCOQs64A=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07LFsxFZ023077;
-        Fri, 21 Aug 2020 10:54:59 -0500
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 21
- Aug 2020 10:54:59 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Fri, 21 Aug 2020 10:54:59 -0500
-Received: from [10.250.220.167] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07LFswlA015451;
-        Fri, 21 Aug 2020 10:54:58 -0500
-Subject: Re: VLAN over HSR/PRP - Issue with rx_handler not called for VLAN hw
- acceleration
-From:   Murali Karicheri <m-karicheri2@ti.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        <jpirko@redhat.com>
-References: <dcea193d-8143-a664-947c-8a1baea7bc2c@ti.com>
- <f20094d8-fd3a-eb1f-8bbf-8d01997ae0e0@ti.com>
-Message-ID: <5e1f46f3-8420-3668-e335-ac8aaee7d1f0@ti.com>
-Date:   Fri, 21 Aug 2020 11:54:58 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728006AbgHUPzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 11:55:21 -0400
+Received: from asavdk4.altibox.net ([109.247.116.15]:39000 "EHLO
+        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726189AbgHUPzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 11:55:18 -0400
+Received: from ravnborg.org (unknown [188.228.123.71])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by asavdk4.altibox.net (Postfix) with ESMTPS id 8848480516;
+        Fri, 21 Aug 2020 17:55:06 +0200 (CEST)
+Date:   Fri, 21 Aug 2020 17:55:05 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Xinliang Liu <xinliang.liu@linaro.org>,
+        Wanchun Zheng <zhengwanchun@hisilicon.com>,
+        linuxarm@huawei.com, dri-devel <dri-devel@lists.freedesktop.org>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        devel@driverdev.osuosl.org, Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Xiubin Zhang <zhangxiubin1@huawei.com>,
+        Wei Xu <xuwei5@hisilicon.com>, David Airlie <airlied@linux.ie>,
+        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Bogdan Togorean <bogdan.togorean@analog.com>,
+        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        Liwei Cai <cailiwei@hisilicon.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Chen Feng <puck.chen@hisilicon.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        linaro-mm-sig@lists.linaro.org, Rob Herring <robh+dt@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, mauro.chehab@huawei.com,
+        Rob Clark <robdclark@chromium.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Liuyao An <anliuyao@huawei.com>,
+        Rongrong Zou <zourongrong@gmail.com>, bpf@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
+Message-ID: <20200821155505.GA300361@ravnborg.org>
+References: <cover.1597833138.git.mchehab+huawei@kernel.org>
+ <20200819152120.GA106437@ravnborg.org>
+ <20200819174027.70b39ee9@coco.lan>
+ <20200819173558.GA3733@ravnborg.org>
+ <20200821155801.0b820fc6@coco.lan>
 MIME-Version: 1.0
-In-Reply-To: <f20094d8-fd3a-eb1f-8bbf-8d01997ae0e0@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200821155801.0b820fc6@coco.lan>
+X-CMAE-Score: 0
+X-CMAE-Analysis: v=2.3 cv=aP3eV41m c=1 sm=1 tr=0
+        a=S6zTFyMACwkrwXSdXUNehg==:117 a=S6zTFyMACwkrwXSdXUNehg==:17
+        a=kj9zAlcOel0A:10 a=D19gQVrFAAAA:8 a=edBkpzIAjiy-cUzT3AwA:9
+        a=CjuIK1q_8ugA:10 a=W4TVW4IDbPiebHqcZpNg:22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Mauro.
+
+Thanks for the detailed feedabck.
+Two comments in the following.
+
+	Sam
+
+> 
+> > > +	ctx->dss_pri_clk = devm_clk_get(dev, "clk_edc0");
+> > > +	if (!ctx->dss_pri_clk) {
+> > > +		DRM_ERROR("failed to parse dss_pri_clk\n");
+> > > +	return -ENODEV;
+> > > +	}
+> ...
+> 
+> > I had expected some of these could fail with a PROBE_DEFER.
+> > Consider to use the newly introduced dev_probe_err()
+> 
+> Yeah, getting clock lines can fail. I was unable to find dev_probe_err(),
+> at least on Kernel 5.9-rc1. I saw this comment:
+> 
+> 	https://lkml.org/lkml/2020/3/6/356
+> 
+> It sounds it didn't reach upstream. Anyway, I add error handling for the
+> the clk_get calls:
+> 
+> 	ctx->dss_pri_clk = devm_clk_get(dev, "clk_edc0");
+> 	ret = PTR_ERR_OR_ZERO(ctx->dss_pri_clk);
+> 	if (ret == -EPROBE_DEFER) {
+> 		return ret;
+> 	} else if (ret) {
+> 		DRM_ERROR("failed to parse dss_pri_clk: %d\n", ret);
+> 		return ret;
+> 	}
+> 
+> This should be able to detect deferred probe, plus to warn
+> about other errors.
+
+I got the name wrong. It is named dev_err_probe(), and was introduced in -rc1.
+ 
+> > Can the panel stuff be moved out and utilise drm_panel?
+> 
+> I saw the code at drm_panel. The real issue here is that I can't
+> test anything related to panel support, as I lack any hardware
+> for testing. So, there's a high chance I may end breaking
+> something while trying to do that.
+
+I will try to take a look again when you post next revision.
+Maybe we should update it and risk that is not works, so whenever
+someone try to fix it they do so on top of an up-to-date implmentation.
+Lets se and decide later.
 
 
-On 8/21/20 11:10 AM, Murali Karicheri wrote:
-> Hello Jiri,
-> 
-> On 8/19/20 12:08 PM, Murali Karicheri wrote:
->> All,
->>
->> I am working to add VLAN interface creation over HSR/PRP interface.
->> It works fine after I fixed the HSR driver to allow creation of
->> VLAN over it and with VLAN without hw acceleration. But with hw
->> acceleration, the HSR hook is bypassed in net/core/dev.c as
->>
->>      if (skb_vlan_tag_present(skb)) {
->>          if (pt_prev) {
->>              ret = deliver_skb(skb, pt_prev, orig_dev);
->>              pt_prev = NULL;
->>          }
->>          if (vlan_do_receive(&skb))
->>              goto another_round;
->>          else if (unlikely(!skb))
->>              goto out;
->>      }
->>
->>      rx_handler = rcu_dereference(skb->dev->rx_handler);
->>      if (rx_handler) {
->>          if (pt_prev) {
->>              ret = deliver_skb(skb, pt_prev, orig_dev);
->>              pt_prev = NULL;
->>          }
->>          switch (rx_handler(&skb)) {
->>          case RX_HANDLER_CONSUMED:
->>              ret = NET_RX_SUCCESS;
->>              goto out;
->>          case RX_HANDLER_ANOTHER:
->>              goto another_round;
->>          case RX_HANDLER_EXACT:
->>              deliver_exact = true;
->>          case RX_HANDLER_PASS:
->>              break;
->>          default:
->>              BUG();
->>          }
->>      }
->>
->> What is the best way to address this issue? With VLAN hw acceleration,
->> skb_vlan_tag_present(skb) is true and rx_handler() is not called.
->>
-> I find that you have modified vlan_do_receive() in the past and
-> wondering if you have some insight into the issue. I also see the same
-> issue when I create VLAN interfaces over a linux bridge over TI's cpsw
-> interfaces. I understand that bridge code also use the same hook
-> (rx_handler) as HSR to receive the frames. The vlan interface doesn't
-> get the frames. With VLAN acceleration disabled, VLAN interfaces seems
-> to work fine. I  have two AM572x IDKs with CPSW port connected back to
-> back. I setup Linux bridge and run stp to avoid looks. I don't
-> understand what vlan_do_receive() is doing. Could you explain?
-
-I think I got it. That appears to be the main vlan receive function
-at the ingress. Correct?
-
-> probably it needs to false for Linux bridge and HSR case so that
-> the rx_handler will receive the frame? As a HACK, I will muck around
-> with this code to return false and see if that helps.
-> 
-> Setup used for my work.
-> 
-> 192.168.100.10  192.168.101.10           192.168.100.20 192.168.101.20
->   br0.100        br0.101                     br0.100      br0.101
->    |-----------|                                |--------------|
->          |                                            |
->          br0 (192.168.2.10)                         br0 (192.168.2.20)
-> DUT-1-----|--eth0 <-------------------------> eth0---|-----DUT-1
->            |--eth1 <-------------------------> eth1---|
-> 
-> Now Ping between 192.168.100.10 and 192.168.100.20 or
-> 192.168.101.10 and 192.168.101.20
-> 
-> Commands below.
-> 
-> DUT-1
-> 
-> brctl addbr br0
-> brctl addif br0 eth0
-> brctl addif br0 eth1
-> ifconfig eth0 up
-> ifconfig eth1 up
-> brctl stp br0 yes
-> ifconfig br0 192.168.2.10
-> 
-> ip link add link br0 name br0.100 type vlan id 100
-> ip link add link br0 name br0.101 type vlan id 101
-> ifconfig br0.100 192.168.100.10
-> ifconfig br0.101 192.168.101.10
-> 
-> 
-> DUT-2
-> 
-> brctl addbr br0
-> brctl addif br0 eth0
-> brctl addif br0 eth1
-> ifconfig eth0 up
-> ifconfig eth1 up
-> brctl stp br0 yes
-> ifconfig br0 192.168.2.20
-> 
-> ip link add link br0 name br0.100 type vlan id 100
-> ip link add link br0 name br0.101 type vlan id 101
-> ifconfig br0.100 192.168.100.20
-> ifconfig br0.101 192.168.101.20
-> 
->> Thanks
->>
-> 
-
--- 
-Murali Karicheri
-Texas Instruments
+	Sam
