@@ -2,328 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D5B824CD84
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 08:02:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61A9A24CDBD
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 08:10:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727093AbgHUGCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 02:02:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53122 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725268AbgHUGCC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 02:02:02 -0400
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7DBF3207DA;
-        Fri, 21 Aug 2020 06:02:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597989721;
-        bh=RL2kB1qW+T6kXdM6zLOpMVYt13gSjORoiUbt1H23+vY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Z9C//bmM2g7aRchQxAjb7DiBdBofi3otaExWunuzrxg8l/ElAiGwExx8tWw1S2iiT
-         26qylZcyX00rTKvxCdjGUvszgtYzH7/E1TCIVDagl3tosIOFESW0V/j9gHbFSpX4nR
-         Lg/DY+uKsHCabQ60JJq5D2SByWuTlxprMkgm5S8E=
-Date:   Fri, 21 Aug 2020 01:07:48 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH][next] mediatek: Use fallthrough pseudo-keyword
-Message-ID: <20200821060748.GA2483@embeddedor>
+        id S1727866AbgHUGK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 02:10:27 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:49539 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbgHUGKW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 02:10:22 -0400
+Received: by mail-il1-f199.google.com with SMTP id b18so744205ilh.16
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 23:10:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=3ZnB5a3tpgDyN7grQLfqbblxbPXfFx3TmuXw4BeWbXQ=;
+        b=j2Nqh+ycsFemF2D8WWjMnqo/evoSGju2T1bvoXJUoKOkmSeQHcrOmvu28UfZnQ+baO
+         pe9lkS5eMpj3CiPrwZDOEiaCTmLMHtXLURH29ujJeDspYkQ7QcZ5EaaR+yV1YnBLXk26
+         1JYmVJSI17W9avAumBb9tylDfKKhpGzB7XXeimHbAvI+PR7N4ESrHqD0l8AmMPTZ9y3C
+         73oztDXmEi+Gf+57whj7KACBu0zFUmsAHEOOx7kjBszT29mT1xc3Szq+IfyJY0jIA51H
+         TzJDTMkcgaQv3igy2HGQk5QaErOXnPkks/Krld40/MKPy7yA/8AxHQMkD6vOgxwNECfX
+         72RA==
+X-Gm-Message-State: AOAM532JSp7B2/NCO4C63SUO/Qiem1fgOO6MtXdxPV6xeIu7U/EoJmEm
+        p+LjJ5LGZH69QQA64S2wAQMH22+b8Xzd1wgxV4MyKbqaOkWN
+X-Google-Smtp-Source: ABdhPJzRz7hA92yUn57X/V5u8/XcJSsy3iMwucDRcRnGMuFScqnCouoR3Crct2jWsldzr3twh0+nvDHrav/zsyXDyOH/6pN39m42
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Received: by 2002:a5e:9601:: with SMTP id a1mr1169661ioq.179.1597990221831;
+ Thu, 20 Aug 2020 23:10:21 -0700 (PDT)
+Date:   Thu, 20 Aug 2020 23:10:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000086e96005ad5d17a7@google.com>
+Subject: general protection fault in fib_check_nexthop
+From:   syzbot <syzbot+55a3e617aaf04b962a3e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the existing /* fall through */ comments and its variants with
-the new pseudo-keyword macro fallthrough[1]. Also, remove unnecessary
-fall-through markings when it is the case.
+Hello,
 
-[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
+syzbot found the following issue on:
 
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+HEAD commit:    18445bf4 Merge tag 'spi-fix-v5.9-rc1' of git://git.kernel...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=162cbd7a900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a0437fdd630bee11
+dashboard link: https://syzkaller.appspot.com/bug?extid=55a3e617aaf04b962a3e
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+userspace arch: i386
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+55a3e617aaf04b962a3e@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc0000000010: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000080-0x0000000000000087]
+CPU: 0 PID: 3746 Comm: syz-executor.2 Not tainted 5.9.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:fib_check_nexthop+0x198/0x660 net/ipv4/nexthop.c:733
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 7b 04 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 10 48 8d bb 80 00 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 4b 04 00 00 48 8b 9b 80 00 00 00 48 b8 00 00 00
+RSP: 0018:ffffc90017a0f308 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000cc16000
+RDX: 0000000000000010 RSI: ffffffff86cbe7bd RDI: 0000000000000080
+RBP: 000000000000008b R08: 0000000000000001 R09: 0000000000000003
+R10: 0000000000000000 R11: 0000000000000001 R12: ffffc90017a0f8a8
+R13: 0000000000000001 R14: ffff8880a2bb7500 R15: ffffffff88ff41e0
+FS:  0000000000000000(0000) GS:ffff8880ae600000(0063) knlGS:00000000f5535b40
+CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+CR2: 00007f2094027659 CR3: 000000020cbe4000 CR4: 00000000001506f0
+DR0: 0000000020000080 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
+Call Trace:
+ fib_create_info+0x1ae8/0x49e0 net/ipv4/fib_semantics.c:1490
+ fib_table_insert+0x1c7/0x1af0 net/ipv4/fib_trie.c:1189
+ inet_rtm_newroute+0x109/0x1e0 net/ipv4/fib_frontend.c:883
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5563
+ netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
+ do_syscall_32_irqs_on arch/x86/entry/common.c:84 [inline]
+ __do_fast_syscall_32+0x57/0x80 arch/x86/entry/common.c:126
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:149
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+RIP: 0023:0xf7f3b549
+Code: b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 00 00 00 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 eb 0d 90 90 90 90 90 90 90 90 90 90 90 90
+RSP: 002b:00000000f55350cc EFLAGS: 00000296 ORIG_RAX: 0000000000000172
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000020000000
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 1afa7bb3bbb54c93 ]---
+RIP: 0010:fib_check_nexthop+0x198/0x660 net/ipv4/nexthop.c:733
+Code: 48 c1 ea 03 80 3c 02 00 0f 85 7b 04 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 5b 10 48 8d bb 80 00 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f 85 4b 04 00 00 48 8b 9b 80 00 00 00 48 b8 00 00 00
+RSP: 0018:ffffc90017a0f308 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000cc16000
+RDX: 0000000000000010 RSI: ffffffff86cbe7bd RDI: 0000000000000080
+RBP: 000000000000008b R08: 0000000000000001 R09: 0000000000000003
+R10: 0000000000000000 R11: 0000000000000001 R12: ffffc90017a0f8a8
+R13: 0000000000000001 R14: ffff8880a2bb7500 R15: ffffffff88ff41e0
+FS:  0000000000000000(0000) GS:ffff8880ae600000(0063) knlGS:00000000f5535b40
+CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+CR2: 00007f5c1af16000 CR3: 000000020cbe4000 CR4: 00000000001506f0
+DR0: 0000000020000080 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
+
+
 ---
- drivers/net/wireless/mediatek/mt76/mt7603/dma.c     | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7603/mac.c     | 4 ++--
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c     | 6 +++---
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.c     | 2 +-
- drivers/net/wireless/mediatek/mt76/mt76x0/phy.c     | 2 +-
- drivers/net/wireless/mediatek/mt76/mt76x02_mac.c    | 6 +++---
- drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c | 1 -
- drivers/net/wireless/mediatek/mt76/mt7915/dma.c     | 2 +-
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c     | 4 ++--
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c     | 2 +-
- drivers/net/wireless/mediatek/mt76/usb.c            | 2 +-
- drivers/net/wireless/mediatek/mt7601u/dma.c         | 4 ++--
- drivers/net/wireless/mediatek/mt7601u/mac.c         | 4 ++--
- drivers/net/wireless/mediatek/mt7601u/phy.c         | 2 +-
- 14 files changed, 21 insertions(+), 22 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/dma.c b/drivers/net/wireless/mediatek/mt76/mt7603/dma.c
-index a08b85281170..1dfcd7407535 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7603/dma.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7603/dma.c
-@@ -123,7 +123,7 @@ void mt7603_queue_rx_skb(struct mt76_dev *mdev, enum mt76_rxq_id q,
- 			mt76_rx(&dev->mt76, q, skb);
- 			return;
- 		}
--		/* fall through */
-+		fallthrough;
- 	default:
- 		dev_kfree_skb(skb);
- 		break;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
-index 8060c1514396..95602cbef3c3 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
-@@ -592,7 +592,7 @@ mt7603_mac_fill_rx(struct mt7603_dev *dev, struct sk_buff *skb)
- 		switch (FIELD_GET(MT_RXV1_TX_MODE, rxdg0)) {
- 		case MT_PHY_TYPE_CCK:
- 			cck = true;
--			/* fall through */
-+			fallthrough;
- 		case MT_PHY_TYPE_OFDM:
- 			i = mt76_get_rate(&dev->mt76, sband, i, cck);
- 			break;
-@@ -1161,7 +1161,7 @@ mt7603_fill_txs(struct mt7603_dev *dev, struct mt7603_sta *sta,
- 	switch (FIELD_GET(MT_TX_RATE_MODE, final_rate)) {
- 	case MT_PHY_TYPE_CCK:
- 		cck = true;
--		/* fall through */
-+		fallthrough;
- 	case MT_PHY_TYPE_OFDM:
- 		if (dev->mphy.chandef.chan->band == NL80211_BAND_5GHZ)
- 			sband = &dev->mphy.sband_5g.sband;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-index 3dd8dd28690e..60be7f409470 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-@@ -378,7 +378,7 @@ static int mt7615_mac_fill_rx(struct mt7615_dev *dev, struct sk_buff *skb)
- 		switch (FIELD_GET(MT_RXV1_TX_MODE, rxdg0)) {
- 		case MT_PHY_TYPE_CCK:
- 			cck = true;
--			/* fall through */
-+			fallthrough;
- 		case MT_PHY_TYPE_OFDM:
- 			i = mt76_get_rate(&dev->mt76, sband, i, cck);
- 			break;
-@@ -1271,7 +1271,7 @@ static bool mt7615_fill_txs(struct mt7615_dev *dev, struct mt7615_sta *sta,
- 	switch (FIELD_GET(MT_TX_RATE_MODE, final_rate)) {
- 	case MT_PHY_TYPE_CCK:
- 		cck = true;
--		/* fall through */
-+		fallthrough;
- 	case MT_PHY_TYPE_OFDM:
- 		mphy = &dev->mphy;
- 		if (sta->wcid.ext_phy && dev->mt76.phy2)
-@@ -1478,7 +1478,7 @@ void mt7615_queue_rx_skb(struct mt76_dev *mdev, enum mt76_rxq_id q,
- 			mt76_rx(&dev->mt76, q, skb);
- 			return;
- 		}
--		/* fall through */
-+		fallthrough;
- 	default:
- 		dev_kfree_skb(skb);
- 		break;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-index d0cbb283982f..745133b6b7af 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
-@@ -3278,7 +3278,7 @@ static int mt7615_dcoc_freq_idx(u16 freq, u8 bw)
- 			freq = freq_bw40[idx];
- 			break;
- 		}
--		/* fall through */
-+		fallthrough;
- 	case NL80211_CHAN_WIDTH_40:
- 		idx = mt7615_find_freq_idx(freq_bw40, ARRAY_SIZE(freq_bw40),
- 					   freq);
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x0/phy.c b/drivers/net/wireless/mediatek/mt76/mt76x0/phy.c
-index 09f34deb6ba1..3de33aadf794 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x0/phy.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x0/phy.c
-@@ -734,7 +734,7 @@ mt76x0_phy_get_delta_power(struct mt76x02_dev *dev, u8 tx_mode,
- 	case 1:
- 		if (chan->band == NL80211_BAND_2GHZ)
- 			tssi_target += 29491; /* 3.6 * 8192 */
--		/* fall through */
-+		fallthrough;
- 	case 0:
- 		break;
- 	default:
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x02_mac.c b/drivers/net/wireless/mediatek/mt76/mt76x02_mac.c
-index e4e03beabe43..11900bcc1be0 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x02_mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x02_mac.c
-@@ -300,7 +300,7 @@ mt76x02_mac_process_tx_rate(struct ieee80211_tx_rate *txrate, u16 rate,
- 		return 0;
- 	case MT_PHY_TYPE_HT_GF:
- 		txrate->flags |= IEEE80211_TX_RC_GREEN_FIELD;
--		/* fall through */
-+		fallthrough;
- 	case MT_PHY_TYPE_HT:
- 		txrate->flags |= IEEE80211_TX_RC_MCS;
- 		txrate->idx = idx;
-@@ -462,7 +462,7 @@ mt76x02_tx_rate_fallback(struct ieee80211_tx_rate *rates, int idx, int phy)
- 			rates[1].idx = 0;
- 			break;
- 		}
--		/* fall through */
-+		fallthrough;
- 	default:
- 		rates[1].idx = max_t(int, rates[0].idx - 1, 0);
- 		break;
-@@ -677,7 +677,7 @@ mt76x02_mac_process_rate(struct mt76x02_dev *dev,
- 		return 0;
- 	case MT_PHY_TYPE_HT_GF:
- 		status->enc_flags |= RX_ENC_FLAG_HT_GF;
--		/* fall through */
-+		fallthrough;
- 	case MT_PHY_TYPE_HT:
- 		status->encoding = RX_ENC_HT;
- 		status->rate_idx = idx;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-index 38f473d587c9..e7febc982930 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-@@ -21,7 +21,6 @@ static int mt7915_ser_trigger_set(void *data, u64 val)
- 	switch (val) {
- 	case SER_SET_RECOVER_L1:
- 	case SER_SET_RECOVER_L2:
--		/* fall through */
- 		ret = mt7915_mcu_set_ser(dev, SER_ENABLE, BIT(val), 0);
- 		if (ret)
- 			return ret;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/dma.c b/drivers/net/wireless/mediatek/mt76/mt7915/dma.c
-index a8832c5e6004..12e5a4988d70 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/dma.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/dma.c
-@@ -72,7 +72,7 @@ void mt7915_queue_rx_skb(struct mt76_dev *mdev, enum mt76_rxq_id q,
- 			mt76_rx(&dev->mt76, q, skb);
- 			return;
- 		}
--		/* fall through */
-+		fallthrough;
- 	default:
- 		dev_kfree_skb(skb);
- 		break;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index 6825afca1efb..4b38e921ad4a 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -468,7 +468,7 @@ int mt7915_mac_fill_rx(struct mt7915_dev *dev, struct sk_buff *skb)
- 			switch (mode) {
- 			case MT_PHY_TYPE_CCK:
- 				cck = true;
--				/* fall through */
-+				fallthrough;
- 			case MT_PHY_TYPE_OFDM:
- 				i = mt76_get_rate(&dev->mt76, sband, i, cck);
- 				break;
-@@ -487,7 +487,7 @@ int mt7915_mac_fill_rx(struct mt7915_dev *dev, struct sk_buff *skb)
- 				break;
- 			case MT_PHY_TYPE_HE_MU:
- 				status->flag |= RX_FLAG_RADIOTAP_HE_MU;
--				/* fall through */
-+				fallthrough;
- 			case MT_PHY_TYPE_HE_SU:
- 			case MT_PHY_TYPE_HE_EXT_SU:
- 			case MT_PHY_TYPE_HE_TB:
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index eaed5ef05401..323d0a396755 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -1407,7 +1407,7 @@ mt7915_mcu_sta_he_tlv(struct sk_buff *skb, struct ieee80211_sta *sta)
- 
- 		he->max_nss_mcs[CMD_HE_MCS_BW160] =
- 				he_cap->he_mcs_nss_supp.rx_mcs_160;
--		/* fall through */
-+		fallthrough;
- 	default:
- 		he->max_nss_mcs[CMD_HE_MCS_BW80] =
- 				he_cap->he_mcs_nss_supp.rx_mcs_80;
-diff --git a/drivers/net/wireless/mediatek/mt76/usb.c b/drivers/net/wireless/mediatek/mt76/usb.c
-index dcab5993763a..aa44b10f69e8 100644
---- a/drivers/net/wireless/mediatek/mt76/usb.c
-+++ b/drivers/net/wireless/mediatek/mt76/usb.c
-@@ -616,7 +616,7 @@ static void mt76u_complete_rx(struct urb *urb)
- 	default:
- 		dev_err_ratelimited(dev->dev, "rx urb failed: %d\n",
- 				    urb->status);
--		/* fall through */
-+		fallthrough;
- 	case 0:
- 		break;
- 	}
-diff --git a/drivers/net/wireless/mediatek/mt7601u/dma.c b/drivers/net/wireless/mediatek/mt7601u/dma.c
-index f6a0454abe04..09f931d4598c 100644
---- a/drivers/net/wireless/mediatek/mt7601u/dma.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/dma.c
-@@ -196,7 +196,7 @@ static void mt7601u_complete_rx(struct urb *urb)
- 	default:
- 		dev_err_ratelimited(dev->dev, "rx urb failed: %d\n",
- 				    urb->status);
--		/* fall through */
-+		fallthrough;
- 	case 0:
- 		break;
- 	}
-@@ -241,7 +241,7 @@ static void mt7601u_complete_tx(struct urb *urb)
- 	default:
- 		dev_err_ratelimited(dev->dev, "tx urb failed: %d\n",
- 				    urb->status);
--		/* fall through */
-+		fallthrough;
- 	case 0:
- 		break;
- 	}
-diff --git a/drivers/net/wireless/mediatek/mt7601u/mac.c b/drivers/net/wireless/mediatek/mt7601u/mac.c
-index cad5e81fcf77..d2ee1aaa3c81 100644
---- a/drivers/net/wireless/mediatek/mt7601u/mac.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/mac.c
-@@ -45,7 +45,7 @@ mt76_mac_process_tx_rate(struct ieee80211_tx_rate *txrate, u16 rate)
- 		return;
- 	case MT_PHY_TYPE_HT_GF:
- 		txrate->flags |= IEEE80211_TX_RC_GREEN_FIELD;
--		/* fall through */
-+		fallthrough;
- 	case MT_PHY_TYPE_HT:
- 		txrate->flags |= IEEE80211_TX_RC_MCS;
- 		txrate->idx = idx;
-@@ -419,7 +419,7 @@ mt76_mac_process_rate(struct ieee80211_rx_status *status, u16 rate)
- 		return;
- 	case MT_PHY_TYPE_HT_GF:
- 		status->enc_flags |= RX_ENC_FLAG_HT_GF;
--		/* fall through */
-+		fallthrough;
- 	case MT_PHY_TYPE_HT:
- 		status->encoding = RX_ENC_HT;
- 		status->rate_idx = idx;
-diff --git a/drivers/net/wireless/mediatek/mt7601u/phy.c b/drivers/net/wireless/mediatek/mt7601u/phy.c
-index d863ab4a66c9..430ae4c1d7db 100644
---- a/drivers/net/wireless/mediatek/mt7601u/phy.c
-+++ b/drivers/net/wireless/mediatek/mt7601u/phy.c
-@@ -787,7 +787,7 @@ mt7601u_phy_rf_pa_mode_val(struct mt7601u_dev *dev, int phy_mode, int tx_rate)
- 	switch (phy_mode) {
- 	case MT_PHY_TYPE_OFDM:
- 		tx_rate += 4;
--		/* fall through */
-+		fallthrough;
- 	case MT_PHY_TYPE_CCK:
- 		reg = dev->rf_pa_mode[0];
- 		break;
--- 
-2.27.0
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
