@@ -2,103 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A645A24E2AC
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 23:27:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E58A824E2B8
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 23:31:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726759AbgHUV1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 17:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
+        id S1726630AbgHUVbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 17:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726187AbgHUV1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 17:27:41 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5348C061573;
-        Fri, 21 Aug 2020 14:27:41 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id 128so1586923pgd.5;
-        Fri, 21 Aug 2020 14:27:41 -0700 (PDT)
+        with ESMTP id S1726187AbgHUVbr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 17:31:47 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B19BC061573;
+        Fri, 21 Aug 2020 14:31:46 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id t6so3369602ljk.9;
+        Fri, 21 Aug 2020 14:31:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QWnVqkXsQ2VHac6sNBlwzOFyH2VOJDY/ZCWON4QvS5I=;
-        b=O5ysZ7BX+yeoWYpqn0zquTNx0iwRRKm2Bzx3i0KWfMjzIB59kkB+pfCQadtv+THzVF
-         LjYONAb2xWOCOooyA/gOSaHcBtzivEBljT9wbum2c3BIahbl+nDRM4pZ1/MVlz7HS077
-         M3cGX7Z8/QRJ5bRx86su5ApaXmUtndHcN3vWWao5asovSjC0tGD+HB7jNgwgsc6kusuT
-         6iqbs9NPOuGfI1bNWxIfHB14J2N1BLeFzSRL5qOwzsDWsvMwEJWM3oEKjyq3ghqUeUWD
-         HJRy7cN/FLGd4JvsDQvbkSgbMHJPs9pNxeC8jpha8jvKpoEteXjMOamRYaG91cpi0dSR
-         Jfow==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rZUr/GkYNW5/6BirLMXHGNGdzUx6hfASz9W4/WE4Qhk=;
+        b=vFcLi8xa0U+sQw3m6NlrUAAuwlIiczp2JfAetCnZMqu6uGfKO00FoIgTD3nMM9RoRk
+         fCvILlCTEHDZucf8v0FxGYYhWipEOxqBEmOIPSqse3jqSCybymmOXuuKMv1Mg+F33SDW
+         WEnUWnY08mYCTg8kwt6wwSyWeXzbkm4kyZ8QMZZtPGzoy39s7U5psUvjYj6kmusEl12Z
+         cwRquLCTvbPOlYt6sKSflVWM1mzCbXQ9K6Y8oBFjG5A/qhcL7YLiDqJwBSnGIRWRuNlN
+         yoZp9SIclPINHqfbod6bvIh3y64+sNCprB+dbgOw73jrCdddOSSw9Q7fAhwzVYolLS8w
+         QlDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QWnVqkXsQ2VHac6sNBlwzOFyH2VOJDY/ZCWON4QvS5I=;
-        b=jYolLoQrfdhQva0pBGReMAxxIhJqxSyfl/yUsKONdCOKC1LyGiUtOx6vV6fFfpiTLY
-         6tZg3hK6Hd3g4PwtLExUbdpav0wRpGekOsDVfP2fe3CLDPbzYt32Y2+szRfmsdmSm9hb
-         oTgUkjRSPjKDMnlpJDuUHnpwjNimV/6AZVw60Vi7rcWbTcuNy6dr1+uxgpsBgwkJqD/r
-         HiVQ6ZyyTIWS0gD+2FjguREappYaoRvbMLqEi25oKGlQY8AiW/1YbHe3ELTZhapzfVgh
-         P7NeDh5+1P5CSZzPaOrJzVaMAeH+XEbXPq+UON1Zhn4bWcBdn7bi/bitwfaZv/fkCQJg
-         V5fg==
-X-Gm-Message-State: AOAM530Xni5GndUNzDp9Icv+AWOZs54Pp9s6fY2QG1M8wQ020CIJUxJd
-        BawDP6u9bXCd6w8G9OTs/64MuTpXRXE=
-X-Google-Smtp-Source: ABdhPJyNJHaQhxQmL0Xty5/tLXUcqT2A3go11AbPNwihM9m6T3s/IKR5KxH7Ajta0gztQMLP8U3Cjw==
-X-Received: by 2002:a62:164a:: with SMTP id 71mr4035129pfw.266.1598045261183;
-        Fri, 21 Aug 2020 14:27:41 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:4c03:c51f:2cf5:9726])
-        by smtp.gmail.com with ESMTPSA id l12sm2780525pjq.31.2020.08.21.14.27.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 14:27:40 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-x25@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net v2] drivers/net/wan/lapbether: Added needed_tailroom
-Date:   Fri, 21 Aug 2020 14:26:59 -0700
-Message-Id: <20200821212659.14551-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rZUr/GkYNW5/6BirLMXHGNGdzUx6hfASz9W4/WE4Qhk=;
+        b=N8nCbSPyXwpOLabyPOUS7U6D9YrG4J1o1a5uep6sVQ3L1Hi5xE0WoP94JZX/261lsk
+         lkoW0QE9qA4Xi08MNk77O9k5un17cNPEso6qj0neThU0FtDciFYGih7AC4mrKC0FGnk2
+         z+tU5cqJW36J/figVpExL6gHGDNqnGngSRgnPadCP/dhBx4txzziAqWofRbrzKNLQ2r1
+         LIlCzmPC103hCNfl7LcjMoBUYGJC+7Ryw15I0CEXOtg5nbbRMN/xOfKeZtFvH1KQLiqY
+         LwZ5nu5hrUklEqRP8fwCGX+1+KcziGcz30Sj3QTZLXidNPSQTj8APf2bl82BcF3PmjSD
+         nvnQ==
+X-Gm-Message-State: AOAM532V/LF9QEPHLolOkTyZfgquiWJfY87vaUCSiKSr/l/N9JSiQy3f
+        BeXRzWJz33nY2NGX8gG11IYSlETG5iK8rbfaefE=
+X-Google-Smtp-Source: ABdhPJzmFAT/wI2qQgZhH8Fe8pMKOY+MQjgip+6drw95aPi/LP8mFu5als1h8DowR1kfEADV6R4Mr/n+xlyb+l/5y30=
+X-Received: by 2002:a05:651c:82:: with SMTP id 2mr2418463ljq.2.1598045504924;
+ Fri, 21 Aug 2020 14:31:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200821165927.849538-1-andriin@fb.com>
+In-Reply-To: <20200821165927.849538-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 21 Aug 2020 14:31:33 -0700
+Message-ID: <CAADnVQJBcUwMzSm7Bw=EW2cLsOcAu+yXrWqqV7zJBmWMmndNjw@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] libbpf: add perf_buffer APIs for better
+ integration with outside epoll loop
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Alan Maguire <alan.maguire@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The underlying Ethernet device may request necessary tailroom to be
-allocated by setting needed_tailroom. This driver should also set
-needed_tailroom to request the tailroom needed by the underlying
-Ethernet device to be allocated.
+On Fri, Aug 21, 2020 at 10:06 AM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Add a set of APIs to perf_buffer manage to allow applications to integrate
+> perf buffer polling into existing epoll-based infrastructure. One example is
+> applications using libevent already and wanting to plug perf_buffer polling,
+> instead of relying on perf_buffer__poll() and waste an extra thread to do it.
+> But perf_buffer is still extremely useful to set up and consume perf buffer
+> rings even for such use cases.
+>
+> So to accomodate such new use cases, add three new APIs:
+>   - perf_buffer__buffer_cnt() returns number of per-CPU buffers maintained by
+>     given instance of perf_buffer manager;
+>   - perf_buffer__buffer_fd() returns FD of perf_event corresponding to
+>     a specified per-CPU buffer; this FD is then polled independently;
+>   - perf_buffer__consume_buffer() consumes data from single per-CPU buffer,
+>     identified by its slot index.
+>
+> To support a simpler, but less efficient, way to integrate perf_buffer into
+> external polling logic, also expose underlying epoll FD through
+> perf_buffer__epoll_fd() API. It will need to be followed by
+> perf_buffer__poll(), wasting extra syscall, or perf_buffer__consume(), wasting
+> CPU to iterate buffers with no data. But could be simpler and more convenient
+> for some cases.
+>
+> These APIs allow for great flexiblity, but do not sacrifice general usability
+> of perf_buffer.
+>
+> Also exercise and check new APIs in perf_buffer selftest.
+>
+> Reviewed-by: Alan Maguire <alan.maguire@oracle.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
-Change from v1:
-None
-I'm re-sending this patch unchanged because the previous reviewer has
-stopped responding for 11 days and he didn't indicate what change I
-should do to this patch.
-
-It's hard to find reviewers for this code. I tried to send emails, but
-people don't respond. If you can review it, I'd really appreciate it.
-I'm not in a hurry so please take your time. Thanks!
----
- drivers/net/wan/lapbether.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index 1ea15f2123ed..cc297ea9c6ec 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -340,6 +340,7 @@ static int lapbeth_new_device(struct net_device *dev)
- 	 */
- 	ndev->needed_headroom = -1 + 3 + 2 + dev->hard_header_len
- 					   + dev->needed_headroom;
-+	ndev->needed_tailroom = dev->needed_tailroom;
- 
- 	lapbeth = netdev_priv(ndev);
- 	lapbeth->axdev = ndev;
--- 
-2.25.1
-
+Applied. Thanks
