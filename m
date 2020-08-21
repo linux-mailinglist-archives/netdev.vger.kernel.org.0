@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1238B24D7DA
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 17:01:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9927D24D801
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 17:07:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728115AbgHUPBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 11:01:53 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:30308 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728069AbgHUPBo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 11:01:44 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07LF1Xav013578
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 08:01:44 -0700
+        id S1728051AbgHUPHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 11:07:05 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:32116 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727945AbgHUPGu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 11:06:50 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07LF3sMQ019136
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 08:06:48 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=Ul+xf1TI54FnPjFpxc3Ihst3TQMepDvmciNWWocFk1Q=;
- b=X9UBRfaZyQqWzJ9tvDuKhWjfiKeHCzV8LSU6YcfZQqOEyfgA1Iu7cmymBDHunq6oDngT
- qPnd/sfDuIbLthIrW0mC6czuKOVvFwjEXSqZpgBg2RnQBmb03ZZy/yusAU9zlsfskQmW
- qNbD42wqrAo7zWO0iiRwsRsLBllgeViIPPE= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 331d50t1dc-5
+ bh=RZYe74Umrx4SuZo82U3dVJ635qqku6CpK0PXhAa9zAQ=;
+ b=cLxEmRzXscG58p7pjoeY9Bt63iqgWSCYGe1GZCekwZ1Ev7ZpZj5KPKSpB/GKYZd/pUoY
+ Z6BAkQ3h3PAJYxwECwvIBAnhIxth0SR5eLPB3SukbHSONbQ+cdN3W85yNc8qMrbBLrWg
+ ESiA9z61XbruDivix7d35oaLa6qMwejvnSs= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 3304kq50s2-7
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 08:01:44 -0700
-Received: from intmgw004.06.prn3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 08:06:48 -0700
+Received: from intmgw004.06.prn3.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 21 Aug 2020 08:01:41 -0700
+ 15.1.1979.3; Fri, 21 Aug 2020 08:06:43 -0700
 Received: by devvm1096.prn0.facebook.com (Postfix, from userid 111017)
-        id 3163A344104B; Fri, 21 Aug 2020 08:01:35 -0700 (PDT)
+        id B4D80344107F; Fri, 21 Aug 2020 08:01:35 -0700 (PDT)
 Smtp-Origin-Hostprefix: devvm
 From:   Roman Gushchin <guro@fb.com>
 Smtp-Origin-Hostname: devvm1096.prn0.facebook.com
@@ -42,9 +42,9 @@ CC:     <netdev@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Shakeel Butt <shakeelb@google.com>, <linux-mm@kvack.org>,
         Roman Gushchin <guro@fb.com>
 Smtp-Origin-Cluster: prn0c01
-Subject: [PATCH bpf-next v4 03/30] bpf: memcg-based memory accounting for bpf maps
-Date:   Fri, 21 Aug 2020 08:01:07 -0700
-Message-ID: <20200821150134.2581465-4-guro@fb.com>
+Subject: [PATCH bpf-next v4 28/30] bpf: eliminate rlimit-based memory accounting infra for bpf maps
+Date:   Fri, 21 Aug 2020 08:01:32 -0700
+Message-ID: <20200821150134.2581465-29-guro@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200821150134.2581465-1-guro@fb.com>
 References: <20200821150134.2581465-1-guro@fb.com>
@@ -54,192 +54,208 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-08-21_08:2020-08-21,2020-08-21 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- malwarescore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
- clxscore=1015 phishscore=0 suspectscore=38 adultscore=0 bulkscore=0
- mlxscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2008210141
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 spamscore=0
+ impostorscore=0 mlxscore=0 adultscore=0 malwarescore=0 mlxlogscore=999
+ lowpriorityscore=0 suspectscore=38 phishscore=0 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008210142
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch enables memcg-based memory accounting for memory allocated
-by __bpf_map_area_alloc(), which is used by most map types for
-large allocations.
-
-If a map is updated from an interrupt context, and the update
-results in memory allocation, the memory cgroup can't be determined
-from the context of the current process. To address this case,
-bpf map preserves a pointer to the memory cgroup of the process,
-which created the map. This memory cgroup is charged for allocations
-from interrupt context.
-
-Following patches in the series will refine the accounting for
-some map types.
+Remove rlimit-based accounting infrastructure code, which is not used
+anymore.
 
 Signed-off-by: Roman Gushchin <guro@fb.com>
 ---
- include/linux/bpf.h  |  4 ++++
- kernel/bpf/helpers.c | 37 ++++++++++++++++++++++++++++++++++++-
- kernel/bpf/syscall.c | 27 ++++++++++++++++++++++++++-
- 3 files changed, 66 insertions(+), 2 deletions(-)
+ include/linux/bpf.h                           | 12 ----
+ kernel/bpf/syscall.c                          | 64 +------------------
+ .../selftests/bpf/progs/map_ptr_kern.c        |  5 --
+ 3 files changed, 2 insertions(+), 79 deletions(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index a9b7185a6b37..b5f178afde94 100644
+index b5f178afde94..7f81cbb981a6 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -34,6 +34,7 @@ struct btf_type;
- struct exception_table_entry;
- struct seq_operations;
- struct bpf_iter_aux_info;
-+struct mem_cgroup;
-=20
- extern struct idr btf_idr;
- extern spinlock_t btf_idr_lock;
-@@ -138,6 +139,9 @@ struct bpf_map {
- 	u32 btf_value_type_id;
- 	struct btf *btf;
- 	struct bpf_map_memory memory;
-+#ifdef CONFIG_MEMCG_KMEM
-+	struct mem_cgroup *memcg;
-+#endif
- 	char name[BPF_OBJ_NAME_LEN];
- 	u32 btf_vmlinux_value_type_id;
- 	bool bypass_spec_v1;
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index be43ab3e619f..f8ce7bc7003f 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -14,6 +14,7 @@
- #include <linux/jiffies.h>
- #include <linux/pid_namespace.h>
- #include <linux/proc_ns.h>
-+#include <linux/sched/mm.h>
-=20
- #include "../../lib/kstrtox.h"
-=20
-@@ -41,11 +42,45 @@ const struct bpf_func_proto bpf_map_lookup_elem_proto=
- =3D {
- 	.arg2_type	=3D ARG_PTR_TO_MAP_KEY,
+@@ -113,11 +113,6 @@ struct bpf_map_ops {
+ 	const struct bpf_iter_seq_info *iter_seq_info;
  };
 =20
-+#ifdef CONFIG_MEMCG_KMEM
-+static __always_inline int __bpf_map_update_elem(struct bpf_map *map, vo=
-id *key,
-+						 void *value, u64 flags)
-+{
-+	struct mem_cgroup *old_memcg;
-+	bool in_interrupt;
-+	int ret;
-+
-+	/*
-+	 * If update from an interrupt context results in a memory allocation,
-+	 * the memory cgroup to charge can't be determined from the context
-+	 * of the current task. Instead, we charge the memory cgroup, which
-+	 * contained a process created the map.
-+	 */
-+	in_interrupt =3D in_interrupt();
-+	if (in_interrupt)
-+		old_memcg =3D memalloc_use_memcg(map->memcg);
-+
-+	ret =3D map->ops->map_update_elem(map, key, value, flags);
-+
-+	if (in_interrupt)
-+		memalloc_use_memcg(old_memcg);
-+
-+	return ret;
-+}
-+#else
-+static __always_inline int __bpf_map_update_elem(struct bpf_map *map, vo=
-id *key,
-+						 void *value, u64 flags)
-+{
-+	return map->ops->map_update_elem(map, key, value, flags);
-+}
-+#endif
-+
- BPF_CALL_4(bpf_map_update_elem, struct bpf_map *, map, void *, key,
- 	   void *, value, u64, flags)
- {
- 	WARN_ON_ONCE(!rcu_read_lock_held());
--	return map->ops->map_update_elem(map, key, value, flags);
-+
-+	return __bpf_map_update_elem(map, key, value, flags);
- }
-=20
- const struct bpf_func_proto bpf_map_update_elem_proto =3D {
+-struct bpf_map_memory {
+-	u32 pages;
+-	struct user_struct *user;
+-};
+-
+ struct bpf_map {
+ 	/* The first two cachelines with read-mostly members of which some
+ 	 * are also accessed in fast-path (e.g. ops, max_entries).
+@@ -138,7 +133,6 @@ struct bpf_map {
+ 	u32 btf_key_type_id;
+ 	u32 btf_value_type_id;
+ 	struct btf *btf;
+-	struct bpf_map_memory memory;
+ #ifdef CONFIG_MEMCG_KMEM
+ 	struct mem_cgroup *memcg;
+ #endif
+@@ -1148,12 +1142,6 @@ void bpf_map_inc_with_uref(struct bpf_map *map);
+ struct bpf_map * __must_check bpf_map_inc_not_zero(struct bpf_map *map);
+ void bpf_map_put_with_uref(struct bpf_map *map);
+ void bpf_map_put(struct bpf_map *map);
+-int bpf_map_charge_memlock(struct bpf_map *map, u32 pages);
+-void bpf_map_uncharge_memlock(struct bpf_map *map, u32 pages);
+-int bpf_map_charge_init(struct bpf_map_memory *mem, u64 size);
+-void bpf_map_charge_finish(struct bpf_map_memory *mem);
+-void bpf_map_charge_move(struct bpf_map_memory *dst,
+-			 struct bpf_map_memory *src);
+ void *bpf_map_area_alloc(u64 size, int numa_node);
+ void *bpf_map_area_mmapable_alloc(u64 size, int numa_node);
+ void bpf_map_area_free(void *base);
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 689d736b6904..683614c17a95 100644
+index 683614c17a95..392e3b2f58e4 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -29,6 +29,7 @@
- #include <linux/bpf_lsm.h>
- #include <linux/poll.h>
- #include <linux/bpf-netns.h>
-+#include <linux/memcontrol.h>
-=20
- #define IS_FD_ARRAY(map) ((map)->map_type =3D=3D BPF_MAP_TYPE_PERF_EVENT=
-_ARRAY || \
- 			  (map)->map_type =3D=3D BPF_MAP_TYPE_CGROUP_ARRAY || \
-@@ -275,7 +276,7 @@ static void *__bpf_map_area_alloc(u64 size, int numa_=
-node, bool mmapable)
- 	 * __GFP_RETRY_MAYFAIL to avoid such situations.
- 	 */
-=20
--	const gfp_t gfp =3D __GFP_NOWARN | __GFP_ZERO;
-+	const gfp_t gfp =3D __GFP_NOWARN | __GFP_ZERO | __GFP_ACCOUNT;
- 	unsigned int flags =3D 0;
- 	unsigned long align =3D 1;
- 	void *area;
-@@ -452,6 +453,27 @@ void bpf_map_free_id(struct bpf_map *map, bool do_id=
-r_lock)
- 		__release(&map_idr_lock);
+@@ -355,60 +355,6 @@ static void bpf_uncharge_memlock(struct user_struct =
+*user, u32 pages)
+ 		atomic_long_sub(pages, &user->locked_vm);
  }
 =20
-+#ifdef CONFIG_MEMCG_KMEM
-+static void bpf_map_save_memcg(struct bpf_map *map)
-+{
-+	map->memcg =3D get_mem_cgroup_from_mm(current->mm);
-+}
-+
-+static void bpf_map_release_memcg(struct bpf_map *map)
-+{
-+	mem_cgroup_put(map->memcg);
-+}
-+
-+#else
-+static void bpf_map_save_memcg(struct bpf_map *map)
-+{
-+}
-+
-+static void bpf_map_release_memcg(struct bpf_map *map)
-+{
-+}
-+#endif
-+
- /* called from workqueue */
+-int bpf_map_charge_init(struct bpf_map_memory *mem, u64 size)
+-{
+-	u32 pages =3D round_up(size, PAGE_SIZE) >> PAGE_SHIFT;
+-	struct user_struct *user;
+-	int ret;
+-
+-	if (size >=3D U32_MAX - PAGE_SIZE)
+-		return -E2BIG;
+-
+-	user =3D get_current_user();
+-	ret =3D bpf_charge_memlock(user, pages);
+-	if (ret) {
+-		free_uid(user);
+-		return ret;
+-	}
+-
+-	mem->pages =3D pages;
+-	mem->user =3D user;
+-
+-	return 0;
+-}
+-
+-void bpf_map_charge_finish(struct bpf_map_memory *mem)
+-{
+-	bpf_uncharge_memlock(mem->user, mem->pages);
+-	free_uid(mem->user);
+-}
+-
+-void bpf_map_charge_move(struct bpf_map_memory *dst,
+-			 struct bpf_map_memory *src)
+-{
+-	*dst =3D *src;
+-
+-	/* Make sure src will not be used for the redundant uncharging. */
+-	memset(src, 0, sizeof(struct bpf_map_memory));
+-}
+-
+-int bpf_map_charge_memlock(struct bpf_map *map, u32 pages)
+-{
+-	int ret;
+-
+-	ret =3D bpf_charge_memlock(map->memory.user, pages);
+-	if (ret)
+-		return ret;
+-	map->memory.pages +=3D pages;
+-	return ret;
+-}
+-
+-void bpf_map_uncharge_memlock(struct bpf_map *map, u32 pages)
+-{
+-	bpf_uncharge_memlock(map->memory.user, pages);
+-	map->memory.pages -=3D pages;
+-}
+-
+ static int bpf_map_alloc_id(struct bpf_map *map)
+ {
+ 	int id;
+@@ -478,13 +424,10 @@ static void bpf_map_release_memcg(struct bpf_map *m=
+ap)
  static void bpf_map_free_deferred(struct work_struct *work)
  {
-@@ -463,6 +485,7 @@ static void bpf_map_free_deferred(struct work_struct =
-*work)
+ 	struct bpf_map *map =3D container_of(work, struct bpf_map, work);
+-	struct bpf_map_memory mem;
+=20
+-	bpf_map_charge_move(&mem, &map->memory);
+ 	security_bpf_map_free(map);
  	/* implementation dependent freeing */
  	map->ops->map_free(map);
- 	bpf_map_charge_finish(&mem);
-+	bpf_map_release_memcg(map);
+-	bpf_map_charge_finish(&mem);
+ 	bpf_map_release_memcg(map);
  }
 =20
- static void bpf_map_put_uref(struct bpf_map *map)
-@@ -869,6 +892,8 @@ static int map_create(union bpf_attr *attr)
- 	if (err)
- 		goto free_map_sec;
+@@ -564,7 +507,7 @@ static void bpf_map_show_fdinfo(struct seq_file *m, s=
+truct file *filp)
+ 		   "value_size:\t%u\n"
+ 		   "max_entries:\t%u\n"
+ 		   "map_flags:\t%#x\n"
+-		   "memlock:\t%llu\n"
++		   "memlock:\t%llu\n" /* deprecated */
+ 		   "map_id:\t%u\n"
+ 		   "frozen:\t%u\n",
+ 		   map->map_type,
+@@ -572,7 +515,7 @@ static void bpf_map_show_fdinfo(struct seq_file *m, s=
+truct file *filp)
+ 		   map->value_size,
+ 		   map->max_entries,
+ 		   map->map_flags,
+-		   map->memory.pages * 1ULL << PAGE_SHIFT,
++		   0LLU,
+ 		   map->id,
+ 		   READ_ONCE(map->frozen));
+ 	if (type) {
+@@ -813,7 +756,6 @@ static int map_check_btf(struct bpf_map *map, const s=
+truct btf *btf,
+ static int map_create(union bpf_attr *attr)
+ {
+ 	int numa_node =3D bpf_map_attr_numa_node(attr);
+-	struct bpf_map_memory mem;
+ 	struct bpf_map *map;
+ 	int f_flags;
+ 	int err;
+@@ -912,9 +854,7 @@ static int map_create(union bpf_attr *attr)
+ 	security_bpf_map_free(map);
+ free_map:
+ 	btf_put(map->btf);
+-	bpf_map_charge_move(&mem, &map->memory);
+ 	map->ops->map_free(map);
+-	bpf_map_charge_finish(&mem);
+ 	return err;
+ }
 =20
-+	bpf_map_save_memcg(map);
-+
- 	err =3D bpf_map_new_fd(map, f_flags);
- 	if (err < 0) {
- 		/* failed to allocate fd.
+diff --git a/tools/testing/selftests/bpf/progs/map_ptr_kern.c b/tools/tes=
+ting/selftests/bpf/progs/map_ptr_kern.c
+index 473665cac67e..49d1dcaf7999 100644
+--- a/tools/testing/selftests/bpf/progs/map_ptr_kern.c
++++ b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
+@@ -26,17 +26,12 @@ __u32 g_line =3D 0;
+ 		return 0;	\
+ })
+=20
+-struct bpf_map_memory {
+-	__u32 pages;
+-} __attribute__((preserve_access_index));
+-
+ struct bpf_map {
+ 	enum bpf_map_type map_type;
+ 	__u32 key_size;
+ 	__u32 value_size;
+ 	__u32 max_entries;
+ 	__u32 id;
+-	struct bpf_map_memory memory;
+ } __attribute__((preserve_access_index));
+=20
+ static inline int check_bpf_map_fields(struct bpf_map *map, __u32 key_si=
+ze,
 --=20
 2.26.2
 
