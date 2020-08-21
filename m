@@ -2,100 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39A6224E1D9
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 22:07:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A370924E1DF
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 22:09:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726734AbgHUUHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 16:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40408 "EHLO
+        id S1726749AbgHUUJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 16:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbgHUUHJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 16:07:09 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27060C061573;
-        Fri, 21 Aug 2020 13:07:09 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id p25so2476494qkp.2;
-        Fri, 21 Aug 2020 13:07:09 -0700 (PDT)
+        with ESMTP id S1725801AbgHUUJV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 16:09:21 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90037C061573;
+        Fri, 21 Aug 2020 13:09:21 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id a34so1656265ybj.9;
+        Fri, 21 Aug 2020 13:09:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/H8qllaBl7DvCB5chhhsKMOAdwJTij5vEFUx78aFoUs=;
-        b=rOIV6Pq5roz+puOb0ywKNBInjRb6mDoOV4rlPMppSnR4aPCcH9Zik0NJCQAvEeXLnn
-         RiR64GUs1T35QGLrVC0UaOxKmn6YkzDjLziykdcN5LIRxGZUaf8PPGTRdAtRZYxVNUQ7
-         fG8t6+Ps5FBtuIz5m4WzL8SfXB/ygB7Gah9oMvopdbAlVDeJZWbD5ImLwKR2hEABBpoT
-         Mv6V+xclg86ntCdlbsVnAnEZHQc4zpA5h0LmYZETnD5mijc3/Lh05yOCBP/VVikJ6HcD
-         h3ao4KkGz45+I/Xsud6uHE300Io7XaTf0N237LiiFkUY5gtvGZ9u0W5VXfGk8kWsR6ZV
-         7Pyw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OlqUo3Dge1orlY+cxzOKP+C7gVBbYdp4PpHHz814e9c=;
+        b=WR4wVgmu2qTjwJc5qujv7bzHaNk0RvFcGAd54SXtSEm0V8FTOyTd+Xx6KhBAAp+gZK
+         YlYMtv0KuCvDcouC81zSWj0IR4D5wBBTgisW74V/8d1YBSHvYtmyqp5s9oSbRyQymBe6
+         vI2GmRQ5K7AOTco6z91rD2gXcjMqSiwo76+9NyHklfdoCKJucSCl43ThmThLdpH+6TFd
+         JkJtJzYxe9RPxqTSG/xNFlPHi47GMpHel0FR4wgy4xqlcX88GUMODtIn8gPSA6sjNrEf
+         9k8480QOYdjY6UTss7+BfDHZCjcYWBVNCdQW63Xvy3B4V1vz4LA5UcmitUrbeFD3NfCx
+         jX2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/H8qllaBl7DvCB5chhhsKMOAdwJTij5vEFUx78aFoUs=;
-        b=mTTCausQi2vK26sT2kqWa1kj1auLQDKlMO6QmlU3J8Vy21q185nAQYkXT6mQSAjRqT
-         I+ZgWlmWQozWWZcCZ9+yoMWO7wGKsyd6p8/qTHkBbVRJs7n+H1aRSovejK3dtPStjsnv
-         PZJJ9aavKatucMT1pFoGavLVbGDhQifMpoGCfaJ4pLy4CLX0JbFp62FgFSwQV6EjsZm6
-         anoXLriQzUnSiNmkfGsfUteShJfjahkdtllULpZky8s/oHiIW4/wMIgjW6cVY4Um5caK
-         K+LDWI1bB5ZH7vySpSoL7u4zhm3Z80Yo2wmRbvt1nHh6pauslmO420x6am7Vl/MFjQee
-         ZD4Q==
-X-Gm-Message-State: AOAM530DDGR4YeACjsF2FJKaeLmrqHbM72Hx5m65qXL+PwNl8cnUqJ5R
-        2bHW0j920079+9NVFAlWIAs=
-X-Google-Smtp-Source: ABdhPJxuVicpRWYmfEU/Z8B/wJ4BDMVE4SGZZRXa2olmw3TLvF6R+eJW02ueEh6KmTXRCQcvS3vLaA==
-X-Received: by 2002:a37:9b91:: with SMTP id d139mr4011202qke.377.1598040427922;
-        Fri, 21 Aug 2020 13:07:07 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.48.246])
-        by smtp.gmail.com with ESMTPSA id k1sm2621289qkf.12.2020.08.21.13.07.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 13:07:07 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id E9F2DC35FC; Fri, 21 Aug 2020 17:07:04 -0300 (-03)
-Date:   Fri, 21 Aug 2020 17:07:04 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: Re: [PATCHv2 net] sctp: not disable bh in the whole
- sctp_get_port_local()
-Message-ID: <20200821200704.GM3399@localhost.localdomain>
-References: <08a14c2f087153c18c67965cc37ed2ac22da18ed.1597993178.git.lucien.xin@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OlqUo3Dge1orlY+cxzOKP+C7gVBbYdp4PpHHz814e9c=;
+        b=N349eTraZ5U5etKJMdcn4SYc91lB0u9OC2ufxlOsecjiYptMMzkfeJMQJwpIQjQQSZ
+         /fDsg+5tTfw8zkbhVSWQFYeU6HNsugQghr0A9eGtkp4cNFUV3VMSRPkNDYqh8ZIjD1L9
+         5Yc1Ono+p1frP/Ri4JNGjvRMmQd7YxtnfwZIZbogNXKExs58LMzT7S5V51bNrjKhC4eh
+         32t/Qn5HzyXr4Y5zXXgDAQQoOldsq+hduZzt++fNAcr+lERmNU5oZMy9dYQ712m8cqYP
+         TwgzQjOd6CQfl11LcxDyrpNOXK6jtTAJMHTKDWvzqPWhEcdLIRO36Mm7wPONnQfZBIkB
+         ZXKA==
+X-Gm-Message-State: AOAM530bPDTkILUH8YWlnjsxC/21m3WH+gXRgGQEcZwk9oiL0PPV3Uj/
+        uUjZ/l+jU4gQkJcBZlv9E/hhRUSaVv1tB6ZiMAk=
+X-Google-Smtp-Source: ABdhPJwrk1iCzTk6KzhCz09vBXaW/eTD6J/3EojIhuAb8Ds06Sge5HXnkkZ+pNjvyW/I6/8pX3Rzl9Is0s0r0dWfTdo=
+X-Received: by 2002:a25:bc50:: with SMTP id d16mr5609943ybk.230.1598040557470;
+ Fri, 21 Aug 2020 13:09:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <08a14c2f087153c18c67965cc37ed2ac22da18ed.1597993178.git.lucien.xin@gmail.com>
+References: <20200821191054.714731-1-yhs@fb.com>
+In-Reply-To: <20200821191054.714731-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 21 Aug 2020 13:09:06 -0700
+Message-ID: <CAEf4BzYkHraBsaaApbaBAUsQfjnYJtnBU7EcNybzxqaHmSNBCg@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: fix a buffer out-of-bound access when filling
+ raw_tp link_info
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 21, 2020 at 02:59:38PM +0800, Xin Long wrote:
-> With disabling bh in the whole sctp_get_port_local(), when
-> snum == 0 and too many ports have been used, the do-while
-> loop will take the cpu for a long time and cause cpu stuck:
-> 
->   [ ] watchdog: BUG: soft lockup - CPU#11 stuck for 22s!
->   [ ] RIP: 0010:native_queued_spin_lock_slowpath+0x4de/0x940
->   [ ] Call Trace:
->   [ ]  _raw_spin_lock+0xc1/0xd0
->   [ ]  sctp_get_port_local+0x527/0x650 [sctp]
->   [ ]  sctp_do_bind+0x208/0x5e0 [sctp]
->   [ ]  sctp_autobind+0x165/0x1e0 [sctp]
->   [ ]  sctp_connect_new_asoc+0x355/0x480 [sctp]
->   [ ]  __sctp_connect+0x360/0xb10 [sctp]
-> 
-> There's no need to disable bh in the whole function of
-> sctp_get_port_local. So fix this cpu stuck by removing
-> local_bh_disable() called at the beginning, and using
-> spin_lock_bh() instead.
-> 
-> The same thing was actually done for inet_csk_get_port() in
-> Commit ea8add2b1903 ("tcp/dccp: better use of ephemeral
-> ports in bind()").
-> 
-> Thanks to Marcelo for pointing the buggy code out.
-> 
-> v1->v2:
->   - use cond_resched() to yield cpu to other tasks if needed,
->     as Eric noticed.
+On Fri, Aug 21, 2020 at 12:11 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> Commit f2e10bff16a0 ("bpf: Add support for BPF_OBJ_GET_INFO_BY_FD for bpf_link")
+> added link query for raw_tp. One of fields in link_info is to
+> fill a user buffer with tp_name. The Scurrent checking only
+> declares "ulen && !ubuf" as invalid. So "!ulen && ubuf" will be
+> valid. Later on, we do "copy_to_user(ubuf, tp_name, ulen - 1)" which
+> may overwrite user memory incorrectly.
+>
+> This patch fixed the problem by disallowing "!ulen && ubuf" case as well.
+>
+> Fixes: f2e10bff16a0 ("bpf: Add support for BPF_OBJ_GET_INFO_BY_FD for bpf_link")
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
+>  kernel/bpf/syscall.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 86299a292214..ac6c784c0576 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -2634,7 +2634,7 @@ static int bpf_raw_tp_link_fill_link_info(const struct bpf_link *link,
+>         u32 ulen = info->raw_tracepoint.tp_name_len;
+>         size_t tp_len = strlen(tp_name);
+>
+> -       if (ulen && !ubuf)
+> +       if (!ulen ^ !ubuf)
+>                 return -EINVAL;
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+I think my original idea was to allow ulen == 0 && ubuf != NULL as a
+still valid way to get real ulen, but it's clearly wrong with ulen-1
+below. So instead of special-casing ulen==0 for the case I wanted to
+support, it's easier to disallow ulen==0 && ubuf!=NULL.
+
+So thanks for the fix!
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>
+>         info->raw_tracepoint.tp_name_len = tp_len + 1;
+> --
+> 2.24.1
+>
