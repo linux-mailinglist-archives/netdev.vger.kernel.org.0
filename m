@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C273024DA8F
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 18:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8902024DC41
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 18:58:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728490AbgHUQVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 12:21:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50022 "EHLO mail.kernel.org"
+        id S1728422AbgHUQ6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 12:58:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49882 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725948AbgHUQVb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 12:21:31 -0400
+        id S1728282AbgHUQT3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 12:19:29 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 405FD206DA;
-        Fri, 21 Aug 2020 16:20:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A75A522CB1;
+        Fri, 21 Aug 2020 16:18:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598026833;
-        bh=hHUvp922SWc2IPNph8CU63+DEsuuCprdRe5rKrlA2u8=;
+        s=default; t=1598026720;
+        bh=jLrsiqJFchZqsU3JqhX9Hjb//ucy/rBP5Iv1hlCWZl0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JP/tvPsBM/96IwR/lYSLB6XXzTuku1eou5ejWLZj7inJmFy+zK7IrZZuaqjlgJMvE
-         1c74t8+BGDQJLVL5iwST4c04Pf6nwvoIL5JuYJOoNK2CuLDqQ7kGriGdyKHkN385Ep
-         SRs74hLpHW+8dHM1ktCIPk84cQl7A9KEO4g7iBiM=
+        b=ROh0EcIsIivn+uo/lN/NeAhOrqR5GOAsFt7Z46qT3jou+qf8DbfkwhernC0B7+HyY
+         D+YKLfmtlgKmJpj+2HDI8JDp3Da+zwojnULDPxYdqQCVKQ+RXQ34BvTcNz1Rk5G/ze
+         hH0h37qUV20g1e/ude6ZhtwpTXQ9q0rpxse7XO10=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Reto Schneider <code@reto-schneider.ch>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 14/22] rtlwifi: rtl8192cu: Prevent leaking urb
-Date:   Fri, 21 Aug 2020 12:20:06 -0400
-Message-Id: <20200821162014.349506-14-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 25/38] rtlwifi: rtl8192cu: Prevent leaking urb
+Date:   Fri, 21 Aug 2020 12:17:54 -0400
+Message-Id: <20200821161807.348600-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200821162014.349506-1-sashal@kernel.org>
-References: <20200821162014.349506-1-sashal@kernel.org>
+In-Reply-To: <20200821161807.348600-1-sashal@kernel.org>
+References: <20200821161807.348600-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,10 +60,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index 9408c1f8e3977..f01ef8ecfaf39 100644
+index 1893640555c1e..3d6c0d8c71d7e 100644
 --- a/drivers/net/wireless/realtek/rtlwifi/usb.c
 +++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -755,8 +755,11 @@ static int _rtl_usb_receive(struct ieee80211_hw *hw)
+@@ -739,8 +739,11 @@ static int _rtl_usb_receive(struct ieee80211_hw *hw)
  
  		usb_anchor_urb(urb, &rtlusb->rx_submitted);
  		err = usb_submit_urb(urb, GFP_KERNEL);
