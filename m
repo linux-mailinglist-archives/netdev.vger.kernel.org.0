@@ -2,88 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E8D024CFDE
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 09:47:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F74B24D006
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 09:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727885AbgHUHr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 03:47:29 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:55130 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725908AbgHUHr2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 03:47:28 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1597996046;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QYrfH5qNal9t0t0APe2l5SVZJtFbnfRRUDVhsTelToo=;
-        b=r4ziFvu5Vua5RWt9RS6TyJ5FZrQA5+Y2S9lyVMTaNfgowWdFrSXCvOPB5uxQb34QROkIWt
-        9RYA/fmbYFNvqiwo1LQ9y7eSlrK5yO2mxxNyKcLQaiD4XPcmJSFZbVkhfBo1gQEwuDyQ8f
-        XgdPUIyRuGtUWXQIlsXqz+7BVvuZ0MVSOyLH7hDEVRxDRMFxM1UJk43jNtQ8oIGfBay9p2
-        /1Sawlax/0f3Dbfi4XneyztBd0DwN1l8GSjWnYXSq/boVAYV2Cpm9ZNt02nNnuaSAicRL0
-        6RFy8DlPCWq9HAjx4HcbvmY8OdmABXAaQr8zgdHUSPh1Arbazq3c5rXQeA3rCQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1597996046;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QYrfH5qNal9t0t0APe2l5SVZJtFbnfRRUDVhsTelToo=;
-        b=w/7+d0Tny9TyRZEVmtObOKW02dRTXpJAS3imgLh6EBGfYkg5b+3BfbTaKNMKIATS3i1eMT
-        IbNQxdWek8IwM3Bw==
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH] net: bridge: Don't reset time stamps on SO_TXTIME enabled sockets
-In-Reply-To: <5affe98d-bb16-0744-5266-db708fb9dc16@cumulusnetworks.com>
-References: <20200820105737.5089-1-kurt@linutronix.de> <5affe98d-bb16-0744-5266-db708fb9dc16@cumulusnetworks.com>
-Date:   Fri, 21 Aug 2020 09:47:25 +0200
-Message-ID: <87mu2oe8z6.fsf@kurt>
+        id S1728182AbgHUHzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 03:55:19 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:49900 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726332AbgHUHzS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 03:55:18 -0400
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.0.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1k91t9-0003tJ-GW; Fri, 21 Aug 2020 17:55:04 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 21 Aug 2020 17:55:03 +1000
+Date:   Fri, 21 Aug 2020 17:55:03 +1000
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     davem@davemloft.net, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] crypto: hifn_795x - switch from 'pci_' to 'dma_' API
+Message-ID: <20200821075503.GA25143@gondor.apana.org.au>
+References: <20200727093027.46331-1-christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200727093027.46331-1-christophe.jaillet@wanadoo.fr>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+On Mon, Jul 27, 2020 at 11:30:27AM +0200, Christophe JAILLET wrote:
+> The wrappers in include/linux/pci-dma-compat.h should go away.
+> 
+> The patch has been generated with the coccinelle script below and has been
+> hand modified to replace GFP_ with a correct flag.
+> It has been compile tested.
+> 
+> When memory is allocated in 'hifn_probe()' GFP_KERNEL can be used
+> because it is a probe function and no spin_lock is taken.
+> 
+> @@
+> @@
+> -    PCI_DMA_BIDIRECTIONAL
+> +    DMA_BIDIRECTIONAL
+> 
+> @@
+> @@
+> -    PCI_DMA_TODEVICE
+> +    DMA_TO_DEVICE
+> 
+> @@
+> @@
+> -    PCI_DMA_FROMDEVICE
+> +    DMA_FROM_DEVICE
+> 
+> @@
+> @@
+> -    PCI_DMA_NONE
+> +    DMA_NONE
+> 
+> @@
+> expression e1, e2, e3;
+> @@
+> -    pci_alloc_consistent(e1, e2, e3)
+> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+> 
+> @@
+> expression e1, e2, e3;
+> @@
+> -    pci_zalloc_consistent(e1, e2, e3)
+> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_free_consistent(e1, e2, e3, e4)
+> +    dma_free_coherent(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_map_single(e1, e2, e3, e4)
+> +    dma_map_single(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_single(e1, e2, e3, e4)
+> +    dma_unmap_single(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4, e5;
+> @@
+> -    pci_map_page(e1, e2, e3, e4, e5)
+> +    dma_map_page(&e1->dev, e2, e3, e4, e5)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_page(e1, e2, e3, e4)
+> +    dma_unmap_page(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_map_sg(e1, e2, e3, e4)
+> +    dma_map_sg(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_sg(e1, e2, e3, e4)
+> +    dma_unmap_sg(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
+> +    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_single_for_device(e1, e2, e3, e4)
+> +    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
+> +    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
+> +    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_dma_mapping_error(e1, e2)
+> +    dma_mapping_error(&e1->dev, e2)
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_set_dma_mask(e1, e2)
+> +    dma_set_mask(&e1->dev, e2)
+> 
+> @@
+> expression e1, e2;
+> @@
+> -    pci_set_consistent_dma_mask(e1, e2)
+> +    dma_set_coherent_mask(&e1->dev, e2)
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+>    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+> ---
+>  drivers/crypto/hifn_795x.c | 21 ++++++++++++---------
+>  1 file changed, 12 insertions(+), 9 deletions(-)
 
-On Thu Aug 20 2020, Nikolay Aleksandrov wrote:
-> The new conditionals will be for all forwarded packets, not only the
-> ones that are transmitted through the bridge master device.
-
-I see makes sense.
-
-> If you'd like to do this please limit it to the bridge dev transmit.
-
-I'm wondering how to do that. The problem is that the time stamp is
-reset to zero unconditionally in br_forward_finish(). This function is
-also called in the transmit path.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl8/fA0ACgkQeSpbgcuY
-8KYR+BAAiaaCs1BIj0Ogf9yXoq5Krdd1Wi27yOkqGGkP081+wuLYUwsFDtxXRxJ8
-d4Eh/M6TxWWKHovkzEc0HXtBhWNkbt+SYXiJ6tNTv4OkaNNJl/PmPPOG5CWpUr3j
-scFu9xwYR0EeOir79QaTpsNR3dpxbLkrjZFQBAyqVO6UrdZ+Ra8iWT9/iNY/rDXH
-Fjabd6QkWO1hIprWdrC+pMKAtre38xHdO+GjCWUQi8GY09X44FcpZwoHJsC9u7AD
-ClAHLHGQWMqqqui1QQGN9pXN5iiwwNefSUOCr1VMxg1s0dNE8G5PLYegteDwyDAi
-to6sXj7bGa28M1uxkjtxxL4SXhGiCTjeRDImTZGjMCrP8KSyxDiZNI1VbDCqd6+3
-QKLiS65/W9vLVY/BSd7/nk5+7aG8KwxtPubKLQ/EN3z24HDtUUajw1UKtuP7XdQa
-+DGX0KbJDNGKsQW9yAznM0RBRj9w6bH19tsABbyaA2QUBAJz/VNOO2sHPOjC9hCr
-7FsVL7MPhKBf9FuuEQdbq0xB+XpXOZSjKYnAQrqW0J7x+IJKRbrhdVLLfU3OVuH8
-QBOSGkBhY9S8wW/LjPCFbCs1ziez0wIHjdbz8l+1QJLVe/XFjZiFY6X+/HgJv4Ap
-TDAhSvn2Hqk5ezYbzJCLuEGTeEPhGQgyjHYJK8XEYwOQwgyvNgM=
-=enjn
------END PGP SIGNATURE-----
---=-=-=--
+Patch applied.  Thanks.
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
