@@ -2,115 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 964DD24E3AD
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 00:58:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 718FF24E3B8
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 01:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726874AbgHUW57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 18:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38552 "EHLO
+        id S1726796AbgHUXAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 19:00:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726772AbgHUW56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 18:57:58 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E9EC061573;
-        Fri, 21 Aug 2020 15:57:57 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id w14so2411228eds.0;
-        Fri, 21 Aug 2020 15:57:57 -0700 (PDT)
+        with ESMTP id S1726541AbgHUXAf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 19:00:35 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF0FC061573;
+        Fri, 21 Aug 2020 16:00:34 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id d19so1668897pgl.10;
+        Fri, 21 Aug 2020 16:00:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=6Y3HAkrVgYNsW26WADT1OAHIAmh+irSetkJetEKSBLc=;
-        b=LmYlBWlqAaYlLTQciRn3s+WD9MIprS0TReEVpc+Z7k5nC/Y9lKDewhsJ5SPjBKZTHp
-         fAaXY21tnl1gT2vIqJDHE0um3m5jtvyiFgQj8j+OE0C1MHq7ufuDNktX7eKcr/wO4/Ax
-         ksVjJtpmqtwqdVFeWvivOrBHE7DZQfOS/2/zyxu0tlgCCxNAkkVS3ifbVLRBbNdt9iVw
-         b4T61UaWEp7wGexWNcLH0Tlid4kfULD7VqYpfsu2/J4q3ZMcysARnaBWiyqfWJaGALZN
-         gZj0iri+5bEtsg7p+jzTxbOaFgJTIlIuR9HbPHLTSmmTV2HxX/hEy+QCQtH6z1KQOYOI
-         XWRw==
+        bh=TCw2I4LhckzIKslySIEuB7+DYrxiWBg1FZst/Fotyz4=;
+        b=hZVidOd+0BEVo/RuP5YFEw4LqB+zyXGcvVf+BHZvrGLZrNDSIqZb94dqeYtBg7hNgD
+         4TmO7YAoX1qU9P7A7IPyeB4WOWMF8XFZUgUz2K+PumuGsbOCm6QNhhIHUG9DKFF+ZuDH
+         8U7XRkVR8lu8N9wmjDyqa9/Vabgwo25IMN42k/FrxyGbFoR1YaL/YweV1Uik2hlOc3ie
+         axlQ8v2QkOfIz4RajYkWqNGPxB3v0fIZiKEjKLc7BT2w4sHoZ/GAaACbLFnjC13YkTST
+         1b9LnMaxlvYfRb9d3U9gLi7TolmWtUsPRuvgfOP9o02WT+dBPG5lT7PkaRv9QP48wt+3
+         KoQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=6Y3HAkrVgYNsW26WADT1OAHIAmh+irSetkJetEKSBLc=;
-        b=cPMD97LBCTzp0sufpKadCWAFTMRIKjp17cYUdjny1DJlR4ScS+CAIApn6SYtJfnl/t
-         7mY822Ti/8jZwpxYdRYUSMQyn2kQEmPv8/L7CasBPJSD3AwhgFpuS66tdT1xo5tgO9MC
-         PjdssnIRCugHAqXLeVmCbqRr6HN4wxnDqBnAJBD4KT2tNpBi1MFuhGOUOfgYJOafOZaf
-         8wCIUJkTiIvq35Qpgd25TnCiu/jfSJnSICg4YFilOkxjrqUHEAzcdDsFUlpMpuIuhhjm
-         44g3osJqerMRHp3MCk5b+GFI6GKcDRFJRz8iTrsuNDh5Sf1Tn83rj3gd+weJ9obSTmvh
-         nw2w==
-X-Gm-Message-State: AOAM532hmnL3yfLZgW85r//W24Nlxx3vOKzo7xf0OPJVZR2emzpDggqM
-        J0g9i7xJ8bBIP57EXd1h6GYS1lA7xiM=
-X-Google-Smtp-Source: ABdhPJwhHp67Go/OlpD5NAZYr8YW4SUI6BBSZAVRj7AR7dXUeoByYRDRzf456SX/p5xgAiEGesWZvg==
-X-Received: by 2002:aa7:da04:: with SMTP id r4mr5032282eds.265.1598050675861;
-        Fri, 21 Aug 2020 15:57:55 -0700 (PDT)
-Received: from skbuf ([86.126.22.216])
-        by smtp.gmail.com with ESMTPSA id d9sm1839906edt.20.2020.08.21.15.57.54
+        bh=TCw2I4LhckzIKslySIEuB7+DYrxiWBg1FZst/Fotyz4=;
+        b=GoefnF8roDk6n3pUceHqmLeYeO7wYdPinGkLpccud1LjmGq7A41hAsJSDauSzFh/+6
+         9AYI7jpjSvl5U5pj7r2uqT9Ec8CdgtsyBaBRFMpxiUhDtQI/S6/wX59y4Pcz/gB5M9jO
+         2+gZQb4gIh2RIwWrTYpyXpfc8P5zQaP7IOyZbez9Jlk4n0sV/aqoaPPh95xLiTnCG9c/
+         7p44Lo3++IOc7qsYR1fjuFhhr/LuvLWvbiMTpaWkrETHqjNyM1vhAPgOZCSwWLencVve
+         AL+BAlGCMMxMsncq1VzyVy++cWht1FpPF6NsSZnXKylZ+zWLcC5qRHAvIB/kHFgPJlNX
+         zvAQ==
+X-Gm-Message-State: AOAM531gxM/GxV03m+7Nqgo6yUixSh2W1D+UzE9/YzcFo1F5fkhshfQ2
+        egSaIy5BlizeNRgVUlXQEd4wd93svaU=
+X-Google-Smtp-Source: ABdhPJzEJu68pmsi1N2tMPnQyVQJ/B40MgxE+Us/gMiOLRgL7urDINIgxZUdgssscEsQUhkzoM5rAA==
+X-Received: by 2002:a63:6fc6:: with SMTP id k189mr3676409pgc.165.1598050834027;
+        Fri, 21 Aug 2020 16:00:34 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:8791])
+        by smtp.gmail.com with ESMTPSA id e26sm3526618pfj.197.2020.08.21.16.00.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 15:57:55 -0700 (PDT)
-Date:   Sat, 22 Aug 2020 01:57:53 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] net: dsa: sja1105: Do not use address of compatible
- member in sja1105_check_device_id
-Message-ID: <20200821225753.cfaclxay6zhq6swg@skbuf>
-References: <20200821222515.414167-1-natechancellor@gmail.com>
+        Fri, 21 Aug 2020 16:00:33 -0700 (PDT)
+Date:   Fri, 21 Aug 2020 16:00:31 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 00/16] Add libbpf full support for BPF-to-BPF
+ calls
+Message-ID: <20200821230031.3p6x7twnt4reayou@ast-mbp.dhcp.thefacebook.com>
+References: <20200820231250.1293069-1-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200821222515.414167-1-natechancellor@gmail.com>
+In-Reply-To: <20200820231250.1293069-1-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 21, 2020 at 03:25:16PM -0700, Nathan Chancellor wrote:
-> Clang warns:
+On Thu, Aug 20, 2020 at 04:12:34PM -0700, Andrii Nakryiko wrote:
+> Currently, libbpf supports a limited form of BPF-to-BPF subprogram calls. The
+> restriction is that entry-point BPF program should use *all* of defined
+> sub-programs in BPF .o file. If any of the subprograms is not used, such
+> entry-point BPF program will be rejected by verifier as containing unreachable
+> dead code. This is not a big limitation for cases with single entry-point BPF
+> programs, but is quite a havy restriction for multi-programs that use only
+> partially overlapping set of subprograms.
 > 
-> drivers/net/dsa/sja1105/sja1105_main.c:3418:38: warning: address of
-> array 'match->compatible' will always evaluate to 'true'
-> [-Wpointer-bool-conversion]
->         for (match = sja1105_dt_ids; match->compatible; match++) {
->         ~~~                          ~~~~~~~^~~~~~~~~~
-> 1 warning generated.
+> This patch sets removes all such restrictions and adds complete support for
+> using BPF sub-program calls on BPF side. This is achieved through libbpf
+> tracking subprograms individually and detecting which subprograms are used by
+> any given entry-point BPF program, and subsequently only appending and
+> relocating code for just those used subprograms.
 > 
-> We should check the value of the first character in compatible to see if
-> it is empty or not. This matches how the rest of the tree iterates over
-> IDs.
+> In addition, libbpf now also supports multiple entry-point BPF programs within
+> the same ELF section. This allows to structure code so that there are few
+> variants of BPF programs of the same type and attaching to the same target
+> (e.g., for tracepoints and kprobes) without the need to worry about ELF
+> section name clashes.
 > 
-> Fixes: 0b0e299720bb ("net: dsa: sja1105: use detected device id instead of DT one on mismatch")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1139
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> ---
->  drivers/net/dsa/sja1105/sja1105_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> This patch set opens way for more wider adoption of BPF subprogram calls,
+> especially for real-world production use-cases with complicated net of
+> subprograms. This will allow to further scale BPF verification process through
+> good use of global functions, which can be verified independently. This is
+> also important prerequisite for static linking which allows static BPF
+> libraries to not worry about naming clashes for section names, as well as use
+> static non-inlined functions (subprograms) without worries of verifier
+> rejecting program due to dead code.
 > 
-> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-> index c3f6f124e5f0..5a28dfb36ec3 100644
-> --- a/drivers/net/dsa/sja1105/sja1105_main.c
-> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
-> @@ -3415,7 +3415,7 @@ static int sja1105_check_device_id(struct sja1105_private *priv)
->  
->  	sja1105_unpack(prod_id, &part_no, 19, 4, SJA1105_SIZE_DEVICE_ID);
->  
-> -	for (match = sja1105_dt_ids; match->compatible; match++) {
-> +	for (match = sja1105_dt_ids; match->compatible[0]; match++) {
->  		const struct sja1105_info *info = match->data;
->  
->  		/* Is what's been probed in our match table at all? */
-> 
-> base-commit: 4af7b32f84aa4cd60e39b355bc8a1eab6cd8d8a4
-> -- 
-> 2.28.0
-> 
+> Patch set is structured as follows:
+> - patches 1-5 contain various smaller improvements to logging and selftests;
+> - patched 6-11 contain all the libbpf changes necessary to support multi-prog
+>   sections and bpf2bpf subcalls;
+> - patch 12 adds dedicated selftests validating all combinations of possible
+>   sub-calls (within and across sections, static vs global functions);
+> - patch 13 deprecated bpf_program__title() in favor of
+>   bpf_program__section_name(). The intent was to also deprecate
+>   bpf_object__find_program_by_title() as it's now non-sensical with multiple
+>   programs per section. But there were too many selftests uses of this and
+>   I didn't want to delay this patches further and make it even bigger, so left
+>   it for a follow up cleanup;
+> - patches 14-15 remove uses for title-related APIs from bpftool and
+>   bpf_program__title() use from selftests;
+> - patch 16 is converting fexit_bpf2bpf to have explicit subtest (it does
+>   contain 4 subtests, which are not handled as sub-tests).
 
-Thanks, Nathan.
-
-Acked-by: Vladimir Oltean <olteanv@gmail.com>
-
--Vladimir
+I've applied the first 5 patches. Cleanup of 'elf:' logs is nice.
+Thanks for doing it.
+The rest of the patches look fine as well, but minimalistic selftest is
+a bit concerning for such major update to libbpf.
+Please consider expanding the tests.
+May be cloudflare's test_cls_redirect.c can be adopted for this purpose?
+test_xdp_noinline.c can also be extended by doing two copies of
+balancer_ingress(). One to process ipv4 another ipv6.
+Then it will make libbpf to do plenty of intersting call adjustments
+and function munipulations for three programs in "xdp-test" section
+that use different sets of sub-programs.
+test_l4lb_noinline.c can be another candidate.
+The selftest that is part of this set is nice for targeted debugging, but would
+be great to see production bpf prog adopting this exciting libbpf feature.
