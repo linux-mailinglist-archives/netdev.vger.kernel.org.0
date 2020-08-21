@@ -2,100 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4EF024D803
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 17:07:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 818EC24D80C
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 17:11:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728035AbgHUPHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 11:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728047AbgHUPHE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 11:07:04 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BCDC061574
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 08:07:04 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id t15so2034163iob.3
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 08:07:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GnYQNhwtXwVYlPdVsnrBy6dOuo2Ol5Ijyx6D4Eg1YoA=;
-        b=ePdvtcgT7ltVEACaDkXOhjZZ02iFArzqiVXgTDQe++M82pCs5Zf0M73C4dRNooFsv/
-         cgVAYMgsOzHtCuF+zIyKxbetlNSd0YbgaQjMzgkoNV1ZslxvAQKHHIMs4AuMmXRkwStD
-         MxbkCWxUBT8aX9J7V4C58hIzUznGe9Ja//XJ3gocQY+1wW7Uf1c2OAAVtt6j/iB3Ive2
-         /AsQS4f/5HH3nDNe9GiqlKBPJdVCcpFW9aEfQN/F1tkd+q+fPo3rAIRo7dOJMcmEFsPw
-         /MqQtHQ1eHKBczcqsdcZmYgRVxC+t7yK7VUfgM+Iwx6+CU2Yv5USTsx2ilYXs/W6v0KY
-         Htag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GnYQNhwtXwVYlPdVsnrBy6dOuo2Ol5Ijyx6D4Eg1YoA=;
-        b=A2DFv9erbxb4iOA90zFJYT0D+y4840fdp5eKYnbE3AjFOsVrvdB25G0JwYTV3s8QQ+
-         JIsBHLCWuGjts7QlFCrolcIhInBR4PfmVkEQqek52onFuDnzDe2N+hp9rLdZsRaVv1Ii
-         y8u/l+T++G8Xwc5YjDvwO2H6aB4nDSgFEZ0IfCMSXZqiL/z38/AX/JxrkJPAF9p3aa/J
-         B/nFcM6/M4E20t/Rr3m8N5mhwDNE1zDpDO2oQ+bhegovVq/VOEQs8ZVNGLqySV9ue6sw
-         WWc0XbzNBXBEa4sHoYPA+5COWr0a/G8KgNYqFPCoDMaWGP8EKw4KRsue829dvKWfvIbw
-         sVhA==
-X-Gm-Message-State: AOAM5316eFlMD1pO4Z8xIB939QGPbJY4i3EXnjoU/BZHeCby11ELph0n
-        asDhC1p8oUizt5y45F1d/TR/Oz+GQXLdMW9/9EB6dw==
-X-Google-Smtp-Source: ABdhPJzB1KDJI41X8qYxbJ9m5IjiKVoEO8Gk4B7Q2R8J9LQz3LTFJRJTOF0VfsN9KiurkFP8iE4R3IK9Cog2hB3AgZA=
-X-Received: by 2002:a6b:7846:: with SMTP id h6mr2643881iop.145.1598022421093;
- Fri, 21 Aug 2020 08:07:01 -0700 (PDT)
+        id S1727123AbgHUPLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 11:11:00 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:40782 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727091AbgHUPK6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 11:10:58 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07LFAtAs066401;
+        Fri, 21 Aug 2020 10:10:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1598022655;
+        bh=wyvu2870QWwbV1ZhRAfgPzVWp/hkgCft5WVF2FENe4A=;
+        h=Subject:From:To:References:Date:In-Reply-To;
+        b=BvUJ7on1AGd4LgweEZA2UVLRhY11Suqj9vIooBrmFySwd2WGGFnLzUWclM78UKdTf
+         8a/8wNBnjFAkAfQkWdDTQTpklc7+ult5rfawrp+uwGtolpMPqWvI0um+awyrmxT2HA
+         3N6SYVu4lkYrivUvZnLj9jMwq0JgcQXIps43OPmU=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 07LFAt4b063369
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 21 Aug 2020 10:10:55 -0500
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 21
+ Aug 2020 10:10:55 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 21 Aug 2020 10:10:55 -0500
+Received: from [10.250.220.167] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07LFAsdZ090462;
+        Fri, 21 Aug 2020 10:10:54 -0500
+Subject: Re: VLAN over HSR/PRP - Issue with rx_handler not called for VLAN hw
+ acceleration
+From:   Murali Karicheri <m-karicheri2@ti.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        <jpirko@redhat.com>
+References: <dcea193d-8143-a664-947c-8a1baea7bc2c@ti.com>
+Message-ID: <f20094d8-fd3a-eb1f-8bbf-8d01997ae0e0@ti.com>
+Date:   Fri, 21 Aug 2020 11:10:54 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20200821063043.1949509-1-elver@google.com> <20200821085907.GJ1362448@hirez.programming.kicks-ass.net>
-In-Reply-To: <20200821085907.GJ1362448@hirez.programming.kicks-ass.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 21 Aug 2020 08:06:49 -0700
-Message-ID: <CANn89i+1MQRCSRVg-af758en5e9nwQBes3aBSjQ6BY1pV5+HdQ@mail.gmail.com>
-Subject: Re: [PATCH] random32: Use rcuidle variant for tracepoint
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Marco Elver <elver@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <dcea193d-8143-a664-947c-8a1baea7bc2c@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 21, 2020 at 1:59 AM <peterz@infradead.org> wrote:
->
-> On Fri, Aug 21, 2020 at 08:30:43AM +0200, Marco Elver wrote:
-> > With KCSAN enabled, prandom_u32() may be called from any context,
-> > including idle CPUs.
-> >
-> > Therefore, switch to using trace_prandom_u32_rcuidle(), to avoid various
-> > issues due to recursion and lockdep warnings when KCSAN and tracing is
-> > enabled.
->
-> At some point we're going to have to introduce noinstr to idle as well.
-> But until that time this should indeed cure things.
+Hello Jiri,
 
-I do not understand what the issue is.  This _rcuidle() is kind of opaque ;)
+On 8/19/20 12:08 PM, Murali Karicheri wrote:
+> All,
+> 
+> I am working to add VLAN interface creation over HSR/PRP interface.
+> It works fine after I fixed the HSR driver to allow creation of
+> VLAN over it and with VLAN without hw acceleration. But with hw
+> acceleration, the HSR hook is bypassed in net/core/dev.c as
+> 
+>      if (skb_vlan_tag_present(skb)) {
+>          if (pt_prev) {
+>              ret = deliver_skb(skb, pt_prev, orig_dev);
+>              pt_prev = NULL;
+>          }
+>          if (vlan_do_receive(&skb))
+>              goto another_round;
+>          else if (unlikely(!skb))
+>              goto out;
+>      }
+> 
+>      rx_handler = rcu_dereference(skb->dev->rx_handler);
+>      if (rx_handler) {
+>          if (pt_prev) {
+>              ret = deliver_skb(skb, pt_prev, orig_dev);
+>              pt_prev = NULL;
+>          }
+>          switch (rx_handler(&skb)) {
+>          case RX_HANDLER_CONSUMED:
+>              ret = NET_RX_SUCCESS;
+>              goto out;
+>          case RX_HANDLER_ANOTHER:
+>              goto another_round;
+>          case RX_HANDLER_EXACT:
+>              deliver_exact = true;
+>          case RX_HANDLER_PASS:
+>              break;
+>          default:
+>              BUG();
+>          }
+>      }
+> 
+> What is the best way to address this issue? With VLAN hw acceleration,
+> skb_vlan_tag_present(skb) is true and rx_handler() is not called.
+> 
+I find that you have modified vlan_do_receive() in the past and
+wondering if you have some insight into the issue. I also see the same
+issue when I create VLAN interfaces over a linux bridge over TI's cpsw
+interfaces. I understand that bridge code also use the same hook
+(rx_handler) as HSR to receive the frames. The vlan interface doesn't
+get the frames. With VLAN acceleration disabled, VLAN interfaces seems
+to work fine. I  have two AM572x IDKs with CPSW port connected back to
+back. I setup Linux bridge and run stp to avoid looks. I don't
+understand what vlan_do_receive() is doing. Could you explain?
+probably it needs to false for Linux bridge and HSR case so that
+the rx_handler will receive the frame? As a HACK, I will muck around
+with this code to return false and see if that helps.
 
-Would this alternative patch work, or is it something more fundamental ?
+Setup used for my work.
 
-Thanks !
+192.168.100.10  192.168.101.10           192.168.100.20 192.168.101.20
+  br0.100        br0.101                     br0.100      br0.101
+   |-----------|                                |--------------|
+         |                                            |
+         br0 (192.168.2.10)                         br0 (192.168.2.20)
+DUT-1-----|--eth0 <-------------------------> eth0---|-----DUT-1
+           |--eth1 <-------------------------> eth1---|
 
-diff --git a/lib/random32.c b/lib/random32.c
-index 932345323af092a93fc2690b0ebbf4f7485ae4f3..17af2d1631e5ab6e02ad1e9288af7e007bed6d5f
-100644
---- a/lib/random32.c
-+++ b/lib/random32.c
-@@ -83,9 +83,10 @@ u32 prandom_u32(void)
-        u32 res;
+Now Ping between 192.168.100.10 and 192.168.100.20 or
+192.168.101.10 and 192.168.101.20
 
-        res = prandom_u32_state(state);
--       trace_prandom_u32(res);
-        put_cpu_var(net_rand_state);
+Commands below.
 
-+       trace_prandom_u32(res);
-+
-        return res;
- }
- EXPORT_SYMBOL(prandom_u32);
+DUT-1
+
+brctl addbr br0
+brctl addif br0 eth0
+brctl addif br0 eth1
+ifconfig eth0 up
+ifconfig eth1 up
+brctl stp br0 yes
+ifconfig br0 192.168.2.10
+
+ip link add link br0 name br0.100 type vlan id 100
+ip link add link br0 name br0.101 type vlan id 101
+ifconfig br0.100 192.168.100.10
+ifconfig br0.101 192.168.101.10
+
+
+DUT-2
+
+brctl addbr br0
+brctl addif br0 eth0
+brctl addif br0 eth1
+ifconfig eth0 up
+ifconfig eth1 up
+brctl stp br0 yes
+ifconfig br0 192.168.2.20
+
+ip link add link br0 name br0.100 type vlan id 100
+ip link add link br0 name br0.101 type vlan id 101
+ifconfig br0.100 192.168.100.20
+ifconfig br0.101 192.168.101.20
+
+> Thanks
+> 
+
+-- 
+Murali Karicheri
+Texas Instruments
