@@ -2,53 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94C5F24E2BF
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 23:35:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59B5C24E2C4
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 23:39:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbgHUVfy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 21 Aug 2020 17:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726433AbgHUVfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 17:35:54 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B49EC061573
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 14:35:54 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id DEDC8128B3509;
-        Fri, 21 Aug 2020 14:19:07 -0700 (PDT)
-Date:   Fri, 21 Aug 2020 14:35:53 -0700 (PDT)
-Message-Id: <20200821.143553.1454267475258459257.davem@davemloft.net>
-To:     maze@google.com
-Cc:     maheshb@google.com, netdev@vger.kernel.org, kuba@kernel.org,
-        edumazet@google.com, mahesh@bandewar.net, jianyang@google.com
-Subject: Re: [PATCH next] net: add option to not create fall-back tunnels
- in root-ns as well
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CANP3RGc+N4O-eUAHr+mOsQ740aExW7zzbmh8V7Wb54d3teB+hQ@mail.gmail.com>
-References: <20200819005123.1867051-1-maheshb@google.com>
-        <20200821.140323.1479263590085016926.davem@davemloft.net>
-        <CANP3RGc+N4O-eUAHr+mOsQ740aExW7zzbmh8V7Wb54d3teB+hQ@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-2
+        id S1725948AbgHUVj2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 21 Aug 2020 17:39:28 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:24982 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726187AbgHUVj2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 17:39:28 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-221-Ovfv65qLMDOzSh5mErwndw-1; Fri, 21 Aug 2020 22:39:24 +0100
+X-MC-Unique: Ovfv65qLMDOzSh5mErwndw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Fri, 21 Aug 2020 22:39:23 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Fri, 21 Aug 2020 22:39:23 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
+CC:     "'linux-sctp@vger.kernel.org'" <linux-sctp@vger.kernel.org>,
+        "'netdev@vger.kernel.org'" <netdev@vger.kernel.org>
+Subject: RE: Use of genradix in sctp
+Thread-Topic: Use of genradix in sctp
+Thread-Index: AdZ1ckZAY2qe63tNS/O9MsxVdvHiSAALTAcAAANIG8AAkcwnAAADgzyw
+Date:   Fri, 21 Aug 2020 21:39:23 +0000
+Message-ID: <11eafe393bc640a8bbddf33d0e784901@AcuMS.aculab.com>
+References: <2ffb7752d3e8403ebb220e0a5e2cf3cd@AcuMS.aculab.com>
+ <20200818213800.GJ906397@localhost.localdomain>
+ <357ded60999a4957addb766a29431ad7@AcuMS.aculab.com>
+ <20200821204636.GO3399@localhost.localdomain>
+In-Reply-To: <20200821204636.GO3399@localhost.localdomain>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0.001
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 21 Aug 2020 14:19:08 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej ¯enczykowski <maze@google.com>
-Date: Fri, 21 Aug 2020 14:25:20 -0700
+From: 'Marcelo Ricardo Leitner'
+> Sent: 21 August 2020 21:47
+...
+> > 3) Defer the allocation until the stream is used.
+> >    for outbound streams this could remove the extra buffer.
+> 
+> This can be tricky. What should happen if it gets a packet on a stream
+> that it couldn't allocate, and then another on a stream that was
+> already allocated? Just a drop, it will retransmit and recover, and
+> then again.. While, OTOH, if the application requested such amount of
+> streams, it is likely going to use it. If not, that's an application
+> bug.
 
-> If no kernel command line option is specified, should the default
-> be to maintain compatibility, or do you think it's okay to make
-> the default be no extra interfaces?  They can AFAICT always be added
-> manually via 'ip link add' netlink commands.
+You'd probably need to (effectively) drop the ethernet frame
+that contained the chunk.
 
-You can't change current default behavior, so the answer should be
-obvious right?
+But the problem I see is that GFP flags are passed in.
+So there must me a path where the allocation can't sleep.
+Now allocating a couple of pages is fine but if the
+maximum is just over 300 for each of 'in' and 'out'.
+I can well imagine that is likely to fail.
+I suspect this happens because the remote system can
+(if my quick scan of the code is right) negotiate a
+much larger number on an active connection.
+
+I don't know what applications might be doing such things.
+But I can imagine someone will try to negotiate 64k-1
+streams just because that is the maximum.
+And/or deciding to use stream 65535 for 'special' traffic.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
