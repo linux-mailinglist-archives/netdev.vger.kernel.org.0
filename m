@@ -2,98 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 565AC24DB1B
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 18:34:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB6724DBA7
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 18:45:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728295AbgHUQeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 12:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35436 "EHLO
+        id S1728439AbgHUQpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 12:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728580AbgHUQdr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 12:33:47 -0400
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43814C061573
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 09:33:47 -0700 (PDT)
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id BDE4586B8E;
-        Fri, 21 Aug 2020 17:33:39 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1598027619; bh=9RfgqFA84TAIrh9nXg8ia1otkH9uJE6w2KA0neSBJhQ=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Fri,=2021=20Aug=202020=2017:33:39=20+0100|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20kernel=20test=20robot=20<lkp@i
-         ntel.com>|Cc:=20netdev@vger.kernel.org,=20kbuild-all@lists.01.org,
-         =20jchapman@katalix.com|Subject:=20Re:=20[PATCH=201/9]=20l2tp:=20d
-         on't=20log=20data=20frames|Message-ID:=20<20200821163339.GA7948@ka
-         talix.com>|References:=20<20200821104728.23530-2-tparkin@katalix.c
-         om>=0D=0A=20<202008212019.nMaa8rae%lkp@intel.com>|MIME-Version:=20
-         1.0|Content-Disposition:=20inline|In-Reply-To:=20<202008212019.nMa
-         a8rae%lkp@intel.com>;
-        b=cXdzRFwg5YN25/wm7dKYYlx3VNYTDh602sAt86ZKaQMe16JyrxueIri73EIuJ+w1F
-         FWxT35tVFTt0fm2QeTjSrOkQPB/BUNf2ER82qSJkJsfLOaUmezRI0T2XUWYiD2vfRT
-         CG5EJf66OrMHncISQLibX5Q1P5n4lWSruo0N6W2HhDjM8OzfVMs6E9LZ44ImJKoG1A
-         9lEy7/I5/CHURIVxfMRdhaeXM9/Pme2Mp/j4/53zX5PHpnd0Fqliz0AHU7m7nGpQSf
-         C36HFETx7J5WKrje5p/pfWvByf5lx2VCi3cSgGcXvZ0kwIlOsY5rWNxqO8i1jcfinT
-         Cvf43i2Lr5UQA==
-Date:   Fri, 21 Aug 2020 17:33:39 +0100
-From:   Tom Parkin <tparkin@katalix.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     netdev@vger.kernel.org, kbuild-all@lists.01.org,
-        jchapman@katalix.com
-Subject: Re: [PATCH 1/9] l2tp: don't log data frames
-Message-ID: <20200821163339.GA7948@katalix.com>
-References: <20200821104728.23530-2-tparkin@katalix.com>
- <202008212019.nMaa8rae%lkp@intel.com>
+        with ESMTP id S1728063AbgHUQpA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 12:45:00 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998C6C061573;
+        Fri, 21 Aug 2020 09:45:00 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id u6so1370131ybf.1;
+        Fri, 21 Aug 2020 09:45:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=o2ZPSXoKQiAgvPofqJBjnMdYBbZ4MAbwhF7IQQ6Dw9Y=;
+        b=FzSUj4/Q6+pY+Ld2kke9+/RxGFULDjpuOcFKWjKFhtIChhx/JMSenwHQn9kLvNVYs0
+         3l07RLGvle4UwE+Q4MUOvubv53ldKifB4QFY8QuO6jqEnkXv0jrPwOn+EC5MwVxXBkt8
+         jXXYepn773T4YIH8kWS3YySMXkul6OdbvaBd/8uePk9e5KoHwzQB4EUjsHY4nPy8Pz+O
+         qm4SN4GLWw5h6EVRouO52rpAA6yASUxG78S0MO/3uV+PV22yuAq+8NPsZS8akOxKYAw4
+         LB3IWk9Nva4TgXEB8nQ5OzLPnFS0b/PCf3cI7Bw4ncLy+8g6kcBLnnIG1+T2WBuWqwSi
+         /iYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=o2ZPSXoKQiAgvPofqJBjnMdYBbZ4MAbwhF7IQQ6Dw9Y=;
+        b=Oywg5j2BidIi/O5AuQBIaumXRUsh9+e8ymi8NUItia3TnMyqWPAGf6soamOQnH9kkk
+         1SiUGvWsKxr7YlAj3nhMuBan8WI+0fDcf586eQj+iK4VDaLZEpJ6RTqoE2i1FxVgxran
+         S7wDci8skc/P4LtxhQAyYal9Lv6A+8MfAICy29/4FqqQPt8S/u1aoN30toG+S98KiYKr
+         S64QX/wU9UgamRn8M0lNj36FcpiFSDzvHqSustkXfTZWH9GUnPsYokc/o8w9uy7xbckJ
+         h7Ar9AnWkHIZJtxrKzUwIPGe7gpaHaDMY1F62p7Np8aSj+fhnUrp2Yo7hCEtF0O1rlSX
+         Qu3Q==
+X-Gm-Message-State: AOAM532D0wJef9vRYj7DPkOCXLFSx5JZLBE/K55xjihMMCYcebNalTXu
+        VcnWXBoNSBS2NrmrQkyCy52iisodWzTDtxFuBK7QT6AU
+X-Google-Smtp-Source: ABdhPJyoZDtihGJP47npsp2NTOEuIp0wDFzOZjLHaUMJSv/O0+wBlAFSNiPBMg3Xbdk3sv2G7pWTrjNFQdQDGPE4CpM=
+X-Received: by 2002:a25:ad5a:: with SMTP id l26mr4649948ybe.510.1598028299749;
+ Fri, 21 Aug 2020 09:44:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="pf9I7BMVVzbSWLtt"
-Content-Disposition: inline
-In-Reply-To: <202008212019.nMaa8rae%lkp@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200820224917.483062-1-yhs@fb.com> <20200820224917.483128-1-yhs@fb.com>
+ <CAEf4BzZ32inDH2MhLFv5o8PiQ9=4EGR0C75Ks6dWzHjVsgozAg@mail.gmail.com> <08982c2f-b9a8-3d30-9e4c-4f3f071a5a58@fb.com>
+In-Reply-To: <08982c2f-b9a8-3d30-9e4c-4f3f071a5a58@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 21 Aug 2020 09:44:48 -0700
+Message-ID: <CAEf4BzbF_KURy4CusoCND6-agPc8SgFAtKDhcwYC8jP=L1M50Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/3] bpf: implement link_query for bpf iterators
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Aug 20, 2020 at 11:42 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 8/20/20 11:31 PM, Andrii Nakryiko wrote:
+> > On Thu, Aug 20, 2020 at 3:50 PM Yonghong Song <yhs@fb.com> wrote:
+> >>
+> >> This patch implemented bpf_link callback functions
+> >> show_fdinfo and fill_link_info to support link_query
+> >> interface.
+> >>
+> >> The general interface for show_fdinfo and fill_link_info
+> >> will print/fill the target_name. Each targets can
+> >> register show_fdinfo and fill_link_info callbacks
+> >> to print/fill more target specific information.
+> >>
+> >> For example, the below is a fdinfo result for a bpf
+> >> task iterator.
+> >>    $ cat /proc/1749/fdinfo/7
+> >>    pos:    0
+> >>    flags:  02000000
+> >>    mnt_id: 14
+> >>    link_type:      iter
+> >>    link_id:        11
+> >>    prog_tag:       990e1f8152f7e54f
+> >>    prog_id:        59
+> >>    target_name:    task
+> >>
+> >> Signed-off-by: Yonghong Song <yhs@fb.com>
+> >> ---
+> >>   include/linux/bpf.h            |  6 ++++
+> >>   include/uapi/linux/bpf.h       |  7 ++++
+> >>   kernel/bpf/bpf_iter.c          | 58 ++++++++++++++++++++++++++++++++++
+> >>   tools/include/uapi/linux/bpf.h |  7 ++++
+> >>   4 files changed, 78 insertions(+)
+> >>
+> >
+> > [...]
+> >
+> >> +
+> >> +static int bpf_iter_link_fill_link_info(const struct bpf_link *link,
+> >> +                                       struct bpf_link_info *info)
+> >> +{
+> >> +       struct bpf_iter_link *iter_link =
+> >> +               container_of(link, struct bpf_iter_link, link);
+> >> +       char __user *ubuf = u64_to_user_ptr(info->iter.target_name);
+> >> +       bpf_iter_fill_link_info_t fill_link_info;
+> >> +       u32 ulen = info->iter.target_name_len;
+> >> +       const char *target_name;
+> >> +       u32 target_len;
+> >> +
+> >> +       if (ulen && !ubuf)
+> >> +               return -EINVAL;
+> >> +
+> >> +       target_name = iter_link->tinfo->reg_info->target;
+> >> +       target_len =  strlen(target_name);
+> >> +       info->iter.target_name_len = target_len + 1;
+> >> +       if (!ubuf)
+> >> +               return 0;
+> >
+> > this might return prematurely before fill_link_info() below gets a
+> > chance to fill in some extra info?
+>
+> The extra info filled by below fill_link_info is target specific
+> and we need a target name to ensure picking right union members.
+> So it is best to enforce a valid target name before filling
+> target dependent fields. See below, if there are any errors
+> for copy_to_user or enospc, we won't copy addition link info
+> either.
+>
 
---pf9I7BMVVzbSWLtt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You are making an assumption that the caller doesn't know what time of
+link it's requesting info for. That's not generally true. So I think
+we just shouldn't make unnecessary assumptions and provide as much
+information on the first try. target_name should be treated as an
+optional thing to request, that's all.
 
-On  Fri, Aug 21, 2020 at 20:28:59 +0800, kernel test robot wrote:
-> Hi Tom,
->=20
-> Thank you for the patch! Perhaps something to improve:
->=20
-[snip]
->=20
->    net/l2tp/l2tp_core.c: In function 'l2tp_recv_common':
-> >> net/l2tp/l2tp_core.c:663:14: warning: variable 'nr' set but not used [=
--Wunused-but-set-variable]
->      663 |  u32 ns =3D 0, nr =3D 0;
->          |              ^
-
-Thank you kernel test robot!
-
-I will incorporate a fix for this in a v2 patchset, but I'll wait a
-little while for any further review comments.
-
---pf9I7BMVVzbSWLtt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl8/910ACgkQlIwGZQq6
-i9AJoAf9EuPVTbhkiZAx7VchLMbe67laascCkPrNCRgz8S4e61WmZKtyWa8OI2D7
-dL/G59VUCA0L0ifPoYDapOhgpiLniVOoZi6vic9tCak6OiSNBVoGnl9LCH6L7YUC
-2gSa7ME+pkh6OpV+hCKiNJ7krj+wA6+ZhuMPM7bdUdZiKy7lkHsmpQ8YJo5jWnt3
-OQbppGpC9wh38EE0Z/hywL/QIfgxDzKVa7lT0iG8W9bmeZfqDDnKgjdOFWBrUgE3
-DiNisJ3oxx6i8mbNw833RMPBd0etkjSuV/6i4KiufshITJni7f8epmhRs9sdWuWE
-Olt/KWGH9HRjHDkchQgCN0964zH2fg==
-=Dbng
------END PGP SIGNATURE-----
-
---pf9I7BMVVzbSWLtt--
+> >
+> >> +
+> >> +       if (ulen >= target_len + 1) {
+> >> +               if (copy_to_user(ubuf, target_name, target_len + 1))
+> >> +                       return -EFAULT;
+> >> +       } else {
+> >> +               char zero = '\0';
+> >> +
+> >> +               if (copy_to_user(ubuf, target_name, ulen - 1))
+> >> +                       return -EFAULT;
+> >> +               if (put_user(zero, ubuf + ulen - 1))
+> >> +                       return -EFAULT;
+> >> +               return -ENOSPC;
+> >> +       }
+> >> +
+> >> +       fill_link_info = iter_link->tinfo->reg_info->fill_link_info;
+> >> +       if (fill_link_info)
+> >> +               return fill_link_info(&iter_link->aux, info);
+> >> +
+> >> +       return 0;
+> >> +}
+> >> +
+> >
+> > [...]
+> >
