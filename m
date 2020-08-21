@@ -2,35 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C0924E35D
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 00:28:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EF6824E363
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 00:29:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727822AbgHUW2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 18:28:13 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:33809 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726848AbgHUW2L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 18:28:11 -0400
+        id S1727005AbgHUW3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 18:29:12 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:4841 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726773AbgHUW3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 18:29:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1598048951; x=1629584951;
+  h=date:from:to:subject:message-id:references:mime-version:
+   in-reply-to;
+  bh=GnaPWG8Oe+Z4HE1P6SoDOEm76X4//r0YcOO+L6vnabY=;
+  b=OPXADg8KJ9Eefwa7fPliC1n96m2E0uzxX0IxQRoPpI9KcxX9jJNw7IQC
+   tMxCpgx9tBqZmtHtwM653DRcq+NKFYZjP+AcpB8nuCi02XjF+ZN5s7dsa
+   13o/8wiOqnUYqZAvf03Lp2WoVF6dBWIScPpLlajOh7YeFQQjnRRVcoBBI
+   U=;
 X-IronPort-AV: E=Sophos;i="5.76,338,1592870400"; 
-   d="scan'208";a="49215816"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2c-2225282c.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 21 Aug 2020 22:28:07 +0000
+   d="scan'208";a="68780955"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-cc689b93.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 21 Aug 2020 22:28:50 +0000
 Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-2225282c.us-west-2.amazon.com (Postfix) with ESMTPS id 1CFA0A250B;
-        Fri, 21 Aug 2020 22:28:05 +0000 (UTC)
-Received: from EX13D08UEB001.ant.amazon.com (10.43.60.245) by
+        by email-inbound-relay-2c-cc689b93.us-west-2.amazon.com (Postfix) with ESMTPS id 3296C121755;
+        Fri, 21 Aug 2020 22:28:42 +0000 (UTC)
+Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
  EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 21 Aug 2020 22:27:49 +0000
+ id 15.0.1497.2; Fri, 21 Aug 2020 22:28:20 +0000
 Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB001.ant.amazon.com (10.43.60.245) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 21 Aug 2020 22:27:48 +0000
+ EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 21 Aug 2020 22:28:19 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
  (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Fri, 21 Aug 2020 22:27:42 +0000
+ Server id 15.0.1497.2 via Frontend Transport; Fri, 21 Aug 2020 22:28:19 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id AB73240362; Fri, 21 Aug 2020 22:27:42 +0000 (UTC)
-Date:   Fri, 21 Aug 2020 22:27:42 +0000
-From:   Thomas Gleixner <tglx@linutronix.de>
+        id 82B9740362; Fri, 21 Aug 2020 22:28:19 +0000 (UTC)
+Date:   Fri, 21 Aug 2020 22:28:19 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
         <jgross@suse.com>, <linux-pm@vger.kernel.org>,
@@ -43,9 +53,9 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
         <benh@kernel.crashing.org>
-Subject: [PATCH v3 05/11] genirq: Shutdown irq chips in suspend/resume during
+Subject: [PATCH v3 06/11] xen-blkfront: add callbacks for PM suspend and
  hibernation
-Message-ID: <d9bcd552c946ac56f3f17cc0c1be57247d4a3004.1598042152.git.anchalag@amazon.com>
+Message-ID: <22b8e0d0c2a5a7b7755d5f0206aa8de61537c5c3.1598042152.git.anchalag@amazon.com>
 References: <cover.1598042152.git.anchalag@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -57,162 +67,283 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Many legacy device drivers do not implement power management (PM)
-functions which means that interrupts requested by these drivers stay
-in active state when the kernel is hibernated.
+From: Munehisa Kamata <kamatam@amazon.com>
 
-This does not matter on bare metal and on most hypervisors because the
-interrupt is restored on resume without any noticable side effects as
-it stays connected to the same physical or virtual interrupt line.
+S4 power transisiton states are much different than xen
+suspend/resume. Former is visible to the guest and frontend drivers should
+be aware of the state transistions and should be able to take appropriate
+actions when needed. In transition to S4 we need to make sure that at least
+all the in-flight blkif requests get completed, since they probably contain
+bits of the guest's memory image and that's not going to get saved any
+other way. Hence, re-issuing of in-flight requests as in case of xen resume
+will not work here. This is in contrast to xen-suspend where we need to
+freeze with as little processing as possible to avoid dirtying RAM late in
+the migration cycle and we know that in-flight data can wait.
 
-The XEN interrupt mechanism is different as it maintains a mapping
-between the Linux interrupt number and a XEN event channel. If the
-interrupt stays active on hibernation this mapping is preserved but
-there is unfortunately no guarantee that on resume the same event
-channels are reassigned to these devices. This can result in event
-channel conflicts which prevent the affected devices from being
-restored correctly.
+Add freeze, thaw and restore callbacks for PM suspend and hibernation
+support. All frontend drivers that needs to use PM_HIBERNATION/PM_SUSPEND
+events, need to implement these xenbus_driver callbacks. The freeze handler
+stops block-layer queue and disconnect the frontend from the backend while
+freeing ring_info and associated resources. Before disconnecting from the
+backend, we need to prevent any new IO from being queued and wait for existing
+IO to complete. Freeze/unfreeze of the queues will guarantee that there are no
+requests in use on the shared ring. However, for sanity we should check
+state of the ring before disconnecting to make sure that there are no
+outstanding requests to be processed on the ring. The restore handler
+re-allocates ring_info, unquiesces and unfreezes the queue and re-connect to
+the backend, so that rest of the kernel can continue to use the block device
+transparently.
 
-One way to solve this would be to add the necessary power management
-functions to all affected legacy device drivers, but that's a
-questionable effort which does not provide any benefits on non-XEN
-environments.
+Note:For older backends,if a backend doesn't have commit'12ea729645ace'
+xen/blkback: unmap all persistent grants when frontend gets disconnected,
+the frontend may see massive amount of grant table warning when freeing
+resources.
+[   36.852659] deferring g.e. 0xf9 (pfn 0xffffffffffffffff)
+[   36.855089] xen:grant_table: WARNING:e.g. 0x112 still in use!
 
-The least intrusive and most efficient solution is to provide a
-mechanism which allows the core interrupt code to tear down these
-interrupts on hibernation and bring them back up again on resume. This
-allows the XEN event channel mechanism to assign an arbitrary event
-channel on resume without affecting the functionality of these
-devices.
+In this case, persistent grants would need to be disabled.
 
-Fortunately all these device interrupts are handled by a dedicated XEN
-interrupt chip so the chip can be marked that all interrupts connected
-to it are handled this way. This is pretty much in line with the other
-interrupt chip specific quirks, e.g. IRQCHIP_MASK_ON_SUSPEND.
+[Anchal Agarwal: Changelog]:
+RFC v1->v2: Removed timeout per request before disconnect during
+	    blkfront freeze.
+	    Added queue freeze/quiesce to the blkfront_freeze
+	    Code cleanup
+RFC v2->v3: None
+RFC v3->v1: Code cleanup, Refractoring
+    v1->v2: * remove err variable in blkfront_freeze
+            * BugFix: error handling if rings are still busy
+              after queue freeze/quiesce and returnign driver to
+              connected state
+            * add TODO if blkback fails to disconnect on freeze
+            * Code formatting
 
-Add a new quirk flag IRQCHIP_SHUTDOWN_ON_SUSPEND and add support for
-it the core interrupt suspend/resume paths.
-
-Changelog:
-v1->v2: Corrected the author's name to tglx@
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 ---
- drivers/xen/events/events_base.c |  1 +
- include/linux/irq.h              |  2 ++
- kernel/irq/chip.c                |  2 +-
- kernel/irq/internals.h           |  1 +
- kernel/irq/pm.c                  | 31 ++++++++++++++++++++++---------
- 5 files changed, 27 insertions(+), 10 deletions(-)
+ drivers/block/xen-blkfront.c | 122 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 118 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
-index 140c7bf33a98..958dea2a4916 100644
---- a/drivers/xen/events/events_base.c
-+++ b/drivers/xen/events/events_base.c
-@@ -1611,6 +1611,7 @@ static struct irq_chip xen_pirq_chip __read_mostly = {
- 	.irq_set_affinity	= set_affinity_irq,
+diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+index 3bb3dd8da9b0..500f1753e339 100644
+--- a/drivers/block/xen-blkfront.c
++++ b/drivers/block/xen-blkfront.c
+@@ -48,6 +48,8 @@
+ #include <linux/list.h>
+ #include <linux/workqueue.h>
+ #include <linux/sched/mm.h>
++#include <linux/completion.h>
++#include <linux/delay.h>
  
- 	.irq_retrigger		= retrigger_dynirq,
-+	.flags                  = IRQCHIP_SHUTDOWN_ON_SUSPEND,
+ #include <xen/xen.h>
+ #include <xen/xenbus.h>
+@@ -80,6 +82,8 @@ enum blkif_state {
+ 	BLKIF_STATE_DISCONNECTED,
+ 	BLKIF_STATE_CONNECTED,
+ 	BLKIF_STATE_SUSPENDED,
++	BLKIF_STATE_FREEZING,
++	BLKIF_STATE_FROZEN,
  };
  
- static struct irq_chip xen_percpu_chip __read_mostly = {
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index 1b7f4dfee35b..9340eec4a5a6 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -555,6 +555,7 @@ struct irq_chip {
-  * IRQCHIP_EOI_THREADED:	Chip requires eoi() on unmask in threaded mode
-  * IRQCHIP_SUPPORTS_LEVEL_MSI	Chip can provide two doorbells for Level MSIs
-  * IRQCHIP_SUPPORTS_NMI:	Chip can deliver NMIs, only for root irqchips
-+ * IRQCHIP_SHUTDOWN_ON_SUSPEND: Shutdown non wake irqs in the suspend path
-  */
- enum {
- 	IRQCHIP_SET_TYPE_MASKED		= (1 <<  0),
-@@ -566,6 +567,7 @@ enum {
- 	IRQCHIP_EOI_THREADED		= (1 <<  6),
- 	IRQCHIP_SUPPORTS_LEVEL_MSI	= (1 <<  7),
- 	IRQCHIP_SUPPORTS_NMI		= (1 <<  8),
-+	IRQCHIP_SHUTDOWN_ON_SUSPEND     = (1 <<  9),
+ struct grant {
+@@ -219,6 +223,7 @@ struct blkfront_info
+ 	struct list_head requests;
+ 	struct bio_list bio_list;
+ 	struct list_head info_list;
++	struct completion wait_backend_disconnected;
  };
  
- #include <linux/irqdesc.h>
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 857f5f4c8098..136e3ebe996f 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -233,7 +233,7 @@ __irq_startup_managed(struct irq_desc *desc, struct cpumask *aff, bool force)
+ static unsigned int nr_minors;
+@@ -1005,6 +1010,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
+ 	info->sector_size = sector_size;
+ 	info->physical_sector_size = physical_sector_size;
+ 	blkif_set_queue_limits(info);
++	init_completion(&info->wait_backend_disconnected);
+ 
+ 	return 0;
  }
- #endif
+@@ -1353,6 +1359,8 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+ 	unsigned int i;
+ 	struct blkfront_ring_info *rinfo;
  
--static int __irq_startup(struct irq_desc *desc)
-+int __irq_startup(struct irq_desc *desc)
- {
- 	struct irq_data *d = irq_desc_get_irq_data(desc);
- 	int ret = 0;
-diff --git a/kernel/irq/internals.h b/kernel/irq/internals.h
-index 7db284b10ac9..b6fca5eacff7 100644
---- a/kernel/irq/internals.h
-+++ b/kernel/irq/internals.h
-@@ -80,6 +80,7 @@ extern void __enable_irq(struct irq_desc *desc);
- extern int irq_activate(struct irq_desc *desc);
- extern int irq_activate_and_startup(struct irq_desc *desc, bool resend);
- extern int irq_startup(struct irq_desc *desc, bool resend, bool force);
-+extern int __irq_startup(struct irq_desc *desc);
++	if (info->connected == BLKIF_STATE_FREEZING)
++		goto free_rings;
+ 	/* Prevent new requests being issued until we fix things up. */
+ 	info->connected = suspend ?
+ 		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
+@@ -1360,6 +1368,7 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+ 	if (info->rq)
+ 		blk_mq_stop_hw_queues(info->rq);
  
- extern void irq_shutdown(struct irq_desc *desc);
- extern void irq_shutdown_and_deactivate(struct irq_desc *desc);
-diff --git a/kernel/irq/pm.c b/kernel/irq/pm.c
-index c6c7e187ae74..3c4ffb2b6ef2 100644
---- a/kernel/irq/pm.c
-+++ b/kernel/irq/pm.c
-@@ -85,16 +85,25 @@ static bool suspend_device_irq(struct irq_desc *desc)
++free_rings:
+ 	for_each_rinfo(info, rinfo, i)
+ 		blkif_free_ring(rinfo);
+ 
+@@ -1563,8 +1572,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
+ 	struct blkfront_info *info = rinfo->dev_info;
+ 
+-	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
++	if (unlikely(info->connected != BLKIF_STATE_CONNECTED &&
++			info->connected != BLKIF_STATE_FREEZING)) {
+ 		return IRQ_HANDLED;
++	}
+ 
+ 	spin_lock_irqsave(&rinfo->ring_lock, flags);
+  again:
+@@ -2027,6 +2038,7 @@ static int blkif_recover(struct blkfront_info *info)
+ 	struct bio *bio;
+ 	unsigned int segs;
+ 	struct blkfront_ring_info *rinfo;
++	bool frozen = info->connected == BLKIF_STATE_FROZEN;
+ 
+ 	blkfront_gather_backend_features(info);
+ 	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
+@@ -2049,6 +2061,9 @@ static int blkif_recover(struct blkfront_info *info)
+ 		kick_pending_request_queues(rinfo);
  	}
  
- 	desc->istate |= IRQS_SUSPENDED;
--	__disable_irq(desc);
--
- 	/*
--	 * Hardware which has no wakeup source configuration facility
--	 * requires that the non wakeup interrupts are masked at the
--	 * chip level. The chip implementation indicates that with
--	 * IRQCHIP_MASK_ON_SUSPEND.
-+	 * Some irq chips (e.g. XEN PIRQ) require a full shutdown on suspend
-+	 * as some of the legacy drivers(e.g. floppy) do nothing during the
-+	 * suspend path
- 	 */
--	if (irq_desc_get_chip(desc)->flags & IRQCHIP_MASK_ON_SUSPEND)
--		mask_irq(desc);
-+	if (irq_desc_get_chip(desc)->flags & IRQCHIP_SHUTDOWN_ON_SUSPEND) {
-+		irq_shutdown(desc);
-+	} else {
-+		__disable_irq(desc);
++	if (frozen)
++		return 0;
 +
-+	       /*
-+		* Hardware which has no wakeup source configuration facility
-+		* requires that the non wakeup interrupts are masked at the
-+		* chip level. The chip implementation indicates that with
-+		* IRQCHIP_MASK_ON_SUSPEND.
-+		*/
-+		if (irq_desc_get_chip(desc)->flags & IRQCHIP_MASK_ON_SUSPEND)
-+			mask_irq(desc);
+ 	list_for_each_entry_safe(req, n, &info->requests, queuelist) {
+ 		/* Requeue pending requests (flush or discard) */
+ 		list_del_init(&req->queuelist);
+@@ -2365,6 +2380,7 @@ static void blkfront_connect(struct blkfront_info *info)
+ 
+ 		return;
+ 	case BLKIF_STATE_SUSPENDED:
++	case BLKIF_STATE_FROZEN:
+ 		/*
+ 		 * If we are recovering from suspension, we need to wait
+ 		 * for the backend to announce it's features before
+@@ -2482,12 +2498,37 @@ static void blkback_changed(struct xenbus_device *dev,
+ 		break;
+ 
+ 	case XenbusStateClosed:
+-		if (dev->state == XenbusStateClosed)
++		if (dev->state == XenbusStateClosed) {
++			if (info->connected == BLKIF_STATE_FREEZING) {
++				blkif_free(info, 0);
++				info->connected = BLKIF_STATE_FROZEN;
++				complete(&info->wait_backend_disconnected);
++			}
+ 			break;
++		}
++		/*
++		 * We receive backend's Closed again while thawing
++		 * or restoring and it causes thawing or restoring to fail.
++		 * During blkfront_restore, backend is still in Closed state
++		 * and we receive backend as closed here while frontend's
++		 * dev->state is set to XenBusStateInitialized.
++		 * Ignore such unexpected state regardless of the backend's
++		 * state.
++		 */
++		if (info->connected == BLKIF_STATE_FROZEN) {
++			dev_dbg(&dev->dev, "Thawing/Restoring, ignore the backend's Closed state: %s",
++				dev->nodename);
++			break;
++		}
++
+ 		/* fall through */
+ 	case XenbusStateClosing:
+-		if (info)
+-			blkfront_closing(info);
++		if (info) {
++			if (info->connected == BLKIF_STATE_FREEZING)
++				xenbus_frontend_closed(dev);
++			else
++				blkfront_closing(info);
++		}
+ 		break;
+ 	}
+ }
+@@ -2631,6 +2672,76 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
+ 	mutex_unlock(&blkfront_mutex);
+ }
+ 
++static int blkfront_freeze(struct xenbus_device *dev)
++{
++	unsigned int i;
++	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
++	struct blkfront_ring_info *rinfo;
++	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
++	unsigned int timeout = 5 * HZ;
++	unsigned long flags;
++
++	info->connected = BLKIF_STATE_FREEZING;
++
++	blk_mq_freeze_queue(info->rq);
++	blk_mq_quiesce_queue(info->rq);
++
++	for_each_rinfo(info, rinfo, i) {
++		/* No more gnttab callback work. */
++		gnttab_cancel_free_callback(&rinfo->callback);
++		/* Flush gnttab callback work. Must be done with no locks held. */
++		flush_work(&rinfo->work);
 +	}
- 	return true;
- }
- 
-@@ -152,7 +161,11 @@ static void resume_irq(struct irq_desc *desc)
- 	irq_state_set_masked(desc);
- resume:
- 	desc->istate &= ~IRQS_SUSPENDED;
--	__enable_irq(desc);
 +
-+	if (irq_desc_get_chip(desc)->flags & IRQCHIP_SHUTDOWN_ON_SUSPEND)
-+		__irq_startup(desc);
-+	else
-+		__enable_irq(desc);
- }
++	for_each_rinfo(info, rinfo, i) {
++		spin_lock_irqsave(&rinfo->ring_lock, flags);
++		if (RING_FULL(&rinfo->ring) ||
++			RING_HAS_UNCONSUMED_RESPONSES(&rinfo->ring)) {
++			spin_unlock_irqrestore(&rinfo->ring_lock, flags);
++			xenbus_dev_error(dev, -EBUSY, "Hibernation Failed. The ring is still busy");
++			info->connected = BLKIF_STATE_CONNECTED;
++			blk_mq_unquiesce_queue(info->rq);
++			blk_mq_unfreeze_queue(info->rq);
++			return -EBUSY;
++		}
++		spin_unlock_irqrestore(&rinfo->ring_lock, flags);
++	}
++	/* Kick the backend to disconnect */
++	xenbus_switch_state(dev, XenbusStateClosing);
++
++	/*
++	 * We don't want to move forward before the frontend is diconnected
++	 * from the backend cleanly.
++	 * TODO:Handle timeout by falling back to the normal
++	 * disconnect path and just wait for the backend to close before
++	 * reconnecting. Bring the system back to its original state by
++	 * failing hibernation gracefully.
++	 */
++	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
++						timeout);
++	if (!timeout) {
++		xenbus_dev_error(dev, -EBUSY, "Freezing timed out;"
++			"the device may become inconsistent state");
++		return -EBUSY;
++	}
++
++	return 0;
++}
++
++static int blkfront_restore(struct xenbus_device *dev)
++{
++	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
++	int err;
++
++	err = talk_to_blkback(dev, info);
++	if (!err) {
++		blk_mq_update_nr_hw_queues(&info->tag_set, info->nr_rings);
++		blk_mq_unquiesce_queue(info->rq);
++		blk_mq_unfreeze_queue(info->rq);
++	}
++	return err;
++}
++
+ static const struct block_device_operations xlvbd_block_fops =
+ {
+ 	.owner = THIS_MODULE,
+@@ -2654,6 +2765,9 @@ static struct xenbus_driver blkfront_driver = {
+ 	.resume = blkfront_resume,
+ 	.otherend_changed = blkback_changed,
+ 	.is_ready = blkfront_is_ready,
++	.freeze = blkfront_freeze,
++	.thaw = blkfront_restore,
++	.restore = blkfront_restore,
+ };
  
- static void resume_irqs(bool want_early)
+ static void purge_persistent_grants(struct blkfront_info *info)
 -- 
 2.16.6
 
