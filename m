@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF6824E363
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 00:29:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 482D424E368
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 00:29:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbgHUW3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 18:29:12 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:4841 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726773AbgHUW3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 18:29:11 -0400
+        id S1727087AbgHUW3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 18:29:34 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:13171 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726773AbgHUW3e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 18:29:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1598048951; x=1629584951;
+  t=1598048972; x=1629584972;
   h=date:from:to:subject:message-id:references:mime-version:
    in-reply-to;
-  bh=GnaPWG8Oe+Z4HE1P6SoDOEm76X4//r0YcOO+L6vnabY=;
-  b=OPXADg8KJ9Eefwa7fPliC1n96m2E0uzxX0IxQRoPpI9KcxX9jJNw7IQC
-   tMxCpgx9tBqZmtHtwM653DRcq+NKFYZjP+AcpB8nuCi02XjF+ZN5s7dsa
-   13o/8wiOqnUYqZAvf03Lp2WoVF6dBWIScPpLlajOh7YeFQQjnRRVcoBBI
-   U=;
+  bh=0l+CXtX6lcZ9WB2ya1Fw3XHogwe7aFcEY8gTvIE6+gU=;
+  b=BLcenG1fHzerVehod+oxsFTwyuS+9v1c8mYhZ3ojDMCGLUfM+UOnlsPK
+   f5+yjvbrY7S3CN/fNvURZpsRQfuxwrKYpvTsEn8RVI9u8HLNaH7slmhgB
+   AG08WZApOlCjx0aX3vJepoA2Djc6X5jsbU38fVGN+GAm5nGu+j9LWZpXo
+   c=;
 X-IronPort-AV: E=Sophos;i="5.76,338,1592870400"; 
-   d="scan'208";a="68780955"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2c-cc689b93.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 21 Aug 2020 22:28:50 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-cc689b93.us-west-2.amazon.com (Postfix) with ESMTPS id 3296C121755;
-        Fri, 21 Aug 2020 22:28:42 +0000 (UTC)
-Received: from EX13D08UEB002.ant.amazon.com (10.43.60.107) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 21 Aug 2020 22:28:20 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB002.ant.amazon.com (10.43.60.107) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 21 Aug 2020 22:28:19 +0000
+   d="scan'208";a="50742767"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-cc689b93.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 21 Aug 2020 22:29:29 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2c-cc689b93.us-west-2.amazon.com (Postfix) with ESMTPS id C9F43120F51;
+        Fri, 21 Aug 2020 22:29:22 +0000 (UTC)
+Received: from EX13D01UWA001.ant.amazon.com (10.43.160.60) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 21 Aug 2020 22:29:15 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
+ EX13d01UWA001.ant.amazon.com (10.43.160.60) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 21 Aug 2020 22:29:15 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Fri, 21 Aug 2020 22:28:19 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Fri, 21 Aug 2020 22:29:15 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 82B9740362; Fri, 21 Aug 2020 22:28:19 +0000 (UTC)
-Date:   Fri, 21 Aug 2020 22:28:19 +0000
+        id AEB9140362; Fri, 21 Aug 2020 22:29:15 +0000 (UTC)
+Date:   Fri, 21 Aug 2020 22:29:15 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -53,9 +53,9 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
         <benh@kernel.crashing.org>
-Subject: [PATCH v3 06/11] xen-blkfront: add callbacks for PM suspend and
+Subject: [PATCH v3 07/11] xen-netfront: add callbacks for PM suspend and
  hibernation
-Message-ID: <22b8e0d0c2a5a7b7755d5f0206aa8de61537c5c3.1598042152.git.anchalag@amazon.com>
+Message-ID: <cb5805d0f91e31c0b9caeae2ea66546b0d6c876c.1598042152.git.anchalag@amazon.com>
 References: <cover.1598042152.git.anchalag@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -69,281 +69,206 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Munehisa Kamata <kamatam@amazon.com>
 
-S4 power transisiton states are much different than xen
-suspend/resume. Former is visible to the guest and frontend drivers should
-be aware of the state transistions and should be able to take appropriate
-actions when needed. In transition to S4 we need to make sure that at least
-all the in-flight blkif requests get completed, since they probably contain
-bits of the guest's memory image and that's not going to get saved any
-other way. Hence, re-issuing of in-flight requests as in case of xen resume
-will not work here. This is in contrast to xen-suspend where we need to
-freeze with as little processing as possible to avoid dirtying RAM late in
-the migration cycle and we know that in-flight data can wait.
-
 Add freeze, thaw and restore callbacks for PM suspend and hibernation
-support. All frontend drivers that needs to use PM_HIBERNATION/PM_SUSPEND
-events, need to implement these xenbus_driver callbacks. The freeze handler
-stops block-layer queue and disconnect the frontend from the backend while
-freeing ring_info and associated resources. Before disconnecting from the
-backend, we need to prevent any new IO from being queued and wait for existing
-IO to complete. Freeze/unfreeze of the queues will guarantee that there are no
-requests in use on the shared ring. However, for sanity we should check
-state of the ring before disconnecting to make sure that there are no
-outstanding requests to be processed on the ring. The restore handler
-re-allocates ring_info, unquiesces and unfreezes the queue and re-connect to
-the backend, so that rest of the kernel can continue to use the block device
-transparently.
-
-Note:For older backends,if a backend doesn't have commit'12ea729645ace'
-xen/blkback: unmap all persistent grants when frontend gets disconnected,
-the frontend may see massive amount of grant table warning when freeing
-resources.
-[   36.852659] deferring g.e. 0xf9 (pfn 0xffffffffffffffff)
-[   36.855089] xen:grant_table: WARNING:e.g. 0x112 still in use!
-
-In this case, persistent grants would need to be disabled.
+support. The freeze handler simply disconnects the frotnend from the
+backend and frees resources associated with queues after disabling the
+net_device from the system. The restore handler just changes the
+frontend state and let the xenbus handler to re-allocate the resources
+and re-connect to the backend. This can be performed transparently to
+the rest of the system. The handlers are used for both PM suspend and
+hibernation so that we can keep the existing suspend/resume callbacks
+for Xen suspend without modification. Freezing netfront devices is
+normally expected to finish within a few hundred milliseconds, but it
+can rarely take more than 5 seconds and hit the hard coded timeout,
+it would depend on backend state which may be congested and/or have
+complex configuration. While it's rare case, longer default timeout
+seems a bit more reasonable here to avoid hitting the timeout.
+Also, make it configurable via module parameter so that we can cover
+broader setups than what we know currently.
 
 [Anchal Agarwal: Changelog]:
-RFC v1->v2: Removed timeout per request before disconnect during
-	    blkfront freeze.
-	    Added queue freeze/quiesce to the blkfront_freeze
-	    Code cleanup
-RFC v2->v3: None
-RFC v3->v1: Code cleanup, Refractoring
-    v1->v2: * remove err variable in blkfront_freeze
-            * BugFix: error handling if rings are still busy
-              after queue freeze/quiesce and returnign driver to
-              connected state
-            * add TODO if blkback fails to disconnect on freeze
-            * Code formatting
+RFCv1->RFCv2: Variable name fix and checkpatch.pl fixes]
+v2->v3: Resolved merge conflicts
 
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
 Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 ---
- drivers/block/xen-blkfront.c | 122 +++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 118 insertions(+), 4 deletions(-)
+ drivers/net/xen-netfront.c | 96 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 95 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index 3bb3dd8da9b0..500f1753e339 100644
---- a/drivers/block/xen-blkfront.c
-+++ b/drivers/block/xen-blkfront.c
-@@ -48,6 +48,8 @@
- #include <linux/list.h>
- #include <linux/workqueue.h>
- #include <linux/sched/mm.h>
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index 458be6882b98..3ea3ecc6e0d3 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -47,6 +47,7 @@
+ #include <linux/bpf.h>
+ #include <net/page_pool.h>
+ #include <linux/bpf_trace.h>
 +#include <linux/completion.h>
-+#include <linux/delay.h>
  
  #include <xen/xen.h>
  #include <xen/xenbus.h>
-@@ -80,6 +82,8 @@ enum blkif_state {
- 	BLKIF_STATE_DISCONNECTED,
- 	BLKIF_STATE_CONNECTED,
- 	BLKIF_STATE_SUSPENDED,
-+	BLKIF_STATE_FREEZING,
-+	BLKIF_STATE_FROZEN,
- };
+@@ -59,6 +60,12 @@
+ #include <xen/interface/memory.h>
+ #include <xen/interface/grant_table.h>
  
- struct grant {
-@@ -219,6 +223,7 @@ struct blkfront_info
- 	struct list_head requests;
- 	struct bio_list bio_list;
- 	struct list_head info_list;
++enum netif_freeze_state {
++	NETIF_FREEZE_STATE_UNFROZEN,
++	NETIF_FREEZE_STATE_FREEZING,
++	NETIF_FREEZE_STATE_FROZEN,
++};
++
+ /* Module parameters */
+ #define MAX_QUEUES_DEFAULT 8
+ static unsigned int xennet_max_queues;
+@@ -68,6 +75,12 @@ MODULE_PARM_DESC(max_queues,
+ 
+ #define XENNET_TIMEOUT  (5 * HZ)
+ 
++static unsigned int netfront_freeze_timeout_secs = 10;
++module_param_named(freeze_timeout_secs,
++		   netfront_freeze_timeout_secs, uint, 0644);
++MODULE_PARM_DESC(freeze_timeout_secs,
++		 "timeout when freezing netfront device in seconds");
++
+ static const struct ethtool_ops xennet_ethtool_ops;
+ 
+ struct netfront_cb {
+@@ -174,6 +187,9 @@ struct netfront_info {
+ 	bool netfront_xdp_enabled;
+ 
+ 	atomic_t rx_gso_checksum_fixup;
++
++	int freeze_state;
 +	struct completion wait_backend_disconnected;
  };
  
- static unsigned int nr_minors;
-@@ -1005,6 +1010,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
- 	info->sector_size = sector_size;
- 	info->physical_sector_size = physical_sector_size;
- 	blkif_set_queue_limits(info);
-+	init_completion(&info->wait_backend_disconnected);
- 
+ struct netfront_rx_info {
+@@ -798,6 +814,21 @@ static int xennet_close(struct net_device *dev)
  	return 0;
  }
-@@ -1353,6 +1359,8 @@ static void blkif_free(struct blkfront_info *info, int suspend)
- 	unsigned int i;
- 	struct blkfront_ring_info *rinfo;
  
-+	if (info->connected == BLKIF_STATE_FREEZING)
-+		goto free_rings;
- 	/* Prevent new requests being issued until we fix things up. */
- 	info->connected = suspend ?
- 		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
-@@ -1360,6 +1368,7 @@ static void blkif_free(struct blkfront_info *info, int suspend)
- 	if (info->rq)
- 		blk_mq_stop_hw_queues(info->rq);
- 
-+free_rings:
- 	for_each_rinfo(info, rinfo, i)
- 		blkif_free_ring(rinfo);
- 
-@@ -1563,8 +1572,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
- 	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
- 	struct blkfront_info *info = rinfo->dev_info;
- 
--	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
-+	if (unlikely(info->connected != BLKIF_STATE_CONNECTED &&
-+			info->connected != BLKIF_STATE_FREEZING)) {
- 		return IRQ_HANDLED;
++static int xennet_disable_interrupts(struct net_device *dev)
++{
++	struct netfront_info *np = netdev_priv(dev);
++	unsigned int num_queues = dev->real_num_tx_queues;
++	unsigned int queue_index;
++	struct netfront_queue *queue;
++
++	for (queue_index = 0; queue_index < num_queues; ++queue_index) {
++		queue = &np->queues[queue_index];
++		disable_irq(queue->tx_irq);
++		disable_irq(queue->rx_irq);
 +	}
++	return 0;
++}
++
+ static void xennet_move_rx_slot(struct netfront_queue *queue, struct sk_buff *skb,
+ 				grant_ref_t ref)
+ {
+@@ -1532,6 +1563,8 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
  
- 	spin_lock_irqsave(&rinfo->ring_lock, flags);
-  again:
-@@ -2027,6 +2038,7 @@ static int blkif_recover(struct blkfront_info *info)
- 	struct bio *bio;
- 	unsigned int segs;
- 	struct blkfront_ring_info *rinfo;
-+	bool frozen = info->connected == BLKIF_STATE_FROZEN;
+ 	np->queues = NULL;
  
- 	blkfront_gather_backend_features(info);
- 	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
-@@ -2049,6 +2061,9 @@ static int blkif_recover(struct blkfront_info *info)
- 		kick_pending_request_queues(rinfo);
++	init_completion(&np->wait_backend_disconnected);
++
+ 	err = -ENOMEM;
+ 	np->rx_stats = netdev_alloc_pcpu_stats(struct netfront_stats);
+ 	if (np->rx_stats == NULL)
+@@ -2084,6 +2117,50 @@ static int xennet_create_queues(struct netfront_info *info,
+ 	return 0;
+ }
+ 
++static int netfront_freeze(struct xenbus_device *dev)
++{
++	struct netfront_info *info = dev_get_drvdata(&dev->dev);
++	unsigned long timeout = netfront_freeze_timeout_secs * HZ;
++	int err = 0;
++
++	xennet_disable_interrupts(info->netdev);
++
++	netif_device_detach(info->netdev);
++
++	info->freeze_state = NETIF_FREEZE_STATE_FREEZING;
++
++	/* Kick the backend to disconnect */
++	xenbus_switch_state(dev, XenbusStateClosing);
++
++	/* We don't want to move forward before the frontend is diconnected
++	 * from the backend cleanly.
++	 */
++	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
++					      timeout);
++	if (!timeout) {
++		err = -EBUSY;
++		xenbus_dev_error(dev, err, "Freezing timed out;"
++					"the device may become inconsistent state");
++		return err;
++	}
++
++	/* Tear down queues */
++	xennet_disconnect_backend(info);
++	xennet_destroy_queues(info);
++
++	info->freeze_state = NETIF_FREEZE_STATE_FROZEN;
++
++	return err;
++}
++
++static int netfront_restore(struct xenbus_device *dev)
++{
++	/* Kick the backend to re-connect */
++	xenbus_switch_state(dev, XenbusStateInitialising);
++
++	return 0;
++}
++
+ /* Common code used when first setting up, and when resuming. */
+ static int talk_to_netback(struct xenbus_device *dev,
+ 			   struct netfront_info *info)
+@@ -2302,6 +2379,8 @@ static int xennet_connect(struct net_device *dev)
+ 		spin_unlock_bh(&queue->rx_lock);
  	}
  
-+	if (frozen)
-+		return 0;
++	np->freeze_state = NETIF_FREEZE_STATE_UNFROZEN;
 +
- 	list_for_each_entry_safe(req, n, &info->requests, queuelist) {
- 		/* Requeue pending requests (flush or discard) */
- 		list_del_init(&req->queuelist);
-@@ -2365,6 +2380,7 @@ static void blkfront_connect(struct blkfront_info *info)
+ 	return 0;
+ }
  
- 		return;
- 	case BLKIF_STATE_SUSPENDED:
-+	case BLKIF_STATE_FROZEN:
- 		/*
- 		 * If we are recovering from suspension, we need to wait
- 		 * for the backend to announce it's features before
-@@ -2482,12 +2498,37 @@ static void blkback_changed(struct xenbus_device *dev,
+@@ -2339,10 +2418,22 @@ static void netback_changed(struct xenbus_device *dev,
  		break;
  
  	case XenbusStateClosed:
 -		if (dev->state == XenbusStateClosed)
 +		if (dev->state == XenbusStateClosed) {
-+			if (info->connected == BLKIF_STATE_FREEZING) {
-+				blkif_free(info, 0);
-+				info->connected = BLKIF_STATE_FROZEN;
-+				complete(&info->wait_backend_disconnected);
-+			}
++			/* dpm context is waiting for the backend */
++			if (np->freeze_state == NETIF_FREEZE_STATE_FREEZING)
++				complete(&np->wait_backend_disconnected);
  			break;
 +		}
-+		/*
-+		 * We receive backend's Closed again while thawing
-+		 * or restoring and it causes thawing or restoring to fail.
-+		 * During blkfront_restore, backend is still in Closed state
-+		 * and we receive backend as closed here while frontend's
-+		 * dev->state is set to XenBusStateInitialized.
-+		 * Ignore such unexpected state regardless of the backend's
-+		 * state.
+ 		/* Fall through - Missed the backend's CLOSING state. */
+ 	case XenbusStateClosing:
++		/* We may see unexpected Closed or Closing from the backend.
++		 * Just ignore it not to prevent the frontend from being
++		 * re-connected in the case of PM suspend or hibernation.
 +		 */
-+		if (info->connected == BLKIF_STATE_FROZEN) {
-+			dev_dbg(&dev->dev, "Thawing/Restoring, ignore the backend's Closed state: %s",
-+				dev->nodename);
++		if (np->freeze_state == NETIF_FREEZE_STATE_FROZEN &&
++		    dev->state == XenbusStateInitialising) {
 +			break;
 +		}
-+
- 		/* fall through */
- 	case XenbusStateClosing:
--		if (info)
--			blkfront_closing(info);
-+		if (info) {
-+			if (info->connected == BLKIF_STATE_FREEZING)
-+				xenbus_frontend_closed(dev);
-+			else
-+				blkfront_closing(info);
-+		}
+ 		xenbus_frontend_closed(dev);
  		break;
  	}
- }
-@@ -2631,6 +2672,76 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
- 	mutex_unlock(&blkfront_mutex);
- }
- 
-+static int blkfront_freeze(struct xenbus_device *dev)
-+{
-+	unsigned int i;
-+	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
-+	struct blkfront_ring_info *rinfo;
-+	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
-+	unsigned int timeout = 5 * HZ;
-+	unsigned long flags;
-+
-+	info->connected = BLKIF_STATE_FREEZING;
-+
-+	blk_mq_freeze_queue(info->rq);
-+	blk_mq_quiesce_queue(info->rq);
-+
-+	for_each_rinfo(info, rinfo, i) {
-+		/* No more gnttab callback work. */
-+		gnttab_cancel_free_callback(&rinfo->callback);
-+		/* Flush gnttab callback work. Must be done with no locks held. */
-+		flush_work(&rinfo->work);
-+	}
-+
-+	for_each_rinfo(info, rinfo, i) {
-+		spin_lock_irqsave(&rinfo->ring_lock, flags);
-+		if (RING_FULL(&rinfo->ring) ||
-+			RING_HAS_UNCONSUMED_RESPONSES(&rinfo->ring)) {
-+			spin_unlock_irqrestore(&rinfo->ring_lock, flags);
-+			xenbus_dev_error(dev, -EBUSY, "Hibernation Failed. The ring is still busy");
-+			info->connected = BLKIF_STATE_CONNECTED;
-+			blk_mq_unquiesce_queue(info->rq);
-+			blk_mq_unfreeze_queue(info->rq);
-+			return -EBUSY;
-+		}
-+		spin_unlock_irqrestore(&rinfo->ring_lock, flags);
-+	}
-+	/* Kick the backend to disconnect */
-+	xenbus_switch_state(dev, XenbusStateClosing);
-+
-+	/*
-+	 * We don't want to move forward before the frontend is diconnected
-+	 * from the backend cleanly.
-+	 * TODO:Handle timeout by falling back to the normal
-+	 * disconnect path and just wait for the backend to close before
-+	 * reconnecting. Bring the system back to its original state by
-+	 * failing hibernation gracefully.
-+	 */
-+	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
-+						timeout);
-+	if (!timeout) {
-+		xenbus_dev_error(dev, -EBUSY, "Freezing timed out;"
-+			"the device may become inconsistent state");
-+		return -EBUSY;
-+	}
-+
-+	return 0;
-+}
-+
-+static int blkfront_restore(struct xenbus_device *dev)
-+{
-+	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
-+	int err;
-+
-+	err = talk_to_blkback(dev, info);
-+	if (!err) {
-+		blk_mq_update_nr_hw_queues(&info->tag_set, info->nr_rings);
-+		blk_mq_unquiesce_queue(info->rq);
-+		blk_mq_unfreeze_queue(info->rq);
-+	}
-+	return err;
-+}
-+
- static const struct block_device_operations xlvbd_block_fops =
- {
- 	.owner = THIS_MODULE,
-@@ -2654,6 +2765,9 @@ static struct xenbus_driver blkfront_driver = {
- 	.resume = blkfront_resume,
- 	.otherend_changed = blkback_changed,
- 	.is_ready = blkfront_is_ready,
-+	.freeze = blkfront_freeze,
-+	.thaw = blkfront_restore,
-+	.restore = blkfront_restore,
+@@ -2505,6 +2596,9 @@ static struct xenbus_driver netfront_driver = {
+ 	.probe = netfront_probe,
+ 	.remove = xennet_remove,
+ 	.resume = netfront_resume,
++	.freeze = netfront_freeze,
++	.thaw   = netfront_restore,
++	.restore = netfront_restore,
+ 	.otherend_changed = netback_changed,
  };
  
- static void purge_persistent_grants(struct blkfront_info *info)
 -- 
 2.16.6
 
