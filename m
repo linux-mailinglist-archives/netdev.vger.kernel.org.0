@@ -2,80 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D63324CD2E
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 07:18:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDBA524CD40
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 07:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbgHUFSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 01:18:33 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:7709 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725908AbgHUFSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 01:18:31 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f3f59190000>; Thu, 20 Aug 2020 22:18:17 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Thu, 20 Aug 2020 22:18:30 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Thu, 20 Aug 2020 22:18:30 -0700
-Received: from [10.2.62.5] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 21 Aug
- 2020 05:18:30 +0000
-Subject: Re: [PATCH iproute2 net-next] iplink: add support for protodown
- reason
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-CC:     <dsahern@gmail.com>, <netdev@vger.kernel.org>
-References: <20200821035202.15612-1-roopa@cumulusnetworks.com>
- <20200820213649.7cd6aa3f@hermes.lan>
-From:   Roopa Prabhu <roopa@nvidia.com>
-Message-ID: <1ad9fc74-db30-fee7-53c8-d1c208b8f9ec@nvidia.com>
-Date:   Thu, 20 Aug 2020 22:18:20 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727049AbgHUFX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 01:23:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726757AbgHUFXQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 01:23:16 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227C0C061386;
+        Thu, 20 Aug 2020 22:23:16 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id m34so452304pgl.11;
+        Thu, 20 Aug 2020 22:23:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kIrZF45/BAvVQh8mbn5wXf5JnEyRG1slRn5cBPdhKss=;
+        b=DfmN6vb4B8kr6tDcwzZIlusSYb6WCJA3RduM6NIddsXJ65ZCz0UVsNaSyZ/NUR94yX
+         ad0zV3EMKOJ83IR0u+lHcjAwgFJDJKkeH8FmYfKUKTx8pEf/X9xczjahG5CklZRDaYt8
+         LGWLqc39N+77WCD/ZUtlc0C2QUrBUbV/3Cp95Y2kGvBEF/Je37P3NW8CK/uZ0psozI2W
+         Njup1s9Cp5s4PD4P24sGOxLs4YGeB9pgtv7xzwS9RKjuBetZSzMD8hENsgFAwHcyxgTD
+         A/6NranznkC+nF4OyGfyN1j0af4E4UTcwGaAvyfxYW/tksZsXad+V5CDtj+USGPUUaNb
+         5ruw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kIrZF45/BAvVQh8mbn5wXf5JnEyRG1slRn5cBPdhKss=;
+        b=ahClYMkByhWiqrShZ2UpiQGNyCXrj6/8J0IqRyC2mMLSXKJk5w0q7W7Uitv6zrexDU
+         yvR7e2qV6c6nxxMOCqRnXCh/2C20Aq+KGOxOQcEge9CkAT+RQFuAD/9IW0McyXt7089P
+         qbckef1w4j9FBe8ACsJVPR5i+HuiCzPBk1cRkHc0Rx8UYdReih5+A0YSQvtmN9bQ8WlF
+         H26yVGArkROlBdK4VC/73e1SyGGAyeIDfEPGY/FwdTWkhbjiql6j24o7YcPNUWdPZ1HW
+         hl62FbeGkBpbN6Q9GnCD+F3fdhLNH7CET729OAUvVGOTjN0R4VketZdSZAoeAS8qE4A/
+         K2Kg==
+X-Gm-Message-State: AOAM532VtZyanoe9Ng9PjlX3af9zcMqLHXJuSztm15NuKPQistodcrFa
+        MUX5WwRFdq4YhQUYaZDaEuE=
+X-Google-Smtp-Source: ABdhPJwGMTHU2migh+Vtz36GIcyJKI0+/w+/wl9eaIpMSvJqvm5WwNJmFhE51zJndWVMYSVxv0mnRw==
+X-Received: by 2002:a62:3583:: with SMTP id c125mr1136819pfa.1.1597987395542;
+        Thu, 20 Aug 2020 22:23:15 -0700 (PDT)
+Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
+        by smtp.gmail.com with ESMTPSA id l7sm593466pjf.43.2020.08.20.22.23.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Aug 2020 22:23:14 -0700 (PDT)
+Date:   Fri, 21 Aug 2020 14:23:08 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Manish Chopra <manishc@marvell.com>,
+        GR-Linux-NIC-Dev@marvell.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>
+Subject: Re: [RFC 1/3] Initialize devlink health dump framework for the dlge
+ driver
+Message-ID: <20200821052308.GA12235@f3>
+References: <20200814160601.901682-1-coiby.xu@gmail.com>
+ <20200814160601.901682-2-coiby.xu@gmail.com>
+ <20200816025640.GA27529@f3>
+ <20200821030822.huyuxa5o5tcvtv2o@Rk>
 MIME-Version: 1.0
-In-Reply-To: <20200820213649.7cd6aa3f@hermes.lan>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1597987097; bh=PGuO7ZyK5Ya4r+BCjLwAMikRLP8/Xs84gWNmVK8+vKY=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:Content-Type:
-         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=dUdaV8adnzP8REA73oABsNZoWnUEP5sxuKBaAq6z2dN/u7nHgnUB75tlVzhCuX0aB
-         6iCkbzhvFwAAKCxSWebd4aJKO/cTG4NlNXxdBFu8T7jd+Lgb+tNGp7TdJ4YWMoPd6B
-         ji/0Ktg6hjpqpY1Q7wltxeUavLfzFbmJK2hMFIBM84+sLkjFW2gTYeF7mz7l9TyGwA
-         9v0RSXy/oc2WYpkHz1uYiy7yXUqj84vMPlkd0fWcDAweZHYJ/UpGgU5EhGbv9/JgJC
-         +T8aQTgPm/El7vZj5OaESTNNBXckhRWfWq4mSaiLI0M0tP9Li+/K/9qmhRiFEalKTr
-         YgDkuzyFpCTBw==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200821030822.huyuxa5o5tcvtv2o@Rk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020-08-21 11:08 +0800, Coiby Xu wrote:
+[...]
+> > > diff --git a/drivers/staging/qlge/qlge_health.h b/drivers/staging/qlge/qlge_health.h
+> > > new file mode 100644
+> > > index 000000000000..07d3bafab845
+> > > --- /dev/null
+> > > +++ b/drivers/staging/qlge/qlge_health.h
+> > > @@ -0,0 +1,2 @@
+> > > +#include <net/devlink.h>
+> > > +int qlge_health_create_reporters(struct qlge_devlink *priv);
+> > 
+> > I would suggest to put this in qlge.h instead of creating a new file.
+> 
+> Although there are only two lines for now, is it possible qlge will add
+> more devlink code? If that's the case, a file to single out these code
 
-On 8/20/20 9:36 PM, Stephen Hemminger wrote:
->
->
-> On Thu, 20 Aug 2020 20:52:02 -0700
-> Roopa Prabhu <roopa@cumulusnetworks.com> wrote:
->
->> +     if (tb[IFLA_PROTO_DOWN]) {
->> +             if (rta_getattr_u8(tb[IFLA_PROTO_DOWN]))
->> +                     print_bool(PRINT_ANY,
->> +                                "proto_down", " protodown on ", true);
-> In general my preference is to use print_null() for presence flags.
-> Otherwise you have to handle the false case in JSON as a special case.
+I would say that if there's more content in the future, it can move to a
+separate file in the future.
 
-
-ok, i will look. But this is existing code moved into a new function and 
-has been
-
-working fine for years.
-
-
+If you feel strongly about putting this in its own file right away, then
+make sure to add the usual
+#ifndef QLGE_HEALTH_H
+#define QLGE_HEALTH_H
+...
