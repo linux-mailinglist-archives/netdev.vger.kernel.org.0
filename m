@@ -2,115 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA5A724CDF9
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 08:28:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17B0624CDFD
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 08:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726216AbgHUG2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 02:28:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41414 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725268AbgHUG2P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 02:28:15 -0400
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B898620738;
-        Fri, 21 Aug 2020 06:28:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597991294;
-        bh=0MGVliHRNiKQ4/z6mRwpRlF0hwNE6dspbCVHx4C7XIM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=lHHiwIGLcdRgRoF8qp6tFDMVHrmTnjm+0vaeS1QhFZuJTfT8+vTj0MFGnx+qA+Wg4
-         37Kp+dWqrwOJEzPidulDvejiwuFjMT8sUHCYak6Eq5QXX86HPykcxpVp4C0JtYGHPd
-         3YgonBmigKvXt2OTtmEfkY1m+p48qP83PZ0O34sQ=
-Date:   Fri, 21 Aug 2020 01:34:02 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH][next] orinoco: Use fallthrough pseudo-keyword
-Message-ID: <20200821063402.GA12500@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1726300AbgHUGa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 02:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725935AbgHUGa4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 02:30:56 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE00BC061386
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 23:30:55 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id d9so659405qvl.10
+        for <netdev@vger.kernel.org>; Thu, 20 Aug 2020 23:30:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=t1ahybeSocYxG75mFEOjBUStE3/N8dMepfEKhYa+PgY=;
+        b=N6pGa6uUQfVSX6lSk34Ndz7XM0iWnAthacC9zfJHhg/RhcgDq78jz6dqetSkTKI8fx
+         1hjmd6co/CwJ++gl9kTgBFWAMjnwcbgnYkbI2cyxAcD/tOI3cokeyiTplznwH5EF8Fh2
+         Flc1zjcQl60kc4U/8hLFi9Lc3mpJ7EqfUwhju48qmeRKu7Vvh925E/8LtI5obSVdxufd
+         p9zH3W4hCESmZNo7VZqFvpLClT2QuqeBAvgdRBem51KT3iteCYaUMP8fYDREaNs2oLHI
+         eLszLstRVI/KUH5G90O7VC2OSEXubYO/tro6JEI/flcTve+pMVzeube0jURHG+m5HTxY
+         1YJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=t1ahybeSocYxG75mFEOjBUStE3/N8dMepfEKhYa+PgY=;
+        b=kVz+T+rOJxIBqJjQOfV/LkHY5LjTDhrsyZkxZyTEmrzatDigymsfN26Fin5EjFo4Nz
+         7EEXM0SRTIDkGSKgXfGVtLwDimj2EwD5Lm1hJp8qerPDkNNQCyPiW1C3BV7Lv2yAR47e
+         i/tigQNaN2sxD6VeBj3DtvbKkm2otx8X3XM4NAKkynLAFBuhw6+U8m74gPN9D2JOXnhm
+         OMVSC7b6INri7ze/FnVCtQ5pAgB66Fq1mJdX1ZtD+/BrTgsC/HfEg8qkUDPsfXrSYJGq
+         UQiGQD82ffi2sB3spcYO/9LwAQl2QYOolOVQqRhW7+9+6u7MezZKQXhGTl8sXpKxtzvE
+         SdmA==
+X-Gm-Message-State: AOAM531iyth20j431ORWY3x17ojMofqmTYrcx5dnK15WAPUwZJ3PaWkG
+        mWrcPj4ob4wNZne4XsPm06VH2nVPEg==
+X-Google-Smtp-Source: ABdhPJysfSt3QWU2JgWJDoarnQbxJp0A96gYx030HqTPN0Gj4l6c13UQz9JiYt1rigEkHWmjo+sJNNwG3Q==
+X-Received: from elver.muc.corp.google.com ([2a00:79e0:15:13:f693:9fff:fef4:2449])
+ (user=elver job=sendgmr) by 2002:a05:6214:140d:: with SMTP id
+ n13mr1254243qvx.69.1597991452992; Thu, 20 Aug 2020 23:30:52 -0700 (PDT)
+Date:   Fri, 21 Aug 2020 08:30:43 +0200
+Message-Id: <20200821063043.1949509-1-elver@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.297.g1956fa8f8d-goog
+Subject: [PATCH] random32: Use rcuidle variant for tracepoint
+From:   Marco Elver <elver@google.com>
+To:     elver@google.com
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the existing /* fall through */ comments and its variants with
-the new pseudo-keyword macro fallthrough[1].
+With KCSAN enabled, prandom_u32() may be called from any context,
+including idle CPUs.
 
-[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
+Therefore, switch to using trace_prandom_u32_rcuidle(), to avoid various
+issues due to recursion and lockdep warnings when KCSAN and tracing is
+enabled.
 
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Fixes: 94c7eb54c4b8 ("random32: add a tracepoint for prandom_u32()")
+Link: https://lkml.kernel.org/r/20200820155923.3d5c4873@oasis.local.home
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Marco Elver <elver@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
 ---
- drivers/net/wireless/intersil/orinoco/main.c        | 4 ++--
- drivers/net/wireless/intersil/orinoco/orinoco_usb.c | 8 ++++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ lib/random32.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intersil/orinoco/main.c b/drivers/net/wireless/intersil/orinoco/main.c
-index 00264a14e52c..a1e041c91190 100644
---- a/drivers/net/wireless/intersil/orinoco/main.c
-+++ b/drivers/net/wireless/intersil/orinoco/main.c
-@@ -1503,7 +1503,7 @@ void __orinoco_ev_info(struct net_device *dev, struct hermes *hw)
- 			schedule_work(&priv->join_work);
- 			break;
- 		}
--		/* fall through */
-+		fallthrough;
- 	case HERMES_INQ_HOSTSCAN:
- 	case HERMES_INQ_HOSTSCAN_SYMBOL: {
- 		/* Result of a scanning. Contains information about
-@@ -1594,7 +1594,7 @@ void __orinoco_ev_info(struct net_device *dev, struct hermes *hw)
- 		/* Ignore this frame for now */
- 		if (priv->firmware_type == FIRMWARE_TYPE_AGERE)
- 			break;
--		/* fall through */
-+		fallthrough;
- 	default:
- 		printk(KERN_DEBUG "%s: Unknown information frame received: "
- 		       "type 0x%04x, length %d\n", dev->name, type, len);
-diff --git a/drivers/net/wireless/intersil/orinoco/orinoco_usb.c b/drivers/net/wireless/intersil/orinoco/orinoco_usb.c
-index 11fa38fedd87..db316b6ff9ae 100644
---- a/drivers/net/wireless/intersil/orinoco/orinoco_usb.c
-+++ b/drivers/net/wireless/intersil/orinoco/orinoco_usb.c
-@@ -535,7 +535,7 @@ static void ezusb_request_out_callback(struct urb *urb)
- 						       flags);
- 				break;
- 			}
--			/* fall through */
-+			fallthrough;
- 		case EZUSB_CTX_RESP_RECEIVED:
- 			/* IN already received before this OUT-ACK */
- 			ctx->state = EZUSB_CTX_COMPLETE;
-@@ -557,7 +557,7 @@ static void ezusb_request_out_callback(struct urb *urb)
- 		case EZUSB_CTX_REQ_SUBMITTED:
- 		case EZUSB_CTX_RESP_RECEIVED:
- 			ctx->state = EZUSB_CTX_REQ_FAILED;
--			/* fall through */
-+			fallthrough;
+diff --git a/lib/random32.c b/lib/random32.c
+index 932345323af0..1c5607a411d4 100644
+--- a/lib/random32.c
++++ b/lib/random32.c
+@@ -83,7 +83,7 @@ u32 prandom_u32(void)
+ 	u32 res;
  
- 		case EZUSB_CTX_REQ_FAILED:
- 		case EZUSB_CTX_REQ_TIMEOUT:
-@@ -897,11 +897,11 @@ static int ezusb_access_ltv(struct ezusb_priv *upriv,
- 	case EZUSB_CTX_REQ_SUBMITTED:
- 		if (!ctx->in_rid)
- 			break;
--		/* fall through */
-+		fallthrough;
- 	default:
- 		err("%s: Unexpected context state %d", __func__,
- 		    state);
--		/* fall through */
-+		fallthrough;
- 	case EZUSB_CTX_REQ_TIMEOUT:
- 	case EZUSB_CTX_REQ_FAILED:
- 	case EZUSB_CTX_RESP_TIMEOUT:
+ 	res = prandom_u32_state(state);
+-	trace_prandom_u32(res);
++	trace_prandom_u32_rcuidle(res);
+ 	put_cpu_var(net_rand_state);
+ 
+ 	return res;
 -- 
-2.27.0
+2.28.0.297.g1956fa8f8d-goog
 
