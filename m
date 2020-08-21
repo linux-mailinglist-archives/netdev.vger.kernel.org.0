@@ -2,112 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E21E24DEDA
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 19:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07A9C24DEE1
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 19:49:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726887AbgHURrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 13:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46840 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725948AbgHURrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 13:47:41 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AABEC061573
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 10:47:41 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id g15so1204528plj.6
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 10:47:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=a8OwdJbq6UtF5fLgwb2XK+E8mnUyeFCCe7CNVV+4zz8=;
-        b=f9n99AuoH2O8dyURfkLb6m/Eu+WocRsJpgcZKUjoclwCNJYzi52qse85F8aVVIJfzr
-         nqC+6eGBduLWNwf1dlDCqv7IvM4I+6PBDImmW0+TJkygDXTylaKS3C9PzBSB4jw1AlRV
-         MCDheM8YxZIRNRT/CNcN26JVfvymINv9uVtzR+GAPpMpobWw1u/52wstfn1RIRcFFTJ/
-         H7AWsBq7Mbj4jOYEKkvhpF2Q1YHV05FC2TcOvWnK5/8XIr0IgSdflb/Mqyu2+iFfzKJU
-         a0RVDIx7aFOAonfc2Ma8YzSSAlcyVLF5l/cmMGnDUbcCLNDoICnM5YNpdPPd+eICgLgN
-         ImQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=a8OwdJbq6UtF5fLgwb2XK+E8mnUyeFCCe7CNVV+4zz8=;
-        b=dXY1eYKWxYhk5lSmp4hv+ZAybJXO9hqCrFC0XYs7MiNganwBhMwU0+nFT3fm8kicLj
-         9MxE2xCTc12hqFTAnOu9HZggUg+gFARzuhM/4EKxNqdncdeV9CqnYJ5JA7FnT+OsJLJ3
-         0NxKNuoZfMOhwwPndHIioJtPVkFhn1VUXwQItRtkACq99lmUeLeDOABUVbuDB8KS0X6C
-         yOgrvM1ieCoBhV8VHVKIrZZPS2UlxMYZGlSTGIDGQSM8rcIB+jcWbd0+3O49ZXPaYCTE
-         CpCXEQ2c3/EgJTI2Rrt5YPqRR7NFpB6VTS479rqZPZyxUn+/0GvGqIIkqcb9aA3eiN2h
-         ZOMw==
-X-Gm-Message-State: AOAM533pra4DsOg/N5gQmJGpUaa8fE2EitZ9ntnDryT1t6nwda6ejS+p
-        FxjbkH2F5Ga7JCRwnAmiKQ4CtH7sM7e+ZQ==
-X-Google-Smtp-Source: ABdhPJzg8bIxfAsDJkBZmSATkNXE7DhFXRzXcW3Kvm8MQ6de9zZS/X/CNTKl00pKw3gdITZ5zP16aQ==
-X-Received: by 2002:a17:902:8e8a:: with SMTP id bg10mr3245757plb.281.1598032060810;
-        Fri, 21 Aug 2020 10:47:40 -0700 (PDT)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id o38sm2794446pgb.38.2020.08.21.10.47.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 10:47:39 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net-next] ipvlan: advertise link netns via netlink
-Date:   Fri, 21 Aug 2020 17:47:32 +0000
-Message-Id: <20200821174732.8181-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727014AbgHURtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 13:49:15 -0400
+Received: from mga14.intel.com ([192.55.52.115]:21552 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726803AbgHURtK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 13:49:10 -0400
+IronPort-SDR: umyPAOJhWWyfLxk4smoyrJyrcAsTtHEtkhMVymzOutAezmgBJNGoj5XYxNwFjURmgAK7dUjk+g
+ VsyDOb+IcTFg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9720"; a="154868067"
+X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
+   d="scan'208";a="154868067"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 10:49:09 -0700
+IronPort-SDR: 7klViRmDc9/Ba1ZQ3NWudYnLU55Lf/gLhioQ/hFlekQrTybP4P2g2ufySVB6OOYUSIVhVFRdeN
+ F8f3sMouGjYw==
+X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
+   d="scan'208";a="293898954"
+Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.38.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 10:49:08 -0700
+Date:   Fri, 21 Aug 2020 10:49:07 -0700
+From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ariel Elior <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>,
+        "Alexander Lobakin" <alobakin@marvell.com>,
+        Michal Kalderon <michal.kalderon@marvell.com>
+Subject: Re: [PATCH net-next 07/11] qed: use devlink logic to report errors
+Message-ID: <20200821104907.00004607@intel.com>
+In-Reply-To: <20200727184310.462-8-irusskikh@marvell.com>
+References: <20200727184310.462-1-irusskikh@marvell.com>
+        <20200727184310.462-8-irusskikh@marvell.com>
+X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Assign rtnl_link_ops->get_link_net() callback so that IFLA_LINK_NETNSID is
-added to rtnetlink messages.
+Igor Russkikh wrote:
 
-Test commands:
-    ip netns add nst
-    ip link add dummy0 type dummy
-    ip link add ipvlan0 link dummy0 type ipvlan
-    ip link set ipvlan0 netns nst
-    ip netns exec nst ip link show ipvlan0
+> Use devlink_health_report to push error indications.
+> We implement this in qede via callback function to make it possible
+> to reuse the same for other drivers sitting on top of qed in future.
+> 
+> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+> Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
+> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+> ---
+>  drivers/net/ethernet/qlogic/qed/qed_devlink.c | 17 +++++++++++++++++
+>  drivers/net/ethernet/qlogic/qed/qed_devlink.h |  2 ++
+>  drivers/net/ethernet/qlogic/qed/qed_main.c    |  1 +
+>  drivers/net/ethernet/qlogic/qede/qede.h       |  1 +
+>  drivers/net/ethernet/qlogic/qede/qede_main.c  |  5 ++++-
+>  include/linux/qed/qed_if.h                    |  3 +++
+>  6 files changed, 28 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+> index 843a35f14cca..ffe776a4f99a 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
+> @@ -14,6 +14,23 @@ enum qed_devlink_param_id {
+>  	QED_DEVLINK_PARAM_ID_IWARP_CMT,
+>  };
+>  
+> +struct qed_fw_fatal_ctx {
+> +	enum qed_hw_err_type err_type;
+> +};
+> +
+> +int qed_report_fatal_error(struct devlink *devlink, enum qed_hw_err_type err_type)
+> +{
+> +	struct qed_devlink *qdl = devlink_priv(devlink);
+> +	struct qed_fw_fatal_ctx fw_fatal_ctx = {
+> +		.err_type = err_type,
+> +	};
+> +
+> +	devlink_health_report(qdl->fw_reporter,
+> +			      "Fatal error reported", &fw_fatal_ctx);
+> +
+> +	return 0;
+> +}
+> +
+>  static const struct devlink_health_reporter_ops qed_fw_fatal_reporter_ops = {
+>  		.name = "fw_fatal",
+>  };
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.h b/drivers/net/ethernet/qlogic/qed/qed_devlink.h
+> index c68ecf778826..ccc7d1d1bfd4 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_devlink.h
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.h
+> @@ -15,4 +15,6 @@ void qed_devlink_unregister(struct devlink *devlink);
+>  void qed_fw_reporters_create(struct devlink *devlink);
+>  void qed_fw_reporters_destroy(struct devlink *devlink);
+>  
+> +int qed_report_fatal_error(struct devlink *dl, enum qed_hw_err_type err_type);
+> +
+>  #endif
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+> index d1a559ccf516..a64d594f9294 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_main.c
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+> @@ -3007,6 +3007,7 @@ const struct qed_common_ops qed_common_ops_pass = {
+>  	.update_msglvl = &qed_init_dp,
+>  	.devlink_register = qed_devlink_register,
+>  	.devlink_unregister = qed_devlink_unregister,
+> +	.report_fatal_error = qed_report_fatal_error,
+>  	.dbg_all_data = &qed_dbg_all_data,
+>  	.dbg_all_data_size = &qed_dbg_all_data_size,
+>  	.chain_alloc = &qed_chain_alloc,
+> diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
+> index 1f0e7505a973..3efc5899f656 100644
+> --- a/drivers/net/ethernet/qlogic/qede/qede.h
+> +++ b/drivers/net/ethernet/qlogic/qede/qede.h
+> @@ -264,6 +264,7 @@ struct qede_dev {
+>  
+>  	struct bpf_prog			*xdp_prog;
+>  
+> +	enum qed_hw_err_type		last_err_type;
+>  	unsigned long			err_flags;
+>  #define QEDE_ERR_IS_HANDLED		31
+>  #define QEDE_ERR_ATTN_CLR_EN		0
+> diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+> index 7c2d948b2035..df437c3f1fc9 100644
+> --- a/drivers/net/ethernet/qlogic/qede/qede_main.c
+> +++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+> @@ -1181,7 +1181,6 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
+>  		}
+>  	} else {
+>  		struct net_device *ndev = pci_get_drvdata(pdev);
+> -
 
-Result:
-    ---Before---
-    6: ipvlan0@if5: <BROADCAST,MULTICAST> ...
-        link/ether 82:3a:78:ab:60:50 brd ff:ff:ff:ff:ff:ff
+should have left this blank line (there should always be a blank line
+after declarations.)
 
-    ---After---
-    12: ipvlan0@if11: <BROADCAST,MULTICAST> ...
-        link/ether 42:b1:ad:57:4e:27 brd ff:ff:ff:ff:ff:ff link-netnsid 0
-                                                           ~~~~~~~~~~~~~~
 
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- drivers/net/ipvlan/ipvlan_main.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+>  		edev = netdev_priv(ndev);
+>  
+>  		if (edev && edev->devlink) {
 
-diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-index 5bca94c99006..60b7d93bb834 100644
---- a/drivers/net/ipvlan/ipvlan_main.c
-+++ b/drivers/net/ipvlan/ipvlan_main.c
-@@ -684,6 +684,13 @@ static const struct nla_policy ipvlan_nl_policy[IFLA_IPVLAN_MAX + 1] =
- 	[IFLA_IPVLAN_FLAGS] = { .type = NLA_U16 },
- };
- 
-+static struct net *ipvlan_get_link_net(const struct net_device *dev)
-+{
-+	struct ipvl_dev *ipvlan = netdev_priv(dev);
-+
-+	return dev_net(ipvlan->phy_dev);
-+}
-+
- static struct rtnl_link_ops ipvlan_link_ops = {
- 	.kind		= "ipvlan",
- 	.priv_size	= sizeof(struct ipvl_dev),
-@@ -691,6 +698,7 @@ static struct rtnl_link_ops ipvlan_link_ops = {
- 	.setup		= ipvlan_link_setup,
- 	.newlink	= ipvlan_link_new,
- 	.dellink	= ipvlan_link_delete,
-+	.get_link_net   = ipvlan_get_link_net,
- };
- 
- int ipvlan_link_register(struct rtnl_link_ops *ops)
--- 
-2.17.1
+I think I mentioned this check in one of my other responses.
+
+> @@ -2603,6 +2602,9 @@ static void qede_generic_hw_err_handler(struct qede_dev *edev)
+>  		  "Generic sleepable HW error handling started - err_flags 0x%lx\n",
+>  		  edev->err_flags);
+>  
+> +	if (edev->devlink)
+> +		edev->ops->common->report_fatal_error(edev->devlink, edev->last_err_type);
+> +
+>  	/* Trigger a recovery process.
+>  	 * This is placed in the sleep requiring section just to make
+>  	 * sure it is the last one, and that all the other operations
+> @@ -2663,6 +2665,7 @@ static void qede_schedule_hw_err_handler(void *dev,
+>  		return;
+>  	}
+>  
+> +	edev->last_err_type = err_type;
+>  	qede_set_hw_err_flags(edev, err_type);
+>  	qede_atomic_hw_err_handler(edev);
+>  	set_bit(QEDE_SP_HW_ERR, &edev->sp_flags);
+> diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
+> index 30fe06fe06a0..1297726f2b25 100644
+> --- a/include/linux/qed/qed_if.h
+> +++ b/include/linux/qed/qed_if.h
+> @@ -906,6 +906,9 @@ struct qed_common_ops {
+>  
+>  	int (*dbg_all_data_size) (struct qed_dev *cdev);
+>  
+> +	int		(*report_fatal_error)(struct devlink *devlink,
+
+way too many extra spaces here, doesn't even match the line above,
+Please just do
+\tint (*foo)(arg, arg, ...)
+
+> +					      enum qed_hw_err_type err_type);
+> +
+>  /**
+>   * @brief can_link_change - can the instance change the link or not
+>   *
+
 
