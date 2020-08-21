@@ -2,186 +2,328 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6D3424CD78
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 07:56:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D5B824CD84
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 08:02:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726257AbgHUF4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 01:56:54 -0400
-Received: from foss.arm.com ([217.140.110.172]:54404 "EHLO foss.arm.com"
+        id S1727093AbgHUGCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 02:02:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53122 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725268AbgHUF4x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 01:56:53 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9B53D31B;
-        Thu, 20 Aug 2020 22:56:52 -0700 (PDT)
-Received: from net-arm-thunderx2-02.shanghai.arm.com (net-arm-thunderx2-02.shanghai.arm.com [10.169.210.119])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C76BF3F6CF;
-        Thu, 20 Aug 2020 22:56:50 -0700 (PDT)
-From:   Jianlin Lv <Jianlin.Lv@arm.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, Jianlin.Lv@arm.com,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: remove redundant variable in vxlan_xmit_one
-Date:   Fri, 21 Aug 2020 13:56:36 +0800
-Message-Id: <20200821055636.59937-1-Jianlin.Lv@arm.com>
-X-Mailer: git-send-email 2.17.1
+        id S1725268AbgHUGCC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 02:02:02 -0400
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7DBF3207DA;
+        Fri, 21 Aug 2020 06:02:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1597989721;
+        bh=RL2kB1qW+T6kXdM6zLOpMVYt13gSjORoiUbt1H23+vY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Z9C//bmM2g7aRchQxAjb7DiBdBofi3otaExWunuzrxg8l/ElAiGwExx8tWw1S2iiT
+         26qylZcyX00rTKvxCdjGUvszgtYzH7/E1TCIVDagl3tosIOFESW0V/j9gHbFSpX4nR
+         Lg/DY+uKsHCabQ60JJq5D2SByWuTlxprMkgm5S8E=
+Date:   Fri, 21 Aug 2020 01:07:48 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH][next] mediatek: Use fallthrough pseudo-keyword
+Message-ID: <20200821060748.GA2483@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dst/src is used multiple times in vxlan_xmit_one function as the variable
-name, although its scope is different, but it reduces the readability and
-it is unnecessary to use intermediate variables here;
-This patch reduces unnecessary assignments and removes redundant variables
+Replace the existing /* fall through */ comments and its variants with
+the new pseudo-keyword macro fallthrough[1]. Also, remove unnecessary
+fall-through markings when it is the case.
 
-Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+[1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
+
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/vxlan.c | 40 +++++++++++++++-------------------------
- 1 file changed, 15 insertions(+), 25 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7603/dma.c     | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7603/mac.c     | 4 ++--
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c     | 6 +++---
+ drivers/net/wireless/mediatek/mt76/mt7615/mcu.c     | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt76x0/phy.c     | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt76x02_mac.c    | 6 +++---
+ drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c | 1 -
+ drivers/net/wireless/mediatek/mt76/mt7915/dma.c     | 2 +-
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c     | 4 ++--
+ drivers/net/wireless/mediatek/mt76/mt7915/mcu.c     | 2 +-
+ drivers/net/wireless/mediatek/mt76/usb.c            | 2 +-
+ drivers/net/wireless/mediatek/mt7601u/dma.c         | 4 ++--
+ drivers/net/wireless/mediatek/mt7601u/mac.c         | 4 ++--
+ drivers/net/wireless/mediatek/mt7601u/phy.c         | 2 +-
+ 14 files changed, 21 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index b9fefe27e3e8..679260e1d9f1 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -2597,7 +2597,6 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 	struct ip_tunnel_info *info;
- 	struct vxlan_dev *vxlan = netdev_priv(dev);
- 	const struct iphdr *old_iph = ip_hdr(skb);
--	union vxlan_addr *dst;
- 	union vxlan_addr remote_ip, local_ip;
- 	struct vxlan_metadata _md;
- 	struct vxlan_metadata *md = &_md;
-@@ -2614,8 +2613,8 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 	info = skb_tunnel_info(skb);
- 
- 	if (rdst) {
--		dst = &rdst->remote_ip;
--		if (vxlan_addr_any(dst)) {
-+		remote_ip = rdst->remote_ip;
-+		if (vxlan_addr_any(&remote_ip)) {
- 			if (did_rsc) {
- 				/* short-circuited back to local bridge */
- 				vxlan_encap_bypass(skb, vxlan, vxlan,
-@@ -2635,7 +2634,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 			ttl = ip_tunnel_get_ttl(old_iph, skb);
- 		} else {
- 			ttl = vxlan->cfg.ttl;
--			if (!ttl && vxlan_addr_multicast(dst))
-+			if (!ttl && vxlan_addr_multicast(&remote_ip))
- 				ttl = 1;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/dma.c b/drivers/net/wireless/mediatek/mt76/mt7603/dma.c
+index a08b85281170..1dfcd7407535 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7603/dma.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7603/dma.c
+@@ -123,7 +123,7 @@ void mt7603_queue_rx_skb(struct mt76_dev *mdev, enum mt76_rxq_id q,
+ 			mt76_rx(&dev->mt76, q, skb);
+ 			return;
  		}
- 
-@@ -2643,7 +2642,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		if (tos == 1)
- 			tos = ip_tunnel_get_dsfield(old_iph, skb);
- 
--		if (dst->sa.sa_family == AF_INET)
-+		if (remote_ip.sa.sa_family == AF_INET)
- 			udp_sum = !(flags & VXLAN_F_UDP_ZERO_CSUM_TX);
- 		else
- 			udp_sum = !(flags & VXLAN_F_UDP_ZERO_CSUM6_TX);
-@@ -2662,7 +2661,6 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 			remote_ip.sin6.sin6_addr = info->key.u.ipv6.dst;
- 			local_ip.sin6.sin6_addr = info->key.u.ipv6.src;
+-		/* fall through */
++		fallthrough;
+ 	default:
+ 		dev_kfree_skb(skb);
+ 		break;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
+index 8060c1514396..95602cbef3c3 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
+@@ -592,7 +592,7 @@ mt7603_mac_fill_rx(struct mt7603_dev *dev, struct sk_buff *skb)
+ 		switch (FIELD_GET(MT_RXV1_TX_MODE, rxdg0)) {
+ 		case MT_PHY_TYPE_CCK:
+ 			cck = true;
+-			/* fall through */
++			fallthrough;
+ 		case MT_PHY_TYPE_OFDM:
+ 			i = mt76_get_rate(&dev->mt76, sband, i, cck);
+ 			break;
+@@ -1161,7 +1161,7 @@ mt7603_fill_txs(struct mt7603_dev *dev, struct mt7603_sta *sta,
+ 	switch (FIELD_GET(MT_TX_RATE_MODE, final_rate)) {
+ 	case MT_PHY_TYPE_CCK:
+ 		cck = true;
+-		/* fall through */
++		fallthrough;
+ 	case MT_PHY_TYPE_OFDM:
+ 		if (dev->mphy.chandef.chan->band == NL80211_BAND_5GHZ)
+ 			sband = &dev->mphy.sband_5g.sband;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index 3dd8dd28690e..60be7f409470 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -378,7 +378,7 @@ static int mt7615_mac_fill_rx(struct mt7615_dev *dev, struct sk_buff *skb)
+ 		switch (FIELD_GET(MT_RXV1_TX_MODE, rxdg0)) {
+ 		case MT_PHY_TYPE_CCK:
+ 			cck = true;
+-			/* fall through */
++			fallthrough;
+ 		case MT_PHY_TYPE_OFDM:
+ 			i = mt76_get_rate(&dev->mt76, sband, i, cck);
+ 			break;
+@@ -1271,7 +1271,7 @@ static bool mt7615_fill_txs(struct mt7615_dev *dev, struct mt7615_sta *sta,
+ 	switch (FIELD_GET(MT_TX_RATE_MODE, final_rate)) {
+ 	case MT_PHY_TYPE_CCK:
+ 		cck = true;
+-		/* fall through */
++		fallthrough;
+ 	case MT_PHY_TYPE_OFDM:
+ 		mphy = &dev->mphy;
+ 		if (sta->wcid.ext_phy && dev->mt76.phy2)
+@@ -1478,7 +1478,7 @@ void mt7615_queue_rx_skb(struct mt76_dev *mdev, enum mt76_rxq_id q,
+ 			mt76_rx(&dev->mt76, q, skb);
+ 			return;
  		}
--		dst = &remote_ip;
- 		dst_port = info->key.tp_dst ? : vxlan->cfg.dst_port;
- 		vni = tunnel_id_to_key32(info->key.tun_id);
- 		ifindex = 0;
-@@ -2681,7 +2679,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 				     vxlan->cfg.port_max, true);
+-		/* fall through */
++		fallthrough;
+ 	default:
+ 		dev_kfree_skb(skb);
+ 		break;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+index d0cbb283982f..745133b6b7af 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+@@ -3278,7 +3278,7 @@ static int mt7615_dcoc_freq_idx(u16 freq, u8 bw)
+ 			freq = freq_bw40[idx];
+ 			break;
+ 		}
+-		/* fall through */
++		fallthrough;
+ 	case NL80211_CHAN_WIDTH_40:
+ 		idx = mt7615_find_freq_idx(freq_bw40, ARRAY_SIZE(freq_bw40),
+ 					   freq);
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x0/phy.c b/drivers/net/wireless/mediatek/mt76/mt76x0/phy.c
+index 09f34deb6ba1..3de33aadf794 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x0/phy.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x0/phy.c
+@@ -734,7 +734,7 @@ mt76x0_phy_get_delta_power(struct mt76x02_dev *dev, u8 tx_mode,
+ 	case 1:
+ 		if (chan->band == NL80211_BAND_2GHZ)
+ 			tssi_target += 29491; /* 3.6 * 8192 */
+-		/* fall through */
++		fallthrough;
+ 	case 0:
+ 		break;
+ 	default:
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76x02_mac.c b/drivers/net/wireless/mediatek/mt76/mt76x02_mac.c
+index e4e03beabe43..11900bcc1be0 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76x02_mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76x02_mac.c
+@@ -300,7 +300,7 @@ mt76x02_mac_process_tx_rate(struct ieee80211_tx_rate *txrate, u16 rate,
+ 		return 0;
+ 	case MT_PHY_TYPE_HT_GF:
+ 		txrate->flags |= IEEE80211_TX_RC_GREEN_FIELD;
+-		/* fall through */
++		fallthrough;
+ 	case MT_PHY_TYPE_HT:
+ 		txrate->flags |= IEEE80211_TX_RC_MCS;
+ 		txrate->idx = idx;
+@@ -462,7 +462,7 @@ mt76x02_tx_rate_fallback(struct ieee80211_tx_rate *rates, int idx, int phy)
+ 			rates[1].idx = 0;
+ 			break;
+ 		}
+-		/* fall through */
++		fallthrough;
+ 	default:
+ 		rates[1].idx = max_t(int, rates[0].idx - 1, 0);
+ 		break;
+@@ -677,7 +677,7 @@ mt76x02_mac_process_rate(struct mt76x02_dev *dev,
+ 		return 0;
+ 	case MT_PHY_TYPE_HT_GF:
+ 		status->enc_flags |= RX_ENC_FLAG_HT_GF;
+-		/* fall through */
++		fallthrough;
+ 	case MT_PHY_TYPE_HT:
+ 		status->encoding = RX_ENC_HT;
+ 		status->rate_idx = idx;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
+index 38f473d587c9..e7febc982930 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
+@@ -21,7 +21,6 @@ static int mt7915_ser_trigger_set(void *data, u64 val)
+ 	switch (val) {
+ 	case SER_SET_RECOVER_L1:
+ 	case SER_SET_RECOVER_L2:
+-		/* fall through */
+ 		ret = mt7915_mcu_set_ser(dev, SER_ENABLE, BIT(val), 0);
+ 		if (ret)
+ 			return ret;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/dma.c b/drivers/net/wireless/mediatek/mt76/mt7915/dma.c
+index a8832c5e6004..12e5a4988d70 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/dma.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/dma.c
+@@ -72,7 +72,7 @@ void mt7915_queue_rx_skb(struct mt76_dev *mdev, enum mt76_rxq_id q,
+ 			mt76_rx(&dev->mt76, q, skb);
+ 			return;
+ 		}
+-		/* fall through */
++		fallthrough;
+ 	default:
+ 		dev_kfree_skb(skb);
+ 		break;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index 6825afca1efb..4b38e921ad4a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -468,7 +468,7 @@ int mt7915_mac_fill_rx(struct mt7915_dev *dev, struct sk_buff *skb)
+ 			switch (mode) {
+ 			case MT_PHY_TYPE_CCK:
+ 				cck = true;
+-				/* fall through */
++				fallthrough;
+ 			case MT_PHY_TYPE_OFDM:
+ 				i = mt76_get_rate(&dev->mt76, sband, i, cck);
+ 				break;
+@@ -487,7 +487,7 @@ int mt7915_mac_fill_rx(struct mt7915_dev *dev, struct sk_buff *skb)
+ 				break;
+ 			case MT_PHY_TYPE_HE_MU:
+ 				status->flag |= RX_FLAG_RADIOTAP_HE_MU;
+-				/* fall through */
++				fallthrough;
+ 			case MT_PHY_TYPE_HE_SU:
+ 			case MT_PHY_TYPE_HE_EXT_SU:
+ 			case MT_PHY_TYPE_HE_TB:
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index eaed5ef05401..323d0a396755 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -1407,7 +1407,7 @@ mt7915_mcu_sta_he_tlv(struct sk_buff *skb, struct ieee80211_sta *sta)
  
- 	rcu_read_lock();
--	if (dst->sa.sa_family == AF_INET) {
-+	if (remote_ip.sa.sa_family == AF_INET) {
- 		struct vxlan_sock *sock4 = rcu_dereference(vxlan->vn4_sock);
- 		struct rtable *rt;
- 		__be16 df = 0;
-@@ -2690,7 +2688,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 			ifindex = sock4->sock->sk->sk_bound_dev_if;
- 
- 		rt = vxlan_get_route(vxlan, dev, sock4, skb, ifindex, tos,
--				     dst->sin.sin_addr.s_addr,
-+				     remote_ip.sin.sin_addr.s_addr,
- 				     &local_ip.sin.sin_addr.s_addr,
- 				     dst_port, src_port,
- 				     dst_cache, info);
-@@ -2701,7 +2699,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 
- 		if (!info) {
- 			/* Bypass encapsulation if the destination is local */
--			err = encap_bypass_if_local(skb, dev, vxlan, dst,
-+			err = encap_bypass_if_local(skb, dev, vxlan, &remote_ip,
- 						    dst_port, ifindex, vni,
- 						    &rt->dst, rt->rt_flags);
- 			if (err)
-@@ -2728,12 +2726,8 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 			goto tx_error;
- 		} else if (err) {
- 			if (info) {
--				struct in_addr src, dst;
--
--				src = remote_ip.sin.sin_addr;
--				dst = local_ip.sin.sin_addr;
--				info->key.u.ipv4.src = src.s_addr;
--				info->key.u.ipv4.dst = dst.s_addr;
-+				info->key.u.ipv4.src = remote_ip.sin.sin_addr.s_addr;
-+				info->key.u.ipv4.dst = local_ip.sin.sin_addr.s_addr;
- 			}
- 			vxlan_encap_bypass(skb, vxlan, vxlan, vni, false);
- 			dst_release(ndst);
-@@ -2748,7 +2742,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 			goto tx_error;
- 
- 		udp_tunnel_xmit_skb(rt, sock4->sock->sk, skb, local_ip.sin.sin_addr.s_addr,
--				    dst->sin.sin_addr.s_addr, tos, ttl, df,
-+				    remote_ip.sin.sin_addr.s_addr, tos, ttl, df,
- 				    src_port, dst_port, xnet, !udp_sum);
- #if IS_ENABLED(CONFIG_IPV6)
- 	} else {
-@@ -2758,7 +2752,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 			ifindex = sock6->sock->sk->sk_bound_dev_if;
- 
- 		ndst = vxlan6_get_route(vxlan, dev, sock6, skb, ifindex, tos,
--					label, &dst->sin6.sin6_addr,
-+					label, &remote_ip.sin6.sin6_addr,
- 					&local_ip.sin6.sin6_addr,
- 					dst_port, src_port,
- 					dst_cache, info);
-@@ -2771,7 +2765,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		if (!info) {
- 			u32 rt6i_flags = ((struct rt6_info *)ndst)->rt6i_flags;
- 
--			err = encap_bypass_if_local(skb, dev, vxlan, dst,
-+			err = encap_bypass_if_local(skb, dev, vxlan, &remote_ip,
- 						    dst_port, ifindex, vni,
- 						    ndst, rt6i_flags);
- 			if (err)
-@@ -2784,12 +2778,8 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 			goto tx_error;
- 		} else if (err) {
- 			if (info) {
--				struct in6_addr src, dst;
--
--				src = remote_ip.sin6.sin6_addr;
--				dst = local_ip.sin6.sin6_addr;
--				info->key.u.ipv6.src = src;
--				info->key.u.ipv6.dst = dst;
-+				info->key.u.ipv6.src = remote_ip.sin6.sin6_addr;
-+				info->key.u.ipv6.dst = local_ip.sin6.sin6_addr;
- 			}
- 
- 			vxlan_encap_bypass(skb, vxlan, vxlan, vni, false);
-@@ -2807,7 +2797,7 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 
- 		udp_tunnel6_xmit_skb(ndst, sock6->sock->sk, skb, dev,
- 				     &local_ip.sin6.sin6_addr,
--				     &dst->sin6.sin6_addr, tos, ttl,
-+				     &remote_ip.sin6.sin6_addr, tos, ttl,
- 				     label, src_port, dst_port, !udp_sum);
- #endif
+ 		he->max_nss_mcs[CMD_HE_MCS_BW160] =
+ 				he_cap->he_mcs_nss_supp.rx_mcs_160;
+-		/* fall through */
++		fallthrough;
+ 	default:
+ 		he->max_nss_mcs[CMD_HE_MCS_BW80] =
+ 				he_cap->he_mcs_nss_supp.rx_mcs_80;
+diff --git a/drivers/net/wireless/mediatek/mt76/usb.c b/drivers/net/wireless/mediatek/mt76/usb.c
+index dcab5993763a..aa44b10f69e8 100644
+--- a/drivers/net/wireless/mediatek/mt76/usb.c
++++ b/drivers/net/wireless/mediatek/mt76/usb.c
+@@ -616,7 +616,7 @@ static void mt76u_complete_rx(struct urb *urb)
+ 	default:
+ 		dev_err_ratelimited(dev->dev, "rx urb failed: %d\n",
+ 				    urb->status);
+-		/* fall through */
++		fallthrough;
+ 	case 0:
+ 		break;
  	}
+diff --git a/drivers/net/wireless/mediatek/mt7601u/dma.c b/drivers/net/wireless/mediatek/mt7601u/dma.c
+index f6a0454abe04..09f931d4598c 100644
+--- a/drivers/net/wireless/mediatek/mt7601u/dma.c
++++ b/drivers/net/wireless/mediatek/mt7601u/dma.c
+@@ -196,7 +196,7 @@ static void mt7601u_complete_rx(struct urb *urb)
+ 	default:
+ 		dev_err_ratelimited(dev->dev, "rx urb failed: %d\n",
+ 				    urb->status);
+-		/* fall through */
++		fallthrough;
+ 	case 0:
+ 		break;
+ 	}
+@@ -241,7 +241,7 @@ static void mt7601u_complete_tx(struct urb *urb)
+ 	default:
+ 		dev_err_ratelimited(dev->dev, "tx urb failed: %d\n",
+ 				    urb->status);
+-		/* fall through */
++		fallthrough;
+ 	case 0:
+ 		break;
+ 	}
+diff --git a/drivers/net/wireless/mediatek/mt7601u/mac.c b/drivers/net/wireless/mediatek/mt7601u/mac.c
+index cad5e81fcf77..d2ee1aaa3c81 100644
+--- a/drivers/net/wireless/mediatek/mt7601u/mac.c
++++ b/drivers/net/wireless/mediatek/mt7601u/mac.c
+@@ -45,7 +45,7 @@ mt76_mac_process_tx_rate(struct ieee80211_tx_rate *txrate, u16 rate)
+ 		return;
+ 	case MT_PHY_TYPE_HT_GF:
+ 		txrate->flags |= IEEE80211_TX_RC_GREEN_FIELD;
+-		/* fall through */
++		fallthrough;
+ 	case MT_PHY_TYPE_HT:
+ 		txrate->flags |= IEEE80211_TX_RC_MCS;
+ 		txrate->idx = idx;
+@@ -419,7 +419,7 @@ mt76_mac_process_rate(struct ieee80211_rx_status *status, u16 rate)
+ 		return;
+ 	case MT_PHY_TYPE_HT_GF:
+ 		status->enc_flags |= RX_ENC_FLAG_HT_GF;
+-		/* fall through */
++		fallthrough;
+ 	case MT_PHY_TYPE_HT:
+ 		status->encoding = RX_ENC_HT;
+ 		status->rate_idx = idx;
+diff --git a/drivers/net/wireless/mediatek/mt7601u/phy.c b/drivers/net/wireless/mediatek/mt7601u/phy.c
+index d863ab4a66c9..430ae4c1d7db 100644
+--- a/drivers/net/wireless/mediatek/mt7601u/phy.c
++++ b/drivers/net/wireless/mediatek/mt7601u/phy.c
+@@ -787,7 +787,7 @@ mt7601u_phy_rf_pa_mode_val(struct mt7601u_dev *dev, int phy_mode, int tx_rate)
+ 	switch (phy_mode) {
+ 	case MT_PHY_TYPE_OFDM:
+ 		tx_rate += 4;
+-		/* fall through */
++		fallthrough;
+ 	case MT_PHY_TYPE_CCK:
+ 		reg = dev->rf_pa_mode[0];
+ 		break;
 -- 
-2.17.1
+2.27.0
 
