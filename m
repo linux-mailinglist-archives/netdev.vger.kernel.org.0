@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A370924E1DF
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 22:09:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7922024E1EE
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 22:14:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726749AbgHUUJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 16:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
+        id S1726779AbgHUUOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 16:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbgHUUJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 16:09:21 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90037C061573;
-        Fri, 21 Aug 2020 13:09:21 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id a34so1656265ybj.9;
-        Fri, 21 Aug 2020 13:09:21 -0700 (PDT)
+        with ESMTP id S1726483AbgHUUN7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 16:13:59 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD5DC061575
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 13:13:59 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id o23so3857477ejr.1
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 13:13:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=OlqUo3Dge1orlY+cxzOKP+C7gVBbYdp4PpHHz814e9c=;
-        b=WR4wVgmu2qTjwJc5qujv7bzHaNk0RvFcGAd54SXtSEm0V8FTOyTd+Xx6KhBAAp+gZK
-         YlYMtv0KuCvDcouC81zSWj0IR4D5wBBTgisW74V/8d1YBSHvYtmyqp5s9oSbRyQymBe6
-         vI2GmRQ5K7AOTco6z91rD2gXcjMqSiwo76+9NyHklfdoCKJucSCl43ThmThLdpH+6TFd
-         JkJtJzYxe9RPxqTSG/xNFlPHi47GMpHel0FR4wgy4xqlcX88GUMODtIn8gPSA6sjNrEf
-         9k8480QOYdjY6UTss7+BfDHZCjcYWBVNCdQW63Xvy3B4V1vz4LA5UcmitUrbeFD3NfCx
-         jX2Q==
+        bh=4BtYd9/pAyG1sqGYcTy0rM8tdo0b9K0n3vpfXHvN2DE=;
+        b=j1MIxYG+ikKdio/J7EEBu7O+TNel4fKx2ssCXBwf1QibUwKRpqucOcuBx8WB9+MiBp
+         yWrpVaS2g4Or8Vsgeq38loMK2o7Ehei2ZhGdshzTafjfyQPoSREWCiy0QXYZYfRIFhsT
+         rTX73zkaUPpfX9PRT8k7hafwBU0/ZL0kTf0UUf4nCTb6d68XXCqd64OJIKfV2JWombm8
+         WTvRKC3G/CXx75X6/3nsms/N8S8lVzAnUwH06hP72mPQZLr6XxUyXRvWSt0dEEaBoIAL
+         5jICYw/OQX1fLwvVhaTNQEe18HTXI5YoEY/jhuo+AvRywFaNHSFUfJHBfv8LqQl2sIo2
+         vCyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=OlqUo3Dge1orlY+cxzOKP+C7gVBbYdp4PpHHz814e9c=;
-        b=N349eTraZ5U5etKJMdcn4SYc91lB0u9OC2ufxlOsecjiYptMMzkfeJMQJwpIQjQQSZ
-         /fDsg+5tTfw8zkbhVSWQFYeU6HNsugQghr0A9eGtkp4cNFUV3VMSRPkNDYqh8ZIjD1L9
-         5Yc1Ono+p1frP/Ri4JNGjvRMmQd7YxtnfwZIZbogNXKExs58LMzT7S5V51bNrjKhC4eh
-         32t/Qn5HzyXr4Y5zXXgDAQQoOldsq+hduZzt++fNAcr+lERmNU5oZMy9dYQ712m8cqYP
-         TwgzQjOd6CQfl11LcxDyrpNOXK6jtTAJMHTKDWvzqPWhEcdLIRO36Mm7wPONnQfZBIkB
-         ZXKA==
-X-Gm-Message-State: AOAM530bPDTkILUH8YWlnjsxC/21m3WH+gXRgGQEcZwk9oiL0PPV3Uj/
-        uUjZ/l+jU4gQkJcBZlv9E/hhRUSaVv1tB6ZiMAk=
-X-Google-Smtp-Source: ABdhPJwrk1iCzTk6KzhCz09vBXaW/eTD6J/3EojIhuAb8Ds06Sge5HXnkkZ+pNjvyW/I6/8pX3Rzl9Is0s0r0dWfTdo=
-X-Received: by 2002:a25:bc50:: with SMTP id d16mr5609943ybk.230.1598040557470;
- Fri, 21 Aug 2020 13:09:17 -0700 (PDT)
+        bh=4BtYd9/pAyG1sqGYcTy0rM8tdo0b9K0n3vpfXHvN2DE=;
+        b=WscKs6ZgK2JVW07iQSsi0hlXh9+WO7pktsG3HMFJG0kHCbAHSlVbKMlrvf6/2Aycjw
+         FVesyM7hmccC/QX3kf2IxlQDXbNDsIDNQs3ZXEat6EZRhUI281fA0ZVM3kyNFMezsZcj
+         fWeJwbH0ZKZNXf6Jv+81zukEOdplqwOY0J51unzu/X5gxw6zdFH/DHDCSbUFAisuos/0
+         gMmUMn6REtvO3NaheWbJD9KbiilG0cq3HWNV0lWT4IvKS1lYctrtKrLiytHyCXoSI6r/
+         DukBtwXC+d5Zh+X8PHHD44vcF+C+j3fCVPVofS/x+VEduZFCiox3TlWYpxRWk8VayziW
+         m1Zw==
+X-Gm-Message-State: AOAM530PO4/R/uwjlJy223zwhXhNa242JLEc1gU/PFwWVDypmfQqfu07
+        fzYYY4jrthM4XIsHfM/nmF76iTZf4/tVACdc/t35
+X-Google-Smtp-Source: ABdhPJyd88CfX7VJaFvZK1tKg0a4ztk8lkZlg+SopdBDlMcFpbfuejWoSXXNsA00gY0qnev4OvuNLAl+o4ySJ/3jueM=
+X-Received: by 2002:a17:906:43c9:: with SMTP id j9mr4526810ejn.542.1598040837725;
+ Fri, 21 Aug 2020 13:13:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200821191054.714731-1-yhs@fb.com>
-In-Reply-To: <20200821191054.714731-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 21 Aug 2020 13:09:06 -0700
-Message-ID: <CAEf4BzYkHraBsaaApbaBAUsQfjnYJtnBU7EcNybzxqaHmSNBCg@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: fix a buffer out-of-bound access when filling
- raw_tp link_info
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
+References: <cover.1593198710.git.rgb@redhat.com> <01229b93733d9baf6ac9bb0cc243eeb08ad579cd.1593198710.git.rgb@redhat.com>
+ <CAHC9VhT6cLxxws_pYWcL=mWe786xPoTTFfPZ1=P4hx4V3nytXA@mail.gmail.com> <20200807171025.523i2sxfyfl7dfjy@madcap2.tricolour.ca>
+In-Reply-To: <20200807171025.523i2sxfyfl7dfjy@madcap2.tricolour.ca>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 21 Aug 2020 16:13:45 -0400
+Message-ID: <CAHC9VhQ3MVUY8Zs4GNXdaqhiPJBzHW_YcCe=DghAgo7g6yrNBw@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V9 11/13] audit: contid check descendancy and nesting
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>, aris@redhat.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 21, 2020 at 12:11 PM Yonghong Song <yhs@fb.com> wrote:
->
-> Commit f2e10bff16a0 ("bpf: Add support for BPF_OBJ_GET_INFO_BY_FD for bpf_link")
-> added link query for raw_tp. One of fields in link_info is to
-> fill a user buffer with tp_name. The Scurrent checking only
-> declares "ulen && !ubuf" as invalid. So "!ulen && ubuf" will be
-> valid. Later on, we do "copy_to_user(ubuf, tp_name, ulen - 1)" which
-> may overwrite user memory incorrectly.
->
-> This patch fixed the problem by disallowing "!ulen && ubuf" case as well.
->
-> Fixes: f2e10bff16a0 ("bpf: Add support for BPF_OBJ_GET_INFO_BY_FD for bpf_link")
-> Cc: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
->  kernel/bpf/syscall.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 86299a292214..ac6c784c0576 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2634,7 +2634,7 @@ static int bpf_raw_tp_link_fill_link_info(const struct bpf_link *link,
->         u32 ulen = info->raw_tracepoint.tp_name_len;
->         size_t tp_len = strlen(tp_name);
->
-> -       if (ulen && !ubuf)
-> +       if (!ulen ^ !ubuf)
->                 return -EINVAL;
+On Fri, Aug 7, 2020 at 1:10 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2020-07-05 11:11, Paul Moore wrote:
+> > On Sat, Jun 27, 2020 at 9:23 AM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > Require the target task to be a descendant of the container
+> > > orchestrator/engine.
 
-I think my original idea was to allow ulen == 0 && ubuf != NULL as a
-still valid way to get real ulen, but it's clearly wrong with ulen-1
-below. So instead of special-casing ulen==0 for the case I wanted to
-support, it's easier to disallow ulen==0 && ubuf!=NULL.
+If you want to get formal about this, you need to define "target" in
+the sentence above.  Target of what?
 
-So thanks for the fix!
+FWIW, I read the above to basically mean that a task can only set the
+audit container ID of processes which are beneath it in the "process
+tree" where the "process tree" is defined as the relationship between
+a parent and children processes such that the children processes are
+branches below the parent process.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+I have no problem with that, with the understanding that nesting
+complicates it somewhat.  For example, this isn't true when one of the
+children is a nested orchestrator, is it?
 
->
->         info->raw_tracepoint.tp_name_len = tp_len + 1;
-> --
-> 2.24.1
->
+> > > You would only change the audit container ID from one set or inherited
+> > > value to another if you were nesting containers.
+
+I thought we decided we were going to allow an orchestrator to move a
+process between audit container IDs, yes?  no?
+
+> > > If changing the contid, the container orchestrator/engine must be a
+> > > descendant and not same orchestrator as the one that set it so it is not
+> > > possible to change the contid of another orchestrator's container.
+
+Try rephrasing the above please, it isn't clear to me what you are
+trying to say.
+
+> Are we able to agree on the premises above?  Is anything asserted that
+> should not be and is there anything missing?
+
+See above.
+
+If you want to go back to the definitions/assumptions stage, it
+probably isn't worth worrying about the other comments until we get
+the above sorted.
+
+-- 
+paul moore
+www.paul-moore.com
