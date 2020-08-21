@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D1D424CE2F
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 08:46:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB60E24CE32
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 08:48:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727870AbgHUGqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 02:46:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46086 "EHLO mail.kernel.org"
+        id S1727791AbgHUGsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 02:48:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47926 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726119AbgHUGqR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 02:46:17 -0400
+        id S1726119AbgHUGsI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 02:48:08 -0400
 Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D5EEA20748;
-        Fri, 21 Aug 2020 06:46:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B78720748;
+        Fri, 21 Aug 2020 06:48:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597992376;
-        bh=E8/QKt/psBiZD7V2dq3ByXn++GuY707IyEPgBWV+szQ=;
+        s=default; t=1597992488;
+        bh=TnGIq0rWWRRhRPKScOtrs8fL6SIFwsJTAU40M1xoTzc=;
         h=Date:From:To:Cc:Subject:From;
-        b=0rFD/WFXI+/TBHiNQU/T93FRcCh0QW22vFPqQvpF/U2pQ+Xquq9m1332tyabfVFLt
-         eqD36Hoe0SBJpiiPBusYgi4Z78S9qHAC/VUWiHEyMv6M4KsJTQ22mkh3ZedJp2s789
-         bxowu5jFIfR59e/b0A2k9jxvQG7bd+fpb8K6KpmY=
-Date:   Fri, 21 Aug 2020 01:52:04 -0500
+        b=JOvJxLh1t2CQ4d/xcBnQdC4M/PlcgWRcQbzKImB41SdTEbYbavlIKPe/eCIOHlH3d
+         GdxiHWH/fvDeFlou3aAU7ncyo2qcFwpf51JlJZIPPpBj6naLzPWVpSiN7oOa/wcmPB
+         PdBLHlbUnvu7QiZF/VdP0pnlhh6ktUMV7lwnuQYU=
+Date:   Fri, 21 Aug 2020 01:53:55 -0500
 From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+To:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Simon Kelley <simon@thekelleys.org.uk>
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: [PATCH][next] carl9170: Use fallthrough pseudo-keyword
-Message-ID: <20200821065204.GA24827@embeddedor>
+Subject: [PATCH][next] atmel: Use fallthrough pseudo-keyword
+Message-ID: <20200821065355.GA25808@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -50,51 +50,36 @@ the new pseudo-keyword macro fallthrough[1].
 
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/net/wireless/ath/carl9170/rx.c | 2 +-
- drivers/net/wireless/ath/carl9170/tx.c | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/wireless/atmel/at76c50x-usb.c | 2 +-
+ drivers/net/wireless/atmel/atmel.c        | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/carl9170/rx.c b/drivers/net/wireless/ath/carl9170/rx.c
-index 23ab8a80c18c..908c4c8b7f82 100644
---- a/drivers/net/wireless/ath/carl9170/rx.c
-+++ b/drivers/net/wireless/ath/carl9170/rx.c
-@@ -766,7 +766,7 @@ static void carl9170_rx_untie_data(struct ar9170 *ar, u8 *buf, int len)
+diff --git a/drivers/net/wireless/atmel/at76c50x-usb.c b/drivers/net/wireless/atmel/at76c50x-usb.c
+index a63b5c2f1e17..b760c6682c4f 100644
+--- a/drivers/net/wireless/atmel/at76c50x-usb.c
++++ b/drivers/net/wireless/atmel/at76c50x-usb.c
+@@ -432,7 +432,7 @@ static int at76_usbdfu_download(struct usb_device *udev, u8 *buf, u32 size,
  
- 			goto drop;
- 		}
--		/* fall through */
-+		fallthrough;
+ 		case STATE_DFU_DOWNLOAD_IDLE:
+ 			at76_dbg(DBG_DFU, "DOWNLOAD...");
+-			/* fall through */
++			fallthrough;
+ 		case STATE_DFU_IDLE:
+ 			at76_dbg(DBG_DFU, "DFU IDLE");
  
- 	case AR9170_RX_STATUS_MPDU_MIDDLE:
- 		/*  These are just data + mac status */
-diff --git a/drivers/net/wireless/ath/carl9170/tx.c b/drivers/net/wireless/ath/carl9170/tx.c
-index 2407931440ed..8f896e1a6ad6 100644
---- a/drivers/net/wireless/ath/carl9170/tx.c
-+++ b/drivers/net/wireless/ath/carl9170/tx.c
-@@ -830,12 +830,12 @@ static bool carl9170_tx_rts_check(struct ar9170 *ar,
- 	case CARL9170_ERP_AUTO:
- 		if (ampdu)
+diff --git a/drivers/net/wireless/atmel/atmel.c b/drivers/net/wireless/atmel/atmel.c
+index d5875836068c..6c97a1af5e8e 100644
+--- a/drivers/net/wireless/atmel/atmel.c
++++ b/drivers/net/wireless/atmel/atmel.c
+@@ -1227,7 +1227,7 @@ static irqreturn_t service_interrupt(int irq, void *dev_id)
+ 
+ 		case ISR_RxFRAMELOST:
+ 			priv->wstats.discard.misc++;
+-			/* fall through */
++			fallthrough;
+ 		case ISR_RxCOMPLETE:
+ 			rx_done_irq(priv);
  			break;
--		/* fall through */
-+		fallthrough;
- 
- 	case CARL9170_ERP_MAC80211:
- 		if (!(rate->flags & IEEE80211_TX_RC_USE_RTS_CTS))
- 			break;
--		/* fall through */
-+		fallthrough;
- 
- 	case CARL9170_ERP_RTS:
- 		if (likely(!multi))
-@@ -856,7 +856,7 @@ static bool carl9170_tx_cts_check(struct ar9170 *ar,
- 	case CARL9170_ERP_MAC80211:
- 		if (!(rate->flags & IEEE80211_TX_RC_USE_CTS_PROTECT))
- 			break;
--		/* fall through */
-+		fallthrough;
- 
- 	case CARL9170_ERP_CTS:
- 		return true;
 -- 
 2.27.0
 
