@@ -2,127 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 718FF24E3B8
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 01:00:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BF8024E3BF
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 01:03:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbgHUXAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 19:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38954 "EHLO
+        id S1726825AbgHUXDP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 19:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726541AbgHUXAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 19:00:35 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF0FC061573;
-        Fri, 21 Aug 2020 16:00:34 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id d19so1668897pgl.10;
-        Fri, 21 Aug 2020 16:00:34 -0700 (PDT)
+        with ESMTP id S1726688AbgHUXDO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 19:03:14 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F92C061573;
+        Fri, 21 Aug 2020 16:03:14 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id y134so1880379yby.2;
+        Fri, 21 Aug 2020 16:03:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TCw2I4LhckzIKslySIEuB7+DYrxiWBg1FZst/Fotyz4=;
-        b=hZVidOd+0BEVo/RuP5YFEw4LqB+zyXGcvVf+BHZvrGLZrNDSIqZb94dqeYtBg7hNgD
-         4TmO7YAoX1qU9P7A7IPyeB4WOWMF8XFZUgUz2K+PumuGsbOCm6QNhhIHUG9DKFF+ZuDH
-         8U7XRkVR8lu8N9wmjDyqa9/Vabgwo25IMN42k/FrxyGbFoR1YaL/YweV1Uik2hlOc3ie
-         axlQ8v2QkOfIz4RajYkWqNGPxB3v0fIZiKEjKLc7BT2w4sHoZ/GAaACbLFnjC13YkTST
-         1b9LnMaxlvYfRb9d3U9gLi7TolmWtUsPRuvgfOP9o02WT+dBPG5lT7PkaRv9QP48wt+3
-         KoQQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QndIelKTZyhrZCQLXMh+hYGMR0IVoTsACe7ccuk1g4o=;
+        b=kdF2YGLqt0bTXX3HauXpH3bbmHRLBO9zeYDsyKHQBPiQSezcaONvt58zFFrIglfVtT
+         /2HA6NDts3dGMeta0CcVbAUL8W6Ojt6CaEBMDD1i+pSRRmbHGct3Pq1Fz9mBlisETqMR
+         Z/Aelax1cwX1peCjVfz//Iou5n6V6sDrK77Bynu1ov59MA7gPUq5SK1pfZSuwX7PPmbU
+         axO16cAOgNJQFGnT7+tYkemLnLsSl57RtP0g1PJGhRQQAOK6xXnNzeLpkFPknPot5vnY
+         3fV9edWhfXWZRqbNDFdEybD53tdC4E+rMSpK4YYePosyOwDbxdDSIBCC03WfAL39g51O
+         vHVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TCw2I4LhckzIKslySIEuB7+DYrxiWBg1FZst/Fotyz4=;
-        b=GoefnF8roDk6n3pUceHqmLeYeO7wYdPinGkLpccud1LjmGq7A41hAsJSDauSzFh/+6
-         9AYI7jpjSvl5U5pj7r2uqT9Ec8CdgtsyBaBRFMpxiUhDtQI/S6/wX59y4Pcz/gB5M9jO
-         2+gZQb4gIh2RIwWrTYpyXpfc8P5zQaP7IOyZbez9Jlk4n0sV/aqoaPPh95xLiTnCG9c/
-         7p44Lo3++IOc7qsYR1fjuFhhr/LuvLWvbiMTpaWkrETHqjNyM1vhAPgOZCSwWLencVve
-         AL+BAlGCMMxMsncq1VzyVy++cWht1FpPF6NsSZnXKylZ+zWLcC5qRHAvIB/kHFgPJlNX
-         zvAQ==
-X-Gm-Message-State: AOAM531gxM/GxV03m+7Nqgo6yUixSh2W1D+UzE9/YzcFo1F5fkhshfQ2
-        egSaIy5BlizeNRgVUlXQEd4wd93svaU=
-X-Google-Smtp-Source: ABdhPJzEJu68pmsi1N2tMPnQyVQJ/B40MgxE+Us/gMiOLRgL7urDINIgxZUdgssscEsQUhkzoM5rAA==
-X-Received: by 2002:a63:6fc6:: with SMTP id k189mr3676409pgc.165.1598050834027;
-        Fri, 21 Aug 2020 16:00:34 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:8791])
-        by smtp.gmail.com with ESMTPSA id e26sm3526618pfj.197.2020.08.21.16.00.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 16:00:33 -0700 (PDT)
-Date:   Fri, 21 Aug 2020 16:00:31 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 00/16] Add libbpf full support for BPF-to-BPF
- calls
-Message-ID: <20200821230031.3p6x7twnt4reayou@ast-mbp.dhcp.thefacebook.com>
-References: <20200820231250.1293069-1-andriin@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QndIelKTZyhrZCQLXMh+hYGMR0IVoTsACe7ccuk1g4o=;
+        b=iWgU16ZN1i7o6KKvGB3pLdZ0aYTFLSKWC0/CdSiQsFF8ZDmc/+IDl/g9UyEoDKNEvj
+         jSH87vTV3ljbOAoRTRYMbiFr9o21LmS7zt9n7yzOqbkqLl+htNXfarmj4i5SSsIe2u+k
+         f2FjnXw5vI95UrzZoVkOm9Y+CYB+vRY73MGdGB+JEtYC8phlzqiKhEW2QQ0t+samwkhS
+         L79wyAPAJ2e8HGQggc0ny4L6el5jTuoYZ+qWwbba9QazdrqQlaT80AaUioXJ/rngUOMM
+         7gDhBXVZHXiBN+Ki76P1iIVwwc5edhl/4s6UmnO0AB6Z3zn/zTp8Ys4SZWRYgczlVqhN
+         FebQ==
+X-Gm-Message-State: AOAM533kCn5ePmE1d+dTR4lxgmeLiqfF+sRfyDXoEyULELWSIB7wUac9
+        ztx5ek3d/gWzfUJjtISsWYtpcKFyGjbyNGkKWuw=
+X-Google-Smtp-Source: ABdhPJya8C0YVkSK3qm2yL9XvcMiXZ8bdwkYbMX9zeLUBpXm1lzO2Gby8Wz5JSR2SMiuZnwEjw2d4HRQSCVGOxTeU3c=
+X-Received: by 2002:a25:ae43:: with SMTP id g3mr7002244ybe.459.1598050993832;
+ Fri, 21 Aug 2020 16:03:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200820231250.1293069-1-andriin@fb.com>
+References: <20200819224030.1615203-1-haoluo@google.com> <20200819224030.1615203-6-haoluo@google.com>
+ <29b8358f-64fb-9e82-acb0-20b5922afc81@fb.com>
+In-Reply-To: <29b8358f-64fb-9e82-acb0-20b5922afc81@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 21 Aug 2020 16:03:03 -0700
+Message-ID: <CAEf4BzbmOnv1W4p2F6Ke8W_Gwi-QjtsOW8MFSifVoiaRY8jNVg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 5/8] bpf/selftests: ksyms_btf to test typed ksyms
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Hao Luo <haoluo@google.com>, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Andrey Ignatov <rdna@fb.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 20, 2020 at 04:12:34PM -0700, Andrii Nakryiko wrote:
-> Currently, libbpf supports a limited form of BPF-to-BPF subprogram calls. The
-> restriction is that entry-point BPF program should use *all* of defined
-> sub-programs in BPF .o file. If any of the subprograms is not used, such
-> entry-point BPF program will be rejected by verifier as containing unreachable
-> dead code. This is not a big limitation for cases with single entry-point BPF
-> programs, but is quite a havy restriction for multi-programs that use only
-> partially overlapping set of subprograms.
-> 
-> This patch sets removes all such restrictions and adds complete support for
-> using BPF sub-program calls on BPF side. This is achieved through libbpf
-> tracking subprograms individually and detecting which subprograms are used by
-> any given entry-point BPF program, and subsequently only appending and
-> relocating code for just those used subprograms.
-> 
-> In addition, libbpf now also supports multiple entry-point BPF programs within
-> the same ELF section. This allows to structure code so that there are few
-> variants of BPF programs of the same type and attaching to the same target
-> (e.g., for tracepoints and kprobes) without the need to worry about ELF
-> section name clashes.
-> 
-> This patch set opens way for more wider adoption of BPF subprogram calls,
-> especially for real-world production use-cases with complicated net of
-> subprograms. This will allow to further scale BPF verification process through
-> good use of global functions, which can be verified independently. This is
-> also important prerequisite for static linking which allows static BPF
-> libraries to not worry about naming clashes for section names, as well as use
-> static non-inlined functions (subprograms) without worries of verifier
-> rejecting program due to dead code.
-> 
-> Patch set is structured as follows:
-> - patches 1-5 contain various smaller improvements to logging and selftests;
-> - patched 6-11 contain all the libbpf changes necessary to support multi-prog
->   sections and bpf2bpf subcalls;
-> - patch 12 adds dedicated selftests validating all combinations of possible
->   sub-calls (within and across sections, static vs global functions);
-> - patch 13 deprecated bpf_program__title() in favor of
->   bpf_program__section_name(). The intent was to also deprecate
->   bpf_object__find_program_by_title() as it's now non-sensical with multiple
->   programs per section. But there were too many selftests uses of this and
->   I didn't want to delay this patches further and make it even bigger, so left
->   it for a follow up cleanup;
-> - patches 14-15 remove uses for title-related APIs from bpftool and
->   bpf_program__title() use from selftests;
-> - patch 16 is converting fexit_bpf2bpf to have explicit subtest (it does
->   contain 4 subtests, which are not handled as sub-tests).
+On Thu, Aug 20, 2020 at 10:32 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 8/19/20 3:40 PM, Hao Luo wrote:
+> > Selftests for typed ksyms. Tests two types of ksyms: one is a struct,
+> > the other is a plain int. This tests two paths in the kernel. Struct
+> > ksyms will be converted into PTR_TO_BTF_ID by the verifier while int
+> > typed ksyms will be converted into PTR_TO_MEM.
+> >
+> > Signed-off-by: Hao Luo <haoluo@google.com>
+> > ---
+> >   .../selftests/bpf/prog_tests/ksyms_btf.c      | 77 +++++++++++++++++++
+> >   .../selftests/bpf/progs/test_ksyms_btf.c      | 23 ++++++
+> >   2 files changed, 100 insertions(+)
+> >   create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+> >   create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_btf.c
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+> > new file mode 100644
+> > index 000000000000..1dad61ba7e99
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+> > @@ -0,0 +1,77 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Copyright (c) 2020 Google */
+> > +
+> > +#include <test_progs.h>
+> > +#include <bpf/libbpf.h>
+> > +#include <bpf/btf.h>
+> > +#include "test_ksyms_btf.skel.h"
+> > +
+> > +static int duration;
+> > +
+> > +static __u64 kallsyms_find(const char *sym)
+> > +{
+> > +     char type, name[500];
+> > +     __u64 addr, res = 0;
+> > +     FILE *f;
+> > +
+> > +     f = fopen("/proc/kallsyms", "r");
+> > +     if (CHECK(!f, "kallsyms_fopen", "failed to open: %d\n", errno))
+> > +             return 0;
+>
+> could you check whether libbpf API can provide this functionality for
+> you? As far as I know, libbpf does parse /proc/kallsyms.
 
-I've applied the first 5 patches. Cleanup of 'elf:' logs is nice.
-Thanks for doing it.
-The rest of the patches look fine as well, but minimalistic selftest is
-a bit concerning for such major update to libbpf.
-Please consider expanding the tests.
-May be cloudflare's test_cls_redirect.c can be adopted for this purpose?
-test_xdp_noinline.c can also be extended by doing two copies of
-balancer_ingress(). One to process ipv4 another ipv6.
-Then it will make libbpf to do plenty of intersting call adjustments
-and function munipulations for three programs in "xdp-test" section
-that use different sets of sub-programs.
-test_l4lb_noinline.c can be another candidate.
-The selftest that is part of this set is nice for targeted debugging, but would
-be great to see production bpf prog adopting this exciting libbpf feature.
+No need to use libbpf's implementation. We already have
+kallsyms_find() in prog_tests/ksyms.c and a combination of
+load_kallsyms() + ksym_get_addr() in trace_helpers.c. It would be good
+to switch to one implementation for both prog_tests/ksyms.c and this
+one.
+
+
+>
+> > +
+> > +     while (fscanf(f, "%llx %c %499s%*[^\n]\n", &addr, &type, name) > 0) {
+> > +             if (strcmp(name, sym) == 0) {
+> > +                     res = addr;
+> > +                     goto out;
+> > +             }
+> > +     }
+> > +
+
+[...]
+
+> > diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_btf.c b/tools/testing/selftests/bpf/progs/test_ksyms_btf.c
+> > new file mode 100644
+> > index 000000000000..e04e31117f84
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/test_ksyms_btf.c
+> > @@ -0,0 +1,23 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Copyright (c) 2020 Google */
+> > +
+> > +#include "vmlinux.h"
+> > +
+> > +#include <bpf/bpf_helpers.h>
+> > +
+> > +__u64 out__runqueues = -1;
+> > +__u64 out__bpf_prog_active = -1;
+> > +
+> > +extern const struct rq runqueues __ksym; /* struct type global var. */
+> > +extern const int bpf_prog_active __ksym; /* int type global var. */
+> > +
+> > +SEC("raw_tp/sys_enter")
+> > +int handler(const void *ctx)
+> > +{
+> > +     out__runqueues = (__u64)&runqueues;
+> > +     out__bpf_prog_active = (__u64)&bpf_prog_active;
+> > +
+
+You didn't test accessing any of the members of runqueues, because BTF
+only has per-CPU variables, right? Adding global/static variables was
+adding too much data to BTF or something like that, is that right?
+
+> > +     return 0;
+> > +}
+> > +
+> > +char _license[] SEC("license") = "GPL";
+> >
