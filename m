@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 482D424E368
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 00:29:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCA3E24E36C
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 00:30:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727087AbgHUW3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 18:29:34 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:13171 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726773AbgHUW3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 18:29:34 -0400
+        id S1727077AbgHUWaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 18:30:20 -0400
+Received: from smtp-fw-4101.amazon.com ([72.21.198.25]:30896 "EHLO
+        smtp-fw-4101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726747AbgHUWaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 18:30:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1598048972; x=1629584972;
+  t=1598049020; x=1629585020;
   h=date:from:to:subject:message-id:references:mime-version:
    in-reply-to;
-  bh=0l+CXtX6lcZ9WB2ya1Fw3XHogwe7aFcEY8gTvIE6+gU=;
-  b=BLcenG1fHzerVehod+oxsFTwyuS+9v1c8mYhZ3ojDMCGLUfM+UOnlsPK
-   f5+yjvbrY7S3CN/fNvURZpsRQfuxwrKYpvTsEn8RVI9u8HLNaH7slmhgB
-   AG08WZApOlCjx0aX3vJepoA2Djc6X5jsbU38fVGN+GAm5nGu+j9LWZpXo
-   c=;
+  bh=YPGbk1ro99+2byQqY7wPsPaRaSmgzuUay7e4tUoB1AM=;
+  b=Y0GwpSGFmXYdsWq+z4vz6YIJHIaIMEhXEyPR1F38J/jYNhI4dwoK55gM
+   gzqqBGmRkvB3cn/X6nne40JI30uYbFIBgiA0iL7Xhq8vk08mnsCHMyIaK
+   nYQMptdlbsflRcsvfsF8yX5yskkowFXllvR96x9X8S1sTI7lyC32Bsl/9
+   w=;
 X-IronPort-AV: E=Sophos;i="5.76,338,1592870400"; 
-   d="scan'208";a="50742767"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-cc689b93.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 21 Aug 2020 22:29:29 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2c-cc689b93.us-west-2.amazon.com (Postfix) with ESMTPS id C9F43120F51;
-        Fri, 21 Aug 2020 22:29:22 +0000 (UTC)
-Received: from EX13D01UWA001.ant.amazon.com (10.43.160.60) by
- EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 21 Aug 2020 22:29:15 +0000
-Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX13d01UWA001.ant.amazon.com (10.43.160.60) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Fri, 21 Aug 2020 22:29:15 +0000
+   d="scan'208";a="49403800"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-5dd976cd.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-4101.iad4.amazon.com with ESMTP; 21 Aug 2020 22:30:19 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1d-5dd976cd.us-east-1.amazon.com (Postfix) with ESMTPS id 06E32A2486;
+        Fri, 21 Aug 2020 22:30:11 +0000 (UTC)
+Received: from EX13D05UWC003.ant.amazon.com (10.43.162.226) by
+ EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 21 Aug 2020 22:29:55 +0000
+Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
+ EX13D05UWC003.ant.amazon.com (10.43.162.226) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 21 Aug 2020 22:29:55 +0000
 Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Fri, 21 Aug 2020 22:29:15 +0000
+ (172.22.96.68) by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Fri, 21 Aug 2020 22:29:54 +0000
 Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id AEB9140362; Fri, 21 Aug 2020 22:29:15 +0000 (UTC)
-Date:   Fri, 21 Aug 2020 22:29:15 +0000
+        id 3480C40362; Fri, 21 Aug 2020 22:29:55 +0000 (UTC)
+Date:   Fri, 21 Aug 2020 22:29:55 +0000
 From:   Anchal Agarwal <anchalag@amazon.com>
 To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
@@ -53,9 +53,9 @@ To:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
         <vkuznets@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <dwmw@amazon.co.uk>,
         <benh@kernel.crashing.org>
-Subject: [PATCH v3 07/11] xen-netfront: add callbacks for PM suspend and
+Subject: [PATCH v3 08/11] x86/xen: save and restore steal clock during PM
  hibernation
-Message-ID: <cb5805d0f91e31c0b9caeae2ea66546b0d6c876c.1598042152.git.anchalag@amazon.com>
+Message-ID: <5c3be5c7519b1f63a51b08abc388c33bd6f66661.1598042152.git.anchalag@amazon.com>
 References: <cover.1598042152.git.anchalag@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -67,207 +67,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Munehisa Kamata <kamatam@amazon.com>
+Save/restore steal times in syscore suspend/resume during PM
+hibernation. Commit '5e25f5db6abb9: ("xen/time: do not
+decrease steal time after live migration on xen")' fixes xen
+guest steal time handling during migration. A similar issue is seen
+during PM hibernation.
+Currently, steal time accounting code in scheduler expects steal clock
+callback to provide monotonically increasing value. If the accounting
+code receives a smaller value than previous one, it uses a negative
+value to calculate steal time and results in incorrectly updated idle
+and steal time accounting. This breaks userspace tools which read
+/proc/stat.
 
-Add freeze, thaw and restore callbacks for PM suspend and hibernation
-support. The freeze handler simply disconnects the frotnend from the
-backend and frees resources associated with queues after disabling the
-net_device from the system. The restore handler just changes the
-frontend state and let the xenbus handler to re-allocate the resources
-and re-connect to the backend. This can be performed transparently to
-the rest of the system. The handlers are used for both PM suspend and
-hibernation so that we can keep the existing suspend/resume callbacks
-for Xen suspend without modification. Freezing netfront devices is
-normally expected to finish within a few hundred milliseconds, but it
-can rarely take more than 5 seconds and hit the hard coded timeout,
-it would depend on backend state which may be congested and/or have
-complex configuration. While it's rare case, longer default timeout
-seems a bit more reasonable here to avoid hitting the timeout.
-Also, make it configurable via module parameter so that we can cover
-broader setups than what we know currently.
+top - 08:05:35 up  2:12,  3 users,  load average: 0.00, 0.07, 0.23
+Tasks:  80 total,   1 running,  79 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,30100.0%id,  0.0%wa,  0.0%hi, 0.0%si,-1253874204672.0%st
 
-[Anchal Agarwal: Changelog]:
-RFCv1->RFCv2: Variable name fix and checkpatch.pl fixes]
-v2->v3: Resolved merge conflicts
+This can actually happen when a Xen PVHVM guest gets restored from
+hibernation, because such a restored guest is just a fresh domain from
+Xen perspective and the time information in runstate info starts over
+from scratch.
+
+Changelog:
+v1->v2: Removed patches that introduced new function calls for saving/restoring
+        sched clock offset and using existing ones that are used during LM
 
 Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
-Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
 ---
- drivers/net/xen-netfront.c | 96 +++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 95 insertions(+), 1 deletion(-)
+ arch/x86/xen/suspend.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 458be6882b98..3ea3ecc6e0d3 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -47,6 +47,7 @@
- #include <linux/bpf.h>
- #include <net/page_pool.h>
- #include <linux/bpf_trace.h>
-+#include <linux/completion.h>
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index 550aa0fc9465..b12db6966af6 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -99,6 +99,7 @@ static int xen_syscore_suspend(void)
  
- #include <xen/xen.h>
- #include <xen/xenbus.h>
-@@ -59,6 +60,12 @@
- #include <xen/interface/memory.h>
- #include <xen/interface/grant_table.h>
+ 	gnttab_suspend();
  
-+enum netif_freeze_state {
-+	NETIF_FREEZE_STATE_UNFROZEN,
-+	NETIF_FREEZE_STATE_FREEZING,
-+	NETIF_FREEZE_STATE_FROZEN,
-+};
-+
- /* Module parameters */
- #define MAX_QUEUES_DEFAULT 8
- static unsigned int xennet_max_queues;
-@@ -68,6 +75,12 @@ MODULE_PARM_DESC(max_queues,
++	xen_manage_runstate_time(-1);
+ 	xrfp.domid = DOMID_SELF;
+ 	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
  
- #define XENNET_TIMEOUT  (5 * HZ)
+@@ -119,7 +120,7 @@ static void xen_syscore_resume(void)
+ 	xen_hvm_map_shared_info();
  
-+static unsigned int netfront_freeze_timeout_secs = 10;
-+module_param_named(freeze_timeout_secs,
-+		   netfront_freeze_timeout_secs, uint, 0644);
-+MODULE_PARM_DESC(freeze_timeout_secs,
-+		 "timeout when freezing netfront device in seconds");
-+
- static const struct ethtool_ops xennet_ethtool_ops;
- 
- struct netfront_cb {
-@@ -174,6 +187,9 @@ struct netfront_info {
- 	bool netfront_xdp_enabled;
- 
- 	atomic_t rx_gso_checksum_fixup;
-+
-+	int freeze_state;
-+	struct completion wait_backend_disconnected;
- };
- 
- struct netfront_rx_info {
-@@ -798,6 +814,21 @@ static int xennet_close(struct net_device *dev)
- 	return 0;
+ 	pvclock_resume();
+-
++	xen_manage_runstate_time(0);
+ 	gnttab_resume();
  }
- 
-+static int xennet_disable_interrupts(struct net_device *dev)
-+{
-+	struct netfront_info *np = netdev_priv(dev);
-+	unsigned int num_queues = dev->real_num_tx_queues;
-+	unsigned int queue_index;
-+	struct netfront_queue *queue;
-+
-+	for (queue_index = 0; queue_index < num_queues; ++queue_index) {
-+		queue = &np->queues[queue_index];
-+		disable_irq(queue->tx_irq);
-+		disable_irq(queue->rx_irq);
-+	}
-+	return 0;
-+}
-+
- static void xennet_move_rx_slot(struct netfront_queue *queue, struct sk_buff *skb,
- 				grant_ref_t ref)
- {
-@@ -1532,6 +1563,8 @@ static struct net_device *xennet_create_dev(struct xenbus_device *dev)
- 
- 	np->queues = NULL;
- 
-+	init_completion(&np->wait_backend_disconnected);
-+
- 	err = -ENOMEM;
- 	np->rx_stats = netdev_alloc_pcpu_stats(struct netfront_stats);
- 	if (np->rx_stats == NULL)
-@@ -2084,6 +2117,50 @@ static int xennet_create_queues(struct netfront_info *info,
- 	return 0;
- }
- 
-+static int netfront_freeze(struct xenbus_device *dev)
-+{
-+	struct netfront_info *info = dev_get_drvdata(&dev->dev);
-+	unsigned long timeout = netfront_freeze_timeout_secs * HZ;
-+	int err = 0;
-+
-+	xennet_disable_interrupts(info->netdev);
-+
-+	netif_device_detach(info->netdev);
-+
-+	info->freeze_state = NETIF_FREEZE_STATE_FREEZING;
-+
-+	/* Kick the backend to disconnect */
-+	xenbus_switch_state(dev, XenbusStateClosing);
-+
-+	/* We don't want to move forward before the frontend is diconnected
-+	 * from the backend cleanly.
-+	 */
-+	timeout = wait_for_completion_timeout(&info->wait_backend_disconnected,
-+					      timeout);
-+	if (!timeout) {
-+		err = -EBUSY;
-+		xenbus_dev_error(dev, err, "Freezing timed out;"
-+					"the device may become inconsistent state");
-+		return err;
-+	}
-+
-+	/* Tear down queues */
-+	xennet_disconnect_backend(info);
-+	xennet_destroy_queues(info);
-+
-+	info->freeze_state = NETIF_FREEZE_STATE_FROZEN;
-+
-+	return err;
-+}
-+
-+static int netfront_restore(struct xenbus_device *dev)
-+{
-+	/* Kick the backend to re-connect */
-+	xenbus_switch_state(dev, XenbusStateInitialising);
-+
-+	return 0;
-+}
-+
- /* Common code used when first setting up, and when resuming. */
- static int talk_to_netback(struct xenbus_device *dev,
- 			   struct netfront_info *info)
-@@ -2302,6 +2379,8 @@ static int xennet_connect(struct net_device *dev)
- 		spin_unlock_bh(&queue->rx_lock);
- 	}
- 
-+	np->freeze_state = NETIF_FREEZE_STATE_UNFROZEN;
-+
- 	return 0;
- }
- 
-@@ -2339,10 +2418,22 @@ static void netback_changed(struct xenbus_device *dev,
- 		break;
- 
- 	case XenbusStateClosed:
--		if (dev->state == XenbusStateClosed)
-+		if (dev->state == XenbusStateClosed) {
-+			/* dpm context is waiting for the backend */
-+			if (np->freeze_state == NETIF_FREEZE_STATE_FREEZING)
-+				complete(&np->wait_backend_disconnected);
- 			break;
-+		}
- 		/* Fall through - Missed the backend's CLOSING state. */
- 	case XenbusStateClosing:
-+		/* We may see unexpected Closed or Closing from the backend.
-+		 * Just ignore it not to prevent the frontend from being
-+		 * re-connected in the case of PM suspend or hibernation.
-+		 */
-+		if (np->freeze_state == NETIF_FREEZE_STATE_FROZEN &&
-+		    dev->state == XenbusStateInitialising) {
-+			break;
-+		}
- 		xenbus_frontend_closed(dev);
- 		break;
- 	}
-@@ -2505,6 +2596,9 @@ static struct xenbus_driver netfront_driver = {
- 	.probe = netfront_probe,
- 	.remove = xennet_remove,
- 	.resume = netfront_resume,
-+	.freeze = netfront_freeze,
-+	.thaw   = netfront_restore,
-+	.restore = netfront_restore,
- 	.otherend_changed = netback_changed,
- };
  
 -- 
 2.16.6
