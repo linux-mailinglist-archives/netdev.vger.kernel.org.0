@@ -2,61 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB19524E1A8
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 22:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A6224E1D9
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 22:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726118AbgHUUAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 16:00:24 -0400
-Received: from mga01.intel.com ([192.55.52.88]:43147 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727911AbgHUUAF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 16:00:05 -0400
-IronPort-SDR: 8P6kU+MckdU+9S2alNxs1OpT1t6V2yP80SokVYu/qOA8NFvmHsIfp2M0BOuFuBhmqDgckZ5+of
- ApB6z7l7Roow==
-X-IronPort-AV: E=McAfee;i="6000,8403,9720"; a="173658091"
-X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
-   d="scan'208";a="173658091"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 13:00:04 -0700
-IronPort-SDR: 1p/Ld3AkZUSG+9b5TCmdowHXQj03+FuyTou6E+/jXVNJI5mrGt9UqGgC+5kQAplbMi4bt9/S+g
- c+9ZW+MlnFsA==
-X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
-   d="scan'208";a="298045300"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.38.54])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 13:00:03 -0700
-Date:   Fri, 21 Aug 2020 13:00:02 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Murali Karicheri <m-karicheri2@ti.com>
-Cc:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <grygorii.strashko@ti.com>, <nsekhar@ti.com>,
-        <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [net v2 PATCH 2/2] net: ethernet: ti: cpsw_new: fix clean up of
- vlan mc entries for host port
-Message-ID: <20200821130002.00002367@intel.com>
-In-Reply-To: <20200821134912.30008-2-m-karicheri2@ti.com>
-References: <20200821134912.30008-1-m-karicheri2@ti.com>
-        <20200821134912.30008-2-m-karicheri2@ti.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1726734AbgHUUHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 16:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725801AbgHUUHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 16:07:09 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27060C061573;
+        Fri, 21 Aug 2020 13:07:09 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id p25so2476494qkp.2;
+        Fri, 21 Aug 2020 13:07:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/H8qllaBl7DvCB5chhhsKMOAdwJTij5vEFUx78aFoUs=;
+        b=rOIV6Pq5roz+puOb0ywKNBInjRb6mDoOV4rlPMppSnR4aPCcH9Zik0NJCQAvEeXLnn
+         RiR64GUs1T35QGLrVC0UaOxKmn6YkzDjLziykdcN5LIRxGZUaf8PPGTRdAtRZYxVNUQ7
+         fG8t6+Ps5FBtuIz5m4WzL8SfXB/ygB7Gah9oMvopdbAlVDeJZWbD5ImLwKR2hEABBpoT
+         Mv6V+xclg86ntCdlbsVnAnEZHQc4zpA5h0LmYZETnD5mijc3/Lh05yOCBP/VVikJ6HcD
+         h3ao4KkGz45+I/Xsud6uHE300Io7XaTf0N237LiiFkUY5gtvGZ9u0W5VXfGk8kWsR6ZV
+         7Pyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/H8qllaBl7DvCB5chhhsKMOAdwJTij5vEFUx78aFoUs=;
+        b=mTTCausQi2vK26sT2kqWa1kj1auLQDKlMO6QmlU3J8Vy21q185nAQYkXT6mQSAjRqT
+         I+ZgWlmWQozWWZcCZ9+yoMWO7wGKsyd6p8/qTHkBbVRJs7n+H1aRSovejK3dtPStjsnv
+         PZJJ9aavKatucMT1pFoGavLVbGDhQifMpoGCfaJ4pLy4CLX0JbFp62FgFSwQV6EjsZm6
+         anoXLriQzUnSiNmkfGsfUteShJfjahkdtllULpZky8s/oHiIW4/wMIgjW6cVY4Um5caK
+         K+LDWI1bB5ZH7vySpSoL7u4zhm3Z80Yo2wmRbvt1nHh6pauslmO420x6am7Vl/MFjQee
+         ZD4Q==
+X-Gm-Message-State: AOAM530DDGR4YeACjsF2FJKaeLmrqHbM72Hx5m65qXL+PwNl8cnUqJ5R
+        2bHW0j920079+9NVFAlWIAs=
+X-Google-Smtp-Source: ABdhPJxuVicpRWYmfEU/Z8B/wJ4BDMVE4SGZZRXa2olmw3TLvF6R+eJW02ueEh6KmTXRCQcvS3vLaA==
+X-Received: by 2002:a37:9b91:: with SMTP id d139mr4011202qke.377.1598040427922;
+        Fri, 21 Aug 2020 13:07:07 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.48.246])
+        by smtp.gmail.com with ESMTPSA id k1sm2621289qkf.12.2020.08.21.13.07.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Aug 2020 13:07:07 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id E9F2DC35FC; Fri, 21 Aug 2020 17:07:04 -0300 (-03)
+Date:   Fri, 21 Aug 2020 17:07:04 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
+        Neil Horman <nhorman@tuxdriver.com>
+Subject: Re: [PATCHv2 net] sctp: not disable bh in the whole
+ sctp_get_port_local()
+Message-ID: <20200821200704.GM3399@localhost.localdomain>
+References: <08a14c2f087153c18c67965cc37ed2ac22da18ed.1597993178.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <08a14c2f087153c18c67965cc37ed2ac22da18ed.1597993178.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Murali Karicheri wrote:
-
-> To flush the vid + mc entries from ALE, which is required when a VLAN
-> interface is removed, driver needs to call cpsw_ale_flush_multicast()
-> with ALE_PORT_HOST for port mask as these entries are added only for
-> host port. Without this, these entries remain in the ALE table even
-> after removing the VLAN interface. cpsw_ale_flush_multicast() calls
-> cpsw_ale_flush_mcast which expects a port mask to do the job.
+On Fri, Aug 21, 2020 at 02:59:38PM +0800, Xin Long wrote:
+> With disabling bh in the whole sctp_get_port_local(), when
+> snum == 0 and too many ports have been used, the do-while
+> loop will take the cpu for a long time and cause cpu stuck:
 > 
-> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+>   [ ] watchdog: BUG: soft lockup - CPU#11 stuck for 22s!
+>   [ ] RIP: 0010:native_queued_spin_lock_slowpath+0x4de/0x940
+>   [ ] Call Trace:
+>   [ ]  _raw_spin_lock+0xc1/0xd0
+>   [ ]  sctp_get_port_local+0x527/0x650 [sctp]
+>   [ ]  sctp_do_bind+0x208/0x5e0 [sctp]
+>   [ ]  sctp_autobind+0x165/0x1e0 [sctp]
+>   [ ]  sctp_connect_new_asoc+0x355/0x480 [sctp]
+>   [ ]  __sctp_connect+0x360/0xb10 [sctp]
+> 
+> There's no need to disable bh in the whole function of
+> sctp_get_port_local. So fix this cpu stuck by removing
+> local_bh_disable() called at the beginning, and using
+> spin_lock_bh() instead.
+> 
+> The same thing was actually done for inet_csk_get_port() in
+> Commit ea8add2b1903 ("tcp/dccp: better use of ephemeral
+> ports in bind()").
+> 
+> Thanks to Marcelo for pointing the buggy code out.
+> 
+> v1->v2:
+>   - use cond_resched() to yield cpu to other tasks if needed,
+>     as Eric noticed.
 
-Patch looks good but please resend with a Fixes: tag.
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
