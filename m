@@ -2,92 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A551424D77F
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 16:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EFF324D783
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 16:43:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727889AbgHUOmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 10:42:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44628 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726610AbgHUOmK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 10:42:10 -0400
-Received: from coco.lan (ip5f5ad5bf.dynamic.kabel-deutschland.de [95.90.213.191])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 05D512078B;
-        Fri, 21 Aug 2020 14:42:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598020928;
-        bh=oZnskDyx49feGRU1KivrlcX9Ad2+BpqnA5lPTA64O8U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TM5fK7GvQnAs4QuEft/iwxbpoY78lVyQ499aIFK9Sa67v+FeZFjpsiiZREgfmjpP7
-         F3wg8pER3AL0vqDXvCJz2TcQ0e0v2xkCaUoU0CrC5EmmIP99YKxfqHltzvoTX1ZBz7
-         /XGjEqvRbxj0QEnDxNw/MfGzBLR1d5g80zBFWmO8=
-Date:   Fri, 21 Aug 2020 16:41:58 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Sam Ravnborg <sam@ravnborg.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Xinliang Liu <xinliang.liu@linaro.org>,
-        Wanchun Zheng <zhengwanchun@hisilicon.com>,
-        linuxarm@huawei.com, dri-devel <dri-devel@lists.freedesktop.org>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        devel@driverdev.osuosl.org, Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Xiubin Zhang <zhangxiubin1@huawei.com>,
-        Wei Xu <xuwei5@hisilicon.com>, David Airlie <airlied@linux.ie>,
-        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Bogdan Togorean <bogdan.togorean@analog.com>,
-        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        Liwei Cai <cailiwei@hisilicon.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Chen Feng <puck.chen@hisilicon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        linaro-mm-sig@lists.linaro.org, Rob Herring <robh+dt@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, mauro.chehab@huawei.com,
-        Rob Clark <robdclark@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Liuyao An <anliuyao@huawei.com>,
-        Rongrong Zou <zourongrong@gmail.com>, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
-Message-ID: <20200821164158.22777f95@coco.lan>
-In-Reply-To: <20200819173558.GA3733@ravnborg.org>
-References: <cover.1597833138.git.mchehab+huawei@kernel.org>
-        <20200819152120.GA106437@ravnborg.org>
-        <20200819174027.70b39ee9@coco.lan>
-        <20200819173558.GA3733@ravnborg.org>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1727836AbgHUOnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 10:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726118AbgHUOnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 10:43:24 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0A2EC061573;
+        Fri, 21 Aug 2020 07:43:23 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id y6so968040plt.3;
+        Fri, 21 Aug 2020 07:43:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=KxSiaalwJaME4ZfRAha7YffGpv+JyYBz2E05xYHBT9o=;
+        b=RDvtAUTu0zgMV7yaQDSc9aYO/XI5MPDNeFekaOswDUpcu94OPV5HdA0a54YLa2yA7L
+         AL0GDo8vxaDZK9LXJ2179GGJHLSA+j3VQLOwzwf15/ZaZHncVvImEdpjrRIe3bfsefor
+         GfzvK10EgBFAt6ZZaTpgtx4CQKjkghmQ38XIhN4I/F1bozSWtTJSKc1V1FPrSCe9Yc+1
+         OBGlVWBAdX37jy3efbhRvs7rmaKNZNS36HoT6j2UfD2AhiOhfngZVXjxFwVU/ciblhFS
+         FW92LJrc4Z8Lmw1pcUlHM9eLuE4kHoHG8jwozUNPHRPlkEIT/V7vJVF3R5DNaMRU0tfh
+         4mYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=KxSiaalwJaME4ZfRAha7YffGpv+JyYBz2E05xYHBT9o=;
+        b=PvGnpLOu6Ugh4ToaN9MO2SIggFI4mykgxq7+ZD6/D7UaKJ6izw0v6WexWh/JON5Tue
+         2oRNlBFxPT4gEmh+y7Rl10gycyd9tXtMqevaKZiRaUOCZpBOTWJv+E7mK3ebZI6nji8I
+         cyhR+8zhTM5Mz6ejvZrjK7e5mtnP9k9fjcQNSgu3outtw6WbuEvaFFa842tJSRntJVGC
+         9T0HTw9eEcJUE/1w3Of/nHGN1KrYUeRbkMl4cRDA5NMwST82FgmG/J3GbnGIzjfVm+bX
+         hBIdoaaxZFaJ80LDrxVwpoWYvbLzryXFEzhmoRCQmkB+0pDgQaf+Knozadz6P93sCBR5
+         rK5A==
+X-Gm-Message-State: AOAM530grrcXTqEdhESSyqkcetF1yjFA3qPnkcWNAXL3lUoS70oas0/I
+        nL9+00oxP0LsBz4xB6ZrtoZZYoDQMfg=
+X-Google-Smtp-Source: ABdhPJxgldVhE1PcofC9mYkwJyVlEM4WbizC8HPHrqcEoChF65VDb1ZOAavOBDNY96gC3+eObka9Lg==
+X-Received: by 2002:a17:902:221:: with SMTP id 30mr2674485plc.222.1598021002532;
+        Fri, 21 Aug 2020 07:43:22 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id n26sm2795181pff.30.2020.08.21.07.43.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Aug 2020 07:43:21 -0700 (PDT)
+Subject: Re: [PATCH] net: dsa: b53: check for timeout
+To:     trix@redhat.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200821135600.18017-1-trix@redhat.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <b249a607-8963-f6c4-3852-0160b72427fc@gmail.com>
+Date:   Fri, 21 Aug 2020 07:43:20 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200821135600.18017-1-trix@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Another quick question:
 
-Em Wed, 19 Aug 2020 19:35:58 +0200
-Sam Ravnborg <sam@ravnborg.org> escreveu:
 
-> > +#define DSS_REDUCE(x)	((x) > 0 ? ((x) - 1) : (x))  
-> Use generic macros for this?
+On 8/21/2020 6:56 AM, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> clang static analysis reports this problem
+> 
+> b53_common.c:1583:13: warning: The left expression of the compound
+>    assignment is an uninitialized value. The computed value will
+>    also be garbage
+>          ent.port &= ~BIT(port);
+>          ~~~~~~~~ ^
+> 
+> ent is set by a successful call to b53_arl_read().  Unsuccessful
+> calls are caught by an switch statement handling specific returns.
+> b32_arl_read() calls b53_arl_op_wait() which fails with the
+> unhandled -ETIMEDOUT.
+> 
+> So add -ETIMEDOUT to the switch statement.  Because
+> b53_arl_op_wait() already prints out a message, do not add another
+> one.
+> 
+> Fixes: 1da6df85c6fb ("net: dsa: b53: Implement ARL add/del/dump operations")
 
-Do you know a generic macro similar to this? Or do you mean adding
-it to include/kernel.h?
+For future submissions: no need for a newline between your tags here, 
+the Fixes tag is just a regular tag in the commit message.
 
-There are the atomic sub ones, but doesn't make sense here.
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
-The closest one I found was min_not_zero(), but this would
-take two args.
-
-Btw, I agree that the name here is a bit odd... I would
-have called such macro as 'dec_not_zero()'.
-
-Thanks,
-Mauro
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
