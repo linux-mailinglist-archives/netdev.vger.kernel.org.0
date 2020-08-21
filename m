@@ -2,80 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A527A24E14E
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 21:55:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AE3324E157
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 21:55:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbgHUTzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 15:55:02 -0400
-Received: from mga07.intel.com ([134.134.136.100]:62120 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726779AbgHUTyO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 15:54:14 -0400
-IronPort-SDR: CMQ8kCqn4spD6VXHuxOq8O4gUROR4pzuVEFtlPkClC10CTFXfmTTQXmuxcdn+nRutUxn8xLng4
- 7A50roCmysjw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9720"; a="219899755"
-X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
-   d="scan'208";a="219899755"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 12:54:12 -0700
-IronPort-SDR: 076Of3LciIw7/GB5bOZ8fvDae1vsHWXBgPvifTvTdUci2onh/Q3cbkCwEeLN4S/dumQZGN6h1H
- k2ZiLLWvsMtQ==
-X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
-   d="scan'208";a="298043991"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.38.54])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 12:54:12 -0700
-Date:   Fri, 21 Aug 2020 12:54:10 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>
-Subject: Re: [PATCH v6 net-next 00/10] qed: introduce devlink health support
-Message-ID: <20200821125410.00005c08@intel.com>
-In-Reply-To: <20200820185204.652-1-irusskikh@marvell.com>
-References: <20200820185204.652-1-irusskikh@marvell.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1726990AbgHUTzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 15:55:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726971AbgHUTzR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 15:55:17 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9435AC061573;
+        Fri, 21 Aug 2020 12:55:17 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1A3B6128911D4;
+        Fri, 21 Aug 2020 12:38:28 -0700 (PDT)
+Date:   Fri, 21 Aug 2020 12:55:08 -0700 (PDT)
+Message-Id: <20200821.125508.1308628373006121882.davem@davemloft.net>
+To:     alexei.starovoitov@gmail.com
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: pull-request: bpf 2020-08-21
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200821194949.71179-1-alexei.starovoitov@gmail.com>
+References: <20200821194949.71179-1-alexei.starovoitov@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 21 Aug 2020 12:38:28 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Igor Russkikh wrote:
+From: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date: Fri, 21 Aug 2020 12:49:49 -0700
 
-> This is a followup implementation after series
+> The following pull-request contains BPF updates for your *net* tree.
 > 
-> https://patchwork.ozlabs.org/project/netdev/cover/20200514095727.1361-1-irusskikh@marvell.com/
+> We've added 11 non-merge commits during the last 5 day(s) which contain
+> a total of 12 files changed, 78 insertions(+), 24 deletions(-).
 > 
-> This is an implementation of devlink health infrastructure.
+> The main changes are:
 > 
-> With this we are now able to report HW errors to devlink, and it'll take
-> its own actions depending on user configuration to capture and store the
-> dump at the bad moment, and to request the driver to recover the device.
+> 1) three fixes in BPF task iterator logic, from Yonghong.
 > 
-> So far we do not differentiate global device failures or specific PCI
-> function failures. This means that some errors specific to one physical
-> function will affect an entire device. This is not yet fully designed
-> and verified, will followup in future.
+> 2) fix for compressed dwarf sections in vmlinux, from Jiri.
 > 
-> Solution was verified with artificial HW errors generated, existing
-> tools for dump analysis could be used.
+> 3) fix xdp attach regression, from Andrii.
 > 
-> v6: patch 4: changing serial to board.serial and fw to fw.app
-> v5: improved patch 4 description
-> v4:
->  - commit message and other fixes after Jiri's comments
->  - removed one patch (will send to net)
-> v3: fix uninit var usage in patch 11
-> v2: fix #include issue from kbuild test robot.
+> Please consider pulling these changes from:
 > 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
 
-I think you're really close, please address the two patches I had
-comments on and then I'd say you can add my Reviewed-by. 
-
-
+Pulled, thank you.
