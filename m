@@ -2,269 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EE8624D25B
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 12:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 930C224D25E
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 12:31:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbgHUKaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 06:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35292 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728629AbgHUKa0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 06:30:26 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384E4C061388
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 03:30:19 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id 83so1332542wme.4
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 03:30:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ljj6mTtU91lq7b/TfTSVrxl5C/pW9YScENl9tsdXqbE=;
-        b=R6p7I49mAyk1+W/1Y8Pnkj+mPEMAav3VZSQytD31wbItfpPh1Qs0BJRa8ngMSMmjVq
-         lsT3jzTRAxyRpyrFWE4AEx/R/OIiq4h52+GF1ZVtXGRHSjxdRyzllAiImC/uBP6TtXnM
-         wkVWRM2JUBizEGV5pleLWeCgkBHVUm4VjMoLs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ljj6mTtU91lq7b/TfTSVrxl5C/pW9YScENl9tsdXqbE=;
-        b=FY5Ji1zFIll2kVEf8ZHV5KcL5EpQ47jPoRhG2kZW1KNv0oFqimRfV3Bq/9TgI2FLZX
-         odhbxKgqyQg/UAXWTESWq7QGI54Vyv3jkmTHPMilYvswJ1tJqpLx+3T7q3fU9n1JVrF6
-         0/muO63+8jx4H6xJZTaga0YfAnsrj4FuOsZPWBdvKGMMcfYcry6wCY3zvy59sv6mOlAT
-         9QhNMlILpVWrxGXtc2zAtjsBiyhRs4SDt4INkuUe75LExmZWu+lXCK4HFpUPuq2hTz7H
-         ZMUQ5Q9tA8+5QIow1HDe9VBKJnmsufoHBvIfV0L5Ehb0fX3PQq3KfmVUeyBJw4x9KY3o
-         DXOg==
-X-Gm-Message-State: AOAM5331iyPEQK0mcBN7Uwn3+a06xqpl2xKRBXdT/0iR3HSh0s8rpzFN
-        5c5I/h8RO0Fh3WRFYMf3Tr/57A==
-X-Google-Smtp-Source: ABdhPJz9f3ah9Zo/6HnA8IeHmu273+Rifoigfi0sKLMZW8R0SQvk9WprxK0NUVRIpTs//b2yLmRzdg==
-X-Received: by 2002:a1c:9803:: with SMTP id a3mr2979278wme.57.1598005817804;
-        Fri, 21 Aug 2020 03:30:17 -0700 (PDT)
-Received: from antares.lan (2.2.9.a.d.9.4.f.6.1.8.9.f.9.8.5.f.f.6.2.a.5.a.7.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:7a5a:26ff:589f:9816:f49d:a922])
-        by smtp.gmail.com with ESMTPSA id o2sm3296885wrj.21.2020.08.21.03.30.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 03:30:17 -0700 (PDT)
-From:   Lorenz Bauer <lmb@cloudflare.com>
-To:     jakub@cloudflare.com, john.fastabend@gmail.com, yhs@fb.com,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     kernel-team@cloudflare.com, Lorenz Bauer <lmb@cloudflare.com>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next v3 6/6] selftests: bpf: test sockmap update from BPF
-Date:   Fri, 21 Aug 2020 11:29:48 +0100
-Message-Id: <20200821102948.21918-7-lmb@cloudflare.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200821102948.21918-1-lmb@cloudflare.com>
-References: <20200821102948.21918-1-lmb@cloudflare.com>
+        id S1728630AbgHUKat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 06:30:49 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:42217 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728631AbgHUKaa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 06:30:30 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 8BA75580370;
+        Fri, 21 Aug 2020 06:30:26 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 21 Aug 2020 06:30:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=8NCQ01
+        kqfznEalwAgda3uxxPHtO8p/aD9TgD23y0Qkg=; b=c3sZPWac9uufvn/QU90vm3
+        cqdikTPcFL5an4vhvwFpgOFYfJBq0qAhIiH4fE11IOpDd4w+Y54Pb0Dlz21QcMKk
+        pVaMS9iFe28+roqjgBaN/lhfXCJiuwSqTxYIdc/soZ4G+huQickVoQhmNLI91qld
+        7GyGcFIeGEY0LY3no1W/x9M85/kVSwG84gVFUF5J8SrYJLhgNFVNDGsm3ZZAJCyS
+        ye5QUA1LH+4eeDSeZYcjKK+wjO2SHbyLD5ayHi42XUjoZwawp7tRgWDhxG5HUH1S
+        spo6+JvhYxHEWX7rLk2pJQwiJKoBTvdlQtaXXTkriIg6c5EU9RMMs01vojVwfsSQ
+        ==
+X-ME-Sender: <xms:QaI_XxBkGYH26681WrS04eT3D0U5uGVY3PYAoiLXjPvqVGpRHUM3BQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudduvddgvddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpeejfeeuhfevtdfhgedugedtieetteelfeevvdefleetjeeuvdejveeuleeludet
+    tdenucffohhmrghinhepmhgvlhhlrghnohigrdgtohhmpdhkvghrnhgvlhdrohhrghenuc
+    fkphepjeelrddujeekrddufedurdefheenucevlhhushhtvghrufhiiigvpedtnecurfgr
+    rhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:QaI_X_gWbC7WtyiZiRdstg9EvKmDhd0qm169V00FJyQWaG5veqmNIg>
+    <xmx:QaI_X8nvqBRHyXP4wKQt1tlWPBOVINy4aUplro2ufYzEmx32vKCCQQ>
+    <xmx:QaI_X7wajDM_3fte3meHEATTkUdIdx9IgGt_EiXycvcvJq796gykcA>
+    <xmx:QqI_Xyat5w9jNn5U_EQrJ_rKP_tc4B4AJCwS8Udsy-zusIAlqh6Wag>
+Received: from localhost (bzq-79-178-131-35.red.bezeqint.net [79.178.131.35])
+        by mail.messagingengine.com (Postfix) with ESMTPA id C686530600B4;
+        Fri, 21 Aug 2020 06:30:24 -0400 (EDT)
+Date:   Fri, 21 Aug 2020 13:30:21 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
+        roopa@nvidia.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        tariqt@nvidia.com, ayal@nvidia.com, mkubecek@suse.cz,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/6] devlink: Add device metric support
+Message-ID: <20200821103021.GA331448@shredder>
+References: <20200817125059.193242-1-idosch@idosch.org>
+ <20200818172419.5b86801b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <58a0356d-3e15-f805-ae52-dc44f265661d@gmail.com>
+ <20200818203501.5c51e61a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <55e40430-a52f-f77b-0d1e-ef79386a0a53@gmail.com>
+ <20200819091843.33ddd113@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <e4fd9b1c-5f7c-d560-9da0-362ddf93165c@gmail.com>
+ <20200819110725.6e8744ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <d0c24aad-b7f3-7fd9-0b34-c695686e3a86@gmail.com>
+ <20200820090942.55dc3182@kicinski-fedora-PC1C0HJN>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200820090942.55dc3182@kicinski-fedora-PC1C0HJN>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test which copies a socket from a sockmap into another sockmap
-or sockhash. This excercises bpf_map_update_elem support from BPF
-context. Compare the socket cookies from source and destination to
-ensure that the copy succeeded.
+On Thu, Aug 20, 2020 at 09:09:42AM -0700, Jakub Kicinski wrote:
+> On Thu, 20 Aug 2020 08:35:25 -0600 David Ahern wrote:
+> > On 8/19/20 12:07 PM, Jakub Kicinski wrote:
+> > > I don't have a great way forward in mind, sadly. All I can think of is
+> > > that we should try to create more well defined interfaces and steer
+> > > away from free-form ones.  
+> > 
+> > There is a lot of value in free-form too.
+> 
+> On Tue, 18 Aug 2020 20:35:01 -0700 Jakub Kicinski wrote:
+> > It's a question of interface, not the value of exposed data.
+> 
+> > > Example, here if the stats are vxlan decap/encap/error - we should
+> > > expose that from the vxlan module. That way vxlan module defines one
+> > > set of stats for everyone.
+> > > 
+> > > In general unless we attach stats to the object they relate to, we will
+> > > end up building parallel structures for exposing statistics from the
+> > > drivers. I posted a set once which was implementing hierarchical stats,
+> > > but I've abandoned it for this reason.
+> > > > [...]
+> > > 
+> > > IDK. I just don't feel like this is going to fly, see how many names
+> > > people invented for the CRC error statistic in ethtool -S, even tho
+> > > there is a standard stat for that! And users are actually parsing the
+> > > output of ethtool -S to get CRC stats because (a) it became the go-to
+> > > place for NIC stats and (b) some drivers forget to report in the
+> > > standard place.
+> > > 
+> > > The cover letter says this set replaces the bad debugfs with a good,
+> > > standard API. It may look good and standard for _vendors_ because they
+> > > will know where to dump their counters, but it makes very little
+> > > difference for _users_. If I have to parse names for every vendor I use,
+> > > I can as well add a per-vendor debugfs path to my script.
+> > > 
+> > > The bar for implementation-specific driver stats has to be high.  
+> > 
+> > My take away from this is you do not like the names - the strings side
+> > of it.
+> > 
+> > Do you object to the netlink API? The netlink API via devlink?
+> > 
+> > 'perf' has json files to describe and document counters
+> > (tools/perf/pmu-events). Would something like that be acceptable as a
+> > form of in-tree documentation of counters? (vs Documentation/networking
+> > or URLs like
+> > https://community.mellanox.com/s/article/understanding-mlx5-ethtool-counters)
+> 
+> Please refer to what I said twice now about the definition of the stats
+> exposed here belonging with the VxLAN code, not the driver.
 
-Also check that the verifier rejects map_update from unsafe contexts.
+Please refer to the changelog:
 
-Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
----
- .../selftests/bpf/prog_tests/sockmap_basic.c  | 78 +++++++++++++++++++
- .../bpf/progs/test_sockmap_invalid_update.c   | 23 ++++++
- .../selftests/bpf/progs/test_sockmap_update.c | 48 ++++++++++++
- 3 files changed, 149 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_invalid_update.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_update.c
+"The Spectrum ASICs have a single hardware VTEP that is able to perform
+VXLAN encapsulation and decapsulation. The VTEP is logically mapped by
+mlxsw to the multiple VXLAN netdevs that are using it. Exposing the
+counters of this VTEP via the multiple VXLAN netdevs that are using it
+would be both inaccurate and confusing for users.
+    
+Instead, expose the counters of the VTEP via devlink-metric. Note that
+Spectrum-1 supports a different set of counters compared to newer ASICs
+in the Spectrum family."
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-index 96e7b7f84c65..65ce7c289534 100644
---- a/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sockmap_basic.c
-@@ -4,6 +4,8 @@
- 
- #include "test_progs.h"
- #include "test_skmsg_load_helpers.skel.h"
-+#include "test_sockmap_update.skel.h"
-+#include "test_sockmap_invalid_update.skel.h"
- 
- #define TCP_REPAIR		19	/* TCP sock is under repair right now */
- 
-@@ -101,6 +103,76 @@ static void test_skmsg_helpers(enum bpf_map_type map_type)
- 	test_skmsg_load_helpers__destroy(skel);
- }
- 
-+static void test_sockmap_update(enum bpf_map_type map_type)
-+{
-+	struct bpf_prog_test_run_attr tattr;
-+	int err, prog, src, dst, duration = 0;
-+	struct test_sockmap_update *skel;
-+	__u64 src_cookie, dst_cookie;
-+	const __u32 zero = 0;
-+	char dummy[14] = {0};
-+	__s64 sk;
-+
-+	sk = connected_socket_v4();
-+	if (CHECK(sk == -1, "connected_socket_v4", "cannot connect\n"))
-+		return;
-+
-+	skel = test_sockmap_update__open_and_load();
-+	if (CHECK(!skel, "open_and_load", "cannot load skeleton\n")) {
-+		close(sk);
-+		return;
-+	}
-+
-+	prog = bpf_program__fd(skel->progs.copy_sock_map);
-+	src = bpf_map__fd(skel->maps.src);
-+	if (map_type == BPF_MAP_TYPE_SOCKMAP)
-+		dst = bpf_map__fd(skel->maps.dst_sock_map);
-+	else
-+		dst = bpf_map__fd(skel->maps.dst_sock_hash);
-+
-+	err = bpf_map_update_elem(src, &zero, &sk, BPF_NOEXIST);
-+	if (CHECK(err, "update_elem(src)", "errno=%u\n", errno))
-+		goto out;
-+
-+	err = bpf_map_lookup_elem(src, &zero, &src_cookie);
-+	if (CHECK(err, "lookup_elem(src, cookie)", "errno=%u\n", errno))
-+		goto out;
-+
-+	tattr = (struct bpf_prog_test_run_attr){
-+		.prog_fd = prog,
-+		.repeat = 1,
-+		.data_in = dummy,
-+		.data_size_in = sizeof(dummy),
-+	};
-+
-+	err = bpf_prog_test_run_xattr(&tattr);
-+	if (CHECK_ATTR(err || !tattr.retval, "bpf_prog_test_run",
-+		       "errno=%u retval=%u\n", errno, tattr.retval))
-+		goto out;
-+
-+	err = bpf_map_lookup_elem(dst, &zero, &dst_cookie);
-+	if (CHECK(err, "lookup_elem(dst, cookie)", "errno=%u\n", errno))
-+		goto out;
-+
-+	CHECK(dst_cookie != src_cookie, "cookie mismatch", "%llu != %llu\n",
-+	      dst_cookie, src_cookie);
-+
-+out:
-+	close(sk);
-+	test_sockmap_update__destroy(skel);
-+}
-+
-+static void test_sockmap_invalid_update(void)
-+{
-+	struct test_sockmap_invalid_update *skel;
-+	int duration = 0;
-+
-+	skel = test_sockmap_invalid_update__open_and_load();
-+	CHECK(skel, "open_and_load", "verifier accepted map_update\n");
-+	if (skel)
-+		test_sockmap_invalid_update__destroy(skel);
-+}
-+
- void test_sockmap_basic(void)
- {
- 	if (test__start_subtest("sockmap create_update_free"))
-@@ -111,4 +183,10 @@ void test_sockmap_basic(void)
- 		test_skmsg_helpers(BPF_MAP_TYPE_SOCKMAP);
- 	if (test__start_subtest("sockhash sk_msg load helpers"))
- 		test_skmsg_helpers(BPF_MAP_TYPE_SOCKHASH);
-+	if (test__start_subtest("sockmap update"))
-+		test_sockmap_update(BPF_MAP_TYPE_SOCKMAP);
-+	if (test__start_subtest("sockhash update"))
-+		test_sockmap_update(BPF_MAP_TYPE_SOCKHASH);
-+	if (test__start_subtest("sockmap update in unsafe context"))
-+		test_sockmap_invalid_update();
- }
-diff --git a/tools/testing/selftests/bpf/progs/test_sockmap_invalid_update.c b/tools/testing/selftests/bpf/progs/test_sockmap_invalid_update.c
-new file mode 100644
-index 000000000000..02a59e220cbc
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_sockmap_invalid_update.c
-@@ -0,0 +1,23 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2020 Cloudflare
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} map SEC(".maps");
-+
-+SEC("sockops")
-+int bpf_sockmap(struct bpf_sock_ops *skops)
-+{
-+	__u32 key = 0;
-+
-+	if (skops->sk)
-+		bpf_map_update_elem(&map, &key, skops->sk, 0);
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_sockmap_update.c b/tools/testing/selftests/bpf/progs/test_sockmap_update.c
-new file mode 100644
-index 000000000000..9d0c9f28cab2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_sockmap_update.c
-@@ -0,0 +1,48 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2020 Cloudflare
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} src SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKMAP);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} dst_sock_map SEC(".maps");
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SOCKHASH);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} dst_sock_hash SEC(".maps");
-+
-+SEC("classifier/copy_sock_map")
-+int copy_sock_map(void *ctx)
-+{
-+	struct bpf_sock *sk;
-+	bool failed = false;
-+	__u32 key = 0;
-+
-+	sk = bpf_map_lookup_elem(&src, &key);
-+	if (!sk)
-+		return SK_DROP;
-+
-+	if (bpf_map_update_elem(&dst_sock_map, &key, sk, 0))
-+		failed = true;
-+
-+	if (bpf_map_update_elem(&dst_sock_hash, &key, sk, 0))
-+		failed = true;
-+
-+	bpf_sk_release(sk);
-+	return failed ? SK_DROP : SK_PASS;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.25.1
+Hardware implementations will rarely fit 1:1 to the nice and discrete
+software implementations that they try to accelerate. The purpose of
+this API is exposing metrics specific to these hardware implementations.
+This results in better visibility which can be leveraged for faster
+debugging and more thorough testing.
 
+The reason I came up with this interface is not the specific VXLAN
+metrics that bother you, but a new platform we are working on. It uses
+the ASIC as a cache that refers lookups to an external device in case of
+cache misses. It is completely transparent to user space (you get better
+scale), but the driver is very much aware of this stuff as it needs to
+insert objects (e.g., routes) in a way that will minimize cache misses.
+Just checking that ping works is hardly enough. We must be able to read
+the cache counters to ensure we do not see cache misses when we do not
+expect them.
+
+As another example, consider the algorithmic TCAM implementation we have
+in Spectrum-2 for ACLs [1]. While a user simply adds / deletes filters,
+the driver needs to jump through multiple hops in order to program them
+in a way that will result in a better scale and reduced latency. We
+currently do not have an interface through which we can expose metrics
+related to this specific implementation.
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=756cd36626f773e9a72a39c1dd12da4deacfacdf
+
+> 
+> > > Okay, fair. I just think that in datacenter deployments we are way
+> > > closer to the SDK model than people may want to admit.
+> > 
+> > I do not agree with that; the SDK model means you *must* use vendor code
+> > to make something work. Your argument here is about labels for stats and
+> > an understanding of their meaning.
+> 
+> Sure, no "must" for passing packets, but you "must" use vendor tooling
+> to operate a fleet.
+> 
+> Since everybody already has vendor tools what value does this API add?
+
+We don't have any "vendor tools" to get this information. Our team is
+doing everything it possibly can in order to move away from such an
+approach.
+
+> I still need per vendor logic. Let's try to build APIs which will
+> actually make user's life easier, which users will want to switch to.
+
+Developers are also users and they should be able to read whatever
+information they need from the device in order to help them do their
+work. You have a multitude of tools (e.g., kprobes, tracepoints) to get
+better visibility into the software data path. Commonality is not a
+reason to be blind as a bat when looking into the hardware data path.
