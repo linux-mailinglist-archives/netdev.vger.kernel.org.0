@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB6724DBA7
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 18:45:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EBFB24DC01
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 18:52:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728439AbgHUQpq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 12:45:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37156 "EHLO
+        id S1727859AbgHUQvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 12:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728063AbgHUQpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 12:45:00 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998C6C061573;
-        Fri, 21 Aug 2020 09:45:00 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id u6so1370131ybf.1;
-        Fri, 21 Aug 2020 09:45:00 -0700 (PDT)
+        with ESMTP id S1728619AbgHUQvm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 12:51:42 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 098BAC061573;
+        Fri, 21 Aug 2020 09:51:42 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id e187so1370730ybc.5;
+        Fri, 21 Aug 2020 09:51:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=o2ZPSXoKQiAgvPofqJBjnMdYBbZ4MAbwhF7IQQ6Dw9Y=;
-        b=FzSUj4/Q6+pY+Ld2kke9+/RxGFULDjpuOcFKWjKFhtIChhx/JMSenwHQn9kLvNVYs0
-         3l07RLGvle4UwE+Q4MUOvubv53ldKifB4QFY8QuO6jqEnkXv0jrPwOn+EC5MwVxXBkt8
-         jXXYepn773T4YIH8kWS3YySMXkul6OdbvaBd/8uePk9e5KoHwzQB4EUjsHY4nPy8Pz+O
-         qm4SN4GLWw5h6EVRouO52rpAA6yASUxG78S0MO/3uV+PV22yuAq+8NPsZS8akOxKYAw4
-         LB3IWk9Nva4TgXEB8nQ5OzLPnFS0b/PCf3cI7Bw4ncLy+8g6kcBLnnIG1+T2WBuWqwSi
-         /iYw==
+        bh=H4dAFLlprWaBYEmTTmuTiGKpaxj4Q19Vfz3BuRHCB/Y=;
+        b=Zj1io0bLawEt7wCZnAO3lr6ZzeKgLjOWHCrhv4k8tWTa4hqXOlGPuQnn1XkZs0K1Mz
+         eDLnkxMc4Q3RzGRqNTwTRavSdV5YmD/WNlBU/26Yp1FAQi/glZUM0jx8BcGLZmisdDnF
+         mqitRmx8kj1d5JUETzemk+Jf4RUUpimdf84CesexCB6CXLkWJEw309gID3FUhp3ejGJ9
+         VT2WJ/Auqkloq3rwdEV6adbXXS5q0HRNR+HUbQPEGp8vonJgbckEEp3ipUY0I6UwJZkt
+         kieNUPmK+58Sq39/J5IfmmVszJCYt5kSyoClZRJLeq44HB/a5ZJHeaIclfMOfKZ6GgzX
+         H8Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=o2ZPSXoKQiAgvPofqJBjnMdYBbZ4MAbwhF7IQQ6Dw9Y=;
-        b=Oywg5j2BidIi/O5AuQBIaumXRUsh9+e8ymi8NUItia3TnMyqWPAGf6soamOQnH9kkk
-         1SiUGvWsKxr7YlAj3nhMuBan8WI+0fDcf586eQj+iK4VDaLZEpJ6RTqoE2i1FxVgxran
-         S7wDci8skc/P4LtxhQAyYal9Lv6A+8MfAICy29/4FqqQPt8S/u1aoN30toG+S98KiYKr
-         S64QX/wU9UgamRn8M0lNj36FcpiFSDzvHqSustkXfTZWH9GUnPsYokc/o8w9uy7xbckJ
-         h7Ar9AnWkHIZJtxrKzUwIPGe7gpaHaDMY1F62p7Np8aSj+fhnUrp2Yo7hCEtF0O1rlSX
-         Qu3Q==
-X-Gm-Message-State: AOAM532D0wJef9vRYj7DPkOCXLFSx5JZLBE/K55xjihMMCYcebNalTXu
-        VcnWXBoNSBS2NrmrQkyCy52iisodWzTDtxFuBK7QT6AU
-X-Google-Smtp-Source: ABdhPJyoZDtihGJP47npsp2NTOEuIp0wDFzOZjLHaUMJSv/O0+wBlAFSNiPBMg3Xbdk3sv2G7pWTrjNFQdQDGPE4CpM=
-X-Received: by 2002:a25:ad5a:: with SMTP id l26mr4649948ybe.510.1598028299749;
- Fri, 21 Aug 2020 09:44:59 -0700 (PDT)
+        bh=H4dAFLlprWaBYEmTTmuTiGKpaxj4Q19Vfz3BuRHCB/Y=;
+        b=cwTBM2FXkSev6+tuhBIEnOOkKoWNgdUC0KodvgnitrPT9Acbu65TeMRpSjrcUDomVQ
+         3DdIww8s7JMkSfnRTtwRTFgeWEn3XYi+cFUnt5aqRkhuA4LiyIhDi8rZKVZi+TmDhtnC
+         QFkSBk3qI7cYL7oLc05LMt4fc+gstifVDBSz2WyEfAq4OE/wS+STMIdzwUsFeeZMoNpl
+         WPb8edW90wj6ldXZvLHq+y5rTY8HAV0Hye+DlgmHIadVZ/OzOfJQFHpgoj2Il6MjbBkG
+         Jmz2tI5K2LMY71WDsuMgkbNlmWakO4grhCiJkgpEDk/Xt1zkDgZWerfU078UN+qYDHlq
+         2I2A==
+X-Gm-Message-State: AOAM530Hq9vO2bjmhd8wfL1Vu5ZB5+h/pubzpGxYHWEwnsnWFPwByCPv
+        IJTIICFdtLxiAtSZ+3HaT/6908ry7wEHOUCcpOc=
+X-Google-Smtp-Source: ABdhPJyZ1mumQvNsR5h7NeLiddrY7u3a/1TjQ5FWGf3MsiKaPHffF7CnZZYlpcllPOCwN055E3jUCH6kzxdIWUsk8lk=
+X-Received: by 2002:a25:84cd:: with SMTP id x13mr4753679ybm.425.1598028701207;
+ Fri, 21 Aug 2020 09:51:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200820224917.483062-1-yhs@fb.com> <20200820224917.483128-1-yhs@fb.com>
- <CAEf4BzZ32inDH2MhLFv5o8PiQ9=4EGR0C75Ks6dWzHjVsgozAg@mail.gmail.com> <08982c2f-b9a8-3d30-9e4c-4f3f071a5a58@fb.com>
-In-Reply-To: <08982c2f-b9a8-3d30-9e4c-4f3f071a5a58@fb.com>
+References: <20200821025448.2087055-1-andriin@fb.com> <alpine.LRH.2.21.2008211149530.9620@localhost>
+In-Reply-To: <alpine.LRH.2.21.2008211149530.9620@localhost>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 21 Aug 2020 09:44:48 -0700
-Message-ID: <CAEf4BzbF_KURy4CusoCND6-agPc8SgFAtKDhcwYC8jP=L1M50Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/3] bpf: implement link_query for bpf iterators
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Fri, 21 Aug 2020 09:51:30 -0700
+Message-ID: <CAEf4BzZiZufcE7r=3qkM76x5jd0da804kcyfaW+jOXR2Ky=i-g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: add perf_buffer APIs for better
+ integration with outside epoll loop
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
@@ -62,105 +63,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 20, 2020 at 11:42 PM Yonghong Song <yhs@fb.com> wrote:
+On Fri, Aug 21, 2020 at 5:51 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
+> On Thu, 20 Aug 2020, Andrii Nakryiko wrote:
 >
->
-> On 8/20/20 11:31 PM, Andrii Nakryiko wrote:
-> > On Thu, Aug 20, 2020 at 3:50 PM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >> This patch implemented bpf_link callback functions
-> >> show_fdinfo and fill_link_info to support link_query
-> >> interface.
-> >>
-> >> The general interface for show_fdinfo and fill_link_info
-> >> will print/fill the target_name. Each targets can
-> >> register show_fdinfo and fill_link_info callbacks
-> >> to print/fill more target specific information.
-> >>
-> >> For example, the below is a fdinfo result for a bpf
-> >> task iterator.
-> >>    $ cat /proc/1749/fdinfo/7
-> >>    pos:    0
-> >>    flags:  02000000
-> >>    mnt_id: 14
-> >>    link_type:      iter
-> >>    link_id:        11
-> >>    prog_tag:       990e1f8152f7e54f
-> >>    prog_id:        59
-> >>    target_name:    task
-> >>
-> >> Signed-off-by: Yonghong Song <yhs@fb.com>
-> >> ---
-> >>   include/linux/bpf.h            |  6 ++++
-> >>   include/uapi/linux/bpf.h       |  7 ++++
-> >>   kernel/bpf/bpf_iter.c          | 58 ++++++++++++++++++++++++++++++++++
-> >>   tools/include/uapi/linux/bpf.h |  7 ++++
-> >>   4 files changed, 78 insertions(+)
-> >>
+> > Add a set of APIs to perf_buffer manage to allow applications to integrate
+> > perf buffer polling into existing epoll-based infrastructure. One example is
+> > applications using libevent already and wanting to plug perf_buffer polling,
+> > instead of relying on perf_buffer__poll() and waste an extra thread to do it.
+> > But perf_buffer is still extremely useful to set up and consume perf buffer
+> > rings even for such use cases.
 > >
-> > [...]
+> > So to accomodate such new use cases, add three new APIs:
+> >   - perf_buffer__buffer_cnt() returns number of per-CPU buffers maintained by
+> >     given instance of perf_buffer manager;
+> >   - perf_buffer__buffer_fd() returns FD of perf_event corresponding to
+> >     a specified per-CPU buffer; this FD is then polled independently;
+> >   - perf_buffer__consume_buffer() consumes data from single per-CPU buffer,
+> >     identified by its slot index.
 > >
-> >> +
-> >> +static int bpf_iter_link_fill_link_info(const struct bpf_link *link,
-> >> +                                       struct bpf_link_info *info)
-> >> +{
-> >> +       struct bpf_iter_link *iter_link =
-> >> +               container_of(link, struct bpf_iter_link, link);
-> >> +       char __user *ubuf = u64_to_user_ptr(info->iter.target_name);
-> >> +       bpf_iter_fill_link_info_t fill_link_info;
-> >> +       u32 ulen = info->iter.target_name_len;
-> >> +       const char *target_name;
-> >> +       u32 target_len;
-> >> +
-> >> +       if (ulen && !ubuf)
-> >> +               return -EINVAL;
-> >> +
-> >> +       target_name = iter_link->tinfo->reg_info->target;
-> >> +       target_len =  strlen(target_name);
-> >> +       info->iter.target_name_len = target_len + 1;
-> >> +       if (!ubuf)
-> >> +               return 0;
+> > These APIs allow for great flexiblity, but do not sacrifice general usability
+> > of perf_buffer.
 > >
-> > this might return prematurely before fill_link_info() below gets a
-> > chance to fill in some extra info?
 >
-> The extra info filled by below fill_link_info is target specific
-> and we need a target name to ensure picking right union members.
-> So it is best to enforce a valid target name before filling
-> target dependent fields. See below, if there are any errors
-> for copy_to_user or enospc, we won't copy addition link info
-> either.
->
+> This is great! If I understand correctly, you're supporting the
+> retrieval and ultimately insertion of the individual per-cpu buffer fds
+> into another epoll()ed fd.  I've been exploring another possibility -
 
-You are making an assumption that the caller doesn't know what time of
-link it's requesting info for. That's not generally true. So I think
-we just shouldn't make unnecessary assumptions and provide as much
-information on the first try. target_name should be treated as an
-optional thing to request, that's all.
+yes, exactly
 
+> hierarchical epoll, where the top-level perf_buffer epoll_fd field is used
+> rather than the individual per-cpu buffers.  In that context, would an
+> interface to return the perf_buffer epoll_fd make sense too? i.e.
+>
+> int perf_buffer__fd(const struct perf_buffer *pb);
+>
+> ?
+>
+> When events occur for the perf_buffer__fd, we can simply call
+> perf_buffer__poll(perf_buffer__fd(pb), ...) to handle them it seems.
+> That approach _appears_ to work, though I do see occasional event loss.
+> Is that method legit too or am I missing something?
+
+Yes, this would also work, but it's less efficient because you either
+need to do unnecessary epoll_wait() syscall to know which buffers to
+process, or you need to call perf_buffer__consume(), which will
+iterate over *all* available buffers, even those that don't have new
+information.
+
+But I can add a way to get epoll FD as well, if that's more convenient
+for some less performance-conscious cases. I'll add:
+
+int perf_buffer__epoll_fd(const struct perf_buffer *pb)
+
+just __fd() is too ambiguous.
+
+>
+> > Also exercise and check new APIs in perf_buffer selftest.
 > >
-> >> +
-> >> +       if (ulen >= target_len + 1) {
-> >> +               if (copy_to_user(ubuf, target_name, target_len + 1))
-> >> +                       return -EFAULT;
-> >> +       } else {
-> >> +               char zero = '\0';
-> >> +
-> >> +               if (copy_to_user(ubuf, target_name, ulen - 1))
-> >> +                       return -EFAULT;
-> >> +               if (put_user(zero, ubuf + ulen - 1))
-> >> +                       return -EFAULT;
-> >> +               return -ENOSPC;
-> >> +       }
-> >> +
-> >> +       fill_link_info = iter_link->tinfo->reg_info->fill_link_info;
-> >> +       if (fill_link_info)
-> >> +               return fill_link_info(&iter_link->aux, info);
-> >> +
-> >> +       return 0;
-> >> +}
-> >> +
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> A few question around the test below, but
+>
+> Reviewed-by: Alan Maguire <alan.maguire@oracle.com>
+>
+>
+> > ---
+> >  tools/lib/bpf/libbpf.c                        | 51 ++++++++++++++-
+> >  tools/lib/bpf/libbpf.h                        |  3 +
+> >  tools/lib/bpf/libbpf.map                      |  7 +++
+> >  .../selftests/bpf/prog_tests/perf_buffer.c    | 62 +++++++++++++++----
+> >  4 files changed, 111 insertions(+), 12 deletions(-)
 > >
-> > [...]
-> >
+
+[...]
+
+please trim next time
+
+> > +     for (i = 0; i < nr_cpus; i++) {
+> > +             if (i >= on_len || !online[i])
+> > +                     continue;
+> > +
+> > +             fd = perf_buffer__buffer_fd(pb, i);
+> > +             CHECK(last_fd == fd, "fd_check", "last fd %d == fd %d\n", last_fd, fd);
+> > +             last_fd = fd;
+> > +
+>
+> I'm not sure why you're testing this way - shouldn't it just be a
+> verification of whether we get an unexpected error code rather
+> than a valid fd?
+
+My goal was to test that I do get different buffer fd for each CPU,
+but you are right, I should also check that I get valid FD here. Will
+fix in v2.
+
+
+>
+> > +             err = perf_buffer__consume_buffer(pb, i);
+> > +             if (CHECK(err, "drain_buf", "cpu %d, err %d\n", i, err))
+> > +                     goto out_close;
+> > +
+>
+> I think I'm a bit lost in what processes what here. The first
+> perf_buffer__poll() should handle the processing of the records
+> associated with the first set of per-cpu triggering I think.
+> Is the above perf_buffer__consume_buffer() checking the
+> "no data, return success" case? If that's right should we do
+> something to explicitly check it indeed was a no-op, like CHECK()ing
+> CPU_ISSET(i, &cpu_seen) to ensure the on_sample() handler wasn't
+> called? The  "drain_buf" description makes me think I'm misreading
+> this and we're draining additional events, so I wanted to check
+> what's going on here to make sure.
+
+We can't make sure that there are no extra samples, because samples
+are produced for any syscall (we don't filter by thread or process).
+The idea here is to drain any remaining samples before I trigger
+another round. Then check that at least one sample was emitted on the
+desired CPU. It could be a spurious event, of course, but I didn't
+think it's important enough to make sure just one sample can be
+emitted.
+
+>
+> Thanks!
+>
+> Alan
