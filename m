@@ -2,88 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0A4C24D080
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 10:28:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F87724D094
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 10:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727791AbgHUI2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 04:28:15 -0400
-Received: from www262.sakura.ne.jp ([202.181.97.72]:49964 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725965AbgHUI2O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 04:28:14 -0400
-Received: from fsav405.sakura.ne.jp (fsav405.sakura.ne.jp [133.242.250.104])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 07L8RP4f093330;
-        Fri, 21 Aug 2020 17:27:25 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav405.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav405.sakura.ne.jp);
- Fri, 21 Aug 2020 17:27:25 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav405.sakura.ne.jp)
-Received: from localhost.localdomain (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 07L8RILL093307
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 21 Aug 2020 17:27:25 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-To:     Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Brian Norris <briannorris@chromium.org>
-Cc:     amitkarwar@gmail.com, andreyknvl@google.com, davem@davemloft.net,
-        dvyukov@google.com, huxinming820@gmail.com, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        nishants@marvell.com, syzkaller-bugs@googlegroups.com,
-        syzbot <syzbot+373e6719b49912399d21@syzkaller.appspotmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        syzbot <syzbot+dc4127f950da51639216@syzkaller.appspotmail.com>
-Subject: [PATCH v2] mwifiex: don't call del_timer_sync() on uninitialized timer
-Date:   Fri, 21 Aug 2020 17:27:19 +0900
-Message-Id: <20200821082720.7716-1-penguin-kernel@I-love.SAKURA.ne.jp>
-X-Mailer: git-send-email 2.18.4
-In-Reply-To: <MN2PR18MB2637D7C742BC235FE38367F0A09C0@MN2PR18MB2637.namprd18.prod.outlook.com>
-References: <MN2PR18MB2637D7C742BC235FE38367F0A09C0@MN2PR18MB2637.namprd18.prod.outlook.com>
+        id S1727997AbgHUIcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 04:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726332AbgHUIcG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 04:32:06 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9A2C061385;
+        Fri, 21 Aug 2020 01:32:05 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id t11so570638plr.5;
+        Fri, 21 Aug 2020 01:32:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KMEAgxnLavJYQ3i7i0cZ9PJqwCosdeDVQ11vARt76rw=;
+        b=rCloECpYonB62tNgFfIMULBA2l11JvstqurZvSoGX36qItHs8DIN1qsnEfoVaTaES+
+         IGdSc4WgHoKYgJbeYmtL6DxV3M7Ifjnbt23iDuSa3BA7Szy2838CCveQQs/XElpWznN8
+         alcOACr6VrPT9+DmM8ROYMm5EqY+Lno+QZ6omVbihWH1N0SwX+qjrNAPiHoNOly44DkK
+         Hub0pOmgLfn+T62btisPy5NXMhDEqtt9ATNtdjQsfZ6fpnLyLnPZTenRV9yWkHRoATjJ
+         Uewm1JxRSh83BjAYUUJVCrs396P6orRjfC0nh/pkBFgMKUplbZFsnmJw1vRLI2KXNHCf
+         SFPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KMEAgxnLavJYQ3i7i0cZ9PJqwCosdeDVQ11vARt76rw=;
+        b=YRizbMu+ZimRXzIbPpDAmwsf27GStFf+CwWdYFRggjKAwl8ukBxnSixS/FOsYtAcF4
+         CdGH0WbqK7NugCJTbDv3+gbD7wq7G4gEOvx1n7EtQAy5ESWPVR4C8yvVXnAJvYKjx5uK
+         P73Aw8zpPC6rLnA7owRZoM0Ci71hHgeRdEh6kJPj2cjOTosgt3iEI/UDZkxw5rfuH/7N
+         aAX+Qdtu0X4rsaNqnFIkWgm0+sJsFZf64QehfyaMYU+gZFQwoPj16ZLWS7jdWTyh99Ez
+         woPBz4S+bglTG0eJ3PrZcdVzKIvfZYREwqGv9Cu3wjE+yoOowj/Z07jberuda/DG3IIS
+         JjgA==
+X-Gm-Message-State: AOAM533qSzuzfqKak3n5RJPYzS6N3Txw5sQk0o5eiYiVrvZmldKzjKR9
+        OMGp9vq+1rJEJQu090oyj08=
+X-Google-Smtp-Source: ABdhPJx3Io9I5JNxZKonQPoNMYC4/SzjvqW41agp76wDFbPJkY6smg0PkhIQ/Qjnk3DdOkmyGNYFGw==
+X-Received: by 2002:a17:90a:1a42:: with SMTP id 2mr1569913pjl.16.1597998725448;
+        Fri, 21 Aug 2020 01:32:05 -0700 (PDT)
+Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
+        by smtp.gmail.com with ESMTPSA id x23sm1617741pfi.60.2020.08.21.01.32.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Aug 2020 01:32:04 -0700 (PDT)
+Date:   Fri, 21 Aug 2020 17:31:59 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     devel@driverdev.osuosl.org, Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] staging: qlge: fix build breakage with dumping enabled
+Message-ID: <20200821083159.GA16579@f3>
+References: <20200821070334.738358-1-coiby.xu@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200821070334.738358-1-coiby.xu@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot is reporting that del_timer_sync() is called from
-mwifiex_usb_cleanup_tx_aggr() from mwifiex_unregister_dev() without
-checking timer_setup() from mwifiex_usb_tx_init() was called [1].
+On 2020-08-21 15:03 +0800, Coiby Xu wrote:
+> This fixes commit 0107635e15ac
+> ("staging: qlge: replace pr_err with netdev_err") which introduced an
+> build breakage with dumping enabled, i.e.,
+> 
+>     $ QL_ALL_DUMP=1 QL_OB_DUMP=1 QL_CB_DUMP=1 QL_REG_DUMP=1 \
+>       QL_IB_DUMP=1 QL_DEV_DUMP=1 make M=drivers/staging/qlge
+> 
+> Fixes: 0107635e15ac ("taging: qlge: replace pr_err with netdev_err")
+			^ staging
+> Reported-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+> ---
+>  drivers/staging/qlge/qlge.h      | 42 ++++++++++++++++----------------
+>  drivers/staging/qlge/qlge_dbg.c  | 36 +++++++++++++--------------
+>  drivers/staging/qlge/qlge_main.c |  4 +--
+>  3 files changed, 41 insertions(+), 41 deletions(-)
+> 
+[...]
+> @@ -1615,7 +1615,7 @@ void ql_dump_qdev(struct ql_adapter *qdev)
+>  #endif
+>  
+>  #ifdef QL_CB_DUMP
+> -void ql_dump_wqicb(struct wqicb *wqicb)
+> +void ql_dump_wqicb(struct ql_adapter *qdev, struct wqicb *wqicb)
+>  {
 
-Ganapathi Bhat proposed a possibly cleaner fix, but it seems that
-that fix was forgotten [2].
+This can be fixed without adding another argument:
 
-"grep -FrB1 'del_timer' drivers/ | grep -FA1 '.function)'" says that
-currently there are 28 locations which call del_timer[_sync]() only if
-that timer's function field was initialized (because timer_setup() sets
-that timer's function field). Therefore, let's use same approach here.
+	struct tx_ring *tx_ring = container_of(wqicb, struct tx_ring, wqicb);
+	struct ql_adapter *qdev = tx_ring->qdev;
 
-[1] https://syzkaller.appspot.com/bug?id=26525f643f454dd7be0078423e3cdb0d57744959
-[2] https://lkml.kernel.org/r/CA+ASDXMHt2gq9Hy+iP_BYkWXsSreWdp3_bAfMkNcuqJ3K+-jbQ@mail.gmail.com
+>  	netdev_err(qdev->ndev, "Dumping wqicb stuff...\n");
+>  	netdev_err(qdev->ndev, "wqicb->len = 0x%x\n", le16_to_cpu(wqicb->len));
+> @@ -1630,7 +1630,7 @@ void ql_dump_wqicb(struct wqicb *wqicb)
+>  		   (unsigned long long)le64_to_cpu(wqicb->cnsmr_idx_addr));
+>  }
+>  
+> -void ql_dump_tx_ring(struct tx_ring *tx_ring)
+> +void ql_dump_tx_ring(struct ql_adapter *qdev, struct tx_ring *tx_ring)
+>  {
 
-Reported-by: syzbot <syzbot+dc4127f950da51639216@syzkaller.appspotmail.com>
-Cc: Ganapathi Bhat <ganapathi.bhat@nxp.com>
-Cc: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
- drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+This can be fixed without adding another argument:
+	struct ql_adapter *qdev;
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
-index 6f3cfde4654c..426e39d4ccf0 100644
---- a/drivers/net/wireless/marvell/mwifiex/usb.c
-+++ b/drivers/net/wireless/marvell/mwifiex/usb.c
-@@ -1353,7 +1353,8 @@ static void mwifiex_usb_cleanup_tx_aggr(struct mwifiex_adapter *adapter)
- 				skb_dequeue(&port->tx_aggr.aggr_list)))
- 				mwifiex_write_data_complete(adapter, skb_tmp,
- 							    0, -1);
--		del_timer_sync(&port->tx_aggr.timer_cnxt.hold_timer);
-+		if (port->tx_aggr.timer_cnxt.hold_timer.function)
-+			del_timer_sync(&port->tx_aggr.timer_cnxt.hold_timer);
- 		port->tx_aggr.timer_cnxt.is_hold_timer_set = false;
- 		port->tx_aggr.timer_cnxt.hold_tmo_msecs = 0;
- 	}
--- 
-2.18.4
+	if (!tx_ring)
+		return;
 
+	qdev = tx_ring->qdev;
+
+... similar comment for the other instances.
