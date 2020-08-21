@@ -2,449 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7AB424CEE0
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 09:19:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B268E24CF29
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 09:22:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728298AbgHUHT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 03:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728018AbgHUHSs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 03:18:48 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DFBC0612FF
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 00:17:29 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id c15so981987wrs.11
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 00:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fN0qY5rtNX6i0CI/MnuefJhN/Bgnf0dv5EJHWFwf6vk=;
-        b=ksj82a6HRu08E3bfyapKcejX0xtl5iGHFyfZcCUPMClXDUrNtHLDftoYae6HslD66s
-         CPqDLCOrB6t/uErjPoZf9azbQEueDP0MGVnLI11OrzaX66+7AOaRsvGzAEEUPfPwRxcO
-         Netet1O0ysiMGMMwfbaxQ8E/B/9unwQUMOnLluAxFS6eaz+MBB4s/E21O2Lko95EzPF1
-         nR+8hU3uIRE2O7jfyIHaMeXnZ6zBRZ2DLpMM8iIbjPt99Ak9QWorIFPbjcVSBTvZdwIC
-         XOFxSED4MIadSZAnWmZYVMbRzKufgZyfev/93XQB8bDRE9mefueuXUJdeS/CdCL8ONcy
-         O5nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fN0qY5rtNX6i0CI/MnuefJhN/Bgnf0dv5EJHWFwf6vk=;
-        b=GRWHrA/s+rhlIW36n0jMXcstrnCN+tbeqSS/oj6DvPQ3wSuRABdbbxCAOPZ2vFU2hX
-         mLCWc7SfWZY+zyXya34pwDZVglI0YrtMu9l9TzjNFGyn+CAEkno3hwZyZ9b9y4G0MojY
-         YYWvW5XBFHgdjnHtuTeuWW0sRyuSYpH/uz+tK7kuKDTJl+ne53M7N0bKMJ6S4TJwkr3+
-         4yABHJ52ktplti9pc3J2Z/4lcB3UTlkxoHcLBLqpeizZydASkm+2fYTx8wlcJCaKkwbp
-         yk0KcsH5r9HsL37SlQubjYEHKzObjWGsQ4cDsjTYR7WkjNZ2/KheA4J+4DYcJO7vpdgv
-         T5qA==
-X-Gm-Message-State: AOAM531Qy/4/3IsmjBdt4DmphQnYnGzznRvUonbZVsU/lv3I45+uZeHm
-        d/jJ0R0cuAqMf/Ex28IndAdoIA==
-X-Google-Smtp-Source: ABdhPJynDxAwG5fKz2IRqvyRd7zLwNoFXN9aqj2CVgzAFKbX1+LchaOsKkQO88FBaINsGVtF1ddAwA==
-X-Received: by 2002:a5d:526d:: with SMTP id l13mr1325446wrc.279.1597994247818;
-        Fri, 21 Aug 2020 00:17:27 -0700 (PDT)
-Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id y24sm2667957wmi.17.2020.08.21.00.17.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 00:17:27 -0700 (PDT)
-From:   Lee Jones <lee.jones@linaro.org>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stanislaw Gruszka <stf_xl@wp.pl>,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH 32/32] wireless: mediatek: mt76x0: Move tables used only by init.c to their own header file
-Date:   Fri, 21 Aug 2020 08:16:44 +0100
-Message-Id: <20200821071644.109970-33-lee.jones@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200821071644.109970-1-lee.jones@linaro.org>
-References: <20200821071644.109970-1-lee.jones@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+        id S1728641AbgHUHWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 03:22:38 -0400
+Received: from mx1.tq-group.com ([62.157.118.193]:44577 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728056AbgHUHW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 03:22:28 -0400
+IronPort-SDR: w79nluinkL3SKoYHInWHxhFBFe07XrWBzzRRr0yktT9zSEIGdcKytSP1gWqqTliOTbgKXVnQwq
+ 7xoMUgAmCPjThddW6S/vuD/Tb9yennWBlwStVClih9qn+goNgcnT+oeL3Vm4oGCVzM8UYPePmn
+ k7LOluuUKTmruUamHRQr1EJcnyP94KaTkqoGJ9KORrgcNYqRJGbAOncJixPfaefPRR5pcqK/sa
+ I6Rvc8+w8n0h6F3bjTOUmIqndXqiPYdpP9f49ZRWM98H/4gPnzVSsht9hHn4P5Z0Xxzf7iWvsr
+ KqI=
+X-IronPort-AV: E=Sophos;i="5.76,335,1592863200"; 
+   d="scan'208";a="13549382"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 21 Aug 2020 09:22:26 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Fri, 21 Aug 2020 09:22:26 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Fri, 21 Aug 2020 09:22:26 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1597994546; x=1629530546;
+  h=from:to:cc:subject:date:message-id;
+  bh=EefKwu7gf4WtneGw/sVo55ly+Znp9htNXOYzXWaEm68=;
+  b=jy9ThjoV4wDk9UiDVcJVGjprT+d2U9L+WrXMQah1AwCzxlxcpGXounJ/
+   EQyvQ19Sg08UxUd3MZvWvJks2AJQHHWXl1kJ13yOKDl/DZnhLmt5PG8oA
+   fDtu35DUubNxZ/HHn3LtSbMCg8JrEdteuAmM1oCZJVXLIaEDK1wXnnteW
+   377vyoON0/N0aGI/Y5Yzt8ZLQ0Bpg64pQsKdM3HL3QdhZ/849C7Wy/c9J
+   +qi9Q6xHHF1iC+joi5f8nliGI9Zn+u5qqrIieWFdm2OjtFkwgDXiRkf6W
+   Jdf5rCUTEfCOwX0Zg/5Gn6CsJyuYFGT+AqMyv3feuu258gnXXcibvS46r
+   g==;
+IronPort-SDR: wl6o/SaXXXPhs/Ibl2ArIyhyI7yKooib5XSU7LoxvPQsN4N2QbJNy8gz6Jt5XPAgNnhljOLtM4
+ dlf63hseFjJEopXKLRXX994O74GctOpWtz6ZQ9K6ltNGBeO8AaIeYX0UR4oLFc3wGNPNCbKfqT
+ ZvyukA7Ec/SS3JxLp4ubcXOTEM1P60dlIZfI37uI7ahsLX7ej0ki59b9u21mcVxUjYVHqu/jXN
+ wjZUi67yqNJ6V/d249jLoTd+cU+bElBh3A6g4SYL4zjPl/LCdVRTmeGYpW/uY1RpqBb2it9+3B
+ dio=
+X-IronPort-AV: E=Sophos;i="5.76,335,1592863200"; 
+   d="scan'208";a="13549381"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 21 Aug 2020 09:22:25 +0200
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.117.49.26])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id BFDDF280065;
+        Fri, 21 Aug 2020 09:22:25 +0200 (CEST)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Dan Murphy <dmurphy@ti.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH net-next 1/2] dt-bindings: dp83867: add ti,led-function and ti,led-ctrl properties
+Date:   Fri, 21 Aug 2020 09:21:45 +0200
+Message-Id: <20200821072146.8117-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Taking the same approach as initvals_phy.h.
+With the TQ-Systems MBa7x (imx7-mba7.dtsi), a user of these properties
+already sneaked in before they were properly specified. Add them to the
+binding docs.
 
-Fixes the following W=1 kernel build warning(s):
+On top of the existing use (requiring to specify the raw register value
+in the DTS), we propose a few convenience macros and defines.
 
- drivers/net/wireless/mediatek/mt76/mt76x0/initvals.h:218:35: warning: ‘mt76x0_dcoc_tab’ defined but not used [-Wunused-const-variable=]
- 218 | static const struct mt76_reg_pair mt76x0_dcoc_tab[] = {
- | ^~~~~~~~~~~~~~~
- drivers/net/wireless/mediatek/mt76/mt76x0/initvals.h:86:35: warning: ‘mt76x0_bbp_init_tab’ defined but not used [-Wunused-const-variable=]
- 86 | static const struct mt76_reg_pair mt76x0_bbp_init_tab[] = {
- | ^~~~~~~~~~~~~~~~~~~
- drivers/net/wireless/mediatek/mt76/mt76x0/initvals.h:48:35: warning: ‘mt76x0_mac_reg_table’ defined but not used [-Wunused-const-variable=]
- 48 | static const struct mt76_reg_pair mt76x0_mac_reg_table[] = {
- | ^~~~~~~~~~~~~~~~~~~~
- drivers/net/wireless/mediatek/mt76/mt76x0/initvals.h:14:35: warning: ‘common_mac_reg_table’ defined but not used [-Wunused-const-variable=]
- 14 | static const struct mt76_reg_pair common_mac_reg_table[] = {
- | ^~~~~~~~~~~~~~~~~~~~
-
-Cc: Felix Fietkau <nbd@nbd.name>
-Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc: Ryder Lee <ryder.lee@mediatek.com>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Stanislaw Gruszka <stf_xl@wp.pl>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Cc: linux-mediatek@lists.infradead.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 ---
- .../net/wireless/mediatek/mt76/mt76x0/init.c  |   1 +
- .../wireless/mediatek/mt76/mt76x0/initvals.h  | 145 ----------------
- .../mediatek/mt76/mt76x0/initvals_init.h      | 159 ++++++++++++++++++
- 3 files changed, 160 insertions(+), 145 deletions(-)
- create mode 100644 drivers/net/wireless/mediatek/mt76/mt76x0/initvals_init.h
+ .../devicetree/bindings/net/ti,dp83867.yaml   | 18 ++++++
+ include/dt-bindings/net/ti-dp83867.h          | 60 +++++++++++++++++++
+ 2 files changed, 78 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x0/init.c b/drivers/net/wireless/mediatek/mt76/mt76x0/init.c
-index dc8bf4c6969af..d78866bf41ba3 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x0/init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x0/init.c
-@@ -10,6 +10,7 @@
- #include "eeprom.h"
- #include "mcu.h"
- #include "initvals.h"
-+#include "initvals_init.h"
- #include "../mt76x02_phy.h"
+diff --git a/Documentation/devicetree/bindings/net/ti,dp83867.yaml b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+index c6716ac6cbcc..f91d40edab39 100644
+--- a/Documentation/devicetree/bindings/net/ti,dp83867.yaml
++++ b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
+@@ -106,6 +106,18 @@ properties:
+       Transmitt FIFO depth- see dt-bindings/net/ti-dp83867.h for applicable
+       values.
  
- static void
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x0/initvals.h b/drivers/net/wireless/mediatek/mt76/mt76x0/initvals.h
-index 3dcd9620a1266..99808ed0c6cb1 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x0/initvals.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x0/initvals.h
-@@ -11,139 +11,6 @@
++  ti,led-function:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description: |
++      Value of LED configuration register 1, controlling the triggers for the
++      PHY LED outputs. See dt-bindings/net/ti-dp83867.h.
++
++  ti,led-ctrl:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description: |
++      Value of LED configuration register 2, controlling polarity and related
++      settings for the PHY LED outputs. See dt-bindings/net/ti-dp83867.h.
++
+ required:
+   - reg
  
- #include "phy.h"
- 
--static const struct mt76_reg_pair common_mac_reg_table[] = {
--	{ MT_BCN_OFFSET(0),		0xf8f0e8e0 },
--	{ MT_BCN_OFFSET(1),		0x6f77d0c8 },
--	{ MT_LEGACY_BASIC_RATE,		0x0000013f },
--	{ MT_HT_BASIC_RATE,		0x00008003 },
--	{ MT_MAC_SYS_CTRL,		0x00000000 },
--	{ MT_RX_FILTR_CFG,		0x00017f97 },
--	{ MT_BKOFF_SLOT_CFG,		0x00000209 },
--	{ MT_TX_SW_CFG0,		0x00000000 },
--	{ MT_TX_SW_CFG1,		0x00080606 },
--	{ MT_TX_LINK_CFG,		0x00001020 },
--	{ MT_TX_TIMEOUT_CFG,		0x000a2090 },
--	{ MT_MAX_LEN_CFG,		0xa0fff | 0x00001000 },
--	{ MT_LED_CFG,			0x7f031e46 },
--	{ MT_PBF_TX_MAX_PCNT,		0x1fbf1f1f },
--	{ MT_PBF_RX_MAX_PCNT,		0x0000fe9f },
--	{ MT_TX_RETRY_CFG,		0x47d01f0f },
--	{ MT_AUTO_RSP_CFG,		0x00000013 },
--	{ MT_CCK_PROT_CFG,		0x07f40003 },
--	{ MT_OFDM_PROT_CFG,		0x07f42004 },
--	{ MT_PBF_CFG,			0x00f40006 },
--	{ MT_WPDMA_GLO_CFG,		0x00000030 },
--	{ MT_GF20_PROT_CFG,		0x01742004 },
--	{ MT_GF40_PROT_CFG,		0x03f42084 },
--	{ MT_MM20_PROT_CFG,		0x01742004 },
--	{ MT_MM40_PROT_CFG,		0x03f42084 },
--	{ MT_TXOP_CTRL_CFG,		0x0000583f },
--	{ MT_TX_RTS_CFG,		0x00ffff20 },
--	{ MT_EXP_ACK_TIME,		0x002400ca },
--	{ MT_TXOP_HLDR_ET,		0x00000002 },
--	{ MT_XIFS_TIME_CFG,		0x33a41010 },
--	{ MT_PWR_PIN_CFG,		0x00000000 },
--};
--
--static const struct mt76_reg_pair mt76x0_mac_reg_table[] = {
--	{ MT_IOCFG_6,			0xa0040080 },
--	{ MT_PBF_SYS_CTRL,		0x00080c00 },
--	{ MT_PBF_CFG,			0x77723c1f },
--	{ MT_FCE_PSE_CTRL,		0x00000001 },
--	{ MT_AMPDU_MAX_LEN_20M1S,	0xAAA99887 },
--	{ MT_TX_SW_CFG0,		0x00000601 },
--	{ MT_TX_SW_CFG1,		0x00040000 },
--	{ MT_TX_SW_CFG2,		0x00000000 },
--	{ 0xa44,			0x00000000 },
--	{ MT_HEADER_TRANS_CTRL_REG,	0x00000000 },
--	{ MT_TSO_CTRL,			0x00000000 },
--	{ MT_BB_PA_MODE_CFG1,		0x00500055 },
--	{ MT_RF_PA_MODE_CFG1,		0x00500055 },
--	{ MT_TX_ALC_CFG_0,		0x2F2F000C },
--	{ MT_TX0_BB_GAIN_ATTEN,		0x00000000 },
--	{ MT_TX_PWR_CFG_0,		0x3A3A3A3A },
--	{ MT_TX_PWR_CFG_1,		0x3A3A3A3A },
--	{ MT_TX_PWR_CFG_2,		0x3A3A3A3A },
--	{ MT_TX_PWR_CFG_3,		0x3A3A3A3A },
--	{ MT_TX_PWR_CFG_4,		0x3A3A3A3A },
--	{ MT_TX_PWR_CFG_7,		0x3A3A3A3A },
--	{ MT_TX_PWR_CFG_8,		0x0000003A },
--	{ MT_TX_PWR_CFG_9,		0x0000003A },
--	{ 0x150C,			0x00000002 },
--	{ 0x1238,			0x001700C8 },
--	{ MT_LDO_CTRL_0,		0x00A647B6 },
--	{ MT_LDO_CTRL_1,		0x6B006464 },
--	{ MT_HT_BASIC_RATE,		0x00004003 },
--	{ MT_HT_CTRL_CFG,		0x000001FF },
--	{ MT_TXOP_HLDR_ET,		0x00000000 },
--	{ MT_PN_PAD_MODE,		0x00000003 },
--	{ MT_TX_PROT_CFG6,		0xe3f42004 },
--	{ MT_TX_PROT_CFG7,		0xe3f42084 },
--	{ MT_TX_PROT_CFG8,		0xe3f42104 },
--	{ MT_VHT_HT_FBK_CFG1,		0xedcba980 },
--};
--
--static const struct mt76_reg_pair mt76x0_bbp_init_tab[] = {
--	{ MT_BBP(CORE, 1),	0x00000002 },
--	{ MT_BBP(CORE, 4),	0x00000000 },
--	{ MT_BBP(CORE, 24),	0x00000000 },
--	{ MT_BBP(CORE, 32),	0x4003000a },
--	{ MT_BBP(CORE, 42),	0x00000000 },
--	{ MT_BBP(CORE, 44),	0x00000000 },
--	{ MT_BBP(IBI, 11),	0x0FDE8081 },
--	{ MT_BBP(AGC, 0),	0x00021400 },
--	{ MT_BBP(AGC, 1),	0x00000003 },
--	{ MT_BBP(AGC, 2),	0x003A6464 },
--	{ MT_BBP(AGC, 15),	0x88A28CB8 },
--	{ MT_BBP(AGC, 22),	0x00001E21 },
--	{ MT_BBP(AGC, 23),	0x0000272C },
--	{ MT_BBP(AGC, 24),	0x00002F3A },
--	{ MT_BBP(AGC, 25),	0x8000005A },
--	{ MT_BBP(AGC, 26),	0x007C2005 },
--	{ MT_BBP(AGC, 33),	0x00003238 },
--	{ MT_BBP(AGC, 34),	0x000A0C0C },
--	{ MT_BBP(AGC, 37),	0x2121262C },
--	{ MT_BBP(AGC, 41),	0x38383E45 },
--	{ MT_BBP(AGC, 57),	0x00001010 },
--	{ MT_BBP(AGC, 59),	0xBAA20E96 },
--	{ MT_BBP(AGC, 63),	0x00000001 },
--	{ MT_BBP(TXC, 0),	0x00280403 },
--	{ MT_BBP(TXC, 1),	0x00000000 },
--	{ MT_BBP(RXC, 1),	0x00000012 },
--	{ MT_BBP(RXC, 2),	0x00000011 },
--	{ MT_BBP(RXC, 3),	0x00000005 },
--	{ MT_BBP(RXC, 4),	0x00000000 },
--	{ MT_BBP(RXC, 5),	0xF977C4EC },
--	{ MT_BBP(RXC, 7),	0x00000090 },
--	{ MT_BBP(TXO, 8),	0x00000000 },
--	{ MT_BBP(TXBE, 0),	0x00000000 },
--	{ MT_BBP(TXBE, 4),	0x00000004 },
--	{ MT_BBP(TXBE, 6),	0x00000000 },
--	{ MT_BBP(TXBE, 8),	0x00000014 },
--	{ MT_BBP(TXBE, 9),	0x20000000 },
--	{ MT_BBP(TXBE, 10),	0x00000000 },
--	{ MT_BBP(TXBE, 12),	0x00000000 },
--	{ MT_BBP(TXBE, 13),	0x00000000 },
--	{ MT_BBP(TXBE, 14),	0x00000000 },
--	{ MT_BBP(TXBE, 15),	0x00000000 },
--	{ MT_BBP(TXBE, 16),	0x00000000 },
--	{ MT_BBP(TXBE, 17),	0x00000000 },
--	{ MT_BBP(RXFE, 1),	0x00008800 },
--	{ MT_BBP(RXFE, 3),	0x00000000 },
--	{ MT_BBP(RXFE, 4),	0x00000000 },
--	{ MT_BBP(RXO, 13),	0x00000192 },
--	{ MT_BBP(RXO, 14),	0x00060612 },
--	{ MT_BBP(RXO, 15),	0xC8321B18 },
--	{ MT_BBP(RXO, 16),	0x0000001E },
--	{ MT_BBP(RXO, 17),	0x00000000 },
--	{ MT_BBP(RXO, 18),	0xCC00A993 },
--	{ MT_BBP(RXO, 19),	0xB9CB9CB9 },
--	{ MT_BBP(RXO, 20),	0x26c00057 },
--	{ MT_BBP(RXO, 21),	0x00000001 },
--	{ MT_BBP(RXO, 24),	0x00000006 },
--	{ MT_BBP(RXO, 28),	0x0000003F },
--};
--
- static const struct mt76x0_bbp_switch_item mt76x0_bbp_switch_tab[] = {
- 	{ RF_G_BAND | RF_BW_20 | RF_BW_40,		{ MT_BBP(AGC, 4),	0x1FEDA049 } },
- 	{ RF_A_BAND | RF_BW_20 | RF_BW_40 | RF_BW_80,	{ MT_BBP(AGC, 4),	0x1FECA054 } },
-@@ -215,16 +82,4 @@ static const struct mt76x0_bbp_switch_item mt76x0_bbp_switch_tab[] = {
- 	{ RF_A_BAND | RF_BW_20 | RF_BW_40 | RF_BW_80,	{ MT_BBP(RXFE, 0),	0x895000E0 } },
- };
- 
--static const struct mt76_reg_pair mt76x0_dcoc_tab[] = {
--	{ MT_BBP(CAL, 47), 0x000010F0 },
--	{ MT_BBP(CAL, 48), 0x00008080 },
--	{ MT_BBP(CAL, 49), 0x00000F07 },
--	{ MT_BBP(CAL, 50), 0x00000040 },
--	{ MT_BBP(CAL, 51), 0x00000404 },
--	{ MT_BBP(CAL, 52), 0x00080803 },
--	{ MT_BBP(CAL, 53), 0x00000704 },
--	{ MT_BBP(CAL, 54), 0x00002828 },
--	{ MT_BBP(CAL, 55), 0x00005050 },
--};
--
- #endif
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x0/initvals_init.h b/drivers/net/wireless/mediatek/mt76/mt76x0/initvals_init.h
-new file mode 100644
-index 0000000000000..9e99ba75f4902
---- /dev/null
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x0/initvals_init.h
-@@ -0,0 +1,159 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
+@@ -123,5 +135,11 @@ examples:
+         ti,clk-output-sel = <DP83867_CLK_O_SEL_CHN_A_RCLK>;
+         ti,rx-internal-delay = <DP83867_RGMIIDCTL_2_25_NS>;
+         ti,tx-internal-delay = <DP83867_RGMIIDCTL_2_75_NS>;
++        ti,led-function = <(DP83867_LED0(FUNC_LINK_ACT) |
++                            DP83867_LED1(FUNC_LINK_1000))>;
++        ti,led-ctrl = <(DP83867_LED0(CTRL_ACTIVE_HIGH) |
++                        DP83867_LED1(CTRL_ACTIVE_HIGH) |
++                        DP83867_LED2(CTRL_FORCE_LOW) |
++                        DP83867_LED3(CTRL_FORCE_LOW))>;
+       };
+     };
+diff --git a/include/dt-bindings/net/ti-dp83867.h b/include/dt-bindings/net/ti-dp83867.h
+index 6fc4b445d3a1..f3e3866d26ee 100644
+--- a/include/dt-bindings/net/ti-dp83867.h
++++ b/include/dt-bindings/net/ti-dp83867.h
+@@ -50,4 +50,64 @@
+ #define DP83867_CLK_O_SEL_REF_CLK		0xC
+ /* Special flag to indicate clock should be off */
+ #define DP83867_CLK_O_SEL_OFF			0xFFFFFFFF
++
 +/*
-+ * (c) Copyright 2002-2010, Ralink Technology, Inc.
-+ * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
-+ * Copyright (C) 2018 Stanislaw Gruszka <stf_xl@wp.pl>
-+ * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
++ * Register values and helper macros for ti,led-function and ti,led-ctrl
++ *
++ * Example:
++ *
++ * ti,led-function = <(DP83867_LED0(FUNC_LINK_ACT) |
++ *                     DP83867_LED1(FUNC_LINK_1000))>;
++ * ti,led-ctrl = <(DP83867_LED0(CTRL_ACTIVE_HIGH) |
++ *                 DP83867_LED1(CTRL_ACTIVE_HIGH) |
++ *                 DP83867_LED2(CTRL_FORCE_LOW) |
++ *                 DP83867_LED3(CTRL_FORCE_LOW))>;
++ *
++ * It is recommended to force all unused LED pins to high or low level via
++ * led-ctrl (led-function is ignored in this case). LEDs that are missing from
++ * the configured value will be set to value 0x0 (FUNC_LINK and
++ * CTRL_ACTIVE_LOW).
 + */
 +
-+#ifndef __MT76X0U_INITVALS_INIT_H
-+#define __MT76X0U_INITVALS_INIT_H
++/* Link established */
++#define DP83867_LED_FUNC_LINK		0x0
++/* Receive or transmit activity */
++#define DP83867_LED_FUNC_ACT		0x1
++/* Transmit activity */
++#define DP83867_LED_FUNC_ACT_TX		0x2
++/* Receive activity */
++#define DP83867_LED_FUNC_ACT_RX		0x3
++/* Collision detected */
++#define DP83867_LED_FUNC_COLLISION	0x4
++/* 1000BT link established */
++#define DP83867_LED_FUNC_LINK_1000	0x5
++/* 100BTX link established */
++#define DP83867_LED_FUNC_LINK_100	0x6
++/* 10BT link established */
++#define DP83867_LED_FUNC_LINK_10	0x7
++/* 10/100BT link established */
++#define DP83867_LED_FUNC_LINK_10_100	0x8
++/* 100/1000BT link established */
++#define DP83867_LED_FUNC_LINK_100_1000	0x9
++/* Full duplex */
++#define DP83867_LED_FUNC_FULL_DUPLEX	0xa
++/* Link established, blink for transmit or receive activity */
++#define DP83867_LED_FUNC_LINK_ACT	0xb
++/* Receive Error or Transmit Error */
++#define DP83867_LED_FUNC_ERR		0xd
++/* Receive Error */
++#define DP83867_LED_FUNC_ERR_RX		0xe
 +
-+#include "phy.h"
++#define DP83867_LED_CTRL_ACTIVE_HIGH	0x4
++#define DP83867_LED_CTRL_ACTIVE_LOW	0x0
++#define DP83867_LED_CTRL_FORCE_HIGH	0x3
++#define DP83867_LED_CTRL_FORCE_LOW	0x1
 +
-+static const struct mt76_reg_pair common_mac_reg_table[] = {
-+	{ MT_BCN_OFFSET(0),		0xf8f0e8e0 },
-+	{ MT_BCN_OFFSET(1),		0x6f77d0c8 },
-+	{ MT_LEGACY_BASIC_RATE,		0x0000013f },
-+	{ MT_HT_BASIC_RATE,		0x00008003 },
-+	{ MT_MAC_SYS_CTRL,		0x00000000 },
-+	{ MT_RX_FILTR_CFG,		0x00017f97 },
-+	{ MT_BKOFF_SLOT_CFG,		0x00000209 },
-+	{ MT_TX_SW_CFG0,		0x00000000 },
-+	{ MT_TX_SW_CFG1,		0x00080606 },
-+	{ MT_TX_LINK_CFG,		0x00001020 },
-+	{ MT_TX_TIMEOUT_CFG,		0x000a2090 },
-+	{ MT_MAX_LEN_CFG,		0xa0fff | 0x00001000 },
-+	{ MT_LED_CFG,			0x7f031e46 },
-+	{ MT_PBF_TX_MAX_PCNT,		0x1fbf1f1f },
-+	{ MT_PBF_RX_MAX_PCNT,		0x0000fe9f },
-+	{ MT_TX_RETRY_CFG,		0x47d01f0f },
-+	{ MT_AUTO_RSP_CFG,		0x00000013 },
-+	{ MT_CCK_PROT_CFG,		0x07f40003 },
-+	{ MT_OFDM_PROT_CFG,		0x07f42004 },
-+	{ MT_PBF_CFG,			0x00f40006 },
-+	{ MT_WPDMA_GLO_CFG,		0x00000030 },
-+	{ MT_GF20_PROT_CFG,		0x01742004 },
-+	{ MT_GF40_PROT_CFG,		0x03f42084 },
-+	{ MT_MM20_PROT_CFG,		0x01742004 },
-+	{ MT_MM40_PROT_CFG,		0x03f42084 },
-+	{ MT_TXOP_CTRL_CFG,		0x0000583f },
-+	{ MT_TX_RTS_CFG,		0x00ffff20 },
-+	{ MT_EXP_ACK_TIME,		0x002400ca },
-+	{ MT_TXOP_HLDR_ET,		0x00000002 },
-+	{ MT_XIFS_TIME_CFG,		0x33a41010 },
-+	{ MT_PWR_PIN_CFG,		0x00000000 },
-+};
++#define DP83867_LED_SHIFT(v, s)		((DP83867_LED_##v) << (s))
 +
-+static const struct mt76_reg_pair mt76x0_mac_reg_table[] = {
-+	{ MT_IOCFG_6,			0xa0040080 },
-+	{ MT_PBF_SYS_CTRL,		0x00080c00 },
-+	{ MT_PBF_CFG,			0x77723c1f },
-+	{ MT_FCE_PSE_CTRL,		0x00000001 },
-+	{ MT_AMPDU_MAX_LEN_20M1S,	0xAAA99887 },
-+	{ MT_TX_SW_CFG0,		0x00000601 },
-+	{ MT_TX_SW_CFG1,		0x00040000 },
-+	{ MT_TX_SW_CFG2,		0x00000000 },
-+	{ 0xa44,			0x00000000 },
-+	{ MT_HEADER_TRANS_CTRL_REG,	0x00000000 },
-+	{ MT_TSO_CTRL,			0x00000000 },
-+	{ MT_BB_PA_MODE_CFG1,		0x00500055 },
-+	{ MT_RF_PA_MODE_CFG1,		0x00500055 },
-+	{ MT_TX_ALC_CFG_0,		0x2F2F000C },
-+	{ MT_TX0_BB_GAIN_ATTEN,		0x00000000 },
-+	{ MT_TX_PWR_CFG_0,		0x3A3A3A3A },
-+	{ MT_TX_PWR_CFG_1,		0x3A3A3A3A },
-+	{ MT_TX_PWR_CFG_2,		0x3A3A3A3A },
-+	{ MT_TX_PWR_CFG_3,		0x3A3A3A3A },
-+	{ MT_TX_PWR_CFG_4,		0x3A3A3A3A },
-+	{ MT_TX_PWR_CFG_7,		0x3A3A3A3A },
-+	{ MT_TX_PWR_CFG_8,		0x0000003A },
-+	{ MT_TX_PWR_CFG_9,		0x0000003A },
-+	{ 0x150C,			0x00000002 },
-+	{ 0x1238,			0x001700C8 },
-+	{ MT_LDO_CTRL_0,		0x00A647B6 },
-+	{ MT_LDO_CTRL_1,		0x6B006464 },
-+	{ MT_HT_BASIC_RATE,		0x00004003 },
-+	{ MT_HT_CTRL_CFG,		0x000001FF },
-+	{ MT_TXOP_HLDR_ET,		0x00000000 },
-+	{ MT_PN_PAD_MODE,		0x00000003 },
-+	{ MT_TX_PROT_CFG6,		0xe3f42004 },
-+	{ MT_TX_PROT_CFG7,		0xe3f42084 },
-+	{ MT_TX_PROT_CFG8,		0xe3f42104 },
-+	{ MT_VHT_HT_FBK_CFG1,		0xedcba980 },
-+};
++#define DP83867_LED0(v)			DP83867_LED_SHIFT(v, 0)
++#define DP83867_LED1(v)			DP83867_LED_SHIFT(v, 4)
++#define DP83867_LED2(v)			DP83867_LED_SHIFT(v, 8)
++#define DP83867_LED3(v)			DP83867_LED_SHIFT(v, 12)
 +
-+static const struct mt76_reg_pair mt76x0_bbp_init_tab[] = {
-+	{ MT_BBP(CORE, 1),	0x00000002 },
-+	{ MT_BBP(CORE, 4),	0x00000000 },
-+	{ MT_BBP(CORE, 24),	0x00000000 },
-+	{ MT_BBP(CORE, 32),	0x4003000a },
-+	{ MT_BBP(CORE, 42),	0x00000000 },
-+	{ MT_BBP(CORE, 44),	0x00000000 },
-+	{ MT_BBP(IBI, 11),	0x0FDE8081 },
-+	{ MT_BBP(AGC, 0),	0x00021400 },
-+	{ MT_BBP(AGC, 1),	0x00000003 },
-+	{ MT_BBP(AGC, 2),	0x003A6464 },
-+	{ MT_BBP(AGC, 15),	0x88A28CB8 },
-+	{ MT_BBP(AGC, 22),	0x00001E21 },
-+	{ MT_BBP(AGC, 23),	0x0000272C },
-+	{ MT_BBP(AGC, 24),	0x00002F3A },
-+	{ MT_BBP(AGC, 25),	0x8000005A },
-+	{ MT_BBP(AGC, 26),	0x007C2005 },
-+	{ MT_BBP(AGC, 33),	0x00003238 },
-+	{ MT_BBP(AGC, 34),	0x000A0C0C },
-+	{ MT_BBP(AGC, 37),	0x2121262C },
-+	{ MT_BBP(AGC, 41),	0x38383E45 },
-+	{ MT_BBP(AGC, 57),	0x00001010 },
-+	{ MT_BBP(AGC, 59),	0xBAA20E96 },
-+	{ MT_BBP(AGC, 63),	0x00000001 },
-+	{ MT_BBP(TXC, 0),	0x00280403 },
-+	{ MT_BBP(TXC, 1),	0x00000000 },
-+	{ MT_BBP(RXC, 1),	0x00000012 },
-+	{ MT_BBP(RXC, 2),	0x00000011 },
-+	{ MT_BBP(RXC, 3),	0x00000005 },
-+	{ MT_BBP(RXC, 4),	0x00000000 },
-+	{ MT_BBP(RXC, 5),	0xF977C4EC },
-+	{ MT_BBP(RXC, 7),	0x00000090 },
-+	{ MT_BBP(TXO, 8),	0x00000000 },
-+	{ MT_BBP(TXBE, 0),	0x00000000 },
-+	{ MT_BBP(TXBE, 4),	0x00000004 },
-+	{ MT_BBP(TXBE, 6),	0x00000000 },
-+	{ MT_BBP(TXBE, 8),	0x00000014 },
-+	{ MT_BBP(TXBE, 9),	0x20000000 },
-+	{ MT_BBP(TXBE, 10),	0x00000000 },
-+	{ MT_BBP(TXBE, 12),	0x00000000 },
-+	{ MT_BBP(TXBE, 13),	0x00000000 },
-+	{ MT_BBP(TXBE, 14),	0x00000000 },
-+	{ MT_BBP(TXBE, 15),	0x00000000 },
-+	{ MT_BBP(TXBE, 16),	0x00000000 },
-+	{ MT_BBP(TXBE, 17),	0x00000000 },
-+	{ MT_BBP(RXFE, 1),	0x00008800 },
-+	{ MT_BBP(RXFE, 3),	0x00000000 },
-+	{ MT_BBP(RXFE, 4),	0x00000000 },
-+	{ MT_BBP(RXO, 13),	0x00000192 },
-+	{ MT_BBP(RXO, 14),	0x00060612 },
-+	{ MT_BBP(RXO, 15),	0xC8321B18 },
-+	{ MT_BBP(RXO, 16),	0x0000001E },
-+	{ MT_BBP(RXO, 17),	0x00000000 },
-+	{ MT_BBP(RXO, 18),	0xCC00A993 },
-+	{ MT_BBP(RXO, 19),	0xB9CB9CB9 },
-+	{ MT_BBP(RXO, 20),	0x26c00057 },
-+	{ MT_BBP(RXO, 21),	0x00000001 },
-+	{ MT_BBP(RXO, 24),	0x00000006 },
-+	{ MT_BBP(RXO, 28),	0x0000003F },
-+};
-+
-+static const struct mt76_reg_pair mt76x0_dcoc_tab[] = {
-+	{ MT_BBP(CAL, 47), 0x000010F0 },
-+	{ MT_BBP(CAL, 48), 0x00008080 },
-+	{ MT_BBP(CAL, 49), 0x00000F07 },
-+	{ MT_BBP(CAL, 50), 0x00000040 },
-+	{ MT_BBP(CAL, 51), 0x00000404 },
-+	{ MT_BBP(CAL, 52), 0x00080803 },
-+	{ MT_BBP(CAL, 53), 0x00000704 },
-+	{ MT_BBP(CAL, 54), 0x00002828 },
-+	{ MT_BBP(CAL, 55), 0x00005050 },
-+};
-+
-+#endif
+ #endif
 -- 
-2.25.1
+2.17.1
 
