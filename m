@@ -2,134 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9563224D116
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 11:02:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 840F024D1E9
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 12:02:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727082AbgHUJCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 05:02:09 -0400
-Received: from mx138-tc.baidu.com ([61.135.168.138]:49688 "EHLO
-        tc-sys-mailedm03.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725855AbgHUJCH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 05:02:07 -0400
-Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
-        by tc-sys-mailedm03.tc.baidu.com (Postfix) with ESMTP id 29262450003C;
-        Fri, 21 Aug 2020 17:01:54 +0800 (CST)
-From:   Li RongQing <lirongqing@baidu.com>
-To:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH][next] i40e: switch kvzalloc to allocate rx/tx_bi buffer
-Date:   Fri, 21 Aug 2020 17:01:54 +0800
-Message-Id: <1598000514-5951-1-git-send-email-lirongqing@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        id S1728464AbgHUKC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 06:02:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727791AbgHUKCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 06:02:49 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A13CC061387
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 03:02:30 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id i10so1226522ljn.2
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 03:02:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0zq6O6XNtbvMJ85OSmttR2Y1SxK+5YaiE+8rmcNArx0=;
+        b=SFQ3Sp3NHvIsGDthPzkjEFDi8Tet3ENIUgQ6XH9GFtNUt78oPw4osTvSZkyOmPV4Fu
+         1IPyt2I/vq4sN9mMoDFgBLEXJ10S0cvBzw252bZLDhZMpuOre2P2AEiLHe1eEN7Ur7G6
+         ek/cAepg4rRlYhGsQLqtkGuxZ/thXGAnSB5ec=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0zq6O6XNtbvMJ85OSmttR2Y1SxK+5YaiE+8rmcNArx0=;
+        b=svBH4iyFa8E2nPNcFVPmux3AR5b2XNOSu+Wi3o87L5QueNqWylcUWygz0Lj9X4XbpH
+         m3+NtlVf40qOokn+QZf9KjDZyunkEoO5HqE1omut7yd9dfdydcyjM9DxMvr7VpAP6RON
+         B+uXDZwrj7f+sbyxcAwVHstAFM7guztaHOQb9iYqNJZgiGhlYZUpLRk9qjdt7ETP6OHT
+         uAe5KL+tkSVEuR3vEXsOS9vFt4J30HU6xiV7dy8v1E2+LwDtt3fq0CuMHr3E3tK+RIVj
+         SUVeDnVA0G/5llCWx8xsRkM/nfCc2UQWs9anG2ZcFLCYxxL9pHnep6jTtgNhNCWbjyCA
+         eFKw==
+X-Gm-Message-State: AOAM5337JvZmjMudpcu/Bp6jTNaJ+meY1IZNngC1cgmCD5hap5lJf2GH
+        CGvgyftkGtcKEJXie7KZfb88/A==
+X-Google-Smtp-Source: ABdhPJwABrPiP6Y65sRymDtE7PCvbRbx4RnVMkhd2+a8xd7U4712s3LREP06ZoJ4hF8AiWPmYWk1Wg==
+X-Received: by 2002:a2e:7c18:: with SMTP id x24mr1131278ljc.402.1598004148054;
+        Fri, 21 Aug 2020 03:02:28 -0700 (PDT)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id g11sm288215lfc.46.2020.08.21.03.02.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Aug 2020 03:02:27 -0700 (PDT)
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     linux-doc@vger.kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: [PATCH] bpf: sk_lookup: Add user documentation
+Date:   Fri, 21 Aug 2020 12:02:26 +0200
+Message-Id: <20200821100226.403844-1-jakub@cloudflare.com>
+X-Mailer: git-send-email 2.25.4
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-when changes the rx/tx ring to 4096, rx/tx_bi needs an order
-5 pages, and allocation maybe fail due to memory fragmentation
-so switch to kvzalloc
+Describe the purpose of BPF sk_lookup program, how it can be attached, when
+it gets invoked, and what information gets passed to it. Point the reader
+to examples and further documentation.
 
- i40e 0000:1a:00.0 xgbe0: Changing Rx descriptor count from 512 to 4096
- ethtool: page allocation failure: order:5, mode:0x60c0c0(GFP_KERNEL|__GFP_COMP|__GFP_ZERO), nodemask=(null)
- ethtool cpuset=/ mems_allowed=0
- CPU: 34 PID: 47182 Comm: ethtool Kdump: loaded Tainted: G            E     4.19 #1
- Hardware name: Inspur BJINSPURV2G5Y72-32A/SN6115M5, BIOS 3.0.12 03/29/2018
- Call Trace:
-  dump_stack+0x66/0x8b
-  warn_alloc+0xff/0x1a0
-  __alloc_pages_slowpath+0xcc9/0xd00
-  __alloc_pages_nodemask+0x25e/0x2a0
-  kmalloc_order+0x14/0x40
-  kmalloc_order_trace+0x1d/0xb0
-  i40e_setup_rx_descriptors+0x47/0x1e0 [i40e]
-  i40e_set_ringparam+0x25e/0x7c0 [i40e]
-  dev_ethtool+0x1fa3/0x2920
-  ? inet_ioctl+0xe0/0x250
-  ? __rtnl_unlock+0x25/0x40
-  ? netdev_run_todo+0x5e/0x2f0
-  ? dev_ioctl+0xb3/0x560
-  dev_ioctl+0xb3/0x560
-  sock_do_ioctl+0xae/0x150
-  ? sock_ioctl+0x1c6/0x310
-  sock_ioctl+0x1c6/0x310
-  ? do_vfs_ioctl+0xa4/0x630
-  ? dlci_ioctl_set+0x30/0x30
-  do_vfs_ioctl+0xa4/0x630
-  ? handle_mm_fault+0xe6/0x240
-  ? __do_page_fault+0x288/0x510
-  ksys_ioctl+0x70/0x80
-  __x64_sys_ioctl+0x16/0x20
-  do_syscall_64+0x5b/0x1b0
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |  2 +-
- drivers/net/ethernet/intel/i40e/i40e_txrx.c | 10 +++++-----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ Documentation/bpf/index.rst          |  1 +
+ Documentation/bpf/prog_sk_lookup.rst | 98 ++++++++++++++++++++++++++++
+ 2 files changed, 99 insertions(+)
+ create mode 100644 Documentation/bpf/prog_sk_lookup.rst
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index a63548cb022d..1a817580b945 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -3260,7 +3260,7 @@ static int i40e_configure_rx_ring(struct i40e_ring *ring)
- 	if (ring->vsi->type == I40E_VSI_MAIN)
- 		xdp_rxq_info_unreg_mem_model(&ring->xdp_rxq);
+diff --git a/Documentation/bpf/index.rst b/Documentation/bpf/index.rst
+index 7df2465fd108..4f2874b729c3 100644
+--- a/Documentation/bpf/index.rst
++++ b/Documentation/bpf/index.rst
+@@ -52,6 +52,7 @@ Program types
+    prog_cgroup_sysctl
+    prog_flow_dissector
+    bpf_lsm
++   prog_sk_lookup
  
--	kfree(ring->rx_bi);
-+	kvfree(ring->rx_bi);
- 	ring->xsk_umem = i40e_xsk_umem(ring);
- 	if (ring->xsk_umem) {
- 		ret = i40e_alloc_rx_bi_zc(ring);
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index 5f9fe55bb66d..4dc7d6e6b226 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -674,7 +674,7 @@ void i40e_clean_tx_ring(struct i40e_ring *tx_ring)
- void i40e_free_tx_resources(struct i40e_ring *tx_ring)
- {
- 	i40e_clean_tx_ring(tx_ring);
--	kfree(tx_ring->tx_bi);
-+	kvfree(tx_ring->tx_bi);
- 	tx_ring->tx_bi = NULL;
  
- 	if (tx_ring->desc) {
-@@ -1273,7 +1273,7 @@ int i40e_setup_tx_descriptors(struct i40e_ring *tx_ring)
- 	/* warn if we are about to overwrite the pointer */
- 	WARN_ON(tx_ring->tx_bi);
- 	bi_size = sizeof(struct i40e_tx_buffer) * tx_ring->count;
--	tx_ring->tx_bi = kzalloc(bi_size, GFP_KERNEL);
-+	tx_ring->tx_bi = kvzalloc(bi_size, GFP_KERNEL);
- 	if (!tx_ring->tx_bi)
- 		goto err;
- 
-@@ -1300,7 +1300,7 @@ int i40e_setup_tx_descriptors(struct i40e_ring *tx_ring)
- 	return 0;
- 
- err:
--	kfree(tx_ring->tx_bi);
-+	kvfree(tx_ring->tx_bi);
- 	tx_ring->tx_bi = NULL;
- 	return -ENOMEM;
- }
-@@ -1309,7 +1309,7 @@ int i40e_alloc_rx_bi(struct i40e_ring *rx_ring)
- {
- 	unsigned long sz = sizeof(*rx_ring->rx_bi) * rx_ring->count;
- 
--	rx_ring->rx_bi = kzalloc(sz, GFP_KERNEL);
-+	rx_ring->rx_bi = kvzalloc(sz, GFP_KERNEL);
- 	return rx_ring->rx_bi ? 0 : -ENOMEM;
- }
- 
-@@ -1394,7 +1394,7 @@ void i40e_free_rx_resources(struct i40e_ring *rx_ring)
- 	if (rx_ring->vsi->type == I40E_VSI_MAIN)
- 		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
- 	rx_ring->xdp_prog = NULL;
--	kfree(rx_ring->rx_bi);
-+	kvfree(rx_ring->rx_bi);
- 	rx_ring->rx_bi = NULL;
- 
- 	if (rx_ring->desc) {
+ Map types
+diff --git a/Documentation/bpf/prog_sk_lookup.rst b/Documentation/bpf/prog_sk_lookup.rst
+new file mode 100644
+index 000000000000..85a305c19bcd
+--- /dev/null
++++ b/Documentation/bpf/prog_sk_lookup.rst
+@@ -0,0 +1,98 @@
++.. SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++
++=====================
++BPF sk_lookup program
++=====================
++
++BPF sk_lookup program type (``BPF_PROG_TYPE_SK_LOOKUP``) introduces programmability
++into the socket lookup performed by the transport layer when a packet is to be
++delivered locally.
++
++When invoked BPF sk_lookup program can select a socket that will receive the
++incoming packet by calling the ``bpf_sk_assign()`` BPF helper function.
++
++Hooks for a common attach point (``BPF_SK_LOOKUP``) exist for both TCP and UDP.
++
++Motivation
++==========
++
++BPF sk_lookup program type was introduced to address setup scenarios where
++binding sockets to an address with ``bind()`` socket call is impractical, such
++as:
++
++1. receiving connections on a range of IP addresses, e.g. 192.0.2.0/24, when
++   binding to a wildcard address ``INADRR_ANY`` is not possible due to a port
++   conflict,
++2. receiving connections on all or a wide range of ports, i.e. an L7 proxy use
++   case.
++
++Such setups would require creating and ``bind()``'ing one socket to each of the
++IP address/port in the range, leading to resource consumption and potential
++latency spikes during socket lookup.
++
++Attachment
++==========
++
++BPF sk_lookup program can be attached to a network namespace with
++``bpf(BPF_LINK_CREATE, ...)`` syscall using the ``BPF_SK_LOOKUP`` attach type and a
++netns FD as attachment ``target_fd``.
++
++Multiple programs can be attached to one network namespace. Programs will be
++invoked in the same order as they were attached.
++
++Hooks
++=====
++
++The attached BPF sk_lookup programs run whenever the transport layer needs to
++find a listening (TCP) or an unconnected (UDP) socket for an incoming packet.
++
++Incoming traffic to established (TCP) and connected (UDP) sockets is delivered
++as usual without triggering the BPF sk_lookup hook.
++
++The attached BPF programs must return with either ``SK_PASS`` or ``SK_DROP``
++verdict code. As for other BPF program types that are network filters,
++``SK_PASS`` signifies that the socket lookup should continue on to regular
++hashtable-based lookup, while ``SK_DROP`` causes the transport layer to drop the
++packet.
++
++A BPF sk_lookup program can also select a socket to receive the packet by
++calling ``bpf_sk_assign()`` BPF helper. Typically, the program looks up a socket
++in a map holding sockets, such as ``SOCKMAP`` or ``SOCKHASH``, and passes a
++``struct bpf_sock *`` to ``bpf_sk_assign()`` helper to record the
++selection. Selecting a socket only takes effect if the program has terminated
++with ``SK_PASS`` code.
++
++When multiple programs are attached, the end result is determined from return
++codes of all the programs according to the following rules:
++
++1. If any program returned ``SK_PASS`` and selected a valid socket, the socket
++   is used as the result of the socket lookup.
++2. If more than one program returned ``SK_PASS`` and selected a socket, the last
++   selection takes effect.
++3. If any program returned ``SK_DROP``, and no program returned ``SK_PASS`` and
++   selected a socket, socket lookup fails.
++4. If all programs returned ``SK_PASS`` and none of them selected a socket,
++   socket lookup continues on.
++
++API
++===
++
++In its context, an instance of ``struct bpf_sk_lookup``, BPF sk_lookup program
++receives information about the packet that triggered the socket lookup. Namely:
++
++* IP version (``AF_INET`` or ``AF_INET6``),
++* L4 protocol identifier (``IPPROTO_TCP`` or ``IPPROTO_UDP``),
++* source and destination IP address,
++* source and destination L4 port,
++* the socket that has been selected with ``bpf_sk_assign()``.
++
++Refer to ``struct bpf_sk_lookup`` declaration in ``linux/bpf.h`` user API
++header, and `bpf-helpers(7)
++<https://man7.org/linux/man-pages/man7/bpf-helpers.7.html>`_ man-page section
++for ``bpf_sk_assign()`` for details.
++
++Example
++=======
++
++See ``tools/testing/selftests/bpf/prog_tests/sk_lookup.c`` for the reference
++implementation.
 -- 
-2.16.2
+2.25.4
 
