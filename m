@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B268E24CF29
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 09:22:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E4F424CF27
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 09:22:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728641AbgHUHWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 03:22:38 -0400
-Received: from mx1.tq-group.com ([62.157.118.193]:44577 "EHLO mx1.tq-group.com"
+        id S1728056AbgHUHWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 03:22:39 -0400
+Received: from mx1.tq-group.com ([62.157.118.193]:44582 "EHLO mx1.tq-group.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728056AbgHUHW2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 03:22:28 -0400
-IronPort-SDR: w79nluinkL3SKoYHInWHxhFBFe07XrWBzzRRr0yktT9zSEIGdcKytSP1gWqqTliOTbgKXVnQwq
- 7xoMUgAmCPjThddW6S/vuD/Tb9yennWBlwStVClih9qn+goNgcnT+oeL3Vm4oGCVzM8UYPePmn
- k7LOluuUKTmruUamHRQr1EJcnyP94KaTkqoGJ9KORrgcNYqRJGbAOncJixPfaefPRR5pcqK/sa
- I6Rvc8+w8n0h6F3bjTOUmIqndXqiPYdpP9f49ZRWM98H/4gPnzVSsht9hHn4P5Z0Xxzf7iWvsr
- KqI=
+        id S1728270AbgHUHWb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 03:22:31 -0400
+IronPort-SDR: PvpX4vLHoB6c9cGWXR+HM20NT9r22FGsrYRI3utjSvWfg16ftQ5T6XYs86nxtN3Xy/Gr9H84f8
+ R0f9vzRkx9AF45foI7mKFqbB0GwehklXFftO6AP07M/MZcavuTmEMDZ//LmJxXZ8fHPg5RVtb+
+ Xu8bF+vyj5wPwW4aeQgZfTu9oP6/mrN15eYA7lAQ672VqX8Wndgao364ec3jGs+SjcLWjc2Az9
+ QJYHA5gXCT+1U8gGbBJVb4GfOujTfNYFKaRNEnC2/V48U3DgKblVqwdOxJEiSH1ERTxfhVi5kP
+ 6CM=
 X-IronPort-AV: E=Sophos;i="5.76,335,1592863200"; 
-   d="scan'208";a="13549382"
+   d="scan'208";a="13549384"
 Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
   by mx1-pgp.tq-group.com with ESMTP; 21 Aug 2020 09:22:26 +0200
 Received: from mx1.tq-group.com ([192.168.6.7])
   by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Fri, 21 Aug 2020 09:22:26 +0200
+  Fri, 21 Aug 2020 09:22:29 +0200
 X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Fri, 21 Aug 2020 09:22:26 +0200
+        by tq-pgp-pr1.tq-net.de on Fri, 21 Aug 2020 09:22:29 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
   t=1597994546; x=1629530546;
-  h=from:to:cc:subject:date:message-id;
-  bh=EefKwu7gf4WtneGw/sVo55ly+Znp9htNXOYzXWaEm68=;
-  b=jy9ThjoV4wDk9UiDVcJVGjprT+d2U9L+WrXMQah1AwCzxlxcpGXounJ/
-   EQyvQ19Sg08UxUd3MZvWvJks2AJQHHWXl1kJ13yOKDl/DZnhLmt5PG8oA
-   fDtu35DUubNxZ/HHn3LtSbMCg8JrEdteuAmM1oCZJVXLIaEDK1wXnnteW
-   377vyoON0/N0aGI/Y5Yzt8ZLQ0Bpg64pQsKdM3HL3QdhZ/849C7Wy/c9J
-   +qi9Q6xHHF1iC+joi5f8nliGI9Zn+u5qqrIieWFdm2OjtFkwgDXiRkf6W
-   Jdf5rCUTEfCOwX0Zg/5Gn6CsJyuYFGT+AqMyv3feuu258gnXXcibvS46r
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=C2YxwjDhmsC3RZPpcsF1SDGKY5Ul1PexKxYtX5L1/3k=;
+  b=jgau/tGjIKIdGMdRG+L7p1JwJvunKAAj1PU8Xcc22sDGkoeVRXCOahTC
+   d3slq2Q7WRF/xbsa7osaR8q5mCmUS9OEr08fXK/4NFD726eA+VkJ+ryA5
+   FYb7cL4OZlH9L4wtmccL/PlNNdw76V83IJj0cLpJwF+tufY9bPtrq9ekr
+   cK+exIP1tw5kf221mYJqvemcIpNntV/koJ1DSQrOVVI9zBvwo8kG7WHt3
+   ex2oNYcJ8YvxgwGrA3bra0TpEvfKJCKgpJehd/QYxEiyZNyZk5eugVk/K
+   BPyfBE7wqJuM9qpL9/pFgZHycJwP7U9joIL63gkoP4YC0Nf7wYM+s2SRO
    g==;
-IronPort-SDR: wl6o/SaXXXPhs/Ibl2ArIyhyI7yKooib5XSU7LoxvPQsN4N2QbJNy8gz6Jt5XPAgNnhljOLtM4
- dlf63hseFjJEopXKLRXX994O74GctOpWtz6ZQ9K6ltNGBeO8AaIeYX0UR4oLFc3wGNPNCbKfqT
- ZvyukA7Ec/SS3JxLp4ubcXOTEM1P60dlIZfI37uI7ahsLX7ej0ki59b9u21mcVxUjYVHqu/jXN
- wjZUi67yqNJ6V/d249jLoTd+cU+bElBh3A6g4SYL4zjPl/LCdVRTmeGYpW/uY1RpqBb2it9+3B
- dio=
+IronPort-SDR: SUKNibXxzv1XPL+UiPJeYZeyVofAQBX+xqiik/VINdxgi6Yea2TV1bKh2HGlBICHCmL2D5Q1IM
+ 8gyzab0K5QkKVxTbWY4AkWjjqCtwADype1Jj31jhJBQuBz9Ev3lRvjPcbgQGwacBts+WycIQD9
+ MVrnnedoL74ZtAqsBbdIz2wSWyLUyyxIUfhXXc76UBNGBTdmTIGllMD9DRAOOYqpuKkXzrYc8j
+ 1pa/15uTRixuAPxqtMCbAdmAl/xNC9+tVgB6JixjH+oA+Jk3zqj5nycXVHWem7+BqqQXNyrhdl
+ EzE=
 X-IronPort-AV: E=Sophos;i="5.76,335,1592863200"; 
-   d="scan'208";a="13549381"
+   d="scan'208";a="13549383"
 Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 21 Aug 2020 09:22:25 +0200
+  by mx1.tq-group.com with ESMTP; 21 Aug 2020 09:22:26 +0200
 Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.117.49.26])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id BFDDF280065;
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id EFC79280070;
         Fri, 21 Aug 2020 09:22:25 +0200 (CEST)
 From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 To:     "David S. Miller" <davem@davemloft.net>,
@@ -59,132 +60,87 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Dan Murphy <dmurphy@ti.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH net-next 1/2] dt-bindings: dp83867: add ti,led-function and ti,led-ctrl properties
-Date:   Fri, 21 Aug 2020 09:21:45 +0200
-Message-Id: <20200821072146.8117-1-matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH net-next 2/2] net: phy: dp83867: apply ti,led-function and ti,led-ctrl to registers
+Date:   Fri, 21 Aug 2020 09:21:46 +0200
+Message-Id: <20200821072146.8117-2-matthias.schiffer@ew.tq-group.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200821072146.8117-1-matthias.schiffer@ew.tq-group.com>
+References: <20200821072146.8117-1-matthias.schiffer@ew.tq-group.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the TQ-Systems MBa7x (imx7-mba7.dtsi), a user of these properties
-already sneaked in before they were properly specified. Add them to the
-binding docs.
-
-On top of the existing use (requiring to specify the raw register value
-in the DTS), we propose a few convenience macros and defines.
+These DT bindings are already in use by the imx7-mba7 DTS, but they were
+not supported by the PHY driver so far.
 
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 ---
- .../devicetree/bindings/net/ti,dp83867.yaml   | 18 ++++++
- include/dt-bindings/net/ti-dp83867.h          | 60 +++++++++++++++++++
- 2 files changed, 78 insertions(+)
+ drivers/net/phy/dp83867.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/ti,dp83867.yaml b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-index c6716ac6cbcc..f91d40edab39 100644
---- a/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,dp83867.yaml
-@@ -106,6 +106,18 @@ properties:
-       Transmitt FIFO depth- see dt-bindings/net/ti-dp83867.h for applicable
-       values.
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index f3c04981b8da..972824e25c1c 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -26,6 +26,8 @@
+ #define MII_DP83867_MICR	0x12
+ #define MII_DP83867_ISR		0x13
+ #define DP83867_CFG2		0x14
++#define DP83867_LEDCR1		0x18
++#define DP83867_LEDCR2		0x19
+ #define DP83867_CFG3		0x1e
+ #define DP83867_CTRL		0x1f
  
-+  ti,led-function:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    description: |
-+      Value of LED configuration register 1, controlling the triggers for the
-+      PHY LED outputs. See dt-bindings/net/ti-dp83867.h.
-+
-+  ti,led-ctrl:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    description: |
-+      Value of LED configuration register 2, controlling polarity and related
-+      settings for the PHY LED outputs. See dt-bindings/net/ti-dp83867.h.
-+
- required:
-   - reg
+@@ -163,6 +165,8 @@ struct dp83867_private {
+ 	u32 rx_fifo_depth;
+ 	int io_impedance;
+ 	int port_mirroring;
++	u32 led_function;
++	u32 led_ctrl;
+ 	bool rxctrl_strap_quirk;
+ 	bool set_clk_output;
+ 	u32 clk_output_sel;
+@@ -583,6 +587,27 @@ static int dp83867_of_init(struct phy_device *phydev)
+ 		return -EINVAL;
+ 	}
  
-@@ -123,5 +135,11 @@ examples:
-         ti,clk-output-sel = <DP83867_CLK_O_SEL_CHN_A_RCLK>;
-         ti,rx-internal-delay = <DP83867_RGMIIDCTL_2_25_NS>;
-         ti,tx-internal-delay = <DP83867_RGMIIDCTL_2_75_NS>;
-+        ti,led-function = <(DP83867_LED0(FUNC_LINK_ACT) |
-+                            DP83867_LED1(FUNC_LINK_1000))>;
-+        ti,led-ctrl = <(DP83867_LED0(CTRL_ACTIVE_HIGH) |
-+                        DP83867_LED1(CTRL_ACTIVE_HIGH) |
-+                        DP83867_LED2(CTRL_FORCE_LOW) |
-+                        DP83867_LED3(CTRL_FORCE_LOW))>;
-       };
-     };
-diff --git a/include/dt-bindings/net/ti-dp83867.h b/include/dt-bindings/net/ti-dp83867.h
-index 6fc4b445d3a1..f3e3866d26ee 100644
---- a/include/dt-bindings/net/ti-dp83867.h
-+++ b/include/dt-bindings/net/ti-dp83867.h
-@@ -50,4 +50,64 @@
- #define DP83867_CLK_O_SEL_REF_CLK		0xC
- /* Special flag to indicate clock should be off */
- #define DP83867_CLK_O_SEL_OFF			0xFFFFFFFF
++	ret = of_property_read_u32(of_node, "ti,led-function",
++				   &dp83867->led_function);
++	if (ret) {
++		dp83867->led_function = U32_MAX;
++	} else if (dp83867->led_function > U16_MAX) {
++		phydev_err(phydev,
++			   "ti,led-function value %x out of range\n",
++			   dp83867->led_function);
++		return -EINVAL;
++	}
 +
-+/*
-+ * Register values and helper macros for ti,led-function and ti,led-ctrl
-+ *
-+ * Example:
-+ *
-+ * ti,led-function = <(DP83867_LED0(FUNC_LINK_ACT) |
-+ *                     DP83867_LED1(FUNC_LINK_1000))>;
-+ * ti,led-ctrl = <(DP83867_LED0(CTRL_ACTIVE_HIGH) |
-+ *                 DP83867_LED1(CTRL_ACTIVE_HIGH) |
-+ *                 DP83867_LED2(CTRL_FORCE_LOW) |
-+ *                 DP83867_LED3(CTRL_FORCE_LOW))>;
-+ *
-+ * It is recommended to force all unused LED pins to high or low level via
-+ * led-ctrl (led-function is ignored in this case). LEDs that are missing from
-+ * the configured value will be set to value 0x0 (FUNC_LINK and
-+ * CTRL_ACTIVE_LOW).
-+ */
++	ret = of_property_read_u32(of_node, "ti,led-ctrl", &dp83867->led_ctrl);
++	if (ret) {
++		dp83867->led_ctrl = U32_MAX;
++	} else if (dp83867->led_ctrl > U16_MAX) {
++		phydev_err(phydev,
++			   "ti,led-ctrl value %x out of range\n",
++			   dp83867->led_ctrl);
++		return -EINVAL;
++	}
 +
-+/* Link established */
-+#define DP83867_LED_FUNC_LINK		0x0
-+/* Receive or transmit activity */
-+#define DP83867_LED_FUNC_ACT		0x1
-+/* Transmit activity */
-+#define DP83867_LED_FUNC_ACT_TX		0x2
-+/* Receive activity */
-+#define DP83867_LED_FUNC_ACT_RX		0x3
-+/* Collision detected */
-+#define DP83867_LED_FUNC_COLLISION	0x4
-+/* 1000BT link established */
-+#define DP83867_LED_FUNC_LINK_1000	0x5
-+/* 100BTX link established */
-+#define DP83867_LED_FUNC_LINK_100	0x6
-+/* 10BT link established */
-+#define DP83867_LED_FUNC_LINK_10	0x7
-+/* 10/100BT link established */
-+#define DP83867_LED_FUNC_LINK_10_100	0x8
-+/* 100/1000BT link established */
-+#define DP83867_LED_FUNC_LINK_100_1000	0x9
-+/* Full duplex */
-+#define DP83867_LED_FUNC_FULL_DUPLEX	0xa
-+/* Link established, blink for transmit or receive activity */
-+#define DP83867_LED_FUNC_LINK_ACT	0xb
-+/* Receive Error or Transmit Error */
-+#define DP83867_LED_FUNC_ERR		0xd
-+/* Receive Error */
-+#define DP83867_LED_FUNC_ERR_RX		0xe
+ 	return 0;
+ }
+ #else
+@@ -788,6 +813,11 @@ static int dp83867_config_init(struct phy_device *phydev)
+ 			       mask, val);
+ 	}
+ 
++	if (dp83867->led_function != U32_MAX)
++		phy_write(phydev, DP83867_LEDCR1, dp83867->led_function);
++	if (dp83867->led_ctrl != U32_MAX)
++		phy_write(phydev, DP83867_LEDCR2, dp83867->led_ctrl);
 +
-+#define DP83867_LED_CTRL_ACTIVE_HIGH	0x4
-+#define DP83867_LED_CTRL_ACTIVE_LOW	0x0
-+#define DP83867_LED_CTRL_FORCE_HIGH	0x3
-+#define DP83867_LED_CTRL_FORCE_LOW	0x1
-+
-+#define DP83867_LED_SHIFT(v, s)		((DP83867_LED_##v) << (s))
-+
-+#define DP83867_LED0(v)			DP83867_LED_SHIFT(v, 0)
-+#define DP83867_LED1(v)			DP83867_LED_SHIFT(v, 4)
-+#define DP83867_LED2(v)			DP83867_LED_SHIFT(v, 8)
-+#define DP83867_LED3(v)			DP83867_LED_SHIFT(v, 12)
-+
- #endif
+ 	return 0;
+ }
+ 
 -- 
 2.17.1
 
