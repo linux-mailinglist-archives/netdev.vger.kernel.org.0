@@ -2,108 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C76B24DF47
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 20:18:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB4B24DF6A
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 20:23:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727828AbgHUSSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 14:18:02 -0400
-Received: from mga05.intel.com ([192.55.52.43]:18326 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726851AbgHUSSC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 14:18:02 -0400
-IronPort-SDR: aD82iQbtYwx99ZsuLJbGq0EjMO9fRFeZZTGTSFFEPhzZq/EkMCkIMhiF3ohfE7hhvrqYKPJSd4
- 1l6D6qdwhzgg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9720"; a="240430475"
-X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
-   d="scan'208";a="240430475"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 11:18:02 -0700
-IronPort-SDR: wBw3XeBwvHQzaudncojCBfacgAW1JLN+BoS3GeEGLzxUvK14b6Y3NklAz6GZdGA0xkCNq+xj6a
- 0xx6mUXWJeGA==
-X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
-   d="scan'208";a="498056540"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.38.54])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 11:18:01 -0700
-Date:   Fri, 21 Aug 2020 11:18:00 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        "Alexander Lobakin" <alobakin@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>
-Subject: Re: [PATCH v6 net-next 02/10] qed/qede: make devlink survive
- recovery
-Message-ID: <20200821111800.00004fb1@intel.com>
-In-Reply-To: <20200820185204.652-3-irusskikh@marvell.com>
-References: <20200820185204.652-1-irusskikh@marvell.com>
-        <20200820185204.652-3-irusskikh@marvell.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1725903AbgHUSX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 14:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725768AbgHUSXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 14:23:25 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2749C061573;
+        Fri, 21 Aug 2020 11:23:25 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id u128so1472981pfb.6;
+        Fri, 21 Aug 2020 11:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=z1l3J4HIwjaymDbG87bFgQjdS5UWloioib/q8SREpNk=;
+        b=jgKxm2H3dmu91ou+hWH8jUo90teTDoqJUzE5K8yC/yLdQLabVo8lvwe+4EVvpoXPQU
+         Pt4fDERjlsRuMxDC+VG61rkO/ycOm3z5g28ZSgI5p8a7NU8zrV8+8uMR0Nb8t4+JYPyQ
+         dbDcmhE9V/Y0PLo2xz1IlAF9C4b3GlSmwLONidpWrXM+srwAMoYyAmhyPdG0Spa9Htlv
+         51FbgUjiYjWYCIfop+HWnyy4Ue9Kv+VE0SoRmnIu9/04cVHOYhzSrleeTi2eFZ4gHOZb
+         b8aBSl3nVs3Eu7pyeVkY5uVHwjUlf16mAvu2aqnbMy9OSq4Ybdrl96jJDdYlyGo+HlRm
+         /3aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=z1l3J4HIwjaymDbG87bFgQjdS5UWloioib/q8SREpNk=;
+        b=nCQnjlT+PRlq2nHA/rr0tYQsq5bUO4PCd7E2cfNhTKhLyEwhOgV6YSdGUwPnmtIOQ5
+         xlmC0/f/XuVaJTvbQ0EvJDKGvoFrYSTDA5zjuS+aFvVQxEFZfvYQLQhpQmcqCbF1faj1
+         mxmUT1friyVBM0BKlbtbJ6PSB3mtxZ6Mh8KbVoEdEQfsmHqbNdVxsFdYUY2X+13q88M/
+         ywSAW+1xVofQmqJX0S3zBrgHVq2XMnq0lYtoTfElxbmeZtlPFJGdoEj+KQqlynCWyKSs
+         BB+6GdD5i+LsAi/PYFIZIMBgi1E2nJcIq3MQCwqxYKyfQo5XJzL7Ec82h822ffO70F/1
+         VJVA==
+X-Gm-Message-State: AOAM533u2BOuLQU8OeXukj7b9HbYAF7WBjH4rN9QWEg3a59EXHi5x9XQ
+        JgNhhVYWuhMG3zv75/z9r4g=
+X-Google-Smtp-Source: ABdhPJzJuiD3ixxA6vJ/NRGlFHb2PXkNQM1SMpjW6/zkgEg4SKvYZ5jB7O5yS6IHs9iQlIHpZAf9Ew==
+X-Received: by 2002:a63:955d:: with SMTP id t29mr3122232pgn.135.1598034205068;
+        Fri, 21 Aug 2020 11:23:25 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:8791])
+        by smtp.gmail.com with ESMTPSA id h19sm2494976pjv.41.2020.08.21.11.23.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Aug 2020 11:23:24 -0700 (PDT)
+Date:   Fri, 21 Aug 2020 11:23:21 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Roman Gushchin <guro@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
+        linux-kernel@vger.kernel.org, Johannes Weiner <hannes@cmpxchg.org>,
+        Shakeel Butt <shakeelb@google.com>, linux-mm@kvack.org
+Subject: Re: [PATCH bpf-next v4 28/30] bpf: eliminate rlimit-based memory
+ accounting infra for bpf maps
+Message-ID: <20200821182321.dtkf5wpi4pukbq3w@ast-mbp.dhcp.thefacebook.com>
+References: <20200821150134.2581465-1-guro@fb.com>
+ <20200821150134.2581465-29-guro@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200821150134.2581465-29-guro@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Igor Russkikh wrote:
-
-> Devlink instance lifecycle was linked to qed_dev object,
-> that caused devlink to be recreated on each recovery.
-> 
-> Changing it by making higher level driver (qede) responsible for its
-> life. This way devlink now survives recoveries.
-> 
-> qede now stores devlink structure pointer as a part of its device
-> object, devlink private data contains a linkage structure,
-> qed_devlink.
-> 
-> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
-> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
-
-<snip>
-
-> diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-> index 140a392a81bb..93071d41afe4 100644
-> --- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-> +++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-> @@ -1170,10 +1170,23 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
->  			rc = -ENOMEM;
->  			goto err2;
->  		}
-> +
-> +		edev->devlink = qed_ops->common->devlink_register(cdev);
-> +		if (IS_ERR(edev->devlink)) {
-> +			DP_NOTICE(edev, "Cannot register devlink\n");
-> +			edev->devlink = NULL;
-> +			/* Go on, we can live without devlink */
-> +		}
->  	} else {
->  		struct net_device *ndev = pci_get_drvdata(pdev);
+On Fri, Aug 21, 2020 at 08:01:32AM -0700, Roman Gushchin wrote:
 >  
->  		edev = netdev_priv(ndev);
-> +
-> +		if (edev && edev->devlink) {
-> +			struct qed_devlink *qdl = devlink_priv(edev->devlink);
-> +
-> +			qdl->cdev = cdev;
-> +		}
->  		edev->cdev = cdev;
->  		memset(&edev->stats, 0, sizeof(edev->stats));
->  		memcpy(&edev->dev_info, &dev_info, sizeof(dev_info));
+> diff --git a/tools/testing/selftests/bpf/progs/map_ptr_kern.c b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
+> index 473665cac67e..49d1dcaf7999 100644
+> --- a/tools/testing/selftests/bpf/progs/map_ptr_kern.c
+> +++ b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
+> @@ -26,17 +26,12 @@ __u32 g_line = 0;
+>  		return 0;	\
+>  })
+>  
+> -struct bpf_map_memory {
+> -	__u32 pages;
+> -} __attribute__((preserve_access_index));
+> -
+>  struct bpf_map {
+>  	enum bpf_map_type map_type;
+>  	__u32 key_size;
+>  	__u32 value_size;
+>  	__u32 max_entries;
+>  	__u32 id;
+> -	struct bpf_map_memory memory;
+>  } __attribute__((preserve_access_index));
 
-same comment as against old version:
+hmm. Did you build selftests?
 
-cppcheck notes that the edev check here before the && is either
-unnecessary, or the original code had a possible null pointer
-dereference.  I figure the code should just be
-		if (edev->devlink) {
-
-And I recommend that you try to run cppcheck --enable=all on your code,
-it finds several style violations and a few other null pointer checks
-that can be fixed up.
+progs/map_ptr_kern.c:45:14: error: no member named 'memory' in 'struct bpf_map'
+        VERIFY(map->memory.pages > 0);
+               ~~~  ^
+progs/map_ptr_kern.c:25:8: note: expanded from macro 'VERIFY'
