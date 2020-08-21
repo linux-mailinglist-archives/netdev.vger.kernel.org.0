@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5377724D572
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 14:52:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 620F724D57C
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 14:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728570AbgHUMwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 08:52:18 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:38258 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726975AbgHUMwO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 08:52:14 -0400
-Received: by mail-ot1-f66.google.com with SMTP id q9so1467932oth.5;
-        Fri, 21 Aug 2020 05:52:13 -0700 (PDT)
+        id S1728236AbgHUMzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 08:55:15 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:34586 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725935AbgHUMzO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 08:55:14 -0400
+Received: by mail-ot1-f65.google.com with SMTP id k12so1489602otr.1;
+        Fri, 21 Aug 2020 05:55:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XStHcO3bN1Cjx01hSjBlwatXDhCzhr4MQAvNLwapbP0=;
-        b=RF3xcUVHkE4K4TwDNXLdzIRofwpTqEFlTCm6Nk/WfrHwNF6+il0Cc2PbI1f32fVFD1
-         Kg2Exyj9RBhOQr2EftWGkIZDGo0ApKo0BknKwV/rN8w064KqWA1GWRpU8oWyuKKKnly8
-         AEeWLxpY1QHjtKGCTBuehPwXDM/B0/28G2d4bjZnpg7uRK2U/6CE+ObisXseS/aKdIhn
-         ZTEfdhBG4U7n7mavrbi8noR1XzGvFS0lsIpNGTZo9Unakw83p4MQpnl9A/+29oucgOUU
-         jnx15dHDvREuvUhirkZryMZq0uzqGCu3JNeRpA8Z8x2giBF/0YDlFQ7gvER8YSfNx8m4
-         7WVA==
-X-Gm-Message-State: AOAM531IvmhwechgvFg+1Ns3gJ7U2SBx+Sywz4BwzkHpaB5atq0RP1CT
-        RvF43Nbgbx1xVttxdUs8DZZKKqk9GM5tjHedCA0=
-X-Google-Smtp-Source: ABdhPJziQqBk58uQyGqBK/37jXkqg84sLRiafHK9TanPnrCQmFw208l3InviG1UskKjtkSlXK4ncbbmuh6Gjfb8CCBU=
-X-Received: by 2002:a9d:1b62:: with SMTP id l89mr1747958otl.145.1598014332829;
- Fri, 21 Aug 2020 05:52:12 -0700 (PDT)
+        bh=JQTj75v+t4gH75KqZzioaSEXd+JGBRQy2YtcQ1vRxYw=;
+        b=XDH+dN7kZh0cMfSxRHTUWvvzopYLfF0xZYTcvPjh6PnIras/dEGjkjctlo6gZZ1/cw
+         I4dz2wLQr7zWik/V7LwKTuon1dc4eTx0k+dHdWPNX/jPADSTltNZ4VEMpMfQw1Cnsf/8
+         I46yujmmC8hx3414c5fbE8afJXh02N3zwafrwK7rLUnhcTEkeghwbxKJE630jjpY5/z2
+         xhBNK9zzJeWWkx26unUwFsuzIP0UNHT1WqmKBidFfxzXWJORFBU2jQzYCvle8tCfU/u/
+         jZ0jdiebu0rR9TLAq7FNNBJz0gQDRz5Kfd2LS5uXFTM4M8JHBnS5/Cv7VRP9SPzcD60r
+         CaFQ==
+X-Gm-Message-State: AOAM533+kyCHkGWyz4aAA6bDy3UlJeG64o9dLcp3ybXnkCr/ZEelY3OX
+        PwcqT07vkvDh8PO9CiLmcw5/5440dZ0dXGB8aI0=
+X-Google-Smtp-Source: ABdhPJxqc+ZD71mnoRQsfhaV3KFb+WFTtCicSB4qWqJ8DMecwf9Q2wNYJlJTt2ATIfQ0jf+/cKUpZoMekDAYtOdqD28=
+X-Received: by 2002:a9d:7d8c:: with SMTP id j12mr1858350otn.250.1598014513423;
+ Fri, 21 Aug 2020 05:55:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200816190732.6905-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20200816190732.6905-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20200816190732.6905-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20200816190732.6905-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20200816190732.6905-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20200816190732.6905-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 21 Aug 2020 14:52:01 +0200
-Message-ID: <CAMuHMdW2RTCi7rAa_tSsY7ukVM2xk6PYD526SRQU1Wd4SSz2Mw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] pinctrl: sh-pfc: r8a7790: Add CAN pins, groups and functions
+Date:   Fri, 21 Aug 2020 14:55:02 +0200
+Message-ID: <CAMuHMdXmC0HuJP6fE5mLqTXn9En5moGf-0QEXfkFtiOcnAN5GA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] ARM: dts: r8a7742: Add CAN support
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Wolfgang Grandegger <wg@grandegger.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -57,18 +57,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Prabhakar,
-
-On Sun, Aug 16, 2020 at 9:07 PM Lad Prabhakar
+On Sun, Aug 16, 2020 at 9:08 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add pins, groups and functions for the CAN0 and CAN1 interface.
+> Add the definitions for can0 and can1 to the r8a7742 SoC dtsi.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Chris Paterson <Chris.Paterson2@renesas.com>
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Don't you want to add the CAN_CLK pins, too?
+i.e. will queue in renesas-devel for v5.10.
 
 Gr{oetje,eeting}s,
 
