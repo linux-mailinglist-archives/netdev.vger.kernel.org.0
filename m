@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BF9724CF08
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 09:21:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD11024CF07
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 09:21:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728218AbgHUHVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 03:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33468 "EHLO
+        id S1728530AbgHUHVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 03:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728138AbgHUHRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 03:17:42 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B280C06136B
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 00:17:12 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id r2so995608wrs.8
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 00:17:12 -0700 (PDT)
+        with ESMTP id S1728153AbgHUHRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 03:17:45 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D35C06136C
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 00:17:13 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id 83so819700wme.4
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 00:17:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UFEv542Lhp8Q0f61EAB5CHsxrkFJGeJ0ctv6xlXdr9A=;
-        b=Ky93DjY3FSfpFv0Y7UcE/Js9RnV2MLxj3X3KnrbnWBMm7iZl+THnGWjjc6/N1ipLm4
-         q7tML5psB7vPbh/O3XlWj+uVmgRN2Rp6PiIMSqN/S2KIteNB48OvCPsEZCcZQ5myzBB6
-         YJNmi61X3xTB7kfwPYMJ1m+7wPGVrS5O/HU/fojJyQGTSycw8ED0xtSdJ64iD9RJS9YS
-         U/0xsKR6+a0Xmo9xSm762Qs+OWYszUmHmgLZu0uLKoXL+WEn7IwmPSCe8hdav87j7npt
-         gkdWFFQ3fmNh03afFO/9sURAQBrCZkZll62ybPIZCoM/Yw/nqQL2qxzFsXscfal05iPx
-         uojg==
+        bh=bsXVZlb3+RPh6wsFFLtZip9Xh8c8BRLlYFokPA0kQU8=;
+        b=GlMRUCt0tk+ts8PiLe/psgZRUi46xqkZeg3YsyC3FR4geI5DPAC+Z3ksWqLHfcuETg
+         C203xvi1zCzTgBG5JRdq5KLMOwrn4MwgT/luru6MwvDzIWOTv22d8NnO1kjCrbbLRxFL
+         oHGGRX3igK0ZK5o8TFxdGMtir+lIaMP2c4dmh5PU5g4kURn1MyRx5wC274j8d37aLVFp
+         yV8sAyeJec4NYastw6y5fzbnDfOYFbGJMxDnO8IYcqCOI/OX9IsAprz7+j8XQjWN2YGc
+         LlB5fPm1IeR2+ywtO0dOrA2ndf9UiAsa8RZUc4Il6C1Ub3GtmSdchlzvWd7ujSR1U2nW
+         gqeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UFEv542Lhp8Q0f61EAB5CHsxrkFJGeJ0ctv6xlXdr9A=;
-        b=P3wgjS4QaZoRtfCnXfuaMkE0cyCj5Po2qjV2ju0vfapteRh9Ff8NBd17gAZYkAPtGR
-         XFeVHtSgegR21RPpEF5nVhzKQOhAwCS6RpypV6wiy1E6TuOfsd1d5sQQdVnS2eo9Jq2i
-         SnCkIbLSkpbryvvtkcqLAlQtz+tPfptILdQDKGLNhjYobWGKLLUQEgjpmjUDIvjrrpE8
-         T+M1JVL9mxd0QL93JxS9t+LNI9qBsiD/3UPXYXbQtehXj/pJjmriiVU1MADTK9zGpXqH
-         tv9af33ypFxBjtjTsOp3VWwQ9v/5H4oOQhIkuBbRUBp5OWi4R6lZ9lEn45OWgLkshasA
-         3CMw==
-X-Gm-Message-State: AOAM533XU/0g578zQIgoyCxG54X6F2o+LNOoli8DHVbLTyaTmqrphSSr
-        vpl28CwwnaTWfgmZH3d0N4OZew==
-X-Google-Smtp-Source: ABdhPJzgKxtK2z0RTPC3f80JykT6rZ2wpR3uT6n9e2Z5Vd3aTmeUJjMG3O5PTc+782jWoRNf6gTX6w==
-X-Received: by 2002:a5d:4b4e:: with SMTP id w14mr1470661wrs.9.1597994230857;
-        Fri, 21 Aug 2020 00:17:10 -0700 (PDT)
+        bh=bsXVZlb3+RPh6wsFFLtZip9Xh8c8BRLlYFokPA0kQU8=;
+        b=lovxDPYKIEMzXD04ylltzNhnJQ1/+Ie2RCfube6hGu5n6AZUPS12bH1aj2ICETqh6X
+         C0lyet0StmKdpeT8VqnGvXBr6zt8OgAiJyunaNTquMA1GZneOfwKYhV228w971kD87of
+         mdB9wr2UUgxrgIRamje2rFag/kuqp5MPSz/yEiiUhN42Q6q8r1I8R3ZJ2EAbxdSxp1nH
+         FVcfLgWVvT1u5CMP944E2o5PSjckTlFQ6pcEpuVm/qhfRhhTaW1PmwD/CR7saXKZC+pF
+         YxBy9ivd7NXRMnmReiJyrURzRMOEet6H9vll1NcKQlenDeLV+l8RpHFeGaVHYgBzw6t9
+         uDjQ==
+X-Gm-Message-State: AOAM530cg2W/xmJMp9k5ieB7CAF6i5+okf6HUXl210f9eTFTQUNO6/38
+        VAV/TuP7A5GGR/whGcXH3iJa3A==
+X-Google-Smtp-Source: ABdhPJzCwMbOmP03tTO4spaAbus4rZY09WFAG3Mma7D8oDWodk5Tt/MzWrKwrCrpe5EVtzJu3ncCyw==
+X-Received: by 2002:a1c:6555:: with SMTP id z82mr2359063wmb.67.1597994232048;
+        Fri, 21 Aug 2020 00:17:12 -0700 (PDT)
 Received: from dell.default ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id y24sm2667957wmi.17.2020.08.21.00.17.09
+        by smtp.gmail.com with ESMTPSA id y24sm2667957wmi.17.2020.08.21.00.17.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 00:17:10 -0700 (PDT)
+        Fri, 21 Aug 2020 00:17:11 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
@@ -55,9 +55,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
         Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Intel Linux Wireless <linuxwifi@intel.com>
-Subject: [PATCH 18/32] wireless: intel: iwlwifi: mvm: tx: Demote misuse of kernel-doc headers
-Date:   Fri, 21 Aug 2020 08:16:30 +0100
-Message-Id: <20200821071644.109970-19-lee.jones@linaro.org>
+Subject: [PATCH 19/32] wireless: intel: iwlwifi: dvm: devices: Fix function documentation formatting issues
+Date:   Fri, 21 Aug 2020 08:16:31 +0100
+Message-Id: <20200821071644.109970-20-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200821071644.109970-1-lee.jones@linaro.org>
 References: <20200821071644.109970-1-lee.jones@linaro.org>
@@ -68,11 +68,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Kerneldoc expects attributes/parameters to be in '@*.: ' format and
+gets confused if the variable does not follow the type/attribute
+definitions.
+
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wireless/intel/iwlwifi/mvm/tx.c:1379: warning: Function parameter or member 'rate_n_flags' not described in 'iwl_mvm_hwrate_to_tx_status'
- drivers/net/wireless/intel/iwlwifi/mvm/tx.c:1379: warning: Function parameter or member 'info' not described in 'iwl_mvm_hwrate_to_tx_status'
- drivers/net/wireless/intel/iwlwifi/mvm/tx.c:1431: warning: Function parameter or member 'mvm' not described in 'iwl_mvm_get_scd_ssn'
+ drivers/net/wireless/intel/iwlwifi/dvm/devices.c:66: warning: Function parameter or member 'priv' not described in 'iwl_beacon_time_mask_low'
+ drivers/net/wireless/intel/iwlwifi/dvm/devices.c:66: warning: Function parameter or member 'tsf_bits' not described in 'iwl_beacon_time_mask_low'
+ drivers/net/wireless/intel/iwlwifi/dvm/devices.c:77: warning: Function parameter or member 'priv' not described in 'iwl_beacon_time_mask_high'
+ drivers/net/wireless/intel/iwlwifi/dvm/devices.c:77: warning: Function parameter or member 'tsf_bits' not described in 'iwl_beacon_time_mask_high'
 
 Cc: Johannes Berg <johannes.berg@intel.com>
 Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
@@ -85,31 +90,35 @@ Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/tx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/dvm/devices.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-index 2f6484e0d726c..82ebf264de397 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-@@ -1371,7 +1371,7 @@ void iwl_mvm_hwrate_to_tx_rate(u32 rate_n_flags,
- 	}
- }
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/devices.c b/drivers/net/wireless/intel/iwlwifi/dvm/devices.c
+index d42bc46fe5662..c3e25885d1943 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/devices.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/devices.c
+@@ -58,8 +58,8 @@ static void iwl1000_nic_config(struct iwl_priv *priv)
  
--/**
-+/*
-  * translate ucode response to mac80211 tx status control values
+ /**
+  * iwl_beacon_time_mask_low - mask of lower 32 bit of beacon time
+- * @priv -- pointer to iwl_priv data structure
+- * @tsf_bits -- number of bits need to shift for masking)
++ * @priv: pointer to iwl_priv data structure
++ * @tsf_bits: number of bits need to shift for masking)
   */
- static void iwl_mvm_hwrate_to_tx_status(u32 rate_n_flags,
-@@ -1413,7 +1413,7 @@ static void iwl_mvm_tx_status_check_trigger(struct iwl_mvm *mvm,
- 	}
- }
+ static inline u32 iwl_beacon_time_mask_low(struct iwl_priv *priv,
+ 					   u16 tsf_bits)
+@@ -69,8 +69,8 @@ static inline u32 iwl_beacon_time_mask_low(struct iwl_priv *priv,
  
--/**
-+/*
-  * iwl_mvm_get_scd_ssn - returns the SSN of the SCD
-  * @tx_resp: the Tx response from the fw (agg or non-agg)
-  *
+ /**
+  * iwl_beacon_time_mask_high - mask of higher 32 bit of beacon time
+- * @priv -- pointer to iwl_priv data structure
+- * @tsf_bits -- number of bits need to shift for masking)
++ * @priv: pointer to iwl_priv data structure
++ * @tsf_bits: number of bits need to shift for masking)
+  */
+ static inline u32 iwl_beacon_time_mask_high(struct iwl_priv *priv,
+ 					    u16 tsf_bits)
 -- 
 2.25.1
 
