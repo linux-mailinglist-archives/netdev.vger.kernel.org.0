@@ -2,44 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07A9C24DEE1
-	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 19:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B245624DEF2
+	for <lists+netdev@lfdr.de>; Fri, 21 Aug 2020 19:54:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727014AbgHURtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 13:49:15 -0400
-Received: from mga14.intel.com ([192.55.52.115]:21552 "EHLO mga14.intel.com"
+        id S1727095AbgHURy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 13:54:57 -0400
+Received: from mga04.intel.com ([192.55.52.120]:30317 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726803AbgHURtK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 21 Aug 2020 13:49:10 -0400
-IronPort-SDR: umyPAOJhWWyfLxk4smoyrJyrcAsTtHEtkhMVymzOutAezmgBJNGoj5XYxNwFjURmgAK7dUjk+g
- VsyDOb+IcTFg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9720"; a="154868067"
+        id S1725873AbgHURyx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 13:54:53 -0400
+IronPort-SDR: 8gdcvXBrW5+syIDwbeAIsLnVQ+Ejd+AGgEqlomeqcLBusvv2LrzbLTlqYNk1R/vAIkiJkUBRwH
+ 8awdV8flmnwQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9720"; a="153012900"
 X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
-   d="scan'208";a="154868067"
+   d="scan'208";a="153012900"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 10:49:09 -0700
-IronPort-SDR: 7klViRmDc9/Ba1ZQ3NWudYnLU55Lf/gLhioQ/hFlekQrTybP4P2g2ufySVB6OOYUSIVhVFRdeN
- F8f3sMouGjYw==
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 10:54:53 -0700
+IronPort-SDR: JSp9H2urWgKZ2YFICDT9QLf8jbPuKyP2LWQ1QeJzvMJr42Gm4PbQ91c1g+lx7OsnUzX/CF/fiq
+ BU81TfhgKcDA==
 X-IronPort-AV: E=Sophos;i="5.76,338,1592895600"; 
-   d="scan'208";a="293898954"
+   d="scan'208";a="293900425"
 Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.38.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 10:49:08 -0700
-Date:   Fri, 21 Aug 2020 10:49:07 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2020 10:54:52 -0700
+Date:   Fri, 21 Aug 2020 10:54:51 -0700
 From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
 To:     Igor Russkikh <irusskikh@marvell.com>
 Cc:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Ariel Elior <aelior@marvell.com>,
-        Michal Kalderon <mkalderon@marvell.com>,
-        "Alexander Lobakin" <alobakin@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>
-Subject: Re: [PATCH net-next 07/11] qed: use devlink logic to report errors
-Message-ID: <20200821104907.00004607@intel.com>
-In-Reply-To: <20200727184310.462-8-irusskikh@marvell.com>
+        Michal Kalderon <mkalderon@marvell.com>
+Subject: Re: [PATCH net-next 00/11] qed: introduce devlink health support
+Message-ID: <20200821105451.000052b9@intel.com>
+In-Reply-To: <20200727184310.462-1-irusskikh@marvell.com>
 References: <20200727184310.462-1-irusskikh@marvell.com>
-        <20200727184310.462-8-irusskikh@marvell.com>
 X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -51,141 +48,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Igor Russkikh wrote:
 
-> Use devlink_health_report to push error indications.
-> We implement this in qede via callback function to make it possible
-> to reuse the same for other drivers sitting on top of qed in future.
+> This is a followup implementation after series
 > 
-> Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-> Signed-off-by: Alexander Lobakin <alobakin@marvell.com>
-> Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
-> ---
->  drivers/net/ethernet/qlogic/qed/qed_devlink.c | 17 +++++++++++++++++
->  drivers/net/ethernet/qlogic/qed/qed_devlink.h |  2 ++
->  drivers/net/ethernet/qlogic/qed/qed_main.c    |  1 +
->  drivers/net/ethernet/qlogic/qede/qede.h       |  1 +
->  drivers/net/ethernet/qlogic/qede/qede_main.c  |  5 ++++-
->  include/linux/qed/qed_if.h                    |  3 +++
->  6 files changed, 28 insertions(+), 1 deletion(-)
+> https://patchwork.ozlabs.org/project/netdev/cover/20200514095727.1361-1-irusskikh@marvell.com/
 > 
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.c b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-> index 843a35f14cca..ffe776a4f99a 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.c
-> @@ -14,6 +14,23 @@ enum qed_devlink_param_id {
->  	QED_DEVLINK_PARAM_ID_IWARP_CMT,
->  };
->  
-> +struct qed_fw_fatal_ctx {
-> +	enum qed_hw_err_type err_type;
-> +};
-> +
-> +int qed_report_fatal_error(struct devlink *devlink, enum qed_hw_err_type err_type)
-> +{
-> +	struct qed_devlink *qdl = devlink_priv(devlink);
-> +	struct qed_fw_fatal_ctx fw_fatal_ctx = {
-> +		.err_type = err_type,
-> +	};
-> +
-> +	devlink_health_report(qdl->fw_reporter,
-> +			      "Fatal error reported", &fw_fatal_ctx);
-> +
-> +	return 0;
-> +}
-> +
->  static const struct devlink_health_reporter_ops qed_fw_fatal_reporter_ops = {
->  		.name = "fw_fatal",
->  };
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_devlink.h b/drivers/net/ethernet/qlogic/qed/qed_devlink.h
-> index c68ecf778826..ccc7d1d1bfd4 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_devlink.h
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_devlink.h
-> @@ -15,4 +15,6 @@ void qed_devlink_unregister(struct devlink *devlink);
->  void qed_fw_reporters_create(struct devlink *devlink);
->  void qed_fw_reporters_destroy(struct devlink *devlink);
->  
-> +int qed_report_fatal_error(struct devlink *dl, enum qed_hw_err_type err_type);
-> +
->  #endif
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-> index d1a559ccf516..a64d594f9294 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-> @@ -3007,6 +3007,7 @@ const struct qed_common_ops qed_common_ops_pass = {
->  	.update_msglvl = &qed_init_dp,
->  	.devlink_register = qed_devlink_register,
->  	.devlink_unregister = qed_devlink_unregister,
-> +	.report_fatal_error = qed_report_fatal_error,
->  	.dbg_all_data = &qed_dbg_all_data,
->  	.dbg_all_data_size = &qed_dbg_all_data_size,
->  	.chain_alloc = &qed_chain_alloc,
-> diff --git a/drivers/net/ethernet/qlogic/qede/qede.h b/drivers/net/ethernet/qlogic/qede/qede.h
-> index 1f0e7505a973..3efc5899f656 100644
-> --- a/drivers/net/ethernet/qlogic/qede/qede.h
-> +++ b/drivers/net/ethernet/qlogic/qede/qede.h
-> @@ -264,6 +264,7 @@ struct qede_dev {
->  
->  	struct bpf_prog			*xdp_prog;
->  
-> +	enum qed_hw_err_type		last_err_type;
->  	unsigned long			err_flags;
->  #define QEDE_ERR_IS_HANDLED		31
->  #define QEDE_ERR_ATTN_CLR_EN		0
-> diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
-> index 7c2d948b2035..df437c3f1fc9 100644
-> --- a/drivers/net/ethernet/qlogic/qede/qede_main.c
-> +++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
-> @@ -1181,7 +1181,6 @@ static int __qede_probe(struct pci_dev *pdev, u32 dp_module, u8 dp_level,
->  		}
->  	} else {
->  		struct net_device *ndev = pci_get_drvdata(pdev);
-> -
+> This is an implementation of devlink health infrastructure.
+> 
+> With this we are now able to report HW errors to devlink, and it'll take
+> its own actions depending on user configuration to capture and store the dump
+> at the bad moment, and to request the driver to recover the device.
+> 
+> So far we do not differentiate global device failures or specific PCI function
+> failures. This means that some errors specific to one physical function will
+> affect an entire device. This is not yet fully designed and verified, will
+> followup in future.
+> 
+> Solution was verified with artificial HW errors generated, existing tools
+> for dump analysis could be used.
+> 
+> Igor Russkikh (11):
+>   qed: move out devlink logic into a new file
+>   qed/qede: make devlink survive recovery
+>   qed: swap param init and publish
+>   qed: fix kconfig help entries
+>   qed: implement devlink info request
+>   qed: health reporter init deinit seq
+>   qed: use devlink logic to report errors
+>   qed*: make use of devlink recovery infrastructure
+>   qed: implement devlink dump
+>   qed: align adjacent indent
+>   qede: make driver reliable on unload after failures
+> 
+>  drivers/net/ethernet/qlogic/Kconfig           |   5 +-
+>  drivers/net/ethernet/qlogic/qed/Makefile      |   1 +
+>  drivers/net/ethernet/qlogic/qed/qed.h         |   3 +-
+>  drivers/net/ethernet/qlogic/qed/qed_dev.c     |  10 +
+>  drivers/net/ethernet/qlogic/qed/qed_devlink.c | 255 ++++++++++++++++++
+>  drivers/net/ethernet/qlogic/qed/qed_devlink.h |  20 ++
+>  drivers/net/ethernet/qlogic/qed/qed_main.c    | 116 +-------
+>  drivers/net/ethernet/qlogic/qede/qede.h       |   2 +
+>  drivers/net/ethernet/qlogic/qede/qede_main.c  |  35 ++-
+>  include/linux/qed/qed_if.h                    |  23 +-
+>  10 files changed, 341 insertions(+), 129 deletions(-)
+>  create mode 100644 drivers/net/ethernet/qlogic/qed/qed_devlink.c
+>  create mode 100644 drivers/net/ethernet/qlogic/qed/qed_devlink.h
 
-should have left this blank line (there should always be a blank line
-after declarations.)
+I just realized I was reviewing this old set (somehow my mailer put this
+one after the v6 in the message order) #reviewfail
 
-
->  		edev = netdev_priv(ndev);
->  
->  		if (edev && edev->devlink) {
-
-I think I mentioned this check in one of my other responses.
-
-> @@ -2603,6 +2602,9 @@ static void qede_generic_hw_err_handler(struct qede_dev *edev)
->  		  "Generic sleepable HW error handling started - err_flags 0x%lx\n",
->  		  edev->err_flags);
->  
-> +	if (edev->devlink)
-> +		edev->ops->common->report_fatal_error(edev->devlink, edev->last_err_type);
-> +
->  	/* Trigger a recovery process.
->  	 * This is placed in the sleep requiring section just to make
->  	 * sure it is the last one, and that all the other operations
-> @@ -2663,6 +2665,7 @@ static void qede_schedule_hw_err_handler(void *dev,
->  		return;
->  	}
->  
-> +	edev->last_err_type = err_type;
->  	qede_set_hw_err_flags(edev, err_type);
->  	qede_atomic_hw_err_handler(edev);
->  	set_bit(QEDE_SP_HW_ERR, &edev->sp_flags);
-> diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
-> index 30fe06fe06a0..1297726f2b25 100644
-> --- a/include/linux/qed/qed_if.h
-> +++ b/include/linux/qed/qed_if.h
-> @@ -906,6 +906,9 @@ struct qed_common_ops {
->  
->  	int (*dbg_all_data_size) (struct qed_dev *cdev);
->  
-> +	int		(*report_fatal_error)(struct devlink *devlink,
-
-way too many extra spaces here, doesn't even match the line above,
-Please just do
-\tint (*foo)(arg, arg, ...)
-
-> +					      enum qed_hw_err_type err_type);
-> +
->  /**
->   * @brief can_link_change - can the instance change the link or not
->   *
-
-
+I'll move over to v6 now, sorry for the thrash.
