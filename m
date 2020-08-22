@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A3C524EA6A
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 01:23:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E4424EA6D
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 01:23:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728745AbgHVXUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 19:20:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38408 "EHLO
+        id S1728755AbgHVXUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 19:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728730AbgHVXUO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 19:20:14 -0400
+        with ESMTP id S1728453AbgHVXUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 19:20:16 -0400
 Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C477C061573;
-        Sat, 22 Aug 2020 16:20:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE67CC061573;
+        Sat, 22 Aug 2020 16:20:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=0wXB/mgeIwbJYY2UNE96VGoeNw63NhFlkhHFN9WE9L8=; b=1Fu3DkI30QaUwOCvEEvpEYo0RF
-        Y/GFySs0HzvPs5whIQGpIFcLtxMU3mzDU/KgdNvVgVaZ9RgDdSRZT1aVirQTHgVavFsy8fYId0p7B
-        Iu7+ucN8+816Be9wpjXd97WlUlpJsyQj9/N1hkD/2vT/seGCnAzgs/xUhibagzGBCqTTS5fPKh90p
-        2D7z52duToGKAClvbvSCTiWcQKb0FqVPYPaxkOgNepWwv7s1jxWXDeWz7hoF44KRGWD0S0uauC7j7
-        D9gMRt/vhBw+cdxDLcuhlxpspnG3vQJu0tS+qvKDTQ2JKQ33dclOLSNp+W+ADpe6YM9ff5wEApvGh
-        HfNmdjiw==;
+        bh=dQqjOIWCPu934+wIYtojwVYSS4Jg4qt14CP2WUE+w6o=; b=zbP4rpjxBXIHZxvdahRbaBoY6W
+        TMuzrBxnCER7b0tWQO6UgHtPmrw01Mt/x/SiKFEwSCMi5ovvmAktPOuEXUUnqQIthPFYhX+7UGOT7
+        d08D471+16pusDroRYoX9MZNTA8x2c1YQPiIZY52u5BLmz5EN/aoHxAztUu+m1iGD6JKS/S/UwRkp
+        7xgv5BUhZjCplqmB/7sS449G4u4CJbHmtSfCjZEoMCegtr/3Gp+K+pMWCPdkXAPc2nCZO3lFa+kbE
+        O2p/gl5kndn64zAntYBMVRw5U02WL4hu5zseab47RTW7CnGdHgOHKwQPO3nidSaHwdY82HuQyrmr3
+        ZXDypRoQ==;
 Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
         by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k9cnz-0006fS-8m; Sat, 22 Aug 2020 23:20:11 +0000
+        id 1k9co1-0006fS-JM; Sat, 22 Aug 2020 23:20:14 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
         Johannes Berg <johannes.berg@intel.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         linux-wireless@vger.kernel.org
-Subject: [PATCH 6/7] net: wireless: sme.c: delete duplicated word
-Date:   Sat, 22 Aug 2020 16:19:52 -0700
-Message-Id: <20200822231953.465-7-rdunlap@infradead.org>
+Subject: [PATCH 7/7] net: wireless: wext_compat.c: delete duplicated word
+Date:   Sat, 22 Aug 2020 16:19:53 -0700
+Message-Id: <20200822231953.465-8-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200822231953.465-1-rdunlap@infradead.org>
 References: <20200822231953.465-1-rdunlap@infradead.org>
@@ -46,24 +46,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drop the repeated word "is".
+Drop the repeated word "be".
 
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Cc: Johannes Berg <johannes.berg@intel.com>
 Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: linux-wireless@vger.kernel.org
 ---
- net/wireless/sme.c |    2 +-
+ net/wireless/wext-compat.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- linux-next-20200731.orig/net/wireless/sme.c
-+++ linux-next-20200731/net/wireless/sme.c
-@@ -24,7 +24,7 @@
+--- linux-next-20200731.orig/net/wireless/wext-compat.c
++++ linux-next-20200731/net/wireless/wext-compat.c
+@@ -497,7 +497,7 @@ static int __cfg80211_set_encryption(str
  
- /*
-  * Software SME in cfg80211, using auth/assoc/deauth calls to the
-- * driver. This is is for implementing nl80211's connect/disconnect
-+ * driver. This is for implementing nl80211's connect/disconnect
-  * and wireless extensions (if configured.)
-  */
- 
+ 	/*
+ 	 * We only need to store WEP keys, since they're the only keys that
+-	 * can be be set before a connection is established and persist after
++	 * can be set before a connection is established and persist after
+ 	 * disconnecting.
+ 	 */
+ 	if (!addr && (params->cipher == WLAN_CIPHER_SUITE_WEP40 ||
