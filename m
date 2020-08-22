@@ -2,86 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B608224E986
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 22:01:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F14D524E9A8
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 22:12:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728724AbgHVT7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 15:59:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
+        id S1727798AbgHVULf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 16:11:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728676AbgHVT7V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 15:59:21 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11516C061575
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 12:59:20 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id f18so3445889wmc.0
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 12:59:20 -0700 (PDT)
+        with ESMTP id S1727005AbgHVULe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 16:11:34 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11A71C061573;
+        Sat, 22 Aug 2020 13:11:34 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id l191so513528pgd.5;
+        Sat, 22 Aug 2020 13:11:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tfz-net.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tdwBhPhtCsN/JQvKp7YTOpn4Lpk5w39RK5RYDO92HW4=;
-        b=aBihwtoX6UoEawRpRhnhZTU/EV/u5sm2Bvg49HAx4AffL36z8qH992WqOJtRoW7ijR
-         +Pa72oGUyYoEONL6qFHeziXobK/N2EfK1x2OAjX+fs7acb2Nkj/PdUQD2Hlami5+GC/j
-         Mtmp+9aL7T5iitXJ2GjTxw0Er2lI81dIGxt4QJ15/4MVXVrV1sQ3zWZz3gy3PVbt5+vL
-         PfoeXezTX2KvpLiqe8sbsK48nlPJzOPnY2m5QoeBSK1Gd/QO/kYbQJ05kK7PlKvjFiQM
-         xXncdZVpykLqVTam6OQDiP4UjJjJF8MVPndp4iUVoN0nIIjrB54j81WX5xu8/6DYiVzI
-         na6Q==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Uh4E6t+sDf2DIjlNQlWGWohk7ZtPPaOk143zxnFjWco=;
+        b=VySoktlukSHPDa1PaQxiVO69MuxABDPo28XhWXQqGCq26Fz8pA+tG9m2mypfH5bCn0
+         LgjIDw2aknhBMQ9lE83bAvV0/LciIxVtxsR1AG0WmDmfhrscWCUQurOfm4N/6XmQBBB6
+         e6MCQ3MxBgj2DgXa7v1HIkfltCBIbYG0l+X9DmAw0sN8PIlAOHUgDYeJgBkwpwiCF+MP
+         F9DU8H3j+xBlU2I//IHszmZiOBb3qsAd7tYWlBQDpDFIBxYEH/BZZx2Fxg92U2zlOnyO
+         ya0yHeU8ETlqMaXZmrC2HNvwdmNv7ci/38wfMbhruUW+dDdPFlS7xOF1pT1II6Ao4jUo
+         NeTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tdwBhPhtCsN/JQvKp7YTOpn4Lpk5w39RK5RYDO92HW4=;
-        b=qU1ZPwjMIUROJmGFN5mNpN2gzg5JTVtBGqWtdDeh8h037PmWwV3lg4eVkayUdqXI2A
-         NGn6Ft2CByhaIdxOh6AN+EFpA3IIgT1LSEhMA9RrSYPy8DRI4WB0HunR825a62ZVGKDQ
-         ah67UomI1w2mQ1GU9hHoFgf5TU+JcRQe9cFAv1Mb9Qza45ubQLaAZw+/WhPF1oJDjJEw
-         dvrWJFGj+7AFd+K0USt2W2OhykKrqjQTx3XCdCEyLvK2ZcdHmmgJTwNfAuWc+Ql9burk
-         65WuC77h4zejRMUyaXTa0+izCQYgUdA+HQU87EAMrfLgOv+8ypYXgfurZm5xD8GmexLr
-         Fcow==
-X-Gm-Message-State: AOAM530SjrT+QUneDiUhNNaTMjS3id6yD963y8xtfMreSuJL/aGtVdiB
-        TP/t8fezq8ketALbn8YOlKGNzX94gHx4heN5EEsxRg==
-X-Google-Smtp-Source: ABdhPJw0/K42CFhQrPnxt7ZAtulKyqck4MJDWapHs8CJeNnb0ySgc12eotg4a5/z2JRlvwYhiXck+CNjPUkFxDAQW7o=
-X-Received: by 2002:a7b:c308:: with SMTP id k8mr9273324wmj.90.1598126358713;
- Sat, 22 Aug 2020 12:59:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200815182344.7469-1-kalou@tfz.net> <20200822032827.6386-1-kalou@tfz.net>
- <20200822032827.6386-2-kalou@tfz.net> <20200822.123650.1479943925913245500.davem@davemloft.net>
-In-Reply-To: <20200822.123650.1479943925913245500.davem@davemloft.net>
-From:   Pascal Bouchareine <kalou@tfz.net>
-Date:   Sat, 22 Aug 2020 12:59:08 -0700
-Message-ID: <CAGbU3_nRMbe8Syo3OHw6B4LXUheGiXXcLcaEQe0EAFTAB7xgng@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] net: socket: implement SO_DESCRIPTION
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Uh4E6t+sDf2DIjlNQlWGWohk7ZtPPaOk143zxnFjWco=;
+        b=G4mGuOOhEAJDQhEBZPKyRqMLy2Xdy0+A7qnP0An/fSj3sSkMkBuGS0KdZGdcPGiNOV
+         ratSiqDpk+JT4ttu0c2SDqRFXox0FJCgK12yJ8Aed+BkT1Qmhl/CY1T/mVRmWnf2ls3f
+         m+5e8wHY/f4NMtQ9B8bIUWG/cYxvmSsAcoMm6w0kq/Q04uyZeNKOpLPhArkrXER3I5Oh
+         uRRfkxUTrvH8Ygu5odn7mcUzHdQ2EZu4NDV+I826twNIRBgUoxiK5f1oQul1m0IWbbGv
+         dPQO/IlVCNtEwVSAEhSgj49yjE8pFvHJlDsQYo/wpqyK+f5/EpHYxg/+JaiZ4oU7O2aj
+         8LAA==
+X-Gm-Message-State: AOAM530XAwlwa9L9wQOM7yMo7cZI5ukwieeVMXGMR1dnLA7YGr8S8laN
+        YxIY53LTIqVDaWbMmcEre175gWiJzv0=
+X-Google-Smtp-Source: ABdhPJzE02AXcCtWsG1ZsWFnfjE/B3G6FByVEQvvdUl42YSMkwcUobRT8vPtICRpfERA6pGPJc/Ohg==
+X-Received: by 2002:a62:2c0e:: with SMTP id s14mr7187923pfs.289.1598127093181;
+        Sat, 22 Aug 2020 13:11:33 -0700 (PDT)
+Received: from 1G5JKC2.lan (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id na16sm4678779pjb.30.2020.08.22.13.11.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Aug 2020 13:11:32 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH net-next 0/6] MAINTAINERS: Remove self from PHY LIBRARY
+Date:   Sat, 22 Aug 2020 13:11:20 -0700
+Message-Id: <20200822201126.8253-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you,
+Hi David, Heiner, Andrew, Russell,
 
-On Sat, Aug 22, 2020 at 12:36 PM David Miller <davem@davemloft.net> wrote:
-> > We ignore optlen and constrain the string to a static max size
-> >
-> > Signed-off-by: Pascal Bouchareine <kalou@tfz.net>
->
-> This change is really a non-starter unless the information gets
-> published somewhere where people actually look at dumped sockets, and
-> that's inet_diag and friends.
+This patch series aims at allowing myself to keep track of the Ethernet
+PHY and MDIO bus drivers that I authored or contributed to without
+being listed as a maintainer in the PHY library anymore.
 
-Would it make sense to also make UDIAG_SHOW_NAME use sk_description?
-(And keep the existing change - setsockopt + show_fd_info via
-/proc/.../fdinfo/..)
+Thank you for the fish, I will still be around.
 
-I would feel like adding a pid information (and what else am I missing
-here) to inet_diag might also be a good improvement then?
+This builds on top of Andrew's series:
+https://lore.kernel.org/netdev/20200822180611.2576807-1-andrew@lunn.ch/
 
-I understand that users have to scan /proc to find the FDs, matching
-the inode number for the socket to find the owning process today.
+Florian Fainelli (6):
+  MAINTAINERS: GENET: Add missing platform data file
+  MAINTAINERS: B53: Add DT binding file
+  MAINTAINERS: GENET: Add DT binding file
+  MAINTAINERS: GENET: Add UniMAC MDIO controller files
+  MAINTAINERS: Add entry for Broadcom Ethernet PHY drivers
+  MAINTAINERS: Remove self from PHY LIBRARY
 
-If that's of interest I can explore that too
+ MAINTAINERS | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+-- 
+2.17.1
+
