@@ -2,122 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E62E524E8B1
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 18:22:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B636324E8BA
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 18:27:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728215AbgHVQWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 12:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726728AbgHVQWR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 12:22:17 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B889BC061573
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 09:22:17 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id s14so2264784plp.4
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 09:22:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=B4jnxt+7nXgnRmVLjKHksdemzUDI4U6ylRq3GcvC2WM=;
-        b=Y/4/HnOOzlBHBLBti9V7l/qNKTBKRLjpCgdmk++X2LrQyyd87/eBD6rJjqshuFo+4K
-         IsCLiepA98Mvv4TwcolslBuM6ZpD7zFdhwHNa+8PXFpUllHpsa6jWijEKEksUaKnDsX8
-         pevZ2m/zhhunO94lJC59so+d93lAYXWN+tyDgT4XXHtrag767GvxRNn2aCngRpxMXGZj
-         A87CL8TNW126xYmTnGoFFfxOQdW75OTESNh5P6XmWZFeakBOVFBd1H0QWOvh1hF5+qIX
-         bHbX0pwDBVGL8XMloyJdG+yWjS6AoCEN4OYYb7ZqgVjGnRR/xuMd2qU2D81z5QChkQoP
-         URHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=B4jnxt+7nXgnRmVLjKHksdemzUDI4U6ylRq3GcvC2WM=;
-        b=E9acyav1PkjXO1pc3kKy3CJ8Hr8ecqRsciQomsPRoIBSI2TBZuaUmTHvT146yG0EUb
-         ctqDEK0gZiwtw6McC4jLuaHFMIZxjhVx+r+10E3NLEzQDBI0M7SPudUZsvnOCTLJ63Z2
-         kRXa9lTmuJbNj3Pmi+CRCvrtSVTVtqmCeDc+BfE5oTX0JGb8Rxmu6yvYakxLIONWsmQ6
-         XaAmfWj6xNsB5CMv+fFfBpn0KnZmkjznb0kkOea0+ITNebc7r+y8whkUndaG8sjCeukZ
-         1AA67f8HQSVTUi/nV+NiCykUz07kt//Gb5po0to7vDZdAmeHlUKxGb5K7iqv1vkrPU4Y
-         LCTw==
-X-Gm-Message-State: AOAM533SDw/UAmG5BU6ZFiBW0M6hoUlffw/dPGbWz9iDr93J3sAbacqT
-        MgXZiLqI0r5BhHpUGVLdYSQFcqUy530=
-X-Google-Smtp-Source: ABdhPJwthnzyJzpCL2fXWnwk9WvVmwyR/2Y0uv+ZRKiFDWiLVqtHyFYDrrdRa9u/bTcNjQk4KvVx5Q==
-X-Received: by 2002:a17:902:b683:: with SMTP id c3mr6491574pls.248.1598113332440;
-        Sat, 22 Aug 2020 09:22:12 -0700 (PDT)
-Received: from [10.1.10.11] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id 7sm5474965pff.78.2020.08.22.09.22.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 22 Aug 2020 09:22:11 -0700 (PDT)
-Subject: Re: [PATCH v3 1/2] net: add support for threaded NAPI polling
-To:     Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>
-Cc:     netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
-        Hillf Danton <hdanton@sina.com>
-References: <20200821190151.9792-1-nbd@nbd.name>
- <20200821184924.5b5c421c@kicinski-fedora-PC1C0HJN>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <48e3082b-7d89-d0ad-f256-b1fa1dca0a45@gmail.com>
-Date:   Sat, 22 Aug 2020 09:22:06 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1728256AbgHVQ1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 12:27:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35502 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726728AbgHVQ1m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 22 Aug 2020 12:27:42 -0400
+Received: from kicinski-fedora-PC1C0HJN (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 074BD2072D;
+        Sat, 22 Aug 2020 16:27:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598113661;
+        bh=KUcY6jUvQbqYukCvFE5e41HgnRDWj1Bb1E+AfJUz76A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K5Nh99z8CFb0NoIpL+8rMN7ytRP1Onuz6c13M4VJP6+HNzfAy1rQWYYJXPVUFKPEK
+         7On4ce7f1Jyx5/ki4ilADCG8b9iUcCZftmwpXRKjfmwKYII4TUWw1bY1jXdpoCwJX8
+         fG1vutgI4Kt9b6n0UrMf1SPq8TckOVF9yS9FiAa0=
+Date:   Sat, 22 Aug 2020 09:27:39 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
+        roopa@nvidia.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        tariqt@nvidia.com, ayal@nvidia.com, mkubecek@suse.cz,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/6] devlink: Add device metric support
+Message-ID: <20200822092739.5ba0c099@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <90b68936-88cf-4d87-55b0-acf9955ef758@gmail.com>
+References: <20200817125059.193242-1-idosch@idosch.org>
+        <20200818172419.5b86801b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <58a0356d-3e15-f805-ae52-dc44f265661d@gmail.com>
+        <20200818203501.5c51e61a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <55e40430-a52f-f77b-0d1e-ef79386a0a53@gmail.com>
+        <20200819091843.33ddd113@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <e4fd9b1c-5f7c-d560-9da0-362ddf93165c@gmail.com>
+        <20200819110725.6e8744ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <d0c24aad-b7f3-7fd9-0b34-c695686e3a86@gmail.com>
+        <20200820090942.55dc3182@kicinski-fedora-PC1C0HJN>
+        <20200821103021.GA331448@shredder>
+        <20200821095303.75e6327b@kicinski-fedora-PC1C0HJN>
+        <6030824c-02f9-8103-dae4-d336624fe425@gmail.com>
+        <20200821165052.6790a7ba@kicinski-fedora-PC1C0HJN>
+        <1e5cdd45-d66f-e8e0-ceb7-bf0f6f653a1c@gmail.com>
+        <20200821173715.2953b164@kicinski-fedora-PC1C0HJN>
+        <90b68936-88cf-4d87-55b0-acf9955ef758@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200821184924.5b5c421c@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/21/20 6:49 PM, Jakub Kicinski wrote:
-> On Fri, 21 Aug 2020 21:01:50 +0200 Felix Fietkau wrote:
->> For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
->> poll function does not perform well. Since NAPI poll is bound to the CPU it
->> was scheduled from, we can easily end up with a few very busy CPUs spending
->> most of their time in softirq/ksoftirqd and some idle ones.
->>
->> Introduce threaded NAPI for such drivers based on a workqueue. The API is the
->> same except for using netif_threaded_napi_add instead of netif_napi_add.
->>
->> In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
->> improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
->> NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
->> thread.
->>
->> With threaded NAPI, throughput seems stable and consistent (and higher than
->> the best results I got without it).
->>
->> Based on a patch by Hillf Danton
+On Fri, 21 Aug 2020 19:18:37 -0600 David Ahern wrote:
+> On 8/21/20 6:37 PM, Jakub Kicinski wrote:
+> >>> # cat /proc/net/tls_stat     
+> >>
+> >> I do not agree with adding files under /proc/net for this.  
+> > 
+> > Yeah it's not the best, with higher LoC a better solution should be
+> > within reach.  
 > 
-> I've tested this patch on a non-NUMA system with a moderately
-> high-network workload (roughly 1:6 network to compute cycles)
-> - and it provides ~2.5% speedup in terms of RPS but 1/6/10% worse
-> P50/P99/P999 latency.
-> 
-> I started working on a counter-proposal which uses a pool of threads
-> dedicated to NAPI polling. It's not unlike the workqueue code but
-> trying to be a little more clever. It gives me ~6.5% more RPS but at
-> the same time lowers the p99 latency by 35% without impacting other
-> percentiles. (I only started testing this afternoon, so hopefully the
-> numbers will improve further).
-> 
-> I'm happy for this patch to be merged, it's quite nice, but I wanted 
-> to give the heads up that I may have something that would replace it...
-> 
-> The extremely rough PoC, less than half-implemented code which is really
-> too broken to share:
-> https://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git/log/?h=tapi
-> 
+> The duplicity here is mind-boggling. Tls stats from hardware is on par
+> with Ido's *example* of vxlan stats from an ASIC. You agree that
+> /proc/net files are wrong,
 
-Yes, the idea of sharing a single napi_workq without the ability to perform
-some per-queue tuning is probably okay for the class of devices Felix is interested in.
+I didn't say /proc/net was wrong, I'm just trying to be agreeable.
+Maybe I need to improve my command of the English language.
 
-I vote for waiting a bit and see what you can achieve, since Felix showed no intent
-to work on using kthreads instead of work queues.
+AFAIK /proc/net is where protocol stats are.
 
-Having one kthread per queue gives us existing instrumentation (sched stats),
-and ability to decide for optimal affinities and priorities.
+> but you did it anyway and now you want the
+> next person to solve the problem you did not want to tackle but have
+> strong opinions on.
 
-Thanks !
+I have no need and interest in vxlan stats.
+
+> Ido has a history of thinking through problems and solutions in a proper
+> Linux Way. netlink is the right API, and devlink was created for
+> 'device' stuff versus 'netdev' stuff. Hence, I agree with this
+> *framework* for extracting asic stats.
+
+You seem to focus on less relevant points. I primarily care about the
+statistics being defined and identified by Linux, not every vendor for
+themselves.
+
+No question about Ido's ability and contributions, but then again 
+(from the cover letter):
+
+> This a joint work [...] during a two-day company hackathon.
