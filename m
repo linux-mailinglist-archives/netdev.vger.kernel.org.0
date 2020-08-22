@@ -2,46 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9247724EA56
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 01:16:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B6F724EA5E
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 01:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728687AbgHVXQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 19:16:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
+        id S1728219AbgHVXUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 19:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728673AbgHVXQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 19:16:30 -0400
+        with ESMTP id S1727106AbgHVXUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 19:20:02 -0400
 Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36DDCC061573;
-        Sat, 22 Aug 2020 16:16:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D53C061573;
+        Sat, 22 Aug 2020 16:20:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=3L/UsgXFqsCf4W0xBIw/XFmX/HWp9gaIOQiCvn/gjeI=; b=TjPviCgXdKtGKO/xSg7eevO5PW
-        QI9KPF0JpYDe7Ly7rx8hbl2ZhtQ8vNUwo5nbVqyd4OvX285vXcyXHU2tWG1Z5Tga4jlXa3XCWqoEE
-        zp/JHVb3xj2XCvuL1xOhYo6hcI9pqI46fgtbEv8LksmT8utUhHZXGvSGNZzYriWgFXpmNzU26qHRU
-        yKX7SjdTDAqU1Vq0UL7gT5hgJszRnY4Ur/qlI7YdET28netI/mHUnhJNAZg4PhVWqR1L3oVcm86vX
-        JHw2yUxMpNpz7GE2QxMuz4c4kRWKAcRCIpmnVV839gH9GUwVjcEXFQKWlFuqYBrUiE3YUqAAnQpBS
-        KFO/An6g==;
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=csQurTZyvfQDdDaT5jrS6ZrOX/zsulP2EHMLBxER/0s=; b=Gm/UUnuY7V40W3rqWBPhySR34c
+        ujWxmUXRJzlLN3IlRL8m9HMtUX7pSubEga25ho/SdiQsWxpen6n2pM48S+76TtHEghR9zdbJShOmw
+        flgJ8dd0+v24m5/TrElTLa/mIdLvXmboI0CUA9gh3keXwukaYw/M5kuK8EIyBarZ2/pEWw63y7ZBy
+        o/Ua2oowcRSWx0mCOp4kjLGKkRRyQejH8YgfqY4zU6o59KO3AfStsYZhPXg+sxPrqR8U636CVYSvQ
+        KcKS46Lw+VBKfHHWkiBNsD4/3c9yZGzvP6xivdLGfjWnvTjvg+rAQ8A/jL0mw06G6UFstTrltcJR0
+        FfHLfj2w==;
 Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
         by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k9ckN-0006VD-U1; Sat, 22 Aug 2020 23:16:28 +0000
+        id 1k9cnl-0006fS-GZ; Sat, 22 Aug 2020 23:19:58 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        linux-sctp@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 7/7] net: sctp: ulpqueue.c: delete duplicated word
-Date:   Sat, 22 Aug 2020 16:16:01 -0700
-Message-Id: <20200822231601.32125-8-rdunlap@infradead.org>
+        Johannes Berg <johannes.berg@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH 0/7] net: wireless: delete duplicated words + other fixes
+Date:   Sat, 22 Aug 2020 16:19:46 -0700
+Message-Id: <20200822231953.465-1-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200822231601.32125-1-rdunlap@infradead.org>
-References: <20200822231601.32125-1-rdunlap@infradead.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -49,27 +44,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drop the repeated word "an".
+Drop or fix duplicated words in net/wireless/ and net/mac80211/.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Vlad Yasevich <vyasevich@gmail.com>
-Cc: Neil Horman <nhorman@tuxdriver.com>
-Cc: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc: linux-sctp@vger.kernel.org
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
----
- net/sctp/ulpqueue.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: linux-wireless@vger.kernel.org
 
---- linux-next-20200731.orig/net/sctp/ulpqueue.c
-+++ linux-next-20200731/net/sctp/ulpqueue.c
-@@ -740,7 +740,7 @@ static void sctp_ulpq_reasm_drain(struct
- 
- 
- /* Helper function to gather skbs that have possibly become
-- * ordered by an an incoming chunk.
-+ * ordered by an incoming chunk.
-  */
- static void sctp_ulpq_retrieve_ordered(struct sctp_ulpq *ulpq,
- 					      struct sctp_ulpevent *event)
+
+ net/mac80211/agg-rx.c      |    2 +-
+ net/mac80211/mesh.c        |    2 +-
+ net/wireless/core.h        |    4 ++--
+ net/wireless/reg.c         |    4 ++--
+ net/wireless/scan.c        |    4 ++--
+ net/wireless/sme.c         |    2 +-
+ net/wireless/wext-compat.c |    2 +-
+ 7 files changed, 10 insertions(+), 10 deletions(-)
