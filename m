@@ -2,345 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9674124E937
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 20:07:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1E4024E944
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 20:30:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728597AbgHVSHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 14:07:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38378 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728446AbgHVSG2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Aug 2020 14:06:28 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1k9XuI-00AoMX-DS; Sat, 22 Aug 2020 20:06:22 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v3 5/5] net: phy: Sort Kconfig and Makefile
-Date:   Sat, 22 Aug 2020 20:06:11 +0200
-Message-Id: <20200822180611.2576807-6-andrew@lunn.ch>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200822180611.2576807-1-andrew@lunn.ch>
-References: <20200822180611.2576807-1-andrew@lunn.ch>
+        id S1728562AbgHVSaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 14:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49648 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727893AbgHVSaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 14:30:13 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23779C061573;
+        Sat, 22 Aug 2020 11:30:13 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id bo3so6691813ejb.11;
+        Sat, 22 Aug 2020 11:30:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pmwc657VcF17LG5ED0cRlkWCOFELPP7RKTL6nAzRSO4=;
+        b=hzbGnIT7kuQhlZTtyKqN8mazgBdpUn6VDHVcpom3d86maYFG4Ciq36TAS/OrXwYFyv
+         Dy7NF0lCN/LCyzeS04r7gOdvDc8VodGRJ5uzu6/N++R4NuZfOitsO8vtSklQ8pNVrW9H
+         2AX20gLnHdCAbnyPKUwCZ7d4TVkd+pY7h2aPz6ECU1W12ObAfRMJ2XCGukjjOje/3UIK
+         JQx5R1trcmwTV0PyXTurNRafPXECqoQ0s+amai5NsJS3JGl3j0IdhG/n9iXUqu9jbOfS
+         Ek0JGbdAbpkF3HjiUQMLMyNXE2jQjD1R+vS5ydVmWqTBCfMDcLejfK4XBHocIR6sdC1O
+         rm7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pmwc657VcF17LG5ED0cRlkWCOFELPP7RKTL6nAzRSO4=;
+        b=DvPWwGDUEt0gQTsb+ga35h0RDUDCnWAO93sFhDlQMtHMlpt46Xrvw6W7NozIVf24mU
+         Wr3hsTx+FHD+jEXQWK6GKME/UgyJ2o9Lh/FieBfY6AkfsQWW3Q8N3YbD/8yucMvIT7Sr
+         +QGY/SY1YQIU2bTdCK1h7HussfHtNfhdgTviRRthM1Xj3vkXPVZrJ0FfVJlltyyWB3DL
+         VMqsFkiplJDIHR5zoERtb7pZ1agkCH8mLvLVQx7z6M36K+IPmt1BHfwO6Q8tLWqdzoGO
+         BJ9eepy6uGCHcoNjPbeQ3yEVyikig79yyZ0Nshq+x+qVvxJElHa96yeG529UycogkxcP
+         wgWA==
+X-Gm-Message-State: AOAM5308DGXs6mve577KemIp4r/LcY31PIZ02DFkii/s7PAohRLrCqJb
+        XY9bxmDMKoSGuiuMyBSAiQZPXq1h7WY=
+X-Google-Smtp-Source: ABdhPJwKFRd7cNh4F6FJ82WpJg5kVdluNhakye9NZ1+MXdzeZweG9ZDTOG3uXo7fzD7j60X9WGSymA==
+X-Received: by 2002:a17:906:401b:: with SMTP id v27mr8277695ejj.300.1598121011480;
+        Sat, 22 Aug 2020 11:30:11 -0700 (PDT)
+Received: from debian64.daheim (p4fd09171.dip0.t-ipconnect.de. [79.208.145.113])
+        by smtp.gmail.com with ESMTPSA id i26sm3406551edv.70.2020.08.22.11.30.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Aug 2020 11:30:10 -0700 (PDT)
+Received: from localhost.daheim ([127.0.0.1])
+        by debian64.daheim with esmtp (Exim 4.94)
+        (envelope-from <chunkeey@gmail.com>)
+        id 1k9YHC-0006WS-6L; Sat, 22 Aug 2020 20:30:04 +0200
+Subject: Re: [PATCH 00/32] Set 2: Rid W=1 warnings in Wireless
+To:     Lee Jones <lee.jones@linaro.org>, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20200821071644.109970-1-lee.jones@linaro.org>
+From:   Christian Lamparter <chunkeey@gmail.com>
+Message-ID: <a3915e15-0583-413f-1fcf-7cb9933ec0bf@gmail.com>
+Date:   Sat, 22 Aug 2020 20:30:03 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200821071644.109970-1-lee.jones@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sort the Kconfig based on the text shown in make menuconfig and sort
-the Makefile by CONFIG symbol.
+On 2020-08-21 09:16, Lee Jones wrote:
+> This set is part of a larger effort attempting to clean-up W=1
+> kernel builds, which are currently overwhelmingly riddled with
+> niggly little warnings.
+>
+I see that after our discussion about the carl9170 change in this
+thread following your patch: <https://lkml.org/lkml/2020/8/14/291>
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/phy/Kconfig  | 164 +++++++++++++++++++--------------------
- drivers/net/phy/Makefile |  10 +--
- 2 files changed, 87 insertions(+), 87 deletions(-)
+you decided the best way to address our requirements, was to "drop"
+your patch from the series, instead of just implementing the requested 
+changes. :(
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 20252d7487db..698bea312adc 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -45,7 +45,15 @@ config LED_TRIGGER_PHY
- 		for any speed known to the PHY.
- 
- 
--comment "MII PHY device drivers"
-+config FIXED_PHY
-+	tristate "MDIO Bus/PHY emulation with fixed speed/link PHYs"
-+	depends on PHYLIB
-+	select SWPHY
-+	help
-+	  Adds the platform "fixed" MDIO Bus to cover the boards that use
-+	  PHYs that are not connected to the real MDIO bus.
-+
-+	  Currently tested with mpc866ads and mpc8349e-mitx.
- 
- config SFP
- 	tristate "SFP cage support"
-@@ -53,6 +61,19 @@ config SFP
- 	depends on HWMON || HWMON=n
- 	select MDIO_I2C
- 
-+comment "MII PHY device drivers"
-+
-+config AMD_PHY
-+	tristate "AMD PHYs"
-+	help
-+	  Currently supports the am79c874
-+
-+config MESON_GXL_PHY
-+	tristate "Amlogic Meson GXL Internal PHY"
-+	depends on ARCH_MESON || COMPILE_TEST
-+	help
-+	  Currently has a driver for the Amlogic Meson GXL Internal PHY
-+
- config ADIN_PHY
- 	tristate "Analog Devices Industrial Ethernet PHYs"
- 	help
-@@ -62,11 +83,6 @@ config ADIN_PHY
- 	  - ADIN1300 - Robust,Industrial, Low Latency 10/100/1000 Gigabit
- 	    Ethernet PHY
- 
--config AMD_PHY
--	tristate "AMD PHYs"
--	help
--	  Currently supports the am79c874
--
- config AQUANTIA_PHY
- 	tristate "Aquantia PHYs"
- 	help
-@@ -78,6 +94,24 @@ config AX88796B_PHY
- 	  Currently supports the Asix Electronics PHY found in the X-Surf 100
- 	  AX88796B package.
- 
-+config BROADCOM_PHY
-+	tristate "Broadcom 54XX PHYs"
-+	select BCM_NET_PHYLIB
-+	help
-+	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
-+	  BCM5481, BCM54810 and BCM5482 PHYs.
-+
-+config BCM54140_PHY
-+	tristate "Broadcom BCM54140 PHY"
-+	depends on PHYLIB
-+	depends on HWMON || HWMON=n
-+	select BCM_NET_PHYLIB
-+	help
-+	  Support the Broadcom BCM54140 Quad SGMII/QSGMII PHY.
-+
-+	  This driver also supports the hardware monitoring of this PHY and
-+	  exposes voltage and temperature sensors.
-+
- config BCM63XX_PHY
- 	tristate "Broadcom 63xx SOCs internal PHY"
- 	depends on BCM63XX || COMPILE_TEST
-@@ -92,6 +126,12 @@ config BCM7XXX_PHY
- 	  Currently supports the BCM7366, BCM7439, BCM7445, and
- 	  40nm and 65nm generation of BCM7xxx Set Top Box SoCs.
- 
-+config BCM84881_PHY
-+	tristate "Broadcom BCM84881 PHY"
-+	depends on PHYLIB
-+	help
-+	  Support the Broadcom BCM84881 PHY.
-+
- config BCM87XX_PHY
- 	tristate "Broadcom BCM8706 and BCM8727 PHYs"
- 	help
-@@ -113,30 +153,6 @@ config BCM_CYGNUS_PHY
- config BCM_NET_PHYLIB
- 	tristate
- 
--config BROADCOM_PHY
--	tristate "Broadcom PHYs"
--	select BCM_NET_PHYLIB
--	help
--	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
--	  BCM5481, BCM54810 and BCM5482 PHYs.
--
--config BCM54140_PHY
--	tristate "Broadcom BCM54140 PHY"
--	depends on PHYLIB
--	depends on HWMON || HWMON=n
--	select BCM_NET_PHYLIB
--	help
--	  Support the Broadcom BCM54140 Quad SGMII/QSGMII PHY.
--
--	  This driver also supports the hardware monitoring of this PHY and
--	  exposes voltage and temperature sensors.
--
--config BCM84881_PHY
--	tristate "Broadcom BCM84881 PHY"
--	depends on PHYLIB
--	help
--	  Support the Broadcom BCM84881 PHY.
--
- config CICADA_PHY
- 	tristate "Cicada PHYs"
- 	help
-@@ -152,48 +168,16 @@ config DAVICOM_PHY
- 	help
- 	  Currently supports dm9161e and dm9131
- 
--config DP83822_PHY
--	tristate "Texas Instruments DP83822/825/826 PHYs"
--	help
--	  Supports the DP83822, DP83825I, DP83825CM, DP83825CS, DP83825S,
--	  DP83826C and DP83826NC PHYs.
--
--config DP83TC811_PHY
--	tristate "Texas Instruments DP83TC811 PHY"
--	help
--	  Supports the DP83TC811 PHY.
--
--config DP83848_PHY
--	tristate "Texas Instruments DP83848 PHY"
--	help
--	  Supports the DP83848 PHY.
--
--config DP83867_PHY
--	tristate "Texas Instruments DP83867 Gigabit PHY"
--	help
--	  Currently supports the DP83867 PHY.
--
--config DP83869_PHY
--	tristate "Texas Instruments DP83869 Gigabit PHY"
--	help
--	  Currently supports the DP83869 PHY.  This PHY supports copper and
--	  fiber connections.
--
--config FIXED_PHY
--	tristate "MDIO Bus/PHY emulation with fixed speed/link PHYs"
--	depends on PHYLIB
--	select SWPHY
--	help
--	  Adds the platform "fixed" MDIO Bus to cover the boards that use
--	  PHYs that are not connected to the real MDIO bus.
--
--	  Currently tested with mpc866ads and mpc8349e-mitx.
--
- config ICPLUS_PHY
- 	tristate "ICPlus PHYs"
- 	help
- 	  Currently supports the IP175C and IP1001 PHYs.
- 
-+config LXT_PHY
-+	tristate "Intel LXT PHYs"
-+	help
-+	  Currently supports the lxt970, lxt971
-+
- config INTEL_XWAY_PHY
- 	tristate "Intel XWAY PHYs"
- 	help
-@@ -207,27 +191,16 @@ config LSI_ET1011C_PHY
- 	help
- 	  Supports the LSI ET1011C PHY.
- 
--config LXT_PHY
--	tristate "Intel LXT PHYs"
--	help
--	  Currently supports the lxt970, lxt971
--
- config MARVELL_PHY
--	tristate "Marvell PHYs"
-+	tristate "Marvell Alaska PHYs"
- 	help
--	  Currently has a driver for the 88E1011S
-+	  Currently has a driver for the 88E1XXX
- 
- config MARVELL_10G_PHY
- 	tristate "Marvell Alaska 10Gbit PHYs"
- 	help
- 	  Support for the Marvell Alaska MV88X3310 and compatible PHYs.
- 
--config MESON_GXL_PHY
--	tristate "Amlogic Meson GXL Internal PHY"
--	depends on ARCH_MESON || COMPILE_TEST
--	help
--	  Currently has a driver for the Amlogic Meson GXL Internal PHY
--
- config MICREL_PHY
- 	tristate "Micrel PHYs"
- 	help
-@@ -278,12 +251,12 @@ config REALTEK_PHY
- 	  Supports the Realtek 821x PHY.
- 
- config RENESAS_PHY
--	tristate "Driver for Renesas PHYs"
-+	tristate "Renesas PHYs"
- 	help
- 	  Supports the Renesas PHYs uPD60620 and uPD60620A.
- 
- config ROCKCHIP_PHY
--	tristate "Driver for Rockchip Ethernet PHYs"
-+	tristate "Rockchip Ethernet PHYs"
- 	help
- 	  Currently supports the integrated Ethernet PHY.
- 
-@@ -302,6 +275,33 @@ config TERANETICS_PHY
- 	help
- 	  Currently supports the Teranetics TN2020
- 
-+config DP83822_PHY
-+	tristate "Texas Instruments DP83822/825/826 PHYs"
-+	help
-+	  Supports the DP83822, DP83825I, DP83825CM, DP83825CS, DP83825S,
-+	  DP83826C and DP83826NC PHYs.
-+
-+config DP83TC811_PHY
-+	tristate "Texas Instruments DP83TC811 PHY"
-+	help
-+	  Supports the DP83TC811 PHY.
-+
-+config DP83848_PHY
-+	tristate "Texas Instruments DP83848 PHY"
-+	help
-+	  Supports the DP83848 PHY.
-+
-+config DP83867_PHY
-+	tristate "Texas Instruments DP83867 Gigabit PHY"
-+	help
-+	  Currently supports the DP83867 PHY.
-+
-+config DP83869_PHY
-+	tristate "Texas Instruments DP83869 Gigabit PHY"
-+	help
-+	  Currently supports the DP83869 PHY.  This PHY supports copper and
-+	  fiber connections.
-+
- config VITESSE_PHY
- 	tristate "Vitesse PHYs"
- 	help
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index 3d83b648e3f0..a13e402074cf 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -37,32 +37,32 @@ ifdef CONFIG_HWMON
- aquantia-objs			+= aquantia_hwmon.o
- endif
- obj-$(CONFIG_AQUANTIA_PHY)	+= aquantia.o
--obj-$(CONFIG_AX88796B_PHY)	+= ax88796b.o
- obj-$(CONFIG_AT803X_PHY)	+= at803x.o
-+obj-$(CONFIG_AX88796B_PHY)	+= ax88796b.o
-+obj-$(CONFIG_BCM54140_PHY)	+= bcm54140.o
- obj-$(CONFIG_BCM63XX_PHY)	+= bcm63xx.o
- obj-$(CONFIG_BCM7XXX_PHY)	+= bcm7xxx.o
-+obj-$(CONFIG_BCM84881_PHY)	+= bcm84881.o
- obj-$(CONFIG_BCM87XX_PHY)	+= bcm87xx.o
- obj-$(CONFIG_BCM_CYGNUS_PHY)	+= bcm-cygnus.o
- obj-$(CONFIG_BCM_NET_PHYLIB)	+= bcm-phy-lib.o
- obj-$(CONFIG_BROADCOM_PHY)	+= broadcom.o
--obj-$(CONFIG_BCM54140_PHY)	+= bcm54140.o
--obj-$(CONFIG_BCM84881_PHY)	+= bcm84881.o
- obj-$(CONFIG_CICADA_PHY)	+= cicada.o
- obj-$(CONFIG_CORTINA_PHY)	+= cortina.o
- obj-$(CONFIG_DAVICOM_PHY)	+= davicom.o
- obj-$(CONFIG_DP83640_PHY)	+= dp83640.o
- obj-$(CONFIG_DP83822_PHY)	+= dp83822.o
--obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
- obj-$(CONFIG_DP83848_PHY)	+= dp83848.o
- obj-$(CONFIG_DP83867_PHY)	+= dp83867.o
- obj-$(CONFIG_DP83869_PHY)	+= dp83869.o
-+obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
- obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
- obj-$(CONFIG_ICPLUS_PHY)	+= icplus.o
- obj-$(CONFIG_INTEL_XWAY_PHY)	+= intel-xway.o
- obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o
- obj-$(CONFIG_LXT_PHY)		+= lxt.o
--obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
- obj-$(CONFIG_MARVELL_10G_PHY)	+= marvell10g.o
-+obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
- obj-$(CONFIG_MESON_GXL_PHY)	+= meson-gxl.o
- obj-$(CONFIG_MICREL_KS8995MA)	+= spi_ks8995.o
- obj-$(CONFIG_MICREL_PHY)	+= micrel.o
--- 
-2.28.0
+> There are quite a few W=1 warnings in the Wireless.  My plan
+> is to work through all of them over the next few weeks.
+> Hopefully it won't be too long before drivers/net/wireless
+> builds clean with W=1 enabled.
 
+Just a parting note for your consideration:
+
+Since 5.7 [0], it has become rather easy to also compile the linux 
+kernel with clang and the LLVM Utilities.
+<https://www.kernel.org/doc/html/latest/kbuild/llvm.html>
+
+I hope this information can help you to see beyond that one-unamed 
+"compiler" bias there... I wish you the best of luck in your endeavors.
+
+Christian
+
+[0] 
+<https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.7-Kbuild-Easier-LLVM>
