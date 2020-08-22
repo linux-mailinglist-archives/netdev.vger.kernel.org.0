@@ -2,29 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E70F24E934
+	by mail.lfdr.de (Postfix) with ESMTP id DBC9E24E935
 	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 20:07:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728544AbgHVSG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 14:06:56 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38376 "EHLO vps0.lunn.ch"
+        id S1728545AbgHVSG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 14:06:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:38366 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728444AbgHVSG1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Aug 2020 14:06:27 -0400
+        id S1728132AbgHVSG2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 22 Aug 2020 14:06:28 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1k9XuI-00AoMK-5S; Sat, 22 Aug 2020 20:06:22 +0200
+        id 1k9XuI-00AoMM-6p; Sat, 22 Aug 2020 20:06:22 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Russell King <rmk+kernel@armlinux.org.uk>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v3 0/5] Move MDIO drivers into there own directory
-Date:   Sat, 22 Aug 2020 20:06:06 +0200
-Message-Id: <20200822180611.2576807-1-andrew@lunn.ch>
+        Andrew Lunn <andrew@lunn.ch>,
+        Jose Abreu <Jose.Abreu@synopsys.com>
+Subject: [PATCH net-next v3 1/5] net: pcs: Move XPCS into new PCS subdirectory
+Date:   Sat, 22 Aug 2020 20:06:07 +0200
+Message-Id: <20200822180611.2576807-2-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200822180611.2576807-1-andrew@lunn.ch>
+References: <20200822180611.2576807-1-andrew@lunn.ch>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -32,101 +35,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The phy subdirectory is getting cluttered. It has both PHY drivers and
-MDIO drivers, plus a stray switch driver. Soon more PCS drivers are
-likely to appear.
+Create drivers/net/pcs and move the Synopsys DesignWare XPCS into the
+new directory. Move the header file into a subdirectory
+include/linux/pcs
 
-Move MDIO and PCS drivers into new directories. This requires fixing
-up the xgene driver which uses a relative include path.
+Start a naming convention of all PCS files use the prefix pcs-, and
+rename the XPCS files to fit.
 
 v2:
-Move the subdirs to drivers/net, rather than drivers/net/phy.
+Add include/linux/pcs
 
-v3:
-Add subdirectories under include/linux for mdio and pcs
-
-Andrew Lunn (5):
-  net: pcs: Move XPCS into new PCS subdirectory
-  net/phy/mdio-i2c: Move header file to include/linux/mdio
-  net: xgene: Move shared header file into include/linux
-  net: mdio: Move MDIO drivers into a new subdirectory
-  net: phy: Sort Kconfig and Makefile
-
- MAINTAINERS                                   |  12 +-
- drivers/net/Kconfig                           |   4 +
- drivers/net/Makefile                          |   2 +
- .../net/ethernet/apm/xgene/xgene_enet_main.h  |   2 +-
- drivers/net/ethernet/stmicro/stmmac/Kconfig   |   2 +-
- drivers/net/ethernet/stmicro/stmmac/common.h  |   2 +-
- drivers/net/mdio/Kconfig                      | 241 +++++++++++
- drivers/net/mdio/Makefile                     |  27 ++
- drivers/net/{phy => mdio}/mdio-aspeed.c       |   0
- drivers/net/{phy => mdio}/mdio-bcm-iproc.c    |   0
- drivers/net/{phy => mdio}/mdio-bcm-unimac.c   |   0
- drivers/net/{phy => mdio}/mdio-bitbang.c      |   0
- drivers/net/{phy => mdio}/mdio-cavium.c       |   0
- drivers/net/{phy => mdio}/mdio-cavium.h       |   0
- drivers/net/{phy => mdio}/mdio-gpio.c         |   0
- drivers/net/{phy => mdio}/mdio-hisi-femac.c   |   0
- drivers/net/{phy => mdio}/mdio-i2c.c          |   3 +-
- drivers/net/{phy => mdio}/mdio-ipq4019.c      |   0
- drivers/net/{phy => mdio}/mdio-ipq8064.c      |   0
- drivers/net/{phy => mdio}/mdio-moxart.c       |   0
- drivers/net/{phy => mdio}/mdio-mscc-miim.c    |   0
- .../net/{phy => mdio}/mdio-mux-bcm-iproc.c    |   0
- drivers/net/{phy => mdio}/mdio-mux-gpio.c     |   0
- .../net/{phy => mdio}/mdio-mux-meson-g12a.c   |   0
- drivers/net/{phy => mdio}/mdio-mux-mmioreg.c  |   0
- .../net/{phy => mdio}/mdio-mux-multiplexer.c  |   0
- drivers/net/{phy => mdio}/mdio-mux.c          |   0
- drivers/net/{phy => mdio}/mdio-mvusb.c        |   0
- drivers/net/{phy => mdio}/mdio-octeon.c       |   0
- drivers/net/{phy => mdio}/mdio-sun4i.c        |   0
- drivers/net/{phy => mdio}/mdio-thunder.c      |   0
- drivers/net/{phy => mdio}/mdio-xgene.c        |   2 +-
- drivers/net/pcs/Kconfig                       |  20 +
- drivers/net/pcs/Makefile                      |   4 +
- .../net/{phy/mdio-xpcs.c => pcs/pcs-xpcs.c}   |   2 +-
- drivers/net/phy/Kconfig                       | 404 ++++--------------
- drivers/net/phy/Makefile                      |  37 +-
- drivers/net/phy/sfp.c                         |   2 +-
- .../net/phy => include/linux/mdio}/mdio-i2c.h |   0
- .../phy => include/linux/mdio}/mdio-xgene.h   |   0
- include/linux/{mdio-xpcs.h => pcs/pcs-xpcs.h} |   8 +-
- 41 files changed, 405 insertions(+), 369 deletions(-)
- create mode 100644 drivers/net/mdio/Kconfig
- create mode 100644 drivers/net/mdio/Makefile
- rename drivers/net/{phy => mdio}/mdio-aspeed.c (100%)
- rename drivers/net/{phy => mdio}/mdio-bcm-iproc.c (100%)
- rename drivers/net/{phy => mdio}/mdio-bcm-unimac.c (100%)
- rename drivers/net/{phy => mdio}/mdio-bitbang.c (100%)
- rename drivers/net/{phy => mdio}/mdio-cavium.c (100%)
- rename drivers/net/{phy => mdio}/mdio-cavium.h (100%)
- rename drivers/net/{phy => mdio}/mdio-gpio.c (100%)
- rename drivers/net/{phy => mdio}/mdio-hisi-femac.c (100%)
- rename drivers/net/{phy => mdio}/mdio-i2c.c (98%)
- rename drivers/net/{phy => mdio}/mdio-ipq4019.c (100%)
- rename drivers/net/{phy => mdio}/mdio-ipq8064.c (100%)
- rename drivers/net/{phy => mdio}/mdio-moxart.c (100%)
- rename drivers/net/{phy => mdio}/mdio-mscc-miim.c (100%)
- rename drivers/net/{phy => mdio}/mdio-mux-bcm-iproc.c (100%)
- rename drivers/net/{phy => mdio}/mdio-mux-gpio.c (100%)
- rename drivers/net/{phy => mdio}/mdio-mux-meson-g12a.c (100%)
- rename drivers/net/{phy => mdio}/mdio-mux-mmioreg.c (100%)
- rename drivers/net/{phy => mdio}/mdio-mux-multiplexer.c (100%)
- rename drivers/net/{phy => mdio}/mdio-mux.c (100%)
- rename drivers/net/{phy => mdio}/mdio-mvusb.c (100%)
- rename drivers/net/{phy => mdio}/mdio-octeon.c (100%)
- rename drivers/net/{phy => mdio}/mdio-sun4i.c (100%)
- rename drivers/net/{phy => mdio}/mdio-thunder.c (100%)
- rename drivers/net/{phy => mdio}/mdio-xgene.c (99%)
+Cc: Jose Abreu <Jose.Abreu@synopsys.com>
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+---
+ MAINTAINERS                                   |  5 +++--
+ drivers/net/Kconfig                           |  2 ++
+ drivers/net/Makefile                          |  1 +
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/common.h  |  2 +-
+ drivers/net/pcs/Kconfig                       | 20 +++++++++++++++++++
+ drivers/net/pcs/Makefile                      |  4 ++++
+ .../net/{phy/mdio-xpcs.c => pcs/pcs-xpcs.c}   |  2 +-
+ drivers/net/phy/Kconfig                       |  6 ------
+ drivers/net/phy/Makefile                      |  1 -
+ include/linux/{mdio-xpcs.h => pcs/pcs-xpcs.h} |  8 ++++----
+ 11 files changed, 37 insertions(+), 16 deletions(-)
  create mode 100644 drivers/net/pcs/Kconfig
  create mode 100644 drivers/net/pcs/Makefile
  rename drivers/net/{phy/mdio-xpcs.c => pcs/pcs-xpcs.c} (99%)
- rename {drivers/net/phy => include/linux/mdio}/mdio-i2c.h (100%)
- rename {drivers/net/phy => include/linux/mdio}/mdio-xgene.h (100%)
  rename include/linux/{mdio-xpcs.h => pcs/pcs-xpcs.h} (88%)
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 57afa6532824..83f0cb32616e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6513,6 +6513,7 @@ F:	Documentation/devicetree/bindings/net/ethernet-phy.yaml
+ F:	Documentation/devicetree/bindings/net/mdio*
+ F:	Documentation/devicetree/bindings/net/qca,ar803x.yaml
+ F:	Documentation/networking/phy.rst
++F:	drivers/net/pcs/
+ F:	drivers/net/phy/
+ F:	drivers/of/of_mdio.c
+ F:	drivers/of/of_net.c
+@@ -16730,8 +16731,8 @@ SYNOPSYS DESIGNWARE ETHERNET XPCS DRIVER
+ M:	Jose Abreu <Jose.Abreu@synopsys.com>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+-F:	drivers/net/phy/mdio-xpcs.c
+-F:	include/linux/mdio-xpcs.h
++F:	drivers/net/pcs/pcs-xpcs.c
++F:	include/linux/pcs/pcs-xpcs.h
+ 
+ SYNOPSYS DESIGNWARE I2C DRIVER
+ M:	Jarkko Nikula <jarkko.nikula@linux.intel.com>
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 1368d1d6a114..2b07566de78c 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -473,6 +473,8 @@ config NET_SB1000
+ 
+ source "drivers/net/phy/Kconfig"
+ 
++source "drivers/net/pcs/Kconfig"
++
+ source "drivers/net/plip/Kconfig"
+ 
+ source "drivers/net/ppp/Kconfig"
+diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+index 94b60800887a..f7402d766b67 100644
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
+@@ -21,6 +21,7 @@ obj-$(CONFIG_MDIO) += mdio.o
+ obj-$(CONFIG_NET) += Space.o loopback.o
+ obj-$(CONFIG_NETCONSOLE) += netconsole.o
+ obj-y += phy/
++obj-y += pcs/
+ obj-$(CONFIG_RIONET) += rionet.o
+ obj-$(CONFIG_NET_TEAM) += team/
+ obj-$(CONFIG_TUN) += tun.o
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+index 9a47c5aec91a..35e8fd6411e2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
++++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+@@ -3,7 +3,7 @@ config STMMAC_ETH
+ 	tristate "STMicroelectronics Multi-Gigabit Ethernet driver"
+ 	depends on HAS_IOMEM && HAS_DMA
+ 	select MII
+-	select MDIO_XPCS
++	select PCS_XPCS
+ 	select PAGE_POOL
+ 	select PHYLINK
+ 	select CRC32
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 127f75862962..74dc742c9a3b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -15,7 +15,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/stmmac.h>
+ #include <linux/phy.h>
+-#include <linux/mdio-xpcs.h>
++#include <linux/pcs-xpcs.h>
+ #include <linux/module.h>
+ #if IS_ENABLED(CONFIG_VLAN_8021Q)
+ #define STMMAC_VLAN_TAG_USED
+diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
+new file mode 100644
+index 000000000000..f81c6446c0fc
+--- /dev/null
++++ b/drivers/net/pcs/Kconfig
+@@ -0,0 +1,20 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# PCS Layer Configuration
++#
++
++menuconfig PCS_DEVICE
++	tristate "PCS device drivers"
++	help
++	  PCS drivers, sitting between the MAC and the PHY
++
++if PCS_DEVICE
++
++config PCS_XPCS
++	tristate "Synopsys DesignWare XPCS controller"
++	select MDIO_BUS
++	help
++	  This module provides helper functions for Synopsys DesignWare XPCS
++	  controllers.
++
++endif
+diff --git a/drivers/net/pcs/Makefile b/drivers/net/pcs/Makefile
+new file mode 100644
+index 000000000000..f0480afc7157
+--- /dev/null
++++ b/drivers/net/pcs/Makefile
+@@ -0,0 +1,4 @@
++# SPDX-License-Identifier: GPL-2.0
++# Makefile for Linux PCS drivers
++
++obj-$(CONFIG_PCS_XPCS)		+= pcs-xpcs.o
+diff --git a/drivers/net/phy/mdio-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
+similarity index 99%
+rename from drivers/net/phy/mdio-xpcs.c
+rename to drivers/net/pcs/pcs-xpcs.c
+index 0d66a8ba7eb6..1aa9903d602e 100644
+--- a/drivers/net/phy/mdio-xpcs.c
++++ b/drivers/net/pcs/pcs-xpcs.c
+@@ -7,8 +7,8 @@
+  */
+ 
+ #include <linux/delay.h>
++#include <linux/pcs/pcs-xpcs.h>
+ #include <linux/mdio.h>
+-#include <linux/mdio-xpcs.h>
+ #include <linux/phylink.h>
+ #include <linux/workqueue.h>
+ 
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 726e4b240e7e..c69cc806f064 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -234,12 +234,6 @@ config MDIO_XGENE
+ 	  This module provides a driver for the MDIO busses found in the
+ 	  APM X-Gene SoC's.
+ 
+-config MDIO_XPCS
+-	tristate "Synopsys DesignWare XPCS controller"
+-	help
+-	  This module provides helper functions for Synopsys DesignWare XPCS
+-	  controllers.
+-
+ endif
+ endif
+ 
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index d84bab489a53..7cd8a0d1c0d0 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -47,7 +47,6 @@ obj-$(CONFIG_MDIO_OCTEON)	+= mdio-octeon.o
+ obj-$(CONFIG_MDIO_SUN4I)	+= mdio-sun4i.o
+ obj-$(CONFIG_MDIO_THUNDER)	+= mdio-thunder.o
+ obj-$(CONFIG_MDIO_XGENE)	+= mdio-xgene.o
+-obj-$(CONFIG_MDIO_XPCS)		+= mdio-xpcs.o
+ 
+ obj-$(CONFIG_NETWORK_PHY_TIMESTAMPING) += mii_timestamper.o
+ 
+diff --git a/include/linux/mdio-xpcs.h b/include/linux/pcs/pcs-xpcs.h
+similarity index 88%
+rename from include/linux/mdio-xpcs.h
+rename to include/linux/pcs/pcs-xpcs.h
+index 9a841aa5982d..351c1c9aedc5 100644
+--- a/include/linux/mdio-xpcs.h
++++ b/include/linux/pcs/pcs-xpcs.h
+@@ -4,8 +4,8 @@
+  * Synopsys DesignWare XPCS helpers
+  */
+ 
+-#ifndef __LINUX_MDIO_XPCS_H
+-#define __LINUX_MDIO_XPCS_H
++#ifndef __LINUX_PCS_XPCS_H
++#define __LINUX_PCS_XPCS_H
+ 
+ #include <linux/phy.h>
+ #include <linux/phylink.h>
+@@ -29,7 +29,7 @@ struct mdio_xpcs_ops {
+ 	int (*probe)(struct mdio_xpcs_args *xpcs, phy_interface_t interface);
+ };
+ 
+-#if IS_ENABLED(CONFIG_MDIO_XPCS)
++#if IS_ENABLED(CONFIG_PCS_XPCS)
+ struct mdio_xpcs_ops *mdio_xpcs_get_ops(void);
+ #else
+ static inline struct mdio_xpcs_ops *mdio_xpcs_get_ops(void)
+@@ -38,4 +38,4 @@ static inline struct mdio_xpcs_ops *mdio_xpcs_get_ops(void)
+ }
+ #endif
+ 
+-#endif /* __LINUX_MDIO_XPCS_H */
++#endif /* __LINUX_PCS_XPCS_H */
 -- 
 2.28.0
 
