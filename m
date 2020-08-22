@@ -2,69 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6983824E758
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 14:18:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC42324E7D4
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 16:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727945AbgHVMSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 08:18:39 -0400
-Received: from sonic306-1.consmr.mail.bf2.yahoo.com ([74.6.132.40]:34160 "EHLO
-        sonic306-1.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727870AbgHVMSh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 08:18:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1598098716; bh=HWomD5uP1j5Q5FEvOniIgsvD2oX57lzH8wSJnE4ZdFk=; h=Date:From:Reply-To:Subject:References:From:Subject; b=BX9h3jhda9za/0wv9fDIU+9Nh1vAQf6BMlslPthJ6BGQHB4CasmoE1sYKORlpvhiSOESZZEqIHIno4OWI+vBN6o5t+MOeabPpOhPaDDhZh2DDaSw1Ksbzfi6anJaaZuB5zpMcyfixPpAtxK4MBO9qvMozrRVKvwL8I1e8Ho0YYpj9FuGhcPkCkzd+PXn1D0eaq0MBY98zjLU9r1ek52TtKroITpM0q4/21wI10vJ2uvJft/lwojHPh41lwxNtAmnol1f8mOq6uweYc5sii+53hJe/VbKzMbMUkmPBlF/OXa5AZItc6kQf6dAqnq6bt8sU1zyGqfrNeu1C3zBYj8HQg==
-X-YMail-OSG: Yry3hsUVM1nUsNNLa.rqTCSY5Ie.M3c4A2dM6JPyFxgeWyDNE9TeOQdg6NoA4v7
- y6.8R1vb5R800Qy7mcnQm4hAWH17LqHQpsq9wkg1Ph0fAeNYkRsTLlyFpzgalXpizDB1nuk0s4oQ
- 4u1xmSuEbHWdvVEtx32UPxjDcekWVxTp_4KZitzYC5hmRJtsMpVEfC7ztLuONPZu6cSyP1ovO_NF
- _SzdAJLP_DzDQnAdhO.mN0IdhwRR8OfmZBEGl9KI6jSWlpvfFDdicltYlCTfCIISPQqrqyhr7xzv
- EcpdDMKMpfMILGVevjmvbcWBIFYYqYiqbxZqosVAoiNNazzhuQWA9LPoCW7X5R9LhhLjz3qmPyzv
- skRLY8SXFguuAIS1bQSW3uGMx9IIRWxW17hft8W50gpqVn8gk5q.9H6nrZ_JcpUnhmp4ix6T92Ya
- NYhBlCrGNsvvoT7BfPLPNPUtASUfSa8E5TgxlcfMw.mgRa7KWH3c4rtOp_NSYqB7eE_vRr.88OGd
- kzPXPKCoKQGcKhdMNqEpMdIEU0x6cpa7.g4.LnXTecIRgDL1l9Hs7nNzhCGe9RjjTSRKcLHEY35C
- tOgu2Pa0f5eo945f9mrDD8rohoN5u_lmDzqdpDZJXUb8omQm1jt0yRfg3n5J.xGv18hMDbE8asUj
- s2U.6FAbZtTl4CHPqLDCoHquuk6l1ODI_hd9U.exdFSs9ltwKYEPJyYPZsOm9PsZqPYhArWzmxHB
- 8TzjXQOiiB47aIKT5eyDFYlPTE0m5pG0SxV.jRJPtXJSuKNAleJKUO.hl599NQu722mxYZdNsrcT
- emAjg2vtf3pKy7CqT67SlGJKTgpANEP02GBjvjATQrl4h9LrxEGkAX9WmOQjctwe_UUuz2nLr3cd
- fC2gp47oMCOywks1qYWb0bwzxQ4xgs7ND70YgghC2cUXXo7y08StWD5cU1pAe.nYQMjl7qOzifb9
- P7myGWZpJTbtviUWeyWm6YCVtLSD01j17HaT7vHD4Gz4bYXcXFJ_yIb43.2m9EAncyKMZj7A.g77
- NvYi5bcvoMIz9eiLuf_HtIzMBAcU4AZOygIC2tZlp0kaRtAD7sVInL2T2ggNzUTTHT1oTdLCmyFY
- cU0uO9RoqUiW9kju2jzhfWMxzN07e_FZi81JF32FesjNJWmPZB6n7Qli0EbIH64.vU_eEm5u4QsR
- AcUj9.Ap62V8drZelbaLMRIrF7e4IEB5wfY9EgHBLajxscip_xHYiAghPha2zuLu.nOz37mZKgFY
- 0GrBcK6LgPKzu9l3L5taVgG2S4RJwzZLlZ2WJqIsxV4vV1ypTGsrc8YlDP9XLcQl4buvkYNRRF79
- 7_CGtQ52ga7vhc_BmaGEpo56HigIYwWcFEAFROJh0NCBnGH6G_3gdwAFhL.9pkcFcRz1jhlH80rA
- lPsotkar1gVabQBWbl0w3.LAtITU8sBI.5YMBS2oScIk8GozH8ipEPIA-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.bf2.yahoo.com with HTTP; Sat, 22 Aug 2020 12:18:36 +0000
-Date:   Sat, 22 Aug 2020 12:18:34 +0000 (UTC)
-From:   Mr Waleed Mazin <waleedmazin3@gmail.com>
-Reply-To: mrwaleedmazin11@gmail.com
-Message-ID: <1394329082.4406666.1598098714152@mail.yahoo.com>
-Subject: I NEED YOUR URGENT RESPOND PLEASE
+        id S1728132AbgHVOWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 10:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728115AbgHVOWc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 10:22:32 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B70C061573
+        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 07:22:31 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id 88so4473587wrh.3
+        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 07:22:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=5HFVo2zL2bsI/Q9rxIrK2pe3dbH+0GlhbWJVp1cCskk=;
+        b=Wbkz2zA+bdCvXZ3rsLg7F0NkvvbKjFGx0Fwa3Zu06+1hpw2dEm/jvRid8vhtlSNfB+
+         aPl3Pdn9/iqjpCH7R5fz7LUKdSff29/ZZ8IO7KLS9eYLANNWtwOapGpYfZCcxcOqhyDn
+         jE/LbyZE93/5JI/BDmGC4H+QaqEu4NudgYpbk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5HFVo2zL2bsI/Q9rxIrK2pe3dbH+0GlhbWJVp1cCskk=;
+        b=rG+gdEuzUbzPhpjyxLjB0eYgL/H5I/bQUVCY3Hs5Z3GqN77F9aK3VmJC0E3Lmt6XOn
+         eFohPtsXFZaLBXuopFRv9BXPp63AshjffAV0Yt4+u8BxUA3HvG9g9NcUcY5quG5vVMbK
+         /nHU0rdQdPqVfyjodzc89xH3+tW06msjxmsHNBQDdPLT62g7hZElcgA+i1Xitb7lgZhJ
+         xwDwuSYK6RCxhYDXF85npvsG8kOdv1VSSjGZ4/nvOtcam6k3xYW5ms3uWQ3YKzzMnEtd
+         IHPs0hmEz6rEWHIpphel9fnN7nVMGwSx53rR4/9qjJldSJP4cZFosPU6B3QIf/xrMYVi
+         OH1Q==
+X-Gm-Message-State: AOAM530NdKH8cANtroseOU1wCpKVFd/SPm8U4YDuE/GSRevNpDHj0OkK
+        Np2m/HEn+A0J4YSHm+qOyN3dK3I9Y8rSEg==
+X-Google-Smtp-Source: ABdhPJzJZyqNjdHMGQ/nkBrB4dh3Vqvf0CzIf2KNRQ9WTeuU0RPG+NzYRmOQyJdoAUhibiQ2J5s+Rw==
+X-Received: by 2002:adf:e60a:: with SMTP id p10mr5303146wrm.295.1598106149913;
+        Sat, 22 Aug 2020 07:22:29 -0700 (PDT)
+Received: from [192.168.0.101] ([79.134.173.43])
+        by smtp.googlemail.com with ESMTPSA id p17sm13328547wra.81.2020.08.22.07.22.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 22 Aug 2020 07:22:28 -0700 (PDT)
+Subject: Re: general protection fault in fib_check_nexthop
+To:     syzbot <syzbot+55a3e617aaf04b962a3e@syzkaller.appspotmail.com>,
+        davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+References: <00000000000086e96005ad5d17a7@google.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <6d82801a-8704-9198-67d6-12927e21f0fd@cumulusnetworks.com>
+Date:   Sat, 22 Aug 2020 17:22:21 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <00000000000086e96005ad5d17a7@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-References: <1394329082.4406666.1598098714152.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16455 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/21/20 9:10 AM, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    18445bf4 Merge tag 'spi-fix-v5.9-rc1' of git://git.kernel...
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=162cbd7a900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a0437fdd630bee11
+> dashboard link: https://syzkaller.appspot.com/bug?extid=55a3e617aaf04b962a3e
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> userspace arch: i386
+> 
 
-I NEED YOUR URGENT RESPOND PLEASE
+#syz dup: general protection fault in fib_dump_info (2)
 
-My name is Mr Waleed Mazin . I have decided to seek a confidential co-operation with you in the execution of the deal described here-under for our both mutual benefit and I hope you will keep it a top secret because of the nature of the transaction, During the course of our bank year auditing, I discovered an unclaimed/abandoned fund, sum total of {US$19.3 Million United State Dollars} in the bank account that belongs to a Saudi Arabia businessman Who unfortunately lost his life and entire family in a Motor Accident.
-
-Now our bank has been waiting for any of the relatives to come-up for the claim but nobody has done that. I personally has been unsuccessful in locating any of the relatives, now, I sincerely seek your consent to present you as the next of kin / Will Beneficiary to the deceased so that the proceeds of this account valued at {US$19.Million United State Dollars} can be paid to you, which we will share in these percentages ratio, 60% to me and 40% to you. All I request is your utmost sincere co-operation; trust and maximum confidentiality to achieve this project successfully. I have carefully mapped out the moralities for execution of this transaction under a legitimate arrangement to protect you from any breach of the law both in your country and here in Burkina Faso when the fund is being transferred to your bank account.
-
-I will have to provide all the relevant document that will be requested to indicate that you are the rightful beneficiary of this legacy and our bank will release the fund to you without any further delay, upon your consideration and acceptance of this offer, please send me the following information as stated below so we can proceed and get this fund transferred to your designated bank account immediately.
-
--Your Full Name:
--Your Contact Address:
--Your direct Mobile telephone Number:
--Your Date of Birth:
--Your occupation:
-
-I await your swift response and re-assurance.
-
-Best regards,
-Mr Waleed Mazin
