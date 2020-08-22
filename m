@@ -2,110 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0191624E47E
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 03:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0B6E24E492
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 03:49:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726408AbgHVBgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 21:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34460 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbgHVBgJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 21:36:09 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A69DC061574
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 18:30:12 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id f5so1662412plr.9
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 18:30:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5FdGCOSh0yGq5LOdKg1cw6G6slHfFg4GcWGqdDvjTBQ=;
-        b=DxUNEdML933X+ar/XoNGfoEBuHpdwgrmWIhk+0OcsF0He/yLLSZI5qArp/ruHKfVxT
-         MtRDKtzGXbx6+FHZfNmFnVR9D8Jy/fr2m1y4Zcjytvf+dTrLbvmPbTpoFhmWpO2x/wDQ
-         7j9/l6sOWtMJiwbrD3dpQXcnNActfp5orI5p7RGxSg7ThFqWkiEFJVAsoa5pkT29UqS3
-         q0XwsnoApctrhbBwefEuVuWwRYpypCY0hCPOy48n3UaLT8Dx/7IeAlxBstA2mZQ09QMx
-         2IGfXkfWdxT/PaCAkvjpV9lyt6kdt+WuNRfIEFJF/g16EmzFBOkCsyFWLXoSYqIW9WXz
-         B+JA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5FdGCOSh0yGq5LOdKg1cw6G6slHfFg4GcWGqdDvjTBQ=;
-        b=E9SNrMujIqa5CYoSReSNec7Gj/vbtHzdkgR0uQCBhywU6DrXX/Hocgc6CgbMoU/cn/
-         FJKTKCLR6mAkzKEKyTSgjeoFxlzLzaggUUgZPi6d7LxkSGpUavKJ6jaEqPCE1F407vDp
-         AAtJzovqDPOd+uY+wOsiQ8PiXGHS/8Q1pFW7sSJMDBbcKSTgmUH1piqPdrf/GdgHgLzM
-         yYLbEy+vXotnpNu9BVOgZeQhqZUUb2YM9bEsuQaya75ZdbkpcJnAcfsi76Cb8yr4KBc2
-         ImjYwAYeMm9VibZOK/t0JOuaCXFA1G9QQ02/b4YLoIQZJtaLSKQtwopECEblHdCn9L2L
-         EGZw==
-X-Gm-Message-State: AOAM530jT0aO9G9wpGVCcl4tHyHKYY/tD8ceqHyC0qOZx7VNs8CX6xe9
-        M2GcNawIfG+JrrTN1obOCav0mJZWo9aiNA==
-X-Google-Smtp-Source: ABdhPJzT3Rxj5ys+Go+GlnOkGA6Vk00z1TpsJPXXCiQezVriHK4KdnqOQXFxSVB1v3OgT4cM/UwVHg==
-X-Received: by 2002:a17:90a:6481:: with SMTP id h1mr4847063pjj.18.1598059811681;
-        Fri, 21 Aug 2020 18:30:11 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id r77sm4041279pfc.193.2020.08.21.18.30.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Aug 2020 18:30:11 -0700 (PDT)
-Date:   Fri, 21 Aug 2020 18:30:02 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Roopa Prabhu <roopa@nvidia.com>
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>, <dsahern@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH iproute2 net-next] iplink: add support for protodown
- reason
-Message-ID: <20200821183002.7bfc7aa0@hermes.lan>
-In-Reply-To: <78abb0f7-7043-2612-58de-e64ecefd7ac5@nvidia.com>
-References: <20200821035202.15612-1-roopa@cumulusnetworks.com>
-        <20200820213649.7cd6aa3f@hermes.lan>
-        <1ad9fc74-db30-fee7-53c8-d1c208b8f9ec@nvidia.com>
-        <78abb0f7-7043-2612-58de-e64ecefd7ac5@nvidia.com>
+        id S1725976AbgHVBt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 21:49:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38280 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725883AbgHVBt0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 21 Aug 2020 21:49:26 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CACA720735;
+        Sat, 22 Aug 2020 01:49:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598060966;
+        bh=Us7hR9PT5tLu6mD4GU5oeioUGExScaxHbh/g39vD+JE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=1jYfxNcMceDQKsYeSftPRMdM0vH9CVmTfU0rF6zBESYRAU5OlACX0ROuCCRj0k9xp
+         JoSaOqfanYfnM0rq68gCAW2vjPunmOKPMyodDRVnN8SM5KccWY2DIDvTkpqY6MulUR
+         17H438kGAS3M4yAMh4XVIjrq8HI5DUy46mSbIM74=
+Date:   Fri, 21 Aug 2020 18:49:24 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     netdev@vger.kernel.org, Eric Dumazet <eric.dumazet@gmail.com>,
+        Hillf Danton <hdanton@sina.com>
+Subject: Re: [PATCH v3 1/2] net: add support for threaded NAPI polling
+Message-ID: <20200821184924.5b5c421c@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200821190151.9792-1-nbd@nbd.name>
+References: <20200821190151.9792-1-nbd@nbd.name>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Aug 2020 14:09:14 -0700
-Roopa Prabhu <roopa@nvidia.com> wrote:
+On Fri, 21 Aug 2020 21:01:50 +0200 Felix Fietkau wrote:
+> For some drivers (especially 802.11 drivers), doing a lot of work in the NAPI
+> poll function does not perform well. Since NAPI poll is bound to the CPU it
+> was scheduled from, we can easily end up with a few very busy CPUs spending
+> most of their time in softirq/ksoftirqd and some idle ones.
+> 
+> Introduce threaded NAPI for such drivers based on a workqueue. The API is the
+> same except for using netif_threaded_napi_add instead of netif_napi_add.
+> 
+> In my tests with mt76 on MT7621 using threaded NAPI + a thread for tx scheduling
+> improves LAN->WLAN bridging throughput by 10-50%. Throughput without threaded
+> NAPI is wildly inconsistent, depending on the CPU that runs the tx scheduling
+> thread.
+> 
+> With threaded NAPI, throughput seems stable and consistent (and higher than
+> the best results I got without it).
+> 
+> Based on a patch by Hillf Danton
 
-> On 8/20/20 10:18 PM, Roopa Prabhu wrote:
-> >
-> > On 8/20/20 9:36 PM, Stephen Hemminger wrote: =20
-> >>
-> >>
-> >> On Thu, 20 Aug 2020 20:52:02 -0700
-> >> Roopa Prabhu <roopa@cumulusnetworks.com> wrote:
-> >> =20
-> >>> +=C2=A0=C2=A0=C2=A0=C2=A0 if (tb[IFLA_PROTO_DOWN]) {
-> >>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 if (rta_getattr_u8(tb[IFLA_PROTO_DOWN]))
-> >>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 print_bool(PRINT_ANY,
-> >>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "proto_down", " protodown on =
-", true); =20
-> >> In general my preference is to use print_null() for presence flags.
-> >> Otherwise you have to handle the false case in JSON as a special case.=
- =20
-> >
-> >
-> > ok, i will look. But this is existing code moved into a new function and
-> > has been
-> >
-> > working fine for years. =20
->=20
->=20
-> looked at print_null and switching to that results in a change in output=
-=20
-> for existing protodown
->=20
-> attribute, so I plan to leave it as is for now.
->=20
+I've tested this patch on a non-NUMA system with a moderately
+high-network workload (roughly 1:6 network to compute cycles)
+- and it provides ~2.5% speedup in terms of RPS but 1/6/10% worse
+P50/P99/P999 latency.
 
-Sure we should really try and have some consistency in the JSON output.
-Maybe a JSON style guide is needed, I wonder if some heavy JSON user already
-has one?
+I started working on a counter-proposal which uses a pool of threads
+dedicated to NAPI polling. It's not unlike the workqueue code but
+trying to be a little more clever. It gives me ~6.5% more RPS but at
+the same time lowers the p99 latency by 35% without impacting other
+percentiles. (I only started testing this afternoon, so hopefully the
+numbers will improve further).
+
+I'm happy for this patch to be merged, it's quite nice, but I wanted 
+to give the heads up that I may have something that would replace it...
+
+The extremely rough PoC, less than half-implemented code which is really
+too broken to share:
+https://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git/log/?h=tapi
