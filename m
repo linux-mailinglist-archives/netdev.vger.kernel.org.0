@@ -2,73 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8257924E46C
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 03:17:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E08224E46D
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 03:19:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726880AbgHVBRv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 21 Aug 2020 21:17:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59876 "EHLO
+        id S1726929AbgHVBTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 21 Aug 2020 21:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726663AbgHVBRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 21:17:49 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6AE6C061573
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 18:17:49 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id s14so1664532plp.4
-        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 18:17:49 -0700 (PDT)
+        with ESMTP id S1726663AbgHVBTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 21 Aug 2020 21:19:00 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3453C061573
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 18:18:59 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id a65so3021380otc.8
+        for <netdev@vger.kernel.org>; Fri, 21 Aug 2020 18:18:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=PBr38ONHjHf5Yd26dktyIMb9CQzaslw/BwWMbbALQpQ=;
-        b=uG/AkSj5/IjNYQ9UVYePNS2oCaLR/4e6i/DjKyEGlCjXmivnsJcrE0xeERompjTmjS
-         ebUZqc42ex77BNwx7NVnxS8yCxYEm4YsOrxLAqsHadse3MymGi2F3Jjp85gw5lJM+OlL
-         9RkDj1o8OJOmgS5kPlbuzk2z0fP1AH+/qFKIbyhMMMi6Snj9SLCbxE8Ojb7nAUHsNchm
-         vXr2ZHFKxkh3qP3vEr9Vihc1ce0FFCHGOKznmJJmI8nlk7O0FVhpzQsZrg/w5APdubO+
-         4G4W2Swq0w6n3+5pzXoOVT+DlvKOI/F/HQqqNmCc3MEfHkzjQKPxe2dUmkjDJuEEO8iw
-         kwXg==
+        bh=AoLHRFfK3SPqgScnZ1zuEEcyxERALKcEC9S8bV0txpI=;
+        b=acSURj7xMMVQcwqR11bfahYQtyKClAohAlH/aNGD22vSufNdOxKkxAgfxEZHmC1y5x
+         nIJMCmreRpGWs+HsrF4ahUYymYvoaUnlHLX7lccHskoGdnz4Ca338AXMM/ctePSPwt/R
+         sn9EuEPAaMnCqPZyHJb51rNGioGSKzPiuNhsJ9LAs0xdADEVzh1HEL2zdvIYsIIT18jj
+         6F0lL8ziQBAGAWZCOrLaEhYESSt4EQiok8Ors1pe0TSEMyL6faM2zbplVlXHUnFtytVv
+         jB4nMBoI0E2LwmSm2ozakYtkMENG9q4cRyV9SYFlN/ZCw+NviOqny0m4Zh/Qp6ErxkQU
+         fnrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=PBr38ONHjHf5Yd26dktyIMb9CQzaslw/BwWMbbALQpQ=;
-        b=QPXMeKOKID6AI729eir8XwZuXRLJW2xKPHZVaOd5p9IR+EIVB1yahN4VT22PqYicLb
-         qzuQn2zz3dD2w6QoAhuK7zKMPDbyqydMjzD68BoQVMN1RNR+O8zJubcGZLtm8AXt7Mnv
-         4u1jTc23aw4rG+L8fPftFgng1YWdKK9DiLeKm/24QwzDoiclMt6emwQTl62R8TrZ2qKP
-         oNmrNUOwpu1b1j5el1JX9+yuD8pK7KTzp8tY5iYDMF3IPSOVaAc347fAmuDuPihOl5mz
-         oYLscD0odLLBtuaMEuWyOJ9LY5RhGxelCN2bNf0iYQVW0LhynLJPeGkiEIXQrQvHiSV9
-         I4cA==
-X-Gm-Message-State: AOAM5328NhmM9TPYS97fFfhpsQM+6817NUIg9Rh1x6Mu5ZTJhNuJIHtN
-        14NER+hum5295hQdZJ5c4iWC+Q==
-X-Google-Smtp-Source: ABdhPJztUbcRVeuCZGYFKQbuGeH8ynlrlIdiE7wY63N3moELsxZsB/QURX6hcGhgWt+nlo8mkSGN1w==
-X-Received: by 2002:a17:90a:d504:: with SMTP id t4mr4587526pju.58.1598059068463;
-        Fri, 21 Aug 2020 18:17:48 -0700 (PDT)
-Received: from [192.168.1.182] ([66.219.217.173])
-        by smtp.gmail.com with ESMTPSA id mp1sm3216003pjb.27.2020.08.21.18.17.46
+        bh=AoLHRFfK3SPqgScnZ1zuEEcyxERALKcEC9S8bV0txpI=;
+        b=eJIJxfbUxxdOg1GbfSg4+IDEfIQQ0pxKaAsS1U9AeeDguOi88+ktfdni/YHCiXjrLP
+         hdnKyVfSNiGkPS4t0QiGw5x4UIxdt2T/AqYI+uZojRUHaqQehIE3E9IWzt8GS2ZoDcl/
+         BK4Rfhl8ibiBneYKv/nFaacv007Hu85rIElVSltRI5sPJyOjs6O8k5s1mdYK4M8Rfn1T
+         tToGHSbAWUyxcBpZq9WIO8BzYlLVKwej+ETneGLY+0mFWhBKqccklNPoD5V3wQpqbQUU
+         4RNGMxd/cctuPvK6IkeTVBY01Ahxe4rbUPUgfSWk+MBWSAcYuxULXmCSm0uylpoT7npt
+         Ukng==
+X-Gm-Message-State: AOAM530ZtfT76Q1Uqzrkt5Dkzt5h521X2HtVhCRvOyqVc54OKmFfhKUQ
+        OFIhuoHhC8NkZQrTWiZMwk4=
+X-Google-Smtp-Source: ABdhPJy2CQkQlIWQFSDc20DHoPiQ0F3mNnP1Qhds5XtkqBPU3KjltZOug0+H/TAUO0V+gNf0skdfrQ==
+X-Received: by 2002:a05:6830:1096:: with SMTP id y22mr3976906oto.180.1598059139067;
+        Fri, 21 Aug 2020 18:18:59 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:284:8202:10b0:a888:bc35:d7d6:9aca])
+        by smtp.googlemail.com with ESMTPSA id v3sm649041oiv.45.2020.08.21.18.18.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Aug 2020 18:17:47 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/2] io_uring: ignore POLLIN for recvmsg on
- MSG_ERRQUEUE
-To:     Luke Hsiao <lukehsiao@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Luke Hsiao <luke.w.hsiao@gmail.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Arjun Roy <arjunroy@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <20200820234954.1784522-1-luke.w.hsiao@gmail.com>
- <20200820234954.1784522-3-luke.w.hsiao@gmail.com>
- <20200821134144.642f6fbb@kicinski-fedora-PC1C0HJN>
- <d0819955-6466-9c11-880d-ae607f033b84@kernel.dk>
- <CADFWnLzwUjs7Sw98y0vitTyPxCzsopeYKO0bVdG9r4uG7qBg2g@mail.gmail.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <9abca73b-de63-f69d-caff-ae3ed24854de@kernel.dk>
-Date:   Fri, 21 Aug 2020 19:17:46 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Fri, 21 Aug 2020 18:18:58 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 0/6] devlink: Add device metric support
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
+        roopa@nvidia.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        tariqt@nvidia.com, ayal@nvidia.com, mkubecek@suse.cz,
+        Ido Schimmel <idosch@nvidia.com>
+References: <20200817125059.193242-1-idosch@idosch.org>
+ <20200818172419.5b86801b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <58a0356d-3e15-f805-ae52-dc44f265661d@gmail.com>
+ <20200818203501.5c51e61a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <55e40430-a52f-f77b-0d1e-ef79386a0a53@gmail.com>
+ <20200819091843.33ddd113@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <e4fd9b1c-5f7c-d560-9da0-362ddf93165c@gmail.com>
+ <20200819110725.6e8744ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <d0c24aad-b7f3-7fd9-0b34-c695686e3a86@gmail.com>
+ <20200820090942.55dc3182@kicinski-fedora-PC1C0HJN>
+ <20200821103021.GA331448@shredder>
+ <20200821095303.75e6327b@kicinski-fedora-PC1C0HJN>
+ <6030824c-02f9-8103-dae4-d336624fe425@gmail.com>
+ <20200821165052.6790a7ba@kicinski-fedora-PC1C0HJN>
+ <1e5cdd45-d66f-e8e0-ceb7-bf0f6f653a1c@gmail.com>
+ <20200821173715.2953b164@kicinski-fedora-PC1C0HJN>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <90b68936-88cf-4d87-55b0-acf9955ef758@gmail.com>
+Date:   Fri, 21 Aug 2020 19:18:37 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <CADFWnLzwUjs7Sw98y0vitTyPxCzsopeYKO0bVdG9r4uG7qBg2g@mail.gmail.com>
+In-Reply-To: <20200821173715.2953b164@kicinski-fedora-PC1C0HJN>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -77,51 +88,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/21/20 6:08 PM, Luke Hsiao wrote:
-> Hi Jakub and Jens,
-> 
-> Thank you for both of your reviews. Some responses inline below.
-> 
-> On Fri, Aug 21, 2020 at 2:11 PM Jens Axboe <axboe@kernel.dk> wrote:
+On 8/21/20 6:37 PM, Jakub Kicinski wrote:
+>>> # cat /proc/net/tls_stat   
 >>
->> On 8/21/20 2:41 PM, Jakub Kicinski wrote:
->>> On Thu, 20 Aug 2020 16:49:54 -0700 Luke Hsiao wrote:
->>>> +    /* If reading from MSG_ERRQUEUE using recvmsg, ignore POLLIN */
->>>> +    if (req->opcode == IORING_OP_RECVMSG && (sqe->msg_flags & MSG_ERRQUEUE))
->>>> +            mask &= ~(POLLIN);
->>>
->>> FWIW this adds another W=1 C=1 warnings to this code:
->>>
->>> fs/io_uring.c:4940:22: warning: invalid assignment: &=
->>> fs/io_uring.c:4940:22:    left side has type restricted __poll_t
->>> fs/io_uring.c:4940:22:    right side has type int
->>
->> Well, 8 or 9 of them don't really matter... This is something that should
->> be cleaned up separately at some point.
+>> I do not agree with adding files under /proc/net for this.
 > 
-> In the spirit of not adding a warning, even if it doesn't really
-> matter, I'd like to fix this. But, I'm struggling to reproduce these
-> warnings using upstream net-next and make for x86_64. With my patches
-> on top of net-next/master, I'm running
-> 
-> $ make defconfig
-> $ make -j`nproc` W=1
-> 
-> I don't see the warning you mentioned in the logs. Could you tell me
-> how I can repro this warning?
+> Yeah it's not the best, with higher LoC a better solution should be
+> within reach.
 
-You should see them with C=1. But as I said, don't worry about it, as that's
-a class of warnings and several exist already. It needs to get cleaned up
-separately.
+The duplicity here is mind-boggling. Tls stats from hardware is on par
+with Ido's *example* of vxlan stats from an ASIC. You agree that
+/proc/net files are wrong, but you did it anyway and now you want the
+next person to solve the problem you did not want to tackle but have
+strong opinions on.
 
->>> And obviously the brackets around POLLIN are not necessary.
->>
->> Agree, would be cleaner without!
-> 
-> Thanks, I'll also remove these unnecessary parens in v2 of the patch series.
-
-Please do, thanks!
-
--- 
-Jens Axboe
-
+Ido has a history of thinking through problems and solutions in a proper
+Linux Way. netlink is the right API, and devlink was created for
+'device' stuff versus 'netdev' stuff. Hence, I agree with this
+*framework* for extracting asic stats.
