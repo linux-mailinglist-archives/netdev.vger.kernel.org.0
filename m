@@ -2,159 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E268124E74E
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 14:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6983824E758
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 14:18:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727952AbgHVMGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 08:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46780 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726704AbgHVMGy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 08:06:54 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19016C061573
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 05:06:53 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id z18so4248154wrm.12
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 05:06:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uyZVZUFpBtCxrrxjsB+xh6eo4LrouZnpQIAitNXa0b0=;
-        b=YEZq6mphfQ5gFPQmxZiscU90LLiXxREcLPDn6stlSuk/tYSEYSdaKejiXDa6s5Be1l
-         PFHkZXgOHsi7Xs/lL2iv7nOdYtpmM2RoMtZRHQpOq41Gzpg8U4gcl8tISKL/2TN5FODa
-         T7dHjmI+NvTPhOXUD+XDKtL/F949YYs5cpjWU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uyZVZUFpBtCxrrxjsB+xh6eo4LrouZnpQIAitNXa0b0=;
-        b=p0RviwdUp8uV8xfuFFdjRMuUyQf1Kt9R+rXqOSD18kFmJn+fPMf0hSAkWlJPQX9RnH
-         48RHoJcyYU0pCvyr5QZhG+G33ciP5DDuq3aioLx8bVSyyQ4V5NPNS/FcCt8jqqKGldpv
-         xiQRzHfq4eKTi8jAKbS6ZaaHiXEpcXIU7oxlUt91ugpLHhxmulJWlz8eB6DSwUhBFOJe
-         mwGdLeHlw1KBblZ4EQeX4nwc0PsygUW2DvQpPCchaVdj4HnZ76XBtz5wiAwvQRpql/dk
-         FrRPdf70f96QI8yzRlfDn3JvgqGN49JgtMUF0rdPstj+fxtcLSM8KLoqYgycq1HZlyM6
-         lF6w==
-X-Gm-Message-State: AOAM5326Cxb/xM51BtInbFnpFDBvYUbHq/+9FTOWG3Rcl1skGp9443JA
-        aNfo5PaO+z1D6gdU6R/nCArlIU50WzlS2w==
-X-Google-Smtp-Source: ABdhPJzCcfELNK2ctztSq88oI9bWu2pF7U8r7jKQBf1FCYcpp2WCDPKNq3HuKVoqzPvBjjuS5vXfwQ==
-X-Received: by 2002:a5d:4241:: with SMTP id s1mr6848487wrr.411.1598098010547;
-        Sat, 22 Aug 2020 05:06:50 -0700 (PDT)
-Received: from wrk.www.tendawifi.com ([79.134.173.43])
-        by smtp.gmail.com with ESMTPSA id z8sm10997516wmf.42.2020.08.22.05.06.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Aug 2020 05:06:49 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        David Ahern <dsahern@gmail.com>,
-        syzbot+a61aa19b0c14c8770bd9@syzkaller.appspotmail.com
-Subject: [PATCH net v2] net: nexthop: don't allow empty NHA_GROUP
-Date:   Sat, 22 Aug 2020 15:06:36 +0300
-Message-Id: <20200822120636.194237-1-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200822103340.184978-1-nikolay@cumulusnetworks.com>
-References: <20200822103340.184978-1-nikolay@cumulusnetworks.com>
+        id S1727945AbgHVMSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 08:18:39 -0400
+Received: from sonic306-1.consmr.mail.bf2.yahoo.com ([74.6.132.40]:34160 "EHLO
+        sonic306-1.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727870AbgHVMSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 08:18:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1598098716; bh=HWomD5uP1j5Q5FEvOniIgsvD2oX57lzH8wSJnE4ZdFk=; h=Date:From:Reply-To:Subject:References:From:Subject; b=BX9h3jhda9za/0wv9fDIU+9Nh1vAQf6BMlslPthJ6BGQHB4CasmoE1sYKORlpvhiSOESZZEqIHIno4OWI+vBN6o5t+MOeabPpOhPaDDhZh2DDaSw1Ksbzfi6anJaaZuB5zpMcyfixPpAtxK4MBO9qvMozrRVKvwL8I1e8Ho0YYpj9FuGhcPkCkzd+PXn1D0eaq0MBY98zjLU9r1ek52TtKroITpM0q4/21wI10vJ2uvJft/lwojHPh41lwxNtAmnol1f8mOq6uweYc5sii+53hJe/VbKzMbMUkmPBlF/OXa5AZItc6kQf6dAqnq6bt8sU1zyGqfrNeu1C3zBYj8HQg==
+X-YMail-OSG: Yry3hsUVM1nUsNNLa.rqTCSY5Ie.M3c4A2dM6JPyFxgeWyDNE9TeOQdg6NoA4v7
+ y6.8R1vb5R800Qy7mcnQm4hAWH17LqHQpsq9wkg1Ph0fAeNYkRsTLlyFpzgalXpizDB1nuk0s4oQ
+ 4u1xmSuEbHWdvVEtx32UPxjDcekWVxTp_4KZitzYC5hmRJtsMpVEfC7ztLuONPZu6cSyP1ovO_NF
+ _SzdAJLP_DzDQnAdhO.mN0IdhwRR8OfmZBEGl9KI6jSWlpvfFDdicltYlCTfCIISPQqrqyhr7xzv
+ EcpdDMKMpfMILGVevjmvbcWBIFYYqYiqbxZqosVAoiNNazzhuQWA9LPoCW7X5R9LhhLjz3qmPyzv
+ skRLY8SXFguuAIS1bQSW3uGMx9IIRWxW17hft8W50gpqVn8gk5q.9H6nrZ_JcpUnhmp4ix6T92Ya
+ NYhBlCrGNsvvoT7BfPLPNPUtASUfSa8E5TgxlcfMw.mgRa7KWH3c4rtOp_NSYqB7eE_vRr.88OGd
+ kzPXPKCoKQGcKhdMNqEpMdIEU0x6cpa7.g4.LnXTecIRgDL1l9Hs7nNzhCGe9RjjTSRKcLHEY35C
+ tOgu2Pa0f5eo945f9mrDD8rohoN5u_lmDzqdpDZJXUb8omQm1jt0yRfg3n5J.xGv18hMDbE8asUj
+ s2U.6FAbZtTl4CHPqLDCoHquuk6l1ODI_hd9U.exdFSs9ltwKYEPJyYPZsOm9PsZqPYhArWzmxHB
+ 8TzjXQOiiB47aIKT5eyDFYlPTE0m5pG0SxV.jRJPtXJSuKNAleJKUO.hl599NQu722mxYZdNsrcT
+ emAjg2vtf3pKy7CqT67SlGJKTgpANEP02GBjvjATQrl4h9LrxEGkAX9WmOQjctwe_UUuz2nLr3cd
+ fC2gp47oMCOywks1qYWb0bwzxQ4xgs7ND70YgghC2cUXXo7y08StWD5cU1pAe.nYQMjl7qOzifb9
+ P7myGWZpJTbtviUWeyWm6YCVtLSD01j17HaT7vHD4Gz4bYXcXFJ_yIb43.2m9EAncyKMZj7A.g77
+ NvYi5bcvoMIz9eiLuf_HtIzMBAcU4AZOygIC2tZlp0kaRtAD7sVInL2T2ggNzUTTHT1oTdLCmyFY
+ cU0uO9RoqUiW9kju2jzhfWMxzN07e_FZi81JF32FesjNJWmPZB6n7Qli0EbIH64.vU_eEm5u4QsR
+ AcUj9.Ap62V8drZelbaLMRIrF7e4IEB5wfY9EgHBLajxscip_xHYiAghPha2zuLu.nOz37mZKgFY
+ 0GrBcK6LgPKzu9l3L5taVgG2S4RJwzZLlZ2WJqIsxV4vV1ypTGsrc8YlDP9XLcQl4buvkYNRRF79
+ 7_CGtQ52ga7vhc_BmaGEpo56HigIYwWcFEAFROJh0NCBnGH6G_3gdwAFhL.9pkcFcRz1jhlH80rA
+ lPsotkar1gVabQBWbl0w3.LAtITU8sBI.5YMBS2oScIk8GozH8ipEPIA-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.bf2.yahoo.com with HTTP; Sat, 22 Aug 2020 12:18:36 +0000
+Date:   Sat, 22 Aug 2020 12:18:34 +0000 (UTC)
+From:   Mr Waleed Mazin <waleedmazin3@gmail.com>
+Reply-To: mrwaleedmazin11@gmail.com
+Message-ID: <1394329082.4406666.1598098714152@mail.yahoo.com>
+Subject: I NEED YOUR URGENT RESPOND PLEASE
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <1394329082.4406666.1598098714152.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16455 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the nexthop code will use an empty NHA_GROUP attribute, but it
-requires at least 1 entry in order to function properly. Otherwise we
-end up derefencing null or random pointers all over the place due to not
-having any nh_grp_entry members allocated, nexthop code relies on having at
-least the first member present. Empty NHA_GROUP doesn't make any sense so
-just disallow it.
-Also add a WARN_ON for any future users of nexthop_create_group().
 
- BUG: kernel NULL pointer dereference, address: 0000000000000080
- #PF: supervisor read access in kernel mode
- #PF: error_code(0x0000) - not-present page
- PGD 0 P4D 0 
- Oops: 0000 [#1] SMP
- CPU: 0 PID: 558 Comm: ip Not tainted 5.9.0-rc1+ #93
- Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-2.fc32 04/01/2014
- RIP: 0010:fib_check_nexthop+0x4a/0xaa
- Code: 0f 84 83 00 00 00 48 c7 02 80 03 f7 81 c3 40 80 fe fe 75 12 b8 ea ff ff ff 48 85 d2 74 6b 48 c7 02 40 03 f7 81 c3 48 8b 40 10 <48> 8b 80 80 00 00 00 eb 36 80 78 1a 00 74 12 b8 ea ff ff ff 48 85
- RSP: 0018:ffff88807983ba00 EFLAGS: 00010213
- RAX: 0000000000000000 RBX: ffff88807983bc00 RCX: 0000000000000000
- RDX: ffff88807983bc00 RSI: 0000000000000000 RDI: ffff88807bdd0a80
- RBP: ffff88807983baf8 R08: 0000000000000dc0 R09: 000000000000040a
- R10: 0000000000000000 R11: ffff88807bdd0ae8 R12: 0000000000000000
- R13: 0000000000000000 R14: ffff88807bea3100 R15: 0000000000000001
- FS:  00007f10db393700(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000000000000080 CR3: 000000007bd0f004 CR4: 00000000003706f0
- Call Trace:
-  fib_create_info+0x64d/0xaf7
-  fib_table_insert+0xf6/0x581
-  ? __vma_adjust+0x3b6/0x4d4
-  inet_rtm_newroute+0x56/0x70
-  rtnetlink_rcv_msg+0x1e3/0x20d
-  ? rtnl_calcit.isra.0+0xb8/0xb8
-  netlink_rcv_skb+0x5b/0xac
-  netlink_unicast+0xfa/0x17b
-  netlink_sendmsg+0x334/0x353
-  sock_sendmsg_nosec+0xf/0x3f
-  ____sys_sendmsg+0x1a0/0x1fc
-  ? copy_msghdr_from_user+0x4c/0x61
-  ___sys_sendmsg+0x63/0x84
-  ? handle_mm_fault+0xa39/0x11b5
-  ? sockfd_lookup_light+0x72/0x9a
-  __sys_sendmsg+0x50/0x6e
-  do_syscall_64+0x54/0xbe
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
- RIP: 0033:0x7f10dacc0bb7
- Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb cd 66 0f 1f 44 00 00 8b 05 9a 4b 2b 00 85 c0 75 2e 48 63 ff 48 63 d2 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 01 c3 48 8b 15 b1 f2 2a 00 f7 d8 64 89 02 48
- RSP: 002b:00007ffcbe628bf8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
- RAX: ffffffffffffffda RBX: 00007ffcbe628f80 RCX: 00007f10dacc0bb7
- RDX: 0000000000000000 RSI: 00007ffcbe628c60 RDI: 0000000000000003
- RBP: 000000005f41099c R08: 0000000000000001 R09: 0000000000000008
- R10: 00000000000005e9 R11: 0000000000000246 R12: 0000000000000000
- R13: 0000000000000000 R14: 00007ffcbe628d70 R15: 0000563a86c6e440
- Modules linked in:
- CR2: 0000000000000080
+I NEED YOUR URGENT RESPOND PLEASE
 
-CC: David Ahern <dsahern@gmail.com>
-Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
-Reported-by: syzbot+a61aa19b0c14c8770bd9@syzkaller.appspotmail.com
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
-Tested on 5.3 and latest -net by adding a nexthop with an empty NHA_GROUP
-(purposefully broken iproute2) and then adding a route which uses it.
+My name is Mr Waleed Mazin . I have decided to seek a confidential co-operation with you in the execution of the deal described here-under for our both mutual benefit and I hope you will keep it a top secret because of the nature of the transaction, During the course of our bank year auditing, I discovered an unclaimed/abandoned fund, sum total of {US$19.3 Million United State Dollars} in the bank account that belongs to a Saudi Arabia businessman Who unfortunately lost his life and entire family in a Motor Accident.
 
-v2: no changes, include stack trace in commit message
+Now our bank has been waiting for any of the relatives to come-up for the claim but nobody has done that. I personally has been unsuccessful in locating any of the relatives, now, I sincerely seek your consent to present you as the next of kin / Will Beneficiary to the deceased so that the proceeds of this account valued at {US$19.Million United State Dollars} can be paid to you, which we will share in these percentages ratio, 60% to me and 40% to you. All I request is your utmost sincere co-operation; trust and maximum confidentiality to achieve this project successfully. I have carefully mapped out the moralities for execution of this transaction under a legitimate arrangement to protect you from any breach of the law both in your country and here in Burkina Faso when the fund is being transferred to your bank account.
 
- net/ipv4/nexthop.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+I will have to provide all the relevant document that will be requested to indicate that you are the rightful beneficiary of this legacy and our bank will release the fund to you without any further delay, upon your consideration and acceptance of this offer, please send me the following information as stated below so we can proceed and get this fund transferred to your designated bank account immediately.
 
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index cc8049b100b2..134e92382275 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -446,7 +446,7 @@ static int nh_check_attr_group(struct net *net, struct nlattr *tb[],
- 	unsigned int i, j;
- 	u8 nhg_fdb = 0;
- 
--	if (len & (sizeof(struct nexthop_grp) - 1)) {
-+	if (!len || len & (sizeof(struct nexthop_grp) - 1)) {
- 		NL_SET_ERR_MSG(extack,
- 			       "Invalid length for nexthop group attribute");
- 		return -EINVAL;
-@@ -1187,6 +1187,9 @@ static struct nexthop *nexthop_create_group(struct net *net,
- 	struct nexthop *nh;
- 	int i;
- 
-+	if (WARN_ON(!num_nh))
-+		return ERR_PTR(-EINVAL);
-+
- 	nh = nexthop_alloc();
- 	if (!nh)
- 		return ERR_PTR(-ENOMEM);
--- 
-2.26.2
+-Your Full Name:
+-Your Contact Address:
+-Your direct Mobile telephone Number:
+-Your Date of Birth:
+-Your occupation:
 
+I await your swift response and re-assurance.
+
+Best regards,
+Mr Waleed Mazin
