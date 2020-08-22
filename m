@@ -2,57 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A7B524E5F1
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 09:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F72424E613
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 09:27:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727055AbgHVHEo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 03:04:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56542 "EHLO
+        id S1727107AbgHVH1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 03:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725932AbgHVHEl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 03:04:41 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D3DC061574
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 00:04:40 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id f24so1108931edw.10
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 00:04:40 -0700 (PDT)
+        with ESMTP id S1727077AbgHVH1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 03:27:11 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884F5C061755
+        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 00:27:10 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id qc22so5179335ejb.4
+        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 00:27:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=fwfunudANjOoTZXdPkqCPqeCMIZCPPl9JuhA1bl5pBw=;
-        b=AtiHmTovOFzL0yalRrqMCdj2asvK/1cxQIlCX37p5Ym1vHLaK5/uyoXDO5PV0Cynn4
-         dUM/RyqHAU8i3IVnpbxyAy5dQVFN3g1WwEgsnZVzWq2wHi8GnA8hZpnKmhaHNY1HPo7I
-         NFWTu98Pw2ehMm3Mg9FVtUzRJ8xGKoxA8Cto7R84r8AZJDA4CVjbhQHT8pSBZ0sVyoEx
-         P3xULHzA0ZOWuFJmDb5bDK2gJCPGMIn+ihEgGD4GwaiL75StGkLVdp9+E8TrJT4jSIF+
-         WslnbwaP1YImU7zqbBh5iEYHAe5d1z08fGQSgSaPSylBFep6M6IalNYNsDlgFB5hK0MK
-         ncYA==
+        bh=mDR0zrvaETchAvJrcviqkk7cP258seKos1RRZO2tCNY=;
+        b=WD1y4zXxFKdPhrJDo7FZF18V8FXHdZAuQzKOqvwg5t4cC+zK1OJ0lfC/t6NmK+O6GG
+         NWICiBh3SfaXsrWidpT/L8d81C880rZzPxlK3xjlS6gvz8POZsgYaj1nm5h7681zVqSV
+         SaLXPjSsR0MQQbKtVGF/UuK00EXO3tq9Z/BrHW4scNC3phcxBiqQTa+lRN2e+V9gs4H1
+         Yh0+8sRw+4LfFgKuIyivx/UOICrzE7utfUuUFiRTd9EMaBWno18Zrmjq/MLKR0zOFkuv
+         /2SWots2svp9DZ+wH63o3IPnu84631NxD5XC0nxh1ZI8AtBGWMS0XSZwKSEVmSpYiYil
+         LnnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=fwfunudANjOoTZXdPkqCPqeCMIZCPPl9JuhA1bl5pBw=;
-        b=kdfizlQaiKGxMRQbuDA2ul1YYuwH8XdHUkYTAqJzCOQQ93r15X5XmZzKRt/0Fgen+c
-         QnNK7CnB4jy4wV8IcoQGw7gtZGXv+hdltBYVKEc/l9zBbUJ4P+56U6fJoJUZ8IJDl0G2
-         UFnWoeYwG+olB1T4pm9+rPfBxmw5lQK1Q4UEdOKYsX21sWknI8KMV9+xxVvEStH8sB11
-         dx6K+drGmXk3186CF3tDeBJPHEJfzUhg71wdHOuGayBEwNOI5OfdFdv0DqaStFGhj0kG
-         rOPjmni2Zg6u5uqGVC9aG7R/w2kMk9OTQpgslJnCnfNMRnVIorfHYVl/a5Pv6g12F48k
-         DP3A==
-X-Gm-Message-State: AOAM532KEO8lZM5cSNGpWOV2SljmHroaWfoclHplD4qmSiAhyM7N0Lb/
-        OF5uHBugD6gK6SbE3uUlu5m5hdMiu2pXtD+9GgXJSg==
-X-Google-Smtp-Source: ABdhPJxYY8CRHDb7qzuMzF83Z04DfNrYhMMudL5DibJuxlaN0+NROigEgLH3AQp37MMKbZJaEeSrr6V8kf9TiBhN0P4=
-X-Received: by 2002:a05:6402:30a5:: with SMTP id df5mr6082918edb.18.1598079878906;
- Sat, 22 Aug 2020 00:04:38 -0700 (PDT)
+        bh=mDR0zrvaETchAvJrcviqkk7cP258seKos1RRZO2tCNY=;
+        b=EH1jCDy4Pzkj4qytHjMy8tEHXEyHijs+z27QnScMHFfYrl4w7zIRnNnmF8XoL8QQM9
+         3EqGtENuwYKLZrhXw6xexBGWaLAKvm2bIIfAKHyHNMIQ2GTsxCjhf9kmLN1cht39aNoW
+         UeCpqUsaCtK1G8OlTSMR55/VALcZuC1Kbn3T/LBGTH1zuJDhjQYSaT4AvRaUgIJxl8t/
+         a6OljjOI26uchRYxt0/PgBvqbZEGwk5jVclPiyXrNCDxQL+JpPIpfpCekBg9MVzW+1GM
+         j94IibQBHBBiHEk8Zz/yV5y6s1fkHPa/rhufp8k5y9JP97EGR32GCGwB4eqIpcdgJ1xh
+         ekFg==
+X-Gm-Message-State: AOAM530e3tcL37haoqYvt/CW8b6TcwoIoo0wg2bl0lOhzRG8cePfMYqX
+        Qj++9MEinw0gVpeYkfMQzsoSAcG0gz4Ff/vmW3B3Uw==
+X-Google-Smtp-Source: ABdhPJwqITtid7OZmHUh//eLVchaGbXrP+3xlPPoyAXWuYCMSciXM8P9U/0GBYjVHb5ptGJivZ8In0FV5V+vGZBpmgc=
+X-Received: by 2002:a17:906:5902:: with SMTP id h2mr6586238ejq.423.1598081228742;
+ Sat, 22 Aug 2020 00:27:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200819224030.1615203-1-haoluo@google.com> <20200819224030.1615203-4-haoluo@google.com>
- <d50a1530-9a9f-45b2-5aba-05fe4b895fbc@fb.com> <CAEf4BzZmLUcw4M16U6w-s2Zd6KbsuY4dzzkeEBx9CejetT5BwQ@mail.gmail.com>
- <CA+khW7jZc=p50eGUb6kLUq00bq8C_JmN2pJcu66uMUu3aL7=ZQ@mail.gmail.com> <CAEf4Bzb70CYZMYXEW0RO+S99xG4iwr9BQmGhD4ymWkwq_NR=6Q@mail.gmail.com>
-In-Reply-To: <CAEf4Bzb70CYZMYXEW0RO+S99xG4iwr9BQmGhD4ymWkwq_NR=6Q@mail.gmail.com>
+References: <20200819224030.1615203-1-haoluo@google.com> <20200819224030.1615203-6-haoluo@google.com>
+ <29b8358f-64fb-9e82-acb0-20b5922afc81@fb.com> <CAEf4BzbmOnv1W4p2F6Ke8W_Gwi-QjtsOW8MFSifVoiaRY8jNVg@mail.gmail.com>
+In-Reply-To: <CAEf4BzbmOnv1W4p2F6Ke8W_Gwi-QjtsOW8MFSifVoiaRY8jNVg@mail.gmail.com>
 From:   Hao Luo <haoluo@google.com>
-Date:   Sat, 22 Aug 2020 00:04:27 -0700
-Message-ID: <CA+khW7hQh8E8p=BAb=3WTD=0JTP_AX2x6wZp-QMQqwoQ2rgG-g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 3/8] bpf: Introduce help function to validate
- ksym's type.
+Date:   Sat, 22 Aug 2020 00:26:57 -0700
+Message-ID: <CA+khW7iLW-KsrfBS2a+OOMU4i72sHiNeSzkAnXoidW7gwaMaLA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 5/8] bpf/selftests: ksyms_btf to test typed ksyms
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Yonghong Song <yhs@fb.com>, Networking <netdev@vger.kernel.org>,
         bpf <bpf@vger.kernel.org>,
@@ -76,122 +74,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ah, I see bpf_core_types_are_compat() after sync'ing my local repo. It
-seems the perfect fit for my use case. I only found the
-btf_equal_xxx() defined in btf.c when posting these patches. I can
-test and use bpf_core_types_are_compat() in v2. Thanks for pointing it
-out and explaining the public APIs.
-
-Hao
-
-On Fri, Aug 21, 2020 at 7:43 PM Andrii Nakryiko
+On Fri, Aug 21, 2020 at 4:03 PM Andrii Nakryiko
 <andrii.nakryiko@gmail.com> wrote:
 >
-> On Fri, Aug 21, 2020 at 5:43 PM Hao Luo <haoluo@google.com> wrote:
+> On Thu, Aug 20, 2020 at 10:32 AM Yonghong Song <yhs@fb.com> wrote:
 > >
-> > On Fri, Aug 21, 2020 at 2:50 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Thu, Aug 20, 2020 at 10:22 AM Yonghong Song <yhs@fb.com> wrote:
-> > > >
-> > > >
-> > > >
-> > > > On 8/19/20 3:40 PM, Hao Luo wrote:
-> > > > > For a ksym to be safely dereferenced and accessed, its type defined in
-> > > > > bpf program should basically match its type defined in kernel. Implement
-> > > > > a help function for a quick matching, which is used by libbpf when
-> > > > > resolving the kernel btf_id of a ksym.
-> > > > >
-> > > > > Signed-off-by: Hao Luo <haoluo@google.com>
-> > > > > ---
-> > [...]
-> > > > > +/*
-> > > > > + * Match a ksym's type defined in bpf programs against its type encoded in
-> > > > > + * kernel btf.
-> > > > > + */
-> > > > > +bool btf_ksym_type_match(const struct btf *ba, __u32 id_a,
-> > > > > +                      const struct btf *bb, __u32 id_b)
-> > > > > +{
-> > >
-> > > [...]
-> > >
-> > > > > +                     }
-> > > > > +             }
-> > > >
-> > > > I am wondering whether this is too strict and how this can co-work with
-> > > > CO-RE. Forcing users to write almost identical structure definition to
-> > > > the underlying kernel will not be user friendly and may not work cross
-> > > > kernel versions even if the field user cares have not changed.
-> > > >
-> > > > Maybe we can relax the constraint here. You can look at existing
-> > > > libbpf CO-RE code.
-> > >
-> > > Right. Hao, can you just re-use bpf_core_types_are_compat() instead?
-> > > See if semantics makes sense, but I think it should. BPF CO-RE has
-> > > been permissive in terms of struct size and few other type aspects,
-> > > because it handles relocations so well. This approach allows to not
-> > > have to exactly match all possible variations of some struct
-> > > definition, which is a big problem with ever-changing kernel data
-> > > structures.
-> > >
 > >
-> > I have to say I hate myself writing another type comparison instead of
-> > reusing the existing one. The issue is that when bpf_core_types_compat
-> > compares names, it uses t1->name_off == t2->name_off. It is also used
->
-> Huh? Are we talking about the same bpf_core_types_are_compat() (there
-> is no bpf_core_types_compat, I think it's a typo)?
-> bpf_core_types_are_compat() doesn't even compare any name, so I'm not
-> sure what you are talking about. Some of btf_dedup functions do string
-> comparisons using name_off directly, but that's a special and very
-> careful case, it's not relevant here.
->
->
-> > in bpf_equal_common(). In my case, because these types are from two
-> > different BTFs, their name_off are not expected to be the same, right?
-> > I didn't find a good solution to refactor before posting this patch. I
->
-> bpf_core_types_are_compat() didn't land until this week, so you must
-> be confusing something. Please take another look.
->
-> > think I can adapt bpf_core_type_compat() and pay more attention to
-> > CO-RE.
 > >
-> > > >
-> > > > > +             break;
-> > > > > +     }
+> > On 8/19/20 3:40 PM, Hao Luo wrote:
+> > > Selftests for typed ksyms. Tests two types of ksyms: one is a struct,
+> > > the other is a plain int. This tests two paths in the kernel. Struct
+> > > ksyms will be converted into PTR_TO_BTF_ID by the verifier while int
+> > > typed ksyms will be converted into PTR_TO_MEM.
 > > >
-> > > [...]
+> > > Signed-off-by: Hao Luo <haoluo@google.com>
+> > > ---
+> > >   .../selftests/bpf/prog_tests/ksyms_btf.c      | 77 +++++++++++++++++++
+> > >   .../selftests/bpf/progs/test_ksyms_btf.c      | 23 ++++++
+> > >   2 files changed, 100 insertions(+)
+> > >   create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+> > >   create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_btf.c
 > > >
-> > > > > +
-> > > > >   struct btf_ext_sec_setup_param {
-> > > > >       __u32 off;
-> > > > >       __u32 len;
-> > > > > diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> > > > > index 91f0ad0e0325..5ef220e52485 100644
-> > > > > --- a/tools/lib/bpf/btf.h
-> > > > > +++ b/tools/lib/bpf/btf.h
-> > > > > @@ -52,6 +52,8 @@ LIBBPF_API int btf__get_map_kv_tids(const struct btf *btf, const char *map_name,
-> > > > >                                   __u32 expected_key_size,
-> > > > >                                   __u32 expected_value_size,
-> > > > >                                   __u32 *key_type_id, __u32 *value_type_id);
-> > > > > +LIBBPF_API bool btf_ksym_type_match(const struct btf *ba, __u32 id_a,
-> > > > > +                                 const struct btf *bb, __u32 id_b);
-> > > > >
-> > > > >   LIBBPF_API struct btf_ext *btf_ext__new(__u8 *data, __u32 size);
-> > > > >   LIBBPF_API void btf_ext__free(struct btf_ext *btf_ext);
-> > > >
-> > > > The new API function should be added to libbpf.map.
-> > >
-> > > My question is why does this even have to be a public API?
+> > > diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+> > > new file mode 100644
+> > > index 000000000000..1dad61ba7e99
+> > > --- /dev/null
+> > > +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+> > > @@ -0,0 +1,77 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/* Copyright (c) 2020 Google */
+> > > +
+> > > +#include <test_progs.h>
+> > > +#include <bpf/libbpf.h>
+> > > +#include <bpf/btf.h>
+> > > +#include "test_ksyms_btf.skel.h"
+> > > +
+> > > +static int duration;
+> > > +
+> > > +static __u64 kallsyms_find(const char *sym)
+> > > +{
+> > > +     char type, name[500];
+> > > +     __u64 addr, res = 0;
+> > > +     FILE *f;
+> > > +
+> > > +     f = fopen("/proc/kallsyms", "r");
+> > > +     if (CHECK(!f, "kallsyms_fopen", "failed to open: %d\n", errno))
+> > > +             return 0;
 > >
-> > I can fix. Please pardon my ignorance, what is the difference between
-> > public and internal APIs? I wasn't sure, so used it improperly.
+> > could you check whether libbpf API can provide this functionality for
+> > you? As far as I know, libbpf does parse /proc/kallsyms.
 >
-> public APIs are those that users of libbpf are supposed to use,
-> internal one is just for libbpf internal use. The former can't change,
-> the latter can be refactor as much as we need to.
+> No need to use libbpf's implementation. We already have
+> kallsyms_find() in prog_tests/ksyms.c and a combination of
+> load_kallsyms() + ksym_get_addr() in trace_helpers.c. It would be good
+> to switch to one implementation for both prog_tests/ksyms.c and this
+> one.
 >
-> >
-> > Thanks,
-> > Hao
+Ack. I can do some refactoring. The least thing that I can do is
+moving kallsyms_find() to a header for both prog_tests/ksyms.c and
+this test to use.
+
+>
+> > > diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_btf.c b/tools/testing/selftests/bpf/progs/test_ksyms_btf.c
+> > > new file mode 100644
+> > > index 000000000000..e04e31117f84
+> > > --- /dev/null
+> > > +++ b/tools/testing/selftests/bpf/progs/test_ksyms_btf.c
+> > > @@ -0,0 +1,23 @@
+> > > +// SPDX-License-Identifier: GPL-2.0
+> > > +/* Copyright (c) 2020 Google */
+> > > +
+> > > +#include "vmlinux.h"
+> > > +
+> > > +#include <bpf/bpf_helpers.h>
+> > > +
+> > > +__u64 out__runqueues = -1;
+> > > +__u64 out__bpf_prog_active = -1;
+> > > +
+> > > +extern const struct rq runqueues __ksym; /* struct type global var. */
+> > > +extern const int bpf_prog_active __ksym; /* int type global var. */
+> > > +
+> > > +SEC("raw_tp/sys_enter")
+> > > +int handler(const void *ctx)
+> > > +{
+> > > +     out__runqueues = (__u64)&runqueues;
+> > > +     out__bpf_prog_active = (__u64)&bpf_prog_active;
+> > > +
+>
+> You didn't test accessing any of the members of runqueues, because BTF
+> only has per-CPU variables, right? Adding global/static variables was
+> adding too much data to BTF or something like that, is that right?
+>
+
+Right. With some experiments, I found the address of a percpu variable
+doesn't necessarily point to a valid structure. So it doesn't make
+sense to dereference runqueues and access its members. However, right
+now there are only percpu variables encoded in BTF, so I can't test
+accessing members of general global/static variables unfortunately.
+
+Hao
