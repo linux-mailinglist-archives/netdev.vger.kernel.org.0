@@ -2,119 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78A5424E827
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 17:01:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78C2724E867
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 17:45:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728364AbgHVO7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 10:59:46 -0400
-Received: from mail.katalix.com ([3.9.82.81]:57986 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728292AbgHVO7c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 22 Aug 2020 10:59:32 -0400
-Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id C0DD986BFF;
-        Sat, 22 Aug 2020 15:59:20 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1598108360; bh=wo0jKYVNAMU7jwtl2qK9yvMoiBNRbqw2AZ0GdBdbbbM=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:From;
-        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
-         rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
-         in@katalix.com>|Subject:=20[PATCH=20net-next=20v2=209/9]=20docs:=2
-         0networking:=20add=20tracepoint=20info=20to=20l2tp.rst|Date:=20Sat
-         ,=2022=20Aug=202020=2015:59:09=20+0100|Message-Id:=20<202008221459
-         09.6381-10-tparkin@katalix.com>|In-Reply-To:=20<20200822145909.638
-         1-1-tparkin@katalix.com>|References:=20<20200822145909.6381-1-tpar
-         kin@katalix.com>;
-        b=v9wS0u1ghlPQEbKSCf6uuLyJtc6WhLY0Yd4arLGCZvmFxo766cstMUGAcxruN1WaZ
-         KP7+cDEkkF5FIb12nQ2rn0vZ2SoYpIrHyz+aJaJtbd2HH/rAkKa4ALmbPV8lDCjB2x
-         AhIUR27RV1b128c3kzCVw60t6qxfAik3KxcEH/EVtx7nx4gPt5B7vWCz5AQMNhiqtQ
-         CHEzwKKdnSdxETixfPbV4kJUFe/mCqx7jxQhtDRNUkuprmpbY/cl/aQ72WYQW5MC9x
-         SObQ5/tzNRfvFtZEqC3i1elguLOIK+xUIBQn/laykZvsqNILdwaEZWHiPBYT6JgUeQ
-         PyC1iXhSQ9w0g==
-From:   Tom Parkin <tparkin@katalix.com>
-To:     netdev@vger.kernel.org
-Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH net-next v2 9/9] docs: networking: add tracepoint info to l2tp.rst
-Date:   Sat, 22 Aug 2020 15:59:09 +0100
-Message-Id: <20200822145909.6381-10-tparkin@katalix.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200822145909.6381-1-tparkin@katalix.com>
-References: <20200822145909.6381-1-tparkin@katalix.com>
+        id S1728196AbgHVPpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 11:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727899AbgHVPpf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 11:45:35 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE08CC061573
+        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 08:45:35 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id t7so3944899otp.0
+        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 08:45:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BOUMiCXf9j7Wt8uOl48K1yzTZg6ycoY2LCI3OS07QwU=;
+        b=RYEZJ7+vYiZXk9huKRDhpEe5/bIaYN7b6sN+feZsU2Si+P1uDBxv6lVE3wPV1ztAFP
+         bjezMJHG3S46TfQsy/vSdYqxmreJty4sk3a9idOD69SpPUOANUJa+hpBHnwLBdmM0TXo
+         4cdXOB3HlhfQ/yrIKP5xefEFds2FRNkslosQyyifowZ7JFZSA5u1UVgH0nV3b1/MTUOV
+         hn8h18/X1LJL54IN/UsBu+052NRH5zl5JMTtm2RMtNEDcrbSuEcIeOyEFIQoZzK9sZnB
+         59sdNWLfTKh8QqZ9bAfIBiZuQNTEJ1TROCBrvbydP7Hg4Gp59i9BAC/Q8NPCbeTzaehG
+         pB1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BOUMiCXf9j7Wt8uOl48K1yzTZg6ycoY2LCI3OS07QwU=;
+        b=rbyOwkpfpo4sagvfEGrrVwSgIeD9kp6kcDbKj65RC41SnhlVxt90FnJO0hGBup1L5o
+         1ylWqSKKWbyRhQiuz5SgcPnm4XZZwl5nCPhXhkQ0Gxh10HcwXJHDpgFxQpO3DCmivw9K
+         BNxMi8eb5bASYHfrnfweWP6CGXo/N+tvAcVuB0quAeUtg8BolWfmM7RhPqLfg/O9LC96
+         HSkYN6+P8F2+w9idaYxoREgR9txPRjzKfJUB6WCVAJ40q5jvZr+fGWx7VYJXzPb3DLrp
+         Zv3SD/g3WSMnB/lrFN8QlBOVVwvW6LuqgfL/V4dSnAKNyYly3L7lIkyM3wcsbdjQiLYH
+         V6KQ==
+X-Gm-Message-State: AOAM530DQjzZaUBEe8QsaTLF5oMnVOe06F8VfKUAWWLWytx54MIUj7T5
+        EPXu0MXionDPY6OGS9f6sOU=
+X-Google-Smtp-Source: ABdhPJyTKEfbC9AHlbf4MivzlLGBeWpIYZs5IQUBN/OW06XMV3Bv7y2pF9afGp5u/zarC0bZilGJvA==
+X-Received: by 2002:a9d:ed0:: with SMTP id 74mr5186078otj.269.1598111135144;
+        Sat, 22 Aug 2020 08:45:35 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:284:8202:10b0:a888:bc35:d7d6:9aca])
+        by smtp.googlemail.com with ESMTPSA id 95sm189330otw.26.2020.08.22.08.45.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 22 Aug 2020 08:45:34 -0700 (PDT)
+Subject: Re: [PATCH net v2] net: nexthop: don't allow empty NHA_GROUP
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net,
+        syzbot+a61aa19b0c14c8770bd9@syzkaller.appspotmail.com
+References: <20200822103340.184978-1-nikolay@cumulusnetworks.com>
+ <20200822120636.194237-1-nikolay@cumulusnetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <197f8d43-d6fa-e701-92ba-81148fc139a5@gmail.com>
+Date:   Sat, 22 Aug 2020 09:45:13 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
+MIME-Version: 1.0
+In-Reply-To: <20200822120636.194237-1-nikolay@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update l2tp.rst to:
+On 8/22/20 6:06 AM, Nikolay Aleksandrov wrote:
+> Currently the nexthop code will use an empty NHA_GROUP attribute, but it
+> requires at least 1 entry in order to function properly. Otherwise we
+> end up derefencing null or random pointers all over the place due to not
+> having any nh_grp_entry members allocated, nexthop code relies on having at
+> least the first member present. Empty NHA_GROUP doesn't make any sense so
+> just disallow it.
+> Also add a WARN_ON for any future users of nexthop_create_group().
+> 
 
- * remove information about the obsolete debug flags and their use
- * include information about tracepoints for l2tp
+...
 
-Signed-off-by: Tom Parkin <tparkin@katalix.com>
----
- Documentation/networking/l2tp.rst | 37 ++++++++++++-------------------
- 1 file changed, 14 insertions(+), 23 deletions(-)
+> 
+> CC: David Ahern <dsahern@gmail.com>
+> Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
+> Reported-by: syzbot+a61aa19b0c14c8770bd9@syzkaller.appspotmail.com
+> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> ---
+> Tested on 5.3 and latest -net by adding a nexthop with an empty NHA_GROUP
+> (purposefully broken iproute2) and then adding a route which uses it.
+> 
+> v2: no changes, include stack trace in commit message
+> 
+>  net/ipv4/nexthop.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
 
-diff --git a/Documentation/networking/l2tp.rst b/Documentation/networking/l2tp.rst
-index 693ea0e3ec26..498b382d25a0 100644
---- a/Documentation/networking/l2tp.rst
-+++ b/Documentation/networking/l2tp.rst
-@@ -455,31 +455,16 @@ l2tp help`` for more information.
- Debugging
- ---------
- 
--The L2TP subsystem offers a debug scheme where kernel trace messages
--may be optionally enabled per tunnel and per session. Care is needed
--when debugging a live system since the messages are not rate-limited
--and a busy system could be swamped. Userspace uses setsockopt on the
--PPPoX socket to set a debug mask, or ``L2TP_ATTR_DEBUG`` in netlink
--Create and Modify commands.
-+The L2TP subsystem offers a range of debugging interfaces through the
-+debugfs filesystem.
- 
--The following debug mask bits are defined:-
--
--================  ==============================
--L2TP_MSG_DEBUG    verbose debug (if compiled in)
--L2TP_MSG_CONTROL  userspace - kernel interface
--L2TP_MSG_SEQ      sequence numbers handling
--L2TP_MSG_DATA     data packets
--================  ==============================
--
--Sessions inherit default debug flags from the parent tunnel.
--
--If enabled, files under a l2tp debugfs directory can be used to dump
--kernel state about L2TP tunnels and sessions. To access it, the
--debugfs filesystem must first be mounted::
-+To access these interfaces, the debugfs filesystem must first be mounted::
- 
-     # mount -t debugfs debugfs /debug
- 
--Files under the l2tp directory can then be accessed::
-+Files under the l2tp directory can then be accessed, providing a summary
-+of the current population of tunnel and session contexts existing in the
-+kernel::
- 
-     # cat /debug/l2tp/tunnels
- 
-@@ -488,8 +473,14 @@ state information because the file format is subject to change. It is
- implemented to provide extra debug information to help diagnose
- problems. Applications should instead use the netlink API.
- 
--/proc/net/pppol2tp is also provided for backwards compatibility with
--the original pppol2tp code. It lists information about L2TPv2
-+In addition the L2TP subsystem implements tracepoints using the standard
-+kernel event tracing API.  The available L2TP events can be reviewed as
-+follows::
-+
-+    # find /debug/tracing/events/l2tp
-+
-+Finally, /proc/net/pppol2tp is also provided for backwards compatibility
-+with the original pppol2tp code. It lists information about L2TPv2
- tunnels and sessions only. Its use is discouraged.
- 
- Internal Implementation
--- 
-2.17.1
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
+Thanks, Nik
