@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B0624EA42
+	by mail.lfdr.de (Postfix) with ESMTP id 7938424EA43
 	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 01:14:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728470AbgHVXOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 19:14:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
+        id S1728478AbgHVXOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 19:14:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728413AbgHVXN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 19:13:59 -0400
+        with ESMTP id S1728454AbgHVXOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 19:14:04 -0400
 Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E2BBC061573
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 16:13:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29EBC061573
+        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 16:14:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=jN0keby5tgRTIpkJS5lSU+8rJVPstHTKjDGQectMSts=; b=QXmgoTrIZzmFgk6XzTEDSUzImZ
-        MBxMZaBP/HJP5xUj/CrDZyf5RgTWRWFHQ3eUgN5Byur8aZYJ6WkcfiDA1pR1uN6jFPgoeaBllsjfa
-        m5xJfck83p3f5dm3yo7xb/qDAwW9tvVCQ6XAhvxFRer3Y0pAkSzHs+XJ+fcgVw7mcVaVG0K8t7LRH
-        I6kE1upj550VgrJj+0SPORrH3z2uHoJXlqM0jqfmbwo2LPDuJJHNAwogig5uJ4mzDZEesTQm6AEYP
-        FS99uO0P74LYhs6lXGXF1draHsEQWVXF4YRO7mnonYPvkg3cR+G3idJ2kSv+nBv9hSdNzFn4IsiKH
-        2L1Y4vLA==;
+        bh=eSP15c+BrHm987EqEjGAno3ZUqcOU4FHWI9USPH8hxw=; b=QRll0Kt2a9074fTxLVvEsdr3iZ
+        0ZVHCvcNqNp2y1fnr+mLLd5tAbpkT3F18E6FbpJId2gqvuAeW9Qlba+OtFD0ZMA50geFF+ABCq4Ps
+        9/lsQqDOIMPatrHC1qFMwGR5V16rtPkvG1V4Q0BMqQDP9X9U1uIrOqyO9YQgrEi6VcGEWJzpCXvdI
+        Xx98KBJtm9ipqh8AXaY+vOeGnZXBr9mYiKBf1akkpNBt76tsEuJzLPxQfvNUBfAPrdwbHe+4luF9Z
+        YInBStUa84p8xN04kZPVLuRWN3PC8SBYixOVJ0ubCYxACNmzUisoS0mHUj1algdtiu+JseZ70xaBG
+        kCGEc0QQ==;
 Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
         by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1k9chx-0006Nf-8q; Sat, 22 Aug 2020 23:13:57 +0000
+        id 1k9ci0-0006Nf-Gh; Sat, 22 Aug 2020 23:14:01 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
@@ -37,9 +37,9 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         b.a.t.m.a.n@lists.open-mesh.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5/8] net: batman-adv: network-coding.c: fix duplicated word
-Date:   Sat, 22 Aug 2020 16:13:32 -0700
-Message-Id: <20200822231335.31304-6-rdunlap@infradead.org>
+Subject: [PATCH 6/8] net: batman-adv: send.c: fix duplicated word
+Date:   Sat, 22 Aug 2020 16:13:33 -0700
+Message-Id: <20200822231335.31304-7-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200822231335.31304-1-rdunlap@infradead.org>
 References: <20200822231335.31304-1-rdunlap@infradead.org>
@@ -61,17 +61,17 @@ Cc: b.a.t.m.a.n@lists.open-mesh.org
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 ---
- net/batman-adv/network-coding.c |    2 +-
+ net/batman-adv/send.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- linux-next-20200731.orig/net/batman-adv/network-coding.c
-+++ linux-next-20200731/net/batman-adv/network-coding.c
-@@ -250,7 +250,7 @@ static void batadv_nc_path_put(struct ba
+--- linux-next-20200731.orig/net/batman-adv/send.c
++++ linux-next-20200731/net/batman-adv/send.c
+@@ -461,7 +461,7 @@ int batadv_send_skb_via_gw(struct batadv
  /**
-  * batadv_nc_packet_free() - frees nc packet
-  * @nc_packet: the nc packet to free
+  * batadv_forw_packet_free() - free a forwarding packet
+  * @forw_packet: The packet to free
 - * @dropped: whether the packet is freed because is is dropped
 + * @dropped: whether the packet is freed because it is dropped
-  */
- static void batadv_nc_packet_free(struct batadv_nc_packet *nc_packet,
- 				  bool dropped)
+  *
+  * This frees a forwarding packet and releases any resources it might
+  * have claimed.
