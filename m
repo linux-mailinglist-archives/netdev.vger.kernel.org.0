@@ -2,104 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1E4024E944
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 20:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FDCB24E950
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 21:00:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728562AbgHVSaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 14:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49648 "EHLO
+        id S1728613AbgHVS4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 14:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727893AbgHVSaN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 14:30:13 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23779C061573;
-        Sat, 22 Aug 2020 11:30:13 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id bo3so6691813ejb.11;
-        Sat, 22 Aug 2020 11:30:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pmwc657VcF17LG5ED0cRlkWCOFELPP7RKTL6nAzRSO4=;
-        b=hzbGnIT7kuQhlZTtyKqN8mazgBdpUn6VDHVcpom3d86maYFG4Ciq36TAS/OrXwYFyv
-         Dy7NF0lCN/LCyzeS04r7gOdvDc8VodGRJ5uzu6/N++R4NuZfOitsO8vtSklQ8pNVrW9H
-         2AX20gLnHdCAbnyPKUwCZ7d4TVkd+pY7h2aPz6ECU1W12ObAfRMJ2XCGukjjOje/3UIK
-         JQx5R1trcmwTV0PyXTurNRafPXECqoQ0s+amai5NsJS3JGl3j0IdhG/n9iXUqu9jbOfS
-         Ek0JGbdAbpkF3HjiUQMLMyNXE2jQjD1R+vS5ydVmWqTBCfMDcLejfK4XBHocIR6sdC1O
-         rm7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pmwc657VcF17LG5ED0cRlkWCOFELPP7RKTL6nAzRSO4=;
-        b=DvPWwGDUEt0gQTsb+ga35h0RDUDCnWAO93sFhDlQMtHMlpt46Xrvw6W7NozIVf24mU
-         Wr3hsTx+FHD+jEXQWK6GKME/UgyJ2o9Lh/FieBfY6AkfsQWW3Q8N3YbD/8yucMvIT7Sr
-         +QGY/SY1YQIU2bTdCK1h7HussfHtNfhdgTviRRthM1Xj3vkXPVZrJ0FfVJlltyyWB3DL
-         VMqsFkiplJDIHR5zoERtb7pZ1agkCH8mLvLVQx7z6M36K+IPmt1BHfwO6Q8tLWqdzoGO
-         BJ9eepy6uGCHcoNjPbeQ3yEVyikig79yyZ0Nshq+x+qVvxJElHa96yeG529UycogkxcP
-         wgWA==
-X-Gm-Message-State: AOAM5308DGXs6mve577KemIp4r/LcY31PIZ02DFkii/s7PAohRLrCqJb
-        XY9bxmDMKoSGuiuMyBSAiQZPXq1h7WY=
-X-Google-Smtp-Source: ABdhPJwKFRd7cNh4F6FJ82WpJg5kVdluNhakye9NZ1+MXdzeZweG9ZDTOG3uXo7fzD7j60X9WGSymA==
-X-Received: by 2002:a17:906:401b:: with SMTP id v27mr8277695ejj.300.1598121011480;
-        Sat, 22 Aug 2020 11:30:11 -0700 (PDT)
-Received: from debian64.daheim (p4fd09171.dip0.t-ipconnect.de. [79.208.145.113])
-        by smtp.gmail.com with ESMTPSA id i26sm3406551edv.70.2020.08.22.11.30.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Aug 2020 11:30:10 -0700 (PDT)
-Received: from localhost.daheim ([127.0.0.1])
-        by debian64.daheim with esmtp (Exim 4.94)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1k9YHC-0006WS-6L; Sat, 22 Aug 2020 20:30:04 +0200
-Subject: Re: [PATCH 00/32] Set 2: Rid W=1 warnings in Wireless
-To:     Lee Jones <lee.jones@linaro.org>, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20200821071644.109970-1-lee.jones@linaro.org>
-From:   Christian Lamparter <chunkeey@gmail.com>
-Message-ID: <a3915e15-0583-413f-1fcf-7cb9933ec0bf@gmail.com>
-Date:   Sat, 22 Aug 2020 20:30:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        with ESMTP id S1728398AbgHVS4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 14:56:05 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A692CC061573
+        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 11:56:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=NAX9n8relzhKEl3ZlDFUFOoGy3bnKWrywtRFciCOibU=; b=FeoyioO/JjBEjSSqqrfBZvvRi
+        5l2IkeSZ1YPk80xmdzM+Ocx9cZPJGQ7NBHFkkDc5Sam/BTbQreG8hdq7iJP/OUybCXzrjpEhaPYlH
+        kTjQpU7XGDM6JRhUudRF3o2o5GKGq3TCFq+7qKsI+GZwYYJMNhnB8cFTqkKfNjQ3Qj2zdp2pXllyZ
+        x+YCeIyhEDe/fdRQMEelGjQtyTzsgPKq05Dj9FltTbTvXRodr7cmw7oBzFA0nlE2LlNFsKIw70N4K
+        uv4eXJj13H+9EHKsuVki2jtoKr8FpZSNIGzwSHXs59ovruJhuIV535ClSRlPeWwxUy+8gJyBomu9A
+        GLtLi+pjA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55830)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1k9YgD-0006Ls-5G; Sat, 22 Aug 2020 19:55:53 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1k9YgC-0005eA-Ix; Sat, 22 Aug 2020 19:55:52 +0100
+Date:   Sat, 22 Aug 2020 19:55:52 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>,
+        netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: Re: [PATCH net-next 3/3] net: dsa: mv88e6xxx: add support for
+ 88E6393X from Amethyst family
+Message-ID: <20200822185552.GG1551@shell.armlinux.org.uk>
+References: <20200819153816.30834-1-marek.behun@nic.cz>
+ <20200819153816.30834-4-marek.behun@nic.cz>
+ <20200822164946.GI2347062@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20200821071644.109970-1-lee.jones@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200822164946.GI2347062@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-08-21 09:16, Lee Jones wrote:
-> This set is part of a larger effort attempting to clean-up W=1
-> kernel builds, which are currently overwhelmingly riddled with
-> niggly little warnings.
->
-I see that after our discussion about the carl9170 change in this
-thread following your patch: <https://lkml.org/lkml/2020/8/14/291>
+On Sat, Aug 22, 2020 at 06:49:46PM +0200, Andrew Lunn wrote:
+> > --- a/drivers/net/dsa/mv88e6xxx/port.c
+> > +++ b/drivers/net/dsa/mv88e6xxx/port.c
+> > @@ -187,11 +187,16 @@ static int mv88e6xxx_port_set_speed_duplex(struct mv88e6xxx_chip *chip,
+> >  		ctrl = MV88E6XXX_PORT_MAC_CTL_SPEED_1000;
+> >  		break;
+> >  	case 2500:
+> > -		if (alt_bit)
+> > -			ctrl = MV88E6390_PORT_MAC_CTL_SPEED_10000 |
+> > -				MV88E6390_PORT_MAC_CTL_ALTSPEED;
+> > +		if (chip->info->family == MV88E6XXX_FAMILY_6393)
+> > +			ctrl = MV88E6XXX_PORT_MAC_CTL_SPEED_1000;
+> >  		else
+> >  			ctrl = MV88E6390_PORT_MAC_CTL_SPEED_10000;
+> > +		if (alt_bit)
+> > +			ctrl |= MV88E6390_PORT_MAC_CTL_ALTSPEED;
+> > +		break;
+> > +	case 5000:
+> > +		ctrl = MV88E6390_PORT_MAC_CTL_SPEED_10000 |
+> > +			MV88E6390_PORT_MAC_CTL_ALTSPEED;
+> >  		break;
+> >  	case 10000:
+> >  		/* all bits set, fall through... */
+> 
+> This is getting more and more complex. Maybe it is time to refactor it?
 
-you decided the best way to address our requirements, was to "drop"
-your patch from the series, instead of just implementing the requested 
-changes. :(
+However, please note that the speed/duplex that is passed through
+phylink from phylib is the _media_ speed.  If you are using RXAUI
+(for example) then the link should be running at 10G speed,
+especially if the PHY is doing rate matching.  The only other thing
+is if rate matching is in use but no flow control, then limiting the
+egress rate is needed.
 
-> There are quite a few W=1 warnings in the Wireless.  My plan
-> is to work through all of them over the next few weeks.
-> Hopefully it won't be too long before drivers/net/wireless
-> builds clean with W=1 enabled.
-
-Just a parting note for your consideration:
-
-Since 5.7 [0], it has become rather easy to also compile the linux 
-kernel with clang and the LLVM Utilities.
-<https://www.kernel.org/doc/html/latest/kbuild/llvm.html>
-
-I hope this information can help you to see beyond that one-unamed 
-"compiler" bias there... I wish you the best of luck in your endeavors.
-
-Christian
-
-[0] 
-<https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.7-Kbuild-Easier-LLVM>
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
