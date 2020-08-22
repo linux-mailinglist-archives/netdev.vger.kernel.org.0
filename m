@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 478C724E82B
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 17:01:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86C0E24E825
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 17:01:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728381AbgHVO7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 10:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45066 "EHLO
+        id S1728354AbgHVO7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 10:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728282AbgHVO73 (ORCPT
+        with ESMTP id S1728272AbgHVO73 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 10:59:29 -0400
 Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1A8CC061575
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABC28C061574
         for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 07:59:27 -0700 (PDT)
 Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
         (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 0242886BE1;
-        Sat, 22 Aug 2020 15:59:19 +0100 (BST)
+        by mail.katalix.com (Postfix) with ESMTPSA id 20D0286BE8;
+        Sat, 22 Aug 2020 15:59:20 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1598108360; bh=Q++7M+sEycD0cieMt7apAtenHL3Q+CGttMloPdUOXtc=;
+        t=1598108360; bh=7zGZQRkcAsXhCwXm+MZBHID+WpjvSz8AdzqvBfQBdkM=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:From;
         z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
          rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
-         in@katalix.com>|Subject:=20[PATCH=20net-next=20v2=203/9]=20l2tp:=2
-         0use=20standard=20API=20for=20warning=20log=20messages|Date:=20Sat
-         ,=2022=20Aug=202020=2015:59:03=20+0100|Message-Id:=20<202008221459
-         09.6381-4-tparkin@katalix.com>|In-Reply-To:=20<20200822145909.6381
-         -1-tparkin@katalix.com>|References:=20<20200822145909.6381-1-tpark
-         in@katalix.com>;
-        b=wZF0u0paNmWAnYjHUh4HkURrKQ6QzBbMPJCW/kTztNMsB5u74a0JSasBza3jG+NWU
-         mSTVm7931SeFdZqlnm2GQcNEEN35T1jxBdiGVCTxA0MY2vpmzeTeNulUiLYDKMP5Sj
-         Wd1plD2poKvZiKqXvKidqr9E7ODymZ057IV12dhvEk7vucL9MATbNFPRSgu5DII2R/
-         SPyQ8t2aPbHgoRsq18JVhf3gGYf0bAnPX3Ibo5vEtsrv+lLmWY1+maKhluV3qYZ20j
-         TyzGRReptEJnaLiY1lhXGIi6AbSE4vbw0ho7O/+eK4cKvhWJTGeVptelT+8cMgddgu
-         6MKLNFCoyjn8A==
+         in@katalix.com>|Subject:=20[PATCH=20net-next=20v2=204/9]=20l2tp:=2
+         0add=20tracepoint=20infrastructure=20to=20core|Date:=20Sat,=2022=2
+         0Aug=202020=2015:59:04=20+0100|Message-Id:=20<20200822145909.6381-
+         5-tparkin@katalix.com>|In-Reply-To:=20<20200822145909.6381-1-tpark
+         in@katalix.com>|References:=20<20200822145909.6381-1-tparkin@katal
+         ix.com>;
+        b=2wPOwyJs/sqA6SckUXasmlSF1+wpWOrv8Ml4yXzuZxg0GBlUVVKFW5LI/e++s8kpQ
+         l23r2rNJTyJBRsin5E8b8G03a3nttYIyNhLrWuj97Go5gF8grlwSmW9pU81+ccWWO0
+         iKF56JZcn6deZPAFm2BZK8GG66bwJDBpvvriAHggHYMwOp2YNDGyul8M+20RX/X0jm
+         OItAgrY2o041oDDttQImVe1g1PLkHL1ppJUI4MXL29HxzVC8xY85hmF61ffYDLQ8OR
+         T/a+mRrYcUWwJVkXAzXrwTVUneOba2+FCHGF+CjSkSTAXZn+O+qyzPPT11wUMKxwSF
+         cpcoztzuYkS7Q==
 From:   Tom Parkin <tparkin@katalix.com>
 To:     netdev@vger.kernel.org
 Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH net-next v2 3/9] l2tp: use standard API for warning log messages
-Date:   Sat, 22 Aug 2020 15:59:03 +0100
-Message-Id: <20200822145909.6381-4-tparkin@katalix.com>
+Subject: [PATCH net-next v2 4/9] l2tp: add tracepoint infrastructure to core
+Date:   Sat, 22 Aug 2020 15:59:04 +0100
+Message-Id: <20200822145909.6381-5-tparkin@katalix.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200822145909.6381-1-tparkin@katalix.com>
 References: <20200822145909.6381-1-tparkin@katalix.com>
@@ -49,115 +49,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The l2tp_* log wrappers only emit messages of a given category if the
-tunnel or session structure has the appropriate flag set in its debug
-field.  Flags default to being unset.
+The l2tp subsystem doesn't currently make use of tracepoints.
 
-For warning messages, this doesn't make a lot of sense since an
-administrator is likely to want to know about datapath warnings without
-needing to tweak the debug flags setting for a given tunnel or session
-instance.
-
-Modify l2tp_warn callsites to use pr_warn_ratelimited instead for
-unconditional output of warning messages.
+As a starting point for adding tracepoints, add skeleton infrastructure
+for defining tracepoints for the subsystem, and for having them build
+appropriately whether compiled into the kernel or built as a module.
 
 Signed-off-by: Tom Parkin <tparkin@katalix.com>
 ---
- net/l2tp/l2tp_core.c | 32 +++++++++++++-------------------
- net/l2tp/l2tp_ppp.c  |  2 +-
- 2 files changed, 14 insertions(+), 20 deletions(-)
+ net/l2tp/Makefile    |  2 ++
+ net/l2tp/l2tp_core.c |  3 +++
+ net/l2tp/trace.h     | 15 +++++++++++++++
+ 3 files changed, 20 insertions(+)
+ create mode 100644 net/l2tp/trace.h
 
+diff --git a/net/l2tp/Makefile b/net/l2tp/Makefile
+index 399a7e5db2f4..cf8f27071d3f 100644
+--- a/net/l2tp/Makefile
++++ b/net/l2tp/Makefile
+@@ -5,6 +5,8 @@
+ 
+ obj-$(CONFIG_L2TP) += l2tp_core.o
+ 
++CFLAGS_l2tp_core.o += -I$(src)
++
+ # Build l2tp as modules if L2TP is M
+ obj-$(subst y,$(CONFIG_L2TP),$(CONFIG_PPPOL2TP)) += l2tp_ppp.o
+ obj-$(subst y,$(CONFIG_L2TP),$(CONFIG_L2TP_IP)) += l2tp_ip.o
 diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index a3017c46f653..54f46ed97b3d 100644
+index 54f46ed97b3d..aee5b230469f 100644
 --- a/net/l2tp/l2tp_core.c
 +++ b/net/l2tp/l2tp_core.c
-@@ -665,10 +665,9 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
- 	/* Parse and check optional cookie */
- 	if (session->peer_cookie_len > 0) {
- 		if (memcmp(ptr, &session->peer_cookie[0], session->peer_cookie_len)) {
--			l2tp_warn(tunnel, L2TP_MSG_DATA,
--				  "%s: cookie mismatch (%u/%u). Discarding.\n",
--				  tunnel->name, tunnel->tunnel_id,
--				  session->session_id);
-+			pr_warn_ratelimited("%s: cookie mismatch (%u/%u). Discarding.\n",
-+					    tunnel->name, tunnel->tunnel_id,
-+					    session->session_id);
- 			atomic_long_inc(&session->stats.rx_cookie_discards);
- 			goto discard;
- 		}
-@@ -721,9 +720,8 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
- 		 * If user has configured mandatory sequence numbers, discard.
- 		 */
- 		if (session->recv_seq) {
--			l2tp_warn(session, L2TP_MSG_SEQ,
--				  "%s: recv data has no seq numbers when required. Discarding.\n",
--				  session->name);
-+			pr_warn_ratelimited("%s: recv data has no seq numbers when required. Discarding.\n",
-+					    session->name);
- 			atomic_long_inc(&session->stats.rx_seq_discards);
- 			goto discard;
- 		}
-@@ -740,9 +738,8 @@ void l2tp_recv_common(struct l2tp_session *session, struct sk_buff *skb,
- 			session->send_seq = 0;
- 			l2tp_session_set_header_len(session, tunnel->version);
- 		} else if (session->send_seq) {
--			l2tp_warn(session, L2TP_MSG_SEQ,
--				  "%s: recv data has no seq numbers when required. Discarding.\n",
--				  session->name);
-+			pr_warn_ratelimited("%s: recv data has no seq numbers when required. Discarding.\n",
-+					    session->name);
- 			atomic_long_inc(&session->stats.rx_seq_discards);
- 			goto discard;
- 		}
-@@ -835,9 +832,8 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb)
+@@ -62,6 +62,9 @@
  
- 	/* Short packet? */
- 	if (!pskb_may_pull(skb, L2TP_HDR_SIZE_MAX)) {
--		l2tp_warn(tunnel, L2TP_MSG_DATA,
--			  "%s: recv short packet (len=%d)\n",
--			  tunnel->name, skb->len);
-+		pr_warn_ratelimited("%s: recv short packet (len=%d)\n",
-+				    tunnel->name, skb->len);
- 		goto error;
- 	}
+ #include "l2tp_core.h"
  
-@@ -851,9 +847,8 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb)
- 	/* Check protocol version */
- 	version = hdrflags & L2TP_HDR_VER_MASK;
- 	if (version != tunnel->version) {
--		l2tp_warn(tunnel, L2TP_MSG_DATA,
--			  "%s: recv protocol version mismatch: got %d expected %d\n",
--			  tunnel->name, version, tunnel->version);
-+		pr_warn_ratelimited("%s: recv protocol version mismatch: got %d expected %d\n",
-+				    tunnel->name, version, tunnel->version);
- 		goto error;
- 	}
++#define CREATE_TRACE_POINTS
++#include "trace.h"
++
+ #define L2TP_DRV_VERSION	"V2.0"
  
-@@ -891,9 +886,8 @@ static int l2tp_udp_recv_core(struct l2tp_tunnel *tunnel, struct sk_buff *skb)
- 			l2tp_session_dec_refcount(session);
- 
- 		/* Not found? Pass to userspace to deal with */
--		l2tp_warn(tunnel, L2TP_MSG_DATA,
--			  "%s: no session found (%u/%u). Passing up.\n",
--			  tunnel->name, tunnel_id, session_id);
-+		pr_warn_ratelimited("%s: no session found (%u/%u). Passing up.\n",
-+				    tunnel->name, tunnel_id, session_id);
- 		goto error;
- 	}
- 
-diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
-index 660ea95e0910..bd6bb17dfadb 100644
---- a/net/l2tp/l2tp_ppp.c
-+++ b/net/l2tp/l2tp_ppp.c
-@@ -251,7 +251,7 @@ static void pppol2tp_recv(struct l2tp_session *session, struct sk_buff *skb, int
- 
- no_sock:
- 	rcu_read_unlock();
--	l2tp_warn(session, L2TP_MSG_DATA, "%s: no socket\n", session->name);
-+	pr_warn_ratelimited("%s: no socket in recv\n", session->name);
- 	kfree_skb(skb);
- }
- 
+ /* L2TP header constants */
+diff --git a/net/l2tp/trace.h b/net/l2tp/trace.h
+new file mode 100644
+index 000000000000..652778291b77
+--- /dev/null
++++ b/net/l2tp/trace.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM l2tp
++
++#if !defined(_TRACE_L2TP_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_L2TP_H
++
++#endif /* _TRACE_L2TP_H */
++
++/* This part must be outside protection */
++#undef TRACE_INCLUDE_PATH
++#define TRACE_INCLUDE_PATH .
++#undef TRACE_INCLUDE_FILE
++#define TRACE_INCLUDE_FILE trace
++#include <trace/define_trace.h>
 -- 
 2.17.1
 
