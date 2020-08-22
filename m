@@ -2,58 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B38124E971
-	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 21:42:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71EFE24E97A
+	for <lists+netdev@lfdr.de>; Sat, 22 Aug 2020 21:45:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728661AbgHVTmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 15:42:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32828 "EHLO
+        id S1728723AbgHVTo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 15:44:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728639AbgHVTmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 15:42:12 -0400
+        with ESMTP id S1728676AbgHVTo6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 15:44:58 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E51C061573
-        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 12:42:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56629C061573
+        for <netdev@vger.kernel.org>; Sat, 22 Aug 2020 12:44:57 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C476C15CFB426;
-        Sat, 22 Aug 2020 12:25:24 -0700 (PDT)
-Date:   Sat, 22 Aug 2020 12:42:09 -0700 (PDT)
-Message-Id: <20200822.124209.2224829060342809395.davem@davemloft.net>
-To:     nikolay@cumulusnetworks.com
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        syzbot+a61aa19b0c14c8770bd9@syzkaller.appspotmail.com
-Subject: Re: [PATCH net v2] net: nexthop: don't allow empty NHA_GROUP
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A75B915D0BF6E;
+        Sat, 22 Aug 2020 12:28:10 -0700 (PDT)
+Date:   Sat, 22 Aug 2020 12:44:55 -0700 (PDT)
+Message-Id: <20200822.124455.289087014160802389.davem@davemloft.net>
+To:     tparkin@katalix.com
+Cc:     netdev@vger.kernel.org, jchapman@katalix.com
+Subject: Re: [PATCH net-next v2 0/9] l2tp: replace custom logging code with
+ tracepoints
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200822120636.194237-1-nikolay@cumulusnetworks.com>
-References: <20200822103340.184978-1-nikolay@cumulusnetworks.com>
-        <20200822120636.194237-1-nikolay@cumulusnetworks.com>
+In-Reply-To: <20200822145909.6381-1-tparkin@katalix.com>
+References: <20200822145909.6381-1-tparkin@katalix.com>
 X-Mailer: Mew version 6.8 on Emacs 26.3
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 22 Aug 2020 12:25:24 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 22 Aug 2020 12:28:10 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Date: Sat, 22 Aug 2020 15:06:36 +0300
+From: Tom Parkin <tparkin@katalix.com>
+Date: Sat, 22 Aug 2020 15:59:00 +0100
 
-> Currently the nexthop code will use an empty NHA_GROUP attribute, but it
-> requires at least 1 entry in order to function properly. Otherwise we
-> end up derefencing null or random pointers all over the place due to not
-> having any nh_grp_entry members allocated, nexthop code relies on having at
-> least the first member present. Empty NHA_GROUP doesn't make any sense so
-> just disallow it.
-> Also add a WARN_ON for any future users of nexthop_create_group().
- ...
-> CC: David Ahern <dsahern@gmail.com>
-> Fixes: 430a049190de ("nexthop: Add support for nexthop groups")
-> Reported-by: syzbot+a61aa19b0c14c8770bd9@syzkaller.appspotmail.com
-> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+> The l2tp subsystem implemented custom logging macros for debugging
+> purposes which were controlled using a set of debugging flags in each
+> tunnel and session structure.
+> 
+> A more standard and easier-to-use approach is to use tracepoints.
+> 
+> This patchset refactors l2tp to:
+> 
+>  * remove excessive logging
+>  * tweak useful log messages to use the standard pr_* calls for logging
+>    rather than the l2tp wrappers
+>  * replace debug-level logging with tracepoints
+>  * add tracepoints for capturing tunnel and session lifetime events
+> 
+> I note that checkpatch.pl warns about the layout of code in the
+> newly-added file net/l2tp/trace.h.  When adding this file I followed the
+> example(s) of other tracepoint files in the net/ subtree since it seemed
+> preferable to adhere to the prevailing style rather than follow
+> checkpatch.pl's advice in this instance.  If that's the wrong
+> approach please let me know.
+> 
+> v1 -> v2
+> 
+>  * Fix up a build warning found by the kernel test robot
 
-Applied and queued up for -stable, thanks.
+Series applied, thanks Tom.
