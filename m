@@ -2,87 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F2B824EBDB
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 08:46:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55B2A24EBEC
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 09:04:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726187AbgHWGqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Aug 2020 02:46:03 -0400
-Received: from dvalin.narfation.org ([213.160.73.56]:55312 "EHLO
-        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725855AbgHWGqC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 02:46:02 -0400
-X-Greylist: delayed 3366 seconds by postgrey-1.27 at vger.kernel.org; Sun, 23 Aug 2020 02:46:01 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1598165160;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dn1Ee1BWUkEe6R3beVJmm/p+qmzJ7mU5y+FkCrsO+Ow=;
-        b=b5DHL4BhdJhm6eCsYhIKlDJZWgLVMphwp06+GOWpT12bMvTcH6r9xv0x7IyjZimHbtmBtX
-        WrK4ELkgf5iLve8qWWrp5odUcuKf0iOiTtusG4T0lfgw/MGjX2TDYsebRE1LJkBW4NBhRM
-        8c+PDWifO+OJafz2z3lE92L66OpFe+U=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, Simon Wunderlich <sw@simonwunderlich.de>,
-        b.a.t.m.a.n@lists.open-mesh.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH 0/8] net: batman-adv: delete duplicated words + other fixes
-Date:   Sun, 23 Aug 2020 08:45:53 +0200
-Message-ID: <3515346.etltgSPTIo@sven-edge>
-In-Reply-To: <37b82a77-fc58-9a7b-8996-a6bd030ee7ef@infradead.org>
-References: <20200822231335.31304-1-rdunlap@infradead.org> <1676363.I2AznyWB51@sven-edge> <37b82a77-fc58-9a7b-8996-a6bd030ee7ef@infradead.org>
+        id S1726983AbgHWHEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Aug 2020 03:04:45 -0400
+Received: from wnew2-smtp.messagingengine.com ([64.147.123.27]:59845 "EHLO
+        wnew2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725771AbgHWHEm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 03:04:42 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.west.internal (Postfix) with ESMTP id D1F80A20;
+        Sun, 23 Aug 2020 03:04:38 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sun, 23 Aug 2020 03:04:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=YL875o
+        xAQ3rCZ2SLFY4uDo7/SdoRl3BPTTquWsxPeVg=; b=TAxu9BlFC3DhRvNLK6JKF0
+        T8X70sM822a9kr8qHxn8tu1WUr3WIzD+i3Brh5NpAZsF4nGQYFsE+BE+VmoY8aCN
+        HyFeQayqTdZXhr1TVxsAtAXm5wTwdlnBDewQK01VplhPF2HjJtuiUrkKXBaedJIX
+        LOTzEeM86IrJUW5P+hYZX5S7G1lfb73T5v8THilRsbmmwG5ufV0IILJ6dtAx0+UJ
+        ir7MVswjX/l6nVxJ/FTXxydnv5OfuIavIfq3XpDTrBxhs37md8dKsJE1SWFSJwGQ
+        zr8M9OmosPUl6OkuK4uoEYwCBPvLC2RYsa3L6Whel1VRBIay6By3RkSVr0iGrL+g
+        ==
+X-ME-Sender: <xms:BRVCX4QGZ16ZRUiAxeqJu6GtuVkct6s3stJ6rfQ4h77ayVUy3tkpVw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudduhedgudduudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecukfhppeejledrudejkedrudefuddrfeehnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:BRVCX1x6XoPuQeA0AG-5ytYnxRAG461UPPz6KTwiMHnbEliGWclLBg>
+    <xmx:BRVCX10ZWV2zCPCPm5t02FnT2ulW4LPhaokbR_rk7ZNRleKlvUmrpA>
+    <xmx:BRVCX8DGWBiLo3KEBDqG9IhZnLxrcM7sz1Wuj2BsJT6S7lpLmfWZjw>
+    <xmx:BhVCX8oTe2YAiK9BMpcpyyzu_EtBo219V-GLkJOvyQfPwFNI9Hmp2t-gHMk>
+Received: from localhost (bzq-79-178-131-35.red.bezeqint.net [79.178.131.35])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 08B1B328005A;
+        Sun, 23 Aug 2020 03:04:36 -0400 (EDT)
+Date:   Sun, 23 Aug 2020 10:04:34 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
+        roopa@nvidia.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        tariqt@nvidia.com, ayal@nvidia.com, mkubecek@suse.cz,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/6] devlink: Add device metric support
+Message-ID: <20200823070434.GA400109@shredder>
+References: <d0c24aad-b7f3-7fd9-0b34-c695686e3a86@gmail.com>
+ <20200820090942.55dc3182@kicinski-fedora-PC1C0HJN>
+ <20200821103021.GA331448@shredder>
+ <20200821095303.75e6327b@kicinski-fedora-PC1C0HJN>
+ <6030824c-02f9-8103-dae4-d336624fe425@gmail.com>
+ <20200821165052.6790a7ba@kicinski-fedora-PC1C0HJN>
+ <1e5cdd45-d66f-e8e0-ceb7-bf0f6f653a1c@gmail.com>
+ <20200821173715.2953b164@kicinski-fedora-PC1C0HJN>
+ <90b68936-88cf-4d87-55b0-acf9955ef758@gmail.com>
+ <20200822092739.5ba0c099@kicinski-fedora-PC1C0HJN>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart4310618.EFodLd8k5E"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200822092739.5ba0c099@kicinski-fedora-PC1C0HJN>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart4310618.EFodLd8k5E
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+On Sat, Aug 22, 2020 at 09:27:39AM -0700, Jakub Kicinski wrote:
+> On Fri, 21 Aug 2020 19:18:37 -0600 David Ahern wrote:
+> > On 8/21/20 6:37 PM, Jakub Kicinski wrote:
+> > >>> # cat /proc/net/tls_stat     
+> > >>
+> > >> I do not agree with adding files under /proc/net for this.  
+> > > 
+> > > Yeah it's not the best, with higher LoC a better solution should be
+> > > within reach.  
+> > 
+> > The duplicity here is mind-boggling. Tls stats from hardware is on par
+> > with Ido's *example* of vxlan stats from an ASIC. You agree that
+> > /proc/net files are wrong,
+> 
+> I didn't say /proc/net was wrong, I'm just trying to be agreeable.
+> Maybe I need to improve my command of the English language.
+> 
+> AFAIK /proc/net is where protocol stats are.
+> 
+> > but you did it anyway and now you want the
+> > next person to solve the problem you did not want to tackle but have
+> > strong opinions on.
+> 
+> I have no need and interest in vxlan stats.
+> 
+> > Ido has a history of thinking through problems and solutions in a proper
+> > Linux Way. netlink is the right API, and devlink was created for
+> > 'device' stuff versus 'netdev' stuff. Hence, I agree with this
+> > *framework* for extracting asic stats.
+> 
+> You seem to focus on less relevant points. I primarily care about the
+> statistics being defined and identified by Linux, not every vendor for
+> themselves.
 
-On Sunday, 23 August 2020 08:05:10 CEST Randy Dunlap wrote:
-[...]
-> > Please rebase to only contain the changes not yet in 
-> > https://git.open-mesh.org/linux-merge.git/shortlog/refs/heads/batadv/net-next
-[...]
-> Is this git tree included in linux-next?
+Trying to understand how we can move this forward. The issue is with the
+specific VXLAN metrics, but you generally agree with the need for the
+framework? See my two other examples: Cache counters and algorithmic
+TCAM counters.
 
-No, Stephen Rothwell isn't including the batadv/net + batadv/net-next branches 
-of this tree [1] directly - only the netdev trees are included. And the batadv 
-specific branches were not yet submitted for inclusion after net-next reopened [2]
-after -rc1.
+> No question about Ido's ability and contributions, but then again 
+> (from the cover letter):
+> 
+> > This a joint work [...] during a two-day company hackathon.
 
-Kind regards,
-	Sven
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/MAINTAINERS?id=c3d8f220d01220a5b253e422be407d068dc65511#n3135
-[2] https://lore.kernel.org/netdev/20200818.002258.232165702420264020.davem@davemloft.net/T/#u
-
---nextPart4310618.EFodLd8k5E
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl9CEKEACgkQXYcKB8Em
-e0YLbxAApJz8wPlivbQR+Z9ArTfALZMyYK1we+BId3vMFGjjsc8FytGzRSCIOEEi
-xzZnFb/LHN8aLJo1rAHV19WfIA6weHNZXxykhaRIcRaM5r7DpaoiSVqozaw0KurG
-kIIZrY9Kc12o73ayuH8XdAb7Oiq1yQRKs3CkLc5xJ2NaEPz7rgJo2vMjFwlLspEN
-rSqsILFfGNIrXIMCymDAetpHEsmmfJH51GAg29Y7S9Y+ZwToU9IzxwUGW3toPoJf
-N6bo9L4f/mfEZJxSH9Mps5RILriQaubYorlemArixAspuhQeqzOXEog7OLDblDfO
-axsruCudqNT3K/5Ni5QV0a+l5FOyZ91IVzt6zosxtamQ5aTaogEo5HBAZOHt1d/B
-f78En0E+CpWWOgzcNSrtKDKdrPfTOyTRAxT2guhFyuWFlRemEJUhlxCr5IXZYPnU
-yk8J7aoyuEWNUjB4Q6Qqstg9wXdzSRdB4MlLAHAqMnoT3QZQyoXJ3WdQkmdx4L5J
-ka0k86mEE+XGStdH3Tisv7uihT4g/INi+OzhR+rXZj0VEWPlXl7frcqezAPLuWyg
-fO0IR2zz6PzaChaysix3HxVHjgSwIt/nsGOxg18QlN8BKCbGSOZwjHt0bTt5p1wm
-0VR6PVpDDt7jJELBv/gs7hH2ZbYRQHNTIdH+JCylPiBuUtJzcaM=
-=nNIY
------END PGP SIGNATURE-----
-
---nextPart4310618.EFodLd8k5E--
-
-
-
+The *implementation* was done during the hackathon. The *design* was
+done before. I sent to the team three design proposals (CLI / netlink
+API / device drivers API) before we landed on this. Started thinking
+about this idea a few months ago and the hackathon was simply a good
+opportunity to implement and showcase it.
