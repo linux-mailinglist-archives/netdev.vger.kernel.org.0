@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50B0424ECE8
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 12:56:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6BE424ECEB
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 12:58:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726059AbgHWK4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Aug 2020 06:56:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725971AbgHWK4D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 Aug 2020 06:56:03 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 130D92072D;
-        Sun, 23 Aug 2020 10:56:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598180162;
-        bh=4yd51JrmDIU9v+Uu6SenJKfbOo3beI55UZ1+lyBGMa4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=v/aPdIfAiaTcN17ybARTdRUaeD7Hd5J/SIBYkPBlSXaUP0egieEsu/OYYKZLS4tA+
-         2Fz2FCNGu2cwIRqIpyfjeMXphy4vy+i6KDUPF8+huSX2XMC0NeoFplO97MSaEWdWdw
-         kcIx2Jt3wxp9RDvWhg0qUl9QKI26gtne3FnlHOIk=
-Date:   Sun, 23 Aug 2020 12:56:22 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Himadri Pandya <himadrispandya@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        USB list <linux-usb@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: [PATCH] net: usb: Fix uninit-was-stored issue in asix_read_cmd()
-Message-ID: <20200823105622.GA87391@kroah.com>
-References: <20200823082042.20816-1-himadrispandya@gmail.com>
- <CACT4Y+Y1TpqYowNXj+OTcQwH-7T4n6PtPPa4gDWkV-np5KhKAQ@mail.gmail.com>
- <20200823101924.GA3078429@kroah.com>
- <CACT4Y+YbDODLRFn8M5QcY4CazhpeCaunJnP_udXtAs0rYoASSg@mail.gmail.com>
+        id S1726905AbgHWK62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Aug 2020 06:58:28 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:33706 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726858AbgHWK6K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 06:58:10 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07NAucYZ007724;
+        Sun, 23 Aug 2020 03:57:57 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pfpt0220;
+ bh=jIiVWmyi+xyrVUpGq+nsWcpiyoSIOxjoarrOL6+28es=;
+ b=SiqIJJnV+XTzt0ZP9KlS/aU0CO+u2Dvc5jHHQsIVykFG2ID3gT2qwnj3E+14+WkpIckO
+ Ym0kKAroQNGukVqgItdVUOVAjL5+U3oEXIvnnxaAl7Lb1616GyodtpQz1ns/FPegm8ph
+ Iaq2vdw+2EHUStTCt8hsjPwzVgY1Q2krmC+piEqHO8PRpl7JxDxWg7WiXOIDOhoQg7jh
+ mYqf6zWWfHtVoMFL5CDqPwxQFzHKuVy2ANrKO/hWeYPOXOI9TPLTaIqViPcEgpq76XHl
+ trkJldJJF2CCAb1rDEF5XcQjernZ4EvX5Ins+RZwuVxIk0z0cjvjY06bYv1OGR4YQZHF gQ== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3330qpb7rw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 23 Aug 2020 03:57:57 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 23 Aug
+ 2020 03:57:56 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 23 Aug
+ 2020 03:57:55 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 23 Aug 2020 03:57:55 -0700
+Received: from [10.193.54.28] (unknown [10.193.54.28])
+        by maili.marvell.com (Postfix) with ESMTP id 2532C3F7043;
+        Sun, 23 Aug 2020 03:57:52 -0700 (PDT)
+Subject: Re: [EXT] Re: [PATCH v6 net-next 04/10] qed: implement devlink info
+ request
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
+        "Ariel Elior" <aelior@marvell.com>,
+        Michal Kalderon <mkalderon@marvell.com>
+References: <20200820185204.652-1-irusskikh@marvell.com>
+ <20200820185204.652-5-irusskikh@marvell.com>
+ <20200821103218.6d1cb211@kicinski-fedora-PC1C0HJN>
+From:   Igor Russkikh <irusskikh@marvell.com>
+Message-ID: <f6d5d039-420a-21d7-2796-0d54292744dc@marvell.com>
+Date:   Sun, 23 Aug 2020 13:57:51 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101
+ Thunderbird/80.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+YbDODLRFn8M5QcY4CazhpeCaunJnP_udXtAs0rYoASSg@mail.gmail.com>
+In-Reply-To: <20200821103218.6d1cb211@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-22_14:2020-08-21,2020-08-22 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 23, 2020 at 12:31:03PM +0200, Dmitry Vyukov wrote:
-> On Sun, Aug 23, 2020 at 12:19 PM Greg Kroah-Hartman
-> > It's not always a failure, some devices have protocols that are "I could
-> > return up to a max X bytes but could be shorter" types of messages, so
-> > it's up to the caller to check that they got what they really asked for.
+
+>> ~$ sudo ~/iproute2/devlink/devlink  dev info
+>> pci/0000:01:00.1:
+>>   driver qed
+>>   board.serial_number REE1915E44552
+>>   versions:
+>>       running:
+>>         fw.app 8.42.2.0
+>>       stored:
+>>         fw.mgmt 8.52.10.0
 > 
-> Yes, that's why I said _separate_ helper function. There seems to be
-> lots of callers that want exactly this -- "I want 4 bytes, anything
-> else is an error". With the current API it's harder to do - you need
-> additional checks, additional code, maybe even additional variables to
-> store the required size. APIs should make correct code easy to write.
+> Are you not able to report the running version of the stored firmware?
+> The two sections are used for checking if machine needs fw-activation
+> or reboot (i.e. if fw.mgmt in stored section does not match fw.mgmt in
+> running - there is a new FW to activate).
 
-One note on this, will respond to the rest of the email later.
-
-It should be the same exact amount of code in the driver to handle this
-either way:
-
-Today's correctly written driver:
-
-	data_size = 4;
-	data = kmalloc(data_size, GFP_KERNEL);
-	...
-
-	retval = usb_control_msg(....., data, data_size, ...);
-	if (retval < buf_size) {
-		/* SOMETHING WENT WRONG! */
-	}
-
-With your new function:
-
-	data_size = 4;
-	data = kmalloc(data_size, GFP_KERNEL);
-	...
-
-	retval = usb_control_msg_error_on_short(....., data, data_size, ...);
-	if (retval < 0) {
-		/* SOMETHING WENT WRONG! */
-	}
+Right now I think its not possible.
+Will investigate more later, when we'll dive more into FW related
+implementation of devlink APIs.
 
 
-Catch the difference, it's only in checking for retval, either way you
-are writing the exact same logic in the driver, you still have to tell
-the USB layer the size of the buffer you want to read into, still have
-to pass in the buffer, and everything else.  You already know the size
-of the data you want, and you already are doing the check, those things
-you have to do no matter what, it's not extra work.
+> In general looks good:
+> 
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> 
 
-We can write a wrapper around usb_control_msg() for something like this
-that does the transformation of a short read into an error, but really,
-does that give us all that much here?
-
-Yes, I want to make it easy to write correct drivers, and hard to get
-things wrong, but in this case, I don't see the new way any "harder" to
-get wrong.
-
-Unless you know of a simpler way here?
-
-thanks,
-
-greg k-h
+Thanks
