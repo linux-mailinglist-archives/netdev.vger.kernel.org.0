@@ -2,68 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A32124ED18
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 13:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9356624ED44
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 14:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbgHWL3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Aug 2020 07:29:52 -0400
-Received: from spam.zju.edu.cn ([61.164.42.155]:30180 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726730AbgHWL3w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 Aug 2020 07:29:52 -0400
-Received: from localhost.localdomain (unknown [210.32.144.184])
-        by mail-app3 (Coremail) with SMTP id cC_KCgAHKfwhU0JfC+kUAw--.30017S4;
-        Sun, 23 Aug 2020 19:29:41 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Chas Williams <3chas3@gmail.com>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] firestream: Fix memleak in fs_open
-Date:   Sun, 23 Aug 2020 19:29:35 +0800
-Message-Id: <20200823112935.27574-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgAHKfwhU0JfC+kUAw--.30017S4
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYs7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Gw4l
-        42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026xCaFVCjc4
-        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
-        17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
-        IF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3
-        Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcS
-        sGvfC2KfnxnUUI43ZEXa7VUj-zVUUUUUU==
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgoSBlZdtPnBhABFsa
+        id S1726939AbgHWMus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Aug 2020 08:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725926AbgHWMur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 08:50:47 -0400
+X-Greylist: delayed 1894 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 23 Aug 2020 05:50:46 PDT
+Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DBB1C061573;
+        Sun, 23 Aug 2020 05:50:46 -0700 (PDT)
+Received: from p200300d06f041cbacebfb77eca04950c.dip0.t-ipconnect.de ([2003:d0:6f04:1cba:cebf:b77e:ca04:950c] helo=localhost.localdomain); authenticated
+        by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1k9oxa-0004Oa-9M; Sun, 23 Aug 2020 14:18:54 +0200
+From:   Kurt Kanzenbach <kurt@kmk-computers.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, Kurt Kanzenbach <kurt@kmk-computers.de>
+Subject: [PATCH] dt-bindings: net: dsa: Fix typo
+Date:   Sun, 23 Aug 2020 14:18:36 +0200
+Message-Id: <20200823121836.16441-1-kurt@kmk-computers.de>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1598187047;52d4deac;
+X-HE-SMSGID: 1k9oxa-0004Oa-9M
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When make_rate() fails, vcc should be freed just
-like other error paths in fs_open().
+Fix spelling mistake documenation -> documentation.
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+Fixes: 5a18bb14c0f7 ("dt-bindings: net: dsa: Let dsa.txt refer to dsa.yaml")
+Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
 ---
- drivers/atm/firestream.c | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/net/dsa/dsa.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
-index 2ca9ec802734..510250cf5c87 100644
---- a/drivers/atm/firestream.c
-+++ b/drivers/atm/firestream.c
-@@ -998,6 +998,7 @@ static int fs_open(struct atm_vcc *atm_vcc)
- 				error = make_rate (pcr, r, &tmc0, NULL);
- 				if (error) {
- 					kfree(tc);
-+					kfree(vcc);
- 					return error;
- 				}
- 			}
+Sorry, missed that earlier.
+
+diff --git a/Documentation/devicetree/bindings/net/dsa/dsa.txt b/Documentation/devicetree/bindings/net/dsa/dsa.txt
+index bf7328aba330..dab208b5c7c7 100644
+--- a/Documentation/devicetree/bindings/net/dsa/dsa.txt
++++ b/Documentation/devicetree/bindings/net/dsa/dsa.txt
+@@ -1,4 +1,4 @@
+ Distributed Switch Architecture Device Tree Bindings
+ ----------------------------------------------------
+ 
+-See Documentation/devicetree/bindings/net/dsa/dsa.yaml for the documenation.
++See Documentation/devicetree/bindings/net/dsa/dsa.yaml for the documentation.
 -- 
-2.17.1
+2.26.2
 
