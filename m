@@ -2,109 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D290224EE0C
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 18:04:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEDC624EE0D
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 18:04:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726090AbgHWQDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Aug 2020 12:03:48 -0400
-Received: from mx2.suse.de ([195.135.220.15]:36382 "EHLO mx2.suse.de"
+        id S1726851AbgHWQEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Aug 2020 12:04:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37222 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726000AbgHWQDW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 Aug 2020 12:03:22 -0400
+        id S1726698AbgHWQEC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 Aug 2020 12:04:02 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 0BF81AB3E;
-        Sun, 23 Aug 2020 16:03:50 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id EECA1AB3E;
+        Sun, 23 Aug 2020 16:04:30 +0000 (UTC)
 Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 7CF426030D; Sun, 23 Aug 2020 18:03:20 +0200 (CEST)
-Date:   Sun, 23 Aug 2020 18:03:20 +0200
+        id 75A2B6030D; Sun, 23 Aug 2020 18:04:01 +0200 (CEST)
+Date:   Sun, 23 Aug 2020 18:04:01 +0200
 From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool 2/2] netlink: Print and return an error when
- features weren't changed
-Message-ID: <20200823160320.onkv4kqgye7u6b2c@lion.mk-sys.cz>
-References: <20200814131745.32215-1-maximmi@mellanox.com>
- <20200814131745.32215-3-maximmi@mellanox.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH ethtool] cable-test: TDR Amplitude is signed
+Message-ID: <20200823160401.i7kngascbvh2r2mg@lion.mk-sys.cz>
+References: <20200816152508.2285431-1-andrew@lunn.ch>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ewf662okiwmsuvqa"
+        protocol="application/pgp-signature"; boundary="sjysja2osr6fi74m"
 Content-Disposition: inline
-In-Reply-To: <20200814131745.32215-3-maximmi@mellanox.com>
+In-Reply-To: <20200816152508.2285431-1-andrew@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---ewf662okiwmsuvqa
+--sjysja2osr6fi74m
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Aug 14, 2020 at 04:17:45PM +0300, Maxim Mikityanskiy wrote:
-> The legacy ethtool prints an error message and returns 1 if no features
-> were changed as requested. Port this behavior to ethtool-netlink.
-> req_mask is compared to wanted_mask to detect if any feature was
-> changed. If these masks are equal, it means that the kernel hasn't
-> changed anything, and all bits got to wanted.
+On Sun, Aug 16, 2020 at 05:25:08PM +0200, Andrew Lunn wrote:
+> Use the signed JSON helper for printing the TDR amplitude. Otherwise
+> negative values, i.e. cable shorts, become very large positive values.
 >=20
-> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> ---
->  netlink/features.c | 25 ++++++++++++++++++-------
->  1 file changed, 18 insertions(+), 7 deletions(-)
->=20
-> diff --git a/netlink/features.c b/netlink/features.c
-> index 133529d..4f63fa2 100644
-> --- a/netlink/features.c
-> +++ b/netlink/features.c
-[...]
-> @@ -471,8 +480,10 @@ int sfeatures_reply_cb(const struct nlmsghdr *nlhdr,=
- void *data)
->  		return MNL_CB_OK;
->  	}
-> =20
-> -	show_feature_changes(nlctx, tb);
-> -	return MNL_CB_OK;
-> +	if (show_feature_changes(nlctx, tb))
-> +		return MNL_CB_OK;
-> +	else
-> +		return MNL_CB_ERROR;
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 
-I agree with the general change and the code aboved detecting the
-condition but this kind of error is IMHO not so critical that it would
-justify bailing out and completely ignoring the final NLMSG_ERROR with
-kernel return code and possible extack (error/warning message).
-
-I would rather suggest to set a flag (e.g. in sfctx) when "no requested
-change performed" result is detected and leave displaying the error
-message and setting the exit code after the whole message queue is
-processed. What do you think?
+Applied, thank you.
 
 Michal
 
->  }
+> ---
+>  netlink/cable_test.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/netlink/cable_test.c b/netlink/cable_test.c
+> index d39b7d8..8a71453 100644
+> --- a/netlink/cable_test.c
+> +++ b/netlink/cable_test.c
+> @@ -354,7 +354,7 @@ static int nl_cable_test_tdr_ntf_attr(struct nlattr *=
+evattr)
 > =20
->  int nl_sfeatures(struct cmd_context *ctx)
+>  		open_json_object(NULL);
+>  		print_string(PRINT_ANY, "pair", "%s ", nl_pair2txt(pair));
+> -		print_uint(PRINT_ANY, "amplitude", "Amplitude %4d\n", mV);
+> +		print_int(PRINT_ANY, "amplitude", "Amplitude %4d\n", mV);
+>  		close_json_object();
+>  		break;
+>  	}
 > --=20
-> 2.21.0
+> 2.27.0
 >=20
 
---ewf662okiwmsuvqa
+--sjysja2osr6fi74m
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl9Ck0MACgkQ538sG/LR
-dpWTigf/TIfZ+JTdubGAqa8VuVlgoMW6TGhrBlr1BSwoSvrSIWQE/meB5Vk/I69U
-EXwGcMSrNUKU6bX2XGTpRbr2ecECMy7FF1MeLShew+mzo0n+OKKLYK6GuNxt8fJ8
-fwon3HwLaJDbYCZchXudnpSRb4pdweCy15ZD4Fjh0jLR3W2lNzg9ckYEOKlLp7Zc
-eWF5pGjSO4n26jCqXpiCuMkx2rrNHiQKGerHCVqn6EuWjISxTP3PAnLW4VrIaqIU
-EBs5+lmPPifSyKMsDtrwfFSX7wRo7ZCYLDJqAT9YLYYq91BvfxuNaee/CfX7+fAi
-2ZAMY9lf5boT/v0sqle63+wjJSli3g==
-=/yZM
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl9Ck2sACgkQ538sG/LR
+dpXSZgf/ZBZlhC9CKDSpC//TPUteQmEh7Rf/y4dVjyZpmQFGqcdsY283eqbRlRew
+1r0Pf2vQxlJduVdfSb/7XE0Pb/3hSd5HGSWNL9hbBJjmytWbS+tbB5hq5SIGbXwP
+c7QzEyQKPYql1wVAC/bWb1vV6fYZM83/mC+E0O9CQLOIuM0l47OUeeRroCLRfa45
+1GVf2Yq7fTokXHqAbfzFt0r1nKHmWFsbW2Sp2C65flncZO4mXMxpgmUMnLX1wOyK
+AhgHU3fZRkUGOrRYRhNOg060Y5qwCdNP8cHzt/PI0ZMCba6WZKXInCDHTfPceHLL
+LOJyJy6BDSXOD+m4WbjvmTBONGmqWA==
+=BFfM
 -----END PGP SIGNATURE-----
 
---ewf662okiwmsuvqa--
+--sjysja2osr6fi74m--
