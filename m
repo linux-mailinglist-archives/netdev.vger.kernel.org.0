@@ -2,68 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69B4124EAA3
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 03:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66A3724EAA7
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 03:07:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726215AbgHWBAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 22 Aug 2020 21:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53778 "EHLO
+        id S1726324AbgHWBHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 22 Aug 2020 21:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725767AbgHWBAi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 21:00:38 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04921C061573;
-        Sat, 22 Aug 2020 18:00:38 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id g33so2797171pgb.4;
-        Sat, 22 Aug 2020 18:00:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5+TanUjx4aTdxJYsMsMUFdiokbTUr43+JM8xsRSY+0I=;
-        b=rx6aRGdcfWR0o7pmQXw8pzwtdAHGaRLCgCMimwem4zB0IThITtZDpAl4mr7GQM5ABv
-         l1Xav6doj4OTLnwA4WdMcHEbD88JHGA94UnRMXKLOFYYtKEK9V+IYzcoAfzLlFLkkIZY
-         c+M50sOOGpNS3D89y06E83Ur0YIMmT1+h/ZfNYjOT8pBg/wWehqtd6D4jkUFAEmJZYKB
-         XbAqvmLPMWCwlgh0+4ZmlL2fdeGndIKC6Z3FxKiJGeU60XbTnI596i7sUNUHzyJMpqz1
-         E4oshkUJ9vHj2h+CgJqIGlXgpPaoG7gDkPCmf+Y4RJZ8CyPClaU/OCI306cSS4xNrpIK
-         1l7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5+TanUjx4aTdxJYsMsMUFdiokbTUr43+JM8xsRSY+0I=;
-        b=KpjA+l49Q3eKA/KS6wGZJW9MgonSDMkDMXUQkgZKQ0YvyoJQNnj56nsB+8eP3fbWFp
-         sr6QspQVcQKxv2M8TxUJZppyH7qjThA+/xbdfRUIA9USiy7+9dGXE8e30SS5UXXGVYE/
-         gxYYn4iRuplnZnmWQ84Rh640XpJMySTi6T7qbod7423j0Ow6kiBn3Jp6NpsvVoUXL0b8
-         w4umKO9w83DzosHLCjDh7PQxOsqNJZm3EiKqbO1a/hq4XYLjgz3HAGpzgBRFTIX4bh4+
-         D2TyB2rSR2Z+yd+phTrTZotbnVf5tklTcAo85Hf20/HWEozZrUwxTtcKkhudHZpzk1+0
-         KSHw==
-X-Gm-Message-State: AOAM530AelOY28gXqNfaCwiC51puINcyUJBplQa5fjAyHqFSZrDe674W
-        hJh3s3iJokAxDxwlsFJV9w9O10uTEj5d/hA4rMc=
-X-Google-Smtp-Source: ABdhPJz1cfAq4nmjDpSF4+magItyeRjS9uG2hW1AoMBR1/nYYEIytOx/aCMpULiCkbyufqWuEEBc5A==
-X-Received: by 2002:a65:60ce:: with SMTP id r14mr6742305pgv.85.1598144436460;
-        Sat, 22 Aug 2020 18:00:36 -0700 (PDT)
-Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id x15sm6875701pfr.208.2020.08.22.18.00.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Aug 2020 18:00:35 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        gregkh@linuxfoundation.org, syzkaller-bugs@googlegroups.com,
-        syzbot+dd768a260f7358adbaf9@syzkaller.appspotmail.com,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
+        with ESMTP id S1725767AbgHWBHZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 22 Aug 2020 21:07:25 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57055C061573;
+        Sat, 22 Aug 2020 18:07:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=rsvb64LGinNZbCALCyrv8WkRC2cBW80GfSBf4aFnjSM=; b=DDVsgZ2DTr4AvA7jKr+r0tLXfZ
+        9+VqOLOhEPccUAPXjKr/hO7e6jUvBeQxFKhZfgaw18TQtnJpbaHr3BUPqEH4mCyOyHrmsrvyxPhtM
+        blHc/Io2PO3E6SZgTX++d7LtysMf3J/ukbU5a9gLV8YkmEBbrmaTl3g6xhgB1ZzCHtAw3E6nGB2ZY
+        HQVdZ3zgo9k06aPpboGk9tW7Ati/WoxgYA1aWY9qoJE9ghrWMPlM+RF1YaZR+D2J7L3I1doNQu9p1
+        /nSQ1OXxF1zj3lGbyPb68GplImrna0tYK3ZQujMDkimPo83tdgrczjfzfEgIAi/OKQpLqsae6GH9l
+        aN5J8Fdg==;
+Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1k9eTf-0005Ki-2J; Sun, 23 Aug 2020 01:07:19 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     netdev@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Gerrit Renker <gerrit@erg.abdn.ac.uk>, dccp@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] Bluetooth: fix "list_add double add" in hci_conn_complete_evt
-Date:   Sun, 23 Aug 2020 09:00:22 +0800
-Message-Id: <20200823010022.938532-1-coiby.xu@gmail.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <000000000000c57f2d05ac4c5b8e@google.com>
-References: <000000000000c57f2d05ac4c5b8e@google.com>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH] net: dccp: delete repeated words
+Date:   Sat, 22 Aug 2020 18:07:13 -0700
+Message-Id: <20200823010713.4728-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -71,40 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When two HCI_EV_CONN_COMPLETE event packets with status=0 of the same
-HCI connection are received, device_add would be called twice which
-leads to kobject_add being called twice. Thus duplicate
-(struct hci_conn *conn)->dev.kobj.entry would be inserted into
-(struct hci_conn *conn)->dev.kobj.kset->list.
+Drop duplicated words in /net/dccp/.
 
-This issue can be fixed by checking (struct hci_conn *conn)->debugfs.
-If it's not NULL, it means the HCI connection has been completed and we
-won't duplicate the work as for processing the first
-HCI_EV_CONN_COMPLETE event.
-
-Reported-and-tested-by: syzbot+dd768a260f7358adbaf9@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=dd768a260f7358adbaf9
-Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Gerrit Renker <gerrit@erg.abdn.ac.uk>
+Cc: dccp@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
 ---
- net/bluetooth/hci_event.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/dccp/ackvec.c |    2 +-
+ net/dccp/ipv4.c   |    2 +-
+ net/dccp/timer.c  |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 4b7fc430793c..1233739ce760 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -2605,6 +2605,11 @@ static void hci_conn_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
+--- linux-next-20200821.orig/net/dccp/ackvec.c
++++ linux-next-20200821/net/dccp/ackvec.c
+@@ -274,7 +274,7 @@ void dccp_ackvec_input(struct dccp_ackve
+ /**
+  * dccp_ackvec_clear_state  -  Perform house-keeping / garbage-collection
+  * This routine is called when the peer acknowledges the receipt of Ack Vectors
+- * up to and including @ackno. While based on on section A.3 of RFC 4340, here
++ * up to and including @ackno. While based on section A.3 of RFC 4340, here
+  * are additional precautions to prevent corrupted buffer state. In particular,
+  * we use tail_ackno to identify outdated records; it always marks the earliest
+  * packet of group (2) in 11.4.2.
+--- linux-next-20200821.orig/net/dccp/ipv4.c
++++ linux-next-20200821/net/dccp/ipv4.c
+@@ -731,7 +731,7 @@ int dccp_invalid_packet(struct sk_buff *
+ 		return 1;
  	}
-
- 	if (!ev->status) {
-+		if (conn->debugfs) {
-+			bt_dev_err(hdev, "The connection has been completed");
-+			goto unlock;
-+		}
-+
- 		conn->handle = __le16_to_cpu(ev->handle);
-
- 		if (conn->type == ACL_LINK) {
---
-2.28.0
-
+ 	/*
+-	 * If P.Data Offset is too too large for packet, drop packet and return
++	 * If P.Data Offset is too large for packet, drop packet and return
+ 	 */
+ 	if (!pskb_may_pull(skb, dccph_doff * sizeof(u32))) {
+ 		DCCP_WARN("P.Data Offset(%u) too large\n", dccph_doff);
+--- linux-next-20200821.orig/net/dccp/timer.c
++++ linux-next-20200821/net/dccp/timer.c
+@@ -85,7 +85,7 @@ static void dccp_retransmit_timer(struct
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 
+ 	/*
+-	 * More than than 4MSL (8 minutes) has passed, a RESET(aborted) was
++	 * More than 4MSL (8 minutes) has passed, a RESET(aborted) was
+ 	 * sent, no need to retransmit, this sock is dead.
+ 	 */
+ 	if (dccp_write_timeout(sk))
