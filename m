@@ -2,97 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58BF724EE07
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 17:54:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA53924EE09
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 17:55:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727963AbgHWPyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Aug 2020 11:54:11 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60778 "EHLO mx2.suse.de"
+        id S1727986AbgHWPzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Aug 2020 11:55:15 -0400
+Received: from mx2.suse.de ([195.135.220.15]:32916 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726839AbgHWPyK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 23 Aug 2020 11:54:10 -0400
+        id S1726839AbgHWPzP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 Aug 2020 11:55:15 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 735EEAD68;
-        Sun, 23 Aug 2020 15:54:37 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id E757BAB3E;
+        Sun, 23 Aug 2020 15:55:42 +0000 (UTC)
 Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id B4D856030D; Sun, 23 Aug 2020 17:54:07 +0200 (CEST)
-Date:   Sun, 23 Aug 2020 17:54:07 +0200
+        id 65D616030D; Sun, 23 Aug 2020 17:55:13 +0200 (CEST)
+Date:   Sun, 23 Aug 2020 17:55:13 +0200
 From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Adrian Pop <popadrian1996@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@mellanox.com, vadimp@mellanox.com, andrew@lunn.ch,
-        mlxsw@mellanox.com, idosch@mellanox.com, roopa@nvidia.com,
-        paschmidt@nvidia.com
-Subject: Re: [PATCH ethtool v5] Add QSFP-DD support
-Message-ID: <20200823155407.i3cy6dpys2nvbzsh@lion.mk-sys.cz>
-References: <20200813150826.16680-1-popadrian1996@gmail.com>
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool 1/2] netlink: Fix the condition for displaying
+ actual changes
+Message-ID: <20200823155513.umnbppvbcpirnyrp@lion.mk-sys.cz>
+References: <20200814131745.32215-1-maximmi@mellanox.com>
+ <20200814131745.32215-2-maximmi@mellanox.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="xwlld7pcdclihdmc"
+        protocol="application/pgp-signature"; boundary="jokywthhdp25na45"
 Content-Disposition: inline
-In-Reply-To: <20200813150826.16680-1-popadrian1996@gmail.com>
+In-Reply-To: <20200814131745.32215-2-maximmi@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---xwlld7pcdclihdmc
+--jokywthhdp25na45
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 13, 2020 at 06:08:26PM +0300, Adrian Pop wrote:
-> The Common Management Interface Specification (CMIS) for QSFP-DD shares
-> some similarities with other form factors such as QSFP or SFP, but due to
-> the fact that the module memory map is different, the current ethtool
-> version is not able to provide relevant information about an interface.
+On Fri, Aug 14, 2020 at 04:17:44PM +0300, Maxim Mikityanskiy wrote:
+> This comment in the code:
 >=20
-> This patch adds QSFP-DD support to ethtool. The changes are similar to
-> the ones already existing in qsfp.c, but customized to use the memory
-> addresses and logic as defined in the specifications document.
+>     /* result is not exactly as requested, show differences */
 >=20
-> Several functions from qsfp.c could be reused, so an additional parameter
-> was added to each and the functions were moved to sff-common.c.
+> implies that the "Actual changes" output should be displayed only if the
+> result is not as requested, which matches the legacy ethtool behavior.
+> However, in fact, ethtool-netlink displays "actual changes" even when
+> the changes are expected (e.g., one bit was requested, and it was
+> changed as requested).
 >=20
-> Diff from v1:
-> * Report cable length in meters instead of kilometers
-> * Fix bad value for QSFP_DD_DATE_VENDOR_LOT_OFFSET
-> * Fix initialization for struct qsfp_dd_diags
-> * Remove unrelated whitespace cleanups in qsfp.c and Makefile.am
+> This commit fixes the condition above to make the behavior match the
+> description in the comment and the behavior of the legacy ethtool. The
+> new condition excludes the req_mask bits from active_mask to avoid
+> reacting on bit changes that we asked for. The new condition now
+> matches the ifs in the loop above that print "[requested on/off]" and
+> "[not requested]".
 >=20
-> Diff from v2:
-> * Remove functions assuming the existance of page 0x10 and 0x11
-> * Remove structs and constants related to the page 0x10 and 0x11
->=20
-> Diff from v3:
-> * Added missing Signed-off-by and Tested-by tags
->=20
-> Diff from v4:
-> * Fix whitespace formatting problems
->=20
-> Signed-off-by: Adrian Pop <popadrian1996@gmail.com>
-> Tested-by: Ido Schimmel <idosch@mellanox.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 
 Applied, thank you.
 
 Michal
 
---xwlld7pcdclihdmc
+> ---
+>  netlink/features.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/netlink/features.c b/netlink/features.c
+> index 8b5b858..133529d 100644
+> --- a/netlink/features.c
+> +++ b/netlink/features.c
+> @@ -413,7 +413,7 @@ static void show_feature_changes(struct nl_context *n=
+lctx,
+> =20
+>  	diff =3D false;
+>  	for (i =3D 0; i < words; i++)
+> -		if (wanted_mask[i] || active_mask[i])
+> +		if (wanted_mask[i] || (active_mask[i] & ~sfctx->req_mask[i]))
+>  			diff =3D true;
+>  	if (!diff)
+>  		return;
+> --=20
+> 2.21.0
+>=20
+
+--jokywthhdp25na45
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl9CkRoACgkQ538sG/LR
-dpXxzwgAyHO8oE0jgibb9ZvLPJGr1lni7ukLHtJNeEHwUqIcy9HpWzoO93GdB99Z
-FNb6L7y4ZbOAuif+W7UEDIxo8p43OepyGkJHhyw+Xr6O5hn6RhKK+pQu13m0Vj8n
-Sc4gKh4DriFRcvUPGKJNHzJrvgk9OEa6NRZXQ36cXLQccUpLowUpqlg7CANOeXLx
-o6mnynSwWU4js1E+H5vewgHdTaoxfKi0/DM5EnlyZ9hq8jXUw/6P/KcrqBZW3ngd
-RnpE1wwURIvNcpnIFseVkS/M3Tu4jQEVff1bJknb7+p4tgNz33Zw1dI96uA6hfMu
-yTCRQH6KGRW5cx8J2VWxTrMK3oHe5Q==
-=HzGL
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl9CkVwACgkQ538sG/LR
+dpWxIgf/RJ4skFwdl510ZeSz6uNjEk2cWj7j5LiEq3GCtQpZbsyezYfk9vb/7A4E
+j2cfUAe+heYNhZ1k6Pae7JLgu4XZcoefecKyMpIvaW725MnEvdDejTn6skJij/XU
+XAU0D6ve9ualPERTCiRHvyoWUXGlNau2Av4FTqh2h2MyYU+O1IDLv1OWPfrkY5YA
+AFQcbr2sS9p+yvXIPRX0R3w/CfkREXeGVHLqP8O6BnKLzXr+857zYUqIR2e4jUKK
+rQUVG9yw6+m1HNCxmmWDrE6fdRW85WrEqIZfYqhkuzP29IRc33s7n0Q+jWQca2Ir
+Qnc9ijmQFIGgFwluORcaHG0Zml0OaA==
+=NmB+
 -----END PGP SIGNATURE-----
 
---xwlld7pcdclihdmc--
+--jokywthhdp25na45--
