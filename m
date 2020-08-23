@@ -2,118 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3498824EF75
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 21:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93CCF24EF80
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 21:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726704AbgHWTbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Aug 2020 15:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54776 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725885AbgHWTbE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 15:31:04 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04CBBC061573;
-        Sun, 23 Aug 2020 12:31:03 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id bh1so3166524plb.12;
-        Sun, 23 Aug 2020 12:31:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=weNWHTNBlFYVLfVtCUahgwUBiIrruSXZn6kHTI1JUaY=;
-        b=V77Ac81FIKwovH3RsFHYw6KqcGVROAhAK7uQOVOywTRUgnyCtheBeTYlD1U+XRbKHB
-         G/ioAl4eu40NyeaXo8Nl33FsxQSPIUvhrlHT2SLxOszsMe0ByUA9Szm5Jbg9ZuS4b0uy
-         ZHJCNEJV1fLvjRhxlxSMq89sQ7MHRGM6yCJDrAa3t8rrnoQ8QIg5eezpRxC/UgdtYppA
-         PoDfL/7KmBV3kKXseyYll1UVhOqEWjq8reufqJ6BX1Ou5u9bvkAQNSDgr0FJxnig6WZN
-         q3am9o04NOYfbyLNjZlXhDpjGRu+YHnYJCuR1Y2E3KPVC9A4WB3DGhfailImR7zwA9Bg
-         92Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=weNWHTNBlFYVLfVtCUahgwUBiIrruSXZn6kHTI1JUaY=;
-        b=dL7Y99KWwtreoa0EbxegI5lw84Tz9qq0mTBBL9qZzs7KN5fh4AFKlon3yb4cCPXIRR
-         qKwNs/skHySolqOICLvUpIe9ijEyLuRxKbSOgZOStwCV9E0Q3eArL2gx2J82ln00WuL7
-         ZapovAL8aMUIVY4S/SIf9GngKvi7m+Gz9//4MRurisWMyPIXnci7xsm+wIAludVRRbMl
-         Y/6W30N34hvKhtsaOIVJCcNUhy3Nb55GtLvaigZ1CyuDPJrWg381/IkTUq5KHE/FIV7F
-         HBSgYnKmTDEC7o+sOYrQBNYvFxcIeQdpsa+1nqfCQX2JRhGZY5Rh65eROF7DehXIJsmU
-         ZVpw==
-X-Gm-Message-State: AOAM53146SF6QFu8L4gDJqFx4SMoHMwsegcqRIC/LlXXby7nJaNNPeSY
-        zEJnATl+VI/WfxBf0J0KgxE=
-X-Google-Smtp-Source: ABdhPJwwq1r/SRRcR3NwII2uDcDioNwrJebgxM9d75uHBbsTp1sJOileU4MFGNBOgcn4iKBR6eyIzA==
-X-Received: by 2002:a17:902:8bcb:: with SMTP id r11mr1547106plo.65.1598211063471;
-        Sun, 23 Aug 2020 12:31:03 -0700 (PDT)
-Received: from localhost.localdomain ([49.207.212.93])
-        by smtp.gmail.com with ESMTPSA id mp1sm7804624pjb.27.2020.08.23.12.30.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Aug 2020 12:31:02 -0700 (PDT)
-From:   Sumera Priyadarsini <sylphrenadin@gmail.com>
-To:     davem@davemloft.net
-Cc:     Julia.Lawall@lip6.fr, andrew@lunn.ch, sean.wang@mediatek.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        matthias.bgg@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Sumera Priyadarsini <sylphrenadin@gmail.com>
-Subject: [PATCH V3] net: dsa: Add of_node_put() before break and return statements
-Date:   Mon, 24 Aug 2020 01:00:54 +0530
-Message-Id: <20200823193054.29336-1-sylphrenadin@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726391AbgHWTkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Aug 2020 15:40:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:50572 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725996AbgHWTkQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 Aug 2020 15:40:16 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id B12D0AEB1;
+        Sun, 23 Aug 2020 19:40:44 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 199266030D; Sun, 23 Aug 2020 21:40:15 +0200 (CEST)
+Message-Id: <cover.1598210544.git.mkubecek@suse.cz>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH ethtool v2 0/9] compiler warnings cleanup, part 2
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>
+Date:   Sun, 23 Aug 2020 21:40:15 +0200 (CEST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Every iteration of for_each_child_of_node() decrements
-the reference count of the previous node, however when control
-is transferred from the middle of the loop, as in the case of
-a return or break or goto, there is no decrement thus ultimately
-resulting in a memory leak.
+Two compiler warnings still appear when compiling current source:
+comparison between signed and unsigned values and missing struct member
+initializations.
 
-Fix a potential memory leak in mt7530.c by inserting of_node_put()
-before the break and return statements.
+The former are mostly handled by declaring variables (loop iterators,
+mostly) as unsigned, only few required an explicit cast. The latter are
+handled by using named field initializers; in link_mode_info[] array,
+helper macros are also used to make code easier to read and check.
 
-Issue found with Coccinelle.
+As the final step, add "-Wextra" to default CFLAGS to catch any future
+warnings as early as possible.
 
----
-Changes in v2:
-	Add another of_node_put() in for_each_child_of_node() as pointed
-out by Andrew.
+changes between v1 and v2:
+- use unsigned int for feature_flags[] (suggested by Andrew Lunn, patch 1)
+- use unsigned int for argc counters and split this change out (suggested
+  by Andrew Lunn, patches 4 and 5)
+- add missing argc underflow check in do_perqueue() (patch 3)
 
-Changes in v3:
-	- Correct syntax errors
-	- Modify commit message
+Michal Kubecek (9):
+  netlink: get rid of signed/unsigned comparison warnings
+  ioctl: check presence of eeprom length argument properly
+  ioctl: prevent argc underflow in do_perqueue()
+  ioctl: make argc counters unsigned
+  ioctl: get rid of signed/unsigned comparison warnings
+  get rid of signed/unsigned comparison warnings in register dump
+    parsers
+  settings: simplify link_mode_info[] initializers
+  ioctl: convert cmdline_info arrays to named initializers
+  build: add -Wextra to default CFLAGS
 
----
+ Makefile.am        |   2 +-
+ dsa.c              |   2 +-
+ ethtool.c          | 447 ++++++++++++++++++++++++++++++++++-----------
+ fec.c              |   2 +-
+ ibm_emac.c         |   2 +-
+ internal.h         |   2 +-
+ marvell.c          |   2 +-
+ natsemi.c          |   2 +-
+ netlink/features.c |   6 +-
+ netlink/netlink.c  |   4 +-
+ netlink/netlink.h  |   2 +-
+ netlink/nlsock.c   |   2 +-
+ netlink/parser.c   |   2 +-
+ netlink/settings.c | 242 +++++++++---------------
+ rxclass.c          |   8 +-
+ sfpdiag.c          |   2 +-
+ tg3.c              |   4 +-
+ 17 files changed, 448 insertions(+), 285 deletions(-)
 
-Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
-
-Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
----
- drivers/net/dsa/mt7530.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 8dcb8a49ab67..4b4701c69fe1 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1326,14 +1326,17 @@ mt7530_setup(struct dsa_switch *ds)
- 
- 			if (phy_node->parent == priv->dev->of_node->parent) {
- 				ret = of_get_phy_mode(mac_np, &interface);
--				if (ret && ret != -ENODEV)
-+				if (ret && ret != -ENODEV) {
-+					of_node_put(mac_np);
- 					return ret;
-+				}
- 				id = of_mdio_parse_addr(ds->dev, phy_node);
- 				if (id == 0)
- 					priv->p5_intf_sel = P5_INTF_SEL_PHY_P0;
- 				if (id == 4)
- 					priv->p5_intf_sel = P5_INTF_SEL_PHY_P4;
- 			}
-+			of_node_put(mac_np);
- 			of_node_put(phy_node);
- 			break;
- 		}
 -- 
-2.17.1
+2.28.0
 
