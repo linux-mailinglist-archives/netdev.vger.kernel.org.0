@@ -2,70 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AEC5B24EDE5
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 17:29:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 821BA24EDF0
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 17:42:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727097AbgHWP2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Aug 2020 11:28:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45702 "EHLO
+        id S1727769AbgHWPmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Aug 2020 11:42:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726632AbgHWP2t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 11:28:49 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E976C061573
-        for <netdev@vger.kernel.org>; Sun, 23 Aug 2020 08:28:48 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id v9so6878483ljk.6
-        for <netdev@vger.kernel.org>; Sun, 23 Aug 2020 08:28:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=0i/vx9dNh0duIZo+YYHyl28QUKMLxr//hpEhD6kAgqs=;
-        b=LjjwogIYDeFUTHNbp4QMu4XgZ3F4VsaZ7Vn3iUVW0uslddwXpg5K3ze0E6oe4ojuqQ
-         1bdXLBBI224W2qFCm/ojTpiEoyZoKGnkbrc2FmerfxRcZ6BVkm2hxrOgc6fXDDgZpLR8
-         EaBDN4gZwCBDltGjAVNSk9alMpNx6ASRoQeM9TsyYAlvMLuoUnX865BcbPggHVKYxvN/
-         jWtPAc24w5IRliyFQ9kDu8B/w4B0dAoU7LHvQc/ZWHTXPLdTFnagTcmZNaOspM3RyIlo
-         RQKEOitqiFJRPOPKICrrPsTLpaRTnLaLQy9bzKP9cMPgGz8wSm4VDoY1UmXD7bDFFwDa
-         vtCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=0i/vx9dNh0duIZo+YYHyl28QUKMLxr//hpEhD6kAgqs=;
-        b=KrSFaBvVbzMVcQJs5sQlq5JX+AcDNtR1oEG0tgaOsJAmOP+COxJZFLTIsMas7hfpGX
-         ffplfAKRPSd8RJuYtEr/K83ldmsJz3S3JebjMkOWSd3Bfk5oowQMC0geUgCTmdOXB8sB
-         64qn9H8lhUnVAU/m8fm+4zzrLxcaZtde073qxp0vJLDbemuSuhWOFPy1wQUuyVvMaTMB
-         zgRPhCBB3mDlk4vpUciEglQZscupIsv7ZPyV3AHBDed6uClZMFB67ZD8T6UuO4OMzGZY
-         psf6Ju6BK+MCv8CRCy46NDyJ5mptv7sDzhMxPb2kHm214lWO6QTzqPk9Lk3ilsclKzli
-         eReg==
-X-Gm-Message-State: AOAM5308MuXC53HjqR0CrTN8fh+LEiI85vDkm7V+Wy/9BYDOopxxG6fj
-        +bbEFzMWWw/2zP/HJqLY1x9Z/Pwe3tIbq+Vjj2vPxnoftg==
-X-Google-Smtp-Source: ABdhPJwUwLbit0CVmGr4/iOy4oMlhcSATLyCptnRsZP5QAAiBxld5gaWNEqf474rK4p5WQqa6FkvjYILwIe/SXUGkVY=
-X-Received: by 2002:a2e:983:: with SMTP id 125mr858881ljj.32.1598196524777;
- Sun, 23 Aug 2020 08:28:44 -0700 (PDT)
+        with ESMTP id S1726836AbgHWPmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 11:42:49 -0400
+Received: from mail.aperture-lab.de (mail.aperture-lab.de [IPv6:2a01:4f8:171:314c::100:a1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEC8C061573
+        for <netdev@vger.kernel.org>; Sun, 23 Aug 2020 08:42:48 -0700 (PDT)
+Date:   Sun, 23 Aug 2020 17:42:39 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue; s=2018;
+        t=1598197362;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WEBQve+/dxCnRS08yIZckUq5RKG1E82t8UUYVFRllgc=;
+        b=ILCJaqwrUUwtXcXASdqvU6bwRTjjI3O76EQTyA2Ut7wHL7rzBNanxBPD43cmr6N+FMMl/M
+        LLmpcEVcp7ajZG5uAxQrDVbwYmN6eNklcWR8N+BvtWN3xv0fYtYTuc+dzZBQm1XNZ2YEDt
+        rNhPI9XIvcUmME120hMHI2jRxrdQ+xG/kx4C6fmBnrT1WxcLrq0QWDts5XFenJ63TitN+f
+        v7Hg8issHGdvvrhScqo44ZgXqPvN3Lfz7XmLLYEIxWdJQ63yeejqI+buVjSXJ4wHW6qDo3
+        88+eeB6t5dSz+6fPPqvG8rOKJiiMCy7Hy9fXcuwR20bwLPmNsmTQ/rJ9UAJ9RQ==
+From:   Linus =?utf-8?Q?L=C3=BCssing?= <linus.luessing@c0d3.blue>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        bridge@lists.linux-foundation.org, gluon@luebeck.freifunk.net,
+        openwrt-devel@lists.openwrt.org,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [Bridge] [RFC PATCH net-next] bridge: Implement MLD Querier
+ wake-up calls / Android bug workaround
+Message-ID: <20200823154239.GA2302@otheros>
+References: <20200816202424.3526-1-linus.luessing@c0d3.blue>
+ <20200816150813.0b998607@hermes.lan>
 MIME-Version: 1.0
-From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
-Date:   Sun, 23 Aug 2020 20:58:33 +0530
-Message-ID: <CAD=jOEY=8T3-USi63hy47BZKfTYcsUw-s-jAc3xi9ksk-je+XA@mail.gmail.com>
-Subject: Regarding possible bug in net/wan/x25_asy.c
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, xie.he.0141@gmail.com
-Cc:     andrianov <andrianov@ispras.ru>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200816150813.0b998607@hermes.lan>
+Authentication-Results: ORIGINATING;
+        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Aug 16, 2020 at 03:08:13PM -0700, Stephen Hemminger wrote:
+> Rather than adding yet another feature to the bridge, could this hack be done by
+> having a BPF hook? or netfilter module?
 
-I have the following doubt:
+Hi Stephen,
 
-sl->xhead is modified in both x25_asy_change_mtu() and
-x25_asy_write_wakeup(). However, sl->lock is not held in
-x25_asy_write_wakeup(). So, I am not sure if it is indeed possible to
-have a race between these two functions. If it is possible that these
-two functions can execute in parallel then the lock should be held in
-x25_asy_write_wakeup() as well. Please let me know if this race is
-possible.
+Thanks for the constructive feedback and suggestions!
 
-Thanks and regards,
-Madhuparna
+The netfilter approach sounds tempting. However as far as I know
+OpenWrt's firewall has no easy layer 2 netfilter integration yet.
+So it has default layer 3 netfilter rules, but not for layer 2.
+
+Ideally I'd want to work towards a solution where things "just
+work as expected" when a user enables "IGMP Snooping" in the UI.
+I could hack the netfilter rules into netifd, the OpenWrt network
+manager, when it configures the bridge. But not sure if the
+OpenWrt maintainers would like that...
+
+Any preferences from the OpenWrt maintainers side?
+
+Regards, Linus
+
+
+PS: With BPF I don't have that much experience yet. I would need
+to write a daemon which would parse the MLD packets and would
+fetch the FDB via netlink, right? If so, sounds like that would
+need way more than 300 lines of code. And that would need to be
+maintained within OpenWrt, right?
