@@ -2,30 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F19BB24EBC3
-	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 08:12:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55AE824EBCD
+	for <lists+netdev@lfdr.de>; Sun, 23 Aug 2020 08:26:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727053AbgHWGMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Aug 2020 02:12:02 -0400
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:57285 "EHLO
+        id S1727813AbgHWG0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Aug 2020 02:26:50 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:20429 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726371AbgHWGMB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 02:12:01 -0400
+        with ESMTP id S1725372AbgHWG0u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 02:26:50 -0400
 Received: from localhost.localdomain ([93.22.133.217])
         by mwinf5d33 with ME
-        id JuBt230054hbG4l03uBtgt; Sun, 23 Aug 2020 08:11:57 +0200
+        id JuSk230054hbG4l03uSlRZ; Sun, 23 Aug 2020 08:26:46 +0200
 X-ME-Helo: localhost.localdomain
 X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 23 Aug 2020 08:11:57 +0200
+X-ME-Date: Sun, 23 Aug 2020 08:26:46 +0200
 X-ME-IP: 93.22.133.217
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     dave@thedillows.org, davem@davemloft.net, kuba@kernel.org
+To:     ionut@badula.org, davem@davemloft.net, kuba@kernel.org,
+        snelson@pensando.io, leon@kernel.org, hkallweit1@gmail.com,
+        vaibhavgupta40@gmail.com, mst@redhat.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel-janitors@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] typhoon: switch from 'pci_' to 'dma_' API
-Date:   Sun, 23 Aug 2020 08:11:50 +0200
-Message-Id: <20200823061150.162135-1-christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] starfire: switch from 'pci_' to 'dma_' API
+Date:   Sun, 23 Aug 2020 08:26:41 +0200
+Message-Id: <20200823062641.163283-1-christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -40,18 +42,12 @@ The patch has been generated with the coccinelle script below and has been
 hand modified to replace GFP_ with a correct flag.
 It has been compile tested.
 
-When memory is allocated in 'typhoon_init_one()' GFP_KERNEL can be used
-because it is a probe function and no lock is acquired.
-
-When memory is allocated in 'typhoon_download_firmware()', GFP_ATOMIC
-must be used because it can be called from a .ndo_tx_timeout function.
+When memory is allocated in 'netdev_open()', GFP_ATOMIC must be used
+because it can be called from a .ndo_tx_timeout function.
 So this function can be called with the 'netif_tx_lock' acquired.
 The call chain is:
-  --> typhoon_tx_timeout                 (.ndo_tx_timeout function)
-    --> typhoon_start_runtime
-      --> typhoon_download_firmware
-
-While at is, update some comments accordingly.
+  --> tx_timeout                 (.ndo_tx_timeout function)
+    --> netdev_open
 
 
 @@
@@ -175,174 +171,185 @@ Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 If needed, see post from Christoph Hellwig on the kernel-janitors ML:
    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
 ---
- drivers/net/ethernet/3com/typhoon.c | 61 ++++++++++++++---------------
- 1 file changed, 30 insertions(+), 31 deletions(-)
+ drivers/net/ethernet/adaptec/starfire.c | 77 ++++++++++++++-----------
+ 1 file changed, 42 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/net/ethernet/3com/typhoon.c b/drivers/net/ethernet/3com/typhoon.c
-index d3b30bacc94e..f11474cac59f 100644
---- a/drivers/net/ethernet/3com/typhoon.c
-+++ b/drivers/net/ethernet/3com/typhoon.c
-@@ -789,8 +789,8 @@ typhoon_start_tx(struct sk_buff *skb, struct net_device *dev)
- 	 * it with zeros to ETH_ZLEN for us.
- 	 */
- 	if (skb_shinfo(skb)->nr_frags == 0) {
--		skb_dma = pci_map_single(tp->tx_pdev, skb->data, skb->len,
--				       PCI_DMA_TODEVICE);
-+		skb_dma = dma_map_single(&tp->tx_pdev->dev, skb->data,
-+					 skb->len, DMA_TO_DEVICE);
- 		txd->flags = TYPHOON_FRAG_DESC | TYPHOON_DESC_VALID;
- 		txd->len = cpu_to_le16(skb->len);
- 		txd->frag.addr = cpu_to_le32(skb_dma);
-@@ -800,8 +800,8 @@ typhoon_start_tx(struct sk_buff *skb, struct net_device *dev)
- 		int i, len;
+diff --git a/drivers/net/ethernet/adaptec/starfire.c b/drivers/net/ethernet/adaptec/starfire.c
+index ba0055bb1614..abbb728c49cc 100644
+--- a/drivers/net/ethernet/adaptec/starfire.c
++++ b/drivers/net/ethernet/adaptec/starfire.c
+@@ -886,7 +886,9 @@ static int netdev_open(struct net_device *dev)
+ 		tx_ring_size = ((sizeof(starfire_tx_desc) * TX_RING_SIZE + QUEUE_ALIGN - 1) / QUEUE_ALIGN) * QUEUE_ALIGN;
+ 		rx_ring_size = sizeof(struct starfire_rx_desc) * RX_RING_SIZE;
+ 		np->queue_mem_size = tx_done_q_size + rx_done_q_size + tx_ring_size + rx_ring_size;
+-		np->queue_mem = pci_alloc_consistent(np->pci_dev, np->queue_mem_size, &np->queue_mem_dma);
++		np->queue_mem = dma_alloc_coherent(&np->pci_dev->dev,
++						   np->queue_mem_size,
++						   &np->queue_mem_dma, GFP_ATOMIC);
+ 		if (np->queue_mem == NULL) {
+ 			free_irq(irq, dev);
+ 			return -ENOMEM;
+@@ -1136,9 +1138,11 @@ static void init_ring(struct net_device *dev)
+ 		np->rx_info[i].skb = skb;
+ 		if (skb == NULL)
+ 			break;
+-		np->rx_info[i].mapping = pci_map_single(np->pci_dev, skb->data, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
+-		if (pci_dma_mapping_error(np->pci_dev,
+-					  np->rx_info[i].mapping)) {
++		np->rx_info[i].mapping = dma_map_single(&np->pci_dev->dev,
++							skb->data,
++							np->rx_buf_sz,
++							DMA_FROM_DEVICE);
++		if (dma_mapping_error(&np->pci_dev->dev, np->rx_info[i].mapping)) {
+ 			dev_kfree_skb(skb);
+ 			np->rx_info[i].skb = NULL;
+ 			break;
+@@ -1217,18 +1221,19 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
+ 			status |= skb_first_frag_len(skb) | (skb_num_frags(skb) << 16);
  
- 		len = skb_headlen(skb);
--		skb_dma = pci_map_single(tp->tx_pdev, skb->data, len,
--				         PCI_DMA_TODEVICE);
-+		skb_dma = dma_map_single(&tp->tx_pdev->dev, skb->data, len,
-+					 DMA_TO_DEVICE);
- 		txd->flags = TYPHOON_FRAG_DESC | TYPHOON_DESC_VALID;
- 		txd->len = cpu_to_le16(len);
- 		txd->frag.addr = cpu_to_le32(skb_dma);
-@@ -818,8 +818,8 @@ typhoon_start_tx(struct sk_buff *skb, struct net_device *dev)
- 
- 			len = skb_frag_size(frag);
- 			frag_addr = skb_frag_address(frag);
--			skb_dma = pci_map_single(tp->tx_pdev, frag_addr, len,
--					 PCI_DMA_TODEVICE);
-+			skb_dma = dma_map_single(&tp->tx_pdev->dev, frag_addr,
-+						 len, DMA_TO_DEVICE);
- 			txd->flags = TYPHOON_FRAG_DESC | TYPHOON_DESC_VALID;
- 			txd->len = cpu_to_le16(len);
- 			txd->frag.addr = cpu_to_le32(skb_dma);
-@@ -1349,12 +1349,12 @@ typhoon_download_firmware(struct typhoon *tp)
- 	image_data = typhoon_fw->data;
- 	fHdr = (struct typhoon_file_header *) image_data;
- 
--	/* Cannot just map the firmware image using pci_map_single() as
-+	/* Cannot just map the firmware image using dma_map_single() as
- 	 * the firmware is vmalloc()'d and may not be physically contiguous,
--	 * so we allocate some consistent memory to copy the sections into.
-+	 * so we allocate some coherent memory to copy the sections into.
- 	 */
- 	err = -ENOMEM;
--	dpage = pci_alloc_consistent(pdev, PAGE_SIZE, &dpage_dma);
-+	dpage = dma_alloc_coherent(&pdev->dev, PAGE_SIZE, &dpage_dma, GFP_ATOMIC);
- 	if (!dpage) {
- 		netdev_err(tp->dev, "no DMA mem for firmware\n");
- 		goto err_out;
-@@ -1460,7 +1460,7 @@ typhoon_download_firmware(struct typhoon *tp)
- 	iowrite32(irqMasked, ioaddr + TYPHOON_REG_INTR_MASK);
- 	iowrite32(irqEnabled, ioaddr + TYPHOON_REG_INTR_ENABLE);
- 
--	pci_free_consistent(pdev, PAGE_SIZE, dpage, dpage_dma);
-+	dma_free_coherent(&pdev->dev, PAGE_SIZE, dpage, dpage_dma);
- 
- err_out:
- 	return err;
-@@ -1527,8 +1527,8 @@ typhoon_clean_tx(struct typhoon *tp, struct transmit_ring *txRing,
- 			 */
- 			skb_dma = (dma_addr_t) le32_to_cpu(tx->frag.addr);
- 			dma_len = le16_to_cpu(tx->len);
--			pci_unmap_single(tp->pdev, skb_dma, dma_len,
--				       PCI_DMA_TODEVICE);
-+			dma_unmap_single(&tp->pdev->dev, skb_dma, dma_len,
-+					 DMA_TO_DEVICE);
- 		}
- 
- 		tx->flags = 0;
-@@ -1609,8 +1609,8 @@ typhoon_alloc_rx_skb(struct typhoon *tp, u32 idx)
- 	skb_reserve(skb, 2);
- #endif
- 
--	dma_addr = pci_map_single(tp->pdev, skb->data,
--				  PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-+	dma_addr = dma_map_single(&tp->pdev->dev, skb->data, PKT_BUF_SZ,
-+				  DMA_FROM_DEVICE);
- 
- 	/* Since no card does 64 bit DAC, the high bits will never
- 	 * change from zero.
-@@ -1665,20 +1665,19 @@ typhoon_rx(struct typhoon *tp, struct basic_ring *rxRing, volatile __le32 * read
- 		if (pkt_len < rx_copybreak &&
- 		   (new_skb = netdev_alloc_skb(tp->dev, pkt_len + 2)) != NULL) {
- 			skb_reserve(new_skb, 2);
--			pci_dma_sync_single_for_cpu(tp->pdev, dma_addr,
--						    PKT_BUF_SZ,
--						    PCI_DMA_FROMDEVICE);
-+			dma_sync_single_for_cpu(&tp->pdev->dev, dma_addr,
-+						PKT_BUF_SZ, DMA_FROM_DEVICE);
- 			skb_copy_to_linear_data(new_skb, skb->data, pkt_len);
--			pci_dma_sync_single_for_device(tp->pdev, dma_addr,
--						       PKT_BUF_SZ,
--						       PCI_DMA_FROMDEVICE);
-+			dma_sync_single_for_device(&tp->pdev->dev, dma_addr,
-+						   PKT_BUF_SZ,
-+						   DMA_FROM_DEVICE);
- 			skb_put(new_skb, pkt_len);
- 			typhoon_recycle_rx_skb(tp, idx);
+ 			np->tx_info[entry].mapping =
+-				pci_map_single(np->pci_dev, skb->data, skb_first_frag_len(skb), PCI_DMA_TODEVICE);
++				dma_map_single(&np->pci_dev->dev, skb->data,
++					       skb_first_frag_len(skb),
++					       DMA_TO_DEVICE);
  		} else {
- 			new_skb = skb;
- 			skb_put(new_skb, pkt_len);
--			pci_unmap_single(tp->pdev, dma_addr, PKT_BUF_SZ,
--				       PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&tp->pdev->dev, dma_addr, PKT_BUF_SZ,
-+					 DMA_FROM_DEVICE);
- 			typhoon_alloc_rx_skb(tp, idx);
+ 			const skb_frag_t *this_frag = &skb_shinfo(skb)->frags[i - 1];
+ 			status |= skb_frag_size(this_frag);
+ 			np->tx_info[entry].mapping =
+-				pci_map_single(np->pci_dev,
++				dma_map_single(&np->pci_dev->dev,
+ 					       skb_frag_address(this_frag),
+ 					       skb_frag_size(this_frag),
+-					       PCI_DMA_TODEVICE);
++					       DMA_TO_DEVICE);
  		}
- 		new_skb->protocol = eth_type_trans(new_skb, tp->dev);
-@@ -1792,8 +1791,8 @@ typhoon_free_rx_rings(struct typhoon *tp)
- 	for (i = 0; i < RXENT_ENTRIES; i++) {
- 		struct rxbuff_ent *rxb = &tp->rxbuffers[i];
- 		if (rxb->skb) {
--			pci_unmap_single(tp->pdev, rxb->dma_addr, PKT_BUF_SZ,
--				       PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&tp->pdev->dev, rxb->dma_addr,
-+					 PKT_BUF_SZ, DMA_FROM_DEVICE);
- 			dev_kfree_skb(rxb->skb);
- 			rxb->skb = NULL;
+-		if (pci_dma_mapping_error(np->pci_dev,
+-					  np->tx_info[entry].mapping)) {
++		if (dma_mapping_error(&np->pci_dev->dev, np->tx_info[entry].mapping)) {
+ 			dev->stats.tx_dropped++;
+ 			goto err_out;
  		}
-@@ -2306,7 +2305,7 @@ typhoon_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto error_out_disable;
+@@ -1271,18 +1276,16 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
+ 	entry = prev_tx % TX_RING_SIZE;
+ 	np->tx_info[entry].skb = NULL;
+ 	if (i > 0) {
+-		pci_unmap_single(np->pci_dev,
++		dma_unmap_single(&np->pci_dev->dev,
+ 				 np->tx_info[entry].mapping,
+-				 skb_first_frag_len(skb),
+-				 PCI_DMA_TODEVICE);
++				 skb_first_frag_len(skb), DMA_TO_DEVICE);
+ 		np->tx_info[entry].mapping = 0;
+ 		entry = (entry + np->tx_info[entry].used_slots) % TX_RING_SIZE;
+ 		for (j = 1; j < i; j++) {
+-			pci_unmap_single(np->pci_dev,
++			dma_unmap_single(&np->pci_dev->dev,
+ 					 np->tx_info[entry].mapping,
+-					 skb_frag_size(
+-						&skb_shinfo(skb)->frags[j-1]),
+-					 PCI_DMA_TODEVICE);
++					 skb_frag_size(&skb_shinfo(skb)->frags[j - 1]),
++					 DMA_TO_DEVICE);
+ 			entry++;
+ 		}
  	}
+@@ -1356,20 +1359,20 @@ static irqreturn_t intr_handler(int irq, void *dev_instance)
+ 				u16 entry = (tx_status & 0x7fff) / sizeof(starfire_tx_desc);
+ 				struct sk_buff *skb = np->tx_info[entry].skb;
+ 				np->tx_info[entry].skb = NULL;
+-				pci_unmap_single(np->pci_dev,
++				dma_unmap_single(&np->pci_dev->dev,
+ 						 np->tx_info[entry].mapping,
+ 						 skb_first_frag_len(skb),
+-						 PCI_DMA_TODEVICE);
++						 DMA_TO_DEVICE);
+ 				np->tx_info[entry].mapping = 0;
+ 				np->dirty_tx += np->tx_info[entry].used_slots;
+ 				entry = (entry + np->tx_info[entry].used_slots) % TX_RING_SIZE;
+ 				{
+ 					int i;
+ 					for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
+-						pci_unmap_single(np->pci_dev,
++						dma_unmap_single(&np->pci_dev->dev,
+ 								 np->tx_info[entry].mapping,
+ 								 skb_frag_size(&skb_shinfo(skb)->frags[i]),
+-								 PCI_DMA_TODEVICE);
++								 DMA_TO_DEVICE);
+ 						np->dirty_tx++;
+ 						entry++;
+ 					}
+@@ -1461,16 +1464,18 @@ static int __netdev_rx(struct net_device *dev, int *quota)
+ 		if (pkt_len < rx_copybreak &&
+ 		    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
+ 			skb_reserve(skb, 2);	/* 16 byte align the IP header */
+-			pci_dma_sync_single_for_cpu(np->pci_dev,
+-						    np->rx_info[entry].mapping,
+-						    pkt_len, PCI_DMA_FROMDEVICE);
++			dma_sync_single_for_cpu(&np->pci_dev->dev,
++						np->rx_info[entry].mapping,
++						pkt_len, DMA_FROM_DEVICE);
+ 			skb_copy_to_linear_data(skb, np->rx_info[entry].skb->data, pkt_len);
+-			pci_dma_sync_single_for_device(np->pci_dev,
+-						       np->rx_info[entry].mapping,
+-						       pkt_len, PCI_DMA_FROMDEVICE);
++			dma_sync_single_for_device(&np->pci_dev->dev,
++						   np->rx_info[entry].mapping,
++						   pkt_len, DMA_FROM_DEVICE);
+ 			skb_put(skb, pkt_len);
+ 		} else {
+-			pci_unmap_single(np->pci_dev, np->rx_info[entry].mapping, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&np->pci_dev->dev,
++					 np->rx_info[entry].mapping,
++					 np->rx_buf_sz, DMA_FROM_DEVICE);
+ 			skb = np->rx_info[entry].skb;
+ 			skb_put(skb, pkt_len);
+ 			np->rx_info[entry].skb = NULL;
+@@ -1588,9 +1593,9 @@ static void refill_rx_ring(struct net_device *dev)
+ 			if (skb == NULL)
+ 				break;	/* Better luck next round. */
+ 			np->rx_info[entry].mapping =
+-				pci_map_single(np->pci_dev, skb->data, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
+-			if (pci_dma_mapping_error(np->pci_dev,
+-						np->rx_info[entry].mapping)) {
++				dma_map_single(&np->pci_dev->dev, skb->data,
++					       np->rx_buf_sz, DMA_FROM_DEVICE);
++			if (dma_mapping_error(&np->pci_dev->dev, np->rx_info[entry].mapping)) {
+ 				dev_kfree_skb(skb);
+ 				np->rx_info[entry].skb = NULL;
+ 				break;
+@@ -1963,7 +1968,9 @@ static int netdev_close(struct net_device *dev)
+ 	for (i = 0; i < RX_RING_SIZE; i++) {
+ 		np->rx_ring[i].rxaddr = cpu_to_dma(0xBADF00D0); /* An invalid address. */
+ 		if (np->rx_info[i].skb != NULL) {
+-			pci_unmap_single(np->pci_dev, np->rx_info[i].mapping, np->rx_buf_sz, PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&np->pci_dev->dev,
++					 np->rx_info[i].mapping,
++					 np->rx_buf_sz, DMA_FROM_DEVICE);
+ 			dev_kfree_skb(np->rx_info[i].skb);
+ 		}
+ 		np->rx_info[i].skb = NULL;
+@@ -1973,9 +1980,8 @@ static int netdev_close(struct net_device *dev)
+ 		struct sk_buff *skb = np->tx_info[i].skb;
+ 		if (skb == NULL)
+ 			continue;
+-		pci_unmap_single(np->pci_dev,
+-				 np->tx_info[i].mapping,
+-				 skb_first_frag_len(skb), PCI_DMA_TODEVICE);
++		dma_unmap_single(&np->pci_dev->dev, np->tx_info[i].mapping,
++				 skb_first_frag_len(skb), DMA_TO_DEVICE);
+ 		np->tx_info[i].mapping = 0;
+ 		dev_kfree_skb(skb);
+ 		np->tx_info[i].skb = NULL;
+@@ -2018,7 +2024,8 @@ static void starfire_remove_one(struct pci_dev *pdev)
+ 	unregister_netdev(dev);
  
--	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-+	err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
- 	if (err < 0) {
- 		err_msg = "No usable DMA configuration";
- 		goto error_out_mwi;
-@@ -2355,8 +2354,8 @@ typhoon_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (np->queue_mem)
+-		pci_free_consistent(pdev, np->queue_mem_size, np->queue_mem, np->queue_mem_dma);
++		dma_free_coherent(&pdev->dev, np->queue_mem_size,
++				  np->queue_mem, np->queue_mem_dma);
  
- 	/* allocate pci dma space for rx and tx descriptor rings
- 	 */
--	shared = pci_alloc_consistent(pdev, sizeof(struct typhoon_shared),
--				      &shared_dma);
-+	shared = dma_alloc_coherent(&pdev->dev, sizeof(struct typhoon_shared),
-+				    &shared_dma, GFP_KERNEL);
- 	if (!shared) {
- 		err_msg = "could not allocate DMA memory";
- 		err = -ENOMEM;
-@@ -2509,8 +2508,8 @@ typhoon_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	typhoon_reset(ioaddr, NoWait);
  
- error_out_dma:
--	pci_free_consistent(pdev, sizeof(struct typhoon_shared),
--			    shared, shared_dma);
-+	dma_free_coherent(&pdev->dev, sizeof(struct typhoon_shared), shared,
-+			  shared_dma);
- error_out_remap:
- 	pci_iounmap(pdev, ioaddr);
- error_out_regions:
-@@ -2537,8 +2536,8 @@ typhoon_remove_one(struct pci_dev *pdev)
- 	pci_restore_state(pdev);
- 	typhoon_reset(tp->ioaddr, NoWait);
- 	pci_iounmap(pdev, tp->ioaddr);
--	pci_free_consistent(pdev, sizeof(struct typhoon_shared),
--			    tp->shared, tp->shared_dma);
-+	dma_free_coherent(&pdev->dev, sizeof(struct typhoon_shared),
-+			  tp->shared, tp->shared_dma);
- 	pci_release_regions(pdev);
- 	pci_clear_mwi(pdev);
- 	pci_disable_device(pdev);
+ 	/* XXX: add wakeup code -- requires firmware for MagicPacket */
 -- 
 2.25.1
 
