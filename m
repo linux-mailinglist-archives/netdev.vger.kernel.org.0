@@ -2,112 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 561CE24F3C6
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 10:17:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C58A24F406
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 10:29:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726086AbgHXIRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 04:17:16 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:37381 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725836AbgHXIRP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 04:17:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598257034;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4qaHx+4DgU7tZu2iXG2DADTWF+wfpKAFg4isrL3CwcQ=;
-        b=hs7KxdvtrJvs1aJH1h+zv5zkVAWaYNRtmY6rjRHVZJQOouBgZHVfiVQ3aCmHA+pGdDp4Aa
-        SqMbg4HfsSrfQkihKZge0BISav6NNBUZERvxk6v8CHjTI29TQOTdSJw2c31oaCWiucLK9n
-        qAYT35cgdQSuGSybdV9T89Dr5CE0dDA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-50-qZiY-s5xPQqOytrDRO8Gjg-1; Mon, 24 Aug 2020 04:17:10 -0400
-X-MC-Unique: qZiY-s5xPQqOytrDRO8Gjg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0DAA081F006;
-        Mon, 24 Aug 2020 08:17:08 +0000 (UTC)
-Received: from ovpn-113-102.ams2.redhat.com (ovpn-113-102.ams2.redhat.com [10.36.113.102])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6464361982;
-        Mon, 24 Aug 2020 08:17:04 +0000 (UTC)
-Message-ID: <8ccf0b77c854a20f65026fdc68dcd64b93d07fc5.camel@redhat.com>
-Subject: Re: BPF sk_lookup v5 - TCP SYN and UDP 0-len flood benchmarks
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
-Date:   Mon, 24 Aug 2020 10:17:03 +0200
-In-Reply-To: <CAADnVQKE6y9h2fwX6OS837v-Uf+aBXnT_JXiN_bbo2gitZQ3tA@mail.gmail.com>
-References: <20200717103536.397595-1-jakub@cloudflare.com>
-         <87lficrm2v.fsf@cloudflare.com>
-         <CAADnVQKE6y9h2fwX6OS837v-Uf+aBXnT_JXiN_bbo2gitZQ3tA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726444AbgHXI3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 04:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33278 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726104AbgHXI3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 04:29:12 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757E1C061574
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 01:29:12 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id m34so4203481pgl.11
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 01:29:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2K6WTwIMAPjI/mFWjHAehqUSAvXRAhIwddvFBN/4ox0=;
+        b=axj1fpmaqcL2Qqo0AMtAeS6B0LKBjq2tPBvFPljiQrgASaCnXDIbJ4z7d4VjuQiTzO
+         +jGzyVIOL6Xo0Zl8tgRb/6ANQAREAa1p3nMY8l+/wfXMzuUzZS8WJ8K4RVFzdGAPSOLt
+         Cu25OPgCOpOV48fmgSwCU9iMxRvkGZ1QAOz50=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2K6WTwIMAPjI/mFWjHAehqUSAvXRAhIwddvFBN/4ox0=;
+        b=nQDEGiTNtyDnF5KM2SEpEC7zFj/iBZePCpd6hbgZapy2HSm4oYBHPDudKDZLjV+IHJ
+         9TO8VvmUIPjVLgxdjiYAToXFLernfmE37eyYWZzutoRWQz8OZrZXZ220M+qMiiwHxzHA
+         Hpunovecpt0FMoDRuO1dVQtCPEUqBC9SZanTHMtEDMEbpjs7IUeyFDKlYJb/X64hEFTl
+         hnLmyJh9kXse/xzGeag5eEeeDLO67KAb0jLvfv2MvfhvZ9sRZ6aBOWFLqwzTPeKBhhGJ
+         qM0JIcLAkAUaw6pugCBwyQr9NyjXoIF7QZztYhH1gFC8tTkV6W3m/1afRhgN7weYqEFX
+         BeTQ==
+X-Gm-Message-State: AOAM530U2PpEGL4dpRMpCHeZwVGGG52Nkx46vdC/YqCtQ5G10dQ5VkcQ
+        BXzB15miIwG9YUMQl33oB/HiUg==
+X-Google-Smtp-Source: ABdhPJxJpp2dbQYy+c7xEPbxjJsA+XavJY3DvvaeIZvSws19WA21Xd666HyNd8XbMZp3ek05KWmEJw==
+X-Received: by 2002:a63:2746:: with SMTP id n67mr2883670pgn.314.1598257748320;
+        Mon, 24 Aug 2020 01:29:08 -0700 (PDT)
+Received: from [192.168.178.129] (f140230.upc-f.chello.nl. [80.56.140.230])
+        by smtp.gmail.com with ESMTPSA id m22sm9074959pja.36.2020.08.24.01.29.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Aug 2020 01:29:07 -0700 (PDT)
+Subject: Re: [PATCH v1] brcmfmac: increase F2 watermark for BCM4329
+To:     Dmitry Osipenko <digetx@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200823142004.21990-1-digetx@gmail.com>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <93536fd4-8abc-e167-a184-5a5e36d4205a@broadcom.com>
+Date:   Mon, 24 Aug 2020 10:28:57 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
+In-Reply-To: <20200823142004.21990-1-digetx@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-08-18 at 11:19 -0700, Alexei Starovoitov wrote:
-> On Tue, Aug 18, 2020 at 8:49 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
-> >          :                      rcu_read_lock();
-> >          :                      run_array = rcu_dereference(net->bpf.run_array[NETNS_BPF_SK_LOOKUP]);
-> >     0.01 :   ffffffff817f8624:       mov    0xd68(%r12),%rsi
-> >          :                      if (run_array) {
-> >     0.00 :   ffffffff817f862c:       test   %rsi,%rsi
-> >     0.00 :   ffffffff817f862f:       je     ffffffff817f87a9 <__udp4_lib_lookup+0x2c9>
-> >          :                      struct bpf_sk_lookup_kern ctx = {
-> >     1.05 :   ffffffff817f8635:       xor    %eax,%eax
-> >     0.00 :   ffffffff817f8637:       mov    $0x6,%ecx
-> >     0.01 :   ffffffff817f863c:       movl   $0x110002,0x40(%rsp)
-> >     0.00 :   ffffffff817f8644:       lea    0x48(%rsp),%rdi
-> >    18.76 :   ffffffff817f8649:       rep stos %rax,%es:(%rdi)
-> >     1.12 :   ffffffff817f864c:       mov    0xc(%rsp),%eax
-> >     0.00 :   ffffffff817f8650:       mov    %ebp,0x48(%rsp)
-> >     0.00 :   ffffffff817f8654:       mov    %eax,0x44(%rsp)
-> >     0.00 :   ffffffff817f8658:       movzwl 0x10(%rsp),%eax
-> >     1.21 :   ffffffff817f865d:       mov    %ax,0x60(%rsp)
-> >     0.00 :   ffffffff817f8662:       movzwl 0x20(%rsp),%eax
-> >     0.00 :   ffffffff817f8667:       mov    %ax,0x62(%rsp)
-> >          :                      .sport          = sport,
-> >          :                      .dport          = dport,
-> >          :                      };
+
+
+On 8/23/2020 4:20 PM, Dmitry Osipenko wrote:
+> This patch fixes SDHCI CRC errors during of RX throughput testing on
+> BCM4329 chip if SDIO BUS is clocked above 25MHz. In particular the
+> checksum problem is observed on NVIDIA Tegra20 SoCs. The good watermark
+> value is borrowed from downstream BCMDHD driver and it's the same as the
+> value used for the BCM4339 chip, hence let's re-use it for BCM4329.
+
+one comment, but when fixed you can add my....
+
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+> ---
+>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> Such heavy hit to zero init 56-byte structure is surprising.
-> There are two 4-byte holes in this struct. You can try to pack it and
-> make sure that 'rep stoq' is used instead of 'rep stos' (8 byte at a time vs 4).
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> index 3c07d1bbe1c6..ac3ee93a2378 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+> @@ -4278,6 +4278,7 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
+>   			brcmf_sdiod_writeb(sdiod, SBSDIO_FUNC1_MESBUSYCTRL,
+>   					   CY_43012_MESBUSYCTRL, &err);
+>   			break;
+> +		case SDIO_DEVICE_ID_BROADCOM_4329:
+>   		case SDIO_DEVICE_ID_BROADCOM_4339:
+>   			brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes for 4339\n",
 
-I think here rep stos is copying 8 bytes at a time (%rax operand, %ecx
-initalized with '6').
-
-I think that you can avoid the costly instruction explicitly
-initializing each field individually:
-
-	struct bpf_sk_lookup_kern ctx;
-
-	ctx.family = AF_INET;
-	ctx.protocol = protocol;
-	// ...
-
-note, you likely want to explicitly zero the v6 addresses, too.
-
-Cheers,
-
-Paolo
-
+Maybe better to drop the chip id from the debug message. The chip id is 
+printed elsewhere already so it does not add info here and could only 
+cause confusion. Maybe you can also remove it from the 43455 message a 
+bit below.
