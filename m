@@ -2,51 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D450824FE65
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 14:59:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D658524FE6C
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 15:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727952AbgHXM73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 08:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726189AbgHXM72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 08:59:28 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8ACC061573;
-        Mon, 24 Aug 2020 05:59:28 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 262F01281D748;
-        Mon, 24 Aug 2020 05:42:40 -0700 (PDT)
-Date:   Mon, 24 Aug 2020 05:59:25 -0700 (PDT)
-Message-Id: <20200824.055925.508725099038824391.davem@davemloft.net>
-To:     dinghao.liu@zju.edu.cn
-Cc:     kjlu@umn.edu, f.fainelli@gmail.com, kuba@kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: systemport: Fix memleak in bcm_sysport_probe
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200824055831.26745-1-dinghao.liu@zju.edu.cn>
-References: <20200824055831.26745-1-dinghao.liu@zju.edu.cn>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Aug 2020 05:42:40 -0700 (PDT)
+        id S1726986AbgHXNB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 09:01:57 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43092 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726189AbgHXNB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 09:01:56 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kAC6Y-00BcbU-5e; Mon, 24 Aug 2020 15:01:42 +0200
+Date:   Mon, 24 Aug 2020 15:01:42 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Van Leeuwen, Pascal" <pvanleeuwen@rambus.com>
+Cc:     Sabrina Dubroca <sd@queasysnail.net>,
+        Scott Dial <scott@scottdial.com>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        Ryan Cox <ryan_cox@byu.edu>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        "ebiggers@google.com" <ebiggers@google.com>
+Subject: Re: Severe performance regression in "net: macsec: preserve ingress
+ frame ordering"
+Message-ID: <20200824130142.GN2588906@lunn.ch>
+References: <1b0cec71-d084-8153-2ba4-72ce71abeb65@byu.edu>
+ <a335c8eb-0450-1274-d1bf-3908dcd9b251@scottdial.com>
+ <20200810133427.GB1128331@bistromath.localdomain>
+ <7663cbb1-7a55-6986-7d5d-8fab55887a80@scottdial.com>
+ <20200812100443.GF1128331@bistromath.localdomain>
+ <CY4PR0401MB36524B348358B23A8DFB741AC3420@CY4PR0401MB3652.namprd04.prod.outlook.com>
+ <20200812124201.GF2154440@lunn.ch>
+ <CY4PR0401MB365240B04FC43F7F8AAE6A0CC3560@CY4PR0401MB3652.namprd04.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CY4PR0401MB365240B04FC43F7F8AAE6A0CC3560@CY4PR0401MB3652.namprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dinghao Liu <dinghao.liu@zju.edu.cn>
-Date: Mon, 24 Aug 2020 13:58:31 +0800
+On Mon, Aug 24, 2020 at 09:07:26AM +0000, Van Leeuwen, Pascal wrote:
+> No need to point this out to me as we're the number one supplier of inline MACsec IP :-)
+> In fact, the Microsemi PHY solution you mention is ours, major parts of that design were
+> even created by these 2 hands here.
 
-> When devm_kcalloc() fails, dev should be freed just
-> like what we've done in the subsequent error paths.
-> 
-> Fixes: 7b78be48a8eb6 ("net: systemport: Dynamically allocate number of TX rings")
-> Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+Oh,  O.K.
 
-Applied and queued up for -stable, thanks.
+Do you know of other silicon vendors which are using the same IP?
+Maybe we can encourage them to share the driver, rather than re-invent
+the wheel, which often happens when nobody realises it is basically
+the same core with a different wrapper.
+
+Thanks
+	Andrew
