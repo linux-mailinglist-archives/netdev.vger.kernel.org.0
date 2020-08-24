@@ -2,97 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBE0424F923
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 11:41:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1183C24F8FC
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 11:39:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729475AbgHXJlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 05:41:39 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:21261 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729198AbgHXIo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 04:44:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598258696;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=amlNRwZzjLO8LRoaaNfqHXc/ssKxKn18rqfsvwULgxs=;
-        b=WZOF/DDHZ0/0qwEKXgiElL7BJ5DhYRdjLk4IUm2PZAh07IDFBXmTe7avJMtGPGkQQw+kvu
-        Z0zjPgrWGZflqZUasXcdOhvTbbhdJVT6EqSyQgNVQcVxQexRKEDmKGJ9BkFhF6aeARUV5R
-        w5Oo72jv9a+RAc/LeN1dv3eaVdgkG9k=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-220-q5Pr61WHOHa60e1SKBA16w-1; Mon, 24 Aug 2020 04:44:54 -0400
-X-MC-Unique: q5Pr61WHOHa60e1SKBA16w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1729600AbgHXJjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 05:39:53 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:44370 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728894AbgHXIqe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 04:46:34 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id A193420523;
+        Mon, 24 Aug 2020 10:46:32 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Y937E9JgfOG3; Mon, 24 Aug 2020 10:46:31 +0200 (CEST)
+Received: from cas-essen-02.secunet.de (202.40.53.10.in-addr.arpa [10.53.40.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E9EC01007462;
-        Mon, 24 Aug 2020 08:44:52 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.64])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8161B197E5;
-        Mon, 24 Aug 2020 08:44:43 +0000 (UTC)
-Date:   Mon, 24 Aug 2020 10:44:42 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Shay Agroskin <shayagr@amazon.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <davem@davemloft.net>,
-        <lorenzo.bianconi@redhat.com>, <echaudro@redhat.com>,
-        <sameehj@amazon.com>, <kuba@kernel.org>, brouer@redhat.com
-Subject: Re: [PATCH net-next 1/6] xdp: introduce mb in xdp_buff/xdp_frame
-Message-ID: <20200824104442.023bdd11@carbon>
-In-Reply-To: <pj41zlft8dsbdt.fsf@u68c7b5b1d2d758.ant.amazon.com>
-References: <cover.1597842004.git.lorenzo@kernel.org>
-        <c2665f369ede07328bbf7456def2e2025b9b320e.1597842004.git.lorenzo@kernel.org>
-        <pj41zlft8dsbdt.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        by a.mx.secunet.com (Postfix) with ESMTPS id C73202051F;
+        Mon, 24 Aug 2020 10:46:31 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 24 Aug 2020 10:46:31 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Mon, 24 Aug
+ 2020 10:46:31 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 41B8F3180449; Mon, 24 Aug 2020 10:46:31 +0200 (CEST)
+Date:   Mon, 24 Aug 2020 10:46:31 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Antony Antony <antony.antony@secunet.com>
+CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        "Antony Antony" <antony@phenome.org>
+Subject: Re: [PATCH 3/3] xfrm: clone XFRMA_SEC_CTX during xfrm_do_migrate
+Message-ID: <20200824084631.GP20687@gauss3.secunet.de>
+References: <20200820181158.GA19658@moon.secunet.de>
+ <20200820181608.GA19772@moon.secunet.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200820181608.GA19772@moon.secunet.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 23 Aug 2020 17:08:30 +0300
-Shay Agroskin <shayagr@amazon.com> wrote:
-
-> > diff --git a/include/net/xdp.h b/include/net/xdp.h
-> > index 3814fb631d52..42f439f9fcda 100644
-> > --- a/include/net/xdp.h
-> > +++ b/include/net/xdp.h
-> > @@ -72,7 +72,8 @@ struct xdp_buff {
-> >  	void *data_hard_start;
-> >  	struct xdp_rxq_info *rxq;
-> >  	struct xdp_txq_info *txq;
-> > -	u32 frame_sz; /* frame size to deduce 
-> > data_hard_end/reserved tailroom*/
-> > +	u32 frame_sz:31; /* frame size to deduce 
-> > data_hard_end/reserved tailroom*/
-> > +	u32 mb:1; /* xdp non-linear buffer */
-> >  };
-> >  
-> >  /* Reserve memory area at end-of data area.
-> > @@ -96,7 +97,8 @@ struct xdp_frame {
-> >  	u16 len;
-> >  	u16 headroom;
-> >  	u32 metasize:8;
-> > -	u32 frame_sz:24;
-> > +	u32 frame_sz:23;
-> > +	u32 mb:1; /* xdp non-linear frame */  
+On Thu, Aug 20, 2020 at 08:16:08PM +0200, Antony Antony wrote:
+> XFRMA_SEC_CTX was not cloned from the old to the new.
+> Migrate this attribute during XFRMA_MSG_MIGRATE
 > 
-> Although this issue wasn't introduced with this patch, why not 
-> make frame_sz field to be the same size in xdp_buff and xdp_frame 
-> ?
+> Signed-off-by: Antony Antony <antony.antony@secunet.com>
+> ---
+>  net/xfrm/xfrm_state.c | 28 ++++++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+> 
+> diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+> index 20a12c67a931..dbcb71b800b8 100644
+> --- a/net/xfrm/xfrm_state.c
+> +++ b/net/xfrm/xfrm_state.c
+> @@ -1441,6 +1441,30 @@ int xfrm_state_add(struct xfrm_state *x)
+>  EXPORT_SYMBOL(xfrm_state_add);
+>  
+>  #ifdef CONFIG_XFRM_MIGRATE
+> +static inline bool clone_security(struct xfrm_state *x, struct xfrm_sec_ctx *security)
+> +{
+> +	struct xfrm_user_sec_ctx *uctx;
+> +	int size = sizeof(*uctx) + security->ctx_len;
+> +	int err;
+> +
+> +	uctx = kmalloc(size, GFP_KERNEL);
+> +	if (!uctx)
+> +		return true;
+> +
+> +	uctx->exttype = XFRMA_SEC_CTX;
+> +	uctx->len = size;
+> +	uctx->ctx_doi = security->ctx_doi;
+> +	uctx->ctx_alg = security->ctx_alg;
+> +	uctx->ctx_len = security->ctx_len;
+> +	memcpy(uctx + 1, security->ctx_str, security->ctx_len);
+> +	err = security_xfrm_state_alloc(x, uctx);
+> +	kfree(uctx);
+> +	if (err)
+> +		return true;
 
-This is all about struct layout and saving memory size, due to
-cacheline access. Please read up on this and use the tool pahole to
-inspect the struct memory layout.
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Returning 'true' on memory allocation errors is a bit odd,
+please return -ENOMEM instead.
 
