@@ -2,125 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABB3624FA41
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 11:55:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71DFA24F95A
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 11:44:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728373AbgHXIhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 04:37:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50246 "EHLO mail.kernel.org"
+        id S1728684AbgHXJoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 05:44:34 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:44072 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728367AbgHXIhH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 04:37:07 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729040AbgHXInS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 04:43:18 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 656EF20536;
+        Mon, 24 Aug 2020 10:43:17 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id zVg6_o3vxt0a; Mon, 24 Aug 2020 10:43:16 +0200 (CEST)
+Received: from mail-essen-02.secunet.de (mail-essen-02.secunet.de [10.53.40.205])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 325CC22B3F;
-        Mon, 24 Aug 2020 08:37:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598258225;
-        bh=RtXJs/UOuaKJowW/vvijg73cN4xBbM6v1dqT0h/PKyY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZFchY9ITY8nJOP0s7pR35F3MWdsneZMK6kaKfQL5+zebj7GZaOHKnXIoRcb9sdJYl
-         mrRehjAgGqJXpQ8BkFkdWpjn9RWdW4gaFiD9uDLwlKmG8ASFTenhh/giQtWUnmRWbj
-         PS2lBP2ImuQyTE0lr7ERmvaoHzilCzvvKNLgMBZg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jarod Wilson <jarod@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.8 091/148] bonding: show saner speed for broadcast mode
-Date:   Mon, 24 Aug 2020 10:29:49 +0200
-Message-Id: <20200824082418.404842600@linuxfoundation.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200824082413.900489417@linuxfoundation.org>
-References: <20200824082413.900489417@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by a.mx.secunet.com (Postfix) with ESMTPS id EB6F2204FD;
+        Mon, 24 Aug 2020 10:43:16 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Mon, 24 Aug 2020 10:43:16 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Mon, 24 Aug
+ 2020 10:43:16 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 56D683180449;
+ Mon, 24 Aug 2020 10:43:16 +0200 (CEST)
+Date:   Mon, 24 Aug 2020 10:43:16 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Antony Antony <antony.antony@secunet.com>
+CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
+        "Antony Antony" <antony@phenome.org>
+Subject: Re: [PATCH 2/3] xfrm: clone XFRMA_REPLAY_ESN_VAL in xfrm_do_migrate
+Message-ID: <20200824084316.GO20687@gauss3.secunet.de>
+References: <20200820181158.GA19658@moon.secunet.de>
+ <20200820181452.GA19740@moon.secunet.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200820181452.GA19740@moon.secunet.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jarod Wilson <jarod@redhat.com>
+On Thu, Aug 20, 2020 at 08:14:52PM +0200, Antony Antony wrote:
+> XFRMA_REPLAY_ESN_VAL was not cloned from the old to the new.
+> Migrate this attribute during XFRMA_MSG_MIGRATE
+> 
+> Signed-off-by: Antony Antony <antony.antony@secunet.com>
+> ---
+>  include/net/xfrm.h    | 16 ++++++----------
+>  net/xfrm/xfrm_state.c |  2 +-
+>  2 files changed, 7 insertions(+), 11 deletions(-)
+> 
+> diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+> index 2737d24ec244..9e806c781025 100644
+> --- a/include/net/xfrm.h
+> +++ b/include/net/xfrm.h
+> @@ -1773,21 +1773,17 @@ static inline unsigned int xfrm_replay_state_esn_len(struct xfrm_replay_state_es
+>  static inline int xfrm_replay_clone(struct xfrm_state *x,
+>  				     struct xfrm_state *orig)
+>  {
+> -	x->replay_esn = kzalloc(xfrm_replay_state_esn_len(orig->replay_esn),
+> +
+> +	x->replay_esn = kmemdup(orig->replay_esn,
+> +				xfrm_replay_state_esn_len(orig->replay_esn),
+>  				GFP_KERNEL);
+>  	if (!x->replay_esn)
+>  		return -ENOMEM;
+> -
+> -	x->replay_esn->bmp_len = orig->replay_esn->bmp_len;
+> -	x->replay_esn->replay_window = orig->replay_esn->replay_window;
+> -
+> -	x->preplay_esn = kmemdup(x->replay_esn,
+> -				 xfrm_replay_state_esn_len(x->replay_esn),
+> +	x->preplay_esn = kmemdup(orig->preplay_esn,
+> +				 xfrm_replay_state_esn_len(orig->preplay_esn),
+>  				 GFP_KERNEL);
+> -	if (!x->preplay_esn) {
+> -		kfree(x->replay_esn);
+> +	if (!x->preplay_esn)
+>  		return -ENOMEM;
+> -	}
+>  
+>  	return 0;
+>  }
+> diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+> index 3a000f289dcd..20a12c67a931 100644
+> --- a/net/xfrm/xfrm_state.c
+> +++ b/net/xfrm/xfrm_state.c
+> @@ -1522,7 +1522,7 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
+>  	x->tfcpad = orig->tfcpad;
+>  	x->replay_maxdiff = orig->replay_maxdiff;
+>  	x->replay_maxage = orig->replay_maxage;
+> -	x->curlft.add_time = orig->curlft.add_time;
+> +	x->curlft = orig->curlft;
 
-[ Upstream commit 4ca0d9ac3fd8f9f90b72a15d8da2aca3ffb58418 ]
-
-Broadcast mode bonds transmit a copy of all traffic simultaneously out of
-all interfaces, so the "speed" of the bond isn't really the aggregate of
-all interfaces, but rather, the speed of the slowest active interface.
-
-Also, the type of the speed field is u32, not unsigned long, so adjust
-that accordingly, as required to make min() function here without
-complaining about mismatching types.
-
-Fixes: bb5b052f751b ("bond: add support to read speed and duplex via ethtool")
-CC: Jay Vosburgh <j.vosburgh@gmail.com>
-CC: Veaceslav Falico <vfalico@gmail.com>
-CC: Andy Gospodarek <andy@greyhouse.net>
-CC: "David S. Miller" <davem@davemloft.net>
-CC: netdev@vger.kernel.org
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: Jarod Wilson <jarod@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/bonding/bond_main.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index f88cb097b022a..a35a05610a5e3 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4431,13 +4431,23 @@ static netdev_tx_t bond_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	return ret;
- }
- 
-+static u32 bond_mode_bcast_speed(struct slave *slave, u32 speed)
-+{
-+	if (speed == 0 || speed == SPEED_UNKNOWN)
-+		speed = slave->speed;
-+	else
-+		speed = min(speed, slave->speed);
-+
-+	return speed;
-+}
-+
- static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
- 					   struct ethtool_link_ksettings *cmd)
- {
- 	struct bonding *bond = netdev_priv(bond_dev);
--	unsigned long speed = 0;
- 	struct list_head *iter;
- 	struct slave *slave;
-+	u32 speed = 0;
- 
- 	cmd->base.duplex = DUPLEX_UNKNOWN;
- 	cmd->base.port = PORT_OTHER;
-@@ -4449,8 +4459,13 @@ static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
- 	 */
- 	bond_for_each_slave(bond, slave, iter) {
- 		if (bond_slave_can_tx(slave)) {
--			if (slave->speed != SPEED_UNKNOWN)
--				speed += slave->speed;
-+			if (slave->speed != SPEED_UNKNOWN) {
-+				if (BOND_MODE(bond) == BOND_MODE_BROADCAST)
-+					speed = bond_mode_bcast_speed(slave,
-+								      speed);
-+				else
-+					speed += slave->speed;
-+			}
- 			if (cmd->base.duplex == DUPLEX_UNKNOWN &&
- 			    slave->duplex != DUPLEX_UNKNOWN)
- 				cmd->base.duplex = slave->duplex;
--- 
-2.25.1
-
-
-
+That change seems not to belong to this patch.
+Also please add a 'Fixes' tag.
