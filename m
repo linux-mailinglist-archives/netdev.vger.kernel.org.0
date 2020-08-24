@@ -2,85 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9308F250454
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:01:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E541025045B
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:01:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726953AbgHXRA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 13:00:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40360 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728495AbgHXQil (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 12:38:41 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 67FDB22D2C;
-        Mon, 24 Aug 2020 16:38:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598287117;
-        bh=Io4p9WMxBPOmvvvDV5Rh1K3tXuBa/vm5am+uOFzQy5Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xb4liEk+6duS9lioxOKloQJ5YHSV8KorHF8VykoJ6BrggW5WTNiyvkejuThTbTEJi
-         ReHZJxxlaaffnvynPGiUpZ/+zsoEPiasMUF166zr6NBFMUAW1TMiZOMVgKRJ0CU+cD
-         TyW8hd0fVVww+vfC6HMX6k8Xu6hmKmyhAVbukcYQ=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sumera Priyadarsini <sylphrenadin@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 33/38] net: gianfar: Add of_node_put() before goto statement
-Date:   Mon, 24 Aug 2020 12:37:45 -0400
-Message-Id: <20200824163751.606577-33-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200824163751.606577-1-sashal@kernel.org>
-References: <20200824163751.606577-1-sashal@kernel.org>
+        id S1726999AbgHXRBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:01:25 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:42544 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726513AbgHXRBI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 13:01:08 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07OH12k0100866;
+        Mon, 24 Aug 2020 12:01:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1598288462;
+        bh=DT3PA1/IKDqSXW15ng6SPivLr45yGQeLTmDSIfcQkho=;
+        h=From:To:Subject:Date;
+        b=C4u2oJBkCwWBuWEgNB3FaDbjnXaCPiJOt9a+jPpmMl1A0oItgXWtmfYVzCxheiqDc
+         5MtGCZgGsfEwbRTcd58tnyMvg+2v8GyIYb7VjOvELRFX9dSsHrrFYpYW6mW+N+QH8H
+         tYTp6bTr+FK9zkDwuNEPWIFkVPT7t8XKWjHcjteU=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 07OH1297035999
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 24 Aug 2020 12:01:02 -0500
+Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 24
+ Aug 2020 12:01:01 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 24 Aug 2020 12:01:01 -0500
+Received: from uda0868495.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07OH103g005955;
+        Mon, 24 Aug 2020 12:01:00 -0500
+From:   Murali Karicheri <m-karicheri2@ti.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <grygorii.strashko@ti.com>, <nsekhar@ti.com>,
+        <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [net v3 PATCH] net: ethernet: ti: cpsw_new: fix error handling in cpsw_ndo_vlan_rx_kill_vid()
+Date:   Mon, 24 Aug 2020 13:01:00 -0400
+Message-ID: <20200824170100.21319-1-m-karicheri2@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sumera Priyadarsini <sylphrenadin@gmail.com>
+This patch fixes a bunch of issues in cpsw_ndo_vlan_rx_kill_vid()
 
-[ Upstream commit 989e4da042ca4a56bbaca9223d1a93639ad11e17 ]
+ - pm_runtime_get_sync() returns non zero value. This results in
+   non zero value return to caller which will be interpreted as error.
+   So overwrite ret with zero.
+ - If VID matches with port VLAN VID, then set error code.
+ - Currently when VLAN interface is deleted, all of the VLAN mc addresses
+   are removed from ALE table, however the return values from ale function
+   calls are not checked. These functions can return error code -ENOENT.
+   But that shouldn't happen in a normal case. So add error print to
+   catch the situations so that these can be investigated and addressed.
+   return zero in these cases as these are not real error case, but only
+   serve to catch ALE table update related issues and help address the
+   same in the driver.
 
-Every iteration of for_each_available_child_of_node() decrements
-reference count of the previous node, however when control
-is transferred from the middle of the loop, as in the case of
-a return or break or goto, there is no decrement thus ultimately
-resulting in a memory leak.
-
-Fix a potential memory leak in gianfar.c by inserting of_node_put()
-before the goto statement.
-
-Issue found with Coccinelle.
-
-Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
+Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
 ---
- drivers/net/ethernet/freescale/gianfar.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ v3 - updated commit description to describe error check related to
+      port vlan VID
+ v2 - updated comments from Grygorii, also return error code if VID
+ match with port_vlan vid.
+ drivers/net/ethernet/ti/cpsw_new.c | 28 ++++++++++++++++++++++------
+ 1 file changed, 22 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index 2580bcd850253..3978d82c95989 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -751,8 +751,10 @@ static int gfar_of_init(struct platform_device *ofdev, struct net_device **pdev)
- 				continue;
+diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+index 8d0a2bc7128d..61fa5063d751 100644
+--- a/drivers/net/ethernet/ti/cpsw_new.c
++++ b/drivers/net/ethernet/ti/cpsw_new.c
+@@ -1032,19 +1032,35 @@ static int cpsw_ndo_vlan_rx_kill_vid(struct net_device *ndev,
+ 		return ret;
+ 	}
  
- 			err = gfar_parse_group(child, priv, model);
--			if (err)
-+			if (err) {
-+				of_node_put(child);
- 				goto err_grp_init;
-+			}
- 		}
- 	} else { /* SQ_SG_MODE */
- 		err = gfar_parse_group(np, priv, model);
++	/* reset the return code as pm_runtime_get_sync() can return
++	 * non zero values as well.
++	 */
++	ret = 0;
+ 	for (i = 0; i < cpsw->data.slaves; i++) {
+ 		if (cpsw->slaves[i].ndev &&
+-		    vid == cpsw->slaves[i].port_vlan)
++		    vid == cpsw->slaves[i].port_vlan) {
++			ret = -EINVAL;
+ 			goto err;
++		}
+ 	}
+ 
+ 	dev_dbg(priv->dev, "removing vlanid %d from vlan filter\n", vid);
+-	cpsw_ale_del_vlan(cpsw->ale, vid, 0);
+-	cpsw_ale_del_ucast(cpsw->ale, priv->mac_addr,
+-			   HOST_PORT_NUM, ALE_VLAN, vid);
+-	cpsw_ale_del_mcast(cpsw->ale, priv->ndev->broadcast,
+-			   0, ALE_VLAN, vid);
++	ret = cpsw_ale_del_vlan(cpsw->ale, vid, 0);
++	if (ret)
++		dev_err(priv->dev, "%s: failed %d: ret %d\n",
++			__func__, __LINE__, ret);
++	ret = cpsw_ale_del_ucast(cpsw->ale, priv->mac_addr,
++				 HOST_PORT_NUM, ALE_VLAN, vid);
++	if (ret)
++		dev_err(priv->dev, "%s: failed %d: ret %d\n",
++			__func__, __LINE__, ret);
++	ret = cpsw_ale_del_mcast(cpsw->ale, priv->ndev->broadcast,
++				 0, ALE_VLAN, vid);
++	if (ret)
++		dev_err(priv->dev, "%s: failed %d: ret %d\n",
++			__func__, __LINE__, ret);
+ 	cpsw_ale_flush_multicast(cpsw->ale, ALE_PORT_HOST, vid);
++	ret = 0;
+ err:
+ 	pm_runtime_put(cpsw->dev);
+ 	return ret;
 -- 
-2.25.1
+2.17.1
 
