@@ -2,143 +2,488 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F35C250C8A
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 01:51:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDB99250CA4
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 01:57:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbgHXXvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 19:51:05 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:51396 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726027AbgHXXvF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 19:51:05 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07ONY2Hg089729;
-        Mon, 24 Aug 2020 19:50:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id; s=pp1;
- bh=E+1YZsFqkMzfmxJkIUfWoEduklIxgHUhw7JqM1ehKMg=;
- b=FL/VKWo3A5abYEJsnOm3qnPIbMXdL7FCLcHP6ejX2hmk/xgkKZEoo/PDY4RaRDyJDMfs
- GcnX3V2QnKSxTmGtecSrjsFm95Waq6iJVe8T6tTvkg+cJwQ9aQ3LhNgkdvlyCLVVKnRr
- 9y1XA1v2OaQ9NmImsFJ5zDxWrEWtX/DCar2eeX1ZvXDrDjXQL0VCUAsPsYEv4N+GmcVa
- W/t3f0g4AuWMaYpaYN5DzNRVJTSjZDs8iXApgRtISwmrESk/I4xGHydrI3c+egOWUZU/
- BB38jbZO6n+P4I2ExBbr/BKqxNn39CLLBavmGwDL6zcGvr3unJtJQesaAp0GPt/Tkm19 YA== 
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 334q5urfwt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Aug 2020 19:50:52 -0400
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07ONmTQZ019584;
-        Mon, 24 Aug 2020 23:50:51 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma02wdc.us.ibm.com with ESMTP id 332ujpw8ds-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Aug 2020 23:50:51 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07ONopAi51511646
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 24 Aug 2020 23:50:51 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EC974B2064;
-        Mon, 24 Aug 2020 23:50:50 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8F116B205F;
-        Mon, 24 Aug 2020 23:50:50 +0000 (GMT)
-Received: from ltcalpine2-lp16.aus.stglabs.ibm.com (unknown [9.40.195.199])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 24 Aug 2020 23:50:50 +0000 (GMT)
-From:   Dany Madden <drt@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Mingming Cao <mmc@linux.vnet.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>
-Subject: [PATCH net] ibmvnic fix NULL tx_pools and rx_tools issue at do_reset
-Date:   Mon, 24 Aug 2020 19:49:23 -0400
-Message-Id: <20200824234922.805858-1-drt@linux.ibm.com>
-X-Mailer: git-send-email 2.18.2
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-24_12:2020-08-24,2020-08-24 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- spamscore=0 suspectscore=1 phishscore=0 mlxlogscore=999 clxscore=1011
- lowpriorityscore=0 bulkscore=0 impostorscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008240185
+        id S1727891AbgHXX5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 19:57:02 -0400
+Received: from mga06.intel.com ([134.134.136.31]:5205 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726189AbgHXX5C (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 19:57:02 -0400
+IronPort-SDR: fCP3RvtHoolCalJ2aH8JD2eAOFR9vCu6ZOV+xGOFmwALZaQdK0lbZbitpVWxpvvvtsBe2v4gm8
+ 3ewMObdmHaSA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9723"; a="217562218"
+X-IronPort-AV: E=Sophos;i="5.76,350,1592895600"; 
+   d="scan'208";a="217562218"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2020 16:57:01 -0700
+IronPort-SDR: y5Pmjra3LnAJHGgf1m7tJIwWX8G0nderXKvpQ2slDea4osSAaYkQHrnmxxEnkqh9M4WYX9LR//
+ iQYAfoTnxeZw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,350,1592895600"; 
+   d="scan'208";a="499102067"
+Received: from unknown (HELO ellie) ([10.254.31.141])
+  by fmsmga006.fm.intel.com with ESMTP; 24 Aug 2020 16:57:00 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
+In-Reply-To: <20200820081118.10105-6-kurt@linutronix.de>
+References: <20200820081118.10105-1-kurt@linutronix.de> <20200820081118.10105-6-kurt@linutronix.de>
+Date:   Mon, 24 Aug 2020 16:57:00 -0700
+Message-ID: <87pn7ftx6b.fsf@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mingming Cao <mmc@linux.vnet.ibm.com>
+Hi,
 
-At the time of do_reset, ibmvnic tries to re-initalize the tx_pools
-and rx_pools to avoid re-allocating the long term buffer. However
-there is a window inside do_reset that the tx_pools and
-rx_pools were freed before re-initialized making it possible to deference
-null pointers.
+Kurt Kanzenbach <kurt@linutronix.de> writes:
 
-This patch fixes this issue by checking that the tx_pool
-and rx_pool are not NULL after ibmvnic_login. If so, re-allocating
-the pools. This will avoid getting into calling reset_tx/rx_pools with
-NULL adapter tx_pools/rx_pools pointer. Also add null pointer check in
-reset_tx_pools and reset_rx_pools to safe handle NULL pointer case.
+> The switch has support for the 802.1Qbv Time Aware Shaper (TAS). Traffic
+> schedules may be configured individually on each front port. Each port has eight
+> egress queues. The traffic is mapped to a traffic class respectively via the PCP
+> field of a VLAN tagged frame.
+>
+> The TAPRIO Qdisc already implements that. Therefore, this interface can simply
+> be reused. Add .port_setup_tc() accordingly.
+>
+> The activation of a schedule on a port is split into two parts:
+>
+>  * Programming the necessary gate control list (GCL)
+>  * Setup hrtimer for starting the schedule
+>
+> The hardware supports starting a schedule up to eight seconds in the future. The
+> TAPRIO interface provides an absolute base time. Therefore, hrtimers are
+> leveraged.
 
-Signed-off-by: Mingming Cao <mmc@linux.vnet.ibm.com>
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+The driver side looks good, looks like a well behaved piece of hardware,
+even not supporting schedules with a base time 8 seconds (or later) in
+the future is not so bad.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 5afb3c9c52d2..5ff48e55308b 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -479,6 +479,9 @@ static int reset_rx_pools(struct ibmvnic_adapter *adapter)
- 	int i, j, rc;
- 	u64 *size_array;
- 
-+	if (!adapter->tx_pool)
-+		return -1;
-+
- 	size_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
- 		be32_to_cpu(adapter->login_rsp_buf->off_rxadd_buff_size));
- 
-@@ -649,6 +652,9 @@ static int reset_tx_pools(struct ibmvnic_adapter *adapter)
- 	int tx_scrqs;
- 	int i, rc;
- 
-+	if (!adapter->tx_pool)
-+		return -1;
-+
- 	tx_scrqs = be32_to_cpu(adapter->login_rsp_buf->num_txsubm_subcrqs);
- 	for (i = 0; i < tx_scrqs; i++) {
- 		rc = reset_one_tx_pool(adapter, &adapter->tso_pool[i]);
-@@ -2011,7 +2017,10 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 		    adapter->req_rx_add_entries_per_subcrq !=
- 		    old_num_rx_slots ||
- 		    adapter->req_tx_entries_per_subcrq !=
--		    old_num_tx_slots) {
-+		    old_num_tx_slots ||
-+			!adapter->rx_pool ||
-+			!adapter->tso_pool ||
-+			!adapter->tx_pool) {
- 			release_rx_pools(adapter);
- 			release_tx_pools(adapter);
- 			release_napi(adapter);
-@@ -2024,10 +2033,14 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 		} else {
- 			rc = reset_tx_pools(adapter);
- 			if (rc)
-+				netdev_dbg(adapter->netdev, "reset tx pools failed (%d)\n",
-+						rc);
- 				goto out;
- 
- 			rc = reset_rx_pools(adapter);
- 			if (rc)
-+				netdev_dbg(adapter->netdev, "reset rx pools failed (%d)\n",
-+						rc);
- 				goto out;
- 		}
- 		ibmvnic_disable_irqs(adapter);
+>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> ---
+>  drivers/net/dsa/hirschmann/hellcreek.c | 294 +++++++++++++++++++++++++
+>  drivers/net/dsa/hirschmann/hellcreek.h |  21 ++
+>  2 files changed, 315 insertions(+)
+>
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+> index 745ca60342b4..e5b54f42c635 100644
+> --- a/drivers/net/dsa/hirschmann/hellcreek.c
+> +++ b/drivers/net/dsa/hirschmann/hellcreek.c
+> @@ -22,7 +22,9 @@
+>  #include <linux/spinlock.h>
+>  #include <linux/delay.h>
+>  #include <linux/ktime.h>
+> +#include <linux/time.h>
+>  #include <net/dsa.h>
+> +#include <net/pkt_sched.h>
+>  
+>  #include "hellcreek.h"
+>  #include "hellcreek_ptp.h"
+> @@ -153,6 +155,15 @@ static void hellcreek_select_vlan(struct hellcreek *hellcreek, int vid,
+>  	hellcreek_write(hellcreek, val, HR_VIDCFG);
+>  }
+>  
+> +static void hellcreek_select_tgd(struct hellcreek *hellcreek, int port)
+> +{
+> +	u16 val = 0;
+> +
+> +	val |= port << TR_TGDSEL_TDGSEL_SHIFT;
+> +
+> +	hellcreek_write(hellcreek, val, TR_TGDSEL);
+> +}
+> +
+>  static int hellcreek_wait_until_ready(struct hellcreek *hellcreek)
+>  {
+>  	u16 val;
+> @@ -958,6 +969,24 @@ static void __hellcreek_setup_tc_identity_mapping(struct hellcreek *hellcreek)
+>  	}
+>  }
+>  
+> +static void hellcreek_setup_tc_mapping(struct hellcreek *hellcreek,
+> +				       struct net_device *netdev)
+> +{
+> +	int i, j;
+> +
+> +	/* Setup mapping between traffic classes and port queues. */
+> +	for (i = 0; i < netdev_get_num_tc(netdev); ++i) {
+> +		for (j = 0; j < netdev->tc_to_txq[i].count; ++j) {
+> +			const int queue = j + netdev->tc_to_txq[i].offset;
+> +
+> +			hellcreek_select_prio(hellcreek, i);
+> +			hellcreek_write(hellcreek,
+> +					queue << HR_PRTCCFG_PCP_TC_MAP_SHIFT,
+> +					HR_PRTCCFG);
+> +		}
+> +	}
+> +}
+> +
+>  static void hellcreek_setup_tc_identity_mapping(struct hellcreek *hellcreek)
+>  {
+>  	unsigned long flags;
+> @@ -1081,6 +1110,267 @@ static void hellcreek_phylink_validate(struct dsa_switch *ds, int port,
+>  		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+>  }
+>  
+> +static void hellcreek_setup_gcl(struct hellcreek *hellcreek, int port,
+> +				const struct hellcreek_schedule *schedule)
+> +{
+> +	size_t i;
+> +
+> +	for (i = 1; i <= schedule->num_entries; ++i) {
+> +		const struct hellcreek_gcl_entry *cur, *initial, *next;
+> +		u16 data;
+> +		u8 gates;
+> +
+> +		cur	= &schedule->entries[i - 1];
+> +		initial = &schedule->entries[0];
+> +		next	= &schedule->entries[i];
+> +
+> +		if (i == schedule->num_entries)
+> +			gates = initial->gate_states ^
+> +				cur->gate_states;
+> +		else
+> +			gates = next->gate_states ^
+> +				cur->gate_states;
+> +
+> +		data = gates;
+> +		if (cur->overrun_ignore)
+> +			data |= TR_GCLDAT_GCLOVRI;
+> +
+> +		if (i == schedule->num_entries)
+> +			data |= TR_GCLDAT_GCLWRLAST;
+> +
+> +		/* Gates states */
+> +		hellcreek_write(hellcreek, data, TR_GCLDAT);
+> +
+> +		/* Time intervall */
+> +		hellcreek_write(hellcreek,
+> +				cur->interval & 0x0000ffff,
+> +				TR_GCLTIL);
+> +		hellcreek_write(hellcreek,
+> +				(cur->interval & 0xffff0000) >> 16,
+> +				TR_GCLTIH);
+> +
+> +		/* Commit entry */
+> +		data = ((i - 1) << TR_GCLCMD_GCLWRADR_SHIFT) |
+> +			(initial->gate_states <<
+> +			 TR_GCLCMD_INIT_GATE_STATES_SHIFT);
+> +		hellcreek_write(hellcreek, data, TR_GCLCMD);
+> +	}
+> +}
+> +
+> +static void hellcreek_set_cycle_time(struct hellcreek *hellcreek,
+> +				     const struct hellcreek_schedule *schedule)
+> +{
+> +	u32 cycle_time = schedule->cycle_time;
+> +
+> +	hellcreek_write(hellcreek, cycle_time & 0x0000ffff, TR_CTWRL);
+> +	hellcreek_write(hellcreek, (cycle_time & 0xffff0000) >> 16, TR_CTWRH);
+> +}
+> +
+> +static void hellcreek_start_schedule(struct hellcreek *hellcreek,
+> +				     ktime_t start_time)
+> +{
+> +	struct timespec64 ts = ktime_to_timespec64(start_time);
+> +
+> +	/* Start can be only 8 seconds in the future */
+> +	ts.tv_sec %= 8;
+> +
+> +	/* Start schedule at this point of time */
+> +	hellcreek_write(hellcreek, ts.tv_nsec & 0x0000ffff, TR_ESTWRL);
+> +	hellcreek_write(hellcreek, (ts.tv_nsec & 0xffff0000) >> 16, TR_ESTWRH);
+> +
+> +	/* Arm timer, set seconds and switch schedule */
+> +	hellcreek_write(hellcreek, TR_ESTCMD_ESTARM | TR_ESTCMD_ESTSWCFG |
+> +		     ((ts.tv_sec & TR_ESTCMD_ESTSEC_MASK) <<
+> +		      TR_ESTCMD_ESTSEC_SHIFT), TR_ESTCMD);
+> +}
+> +
+> +static struct hellcreek_schedule *hellcreek_taprio_to_schedule(
+> +	const struct tc_taprio_qopt_offload *taprio)
+> +{
+> +	struct hellcreek_schedule *schedule;
+> +	size_t i;
+> +
+> +	/* Allocate some memory first */
+> +	schedule = kzalloc(sizeof(*schedule), GFP_KERNEL);
+> +	if (!schedule)
+> +		return ERR_PTR(-ENOMEM);
+> +	schedule->entries = kcalloc(taprio->num_entries,
+> +				    sizeof(*schedule->entries),
+> +				    GFP_KERNEL);
+> +	if (!schedule->entries) {
+> +		kfree(schedule);
+> +		return ERR_PTR(-ENOMEM);
+> +	}
+> +
+> +	/* Construct hellcreek schedule */
+> +	schedule->num_entries = taprio->num_entries;
+> +	schedule->base_time   = taprio->base_time;
+> +
+> +	for (i = 0; i < taprio->num_entries; ++i) {
+> +		const struct tc_taprio_sched_entry *t = &taprio->entries[i];
+> +		struct hellcreek_gcl_entry *k = &schedule->entries[i];
+> +
+> +		k->interval	  = t->interval;
+> +		k->gate_states	  = t->gate_mask;
+> +		k->overrun_ignore = 0;
+> +
+> +		/* Update complete cycle time */
+> +		schedule->cycle_time += t->interval;
+> +	}
+> +
+> +	return schedule;
+> +}
+> +
+> +static enum hrtimer_restart hellcreek_set_schedule(struct hrtimer *timer)
+> +{
+> +	struct hellcreek_port *hellcreek_port =
+> +		hrtimer_to_hellcreek_port(timer);
+> +	struct hellcreek *hellcreek = hellcreek_port->hellcreek;
+> +	struct hellcreek_schedule *schedule;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&hellcreek->reg_lock, flags);
+> +
+> +	/* First select port */
+> +	hellcreek_select_tgd(hellcreek, hellcreek_port->port);
+> +
+> +	/* Set admin base time and switch schedule */
+> +	hellcreek_start_schedule(hellcreek,
+> +				 hellcreek_port->current_schedule->base_time);
+> +
+> +	schedule = hellcreek_port->current_schedule;
+> +	hellcreek_port->current_schedule = NULL;
+> +
+> +	spin_unlock_irqrestore(&hellcreek->reg_lock, flags);
+> +
+> +	dev_dbg(hellcreek->dev, "ARMed EST timer for port %d\n",
+> +		hellcreek_port->port);
+> +
+> +	/* Free resources */
+> +	kfree(schedule->entries);
+> +	kfree(schedule);
+> +
+> +	return HRTIMER_NORESTART;
+> +}
+> +
+> +static int hellcreek_port_set_schedule(struct dsa_switch *ds, int port,
+> +				       const struct tc_taprio_qopt_offload *taprio)
+> +{
+> +	struct net_device *netdev = dsa_to_port(ds, port)->slave;
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	struct hellcreek_port *hellcreek_port;
+> +	struct hellcreek_schedule *schedule;
+> +	unsigned long flags;
+> +	ktime_t start;
+> +	u16 ctrl;
+> +
+> +	hellcreek_port = &hellcreek->ports[port];
+> +
+> +	/* Convert taprio data to hellcreek schedule */
+> +	schedule = hellcreek_taprio_to_schedule(taprio);
+> +	if (IS_ERR(schedule))
+> +		return PTR_ERR(schedule);
+> +
+> +	dev_dbg(hellcreek->dev, "Configure traffic schedule on port %d\n",
+> +		port);
+> +
+> +	/* Cancel an in flight timer */
+> +	hrtimer_cancel(&hellcreek_port->cycle_start_timer);
+> +
+> +	spin_lock_irqsave(&hellcreek->reg_lock, flags);
+> +
+> +	if (hellcreek_port->current_schedule) {
+> +		kfree(hellcreek_port->current_schedule->entries);
+> +		kfree(hellcreek_port->current_schedule);
+> +	}
+> +
+> +	hellcreek_port->current_schedule = schedule;
+> +
+> +	/* First select port */
+> +	hellcreek_select_tgd(hellcreek, port);
+> +
+> +	/* Setup traffic class <-> queue mapping */
+> +	hellcreek_setup_tc_mapping(hellcreek, netdev);
+> +
+> +	/* Enable gating and set the admin state to forward everything in the
+> +	 * mean time
+> +	 */
+> +	ctrl = (0xff << TR_TGDCTRL_ADMINGATESTATES_SHIFT) | TR_TGDCTRL_GATE_EN;
+> +	hellcreek_write(hellcreek, ctrl, TR_TGDCTRL);
+> +
+> +	/* Cancel pending schedule */
+> +	hellcreek_write(hellcreek, 0x00, TR_ESTCMD);
+> +
+> +	/* Setup a new schedule */
+> +	hellcreek_setup_gcl(hellcreek, port, schedule);
+> +
+> +	/* Configure cycle time */
+> +	hellcreek_set_cycle_time(hellcreek, schedule);
+> +
+> +	/* Setup timer for schedule switch: The IP core only allows to set a
+> +	 * cycle start timer 8 seconds in the future. This is why we setup the
+> +	 * hritmer to base_time - 5 seconds. Then, we have enough time to
+> +	 * activate IP core's EST timer.
+> +	 */
+> +	start = ktime_sub_ns(schedule->base_time, (u64)5 * NSEC_PER_SEC);
+> +	hrtimer_start_range_ns(&hellcreek_port->cycle_start_timer, start,
+> +			       NSEC_PER_SEC, HRTIMER_MODE_ABS);
+
+If we are talking about seconds here, I don't think you need to use a
+hrtimer, you could use a workqueue/delayed_work. Should make things a
+bit simpler. 
+
+> +
+> +	spin_unlock_irqrestore(&hellcreek->reg_lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static int hellcreek_port_del_schedule(struct dsa_switch *ds, int port)
+> +{
+> +	struct hellcreek *hellcreek = ds->priv;
+> +	struct hellcreek_port *hellcreek_port;
+> +	unsigned long flags;
+> +
+> +	hellcreek_port = &hellcreek->ports[port];
+> +
+> +	dev_dbg(hellcreek->dev, "Remove traffic schedule on port %d\n", port);
+> +
+> +	/* First cancel timer */
+> +	hrtimer_cancel(&hellcreek_port->cycle_start_timer);
+> +
+> +	spin_lock_irqsave(&hellcreek->reg_lock, flags);
+> +
+> +	if (hellcreek_port->current_schedule) {
+> +		kfree(hellcreek_port->current_schedule->entries);
+> +		kfree(hellcreek_port->current_schedule);
+> +		hellcreek_port->current_schedule = NULL;
+> +	}
+> +
+> +	/* Then select port */
+> +	hellcreek_select_tgd(hellcreek, port);
+> +
+> +	/* Revert tc mapping */
+> +	__hellcreek_setup_tc_identity_mapping(hellcreek);
+> +
+> +	/* Disable gating and return to regular switching flow */
+> +	hellcreek_write(hellcreek, 0xff << TR_TGDCTRL_ADMINGATESTATES_SHIFT,
+> +			TR_TGDCTRL);
+> +
+> +	spin_unlock_irqrestore(&hellcreek->reg_lock, flags);
+> +
+> +	return 0;
+> +}
+> +
+> +static int hellcreek_port_setup_tc(struct dsa_switch *ds, int port,
+> +				   enum tc_setup_type type, void *type_data)
+> +{
+> +	const struct tc_taprio_qopt_offload *taprio = type_data;
+> +
+> +	if (type != TC_SETUP_QDISC_TAPRIO)
+> +		return -EOPNOTSUPP;
+> +
+> +	if (taprio->enable)
+> +		return hellcreek_port_set_schedule(ds, port, taprio);
+> +
+> +	return hellcreek_port_del_schedule(ds, port);
+> +}
+> +
+>  static const struct dsa_switch_ops hellcreek_ds_ops = {
+>  	.get_tag_protocol    = hellcreek_get_tag_protocol,
+>  	.setup		     = hellcreek_setup,
+> @@ -1104,6 +1394,7 @@ static const struct dsa_switch_ops hellcreek_ds_ops = {
+>  	.port_hwtstamp_get   = hellcreek_port_hwtstamp_get,
+>  	.port_txtstamp	     = hellcreek_port_txtstamp,
+>  	.port_rxtstamp	     = hellcreek_port_rxtstamp,
+> +	.port_setup_tc	     = hellcreek_port_setup_tc,
+>  	.get_ts_info	     = hellcreek_get_ts_info,
+>  };
+>  
+> @@ -1135,6 +1426,9 @@ static int hellcreek_probe(struct platform_device *pdev)
+>  		if (!port->counter_values)
+>  			return -ENOMEM;
+>  
+> +		hrtimer_init(&port->cycle_start_timer, CLOCK_TAI,
+> +			     HRTIMER_MODE_ABS);
+> +		port->cycle_start_timer.function = hellcreek_set_schedule;
+>  		port->hellcreek = hellcreek;
+>  		port->port	= i;
+>  	}
+> diff --git a/drivers/net/dsa/hirschmann/hellcreek.h b/drivers/net/dsa/hirschmann/hellcreek.h
+> index 1d3de72a48a5..d3d1a1144857 100644
+> --- a/drivers/net/dsa/hirschmann/hellcreek.h
+> +++ b/drivers/net/dsa/hirschmann/hellcreek.h
+> @@ -16,6 +16,7 @@
+>  #include <linux/ptp_clock_kernel.h>
+>  #include <linux/timecounter.h>
+>  #include <linux/spinlock.h>
+> +#include <linux/hrtimer.h>
+>  #include <net/dsa.h>
+>  
+>  /* Ports:
+> @@ -210,6 +211,20 @@ struct hellcreek_counter {
+>  	const char *name;
+>  };
+>  
+> +struct hellcreek_gcl_entry {
+> +	u32 interval;
+> +	u8 gate_states;
+> +	bool overrun_ignore;
+> +};
+> +
+> +struct hellcreek_schedule {
+> +	struct hellcreek_gcl_entry *entries;
+> +	size_t num_entries;
+> +	ktime_t base_time;
+> +	u32 cycle_time;
+> +	int port;
+> +};
+> +
+>  struct hellcreek;
+>  
+>  /* State flags for hellcreek_port_hwtstamp::state */
+> @@ -236,6 +251,8 @@ struct hellcreek_port_hwtstamp {
+>  
+>  struct hellcreek_port {
+>  	struct hellcreek *hellcreek;
+> +	struct hellcreek_schedule *current_schedule;
+> +	struct hrtimer cycle_start_timer;
+>  	int port;
+>  	u16 ptcfg;		/* ptcfg shadow */
+>  	u64 *counter_values;
+> @@ -273,4 +290,8 @@ struct hellcreek {
+>  	size_t fdb_entries;
+>  };
+>  
+> +#define hrtimer_to_hellcreek_port(timer)		\
+> +	container_of(timer, struct hellcreek_port,	\
+> +		     cycle_start_timer)
+> +
+>  #endif /* _HELLCREEK_H_ */
+> -- 
+> 2.20.1
+>
+
+Cheers,
 -- 
-2.18.2
-
+Vinicius
