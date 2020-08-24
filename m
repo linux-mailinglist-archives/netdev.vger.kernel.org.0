@@ -2,94 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE180250B68
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 00:08:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13437250BA0
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 00:28:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbgHXWIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 18:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbgHXWIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 18:08:20 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A7DC061574;
-        Mon, 24 Aug 2020 15:08:19 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id o22so7534451qtt.13;
-        Mon, 24 Aug 2020 15:08:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lBxRutKoRvBsYMY7DjEDLutlgfOhzLlM9Y1VeLJ+A7s=;
-        b=T/2Bfrf1wY8nhFiNcBiCCQhHmW5zBx7JXmfuWVBbQB+x1k7mRvciNL7nUBN7oFE8LJ
-         oEzm5C8MEsIWBoZob/1OcU3xpIar/nzvkhjBV76G4FfLUyxyDx5aOfuWsfhLlXyOjTFy
-         cwdHFDxZsPGRF2um51QavWrE9tpB9dd6qMZs72+xi0KEHHLe0ivLOQ4bCM55rreYFIMX
-         2+/cfSxNhUmdZfAprWggg8dBWbwQyy6fdmbmcbVcVrVF4hP6G7MgYOIxVP85hQc3PJxD
-         Or465Fn93dC8QrfshSd0ivrVPnxMiiEMS1dH/fWwqMUFBXGx8bA1rBTX+HPAFuQfc4xT
-         iONA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=lBxRutKoRvBsYMY7DjEDLutlgfOhzLlM9Y1VeLJ+A7s=;
-        b=TO2OivIUQrVMdakkgtZrKlJbhGfex1+O9ReyvKfeRTRztZVqGI0l5oO7W7yQrcxU6f
-         QDn0/hIpnYecbSzhho4YWV+eT5mt6NEGJb6VCkg4X3c5DpsI40UkkCc8l/O/nGieDp/g
-         WyMRRfpr/rHyvRQ7l7GDkmuqNIJYDNEBTpBTsgCv9gMu2L9Jw2CRDUP6EgBO0AY6zbor
-         9WYjyKTXMFNy2S19ReQHcJVIM61PKNQ8AmkRQQJUtbo/gjBZXMTPh7BeS/e1d3cMXESJ
-         8nphqGCRcaWv05oQ9S2sxK43Tmwbi1tvuLyFZlzN3ELXs4HCjyzOqC+EjkTCDeFdx5+V
-         k4Bw==
-X-Gm-Message-State: AOAM532QvmuIyCgawdkI/N/1N1uYj8czK5WZETBQpV40ZoK3vkQBNbSM
-        cHxReIUmsTrkGq/GkQ9kDng=
-X-Google-Smtp-Source: ABdhPJzKshlK6jcVf/9HMVRKL2q2AuOpfROK7MkWUZaFhH9sfkW0M9H1pE69KAD4NDzRvQPAc/a1Rw==
-X-Received: by 2002:aed:364a:: with SMTP id e68mr6690391qtb.260.1598306898013;
-        Mon, 24 Aug 2020 15:08:18 -0700 (PDT)
-Received: from tong-desktop.local ([2601:5c0:c100:b9d:e9aa:e42d:21e4:5150])
-        by smtp.googlemail.com with ESMTPSA id x31sm8241177qtx.97.2020.08.24.15.08.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Aug 2020 15:08:17 -0700 (PDT)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, ztong0001@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: caif: fix error code handling
-Date:   Mon, 24 Aug 2020 18:08:06 -0400
-Message-Id: <20200824220806.1257123-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727940AbgHXW2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 18:28:14 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:4226 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726531AbgHXW2O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 18:28:14 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07OML0tp028314
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 15:28:13 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=Ph2BI8Aws2Tf2cWVu8gVGq9pGhqUnKAxMSGZgTd0ZJo=;
+ b=irklnqOBkrNlCz+dyDXVbXGrA/Wg6TiC9vrUa3oHlHp+6OhAEkCuchhrxXHEkQEsKCWC
+ ErkDPp1fIWM3CuI40Vf+duZxZ9xUiQGWoA8PFGE7LbsJv/GqHjpQf4khuhphgsZw1VMb
+ eJIX1hSkHJSErNayT9+eNc2WrFIfv05+u/o= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 333jv9qh9s-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 15:28:13 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 24 Aug 2020 15:28:11 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id 6ED893704D57; Mon, 24 Aug 2020 15:28:07 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: enable tc verbose mode for test_sk_assign
+Date:   Mon, 24 Aug 2020 15:28:07 -0700
+Message-ID: <20200824222807.100200-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-24_12:2020-08-24,2020-08-24 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ suspectscore=8 mlxlogscore=999 lowpriorityscore=0 clxscore=1015 mlxscore=0
+ spamscore=0 adultscore=0 impostorscore=0 bulkscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008240177
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cfpkt_peek_head return 0 and 1, caller is checking error using <0
+Currently test_sk_assign failed verifier with llvm11/llvm12.
+During debugging, I found the default verifier output is
+truncated like below
+  Verifier analysis:
 
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+  Skipped 2200 bytes, use 'verb' option for the full verbose log.
+  [...]
+  off=3D23,r=3D34,imm=3D0) R5=3Dinv0 R6=3Dctx(id=3D0,off=3D0,imm=3D0) R7=3D=
+pkt(id=3D0,off=3D0,r=3D34,imm=3D0) R10=3Dfp0
+  80: (0f) r7 +=3D r2
+  last_idx 80 first_idx 21
+  regs=3D4 stack=3D0 before 78: (16) if w3 =3D=3D 0x11 goto pc+1
+when I am using "./test_progs -vv -t assign".
+
+The reason is tc verbose mode is not enabled.
+
+This patched enabled tc verbose mode and the output looks like below
+  Verifier analysis:
+
+  0: (bf) r6 =3D r1
+  1: (b4) w0 =3D 2
+  2: (61) r1 =3D *(u32 *)(r6 +80)
+  3: (61) r7 =3D *(u32 *)(r6 +76)
+  4: (bf) r2 =3D r7
+  5: (07) r2 +=3D 14
+  6: (2d) if r2 > r1 goto pc+61
+   R0_w=3Dinv2 R1_w=3Dpkt_end(id=3D0,off=3D0,imm=3D0) R2_w=3Dpkt(id=3D0,o=
+ff=3D14,r=3D14,imm=3D0)
+  ...
+
+Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- net/caif/cfrfml.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/sk_assign.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/caif/cfrfml.c b/net/caif/cfrfml.c
-index ce2767e9cec6..7b0af33bdb97 100644
---- a/net/caif/cfrfml.c
-+++ b/net/caif/cfrfml.c
-@@ -116,7 +116,7 @@ static int cfrfml_receive(struct cflayer *layr, struct cfpkt *pkt)
- 	if (segmented) {
- 		if (rfml->incomplete_frm == NULL) {
- 			/* Initial Segment */
--			if (cfpkt_peek_head(pkt, rfml->seghead, 6) < 0)
-+			if (cfpkt_peek_head(pkt, rfml->seghead, 6) != 0)
- 				goto out;
- 
- 			rfml->pdu_size = get_unaligned_le16(rfml->seghead+4);
-@@ -233,7 +233,7 @@ static int cfrfml_transmit(struct cflayer *layr, struct cfpkt *pkt)
- 	if (cfpkt_getlen(pkt) > rfml->fragment_size + RFM_HEAD_SIZE)
- 		err = cfpkt_peek_head(pkt, head, 6);
- 
--	if (err < 0)
-+	if (err != 0)
- 		goto out;
- 
- 	while (cfpkt_getlen(frontpkt) > rfml->fragment_size + RFM_HEAD_SIZE) {
--- 
-2.25.1
+diff --git a/tools/testing/selftests/bpf/prog_tests/sk_assign.c b/tools/t=
+esting/selftests/bpf/prog_tests/sk_assign.c
+index d43038d2b9e1..a49a26f95a8b 100644
+--- a/tools/testing/selftests/bpf/prog_tests/sk_assign.c
++++ b/tools/testing/selftests/bpf/prog_tests/sk_assign.c
+@@ -49,7 +49,7 @@ configure_stack(void)
+ 	sprintf(tc_cmd, "%s %s %s %s", "tc filter add dev lo ingress bpf",
+ 		       "direct-action object-file ./test_sk_assign.o",
+ 		       "section classifier/sk_assign_test",
+-		       (env.verbosity < VERBOSE_VERY) ? " 2>/dev/null" : "");
++		       (env.verbosity < VERBOSE_VERY) ? " 2>/dev/null" : "verbose");
+ 	if (CHECK(system(tc_cmd), "BPF load failed;",
+ 		  "run with -vv for more info\n"))
+ 		return false;
+--=20
+2.24.1
 
