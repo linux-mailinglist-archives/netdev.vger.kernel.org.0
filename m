@@ -2,164 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E54B24FF5C
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 15:58:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDFB224FFA4
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 16:13:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726967AbgHXN61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 09:58:27 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:34892 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725921AbgHXN6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 09:58:24 -0400
-Received: by mail-io1-f72.google.com with SMTP id k20so6183203iog.2
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 06:58:23 -0700 (PDT)
+        id S1726024AbgHXON3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 10:13:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725781AbgHXONZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 10:13:25 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFBE3C061573
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 07:13:24 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id mw10so4289467pjb.2
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 07:13:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=My99gZu9SAiWLI/FM5xZGCr2h7VV0u5aP+ilsJxkPsw=;
+        b=HpGBvByV+x8/zNqxwxPRhqIYxKvrUHK2enGkHJ7sPxNEMPoAlBPoBt8v0++iYxFO6J
+         EPy1/xBRuLt6QI5T9AOKcM9DneOYsQYNgeKQgLfefW+x4wO3LOVtbc18Qtb7b+77fNUt
+         KXHoxeEirHhNwNihCTUDz15pd4z/oYLEDkC4mEuEWJxCDbwg1pZXzRAdOm56BlkRN3++
+         S35jhyjYBS2lkqmb8DQtgcCR77t14L37/mJwhwQFyD7tGxvEFk5+kAGgxXlOkK95xO2q
+         VzcdlSorKmbJDm7k2290iNCEkKBXpB7mxMMPx3plgr3cfI86wOBWYeMmmhfQ57To7AUT
+         1tyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=+V0QzvgG14Z720o2lIX3LxzlzhonjMzU55Q/hPYeJzs=;
-        b=X8W4Y3jNEBBOgW+5PGBSNBVDQtApMovki8uOYZ6fLmqN8SLBNnaIcjgOzjR0eRR9jz
-         As2wAEgcVwTiWGRLlgMV7hY96wqxEdDzJoCNImq5DRpDA+GgvDD468jAf2TLCrq3+RZC
-         gISZSAmjnJREF9LOKDOFRqCOhy2XWXUJGFZ1vIaTOYIbo4v9X1nnDulK/ahTteUFztI3
-         HJE3GVut5c2apHaACnmN7XnyqhAm7qbMvgsmSgDVtRJQIyJ27+gwpKtw1HCKnzrwPJCF
-         W1/pHz6jSgwnoCPd3o9GKGT2cALPH6CqxLb14SwrMGBsRRVULj5SSyp92CrDWvdWfToJ
-         OHxw==
-X-Gm-Message-State: AOAM5301teLh5JDokVUrvsnBOEW551uAR8Fp8SBul7PCRxpBUBdKIfnv
-        UBlTg5oPJcUw0TMqNoIFyR3/UK8yvhnyt9a4Ztis/SLBmEby
-X-Google-Smtp-Source: ABdhPJz9+MNTbmYaygbznNojo1zCWjjM1cvV8uf26efNvgfqFvYArf/xzRYpvkp3qupeC3r8pUBY7AdMzFgka09oRgeWFyO2p1i1
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=My99gZu9SAiWLI/FM5xZGCr2h7VV0u5aP+ilsJxkPsw=;
+        b=WLxL2++mQPHBTU9vdDCPQ5C3MFkAybmpJSjQt1VLc19nhc3Qen5iHmfwNlZsiNJnhm
+         VedyYGzKlCuPVg4I1uNG2wnwzXgWeGI3mJEE16+7/Da/KggkgOYEc1qzztOxbuNJZyMm
+         ufReWI6swgngAA1PvWbucd7i7pKLPoNIeO6pd1jtdlPseaMMvp2SXg0pduvnPsVP84CP
+         D/4SsCfkx8rsXsYcb7xq6OWO4tQ1Lc6FSsK/QNxtYrp3lBB1/m5RFlrXXHkKhT7ISZ4h
+         j4whniETUt1UHvION89zRMFDIqxc93lYVeuYu1/gX2w7+5ApW8RfQSPe8G7YDqIvvhYV
+         iTaw==
+X-Gm-Message-State: AOAM531neadPG9rlO7l0s7MyUMLUcZK/mCG1jR+egfEeoazzzE8DJiSt
+        8ixfiXbGpS7fQkDukXi1yw==
+X-Google-Smtp-Source: ABdhPJyvkwGd239UD67WcPvS9vUlCtl3t3kvanxIwEy5zRezPm8CDYMJ3WWEQ7bdhzdD80GY/SO0Dg==
+X-Received: by 2002:a17:90a:8817:: with SMTP id s23mr4901019pjn.158.1598278402245;
+        Mon, 24 Aug 2020 07:13:22 -0700 (PDT)
+Received: from madhuparna-HP-Notebook ([2402:3a80:cfa:d88f:d15b:321b:cea4:bde0])
+        by smtp.gmail.com with ESMTPSA id r91sm10094555pja.56.2020.08.24.07.13.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 24 Aug 2020 07:13:21 -0700 (PDT)
+From:   Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+X-Google-Original-From: Madhuparna Bhowmik <change_this_user_name@gmail.com>
+Date:   Mon, 24 Aug 2020 19:43:16 +0530
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        andrianov <andrianov@ispras.ru>, netdev <netdev@vger.kernel.org>
+Subject: Re: Regarding possible bug in net/wan/x25_asy.c
+Message-ID: <20200824141315.GA21579@madhuparna-HP-Notebook>
+References: <CAD=jOEY=8T3-USi63hy47BZKfTYcsUw-s-jAc3xi9ksk-je+XA@mail.gmail.com>
+ <CAJht_EPrOuk3uweCNy06s0UQTBwkwCzjoS9fMfP8DMRAt8UV8w@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8b4f:: with SMTP id c15mr4900416iot.146.1598277503540;
- Mon, 24 Aug 2020 06:58:23 -0700 (PDT)
-Date:   Mon, 24 Aug 2020 06:58:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d9e4bb05ad9ffaef@google.com>
-Subject: KMSAN: uninit-value in skb_trim
-From:   syzbot <syzbot+e4534e8c1c382508312c@syzkaller.appspotmail.com>
-To:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
-        glider@google.com, kuba@kernel.org, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJht_EPrOuk3uweCNy06s0UQTBwkwCzjoS9fMfP8DMRAt8UV8w@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sun, Aug 23, 2020 at 12:12:01PM -0700, Xie He wrote:
+> On Sun, Aug 23, 2020 at 8:28 AM Madhuparna Bhowmik
+> <madhuparnabhowmik10@gmail.com> wrote:
+> >
+> > sl->xhead is modified in both x25_asy_change_mtu() and
+> > x25_asy_write_wakeup(). However, sl->lock is not held in
+> > x25_asy_write_wakeup(). So, I am not sure if it is indeed possible to
+> > have a race between these two functions. If it is possible that these
+> > two functions can execute in parallel then the lock should be held in
+> > x25_asy_write_wakeup() as well. Please let me know if this race is
+> > possible.
+> 
+> I think you are right. These two functions do race with each other.
+> There seems to be nothing preventing them from racing. We need to hold
+> the lock in x25_asy_write_wakeup to prevent it from racing with
+> x25_asy_change_mtu.
+> 
+> By the way, I think this driver has bigger problems. We can see that
+> these function pairs are not symmetric with one another in what they
+> do:
+> "x25_asy_alloc" and "x25_asy_free";
+> "x25_asy_open" and "x25_asy_close";
+> "x25_asy_open_tty" and "x25_asy_close_tty";
+> "x25_asy_netdev_ops.ndo_open" and "x25_asy_netdev_ops.ndo_stop".
+> 
+> This not only makes the code messy, but also makes the actual runtime
+> behavior buggy.
+> 
+> I'm planning to fix this with this change:
+> https://github.com/hyanggi/linux/commit/66387f229168014024117d50ade01092e3c9932c
+> Please take a look if you are interested. Thanks!
+>
+Sure, I had a look at it and since you are already working on fixing
+this driver, don't think there is a need for a patch to fix the
+particular race condition bug. This bug was found by the Linux driver
+verification project and my work was to report it to the maintainers.
 
-syzbot found the following issue on:
-
-HEAD commit:    ce8056d1 wip: changed copy_from_user where instrumented
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=16e3c4b6900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3afe005fb99591f
-dashboard link: https://syzkaller.appspot.com/bug?extid=e4534e8c1c382508312c
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e4534e8c1c382508312c@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in skb_trim+0x1f2/0x280 net/core/skbuff.c:1916
-CPU: 1 PID: 8770 Comm: syz-executor.1 Not tainted 5.8.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x21c/0x280 lib/dump_stack.c:118
- kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
- __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
- skb_trim+0x1f2/0x280 net/core/skbuff.c:1916
- ath9k_htc_rx_msg+0x5f6/0x1f50 drivers/net/wireless/ath/ath9k/htc_hst.c:453
- ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:638 [inline]
- ath9k_hif_usb_rx_cb+0x1841/0x1d10 drivers/net/wireless/ath/ath9k/hif_usb.c:671
- __usb_hcd_giveback_urb+0x687/0x870 drivers/usb/core/hcd.c:1650
- usb_hcd_giveback_urb+0x1cb/0x730 drivers/usb/core/hcd.c:1716
- dummy_timer+0xd98/0x71c0 drivers/usb/gadget/udc/dummy_hcd.c:1967
- call_timer_fn+0x226/0x550 kernel/time/timer.c:1404
- expire_timers+0x4fc/0x780 kernel/time/timer.c:1449
- __run_timers+0xaf4/0xd30 kernel/time/timer.c:1773
- run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
- __do_softirq+0x2ea/0x7f5 kernel/softirq.c:293
- asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
- </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:23 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:50 [inline]
- do_softirq_own_stack+0x7c/0xa0 arch/x86/kernel/irq_64.c:77
- invoke_softirq kernel/softirq.c:390 [inline]
- __irq_exit_rcu+0x226/0x270 kernel/softirq.c:420
- irq_exit_rcu+0xe/0x10 kernel/softirq.c:432
- sysvec_apic_timer_interrupt+0x107/0x130 arch/x86/kernel/apic/apic.c:1091
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:593
-RIP: 0010:kmsan_slab_free+0x8c/0xb0 mm/kmsan/kmsan_hooks.c:109
-Code: 00 00 b9 03 00 00 00 e8 12 ea ff ff be ff ff ff ff 65 0f c1 35 75 57 cc 7d ff ce 75 1a e8 6c ff 14 ff 4c 89 7d e0 ff 75 e0 9d <48> 83 c4 10 5b 41 5e 41 5f 5d c3 0f 0b 48 c7 c7 b0 63 e1 91 31 c0
-RSP: 0018:ffff888036ea36e8 EFLAGS: 00000246
-RAX: c38ce7a59d21d100 RBX: ffff88812f403c00 RCX: 0000000000000003
-RDX: 0000000000000002 RSI: 0000000000000000 RDI: ffff8881c7f65bb0
-RBP: ffff888036ea3710 R08: ffffea000000000f R09: ffff88812fffa000
-R10: 0000000000000010 R11: ffffffff912007f5 R12: 0000000000000000
-R13: 0000000000000000 R14: ffff8881c7f65bb0 R15: 0000000000000246
- slab_free_freelist_hook mm/slub.c:1507 [inline]
- slab_free mm/slub.c:3088 [inline]
- kfree+0x4f3/0x3000 mm/slub.c:4069
- kvfree+0x91/0xa0 mm/util.c:603
- __vunmap+0xfec/0x1080 mm/vmalloc.c:2320
- __vfree mm/vmalloc.c:2364 [inline]
- vfree+0xcc/0x1c0 mm/vmalloc.c:2394
- copy_entries_to_user net/ipv4/netfilter/ip_tables.c:867 [inline]
- get_entries net/ipv4/netfilter/ip_tables.c:1024 [inline]
- do_ipt_get_ctl+0x115c/0x11e0 net/ipv4/netfilter/ip_tables.c:1700
- nf_sockopt net/netfilter/nf_sockopt.c:104 [inline]
- nf_getsockopt+0x588/0x5e0 net/netfilter/nf_sockopt.c:122
- ip_getsockopt+0x34e/0x520 net/ipv4/ip_sockglue.c:1749
- tcp_getsockopt+0x1de/0x210 net/ipv4/tcp.c:3893
- sock_common_getsockopt+0x13a/0x170 net/core/sock.c:3221
- __sys_getsockopt+0x6c7/0x820 net/socket.c:2172
- __do_sys_getsockopt net/socket.c:2187 [inline]
- __se_sys_getsockopt+0xe1/0x100 net/socket.c:2184
- __x64_sys_getsockopt+0x62/0x80 net/socket.c:2184
- do_syscall_64+0xad/0x160 arch/x86/entry/common.c:386
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x46008a
-Code: Bad RIP value.
-RSP: 002b:000000000169f6b8 EFLAGS: 00000212 ORIG_RAX: 0000000000000037
-RAX: ffffffffffffffda RBX: 000000000169f6e0 RCX: 000000000046008a
-RDX: 0000000000000041 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 0000000000749e60 R08: 000000000169f6dc R09: 0000000000004000
-R10: 000000000169f740 R11: 0000000000000212 R12: 000000000169f740
-R13: 0000000000000003 R14: 0000000000748a20 R15: 0000000000000000
-
-Uninit was created at:
- kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:144
- kmsan_internal_alloc_meta_for_pages mm/kmsan/kmsan_shadow.c:269 [inline]
- kmsan_alloc_page+0xc5/0x1a0 mm/kmsan/kmsan_shadow.c:293
- __alloc_pages_nodemask+0xdf0/0x1030 mm/page_alloc.c:4889
- __alloc_pages include/linux/gfp.h:509 [inline]
- __alloc_pages_node include/linux/gfp.h:522 [inline]
- alloc_pages_node include/linux/gfp.h:536 [inline]
- __page_frag_cache_refill mm/page_alloc.c:4964 [inline]
- page_frag_alloc+0x35b/0x880 mm/page_alloc.c:4994
- __netdev_alloc_skb+0x2a8/0xc90 net/core/skbuff.c:451
- __dev_alloc_skb include/linux/skbuff.h:2813 [inline]
- ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:620 [inline]
- ath9k_hif_usb_rx_cb+0xe5a/0x1d10 drivers/net/wireless/ath/ath9k/hif_usb.c:671
- __usb_hcd_giveback_urb+0x687/0x870 drivers/usb/core/hcd.c:1650
- usb_hcd_giveback_urb+0x1cb/0x730 drivers/usb/core/hcd.c:1716
- dummy_timer+0xd98/0x71c0 drivers/usb/gadget/udc/dummy_hcd.c:1967
- call_timer_fn+0x226/0x550 kernel/time/timer.c:1404
- expire_timers+0x4fc/0x780 kernel/time/timer.c:1449
- __run_timers+0xaf4/0xd30 kernel/time/timer.c:1773
- run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
- __do_softirq+0x2ea/0x7f5 kernel/softirq.c:293
-=====================================================
+Thanks and Regards,
+Madhuparna
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> Thanks,
+> Xie He
