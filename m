@@ -2,106 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C58A24F406
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 10:29:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0DA324F4E6
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 10:42:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726444AbgHXI3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 04:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33278 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726104AbgHXI3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 04:29:12 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 757E1C061574
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 01:29:12 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id m34so4203481pgl.11
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 01:29:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2K6WTwIMAPjI/mFWjHAehqUSAvXRAhIwddvFBN/4ox0=;
-        b=axj1fpmaqcL2Qqo0AMtAeS6B0LKBjq2tPBvFPljiQrgASaCnXDIbJ4z7d4VjuQiTzO
-         +jGzyVIOL6Xo0Zl8tgRb/6ANQAREAa1p3nMY8l+/wfXMzuUzZS8WJ8K4RVFzdGAPSOLt
-         Cu25OPgCOpOV48fmgSwCU9iMxRvkGZ1QAOz50=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2K6WTwIMAPjI/mFWjHAehqUSAvXRAhIwddvFBN/4ox0=;
-        b=nQDEGiTNtyDnF5KM2SEpEC7zFj/iBZePCpd6hbgZapy2HSm4oYBHPDudKDZLjV+IHJ
-         9TO8VvmUIPjVLgxdjiYAToXFLernfmE37eyYWZzutoRWQz8OZrZXZ220M+qMiiwHxzHA
-         Hpunovecpt0FMoDRuO1dVQtCPEUqBC9SZanTHMtEDMEbpjs7IUeyFDKlYJb/X64hEFTl
-         hnLmyJh9kXse/xzGeag5eEeeDLO67KAb0jLvfv2MvfhvZ9sRZ6aBOWFLqwzTPeKBhhGJ
-         qM0JIcLAkAUaw6pugCBwyQr9NyjXoIF7QZztYhH1gFC8tTkV6W3m/1afRhgN7weYqEFX
-         BeTQ==
-X-Gm-Message-State: AOAM530U2PpEGL4dpRMpCHeZwVGGG52Nkx46vdC/YqCtQ5G10dQ5VkcQ
-        BXzB15miIwG9YUMQl33oB/HiUg==
-X-Google-Smtp-Source: ABdhPJxJpp2dbQYy+c7xEPbxjJsA+XavJY3DvvaeIZvSws19WA21Xd666HyNd8XbMZp3ek05KWmEJw==
-X-Received: by 2002:a63:2746:: with SMTP id n67mr2883670pgn.314.1598257748320;
-        Mon, 24 Aug 2020 01:29:08 -0700 (PDT)
-Received: from [192.168.178.129] (f140230.upc-f.chello.nl. [80.56.140.230])
-        by smtp.gmail.com with ESMTPSA id m22sm9074959pja.36.2020.08.24.01.29.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Aug 2020 01:29:07 -0700 (PDT)
-Subject: Re: [PATCH v1] brcmfmac: increase F2 watermark for BCM4329
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200823142004.21990-1-digetx@gmail.com>
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <93536fd4-8abc-e167-a184-5a5e36d4205a@broadcom.com>
-Date:   Mon, 24 Aug 2020 10:28:57 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1728922AbgHXImI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 04:42:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33474 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728051AbgHXImG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 04:42:06 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B7F622074D;
+        Mon, 24 Aug 2020 08:42:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598258525;
+        bh=FTsQCWCKjqi5L6rv6UcsErtk7TlTr3R1clk+kEzu22g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zZ3ML0IvQ/eVRGlE81jCvvJ8cKlEMhVHup3cMu76agEq6AwnCdRXoIS87wJBzxeuE
+         pKdzcoWSRfA8ehYmxdH/vKMT9Opq70HRmg95tP6CJ1Z+kvobPpufb7OTSNW6Z8xm66
+         VbxsJubITEiFNJS3HCis/0rVvWiLtC6ms7SEaNMI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Jarod Wilson <jarod@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.7 077/124] bonding: show saner speed for broadcast mode
+Date:   Mon, 24 Aug 2020 10:30:11 +0200
+Message-Id: <20200824082413.194524264@linuxfoundation.org>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200824082409.368269240@linuxfoundation.org>
+References: <20200824082409.368269240@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <20200823142004.21990-1-digetx@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jarod Wilson <jarod@redhat.com>
+
+[ Upstream commit 4ca0d9ac3fd8f9f90b72a15d8da2aca3ffb58418 ]
+
+Broadcast mode bonds transmit a copy of all traffic simultaneously out of
+all interfaces, so the "speed" of the bond isn't really the aggregate of
+all interfaces, but rather, the speed of the slowest active interface.
+
+Also, the type of the speed field is u32, not unsigned long, so adjust
+that accordingly, as required to make min() function here without
+complaining about mismatching types.
+
+Fixes: bb5b052f751b ("bond: add support to read speed and duplex via ethtool")
+CC: Jay Vosburgh <j.vosburgh@gmail.com>
+CC: Veaceslav Falico <vfalico@gmail.com>
+CC: Andy Gospodarek <andy@greyhouse.net>
+CC: "David S. Miller" <davem@davemloft.net>
+CC: netdev@vger.kernel.org
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Signed-off-by: Jarod Wilson <jarod@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/bonding/bond_main.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 6b40b5ab143a7..7abb3e2cc9926 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4336,13 +4336,23 @@ static netdev_tx_t bond_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return ret;
+ }
+ 
++static u32 bond_mode_bcast_speed(struct slave *slave, u32 speed)
++{
++	if (speed == 0 || speed == SPEED_UNKNOWN)
++		speed = slave->speed;
++	else
++		speed = min(speed, slave->speed);
++
++	return speed;
++}
++
+ static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
+ 					   struct ethtool_link_ksettings *cmd)
+ {
+ 	struct bonding *bond = netdev_priv(bond_dev);
+-	unsigned long speed = 0;
+ 	struct list_head *iter;
+ 	struct slave *slave;
++	u32 speed = 0;
+ 
+ 	cmd->base.duplex = DUPLEX_UNKNOWN;
+ 	cmd->base.port = PORT_OTHER;
+@@ -4354,8 +4364,13 @@ static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
+ 	 */
+ 	bond_for_each_slave(bond, slave, iter) {
+ 		if (bond_slave_can_tx(slave)) {
+-			if (slave->speed != SPEED_UNKNOWN)
+-				speed += slave->speed;
++			if (slave->speed != SPEED_UNKNOWN) {
++				if (BOND_MODE(bond) == BOND_MODE_BROADCAST)
++					speed = bond_mode_bcast_speed(slave,
++								      speed);
++				else
++					speed += slave->speed;
++			}
+ 			if (cmd->base.duplex == DUPLEX_UNKNOWN &&
+ 			    slave->duplex != DUPLEX_UNKNOWN)
+ 				cmd->base.duplex = slave->duplex;
+-- 
+2.25.1
 
 
-On 8/23/2020 4:20 PM, Dmitry Osipenko wrote:
-> This patch fixes SDHCI CRC errors during of RX throughput testing on
-> BCM4329 chip if SDIO BUS is clocked above 25MHz. In particular the
-> checksum problem is observed on NVIDIA Tegra20 SoCs. The good watermark
-> value is borrowed from downstream BCMDHD driver and it's the same as the
-> value used for the BCM4339 chip, hence let's re-use it for BCM4329.
 
-one comment, but when fixed you can add my....
-
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-> ---
->   drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> index 3c07d1bbe1c6..ac3ee93a2378 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-> @@ -4278,6 +4278,7 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
->   			brcmf_sdiod_writeb(sdiod, SBSDIO_FUNC1_MESBUSYCTRL,
->   					   CY_43012_MESBUSYCTRL, &err);
->   			break;
-> +		case SDIO_DEVICE_ID_BROADCOM_4329:
->   		case SDIO_DEVICE_ID_BROADCOM_4339:
->   			brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes for 4339\n",
-
-Maybe better to drop the chip id from the debug message. The chip id is 
-printed elsewhere already so it does not add info here and could only 
-cause confusion. Maybe you can also remove it from the 43455 message a 
-bit below.
