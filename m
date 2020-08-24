@@ -2,125 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAF2C24F330
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 09:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8966424F339
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 09:41:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbgHXHiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 03:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52988 "EHLO
+        id S1726075AbgHXHli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 03:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726636AbgHXHh7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 03:37:59 -0400
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEE8C061574
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 00:37:58 -0700 (PDT)
-Received: by mail-qt1-x833.google.com with SMTP id i2so2329730qtb.8
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 00:37:58 -0700 (PDT)
+        with ESMTP id S1725926AbgHXHli (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 03:41:38 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC387C061573
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 00:41:37 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id m22so10584004eje.10
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 00:41:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5eCGLgLNenZ566UZPUM5B88289BkX6rGslWGkr4wp0Q=;
-        b=dF3PGoyRdkh+ejT/bJxGucIVmaKa6B6dYibGEaYQXOYHOX1Kjvblcg6NrxuLBtPP+B
-         WWmNu1ZAiTJoSUHTonkabDrUYT09cNPvhN+yyhy+6YXkoBn5NiJdcOipR8ZSxlz/qOVO
-         Ew2640Tv+ZLMS0ZmQZHRxN+MVRftfY8Oj9MKRPNEgD2shnArAR/sAyVEqeQcPoEdzgwb
-         wA6XhdCXYfiYKdfd6Z4HBSVHeWo48dtk8jD+yS+LazqLluNWl/ytSIE7utACV+X/wk24
-         B2U7/MjNRUTMteekWc42d108qo3ZeY1eKIlU2MvWMTabrxv4EB4FLheBSyuojFx5w8Nf
-         ayLA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cTzlQ7Rhg3BTSDxMZf6QKa1TmEEqVMRelM5+HXqfNqc=;
+        b=ZgbzKWZocv0/t2CkGuegbUbenwIhMyURXxemd3OHiQCAU7jPp3cSLx0vy7JGG3a0eG
+         ahMpvvNdDFtCdPNW5IiLFE/KIsj3t5l3m6n5cZXK+TLzDLrON23KTcgds1SsjcRHA2w2
+         20R26VXWkHSSnxXR4Yi98MbEchd9I7e/grPRaDhcUllIVcyVzOzcaq9jW3Q+T8KWeIF7
+         jQYBI3UmSkHJKfO/dLZ9PGWhcBCuRkJvf68sdf8symmIs0ZUclG0Io3geZn6OyNSNyPp
+         l9+N3RC6V5U8/NjG6EAgHdirwOuJQfV8L/ZhRknOoaVUwFGUuWUeQikZBZK5xT1H9TRH
+         RZ7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=5eCGLgLNenZ566UZPUM5B88289BkX6rGslWGkr4wp0Q=;
-        b=EmJmz0cS2bI+UauCwfCDd28EY47VbFon5OcvaK5OBX8RDjSG4evonYjPwPXI+L1VGE
-         17ifPbuXDhL8VFS+91+DUndI56BzIZSesXNpRbQT+BJPufRZ9Kmvg8LdGUSVqQ53Mnff
-         GgFfdy0JHmaYzxwUCM3syNsqfXjj9sT8LZ7P1K22AKy5tmEtCfAwiOPAj2Vkk7/3oeFb
-         qfW/DRUkGUIH/w9olLT3VZDxpod/Gz2nygQKwGYqiWJmxuiHTgquKn915TG4LBNh7dxe
-         l/KalLZtKIxF5O4ZiIZJ+khCoPVmL+y/RbZzLZH+ORxNQtDc/ItMcnnsSHel1WPnKKTZ
-         4RGQ==
-X-Gm-Message-State: AOAM533bD6L3w12NkX0CXWTH7JdpDHG1e2Vh+hhhA0uhF0JtZFgvIVqR
-        W7O8jcgJMumqQFvzhCTBDG398xiBtao=
-X-Google-Smtp-Source: ABdhPJwK/Hj3CCDD9m+72hBs8laL15bod+DgIRMKMli+Y63P4Qv0ITzGZVv+RbJ48YYug5Dgm4je+Q==
-X-Received: by 2002:ac8:1c6a:: with SMTP id j39mr1919228qtk.127.1598254677526;
-        Mon, 24 Aug 2020 00:37:57 -0700 (PDT)
-Received: from localhost.localdomain ([50.236.19.102])
-        by smtp.gmail.com with ESMTPSA id y9sm9092322qka.0.2020.08.24.00.37.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Aug 2020 00:37:56 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     davem@davemloft.net, pshelar@ovn.org, xiyou.wangcong@gmail.com
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v2 3/3] net: openvswitch: remove unused keep_flows
-Date:   Mon, 24 Aug 2020 15:36:02 +0800
-Message-Id: <20200824073602.70812-4-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.15.0
-In-Reply-To: <20200824073602.70812-1-xiangxia.m.yue@gmail.com>
-References: <20200824073602.70812-1-xiangxia.m.yue@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cTzlQ7Rhg3BTSDxMZf6QKa1TmEEqVMRelM5+HXqfNqc=;
+        b=c4YCUiTZWXyVOTJjtz8h0Rp9IbxC587evm0HqYu5rBQ5E3vlIhkFPXUrYd5n+lDGY0
+         1++wlJtB3TL1ZTVODsHfF38CC4+ddfxawsywIXcNGRKey9FfG65mH3QedxUoqBEP+FtA
+         7xiZRNCa6RZa4fhfepQQMcrqZqKseSa75So1TX5ceeTM6XDRs7noo0ORcYavxF+yVt2W
+         cRCE30fewWDN1eTq7FixItWJCPS4NPwd/978V9K8bUIB7EAzDnJxa0L7QGWgqzjHLkLK
+         OFlRKqLB/FzEOA/lchfAjqkiF8kjmXxFTk8llYWrn9dKhtz/GD21EWFCxMwtIe4AnNn6
+         B+Vg==
+X-Gm-Message-State: AOAM533L0hIUgp1fExxdyiS7cV76MNZMJ9c+iiXXuY1+LnKfXpD79xwc
+        B0F2+Lt51qRoquQqVOwnv3TMhMfKI2zWkwbrjNk=
+X-Google-Smtp-Source: ABdhPJx7uGhhzEjLv9XhBS3RFhbxJfOOxkIRVFJ94dz0Erq+e1ybBX6FxHSeHUqqKNoInlZBGTBDLSMdaGan5ZyBdms=
+X-Received: by 2002:a17:906:1a07:: with SMTP id i7mr1413ejf.122.1598254896396;
+ Mon, 24 Aug 2020 00:41:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200818100923.46840-3-xiangxia.m.yue@gmail.com>
+ <20200819.155207.713791050216186108.davem@davemloft.net> <CAMDZJNVcuN29b5S0JxqzEcw4yG6S+TVSpwkiohYJMgE0TU45PA@mail.gmail.com>
+ <20200819.185209.697239873202931307.davem@davemloft.net>
+In-Reply-To: <20200819.185209.697239873202931307.davem@davemloft.net>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Mon, 24 Aug 2020 15:39:41 +0800
+Message-ID: <CAMDZJNV4RXtbzy8SyyLbUCt1LE2wCOBcTQYt=-WR5T_2hQMNCQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 2/3] net: openvswitch: refactor flow free function
+To:     David Miller <davem@davemloft.net>
+Cc:     ovs dev <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Pravin Shelar <pshelar@ovn.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Thu, Aug 20, 2020 at 9:52 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> Date: Thu, 20 Aug 2020 07:21:33 +0800
+>
+> > On Thu, Aug 20, 2020 at 6:52 AM David Miller <davem@davemloft.net> wrote:
+> >
+> >> From: xiangxia.m.yue@gmail.com
+> >>
+> >> Date: Tue, 18 Aug 2020 18:09:22 +0800
+> >>
+> >>
+> >>
+> >> > Decrease table->count and ufid_count unconditionally,
+> >>
+> >>
+> >>
+> >> You don't explain why this is a valid transformation.
+> >>
+> >>
+> >>
+> >> Is it a bug fix?
+> >
+> > No
+> >
+> >>
+> >>
+> >>
+> >> Can it never happen?
+> >>
+> >>
+> >>
+> >> What are the details and how did you determine this?
+> >
+> > I want to simplify the codes, when flushing the flow, previous codes don't
+> > count the flow, because we have set them(flow counter/ufid counter)to 0.
+> > Now don't set counter and count flow and ufid flow when deleting them, and
+> > I add BUG_ON to make sure other patch no bug when flushing flow.
+>
+> Add these details to your commit message, please.
+Hi David
+v2 are sent, please review
+http://patchwork.ozlabs.org/project/netdev/patch/20200824073602.70812-2-xiangxia.m.yue@gmail.com/
+http://patchwork.ozlabs.org/project/netdev/patch/20200824073602.70812-3-xiangxia.m.yue@gmail.com/
+http://patchwork.ozlabs.org/project/netdev/patch/20200824073602.70812-4-xiangxia.m.yue@gmail.com/
 
-keep_flows was introduced by [1], which used as flag to delete flows or not.
-When rehashing or expanding the table instance, we will not flush the flows.
-Now don't use it anymore, remove it.
-
-[1] - https://github.com/openvswitch/ovs/commit/acd051f1761569205827dc9b037e15568a8d59f8
-Cc: Pravin B Shelar <pshelar@ovn.org>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
-v2:
-change unnused -> unused
----
- net/openvswitch/flow_table.c | 6 ------
- net/openvswitch/flow_table.h | 1 -
- 2 files changed, 7 deletions(-)
-
-diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index f8a21dd80e72..0473758035b5 100644
---- a/net/openvswitch/flow_table.c
-+++ b/net/openvswitch/flow_table.c
-@@ -166,7 +166,6 @@ static struct table_instance *table_instance_alloc(int new_size)
- 
- 	ti->n_buckets = new_size;
- 	ti->node_ver = 0;
--	ti->keep_flows = false;
- 	get_random_bytes(&ti->hash_seed, sizeof(u32));
- 
- 	return ti;
-@@ -479,9 +478,6 @@ void table_instance_flow_flush(struct flow_table *table,
- {
- 	int i;
- 
--	if (ti->keep_flows)
--		return;
--
- 	for (i = 0; i < ti->n_buckets; i++) {
- 		struct hlist_head *head = &ti->buckets[i];
- 		struct hlist_node *n;
-@@ -598,8 +594,6 @@ static void flow_table_copy_flows(struct table_instance *old,
- 						 lockdep_ovsl_is_held())
- 				table_instance_insert(new, flow);
- 	}
--
--	old->keep_flows = true;
- }
- 
- static struct table_instance *table_instance_rehash(struct table_instance *ti,
-diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
-index 6e7d4ac59353..d8fb7a3a3dfd 100644
---- a/net/openvswitch/flow_table.h
-+++ b/net/openvswitch/flow_table.h
-@@ -53,7 +53,6 @@ struct table_instance {
- 	struct rcu_head rcu;
- 	int node_ver;
- 	u32 hash_seed;
--	bool keep_flows;
- };
- 
- struct flow_table {
 -- 
-2.23.0
-
+Best regards, Tonghao
