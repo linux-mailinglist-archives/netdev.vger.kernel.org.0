@@ -2,89 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A599E24FFE1
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 16:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41A9824FFF7
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 16:38:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726650AbgHXOfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 10:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
+        id S1726820AbgHXOiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 10:38:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726413AbgHXOfm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 10:35:42 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D784BC061573
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 07:35:41 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id x9so4464325wmi.2
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 07:35:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intinor-se.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=PV6NInVuwM0ZFOzf5u+K0D31QYADBewwzCHAM/IfltE=;
-        b=0UqxTxIpnQuB5y+UFMpBcrIwJsTK3l3i21F7K83t2PsSwdJPUDZMcaBPoFnjTZFI2/
-         mxJEaLWqcck77bLm6emiuNtQKNipwosI7n0hR4DcGsyq4mdC3Pd5T+RAZ1mUSV0Gzx4r
-         Z19tdWn6Mgr2ondxRJNSi5egGqHYbK+hay01hlCMOFMFo1Jb8Jg4vyQzNBeD+JaraB3Q
-         tqVoy/PxauDXBILZ0UJ4fQWI1oKkt/vygA9O1jvjagAj0kRIpJrqwShvhcByo+TcAcvk
-         WmTgYaZbm26FgF9ekqo5Bp5HHGPYNdFytf8ZisswtebH+bw9J52sHEqQxanPGa3ugltj
-         1aPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=PV6NInVuwM0ZFOzf5u+K0D31QYADBewwzCHAM/IfltE=;
-        b=tiEg0f3z3fUkPIGnQswZPmru8OZpEDbiemo1VKeCjlqWNxr7PhVTkrYmWRjqUwTZPA
-         taSu+asjKO0wpI+kDP9RQf4yIJNVXGV9tPgk9D76G9zRc3esH9+XSLaSuNpYyNELCn/L
-         Whw1jeiz28ozNq42gTlAkh83fgOe1gEQ91wVegmEFT45lEbdN6HF1zTq3n25jwaawpFl
-         4DGbyC7SMz1xOYWooM6aL12415S0jFZMTcj+yJIDHMyJINCn2yXkfNadhABVbsUOtsub
-         uD4+saT1hZBSKrNco4tiSULYL3qeS8W++a51/sCooeg+qbDpiuSFkwffovRLUJiwChHT
-         uhgQ==
-X-Gm-Message-State: AOAM531p2ViB9rHLaTpPg3RzD0XQs4dyINqJGk7PP1VHdyfldY4a3u5t
-        CpnmJLIXJ7Wa0LGDfO/A+asKPjcgKcsgB/sCzyA2LHNR7SB9Cg==
-X-Google-Smtp-Source: ABdhPJzw/FoJtoxQzgPdUYNP97ZKCCZGfUhCn2Rjfzh3yzKwvOUvbFpKgUezOiwynlbXfumuzyAZ+tIHp63hR+zFUgI=
-X-Received: by 2002:a1c:7c0d:: with SMTP id x13mr5744838wmc.164.1598279740415;
- Mon, 24 Aug 2020 07:35:40 -0700 (PDT)
+        with ESMTP id S1725976AbgHXOiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 10:38:51 -0400
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7057C061573;
+        Mon, 24 Aug 2020 07:38:50 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
+        (No client certificate requested)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4BZvrN2FGbzKmfC;
+        Mon, 24 Aug 2020 16:38:44 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aixah.de; s=MBO0001;
+        t=1598279922;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=lu9Ktp+bySCFRtP7BRL14t8FuxO69qAJr/NQBMQAZ48=;
+        b=rrjRoZthRzUL9dU+E60L2oqOFYngU8pq51imshEww5POU7e6+TBNG8U/W6aqwX6dtEG6yR
+        svwsKyNS0IVDdW6EBQbMWKJmTriw4rBwGrEwOUG6hk33+nU3QYmS+QjFgh+Mt24Wyv61wZ
+        QrXBeFZLtSjchuFBmj/xuMHTzuLA1i4X6N6ipEbwITB6nxDgtcfDuUwv7yorXBsCr5p2gJ
+        DsAVsGWAmsf/NqyoNHTqZkS6K1Ay2ItVwoINg4RDLgEcYVt9T6xw8blz5gNXzmA/5acmTQ
+        tSAopkJ6NYXil9usLfKReq7fXr5KaHmK1l4s/g6d6/vHD14XjhOBsukEidTpBA==
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter02.heinlein-hosting.de (spamfilter02.heinlein-hosting.de [80.241.56.116]) (amavisd-new, port 10030)
+        with ESMTP id HVvsVQgvEvFc; Mon, 24 Aug 2020 16:38:41 +0200 (CEST)
+From:   Mira Ressel <aranea@aixah.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Cc:     Mira Ressel <aranea@aixah.de>
+Subject: [PATCH 1/2] veth: Initialize dev->perm_addr
+Date:   Mon, 24 Aug 2020 14:38:26 +0000
+Message-Id: <20200824143828.5964-1-aranea@aixah.de>
 MIME-Version: 1.0
-From:   =?UTF-8?Q?Robert_Bengtsson=2D=C3=96lund?= 
-        <robert.bengtsson-olund@intinor.se>
-Date:   Mon, 24 Aug 2020 16:35:29 +0200
-Message-ID: <CAM7CaVQf-xymnx8y-nn7E3N6P5=-HF2i_1XhFgp1MZB1==WZiA@mail.gmail.com>
-Subject: Request for backport of 78dc70ebaa38aa303274e333be6c98eef87619e2 to 4.19.y
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -4.46 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 242C55FE
+X-Rspamd-UID: e6eb65
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi everyone
+Set the perm_addr of veth devices to whatever MAC has been assigned to
+the device. Otherwise, it remains all zero, with the consequence that
+ipv6_generate_stable_address() (which is used if the sysctl
+net.ipv6.conf.DEV.addr_gen_mode is set to 2 or 3) assigns every veth
+interface on a host the same link-local address.
 
-We stumbled upon a TCP BBR throughput issue that the following change fixes=
-.
-git: 78dc70ebaa38aa303274e333be6c98eef87619e2
+The new behaviour matches that of several other virtual interface types
+(such as gre), and as far as I can tell, perm_addr isn't used by any
+other code sites that are relevant to veth.
 
-Our issue:
-We have a transmission that is application limited to 20Mbps on an
-ethernet connection that has ~1Gbps capacity.
-Without this change our transmission seems to settle at ~3.5Mbps.
+Signed-off-by: Mira Ressel <aranea@aixah.de>
+---
+ drivers/net/veth.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-We have seen the issue on a slightly different network setup as well
-between two fiber internet connections.
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index e56cd562a664..af1a7cda6205 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -1342,6 +1342,8 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
+ 	if (!ifmp || !tbp[IFLA_ADDRESS])
+ 		eth_hw_addr_random(peer);
+ 
++	memcpy(peer->perm_addr, peer->dev_addr, peer->addr_len);
++
+ 	if (ifmp && (dev->ifindex != 0))
+ 		peer->ifindex = ifmp->ifi_index;
+ 
+@@ -1370,6 +1372,8 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
+ 	if (tb[IFLA_ADDRESS] == NULL)
+ 		eth_hw_addr_random(dev);
+ 
++	memcpy(dev->perm_addr, dev->dev_addr, dev->addr_len);
++
+ 	if (tb[IFLA_IFNAME])
+ 		nla_strlcpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
+ 	else
+-- 
+2.25.4
 
-Due to what the mentioned commit changes we suspect some middlebox
-plays with the ACK frequency in both of our cases.
-
-Our transmission is basically an RTMP feed through ffmpeg to MistServer.
-
-Best regards
-/Robert
-
---=20
-Robert Bengtsson-=C3=96lund, System Developer
-Software Development
-+46(0)90-349 39 00
-
-www.intinor.com
-
--- INTINOR --
-WE ARE DIREKT
