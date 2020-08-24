@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 390C5250709
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:56:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E81025070D
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:57:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726727AbgHXR4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 13:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
+        id S1727041AbgHXR5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725905AbgHXR4a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 13:56:30 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2771C061573;
-        Mon, 24 Aug 2020 10:56:30 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id bh1so4584641plb.12;
-        Mon, 24 Aug 2020 10:56:30 -0700 (PDT)
+        with ESMTP id S1726075AbgHXR50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 13:57:26 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57184C061573;
+        Mon, 24 Aug 2020 10:57:26 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id v16so4609930plo.1;
+        Mon, 24 Aug 2020 10:57:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KYviVGzFv/2MO9Y7cO7l0zoMh/bVNfrB7GiTzqLv67I=;
-        b=U1AiLdbdxeFU5Mzb+kW6qwHABfZ5dIN16bRSLZAVg32bkrH2tdH3lvKzUg50VFQril
-         UzMjcpPrXXrvf11GlxQUXrYIGsQ8d414DGCIN0bdosz3Ffj1ezA3kHk1OVnYAGzMSYIr
-         y4UEE92Y5C4hZmbwhRTAO/TZT4ydx4/n/kYDN6RejCXKkBMfMIIPAwicOeGg4RpHJI4q
-         n4GY4lE1w1h9l6TCbqMze8HYBKgsz0oOC7DvjL4FHz/29LpSnOr8vio1potStuKDSboT
-         lXCwxPQntIJn139NcjRJDOgRbFbbRuPNExAiBMcNo7t2PF3bKYtsHZfmpM+qZYqOWT3f
-         gUXA==
+        bh=Bxt+hFW2eQXsPzOwVBEj8vb9gmrYpo9pA6uQkaiEPbA=;
+        b=JmLdzBJME5o9JTzm4gJvSuNJNchmPI4d5z1rDJISdozPpnz+ABbCRm9RTfO/jzc41F
+         xwxmKihgcrZiih5xpNLc7ccUIYRKhwOTNkV0BhmzfxwmBzNEGU32IoJbAunjKou6+pFq
+         dILoNXGiBHBmL9D0nmyrzIeHJdwelx2CuSLGX50NfzI3p29M6rw4BY2q7/nY0sfye3zu
+         Cm6mSmsAQAx84CgIDYd8lY3iZYW7mnuiWbE+kdhXiFD+5znfeBbnDjono2JqJD9OXun7
+         o44ES3ybRoRHn8uOEA50i15ynNy3CiMfY3e0A2Q5F6ZD94YFXSWoD8FM0QLexNyqPIuP
+         coiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=KYviVGzFv/2MO9Y7cO7l0zoMh/bVNfrB7GiTzqLv67I=;
-        b=rjkhZ9IR0keVXkeTP+FYp6T5KQ1nH4lHHULyoL2JSGZm0MRRJWpEumQCuhAjbK4GgB
-         Td2cRXs81e2AV6ShqKu185DTH9M/AQ1OwuHtkE1Nfk9ad1aJq4Je0aRFzxEQ5VlcCp0t
-         owmVwQ7lPJmy3Y2zxfYZ1Ydk4/ypl1rh51vlyjwqiqsg2HK/Uxltdfq4NZQOMcOXnTEP
-         9f+7wy8RATpu+byNVT8wxZfKKSF6+Nr64tJ8yzX1+2H72/tXxlzfXENj9yFHKIqe3YSp
-         7XUsKEHI3a48a1i/kjsMNX/LKJoLi8gXruuxaGJSJdkQC13+9t0vjxLv9lg6V2Ri1nFj
-         AgGg==
-X-Gm-Message-State: AOAM530K6GCmc0aCzpp4FZK68j2FkFVYxZsM7STkuaNMPs0ysv0bEEBx
-        4KLZNqO+R/ICWpL9GNwyu58pQ7fIWEQ=
-X-Google-Smtp-Source: ABdhPJyAhE47imOrWB2iHr8UQE1pfFtrVwwghCOZ63focc0DxMDZN3q1Bc/1dZ468VTzOQvzdlh4Gw==
-X-Received: by 2002:a17:90b:4b03:: with SMTP id lx3mr343367pjb.143.1598291785997;
-        Mon, 24 Aug 2020 10:56:25 -0700 (PDT)
+        bh=Bxt+hFW2eQXsPzOwVBEj8vb9gmrYpo9pA6uQkaiEPbA=;
+        b=qsMIqiV6OILBEjFUSQuAYidJ5uFSSz8vfq3nnGNT+YSiBrXD7+tUtUbCdBzr3hJmK6
+         6sDRM0u6m37IFucXVRnqTWDFAipW2+xM0qjxyzSBxdkLifLxUIA+AykvS/yKZFdFZdn3
+         +3xe2CVrFb+PfvhpmUlNxBDrtwDzioIxUgmbgXPjJSL2irjw0C28wdg3Nl7G9hRDRHIE
+         aBKakcpj1EuIiwFr5HOMdUQ+bfaH0d0jg0c9ns+IGLNODEkKpbhfC0Wi1+rQyqVyPAbA
+         ORJnYtd566FgPn88+Q+IjQsFPgTjC1WUPdbzKqzDv28g2/l3ARd1B1au0DwGc5dN2oyR
+         xUMg==
+X-Gm-Message-State: AOAM531LW5+xaGYOykOrpoDMxl9vHtQj31z6huIpx1TIDF7amY3c/4kK
+        y9N7fY22I7V2TUds3EdtZVghOKVP+qA=
+X-Google-Smtp-Source: ABdhPJz0WR5+GGfIGKrk8znl64dH+HodfHNLWDkg6kkrfaEThXLuHU93DAYJAkOgQZFgtGkmcZi5ow==
+X-Received: by 2002:a17:902:8e85:: with SMTP id bg5mr4527163plb.306.1598291841551;
+        Mon, 24 Aug 2020 10:57:21 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q7sm1045347pgg.10.2020.08.24.10.56.17
+        by smtp.googlemail.com with ESMTPSA id f12sm182263pjm.52.2020.08.24.10.57.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Aug 2020 10:56:25 -0700 (PDT)
-Subject: Re: [PATCH v3 2/7] dt-bindings: net: renesas,ravb: Document internal
- clock delay properties
+        Mon, 24 Aug 2020 10:57:20 -0700 (PDT)
+Subject: Re: [PATCH v3 3/7] dt-bindings: net: renesas,etheravb: Convert to
+ json-schema
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -66,7 +66,7 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <20200819134344.27813-1-geert+renesas@glider.be>
- <20200819134344.27813-3-geert+renesas@glider.be>
+ <20200819134344.27813-4-geert+renesas@glider.be>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -122,12 +122,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <a0b11686-c519-4753-84ce-824ee2edde3f@gmail.com>
-Date:   Mon, 24 Aug 2020 10:56:13 -0700
+Message-ID: <b721f963-d667-fecd-1601-3bc66191a644@gmail.com>
+Date:   Mon, 24 Aug 2020 10:57:11 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200819134344.27813-3-geert+renesas@glider.be>
+In-Reply-To: <20200819134344.27813-4-geert+renesas@glider.be>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -137,23 +137,18 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 8/19/20 6:43 AM, Geert Uytterhoeven wrote:
-> Some EtherAVB variants support internal clock delay configuration, which
-> can add larger delays than the delays that are typically supported by
-> the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
-> properties).
+> Convert the Renesas Ethernet AVB (EthernetAVB-IF) Device Tree binding
+> documentation to json-schema.
 > 
-> Add properties for configuring the internal MAC delays.
-> These properties are mandatory, even when specified as zero, to
-> distinguish between old and new DTBs.
-> 
-> Update the (bogus) example accordingly.
+> Add missing properties.
+> Update the example to match reality.
 > 
 > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+> Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 > Reviewed-by: Rob Herring <robh@kernel.org>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Ignore my previous comment, you just did that YAML conversion, thanks!
 
-Is there a plan to convert renesas,ravb.txt to a YAML binding?
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
