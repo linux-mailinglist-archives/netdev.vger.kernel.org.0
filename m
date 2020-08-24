@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 827AF250704
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:55:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 390C5250709
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbgHXRzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 13:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
+        id S1726727AbgHXR4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbgHXRzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 13:55:41 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13B5C061573;
-        Mon, 24 Aug 2020 10:55:40 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id d188so5222802pfd.2;
-        Mon, 24 Aug 2020 10:55:40 -0700 (PDT)
+        with ESMTP id S1725905AbgHXR4a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 13:56:30 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2771C061573;
+        Mon, 24 Aug 2020 10:56:30 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id bh1so4584641plb.12;
+        Mon, 24 Aug 2020 10:56:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=INVy8TBVNiOdGol546iaylDOMpjzSD/dXUu2kSiUMYs=;
-        b=eDXGgsGdJBtMS/vpPQq4epf6i2YpJP2B1RUstA7XxLF4vTc6yHEur5k27oE04hq6r9
-         SEZD+FW4l+FGieV7SVgvGP+2j3i/nydD+DlYSjweRIRHQFT0or4jORO8p5GH66iTHhgg
-         9zY7Y2XhCjY8wt9u1V+zHv3Grhynb9FxCfE/Rpq2prsk4LT1zCJ69tdggB2xx37awOO0
-         J5+mdvcIlwt7yE/z+sU+dKzd3BxOszz/wvf8kJDBW9S4aZZsYX0Rj31lWZQo42+z2LUz
-         wawRL3UzKfU+vTNtNBzHIW8vRfRFBzfBt3b7c7DIhKm7zEJodoI6IQ5zbS0+tNc1oDXv
-         laRQ==
+        bh=KYviVGzFv/2MO9Y7cO7l0zoMh/bVNfrB7GiTzqLv67I=;
+        b=U1AiLdbdxeFU5Mzb+kW6qwHABfZ5dIN16bRSLZAVg32bkrH2tdH3lvKzUg50VFQril
+         UzMjcpPrXXrvf11GlxQUXrYIGsQ8d414DGCIN0bdosz3Ffj1ezA3kHk1OVnYAGzMSYIr
+         y4UEE92Y5C4hZmbwhRTAO/TZT4ydx4/n/kYDN6RejCXKkBMfMIIPAwicOeGg4RpHJI4q
+         n4GY4lE1w1h9l6TCbqMze8HYBKgsz0oOC7DvjL4FHz/29LpSnOr8vio1potStuKDSboT
+         lXCwxPQntIJn139NcjRJDOgRbFbbRuPNExAiBMcNo7t2PF3bKYtsHZfmpM+qZYqOWT3f
+         gUXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=INVy8TBVNiOdGol546iaylDOMpjzSD/dXUu2kSiUMYs=;
-        b=CjPWZPKEVLBOnDaKwqWQPUrmM0rZ4dKdH9Pf6r4kA8RRsX6W2PvgEpno3hFtlhRHhQ
-         FVT+WceMB3S+8LRzOtoIf1gj+kLlw0tq6ZdGWZ77cV7NhWc5qKq1eE+kJMuvfIbOq2tr
-         1nYZaWi7KTb2KVpmWPieGF8y8yrwxXOeZ6h3p1565YW7pGqGOUE+qDDuggKwqsJNzOPl
-         vgKh36rugngpO3JTOwjjn/TF1JC4MIz0P674jZRNfuF5xGTrp3pTz7NJcSXKh5ZKzNw1
-         mKtHPRDu3Faqr6jwYlEDBo4UrrabMMupvLHR3FqaEHkEVCGDyqoUW+/GuP12CL4jIIFr
-         CdKg==
-X-Gm-Message-State: AOAM530TV/ETmZPCUpmZkj89s39IxXGexAZSRNXTYg3jtK9WQTpPpLC5
-        i9UH8HFp5wxJgbAi7B70kiWFmuxxhJE=
-X-Google-Smtp-Source: ABdhPJw5oR9lHZMfifIp+VShfzsDfkb6B8h9ta6km/xIED5/B5Sc+8G4Gf+/nFITo5ZH8aMONIrTnQ==
-X-Received: by 2002:a63:5515:: with SMTP id j21mr3967274pgb.31.1598291735989;
-        Mon, 24 Aug 2020 10:55:35 -0700 (PDT)
+        bh=KYviVGzFv/2MO9Y7cO7l0zoMh/bVNfrB7GiTzqLv67I=;
+        b=rjkhZ9IR0keVXkeTP+FYp6T5KQ1nH4lHHULyoL2JSGZm0MRRJWpEumQCuhAjbK4GgB
+         Td2cRXs81e2AV6ShqKu185DTH9M/AQ1OwuHtkE1Nfk9ad1aJq4Je0aRFzxEQ5VlcCp0t
+         owmVwQ7lPJmy3Y2zxfYZ1Ydk4/ypl1rh51vlyjwqiqsg2HK/Uxltdfq4NZQOMcOXnTEP
+         9f+7wy8RATpu+byNVT8wxZfKKSF6+Nr64tJ8yzX1+2H72/tXxlzfXENj9yFHKIqe3YSp
+         7XUsKEHI3a48a1i/kjsMNX/LKJoLi8gXruuxaGJSJdkQC13+9t0vjxLv9lg6V2Ri1nFj
+         AgGg==
+X-Gm-Message-State: AOAM530K6GCmc0aCzpp4FZK68j2FkFVYxZsM7STkuaNMPs0ysv0bEEBx
+        4KLZNqO+R/ICWpL9GNwyu58pQ7fIWEQ=
+X-Google-Smtp-Source: ABdhPJyAhE47imOrWB2iHr8UQE1pfFtrVwwghCOZ63focc0DxMDZN3q1Bc/1dZ468VTzOQvzdlh4Gw==
+X-Received: by 2002:a17:90b:4b03:: with SMTP id lx3mr343367pjb.143.1598291785997;
+        Mon, 24 Aug 2020 10:56:25 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id a1sm4712961pfd.65.2020.08.24.10.55.26
+        by smtp.googlemail.com with ESMTPSA id q7sm1045347pgg.10.2020.08.24.10.56.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Aug 2020 10:55:35 -0700 (PDT)
-Subject: Re: [PATCH v3 1/7] dt-bindings: net: ethernet-controller: Add
- internal delay properties
+        Mon, 24 Aug 2020 10:56:25 -0700 (PDT)
+Subject: Re: [PATCH v3 2/7] dt-bindings: net: renesas,ravb: Document internal
+ clock delay properties
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -66,7 +66,7 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <20200819134344.27813-1-geert+renesas@glider.be>
- <20200819134344.27813-2-geert+renesas@glider.be>
+ <20200819134344.27813-3-geert+renesas@glider.be>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -122,12 +122,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <7b7d8579-9391-4966-491d-56cc9a46f3b1@gmail.com>
-Date:   Mon, 24 Aug 2020 10:55:12 -0700
+Message-ID: <a0b11686-c519-4753-84ce-824ee2edde3f@gmail.com>
+Date:   Mon, 24 Aug 2020 10:56:13 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200819134344.27813-2-geert+renesas@glider.be>
+In-Reply-To: <20200819134344.27813-3-geert+renesas@glider.be>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -137,19 +137,23 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 8/19/20 6:43 AM, Geert Uytterhoeven wrote:
-> Internal Receive and Transmit Clock Delays are a common setting for
-> RGMII capable devices.
+> Some EtherAVB variants support internal clock delay configuration, which
+> can add larger delays than the delays that are typically supported by
+> the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
+> properties).
 > 
-> While these delays are typically applied by the PHY, some MACs support
-> configuring internal clock delay settings, too.  Hence add standardized
-> properties to configure this.
+> Add properties for configuring the internal MAC delays.
+> These properties are mandatory, even when specified as zero, to
+> distinguish between old and new DTBs.
 > 
-> This is the MAC counterpart of commit 9150069bf5fc0e86 ("dt-bindings:
-> net: Add tx and rx internal delays"), which applies to the PHY.
+> Update the (bogus) example accordingly.
 > 
 > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
 > Reviewed-by: Rob Herring <robh@kernel.org>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Is there a plan to convert renesas,ravb.txt to a YAML binding?
 -- 
 Florian
