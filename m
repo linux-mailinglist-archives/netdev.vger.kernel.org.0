@@ -2,123 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F3F224F3C2
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 10:16:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 561CE24F3C6
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 10:17:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726241AbgHXIQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 04:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58946 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725924AbgHXIQ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 04:16:26 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E3AC061573
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 01:16:26 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id a5so7737921wrm.6
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 01:16:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=WIZAf3x2BneXQTTKPWzLh7lCftlSclIRyCF/Mlb3EW4=;
-        b=UHKFH64eK+dJNPTMUEG2GKmEf2QnNltVe6HCRpFWZspvwFb52ZYmQiiZ4kCn7gaF2n
-         SXWHdJsGJdH3VASepqgugyFAniRVIf2/X+rV8wETDho6CtJwZxWFMEqRrP7qLqT0XnBu
-         YeX+uSKhRk43xBqG+pNd/UgX22Fejf0PMRAWhlTDfbe4xvd6zuPGst55lUXGpU5bGOSi
-         JJc8XAbBvVpdlaTys1EakKWsoJfhau+xKzZ49CNCDNf/Xm8fye7qn+8sIvjmFYZmYqDK
-         51Pg1dKN8+2RkirYUoo7Y6SGAHGMfsl7fyD6/Xi2nyGomPK46Dz9HxN0fIKyv90Y7jg8
-         ho2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=WIZAf3x2BneXQTTKPWzLh7lCftlSclIRyCF/Mlb3EW4=;
-        b=rs/6Y1kKBThTOvHfODtaQA9qlVD85nYWlbclD1+QxrXqSPTZp+K3lemTJfRbu0TBcH
-         EtGaNm7acjlPBV0uqQHOpFcrfdMseUR5MoVYEJsRTIQgeGrxUiIbGH7VxiMydMaoa3wh
-         VXZOQX1zhdh1AJm6epu3jdZnHc7XWTja5lAdHS32s0ZhGv4DdSjAMgJmsPrz0R+yfb86
-         /bqJpcHUqizRW+YombPfvVNMFNfaI6w76swlQstYOuNyYwngulN0dJYVgmqJz8HPduQ+
-         ufcP/iFaXVbFIXlkWqTB0T+gUN7/ZsFL3Y0WZ+M2aPX7GIdkLdvmj+NM236/hBQJ0L1b
-         AKJA==
-X-Gm-Message-State: AOAM530YR5jVr7Fd+0d9DiMhXRKz2k5XeeI+CVvqFyMI/a8GAffGTMs2
-        eP8xQoioGEz+aBqzUDzshtvD9g==
-X-Google-Smtp-Source: ABdhPJyQ1dfhud31uvmhWjcNOV9nz6EpZ3fFDfyZlE0Rpp4BVPYFIT8QORlNPZLa72KkbDqugJRCWA==
-X-Received: by 2002:a05:6000:1211:: with SMTP id e17mr4734550wrx.263.1598256984974;
-        Mon, 24 Aug 2020 01:16:24 -0700 (PDT)
-Received: from dell ([95.149.164.62])
-        by smtp.gmail.com with ESMTPSA id w1sm22294675wmc.18.2020.08.24.01.16.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Aug 2020 01:16:24 -0700 (PDT)
-Date:   Mon, 24 Aug 2020 09:16:22 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Christian Lamparter <chunkeey@gmail.com>
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 00/32] Set 2: Rid W=1 warnings in Wireless
-Message-ID: <20200824081622.GI3248864@dell>
-References: <20200821071644.109970-1-lee.jones@linaro.org>
- <a3915e15-0583-413f-1fcf-7cb9933ec0bf@gmail.com>
+        id S1726086AbgHXIRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 04:17:16 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:37381 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725836AbgHXIRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 04:17:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598257034;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4qaHx+4DgU7tZu2iXG2DADTWF+wfpKAFg4isrL3CwcQ=;
+        b=hs7KxdvtrJvs1aJH1h+zv5zkVAWaYNRtmY6rjRHVZJQOouBgZHVfiVQ3aCmHA+pGdDp4Aa
+        SqMbg4HfsSrfQkihKZge0BISav6NNBUZERvxk6v8CHjTI29TQOTdSJw2c31oaCWiucLK9n
+        qAYT35cgdQSuGSybdV9T89Dr5CE0dDA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-50-qZiY-s5xPQqOytrDRO8Gjg-1; Mon, 24 Aug 2020 04:17:10 -0400
+X-MC-Unique: qZiY-s5xPQqOytrDRO8Gjg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0DAA081F006;
+        Mon, 24 Aug 2020 08:17:08 +0000 (UTC)
+Received: from ovpn-113-102.ams2.redhat.com (ovpn-113-102.ams2.redhat.com [10.36.113.102])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6464361982;
+        Mon, 24 Aug 2020 08:17:04 +0000 (UTC)
+Message-ID: <8ccf0b77c854a20f65026fdc68dcd64b93d07fc5.camel@redhat.com>
+Subject: Re: BPF sk_lookup v5 - TCP SYN and UDP 0-len flood benchmarks
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
+Date:   Mon, 24 Aug 2020 10:17:03 +0200
+In-Reply-To: <CAADnVQKE6y9h2fwX6OS837v-Uf+aBXnT_JXiN_bbo2gitZQ3tA@mail.gmail.com>
+References: <20200717103536.397595-1-jakub@cloudflare.com>
+         <87lficrm2v.fsf@cloudflare.com>
+         <CAADnVQKE6y9h2fwX6OS837v-Uf+aBXnT_JXiN_bbo2gitZQ3tA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a3915e15-0583-413f-1fcf-7cb9933ec0bf@gmail.com>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 22 Aug 2020, Christian Lamparter wrote:
-
-> On 2020-08-21 09:16, Lee Jones wrote:
-> > This set is part of a larger effort attempting to clean-up W=1
-> > kernel builds, which are currently overwhelmingly riddled with
-> > niggly little warnings.
-> > 
-> I see that after our discussion about the carl9170 change in this
-> thread following your patch: <https://lkml.org/lkml/2020/8/14/291>
+On Tue, 2020-08-18 at 11:19 -0700, Alexei Starovoitov wrote:
+> On Tue, Aug 18, 2020 at 8:49 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+> >          :                      rcu_read_lock();
+> >          :                      run_array = rcu_dereference(net->bpf.run_array[NETNS_BPF_SK_LOOKUP]);
+> >     0.01 :   ffffffff817f8624:       mov    0xd68(%r12),%rsi
+> >          :                      if (run_array) {
+> >     0.00 :   ffffffff817f862c:       test   %rsi,%rsi
+> >     0.00 :   ffffffff817f862f:       je     ffffffff817f87a9 <__udp4_lib_lookup+0x2c9>
+> >          :                      struct bpf_sk_lookup_kern ctx = {
+> >     1.05 :   ffffffff817f8635:       xor    %eax,%eax
+> >     0.00 :   ffffffff817f8637:       mov    $0x6,%ecx
+> >     0.01 :   ffffffff817f863c:       movl   $0x110002,0x40(%rsp)
+> >     0.00 :   ffffffff817f8644:       lea    0x48(%rsp),%rdi
+> >    18.76 :   ffffffff817f8649:       rep stos %rax,%es:(%rdi)
+> >     1.12 :   ffffffff817f864c:       mov    0xc(%rsp),%eax
+> >     0.00 :   ffffffff817f8650:       mov    %ebp,0x48(%rsp)
+> >     0.00 :   ffffffff817f8654:       mov    %eax,0x44(%rsp)
+> >     0.00 :   ffffffff817f8658:       movzwl 0x10(%rsp),%eax
+> >     1.21 :   ffffffff817f865d:       mov    %ax,0x60(%rsp)
+> >     0.00 :   ffffffff817f8662:       movzwl 0x20(%rsp),%eax
+> >     0.00 :   ffffffff817f8667:       mov    %ax,0x62(%rsp)
+> >          :                      .sport          = sport,
+> >          :                      .dport          = dport,
+> >          :                      };
 > 
-> you decided the best way to address our requirements, was to "drop"
-> your patch from the series, instead of just implementing the requested
-> changes. :(
+> Such heavy hit to zero init 56-byte structure is surprising.
+> There are two 4-byte holes in this struct. You can try to pack it and
+> make sure that 'rep stoq' is used instead of 'rep stos' (8 byte at a time vs 4).
 
-No, this is "set 2", not "v2".
+I think here rep stos is copying 8 bytes at a time (%rax operand, %ecx
+initalized with '6').
 
-The patch you refer to is in the first set.
+I think that you can avoid the costly instruction explicitly
+initializing each field individually:
 
-Looks like I am waiting for your reply [0]:
+	struct bpf_sk_lookup_kern ctx;
 
-[0] https://lkml.org/lkml/2020/8/18/334
+	ctx.family = AF_INET;
+	ctx.protocol = protocol;
+	// ...
 
-> > There are quite a few W=1 warnings in the Wireless.  My plan
-> > is to work through all of them over the next few weeks.
-> > Hopefully it won't be too long before drivers/net/wireless
-> > builds clean with W=1 enabled.
-> 
-> Just a parting note for your consideration:
-> 
-> Since 5.7 [0], it has become rather easy to also compile the linux kernel
-> with clang and the LLVM Utilities.
-> <https://www.kernel.org/doc/html/latest/kbuild/llvm.html>
-> 
-> I hope this information can help you to see beyond that one-unamed
-> "compiler" bias there... I wish you the best of luck in your endeavors.
+note, you likely want to explicitly zero the v6 addresses, too.
 
-Never used them.
+Cheers,
 
-GCC has always worked well for me.  What are their benefits over GCC?
+Paolo
 
-I already build for 5 architectures locally and a great deal more
-(arch * defconfigs) using remote testing infrastructures.  Multiplying
-them without very good reason sounds like a *potential* waste of
-already limited computation resources.
-
-> Christian
-> 
-> [0] <https://www.phoronix.com/scan.php?page=news_item&px=Linux-5.7-Kbuild-Easier-LLVM>
-
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
