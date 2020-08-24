@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0739250539
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:13:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2189825052D
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:12:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727925AbgHXRMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 13:12:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41056 "EHLO mail.kernel.org"
+        id S1728434AbgHXRMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:12:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40652 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728382AbgHXQhr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728355AbgHXQhr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 24 Aug 2020 12:37:47 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E2D3B22D3E;
-        Mon, 24 Aug 2020 16:37:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5E08D22BED;
+        Mon, 24 Aug 2020 16:37:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598287021;
-        bh=TYTTdCegp15oLYrWq/F7PP5Ab8BnxcWk62tjoSVlprc=;
+        s=default; t=1598287023;
+        bh=XgAPwW5p08EVNxpEPZXKmgq4NXimCCuJjGzdGrbacpk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eMsL5rRmqDybtENNNmFKjsGU7HxASjVgAG0+owzOqM96SJmLfkUTAzCTOWiigS+be
-         iZI5x0IN91FTDRxqpzog3Z8gl0fhwE58JXO0ev52TWAeOa0fTj8WRY03ZtV3zP10E1
-         fvX+PDkQvMen7aE1Oiu+7g8Osk7FJ2+Ux7MgeVko=
+        b=O5e+NDAdH+5jc/hGF+2ekXFwoohqBSMzmdG3298tYf30rC2kwtl36xFLOLOF72eGb
+         fshzslzScw30mCtC0SvxQ1x8tiHBCbXpdgSMecV+cczgtgLO3FvXuINmiHVGsZssiq
+         sRUMR72ypxWbHg0mIzfChLU7DggLONYMe2roEbVs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jianlin Lv <Jianlin.Lv@arm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+Cc:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Jakov Petrina <jakov.petrina@sartura.hr>,
+        Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andriin@fb.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 20/54] selftests/bpf: Fix segmentation fault in test_progs
-Date:   Mon, 24 Aug 2020 12:35:59 -0400
-Message-Id: <20200824163634.606093-20-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 5.7 21/54] libbpf: Handle GCC built-in types for Arm NEON
+Date:   Mon, 24 Aug 2020 12:36:00 -0400
+Message-Id: <20200824163634.606093-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200824163634.606093-1-sashal@kernel.org>
 References: <20200824163634.606093-1-sashal@kernel.org>
@@ -46,99 +46,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jianlin Lv <Jianlin.Lv@arm.com>
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-[ Upstream commit 0390c429dbed4068bd2cd8dded937d9a5ec24cd2 ]
+[ Upstream commit 702eddc77a905782083b14ccd05b23840675fd18 ]
 
-test_progs reports the segmentation fault as below:
+When building Arm NEON (SIMD) code from lib/raid6/neon.uc, GCC emits
+DWARF information using a base type "__Poly8_t", which is internal to
+GCC and not recognized by Clang. This causes build failures when
+building with Clang a vmlinux.h generated from an arm64 kernel that was
+built with GCC.
 
-  $ sudo ./test_progs -t mmap --verbose
-  test_mmap:PASS:skel_open_and_load 0 nsec
-  [...]
-  test_mmap:PASS:adv_mmap1 0 nsec
-  test_mmap:PASS:adv_mmap2 0 nsec
-  test_mmap:PASS:adv_mmap3 0 nsec
-  test_mmap:PASS:adv_mmap4 0 nsec
-  Segmentation fault
+	vmlinux.h:47284:9: error: unknown type name '__Poly8_t'
+	typedef __Poly8_t poly8x16_t[16];
+	        ^~~~~~~~~
 
-This issue was triggered because mmap() and munmap() used inconsistent
-length parameters; mmap() creates a new mapping of 3 * page_size, but the
-length parameter set in the subsequent re-map and munmap() functions is
-4 * page_size; this leads to the destruction of the process space.
+The polyX_t types are defined as unsigned integers in the "Arm C
+Language Extension" document (101028_Q220_00_en). Emit typedefs based on
+standard integer types for the GCC internal types, similar to those
+emitted by Clang.
 
-To fix this issue, first create 4 pages of anonymous mapping, then do all
-the mmap() with MAP_FIXED.
+Including linux/kernel.h to use ARRAY_SIZE() incidentally redefined
+max(), causing a build bug due to different types, hence the seemingly
+unrelated change.
 
-Another issue is that when unmap the second page fails, the length
-parameter to delete tmp1 mappings should be 4 * page_size.
-
-Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Reported-by: Jakov Petrina <jakov.petrina@sartura.hr>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Acked-by: Andrii Nakryiko <andriin@fb.com>
-Link: https://lore.kernel.org/bpf/20200810153940.125508-1-Jianlin.Lv@arm.com
+Link: https://lore.kernel.org/bpf/20200812143909.3293280-1-jean-philippe@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/mmap.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ tools/lib/bpf/btf_dump.c | 35 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/mmap.c b/tools/testing/selftests/bpf/prog_tests/mmap.c
-index 43d0b5578f461..9c3c5c0f068fb 100644
---- a/tools/testing/selftests/bpf/prog_tests/mmap.c
-+++ b/tools/testing/selftests/bpf/prog_tests/mmap.c
-@@ -21,7 +21,7 @@ void test_mmap(void)
- 	const long page_size = sysconf(_SC_PAGE_SIZE);
- 	int err, duration = 0, i, data_map_fd, data_map_id, tmp_fd, rdmap_fd;
- 	struct bpf_map *data_map, *bss_map;
--	void *bss_mmaped = NULL, *map_mmaped = NULL, *tmp1, *tmp2;
-+	void *bss_mmaped = NULL, *map_mmaped = NULL, *tmp0, *tmp1, *tmp2;
- 	struct test_mmap__bss *bss_data;
- 	struct bpf_map_info map_info;
- 	__u32 map_info_sz = sizeof(map_info);
-@@ -183,16 +183,23 @@ void test_mmap(void)
+diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
+index 653dbbe2e3663..55a729682cf94 100644
+--- a/tools/lib/bpf/btf_dump.c
++++ b/tools/lib/bpf/btf_dump.c
+@@ -13,6 +13,7 @@
+ #include <errno.h>
+ #include <linux/err.h>
+ #include <linux/btf.h>
++#include <linux/kernel.h>
+ #include "btf.h"
+ #include "hashmap.h"
+ #include "libbpf.h"
+@@ -548,6 +549,9 @@ static int btf_dump_order_type(struct btf_dump *d, __u32 id, bool through_ptr)
+ 	}
+ }
  
- 	/* check some more advanced mmap() manipulations */
- 
-+	tmp0 = mmap(NULL, 4 * page_size, PROT_READ, MAP_SHARED | MAP_ANONYMOUS,
-+			  -1, 0);
-+	if (CHECK(tmp0 == MAP_FAILED, "adv_mmap0", "errno %d\n", errno))
-+		goto cleanup;
++static void btf_dump_emit_missing_aliases(struct btf_dump *d, __u32 id,
++					  const struct btf_type *t);
 +
- 	/* map all but last page: pages 1-3 mapped */
--	tmp1 = mmap(NULL, 3 * page_size, PROT_READ, MAP_SHARED,
-+	tmp1 = mmap(tmp0, 3 * page_size, PROT_READ, MAP_SHARED | MAP_FIXED,
- 			  data_map_fd, 0);
--	if (CHECK(tmp1 == MAP_FAILED, "adv_mmap1", "errno %d\n", errno))
-+	if (CHECK(tmp0 != tmp1, "adv_mmap1", "tmp0: %p, tmp1: %p\n", tmp0, tmp1)) {
-+		munmap(tmp0, 4 * page_size);
- 		goto cleanup;
+ static void btf_dump_emit_struct_fwd(struct btf_dump *d, __u32 id,
+ 				     const struct btf_type *t);
+ static void btf_dump_emit_struct_def(struct btf_dump *d, __u32 id,
+@@ -670,6 +674,9 @@ static void btf_dump_emit_type(struct btf_dump *d, __u32 id, __u32 cont_id)
+ 
+ 	switch (kind) {
+ 	case BTF_KIND_INT:
++		/* Emit type alias definitions if necessary */
++		btf_dump_emit_missing_aliases(d, id, t);
++
+ 		tstate->emit_state = EMITTED;
+ 		break;
+ 	case BTF_KIND_ENUM:
+@@ -869,7 +876,7 @@ static void btf_dump_emit_struct_def(struct btf_dump *d,
+ 			btf_dump_printf(d, ": %d", m_sz);
+ 			off = m_off + m_sz;
+ 		} else {
+-			m_sz = max(0, btf__resolve_size(d->btf, m->type));
++			m_sz = max(0LL, btf__resolve_size(d->btf, m->type));
+ 			off = m_off + m_sz * 8;
+ 		}
+ 		btf_dump_printf(d, ";");
+@@ -889,6 +896,32 @@ static void btf_dump_emit_struct_def(struct btf_dump *d,
+ 		btf_dump_printf(d, " __attribute__((packed))");
+ }
+ 
++static const char *missing_base_types[][2] = {
++	/*
++	 * GCC emits typedefs to its internal __PolyX_t types when compiling Arm
++	 * SIMD intrinsics. Alias them to standard base types.
++	 */
++	{ "__Poly8_t",		"unsigned char" },
++	{ "__Poly16_t",		"unsigned short" },
++	{ "__Poly64_t",		"unsigned long long" },
++	{ "__Poly128_t",	"unsigned __int128" },
++};
++
++static void btf_dump_emit_missing_aliases(struct btf_dump *d, __u32 id,
++					  const struct btf_type *t)
++{
++	const char *name = btf_dump_type_name(d, id);
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(missing_base_types); i++) {
++		if (strcmp(name, missing_base_types[i][0]) == 0) {
++			btf_dump_printf(d, "typedef %s %s;\n\n",
++					missing_base_types[i][1], name);
++			break;
++		}
 +	}
- 
- 	/* unmap second page: pages 1, 3 mapped */
- 	err = munmap(tmp1 + page_size, page_size);
- 	if (CHECK(err, "adv_mmap2", "errno %d\n", errno)) {
--		munmap(tmp1, map_sz);
-+		munmap(tmp1, 4 * page_size);
- 		goto cleanup;
- 	}
- 
-@@ -201,7 +208,7 @@ void test_mmap(void)
- 		    MAP_SHARED | MAP_FIXED, data_map_fd, 0);
- 	if (CHECK(tmp2 == MAP_FAILED, "adv_mmap3", "errno %d\n", errno)) {
- 		munmap(tmp1, page_size);
--		munmap(tmp1 + 2*page_size, page_size);
-+		munmap(tmp1 + 2*page_size, 2 * page_size);
- 		goto cleanup;
- 	}
- 	CHECK(tmp1 + page_size != tmp2, "adv_mmap4",
-@@ -211,7 +218,7 @@ void test_mmap(void)
- 	tmp2 = mmap(tmp1, 4 * page_size, PROT_READ, MAP_SHARED | MAP_FIXED,
- 		    data_map_fd, 0);
- 	if (CHECK(tmp2 == MAP_FAILED, "adv_mmap5", "errno %d\n", errno)) {
--		munmap(tmp1, 3 * page_size); /* unmap page 1 */
-+		munmap(tmp1, 4 * page_size); /* unmap page 1 */
- 		goto cleanup;
- 	}
- 	CHECK(tmp1 != tmp2, "adv_mmap6", "tmp1: %p, tmp2: %p\n", tmp1, tmp2);
++}
++
+ static void btf_dump_emit_enum_fwd(struct btf_dump *d, __u32 id,
+ 				   const struct btf_type *t)
+ {
 -- 
 2.25.1
 
