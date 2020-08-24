@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BABFD2504E2
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6CC5250477
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbgHXRIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 13:08:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40038 "EHLO mail.kernel.org"
+        id S1727781AbgHXRDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:03:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40164 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728434AbgHXQiY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 12:38:24 -0400
+        id S1728470AbgHXQih (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 12:38:37 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A120923117;
-        Mon, 24 Aug 2020 16:37:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6589922EBF;
+        Mon, 24 Aug 2020 16:38:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598287066;
-        bh=elLIwk+vXIz3X/dNZdhcxZlWgo/Xj0p8DfSj9gycQNg=;
+        s=default; t=1598287096;
+        bh=AJ5GY7sStFFpN4d2wp55vrmNmGGsqU3GnYKHqvcwtPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tJ30+peaYdjyrRX+a3dcekyDNNSntYzGFf2G0ETt7gJ7KliyKYyAt69ZIsVFMgqNj
-         c463geURfkvgWxX9aoL/3t8IxWoS8FlB9GyOrcT5ZwUiwn2zLRjwNt6K3HwvcA8jZm
-         iRrABY2V6QJppEZqIVvRFhUfAyinsQOyVmYmNC7s=
+        b=2NcTrTsiYfvGpMlRCWhEfukPMsIP/Z3L5oO1AGkAlWbBI0mdxRdkZg/1xMSzI5vot
+         xo08f3suUM5NeU9AhuGwhmUm6NW1LN1jgS/INHzTigC2Yw/nIeXFD+h0AYaAYfFkou
+         NzalKI5dq/MTKq+YQNa11uvrX0Y8vI7y5bLEU5zI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 52/54] bpf: selftests: global_funcs: Check err_str before strstr
-Date:   Mon, 24 Aug 2020 12:36:31 -0400
-Message-Id: <20200824163634.606093-52-sashal@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 18/38] netfilter: avoid ipv6 -> nf_defrag_ipv6 module dependency
+Date:   Mon, 24 Aug 2020 12:37:30 -0400
+Message-Id: <20200824163751.606577-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200824163634.606093-1-sashal@kernel.org>
-References: <20200824163634.606093-1-sashal@kernel.org>
+In-Reply-To: <20200824163751.606577-1-sashal@kernel.org>
+References: <20200824163751.606577-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,42 +45,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit c210773d6c6f595f5922d56b7391fe343bc7310e ]
+[ Upstream commit 2404b73c3f1a5f15726c6ecd226b56f6f992767f ]
 
-The error path in libbpf.c:load_program() has calls to pr_warn()
-which ends up for global_funcs tests to
-test_global_funcs.c:libbpf_debug_print().
+nf_ct_frag6_gather is part of nf_defrag_ipv6.ko, not ipv6 core.
 
-For the tests with no struct test_def::err_str initialized with a
-string, it causes call of strstr() with NULL as the second argument
-and it segfaults.
+The current use of the netfilter ipv6 stub indirections  causes a module
+dependency between ipv6 and nf_defrag_ipv6.
 
-Fix it by calling strstr() only for non-NULL err_str.
+This prevents nf_defrag_ipv6 module from being removed because ipv6 can't
+be unloaded.
 
-Signed-off-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20200820115843.39454-1-yauheni.kaliuta@redhat.com
+Remove the indirection and always use a direct call.  This creates a
+depency from nf_conntrack_bridge to nf_defrag_ipv6 instead:
+
+modinfo nf_conntrack
+depends:        nf_conntrack,nf_defrag_ipv6,bridge
+
+.. and nf_conntrack already depends on nf_defrag_ipv6 anyway.
+
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/test_global_funcs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/netfilter_ipv6.h             | 18 ------------------
+ net/bridge/netfilter/nf_conntrack_bridge.c |  8 ++++++--
+ net/ipv6/netfilter.c                       |  3 ---
+ 3 files changed, 6 insertions(+), 23 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_global_funcs.c b/tools/testing/selftests/bpf/prog_tests/test_global_funcs.c
-index 25b068591e9a4..193002b14d7f6 100644
---- a/tools/testing/selftests/bpf/prog_tests/test_global_funcs.c
-+++ b/tools/testing/selftests/bpf/prog_tests/test_global_funcs.c
-@@ -19,7 +19,7 @@ static int libbpf_debug_print(enum libbpf_print_level level,
- 	log_buf = va_arg(args, char *);
- 	if (!log_buf)
- 		goto out;
--	if (strstr(log_buf, err_str) == 0)
-+	if (err_str && strstr(log_buf, err_str) == 0)
- 		found = true;
- out:
- 	printf(format, log_buf);
+diff --git a/include/linux/netfilter_ipv6.h b/include/linux/netfilter_ipv6.h
+index aac42c28fe62d..9b67394471e1c 100644
+--- a/include/linux/netfilter_ipv6.h
++++ b/include/linux/netfilter_ipv6.h
+@@ -58,7 +58,6 @@ struct nf_ipv6_ops {
+ 			int (*output)(struct net *, struct sock *, struct sk_buff *));
+ 	int (*reroute)(struct sk_buff *skb, const struct nf_queue_entry *entry);
+ #if IS_MODULE(CONFIG_IPV6)
+-	int (*br_defrag)(struct net *net, struct sk_buff *skb, u32 user);
+ 	int (*br_fragment)(struct net *net, struct sock *sk,
+ 			   struct sk_buff *skb,
+ 			   struct nf_bridge_frag_data *data,
+@@ -117,23 +116,6 @@ static inline int nf_ip6_route(struct net *net, struct dst_entry **dst,
+ 
+ #include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+ 
+-static inline int nf_ipv6_br_defrag(struct net *net, struct sk_buff *skb,
+-				    u32 user)
+-{
+-#if IS_MODULE(CONFIG_IPV6)
+-	const struct nf_ipv6_ops *v6_ops = nf_get_ipv6_ops();
+-
+-	if (!v6_ops)
+-		return 1;
+-
+-	return v6_ops->br_defrag(net, skb, user);
+-#elif IS_BUILTIN(CONFIG_IPV6)
+-	return nf_ct_frag6_gather(net, skb, user);
+-#else
+-	return 1;
+-#endif
+-}
+-
+ int br_ip6_fragment(struct net *net, struct sock *sk, struct sk_buff *skb,
+ 		    struct nf_bridge_frag_data *data,
+ 		    int (*output)(struct net *, struct sock *sk,
+diff --git a/net/bridge/netfilter/nf_conntrack_bridge.c b/net/bridge/netfilter/nf_conntrack_bridge.c
+index 8096732223828..8d033a75a766e 100644
+--- a/net/bridge/netfilter/nf_conntrack_bridge.c
++++ b/net/bridge/netfilter/nf_conntrack_bridge.c
+@@ -168,6 +168,7 @@ static unsigned int nf_ct_br_defrag4(struct sk_buff *skb,
+ static unsigned int nf_ct_br_defrag6(struct sk_buff *skb,
+ 				     const struct nf_hook_state *state)
+ {
++#if IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
+ 	u16 zone_id = NF_CT_DEFAULT_ZONE_ID;
+ 	enum ip_conntrack_info ctinfo;
+ 	struct br_input_skb_cb cb;
+@@ -180,14 +181,17 @@ static unsigned int nf_ct_br_defrag6(struct sk_buff *skb,
+ 
+ 	br_skb_cb_save(skb, &cb, sizeof(struct inet6_skb_parm));
+ 
+-	err = nf_ipv6_br_defrag(state->net, skb,
+-				IP_DEFRAG_CONNTRACK_BRIDGE_IN + zone_id);
++	err = nf_ct_frag6_gather(state->net, skb,
++				 IP_DEFRAG_CONNTRACK_BRIDGE_IN + zone_id);
+ 	/* queued */
+ 	if (err == -EINPROGRESS)
+ 		return NF_STOLEN;
+ 
+ 	br_skb_cb_restore(skb, &cb, IP6CB(skb)->frag_max_size);
+ 	return err == 0 ? NF_ACCEPT : NF_DROP;
++#else
++	return NF_ACCEPT;
++#endif
+ }
+ 
+ static int nf_ct_br_ip_check(const struct sk_buff *skb)
+diff --git a/net/ipv6/netfilter.c b/net/ipv6/netfilter.c
+index 409e79b84a830..6d0e942d082d4 100644
+--- a/net/ipv6/netfilter.c
++++ b/net/ipv6/netfilter.c
+@@ -245,9 +245,6 @@ static const struct nf_ipv6_ops ipv6ops = {
+ 	.route_input		= ip6_route_input,
+ 	.fragment		= ip6_fragment,
+ 	.reroute		= nf_ip6_reroute,
+-#if IS_MODULE(CONFIG_IPV6) && IS_ENABLED(CONFIG_NF_DEFRAG_IPV6)
+-	.br_defrag		= nf_ct_frag6_gather,
+-#endif
+ #if IS_MODULE(CONFIG_IPV6)
+ 	.br_fragment		= br_ip6_fragment,
+ #endif
 -- 
 2.25.1
 
