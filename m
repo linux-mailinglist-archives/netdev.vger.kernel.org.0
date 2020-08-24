@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F451250483
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:04:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5A20250486
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:04:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727780AbgHXRDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 13:03:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40072 "EHLO mail.kernel.org"
+        id S1727123AbgHXRDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:03:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40658 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728471AbgHXQii (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728481AbgHXQii (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 24 Aug 2020 12:38:38 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CF93222E03;
-        Mon, 24 Aug 2020 16:38:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5BE022D70;
+        Mon, 24 Aug 2020 16:38:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598287097;
-        bh=Y+dzBIhGF+kbEmw58dJ4IZaOWYovq8f4Yu+nhkSCnkU=;
+        s=default; t=1598287102;
+        bh=suhF0qwwSU0yECNHcaKgTLO11nlKyMh0NmEMGkWs6+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QvH1BkrGmf1brHRm/nR3BgzZaM/5YvTu1w5ZmX20RJy5Hs3Mj9+mW0adWtUiJyFQX
-         H7+NbeKm5+MSoM27BlJ2GCmkup+3ain8LT1LcSiW0cT0U6zYIdh2UNuwo1rvXKL+8U
-         +3P6ClfMBYPsICgKZgJ9Q4FOrRMOKa15FVflbr8c=
+        b=dX8jLqaCNJBKjhDYgGwXGWVEG8+ahICXV+iXVorxpb9nm+ifSoO+Aydw6W0QkAdCU
+         iE/ro1uJpzGKi0mh8jeCEVEmNfD02N49/77+Qjyd0LcG8rLMvTGBUsTJrQmyjBvBgQ
+         RxqY88GyxAfSmRoe8khZzSJuXgpdcVlxrgqiNKFY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 19/38] can: j1939: transport: j1939_xtp_rx_dat_one(): compare own packets to detect corruptions
-Date:   Mon, 24 Aug 2020 12:37:31 -0400
-Message-Id: <20200824163751.606577-19-sashal@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 23/38] selftests: disable rp_filter for icmp_redirect.sh
+Date:   Mon, 24 Aug 2020 12:37:35 -0400
+Message-Id: <20200824163751.606577-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200824163751.606577-1-sashal@kernel.org>
 References: <20200824163751.606577-1-sashal@kernel.org>
@@ -44,54 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: David Ahern <dsahern@kernel.org>
 
-[ Upstream commit e052d0540298bfe0f6cbbecdc7e2ea9b859575b2 ]
+[ Upstream commit bcf7ddb0186d366f761f86196b480ea6dd2dc18c ]
 
-Since the stack relays on receiving own packets, it was overwriting own
-transmit buffer from received packets.
+h1 is initially configured to reach h2 via r1 rather than the
+more direct path through r2. If rp_filter is set and inherited
+for r2, forwarding fails since the source address of h1 is
+reachable from eth0 vs the packet coming to it via r1 and eth1.
+Since rp_filter setting affects the test, explicitly reset it.
 
-At least theoretically, the received echo buffer can be corrupt or
-changed and the session partner can request to resend previous data. In
-this case we will re-send bad data.
-
-With this patch we will stop to overwrite own TX buffer and use it for
-sanity checking.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/r/20200807105200.26441-6-o.rempel@pengutronix.de
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/j1939/transport.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ tools/testing/selftests/net/icmp_redirect.sh | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-index 9f99af5b0b11e..3e9c377b0dcce 100644
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -1769,7 +1769,20 @@ static void j1939_xtp_rx_dat_one(struct j1939_session *session,
- 	}
+diff --git a/tools/testing/selftests/net/icmp_redirect.sh b/tools/testing/selftests/net/icmp_redirect.sh
+index 18c5de53558af..bf361f30d6ef9 100755
+--- a/tools/testing/selftests/net/icmp_redirect.sh
++++ b/tools/testing/selftests/net/icmp_redirect.sh
+@@ -180,6 +180,8 @@ setup()
+ 			;;
+ 		r[12]) ip netns exec $ns sysctl -q -w net.ipv4.ip_forward=1
+ 		       ip netns exec $ns sysctl -q -w net.ipv4.conf.all.send_redirects=1
++		       ip netns exec $ns sysctl -q -w net.ipv4.conf.default.rp_filter=0
++		       ip netns exec $ns sysctl -q -w net.ipv4.conf.all.rp_filter=0
  
- 	tpdat = se_skb->data;
--	memcpy(&tpdat[offset], &dat[1], nbytes);
-+	if (!session->transmission) {
-+		memcpy(&tpdat[offset], &dat[1], nbytes);
-+	} else {
-+		int err;
-+
-+		err = memcmp(&tpdat[offset], &dat[1], nbytes);
-+		if (err)
-+			netdev_err_once(priv->ndev,
-+					"%s: 0x%p: Data of RX-looped back packet (%*ph) doesn't match TX data (%*ph)!\n",
-+					__func__, session,
-+					nbytes, &dat[1],
-+					nbytes, &tpdat[offset]);
-+	}
-+
- 	if (packet == session->pkt.rx)
- 		session->pkt.rx++;
- 
+ 		       ip netns exec $ns sysctl -q -w net.ipv6.conf.all.forwarding=1
+ 		       ip netns exec $ns sysctl -q -w net.ipv6.route.mtu_expires=10
 -- 
 2.25.1
 
