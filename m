@@ -2,111 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8845B2500C5
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 17:20:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28EF2250114
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 17:27:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727912AbgHXPUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 11:20:13 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:50246 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725947AbgHXPTD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 11:19:03 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9ED31600C2;
-        Mon, 24 Aug 2020 15:19:00 +0000 (UTC)
-Received: from us4-mdac16-11.ut7.mdlocal (unknown [10.7.65.208])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9C0FF200A3;
-        Mon, 24 Aug 2020 15:19:00 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.33])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 299D51C0055;
-        Mon, 24 Aug 2020 15:19:00 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C55EFA800A1;
-        Mon, 24 Aug 2020 15:18:59 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 24 Aug
- 2020 16:18:55 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net] sfc: fix boolreturn.cocci warning and rename function
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-Message-ID: <7c627a43-4339-cb08-c051-340100466033@solarflare.com>
-Date:   Mon, 24 Aug 2020 16:18:51 +0100
+        id S1728092AbgHXP1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 11:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727024AbgHXP1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 11:27:09 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCC1C061573;
+        Mon, 24 Aug 2020 08:27:08 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id h19so10118610ljg.13;
+        Mon, 24 Aug 2020 08:27:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sZNoB46D8/M/M2PgyVIiT6V2NCFpqgPFmRkE3BbQYY0=;
+        b=sFvK/cjqd0IY2FPppcw4ggSbTyzS+/bWDuEn6APnjzaEMODweGr843dqvGmIuZ+7+l
+         gh06YDRForm905ZwwSXfCS10xvIyJHfBRec0N9sQKOlmpvcQiDXtyT/bqdhRpw7tZUNu
+         UEt8sEEUrr11VVRAa01f+JHkf5pvNVeBCA7po2V2tGY66x0vz7fDMP2/dIH8JrUq37HC
+         8bfccDyUTlVyGazDcn+uLQRca/72M8adtNfMbKh3TutR5L2eUnXkaE1OEV1wT1R0bjyc
+         7Ir8HxkHJ7jEa/cc/qgxI3W57DzAosbcngWFKAECdSjK8/+4rinCdsDecBnH4RjzY/1q
+         m2Rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sZNoB46D8/M/M2PgyVIiT6V2NCFpqgPFmRkE3BbQYY0=;
+        b=gGRWGha3WcfILFzg2rb2LW8XxMEg1iMfsXG/iR/0/4sT+iJ/tG3o7xZXyobYoqzMyd
+         aSlPAP3eTM52Yu1MBKKjL4alqscKJKLn4Q9Lh77WT1xOb+Uhus1AESL7jMytx8OKtPiS
+         +m7Q+b/wZtLo9YfJkHirxdGUL1hw6PpxetPl+2o0sukiWSSnc0qCI38Uh/fZH87QugCe
+         tF/LxxCMGJQ5DopjVysOE7WTfv6Re9BH4g6UacM/uGoUXz/ULsVva8VlHSVwas9Gmk/j
+         Ug5wy5UXaWKbaYt4KzRrBLI2+mGOtKoZ+0E73lt/8+tB99JxrgVxl3E9cwyNlkrY0hxM
+         qmCA==
+X-Gm-Message-State: AOAM530UWit5etDGObjrMvo7RV5hh8UXG9DQHwJVpFJSLfCpVQUNoq0/
+        klZ/GqYQRnMyG2FFR+iAy24xniYdYmk=
+X-Google-Smtp-Source: ABdhPJwS3dpy3Zm6zjcqPm81pjWD00BirHl7L/nEzT8MmwndTfEiqXTyjQEML9iDc7lMLRZgUCDamw==
+X-Received: by 2002:a2e:2c0e:: with SMTP id s14mr3038795ljs.28.1598282826933;
+        Mon, 24 Aug 2020 08:27:06 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-170-211.dynamic.spd-mgts.ru. [109.252.170.211])
+        by smtp.googlemail.com with ESMTPSA id z3sm2239976ljz.109.2020.08.24.08.27.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Aug 2020 08:27:06 -0700 (PDT)
+Subject: Re: [PATCH v1] brcmfmac: increase F2 watermark for BCM4329
+To:     Arend Van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200823142004.21990-1-digetx@gmail.com>
+ <93536fd4-8abc-e167-a184-5a5e36d4205a@broadcom.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <1ac6d0f3-d639-e947-4108-17ecc0220a1e@gmail.com>
+Date:   Mon, 24 Aug 2020 18:27:05 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25622.005
-X-TM-AS-Result: No-4.183400-8.000000-10
-X-TMASE-MatchedRID: woeVJAYvYhNyOVk+FPzL12WnA2xO92Up5xJf2EAcYnAH8UzOewTxw0iK
-        cRG5pooKsQK9Ybrx7RJZw8ewls/9KtEYJsLZsWT8cTela9PpnnzRjnAHxymurmMunwKby/AXCh5
-        FGEJlYgEDOIfIUNcfgfmpjDPjqvkiYlldA0POS1LfhvTQ/n1nGVB1e7/F/vq5VWQnHKxp38hNwx
-        Og0TtaaRE8Rj2cU+bEoXaQ1VGW4+YM8jMXjBF+sDl/1fD/GopdcmfM3DjaQLHEQdG7H66TyJ8TM
-        nmE+d0Zg4Ws6XBpZIp//h4FYwN+W8Ui6zqplTyRCzUXe8ZY2+TMlGNYZa4cFaKe9QvllEiKhRnP
-        4ZJ3ADE2ibVLBmzrhnLZ5TldIX8ZGhBWFwMpQfUlEjOZsGnBpCAkKbrKkYtno6XmhFfKEURWXGv
-        UUmKP2w==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--4.183400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25622.005
-X-MDID: 1598282340-Fvhx3uJ9pSd4
+In-Reply-To: <93536fd4-8abc-e167-a184-5a5e36d4205a@broadcom.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-check_fcs() was returning bool as 0/1, which was a sign that the sense
- of the function was unclear: false was good, which doesn't really match
- a name like 'check_$thing'.  So rename it to ef100_has_fcs_error(), and
- use proper booleans in the return statements.
+24.08.2020 11:28, Arend Van Spriel пишет:
+> 
+> 
+> On 8/23/2020 4:20 PM, Dmitry Osipenko wrote:
+>> This patch fixes SDHCI CRC errors during of RX throughput testing on
+>> BCM4329 chip if SDIO BUS is clocked above 25MHz. In particular the
+>> checksum problem is observed on NVIDIA Tegra20 SoCs. The good watermark
+>> value is borrowed from downstream BCMDHD driver and it's the same as the
+>> value used for the BCM4339 chip, hence let's re-use it for BCM4329.
+> 
+> one comment, but when fixed you can add my....
+> 
+> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+>> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+>> ---
+>>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>> b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>> index 3c07d1bbe1c6..ac3ee93a2378 100644
+>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+>> @@ -4278,6 +4278,7 @@ static void brcmf_sdio_firmware_callback(struct
+>> device *dev, int err,
+>>               brcmf_sdiod_writeb(sdiod, SBSDIO_FUNC1_MESBUSYCTRL,
+>>                          CY_43012_MESBUSYCTRL, &err);
+>>               break;
+>> +        case SDIO_DEVICE_ID_BROADCOM_4329:
+>>           case SDIO_DEVICE_ID_BROADCOM_4339:
+>>               brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes for
+>> 4339\n",
+> 
+> Maybe better to drop the chip id from the debug message. The chip id is
+> printed elsewhere already so it does not add info here and could only
+> cause confusion. Maybe you can also remove it from the 43455 message a
+> bit below.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/ef100_rx.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/sfc/ef100_rx.c b/drivers/net/ethernet/sfc/ef100_rx.c
-index 012925e878f4..85207acf7dee 100644
---- a/drivers/net/ethernet/sfc/ef100_rx.c
-+++ b/drivers/net/ethernet/sfc/ef100_rx.c
-@@ -36,7 +36,7 @@ bool ef100_rx_buf_hash_valid(const u8 *prefix)
- 	return PREFIX_FIELD(prefix, RSS_HASH_VALID);
- }
- 
--static bool check_fcs(struct efx_channel *channel, u32 *prefix)
-+static bool ef100_has_fcs_error(struct efx_channel *channel, u32 *prefix)
- {
- 	u16 rxclass;
- 	u8 l2status;
-@@ -46,11 +46,11 @@ static bool check_fcs(struct efx_channel *channel, u32 *prefix)
- 
- 	if (likely(l2status == ESE_GZ_RH_HCLASS_L2_STATUS_OK))
- 		/* Everything is ok */
--		return 0;
-+		return false;
- 
- 	if (l2status == ESE_GZ_RH_HCLASS_L2_STATUS_FCS_ERR)
- 		channel->n_rx_eth_crc_err++;
--	return 1;
-+	return true;
- }
- 
- void __ef100_rx_packet(struct efx_channel *channel)
-@@ -63,7 +63,7 @@ void __ef100_rx_packet(struct efx_channel *channel)
- 
- 	prefix = (u32 *)(eh - ESE_GZ_RX_PKT_PREFIX_LEN);
- 
--	if (check_fcs(channel, prefix) &&
-+	if (ef100_has_fcs_error(channel, prefix) &&
- 	    unlikely(!(efx->net_dev->features & NETIF_F_RXALL)))
- 		goto out;
- 
+Hello, Arend! Thank you for the review! I'll prepare v2 with the cleaned
+debug messages and couple more small changes!
