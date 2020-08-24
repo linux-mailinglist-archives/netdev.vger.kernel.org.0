@@ -2,127 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0255124F2B6
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 08:49:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6EB524F32C
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 09:37:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726090AbgHXGtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 02:49:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40096 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725730AbgHXGtm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 02:49:42 -0400
-Received: from coco.lan (unknown [95.90.213.182])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BB28A2067C;
-        Mon, 24 Aug 2020 06:49:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598251781;
-        bh=MoR5l415tOqXO7qDvbGK3qkYCXTWIk9BbyxnSBH+NOA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d8Fa9jnF4RxQAHQUfTQiJnd1/Cv3peOrzUsQ+uvrMSfO9dxpXk5FFmL8qQR+62r2d
-         /5Z+CzrXnWZx+hAETh664fBPlISrF9QHDL0J3KIvyrE+0W2sam4bZO9CkasBh6uuiy
-         Lifm+3q0OlCTMYdbS1UXGwLbhr7/E/XclY5RLP1s=
-Date:   Mon, 24 Aug 2020 08:49:30 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linuxarm@huawei.com, mauro.chehab@huawei.com,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Bogdan Togorean <bogdan.togorean@analog.com>,
-        Liwei Cai <cailiwei@hisilicon.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Xinliang Liu <xinliang.liu@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Wanchun Zheng <zhengwanchun@hisilicon.com>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        linux-media <linux-media@vger.kernel.org>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Rob Clark <robdclark@chromium.org>,
-        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Liuyao An <anliuyao@huawei.com>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>, Wei Xu <xuwei5@hisilicon.com>,
-        Rongrong Zou <zourongrong@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Chen Feng <puck.chen@hisilicon.com>
-Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
-Message-ID: <20200824084853.10560ed1@coco.lan>
-In-Reply-To: <CALAqxLULQvW3UikCHpEzSDnpeYnBy8wDSsWZNbSrmivQTW3_Sg@mail.gmail.com>
-References: <cover.1597833138.git.mchehab+huawei@kernel.org>
-        <CALAqxLU3bt6fT4nGHZFSnzyQq4xJo2On=c_Oa9ONED9-jhaFgw@mail.gmail.com>
-        <CALAqxLW98nVc-=8Q6nx-wRP1z8pzkw1_zNc9M7V3GhnJQqM9rg@mail.gmail.com>
-        <CALAqxLULQvW3UikCHpEzSDnpeYnBy8wDSsWZNbSrmivQTW3_Sg@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726610AbgHXHht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 03:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbgHXHhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 03:37:48 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68FE7C061573
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 00:37:48 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id p25so6605591qkp.2
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 00:37:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=WSlulmSSlwj5nGIJfCEx8kLyn4FEhJjaElPGH8H1ixc=;
+        b=qytO71aIRoyTyktFMpzjl3JutCiKeve6+YOYXOffJNSN6kaD2LYCRyUHC1YG/PO1Hl
+         ED0WkJW5HmDOBQoyGslqFRepdfrGuuSdnY9+jl+eH53cAE7fdfCNzRrDZxIdUYi71TGc
+         t4vgAdlJphzvuIulNcqjNu+RWbPmB6tfACeS3gUFbIcjQmaUzYu1qXGa7G/lE9O2pVaP
+         HRt02QQy5ZsY+iKkLGyUOJ5H8rqt2uFpNK2/nU7hMlMCz6uzWQg6GmkvCPvxBVcgYBcM
+         rs6cuKPyW4azeO0D5a2masPL8c6qe26Ek4NKd3EZ/1qlDI4QsGe/vnqipQWcvPhMChxd
+         WCYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=WSlulmSSlwj5nGIJfCEx8kLyn4FEhJjaElPGH8H1ixc=;
+        b=QUK8Xy33CArR+LOyGkCk/+622h7HKZbPq1W5+AFFIjX8OXl5fHryLzfXucZznGfs2a
+         cfHkaj5XOf/rBB0nlwXPJHL08lbyNWzFqUnQ/UK0b5dREd1H1q9YUnEz2ompLUDBKIci
+         bOsNjQAJFqO67WJadYevaCblotlIbXHajWqeetGdZax8k+8MmjfyVDHzVV31uVjZmOrE
+         ZhROee0JQLy1gCCCwJdHa2sTTvo67BLLljd6Mqx9lG9iqxKdzwn5SOlD5zPXtzq8qHA9
+         WUIq0fkuagQcu6BzINJRWBgFMaOJ8hPHIXttlFJBookBKveCs6tLW+p5hn/YLv4YzJG2
+         sqOg==
+X-Gm-Message-State: AOAM530bYVud6WBsdoxPSG4ypGkTfF9bNf7PC51Au8/F+ancWhGgTTZN
+        9gDY/+8PsQ0kUt5M/rcSnbw=
+X-Google-Smtp-Source: ABdhPJyN0zSbjMxmBYQQlUpWVOWMZnZCRcNFcRGHqggWeQnSuUZxUCeFJfW68hxGare3CcEcLyw53w==
+X-Received: by 2002:a37:a493:: with SMTP id n141mr3490986qke.351.1598254665987;
+        Mon, 24 Aug 2020 00:37:45 -0700 (PDT)
+Received: from localhost.localdomain ([50.236.19.102])
+        by smtp.gmail.com with ESMTPSA id y9sm9092322qka.0.2020.08.24.00.37.43
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 24 Aug 2020 00:37:45 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     davem@davemloft.net, pshelar@ovn.org, xiyou.wangcong@gmail.com
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v2 0/3] net: openvswitch: improve codes
+Date:   Mon, 24 Aug 2020 15:35:59 +0800
+Message-Id: <20200824073602.70812-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.15.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Em Wed, 19 Aug 2020 20:28:44 -0700
-John Stultz <john.stultz@linaro.org> escreveu:
+This series patches are not bug fix, just improve codes.
 
+Tonghao Zhang (3):
+  net: openvswitch: improve coding style
+  net: openvswitch: refactor flow free function
+  net: openvswitch: remove unused keep_flows
 
-> That said even with the patches I've got on top of your series, I
-> still see a few issues:
-> 1) I'm seeing red-blue swap with your driver.  I need to dig a bit to
-> see what the difference is, I know gralloc has a config option for
-> this, and maybe the version of the driver I'm carrying has it wrong?
+ net/openvswitch/actions.c    |  5 +--
+ net/openvswitch/datapath.c   | 35 ++++++++++---------
+ net/openvswitch/flow_table.c | 65 +++++++++++++++++-------------------
+ net/openvswitch/flow_table.h |  1 -
+ net/openvswitch/vport.c      |  7 ++--
+ 5 files changed, 57 insertions(+), 56 deletions(-)
 
-Maybe it is due to this:
+-- 
+2.23.0
 
-	drivers/staging/hikey9xx/gpu/kirin9xx_drm_overlay_utils.c:      hal_fmt = HISI_FB_PIXEL_FORMAT_BGRA_8888;/* dss_get_format(fb->pixel_format); */
-
-It sounds to me that someone added a hack hardcoding BGRA_8888 over
-there.
-
-Btw, I removed the hack, with:
-
-
-diff --git a/drivers/staging/hikey9xx/gpu/kirin9xx_drm_overlay_utils.c b/drivers/staging/hikey9xx/gpu/kirin9xx_drm_overlay_utils.c
-index a68db1a27bbf..ba64aae371e4 100644
---- a/drivers/staging/hikey9xx/gpu/kirin9xx_drm_overlay_utils.c
-+++ b/drivers/staging/hikey9xx/gpu/kirin9xx_drm_overlay_utils.c
-@@ -857,7 +857,7 @@ void hisi_fb_pan_display(struct drm_plane *plane)
-        rect.right = src_w - 1;
-        rect.top = 0;
-        rect.bottom = src_h - 1;
--       hal_fmt = HISI_FB_PIXEL_FORMAT_BGRA_8888;/* dss_get_format(fb->pixel_format); */
-+       hal_fmt = dss_get_format(fb->format->format);
- 
-        DRM_DEBUG_DRIVER("channel%d: src:(%d,%d, %dx%d) crtc:(%d,%d, %dx%d), rect(%d,%d,%d,%d),fb:%dx%d, pixel_format=%d, stride=%d, paddr=0x%x, bpp=%d.\n",
-                         chn_idx, src_x, src_y, src_w, src_h,
-
-
-And now red and blue are swapped on my HDMI screen too.
-
-I'll compare this part with your version, but I guess the bug is
-on this logic.
-
-
-Thanks,
-Mauro
