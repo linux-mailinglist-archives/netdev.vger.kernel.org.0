@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E81025070D
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:57:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D554250712
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:58:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727041AbgHXR5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 13:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38102 "EHLO
+        id S1726929AbgHXR6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726075AbgHXR50 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 13:57:26 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57184C061573;
-        Mon, 24 Aug 2020 10:57:26 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id v16so4609930plo.1;
-        Mon, 24 Aug 2020 10:57:26 -0700 (PDT)
+        with ESMTP id S1726026AbgHXR6I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 13:58:08 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC6DC061573;
+        Mon, 24 Aug 2020 10:58:07 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id y6so4592860plk.10;
+        Mon, 24 Aug 2020 10:58:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Bxt+hFW2eQXsPzOwVBEj8vb9gmrYpo9pA6uQkaiEPbA=;
-        b=JmLdzBJME5o9JTzm4gJvSuNJNchmPI4d5z1rDJISdozPpnz+ABbCRm9RTfO/jzc41F
-         xwxmKihgcrZiih5xpNLc7ccUIYRKhwOTNkV0BhmzfxwmBzNEGU32IoJbAunjKou6+pFq
-         dILoNXGiBHBmL9D0nmyrzIeHJdwelx2CuSLGX50NfzI3p29M6rw4BY2q7/nY0sfye3zu
-         Cm6mSmsAQAx84CgIDYd8lY3iZYW7mnuiWbE+kdhXiFD+5znfeBbnDjono2JqJD9OXun7
-         o44ES3ybRoRHn8uOEA50i15ynNy3CiMfY3e0A2Q5F6ZD94YFXSWoD8FM0QLexNyqPIuP
-         coiA==
+        bh=agqPCuS6BEn9aWk5uJd0tZp87UFT9iOXwrsq0Ti4dh0=;
+        b=vdUQFKZdVKfNznmzKQXsXZy82DbDAKIs+G5S4LNs3Wj1fCPE2szp+cTcl2fkpx1uFm
+         RQGvznDgaEVO5cH5BJho8tVE9BXqim2YKI1E5VjGMm5+MEAFi9E/mbYDPAG4Ia5jPB0P
+         UfP/3ifKuptwfzA0/+2IsQXDLQ+QmvKwLXV/Q/yVCRoFPYHFfUI6Ok28lbdxNESZAuWT
+         klX7YXWyJJX6jc6Z+uUOUpgAdFfeuq/N7CnrU1Wr8OLCVEQBmyQqbQkcNqjXerQmthy5
+         L7LTf7Yi53TL3fIEGHo2b/RunvK/x72IhwgaTGD8rQ1H2K51rPVL1wcjjbpXatGUFQ/n
+         QtRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=Bxt+hFW2eQXsPzOwVBEj8vb9gmrYpo9pA6uQkaiEPbA=;
-        b=qsMIqiV6OILBEjFUSQuAYidJ5uFSSz8vfq3nnGNT+YSiBrXD7+tUtUbCdBzr3hJmK6
-         6sDRM0u6m37IFucXVRnqTWDFAipW2+xM0qjxyzSBxdkLifLxUIA+AykvS/yKZFdFZdn3
-         +3xe2CVrFb+PfvhpmUlNxBDrtwDzioIxUgmbgXPjJSL2irjw0C28wdg3Nl7G9hRDRHIE
-         aBKakcpj1EuIiwFr5HOMdUQ+bfaH0d0jg0c9ns+IGLNODEkKpbhfC0Wi1+rQyqVyPAbA
-         ORJnYtd566FgPn88+Q+IjQsFPgTjC1WUPdbzKqzDv28g2/l3ARd1B1au0DwGc5dN2oyR
-         xUMg==
-X-Gm-Message-State: AOAM531LW5+xaGYOykOrpoDMxl9vHtQj31z6huIpx1TIDF7amY3c/4kK
-        y9N7fY22I7V2TUds3EdtZVghOKVP+qA=
-X-Google-Smtp-Source: ABdhPJz0WR5+GGfIGKrk8znl64dH+HodfHNLWDkg6kkrfaEThXLuHU93DAYJAkOgQZFgtGkmcZi5ow==
-X-Received: by 2002:a17:902:8e85:: with SMTP id bg5mr4527163plb.306.1598291841551;
-        Mon, 24 Aug 2020 10:57:21 -0700 (PDT)
+        bh=agqPCuS6BEn9aWk5uJd0tZp87UFT9iOXwrsq0Ti4dh0=;
+        b=l41aU58qKRW17zOIialfY+8ynk1bejt94Kr8putXu3g0pEx9O2rKwHeuTiI1kHumuf
+         5VmjcCQc71dLwHmSfWGazkxuQmQLvpTZ3vYnn8s5dR9XBasbGXmo71QHRIJcT/t3wVkZ
+         2QtPhYvrpkhGcGwVI/1DifG8EX03nGUqwFWw3LRkGfLPGiWq2m7Jv5E/4vdaOr0ZDOCw
+         Zdxbixt9ApViaFJfwdWIqhjtF33af2a0ghmSFE1u2hQk4HWndQcAgYlyj/6qosNG9h5n
+         OHOtIb7DtN5/FhPy068PtZoQdKjGATKT9J8uf+yj/m9IS7pDxK/KB3BfDB9PRf6i0tnc
+         4gDw==
+X-Gm-Message-State: AOAM532grtwhhgx8HS3+rJzpLJjCri2KRQjKZOjTe2BE/THNQMBoEPt1
+        8oHrN6tRs6iM/Cu7lh5N9UUIG4PAl+U=
+X-Google-Smtp-Source: ABdhPJyLhSQVTkblSJ95fi7cGoFJ84C8kiI4phXKfVdGGhiQPtpKnr9o1I8Wa5A8P/nwBI+f0KY47Q==
+X-Received: by 2002:a17:90b:3750:: with SMTP id ne16mr385490pjb.6.1598291883191;
+        Mon, 24 Aug 2020 10:58:03 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f12sm182263pjm.52.2020.08.24.10.57.14
+        by smtp.googlemail.com with ESMTPSA id fv21sm184991pjb.16.2020.08.24.10.57.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Aug 2020 10:57:20 -0700 (PDT)
-Subject: Re: [PATCH v3 3/7] dt-bindings: net: renesas,etheravb: Convert to
- json-schema
+        Mon, 24 Aug 2020 10:58:02 -0700 (PDT)
+Subject: Re: [PATCH v3 4/7] ravb: Split delay handling in parsing and applying
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -66,7 +65,7 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <20200819134344.27813-1-geert+renesas@glider.be>
- <20200819134344.27813-4-geert+renesas@glider.be>
+ <20200819134344.27813-5-geert+renesas@glider.be>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -122,12 +121,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <b721f963-d667-fecd-1601-3bc66191a644@gmail.com>
-Date:   Mon, 24 Aug 2020 10:57:11 -0700
+Message-ID: <5b021cb3-cc07-8f37-20d9-017b4dadf33b@gmail.com>
+Date:   Mon, 24 Aug 2020 10:57:50 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200819134344.27813-4-geert+renesas@glider.be>
+In-Reply-To: <20200819134344.27813-5-geert+renesas@glider.be>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -137,17 +136,12 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 8/19/20 6:43 AM, Geert Uytterhoeven wrote:
-> Convert the Renesas Ethernet AVB (EthernetAVB-IF) Device Tree binding
-> documentation to json-schema.
-> 
-> Add missing properties.
-> Update the example to match reality.
+> Currently, full delay handling is done in both the probe and resume
+> paths.  Split it in two parts, so the resume path doesn't have to redo
+> the parsing part over and over again.
 > 
 > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-
-Ignore my previous comment, you just did that YAML conversion, thanks!
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
