@@ -2,124 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5948C2509BF
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 22:03:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E8A72509C2
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 22:07:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbgHXUDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 16:03:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725904AbgHXUDR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 16:03:17 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2653FC061573;
-        Mon, 24 Aug 2020 13:03:17 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id p11so2286394pfn.11;
-        Mon, 24 Aug 2020 13:03:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=isOavbC0CqCTOWpwarMOyw2TDbIMP+uJPiDdCwZdCm4=;
-        b=c2U6POoJvv+0vYTJHvEKQaX7ET3zmfZwu9hCOQz2NJZ+PiNfhFvjFQkeNq2hSR42uW
-         7S8VHrutiLhiRBILzasdfdAJAUnRG1BHOCXg+p3O3MnhKvLqagdmz9JFCDcXCQjh55oY
-         +f/IPLBAsnBHlUOyvhRwO9nsmc8HG92Qbgce3slKVbJKFawgJNYx1D+Z4lADIh2TFrhG
-         AAQvK+mlzor09CElVJkoHNgs8uWmwthGXkvATFK48jV6B9yy1Bwy7gHmmM7rktLFFFkg
-         xOykXFC2KPGf9A+h/7exWOnjehmtzUPeRqpqsFOFSR19UiXRudkmG3F43aht6Jpr7lZ7
-         wN7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=isOavbC0CqCTOWpwarMOyw2TDbIMP+uJPiDdCwZdCm4=;
-        b=WTurTcg55fTsQIkCM7103viaEBo7c5mNR0dWsvLqWqNE6Yy123w/ArcPu/I0qUfD3F
-         hIVx8RTq0125wvS2VMxqRdXGsuKffaJojOUC9TkmZqSnhcqZsHc2l5vufs8Ky0gSG9qQ
-         K36SrFnyY2BSyD+/FDqFNXy2y4cocfHqzxyA5BjMLfpdOfRBbdBdFw5Ekujyv/Nh7gfn
-         87ItI3umJSCW4CqcNtWeBg6/hRffikGpycsKSjabsEN2q+5xKso1pD9UcyAXfNtcgJlo
-         kTsOQMevDs/YcQMBI7eo6veOCm3oRcs0u767oRY7CjkK8nIh6qfuAZemET5s/RAFsqvH
-         WNfg==
-X-Gm-Message-State: AOAM532YBl5TD3QkNPbJw7QJbkSfIpXUmXe5UxNOr1+jiS5v4dA/P3Bw
-        3tZqtMeilEtWxjRXeEkpGbg=
-X-Google-Smtp-Source: ABdhPJyNNJ7ZQ0kH+sJbXxUJ+q4pt6tVcRPH37tIEAQf5D8RdnbjPmfJNMPVfDiij6bCHTAMNMa81g==
-X-Received: by 2002:a63:7018:: with SMTP id l24mr4221170pgc.55.1598299396720;
-        Mon, 24 Aug 2020 13:03:16 -0700 (PDT)
-Received: from Kaladin ([49.207.215.194])
-        by smtp.gmail.com with ESMTPSA id d23sm10418236pgm.11.2020.08.24.13.03.13
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 24 Aug 2020 13:03:16 -0700 (PDT)
-Date:   Tue, 25 Aug 2020 01:33:11 +0530
-From:   Sumera Priyadarsini <sylphrenadin@gmail.com>
-To:     davem@davemloft.net
-Cc:     Julia.Lawall@lip6.fr, andrew@lunn.ch, sean.wang@mediatek.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        matthias.bgg@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH V4] net: dsa: mt7530: Add of_node_put() before break and
- return statements
-Message-ID: <20200824200311.GA19436@Kaladin>
+        id S1726225AbgHXUHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 16:07:19 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:57273 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725904AbgHXUHR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 16:07:17 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 0a22425d;
+        Mon, 24 Aug 2020 19:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:in-reply-to:references:mime-version
+        :content-transfer-encoding; s=mail; bh=cgxmZzC0XHaMZRdZxc5cyPLAX
+        fk=; b=jMSgxwwiyuxidlQv9BgVbzRJTnrilwXVqfcl7rq3h0ABHqFrn5b7Q8uWS
+        ukzA9iIVTpWmN1xmSdUBxEhe1J/gB8lEnpwCP/TthGucRglvGDIxbHxTio4yhAAI
+        xNPTe1lDlOq2+DyofJ4+qp16Fd5iyR8ZtiSTMKutwwb3gfR5nEtvC2uOkUIuAbxA
+        r/yjYFsggPDcWd2lTjaHBWDcdLZmiej56hOvUCin4uYER4sTXPfo52/W0y4ATNyF
+        fZt+eVMdrhzsd8Qyj2uIIxdlQrlC0pQckRTdmaP1hLZgApLcYQwT+Z5404RoRJAx
+        3NGahVR1Y+u5pdGDp6khJS9V/MVUw==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8021a682 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Mon, 24 Aug 2020 19:40:10 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH net] net: read dev->needs_free_netdev before potentially freeing dev
+Date:   Mon, 24 Aug 2020 22:06:50 +0200
+Message-Id: <20200824200650.21982-1-Jason@zx2c4.com>
+In-Reply-To: <20200824141519.GA223008@mwanda>
+References: <20200824141519.GA223008@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Every iteration of for_each_child_of_node() decrements
-the reference count of the previous node, however when control
-is transferred from the middle of the loop, as in the case of
-a return or break or goto, there is no decrement thus ultimately
-resulting in a memory leak.
+If dev->needs_free_netdev is true, it means that netdev_run_todo should
+call free_netdev(dev) after it calls dev->priv_destructor. If
+dev->needs_free_netdev is false, then it means that either
+dev->priv_destructor is taking care of calling free_netdev(dev), or
+something else, elsewhere, is doing that. In this case, branching on
+"if (dev->needs_free_netdev)" after calling dev->priv_destructor is a
+potential UaF. This patch fixes the issue by reading
+dev->needs_free_netdev before calling dev->priv_destructor.
 
-Fix a potential memory leak in mt7530.c by inserting of_node_put()
-before the break and return statements.
-
-Issue found with Coccinelle.
-
-Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: cf124db566e6 ("net: Fix inconsistent teardown and release of private netdev state.")
+Cc: David S. Miller <davem@davemloft.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
-Changes in v2:
-        Add another of_node_put() in for_each_child_of_node() as
-pointed out by Andrew.
+I believe that the bug Dan reported would easily be fixed as well by
+just setting dev->needs_free_netdev=true and removing the call to
+free_netdev(dev) in wg_destruct, in wireguard. If you think that this is
+the more proper fix -- and that the problem actually isn't this flow in
+dev.c and any code that might hit this UaF is wrong -- let me know and
+I'll send in a patch for wireguard instead.
 
-Changes in v3:
-        - Correct syntax errors
-        - Modify commit message
+ net/core/dev.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Changes in v4:
-	- Change commit prefix to include the driver name,
-mt7530, as pointed out by Vladimir.
-	- Change the signoff to the correct format.
-
----
- drivers/net/dsa/mt7530.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 8dcb8a49ab67..4b4701c69fe1 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1326,14 +1326,17 @@ mt7530_setup(struct dsa_switch *ds)
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7df6c9617321..abe53c2fae8c 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10073,6 +10073,8 @@ void netdev_run_todo(void)
+ 	while (!list_empty(&list)) {
+ 		struct net_device *dev
+ 			= list_first_entry(&list, struct net_device, todo_list);
++		bool needs_free_netdev = dev->needs_free_netdev;
++
+ 		list_del(&dev->todo_list);
  
- 			if (phy_node->parent == priv->dev->of_node->parent) {
- 				ret = of_get_phy_mode(mac_np, &interface);
--				if (ret && ret != -ENODEV)
-+				if (ret && ret != -ENODEV) {
-+					of_node_put(mac_np);
- 					return ret;
-+				}
- 				id = of_mdio_parse_addr(ds->dev, phy_node);
- 				if (id == 0)
- 					priv->p5_intf_sel = P5_INTF_SEL_PHY_P0;
- 				if (id == 4)
- 					priv->p5_intf_sel = P5_INTF_SEL_PHY_P4;
- 			}
-+			of_node_put(mac_np);
- 			of_node_put(phy_node);
- 			break;
- 		}
+ 		if (unlikely(dev->reg_state != NETREG_UNREGISTERING)) {
+@@ -10097,7 +10099,7 @@ void netdev_run_todo(void)
+ #endif
+ 		if (dev->priv_destructor)
+ 			dev->priv_destructor(dev);
+-		if (dev->needs_free_netdev)
++		if (needs_free_netdev)
+ 			free_netdev(dev);
+ 
+ 		/* Report a network device has been unregistered */
 -- 
-2.17.1
+2.28.0
 
