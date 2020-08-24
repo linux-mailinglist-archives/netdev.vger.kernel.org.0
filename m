@@ -2,143 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EE28250B0F
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 23:45:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43C1B250B16
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 23:47:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727869AbgHXVo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 17:44:59 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41476 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726090AbgHXVo7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 17:44:59 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id E7AA8ACBF;
-        Mon, 24 Aug 2020 21:45:26 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 1613160326; Mon, 24 Aug 2020 23:44:56 +0200 (CEST)
-Date:   Mon, 24 Aug 2020 23:44:56 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, Alice Michael <alice.michael@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com, Alan Brady <alan.brady@intel.com>,
-        Phani Burra <phani.r.burra@intel.com>,
-        Joshua Hay <joshua.a.hay@intel.com>,
-        Madhu Chittim <madhu.chittim@intel.com>,
-        Pavan Kumar Linga <pavan.kumar.linga@intel.com>,
-        Donald Skidmore <donald.c.skidmore@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>
-Subject: Re: [net-next v5 13/15] iecm: Add ethtool
-Message-ID: <20200824214456.go72ij4wfqpse7qj@lion.mk-sys.cz>
-References: <20200824173306.3178343-1-anthony.l.nguyen@intel.com>
- <20200824173306.3178343-14-anthony.l.nguyen@intel.com>
+        id S1726803AbgHXVrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 17:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726365AbgHXVru (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 17:47:50 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4578EC061574;
+        Mon, 24 Aug 2020 14:47:50 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id f26so11401255ljc.8;
+        Mon, 24 Aug 2020 14:47:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U8AEMx+c+PIG8pVY+1WZJabYi9uVpApSHXqIEELfdGY=;
+        b=YkjD+uj+Uvg9cAMLJes7/IcruEFSRaXCc2h/WETwH7QH1oHaNOxh50r52bZ09fQiYQ
+         EIMMtqWFIsAFYR38qEiZiiox7Tyla+H151srxmmEUdzuikHxOd7vPry1wFGV2t4OCzil
+         FO17CT4i+sc0HQLXvsJnP2o6JxatA6ziAoeWKGwcVlC688T6r2MELrimnVWOS+qWvcYr
+         H8xJ1pnmR0v1MMfwgQ57kO5NQ2y0A24+XUxKtd6Are8kja8Fa0U0j/hNrdYKtg8hB8OV
+         pnS+U20s9Y5WACZCLZXreWJ7sESdJg1Tvy3ouot/WWdzkpt5EuFNtoZrAlsF+x4fDGOt
+         Ryiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U8AEMx+c+PIG8pVY+1WZJabYi9uVpApSHXqIEELfdGY=;
+        b=aNht+UZInZmuukI1j1LdyILaWPo4hlCiB+iXvrYaGNKggAL8YWkqoWrdW4qD3J+j35
+         m5HE2ciNEwIeBUmEWVXkYds62rfIRwC1XpVPigNuB6/QL7FmenPcD6HwPMq+zyc1ON1z
+         7T0xxJxJ0kgf1FRwDx7VXuDbzsjQ2miOaY8QZGNIF8BNenKC+MXdDu6VOegrmCKKxpiI
+         J+z8OCK6OvUmeFl7WQ1zairv/93jAzHhINQG8k6jKupq5Esn/mVaM3AyRtIQ4hy2cKyN
+         SqHDwoKE4U6RpAN8nJPmJL2ILmJ24BAM9seIfPGbxWlzQXMyVexpYXRP7V41TyW8CrET
+         ji3w==
+X-Gm-Message-State: AOAM533sLT3Ju7XLbb8qQ02TwokkWtMFD5WuaPUhmA6y9Ihq8+y8DNk0
+        xScudIEG2h+ezmFkFnI5ZV6vNjK+JRMFliW1f00=
+X-Google-Smtp-Source: ABdhPJyvIf4NPitY4M02yDuGYpeLWF7mxpYui7UX/35anjxUsVgeX0RbTHSoNCMqzVX6fW9WyUIZRqlPnzoirTWNkhM=
+X-Received: by 2002:a2e:4e09:: with SMTP id c9mr3563500ljb.283.1598305668740;
+ Mon, 24 Aug 2020 14:47:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200824173306.3178343-14-anthony.l.nguyen@intel.com>
+References: <20200821100226.403844-1-jakub@cloudflare.com>
+In-Reply-To: <20200821100226.403844-1-jakub@cloudflare.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 24 Aug 2020 14:47:37 -0700
+Message-ID: <CAADnVQKm8nQsTVamtNZbSJz0feezdLk=vYKitp_zjT02TV9ejw@mail.gmail.com>
+Subject: Re: [PATCH] bpf: sk_lookup: Add user documentation
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 24, 2020 at 10:33:04AM -0700, Tony Nguyen wrote:
-> From: Alice Michael <alice.michael@intel.com>
-> 
-> Implement ethtool interface for the common module.
-> 
-> Signed-off-by: Alice Michael <alice.michael@intel.com>
-> Signed-off-by: Alan Brady <alan.brady@intel.com>
-> Signed-off-by: Phani Burra <phani.r.burra@intel.com>
-> Signed-off-by: Joshua Hay <joshua.a.hay@intel.com>
-> Signed-off-by: Madhu Chittim <madhu.chittim@intel.com>
-> Signed-off-by: Pavan Kumar Linga <pavan.kumar.linga@intel.com>
-> Reviewed-by: Donald Skidmore <donald.c.skidmore@intel.com>
-> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> Reviewed-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> ---
-[...]
-> +static void iecm_get_channels(struct net_device *netdev,
-> +			      struct ethtool_channels *ch)
-> +{
-> +	struct iecm_vport *vport = iecm_netdev_to_vport(netdev);
-> +	unsigned int combined;
-> +
-> +	combined = min(vport->num_txq, vport->num_rxq);
-> +
-> +	/* Report maximum channels */
-> +	ch->max_combined = IECM_MAX_Q;
-> +
-> +	ch->max_other = IECM_MAX_NONQ;
-> +	ch->other_count = IECM_MAX_NONQ;
-> +
-> +	ch->combined_count = combined;
-> +	ch->rx_count = vport->num_rxq - combined;
-> +	ch->tx_count = vport->num_txq - combined;
-> +}
+On Fri, Aug 21, 2020 at 3:02 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> Describe the purpose of BPF sk_lookup program, how it can be attached, when
+> it gets invoked, and what information gets passed to it. Point the reader
+> to examples and further documentation.
+>
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 
-You don't set max_rx and max_tx so that they will be always reported
-as 0. If vport->num_rxq != vport->num_txq, one of rx_count, tx_count
-will be higher than corresponding maximum so that any "set channels"
-request not touching that value will fail the sanity check in
-ethnl_set_channels() or ethtool_set_channels().
-
-> +
-> +/**
-> + * iecm_set_channels: set the new channel count
-> + * @netdev: network interface device structure
-> + * @ch: channel information structure
-> + *
-> + * Negotiate a new number of channels with CP. Returns 0 on success, negative
-> + * on failure.
-> + */
-> +static int iecm_set_channels(struct net_device *netdev,
-> +			     struct ethtool_channels *ch)
-> +{
-> +	struct iecm_vport *vport = iecm_netdev_to_vport(netdev);
-> +	int num_req_q = ch->combined_count;
-> +
-> +	if (num_req_q == max(vport->num_txq, vport->num_rxq))
-> +		return 0;
-> +
-> +	vport->adapter->config_data.num_req_qs = num_req_q;
-> +
-> +	return iecm_initiate_soft_reset(vport, __IECM_SR_Q_CHANGE);
-> +}
-
-In iecm_get_channels() you set combined_count to minimum of num_rxq and
-num_txq but here you expect it to be the maximum. And you also
-completely ignore everything else than combined_count. Can this ever
-work correctly if num_rxq != num_txq?
-
-> +static int iecm_set_ringparam(struct net_device *netdev,
-> +			      struct ethtool_ringparam *ring)
-> +{
-> +	struct iecm_vport *vport = iecm_netdev_to_vport(netdev);
-> +	u32 new_rx_count, new_tx_count;
-> +
-> +	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
-> +		return -EINVAL;
-
-This will be caught by the generic sanity check in ethnl_set_rings() or
-ethtool_set_ringparam().
-
-Michal
-
-> +
-> +	new_tx_count = ALIGN(ring->tx_pending, IECM_REQ_DESC_MULTIPLE);
-> +	new_rx_count = ALIGN(ring->rx_pending, IECM_REQ_DESC_MULTIPLE);
-> +
-> +	/* if nothing to do return success */
-> +	if (new_tx_count == vport->txq_desc_count &&
-> +	    new_rx_count == vport->rxq_desc_count)
-> +		return 0;
-> +
-> +	vport->adapter->config_data.num_req_txq_desc = new_tx_count;
-> +	vport->adapter->config_data.num_req_rxq_desc = new_rx_count;
-> +
-> +	return iecm_initiate_soft_reset(vport, __IECM_SR_Q_DESC_CHANGE);
-> +}
+Applied to bpf-next. Thanks
