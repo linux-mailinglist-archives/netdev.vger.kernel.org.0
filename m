@@ -2,107 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D024524F80E
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 11:25:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1EB924F683
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 11:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730185AbgHXIxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 04:53:24 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:45142 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730177AbgHXIxV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 04:53:21 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id F31B820519;
-        Mon, 24 Aug 2020 10:53:19 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id USHBQR3CU35V; Mon, 24 Aug 2020 10:53:19 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 3A71D204B4;
-        Mon, 24 Aug 2020 10:53:19 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 24 Aug 2020 10:53:19 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Mon, 24 Aug
- 2020 10:53:18 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 9F70A3180449; Mon, 24 Aug 2020 10:53:18 +0200 (CEST)
-Date:   Mon, 24 Aug 2020 10:53:18 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        <netdev@vger.kernel.org>, Sabrina Dubroca <sd@queasysnail.net>
-Subject: Re: [PATCH 6/6] xfrm: add espintcp (RFC 8229)
-Message-ID: <20200824085318.GQ20687@gauss3.secunet.de>
-References: <20200121073858.31120-1-steffen.klassert@secunet.com>
- <20200121073858.31120-7-steffen.klassert@secunet.com>
- <77263327-2fc7-6ba0-567e-0d3643d57c2d@gmail.com>
+        id S1730543AbgHXJAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 05:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730617AbgHXJAP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 05:00:15 -0400
+Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B044FC061573
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 02:00:14 -0700 (PDT)
+Received: by mail-vk1-xa2d.google.com with SMTP id o2so1800378vkn.9
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 02:00:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=KfhSuOovLnLRVmlJFLbo80kBFl4FB5sqA5U4FgRWdXE=;
+        b=sF0cp1JrdrQ5w+tMqws5LD4vUPY/tS2GNl0kwpIxrT7Z2tvlIvQl3kp/UupnnkFEhw
+         P97cQIaiKcoqDiXPPChDUtgG3floGftRcROmppacO3HxwKH80TUEl6Vr2WM8I8s6S9u4
+         sghLN2nBSTyQpm7VBixjZNrvVUOMM/VwZ9MTfhS9bA+x3LYj8x587UWnrhiWQ5rK/S8c
+         sMrf0vOlbgVyn3Kyh06cI3dtcOykPduzolO2XbUM1mCa0bnxK2/e3X+I5MI/OAbvIQer
+         RrVqK3fqYbCfcU1Er/UikCOKQm8VTa1SsBPUTpUo+OGY8a8L4QX9n2TrQR1KnduIIb2p
+         xhCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=KfhSuOovLnLRVmlJFLbo80kBFl4FB5sqA5U4FgRWdXE=;
+        b=gHaT6OS9HDWAKRDQPoIVrxfKTxPKUyMEMeiwF9FuzGib1XEcUaFBCghskFJP2KO0Ke
+         QHudjm18tl5k4nBV5iRoVs6FtejLPhToS/2ENDaqufaBXDJo/+DibCNGfDXss7gIfTJY
+         qAfS9fg70kr18STa022CmYLbWh8NuTjMewr/pcCqR3QfzMXYhotgHfjNuj455yWXeRiP
+         PidAAHUXzyTg6TagkbF+JEgjZFPJhgon0/NQ4H5JTDZbGiJMgFxbSbqAPUNII9Qa6ZRY
+         7Hs+qL2k6QXFl0F4yrUNeMUpcPF43r+fmzc7jJrhIhmz2YdfKY4KuwlbcdT+3G0xS96d
+         Kuow==
+X-Gm-Message-State: AOAM532tIqUCbKOdKw11XaQSRmzqB1CS+slM0BoReLBQ+1fXAkwuu3VA
+        zvSyT0nJOnruyf5kGQgjtk+wCQLwArKU2uNdiX6pHg==
+X-Google-Smtp-Source: ABdhPJz/KtMppW2wUDSI5hh9kF22nqOYQnim3Qj7+E4taS5Wd7au/tHa/tVWNgJla6ZbMnBGXUm+Vz9lK3r+rPtUyo4=
+X-Received: by 2002:a1f:eecb:: with SMTP id m194mr1767325vkh.40.1598259613475;
+ Mon, 24 Aug 2020 02:00:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <77263327-2fc7-6ba0-567e-0d3643d57c2d@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 24 Aug 2020 14:30:01 +0530
+Message-ID: <CA+G9fYvWkGp9p95DQ5T87GDBmUMecEYBZC0TYHmfwHysanQ7zA@mail.gmail.com>
+Subject: expects argument of type 'size_t', but argument 5 has type 'Elf64_Xword
+To:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        ast@fb.com, Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, lkft-triage@lists.linaro.org,
+        =?UTF-8?B?RGFuaWVsIETDrWF6?= <daniel.diaz@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ccing Sabrina.
+while building perf with gcc 7.3.0 on linux next this warning/error is found.
 
-On Fri, Aug 21, 2020 at 02:46:44PM -0700, Eric Dumazet wrote:
-> 
-> 
-> On 1/20/20 11:38 PM, Steffen Klassert wrote:
-> > From: Sabrina Dubroca <sd@queasysnail.net>
-> > 
-> > TCP encapsulation of IKE and IPsec messages (RFC 8229) is implemented
-> > as a TCP ULP, overriding in particular the sendmsg and recvmsg
-> > operations. A Stream Parser is used to extract messages out of the TCP
-> > stream using the first 2 bytes as length marker. Received IKE messages
-> > are put on "ike_queue", waiting to be dequeued by the custom recvmsg
-> > implementation. Received ESP messages are sent to XFRM, like with UDP
-> > encapsulation
-> 
-> ...
-> 
-> > +
-> > +static int espintcp_sendskb_locked(struct sock *sk, struct espintcp_msg *emsg,
-> > +				   int flags)
-> > +{
-> > +	do {
-> > +		int ret;
-> > +
-> > +		ret = skb_send_sock_locked(sk, emsg->skb,
-> > +					   emsg->offset, emsg->len);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +
-> > +		emsg->len -= ret;
-> > +		emsg->offset += ret;
-> > +	} while (emsg->len > 0);
-> > +
-> > +	kfree_skb(emsg->skb);
-> > +	memset(emsg, 0, sizeof(*emsg));
-> > +
-> > +	return 0;
-> > +}
-> 
-> 
-> Is there any particular reason we use kfree_skb() here instead of consume_skb() ?
+In file included from libbpf.c:55:0:
+libbpf.c: In function 'bpf_object__elf_collect':
+libbpf_internal.h:74:22: error: format '%zu' expects argument of type
+'size_t', but argument 5 has type 'Elf64_Xword {aka long long unsigned
+int}' [-Werror=format=]
+  libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__);
+cc1: all warnings being treated as errors
 
-I guess not. The skb in not dropped due to an error, so
-consume_skb() seems to be more appropriate.
+OE perf build long link,
+https://ci.linaro.org/view/lkft/job/openembedded-lkft-linux-next/DISTRO=lkft,MACHINE=am57xx-evm,label=docker-lkft/846/consoleText
 
-> 
-> Same remark for final kfree_skb() in espintcp_recvmsg()
-> 
+- Naresh
