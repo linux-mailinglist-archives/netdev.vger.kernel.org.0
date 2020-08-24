@@ -2,54 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B62250BE2
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 00:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5519250BE3
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 00:51:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728079AbgHXWtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 18:49:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726519AbgHXWtF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 18:49:05 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14E7C061574;
-        Mon, 24 Aug 2020 15:49:05 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id CC7AA1290D468;
-        Mon, 24 Aug 2020 15:32:17 -0700 (PDT)
-Date:   Mon, 24 Aug 2020 15:49:02 -0700 (PDT)
-Message-Id: <20200824.154902.1388669182717688782.davem@davemloft.net>
-To:     linmiaohe@huawei.com
-Cc:     kuba@kernel.org, martin.varghese@nokia.com, pshelar@ovn.org,
-        fw@strlen.de, dcaratti@redhat.com, edumazet@google.com,
-        steffen.klassert@secunet.com, pabeni@redhat.com,
-        shmulik@metanetworks.com, kyk.segfault@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: Check the expect of skb->data at mac header
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200820122822.46608-1-linmiaohe@huawei.com>
-References: <20200820122822.46608-1-linmiaohe@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Aug 2020 15:32:18 -0700 (PDT)
+        id S1728054AbgHXWu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 18:50:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48014 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726664AbgHXWu6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 18:50:58 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kALIk-00BhXX-Uf; Tue, 25 Aug 2020 00:50:54 +0200
+Date:   Tue, 25 Aug 2020 00:50:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH v3 6/8] net: dsa: hellcreek: Add PTP status LEDs
+Message-ID: <20200824225054.GL2403519@lunn.ch>
+References: <20200820081118.10105-1-kurt@linutronix.de>
+ <20200820081118.10105-7-kurt@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200820081118.10105-7-kurt@linutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
-Date: Thu, 20 Aug 2020 08:28:22 -0400
-
-> skb_mpls_push() and skb_mpls_pop() expect skb->data at mac header. Check
-> this assumption or we would get wrong mac_header and network_header.
+On Thu, Aug 20, 2020 at 10:11:16AM +0200, Kurt Kanzenbach wrote:
+> The switch has two controllable I/Os which are usually connected to LEDs. This
+> is useful to immediately visually see the PTP status.
 > 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> These provide two signals:
+> 
+>  * is_gm
+> 
+>    This LED can be activated if the current device is the grand master in that
+>    PTP domain.
+> 
+>  * sync_good
+> 
+>    This LED can be activated if the current device is in sync with the network
+>    time.
+> 
+> Expose these via the LED framework to be controlled via user space
+> e.g. linuxptp.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-Both openvswitch and act_mpls.c seem to adhere to this constraint.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-I don't see real value to these extra checks, sorry.
+    Andrew
