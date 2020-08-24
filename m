@@ -2,56 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A244250A46
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 22:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16F0D250A4A
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 22:49:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727123AbgHXUst (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 16:48:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38226 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726090AbgHXUst (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 16:48:49 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 66D792067C;
-        Mon, 24 Aug 2020 20:48:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598302128;
-        bh=VY4oO7v0XkFesA6GrScKc8z8fmrFa3YfhqrK4++icyE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=srU2fq5yXC6HTrbHepG+qmK98aZ/GeNr6PYOfQ09OpvRdx8gr3hjeZfri2ybFx5Ni
-         R0olAqmEm8aFJFwcSpuRWTZgXcpvEF0ZXbe+fs5OEafRHw/tQiYmCwpMfHY1YJ5Mnf
-         6r4Apz08VXTeph3SVsY6kVi4bIogbhxbYs0aIF8U=
-Date:   Mon, 24 Aug 2020 13:48:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Parav Pandit <parav@nvidia.com>
-Subject: Re: [PATCH net-next 0/2] devlink fixes for port and reporter field
- access
-Message-ID: <20200824134846.6125c838@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200821191221.82522-1-parav@mellanox.com>
-References: <20200821191221.82522-1-parav@mellanox.com>
+        id S1727827AbgHXUtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 16:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726090AbgHXUtR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 16:49:17 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501A4C061574
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 13:49:17 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id f193so5546302pfa.12
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 13:49:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Uv9gG7ktC/ackhaGqtPHs34kPN0x3rmU+zhvd3e95ak=;
+        b=XAjxQ/wy+UpyPYzlMz93w3SUo53RK7zMkAa/g3Q+wN0+SXG/SMO7xa2EZcyF4q0up6
+         +gsh0R5HHCKV0hV2XIhxnMs1WUnkh2n4SFLEcJ+me7qAeDoeThpRtUKtWGiPdjDYH9jt
+         1EM3lm6sAYxa0O4DjaM4jVMre6jZ33xWWqbqc4sYirmZ9S2Geon4BnZF6GZB7/SGESt1
+         OsVOV/WeJYeUNR1troS3bx3PvFb2oqjp6bt0gSZ649I/f7BqK5W0LlDWxCZ7k4DSI+a9
+         qESH1iK++M2H1td1J+zgNNxPFF/vq/wk2GJAkFIAhnXiVKqljMJm16+19pmRfoEksl5g
+         Ezjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Uv9gG7ktC/ackhaGqtPHs34kPN0x3rmU+zhvd3e95ak=;
+        b=FrZWTZO1D0IZqI7uHMGWmvhMa6CN7fTJj5JfhbH9qZqOo+NnBCcpa5O25v0XySDIK8
+         +vrMqZvqyWxXG+OGO5zsF15LUTVtO4iwzE9n05iXIShXq7jfBItn6DSCHI077NdsXDBR
+         AMol+nGOygbbSOVuo/SDp8GLqTOG8avG6jwqFttznJvuXp0Rc626tY2Y2yGwefEIO5+j
+         phVHsOvwe1cpyctoM9xawaeMUm0xSCcJzulTO/hP7XOOKk9zGIdUDpAmqANXtmlxt8Xd
+         nP86HnujmpOcqUAUntLpIXIMGpNjd3xnExVQmS2MmwQ5hL/nx6MXGpxzA2UoVqv4djaF
+         i1qA==
+X-Gm-Message-State: AOAM533YOMB566o15nvnJUiBpgf1rlRFMmr1v6ufg2Ccoyq5HCg0WaE/
+        hsN9BCdDeQlAdZZMXUnZv0jr0AI5D4yjDeAmKEc=
+X-Google-Smtp-Source: ABdhPJxqEF7ku+7/JtZQ0AQE9Uh+P2NIRgLbYDULW7JUikfvvlZ3pQMJAWVHLkeGNVpLT10LlIsrlW/lr+xcI6gmOtM=
+X-Received: by 2002:a63:b24b:: with SMTP id t11mr4501787pgo.233.1598302156023;
+ Mon, 24 Aug 2020 13:49:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <CAD=jOEY=8T3-USi63hy47BZKfTYcsUw-s-jAc3xi9ksk-je+XA@mail.gmail.com>
+ <CAJht_EPrOuk3uweCNy06s0UQTBwkwCzjoS9fMfP8DMRAt8UV8w@mail.gmail.com> <20200824141315.GA21579@madhuparna-HP-Notebook>
+In-Reply-To: <20200824141315.GA21579@madhuparna-HP-Notebook>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Mon, 24 Aug 2020 13:49:04 -0700
+Message-ID: <CAJht_ENNhvOO=V+bABBC3nL6G7Gkw6H-UVQPWxO4_vyYXcVNhA@mail.gmail.com>
+Subject: Re: Regarding possible bug in net/wan/x25_asy.c
+To:     Madhuparna Bhowmik <madhuparnabhowmik10@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        andrianov <andrianov@ispras.ru>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 21 Aug 2020 22:12:19 +0300 Parav Pandit wrote:
-> From: Parav Pandit <parav@nvidia.com>
-> 
-> Hi Dave,
-> 
-> These series contains two small fixes of devlink.
-> 
-> Patch-1 initializes port reporter fields early enough to
-> avoid access before initialized error.
-> Patch-2 protects port list lock during traversal.
+On Mon, Aug 24, 2020 at 7:13 AM Madhuparna Bhowmik
+<madhuparnabhowmik10@gmail.com> wrote:
+>
+> Sure, I had a look at it and since you are already working on fixing
+> this driver, don't think there is a need for a patch to fix the
+> particular race condition bug. This bug was found by the Linux driver
+> verification project and my work was to report it to the maintainers.
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+OK. Thank you for reporting!
 
-Why did you tag this for net-next, instead of net?
+I think the Linux driver verification project works very well because
+it can help to find data races.
+
+This driver might take a long time to fix because it has many issues,
+and developers who are interested in it and are able to review patches
+to it are rare.
+
+Xie He
