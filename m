@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78F6B250411
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 18:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A5AA2503A5
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 18:48:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726337AbgHXQ4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 12:56:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46462 "EHLO mail.kernel.org"
+        id S1728755AbgHXQrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 12:47:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40164 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728538AbgHXQjC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 12:39:02 -0400
+        id S1728555AbgHXQjL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 12:39:11 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0721A22D73;
-        Mon, 24 Aug 2020 16:39:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D752022D2A;
+        Mon, 24 Aug 2020 16:39:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598287142;
-        bh=7vW9pubFJ2lXT/pAXpSXlFiiGmSmzPr2BzVU76xukgM=;
+        s=default; t=1598287151;
+        bh=kjggIwyu8tGGql/uP4yWKtPejoz6uZLhw5z0iPKYxWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ilEM7SLt2fUrV+fIwTBfUUpcACyM8v8L8UIW9SVf82K241sOoXvZSi5se+jszhbMT
-         U+J+HOM7gaX7SJDdHVZLnsOvrY9vQuCkxQBgMKBz3tC/vsbSpvVT1WhBrlRh77TogE
-         xQUj1r/slaAourZYCbRYv4BaQMZTeUMKXL/xFVrM=
+        b=nvZrWObsmoghNZZREZZlhZYSVKkWTyAQO25kQtZtK9Zn3DHiUC0Vr2cZxLBxGoiOv
+         etzSNkSLX9EueyMEgKJEnsSUlNyvMST4eXAbHevuGctBeDXPtBKHPx4b8YJz3F9gWK
+         /nCmo9VuC4OzwE+svCMJfZDdxwzmspopW+OD6cng=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Christie <michael.christie@oracle.com>,
-        Hannes Reinecke <hare@suse.de>, Lee Duncan <lduncan@suse.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 12/21] scsi: fcoe: Fix I/O path allocation
-Date:   Mon, 24 Aug 2020 12:38:36 -0400
-Message-Id: <20200824163845.606933-12-sashal@kernel.org>
+Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 19/21] macvlan: validate setting of multiple remote source MAC addresses
+Date:   Mon, 24 Aug 2020 12:38:43 -0400
+Message-Id: <20200824163845.606933-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200824163845.606933-1-sashal@kernel.org>
 References: <20200824163845.606933-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,37 +44,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-[ Upstream commit fa39ab5184d64563cd36f2fb5f0d3fbad83a432c ]
+[ Upstream commit 8b61fba503904acae24aeb2bd5569b4d6544d48f ]
 
-ixgbe_fcoe_ddp_setup() can be called from the main I/O path and is called
-with a spin_lock held, so we have to use GFP_ATOMIC allocation instead of
-GFP_KERNEL.
+Remote source MAC addresses can be set on a 'source mode' macvlan
+interface via the IFLA_MACVLAN_MACADDR_DATA attribute. This commit
+tightens the validation of these MAC addresses to match the validation
+already performed when setting or adding a single MAC address via the
+IFLA_MACVLAN_MACADDR attribute.
 
-Link: https://lore.kernel.org/r/1596831813-9839-1-git-send-email-michael.christie@oracle.com
-cc: Hannes Reinecke <hare@suse.de>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+iproute2 uses IFLA_MACVLAN_MACADDR_DATA for its 'macvlan macaddr set'
+command, and IFLA_MACVLAN_MACADDR for its 'macvlan macaddr add' command,
+which demonstrates the inconsistent behaviour that this commit
+addresses:
+
+ # ip link add link eth0 name macvlan0 type macvlan mode source
+ # ip link set link dev macvlan0 type macvlan macaddr add 01:00:00:00:00:00
+ RTNETLINK answers: Cannot assign requested address
+ # ip link set link dev macvlan0 type macvlan macaddr set 01:00:00:00:00:00
+ # ip -d link show macvlan0
+ 5: macvlan0@eth0: <BROADCAST,MULTICAST,DYNAMIC,UP,LOWER_UP> mtu 1500 ...
+     link/ether 2e:ac:fd:2d:69:f8 brd ff:ff:ff:ff:ff:ff promiscuity 0
+     macvlan mode source remotes (1) 01:00:00:00:00:00 numtxqueues 1 ...
+
+With this change, the 'set' command will (rightly) fail in the same way
+as the 'add' command.
+
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/macvlan.c | 21 +++++++++++++++++----
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c
-index ccd852ad62a4b..d50c5b55da180 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c
-@@ -192,7 +192,7 @@ static int ixgbe_fcoe_ddp_setup(struct net_device *netdev, u16 xid,
+diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
+index 349123592af0f..e226a96da3a39 100644
+--- a/drivers/net/macvlan.c
++++ b/drivers/net/macvlan.c
+@@ -1230,6 +1230,9 @@ static void macvlan_port_destroy(struct net_device *dev)
+ static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
+ 			    struct netlink_ext_ack *extack)
+ {
++	struct nlattr *nla, *head;
++	int rem, len;
++
+ 	if (tb[IFLA_ADDRESS]) {
+ 		if (nla_len(tb[IFLA_ADDRESS]) != ETH_ALEN)
+ 			return -EINVAL;
+@@ -1277,6 +1280,20 @@ static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
+ 			return -EADDRNOTAVAIL;
  	}
  
- 	/* alloc the udl from per cpu ddp pool */
--	ddp->udl = dma_pool_alloc(ddp_pool->pool, GFP_KERNEL, &ddp->udp);
-+	ddp->udl = dma_pool_alloc(ddp_pool->pool, GFP_ATOMIC, &ddp->udp);
- 	if (!ddp->udl) {
- 		e_err(drv, "failed allocated ddp context\n");
- 		goto out_noddp_unmap;
++	if (data[IFLA_MACVLAN_MACADDR_DATA]) {
++		head = nla_data(data[IFLA_MACVLAN_MACADDR_DATA]);
++		len = nla_len(data[IFLA_MACVLAN_MACADDR_DATA]);
++
++		nla_for_each_attr(nla, head, len, rem) {
++			if (nla_type(nla) != IFLA_MACVLAN_MACADDR ||
++			    nla_len(nla) != ETH_ALEN)
++				return -EINVAL;
++
++			if (!is_valid_ether_addr(nla_data(nla)))
++				return -EADDRNOTAVAIL;
++		}
++	}
++
+ 	if (data[IFLA_MACVLAN_MACADDR_COUNT])
+ 		return -EINVAL;
+ 
+@@ -1333,10 +1350,6 @@ static int macvlan_changelink_sources(struct macvlan_dev *vlan, u32 mode,
+ 		len = nla_len(data[IFLA_MACVLAN_MACADDR_DATA]);
+ 
+ 		nla_for_each_attr(nla, head, len, rem) {
+-			if (nla_type(nla) != IFLA_MACVLAN_MACADDR ||
+-			    nla_len(nla) != ETH_ALEN)
+-				continue;
+-
+ 			addr = nla_data(nla);
+ 			ret = macvlan_hash_add_source(vlan, addr);
+ 			if (ret)
 -- 
 2.25.1
 
