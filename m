@@ -2,128 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B16E2509A7
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 21:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5948C2509BF
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 22:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbgHXTxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 15:53:00 -0400
-Received: from mail.zx2c4.com ([192.95.5.64]:57803 "EHLO mail.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726303AbgHXTw6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 15:52:58 -0400
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 34338963;
-        Mon, 24 Aug 2020 19:25:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
-        :references:in-reply-to:from:date:message-id:subject:to:cc
-        :content-type; s=mail; bh=kZvBC3dKvagzKtx7Cpr3Owe93hg=; b=fmZ45a
-        WLGPXX7mTFvmO1DTdmGEpdVbS16eUwsVbYaA0RKoD0OQlKNW3iAE2LdGdwnOgPl1
-        z/VvPz6Wk1viJjsrjgXaHzGGx0o7Y1zGQotHXULkBq+J/rm1Q/kFmkhRJQx+Mvjj
-        Tc5gyEs+ER/5hle544oVB/j9kmFNtZK9je9z1CWWkVye98UYWJtHecmlkvgGWmdR
-        dCniT2wVOe8SZ2ulzBDmLnD+l1ZeLineez+8ahfKjGCQfhRnW3THeMcokx53Ab8O
-        997GDHRQeWjzpCjwEUYkapBwfM/O39TCXhMNgNwAovUtM65RdLxxml20I4lg08bm
-        q/8c4APyeZptT56A==
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id b7dcdd6e (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Mon, 24 Aug 2020 19:25:58 +0000 (UTC)
-Received: by mail-io1-f45.google.com with SMTP id b16so10023260ioj.4;
-        Mon, 24 Aug 2020 12:52:57 -0700 (PDT)
-X-Gm-Message-State: AOAM530yGqMviITJ8VeU4HBOOVGhFQJcmWsK3psWz8zWR99D1uC0JUqq
-        Vlli+hfqpxe2RsmDvE6oTqa+4e5kQwScuDYVb70=
-X-Google-Smtp-Source: ABdhPJyGlMk0PQmZ7wJPjtSmTV7irbslSCugeo+bQKmO1S9GTyH6J4Hk9lS3Vb7PjtOCLedDtpgt+A+fFRLtj7aCPnk=
-X-Received: by 2002:a05:6602:15c3:: with SMTP id f3mr6378056iow.25.1598298776630;
- Mon, 24 Aug 2020 12:52:56 -0700 (PDT)
+        id S1726944AbgHXUDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 16:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725904AbgHXUDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 16:03:17 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2653FC061573;
+        Mon, 24 Aug 2020 13:03:17 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id p11so2286394pfn.11;
+        Mon, 24 Aug 2020 13:03:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=isOavbC0CqCTOWpwarMOyw2TDbIMP+uJPiDdCwZdCm4=;
+        b=c2U6POoJvv+0vYTJHvEKQaX7ET3zmfZwu9hCOQz2NJZ+PiNfhFvjFQkeNq2hSR42uW
+         7S8VHrutiLhiRBILzasdfdAJAUnRG1BHOCXg+p3O3MnhKvLqagdmz9JFCDcXCQjh55oY
+         +f/IPLBAsnBHlUOyvhRwO9nsmc8HG92Qbgce3slKVbJKFawgJNYx1D+Z4lADIh2TFrhG
+         AAQvK+mlzor09CElVJkoHNgs8uWmwthGXkvATFK48jV6B9yy1Bwy7gHmmM7rktLFFFkg
+         xOykXFC2KPGf9A+h/7exWOnjehmtzUPeRqpqsFOFSR19UiXRudkmG3F43aht6Jpr7lZ7
+         wN7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=isOavbC0CqCTOWpwarMOyw2TDbIMP+uJPiDdCwZdCm4=;
+        b=WTurTcg55fTsQIkCM7103viaEBo7c5mNR0dWsvLqWqNE6Yy123w/ArcPu/I0qUfD3F
+         hIVx8RTq0125wvS2VMxqRdXGsuKffaJojOUC9TkmZqSnhcqZsHc2l5vufs8Ky0gSG9qQ
+         K36SrFnyY2BSyD+/FDqFNXy2y4cocfHqzxyA5BjMLfpdOfRBbdBdFw5Ekujyv/Nh7gfn
+         87ItI3umJSCW4CqcNtWeBg6/hRffikGpycsKSjabsEN2q+5xKso1pD9UcyAXfNtcgJlo
+         kTsOQMevDs/YcQMBI7eo6veOCm3oRcs0u767oRY7CjkK8nIh6qfuAZemET5s/RAFsqvH
+         WNfg==
+X-Gm-Message-State: AOAM532YBl5TD3QkNPbJw7QJbkSfIpXUmXe5UxNOr1+jiS5v4dA/P3Bw
+        3tZqtMeilEtWxjRXeEkpGbg=
+X-Google-Smtp-Source: ABdhPJyNNJ7ZQ0kH+sJbXxUJ+q4pt6tVcRPH37tIEAQf5D8RdnbjPmfJNMPVfDiij6bCHTAMNMa81g==
+X-Received: by 2002:a63:7018:: with SMTP id l24mr4221170pgc.55.1598299396720;
+        Mon, 24 Aug 2020 13:03:16 -0700 (PDT)
+Received: from Kaladin ([49.207.215.194])
+        by smtp.gmail.com with ESMTPSA id d23sm10418236pgm.11.2020.08.24.13.03.13
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 24 Aug 2020 13:03:16 -0700 (PDT)
+Date:   Tue, 25 Aug 2020 01:33:11 +0530
+From:   Sumera Priyadarsini <sylphrenadin@gmail.com>
+To:     davem@davemloft.net
+Cc:     Julia.Lawall@lip6.fr, andrew@lunn.ch, sean.wang@mediatek.com,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
+        matthias.bgg@gmail.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH V4] net: dsa: mt7530: Add of_node_put() before break and
+ return statements
+Message-ID: <20200824200311.GA19436@Kaladin>
 MIME-Version: 1.0
-References: <20200824141519.GA223008@mwanda>
-In-Reply-To: <20200824141519.GA223008@mwanda>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 24 Aug 2020 21:52:45 +0200
-X-Gmail-Original-Message-ID: <CAHmME9r9TazDujfSL3sM98QHZWEQxD99bTdHK+d8vFNOi+H_ZA@mail.gmail.com>
-Message-ID: <CAHmME9r9TazDujfSL3sM98QHZWEQxD99bTdHK+d8vFNOi+H_ZA@mail.gmail.com>
-Subject: Re: [bug report] net: WireGuard secure network tunnel
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     bpf@vger.kernel.org, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 24, 2020 at 4:15 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> Hello Jason A. Donenfeld,
->
-> The patch e7096c131e51: "net: WireGuard secure network tunnel" from
-> Dec 9, 2019, leads to the following static checker warning:
->
->         net/core/dev.c:10103 netdev_run_todo()
->         warn: 'dev->_tx' double freed
->
-> net/core/dev.c
->  10071          /* Wait for rcu callbacks to finish before next phase */
->  10072          if (!list_empty(&list))
->  10073                  rcu_barrier();
->  10074
->  10075          while (!list_empty(&list)) {
->  10076                  struct net_device *dev
->  10077                          = list_first_entry(&list, struct net_device, todo_list);
->  10078                  list_del(&dev->todo_list);
->  10079
->  10080                  if (unlikely(dev->reg_state != NETREG_UNREGISTERING)) {
->  10081                          pr_err("network todo '%s' but state %d\n",
->  10082                                 dev->name, dev->reg_state);
->  10083                          dump_stack();
->  10084                          continue;
->  10085                  }
->  10086
->  10087                  dev->reg_state = NETREG_UNREGISTERED;
->  10088
->  10089                  netdev_wait_allrefs(dev);
->  10090
->  10091                  /* paranoia */
->  10092                  BUG_ON(netdev_refcnt_read(dev));
->  10093                  BUG_ON(!list_empty(&dev->ptype_all));
->  10094                  BUG_ON(!list_empty(&dev->ptype_specific));
->  10095                  WARN_ON(rcu_access_pointer(dev->ip_ptr));
->  10096                  WARN_ON(rcu_access_pointer(dev->ip6_ptr));
->  10097  #if IS_ENABLED(CONFIG_DECNET)
->  10098                  WARN_ON(dev->dn_ptr);
->  10099  #endif
->  10100                  if (dev->priv_destructor)
->  10101                          dev->priv_destructor(dev);
->                                 ^^^^^^^^^^^^^^^^^^^^^^^^^
-> The wg_destruct() functions frees "dev".
->
->  10102                  if (dev->needs_free_netdev)
->                             ^^^^^
-> Use after free.
->
->  10103                          free_netdev(dev);
->  10104
->  10105                  /* Report a network device has been unregistered */
->  10106                  rtnl_lock();
->  10107                  dev_net(dev)->dev_unreg_count--;
->  10108                  __rtnl_unlock();
->  10109                  wake_up(&netdev_unregistering_wq);
->  10110
->  10111                  /* Free network device */
->  10112                  kobject_put(&dev->dev.kobj);
->  10113          }
->  10114  }
->
-> regards,
-> dan carpenter
+Every iteration of for_each_child_of_node() decrements
+the reference count of the previous node, however when control
+is transferred from the middle of the loop, as in the case of
+a return or break or goto, there is no decrement thus ultimately
+resulting in a memory leak.
 
-I actually recall a patch ~3 years ago from DaveM trying to make
-netdev tear down semantics a bit cleaner, by distinguishing between
-the case when netdevs free their own dev and when they don't. I'm not
-sure whether wireguard should set needs_free_netdev or not, but I
-vaguely remember reasoning about that a long time ago and deciding,
-"no". However, branching on dev->needs_free_netdev seems like it must
-be a UaF always in the case where needs_free_netdev is false, since in
-that case, the destructor should free it (I think). I'll send a patch,
-and see if DaveM likes that, or if he'd prefer I just set
-needs_free_netdev in wireguard and remove the free_netdev call in
-wg_destruct.
+Fix a potential memory leak in mt7530.c by inserting of_node_put()
+before the break and return statements.
 
-Thanks for the report.
+Issue found with Coccinelle.
 
-Jason
+Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
+---
+Changes in v2:
+        Add another of_node_put() in for_each_child_of_node() as
+pointed out by Andrew.
+
+Changes in v3:
+        - Correct syntax errors
+        - Modify commit message
+
+Changes in v4:
+	- Change commit prefix to include the driver name,
+mt7530, as pointed out by Vladimir.
+	- Change the signoff to the correct format.
+
+---
+ drivers/net/dsa/mt7530.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 8dcb8a49ab67..4b4701c69fe1 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -1326,14 +1326,17 @@ mt7530_setup(struct dsa_switch *ds)
+ 
+ 			if (phy_node->parent == priv->dev->of_node->parent) {
+ 				ret = of_get_phy_mode(mac_np, &interface);
+-				if (ret && ret != -ENODEV)
++				if (ret && ret != -ENODEV) {
++					of_node_put(mac_np);
+ 					return ret;
++				}
+ 				id = of_mdio_parse_addr(ds->dev, phy_node);
+ 				if (id == 0)
+ 					priv->p5_intf_sel = P5_INTF_SEL_PHY_P0;
+ 				if (id == 4)
+ 					priv->p5_intf_sel = P5_INTF_SEL_PHY_P4;
+ 			}
++			of_node_put(mac_np);
+ 			of_node_put(phy_node);
+ 			break;
+ 		}
+-- 
+2.17.1
+
