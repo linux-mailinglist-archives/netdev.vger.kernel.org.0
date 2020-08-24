@@ -2,189 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA421250941
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 21:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DE16250979
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 21:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbgHXT3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 15:29:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbgHXT3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 15:29:43 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE81C061573;
-        Mon, 24 Aug 2020 12:29:43 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id i26so9127537edv.4;
-        Mon, 24 Aug 2020 12:29:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tkyjDeEozETacXNRr3uxxFjEe+DOSkNiETr7ujJ7mA4=;
-        b=gbLjbs+kaoh4rZOxABupqrCM4Qcd3bYtkfeVC/nRU8Z2Wz1U+JbkAQkArH4gmcAbQg
-         +me959Drpnd4CjLnwv1i7I+n39T70i1k9MgfXmM4TdqSH5CHPeQQ704WlNRzvMmsCNE3
-         mHOMfsb2nqxSIfJ5iG/uxSzInfGvZgulDJl2jhM0ZTUq12X/DcNPeCcreRhIEGU5c473
-         tplXuWIWR80tZi94jsXsW9LbmVH0mU1xGrXQJgLidd+oqlPUkRSlZgZ3kJ1zt0Zs4Z/h
-         iVwiFqFsoqXrzRsD/80e0iJI+ElqXVWr+zeUX5i662Lr58YYWQFbC+XEQHqwTrZ52/i7
-         S1hg==
+        id S1726840AbgHXThR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 15:37:17 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:35676 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726747AbgHXThP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 15:37:15 -0400
+Received: by mail-io1-f70.google.com with SMTP id k20so6919194iog.2
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 12:37:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tkyjDeEozETacXNRr3uxxFjEe+DOSkNiETr7ujJ7mA4=;
-        b=rEgwT0ZbXNTE+tR82bQrOlKADOrPeQE9BzXIQ40wkQ3nALEqkuNPYO5uXNK6fTvf5L
-         xkslt5ZEM1cN0pNvVQPDQD8+3SVVfNqhkbIrwYhKzrv6ymwVBkz+JLJh6fR8IKOIx6G6
-         v0OddlOcBiWD+jA0M9w+I7dr2fPn7TFoubyzfGJ0cThELC+JFWgPe7XXRBOAWCxoTlKW
-         LLUcA6kpZphz5aUDbASrhefDMDDFxgpC/LiNlN/gydahM9tcSNS1hnH4AcUGt42N1j01
-         g4ViN6/jHTfacWAr4Z9VoUI1ms3XfQs5+3VwLsC1knpMg3lGoifpbyKKJhgkA33HPQk4
-         H/lw==
-X-Gm-Message-State: AOAM531nbeZ+mAt5m9q7abkJtViyJvbkbMUhO89+u+YS8rU7GQPh9Fag
-        a81hGNWqixhUjVpouA5gmztu6EnCidt2h6ECb1c=
-X-Google-Smtp-Source: ABdhPJy8zXxqgoqnCG7czfw4GIuDC9/xFzn6G7zIEQJby4+MpOb+8f/28WY9QeyW1U8+CILxKbHrHp2ZOuZ7tua7MN0=
-X-Received: by 2002:aa7:c983:: with SMTP id c3mr6737425edt.383.1598297381878;
- Mon, 24 Aug 2020 12:29:41 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=vsgtHuVnx0ZvzeehfUfHgJ33sOPqjeFQQzciJ80PJFc=;
+        b=I4k7D6OVpybuerV0pr5VbTP89ti7jarFGtEA543u9lISvU0HlijO/QDTVoasI3zYNp
+         tZITn21h+iLBYLQsHd0Ihv3tjcCcN0UQNnwvHHanQ9Uw0cTBgmA83QpUCgfK+BXGC8EG
+         voYdEH4hzVSNgtG3YxjJ4m1nL4ThdyeOSSQ2hWmRoESopHPA6xr2cFe5aT42Fl1yagvO
+         9tDqbc13wbOXQBylvfzQ5WJ4luW3U7dYTLLuReiGkP4BQi/GFpdrqMKoFtdDPzQQ1Tgm
+         XzmvqGGNFecTHOwkElKgJ/RzLKETuY2OktsKvursOx/imq1CNt+k8fVbijVVsuW+sCXI
+         e/DQ==
+X-Gm-Message-State: AOAM533jaoW+nC0zUhigyaxxN6cUgBZ/3SEsM2L88jd1uqCX7wPMJGbb
+        6lE6IAm4w3dFQfrIf2JxyzBqGxot2Tbvz4tW2ARp3WOh5BNh
+X-Google-Smtp-Source: ABdhPJykWdEKk+SqTsQefs1R/IQeVu1pLKHEgBFUhzI6awaY9lYXscEbCL7ZEK/z8a0bRxGhiWSjE9l+GUyu97x6RSF5GLHIb1/m
 MIME-Version: 1.0
-References: <cover.1597833138.git.mchehab+huawei@kernel.org>
- <20200819152120.GA106437@ravnborg.org> <20200819153045.GA18469@pendragon.ideasonboard.com>
- <CALAqxLUXnPRec3UYbMKge8yNKBagLOatOeRCagF=JEyPEfWeKA@mail.gmail.com>
- <20200820090326.3f400a15@coco.lan> <20200820100205.GA5962@pendragon.ideasonboard.com>
-In-Reply-To: <20200820100205.GA5962@pendragon.ideasonboard.com>
-From:   Dave Airlie <airlied@gmail.com>
-Date:   Tue, 25 Aug 2020 05:29:29 +1000
-Message-ID: <CAPM=9twzsw7T=GD6Jc1EFenXq9ZhTgf_Nuo71uLfX2W33oa=6w@mail.gmail.com>
-Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        Wanchun Zheng <zhengwanchun@hisilicon.com>,
-        linuxarm@huawei.com, dri-devel <dri-devel@lists.freedesktop.org>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Xiubin Zhang <zhangxiubin1@huawei.com>,
-        Wei Xu <xuwei5@hisilicon.com>,
-        Xinliang Liu <xinliang.liu@linaro.org>,
-        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Bogdan Togorean <bogdan.togorean@analog.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
-        linux-media <linux-media@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Liwei Cai <cailiwei@hisilicon.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Chen Feng <puck.chen@hisilicon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        mauro.chehab@huawei.com, Rob Clark <robdclark@chromium.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Liuyao An <anliuyao@huawei.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Rongrong Zou <zourongrong@gmail.com>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
+X-Received: by 2002:a05:6638:1393:: with SMTP id w19mr7060480jad.113.1598297834201;
+ Mon, 24 Aug 2020 12:37:14 -0700 (PDT)
+Date:   Mon, 24 Aug 2020 12:37:14 -0700
+In-Reply-To: <0000000000008caae305ab9a5318@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a726a405ada4b6cf@google.com>
+Subject: Re: general protection fault in security_inode_getattr
+From:   syzbot <syzbot+f07cc9be8d1d226947ed@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, jmorris@namei.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@chromium.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        serge@hallyn.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 20 Aug 2020 at 20:02, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
->
-> Hi Mauro,
->
-> On Thu, Aug 20, 2020 at 09:03:26AM +0200, Mauro Carvalho Chehab wrote:
-> > Em Wed, 19 Aug 2020 12:52:06 -0700 John Stultz escreveu:
-> > > On Wed, Aug 19, 2020 at 8:31 AM Laurent Pinchart wrote:
-> > > > On Wed, Aug 19, 2020 at 05:21:20PM +0200, Sam Ravnborg wrote:
-> > > > > On Wed, Aug 19, 2020 at 01:45:28PM +0200, Mauro Carvalho Chehab wrote:
-> > > > > > This patch series port the out-of-tree driver for Hikey 970 (which
-> > > > > > should also support Hikey 960) from the official 96boards tree:
-> > > > > >
-> > > > > >    https://github.com/96boards-hikey/linux/tree/hikey970-v4.9
-> > > > > >
-> > > > > > Based on his history, this driver seems to be originally written
-> > > > > > for Kernel 4.4, and was later ported to Kernel 4.9. The original
-> > > > > > driver used to depend on ION (from Kernel 4.4) and had its own
-> > > > > > implementation for FB dev API.
-> > > > > >
-> > > > > > As I need to preserve the original history (with has patches from
-> > > > > > both HiSilicon and from Linaro),  I'm starting from the original
-> > > > > > patch applied there. The remaining patches are incremental,
-> > > > > > and port this driver to work with upstream Kernel.
-> > > > > >
-> > > ...
-> > > > > > - Due to legal reasons, I need to preserve the authorship of
-> > > > > >   each one responsbile for each patch. So, I need to start from
-> > > > > >   the original patch from Kernel 4.4;
-> > > ...
-> > > > > I do acknowledge you need to preserve history and all -
-> > > > > but this patchset is not easy to review.
-> > > >
-> > > > Why do we need to preserve history ? Adding relevant Signed-off-by and
-> > > > Co-developed-by should be enough, shouldn't it ? Having a public branch
-> > > > that contains the history is useful if anyone is interested, but I don't
-> > > > think it's required in mainline.
-> > >
-> > > Yea. I concur with Laurent here. I'm not sure what legal reasoning you
-> > > have on this but preserving the "absolute" history here is actively
-> > > detrimental for review and understanding of the patch set.
-> > >
-> > > Preserving Authorship, Signed-off-by lines and adding Co-developed-by
-> > > lines should be sufficient to provide both atribution credit and DCO
-> > > history.
-> >
-> > I'm not convinced that, from legal standpoint, folding things would
-> > be enough. See, there are at least 3 legal systems involved here
-> > among the different patch authors:
-> >
-> >       - civil law;
-> >       - common law;
-> >       - customary law + common law.
-> >
-> > Merging stuff altogether from different law systems can be problematic,
-> > and trying to discuss this with experienced IP property lawyers will
-> > for sure take a lot of time and efforts. I also bet that different
-> > lawyers will have different opinions, because laws are subject to
-> > interpretation. With that matter I'm not aware of any court rules
-> > with regards to folded patches. So, it sounds to me that folding
-> > patches is something that has yet to be proofed in courts around
-> > the globe.
-> >
-> > At least for US legal system, it sounds that the Country of
-> > origin of a patch is relevant, as they have a concept of
-> > "national technology" that can be subject to export regulations.
-> >
-> > From my side, I really prefer to play safe and stay out of any such
-> > legal discussions.
->
-> Let's be serious for a moment. If you think there are legal issues in
-> taking GPL-v2.0-only patches and squashing them while retaining
-> authorship information through tags, the Linux kernel if *full* of that.
-> You also routinely modify patches that you commit to the media subsystem
-> to fix "small issues".
->
-> The country of origin argument makes no sense either, the kernel code
-> base if full of code coming from pretty much all country on the planet.
->
-> Keeping the patches separate make this hard to review. Please squash
-> them.
+syzbot has found a reproducer for the following issue on:
 
-I'm inclined to agree with Laurent here.
+HEAD commit:    d012a719 Linux 5.9-rc2
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14aa130e900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=891ca5711a9f1650
+dashboard link: https://syzkaller.appspot.com/bug?extid=f07cc9be8d1d226947ed
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=104a650e900000
 
-Patches submitted as GPL-v2 with DCO lines and author names/companies
-should be fine to be squashed and rearranged,
-as long as the DCO and Authorship is kept somewhere in the new patch
-that is applied.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f07cc9be8d1d226947ed@syzkaller.appspotmail.com
 
-Review is more important here.
+general protection fault, probably for non-canonical address 0xdffffc000000000d: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000068-0x000000000000006f]
+CPU: 1 PID: 32288 Comm: syz-executor.3 Not tainted 5.9.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:d_backing_inode include/linux/dcache.h:549 [inline]
+RIP: 0010:security_inode_getattr+0x42/0x140 security/security.c:1276
+Code: 1b fe 49 8d 5e 08 48 89 d8 48 c1 e8 03 42 80 3c 38 00 74 08 48 89 df e8 bc b4 5b fe 48 8b 1b 48 83 c3 68 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 9f b4 5b fe 48 8b 1b 48 83 c3 0c
+RSP: 0018:ffffc9000a017750 EFLAGS: 00010202
+RAX: 000000000000000d RBX: 0000000000000068 RCX: ffff888093ec6180
+RDX: 0000000000000000 RSI: ffffc9000a017860 RDI: ffffc9000a017850
+RBP: ffffc9000a017850 R08: dffffc0000000000 R09: ffffc9000a017850
+R10: fffff52001402f0c R11: 0000000000000000 R12: ffffc9000a017860
+R13: 0000000000008401 R14: ffffc9000a017850 R15: dffffc0000000000
+FS:  00007f292d4ef700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b30920074 CR3: 00000000937fd000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ vfs_getattr+0x21/0x60 fs/stat.c:121
+ ovl_copy_up_one fs/overlayfs/copy_up.c:850 [inline]
+ ovl_copy_up_flags+0x2ef/0x2a00 fs/overlayfs/copy_up.c:931
+ ovl_maybe_copy_up+0x154/0x180 fs/overlayfs/copy_up.c:963
+ ovl_open+0xa2/0x200 fs/overlayfs/file.c:147
+ do_dentry_open+0x7c8/0x1010 fs/open.c:817
+ do_open fs/namei.c:3251 [inline]
+ path_openat+0x2794/0x3840 fs/namei.c:3368
+ do_filp_open+0x191/0x3a0 fs/namei.c:3395
+ file_open_name+0x321/0x430 fs/open.c:1113
+ acct_on kernel/acct.c:207 [inline]
+ __do_sys_acct kernel/acct.c:286 [inline]
+ __se_sys_acct+0x122/0x6f0 kernel/acct.c:273
+ do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45d579
+Code: 5d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 2b b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f292d4eec78 EFLAGS: 00000246 ORIG_RAX: 00000000000000a3
+RAX: ffffffffffffffda RBX: 0000000000000700 RCX: 000000000045d579
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000020000040
+RBP: 000000000118cf70 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118cf4c
+R13: 00007ffc8e04bc4f R14: 00007f292d4ef9c0 R15: 000000000118cf4c
+Modules linked in:
+---[ end trace 7e4f1041b188e411 ]---
+RIP: 0010:d_backing_inode include/linux/dcache.h:549 [inline]
+RIP: 0010:security_inode_getattr+0x42/0x140 security/security.c:1276
+Code: 1b fe 49 8d 5e 08 48 89 d8 48 c1 e8 03 42 80 3c 38 00 74 08 48 89 df e8 bc b4 5b fe 48 8b 1b 48 83 c3 68 48 89 d8 48 c1 e8 03 <42> 80 3c 38 00 74 08 48 89 df e8 9f b4 5b fe 48 8b 1b 48 83 c3 0c
+RSP: 0018:ffffc9000a017750 EFLAGS: 00010202
+RAX: 000000000000000d RBX: 0000000000000068 RCX: ffff888093ec6180
+RDX: 0000000000000000 RSI: ffffc9000a017860 RDI: ffffc9000a017850
+RBP: ffffc9000a017850 R08: dffffc0000000000 R09: ffffc9000a017850
+R10: fffff52001402f0c R11: 0000000000000000 R12: ffffc9000a017860
+R13: 0000000000008401 R14: ffffc9000a017850 R15: dffffc0000000000
+FS:  00007f292d4ef700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fef820e7000 CR3: 00000000937fd000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-Dave.
