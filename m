@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D554250712
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:58:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21436250716
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:59:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726929AbgHXR6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 13:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38214 "EHLO
+        id S1726751AbgHXR66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726026AbgHXR6I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 13:58:08 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC6DC061573;
-        Mon, 24 Aug 2020 10:58:07 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id y6so4592860plk.10;
-        Mon, 24 Aug 2020 10:58:07 -0700 (PDT)
+        with ESMTP id S1725905AbgHXR65 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 13:58:57 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E465C061573;
+        Mon, 24 Aug 2020 10:58:57 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id 17so5214720pfw.9;
+        Mon, 24 Aug 2020 10:58:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=agqPCuS6BEn9aWk5uJd0tZp87UFT9iOXwrsq0Ti4dh0=;
-        b=vdUQFKZdVKfNznmzKQXsXZy82DbDAKIs+G5S4LNs3Wj1fCPE2szp+cTcl2fkpx1uFm
-         RQGvznDgaEVO5cH5BJho8tVE9BXqim2YKI1E5VjGMm5+MEAFi9E/mbYDPAG4Ia5jPB0P
-         UfP/3ifKuptwfzA0/+2IsQXDLQ+QmvKwLXV/Q/yVCRoFPYHFfUI6Ok28lbdxNESZAuWT
-         klX7YXWyJJX6jc6Z+uUOUpgAdFfeuq/N7CnrU1Wr8OLCVEQBmyQqbQkcNqjXerQmthy5
-         L7LTf7Yi53TL3fIEGHo2b/RunvK/x72IhwgaTGD8rQ1H2K51rPVL1wcjjbpXatGUFQ/n
-         QtRg==
+        bh=cyRriszs3utks1t2145ktO4KDtaWTJm6JNlu6Pk8PUg=;
+        b=i84N346pJMs3I4P7EoK0XhQbXPpL0xzDmSJ4zRTyzVSrvJKqyArQpDc4wmSN8rrLGK
+         lBzgEUkR7TylIG9RCJdQC7PBeSdEYohWhwx1r9wsY+LWEm0l3buh+f6D8ohHNVIWulvm
+         o07rjKRycjN8HCdiec/aue7Q25ITvKKTKHGhBWkm42HXbg3YSfTMBKP/KHzSmFbgzJLo
+         hDtfuJ5t4iMUGHOt1qjr9bOAE7nNqde3q7FR49oX6IMkLiczQA2/LUpQ8ViLzQ44pjnG
+         2aaNxkB6JBFE05p6yZC+FXhhGo88dXvRO8DDUT+WDihSyNKhITeBmvc8iXAt4fasqo9b
+         6UsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=agqPCuS6BEn9aWk5uJd0tZp87UFT9iOXwrsq0Ti4dh0=;
-        b=l41aU58qKRW17zOIialfY+8ynk1bejt94Kr8putXu3g0pEx9O2rKwHeuTiI1kHumuf
-         5VmjcCQc71dLwHmSfWGazkxuQmQLvpTZ3vYnn8s5dR9XBasbGXmo71QHRIJcT/t3wVkZ
-         2QtPhYvrpkhGcGwVI/1DifG8EX03nGUqwFWw3LRkGfLPGiWq2m7Jv5E/4vdaOr0ZDOCw
-         Zdxbixt9ApViaFJfwdWIqhjtF33af2a0ghmSFE1u2hQk4HWndQcAgYlyj/6qosNG9h5n
-         OHOtIb7DtN5/FhPy068PtZoQdKjGATKT9J8uf+yj/m9IS7pDxK/KB3BfDB9PRf6i0tnc
-         4gDw==
-X-Gm-Message-State: AOAM532grtwhhgx8HS3+rJzpLJjCri2KRQjKZOjTe2BE/THNQMBoEPt1
-        8oHrN6tRs6iM/Cu7lh5N9UUIG4PAl+U=
-X-Google-Smtp-Source: ABdhPJyLhSQVTkblSJ95fi7cGoFJ84C8kiI4phXKfVdGGhiQPtpKnr9o1I8Wa5A8P/nwBI+f0KY47Q==
-X-Received: by 2002:a17:90b:3750:: with SMTP id ne16mr385490pjb.6.1598291883191;
-        Mon, 24 Aug 2020 10:58:03 -0700 (PDT)
+        bh=cyRriszs3utks1t2145ktO4KDtaWTJm6JNlu6Pk8PUg=;
+        b=KUZQTgjTk7b6hyHqi0JBHFNHlfVpdzumYhW6UpKrExkU2MrU4PKOy/I7952gg2/l07
+         s/+iVMS0CtPyArpj4iEY8a+HDf8u4rP94Kkkze0GrIHWEc96Z6c1l4rifndu+0rqd1fw
+         IEKGsq89WnwdqKRkvP+jzuCU8QK1LjwzY5/k1Eg5qMwVJfOQY6OIwocX5iQkJDWANh+G
+         fIQb2zDvsi+WNhupTHhbhEpszMNPyN3JvQmbVbnr0nZlqrQKWY024+CfBULCN6kFdiLX
+         1vM2QA8EKvlCa9KHa5YYx9cOE3XfxZAzeXEDF9FjuQ70B0iRUzZ0eGCla/9PX4D0l+1W
+         Z8+g==
+X-Gm-Message-State: AOAM531y4sOQziZ+h3d3kaFDI4FetRpodL1X7MRWuAJ14uWjy+qh3Vd2
+        6vXzIYyvVwcnpOyqr/VKbi+N0wpFHeA=
+X-Google-Smtp-Source: ABdhPJxPfDQ2+lZQwhWM4ViiBl4Qt6Jgm85l7elx+jcl24D2K0wUuC5NQL6lM/k1M3omtFVavg2t/w==
+X-Received: by 2002:a62:c319:: with SMTP id v25mr4780192pfg.130.1598291932579;
+        Mon, 24 Aug 2020 10:58:52 -0700 (PDT)
 Received: from [10.67.50.75] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id fv21sm184991pjb.16.2020.08.24.10.57.53
+        by smtp.googlemail.com with ESMTPSA id m4sm12076242pfh.129.2020.08.24.10.58.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Aug 2020 10:58:02 -0700 (PDT)
-Subject: Re: [PATCH v3 4/7] ravb: Split delay handling in parsing and applying
+        Mon, 24 Aug 2020 10:58:51 -0700 (PDT)
+Subject: Re: [PATCH v3 5/7] ravb: Add support for explicit internal clock
+ delay configuration
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -65,7 +66,7 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <20200819134344.27813-1-geert+renesas@glider.be>
- <20200819134344.27813-5-geert+renesas@glider.be>
+ <20200819134344.27813-6-geert+renesas@glider.be>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -121,12 +122,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <5b021cb3-cc07-8f37-20d9-017b4dadf33b@gmail.com>
-Date:   Mon, 24 Aug 2020 10:57:50 -0700
+Message-ID: <4a3fb35a-3cfd-c288-2d57-9cf65df52bbb@gmail.com>
+Date:   Mon, 24 Aug 2020 10:58:37 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200819134344.27813-5-geert+renesas@glider.be>
+In-Reply-To: <20200819134344.27813-6-geert+renesas@glider.be>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -136,9 +137,24 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 8/19/20 6:43 AM, Geert Uytterhoeven wrote:
-> Currently, full delay handling is done in both the probe and resume
-> paths.  Split it in two parts, so the resume path doesn't have to redo
-> the parsing part over and over again.
+> Some EtherAVB variants support internal clock delay configuration, which
+> can add larger delays than the delays that are typically supported by
+> the PHY (using an "rgmii-*id" PHY mode, and/or "[rt]xc-skew-ps"
+> properties).
+> 
+> Historically, the EtherAVB driver configured these delays based on the
+> "rgmii-*id" PHY mode.  This caused issues with PHY drivers that
+> implement PHY internal delays properly[1].  Hence a backwards-compatible
+> workaround was added by masking the PHY mode[2].
+> 
+> Add proper support for explicit configuration of the MAC internal clock
+> delays using the new "[rt]x-internal-delay-ps" properties.
+> Fall back to the old handling if none of these properties is present.
+> 
+> [1] Commit bcf3440c6dd78bfe ("net: phy: micrel: add phy-mode support for
+>     the KSZ9031 PHY")
+> [2] Commit 9b23203c32ee02cd ("ravb: Mask PHY mode to avoid inserting
+>     delays twice").
 > 
 > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
