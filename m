@@ -2,101 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA869250C80
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 01:45:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ABEF250C82
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 01:49:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726542AbgHXXpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 19:45:51 -0400
-Received: from mga01.intel.com ([192.55.52.88]:25938 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725890AbgHXXpv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 19:45:51 -0400
-IronPort-SDR: MnPFUZ9zphnoD5OzHv77TpwYAtjedI2cJeSjSBv7xwSjnePdIzvdI2BAREveA6WMcUcGEie10P
- uXCTVTAC3w1w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9723"; a="174049287"
-X-IronPort-AV: E=Sophos;i="5.76,350,1592895600"; 
-   d="scan'208";a="174049287"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2020 16:45:51 -0700
-IronPort-SDR: NmAvFCg1vOBHJONklwmSRgHRYXt9YkPchvshhxW0Xm1pvwF9TH6gUmOnOIjLHwf9OWm/gzK1Qw
- +NyMvvY2c/PA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,350,1592895600"; 
-   d="scan'208";a="499099888"
-Received: from unknown (HELO ellie) ([10.254.31.141])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Aug 2020 16:45:50 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
-In-Reply-To: <87imd8zi8z.fsf@kurt>
-References: <20200820081118.10105-1-kurt@linutronix.de> <20200820081118.10105-6-kurt@linutronix.de> <20200822143922.frjtog4mcyaegtyg@skbuf> <87imd8zi8z.fsf@kurt>
-Date:   Mon, 24 Aug 2020 16:45:50 -0700
-Message-ID: <87y2m3txox.fsf@intel.com>
+        id S1726610AbgHXXtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 19:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725890AbgHXXtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 19:49:10 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF44C061574;
+        Mon, 24 Aug 2020 16:49:10 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id p11so2673943pfn.11;
+        Mon, 24 Aug 2020 16:49:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MRFtcPoCikAVvKJYCXbUBDj9joKfZP9gvPiffFziVs4=;
+        b=UtFLoRdmhkURy9IIpmgJFC0bgeJ1qVxQ0QHeMe2UlDPEPmZ6paDRATFFCezcM2Qxj2
+         ZF/iQHVjRDhyDlHIJ8DtJ4948A3fOqdsASI0586Ex3zP9rBxxE5A/1HtEt6LhJ8Awon3
+         R0rDvRFkpO4NK784e+/Yr5aR9BBbET8aF1P6dfUSC2MoYo8+PrYloZRK4n2v1R44P5pX
+         N21ZOA7CsN6CSqJELOakhDVX57F53/HLExqfk66OssaZgKc6tevxnTmUdEdIGiQIKu8t
+         9i/cHb8iapf7NtaC0cbFyN1XO/u6KV3ZRH08ebogDH6mcPSGxhze/2adaSa2eQP4zArZ
+         EtEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MRFtcPoCikAVvKJYCXbUBDj9joKfZP9gvPiffFziVs4=;
+        b=jdlcuHnxBOBZzxCtYUsH7iDZwPItLTJ8l7m8/6u0iASfXZARKzRb2Mjp9iiHcHYH6Q
+         WRubVpFSJCr2Ro5RzFkkIsaloawaj5RQi/X57mW+hnzwC1FTd0ZDhgZdaVZCwYELOyWP
+         XR2+sCNe5op1G9Y/GXKkEaZfPDpV5lFsd7uarvaPcxlwiMAzhvanDklL9jxSb28LVCdT
+         3949yYAq4ka7e0K580oeTvZhd/yjmK+OSFJUqGDIXJMNVq8ij0Cv64XkVMBbJWxdV9vs
+         MeTM610VmpEAyRva1kbFkbKjlbWFiYikShpw/0oegXWMrncNsQixt2WQ6cLLztUUgdpW
+         YUJQ==
+X-Gm-Message-State: AOAM531piscxEW5KkUSltw4bIMkNgE2QxcMfx9WPK5ikfOtbhM2CsQWa
+        SnkWvvHpPtSNHFjcP4o8e8vw7eNBoQvhR93lx6M=
+X-Google-Smtp-Source: ABdhPJwDvbqoHpdGgbg6R3mtccIx7uaxGYn/pgnOamBZn5OBTmjxGEOYwWsq4yvvrwrRdZMup3IT4zcbH58wvaa8vms=
+X-Received: by 2002:a17:902:8543:: with SMTP id d3mr5418093plo.244.1598312949912;
+ Mon, 24 Aug 2020 16:49:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20200821212659.14551-1-xie.he.0141@gmail.com> <20200824.160949.2284526241463900498.davem@davemloft.net>
+In-Reply-To: <20200824.160949.2284526241463900498.davem@davemloft.net>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Mon, 24 Aug 2020 16:48:58 -0700
+Message-ID: <CAJht_ENk-8ziaJ7FFPr9DVRinDOxaXaH2mJHoYcDw3CCHgx-Zg@mail.gmail.com>
+Subject: Re: [PATCH net v2] drivers/net/wan/lapbether: Added needed_tailroom
+To:     David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux X25 <linux-x25@vger.kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Martin Schiller <ms@dev.tdt.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kurt,
-
-Kurt Kanzenbach <kurt@linutronix.de> writes:
-
->>> +static void hellcreek_setup_tc_mapping(struct hellcreek *hellcreek,
->>> +				       struct net_device *netdev)
->>> +{
->>> +	int i, j;
->>> +
->>> +	/* Setup mapping between traffic classes and port queues. */
->>> +	for (i = 0; i < netdev_get_num_tc(netdev); ++i) {
->>> +		for (j = 0; j < netdev->tc_to_txq[i].count; ++j) {
->>> +			const int queue = j + netdev->tc_to_txq[i].offset;
->>> +
->>> +			hellcreek_select_prio(hellcreek, i);
->>> +			hellcreek_write(hellcreek,
->>> +					queue << HR_PRTCCFG_PCP_TC_MAP_SHIFT,
->>> +					HR_PRTCCFG);
->>> +		}
->>> +	}
->>> +}
->>
->> What other driver have you seen that does this?
->>
+On Mon, Aug 24, 2020 at 4:09 PM David Miller <davem@davemloft.net> wrote:
 >
-> Probably none.
->
-> With TAPRIO traffic classes and the mapping to queues can be
-> configured. The switch can also map traffic classes. That sounded like a
-> good match to me.
+> Applied, thank you.
 
-The only reason I could think that you would need this that *right now*
-taprio has pretty glaring oversight: that in the offload parameters each entry
-'gate_mask' reference the "Traffic Class" (i.e. bit 0 is Traffic Class
-0), and it really should be the HW queue.
-
-I have a patch that does the conversion on taprio before talking to the
-driver. Do you think it would help you avoid doing this on the driver
-side?
-
->
-> Thanks,
-> Kurt
-
-
-Cheers,
--- 
-Vinicius
+Thank you!
