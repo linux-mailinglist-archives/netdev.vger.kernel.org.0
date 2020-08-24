@@ -2,60 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE60724FFD6
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 16:31:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A599E24FFE1
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 16:35:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726354AbgHXObv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 10:31:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34160 "EHLO
+        id S1726650AbgHXOfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 10:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725916AbgHXObu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 10:31:50 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CDBC061573
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 07:31:50 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id e11so7397568ils.10
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 07:31:50 -0700 (PDT)
+        with ESMTP id S1726413AbgHXOfm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 10:35:42 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D784BC061573
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 07:35:41 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id x9so4464325wmi.2
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 07:35:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=iqPMeMXHCwwrrVeMUoxZUiCIdtQQu6/AqnQAcMvhfeo=;
-        b=IMR/Y0qQjVFDyld2iBigqJAUWf4gm1de9KtAy+8s9OkbHEgz0c1+Y46x9JeExX8NNV
-         syeP8Ps3qwmxE0FaH5shVLUrHu+32j7qwGt79X53Ssi0Hb6FFgoNAi9frYGCDjPeMBSg
-         MScwZ9RiBddRy3DCBtbbZDnJ91fhtXX9qGWJ8hjWQcdxRvF9F+ZYle/2H7COQrWACl5r
-         vqexgQmxqifDWo5jAsJf3hTEmddrQTuCDMMjJK6sEGz8FywvLzaLx/69tG9PfHt+eX6g
-         GE4psISTyBQ7ARU/2BEN+PkRN070lzrTaysCIlE1ohO32U7MiNbCSJugQ/SxLMEK2Iuo
-         KSvQ==
+        d=intinor-se.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=PV6NInVuwM0ZFOzf5u+K0D31QYADBewwzCHAM/IfltE=;
+        b=0UqxTxIpnQuB5y+UFMpBcrIwJsTK3l3i21F7K83t2PsSwdJPUDZMcaBPoFnjTZFI2/
+         mxJEaLWqcck77bLm6emiuNtQKNipwosI7n0hR4DcGsyq4mdC3Pd5T+RAZ1mUSV0Gzx4r
+         Z19tdWn6Mgr2ondxRJNSi5egGqHYbK+hay01hlCMOFMFo1Jb8Jg4vyQzNBeD+JaraB3Q
+         tqVoy/PxauDXBILZ0UJ4fQWI1oKkt/vygA9O1jvjagAj0kRIpJrqwShvhcByo+TcAcvk
+         WmTgYaZbm26FgF9ekqo5Bp5HHGPYNdFytf8ZisswtebH+bw9J52sHEqQxanPGa3ugltj
+         1aPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=iqPMeMXHCwwrrVeMUoxZUiCIdtQQu6/AqnQAcMvhfeo=;
-        b=nK0P4OeJL7GqIsosdESmQiVa3CJdFqtZKQsmZzUz1Pl084Wog23NWlMyi/qc4crF9g
-         ec5yptbljKWWx/1+RSOI3wadsdp6YOQJS0xgntSjqSo7cG6bfFU+ATzspmQ++5oEgOkF
-         M0rJPhDW/H+Zsr4FgrrhUPhGdniSq+sZTXy4BuE/ynL5Cky71gdMHiQngzmRMOUeKtNc
-         6UOtuDwUfAVdROLXJZ6NfU9T7arIi7VhvEYiUVMHuKuTTSaxKyJS3T0IP5OW8s/9KfiT
-         15IVUHsDP/L+mD7ZjTVM2xQys5hepU/THFcFeEifsJ1GKXX153xKQJpSSEEx5kE2bVod
-         RQ/A==
-X-Gm-Message-State: AOAM532hhBmXyJLF3jDmItI/w3vs2hKNlr3aT2NNqE82WiAkZpMij1hz
-        jbvdrSBt9k+DRIrhck9sztSSU3wIJybHGik6Pyg=
-X-Google-Smtp-Source: ABdhPJwIxsijmOT9KX1yVX9hXkUj0p+R77bPMrpt/ByfC9KYDBE9pau2uzr1XYeetrmrZ2M3Lzu6tBv1Xo4BsMg+K8w=
-X-Received: by 2002:a92:9117:: with SMTP id t23mr5482261ild.177.1598279509608;
- Mon, 24 Aug 2020 07:31:49 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=PV6NInVuwM0ZFOzf5u+K0D31QYADBewwzCHAM/IfltE=;
+        b=tiEg0f3z3fUkPIGnQswZPmru8OZpEDbiemo1VKeCjlqWNxr7PhVTkrYmWRjqUwTZPA
+         taSu+asjKO0wpI+kDP9RQf4yIJNVXGV9tPgk9D76G9zRc3esH9+XSLaSuNpYyNELCn/L
+         Whw1jeiz28ozNq42gTlAkh83fgOe1gEQ91wVegmEFT45lEbdN6HF1zTq3n25jwaawpFl
+         4DGbyC7SMz1xOYWooM6aL12415S0jFZMTcj+yJIDHMyJINCn2yXkfNadhABVbsUOtsub
+         uD4+saT1hZBSKrNco4tiSULYL3qeS8W++a51/sCooeg+qbDpiuSFkwffovRLUJiwChHT
+         uhgQ==
+X-Gm-Message-State: AOAM531p2ViB9rHLaTpPg3RzD0XQs4dyINqJGk7PP1VHdyfldY4a3u5t
+        CpnmJLIXJ7Wa0LGDfO/A+asKPjcgKcsgB/sCzyA2LHNR7SB9Cg==
+X-Google-Smtp-Source: ABdhPJzw/FoJtoxQzgPdUYNP97ZKCCZGfUhCn2Rjfzh3yzKwvOUvbFpKgUezOiwynlbXfumuzyAZ+tIHp63hR+zFUgI=
+X-Received: by 2002:a1c:7c0d:: with SMTP id x13mr5744838wmc.164.1598279740415;
+ Mon, 24 Aug 2020 07:35:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <1598255717-32316-1-git-send-email-sundeep.lkml@gmail.com>
- <20200824.061657.2168445189551301124.davem@davemloft.net> <20200824.061737.1288546229773264212.davem@davemloft.net>
-In-Reply-To: <20200824.061737.1288546229773264212.davem@davemloft.net>
-From:   sundeep subbaraya <sundeep.lkml@gmail.com>
-Date:   Mon, 24 Aug 2020 20:01:38 +0530
-Message-ID: <CALHRZuqdDAELDfpj6DA02i0NkhqyYDcr+ZWushhg4nZpCazK0w@mail.gmail.com>
-Subject: Re: [PATCH v7 net-next 0/3] Add PTP support for Octeontx2
-To:     David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        netdev@vger.kernel.org, sgoutham@marvell.com,
-        Subbaraya Sundeep <sbhatta@marvell.com>
+From:   =?UTF-8?Q?Robert_Bengtsson=2D=C3=96lund?= 
+        <robert.bengtsson-olund@intinor.se>
+Date:   Mon, 24 Aug 2020 16:35:29 +0200
+Message-ID: <CAM7CaVQf-xymnx8y-nn7E3N6P5=-HF2i_1XhFgp1MZB1==WZiA@mail.gmail.com>
+Subject: Request for backport of 78dc70ebaa38aa303274e333be6c98eef87619e2 to 4.19.y
+To:     netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -63,31 +57,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+Hi everyone
 
-On Mon, Aug 24, 2020 at 6:47 PM David Miller <davem@davemloft.net> wrote:
->
-> From: David Miller <davem@davemloft.net>
-> Date: Mon, 24 Aug 2020 06:16:57 -0700 (PDT)
->
-> > Series applied, thank you.
->
-> Actually, this doesn't even compile:
->
-Our Marvell GCC10 ARM64 compiler did not complain anything about this
-even with W=3D1 and my bad I overlooked the missing header file inclusion.
-The same happened during V1 where the power-pc compiler caught a
-similar error and ours did not.
-Sorry for the trouble, I will send the next spin.
+We stumbled upon a TCP BBR throughput issue that the following change fixes=
+.
+git: 78dc70ebaa38aa303274e333be6c98eef87619e2
 
-Thanks,
-Sundeep
+Our issue:
+We have a transmission that is application limited to 20Mbps on an
+ethernet connection that has ~1Gbps capacity.
+Without this change our transmission seems to settle at ~3.5Mbps.
 
-> drivers/net/ethernet/marvell/octeontx2/af/ptp.c: In function =E2=80=98get=
-_clock_rate=E2=80=99:
-> drivers/net/ethernet/marvell/octeontx2/af/ptp.c:60:26: error: implicit de=
-claration of function =E2=80=98FIELD_GET=E2=80=99; did you mean =E2=80=98FO=
-LL_GET=E2=80=99? [-Werror=3Dimplicit-function-declaration]
->    60 |  ret =3D CLOCK_BASE_RATE * FIELD_GET(RST_MUL_BITS, cfg);
->       |                          ^~~~~~~~~
->       |                          FOLL_GET
+We have seen the issue on a slightly different network setup as well
+between two fiber internet connections.
+
+Due to what the mentioned commit changes we suspect some middlebox
+plays with the ACK frequency in both of our cases.
+
+Our transmission is basically an RTMP feed through ffmpeg to MistServer.
+
+Best regards
+/Robert
+
+--=20
+Robert Bengtsson-=C3=96lund, System Developer
+Software Development
++46(0)90-349 39 00
+
+www.intinor.com
+
+-- INTINOR --
+WE ARE DIREKT
