@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F6424F691
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 11:01:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54DE024F7F3
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 11:23:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730362AbgHXI4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 04:56:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42620 "EHLO mail.kernel.org"
+        id S1729810AbgHXIyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 04:54:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34212 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730579AbgHXI4n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 04:56:43 -0400
+        id S1730283AbgHXIyL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 04:54:11 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 31178207DF;
-        Mon, 24 Aug 2020 08:56:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9C427208E4;
+        Mon, 24 Aug 2020 08:54:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598259402;
-        bh=Q1TI+LHp6d08jhWY1mKLYG0n33dy9WBxpPYs0q3FpaA=;
+        s=default; t=1598259250;
+        bh=q4ZJIPRsmUADwzfFX4V5HvPf+nuvNA6nOU5SWOTd+ac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R5nIe6RuY4VahOUXely8pQJX5iD2aFC0RrDUfdyy59quJqDvlop+K2+/XD6quiZYL
-         UUxTaaB/Q+0RJGcMu7rAf9IPjsCFBOZoyZQ7Z57CcL+HexSFPLqoZw+IPM6x1+0aa3
-         /71E/TD1QKhQ//i6OKDY+1bLOdMNaH1Yy9Wf6yFw=
+        b=GQCF6YdeGF85ZuXp/mR7nhkKT5juiYuREmF39lm5skXqcxaCWdgAquRPNDNR09VKi
+         p475id0MeYGDN18x71Lra0gdMZ16NhZY+kG8nDd9xcYg7dbAkVBiRacV5zR9LN9SlV
+         f2Z2cMwDnFsl0WF8ED+u5Pv5mJ1PMxZrd6Yv3r0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -33,12 +33,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jay Vosburgh <jay.vosburgh@canonical.com>,
         Jarod Wilson <jarod@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 45/71] bonding: show saner speed for broadcast mode
-Date:   Mon, 24 Aug 2020 10:31:36 +0200
-Message-Id: <20200824082358.135590476@linuxfoundation.org>
+Subject: [PATCH 4.14 37/50] bonding: show saner speed for broadcast mode
+Date:   Mon, 24 Aug 2020 10:31:38 +0200
+Message-Id: <20200824082353.927129203@linuxfoundation.org>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200824082355.848475917@linuxfoundation.org>
-References: <20200824082355.848475917@linuxfoundation.org>
+In-Reply-To: <20200824082351.823243923@linuxfoundation.org>
+References: <20200824082351.823243923@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -75,10 +75,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 18 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 11429df743067..76fd5fc437ebe 100644
+index 1f867e275408e..9ddbafdca3b05 100644
 --- a/drivers/net/bonding/bond_main.c
 +++ b/drivers/net/bonding/bond_main.c
-@@ -4200,13 +4200,23 @@ static netdev_tx_t bond_start_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -4156,13 +4156,23 @@ static netdev_tx_t bond_start_xmit(struct sk_buff *skb, struct net_device *dev)
  	return ret;
  }
  
@@ -103,7 +103,7 @@ index 11429df743067..76fd5fc437ebe 100644
  
  	cmd->base.duplex = DUPLEX_UNKNOWN;
  	cmd->base.port = PORT_OTHER;
-@@ -4218,8 +4228,13 @@ static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
+@@ -4174,8 +4184,13 @@ static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
  	 */
  	bond_for_each_slave(bond, slave, iter) {
  		if (bond_slave_can_tx(slave)) {
