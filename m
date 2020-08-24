@@ -2,129 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 598E125089C
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 20:58:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 110602508EC
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 21:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbgHXS6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 14:58:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47682 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726542AbgHXS6N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 14:58:13 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3BEC061573
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 11:58:11 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id si26so13269062ejb.12
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 11:58:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kr/ilKP3KtnpaNLBR4Wfqo2ibtevdlA/61dd3WxVQbQ=;
-        b=bqOH7tKogCiyKYB3sMzalRYYv42T8tBwVa1C577l6dLDiQqHISTeBcw3/rVMjcQVRr
-         +oeKkG0mXbC9eLC33+u8/ltcR8dvp2UukEC9uSYpxY/C3Gkwd5Y8jfWXavf3P3sBT+Er
-         X0gXWdng+UeTkQ4qPQxDaSxZZL7g5raQtCJsQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kr/ilKP3KtnpaNLBR4Wfqo2ibtevdlA/61dd3WxVQbQ=;
-        b=X1e/peFtwowtD6t5e9FJiOnNaUUuZkh8rx0XmoxtPdmzYk9RSpBPniHdx/lyRcgETE
-         zcRyFrziPQx3fNPDRoZZDvkoL2s2Xbe/OdrvF0aWwqds3U6hkEhD4zyw40g/yF+tcKyO
-         AWwpG6O2qf6jGR+njlSKb3530tbEUTXUKJRYCoiEQhJmktGDV9/ysk+EEHv7LRqrXu/o
-         IRP2FsBwmvMjfkarF3q5F7/Pimqq9OP/0KZa+oWRgoReqIIQ7TSAe84QsQSWZGzKum2s
-         xNpWXl6SZKBN4p7UxmHvbbBpwnGLKBh+sYDX59pDrQ4zqoRjkoZn0RaqBxdwVE6/Cwwx
-         DEYg==
-X-Gm-Message-State: AOAM532LTN7QvOwKGLJTH4vOmqBzib6K+3LVjY+o+zeIuvLJOkgOnT7R
-        eV+p4aMsfZ3VyXd9dMEu5ANM3guWWglYUA==
-X-Google-Smtp-Source: ABdhPJxUVHhSkIvogXMTXgS5wicexFdMRzbDtz03BjzWRr0thRB2gnvfTXoj+9E8fmgN4PsXiF8wGQ==
-X-Received: by 2002:a17:906:5812:: with SMTP id m18mr6957022ejq.66.1598295489038;
-        Mon, 24 Aug 2020 11:58:09 -0700 (PDT)
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com. [209.85.208.45])
-        by smtp.gmail.com with ESMTPSA id p3sm10370898edx.75.2020.08.24.11.58.08
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Aug 2020 11:58:08 -0700 (PDT)
-Received: by mail-ed1-f45.google.com with SMTP id di22so9028145edb.12
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 11:58:08 -0700 (PDT)
-X-Received: by 2002:a05:651c:d5:: with SMTP id 21mr2906073ljr.276.1598295186265;
- Mon, 24 Aug 2020 11:53:06 -0700 (PDT)
+        id S1726930AbgHXTLq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 15:11:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34194 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726303AbgHXTLq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 15:11:46 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F3F962074D;
+        Mon, 24 Aug 2020 19:11:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598296305;
+        bh=RBymF6SwORNMF14zud8wnATR9iwF2EZLrKwrjnmdPq0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aoVF4KkCLgMCTmgJ7T0rqng8Utv0OR5fdkq0dpFRyG8rrE2PGLyEOLUpvlkmevloD
+         0zPiod9JuTDGoEAqoZDQDJbxKJ5uHWkGDfRIs36tFUNUjazB607fpGhoM8rrhGRD9Y
+         MPxok+AEK5CuUlR5+VfBdxEdvjTZs+e0FwVhaok0=
+Date:   Mon, 24 Aug 2020 12:11:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        amcohen@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
+        roopa@nvidia.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        tariqt@nvidia.com, ayal@nvidia.com, mkubecek@suse.cz,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 0/6] devlink: Add device metric support
+Message-ID: <20200824121143.3b233788@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200823070434.GA400109@shredder>
+References: <d0c24aad-b7f3-7fd9-0b34-c695686e3a86@gmail.com>
+        <20200820090942.55dc3182@kicinski-fedora-PC1C0HJN>
+        <20200821103021.GA331448@shredder>
+        <20200821095303.75e6327b@kicinski-fedora-PC1C0HJN>
+        <6030824c-02f9-8103-dae4-d336624fe425@gmail.com>
+        <20200821165052.6790a7ba@kicinski-fedora-PC1C0HJN>
+        <1e5cdd45-d66f-e8e0-ceb7-bf0f6f653a1c@gmail.com>
+        <20200821173715.2953b164@kicinski-fedora-PC1C0HJN>
+        <90b68936-88cf-4d87-55b0-acf9955ef758@gmail.com>
+        <20200822092739.5ba0c099@kicinski-fedora-PC1C0HJN>
+        <20200823070434.GA400109@shredder>
 MIME-Version: 1.0
-References: <MN2PR18MB2637D7C742BC235FE38367F0A09C0@MN2PR18MB2637.namprd18.prod.outlook.com>
- <20200821082720.7716-1-penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <20200821082720.7716-1-penguin-kernel@I-love.SAKURA.ne.jp>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Mon, 24 Aug 2020 11:52:53 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXOHDU+SWmr+7aOUtbuzC22T-UWhZXJ5UXtcsev5ZTbqMw@mail.gmail.com>
-Message-ID: <CA+ASDXOHDU+SWmr+7aOUtbuzC22T-UWhZXJ5UXtcsev5ZTbqMw@mail.gmail.com>
-Subject: Re: [PATCH v2] mwifiex: don't call del_timer_sync() on uninitialized timer
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        amit karwar <amitkarwar@gmail.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Nishant Sarmukadam <nishants@marvell.com>,
-        syzkaller-bugs@googlegroups.com,
-        syzbot <syzbot+373e6719b49912399d21@syzkaller.appspotmail.com>,
-        syzbot <syzbot+dc4127f950da51639216@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 21, 2020 at 1:28 AM Tetsuo Handa
-<penguin-kernel@i-love.sakura.ne.jp> wrote:
->
-> syzbot is reporting that del_timer_sync() is called from
-> mwifiex_usb_cleanup_tx_aggr() from mwifiex_unregister_dev() without
-> checking timer_setup() from mwifiex_usb_tx_init() was called [1].
->
-> Ganapathi Bhat proposed a possibly cleaner fix, but it seems that
-> that fix was forgotten [2].
->
-> "grep -FrB1 'del_timer' drivers/ | grep -FA1 '.function)'" says that
-> currently there are 28 locations which call del_timer[_sync]() only if
-> that timer's function field was initialized (because timer_setup() sets
-> that timer's function field). Therefore, let's use same approach here.
->
-> [1] https://syzkaller.appspot.com/bug?id=26525f643f454dd7be0078423e3cdb0d57744959
-> [2] https://lkml.kernel.org/r/CA+ASDXMHt2gq9Hy+iP_BYkWXsSreWdp3_bAfMkNcuqJ3K+-jbQ@mail.gmail.com
->
-> Reported-by: syzbot <syzbot+dc4127f950da51639216@syzkaller.appspotmail.com>
-> Cc: Ganapathi Bhat <ganapathi.bhat@nxp.com>
-> Cc: Brian Norris <briannorris@chromium.org>
-> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+On Sun, 23 Aug 2020 10:04:34 +0300 Ido Schimmel wrote:
+> > You seem to focus on less relevant points. I primarily care about the
+> > statistics being defined and identified by Linux, not every vendor for
+> > themselves.  
+> 
+> Trying to understand how we can move this forward. The issue is with the
+> specific VXLAN metrics, but you generally agree with the need for the
+> framework? See my two other examples: Cache counters and algorithmic
+> TCAM counters.
 
-This seems good to me:
+Yes, we will likely need a way to report design-specific performance
+counters no matter what. That said I would prefer to pave the way for
+exposing standardized stats first, so the reviewers (e.g. myself) have
+a clear place to point folks to. 
 
-Reviewed-by: Brian Norris <briannorris@chromium.org>
+My last attempt was to just try to standardize the strings for the
+per-netdev TLS offload stats (those are in addition to the /proc stats),
+and document them in Documentation/. It turned out to have quite a
+high review overhead, and the convergence is not satisfactory.
 
-> ---
->  drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
-> index 6f3cfde4654c..426e39d4ccf0 100644
-> --- a/drivers/net/wireless/marvell/mwifiex/usb.c
-> +++ b/drivers/net/wireless/marvell/mwifiex/usb.c
-> @@ -1353,7 +1353,8 @@ static void mwifiex_usb_cleanup_tx_aggr(struct mwifiex_adapter *adapter)
->                                 skb_dequeue(&port->tx_aggr.aggr_list)))
->                                 mwifiex_write_data_complete(adapter, skb_tmp,
->                                                             0, -1);
-> -               del_timer_sync(&port->tx_aggr.timer_cnxt.hold_timer);
-> +               if (port->tx_aggr.timer_cnxt.hold_timer.function)
-> +                       del_timer_sync(&port->tx_aggr.timer_cnxt.hold_timer);
->                 port->tx_aggr.timer_cnxt.is_hold_timer_set = false;
->                 port->tx_aggr.timer_cnxt.hold_tmo_msecs = 0;
->         }
-> --
-> 2.18.4
->
+The only strong use I have right now is FEC stats, and I'm planning to
+add IEEE-based counters to devlink ports. The scoping of MAC/PHY
+counters to dl-port is, I hope, reasonable, although it remains to be
+seen what phy folks think about it.
+
+As I previously said - I think that protocol stats are best exported
+from the protocol driver, otherwise the API may need to grow parallel
+hierarchies. E.g. semantics of per-queue NIC counters get confusing
+unless the are reported with the information about the queues - sadly
+no API for that exists. In particular the life time of objects is hard
+to match with lifetime of statistics. Similar thing with low
+granularity counters related to traffic classification.
+
+Long story short, it's a complicated topic, IDK how much of it I can
+expect you to tackle. At the minimum I'd like it if we had a clear
+separation between Linux/standard stats that drivers should share, 
+and justifiably implementation specific values.
+
+The DEVLINK_..GENERIC identifiers or trying to standardize on strings
+are not working for me as a reviewer, and as an infrastructure engineer.
