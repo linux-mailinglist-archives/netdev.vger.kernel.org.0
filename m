@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46D63250458
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9308F250454
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:01:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726972AbgHXRBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 13:01:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40324 "EHLO mail.kernel.org"
+        id S1726953AbgHXRA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:00:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40360 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728496AbgHXQil (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728495AbgHXQil (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 24 Aug 2020 12:38:41 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 34EEA22D2A;
-        Mon, 24 Aug 2020 16:38:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 67FDB22D2C;
+        Mon, 24 Aug 2020 16:38:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598287115;
-        bh=uRJCU0jqydOCQjEdqrxJWapHI3L0k/9sZlHerSON5kc=;
+        s=default; t=1598287117;
+        bh=Io4p9WMxBPOmvvvDV5Rh1K3tXuBa/vm5am+uOFzQy5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GpXTU4YJ9Lb2ugIO34c613mt2dfN/8wU44FdWKkfWOPszLsLshwe5b64HZ78+dcFu
-         eA/pHorPse4vTWfjuskToi8BIHQ8MwKnT4HnPW8CHxpeqNKJWfNMDYul+RWLkraM3l
-         kWf5QsDDv2T1R1cqO1BUhbYz53qPMgUQk8gzfHag=
+        b=Xb4liEk+6duS9lioxOKloQJ5YHSV8KorHF8VykoJ6BrggW5WTNiyvkejuThTbTEJi
+         ReHZJxxlaaffnvynPGiUpZ/+zsoEPiasMUF166zr6NBFMUAW1TMiZOMVgKRJ0CU+cD
+         TyW8hd0fVVww+vfC6HMX6k8Xu6hmKmyhAVbukcYQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+Cc:     Sumera Priyadarsini <sylphrenadin@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 32/38] macvlan: validate setting of multiple remote source MAC addresses
-Date:   Mon, 24 Aug 2020 12:37:44 -0400
-Message-Id: <20200824163751.606577-32-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 33/38] net: gianfar: Add of_node_put() before goto statement
+Date:   Mon, 24 Aug 2020 12:37:45 -0400
+Message-Id: <20200824163751.606577-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200824163751.606577-1-sashal@kernel.org>
 References: <20200824163751.606577-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,86 +43,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+From: Sumera Priyadarsini <sylphrenadin@gmail.com>
 
-[ Upstream commit 8b61fba503904acae24aeb2bd5569b4d6544d48f ]
+[ Upstream commit 989e4da042ca4a56bbaca9223d1a93639ad11e17 ]
 
-Remote source MAC addresses can be set on a 'source mode' macvlan
-interface via the IFLA_MACVLAN_MACADDR_DATA attribute. This commit
-tightens the validation of these MAC addresses to match the validation
-already performed when setting or adding a single MAC address via the
-IFLA_MACVLAN_MACADDR attribute.
+Every iteration of for_each_available_child_of_node() decrements
+reference count of the previous node, however when control
+is transferred from the middle of the loop, as in the case of
+a return or break or goto, there is no decrement thus ultimately
+resulting in a memory leak.
 
-iproute2 uses IFLA_MACVLAN_MACADDR_DATA for its 'macvlan macaddr set'
-command, and IFLA_MACVLAN_MACADDR for its 'macvlan macaddr add' command,
-which demonstrates the inconsistent behaviour that this commit
-addresses:
+Fix a potential memory leak in gianfar.c by inserting of_node_put()
+before the goto statement.
 
- # ip link add link eth0 name macvlan0 type macvlan mode source
- # ip link set link dev macvlan0 type macvlan macaddr add 01:00:00:00:00:00
- RTNETLINK answers: Cannot assign requested address
- # ip link set link dev macvlan0 type macvlan macaddr set 01:00:00:00:00:00
- # ip -d link show macvlan0
- 5: macvlan0@eth0: <BROADCAST,MULTICAST,DYNAMIC,UP,LOWER_UP> mtu 1500 ...
-     link/ether 2e:ac:fd:2d:69:f8 brd ff:ff:ff:ff:ff:ff promiscuity 0
-     macvlan mode source remotes (1) 01:00:00:00:00:00 numtxqueues 1 ...
+Issue found with Coccinelle.
 
-With this change, the 'set' command will (rightly) fail in the same way
-as the 'add' command.
-
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/macvlan.c | 21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/freescale/gianfar.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 9d3209ae41cfb..07622cf8765ae 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -1259,6 +1259,9 @@ static void macvlan_port_destroy(struct net_device *dev)
- static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
- 			    struct netlink_ext_ack *extack)
- {
-+	struct nlattr *nla, *head;
-+	int rem, len;
-+
- 	if (tb[IFLA_ADDRESS]) {
- 		if (nla_len(tb[IFLA_ADDRESS]) != ETH_ALEN)
- 			return -EINVAL;
-@@ -1306,6 +1309,20 @@ static int macvlan_validate(struct nlattr *tb[], struct nlattr *data[],
- 			return -EADDRNOTAVAIL;
- 	}
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index 2580bcd850253..3978d82c95989 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -751,8 +751,10 @@ static int gfar_of_init(struct platform_device *ofdev, struct net_device **pdev)
+ 				continue;
  
-+	if (data[IFLA_MACVLAN_MACADDR_DATA]) {
-+		head = nla_data(data[IFLA_MACVLAN_MACADDR_DATA]);
-+		len = nla_len(data[IFLA_MACVLAN_MACADDR_DATA]);
-+
-+		nla_for_each_attr(nla, head, len, rem) {
-+			if (nla_type(nla) != IFLA_MACVLAN_MACADDR ||
-+			    nla_len(nla) != ETH_ALEN)
-+				return -EINVAL;
-+
-+			if (!is_valid_ether_addr(nla_data(nla)))
-+				return -EADDRNOTAVAIL;
-+		}
-+	}
-+
- 	if (data[IFLA_MACVLAN_MACADDR_COUNT])
- 		return -EINVAL;
- 
-@@ -1362,10 +1379,6 @@ static int macvlan_changelink_sources(struct macvlan_dev *vlan, u32 mode,
- 		len = nla_len(data[IFLA_MACVLAN_MACADDR_DATA]);
- 
- 		nla_for_each_attr(nla, head, len, rem) {
--			if (nla_type(nla) != IFLA_MACVLAN_MACADDR ||
--			    nla_len(nla) != ETH_ALEN)
--				continue;
--
- 			addr = nla_data(nla);
- 			ret = macvlan_hash_add_source(vlan, addr);
- 			if (ret)
+ 			err = gfar_parse_group(child, priv, model);
+-			if (err)
++			if (err) {
++				of_node_put(child);
+ 				goto err_grp_init;
++			}
+ 		}
+ 	} else { /* SQ_SG_MODE */
+ 		err = gfar_parse_group(np, priv, model);
 -- 
 2.25.1
 
