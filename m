@@ -2,116 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 725D724F12C
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 04:33:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BD724F15E
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 05:09:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727029AbgHXCdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 23 Aug 2020 22:33:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726794AbgHXCdx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 23 Aug 2020 22:33:53 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCCAAC061573
-        for <netdev@vger.kernel.org>; Sun, 23 Aug 2020 19:33:52 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id a65so6114048otc.8
-        for <netdev@vger.kernel.org>; Sun, 23 Aug 2020 19:33:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6R6P/NA4ILLqA/tRejRRnZIRe7AE0kNOKk6gAhNpSLU=;
-        b=Phx4AZoidyy+jcfuzZgiOzJlbMW8XxSzg10zgnjxBfXm31UcippoPBx2khctg1Acwx
-         PsdGy0RBFzR1yEy5U7K/nc9sAQG7TfgRYjCWc9M/6dMPHodUI17WC4rpP2/5qyPwNyC4
-         nnbK9yFY42bfULAX5sKT8AQ58sKPEqh1QDhqvrI8B3xhdXvhg75pBnXN6CKXqHk5vUMg
-         kkebw4gR7FoCiirI2+E0S+siovZ85BcHnR0FMPJS6sUaMFTxvUqns743ePxCH98Gk3rO
-         cxb5xlJQe1UejyLal04qan+3YR0e2r78MhBoCwb+bEDVPBoxLosBkudEWt35UzAG2fjo
-         mOMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6R6P/NA4ILLqA/tRejRRnZIRe7AE0kNOKk6gAhNpSLU=;
-        b=pP5Hu7zreMOZbJDS7g/a13qnupqkDIioaKoci0ofdfDTT6J13uUDuW3Qc5bLiGBcmV
-         tfqfDHn/3ojgP5qfBJKI/qm7egqimQCbX09DJlPyohhTc+CySlpdhBZ+fONXAaSHYcea
-         zxsGuE+mf+5JN4sATJSUawCLUhUEzar8BexA5W7xWTKlMKWpJbAju1JYAY06mumIthIW
-         xo9TTKV+Ek9jCzMuGvwnU07BgavTUNPX+OPn8Gyls1/UajDXyak0UxrE9ccWmMJG1yoa
-         N358vN/tIsl+mIp/kTikS2/7VaBmxbi8M0IeBOrBZ8BYkxCtQLgaWJmKKwwR/VMADWNO
-         6GGg==
-X-Gm-Message-State: AOAM532zZxmV1EWXNmTH9sQ7xNUiAKohQFzoMKIbUX36OltbU4SKwC14
-        bT/hmy1XaxaVZCjgkYmprzjuQUvy0a0UGg==
-X-Google-Smtp-Source: ABdhPJwLjTpExKQ0ETpky5bVwa9gsFMoStXg8Gic12CjwnRJUOZG2UJGl/xTWGZUEk+fQlNWYzpkRw==
-X-Received: by 2002:a9d:7458:: with SMTP id p24mr2134142otk.372.1598236432074;
-        Sun, 23 Aug 2020 19:33:52 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:39b0:ac18:30c6:b094])
-        by smtp.googlemail.com with ESMTPSA id f11sm2045250oom.38.2020.08.23.19.33.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 23 Aug 2020 19:33:51 -0700 (PDT)
-Subject: Re: [PATCH] ipv4: fix the problem of ping failure in some cases
-To:     guodeqing <geffrey.guo@huawei.com>, davem@davemloft.net
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
+        id S1728050AbgHXDJT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 23 Aug 2020 23:09:19 -0400
+Received: from szxga08-in.huawei.com ([45.249.212.255]:48868 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726635AbgHXDJS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 23 Aug 2020 23:09:18 -0400
+Received: from nkgeml707-chm.china.huawei.com (unknown [172.30.72.56])
+        by Forcepoint Email with ESMTP id 5DCEFC53D0322B880C67;
+        Mon, 24 Aug 2020 11:09:16 +0800 (CST)
+Received: from nkgeml708-chm.china.huawei.com (10.98.57.160) by
+ nkgeml707-chm.china.huawei.com (10.98.57.157) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1913.5; Mon, 24 Aug 2020 11:09:16 +0800
+Received: from nkgeml708-chm.china.huawei.com ([10.98.57.160]) by
+ nkgeml708-chm.china.huawei.com ([10.98.57.160]) with mapi id 15.01.1913.007;
+ Mon, 24 Aug 2020 11:09:16 +0800
+From:   "Guodeqing (A)" <geffrey.guo@huawei.com>
+To:     David Ahern <dsahern@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIGlwdjQ6IGZpeCB0aGUgcHJvYmxlbSBvZiBwaW5n?=
+ =?utf-8?Q?_failure_in_some_cases?=
+Thread-Topic: [PATCH] ipv4: fix the problem of ping failure in some cases
+Thread-Index: AQHWeFkty0AVBoLa8Um0ZFXgwnnYe6lGBUyAgAAB5QCAAI+5gA==
+Date:   Mon, 24 Aug 2020 03:09:15 +0000
+Message-ID: <5d678cbd20fd4f8fbd2ac75e62aab458@huawei.com>
 References: <1598082397-115790-1-git-send-email-geffrey.guo@huawei.com>
  <0b7e931b-f159-4f53-1b9b-5bf84a072712@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <63e26f77-ccf0-4c07-8eaf-e571dcf2204f@gmail.com>
-Date:   Sun, 23 Aug 2020 20:33:50 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+ <63e26f77-ccf0-4c07-8eaf-e571dcf2204f@gmail.com>
+In-Reply-To: <63e26f77-ccf0-4c07-8eaf-e571dcf2204f@gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.136.112.227]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <0b7e931b-f159-4f53-1b9b-5bf84a072712@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/23/20 8:27 PM, David Ahern wrote:
-> On 8/22/20 1:46 AM, guodeqing wrote:
->> ie.,
->> $ ifconfig eth0 9.9.9.9 netmask 255.255.255.0
->>
->> $ ping -I lo 9.9.9.9
-
-If that ever worked it was wrong; the address is scoped to eth0, not lo.
-
->> ping: Warning: source address might be selected on device other than lo.
->> PING 9.9.9.9 (9.9.9.9) from 9.9.9.9 lo: 56(84) bytes of data.
->>
->> 4 packets transmitted, 0 received, 100% packet loss, time 3068ms
->>
->> This is because the return value of __raw_v4_lookup in raw_v4_input
->> is null, the packets cannot be sent to the ping application.
->> The reason of the __raw_v4_lookup failure is that sk_bound_dev_if and
->> dif/sdif are not equal in raw_sk_bound_dev_eq.
->>
->> Here I add a check of whether the sk_bound_dev_if is LOOPBACK_IFINDEX
->> to solve this problem.
->>
->> Fixes: 19e4e768064a8 ("ipv4: Fix raw socket lookup for local traffic")
->> Signed-off-by: guodeqing <geffrey.guo@huawei.com>
->> ---
->>  include/net/inet_sock.h | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
->> index a3702d1..7707b1d 100644
->> --- a/include/net/inet_sock.h
->> +++ b/include/net/inet_sock.h
->> @@ -144,7 +144,7 @@ static inline bool inet_bound_dev_eq(bool l3mdev_accept, int bound_dev_if,
->>  {
->>  	if (!bound_dev_if)
->>  		return !sdif || l3mdev_accept;
->> -	return bound_dev_if == dif || bound_dev_if == sdif;
->> +	return bound_dev_if == dif || bound_dev_if == sdif || bound_dev_if == LOOPBACK_IFINDEX;
->>  }
->>  
->>  struct inet_cork {
->>
-> 
-> this is used by more than just raw socket lookups.
-> 
-
-And assuming it should work, this is definitely the wrong fix.
+DQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IERhdmlkIEFoZXJuIFtt
+YWlsdG86ZHNhaGVybkBnbWFpbC5jb21dDQo+IOWPkemAgeaXtumXtDogTW9uZGF5LCBBdWd1c3Qg
+MjQsIDIwMjAgMTA6MzQNCj4g5pS25Lu25Lq6OiBHdW9kZXFpbmcgKEEpIDxnZWZmcmV5Lmd1b0Bo
+dWF3ZWkuY29tPjsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldA0KPiDmioTpgIE6IGt1YmFAa2VybmVsLm9y
+ZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiDkuLvpopg6IFJlOiBbUEFUQ0hdIGlwdjQ6IGZp
+eCB0aGUgcHJvYmxlbSBvZiBwaW5nIGZhaWx1cmUgaW4gc29tZSBjYXNlcw0KPiANCj4gT24gOC8y
+My8yMCA4OjI3IFBNLCBEYXZpZCBBaGVybiB3cm90ZToNCj4gPiBPbiA4LzIyLzIwIDE6NDYgQU0s
+IGd1b2RlcWluZyB3cm90ZToNCj4gPj4gaWUuLA0KPiA+PiAkIGlmY29uZmlnIGV0aDAgOS45Ljku
+OSBuZXRtYXNrIDI1NS4yNTUuMjU1LjANCj4gPj4NCj4gPj4gJCBwaW5nIC1JIGxvIDkuOS45LjkN
+Cj4gDQo+IElmIHRoYXQgZXZlciB3b3JrZWQgaXQgd2FzIHdyb25nOyB0aGUgYWRkcmVzcyBpcyBz
+Y29wZWQgdG8gZXRoMCwgbm90IGxvLg0KPiANCj4gPj4gcGluZzogV2FybmluZzogc291cmNlIGFk
+ZHJlc3MgbWlnaHQgYmUgc2VsZWN0ZWQgb24gZGV2aWNlIG90aGVyIHRoYW4gbG8uDQo+ID4+IFBJ
+TkcgOS45LjkuOSAoOS45LjkuOSkgZnJvbSA5LjkuOS45IGxvOiA1Nig4NCkgYnl0ZXMgb2YgZGF0
+YS4NCj4gPj4NCj4gPj4gNCBwYWNrZXRzIHRyYW5zbWl0dGVkLCAwIHJlY2VpdmVkLCAxMDAlIHBh
+Y2tldCBsb3NzLCB0aW1lIDMwNjhtcw0KPiA+Pg0KPiA+PiBUaGlzIGlzIGJlY2F1c2UgdGhlIHJl
+dHVybiB2YWx1ZSBvZiBfX3Jhd192NF9sb29rdXAgaW4gcmF3X3Y0X2lucHV0DQo+ID4+IGlzIG51
+bGwsIHRoZSBwYWNrZXRzIGNhbm5vdCBiZSBzZW50IHRvIHRoZSBwaW5nIGFwcGxpY2F0aW9uLg0K
+PiA+PiBUaGUgcmVhc29uIG9mIHRoZSBfX3Jhd192NF9sb29rdXAgZmFpbHVyZSBpcyB0aGF0IHNr
+X2JvdW5kX2Rldl9pZiBhbmQNCj4gPj4gZGlmL3NkaWYgYXJlIG5vdCBlcXVhbCBpbiByYXdfc2tf
+Ym91bmRfZGV2X2VxLg0KPiA+Pg0KPiA+PiBIZXJlIEkgYWRkIGEgY2hlY2sgb2Ygd2hldGhlciB0
+aGUgc2tfYm91bmRfZGV2X2lmIGlzIExPT1BCQUNLX0lGSU5ERVgNCj4gPj4gdG8gc29sdmUgdGhp
+cyBwcm9ibGVtLg0KPiA+Pg0KPiA+PiBGaXhlczogMTllNGU3NjgwNjRhOCAoImlwdjQ6IEZpeCBy
+YXcgc29ja2V0IGxvb2t1cCBmb3IgbG9jYWwNCj4gPj4gdHJhZmZpYyIpDQo+ID4+IFNpZ25lZC1v
+ZmYtYnk6IGd1b2RlcWluZyA8Z2VmZnJleS5ndW9AaHVhd2VpLmNvbT4NCj4gPj4gLS0tDQo+ID4+
+ICBpbmNsdWRlL25ldC9pbmV0X3NvY2suaCB8IDIgKy0NCj4gPj4gIDEgZmlsZSBjaGFuZ2VkLCAx
+IGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPiA+Pg0KPiA+PiBkaWZmIC0tZ2l0IGEvaW5j
+bHVkZS9uZXQvaW5ldF9zb2NrLmggYi9pbmNsdWRlL25ldC9pbmV0X3NvY2suaCBpbmRleA0KPiA+
+PiBhMzcwMmQxLi43NzA3YjFkIDEwMDY0NA0KPiA+PiAtLS0gYS9pbmNsdWRlL25ldC9pbmV0X3Nv
+Y2suaA0KPiA+PiArKysgYi9pbmNsdWRlL25ldC9pbmV0X3NvY2suaA0KPiA+PiBAQCAtMTQ0LDcg
+KzE0NCw3IEBAIHN0YXRpYyBpbmxpbmUgYm9vbCBpbmV0X2JvdW5kX2Rldl9lcShib29sDQo+ID4+
+IGwzbWRldl9hY2NlcHQsIGludCBib3VuZF9kZXZfaWYsICB7DQo+ID4+ICAJaWYgKCFib3VuZF9k
+ZXZfaWYpDQo+ID4+ICAJCXJldHVybiAhc2RpZiB8fCBsM21kZXZfYWNjZXB0Ow0KPiA+PiAtCXJl
+dHVybiBib3VuZF9kZXZfaWYgPT0gZGlmIHx8IGJvdW5kX2Rldl9pZiA9PSBzZGlmOw0KPiA+PiAr
+CXJldHVybiBib3VuZF9kZXZfaWYgPT0gZGlmIHx8IGJvdW5kX2Rldl9pZiA9PSBzZGlmIHx8IGJv
+dW5kX2Rldl9pZg0KPiA+PiArPT0gTE9PUEJBQ0tfSUZJTkRFWDsNCj4gPj4gIH0NCj4gPj4NCj4g
+Pj4gIHN0cnVjdCBpbmV0X2Nvcmsgew0KPiA+Pg0KPiA+DQo+ID4gdGhpcyBpcyB1c2VkIGJ5IG1v
+cmUgdGhhbiBqdXN0IHJhdyBzb2NrZXQgbG9va3Vwcy4NCj4gPg0KPiANCj4gQW5kIGFzc3VtaW5n
+IGl0IHNob3VsZCB3b3JrLCB0aGlzIGlzIGRlZmluaXRlbHkgdGhlIHdyb25nIGZpeC4NCg0Kb2ss
+IEkgc2VlIG5vdy4gSSBtaXN1bmRlcnN0b29kIHRoZSBmdW5jdGlvbiBvZiB0aGUgbG9vcGJhY2sg
+aW50ZXJmYWNlLCB0aGFua3MuDQo=
