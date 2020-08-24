@@ -2,85 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C97B42503FD
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 18:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C033250618
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 19:27:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728923AbgHXQy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 12:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728603AbgHXQyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 12:54:53 -0400
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C797C061573
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 09:54:52 -0700 (PDT)
-Received: by mail-oi1-x242.google.com with SMTP id b9so5437191oiy.3
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 09:54:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0E7pGvMNR/icrl555qIP4CCGFnyDIWwW1gBbuMxbE20=;
-        b=LNlLKbEQ+w+CzdVi7k9UxUi+ezYJdMikFhsbqIquGcp+UUpUwN/enklVPZAtrttQkN
-         C3sU5E0otqzyO//3k/Byb2N12yJG6yyXwpqnwJFGD8Xdr1qEtL1gKNHengH6MoM69tDH
-         6D4rpw3OR4E5IAyFOavgAwGsyH8+Sf5wQt1dUKkvrE4H2uDSYjZ8Kda+lHgvOlVhI00k
-         QBe0v1hc+7Z0OwmuCWn1dfzybGmoUo2ZSA9Mzis2/EPpdhdy4KWuChxMB/6LgmcKqw3c
-         Wl1d3x/H9dqe0X+pjYga4zpWqV/AM+kphJSkE1Y+fmakB/Oqh5UWopcIMeVUVmhoocym
-         uknQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0E7pGvMNR/icrl555qIP4CCGFnyDIWwW1gBbuMxbE20=;
-        b=dYO+ZLSE2+S3HfJ6/JoZKfufPlO9ttBSJ2MyuHvTc8I+ow3xHO4+jmniu2BiUiORWB
-         7E80kJjlEz+C6EXqWe53J2CwFoIRyBxGgQehPqjRxawMOhyKevcWIUTAznh3NYLjMspw
-         YRImjhEAa7J6o8dmHK31TBBg8KiP7phaQi1uRKaQL4Vx3o2b/cwxVqjvdwAOAjr7JR1V
-         ZsFd2fHemwUT3QMwISfN35I6kSZOs+hWGt+oJpve6qiC33XLCEROFpZ2oJe/MKg8rPpW
-         CxxC4ZFDcZ3t9oQ9gdLLJ2UNsfTNyXVaUGvlVnjD04RvXIvCMMA2xjyVDJYJXbyJ1CFE
-         yJ2g==
-X-Gm-Message-State: AOAM533ZoaXplZ7fDL6U39sCsghnfW3JH6OwHm/xvLOb7nm7JzK00pRL
-        d3R0SM+WHDE3Yg3mlqAg/eE=
-X-Google-Smtp-Source: ABdhPJwAt5KP5bNqpfLxSNA+5W0Cs02terJ4iTq72jwUebLaKvgMnwrXumggHAHSIiWscowL/e2RrA==
-X-Received: by 2002:a54:478f:: with SMTP id o15mr152651oic.77.1598288091869;
-        Mon, 24 Aug 2020 09:54:51 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:12c:2110:d2ae:4b39])
-        by smtp.googlemail.com with ESMTPSA id w11sm2316408oog.33.2020.08.24.09.54.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Aug 2020 09:54:51 -0700 (PDT)
-Subject: Re: [PATCH 2/2] genl: ctrl: support dumping netlink policy
-To:     Johannes Berg <johannes@sipsolutions.net>, netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>
-References: <20200819102903.21740-1-johannes@sipsolutions.net>
- <20200819102903.21740-2-johannes@sipsolutions.net>
- <3e300840-35ea-5f05-e9c1-33a66646042e@gmail.com>
- <251b824ef444ee46fb199b7e650f077fb7f682ea.camel@sipsolutions.net>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <9d6372e5-66cd-6313-5302-5306a4cc8686@gmail.com>
-Date:   Mon, 24 Aug 2020 10:54:50 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        id S1728350AbgHXR1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 13:27:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39586 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728253AbgHXQfd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 12:35:33 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C295F22CB3;
+        Mon, 24 Aug 2020 16:35:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598286932;
+        bh=TYTTdCegp15oLYrWq/F7PP5Ab8BnxcWk62tjoSVlprc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fvM2waNELlc+JzCWDkFWEcIekDarNnw3hnpLX4gTSi0P8k7qWbYrD7h363vM4w0wy
+         XmBlHDlKz7EchMWE2Wd+1IfJKbLLrLOD5zBHlKpFg/PEZrixrtCIHtFd5cMSRJb/yI
+         TPpoS1S5N/pu1DguqSot1IPaAEEDfV5O0etr+0n0=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jianlin Lv <Jianlin.Lv@arm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 21/63] selftests/bpf: Fix segmentation fault in test_progs
+Date:   Mon, 24 Aug 2020 12:34:21 -0400
+Message-Id: <20200824163504.605538-21-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200824163504.605538-1-sashal@kernel.org>
+References: <20200824163504.605538-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <251b824ef444ee46fb199b7e650f077fb7f682ea.camel@sipsolutions.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/24/20 1:54 AM, Johannes Berg wrote:
-> Arguably, pretty much all of the code here should go into libnetlink
-> then, since the kernel facility was expressly written in a way that
-> would allow dumping out arbitrary (not just generic netlink) policies,
-> just needs wiring up in the appropriate netlink family (or perhaps some
-> additional "policy netlink" family?)
+From: Jianlin Lv <Jianlin.Lv@arm.com>
 
-good point.
+[ Upstream commit 0390c429dbed4068bd2cd8dded937d9a5ec24cd2 ]
 
-> 
-> I can make that change, but I sort of assumed it'd be nicer to do that
-> when someone else actually picked it up.
+test_progs reports the segmentation fault as below:
 
-I think it would be better to put this into libnetlink from the start.
+  $ sudo ./test_progs -t mmap --verbose
+  test_mmap:PASS:skel_open_and_load 0 nsec
+  [...]
+  test_mmap:PASS:adv_mmap1 0 nsec
+  test_mmap:PASS:adv_mmap2 0 nsec
+  test_mmap:PASS:adv_mmap3 0 nsec
+  test_mmap:PASS:adv_mmap4 0 nsec
+  Segmentation fault
+
+This issue was triggered because mmap() and munmap() used inconsistent
+length parameters; mmap() creates a new mapping of 3 * page_size, but the
+length parameter set in the subsequent re-map and munmap() functions is
+4 * page_size; this leads to the destruction of the process space.
+
+To fix this issue, first create 4 pages of anonymous mapping, then do all
+the mmap() with MAP_FIXED.
+
+Another issue is that when unmap the second page fails, the length
+parameter to delete tmp1 mappings should be 4 * page_size.
+
+Signed-off-by: Jianlin Lv <Jianlin.Lv@arm.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+Link: https://lore.kernel.org/bpf/20200810153940.125508-1-Jianlin.Lv@arm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/bpf/prog_tests/mmap.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/mmap.c b/tools/testing/selftests/bpf/prog_tests/mmap.c
+index 43d0b5578f461..9c3c5c0f068fb 100644
+--- a/tools/testing/selftests/bpf/prog_tests/mmap.c
++++ b/tools/testing/selftests/bpf/prog_tests/mmap.c
+@@ -21,7 +21,7 @@ void test_mmap(void)
+ 	const long page_size = sysconf(_SC_PAGE_SIZE);
+ 	int err, duration = 0, i, data_map_fd, data_map_id, tmp_fd, rdmap_fd;
+ 	struct bpf_map *data_map, *bss_map;
+-	void *bss_mmaped = NULL, *map_mmaped = NULL, *tmp1, *tmp2;
++	void *bss_mmaped = NULL, *map_mmaped = NULL, *tmp0, *tmp1, *tmp2;
+ 	struct test_mmap__bss *bss_data;
+ 	struct bpf_map_info map_info;
+ 	__u32 map_info_sz = sizeof(map_info);
+@@ -183,16 +183,23 @@ void test_mmap(void)
+ 
+ 	/* check some more advanced mmap() manipulations */
+ 
++	tmp0 = mmap(NULL, 4 * page_size, PROT_READ, MAP_SHARED | MAP_ANONYMOUS,
++			  -1, 0);
++	if (CHECK(tmp0 == MAP_FAILED, "adv_mmap0", "errno %d\n", errno))
++		goto cleanup;
++
+ 	/* map all but last page: pages 1-3 mapped */
+-	tmp1 = mmap(NULL, 3 * page_size, PROT_READ, MAP_SHARED,
++	tmp1 = mmap(tmp0, 3 * page_size, PROT_READ, MAP_SHARED | MAP_FIXED,
+ 			  data_map_fd, 0);
+-	if (CHECK(tmp1 == MAP_FAILED, "adv_mmap1", "errno %d\n", errno))
++	if (CHECK(tmp0 != tmp1, "adv_mmap1", "tmp0: %p, tmp1: %p\n", tmp0, tmp1)) {
++		munmap(tmp0, 4 * page_size);
+ 		goto cleanup;
++	}
+ 
+ 	/* unmap second page: pages 1, 3 mapped */
+ 	err = munmap(tmp1 + page_size, page_size);
+ 	if (CHECK(err, "adv_mmap2", "errno %d\n", errno)) {
+-		munmap(tmp1, map_sz);
++		munmap(tmp1, 4 * page_size);
+ 		goto cleanup;
+ 	}
+ 
+@@ -201,7 +208,7 @@ void test_mmap(void)
+ 		    MAP_SHARED | MAP_FIXED, data_map_fd, 0);
+ 	if (CHECK(tmp2 == MAP_FAILED, "adv_mmap3", "errno %d\n", errno)) {
+ 		munmap(tmp1, page_size);
+-		munmap(tmp1 + 2*page_size, page_size);
++		munmap(tmp1 + 2*page_size, 2 * page_size);
+ 		goto cleanup;
+ 	}
+ 	CHECK(tmp1 + page_size != tmp2, "adv_mmap4",
+@@ -211,7 +218,7 @@ void test_mmap(void)
+ 	tmp2 = mmap(tmp1, 4 * page_size, PROT_READ, MAP_SHARED | MAP_FIXED,
+ 		    data_map_fd, 0);
+ 	if (CHECK(tmp2 == MAP_FAILED, "adv_mmap5", "errno %d\n", errno)) {
+-		munmap(tmp1, 3 * page_size); /* unmap page 1 */
++		munmap(tmp1, 4 * page_size); /* unmap page 1 */
+ 		goto cleanup;
+ 	}
+ 	CHECK(tmp1 != tmp2, "adv_mmap6", "tmp1: %p, tmp2: %p\n", tmp1, tmp2);
+-- 
+2.25.1
+
