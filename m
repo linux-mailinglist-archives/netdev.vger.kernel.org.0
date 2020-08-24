@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4848B250367
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 18:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 182E025032E
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 18:40:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728753AbgHXQnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 12:43:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47724 "EHLO mail.kernel.org"
+        id S1728657AbgHXQkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 12:40:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48040 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728120AbgHXQjl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 12:39:41 -0400
+        id S1726803AbgHXQju (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 12:39:50 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 73D1720838;
-        Mon, 24 Aug 2020 16:39:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BB14622C9F;
+        Mon, 24 Aug 2020 16:39:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598287181;
-        bh=0aYOyJLFu4Wv5vEpEX4FeNcSW03GWsGp9oUJZGmRMAU=;
+        s=default; t=1598287190;
+        bh=mdxoQ4ei3+fvVShYPWCRRxh5xRlB/KycAgoxaaOHUIA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DlcyiRd2JzxEyPY/xi8GW0MN841wNqqTZTLhjw4Xqsudtk+7qysTx2iaHPUwNjqcV
-         Wwzrsi99LjSg2dJxADSFIrzEYuLUMkEW1uIIh+PbAGlG8qYz8s2yDAXs1OWLQ2IbXc
-         tDmX5kH+gXUHaBsFZgzoBKWzrQDfsbcv7kODwGSs=
+        b=O3YJF8tVHVfKzeB5iECkcoWXA3Rjc3wz/Po72PlESWPdEDHSAuCepumSocTjaw1FP
+         eKqLXIUlXcOPmijzZ7ON+gDrEz7D3cobJEL3mL99roDE5a6slUIa7H2yV5KWeNKML4
+         QaIEk0SxyKNb+WGoCRs/gfjyrzMemN6qwAQcxGZY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sumera Priyadarsini <sylphrenadin@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 7/8] net: gianfar: Add of_node_put() before goto statement
-Date:   Mon, 24 Aug 2020 12:39:30 -0400
-Message-Id: <20200824163931.607291-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 5/6] net: gianfar: Add of_node_put() before goto statement
+Date:   Mon, 24 Aug 2020 12:39:42 -0400
+Message-Id: <20200824163943.607406-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200824163931.607291-1-sashal@kernel.org>
-References: <20200824163931.607291-1-sashal@kernel.org>
+In-Reply-To: <20200824163943.607406-1-sashal@kernel.org>
+References: <20200824163943.607406-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -66,10 +66,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index b665d27f8e299..95ab44aa0eeab 100644
+index 37cc1f838dd8b..96310e2ee5458 100644
 --- a/drivers/net/ethernet/freescale/gianfar.c
 +++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -844,8 +844,10 @@ static int gfar_of_init(struct platform_device *ofdev, struct net_device **pdev)
+@@ -845,8 +845,10 @@ static int gfar_of_init(struct platform_device *ofdev, struct net_device **pdev)
  				continue;
  
  			err = gfar_parse_group(child, priv, model);
