@@ -2,94 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C1B124F22F
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 07:45:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A4D124F245
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 07:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727929AbgHXFpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 01:45:10 -0400
-Received: from spam.zju.edu.cn ([61.164.42.155]:37716 "EHLO zju.edu.cn"
+        id S1727049AbgHXF6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 01:58:49 -0400
+Received: from mail.zju.edu.cn ([61.164.42.155]:39022 "EHLO zju.edu.cn"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725836AbgHXFpJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 24 Aug 2020 01:45:09 -0400
+        id S1725947AbgHXF6s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 24 Aug 2020 01:58:48 -0400
 Received: from localhost.localdomain (unknown [210.32.144.184])
-        by mail-app2 (Coremail) with SMTP id by_KCgCHL2DNU0NfqbMiAg--.23431S4;
-        Mon, 24 Aug 2020 13:44:48 +0800 (CST)
+        by mail-app4 (Coremail) with SMTP id cS_KCgA3r3oIV0NfjJlCAQ--.61993S4;
+        Mon, 24 Aug 2020 13:58:35 +0800 (CST)
 From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
 To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Yonglong Liu <liuyonglong@huawei.com>,
-        Kejian Yan <yankejian@huawei.com>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] net: hns: Fix memleak in hns_nic_dev_probe
-Date:   Mon, 24 Aug 2020 13:44:42 +0800
-Message-Id: <20200824054444.24142-1-dinghao.liu@zju.edu.cn>
+Subject: [PATCH] net: systemport: Fix memleak in bcm_sysport_probe
+Date:   Mon, 24 Aug 2020 13:58:31 +0800
+Message-Id: <20200824055831.26745-1-dinghao.liu@zju.edu.cn>
 X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgCHL2DNU0NfqbMiAg--.23431S4
-X-Coremail-Antispam: 1UD129KBjvJXoWxJr4DWFyxZF4xZr13Jw45trb_yoW8GryDpF
-        Z5Aay7WrW8Wr4fGw4Iqw4FkFn8A3W29a9rGFy8Aw4Sv3s0yF4UXr97WF17JF48tFWkGFWY
-        ga4jkrsxuasxK3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9v1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E
+X-CM-TRANSID: cS_KCgA3r3oIV0NfjJlCAQ--.61993S4
+X-Coremail-Antispam: 1UD129KBjvdXoW7JFWxAw1xWw48JF15Gw4kJFb_yoWDurcEk3
+        W5Z3s5Xr4UGr9Ivr4UCr43C3sFkFn09r4ruF1xtry3X3srJr1DCw4kZr13Xw17Way8CFyD
+        ArnIqa95A345KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbIkFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
+        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
+        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
         87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK
-        67AK6r4rMxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxV
-        CFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r10
-        6r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxV
-        WUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG
-        6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JV
-        W8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbDDG5UUUUU==
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgUCBlZdtPpD7wAFsv
+        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_
+        JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
+        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4rMxAIw28IcxkI7VAKI48J
+        MxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
+        02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_
+        GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
+        CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE
+        14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf
+        9x0JUGZXrUUUUU=
+X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgUCBlZdtPpD7wAIsi
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hns_nic_dev_probe allocates ndev, but not free it on
-two error handling paths, which may lead to memleak.
+When devm_kcalloc() fails, dev should be freed just
+like what we've done in the subsequent error paths.
 
-Fixes: 63434888aaf1b ("net: hns: net: hns: enet adds support of acpi")
+Fixes: 7b78be48a8eb6 ("net: systemport: Dynamically allocate number of TX rings")
 Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
 ---
- drivers/net/ethernet/hisilicon/hns/hns_enet.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bcmsysport.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-index 23f278e46975..22522f8a5299 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-@@ -2282,8 +2282,10 @@ static int hns_nic_dev_probe(struct platform_device *pdev)
- 			priv->enet_ver = AE_VERSION_1;
- 		else if (acpi_dev_found(hns_enet_acpi_match[1].id))
- 			priv->enet_ver = AE_VERSION_2;
--		else
--			return -ENXIO;
-+		else {
-+			ret = -ENXIO;
-+			goto out_read_prop_fail;
-+		}
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
+index dfed9ade6950..0762d5d1a810 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.c
++++ b/drivers/net/ethernet/broadcom/bcmsysport.c
+@@ -2491,8 +2491,10 @@ static int bcm_sysport_probe(struct platform_device *pdev)
+ 	priv->tx_rings = devm_kcalloc(&pdev->dev, txq,
+ 				      sizeof(struct bcm_sysport_tx_ring),
+ 				      GFP_KERNEL);
+-	if (!priv->tx_rings)
+-		return -ENOMEM;
++	if (!priv->tx_rings) {
++		ret = -ENOMEM;
++		goto err_free_netdev;
++	}
  
- 		/* try to find port-idx-in-ae first */
- 		ret = acpi_node_get_property_reference(dev->fwnode,
-@@ -2299,7 +2301,8 @@ static int hns_nic_dev_probe(struct platform_device *pdev)
- 		priv->fwnode = args.fwnode;
- 	} else {
- 		dev_err(dev, "cannot read cfg data from OF or acpi\n");
--		return -ENXIO;
-+		ret = -ENXIO;
-+		goto out_read_prop_fail;
- 	}
- 
- 	ret = device_property_read_u32(dev, "port-idx-in-ae", &port_id);
+ 	priv->is_lite = params->is_lite;
+ 	priv->num_rx_desc_words = params->num_rx_desc_words;
 -- 
 2.17.1
 
