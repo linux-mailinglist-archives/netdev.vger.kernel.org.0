@@ -2,124 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE332503E6
-	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 18:53:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C97B42503FD
+	for <lists+netdev@lfdr.de>; Mon, 24 Aug 2020 18:55:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728822AbgHXQxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 12:53:32 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:55094 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728734AbgHXQxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 12:53:20 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07OGrF1G102097;
-        Mon, 24 Aug 2020 11:53:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1598287995;
-        bh=Js6kMsNm4ATKiNQnBPStvxyMXL9/jE2nxHz5i/lhfp0=;
-        h=From:To:Subject:Date;
-        b=tcelBRX2222nAtQlt1C6xKNRRUlIXHJLBOcPHcFM+fVkMl9ah4/y9p8n50vFQXdOn
-         hLdaHYJo3bIpvHJzca/tisU2hzTeVuq6IjrJXx84xqc5M15Thvqb9r9tthSSf+zKTa
-         XZ6RKsNL6deiDJo0tosY0aPWMjpPurvCn5ExCnXI=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 07OGrFwH026815
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 24 Aug 2020 11:53:15 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 24
- Aug 2020 11:53:14 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 24 Aug 2020 11:53:14 -0500
-Received: from uda0868495.ent.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07OGrEVW001473;
-        Mon, 24 Aug 2020 11:53:14 -0500
-From:   Murali Karicheri <m-karicheri2@ti.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>,
-        <grygorii.strashko@ti.com>, <nsekhar@ti.com>,
-        <linux-omap@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [net v2 PATCH] net: ethernet: ti: cpsw_new: fix error handling in cpsw_ndo_vlan_rx_kill_vid()
-Date:   Mon, 24 Aug 2020 12:53:14 -0400
-Message-ID: <20200824165314.21148-1-m-karicheri2@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728923AbgHXQy7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 12:54:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728603AbgHXQyx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 12:54:53 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C797C061573
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 09:54:52 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id b9so5437191oiy.3
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 09:54:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=0E7pGvMNR/icrl555qIP4CCGFnyDIWwW1gBbuMxbE20=;
+        b=LNlLKbEQ+w+CzdVi7k9UxUi+ezYJdMikFhsbqIquGcp+UUpUwN/enklVPZAtrttQkN
+         C3sU5E0otqzyO//3k/Byb2N12yJG6yyXwpqnwJFGD8Xdr1qEtL1gKNHengH6MoM69tDH
+         6D4rpw3OR4E5IAyFOavgAwGsyH8+Sf5wQt1dUKkvrE4H2uDSYjZ8Kda+lHgvOlVhI00k
+         QBe0v1hc+7Z0OwmuCWn1dfzybGmoUo2ZSA9Mzis2/EPpdhdy4KWuChxMB/6LgmcKqw3c
+         Wl1d3x/H9dqe0X+pjYga4zpWqV/AM+kphJSkE1Y+fmakB/Oqh5UWopcIMeVUVmhoocym
+         uknQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=0E7pGvMNR/icrl555qIP4CCGFnyDIWwW1gBbuMxbE20=;
+        b=dYO+ZLSE2+S3HfJ6/JoZKfufPlO9ttBSJ2MyuHvTc8I+ow3xHO4+jmniu2BiUiORWB
+         7E80kJjlEz+C6EXqWe53J2CwFoIRyBxGgQehPqjRxawMOhyKevcWIUTAznh3NYLjMspw
+         YRImjhEAa7J6o8dmHK31TBBg8KiP7phaQi1uRKaQL4Vx3o2b/cwxVqjvdwAOAjr7JR1V
+         ZsFd2fHemwUT3QMwISfN35I6kSZOs+hWGt+oJpve6qiC33XLCEROFpZ2oJe/MKg8rPpW
+         CxxC4ZFDcZ3t9oQ9gdLLJ2UNsfTNyXVaUGvlVnjD04RvXIvCMMA2xjyVDJYJXbyJ1CFE
+         yJ2g==
+X-Gm-Message-State: AOAM533ZoaXplZ7fDL6U39sCsghnfW3JH6OwHm/xvLOb7nm7JzK00pRL
+        d3R0SM+WHDE3Yg3mlqAg/eE=
+X-Google-Smtp-Source: ABdhPJwAt5KP5bNqpfLxSNA+5W0Cs02terJ4iTq72jwUebLaKvgMnwrXumggHAHSIiWscowL/e2RrA==
+X-Received: by 2002:a54:478f:: with SMTP id o15mr152651oic.77.1598288091869;
+        Mon, 24 Aug 2020 09:54:51 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:12c:2110:d2ae:4b39])
+        by smtp.googlemail.com with ESMTPSA id w11sm2316408oog.33.2020.08.24.09.54.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Aug 2020 09:54:51 -0700 (PDT)
+Subject: Re: [PATCH 2/2] genl: ctrl: support dumping netlink policy
+To:     Johannes Berg <johannes@sipsolutions.net>, netdev@vger.kernel.org
+Cc:     Stephen Hemminger <stephen@networkplumber.org>
+References: <20200819102903.21740-1-johannes@sipsolutions.net>
+ <20200819102903.21740-2-johannes@sipsolutions.net>
+ <3e300840-35ea-5f05-e9c1-33a66646042e@gmail.com>
+ <251b824ef444ee46fb199b7e650f077fb7f682ea.camel@sipsolutions.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9d6372e5-66cd-6313-5302-5306a4cc8686@gmail.com>
+Date:   Mon, 24 Aug 2020 10:54:50 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <251b824ef444ee46fb199b7e650f077fb7f682ea.camel@sipsolutions.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a bunch of issues in cpsw_ndo_vlan_rx_kill_vid()
+On 8/24/20 1:54 AM, Johannes Berg wrote:
+> Arguably, pretty much all of the code here should go into libnetlink
+> then, since the kernel facility was expressly written in a way that
+> would allow dumping out arbitrary (not just generic netlink) policies,
+> just needs wiring up in the appropriate netlink family (or perhaps some
+> additional "policy netlink" family?)
 
- - pm_runtime_get_sync() returns non zero value. This results in
-   non zero value return to caller which will be interpreted as error.
-   So overwrite ret with zero.
- - Currently when VLAN interface is deleted, all of the VLAN mc addresses
-   are removed from ALE table, however the return values from ale function
-   calls are not checked. These functions can return error code -ENOENT.
-   But that shouldn't happen in a normal case. So add error print to
-   catch the situations so that these can be investigated and addressed.
-   return zero in these cases as these are not real error case, but only
-   serve to catch ALE table update related issues and help address the
-   same in the driver.
+good point.
 
-Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
-Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
----
- v2 - updated based on comments from Grygorii.
- drivers/net/ethernet/ti/cpsw_new.c | 28 ++++++++++++++++++++++------
- 1 file changed, 22 insertions(+), 6 deletions(-)
+> 
+> I can make that change, but I sort of assumed it'd be nicer to do that
+> when someone else actually picked it up.
 
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 8d0a2bc7128d..61fa5063d751 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -1032,19 +1032,35 @@ static int cpsw_ndo_vlan_rx_kill_vid(struct net_device *ndev,
- 		return ret;
- 	}
- 
-+	/* reset the return code as pm_runtime_get_sync() can return
-+	 * non zero values as well.
-+	 */
-+	ret = 0;
- 	for (i = 0; i < cpsw->data.slaves; i++) {
- 		if (cpsw->slaves[i].ndev &&
--		    vid == cpsw->slaves[i].port_vlan)
-+		    vid == cpsw->slaves[i].port_vlan) {
-+			ret = -EINVAL;
- 			goto err;
-+		}
- 	}
- 
- 	dev_dbg(priv->dev, "removing vlanid %d from vlan filter\n", vid);
--	cpsw_ale_del_vlan(cpsw->ale, vid, 0);
--	cpsw_ale_del_ucast(cpsw->ale, priv->mac_addr,
--			   HOST_PORT_NUM, ALE_VLAN, vid);
--	cpsw_ale_del_mcast(cpsw->ale, priv->ndev->broadcast,
--			   0, ALE_VLAN, vid);
-+	ret = cpsw_ale_del_vlan(cpsw->ale, vid, 0);
-+	if (ret)
-+		dev_err(priv->dev, "%s: failed %d: ret %d\n",
-+			__func__, __LINE__, ret);
-+	ret = cpsw_ale_del_ucast(cpsw->ale, priv->mac_addr,
-+				 HOST_PORT_NUM, ALE_VLAN, vid);
-+	if (ret)
-+		dev_err(priv->dev, "%s: failed %d: ret %d\n",
-+			__func__, __LINE__, ret);
-+	ret = cpsw_ale_del_mcast(cpsw->ale, priv->ndev->broadcast,
-+				 0, ALE_VLAN, vid);
-+	if (ret)
-+		dev_err(priv->dev, "%s: failed %d: ret %d\n",
-+			__func__, __LINE__, ret);
- 	cpsw_ale_flush_multicast(cpsw->ale, ALE_PORT_HOST, vid);
-+	ret = 0;
- err:
- 	pm_runtime_put(cpsw->dev);
- 	return ret;
--- 
-2.17.1
-
+I think it would be better to put this into libnetlink from the start.
