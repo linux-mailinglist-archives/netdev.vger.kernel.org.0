@@ -2,69 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ABEF250C82
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 01:49:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F35C250C8A
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 01:51:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbgHXXtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 19:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgHXXtK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 19:49:10 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF44C061574;
-        Mon, 24 Aug 2020 16:49:10 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id p11so2673943pfn.11;
-        Mon, 24 Aug 2020 16:49:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MRFtcPoCikAVvKJYCXbUBDj9joKfZP9gvPiffFziVs4=;
-        b=UtFLoRdmhkURy9IIpmgJFC0bgeJ1qVxQ0QHeMe2UlDPEPmZ6paDRATFFCezcM2Qxj2
-         ZF/iQHVjRDhyDlHIJ8DtJ4948A3fOqdsASI0586Ex3zP9rBxxE5A/1HtEt6LhJ8Awon3
-         R0rDvRFkpO4NK784e+/Yr5aR9BBbET8aF1P6dfUSC2MoYo8+PrYloZRK4n2v1R44P5pX
-         N21ZOA7CsN6CSqJELOakhDVX57F53/HLExqfk66OssaZgKc6tevxnTmUdEdIGiQIKu8t
-         9i/cHb8iapf7NtaC0cbFyN1XO/u6KV3ZRH08ebogDH6mcPSGxhze/2adaSa2eQP4zArZ
-         EtEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MRFtcPoCikAVvKJYCXbUBDj9joKfZP9gvPiffFziVs4=;
-        b=jdlcuHnxBOBZzxCtYUsH7iDZwPItLTJ8l7m8/6u0iASfXZARKzRb2Mjp9iiHcHYH6Q
-         WRubVpFSJCr2Ro5RzFkkIsaloawaj5RQi/X57mW+hnzwC1FTd0ZDhgZdaVZCwYELOyWP
-         XR2+sCNe5op1G9Y/GXKkEaZfPDpV5lFsd7uarvaPcxlwiMAzhvanDklL9jxSb28LVCdT
-         3949yYAq4ka7e0K580oeTvZhd/yjmK+OSFJUqGDIXJMNVq8ij0Cv64XkVMBbJWxdV9vs
-         MeTM610VmpEAyRva1kbFkbKjlbWFiYikShpw/0oegXWMrncNsQixt2WQ6cLLztUUgdpW
-         YUJQ==
-X-Gm-Message-State: AOAM531piscxEW5KkUSltw4bIMkNgE2QxcMfx9WPK5ikfOtbhM2CsQWa
-        SnkWvvHpPtSNHFjcP4o8e8vw7eNBoQvhR93lx6M=
-X-Google-Smtp-Source: ABdhPJwDvbqoHpdGgbg6R3mtccIx7uaxGYn/pgnOamBZn5OBTmjxGEOYwWsq4yvvrwrRdZMup3IT4zcbH58wvaa8vms=
-X-Received: by 2002:a17:902:8543:: with SMTP id d3mr5418093plo.244.1598312949912;
- Mon, 24 Aug 2020 16:49:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200821212659.14551-1-xie.he.0141@gmail.com> <20200824.160949.2284526241463900498.davem@davemloft.net>
-In-Reply-To: <20200824.160949.2284526241463900498.davem@davemloft.net>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 24 Aug 2020 16:48:58 -0700
-Message-ID: <CAJht_ENk-8ziaJ7FFPr9DVRinDOxaXaH2mJHoYcDw3CCHgx-Zg@mail.gmail.com>
-Subject: Re: [PATCH net v2] drivers/net/wan/lapbether: Added needed_tailroom
-To:     David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Martin Schiller <ms@dev.tdt.de>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726903AbgHXXvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 19:51:05 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:51396 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726027AbgHXXvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 19:51:05 -0400
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07ONY2Hg089729;
+        Mon, 24 Aug 2020 19:50:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=E+1YZsFqkMzfmxJkIUfWoEduklIxgHUhw7JqM1ehKMg=;
+ b=FL/VKWo3A5abYEJsnOm3qnPIbMXdL7FCLcHP6ejX2hmk/xgkKZEoo/PDY4RaRDyJDMfs
+ GcnX3V2QnKSxTmGtecSrjsFm95Waq6iJVe8T6tTvkg+cJwQ9aQ3LhNgkdvlyCLVVKnRr
+ 9y1XA1v2OaQ9NmImsFJ5zDxWrEWtX/DCar2eeX1ZvXDrDjXQL0VCUAsPsYEv4N+GmcVa
+ W/t3f0g4AuWMaYpaYN5DzNRVJTSjZDs8iXApgRtISwmrESk/I4xGHydrI3c+egOWUZU/
+ BB38jbZO6n+P4I2ExBbr/BKqxNn39CLLBavmGwDL6zcGvr3unJtJQesaAp0GPt/Tkm19 YA== 
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 334q5urfwt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 24 Aug 2020 19:50:52 -0400
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07ONmTQZ019584;
+        Mon, 24 Aug 2020 23:50:51 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+        by ppma02wdc.us.ibm.com with ESMTP id 332ujpw8ds-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 24 Aug 2020 23:50:51 +0000
+Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
+        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07ONopAi51511646
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 24 Aug 2020 23:50:51 GMT
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EC974B2064;
+        Mon, 24 Aug 2020 23:50:50 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8F116B205F;
+        Mon, 24 Aug 2020 23:50:50 +0000 (GMT)
+Received: from ltcalpine2-lp16.aus.stglabs.ibm.com (unknown [9.40.195.199])
+        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 24 Aug 2020 23:50:50 +0000 (GMT)
+From:   Dany Madden <drt@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Mingming Cao <mmc@linux.vnet.ibm.com>,
+        Dany Madden <drt@linux.ibm.com>
+Subject: [PATCH net] ibmvnic fix NULL tx_pools and rx_tools issue at do_reset
+Date:   Mon, 24 Aug 2020 19:49:23 -0400
+Message-Id: <20200824234922.805858-1-drt@linux.ibm.com>
+X-Mailer: git-send-email 2.18.2
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-24_12:2020-08-24,2020-08-24 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ spamscore=0 suspectscore=1 phishscore=0 mlxlogscore=999 clxscore=1011
+ lowpriorityscore=0 bulkscore=0 impostorscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008240185
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 24, 2020 at 4:09 PM David Miller <davem@davemloft.net> wrote:
->
-> Applied, thank you.
+From: Mingming Cao <mmc@linux.vnet.ibm.com>
 
-Thank you!
+At the time of do_reset, ibmvnic tries to re-initalize the tx_pools
+and rx_pools to avoid re-allocating the long term buffer. However
+there is a window inside do_reset that the tx_pools and
+rx_pools were freed before re-initialized making it possible to deference
+null pointers.
+
+This patch fixes this issue by checking that the tx_pool
+and rx_pool are not NULL after ibmvnic_login. If so, re-allocating
+the pools. This will avoid getting into calling reset_tx/rx_pools with
+NULL adapter tx_pools/rx_pools pointer. Also add null pointer check in
+reset_tx_pools and reset_rx_pools to safe handle NULL pointer case.
+
+Signed-off-by: Mingming Cao <mmc@linux.vnet.ibm.com>
+Signed-off-by: Dany Madden <drt@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 5afb3c9c52d2..5ff48e55308b 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -479,6 +479,9 @@ static int reset_rx_pools(struct ibmvnic_adapter *adapter)
+ 	int i, j, rc;
+ 	u64 *size_array;
+ 
++	if (!adapter->tx_pool)
++		return -1;
++
+ 	size_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
+ 		be32_to_cpu(adapter->login_rsp_buf->off_rxadd_buff_size));
+ 
+@@ -649,6 +652,9 @@ static int reset_tx_pools(struct ibmvnic_adapter *adapter)
+ 	int tx_scrqs;
+ 	int i, rc;
+ 
++	if (!adapter->tx_pool)
++		return -1;
++
+ 	tx_scrqs = be32_to_cpu(adapter->login_rsp_buf->num_txsubm_subcrqs);
+ 	for (i = 0; i < tx_scrqs; i++) {
+ 		rc = reset_one_tx_pool(adapter, &adapter->tso_pool[i]);
+@@ -2011,7 +2017,10 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		    adapter->req_rx_add_entries_per_subcrq !=
+ 		    old_num_rx_slots ||
+ 		    adapter->req_tx_entries_per_subcrq !=
+-		    old_num_tx_slots) {
++		    old_num_tx_slots ||
++			!adapter->rx_pool ||
++			!adapter->tso_pool ||
++			!adapter->tx_pool) {
+ 			release_rx_pools(adapter);
+ 			release_tx_pools(adapter);
+ 			release_napi(adapter);
+@@ -2024,10 +2033,14 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+ 		} else {
+ 			rc = reset_tx_pools(adapter);
+ 			if (rc)
++				netdev_dbg(adapter->netdev, "reset tx pools failed (%d)\n",
++						rc);
+ 				goto out;
+ 
+ 			rc = reset_rx_pools(adapter);
+ 			if (rc)
++				netdev_dbg(adapter->netdev, "reset rx pools failed (%d)\n",
++						rc);
+ 				goto out;
+ 		}
+ 		ibmvnic_disable_irqs(adapter);
+-- 
+2.18.2
+
