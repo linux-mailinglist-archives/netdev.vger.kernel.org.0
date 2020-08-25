@@ -2,111 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 939ED2523C7
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 00:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D41402523EC
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 00:58:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726706AbgHYWrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 18:47:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54380 "EHLO
+        id S1726645AbgHYW6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 18:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726466AbgHYWri (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 18:47:38 -0400
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B57A8C061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 15:47:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=1oYN+RG/fj4y1sMv5AhatKH6mvUnJq87n/PGVTOGtXo=; b=JWAVACNc1EBijZpeCba+mLAiZR
-        Ueyt8ovgAGADmGkYMgLy7cHmnTYEltmwsFyd2KzW2HNlKCi/1UV+u41H0uZ3dcQoW8RVE/TVlBT6D
-        8RXruk1+91aR+WkA/feqC4alUbZsS+zM5Y6wTGVBzoMUU5Nik2vJaNaPkI6QKaIaSsXl4Ibbu7kNp
-        sa6ZhpkKwICcxArdyWAdfUhgjyzfmlQ0P8d0//suKx6OyR1f47t66CSyiaSC8zQIMnpTD6L3Jxcjy
-        qhAPT8qMJ7+KCHeQRVdYUVbPlc9BVLvSLFfAyJXmKCrdEPZLey2YI8DEssZW/2nyNNwbnie+yOBvc
-        E6kKNyCw==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kAhj0-0006Xd-84; Tue, 25 Aug 2020 22:47:30 +0000
-Subject: Re: [PATCHv2 next] net: add option to not create fall-back tunnels in
- root-ns as well
-To:     Mahesh Bandewar <maheshb@google.com>,
-        Netdev <netdev@vger.kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        Maciej Zenczykowski <maze@google.com>,
-        Jian Yang <jianyang@google.com>
-References: <20200825224208.1268641-1-maheshb@google.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <9fce7d7e-aa33-a451-ab4a-a297b1317310@infradead.org>
-Date:   Tue, 25 Aug 2020 15:47:25 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        with ESMTP id S1726593AbgHYW6q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 18:58:46 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5532C061755;
+        Tue, 25 Aug 2020 15:58:45 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id h19so119130ljg.13;
+        Tue, 25 Aug 2020 15:58:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l2cjR9MV5pvSVMmhgeG5m9fnexeorxlv3qcsSxNAMZk=;
+        b=V1MBc6qdGt7oY3UHpUOGg0cphBBi5DbG49KVxb/GOzAHDlBWtk/o/Z3sE/lqZ34B90
+         a5wnoMLYtA162jVdYZpxt2VuN3uREzfBEA85OC5HTHsOibxEc+JdY5BPi5RQrQQ9SVCs
+         rgvz9O+pPxEtN6irGEDbehZZdxD2UyrAexsoipw5UxG7+YTi+9oDP6tZHlTICuN82hP0
+         Z4X4f7MdN96S+o1CLndICowGZNhNfnp4XBIKRHOlCMaNxrZYOb0sfjPe3Wfn2J1xDENt
+         FMsBIygvbD6cLcaI6iAnGn5ddNDphkfPMrMyPYJmQ+/5iy5XuIGXzEHIetVdQ2bKgrIq
+         Dkig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l2cjR9MV5pvSVMmhgeG5m9fnexeorxlv3qcsSxNAMZk=;
+        b=FP+Bbqu9ukvG03Nd62ynplKN5/QRmc3urkNfF0eCCpCF28YBVdPWxD2sPT8e/1alEm
+         ZiBye5H7GduoAFI06hNiBMjiiJTxMx4jBIHIhqhg6RfPBup5m2Cjf6iI4f/Ife963hVi
+         FZj3JVkkPRO1ogCwYg/Ldlc/qM66KGUIMr7FJamQrU+Uq72GVuVX5UpOaybm4r4P27Mn
+         c2q8bHyDeZzMl+R6by1DcOs+zdl56LIMI8TnuxB1OF+NQ12WGgnFKR7pXQqrurPonRWC
+         +xNycI9BLa+6EU4vOKFMEutI7eWIvUBVhYzBewKbhcKKpBE7oiUADURFUWlXfn/1uudH
+         3EzQ==
+X-Gm-Message-State: AOAM533+beGLO4XmdBE/X9ZROj0WQMugAarJb8xtVMjKOT6Zl/kcCyFk
+        ojBFVIPTB99awlAjfTvSHWTKe8RG+aKVYyJmPH0=
+X-Google-Smtp-Source: ABdhPJwsTb+S1GD0wz7dH7SfF7esDGRQMAbokMXNVHrncRSV1HbkEIrkBs21HtypJ1x1F1pvXTBX+tVO8y1OlARF1Uc=
+X-Received: by 2002:a2e:8e28:: with SMTP id r8mr5410177ljk.290.1598396324173;
+ Tue, 25 Aug 2020 15:58:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200825224208.1268641-1-maheshb@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200825192124.710397-1-jolsa@kernel.org> <20200825192124.710397-11-jolsa@kernel.org>
+In-Reply-To: <20200825192124.710397-11-jolsa@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 25 Aug 2020 15:58:32 -0700
+Message-ID: <CAADnVQKtE9p22J2stAc6WuGOxkoPdzcAf5DstK6J76-x1thjZA@mail.gmail.com>
+Subject: Re: [PATCH v12 bpf-next 10/14] bpf: Add d_path helper
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/25/20 3:42 PM, Mahesh Bandewar wrote:
-> The sysctl that was added  earlier by commit 79134e6ce2c ("net: do
-> not create fallback tunnels for non-default namespaces") to create
-> fall-back only in root-ns. This patch enhances that behavior to provide
-> option not to create fallback tunnels in root-ns as well. Since modules
-> that create fallback tunnels could be built-in and setting the sysctl
-> value after booting is pointless, so added a kernel cmdline options to
-> change this default. The default setting is preseved for backward
-> compatibility. The kernel command line option of fb_tunnels=initns will
-> set the sysctl value to 1 and will create fallback tunnels only in initns
-> while kernel cmdline fb_tunnels=none will set the sysctl value to 2 and
-> fallback tunnels are skipped in every netns.
-> 
-> Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Maciej Zenczykowski <maze@google.com>
-> Cc: Jian Yang <jianyang@google.com>
-> ---
-> v1->v2
->   Removed the Kconfig option which would force rebuild and replaced with
->   kcmd-line option
-> 
->  .../admin-guide/kernel-parameters.txt         |  5 +++++
->  Documentation/admin-guide/sysctl/net.rst      | 20 +++++++++++++------
->  include/linux/netdevice.h                     |  7 ++++++-
->  net/core/sysctl_net_core.c                    | 17 ++++++++++++++--
->  4 files changed, 40 insertions(+), 9 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index a1068742a6df..09a51598c792 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -801,6 +801,11 @@
->  
->  	debug_objects	[KNL] Enable object debugging
->  
-> +	fb_tunnels=	[NET]
-> +			Format: { initns | none }
-> +			See Documentation/admin-guide/sysctl/net.rst for
-> +			fb_tunnels_only_for_init_ns
-> +
+On Tue, Aug 25, 2020 at 12:23 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3655,7 +3668,8 @@ union bpf_attr {
+>         FN(get_task_stack),             \
+>         FN(load_hdr_opt),               \
+>         FN(store_hdr_opt),              \
+> -       FN(reserve_hdr_opt),
+> +       FN(reserve_hdr_opt),            \
+> +       FN(d_path),
+>         /* */
 
-Not at this location in this file.
-Entries in this file are meant to be in alphabetical order (mostly).
-
-So leave debug_objects and no_debug_objects together, and insert fb_tunnels
-between fail_make_request= and floppy=.
-
-Thanks.
-
->  	no_debug_objects
->  			[KNL] Disable object debugging
->  
-
--- 
-~Randy
-
+This is not correct. Please keep "\" at the end.
+I've missed it while applying Martin's patch.
+I've manually rebased this set due to conflict with KP's changes,
+fixed the above issue and applied.
