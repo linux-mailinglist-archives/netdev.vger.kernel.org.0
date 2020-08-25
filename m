@@ -2,97 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62A19251A48
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 15:56:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48BDF251A51
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 15:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726113AbgHYN40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 09:56:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49302 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726045AbgHYN4V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 09:56:21 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kAZQt-00BmIB-U5; Tue, 25 Aug 2020 15:56:15 +0200
-Date:   Tue, 25 Aug 2020 15:56:15 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH v3 2/8] net: dsa: Add DSA driver for Hirschmann Hellcreek
- switches
-Message-ID: <20200825135615.GR2588906@lunn.ch>
-References: <20200820081118.10105-1-kurt@linutronix.de>
- <20200820081118.10105-3-kurt@linutronix.de>
- <20200824224450.GK2403519@lunn.ch>
- <87eenv14bt.fsf@kurt>
+        id S1726497AbgHYN7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 09:59:25 -0400
+Received: from mail-eopbgr80071.outbound.protection.outlook.com ([40.107.8.71]:60483
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726347AbgHYN7D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 09:59:03 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e14pgT/mOLe4QtpIo+BCd0jawFZtTgRR1trIROO6Rx19wbm+FtzQC2FloRY0uLjwaYNVtk45sCW/SsEwTqXeK0P3HDCxE7PGXY4gflNp4z9wuo8f1KaYrMyheeSE5Ge9220MpO+iWTWp6O7MJzBLe9p4iR1pepClNQdZgS+oG7KbN8LL0yuU0aekmeyfJ7bgIBbJl7cVS5nba9WiKfZBIB8SGb7fQIQ1EeSEBWYgU74mGW9gJEHOJInWmYKgJ5jRN7Cq7ZOEE5ltddYrDTrt3ZNetQ3kQTwRA5MVaV5l+4zgZwX8ao72MgIneG3NDcIfsYIyVFqasTj1/xsEyRZpOg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/A+RHMcNA0PPkW53ALF9ayxGKd28LSxAGDEssGlk0bg=;
+ b=ZpdPFCbWIzzqC5dRf1oNVwPn904xO3fortW2UnITlei16s8ams3Ct5pvuWE0fZ09AOihhs8bmSRHrOHg2pePnU+Im8ME2iIh6c1zE84eaTYEmfQD7ZGtkxQARjcXIgoNnITaz7Gry63b3blbHI1H5grD+NytTU/QoiHkERxta9jCByKTpZTIULFe/gmVEB5C1+zKxNNIh1MFM6oq1MjslN7wXhi29TfV5gP2WEZ4+khiibnCDAAuMGNVpTdEMuzgAmnL78awZ7kLSlgDibGFqPDTySHPj5xQMuOXpFdazifMUpe6DdPBVHdDR01NkI2cg8bq/V10bx0ZR4eBA/29KA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/A+RHMcNA0PPkW53ALF9ayxGKd28LSxAGDEssGlk0bg=;
+ b=GjHcSzYQjcHI8CKfZpcj5DjdxyBTj3PqLA8IdW97xrgRho2u5jiv7PTot4jgXlSQaG6JpMThEYtNKMMQQ80518chH6P6DdS9UT89vT4cQpSeDWf/T4mdu3A0MpIQ59PtvKrAAc8sLAr2FLtne9cQkUodSPS1FKLlKFdUNbIiEFY=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=mellanox.com;
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (2603:10a6:208:c0::32)
+ by AM0PR0502MB3649.eurprd05.prod.outlook.com (2603:10a6:208:22::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Tue, 25 Aug
+ 2020 13:58:57 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::5038:5c70:6fef:90a6]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::5038:5c70:6fef:90a6%5]) with mapi id 15.20.3305.026; Tue, 25 Aug 2020
+ 13:58:57 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     roid@mellanox.com, saeedm@mellanox.com,
+        Parav Pandit <parav@mellanox.com>
+Subject: [PATCH net-next 0/3] devlink show controller info
+Date:   Tue, 25 Aug 2020 16:58:36 +0300
+Message-Id: <20200825135839.106796-1-parav@mellanox.com>
+X-Mailer: git-send-email 2.26.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR10CA0048.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::28) To AM0PR05MB4866.eurprd05.prod.outlook.com
+ (2603:10a6:208:c0::32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87eenv14bt.fsf@kurt>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from c-235-9-1-005.mtl.labs.mlnx (94.188.199.18) by AM0PR10CA0048.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25 via Frontend Transport; Tue, 25 Aug 2020 13:58:56 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [94.188.199.18]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 9592cd21-60e0-4821-37e2-08d848ff0250
+X-MS-TrafficTypeDiagnostic: AM0PR0502MB3649:
+X-LD-Processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr,ExtFwd
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR0502MB3649814700463F1440F40FB5D1570@AM0PR0502MB3649.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Isg6IcyY8TL3UBEQvf6S5doFp196RcBOLY//mibDdaH2hNw9G17BMnyJGlGwoYbx0IZcipQycaNqUrC7cDjMXB+OhyuC85bqMEqhvHMinD0Yc1rCsiEQytvVItcmJN6F5X1KTYntSC95iz+/C3hZ+NzMkfS6FQJytbU2Bbm1zBaMMRRUKP6golZJbJpYbnHYSvwDscG1CsYoSuBr58BbUViy3b/udyUbo7fUHpYZ3KQVZKoWCuEu5ueS+AHzmjqf9T/atj3dO8LZ1sn2G3/Mrocgplkr8SUr24Cqm2wLnDLW581POFpdLBvwAmguUAqA1msVM/wHCZO0ca6KEB9JXg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4866.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(366004)(376002)(136003)(396003)(6506007)(6666004)(956004)(86362001)(36756003)(8936002)(83380400001)(5660300002)(316002)(8676002)(4326008)(52116002)(6486002)(6512007)(1076003)(478600001)(107886003)(2906002)(2616005)(66946007)(26005)(186003)(66476007)(66556008)(16526019);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 2DYpH+buGiLqpcC2KDx+c1pUGIfgEOcwYpgqzOlAkzG6G9Iwkfk/38TOwTlGj0aK7cmfXbYnIq07wIMsGxfET2X7MW1vmGf2ZW6rjEdsfw0/DHy8mbeu7Pg6A6aoG3jivxhBB7MAknfHl0ewITqFQhKPEX2wmQLX9A+DFBLnUI4YUWuX6y2fQtThOcEtiykmOXRqtITvLmqcb1J6c+SE9WraPWnYlLjwuDPUXanH8WNA/O+rdOb4UW1wk8qrS3CPnNFojKfL/idmZcFBClomDcvVjR1UXoYmx580ggwElazHPexDs0WiwExruyGXwQ6x4NBm9afCG6jMpwm+ZwPxelqjrwLh4r1fKuI4n8NUdxcRJessgKtayflGSWKxGNZKSXLCtlwtnuFvae0HVb9ZF9ocWPPPbUJWl9uAGVQlN1Unmi1gqSctRxlc5EfdQ5g37+XxrUH8tVxqDLB+wrUplJrzMWlOOX8N6fVBfNe7bNkE816roGxuIk5eL8GR7PzhH15Ie+FMDcDvu912NiBO/8VQjsTMfcAhUeOvbUolVxxIUtL3RY6HdFQ1XZJashKdCz1iKwNp9xSmVoa6NDhg0AaJ/IOaz7nVxT5VVJTv8ZZBnyOCp6MQH4tCe49h+eHGLlxpzUDE3kbJRIrmrV0+KA==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9592cd21-60e0-4821-37e2-08d848ff0250
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4866.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2020 13:58:56.7945
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +yvv1nboLW8dsbhEwh80VqqbPgTXoOMeqgZcaCEFRqGTqmYJ6dFelBQxaSCgz3U/fEAk5wkmPJGgW8dTwIOBaA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB3649
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> +static int hellcreek_detect(struct hellcreek *hellcreek)
-> >> +{
-> >> +	u16 id, rel_low, rel_high, date_low, date_high, tgd_ver;
-> >> +	u8 tgd_maj, tgd_min;
-> >> +	u32 rel, date;
-> >> +
-> >> +	id	  = hellcreek_read(hellcreek, HR_MODID_C);
-> >> +	rel_low	  = hellcreek_read(hellcreek, HR_REL_L_C);
-> >> +	rel_high  = hellcreek_read(hellcreek, HR_REL_H_C);
-> >> +	date_low  = hellcreek_read(hellcreek, HR_BLD_L_C);
-> >> +	date_high = hellcreek_read(hellcreek, HR_BLD_H_C);
-> >> +	tgd_ver   = hellcreek_read(hellcreek, TR_TGDVER);
-> >> +
-> >> +	if (id != HELLCREEK_MODULE_ID)
-> >> +		return -ENODEV;
-> >
-> > Are there other Hellcreek devices? I'm just wondering if we should
-> > have a specific compatible for 0x4c30 as well as the more generic 
-> > "hirschmann,hellcreek".
-> 
-> Yes, there will be different revisions of the Hellcreek devices. This ID
-> is really device specific. A lot of features of this switch are
-> configured in the VHDL code. For instance the MAC settings (100 or 1000
-> Mbit/s).
-> 
-> I've discussed this with the HW engineer from Hirschmann. He suggested
-> to keep this check here, as the driver is currently specific for the
-> that device. We have to make sure that the driver matches the hardware.
+Hi Dave, Jakub,
 
-I agree with the check here. The question is about the compatible
-string. Should there be a more specific compatible string as well as
-the generic one?
+Currently a devlink instance that supports an eswitch handles eswitch
+ports of two type of controllers.
+(1) controller discovered on same system where eswitch resides.
+This is the case where PCI PF/VF of a controller and devlink eswitch
+instance both are located on a single system.
+(2) controller located on other system.
+This is the case where a controller is located in one system and its
+devlink eswitch ports are located in a different system. In this case
+devlink instance of the eswitch only have access to ports of the
+controller.
+However, there is no way to describe that a eswitch devlink port
+belongs to which controller (mainly which external host controller).
+This problem is more prevalent when port attribute such as PF and VF
+numbers are overlapping between multiple controllers of same eswitch.
+Due to this, for a specific switch_id, unique phys_port_name cannot
+be constructed for such devlink ports.
 
-There have been a few discussions about how the Marvell DSA driver
-does its compatible string. The compatible string tells you where to
-find the ID register, not what value to expect in the ID register. The
-ID register can currently be in one of three different locations. Do
-all current and future Hellcreak devices have the same value for
-HR_MODID_C? If not, now is a good time to add a more specific
-compatible string to tell you where to find the ID register.
+This short series overcomes this limitation by defining external
+controller attribute of the devlink port.
+A port that represents an external controller's port defines which
+controller it belongs to. Based on this a unique phys_port_name
+is prepared.
 
-> My plan was to extend this when I have access to other revisions. There
-> will be a SPI variant as well. But, I didn't want to implement it without the
-> ability to test it.
+phys_port_name construction using unique controller number is only
+applicable to external controller ports. This ensures that for
+non smartnic usecases where there is no external controller,
+phys_port_name stays same as before.
 
-Does the SPI variant use the same value for HR_MODID_C? Maybe you need
-a different compatible, maybe not, depending on how the driver is
-structured.
+Patch summary:
+Patch-1 Adds the missing comment for the port attributes
+Patch-2 prepares devlink port with external controller attribute
+Patch-3 mlx5 driver to use new external controller attribute API
 
-The compatible string is part of the ABI. So thinking about it a bit
-now can make things easier later. I just want to make sure you have
-thought about this.
+Parav Pandit (3):
+  devlink: Add comment block for missing port attributes
+  devlink: Consider other controller while building phys_port_name
+  net/mlx5: E-switch, Set controller attribute for PCI PF and VF ports
 
-	Andrew
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  5 ++++
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  1 +
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 21 ++++++++++++++
+ include/net/devlink.h                         | 10 ++++++-
+ include/uapi/linux/devlink.h                  |  1 +
+ net/core/devlink.c                            | 29 +++++++++++++++++++
+ 6 files changed, 66 insertions(+), 1 deletion(-)
+
+-- 
+2.26.2
+
