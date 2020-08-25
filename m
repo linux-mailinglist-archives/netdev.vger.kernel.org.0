@@ -2,105 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E404251C59
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:33:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC368251C6E
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:38:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbgHYPd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 11:33:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        id S1726717AbgHYPio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 11:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725998AbgHYPdZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 11:33:25 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306FEC061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 08:33:23 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id z3so6979503qkz.7
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 08:33:23 -0700 (PDT)
+        with ESMTP id S1726015AbgHYPim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 11:38:42 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CDDC061574;
+        Tue, 25 Aug 2020 08:38:42 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id a26so17186240ejc.2;
+        Tue, 25 Aug 2020 08:38:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Yy8fwKjPJwUQ6ad92J+IQZsOtreG8cS2EHL/AcKAcdE=;
-        b=sIPduKcBpcPkQTf+dqdwcHjlQidEBPDfGeLb5AZLnfcMLflYGzNr0AKFXS64d/MQsq
-         Va2l9nz+kkjhM5Yfu18H+hdHDvUL1ElA42qPBa6f5OdElPeyS/vV3eVGI+eIMRNT1Qd2
-         CbMX5lbgDVeUEVF7LWLyetdaSVBcqzpLKUAt3oG9zoOv/DQ18vfED1Bg0YWrTnxRn67X
-         5krRQBdWnCPPuKjmwIiZ0b4ZZEMk9SFOHHLQ2p3PYS19ShOXhiZecF7AHh5LbYvQNHUp
-         GQlBdKVdnRwgu44vAK4AZ5FQdSazWLxzNDT4D0arUhLN7D9+kZMw3tXk/k47RIOk5Lqj
-         rYiw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aOC7A48azq7u/Y2PtBK0riAhUlLviqiXpwCgqBbMTlA=;
+        b=MiQdsXLBEShUJ3UfYx+HFrMQ3lqH48i2EWUdUukYa7h9wqemD9VAq/8/CVS6AEYiXM
+         Q/nA1/NVN+JcYAUyeoJAj+IghWrQe+PELqxBqdmzWLXEkziwL4I+gylS8fXXupJkoA8V
+         AI5dHIdhZlk7LU/XE4D0lC3euvaM5CmgZk5tjp+qkJUjGvkcyoHppfC2yX8NUrEaHo2a
+         sYpbyGTI70YWCic4UMWwCS/7I+U/KgePrT1pkWY6qRUePX+3ugMWUSIKecu7wK8l/b1r
+         4c4jBek6Sl6QR3287MliHSSQCUTPB8MNXeuWUiapkF2kJUOSRItNM8PF37UFQ0arnAdu
+         8drQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Yy8fwKjPJwUQ6ad92J+IQZsOtreG8cS2EHL/AcKAcdE=;
-        b=L4aw3D3z+UPBAodrGiD6PeXFg+c9mtQOTFxDslKm9oyd2wkEnzsr7O2SXEQBasxtYH
-         pl6sgywVQ5apc9YLTzjGPs5/9RcZMdbu7xLv0DRDqVnajtZi+QCwpZh5JlV0n1jzTBgW
-         O959/JfzoPNCE2SiwFzNo5+npSYBE41SPw6mcc1ChlV3AFaxvKtY60mdWmUSWLZacTaU
-         VKitIuM5esLj+i0EpXNcr7UzyL6FCCrC62Vu2XfFkbJ12yeHyz9R8v2MUxRj0mZE/tZ2
-         aAkO0Xy1/H7FwuRB7dE+xvClHoi09NfdrjM5Ay4BMN3rvp/Sp0OrdpffBtZ2QHgcb/T6
-         48OA==
-X-Gm-Message-State: AOAM5338X9knksngel3A34qpbXl8HYGqMdz7daOLRXNkPPwINXjtjMHG
-        ecUKwAgEJ4hKzEyhZ2dDIqs=
-X-Google-Smtp-Source: ABdhPJwSAXK+PO/Iw7fq9zJAovayXWR/UdH3gYY7UI83NStwkv32XNlde2hMl/ZZensmsRSoD3vlhw==
-X-Received: by 2002:a05:620a:5ee:: with SMTP id z14mr9298560qkg.48.1598369602264;
-        Tue, 25 Aug 2020 08:33:22 -0700 (PDT)
-Received: from localhost.localdomain ([177.220.172.63])
-        by smtp.gmail.com with ESMTPSA id x13sm13413566qts.23.2020.08.25.08.33.21
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aOC7A48azq7u/Y2PtBK0riAhUlLviqiXpwCgqBbMTlA=;
+        b=sPN4O4Rw/sPKR5hfJCleCPB1T42/rVOSDhhQ7ctlj6ouaBl3DjI2NsIt4BQr/ItZ5f
+         vW4sx08f+QtceyO5XMrimgQ/lY0Ljn0oHGx2v10B4b5c8oLNnKbiV7+gceqkyt5bapWJ
+         Jzia2F3JwmTo47EEX/sCdZdKo1UtAHIIBJm/wsczneFUr3D7AWLW4rFLcRqyZmK7Fdg7
+         kVddFekH6l9DKBk+Cn9SivE5y3u3jr5oyKLbE1SCsUurxrgSH+WyUYE/2/cs22w+sPZO
+         T2NBF5/28iOZQ7ztnt9dAbVOSa1dvgABbXFewFgt4n+JmBWke2ITfpbHVD196x9UcybN
+         ac5Q==
+X-Gm-Message-State: AOAM530IiVn69L7+1LLoN+vgrwOqVW9z6lri0+Houa0QEk46sZGzeizb
+        rQL/Opa/Ph/bSVgOai5CdB4=
+X-Google-Smtp-Source: ABdhPJxwMaSNXf1QripcVRS+1j9m9OfmVU8oepZwgCrffk6lLC2hdUZ6uAM34yxzm/szM8Ctw7BEAw==
+X-Received: by 2002:a17:906:e24e:: with SMTP id gq14mr5213550ejb.378.1598369921131;
+        Tue, 25 Aug 2020 08:38:41 -0700 (PDT)
+Received: from xws.fritz.box (pd9ea301b.dip0.t-ipconnect.de. [217.234.48.27])
+        by smtp.gmail.com with ESMTPSA id t22sm13105804ejf.24.2020.08.25.08.38.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2020 08:33:21 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 6C43AC4BDE; Tue, 25 Aug 2020 12:33:18 -0300 (-03)
-Date:   Tue, 25 Aug 2020 12:33:18 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     wenxu@ucloud.cn
-Cc:     netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
-Subject: Re: [PATCH net-next] net/sched: add act_ct_output support
-Message-ID: <20200825153318.GA2444@localhost.localdomain>
-References: <1598335663-26503-1-git-send-email-wenxu@ucloud.cn>
+        Tue, 25 Aug 2020 08:38:40 -0700 (PDT)
+From:   Maximilian Luz <luzmaximilian@gmail.com>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Kaloyan Nikolov <konik98@gmail.com>
+Subject: [PATCH net] mwifiex: Increase AES key storage size to 256 bits
+Date:   Tue, 25 Aug 2020 17:38:29 +0200
+Message-Id: <20200825153829.38043-1-luzmaximilian@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1598335663-26503-1-git-send-email-wenxu@ucloud.cn>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 02:07:43PM +0800, wenxu@ucloud.cn wrote:
-...
-> +static LIST_HEAD(ct_output_list);
-> +static DEFINE_SPINLOCK(ct_output_list_lock);
-> +
-> +#define CT_OUTPUT_RECURSION_LIMIT    4
-> +static DEFINE_PER_CPU(unsigned int, ct_output_rec_level);
+Following commit e18696786548 ("mwifiex: Prevent memory corruption
+handling keys") the mwifiex driver fails to authenticate with certain
+networks, specifically networks with 256 bit keys, and repeatedly asks
+for the password. The kernel log repeats the following lines (id and
+bssid redacted):
 
-Wenxu, first of all, thanks for doing this.
+    mwifiex_pcie 0000:01:00.0: info: trying to associate to '<id>' bssid <bssid>
+    mwifiex_pcie 0000:01:00.0: info: associated to bssid <bssid> successfully
+    mwifiex_pcie 0000:01:00.0: crypto keys added
+    mwifiex_pcie 0000:01:00.0: info: successfully disconnected from <bssid>: reason code 3
 
-Hopefully this helps to show how much duplicated code this means.
-Later on, any bug that we find on mirrer, we also need to fix in
-act_ct_output, which is not good.
+Tracking down this problem lead to the overflow check introduced by the
+aforementioned commit into mwifiex_ret_802_11_key_material_v2(). This
+check fails on networks with 256 bit keys due to the current storage
+size for AES keys in struct mwifiex_aes_param being only 128 bit.
 
-Currently act_ct is the only one doing defrag and leading to this
-need, but that may change in the future. The action here, AFAICT, has
-nothing in specific to conntrack.  It is "just" re-fragmenting
-packets. The only specific reference to nf/ct I could notice is for
-the v6ops, to have access to ip6_fragment(), which can also be done
-via struct ipv6_stub (once added there). That said, it shouldn't be
-named after conntrack, to avoid future confusions.
+To fix this issue, increase the storage size for AES keys to 256 bit.
 
-I still don't understand Cong's argument for not having this on
-act_mirred because TC is L2. That's actually not right. TC hooks at L2
-but deals with L3 and L4 (after all, it does static NAT, mungles L4
-headers and classifies based on virtually anything) since beginning,
-and this is just another case.
+Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+Reported-by: Kaloyan Nikolov <konik98@gmail.com>
+Tested-by: Kaloyan Nikolov <konik98@gmail.com>
+---
+ drivers/net/wireless/marvell/mwifiex/fw.h          | 2 +-
+ drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-What I can understand, is that this feature shouldn't be enabled by
-default on mirred. So that we are sure that users opting-in know what
-they are doing. It can have a "l3" flag, to enable L3 semantics, and
-that's it. Code re-used, no performance drawback for pure L2 users (it
-can even be protected by a static_key. Once a l3-enabled mirred is
-loaded, enable it), user knows what to expect and no confusion on
-which action to use.
+diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
+index 8047e307892e3..d9f8bdbc817b2 100644
+--- a/drivers/net/wireless/marvell/mwifiex/fw.h
++++ b/drivers/net/wireless/marvell/mwifiex/fw.h
+@@ -954,7 +954,7 @@ struct mwifiex_tkip_param {
+ struct mwifiex_aes_param {
+ 	u8 pn[WPA_PN_SIZE];
+ 	__le16 key_len;
+-	u8 key[WLAN_KEY_LEN_CCMP];
++	u8 key[WLAN_KEY_LEN_CCMP_256];
+ } __packed;
+ 
+ struct mwifiex_wapi_param {
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
+index 962d8bfe6f101..119ccacd1fcc4 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
+@@ -619,7 +619,7 @@ static int mwifiex_ret_802_11_key_material_v2(struct mwifiex_private *priv,
+ 	key_v2 = &resp->params.key_material_v2;
+ 
+ 	len = le16_to_cpu(key_v2->key_param_set.key_params.aes.key_len);
+-	if (len > WLAN_KEY_LEN_CCMP)
++	if (len > sizeof(key_v2->key_param_set.key_params.aes.key))
+ 		return -EINVAL;
+ 
+ 	if (le16_to_cpu(key_v2->action) == HostCmd_ACT_GEN_SET) {
+@@ -635,7 +635,7 @@ static int mwifiex_ret_802_11_key_material_v2(struct mwifiex_private *priv,
+ 		return 0;
+ 
+ 	memset(priv->aes_key_v2.key_param_set.key_params.aes.key, 0,
+-	       WLAN_KEY_LEN_CCMP);
++	       sizeof(key_v2->key_param_set.key_params.aes.key));
+ 	priv->aes_key_v2.key_param_set.key_params.aes.key_len =
+ 				cpu_to_le16(len);
+ 	memcpy(priv->aes_key_v2.key_param_set.key_params.aes.key,
+-- 
+2.28.0
 
-  Marcelo
