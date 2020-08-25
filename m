@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A60F8250D66
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 02:32:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 683F5250D93
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 02:33:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728677AbgHYAcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 20:32:15 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:36397 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728670AbgHYAcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 20:32:06 -0400
-Received: by mail-il1-f200.google.com with SMTP id u13so7906080ilc.3
-        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 17:32:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=c5Kv1Rn0yV+exH6v0x9JjcLClh6/0bR8a+fScfVRIVU=;
-        b=kaq5Kl8WhZSkkv/OESDHm/Yh6x9TTtK9rTalTdI0IUM44e9KFV2pktmFLjdd+2YdDB
-         kJ0XTT0jMNkrljqH+HNYyYhVHERi7cBM+h5VGcRAaYyorQjy26qYfLJJscTaL0FeE2hU
-         K4UFFvxlqzJHzKL2aJ7CB1/V8mLo+LMPNOdw71r6cqcwkLm6c/5yenPDq9lhxihZtaeZ
-         yKXiN9fUWiYgJ+ihrtSZdSYKPjM8xWpr2my3rV/NPoxy86y1oYGrt3Rl8Z6DB7E9VNGu
-         RwI5hbIXGgzVKT7jRBwxnCKsVDxK8UE5hpT2nljBnPID0dxYY8TQ1ljLRQP0ZZpSF0aU
-         rG9g==
-X-Gm-Message-State: AOAM5305dYetc4L5mP4HSWm90JC0j01BouHBvjnOfK4lbrPNC7xHVx1F
-        2kAp3SasbvVTN6wsxYMy55YmkulNKTBMjUXCPchmjSD80QYj
-X-Google-Smtp-Source: ABdhPJx5MOMoD70oFHm4ifkadWV41DDpC3TBkUtcU2ajYZ2Tp6W0+CZhNsxmqkl6PMO/AuyVZqFpYAiqtEXzphpRRafjmRKmf4LA
-MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:13ca:: with SMTP id v10mr7365206ilj.105.1598315525364;
- Mon, 24 Aug 2020 17:32:05 -0700 (PDT)
-Date:   Mon, 24 Aug 2020 17:32:05 -0700
-In-Reply-To: <0000000000008caae305ab9a5318@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000020e49105ada8d598@google.com>
-Subject: Re: general protection fault in security_inode_getattr
-From:   syzbot <syzbot+f07cc9be8d1d226947ed@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, jmorris@namei.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@chromium.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-unionfs@vger.kernel.org, miklos@szeredi.hu,
-        netdev@vger.kernel.org, omosnace@redhat.com, serge@hallyn.com,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1728748AbgHYAdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 20:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728513AbgHYAdg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 20:33:36 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B184CC061574;
+        Mon, 24 Aug 2020 17:33:35 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7DC2E1294C709;
+        Mon, 24 Aug 2020 17:16:48 -0700 (PDT)
+Date:   Mon, 24 Aug 2020 17:33:33 -0700 (PDT)
+Message-Id: <20200824.173333.548043755025064224.davem@davemloft.net>
+To:     christophe.jaillet@wanadoo.fr
+Cc:     dave@thedillows.org, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] typhoon: switch from 'pci_' to 'dma_' API
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200823061150.162135-1-christophe.jaillet@wanadoo.fr>
+References: <20200823061150.162135-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 24 Aug 2020 17:16:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Date: Sun, 23 Aug 2020 08:11:50 +0200
 
-commit 35697c12d7ffd31a56d3c9604066a166b75d0169
-Author: Yonghong Song <yhs@fb.com>
-Date:   Thu Jan 16 17:40:04 2020 +0000
+> The wrappers in include/linux/pci-dma-compat.h should go away.
+> 
+> The patch has been generated with the coccinelle script below and has been
+> hand modified to replace GFP_ with a correct flag.
+> It has been compile tested.
+> 
+> When memory is allocated in 'typhoon_init_one()' GFP_KERNEL can be used
+> because it is a probe function and no lock is acquired.
+> 
+> When memory is allocated in 'typhoon_download_firmware()', GFP_ATOMIC
+> must be used because it can be called from a .ndo_tx_timeout function.
+> So this function can be called with the 'netif_tx_lock' acquired.
+> The call chain is:
+>   --> typhoon_tx_timeout                 (.ndo_tx_timeout function)
+>     --> typhoon_start_runtime
+>       --> typhoon_download_firmware
+> 
+> While at is, update some comments accordingly.
+ ...
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-    selftests/bpf: Fix test_progs send_signal flakiness with nmi mode
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13032139900000
-start commit:   d012a719 Linux 5.9-rc2
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=10832139900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=17032139900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=891ca5711a9f1650
-dashboard link: https://syzkaller.appspot.com/bug?extid=f07cc9be8d1d226947ed
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=104a650e900000
-
-Reported-by: syzbot+f07cc9be8d1d226947ed@syzkaller.appspotmail.com
-Fixes: 35697c12d7ff ("selftests/bpf: Fix test_progs send_signal flakiness with nmi mode")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Applied.
