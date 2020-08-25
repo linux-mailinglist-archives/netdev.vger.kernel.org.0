@@ -2,80 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 551AE251C3E
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:25:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E404251C59
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:33:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726723AbgHYPZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 11:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
+        id S1726673AbgHYPd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 11:33:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726294AbgHYPZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 11:25:30 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB1AC061574;
-        Tue, 25 Aug 2020 08:25:29 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1598369126;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PAump9L0LM6bJcSU7K51HCc/4/nx2NUvs/nMFC8fAoI=;
-        b=iIVCOMdB9YLLRkw6woY3g270WXgQxEdxkShajzznnvUFeM+ajn1ICA9VgSf2sjfhOy1/aH
-        NzT3gZL7wQXldhx9K073ykAv3Wb7sXPphzCm9kMO3SfGv6L8Vs2i2fp8zQNsFon+RVDyj8
-        jjCWIm0SFHjjAU8hbJscrOv16Ka/B9sfvEMRJxWzMQtqFRPjHa7pf/Bowq6upsdc/UPTNe
-        IHrpfq3zBDLe6nxxRzS5OV4Xdw5OZX/jdQRmOPwy1J0RgvW3oFRwIBp0cNRkVrXeV2fWZl
-        X/LtjzHlkojohJFRuf6qBiKFaCOSIa3rsXQ61bQMxNQaT3OQEBPjACAPNMFTtg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1598369126;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PAump9L0LM6bJcSU7K51HCc/4/nx2NUvs/nMFC8fAoI=;
-        b=fvX+yFvs42lpxH0z2dBFAN5Yh2RS7EDQV+nzx1Bme+X14FyneOzVV0qM8LqcuV4cA/sK6d
-        H2iabTe1VcvQXBDw==
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org,
-        boris.ostrovsky@oracle.com, jgross@suse.com,
-        linux-pm@vger.kernel.org, linux-mm@kvack.org, kamatam@amazon.com,
-        sstabellini@kernel.org, konrad.wilk@oracle.com,
-        roger.pau@citrix.com, axboe@kernel.dk, davem@davemloft.net,
-        rjw@rjwysocki.net, len.brown@intel.com, pavel@ucw.cz,
-        peterz@infradead.org, eduval@amazon.com, sblbir@amazon.com,
-        anchalag@amazon.com, xen-devel@lists.xenproject.org,
-        vkuznets@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dwmw@amazon.co.uk,
-        benh@kernel.crashing.org
-Subject: Re: [PATCH v3 05/11] genirq: Shutdown irq chips in suspend/resume during hibernation
-In-Reply-To: <20200825132002.GA25009@infradead.org>
-References: <cover.1598042152.git.anchalag@amazon.com> <d9bcd552c946ac56f3f17cc0c1be57247d4a3004.1598042152.git.anchalag@amazon.com> <87h7svqzxm.fsf@nanos.tec.linutronix.de> <20200825132002.GA25009@infradead.org>
-Date:   Tue, 25 Aug 2020 17:25:26 +0200
-Message-ID: <87imd6ycgp.fsf@nanos.tec.linutronix.de>
+        with ESMTP id S1725998AbgHYPdZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 11:33:25 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306FEC061574
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 08:33:23 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id z3so6979503qkz.7
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 08:33:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Yy8fwKjPJwUQ6ad92J+IQZsOtreG8cS2EHL/AcKAcdE=;
+        b=sIPduKcBpcPkQTf+dqdwcHjlQidEBPDfGeLb5AZLnfcMLflYGzNr0AKFXS64d/MQsq
+         Va2l9nz+kkjhM5Yfu18H+hdHDvUL1ElA42qPBa6f5OdElPeyS/vV3eVGI+eIMRNT1Qd2
+         CbMX5lbgDVeUEVF7LWLyetdaSVBcqzpLKUAt3oG9zoOv/DQ18vfED1Bg0YWrTnxRn67X
+         5krRQBdWnCPPuKjmwIiZ0b4ZZEMk9SFOHHLQ2p3PYS19ShOXhiZecF7AHh5LbYvQNHUp
+         GQlBdKVdnRwgu44vAK4AZ5FQdSazWLxzNDT4D0arUhLN7D9+kZMw3tXk/k47RIOk5Lqj
+         rYiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Yy8fwKjPJwUQ6ad92J+IQZsOtreG8cS2EHL/AcKAcdE=;
+        b=L4aw3D3z+UPBAodrGiD6PeXFg+c9mtQOTFxDslKm9oyd2wkEnzsr7O2SXEQBasxtYH
+         pl6sgywVQ5apc9YLTzjGPs5/9RcZMdbu7xLv0DRDqVnajtZi+QCwpZh5JlV0n1jzTBgW
+         O959/JfzoPNCE2SiwFzNo5+npSYBE41SPw6mcc1ChlV3AFaxvKtY60mdWmUSWLZacTaU
+         VKitIuM5esLj+i0EpXNcr7UzyL6FCCrC62Vu2XfFkbJ12yeHyz9R8v2MUxRj0mZE/tZ2
+         aAkO0Xy1/H7FwuRB7dE+xvClHoi09NfdrjM5Ay4BMN3rvp/Sp0OrdpffBtZ2QHgcb/T6
+         48OA==
+X-Gm-Message-State: AOAM5338X9knksngel3A34qpbXl8HYGqMdz7daOLRXNkPPwINXjtjMHG
+        ecUKwAgEJ4hKzEyhZ2dDIqs=
+X-Google-Smtp-Source: ABdhPJwSAXK+PO/Iw7fq9zJAovayXWR/UdH3gYY7UI83NStwkv32XNlde2hMl/ZZensmsRSoD3vlhw==
+X-Received: by 2002:a05:620a:5ee:: with SMTP id z14mr9298560qkg.48.1598369602264;
+        Tue, 25 Aug 2020 08:33:22 -0700 (PDT)
+Received: from localhost.localdomain ([177.220.172.63])
+        by smtp.gmail.com with ESMTPSA id x13sm13413566qts.23.2020.08.25.08.33.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2020 08:33:21 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 6C43AC4BDE; Tue, 25 Aug 2020 12:33:18 -0300 (-03)
+Date:   Tue, 25 Aug 2020 12:33:18 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     wenxu@ucloud.cn
+Cc:     netdev@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+Subject: Re: [PATCH net-next] net/sched: add act_ct_output support
+Message-ID: <20200825153318.GA2444@localhost.localdomain>
+References: <1598335663-26503-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1598335663-26503-1-git-send-email-wenxu@ucloud.cn>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25 2020 at 14:20, Christoph Hellwig wrote:
-> On Sat, Aug 22, 2020 at 02:36:37AM +0200, Thomas Gleixner wrote:
->> From: Thomas Gleixner <tglx@linutronix.de>
->> 
->> followed by an empty new line before the actual changelog text
->> starts. That way the attribution of the patch when applying it will be
->> correct.
->
-> The way he sent it attribution will be correct as he managed to get his
-> MTU to send out the mail claiming to be from you.
+On Tue, Aug 25, 2020 at 02:07:43PM +0800, wenxu@ucloud.cn wrote:
+...
+> +static LIST_HEAD(ct_output_list);
+> +static DEFINE_SPINLOCK(ct_output_list_lock);
+> +
+> +#define CT_OUTPUT_RECURSION_LIMIT    4
+> +static DEFINE_PER_CPU(unsigned int, ct_output_rec_level);
 
-Which is even worse as that spammed my inbox with mail delivery rejects
-for SPF and whatever violations. And those came mostly from Amazon
-servers which sent out that wrong stuff in the first place ....
+Wenxu, first of all, thanks for doing this.
 
-> But yes, it needs the second From line, _and_ the first from line
-> needs to be fixed to be from him.
+Hopefully this helps to show how much duplicated code this means.
+Later on, any bug that we find on mirrer, we also need to fix in
+act_ct_output, which is not good.
 
-Thanks,
+Currently act_ct is the only one doing defrag and leading to this
+need, but that may change in the future. The action here, AFAICT, has
+nothing in specific to conntrack.  It is "just" re-fragmenting
+packets. The only specific reference to nf/ct I could notice is for
+the v6ops, to have access to ip6_fragment(), which can also be done
+via struct ipv6_stub (once added there). That said, it shouldn't be
+named after conntrack, to avoid future confusions.
 
-        tglx
+I still don't understand Cong's argument for not having this on
+act_mirred because TC is L2. That's actually not right. TC hooks at L2
+but deals with L3 and L4 (after all, it does static NAT, mungles L4
+headers and classifies based on virtually anything) since beginning,
+and this is just another case.
+
+What I can understand, is that this feature shouldn't be enabled by
+default on mirred. So that we are sure that users opting-in know what
+they are doing. It can have a "l3" flag, to enable L3 semantics, and
+that's it. Code re-used, no performance drawback for pure L2 users (it
+can even be protected by a static_key. Once a l3-enabled mirred is
+loaded, enable it), user knows what to expect and no confusion on
+which action to use.
+
+  Marcelo
