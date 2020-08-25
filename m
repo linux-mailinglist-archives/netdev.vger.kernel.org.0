@@ -2,41 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 214CB2515A9
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:42:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D9E92515B4
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:46:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729504AbgHYJmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 05:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44058 "EHLO
+        id S1729583AbgHYJqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 05:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726000AbgHYJmG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 05:42:06 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74090C061574;
-        Tue, 25 Aug 2020 02:42:05 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1598348523;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/+Ss+1fob1O6FWxjtF6nrsXHbKK8dvDZbAhYL4hFrIA=;
-        b=cr0TmoiU6ip2MXdtuJMHbf+/qDvLAgwTQYErKTnmX5SNIaMEGNYwvGWAr3U6QVad3Z585b
-        VtkpgavkL9ZPUzBejWqpNxtTf1ofg+cd/ZwrexuAsSgK/fFRpSF3cxARgKSv2998anUH5f
-        YLJNBNgUnDZpp/Hs8BpPey7R+4MA7Rr3Q5NW7T6lXTGaOvPyF8fBMtIOU1nt9EjpheqR+y
-        VOLPrmdIc+bqYVjLbBgQve7o+jfNRe9dFBGSp0ut5rPRLIuR35tx4m3B2ID4csQXy3mlNQ
-        dNlo/Hcf209QeiptBRYRE6XcjS7J/2kFl/8uo5iw4R6lPhL44yl559zr7JgxHA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1598348523;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/+Ss+1fob1O6FWxjtF6nrsXHbKK8dvDZbAhYL4hFrIA=;
-        b=4sUO7BIbXUi7pGUUyxjGhPiLsadhTbX/cN/SKVZELKKvcHby7SYioronJ6nCQ2SbrrS25R
-        dxPaP/hlQgdJeAAQ==
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S1728944AbgHYJqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 05:46:17 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42196C061755;
+        Tue, 25 Aug 2020 02:46:16 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id u1so471162edi.4;
+        Tue, 25 Aug 2020 02:46:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lTsKS8Pb8K5WIlay+gSpZALJK9CC4vKfRtBondq1rG0=;
+        b=WubUU/NVMgDBIGpWM+WY1oTuRzE54vLKnQZjndSsLe89JNw7+MYdJGerAlsZ9ySeTY
+         15gwueEu/r8j62UNGT7C2eayRAaY9ZMrNLQzLFkqBWoolNtxGwRDkO9wcOGa5wD14F/R
+         HGgEYYU2to8O37h73hzceBTc+qW4IjlqL7r8zKO7qN0kan3RMu7vGNzwlVfvQ1ZnLCg7
+         0uqbmd3YZcTHHDuDIajMER0iIoywAtDO/BcLFRPRPcHQOm6GOqRH2U+vRDh89Mbo7kvj
+         RPayqch3tZXsTR+Xa5pb2cs8r9yZLqHMOWxBSWYwkvn4tCPJ7Z4I7L2N2voyzE4r70kG
+         Hbzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lTsKS8Pb8K5WIlay+gSpZALJK9CC4vKfRtBondq1rG0=;
+        b=UBuoz5DZkBwjxD8pykLp+xk/4O3UvLneTM1LKQ45HvLzQFIZEgHNpnnNoHyeOIR0DU
+         0dAvmWmtiFXclH35PHuEsm6q+tsx8LHIobQ8dieyv6eQWG1P4nM0yDi1g0H1dLnzywjc
+         KaliTDPHlnKO8fFOf6mcpEMpcRtVC1bf5zBdg9VS5DYlnxCgTsV+PdBvUMc0Js/Jffin
+         W1vjcwqeAAX/dgpAjZddkE2Y1Xjr3wUI/fcQCEOcjn8QYhrXUWOFVeFQviV+Bh02WYXl
+         /oczORiT7bjeySmA19m7zhJ7DMJ3xMsYfxvAmIrLNUz9Z+yLsk1uRISPX1Mykhd1PdrZ
+         TQJQ==
+X-Gm-Message-State: AOAM531OvnsXONHYzhksooMg1k8HpAkCYwWpGS3U3xTuQJPWFpPCvnHY
+        5zr35OuSbc2oC64vrgUj644=
+X-Google-Smtp-Source: ABdhPJwr9ysM8xXqvCVtvOtSxeedByHPMHO/m8GmhNTtL1ZLM4UWcZ1QRYAdRSipjRxoEdwNIT/VyQ==
+X-Received: by 2002:aa7:d688:: with SMTP id d8mr9525604edr.168.1598348774916;
+        Tue, 25 Aug 2020 02:46:14 -0700 (PDT)
+Received: from skbuf ([86.126.22.216])
+        by smtp.gmail.com with ESMTPSA id p3sm12461605edx.75.2020.08.25.02.46.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2020 02:46:14 -0700 (PDT)
+Date:   Tue, 25 Aug 2020 12:46:12 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -47,87 +61,46 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
         ilias.apalodimas@linaro.org
 Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
-In-Reply-To: <87y2m3txox.fsf@intel.com>
-References: <20200820081118.10105-1-kurt@linutronix.de> <20200820081118.10105-6-kurt@linutronix.de> <20200822143922.frjtog4mcyaegtyg@skbuf> <87imd8zi8z.fsf@kurt> <87y2m3txox.fsf@intel.com>
-Date:   Tue, 25 Aug 2020 11:42:02 +0200
-Message-ID: <875z9712qd.fsf@kurt>
+Message-ID: <20200825094612.ffdt6xkl552ppc3i@skbuf>
+References: <20200820081118.10105-1-kurt@linutronix.de>
+ <20200820081118.10105-6-kurt@linutronix.de>
+ <20200822143922.frjtog4mcyaegtyg@skbuf>
+ <87imd8zi8z.fsf@kurt>
+ <87y2m3txox.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87y2m3txox.fsf@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+Hi Vinicius,
 
-On Mon Aug 24 2020, Vinicius Costa Gomes wrote:
-> Hi Kurt,
->
+On Mon, Aug 24, 2020 at 04:45:50PM -0700, Vinicius Costa Gomes wrote:
 > Kurt Kanzenbach <kurt@linutronix.de> writes:
->
->>>> +static void hellcreek_setup_tc_mapping(struct hellcreek *hellcreek,
->>>> +				       struct net_device *netdev)
->>>> +{
->>>> +	int i, j;
->>>> +
->>>> +	/* Setup mapping between traffic classes and port queues. */
->>>> +	for (i = 0; i < netdev_get_num_tc(netdev); ++i) {
->>>> +		for (j = 0; j < netdev->tc_to_txq[i].count; ++j) {
->>>> +			const int queue = j + netdev->tc_to_txq[i].offset;
->>>> +
->>>> +			hellcreek_select_prio(hellcreek, i);
->>>> +			hellcreek_write(hellcreek,
->>>> +					queue << HR_PRTCCFG_PCP_TC_MAP_SHIFT,
->>>> +					HR_PRTCCFG);
->>>> +		}
->>>> +	}
->>>> +}
->>>
->>> What other driver have you seen that does this?
->>>
->>
->> Probably none.
->>
->> With TAPRIO traffic classes and the mapping to queues can be
->> configured. The switch can also map traffic classes. That sounded like a
->> good match to me.
+> >
+> > With TAPRIO traffic classes and the mapping to queues can be
+> > configured. The switch can also map traffic classes. That sounded like a
+> > good match to me.
 >
 > The only reason I could think that you would need this that *right now*
 > taprio has pretty glaring oversight: that in the offload parameters each entry
 > 'gate_mask' reference the "Traffic Class" (i.e. bit 0 is Traffic Class
 > 0), and it really should be the HW queue.
 >
-> I have a patch that does the conversion on taprio before talking to the
-> driver. Do you think it would help you avoid doing this on the driver
-> side?
 
-I think so. As Vladimir pointed out, the driver should setup an identity
-mapping which I already did by default.
+Sorry, but could you please explain why having the gate_mask reference
+the traffic classes is a glaring oversight, and how changing it would
+help here?
 
-Can you point me your patch?
+Also, Kurt, could you please explain what the
+HR_PRTCCFG_PCP_TC_MAP_SHIFT field in HR_PRTCCFG is doing?
+To me, it appears that it's configuring ingress QoS classification on
+the port (and the reason why this is strange to me is because you're
+applying this configuration through an egress qdisc), but I want to make
+sure I'm not misunderstanding.
 
 Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl9E3OoACgkQeSpbgcuY
-8KZ8dxAAxgttX/K0rFFtRu/2uiG0DqMlOfsa6okj35BVMrZYHKyeMh0Z79vSvu3b
-3dP3zk4AzDnWwvv2EriOJndGUouB+5PSh+elxQiaDplbsGRYwFt64PHeazGFrXmg
-Ze/eiqLFNj9dWVVKWwK9dlY8OZN+TMTlykBfLMkjtCS988b7pXj7UiYpAidyQ/pR
-JAmJG/WIkWZPnv976FwHfaji0kHTKlHdm+RxqI6xkFR6fiQelXansUHGW4VVl+/J
-TnvGF+RDss5MiWz1DYnCQC6xir9IsVVp6hJqhzZnnOd4TnoViMSF0XwQpIL0x+OY
-AZod/eAlrQdAEzlj6bW0NA8anVxSBy2Wc0EfdOnsyw/NQ7gyKAZwqITOPZbz43GR
-oSys/Gq3j+2BgTrpzB/nxKwB2EMDy3D0+lH/l0yWcJFXjRgGAWFrx5Jq2iTq/ttp
-PDN+VwMWD371pPRtvqjONZkCVSx4HzC7u3K0oFr9m2OSY0BcVExMtqsUgC9Zr1sQ
-ZHULIPQrJ21CiiMHv6Z26KknKxXzrTh4LY9G2M8k+Lo8A2rTnUT5ZzPdPwDlFFTz
-hD7FZZowi3PJ8Qe5ABf9McUtfXnc+goDiVFAliBq+gRMF/fo94G42o4TVaiTDmFL
-fy6wNzn3gOO4VsXPKFUDzYsgJcyvUS1O5FjpoJr1CD1BUzBIBw4=
-=sWPu
------END PGP SIGNATURE-----
---=-=-=--
+-Vladimir
