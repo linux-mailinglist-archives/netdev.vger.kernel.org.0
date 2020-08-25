@@ -2,77 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B053D251EAC
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:55:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2370251EB5
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:58:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726551AbgHYRzh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 13:55:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726104AbgHYRzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 13:55:36 -0400
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7710C061574;
-        Tue, 25 Aug 2020 10:55:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=13q0yU/4W+VWpJEEdUThAvzf3bI1pgdy0BRgeQelX+A=; b=kWlKX1YrWrdR9fwDglszc5bQml
-        esDRvCt2b8TJ/PpEZbhQ3yELpWLbecx60YAwyFq6rqxbWqkeqOgSTjj+Nynqo993f6Xqs15kL5koH
-        llQ3HU7hPLTiE/zVNDsZo99p8BY7W4+se4rOnwPF7ET4FdmPc6ErFT7T70ZdpqCsFlQo3lyazxrRr
-        VSiGixEg8MiErB+DwhuqpCVSinS9v6hPLt5YOYmhBwjFNvYf8/aIbDVIN9eMohNkrpuDN3ElmlBIb
-        7FcatTwcvg3/AFCgArZ3qKdez7NqQP2g1AkPCHwQoIX/GG6vsCTVTA6VIfVDI4qXM2UYVaDimj5tK
-        JUJSKu6g==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kAdAS-00040v-VR; Tue, 25 Aug 2020 17:55:33 +0000
-Subject: Re: [PATCH 1/3] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
- Driver
-To:     Lukasz Stelmach <l.stelmach@samsung.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, m.szyprowski@samsung.com,
-        b.zolnierkie@samsung.com
-References: <6062dc73-99bc-cde0-26a1-5c40ea1447bd@infradead.org>
- <CGME20200825173041eucas1p29cb450a15648e0ecb1e896fcbe0f9126@eucas1p2.samsung.com>
- <dleftjr1ruvdjd.fsf%l.stelmach@samsung.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <dae861c2-71c8-093b-74a6-68cf5c5ae744@infradead.org>
-Date:   Tue, 25 Aug 2020 10:55:27 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1726257AbgHYR6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 13:58:05 -0400
+Received: from mga11.intel.com ([192.55.52.93]:41198 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726119AbgHYR6E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 13:58:04 -0400
+IronPort-SDR: u1h6fXqDlbKAQLDc0lXrJcSHhKdLew8GdeRx3+PxMtTbp/4OQRTrNimfFj7voCfqzjqBD4pScf
+ k3z5xtavprWw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9723"; a="153746295"
+X-IronPort-AV: E=Sophos;i="5.76,353,1592895600"; 
+   d="scan'208";a="153746295"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2020 10:58:04 -0700
+IronPort-SDR: 2wBErFcwFqPKB8Ayi1BF8FUakWu9BuWS4+aKtavvEx0Y1g1tQRwI7Uf7W69wX1TaQrWCrkCLPF
+ h+N/cppawE7Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,353,1592895600"; 
+   d="scan'208";a="499401862"
+Received: from adent-mobl.amr.corp.intel.com (HELO ellie) ([10.209.77.195])
+  by fmsmga006.fm.intel.com with ESMTP; 25 Aug 2020 10:58:03 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
+In-Reply-To: <875z9712qd.fsf@kurt>
+References: <20200820081118.10105-1-kurt@linutronix.de> <20200820081118.10105-6-kurt@linutronix.de> <20200822143922.frjtog4mcyaegtyg@skbuf> <87imd8zi8z.fsf@kurt> <87y2m3txox.fsf@intel.com> <875z9712qd.fsf@kurt>
+Date:   Tue, 25 Aug 2020 10:58:03 -0700
+Message-ID: <878se2txp0.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <dleftjr1ruvdjd.fsf%l.stelmach@samsung.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Kurt,
 
->>> +if NET_VENDOR_ASIX
->>> +
->>> +config SPI_AX88796C
->>> +	tristate "Asix AX88796C-SPI support"
->>> +	depends on SPI
->>
->> That line is redundant (but not harmful).
-> 
-> Why? Is it because NET_VENDOR_ASIX depends on SPI? Probably it
-> shouldn't. Thanks for spotting.
+Kurt Kanzenbach <kurt@linutronix.de> writes:
 
-Yes, that.
+> I think so. As Vladimir pointed out, the driver should setup an identity
+> mapping which I already did by default.
+>
+> Can you point me your patch?
+
+Just sent it for consideration:
+
+http://patchwork.ozlabs.org/project/netdev/patch/20200825174404.2727633-1-vinicius.gomes@intel.com/
 
 
+Cheers,
 -- 
-~Randy
-
+Vinicius
