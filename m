@@ -2,145 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 968A825254C
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 03:51:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7F5F252580
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 04:35:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727017AbgHZBvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 21:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726599AbgHZBvs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 21:51:48 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FDAC061574;
-        Tue, 25 Aug 2020 18:51:48 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id r15so144621wrp.13;
-        Tue, 25 Aug 2020 18:51:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6lKBXswTrzhA0xBsr6HB8AlB5+bACM8/QHtln5EsmDM=;
-        b=rkPU8zA6FnvPI7YRdwlrF32Z+jufZRPGDhsVbublBxI+2WdfyrQZ4OMYugj2LjMgRs
-         tcBC2iVxYnWeg8Zk6YWzQfE0csZvqLsQKSxRKrpJnxvpSdJ9HVsaxBuVVCZ33a7Fy89F
-         YzL00nv71TEx1KwJewv+LaAx654GeLawZ3dB08BJtkewTW0RxdimmA59/2c32/oJxdK5
-         dSKP0GfmMvAUQJfWlO1JkSN5McliJO+sig5zbM32H0/Kuj9D+O0+2QWE9ikcOBAgMoCE
-         knF+3yVSHzD+dH7rwDtBk3Dij3c2i2NaVRbX/WHThEgypBISYgNE6EdHQjalStrd+n7R
-         ERAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6lKBXswTrzhA0xBsr6HB8AlB5+bACM8/QHtln5EsmDM=;
-        b=Smmunnpt1LjXpGp/N/t0FV0JpDIO+k456WlcUpDewg1p2nTBOA1P67S7CZhYS2eSnR
-         +OOu2WflF/myrmiKXjLyTDaOm9yWRQ/+m8rWhp4lfGRIQPptsKuzcIbQK/gfqzrsmgb2
-         BdQeToImOPECJssEo1/TBCGYzI7wfdeorUnpu7sSaErjF0BZxrIBwxej/FG4QVGmlh2X
-         1BHiv36vlSmis5BKaAtrqFc4MD1qxap9ZHiDz2gBaMW3K4hIGCY8DekMKBubBcRoWA2R
-         RBoRwxM4sCife/uTbJfjeAzX/lJkNnPNGkYKMD/Hi0cHsiYPB61eiVR70QtO+4h+3P/C
-         fPwA==
-X-Gm-Message-State: AOAM530oFG3ifVTPrO+3udsr1xhmkYJh0IEhN4H2KNWhmkrJD+j5JUa9
-        fGPsJZQ/BpxSlrw+43if6fdezIzMsx/vRGp6QYY=
-X-Google-Smtp-Source: ABdhPJyeqlKj5YPc50Em7rO4ODLMTr2DC/m+jfMJDMOpF+XoOI2kKLAaJQ+LNrc4dhPoiuNEDU0+R/Ls8lv1xf0wUss=
-X-Received: by 2002:adf:db43:: with SMTP id f3mr14164955wrj.219.1598406706678;
- Tue, 25 Aug 2020 18:51:46 -0700 (PDT)
+        id S1726706AbgHZCfy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Aug 2020 22:35:54 -0400
+Received: from mx.metalurgs.lv ([81.198.125.103]:59210 "EHLO mx.metalurgs.lv"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726611AbgHZCfy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 22:35:54 -0400
+Received: from mx.metalurgs.lv (localhost [127.0.0.1])
+        by mx.metalurgs.lv (Postfix) with ESMTP id E7BE37DCFD
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 05:00:49 +0300 (EEST)
+Received: from kas30pipe.localhost (localhost [127.0.0.1])
+        by mx.metalurgs.lv (Postfix) with ESMTP id 288529925
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 04:19:57 +0300 (EEST)
+Received: by mx.metalurgs.lv (Postfix, from userid 1005)
+        id 26F9D4D44; Wed, 26 Aug 2020 02:53:56 +0300 (EEST)
+Received: from [192.168.8.10] (ip168-243-231-195.intercom.com.sv [168.243.231.195])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: admin)
+        by mx.metalurgs.lv (Postfix) with ESMTPSA id 94AF268481
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 02:18:39 +0300 (EEST)
 MIME-Version: 1.0
-References: <20200817091617.28119-1-allen.cryptic@gmail.com>
- <20200817091617.28119-2-allen.cryptic@gmail.com> <b5508ca4-0641-7265-2939-5f03cbfab2e2@kernel.dk>
- <202008171228.29E6B3BB@keescook> <161b75f1-4e88-dcdf-42e8-b22504d7525c@kernel.dk>
- <202008171246.80287CDCA@keescook> <df645c06-c30b-eafa-4d23-826b84f2ff48@kernel.dk>
- <1597780833.3978.3.camel@HansenPartnership.com> <f3312928-430c-25f3-7112-76f2754df080@kernel.dk>
- <1597849185.3875.7.camel@HansenPartnership.com> <CAOMdWSJRR0BhjJK1FxD7UKxNd5sk4ycmEX6TYtJjRNR6UFAj6Q@mail.gmail.com>
- <1597873172.4030.2.camel@HansenPartnership.com>
-In-Reply-To: <1597873172.4030.2.camel@HansenPartnership.com>
-From:   Allen Pais <allen.cryptic@gmail.com>
-Date:   Wed, 26 Aug 2020 07:21:35 +0530
-Message-ID: <CAEogwTCH8qqjAnSpT0GDn+NuAps8dNbfcPVQ9h8kfOWNbzrD0w@mail.gmail.com>
-Subject: Re: [PATCH] block: convert tasklets to use new tasklet_setup() API
-To:     James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc:     Allen <allen.lkml@gmail.com>, Jens Axboe <axboe@kernel.dk>,
-        Kees Cook <keescook@chromium.org>, jdike@addtoit.com,
-        richard@nod.at, anton.ivanov@cambridgegreys.com, 3chas3@gmail.com,
-        stefanr@s5r6.in-berlin.de, airlied@linux.ie,
-        Daniel Vetter <daniel@ffwll.ch>, sre@kernel.org,
-        kys@microsoft.com, deller@gmx.de, dmitry.torokhov@gmail.com,
-        jassisinghbrar@gmail.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, maximlevitsky@gmail.com, oakad@yahoo.com,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        mporter@kernel.crashing.org, alex.bou9@gmail.com,
-        broonie@kernel.org, martyn@welchs.me.uk, manohar.vanga@gmail.com,
-        mitch@sfgoth.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-um@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux1394-devel@lists.sourceforge.net,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-hyperv@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-ntb@googlegroups.com, linux-s390@vger.kernel.org,
-        linux-spi@vger.kernel.org, devel@driverdev.osuosl.org,
-        Romain Perier <romain.perier@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Description: Mail message body
+To:     netdev@vger.kernel.org
+From:   "Angel Investors" <info@unituscapital.com>
+Date:   Tue, 25 Aug 2020 17:18:31 -0600
+Reply-To: andrewmacklin12@gmail.com
+X-SpamTest-Envelope-From: info@unituscapital.com
+X-SpamTest-Group-ID: 00000000
+X-SpamTest-Info: Profiles 71303 [Jan 01 2015]
+X-SpamTest-Info: {RECEIVED: dynamic ip detected}
+X-SpamTest-Info: {DATE: unreal year}
+X-SpamTest-Method: none
+X-SpamTest-Rate: 35
+X-SpamTest-Status: Not detected
+X-SpamTest-Status-Extended: not_detected
+X-SpamTest-Version: SMTP-Filter Version 3.0.0 [0284], KAS30/Release
+Message-ID: <20200826002231.26F9D4D44@mx.metalurgs.lv>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+Subject: START UP FUNDS.
+X-Anti-Virus: Kaspersky Anti-Virus for Linux Mail Server 5.6.39/RELEASE,
+         bases: 20140401 #7726142, check: 20200826 notchecked
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 20, 2020 at 3:09 AM James Bottomley
-<James.Bottomley@hansenpartnership.com> wrote:
->
-> On Wed, 2020-08-19 at 21:54 +0530, Allen wrote:
-> > > [...]
-> > > > > Since both threads seem to have petered out, let me suggest in
-> > > > > kernel.h:
-> > > > >
-> > > > > #define cast_out(ptr, container, member) \
-> > > > >     container_of(ptr, typeof(*container), member)
-> > > > >
-> > > > > It does what you want, the argument order is the same as
-> > > > > container_of with the only difference being you name the
-> > > > > containing structure instead of having to specify its type.
-> > > >
-> > > > Not to incessantly bike shed on the naming, but I don't like
-> > > > cast_out, it's not very descriptive. And it has connotations of
-> > > > getting rid of something, which isn't really true.
-> > >
-> > > Um, I thought it was exactly descriptive: you're casting to the
-> > > outer container.  I thought about following the C++ dynamic casting
-> > > style, so out_cast(), but that seemed a bit pejorative.  What about
-> > > outer_cast()?
-> > >
-> > > > FWIW, I like the from_ part of the original naming, as it has
-> > > > some clues as to what is being done here. Why not just
-> > > > from_container()? That should immediately tell people what it
-> > > > does without having to look up the implementation, even before
-> > > > this becomes a part of the accepted coding norm.
-> > >
-> > > I'm not opposed to container_from() but it seems a little less
-> > > descriptive than outer_cast() but I don't really care.  I always
-> > > have to look up container_of() when I'm using it so this would just
-> > > be another macro of that type ...
-> > >
-> >
-> >  So far we have a few which have been suggested as replacement
-> > for from_tasklet()
-> >
-> > - out_cast() or outer_cast()
-> > - from_member().
-> > - container_from() or from_container()
-> >
-> > from_container() sounds fine, would trimming it a bit work? like
-> > from_cont().
->
-> I'm fine with container_from().  It's the same form as container_of()
-> and I think we need urgent agreement to not stall everything else so
-> the most innocuous name is likely to get the widest acceptance.
-
-Kees,
-
-  Will you be  sending the newly proposed API to Linus? I have V2
-which uses container_from()
-ready to be sent out.
-
-Thanks.
+Attention To Email : netdev@vger.kernel.org
+Good Day Sir,
+Our Group have the financial capability to finance any investment portfolio as far as is genuine, all we need is a capable business partner that possesses investment strategies for profitable business information for good turn over within 10-30years. Our Partners are willing to invest 10million — 5billon USD. We can provide proof of funds on demand, after certification of your documents/details. Please write me back if you can work with me on this project. Thank You,
+Best Regards
+Andrew Macklin
