@@ -2,83 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC5CB251855
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:13:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E734251851
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:12:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729214AbgHYMNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 08:13:02 -0400
-Received: from pd9568d8c.dip0.t-ipconnect.de ([217.86.141.140]:46701 "EHLO
-        remote.esd.eu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726159AbgHYMNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 08:13:01 -0400
-X-Greylist: delayed 329 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Aug 2020 08:13:01 EDT
-Received: from esd-s7 ([10.0.0.77]:49372 helo=esd-s7.esd)
-        by remote.esd.eu with esmtp (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <daniel.gorsulowski@esd.eu>)
-        id 1kAXjV-0008Rs-33; Tue, 25 Aug 2020 14:07:22 +0200
-Received: from debby.esd.local (unknown [10.0.0.190])
-        by esd-s7.esd (Postfix) with ESMTP id D833B7C162F;
-        Tue, 25 Aug 2020 14:07:21 +0200 (CEST)
-X-CTCH-RefID: str=0001.0A682F19.5F44FEFA.0005,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
-From:   Daniel Gorsulowski <daniel.gorsulowski@esd.eu>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com,
-        Daniel Gorsulowski <daniel.gorsulowski@esd.eu>
-Subject: [PATCH] net: dp83869: Fix RGMII internal delay configuration
-Date:   Tue, 25 Aug 2020 14:07:21 +0200
-Message-Id: <20200825120721.32746-1-daniel.gorsulowski@esd.eu>
-X-Mailer: git-send-email 2.19.2
+        id S1730203AbgHYMMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 08:12:09 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:10263 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730181AbgHYML4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 08:11:56 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 73DCBBFAFAAE71C95194;
+        Tue, 25 Aug 2020 20:11:53 +0800 (CST)
+Received: from huawei.com (10.175.104.175) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Tue, 25 Aug 2020
+ 20:11:45 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] net: Remove duplicated midx check against 0
+Date:   Tue, 25 Aug 2020 08:10:37 -0400
+Message-ID: <20200825121037.10061-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.175]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The RGMII control register at 0x32 indicates the states for the bits
-RGMII_TX_CLK_DELAY and RGMII_RX_CLK_DELAY as follows:
+Check midx against 0 is always equal to check midx against sk_bound_dev_if
+when sk_bound_dev_if is known not equal to 0 in these case.
 
-  RGMII Transmit/Receive Clock Delay
-    0x0 = RGMII transmit clock is shifted with respect to transmit/receive data.
-    0x1 = RGMII transmit clock is aligned with respect to transmit/receive data.
-
-This commit fixes the inversed behavior of these bits
-
-Fixes: 736b25afe284 ("net: dp83869: Add RGMII internal delay configuration")
-
-Signed-off-by: Daniel Gorsulowski <daniel.gorsulowski@esd.eu>
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- drivers/net/phy/dp83869.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/ipv4/ip_sockglue.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index 58103152c601..3ad48673f865 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -427,18 +427,18 @@ static int dp83869_config_init(struct phy_device *phydev)
- 			return ret;
+diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+index d2c223554ff7..ec6036713e2c 100644
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
+@@ -1124,8 +1124,7 @@ static int do_ip_setsockopt(struct sock *sk, int level, int optname,
+ 		dev_put(dev);
  
- 		val = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL);
--		val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
-+		val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
- 			 DP83869_RGMII_RX_CLK_DELAY_EN);
+ 		err = -EINVAL;
+-		if (sk->sk_bound_dev_if &&
+-		    (!midx || midx != sk->sk_bound_dev_if))
++		if (sk->sk_bound_dev_if && midx != sk->sk_bound_dev_if)
+ 			break;
  
- 		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
--			val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
-+			val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
- 				DP83869_RGMII_RX_CLK_DELAY_EN);
+ 		inet->uc_index = ifindex;
+@@ -1189,7 +1188,7 @@ static int do_ip_setsockopt(struct sock *sk, int level, int optname,
+ 		err = -EINVAL;
+ 		if (sk->sk_bound_dev_if &&
+ 		    mreq.imr_ifindex != sk->sk_bound_dev_if &&
+-		    (!midx || midx != sk->sk_bound_dev_if))
++		    midx != sk->sk_bound_dev_if)
+ 			break;
  
- 		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
--			val |= DP83869_RGMII_TX_CLK_DELAY_EN;
-+			val &= ~DP83869_RGMII_TX_CLK_DELAY_EN;
- 
- 		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
--			val |= DP83869_RGMII_RX_CLK_DELAY_EN;
-+			val &= ~DP83869_RGMII_RX_CLK_DELAY_EN;
- 
- 		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL,
- 				    val);
+ 		inet->mc_index = mreq.imr_ifindex;
 -- 
-2.19.2
+2.19.1
 
