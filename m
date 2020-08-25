@@ -2,129 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4842E251F61
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 20:56:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75EF3251F67
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 21:00:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgHYSz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 14:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
+        id S1726617AbgHYTAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 15:00:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbgHYSz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 14:55:57 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E770C061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 11:55:56 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id w20so10276350iom.1
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 11:55:56 -0700 (PDT)
+        with ESMTP id S1726466AbgHYTAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 15:00:31 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36CD4C061755
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 12:00:31 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id v9so15083892ljk.6
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 12:00:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=w9uk4AMLpvzRAgzq0rqHpsTXVWbRiA2GeYuDtu/sc0s=;
-        b=uUs54mDsCzNMq6oM+OHwokxMNdLcMeL723VOZvI9OBiLh6Uganid+kexMgqvabfxm5
-         icbGpodVRZgsqpBW8/ccZxX9Xwoq1+J+7ar/QWmxgjKhTUR96ejFDrEjy/aO15wNZglD
-         XxGIV7rCwfG4Sw3IrnyC3l7AVwlITjxNZDKaXet5eogwSjqgcheDVZeunE+xopwwyOnf
-         wzQLgYrJ0kZ5XZHgJwLyJUVvA/UwHztMVYDso7KZSlFUsFBYJKN7wPZXFIEOD8g6n6f6
-         ClETrR+hQVjbWIdTrzvUxKcn7BG8eiVhydS1prRnL6BXJam6k1gu1SiIKXt6rc3hv5me
-         VfeA==
+        bh=IIZWu3166pXihdAEpw+Mp3W7uVSGrl+5DTpGsRd8suw=;
+        b=lsWgElMBWLnmMhFudG5zPSTYJbQ/5EhklPtOF3MT+YYIJ2ltRqVueDGqSVXyuEp5l0
+         4Fr/+4qaRi9d8qFy0aSaQoWL83iGLpaCbztACHZkNIVZGr5XeP2X9SE/mPsM0Pyw3Obj
+         /AI28oA7vpsLnZgCp0GuSFsun9X2dMJUOx12jC7SC5ZdEEjmfOETQ92Dq1wKeLyTsEgG
+         qV83/bSX0KsK1hrT8JRpybLwa32pPGaOpbVPwpSJldw0FmZ9r4pArY81G37TFDNnl4Wx
+         klELNKwfXEIqzc18TPNPXeYsHjPN5IsvTwy6e5oLO3Na/4RvLcEAyrFoE2MZWrIEuLYr
+         J70g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=w9uk4AMLpvzRAgzq0rqHpsTXVWbRiA2GeYuDtu/sc0s=;
-        b=nZQobDm+lAMDUaZjCrtYByJ6CW37A2o2HSubxdksTbyxPxeMUT0k2UgiB5yVSyIg+M
-         9OYHH7xn6OSWg9BqM6+jC36+xk/KIE7qfWDn9HBw/fU9I2Tlgcna6EnjT9iGhJFaDATV
-         HhLe168uM/YI3HG2ACgpABfl2Ljp4PG+XKRyGHhEyvT1BP5zfjly8qfMpL9DOea00fZ6
-         R1QdfmRHbLD3V4dfNcatezVURcmCWVRrkAfopx7Y9338eijfhPKB6bx7P+KTsyVrmWFt
-         iYXXDW4VEFJv/edw7YjmGFBakE5WoVr8avX+OPU0Vwl2IV8HVrakUJwyhokGyr5OvoAd
-         p3kw==
-X-Gm-Message-State: AOAM532NcWOD+ocDngXVJ0pIZ3Heah2xL+2rUgyTulKqqHqpaMw6ve7V
-        ncPURmjcmKok2hBsxX9rpiZ1OfD115VTot70SnD7gQ==
-X-Google-Smtp-Source: ABdhPJx+ob/M28pOeAl3kt6mLnGqklY78HLbZa/gq1HlEJ8Yxtco7WcCkPUTffmLLFlreoxix4kFWnNHV3it3rBtNl4=
-X-Received: by 2002:a6b:6204:: with SMTP id f4mr9990861iog.56.1598381755631;
- Tue, 25 Aug 2020 11:55:55 -0700 (PDT)
+        bh=IIZWu3166pXihdAEpw+Mp3W7uVSGrl+5DTpGsRd8suw=;
+        b=o9LsNRgN81q35p2QaVGd4vSJp11Ch/zf6g07GISDYyVUHZ483f+bBmyWamha/H7fHr
+         9juAzvWr7AYqRRmTNqoVu2eAcii23RfwLGwK9g4b4V01DbSD8n7luB4ux2sBbAYy7hyV
+         CI9smse7IB0ikPW2uRXJIVUyQyBoTap6S37eyJgvE5WyThCAJMpHizQq9PW3YRdMS5km
+         ZOqE6J8QQ8LCoA0cMzV3Q+FNIPNviqTeuu9aqPWs1AakDVXCKppsfVU8s+m3azcLW9uP
+         M1xGyeW5g2M5Ez+KI+lrHO7yExLXCfGWXPFUtXOhbvPVZj5NW8/FWhZEThQKnovkCj2x
+         IQsg==
+X-Gm-Message-State: AOAM533UFNh4eMxYAWbQk45BFXIFZB6TE0GHiW0WDY3aNttpdxIUFe1N
+        GRs6+3IWyjLQhkG4kuoHzVtOg6n+FH3qwzbNIxA3Jg==
+X-Google-Smtp-Source: ABdhPJzy0DbyVXrksmXBq429f3AEhs6iVcJCCucbg6NfOX6mgM9neMfFrPgpmXYuf2xLf50xjDWsZXuqT+BnUXud0Cg=
+X-Received: by 2002:a05:651c:330:: with SMTP id b16mr5536957ljp.77.1598382026379;
+ Tue, 25 Aug 2020 12:00:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200821151544.1211989-1-nicolas.rybowski@tessares.net> <20200824220100.y33yza2sbd7sgemh@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20200824220100.y33yza2sbd7sgemh@ast-mbp.dhcp.thefacebook.com>
-From:   Nicolas Rybowski <nicolas.rybowski@tessares.net>
-Date:   Tue, 25 Aug 2020 20:55:43 +0200
-Message-ID: <CACXrtpQCE-Yp9=7fbH9sB7-4k-OO12JD18JU=9GL_sYHcmnDtA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] bpf: add MPTCP subflow support
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
+References: <20200821150134.2581465-1-guro@fb.com> <20200821150134.2581465-3-guro@fb.com>
+In-Reply-To: <20200821150134.2581465-3-guro@fb.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Tue, 25 Aug 2020 12:00:15 -0700
+Message-ID: <CALvZod625bjHHpDUVYXCZ1hCqyVy133g5cSv2+bhTK_9YfR6KA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 02/30] bpf: memcg-based memory accounting for
+ bpf progs
+To:     Roman Gushchin <guro@fb.com>
+Cc:     bpf@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mptcp@lists.01.org, netdev@vger.kernel.org
+        Kernel Team <kernel-team@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Linux MM <linux-mm@kvack.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexei,
-
-Thanks for the feedback!
-
-On Tue, Aug 25, 2020 at 12:01 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Fri, Aug 21, 2020 at 8:01 AM Roman Gushchin <guro@fb.com> wrote:
 >
-> On Fri, Aug 21, 2020 at 05:15:38PM +0200, Nicolas Rybowski wrote:
-> > Previously it was not possible to make a distinction between plain TCP
-> > sockets and MPTCP subflow sockets on the BPF_PROG_TYPE_SOCK_OPS hook.
-> >
-> > This patch series now enables a fine control of subflow sockets. In its
-> > current state, it allows to put different sockopt on each subflow from a
-> > same MPTCP connection (socket mark, TCP congestion algorithm, ...) using
-> > BPF programs.
-> >
-> > It should also be the basis of exposing MPTCP-specific fields through BPF.
+> Include memory used by bpf programs into the memcg-based accounting.
+> This includes the memory used by programs itself, auxiliary data
+> and statistics.
 >
-> Looks fine, but I'd like to see the full picture a bit better.
-> What's the point of just 'token' ? What can be done with it?
+> Signed-off-by: Roman Gushchin <guro@fb.com>
+> ---
+>  kernel/bpf/core.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index ed0b3578867c..021fff2df81b 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -77,7 +77,7 @@ void *bpf_internal_load_pointer_neg_helper(const struct sk_buff *skb, int k, uns
+>
+>  struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flags)
+>  {
+> -       gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | gfp_extra_flags;
+> +       gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
+>         struct bpf_prog_aux *aux;
+>         struct bpf_prog *fp;
+>
+> @@ -86,7 +86,7 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
+>         if (fp == NULL)
+>                 return NULL;
+>
+> -       aux = kzalloc(sizeof(*aux), GFP_KERNEL | gfp_extra_flags);
+> +       aux = kzalloc(sizeof(*aux), GFP_KERNEL_ACCOUNT | gfp_extra_flags);
+>         if (aux == NULL) {
+>                 vfree(fp);
+>                 return NULL;
+> @@ -104,7 +104,7 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
+>
+>  struct bpf_prog *bpf_prog_alloc(unsigned int size, gfp_t gfp_extra_flags)
+>  {
+> -       gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | gfp_extra_flags;
+> +       gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
+>         struct bpf_prog *prog;
+>         int cpu;
+>
+> @@ -217,7 +217,7 @@ void bpf_prog_free_linfo(struct bpf_prog *prog)
+>  struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
+>                                   gfp_t gfp_extra_flags)
+>  {
+> -       gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | gfp_extra_flags;
+> +       gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
+>         struct bpf_prog *fp;
+>         u32 pages, delta;
+>         int ret;
+> --
+> 2.26.2
+>
 
-The idea behind exposing only the token at the moment is that it is
-the strict minimum required to identify all subflows linked to a
-single MPTCP connection. Without that, each subflow is seen as a
-"normal" TCP connection and it is not possible to find a link between
-each other.
-In other words, it allows the collection of all the subflows of a
-MPTCP connection in a BPF map and then the application of per subflow
-specific policies. More concrete examples of its usage are available
-at [1].
-
-We try to avoid exposing new fields without related use-cases, this is
-why it is the only one currently. And this one is very important to
-identify MPTCP connections and subflows.
-
-> What are you thinking to add later?
-
-The next steps would be the exposure of additional subflow context
-data like the backup bit or some path manager fields to allow more
-flexible / accurate BPF decisions.
-We are also looking at implementing Packet Schedulers [2] and Path
-Managers through BPF.
-The ability of collecting all the paths available for a given MPTCP
-connection - identified by its token - at the BPF level should help
-for such decisions but more data will need to be exposed later to take
-smart decisions or to analyse some situations.
-
-I hope it makes the overall idea clearer.
-
-> Also selftest for new feature is mandatory.
-
-I will work on the selftests to add them in a v2. I was not sure a new
-selftest was required when exposing a new field but now it is clear,
-thanks!
-
-
-[1] https://github.com/multipath-tcp/mptcp_net-next/tree/scripts/bpf/examples
-[2] https://datatracker.ietf.org/doc/draft-bonaventure-iccrg-schedulers/
+What about prog->aux->jited_linfo in bpf_prog_alloc_jited_linfo()?
