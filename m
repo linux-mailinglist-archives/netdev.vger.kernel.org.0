@@ -2,57 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BE21251CA8
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:51:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DEC9251CAD
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:51:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727008AbgHYPvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 11:51:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726988AbgHYPvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 11:51:06 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BCB0C061574;
-        Tue, 25 Aug 2020 08:51:06 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 54D9F1344473D;
-        Tue, 25 Aug 2020 08:34:19 -0700 (PDT)
-Date:   Tue, 25 Aug 2020 08:51:05 -0700 (PDT)
-Message-Id: <20200825.085105.471804029075197026.davem@davemloft.net>
-To:     m-karicheri2@ti.com
-Cc:     kuba@kernel.org, grygorii.strashko@ti.com, nsekhar@ti.com,
-        linux-omap@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net v3 PATCH 2/2] net: ethernet: ti: cpsw_new: fix clean up
- of vlan mc entries for host port
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200824151053.18449-2-m-karicheri2@ti.com>
-References: <20200824151053.18449-1-m-karicheri2@ti.com>
-        <20200824151053.18449-2-m-karicheri2@ti.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727047AbgHYPvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 11:51:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34082 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726971AbgHYPv3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 11:51:29 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 19F6B2067C;
+        Tue, 25 Aug 2020 15:51:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598370689;
+        bh=+uhEw3b1gTUz8slduurRGvop16JpIs0dqRKz0ZZTDDo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=0Sj/9uvdrKQF9Vu9WBAKh2vfzD3Fe4x6G0+v2AMnUNfoi3HM6Dsxzp+0mW88uNpg2
+         tulm14+7IPDfwHPep7T15dfHPtyT052erZLY1MSHi4bBbJZg/khKWUJ4FhiBH6S6RP
+         x8Qe3+stLb739yqTedhacEFwqbebiX4Bs2NhLz4I=
+Date:   Tue, 25 Aug 2020 08:51:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ahmed Abdelsalam <ahabdels@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andrea.mayer@uniroma2.it
+Subject: Re: [net-next v5 2/2] seg6: Add documentation for
+ seg6_inherit_inner_ipv4_dscp sysctl
+Message-ID: <20200825085127.50ba9c82@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200825121844.1576-1-ahabdels@gmail.com>
+References: <20200825121844.1576-1-ahabdels@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Aug 2020 08:34:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Murali Karicheri <m-karicheri2@ti.com>
-Date: Mon, 24 Aug 2020 11:10:53 -0400
+On Tue, 25 Aug 2020 12:18:44 +0000 Ahmed Abdelsalam wrote:
+> +	Enable the SRv6 encapsulation to inherit the DSCP value of the inner IPv4 packet.                                                                                                         
+> +
+> +	Default: FALSE (Do not inherit DSCP)
+> +
+>  ``conf/default/*``:
+>  	Change the interface-specific default settings.
+>  
 
-> To flush the vid + mc entries from ALE, which is required when a VLAN
-> interface is removed, driver needs to call cpsw_ale_flush_multicast()
-> with ALE_PORT_HOST for port mask as these entries are added only for
-> host port. Without this, these entries remain in the ALE table even
-> after removing the VLAN interface. cpsw_ale_flush_multicast() calls
-> cpsw_ale_flush_mcast which expects a port mask to do the job.
-> 
-> Fixes: ed3525eda4c4 ("net: ethernet: ti: introduce cpsw switchdev based driver part 1 - dual-emac")
-> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
+Checkpatch complains about whitespace:
 
-Applied and queued up for -stable.
+ERROR: trailing whitespace
+#24: FILE: Documentation/networking/ip-sysctl.rst:1802:
++seg6_inherit_inner_ipv4_dscp - BOOLEAN                                                                                                                                                                                                                                                                                                        $
