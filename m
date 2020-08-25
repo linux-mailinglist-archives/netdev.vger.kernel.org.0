@@ -2,102 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C09342521CF
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 22:18:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADCFD2521E5
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 22:22:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgHYUSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 16:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726149AbgHYUSp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 16:18:45 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522B8C061574;
-        Tue, 25 Aug 2020 13:18:45 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id f24so10087472edw.10;
-        Tue, 25 Aug 2020 13:18:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8k54/wE0SJdSYHFKB65kPT2GfYY/F68XNItC0ZawlMs=;
-        b=Rv4w+BsVBU9bQLlMX5nPmcv/iby7Atp6ZZWB8ouG2LBYQCQO6yK3bsOCRaDyo0fD2u
-         z9mvfWrDzWtn31JC7edW3JoTUVRsmcLVRWv0KqFtwGB54Mop9v5/IkA+0dSfl3zpVCqv
-         ukYUDPpLX4NrCWY36fBvJ0Gk1IpgbeDkXLPldeQ1+F27Yp0oC1XCDd6v/zL/V82b+ByN
-         MkZek+GZtchOBGt2lEkrS4ZdivRtPfSHCHtxJ1IMoI5oztjwEMMP3NlekvDiTfOmo2Y2
-         sMxaHNw4h65nSS0f+uiyIHOrYK0rOmgoHrvd4AuFoc3lFFDUUKoFZBLjxJ95PsQWMpSa
-         5XKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8k54/wE0SJdSYHFKB65kPT2GfYY/F68XNItC0ZawlMs=;
-        b=U+tJMUqjnziRCeMyDZf0ZO7QLd2crpM88kmJdRwOUy+rH5kbc6MvRAgG6PZ08+N6+e
-         buGU1gAQF7KhiyU3uOPWeffsztAIkREp05/B66X6PX9II+VWlcZbED2lll5DhQp4jNmj
-         2BphTGwl0GdXLf4MU1VOBcgybokLtI/vrJZn64lLd0QgzAoJswYYy5pqIUuTrbB36IzW
-         Xg5pgT743aobNw5EkFBlGeYTfUFF3+pxsfq7MUfZAC6qtFkXdqCeC0M691fMjv4pBnET
-         G/k69WuT3Q8jq+brQu1soqQKYlyVWVj5Bv1ZOaipMtD6g1ja4Bg0rgkQwbgP+GCLQ44z
-         XJyg==
-X-Gm-Message-State: AOAM532OoNpwdtHSciEOcoxZ7iYO+2FSTROojb/MsleCsmcUDmrffcUx
-        eTu4dujb500TL/ZCKeajGKyYghdcdfotHA==
-X-Google-Smtp-Source: ABdhPJwjRBjRSuLtemmLEN8j2cEzr4ZD1/ajIblLZhbYqPBNqz/8YT4tY6U4+d4dS25qBeJ7gxnJHg==
-X-Received: by 2002:a05:6402:74f:: with SMTP id p15mr10295040edy.377.1598386723973;
-        Tue, 25 Aug 2020 13:18:43 -0700 (PDT)
-Received: from [192.168.2.202] (pd9ea301b.dip0.t-ipconnect.de. [217.234.48.27])
-        by smtp.gmail.com with ESMTPSA id dr21sm15574816ejc.112.2020.08.25.13.18.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Aug 2020 13:18:43 -0700 (PDT)
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-Subject: Re: [PATCH net] mwifiex: Increase AES key storage size to 256 bits
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Kaloyan Nikolov <konik98@gmail.com>
-References: <20200825153829.38043-1-luzmaximilian@gmail.com>
- <CA+ASDXPoxdMb4b5d0Ayv=JFACHcq7EXub14pJtJfcCV2di95Rg@mail.gmail.com>
-Message-ID: <65b14706-321d-4025-f199-a89768815dfe@gmail.com>
-Date:   Tue, 25 Aug 2020 22:18:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1726682AbgHYUWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 16:22:06 -0400
+Received: from asavdk3.altibox.net ([109.247.116.14]:49118 "EHLO
+        asavdk3.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbgHYUWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 16:22:05 -0400
+Received: from ravnborg.org (unknown [188.228.123.71])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by asavdk3.altibox.net (Postfix) with ESMTPS id 199B620024;
+        Tue, 25 Aug 2020 22:21:54 +0200 (CEST)
+Date:   Tue, 25 Aug 2020 22:21:53 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Xinliang Liu <xinliang.liu@linaro.org>,
+        Wanchun Zheng <zhengwanchun@hisilicon.com>,
+        linuxarm@huawei.com, dri-devel <dri-devel@lists.freedesktop.org>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        devel@driverdev.osuosl.org, Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Xiubin Zhang <zhangxiubin1@huawei.com>,
+        Wei Xu <xuwei5@hisilicon.com>, David Airlie <airlied@linux.ie>,
+        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Bogdan Togorean <bogdan.togorean@analog.com>,
+        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        Liwei Cai <cailiwei@hisilicon.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Chen Feng <puck.chen@hisilicon.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        linaro-mm-sig@lists.linaro.org, Rob Herring <robh+dt@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, mauro.chehab@huawei.com,
+        Rob Clark <robdclark@chromium.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Liuyao An <anliuyao@huawei.com>,
+        Rongrong Zou <zourongrong@gmail.com>, bpf@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
+Message-ID: <20200825202153.GA237836@ravnborg.org>
+References: <cover.1597833138.git.mchehab+huawei@kernel.org>
+ <20200819152120.GA106437@ravnborg.org>
+ <20200819174027.70b39ee9@coco.lan>
+ <20200819173558.GA3733@ravnborg.org>
+ <20200821155801.0b820fc6@coco.lan>
+ <20200821155505.GA300361@ravnborg.org>
+ <20200824180225.1a515b6a@coco.lan>
 MIME-Version: 1.0
-In-Reply-To: <CA+ASDXPoxdMb4b5d0Ayv=JFACHcq7EXub14pJtJfcCV2di95Rg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200824180225.1a515b6a@coco.lan>
+X-CMAE-Score: 0
+X-CMAE-Analysis: v=2.3 cv=f+hm+t6M c=1 sm=1 tr=0
+        a=S6zTFyMACwkrwXSdXUNehg==:117 a=S6zTFyMACwkrwXSdXUNehg==:17
+        a=kj9zAlcOel0A:10 a=e5mUnYsNAAAA:8 a=jmfwfdV-BNFhccFjUE8A:9
+        a=CjuIK1q_8ugA:10 a=pBTelFdiagIA:10 a=Vxmtnl_E_bksehYqCbjh:22
+        a=pHzHmUro8NiASowvMSCR:22 a=xoEH_sTeL_Rfw54TyV31:22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/25/20 9:30 PM, Brian Norris wrote:
-> Also, while technically the regressing commit (e18696786548 ("mwifiex:
-> Prevent memory corruption handling keys")) was fixing a potential
-> overflow, the encasing command structure (struct host_cmd_ds_command)
-> is a union of a ton of other command layouts, and likely had plenty of
-> padding at the end, which would at least explain why non-malicious
-> scenarios weren't problematic pre-commit-e18696786548.
+Hi Mauro.
 
-This is pretty much spot on, although as far as I can tell, the padding
-comes from struct mwifiex_ie_type_key_param_set_v2. That contains a
-key_params member, which is a union over all supported key types,
-including other 256 bit types (like struct mwifiex_wapi_param).
+Laurent and I discussed this driver a little on irc.
+Some highlights:
 
-I should also note that this fix also affects mwifiex_set_aes_key_v2(),
-where sizeof(struct mwifiex_aes_param) is used to calculate the command
-length of what looks like a command being sent to the chip. This should
-probably be reviewed by someone with a bit more inside knowledge about
-the driver, as this could potentially break something due to the commit
-changing it from 16 to 32. I think, however, that this might actually
-also fix a potential issue when setting 256 bit AES keys.
+This parts could use register names:
++       writel(0x2, noc_dss_base + 0xc);
++       writel(0x2, noc_dss_base + 0x8c);
++       writel(0x2, noc_dss_base + 0x10c);
++       writel(0x2, noc_dss_base + 0x18c);
 
-Regards,
-Max
+The two nodes in the DT for DPE and DSI uses overlapping range for reg
+entries. It looks like a syscon node or some iommu thing is needed to do
+this properly.
+
+The chain will lok like this:
+
+DPE -> DSI -> video mux -> {adv7533, panel}
+
+But drm_bridge has not yet support for such non-linear setup.
+The recommendation is to focus on the HDMI prat. Then we can later
+come up with support for a video mux.
+
+The video mux should have a dedicated node with one input node and two
+output nodes. Which is also where the gpio should be.
+
+The DSI node references two DPHY instances - should it be PHY driver(s)?
+
+Does the DSI part contain one or two instances. Clocks looks duplicated.
+
+Does the DPE and DSI share a lot of register blocks - or does it just
+look like this from a first point of view?
+
+You can read though the logs here:
+https://people.freedesktop.org/~cbrill/dri-log/index.php
+
+Could you please try to get back on some of the points above so we can
+help you move forward in the right direction.
+
+Thanks,
+	Sam
