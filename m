@@ -2,78 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4CB251044
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 05:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C008251049
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 06:02:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728110AbgHYD4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 23:56:42 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:58503 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727913AbgHYD4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 23:56:41 -0400
-Received: from v4.asicdesigners.com (v4.blr.asicdesigners.com [10.193.186.237])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 07P3uYWS017734;
-        Mon, 24 Aug 2020 20:56:35 -0700
-From:   Raju Rangoju <rajur@chelsio.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, vishal@chelsio.com, dt@chelsio.com,
-        rajur@chelsio.com
-Subject: [PATCH net-next] cxgb4: add error handlers to LE intr_handler
-Date:   Tue, 25 Aug 2020 09:25:46 +0530
-Message-Id: <20200825035546.18330-1-rajur@chelsio.com>
-X-Mailer: git-send-email 2.9.5
+        id S1725805AbgHYECR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 00:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725263AbgHYECQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 00:02:16 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65740C061574;
+        Mon, 24 Aug 2020 21:02:15 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id k18so6265517pfp.7;
+        Mon, 24 Aug 2020 21:02:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OWP3Doavv4AA5MTHUfERK+5fDLCAAOxRkHFkQDFePYA=;
+        b=bQ3ljGLC5BwLgsiUgJYdqoqrw82XUREWO5/zTU4ADXG0Rc4P1VD0jZc08F4Tbg+HGu
+         gOU4qbbhal7hgak17fkRX/tUP8su+EV3UTQtpobsbbacR3iu5suqB7zQfpIbg2gbCwVw
+         EkwiT8320NlykE/ORi7g6NrM2Kiw6b5lhohmdZi4983A/haT/GzpqNQHB/TIdTsZr8NR
+         HRignxCoDEXJ4QvPyOo/3Fl9cSTNT8r6pfbksgku/jYXMRuXKz0Q0am9eGEgJOf5Rxhf
+         Y5BNxAkVsZv3WwCoXT/EH+JZWiizLF9BjipG/NDDZLyF18QJcO7u7irhHqOeq9JkjxB4
+         dHVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OWP3Doavv4AA5MTHUfERK+5fDLCAAOxRkHFkQDFePYA=;
+        b=uT4yBDtIXxDKYV1wGheg8BY3AHt46yNShldVqNgwkjPfO3Tx4iTv9Hq0BbCtWbmgd/
+         IU3wUaJ8+44tZM3RfQDXfbAx4rZM6L1uA0Z47EULzY+iFrEWGc45FR7jTaAFRXwyce6t
+         FFhcmQB/gCBl/HtnVJdM66sWS9f4qLqICjnOGO1hQAXVsrtP3OxcMfyT5WeBU0aT4D2a
+         s1EZhxc3/eriaNMMndkIIVdEIQFjFrgBD2efSYMe8H7eXCiWLXID9Z40vpnzvN5Tv5E6
+         F+cMqMgUnLJzgv6oyhBwGg/1bdcNxna+R9zZhmeW2NyGRX6Wh6waGBtffdVph3IFZ+3i
+         bkvQ==
+X-Gm-Message-State: AOAM530sh2HbWVAZej67kJ6U4YSpsYSweLeT7mLFt3DTGF/BC9K7J19+
+        egss4GGJ85KJMr2eiXDrvcg=
+X-Google-Smtp-Source: ABdhPJzZSXK3qRkITFj5doK44JXAAp3hdl6VDwNzNrQomSSXun/dR/mHs4ls7u4rsaqFWOa8UNcj6Q==
+X-Received: by 2002:a63:e301:: with SMTP id f1mr5434785pgh.169.1598328134975;
+        Mon, 24 Aug 2020 21:02:14 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:1561])
+        by smtp.gmail.com with ESMTPSA id v134sm7781620pfc.101.2020.08.24.21.02.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Aug 2020 21:02:13 -0700 (PDT)
+Date:   Mon, 24 Aug 2020 21:02:11 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 0/3] samples: bpf: Refactor tracing programs
+ with libbpf
+Message-ID: <20200825040211.zoo3s4wf2gi23f3t@ast-mbp.dhcp.thefacebook.com>
+References: <20200823085334.9413-1-danieltimlee@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200823085334.9413-1-danieltimlee@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cxgb4 does not look for HASHTBLMEMCRCERR and CMDTIDERR
-bits in LE_DB_INT_CAUSE register, but these are enabled
-in LE_DB_INT_ENABLE. So, add error handlers to LE
-interrupt handler to emit a warning or alert message
-for hash table mem crc and cmd tid errors
+On Sun, Aug 23, 2020 at 05:53:31PM +0900, Daniel T. Lee wrote:
+> For the problem of increasing fragmentation of the bpf loader programs,
+> instead of using bpf_loader.o, which is used in samples/bpf, this
+> patch refactors the existing kprobe, tracepoint tracing programs with 
+> libbbpf bpf loader.
 
-Signed-off-by: Raju Rangoju <rajur@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c   | 2 ++
- drivers/net/ethernet/chelsio/cxgb4/t4_regs.h | 8 ++++++++
- 2 files changed, 10 insertions(+)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index 8a56491bb034..e49370f9d59b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -4745,9 +4745,11 @@ static void le_intr_handler(struct adapter *adap)
- 	static struct intr_info t6_le_intr_info[] = {
- 		{ T6_LIPMISS_F, "LE LIP miss", -1, 0 },
- 		{ T6_LIP0_F, "LE 0 LIP error", -1, 0 },
-+		{ CMDTIDERR_F, "LE cmd tid error", -1, 1 },
- 		{ TCAMINTPERR_F, "LE parity error", -1, 1 },
- 		{ T6_UNKNOWNCMD_F, "LE unknown command", -1, 1 },
- 		{ SSRAMINTPERR_F, "LE request queue parity error", -1, 1 },
-+		{ HASHTBLMEMCRCERR_F, "LE hash table mem crc error", -1, 0 },
- 		{ 0 }
- 	};
- 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-index 065c01c654ff..b11a172b5174 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
-@@ -3017,6 +3017,14 @@
- #define REV_V(x) ((x) << REV_S)
- #define REV_G(x) (((x) >> REV_S) & REV_M)
- 
-+#define HASHTBLMEMCRCERR_S    27
-+#define HASHTBLMEMCRCERR_V(x) ((x) << HASHTBLMEMCRCERR_S)
-+#define HASHTBLMEMCRCERR_F    HASHTBLMEMCRCERR_V(1U)
-+
-+#define CMDTIDERR_S    22
-+#define CMDTIDERR_V(x) ((x) << CMDTIDERR_S)
-+#define CMDTIDERR_F    CMDTIDERR_V(1U)
-+
- #define T6_UNKNOWNCMD_S    3
- #define T6_UNKNOWNCMD_V(x) ((x) << T6_UNKNOWNCMD_S)
- #define T6_UNKNOWNCMD_F    T6_UNKNOWNCMD_V(1U)
--- 
-2.9.5
-
+Thank for you doing the conversion. Applied.
