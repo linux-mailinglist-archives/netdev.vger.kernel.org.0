@@ -2,104 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F072251BE7
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:11:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A9B251BE9
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:11:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbgHYPLL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 11:11:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
+        id S1726786AbgHYPLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 11:11:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726113AbgHYPLE (ORCPT
+        with ESMTP id S1726096AbgHYPLE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 11:11:04 -0400
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0CAC061755;
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA292C061574;
         Tue, 25 Aug 2020 08:11:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=LPG5Lc7nCg6NrS7ax+6DMhtaCUehIHNu6awjAcV2BcE=; b=tB7mY0ZOpnz4kAH3i8HK3Mu2Dr
-        KdjEI6mp7kDoq4wQGigAPa4qc5Uzr0yGhCJqcti2O8wuhkO6l6Y5mOSL5jBo8HryngLeovoPGDjvT
-        6NodraZ/TUTwHK4CD7ro8a1FOfHYzy0YSFWm5tmdL574Q81rla/G/tPLAgmKQmu9ZnQluf4rmyxgf
-        36SM1gZq65OUuvNaW1W4PtfWlUuVHkOZzx9ekjEmCBgdQC/lzKDU5CnupngOBr3GGGxzUhWMQ1ePt
-        szktTlwydy0dQUcdxA0P35WDPeRCbcYF+OC7Fbzc4p7owylhuQMtnZlwQAd780JWGROiokTNr5vxl
-        WvTtxoaA==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kAab6-0005G5-QJ; Tue, 25 Aug 2020 15:10:53 +0000
-Subject: Re: [PATCH v5 5/6] can: ctucanfd: CTU CAN FD open-source IP core -
- platform and next steps and mainlining chances
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Drew Fustini <pdp7pdp7@gmail.com>
-Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>, mark.rutland@arm.com,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>
-References: <cover.1597518433.git.ppisa@pikron.com>
- <4ceda3a9d68263b4e0dfe66521a46f40b2e502f7.1597518433.git.ppisa@pikron.com>
- <73e3dad8-9ab7-2f8f-312c-1957b4572b08@infradead.org>
- <202008251125.41514.pisa@cmp.felk.cvut.cz>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <6f26127d-5403-3ea2-9b6d-11dc35b0d5c2@infradead.org>
-Date:   Tue, 25 Aug 2020 08:10:43 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+Received: by mail-wr1-x444.google.com with SMTP id 2so1915839wrj.10;
+        Tue, 25 Aug 2020 08:11:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=zGwmmwPw3Le2wH1Emc9uaafD9ZICagjL8Io08HFMTg0=;
+        b=kmIa3bGpCHQR9WehyCp7+1HD5BfIVmwhr7LEWscMsQYHBD/EgJwjdITfG/wmcw3M6F
+         fAk5xFqYrAeIe5BsW5GS1XYU/+Zusmtr/JS8kzZnk8JyW030xuHZxwrBbaExW89LIbxU
+         AQe4qPT1a5/UD+ZuoUUCkybUarwVq4QMRPAeiRHzR7USA6Osi9rZZ3YmggTHDwesXS5y
+         biZA+TN+kQ1yrU9WbagW3BaNygWBCIvr4ECuc4Ds4vaaA0H7oWqHV90i8kvSKy11YTaz
+         LGGKsX1Ii/hEzDx9iSVKYoDEsYa1E+7/JReAaicezSotN/TtuGe0w4Vy5N8bAFBEwK9m
+         zfpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:reply-to:to:cc:date
+         :in-reply-to:references:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=zGwmmwPw3Le2wH1Emc9uaafD9ZICagjL8Io08HFMTg0=;
+        b=Q06W/8+UQjFIigGBKu+iwHtiwIK2guAg+88vG7asyqILGJjwbzmghl5i+pbtPcKLLj
+         wB4kEh1ANgJBWEKkj5k095QlF81e1YJLVrDRlm5ozLysnCEqHEhURLVjkVi75A0TvSs+
+         Gn5jwxilqdp4qyfcaFV2N+h5PSxsgk+9bzJTxvHjh5YbE61L6zPOjLwvCWMAXBXyIwHo
+         fQCEhGmhqOcAbLY5EWtnQe2ENsVgEJzOrVhFwgOr7UmZPAMt4pCNxVFBPHJYMAb+4+oi
+         FyEdcMXJhQoDOwO+7KIs2qgd7JXDVIgc5cXZUa4j05VcmtUHwCneckeRtGjxo0BWKzTe
+         CbnA==
+X-Gm-Message-State: AOAM530cxdiDe8XTCyJTYr/5+3oWvqUt2G/JkMSYQ7ssVk9tVZ0jTEsk
+        2deI6Xofpge6je04Uva6k11PwFpc7+s=
+X-Google-Smtp-Source: ABdhPJwgBnGNu33aGEgjIVktAH11ksdR/aOlw+gqj6vInGkZPyORLyPKDOh+Vo+kPXgG9fTRRxmKsw==
+X-Received: by 2002:adf:de8d:: with SMTP id w13mr10928850wrl.129.1598368262506;
+        Tue, 25 Aug 2020 08:11:02 -0700 (PDT)
+Received: from ?IPv6:2a02:8070:bb9:bc00::fc? ([2a02:8070:bb9:bc00::fc])
+        by smtp.gmail.com with ESMTPSA id j11sm30262625wrq.69.2020.08.25.08.11.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2020 08:11:01 -0700 (PDT)
+Message-ID: <c8915d7b91035e15dc87a4540a6dcfc5c4c0bf1a.camel@googlemail.com>
+Subject: Re: v4.19.132: r8169: possible bug during load
+From:   Christoph Fritz <chf.fritz@googlemail.com>
+Reply-To: chf.fritz@googlemail.com
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, netdev@vger.kernel.org
+Date:   Tue, 25 Aug 2020 17:11:01 +0200
+In-Reply-To: <eab4f025-fabf-63fc-6bde-0a936cf2731b@gmail.com>
+References: <c3193408e36e762a53a13867c0ea8e253147edf2.camel@googlemail.com>
+         <eab4f025-fabf-63fc-6bde-0a936cf2731b@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-In-Reply-To: <202008251125.41514.pisa@cmp.felk.cvut.cz>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/25/20 2:25 AM, Pavel Pisa wrote:
-> Hello Randy and Rob,
-> 
-> thanks much for review, I have corrected FPGA spelling
-> and binding YAML license.
-> 
-> On Sunday 16 of August 2020 01:28:13 Randy Dunlap wrote:
->> On 8/15/20 12:43 PM, Pavel Pisa wrote:
->>> diff --git a/drivers/net/can/ctucanfd/Kconfig
->>> b/drivers/net/can/ctucanfd/Kconfig index e1636373628a..a8c9cc38f216
->>> 100644
->>> --- a/drivers/net/can/ctucanfd/Kconfig
->>> +++ b/drivers/net/can/ctucanfd/Kconfig
->>> @@ -21,4 +21,15 @@ config CAN_CTUCANFD_PCI
->>>  	  PCIe board with PiKRON.com designed transceiver riser shield is
->>> available at https://gitlab.fel.cvut.cz/canbus/pcie-ctu_can_fd .
->>>
->>> +config CAN_CTUCANFD_PLATFORM
->>> +	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
->>> +	depends on OF
->>
->> Can this be
->> 	depends on OF || COMPILE_TEST
->> ?
-> 
-> I am not sure for this change. Is it ensured/documented somewhere that
-> header files provide dummy definition such way, that OF drivers builds
-> even if OF support is disabled? If I remember well, CTU CAN FD OF
-> module build fails if attempted in the frame of native x86_64
-> build where OF has been disabled. Does COMPILE_TEST ensure that
-> such build succeeds.
-> 
+On Tue, 2020-08-25 at 13:06 +0200, Heiner Kallweit wrote:
+> I don't see how the improvement to the r8169 driver and the issues deep
+> in the network stack should be related. Was the referenced r8169 commit
+> result of a bisect?
 
-COMPILE_TEST won't ensure anything.
-OTOH, <linux/of.h> has lots of stubs for handling the case of
-CONFIG_OF not being enabled.
+Nope, just a best guess.
 
--- 
-~Randy
+It takes some hours to hit the issue and most of the time there is no
+trace, just a frozen OS.
+
+> The Debian kernel may include additional Distro-specific patches.
+> I'd recommend re-testing with mainline kernels.
+> 
+> Also 4.19 has been out for quite some time and boards with r8169-driven
+> chips are very common (basically every consumer mainboard). In case of a
+> general driver issue I'd expect to have received more such reports.
+> Do you use any special network features on your system?
+
+mhm, ... maybe a bit unusual load: a lot of tftp, NFS and KVM.
+
+That's the first time I'm using a distro kernel. I guess I'll just dial
+back and stick to backing mainline again.
+
+Thanks
+  -- Christoph
 
