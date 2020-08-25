@@ -2,128 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C622515C7
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:55:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 093932515C8
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:55:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729654AbgHYJzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 05:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46248 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729456AbgHYJzk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 05:55:40 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87148C061574;
-        Tue, 25 Aug 2020 02:55:40 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1598349339;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5bdT5tTM+hEnX3GHDG3SgFYwTwZMX1yMI7aVVjqitqY=;
-        b=az6XmRx0k5oLN1bIaAHyCdIuH590fxM3/uYM0egcx2w+6s56vftoivh4/DDL0y8tZaXGgB
-        Xd/dMTYP4htDmj77ZYPKmtuulUTGZiW6ctR83KWrcYJVaEdwSun+H2/FFnQa+vUbFYjyiO
-        3Cs6fxHY+4V3XDEUic1hESs9SRP8bkbUzGnMP1Fh2XCzeSUmfh7zbZX5wg04Bowsz2/unh
-        FEizV4bgRM2CunF+cLppghCcpx9DmSprFsZZcFIAccCKIC8CnzMQmc2XbxV3bNxAHYbi8e
-        Wb51G0XpY5WPkK+74sRRJlVPc96CK/PxFSH9s4N+IsDr4XGf7/UOdqHsDycnGQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1598349339;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5bdT5tTM+hEnX3GHDG3SgFYwTwZMX1yMI7aVVjqitqY=;
-        b=p0+MO18mFNv6nUcGw/fOpqWL3EmCv1vx5i0JWx2mxD5NVODpZfbqICiy0wx/6EIRg2VsKJ
-        sQOT40Z3aCsfvoCQ==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
-In-Reply-To: <20200825093830.r2zlpowtmhgwm6rz@skbuf>
-References: <20200820081118.10105-1-kurt@linutronix.de> <20200820081118.10105-6-kurt@linutronix.de> <20200824225615.jtikfwyrxa7vxiq2@skbuf> <878se3133y.fsf@kurt> <20200825093830.r2zlpowtmhgwm6rz@skbuf>
-Date:   Tue, 25 Aug 2020 11:55:37 +0200
-Message-ID: <871rjv123q.fsf@kurt>
+        id S1729656AbgHYJzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 05:55:46 -0400
+Received: from mx20.baidu.com ([111.202.115.85]:50812 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729456AbgHYJzq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 05:55:46 -0400
+Received: from BC-Mail-Ex32.internal.baidu.com (unknown [172.31.51.26])
+        by Forcepoint Email with ESMTPS id 3539B8D34D64D489C8D8;
+        Tue, 25 Aug 2020 17:55:44 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ BC-Mail-Ex32.internal.baidu.com (172.31.51.26) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1979.3; Tue, 25 Aug 2020 17:55:44 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1979.003; Tue, 25 Aug 2020 17:55:44 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "maciej.fijalkowski@intel.com" <maciej.fijalkowski@intel.com>,
+        "piotr.raczynski@intel.com" <piotr.raczynski@intel.com>,
+        "maciej.machnikowski@intel.com" <maciej.machnikowski@intel.com>
+Subject: RE: [PATCH net 2/3] ixgbe: avoid premature Rx buffer reuse
+Thread-Topic: [PATCH net 2/3] ixgbe: avoid premature Rx buffer reuse
+Thread-Index: AQHWesB7tnRiiToEI0WTNehm9NY04alIljXw
+Date:   Tue, 25 Aug 2020 09:55:44 +0000
+Message-ID: <6356c0ddbdbd4f8fb4927f3ee96c4c33@baidu.com>
+References: <20200825091629.12949-1-bjorn.topel@gmail.com>
+ <20200825091629.12949-3-bjorn.topel@gmail.com>
+In-Reply-To: <20200825091629.12949-3-bjorn.topel@gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.198.44]
+x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex32_2020-08-25 17:55:44:333
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-On Tue Aug 25 2020, Vladimir Oltean wrote:
-> On Tue, Aug 25, 2020 at 11:33:53AM +0200, Kurt Kanzenbach wrote:
->> On Tue Aug 25 2020, Vladimir Oltean wrote:
->> > On Thu, Aug 20, 2020 at 10:11:15AM +0200, Kurt Kanzenbach wrote:
->> >
->> > Explain again how this works, please? The hrtimer measures the CLOCK_T=
-AI
->> > of the CPU, but you are offloading the CLOCK_TAI domain of the NIC? So
->> > you are assuming that the CPU and the NIC PHC are synchronized? What if
->> > they aren't?
->>=20
->> Yes, I assume that's synchronized with e.g. phc2sys.
->>=20
->
-> My intuition tells me that this isn't the user's expectation, and that
-> it should do the right thing even if it's not synchronized to the system
-> clock.
-
-I get your point. But how to do it? We would need a timer based on the
-PTP clock in the switch.
-
->
->> >
->> > And what if the base-time is in the past, do you deal with that (how
->> > does the hardware deal with a base-time in the past)?
->> > A base-time in the past (example: 0) should work: you should advance t=
-he
->> > base-time into the nearest future multiple of the cycle-time, to at
->> > least preserve phase correctness of the schedule.
->>=20
->> If the hrtimer is programmed with a value in the past, it fires
->> instantly.
->
-> Yes, it does.
->
->> The callback is executed and the start time is programmed.
->>=20
->
-> With a valid value from the hardware's perspective?
-
-Yes. That's no problem.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl9E4BkACgkQeSpbgcuY
-8KYTLA//czMWI4/CjiYlrGZSJO5Yo+04S6/y8xANPp50A8kGblNt3YuN5etwykHx
-7xPPR6FdlU/U1FNTbi6FMgi5ryJjE6aktcpnCjkHPL63epMnx2pbt4JMRMNInaYv
-u91chzZcsyMJRb3FTu5SMZVC06aPh7zPgxSIey9+D/Yn7xjtvXKu511mPooPCPC3
-vR5+++wa3sOassjabinJRr2Vjsg+6nzGULd0GCQ3L8gnURN3bB/a4McV0xBWpUpi
-IM256G0NWkRs0NXNX8R9B/Tn7ykeacgErRuLtuL/qXOktI+awR9PStS0O5JI8xnC
-0FodtVyKhPhdTxTiaeNf8tHlyWsxUy812G5uJXWxCSdZrSoRjzCq5oVOmjvxaP5Z
-s/ws+WWOufaDb4eN8QbqHvmTfqMDi7uhUFpEHnuHoBTOaXY0hzLHNKx1n6S/fHMK
-x7kWkgoJ4Xu0xvuOGgVRuZcq5VpG5XaF7Hxzyn4tgT1XXXAyyIbIzvaLZSGOslBc
-yOUmoYPeru2J91Ssh5GLy8nuPadYaQjsynOy+/i7RDDS+yhOuSgt8jBBcHMX3RBX
-YrCGJZY5blnm5YT4Kk+f68p5njinzU9wbCoOuFQe+KX8rDhQJ05GQeVHGSAZOlpV
-nQ+sH4raun37QhMM+s5pe1W8glnBdOFV5M62VMFuHdLRart4DAA=
-=G86F
------END PGP SIGNATURE-----
---=-=-=--
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQmrDtnJuIFTDtnBlbCBb
+bWFpbHRvOmJqb3JuLnRvcGVsQGdtYWlsLmNvbV0NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDI1
+LCAyMDIwIDU6MTYgUE0NCj4gVG86IGplZmZyZXkudC5raXJzaGVyQGludGVsLmNvbTsgaW50ZWwt
+d2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmcNCj4gQ2M6IEJqw7ZybiBUw7ZwZWwgPGJqb3JuLnRv
+cGVsQGludGVsLmNvbT47IG1hZ251cy5rYXJsc3NvbkBpbnRlbC5jb207DQo+IG1hZ251cy5rYXJs
+c3NvbkBnbWFpbC5jb207IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7DQo+IG1hY2llai5maWphbGtv
+d3NraUBpbnRlbC5jb207IHBpb3RyLnJhY3p5bnNraUBpbnRlbC5jb207DQo+IG1hY2llai5tYWNo
+bmlrb3dza2lAaW50ZWwuY29tOyBMaSxSb25ncWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+
+IFN1YmplY3Q6IFtQQVRDSCBuZXQgMi8zXSBpeGdiZTogYXZvaWQgcHJlbWF0dXJlIFJ4IGJ1ZmZl
+ciByZXVzZQ0KPiANCj4gRnJvbTogQmrDtnJuIFTDtnBlbCA8Ympvcm4udG9wZWxAaW50ZWwuY29t
+Pg0KPiANCj4gVGhlIHBhZ2UgcmVjeWNsZSBjb2RlLCBpbmNvcnJlY3RseSwgcmVsaWVkIG9uIHRo
+YXQgYSBwYWdlIGZyYWdtZW50IGNvdWxkIG5vdCBiZQ0KPiBmcmVlZCBpbnNpZGUgeGRwX2RvX3Jl
+ZGlyZWN0KCkuIFRoaXMgYXNzdW1wdGlvbiBsZWFkcyB0byB0aGF0IHBhZ2UgZnJhZ21lbnRzDQo+
+IHRoYXQgYXJlIHVzZWQgYnkgdGhlIHN0YWNrL1hEUCByZWRpcmVjdCBjYW4gYmUgcmV1c2VkIGFu
+ZCBvdmVyd3JpdHRlbi4NCj4gDQo+IFRvIGF2b2lkIHRoaXMsIHN0b3JlIHRoZSBwYWdlIGNvdW50
+IHByaW9yIGludm9raW5nIHhkcF9kb19yZWRpcmVjdCgpLg0KPiANCj4gRml4ZXM6IDY0NTMwNzM5
+ODdiYSAoIml4Z2JlOiBhZGQgaW5pdGlhbCBzdXBwb3J0IGZvciB4ZHAgcmVkaXJlY3QiKQ0KPiBT
+aWduZWQtb2ZmLWJ5OiBCasO2cm4gVMO2cGVsIDxiam9ybi50b3BlbEBpbnRlbC5jb20+DQoNClJl
+cG9ydGVkLWFuZC1hbmFseXplZC1ieTogTGkgUm9uZ1FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29t
+Pg0KDQpUaGFua3MNCg0KLUxpDQoNCg==
