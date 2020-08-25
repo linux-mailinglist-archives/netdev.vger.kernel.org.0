@@ -2,95 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2965A251DF1
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:14:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17DA6251E20
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:20:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbgHYROa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 13:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
+        id S1726759AbgHYRUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 13:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726803AbgHYROV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 13:14:21 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 602C0C061574;
-        Tue, 25 Aug 2020 10:14:21 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id kx11so1129760pjb.5;
-        Tue, 25 Aug 2020 10:14:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nC0CGa0DhQLywOaSN+bsM9yIH3pm94jbNUPQgdZ88Zc=;
-        b=UrPh53BImtLFBcv+cCSnb2qNXo6lIQxjvbEe5IvkiLrUqCkvCd0vLMoTGJ33ldyijB
-         5jG3uzkNRQI4r42LVWK5lVeOtDkTlJhqLRmfH/yZ899mxP4JFtPFQjcqGSH2H7mz4Cu7
-         uetACryJmuPdWieQ29zfPJMjyfXscYG+Ok97mXqWRwEkWKcRN6sbbKj9S1SETrVb4Iwg
-         a63GIEAuK9eZpTX+Fr/qiLnz72/kyKwlA6kShPSGfw++voig8J1arLJD3U3fzcFHrire
-         l///LWgSxJmGXZ+nRaDpYhAyoYsJCVlMpuE3OG4h9+G5S2Dhb1Tskuvfriid8xcEByoZ
-         Vrjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nC0CGa0DhQLywOaSN+bsM9yIH3pm94jbNUPQgdZ88Zc=;
-        b=aGaQ6hYJ4ZwnvaEPqtvMIOm2w/wMAFTrT+RR34rQse3F4i2xffTFboMsqJ6hFipMBz
-         382PMdlmaCO9fQbhlABzez1gbM2MW8gNKe/hw9BGNhYX4s5g3M3eFVD0m7x5z6aRW4kR
-         7a8Pz8U/E8pqQF3GGzR3LBg0PWx/xpjlqg6oVB4m+dXeDnRfdBQFgNRSkykJSeGnFbMJ
-         cKSCtZ9ure9aI+hmNwCDxBp/HnOWLAd4OXPwBW9d35c2Qoyr3lgVqSEWvFfNSafp791B
-         6y0RDkAz5D3esuBioj3G3JvrFnMAU0HsG8BrShMpUq1JMOJB2GglncYcdny88qQ3+Q4l
-         8IMA==
-X-Gm-Message-State: AOAM533JPKiJDRKgHBHO/ieHRLXyXox/JQ82Fyx0dNEScDScMW+XuFdR
-        dyjwkRoGIieEwi/2x1DqPBZfqntEWD0=
-X-Google-Smtp-Source: ABdhPJz0hdCt6dO/xZHDgu7EfQeIWkH/2zYpyMfqRxlMXWDKzR+FSmzEGgyr71G/fTK5jRzr117JKA==
-X-Received: by 2002:a17:90a:bc09:: with SMTP id w9mr2380318pjr.43.1598375660814;
-        Tue, 25 Aug 2020 10:14:20 -0700 (PDT)
-Received: from [10.69.79.32] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id c15sm15746867pfo.115.2020.08.25.10.14.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Aug 2020 10:14:19 -0700 (PDT)
-Subject: Re: [PATCH v3 0/8] Hirschmann Hellcreek DSA driver
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        David Miller <davem@davemloft.net>, olteanv@gmail.com
-Cc:     kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        netdev@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, bigeasy@linutronix.de,
-        richardcochran@gmail.com, kamil.alkhouri@hs-offenburg.de,
-        ilias.apalodimas@linaro.org, ivan.khoronzhuk@linaro.org,
-        vinicius.gomes@intel.com, xiaoliang.yang_1@nxp.com, Po.Liu@nxp.com
-References: <20200820081118.10105-1-kurt@linutronix.de>
- <20200824143110.43f4619f@kicinski-fedora-PC1C0HJN>
- <20200824220203.atjmjrydq4qyt33x@skbuf>
- <20200824.153518.700546598086140133.davem@davemloft.net>
- <87sgcbynr9.fsf@kurt>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <efd98ac6-baaa-ae44-9630-ba1241ac315a@gmail.com>
-Date:   Tue, 25 Aug 2020 10:14:17 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.1.1
+        with ESMTP id S1726090AbgHYRUD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 13:20:03 -0400
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626CEC061574;
+        Tue, 25 Aug 2020 10:20:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=J0sCtfCRKI0PUi5IGIcZ/gUzI83eFMEqQ3PM5FwtjnU=; b=3dQF/4f0dY0Lx3K4jejK7ksnPs
+        jAXQ8un2Eb6vaIXj7mboT6pCfFyq51VgHnlBq9iOio2foQH9p09N3qiBh8/wZA2Tswx5qTGQmlWSU
+        U1n7V1ukJ+6fUnvIZNRGXmfQPQgnW8iZJzs3YnppULCjIjGShBVQVi88bXMTyDP74LGzWlf0+VYyx
+        Hv6LdyaSh8MBiZiWSSri20H/0UsG4dewv4fo6N2FwxMUFmOQEvUKADfGOaH4xqCRKQoNWygHI1Vxb
+        58xV/XZTak50R5yOXhncjrLF75qJuNmKgYgZEDzAk8oWWN+mX3hRA9FlNnN1jYWFRbR7whN6Vt4IT
+        1gniMZzQ==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kAcc1-0004rI-4Q; Tue, 25 Aug 2020 17:19:57 +0000
+Subject: Re: [PATCH 1/3] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
+ Driver
+To:     =?UTF-8?Q?=c5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     m.szyprowski@samsung.com, b.zolnierkie@samsung.com
+References: <CGME20200825170322eucas1p2c6619aa3e02d2762e07da99640a2451c@eucas1p2.samsung.com>
+ <20200825170311.24886-1-l.stelmach@samsung.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <6062dc73-99bc-cde0-26a1-5c40ea1447bd@infradead.org>
+Date:   Tue, 25 Aug 2020 10:19:51 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <87sgcbynr9.fsf@kurt>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200825170311.24886-1-l.stelmach@samsung.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/25/20 10:03 AM, Łukasz Stelmach wrote:
+> diff --git a/drivers/net/ethernet/asix/Kconfig b/drivers/net/ethernet/asix/Kconfig
+> new file mode 100644
+> index 000000000000..4b127a4a659a
+> --- /dev/null
+> +++ b/drivers/net/ethernet/asix/Kconfig
+> @@ -0,0 +1,20 @@
+> +#
+> +# Asix network device configuration
+> +#
+> +
+> +config NET_VENDOR_ASIX
+> +	bool "Asix devices"
+
+Most vendor entries also have:
+	default y
+so that they will be displayed in the config menu.
+
+> +	depends on SPI
+> +	help
+> +	  If you have a network (Ethernet) interface based on a chip from ASIX, say Y
+> +
+> +if NET_VENDOR_ASIX
+> +
+> +config SPI_AX88796C
+> +	tristate "Asix AX88796C-SPI support"
+> +	depends on SPI
+
+That line is redundant (but not harmful).
+
+> +	depends on GPIOLIB
+> +	help
+> +	  Say Y here if you intend to attach a Asix AX88796C as SPI mode
+> +
+> +endif # NET_VENDOR_ASIX
 
 
-On 8/25/2020 4:21 AM, Kurt Kanzenbach wrote:
-> On Mon Aug 24 2020, David Miller wrote:
->> Agreed, Kurt can you repost this series without the TAPRIO support for
->> now since it's controversial and needs more discussion and changes?
-> 
-> OK. It seems like the TAPRIO implementation has to be discussed more and
-> it might be good to do that separately.
-> 
-> I'll replace the spinlocks (which were only introduced for the hrtimers)
-> with mutexes and post a sane version of the driver without the TAPRIO
-> support.
-
-Sounds great, thanks!
 -- 
-Florian
+~Randy
+
