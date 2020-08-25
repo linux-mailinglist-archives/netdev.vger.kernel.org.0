@@ -2,79 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E715251E9A
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB905251E97
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:44:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbgHYRqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 13:46:30 -0400
-Received: from mga17.intel.com ([192.55.52.151]:25820 "EHLO mga17.intel.com"
+        id S1726374AbgHYRoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 13:44:21 -0400
+Received: from mga14.intel.com ([192.55.52.115]:7427 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726222AbgHYRq2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 13:46:28 -0400
-IronPort-SDR: cQpSD+idSkOIt1uXESuaZIa3n1IpXWcwO6zEkZocb9y7PvmDxyOL1WIYPKK5ABPbDLI6wybCgI
- 19C7mb7+g+Fw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9723"; a="136228362"
+        id S1725936AbgHYRoN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 13:44:13 -0400
+IronPort-SDR: aUumUTDwCz53Y2iHGwyAe3LAAUcoR1diOiWxoAYxmBFJAVcHCS7hB9nfWjwrWPOZz4TIAr8+Bp
+ 0IFeqYWCsdhQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9723"; a="155426814"
 X-IronPort-AV: E=Sophos;i="5.76,353,1592895600"; 
-   d="scan'208";a="136228362"
+   d="scan'208";a="155426814"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2020 10:46:27 -0700
-IronPort-SDR: FkQ4Y2OERWw+At5i7+dWYQzpDTgYV+0TKYcHslKswKogDt4//VRTDMCIe1/R2fngyBfeezCqVe
- xeswMREuGYFA==
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2020 10:44:12 -0700
+IronPort-SDR: zqhS6m/fLND9RgCesJVjpsnSbLCbCb3AXwQnlT9WRKKPBrzUIrbwF+Ghr3rZU/jwWiSRJouhJI
+ xzyW8N/vSLPQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,353,1592895600"; 
-   d="scan'208";a="443714708"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga004.jf.intel.com with ESMTP; 25 Aug 2020 10:46:25 -0700
-Date:   Tue, 25 Aug 2020 19:40:18 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Cc:     jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org,
-        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        netdev@vger.kernel.org, piotr.raczynski@intel.com,
-        maciej.machnikowski@intel.com, lirongqing@baidu.com
-Subject: Re: [PATCH net v3 0/3] Avoid premature Rx buffer reuse for
- XDP_REDIRECT
-Message-ID: <20200825174018.GA41513@ranger.igk.intel.com>
-References: <20200825172736.27318-1-bjorn.topel@gmail.com>
+   d="scan'208";a="499936952"
+Received: from adent-mobl.amr.corp.intel.com (HELO localhost.localdomain) ([10.209.77.195])
+  by fmsmga005.fm.intel.com with ESMTP; 25 Aug 2020 10:44:12 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        vladimir.oltean@nxp.com, kurt@linutronix.de
+Subject: [PATCH net-next v1] taprio: Fix using wrong queues in gate mask
+Date:   Tue, 25 Aug 2020 10:44:04 -0700
+Message-Id: <20200825174404.2727633-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200825172736.27318-1-bjorn.topel@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 07:27:33PM +0200, Björn Töpel wrote:
+Since commit 9c66d1564676 ("taprio: Add support for hardware
+offloading") there's a bit of inconsistency when offloading schedules
+to the hardware:
 
-[...]
+In software mode, the gate masks are specified in terms of traffic
+classes, so if say "sched-entry S 03 20000", it means that the traffic
+classes 0 and 1 are open for 20us; when taprio is offloaded to
+hardware, the gate masks are specified in terms of hardware queues.
 
-> 
-> v2->v3: Fixed kdoc for i40e/ice. (Jakub)
-> v1->v2: Removed page count function into get Rx buffer function, and
->         changed scope of automatic variable. (Maciej)
-> 
+The idea here is to fix hardware offloading, so schedules in hardware
+and software mode have the same behavior. What's needed to do is to
+map traffic classes to queues when applying the offload to the driver.
 
-For the series:
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Fixes: 9c66d1564676 ("taprio: Add support for hardware offloading")
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+---
+ net/sched/sch_taprio.c | 30 ++++++++++++++++++++++++------
+ 1 file changed, 24 insertions(+), 6 deletions(-)
 
-> 
-> Björn Töpel (3):
->   i40e: avoid premature Rx buffer reuse
->   ixgbe: avoid premature Rx buffer reuse
->   ice: avoid premature Rx buffer reuse
-> 
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 27 ++++++++++++-----
->  drivers/net/ethernet/intel/ice/ice_txrx.c     | 30 +++++++++++++------
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 24 ++++++++++-----
->  3 files changed, 58 insertions(+), 23 deletions(-)
-> 
-> 
-> base-commit: 99408c422d336db32bfab5cbebc10038a70cf7d2
-> -- 
-> 2.25.1
-> 
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index e981992634dd..fe53c1e38c7d 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -1176,9 +1176,27 @@ static void taprio_offload_config_changed(struct taprio_sched *q)
+ 	spin_unlock(&q->current_entry_lock);
+ }
+ 
+-static void taprio_sched_to_offload(struct taprio_sched *q,
++static u32 tc_map_to_queue_mask(struct net_device *dev, u32 tc_mask)
++{
++	u32 i, queue_mask = 0;
++
++	for (i = 0; i < dev->num_tc; i++) {
++		u32 offset, count;
++
++		if (!(tc_mask & BIT(i)))
++			continue;
++
++		offset = dev->tc_to_txq[i].offset;
++		count = dev->tc_to_txq[i].count;
++
++		queue_mask |= GENMASK(offset + count - 1, offset);
++	}
++
++	return queue_mask;
++}
++
++static void taprio_sched_to_offload(struct net_device *dev,
+ 				    struct sched_gate_list *sched,
+-				    const struct tc_mqprio_qopt *mqprio,
+ 				    struct tc_taprio_qopt_offload *offload)
+ {
+ 	struct sched_entry *entry;
+@@ -1193,7 +1211,8 @@ static void taprio_sched_to_offload(struct taprio_sched *q,
+ 
+ 		e->command = entry->command;
+ 		e->interval = entry->interval;
+-		e->gate_mask = entry->gate_mask;
++		e->gate_mask = tc_map_to_queue_mask(dev, entry->gate_mask);
++
+ 		i++;
+ 	}
+ 
+@@ -1201,7 +1220,6 @@ static void taprio_sched_to_offload(struct taprio_sched *q,
+ }
+ 
+ static int taprio_enable_offload(struct net_device *dev,
+-				 struct tc_mqprio_qopt *mqprio,
+ 				 struct taprio_sched *q,
+ 				 struct sched_gate_list *sched,
+ 				 struct netlink_ext_ack *extack)
+@@ -1223,7 +1241,7 @@ static int taprio_enable_offload(struct net_device *dev,
+ 		return -ENOMEM;
+ 	}
+ 	offload->enable = 1;
+-	taprio_sched_to_offload(q, sched, mqprio, offload);
++	taprio_sched_to_offload(dev, sched, offload);
+ 
+ 	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
+ 	if (err < 0) {
+@@ -1485,7 +1503,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
+ 	}
+ 
+ 	if (FULL_OFFLOAD_IS_ENABLED(q->flags))
+-		err = taprio_enable_offload(dev, mqprio, q, new_admin, extack);
++		err = taprio_enable_offload(dev, q, new_admin, extack);
+ 	else
+ 		err = taprio_disable_offload(dev, q, extack);
+ 	if (err)
+-- 
+2.28.0
+
