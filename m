@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C32E12517EC
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 13:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02EA42517F2
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 13:41:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730093AbgHYLlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 07:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
+        id S1730034AbgHYLk4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 07:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730022AbgHYLga (ORCPT
+        with ESMTP id S1730027AbgHYLga (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 07:36:30 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A2DBC061757;
-        Tue, 25 Aug 2020 04:36:19 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id ep8so1098481pjb.3;
-        Tue, 25 Aug 2020 04:36:19 -0700 (PDT)
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E5FC0613ED;
+        Tue, 25 Aug 2020 04:36:22 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id ds1so1116246pjb.1;
+        Tue, 25 Aug 2020 04:36:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rhY88JdRNjLHY9J/WjwwpO1RSozTLyNiKj+QUN0VOyY=;
-        b=CgrO8+VWYvlAsqmozCU+JIoxKWxkdIiuXyG7ARljMwhuDvYjcCx/fHEe6M5j5Q/0TQ
-         /m9T9bSr38rkVrwb9jaPpEy1+8/i1dRVkjZzfuFBnHcARFEhVJhWQO9Oax9KuzvVOqhH
-         jl1LLPp/KRDK0kYWLxwUnEqS2ghXAqG2ii/8QTKOXiYHHu+zpPqnR8//B9DXbtyAaEiZ
-         mgr5JfoMdXFZqCDBxfovvactrjG+/zLBAZWjWO9A9/ie39W4T4HoRU1cjbQwI3eyGhnM
-         Pax+nuL93mrASW6KqwSTBciGVa3MCML/euErqtyHkdOwCsDfNcQ00KDWenMRX1mH2QJ4
-         OhtA==
+        bh=0D1IRpXS9A/gM5G1vVZT30mGYc3nb9zLCzTnVKaIp0Q=;
+        b=kJ/OjMY/0zKjOsjwXbWe80OaUcrCWI2VaXvSlTeKsqE/pX4FYryY+C6pLo7Zshe01D
+         JiL4Yu1reJroYMY0XzsVs52vmfe/eX+AB9pdeJAe7OHpJoZcvD8BWuCbQfA2bKVF3tB6
+         mvN1ay89Qqv9RcqMHYEYJoPHZQpStIptLmEzOS3hepeAaBRMp+Pib3AODqBnTPDgGEIK
+         AKKJpdXv12RdvewPtJrVhPey/YpwcdPbPz4C8gtk1fPnxeQgs4gAHA8H5Ll16OaR9RwW
+         40GQVAaZw0g/Or1vIDEjlbTdK39oAuBHSrrgZvZ+sAWp+hyiTDUtR1K7O8ZQGrs1Sla7
+         7kdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rhY88JdRNjLHY9J/WjwwpO1RSozTLyNiKj+QUN0VOyY=;
-        b=BX46+GaynbOJX05jVJM5Ma9j2Y6sUlTUaGHeomoqAA7QFSayERkL4P6fC1c3DfaNxY
-         ILW0Cs+92tr16o0IE0geVJh7W2N34MeoZ6vCgi8SntawpyuEkD2X6oqVsR1EuO8USkqe
-         CHQTw102wAeCEKaZbwsL5qDeqTJY5YokCeGmIv+EksfcJo7LjktfTRliSJ/bbKFd2C6m
-         ml+EclRLUWr2dfL+q1RodgZRYlgYtdmaM63LRBk1QjU4s6OygnabPMviAay2HE0dGqv4
-         GiWyNTe+oT0IuUkTOpmnIMYg6LZMWJcVtM5wNf5XhqFyxM2Twlq6eYkqqh8ZZFfC/mVt
-         bVjw==
-X-Gm-Message-State: AOAM531x5zP9FcPSe9EeTo/B0vG1PgU5MK019acoh/jq59JaPvPZ0MXx
-        /Bk8p63wr0WXkZIU6kWvCVY=
-X-Google-Smtp-Source: ABdhPJyCC+GCfoM0vWSgxtdii4EKkhlDYmcWbY8C2oOAZu3rGXIWPvsLl8/0umYTv10ZskgrJF9XwA==
-X-Received: by 2002:a17:90a:c781:: with SMTP id gn1mr1217955pjb.151.1598355378935;
-        Tue, 25 Aug 2020 04:36:18 -0700 (PDT)
+        bh=0D1IRpXS9A/gM5G1vVZT30mGYc3nb9zLCzTnVKaIp0Q=;
+        b=Moq2VDWSX2eOCnqhHaZL3ODXk/HVGKQRCcuK0nX1X7Ss3KBe98YT4soTEcVi0IHbIi
+         RUv2tMx08FG/Xd5xmHFWvgxlnghm5qVWkVOwr0+ovv7zaUi6SBXSxYT9oEs9ymTxI860
+         mqcmxU8551RqXBsr6G03OwP7KXXzyqeso0WpUih9Xxsuw1W/FZoIxOzKUuDMKam7p1ww
+         muGLjZ6pWg/1CmKQ8NcnZvZC+6+8W4UgnFuOuWvwlIiotPENuvwaPeOKtwAv3V2ZYS95
+         NiOozBKbOJrAfp6DFEXhqv6DoFzAHQmjMjzFb8LJlZ9iL3g/X3PHBfNdiI8rikJbLn9u
+         zzkg==
+X-Gm-Message-State: AOAM5315sPbA9I6hltsn935W6HP2t2/JqYtc4c5XYfx5KOxuyWqtv2HN
+        AjYFrj6VuwwZEQcCRKLptFg=
+X-Google-Smtp-Source: ABdhPJxHHZOwCMiCYZq1sRRMNmhU/TdDDnu697pELj/7wX2ML19Au0dKJA6pClE6hVfKwDNZu9wyTA==
+X-Received: by 2002:a17:90a:9203:: with SMTP id m3mr1266792pjo.148.1598355382229;
+        Tue, 25 Aug 2020 04:36:22 -0700 (PDT)
 Received: from btopel-mobl.ger.intel.com ([192.55.54.40])
-        by smtp.gmail.com with ESMTPSA id e7sm12699937pgn.64.2020.08.25.04.36.16
+        by smtp.gmail.com with ESMTPSA id e7sm12699937pgn.64.2020.08.25.04.36.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2020 04:36:18 -0700 (PDT)
+        Tue, 25 Aug 2020 04:36:21 -0700 (PDT)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     intel-wired-lan@lists.osuosl.org
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         magnus.karlsson@intel.com, netdev@vger.kernel.org,
         bpf@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next v2 2/3] i40e: use 16B HW descriptors instead of 32B
-Date:   Tue, 25 Aug 2020 13:35:55 +0200
-Message-Id: <20200825113556.18342-3-bjorn.topel@gmail.com>
+Subject: [PATCH net-next v2 3/3] i40e, xsk: move buffer allocation out of the Rx processing loop
+Date:   Tue, 25 Aug 2020 13:35:56 +0200
+Message-Id: <20200825113556.18342-4-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200825113556.18342-1-bjorn.topel@gmail.com>
 References: <20200825113556.18342-1-bjorn.topel@gmail.com>
@@ -68,182 +68,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-The i40e NIC supports two flavors of HW descriptors, 16 and 32
-byte. The latter has, obviously, room for more offloading
-information. However, the only fields of the 32B HW descriptor that is
-being used by the driver, is also available in the 16B descriptor.
+Instead of checking in each iteration of the Rx packet processing
+loop, move the allocation out of the loop and do it once for each napi
+activation.
 
-In other words; Reading and writing 32 bytes instead of 16 byte is a
-waste of bus bandwidth.
-
-This commit starts using 16 byte descriptors instead of 32 byte
-descriptors.
-
-For AF_XDP the rx_drop benchmark was improved by 2%.
+For AF_XDP the rx_drop benchmark was improved by 6%.
 
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e.h         |  2 +-
- drivers/net/ethernet/intel/i40e/i40e_debugfs.c | 10 ++++------
- drivers/net/ethernet/intel/i40e/i40e_main.c    |  4 ++--
- drivers/net/ethernet/intel/i40e/i40e_trace.h   |  6 +++---
- drivers/net/ethernet/intel/i40e/i40e_txrx.c    |  6 +++---
- drivers/net/ethernet/intel/i40e/i40e_txrx.h    |  2 +-
- drivers/net/ethernet/intel/i40e/i40e_type.h    |  5 ++++-
- 7 files changed, 18 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e.h b/drivers/net/ethernet/intel/i40e/i40e.h
-index a7e212d1caa2..ada0e93c38f0 100644
---- a/drivers/net/ethernet/intel/i40e/i40e.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e.h
-@@ -90,7 +90,7 @@
- #define I40E_OEM_RELEASE_MASK		0x0000ffff
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index 1f2dd591dbf1..ae40592c31f9 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -277,8 +277,8 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+ 	unsigned int total_rx_bytes = 0, total_rx_packets = 0;
+ 	u16 cleaned_count = I40E_DESC_UNUSED(rx_ring);
+ 	unsigned int xdp_res, xdp_xmit = 0;
+-	bool failure = false;
+ 	struct sk_buff *skb;
++	bool failure;
  
- #define I40E_RX_DESC(R, i)	\
--	(&(((union i40e_32byte_rx_desc *)((R)->desc))[i]))
-+	(&(((union i40e_rx_desc *)((R)->desc))[i]))
- #define I40E_TX_DESC(R, i)	\
- 	(&(((struct i40e_tx_desc *)((R)->desc))[i]))
- #define I40E_TX_CTXTDESC(R, i)	\
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-index d3ad2e3aa838..d7c13ca9be7d 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-@@ -604,10 +604,9 @@ static void i40e_dbg_dump_desc(int cnt, int vsi_seid, int ring_id, int desc_n,
- 			} else {
- 				rxd = I40E_RX_DESC(ring, i);
- 				dev_info(&pf->pdev->dev,
--					 "   d[%03x] = 0x%016llx 0x%016llx 0x%016llx 0x%016llx\n",
-+					 "   d[%03x] = 0x%016llx 0x%016llx\n",
- 					 i, rxd->read.pkt_addr,
--					 rxd->read.hdr_addr,
--					 rxd->read.rsvd1, rxd->read.rsvd2);
-+					 rxd->read.hdr_addr);
- 			}
- 		}
- 	} else if (cnt == 3) {
-@@ -625,10 +624,9 @@ static void i40e_dbg_dump_desc(int cnt, int vsi_seid, int ring_id, int desc_n,
- 		} else {
- 			rxd = I40E_RX_DESC(ring, desc_n);
- 			dev_info(&pf->pdev->dev,
--				 "vsi = %02i rx ring = %02i d[%03x] = 0x%016llx 0x%016llx 0x%016llx 0x%016llx\n",
-+				 "vsi = %02i rx ring = %02i d[%03x] = 0x%016llx 0x%016llx\n",
- 				 vsi_seid, ring_id, desc_n,
--				 rxd->read.pkt_addr, rxd->read.hdr_addr,
--				 rxd->read.rsvd1, rxd->read.rsvd2);
-+				 rxd->read.pkt_addr, rxd->read.hdr_addr);
- 		}
- 	} else {
- 		dev_info(&pf->pdev->dev, "dump desc rx/tx/xdp <vsi_seid> <ring_id> [<desc_n>]\n");
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 2e433fdbf2c3..e9516dea6d32 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -3320,8 +3320,8 @@ static int i40e_configure_rx_ring(struct i40e_ring *ring)
- 	rx_ctx.base = (ring->dma / 128);
- 	rx_ctx.qlen = ring->count;
+ 	while (likely(total_rx_packets < (unsigned int)budget)) {
+ 		union i40e_rx_desc *rx_desc;
+@@ -286,13 +286,6 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+ 		unsigned int size;
+ 		u64 qword;
  
--	/* use 32 byte descriptors */
--	rx_ctx.dsize = 1;
-+	/* use 16 byte descriptors */
-+	rx_ctx.dsize = 0;
+-		if (cleaned_count >= I40E_RX_BUFFER_WRITE) {
+-			failure = failure ||
+-				  !i40e_alloc_rx_buffers_zc(rx_ring,
+-							    cleaned_count);
+-			cleaned_count = 0;
+-		}
+-
+ 		rx_desc = I40E_RX_DESC(rx_ring, rx_ring->next_to_clean);
+ 		qword = le64_to_cpu(rx_desc->wb.qword1.status_error_len);
  
- 	/* descriptor type is always zero
- 	 * rx_ctx.dtype = 0;
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_trace.h b/drivers/net/ethernet/intel/i40e/i40e_trace.h
-index 424f02077e2e..983f8b98b275 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_trace.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_trace.h
-@@ -112,7 +112,7 @@ DECLARE_EVENT_CLASS(
- 	i40e_rx_template,
+@@ -367,6 +360,9 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+ 		napi_gro_receive(&rx_ring->q_vector->napi, skb);
+ 	}
  
- 	TP_PROTO(struct i40e_ring *ring,
--		 union i40e_32byte_rx_desc *desc,
-+		 union i40e_16byte_rx_desc *desc,
- 		 struct sk_buff *skb),
++	if (cleaned_count >= I40E_RX_BUFFER_WRITE)
++		failure = !i40e_alloc_rx_buffers_zc(rx_ring, cleaned_count);
++
+ 	i40e_finalize_xdp_rx(rx_ring, xdp_xmit);
+ 	i40e_update_rx_stats(rx_ring, total_rx_bytes, total_rx_packets);
  
- 	TP_ARGS(ring, desc, skb),
-@@ -140,7 +140,7 @@ DECLARE_EVENT_CLASS(
- DEFINE_EVENT(
- 	i40e_rx_template, i40e_clean_rx_irq,
- 	TP_PROTO(struct i40e_ring *ring,
--		 union i40e_32byte_rx_desc *desc,
-+		 union i40e_16byte_rx_desc *desc,
- 		 struct sk_buff *skb),
- 
- 	TP_ARGS(ring, desc, skb));
-@@ -148,7 +148,7 @@ DEFINE_EVENT(
- DEFINE_EVENT(
- 	i40e_rx_template, i40e_clean_rx_irq_rx,
- 	TP_PROTO(struct i40e_ring *ring,
--		 union i40e_32byte_rx_desc *desc,
-+		 union i40e_16byte_rx_desc *desc,
- 		 struct sk_buff *skb),
- 
- 	TP_ARGS(ring, desc, skb));
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index e1a76fc05b8d..0db656ef5b9a 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -533,11 +533,11 @@ static void i40e_fd_handle_status(struct i40e_ring *rx_ring, u64 qword0_raw,
- {
- 	struct i40e_pf *pf = rx_ring->vsi->back;
- 	struct pci_dev *pdev = pf->pdev;
--	struct i40e_32b_rx_wb_qw0 *qw0;
-+	struct i40e_16b_rx_wb_qw0 *qw0;
- 	u32 fcnt_prog, fcnt_avail;
- 	u32 error;
- 
--	qw0 = (struct i40e_32b_rx_wb_qw0 *)&qword0_raw;
-+	qw0 = (struct i40e_16b_rx_wb_qw0 *)&qword0_raw;
- 	error = (qword1 & I40E_RX_PROG_STATUS_DESC_QW1_ERROR_MASK) >>
- 		I40E_RX_PROG_STATUS_DESC_QW1_ERROR_SHIFT;
- 
-@@ -1418,7 +1418,7 @@ int i40e_setup_rx_descriptors(struct i40e_ring *rx_ring)
- 	u64_stats_init(&rx_ring->syncp);
- 
- 	/* Round up to nearest 4K */
--	rx_ring->size = rx_ring->count * sizeof(union i40e_32byte_rx_desc);
-+	rx_ring->size = rx_ring->count * sizeof(union i40e_rx_desc);
- 	rx_ring->size = ALIGN(rx_ring->size, 4096);
- 	rx_ring->desc = dma_alloc_coherent(dev, rx_ring->size,
- 					   &rx_ring->dma, GFP_KERNEL);
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.h b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
-index 4036893d6825..0eacd5f21e9d 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.h
-@@ -110,7 +110,7 @@ enum i40e_dyn_idx_t {
-  */
- #define I40E_RX_HDR_SIZE I40E_RXBUFFER_256
- #define I40E_PACKET_HDR_PAD (ETH_HLEN + ETH_FCS_LEN + (VLAN_HLEN * 2))
--#define i40e_rx_desc i40e_32byte_rx_desc
-+#define i40e_rx_desc i40e_16byte_rx_desc
- 
- #define I40E_RX_DMA_ATTR \
- 	(DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING)
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_type.h b/drivers/net/ethernet/intel/i40e/i40e_type.h
-index 52410d609ba1..97d29df65f9e 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_type.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_type.h
-@@ -628,7 +628,7 @@ union i40e_16byte_rx_desc {
- 		__le64 hdr_addr; /* Header buffer address */
- 	} read;
- 	struct {
--		struct {
-+		struct i40e_16b_rx_wb_qw0 {
- 			struct {
- 				union {
- 					__le16 mirroring_status;
-@@ -647,6 +647,9 @@ union i40e_16byte_rx_desc {
- 			__le64 status_error_len;
- 		} qword1;
- 	} wb;  /* writeback */
-+	struct {
-+		u64 qword[2];
-+	} raw;
- };
- 
- union i40e_32byte_rx_desc {
 -- 
 2.25.1
 
