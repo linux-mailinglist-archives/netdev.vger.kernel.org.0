@@ -2,73 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F85E251950
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 15:14:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E933A251961
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 15:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbgHYNOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 09:14:19 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49146 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726241AbgHYNOD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 09:14:03 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kAYm0-00Blzu-ER; Tue, 25 Aug 2020 15:14:00 +0200
-Date:   Tue, 25 Aug 2020 15:14:00 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de
-Subject: Re: ethernet-phy-ieee802.3-c22 binding and reset-gpios
-Message-ID: <20200825131400.GO2588906@lunn.ch>
-References: <20200825090933.GN13023@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200825090933.GN13023@pengutronix.de>
+        id S1726593AbgHYNSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 09:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50346 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726024AbgHYNS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 09:18:29 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15ECAC061574;
+        Tue, 25 Aug 2020 06:18:29 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7043811D53F8B;
+        Tue, 25 Aug 2020 06:01:41 -0700 (PDT)
+Date:   Tue, 25 Aug 2020 06:18:26 -0700 (PDT)
+Message-Id: <20200825.061826.282996371886506118.davem@davemloft.net>
+To:     linmiaohe@huawei.com
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: Set ping saddr after we successfully get the ping
+ port
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200825113322.11771-1-linmiaohe@huawei.com>
+References: <20200825113322.11771-1-linmiaohe@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Aug 2020 06:01:41 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 11:09:33AM +0200, Sascha Hauer wrote:
-> Hi All,
+From: Miaohe Lin <linmiaohe@huawei.com>
+Date: Tue, 25 Aug 2020 07:33:22 -0400
+
+> We can defer set ping saddr until we successfully get the ping port. So we
+> can avoid clear saddr when failed. Since ping_clear_saddr() is not used
+> anymore now, remove it.
 > 
-> I am using the ethernet phy binding here that looks like:
-> 
-> ethphy1: ethernet-phy@1 {
-> 	compatible = "ethernet-phy-ieee802.3-c22";
-> 	reg = <1>;
-> 	eee-broken-1000t;
-> 	reset-gpios = <&gpio4 2 GPIO_ACTIVE_LOW>;
-> };
-> 
-> It seems the "reset-gpios" is inherently broken in Linux.
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-Hi Sascha
-
-I think it would be better to say, it does not do what people expect,
-rather than broken.
-
-This code was developed for a PHY which needed to be reset after
-enumeration. That PHY did enumerate, either because it was not held in
-reset, or would still answer ID requests while held in reset.
-
-It does however not work for PHYs which are held in reset during probe
-and won't enumerate. This is a known issues, but could be better
-documented.
-
-> Is this the path to go or are there any other ideas how to solve
-> this issue?
-
-There is two different reset gpios in DT. There is a per PHY reset,
-which you are trying to use. And a per MDIO bus reset, which should
-apply to all PHYs on the bus. This per bus reset works more as
-expected. If this works for you, you could use that.
-
-Otherwise, you need to modify of_mdiobus_register() to look in device
-tree while it is performing the scan and see if there is a reset
-property for each address on the bus. If so, take the device out of
-reset before reading the ID registers.
-
-	Andrew
+Applied to net-next, thanks.
