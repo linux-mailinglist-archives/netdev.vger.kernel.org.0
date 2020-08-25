@@ -2,130 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57BFC251892
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:31:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DA3725189C
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:33:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726609AbgHYMbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 08:31:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726581AbgHYMba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 08:31:30 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F6DC061755
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 05:31:30 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id 2so1366872wrj.10
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 05:31:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fooishbar-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+HLPhy+qXHIinU4+E7TS6jEdPNtNrgqFPzcA0O6t5kU=;
-        b=wEO9WqPQBcLwZUKcvqXvWeTQyatZBnoj8MNgvqBl3wXtPJizAT/oQ/SdGZfZ4EMq/E
-         eyFKyYTJISm+DV330UA3npw7Dk0YMydTsCuYN9jpA+MHjIs/adfjauEBoaNXRZ0HI9Le
-         JDdxy0U/s9OnS3u2btlKuWA8skzmnHXl+FdDvALKESloVFY3kHERMGM8vAtLPvLngs7q
-         pN4QuFCkbyvSu3wmqoe19Atprq/sp9hCBmKWOpw9qfETRsv0KPDoH2X3ZJsbn1hKBRKu
-         pSMBFzyQPBylG6jIRY2gLJ9lFIrCS6nd9xiUy1RuilZMNT57weEJFi5aBrdPQmLzGZTH
-         70ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+HLPhy+qXHIinU4+E7TS6jEdPNtNrgqFPzcA0O6t5kU=;
-        b=btq0b091o9+s9UFVMq/SN2IYoPM4FFLP1ziCHy78hK+eBROhqKpgNcHKax3YBKPgKe
-         Ad5dIflq0nPfHmFSDvqeYMeaNMowPw8ThOVB2Gmvirtx7njLafpvS0jtJcxvfagSVa0s
-         8V/Wp+I1Oq01CjDk3MpKhh6dfnuyLAftW6P+BNs7xHhpyQNcKWR5MgRVG5hbxrStzYyF
-         MG5LwgGrKgziLWoEYRnlQdeNfvlNcBIb3qazHTnVQm9DqDKxONLhQM06A+4SbSPMAN4I
-         yLUhoq6t7s/fFR5xhJNSw0jtumOG4tQ9tbHmY8IYdVpnaK6BfW4wyO5BgyL0CqGhZxCu
-         IruA==
-X-Gm-Message-State: AOAM531L9gXpBr4FbUBOx8HyWUu8YT4tWckipOB9OeWVB37qs4F5RcCt
-        kY1yVc1lV4sgKNsGhtlqtuMaK9luTA2aN13kjybGIw==
-X-Google-Smtp-Source: ABdhPJz1mB4Fdo1aDIpEuz/ea4FV6oUPMILZjNgY202nHhhVQ2y6zu7/a0D9cIzuEsl4KQKXulFb7/NPn2fB9IdTTE0=
-X-Received: by 2002:a5d:644b:: with SMTP id d11mr10206039wrw.373.1598358688698;
- Tue, 25 Aug 2020 05:31:28 -0700 (PDT)
+        id S1727833AbgHYMdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 08:33:39 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:10320 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726691AbgHYMdf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 08:33:35 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id EDFE757303068AF559DB;
+        Tue, 25 Aug 2020 20:33:28 +0800 (CST)
+Received: from huawei.com (10.175.104.175) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Tue, 25 Aug 2020
+ 20:33:19 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] net: clean up codestyle for net/ipv4
+Date:   Tue, 25 Aug 2020 08:32:11 -0400
+Message-ID: <20200825123211.33235-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-References: <cover.1597833138.git.mchehab+huawei@kernel.org>
- <20200819152120.GA106437@ravnborg.org> <20200819153045.GA18469@pendragon.ideasonboard.com>
- <CALAqxLUXnPRec3UYbMKge8yNKBagLOatOeRCagF=JEyPEfWeKA@mail.gmail.com>
- <20200820090326.3f400a15@coco.lan> <20200820100205.GA5962@pendragon.ideasonboard.com>
- <CAPM=9twzsw7T=GD6Jc1EFenXq9ZhTgf_Nuo71uLfX2W33oa=6w@mail.gmail.com> <20200825133025.13f047f0@coco.lan>
-In-Reply-To: <20200825133025.13f047f0@coco.lan>
-From:   Daniel Stone <daniel@fooishbar.org>
-Date:   Tue, 25 Aug 2020 13:31:16 +0100
-Message-ID: <CAPj87rNkqp0hDEv63jhJsMzsQ0qMLucjWE4KVByCFoMRrnfUKA@mail.gmail.com>
-Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Dave Airlie <airlied@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        Wanchun Zheng <zhengwanchun@hisilicon.com>,
-        linuxarm@huawei.com, dri-devel <dri-devel@lists.freedesktop.org>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        driverdevel <devel@driverdev.osuosl.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Xiubin Zhang <zhangxiubin1@huawei.com>,
-        Wei Xu <xuwei5@hisilicon.com>,
-        Xinliang Liu <xinliang.liu@linaro.org>,
-        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Bogdan Togorean <bogdan.togorean@analog.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
-        linux-media <linux-media@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Liwei Cai <cailiwei@hisilicon.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Chen Feng <puck.chen@hisilicon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        mauro.chehab@huawei.com, Rob Clark <robdclark@chromium.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Liuyao An <anliuyao@huawei.com>,
-        Network Development <netdev@vger.kernel.org>,
-        Rongrong Zou <zourongrong@gmail.com>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.175]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mauro,
+This is a pure codestyle cleanup patch. Also add a blank line after
+declarations as warned by checkpatch.pl.
 
-On Tue, 25 Aug 2020 at 12:30, Mauro Carvalho Chehab
-<mchehab+huawei@kernel.org> wrote:
-> Sorry, but I can't agree that review is more important than to be able
-> to properly indicate copyrights in a valid way at the legal systems that
-> it would apply ;-)
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ net/ipv4/ip_options.c | 35 +++++++++++++++++++----------------
+ net/ipv4/ip_output.c  |  2 +-
+ net/ipv4/route.c      |  6 +++---
+ 3 files changed, 23 insertions(+), 20 deletions(-)
 
-The way to properly indicate copyright coverage is to insert a
-copyright statement in the file. This has been the accepted way of
-communicating copyright notices since approximately the dawn of time.
-The value of the 'author' field within a chain of git commits does not
-have privileged legal value.
+diff --git a/net/ipv4/ip_options.c b/net/ipv4/ip_options.c
+index 948747aac4e2..da1b5038bdfd 100644
+--- a/net/ipv4/ip_options.c
++++ b/net/ipv4/ip_options.c
+@@ -47,32 +47,32 @@ void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
+ 	unsigned char *iph = skb_network_header(skb);
+ 
+ 	memcpy(&(IPCB(skb)->opt), opt, sizeof(struct ip_options));
+-	memcpy(iph+sizeof(struct iphdr), opt->__data, opt->optlen);
++	memcpy(iph + sizeof(struct iphdr), opt->__data, opt->optlen);
+ 	opt = &(IPCB(skb)->opt);
+ 
+ 	if (opt->srr)
+-		memcpy(iph+opt->srr+iph[opt->srr+1]-4, &daddr, 4);
++		memcpy(iph + opt->srr + iph[opt->srr + 1] - 4, &daddr, 4);
+ 
+ 	if (!is_frag) {
+ 		if (opt->rr_needaddr)
+-			ip_rt_get_source(iph+opt->rr+iph[opt->rr+2]-5, skb, rt);
++			ip_rt_get_source(iph + opt->rr + iph[opt->rr + 2] - 5, skb, rt);
+ 		if (opt->ts_needaddr)
+-			ip_rt_get_source(iph+opt->ts+iph[opt->ts+2]-9, skb, rt);
++			ip_rt_get_source(iph + opt->ts + iph[opt->ts + 2] - 9, skb, rt);
+ 		if (opt->ts_needtime) {
+ 			__be32 midtime;
+ 
+ 			midtime = inet_current_timestamp();
+-			memcpy(iph+opt->ts+iph[opt->ts+2]-5, &midtime, 4);
++			memcpy(iph + opt->ts + iph[opt->ts + 2] - 5, &midtime, 4);
+ 		}
+ 		return;
+ 	}
+ 	if (opt->rr) {
+-		memset(iph+opt->rr, IPOPT_NOP, iph[opt->rr+1]);
++		memset(iph + opt->rr, IPOPT_NOP, iph[opt->rr + 1]);
+ 		opt->rr = 0;
+ 		opt->rr_needaddr = 0;
+ 	}
+ 	if (opt->ts) {
+-		memset(iph+opt->ts, IPOPT_NOP, iph[opt->ts+1]);
++		memset(iph + opt->ts, IPOPT_NOP, iph[opt->ts + 1]);
+ 		opt->ts = 0;
+ 		opt->ts_needaddr = opt->ts_needtime = 0;
+ 	}
+@@ -495,26 +495,29 @@ EXPORT_SYMBOL(ip_options_compile);
+ void ip_options_undo(struct ip_options *opt)
+ {
+ 	if (opt->srr) {
+-		unsigned  char *optptr = opt->__data+opt->srr-sizeof(struct  iphdr);
+-		memmove(optptr+7, optptr+3, optptr[1]-7);
+-		memcpy(optptr+3, &opt->faddr, 4);
++		unsigned char *optptr = opt->__data + opt->srr - sizeof(struct iphdr);
++
++		memmove(optptr + 7, optptr + 3, optptr[1] - 7);
++		memcpy(optptr + 3, &opt->faddr, 4);
+ 	}
+ 	if (opt->rr_needaddr) {
+-		unsigned  char *optptr = opt->__data+opt->rr-sizeof(struct  iphdr);
++		unsigned char *optptr = opt->__data + opt->rr - sizeof(struct iphdr);
++
+ 		optptr[2] -= 4;
+-		memset(&optptr[optptr[2]-1], 0, 4);
++		memset(&optptr[optptr[2] - 1], 0, 4);
+ 	}
+ 	if (opt->ts) {
+-		unsigned  char *optptr = opt->__data+opt->ts-sizeof(struct  iphdr);
++		unsigned char *optptr = opt->__data + opt->ts - sizeof(struct iphdr);
++
+ 		if (opt->ts_needtime) {
+ 			optptr[2] -= 4;
+-			memset(&optptr[optptr[2]-1], 0, 4);
+-			if ((optptr[3]&0xF) == IPOPT_TS_PRESPEC)
++			memset(&optptr[optptr[2] - 1], 0, 4);
++			if ((optptr[3] & 0xF) == IPOPT_TS_PRESPEC)
+ 				optptr[2] -= 4;
+ 		}
+ 		if (opt->ts_needaddr) {
+ 			optptr[2] -= 4;
+-			memset(&optptr[optptr[2]-1], 0, 4);
++			memset(&optptr[optptr[2] - 1], 0, 4);
+ 		}
+ 	}
+ }
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 61f802d5350c..329a0ab87542 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1351,7 +1351,7 @@ ssize_t	ip_append_page(struct sock *sk, struct flowi4 *fl4, struct page *page,
+ 	if (cork->flags & IPCORK_OPT)
+ 		opt = cork->opt;
+ 
+-	if (!(rt->dst.dev->features&NETIF_F_SG))
++	if (!(rt->dst.dev->features & NETIF_F_SG))
+ 		return -EOPNOTSUPP;
+ 
+ 	hh_len = LL_RESERVED_SPACE(rt->dst.dev);
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 18c8baf32de5..96fcdfb9bb26 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1079,7 +1079,7 @@ EXPORT_SYMBOL_GPL(ipv4_update_pmtu);
+ 
+ static void __ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
+ {
+-	const struct iphdr *iph = (const struct iphdr *) skb->data;
++	const struct iphdr *iph = (const struct iphdr *)skb->data;
+ 	struct flowi4 fl4;
+ 	struct rtable *rt;
+ 
+@@ -1127,7 +1127,7 @@ void ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
+ 		new = true;
+ 	}
+ 
+-	__ip_rt_update_pmtu((struct rtable *) xfrm_dst_path(&rt->dst), &fl4, mtu);
++	__ip_rt_update_pmtu((struct rtable *)xfrm_dst_path(&rt->dst), &fl4, mtu);
+ 
+ 	if (!dst_check(&rt->dst, 0)) {
+ 		if (new)
+@@ -1168,7 +1168,7 @@ EXPORT_SYMBOL_GPL(ipv4_redirect);
+ 
+ void ipv4_sk_redirect(struct sk_buff *skb, struct sock *sk)
+ {
+-	const struct iphdr *iph = (const struct iphdr *) skb->data;
++	const struct iphdr *iph = (const struct iphdr *)skb->data;
+ 	struct flowi4 fl4;
+ 	struct rtable *rt;
+ 	struct net *net = sock_net(sk);
+-- 
+2.19.1
 
-If what you were saying is true, it would be impossible for any
-project to copy code from any other project, unless they did git
-filter-branch and made sure to follow renames too. As others have
-noted, it would also be impossible for any patches to be developed
-collaboratively by different copyright holders, or for maintainers to
-apply changes.
-
-This is accepted community practice and has passed signoffs from a
-million different lawyers and copyright holders. If you wish to break
-with this and do something different, the onus is on you to provide
-the community with _specific_ legal advice; if this is accepted, the
-development model would have to drastically change in the presence of
-single pieces of code developed by multiple distinct copyright
-holders.
-
-Cheers,
-Daniel
