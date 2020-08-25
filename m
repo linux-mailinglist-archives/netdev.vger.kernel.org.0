@@ -2,79 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00346250EE9
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 04:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23498250FD1
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 05:05:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727882AbgHYCVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 22:21:09 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:40758 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725924AbgHYCVH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 22:21:07 -0400
-Received: by mail-io1-f66.google.com with SMTP id q132so471131iod.7;
-        Mon, 24 Aug 2020 19:21:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rg7Bsd6p+mIyfsdifHuWk+4yWTHBPMjJ9LRnbA1nMVw=;
-        b=hHrM6wxP1vqP17b9vm5/ERu53XsAoH4t1NXupNTGhGlZIb+W3pbpWqN2uKVLtObtqP
-         tP/UYgG8wJO3Ic8PtNzAFkfC/c3210EYyE/ztissMVZeMGtJ4DM3ZNn66F0mmcnrwPms
-         zkypyCApFAJK5QXhEKuO0aWVJmCwDYN8nnhM2izfV/aFVW75HKtDD3B3BB6LtaPLJbDV
-         HtyGxAkDhhJqJyDkpCAaN9Hr03SNFGDHxpfMhyuzjI+VEJeGVNVFh3CejHo8oNYR8RsQ
-         qYjg7/vBil35x+diXI3vFWm2pOGhCF7Bnh4YoImrIdZsYEotop2I90lXZNmbT5gn6JGY
-         u1oQ==
-X-Gm-Message-State: AOAM53180JKe/SjT4MkyhUsDjMDXjBVPBjtRyS0RtwOl8rlR5Yxk6mZD
-        3NpSOUfiQuGNBm/blGY4/w==
-X-Google-Smtp-Source: ABdhPJwbSqh1z12wlvJULaLb/vP4/4rRUIPZFoP7kgCBcEhrK9NvGe+E689vQgXG7sj5IG0hXXN7uQ==
-X-Received: by 2002:a6b:d811:: with SMTP id y17mr7359240iob.199.1598322066291;
-        Mon, 24 Aug 2020 19:21:06 -0700 (PDT)
-Received: from xps15 ([64.188.179.249])
-        by smtp.gmail.com with ESMTPSA id u68sm3268099ioe.18.2020.08.24.19.21.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Aug 2020 19:21:05 -0700 (PDT)
-Received: (nullmailer pid 3808092 invoked by uid 1000);
-        Tue, 25 Aug 2020 02:21:02 -0000
-Date:   Mon, 24 Aug 2020 20:21:02 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-gpio@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH 2/3] dt-bindings: can: rcar_can: Add r8a7742 support
-Message-ID: <20200825022102.GA3808062@bogus>
-References: <20200816190732.6905-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20200816190732.6905-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        id S1728449AbgHYDE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 23:04:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728175AbgHYDEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 23:04:53 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A30DC061574;
+        Mon, 24 Aug 2020 20:04:53 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BbDPF10T7z9sTK;
+        Tue, 25 Aug 2020 13:04:49 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1598324690;
+        bh=lhIqz0KHpNDTmGHLdzVh8OUSERGOE3vTU7qYSXb9H0M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ogCUT23ikQY9/IXgkqJbt/3Rzwz16zo2Akhi97eCg3F2rcU+onlZe5f8jjuVFNJWl
+         yYtfcQmsJgFlecHghQNn1zrK4QZ1zzO2E+JqlZHIWzoUuatU/p1CzF8hWkfPwLPwYS
+         DlSDjpD/mkyKMsaxwfGQl1II8wYFNMri1E6L/IqB2YNWCfpXNTi4Kiv5uC2duCQW/X
+         CqpRfE7VTREB72C4ZpIeefE+uS56yQF2PSzrIS408WCyM9dZv09f/wBSUWrj9gflnd
+         YKevMVcbSwyj6QnF3qm8BjtE3kGtx4323R5D+vfbk5YDDB2wfiZP9iDCgQWn2ZPGp+
+         zJ5XBZdrBQs2g==
+Date:   Tue, 25 Aug 2020 13:04:45 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: Re: linux-next: build failure after merge of the bpf-next tree
+Message-ID: <20200825130445.655885f8@canb.auug.org.au>
+In-Reply-To: <CAADnVQLr8dU799ZrUnrBBDCtDxPyybZwrMFs5CAOHHW5pnLHHA@mail.gmail.com>
+References: <20200821111111.6c04acd6@canb.auug.org.au>
+        <20200825112020.43ce26bb@canb.auug.org.au>
+        <CAADnVQLr8dU799ZrUnrBBDCtDxPyybZwrMFs5CAOHHW5pnLHHA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200816190732.6905-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: multipart/signed; boundary="Sig_/UdHhr.Z1_ueRZo/AaeqreTx";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 16 Aug 2020 20:07:31 +0100, Lad Prabhakar wrote:
-> Document RZ/G1H (r8a7742) SoC specific bindings. The R8A7742 CAN module
-> is identical to R-Car Gen2 family.
-> 
-> No driver change is needed due to the fallback compatible value
-> "renesas,rcar-gen2-can".
-> 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Chris Paterson <Chris.Paterson2@renesas.com>
-> ---
->  Documentation/devicetree/bindings/net/can/rcar_can.txt | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+--Sig_/UdHhr.Z1_ueRZo/AaeqreTx
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Rob Herring <robh@kernel.org>
+Hi Alexei,
+
+On Mon, 24 Aug 2020 18:25:44 -0700 Alexei Starovoitov <alexei.starovoitov@g=
+mail.com> wrote:
+>
+> On Mon, Aug 24, 2020 at 6:20 PM Stephen Rothwell <sfr@canb.auug.org.au> w=
+rote:
+> >
+> > On Fri, 21 Aug 2020 11:11:11 +1000 Stephen Rothwell <sfr@canb.auug.org.=
+au> wrote: =20
+> > >
+> > > After merging the bpf-next tree, today's linux-next build (x86_64
+> > > allmodconfig) failed like this:
+> > >
+> > > Auto-detecting system features:
+> > > ...                        libelf: [  [31mOFF [m ]
+> > > ...                          zlib: [  [31mOFF [m ]
+> > > ...                           bpf: [  [32mon [m  ]
+> > >
+> > > No libelf found
+> > > make[5]: *** [Makefile:284: elfdep] Error 1
+> > >
+> > > Caused by commit
+> > >
+> > >   d71fa5c9763c ("bpf: Add kernel module with user mode driver that po=
+pulates bpffs.")
+> > >
+> > > [For a start, can we please *not* add this verbose feature detection
+> > > output to the nrormal build?]
+> > >
+> > > This is a PowerPC hosted cross build.
+> > >
+> > > I have marked BPF_PRELOAD as BROKEN for now. =20
+> >
+> > Still getting this failure ... =20
+>=20
+> I don't have powerpc with crosscompiler to x86 to reproduce.
+> What exactly the error?
+
+Just as above.
+
+> bpf_preload has:
+> "depends on CC_CAN_LINK"
+> which is exactly the same as bpfilter.
+> You should have seen this issue with bpfilter for years now.
+
+Well, I haven't :-)  It just started the other day when that commit
+appeared.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/UdHhr.Z1_ueRZo/AaeqreTx
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9Ef80ACgkQAVBC80lX
+0GztqQgAnLGgzIRqWxxHypLlA/LvG2w9edly23uy0BJN03RXPa3Cvpew2ncoHwfs
+MVduYmtGBYedqewae9ZmSVtuRqh73ANCoit0FahXeEbj4Cwi4rw5RIaGP/Qsojbb
+c2xFtgRRDVzeEsyS7ZQo9t+UF7s6DNkkO/pMeLViDDujGspbJQiNeBH9bBoAH48Y
+evzfAso+xprMeAdn/EPe46g2C2SyS8b+PDIUVpOqZo4bosBmZs39B4XhLm5OXXi3
+p/D2H4uxaaHkm4BBBKgU0Za1SgwElOFfy8+ckGB78fuBe9ZndFsmyl4TH1MAkhGv
+FChh4XLX8Lp0gIso/bf1HauoK7fUUA==
+=sTUQ
+-----END PGP SIGNATURE-----
+
+--Sig_/UdHhr.Z1_ueRZo/AaeqreTx--
