@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE23251E40
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:28:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A3D3251E42
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:28:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbgHYR2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 13:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33162 "EHLO
+        id S1726697AbgHYR2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 13:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726645AbgHYR2D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 13:28:03 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C804C061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 10:28:03 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id m71so7896627pfd.1
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 10:28:03 -0700 (PDT)
+        with ESMTP id S1726682AbgHYR2I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 13:28:08 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66109C061574
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 10:28:08 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id mw10so1583599pjb.2
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 10:28:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UtTChdCSLkSxd+sRXkD3oHe4KiRrekM2v0o2HWq7aYE=;
-        b=sUxJoH9zpt6SuA5osAlwo1d+vTxGq5s+dhoDOxQMH24drU45b16tlDQRuSnqNlpVOz
-         0egYRvPAQvHLnUZ83ptqVonRUSuK0NW7PY8lE+zHqvRc4i+/Gajo6SnNkBAq3kXgCQ8M
-         nMlx9zwLxf/6gyPZhJveWddB3Ww1K19715v9HAQnXsMONGvEpfgQbrBdK+HMIrw38p8M
-         cm3AJccqpBIOsmEKoTDaEljamy6XigkrCDSo0LO82NP41HoX2Ku0fw+5bOwvPPr122hK
-         ZMaNAOSbV6TBdW2K0h89pKklvK/gKDWqRm+ebd5e4Yhyo0jDMaxIYUy10FZ5CN72GaEj
-         y79A==
+        bh=eOjCRr1iyADG+ZRax7slSjtpeURMGhBQuIQOuCjnTx8=;
+        b=UQMPPCu9M7VXhMA2GaLJ4yrUVAp6ZvDzxQBrBPBJgJo7OBwsGEj9hJ0XfpVEy4L0sX
+         1237QHrWSjzASMkKCOF2uW9K2yRK7pI6Vi10dZoy6whPg1o3kQOX+i4ORkIH66R6sCJ8
+         g8Cm8aCUl/j21Ll6nsFAo9EGr+fXeNEZLvpXeP5vPxGON6OkfFTk0U3hgu9TGs2Zb11X
+         lDRY4i17sB8oWW8U0jgZ2N6eByQZW5kZ4mIgqFh8kYvWLg4IS752RWcEapYe+FdoKHMc
+         DlZwwNH6vodyLV2ffiZYFGTWa93F06MAq7zjutlwWbyScdjn0rA/fn40ejMzqjaCsyHJ
+         3Iww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UtTChdCSLkSxd+sRXkD3oHe4KiRrekM2v0o2HWq7aYE=;
-        b=XuqVZ1ktRa+5nrdb0CWGgNanHo4nuGyv2OeNRnA37BeMdA58lvIHCjYphLnYr7yoUI
-         DkdldkkvuExiQqzf7UN0/K71ewTxRIy4sgA7TOpkeCgq0cwgvz38l3h3lw/7k84t5Dnr
-         oYgOuTyKLqxJO6HyKdfbZLPKNICCyLEBMti3coN9tUkUWqV+I1oXXMxM2woMR0KIWqi2
-         f3WTZWhi91gDEdaUKbmH2eV9Uo3PcnNin+5Y9+TtFkQe0lKEvYGcgiCOCYhNf054WfDn
-         /gnBv4nofrhERVq0jcMhTNmWwZzne3i2lhRvRbeacsbQ8k3yVP88rJ+ZbJE/7aJBSVMD
-         SBNw==
-X-Gm-Message-State: AOAM531aXNKy+WMclY1MeMvGia/dX54YTgtNAxErpPtbFUjSS0ICQ8hh
-        Gi14G+nFVn2k+hPFO9vREM4=
-X-Google-Smtp-Source: ABdhPJwHXCV6f7HcpXf/XOWCWj9ykyOSpU1Vpf67OdpO3iCpGXAugCjRQN+/bAWkhGM8VXeLC5zcEQ==
-X-Received: by 2002:a63:c62:: with SMTP id 34mr7671828pgm.115.1598376483039;
-        Tue, 25 Aug 2020 10:28:03 -0700 (PDT)
+        bh=eOjCRr1iyADG+ZRax7slSjtpeURMGhBQuIQOuCjnTx8=;
+        b=FTKvOGFSqIbOP+7cO9yBdQ1v4ks1i/h41i9/RJFmAbOBb4AbY8Zunb3+To4BwYQvQx
+         vmM6NAuJMvs+SV4fR2Y13WTz54Sli+NmgnoxHdY7Id+gRqXLQ5Ib4A2rAyQeVbDM6qOu
+         AsMxEzqWAVZoGcO6+pLmodPM1SmU4EfdR1ObWiXYZrjJ+eeCVEsPMMnHQi1Rq2feVoHN
+         cF+H7/gjV/3exUzQD5ovsH6j6qVDqshaVV+I/yp96KAoIKlYeYGzHM4iSThhtl91nGqr
+         RbUAGl845UG6zS4qL561koBQQXVbP494ELoxg9M7yaHI7DBz50eCjzBunOZaYALiBFOZ
+         YZMQ==
+X-Gm-Message-State: AOAM532xiPPPJnT4rb3471lLXnkVw4sCzP3sIi8odypz7w5+jozH603c
+        hs5bNlFhpbiFC4uQe12lanE=
+X-Google-Smtp-Source: ABdhPJzt9xTZoria9TuDD0fHYCIwHqwrTx86olUY6ebNvc1ipmlGyW4r7NvlhOCFaxSo8SayouuSyQ==
+X-Received: by 2002:a17:90a:ee08:: with SMTP id e8mr2566409pjy.86.1598376487967;
+        Tue, 25 Aug 2020 10:28:07 -0700 (PDT)
 Received: from btopel-mobl.ger.intel.com ([134.134.137.77])
-        by smtp.gmail.com with ESMTPSA id n72sm11685763pfd.93.2020.08.25.10.27.57
+        by smtp.gmail.com with ESMTPSA id n72sm11685763pfd.93.2020.08.25.10.28.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2020 10:28:02 -0700 (PDT)
+        Tue, 25 Aug 2020 10:28:07 -0700 (PDT)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
@@ -54,9 +54,9 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         netdev@vger.kernel.org, maciej.fijalkowski@intel.com,
         piotr.raczynski@intel.com, maciej.machnikowski@intel.com,
         lirongqing@baidu.com
-Subject: [PATCH net v3 2/3] ixgbe: avoid premature Rx buffer reuse
-Date:   Tue, 25 Aug 2020 19:27:35 +0200
-Message-Id: <20200825172736.27318-3-bjorn.topel@gmail.com>
+Subject: [PATCH net v3 3/3] ice: avoid premature Rx buffer reuse
+Date:   Tue, 25 Aug 2020 19:27:36 +0200
+Message-Id: <20200825172736.27318-4-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200825172736.27318-1-bjorn.topel@gmail.com>
 References: <20200825172736.27318-1-bjorn.topel@gmail.com>
@@ -77,95 +77,138 @@ reused and overwritten.
 
 To avoid this, store the page count prior invoking xdp_do_redirect().
 
-Fixes: 6453073987ba ("ixgbe: add initial support for xdp redirect")
+Fixes: efc2214b6047 ("ice: Add support for XDP")
 Reported-and-analyzed-by: Li RongQing <lirongqing@baidu.com>
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 24 +++++++++++++------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 30 ++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 2f8a4cfc5fa1..824c776a3abc 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -1945,7 +1945,8 @@ static inline bool ixgbe_page_is_reserved(struct page *page)
- 	return (page_to_nid(page) != numa_mem_id()) || page_is_pfmemalloc(page);
- }
- 
--static bool ixgbe_can_reuse_rx_page(struct ixgbe_rx_buffer *rx_buffer)
-+static bool ixgbe_can_reuse_rx_page(struct ixgbe_rx_buffer *rx_buffer,
-+				    int rx_buffer_pgcnt)
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 9d0d6b0025cf..61279adf3561 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -762,13 +762,15 @@ ice_rx_buf_adjust_pg_offset(struct ice_rx_buf *rx_buf, unsigned int size)
+ /**
+  * ice_can_reuse_rx_page - Determine if page can be reused for another Rx
+  * @rx_buf: buffer containing the page
++ * @rx_buf_pgcnt: rx_buf page refcount pre xdp_do_redirect() call
+  *
+  * If page is reusable, we have a green light for calling ice_reuse_rx_page,
+  * which will assign the current buffer to the buffer that next_to_alloc is
+  * pointing to; otherwise, the DMA mapping needs to be destroyed and
+  * page freed
+  */
+-static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf)
++static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf,
++				  int rx_buf_pgcnt)
  {
- 	unsigned int pagecnt_bias = rx_buffer->pagecnt_bias;
- 	struct page *page = rx_buffer->page;
-@@ -1956,7 +1957,7 @@ static bool ixgbe_can_reuse_rx_page(struct ixgbe_rx_buffer *rx_buffer)
+ 	unsigned int pagecnt_bias = rx_buf->pagecnt_bias;
+ 	struct page *page = rx_buf->page;
+@@ -779,7 +781,7 @@ static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf)
  
  #if (PAGE_SIZE < 8192)
  	/* if we are only owner of page we can reuse it */
--	if (unlikely((page_ref_count(page) - pagecnt_bias) > 1))
-+	if (unlikely((rx_buffer_pgcnt - pagecnt_bias) > 1))
+-	if (unlikely((page_count(page) - pagecnt_bias) > 1))
++	if (unlikely((rx_buf_pgcnt - pagecnt_bias) > 1))
  		return false;
  #else
- 	/* The last offset is a bit aggressive in that we assume the
-@@ -2021,11 +2022,18 @@ static void ixgbe_add_rx_frag(struct ixgbe_ring *rx_ring,
- static struct ixgbe_rx_buffer *ixgbe_get_rx_buffer(struct ixgbe_ring *rx_ring,
- 						   union ixgbe_adv_rx_desc *rx_desc,
- 						   struct sk_buff **skb,
--						   const unsigned int size)
-+						   const unsigned int size,
-+						   int *rx_buffer_pgcnt)
+ #define ICE_LAST_OFFSET \
+@@ -864,17 +866,25 @@ ice_reuse_rx_page(struct ice_ring *rx_ring, struct ice_rx_buf *old_buf)
+  * @rx_ring: Rx descriptor ring to transact packets on
+  * @skb: skb to be used
+  * @size: size of buffer to add to skb
++ * @rx_buf_pgcnt: rx_buf page refcount
+  *
+  * This function will pull an Rx buffer from the ring and synchronize it
+  * for use by the CPU.
+  */
+ static struct ice_rx_buf *
+ ice_get_rx_buf(struct ice_ring *rx_ring, struct sk_buff **skb,
+-	       const unsigned int size)
++	       const unsigned int size,
++	       int *rx_buf_pgcnt)
  {
- 	struct ixgbe_rx_buffer *rx_buffer;
+ 	struct ice_rx_buf *rx_buf;
  
- 	rx_buffer = &rx_ring->rx_buffer_info[rx_ring->next_to_clean];
-+	*rx_buffer_pgcnt =
+ 	rx_buf = &rx_ring->rx_buf[rx_ring->next_to_clean];
++	*rx_buf_pgcnt =
 +#if (PAGE_SIZE < 8192)
-+		page_count(rx_buffer->page);
++		page_count(rx_buf->page);
 +#else
 +		0;
 +#endif
- 	prefetchw(rx_buffer->page);
- 	*skb = rx_buffer->skb;
+ 	prefetchw(rx_buf->page);
+ 	*skb = rx_buf->skb;
  
-@@ -2055,9 +2063,10 @@ static struct ixgbe_rx_buffer *ixgbe_get_rx_buffer(struct ixgbe_ring *rx_ring,
- 
- static void ixgbe_put_rx_buffer(struct ixgbe_ring *rx_ring,
- 				struct ixgbe_rx_buffer *rx_buffer,
--				struct sk_buff *skb)
-+				struct sk_buff *skb,
-+				int rx_buffer_pgcnt)
+@@ -1012,12 +1022,13 @@ ice_construct_skb(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf,
+  * ice_put_rx_buf - Clean up used buffer and either recycle or free
+  * @rx_ring: Rx descriptor ring to transact packets on
+  * @rx_buf: Rx buffer to pull data from
++ * @rx_buf_pgcnt: Rx buffer page count pre xdp_do_redirect()
+  *
+  * This function will update next_to_clean and then clean up the contents
+  * of the rx_buf. It will either recycle the buffer or unmap it and free
+  * the associated resources.
+  */
+-static void ice_put_rx_buf(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf)
++static void ice_put_rx_buf(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf, int rx_buf_pgcnt)
  {
--	if (ixgbe_can_reuse_rx_page(rx_buffer)) {
-+	if (ixgbe_can_reuse_rx_page(rx_buffer, rx_buffer_pgcnt)) {
- 		/* hand second half of page back to the ring */
- 		ixgbe_reuse_rx_page(rx_ring, rx_buffer);
- 	} else {
-@@ -2308,6 +2317,7 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
- 		union ixgbe_adv_rx_desc *rx_desc;
- 		struct ixgbe_rx_buffer *rx_buffer;
- 		struct sk_buff *skb;
-+		int rx_buffer_pgcnt;
- 		unsigned int size;
+ 	u16 ntc = rx_ring->next_to_clean + 1;
  
- 		/* return some buffers to hardware, one at a time is too slow */
-@@ -2327,7 +2337,7 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
- 		 */
+@@ -1028,7 +1039,7 @@ static void ice_put_rx_buf(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf)
+ 	if (!rx_buf)
+ 		return;
+ 
+-	if (ice_can_reuse_rx_page(rx_buf)) {
++	if (ice_can_reuse_rx_page(rx_buf, rx_buf_pgcnt)) {
+ 		/* hand second half of page back to the ring */
+ 		ice_reuse_rx_page(rx_ring, rx_buf);
+ 	} else {
+@@ -1103,6 +1114,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 		struct sk_buff *skb;
+ 		unsigned int size;
+ 		u16 stat_err_bits;
++		int rx_buf_pgcnt;
+ 		u16 vlan_tag = 0;
+ 		u8 rx_ptype;
+ 
+@@ -1125,7 +1137,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
  		dma_rmb();
  
--		rx_buffer = ixgbe_get_rx_buffer(rx_ring, rx_desc, &skb, size);
-+		rx_buffer = ixgbe_get_rx_buffer(rx_ring, rx_desc, &skb, size, &rx_buffer_pgcnt);
+ 		if (rx_desc->wb.rxdid == FDIR_DESC_RXDID || !rx_ring->netdev) {
+-			ice_put_rx_buf(rx_ring, NULL);
++			ice_put_rx_buf(rx_ring, NULL, 0);
+ 			cleaned_count++;
+ 			continue;
+ 		}
+@@ -1134,7 +1146,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 			ICE_RX_FLX_DESC_PKT_LEN_M;
  
  		/* retrieve a buffer from the ring */
- 		if (!skb) {
-@@ -2372,7 +2382,7 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
+-		rx_buf = ice_get_rx_buf(rx_ring, &skb, size);
++		rx_buf = ice_get_rx_buf(rx_ring, &skb, size, &rx_buf_pgcnt);
+ 
+ 		if (!size) {
+ 			xdp.data = NULL;
+@@ -1174,7 +1186,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 		total_rx_pkts++;
+ 
+ 		cleaned_count++;
+-		ice_put_rx_buf(rx_ring, rx_buf);
++		ice_put_rx_buf(rx_ring, rx_buf, rx_buf_pgcnt);
+ 		continue;
+ construct_skb:
+ 		if (skb) {
+@@ -1193,7 +1205,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
  			break;
  		}
  
--		ixgbe_put_rx_buffer(rx_ring, rx_buffer, skb);
-+		ixgbe_put_rx_buffer(rx_ring, rx_buffer, skb, rx_buffer_pgcnt);
+-		ice_put_rx_buf(rx_ring, rx_buf);
++		ice_put_rx_buf(rx_ring, rx_buf, rx_buf_pgcnt);
  		cleaned_count++;
  
- 		/* place incomplete frames back on ring for completion */
+ 		/* skip if it is NOP desc */
 -- 
 2.25.1
 
