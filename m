@@ -2,152 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FA94251871
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:21:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57BFC251892
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:31:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728117AbgHYMVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 08:21:06 -0400
-Received: from mail-eopbgr40122.outbound.protection.outlook.com ([40.107.4.122]:1511
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726015AbgHYMUv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 08:20:51 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XnuHUESqRpeGiUUtwZz7EkVmq6un0B7jXoNt963iBinTPOrFzgthWmGgAx1hRgWSxu3c5w1LiJnrwDTeMfoPglWWopZJMiUta8A0kxYs9+Adpn2IhPP2aAln8Y0EWc/NzGiaAfayBu6OcLvZPQJPRzLKzOT+k9wQi8r/9L6NBHBzEOpa0p4+wBpBg0oui0H3Ye7y1KhGoDRDmmq5eZMtOr/Gmrhlx+tc6vY82qATE3yUss80FX9CWXo0PW35ZOtN25D3yMaYofVA9IdMScUWrufbCW9uzjCW+fbFAedbE0bzPp6zL3yHk4tfsCyjrIBmTqq+MeDUKhxOi5xXuURuGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OUm1aS9UUuseD4nWcf7QHncYBRxQA+2Hm6PztoMAtIA=;
- b=UHkrhoJvibPl2cfJWGDDgLe+aabDfItQlOs7qrSa9TR57vjJ3rqYaZgTMCucou1gwQfDXP+H2vB3CdR+dR2RUd9tOQktS/JQtOWxgBPZr6hxH4qvESqvL7N1NEt+T5EPPZrZb/ZVB9CQZxdC985WtjrS+V9Q/zI12izKgzXkrdvVKjQnBe2i1x0zG63KV5MllTLjgsQQ9Tfypu6HmkmrPD40QJk5x4/in19ohlueDk3/qvs76pDsxvxcy6wA9IXy/8aPBnVvu/TH5QJvj01FEDdwdSeJ5C5evxR6J5vbev7aHvd82ibj2c3Xigok6KRlwJN953QLTPAWtO4duskWew==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OUm1aS9UUuseD4nWcf7QHncYBRxQA+2Hm6PztoMAtIA=;
- b=kV1OSLF7dsuIlsvePPth1FA3BqLHhUOaw1wfKW0Yo4bpkwby+YIbOEVXRcgnhkk4UkIebBQxSXpTt3YTENoemRuhxz70A79c3O9aq1KPT0iTSA10oF8msRG7oX/fSBo5tR62FoD91IH69mmM+nD/G2p+0YD8M+MPC+9VASZf1Qo=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
- HE1P190MB0571.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:5e::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3305.26; Tue, 25 Aug 2020 12:20:46 +0000
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::b1a4:e5e3:a12b:1305]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::b1a4:e5e3:a12b:1305%6]) with mapi id 15.20.3305.026; Tue, 25 Aug 2020
- 12:20:46 +0000
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Vadym Kochan <vadym.kochan@plvision.eu>
-Subject: [net-next v5 6/6] dt-bindings: marvell,prestera: Add description for device-tree bindings
-Date:   Tue, 25 Aug 2020 15:20:13 +0300
-Message-Id: <20200825122013.2844-7-vadym.kochan@plvision.eu>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200825122013.2844-1-vadym.kochan@plvision.eu>
-References: <20200825122013.2844-1-vadym.kochan@plvision.eu>
-Content-Type: text/plain
-X-ClientProxiedBy: AM6PR08CA0039.eurprd08.prod.outlook.com
- (2603:10a6:20b:c0::27) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:7:56::28)
+        id S1726609AbgHYMbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 08:31:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726581AbgHYMba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 08:31:30 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F6DC061755
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 05:31:30 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id 2so1366872wrj.10
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 05:31:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fooishbar-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+HLPhy+qXHIinU4+E7TS6jEdPNtNrgqFPzcA0O6t5kU=;
+        b=wEO9WqPQBcLwZUKcvqXvWeTQyatZBnoj8MNgvqBl3wXtPJizAT/oQ/SdGZfZ4EMq/E
+         eyFKyYTJISm+DV330UA3npw7Dk0YMydTsCuYN9jpA+MHjIs/adfjauEBoaNXRZ0HI9Le
+         JDdxy0U/s9OnS3u2btlKuWA8skzmnHXl+FdDvALKESloVFY3kHERMGM8vAtLPvLngs7q
+         pN4QuFCkbyvSu3wmqoe19Atprq/sp9hCBmKWOpw9qfETRsv0KPDoH2X3ZJsbn1hKBRKu
+         pSMBFzyQPBylG6jIRY2gLJ9lFIrCS6nd9xiUy1RuilZMNT57weEJFi5aBrdPQmLzGZTH
+         70ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+HLPhy+qXHIinU4+E7TS6jEdPNtNrgqFPzcA0O6t5kU=;
+        b=btq0b091o9+s9UFVMq/SN2IYoPM4FFLP1ziCHy78hK+eBROhqKpgNcHKax3YBKPgKe
+         Ad5dIflq0nPfHmFSDvqeYMeaNMowPw8ThOVB2Gmvirtx7njLafpvS0jtJcxvfagSVa0s
+         8V/Wp+I1Oq01CjDk3MpKhh6dfnuyLAftW6P+BNs7xHhpyQNcKWR5MgRVG5hbxrStzYyF
+         MG5LwgGrKgziLWoEYRnlQdeNfvlNcBIb3qazHTnVQm9DqDKxONLhQM06A+4SbSPMAN4I
+         yLUhoq6t7s/fFR5xhJNSw0jtumOG4tQ9tbHmY8IYdVpnaK6BfW4wyO5BgyL0CqGhZxCu
+         IruA==
+X-Gm-Message-State: AOAM531L9gXpBr4FbUBOx8HyWUu8YT4tWckipOB9OeWVB37qs4F5RcCt
+        kY1yVc1lV4sgKNsGhtlqtuMaK9luTA2aN13kjybGIw==
+X-Google-Smtp-Source: ABdhPJz1mB4Fdo1aDIpEuz/ea4FV6oUPMILZjNgY202nHhhVQ2y6zu7/a0D9cIzuEsl4KQKXulFb7/NPn2fB9IdTTE0=
+X-Received: by 2002:a5d:644b:: with SMTP id d11mr10206039wrw.373.1598358688698;
+ Tue, 25 Aug 2020 05:31:28 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM6PR08CA0039.eurprd08.prod.outlook.com (2603:10a6:20b:c0::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25 via Frontend Transport; Tue, 25 Aug 2020 12:20:44 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [217.20.186.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 025c3205-da84-4c57-0131-08d848f14b17
-X-MS-TrafficTypeDiagnostic: HE1P190MB0571:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1P190MB057118C41A2D6E3D621FC4A595570@HE1P190MB0571.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: v5Pu8x2dVvRYOJXzXWFKfq504x+dcb70TysduWH7tVAFIR/eQUp3eH50X/0IKnllrikwVTiJOyseSxG5Q5WZglNMenrs6MxO01wfEoiMh27g0FyEUcXp33S1Lk5huSa9MZiwPwntwGQ6pucbvm+eO9AaRdR0z0VsLVm+WhQlq3blA/KTRb/zXuDESlhdz/BV1SYV53LEdEPhmZB29yliMFroMXkAUY9j2yZKfwrx7aY4ZmZviHA0reXCCGGhXtyOeXZIOfEIIlFHq6F+jKhxbXI0kxGOolGaKCSlQVFD+nmvxmRN+ZiMwlYP95qtjUGKgWVw99srJWSbJuybwUirYwCR7Erwu/pRbZVUzRq7dFbMJ2mTAPYRGEtzceIrVWwIg2LAWmFwwL41uZ7hsWUMSQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(346002)(376002)(39830400003)(396003)(136003)(5660300002)(8936002)(2906002)(66556008)(66946007)(8676002)(52116002)(54906003)(4326008)(1076003)(110136005)(107886003)(66476007)(2616005)(6506007)(956004)(478600001)(36756003)(6486002)(6512007)(26005)(86362001)(44832011)(83380400001)(186003)(16526019)(6666004)(316002)(921003)(142933001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: BmLaAyLOiKKCZ1L847+OFfhUoXghWa1m4rxe6cMoe5BVM/LNs/Do6Kj+s/f4jOreh26hhJ49/zhrXPWwAqRwfmkBcCRu4o/9+lJu55KrPVa82mMD3USSTamyMJDCp4/c43dT79r5vvTx5bj3DTwAX3XWjbByIQQE59mfvFSS+Yp0/THrf3T16dP3MNXtj5l1qA5RdKllnKlvUOOBzyPK9pSkS6qxW2lJIu72rMaLtUKXhRbhZQ/QlUocQIOP8oVBL+p+IfQK/e094FPXZOGCf30ZLmXX03RcUnTmuLBtD31Yn8Oe+L02wj68PYwYqSyvWUvtEuq9fi3WvJY8dhuuNnnXWGgWjv387AxSKsOHJmsWnX24ioe7j1xzVV2gUImBp6h3OGduHeCkWvbNUM/vwm/DePPjqKkVgIeTYfUbL/8PjjYxBJxb+cZQkO5um98Hd3NTn0fMUYR4JUCYadpEiichPa3joAYJSuYpN5Jaskx2VgOtmQ1y1w0i7RTDQv8i4P31PwjbfNXlgYgkXyxf7PCi+PjzhX4FBIqstmhA+WzyVkmdgYvPz5A8CL5L9An5QsbSOrV9rydPUhlnIraMue/23VNu9ai4d0s3WlzDNCgajK01BQYXCo3WO52Itl6VWWeWUiy7N+Ws9N3tdfRv3Q==
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 025c3205-da84-4c57-0131-08d848f14b17
-X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2020 12:20:45.9163
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6zXrFnrnYHXLDNm9Bce5s5ItXxZbUJaXWa1PI4P3mJqHoOZNunQfQEURQ3fFeyxcshv9cIy3FOH/YuhD/Nsyh4oDfy8fGoK1Nklo3ul4LpU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0571
+References: <cover.1597833138.git.mchehab+huawei@kernel.org>
+ <20200819152120.GA106437@ravnborg.org> <20200819153045.GA18469@pendragon.ideasonboard.com>
+ <CALAqxLUXnPRec3UYbMKge8yNKBagLOatOeRCagF=JEyPEfWeKA@mail.gmail.com>
+ <20200820090326.3f400a15@coco.lan> <20200820100205.GA5962@pendragon.ideasonboard.com>
+ <CAPM=9twzsw7T=GD6Jc1EFenXq9ZhTgf_Nuo71uLfX2W33oa=6w@mail.gmail.com> <20200825133025.13f047f0@coco.lan>
+In-Reply-To: <20200825133025.13f047f0@coco.lan>
+From:   Daniel Stone <daniel@fooishbar.org>
+Date:   Tue, 25 Aug 2020 13:31:16 +0100
+Message-ID: <CAPj87rNkqp0hDEv63jhJsMzsQ0qMLucjWE4KVByCFoMRrnfUKA@mail.gmail.com>
+Subject: Re: [PATCH 00/49] DRM driver for Hikey 970
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Dave Airlie <airlied@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        David Airlie <airlied@linux.ie>,
+        Wanchun Zheng <zhengwanchun@hisilicon.com>,
+        linuxarm@huawei.com, dri-devel <dri-devel@lists.freedesktop.org>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Xiubin Zhang <zhangxiubin1@huawei.com>,
+        Wei Xu <xuwei5@hisilicon.com>,
+        Xinliang Liu <xinliang.liu@linaro.org>,
+        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Bogdan Togorean <bogdan.togorean@analog.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Laurentiu Palcu <laurentiu.palcu@nxp.com>,
+        linux-media <linux-media@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Liwei Cai <cailiwei@hisilicon.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Chen Feng <puck.chen@hisilicon.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        mauro.chehab@huawei.com, Rob Clark <robdclark@chromium.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Liuyao An <anliuyao@huawei.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Rongrong Zou <zourongrong@gmail.com>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add brief description how to configure base mac address binding in
-device-tree.
+Hi Mauro,
 
-Describe requirement for the PCI port which is connected to the ASIC, to
-allow access to the firmware related registers.
+On Tue, 25 Aug 2020 at 12:30, Mauro Carvalho Chehab
+<mchehab+huawei@kernel.org> wrote:
+> Sorry, but I can't agree that review is more important than to be able
+> to properly indicate copyrights in a valid way at the legal systems that
+> it would apply ;-)
 
-Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
----
- .../bindings/net/marvell,prestera.txt         | 34 +++++++++++++++++++
- 1 file changed, 34 insertions(+)
+The way to properly indicate copyright coverage is to insert a
+copyright statement in the file. This has been the accepted way of
+communicating copyright notices since approximately the dawn of time.
+The value of the 'author' field within a chain of git commits does not
+have privileged legal value.
 
-diff --git a/Documentation/devicetree/bindings/net/marvell,prestera.txt b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-index 83370ebf5b89..e28938ddfdf5 100644
---- a/Documentation/devicetree/bindings/net/marvell,prestera.txt
-+++ b/Documentation/devicetree/bindings/net/marvell,prestera.txt
-@@ -45,3 +45,37 @@ dfx-server {
- 	ranges = <0 MBUS_ID(0x08, 0x00) 0 0x100000>;
- 	reg = <MBUS_ID(0x08, 0x00) 0 0x100000>;
- };
-+
-+Marvell Prestera SwitchDev bindings
-+-----------------------------------
-+Optional properties:
-+- compatible: must be "marvell,prestera"
-+- base-mac-provider: describes handle to node which provides base mac address,
-+	might be a static base mac address or nvme cell provider.
-+
-+Example:
-+
-+eeprom_mac_addr: eeprom-mac-addr {
-+       compatible = "eeprom,mac-addr-cell";
-+       status = "okay";
-+
-+       nvmem = <&eeprom_at24>;
-+};
-+
-+prestera {
-+       compatible = "marvell,prestera";
-+       status = "okay";
-+
-+       base-mac-provider = <&eeprom_mac_addr>;
-+};
-+
-+The current implementation of Prestera Switchdev PCI interface driver requires
-+that BAR2 is assigned to 0xf6000000 as base address from the PCI IO range:
-+
-+&cp0_pcie0 {
-+	ranges = <0x81000000 0x0 0xfb000000 0x0 0xfb000000 0x0 0xf0000
-+		0x82000000 0x0 0xf6000000 0x0 0xf6000000 0x0 0x2000000
-+		0x82000000 0x0 0xf9000000 0x0 0xf9000000 0x0 0x100000>;
-+	phys = <&cp0_comphy0 0>;
-+	status = "okay";
-+};
--- 
-2.17.1
+If what you were saying is true, it would be impossible for any
+project to copy code from any other project, unless they did git
+filter-branch and made sure to follow renames too. As others have
+noted, it would also be impossible for any patches to be developed
+collaboratively by different copyright holders, or for maintainers to
+apply changes.
 
+This is accepted community practice and has passed signoffs from a
+million different lawyers and copyright holders. If you wish to break
+with this and do something different, the onus is on you to provide
+the community with _specific_ legal advice; if this is accepted, the
+development model would have to drastically change in the presence of
+single pieces of code developed by multiple distinct copyright
+holders.
+
+Cheers,
+Daniel
