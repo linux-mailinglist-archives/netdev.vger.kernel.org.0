@@ -2,108 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C55C250E81
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 04:04:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACEA8250EDD
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 04:17:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726593AbgHYCDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 22:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725838AbgHYCDs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 22:03:48 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C650C061574;
-        Mon, 24 Aug 2020 19:03:48 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id w14so9334696eds.0;
-        Mon, 24 Aug 2020 19:03:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=J49ibx7rWGFZBjoDPxKJPcnIgdlw0PGmq9DEe+09t7c=;
-        b=pN9KGp8EA4+447mPGfQrOaDsDdt7pZWjGDXrVigq63ADBstrVE4fOEW2XNN419sZMH
-         qrlIybKYhkhbScRF+4k6YVcByDAjhpXR2cBtOiAFKY1Uq3BbbJR6bTDt3Xf3RnNH+ZoE
-         K44RmSK+ckbJx66/BxCsgM724/s6XOMpEUoDotTBlucFpjk1MvWIRnwYEMekFMX8U+g2
-         giteHXA/MzU1lnCfiUuneHY3QQBbOAEEgatGVVgU9IzL2weLqYFKaEmgKYq+8SzR6maA
-         53CchjhFIKW5IV+2FdGiHXfym5i4TFLh31PxGMGsX46tTIKKQ86Q/PZHqlhCG57N4It5
-         qwhQ==
+        id S1727973AbgHYCRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 22:17:02 -0400
+Received: from mail-il1-f193.google.com ([209.85.166.193]:45914 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726531AbgHYCRB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 22:17:01 -0400
+Received: by mail-il1-f193.google.com with SMTP id k4so9109246ilr.12;
+        Mon, 24 Aug 2020 19:17:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=J49ibx7rWGFZBjoDPxKJPcnIgdlw0PGmq9DEe+09t7c=;
-        b=S8GSRMQERfDS20HMaMuVx9Akn2EzzjviwJNxUUaGdBmqLUFbKV66+thLLlJHu/81vl
-         /hsDWws5hlc9fJCEE7+WIWd7/jWHnQtwgU+1mkq6W4W4ZhUXVTotdFaTrTiPoEXlpPbk
-         F5+gHHlODA34ZwzvoIYcmNpdw+FuKrS28Su7AFMoEASU+R2IZjcsDZWhEcdNoPRvP5ti
-         WFq1XjkaXgQdMdlhFgYidzST6LLB541TBGH3R2ufU7YYq4RZ1A/Tkd/q1aX9wG3Wf4AT
-         MsM98DCKTDws5FS44yRoRKuw1Y1jjjT0rGhMf5g31R/GW0RtVCBcg3quNFcXzV5YjQhz
-         zVkw==
-X-Gm-Message-State: AOAM530FfCvaRuogtB6K4hNfBF7EtQazgQNgu3XMpU6tLep79F3NlWeB
-        LXi81xglCoNtEQPVldR/aJI=
-X-Google-Smtp-Source: ABdhPJz5AHGCH48uQk6CVnq9RWkLV4y4g44m8Lll8usQ+nw4V75nvjb0ik+6WFoTInLpR2ll3p+FAA==
-X-Received: by 2002:aa7:cf94:: with SMTP id z20mr2790499edx.247.1598321027020;
-        Mon, 24 Aug 2020 19:03:47 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id y25sm11925234ejq.36.2020.08.24.19.03.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Aug 2020 19:03:46 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/6] MAINTAINERS: Remove self from PHY LIBRARY
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk
-References: <20200822201126.8253-1-f.fainelli@gmail.com>
- <20200824.161937.197785505315942083.davem@davemloft.net>
- <bd8da53d-ebf8-2e2e-124d-f12e614d820a@gmail.com>
- <20200824.182135.131366460578950674.davem@davemloft.net>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <824f8432-f40e-79ea-3d09-9be09b54746c@gmail.com>
-Date:   Mon, 24 Aug 2020 19:03:43 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.1.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cPaUYqeBD8duoMMFHhwQl/b6M7U9Dhl4gzL36hPNANM=;
+        b=PaUg8UVgFkV8xgWBE6u2tLN0ov0OGgqUSMY5FL/6y8QNWzcgVS0RMLjXmSxw1VRE/9
+         TZ1wuSpMryDW/TbNgREHclNA0kBCdo+0y3B2HjnS+YywKIYfryWG5jHbMIlUiFLzgUkc
+         cidX65NgG3tkk/m0GKVGTHxYUIQp8uW6Z3ooSne5Mn8rL2187+OfO4E843ZVOJc2sqpN
+         9a+e+TqsmWkHqDMISH8EcL5UIyWcnkCAihVXYrbMECV9KccJ7d3kbXmcg0/4ux/H03K8
+         mqOBRDvZQQNg6B3TVSY2o+AKwFnOCG9pTKuC3dH2i8msr0pXn9AvqRBFZji+k9qwHt3G
+         HW/Q==
+X-Gm-Message-State: AOAM531QSZaVeghvCMUC85RaDFy6R+F3SEmQilBhFKnh2OKAmgD4jK0o
+        Zvr4KNtxWuEFd/uuzuYf8jzD2wyBSUdH
+X-Google-Smtp-Source: ABdhPJy039p/D5ALU5plBARNf/qhTGH6VaZe6QqtAV1pNqKKbjtJR47Z1aYdm+9EkRB8JTK6peL8tQ==
+X-Received: by 2002:a92:5bcb:: with SMTP id c72mr6813468ilg.94.1598321820672;
+        Mon, 24 Aug 2020 19:17:00 -0700 (PDT)
+Received: from xps15 ([64.188.179.249])
+        by smtp.gmail.com with ESMTPSA id 18sm1263026iog.31.2020.08.24.19.16.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Aug 2020 19:17:00 -0700 (PDT)
+Received: (nullmailer pid 3801477 invoked by uid 1000);
+        Tue, 25 Aug 2020 02:16:57 -0000
+Date:   Mon, 24 Aug 2020 20:16:57 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     devicetree@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-can@vger.kernel.org, mark.rutland@arm.com,
+        netdev@vger.kernel.org, armbru@redhat.com,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Carsten Emde <c.emde@osadl.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/6] dt-bindings: vendor-prefix: add prefix for the
+ Czech Technical University in Prague.
+Message-ID: <20200825021657.GA3801424@bogus>
+References: <cover.1597518433.git.ppisa@pikron.com>
+ <8d0674796f3c4ecfd6fcd66ae79bc3aeb93ace22.1597518433.git.ppisa@pikron.com>
 MIME-Version: 1.0
-In-Reply-To: <20200824.182135.131366460578950674.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8d0674796f3c4ecfd6fcd66ae79bc3aeb93ace22.1597518433.git.ppisa@pikron.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/24/2020 6:21 PM, David Miller wrote:
-> From: Florian Fainelli <f.fainelli@gmail.com>
-> Date: Mon, 24 Aug 2020 17:43:37 -0700
+On Sat, 15 Aug 2020 21:43:03 +0200, Pavel Pisa wrote:
+> The Czech Technical University in Prague (CTU) is one of
+> the biggest and oldest (founded 1707) technical universities
+> in Europe. The abbreviation in Czech language is ČVUT according
+> to official name in Czech language
 > 
->>
->>
->> On 8/24/2020 4:19 PM, David Miller wrote:
->>> From: Florian Fainelli <f.fainelli@gmail.com>
->>> Date: Sat, 22 Aug 2020 13:11:20 -0700
->>>
->>>> Hi David, Heiner, Andrew, Russell,
->>>>
->>>> This patch series aims at allowing myself to keep track of the
->>>> Ethernet
->>>> PHY and MDIO bus drivers that I authored or contributed to without
->>>> being listed as a maintainer in the PHY library anymore.
->>>>
->>>> Thank you for the fish, I will still be around.
->>> I applied this to 'net' because I think it's important to MAINTAINERS
->>> information to be as uptodate as possible.
->>
->> Humm sure, however some of the paths defined in patches 4 and 5 assume
->> that Andrew's series that moves PHY/MDIO/PCS to separate
->> directories. I suppose this may be okay for a little while until you
->> merge his patch series?
+>   České vysoké učení technické v Praze
 > 
-> Aha, I see.  I think it's ok for now.
+> The English translation
+> 
+>   The Czech Technical University in Prague
+> 
+> The university pages in English
+> 
+>   https://www.cvut.cz/en
+> 
+> Signed-off-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-I should have probably made it clearer that this depended on Andrew's 
-patch series as opposed to simply building on top of it.
--- 
-Florian
+Acked-by: Rob Herring <robh@kernel.org>
