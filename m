@@ -2,121 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D04CE251FFE
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 21:30:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C34A2520CD
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 21:43:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726483AbgHYTar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 15:30:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52256 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726149AbgHYTap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 15:30:45 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7974C061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 12:30:44 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id x64so6116214lff.0
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 12:30:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=91WGW73GFVXZx1UKeprndgfgbUo/dF8OQ0jSHfku+Fs=;
-        b=oMyRKWufRNneJLathiUhhHb8GFwnpMOFPdZUhrb+Lp5nOIEH2I70wf70XzWPL2p86h
-         tV6zGVWvQ5UqlBWAD/mIdJIH3c6cdzff4Zwg3yszC7MGUw0wSw6mKfhIBUoaoSPDVtdf
-         62c56twYXvz6zL2YlbNYGyGie1UQatqVYornI=
+        id S1726617AbgHYTnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 15:43:11 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:36614 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726303AbgHYTnK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 15:43:10 -0400
+Received: by mail-io1-f68.google.com with SMTP id i10so8158551iow.3;
+        Tue, 25 Aug 2020 12:43:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=91WGW73GFVXZx1UKeprndgfgbUo/dF8OQ0jSHfku+Fs=;
-        b=ewWROMqulA1bJkSARF6dXoMMH51GqqJlo8KxlSysM1UvsuEoMGYFBWhPqsJQ2ivxO3
-         R4an/RmLKDEtkRob7gnP9TRQw+Z8S3b3IhqnIu9YC5yIvJjdRCD3hACXg500BnATL7/e
-         q7/Hi6GjxJY7r/MDln/ewRDi1bwY/Q0NhnAJxti09ystIfW66nUPEEwXHbSSMq0jOGcZ
-         CH5DzOFPTH1zZ1OqvJneEhu5cLTJqp/CRLOEX4EAELK1ePhs1yHkhi6uGBgSfxPSZPAQ
-         dFevw5vN6eDqVbpV5sV2YvoGd9Rwspuw9OB9LNyfuZdw6ehJCc3UbKtBvFpUsAleYsot
-         S6jw==
-X-Gm-Message-State: AOAM531+LwZokHuxxa9khUwftSPVBphkTb0h/UbzmZTuGxCA82cmAyLp
-        lb6G0XaDI7CZkVVlVLe3fM/2yltZRjinuw==
-X-Google-Smtp-Source: ABdhPJzqmUo1c75XakowNqN5YfwHvmfw5I5VWXKSpl6KNjpK5qTgbJxjj5Hu38xr2xKFLZSplZwI5A==
-X-Received: by 2002:ac2:5dc1:: with SMTP id x1mr5497706lfq.217.1598383842949;
-        Tue, 25 Aug 2020 12:30:42 -0700 (PDT)
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com. [209.85.167.43])
-        by smtp.gmail.com with ESMTPSA id a2sm3027391ljp.26.2020.08.25.12.30.41
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Aug 2020 12:30:41 -0700 (PDT)
-Received: by mail-lf1-f43.google.com with SMTP id u25so1018030lfm.10
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 12:30:41 -0700 (PDT)
-X-Received: by 2002:a19:8c3:: with SMTP id 186mr5686629lfi.61.1598383840878;
- Tue, 25 Aug 2020 12:30:40 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xFa4K2EMnvtSpb7MXWNHE/NvCVe7Pt+4e7+jJHBanys=;
+        b=RWWyOZTC34l4psCUv40YziStvOB1Sju+6sqfXEqpMfEBjbdv5WHhV3D3QQVTonDfof
+         9EDuFhEi/LdgR9uHIvIqsPOxxAphKpU2i6vD0qea5JiXseyoikJyEHI1J0PeEssqbeQk
+         vPwxEPXqLPkSo8h5Y1CIXX4eDKl01Zq4JZyPGw42yKzqVBTdprFlk2Kq1U+0x+Vc3wEo
+         fXSfjJ/cQMMiy4T+t2EKWJjUiIi0Bw/Um61woo8FJm3RTGGoqdnlN2Ai7HHBwQMpfARu
+         m++o187vME2t90J7eLaxn3SIQ7Lx6cYpbSDz1DrZuAt1EYPiqxgMptW7KQN9wQyHhahL
+         8+5Q==
+X-Gm-Message-State: AOAM5319nVVIyI2n29oyjj6E795wEWPD2Z00vpEZ9sNhAFWk04djIPQ/
+        DLoJ974wiavfgEcjPKVtaQ==
+X-Google-Smtp-Source: ABdhPJw/xaJIuCeQO1r6j9JB2bC93O0bNOs9R51Cj4LIZPtj20c0bgEkzt2KrzZok2oxQxpiHdKeDg==
+X-Received: by 2002:a6b:bfc1:: with SMTP id p184mr10370531iof.193.1598384589390;
+        Tue, 25 Aug 2020 12:43:09 -0700 (PDT)
+Received: from xps15 ([64.188.179.249])
+        by smtp.gmail.com with ESMTPSA id f128sm9645725ilh.71.2020.08.25.12.43.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2020 12:43:08 -0700 (PDT)
+Received: (nullmailer pid 1198512 invoked by uid 1000);
+        Tue, 25 Aug 2020 19:43:06 -0000
+Date:   Tue, 25 Aug 2020 13:43:06 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Landen Chao <landen.chao@mediatek.com>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com,
+        vivien.didelot@savoirfairelinux.com, matthias.bgg@gmail.com,
+        mark.rutland@arm.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, davem@davemloft.net,
+        sean.wang@mediatek.com, opensource@vdorst.com,
+        frank-w@public-files.de, dqfext@gmail.com
+Subject: Re: [PATCH net-next v2 4/7] dt-bindings: net: dsa: add new MT7531
+ binding to support MT7531
+Message-ID: <20200825194306.GA1160944@bogus>
+References: <cover.1597729692.git.landen.chao@mediatek.com>
+ <1ec38b68deec6f1c23e1236d38035b1823ea2ebf.1597729692.git.landen.chao@mediatek.com>
 MIME-Version: 1.0
-References: <20200825153829.38043-1-luzmaximilian@gmail.com>
-In-Reply-To: <20200825153829.38043-1-luzmaximilian@gmail.com>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Tue, 25 Aug 2020 12:30:28 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXPoxdMb4b5d0Ayv=JFACHcq7EXub14pJtJfcCV2di95Rg@mail.gmail.com>
-Message-ID: <CA+ASDXPoxdMb4b5d0Ayv=JFACHcq7EXub14pJtJfcCV2di95Rg@mail.gmail.com>
-Subject: Re: [PATCH net] mwifiex: Increase AES key storage size to 256 bits
-To:     Maximilian Luz <luzmaximilian@gmail.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Kaloyan Nikolov <konik98@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1ec38b68deec6f1c23e1236d38035b1823ea2ebf.1597729692.git.landen.chao@mediatek.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Aug 18, 2020 at 03:14:09PM +0800, Landen Chao wrote:
+> Add devicetree binding to support the compatible mt7531 switch as used
+> in the MediaTek MT7531 switch.
+> 
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> Signed-off-by: Landen Chao <landen.chao@mediatek.com>
+> ---
+>  .../devicetree/bindings/net/dsa/mt7530.txt    | 71 ++++++++++++++++++-
+>  1 file changed, 68 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mt7530.txt b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
+> index c5ed5d25f642..50eaf40fb612 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mt7530.txt
+> +++ b/Documentation/devicetree/bindings/net/dsa/mt7530.txt
+> @@ -5,6 +5,7 @@ Required properties:
+>  
+>  - compatible: may be compatible = "mediatek,mt7530"
+>  	or compatible = "mediatek,mt7621"
+> +	or compatible = "mediatek,mt7531"
+>  - #address-cells: Must be 1.
+>  - #size-cells: Must be 0.
+>  - mediatek,mcm: Boolean; if defined, indicates that either MT7530 is the part
+> @@ -32,10 +33,13 @@ Required properties for the child nodes within ports container:
+>  
+>  - reg: Port address described must be 6 for CPU port and from 0 to 5 for
+>  	user ports.
+> -- phy-mode: String, must be either "trgmii" or "rgmii" for port labeled
+> -	 "cpu".
+> +- phy-mode: String, the follow value would be acceptable for port labeled "cpu"
+> +	If compatible mediatek,mt7530 or mediatek,mt7621 is set,
+> +	must be either "trgmii" or "rgmii"
+> +	If compatible mediatek,mt7531 is set,
+> +	must be either "sgmii", "1000base-x" or "2500base-x"
+>  
+> -Port 5 of the switch is muxed between:
+> +Port 5 of mt7530 and mt7621 switch is muxed between:
+>  1. GMAC5: GMAC5 can interface with another external MAC or PHY.
+>  2. PHY of port 0 or port 4: PHY interfaces with an external MAC like 2nd GMAC
+>     of the SOC. Used in many setups where port 0/4 becomes the WAN port.
+> @@ -308,3 +312,64 @@ Example 3: MT7621: Port 5 is connected to external PHY: Port 5 -> external PHY.
+>  		};
+>  	};
+>  };
+> +
+> +Example 4: MT7531BE port6 -- up-clocked 2.5Gbps SGMII -- MT7622 CPU 1st GMAC
 
-On Tue, Aug 25, 2020 at 8:38 AM Maximilian Luz <luzmaximilian@gmail.com> wrote:
->
-> Following commit e18696786548 ("mwifiex: Prevent memory corruption
-> handling keys") the mwifiex driver fails to authenticate with certain
-> networks, specifically networks with 256 bit keys, and repeatedly asks
-> for the password. The kernel log repeats the following lines (id and
-> bssid redacted):
->
->     mwifiex_pcie 0000:01:00.0: info: trying to associate to '<id>' bssid <bssid>
->     mwifiex_pcie 0000:01:00.0: info: associated to bssid <bssid> successfully
->     mwifiex_pcie 0000:01:00.0: crypto keys added
->     mwifiex_pcie 0000:01:00.0: info: successfully disconnected from <bssid>: reason code 3
->
-> Tracking down this problem lead to the overflow check introduced by the
-> aforementioned commit into mwifiex_ret_802_11_key_material_v2(). This
-> check fails on networks with 256 bit keys due to the current storage
-> size for AES keys in struct mwifiex_aes_param being only 128 bit.
->
-> To fix this issue, increase the storage size for AES keys to 256 bit.
->
-> Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
-> Reported-by: Kaloyan Nikolov <konik98@gmail.com>
-> Tested-by: Kaloyan Nikolov <konik98@gmail.com>
+Does this really need another example?
 
-Thanks for this! I just happened to notice this breakage here, as we
-just merged the relevant -stable updates. I think it would be wise to
-get the Fixes tag Dan noted, when Kalle lands this.
-
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Tested-by: Brian Norris <briannorris@chromium.org>
-
-Also, while technically the regressing commit (e18696786548 ("mwifiex:
-Prevent memory corruption handling keys")) was fixing a potential
-overflow, the encasing command structure (struct host_cmd_ds_command)
-is a union of a ton of other command layouts, and likely had plenty of
-padding at the end, which would at least explain why non-malicious
-scenarios weren't problematic pre-commit-e18696786548. It's also not
-clear to me how much the network can directly determine this length,
-but I suppose that's beside the point now -- it's good to fix both of
-these bugs.
-
-Regards,
-Brian
+> +
+> +&eth {
+> +	gmac0: mac@0 {
+> +		compatible = "mediatek,eth-mac";
+> +		reg = <0>;
+> +		phy-mode = "2500base-x";
+> +
+> +		fixed-link {
+> +			speed = <2500>;
+> +			full-duplex;
+> +			pause;
+> +		};
+> +	};
+> +
+> +	&mdio0 {
+> +		switch@0 {
+> +			compatible = "mediatek,mt7531";
+> +			reg = <0>;
+> +			reset-gpios = <&pio 54 0>;
+> +
+> +			ports {
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				reg = <0>;
+> +
+> +				port@0 {
+> +					reg = <0>;
+> +					label = "lan0";
+> +				};
+> +
+> +				port@1 {
+> +					reg = <1>;
+> +					label = "lan1";
+> +				};
+> +
+> +				port@2 {
+> +					reg = <2>;
+> +					label = "lan2";
+> +				};
+> +
+> +				port@3 {
+> +					reg = <3>;
+> +					label = "lan3";
+> +				};
+> +
+> +				port@4 {
+> +					reg = <4>;
+> +					label = "wan";
+> +				};
+> +
+> +				port@6 {
+> +					reg = <6>;
+> +					label = "cpu";
+> +					ethernet = <&gmac0>;
+> +					phy-mode = "2500base-x";
+> +				};
+> +			};
+> +		};
+> +	};
+> -- 
+> 2.17.1
