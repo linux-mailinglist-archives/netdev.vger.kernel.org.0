@@ -2,136 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB905251E97
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:44:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4DD4251EA2
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:50:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726374AbgHYRoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 13:44:21 -0400
-Received: from mga14.intel.com ([192.55.52.115]:7427 "EHLO mga14.intel.com"
+        id S1726186AbgHYRuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 13:50:52 -0400
+Received: from mga12.intel.com ([192.55.52.136]:30548 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725936AbgHYRoN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 13:44:13 -0400
-IronPort-SDR: aUumUTDwCz53Y2iHGwyAe3LAAUcoR1diOiWxoAYxmBFJAVcHCS7hB9nfWjwrWPOZz4TIAr8+Bp
- 0IFeqYWCsdhQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9723"; a="155426814"
+        id S1725936AbgHYRuv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 13:50:51 -0400
+IronPort-SDR: 61xovL9MLi8AsEGvSw4FzZ2NPSJcNJ4Kks8gGo9FZOx/NRGaC1lRo/EONcI3dOimW9nFKI711d
+ TPiKIcJ2LXyQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9723"; a="135718451"
 X-IronPort-AV: E=Sophos;i="5.76,353,1592895600"; 
-   d="scan'208";a="155426814"
+   d="scan'208";a="135718451"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2020 10:44:12 -0700
-IronPort-SDR: zqhS6m/fLND9RgCesJVjpsnSbLCbCb3AXwQnlT9WRKKPBrzUIrbwF+Ghr3rZU/jwWiSRJouhJI
- xzyW8N/vSLPQ==
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2020 10:50:50 -0700
+IronPort-SDR: mBy4kAEHercHMbotNfm9BjCeJlV7ysa+UDvg8fICyG6emBZiknw+7rsDFbfvm9avTEC0JzKnb8
+ bJT8ln0mMtNg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,353,1592895600"; 
-   d="scan'208";a="499936952"
-Received: from adent-mobl.amr.corp.intel.com (HELO localhost.localdomain) ([10.209.77.195])
-  by fmsmga005.fm.intel.com with ESMTP; 25 Aug 2020 10:44:12 -0700
+   d="scan'208";a="499399872"
+Received: from adent-mobl.amr.corp.intel.com (HELO ellie) ([10.209.77.195])
+  by fmsmga006.fm.intel.com with ESMTP; 25 Aug 2020 10:50:50 -0700
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        vladimir.oltean@nxp.com, kurt@linutronix.de
-Subject: [PATCH net-next v1] taprio: Fix using wrong queues in gate mask
-Date:   Tue, 25 Aug 2020 10:44:04 -0700
-Message-Id: <20200825174404.2727633-1-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.28.0
+To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
+In-Reply-To: <87bliz13kj.fsf@kurt>
+References: <20200820081118.10105-1-kurt@linutronix.de> <20200820081118.10105-6-kurt@linutronix.de> <87pn7ftx6b.fsf@intel.com> <87bliz13kj.fsf@kurt>
+Date:   Tue, 25 Aug 2020 10:50:50 -0700
+Message-ID: <87d03ety11.fsf@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit 9c66d1564676 ("taprio: Add support for hardware
-offloading") there's a bit of inconsistency when offloading schedules
-to the hardware:
+Hi Kurt,
 
-In software mode, the gate masks are specified in terms of traffic
-classes, so if say "sched-entry S 03 20000", it means that the traffic
-classes 0 and 1 are open for 20us; when taprio is offloaded to
-hardware, the gate masks are specified in terms of hardware queues.
+Kurt Kanzenbach <kurt@linutronix.de> writes:
 
-The idea here is to fix hardware offloading, so schedules in hardware
-and software mode have the same behavior. What's needed to do is to
-map traffic classes to queues when applying the offload to the driver.
+> On Mon Aug 24 2020, Vinicius Costa Gomes wrote:
+>> Hi,
+>>
+>> Kurt Kanzenbach <kurt@linutronix.de> writes:
+>>
+> [snip]
+>>> +	/* Setup timer for schedule switch: The IP core only allows to set a
+>>> +	 * cycle start timer 8 seconds in the future. This is why we setup the
+>>> +	 * hritmer to base_time - 5 seconds. Then, we have enough time to
+>>> +	 * activate IP core's EST timer.
+>>> +	 */
+>>> +	start = ktime_sub_ns(schedule->base_time, (u64)5 * NSEC_PER_SEC);
+>>> +	hrtimer_start_range_ns(&hellcreek_port->cycle_start_timer, start,
+>>> +			       NSEC_PER_SEC, HRTIMER_MODE_ABS);
+>>
+>> If we are talking about seconds here, I don't think you need to use a
+>> hrtimer, you could use a workqueue/delayed_work. Should make things a
+>> bit simpler.
+>
+> I've used hrtimers for one reason: The hrtimer provides a way to fire at
+> an absolute base time based on CLOCK_TAI. All the other facilities such
+> as workqueues, timer list timers, etc do not.
 
-Fixes: 9c66d1564676 ("taprio: Add support for hardware offloading")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- net/sched/sch_taprio.c | 30 ++++++++++++++++++++++++------
- 1 file changed, 24 insertions(+), 6 deletions(-)
+Oh, yeah. Good point.
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index e981992634dd..fe53c1e38c7d 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1176,9 +1176,27 @@ static void taprio_offload_config_changed(struct taprio_sched *q)
- 	spin_unlock(&q->current_entry_lock);
- }
- 
--static void taprio_sched_to_offload(struct taprio_sched *q,
-+static u32 tc_map_to_queue_mask(struct net_device *dev, u32 tc_mask)
-+{
-+	u32 i, queue_mask = 0;
-+
-+	for (i = 0; i < dev->num_tc; i++) {
-+		u32 offset, count;
-+
-+		if (!(tc_mask & BIT(i)))
-+			continue;
-+
-+		offset = dev->tc_to_txq[i].offset;
-+		count = dev->tc_to_txq[i].count;
-+
-+		queue_mask |= GENMASK(offset + count - 1, offset);
-+	}
-+
-+	return queue_mask;
-+}
-+
-+static void taprio_sched_to_offload(struct net_device *dev,
- 				    struct sched_gate_list *sched,
--				    const struct tc_mqprio_qopt *mqprio,
- 				    struct tc_taprio_qopt_offload *offload)
- {
- 	struct sched_entry *entry;
-@@ -1193,7 +1211,8 @@ static void taprio_sched_to_offload(struct taprio_sched *q,
- 
- 		e->command = entry->command;
- 		e->interval = entry->interval;
--		e->gate_mask = entry->gate_mask;
-+		e->gate_mask = tc_map_to_queue_mask(dev, entry->gate_mask);
-+
- 		i++;
- 	}
- 
-@@ -1201,7 +1220,6 @@ static void taprio_sched_to_offload(struct taprio_sched *q,
- }
- 
- static int taprio_enable_offload(struct net_device *dev,
--				 struct tc_mqprio_qopt *mqprio,
- 				 struct taprio_sched *q,
- 				 struct sched_gate_list *sched,
- 				 struct netlink_ext_ack *extack)
-@@ -1223,7 +1241,7 @@ static int taprio_enable_offload(struct net_device *dev,
- 		return -ENOMEM;
- 	}
- 	offload->enable = 1;
--	taprio_sched_to_offload(q, sched, mqprio, offload);
-+	taprio_sched_to_offload(dev, sched, offload);
- 
- 	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
- 	if (err < 0) {
-@@ -1485,7 +1503,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 	}
- 
- 	if (FULL_OFFLOAD_IS_ENABLED(q->flags))
--		err = taprio_enable_offload(dev, mqprio, q, new_admin, extack);
-+		err = taprio_enable_offload(dev, q, new_admin, extack);
- 	else
- 		err = taprio_disable_offload(dev, q, extack);
- 	if (err)
+
+Cheers,
 -- 
-2.28.0
-
+Vinicius
