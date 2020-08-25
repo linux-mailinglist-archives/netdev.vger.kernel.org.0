@@ -2,105 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D9E92515B4
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:46:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B0D2515C2
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:55:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729583AbgHYJqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 05:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728944AbgHYJqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 05:46:17 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42196C061755;
-        Tue, 25 Aug 2020 02:46:16 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id u1so471162edi.4;
-        Tue, 25 Aug 2020 02:46:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lTsKS8Pb8K5WIlay+gSpZALJK9CC4vKfRtBondq1rG0=;
-        b=WubUU/NVMgDBIGpWM+WY1oTuRzE54vLKnQZjndSsLe89JNw7+MYdJGerAlsZ9ySeTY
-         15gwueEu/r8j62UNGT7C2eayRAaY9ZMrNLQzLFkqBWoolNtxGwRDkO9wcOGa5wD14F/R
-         HGgEYYU2to8O37h73hzceBTc+qW4IjlqL7r8zKO7qN0kan3RMu7vGNzwlVfvQ1ZnLCg7
-         0uqbmd3YZcTHHDuDIajMER0iIoywAtDO/BcLFRPRPcHQOm6GOqRH2U+vRDh89Mbo7kvj
-         RPayqch3tZXsTR+Xa5pb2cs8r9yZLqHMOWxBSWYwkvn4tCPJ7Z4I7L2N2voyzE4r70kG
-         Hbzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lTsKS8Pb8K5WIlay+gSpZALJK9CC4vKfRtBondq1rG0=;
-        b=UBuoz5DZkBwjxD8pykLp+xk/4O3UvLneTM1LKQ45HvLzQFIZEgHNpnnNoHyeOIR0DU
-         0dAvmWmtiFXclH35PHuEsm6q+tsx8LHIobQ8dieyv6eQWG1P4nM0yDi1g0H1dLnzywjc
-         KaliTDPHlnKO8fFOf6mcpEMpcRtVC1bf5zBdg9VS5DYlnxCgTsV+PdBvUMc0Js/Jffin
-         W1vjcwqeAAX/dgpAjZddkE2Y1Xjr3wUI/fcQCEOcjn8QYhrXUWOFVeFQviV+Bh02WYXl
-         /oczORiT7bjeySmA19m7zhJ7DMJ3xMsYfxvAmIrLNUz9Z+yLsk1uRISPX1Mykhd1PdrZ
-         TQJQ==
-X-Gm-Message-State: AOAM531OvnsXONHYzhksooMg1k8HpAkCYwWpGS3U3xTuQJPWFpPCvnHY
-        5zr35OuSbc2oC64vrgUj644=
-X-Google-Smtp-Source: ABdhPJwr9ysM8xXqvCVtvOtSxeedByHPMHO/m8GmhNTtL1ZLM4UWcZ1QRYAdRSipjRxoEdwNIT/VyQ==
-X-Received: by 2002:aa7:d688:: with SMTP id d8mr9525604edr.168.1598348774916;
-        Tue, 25 Aug 2020 02:46:14 -0700 (PDT)
-Received: from skbuf ([86.126.22.216])
-        by smtp.gmail.com with ESMTPSA id p3sm12461605edx.75.2020.08.25.02.46.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2020 02:46:14 -0700 (PDT)
-Date:   Tue, 25 Aug 2020 12:46:12 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
-Message-ID: <20200825094612.ffdt6xkl552ppc3i@skbuf>
-References: <20200820081118.10105-1-kurt@linutronix.de>
- <20200820081118.10105-6-kurt@linutronix.de>
- <20200822143922.frjtog4mcyaegtyg@skbuf>
- <87imd8zi8z.fsf@kurt>
- <87y2m3txox.fsf@intel.com>
+        id S1729630AbgHYJz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 05:55:29 -0400
+Received: from mx20.baidu.com ([111.202.115.85]:50462 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729456AbgHYJz1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 05:55:27 -0400
+Received: from BC-Mail-Ex30.internal.baidu.com (unknown [172.31.51.24])
+        by Forcepoint Email with ESMTPS id 156F2123377374D54E85;
+        Tue, 25 Aug 2020 17:55:25 +0800 (CST)
+Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
+ BC-Mail-Ex30.internal.baidu.com (172.31.51.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1979.3; Tue, 25 Aug 2020 17:55:25 +0800
+Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
+ BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
+ 15.01.1979.003; Tue, 25 Aug 2020 17:55:24 +0800
+From:   "Li,Rongqing" <lirongqing@baidu.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "maciej.fijalkowski@intel.com" <maciej.fijalkowski@intel.com>,
+        "piotr.raczynski@intel.com" <piotr.raczynski@intel.com>,
+        "maciej.machnikowski@intel.com" <maciej.machnikowski@intel.com>
+Subject: RE: [PATCH net 3/3] ice: avoid premature Rx buffer reuse
+Thread-Topic: [PATCH net 3/3] ice: avoid premature Rx buffer reuse
+Thread-Index: AQHWesB+EeQgHcjyYUOf84ugEjVBQqlIlccw
+Date:   Tue, 25 Aug 2020 09:55:24 +0000
+Message-ID: <f4cf2c5e2a0a4a6bb877fb24f0cc8b97@baidu.com>
+References: <20200825091629.12949-1-bjorn.topel@gmail.com>
+ <20200825091629.12949-4-bjorn.topel@gmail.com>
+In-Reply-To: <20200825091629.12949-4-bjorn.topel@gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.198.44]
+x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex30_2020-08-25 17:55:25:195
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87y2m3txox.fsf@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinicius,
-
-On Mon, Aug 24, 2020 at 04:45:50PM -0700, Vinicius Costa Gomes wrote:
-> Kurt Kanzenbach <kurt@linutronix.de> writes:
-> >
-> > With TAPRIO traffic classes and the mapping to queues can be
-> > configured. The switch can also map traffic classes. That sounded like a
-> > good match to me.
->
-> The only reason I could think that you would need this that *right now*
-> taprio has pretty glaring oversight: that in the offload parameters each entry
-> 'gate_mask' reference the "Traffic Class" (i.e. bit 0 is Traffic Class
-> 0), and it really should be the HW queue.
->
-
-Sorry, but could you please explain why having the gate_mask reference
-the traffic classes is a glaring oversight, and how changing it would
-help here?
-
-Also, Kurt, could you please explain what the
-HR_PRTCCFG_PCP_TC_MAP_SHIFT field in HR_PRTCCFG is doing?
-To me, it appears that it's configuring ingress QoS classification on
-the port (and the reason why this is strange to me is because you're
-applying this configuration through an egress qdisc), but I want to make
-sure I'm not misunderstanding.
-
-Thanks,
--Vladimir
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQmrDtnJuIFTDtnBlbCBb
+bWFpbHRvOmJqb3JuLnRvcGVsQGdtYWlsLmNvbV0NCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDI1
+LCAyMDIwIDU6MTYgUE0NCj4gVG86IGplZmZyZXkudC5raXJzaGVyQGludGVsLmNvbTsgaW50ZWwt
+d2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmcNCj4gQ2M6IEJqw7ZybiBUw7ZwZWwgPGJqb3JuLnRv
+cGVsQGludGVsLmNvbT47IG1hZ251cy5rYXJsc3NvbkBpbnRlbC5jb207DQo+IG1hZ251cy5rYXJs
+c3NvbkBnbWFpbC5jb207IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7DQo+IG1hY2llai5maWphbGtv
+d3NraUBpbnRlbC5jb207IHBpb3RyLnJhY3p5bnNraUBpbnRlbC5jb207DQo+IG1hY2llai5tYWNo
+bmlrb3dza2lAaW50ZWwuY29tOyBMaSxSb25ncWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQo+
+IFN1YmplY3Q6IFtQQVRDSCBuZXQgMy8zXSBpY2U6IGF2b2lkIHByZW1hdHVyZSBSeCBidWZmZXIg
+cmV1c2UNCj4gDQo+IEZyb206IEJqw7ZybiBUw7ZwZWwgPGJqb3JuLnRvcGVsQGludGVsLmNvbT4N
+Cj4gDQo+IFRoZSBwYWdlIHJlY3ljbGUgY29kZSwgaW5jb3JyZWN0bHksIHJlbGllZCBvbiB0aGF0
+IGEgcGFnZSBmcmFnbWVudCBjb3VsZCBub3QgYmUNCj4gZnJlZWQgaW5zaWRlIHhkcF9kb19yZWRp
+cmVjdCgpLiBUaGlzIGFzc3VtcHRpb24gbGVhZHMgdG8gdGhhdCBwYWdlIGZyYWdtZW50cw0KPiB0
+aGF0IGFyZSB1c2VkIGJ5IHRoZSBzdGFjay9YRFAgcmVkaXJlY3QgY2FuIGJlIHJldXNlZCBhbmQg
+b3ZlcndyaXR0ZW4uDQo+IA0KPiBUbyBhdm9pZCB0aGlzLCBzdG9yZSB0aGUgcGFnZSBjb3VudCBw
+cmlvciBpbnZva2luZyB4ZHBfZG9fcmVkaXJlY3QoKS4NCj4gDQo+IEZpeGVzOiBlZmMyMjE0YjYw
+NDcgKCJpY2U6IEFkZCBzdXBwb3J0IGZvciBYRFAiKQ0KPiBTaWduZWQtb2ZmLWJ5OiBCasO2cm4g
+VMO2cGVsIDxiam9ybi50b3BlbEBpbnRlbC5jb20+DQoNCg0KUmVwb3J0ZWQtYW5kLWFuYWx5emVk
+LWJ5OiBMaSBSb25nUWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+DQoNClRoYW5rcw0KDQotTGkN
+Cg0K
