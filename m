@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B44925187A
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:22:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2754E25187B
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:22:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726015AbgHYMWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 08:22:05 -0400
-Received: from mail-vi1eur05on2133.outbound.protection.outlook.com ([40.107.21.133]:20768
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S1729845AbgHYMWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 08:22:09 -0400
+Received: from mail-eopbgr60101.outbound.protection.outlook.com ([40.107.6.101]:20611
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729349AbgHYMV2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 08:21:28 -0400
+        id S1729502AbgHYMV1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 08:21:27 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Pcc+7KQ1HULq6laM7iDppi+At7+awZ1ujyzW7ulH+9K4ycNVos5x1Q14heDNNSfUeJuH7iplmRxg+KU7Aws9CGyPNK4pmYcw048as+9FbZSrckCOJZBJTKucdZUlp/+me3aEA2pAcZg+NUF+2WdoyBuFNTZft9kZ8/zrNywNaZ0MTF/oS5IkZcFRfxVDbSTuGWwRAUdDJG/Z3ZMctq6HUkmvuwaRYyFrSos0VVgiOOU8RumbRicukqt7FTE5XGwSz11x/nugAL6fAzeexG00xw0WZ4qaDWE/Hulwp4fcT65Dk+Zv6KI7G6Pd1M/sD0pUtVWMlQzoZ9bS/yL/wa22sQ==
+ b=lD/EA1qvDPDc39jrkX/vOZcqYrce4eV/5XnYHyFzbZmr06ngZqnyTPOaDVrp9wJbIsuz5vguddMtbSuKfjk1xjBv5soA2RBZ2lwuDEcqHdos56kA0byJt15FfVK9rqzUVE36yQHzOrx/J6bS8JCY1S8s4ohczrfw6Jgmo7brSl8HgrXYtmCCZz8BH/qI0g66gLz2M5bCA5cw0bdmTRMoqB9Qu9vzv3E4h6gxXwaqWKr5vJKq0r3/EORKnSiH4hcN8J50aLVcvCTapR8qyCtB/P9hqd5XqW10YMViYkJ+euUsF/WI+gOlf4Zk+9EZy2jedu080aKKvuATPN6Dd1UVRA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z5dd6EVEqy6hXvgFAUZn+qfSpROxlfgdNFZWKMGVmXo=;
- b=TdjOBJbsBQGF/oOm6Ef976CaM/w6dH09nEt/YZPVcABJ+IOvcbdBYOq7m14UWuQITnnayIcTEhZwgcaA2UaH2WzRoybK2CedYMQgJRv4DclsKuBwfLH4TIyv6LUCAAZO6pyXHDS9tQmokyVxCnEhXZwtb6jkKFtJljeqj2cbWyr6BQbgqiZ2S4Lc8OMQkZZeOTuczMBPXuhRYVtQUgACZouvxtGfAWPF5AL6Q3/jWNzBKKf8JVDxitxlYvVOlKVWrsXwcP4JivCjzmSO1xg/45Fw5VGsPzAPBgGEOESPtscS/Xn7X/+Fn1cWBGZ42Qd/7cpifJ/JR7K6/f3LSfzPmw==
+ bh=VjY6x7NhD5IsyIbjppRO1Q1rJC0//YrHiwPwcv4XqeQ=;
+ b=RUSWDRW6XNCpo9RCALr7stVhAn15OuQAMQ/pa4eQDH/9IRFbJM7hO6jRRem3BXtuED1eWLVzPiKHFW9DLV/oIcPKJb1E7JzE8TmP6Bv/chHnFmVGZS5ZM7sxcg/DnZYHOfMn7rUiv1+ttv+OY3ILJrozbD6FtzuXAH6iDkms9WyI8gwFlaOG5C2PteZxjoLWyf8Wnvu2LLDz5lFhCXeFb2qG23yZrfwcpIDgVKvV7aEceVjT2g1s3CJGrcLALmbgAHuh/60KVYZ5T1j9HrlrYJDbHQGb8xKSO1zgTPjlJOI3zZTpATvc8fU4vpCSGUlv8RYwzq/tKidWGD3aD/fNxA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z5dd6EVEqy6hXvgFAUZn+qfSpROxlfgdNFZWKMGVmXo=;
- b=Qnv2AZBP668wnjW6GxoLm2+0pXo9mWSHZ11/v2mq3XXJ1dpF9I4zbUy6nKRAf6CBJbPpu+XcTmM6WROxvlYgnqwyMl31szZWwsxi5jmt+3MHNk2ixn0HAT3zfPp5LslpXh+NEuCpWfZt0Kzc5lzAZtiSpbRrRgUvv9/PX5erfdw=
+ bh=VjY6x7NhD5IsyIbjppRO1Q1rJC0//YrHiwPwcv4XqeQ=;
+ b=Xoc5a5AIyoyArxf058cBneMEWAopcy+bBbSM19jlb97pQ+5t6QGeq9wXkmn31wXZxokQNCqiYrMHTU7oy31wMriHsuiPiQMh4IhGFSrd3RugJ8oE4afdNNWtQB+pkRM9l3BVNILL3wRdzbBiTu74L0VHSFEwcqq5XobcMtmpHcw=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
 Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
  HE1P190MB0507.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:60::10) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3305.26; Tue, 25 Aug 2020 12:20:42 +0000
+ 15.20.3305.26; Tue, 25 Aug 2020 12:20:44 +0000
 Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
  ([fe80::b1a4:e5e3:a12b:1305]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
  ([fe80::b1a4:e5e3:a12b:1305%6]) with mapi id 15.20.3305.026; Tue, 25 Aug 2020
- 12:20:42 +0000
+ 12:20:44 +0000
 From:   Vadym Kochan <vadym.kochan@plvision.eu>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -53,9 +53,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Mickey Rachamim <mickeyr@marvell.com>,
         Vadym Kochan <vadym.kochan@plvision.eu>
-Subject: [net-next v5 4/6] net: marvell: prestera: Add ethtool interface support
-Date:   Tue, 25 Aug 2020 15:20:11 +0300
-Message-Id: <20200825122013.2844-5-vadym.kochan@plvision.eu>
+Subject: [net-next v5 5/6] net: marvell: prestera: Add Switchdev driver implementation
+Date:   Tue, 25 Aug 2020 15:20:12 +0300
+Message-Id: <20200825122013.2844-6-vadym.kochan@plvision.eu>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200825122013.2844-1-vadym.kochan@plvision.eu>
 References: <20200825122013.2844-1-vadym.kochan@plvision.eu>
@@ -65,1417 +65,2171 @@ X-ClientProxiedBy: AM6PR08CA0039.eurprd08.prod.outlook.com
  (2603:10a6:7:56::28)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM6PR08CA0039.eurprd08.prod.outlook.com (2603:10a6:20b:c0::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25 via Frontend Transport; Tue, 25 Aug 2020 12:20:39 +0000
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM6PR08CA0039.eurprd08.prod.outlook.com (2603:10a6:20b:c0::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25 via Frontend Transport; Tue, 25 Aug 2020 12:20:42 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [217.20.186.93]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 37cb84b1-4403-4eb2-a674-08d848f14886
+X-MS-Office365-Filtering-Correlation-Id: 65ea9a46-b0f0-44d4-1b1d-08d848f149dd
 X-MS-TrafficTypeDiagnostic: HE1P190MB0507:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1P190MB0507D3D2B9D2FCB22C4DA48195570@HE1P190MB0507.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:257;
+X-Microsoft-Antispam-PRVS: <HE1P190MB0507F301DAC15F36D60F9B0E95570@HE1P190MB0507.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3B3qjLwBnOqmn5z8/jGZwfmso55lygFUfyDy+jmi8NHiQhBXbZdkxIQdHrlVDDEXJoKpGLzzBjMYIEdaoBNzAkzSXGGJT1m/Aa3tu3XITbY0RrbTalqJlMdFOu4bR2MctmA2bITQbrnvzhUU34spNi5AKYfYv0dnVAhGVdXzG0w2AxpCpSKbaWL99RfjQ3zbNZC5oiMBD7YlH23GdOks3lsSUhSIIqvl2cO3cd7kzY/GlA2ZhJPMoZa2YLw8MCZqImwfNkzrDQVrC0MLMda4xhYlOVf8fMVP7NuxQUDZBaA+yEoohVJf9MMdqovv4nxpv/9tcUpeb1oZp7hTYqEKDeH4fVGEreV/DhvAmP8CBwgfrIlrC5OHYSXu0xj11d96cTPXu6T0A+h9WTmLU9vpIA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(39830400003)(366004)(136003)(346002)(396003)(83380400001)(5660300002)(86362001)(4326008)(30864003)(107886003)(6506007)(36756003)(52116002)(8676002)(54906003)(26005)(186003)(6486002)(66556008)(66476007)(44832011)(66946007)(2616005)(8936002)(1076003)(956004)(316002)(110136005)(2906002)(16526019)(6512007)(478600001)(6666004)(333604002)(921003)(579004);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: HkNMejlt36yWY1Db8kgczbUmI1/7pWyi3clSgug+Jkx92oKO81j/f+j+d2CKMbuROkJTGJajjEGdvOnZXrylM4CpXk4Xbpr05rdx78t/+fpuVqfNrMmhJDBrYPJ+PxGDlkaKx59WTTvUl6FuhkYBlS1YTgSxbDolCW+6zM9CNVVwU3BqpQajVmtE3vr7l19n78Nxg7fXVQe03asJkXlQ+MjlEP51AThcF7dcNetCACa6MxO+4omqiA+U/0XMu61uM4ePqa2hY2izYy7oAtZS4LFTy/M9iIznaf64HYmFYpEnuk7lLZE5z0bZKiYutG7VxkaE6eu/sB3IkzNxcfC0CvmaN9omvaNzAvX8rDBAyPORg0oLCJoOd55XGKUJj/Th53clzjuKo0/4f5nu9v3E0Px1EpeNmInxDqHbli9ekzKcbquZeX4eSOEW702eO+BKA0DQO/Hc1a/dA7fDzDzYm/dbH9H5XYRl78LFOruQWdxE0yvlkXIYZgn7o4YD2gQiYFCxJRnkgWdhIvKKuQAZCUE6W3MC202n78BmD0nWcIUDvoo2qFGdKcL0RSKHlVV93+9g7SYvoClqpOgMUYA4zh09gN2eONAvF+6fPyS5pYG4WP4kcgNlWFn5BcPnxdgF4GSsA16i/kJuAWxdBXyX0g==
+X-Microsoft-Antispam-Message-Info: C6SY/JWBXmNIrzuG9sBcDZ05HSOTlWzBFaCVvfudTiukth2wQCtcH+JdaiOUvrVwS57OcmHhTgMNbB1mTRBdM7wxj6gdjB0THMtiZM9wevXxYiajebmoge7+8UK1VFK8WU8NMTbS6OvMFgZ2D5qt9I1iMRSPw+WT5Fi/z5yndbczXE4r1qNvNFxqXDXNHFlU1oPtaqXw9Lpgw6kTWJ/WGcXpZo85qR+P8K2a0dSazC1OeV3eGAKgSveFU6/brIMQpfg7gKA/eg2ILqIOSjFUBDE+rqdB6tAiWuNFCTs2zLiv+ayQOxDMIrFGQIhVzunbrej2ktxnE5kejoRXHp5+de3InBOoYnhVsozbLWopNyPzqjs1zlu2pi00yx66fskmTxuJ40F9PC6kXLMHq4OlnA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(39830400003)(366004)(136003)(346002)(396003)(83380400001)(5660300002)(86362001)(4326008)(30864003)(107886003)(6506007)(36756003)(52116002)(8676002)(54906003)(26005)(186003)(6486002)(66556008)(66476007)(44832011)(66946007)(2616005)(8936002)(1076003)(956004)(316002)(110136005)(2906002)(16526019)(6512007)(478600001)(6666004)(333604002)(921003)(559001)(579004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: LjtsXRLSgMldCMwmA6pexqcyZa1UEzG1w5hoepsp8pBAXtRPLhxsb74xH+vUIE8rLDqO6083P1KLkS8fxgL/9I19uWRWxYKDF/ZEfrl2hK+Oy6gEMhjrNO79SuBYkFIqdj2P3vi7wroCcDzA36OcGIk0ixTn8BVdg/F9Xh5GMkZAleuU0MAfKPsrz1K8G8TB6XjaGEbGIYcgNXZtAIhPH/WsFQy2/FWuC+fFit/oERQeL89mSBYuOZdW8/eos9WcqXqMjqjv2zfEwxtXWpl7Je5zLuIf2y0lKxqeXHRrl48jXZheWhoDFtzPIxmOhySxpcQqyBBSlbAQYXhNRiRDxvEhHR2fpvBEGAJzvetYxutGFO9HkSDXKqhIhXOVBgylPx2vJDhENR91AmaQOU6Ol0vBnvCht66u3m6cIZD6oVkYbqp32nnQY4HMY/2vm1pT6GOOGVJR5/+zeI2x/Z/IkXIejrnTnMeX984eMqwVQPGeVxynczP9ILTlhBVCIfg4qjAPNt0Au/vaxfX5oWElZ3+cOwx5P56GZsLIpEpFB+8N5kmtegtTe3J9QTJ/Zum7lAg0mWKVzaO7Xyvj527tSbGKlGrbK9IXze7GYSR0Uz+q3TYhdt8tVCxgWmRPfAmvWnptu0GVX+mjg/OcrlcODg==
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37cb84b1-4403-4eb2-a674-08d848f14886
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65ea9a46-b0f0-44d4-1b1d-08d848f149dd
 X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2020 12:20:41.8998
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2020 12:20:44.3282
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DJlFE81AtDfRFbe7w6XHqf79kZsWAW/e2EszXchkKgU7tqYkwzPa0HXuqv0totNqv24GRjMW6d9jkCP1Awrp4dU8C4M3iBPiC2WPr+S5Blk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: /Z3L5vBCeYhJn2WWnYNBh06DSStwUdXoDUArUrqPzBZJZZ4y5Qr2grAn1umE36rkj8mgsgc50/7PPy71VuWRPdREEZ7Ci54C7ppUZrXEa2o=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0507
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ethtool API provides support for the configuration of the following
-features: speed and duplex, auto-negotiation, MDI-x, forward error
-correction, port media type. The API also provides information about the
-port status, hardware and software statistic. The following limitation
-exists:
+The following features are supported:
 
-    - port media type should be configured before speed setting
-    - ethtool -m option is not supported
-    - ethtool -p option is not supported
-    - ethtool -r option is supported for RJ45 port only
-    - the following combination of parameters is not supported:
+    - VLAN-aware bridge offloading
+    - VLAN-unaware bridge offloading
+    - FDB offloading (learning, ageing)
+    - Switchport configuration
 
-          ethtool -s sw1pX port XX autoneg on
+Currently there are some limitations like:
 
-    - forward error correction feature is supported only on SFP ports, 10G
-      speed
+    - Only 1 VLAN-aware bridge instance supported
+    - FDB ageing timeout parameter is set globally per device
 
-    - auto-negotiation and MDI-x features are not supported on
-      Copper-to-Fiber SFP module
-
-Co-developed-by: Andrii Savka <andrii.savka@plvision.eu>
-Signed-off-by: Andrii Savka <andrii.savka@plvision.eu>
 Co-developed-by: Serhiy Boiko <serhiy.boiko@plvision.eu>
 Signed-off-by: Serhiy Boiko <serhiy.boiko@plvision.eu>
+Co-developed-by: Serhiy Pshyk <serhiy.pshyk@plvision.eu>
+Signed-off-by: Serhiy Pshyk <serhiy.pshyk@plvision.eu>
+Co-developed-by: Taras Chornyi <taras.chornyi@plvision.eu>
+Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
 Co-developed-by: Vadym Kochan <vadym.kochan@plvision.eu>
 Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
 ---
 PATCH v5:
+    0) Add Co-developed tag.
 
-    1) Convert following error check:
+    1) Remove "," from terminated enum entry.
 
-        if (func(...))
-        or
-        if (!func(...))
+    2) Replace 'u8 *' -> 'void *' in prestera_fw_parse_fdb_evt(...)
 
-        to use err variable:
-
-        err = func(...)
-        if (err)
-
-    2) Remove "," from terminated enum entry.
+    3) Use ether_addr_copy() in prestera_fw_parse_fdb_evt(...)
 
 PATCH v4:
-    1) Export only prestera_ethtool_ops instead of
-       each ethtool handler.
+    1) Check for the prestera dev interface in switchdev event handler
+       to ignore unsupported topology.
 
-    2) Get rid of not needed cast in prestera_ethtool_get_stats(...)
-       when doing memcpy.
-
- .../net/ethernet/marvell/prestera/Makefile    |   2 +-
- .../net/ethernet/marvell/prestera/prestera.h  |   3 +
- .../marvell/prestera/prestera_ethtool.c       | 759 ++++++++++++++++++
- .../marvell/prestera/prestera_ethtool.h       |  14 +
- .../ethernet/marvell/prestera/prestera_hw.c   | 295 ++++++-
- .../ethernet/marvell/prestera/prestera_hw.h   |  65 ++
- .../ethernet/marvell/prestera/prestera_main.c |  28 +-
- 7 files changed, 1159 insertions(+), 7 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_ethtool.h
+ .../net/ethernet/marvell/prestera/Makefile    |    3 +-
+ .../net/ethernet/marvell/prestera/prestera.h  |   33 +-
+ .../ethernet/marvell/prestera/prestera_hw.c   |  322 +++-
+ .../ethernet/marvell/prestera/prestera_hw.h   |   48 +
+ .../ethernet/marvell/prestera/prestera_main.c |  111 +-
+ .../marvell/prestera/prestera_switchdev.c     | 1289 +++++++++++++++++
+ .../marvell/prestera/prestera_switchdev.h     |   16 +
+ 7 files changed, 1815 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+ create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_switchdev.h
 
 diff --git a/drivers/net/ethernet/marvell/prestera/Makefile b/drivers/net/ethernet/marvell/prestera/Makefile
-index babd71fba809..7684e7047562 100644
+index 7684e7047562..93129e32ebc5 100644
 --- a/drivers/net/ethernet/marvell/prestera/Makefile
 +++ b/drivers/net/ethernet/marvell/prestera/Makefile
-@@ -1,6 +1,6 @@
+@@ -1,6 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  obj-$(CONFIG_PRESTERA)	+= prestera.o
  prestera-objs		:= prestera_main.o prestera_hw.o prestera_dsa.o \
--			   prestera_rxtx.o prestera_devlink.o
-+			   prestera_rxtx.o prestera_devlink.o prestera_ethtool.o
+-			   prestera_rxtx.o prestera_devlink.o prestera_ethtool.o
++			   prestera_rxtx.o prestera_devlink.o prestera_ethtool.o \
++			   prestera_switchdev.o
  
  obj-$(CONFIG_PRESTERA_PCI)	+= prestera_pci.o
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
-index 886b12f656d4..b1fd0a1edad1 100644
+index b1fd0a1edad1..968ae36eac01 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera.h
 +++ b/drivers/net/ethernet/marvell/prestera/prestera.h
-@@ -173,4 +173,7 @@ void prestera_device_unregister(struct prestera_device *dev);
- struct prestera_port *prestera_port_find_by_hwid(struct prestera_switch *sw,
- 						 u32 dev_id, u32 hw_id);
+@@ -15,6 +15,8 @@
  
-+int prestera_port_autoneg_set(struct prestera_port *port, bool enable,
-+			      u64 adver_link_modes, u8 adver_fec);
+ #define PRESTERA_DRV_NAME	"prestera"
+ 
++#define PRESTERA_DEFAULT_VID    1
++
+ struct prestera_fw_rev {
+ 	u16 maj;
+ 	u16 min;
+@@ -51,8 +53,6 @@ struct prestera_port_stats {
+ 	u64 unicast_frames_sent;
+ 	u64 sent_multiple;
+ 	u64 sent_deferred;
+-	u64 frames_1024_to_1518_octets;
+-	u64 frames_1519_to_max_octets;
+ 	u64 good_octets_sent;
+ };
+ 
+@@ -71,11 +71,13 @@ struct prestera_port {
+ 	u32 hw_id;
+ 	u32 dev_id;
+ 	u16 fp_id;
++	u16 pvid;
+ 	bool autoneg;
+ 	u64 adver_link_modes;
+ 	u8 adver_fec;
+ 	struct prestera_port_caps caps;
+ 	struct list_head list;
++	struct list_head vlans_list;
+ 	struct {
+ 		struct prestera_port_stats stats;
+ 		struct delayed_work caching_dw;
+@@ -105,6 +107,7 @@ enum prestera_event_type {
+ 	PRESTERA_EVENT_TYPE_UNSPEC,
+ 
+ 	PRESTERA_EVENT_TYPE_PORT,
++	PRESTERA_EVENT_TYPE_FDB,
+ 	PRESTERA_EVENT_TYPE_RXTX,
+ 
+ 	PRESTERA_EVENT_TYPE_MAX
+@@ -127,19 +130,37 @@ struct prestera_port_event {
+ 	} data;
+ };
+ 
++enum prestera_fdb_event_id {
++	PRESTERA_FDB_EVENT_UNSPEC,
++	PRESTERA_FDB_EVENT_LEARNED,
++	PRESTERA_FDB_EVENT_AGED,
++};
++
++struct prestera_fdb_event {
++	u32 port_id;
++	u32 vid;
++	union {
++		u8 mac[ETH_ALEN];
++	} data;
++};
++
+ struct prestera_event {
+ 	u16 id;
+ 	union {
+ 		struct prestera_port_event port_evt;
++		struct prestera_fdb_event fdb_evt;
+ 	};
+ };
+ 
++struct prestera_switchdev;
+ struct prestera_rxtx;
+ 
+ struct prestera_switch {
+ 	struct prestera_device *dev;
++	struct prestera_switchdev *swdev;
+ 	struct prestera_rxtx *rxtx;
+ 	struct list_head event_handlers;
++	struct notifier_block netdev_nb;
+ 	char base_mac[ETH_ALEN];
+ 	struct list_head port_list;
+ 	u32 port_count;
+@@ -176,4 +197,12 @@ struct prestera_port *prestera_port_find_by_hwid(struct prestera_switch *sw,
+ int prestera_port_autoneg_set(struct prestera_port *port, bool enable,
+ 			      u64 adver_link_modes, u8 adver_fec);
+ 
++struct prestera_port *prestera_find_port(struct prestera_switch *sw, u32 id);
++
++struct prestera_port *prestera_port_dev_lower_find(struct net_device *dev);
++
++int prestera_port_pvid_set(struct prestera_port *port, u16 vid);
++
++bool prestera_netdev_check(const struct net_device *dev);
 +
  #endif /* _PRESTERA_H_ */
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
-new file mode 100644
-index 000000000000..d947c09ce134
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
-@@ -0,0 +1,759 @@
-+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-+/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
-+
-+#include <linux/kernel.h>
-+#include <linux/netdevice.h>
-+#include <linux/ethtool.h>
-+
-+#include "prestera.h"
-+#include "prestera_hw.h"
-+#include "prestera_ethtool.h"
-+
-+#define PRESTERA_STATS_CNT \
-+	(sizeof(struct prestera_port_stats) / sizeof(u64))
-+#define PRESTERA_STATS_IDX(name) \
-+	(offsetof(struct prestera_port_stats, name) / sizeof(u64))
-+#define PRESTERA_STATS_FIELD(name)	\
-+	[PRESTERA_STATS_IDX(name)] = __stringify(name)
-+
-+static const char driver_kind[] = "prestera";
-+
-+static const struct prestera_link_mode {
-+	enum ethtool_link_mode_bit_indices eth_mode;
-+	u32 speed;
-+	u64 pr_mask;
-+	u8 duplex;
-+	u8 port_type;
-+} port_link_modes[PRESTERA_LINK_MODE_MAX] = {
-+	[PRESTERA_LINK_MODE_10baseT_Half] = {
-+		.eth_mode =  ETHTOOL_LINK_MODE_10baseT_Half_BIT,
-+		.speed = 10,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_10baseT_Half,
-+		.duplex = PRESTERA_PORT_DUPLEX_HALF,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_10baseT_Full] = {
-+		.eth_mode =  ETHTOOL_LINK_MODE_10baseT_Full_BIT,
-+		.speed = 10,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_10baseT_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_100baseT_Half] = {
-+		.eth_mode =  ETHTOOL_LINK_MODE_100baseT_Half_BIT,
-+		.speed = 100,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_100baseT_Half,
-+		.duplex = PRESTERA_PORT_DUPLEX_HALF,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_100baseT_Full] = {
-+		.eth_mode =  ETHTOOL_LINK_MODE_100baseT_Full_BIT,
-+		.speed = 100,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_100baseT_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_1000baseT_Half] = {
-+		.eth_mode =  ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
-+		.speed = 1000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_1000baseT_Half,
-+		.duplex = PRESTERA_PORT_DUPLEX_HALF,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_1000baseT_Full] = {
-+		.eth_mode =  ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
-+		.speed = 1000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_1000baseT_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_1000baseX_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
-+		.speed = 1000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_1000baseX_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_FIBRE,
-+	},
-+	[PRESTERA_LINK_MODE_1000baseKX_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_1000baseKX_Full_BIT,
-+		.speed = 1000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_1000baseKX_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_2500baseX_Full] = {
-+		.eth_mode =  ETHTOOL_LINK_MODE_2500baseX_Full_BIT,
-+		.speed = 2500,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_2500baseX_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+	},
-+	[PRESTERA_LINK_MODE_10GbaseKR_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
-+		.speed = 10000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_10GbaseKR_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_10GbaseSR_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_10000baseSR_Full_BIT,
-+		.speed = 10000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_10GbaseSR_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_FIBRE,
-+	},
-+	[PRESTERA_LINK_MODE_10GbaseLR_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_10000baseLR_Full_BIT,
-+		.speed = 10000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_10GbaseLR_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_FIBRE,
-+	},
-+	[PRESTERA_LINK_MODE_20GbaseKR2_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_20000baseKR2_Full_BIT,
-+		.speed = 20000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_20GbaseKR2_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_25GbaseCR_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_25000baseCR_Full_BIT,
-+		.speed = 25000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_25GbaseCR_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_DA,
-+	},
-+	[PRESTERA_LINK_MODE_25GbaseKR_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_25000baseKR_Full_BIT,
-+		.speed = 25000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_25GbaseKR_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_25GbaseSR_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_25000baseSR_Full_BIT,
-+		.speed = 25000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_25GbaseSR_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_FIBRE,
-+	},
-+	[PRESTERA_LINK_MODE_40GbaseKR4_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_40000baseKR4_Full_BIT,
-+		.speed = 40000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_40GbaseKR4_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_40GbaseCR4_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_40000baseCR4_Full_BIT,
-+		.speed = 40000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_40GbaseCR4_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_DA,
-+	},
-+	[PRESTERA_LINK_MODE_40GbaseSR4_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_40000baseSR4_Full_BIT,
-+		.speed = 40000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_40GbaseSR4_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_FIBRE,
-+	},
-+	[PRESTERA_LINK_MODE_50GbaseCR2_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_50000baseCR2_Full_BIT,
-+		.speed = 50000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_50GbaseCR2_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_DA,
-+	},
-+	[PRESTERA_LINK_MODE_50GbaseKR2_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_50000baseKR2_Full_BIT,
-+		.speed = 50000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_50GbaseKR2_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_50GbaseSR2_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_50000baseSR2_Full_BIT,
-+		.speed = 50000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_50GbaseSR2_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_FIBRE,
-+	},
-+	[PRESTERA_LINK_MODE_100GbaseKR4_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_100000baseKR4_Full_BIT,
-+		.speed = 100000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_100GbaseKR4_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_TP,
-+	},
-+	[PRESTERA_LINK_MODE_100GbaseSR4_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_100000baseSR4_Full_BIT,
-+		.speed = 100000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_100GbaseSR4_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_FIBRE,
-+	},
-+	[PRESTERA_LINK_MODE_100GbaseCR4_Full] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_100000baseCR4_Full_BIT,
-+		.speed = 100000,
-+		.pr_mask = 1 << PRESTERA_LINK_MODE_100GbaseCR4_Full,
-+		.duplex = PRESTERA_PORT_DUPLEX_FULL,
-+		.port_type = PRESTERA_PORT_TYPE_DA,
-+	}
-+};
-+
-+static const struct prestera_fec {
-+	u32 eth_fec;
-+	enum ethtool_link_mode_bit_indices eth_mode;
-+	u8 pr_fec;
-+} port_fec_caps[PRESTERA_PORT_FEC_MAX] = {
-+	[PRESTERA_PORT_FEC_OFF] = {
-+		.eth_fec = ETHTOOL_FEC_OFF,
-+		.eth_mode = ETHTOOL_LINK_MODE_FEC_NONE_BIT,
-+		.pr_fec = 1 << PRESTERA_PORT_FEC_OFF,
-+	},
-+	[PRESTERA_PORT_FEC_BASER] = {
-+		.eth_fec = ETHTOOL_FEC_BASER,
-+		.eth_mode = ETHTOOL_LINK_MODE_FEC_BASER_BIT,
-+		.pr_fec = 1 << PRESTERA_PORT_FEC_BASER,
-+	},
-+	[PRESTERA_PORT_FEC_RS] = {
-+		.eth_fec = ETHTOOL_FEC_RS,
-+		.eth_mode = ETHTOOL_LINK_MODE_FEC_RS_BIT,
-+		.pr_fec = 1 << PRESTERA_PORT_FEC_RS,
-+	}
-+};
-+
-+static const struct prestera_port_type {
-+	enum ethtool_link_mode_bit_indices eth_mode;
-+	u8 eth_type;
-+} port_types[PRESTERA_PORT_TYPE_MAX] = {
-+	[PRESTERA_PORT_TYPE_NONE] = {
-+		.eth_mode = __ETHTOOL_LINK_MODE_MASK_NBITS,
-+		.eth_type = PORT_NONE,
-+	},
-+	[PRESTERA_PORT_TYPE_TP] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_TP_BIT,
-+		.eth_type = PORT_TP,
-+	},
-+	[PRESTERA_PORT_TYPE_AUI] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_AUI_BIT,
-+		.eth_type = PORT_AUI,
-+	},
-+	[PRESTERA_PORT_TYPE_MII] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_MII_BIT,
-+		.eth_type = PORT_MII,
-+	},
-+	[PRESTERA_PORT_TYPE_FIBRE] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_FIBRE_BIT,
-+		.eth_type = PORT_FIBRE,
-+	},
-+	[PRESTERA_PORT_TYPE_BNC] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_BNC_BIT,
-+		.eth_type = PORT_BNC,
-+	},
-+	[PRESTERA_PORT_TYPE_DA] = {
-+		.eth_mode = ETHTOOL_LINK_MODE_TP_BIT,
-+		.eth_type = PORT_TP,
-+	},
-+	[PRESTERA_PORT_TYPE_OTHER] = {
-+		.eth_mode = __ETHTOOL_LINK_MODE_MASK_NBITS,
-+		.eth_type = PORT_OTHER,
-+	}
-+};
-+
-+static const char prestera_cnt_name[PRESTERA_STATS_CNT][ETH_GSTRING_LEN] = {
-+	PRESTERA_STATS_FIELD(good_octets_received),
-+	PRESTERA_STATS_FIELD(bad_octets_received),
-+	PRESTERA_STATS_FIELD(mac_trans_error),
-+	PRESTERA_STATS_FIELD(broadcast_frames_received),
-+	PRESTERA_STATS_FIELD(multicast_frames_received),
-+	PRESTERA_STATS_FIELD(frames_64_octets),
-+	PRESTERA_STATS_FIELD(frames_65_to_127_octets),
-+	PRESTERA_STATS_FIELD(frames_128_to_255_octets),
-+	PRESTERA_STATS_FIELD(frames_256_to_511_octets),
-+	PRESTERA_STATS_FIELD(frames_512_to_1023_octets),
-+	PRESTERA_STATS_FIELD(frames_1024_to_max_octets),
-+	PRESTERA_STATS_FIELD(excessive_collision),
-+	PRESTERA_STATS_FIELD(multicast_frames_sent),
-+	PRESTERA_STATS_FIELD(broadcast_frames_sent),
-+	PRESTERA_STATS_FIELD(fc_sent),
-+	PRESTERA_STATS_FIELD(fc_received),
-+	PRESTERA_STATS_FIELD(buffer_overrun),
-+	PRESTERA_STATS_FIELD(undersize),
-+	PRESTERA_STATS_FIELD(fragments),
-+	PRESTERA_STATS_FIELD(oversize),
-+	PRESTERA_STATS_FIELD(jabber),
-+	PRESTERA_STATS_FIELD(rx_error_frame_received),
-+	PRESTERA_STATS_FIELD(bad_crc),
-+	PRESTERA_STATS_FIELD(collisions),
-+	PRESTERA_STATS_FIELD(late_collision),
-+	PRESTERA_STATS_FIELD(unicast_frames_received),
-+	PRESTERA_STATS_FIELD(unicast_frames_sent),
-+	PRESTERA_STATS_FIELD(sent_multiple),
-+	PRESTERA_STATS_FIELD(sent_deferred),
-+	PRESTERA_STATS_FIELD(good_octets_sent),
-+};
-+
-+static void prestera_ethtool_get_drvinfo(struct net_device *dev,
-+					 struct ethtool_drvinfo *drvinfo)
-+{
-+	struct prestera_port *port = netdev_priv(dev);
-+	struct prestera_switch *sw = port->sw;
-+
-+	strlcpy(drvinfo->driver, driver_kind, sizeof(drvinfo->driver));
-+	strlcpy(drvinfo->bus_info, dev_name(prestera_dev(sw)),
-+		sizeof(drvinfo->bus_info));
-+	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
-+		 "%d.%d.%d",
-+		 sw->dev->fw_rev.maj,
-+		 sw->dev->fw_rev.min,
-+		 sw->dev->fw_rev.sub);
-+}
-+
-+static u8 prestera_port_type_get(struct prestera_port *port)
-+{
-+	if (port->caps.type < PRESTERA_PORT_TYPE_MAX)
-+		return port_types[port->caps.type].eth_type;
-+	return PORT_OTHER;
-+}
-+
-+static int prestera_port_type_set(const struct ethtool_link_ksettings *ecmd,
-+				  struct prestera_port *port)
-+{
-+	u32 new_mode = PRESTERA_LINK_MODE_MAX;
-+	u32 type, mode;
-+	int err;
-+
-+	for (type = 0; type < PRESTERA_PORT_TYPE_MAX; type++) {
-+		if (port_types[type].eth_type == ecmd->base.port &&
-+		    test_bit(port_types[type].eth_mode,
-+			     ecmd->link_modes.supported)) {
-+			break;
-+		}
-+	}
-+
-+	if (type == port->caps.type)
-+		return 0;
-+	if (type != port->caps.type && ecmd->base.autoneg == AUTONEG_ENABLE)
-+		return -EINVAL;
-+	if (type == PRESTERA_PORT_TYPE_MAX)
-+		return -EOPNOTSUPP;
-+
-+	for (mode = 0; mode < PRESTERA_LINK_MODE_MAX; mode++) {
-+		if ((port_link_modes[mode].pr_mask &
-+		    port->caps.supp_link_modes) &&
-+		    type == port_link_modes[mode].port_type) {
-+			new_mode = mode;
-+		}
-+	}
-+
-+	if (new_mode < PRESTERA_LINK_MODE_MAX)
-+		err = prestera_hw_port_link_mode_set(port, new_mode);
-+	else
-+		err = -EINVAL;
-+
-+	if (!err) {
-+		port->caps.type = type;
-+		port->autoneg = false;
-+	}
-+
-+	return err;
-+}
-+
-+static void prestera_modes_to_eth(unsigned long *eth_modes, u64 link_modes,
-+				  u8 fec, u8 type)
-+{
-+	u32 mode;
-+
-+	for (mode = 0; mode < PRESTERA_LINK_MODE_MAX; mode++) {
-+		if ((port_link_modes[mode].pr_mask & link_modes) == 0)
-+			continue;
-+		if (type != PRESTERA_PORT_TYPE_NONE &&
-+		    port_link_modes[mode].port_type != type)
-+			continue;
-+		__set_bit(port_link_modes[mode].eth_mode, eth_modes);
-+	}
-+
-+	for (mode = 0; mode < PRESTERA_PORT_FEC_MAX; mode++) {
-+		if ((port_fec_caps[mode].pr_fec & fec) == 0)
-+			continue;
-+		__set_bit(port_fec_caps[mode].eth_mode, eth_modes);
-+	}
-+}
-+
-+static void prestera_modes_from_eth(const unsigned long *eth_modes,
-+				    u64 *link_modes, u8 *fec, u8 type)
-+{
-+	u32 mode;
-+
-+	for (mode = 0; mode < PRESTERA_LINK_MODE_MAX; mode++) {
-+		if (!test_bit(port_link_modes[mode].eth_mode, eth_modes))
-+			continue;
-+		if (port_link_modes[mode].port_type != type)
-+			continue;
-+		*link_modes |= port_link_modes[mode].pr_mask;
-+	}
-+
-+	for (mode = 0; mode < PRESTERA_PORT_FEC_MAX; mode++) {
-+		if (!test_bit(port_fec_caps[mode].eth_mode, eth_modes))
-+			continue;
-+		*fec |= port_fec_caps[mode].pr_fec;
-+	}
-+}
-+
-+static void prestera_port_supp_types_get(struct ethtool_link_ksettings *ecmd,
-+					 struct prestera_port *port)
-+{
-+	u32 mode;
-+	u8 ptype;
-+
-+	for (mode = 0; mode < PRESTERA_LINK_MODE_MAX; mode++) {
-+		if ((port_link_modes[mode].pr_mask &
-+		    port->caps.supp_link_modes) == 0)
-+			continue;
-+		ptype = port_link_modes[mode].port_type;
-+		__set_bit(port_types[ptype].eth_mode,
-+			  ecmd->link_modes.supported);
-+	}
-+}
-+
-+static void prestera_port_remote_cap_get(struct ethtool_link_ksettings *ecmd,
-+					 struct prestera_port *port)
-+{
-+	bool asym_pause;
-+	bool pause;
-+	u64 bitmap;
-+	int err;
-+
-+	err = prestera_hw_port_remote_cap_get(port, &bitmap);
-+	if (!err) {
-+		prestera_modes_to_eth(ecmd->link_modes.lp_advertising,
-+				      bitmap, 0, PRESTERA_PORT_TYPE_NONE);
-+
-+		if (!bitmap_empty(ecmd->link_modes.lp_advertising,
-+				  __ETHTOOL_LINK_MODE_MASK_NBITS)) {
-+			ethtool_link_ksettings_add_link_mode(ecmd,
-+							     lp_advertising,
-+							     Autoneg);
-+		}
-+	}
-+
-+	err = prestera_hw_port_remote_fc_get(port, &pause, &asym_pause);
-+	if (err)
-+		return;
-+
-+	if (pause)
-+		ethtool_link_ksettings_add_link_mode(ecmd,
-+						     lp_advertising,
-+						     Pause);
-+	if (asym_pause)
-+		ethtool_link_ksettings_add_link_mode(ecmd,
-+						     lp_advertising,
-+						     Asym_Pause);
-+}
-+
-+static void prestera_port_speed_get(struct ethtool_link_ksettings *ecmd,
-+				    struct prestera_port *port)
-+{
-+	u32 speed;
-+	int err;
-+
-+	err = prestera_hw_port_speed_get(port, &speed);
-+	ecmd->base.speed = !err ? speed : SPEED_UNKNOWN;
-+}
-+
-+static void prestera_port_duplex_get(struct ethtool_link_ksettings *ecmd,
-+				     struct prestera_port *port)
-+{
-+	u8 duplex;
-+	int err;
-+
-+	err = prestera_hw_port_duplex_get(port, &duplex);
-+	if (err) {
-+		ecmd->base.duplex = DUPLEX_UNKNOWN;
-+		return;
-+	}
-+
-+	ecmd->base.duplex = duplex == PRESTERA_PORT_DUPLEX_FULL ?
-+			    DUPLEX_FULL : DUPLEX_HALF;
-+}
-+
-+static int
-+prestera_ethtool_get_link_ksettings(struct net_device *dev,
-+				    struct ethtool_link_ksettings *ecmd)
-+{
-+	struct prestera_port *port = netdev_priv(dev);
-+
-+	ethtool_link_ksettings_zero_link_mode(ecmd, supported);
-+	ethtool_link_ksettings_zero_link_mode(ecmd, advertising);
-+	ethtool_link_ksettings_zero_link_mode(ecmd, lp_advertising);
-+
-+	ecmd->base.autoneg = port->autoneg ? AUTONEG_ENABLE : AUTONEG_DISABLE;
-+
-+	if (port->caps.type == PRESTERA_PORT_TYPE_TP) {
-+		ethtool_link_ksettings_add_link_mode(ecmd, supported, Autoneg);
-+
-+		if (netif_running(dev) &&
-+		    (port->autoneg ||
-+		     port->caps.transceiver == PRESTERA_PORT_TCVR_COPPER))
-+			ethtool_link_ksettings_add_link_mode(ecmd, advertising,
-+							     Autoneg);
-+	}
-+
-+	prestera_modes_to_eth(ecmd->link_modes.supported,
-+			      port->caps.supp_link_modes,
-+			      port->caps.supp_fec,
-+			      port->caps.type);
-+
-+	prestera_port_supp_types_get(ecmd, port);
-+
-+	if (netif_carrier_ok(dev)) {
-+		prestera_port_speed_get(ecmd, port);
-+		prestera_port_duplex_get(ecmd, port);
-+	} else {
-+		ecmd->base.speed = SPEED_UNKNOWN;
-+		ecmd->base.duplex = DUPLEX_UNKNOWN;
-+	}
-+
-+	ecmd->base.port = prestera_port_type_get(port);
-+
-+	if (port->autoneg) {
-+		if (netif_running(dev))
-+			prestera_modes_to_eth(ecmd->link_modes.advertising,
-+					      port->adver_link_modes,
-+					      port->adver_fec,
-+					      port->caps.type);
-+
-+		if (netif_carrier_ok(dev) &&
-+		    port->caps.transceiver == PRESTERA_PORT_TCVR_COPPER)
-+			prestera_port_remote_cap_get(ecmd, port);
-+	}
-+
-+	if (port->caps.type == PRESTERA_PORT_TYPE_TP &&
-+	    port->caps.transceiver == PRESTERA_PORT_TCVR_COPPER)
-+		prestera_hw_port_mdix_get(port, &ecmd->base.eth_tp_mdix,
-+					  &ecmd->base.eth_tp_mdix_ctrl);
-+
-+	return 0;
-+}
-+
-+static int prestera_port_mdix_set(const struct ethtool_link_ksettings *ecmd,
-+				  struct prestera_port *port)
-+{
-+	if (ecmd->base.eth_tp_mdix_ctrl != ETH_TP_MDI_INVALID &&
-+	    port->caps.transceiver == PRESTERA_PORT_TCVR_COPPER &&
-+	    port->caps.type == PRESTERA_PORT_TYPE_TP)
-+		return prestera_hw_port_mdix_set(port,
-+						 ecmd->base.eth_tp_mdix_ctrl);
-+
-+	return 0;
-+}
-+
-+static int prestera_port_link_mode_set(struct prestera_port *port,
-+				       u32 speed, u8 duplex, u8 type)
-+{
-+	u32 new_mode = PRESTERA_LINK_MODE_MAX;
-+	u32 mode;
-+
-+	for (mode = 0; mode < PRESTERA_LINK_MODE_MAX; mode++) {
-+		if (speed != port_link_modes[mode].speed)
-+			continue;
-+		if (duplex != port_link_modes[mode].duplex)
-+			continue;
-+		if (!(port_link_modes[mode].pr_mask &
-+		    port->caps.supp_link_modes))
-+			continue;
-+		if (type != port_link_modes[mode].port_type)
-+			continue;
-+
-+		new_mode = mode;
-+		break;
-+	}
-+
-+	if (new_mode == PRESTERA_LINK_MODE_MAX)
-+		return -EOPNOTSUPP;
-+
-+	return prestera_hw_port_link_mode_set(port, new_mode);
-+}
-+
-+static int
-+prestera_port_speed_duplex_set(const struct ethtool_link_ksettings *ecmd,
-+			       struct prestera_port *port)
-+{
-+	u32 curr_mode;
-+	u8 duplex;
-+	u32 speed;
-+	int err;
-+
-+	err = prestera_hw_port_link_mode_get(port, &curr_mode);
-+	if (err || curr_mode >= PRESTERA_LINK_MODE_MAX)
-+		return -EINVAL;
-+
-+	if (ecmd->base.duplex != DUPLEX_UNKNOWN)
-+		duplex = ecmd->base.duplex == DUPLEX_FULL ?
-+			 PRESTERA_PORT_DUPLEX_FULL : PRESTERA_PORT_DUPLEX_HALF;
-+	else
-+		duplex = port_link_modes[curr_mode].duplex;
-+
-+	if (ecmd->base.speed != SPEED_UNKNOWN)
-+		speed = ecmd->base.speed;
-+	else
-+		speed = port_link_modes[curr_mode].speed;
-+
-+	return prestera_port_link_mode_set(port, speed, duplex,
-+					   port->caps.type);
-+}
-+
-+static int
-+prestera_ethtool_set_link_ksettings(struct net_device *dev,
-+				    const struct ethtool_link_ksettings *ecmd)
-+{
-+	struct prestera_port *port = netdev_priv(dev);
-+	u64 adver_modes = 0;
-+	u8 adver_fec = 0;
-+	int err;
-+
-+	err = prestera_port_type_set(ecmd, port);
-+	if (err)
-+		return err;
-+
-+	if (port->caps.transceiver == PRESTERA_PORT_TCVR_COPPER) {
-+		err = prestera_port_mdix_set(ecmd, port);
-+		if (err)
-+			return err;
-+	}
-+
-+	prestera_modes_from_eth(ecmd->link_modes.advertising, &adver_modes,
-+				&adver_fec, port->caps.type);
-+
-+	err = prestera_port_autoneg_set(port,
-+					ecmd->base.autoneg == AUTONEG_ENABLE,
-+					adver_modes, adver_fec);
-+	if (err)
-+		return err;
-+
-+	if (ecmd->base.autoneg == AUTONEG_DISABLE) {
-+		err = prestera_port_speed_duplex_set(ecmd, port);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int prestera_ethtool_get_fecparam(struct net_device *dev,
-+					 struct ethtool_fecparam *fecparam)
-+{
-+	struct prestera_port *port = netdev_priv(dev);
-+	u32 mode;
-+	u8 active;
-+	int err;
-+
-+	err = prestera_hw_port_fec_get(port, &active);
-+	if (err)
-+		return err;
-+
-+	fecparam->fec = 0;
-+	for (mode = 0; mode < PRESTERA_PORT_FEC_MAX; mode++) {
-+		if ((port_fec_caps[mode].pr_fec & port->caps.supp_fec) == 0)
-+			continue;
-+		fecparam->fec |= port_fec_caps[mode].eth_fec;
-+	}
-+
-+	if (active < PRESTERA_PORT_FEC_MAX)
-+		fecparam->active_fec = port_fec_caps[active].eth_fec;
-+	else
-+		fecparam->active_fec = ETHTOOL_FEC_AUTO;
-+
-+	return 0;
-+}
-+
-+static int prestera_ethtool_set_fecparam(struct net_device *dev,
-+					 struct ethtool_fecparam *fecparam)
-+{
-+	struct prestera_port *port = netdev_priv(dev);
-+	u8 fec, active;
-+	u32 mode;
-+	int err;
-+
-+	if (port->autoneg) {
-+		netdev_err(dev, "FEC set is not allowed while autoneg is on\n");
-+		return -EINVAL;
-+	}
-+
-+	err = prestera_hw_port_fec_get(port, &active);
-+	if (err)
-+		return err;
-+
-+	fec = PRESTERA_PORT_FEC_MAX;
-+	for (mode = 0; mode < PRESTERA_PORT_FEC_MAX; mode++) {
-+		if ((port_fec_caps[mode].eth_fec & fecparam->fec) &&
-+		    (port_fec_caps[mode].pr_fec & port->caps.supp_fec)) {
-+			fec = mode;
-+			break;
-+		}
-+	}
-+
-+	if (fec == active)
-+		return 0;
-+
-+	if (fec == PRESTERA_PORT_FEC_MAX)
-+		return -EOPNOTSUPP;
-+
-+	return prestera_hw_port_fec_set(port, fec);
-+}
-+
-+static int prestera_ethtool_get_sset_count(struct net_device *dev, int sset)
-+{
-+	switch (sset) {
-+	case ETH_SS_STATS:
-+		return PRESTERA_STATS_CNT;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static void prestera_ethtool_get_strings(struct net_device *dev,
-+					 u32 stringset, u8 *data)
-+{
-+	if (stringset != ETH_SS_STATS)
-+		return;
-+
-+	memcpy(data, prestera_cnt_name, sizeof(prestera_cnt_name));
-+}
-+
-+static void prestera_ethtool_get_stats(struct net_device *dev,
-+				       struct ethtool_stats *stats, u64 *data)
-+{
-+	struct prestera_port *port = netdev_priv(dev);
-+	struct prestera_port_stats *port_stats;
-+
-+	port_stats = &port->cached_hw_stats.stats;
-+
-+	memcpy(data, port_stats, sizeof(*port_stats));
-+}
-+
-+static int prestera_ethtool_nway_reset(struct net_device *dev)
-+{
-+	struct prestera_port *port = netdev_priv(dev);
-+
-+	if (netif_running(dev) &&
-+	    port->caps.transceiver == PRESTERA_PORT_TCVR_COPPER &&
-+	    port->caps.type == PRESTERA_PORT_TYPE_TP)
-+		return prestera_hw_port_autoneg_restart(port);
-+
-+	return -EINVAL;
-+}
-+
-+const struct ethtool_ops prestera_ethtool_ops = {
-+	.get_drvinfo = prestera_ethtool_get_drvinfo,
-+	.get_link_ksettings = prestera_ethtool_get_link_ksettings,
-+	.set_link_ksettings = prestera_ethtool_set_link_ksettings,
-+	.get_fecparam = prestera_ethtool_get_fecparam,
-+	.set_fecparam = prestera_ethtool_set_fecparam,
-+	.get_sset_count = prestera_ethtool_get_sset_count,
-+	.get_strings = prestera_ethtool_get_strings,
-+	.get_ethtool_stats = prestera_ethtool_get_stats,
-+	.get_link = ethtool_op_get_link,
-+	.nway_reset = prestera_ethtool_nway_reset
-+};
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_ethtool.h b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.h
-new file mode 100644
-index 000000000000..016652b09ab6
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_ethtool.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-+/*
-+ * Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved.
-+ *
-+ */
-+#ifndef __PRESTERA_ETHTOOL_H_
-+#define __PRESTERA_ETHTOOL_H_
-+
-+#include <linux/netdevice.h>
-+#include <linux/ethtool.h>
-+
-+extern const struct ethtool_ops prestera_ethtool_ops;
-+
-+#endif /* _PRESTERA_ETHTOOL_H_ */
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-index 9e98deb0ef43..ee2b553927bb 100644
+index ee2b553927bb..50643cba7470 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
-@@ -32,9 +32,18 @@ enum {
- 	PRESTERA_CMD_PORT_ATTR_ADMIN_STATE = 1,
+@@ -21,9 +21,27 @@ enum prestera_cmd_type_t {
+ 	PRESTERA_CMD_TYPE_PORT_ATTR_GET = 0x101,
+ 	PRESTERA_CMD_TYPE_PORT_INFO_GET = 0x110,
+ 
++	PRESTERA_CMD_TYPE_VLAN_CREATE = 0x200,
++	PRESTERA_CMD_TYPE_VLAN_DELETE = 0x201,
++	PRESTERA_CMD_TYPE_VLAN_PORT_SET = 0x202,
++	PRESTERA_CMD_TYPE_VLAN_PVID_SET = 0x203,
++
++	PRESTERA_CMD_TYPE_FDB_ADD = 0x300,
++	PRESTERA_CMD_TYPE_FDB_DELETE = 0x301,
++	PRESTERA_CMD_TYPE_FDB_FLUSH_PORT = 0x310,
++	PRESTERA_CMD_TYPE_FDB_FLUSH_VLAN = 0x311,
++	PRESTERA_CMD_TYPE_FDB_FLUSH_PORT_VLAN = 0x312,
++
++	PRESTERA_CMD_TYPE_BRIDGE_CREATE = 0x400,
++	PRESTERA_CMD_TYPE_BRIDGE_DELETE = 0x401,
++	PRESTERA_CMD_TYPE_BRIDGE_PORT_ADD = 0x402,
++	PRESTERA_CMD_TYPE_BRIDGE_PORT_DELETE = 0x403,
++
+ 	PRESTERA_CMD_TYPE_RXTX_INIT = 0x800,
+ 	PRESTERA_CMD_TYPE_RXTX_PORT_INIT = 0x801,
+ 
++	PRESTERA_CMD_TYPE_STP_PORT_SET = 0x1000,
++
+ 	PRESTERA_CMD_TYPE_ACK = 0x10000,
+ 	PRESTERA_CMD_TYPE_MAX
+ };
+@@ -33,6 +51,9 @@ enum {
  	PRESTERA_CMD_PORT_ATTR_MTU = 3,
  	PRESTERA_CMD_PORT_ATTR_MAC = 4,
-+	PRESTERA_CMD_PORT_ATTR_SPEED = 5,
+ 	PRESTERA_CMD_PORT_ATTR_SPEED = 5,
++	PRESTERA_CMD_PORT_ATTR_ACCEPT_FRAME_TYPE = 6,
++	PRESTERA_CMD_PORT_ATTR_LEARNING = 7,
++	PRESTERA_CMD_PORT_ATTR_FLOOD = 8,
  	PRESTERA_CMD_PORT_ATTR_CAPABILITY = 9,
-+	PRESTERA_CMD_PORT_ATTR_REMOTE_CAPABILITY = 10,
-+	PRESTERA_CMD_PORT_ATTR_REMOTE_FC = 11,
-+	PRESTERA_CMD_PORT_ATTR_LINK_MODE = 12,
-+	PRESTERA_CMD_PORT_ATTR_TYPE = 13,
-+	PRESTERA_CMD_PORT_ATTR_FEC = 14,
- 	PRESTERA_CMD_PORT_ATTR_AUTONEG = 15,
--	PRESTERA_CMD_PORT_ATTR_STATS = 17
-+	PRESTERA_CMD_PORT_ATTR_DUPLEX = 16,
-+	PRESTERA_CMD_PORT_ATTR_STATS = 17,
-+	PRESTERA_CMD_PORT_ATTR_MDIX = 18,
-+	PRESTERA_CMD_PORT_ATTR_AUTONEG_RESTART = 19
+ 	PRESTERA_CMD_PORT_ATTR_REMOTE_CAPABILITY = 10,
+ 	PRESTERA_CMD_PORT_ATTR_REMOTE_FC = 11,
+@@ -47,7 +68,8 @@ enum {
  };
  
  enum {
-@@ -48,6 +57,13 @@ enum {
- 	PRESTERA_CMD_ACK_MAX
+-	PRESTERA_CMD_SWITCH_ATTR_MAC = 1
++	PRESTERA_CMD_SWITCH_ATTR_MAC = 1,
++	PRESTERA_CMD_SWITCH_ATTR_AGEING = 2
  };
  
-+enum {
-+	PRESTERA_PORT_TP_NA,
-+	PRESTERA_PORT_TP_MDI,
-+	PRESTERA_PORT_TP_MDIX,
-+	PRESTERA_PORT_TP_AUTO
-+};
-+
  enum {
- 	PRESTERA_PORT_GOOD_OCTETS_RCV_CNT,
- 	PRESTERA_PORT_BAD_OCTETS_RCV_CNT,
-@@ -83,6 +99,13 @@ enum {
- 	PRESTERA_PORT_CNT_MAX
+@@ -133,6 +155,7 @@ struct prestera_msg_common_resp {
+ 
+ union prestera_msg_switch_param {
+ 	u8 mac[ETH_ALEN];
++	u32 ageing_timeout;
  };
  
-+enum {
-+	PRESTERA_FC_NONE,
-+	PRESTERA_FC_SYMMETRIC,
-+	PRESTERA_FC_ASYMMETRIC,
-+	PRESTERA_FC_SYMM_ASYMM
-+};
-+
- struct prestera_fw_event_handler {
- 	struct list_head list;
- 	struct rcu_head rcu;
-@@ -138,11 +161,23 @@ struct prestera_msg_port_cap_param {
- 	u8  transceiver;
- };
- 
-+struct prestera_msg_port_mdix_param {
-+	u8 status;
-+	u8 admin_mode;
-+};
-+
- union prestera_msg_port_param {
- 	u8  admin_state;
+ struct prestera_msg_switch_attr_req {
+@@ -171,7 +194,10 @@ union prestera_msg_port_param {
  	u8  oper_state;
  	u32 mtu;
  	u8  mac[ETH_ALEN];
-+	u32 speed;
-+	u32 link_mode;
-+	u8  type;
-+	u8  duplex;
-+	u8  fec;
-+	u8  fc;
-+	struct prestera_msg_port_mdix_param mdix;
- 	struct prestera_msg_port_autoneg_param autoneg;
- 	struct prestera_msg_port_cap_param cap;
++	u8  accept_frm_type;
+ 	u32 speed;
++	u8 learning;
++	u8 flood;
+ 	u32 link_mode;
+ 	u8  type;
+ 	u8  duplex;
+@@ -212,6 +238,46 @@ struct prestera_msg_port_info_resp {
+ 	u16 fp_id;
  };
-@@ -477,6 +512,232 @@ int prestera_hw_port_cap_get(const struct prestera_port *port,
- 	return err;
+ 
++struct prestera_msg_vlan_req {
++	struct prestera_msg_cmd cmd;
++	u32 port;
++	u32 dev;
++	u16 vid;
++	u8  is_member;
++	u8  is_tagged;
++};
++
++struct prestera_msg_fdb_req {
++	struct prestera_msg_cmd cmd;
++	u8 dest_type;
++	u32 port;
++	u32 dev;
++	u8  mac[ETH_ALEN];
++	u16 vid;
++	u8  dynamic;
++	u32 flush_mode;
++};
++
++struct prestera_msg_bridge_req {
++	struct prestera_msg_cmd cmd;
++	u32 port;
++	u32 dev;
++	u16 bridge;
++};
++
++struct prestera_msg_bridge_resp {
++	struct prestera_msg_ret ret;
++	u16 bridge;
++};
++
++struct prestera_msg_stp_req {
++	struct prestera_msg_cmd cmd;
++	u32 port;
++	u32 dev;
++	u16 vid;
++	u8  state;
++};
++
+ struct prestera_msg_rxtx_req {
+ 	struct prestera_msg_cmd cmd;
+ 	u8 use_sdma;
+@@ -243,6 +309,18 @@ struct prestera_msg_event_port {
+ 	union prestera_msg_event_port_param param;
+ };
+ 
++union prestera_msg_event_fdb_param {
++	u8 mac[ETH_ALEN];
++};
++
++struct prestera_msg_event_fdb {
++	struct prestera_msg_event id;
++	u8 dest_type;
++	u32 port_id;
++	u32 vid;
++	union prestera_msg_event_fdb_param param;
++};
++
+ static int __prestera_cmd_ret(struct prestera_switch *sw,
+ 			      enum prestera_cmd_type_t type,
+ 			      struct prestera_msg_cmd *cmd, size_t clen,
+@@ -305,10 +383,23 @@ static int prestera_fw_parse_port_evt(void *msg, struct prestera_event *evt)
+ 	return 0;
  }
  
-+int prestera_hw_port_remote_cap_get(const struct prestera_port *port,
-+				    u64 *link_mode_bitmap)
++static int prestera_fw_parse_fdb_evt(void *msg, struct prestera_event *evt)
 +{
-+	struct prestera_msg_port_attr_resp resp;
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_REMOTE_CAPABILITY,
-+		.port = port->hw_id,
-+		.dev = port->dev_id
-+	};
-+	int err;
++	struct prestera_msg_event_fdb *hw_evt = msg;
 +
-+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
-+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-+	if (err)
-+		return err;
++	evt->fdb_evt.port_id = hw_evt->port_id;
++	evt->fdb_evt.vid = hw_evt->vid;
 +
-+	*link_mode_bitmap = resp.param.cap.link_mode;
-+
-+	return err;
-+}
-+
-+int prestera_hw_port_remote_fc_get(const struct prestera_port *port,
-+				   bool *pause, bool *asym_pause)
-+{
-+	struct prestera_msg_port_attr_resp resp;
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_REMOTE_FC,
-+		.port = port->hw_id,
-+		.dev = port->dev_id
-+	};
-+	int err;
-+
-+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
-+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-+	if (err)
-+		return err;
-+
-+	switch (resp.param.fc) {
-+	case PRESTERA_FC_SYMMETRIC:
-+		*pause = true;
-+		*asym_pause = false;
-+		break;
-+	case PRESTERA_FC_ASYMMETRIC:
-+		*pause = false;
-+		*asym_pause = true;
-+		break;
-+	case PRESTERA_FC_SYMM_ASYMM:
-+		*pause = true;
-+		*asym_pause = true;
-+		break;
-+	default:
-+		*pause = false;
-+		*asym_pause = false;
-+	}
-+
-+	return err;
-+}
-+
-+int prestera_hw_port_type_get(const struct prestera_port *port, u8 *type)
-+{
-+	struct prestera_msg_port_attr_resp resp;
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_TYPE,
-+		.port = port->hw_id,
-+		.dev = port->dev_id
-+	};
-+	int err;
-+
-+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
-+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-+	if (err)
-+		return err;
-+
-+	*type = resp.param.type;
-+
-+	return err;
-+}
-+
-+int prestera_hw_port_fec_get(const struct prestera_port *port, u8 *fec)
-+{
-+	struct prestera_msg_port_attr_resp resp;
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_FEC,
-+		.port = port->hw_id,
-+		.dev = port->dev_id
-+	};
-+	int err;
-+
-+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
-+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-+	if (err)
-+		return err;
-+
-+	*fec = resp.param.fec;
-+
-+	return err;
-+}
-+
-+int prestera_hw_port_fec_set(const struct prestera_port *port, u8 fec)
-+{
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_FEC,
-+		.port = port->hw_id,
-+		.dev = port->dev_id,
-+		.param = {.fec = fec}
-+	};
-+
-+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
-+			    &req.cmd, sizeof(req));
-+}
-+
-+static u8 prestera_hw_mdix_to_eth(u8 mode)
-+{
-+	switch (mode) {
-+	case PRESTERA_PORT_TP_MDI:
-+		return ETH_TP_MDI;
-+	case PRESTERA_PORT_TP_MDIX:
-+		return ETH_TP_MDI_X;
-+	case PRESTERA_PORT_TP_AUTO:
-+		return ETH_TP_MDI_AUTO;
-+	}
-+
-+	return ETH_TP_MDI_INVALID;
-+}
-+
-+static u8 prestera_hw_mdix_from_eth(u8 mode)
-+{
-+	switch (mode) {
-+	case ETH_TP_MDI:
-+		return PRESTERA_PORT_TP_MDI;
-+	case ETH_TP_MDI_X:
-+		return PRESTERA_PORT_TP_MDIX;
-+	case ETH_TP_MDI_AUTO:
-+		return PRESTERA_PORT_TP_AUTO;
-+	}
-+
-+	return PRESTERA_PORT_TP_NA;
-+}
-+
-+int prestera_hw_port_mdix_get(const struct prestera_port *port, u8 *status,
-+			      u8 *admin_mode)
-+{
-+	struct prestera_msg_port_attr_resp resp;
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_MDIX,
-+		.port = port->hw_id,
-+		.dev = port->dev_id
-+	};
-+	int err;
-+
-+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
-+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-+	if (err)
-+		return err;
-+
-+	*status = prestera_hw_mdix_to_eth(resp.param.mdix.status);
-+	*admin_mode = prestera_hw_mdix_to_eth(resp.param.mdix.admin_mode);
++	ether_addr_copy(evt->fdb_evt.data.mac, hw_evt->param.mac);
 +
 +	return 0;
 +}
 +
-+int prestera_hw_port_mdix_set(const struct prestera_port *port, u8 mode)
+ static struct prestera_fw_evt_parser {
+ 	int (*func)(void *msg, struct prestera_event *evt);
+ } fw_event_parsers[PRESTERA_EVENT_TYPE_MAX] = {
+ 	[PRESTERA_EVENT_TYPE_PORT] = {.func = prestera_fw_parse_port_evt},
++	[PRESTERA_EVENT_TYPE_FDB] = {.func = prestera_fw_parse_fdb_evt},
+ };
+ 
+ static struct prestera_fw_event_handler *
+@@ -447,6 +538,17 @@ void prestera_hw_switch_fini(struct prestera_switch *sw)
+ 	WARN_ON(!list_empty(&sw->event_handlers));
+ }
+ 
++int prestera_hw_switch_ageing_set(struct prestera_switch *sw, u32 ageing)
 +{
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_MDIX,
-+		.port = port->hw_id,
-+		.dev = port->dev_id
++	struct prestera_msg_switch_attr_req req = {
++		.param = {.ageing_timeout = ageing},
++		.attr = PRESTERA_CMD_SWITCH_ATTR_AGEING,
 +	};
 +
-+	req.param.mdix.admin_mode = prestera_hw_mdix_from_eth(mode);
-+
-+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
++	return prestera_cmd(sw, PRESTERA_CMD_TYPE_SWITCH_ATTR_SET,
 +			    &req.cmd, sizeof(req));
 +}
 +
-+int prestera_hw_port_link_mode_set(const struct prestera_port *port, u32 mode)
-+{
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_LINK_MODE,
-+		.port = port->hw_id,
-+		.dev = port->dev_id,
-+		.param = {.link_mode = mode}
-+	};
-+
-+	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
-+			    &req.cmd, sizeof(req));
-+}
-+
-+int prestera_hw_port_link_mode_get(const struct prestera_port *port, u32 *mode)
-+{
-+	struct prestera_msg_port_attr_resp resp;
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_LINK_MODE,
-+		.port = port->hw_id,
-+		.dev = port->dev_id
-+	};
-+	int err;
-+
-+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
-+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-+
-+	*mode = resp.param.link_mode;
-+
-+	return err;
-+}
-+
-+int prestera_hw_port_speed_get(const struct prestera_port *port, u32 *speed)
-+{
-+	struct prestera_msg_port_attr_resp resp;
-+	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_SPEED,
-+		.port = port->hw_id,
-+		.dev = port->dev_id
-+	};
-+	int err;
-+
-+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
-+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
-+	if (err)
-+		return err;
-+
-+	*speed = resp.param.speed;
-+
-+	return err;
-+}
-+
- int prestera_hw_port_autoneg_set(const struct prestera_port *port,
- 				 bool autoneg, u64 link_modes, u8 fec)
+ int prestera_hw_port_state_set(const struct prestera_port *port,
+ 			       bool admin_state)
  {
-@@ -494,6 +755,38 @@ int prestera_hw_port_autoneg_set(const struct prestera_port *port,
+@@ -488,6 +590,20 @@ int prestera_hw_port_mac_set(const struct prestera_port *port, const char *mac)
  			    &req.cmd, sizeof(req));
  }
  
-+int prestera_hw_port_autoneg_restart(struct prestera_port *port)
++int prestera_hw_port_accept_frm_type(struct prestera_port *port,
++				     enum prestera_accept_frm_type type)
 +{
 +	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_AUTONEG_RESTART,
++		.attr = PRESTERA_CMD_PORT_ATTR_ACCEPT_FRAME_TYPE,
 +		.port = port->hw_id,
 +		.dev = port->dev_id,
++		.param = {.accept_frm_type = type}
 +	};
 +
 +	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
 +			    &req.cmd, sizeof(req));
 +}
 +
-+int prestera_hw_port_duplex_get(const struct prestera_port *port, u8 *duplex)
+ int prestera_hw_port_cap_get(const struct prestera_port *port,
+ 			     struct prestera_port_caps *caps)
+ {
+@@ -838,6 +954,210 @@ int prestera_hw_port_stats_get(const struct prestera_port *port,
+ 	return 0;
+ }
+ 
++int prestera_hw_port_learning_set(struct prestera_port *port, bool enable)
 +{
-+	struct prestera_msg_port_attr_resp resp;
 +	struct prestera_msg_port_attr_req req = {
-+		.attr = PRESTERA_CMD_PORT_ATTR_DUPLEX,
++		.attr = PRESTERA_CMD_PORT_ATTR_LEARNING,
 +		.port = port->hw_id,
-+		.dev = port->dev_id
++		.dev = port->dev_id,
++		.param = {.learning = enable}
 +	};
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_port_flood_set(struct prestera_port *port, bool flood)
++{
++	struct prestera_msg_port_attr_req req = {
++		.attr = PRESTERA_CMD_PORT_ATTR_FLOOD,
++		.port = port->hw_id,
++		.dev = port->dev_id,
++		.param = {.flood = flood}
++	};
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_SET,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_vlan_create(struct prestera_switch *sw, u16 vid)
++{
++	struct prestera_msg_vlan_req req = {
++		.vid = vid,
++	};
++
++	return prestera_cmd(sw, PRESTERA_CMD_TYPE_VLAN_CREATE,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_vlan_delete(struct prestera_switch *sw, u16 vid)
++{
++	struct prestera_msg_vlan_req req = {
++		.vid = vid,
++	};
++
++	return prestera_cmd(sw, PRESTERA_CMD_TYPE_VLAN_DELETE,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_vlan_port_set(struct prestera_port *port, u16 vid,
++			      bool is_member, bool untagged)
++{
++	struct prestera_msg_vlan_req req = {
++		.port = port->hw_id,
++		.dev = port->dev_id,
++		.vid = vid,
++		.is_member = is_member,
++		.is_tagged = !untagged
++	};
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_VLAN_PORT_SET,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_vlan_port_vid_set(struct prestera_port *port, u16 vid)
++{
++	struct prestera_msg_vlan_req req = {
++		.port = port->hw_id,
++		.dev = port->dev_id,
++		.vid = vid
++	};
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_VLAN_PVID_SET,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_vlan_port_stp_set(struct prestera_port *port, u16 vid, u8 state)
++{
++	struct prestera_msg_stp_req req = {
++		.port = port->hw_id,
++		.dev = port->dev_id,
++		.vid = vid,
++		.state = state
++	};
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_STP_PORT_SET,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_fdb_add(struct prestera_port *port, const unsigned char *mac,
++			u16 vid, bool dynamic)
++{
++	struct prestera_msg_fdb_req req = {
++		.port = port->hw_id,
++		.dev = port->dev_id,
++		.vid = vid,
++		.dynamic = dynamic
++	};
++
++	memcpy(req.mac, mac, sizeof(req.mac));
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_FDB_ADD,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_fdb_del(struct prestera_port *port, const unsigned char *mac,
++			u16 vid)
++{
++	struct prestera_msg_fdb_req req = {
++		.port = port->hw_id,
++		.dev = port->dev_id,
++		.vid = vid
++	};
++
++	memcpy(req.mac, mac, sizeof(req.mac));
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_FDB_DELETE,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_fdb_flush_port(struct prestera_port *port, u32 mode)
++{
++	struct prestera_msg_fdb_req req = {
++		.port = port->hw_id,
++		.dev = port->dev_id,
++		.flush_mode = mode,
++	};
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_FDB_FLUSH_PORT,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_fdb_flush_vlan(struct prestera_switch *sw, u16 vid, u32 mode)
++{
++	struct prestera_msg_fdb_req req = {
++		.vid = vid,
++		.flush_mode = mode,
++	};
++
++	return prestera_cmd(sw, PRESTERA_CMD_TYPE_FDB_FLUSH_VLAN,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_fdb_flush_port_vlan(struct prestera_port *port, u16 vid,
++				    u32 mode)
++{
++	struct prestera_msg_fdb_req req = {
++		.port = port->hw_id,
++		.dev = port->dev_id,
++		.vid = vid,
++		.flush_mode = mode,
++	};
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_FDB_FLUSH_PORT_VLAN,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_bridge_create(struct prestera_switch *sw, u16 *bridge_id)
++{
++	struct prestera_msg_bridge_resp resp;
++	struct prestera_msg_bridge_req req;
 +	int err;
 +
-+	err = prestera_cmd_ret(port->sw, PRESTERA_CMD_TYPE_PORT_ATTR_GET,
-+			       &req.cmd, sizeof(req), &resp.ret, sizeof(resp));
++	err = prestera_cmd_ret(sw, PRESTERA_CMD_TYPE_BRIDGE_CREATE,
++			       &req.cmd, sizeof(req),
++			       &resp.ret, sizeof(resp));
 +	if (err)
 +		return err;
 +
-+	*duplex = resp.param.duplex;
-+
++	*bridge_id = resp.bridge;
 +	return err;
 +}
 +
- int prestera_hw_port_stats_get(const struct prestera_port *port,
- 			       struct prestera_port_stats *st)
++int prestera_hw_bridge_delete(struct prestera_switch *sw, u16 bridge_id)
++{
++	struct prestera_msg_bridge_req req = {
++		.bridge = bridge_id
++	};
++
++	return prestera_cmd(sw, PRESTERA_CMD_TYPE_BRIDGE_DELETE,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_bridge_port_add(struct prestera_port *port, u16 bridge_id)
++{
++	struct prestera_msg_bridge_req req = {
++		.bridge = bridge_id,
++		.port = port->hw_id,
++		.dev = port->dev_id
++	};
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_BRIDGE_PORT_ADD,
++			    &req.cmd, sizeof(req));
++}
++
++int prestera_hw_bridge_port_delete(struct prestera_port *port, u16 bridge_id)
++{
++	struct prestera_msg_bridge_req req = {
++		.bridge = bridge_id,
++		.port = port->hw_id,
++		.dev = port->dev_id
++	};
++
++	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_BRIDGE_PORT_DELETE,
++			    &req.cmd, sizeof(req));
++}
++
+ int prestera_hw_rxtx_init(struct prestera_switch *sw,
+ 			  struct prestera_rxtx_params *params)
  {
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-index f12c368c4727..196a8ee47f3f 100644
+index 196a8ee47f3f..1ad8539b48f9 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
-@@ -9,19 +9,69 @@
+@@ -9,6 +9,19 @@
  
  #include <linux/types.h>
  
-+enum {
-+	PRESTERA_LINK_MODE_10baseT_Half,
-+	PRESTERA_LINK_MODE_10baseT_Full,
-+	PRESTERA_LINK_MODE_100baseT_Half,
-+	PRESTERA_LINK_MODE_100baseT_Full,
-+	PRESTERA_LINK_MODE_1000baseT_Half,
-+	PRESTERA_LINK_MODE_1000baseT_Full,
-+	PRESTERA_LINK_MODE_1000baseX_Full,
-+	PRESTERA_LINK_MODE_1000baseKX_Full,
-+	PRESTERA_LINK_MODE_2500baseX_Full,
-+	PRESTERA_LINK_MODE_10GbaseKR_Full,
-+	PRESTERA_LINK_MODE_10GbaseSR_Full,
-+	PRESTERA_LINK_MODE_10GbaseLR_Full,
-+	PRESTERA_LINK_MODE_20GbaseKR2_Full,
-+	PRESTERA_LINK_MODE_25GbaseCR_Full,
-+	PRESTERA_LINK_MODE_25GbaseKR_Full,
-+	PRESTERA_LINK_MODE_25GbaseSR_Full,
-+	PRESTERA_LINK_MODE_40GbaseKR4_Full,
-+	PRESTERA_LINK_MODE_40GbaseCR4_Full,
-+	PRESTERA_LINK_MODE_40GbaseSR4_Full,
-+	PRESTERA_LINK_MODE_50GbaseCR2_Full,
-+	PRESTERA_LINK_MODE_50GbaseKR2_Full,
-+	PRESTERA_LINK_MODE_50GbaseSR2_Full,
-+	PRESTERA_LINK_MODE_100GbaseKR4_Full,
-+	PRESTERA_LINK_MODE_100GbaseSR4_Full,
-+	PRESTERA_LINK_MODE_100GbaseCR4_Full,
++enum prestera_accept_frm_type {
++	PRESTERA_ACCEPT_FRAME_TYPE_TAGGED,
++	PRESTERA_ACCEPT_FRAME_TYPE_UNTAGGED,
++	PRESTERA_ACCEPT_FRAME_TYPE_ALL
++};
 +
-+	PRESTERA_LINK_MODE_MAX
++enum prestera_fdb_flush_mode {
++	PRESTERA_FDB_FLUSH_MODE_DYNAMIC = BIT(0),
++	PRESTERA_FDB_FLUSH_MODE_STATIC = BIT(1),
++	PRESTERA_FDB_FLUSH_MODE_ALL = PRESTERA_FDB_FLUSH_MODE_DYNAMIC
++					| PRESTERA_FDB_FLUSH_MODE_STATIC,
 +};
 +
  enum {
- 	PRESTERA_PORT_TYPE_NONE,
- 	PRESTERA_PORT_TYPE_TP,
-+	PRESTERA_PORT_TYPE_AUI,
-+	PRESTERA_PORT_TYPE_MII,
-+	PRESTERA_PORT_TYPE_FIBRE,
-+	PRESTERA_PORT_TYPE_BNC,
-+	PRESTERA_PORT_TYPE_DA,
-+	PRESTERA_PORT_TYPE_OTHER,
- 
- 	PRESTERA_PORT_TYPE_MAX
+ 	PRESTERA_LINK_MODE_10baseT_Half,
+ 	PRESTERA_LINK_MODE_10baseT_Full,
+@@ -72,6 +85,13 @@ enum {
+ 	PRESTERA_PORT_DUPLEX_FULL
  };
  
 +enum {
-+	PRESTERA_PORT_TCVR_COPPER,
-+	PRESTERA_PORT_TCVR_SFP,
-+
-+	PRESTERA_PORT_TCVR_MAX
-+};
-+
- enum {
- 	PRESTERA_PORT_FEC_OFF,
-+	PRESTERA_PORT_FEC_BASER,
-+	PRESTERA_PORT_FEC_RS,
- 
- 	PRESTERA_PORT_FEC_MAX
- };
- 
-+enum {
-+	PRESTERA_PORT_DUPLEX_HALF,
-+	PRESTERA_PORT_DUPLEX_FULL
++	PRESTERA_STP_DISABLED,
++	PRESTERA_STP_BLOCK_LISTEN,
++	PRESTERA_STP_LEARN,
++	PRESTERA_STP_FORWARD
 +};
 +
  struct prestera_switch;
  struct prestera_port;
  struct prestera_port_stats;
-@@ -50,10 +100,25 @@ int prestera_hw_port_mac_set(const struct prestera_port *port, const char *mac);
- int prestera_hw_port_mac_get(const struct prestera_port *port, char *mac);
- int prestera_hw_port_cap_get(const struct prestera_port *port,
- 			     struct prestera_port_caps *caps);
-+int prestera_hw_port_remote_cap_get(const struct prestera_port *port,
-+				    u64 *link_mode_bitmap);
-+int prestera_hw_port_remote_fc_get(const struct prestera_port *port,
-+				   bool *pause, bool *asym_pause);
-+int prestera_hw_port_type_get(const struct prestera_port *port, u8 *type);
-+int prestera_hw_port_fec_get(const struct prestera_port *port, u8 *fec);
-+int prestera_hw_port_fec_set(const struct prestera_port *port, u8 fec);
- int prestera_hw_port_autoneg_set(const struct prestera_port *port,
- 				 bool autoneg, u64 link_modes, u8 fec);
-+int prestera_hw_port_autoneg_restart(struct prestera_port *port);
-+int prestera_hw_port_duplex_get(const struct prestera_port *port, u8 *duplex);
- int prestera_hw_port_stats_get(const struct prestera_port *port,
- 			       struct prestera_port_stats *stats);
-+int prestera_hw_port_link_mode_set(const struct prestera_port *port, u32 mode);
-+int prestera_hw_port_link_mode_get(const struct prestera_port *port, u32 *mode);
-+int prestera_hw_port_mdix_get(const struct prestera_port *port, u8 *status,
-+			      u8 *admin_mode);
-+int prestera_hw_port_mdix_set(const struct prestera_port *port, u8 mode);
-+int prestera_hw_port_speed_get(const struct prestera_port *port, u32 *speed);
+@@ -87,6 +107,7 @@ struct prestera_rxtx_params;
+ /* Switch API */
+ int prestera_hw_switch_init(struct prestera_switch *sw);
+ void prestera_hw_switch_fini(struct prestera_switch *sw);
++int prestera_hw_switch_ageing_set(struct prestera_switch *sw, u32 ageing);
+ int prestera_hw_switch_mac_set(struct prestera_switch *sw, const char *mac);
+ 
+ /* Port API */
+@@ -119,6 +140,33 @@ int prestera_hw_port_mdix_get(const struct prestera_port *port, u8 *status,
+ 			      u8 *admin_mode);
+ int prestera_hw_port_mdix_set(const struct prestera_port *port, u8 mode);
+ int prestera_hw_port_speed_get(const struct prestera_port *port, u32 *speed);
++int prestera_hw_port_learning_set(struct prestera_port *port, bool enable);
++int prestera_hw_port_flood_set(struct prestera_port *port, bool flood);
++int prestera_hw_port_accept_frm_type(struct prestera_port *port,
++				     enum prestera_accept_frm_type type);
++/* Vlan API */
++int prestera_hw_vlan_create(struct prestera_switch *sw, u16 vid);
++int prestera_hw_vlan_delete(struct prestera_switch *sw, u16 vid);
++int prestera_hw_vlan_port_set(struct prestera_port *port, u16 vid,
++			      bool is_member, bool untagged);
++int prestera_hw_vlan_port_vid_set(struct prestera_port *port, u16 vid);
++int prestera_hw_vlan_port_stp_set(struct prestera_port *port, u16 vid, u8 state);
++
++/* FDB API */
++int prestera_hw_fdb_add(struct prestera_port *port, const unsigned char *mac,
++			u16 vid, bool dynamic);
++int prestera_hw_fdb_del(struct prestera_port *port, const unsigned char *mac,
++			u16 vid);
++int prestera_hw_fdb_flush_port(struct prestera_port *port, u32 mode);
++int prestera_hw_fdb_flush_vlan(struct prestera_switch *sw, u16 vid, u32 mode);
++int prestera_hw_fdb_flush_port_vlan(struct prestera_port *port, u16 vid,
++				    u32 mode);
++
++/* Bridge API */
++int prestera_hw_bridge_create(struct prestera_switch *sw, u16 *bridge_id);
++int prestera_hw_bridge_delete(struct prestera_switch *sw, u16 bridge_id);
++int prestera_hw_bridge_port_add(struct prestera_port *port, u16 bridge_id);
++int prestera_hw_bridge_port_delete(struct prestera_port *port, u16 bridge_id);
  
  /* Event handlers */
  int prestera_hw_event_handler_register(struct prestera_switch *sw,
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-index 2eed7ba763ff..0fd483e617f0 100644
+index 0fd483e617f0..9fb6691495fb 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
-@@ -15,6 +15,7 @@
- #include "prestera_hw.h"
+@@ -16,6 +16,7 @@
  #include "prestera_rxtx.h"
  #include "prestera_devlink.h"
-+#include "prestera_ethtool.h"
+ #include "prestera_ethtool.h"
++#include "prestera_switchdev.h"
  
  #define PRESTERA_MTU_DEFAULT	1536
  
-@@ -187,22 +188,38 @@ static const struct net_device_ops prestera_netdev_ops = {
- 	.ndo_get_devlink_port = prestera_devlink_get_port,
- };
+@@ -25,6 +26,29 @@
  
--static int prestera_port_autoneg_set(struct prestera_port *port, bool enable,
--				     u64 link_modes, u8 fec)
-+int prestera_port_autoneg_set(struct prestera_port *port, bool enable,
-+			      u64 adver_link_modes, u8 adver_fec)
- {
- 	bool refresh = false;
-+	u64 link_modes;
- 	int err = 0;
-+	u8 fec;
+ static struct workqueue_struct *prestera_wq;
  
- 	if (port->caps.type != PRESTERA_PORT_TYPE_TP)
- 		return enable ? -EINVAL : 0;
- 
--	if (port->adver_link_modes != link_modes || port->adver_fec != fec) {
--		port->adver_fec = fec ?: BIT(PRESTERA_PORT_FEC_OFF);
-+	if (!enable)
-+		goto set_autoneg;
++int prestera_port_pvid_set(struct prestera_port *port, u16 vid)
++{
++	enum prestera_accept_frm_type frm_type;
++	int err;
 +
-+	link_modes = port->caps.supp_link_modes & adver_link_modes;
-+	fec = port->caps.supp_fec & adver_fec;
++	frm_type = PRESTERA_ACCEPT_FRAME_TYPE_TAGGED;
 +
-+	if (!link_modes && !fec)
-+		return -EOPNOTSUPP;
++	if (vid) {
++		err = prestera_hw_vlan_port_vid_set(port, vid);
++		if (err)
++			return err;
 +
-+	if (link_modes && port->adver_link_modes != link_modes) {
- 		port->adver_link_modes = link_modes;
- 		refresh = true;
- 	}
- 
--	if (port->autoneg == enable && !(port->autoneg && refresh))
-+	if (fec && port->adver_fec != fec) {
-+		port->adver_fec = fec;
-+		refresh = true;
++		frm_type = PRESTERA_ACCEPT_FRAME_TYPE_ALL;
 +	}
 +
-+set_autoneg:
-+	if (port->autoneg == enable && !refresh)
- 		return 0;
++	err = prestera_hw_port_accept_frm_type(port, frm_type);
++	if (err && frm_type == PRESTERA_ACCEPT_FRAME_TYPE_ALL)
++		prestera_hw_vlan_port_vid_set(port, port->pvid);
++
++	port->pvid = vid;
++	return 0;
++}
++
+ struct prestera_port *prestera_port_find_by_hwid(struct prestera_switch *sw,
+ 						 u32 dev_id, u32 hw_id)
+ {
+@@ -38,8 +62,7 @@ struct prestera_port *prestera_port_find_by_hwid(struct prestera_switch *sw,
+ 	return NULL;
+ }
  
- 	err = prestera_hw_port_autoneg_set(port, enable, port->adver_link_modes,
-@@ -243,6 +260,7 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+-static struct prestera_port *prestera_find_port(struct prestera_switch *sw,
+-						u32 id)
++struct prestera_port *prestera_find_port(struct prestera_switch *sw, u32 id)
+ {
+ 	struct prestera_port *port;
  
- 	dev->features |= NETIF_F_NETNS_LOCAL;
- 	dev->netdev_ops = &prestera_netdev_ops;
-+	dev->ethtool_ops = &prestera_ethtool_ops;
+@@ -243,6 +266,8 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
  
- 	netif_carrier_off(dev);
+ 	port = netdev_priv(dev);
  
++	INIT_LIST_HEAD(&port->vlans_list);
++	port->pvid = PRESTERA_DEFAULT_VID;
+ 	port->dev = dev;
+ 	port->id = id;
+ 	port->sw = sw;
+@@ -435,6 +460,72 @@ static int prestera_switch_set_base_mac_addr(struct prestera_switch *sw)
+ 	return prestera_hw_switch_mac_set(sw, sw->base_mac);
+ }
+ 
++bool prestera_netdev_check(const struct net_device *dev)
++{
++	return dev->netdev_ops == &prestera_netdev_ops;
++}
++
++static int prestera_lower_dev_walk(struct net_device *dev, void *data)
++{
++	struct prestera_port **pport = data;
++
++	if (prestera_netdev_check(dev)) {
++		*pport = netdev_priv(dev);
++		return 1;
++	}
++
++	return 0;
++}
++
++struct prestera_port *prestera_port_dev_lower_find(struct net_device *dev)
++{
++	struct prestera_port *port;
++
++	if (prestera_netdev_check(dev))
++		return netdev_priv(dev);
++
++	port = NULL;
++	netdev_walk_all_lower_dev(dev, prestera_lower_dev_walk, &port);
++
++	return port;
++}
++
++static int prestera_netdev_port_event(struct net_device *dev,
++				      unsigned long event, void *ptr)
++{
++	switch (event) {
++	case NETDEV_PRECHANGEUPPER:
++	case NETDEV_CHANGEUPPER:
++		return prestera_bridge_port_event(dev, event, ptr);
++	}
++
++	return 0;
++}
++
++static int prestera_netdev_event_handler(struct notifier_block *nb,
++					 unsigned long event, void *ptr)
++{
++	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
++	int err = 0;
++
++	if (prestera_netdev_check(dev))
++		err = prestera_netdev_port_event(dev, event, ptr);
++
++	return notifier_from_errno(err);
++}
++
++static int prestera_netdev_event_handler_register(struct prestera_switch *sw)
++{
++	sw->netdev_nb.notifier_call = prestera_netdev_event_handler;
++
++	return register_netdevice_notifier(&sw->netdev_nb);
++}
++
++static void prestera_netdev_event_handler_unregister(struct prestera_switch *sw)
++{
++	unregister_netdevice_notifier(&sw->netdev_nb);
++}
++
+ static int prestera_switch_init(struct prestera_switch *sw)
+ {
+ 	int err;
+@@ -451,10 +542,18 @@ static int prestera_switch_init(struct prestera_switch *sw)
+ 	if (err)
+ 		return err;
+ 
+-	err = prestera_rxtx_switch_init(sw);
++	err = prestera_netdev_event_handler_register(sw);
+ 	if (err)
+ 		return err;
+ 
++	err = prestera_switchdev_init(sw);
++	if (err)
++		goto err_swdev_register;
++
++	err = prestera_rxtx_switch_init(sw);
++	if (err)
++		goto err_rxtx_register;
++
+ 	err = prestera_event_handlers_register(sw);
+ 	if (err)
+ 		goto err_handlers_register;
+@@ -475,6 +574,10 @@ static int prestera_switch_init(struct prestera_switch *sw)
+ 	prestera_event_handlers_unregister(sw);
+ err_handlers_register:
+ 	prestera_rxtx_switch_fini(sw);
++err_rxtx_register:
++	prestera_switchdev_fini(sw);
++err_swdev_register:
++	prestera_netdev_event_handler_unregister(sw);
+ 	prestera_hw_switch_fini(sw);
+ 
+ 	return err;
+@@ -486,6 +589,8 @@ static void prestera_switch_fini(struct prestera_switch *sw)
+ 	prestera_devlink_unregister(sw);
+ 	prestera_event_handlers_unregister(sw);
+ 	prestera_rxtx_switch_fini(sw);
++	prestera_switchdev_fini(sw);
++	prestera_netdev_event_handler_unregister(sw);
+ 	prestera_hw_switch_fini(sw);
+ }
+ 
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+new file mode 100644
+index 000000000000..840b5df4f71b
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+@@ -0,0 +1,1289 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
++/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/if_vlan.h>
++#include <linux/if_bridge.h>
++#include <linux/notifier.h>
++#include <net/switchdev.h>
++#include <net/netevent.h>
++
++#include "prestera.h"
++#include "prestera_hw.h"
++#include "prestera_switchdev.h"
++
++#define PRESTERA_VID_ALL (0xffff)
++
++#define PRESTERA_DEFAULT_AGEING_TIME_MS 300
++#define PRESTERA_MAX_AGEING_TIME_MS 1000000
++#define PRESTERA_MIN_AGEING_TIME_MS 10
++
++struct prestera_fdb_event_work {
++	struct work_struct work;
++	struct switchdev_notifier_fdb_info fdb_info;
++	struct net_device *dev;
++	unsigned long event;
++};
++
++struct prestera_switchdev {
++	struct prestera_switch *sw;
++	u32 ageing_time;
++	struct list_head bridge_list;
++	bool bridge_8021q_exists;
++	struct notifier_block swdev_nb_blk;
++	struct notifier_block swdev_nb;
++};
++
++struct prestera_bridge {
++	struct list_head head;
++	struct net_device *dev;
++	struct prestera_switchdev *swdev;
++	struct list_head port_list;
++	bool vlan_enabled;
++	u16 bridge_id;
++};
++
++struct prestera_bridge_port {
++	struct list_head head;
++	struct net_device *dev;
++	struct prestera_bridge *bridge;
++	struct list_head vlan_list;
++	refcount_t ref_count;
++	unsigned long flags;
++	u8 stp_state;
++};
++
++struct prestera_bridge_vlan {
++	struct list_head head;
++	struct list_head port_vlan_list;
++	u16 vid;
++};
++
++struct prestera_port_vlan {
++	struct list_head br_vlan_head;
++	struct list_head port_head;
++	struct prestera_port *port;
++	struct prestera_bridge_port *br_port;
++	u16 vid;
++};
++
++static struct workqueue_struct *swdev_wq;
++
++static void prestera_bridge_port_put(struct prestera_bridge_port *br_port);
++
++static int prestera_port_vid_stp_set(struct prestera_port *port, u16 vid,
++				     u8 state);
++
++static struct prestera_bridge_vlan *
++prestera_bridge_vlan_create(struct prestera_bridge_port *br_port, u16 vid)
++{
++	struct prestera_bridge_vlan *br_vlan;
++
++	br_vlan = kzalloc(sizeof(*br_vlan), GFP_KERNEL);
++	if (!br_vlan)
++		return NULL;
++
++	INIT_LIST_HEAD(&br_vlan->port_vlan_list);
++	br_vlan->vid = vid;
++	list_add(&br_vlan->head, &br_port->vlan_list);
++
++	return br_vlan;
++}
++
++static void prestera_bridge_vlan_destroy(struct prestera_bridge_vlan *br_vlan)
++{
++	list_del(&br_vlan->head);
++	WARN_ON(!list_empty(&br_vlan->port_vlan_list));
++	kfree(br_vlan);
++}
++
++static struct prestera_bridge_vlan *
++prestera_bridge_vlan_by_vid(struct prestera_bridge_port *br_port, u16 vid)
++{
++	struct prestera_bridge_vlan *br_vlan;
++
++	list_for_each_entry(br_vlan, &br_port->vlan_list, head) {
++		if (br_vlan->vid == vid)
++			return br_vlan;
++	}
++
++	return NULL;
++}
++
++static int prestera_bridge_vlan_port_count(struct prestera_bridge *bridge,
++					   u16 vid)
++{
++	struct prestera_bridge_port *br_port;
++	struct prestera_bridge_vlan *br_vlan;
++	int count = 0;
++
++	list_for_each_entry(br_port, &bridge->port_list, head) {
++		list_for_each_entry(br_vlan, &br_port->vlan_list, head) {
++			if (br_vlan->vid == vid) {
++				count += 1;
++				break;
++			}
++		}
++	}
++
++	return count;
++}
++
++static void prestera_bridge_vlan_put(struct prestera_bridge_vlan *br_vlan)
++{
++	if (list_empty(&br_vlan->port_vlan_list))
++		prestera_bridge_vlan_destroy(br_vlan);
++}
++
++static struct prestera_port_vlan *
++prestera_port_vlan_by_vid(struct prestera_port *port, u16 vid)
++{
++	struct prestera_port_vlan *port_vlan;
++
++	list_for_each_entry(port_vlan, &port->vlans_list, port_head) {
++		if (port_vlan->vid == vid)
++			return port_vlan;
++	}
++
++	return NULL;
++}
++
++static struct prestera_port_vlan *
++prestera_port_vlan_create(struct prestera_port *port, u16 vid, bool untagged)
++{
++	struct prestera_port_vlan *port_vlan;
++	int err;
++
++	port_vlan = prestera_port_vlan_by_vid(port, vid);
++	if (port_vlan)
++		return ERR_PTR(-EEXIST);
++
++	err = prestera_hw_vlan_port_set(port, vid, true, untagged);
++	if (err)
++		return ERR_PTR(err);
++
++	port_vlan = kzalloc(sizeof(*port_vlan), GFP_KERNEL);
++	if (!port_vlan) {
++		err = -ENOMEM;
++		goto err_port_vlan_alloc;
++	}
++
++	port_vlan->port = port;
++	port_vlan->vid = vid;
++
++	list_add(&port_vlan->port_head, &port->vlans_list);
++
++	return port_vlan;
++
++err_port_vlan_alloc:
++	prestera_hw_vlan_port_set(port, vid, false, false);
++	return ERR_PTR(err);
++}
++
++static void
++prestera_port_vlan_bridge_leave(struct prestera_port_vlan *port_vlan)
++{
++	u32 fdb_flush_mode = PRESTERA_FDB_FLUSH_MODE_DYNAMIC;
++	struct prestera_port *port = port_vlan->port;
++	struct prestera_bridge_vlan *br_vlan;
++	struct prestera_bridge_port *br_port;
++	u16 vid = port_vlan->vid;
++	bool last_port, last_vlan;
++	int port_count;
++
++	br_port = port_vlan->br_port;
++	port_count = prestera_bridge_vlan_port_count(br_port->bridge, vid);
++	br_vlan = prestera_bridge_vlan_by_vid(br_port, vid);
++
++	last_vlan = list_is_singular(&br_port->vlan_list);
++	last_port = port_count == 1;
++
++	if (last_vlan)
++		prestera_hw_fdb_flush_port(port, fdb_flush_mode);
++	else if (last_port)
++		prestera_hw_fdb_flush_vlan(port->sw, vid, fdb_flush_mode);
++	else
++		prestera_hw_fdb_flush_port_vlan(port, vid, fdb_flush_mode);
++
++	list_del(&port_vlan->br_vlan_head);
++	prestera_bridge_vlan_put(br_vlan);
++	prestera_bridge_port_put(br_port);
++	port_vlan->br_port = NULL;
++}
++
++static void prestera_port_vlan_destroy(struct prestera_port_vlan *port_vlan)
++{
++	struct prestera_port *port = port_vlan->port;
++	u16 vid = port_vlan->vid;
++
++	if (port_vlan->br_port)
++		prestera_port_vlan_bridge_leave(port_vlan);
++
++	list_del(&port_vlan->port_head);
++	kfree(port_vlan);
++	prestera_hw_vlan_port_set(port, vid, false, false);
++}
++
++static struct prestera_bridge *
++prestera_bridge_create(struct prestera_switchdev *swdev, struct net_device *dev)
++{
++	bool vlan_enabled = br_vlan_enabled(dev);
++	struct prestera_bridge *bridge;
++	u16 bridge_id;
++	int err;
++
++	if (vlan_enabled && swdev->bridge_8021q_exists) {
++		netdev_err(dev, "Only one VLAN-aware bridge is supported\n");
++		return ERR_PTR(-EINVAL);
++	}
++
++	bridge = kzalloc(sizeof(*bridge), GFP_KERNEL);
++	if (!bridge)
++		return ERR_PTR(-ENOMEM);
++
++	if (vlan_enabled) {
++		swdev->bridge_8021q_exists = true;
++	} else {
++		err = prestera_hw_bridge_create(swdev->sw, &bridge_id);
++		if (err) {
++			kfree(bridge);
++			return ERR_PTR(err);
++		}
++
++		bridge->bridge_id = bridge_id;
++	}
++
++	bridge->vlan_enabled = vlan_enabled;
++	bridge->swdev = swdev;
++	bridge->dev = dev;
++
++	INIT_LIST_HEAD(&bridge->port_list);
++
++	list_add(&bridge->head, &swdev->bridge_list);
++
++	return bridge;
++}
++
++static void prestera_bridge_destroy(struct prestera_bridge *bridge)
++{
++	struct prestera_switchdev *swdev = bridge->swdev;
++
++	list_del(&bridge->head);
++
++	if (bridge->vlan_enabled)
++		swdev->bridge_8021q_exists = false;
++	else
++		prestera_hw_bridge_delete(swdev->sw, bridge->bridge_id);
++
++	WARN_ON(!list_empty(&bridge->port_list));
++	kfree(bridge);
++}
++
++static void prestera_bridge_put(struct prestera_bridge *bridge)
++{
++	if (list_empty(&bridge->port_list))
++		prestera_bridge_destroy(bridge);
++}
++
++static
++struct prestera_bridge *prestera_bridge_by_dev(struct prestera_switchdev *swdev,
++					       const struct net_device *dev)
++{
++	struct prestera_bridge *bridge;
++
++	list_for_each_entry(bridge, &swdev->bridge_list, head)
++		if (bridge->dev == dev)
++			return bridge;
++
++	return NULL;
++}
++
++static struct prestera_bridge_port *
++__prestera_bridge_port_by_dev(struct prestera_bridge *bridge,
++			      struct net_device *dev)
++{
++	struct prestera_bridge_port *br_port;
++
++	list_for_each_entry(br_port, &bridge->port_list, head) {
++		if (br_port->dev == dev)
++			return br_port;
++	}
++
++	return NULL;
++}
++
++static struct prestera_bridge_port *
++prestera_bridge_port_by_dev(struct prestera_switchdev *swdev,
++			    struct net_device *dev)
++{
++	struct net_device *br_dev = netdev_master_upper_dev_get(dev);
++	struct prestera_bridge *bridge;
++
++	if (!br_dev)
++		return NULL;
++
++	bridge = prestera_bridge_by_dev(swdev, br_dev);
++	if (!bridge)
++		return NULL;
++
++	return __prestera_bridge_port_by_dev(bridge, dev);
++}
++
++static struct prestera_bridge_port *
++prestera_bridge_port_create(struct prestera_bridge *bridge,
++			    struct net_device *dev)
++{
++	struct prestera_bridge_port *br_port;
++
++	br_port = kzalloc(sizeof(*br_port), GFP_KERNEL);
++	if (!br_port)
++		return NULL;
++
++	br_port->flags = BR_LEARNING | BR_FLOOD | BR_LEARNING_SYNC |
++				BR_MCAST_FLOOD;
++	br_port->stp_state = BR_STATE_DISABLED;
++	refcount_set(&br_port->ref_count, 1);
++	br_port->bridge = bridge;
++	br_port->dev = dev;
++
++	INIT_LIST_HEAD(&br_port->vlan_list);
++	list_add(&br_port->head, &bridge->port_list);
++
++	return br_port;
++}
++
++static void
++prestera_bridge_port_destroy(struct prestera_bridge_port *br_port)
++{
++	list_del(&br_port->head);
++	WARN_ON(!list_empty(&br_port->vlan_list));
++	kfree(br_port);
++}
++
++static void prestera_bridge_port_get(struct prestera_bridge_port *br_port)
++{
++	refcount_inc(&br_port->ref_count);
++}
++
++static void prestera_bridge_port_put(struct prestera_bridge_port *br_port)
++{
++	struct prestera_bridge *bridge = br_port->bridge;
++
++	if (refcount_dec_and_test(&br_port->ref_count)) {
++		prestera_bridge_port_destroy(br_port);
++		prestera_bridge_put(bridge);
++	}
++}
++
++static struct prestera_bridge_port *
++prestera_bridge_port_add(struct prestera_bridge *bridge, struct net_device *dev)
++{
++	struct prestera_bridge_port *br_port;
++
++	br_port = __prestera_bridge_port_by_dev(bridge, dev);
++	if (br_port) {
++		prestera_bridge_port_get(br_port);
++		return br_port;
++	}
++
++	br_port = prestera_bridge_port_create(bridge, dev);
++	if (!br_port)
++		return ERR_PTR(-ENOMEM);
++
++	return br_port;
++}
++
++static int
++prestera_bridge_1d_port_join(struct prestera_bridge_port *br_port)
++{
++	struct prestera_port *port = netdev_priv(br_port->dev);
++	struct prestera_bridge *bridge = br_port->bridge;
++	int err;
++
++	err = prestera_hw_bridge_port_add(port, bridge->bridge_id);
++	if (err)
++		return err;
++
++	err = prestera_hw_port_flood_set(port, br_port->flags & BR_FLOOD);
++	if (err)
++		goto err_port_flood_set;
++
++	err = prestera_hw_port_learning_set(port, br_port->flags & BR_LEARNING);
++	if (err)
++		goto err_port_learning_set;
++
++	return err;
++
++err_port_learning_set:
++	prestera_hw_port_flood_set(port, false);
++err_port_flood_set:
++	prestera_hw_bridge_port_delete(port, bridge->bridge_id);
++
++	return err;
++}
++
++static int prestera_port_bridge_join(struct prestera_port *port,
++				     struct net_device *upper)
++{
++	struct prestera_bridge_port *br_port;
++	struct prestera_switchdev *swdev;
++	struct prestera_bridge *bridge;
++	int err;
++
++	swdev = port->sw->swdev;
++
++	bridge = prestera_bridge_by_dev(swdev, upper);
++	if (!bridge) {
++		bridge = prestera_bridge_create(swdev, upper);
++		if (IS_ERR(bridge))
++			return PTR_ERR(bridge);
++	}
++
++	br_port = prestera_bridge_port_add(bridge, port->dev);
++	if (IS_ERR(br_port)) {
++		err = PTR_ERR(br_port);
++		goto err_brport_create;
++	}
++
++	if (bridge->vlan_enabled)
++		return 0;
++
++	err = prestera_bridge_1d_port_join(br_port);
++	if (err)
++		goto err_port_join;
++
++	return 0;
++
++err_port_join:
++	prestera_bridge_port_put(br_port);
++err_brport_create:
++	prestera_bridge_put(bridge);
++	return err;
++}
++
++static void prestera_bridge_1q_port_leave(struct prestera_bridge_port *br_port)
++{
++	struct prestera_port *port = netdev_priv(br_port->dev);
++
++	prestera_hw_fdb_flush_port(port, PRESTERA_FDB_FLUSH_MODE_ALL);
++	prestera_port_pvid_set(port, PRESTERA_DEFAULT_VID);
++}
++
++static void prestera_bridge_1d_port_leave(struct prestera_bridge_port *br_port)
++{
++	struct prestera_port *port = netdev_priv(br_port->dev);
++
++	prestera_hw_fdb_flush_port(port, PRESTERA_FDB_FLUSH_MODE_ALL);
++	prestera_hw_bridge_port_delete(port, br_port->bridge->bridge_id);
++}
++
++static int prestera_port_vid_stp_set(struct prestera_port *port, u16 vid,
++				     u8 state)
++{
++	u8 hw_state = state;
++
++	switch (state) {
++	case BR_STATE_DISABLED:
++		hw_state = PRESTERA_STP_DISABLED;
++		break;
++
++	case BR_STATE_BLOCKING:
++	case BR_STATE_LISTENING:
++		hw_state = PRESTERA_STP_BLOCK_LISTEN;
++		break;
++
++	case BR_STATE_LEARNING:
++		hw_state = PRESTERA_STP_LEARN;
++		break;
++
++	case BR_STATE_FORWARDING:
++		hw_state = PRESTERA_STP_FORWARD;
++		break;
++
++	default:
++		return -EINVAL;
++	}
++
++	return prestera_hw_vlan_port_stp_set(port, vid, hw_state);
++}
++
++static void prestera_port_bridge_leave(struct prestera_port *port,
++				       struct net_device *upper)
++{
++	struct prestera_switchdev *swdev = port->sw->swdev;
++	struct prestera_bridge_port *br_port;
++	struct prestera_bridge *bridge;
++
++	bridge = prestera_bridge_by_dev(swdev, upper);
++	if (!bridge)
++		return;
++
++	br_port = __prestera_bridge_port_by_dev(bridge, port->dev);
++	if (!br_port)
++		return;
++
++	bridge = br_port->bridge;
++
++	if (bridge->vlan_enabled)
++		prestera_bridge_1q_port_leave(br_port);
++	else
++		prestera_bridge_1d_port_leave(br_port);
++
++	prestera_hw_port_learning_set(port, false);
++	prestera_hw_port_flood_set(port, false);
++	prestera_port_vid_stp_set(port, PRESTERA_VID_ALL, BR_STATE_FORWARDING);
++	prestera_bridge_port_put(br_port);
++}
++
++int prestera_bridge_port_event(struct net_device *dev, unsigned long event,
++			       void *ptr)
++{
++	struct netdev_notifier_changeupper_info *info = ptr;
++	struct netlink_ext_ack *extack;
++	struct prestera_port *port;
++	struct net_device *upper;
++	int err = 0;
++
++	extack = netdev_notifier_info_to_extack(&info->info);
++	port = netdev_priv(dev);
++	upper = info->upper_dev;
++
++	switch (event) {
++	case NETDEV_PRECHANGEUPPER:
++		if (!netif_is_bridge_master(upper)) {
++			NL_SET_ERR_MSG_MOD(extack, "Unknown upper device type");
++			return -EINVAL;
++		}
++
++		if (!info->linking)
++			break;
++
++		if (netdev_has_any_upper_dev(upper)) {
++			NL_SET_ERR_MSG_MOD(extack, "Upper device is already enslaved");
++			return -EINVAL;
++		}
++		break;
++
++	case NETDEV_CHANGEUPPER:
++		if (!netif_is_bridge_master(upper))
++			break;
++
++		if (info->linking)
++			err = prestera_port_bridge_join(port, upper);
++		else
++			prestera_port_bridge_leave(port, upper);
++		break;
++	}
++
++	return err;
++}
++
++static int prestera_port_attr_br_flags_set(struct prestera_port *port,
++					   struct switchdev_trans *trans,
++					   struct net_device *dev,
++					   unsigned long flags)
++{
++	struct prestera_bridge_port *br_port;
++	int err;
++
++	if (switchdev_trans_ph_prepare(trans))
++		return 0;
++
++	br_port = prestera_bridge_port_by_dev(port->sw->swdev, dev);
++	if (!br_port)
++		return 0;
++
++	err = prestera_hw_port_flood_set(port, flags & BR_FLOOD);
++	if (err)
++		return err;
++
++	err = prestera_hw_port_learning_set(port, flags & BR_LEARNING);
++	if (err)
++		return err;
++
++	memcpy(&br_port->flags, &flags, sizeof(flags));
++	return 0;
++}
++
++static int prestera_port_attr_br_ageing_set(struct prestera_port *port,
++					    struct switchdev_trans *trans,
++					    unsigned long ageing_clock_t)
++{
++	unsigned long ageing_jiffies = clock_t_to_jiffies(ageing_clock_t);
++	u32 ageing_time = jiffies_to_msecs(ageing_jiffies) / 1000;
++	struct prestera_switch *sw = port->sw;
++	int err;
++
++	if (switchdev_trans_ph_prepare(trans)) {
++		if (ageing_time < PRESTERA_MIN_AGEING_TIME_MS ||
++		    ageing_time > PRESTERA_MAX_AGEING_TIME_MS)
++			return -ERANGE;
++		else
++			return 0;
++	}
++
++	err = prestera_hw_switch_ageing_set(sw, ageing_time);
++	if (!err)
++		sw->swdev->ageing_time = ageing_time;
++
++	return err;
++}
++
++static int prestera_port_attr_br_vlan_set(struct prestera_port *port,
++					  struct switchdev_trans *trans,
++					  struct net_device *dev,
++					  bool vlan_enabled)
++{
++	struct prestera_switch *sw = port->sw;
++	struct prestera_bridge *bridge;
++
++	if (!switchdev_trans_ph_prepare(trans))
++		return 0;
++
++	bridge = prestera_bridge_by_dev(sw->swdev, dev);
++	if (WARN_ON(!bridge))
++		return -EINVAL;
++
++	if (bridge->vlan_enabled == vlan_enabled)
++		return 0;
++
++	netdev_err(bridge->dev, "VLAN filtering can't be changed for existing bridge\n");
++
++	return -EINVAL;
++}
++
++static int prestera_port_bridge_vlan_stp_set(struct prestera_port *port,
++					     struct prestera_bridge_vlan *br_vlan,
++					     u8 state)
++{
++	struct prestera_port_vlan *port_vlan;
++
++	list_for_each_entry(port_vlan, &br_vlan->port_vlan_list, br_vlan_head) {
++		if (port_vlan->port != port)
++			continue;
++
++		return prestera_port_vid_stp_set(port, br_vlan->vid, state);
++	}
++
++	return 0;
++}
++
++static int presterar_port_attr_stp_state_set(struct prestera_port *port,
++					     struct switchdev_trans *trans,
++					     struct net_device *dev,
++					     u8 state)
++{
++	struct prestera_bridge_port *br_port;
++	struct prestera_bridge_vlan *br_vlan;
++	int err;
++	u16 vid;
++
++	if (switchdev_trans_ph_prepare(trans))
++		return 0;
++
++	br_port = prestera_bridge_port_by_dev(port->sw->swdev, dev);
++	if (!br_port)
++		return 0;
++
++	if (!br_port->bridge->vlan_enabled) {
++		vid = br_port->bridge->bridge_id;
++		err = prestera_port_vid_stp_set(port, vid, state);
++		if (err)
++			goto err_port_stp_set;
++	} else {
++		list_for_each_entry(br_vlan, &br_port->vlan_list, head) {
++			err = prestera_port_bridge_vlan_stp_set(port, br_vlan,
++								state);
++			if (err)
++				goto err_port_vlan_stp_set;
++		}
++	}
++
++	br_port->stp_state = state;
++
++	return 0;
++
++err_port_vlan_stp_set:
++	list_for_each_entry_continue_reverse(br_vlan, &br_port->vlan_list, head)
++		prestera_port_bridge_vlan_stp_set(port, br_vlan, br_port->stp_state);
++	return err;
++
++err_port_stp_set:
++	prestera_port_vid_stp_set(port, vid, br_port->stp_state);
++
++	return err;
++}
++
++static int prestera_port_obj_attr_set(struct net_device *dev,
++				      const struct switchdev_attr *attr,
++				      struct switchdev_trans *trans)
++{
++	struct prestera_port *port = netdev_priv(dev);
++	int err = 0;
++
++	switch (attr->id) {
++	case SWITCHDEV_ATTR_ID_PORT_STP_STATE:
++		err = presterar_port_attr_stp_state_set(port, trans,
++							attr->orig_dev,
++							attr->u.stp_state);
++		break;
++	case SWITCHDEV_ATTR_ID_PORT_PRE_BRIDGE_FLAGS:
++		if (attr->u.brport_flags &
++		    ~(BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD))
++			err = -EINVAL;
++		break;
++	case SWITCHDEV_ATTR_ID_PORT_BRIDGE_FLAGS:
++		err = prestera_port_attr_br_flags_set(port, trans,
++						      attr->orig_dev,
++						      attr->u.brport_flags);
++		break;
++	case SWITCHDEV_ATTR_ID_BRIDGE_AGEING_TIME:
++		err = prestera_port_attr_br_ageing_set(port, trans,
++						      attr->u.ageing_time);
++		break;
++	case SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING:
++		err = prestera_port_attr_br_vlan_set(port, trans,
++						     attr->orig_dev,
++						     attr->u.vlan_filtering);
++		break;
++	default:
++		err = -EOPNOTSUPP;
++	}
++
++	return err;
++}
++
++static void
++prestera_fdb_offload_notify(struct prestera_port *port,
++			    struct switchdev_notifier_fdb_info *info)
++{
++	struct switchdev_notifier_fdb_info send_info;
++
++	send_info.addr = info->addr;
++	send_info.vid = info->vid;
++	send_info.offloaded = true;
++
++	call_switchdev_notifiers(SWITCHDEV_FDB_OFFLOADED, port->dev,
++				 &send_info.info, NULL);
++}
++
++static int prestera_port_fdb_set(struct prestera_port *port,
++				 struct switchdev_notifier_fdb_info *fdb_info,
++				 bool adding)
++{
++	struct prestera_switch *sw = port->sw;
++	struct prestera_bridge_port *br_port;
++	struct prestera_bridge *bridge;
++	int err;
++	u16 vid;
++
++	br_port = prestera_bridge_port_by_dev(sw->swdev, port->dev);
++	if (!br_port)
++		return -EINVAL;
++
++	bridge = br_port->bridge;
++
++	if (bridge->vlan_enabled)
++		vid = fdb_info->vid;
++	else
++		vid = bridge->bridge_id;
++
++	if (adding)
++		err = prestera_hw_fdb_add(port, fdb_info->addr, vid, false);
++	else
++		err = prestera_hw_fdb_del(port, fdb_info->addr, vid);
++
++	return err;
++}
++
++static void prestera_fdb_event_work(struct work_struct *work)
++{
++	struct switchdev_notifier_fdb_info *fdb_info;
++	struct prestera_fdb_event_work *swdev_work;
++	struct prestera_port *port;
++	struct net_device *dev;
++	int err = 0;
++
++	swdev_work = container_of(work, struct prestera_fdb_event_work, work);
++	dev = swdev_work->dev;
++
++	rtnl_lock();
++
++	port = prestera_port_dev_lower_find(dev);
++	if (!port)
++		goto out;
++
++	switch (swdev_work->event) {
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++		fdb_info = &swdev_work->fdb_info;
++		if (!fdb_info->added_by_user)
++			break;
++
++		err = prestera_port_fdb_set(port, fdb_info, true);
++		if (err)
++			break;
++
++		prestera_fdb_offload_notify(port, fdb_info);
++		break;
++
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		fdb_info = &swdev_work->fdb_info;
++		prestera_port_fdb_set(port, fdb_info, false);
++		break;
++	}
++
++out:
++	rtnl_unlock();
++
++	kfree(swdev_work->fdb_info.addr);
++	kfree(swdev_work);
++	dev_put(dev);
++}
++
++static int prestera_switchdev_event(struct notifier_block *unused,
++				    unsigned long event, void *ptr)
++{
++	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
++	struct switchdev_notifier_fdb_info *fdb_info;
++	struct switchdev_notifier_info *info = ptr;
++	struct prestera_fdb_event_work *swdev_work;
++	struct net_device *upper;
++	int err = 0;
++
++	if (event == SWITCHDEV_PORT_ATTR_SET) {
++		err = switchdev_handle_port_attr_set(dev, ptr,
++						     prestera_netdev_check,
++						     prestera_port_obj_attr_set);
++		return notifier_from_errno(err);
++	}
++
++	if (!prestera_netdev_check(dev))
++		return NOTIFY_DONE;
++
++	upper = netdev_master_upper_dev_get_rcu(dev);
++	if (!upper)
++		return NOTIFY_DONE;
++
++	if (!netif_is_bridge_master(upper))
++		return NOTIFY_DONE;
++
++	swdev_work = kzalloc(sizeof(*swdev_work), GFP_ATOMIC);
++	if (!swdev_work)
++		return NOTIFY_BAD;
++
++	swdev_work->event = event;
++	swdev_work->dev = dev;
++
++	switch (event) {
++	case SWITCHDEV_FDB_ADD_TO_DEVICE:
++	case SWITCHDEV_FDB_DEL_TO_DEVICE:
++		fdb_info = container_of(info,
++					struct switchdev_notifier_fdb_info,
++					info);
++
++		INIT_WORK(&swdev_work->work, prestera_fdb_event_work);
++		memcpy(&swdev_work->fdb_info, ptr,
++		       sizeof(swdev_work->fdb_info));
++
++		swdev_work->fdb_info.addr = kzalloc(ETH_ALEN, GFP_ATOMIC);
++		if (!swdev_work->fdb_info.addr)
++			goto out;
++
++		ether_addr_copy((u8 *)swdev_work->fdb_info.addr,
++				fdb_info->addr);
++		dev_hold(dev);
++
++		break;
++
++	default:
++		kfree(swdev_work);
++		return NOTIFY_DONE;
++	}
++
++	queue_work(swdev_wq, &swdev_work->work);
++	return NOTIFY_DONE;
++out:
++	kfree(swdev_work);
++	return NOTIFY_BAD;
++}
++
++static int
++prestera_port_vlan_bridge_join(struct prestera_port_vlan *port_vlan,
++			       struct prestera_bridge_port *br_port)
++{
++	struct prestera_port *port = port_vlan->port;
++	struct prestera_bridge_vlan *br_vlan;
++	u16 vid = port_vlan->vid;
++	int err;
++
++	if (port_vlan->br_port)
++		return 0;
++
++	err = prestera_hw_port_flood_set(port, br_port->flags & BR_FLOOD);
++	if (err)
++		return err;
++
++	err = prestera_hw_port_learning_set(port, br_port->flags & BR_LEARNING);
++	if (err)
++		goto err_port_learning_set;
++
++	err = prestera_port_vid_stp_set(port, vid, br_port->stp_state);
++	if (err)
++		goto err_port_vid_stp_set;
++
++	br_vlan = prestera_bridge_vlan_by_vid(br_port, vid);
++	if (!br_vlan) {
++		br_vlan = prestera_bridge_vlan_create(br_port, vid);
++		if (!br_vlan) {
++			err = -ENOMEM;
++			goto err_bridge_vlan_get;
++		}
++	}
++
++	list_add(&port_vlan->br_vlan_head, &br_vlan->port_vlan_list);
++
++	prestera_bridge_port_get(br_port);
++	port_vlan->br_port = br_port;
++
++	return 0;
++
++err_bridge_vlan_get:
++	prestera_port_vid_stp_set(port, vid, BR_STATE_FORWARDING);
++err_port_vid_stp_set:
++	prestera_hw_port_learning_set(port, false);
++err_port_learning_set:
++	return err;
++}
++
++static int
++prestera_bridge_port_vlan_add(struct prestera_port *port,
++			      struct prestera_bridge_port *br_port,
++			      u16 vid, bool is_untagged, bool is_pvid,
++			      struct netlink_ext_ack *extack)
++{
++	struct prestera_port_vlan *port_vlan;
++	u16 old_pvid = port->pvid;
++	u16 pvid;
++	int err;
++
++	if (is_pvid)
++		pvid = vid;
++	else
++		pvid = port->pvid == vid ? 0 : port->pvid;
++
++	port_vlan = prestera_port_vlan_by_vid(port, vid);
++	if (port_vlan && port_vlan->br_port != br_port)
++		return -EEXIST;
++
++	if (!port_vlan) {
++		port_vlan = prestera_port_vlan_create(port, vid, is_untagged);
++		if (IS_ERR(port_vlan))
++			return PTR_ERR(port_vlan);
++	} else {
++		err = prestera_hw_vlan_port_set(port, vid, true, is_untagged);
++		if (err)
++			goto err_port_vlan_set;
++	}
++
++	err = prestera_port_pvid_set(port, pvid);
++	if (err)
++		goto err_port_pvid_set;
++
++	err = prestera_port_vlan_bridge_join(port_vlan, br_port);
++	if (err)
++		goto err_port_vlan_bridge_join;
++
++	return 0;
++
++err_port_vlan_bridge_join:
++	prestera_port_pvid_set(port, old_pvid);
++err_port_pvid_set:
++	prestera_hw_vlan_port_set(port, vid, false, false);
++err_port_vlan_set:
++	prestera_port_vlan_destroy(port_vlan);
++
++	return err;
++}
++
++static void
++prestera_bridge_port_vlan_del(struct prestera_port *port,
++			      struct prestera_bridge_port *br_port, u16 vid)
++{
++	u16 pvid = port->pvid == vid ? 0 : port->pvid;
++	struct prestera_port_vlan *port_vlan;
++
++	port_vlan = prestera_port_vlan_by_vid(port, vid);
++	if (WARN_ON(!port_vlan))
++		return;
++
++	prestera_port_vlan_bridge_leave(port_vlan);
++	prestera_port_pvid_set(port, pvid);
++	prestera_port_vlan_destroy(port_vlan);
++}
++
++static int prestera_port_vlans_add(struct prestera_port *port,
++				   const struct switchdev_obj_port_vlan *vlan,
++				   struct switchdev_trans *trans,
++				   struct netlink_ext_ack *extack)
++{
++	bool flag_untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
++	bool flag_pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
++	struct net_device *dev = vlan->obj.orig_dev;
++	struct prestera_bridge_port *br_port;
++	struct prestera_switch *sw = port->sw;
++	struct prestera_bridge *bridge;
++	u16 vid;
++
++	if (netif_is_bridge_master(dev))
++		return 0;
++
++	if (switchdev_trans_ph_commit(trans))
++		return 0;
++
++	br_port = prestera_bridge_port_by_dev(sw->swdev, dev);
++	if (WARN_ON(!br_port))
++		return -EINVAL;
++
++	bridge = br_port->bridge;
++	if (!bridge->vlan_enabled)
++		return 0;
++
++	for (vid = vlan->vid_begin; vid <= vlan->vid_end; vid++) {
++		int err;
++
++		err = prestera_bridge_port_vlan_add(port, br_port,
++						    vid, flag_untagged,
++						    flag_pvid, extack);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
++static int prestera_port_obj_add(struct net_device *dev,
++				 const struct switchdev_obj *obj,
++				 struct switchdev_trans *trans,
++				 struct netlink_ext_ack *extack)
++{
++	struct prestera_port *port = netdev_priv(dev);
++	const struct switchdev_obj_port_vlan *vlan;
++	int err = 0;
++
++	switch (obj->id) {
++	case SWITCHDEV_OBJ_ID_PORT_VLAN:
++		vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
++		err = prestera_port_vlans_add(port, vlan, trans, extack);
++		break;
++	default:
++		err = -EOPNOTSUPP;
++	}
++
++	return err;
++}
++
++static int prestera_port_vlans_del(struct prestera_port *port,
++				   const struct switchdev_obj_port_vlan *vlan)
++{
++	struct net_device *dev = vlan->obj.orig_dev;
++	struct prestera_bridge_port *br_port;
++	struct prestera_switch *sw = port->sw;
++	u16 vid;
++
++	if (netif_is_bridge_master(dev))
++		return -EOPNOTSUPP;
++
++	br_port = prestera_bridge_port_by_dev(sw->swdev, dev);
++	if (WARN_ON(!br_port))
++		return -EINVAL;
++
++	if (!br_port->bridge->vlan_enabled)
++		return 0;
++
++	for (vid = vlan->vid_begin; vid <= vlan->vid_end; vid++)
++		prestera_bridge_port_vlan_del(port, br_port, vid);
++
++	return 0;
++}
++
++static int prestera_port_obj_del(struct net_device *dev,
++				 const struct switchdev_obj *obj)
++{
++	struct prestera_port *port = netdev_priv(dev);
++	int err = 0;
++
++	switch (obj->id) {
++	case SWITCHDEV_OBJ_ID_PORT_VLAN:
++		err = prestera_port_vlans_del(port, SWITCHDEV_OBJ_PORT_VLAN(obj));
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++
++	return err;
++}
++
++static int prestera_switchdev_blk_event(struct notifier_block *unused,
++					unsigned long event, void *ptr)
++{
++	struct net_device *dev = switchdev_notifier_info_to_dev(ptr);
++	int err = 0;
++
++	switch (event) {
++	case SWITCHDEV_PORT_OBJ_ADD:
++		err = switchdev_handle_port_obj_add(dev, ptr,
++						    prestera_netdev_check,
++						    prestera_port_obj_add);
++		break;
++	case SWITCHDEV_PORT_OBJ_DEL:
++		err = switchdev_handle_port_obj_del(dev, ptr,
++						    prestera_netdev_check,
++						    prestera_port_obj_del);
++		break;
++	case SWITCHDEV_PORT_ATTR_SET:
++		err = switchdev_handle_port_attr_set(dev, ptr,
++						     prestera_netdev_check,
++						     prestera_port_obj_attr_set);
++		break;
++	default:
++		err = -EOPNOTSUPP;
++	}
++
++	return notifier_from_errno(err);
++}
++
++static void prestera_fdb_event(struct prestera_switch *sw,
++			       struct prestera_event *evt, void *arg)
++{
++	struct switchdev_notifier_fdb_info info;
++	struct prestera_port *port;
++
++	port = prestera_find_port(sw, evt->fdb_evt.port_id);
++	if (!port)
++		return;
++
++	info.addr = evt->fdb_evt.data.mac;
++	info.vid = evt->fdb_evt.vid;
++	info.offloaded = true;
++
++	rtnl_lock();
++
++	switch (evt->id) {
++	case PRESTERA_FDB_EVENT_LEARNED:
++		call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE,
++					 port->dev, &info.info, NULL);
++		break;
++	case PRESTERA_FDB_EVENT_AGED:
++		call_switchdev_notifiers(SWITCHDEV_FDB_DEL_TO_BRIDGE,
++					 port->dev, &info.info, NULL);
++		break;
++	}
++
++	rtnl_unlock();
++}
++
++static int prestera_fdb_init(struct prestera_switch *sw)
++{
++	int err;
++
++	err = prestera_hw_event_handler_register(sw, PRESTERA_EVENT_TYPE_FDB,
++						 prestera_fdb_event, NULL);
++	if (err)
++		return err;
++
++	err = prestera_hw_switch_ageing_set(sw, PRESTERA_DEFAULT_AGEING_TIME_MS);
++	if (err)
++		goto err_ageing_set;
++
++	return 0;
++
++err_ageing_set:
++	prestera_hw_event_handler_unregister(sw, PRESTERA_EVENT_TYPE_FDB,
++					     prestera_fdb_event);
++	return err;
++}
++
++static void prestera_fdb_fini(struct prestera_switch *sw)
++{
++	prestera_hw_event_handler_unregister(sw, PRESTERA_EVENT_TYPE_FDB,
++					     prestera_fdb_event);
++}
++
++static int prestera_switchdev_handler_init(struct prestera_switchdev *swdev)
++{
++	int err;
++
++	swdev->swdev_nb.notifier_call = prestera_switchdev_event;
++	err = register_switchdev_notifier(&swdev->swdev_nb);
++	if (err)
++		goto err_register_swdev_notifier;
++
++	swdev->swdev_nb_blk.notifier_call = prestera_switchdev_blk_event;
++	err = register_switchdev_blocking_notifier(&swdev->swdev_nb_blk);
++	if (err)
++		goto err_register_blk_swdev_notifier;
++
++	return 0;
++
++err_register_blk_swdev_notifier:
++	unregister_switchdev_notifier(&swdev->swdev_nb);
++err_register_swdev_notifier:
++	destroy_workqueue(swdev_wq);
++	return err;
++}
++
++static void prestera_switchdev_handler_fini(struct prestera_switchdev *swdev)
++{
++	unregister_switchdev_blocking_notifier(&swdev->swdev_nb_blk);
++	unregister_switchdev_notifier(&swdev->swdev_nb);
++}
++
++int prestera_switchdev_init(struct prestera_switch *sw)
++{
++	struct prestera_switchdev *swdev;
++	int err;
++
++	swdev = kzalloc(sizeof(*swdev), GFP_KERNEL);
++	if (!swdev)
++		return -ENOMEM;
++
++	sw->swdev = swdev;
++	swdev->sw = sw;
++
++	INIT_LIST_HEAD(&swdev->bridge_list);
++
++	swdev_wq = alloc_ordered_workqueue("%s_ordered", 0, "prestera_br");
++	if (!swdev_wq) {
++		err = -ENOMEM;
++		goto err_alloc_wq;
++	}
++
++	err = prestera_switchdev_handler_init(swdev);
++	if (err)
++		goto err_swdev_init;
++
++	err = prestera_fdb_init(sw);
++	if (err)
++		goto err_fdb_init;
++
++	return 0;
++
++err_fdb_init:
++err_swdev_init:
++err_alloc_wq:
++	kfree(swdev);
++
++	return err;
++}
++
++void prestera_switchdev_fini(struct prestera_switch *sw)
++{
++	struct prestera_switchdev *swdev = sw->swdev;
++
++	prestera_fdb_fini(sw);
++	prestera_switchdev_handler_fini(swdev);
++	destroy_workqueue(swdev_wq);
++	kfree(swdev);
++}
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.h b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.h
+new file mode 100644
+index 000000000000..0f8621a4509d
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
++/*
++ * Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved.
++ *
++ */
++
++#ifndef _PRESTERA_SWITCHDEV_H_
++#define _PRESTERA_SWITCHDEV_H_
++
++int prestera_switchdev_init(struct prestera_switch *sw);
++void prestera_switchdev_fini(struct prestera_switch *sw);
++
++int prestera_bridge_port_event(struct net_device *dev, unsigned long event,
++			       void *ptr);
++
++#endif /* _PRESTERA_SWITCHDEV_H_ */
 -- 
 2.17.1
 
