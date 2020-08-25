@@ -2,112 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6FD12523FA
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 01:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46A1825241E
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 01:21:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbgHYXJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 19:09:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726578AbgHYXJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 19:09:28 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562D5C061574;
-        Tue, 25 Aug 2020 16:09:28 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Bbl754848z9sTK;
-        Wed, 26 Aug 2020 09:09:21 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1598396962;
-        bh=PT/lyVPPPlyugAJQBBONAwhxYNwsYmbBguP8Pax6C38=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=J1bO8Yx/hQOulgT9ISDieyLJujg9TVAqYpEGGNYtixi8BJIHQUBtv3QQqRMIaIIoT
-         KWi42x9UyOdrVA4ga5+6o2sP2w3psGT1du1queIriNL/XSVVgCEc4HzM2LyTYZBvX9
-         SRVJ+Y/Di1CNDymMNUAfaeV1S35cTrATiwjBqLihn4aNeH1uRY3ZOKMjfUOst7s467
-         VYh02/JLZSBp+glwUGOV4RnWH6GsTQiBCJ/HLfONLgDT1jXewFi0jVoJQhrHYM2hl3
-         Sy32/HytRfS0rNn1pms1CeZZMsQky+9mVcZaAOuyFXUGXc4D5EDdlOMWDf9EqG/VXC
-         zJVmnRg0g6cOQ==
-Date:   Wed, 26 Aug 2020 09:09:19 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: linux-next: build failure after merge of the bpf-next tree
-Message-ID: <20200826090919.5363a6f6@canb.auug.org.au>
-In-Reply-To: <CAADnVQJ1KZ1hUGsZY0XrWcQTa6V-y7VA9YdEjxCJfHRe5mH4xw@mail.gmail.com>
-References: <20200821111111.6c04acd6@canb.auug.org.au>
-        <20200825112020.43ce26bb@canb.auug.org.au>
-        <CAADnVQLr8dU799ZrUnrBBDCtDxPyybZwrMFs5CAOHHW5pnLHHA@mail.gmail.com>
-        <20200825130445.655885f8@canb.auug.org.au>
-        <CAADnVQKGf7o8gJ60m_zjh+QcmRTNH+y1ha_B2q-1ixcCSAoHaw@mail.gmail.com>
-        <20200825165029.795a8428@canb.auug.org.au>
-        <CAADnVQ+SZj-Q=vijGkoUkmWeA=MM2S2oaVvJ7fj6=c4S4y-LMA@mail.gmail.com>
-        <20200826071046.263e0c24@canb.auug.org.au>
-        <CAADnVQJ1KZ1hUGsZY0XrWcQTa6V-y7VA9YdEjxCJfHRe5mH4xw@mail.gmail.com>
+        id S1726757AbgHYXUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 19:20:51 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:48294 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726717AbgHYXUr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 19:20:47 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07PNIQXS016550
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 16:20:46 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=7vFPxfbUZkYxWAD0+nMscJ1pZa6+fxgsolX0ujeyhgk=;
+ b=NHsqbFmKZntSF0WU0EKbv/Zb7124/L7ItbUD/UTTDypokd8KuFN491uW2VxLjuF7eJE/
+ z7vzhdyh2C3xNhIqWNVMPHdIPNS3Mn2GT2WOAZEPA+1WuKCAwjfl+aKnZwBLyC8YIkCi
+ OLWtNzHLXcFXlM0JsUHerrvTLFWZCu5QsfQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 333k6k63nf-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 16:20:46 -0700
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 25 Aug 2020 16:20:39 -0700
+Received: by devbig218.frc2.facebook.com (Postfix, from userid 116055)
+        id A08A4207586; Tue, 25 Aug 2020 16:20:35 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Udip Pant <udippant@fb.com>
+Smtp-Origin-Hostname: devbig218.frc2.facebook.com
+To:     Udip Pant <udippant@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Smtp-Origin-Cluster: frc2c02
+Subject: [PATCH bpf-next v3 0/4] bpf: verifier: use target program's type for access verifications
+Date:   Tue, 25 Aug 2020 16:19:59 -0700
+Message-ID: <20200825232003.2877030-1-udippant@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Zh2BFdtqv6yQB66h7H_fq7a";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-25_10:2020-08-25,2020-08-25 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 lowpriorityscore=0 clxscore=1015 bulkscore=0 spamscore=0
+ mlxlogscore=978 phishscore=0 adultscore=0 mlxscore=0 impostorscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008250173
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Zh2BFdtqv6yQB66h7H_fq7a
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This patch series adds changes in verifier to make decisions such as gran=
+ting
+of read / write access or enforcement of return code status based on
+the program type of the target program while using dynamic program
+extension (of type BPF_PROG_TYPE_EXT).
 
-Hi Alexei,
+The BPF_PROG_TYPE_EXT type can be used to extend types such as XDP, SKB
+and others. Since the BPF_PROG_TYPE_EXT program type on itself is just a
+placeholder for those, we need this extended check for those extended
+programs to actually work with proper access, while using this option.
 
-On Tue, 25 Aug 2020 15:34:52 -0700 Alexei Starovoitov <alexei.starovoitov@g=
-mail.com> wrote:
->
-> On Tue, Aug 25, 2020 at 2:10 PM Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
-> >
-> > Hi Alexei,
-> >
-> > On Tue, 25 Aug 2020 07:33:51 -0700 Alexei Starovoitov <alexei.starovoit=
-ov@gmail.com> wrote: =20
-> > >
-> > > what do you suggest to use to make it 'manually enabled' ?
-> > > All I could think of is to add:
-> > > depends on !COMPILE_TEST
-> > > so that allmodconfig doesn't pick it up. =20
-> >
-> > That is probably sufficient.  Some gcc plugins and kasan bits, etc use
-> > just that. =20
->=20
-> Ok. Pushed the silencing 'fix':
-> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?=
-id=3D2532f849b5134c4c62a20e5aaca33d9fb08af528
+Patch #1 includes changes in the verifier.
+Patch #2 adds selftests to verify write access on a packet for a valid=20
+extension program type
+Patch #3 adds selftests to verify proper check for the return code
+Patch #4 adds selftests to ensure access permissions and restrictions=20
+for some map types such sockmap.
 
-Thanks for that.
+Changelogs:
+  v2 -> v3:
+    * more comprehensive resolution of the program type in the verifier
+      based on the target program (and not just for the packet access)
+    * selftests for checking return code and map access
+    * Also moved this patch to 'bpf-next' from 'bpf' tree
+  v1 -> v2:
+    * extraction of the logic to resolve prog type into a separate method
+    * selftests to check for packet access for a valid freplace prog
+
+Udip Pant (4):
+  bpf: verifier: use target program's type for access verifications
+  selftests/bpf: add test for freplace program with write access
+  selftests/bpf: test for checking return code for the extended prog
+  selftests/bpf: test for map update access from within EXT programs
+
+ kernel/bpf/verifier.c                         | 32 ++++++---
+ .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  | 68 +++++++++++++++++++
+ .../selftests/bpf/progs/fexit_bpf2bpf.c       | 27 ++++++++
+ .../bpf/progs/freplace_attach_probe.c         | 40 +++++++++++
+ .../bpf/progs/freplace_cls_redirect.c         | 34 ++++++++++
+ .../bpf/progs/freplace_connect_v4_prog.c      | 19 ++++++
+ .../selftests/bpf/progs/test_pkt_access.c     | 20 ++++++
+ 7 files changed, 229 insertions(+), 11 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/freplace_attach_pro=
+be.c
+ create mode 100644 tools/testing/selftests/bpf/progs/freplace_cls_redire=
+ct.c
+ create mode 100644 tools/testing/selftests/bpf/progs/freplace_connect_v4=
+_prog.c
 
 --=20
-Cheers,
-Stephen Rothwell
+2.24.1
 
---Sig_/Zh2BFdtqv6yQB66h7H_fq7a
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9Fmh8ACgkQAVBC80lX
-0GycUAf/QpYP3TtlUVJ6SmAaJPuAUYrTh68rq3ACJ0IjFZwwiOCQp6ucfEIYa4F5
-ls/OOmoh7FlL8TPBRIVOKtBG/FBmPOiX74QWh3Nu4c9niR1J0hPymwobI7vVtWGB
-Sgdztx2z8HL1v1sM7F9uFNWRkQOwvyqurYijKpeRTHcoPv7na+stl0ooLYYII8gw
-2lpKqE5TyPHMHGWljXfy7K2yqxPbBpQxc4d000c1zaL5EPAlF4JWw3fci3N8BoT4
-bn5sMBcNg2dQMzx+CIlev8oQO4i5c7u4bTaogEsXx90YRO7pmwRm9e11ZlvRZLeU
-rwPezPGPNmj20GUbBIfO0TAtHsP5Sg==
-=rf9f
------END PGP SIGNATURE-----
-
---Sig_/Zh2BFdtqv6yQB66h7H_fq7a--
