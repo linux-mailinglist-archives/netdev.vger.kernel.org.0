@@ -2,93 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED26A251FAC
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 21:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8247A251FC2
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 21:21:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726225AbgHYTSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 15:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726066AbgHYTSP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 15:18:15 -0400
-X-Greylist: delayed 554 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 25 Aug 2020 12:18:14 PDT
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDAD4C061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 12:18:14 -0700 (PDT)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id A86DC7AAB; Tue, 25 Aug 2020 15:08:57 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org A86DC7AAB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1598382537;
-        bh=I0JFe4GcFukORtxs5qTvSrfssxpDhIRhbmQB2ue9tqQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W6yt2juzNqxepvsntjpyskouacsnozXgtL9HKNHfZtWsy34NrJO0c2mplutOKc0i0
-         Z2gKZoDorkG9N/j2IEQ6G4jIN3M7bjjNzsl84RSPsuvMGV3fm5cujoE0rQo9G1ve7O
-         9yGWIbiekyoCW6sFnotgo0q6lIvIyxjflv4MGQjE=
-Date:   Tue, 25 Aug 2020 15:08:57 -0400
-From:   "J. Bruce Fields" <bfields@fieldses.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     netdev@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
-        linux-nfs@vger.kernel.org
-Subject: Re: [PATCH] net: sunrpc: delete repeated words
-Message-ID: <20200825190857.GA1955@fieldses.org>
-References: <20200823010738.4837-1-rdunlap@infradead.org>
+        id S1726858AbgHYTVl convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Aug 2020 15:21:41 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:37391 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726066AbgHYTVl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 15:21:41 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-24-x7u3CpNmO2yfhTvhXpyEoQ-1; Tue, 25 Aug 2020 15:21:34 -0400
+X-MC-Unique: x7u3CpNmO2yfhTvhXpyEoQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DE3F63FE7;
+        Tue, 25 Aug 2020 19:21:32 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.192.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 96A6819C4F;
+        Tue, 25 Aug 2020 19:21:25 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: [PATCH v12 bpf-next 00/14] bpf: Add d_path helper
+Date:   Tue, 25 Aug 2020 21:21:10 +0200
+Message-Id: <20200825192124.710397-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200823010738.4837-1-rdunlap@infradead.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0.001
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Applied, thanks.--b.
+hi,
+adding d_path helper function that returns full path for
+given 'struct path' object, which needs to be the kernel
+BTF 'path' object. The path is returned in buffer provided
+'buf' of size 'sz' and is zero terminated.
 
-On Sat, Aug 22, 2020 at 06:07:38PM -0700, Randy Dunlap wrote:
-> Drop duplicate words in net/sunrpc/.
-> Also fix "Anyone" to be "Any one".
-> 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: "J. Bruce Fields" <bfields@fieldses.org>
-> Cc: Chuck Lever <chuck.lever@oracle.com>
-> Cc: linux-nfs@vger.kernel.org
-> ---
->  net/sunrpc/backchannel_rqst.c     |    2 +-
->  net/sunrpc/xdr.c                  |    2 +-
->  net/sunrpc/xprtrdma/svc_rdma_rw.c |    2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> --- linux-next-20200821.orig/net/sunrpc/backchannel_rqst.c
-> +++ linux-next-20200821/net/sunrpc/backchannel_rqst.c
-> @@ -111,7 +111,7 @@ out_free:
->   * by the backchannel.  This function can be called multiple times
->   * when creating new sessions that use the same rpc_xprt.  The
->   * preallocated buffers are added to the pool of resources used by
-> - * the rpc_xprt.  Anyone of these resources may be used used by an
-> + * the rpc_xprt.  Any one of these resources may be used by an
->   * incoming callback request.  It's up to the higher levels in the
->   * stack to enforce that the maximum number of session slots is not
->   * being exceeded.
-> --- linux-next-20200821.orig/net/sunrpc/xdr.c
-> +++ linux-next-20200821/net/sunrpc/xdr.c
-> @@ -658,7 +658,7 @@ EXPORT_SYMBOL_GPL(xdr_reserve_space);
->   * head, tail, and page lengths are adjusted to correspond.
->   *
->   * If this means moving xdr->p to a different buffer, we assume that
-> - * that the end pointer should be set to the end of the current page,
-> + * the end pointer should be set to the end of the current page,
->   * except in the case of the head buffer when we assume the head
->   * buffer's current length represents the end of the available buffer.
->   *
-> --- linux-next-20200821.orig/net/sunrpc/xprtrdma/svc_rdma_rw.c
-> +++ linux-next-20200821/net/sunrpc/xprtrdma/svc_rdma_rw.c
-> @@ -137,7 +137,7 @@ static int svc_rdma_rw_ctx_init(struct s
->  }
->  
->  /* A chunk context tracks all I/O for moving one Read or Write
-> - * chunk. This is a a set of rdma_rw's that handle data movement
-> + * chunk. This is a set of rdma_rw's that handle data movement
->   * for all segments of one chunk.
->   *
->   * These are small, acquired with a single allocator call, and
+  long bpf_d_path(struct path *path, char *buf, u32 sz);
+
+The helper calls directly d_path function, so there's only
+limited set of function it can be called from.
+
+The patchset also adds support to add set of BTF IDs for
+a helper to define functions that the helper is allowed
+to be called from.
+
+Also available at:
+  https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+  bpf/d_path
+
+v12 changes:
+  - added acks
+  - rebased on latest bpf-next
+  - reposted without RFC tag
+
+thanks,
+jirka
+
+
+---
+Jiri Olsa (14):
+      tools resolve_btfids: Add size check to get_id function
+      tools resolve_btfids: Add support for set symbols
+      bpf: Move btf_resolve_size into __btf_resolve_size
+      bpf: Add elem_id pointer as argument to __btf_resolve_size
+      bpf: Add type_id pointer as argument to __btf_resolve_size
+      bpf: Remove recursion call in btf_struct_access
+      bpf: Factor btf_struct_access function
+      bpf: Add btf_struct_ids_match function
+      bpf: Add BTF_SET_START/END macros
+      bpf: Add d_path helper
+      bpf: Update .BTF_ids section in btf.rst with sets info
+      selftests/bpf: Add verifier test for d_path helper
+      selftests/bpf: Add test for d_path helper
+      selftests/bpf: Add set test to resolve_btfids
+
+ Documentation/bpf/btf.rst                               |  25 +++++++++++++++
+ include/linux/bpf.h                                     |   6 ++++
+ include/linux/btf.h                                     |   3 +-
+ include/linux/btf_ids.h                                 |  51 +++++++++++++++++++++++++++++-
+ include/uapi/linux/bpf.h                                |  16 +++++++++-
+ kernel/bpf/bpf_struct_ops.c                             |   6 ++--
+ kernel/bpf/btf.c                                        | 163 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--------------
+ kernel/bpf/verifier.c                                   |  22 +++++++++----
+ kernel/trace/bpf_trace.c                                |  48 ++++++++++++++++++++++++++++
+ scripts/bpf_helpers_doc.py                              |   2 ++
+ tools/bpf/resolve_btfids/main.c                         |  29 +++++++++++++++--
+ tools/include/linux/btf_ids.h                           |  51 +++++++++++++++++++++++++++++-
+ tools/include/uapi/linux/bpf.h                          |  16 +++++++++-
+ tools/testing/selftests/bpf/prog_tests/d_path.c         | 147 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/prog_tests/resolve_btfids.c |  39 ++++++++++++++++++++++-
+ tools/testing/selftests/bpf/progs/test_d_path.c         |  58 ++++++++++++++++++++++++++++++++++
+ tools/testing/selftests/bpf/test_verifier.c             |  19 ++++++++++-
+ tools/testing/selftests/bpf/verifier/d_path.c           |  37 ++++++++++++++++++++++
+ 18 files changed, 694 insertions(+), 44 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/d_path.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_d_path.c
+ create mode 100644 tools/testing/selftests/bpf/verifier/d_path.c
+
