@@ -2,84 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4DD4251EA2
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:50:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C12E251EA5
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726186AbgHYRuw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 13:50:52 -0400
-Received: from mga12.intel.com ([192.55.52.136]:30548 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725936AbgHYRuv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 13:50:51 -0400
-IronPort-SDR: 61xovL9MLi8AsEGvSw4FzZ2NPSJcNJ4Kks8gGo9FZOx/NRGaC1lRo/EONcI3dOimW9nFKI711d
- TPiKIcJ2LXyQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9723"; a="135718451"
-X-IronPort-AV: E=Sophos;i="5.76,353,1592895600"; 
-   d="scan'208";a="135718451"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2020 10:50:50 -0700
-IronPort-SDR: mBy4kAEHercHMbotNfm9BjCeJlV7ysa+UDvg8fICyG6emBZiknw+7rsDFbfvm9avTEC0JzKnb8
- bJT8ln0mMtNg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,353,1592895600"; 
-   d="scan'208";a="499399872"
-Received: from adent-mobl.amr.corp.intel.com (HELO ellie) ([10.209.77.195])
-  by fmsmga006.fm.intel.com with ESMTP; 25 Aug 2020 10:50:50 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
-In-Reply-To: <87bliz13kj.fsf@kurt>
-References: <20200820081118.10105-1-kurt@linutronix.de> <20200820081118.10105-6-kurt@linutronix.de> <87pn7ftx6b.fsf@intel.com> <87bliz13kj.fsf@kurt>
-Date:   Tue, 25 Aug 2020 10:50:50 -0700
-Message-ID: <87d03ety11.fsf@intel.com>
+        id S1726257AbgHYRxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 13:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726090AbgHYRxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 13:53:07 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9815CC061574
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 10:53:07 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id m8so7943712pfh.3
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 10:53:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xG9LiyraX6kSIR011215MFt/pkdbgasJf8IEGvTRJvA=;
+        b=vCAyf/ycDJhyw1eSNpqL/levluAudu2QolXebrwuednJo0+FIIDMZdYK8/KFqcfUYy
+         +qOOqX8v8WJxbaJFv8+OfpPK1bmJTsM+Fi1BKp8oNni+4KO55WC26HxOzdbUYD1+gGrQ
+         m8Q+tnXrU4Rnzhgte6rLjUD/P9FvuI2k49K2Wx8cX/qUVR89eZH8m5T2a7Zr0fZ3kAX4
+         enFK/GNUPi8oLfNMEgi0ROaHg/1lZg0dsDMfJ4n7wuE3B0ZpozY6olctJ9DrInxAua6f
+         Z+Y/h2oCS+H8kXPsU/QdmRCsaIb9nvspAQRU+/uU17I/L0rHsENRtC78pULFE1gQPX2A
+         Atjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xG9LiyraX6kSIR011215MFt/pkdbgasJf8IEGvTRJvA=;
+        b=YPX/xIXb4v501O86Gy8DKByh+LOq5YiP4Z/gQQz9xdsxZX+pkLsRT2pQFlr1SMAqcC
+         JS2L3KEmoC1RmdKzP6Yz2kvRrm/CpJZNyDGYbroWpbULumoFmbEAU3G3BaxDVt9ib8Mk
+         0QPWqsiTsuht8oid7T5Y4bzCbEmP+UgSWWt6azmPlAoo+7Z5i3AMTtuol3kA753wO36n
+         Kng1MZhM6aREGfcnCqORml07cJHNGINP4G10USH1R+VgC05uAA5CpUIXNA5BQm2U0YMZ
+         2c2At93FclLtHO8SF+sSZfNk9CB468FcrF01SgZto8bWLACNq9XqVXX1Wb6FT4JWwl9m
+         2yAg==
+X-Gm-Message-State: AOAM5325X3iSq1eqPIx069NieE4I6Rq3W9IUwm5q7ilTT7T4awwRrzMC
+        dgKJV2KhnllEVb0VbTbQnnM7B+u7k0RGHA==
+X-Google-Smtp-Source: ABdhPJxhawMrJNedFL5CoATreU64Im9fqBAsF7BkIqaFwGNNRokkTTOqSg9+LNy2nGGv9ElwWxeWFA==
+X-Received: by 2002:a63:e157:: with SMTP id h23mr7925447pgk.239.1598377986297;
+        Tue, 25 Aug 2020 10:53:06 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id s24sm3319849pjp.1.2020.08.25.10.53.05
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2020 10:53:05 -0700 (PDT)
+Date:   Tue, 25 Aug 2020 10:52:57 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 209037] New: lec_seq_next does not update index position
+Message-ID: <20200825105257.1f2b9cf1@hermes.lan>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kurt,
-
-Kurt Kanzenbach <kurt@linutronix.de> writes:
-
-> On Mon Aug 24 2020, Vinicius Costa Gomes wrote:
->> Hi,
->>
->> Kurt Kanzenbach <kurt@linutronix.de> writes:
->>
-> [snip]
->>> +	/* Setup timer for schedule switch: The IP core only allows to set a
->>> +	 * cycle start timer 8 seconds in the future. This is why we setup the
->>> +	 * hritmer to base_time - 5 seconds. Then, we have enough time to
->>> +	 * activate IP core's EST timer.
->>> +	 */
->>> +	start = ktime_sub_ns(schedule->base_time, (u64)5 * NSEC_PER_SEC);
->>> +	hrtimer_start_range_ns(&hellcreek_port->cycle_start_timer, start,
->>> +			       NSEC_PER_SEC, HRTIMER_MODE_ABS);
->>
->> If we are talking about seconds here, I don't think you need to use a
->> hrtimer, you could use a workqueue/delayed_work. Should make things a
->> bit simpler.
->
-> I've used hrtimers for one reason: The hrtimer provides a way to fire at
-> an absolute base time based on CLOCK_TAI. All the other facilities such
-> as workqueues, timer list timers, etc do not.
-
-Oh, yeah. Good point.
 
 
-Cheers,
+Begin forwarded message:
+
+Date: Tue, 25 Aug 2020 16:10:37 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 209037] New: lec_seq_next does not update index position
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=209037
+
+            Bug ID: 209037
+           Summary: lec_seq_next does not update index position
+           Product: Networking
+           Version: 2.5
+    Kernel Version: from at least 2.6.12+
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: low
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: colin.king@canonical.com
+        Regression: No
+
+Stress-testing /procfs with stress-ng tripped the following warning when
+reading /proc/net/atm/lec:
+
+[ 7236.344619] seq_file: buggy .next function lec_seq_next [lec] did not update
+position index
+[ 7236.344704] seq_file: buggy .next function lec_seq_next [lec] did not update
+position index
+
+can be reproduced by seeking on the proc file and reading:
+
+dd if=/proc/net/atm/lec seek=1 of=/dev/stdout bs=1K
+
+the read() also blocks which is not correct either.
+
 -- 
-Vinicius
+You are receiving this mail because:
+You are the assignee for the bug.
