@@ -2,158 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CC1A251550
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 753CC251567
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:32:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729352AbgHYJ0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 05:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
+        id S1729048AbgHYJc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 05:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729048AbgHYJ0n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 05:26:43 -0400
-Received: from relay.felk.cvut.cz (relay.felk.cvut.cz [IPv6:2001:718:2:1611:0:1:0:70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61F21C061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 02:26:40 -0700 (PDT)
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by relay.felk.cvut.cz (8.15.2/8.15.2) with ESMTP id 07P9PiZd063077;
-        Tue, 25 Aug 2020 11:25:44 +0200 (CEST)
-        (envelope-from pisa@cmp.felk.cvut.cz)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 07P9PhbJ023763;
-        Tue, 25 Aug 2020 11:25:44 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 07P9Pg7v023760;
-        Tue, 25 Aug 2020 11:25:42 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Drew Fustini <pdp7pdp7@gmail.com>
-Subject: Re: [PATCH v5 5/6] can: ctucanfd: CTU CAN FD open-source IP core - platform and next steps and mainlining chances
-Date:   Tue, 25 Aug 2020 11:25:41 +0200
-User-Agent: KMail/1.9.10
-Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>, mark.rutland@arm.com,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>
-References: <cover.1597518433.git.ppisa@pikron.com> <4ceda3a9d68263b4e0dfe66521a46f40b2e502f7.1597518433.git.ppisa@pikron.com> <73e3dad8-9ab7-2f8f-312c-1957b4572b08@infradead.org>
-In-Reply-To: <73e3dad8-9ab7-2f8f-312c-1957b4572b08@infradead.org>
-X-KMail-QuotePrefix: > 
+        with ESMTP id S1728059AbgHYJcY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 05:32:24 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2D3C061574;
+        Tue, 25 Aug 2020 02:32:24 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id b17so7352757ejq.8;
+        Tue, 25 Aug 2020 02:32:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+OL1BkKHPa8TO+ySMXJR94J2ke1VHUzpaMpCsDy49Uc=;
+        b=sIJwn8VJ/fl4uKwSIoVsD1/JlWGZN9GOeQe3Q7xG77WwSNi/GpYpklD+Rsx5Y9PTG8
+         VPZ8np6Cg2DKZs0V/X8i+AB6H0sjxW0XkqJhozfgjGOGsD+5eK2IbXDUd1KA7i5P362Q
+         eyzhzr9hUmB100MXL8FNwA8lMSs5HETaGDJmP3Rm5f6vzD2nfW6M2Ckuvx5zwbZwya7m
+         JEP26uvbfGEDav8bYbzO/MEK7QI2iQHCVqmV93XGRsOYFJMldE2+DxOZhQRGSdY4JnTi
+         yiZ31p4CR2kdYcLsc7OzlrTIheEZXhCJq/YjRkaw5Tfk8jogbnhmkF+q7JwLblYCxTK2
+         iODg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+OL1BkKHPa8TO+ySMXJR94J2ke1VHUzpaMpCsDy49Uc=;
+        b=XsfHzy/nTghSTwq6/tjMcRhgvHfkVOtwwQseMSttbjawGYF7N+tDKGT9+V1H4UUIUu
+         BIi7qxNFIL/Jfg2L5WcnOlZ83hcNexY/c6kw3qO6P4Cdwb8hZdRZ6lsq6q9P7RpqfpoY
+         9CaSBTA7UlN39UESxJdg2zkwTxaEt51xGXQt7ZI9+mUrfA1By1agZfJQM89JKC4VOy/N
+         9enlWb5Dw/qPC3kVO7DPSPDzc1j9w+6YKiIsEADd9E2SW9Kzm09vsjv0PlKBIAtfDW7h
+         WpbmCYKwb7TjXqPmBAKnvN/4c8nT9uI9MGdVhCzN93niQTFsh7sC1UGpTe9yljmbuzov
+         ng6g==
+X-Gm-Message-State: AOAM533YQSDw9juuOIa+odpA4KfNB/h8CZ4xRG94W00aRzM6qH+zFSmA
+        /I/8l5H+9K5SSXZV0Zc3hec=
+X-Google-Smtp-Source: ABdhPJyJibwrKvFmGrHifck0mtLct24rvFhYheJeMPjbYsJJLnDUGC4LhSGzTJII8y99QwwCJqsmKQ==
+X-Received: by 2002:a17:906:35d6:: with SMTP id p22mr1478713ejb.221.1598347942793;
+        Tue, 25 Aug 2020 02:32:22 -0700 (PDT)
+Received: from skbuf ([86.126.22.216])
+        by smtp.gmail.com with ESMTPSA id c4sm482930edr.49.2020.08.25.02.32.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2020 02:32:22 -0700 (PDT)
+Date:   Tue, 25 Aug 2020 12:32:19 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
+Message-ID: <20200825093219.bybzzpyfbbccjanf@skbuf>
+References: <20200820081118.10105-1-kurt@linutronix.de>
+ <20200820081118.10105-6-kurt@linutronix.de>
+ <87pn7ftx6b.fsf@intel.com>
+ <87bliz13kj.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Message-Id: <202008251125.41514.pisa@cmp.felk.cvut.cz>
-X-FELK-MailScanner-Information: 
-X-MailScanner-ID: 07P9PiZd063077
-X-FELK-MailScanner: Found to be clean
-X-FELK-MailScanner-SpamCheck: not spam, SpamAssassin (not cached,
-        score=-2.35, required 6, autolearn=not spam, BAYES_00 -0.50,
-        KHOP_HELO_FCRDNS 0.40, NICE_REPLY_A -2.25, SPF_HELO_NONE 0.00,
-        SPF_NONE 0.00)
-X-FELK-MailScanner-From: pisa@cmp.felk.cvut.cz
-X-FELK-MailScanner-Watermark: 1598952344.9039@HkfVtbUmYo4kbaG1GUmWow
-X-Spam-Status: No
+In-Reply-To: <87bliz13kj.fsf@kurt>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Randy and Rob,
-
-thanks much for review, I have corrected FPGA spelling
-and binding YAML license.
-
-On Sunday 16 of August 2020 01:28:13 Randy Dunlap wrote:
-> On 8/15/20 12:43 PM, Pavel Pisa wrote:
-> > diff --git a/drivers/net/can/ctucanfd/Kconfig
-> > b/drivers/net/can/ctucanfd/Kconfig index e1636373628a..a8c9cc38f216
-> > 100644
-> > --- a/drivers/net/can/ctucanfd/Kconfig
-> > +++ b/drivers/net/can/ctucanfd/Kconfig
-> > @@ -21,4 +21,15 @@ config CAN_CTUCANFD_PCI
-> >  	  PCIe board with PiKRON.com designed transceiver riser shield is
-> > available at https://gitlab.fel.cvut.cz/canbus/pcie-ctu_can_fd .
+On Tue, Aug 25, 2020 at 11:23:56AM +0200, Kurt Kanzenbach wrote:
+> On Mon Aug 24 2020, Vinicius Costa Gomes wrote:
+> > Hi,
 > >
-> > +config CAN_CTUCANFD_PLATFORM
-> > +	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
-> > +	depends on OF
->
-> Can this be
-> 	depends on OF || COMPILE_TEST
-> ?
+> > Kurt Kanzenbach <kurt@linutronix.de> writes:
+> >
+> [snip]
+> >> +	/* Setup timer for schedule switch: The IP core only allows to set a
+> >> +	 * cycle start timer 8 seconds in the future. This is why we setup the
+> >> +	 * hritmer to base_time - 5 seconds. Then, we have enough time to
+> >> +	 * activate IP core's EST timer.
+> >> +	 */
+> >> +	start = ktime_sub_ns(schedule->base_time, (u64)5 * NSEC_PER_SEC);
+> >> +	hrtimer_start_range_ns(&hellcreek_port->cycle_start_timer, start,
+> >> +			       NSEC_PER_SEC, HRTIMER_MODE_ABS);
+> >
+> > If we are talking about seconds here, I don't think you need to use a
+> > hrtimer, you could use a workqueue/delayed_work. Should make things a
+> > bit simpler.
+> 
+> I've used hrtimers for one reason: The hrtimer provides a way to fire at
+> an absolute base time based on CLOCK_TAI. All the other facilities such
+> as workqueues, timer list timers, etc do not.
 
-I am not sure for this change. Is it ensured/documented somewhere that
-header files provide dummy definition such way, that OF drivers builds
-even if OF support is disabled? If I remember well, CTU CAN FD OF
-module build fails if attempted in the frame of native x86_64
-build where OF has been disabled. Does COMPILE_TEST ensure that
-such build succeeds.
+That still doesn't justify the complexity of irqsave spinlocks and such.
+You could just as well schedule a workqueue from that hrtimer and have
+process context...
 
-As for the next steps, I expect that without any review of Marc Kleine-Budde
-or Wolfgang Grandegger from initial attempt for submission from February 2019,
-we are at the end of the road now.
-
-If there is confirmed preference, I would shorten license headers in the
-C files, but I am not sure if SPDX-License-Identifier is recognized by 
-copyright law and because code and CTU CAN FD IP can be used outside
-of Linux kernel by others, we would like to keep legally binding preamble.
-It is reduced by not listing address to obtain complete GPL-2.0 from anyway.
-And change of preamble requires to update main repository, because
-header files are generated from IP core IPXACT definition by Python
-based tools. 
-
-I am aware of only one other suggestion not followed yet and it
-is separation of part of ctucan_tx_interrupt() function into new
-one suggested by Pavel Machek. I agree that function length of 108
-lines is big. When blank lines are removed we are on 68 lines and 28
-lines are switch statement. The function consist of two nested loops.
-External one required to ensure no lost interrupt when edge triggered
-delivery or implementation is used. For me personally, it is more
-readable in the actual format then to separate and propagate local
-variables to another function. And particular function code received
-only formatting and ctu_can_fd_ -> ctucan_hw_ rename in past year
-so it is tested many/many times by manual PCI test and automated
-Zynq tests. Each of the following pipelines which contains two jobs
-ands by test of FPGA design and driver build and tests on real HW  
-
-   https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top/pipelines
-
-You can go through years of the testing and development back.
-So I have even tendency to not shuffle code which does not
-result in indisputable better readability and breaks more than year
-of unmodified code successful (pass) test result line and confidence.
-
-Because I understand that you all are loaded a lot I expect that after
-ACK/review-by by Rob, there is no need to send v6 to
-  devicetree@vger.kernel.org
-I am not sure about cross-post to
-  netdev@vger.kernel.org
-  linux-kernel@vger.kernel.org
-when the progress is stuck on
-  linux-can@vger.kernel.org
-Problem is that linux-can seems to eat core driver patch, probably because it 
-is too long.
-
-Thanks to all for patience and if somebody does want to be loaded by minor
-updates, resends and pings to linux-can, send me note to not bother you
-again.
-
-Thanks for your time,
-
-Pavel
-
-PS: I would be available on Drew Fustini's LPC 2020
-    BoF: upstream drivers for open source FPGA SoC peripherals 
-    today. If there is interrest I can provide some information
-    and show some overview and results.
-
+Thanks,
+-Vladimir
