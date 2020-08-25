@@ -2,143 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13B2F251E3B
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A5C251E3C
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 19:27:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726581AbgHYR06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 13:26:58 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:10352 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726119AbgHYR06 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 13:26:58 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07PH1vaG188263;
-        Tue, 25 Aug 2020 13:26:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id; s=pp1;
- bh=FOunzJ/TVxVFN90AVQ13n0/U/0TJTXV7sLNEwjcOXxY=;
- b=heDK+YX+g6bTLSCFbvf3h4XTNfnJktraDL/26ytjdi/oLw4DYZTfqT9JwAhm0snggfJI
- ZD6xrkSbwgY9whfvOrJSTflggVdOMqwobgPTtr7xqfDT6fRFdWv71hQ/RYgciI53BF9B
- wGF4dtJ24SrLf1HROOVMQ+ZTlRQKudo6elkSmdJJcaapxr5dzwGRqeykVYJPt4Is9kB6
- uY1nCy+jzgk61B5rezf0iqP/PhWs7wkoiztTa3TXo+CBPC18tpfRi53WYarFVvhl9+Up
- 5J2kg31X4Z7WjoDgXU2vcwHyOqLA8/UHKyZ0BceyhdMoZB2K6e2yzxt8/aBVODNPxKwZ yA== 
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3356d917f3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Aug 2020 13:26:49 -0400
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07PHHnTJ025476;
-        Tue, 25 Aug 2020 17:26:49 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma02dal.us.ibm.com with ESMTP id 332utua0jq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Aug 2020 17:26:49 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07PHQm6V32178518
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 25 Aug 2020 17:26:48 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 80891AE062;
-        Tue, 25 Aug 2020 17:26:48 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1B47FAE05F;
-        Tue, 25 Aug 2020 17:26:48 +0000 (GMT)
-Received: from ltcalpine2-lp16.aus.stglabs.ibm.com (unknown [9.40.195.199])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 25 Aug 2020 17:26:47 +0000 (GMT)
-From:   Dany Madden <drt@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Mingming Cao <mmc@linux.vnet.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>
-Subject: [PATCH net v3] ibmvnic fix NULL tx_pools and rx_tools issue at do_reset
-Date:   Tue, 25 Aug 2020 13:26:41 -0400
-Message-Id: <20200825172641.806912-1-drt@linux.ibm.com>
-X-Mailer: git-send-email 2.18.2
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-25_06:2020-08-25,2020-08-25 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- clxscore=1015 impostorscore=0 spamscore=0 phishscore=0 adultscore=0
- bulkscore=0 malwarescore=0 mlxscore=0 mlxlogscore=999 suspectscore=1
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008250124
+        id S1726475AbgHYR1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 13:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726119AbgHYR1v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 13:27:51 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F59C061574
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 10:27:51 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id q93so1140373pjq.0
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 10:27:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R96er/PUVvfadsqAyZv+jNgEaJpcty4Nzo7grHpCEwo=;
+        b=apeSbu/SUCX4n2tlsVngUvy9gGtEQOK9BDjzH4FDbB2y1L2RKRDtTeXhbaFatRa4lk
+         k0zgA3E75zj1asMXPBXfD34AMSrQTUqEm+eipH/W/zscyEfppmLasI2KnQh9TlvKisGm
+         e5a96y6rtGooDV1nW2wgVx5wJ5mwkQNvz7nkTQeD6k1ZMcAKiADm10/Goqn5sUmNNKQE
+         n1bby2NcH/HUOQnnz4gOjtounHXOTQs2K5C9z+QryO/HaLjhDv9GLL0us6ztfWbfFKtm
+         RIm1NQ6iIplIIIo31Ikjs+vUh4gme6BvffX1zhXifU+Xzc0/cIeVN9GI1T06VxK0Lke3
+         Evpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R96er/PUVvfadsqAyZv+jNgEaJpcty4Nzo7grHpCEwo=;
+        b=TNJ1hW3y6jixq9MWyvwSt8lA0fmlbFHGbD/uqQII95FqwJ+La+8crJS8rV0r0o0JSZ
+         pgqosbaUdqf8BTWRXZHeM7K+4wr2MqwOOGMtkfDSodpQl38/WVNgRPLW6Bkg/6F8k0x8
+         sPaTKyjwlLWv3rnIs6xetA3ZXdirkeM+lq0J7R41RsvHzYVXjQKjdMPX6LJxkRze1zOS
+         BrxbU+mVUzIPvnRPvwQJG56bcJtFlj0exHbrVRdN7hTPuZDv5qXriDTkHsREbe2zerck
+         0BSqJvGNiMr7Ao7wEAKyw1UntbizpANz7Bm4qxhFNxHXQ/OHWxw4RL/UkRhOgtsCTZPD
+         pASA==
+X-Gm-Message-State: AOAM53292c5iztJ6mIiEqEME2aGsjzTYBE6Rq3jMRyV4Mur1c+Y9Kp1L
+        kBMP6lWaD+o1LAixLL4Xmp8=
+X-Google-Smtp-Source: ABdhPJxQtVm46T/KQ/dnkbqg0kkC84ILQee1EL+5QmQ6iMdHInpMtTQZ2saxctC7G0GXeiNNNYlVlQ==
+X-Received: by 2002:a17:90b:c97:: with SMTP id o23mr2514529pjz.216.1598376470570;
+        Tue, 25 Aug 2020 10:27:50 -0700 (PDT)
+Received: from btopel-mobl.ger.intel.com ([134.134.137.77])
+        by smtp.gmail.com with ESMTPSA id n72sm11685763pfd.93.2020.08.25.10.27.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2020 10:27:49 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
+        netdev@vger.kernel.org, maciej.fijalkowski@intel.com,
+        piotr.raczynski@intel.com, maciej.machnikowski@intel.com,
+        lirongqing@baidu.com
+Subject: [PATCH net v3 0/3] Avoid premature Rx buffer reuse for XDP_REDIRECT
+Date:   Tue, 25 Aug 2020 19:27:33 +0200
+Message-Id: <20200825172736.27318-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mingming Cao <mmc@linux.vnet.ibm.com>
+Intel NICs have a recycle mechanism. The main idea is that a page is
+split into two parts. One part is owned by the driver, one part might
+be owned by someone else, such as the stack.
 
-At the time of do_rest, ibmvnic tries to re-initalize the tx_pools
-and rx_pools to avoid re-allocating the long term buffer. However
-there is a window inside do_reset that the tx_pools and
-rx_pools were freed before re-initialized making it possible to deference
-null pointers.
+The page recycle code, incorrectly, relied on that a page fragment
+could not be freed inside xdp_do_redirect(), e.g. a redirect to a
+devmap where the ndo_xdp_xmit() implementation would transmit and free
+the frame, or xskmap where the frame would be copied to userspace and
+freed.
 
-This patch fix this issue by always check the tx_pool
-and rx_pool are not NULL after ibmvnic_login. If so, re-allocating
-the pools. This will avoid getting into calling reset_tx/rx_pools with
-NULL adapter tx_pools/rx_pools pointer. Also add null pointer check in
-reset_tx_pools and reset_rx_pools to safe handle NULL pointer case.
+This assumption leads to that page fragments that are used by the
+stack/XDP redirect can be reused and overwritten.
 
-Signed-off-by: Mingming Cao <mmc@linux.vnet.ibm.com>
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+To avoid this, store the page count prior invoking
+xdp_do_redirect(). The affected drivers are ixgbe, ice, and i40e.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 5afb3c9c52d2..d3a774331afc 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -479,6 +479,9 @@ static int reset_rx_pools(struct ibmvnic_adapter *adapter)
- 	int i, j, rc;
- 	u64 *size_array;
- 
-+	if (!adapter->rx_pool)
-+		return -1;
-+
- 	size_array = (u64 *)((u8 *)(adapter->login_rsp_buf) +
- 		be32_to_cpu(adapter->login_rsp_buf->off_rxadd_buff_size));
- 
-@@ -649,6 +652,9 @@ static int reset_tx_pools(struct ibmvnic_adapter *adapter)
- 	int tx_scrqs;
- 	int i, rc;
- 
-+	if (!adapter->tx_pool)
-+		return -1;
-+
- 	tx_scrqs = be32_to_cpu(adapter->login_rsp_buf->num_txsubm_subcrqs);
- 	for (i = 0; i < tx_scrqs; i++) {
- 		rc = reset_one_tx_pool(adapter, &adapter->tso_pool[i]);
-@@ -2011,7 +2017,10 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 		    adapter->req_rx_add_entries_per_subcrq !=
- 		    old_num_rx_slots ||
- 		    adapter->req_tx_entries_per_subcrq !=
--		    old_num_tx_slots) {
-+		    old_num_tx_slots ||
-+		    !adapter->rx_pool ||
-+		    !adapter->tso_pool ||
-+		    !adapter->tx_pool) {
- 			release_rx_pools(adapter);
- 			release_tx_pools(adapter);
- 			release_napi(adapter);
-@@ -2024,10 +2033,14 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 		} else {
- 			rc = reset_tx_pools(adapter);
- 			if (rc)
-+				netdev_dbg(adapter->netdev, "reset tx pools failed (%d)\n",
-+						rc);
- 				goto out;
- 
- 			rc = reset_rx_pools(adapter);
- 			if (rc)
-+				netdev_dbg(adapter->netdev, "reset rx pools failed (%d)\n",
-+						rc);
- 				goto out;
- 		}
- 		ibmvnic_disable_irqs(adapter);
+An example how things might go wrong:
+
+t0: Page is allocated, and put on the Rx ring
+              +---------------
+used by NIC ->| upper buffer
+(rx_buffer)   +---------------
+              | lower buffer
+              +---------------
+  page count  == USHRT_MAX
+  rx_buffer->pagecnt_bias == USHRT_MAX
+
+t1: Buffer is received, and passed to the stack (e.g.)
+              +---------------
+              | upper buff (skb)
+              +---------------
+used by NIC ->| lower buffer
+(rx_buffer)   +---------------
+  page count  == USHRT_MAX
+  rx_buffer->pagecnt_bias == USHRT_MAX - 1
+
+t2: Buffer is received, and redirected
+              +---------------
+              | upper buff (skb)
+              +---------------
+used by NIC ->| lower buffer
+(rx_buffer)   +---------------
+
+Now, prior calling xdp_do_redirect():
+  page count  == USHRT_MAX
+  rx_buffer->pagecnt_bias == USHRT_MAX - 2
+
+This means that buffer *cannot* be flipped/reused, because the skb is
+still using it.
+
+The problem arises when xdp_do_redirect() actually frees the
+segment. Then we get:
+  page count  == USHRT_MAX - 1
+  rx_buffer->pagecnt_bias == USHRT_MAX - 2
+
+From a recycle perspective, the buffer can be flipped and reused,
+which means that the skb data area is passed to the Rx HW ring!
+
+To work around this, the page count is stored prior calling
+xdp_do_redirect().
+
+Note that this is not optimal, since the NIC could actually reuse the
+"lower buffer" again. However, then we need to track whether
+XDP_REDIRECT consumed the buffer or not. This scenario is very rare,
+and tracking consumtion status would introduce more complexity.
+
+A big thanks to Li RongQing from Baidu for having patience with me
+understanding that there was a bug. I would have given up much
+earlier! :-)
+
+
+Cheers,
+Björn
+
+v2->v3: Fixed kdoc for i40e/ice. (Jakub)
+v1->v2: Removed page count function into get Rx buffer function, and
+        changed scope of automatic variable. (Maciej)
+
+
+Björn Töpel (3):
+  i40e: avoid premature Rx buffer reuse
+  ixgbe: avoid premature Rx buffer reuse
+  ice: avoid premature Rx buffer reuse
+
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 27 ++++++++++++-----
+ drivers/net/ethernet/intel/ice/ice_txrx.c     | 30 +++++++++++++------
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 24 ++++++++++-----
+ 3 files changed, 58 insertions(+), 23 deletions(-)
+
+
+base-commit: 99408c422d336db32bfab5cbebc10038a70cf7d2
 -- 
-2.18.2
+2.25.1
 
