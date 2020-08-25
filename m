@@ -2,211 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98E53251CBC
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:57:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DFEB251CBF
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 17:59:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726514AbgHYP5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 11:57:21 -0400
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:46803 "EHLO
-        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbgHYP5V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 11:57:21 -0400
-Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id DA1B04453FF;
-        Tue, 25 Aug 2020 17:57:17 +0200 (CEST)
-Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
-        (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1kAbK1-0002gi-Hw; Tue, 25 Aug 2020 17:57:17 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
-        laforge@gnumonks.org, osmocom-net-gprs@lists.osmocom.org
-Cc:     netdev@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Gabriel Ganne <gabriel.ganne@6wind.com>
-Subject: [PATCH net-next v2] gtp: add notification mechanism
-Date:   Tue, 25 Aug 2020 17:57:15 +0200
-Message-Id: <20200825155715.24006-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200825143556.23766-1-nicolas.dichtel@6wind.com>
-References: <20200825143556.23766-1-nicolas.dichtel@6wind.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726818AbgHYP7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 11:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47486 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726466AbgHYP67 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 11:58:59 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEC3C061574;
+        Tue, 25 Aug 2020 08:58:58 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id b17so12461294wru.2;
+        Tue, 25 Aug 2020 08:58:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=uc+i0gWQ7QGFfIc1FEZg9eNWGBKxWPtFWURbOx3qDRs=;
+        b=VGI3XJusG7DtDltydX+p+GzQ5RPWGMc1T1ToEdnMnFchvPZQ3hNqQJyzZXejriIevw
+         hK/hOEsqvPo9CqNq5xjLXmUF/Lq+FYVV8cCkZNDTXXjsiuep9u07mK1dbVu64ZCl4i/y
+         hU7vcT/ErbkDhi8L+hWUu8Krk2xRoktNjGH2j/1ew87GNEk/l2I3mBETh0I7uMoYHRfA
+         0ICvCAZLnd/b9Ztb31msjaxO5SwIKNejh3SL18kQZhDeiG8IMcYexqxsLs9WPnMIYZd4
+         C5Uzkj/Wi++Jk9wGeEAN0HZVT+yGQQaM9PTfj+CRPgrkB7/bFOpALaSUcIsNdNGxRyS0
+         gIvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=uc+i0gWQ7QGFfIc1FEZg9eNWGBKxWPtFWURbOx3qDRs=;
+        b=X/B49lI4Rf6YfR0OfY/AHfIiZIE5NNoEy+GPjkIxIeOsujridcCV/p1sGHMCJfDSiW
+         7RxgjgMgKmJTBK+mylVKGaOGKdbFwOveyDW3yUx8ldgMFReLYCjd1oulJ9/OIIiiHvop
+         o7S0kCYdkVwiXCbB4B07GELjkCq7wsMWZIzvwjj8znw56oycfMvS9QbpZT4nDSBIfbd5
+         0AWVLOzRVEzEg5eT+VvebQe/VQpVAT4TdZBSYwF5VI8Djn/lXcE1Y433grmzYyIA6OxO
+         Xfr1opVJxVDdoJoyKQX/IZHhnbC1S50iskCtRnc6haaSmC9ZZ7BPvHC2zVufFlhAUn0P
+         kM5w==
+X-Gm-Message-State: AOAM531Sup77c/vtO0yqEVAiTtXQO/wPmIVSqHnIPNJouHJERT/XJueI
+        txVbxe/zi5xCFD20PEL5gYlkxlKQlsDae1QT
+X-Google-Smtp-Source: ABdhPJy5CtEGeRW1UBmrR30rISXoR9TcOxm8quyf9iUBq3d4PfZjDJ8RF7ddO2JxnjDRZy14uWvLDQ==
+X-Received: by 2002:a5d:4850:: with SMTP id n16mr8439374wrs.92.1598371136604;
+        Tue, 25 Aug 2020 08:58:56 -0700 (PDT)
+Received: from ubuntu18_1.cisco.com ([173.38.220.45])
+        by smtp.gmail.com with ESMTPSA id r3sm28198987wro.1.2020.08.25.08.58.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2020 08:58:55 -0700 (PDT)
+From:   Ahmed Abdelsalam <ahabdels@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     ahabdels@gmail.com, andrea.mayer@uniroma2.it
+Subject: [net-next v5 2/2] seg6: Add documentation for seg6_inherit_inner_ipv4_dscp sysctl
+Date:   Tue, 25 Aug 2020 15:58:40 +0000
+Message-Id: <20200825155840.1070-1-ahabdels@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like all other network functions, let's notify gtp context on creation and
-deletion.
+This patch adds a documentation for seg6_inherit_inner_ipv4_dscp
+sysctl into Documentation/networking/ip-sysctl.rst
 
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Tested-by: Gabriel Ganne <gabriel.ganne@6wind.com>
+Signed-off-by: Ahmed Abdelsalam <ahabdels@gmail.com>
 ---
+ Documentation/networking/ip-sysctl.rst | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-v1 -> v2:
- - fix typo in the commit title
- - fix indentation of GTP_GENL_MCGRP
-
- drivers/net/gtp.c        | 58 +++++++++++++++++++++++++++++++++-------
- include/uapi/linux/gtp.h |  2 ++
- 2 files changed, 51 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 8e47d0112e5d..76fd87a44fdf 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -928,8 +928,8 @@ static void ipv4_pdp_fill(struct pdp_ctx *pctx, struct genl_info *info)
- 	}
- }
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 837d51f9e1fa..9dacdebeafc5 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1799,6 +1799,11 @@ seg6_flowlabel - INTEGER
  
--static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
--		       struct genl_info *info)
-+static struct pdp_ctx *gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
-+				   struct genl_info *info)
- {
- 	struct pdp_ctx *pctx, *pctx_tid = NULL;
- 	struct net_device *dev = gtp->dev;
-@@ -956,12 +956,12 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+ 	Default is 0.
  
- 	if (found) {
- 		if (info->nlhdr->nlmsg_flags & NLM_F_EXCL)
--			return -EEXIST;
-+			return ERR_PTR(-EEXIST);
- 		if (info->nlhdr->nlmsg_flags & NLM_F_REPLACE)
--			return -EOPNOTSUPP;
-+			return ERR_PTR(-EOPNOTSUPP);
- 
- 		if (pctx && pctx_tid)
--			return -EEXIST;
-+			return ERR_PTR(-EEXIST);
- 		if (!pctx)
- 			pctx = pctx_tid;
- 
-@@ -974,13 +974,13 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
- 			netdev_dbg(dev, "GTPv1-U: update tunnel id = %x/%x (pdp %p)\n",
- 				   pctx->u.v1.i_tei, pctx->u.v1.o_tei, pctx);
- 
--		return 0;
-+		return pctx;
- 
- 	}
- 
- 	pctx = kmalloc(sizeof(*pctx), GFP_ATOMIC);
- 	if (pctx == NULL)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	sock_hold(sk);
- 	pctx->sk = sk;
-@@ -1018,7 +1018,7 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
- 		break;
- 	}
- 
--	return 0;
-+	return pctx;
- }
- 
- static void pdp_context_free(struct rcu_head *head)
-@@ -1036,9 +1036,12 @@ static void pdp_context_delete(struct pdp_ctx *pctx)
- 	call_rcu(&pctx->rcu_head, pdp_context_free);
- }
- 
-+static int gtp_tunnel_notify(struct pdp_ctx *pctx, u8 cmd);
++seg6_inherit_inner_ipv4_dscp - BOOLEAN
++	Enable the SRv6 encapsulation to inherit the DSCP value of the inner IPv4 packet.
 +
- static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
- {
- 	unsigned int version;
-+	struct pdp_ctx *pctx;
- 	struct gtp_dev *gtp;
- 	struct sock *sk;
- 	int err;
-@@ -1088,7 +1091,13 @@ static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
- 		goto out_unlock;
- 	}
- 
--	err = gtp_pdp_add(gtp, sk, info);
-+	pctx = gtp_pdp_add(gtp, sk, info);
-+	if (IS_ERR(pctx)) {
-+		err = PTR_ERR(pctx);
-+	} else {
-+		gtp_tunnel_notify(pctx, GTP_CMD_NEWPDP);
-+		err = 0;
-+	}
- 
- out_unlock:
- 	rcu_read_unlock();
-@@ -1159,6 +1168,7 @@ static int gtp_genl_del_pdp(struct sk_buff *skb, struct genl_info *info)
- 		netdev_dbg(pctx->dev, "GTPv1-U: deleting tunnel id = %x/%x (pdp %p)\n",
- 			   pctx->u.v1.i_tei, pctx->u.v1.o_tei, pctx);
- 
-+	gtp_tunnel_notify(pctx, GTP_CMD_DELPDP);
- 	pdp_context_delete(pctx);
- 
- out_unlock:
-@@ -1168,6 +1178,14 @@ static int gtp_genl_del_pdp(struct sk_buff *skb, struct genl_info *info)
- 
- static struct genl_family gtp_genl_family;
- 
-+enum gtp_multicast_groups {
-+	GTP_GENL_MCGRP,
-+};
++	Default: FALSE (Do not inherit DSCP)
 +
-+static const struct genl_multicast_group gtp_genl_mcgrps[] = {
-+	[GTP_GENL_MCGRP] = { .name = GTP_GENL_MCGRP_NAME },
-+};
-+
- static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
- 			      int flags, u32 type, struct pdp_ctx *pctx)
- {
-@@ -1205,6 +1223,26 @@ static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
- 	return -EMSGSIZE;
- }
+ ``conf/default/*``:
+ 	Change the interface-specific default settings.
  
-+static int gtp_tunnel_notify(struct pdp_ctx *pctx, u8 cmd)
-+{
-+	struct sk_buff *msg;
-+	int ret;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	ret = gtp_genl_fill_info(msg, 0, 0, 0, cmd, pctx);
-+	if (ret < 0) {
-+		nlmsg_free(msg);
-+		return ret;
-+	}
-+
-+	ret = genlmsg_multicast_netns(&gtp_genl_family, dev_net(pctx->dev), msg,
-+				      0, GTP_GENL_MCGRP, GFP_ATOMIC);
-+	return ret;
-+}
-+
- static int gtp_genl_get_pdp(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct pdp_ctx *pctx = NULL;
-@@ -1335,6 +1373,8 @@ static struct genl_family gtp_genl_family __ro_after_init = {
- 	.module		= THIS_MODULE,
- 	.ops		= gtp_genl_ops,
- 	.n_ops		= ARRAY_SIZE(gtp_genl_ops),
-+	.mcgrps		= gtp_genl_mcgrps,
-+	.n_mcgrps	= ARRAY_SIZE(gtp_genl_mcgrps),
- };
- 
- static int __net_init gtp_net_init(struct net *net)
-diff --git a/include/uapi/linux/gtp.h b/include/uapi/linux/gtp.h
-index c7d66755d212..79f9191bbb24 100644
---- a/include/uapi/linux/gtp.h
-+++ b/include/uapi/linux/gtp.h
-@@ -2,6 +2,8 @@
- #ifndef _UAPI_LINUX_GTP_H_
- #define _UAPI_LINUX_GTP_H_
- 
-+#define GTP_GENL_MCGRP_NAME	"gtp"
-+
- enum gtp_genl_cmds {
- 	GTP_CMD_NEWPDP,
- 	GTP_CMD_DELPDP,
 -- 
-2.26.2
+2.17.1
 
