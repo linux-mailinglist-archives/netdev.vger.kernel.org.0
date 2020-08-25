@@ -2,122 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF11D250FF9
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 05:27:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA6D0251007
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 05:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728613AbgHYD1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 24 Aug 2020 23:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42356 "EHLO
+        id S1728602AbgHYDgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 24 Aug 2020 23:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728105AbgHYD1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 23:27:41 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFDBC061574;
-        Mon, 24 Aug 2020 20:27:41 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id w14so12102368ljj.4;
-        Mon, 24 Aug 2020 20:27:41 -0700 (PDT)
+        with ESMTP id S1726532AbgHYDgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 24 Aug 2020 23:36:24 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2738BC061574;
+        Mon, 24 Aug 2020 20:36:24 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id v13so10383122oiv.13;
+        Mon, 24 Aug 2020 20:36:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4ISkKwpf1NKEfistWSxUgd367ieHCmBZuSqVZcUfedQ=;
-        b=opGYwbvyYRgk6oN6QyfAJ+tyFRMEooh6BTTZdcbl6X5up1m9KwAW7wW7MicSB9vqA+
-         BUQd9lNNGa2ov58hsXHBsfItnGK/Vtz5B04twulawQ2EHGYIZSYISj8MFxyN05j25krP
-         3rQU1elXYMygrDUdTl1Oj8ptUyWwwiyNDUGQeOWgdHY0TP3OuQ2Yl2qxwQwcivdtBq7d
-         YjmMs+Dpf93XbVwYL6ht+tMEXByLg0See8V/Iu4De/LETcnqlHmrFU45u+qSbBL5ZYSI
-         Oz6yV8Zo7uvve3hX6vu4RGW2xkqvxmB05+g4ne4r3wdDcyHowXVBy/3gS75av7ZzF0Ci
-         aJZA==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=aJK4CYpBJPrH1toP8zLPbQR7/OSGwyBsRegpuVoVLfM=;
+        b=U3Kxms8nGHG/4Cel6thKiw6GhrtcjVEviQYZYOrBThIqVF1LjLzpMsocDb3ui37Flj
+         oBMq07YDPBK89FbhnNeenmJgGg4Q3NEVADr96BcxqGh01I6Oo7qOMyZp9NkZQNwCZKad
+         khaeh13gdeYgwrGdTzfeQW9cdR97D3D8Pv++aOVvClcqRcOkjpG/+IpzayqLD6CuNMK9
+         dmbFXLz20bCjF1zauTjo0mUY/PgTxuFADrCG/IefnYrK2H5vpxrhv4HeU7PQs6QExccD
+         zIYuRhRXwU/ru2mknYkNkUYKJZH9y2od7q9LqQEsBeXLpnVydT1AK/QSxyQNwTIO8BSH
+         SkXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4ISkKwpf1NKEfistWSxUgd367ieHCmBZuSqVZcUfedQ=;
-        b=OU1zGS+IWxnZAZyWK3jpc3fTPj6FFawAt6pL9A+VgDu81rh19a7Of2N7XKqoj1viOv
-         ygqpWcCuGS2fjZ+t/xu/uhEruB+KpJQA4f1zSjjOvp8PSBFxlzFcGA3wLyUzJYtAfNDZ
-         FHr41/tGljinQI+zkNDlbTnJw6V3+D+skZ5nWhpvMQ6GUwGiYQYPNbeLCFQ2cjFjS9No
-         +0mRvgJmb0mFxwsUDDQb/hqJFxY1FNXBfEdHG59tMVFEIPxbl2Rfjxn39B1uJ6bdC+v5
-         jE19NQSx2+bf3ymknFsl68vcKqlcvyWJqZsrwCpn5Ka52nKQy5qrhqF9OjisBeoGu4Bf
-         bKeA==
-X-Gm-Message-State: AOAM531h2l1auJkHU5+Fr+v2kJPJpqDXDTg7tnPZpHTZ0gI2COzq3iMZ
-        v6eicHoZSgzp8J3LxkBjMgbvMfRPtDMvCRMljk3H2mgEwAQ=
-X-Google-Smtp-Source: ABdhPJx929t7WmM1kzR4eLUL/43eA/hSVvqhj/hqPW/OCoF4qHfzdgBbNUA2ey4rGUquHSFICqAmnSHuTTAwhAi/qag=
-X-Received: by 2002:a2e:4e09:: with SMTP id c9mr4037385ljb.283.1598326059940;
- Mon, 24 Aug 2020 20:27:39 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aJK4CYpBJPrH1toP8zLPbQR7/OSGwyBsRegpuVoVLfM=;
+        b=W3/JnMQOTEkg4xIkI7gv6L54Kn+GS7peGvmbu8gFxhiMQcQ8x2w5Xc/G6aKoQkpBh/
+         8SYXiudhn9Oxf1ymJwQ0XkUTOJFpBxnkSaCBWS7HlD99D43OG+CyTb2VglmVK4Ig3GDk
+         yEiGMtBFeITdvHep4dA1+Ma1UqWD6bvsjVfeddCK6yZL6SVAL4h3un+hxj6hwKCn0sqn
+         DGNXQ5JUwSbfGIoxmf4LBa+rfT26hq1FHu37X9DAp0Mv++kbfWkcGe57a3UIns3I004p
+         MPJBxU0pd7av9ZcDmWeP9L+35Fjm+dRo7nHb6bpdOOFj6JbLgRoI6TGXH+7wCjDUMN03
+         Zr6w==
+X-Gm-Message-State: AOAM530uptShst+tYoX3loVmBlGBduswspp03GA8UgDoSmt2hIPF/QWI
+        wo5BlELeRhlugQAlS1nCpN08TOkoKOTNMw==
+X-Google-Smtp-Source: ABdhPJxtP6KLYyj5cNr/5kaxw4wmrCX+oW628EQ4RUi1uvc3OHt6U1jaXcmM4/8hxGmG5ugwK+sbtQ==
+X-Received: by 2002:aca:adc4:: with SMTP id w187mr1492697oie.153.1598326582277;
+        Mon, 24 Aug 2020 20:36:22 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:12c:2110:d2ae:4b39])
+        by smtp.googlemail.com with ESMTPSA id 22sm71587oin.26.2020.08.24.20.36.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Aug 2020 20:36:21 -0700 (PDT)
+Subject: Re: [PATCH 1/3] libnetlink: add rtattr_for_each_nested() iteration
+ macro
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        linux-wireless@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+References: <20200824175108.53101-1-johannes@sipsolutions.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <5b6ed1d7-ff05-50e7-2194-3a59b799c014@gmail.com>
+Date:   Mon, 24 Aug 2020 21:36:20 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <20200821111111.6c04acd6@canb.auug.org.au> <20200825112020.43ce26bb@canb.auug.org.au>
- <CAADnVQLr8dU799ZrUnrBBDCtDxPyybZwrMFs5CAOHHW5pnLHHA@mail.gmail.com> <20200825130445.655885f8@canb.auug.org.au>
-In-Reply-To: <20200825130445.655885f8@canb.auug.org.au>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 24 Aug 2020 20:27:28 -0700
-Message-ID: <CAADnVQKGf7o8gJ60m_zjh+QcmRTNH+y1ha_B2q-1ixcCSAoHaw@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the bpf-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200824175108.53101-1-johannes@sipsolutions.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 24, 2020 at 8:04 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi Alexei,
->
-> On Mon, 24 Aug 2020 18:25:44 -0700 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Mon, Aug 24, 2020 at 6:20 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> > >
-> > > On Fri, 21 Aug 2020 11:11:11 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> > > >
-> > > > After merging the bpf-next tree, today's linux-next build (x86_64
-> > > > allmodconfig) failed like this:
-> > > >
-> > > > Auto-detecting system features:
-> > > > ...                        libelf: [  [31mOFF [m ]
-> > > > ...                          zlib: [  [31mOFF [m ]
-> > > > ...                           bpf: [  [32mon [m  ]
-> > > >
-> > > > No libelf found
-> > > > make[5]: *** [Makefile:284: elfdep] Error 1
-> > > >
-> > > > Caused by commit
-> > > >
-> > > >   d71fa5c9763c ("bpf: Add kernel module with user mode driver that populates bpffs.")
-> > > >
-> > > > [For a start, can we please *not* add this verbose feature detection
-> > > > output to the nrormal build?]
-> > > >
-> > > > This is a PowerPC hosted cross build.
-> > > >
-> > > > I have marked BPF_PRELOAD as BROKEN for now.
-> > >
-> > > Still getting this failure ...
-> >
-> > I don't have powerpc with crosscompiler to x86 to reproduce.
-> > What exactly the error?
->
-> Just as above.
+On 8/24/20 11:51 AM, Johannes Berg wrote:
+> This is useful for iterating elements in a nested attribute,
+> if they're not parsed with a strict length limit or such.
+> 
+> Signed-off-by: Johannes Berg <johannes@sipsolutions.net>
+> ---
+>  include/libnetlink.h | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
 
-I didn't receive the first email you've replied to.
-The build error is:
-"
-No libelf found
-make[5]: *** [Makefile:284: elfdep] Error 1
-"
-and build process stops because libelf is not found, right?
-That is expected and necessary.
-bpf_preload needs libbpf that depends on libelf.
-The only 'fix' is to turn off bpf_preload.
-It's off by default.
-allmodconfig cannot build bpf_preload umd if there is no libelf.
-There is CC_CAN_LINK that does feature detection.
-We can extend scripts/cc-can-link.sh or add another script that
-will do CC_CAN_LINK_LIBELF, but such approach doesn't scale.
-imo it's cleaner to rely on feature detection by libbpf Makefile with
-an error above instead of adding such knobs to top Kconfig.
-Does it make sense?
+applied to iproute2-next. Thanks, Johannes.
+
