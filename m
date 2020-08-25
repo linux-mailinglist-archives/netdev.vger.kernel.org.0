@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6961251FE1
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 21:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4838251FE2
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 21:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726697AbgHYTXN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Aug 2020 15:23:13 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:42368 "EHLO
+        id S1726998AbgHYTXT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 25 Aug 2020 15:23:19 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:34954 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726090AbgHYTXM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 15:23:12 -0400
+        by vger.kernel.org with ESMTP id S1726090AbgHYTXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 15:23:18 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-177-ClstaEwFOKO069Zf3p0HTw-1; Tue, 25 Aug 2020 15:22:03 -0400
-X-MC-Unique: ClstaEwFOKO069Zf3p0HTw-1
+ us-mta-291-L73Sk5FaPius9RJG_ddvOA-1; Tue, 25 Aug 2020 15:22:07 -0400
+X-MC-Unique: L73Sk5FaPius9RJG_ddvOA-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D781F51AE;
-        Tue, 25 Aug 2020 19:22:01 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 869BD801AAD;
+        Tue, 25 Aug 2020 19:22:05 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.192.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0FB2D19C4F;
-        Tue, 25 Aug 2020 19:21:58 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6731819C4F;
+        Tue, 25 Aug 2020 19:22:02 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -32,9 +32,9 @@ Cc:     Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: [PATCH v12 bpf-next 07/14] bpf: Factor btf_struct_access function
-Date:   Tue, 25 Aug 2020 21:21:17 +0200
-Message-Id: <20200825192124.710397-8-jolsa@kernel.org>
+Subject: [PATCH v12 bpf-next 08/14] bpf: Add btf_struct_ids_match function
+Date:   Tue, 25 Aug 2020 21:21:18 +0200
+Message-Id: <20200825192124.710397-9-jolsa@kernel.org>
 In-Reply-To: <20200825192124.710397-1-jolsa@kernel.org>
 References: <20200825192124.710397-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -50,179 +50,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding btf_struct_walk function that walks through the
-struct type + given offset and returns following values:
+Adding btf_struct_ids_match function to check if given address provided
+by BTF object + offset is also address of another nested BTF object.
 
-  enum bpf_struct_walk_result {
-       /* < 0 error */
-       WALK_SCALAR = 0,
-       WALK_PTR,
-       WALK_STRUCT,
-  };
+This allows to pass an argument to helper, which is defined via parent
+BTF object + offset, like for bpf_d_path (added in following changes):
 
-WALK_SCALAR - when SCALAR_VALUE is found
-WALK_PTR    - when pointer value is found, its ID is stored
-              in 'next_btf_id' output param
-WALK_STRUCT - when nested struct object is found, its ID is stored
-              in 'next_btf_id' output param
+  SEC("fentry/filp_close")
+  int BPF_PROG(prog_close, struct file *file, void *id)
+  {
+    ...
+    ret = bpf_d_path(&file->f_path, ...
 
-It will be used in following patches to get all nested
-struct objects for given type and offset.
+The first bpf_d_path argument is hold by verifier as BTF file object
+plus offset of f_path member.
 
-The btf_struct_access now calls btf_struct_walk function,
-as long as it gets nested structs as return value.
+The btf_struct_ids_match function will walk the struct file object and
+check if there's nested struct path object on the given offset.
 
 Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- kernel/bpf/btf.c | 75 +++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 65 insertions(+), 10 deletions(-)
+ include/linux/bpf.h   |  2 ++
+ kernel/bpf/btf.c      | 31 +++++++++++++++++++++++++++++++
+ kernel/bpf/verifier.c | 17 +++++++++++------
+ 3 files changed, 44 insertions(+), 6 deletions(-)
 
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 81f38e2fda78..d6c356abcc0f 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1350,6 +1350,8 @@ int btf_struct_access(struct bpf_verifier_log *log,
+ 		      const struct btf_type *t, int off, int size,
+ 		      enum bpf_access_type atype,
+ 		      u32 *next_btf_id);
++bool btf_struct_ids_match(struct bpf_verifier_log *log,
++			  int off, u32 id, u32 need_type_id);
+ int btf_resolve_helper_id(struct bpf_verifier_log *log,
+ 			  const struct bpf_func_proto *fn, int);
+ 
 diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 4488c5b03941..d8d64201c4e0 100644
+index d8d64201c4e0..df966acaaeb1 100644
 --- a/kernel/bpf/btf.c
 +++ b/kernel/bpf/btf.c
-@@ -3886,16 +3886,22 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 	return true;
- }
- 
--int btf_struct_access(struct bpf_verifier_log *log,
--		      const struct btf_type *t, int off, int size,
--		      enum bpf_access_type atype,
--		      u32 *next_btf_id)
-+enum bpf_struct_walk_result {
-+	/* < 0 error */
-+	WALK_SCALAR = 0,
-+	WALK_PTR,
-+	WALK_STRUCT,
-+};
-+
-+static int btf_struct_walk(struct bpf_verifier_log *log,
-+			   const struct btf_type *t, int off, int size,
-+			   u32 *next_btf_id)
- {
- 	u32 i, moff, mtrue_end, msize = 0, total_nelems = 0;
- 	const struct btf_type *mtype, *elem_type = NULL;
- 	const struct btf_member *member;
- 	const char *tname, *mname;
--	u32 vlen;
-+	u32 vlen, elem_id, mid;
- 
- again:
- 	tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
-@@ -3966,7 +3972,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 			 */
- 			if (off <= moff &&
- 			    BITS_ROUNDUP_BYTES(end_bit) <= off + size)
--				return SCALAR_VALUE;
-+				return WALK_SCALAR;
- 
- 			/* off may be accessing a following member
- 			 *
-@@ -3988,11 +3994,13 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 			break;
- 
- 		/* type of the field */
-+		mid = member->type;
- 		mtype = btf_type_by_id(btf_vmlinux, member->type);
- 		mname = __btf_name_by_offset(btf_vmlinux, member->name_off);
- 
- 		mtype = __btf_resolve_size(btf_vmlinux, mtype, &msize,
--					   &elem_type, NULL, &total_nelems, NULL);
-+					   &elem_type, &elem_id, &total_nelems,
-+					   &mid);
- 		if (IS_ERR(mtype)) {
- 			bpf_log(log, "field %s doesn't have size\n", mname);
- 			return -EFAULT;
-@@ -4054,6 +4062,7 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 			elem_idx = (off - moff) / msize;
- 			moff += elem_idx * msize;
- 			mtype = elem_type;
-+			mid = elem_id;
- 		}
- 
- 		/* the 'off' we're looking for is either equal to start
-@@ -4063,6 +4072,12 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 			/* our field must be inside that union or struct */
- 			t = mtype;
- 
-+			/* return if the offset matches the member offset */
-+			if (off == moff) {
-+				*next_btf_id = mid;
-+				return WALK_STRUCT;
-+			}
-+
- 			/* adjust offset we're looking for */
- 			off -= moff;
- 			goto again;
-@@ -4078,11 +4093,10 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 					mname, moff, tname, off, size);
- 				return -EACCES;
- 			}
--
- 			stype = btf_type_skip_modifiers(btf_vmlinux, mtype->type, &id);
- 			if (btf_type_is_struct(stype)) {
- 				*next_btf_id = id;
--				return PTR_TO_BTF_ID;
-+				return WALK_PTR;
- 			}
- 		}
- 
-@@ -4099,12 +4113,53 @@ int btf_struct_access(struct bpf_verifier_log *log,
- 			return -EACCES;
- 		}
- 
--		return SCALAR_VALUE;
-+		return WALK_SCALAR;
- 	}
- 	bpf_log(log, "struct %s doesn't have field at offset %d\n", tname, off);
+@@ -4160,6 +4160,37 @@ int btf_struct_access(struct bpf_verifier_log *log,
  	return -EINVAL;
  }
  
-+int btf_struct_access(struct bpf_verifier_log *log,
-+		      const struct btf_type *t, int off, int size,
-+		      enum bpf_access_type atype __maybe_unused,
-+		      u32 *next_btf_id)
++bool btf_struct_ids_match(struct bpf_verifier_log *log,
++			  int off, u32 id, u32 need_type_id)
 +{
++	const struct btf_type *type;
 +	int err;
-+	u32 id;
 +
-+	do {
-+		err = btf_struct_walk(log, t, off, size, &id);
++	/* Are we already done? */
++	if (need_type_id == id && off == 0)
++		return true;
 +
-+		switch (err) {
-+		case WALK_PTR:
-+			/* If we found the pointer or scalar on t+off,
-+			 * we're done.
-+			 */
-+			*next_btf_id = id;
-+			return PTR_TO_BTF_ID;
-+		case WALK_SCALAR:
-+			return SCALAR_VALUE;
-+		case WALK_STRUCT:
-+			/* We found nested struct, so continue the search
-+			 * by diving in it. At this point the offset is
-+			 * aligned with the new type, so set it to 0.
-+			 */
-+			t = btf_type_by_id(btf_vmlinux, id);
-+			off = 0;
-+			break;
-+		default:
-+			/* It's either error or unknown return value..
-+			 * scream and leave.
-+			 */
-+			if (WARN_ONCE(err > 0, "unknown btf_struct_walk return value"))
-+				return -EINVAL;
-+			return err;
-+		}
-+	} while (t);
++again:
++	type = btf_type_by_id(btf_vmlinux, id);
++	if (!type)
++		return false;
++	err = btf_struct_walk(log, type, off, 1, &id);
++	if (err != WALK_STRUCT)
++		return false;
 +
-+	return -EINVAL;
++	/* We found nested struct object. If it matches
++	 * the requested ID, we're done. Otherwise let's
++	 * continue the search with offset 0 in the new
++	 * type.
++	 */
++	if (need_type_id != id) {
++		off = 0;
++		goto again;
++	}
++
++	return true;
 +}
 +
  int btf_resolve_helper_id(struct bpf_verifier_log *log,
  			  const struct bpf_func_proto *fn, int arg)
  {
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index dd24503ab3d3..0689d6e66245 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -3995,16 +3995,21 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+ 				goto err_type;
+ 		}
+ 	} else if (arg_type == ARG_PTR_TO_BTF_ID) {
++		bool ids_match = false;
++
+ 		expected_type = PTR_TO_BTF_ID;
+ 		if (type != expected_type)
+ 			goto err_type;
+ 		if (!fn->check_btf_id) {
+ 			if (reg->btf_id != meta->btf_id) {
+-				verbose(env, "Helper has type %s got %s in R%d\n",
+-					kernel_type_name(meta->btf_id),
+-					kernel_type_name(reg->btf_id), regno);
+-
+-				return -EACCES;
++				ids_match = btf_struct_ids_match(&env->log, reg->off, reg->btf_id,
++								 meta->btf_id);
++				if (!ids_match) {
++					verbose(env, "Helper has type %s got %s in R%d\n",
++						kernel_type_name(meta->btf_id),
++						kernel_type_name(reg->btf_id), regno);
++					return -EACCES;
++				}
+ 			}
+ 		} else if (!fn->check_btf_id(reg->btf_id, arg)) {
+ 			verbose(env, "Helper does not support %s in R%d\n",
+@@ -4012,7 +4017,7 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+ 
+ 			return -EACCES;
+ 		}
+-		if (!tnum_is_const(reg->var_off) || reg->var_off.value || reg->off) {
++		if ((reg->off && !ids_match) || !tnum_is_const(reg->var_off) || reg->var_off.value) {
+ 			verbose(env, "R%d is a pointer to in-kernel struct with non-zero offset\n",
+ 				regno);
+ 			return -EACCES;
 -- 
 2.25.4
 
