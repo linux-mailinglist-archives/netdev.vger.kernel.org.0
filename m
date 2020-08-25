@@ -2,193 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9501925185F
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 414E8251867
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729719AbgHYMN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 08:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
+        id S1728808AbgHYMSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 08:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729627AbgHYMNt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 08:13:49 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58D0C061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 05:13:46 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id p11so4029287pfn.11
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 05:13:46 -0700 (PDT)
+        with ESMTP id S1726045AbgHYMSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 08:18:15 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD44C061574;
+        Tue, 25 Aug 2020 05:18:14 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id b17so11704024wru.2;
+        Tue, 25 Aug 2020 05:18:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=E3FCU1ysVCQIS/y1LR8GDdyKBD7FyoWGv58ugE95k9E=;
-        b=V2Gd3bMSWjb7++EjJGkSGGumtzMg4VDVUyC/lsdu1LTIUAPBkaWWuaoQpPq7FnENNE
-         h05mQeLPZII16LAJZ/Z/vxq+jtlu8PSpA0Js48LBqfaHSPdNyGgW2zRvS1gqVrQ8YAK3
-         9rT0dJd879yasu5lrYr6CZa1Z9xxXAdXTha7tl3XsQfQ9H4n3L7O5antaVyHubmLuxxv
-         DRkz8yw/guX+VB08PJpLbFKKrsB0eggBEUzAn5WreBR0Ygv6Vl8eVlVI8PV+oAAzktBM
-         9MBqUgGt+NvQjg9kBpTbUROOwmZ2XSBNH8wvMuBRN7j7k/cX6TcA+10Yl9Tx9xbE4238
-         LNUg==
+        h=from:to:cc:subject:date:message-id;
+        bh=GBdGSIj6c6kMmn2l3br70BmRSgCoyvpbeosCzLwhaiQ=;
+        b=mt+pWwlwZQlDp6ICVCSpTPEZQGnBRrUH2clmqMFK951PPoSAe92uARykcXsJfFvL8x
+         FNavkaDxwpxzFSwPTpG/ghNmwKeBD4fRHu7R9br4oFEKZfeeEGC8jbmJ09k32AOJO2hF
+         tcbyPsUzLkeagd1mBR+ZZYfcCBoek22ZXVBcYHZUPGeALzLahOM4k3sZdAD/rRMaJ1Yd
+         ZrHTYGO9ox6QCaHcOF5CYblsMF06K/EeHV+Z/KSsUnGi9OUJUqvU/i25yMbPgQU2gpAq
+         weVj+l68/wN4HFtVtzzoPwaXgO1gTDVDp+W6JOTqDyqaIObVdLoV8T8LJeXXFtzW4dya
+         xYHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=E3FCU1ysVCQIS/y1LR8GDdyKBD7FyoWGv58ugE95k9E=;
-        b=BtRr2BSaspwAB4gxtJaVZVvXxUnggy4MbygQylBgLDg7TY8qdHQbtTUvYJvMMASalB
-         SS2laaBYpn5fR06PKha4CvlA8dxibqAKPZhU0B2HtxbAo/ANFpGJLwhp2cuxmESkgfv9
-         cfTgnYJUoeKUwBHx+zoMO2hWgG7uJM2qsSmFpgip+uVnC4A7KdkIBs/nPG/5eus225yd
-         BPlT9aKuOoppAshoGjH1MG70o9ljr/9kqEw7LFjYzPiOj7ng1Hff7t99FiAIHJWekC9Q
-         UOD8dmdy74Dso1DfFkh2sVGiKeBBswS15vqPg5hXxrO5XNYO2PrwIrC1jbDU/g0PJkZm
-         Ozyw==
-X-Gm-Message-State: AOAM532IUzeY8R4WSGZeL1TQ6yOrteGZ4PvWmxFueQV/day1aR43hQeC
-        BBCgPpF0yS9/2/d+HT7f8WQ=
-X-Google-Smtp-Source: ABdhPJxz8r9wVR00AicZeBN5vv6rNG38IzyW6IBd9yFmG0BNmLXpZnq4GyFjyOdM+yt6o4wnV8gO1Q==
-X-Received: by 2002:aa7:84d1:: with SMTP id x17mr7591486pfn.87.1598357626371;
-        Tue, 25 Aug 2020 05:13:46 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.54.40])
-        by smtp.gmail.com with ESMTPSA id d5sm2700031pjw.18.2020.08.25.05.13.42
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=GBdGSIj6c6kMmn2l3br70BmRSgCoyvpbeosCzLwhaiQ=;
+        b=bGg84KN25ijzW+npBDHAGjIlV3l0DNFp9H0xw56jUbV+HELFp64C5SLTIDFvY64sMj
+         VSwJcB/7t1RfMnFIB/X73iHZG9YEFWKqzbnl3briyZG8MjeajOJzE/gflvWjjH6JaEYk
+         Ihq9ZJfAQVchvSI6stMEPOEi8RNN++CLiLBQVJLeMbkEBg5aeYMMG2YW3JOc1ajfa/DT
+         0U4prQaCJGcPas/v0Ib4sm2wFM5FRZTasTRJ3vrkUJOyg4AQsMy/PzrQb8SeAFYA6Ciy
+         mXpEX4/5C5b9MqzI3YZdRaNr7L5r3Tj4Q5Z23bFzvMm3RoYw1E/7w5IcmsBF2wYnWuj7
+         f3kA==
+X-Gm-Message-State: AOAM533zTfRO7ChP9OSd44aJQRryyBDakYV+6dtHQOhCdH0eCzfa5sAZ
+        XJc7tbAShT2JNAstoXuLxjY=
+X-Google-Smtp-Source: ABdhPJxNB6qSXIDWHxAGA3pSFjoa6G1hLEhjjGr4vPiCTdO5j2Z5a/zdg63cY+NgNIrCU18GcZEA8g==
+X-Received: by 2002:a05:6000:12c1:: with SMTP id l1mr9954271wrx.270.1598357893338;
+        Tue, 25 Aug 2020 05:18:13 -0700 (PDT)
+Received: from localhost.localdomain (dynamic-adsl-84-220-30-184.clienti.tiscali.it. [84.220.30.184])
+        by smtp.gmail.com with ESMTPSA id t14sm29263718wrv.14.2020.08.25.05.18.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 25 Aug 2020 05:13:45 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     jeffrey.t.kirsher@intel.com, intel-wired-lan@lists.osuosl.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        netdev@vger.kernel.org, maciej.fijalkowski@intel.com,
-        piotr.raczynski@intel.com, maciej.machnikowski@intel.com,
-        lirongqing@baidu.com
-Subject: [PATCH net v2 3/3] ice: avoid premature Rx buffer reuse
-Date:   Tue, 25 Aug 2020 14:13:23 +0200
-Message-Id: <20200825121323.20239-4-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200825121323.20239-1-bjorn.topel@gmail.com>
-References: <20200825121323.20239-1-bjorn.topel@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 25 Aug 2020 05:18:12 -0700 (PDT)
+From:   Ahmed Abdelsalam <ahabdels@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@gmail.com>,
+        Ahmed Abdelsalam <ahabdels@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     andrea.mayer@uniroma2.it
+Subject: [net-next v5 1/2] seg6: inherit DSCP of inner IPv4 packets
+Date:   Tue, 25 Aug 2020 12:17:57 +0000
+Message-Id: <20200825121800.1521-1-ahabdels@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+This patch allows SRv6 encapsulation to inherit the DSCP value of
+the inner IPv4 packet.
 
-The page recycle code, incorrectly, relied on that a page fragment
-could not be freed inside xdp_do_redirect(). This assumption leads to
-that page fragments that are used by the stack/XDP redirect can be
-reused and overwritten.
+This allows forwarding packet across the SRv6 fabric based on their
+original traffic class.
 
-To avoid this, store the page count prior invoking xdp_do_redirect().
+The option is controlled through a sysctl (seg6_inherit_inner_ipv4_dscp).
+The sysctl has to be set to 1 to enable this feature.
 
-Fixes: efc2214b6047 ("ice: Add support for XDP")
-Reported-and-analyzed-by: Li RongQing <lirongqing@baidu.com>
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+Signed-off-by: Ahmed Abdelsalam <ahabdels@gmail.com>
 ---
- drivers/net/ethernet/intel/ice/ice_txrx.c | 27 +++++++++++++++--------
- 1 file changed, 18 insertions(+), 9 deletions(-)
+ include/net/netns/ipv6.h   |  1 +
+ net/ipv6/seg6_iptunnel.c   | 37 ++++++++++++++++++++-----------------
+ net/ipv6/sysctl_net_ipv6.c |  9 +++++++++
+ 3 files changed, 30 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 9d0d6b0025cf..924d34ad9fa4 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -768,7 +768,8 @@ ice_rx_buf_adjust_pg_offset(struct ice_rx_buf *rx_buf, unsigned int size)
-  * pointing to; otherwise, the DMA mapping needs to be destroyed and
-  * page freed
-  */
--static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf)
-+static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf,
-+				  int rx_buf_pgcnt)
+diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
+index 5ec054473d81..6ed73951f479 100644
+--- a/include/net/netns/ipv6.h
++++ b/include/net/netns/ipv6.h
+@@ -50,6 +50,7 @@ struct netns_sysctl_ipv6 {
+ 	int max_dst_opts_len;
+ 	int max_hbh_opts_len;
+ 	int seg6_flowlabel;
++	bool seg6_inherit_inner_ipv4_dscp;
+ 	bool skip_notify_on_dev_down;
+ };
+ 
+diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
+index 897fa59c47de..9cc168462e11 100644
+--- a/net/ipv6/seg6_iptunnel.c
++++ b/net/ipv6/seg6_iptunnel.c
+@@ -104,8 +104,7 @@ static void set_tun_src(struct net *net, struct net_device *dev,
+ }
+ 
+ /* Compute flowlabel for outer IPv6 header */
+-static __be32 seg6_make_flowlabel(struct net *net, struct sk_buff *skb,
+-				  struct ipv6hdr *inner_hdr)
++static __be32 seg6_make_flowlabel(struct net *net, struct sk_buff *skb)
  {
- 	unsigned int pagecnt_bias = rx_buf->pagecnt_bias;
- 	struct page *page = rx_buf->page;
-@@ -779,7 +780,7 @@ static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf)
+ 	int do_flowlabel = net->ipv6.sysctl.seg6_flowlabel;
+ 	__be32 flowlabel = 0;
+@@ -116,7 +115,7 @@ static __be32 seg6_make_flowlabel(struct net *net, struct sk_buff *skb,
+ 		hash = rol32(hash, 16);
+ 		flowlabel = (__force __be32)hash & IPV6_FLOWLABEL_MASK;
+ 	} else if (!do_flowlabel && skb->protocol == htons(ETH_P_IPV6)) {
+-		flowlabel = ip6_flowlabel(inner_hdr);
++		flowlabel = ip6_flowlabel(ipv6_hdr(skb));
+ 	}
+ 	return flowlabel;
+ }
+@@ -129,6 +128,7 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
+ 	struct ipv6hdr *hdr, *inner_hdr;
+ 	struct ipv6_sr_hdr *isrh;
+ 	int hdrlen, tot_len, err;
++	u8 tos = 0, hop_limit;
+ 	__be32 flowlabel;
  
- #if (PAGE_SIZE < 8192)
- 	/* if we are only owner of page we can reuse it */
--	if (unlikely((page_count(page) - pagecnt_bias) > 1))
-+	if (unlikely((rx_buf_pgcnt - pagecnt_bias) > 1))
- 		return false;
- #else
- #define ICE_LAST_OFFSET \
-@@ -870,11 +871,18 @@ ice_reuse_rx_page(struct ice_ring *rx_ring, struct ice_rx_buf *old_buf)
-  */
- static struct ice_rx_buf *
- ice_get_rx_buf(struct ice_ring *rx_ring, struct sk_buff **skb,
--	       const unsigned int size)
-+	       const unsigned int size,
-+	       int *rx_buf_pgcnt)
- {
- 	struct ice_rx_buf *rx_buf;
+ 	hdrlen = (osrh->hdrlen + 1) << 3;
+@@ -138,30 +138,33 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
+ 	if (unlikely(err))
+ 		return err;
  
- 	rx_buf = &rx_ring->rx_buf[rx_ring->next_to_clean];
-+	*rx_buf_pgcnt =
-+#if (PAGE_SIZE < 8192)
-+		page_count(rx_buf->page);
-+#else
-+		0;
-+#endif
- 	prefetchw(rx_buf->page);
- 	*skb = rx_buf->skb;
+-	inner_hdr = ipv6_hdr(skb);
+-	flowlabel = seg6_make_flowlabel(net, skb, inner_hdr);
+-
+-	skb_push(skb, tot_len);
+-	skb_reset_network_header(skb);
+-	skb_mac_header_rebuild(skb);
+-	hdr = ipv6_hdr(skb);
+-
+ 	/* inherit tc, flowlabel and hlim
+ 	 * hlim will be decremented in ip6_forward() afterwards and
+ 	 * decapsulation will overwrite inner hlim with outer hlim
+ 	 */
  
-@@ -1017,7 +1025,7 @@ ice_construct_skb(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf,
-  * of the rx_buf. It will either recycle the buffer or unmap it and free
-  * the associated resources.
-  */
--static void ice_put_rx_buf(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf)
-+static void ice_put_rx_buf(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf, int rx_buf_pgcnt)
- {
- 	u16 ntc = rx_ring->next_to_clean + 1;
- 
-@@ -1028,7 +1036,7 @@ static void ice_put_rx_buf(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf)
- 	if (!rx_buf)
- 		return;
- 
--	if (ice_can_reuse_rx_page(rx_buf)) {
-+	if (ice_can_reuse_rx_page(rx_buf, rx_buf_pgcnt)) {
- 		/* hand second half of page back to the ring */
- 		ice_reuse_rx_page(rx_ring, rx_buf);
++	flowlabel = seg6_make_flowlabel(net, skb);
++	hop_limit = ip6_dst_hoplimit(skb_dst(skb));
++
+ 	if (skb->protocol == htons(ETH_P_IPV6)) {
+-		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr)),
+-			     flowlabel);
+-		hdr->hop_limit = inner_hdr->hop_limit;
++		inner_hdr = ipv6_hdr(skb);
++		hop_limit = inner_hdr->hop_limit;
++		tos = ip6_tclass(ip6_flowinfo(inner_hdr));
++	} else if (skb->protocol == htons(ETH_P_IP)) {
++		if (net->ipv6.sysctl.seg6_inherit_inner_ipv4_dscp)
++			tos = ip_hdr(skb)->tos;
++		memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
  	} else {
-@@ -1103,6 +1111,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 		struct sk_buff *skb;
- 		unsigned int size;
- 		u16 stat_err_bits;
-+		int rx_buf_pgcnt;
- 		u16 vlan_tag = 0;
- 		u8 rx_ptype;
+-		ip6_flow_hdr(hdr, 0, flowlabel);
+-		hdr->hop_limit = ip6_dst_hoplimit(skb_dst(skb));
+-
+ 		memset(IP6CB(skb), 0, sizeof(*IP6CB(skb)));
+ 	}
  
-@@ -1125,7 +1134,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 		dma_rmb();
++	skb_push(skb, tot_len);
++	skb_reset_network_header(skb);
++	skb_mac_header_rebuild(skb);
++
++	hdr = ipv6_hdr(skb);
++	ip6_flow_hdr(hdr, tos, flowlabel);
++	hdr->hop_limit = hop_limit;
+ 	hdr->nexthdr = NEXTHDR_ROUTING;
  
- 		if (rx_desc->wb.rxdid == FDIR_DESC_RXDID || !rx_ring->netdev) {
--			ice_put_rx_buf(rx_ring, NULL);
-+			ice_put_rx_buf(rx_ring, NULL, 0);
- 			cleaned_count++;
- 			continue;
- 		}
-@@ -1134,7 +1143,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 			ICE_RX_FLX_DESC_PKT_LEN_M;
+ 	isrh = (void *)hdr + sizeof(*hdr);
+diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
+index fac2135aa47b..4b2cf8764524 100644
+--- a/net/ipv6/sysctl_net_ipv6.c
++++ b/net/ipv6/sysctl_net_ipv6.c
+@@ -159,6 +159,15 @@ static struct ctl_table ipv6_table_template[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec
+ 	},
++	{
++		.procname	= "seg6_inherit_inner_ipv4_dscp",
++		.data		= &init_net.ipv6.sysctl.seg6_inherit_inner_ipv4_dscp,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_ONE,
++	},
+ 	{ }
+ };
  
- 		/* retrieve a buffer from the ring */
--		rx_buf = ice_get_rx_buf(rx_ring, &skb, size);
-+		rx_buf = ice_get_rx_buf(rx_ring, &skb, size, &rx_buf_pgcnt);
- 
- 		if (!size) {
- 			xdp.data = NULL;
-@@ -1174,7 +1183,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 		total_rx_pkts++;
- 
- 		cleaned_count++;
--		ice_put_rx_buf(rx_ring, rx_buf);
-+		ice_put_rx_buf(rx_ring, rx_buf, rx_buf_pgcnt);
- 		continue;
- construct_skb:
- 		if (skb) {
-@@ -1193,7 +1202,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 			break;
- 		}
- 
--		ice_put_rx_buf(rx_ring, rx_buf);
-+		ice_put_rx_buf(rx_ring, rx_buf, rx_buf_pgcnt);
- 		cleaned_count++;
- 
- 		/* skip if it is NOP desc */
 -- 
-2.25.1
+2.17.1
 
