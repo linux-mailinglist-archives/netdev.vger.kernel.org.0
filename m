@@ -2,101 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 100CB251AE4
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 16:34:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9FFF251AEF
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 16:36:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726218AbgHYOeZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 10:34:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726551AbgHYOeH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 10:34:07 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B737C061574;
-        Tue, 25 Aug 2020 07:34:04 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id w25so14038964ljo.12;
-        Tue, 25 Aug 2020 07:34:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=00qy2pNCOtPFyED/8lG4zQs8PuaD2Zn8I4O/t5hQ9Bk=;
-        b=OCecthoSt4bCALEoeE5FfEDKlZu18mvmEIdpPOsMkQ5l6lPkerHfErNgTJzfxxC+DX
-         jhaZR5EuPhkh31XY0g0jK+LPX680HVNsA2kIljZpjMk+1n3MfNm5wKPpoUt1nXyEtUt7
-         eL0iyv9JmUesw6rlTvZB1Gqvw11FLp/R3DwzQMEbFCgP2729nNW/+qm4hJ9PsDVCOvnD
-         L7colNLXj6/HoHwIhEYWDRnco8YxdMGf1HIKfIVseTiFcMxZ7k/nR+EFcmtSluYoJAxT
-         fEe9NtHotaJpCZA5OWmVGe4sMzX3w96kIgRVsV17UX+QyeohQny0JGGgVts1t39vQU01
-         PZPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=00qy2pNCOtPFyED/8lG4zQs8PuaD2Zn8I4O/t5hQ9Bk=;
-        b=HfUCrM4henAikbdg7yu3gr8dtiloNlSB5rhz5ZAY/GN45IwKZKDkRibf8/bbiTrr3V
-         G+UpdGrkWagW/qE35Ko3OAGLyOMZnWM1I/TIHhnCbqvUQ53QdTVAiAThV/p7JRSy+XdZ
-         zjjOmI1YArLGlQHhPjnYCD37HxTDm1C40VZ/B+d8yUMlJoSv4vmN/R52pOctpVB4Lljo
-         ot8j4gTqf4n0pjVo2u+Ysey5AZDEHWcWuWlZnmtxccDrjH2Bdv2tH+D6fkFWp7FB1hwy
-         g2MNsYn+PmHUwVaIer+LKWZwKuMJJQF9IaX22tplg7O5EfMWoOw5gaugi7ia5aP4+LyO
-         OkIw==
-X-Gm-Message-State: AOAM532YjBWUG+lpIbZ3ssL733m4WwuPPfmymOvvvzZi/V3TY5uVX+UE
-        ykGb6MjSGQaErwIqs0oFxCAP3wcjK4GY5KTkzn4=
-X-Google-Smtp-Source: ABdhPJw+2PoMTt6hCpRQlUsK/fYGK+EZ00dHWuxY8Agb+bMR/IyI65ArPrD06xZaoIRR454ye1p7RW6pIp+aChjNGfM=
-X-Received: by 2002:a2e:968c:: with SMTP id q12mr4759972lji.51.1598366042818;
- Tue, 25 Aug 2020 07:34:02 -0700 (PDT)
+        id S1726645AbgHYOgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 10:36:35 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:46506 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726551AbgHYOga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 10:36:30 -0400
+Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
+        by proxy.6wind.com (Postfix) with ESMTPS id E9866445324;
+        Tue, 25 Aug 2020 16:36:08 +0200 (CEST)
+Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
+        (envelope-from <dichtel@bretzel.dev.6wind.com>)
+        id 1kAa3U-0006Cd-NT; Tue, 25 Aug 2020 16:36:08 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
+        laforge@gnumonks.org, osmocom-net-gprs@lists.osmocom.org
+Cc:     netdev@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Gabriel Ganne <gabriel.ganne@6wind.com>
+Subject: [PATCH net-next] gtp: add notification mechnism
+Date:   Tue, 25 Aug 2020 16:35:56 +0200
+Message-Id: <20200825143556.23766-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200821111111.6c04acd6@canb.auug.org.au> <20200825112020.43ce26bb@canb.auug.org.au>
- <CAADnVQLr8dU799ZrUnrBBDCtDxPyybZwrMFs5CAOHHW5pnLHHA@mail.gmail.com>
- <20200825130445.655885f8@canb.auug.org.au> <CAADnVQKGf7o8gJ60m_zjh+QcmRTNH+y1ha_B2q-1ixcCSAoHaw@mail.gmail.com>
- <20200825165029.795a8428@canb.auug.org.au>
-In-Reply-To: <20200825165029.795a8428@canb.auug.org.au>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 25 Aug 2020 07:33:51 -0700
-Message-ID: <CAADnVQ+SZj-Q=vijGkoUkmWeA=MM2S2oaVvJ7fj6=c4S4y-LMA@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the bpf-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 24, 2020 at 11:50 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi Alexei,
->
-> On Mon, 24 Aug 2020 20:27:28 -0700 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> >
-> > I didn't receive the first email you've replied to.
-> > The build error is:
-> > "
-> > No libelf found
-> > make[5]: *** [Makefile:284: elfdep] Error 1
-> > "
-> > and build process stops because libelf is not found, right?
-> > That is expected and necessary.
-> > bpf_preload needs libbpf that depends on libelf.
-> > The only 'fix' is to turn off bpf_preload.
-> > It's off by default.
-> > allmodconfig cannot build bpf_preload umd if there is no libelf.
-> > There is CC_CAN_LINK that does feature detection.
-> > We can extend scripts/cc-can-link.sh or add another script that
-> > will do CC_CAN_LINK_LIBELF, but such approach doesn't scale.
-> > imo it's cleaner to rely on feature detection by libbpf Makefile with
-> > an error above instead of adding such knobs to top Kconfig.
-> > Does it make sense?
->
-> Sorry, but if this is not necessary to build the kernel, then an
-> allmodconfig build needs to succeed so you need to do the detection and
-> turn it off automatically.  Or you could make it so that it has to be
-> manually enabled in all circumstances.
+Like all other network functions, let's notify gtp context on creation and
+deletion.
 
-what do you suggest to use to make it 'manually enabled' ?
-All I could think of is to add:
-depends on !COMPILE_TEST
-so that allmodconfig doesn't pick it up.
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Tested-by: Gabriel Ganne <gabriel.ganne@6wind.com>
+---
+ drivers/net/gtp.c        | 58 +++++++++++++++++++++++++++++++++-------
+ include/uapi/linux/gtp.h |  2 ++
+ 2 files changed, 51 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index 8e47d0112e5d..360c1dc9381e 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -928,8 +928,8 @@ static void ipv4_pdp_fill(struct pdp_ctx *pctx, struct genl_info *info)
+ 	}
+ }
+ 
+-static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+-		       struct genl_info *info)
++static struct pdp_ctx *gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
++				   struct genl_info *info)
+ {
+ 	struct pdp_ctx *pctx, *pctx_tid = NULL;
+ 	struct net_device *dev = gtp->dev;
+@@ -956,12 +956,12 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+ 
+ 	if (found) {
+ 		if (info->nlhdr->nlmsg_flags & NLM_F_EXCL)
+-			return -EEXIST;
++			return ERR_PTR(-EEXIST);
+ 		if (info->nlhdr->nlmsg_flags & NLM_F_REPLACE)
+-			return -EOPNOTSUPP;
++			return ERR_PTR(-EOPNOTSUPP);
+ 
+ 		if (pctx && pctx_tid)
+-			return -EEXIST;
++			return ERR_PTR(-EEXIST);
+ 		if (!pctx)
+ 			pctx = pctx_tid;
+ 
+@@ -974,13 +974,13 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+ 			netdev_dbg(dev, "GTPv1-U: update tunnel id = %x/%x (pdp %p)\n",
+ 				   pctx->u.v1.i_tei, pctx->u.v1.o_tei, pctx);
+ 
+-		return 0;
++		return pctx;
+ 
+ 	}
+ 
+ 	pctx = kmalloc(sizeof(*pctx), GFP_ATOMIC);
+ 	if (pctx == NULL)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	sock_hold(sk);
+ 	pctx->sk = sk;
+@@ -1018,7 +1018,7 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+ 		break;
+ 	}
+ 
+-	return 0;
++	return pctx;
+ }
+ 
+ static void pdp_context_free(struct rcu_head *head)
+@@ -1036,9 +1036,12 @@ static void pdp_context_delete(struct pdp_ctx *pctx)
+ 	call_rcu(&pctx->rcu_head, pdp_context_free);
+ }
+ 
++static int gtp_tunnel_notify(struct pdp_ctx *pctx, u8 cmd);
++
+ static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	unsigned int version;
++	struct pdp_ctx *pctx;
+ 	struct gtp_dev *gtp;
+ 	struct sock *sk;
+ 	int err;
+@@ -1088,7 +1091,13 @@ static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
+ 		goto out_unlock;
+ 	}
+ 
+-	err = gtp_pdp_add(gtp, sk, info);
++	pctx = gtp_pdp_add(gtp, sk, info);
++	if (IS_ERR(pctx)) {
++		err = PTR_ERR(pctx);
++	} else {
++		gtp_tunnel_notify(pctx, GTP_CMD_NEWPDP);
++		err = 0;
++	}
+ 
+ out_unlock:
+ 	rcu_read_unlock();
+@@ -1159,6 +1168,7 @@ static int gtp_genl_del_pdp(struct sk_buff *skb, struct genl_info *info)
+ 		netdev_dbg(pctx->dev, "GTPv1-U: deleting tunnel id = %x/%x (pdp %p)\n",
+ 			   pctx->u.v1.i_tei, pctx->u.v1.o_tei, pctx);
+ 
++	gtp_tunnel_notify(pctx, GTP_CMD_DELPDP);
+ 	pdp_context_delete(pctx);
+ 
+ out_unlock:
+@@ -1168,6 +1178,14 @@ static int gtp_genl_del_pdp(struct sk_buff *skb, struct genl_info *info)
+ 
+ static struct genl_family gtp_genl_family;
+ 
++enum gtp_multicast_groups {
++        GTP_GENL_MCGRP,
++};
++
++static const struct genl_multicast_group gtp_genl_mcgrps[] = {
++	[GTP_GENL_MCGRP] = { .name = GTP_GENL_MCGRP_NAME },
++};
++
+ static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
+ 			      int flags, u32 type, struct pdp_ctx *pctx)
+ {
+@@ -1205,6 +1223,26 @@ static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
+ 	return -EMSGSIZE;
+ }
+ 
++static int gtp_tunnel_notify(struct pdp_ctx *pctx, u8 cmd)
++{
++	struct sk_buff *msg;
++	int ret;
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
++	if (!msg)
++		return -ENOMEM;
++
++	ret = gtp_genl_fill_info(msg, 0, 0, 0, cmd, pctx);
++	if (ret < 0) {
++		nlmsg_free(msg);
++		return ret;
++	}
++
++	ret = genlmsg_multicast_netns(&gtp_genl_family, dev_net(pctx->dev), msg,
++				      0, GTP_GENL_MCGRP, GFP_ATOMIC);
++	return ret;
++}
++
+ static int gtp_genl_get_pdp(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct pdp_ctx *pctx = NULL;
+@@ -1335,6 +1373,8 @@ static struct genl_family gtp_genl_family __ro_after_init = {
+ 	.module		= THIS_MODULE,
+ 	.ops		= gtp_genl_ops,
+ 	.n_ops		= ARRAY_SIZE(gtp_genl_ops),
++	.mcgrps		= gtp_genl_mcgrps,
++	.n_mcgrps	= ARRAY_SIZE(gtp_genl_mcgrps),
+ };
+ 
+ static int __net_init gtp_net_init(struct net *net)
+diff --git a/include/uapi/linux/gtp.h b/include/uapi/linux/gtp.h
+index c7d66755d212..79f9191bbb24 100644
+--- a/include/uapi/linux/gtp.h
++++ b/include/uapi/linux/gtp.h
+@@ -2,6 +2,8 @@
+ #ifndef _UAPI_LINUX_GTP_H_
+ #define _UAPI_LINUX_GTP_H_
+ 
++#define GTP_GENL_MCGRP_NAME	"gtp"
++
+ enum gtp_genl_cmds {
+ 	GTP_CMD_NEWPDP,
+ 	GTP_CMD_DELPDP,
+-- 
+2.26.2
+
