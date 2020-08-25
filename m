@@ -2,108 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3344F2514E2
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E015E2514EB
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 11:02:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729085AbgHYJA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 05:00:28 -0400
-Received: from mail-bn8nam11on2079.outbound.protection.outlook.com ([40.107.236.79]:20448
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729672AbgHYI7o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 04:59:44 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IDeKv7f9kZqwqCPLjwW+JUN0dsYeiKJSu834C9HWorHHZhhI0JieBU67gTI8hlXQnMq4NIH16alnajHqKvRmIBgNME9ae4VaNzE9OohRi6WE1SmS5phvnngmbEfvzjibcprBhYB6aLtN1h7J6IGwK5mDrc7ZYB7/QEeIbTQvAI9I23c6EdwGwiCoVwuAayOuyHGNCxJGEbLHTEvGoqzt5bqVuAOVViueVx41BsqOWOsH2IhkvDiNzRRqMORS2Hd5rE6SvgRtyUP9gg31NWf0cpz4+ZeZcDXYGouaL4xQt8BztWbBY3jMWmMe64JbHYDZHoFP5cVawX6oHjs+QKAoTw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=54rBtP5u0nh32OciXaVgs0skqMaNtbGtASNU92LkxqA=;
- b=gMbcMBLpgmLbJgzDNHwSiIDucDx4wgvLg386r+MzB86wFo5R68RBGbcqJzbDCYTUjabbgpDqPEnl6vCeD/8jl4hrmHtO7XSn03y7H1uS/8o+z9vfUGVd6UPZFRx61U3rDPLwDtufGcSv+NXErnxpJ8mOs7ggqADC+5dH1crBPmprVvzuKXD0sohyfMPrOGmGgJ5arBi6mxvLBTrB2+c0K/llf5ReiQwCJUHjTvpBzroDKlJDlDcvYM8JXw7co/E47fYeXr0kZGp+NY7qjenUHkrdQiAwCMQrrWr2IoPGLANeEyGAb3TKLofYboIpqno5u5OszEUo5Gfz115m+J/80w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
+        id S1726836AbgHYJCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 05:02:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726045AbgHYJCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 05:02:05 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED8BC061574
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 02:02:05 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id o4so7871044wrn.0
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 02:02:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=54rBtP5u0nh32OciXaVgs0skqMaNtbGtASNU92LkxqA=;
- b=fU+9AnIM4OockertY+ATqQ4Ex5Y6dFZz8tenAYnGhMxCUNaQ7SAhcdBKHH7rDu+mKzPDawdGHZKhsNBnXUhC8ByUUzKPIh+hm2dVo6Zkt9MKqze1vS8VEEuRuELVLXOg0tJRp4UifuwwNV38a1Jn13OGijmuk9nIG4jCq7p/NNE=
-Authentication-Results: driverdev.osuosl.org; dkim=none (message not signed)
- header.d=none;driverdev.osuosl.org; dmarc=none action=none
- header.from=silabs.com;
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
- by SN6PR11MB3501.namprd11.prod.outlook.com (2603:10b6:805:d4::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.26; Tue, 25 Aug
- 2020 08:59:10 +0000
-Received: from SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::85c9:1aa9:aeab:3fa6]) by SN6PR11MB2718.namprd11.prod.outlook.com
- ([fe80::85c9:1aa9:aeab:3fa6%4]) with mapi id 15.20.3305.026; Tue, 25 Aug 2020
- 08:59:10 +0000
-From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
-To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>
-Subject: [PATCH v2 10/12] staging: wfx: enable powersave on probe
-Date:   Tue, 25 Aug 2020 10:58:26 +0200
-Message-Id: <20200825085828.399505-10-Jerome.Pouiller@silabs.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200825085828.399505-1-Jerome.Pouiller@silabs.com>
-References: <20200825085828.399505-1-Jerome.Pouiller@silabs.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-ClientProxiedBy: PR3P192CA0002.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:102:56::7) To SN6PR11MB2718.namprd11.prod.outlook.com
- (2603:10b6:805:63::18)
+        d=intinor-se.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=W8pA2ifKvmS7Kz+eJefzxo1Hg47OftIXwh7RwBS9u9M=;
+        b=wnb34B70xRvugcxvP8gxiC7cprltRJkKbpTen39LNM7dR7ZaqS99sZ2+sYY1mBxX5h
+         eGgrbxSGvXcylnKGjZra5wAYKoIo4xwkZMtCGbFWZ8Cynzio9gWjU8vbNamktiA/rhGE
+         3FrcPrCaWhCiSPJL0pw1AjwmOOm90XN5zLj1kfGuh8vc9I8NeTYETdTRSrgf3SN0TdkB
+         GXEuY1153bCQ6mgg8TCj35pK+Z72ZP3ibWi/B4RKdwQdKac92cb5YFg1aXNWLSvzLMJ2
+         gigRBxbPrAYo52h+bDmoXK21O73N1llWHErVGp01uboyzjP29Ui9lScNCbkifIwnNZrH
+         gxUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=W8pA2ifKvmS7Kz+eJefzxo1Hg47OftIXwh7RwBS9u9M=;
+        b=AlvybLm+YrkrHW4PtlCWuUTA7NwNL9hqiTPAmSCpBXzP8Wp5B6kbepveNW+fbJ8VMC
+         Hl3Ogt8jj2Y+uZ0UylKgVmd415FlPBa2cwaQ6wKrbQQqWtyJ1+MiSK/2RCXCvLJ8uZ9T
+         sAe1dXrOSjR2b0+6ufVu//azDTBThobtemUJuQ6M3YI2iQUfxRuEj6X4nelS4JnYlTEJ
+         iXlmzF2gU6WGegrBIq/JywztTkz+9I7JmJisgV8eb9VYZC1VF7Psyd/1Vm5Xkq2qoUZf
+         8a27oOEAi7KCCiBWbEfgcTeWIRpnkCXgWb5vmOxQdXcVngkIQa+rJYVgESgflSZffVrX
+         wcSw==
+X-Gm-Message-State: AOAM533PmoNS07gDyg5gJJVEZ+3xKW0445tBpifCSfjTtyXN37NO43F+
+        wSgYKQciiJs/RfA0p+wQEuNdJnbgBEDU7D8VaPXB3Q==
+X-Google-Smtp-Source: ABdhPJyixPz8WeHjWsTnHHhsIOhOs8rZpG68UaI4+brFXB61jWg6YLOlA77TGx8UBnr7b65ShzD1oC7Oe8FPxToEIjs=
+X-Received: by 2002:a5d:52c1:: with SMTP id r1mr2741983wrv.224.1598346123928;
+ Tue, 25 Aug 2020 02:02:03 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from 255.255.255.255 (255.255.255.255) by PR3P192CA0002.EURP192.PROD.OUTLOOK.COM (2603:10a6:102:56::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend Transport; Tue, 25 Aug 2020 08:59:08 +0000
-X-Mailer: git-send-email 2.28.0
-X-Originating-IP: [37.71.187.125]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d6be8db3-345f-4f74-f50c-08d848d5218c
-X-MS-TrafficTypeDiagnostic: SN6PR11MB3501:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SN6PR11MB3501B6DE970067D98377765793570@SN6PR11MB3501.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zhBySxw0t2CB55Mb/Fzjmt1QPy5u/ZOdt1lvX06FQj+3nr2rw/it41hcjfPT4aUIsOzpum7rhUq1MOQbxbMt0OPqRj1DiNJsU6YgxZBuFgf7R9WOSEx7AjDdZ89TkHx8IGXYzNXIKzu8CyxfBlAYlsbQXWRqNLRDShcKcSnETMVBgerPD0+SRJat4fe1vA5C+rBRUWko3isEq28crwmujI8MwD02iEzfi+AscHQPLRXcG8wkf0ae3xWBYp2xPNRJuHq+35oeTJqph1IurT2dUNEWNdNF69WKhhorCAAxWrjznyyUBocrzUQy9GJhB2n8tpUYrHCByVtplmWiiS1OlA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(39840400004)(396003)(346002)(376002)(366004)(316002)(5660300002)(478600001)(107886003)(1076003)(8936002)(4744005)(83380400001)(16576012)(956004)(66556008)(66476007)(26005)(2616005)(186003)(8676002)(86362001)(66946007)(6486002)(54906003)(6666004)(36756003)(4326008)(66574015)(2906002)(52116002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: kQbtbU0k6CZTNO7u7pJ9aYF4bC9Qiq1BotACZIE8UbrmAcfzs1gU50phqmqPHj4beTqZcGkzlnbEfZOFJuQA5a2sYQvqR2U2K24HlfHjMil95qi9dlsviX+MH0PyBTOFGN2xXzjtLPj64mTF23vheTmmdeWl+TDV7IL86Yg6zcSLuNEAlP05CCql3WFGTiH724btRER3YGGilNnB8UA1yh7pfrXMRH7jx0WtAaoW0NynoH9A6RGqyQ6uMOyQ06Rh5E7zxy6tT+ol9Y308JVeI8ruqsp/+iStrue+fUEWFVGEhml0XYoj+ZYyunKgkk5faJl48cgr+ZlrEcQzPzOtXfQONvEVQzsYNYqbfdw76p6uai8gsPv9DMalxygGyPEfsEi0aXJZfbeErOlEyjPH17SC8ZtGhnOyuzY6WRav/GQ15pKFkURiSFgDpMj6BpE2gt7pTVr75aE69e5awm2KuVL5A1bDgPZS8+vc8bYjAO+Lbti0L4anVodDpKmk7DZ1hFnl4Rs5gpzx5VxH7o2+oLbwBplAZeUwZ2hcwYrFMp+ygQV1BpBYvbTTV+akh4Mm87LKNSehY/E80JawV/tZNr8mcLkaooKmgImS16nV8+jT/gfvbXR8/fOegPWNS6RIQqF0gRaGFJE+755gGsoVRw==
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d6be8db3-345f-4f74-f50c-08d848d5218c
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2020 08:59:10.4073
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AwEpjS0IjRl28JIVmAPHVHJVvGMq2bc7sx3yuDEIxokxJz7/S/TIf/mPmKF2Vbz42ErY2Y6N/fOKJRGXhuV5xA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3501
+References: <CAM7CaVQf-xymnx8y-nn7E3N6P5=-HF2i_1XhFgp1MZB1==WZiA@mail.gmail.com>
+ <6be0e30c-e9ec-17ea-968b-6ec5a9559dac@gmail.com> <CAAkXG4f5YvZKxQ+2SgcOTwJ1ToGUQnCuSnOBZsXTke+fLcE_WA@mail.gmail.com>
+In-Reply-To: <CAAkXG4f5YvZKxQ+2SgcOTwJ1ToGUQnCuSnOBZsXTke+fLcE_WA@mail.gmail.com>
+From:   =?UTF-8?Q?Robert_Bengtsson=2D=C3=96lund?= 
+        <robert.bengtsson-olund@intinor.se>
+Date:   Tue, 25 Aug 2020 11:01:52 +0200
+Message-ID: <CAM7CaVSCNO1MWNfzQhVwU0=hP_LYP9k1fzxyWTUfn2c9M-c8Ng@mail.gmail.com>
+Subject: Re: Request for backport of 78dc70ebaa38aa303274e333be6c98eef87619e2
+ to 4.19.y
+To:     Priyaranjan Jha <priyarjha@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>, netdev@vger.kernel.org,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKSW4g
-dGhlIG9sZCBkYXlzLCBpZWVlODAyMTEgcG93ZXJzYXZlIGhhcyBzb21lIGltcGFjdCBvbiB0aGUg
-Unggc3BlZWQuClRoZXNlIHByb2JsZW1zIGFyZSBzb2x2ZWQgZm9yIGEgbG9uZyB0aW1lIG5vdy4g
-VGhlcmUgaXMgbm8gbW9yZSByZWFzb24KdG8gbm90IGVuYWJsaW5nIGl0LgoKU2lnbmVkLW9mZi1i
-eTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgotLS0KIGRy
-aXZlcnMvc3RhZ2luZy93ZngvbWFpbi5jIHwgMSAtCiAxIGZpbGUgY2hhbmdlZCwgMSBkZWxldGlv
-bigtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy93ZngvbWFpbi5jIGIvZHJpdmVycy9z
-dGFnaW5nL3dmeC9tYWluLmMKaW5kZXggNWEzMDE4ZTE0NDQ1Li41ZTJiODI0OTkwMDQgMTAwNjQ0
-Ci0tLSBhL2RyaXZlcnMvc3RhZ2luZy93ZngvbWFpbi5jCisrKyBiL2RyaXZlcnMvc3RhZ2luZy93
-ZngvbWFpbi5jCkBAIC0yODUsNyArMjg1LDYgQEAgc3RydWN0IHdmeF9kZXYgKndmeF9pbml0X2Nv
-bW1vbihzdHJ1Y3QgZGV2aWNlICpkZXYsCiAJaHctPndpcGh5LT5mZWF0dXJlcyB8PSBOTDgwMjEx
-X0ZFQVRVUkVfQVBfU0NBTjsKIAlody0+d2lwaHktPmZsYWdzIHw9IFdJUEhZX0ZMQUdfQVBfUFJP
-QkVfUkVTUF9PRkZMT0FEOwogCWh3LT53aXBoeS0+ZmxhZ3MgfD0gV0lQSFlfRkxBR19BUF9VQVBT
-RDsKLQlody0+d2lwaHktPmZsYWdzICY9IH5XSVBIWV9GTEFHX1BTX09OX0JZX0RFRkFVTFQ7CiAJ
-aHctPndpcGh5LT5tYXhfYXBfYXNzb2Nfc3RhID0gSElGX0xJTktfSURfTUFYOwogCWh3LT53aXBo
-eS0+bWF4X3NjYW5fc3NpZHMgPSAyOwogCWh3LT53aXBoeS0+bWF4X3NjYW5faWVfbGVuID0gSUVF
-RTgwMjExX01BWF9EQVRBX0xFTjsKLS0gCjIuMjguMAoK
+Much appreciated.
+
+Thank you everyone.
+/Robert
+
+
+On Mon, 24 Aug 2020 at 20:39, Priyaranjan Jha <priyarjha@google.com> wrote:
+>
+> Thank you, Eric, Robert.
+> We will try to provide the backport for the patch soon.
+>
+> Thanks,
+> Priyaranjan
+>
+> (resending since previous reply bounced back)
+> On Mon, Aug 24, 2020 at 9:14 AM Eric Dumazet <eric.dumazet@gmail.com> wro=
+te:
+> >
+> >
+> >
+> > On 8/24/20 7:35 AM, Robert Bengtsson-=C3=96lund wrote:
+> > > Hi everyone
+> > >
+> > > We stumbled upon a TCP BBR throughput issue that the following change=
+ fixes.
+> > > git: 78dc70ebaa38aa303274e333be6c98eef87619e2
+> > >
+> > > Our issue:
+> > > We have a transmission that is application limited to 20Mbps on an
+> > > ethernet connection that has ~1Gbps capacity.
+> > > Without this change our transmission seems to settle at ~3.5Mbps.
+> > >
+> > > We have seen the issue on a slightly different network setup as well
+> > > between two fiber internet connections.
+> > >
+> > > Due to what the mentioned commit changes we suspect some middlebox
+> > > plays with the ACK frequency in both of our cases.
+> > >
+> > > Our transmission is basically an RTMP feed through ffmpeg to MistServ=
+er.
+> > >
+> > > Best regards
+> > > /Robert
+> > >
+> >
+> > Please always CC patch authors in this kind of requests.
+> >
+> > Thanks.
+> >
+> > Patch was :
+> >
+> > commit 78dc70ebaa38aa303274e333be6c98eef87619e2
+> > Author: Priyaranjan Jha <priyarjha@google.com>
+> > Date:   Wed Jan 23 12:04:54 2019 -0800
+> >
+> >     tcp_bbr: adapt cwnd based on ack aggregation estimation
+> >
+> >     Aggregation effects are extremely common with wifi, cellular, and c=
+able
+> >     modem link technologies, ACK decimation in middleboxes, and LRO and=
+ GRO
+> >     in receiving hosts. The aggregation can happen in either direction,
+> >     data or ACKs, but in either case the aggregation effect is visible
+> >     to the sender in the ACK stream.
+> >
+> >     Previously BBR's sending was often limited by cwnd under severe ACK
+> >     aggregation/decimation because BBR sized the cwnd at 2*BDP. If pack=
+ets
+> >     were acked in bursts after long delays (e.g. one ACK acking 5*BDP a=
+fter
+> >     5*RTT), BBR's sending was halted after sending 2*BDP over 2*RTT, le=
+aving
+> >     the bottleneck idle for potentially long periods. Note that loss-ba=
+sed
+> >     congestion control does not have this issue because when facing
+> >     aggregation it continues increasing cwnd after bursts of ACKs, grow=
+ing
+> >     cwnd until the buffer is full.
+> >
+> >     To achieve good throughput in the presence of aggregation effects, =
+this
+> >     algorithm allows the BBR sender to put extra data in flight to keep=
+ the
+> >     bottleneck utilized during silences in the ACK stream that it has e=
+vidence
+> >     to suggest were caused by aggregation.
+> >
+> >     A summary of the algorithm: when a burst of packets are acked by a
+> >     stretched ACK or a burst of ACKs or both, BBR first estimates the e=
+xpected
+> >     amount of data that should have been acked, based on its estimated
+> >     bandwidth. Then the surplus ("extra_acked") is recorded in a window=
+ed-max
+> >     filter to estimate the recent level of observed ACK aggregation. Th=
+en cwnd
+> >     is increased by the ACK aggregation estimate. The larger cwnd avoid=
+s BBR
+> >     being cwnd-limited in the face of ACK silences that recent history =
+suggests
+> >     were caused by aggregation. As a sanity check, the ACK aggregation =
+degree
+> >     is upper-bounded by the cwnd (at the time of measurement) and a glo=
+bal max
+> >     of BW * 100ms. The algorithm is further described by the following
+> >     presentation:
+> >     https://datatracker.ietf.org/meeting/101/materials/slides-101-iccrg=
+-an-update-on-bbr-work-at-google-00
+> >
+> >     In our internal testing, we observed a significant increase in BBR
+> >     throughput (measured using netperf), in a basic wifi setup.
+> >     - Host1 (sender on ethernet) -> AP -> Host2 (receiver on wifi)
+> >     - 2.4 GHz -> BBR before: ~73 Mbps; BBR after: ~102 Mbps; CUBIC: ~10=
+0 Mbps
+> >     - 5.0 GHz -> BBR before: ~362 Mbps; BBR after: ~593 Mbps; CUBIC: ~6=
+01 Mbps
+> >
+> >     Also, this code is running globally on YouTube TCP connections and =
+produced
+> >     significant bandwidth increases for YouTube traffic.
+> >
+> >     This is based on Ian Swett's max_ack_height_ algorithm from the
+> >     QUIC BBR implementation.
+> >
+> >     Signed-off-by: Priyaranjan Jha <priyarjha@google.com>
+> >     Signed-off-by: Neal Cardwell <ncardwell@google.com>
+> >     Signed-off-by: Yuchung Cheng <ycheng@google.com>
+> >     Signed-off-by: David S. Miller <davem@davemloft.net>
+> >
+
+
+
+--=20
+Robert Bengtsson-=C3=96lund, System Developer
+Software Development
++46(0)90-349 39 00
+
+www.intinor.com
+
+-- INTINOR --
+WE ARE DIREKT
