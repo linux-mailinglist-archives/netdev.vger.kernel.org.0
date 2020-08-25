@@ -2,204 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9FFF251AEF
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 16:36:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BB48251B01
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 16:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbgHYOgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 10:36:35 -0400
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:46506 "EHLO
-        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726551AbgHYOga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 10:36:30 -0400
-Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id E9866445324;
-        Tue, 25 Aug 2020 16:36:08 +0200 (CEST)
-Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
-        (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1kAa3U-0006Cd-NT; Tue, 25 Aug 2020 16:36:08 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
-        laforge@gnumonks.org, osmocom-net-gprs@lists.osmocom.org
-Cc:     netdev@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Gabriel Ganne <gabriel.ganne@6wind.com>
-Subject: [PATCH net-next] gtp: add notification mechnism
-Date:   Tue, 25 Aug 2020 16:35:56 +0200
-Message-Id: <20200825143556.23766-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.26.2
+        id S1725998AbgHYOjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 10:39:49 -0400
+Received: from netrider.rowland.org ([192.131.102.5]:57463 "HELO
+        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S1726191AbgHYOjr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 10:39:47 -0400
+Received: (qmail 367187 invoked by uid 1000); 25 Aug 2020 10:39:46 -0400
+Date:   Tue, 25 Aug 2020 10:39:46 -0400
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
+        Himadri Pandya <himadrispandya@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        USB list <linux-usb@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: [PATCH] net: usb: Fix uninit-was-stored issue in asix_read_cmd()
+Message-ID: <20200825143946.GA365901@rowland.harvard.edu>
+References: <20200823082042.20816-1-himadrispandya@gmail.com>
+ <CACT4Y+Y1TpqYowNXj+OTcQwH-7T4n6PtPPa4gDWkV-np5KhKAQ@mail.gmail.com>
+ <20200823101924.GA3078429@kroah.com>
+ <CACT4Y+YbDODLRFn8M5QcY4CazhpeCaunJnP_udXtAs0rYoASSg@mail.gmail.com>
+ <20200823105808.GB87391@kroah.com>
+ <CACT4Y+ZiZQK8WBre9E4777NPaRK4UDOeZOeMZOQC=5tDsDu23A@mail.gmail.com>
+ <20200825065135.GA1316856@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200825065135.GA1316856@kroah.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like all other network functions, let's notify gtp context on creation and
-deletion.
+On Tue, Aug 25, 2020 at 08:51:35AM +0200, Greg Kroah-Hartman wrote:
+> At first glance, I think this can all be cleaned up, but it will take a
+> bit of tree-wide work.  I agree, we need a "read this message and error
+> if the whole thing is not there", as well as a "send this message and
+> error if the whole thing was not sent", and also a way to handle
+> stack-provided data, which seems to be the primary reason subsystems
+> wrap this call (they want to make it easier on their drivers to use it.)
+> 
+> Let me think about this in more detail, but maybe something like:
+> 	usb_control_msg_read()
+> 	usb_control_msg_send()
+> is a good first step (as the caller knows this) and stack provided data
+> would be allowed, and it would return an error if the whole message was
+> not read/sent properly.  That way we can start converting everything
+> over to a sane, and checkable, api and remove a bunch of wrapper
+> functions as well.
 
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Tested-by: Gabriel Ganne <gabriel.ganne@6wind.com>
----
- drivers/net/gtp.c        | 58 +++++++++++++++++++++++++++++++++-------
- include/uapi/linux/gtp.h |  2 ++
- 2 files changed, 51 insertions(+), 9 deletions(-)
+Suggestion: _read and _send are not a natural pair.  Consider instead
+_read and _write.  _recv and _send don't feel right either, because it
+both cases the host sends the control message -- the difference lies
+in who sends the data.
 
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 8e47d0112e5d..360c1dc9381e 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -928,8 +928,8 @@ static void ipv4_pdp_fill(struct pdp_ctx *pctx, struct genl_info *info)
- 	}
- }
- 
--static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
--		       struct genl_info *info)
-+static struct pdp_ctx *gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
-+				   struct genl_info *info)
- {
- 	struct pdp_ctx *pctx, *pctx_tid = NULL;
- 	struct net_device *dev = gtp->dev;
-@@ -956,12 +956,12 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
- 
- 	if (found) {
- 		if (info->nlhdr->nlmsg_flags & NLM_F_EXCL)
--			return -EEXIST;
-+			return ERR_PTR(-EEXIST);
- 		if (info->nlhdr->nlmsg_flags & NLM_F_REPLACE)
--			return -EOPNOTSUPP;
-+			return ERR_PTR(-EOPNOTSUPP);
- 
- 		if (pctx && pctx_tid)
--			return -EEXIST;
-+			return ERR_PTR(-EEXIST);
- 		if (!pctx)
- 			pctx = pctx_tid;
- 
-@@ -974,13 +974,13 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
- 			netdev_dbg(dev, "GTPv1-U: update tunnel id = %x/%x (pdp %p)\n",
- 				   pctx->u.v1.i_tei, pctx->u.v1.o_tei, pctx);
- 
--		return 0;
-+		return pctx;
- 
- 	}
- 
- 	pctx = kmalloc(sizeof(*pctx), GFP_ATOMIC);
- 	if (pctx == NULL)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	sock_hold(sk);
- 	pctx->sk = sk;
-@@ -1018,7 +1018,7 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
- 		break;
- 	}
- 
--	return 0;
-+	return pctx;
- }
- 
- static void pdp_context_free(struct rcu_head *head)
-@@ -1036,9 +1036,12 @@ static void pdp_context_delete(struct pdp_ctx *pctx)
- 	call_rcu(&pctx->rcu_head, pdp_context_free);
- }
- 
-+static int gtp_tunnel_notify(struct pdp_ctx *pctx, u8 cmd);
-+
- static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
- {
- 	unsigned int version;
-+	struct pdp_ctx *pctx;
- 	struct gtp_dev *gtp;
- 	struct sock *sk;
- 	int err;
-@@ -1088,7 +1091,13 @@ static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
- 		goto out_unlock;
- 	}
- 
--	err = gtp_pdp_add(gtp, sk, info);
-+	pctx = gtp_pdp_add(gtp, sk, info);
-+	if (IS_ERR(pctx)) {
-+		err = PTR_ERR(pctx);
-+	} else {
-+		gtp_tunnel_notify(pctx, GTP_CMD_NEWPDP);
-+		err = 0;
-+	}
- 
- out_unlock:
- 	rcu_read_unlock();
-@@ -1159,6 +1168,7 @@ static int gtp_genl_del_pdp(struct sk_buff *skb, struct genl_info *info)
- 		netdev_dbg(pctx->dev, "GTPv1-U: deleting tunnel id = %x/%x (pdp %p)\n",
- 			   pctx->u.v1.i_tei, pctx->u.v1.o_tei, pctx);
- 
-+	gtp_tunnel_notify(pctx, GTP_CMD_DELPDP);
- 	pdp_context_delete(pctx);
- 
- out_unlock:
-@@ -1168,6 +1178,14 @@ static int gtp_genl_del_pdp(struct sk_buff *skb, struct genl_info *info)
- 
- static struct genl_family gtp_genl_family;
- 
-+enum gtp_multicast_groups {
-+        GTP_GENL_MCGRP,
-+};
-+
-+static const struct genl_multicast_group gtp_genl_mcgrps[] = {
-+	[GTP_GENL_MCGRP] = { .name = GTP_GENL_MCGRP_NAME },
-+};
-+
- static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
- 			      int flags, u32 type, struct pdp_ctx *pctx)
- {
-@@ -1205,6 +1223,26 @@ static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
- 	return -EMSGSIZE;
- }
- 
-+static int gtp_tunnel_notify(struct pdp_ctx *pctx, u8 cmd)
-+{
-+	struct sk_buff *msg;
-+	int ret;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	ret = gtp_genl_fill_info(msg, 0, 0, 0, cmd, pctx);
-+	if (ret < 0) {
-+		nlmsg_free(msg);
-+		return ret;
-+	}
-+
-+	ret = genlmsg_multicast_netns(&gtp_genl_family, dev_net(pctx->dev), msg,
-+				      0, GTP_GENL_MCGRP, GFP_ATOMIC);
-+	return ret;
-+}
-+
- static int gtp_genl_get_pdp(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct pdp_ctx *pctx = NULL;
-@@ -1335,6 +1373,8 @@ static struct genl_family gtp_genl_family __ro_after_init = {
- 	.module		= THIS_MODULE,
- 	.ops		= gtp_genl_ops,
- 	.n_ops		= ARRAY_SIZE(gtp_genl_ops),
-+	.mcgrps		= gtp_genl_mcgrps,
-+	.n_mcgrps	= ARRAY_SIZE(gtp_genl_mcgrps),
- };
- 
- static int __net_init gtp_net_init(struct net *net)
-diff --git a/include/uapi/linux/gtp.h b/include/uapi/linux/gtp.h
-index c7d66755d212..79f9191bbb24 100644
---- a/include/uapi/linux/gtp.h
-+++ b/include/uapi/linux/gtp.h
-@@ -2,6 +2,8 @@
- #ifndef _UAPI_LINUX_GTP_H_
- #define _UAPI_LINUX_GTP_H_
- 
-+#define GTP_GENL_MCGRP_NAME	"gtp"
-+
- enum gtp_genl_cmds {
- 	GTP_CMD_NEWPDP,
- 	GTP_CMD_DELPDP,
--- 
-2.26.2
-
+Alan Stern
