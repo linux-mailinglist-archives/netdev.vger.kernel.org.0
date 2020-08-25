@@ -2,65 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C104251931
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 15:06:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2CA251929
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 15:05:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727824AbgHYNGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 09:06:52 -0400
-Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:46191 "EHLO
-        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726230AbgHYNGv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 09:06:51 -0400
-X-Greylist: delayed 424 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Aug 2020 09:06:50 EDT
-Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
-        by proxy.6wind.com (Postfix) with ESMTPS id B4A67445186;
-        Tue, 25 Aug 2020 14:59:45 +0200 (CEST)
-Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
-        (envelope-from <dichtel@bretzel.dev.6wind.com>)
-        id 1kAYYD-0005Xw-Gu; Tue, 25 Aug 2020 14:59:45 +0200
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-To:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
-        laforge@gnumonks.org, osmocom-net-gprs@lists.osmocom.org
-Cc:     netdev@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Gabriel Ganne <gabriel.ganne@6wind.com>
-Subject: [PATCH net] gtp: add GTPA_LINK info to msg sent to userspace
-Date:   Tue, 25 Aug 2020 14:59:40 +0200
-Message-Id: <20200825125940.21238-1-nicolas.dichtel@6wind.com>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727008AbgHYNFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 09:05:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725792AbgHYNFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 09:05:08 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31810C061574;
+        Tue, 25 Aug 2020 06:05:07 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1DFA011E45763;
+        Tue, 25 Aug 2020 05:48:16 -0700 (PDT)
+Date:   Tue, 25 Aug 2020 06:04:59 -0700 (PDT)
+Message-Id: <20200825.060459.1286154906360629138.davem@davemloft.net>
+To:     linmiaohe@huawei.com
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: gain ipv4 mtu when mtu is not locked
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200825032028.50760-1-linmiaohe@huawei.com>
+References: <20200825032028.50760-1-linmiaohe@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Aug 2020 05:48:16 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During a dump, this attribute is essential, it enables the userspace to
-know on which interface the context is linked to.
+From: Miaohe Lin <linmiaohe@huawei.com>
+Date: Mon, 24 Aug 2020 23:20:28 -0400
 
-Fixes: 459aa660eb1d ("gtp: add initial driver for datapath of GPRS Tunneling Protocol (GTP-U)")
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Tested-by: Gabriel Ganne <gabriel.ganne@6wind.com>
----
+> When mtu is locked, we should not obtain ipv4 mtu as we return immediately
+> in this case and leave acquired ipv4 mtu unused.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 
-I target this to net, because I think this is a bug fix. The dump result cannot
-be used if there is more than one gtp interface on the system.
-
- drivers/net/gtp.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 21640a035d7d..8e47d0112e5d 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -1179,6 +1179,7 @@ static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
- 		goto nlmsg_failure;
- 
- 	if (nla_put_u32(skb, GTPA_VERSION, pctx->gtp_version) ||
-+	    nla_put_u32(skb, GTPA_LINK, pctx->dev->ifindex) ||
- 	    nla_put_be32(skb, GTPA_PEER_ADDRESS, pctx->peer_addr_ip4.s_addr) ||
- 	    nla_put_be32(skb, GTPA_MS_ADDRESS, pctx->ms_addr_ip4.s_addr))
- 		goto nla_put_failure;
--- 
-2.26.2
-
+Applied to net-next.
