@@ -2,72 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD32F2521C4
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 22:17:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C09342521CF
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 22:18:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726698AbgHYURS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 16:17:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59436 "EHLO
+        id S1726752AbgHYUSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 16:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726149AbgHYURP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 16:17:15 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05999C061574;
-        Tue, 25 Aug 2020 13:17:14 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id l23so12368632edv.11;
-        Tue, 25 Aug 2020 13:17:14 -0700 (PDT)
+        with ESMTP id S1726149AbgHYUSp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 16:18:45 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 522B8C061574;
+        Tue, 25 Aug 2020 13:18:45 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id f24so10087472edw.10;
+        Tue, 25 Aug 2020 13:18:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:subject:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=81t2aDI5v1x3cz6lfle+1PiUyFahp9ZjxTfV8FCX8Xo=;
-        b=IZvJ/ufQek750GeWPxk9BxabiDFeqIOQLeTijcyIhHyqigJDxAvuLEvssHqG0ByYzd
-         5RgULxsKaJVJ/ImRbHQoZ0UFLH/eHB+6QDVs9zdYHOdZ/ifdWTqet4IRO/hirzYDWmc8
-         QYM/voORlmaRa+9Y6b3zrNyVjezPqsZhWnlV94NsZVQZQCUy+GwJgJoU8B34nUaTX19c
-         5vRRdzc4eVIKv3TpU3AHGvc/SPWcLEu2oTxbjF/IXCE+Hd+O51/5Mebf1b8QraGMBCdX
-         xjOjs8dPxfFV5tu7xI1ApTxRqfNc8wv2eEiCSGkD7rQriK712jxAgx+hXIo5og/QWnbT
-         m5+g==
+        bh=8k54/wE0SJdSYHFKB65kPT2GfYY/F68XNItC0ZawlMs=;
+        b=Rv4w+BsVBU9bQLlMX5nPmcv/iby7Atp6ZZWB8ouG2LBYQCQO6yK3bsOCRaDyo0fD2u
+         z9mvfWrDzWtn31JC7edW3JoTUVRsmcLVRWv0KqFtwGB54Mop9v5/IkA+0dSfl3zpVCqv
+         ukYUDPpLX4NrCWY36fBvJ0Gk1IpgbeDkXLPldeQ1+F27Yp0oC1XCDd6v/zL/V82b+ByN
+         MkZek+GZtchOBGt2lEkrS4ZdivRtPfSHCHtxJ1IMoI5oztjwEMMP3NlekvDiTfOmo2Y2
+         sMxaHNw4h65nSS0f+uiyIHOrYK0rOmgoHrvd4AuFoc3lFFDUUKoFZBLjxJ95PsQWMpSa
+         5XKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:subject:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=81t2aDI5v1x3cz6lfle+1PiUyFahp9ZjxTfV8FCX8Xo=;
-        b=NoocFbsS/FtqVu9xQPx5Zy0j6B6BzkzKZNDiRNZ1UdwtPUzwQliSqERWv926Aw4e00
-         lb6kCeHdOv7WU3xKtAy4MoQMzD1MmCDp485aiWxTj2B4vsDUyE8BCUERciZb6Z9530mw
-         UePGeeJU/D/ZlEAtCBR/y2tbhoP0XtXVgYnMVs7EHykUHi6M1hDjJFK+ov5cd1gOv/UZ
-         BGaetOKV9PvElhPp4z9IAjG76swQcFzaGWDqcWpjxI2WZ4zRoIQ0AncZ9MMo1/PZj/HI
-         rPMrSOjl6yDS2VQbYJcQ2iS+QZLbu6U5Mas44r32rGRHF2H6Q8b13MQWd4WOyibe8XD2
-         bsxw==
-X-Gm-Message-State: AOAM533PenUw8vrYB1aJuiKz3dvcrneRHHd7nQNW70+IJaV47ZNJWSG6
-        kRl95b5E574i2VLRHzxzXyU=
-X-Google-Smtp-Source: ABdhPJzDMdTD0z69cJdwS/8jhUmd/UCBW5lo2GAsKIaEs4WrroEXT6CUJTbOoG5ZIVbA0v2Ssh5/Dw==
-X-Received: by 2002:a50:8709:: with SMTP id i9mr12236951edb.141.1598386632599;
-        Tue, 25 Aug 2020 13:17:12 -0700 (PDT)
+        bh=8k54/wE0SJdSYHFKB65kPT2GfYY/F68XNItC0ZawlMs=;
+        b=U+tJMUqjnziRCeMyDZf0ZO7QLd2crpM88kmJdRwOUy+rH5kbc6MvRAgG6PZ08+N6+e
+         buGU1gAQF7KhiyU3uOPWeffsztAIkREp05/B66X6PX9II+VWlcZbED2lll5DhQp4jNmj
+         2BphTGwl0GdXLf4MU1VOBcgybokLtI/vrJZn64lLd0QgzAoJswYYy5pqIUuTrbB36IzW
+         Xg5pgT743aobNw5EkFBlGeYTfUFF3+pxsfq7MUfZAC6qtFkXdqCeC0M691fMjv4pBnET
+         G/k69WuT3Q8jq+brQu1soqQKYlyVWVj5Bv1ZOaipMtD6g1ja4Bg0rgkQwbgP+GCLQ44z
+         XJyg==
+X-Gm-Message-State: AOAM532OoNpwdtHSciEOcoxZ7iYO+2FSTROojb/MsleCsmcUDmrffcUx
+        eTu4dujb500TL/ZCKeajGKyYghdcdfotHA==
+X-Google-Smtp-Source: ABdhPJwjRBjRSuLtemmLEN8j2cEzr4ZD1/ajIblLZhbYqPBNqz/8YT4tY6U4+d4dS25qBeJ7gxnJHg==
+X-Received: by 2002:a05:6402:74f:: with SMTP id p15mr10295040edy.377.1598386723973;
+        Tue, 25 Aug 2020 13:18:43 -0700 (PDT)
 Received: from [192.168.2.202] (pd9ea301b.dip0.t-ipconnect.de. [217.234.48.27])
-        by smtp.gmail.com with ESMTPSA id sd17sm14506440ejb.93.2020.08.25.13.17.10
+        by smtp.gmail.com with ESMTPSA id dr21sm15574816ejc.112.2020.08.25.13.18.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Aug 2020 13:17:11 -0700 (PDT)
+        Tue, 25 Aug 2020 13:18:43 -0700 (PDT)
 From:   Maximilian Luz <luzmaximilian@gmail.com>
 Subject: Re: [PATCH net] mwifiex: Increase AES key storage size to 256 bits
-To:     Dan Carpenter <dan.carpenter@oracle.com>
+To:     Brian Norris <briannorris@chromium.org>
 Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Ganapathi Bhat <ganapathi.bhat@nxp.com>,
         Xinming Hu <huxinming820@gmail.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kaloyan Nikolov <konik98@gmail.com>,
-        Brian Norris <briannorris@chromium.org>
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev@vger.kernel.org,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Kaloyan Nikolov <konik98@gmail.com>
 References: <20200825153829.38043-1-luzmaximilian@gmail.com>
- <20200825185151.GV5493@kadam>
-Message-ID: <54a785f9-d49e-354b-1430-8a854b4d36c5@gmail.com>
-Date:   Tue, 25 Aug 2020 22:17:10 +0200
+ <CA+ASDXPoxdMb4b5d0Ayv=JFACHcq7EXub14pJtJfcCV2di95Rg@mail.gmail.com>
+Message-ID: <65b14706-321d-4025-f199-a89768815dfe@gmail.com>
+Date:   Tue, 25 Aug 2020 22:18:42 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200825185151.GV5493@kadam>
+In-Reply-To: <CA+ASDXPoxdMb4b5d0Ayv=JFACHcq7EXub14pJtJfcCV2di95Rg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -76,25 +78,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/25/20 8:51 PM, Dan Carpenter wrote:
-> I sort of feel like the code was broken before I added the bounds
-> checking but it's also okay if the Fixes tag points to my change as
-> well just to make backporting easier.
+On 8/25/20 9:30 PM, Brian Norris wrote:
+> Also, while technically the regressing commit (e18696786548 ("mwifiex:
+> Prevent memory corruption handling keys")) was fixing a potential
+> overflow, the encasing command structure (struct host_cmd_ds_command)
+> is a union of a ton of other command layouts, and likely had plenty of
+> padding at the end, which would at least explain why non-malicious
+> scenarios weren't problematic pre-commit-e18696786548.
 
-I'd argue the same. Any critical out-of-bounds access was just never
-discovered (at least for 256 bit keys) due to the struct containing the
-key being a union member, as Brian observed.
+This is pretty much spot on, although as far as I can tell, the padding
+comes from struct mwifiex_ie_type_key_param_set_v2. That contains a
+key_params member, which is a union over all supported key types,
+including other 256 bit types (like struct mwifiex_wapi_param).
 
-> Another question would be if it would be better to move the bounds
-> check after the "if (key_v2->key_param_set.key_type != KEY_TYPE_ID_AES)"
-> check?  Do we care if the length is invalid on the other paths?
-
-Given that I have pretty much no knowledge of the driver, I
-unfortunately can't answer this. But I agree that this should be looked
-at. I think this has the potential to work now (as long as the maximum
-key size is 256 bit) but break in the future if the maximum key size
-ever gets larger and the check excludes some key types that would be
-valid in this context (if there are even any?).
+I should also note that this fix also affects mwifiex_set_aes_key_v2(),
+where sizeof(struct mwifiex_aes_param) is used to calculate the command
+length of what looks like a command being sent to the chip. This should
+probably be reviewed by someone with a bit more inside knowledge about
+the driver, as this could potentially break something due to the commit
+changing it from 16 to 32. I think, however, that this might actually
+also fix a potential issue when setting 256 bit AES keys.
 
 Regards,
 Max
