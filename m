@@ -2,177 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DA3725189C
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 14:33:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C104251931
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 15:06:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727833AbgHYMdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 08:33:39 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:10320 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726691AbgHYMdf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 08:33:35 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id EDFE757303068AF559DB;
-        Tue, 25 Aug 2020 20:33:28 +0800 (CST)
-Received: from huawei.com (10.175.104.175) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Tue, 25 Aug 2020
- 20:33:19 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
-        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] net: clean up codestyle for net/ipv4
-Date:   Tue, 25 Aug 2020 08:32:11 -0400
-Message-ID: <20200825123211.33235-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.19.1
+        id S1727824AbgHYNGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 09:06:52 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:46191 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726230AbgHYNGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 09:06:51 -0400
+X-Greylist: delayed 424 seconds by postgrey-1.27 at vger.kernel.org; Tue, 25 Aug 2020 09:06:50 EDT
+Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
+        by proxy.6wind.com (Postfix) with ESMTPS id B4A67445186;
+        Tue, 25 Aug 2020 14:59:45 +0200 (CEST)
+Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
+        (envelope-from <dichtel@bretzel.dev.6wind.com>)
+        id 1kAYYD-0005Xw-Gu; Tue, 25 Aug 2020 14:59:45 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
+        laforge@gnumonks.org, osmocom-net-gprs@lists.osmocom.org
+Cc:     netdev@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Gabriel Ganne <gabriel.ganne@6wind.com>
+Subject: [PATCH net] gtp: add GTPA_LINK info to msg sent to userspace
+Date:   Tue, 25 Aug 2020 14:59:40 +0200
+Message-Id: <20200825125940.21238-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.175]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a pure codestyle cleanup patch. Also add a blank line after
-declarations as warned by checkpatch.pl.
+During a dump, this attribute is essential, it enables the userspace to
+know on which interface the context is linked to.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Fixes: 459aa660eb1d ("gtp: add initial driver for datapath of GPRS Tunneling Protocol (GTP-U)")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Tested-by: Gabriel Ganne <gabriel.ganne@6wind.com>
 ---
- net/ipv4/ip_options.c | 35 +++++++++++++++++++----------------
- net/ipv4/ip_output.c  |  2 +-
- net/ipv4/route.c      |  6 +++---
- 3 files changed, 23 insertions(+), 20 deletions(-)
 
-diff --git a/net/ipv4/ip_options.c b/net/ipv4/ip_options.c
-index 948747aac4e2..da1b5038bdfd 100644
---- a/net/ipv4/ip_options.c
-+++ b/net/ipv4/ip_options.c
-@@ -47,32 +47,32 @@ void ip_options_build(struct sk_buff *skb, struct ip_options *opt,
- 	unsigned char *iph = skb_network_header(skb);
+I target this to net, because I think this is a bug fix. The dump result cannot
+be used if there is more than one gtp interface on the system.
+
+ drivers/net/gtp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index 21640a035d7d..8e47d0112e5d 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -1179,6 +1179,7 @@ static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
+ 		goto nlmsg_failure;
  
- 	memcpy(&(IPCB(skb)->opt), opt, sizeof(struct ip_options));
--	memcpy(iph+sizeof(struct iphdr), opt->__data, opt->optlen);
-+	memcpy(iph + sizeof(struct iphdr), opt->__data, opt->optlen);
- 	opt = &(IPCB(skb)->opt);
- 
- 	if (opt->srr)
--		memcpy(iph+opt->srr+iph[opt->srr+1]-4, &daddr, 4);
-+		memcpy(iph + opt->srr + iph[opt->srr + 1] - 4, &daddr, 4);
- 
- 	if (!is_frag) {
- 		if (opt->rr_needaddr)
--			ip_rt_get_source(iph+opt->rr+iph[opt->rr+2]-5, skb, rt);
-+			ip_rt_get_source(iph + opt->rr + iph[opt->rr + 2] - 5, skb, rt);
- 		if (opt->ts_needaddr)
--			ip_rt_get_source(iph+opt->ts+iph[opt->ts+2]-9, skb, rt);
-+			ip_rt_get_source(iph + opt->ts + iph[opt->ts + 2] - 9, skb, rt);
- 		if (opt->ts_needtime) {
- 			__be32 midtime;
- 
- 			midtime = inet_current_timestamp();
--			memcpy(iph+opt->ts+iph[opt->ts+2]-5, &midtime, 4);
-+			memcpy(iph + opt->ts + iph[opt->ts + 2] - 5, &midtime, 4);
- 		}
- 		return;
- 	}
- 	if (opt->rr) {
--		memset(iph+opt->rr, IPOPT_NOP, iph[opt->rr+1]);
-+		memset(iph + opt->rr, IPOPT_NOP, iph[opt->rr + 1]);
- 		opt->rr = 0;
- 		opt->rr_needaddr = 0;
- 	}
- 	if (opt->ts) {
--		memset(iph+opt->ts, IPOPT_NOP, iph[opt->ts+1]);
-+		memset(iph + opt->ts, IPOPT_NOP, iph[opt->ts + 1]);
- 		opt->ts = 0;
- 		opt->ts_needaddr = opt->ts_needtime = 0;
- 	}
-@@ -495,26 +495,29 @@ EXPORT_SYMBOL(ip_options_compile);
- void ip_options_undo(struct ip_options *opt)
- {
- 	if (opt->srr) {
--		unsigned  char *optptr = opt->__data+opt->srr-sizeof(struct  iphdr);
--		memmove(optptr+7, optptr+3, optptr[1]-7);
--		memcpy(optptr+3, &opt->faddr, 4);
-+		unsigned char *optptr = opt->__data + opt->srr - sizeof(struct iphdr);
-+
-+		memmove(optptr + 7, optptr + 3, optptr[1] - 7);
-+		memcpy(optptr + 3, &opt->faddr, 4);
- 	}
- 	if (opt->rr_needaddr) {
--		unsigned  char *optptr = opt->__data+opt->rr-sizeof(struct  iphdr);
-+		unsigned char *optptr = opt->__data + opt->rr - sizeof(struct iphdr);
-+
- 		optptr[2] -= 4;
--		memset(&optptr[optptr[2]-1], 0, 4);
-+		memset(&optptr[optptr[2] - 1], 0, 4);
- 	}
- 	if (opt->ts) {
--		unsigned  char *optptr = opt->__data+opt->ts-sizeof(struct  iphdr);
-+		unsigned char *optptr = opt->__data + opt->ts - sizeof(struct iphdr);
-+
- 		if (opt->ts_needtime) {
- 			optptr[2] -= 4;
--			memset(&optptr[optptr[2]-1], 0, 4);
--			if ((optptr[3]&0xF) == IPOPT_TS_PRESPEC)
-+			memset(&optptr[optptr[2] - 1], 0, 4);
-+			if ((optptr[3] & 0xF) == IPOPT_TS_PRESPEC)
- 				optptr[2] -= 4;
- 		}
- 		if (opt->ts_needaddr) {
- 			optptr[2] -= 4;
--			memset(&optptr[optptr[2]-1], 0, 4);
-+			memset(&optptr[optptr[2] - 1], 0, 4);
- 		}
- 	}
- }
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 61f802d5350c..329a0ab87542 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1351,7 +1351,7 @@ ssize_t	ip_append_page(struct sock *sk, struct flowi4 *fl4, struct page *page,
- 	if (cork->flags & IPCORK_OPT)
- 		opt = cork->opt;
- 
--	if (!(rt->dst.dev->features&NETIF_F_SG))
-+	if (!(rt->dst.dev->features & NETIF_F_SG))
- 		return -EOPNOTSUPP;
- 
- 	hh_len = LL_RESERVED_SPACE(rt->dst.dev);
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 18c8baf32de5..96fcdfb9bb26 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1079,7 +1079,7 @@ EXPORT_SYMBOL_GPL(ipv4_update_pmtu);
- 
- static void __ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
- {
--	const struct iphdr *iph = (const struct iphdr *) skb->data;
-+	const struct iphdr *iph = (const struct iphdr *)skb->data;
- 	struct flowi4 fl4;
- 	struct rtable *rt;
- 
-@@ -1127,7 +1127,7 @@ void ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
- 		new = true;
- 	}
- 
--	__ip_rt_update_pmtu((struct rtable *) xfrm_dst_path(&rt->dst), &fl4, mtu);
-+	__ip_rt_update_pmtu((struct rtable *)xfrm_dst_path(&rt->dst), &fl4, mtu);
- 
- 	if (!dst_check(&rt->dst, 0)) {
- 		if (new)
-@@ -1168,7 +1168,7 @@ EXPORT_SYMBOL_GPL(ipv4_redirect);
- 
- void ipv4_sk_redirect(struct sk_buff *skb, struct sock *sk)
- {
--	const struct iphdr *iph = (const struct iphdr *) skb->data;
-+	const struct iphdr *iph = (const struct iphdr *)skb->data;
- 	struct flowi4 fl4;
- 	struct rtable *rt;
- 	struct net *net = sock_net(sk);
+ 	if (nla_put_u32(skb, GTPA_VERSION, pctx->gtp_version) ||
++	    nla_put_u32(skb, GTPA_LINK, pctx->dev->ifindex) ||
+ 	    nla_put_be32(skb, GTPA_PEER_ADDRESS, pctx->peer_addr_ip4.s_addr) ||
+ 	    nla_put_be32(skb, GTPA_MS_ADDRESS, pctx->ms_addr_ip4.s_addr))
+ 		goto nla_put_failure;
 -- 
-2.19.1
+2.26.2
 
