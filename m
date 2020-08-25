@@ -2,122 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75EF3251F67
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 21:00:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED26A251FAC
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 21:18:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726617AbgHYTAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 15:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47584 "EHLO
+        id S1726225AbgHYTSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 15:18:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726466AbgHYTAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 15:00:31 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36CD4C061755
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 12:00:31 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id v9so15083892ljk.6
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 12:00:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IIZWu3166pXihdAEpw+Mp3W7uVSGrl+5DTpGsRd8suw=;
-        b=lsWgElMBWLnmMhFudG5zPSTYJbQ/5EhklPtOF3MT+YYIJ2ltRqVueDGqSVXyuEp5l0
-         4Fr/+4qaRi9d8qFy0aSaQoWL83iGLpaCbztACHZkNIVZGr5XeP2X9SE/mPsM0Pyw3Obj
-         /AI28oA7vpsLnZgCp0GuSFsun9X2dMJUOx12jC7SC5ZdEEjmfOETQ92Dq1wKeLyTsEgG
-         qV83/bSX0KsK1hrT8JRpybLwa32pPGaOpbVPwpSJldw0FmZ9r4pArY81G37TFDNnl4Wx
-         klELNKwfXEIqzc18TPNPXeYsHjPN5IsvTwy6e5oLO3Na/4RvLcEAyrFoE2MZWrIEuLYr
-         J70g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IIZWu3166pXihdAEpw+Mp3W7uVSGrl+5DTpGsRd8suw=;
-        b=o9LsNRgN81q35p2QaVGd4vSJp11Ch/zf6g07GISDYyVUHZ483f+bBmyWamha/H7fHr
-         9juAzvWr7AYqRRmTNqoVu2eAcii23RfwLGwK9g4b4V01DbSD8n7luB4ux2sBbAYy7hyV
-         CI9smse7IB0ikPW2uRXJIVUyQyBoTap6S37eyJgvE5WyThCAJMpHizQq9PW3YRdMS5km
-         ZOqE6J8QQ8LCoA0cMzV3Q+FNIPNviqTeuu9aqPWs1AakDVXCKppsfVU8s+m3azcLW9uP
-         M1xGyeW5g2M5Ez+KI+lrHO7yExLXCfGWXPFUtXOhbvPVZj5NW8/FWhZEThQKnovkCj2x
-         IQsg==
-X-Gm-Message-State: AOAM533UFNh4eMxYAWbQk45BFXIFZB6TE0GHiW0WDY3aNttpdxIUFe1N
-        GRs6+3IWyjLQhkG4kuoHzVtOg6n+FH3qwzbNIxA3Jg==
-X-Google-Smtp-Source: ABdhPJzy0DbyVXrksmXBq429f3AEhs6iVcJCCucbg6NfOX6mgM9neMfFrPgpmXYuf2xLf50xjDWsZXuqT+BnUXud0Cg=
-X-Received: by 2002:a05:651c:330:: with SMTP id b16mr5536957ljp.77.1598382026379;
- Tue, 25 Aug 2020 12:00:26 -0700 (PDT)
+        with ESMTP id S1726066AbgHYTSP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 15:18:15 -0400
+X-Greylist: delayed 554 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 25 Aug 2020 12:18:14 PDT
+Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDAD4C061574
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 12:18:14 -0700 (PDT)
+Received: by fieldses.org (Postfix, from userid 2815)
+        id A86DC7AAB; Tue, 25 Aug 2020 15:08:57 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org A86DC7AAB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
+        s=default; t=1598382537;
+        bh=I0JFe4GcFukORtxs5qTvSrfssxpDhIRhbmQB2ue9tqQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W6yt2juzNqxepvsntjpyskouacsnozXgtL9HKNHfZtWsy34NrJO0c2mplutOKc0i0
+         Z2gKZoDorkG9N/j2IEQ6G4jIN3M7bjjNzsl84RSPsuvMGV3fm5cujoE0rQo9G1ve7O
+         9yGWIbiekyoCW6sFnotgo0q6lIvIyxjflv4MGQjE=
+Date:   Tue, 25 Aug 2020 15:08:57 -0400
+From:   "J. Bruce Fields" <bfields@fieldses.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     netdev@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        linux-nfs@vger.kernel.org
+Subject: Re: [PATCH] net: sunrpc: delete repeated words
+Message-ID: <20200825190857.GA1955@fieldses.org>
+References: <20200823010738.4837-1-rdunlap@infradead.org>
 MIME-Version: 1.0
-References: <20200821150134.2581465-1-guro@fb.com> <20200821150134.2581465-3-guro@fb.com>
-In-Reply-To: <20200821150134.2581465-3-guro@fb.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Tue, 25 Aug 2020 12:00:15 -0700
-Message-ID: <CALvZod625bjHHpDUVYXCZ1hCqyVy133g5cSv2+bhTK_9YfR6KA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 02/30] bpf: memcg-based memory accounting for
- bpf progs
-To:     Roman Gushchin <guro@fb.com>
-Cc:     bpf@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200823010738.4837-1-rdunlap@infradead.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 21, 2020 at 8:01 AM Roman Gushchin <guro@fb.com> wrote:
->
-> Include memory used by bpf programs into the memcg-based accounting.
-> This includes the memory used by programs itself, auxiliary data
-> and statistics.
->
-> Signed-off-by: Roman Gushchin <guro@fb.com>
-> ---
->  kernel/bpf/core.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index ed0b3578867c..021fff2df81b 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -77,7 +77,7 @@ void *bpf_internal_load_pointer_neg_helper(const struct sk_buff *skb, int k, uns
->
->  struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flags)
->  {
-> -       gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | gfp_extra_flags;
-> +       gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
->         struct bpf_prog_aux *aux;
->         struct bpf_prog *fp;
->
-> @@ -86,7 +86,7 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
->         if (fp == NULL)
->                 return NULL;
->
-> -       aux = kzalloc(sizeof(*aux), GFP_KERNEL | gfp_extra_flags);
-> +       aux = kzalloc(sizeof(*aux), GFP_KERNEL_ACCOUNT | gfp_extra_flags);
->         if (aux == NULL) {
->                 vfree(fp);
->                 return NULL;
-> @@ -104,7 +104,7 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
->
->  struct bpf_prog *bpf_prog_alloc(unsigned int size, gfp_t gfp_extra_flags)
->  {
-> -       gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | gfp_extra_flags;
-> +       gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
->         struct bpf_prog *prog;
->         int cpu;
->
-> @@ -217,7 +217,7 @@ void bpf_prog_free_linfo(struct bpf_prog *prog)
->  struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
->                                   gfp_t gfp_extra_flags)
->  {
-> -       gfp_t gfp_flags = GFP_KERNEL | __GFP_ZERO | gfp_extra_flags;
-> +       gfp_t gfp_flags = GFP_KERNEL_ACCOUNT | __GFP_ZERO | gfp_extra_flags;
->         struct bpf_prog *fp;
->         u32 pages, delta;
->         int ret;
-> --
-> 2.26.2
->
+Applied, thanks.--b.
 
-What about prog->aux->jited_linfo in bpf_prog_alloc_jited_linfo()?
+On Sat, Aug 22, 2020 at 06:07:38PM -0700, Randy Dunlap wrote:
+> Drop duplicate words in net/sunrpc/.
+> Also fix "Anyone" to be "Any one".
+> 
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: "J. Bruce Fields" <bfields@fieldses.org>
+> Cc: Chuck Lever <chuck.lever@oracle.com>
+> Cc: linux-nfs@vger.kernel.org
+> ---
+>  net/sunrpc/backchannel_rqst.c     |    2 +-
+>  net/sunrpc/xdr.c                  |    2 +-
+>  net/sunrpc/xprtrdma/svc_rdma_rw.c |    2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> --- linux-next-20200821.orig/net/sunrpc/backchannel_rqst.c
+> +++ linux-next-20200821/net/sunrpc/backchannel_rqst.c
+> @@ -111,7 +111,7 @@ out_free:
+>   * by the backchannel.  This function can be called multiple times
+>   * when creating new sessions that use the same rpc_xprt.  The
+>   * preallocated buffers are added to the pool of resources used by
+> - * the rpc_xprt.  Anyone of these resources may be used used by an
+> + * the rpc_xprt.  Any one of these resources may be used by an
+>   * incoming callback request.  It's up to the higher levels in the
+>   * stack to enforce that the maximum number of session slots is not
+>   * being exceeded.
+> --- linux-next-20200821.orig/net/sunrpc/xdr.c
+> +++ linux-next-20200821/net/sunrpc/xdr.c
+> @@ -658,7 +658,7 @@ EXPORT_SYMBOL_GPL(xdr_reserve_space);
+>   * head, tail, and page lengths are adjusted to correspond.
+>   *
+>   * If this means moving xdr->p to a different buffer, we assume that
+> - * that the end pointer should be set to the end of the current page,
+> + * the end pointer should be set to the end of the current page,
+>   * except in the case of the head buffer when we assume the head
+>   * buffer's current length represents the end of the available buffer.
+>   *
+> --- linux-next-20200821.orig/net/sunrpc/xprtrdma/svc_rdma_rw.c
+> +++ linux-next-20200821/net/sunrpc/xprtrdma/svc_rdma_rw.c
+> @@ -137,7 +137,7 @@ static int svc_rdma_rw_ctx_init(struct s
+>  }
+>  
+>  /* A chunk context tracks all I/O for moving one Read or Write
+> - * chunk. This is a a set of rdma_rw's that handle data movement
+> + * chunk. This is a set of rdma_rw's that handle data movement
+>   * for all segments of one chunk.
+>   *
+>   * These are small, acquired with a single allocator call, and
