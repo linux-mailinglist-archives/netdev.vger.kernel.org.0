@@ -2,72 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F279625110F
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 06:58:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06BB0251155
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 07:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728988AbgHYE6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 00:58:01 -0400
-Received: from smtprelay0011.hostedemail.com ([216.40.44.11]:49368 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728929AbgHYE5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 00:57:37 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id B73E918029120;
-        Tue, 25 Aug 2020 04:57:34 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:541:800:960:973:988:989:1260:1311:1314:1345:1359:1515:1534:1539:1711:1714:1730:1747:1777:1792:2393:2559:2562:3138:3139:3140:3141:3142:3350:3868:4321:5007:6261:7875:10004:10848:11658:11914:12048:12296:12297:12555:12895:12986:13069:13311:13357:13894:14181:14384:14394:14721:21080:21627:21990:30054,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: owl13_531383327059
-X-Filterd-Recvd-Size: 1706
-Received: from joe-laptop.perches.com (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf08.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 25 Aug 2020 04:57:32 +0000 (UTC)
-From:   Joe Perches <joe@perches.com>
-To:     Jiri Kosina <trivial@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Chuck Lever <chuck.lever@oracle.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 28/29] sunrpc: Avoid comma separated statements
-Date:   Mon, 24 Aug 2020 21:56:25 -0700
-Message-Id: <6adb266d5efe8e1ab95adfcdc1ff8240e99e2c37.1598331149.git.joe@perches.com>
-X-Mailer: git-send-email 2.26.0
-In-Reply-To: <cover.1598331148.git.joe@perches.com>
-References: <cover.1598331148.git.joe@perches.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728029AbgHYFIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 01:08:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725781AbgHYFIS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 01:08:18 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2354CC061574
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 22:08:18 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id d139so4880153qke.11
+        for <netdev@vger.kernel.org>; Mon, 24 Aug 2020 22:08:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=u640OaobPHFzcS5upItcsMK59UxaOWft829Rke4KdfA=;
+        b=VUvzBkiDgymE5aSVMgJ7wNEmvndl0P+Q9K+cYOJRI9MMv02IM3+EYhG6VoT3u4vWPv
+         ON0k3KVbb7X2ro74HXVV2ANqQNSES7+6DnZs0dXD4uIHqfY2/h1800C/+bSwNd2YLrhH
+         iv/OXOKzESscbUnV/I9yihiJRQluQdov6zfgLVxddDli3vExXmfPLPPevVeMTZa28kr4
+         lSbLXY+sPUN4S2BKpM5M8zx77qCZeiPqxQ9P55e9V5j3LAnfeAB1ptns+2BU6U88sQub
+         L5qm9ZilXpgujL8yU/WtvUed2OaL36MFa2amDxodXVtzIGe69Ti+6eZjIfYiMgDTCBKM
+         0Dyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=u640OaobPHFzcS5upItcsMK59UxaOWft829Rke4KdfA=;
+        b=R9ebUk8Gmo3Xls2EveOYv4QBzyldGR6kjraLH1E46oxxx7zCE8KN+3zwGRoS2XI6/t
+         qFxlRe6aThJEJjqGjcnyp+PHZ0a42V+OJGW4eLGgt81YDJP8yimhgydZqkvCzkhOYBAy
+         rAJvZShHJn2rUYWCE7uQJBjIpIwnxdEayZkL119DLi+XtFd3DMMhgDwnoTXJraV9ecJZ
+         6v++CPrghw2dMHbHR+ZWq6Ts28dLp27AutbdFOhdp8akDzmZW0iRsE7sy2YwPfCkOqmM
+         bRS0uvxpp+H5AM/g3A2kyUd6TvXvMu1d2oteN5BfiNt+rXLv2E4DnpE4FhbLe1flPX4Z
+         Bdcw==
+X-Gm-Message-State: AOAM531gMFHrSSRfUfaVUVwh4oMxjwbdrl9f/BPXR3bhJRGHcQVsEO4z
+        DoJ8ioUd+mOQcXWMbZH5DoM=
+X-Google-Smtp-Source: ABdhPJxL8t11jsW/gwJlsdPUowihTF2y8puZxoQJlooOzKZNkP0Y7NmmOHROEtOx29dmjOutSteAgg==
+X-Received: by 2002:a37:2781:: with SMTP id n123mr7667877qkn.59.1598332097314;
+        Mon, 24 Aug 2020 22:08:17 -0700 (PDT)
+Received: from localhost.localdomain ([50.236.19.102])
+        by smtp.gmail.com with ESMTPSA id 16sm7261723qkv.34.2020.08.24.22.08.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 24 Aug 2020 22:08:16 -0700 (PDT)
+From:   xiangxia.m.yue@gmail.com
+To:     davem@davemloft.net, pshelar@ovn.org, xiyou.wangcong@gmail.com
+Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v3 0/3] net: openvswitch: improve codes
+Date:   Tue, 25 Aug 2020 13:06:33 +0800
+Message-Id: <20200825050636.14153-1-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 2.15.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use semicolons and braces.
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Signed-off-by: Joe Perches <joe@perches.com>
----
- net/sunrpc/sysctl.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+This series patches are not bug fix, just improve codes.
 
-diff --git a/net/sunrpc/sysctl.c b/net/sunrpc/sysctl.c
-index 999eee1ed61c..6c86e2a7d942 100644
---- a/net/sunrpc/sysctl.c
-+++ b/net/sunrpc/sysctl.c
-@@ -108,8 +108,10 @@ proc_dodebug(struct ctl_table *table, int write, void *buffer, size_t *lenp,
- 			left -= (s - tmpbuf);
- 			if (left && !isspace(*s))
- 				return -EINVAL;
--			while (left && isspace(*s))
--				left--, s++;
-+			while (left && isspace(*s)) {
-+				left--;
-+				s++;
-+			}
- 		} else
- 			left = 0;
- 		*(unsigned int *) table->data = value;
+Tonghao Zhang (3):
+  net: openvswitch: improve coding style
+  net: openvswitch: refactor flow free function
+  net: openvswitch: remove unnused keep_flows
+
+ net/openvswitch/actions.c    |  5 +--
+ net/openvswitch/datapath.c   | 35 +++++++++++--------
+ net/openvswitch/flow_table.c | 68 +++++++++++++++++-------------------
+ net/openvswitch/flow_table.h |  1 -
+ net/openvswitch/vport.c      |  7 ++--
+ 5 files changed, 60 insertions(+), 56 deletions(-)
+
 -- 
-2.26.0
+2.23.0
 
