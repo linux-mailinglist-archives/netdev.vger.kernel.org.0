@@ -2,107 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C0C125125D
-	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 08:50:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81DB0251264
+	for <lists+netdev@lfdr.de>; Tue, 25 Aug 2020 08:51:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729216AbgHYGuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 02:50:37 -0400
-Received: from ozlabs.org ([203.11.71.1]:51733 "EHLO ozlabs.org"
+        id S1729231AbgHYGvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 02:51:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48362 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729116AbgHYGug (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 02:50:36 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S1729111AbgHYGvU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 02:51:20 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BbKPh4TtCz9sTK;
-        Tue, 25 Aug 2020 16:50:32 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1598338234;
-        bh=j9NrgxUjqWGE3IxuHRcqD4UBKle0ICvlV8D9udyUimw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Dp8HZQrQc6wRe+J1BEAo9CUpupQ4h3iULERXYZPL5jpU/z3dxhpNHZzB006zesX39
-         HtQINc6Nzi8aX9qEhXj7kzGOz5b8duQIhe9FBbcGaN63dtynXRWNbfcbEFUAzsNFIJ
-         Gh9ISm8vtrlNPHxMSHq0Orx7EFHsj/vLDfxQCPxnYIcdF+Yn5eb4BPvxpJo5QrGuyy
-         XrHr3K8ZApY+qSZkh09vMK9KJwxa5xv5yNJbDuDmgWjjUUr252P9Qx950effgVYJn+
-         +Jhm6Tuyy93fMvANbLxIGwK8FtO27IIutMZjl23AdPo9Ps4Q/onET+FmbMGuntn8OK
-         +1NRusNoUGGSA==
-Date:   Tue, 25 Aug 2020 16:50:29 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: linux-next: build failure after merge of the bpf-next tree
-Message-ID: <20200825165029.795a8428@canb.auug.org.au>
-In-Reply-To: <CAADnVQKGf7o8gJ60m_zjh+QcmRTNH+y1ha_B2q-1ixcCSAoHaw@mail.gmail.com>
-References: <20200821111111.6c04acd6@canb.auug.org.au>
-        <20200825112020.43ce26bb@canb.auug.org.au>
-        <CAADnVQLr8dU799ZrUnrBBDCtDxPyybZwrMFs5CAOHHW5pnLHHA@mail.gmail.com>
-        <20200825130445.655885f8@canb.auug.org.au>
-        <CAADnVQKGf7o8gJ60m_zjh+QcmRTNH+y1ha_B2q-1ixcCSAoHaw@mail.gmail.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 844DD2076C;
+        Tue, 25 Aug 2020 06:51:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598338279;
+        bh=dLhL6dPmhERcMqlQBLbhE8LoE6W9RMctbOefccjpeJs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wTPIXq+tDZCBqLY5h9jg2VnuZ4W6dejTDyTQZ6V8yeAfPL+HhWqNyaEMeWLheOU7p
+         fIzIiXphma4cMbcK1ZxogyvXf2KTXrrX51oKtVhvDIGpyJMObN96lHo+40ljiPlkIh
+         DK/5v5M/v8DEKqeiZStB8blwXcGygdNSPBnitwsc=
+Date:   Tue, 25 Aug 2020 08:51:35 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Himadri Pandya <himadrispandya@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        USB list <linux-usb@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: [PATCH] net: usb: Fix uninit-was-stored issue in asix_read_cmd()
+Message-ID: <20200825065135.GA1316856@kroah.com>
+References: <20200823082042.20816-1-himadrispandya@gmail.com>
+ <CACT4Y+Y1TpqYowNXj+OTcQwH-7T4n6PtPPa4gDWkV-np5KhKAQ@mail.gmail.com>
+ <20200823101924.GA3078429@kroah.com>
+ <CACT4Y+YbDODLRFn8M5QcY4CazhpeCaunJnP_udXtAs0rYoASSg@mail.gmail.com>
+ <20200823105808.GB87391@kroah.com>
+ <CACT4Y+ZiZQK8WBre9E4777NPaRK4UDOeZOeMZOQC=5tDsDu23A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/tDU.O6cX1D9IrOpNIJF9IC5";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+ZiZQK8WBre9E4777NPaRK4UDOeZOeMZOQC=5tDsDu23A@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/tDU.O6cX1D9IrOpNIJF9IC5
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Mon, Aug 24, 2020 at 10:55:28AM +0200, Dmitry Vyukov wrote:
+> On Sun, Aug 23, 2020 at 12:57 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Sun, Aug 23, 2020 at 12:31:03PM +0200, Dmitry Vyukov wrote:
+> > > On Sun, Aug 23, 2020 at 12:19 PM Greg Kroah-Hartman
+> > > <gregkh@linuxfoundation.org> wrote:
+> > > >
+> > > > On Sun, Aug 23, 2020 at 11:26:27AM +0200, Dmitry Vyukov wrote:
+> > > > > On Sun, Aug 23, 2020 at 10:21 AM Himadri Pandya
+> > > > > <himadrispandya@gmail.com> wrote:
+> > > > > >
+> > > > > > Initialize the buffer before passing it to usb_read_cmd() function(s) to
+> > > > > > fix the uninit-was-stored issue in asix_read_cmd().
+> > > > > >
+> > > > > > Fixes: KMSAN: kernel-infoleak in raw_ioctl
+> > > > > > Reported by: syzbot+a7e220df5a81d1ab400e@syzkaller.appspotmail.com
+> > > > > >
+> > > > > > Signed-off-by: Himadri Pandya <himadrispandya@gmail.com>
+> > > > > > ---
+> > > > > >  drivers/net/usb/asix_common.c | 2 ++
+> > > > > >  1 file changed, 2 insertions(+)
+> > > > > >
+> > > > > > diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+> > > > > > index e39f41efda3e..a67ea1971b78 100644
+> > > > > > --- a/drivers/net/usb/asix_common.c
+> > > > > > +++ b/drivers/net/usb/asix_common.c
+> > > > > > @@ -17,6 +17,8 @@ int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+> > > > > >
+> > > > > >         BUG_ON(!dev);
+> > > > > >
+> > > > > > +       memset(data, 0, size);
+> > > > >
+> > > > > Hi Himadri,
+> > > > >
+> > > > > I think the proper fix is to check
+> > > > > usbnet_read_cmd/usbnet_read_cmd_nopm return value instead.
+> > > > > Memsetting data helps to fix the warning at hand, but the device did
+> > > > > not send these 0's and we use them as if the device did send them.
+> > > >
+> > > > But, for broken/abusive devices, that really is the safest thing to do
+> > > > here.  They are returning something that is obviously not correct, so
+> > > > either all callers need to check the size received really is the size
+> > > > they asked for, or we just plod onward with a 0 value like this.  Or we
+> > > > could pick some other value, but that could cause other problems if it
+> > > > is treated as an actual value.
+> > >
+> > > Do we want callers to do at least some error check (e.g. device did
+> > > not return anything at all, broke, hang)?
+> > > If yes, then with a separate helper function that fails on short
+> > > reads, we can get both benefits at no additional cost. User code will
+> > > say "I want 4 bytes, anything that is not 4 bytes is an error" and
+> > > then 1 error check will do. In fact, it seems that that was the
+> > > intention of whoever wrote this code (they assumed no short reads),
+> > > it's just they did not actually implement that "anything that is not 4
+> > > bytes is an error" part.
+> > >
+> > >
+> > > > > Perhaps we need a separate helper function (of a bool flag) that will
+> > > > > fail on incomplete reads. Maybe even in the common USB layer because I
+> > > > > think we've seen this type of bug lots of times and I guess there are
+> > > > > dozens more.
+> > > >
+> > > > It's not always a failure, some devices have protocols that are "I could
+> > > > return up to a max X bytes but could be shorter" types of messages, so
+> > > > it's up to the caller to check that they got what they really asked for.
+> > >
+> > > Yes, that's why I said _separate_ helper function. There seems to be
+> > > lots of callers that want exactly this -- "I want 4 bytes, anything
+> > > else is an error". With the current API it's harder to do - you need
+> > > additional checks, additional code, maybe even additional variables to
+> > > store the required size. APIs should make correct code easy to write.
+> >
+> > I guess I already answered both of these in my previous email...
+> >
+> > > > Yes, it's more work to do this checking.  However converting the world
+> > > > over to a "give me an error value if you don't read X number of bytes"
+> > > > function would also be the same amount of work, right?
+> > >
+> > > Should this go into the common USB layer then?
+> > > It's weird to have such a special convention on the level of a single
+> > > driver. Why are rules for this single driver so special?...
+> >
+> > They aren't special at all, so yes, we should be checking for a short
+> > read everywhere.  That would be the "correct" thing to do, I was just
+> > suggesting a "quick fix" here, sorry.
+> 
+> Re quick fix, I guess it depends on the amount of work for the larger
+> fix and if we can find volunteers (thanks Himadri!). We need to be
+> practical as well.
+> 
+> Re:
+>         retval = usb_control_msg(....., data, data_size, ...);
+>         if (retval < buf_size) {
+> 
+> There may be a fine line between interfaces and what code they
+> provoke. Let me describe my reasoning.
+> 
+> Yes, the current interface allows writing correct code with moderate
+> amount of effort. Yet we see cases where it's used incorrectly, maybe
+> people were just a little bit lazy, or maybe they did not understand
+> how to use it properly (nobody reads the docs, and it's also
+> reasonable to assume that if you ask for N bytes and the function does
+> not fail, then you get N bytes).
 
-Hi Alexei,
+I did a quick scan of the tree, and in short, I think it's worse than we
+both imagined, more below...
 
-On Mon, 24 Aug 2020 20:27:28 -0700 Alexei Starovoitov <alexei.starovoitov@g=
-mail.com> wrote:
->
-> I didn't receive the first email you've replied to.
-> The build error is:
-> "
-> No libelf found
-> make[5]: *** [Makefile:284: elfdep] Error 1
-> "
-> and build process stops because libelf is not found, right?
-> That is expected and necessary.
-> bpf_preload needs libbpf that depends on libelf.
-> The only 'fix' is to turn off bpf_preload.
-> It's off by default.
-> allmodconfig cannot build bpf_preload umd if there is no libelf.
-> There is CC_CAN_LINK that does feature detection.
-> We can extend scripts/cc-can-link.sh or add another script that
-> will do CC_CAN_LINK_LIBELF, but such approach doesn't scale.
-> imo it's cleaner to rely on feature detection by libbpf Makefile with
-> an error above instead of adding such knobs to top Kconfig.
-> Does it make sense?
+> Currently to write correct code (1) we need a bit of duplication,
+> which gets worse if data_size is actually some lengthy expression
+> (X+Y*Z), maybe one will need an additional variable to use it
+> correctly.
+> (2) one needs to understand the contract;
+> (3) may be subject to the following class of bugs (after some copy-paste:
+>         retval = usb_control_msg(....., data, 4, ...);
+>         if (retval < 2) {
+> This class of bugs won't be necessary immediately caught by kernel
+> testing systems (can have long life-time).
+> 
+> I would add a "default" function (with shorter name) that does full read:
+> 
+> if (!usb_control_msg(, ...., data, 4))
+> 
+> and a function with longer name to read variable-size data:
+> 
+> n = usb_control_msg_variable_length(, ...., data, sizeof(data)));
+> 
+> The full read should be "the default" (shorter name), because if you
+> need full read and use the wrong function, it won't be caught by
+> testing (most likely long-lived bug). Whereas if you use full read for
+> lengthy variable size data read, this will be immediately caught
+> during any testing (even manual) -- you ask for 4K, you get fewer
+> bytes, all your reads fail.
+> So having "full read" easier to spell will lead to fewer bugs by design.
 
-Sorry, but if this is not necessary to build the kernel, then an
-allmodconfig build needs to succeed so you need to do the detection and
-turn it off automatically.  Or you could make it so that it has to be
-manually enabled in all circumstances.
+Originally I would sick to my first proposal that "all is fine" and the
+api is "easy enough", but in auditing the tree, it's horrid.
 
---=20
-Cheers,
-Stephen Rothwell
+The error checking for this function call is almost non-existant.  And,
+to make things more difficult, this is a bi-directional call, it is a
+read or write call, depending on what USB endpoint the user asks for (or
+both for some endpoints.)  So trying to automatically scan the tree for
+valid error handling is really really hard.
 
---Sig_/tDU.O6cX1D9IrOpNIJF9IC5
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+Combine that with the need of many subsystems to "wrap" this function in
+a helper call, because the USB core isn't providing a useful call it
+could call directly, and we have a total mess.
 
------BEGIN PGP SIGNATURE-----
+At first glance, I think this can all be cleaned up, but it will take a
+bit of tree-wide work.  I agree, we need a "read this message and error
+if the whole thing is not there", as well as a "send this message and
+error if the whole thing was not sent", and also a way to handle
+stack-provided data, which seems to be the primary reason subsystems
+wrap this call (they want to make it easier on their drivers to use it.)
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9EtLUACgkQAVBC80lX
-0GwK6gf8DesCk38JfwT0m8g2BShvJEsTqH87hEuvVInFsGPaKvYcQTntETkYPPQa
-bF4jfkYOh5VlMGkgCLMGUw+GP48RuHKXt75oohyPzAEnDSwJhVAdG2q4LD4qhDJJ
-P+vN1s1VQ/qxreEGn0kqy66UJSWzavy1NKn2JXeEkacGKdQBqPhm1o1D+Cqay948
-+JGt4A1kCx9uR+a1lWoafFLsdRgkMCbnKM+qTAhU+pnm67xsk+gO81MtmfX2/0Tw
-ocs0Uo2yl1K5u3RVciU83Ad7htWkqBvuFFiCXKIaGKNRPRKIZEnHG+X4hdAp9EdM
-Sbh7fMGJHGmjUV4MUvCVgzhUD65p+A==
-=Geul
------END PGP SIGNATURE-----
+Let me think about this in more detail, but maybe something like:
+	usb_control_msg_read()
+	usb_control_msg_send()
+is a good first step (as the caller knows this) and stack provided data
+would be allowed, and it would return an error if the whole message was
+not read/sent properly.  That way we can start converting everything
+over to a sane, and checkable, api and remove a bunch of wrapper
+functions as well.
 
---Sig_/tDU.O6cX1D9IrOpNIJF9IC5--
+thanks,
+
+greg k-h
