@@ -2,92 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A732538E1
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 22:07:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 246B3253913
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 22:23:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726770AbgHZUHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 16:07:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726609AbgHZUHu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Aug 2020 16:07:50 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 22F2E2078D;
-        Wed, 26 Aug 2020 20:07:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598472469;
-        bh=fNlsxJKW6gXAc9anSV73RBlBWdYpuu7d8WBE26l1mLY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=abR1FftW3x9co4IFNGcc0HDS3+VKOks9ZiTe+qlSqAvWWUaJIn8+IZjcRi7N2lqZ2
-         3MJgDnIVU/mt6aHB1YcUVJYdD/21HB1cKv0q3ZnW21yBkIikH1+1GNmWN6Cjf8AShk
-         sTYuCDg5dx3bA2ioibj4QiAwYFBFdIg0Lo84iSXQ=
-Date:   Wed, 26 Aug 2020 13:07:47 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Parav Pandit <parav@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "roid@mellanox.com" <roid@mellanox.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 2/3] devlink: Consider other controller while
- building phys_port_name
-Message-ID: <20200826130747.4d886a09@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <BY5PR12MB4322E2E21395BD1553B8E375DC540@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20200825135839.106796-1-parav@mellanox.com>
-        <20200825135839.106796-3-parav@mellanox.com>
-        <20200825173203.2c80ed48@kicinski-fedora-PC1C0HJN>
-        <BY5PR12MB4322E2E21395BD1553B8E375DC540@BY5PR12MB4322.namprd12.prod.outlook.com>
+        id S1726788AbgHZUXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 16:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726609AbgHZUXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 16:23:46 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20257C061574
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 13:23:46 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id k20so2650684qtq.11
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 13:23:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q7CIavqzl4prPwTgKPP8K9Tv1D7qPz52rBnVD0rJLe0=;
+        b=hUToxT9EHUFqY09eIsUAQTC+b1SVG7eJG0JC38xx4VQIpMI01IXZCcIuQOsXIfdUth
+         6yhhtT2BiZZ1bXt8LDDMAYWW/ULsJXK8yIu+dtnT1c9ZV41Q+TC6ZbxsDAipnTNmvg94
+         b/jRIT296Ubn/Gp8gkRtoHM3c5h5BF9PUgAyE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q7CIavqzl4prPwTgKPP8K9Tv1D7qPz52rBnVD0rJLe0=;
+        b=qZYcabJYZUNeU23rg3mronNEG7+o00QiOQJLJxjnhHQS5Hi03b/5BZdjZBJ5Bnmwlp
+         4Cx8XmgWIxghyI1T1Jpd3qyrGtmQ8khq3CQGYTMSb33cSiSjlsmDVqaFCU5FXHpGebM8
+         uLsWgV4NqRD312xIRNzx3cDoDDdbyUCwXuqb2Yz4SAaU80a57s6+9bSOSS+QBPqAgDa7
+         QT8sNw9DmpK+4iakjzSuNgMGhFJBeyqN5y3qkg0C1LFH/yyHdy0Lqo8UhY5FlHWndUl8
+         sXxsEHHHhNafJjV0y4wnIOTfMLcvHwlCz9AZt1TR+fZGhRBO0daNroseKI+f4ZNm2jXM
+         iB0A==
+X-Gm-Message-State: AOAM533e11elAvxDaRFiQbIUUwVyniX5GsDlN8KrzI+zDR4ehB9cLXuw
+        EviNSdmI8VypY2nVjCAIz57MQpH+fdVyj+HIEIgPbNaWN4A=
+X-Google-Smtp-Source: ABdhPJxmcV7uBn31iFczRsYBV9D9TK39WHzX0xCoBQLj9Zod99yjWnPmmVP1T+WKwYiMs6M+jk9GpdAL4POaHoW5koA=
+X-Received: by 2002:ac8:4815:: with SMTP id g21mr16138226qtq.148.1598473425094;
+ Wed, 26 Aug 2020 13:23:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200826194007.1962762-1-kuba@kernel.org> <20200826194007.1962762-3-kuba@kernel.org>
+In-Reply-To: <20200826194007.1962762-3-kuba@kernel.org>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Wed, 26 Aug 2020 13:23:33 -0700
+Message-ID: <CACKFLineN=vFwJ3QnwKL4cPgv_JVx1r9fCQ9XyWgcyJe2ei2HA@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] bnxt: don't enable NAPI until rings are ready
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>, Rob Sherwood <rsher@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 26 Aug 2020 04:27:35 +0000 Parav Pandit wrote:
-> > On Tue, 25 Aug 2020 16:58:38 +0300 Parav Pandit wrote:  
-> > > A devlink port may be for a controller consist of PCI device.
-> > > A devlink instance holds ports of two types of controllers.
-> > > (1) controller discovered on same system where eswitch resides This is
-> > > the case where PCI PF/VF of a controller and devlink eswitch instance
-> > > both are located on a single system.
-> > > (2) controller located on other system.
-> > > This is the case where a controller is located in one system and its
-> > > devlink eswitch ports are located in a different system. In this case
-> > > devlink instance of the eswitch only have access to ports of the
-> > > controller.
-> > >
-> > > When a devlink eswitch instance serves the devlink ports of both
-> > > controllers together, PCI PF/VF numbers may overlap.
-> > > Due to this a unique phys_port_name cannot be constructed.  
-> > 
-> > This description is clear as mud to me. Is it just me? Can someone understand
-> > this?  
-> 
-> I would like to improve this description.
-> Do you have an input to describe these two different controllers,
-> each has same PF and VF numbers?
+On Wed, Aug 26, 2020 at 12:40 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Netpoll can try to poll napi as soon as napi_enable() is called.
+> It crashes trying to access a doorbell which is still NULL:
+>
+>  BUG: kernel NULL pointer dereference, address: 0000000000000000
+>  CPU: 59 PID: 6039 Comm: ethtool Kdump: loaded Tainted: G S                5.9.0-rc1-00469-g5fd99b5d9950-dirty #26
+>  RIP: 0010:bnxt_poll+0x121/0x1c0
+>  Code: c4 20 44 89 e0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 41 8b 86 a0 01 00 00 41 23 85 18 01 00 00 49 8b 96 a8 01 00 00 0d 00 00 00 24 <89> 02
+> 41 f6 45 77 02 74 cb 49 8b ae d8 01 00 00 31 c0 c7 44 24 1a
+>   netpoll_poll_dev+0xbd/0x1a0
+>   __netpoll_send_skb+0x1b2/0x210
+>   netpoll_send_udp+0x2c9/0x406
+>   write_ext_msg+0x1d7/0x1f0
+>   console_unlock+0x23c/0x520
+>   vprintk_emit+0xe0/0x1d0
+>   printk+0x58/0x6f
+>   x86_vector_activate.cold+0xf/0x46
+>   __irq_domain_activate_irq+0x50/0x80
+>   __irq_domain_activate_irq+0x32/0x80
+>   __irq_domain_activate_irq+0x32/0x80
+>   irq_domain_activate_irq+0x25/0x40
+>   __setup_irq+0x2d2/0x700
+>   request_threaded_irq+0xfb/0x160
+>   __bnxt_open_nic+0x3b1/0x750
+>   bnxt_open_nic+0x19/0x30
+>   ethtool_set_channels+0x1ac/0x220
+>   dev_ethtool+0x11ba/0x2240
+>   dev_ioctl+0x1cf/0x390
+>   sock_do_ioctl+0x95/0x130
+>
+> Reported-by: Rob Sherwood <rsher@fb.com>
+> Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Not yet, I'm just trying to figure out how things come together.
+Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 
-Are some VFs of the same PF under one controller and other ones under 
-a different controller? 
-
-> $ devlink port show looks like below without a controller annotation.
-> pci/0000:00:08.0/0: type eth netdev eth5 flavour physical
-> pci/0000:00:08.0/1: type eth netdev eth6 flavour pcipf pfnum 0
-> pci/0000:00:08.0/2: type eth netdev eth7 flavour pcipf pfnum 0
-
-How can you have two PF 0? Aaah - by controller you mean hardware IP,
-not whoever is controlling the switching! So the chip has multiple HW
-controllers, each of which can have multiple PFs?
-
-Definitely please make that more clear.
-
-Why is @controller_num not under PCI port attrs, but a separate field
-without even a mention of PCI? Are some of the controllers a different
-bus?
+Thanks.
