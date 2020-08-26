@@ -2,169 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E29D0252B05
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 12:01:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B0C0252B41
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 12:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728516AbgHZKB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 06:01:29 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:33948 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728165AbgHZKBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 06:01:24 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07Q9rmML110211;
-        Wed, 26 Aug 2020 09:58:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=99lx5iUfIkT1H9yGqvvBxJOhPDkHKQlkIHLEmQ8PDXw=;
- b=pHUo6T87aN4HkyoolW4yELYhdaG6ZvSavIkxfBgUOj0Org1O9z1r+ZQOuET12WJ7H5Pc
- xnVCQfyl6qFGmQNX19oW+/bFETNvgM6pF7csHfuvBHB3cwqfsUd0O1/rGIc/5OQTnnFB
- MEojeNBzUtEmGEuqP0gM6P7/G+Nn01P+JHgzxPDBnzH/evLKYOeuFaI9EUmCauKOO4Dv
- zZppw57NrWnHoxtj9wH99M6dzm4GlspA3OSB7TYDhwfTGMPmrp1Qrwutr2AFfwHTZX4W
- mmUMO7IJxJ3uJAsWGpM1c6assMY729yLXVkHlFuUfSzlq1xzAsoVwPIWis3T8JNJMC4u Ng== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 333dbryf24-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 26 Aug 2020 09:58:06 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 07Q9odrR139540;
-        Wed, 26 Aug 2020 09:56:05 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 333rtywr8n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 26 Aug 2020 09:56:05 +0000
-Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 07Q9tlAJ026067;
-        Wed, 26 Aug 2020 09:55:47 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 26 Aug 2020 02:55:46 -0700
-Date:   Wed, 26 Aug 2020 12:55:28 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Allen Pais <allen.cryptic@gmail.com>
-Cc:     James Bottomley <James.Bottomley@hansenpartnership.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-atm-general@lists.sourceforge.net, manohar.vanga@gmail.com,
-        airlied@linux.ie, linux-hyperv@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, sre@kernel.org,
-        anton.ivanov@cambridgegreys.com, devel@driverdev.osuosl.org,
-        linux-s390@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
-        maximlevitsky@gmail.com, richard@nod.at, deller@gmx.de,
-        jassisinghbrar@gmail.com, linux-spi@vger.kernel.org,
-        3chas3@gmail.com, intel-gfx@lists.freedesktop.org,
-        Jakub Kicinski <kuba@kernel.org>, mporter@kernel.crashing.org,
-        jdike@addtoit.com, Kees Cook <keescook@chromium.org>,
-        oakad@yahoo.com, s.hauer@pengutronix.de,
-        linux-input@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-block@vger.kernel.org, broonie@kernel.org,
-        openipmi-developer@lists.sourceforge.net, mitch@sfgoth.com,
-        linux-arm-kernel@lists.infradead.org, Jens Axboe <axboe@kernel.dk>,
-        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
-        martyn@welchs.me.uk, dmitry.torokhov@gmail.com,
-        linux-mmc@vger.kernel.org, Allen <allen.lkml@gmail.com>,
-        linux-kernel@vger.kernel.org, alex.bou9@gmail.com,
-        stefanr@s5r6.in-berlin.de, Daniel Vetter <daniel@ffwll.ch>,
-        linux-ntb@googlegroups.com,
-        Romain Perier <romain.perier@gmail.com>, shawnguo@kernel.org,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH] block: convert tasklets to use new tasklet_setup() API
-Message-ID: <20200826095528.GX1793@kadam>
-References: <202008171228.29E6B3BB@keescook>
- <161b75f1-4e88-dcdf-42e8-b22504d7525c@kernel.dk>
- <202008171246.80287CDCA@keescook>
- <df645c06-c30b-eafa-4d23-826b84f2ff48@kernel.dk>
- <1597780833.3978.3.camel@HansenPartnership.com>
- <f3312928-430c-25f3-7112-76f2754df080@kernel.dk>
- <1597849185.3875.7.camel@HansenPartnership.com>
- <CAOMdWSJRR0BhjJK1FxD7UKxNd5sk4ycmEX6TYtJjRNR6UFAj6Q@mail.gmail.com>
- <1597873172.4030.2.camel@HansenPartnership.com>
- <CAEogwTCH8qqjAnSpT0GDn+NuAps8dNbfcPVQ9h8kfOWNbzrD0w@mail.gmail.com>
+        id S1728265AbgHZKTB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Aug 2020 06:19:01 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:23116 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727884AbgHZKS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 06:18:59 -0400
+X-Greylist: delayed 53829 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Aug 2020 06:18:59 EDT
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-269-axKnq8jwPNyk4FK5q1gRMw-1; Wed, 26 Aug 2020 06:18:54 -0400
+X-MC-Unique: axKnq8jwPNyk4FK5q1gRMw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0BB20807332;
+        Wed, 26 Aug 2020 10:18:52 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.194.188])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3960F1992F;
+        Wed, 26 Aug 2020 10:18:46 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: [PATCH bpf-next] selftests/bpf: Fix open call in trigger_fstat_events
+Date:   Wed, 26 Aug 2020 12:18:45 +0200
+Message-Id: <20200826101845.747617-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEogwTCH8qqjAnSpT0GDn+NuAps8dNbfcPVQ9h8kfOWNbzrD0w@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9724 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0
- phishscore=0 spamscore=0 bulkscore=0 mlxlogscore=999 malwarescore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008260078
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9724 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 clxscore=1011
- priorityscore=1501 impostorscore=0 phishscore=0 malwarescore=0
- mlxlogscore=999 spamscore=0 mlxscore=0 lowpriorityscore=0 suspectscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008260079
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0.002
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 26, 2020 at 07:21:35AM +0530, Allen Pais wrote:
-> On Thu, Aug 20, 2020 at 3:09 AM James Bottomley
-> <James.Bottomley@hansenpartnership.com> wrote:
-> >
-> > On Wed, 2020-08-19 at 21:54 +0530, Allen wrote:
-> > > > [...]
-> > > > > > Since both threads seem to have petered out, let me suggest in
-> > > > > > kernel.h:
-> > > > > >
-> > > > > > #define cast_out(ptr, container, member) \
-> > > > > >     container_of(ptr, typeof(*container), member)
-> > > > > >
-> > > > > > It does what you want, the argument order is the same as
-> > > > > > container_of with the only difference being you name the
-> > > > > > containing structure instead of having to specify its type.
-> > > > >
-> > > > > Not to incessantly bike shed on the naming, but I don't like
-> > > > > cast_out, it's not very descriptive. And it has connotations of
-> > > > > getting rid of something, which isn't really true.
-> > > >
-> > > > Um, I thought it was exactly descriptive: you're casting to the
-> > > > outer container.  I thought about following the C++ dynamic casting
-> > > > style, so out_cast(), but that seemed a bit pejorative.  What about
-> > > > outer_cast()?
-> > > >
-> > > > > FWIW, I like the from_ part of the original naming, as it has
-> > > > > some clues as to what is being done here. Why not just
-> > > > > from_container()? That should immediately tell people what it
-> > > > > does without having to look up the implementation, even before
-> > > > > this becomes a part of the accepted coding norm.
-> > > >
-> > > > I'm not opposed to container_from() but it seems a little less
-> > > > descriptive than outer_cast() but I don't really care.  I always
-> > > > have to look up container_of() when I'm using it so this would just
-> > > > be another macro of that type ...
-> > > >
-> > >
-> > >  So far we have a few which have been suggested as replacement
-> > > for from_tasklet()
-> > >
-> > > - out_cast() or outer_cast()
-> > > - from_member().
-> > > - container_from() or from_container()
-> > >
-> > > from_container() sounds fine, would trimming it a bit work? like
-> > > from_cont().
-> >
-> > I'm fine with container_from().  It's the same form as container_of()
-> > and I think we need urgent agreement to not stall everything else so
-> > the most innocuous name is likely to get the widest acceptance.
-> 
-> Kees,
-> 
->   Will you be  sending the newly proposed API to Linus? I have V2
-> which uses container_from()
-> ready to be sent out.
+Alexei reported compile breakage on newer systems with
+following error:
 
-I liked that James swapped the first two arguments so that it matches
-container_of().  Plus it's nice that when you have:
+  In file included from /usr/include/fcntl.h:290:0,
+  4814                 from ./test_progs.h:29,
+  4815                 from
+  .../bpf-next/tools/testing/selftests/bpf/prog_tests/d_path.c:3:
+  4816In function ‘open’,
+  4817    inlined from ‘trigger_fstat_events’ at
+  .../bpf-next/tools/testing/selftests/bpf/prog_tests/d_path.c:50:10,
+  4818    inlined from ‘test_d_path’ at
+  .../bpf-next/tools/testing/selftests/bpf/prog_tests/d_path.c:119:6:
+  4819/usr/include/x86_64-linux-gnu/bits/fcntl2.h:50:4: error: call to
+  ‘__open_missing_mode’ declared with attribute error: open with O_CREAT
+  or O_TMPFILE in second argument needs 3 arguments
+  4820    __open_missing_mode ();
+  4821    ^~~~~~~~~~~~~~~~~~~~~~
 
-	struct whatever *foo = container_from(ptr, foo, member);
+We're missing permission bits as 3rd argument
+for open call with O_CREAT flag specified.
 
-Then it means that "ptr == &foo->member".
+Reported-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: e4d1af4b16f8 ("selftests/bpf: Add test for d_path helper")
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ tools/testing/selftests/bpf/prog_tests/d_path.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-regards,
-dan carpenter
+diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
+index 058765da17e6..43ffbeacd680 100644
+--- a/tools/testing/selftests/bpf/prog_tests/d_path.c
++++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
+@@ -47,7 +47,7 @@ static int trigger_fstat_events(pid_t pid)
+ 	devfd = open("/dev/urandom", O_RDONLY);
+ 	if (CHECK(devfd < 0, "trigger", "open /dev/urandom failed\n"))
+ 		goto out_close;
+-	localfd = open("/tmp/d_path_loadgen.txt", O_CREAT | O_RDONLY);
++	localfd = open("/tmp/d_path_loadgen.txt", O_CREAT | O_RDONLY, 0644);
+ 	if (CHECK(localfd < 0, "trigger", "open /tmp/d_path_loadgen.txt failed\n"))
+ 		goto out_close;
+ 	/* bpf_d_path will return path with (deleted) */
+-- 
+2.25.4
 
