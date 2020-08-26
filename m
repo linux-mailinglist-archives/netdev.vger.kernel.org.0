@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B1CD253561
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 18:49:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24390253562
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 18:49:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727846AbgHZQtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 12:49:25 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:57483 "EHLO
+        id S1728037AbgHZQt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 12:49:29 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:46015 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726929AbgHZQtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 12:49:22 -0400
+        by vger.kernel.org with ESMTP id S1726739AbgHZQtY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 12:49:24 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id A6A205C00CE;
-        Wed, 26 Aug 2020 12:49:21 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 75C8A5C00F2;
+        Wed, 26 Aug 2020 12:49:23 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 26 Aug 2020 12:49:21 -0400
+  by compute4.internal (MEProxy); Wed, 26 Aug 2020 12:49:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=lj6H+mDuCQceq/KxuwKkf2oL6L05xx1vRf5rfcSCdM4=; b=nkErL/4T
-        OsjTB69kx/omrOjgity3Ndh/mGiuQR5cXFuXF6svH2Plix6rhtJriQVFj4WJuPKC
-        uo1q1Qa31RUHD+LU9JFAu/JJr16kJG2XwAerJqJY+7AfR7S2GDYbICc2Jz4qSTF0
-        tfae+aVPP7R73w4QMX8krVyuJnBGl8h9/Nx6VHX7+MtVmdbV3pSN/XAx4mfclkgx
-        WiACXLtbUcaOHQ0ivLSkM2tEbyw1YVpkR+6CjuhEsM0rYmzeKiqe9AseTV/z5ig9
-        wrxKbdY89rOMkSxDVcLUKcrWdMBptNHUHDNIWG2bizeHZqhZRzRluMU2VQb9qoTq
-        4ttfuBu9aQzgWg==
-X-ME-Sender: <xms:kZJGX3Z2p_Lxfy8AUnChPxJtxcb0_MVjHH1-fFkVFPB7aoHw5_aInA>
+        fm3; bh=qgPPP+22HNcXHBI2ElY71Qiz6wDOZ8oN2F3Tpjd4SpE=; b=Q0s/4Sjn
+        Vf74SCmar91OPcQrpUHo8yP/HXyoGYAp4tU94EFL4SiJr6fCnHbzrVQVxOGBBlIW
+        wcnyXjp/HsfPhafNmiNSW1HRS5N/DcBpoR8PumDuSC2BDxLxWkswFX93eDnzBPws
+        1sMvwC0uBPmB2rimCQ3syYNiU8kDoYGuTONg/MdRjMGyt3VgJQug2ajXViGZIg5T
+        70ot8bS5AgCwhyEWfH3ZMmRMjvWlPaMLBkXpn893NVuUAYL+jPVi6CBsYaQgwi/h
+        0mAgPF0+avikezMOFC1lNkPME2LQIN5ImraAAkmI5GA7iMgunquZBCx5Nul0f9ap
+        gPkhq2KDKQaVTg==
+X-ME-Sender: <xms:k5JGXwyHhxkw5SNeWixIaGiw1Iy24NB4zQbpJ-_m-RfuI2NCdpueUg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedruddvvddguddtfecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
@@ -36,20 +36,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedruddvvddguddtfecutefuodetgg
     ekhefgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdefjedrudei
     keenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:kZJGX2aQeZblzHLhTvjy6IownP1QcUd_r-MRpltrOXKqq_Jo4KpFsg>
-    <xmx:kZJGX5935tIVGj23hs8NBNjx5Ft3geDPk1IPR0ONUj8H6xuu2TvBlg>
-    <xmx:kZJGX9o0EUk5F-n7XTc_zCT-c5tR55uvmcGYVCqVhVNVT17xBkP4LA>
-    <xmx:kZJGX3BB5D9sLq7nrW0hnN-mO81fPMbDZky2yK79iCLFRoWLif1cLg>
+X-ME-Proxy: <xmx:k5JGX0RkD9ElclozMHwaEDHbc-DkE1varwjp6BIktNw05uL61hHA5A>
+    <xmx:k5JGXyUhszVtekOS8UjwNfUvkRbPFX1A-0oK7Fu4msImsyCBytB6vg>
+    <xmx:k5JGX-jGC7ZuofA4g0HZ_w-PuLVBmFBOG2KHd7PXN4MW6CCSQUcHUw>
+    <xmx:k5JGXz7H7brq9t-ShsIoaBqfp4yMVL3TE0uAPRFZdxVYWrNtHxrGqw>
 Received: from shredder.mtl.com (igld-84-229-37-168.inter.net.il [84.229.37.168])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 00341328005D;
-        Wed, 26 Aug 2020 12:49:19 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id C0F6C3280059;
+        Wed, 26 Aug 2020 12:49:21 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 1/7] ipv4: nexthop: Reduce allocation size of 'struct nh_group'
-Date:   Wed, 26 Aug 2020 19:48:51 +0300
-Message-Id: <20200826164857.1029764-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/7] ipv4: nexthop: Use nla_put_be32() for NHA_GATEWAY
+Date:   Wed, 26 Aug 2020 19:48:52 +0300
+Message-Id: <20200826164857.1029764-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200826164857.1029764-1-idosch@idosch.org>
 References: <20200826164857.1029764-1-idosch@idosch.org>
@@ -62,45 +62,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The struct looks as follows:
+The code correctly uses nla_get_be32() to get the payload of the
+attribute, but incorrectly uses nla_put_u32() to add the attribute to
+the payload. This results in the following warning:
 
-struct nh_group {
-	struct nh_group		*spare; /* spare group for removals */
-	u16			num_nh;
-	bool			mpath;
-	bool			fdb_nh;
-	bool			has_v4;
-	struct nh_grp_entry	nh_entries[];
-};
+net/ipv4/nexthop.c:279:59: warning: incorrect type in argument 3 (different base types)
+net/ipv4/nexthop.c:279:59:    expected unsigned int [usertype] value
+net/ipv4/nexthop.c:279:59:    got restricted __be32 [usertype] ipv4
 
-But its offset within 'struct nexthop' is also taken into account to
-determine the allocation size.
-
-Instead, use struct_size() to allocate only the required number of
-bytes.
+Suppress the warning by using nla_put_be32().
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- net/ipv4/nexthop.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ net/ipv4/nexthop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 134e92382275..d13730ff9aeb 100644
+index d13730ff9aeb..0823643a7dec 100644
 --- a/net/ipv4/nexthop.c
 +++ b/net/ipv4/nexthop.c
-@@ -133,12 +133,9 @@ static struct nexthop *nexthop_alloc(void)
- 
- static struct nh_group *nexthop_grp_alloc(u16 num_nh)
- {
--	size_t sz = offsetof(struct nexthop, nh_grp)
--		    + sizeof(struct nh_group)
--		    + sizeof(struct nh_grp_entry) * num_nh;
- 	struct nh_group *nhg;
- 
--	nhg = kzalloc(sz, GFP_KERNEL);
-+	nhg = kzalloc(struct_size(nhg, nh_entries, num_nh), GFP_KERNEL);
- 	if (nhg)
- 		nhg->num_nh = num_nh;
+@@ -276,7 +276,7 @@ static int nh_fill_node(struct sk_buff *skb, struct nexthop *nh,
+ 	case AF_INET:
+ 		fib_nh = &nhi->fib_nh;
+ 		if (fib_nh->fib_nh_gw_family &&
+-		    nla_put_u32(skb, NHA_GATEWAY, fib_nh->fib_nh_gw4))
++		    nla_put_be32(skb, NHA_GATEWAY, fib_nh->fib_nh_gw4))
+ 			goto nla_put_failure;
+ 		break;
  
 -- 
 2.26.2
