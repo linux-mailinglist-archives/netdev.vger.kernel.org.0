@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C60A9253A74
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 00:57:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E84A253A6D
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 00:56:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbgHZW5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 18:57:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
+        id S1726988AbgHZW4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 18:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726929AbgHZW4p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 18:56:45 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3311C061574;
-        Wed, 26 Aug 2020 15:56:44 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id w14so4265603ljj.4;
-        Wed, 26 Aug 2020 15:56:44 -0700 (PDT)
+        with ESMTP id S1726944AbgHZW4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 18:56:46 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25EDC061756;
+        Wed, 26 Aug 2020 15:56:45 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id d2so1883574lfj.1;
+        Wed, 26 Aug 2020 15:56:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Faqc4Y9V7/YRWZwITUiurHwxzcpfGAmHW6joRfPlemE=;
-        b=lmB0LDB+1vQqs+eJfL1qEVGeBIDKO6Etz3hYkvun8GOSnCfD8+mtdlAGRcmu4XUWlk
-         moo1Q0TZkVepYDg8xveCv1ZqQRFvPZVANhKYoOWDD/S6suUO5WDh8UIzbMG/pKEBzcMi
-         QByv0YZe2eeFNbWSQ9Wohjjf9DbHR41K9AAO8bNyZjU1290xUvmL5T7CkltlhQ6WMtez
-         4dC3MOYe3Hdskh5ZtwUYOs+B7HtknSlrxW1bY6+F9uG5olqRg+Llz2DCl4nwk6qJPP7b
-         Vh27lpnRmBWj6CUR92qLAN4ZjfIyUGjEa9AEDumyEHb4HACWF7BIE0uhDYyNMsVxXA8Z
-         6mKg==
+        bh=IczZFezy4iUgpT57xY22u6EXZy2MKKM2x/4edFQQN1E=;
+        b=olyPMGQS/MuBkv49XJ/YQcFtzuDmJzmYugIzuzqQRTGKlU9CKJhd3m9Ot8UpB2xcnx
+         nw7JuNBH6l7IMDOaG37jvjuEFFWToP7V016/nGrbNnoJfm7YRs+RwdDkdSb5mZ27ULXp
+         vDLTpXkM5Z1sK1UsFdpEJirxLkINgHCuYUonCpLAM0iSEEQxI8PSfH+F9fN5VY/9Aq14
+         vDTyH4avHkVOyQz6JMD/rNCLmnWzdvfWzDUhTkz8BFrQeXwbI+9afWN1w9BPRwnf5maj
+         ILfbYrdAPmXwASwDvHGctG7J0qFRMqcY95fi1P5SfNkKyQH5d8Iv4/ao7GFtJw+MU8/6
+         /4/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Faqc4Y9V7/YRWZwITUiurHwxzcpfGAmHW6joRfPlemE=;
-        b=b382khUh4T2AgfbxbvaQdGX+L8Oxd9whG83lEjZdP6GFWCVqHzPSfVkTPYjVtEEtVr
-         rVgBbEssDyDigQuLEYmmKMDbbPkB3etaBmNpml6teISUhOqAvHDaKK8NGpOc5cpQQtf6
-         tsaT2zeGEOxmmrusfkei47zXmXY/6VS1knjtAndXhjh8im5FhaoV/469q8ogF7VutGlj
-         5jzaJY/mzo1hJNhriEdAKX9M3P2W9U4jKBa0Tr4JIIqwi66S8sRJAlHDHyOg3DLwBBdL
-         VonKHgQtcbPoEEL5pjshKq4SpYhTDO13/LmHkOXoQV2JegfrBoP8Lce7zQfxacgKfFAM
-         iA4Q==
-X-Gm-Message-State: AOAM530474UO6H7HVRLeUcYtxlPUv3g1JTRNQ+v+rS35zl5QXvqs+8sU
-        0YLDHH/fo5cC20wnW2Twt08Zn18dzuFtWg==
-X-Google-Smtp-Source: ABdhPJyUt3p1ehjR9dqBkgLWDFtQon1+zZydUewkZUdKSYezBlbKsX5ZjoZxjY1ZM85rtKZo3y7Dig==
-X-Received: by 2002:a2e:918f:: with SMTP id f15mr8087271ljg.86.1598482603215;
-        Wed, 26 Aug 2020 15:56:43 -0700 (PDT)
+        bh=IczZFezy4iUgpT57xY22u6EXZy2MKKM2x/4edFQQN1E=;
+        b=Of67z7XDSqws1XGoGx1ucU8bo7x12vS7TOvWERjLghixuvvOFLj9qCS3DVOlXsI30G
+         X+P1A1fIPCpCq1A7tlPSxTrHJsVxNV1PcdI/s7RF0jIK9fcvzKAOg++BzfV59LfBVoi9
+         bDlWTJ5MCYSs5q1NKpaXKlh+4tKqxhDTT2WD6rXodejYWNAFn7r3QgoMUA17u6Dw/ssO
+         sMs0Z3j3XrvwruDk1sdqO4Z5gjbvYJoR+Q0LXFJoi3uGQnGFQK5KQpXs76J8nnKFslfR
+         gBEZABS375lKQA9+QElISa9a4VbXMFFWkNo7XcBPLka/lB0UqkVsLhFipbD6yt2kprZg
+         i8XQ==
+X-Gm-Message-State: AOAM533EiIwiWmgdHssJZpzrhkWTCSdttF44wy8qk0UcFY7GB8mUWnHP
+        W4H1ADfnTWp0MOrnTcrUZ/A=
+X-Google-Smtp-Source: ABdhPJyKx+56/SHAfVbE0yslIhtVZETXi3wxIzyRovjepBa8prVJDIfrrMu3ljkMagjI9hGy6iIgVQ==
+X-Received: by 2002:a19:3fc9:: with SMTP id m192mr431848lfa.36.1598482604326;
+        Wed, 26 Aug 2020 15:56:44 -0700 (PDT)
 Received: from localhost.localdomain (h-82-196-111-59.NA.cust.bahnhof.se. [82.196.111.59])
-        by smtp.gmail.com with ESMTPSA id u28sm49075ljd.39.2020.08.26.15.56.41
+        by smtp.gmail.com with ESMTPSA id u28sm49075ljd.39.2020.08.26.15.56.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2020 15:56:42 -0700 (PDT)
+        Wed, 26 Aug 2020 15:56:43 -0700 (PDT)
 From:   Rikard Falkeborn <rikard.falkeborn@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
@@ -54,10 +54,11 @@ Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         Rikard Falkeborn <rikard.falkeborn@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH net-next 4/6] net: phy: at803x: constify static regulator_ops
-Date:   Thu, 27 Aug 2020 00:56:06 +0200
-Message-Id: <20200826225608.90299-5-rikard.falkeborn@gmail.com>
+        Russell King <linux@armlinux.org.uk>,
+        Antoine Tenart <antoine.tenart@bootlin.com>
+Subject: [PATCH net-next 5/6] net: phy: mscc: macsec: constify vsc8584_macsec_ops
+Date:   Thu, 27 Aug 2020 00:56:07 +0200
+Message-Id: <20200826225608.90299-6-rikard.falkeborn@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200826225608.90299-1-rikard.falkeborn@gmail.com>
 References: <20200826225608.90299-1-rikard.falkeborn@gmail.com>
@@ -68,38 +69,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The only usage of vddio_regulator_ops and vddh_regulator_ops is to
-assign their address to the ops field in the regulator_desc struct,
-which is a const pointer. Make them const to allow the compiler to
-put them in read-only memory.
+The only usage of vsc8584_macsec_ops is to assign its address to the
+macsec_ops field in the phydev struct, which is a const pointer. Make it
+const to allow the compiler to put it in read-only memory.
 
 Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
 ---
- drivers/net/phy/at803x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/phy/mscc/mscc_macsec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 101651b2de54..ed601a7e46a0 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -343,7 +343,7 @@ static int at803x_rgmii_reg_get_voltage_sel(struct regulator_dev *rdev)
- 	return (val & AT803X_DEBUG_RGMII_1V8) ? 1 : 0;
+diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
+index 1d4c012194e9..6cf9b798b710 100644
+--- a/drivers/net/phy/mscc/mscc_macsec.c
++++ b/drivers/net/phy/mscc/mscc_macsec.c
+@@ -958,7 +958,7 @@ static int vsc8584_macsec_del_txsa(struct macsec_context *ctx)
+ 	return 0;
  }
  
--static struct regulator_ops vddio_regulator_ops = {
-+static const struct regulator_ops vddio_regulator_ops = {
- 	.list_voltage = regulator_list_voltage_table,
- 	.set_voltage_sel = at803x_rgmii_reg_set_voltage_sel,
- 	.get_voltage_sel = at803x_rgmii_reg_get_voltage_sel,
-@@ -364,7 +364,7 @@ static const struct regulator_desc vddio_desc = {
- 	.owner = THIS_MODULE,
- };
- 
--static struct regulator_ops vddh_regulator_ops = {
-+static const struct regulator_ops vddh_regulator_ops = {
- };
- 
- static const struct regulator_desc vddh_desc = {
+-static struct macsec_ops vsc8584_macsec_ops = {
++static const struct macsec_ops vsc8584_macsec_ops = {
+ 	.mdo_dev_open = vsc8584_macsec_dev_open,
+ 	.mdo_dev_stop = vsc8584_macsec_dev_stop,
+ 	.mdo_add_secy = vsc8584_macsec_add_secy,
 -- 
 2.28.0
 
