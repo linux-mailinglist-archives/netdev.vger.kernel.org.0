@@ -2,125 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 006C9252A0C
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 11:30:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2856D252A8C
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 11:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728037AbgHZJar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 05:30:47 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46762 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727854AbgHZJaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 05:30:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598434244;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TIFpYXnMBOqbh9sUvKB9k5AmLKgqS7phPYgWhAo81EI=;
-        b=Tkyk+zpzzTQbKjrtnCYpuys/U/XoexH03ECslznPTKcx1VNHZrJPB9JPKk38swVQmGUVIk
-        a77dWVxrBXX2vWKm8TxdjRx4ZeTJU2U0K4zSoMU7e2TJ/VCGsCNdAysn2GSZg8TR8eWS8A
-        zjbc3Oqd6kJa9n4b5MLptF46mLHe3Yc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-341-sAPp14RnP8-Zay7gCO39hQ-1; Wed, 26 Aug 2020 05:30:39 -0400
-X-MC-Unique: sAPp14RnP8-Zay7gCO39hQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F3B861800D41;
-        Wed, 26 Aug 2020 09:30:37 +0000 (UTC)
-Received: from krava (unknown [10.40.194.188])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AAC4760D34;
-        Wed, 26 Aug 2020 09:30:31 +0000 (UTC)
-Date:   Wed, 26 Aug 2020 11:30:30 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Wenbo Zhang <ethercflow@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH v12 bpf-next 13/14] selftests/bpf: Add test for d_path
- helper
-Message-ID: <20200826093030.GB703542@krava>
-References: <20200825192124.710397-1-jolsa@kernel.org>
- <20200825192124.710397-14-jolsa@kernel.org>
- <CAADnVQ+_X4-eWW_wNDr9G+Ac6LObQeJ5uCxgetGpR2F33BFk5A@mail.gmail.com>
+        id S1728191AbgHZJkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 05:40:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728184AbgHZJeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 05:34:06 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F60DC061757
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 02:34:06 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id t2so1085636wma.0
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 02:34:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Nj39KvvJBDQl5ELAslfY4/i9vvM4QKppfETPhCXArpc=;
+        b=jVsOQgq3bmDNN84kXzuXjYV8L219/+agEp0AYrZTWi5mNYBgR3wJWjK+E3NUMNqTSe
+         3KFmoA6/7YIs9JZpCb74AcRq9O9xaj6fPkyteXmvcuajLsbeghuzoHxVAHPPXeSg2gQO
+         T2GCNNXYeuCb2bro/kdqyOU2+rUESJ8vJX3xsQDV6i6dhGQdBJgDo+knImzjnlvTLXDH
+         M1XL3XkTrIlxP3VfixZNTU+3iwZAM27dY/Zol2KPSQp0YzUqPKr3ww3GVEjZ+GsLa6zB
+         BRq9+P37N55Se0YARaCTvStQAhPkLSLc6KTxuOjimy3oJ/Ie2JUhsvOqLOfyBBrC3HHt
+         KLjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Nj39KvvJBDQl5ELAslfY4/i9vvM4QKppfETPhCXArpc=;
+        b=gUCIJseMc17lC3sBS84Mf5WwgZGlGRIwIztJskbpUM0HDXdOG+xZ4UFiCnppfNwMcH
+         6+gxdnzym4g2g7YAcaqOSso0d97ji5VEWTyx4YvFjQva6dBirt3dX2I4hA9maG3vG7a0
+         +XzowdutUfKF7uh0nAHywFIOTMkWM483kfZCpmd+8a2dC5Uua3E1mOTPgMnH4n972v+P
+         1dBKgyhRNtFqcLcrpRHcJUzZiegp+tvv2VDjxP8Rxv5D6iXoKqQg4kwrLmSFaM7nnpAD
+         YehtPLrzmqqvIFK4vHJTfmNuUAbTUBIiTZpNNyKEB1S3BjxIpXIFuHvdT8pXT/lC+MFQ
+         XCEQ==
+X-Gm-Message-State: AOAM530UMATxmPml8ZQWDZrVtzFk0NbROd36Mdvhq550w+xad+p8I1kU
+        K38eaVSVoEsYVncfhAPXFzLgrHcC7RynSw==
+X-Google-Smtp-Source: ABdhPJzkQOqGFOcEg9whbSvuGXmCwHXjNrJoG5glhH0qTG+uI4IMx4m3mRLJ96FmImpnqfyHHaoxLQ==
+X-Received: by 2002:a05:600c:2212:: with SMTP id z18mr6041484wml.186.1598434444635;
+        Wed, 26 Aug 2020 02:34:04 -0700 (PDT)
+Received: from dell.default ([95.149.164.62])
+        by smtp.gmail.com with ESMTPSA id u3sm3978759wml.44.2020.08.26.02.34.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Aug 2020 02:34:04 -0700 (PDT)
+From:   Lee Jones <lee.jones@linaro.org>
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 00/30] Set 3: Rid W=1 warnings in Wireless
+Date:   Wed, 26 Aug 2020 10:33:31 +0100
+Message-Id: <20200826093401.1458456-1-lee.jones@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAADnVQ+_X4-eWW_wNDr9G+Ac6LObQeJ5uCxgetGpR2F33BFk5A@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 04:06:14PM -0700, Alexei Starovoitov wrote:
-> On Tue, Aug 25, 2020 at 12:22 PM Jiri Olsa <jolsa@kernel.org> wrote:
-> > +
-> > +static int trigger_fstat_events(pid_t pid)
-> > +{
-> > +       int sockfd = -1, procfd = -1, devfd = -1;
-> > +       int localfd = -1, indicatorfd = -1;
-> > +       int pipefd[2] = { -1, -1 };
-> > +       struct stat fileStat;
-> > +       int ret = -1;
-> > +
-> > +       /* unmountable pseudo-filesystems */
-> > +       if (CHECK(pipe(pipefd) < 0, "trigger", "pipe failed\n"))
-> > +               return ret;
-> > +       /* unmountable pseudo-filesystems */
-> > +       sockfd = socket(AF_INET, SOCK_STREAM, 0);
-> > +       if (CHECK(sockfd < 0, "trigger", "scoket failed\n"))
-> > +               goto out_close;
-> > +       /* mountable pseudo-filesystems */
-> > +       procfd = open("/proc/self/comm", O_RDONLY);
-> > +       if (CHECK(procfd < 0, "trigger", "open /proc/self/comm failed\n"))
-> > +               goto out_close;
-> > +       devfd = open("/dev/urandom", O_RDONLY);
-> > +       if (CHECK(devfd < 0, "trigger", "open /dev/urandom failed\n"))
-> > +               goto out_close;
-> > +       localfd = open("/tmp/d_path_loadgen.txt", O_CREAT | O_RDONLY);
-> 
-> The work-in-progress CI caught a problem here:
-> 
-> In file included from /usr/include/fcntl.h:290:0,
-> 4814                 from ./test_progs.h:29,
-> 4815                 from
-> /home/travis/build/tsipa/bpf-next/tools/testing/selftests/bpf/prog_tests/d_path.c:3:
-> 4816In function ‘open’,
-> 4817    inlined from ‘trigger_fstat_events’ at
-> /home/travis/build/tsipa/bpf-next/tools/testing/selftests/bpf/prog_tests/d_path.c:50:10,
-> 4818    inlined from ‘test_d_path’ at
-> /home/travis/build/tsipa/bpf-next/tools/testing/selftests/bpf/prog_tests/d_path.c:119:6:
-> 4819/usr/include/x86_64-linux-gnu/bits/fcntl2.h:50:4: error: call to
-> ‘__open_missing_mode’ declared with attribute error: open with O_CREAT
-> or O_TMPFILE in second argument needs 3 arguments
-> 4820    __open_missing_mode ();
-> 4821    ^~~~~~~~~~~~~~~~~~~~~~
+This set is part of a larger effort attempting to clean-up W=1
+kernel builds, which are currently overwhelmingly riddled with
+niggly little warnings.
 
-ok, looks like it's missing the permission bits
+There are quite a few W=1 warnings in the Wireless.  My plan
+is to work through all of them over the next few weeks.
+Hopefully it won't be too long before drivers/net/wireless
+builds clean with W=1 enabled.
 
-> 
-> I don't see this bug in my setup, since I'm using an older glibc that
-> doesn't have this check,
-> so I've pushed it anyway since it was taking a bit long to land and folks were
-> eagerly waiting for the allowlist and d_path features.
-> But some other folks may complain about build breakage really soon.
-> So please follow up asap.
+This set brings the total number of (arm, arm64, x86, mips and
+ppc *combined* i.e. some duplicated) warnings down from 2066
+(since the last set) to 1018.
 
-time to upadte my systems, I'm missing new warnings ;-)
+Lee Jones (30):
+  wireless: marvell: mwifiex: pcie: Move tables to the only place
+    they're used
+  wireless: broadcom: brcmsmac: ampdu: Remove a couple set but unused
+    variables
+  wireless: intel: iwlegacy: 3945-mac: Remove all non-conformant
+    kernel-doc headers
+  wireless: intel: iwlegacy: 3945-rs: Remove all non-conformant
+    kernel-doc headers
+  wireless: intel: iwlegacy: 3945: Remove all non-conformant kernel-doc
+    headers
+  wireless: broadcom: brcmfmac: p2p: Fix a couple of function headers
+  wireless: intersil: orinoco_usb: Downgrade non-conforming kernel-doc
+    headers
+  wireless: broadcom: brcmsmac: phy_cmn: Remove a unused variables
+    'vbat' and 'temp'
+  wireless: zydas: zd1211rw: zd_chip: Fix formatting
+  wireless: zydas: zd1211rw: zd_mac: Add missing or incorrect function
+    documentation
+  wireless: zydas: zd1211rw: zd_chip: Correct misspelled function
+    argument
+  wireless: ath: wil6210: wmi: Correct misnamed function parameter
+    'ptr_'
+  wireless: broadcom: brcm80211: brcmfmac: fwsignal: Finish documenting
+    'brcmf_fws_mac_descriptor'
+  wireless: ath: ath6kl: wmi: Remove unused variable 'rate'
+  wireless: ti: wlcore: debugfs: Remove unused variable 'res'
+  wireless: rsi: rsi_91x_sdio: Fix a few kernel-doc related issues
+  wireless: ath: ath9k: ar9002_initvals: Remove unused array
+    'ar9280PciePhy_clkreq_off_L1_9280'
+  wireless: ath: ath9k: ar9001_initvals: Remove unused array
+    'ar5416Bank6_9100'
+  wireless: intersil: hostap: hostap_hw: Remove unused variable 'fc'
+  wireless: wl3501_cs: Fix a bunch of formatting issues related to
+    function docs
+  wireless: realtek: rtw88: debug: Remove unused variables 'val'
+  wireless: rsi: rsi_91x_sdio_ops: File headers are not good kernel-doc
+    candidates
+  wireless: intersil: prism54: isl_ioctl:  Remove unused variable 'j'
+  wireless: marvell: mwifiex: wmm: Mark 'mwifiex_1d_to_wmm_queue' as
+    __maybe_unused
+  wireless: ath: ath9k: ar5008_initvals: Remove unused table entirely
+  wireless: ath: ath9k: ar5008_initvals: Move ar5416Bank{0,1,2,3,7} to
+    where they are used
+  wireless: broadcom: brcm80211: phy_lcn: Remove a bunch of unused
+    variables
+  wireless: broadcom: brcm80211: phy_n: Remove a bunch of unused
+    variables
+  wireless: broadcom: brcm80211: phytbl_lcn: Remove unused array
+    'dot11lcnphytbl_rx_gain_info_rev1'
+  wireless: broadcom: brcm80211: phytbl_n: Remove a few unused arrays
 
-I'll send the fix
+ drivers/net/wireless/ath/ath6kl/wmi.c         |  10 +-
+ .../net/wireless/ath/ath9k/ar5008_initvals.h  |  68 -----
+ drivers/net/wireless/ath/ath9k/ar5008_phy.c   |  31 +-
+ .../net/wireless/ath/ath9k/ar9001_initvals.h  |  37 ---
+ .../net/wireless/ath/ath9k/ar9002_initvals.h  |  14 -
+ drivers/net/wireless/ath/wil6210/wmi.c        |   2 +-
+ .../broadcom/brcm80211/brcmfmac/fwsignal.c    |   6 +
+ .../broadcom/brcm80211/brcmfmac/p2p.c         |   5 +-
+ .../broadcom/brcm80211/brcmsmac/ampdu.c       |   9 +-
+ .../broadcom/brcm80211/brcmsmac/phy/phy_cmn.c |   6 +-
+ .../broadcom/brcm80211/brcmsmac/phy/phy_lcn.c |  40 +--
+ .../broadcom/brcm80211/brcmsmac/phy/phy_n.c   |  47 +--
+ .../brcm80211/brcmsmac/phy/phytbl_lcn.c       |  13 -
+ .../brcm80211/brcmsmac/phy/phytbl_n.c         | 268 ------------------
+ .../net/wireless/intel/iwlegacy/3945-mac.c    |  24 +-
+ drivers/net/wireless/intel/iwlegacy/3945-rs.c |   8 +-
+ drivers/net/wireless/intel/iwlegacy/3945.c    |  46 +--
+ .../net/wireless/intersil/hostap/hostap_hw.c  |   3 +-
+ .../wireless/intersil/orinoco/orinoco_usb.c   |   6 +-
+ .../net/wireless/intersil/prism54/isl_ioctl.c |   3 +-
+ drivers/net/wireless/marvell/mwifiex/pcie.c   | 149 ++++++++++
+ drivers/net/wireless/marvell/mwifiex/pcie.h   | 149 ----------
+ drivers/net/wireless/marvell/mwifiex/wmm.h    |   3 +-
+ drivers/net/wireless/realtek/rtw88/debug.c    |   6 +-
+ drivers/net/wireless/rsi/rsi_91x_sdio.c       |   7 +-
+ drivers/net/wireless/rsi/rsi_91x_sdio_ops.c   |   2 +-
+ drivers/net/wireless/ti/wlcore/debugfs.h      |   6 +-
+ drivers/net/wireless/wl3501_cs.c              |  22 +-
+ drivers/net/wireless/zydas/zd1211rw/zd_chip.c |   4 +-
+ drivers/net/wireless/zydas/zd1211rw/zd_mac.c  |  15 +-
+ 30 files changed, 288 insertions(+), 721 deletions(-)
 
-thanks,
-jirka
+-- 
+2.25.1
 
