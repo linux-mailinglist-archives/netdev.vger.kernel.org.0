@@ -2,165 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9FC4253566
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 18:49:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C42E25357C
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 18:53:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728030AbgHZQtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 12:49:47 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:57161 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728111AbgHZQte (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 12:49:34 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 61FAD5C01C4;
-        Wed, 26 Aug 2020 12:49:33 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Wed, 26 Aug 2020 12:49:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=qr1gEb0wz6G/8lIu18yHNyBenk9c96Y9+ywrv2o5c+Q=; b=Zlufk2du
-        EUfxi6GE4WP9FFkMzSn/ensuQs4JLBzijdmbx6B6/FVAu+ysKmIR0B3GJJCcecDG
-        jrFJq4A0eWAx9Rzy87HcKNTMhRs7JfvKguBCY13DXVEkQp60o4UaZJ+/qa6o5mOg
-        xlQNJZHjsI2WKqEB7hKbY7YdDD2oBGc5Flsj+W5uT40yho5N0p40bb8r+x9rAmsA
-        SKTgxWeYA+It4euZDGbA6ozbq1TYjU6FQl6F0fwNyQz6hGFulRdhZea0aUe3fJqZ
-        3ib7Cdp+oij4r94bq4atkRAnqseMYp61WLmGWUY4umfe55XD4+bac6vTeEE5BPcU
-        9g+Hgk41FqR9eA==
-X-ME-Sender: <xms:nZJGX91aWgtgEBAugxoCpKr74aXug2FfDrXqioiJJMnYvdEVH73yQw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedruddvvddguddtfecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhf
-    ekhefgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdefjedrudei
-    keenucevlhhushhtvghrufhiiigvpeehnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:nZJGX0FazbSurnnJAvx9GkC1q47EnA07CiWS1AJTY5luS8tZoGtDvQ>
-    <xmx:nZJGX94r0gPiCQ4ULzdcTmixgUE1jlNzU8lVKPB3PwoI9OCyvM-qCQ>
-    <xmx:nZJGX62Nca2a7GeEwFbMNWCKBJuWZ77lJKmSKROFaCeIoagG8J7I_w>
-    <xmx:nZJGX6PB-eqI3leW9bbWXVhT2wtEIU3WaSiZGYvqO5s1VLBB3mTSNg>
-Received: from shredder.mtl.com (igld-84-229-37-168.inter.net.il [84.229.37.168])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A43A3328005E;
-        Wed, 26 Aug 2020 12:49:31 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 7/7] selftests: fib_nexthops: Test IPv6 route with group after replacing IPv4 nexthops
-Date:   Wed, 26 Aug 2020 19:48:57 +0300
-Message-Id: <20200826164857.1029764-8-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200826164857.1029764-1-idosch@idosch.org>
-References: <20200826164857.1029764-1-idosch@idosch.org>
+        id S1727905AbgHZQw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 12:52:56 -0400
+Received: from mail-ej1-f66.google.com ([209.85.218.66]:45048 "EHLO
+        mail-ej1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726739AbgHZQww (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 12:52:52 -0400
+Received: by mail-ej1-f66.google.com with SMTP id bo3so3788527ejb.11;
+        Wed, 26 Aug 2020 09:52:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=f3SjKHg0rc/Hi94wKGeK4sTEIeweZxxU2pp3miD2U7w=;
+        b=fw7+bH7AiRhwXjq5tfTImHCJPfa+iMv2NbgB0cFIh1y8lFXKapBDUFm5fXQNsJGlJj
+         5DXxGyaezcySLqGq8GHC8LJLLaqbE6C/aeCXfXka5mYXJ1QGn2VRKPuSZdUj3M6SXRF6
+         W1TBlka4AXnyAX74NdyrDDdgZuUn6hNrwO8xfKNBQEhdqvE7QTXDqJdocBsW3hPmVP6b
+         MMGEE2p2VxiAO7kgtGOBwCSl9ZzTN0vlra+xY/dxBjwtyISYXgUiAovTDrORcrHDU/GV
+         6mR3S+5Ct4w7Fx4tcjt4QXFl6jh1bwj4u6fpwmViuqJTfhxzez6jd2bULogNxJC316Qj
+         PkTA==
+X-Gm-Message-State: AOAM531Kyf8RS73pCksdr2lqiLQ2R+Ek5GFFOh/rK7OAph9jtFsHtOK2
+        2efYRXJnX9pIy1U7qUE9Lqk=
+X-Google-Smtp-Source: ABdhPJx8z7paHiBU5Vqit+UaxQDuL7FcpAQaf80dIweI/Cw+HnrnkKZ/d1NlwB9sHxh0qTew9unJQQ==
+X-Received: by 2002:a17:906:b09a:: with SMTP id x26mr2766990ejy.162.1598460769603;
+        Wed, 26 Aug 2020 09:52:49 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.216])
+        by smtp.googlemail.com with ESMTPSA id d2sm2656101ejm.19.2020.08.26.09.52.48
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 26 Aug 2020 09:52:49 -0700 (PDT)
+Date:   Wed, 26 Aug 2020 18:52:46 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Lukasz Stelmach <l.stelmach@samsung.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, m.szyprowski@samsung.com,
+        b.zolnierkie@samsung.com
+Subject: Re: [PATCH 1/3] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
+ Driver
+Message-ID: <20200826165246.GA29212@kozik-lap>
+References: <20200825184413.GA2693@kozik-lap>
+ <CGME20200826145929eucas1p1367c260edb8fa003869de1da527039c0@eucas1p1.samsung.com>
+ <dleftja6yhv4g2.fsf%l.stelmach@samsung.com>
+ <20200826164533.GC31748@kozik-lap>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200826164533.GC31748@kozik-lap>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Wed, Aug 26, 2020 at 06:45:33PM +0200, Krzysztof Kozlowski wrote:
+> On Wed, Aug 26, 2020 at 04:59:09PM +0200, Lukasz Stelmach wrote:
+ > >> +#include <linux/of.h>
+> > >> +#endif
+> > >> +#include <linux/crc32.h>
+> > >> +#include <linux/etherdevice.h>
+> > >> +#include <linux/ethtool.h>
+> > >> +#include <linux/gpio/consumer.h>
+> > >> +#include <linux/init.h>
+> > >> +#include <linux/io.h>
+> > >> +#include <linux/kmod.h>
+> > >> +#include <linux/mii.h>
+> > >> +#include <linux/module.h>
+> > >> +#include <linux/netdevice.h>
+> > >> +#include <linux/platform_device.h>
+> > >> +#include <linux/sched.h>
+> > >> +#include <linux/spi/spi.h>
+> > >> +#include <linux/timer.h>
+> > >> +#include <linux/uaccess.h>
+> > >> +#include <linux/usb.h>
+> > >> +#include <linux/version.h>
+> > >> +#include <linux/workqueue.h>
+> > >
+> > > All of these should be removed except the headers used directly in this
+> > > header.
+> > >
+> > 
+> > This is "private" header file included in all ax88796c_*.c files and
+> > these are headers required in them. It seems more conveninet to have
+> > them all listed in one place. What is the reason to do otherwise?
+> 
+> Because:
+> 1. The header is included in other files (more than one) so each other
+> compilation unit will include all these headers, while not all of them
+> need. This has a performance penalty during preprocessing.
+> 
+> 2. You will loose the track which headers are needed, which are not. We
+> tend to keep it local, which means each compilation unit includes stuff
+> it needs. This helps removing obsolete includes later.
+> 
+> 3. Otherwise you could make one header, including all headers of Linux,
+> and then include this one header in each of C files. One to rule them
+> all.
 
-Test that an IPv6 route can not use a nexthop group with mixed IPv4 and
-IPv6 nexthops, but can use it after replacing the IPv4 nexthops with
-IPv6 nexthops.
+... and I got one more:
 
-Output without previous patch:
+4. Drivers sometimes get reused, extended or they parts got reused. If
+a header includes more stuff, it simply will pollute all other units
+trying to reuse it... making the re-usage difficult. This is less likely
+reason, I mean, quite imaginary for this particular driver.
 
-# ./fib_nexthops.sh -t ipv6_fcnal_runtime
+I don't expect pieces of this driver to be reused... but who knows. Many
+times in the past in the kernel there was a huge work rewriting headers
+in many files, because something was including something else and we
+wanted to decouple these things.  Therefore following the pattern -
+include stuff you explicitly use - helps in every case.
 
-IPv6 functional runtime
------------------------
-TEST: Route add                                                     [ OK ]
-TEST: Route delete                                                  [ OK ]
-TEST: Ping with nexthop                                             [ OK ]
-TEST: Ping - multipath                                              [ OK ]
-TEST: Ping - blackhole                                              [ OK ]
-TEST: Ping - blackhole replaced with gateway                        [ OK ]
-TEST: Ping - gateway replaced by blackhole                          [ OK ]
-TEST: Ping - group with blackhole                                   [ OK ]
-TEST: Ping - group blackhole replaced with gateways                 [ OK ]
-TEST: IPv6 route with device only nexthop                           [ OK ]
-TEST: IPv6 multipath route with nexthop mix - dev only + gw         [ OK ]
-TEST: IPv6 route can not have a v4 gateway                          [ OK ]
-TEST: Nexthop replace - v6 route, v4 nexthop                        [ OK ]
-TEST: Nexthop replace of group entry - v6 route, v4 nexthop         [ OK ]
-TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-TEST: IPv6 route using a group after removing v4 gateways           [ OK ]
-TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-TEST: IPv6 route using a group after replacing v4 gateways          [FAIL]
-TEST: Nexthop with default route and rpfilter                       [ OK ]
-TEST: Nexthop with multipath default route and rpfilter             [ OK ]
-
-Tests passed:  21
-Tests failed:   1
-
-Output with previous patch:
-
-# ./fib_nexthops.sh -t ipv6_fcnal_runtime
-
-IPv6 functional runtime
------------------------
-TEST: Route add                                                     [ OK ]
-TEST: Route delete                                                  [ OK ]
-TEST: Ping with nexthop                                             [ OK ]
-TEST: Ping - multipath                                              [ OK ]
-TEST: Ping - blackhole                                              [ OK ]
-TEST: Ping - blackhole replaced with gateway                        [ OK ]
-TEST: Ping - gateway replaced by blackhole                          [ OK ]
-TEST: Ping - group with blackhole                                   [ OK ]
-TEST: Ping - group blackhole replaced with gateways                 [ OK ]
-TEST: IPv6 route with device only nexthop                           [ OK ]
-TEST: IPv6 multipath route with nexthop mix - dev only + gw         [ OK ]
-TEST: IPv6 route can not have a v4 gateway                          [ OK ]
-TEST: Nexthop replace - v6 route, v4 nexthop                        [ OK ]
-TEST: Nexthop replace of group entry - v6 route, v4 nexthop         [ OK ]
-TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-TEST: IPv6 route using a group after removing v4 gateways           [ OK ]
-TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-TEST: IPv6 route using a group after replacing v4 gateways          [ OK ]
-TEST: Nexthop with default route and rpfilter                       [ OK ]
-TEST: Nexthop with multipath default route and rpfilter             [ OK ]
-
-Tests passed:  22
-Tests failed:   0
-
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- tools/testing/selftests/net/fib_nexthops.sh | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index 06e4f12e838d..b74884d52913 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -754,6 +754,21 @@ ipv6_fcnal_runtime()
- 	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 124"
- 	log_test $? 0 "IPv6 route using a group after removing v4 gateways"
- 
-+	run_cmd "$IP ro delete 2001:db8:101::1/128"
-+	run_cmd "$IP nexthop add id 87 via 172.16.1.1 dev veth1"
-+	run_cmd "$IP nexthop add id 88 via 172.16.1.1 dev veth1"
-+	run_cmd "$IP nexthop replace id 124 group 86/87/88"
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 124"
-+	log_test $? 2 "IPv6 route can not have a group with v4 and v6 gateways"
-+
-+	run_cmd "$IP nexthop replace id 88 via 2001:db8:92::2 dev veth3"
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 124"
-+	log_test $? 2 "IPv6 route can not have a group with v4 and v6 gateways"
-+
-+	run_cmd "$IP nexthop replace id 87 via 2001:db8:92::2 dev veth3"
-+	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 124"
-+	log_test $? 0 "IPv6 route using a group after replacing v4 gateways"
-+
- 	$IP nexthop flush >/dev/null 2>&1
- 
- 	#
--- 
-2.26.2
+Best regards,
+Krzysztof
 
