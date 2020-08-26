@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23627252CD1
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:48:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 317FD252CC8
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:48:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728786AbgHZLsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 07:48:38 -0400
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:16935 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728659AbgHZLSI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 07:18:08 -0400
+        id S1728829AbgHZLSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 07:18:25 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:31009 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728787AbgHZLSM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 07:18:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1598440688; x=1629976688;
+  t=1598440692; x=1629976692;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Xxv/yDjemQvZ/pge0wayJNkQ0RG4xuY7VsDnEhXS79c=;
-  b=XN6ysmclzyNYZ4jHAXoFs+w9fiy27B57EWDSkOEeq6U3UvPQxJnu79o3
-   LAEbQD88mG2tP3sDpc+8KYG8r2ckxLnKLPOgP2GKF8jYi+p8fzL+vrWD7
-   XTjjEfMPqIuDaxi4uOJK+mTiMR26A9ZetMSdIzfxNhqpCB7o8KakYUB1w
-   4azg1NCvaH9TUFSVZPbeGdBM6DQFiTh/20a6OKNW4HnWOKzeDkty93H7S
-   avp/lJtGY1azFjFBWGOmTCT0qOo8fdm6OHMFEo2ACGm8q8NmYHI8hKNVT
-   DY5b42PnCDSaw7FkoeYit7YU4+hXuXXq08tWS8g33kPVHjCM6BIlHERuI
-   g==;
-IronPort-SDR: azoK6QAb3zRhoTbBQaw8oa2QvVY+PgSwEHssbjHVgHXNZxrBgEf4zY/YN7bG2sxFgiwnI8yxSF
- fj2YtxC3/ntl/tQbUxQYgP6Bf1Cfa9eqnyRfphC9ZUCm7vYv5oTEZiCgsb8ByfK6OBzG7FkgC7
- uLB3UOPiagNtwNnf38XLcTWSUoT/VOw+K/Pnon8XvezybSmtOcjh4/sDywbMpq+ZDi26qt4Kcq
- dukqSczfXP6v1O65EV0tjQlgRqSsHNlDasmsT2ZD7LJB6Dhn/U2n3tXsfoVDVQbMTop9oe7Uyi
- Zes=
+  bh=YaNf+A7gfBXQeslt9FJiNjpp3pP8pSDKQOUw+GDZKRM=;
+  b=RoeDZl6iClRcBrl3MywBB0wUf9RPf67YRlIqCRrD2lTEFurW2/iMhtn6
+   2FZud4XXL6oiN0mc/EA67+MuJEk5qEpW8uYFngYHx1wTmaCntWdbklPOI
+   hfTUd8+o8ksGwZJnIsmUO/O4+Sf4bc8yJ/tRhRU8k1MCTG4ze1jCzfnUD
+   lfFSfTZIBXgneSFE3KUhQfZkYcKNJX3dCxJ6hnAIaD0B520YmZexTuvRD
+   mCEHwjq1vl2JJ5mb7nx85jnR5PJa8+8Hq/E+njZyzUM6srpTEm9qJgwps
+   SKdNI7+p8mh4Tz0PeSzcxb90gUxW7UdCIjQYBihvO5b3j9Za+yb5XL2DO
+   Q==;
+IronPort-SDR: uBi5IqaavpYwzj9jWepAgofGJc9tWOnYjaeN7igXXx4ONl6lxr8SFFfLkNpPmE5QP0md7M4pS8
+ Kef1UQw4DiDXmGssDdVgkfLr4IeIf2Fvw3kMBGXr+OxX+eRgR3hpvqb9wXDYN0CIu3UCI7PPtq
+ 0Ye6aN2681+KHSQ1I3hAfZi7D11vhD42rlyr6k06U6Q0wYHiyWhXi2+fMHg7rMVo0bNjbiB0WF
+ OuK0vNJ5SGnuXQuwyYiTIn4vea6WpVhtySA35A1Ehswsd1XKSBZk51aELWFQZr8u+WCUFO046G
+ WsQ=
 X-IronPort-AV: E=Sophos;i="5.76,355,1592895600"; 
-   d="scan'208";a="93196279"
+   d="scan'208";a="88605635"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2020 04:17:25 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2020 04:17:41 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 26 Aug 2020 04:16:37 -0700
+ 15.1.1979.3; Wed, 26 Aug 2020 04:17:38 -0700
 Received: from xasv.mchp-main.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
  (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 26 Aug 2020 04:16:34 -0700
+ Transport; Wed, 26 Aug 2020 04:16:49 -0700
 From:   Andre Edich <andre.edich@microchip.com>
 To:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
         <steve.glendinning@shawell.net>
 CC:     <Parthiban.Veerasooran@microchip.com>,
         Andre Edich <andre.edich@microchip.com>
-Subject: [PATCH net-next v5 2/3] smsc95xx: use usbnet->driver_priv
-Date:   Wed, 26 Aug 2020 13:17:16 +0200
-Message-ID: <20200826111717.405305-3-andre.edich@microchip.com>
+Subject: [PATCH net-next v5 3/3] smsc95xx: add phylib support
+Date:   Wed, 26 Aug 2020 13:17:17 +0200
+Message-ID: <20200826111717.405305-4-andre.edich@microchip.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200826111717.405305-1-andre.edich@microchip.com>
 References: <20200826111717.405305-1-andre.edich@microchip.com>
@@ -59,237 +59,806 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using `void *driver_priv` instead of `unsigned long data[]` is more
-straightforward way to recover the `struct smsc95xx_priv *` from the
-`struct net_device *`.
+Generally, each PHY has their own configuration and it can be done
+through an external PHY driver.  The smsc95xx driver uses only the
+hard-coded internal PHY configuration.
+
+This patch adds phylib support to probe external PHY drivers for
+configuring external PHYs.
+
+The MDI-X configuration for the internal PHYs moves from
+drivers/net/usb/smsc95xx.c to drivers/net/phy/smsc.c.
 
 Signed-off-by: Andre Edich <andre.edich@microchip.com>
 ---
- drivers/net/usb/smsc95xx.c | 61 +++++++++++++++++---------------------
- 1 file changed, 28 insertions(+), 33 deletions(-)
+ drivers/net/phy/smsc.c     |  67 +++++++
+ drivers/net/usb/Kconfig    |   2 +
+ drivers/net/usb/smsc95xx.c | 399 +++++++++++++------------------------
+ 3 files changed, 203 insertions(+), 265 deletions(-)
 
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index 74568ae16125..638e8c3d1f4a 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -21,6 +21,17 @@
+ #include <linux/netdevice.h>
+ #include <linux/smscphy.h>
+ 
++/* Vendor-specific PHY Definitions */
++/* EDPD NLP / crossover time configuration */
++#define PHY_EDPD_CONFIG			16
++#define PHY_EDPD_CONFIG_EXT_CROSSOVER_	0x0001
++
++/* Control/Status Indication Register */
++#define SPECIAL_CTRL_STS		27
++#define SPECIAL_CTRL_STS_OVRRD_AMDIX_	0x8000
++#define SPECIAL_CTRL_STS_AMDIX_ENABLE_	0x4000
++#define SPECIAL_CTRL_STS_AMDIX_STATE_	0x2000
++
+ struct smsc_hw_stat {
+ 	const char *string;
+ 	u8 reg;
+@@ -96,6 +107,54 @@ static int lan911x_config_init(struct phy_device *phydev)
+ 	return smsc_phy_ack_interrupt(phydev);
+ }
+ 
++static int lan87xx_config_aneg(struct phy_device *phydev)
++{
++	int rc;
++	int val;
++
++	switch (phydev->mdix_ctrl) {
++	case ETH_TP_MDI:
++		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_;
++		break;
++	case ETH_TP_MDI_X:
++		val = SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
++			SPECIAL_CTRL_STS_AMDIX_STATE_;
++		break;
++	case ETH_TP_MDI_AUTO:
++		val = SPECIAL_CTRL_STS_AMDIX_ENABLE_;
++		break;
++	default:
++		return genphy_config_aneg(phydev);
++	}
++
++	rc = phy_read(phydev, SPECIAL_CTRL_STS);
++	if (rc < 0)
++		return rc;
++
++	rc &= ~(SPECIAL_CTRL_STS_OVRRD_AMDIX_ |
++		SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
++		SPECIAL_CTRL_STS_AMDIX_STATE_);
++	rc |= val;
++	phy_write(phydev, SPECIAL_CTRL_STS, rc);
++
++	phydev->mdix = phydev->mdix_ctrl;
++	return genphy_config_aneg(phydev);
++}
++
++static int lan87xx_config_aneg_ext(struct phy_device *phydev)
++{
++	int rc;
++
++	/* Extend Manual AutoMDIX timer */
++	rc = phy_read(phydev, PHY_EDPD_CONFIG);
++	if (rc < 0)
++		return rc;
++
++	rc |= PHY_EDPD_CONFIG_EXT_CROSSOVER_;
++	phy_write(phydev, PHY_EDPD_CONFIG, rc);
++	return lan87xx_config_aneg(phydev);
++}
++
+ /*
+  * The LAN87xx suffers from rare absence of the ENERGYON-bit when Ethernet cable
+  * plugs in while LAN87xx is in Energy Detect Power-Down mode. This leads to
+@@ -250,6 +309,9 @@ static struct phy_driver smsc_phy_driver[] = {
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+ }, {
++	/* This covers internal PHY (phy_id: 0x0007C0C3) for
++	 * LAN9500 (PID: 0x9500), LAN9514 (PID: 0xec00), LAN9505 (PID: 0x9505)
++	 */
+ 	.phy_id		= 0x0007c0c0, /* OUI=0x00800f, Model#=0x0c */
+ 	.phy_id_mask	= 0xfffffff0,
+ 	.name		= "SMSC LAN8700",
+@@ -262,6 +324,7 @@ static struct phy_driver smsc_phy_driver[] = {
+ 	.read_status	= lan87xx_read_status,
+ 	.config_init	= smsc_phy_config_init,
+ 	.soft_reset	= smsc_phy_reset,
++	.config_aneg	= lan87xx_config_aneg,
+ 
+ 	/* IRQ related */
+ 	.ack_interrupt	= smsc_phy_ack_interrupt,
+@@ -293,6 +356,9 @@ static struct phy_driver smsc_phy_driver[] = {
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+ }, {
++	/* This covers internal PHY (phy_id: 0x0007C0F0) for
++	 * LAN9500A (PID: 0x9E00), LAN9505A (PID: 0x9E01)
++	 */
+ 	.phy_id		= 0x0007c0f0, /* OUI=0x00800f, Model#=0x0f */
+ 	.phy_id_mask	= 0xfffffff0,
+ 	.name		= "SMSC LAN8710/LAN8720",
+@@ -306,6 +372,7 @@ static struct phy_driver smsc_phy_driver[] = {
+ 	.read_status	= lan87xx_read_status,
+ 	.config_init	= smsc_phy_config_init,
+ 	.soft_reset	= smsc_phy_reset,
++	.config_aneg	= lan87xx_config_aneg_ext,
+ 
+ 	/* IRQ related */
+ 	.ack_interrupt	= smsc_phy_ack_interrupt,
+diff --git a/drivers/net/usb/Kconfig b/drivers/net/usb/Kconfig
+index a7fbc3ccd29e..0863f01937b3 100644
+--- a/drivers/net/usb/Kconfig
++++ b/drivers/net/usb/Kconfig
+@@ -345,6 +345,8 @@ config USB_NET_SMSC75XX
+ config USB_NET_SMSC95XX
+ 	tristate "SMSC LAN95XX based USB 2.0 10/100 ethernet devices"
+ 	depends on USB_USBNET
++	select PHYLIB
++	select SMSC_PHY
+ 	select BITREVERSE
+ 	select CRC16
+ 	select CRC32
 diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 3fdf7c2b2d25..f200684875fb 100644
+index f200684875fb..601fb40a2a0a 100644
 --- a/drivers/net/usb/smsc95xx.c
 +++ b/drivers/net/usb/smsc95xx.c
-@@ -457,7 +457,7 @@ static unsigned int smsc95xx_hash(char addr[ETH_ALEN])
- static void smsc95xx_set_multicast(struct net_device *netdev)
+@@ -18,10 +18,12 @@
+ #include <linux/usb/usbnet.h>
+ #include <linux/slab.h>
+ #include <linux/of_net.h>
++#include <linux/mdio.h>
++#include <linux/phy.h>
+ #include "smsc95xx.h"
+ 
+ #define SMSC_CHIPNAME			"smsc95xx"
+-#define SMSC_DRIVER_VERSION		"1.0.6"
++#define SMSC_DRIVER_VERSION		"2.0.0"
+ #define HS_USB_PKT_SIZE			(512)
+ #define FS_USB_PKT_SIZE			(64)
+ #define DEFAULT_HS_BURST_CAP_SIZE	(16 * 1024 + 5 * HS_USB_PKT_SIZE)
+@@ -49,10 +51,7 @@
+ #define SUSPEND_ALLMODES		(SUSPEND_SUSPEND0 | SUSPEND_SUSPEND1 | \
+ 					 SUSPEND_SUSPEND2 | SUSPEND_SUSPEND3)
+ 
+-#define CARRIER_CHECK_DELAY (2 * HZ)
+-
+ struct smsc95xx_priv {
+-	u32 chip_id;
+ 	u32 mac_cr;
+ 	u32 hash_hi;
+ 	u32 hash_lo;
+@@ -60,10 +59,8 @@ struct smsc95xx_priv {
+ 	spinlock_t mac_cr_lock;
+ 	u8 features;
+ 	u8 suspend_flags;
+-	u8 mdix_ctrl;
+-	bool link_ok;
+-	struct delayed_work carrier_check;
+-	struct usbnet *dev;
++	struct mii_bus *mdiobus;
++	struct phy_device *phydev;
+ };
+ 
+ static bool turbo_mode = true;
+@@ -173,10 +170,14 @@ static int __must_check __smsc95xx_phy_wait_not_busy(struct usbnet *dev,
+ 	return -EIO;
+ }
+ 
+-static int __smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
++static u32 mii_address_cmd(int phy_id, int idx, u16 op)
++{
++	return (phy_id & 0x1f) << 11 | (idx & 0x1f) << 6 | op;
++}
++
++static int __smsc95xx_mdio_read(struct usbnet *dev, int phy_id, int idx,
+ 				int in_pm)
  {
- 	struct usbnet *dev = netdev_priv(netdev);
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	unsigned long flags;
+-	struct usbnet *dev = netdev_priv(netdev);
+ 	u32 val, addr;
  	int ret;
  
-@@ -552,7 +552,7 @@ static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev, u8 duplex,
+@@ -185,14 +186,12 @@ static int __smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
+ 	/* confirm MII not busy */
+ 	ret = __smsc95xx_phy_wait_not_busy(dev, in_pm);
+ 	if (ret < 0) {
+-		netdev_warn(dev->net, "MII is busy in smsc95xx_mdio_read\n");
++		netdev_warn(dev->net, "%s: MII is busy\n", __func__);
+ 		goto done;
+ 	}
  
+ 	/* set the address, index & direction (read from PHY) */
+-	phy_id &= dev->mii.phy_id_mask;
+-	idx &= dev->mii.reg_num_mask;
+-	addr = (phy_id << 11) | (idx << 6) | MII_READ_ | MII_BUSY_;
++	addr = mii_address_cmd(phy_id, idx, MII_READ_ | MII_BUSY_);
+ 	ret = __smsc95xx_write_reg(dev, MII_ADDR, addr, in_pm);
+ 	if (ret < 0) {
+ 		netdev_warn(dev->net, "Error writing MII_ADDR\n");
+@@ -218,10 +217,9 @@ static int __smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx,
+ 	return ret;
+ }
+ 
+-static void __smsc95xx_mdio_write(struct net_device *netdev, int phy_id,
++static void __smsc95xx_mdio_write(struct usbnet *dev, int phy_id,
+ 				  int idx, int regval, int in_pm)
+ {
+-	struct usbnet *dev = netdev_priv(netdev);
+ 	u32 val, addr;
+ 	int ret;
+ 
+@@ -230,7 +228,7 @@ static void __smsc95xx_mdio_write(struct net_device *netdev, int phy_id,
+ 	/* confirm MII not busy */
+ 	ret = __smsc95xx_phy_wait_not_busy(dev, in_pm);
+ 	if (ret < 0) {
+-		netdev_warn(dev->net, "MII is busy in smsc95xx_mdio_write\n");
++		netdev_warn(dev->net, "%s: MII is busy\n", __func__);
+ 		goto done;
+ 	}
+ 
+@@ -242,9 +240,7 @@ static void __smsc95xx_mdio_write(struct net_device *netdev, int phy_id,
+ 	}
+ 
+ 	/* set the address, index & direction (write to PHY) */
+-	phy_id &= dev->mii.phy_id_mask;
+-	idx &= dev->mii.reg_num_mask;
+-	addr = (phy_id << 11) | (idx << 6) | MII_WRITE_ | MII_BUSY_;
++	addr = mii_address_cmd(phy_id, idx, MII_WRITE_ | MII_BUSY_);
+ 	ret = __smsc95xx_write_reg(dev, MII_ADDR, addr, in_pm);
+ 	if (ret < 0) {
+ 		netdev_warn(dev->net, "Error writing MII_ADDR\n");
+@@ -263,27 +259,32 @@ static void __smsc95xx_mdio_write(struct net_device *netdev, int phy_id,
+ 
+ static int smsc95xx_mdio_read_nopm(struct usbnet *dev, int idx)
+ {
+-	struct mii_if_info *mii = &dev->mii;
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 
+-	return __smsc95xx_mdio_read(dev->net, mii->phy_id, idx, 1);
++	return __smsc95xx_mdio_read(dev, pdata->phydev->mdio.addr, idx, 1);
+ }
+ 
+ static void smsc95xx_mdio_write_nopm(struct usbnet *dev, int idx, int regval)
+ {
+-	struct mii_if_info *mii = &dev->mii;
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 
+-	__smsc95xx_mdio_write(dev->net, mii->phy_id, idx, regval, 1);
++	__smsc95xx_mdio_write(dev, pdata->phydev->mdio.addr, idx, regval, 1);
+ }
+ 
+-static int smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx)
++static int smsc95xx_mdiobus_read(struct mii_bus *bus, int phy_id, int idx)
+ {
+-	return __smsc95xx_mdio_read(netdev, phy_id, idx, 0);
++	struct usbnet *dev = bus->priv;
++
++	return __smsc95xx_mdio_read(dev, phy_id, idx, 0);
+ }
+ 
+-static void smsc95xx_mdio_write(struct net_device *netdev, int phy_id, int idx,
+-				int regval)
++static int smsc95xx_mdiobus_write(struct mii_bus *bus, int phy_id, int idx,
++				  u16 regval)
+ {
+-	__smsc95xx_mdio_write(netdev, phy_id, idx, regval, 0);
++	struct usbnet *dev = bus->priv;
++
++	__smsc95xx_mdio_write(dev, phy_id, idx, regval, 0);
++	return 0;
+ }
+ 
+ static int __must_check smsc95xx_wait_eeprom(struct usbnet *dev)
+@@ -513,22 +514,23 @@ static void smsc95xx_set_multicast(struct net_device *netdev)
+ 		netdev_warn(dev->net, "failed to initiate async write to MAC_CR\n");
+ }
+ 
+-static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev, u8 duplex,
+-					   u16 lcladv, u16 rmtadv)
++static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev)
+ {
+ 	u32 flow = 0, afc_cfg;
++	struct smsc95xx_priv *pdata = dev->driver_priv;
++	bool tx_pause, rx_pause;
+ 
+ 	int ret = smsc95xx_read_reg(dev, AFC_CFG, &afc_cfg);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (duplex == DUPLEX_FULL) {
+-		u8 cap = mii_resolve_flowctrl_fdx(lcladv, rmtadv);
++	if (pdata->phydev->duplex == DUPLEX_FULL) {
++		phy_get_pause(pdata->phydev, &tx_pause, &rx_pause);
+ 
+-		if (cap & FLOW_CTRL_RX)
++		if (rx_pause)
+ 			flow = 0xFFFF0002;
+ 
+-		if (cap & FLOW_CTRL_TX) {
++		if (tx_pause) {
+ 			afc_cfg |= 0xF;
+ 			flow |= 0xFFFF0000;
+ 		} else {
+@@ -536,8 +538,8 @@ static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev, u8 duplex,
+ 		}
+ 
+ 		netif_dbg(dev, link, dev->net, "rx pause %s, tx pause %s\n",
+-				   cap & FLOW_CTRL_RX ? "enabled" : "disabled",
+-				   cap & FLOW_CTRL_TX ? "enabled" : "disabled");
++			  rx_pause ? "enabled" : "disabled",
++			  tx_pause ? "enabled" : "disabled");
+ 	} else {
+ 		netif_dbg(dev, link, dev->net, "half duplex\n");
+ 		afc_cfg |= 0xF;
+@@ -553,32 +555,15 @@ static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev, u8 duplex,
  static int smsc95xx_link_reset(struct usbnet *dev)
  {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	struct mii_if_info *mii = &dev->mii;
- 	struct ethtool_cmd ecmd = { .cmd = ETHTOOL_GSET };
+ 	struct smsc95xx_priv *pdata = dev->driver_priv;
+-	struct mii_if_info *mii = &dev->mii;
+-	struct ethtool_cmd ecmd = { .cmd = ETHTOOL_GSET };
  	unsigned long flags;
-@@ -620,7 +620,7 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
- 
- static void set_carrier(struct usbnet *dev, bool link)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 
- 	if (pdata->link_ok == link)
- 		return;
-@@ -749,7 +749,7 @@ static void smsc95xx_ethtool_get_wol(struct net_device *net,
- 				     struct ethtool_wolinfo *wolinfo)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 
- 	wolinfo->supported = SUPPORTED_WAKE;
- 	wolinfo->wolopts = pdata->wolopts;
-@@ -759,7 +759,7 @@ static int smsc95xx_ethtool_set_wol(struct net_device *net,
- 				    struct ethtool_wolinfo *wolinfo)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
+-	u16 lcladv, rmtadv;
  	int ret;
  
- 	if (wolinfo->wolopts & ~SUPPORTED_WAKE)
-@@ -798,7 +798,7 @@ static int get_mdix_status(struct net_device *net)
- static void set_mdix_status(struct net_device *net, __u8 mdix_ctrl)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	int buf;
+-	/* clear interrupt status */
+-	ret = smsc95xx_mdio_read(dev->net, mii->phy_id, PHY_INT_SRC);
+-	if (ret < 0)
+-		return ret;
+-
+ 	ret = smsc95xx_write_reg(dev, INT_STS, INT_STS_CLEAR_ALL_);
+ 	if (ret < 0)
+ 		return ret;
  
- 	if ((pdata->chip_id == ID_REV_CHIP_ID_9500A_) ||
-@@ -847,7 +847,7 @@ static int smsc95xx_get_link_ksettings(struct net_device *net,
- 				       struct ethtool_link_ksettings *cmd)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	int retval;
- 
- 	retval = usbnet_get_link_ksettings(net, cmd);
-@@ -862,7 +862,7 @@ static int smsc95xx_set_link_ksettings(struct net_device *net,
- 				       const struct ethtool_link_ksettings *cmd)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	int retval;
- 
- 	if (pdata->mdix_ctrl != cmd->base.eth_tp_mdix_ctrl)
-@@ -944,7 +944,7 @@ static int smsc95xx_set_mac_address(struct usbnet *dev)
- /* starts the TX path */
- static int smsc95xx_start_tx_path(struct usbnet *dev)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	unsigned long flags;
- 	int ret;
- 
-@@ -964,7 +964,7 @@ static int smsc95xx_start_tx_path(struct usbnet *dev)
- /* Starts the Receive path */
- static int smsc95xx_start_rx_path(struct usbnet *dev, int in_pm)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	unsigned long flags;
- 
+-	mii_check_media(mii, 1, 1);
+-	mii_ethtool_gset(&dev->mii, &ecmd);
+-	lcladv = smsc95xx_mdio_read(dev->net, mii->phy_id, MII_ADVERTISE);
+-	rmtadv = smsc95xx_mdio_read(dev->net, mii->phy_id, MII_LPA);
+-
+-	netif_dbg(dev, link, dev->net,
+-		  "speed: %u duplex: %d lcladv: %04x rmtadv: %04x\n",
+-		  ethtool_cmd_speed(&ecmd), ecmd.duplex, lcladv, rmtadv);
+-
  	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
-@@ -1021,7 +1021,7 @@ static int smsc95xx_phy_initialize(struct usbnet *dev)
+-	if (ecmd.duplex != DUPLEX_FULL) {
++	if (pdata->phydev->duplex != DUPLEX_FULL) {
+ 		pdata->mac_cr &= ~MAC_CR_FDPX_;
+ 		pdata->mac_cr |= MAC_CR_RCVOWN_;
+ 	} else {
+@@ -591,7 +576,7 @@ static int smsc95xx_link_reset(struct usbnet *dev)
+ 	if (ret < 0)
+ 		return ret;
  
+-	ret = smsc95xx_phy_update_flowcontrol(dev, ecmd.duplex, lcladv, rmtadv);
++	ret = smsc95xx_phy_update_flowcontrol(dev);
+ 	if (ret < 0)
+ 		netdev_warn(dev->net, "Error updating PHY flow control\n");
+ 
+@@ -618,44 +603,6 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+ 			    intdata);
+ }
+ 
+-static void set_carrier(struct usbnet *dev, bool link)
+-{
+-	struct smsc95xx_priv *pdata = dev->driver_priv;
+-
+-	if (pdata->link_ok == link)
+-		return;
+-
+-	pdata->link_ok = link;
+-
+-	if (link)
+-		usbnet_link_change(dev, 1, 0);
+-	else
+-		usbnet_link_change(dev, 0, 0);
+-}
+-
+-static void check_carrier(struct work_struct *work)
+-{
+-	struct smsc95xx_priv *pdata = container_of(work, struct smsc95xx_priv,
+-						carrier_check.work);
+-	struct usbnet *dev = pdata->dev;
+-	int ret;
+-
+-	if (pdata->suspend_flags != 0)
+-		return;
+-
+-	ret = smsc95xx_mdio_read(dev->net, dev->mii.phy_id, MII_BMSR);
+-	if (ret < 0) {
+-		netdev_warn(dev->net, "Failed to read MII_BMSR\n");
+-		return;
+-	}
+-	if (ret & BMSR_LSTATUS)
+-		set_carrier(dev, 1);
+-	else
+-		set_carrier(dev, 0);
+-
+-	schedule_delayed_work(&pdata->carrier_check, CARRIER_CHECK_DELAY);
+-}
+-
+ /* Enable or disable Tx & Rx checksum offload engines */
+ static int smsc95xx_set_features(struct net_device *netdev,
+ 	netdev_features_t features)
+@@ -774,108 +721,15 @@ static int smsc95xx_ethtool_set_wol(struct net_device *net,
+ 	return ret;
+ }
+ 
+-static int get_mdix_status(struct net_device *net)
+-{
+-	struct usbnet *dev = netdev_priv(net);
+-	u32 val;
+-	int buf;
+-
+-	buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id, SPECIAL_CTRL_STS);
+-	if (buf & SPECIAL_CTRL_STS_OVRRD_AMDIX_) {
+-		if (buf & SPECIAL_CTRL_STS_AMDIX_ENABLE_)
+-			return ETH_TP_MDI_AUTO;
+-		else if (buf & SPECIAL_CTRL_STS_AMDIX_STATE_)
+-			return ETH_TP_MDI_X;
+-	} else {
+-		buf = smsc95xx_read_reg(dev, STRAP_STATUS, &val);
+-		if (val & STRAP_STATUS_AMDIX_EN_)
+-			return ETH_TP_MDI_AUTO;
+-	}
+-
+-	return ETH_TP_MDI;
+-}
+-
+-static void set_mdix_status(struct net_device *net, __u8 mdix_ctrl)
+-{
+-	struct usbnet *dev = netdev_priv(net);
+-	struct smsc95xx_priv *pdata = dev->driver_priv;
+-	int buf;
+-
+-	if ((pdata->chip_id == ID_REV_CHIP_ID_9500A_) ||
+-	    (pdata->chip_id == ID_REV_CHIP_ID_9530_) ||
+-	    (pdata->chip_id == ID_REV_CHIP_ID_89530_) ||
+-	    (pdata->chip_id == ID_REV_CHIP_ID_9730_)) {
+-		/* Extend Manual AutoMDIX timer for 9500A/9500Ai */
+-		buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id,
+-					 PHY_EDPD_CONFIG);
+-		buf |= PHY_EDPD_CONFIG_EXT_CROSSOVER_;
+-		smsc95xx_mdio_write(dev->net, dev->mii.phy_id,
+-				    PHY_EDPD_CONFIG, buf);
+-	}
+-
+-	if (mdix_ctrl == ETH_TP_MDI) {
+-		buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id,
+-					 SPECIAL_CTRL_STS);
+-		buf |= SPECIAL_CTRL_STS_OVRRD_AMDIX_;
+-		buf &= ~(SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
+-			 SPECIAL_CTRL_STS_AMDIX_STATE_);
+-		smsc95xx_mdio_write(dev->net, dev->mii.phy_id,
+-				    SPECIAL_CTRL_STS, buf);
+-	} else if (mdix_ctrl == ETH_TP_MDI_X) {
+-		buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id,
+-					 SPECIAL_CTRL_STS);
+-		buf |= SPECIAL_CTRL_STS_OVRRD_AMDIX_;
+-		buf &= ~(SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
+-			 SPECIAL_CTRL_STS_AMDIX_STATE_);
+-		buf |= SPECIAL_CTRL_STS_AMDIX_STATE_;
+-		smsc95xx_mdio_write(dev->net, dev->mii.phy_id,
+-				    SPECIAL_CTRL_STS, buf);
+-	} else if (mdix_ctrl == ETH_TP_MDI_AUTO) {
+-		buf = smsc95xx_mdio_read(dev->net, dev->mii.phy_id,
+-					 SPECIAL_CTRL_STS);
+-		buf &= ~SPECIAL_CTRL_STS_OVRRD_AMDIX_;
+-		buf &= ~(SPECIAL_CTRL_STS_AMDIX_ENABLE_ |
+-			 SPECIAL_CTRL_STS_AMDIX_STATE_);
+-		buf |= SPECIAL_CTRL_STS_AMDIX_ENABLE_;
+-		smsc95xx_mdio_write(dev->net, dev->mii.phy_id,
+-				    SPECIAL_CTRL_STS, buf);
+-	}
+-	pdata->mdix_ctrl = mdix_ctrl;
+-}
+-
+-static int smsc95xx_get_link_ksettings(struct net_device *net,
+-				       struct ethtool_link_ksettings *cmd)
++static u32 smsc95xx_get_link(struct net_device *net)
+ {
+-	struct usbnet *dev = netdev_priv(net);
+-	struct smsc95xx_priv *pdata = dev->driver_priv;
+-	int retval;
+-
+-	retval = usbnet_get_link_ksettings(net, cmd);
+-
+-	cmd->base.eth_tp_mdix = pdata->mdix_ctrl;
+-	cmd->base.eth_tp_mdix_ctrl = pdata->mdix_ctrl;
+-
+-	return retval;
+-}
+-
+-static int smsc95xx_set_link_ksettings(struct net_device *net,
+-				       const struct ethtool_link_ksettings *cmd)
+-{
+-	struct usbnet *dev = netdev_priv(net);
+-	struct smsc95xx_priv *pdata = dev->driver_priv;
+-	int retval;
+-
+-	if (pdata->mdix_ctrl != cmd->base.eth_tp_mdix_ctrl)
+-		set_mdix_status(net, cmd->base.eth_tp_mdix_ctrl);
+-
+-	retval = usbnet_set_link_ksettings(net, cmd);
+-
+-	return retval;
++	phy_read_status(net->phydev);
++	return net->phydev->link;
+ }
+ 
+ static const struct ethtool_ops smsc95xx_ethtool_ops = {
+-	.get_link	= usbnet_get_link,
+-	.nway_reset	= usbnet_nway_reset,
++	.get_link	= smsc95xx_get_link,
++	.nway_reset	= phy_ethtool_nway_reset,
+ 	.get_drvinfo	= usbnet_get_drvinfo,
+ 	.get_msglevel	= usbnet_get_msglevel,
+ 	.set_msglevel	= usbnet_set_msglevel,
+@@ -886,19 +740,17 @@ static const struct ethtool_ops smsc95xx_ethtool_ops = {
+ 	.get_regs	= smsc95xx_ethtool_getregs,
+ 	.get_wol	= smsc95xx_ethtool_get_wol,
+ 	.set_wol	= smsc95xx_ethtool_set_wol,
+-	.get_link_ksettings	= smsc95xx_get_link_ksettings,
+-	.set_link_ksettings	= smsc95xx_set_link_ksettings,
++	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
++	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
+ 	.get_ts_info	= ethtool_op_get_ts_info,
+ };
+ 
+ static int smsc95xx_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
+ {
+-	struct usbnet *dev = netdev_priv(netdev);
+-
+ 	if (!netif_running(netdev))
+ 		return -EINVAL;
+ 
+-	return generic_mii_ioctl(&dev->mii, if_mii(rq), cmd, NULL);
++	return phy_mii_ioctl(netdev->phydev, rq, cmd);
+ }
+ 
+ static void smsc95xx_init_mac_address(struct usbnet *dev)
+@@ -974,51 +826,6 @@ static int smsc95xx_start_rx_path(struct usbnet *dev, int in_pm)
+ 	return __smsc95xx_write_reg(dev, MAC_CR, pdata->mac_cr, in_pm);
+ }
+ 
+-static int smsc95xx_phy_initialize(struct usbnet *dev)
+-{
+-	int bmcr, ret, timeout = 0;
+-
+-	/* Initialize MII structure */
+-	dev->mii.dev = dev->net;
+-	dev->mii.mdio_read = smsc95xx_mdio_read;
+-	dev->mii.mdio_write = smsc95xx_mdio_write;
+-	dev->mii.phy_id_mask = 0x1f;
+-	dev->mii.reg_num_mask = 0x1f;
+-	dev->mii.phy_id = SMSC95XX_INTERNAL_PHY_ID;
+-
+-	/* reset phy and wait for reset to complete */
+-	smsc95xx_mdio_write(dev->net, dev->mii.phy_id, MII_BMCR, BMCR_RESET);
+-
+-	do {
+-		msleep(10);
+-		bmcr = smsc95xx_mdio_read(dev->net, dev->mii.phy_id, MII_BMCR);
+-		timeout++;
+-	} while ((bmcr & BMCR_RESET) && (timeout < 100));
+-
+-	if (timeout >= 100) {
+-		netdev_warn(dev->net, "timeout on PHY Reset");
+-		return -EIO;
+-	}
+-
+-	smsc95xx_mdio_write(dev->net, dev->mii.phy_id, MII_ADVERTISE,
+-		ADVERTISE_ALL | ADVERTISE_CSMA | ADVERTISE_PAUSE_CAP |
+-		ADVERTISE_PAUSE_ASYM);
+-
+-	/* read to clear */
+-	ret = smsc95xx_mdio_read(dev->net, dev->mii.phy_id, PHY_INT_SRC);
+-	if (ret < 0) {
+-		netdev_warn(dev->net, "Failed to read PHY_INT_SRC during init\n");
+-		return ret;
+-	}
+-
+-	smsc95xx_mdio_write(dev->net, dev->mii.phy_id, PHY_INT_MASK,
+-		PHY_INT_MASK_DEFAULT_);
+-	mii_nway_restart(&dev->mii);
+-
+-	netif_dbg(dev, ifup, dev->net, "phy initialised successfully\n");
+-	return 0;
+-}
+-
  static int smsc95xx_reset(struct usbnet *dev)
  {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	u32 read_buf, write_buf, burst_cap;
- 	int ret = 0, timeout;
+ 	struct smsc95xx_priv *pdata = dev->driver_priv;
+@@ -1200,12 +1007,6 @@ static int smsc95xx_reset(struct usbnet *dev)
  
-@@ -1249,7 +1249,7 @@ static const struct net_device_ops smsc95xx_netdev_ops = {
+ 	smsc95xx_set_multicast(dev->net);
  
+-	ret = smsc95xx_phy_initialize(dev);
+-	if (ret < 0) {
+-		netdev_warn(dev->net, "Failed to init PHY\n");
+-		return ret;
+-	}
+-
+ 	ret = smsc95xx_read_reg(dev, INT_EP_CTL, &read_buf);
+ 	if (ret < 0)
+ 		return ret;
+@@ -1250,6 +1051,7 @@ static const struct net_device_ops smsc95xx_netdev_ops = {
  static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
  {
--	struct smsc95xx_priv *pdata = NULL;
-+	struct smsc95xx_priv *pdata;
+ 	struct smsc95xx_priv *pdata;
++	bool is_internal_phy;
  	u32 val;
  	int ret;
  
-@@ -1261,13 +1261,12 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+@@ -1291,15 +1093,50 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	if (ret)
+ 		goto free_pdata;
+ 
++	pdata->mdiobus = mdiobus_alloc();
++	if (!pdata->mdiobus) {
++		ret = -ENOMEM;
++		goto free_pdata;
++	}
++
++	ret = smsc95xx_read_reg(dev, HW_CFG, &val);
++	if (ret < 0)
++		goto free_mdio;
++
++	is_internal_phy = !(val & HW_CFG_PSEL_);
++	if (is_internal_phy)
++		pdata->mdiobus->phy_mask = ~(1u << SMSC95XX_INTERNAL_PHY_ID);
++
++	pdata->mdiobus->priv = dev;
++	pdata->mdiobus->read = smsc95xx_mdiobus_read;
++	pdata->mdiobus->write = smsc95xx_mdiobus_write;
++	pdata->mdiobus->name = "smsc95xx-mdiobus";
++	pdata->mdiobus->parent = &dev->udev->dev;
++
++	snprintf(pdata->mdiobus->id, ARRAY_SIZE(pdata->mdiobus->id),
++		 "usb-%03d:%03d", dev->udev->bus->busnum, dev->udev->devnum);
++
++	ret = mdiobus_register(pdata->mdiobus);
++	if (ret) {
++		netdev_err(dev->net, "Could not register MDIO bus\n");
++		goto free_mdio;
++	}
++
++	pdata->phydev = phy_find_first(pdata->mdiobus);
++	if (!pdata->phydev) {
++		netdev_err(dev->net, "no PHY found\n");
++		ret = -ENODEV;
++		goto unregister_mdio;
++	}
++
++	pdata->phydev->is_internal = is_internal_phy;
++
+ 	/* detect device revision as different features may be available */
+ 	ret = smsc95xx_read_reg(dev, ID_REV, &val);
+ 	if (ret < 0)
+-		goto free_pdata;
++		goto unregister_mdio;
+ 
+ 	val >>= 16;
+-	pdata->chip_id = val;
+-	pdata->mdix_ctrl = get_mdix_status(dev->net);
+-
+ 	if ((val == ID_REV_CHIP_ID_9500A_) || (val == ID_REV_CHIP_ID_9530_) ||
+ 	    (val == ID_REV_CHIP_ID_89530_) || (val == ID_REV_CHIP_ID_9730_))
+ 		pdata->features = (FEATURE_8_WAKEUP_FILTERS |
+@@ -1315,12 +1152,13 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ 	dev->net->min_mtu = ETH_MIN_MTU;
+ 	dev->net->max_mtu = ETH_DATA_LEN;
+ 	dev->hard_mtu = dev->net->mtu + dev->net->hard_header_len;
++	return 0;
+ 
+-	pdata->dev = dev;
+-	INIT_DELAYED_WORK(&pdata->carrier_check, check_carrier);
+-	schedule_delayed_work(&pdata->carrier_check, CARRIER_CHECK_DELAY);
++unregister_mdio:
++	mdiobus_unregister(pdata->mdiobus);
+ 
+-	return 0;
++free_mdio:
++	mdiobus_free(pdata->mdiobus);
+ 
+ free_pdata:
+ 	kfree(pdata);
+@@ -1331,11 +1169,47 @@ static void smsc95xx_unbind(struct usbnet *dev, struct usb_interface *intf)
+ {
+ 	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 
+-	cancel_delayed_work_sync(&pdata->carrier_check);
++	mdiobus_unregister(pdata->mdiobus);
++	mdiobus_free(pdata->mdiobus);
+ 	netif_dbg(dev, ifdown, dev->net, "free pdata\n");
+ 	kfree(pdata);
+ }
+ 
++static void smsc95xx_handle_link_change(struct net_device *net)
++{
++	phy_print_status(net->phydev);
++}
++
++static int smsc95xx_start_phy(struct usbnet *dev)
++{
++	struct smsc95xx_priv *pdata = dev->driver_priv;
++	struct net_device *net = dev->net;
++	int ret;
++
++	ret = smsc95xx_reset(dev);
++	if (ret < 0)
++		return ret;
++
++	ret = phy_connect_direct(net, pdata->phydev,
++				 &smsc95xx_handle_link_change,
++				 PHY_INTERFACE_MODE_MII);
++	if (ret) {
++		netdev_err(net, "can't attach PHY to %s\n", pdata->mdiobus->id);
++		return ret;
++	}
++
++	phy_attached_info(net->phydev);
++	phy_start(net->phydev);
++	return 0;
++}
++
++static int smsc95xx_disconnect_phy(struct usbnet *dev)
++{
++	phy_stop(dev->net->phydev);
++	phy_disconnect(dev->net->phydev);
++	return 0;
++}
++
+ static u32 smsc_crc(const u8 *buffer, size_t len, int filter)
+ {
+ 	u32 crc = bitrev16(crc16(0xFFFF, buffer, len));
+@@ -1588,8 +1462,6 @@ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
  		return ret;
  	}
  
--	dev->data[0] = (unsigned long)kzalloc(sizeof(struct smsc95xx_priv),
--					      GFP_KERNEL);
+-	cancel_delayed_work_sync(&pdata->carrier_check);
 -
--	pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
- 	if (!pdata)
- 		return -ENOMEM;
+ 	if (pdata->suspend_flags) {
+ 		netdev_warn(dev->net, "error during last resume\n");
+ 		pdata->suspend_flags = 0;
+@@ -1833,10 +1705,6 @@ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
+ 	if (ret && PMSG_IS_AUTO(message))
+ 		usbnet_resume(intf);
  
-+	dev->driver_priv = pdata;
-+
- 	spin_lock_init(&pdata->mac_cr_lock);
- 
- 	/* LAN95xx devices do not alter the computed checksum of 0 to 0xffff.
-@@ -1330,15 +1329,11 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
- 
- static void smsc95xx_unbind(struct usbnet *dev, struct usb_interface *intf)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
+-	if (ret)
+-		schedule_delayed_work(&pdata->carrier_check,
+-				      CARRIER_CHECK_DELAY);
 -
--	if (pdata) {
--		cancel_delayed_work_sync(&pdata->carrier_check);
--		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
--		kfree(pdata);
--		pdata = NULL;
--		dev->data[0] = 0;
--	}
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
-+
-+	cancel_delayed_work_sync(&pdata->carrier_check);
-+	netif_dbg(dev, ifdown, dev->net, "free pdata\n");
-+	kfree(pdata);
+ 	return ret;
  }
  
- static u32 smsc_crc(const u8 *buffer, size_t len, int filter)
-@@ -1388,7 +1383,7 @@ static int smsc95xx_link_ok_nopm(struct usbnet *dev)
+@@ -1856,7 +1724,6 @@ static int smsc95xx_resume(struct usb_interface *intf)
  
- static int smsc95xx_enter_suspend0(struct usbnet *dev)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	u32 val;
- 	int ret;
+ 	/* do this first to ensure it's cleared even in error case */
+ 	pdata->suspend_flags = 0;
+-	schedule_delayed_work(&pdata->carrier_check, CARRIER_CHECK_DELAY);
  
-@@ -1427,7 +1422,7 @@ static int smsc95xx_enter_suspend0(struct usbnet *dev)
+ 	if (suspend_flags & SUSPEND_ALLMODES) {
+ 		/* clear wake-up sources */
+@@ -1887,6 +1754,7 @@ static int smsc95xx_resume(struct usb_interface *intf)
+ 	if (ret < 0)
+ 		netdev_warn(dev->net, "usbnet_resume error\n");
  
- static int smsc95xx_enter_suspend1(struct usbnet *dev)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	u32 val;
- 	int ret;
++	phy_init_hw(pdata->phydev);
+ 	return ret;
+ }
  
-@@ -1474,7 +1469,7 @@ static int smsc95xx_enter_suspend1(struct usbnet *dev)
- 
- static int smsc95xx_enter_suspend2(struct usbnet *dev)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	u32 val;
- 	int ret;
- 
-@@ -1496,7 +1491,7 @@ static int smsc95xx_enter_suspend2(struct usbnet *dev)
- 
- static int smsc95xx_enter_suspend3(struct usbnet *dev)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	u32 val;
- 	int ret;
- 
-@@ -1535,7 +1530,7 @@ static int smsc95xx_enter_suspend3(struct usbnet *dev)
- 
- static int smsc95xx_autosuspend(struct usbnet *dev, u32 link_up)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	int ret;
- 
- 	if (!netif_running(dev->net)) {
-@@ -1583,7 +1578,7 @@ static int smsc95xx_autosuspend(struct usbnet *dev, u32 link_up)
- static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
- {
- 	struct usbnet *dev = usb_get_intfdata(intf);
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 	u32 val, link_up;
- 	int ret;
- 
-@@ -1854,7 +1849,7 @@ static int smsc95xx_resume(struct usb_interface *intf)
- 	u32 val;
- 
- 	BUG_ON(!dev);
--	pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	pdata = dev->driver_priv;
- 	suspend_flags = pdata->suspend_flags;
- 
- 	netdev_dbg(dev->net, "resume suspend_flags=0x%02x\n", suspend_flags);
-@@ -2074,7 +2069,7 @@ static struct sk_buff *smsc95xx_tx_fixup(struct usbnet *dev,
- 
- static int smsc95xx_manage_power(struct usbnet *dev, int on)
- {
--	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
-+	struct smsc95xx_priv *pdata = dev->driver_priv;
- 
- 	dev->intf->needs_remote_wakeup = on;
- 
+@@ -2092,7 +1960,8 @@ static const struct driver_info smsc95xx_info = {
+ 	.bind		= smsc95xx_bind,
+ 	.unbind		= smsc95xx_unbind,
+ 	.link_reset	= smsc95xx_link_reset,
+-	.reset		= smsc95xx_reset,
++	.reset		= smsc95xx_start_phy,
++	.stop		= smsc95xx_disconnect_phy,
+ 	.rx_fixup	= smsc95xx_rx_fixup,
+ 	.tx_fixup	= smsc95xx_tx_fixup,
+ 	.status		= smsc95xx_status,
 -- 
 2.28.0
 
