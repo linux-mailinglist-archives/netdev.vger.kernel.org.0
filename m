@@ -2,186 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE8CB25386F
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:41:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75501253894
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727786AbgHZTlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 15:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51288 "EHLO
+        id S1727053AbgHZTwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 15:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726723AbgHZTlK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:41:10 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68763C061574;
-        Wed, 26 Aug 2020 12:41:10 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id t13so2836231ile.9;
-        Wed, 26 Aug 2020 12:41:10 -0700 (PDT)
+        with ESMTP id S1726794AbgHZTwy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:52:54 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0A3C061574;
+        Wed, 26 Aug 2020 12:52:54 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 67so1619774pgd.12;
+        Wed, 26 Aug 2020 12:52:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+N/+NIRAXypVf/WOhOh1869gebLdqn4kYppUBPHpbOA=;
-        b=fW4Q3BBV/1kgmDW2x7cKgOQEBnAjwOc9xEEv6qh/Ibhk5QxgnJBC81ifUFAbpzPu4/
-         dfr5JzCINNWslrnd2XcwcTdyja4RHzeez1Byb5FIVCEu1XYVzMD7X70cN7fWxM1iZfbL
-         oYe56B7NNE6aaMHOwFq/smzSUgXWw5MJz0rIhNqNmNWClBO2VE/Zc8M4/UDyh5CJxfMF
-         aL1rlWikX4W2NQN2VycOUeg1ybTCdCo4q2qrMujyYG03h1U8CarqtvjAS37SCn+ND05J
-         uVfz5rhi2HtqZtedo7CbVz5Gk2nvY3K7/m0UvLI7D4iLEpmaLWQ3+6mFOt8RmLAfRaEU
-         AlnA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=94/SNbSIYD+Xo9JGqNVO2RH4yAJNdDu/Srjv1flV1xU=;
+        b=B9oo0fYO83YraeDiISzi9wTvMOYANVtCssR31gsYfbP26/yLDn62YivLWh28/HRLuW
+         5E3flOJzN9eMe0WK11fWSUldNF/kjJWzEexyBSQpp1894bKqzkJJskj14VIxYVK9qXL9
+         P6730iOT4DKPNAbcDlNxN9BWambABkuUnFs/8Sf+v60d6o2+G5/yFZvd/tvE4Ui+r3Wb
+         XnYazDzrSHPsbHTIgiFfAofWF0M/qqH1eHN6ZfMhl1JD1NacfmnQNrYyP5LatergKUnF
+         /PFzdw3koueaaOVUGFClaZrew8vDS3NBRo5OhH1q8zxDtPm5n/Zlp5xkeI7cAskhQ6Wk
+         gTfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+N/+NIRAXypVf/WOhOh1869gebLdqn4kYppUBPHpbOA=;
-        b=qDlLzpyiifLNXL0LBu2qiI3f+kjomUX7x+qONZMEoFIUFF8wx6PflCEGSMWvbXhpbQ
-         Eeh7JJLqbz4W5Dfmjkp/NuUM8ulW6JWz2KjSdqkIPx/fKVNwT5+v7TBG6gy1mFSLhIZQ
-         rL9PGgkwG/kgIwEN9bEwYZ4TVFeFy7aundAoQcEAQZd+x8kr7ke92AMs+MHaTIz1Jvzr
-         sfCM3bWdRKLqDKrTWYRoaiR/HLxC0C3+osXLI21PAcwjvFsN3/AViC/i/UNUITqjU61N
-         u4u0umefjqExLOsVT/JSbLIdpu/KtyfdACclRTFhW5u7tqjhzYgtl/ew8G3Ihuvwx8HI
-         auGQ==
-X-Gm-Message-State: AOAM5304SwgAeTuksB+jzjQGkWSHeGdkS0CdDinqHh3FVdtQn72IUgdL
-        RYbeMWkqBnRVzAW+7+dCfPQ=
-X-Google-Smtp-Source: ABdhPJx8Jev2jomN4ZVBesMpkBRjx/QzweWvALpiH8/lBFJiqnOw6/FpNb7olR9Z7oZI/7wzp82JlQ==
-X-Received: by 2002:a92:1fd9:: with SMTP id f86mr14778849ilf.250.1598470869675;
-        Wed, 26 Aug 2020 12:41:09 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:305a:ae30:42e4:e2ca])
-        by smtp.googlemail.com with ESMTPSA id o2sm1938681ili.83.2020.08.26.12.41.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Aug 2020 12:41:08 -0700 (PDT)
-Subject: Re: [net-next v5 1/2] seg6: inherit DSCP of inner IPv4 packets
-To:     Ahmed Abdelsalam <ahabdels@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     andrea.mayer@uniroma2.it
-References: <20200825160236.1123-1-ahabdels@gmail.com>
- <efaf3273-e147-c27e-d5b8-241930335b82@gmail.com>
- <75f7be67-2362-e931-6793-1ce12c69b4ea@gmail.com>
- <71351d27-0719-6ed9-f5c6-4aee20547c58@gmail.com>
- <ab0869f7-9e69-b6fd-af5c-8e3ce432452b@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2c6bad0c-cd6f-b5d7-f921-a40db4a2e9ee@gmail.com>
-Date:   Wed, 26 Aug 2020 13:41:07 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=94/SNbSIYD+Xo9JGqNVO2RH4yAJNdDu/Srjv1flV1xU=;
+        b=d/t53aXHiH54vIMCYmG0ZeNyuPHsBYGsFVr8yNEN4YmXtZZ2fvEqcNjum3xnWIEzP8
+         MILzApx5QBxzDPhns8CzeJyrAlLiieX1gSbJaVmReyrenm1Qw1bGxy7tvSXZrSfAhMB9
+         EBPUODg61CpbzVRatQylopD1ZQq0iAvP/1INgQi8ADarsLqA8TjmFksZLW508ElwlRtk
+         SmR8qWdMZK7tuJ5TwaVZO8VHyjgvcU/8dJ9zTv7PeMPgKLHR3MC3Kwsuel28QksJLGlP
+         eyTGgaSJGQMxyKifkHnhb0Oeo8bg5ksxHoYiUhgpFwkQIhjyVH2GzduWD6HHkMopwgxy
+         BSvQ==
+X-Gm-Message-State: AOAM532jFjz62QUuBVdhbykj953jFSGu+jQLJPt5HFQFjSa8V2w5qQzw
+        3VjRVUOyQyWtpZBa8fLr3KQ=
+X-Google-Smtp-Source: ABdhPJzSnqwgeAkAqN2xJDE0qEBkdhNetW25TS9HYgmaf31pTd7MgP/c7bHA7cLtQF0Bg3Ng4vnQqw==
+X-Received: by 2002:a65:670d:: with SMTP id u13mr11775755pgf.280.1598471573542;
+        Wed, 26 Aug 2020 12:52:53 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:8e18])
+        by smtp.gmail.com with ESMTPSA id x12sm3738117pff.48.2020.08.26.12.52.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Aug 2020 12:52:52 -0700 (PDT)
+Date:   Wed, 26 Aug 2020 12:52:50 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Udip Pant <udippant@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 0/4] bpf: verifier: use target program's type
+ for access verifications
+Message-ID: <20200826195250.jnbl3oca5lqrdgbs@ast-mbp.dhcp.thefacebook.com>
+References: <20200825232003.2877030-1-udippant@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <ab0869f7-9e69-b6fd-af5c-8e3ce432452b@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200825232003.2877030-1-udippant@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/20 6:12 AM, Ahmed Abdelsalam wrote:
+On Tue, Aug 25, 2020 at 04:19:59PM -0700, Udip Pant wrote:
+> This patch series adds changes in verifier to make decisions such as granting
+> of read / write access or enforcement of return code status based on
+> the program type of the target program while using dynamic program
+> extension (of type BPF_PROG_TYPE_EXT).
 > 
-> On 26/08/2020 02:45, David Ahern wrote:
->> On 8/25/20 5:45 PM, Ahmed Abdelsalam wrote:
->>>
->>> Hi David
->>>
->>> The seg6 encap is implemented through the seg6_lwt rather than
->>> seg6_local_lwt.
->>
->> ok. I don't know the seg6 code; just taking a guess from a quick look.
->>
->>> We can add a flag(SEG6_IPTUNNEL_DSCP) in seg6_iptunnel.h if we do not
->>> want to go the sysctl direction.
->>
->> sysctl is just a big hammer with side effects.
->>
->> It struck me that the DSCP propagation is very similar to the TTL
->> propagation with MPLS which is per route entry (MPLS_IPTUNNEL_TTL and
->> stored as ttl_propagate in mpls_iptunnel_encap). Hence the question of
->> whether SR could make this a per route attribute. Consistency across
->> implementations is best.
->> SRv6 does not have an issue of having this per route.
-> Actually, as SRv6 leverage IPv6 encapsulation, I would say it should
-> consistent with ip6_tunnel not MPLS.
+> The BPF_PROG_TYPE_EXT type can be used to extend types such as XDP, SKB
+> and others. Since the BPF_PROG_TYPE_EXT program type on itself is just a
+> placeholder for those, we need this extended check for those extended
+> programs to actually work with proper access, while using this option.
 > 
-> In ip6_tunnel, both ttl and flowinfo (tclass and flowlabel) are provided.
+> Patch #1 includes changes in the verifier.
+> Patch #2 adds selftests to verify write access on a packet for a valid 
+> extension program type
+> Patch #3 adds selftests to verify proper check for the return code
+> Patch #4 adds selftests to ensure access permissions and restrictions 
+> for some map types such sockmap.
 > 
-> Ideally, SRv6 code should have done the same with:
-> TTL       := VLAUE | DEFAULT | inherit.
-> TCLASS    := 0x00 .. 0xFF | inherit
-> FLOWLABEL := { 0x00000 .. 0xfffff | inherit | compute.
-> 
+> Changelogs:
+>   v2 -> v3:
+>     * more comprehensive resolution of the program type in the verifier
+>       based on the target program (and not just for the packet access)
+>     * selftests for checking return code and map access
+>     * Also moved this patch to 'bpf-next' from 'bpf' tree
 
-New attributes get added all the time. Why does something like this now
-work for these features:
-
-diff --git a/include/uapi/linux/seg6_iptunnel.h
-b/include/uapi/linux/seg6_iptunnel.h
-index eb815e0d0ac3..b628333ba100 100644
---- a/include/uapi/linux/seg6_iptunnel.h
-+++ b/include/uapi/linux/seg6_iptunnel.h
-@@ -20,6 +20,8 @@
- enum {
-        SEG6_IPTUNNEL_UNSPEC,
-        SEG6_IPTUNNEL_SRH,
-+       SEG6_IPTUNNEL_TTL,      /* u8 */
-+       SEG6_IPTUNNEL_TCLASS,   /* u8 */
-        __SEG6_IPTUNNEL_MAX,
- };
- #define SEG6_IPTUNNEL_MAX (__SEG6_IPTUNNEL_MAX - 1)
-diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
-index 897fa59c47de..7cb512b65bc3 100644
---- a/net/ipv6/seg6_iptunnel.c
-+++ b/net/ipv6/seg6_iptunnel.c
-@@ -46,6 +46,11 @@ static size_t seg6_lwt_headroom(struct
-seg6_iptunnel_encap *tuninfo)
-
- struct seg6_lwt {
-        struct dst_cache cache;
-+       u8      ttl_propagate;  /* propagate ttl from inner header */
-+       u8      default_ttl;    /* ttl value to use */
-+       u8      tclass_inherit; /* inherit tclass from inner header */
-+       u8      tclass;         /* tclass value to use */
-+
-        struct seg6_iptunnel_encap tuninfo[];
- };
-
-@@ -61,7 +66,10 @@ seg6_encap_lwtunnel(struct lwtunnel_state *lwt)
- }
-
- static const struct nla_policy seg6_iptunnel_policy[SEG6_IPTUNNEL_MAX +
-1] = {
--       [SEG6_IPTUNNEL_SRH]     = { .type = NLA_BINARY },
-+       [SEG6_IPTUNNEL_UNSPEC]          = { .strict_start_type =
-SEG6_IPTUNNEL_SRH + 1 },
-+       [SEG6_IPTUNNEL_SRH]             = { .type = NLA_BINARY },
-+       [SEG6_IPTUNNEL_TTL]             = { .type = NLA_U8 },
-+       [SEG6_IPTUNNEL_TCLASS]          = { .type = NLA_U8 },
- };
-
- static int nla_put_srh(struct sk_buff *skb, int attrtype,
-@@ -460,6 +468,22 @@ static int seg6_build_state(struct net *net, struct
-nlattr *nla,
-
-        memcpy(&slwt->tuninfo, tuninfo, tuninfo_len);
-
-+       if (tb[SEG6_IPTUNNEL_TTL]) {
-+               slwt->default_ttl = nla_get_u8(tb[SEG6_IPTUNNEL_TTL]);
-+               slwt->ttl_propagate = slwt->default_ttl ? 0 : 1;
-+       }
-+       if (tb[SEG6_IPTUNNEL_TCLASS]) {
-+               u32 tmp = nla_get_u32(tb[SEG6_IPTUNNEL_TCLASS]);
-+
-+               if (tmp == (u32)-1) {
-+                       slwt->tclass_inherit = true;
-+               } else if (tmp & <some valid range mask>) {
-+                       error
-+               } else {
-+                       slwt->tclass = ...
-+               }
-+       }
-+
-        newts->type = LWTUNNEL_ENCAP_SEG6;
-        newts->flags |= LWTUNNEL_STATE_INPUT_REDIRECT;
-
-
-And the use the values in slwt as needed.
+Applied. Thanks
