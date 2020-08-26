@@ -2,96 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75501253894
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A732538E1
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 22:07:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727053AbgHZTwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 15:52:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726794AbgHZTwy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:52:54 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0A3C061574;
-        Wed, 26 Aug 2020 12:52:54 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 67so1619774pgd.12;
-        Wed, 26 Aug 2020 12:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=94/SNbSIYD+Xo9JGqNVO2RH4yAJNdDu/Srjv1flV1xU=;
-        b=B9oo0fYO83YraeDiISzi9wTvMOYANVtCssR31gsYfbP26/yLDn62YivLWh28/HRLuW
-         5E3flOJzN9eMe0WK11fWSUldNF/kjJWzEexyBSQpp1894bKqzkJJskj14VIxYVK9qXL9
-         P6730iOT4DKPNAbcDlNxN9BWambABkuUnFs/8Sf+v60d6o2+G5/yFZvd/tvE4Ui+r3Wb
-         XnYazDzrSHPsbHTIgiFfAofWF0M/qqH1eHN6ZfMhl1JD1NacfmnQNrYyP5LatergKUnF
-         /PFzdw3koueaaOVUGFClaZrew8vDS3NBRo5OhH1q8zxDtPm5n/Zlp5xkeI7cAskhQ6Wk
-         gTfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=94/SNbSIYD+Xo9JGqNVO2RH4yAJNdDu/Srjv1flV1xU=;
-        b=d/t53aXHiH54vIMCYmG0ZeNyuPHsBYGsFVr8yNEN4YmXtZZ2fvEqcNjum3xnWIEzP8
-         MILzApx5QBxzDPhns8CzeJyrAlLiieX1gSbJaVmReyrenm1Qw1bGxy7tvSXZrSfAhMB9
-         EBPUODg61CpbzVRatQylopD1ZQq0iAvP/1INgQi8ADarsLqA8TjmFksZLW508ElwlRtk
-         SmR8qWdMZK7tuJ5TwaVZO8VHyjgvcU/8dJ9zTv7PeMPgKLHR3MC3Kwsuel28QksJLGlP
-         eyTGgaSJGQMxyKifkHnhb0Oeo8bg5ksxHoYiUhgpFwkQIhjyVH2GzduWD6HHkMopwgxy
-         BSvQ==
-X-Gm-Message-State: AOAM532jFjz62QUuBVdhbykj953jFSGu+jQLJPt5HFQFjSa8V2w5qQzw
-        3VjRVUOyQyWtpZBa8fLr3KQ=
-X-Google-Smtp-Source: ABdhPJzSnqwgeAkAqN2xJDE0qEBkdhNetW25TS9HYgmaf31pTd7MgP/c7bHA7cLtQF0Bg3Ng4vnQqw==
-X-Received: by 2002:a65:670d:: with SMTP id u13mr11775755pgf.280.1598471573542;
-        Wed, 26 Aug 2020 12:52:53 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:8e18])
-        by smtp.gmail.com with ESMTPSA id x12sm3738117pff.48.2020.08.26.12.52.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2020 12:52:52 -0700 (PDT)
-Date:   Wed, 26 Aug 2020 12:52:50 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Udip Pant <udippant@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 0/4] bpf: verifier: use target program's type
- for access verifications
-Message-ID: <20200826195250.jnbl3oca5lqrdgbs@ast-mbp.dhcp.thefacebook.com>
-References: <20200825232003.2877030-1-udippant@fb.com>
+        id S1726770AbgHZUHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 16:07:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35896 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726609AbgHZUHu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Aug 2020 16:07:50 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 22F2E2078D;
+        Wed, 26 Aug 2020 20:07:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598472469;
+        bh=fNlsxJKW6gXAc9anSV73RBlBWdYpuu7d8WBE26l1mLY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=abR1FftW3x9co4IFNGcc0HDS3+VKOks9ZiTe+qlSqAvWWUaJIn8+IZjcRi7N2lqZ2
+         3MJgDnIVU/mt6aHB1YcUVJYdD/21HB1cKv0q3ZnW21yBkIikH1+1GNmWN6Cjf8AShk
+         sTYuCDg5dx3bA2ioibj4QiAwYFBFdIg0Lo84iSXQ=
+Date:   Wed, 26 Aug 2020 13:07:47 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Parav Pandit <parav@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "roid@mellanox.com" <roid@mellanox.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next 2/3] devlink: Consider other controller while
+ building phys_port_name
+Message-ID: <20200826130747.4d886a09@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <BY5PR12MB4322E2E21395BD1553B8E375DC540@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <20200825135839.106796-1-parav@mellanox.com>
+        <20200825135839.106796-3-parav@mellanox.com>
+        <20200825173203.2c80ed48@kicinski-fedora-PC1C0HJN>
+        <BY5PR12MB4322E2E21395BD1553B8E375DC540@BY5PR12MB4322.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200825232003.2877030-1-udippant@fb.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 04:19:59PM -0700, Udip Pant wrote:
-> This patch series adds changes in verifier to make decisions such as granting
-> of read / write access or enforcement of return code status based on
-> the program type of the target program while using dynamic program
-> extension (of type BPF_PROG_TYPE_EXT).
+On Wed, 26 Aug 2020 04:27:35 +0000 Parav Pandit wrote:
+> > On Tue, 25 Aug 2020 16:58:38 +0300 Parav Pandit wrote:  
+> > > A devlink port may be for a controller consist of PCI device.
+> > > A devlink instance holds ports of two types of controllers.
+> > > (1) controller discovered on same system where eswitch resides This is
+> > > the case where PCI PF/VF of a controller and devlink eswitch instance
+> > > both are located on a single system.
+> > > (2) controller located on other system.
+> > > This is the case where a controller is located in one system and its
+> > > devlink eswitch ports are located in a different system. In this case
+> > > devlink instance of the eswitch only have access to ports of the
+> > > controller.
+> > >
+> > > When a devlink eswitch instance serves the devlink ports of both
+> > > controllers together, PCI PF/VF numbers may overlap.
+> > > Due to this a unique phys_port_name cannot be constructed.  
+> > 
+> > This description is clear as mud to me. Is it just me? Can someone understand
+> > this?  
 > 
-> The BPF_PROG_TYPE_EXT type can be used to extend types such as XDP, SKB
-> and others. Since the BPF_PROG_TYPE_EXT program type on itself is just a
-> placeholder for those, we need this extended check for those extended
-> programs to actually work with proper access, while using this option.
-> 
-> Patch #1 includes changes in the verifier.
-> Patch #2 adds selftests to verify write access on a packet for a valid 
-> extension program type
-> Patch #3 adds selftests to verify proper check for the return code
-> Patch #4 adds selftests to ensure access permissions and restrictions 
-> for some map types such sockmap.
-> 
-> Changelogs:
->   v2 -> v3:
->     * more comprehensive resolution of the program type in the verifier
->       based on the target program (and not just for the packet access)
->     * selftests for checking return code and map access
->     * Also moved this patch to 'bpf-next' from 'bpf' tree
+> I would like to improve this description.
+> Do you have an input to describe these two different controllers,
+> each has same PF and VF numbers?
 
-Applied. Thanks
+Not yet, I'm just trying to figure out how things come together.
+
+Are some VFs of the same PF under one controller and other ones under 
+a different controller? 
+
+> $ devlink port show looks like below without a controller annotation.
+> pci/0000:00:08.0/0: type eth netdev eth5 flavour physical
+> pci/0000:00:08.0/1: type eth netdev eth6 flavour pcipf pfnum 0
+> pci/0000:00:08.0/2: type eth netdev eth7 flavour pcipf pfnum 0
+
+How can you have two PF 0? Aaah - by controller you mean hardware IP,
+not whoever is controlling the switching! So the chip has multiple HW
+controllers, each of which can have multiple PFs?
+
+Definitely please make that more clear.
+
+Why is @controller_num not under PCI port attrs, but a separate field
+without even a mention of PCI? Are some of the controllers a different
+bus?
