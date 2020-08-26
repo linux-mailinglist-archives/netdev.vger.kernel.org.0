@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3A1525385C
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:39:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB65D25385F
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726929AbgHZTjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 15:39:49 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:37958 "EHLO a.mx.secunet.com"
+        id S1726995AbgHZTkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 15:40:01 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:37970 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726723AbgHZTjq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Aug 2020 15:39:46 -0400
+        id S1726765AbgHZTkB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Aug 2020 15:40:01 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 91D2E205B2;
-        Wed, 26 Aug 2020 21:39:44 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id A65B8205B2;
+        Wed, 26 Aug 2020 21:39:59 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id DINw8FpDzgFY; Wed, 26 Aug 2020 21:39:43 +0200 (CEST)
-Received: from cas-essen-02.secunet.de (202.40.53.10.in-addr.arpa [10.53.40.202])
+        with ESMTP id nscUObrFuami; Wed, 26 Aug 2020 21:39:59 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 41BEF205AA;
-        Wed, 26 Aug 2020 21:39:43 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 39597205AA;
+        Wed, 26 Aug 2020 21:39:59 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-02.secunet.de (10.53.40.202) with Microsoft SMTP Server
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 26 Aug 2020 21:39:43 +0200
+ 15.1.1979.3; Wed, 26 Aug 2020 21:39:59 +0200
 Received: from moon.secunet.de (172.18.26.122) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 26 Aug
- 2020 21:39:42 +0200
-Date:   Wed, 26 Aug 2020 21:39:35 +0200
+ 2020 21:39:58 +0200
+Date:   Wed, 26 Aug 2020 21:39:53 +0200
 From:   Antony Antony <antony.antony@secunet.com>
 To:     Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>
 CC:     Antony Antony <antony@phenome.org>,
         Antony Antony <antony.antony@secunet.com>
-Subject: [PATCH v2 1/4] xfrm: clone XFRMA_SET_MARK in xfrm_do_migrate
-Message-ID: <20200826193935.GA14974@moon.secunet.de>
+Subject: [PATCH v2 2/4] xfrm: clone XFRMA_REPLAY_ESN_VAL in xfrm_do_migrate
+Message-ID: <20200826193953.GA15002@moon.secunet.de>
 Reply-To: <antony.antony@secunet.com>
 References: <20200820181158.GA19658@moon.secunet.de>
 MIME-Version: 1.0
@@ -55,27 +55,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XFRMA_SET_MARK and XFRMA_SET_MARK_MASK was not cloned from the old
-to the new. Migrate these two attributes during XFRMA_MSG_MIGRATE
+XFRMA_REPLAY_ESN_VAL was not cloned completely from the old to the new.
+Migrate this attribute during XFRMA_MSG_MIGRATE
 
-Fixes: 9b42c1f179a6 ("xfrm: Extend the output_mark to support input direction and masking.")
+v1->v2:
+ - move curleft cloning to a seperate patch
+
+Fixes: af2f464e326e ("xfrm: Assign esn pointers when cloning a state")
 Signed-off-by: Antony Antony <antony.antony@secunet.com>
 ---
- net/xfrm/xfrm_state.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/net/xfrm.h | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 69520ad3d83b..3a000f289dcd 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1510,6 +1510,7 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
- 	}
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 2737d24ec244..9e806c781025 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1773,21 +1773,17 @@ static inline unsigned int xfrm_replay_state_esn_len(struct xfrm_replay_state_es
+ static inline int xfrm_replay_clone(struct xfrm_state *x,
+ 				     struct xfrm_state *orig)
+ {
+-	x->replay_esn = kzalloc(xfrm_replay_state_esn_len(orig->replay_esn),
++
++	x->replay_esn = kmemdup(orig->replay_esn,
++				xfrm_replay_state_esn_len(orig->replay_esn),
+ 				GFP_KERNEL);
+ 	if (!x->replay_esn)
+ 		return -ENOMEM;
+-
+-	x->replay_esn->bmp_len = orig->replay_esn->bmp_len;
+-	x->replay_esn->replay_window = orig->replay_esn->replay_window;
+-
+-	x->preplay_esn = kmemdup(x->replay_esn,
+-				 xfrm_replay_state_esn_len(x->replay_esn),
++	x->preplay_esn = kmemdup(orig->preplay_esn,
++				 xfrm_replay_state_esn_len(orig->preplay_esn),
+ 				 GFP_KERNEL);
+-	if (!x->preplay_esn) {
+-		kfree(x->replay_esn);
++	if (!x->preplay_esn)
+ 		return -ENOMEM;
+-	}
  
- 	memcpy(&x->mark, &orig->mark, sizeof(x->mark));
-+	memcpy(&x->props.smark, &orig->props.smark, sizeof(x->props.smark));
- 
- 	if (xfrm_init_state(x) < 0)
- 		goto error;
+ 	return 0;
+ }
 -- 
 2.20.1
 
