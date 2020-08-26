@@ -2,176 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8092A252C53
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:18:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4354E252C5E
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:22:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728786AbgHZLSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 07:18:15 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:30965 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728774AbgHZLRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 07:17:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1598440642; x=1629976642;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QzbApBWBtmyrhmLzonYXJpEBU1WNdnSVBf6JFAeWtRs=;
-  b=vTalSfeHqRToUv8CcZIBqFEWoaCsTtZYVnhdIEAjx+XkYTvC8BHc5WYX
-   i+uy56eapBqbk0eWsqX469bK5L5dZCLbOIz5LsaTNdT0VT7ETb1z5LefX
-   KONG0Ec6Kv+goQh7u+qafgp1PhDOII5g7OpKQWnKFve5eVxOi9PK5jEUc
-   v41ndZKpsYQ8cq15377SF2tGu0gLEBcxB2fOlIaQG48rr2naLiw+kK1do
-   MYkekl1uF1jlvsHsqUXs127OCa9B/Hzu8AuA9mmmjDGeLKvk7AE79oUrL
-   0t7wEv4dMdc/iC2HzG6m0juyqBDkqokvJQlKV/oppczIW2FK7JHvsMy+q
-   A==;
-IronPort-SDR: 3WLAbxwbGeZ4oWe0+cvguUBYka/1VUoADDNZj23yQEEbqtMOuzwQCujzWueJpzclLDqfDDHHsP
- ++L5lTfXiHhi1NvJMhKbBbQkUoMNQjCOVIZY6Uwl+jC+vc3HJ6/NtMabBC01ahK8hS70grQU6y
- /sCMrw6xbTA5IxCOm5eIc39vsvkl0QYdAZuZw06jyKzId2tp6ykXO3TdkxktU4eZwjlh/I/MCL
- lf7tNw6cEez7IQ04qYoWPB2LwUoDMIwLAgT5Swxa9zY/vwfJDDk89wlG5EPX3/lr9mIRL7wUZf
- DWk=
-X-IronPort-AV: E=Sophos;i="5.76,355,1592895600"; 
-   d="scan'208";a="88605579"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2020 04:17:16 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 26 Aug 2020 04:17:13 -0700
-Received: from xasv.mchp-main.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 26 Aug 2020 04:16:24 -0700
-From:   Andre Edich <andre.edich@microchip.com>
-To:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <steve.glendinning@shawell.net>
-CC:     <Parthiban.Veerasooran@microchip.com>,
-        Andre Edich <andre.edich@microchip.com>
-Subject: [PATCH net-next v5 1/3] smsc95xx: remove redundant function arguments
-Date:   Wed, 26 Aug 2020 13:17:15 +0200
-Message-ID: <20200826111717.405305-2-andre.edich@microchip.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200826111717.405305-1-andre.edich@microchip.com>
-References: <20200826111717.405305-1-andre.edich@microchip.com>
+        id S1728718AbgHZLWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 07:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728905AbgHZLV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 07:21:28 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9FAFC061574
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 04:21:27 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id x9so1394117wmi.2
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 04:21:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=SEDuZLoEMjEHog4pApJjNCMgFg9dzBqJXIk1pFgNb80=;
+        b=tj1ZX9QaB4QGO9d4/spzrqx89NYfYamXLXhILYwshGhtiGjacdxXcGR/ehyTyM9sU/
+         cH2MkkHG8d4hUjmtFhEUgcIrg/US6K/ZezMARZ3YETc2gT8IolPxBNJpBHBk/7I9YcMx
+         8ppmQhFRyLlquFbvQyz6iSJVqJ7Y9XgwPZca62eQJtkzoR3uG9SjxR/6or9jaocJLico
+         gTv+O7jcD+kq3DpraaKuNZOcdxdQL+K/dRZV1l2aQT+mqirwCICbLGGkN+kKuYsCOsit
+         Vd5YRrNP0DmW8AOFBDRzM1LLtt4IifdYL6i7093b3j/NPtKkiNEw8JbuVCErU2VwuSOL
+         pU5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=SEDuZLoEMjEHog4pApJjNCMgFg9dzBqJXIk1pFgNb80=;
+        b=WtySlSNbTiwCMr4EN9puegHtm8nN3tsTROHyi2BhftU20kLDXE4mL8EV/IfYsJ7yGd
+         G/tPTdL78y6wpy41plmxzrqnL/uO0B7BpCiYXW++SdwSpNlGnokaSEl6MUGAGc7x0v7T
+         uETbSMQpDyK9qcUbeWuib8cqjn41b6EzmhFmZ7H10C3el1ir+4pImaMMVA3/MgbzCHE1
+         qyGZ2QrEGH89wst5uA7xPi1pv00bHgN+CNJPv6EB6jn2kBRCDZWyTiuwCv902EU1ErE8
+         HAMDxOe6YxMw/i5RMh+wqb4eeRkhE0d2EhMiY7RnoLIjfouU+lqfkwZWTuSRXDdZRtJQ
+         b+3A==
+X-Gm-Message-State: AOAM532WWuGd+poJkfFI/yBE7pwEgLSCtAu58Jq4cQFXXrK64nI1BMei
+        dy4fNHFnqRJ+aY/RStvy52Kh+A==
+X-Google-Smtp-Source: ABdhPJzMnJP2DhJKlKa0q/INIKLrcWwlyHS0fmuV/bjwj4iefa5IJkdfbtDVq8kV6WpCJ0owLKxtUw==
+X-Received: by 2002:a1c:bc45:: with SMTP id m66mr6121110wmf.36.1598440886485;
+        Wed, 26 Aug 2020 04:21:26 -0700 (PDT)
+Received: from dell ([95.149.164.62])
+        by smtp.gmail.com with ESMTPSA id 3sm4623945wms.36.2020.08.26.04.21.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Aug 2020 04:21:25 -0700 (PDT)
+Date:   Wed, 26 Aug 2020 12:21:24 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     merez@codeaurora.org
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, wil6210@qti.qualcomm.com
+Subject: Re: [PATCH 25/32] wireless: ath: wil6210: wmi: Fix formatting and
+ demote non-conforming function headers
+Message-ID: <20200826112124.GN3248864@dell>
+References: <20200821071644.109970-1-lee.jones@linaro.org>
+ <20200821071644.109970-26-lee.jones@linaro.org>
+ <330bc340a4d16f383c9adef2324db60e@codeaurora.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <330bc340a4d16f383c9adef2324db60e@codeaurora.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch removes arguments netdev and phy_id from the functions
-smsc95xx_mdio_read_nopm and smsc95xx_mdio_write_nopm.  Both removed
-arguments are recovered from a new argument `struct usbnet *dev`.
+On Wed, 26 Aug 2020, merez@codeaurora.org wrote:
 
-Signed-off-by: Andre Edich <andre.edich@microchip.com>
----
- drivers/net/usb/smsc95xx.c | 35 +++++++++++++++++------------------
- 1 file changed, 17 insertions(+), 18 deletions(-)
+> On 2020-08-21 10:16, Lee Jones wrote:
+> > Fixes the following W=1 kernel build warning(s):
+> > 
+> >  drivers/net/wireless/ath/wil6210/wmi.c:52: warning: Incorrect use of
+> > kernel-doc format:  * Addressing - theory of operations
+> >  drivers/net/wireless/ath/wil6210/wmi.c:70: warning: Incorrect use of
+> > kernel-doc format:  * @sparrow_fw_mapping provides memory remapping
+> > table for sparrow
+> >  drivers/net/wireless/ath/wil6210/wmi.c:80: warning: cannot understand
+> > function prototype: 'const struct fw_map sparrow_fw_mapping[] = '
+> >  drivers/net/wireless/ath/wil6210/wmi.c:107: warning: Cannot
+> > understand  * @sparrow_d0_mac_rgf_ext - mac_rgf_ext section for
+> > Sparrow D0
+> >  drivers/net/wireless/ath/wil6210/wmi.c:115: warning: Cannot
+> > understand  * @talyn_fw_mapping provides memory remapping table for
+> > Talyn
+> >  drivers/net/wireless/ath/wil6210/wmi.c:158: warning: Cannot
+> > understand  * @talyn_mb_fw_mapping provides memory remapping table for
+> > Talyn-MB
+> >  drivers/net/wireless/ath/wil6210/wmi.c:236: warning: Function
+> > parameter or member 'x' not described in 'wmi_addr_remap'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:255: warning: Function
+> > parameter or member 'section' not described in 'wil_find_fw_mapping'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:278: warning: Function
+> > parameter or member 'wil' not described in 'wmi_buffer_block'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:278: warning: Function
+> > parameter or member 'ptr_' not described in 'wmi_buffer_block'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:278: warning: Function
+> > parameter or member 'size' not described in 'wmi_buffer_block'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:307: warning: Function
+> > parameter or member 'wil' not described in 'wmi_addr'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:307: warning: Function
+> > parameter or member 'ptr' not described in 'wmi_addr'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:1589: warning: Function
+> > parameter or member 'wil' not described in 'wil_find_cid_ringid_sta'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:1589: warning: Function
+> > parameter or member 'vif' not described in 'wil_find_cid_ringid_sta'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:1589: warning: Function
+> > parameter or member 'cid' not described in 'wil_find_cid_ringid_sta'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:1589: warning: Function
+> > parameter or member 'ringid' not described in
+> > 'wil_find_cid_ringid_sta'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:1876: warning: Function
+> > parameter or member 'vif' not described in 'wmi_evt_ignore'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:1876: warning: Function
+> > parameter or member 'id' not described in 'wmi_evt_ignore'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:1876: warning: Function
+> > parameter or member 'd' not described in 'wmi_evt_ignore'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:1876: warning: Function
+> > parameter or member 'len' not described in 'wmi_evt_ignore'
+> >  drivers/net/wireless/ath/wil6210/wmi.c:2588: warning: Function
+> > parameter or member 'wil' not described in 'wmi_rxon'
+> > 
+> > Cc: Maya Erez <merez@codeaurora.org>
+> > Cc: Kalle Valo <kvalo@codeaurora.org>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: linux-wireless@vger.kernel.org
+> > Cc: wil6210@qti.qualcomm.com
+> > Cc: netdev@vger.kernel.org
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> > ---
+> >  drivers/net/wireless/ath/wil6210/wmi.c | 28 ++++++++++++++------------
+> >  1 file changed, 15 insertions(+), 13 deletions(-)
+> > 
+> > diff --git a/drivers/net/wireless/ath/wil6210/wmi.c
+> > b/drivers/net/wireless/ath/wil6210/wmi.c
+> > index c7136ce567eea..3a6ee85acf6c7 100644
+> > --- a/drivers/net/wireless/ath/wil6210/wmi.c
+> > +++ b/drivers/net/wireless/ath/wil6210/wmi.c
+> > @@ -31,7 +31,7 @@ MODULE_PARM_DESC(led_id,
+> >  #define WIL_WAIT_FOR_SUSPEND_RESUME_COMP 200
+> >  #define WIL_WMI_PCP_STOP_TO_MS 5000
+> > 
+> > -/**
+> > +/*
+> >   * WMI event receiving - theory of operations
+> >   *
+> >   * When firmware about to report WMI event, it fills memory area
+> 
+> The correct format for such documentation blocks is:
+> /**
+>  * DOC: Theory of Operation
+> 
+> This comment is also applicable for the rest of such documentation blocks
+> changed in this patch.
 
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index bb4ccbda031a..3fdf7c2b2d25 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -261,16 +261,18 @@ static void __smsc95xx_mdio_write(struct net_device *netdev, int phy_id,
- 	mutex_unlock(&dev->phy_mutex);
- }
- 
--static int smsc95xx_mdio_read_nopm(struct net_device *netdev, int phy_id,
--				   int idx)
-+static int smsc95xx_mdio_read_nopm(struct usbnet *dev, int idx)
- {
--	return __smsc95xx_mdio_read(netdev, phy_id, idx, 1);
-+	struct mii_if_info *mii = &dev->mii;
-+
-+	return __smsc95xx_mdio_read(dev->net, mii->phy_id, idx, 1);
- }
- 
--static void smsc95xx_mdio_write_nopm(struct net_device *netdev, int phy_id,
--				     int idx, int regval)
-+static void smsc95xx_mdio_write_nopm(struct usbnet *dev, int idx, int regval)
- {
--	__smsc95xx_mdio_write(netdev, phy_id, idx, regval, 1);
-+	struct mii_if_info *mii = &dev->mii;
-+
-+	__smsc95xx_mdio_write(dev->net, mii->phy_id, idx, regval, 1);
- }
- 
- static int smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx)
-@@ -1347,39 +1349,37 @@ static u32 smsc_crc(const u8 *buffer, size_t len, int filter)
- 
- static int smsc95xx_enable_phy_wakeup_interrupts(struct usbnet *dev, u16 mask)
- {
--	struct mii_if_info *mii = &dev->mii;
- 	int ret;
- 
- 	netdev_dbg(dev->net, "enabling PHY wakeup interrupts\n");
- 
- 	/* read to clear */
--	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, PHY_INT_SRC);
-+	ret = smsc95xx_mdio_read_nopm(dev, PHY_INT_SRC);
- 	if (ret < 0)
- 		return ret;
- 
- 	/* enable interrupt source */
--	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, PHY_INT_MASK);
-+	ret = smsc95xx_mdio_read_nopm(dev, PHY_INT_MASK);
- 	if (ret < 0)
- 		return ret;
- 
- 	ret |= mask;
- 
--	smsc95xx_mdio_write_nopm(dev->net, mii->phy_id, PHY_INT_MASK, ret);
-+	smsc95xx_mdio_write_nopm(dev, PHY_INT_MASK, ret);
- 
- 	return 0;
- }
- 
- static int smsc95xx_link_ok_nopm(struct usbnet *dev)
- {
--	struct mii_if_info *mii = &dev->mii;
- 	int ret;
- 
- 	/* first, a dummy read, needed to latch some MII phys */
--	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, MII_BMSR);
-+	ret = smsc95xx_mdio_read_nopm(dev, MII_BMSR);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, MII_BMSR);
-+	ret = smsc95xx_mdio_read_nopm(dev, MII_BMSR);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1428,7 +1428,6 @@ static int smsc95xx_enter_suspend0(struct usbnet *dev)
- static int smsc95xx_enter_suspend1(struct usbnet *dev)
- {
- 	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
--	struct mii_if_info *mii = &dev->mii;
- 	u32 val;
- 	int ret;
- 
-@@ -1436,17 +1435,17 @@ static int smsc95xx_enter_suspend1(struct usbnet *dev)
- 	 * compatibility with non-standard link partners
- 	 */
- 	if (pdata->features & FEATURE_PHY_NLP_CROSSOVER)
--		smsc95xx_mdio_write_nopm(dev->net, mii->phy_id,	PHY_EDPD_CONFIG,
--			PHY_EDPD_CONFIG_DEFAULT);
-+		smsc95xx_mdio_write_nopm(dev, PHY_EDPD_CONFIG,
-+					 PHY_EDPD_CONFIG_DEFAULT);
- 
- 	/* enable energy detect power-down mode */
--	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, PHY_MODE_CTRL_STS);
-+	ret = smsc95xx_mdio_read_nopm(dev, PHY_MODE_CTRL_STS);
- 	if (ret < 0)
- 		return ret;
- 
- 	ret |= MODE_CTRL_STS_EDPWRDOWN_;
- 
--	smsc95xx_mdio_write_nopm(dev->net, mii->phy_id, PHY_MODE_CTRL_STS, ret);
-+	smsc95xx_mdio_write_nopm(dev, PHY_MODE_CTRL_STS, ret);
- 
- 	/* enter SUSPEND1 mode */
- 	ret = smsc95xx_read_reg_nopm(dev, PM_CTRL, &val);
+Ah yes, good point.  Will fix.
+
+> > @@ -66,7 +66,7 @@ MODULE_PARM_DESC(led_id,
+> >   * AHB address must be used.
+> >   */
+> > 
+> > -/**
+> > +/*
+> >   * @sparrow_fw_mapping provides memory remapping table for sparrow
+> >   *
+> >   * array size should be in sync with the declaration in the wil6210.h
+> For files in net/ and drivers/net/ the preferred style for long (multi-line)
+> comments is a different and
+> the text should be in the same line as /*, as follows:
+> /* sparrow_fw_mapping provides memory remapping table for sparrow
+> I would also remove the @ from @sparrow_fw_mapping.
+> This comment is also applicable for the rest of such documentation blocks
+> changed in this patch.
+
+Sounds fair.  Will also fix.
+
+Thank you.
+
 -- 
-2.28.0
-
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
