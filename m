@@ -2,105 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DCDE7252FC9
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 15:28:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5AE8253057
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 15:50:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730252AbgHZN2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 09:28:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:60400 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730204AbgHZN20 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 09:28:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598448502;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=i67+aNF8QtmkXbZ+5JSUQwpOse6+0MGUqtdEKnlOGYo=;
-        b=Q4SObXwIqXhBVDXo5ddCXC0ao/UUQJinuE+m/FsbGLI3qQ9NO3KPWnr+UxBSYRZFjuvx0K
-        CEKj815+pBPfN0ZM0xRZB0cT7U2oACkXsfZPc4ACCZZVagm5/G2ZFYV/XnU1LXotHbzTUZ
-        jtfJhKTkM72coH1njWVDRfX95WmHkGg=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-382-vUtzJLkGNcq90rzi7kLy0A-1; Wed, 26 Aug 2020 09:28:20 -0400
-X-MC-Unique: vUtzJLkGNcq90rzi7kLy0A-1
-Received: by mail-wm1-f71.google.com with SMTP id z1so756647wmf.9
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 06:28:20 -0700 (PDT)
+        id S1730539AbgHZNub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 09:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730534AbgHZNuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 09:50:21 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C2FC061574
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 06:50:20 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id k11so2904863ybp.1
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 06:50:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=lCJ9B3SXwDwW6scb5guoks5aiOHsE7oNfHq5QpIf53o=;
+        b=mo7kawrBY/xEPSQGDtn0GowkoVBq/XVviUv2qYD3ocIHisZBZTTquaG0PnlN/d7DNx
+         NXaohOJQ3FJwje1t7jwJjUWzIKHwS/OCorqxkibf2Oo2TepFKCJ9w2GSfXKP+LB0iQ9P
+         zjJfKsG6hgNEdz++MppLVM/iLR4woARpzLgn2NTBgFQDPMOfEGpVNfr5jtuYn7QaVaMv
+         YaRWSG+tBV9Dz0fHb4oN+4ICCzo+xHL48R40P6YaStyNlVNq782ddz+qEs26o8foHrcp
+         oUOsZlXZv045nPmftOLfiLeV+F5si2gV2Tw9vJi4bN4kYGOiGGLdzRKZh1IS8wAxfB6c
+         MF5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=i67+aNF8QtmkXbZ+5JSUQwpOse6+0MGUqtdEKnlOGYo=;
-        b=OQEFEZ7cYLd2XZ5zeyvqi5MnZ1m4qX3IbbyEqZsnFeOtrfgVNxWoo9tvj7SPdbsZ4f
-         Tok6DNigKy8MwdAgSmVt7R4Lr53tyc7vYwsVDyeuOpsBeuPpPGVC6HfCG5aLWqvmo30o
-         EGjwKkuhl2Rogld6K3V81hzlLvsXMQqND7mG5meSa3kX3lPiez6j1ql/ghNMLr+fMlz4
-         c5JHQqoCXwHlluNVpXN7bpwz9n1RxeG7zr6SQTrcLYRbq1KZuvJJHc8steOQyZyS50wY
-         +hxGtp5IdhYtz81YSWwpb6BAAXBxM7/sNySU6GU5u3nS2ogOv++N3AmmDyKwcMjSNCtv
-         jLuQ==
-X-Gm-Message-State: AOAM533uwajV2anUh9cB9NZ0qIL/YZLxfctWjbRVhyKg1airVmFN6hXY
-        wRziuU0qyLmliUQj1Amj8wk0O1SkkNYsPB1iUV3DfEWlf2yH7Kpi+e/ph/cXhDCoYWTk3hV50na
-        5KvUcoAlCg8X48Ulm
-X-Received: by 2002:a1c:105:: with SMTP id 5mr7557740wmb.83.1598448499406;
-        Wed, 26 Aug 2020 06:28:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzE5CXik9B/yf7SlhoMl9P+rB1tllMpEuE0RJnSmFjwzWrgc4RXpHi+O77/0mfTHMtg2dZEVQ==
-X-Received: by 2002:a1c:105:: with SMTP id 5mr7557705wmb.83.1598448499198;
-        Wed, 26 Aug 2020 06:28:19 -0700 (PDT)
-Received: from redhat.com (bzq-109-67-46-169.red.bezeqint.net. [109.67.46.169])
-        by smtp.gmail.com with ESMTPSA id g62sm5158616wmf.33.2020.08.26.06.27.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2020 06:28:18 -0700 (PDT)
-Date:   Wed, 26 Aug 2020 09:27:31 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elic@nvidia.com, jasowang@redhat.com, lingshan.zhu@intel.com,
-        maxime.coquelin@redhat.com, mst@redhat.com,
-        natechancellor@gmail.com, rdunlap@infradead.org,
-        sgarzare@redhat.com
-Subject: [GIT PULL] virtio: bugfixes
-Message-ID: <20200826092731-mutt-send-email-mst@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=lCJ9B3SXwDwW6scb5guoks5aiOHsE7oNfHq5QpIf53o=;
+        b=tfZoQ9pGXlMZynRv9krWx05MccOEFeshRGvDOYlcAT8xenL0/M8xYjuVGnLEgRUq/4
+         zASimJLKZpApoWsR24X7tofioLnnaIac9XLc48DS74k0ZrJRBhZ4+xKd5vaWVHy+wDx1
+         85A1X8R0oQ5vbachiwo3Pu+bsdMoS5eyXXxUBeGW/uU35fI3cSOaGTbAUUxkWY4g9Krk
+         pilStGPo4riYAUN3iyHqhFSkzv1g2UT4kz00TmcCXu9yVVI3VeXidAPA44FrP2R9d/HL
+         py7ebsinllUpPhOB3RHPAdF0Be5pH+7qGf7a5DXa/hepscf3eDYT6zanshWXlTo067LE
+         2Oag==
+X-Gm-Message-State: AOAM530o+u6uwcIHdgcikkU3oBl5g1PyhNCiF26WDUrH0DQIHqDVc55U
+        n2W1JnFdCBjypFXULXEzub7hfPs3OCnyew==
+X-Google-Smtp-Source: ABdhPJxNNkp/KeflwmWraYbAv4T2sQEMlsZr5DHoeWJK2W2pHaqYOTDM/MWybkP+tDyXyxFDjGH3vN5qYHZXKg==
+X-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
+ (user=edumazet job=sendgmr) by 2002:a25:3758:: with SMTP id
+ e85mr20463600yba.254.1598449820084; Wed, 26 Aug 2020 06:50:20 -0700 (PDT)
+Date:   Wed, 26 Aug 2020 06:50:16 -0700
+Message-Id: <20200826135016.802137-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.297.g1956fa8f8d-goog
+Subject: [PATCH net-next] inet: remove inet_sk_copy_descendant()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit d012a7190fc1fd72ed48911e77ca97ba4521bccd:
+This is no longer used, SCTP now uses a private helper.
 
-  Linux 5.9-rc2 (2020-08-23 14:08:43 -0700)
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/linux/ipv6.h    | 11 -----------
+ include/net/inet_sock.h |  7 -------
+ 2 files changed, 18 deletions(-)
 
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to cbb523594eb718944b726ba52bb43a1d66188a17:
-
-  vdpa/mlx5: Avoid warnings about shifts on 32-bit platforms (2020-08-26 08:13:59 -0400)
-
-----------------------------------------------------------------
-virtio: bugfixes
-
-A couple vdpa and vhost bugfixes
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Jason Wang (2):
-      vdpa: ifcvf: return err when fail to request config irq
-      vdpa: ifcvf: free config irq in ifcvf_free_irq()
-
-Nathan Chancellor (1):
-      vdpa/mlx5: Avoid warnings about shifts on 32-bit platforms
-
-Stefano Garzarella (1):
-      vhost-iotlb: fix vhost_iotlb_itree_next() documentation
-
- drivers/vdpa/ifcvf/ifcvf_base.h   |  2 +-
- drivers/vdpa/ifcvf/ifcvf_main.c   |  9 +++++--
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 50 +++++++++++++++++++--------------------
- drivers/vhost/iotlb.c             |  4 ++--
- 4 files changed, 35 insertions(+), 30 deletions(-)
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index a44789d027cc8cdb4a210ad4e17463d941f2f9c2..bac8f4fffbd6b736bf36b6b8188e09243fdc4a1f 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -345,17 +345,6 @@ static inline struct raw6_sock *raw6_sk(const struct sock *sk)
+ 	return (struct raw6_sock *)sk;
+ }
+ 
+-static inline void inet_sk_copy_descendant(struct sock *sk_to,
+-					   const struct sock *sk_from)
+-{
+-	int ancestor_size = sizeof(struct inet_sock);
+-
+-	if (sk_from->sk_family == PF_INET6)
+-		ancestor_size += sizeof(struct ipv6_pinfo);
+-
+-	__inet_sk_copy_descendant(sk_to, sk_from, ancestor_size);
+-}
+-
+ #define __ipv6_only_sock(sk)	(sk->sk_ipv6only)
+ #define ipv6_only_sock(sk)	(__ipv6_only_sock(sk))
+ #define ipv6_sk_rxinfo(sk)	((sk)->sk_family == PF_INET6 && \
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index a3702d1d48754fbc23b9789f32e1a72d45f5ecf1..89163ef8cf4be2aaf99d09806749911a121a56e0 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -296,13 +296,6 @@ static inline void __inet_sk_copy_descendant(struct sock *sk_to,
+ 	memcpy(inet_sk(sk_to) + 1, inet_sk(sk_from) + 1,
+ 	       sk_from->sk_prot->obj_size - ancestor_size);
+ }
+-#if !(IS_ENABLED(CONFIG_IPV6))
+-static inline void inet_sk_copy_descendant(struct sock *sk_to,
+-					   const struct sock *sk_from)
+-{
+-	__inet_sk_copy_descendant(sk_to, sk_from, sizeof(struct inet_sock));
+-}
+-#endif
+ 
+ int inet_sk_rebuild_header(struct sock *sk);
+ 
+-- 
+2.28.0.297.g1956fa8f8d-goog
 
