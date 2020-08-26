@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4EAA2537E8
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:10:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A952537EC
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:12:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726788AbgHZTK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 15:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
+        id S1726851AbgHZTMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 15:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726723AbgHZTKz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:10:55 -0400
+        with ESMTP id S1726723AbgHZTMa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:12:30 -0400
 Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65D7BC061574
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:10:54 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id e11so2740137ils.10
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:10:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB5BC061574
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:12:30 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id v2so2779245ilq.4
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:12:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xrqtIK21B5DYUM4Ma+HFKpK6EpktDF+hVH38+prxLWM=;
-        b=LJ5DqZr12aWAKSxJomhvjWrn0KQX+MQcH+hwv4Js4Qcxgi9+ExIvBxhNO99ABzCnSP
-         lF1PO3ZdO9/2jLplRLQTCHobU20iJcGUIM46SvQcF8pf58ghBqlUjH3O1F8PExz3Ujri
-         CHy4cBQULoo108eyBnccDfcRbzRGIkTEPUQXb1alt0B8RiGYZdZsSyxKkmSsHsW+hGEz
-         FAAPabIQEiBdAod9ZBBJH/TXrnS4mnJLe7sZu6+ZPsdOBBGWOGGm/iB23KYnG73Gv/ep
-         zO8wepkPsvv1d2k5sHH6W/HiZg8k4bo7OOgpTOrghA/LHXwRL+JTViQN+xE3luQ93mu+
-         582Q==
+        bh=8z5Xhi6enr8YdRnDjy52EOoKpYINSm+nC7W2doz3ps4=;
+        b=Lc7C7uHma+9V9S1b+uS2/nCyCMbZ57VnbhoIshNDVaXsImyXUnXorXQNEBaVKW3fUy
+         Ib8jtrZ8KN5cybrM5Ph8+hcS+dlIfg8zVl2iA7H1x2irtHf83hJvSGlKVV1dvBZ3vq7v
+         f+QNHZNiEv3L+l+jBsev9id3bmL6TXkPQp2GXU7Xu0tUM11c1qQWWdejmcpo/8Nq2U/A
+         fZ5cVYahwdv87Q8rW3eXt2G+cl8F09TjS76rXV8F2YXe29Hh6iy1zjcDB+LQxNlLiYHh
+         4jr3aq1hZwmPvHkjRm12dbQJIsiVXpwzFgqWXaCpm8uPeUW5iIyVNWGtSPK4HMWZSEIS
+         cw1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=xrqtIK21B5DYUM4Ma+HFKpK6EpktDF+hVH38+prxLWM=;
-        b=oRac6jXermd3nRZoQb4EuWZoxsD0bWcxt8tZ8PpHgOH6IINSp8HV8Hm5b2avFUatZd
-         7DokTqDANNpYKggU++6aHDruTtOYIw2srdm5d5MohIxOPA4sgdYkQ6dLaRpnLlPdW/6e
-         X4ZZ1x5R0sehC0O13BiOvPrEJe7ZPVORT6wvot8CBHFGl6thwrmxr92JMUJy9YkLPZen
-         EIfHvgUklcQyeRcOAjUKiTWwUAkot67ftAhg6HJFXm/RLjNBkjp0xZwymXgaMJZS0KHi
-         eIn8vK4I2wx6Q7RqmbyBkozd4Bb0OmHRSeCQWzEJK3YqgJQ+8FFfTDvakL1S9U/P0Ysi
-         AnRw==
-X-Gm-Message-State: AOAM5324GS+aFT6oLQn1U8jYlWhIQEnYZ+10i+SFBB7o6CMigNNbSjUS
-        zuaMw1uvlMJNRSwYe0iRHKrBEIwPXlKgDw==
-X-Google-Smtp-Source: ABdhPJxv4vJ5fTFpe5O87uL+Ci9A/WLj1fHFgScmsR8wYhfMIF4cGxMXXeCYWf6Jk64L6zjjNiFKJw==
-X-Received: by 2002:a92:d089:: with SMTP id h9mr13173116ilh.60.1598469053176;
-        Wed, 26 Aug 2020 12:10:53 -0700 (PDT)
+        bh=8z5Xhi6enr8YdRnDjy52EOoKpYINSm+nC7W2doz3ps4=;
+        b=KINsLVktrPxIrWtmFN+HTRZlkhm/aJtCKkQVVibCn//p9WLGnlr2OdNDKETVI30rzH
+         OwfE0qkpaW9AmI08fUf3vO6TxGHe6X+n3oyRofsaaNaH0KO7BKMqoQaC8RyX6xRpTI4a
+         VzZpnShZ0w7rBCmaoI7Q0MHgdVxqMxOzZpoq2aRH14IBr5fTT2FP/82aMrsC5mqSyqol
+         CVQ597k6XhyEYDH3yWOcNkEmucSUGxFOyxdHjGh7bRYixFHkar8aBD/H0cZtcX2fqOHR
+         QIHMgLKRla5QXIPd1Ob+VEUMGMluFLHtN5XNMsprLIGs43Eb3SR8TU9cTDZ56XUhxRZr
+         qCOQ==
+X-Gm-Message-State: AOAM532Ls2eJvrIxhFRhsmxABJLZ9GSMnLapy5Mz6RTkrwTnAaWgrgXn
+        AMhn5t352KopvlUtDb1sk+k=
+X-Google-Smtp-Source: ABdhPJxTb/gplm1jjKlmNz1xmt0VifNoF7pSLEc+P+2SRqJT7PFEam1ddsMFW/6IniBfa8Ej3Eye0A==
+X-Received: by 2002:a92:a1c5:: with SMTP id b66mr10801145ill.71.1598469149576;
+        Wed, 26 Aug 2020 12:12:29 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:305a:ae30:42e4:e2ca])
-        by smtp.googlemail.com with ESMTPSA id p3sm198448ilq.59.2020.08.26.12.10.52
+        by smtp.googlemail.com with ESMTPSA id u68sm1618144ioe.18.2020.08.26.12.12.28
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Aug 2020 12:10:52 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/7] ipv4: nexthop: Remove unnecessary
- rtnl_dereference()
+        Wed, 26 Aug 2020 12:12:29 -0700 (PDT)
+Subject: Re: [PATCH net-next 4/7] ipv4: nexthop: Correctly update nexthop
+ group when removing a nexthop
 To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
 References: <20200826164857.1029764-1-idosch@idosch.org>
- <20200826164857.1029764-4-idosch@idosch.org>
+ <20200826164857.1029764-5-idosch@idosch.org>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3e7866d6-b088-7141-182a-da1bb6011619@gmail.com>
-Date:   Wed, 26 Aug 2020 13:10:51 -0600
+Message-ID: <11cecb67-cbe5-4d54-1644-fc775a87acb2@gmail.com>
+Date:   Wed, 26 Aug 2020 13:12:28 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200826164857.1029764-4-idosch@idosch.org>
+In-Reply-To: <20200826164857.1029764-5-idosch@idosch.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -73,33 +73,61 @@ X-Mailing-List: netdev@vger.kernel.org
 On 8/26/20 10:48 AM, Ido Schimmel wrote:
 > From: Ido Schimmel <idosch@nvidia.com>
 > 
-> The pointer is not RCU protected, so remove the unnecessary
-> rtnl_dereference(). This suppresses the following warning:
+> Each nexthop group contains an indication if it has IPv4 nexthops
+> ('has_v4'). Its purpose is to prevent IPv6 routes from using groups with
+> IPv4 nexthops.
 > 
-> net/ipv4/nexthop.c:1101:24: error: incompatible types in comparison expression (different address spaces):
-> net/ipv4/nexthop.c:1101:24:    struct rb_node [noderef] __rcu *
-> net/ipv4/nexthop.c:1101:24:    struct rb_node *
+> However, the indication is not updated when a nexthop is removed. This
+> results in the kernel wrongly rejecting IPv6 routes from pointing to
+> groups that only contain IPv6 nexthops. Example:
+> 
+> # ip nexthop replace id 1 via 192.0.2.2 dev dummy10
+> # ip nexthop replace id 2 via 2001:db8:1::2 dev dummy10
+> # ip nexthop replace id 10 group 1/2
+> # ip nexthop del id 1
+> # ip route replace 2001:db8:10::/64 nhid 10
+> Error: IPv6 routes can not use an IPv4 nexthop.
+> 
+> Solve this by updating the indication according to the new set of
+> member nexthops.
 > 
 > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 > ---
->  net/ipv4/nexthop.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  net/ipv4/nexthop.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 > 
 > diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-> index 0823643a7dec..1b736e3e1baa 100644
+> index 1b736e3e1baa..5199a2815df6 100644
 > --- a/net/ipv4/nexthop.c
 > +++ b/net/ipv4/nexthop.c
-> @@ -1098,7 +1098,7 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
->  	while (1) {
->  		struct nexthop *nh;
+> @@ -797,7 +797,7 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
+>  		return;
+>  	}
 >  
-> -		next = rtnl_dereference(*pp);
-> +		next = *pp;
->  		if (!next)
->  			break;
+> -	newg->has_v4 = nhg->has_v4;
+> +	newg->has_v4 = false;
+>  	newg->mpath = nhg->mpath;
+>  	newg->fdb_nh = nhg->fdb_nh;
+>  	newg->num_nh = nhg->num_nh;
+> @@ -806,12 +806,18 @@ static void remove_nh_grp_entry(struct net *net, struct nh_grp_entry *nhge,
+>  	nhges = nhg->nh_entries;
+>  	new_nhges = newg->nh_entries;
+>  	for (i = 0, j = 0; i < nhg->num_nh; ++i) {
+> +		struct nh_info *nhi;
+> +
+>  		/* current nexthop getting removed */
+>  		if (nhg->nh_entries[i].nh == nh) {
+>  			newg->num_nh--;
+>  			continue;
+>  		}
 >  
+> +		nhi = rtnl_dereference(nhges[i].nh->nh_info);
+> +		if (nhi->family == AF_INET)
+> +			newg->has_v4 = true;
+> +
+>  		list_del(&nhges[i].nh_list);
+>  		new_nhges[j].nh_parent = nhges[i].nh_parent;
+>  		new_nhges[j].nh = nhges[i].nh;
 > 
-
-A left over from initial attempts to convert connected routes to nexthops.
 
 Reviewed-by: David Ahern <dsahern@gmail.com>
