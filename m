@@ -2,294 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74A16252656
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 06:35:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1A7F252666
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 07:02:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726198AbgHZEfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 00:35:42 -0400
-Received: from mga18.intel.com ([134.134.136.126]:38861 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725267AbgHZEfi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Aug 2020 00:35:38 -0400
-IronPort-SDR: oAzWnS5u6cSS159zAz5mpvrGox5dtm9yFjUk9ulLYx7Sog3m5udBbVRbAg5NOAB25cx3akviOF
- GK22Mt2fN/GQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9724"; a="143897919"
-X-IronPort-AV: E=Sophos;i="5.76,354,1592895600"; 
-   d="scan'208";a="143897919"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2020 21:35:36 -0700
-IronPort-SDR: sQzOyYirYcZ4xF2e+uvt2DCyBjrgyZ2lB/CORy5Y2Zy18e9ozZht3Pz0qByIMohhnTYlr81u0j
- mNcawb9dlZgQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,354,1592895600"; 
-   d="scan'208";a="373260415"
-Received: from vgjayaku-ilbpg7.png.intel.com ([10.88.227.96])
-  by orsmga001.jf.intel.com with ESMTP; 25 Aug 2020 21:35:33 -0700
-From:   vineetha.g.jaya.kumaran@intel.com
-To:     davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
-        robh+dt@kernel.org
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        weifeng.voon@intel.com, hock.leong.kweh@intel.com,
-        boon.leong.ong@intel.com, lakshmi.bai.raja.subramanian@intel.com
-Subject: [PATCH v3 2/2] net: stmmac: Add dwmac-intel-plat for GBE driver
-Date:   Wed, 26 Aug 2020 12:33:42 +0800
-Message-Id: <1598416422-30796-3-git-send-email-vineetha.g.jaya.kumaran@intel.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1598416422-30796-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
-References: <1598416422-30796-1-git-send-email-vineetha.g.jaya.kumaran@intel.com>
+        id S1725853AbgHZFAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 01:00:24 -0400
+Received: from pd9568d8c.dip0.t-ipconnect.de ([217.86.141.140]:47265 "EHLO
+        remote.esd.eu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725294AbgHZFAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 01:00:23 -0400
+Received: from esd-s7 ([10.0.0.77]:32884 helo=esd-s7.esd)
+        by remote.esd.eu with esmtp (Exim 4.82_1-5b7a7c0-XX)
+        (envelope-from <daniel.gorsulowski@esd.eu>)
+        id 1kAnXi-0006h1-32; Wed, 26 Aug 2020 07:00:15 +0200
+Received: from PC-Daniel.esd.local (unknown [10.0.18.30])
+        by esd-s7.esd (Postfix) with ESMTP id D17FD7C1631;
+        Wed, 26 Aug 2020 07:00:14 +0200 (CEST)
+X-CTCH-RefID: str=0001.0A782F1F.5F45EC5E.007C,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
+From:   Daniel Gorsulowski <daniel.gorsulowski@esd.eu>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, dmurphy@ti.com,
+        Daniel Gorsulowski <daniel.gorsulowski@esd.eu>
+Subject: [PATCH v2] net: dp83869: Fix RGMII internal delay configuration
+Date:   Wed, 26 Aug 2020 07:00:14 +0200
+Message-Id: <20200826050014.428639-1-daniel.gorsulowski@esd.eu>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rusaimi Amira Ruslan <rusaimi.amira.rusaimi@intel.com>
+The RGMII control register at 0x32 indicates the states for the bits
+RGMII_TX_CLK_DELAY and RGMII_RX_CLK_DELAY as follows:
 
-Add dwmac-intel-plat to enable the stmmac driver in Intel Keem Bay.
-Also add fix_mac_speed and tx_clk in order to change link speeds.
-This is required as mac_speed_o is not connected in the
-Intel Keem Bay SoC.
+  RGMII Transmit/Receive Clock Delay
+    0x0 = RGMII transmit clock is shifted with respect to transmit/receive data.
+    0x1 = RGMII transmit clock is aligned with respect to transmit/receive data.
 
-Signed-off-by: Rusaimi Amira Ruslan <rusaimi.amira.rusaimi@intel.com>
-Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
+This commit fixes the inversed behavior of these bits
+
+Fixes: 736b25afe284 ("net: dp83869: Add RGMII internal delay configuration")
+Signed-off-by: Daniel Gorsulowski <daniel.gorsulowski@esd.eu>
 ---
- drivers/net/ethernet/stmicro/stmmac/Kconfig        |  10 ++
- drivers/net/ethernet/stmicro/stmmac/Makefile       |   1 +
- .../net/ethernet/stmicro/stmmac/dwmac-intel-plat.c | 191 +++++++++++++++++++++
- 3 files changed, 202 insertions(+)
- create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
+v2: fixed indentation and commit style
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-index 9a47c5a..7572cea 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
-+++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
-@@ -209,6 +209,16 @@ config DWMAC_IMX8
- 	  device driver. This driver is used for i.MX8 series like
- 	  iMX8MP/iMX8DXL GMAC ethernet controller.
+ drivers/net/phy/dp83869.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+index 58103152c601..6b98d74b5102 100644
+--- a/drivers/net/phy/dp83869.c
++++ b/drivers/net/phy/dp83869.c
+@@ -427,18 +427,18 @@ static int dp83869_config_init(struct phy_device *phydev)
+ 			return ret;
  
-+config DWMAC_INTEL_PLAT
-+	tristate "Intel dwmac support"
-+	depends on OF && COMMON_CLK
-+	depends on STMMAC_ETH
-+	help
-+	  Support for ethernet controllers on Intel SoCs
-+
-+	  This selects the Intel platform specific glue layer support for
-+	  the stmmac device driver. This driver is used for the Intel Keem Bay
-+	  SoC.
- endif
+ 		val = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL);
+-		val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
+-			 DP83869_RGMII_RX_CLK_DELAY_EN);
++		val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
++			DP83869_RGMII_RX_CLK_DELAY_EN);
  
- config DWMAC_INTEL
-diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
-index 295615a..24e6145 100644
---- a/drivers/net/ethernet/stmicro/stmmac/Makefile
-+++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
-@@ -26,6 +26,7 @@ obj-$(CONFIG_DWMAC_STM32)	+= dwmac-stm32.o
- obj-$(CONFIG_DWMAC_SUNXI)	+= dwmac-sunxi.o
- obj-$(CONFIG_DWMAC_SUN8I)	+= dwmac-sun8i.o
- obj-$(CONFIG_DWMAC_DWC_QOS_ETH)	+= dwmac-dwc-qos-eth.o
-+obj-$(CONFIG_DWMAC_INTEL_PLAT)	+= dwmac-intel-plat.o
- obj-$(CONFIG_DWMAC_GENERIC)	+= dwmac-generic.o
- obj-$(CONFIG_DWMAC_IMX8)	+= dwmac-imx.o
- stmmac-platform-objs:= stmmac_platform.o
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
-new file mode 100644
-index 00000000..ccac7bf
---- /dev/null
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
-@@ -0,0 +1,191 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Intel DWMAC platform driver
-+ *
-+ * Copyright(C) 2020 Intel Corporation
-+ */
-+
-+#include <linux/ethtool.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/stmmac.h>
-+
-+#include "stmmac.h"
-+#include "stmmac_platform.h"
-+
-+struct intel_dwmac {
-+	struct device *dev;
-+	struct clk *tx_clk;
-+	const struct intel_dwmac_data *data;
-+};
-+
-+struct intel_dwmac_data {
-+	void (*fix_mac_speed)(void *priv, unsigned int speed);
-+	unsigned long ptp_ref_clk_rate;
-+	unsigned long tx_clk_rate;
-+	bool tx_clk_en;
-+};
-+
-+static void kmb_eth_fix_mac_speed(void *priv, unsigned int speed)
-+{
-+	struct intel_dwmac *dwmac = priv;
-+	unsigned long rate;
-+	int ret;
-+
-+	rate = clk_get_rate(dwmac->tx_clk);
-+
-+	switch (speed) {
-+	case SPEED_1000:
-+		rate = 125000000;
-+		break;
-+
-+	case SPEED_100:
-+		rate = 25000000;
-+		break;
-+
-+	case SPEED_10:
-+		rate = 2500000;
-+		break;
-+
-+	default:
-+		dev_err(dwmac->dev, "Invalid speed\n");
-+		break;
-+	}
-+
-+	ret = clk_set_rate(dwmac->tx_clk, rate);
-+	if (ret)
-+		dev_err(dwmac->dev, "Failed to configure tx clock rate\n");
-+}
-+
-+static const struct intel_dwmac_data kmb_data = {
-+	.fix_mac_speed = kmb_eth_fix_mac_speed,
-+	.ptp_ref_clk_rate = 200000000,
-+	.tx_clk_rate = 125000000,
-+	.tx_clk_en = true,
-+};
-+
-+static const struct of_device_id intel_eth_plat_match[] = {
-+	{ .compatible = "intel,keembay-dwmac", .data = &kmb_data },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, intel_eth_plat_match);
-+
-+static int intel_eth_plat_probe(struct platform_device *pdev)
-+{
-+	struct net_device *ndev = platform_get_drvdata(pdev);
-+	struct stmmac_priv *priv = netdev_priv(ndev);
-+	struct plat_stmmacenet_data *plat_dat;
-+	struct stmmac_resources stmmac_res;
-+	const struct of_device_id *match;
-+	struct intel_dwmac *dwmac;
-+	unsigned long rate;
-+	int ret;
-+
-+	plat_dat = priv->plat;
-+	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
-+	if (ret)
-+		return ret;
-+
-+	plat_dat = stmmac_probe_config_dt(pdev, &stmmac_res.mac);
-+	if (IS_ERR(plat_dat)) {
-+		dev_err(&pdev->dev, "dt configuration failed\n");
-+		return PTR_ERR(plat_dat);
-+	}
-+
-+	dwmac = devm_kzalloc(&pdev->dev, sizeof(*dwmac), GFP_KERNEL);
-+	if (!dwmac) {
-+		ret = -ENOMEM;
-+		goto err_remove_config_dt;
-+	}
-+
-+	dwmac->dev = &pdev->dev;
-+	dwmac->tx_clk = NULL;
-+
-+	match = of_match_device(intel_eth_plat_match, &pdev->dev);
-+	if (match && match->data) {
-+		dwmac->data = (const struct intel_dwmac_data *)match->data;
-+
-+		if (dwmac->data->fix_mac_speed)
-+			plat_dat->fix_mac_speed = dwmac->data->fix_mac_speed;
-+
-+		/* Enable TX clock */
-+		if (dwmac->data->tx_clk_en) {
-+			dwmac->tx_clk = devm_clk_get(&pdev->dev, "tx_clk");
-+			if (IS_ERR(dwmac->tx_clk))
-+				goto err_remove_config_dt;
-+
-+			clk_prepare_enable(dwmac->tx_clk);
-+
-+			/* Check and configure TX clock rate */
-+			rate = clk_get_rate(dwmac->tx_clk);
-+			if (dwmac->data->tx_clk_rate &&
-+			    rate != dwmac->data->tx_clk_rate) {
-+				rate = dwmac->data->tx_clk_rate;
-+				ret = clk_set_rate(dwmac->tx_clk, rate);
-+				if (ret) {
-+					dev_err(&pdev->dev,
-+						"Failed to set tx_clk\n");
-+					return ret;
-+				}
-+			}
-+		}
-+
-+		/* Check and configure PTP ref clock rate */
-+		rate = clk_get_rate(plat_dat->clk_ptp_ref);
-+		if (dwmac->data->ptp_ref_clk_rate &&
-+		    rate != dwmac->data->ptp_ref_clk_rate) {
-+			rate = dwmac->data->ptp_ref_clk_rate;
-+			ret = clk_set_rate(plat_dat->clk_ptp_ref, rate);
-+			if (ret) {
-+				dev_err(&pdev->dev,
-+					"Failed to set clk_ptp_ref\n");
-+				return ret;
-+			}
-+		}
-+	}
-+
-+	plat_dat->bsp_priv = dwmac;
-+
-+	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
-+	if (ret) {
-+		if (dwmac->tx_clk)
-+			clk_disable_unprepare(dwmac->tx_clk);
-+
-+		goto err_remove_config_dt;
-+	}
-+
-+	return 0;
-+
-+err_remove_config_dt:
-+	stmmac_remove_config_dt(pdev, plat_dat);
-+
-+	return ret;
-+}
-+
-+static int intel_eth_plat_remove(struct platform_device *pdev)
-+{
-+	struct intel_dwmac *dwmac = get_stmmac_bsp_priv(&pdev->dev);
-+	int ret;
-+
-+	ret = stmmac_pltfr_remove(pdev);
-+
-+	if (dwmac->tx_clk)
-+		clk_disable_unprepare(dwmac->tx_clk);
-+
-+	return ret;
-+}
-+
-+static struct platform_driver intel_eth_plat_driver = {
-+	.probe  = intel_eth_plat_probe,
-+	.remove = intel_eth_plat_remove,
-+	.driver = {
-+		.name		= "intel-eth-plat",
-+		.pm		= &stmmac_pltfr_pm_ops,
-+		.of_match_table = intel_eth_plat_match,
-+	},
-+};
-+module_platform_driver(intel_eth_plat_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("Intel DWMAC platform driver");
+ 		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+-			val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
+-				DP83869_RGMII_RX_CLK_DELAY_EN);
++			val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
++				 DP83869_RGMII_RX_CLK_DELAY_EN);
+ 
+ 		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
+-			val |= DP83869_RGMII_TX_CLK_DELAY_EN;
++			val &= ~DP83869_RGMII_TX_CLK_DELAY_EN;
+ 
+ 		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
+-			val |= DP83869_RGMII_RX_CLK_DELAY_EN;
++			val &= ~DP83869_RGMII_RX_CLK_DELAY_EN;
+ 
+ 		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL,
+ 				    val);
 -- 
-1.9.1
+2.25.1
 
