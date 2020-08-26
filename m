@@ -2,190 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DF24252BA7
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 12:49:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C610B252BAD
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 12:50:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728663AbgHZKt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 06:49:27 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:59355 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728585AbgHZKtX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 06:49:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1598438963; x=1629974963;
-  h=from:to:cc:date:message-id:references:
-   content-transfer-encoding:mime-version:subject;
-  bh=V6dAAwigQ03rc8u07X1ltWscDVSMfjamafwTpWqkFr4=;
-  b=G/r+PFza50IUJ80GocbdjfwJ+noSJISOSIl3jqGk7veO0DfebtJhIBhV
-   tqe+cXxuMTA0R55AhYBxVuyCd9fOoOe9wjcw3xyQ5E7toPcRGqQn1txkp
-   xpdH75qlKUrNvQEB/R/3uEiT42LKhHitFDKbBqkbB12OBEzxWiHPaZ5JP
-   I=;
-X-IronPort-AV: E=Sophos;i="5.76,355,1592870400"; 
-   d="scan'208";a="69831133"
-Subject: RE: [PATCH V2 net-next 1/4] net: ena: ethtool: use unsigned long for pointer
- arithmetics
-Thread-Topic: [PATCH V2 net-next 1/4] net: ena: ethtool: use unsigned long for pointer
- arithmetics
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 26 Aug 2020 10:49:14 +0000
-Received: from EX13D04EUB002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-38ae4ad2.us-east-1.amazon.com (Postfix) with ESMTPS id 46101A1822;
-        Wed, 26 Aug 2020 10:49:12 +0000 (UTC)
-Received: from EX13D11EUB002.ant.amazon.com (10.43.166.13) by
- EX13D04EUB002.ant.amazon.com (10.43.166.51) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 26 Aug 2020 10:49:11 +0000
-Received: from EX13D11EUB002.ant.amazon.com ([10.43.166.13]) by
- EX13D11EUB002.ant.amazon.com ([10.43.166.13]) with mapi id 15.00.1497.006;
- Wed, 26 Aug 2020 10:49:11 +0000
-From:   "Jubran, Samih" <sameehj@amazon.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "Matushevsky, Alexander" <matua@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Wilson, Matt" <msw@amazon.com>,
-        "Liguori, Anthony" <aliguori@amazon.com>,
-        "Bshara, Nafea" <nafea@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Saidi, Ali" <alisaidi@amazon.com>,
-        "Herrenschmidt, Benjamin" <benh@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "Dagan, Noam" <ndagan@amazon.com>
-Thread-Index: AQHWdi7NzspiPY1+006P3nEMueihz6k/eoMAgAFjQKCACWIfwA==
-Date:   Wed, 26 Aug 2020 10:48:47 +0000
-Deferred-Delivery: Wed, 26 Aug 2020 10:47:26 +0000
-Message-ID: <30dd4ec5a7624acb8de8ffde6fb5d39f@EX13D11EUB002.ant.amazon.com>
-References: <20200819134349.22129-1-sameehj@amazon.com>
- <20200819134349.22129-2-sameehj@amazon.com>
- <20200819141716.GE2403519@lunn.ch> 
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.164.242]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1728762AbgHZKuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 06:50:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38872 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728754AbgHZKt4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Aug 2020 06:49:56 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 96C69206EB;
+        Wed, 26 Aug 2020 10:49:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598438996;
+        bh=TqPevqx6D2J7PXGgLZWIHZHYHYk8i8daoX9CkV8jVM0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=2sgsrLL8+6Se7RV01jW3bbRE2mvcZfKUPxov22vTodcl7jsNoAEyoN0nVtDuiV9Uy
+         YbCjL5vyGCjtkW9Gxm5wwLDgAmsvpiB284grpS1ZcdGjsR1BQyldPXZ4OTsLiXQNpw
+         4Ie/fRL6Whnaa9pcDNOXdoOByiDooJoftVzQm78I=
+Date:   Wed, 26 Aug 2020 11:49:19 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     syzbot <syzbot+fbe34b643e462f65e542@syzkaller.appspotmail.com>
+Cc:     alsa-devel@alsa-project.org, asmadeus@codewreck.org,
+        daniel.baluta@nxp.com, davem@davemloft.net, ericvh@gmail.com,
+        kuba@kernel.org, lgirdwood@gmail.com, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org, perex@perex.cz,
+        rminnich@sandia.gov, syzkaller-bugs@googlegroups.com,
+        tiwai@suse.com, v9fs-developer@lists.sourceforge.net
+Subject: Re: INFO: task can't die in p9_fd_close
+Message-ID: <20200826104919.GE4965@sirena.org.uk>
+References: <000000000000ca0c6805adc56a38@google.com>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ryJZkp9/svQ58syV"
+Content-Disposition: inline
+In-Reply-To: <000000000000ca0c6805adc56a38@google.com>
+X-Cookie: Should I do my BOBBIE VINTON medley?
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--ryJZkp9/svQ58syV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> -----Original Message-----
-> From: Jubran, Samih
-> Sent: Thursday, August 20, 2020 3:13 PM
-> To: 'Andrew Lunn' <andrew@lunn.ch>
-> Cc: davem@davemloft.net; netdev@vger.kernel.org; Woodhouse, David
-> <dwmw@amazon.co.uk>; Machulsky, Zorik <zorik@amazon.com>;
-> Matushevsky, Alexander <matua@amazon.com>; Bshara, Saeed
-> <saeedb@amazon.com>; Wilson, Matt <msw@amazon.com>; Liguori,
-> Anthony <aliguori@amazon.com>; Bshara, Nafea <nafea@amazon.com>;
-> Tzalik, Guy <gtzalik@amazon.com>; Belgazal, Netanel
-> <netanel@amazon.com>; Saidi, Ali <alisaidi@amazon.com>; Herrenschmidt,
-> Benjamin <benh@amazon.com>; Kiyanovski, Arthur
-> <akiyano@amazon.com>; Dagan, Noam <ndagan@amazon.com>
-> Subject: RE: [EXTERNAL] [PATCH V2 net-next 1/4] net: ena: ethtool: use
-> unsigned long for pointer arithmetics
->=20
->=20
->=20
-> > -----Original Message-----
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > Sent: Wednesday, August 19, 2020 5:17 PM
-> > To: Jubran, Samih <sameehj@amazon.com>
-> > Cc: davem@davemloft.net; netdev@vger.kernel.org; Woodhouse, David
-> > <dwmw@amazon.co.uk>; Machulsky, Zorik <zorik@amazon.com>;
-> Matushevsky,
-> > Alexander <matua@amazon.com>; Bshara, Saeed
-> <saeedb@amazon.com>;
-> > Wilson, Matt <msw@amazon.com>; Liguori, Anthony
-> <aliguori@amazon.com>;
-> > Bshara, Nafea <nafea@amazon.com>; Tzalik, Guy <gtzalik@amazon.com>;
-> > Belgazal, Netanel <netanel@amazon.com>; Saidi, Ali
-> > <alisaidi@amazon.com>; Herrenschmidt, Benjamin <benh@amazon.com>;
-> > Kiyanovski, Arthur <akiyano@amazon.com>; Dagan, Noam
-> > <ndagan@amazon.com>
-> > Subject: RE: [EXTERNAL] [PATCH V2 net-next 1/4] net: ena: ethtool: use
-> > unsigned long for pointer arithmetics
-> >
-> > CAUTION: This email originated from outside of the organization. Do
-> > not click links or open attachments unless you can confirm the sender
-> > and know the content is safe.
-> >
-> >
-> >
-> > On Wed, Aug 19, 2020 at 01:43:46PM +0000, sameehj@amazon.com wrote:
-> > > From: Sameeh Jubran <sameehj@amazon.com>
-> > >
-> > > unsigned long is the type for doing maths on pointers.
-> >
-> > Maths on pointers is perfectly valid. The real issue here is you have
-> > all your types mixed up.
->=20
-> The stat_offset field has the bytes from the start of the struct, the mat=
-h is
-> perfectly valid IMO=B8 I have also went for the extra step and tested it =
-using
-> prints.
->=20
-> >
-> > > -                     ptr =3D (u64 *)((uintptr_t)&ring->tx_stats +
-> > > -                             (uintptr_t)ena_stats->stat_offset);
-> > > +                     ptr =3D (u64 *)((unsigned long)&ring->tx_stats =
-+
-> > > +                             ena_stats->stat_offset);
-> >
-> > struct ena_ring {
-> > ...
-> >         union {
-> >                 struct ena_stats_tx tx_stats;
-> >                 struct ena_stats_rx rx_stats;
-> >         };
-> >
-> > struct ena_stats_tx {
-> >         u64 cnt;
-> >         u64 bytes;
-> >         u64 queue_stop;
-> >         u64 prepare_ctx_err;
-> >         u64 queue_wakeup;
-> >         ...
-> > }
-> >
-> > &ring->tx_stats will give you a struct *ena_stats_tx. Arithmetic on
-> > that, adding 1 for example, takes you forward a full ena_stats_tx
-> > structure. Not what you want.
-> >
-> > &ring->tx_stats.cnt however, will give you a u64 *. Adding 1 to that
-> > will give you bytes, etc.
->=20
->=20
-> If I understand you well, the alternative approach you are suggesting is:
->=20
-> ptr =3D &ring->tx_stats.cnt + ena_stats->stat_offset;
->=20
-> of course we need to convert the stat_offset field to be in 8 bytes resol=
-ution
-> instead.
->=20
-> This approach has a potential bug hidden in it. If in the future someone
-> decides to expand the "ena_stats_tx" struct and add a field preceding cnt=
-,
-> cnt will no longer be the beginning of the struct, which will cause a bug=
-."
->=20
-> Therefore, if you have another way to do this, please share it. Otherwise=
- I'd
-> rather leave this code as it is for the sake of robustness.
->=20
-> >
-> >      Andrew
+On Wed, Aug 26, 2020 at 03:38:15AM -0700, syzbot wrote:
 
+> console output: https://syzkaller.appspot.com/x/log.txt?x=3D10615b36900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3Da61d44f28687f=
+508
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3Dfbe34b643e462f6=
+5e542
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D15920a05900=
+000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D13a78539900000
+>=20
+> The issue was bisected to:
+>=20
+> commit af3acca3e35c01920fe476f730dca7345d0a48df
+> Author: Daniel Baluta <daniel.baluta@nxp.com>
+> Date:   Tue Feb 20 12:53:10 2018 +0000
+>=20
+>     ASoC: ak5558: Fix style for SPDX identifier
 
-Ping.
+This bisection is clearly not accurate, I'm guessing the bug is
+intermittent and it was just luck that landed it on this commit.
+
+--ryJZkp9/svQ58syV
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl9GPi8ACgkQJNaLcl1U
+h9DyfAf8C2paLbOwHHdDVOi687LcmeI2dZuyjT7chCNm5YaFacrU8e5nRF/fnG6y
+G350XTQP7ygvtDz3oeIoEzMn8bJa7Xzeo03wiNm2JrUiMFRT6/S77JOk5g1d75xv
+tVwBelb7UdHY869OzQLeLc7exArpn9SsuSpRXkwqrY3EO4Ki/ZwwQPgOPrtYNdLM
+x1gX63pYxXoLCaHV3QHnselGfBIcz551NPsJJFowk4+ztuCDvaCp1pCYQpfaA+mS
+RU3Ttf+3q8xnCtvFF/Fz8deIGx9sXK9SMlc/uLC9GwhuP57oJ3G3O+JKLiaD9ONf
+rdK9/4syv9inh3Wwk3n22yqnKN96hw==
+=g5nP
+-----END PGP SIGNATURE-----
+
+--ryJZkp9/svQ58syV--
