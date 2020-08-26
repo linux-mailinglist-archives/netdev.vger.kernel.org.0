@@ -2,95 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B0C0252B41
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 12:19:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 454EE252B4F
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 12:22:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728265AbgHZKTB convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Aug 2020 06:19:01 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:23116 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727884AbgHZKS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 06:18:59 -0400
-X-Greylist: delayed 53829 seconds by postgrey-1.27 at vger.kernel.org; Wed, 26 Aug 2020 06:18:59 EDT
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-269-axKnq8jwPNyk4FK5q1gRMw-1; Wed, 26 Aug 2020 06:18:54 -0400
-X-MC-Unique: axKnq8jwPNyk4FK5q1gRMw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1728385AbgHZKWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 06:22:04 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:24591 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728327AbgHZKWC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 06:22:02 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1598437320; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=MkBteFA49aiDVrV3uQvOo1CKvWxeAW0hpmXtiWdWsqg=;
+ b=kLKJum/YUlk6WgjSTMQm1/WLJwBVZK9xWGCpw0Vc7+CXdPqVSbPEgXfNoACBKQToBwdUWRsO
+ 0LuP/w0ecqZHQV2SQYQP0gZQrmvVjF3wT08O9MpzQFzTd/LTTbm0DYy5eU840krL+U2kAJTr
+ LwQRaOltQ5polEg7b4J9YsITH5s=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 5f4637c2e2d4d29fc898b68e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 26 Aug 2020 10:21:54
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id B653AC433CA; Wed, 26 Aug 2020 10:21:54 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0BB20807332;
-        Wed, 26 Aug 2020 10:18:52 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.194.188])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3960F1992F;
-        Wed, 26 Aug 2020 10:18:46 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: [PATCH bpf-next] selftests/bpf: Fix open call in trigger_fstat_events
-Date:   Wed, 26 Aug 2020 12:18:45 +0200
-Message-Id: <20200826101845.747617-1-jolsa@kernel.org>
+        (Authenticated sender: merez)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id ACA26C433C6;
+        Wed, 26 Aug 2020 10:21:53 +0000 (UTC)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0.002
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 26 Aug 2020 13:21:53 +0300
+From:   merez@codeaurora.org
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, wil6210@qti.qualcomm.com
+Subject: Re: [PATCH 25/32] wireless: ath: wil6210: wmi: Fix formatting and
+ demote non-conforming function headers
+In-Reply-To: <20200821071644.109970-26-lee.jones@linaro.org>
+References: <20200821071644.109970-1-lee.jones@linaro.org>
+ <20200821071644.109970-26-lee.jones@linaro.org>
+Message-ID: <330bc340a4d16f383c9adef2324db60e@codeaurora.org>
+X-Sender: merez@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei reported compile breakage on newer systems with
-following error:
+On 2020-08-21 10:16, Lee Jones wrote:
+> Fixes the following W=1 kernel build warning(s):
+> 
+>  drivers/net/wireless/ath/wil6210/wmi.c:52: warning: Incorrect use of
+> kernel-doc format:  * Addressing - theory of operations
+>  drivers/net/wireless/ath/wil6210/wmi.c:70: warning: Incorrect use of
+> kernel-doc format:  * @sparrow_fw_mapping provides memory remapping
+> table for sparrow
+>  drivers/net/wireless/ath/wil6210/wmi.c:80: warning: cannot understand
+> function prototype: 'const struct fw_map sparrow_fw_mapping[] = '
+>  drivers/net/wireless/ath/wil6210/wmi.c:107: warning: Cannot
+> understand  * @sparrow_d0_mac_rgf_ext - mac_rgf_ext section for
+> Sparrow D0
+>  drivers/net/wireless/ath/wil6210/wmi.c:115: warning: Cannot
+> understand  * @talyn_fw_mapping provides memory remapping table for
+> Talyn
+>  drivers/net/wireless/ath/wil6210/wmi.c:158: warning: Cannot
+> understand  * @talyn_mb_fw_mapping provides memory remapping table for
+> Talyn-MB
+>  drivers/net/wireless/ath/wil6210/wmi.c:236: warning: Function
+> parameter or member 'x' not described in 'wmi_addr_remap'
+>  drivers/net/wireless/ath/wil6210/wmi.c:255: warning: Function
+> parameter or member 'section' not described in 'wil_find_fw_mapping'
+>  drivers/net/wireless/ath/wil6210/wmi.c:278: warning: Function
+> parameter or member 'wil' not described in 'wmi_buffer_block'
+>  drivers/net/wireless/ath/wil6210/wmi.c:278: warning: Function
+> parameter or member 'ptr_' not described in 'wmi_buffer_block'
+>  drivers/net/wireless/ath/wil6210/wmi.c:278: warning: Function
+> parameter or member 'size' not described in 'wmi_buffer_block'
+>  drivers/net/wireless/ath/wil6210/wmi.c:307: warning: Function
+> parameter or member 'wil' not described in 'wmi_addr'
+>  drivers/net/wireless/ath/wil6210/wmi.c:307: warning: Function
+> parameter or member 'ptr' not described in 'wmi_addr'
+>  drivers/net/wireless/ath/wil6210/wmi.c:1589: warning: Function
+> parameter or member 'wil' not described in 'wil_find_cid_ringid_sta'
+>  drivers/net/wireless/ath/wil6210/wmi.c:1589: warning: Function
+> parameter or member 'vif' not described in 'wil_find_cid_ringid_sta'
+>  drivers/net/wireless/ath/wil6210/wmi.c:1589: warning: Function
+> parameter or member 'cid' not described in 'wil_find_cid_ringid_sta'
+>  drivers/net/wireless/ath/wil6210/wmi.c:1589: warning: Function
+> parameter or member 'ringid' not described in
+> 'wil_find_cid_ringid_sta'
+>  drivers/net/wireless/ath/wil6210/wmi.c:1876: warning: Function
+> parameter or member 'vif' not described in 'wmi_evt_ignore'
+>  drivers/net/wireless/ath/wil6210/wmi.c:1876: warning: Function
+> parameter or member 'id' not described in 'wmi_evt_ignore'
+>  drivers/net/wireless/ath/wil6210/wmi.c:1876: warning: Function
+> parameter or member 'd' not described in 'wmi_evt_ignore'
+>  drivers/net/wireless/ath/wil6210/wmi.c:1876: warning: Function
+> parameter or member 'len' not described in 'wmi_evt_ignore'
+>  drivers/net/wireless/ath/wil6210/wmi.c:2588: warning: Function
+> parameter or member 'wil' not described in 'wmi_rxon'
+> 
+> Cc: Maya Erez <merez@codeaurora.org>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: wil6210@qti.qualcomm.com
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  drivers/net/wireless/ath/wil6210/wmi.c | 28 ++++++++++++++------------
+>  1 file changed, 15 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/wil6210/wmi.c
+> b/drivers/net/wireless/ath/wil6210/wmi.c
+> index c7136ce567eea..3a6ee85acf6c7 100644
+> --- a/drivers/net/wireless/ath/wil6210/wmi.c
+> +++ b/drivers/net/wireless/ath/wil6210/wmi.c
+> @@ -31,7 +31,7 @@ MODULE_PARM_DESC(led_id,
+>  #define WIL_WAIT_FOR_SUSPEND_RESUME_COMP 200
+>  #define WIL_WMI_PCP_STOP_TO_MS 5000
+> 
+> -/**
+> +/*
+>   * WMI event receiving - theory of operations
+>   *
+>   * When firmware about to report WMI event, it fills memory area
 
-  In file included from /usr/include/fcntl.h:290:0,
-  4814                 from ./test_progs.h:29,
-  4815                 from
-  .../bpf-next/tools/testing/selftests/bpf/prog_tests/d_path.c:3:
-  4816In function ‘open’,
-  4817    inlined from ‘trigger_fstat_events’ at
-  .../bpf-next/tools/testing/selftests/bpf/prog_tests/d_path.c:50:10,
-  4818    inlined from ‘test_d_path’ at
-  .../bpf-next/tools/testing/selftests/bpf/prog_tests/d_path.c:119:6:
-  4819/usr/include/x86_64-linux-gnu/bits/fcntl2.h:50:4: error: call to
-  ‘__open_missing_mode’ declared with attribute error: open with O_CREAT
-  or O_TMPFILE in second argument needs 3 arguments
-  4820    __open_missing_mode ();
-  4821    ^~~~~~~~~~~~~~~~~~~~~~
+The correct format for such documentation blocks is:
+/**
+  * DOC: Theory of Operation
 
-We're missing permission bits as 3rd argument
-for open call with O_CREAT flag specified.
+This comment is also applicable for the rest of such documentation 
+blocks changed in this patch.
 
-Reported-by: Alexei Starovoitov <ast@kernel.org>
-Fixes: e4d1af4b16f8 ("selftests/bpf: Add test for d_path helper")
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/testing/selftests/bpf/prog_tests/d_path.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
-index 058765da17e6..43ffbeacd680 100644
---- a/tools/testing/selftests/bpf/prog_tests/d_path.c
-+++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
-@@ -47,7 +47,7 @@ static int trigger_fstat_events(pid_t pid)
- 	devfd = open("/dev/urandom", O_RDONLY);
- 	if (CHECK(devfd < 0, "trigger", "open /dev/urandom failed\n"))
- 		goto out_close;
--	localfd = open("/tmp/d_path_loadgen.txt", O_CREAT | O_RDONLY);
-+	localfd = open("/tmp/d_path_loadgen.txt", O_CREAT | O_RDONLY, 0644);
- 	if (CHECK(localfd < 0, "trigger", "open /tmp/d_path_loadgen.txt failed\n"))
- 		goto out_close;
- 	/* bpf_d_path will return path with (deleted) */
--- 
-2.25.4
-
+> @@ -66,7 +66,7 @@ MODULE_PARM_DESC(led_id,
+>   * AHB address must be used.
+>   */
+> 
+> -/**
+> +/*
+>   * @sparrow_fw_mapping provides memory remapping table for sparrow
+>   *
+>   * array size should be in sync with the declaration in the wil6210.h
+For files in net/ and drivers/net/ the preferred style for long 
+(multi-line) comments is a different and
+the text should be in the same line as /*, as follows:
+/* sparrow_fw_mapping provides memory remapping table for sparrow
+I would also remove the @ from @sparrow_fw_mapping.
+This comment is also applicable for the rest of such documentation 
+blocks changed in this patch.
