@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1699E253A77
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 00:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C60A9253A74
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 00:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727095AbgHZW5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 18:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53222 "EHLO
+        id S1727050AbgHZW5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 18:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726071AbgHZW4n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 18:56:43 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB3AC061756;
-        Wed, 26 Aug 2020 15:56:43 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id v9so4249658ljk.6;
-        Wed, 26 Aug 2020 15:56:43 -0700 (PDT)
+        with ESMTP id S1726929AbgHZW4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 18:56:45 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3311C061574;
+        Wed, 26 Aug 2020 15:56:44 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id w14so4265603ljj.4;
+        Wed, 26 Aug 2020 15:56:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=uGDCXvFspMO8NQAIm2Bj3sXT+iHnXd7C3vdQptV9New=;
-        b=hdYNoVQ7SlUjI2/C2iMha+vQjOKczP0qwRf+g2wycZ98gtprwYQlG5f90v8HjeUBY4
-         HmdJtE5LfDIM0lhx+5TsmcBj91cO1YBDfii/8Fqd6KZ+10wqOXNA2trX32dsqYXXNqhx
-         fXutFRiRoW3GqXDoQeCCMz4h6/A9upyClKOuewzbF9atHPy/pHd38VwqHJgrhEDDWjNi
-         eXhjTKL5WgHBm3te7+PFVqXxx4iyOdSym+aP9qJmbmKQj0rYuz3se3OEkBJeiaW+UXyo
-         xJilzPCsKlC3CkPml80cpw0nOpnk8xT5X1HD8VrUKxf/bdYs60FdLj1OqQLr6TCn92gD
-         3oHA==
+        bh=Faqc4Y9V7/YRWZwITUiurHwxzcpfGAmHW6joRfPlemE=;
+        b=lmB0LDB+1vQqs+eJfL1qEVGeBIDKO6Etz3hYkvun8GOSnCfD8+mtdlAGRcmu4XUWlk
+         moo1Q0TZkVepYDg8xveCv1ZqQRFvPZVANhKYoOWDD/S6suUO5WDh8UIzbMG/pKEBzcMi
+         QByv0YZe2eeFNbWSQ9Wohjjf9DbHR41K9AAO8bNyZjU1290xUvmL5T7CkltlhQ6WMtez
+         4dC3MOYe3Hdskh5ZtwUYOs+B7HtknSlrxW1bY6+F9uG5olqRg+Llz2DCl4nwk6qJPP7b
+         Vh27lpnRmBWj6CUR92qLAN4ZjfIyUGjEa9AEDumyEHb4HACWF7BIE0uhDYyNMsVxXA8Z
+         6mKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=uGDCXvFspMO8NQAIm2Bj3sXT+iHnXd7C3vdQptV9New=;
-        b=d6OW0Cu/u1qlNHJiVtcM+EJRI8BwcH5LlDnTAqM0gMTthKd+Z2G+bddrJmdZHiHFJH
-         yuVMwz4cd5Ki9E8vBServ1iymtXRLt0FJwA2bJklvWXizRMtvinHq5hp4OlowZLtVvP1
-         hDvyYdmBXhX40T8YENQDkD0lNlIslTaCbh4k2qddNSjHqV9v+lHPoWf4lKzEA+4vQ9nG
-         f+BbLF33KpVnS8Vj4wI3KyD7mEIUqbh/6f861nIsw05lAHBCpfxAXdoNlkpwFaUu5jC5
-         ao+j38Q+jSW/fHGKmQHhddMA9IZtDuXNgxDYbAejc2mgB0vfG0Rq+dDTac5I2fuKiQT0
-         RvQQ==
-X-Gm-Message-State: AOAM533D+jMz6du00PdCRkr/yDkRhlnozmqjN3fXVMoN2sTJ53YNlA0P
-        HFYCjMXVkS9GogistPF2lFM=
-X-Google-Smtp-Source: ABdhPJzzBL+4E4BcqqUd9CGQYIHBB7HWBXiQQs3DWkY9XegQYNiExDC7eIrYVSp44qu2pKrgdfCCoA==
-X-Received: by 2002:a2e:503:: with SMTP id 3mr8725475ljf.225.1598482601871;
-        Wed, 26 Aug 2020 15:56:41 -0700 (PDT)
+        bh=Faqc4Y9V7/YRWZwITUiurHwxzcpfGAmHW6joRfPlemE=;
+        b=b382khUh4T2AgfbxbvaQdGX+L8Oxd9whG83lEjZdP6GFWCVqHzPSfVkTPYjVtEEtVr
+         rVgBbEssDyDigQuLEYmmKMDbbPkB3etaBmNpml6teISUhOqAvHDaKK8NGpOc5cpQQtf6
+         tsaT2zeGEOxmmrusfkei47zXmXY/6VS1knjtAndXhjh8im5FhaoV/469q8ogF7VutGlj
+         5jzaJY/mzo1hJNhriEdAKX9M3P2W9U4jKBa0Tr4JIIqwi66S8sRJAlHDHyOg3DLwBBdL
+         VonKHgQtcbPoEEL5pjshKq4SpYhTDO13/LmHkOXoQV2JegfrBoP8Lce7zQfxacgKfFAM
+         iA4Q==
+X-Gm-Message-State: AOAM530474UO6H7HVRLeUcYtxlPUv3g1JTRNQ+v+rS35zl5QXvqs+8sU
+        0YLDHH/fo5cC20wnW2Twt08Zn18dzuFtWg==
+X-Google-Smtp-Source: ABdhPJyUt3p1ehjR9dqBkgLWDFtQon1+zZydUewkZUdKSYezBlbKsX5ZjoZxjY1ZM85rtKZo3y7Dig==
+X-Received: by 2002:a2e:918f:: with SMTP id f15mr8087271ljg.86.1598482603215;
+        Wed, 26 Aug 2020 15:56:43 -0700 (PDT)
 Received: from localhost.localdomain (h-82-196-111-59.NA.cust.bahnhof.se. [82.196.111.59])
         by smtp.gmail.com with ESMTPSA id u28sm49075ljd.39.2020.08.26.15.56.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2020 15:56:41 -0700 (PDT)
+        Wed, 26 Aug 2020 15:56:42 -0700 (PDT)
 From:   Rikard Falkeborn <rikard.falkeborn@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH net-next 3/6] net: renesas: sh_eth: constify bb_ops
-Date:   Thu, 27 Aug 2020 00:56:05 +0200
-Message-Id: <20200826225608.90299-4-rikard.falkeborn@gmail.com>
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH net-next 4/6] net: phy: at803x: constify static regulator_ops
+Date:   Thu, 27 Aug 2020 00:56:06 +0200
+Message-Id: <20200826225608.90299-5-rikard.falkeborn@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200826225608.90299-1-rikard.falkeborn@gmail.com>
 References: <20200826225608.90299-1-rikard.falkeborn@gmail.com>
@@ -67,28 +68,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The only usage of bb_ops is to assign its address to the ops field in
-the mdiobb_ctrl struct, which is a const pointer. Make it const to allow
-the compiler to put it in read-only memory.
+The only usage of vddio_regulator_ops and vddh_regulator_ops is to
+assign their address to the ops field in the regulator_desc struct,
+which is a const pointer. Make them const to allow the compiler to
+put them in read-only memory.
 
 Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
 ---
- drivers/net/ethernet/renesas/sh_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/at803x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
-index f45331ed90b0..586642c33d2b 100644
---- a/drivers/net/ethernet/renesas/sh_eth.c
-+++ b/drivers/net/ethernet/renesas/sh_eth.c
-@@ -1202,7 +1202,7 @@ static void sh_mdc_ctrl(struct mdiobb_ctrl *ctrl, int bit)
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 101651b2de54..ed601a7e46a0 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -343,7 +343,7 @@ static int at803x_rgmii_reg_get_voltage_sel(struct regulator_dev *rdev)
+ 	return (val & AT803X_DEBUG_RGMII_1V8) ? 1 : 0;
  }
  
- /* mdio bus control struct */
--static struct mdiobb_ops bb_ops = {
-+static const struct mdiobb_ops bb_ops = {
+-static struct regulator_ops vddio_regulator_ops = {
++static const struct regulator_ops vddio_regulator_ops = {
+ 	.list_voltage = regulator_list_voltage_table,
+ 	.set_voltage_sel = at803x_rgmii_reg_set_voltage_sel,
+ 	.get_voltage_sel = at803x_rgmii_reg_get_voltage_sel,
+@@ -364,7 +364,7 @@ static const struct regulator_desc vddio_desc = {
  	.owner = THIS_MODULE,
- 	.set_mdc = sh_mdc_ctrl,
- 	.set_mdio_dir = sh_mmd_ctrl,
+ };
+ 
+-static struct regulator_ops vddh_regulator_ops = {
++static const struct regulator_ops vddh_regulator_ops = {
+ };
+ 
+ static const struct regulator_desc vddh_desc = {
 -- 
 2.28.0
 
