@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C40A252833
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 09:09:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6690252839
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 09:13:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbgHZHJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 03:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726240AbgHZHJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 03:09:36 -0400
-Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C845C061574
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 00:09:36 -0700 (PDT)
-Received: by mail-ua1-x944.google.com with SMTP id k18so243820uao.11
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 00:09:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yVZPtQKrFUjsTrBTBd2Ot5lsxpy+sE8QSoUTRLQdxEM=;
-        b=s1pDIVqDdScbCVy7tyVi5liKXhJmAV4ekoFMiebmFz6ZmYBv7Lk7nwfeUM2YvAMTn3
-         xQ9s0kU5T4nnlK59zt1f24/b7rXwKFwinmJNRQG4w5/260MOiQjN1UoW4cg2eHebkMht
-         C/ZVUmUY1c6CR8afSxYEwkFgmZsIEfDPlGMSoqb8Tl/yMLOXy5gKvxkIIidVnr3Ogpa1
-         QaDF1682vxeO7OZX5nM/wAgSM+IPmMQ78U0XWrfNfMw4BNGha+ldtwGMJhJsE7ZL4fyo
-         HjCvNDANTKHzwfidN6B+AKM7lAkSJW0FhEuFFS0bi9TS5Gk+LqpL/ieCLwD+e+fiF0Bq
-         U5oA==
+        id S1726723AbgHZHN2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Aug 2020 03:13:28 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:36715 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726240AbgHZHN1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 03:13:27 -0400
+Received: by mail-oi1-f195.google.com with SMTP id b9so695859oiy.3;
+        Wed, 26 Aug 2020 00:13:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yVZPtQKrFUjsTrBTBd2Ot5lsxpy+sE8QSoUTRLQdxEM=;
-        b=kkoYKfEIs78JGoJh7wQCfvQO3yVCu0Wv47MDVrWMkqPzCO2SZWWIlV0Be2RNgqaFK4
-         dzNCD54WblNgA0Q1EN1Xku9SaXX2y6XCkVwdrXR9EBOnWOlk7P9rmMq/Ok0QujYR98p1
-         JCeQrNbXxuWgXqjUV0b+qjMU/kkwy8OLJrRHb3qSLnMJJbHYAL7l4dUo1EimdlRl2qID
-         Jihobx0s2MahGQvkS9tkd3MH/3gUpyrGZ26URA+QLPIo1i86J8gX2knNbcMMvYmB+N0C
-         JYp2RF5JPhqNpAOoExGxc0GK8ZaVlG2OLEKaeYOg6o0xCRfnVrLopsXL7ysBhmQD3ohL
-         y/Pg==
-X-Gm-Message-State: AOAM532vJ+WrqwQa9f3jtCIjl6XzL3SBF9VVEi538eoGMZgryQjsYV1T
-        /+E2+iHTJBdncS/zpNCG0oG+1mpvBsJddFSITVA=
-X-Google-Smtp-Source: ABdhPJxYQZZFiDo+6A4ryh/RqY0rf8QGIFNvzceitKfNM3onh7XaRZeH5V8NlyHncDfv8vZD0M2zSKHfORpoEysmX5w=
-X-Received: by 2002:ab0:3791:: with SMTP id d17mr7471819uav.28.1598425775164;
- Wed, 26 Aug 2020 00:09:35 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=FGHPb84Jx11W3vIf+ODKn/oBh3C6uj3q4u2snyewUTw=;
+        b=TPRbD82xxEC79PMccp+ZMzJ5MVIGmAwTuXCY1UUHzFpOD1E3s2Wch/5XWinv0bYWXF
+         s8yCbd9DMBQW+xOr6/wXdUeDPttAPu8gSqKvXc78Oz6/8//8H1qazrRolufojI3siDPy
+         6n5NP+43t1fV20nj4OpaPbJkf8NX938MnMM925QrVXiVbGJnfIU80GpixayLF7x6uk/R
+         mk9gGftC5RpehgtfUc5OaqmDEB2YGEr6vecq9qEyWnKj5CkQWETVnjO3fBLqOpqIoZPe
+         rYFmUOKbUReXyM7O30WTfBJdkj5tGqYCqRkdEsDusL1xBpl3ViG9ZgYwrLppk4fi3A2m
+         J7nA==
+X-Gm-Message-State: AOAM531/WUMwliqa8O3BASt/i04yccXlsgCfKQFhG7SpxuKaZ7fhd/sq
+        AN4sXy0OBecMWlfTZN4hW7vLb09xl0qOdKdZfys88k8F89I=
+X-Google-Smtp-Source: ABdhPJzJ6a5NBDzJtEvfkg5F2sVcb5PuRWQN4ld2RSTCZ8WlCraVfILM0VjbwiytxZr10m9hx+KCyWNT6QSx2+Z7PCM=
+X-Received: by 2002:aca:3402:: with SMTP id b2mr648406oia.153.1598426006201;
+ Wed, 26 Aug 2020 00:13:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200825050636.14153-1-xiangxia.m.yue@gmail.com> <20200825.093737.498387792119845500.davem@davemloft.net>
-In-Reply-To: <20200825.093737.498387792119845500.davem@davemloft.net>
-From:   Pravin Shelar <pravin.ovn@gmail.com>
-Date:   Wed, 26 Aug 2020 00:09:23 -0700
-Message-ID: <CAOrHB_D+uow_8t9LHH+v0syE6f_+Ty_cO39+OLPVr=nvL=SbGw@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 0/3] net: openvswitch: improve codes
-To:     David Miller <davem@davemloft.net>
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        ovs dev <dev@openvswitch.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <CGME20200825170322eucas1p2c6619aa3e02d2762e07da99640a2451c@eucas1p2.samsung.com>
+ <20200825170311.24886-1-l.stelmach@samsung.com> <20200825180134.GN2403519@lunn.ch>
+In-Reply-To: <20200825180134.GN2403519@lunn.ch>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 26 Aug 2020 09:13:14 +0200
+Message-ID: <CAMuHMdWNdMEnSnLRkUkRmLop4E-tnBirjfMw06e_40Ss-V-JyQ@mail.gmail.com>
+Subject: Re: [PATCH 1/3] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter Driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 9:37 AM David Miller <davem@davemloft.net> wrote:
+On Tue, Aug 25, 2020 at 8:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> On Tue, Aug 25, 2020 at 07:03:09PM +0200, Łukasz Stelmach wrote:
+> > +     if (netif_msg_pktdata(ax_local)) {
+> > +             int loop;
+> > +             netdev_info(ndev, "TX packet len %d, total len %d, seq %d\n",
+> > +                             pkt_len, tx_skb->len, seq_num);
+> > +
+> > +             netdev_info(ndev, "  Dump SPI Header:\n    ");
+> > +             for (loop = 0; loop < 4; loop++)
+> > +                     netdev_info(ndev, "%02x ", *(tx_skb->data + loop));
+> > +
+> > +             netdev_info(ndev, "\n");
 >
-> From: xiangxia.m.yue@gmail.com
-> Date: Tue, 25 Aug 2020 13:06:33 +0800
+> This no longer works as far as i remember. Lines are terminate by
+> default even if they don't have a \n.
 >
-> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >
-> > This series patches are not bug fix, just improve codes.
->
-> Pravin, please review this patch series.
->
-Sorry for delay. I will have a look tomorrow morning PST.
+> Please you should not be using netdev_info(). netdev_dbg() please.
+
+We have a nice helper for this: print_hex_dump_debug().
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
