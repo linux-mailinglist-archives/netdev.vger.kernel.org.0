@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 550BA252671
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 07:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06C55252676
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 07:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgHZFJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726734AbgHZFJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 26 Aug 2020 01:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56558 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726704AbgHZFJG (ORCPT
+        with ESMTP id S1726190AbgHZFJG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 01:09:06 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64974C061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 22:09:06 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id t14so444811wmi.3
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 22:09:06 -0700 (PDT)
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EF9C061756
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 22:09:05 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id o21so454014wmc.0
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 22:09:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=wJzfwh+I7Qkxo/PgUrftLIVDHNWDdDaKowVOP9U2PTQ=;
-        b=Tx0YAM6SaRYTUpwQFDa+1dSRozhhvFh87DWGNUTSuC79Urd3AIuwAgJsP2KnTgfGpg
-         FqThNSMUm/U5IR2VzkUxUnTRiszj+hlKSwAa4zyzkahAfRsEPWXN3CQxmyOp6VlgK2EK
-         JgKXDpEtUUM8WZmaiDz3Q+9gfNUsQxIJlyJik=
+        bh=rq5s7AmaiVsv85ejYXRh3zzJymvPxUYH4FKSzZrzbL8=;
+        b=NhQyDYObK5+PDnWwN7tqxDbtlmdDFRFawEf29sXY7KMtmKXJKlfrdcWrrhJ3tx71i6
+         L75C0ISinNqitfFXdD//qEnvuw7+/46Y0yxj16gyKeCd0emnelsqijuA0m68lpb+VvUI
+         AXkWahN5rcqlPvvEVRAm29U8wMW2htmlfI6GY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=wJzfwh+I7Qkxo/PgUrftLIVDHNWDdDaKowVOP9U2PTQ=;
-        b=o1OantJGRkexTYsKdP+6D6YWNQqArmvAC15Xue5z3Yy6xJm1ATMNGzPk1wEM5J8FTC
-         e5tBQocAiHo9TEUSR6Yt9AJD+7FFgpz2L7/yWCw+bY6sX4ODx/vyiwq846SKFbbcXtFz
-         HFzbAzfNVqM86AjbmWAe+gsSL+Q5eI/9nW8mNy2I4leU41eF/ydXXVbSqC2ONLVnxteI
-         rSbke8GZwRWNNMKi2kVay7s8+1h2rUo732p0LaUdTOYuxpyWDeF5H5u4G3pyUDwcqygM
-         Dhw3kEX5a6JlLQ78Oezv0ROKMCspTkCIjeU7HxrQpixZu7ttjRPVPAXg5nsl0PmKfks1
-         Dxfw==
-X-Gm-Message-State: AOAM533vjxgNAV0CnlNw3t0QOz5/p4NEY3HvdOUms0F+Yq3pT0D7jFWH
-        ODHKBzpdT67Mhz2BWSvqVCZOJw==
-X-Google-Smtp-Source: ABdhPJykWbOTvLJBe0CHzVrzyPOfVVg8hINZO9kZqFrfKn4UF/mDzsZaVbtSJriOJwBKkaXLGbVy8A==
-X-Received: by 2002:a1c:a446:: with SMTP id n67mr4988654wme.174.1598418542435;
-        Tue, 25 Aug 2020 22:09:02 -0700 (PDT)
+        bh=rq5s7AmaiVsv85ejYXRh3zzJymvPxUYH4FKSzZrzbL8=;
+        b=T4g+rUmwSWHFcmU1aqjTxVCJyqONl8y2MuOqZOB/dA+XbJsHBXEpa1VkwORVtELWr4
+         UVB2P5tD0qA9kMvC90Lu+d29pZkPd1Q3xdR0g6Yh9t77BbzS9uVakkb/Qdx1yNzS6rge
+         RohiuoEKEwNUp6I/tnKcKUBl2AiVFSSnvkoely9HVh99nr5aydtKRU6/CK4Q7eKUfD76
+         7ZgItoz0KaFvZTKJbjizmUJMN3vw/H/2ZhFItgmdmMrtyqsHZksX5OqKUPQI6wppPSGM
+         evnp8DQV+FvwetOwFxc/5QFtU/DtHJrmctI673RTgM6WQWHy4nFTySAlaudXWvvSA+4p
+         3e2g==
+X-Gm-Message-State: AOAM5303MiRBKboxHyCtuTAQYATu6gaR/Q9RhNizrBUKOO3lMEZF8GPn
+        8tLQWoEu0J+xyUFCJsRjVgF+0w==
+X-Google-Smtp-Source: ABdhPJy9ss8eLLKQJu69zriACbLVpdp3ppRFQKH05/xbaHSAy82VyvqBAqQ3IqPV1jTiNb9uaQ2Zyw==
+X-Received: by 2002:a05:600c:214e:: with SMTP id v14mr5199273wml.118.1598418544301;
+        Tue, 25 Aug 2020 22:09:04 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q12sm2825832wrm.39.2020.08.25.22.09.00
+        by smtp.gmail.com with ESMTPSA id q12sm2825832wrm.39.2020.08.25.22.09.02
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Aug 2020 22:09:01 -0700 (PDT)
+        Tue, 25 Aug 2020 22:09:03 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>
-Subject: [PATCH net 1/8] bnxt_en: Don't query FW when netif_running() is false.
-Date:   Wed, 26 Aug 2020 01:08:32 -0400
-Message-Id: <1598418519-20168-2-git-send-email-michael.chan@broadcom.com>
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH net 2/8] bnxt_en: Check for zero dir entries in NVRAM.
+Date:   Wed, 26 Aug 2020 01:08:33 -0400
+Message-Id: <1598418519-20168-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1598418519-20168-1-git-send-email-michael.chan@broadcom.com>
 References: <1598418519-20168-1-git-send-email-michael.chan@broadcom.com>
@@ -58,34 +58,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-In rare conditions like two stage OS installation, the
-ethtool's get_channels function may be called when the
-device is in D3 state, leading to uncorrectable PCI error.
-Check netif_running() first before making any query to FW
-which involves writing to BAR.
+If firmware goes into unstable state, HWRM_NVM_GET_DIR_INFO firmware
+command may return zero dir entries. Return error in such case to
+avoid zero length dma buffer request.
 
-Fixes: db4723b3cd2d ("bnxt_en: Check max_tx_scheduler_inputs value from firmware.")
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 64da654..3890c1a 100644
+index 3890c1a..5d1a0cd 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -806,7 +806,7 @@ static void bnxt_get_channels(struct net_device *dev,
- 	int max_tx_sch_inputs;
+@@ -2323,6 +2323,9 @@ static int bnxt_get_nvram_directory(struct net_device *dev, u32 len, u8 *data)
+ 	if (rc != 0)
+ 		return rc;
  
- 	/* Get the most up-to-date max_tx_sch_inputs. */
--	if (BNXT_NEW_RM(bp))
-+	if (netif_running(dev) && BNXT_NEW_RM(bp))
- 		bnxt_hwrm_func_resc_qcaps(bp, false);
- 	max_tx_sch_inputs = hw_resc->max_tx_sch_inputs;
- 
++	if (!dir_entries || !entry_length)
++		return -EIO;
++
+ 	/* Insert 2 bytes of directory info (count and size of entries) */
+ 	if (len < 2)
+ 		return -EINVAL;
 -- 
 1.8.3.1
 
