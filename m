@@ -2,57 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8E0825373F
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 20:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8885C253797
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 20:52:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727034AbgHZSeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 14:34:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41666 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726783AbgHZSeP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Aug 2020 14:34:15 -0400
-Subject: Re: [GIT PULL] virtio: bugfixes
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598466855;
-        bh=2IrI3zDccPh7k4A7Ku/CCGl3h9hU0yX4/grdGm77idU=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=CT73xgJKU9ebCwnZp3Q1MFBBzKb5KM83wM/zdkExncYhIwOCkq8RMeDPBQdBNAoeC
-         lbdLssF9i+Xb9eXqL1V/t6mJRD7deuO1v4771hKMw13s4OTrfAavRsIW0+iKFOJCfA
-         NG5PyOa0jwfY9cXlm5TN/yiH5BI0HBXQlbuk/c9I=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20200826092731-mutt-send-email-mst@kernel.org>
-References: <20200826092731-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20200826092731-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: cbb523594eb718944b726ba52bb43a1d66188a17
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: e652049b2018e3a2e32d71c74cf7d359e07e7618
-Message-Id: <159846685526.8056.7551024561913275412.pr-tracker-bot@kernel.org>
-Date:   Wed, 26 Aug 2020 18:34:15 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elic@nvidia.com, jasowang@redhat.com, lingshan.zhu@intel.com,
-        maxime.coquelin@redhat.com, mst@redhat.com,
-        natechancellor@gmail.com, rdunlap@infradead.org,
-        sgarzare@redhat.com
+        id S1726191AbgHZSwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 14:52:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726809AbgHZSwd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 14:52:33 -0400
+Received: from ganesha.gnumonks.org (unknown [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3B1C061574
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 11:52:31 -0700 (PDT)
+Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1kB0Wy-0006aR-Qy; Wed, 26 Aug 2020 20:52:20 +0200
+Received: from laforge by localhost.localdomain with local (Exim 4.94)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1kB0Wg-000Xwy-FF; Wed, 26 Aug 2020 20:52:02 +0200
+Date:   Wed, 26 Aug 2020 20:52:02 +0200
+From:   Harald Welte <laforge@gnumonks.org>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     netdev@vger.kernel.org, osmocom-net-gprs@lists.osmocom.org,
+        Gabriel Ganne <gabriel.ganne@6wind.com>, kuba@kernel.org,
+        davem@davemloft.net, pablo@netfilter.org
+Subject: Re: [PATCH net-next v2] gtp: add notification mechanism
+Message-ID: <20200826185202.GZ3739@nataraja>
+References: <20200825143556.23766-1-nicolas.dichtel@6wind.com>
+ <20200825155715.24006-1-nicolas.dichtel@6wind.com>
+ <20200825170109.GH3822842@nataraja>
+ <bd834ad7-b06e-69f0-40a6-5f4a21a1eba2@6wind.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bd834ad7-b06e-69f0-40a6-5f4a21a1eba2@6wind.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Wed, 26 Aug 2020 09:27:31 -0400:
+Hi Nicolas,
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+On Wed, Aug 26, 2020 at 09:47:54AM +0200, Nicolas Dichtel wrote:
+> > Sending (unsolicited) notifications about all of those seems quite heavyweight to me.
+>
+> There is no 'unsolicited' notifications with this patch. Notifications are sent
+> only if a userspace application has subscribed to the gtp mcast group.
+> ip routes or conntrack entries are notified in the same way and there could a
+> lot of them also (more than 100k conntrack entries for example).
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/e652049b2018e3a2e32d71c74cf7d359e07e7618
+Ok, thanks for reminding me of that.  However, even if those events are
+not sent/multicasted, it still looks like the proposed patch is
+unconditionally allocating a netlink message and filling it with
+information about the PDP.  That alone looks like adding significant
+overhead to every user - even the majority of current use cases where
+nobody is listening/subscribing to that multicast group.
 
-Thank you!
+Wouldn't it make sense to only allocate + fill those messages if we
+actually knew a subscriber existed?
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
