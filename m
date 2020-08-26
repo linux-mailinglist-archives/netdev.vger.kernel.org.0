@@ -2,67 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8885C253797
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 20:52:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 323012537C4
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:02:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726191AbgHZSwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 14:52:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
+        id S1726929AbgHZTCJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 15:02:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726809AbgHZSwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 14:52:33 -0400
-Received: from ganesha.gnumonks.org (unknown [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3B1C061574
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 11:52:31 -0700 (PDT)
-Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1kB0Wy-0006aR-Qy; Wed, 26 Aug 2020 20:52:20 +0200
-Received: from laforge by localhost.localdomain with local (Exim 4.94)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1kB0Wg-000Xwy-FF; Wed, 26 Aug 2020 20:52:02 +0200
-Date:   Wed, 26 Aug 2020 20:52:02 +0200
-From:   Harald Welte <laforge@gnumonks.org>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     netdev@vger.kernel.org, osmocom-net-gprs@lists.osmocom.org,
-        Gabriel Ganne <gabriel.ganne@6wind.com>, kuba@kernel.org,
-        davem@davemloft.net, pablo@netfilter.org
-Subject: Re: [PATCH net-next v2] gtp: add notification mechanism
-Message-ID: <20200826185202.GZ3739@nataraja>
-References: <20200825143556.23766-1-nicolas.dichtel@6wind.com>
- <20200825155715.24006-1-nicolas.dichtel@6wind.com>
- <20200825170109.GH3822842@nataraja>
- <bd834ad7-b06e-69f0-40a6-5f4a21a1eba2@6wind.com>
+        with ESMTP id S1726734AbgHZTCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:02:05 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBEAC061574
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:02:05 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id s2so3285149ioo.2
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:02:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XnVCITvuyRZGEPvUfOPw9wTtaM7rO+zmAxjzhI58uRM=;
+        b=nPOgqIsXsQCzFg31duu3FoxvR4udgNF9iHsEjzBi77DrlkKKHgwPXYaws/y6z0As1K
+         WAaddRh8cQTo+NOt+W8mz1KgN/EE2wB2IOLzLrRaHoNCtLGx4gse5EairzBeelMrHKBV
+         5/hdbL9uS9VnH2C1gTG23c7+zRmam7pFLMZzwGuKi/LlAUj+Pusfk8gXWZTZ3Z6vLrHV
+         /aMaz5/ZXhPbrfX8Ut2aF91mDCy0VkfFPJOctuJ9wXQZOfIx6JHWvgsDFfTfr7EEA97e
+         24J6WY6XgZeiDoRhLB7a+H75jvTBaDomYIICJa9BlVRzjHzdS0puTKqNiIOXl+DZlrwJ
+         Ingw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XnVCITvuyRZGEPvUfOPw9wTtaM7rO+zmAxjzhI58uRM=;
+        b=MFtRyyMtwI4+zja/F08zSJ2Y1SWw9odlU44TVxEY4EDfrimxSOZoBIQE0To0nq0Qom
+         KIHTAHvA2RcxC83H/CVjp0S83N8yoDy/vfGIwDrFX1iKbI23l1FspxFPfU63X0EQU0d4
+         SeVtQ0jhIrE1MzXZzrGrT80NH4G02EnwxWuTHYuu6SJXAccwcGdi+tZobNsGb1XZZJJJ
+         KE3z00L1Z4PqMPgfooIwDxY2pxQQB1UytMqXfxauh/cx3Dzzqvvpy3Tqbli7c2zF5jRZ
+         1R0q3XMPYIVjBiSZGeM8okyQ2HSjjZi3cUeByKaYPN6RVNWI72KIrhIiccY/aftg7/Kd
+         Kw3Q==
+X-Gm-Message-State: AOAM533SRzkLJtyqf2IPbm9a2pYec/ogV7bx+UXyyj17khpps3TzktEW
+        QA8Ilrp9x9pkqcqdpemMIVw=
+X-Google-Smtp-Source: ABdhPJzI38Oukb0HFKpA4bU+TnhNxi0YO7iljD7t2J2yEMuirum/D8wTE+tt/3jjVthbI7uGfGwnAQ==
+X-Received: by 2002:a5d:9943:: with SMTP id v3mr13707750ios.51.1598468524903;
+        Wed, 26 Aug 2020 12:02:04 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:305a:ae30:42e4:e2ca])
+        by smtp.googlemail.com with ESMTPSA id v6sm1911624ila.57.2020.08.26.12.02.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Aug 2020 12:02:04 -0700 (PDT)
+Subject: Re: [PATCH net] ipv4: Silence suspicious RCU usage warning
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+References: <20200826164810.1029595-1-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <e2e8e329-0d3b-a910-5c40-d63600b6ba14@gmail.com>
+Date:   Wed, 26 Aug 2020 13:02:03 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bd834ad7-b06e-69f0-40a6-5f4a21a1eba2@6wind.com>
+In-Reply-To: <20200826164810.1029595-1-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nicolas,
+On 8/26/20 10:48 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> fib_info_notify_update() is always called with RTNL held, but not from
+> an RCU read-side critical section. This leads to the following warning
+> [1] when the FIB table list is traversed with
+> hlist_for_each_entry_rcu(), but without a proper lockdep expression.
+> 
+> Since modification of the list is protected by RTNL, silence the warning
+> by adding a lockdep expression which verifies RTNL is held.
+> 
 
-On Wed, Aug 26, 2020 at 09:47:54AM +0200, Nicolas Dichtel wrote:
-> > Sending (unsolicited) notifications about all of those seems quite heavyweight to me.
->
-> There is no 'unsolicited' notifications with this patch. Notifications are sent
-> only if a userspace application has subscribed to the gtp mcast group.
-> ip routes or conntrack entries are notified in the same way and there could a
-> lot of them also (more than 100k conntrack entries for example).
+...
 
-Ok, thanks for reminding me of that.  However, even if those events are
-not sent/multicasted, it still looks like the proposed patch is
-unconditionally allocating a netlink message and filling it with
-information about the PDP.  That alone looks like adding significant
-overhead to every user - even the majority of current use cases where
-nobody is listening/subscribing to that multicast group.
+> 
+> Fixes: 1bff1a0c9bbd ("ipv4: Add function to send route updates")
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/ipv4/fib_trie.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
 
-Wouldn't it make sense to only allocate + fill those messages if we
-actually knew a subscriber existed?
+Thanks, Ido.
 
--- 
-- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-============================================================================
-"Privacy in residential applications is a desirable marketing option."
-                                                  (ETSI EN 300 175-7 Ch. A6)
+Reviewed-by: David Ahern <dsahern@gmail.com>
+
+
