@@ -2,106 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A82253203
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 16:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B481E253274
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 16:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728049AbgHZOve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 10:51:34 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:24238 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727108AbgHZOvN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 10:51:13 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598453473; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=O2P61fFaIWACVbX6D5mvTEtXsK1IGohXRkrD+M58vq4=;
- b=AWkiwgGaX8E2v8CVkQCjLU8sFFNLYoIP0G2sCNRTRGgcoTWfhubwjChiKkSfaORGHujN7q0d
- F7rfyzZ3Mx+twHH0ZXdDfqQT/yWdGz2UmubBQnRNI59sQgcGa5+SFbuk07FvgzJmnDpZMXdo
- xtGWSjykT/zodzO7mU9vtzkwWF4=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 5f4676a4e2cf79f0e27551b6 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 26 Aug 2020 14:50:12
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C4E48C43387; Wed, 26 Aug 2020 14:50:11 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 775FAC43387;
-        Wed, 26 Aug 2020 14:50:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 775FAC43387
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728161AbgHZO4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 10:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727012AbgHZO4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 10:56:19 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7337DC061574
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 07:56:18 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id q14so2098404wrn.9
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 07:56:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=g50Mvxau++0Z/x758kbBweP91Vq2ziQSaXSGj8uR10U=;
+        b=by/f2qrNImTOjMROOBrQmTdA8EAMnXUJBTAUFwFQi5AS3FzN6MDp30PLX64Prp6WbB
+         RiAj67JYCNLmEMuSZ0ZNsRgAXo8bqBTiO+P5iWbH3Djq7UnFZ+3wVW/PAK1x+YtV451Y
+         4jQTJ1nF5i8JLAzrdWcFxbABFdiLFcgE1hC31n2tGN+IyOU4ZgxKtNuABcHwt5yZq9R9
+         3DVRzwSHDYQ47ZIao7c5JKc0uN6zmM5iHBkf33sQ18Ol00LQB/68+U8ehA3ZCnmdz41K
+         ezIn9tjOe/CwL3C9naUUKicMCkcOuvuqoiqsePIBqgSp/XuRB+bO0gT01xadgz/8rNCr
+         VtQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=g50Mvxau++0Z/x758kbBweP91Vq2ziQSaXSGj8uR10U=;
+        b=byNb9wGXypfJh33CCkbw4qIKfZOPKQ4KyCQlpdjJFm1kXlooVVPa2GhqEe7SlszE6V
+         3CECPJL6NPEvXFlsdqh32lsNteii5o+hf+WvygGd65vMXEA3D0y3+lQXGN1G1JIuwrgv
+         JYrozOGz5FEJExTCxRS1MdZ4wuDEUOW0dDi5DbM8206YCXoLr0K/XNPzgevYaxMiOJI/
+         i+AyAWEVgfJMdzOHjg5VVI8Df7STUwdl4OTddgD/mO//xGxRVyEMWeaMGf3NpGh05rRz
+         enMfA6tl0vOVXxUYFbHmC8ZVdn2sXy4yG3UqtivfjDifFBE6NARKi+cRjphLlMVwl6CG
+         MjPQ==
+X-Gm-Message-State: AOAM533jceAx1afuFDXpTHw8nhHactk3T9WaOh373iC4P5rD0i4SwQjl
+        B95v/2SaJuwrIpfOi5rQrG0=
+X-Google-Smtp-Source: ABdhPJw5HycaNNytTUt+XIsQr4qQ2icF2GIgfiwVEBHi5xXuyC/vicHqEjDnq4xPFUp+NtowuIIo6A==
+X-Received: by 2002:adf:9ed1:: with SMTP id b17mr15358258wrf.140.1598453777179;
+        Wed, 26 Aug 2020 07:56:17 -0700 (PDT)
+Received: from [192.168.8.147] ([37.171.17.76])
+        by smtp.gmail.com with ESMTPSA id j11sm6013521wrq.69.2020.08.26.07.55.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Aug 2020 07:56:16 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/3] net/mlx4_en: RX, Add a prefetch command for
+ small L1_CACHE_BYTES
+To:     Tariq Toukan <tariqt@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20200826125418.11379-1-tariqt@mellanox.com>
+ <20200826125418.11379-4-tariqt@mellanox.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7a5e4514-5c5c-cd7d-6300-ff491f41aefa@gmail.com>
+Date:   Wed, 26 Aug 2020 07:55:26 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
+In-Reply-To: <20200826125418.11379-4-tariqt@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 1/2] ath10k: Keep track of which interrupts fired,
- don't poll them
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200709082024.v2.1.I4d2f85ffa06f38532631e864a3125691ef5ffe06@changeid>
-References: <20200709082024.v2.1.I4d2f85ffa06f38532631e864a3125691ef5ffe06@changeid>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     ath10k@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        briannorris@chromium.org, saiprakash.ranjan@codeaurora.org,
-        linux-wireless@vger.kernel.org, pillair@codeaurora.org,
-        kuabhs@google.com, Douglas Anderson <dianders@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200826145011.C4E48C43387@smtp.codeaurora.org>
-Date:   Wed, 26 Aug 2020 14:50:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Douglas Anderson <dianders@chromium.org> wrote:
 
-> If we have a per CE (Copy Engine) IRQ then we have no summary
-> register.  Right now the code generates a summary register by
-> iterating over all copy engines and seeing if they have an interrupt
-> pending.
+
+On 8/26/20 5:54 AM, Tariq Toukan wrote:
+> A single cacheline might not contain the packet header for
+> small L1_CACHE_BYTES values.
+> Use net_prefetch() as it issues an additional prefetch
+> in this case.
 > 
-> This has a problem.  Specifically if _none_ if the Copy Engines have
-> an interrupt pending then they might go into low power mode and
-> reading from their address space will cause a full system crash.  This
-> was seen to happen when two interrupts went off at nearly the same
-> time.  Both were handled by a single call of ath10k_snoc_napi_poll()
-> but, because there were two interrupts handled and thus two calls to
-> napi_schedule() there was still a second call to
-> ath10k_snoc_napi_poll() which ran with no interrupts pending.
+> Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+> Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+> ---
+>  drivers/net/ethernet/mellanox/mlx4/en_rx.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Instead of iterating over all the copy engines, let's just keep track
-> of the IRQs that fire.  Then we can effectively generate our own
-> summary without ever needing to read the Copy Engines.
+> diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> index b50c567ef508..99d7737e8ad6 100644
+> --- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> +++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+> @@ -705,7 +705,7 @@ int mlx4_en_process_rx_cq(struct net_device *dev, struct mlx4_en_cq *cq, int bud
+>  
+>  		frags = ring->rx_info + (index << priv->log_rx_info);
+>  		va = page_address(frags[0].page) + frags[0].page_offset;
+> -		prefetchw(va);
+> +		net_prefetchw(va);
+>  		/*
+>  		 * make sure we read the CQE after we read the ownership bit
+>  		 */
 > 
-> Tested-on: WCN3990 SNOC WLAN.HL.3.2.2-00490-QCAHLSWMTPL-1
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> Reviewed-by: Rakesh Pillai <pillair@codeaurora.org>
-> Reviewed-by: Brian Norris <briannorris@chromium.org>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-My main concern of this patch is that there's no info how it works on other
-hardware families. For example, QCA9984 is very different from WCN3990. The
-best would be if someone can provide a Tested-on tags for other hardware (even
-some of them).
+Why these cache lines would be written next ? Presumably we read the headers (pulled into skb->head)
 
-https://wireless.wiki.kernel.org/en/users/drivers/ath10k/submittingpatches#hardware_families
-
--- 
-https://patchwork.kernel.org/patch/11654625/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Really using prefetch() for the about to be read packet is too late anyway for current cpus.
 
