@@ -2,254 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B14B253558
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 18:48:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6073625355C
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 18:49:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbgHZQst convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 26 Aug 2020 12:48:49 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:37992 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727776AbgHZQpj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 12:45:39 -0400
-Received: by mail-ed1-f67.google.com with SMTP id b2so2325625edw.5;
-        Wed, 26 Aug 2020 09:45:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=VcpR9KHDU061Xv9zuvEUeTLNw9aF0vug7DDIpypunYI=;
-        b=qc88HgN4gEDB1GZFa7LnH/4zVqz+w2yyCgwbk0VZNqmHXEg3xyBrFZycuXXzY8wPdN
-         o2O5bRplEB/UkdvLL9dRTCvwoS9V4iGbqXl9bXuNJm+wk+aW+6juF21Vq6/QiBlqtBGm
-         YgxhBQ3vyNAoSAok41E3yyDDK3FZIdOm1+AB6zMZgWBSCQKE6VINN3E3W6PGH8zbUsf8
-         PXGKD3eSDeTU6i4QPMfio53/FApU2V8V6oAIXldZSnxWsdTuat9wrv9AROpue8tL2fqh
-         pT8Ncv5/RAkGeW62co2N1DMSVudwQWK8boUwjGOCUS0mzBJqI1KfFex/P9kGn2irc0rv
-         helQ==
-X-Gm-Message-State: AOAM530ZPmk4PKEKDrGRlEjpVS5BbjNS/ffyiAsELuUj1SF2Lma92Ll3
-        127N+XuFjDCxN0G2yzxWCsU=
-X-Google-Smtp-Source: ABdhPJzNZvG8R0iGqLLI9Osb88KuUk8+rAMTgLpfwJZTkp1b9hrm1Bu1P1MhhqYt3+HlwwHi7Y0p3A==
-X-Received: by 2002:a05:6402:1a46:: with SMTP id bf6mr15632175edb.284.1598460336278;
-        Wed, 26 Aug 2020 09:45:36 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.216])
-        by smtp.googlemail.com with ESMTPSA id s24sm2722569ejx.15.2020.08.26.09.45.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 26 Aug 2020 09:45:35 -0700 (PDT)
-Date:   Wed, 26 Aug 2020 18:45:33 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Lukasz Stelmach <l.stelmach@samsung.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, m.szyprowski@samsung.com,
-        b.zolnierkie@samsung.com
-Subject: Re: [PATCH 1/3] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
- Driver
-Message-ID: <20200826164533.GC31748@kozik-lap>
-References: <20200825184413.GA2693@kozik-lap>
- <CGME20200826145929eucas1p1367c260edb8fa003869de1da527039c0@eucas1p1.samsung.com>
- <dleftja6yhv4g2.fsf%l.stelmach@samsung.com>
+        id S1727814AbgHZQs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 12:48:59 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:35723 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727881AbgHZQsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 12:48:47 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id B4C735C010C;
+        Wed, 26 Aug 2020 12:48:44 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Wed, 26 Aug 2020 12:48:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=84XvK7zwQfzr9D2k6
+        D6KviPpBZP3mGAbuZUi3djrvT4=; b=CVHoE4MNJSN08jOXffV0b3o4Exeb/yf/+
+        FpWyamGCsriqqlVCvOyl6yiaQGwB91Mkl+jGKHNaY62FsFsjgHXJpchu4tuBagmD
+        wo2Eayrjlzvx67KGqU161UH2Lvpm94paHmPpOshzYO8PPXfPa/2w4TrxzyX93Pzs
+        0qanhIqYosDW8BFsf+CL97EcRPRXfPwUPaVdm8M5bmN1roUe0VLBMemBu0UoITek
+        r5bh7LkzUV1HnDmZCXnvJFIQg5XEbyKljoPkLu+Vqgn3Y05NHsfhQ0uH76ISlfwm
+        VcztrORwz5hoUIWhKAMywnMRQrGOya3J64AsnJQBpv9H5pCj1LYDg==
+X-ME-Sender: <xms:a5JGXxTld540lEl5CrTkG7PWH-kRoVbitv1Dov1-kMtVN3ENt8T4sA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedruddvvddguddtfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuhe
+    ehteffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdefjedrudeikeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:a5JGX6ydQv-yfR-dVcFgCcFRVSCQWEGcIZ6FGE4VnrDzY9E3edk2vw>
+    <xmx:a5JGX20C9gKnFoeaHcLhZZmcbclw_ML5HOkV9Ddev-WAXhn44CVBXg>
+    <xmx:a5JGX5BiTFCwTR-B3THx2azQF6M4i4rtBu1ke6-u8k5IJASFDdPyRg>
+    <xmx:bJJGX-YvN5WzT_PtUWic7OX3Xc7S48B_vavqJm3CeEWkk-MmaTYXfA>
+Received: from shredder.mtl.com (igld-84-229-37-168.inter.net.il [84.229.37.168])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1BC5C30600B2;
+        Wed, 26 Aug 2020 12:48:41 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] ipv4: Silence suspicious RCU usage warning
+Date:   Wed, 26 Aug 2020 19:48:10 +0300
+Message-Id: <20200826164810.1029595-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <dleftja6yhv4g2.fsf%l.stelmach@samsung.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 26, 2020 at 04:59:09PM +0200, Lukasz Stelmach wrote:
-> It was <2020-08-25 wto 20:44>, when Krzysztof Kozlowski wrote:
-> > On Tue, Aug 25, 2020 at 07:03:09PM +0200, Łukasz Stelmach wrote:
-> >> ASIX AX88796[1] is a versatile ethernet adapter chip, that can be
-> >> connected to a CPU with a 8/16-bit bus or with an SPI. This driver
-> >> supports SPI connection.
-> >> 
-> >> The driver has been ported from the vendor kernel for ARTIK5[2]
-> >> boards. Several changes were made to adapt it to the current kernel
-> >> which include:
-> >> 
-> >> + updated DT configuration,
-> >> + clock configuration moved to DT,
-> >> + new timer, ethtool and gpio APIs
-> >> + dev_* instead of pr_* and custom printk() wrappers.
-> >> 
-> >> [1] https://protect2.fireeye.com/v1/url?k=074e9e9d-5a9dc212-074f15d2-0cc47a31ce52-0f896a3d08738907&q=1&e=bcaebfa2-4f00-46b6-a35d-096f39710f47&u=https%3A%2F%2Fwww.asix.com.tw%2Fproducts.php%3Fop%3DpItemdetail%26PItemID%3D104%3B65%3B86%26PLine%3D65
-> >> [2] https://protect2.fireeye.com/v1/url?k=553869ec-08eb3563-5539e2a3-0cc47a31ce52-fc42424019c6fd8f&q=1&e=bcaebfa2-4f00-46b6-a35d-096f39710f47&u=https%3A%2F%2Fgit.tizen.org%2Fcgit%2Fprofile%2Fcommon%2Fplatform%2Fkernel%2Flinux-3.10-artik%2F
-> >> 
-> >> The other ax88796 driver is for NE2000 compatible AX88796L chip. These
-> >> chips are not compatible. Hence, two separate drivers are required.
-> >
-> > Hi,
-> >
-> > Thanks for the driver, nice work. Few comments below.
-> >
-> 
-> Thank you. I fixed most problems and asked some question where I didn't
-> understand.
-> 
-> >> 
-> >> Signed-off-by: Łukasz Stelmach <l.stelmach@samsung.com>
-> >> ---
-> >>  drivers/net/ethernet/Kconfig               |    1 +
-> >>  drivers/net/ethernet/Makefile              |    1 +
-> >>  drivers/net/ethernet/asix/Kconfig          |   20 +
-> >>  drivers/net/ethernet/asix/Makefile         |    6 +
-> >>  drivers/net/ethernet/asix/ax88796c_ioctl.c |  293 +++++
-> >>  drivers/net/ethernet/asix/ax88796c_ioctl.h |   21 +
-> >>  drivers/net/ethernet/asix/ax88796c_main.c  | 1373 ++++++++++++++++++++
-> >>  drivers/net/ethernet/asix/ax88796c_main.h  |  596 +++++++++
-> >>  drivers/net/ethernet/asix/ax88796c_spi.c   |  103 ++
-> >>  drivers/net/ethernet/asix/ax88796c_spi.h   |   67 +
-> >>  10 files changed, 2481 insertions(+)
-> >>  create mode 100644 drivers/net/ethernet/asix/Kconfig
-> >>  create mode 100644 drivers/net/ethernet/asix/Makefile
-> >>  create mode 100644 drivers/net/ethernet/asix/ax88796c_ioctl.c
-> >>  create mode 100644 drivers/net/ethernet/asix/ax88796c_ioctl.h
-> >>  create mode 100644 drivers/net/ethernet/asix/ax88796c_main.c
-> >>  create mode 100644 drivers/net/ethernet/asix/ax88796c_main.h
-> >>  create mode 100644 drivers/net/ethernet/asix/ax88796c_spi.c
-> >>  create mode 100644 drivers/net/ethernet/asix/ax88796c_spi.h
-> >> 
-> >> diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-> >> index de50e8b9e656..f3b218e45ea5 100644
-> >> --- a/drivers/net/ethernet/Kconfig
-> >> +++ b/drivers/net/ethernet/Kconfig
-> >> @@ -32,6 +32,7 @@ source "drivers/net/ethernet/apm/Kconfig"
-> >>  source "drivers/net/ethernet/apple/Kconfig"
-> >>  source "drivers/net/ethernet/aquantia/Kconfig"
-> >>  source "drivers/net/ethernet/arc/Kconfig"
-> >> +source "drivers/net/ethernet/asix/Kconfig"
-> >>  source "drivers/net/ethernet/atheros/Kconfig"
-> >>  source "drivers/net/ethernet/aurora/Kconfig"
-> >>  source "drivers/net/ethernet/broadcom/Kconfig"
-> >> diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
-> >> index f8f38dcb5f8a..9eb368d93607 100644
-> >> --- a/drivers/net/ethernet/Makefile
-> >> +++ b/drivers/net/ethernet/Makefile
-> >> @@ -18,6 +18,7 @@ obj-$(CONFIG_NET_XGENE) += apm/
-> >>  obj-$(CONFIG_NET_VENDOR_APPLE) += apple/
-> >>  obj-$(CONFIG_NET_VENDOR_AQUANTIA) += aquantia/
-> >>  obj-$(CONFIG_NET_VENDOR_ARC) += arc/
-> >> +obj-$(CONFIG_NET_VENDOR_ASIX) += asix/
-> >>  obj-$(CONFIG_NET_VENDOR_ATHEROS) += atheros/
-> >>  obj-$(CONFIG_NET_VENDOR_AURORA) += aurora/
-> >>  obj-$(CONFIG_NET_VENDOR_CADENCE) += cadence/
-> >> diff --git a/drivers/net/ethernet/asix/Kconfig b/drivers/net/ethernet/asix/Kconfig
-> >> new file mode 100644
-> >> index 000000000000..4b127a4a659a
-> >> --- /dev/null
-> >> +++ b/drivers/net/ethernet/asix/Kconfig
-> >> @@ -0,0 +1,20 @@
-> >> +#
-> >> +# Asix network device configuration
-> >> +#
-> >> +
-> >> +config NET_VENDOR_ASIX
-> >> +	bool "Asix devices"
-> >> +	depends on SPI
-> >> +	help
-> >> +	  If you have a network (Ethernet) interface based on a chip from ASIX, say Y
-> >
-> > Looks like too long, did it pass checkpatch?
-> 
-> Yes? Let me try again. Yes, this one passed, but I missed a few other
-> problems. Thank you.
+From: Ido Schimmel <idosch@nvidia.com>
 
-I noticed that now the limit is 100 when improves readability, so this
-one is good.
+fib_info_notify_update() is always called with RTNL held, but not from
+an RCU read-side critical section. This leads to the following warning
+[1] when the FIB table list is traversed with
+hlist_for_each_entry_rcu(), but without a proper lockdep expression.
 
-(...)
+Since modification of the list is protected by RTNL, silence the warning
+by adding a lockdep expression which verifies RTNL is held.
 
-> >> +
-> >> +u8 ax88796c_check_power(struct ax88796c_device *ax_local)
-> >
-> > Looks here like pointer to const. Unless it is because of
-> > AX_READ_STATUS() which cannot take const?
-> 
-> It can. I changed other stuff in ax88796c_spi.[hc] to const too.
-> 
-> >> +{
-> >
-> > Please put file-scope definitions first, so this should go to the end.
-> 
-> I don't understand.
+[1]
+ =============================
+ WARNING: suspicious RCU usage
+ 5.9.0-rc1-custom-14233-g2f26e122d62f #129 Not tainted
+ -----------------------------
+ net/ipv4/fib_trie.c:2124 RCU-list traversed in non-reader section!!
 
-Functions and variables which (file scope) are static go to the
-beginning of file. Ones visible externally (non static), go after them.
+ other info that might help us debug this:
 
-(...)
+ rcu_scheduler_active = 2, debug_locks = 1
+ 1 lock held by ip/834:
+  #0: ffffffff85a3b6b0 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x49a/0xbd0
 
-> >> +
-> >> +	AX_WRITE(&ax_local->ax_spi, rx_ctl, P2_RXCR);
-> >> +
-> >
-> > No need for empty line.
-> >
-> 
-> Fixed.
-> 
-> >> +}
-> >> +
-> >> +#if 0
-> >
-> > Please comment why it is commented out.
-> >
-> 
-> Always has been (-; This is how it came from the vendor I missed it when
-> I focused on making things work. I will investigate it and either
-> uncomment or remove it.
+ stack backtrace:
+ CPU: 0 PID: 834 Comm: ip Not tainted 5.9.0-rc1-custom-14233-g2f26e122d62f #129
+ Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-2.fc32 04/01/2014
+ Call Trace:
+  dump_stack+0x100/0x184
+  lockdep_rcu_suspicious+0x143/0x14d
+  fib_info_notify_update+0x8d1/0xa60
+  __nexthop_replace_notify+0xd2/0x290
+  rtm_new_nexthop+0x35e2/0x5946
+  rtnetlink_rcv_msg+0x4f7/0xbd0
+  netlink_rcv_skb+0x17a/0x480
+  rtnetlink_rcv+0x22/0x30
+  netlink_unicast+0x5ae/0x890
+  netlink_sendmsg+0x98a/0xf40
+  ____sys_sendmsg+0x879/0xa00
+  ___sys_sendmsg+0x122/0x190
+  __sys_sendmsg+0x103/0x1d0
+  __x64_sys_sendmsg+0x7d/0xb0
+  do_syscall_64+0x32/0x50
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+ RIP: 0033:0x7fde28c3be57
+ Code: 0c 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f 1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 51
+c3 48 83 ec 28 89 54 24 1c 48 89 74 24 10
+RSP: 002b:00007ffc09330028 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fde28c3be57
+RDX: 0000000000000000 RSI: 00007ffc09330090 RDI: 0000000000000003
+RBP: 000000005f45f911 R08: 0000000000000001 R09: 00007ffc0933012c
+R10: 0000000000000076 R11: 0000000000000246 R12: 0000000000000001
+R13: 00007ffc09330290 R14: 00007ffc09330eee R15: 00005610e48ed020
 
-Then just remove it.
+Fixes: 1bff1a0c9bbd ("ipv4: Add function to send route updates")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ net/ipv4/fib_trie.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-(...)
+diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+index c89b46fec153..ffc5332f1390 100644
+--- a/net/ipv4/fib_trie.c
++++ b/net/ipv4/fib_trie.c
+@@ -2121,7 +2121,8 @@ void fib_info_notify_update(struct net *net, struct nl_info *info)
+ 		struct hlist_head *head = &net->ipv4.fib_table_hash[h];
+ 		struct fib_table *tb;
+ 
+-		hlist_for_each_entry_rcu(tb, head, tb_hlist)
++		hlist_for_each_entry_rcu(tb, head, tb_hlist,
++					 lockdep_rtnl_is_held())
+ 			__fib_info_notify_update(net, tb, info);
+ 	}
+ }
+-- 
+2.26.2
 
-> >> +#include <linux/of.h>
-> >> +#endif
-> >> +#include <linux/crc32.h>
-> >> +#include <linux/etherdevice.h>
-> >> +#include <linux/ethtool.h>
-> >> +#include <linux/gpio/consumer.h>
-> >> +#include <linux/init.h>
-> >> +#include <linux/io.h>
-> >> +#include <linux/kmod.h>
-> >> +#include <linux/mii.h>
-> >> +#include <linux/module.h>
-> >> +#include <linux/netdevice.h>
-> >> +#include <linux/platform_device.h>
-> >> +#include <linux/sched.h>
-> >> +#include <linux/spi/spi.h>
-> >> +#include <linux/timer.h>
-> >> +#include <linux/uaccess.h>
-> >> +#include <linux/usb.h>
-> >> +#include <linux/version.h>
-> >> +#include <linux/workqueue.h>
-> >
-> > All of these should be removed except the headers used directly in this
-> > header.
-> >
-> 
-> This is "private" header file included in all ax88796c_*.c files and
-> these are headers required in them. It seems more conveninet to have
-> them all listed in one place. What is the reason to do otherwise?
-
-Because:
-1. The header is included in other files (more than one) so each other
-compilation unit will include all these headers, while not all of them
-need. This has a performance penalty during preprocessing.
-
-2. You will loose the track which headers are needed, which are not. We
-tend to keep it local, which means each compilation unit includes stuff
-it needs. This helps removing obsolete includes later.
-
-3. Otherwise you could make one header, including all headers of Linux,
-and then include this one header in each of C files. One to rule them
-all.
-
-Best regards,
-Krzysztof
