@@ -2,111 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5AE8253057
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 15:50:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A6932530BE
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 15:56:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730539AbgHZNub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 09:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52274 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730534AbgHZNuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 09:50:21 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C2FC061574
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 06:50:20 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id k11so2904863ybp.1
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 06:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=lCJ9B3SXwDwW6scb5guoks5aiOHsE7oNfHq5QpIf53o=;
-        b=mo7kawrBY/xEPSQGDtn0GowkoVBq/XVviUv2qYD3ocIHisZBZTTquaG0PnlN/d7DNx
-         NXaohOJQ3FJwje1t7jwJjUWzIKHwS/OCorqxkibf2Oo2TepFKCJ9w2GSfXKP+LB0iQ9P
-         zjJfKsG6hgNEdz++MppLVM/iLR4woARpzLgn2NTBgFQDPMOfEGpVNfr5jtuYn7QaVaMv
-         YaRWSG+tBV9Dz0fHb4oN+4ICCzo+xHL48R40P6YaStyNlVNq782ddz+qEs26o8foHrcp
-         oUOsZlXZv045nPmftOLfiLeV+F5si2gV2Tw9vJi4bN4kYGOiGGLdzRKZh1IS8wAxfB6c
-         MF5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=lCJ9B3SXwDwW6scb5guoks5aiOHsE7oNfHq5QpIf53o=;
-        b=tfZoQ9pGXlMZynRv9krWx05MccOEFeshRGvDOYlcAT8xenL0/M8xYjuVGnLEgRUq/4
-         zASimJLKZpApoWsR24X7tofioLnnaIac9XLc48DS74k0ZrJRBhZ4+xKd5vaWVHy+wDx1
-         85A1X8R0oQ5vbachiwo3Pu+bsdMoS5eyXXxUBeGW/uU35fI3cSOaGTbAUUxkWY4g9Krk
-         pilStGPo4riYAUN3iyHqhFSkzv1g2UT4kz00TmcCXu9yVVI3VeXidAPA44FrP2R9d/HL
-         py7ebsinllUpPhOB3RHPAdF0Be5pH+7qGf7a5DXa/hepscf3eDYT6zanshWXlTo067LE
-         2Oag==
-X-Gm-Message-State: AOAM530o+u6uwcIHdgcikkU3oBl5g1PyhNCiF26WDUrH0DQIHqDVc55U
-        n2W1JnFdCBjypFXULXEzub7hfPs3OCnyew==
-X-Google-Smtp-Source: ABdhPJxNNkp/KeflwmWraYbAv4T2sQEMlsZr5DHoeWJK2W2pHaqYOTDM/MWybkP+tDyXyxFDjGH3vN5qYHZXKg==
-X-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
- (user=edumazet job=sendgmr) by 2002:a25:3758:: with SMTP id
- e85mr20463600yba.254.1598449820084; Wed, 26 Aug 2020 06:50:20 -0700 (PDT)
-Date:   Wed, 26 Aug 2020 06:50:16 -0700
-Message-Id: <20200826135016.802137-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.28.0.297.g1956fa8f8d-goog
-Subject: [PATCH net-next] inet: remove inet_sk_copy_descendant()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730463AbgHZN4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 09:56:52 -0400
+Received: from sonic304-21.consmr.mail.ne1.yahoo.com ([66.163.191.147]:45164
+        "EHLO sonic304-21.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730520AbgHZN4p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 09:56:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1598450205; bh=OCp2NQ1DG8WDrE2HT9ykXjnTFISlxhUILAf78oJl1As=; h=Date:From:Reply-To:Subject:References:From:Subject; b=XPFXERR62Vsu7AR3vFuIWbjwaDAv7+5sovKPH84bJcedOEr4a8gan7owPlmekRe/Y4+kC1XUuA3cvUHgaoKWB+Qnpjy4pEsGVd71n82mGFrh7vImqFgGNHPBAVeHE7yLVgodywsUFsmer9fOj94Qs0jNzvJtKOiQxZGvs0MDG9BOzLt5Z7vf8Rb31lbB9AFrfovVs+Qzr2XZameHnjwibYJ0c5J4uUGLcGuqvTbzf5gv5e0T2enfCPCBY0hr0w+PGFzJA0Ui55vROglskuOFk+hoiGOeFDlRD16tWQcXIjY0c79peGvELG9dA2Uodn3ulHsDU/OhxWAiCNGnFM6Rog==
+X-YMail-OSG: P3yaZfAVM1kZVRgnlSJ48Nn8DaVTFYBK6WIrKwFLyKXs11x5UNgYWATijTiGWXA
+ 88w78hII9lvh_fz9OL8RBkuV3ZCUWt8QcoDziDVpPxdNuMoAlPewc397qLiIkpVXKRBu3Y1S4wlf
+ TDgHb54sawQDvah3NOiAAg.d2hvr6CTX_JdtQWz8ePdbBZJDB81rkDeXgt3GzgsbnQa_F9Kn_PCO
+ MEIDtKPkArijSsWEmtBtI..NVSlqXQXsd_tDPTfhuII.2qVpyG5jVERI1sZFltdtTZ2OSCNdXu4A
+ jiwbGGAIUUDwWqdNvAWEu9sq7yQP.gTXE_IUaH22TAjuj8RsSl1lSGHlLVE9iF4p4bTwhL_zTeca
+ g0gFrWW7VwiQVYxQsbB78ncLx_C6urraM06DOE2JaCd3wSzYbWPQq7eFcdgNdbXXkBPfkGoR_qQg
+ Bz3fpHYK1EKS99QtAjjuJ8.IQ4Yr5fQfvZ4ZJLTqOu_JmDK11uPuffhRXTSYfKoj4xWMDiG3cDOP
+ fhyXx6OOD2tmeTSBvdwN6in2aisoRuJO_xFzmvagtHs9sbPtmROHfqw6lpbw6qhqQdU9Mlpx00nd
+ Oo1_dsZa8_N1qFWrkM00HOFKYSYHZVz17kEIBEgjDtFVHU49EQ0YHyMsT5Ka41jiMwdy6lYCoDCb
+ 3l4Ym6yzyThQdLLfiBd0pRmHO.SCBWQJ2qwzlINwWFktGt8HXLzaKEpFzhQSv8Lz_uXRuRagLFB5
+ XB.ZVBWdydaklj6gorotZEqZm8dONE_LZGAvnBRqnnHGkmXscbm_Dj6hn1F_0wkBcUFlElzUNccI
+ vr8is3Gthl01zvTqmLUtMNqicViVkcieCxWN2oZnbWEeXCG99nb92yLXDHeZinFGlzzf10MNxI.k
+ 60iGf9zTvsCNviuyL8jJrjSg.HC2X671J_m_QZadF5pFpd5ouCUYtnxt8lk4tShU1XyqJqNA.Rfs
+ yWI6w8CVKWiVjS7CzfFiyAPLwFR.aG03OA_44j944SuXKBShqUcXhB7aX1cLdabJhLFwR7EOKNIw
+ sYa9iqyNeTTfmXDRSCHYRwQ6R7Ss6EhZ5R_EuI4jMyw5VtMlqHnOrwsqFqiGMtjp8vEeA1mBAl48
+ a7cNZx41ggiGZc2U9q4bBfL9dWYDBWRhcc62VI7xSy0QXbMG.sAD.q0szY0MkW6.N5LW0tva_R4G
+ 7yUEVz9BWtH9eCFYAvM6cX3LPL.HSni0Dxaa34F9KgUhUf8hMRcOqvAI3cjCLeQkp5cPj9oU.3Hr
+ krMNNVwSZtn7glizRmsftA7Ab7f00ERjegeUl._w6104avJKmxgUQMJLcoFj2UfaSOTbyoWX8tpr
+ KhNgJ_S8hGAUQllIFJas58fvIg9JhnLon4T5c_YQqYdYOyltL4xiMvp1rtHH_1lyVfpS04mvyosp
+ R8HDwahnXdw7CbsORMvpEJRJ7MJQmPlG4SMt1Jn8Ys6IY79iBuPVj
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ne1.yahoo.com with HTTP; Wed, 26 Aug 2020 13:56:45 +0000
+Date:   Wed, 26 Aug 2020 13:56:43 +0000 (UTC)
+From:   Mrs Elodie Antoine <eodieantoine@gmail.com>
+Reply-To: elodieantoin678@yahoo.com
+Message-ID: <1782567564.7857547.1598450203982@mail.yahoo.com>
+Subject: Greetings from Mrs Elodie Antoine,
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <1782567564.7857547.1598450203982.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16455 YMailNodin Mozilla/5.0 (Windows NT 6.1; rv:80.0) Gecko/20100101 Firefox/80.0
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is no longer used, SCTP now uses a private helper.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/linux/ipv6.h    | 11 -----------
- include/net/inet_sock.h |  7 -------
- 2 files changed, 18 deletions(-)
 
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index a44789d027cc8cdb4a210ad4e17463d941f2f9c2..bac8f4fffbd6b736bf36b6b8188e09243fdc4a1f 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -345,17 +345,6 @@ static inline struct raw6_sock *raw6_sk(const struct sock *sk)
- 	return (struct raw6_sock *)sk;
- }
- 
--static inline void inet_sk_copy_descendant(struct sock *sk_to,
--					   const struct sock *sk_from)
--{
--	int ancestor_size = sizeof(struct inet_sock);
--
--	if (sk_from->sk_family == PF_INET6)
--		ancestor_size += sizeof(struct ipv6_pinfo);
--
--	__inet_sk_copy_descendant(sk_to, sk_from, ancestor_size);
--}
--
- #define __ipv6_only_sock(sk)	(sk->sk_ipv6only)
- #define ipv6_only_sock(sk)	(__ipv6_only_sock(sk))
- #define ipv6_sk_rxinfo(sk)	((sk)->sk_family == PF_INET6 && \
-diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
-index a3702d1d48754fbc23b9789f32e1a72d45f5ecf1..89163ef8cf4be2aaf99d09806749911a121a56e0 100644
---- a/include/net/inet_sock.h
-+++ b/include/net/inet_sock.h
-@@ -296,13 +296,6 @@ static inline void __inet_sk_copy_descendant(struct sock *sk_to,
- 	memcpy(inet_sk(sk_to) + 1, inet_sk(sk_from) + 1,
- 	       sk_from->sk_prot->obj_size - ancestor_size);
- }
--#if !(IS_ENABLED(CONFIG_IPV6))
--static inline void inet_sk_copy_descendant(struct sock *sk_to,
--					   const struct sock *sk_from)
--{
--	__inet_sk_copy_descendant(sk_to, sk_from, sizeof(struct inet_sock));
--}
--#endif
- 
- int inet_sk_rebuild_header(struct sock *sk);
- 
--- 
-2.28.0.297.g1956fa8f8d-goog
+Greetings from Mrs Elodie Antoine,
 
+Calvary Greetings in the name of the LORD Almighty and Our LORD JESUS CHRIST the giver of every good thing. Good day,i know this letter will definitely come to you as a huge surprise, but I implore you to take the time to go through it carefully as the decision you make will go off a long way to determine my future and continued existence. I am Mrs Elodie Antoine
+aging widow of 59 years old suffering from long time illness. I have some funds I inherited from my late husband,
+
+The sum of (US$4.5 Million Dollars) and I needed a very honest and God fearing who can withdraw this money then use the funds for Charity works. I WISH TO GIVE THIS FUNDS TO YOU FOR CHARITY WORKS. I found your email address from the internet after honest prayers to the LORD to bring me a helper and i decided to contact you if you may be willing and interested to handle these trust funds in good faith before anything happens to me.
+I accept this decision because I do not have any child who will inherit this money after I die. I want your urgent reply to me so that I will give you the deposit receipt which the COMPANY issued to me as next of kin for immediate transfer of the money to your account in your country, to start the good work of God, I want you to use the 15/percent of the total amount to help yourself in doing the project.
+
+
+I am desperately in keen need of assistance and I have summoned up courage to contact you for this task, you must not fail me and the millions of the poor people in our todays WORLD. This is no stolen money and there are no dangers involved,100% RISK FREE with full legal proof. Please if you would be able to use the funds for the Charity works kindly let me know immediately.I will appreciate your utmost confidentiality and trust in this matter to accomplish my heart desire, as I don't want anything that will jeopardize my last wish. I want you to take 15 percent of the total money for your personal use while 85% of the money will go to charity.I will appreciate your utmost confidentiality and trust in this matter to accomplish my heart desire, as I don't want anything that will jeopardize my last wish.
+
+
+kindly respond for further details.
+
+Thanks and God bless you,
+
+Mrs Elodie Antoine
