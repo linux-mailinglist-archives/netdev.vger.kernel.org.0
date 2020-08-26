@@ -2,142 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CA882537F4
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:13:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E683253814
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:16:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727061AbgHZTNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 15:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
+        id S1726988AbgHZTQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 15:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726998AbgHZTNF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:13:05 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410B3C061574;
-        Wed, 26 Aug 2020 12:13:04 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id t6so3627899ljk.9;
-        Wed, 26 Aug 2020 12:13:04 -0700 (PDT)
+        with ESMTP id S1728009AbgHZTP4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:15:56 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0BFC061757
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:15:56 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id t4so2797680iln.1
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:15:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZiXOO5FpngiYweKJgzDa8Z+wo7f+rbji0luwABt9fiU=;
-        b=uoh/yV1KiL17KBpuqqT/Pg8KYgKHJgyRt8QI9gtULhHPZpMsNqAFx0Y1HJ068heVn+
-         b13VqwcGRSSRC89hxZI79yDFD1Mk3jeYx0JIIHzAnMU1zAGMIoW5beDoIIxf8vvlpWZQ
-         6GBsjUrjq37gcTof624cNMqDA6ll4tcaJ38yBJ4QLrJz0/DAGXbYBRVMBJetAhlUeZV/
-         Gb2YCo3791tw+r2G1f1zMW5ag/KX2ruXq5+nrqldOL+unnm0lSx4swjwqleMMP7v+23J
-         rWqoxv0STOWfSPP3kC6yhu22HniAkPourpfeFICL9HZwNxaZYqW/yJ/ejbt/zfgU+MBp
-         i7oA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aIzS3e5VSptv517Fs+LdEWd11MIHR1n2VNOHOD5Aosc=;
+        b=fqoWEKqvyCiNKnt39/Qx45qlFObGY+3+PFnruujCOay7RgAlbewRJF4E7D4E+YLAhq
+         0fDsVSet7YmyXsXC215dFmrqFtDxyTaMqUSqgIZCUUTzbr2ZJSoK3Wx50O+hT2As3kZT
+         3TDXQAyJ9vZiUCPEEzLfb6WbaA9uE0qr+90HCBjBJSgd/oanGLBO6nJx1yj1E3tbK744
+         vF4ADFA03U3FkWHreSTccp6a/a0B8YvOEcd9V0DzWMIVY5zXKa3j1Fl95NzMwi62Wwnt
+         DIibfAbMPwbwqRB1oKadd0gm5cVTKCEoWPWJcLewtIpCTEx3YrlkHa8VFlOARkK+KKjG
+         69lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZiXOO5FpngiYweKJgzDa8Z+wo7f+rbji0luwABt9fiU=;
-        b=seXry+Kpc8QyxTpY9dLsslgUqvR1RmhvqAStaWgzU2n3PSrm9H3YJUfQrge3nc8YFL
-         G0Gvz72rv+y7DaRTPsAxD91CObAkZ+JvIQIU1Uc5NhTpg4DZhfulNgZiKie6Bw0mFBJl
-         qXp3lptisupmITOotF4hCZL8XvnI9wMSNSqGPSkmyqlnWL3t53NZUN/I1nSWq1k6Nplv
-         NyfC9Tcx6guNb54AqI1C8a5XM4uSXCHDNyC5R9XgdtONWhpQdCyTYT/0eSyPTAJfCvwS
-         tpUFGP54lKTg6xhN1DnGCQruioIkphkBpuyNNZDC66h1H3acMbWgoBN8sSi62TRX/NL6
-         VtDQ==
-X-Gm-Message-State: AOAM531PEUXeanfvxSANbONjVP76OrMACcLyCVZN3G9CfcHOxvdcUwbu
-        q9GlokNUwPjAed+mCfVsMRHbcgkh2KE0VhZ5pWS/Y7bNFuI=
-X-Google-Smtp-Source: ABdhPJzNhmbE7y+d0PydrNDvqHITPKb/PEnqf5BTksJSC/rfjR1CsNym3Gvvxvif5V+4YAkOtSKa2POe2BCY0yfGkt0=
-X-Received: by 2002:a2e:9e4e:: with SMTP id g14mr378990ljk.450.1598469182328;
- Wed, 26 Aug 2020 12:13:02 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aIzS3e5VSptv517Fs+LdEWd11MIHR1n2VNOHOD5Aosc=;
+        b=GIAm00KODiRs0aC/nKltE454a0LOclj2nPJXDv+lYYl4nHasWMB16zQeActuudA6xY
+         /LqX3BuQsjDyjpsCkWUngl7MdjQ99mGiaUcit49BPmB/pe9/AoXpKTe67acC/NLous14
+         EjMRbraJg6ixVuxvx+YM+nKaMrvnd9X9rMkCaG6V7cVgDCj2PgLiC6CWAGbcfUd04Af0
+         6fcZkRwh0V855g5loIR3JBlbwFvqvbiciBEfk41t/5yevJVy4E0N/044neZtlx5nOZSZ
+         DpVqEj57Rr7wAEqM5hkVz6Rt2lXDmX9BJuShaE6m8CDELzzHkNZLvdSg1SKn75f1+eLp
+         /KlA==
+X-Gm-Message-State: AOAM5320MYs60LiwqKvUavc1M55axEb/OOs9Jmb/JTBOxMpJdczdTZDk
+        3GpJBz71UkJI1L7epxd3Bbk=
+X-Google-Smtp-Source: ABdhPJwByBW9G86kgP2AFOEvDBVg4VyVWaFkbrxUY9sWeJVVcxEffxV7tPcGg/fbNArgJ9/t8IMf6Q==
+X-Received: by 2002:a05:6e02:82:: with SMTP id l2mr14418999ilm.130.1598469355706;
+        Wed, 26 Aug 2020 12:15:55 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:305a:ae30:42e4:e2ca])
+        by smtp.googlemail.com with ESMTPSA id e22sm1596897ioc.43.2020.08.26.12.15.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 26 Aug 2020 12:15:55 -0700 (PDT)
+Subject: Re: [PATCH net-next 6/7] ipv4: nexthop: Correctly update nexthop
+ group when replacing a nexthop
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+References: <20200826164857.1029764-1-idosch@idosch.org>
+ <20200826164857.1029764-7-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7a5f541e-c11c-30a0-9210-7d440443c1c6@gmail.com>
+Date:   Wed, 26 Aug 2020 13:15:54 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <20200821151544.1211989-1-nicolas.rybowski@tessares.net>
- <20200824220100.y33yza2sbd7sgemh@ast-mbp.dhcp.thefacebook.com> <CACXrtpQCE-Yp9=7fbH9sB7-4k-OO12JD18JU=9GL_sYHcmnDtA@mail.gmail.com>
-In-Reply-To: <CACXrtpQCE-Yp9=7fbH9sB7-4k-OO12JD18JU=9GL_sYHcmnDtA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 26 Aug 2020 12:12:50 -0700
-Message-ID: <CAADnVQL1O3Ncr5iwmZx_5FgVrwbXmEWZfGm_ASrTcu0j6YGbiA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] bpf: add MPTCP subflow support
-To:     Nicolas Rybowski <nicolas.rybowski@tessares.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        mptcp@lists.01.org, Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200826164857.1029764-7-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 11:55 AM Nicolas Rybowski
-<nicolas.rybowski@tessares.net> wrote:
->
-> Hi Alexei,
->
-> Thanks for the feedback!
->
-> On Tue, Aug 25, 2020 at 12:01 AM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Fri, Aug 21, 2020 at 05:15:38PM +0200, Nicolas Rybowski wrote:
-> > > Previously it was not possible to make a distinction between plain TCP
-> > > sockets and MPTCP subflow sockets on the BPF_PROG_TYPE_SOCK_OPS hook.
-> > >
-> > > This patch series now enables a fine control of subflow sockets. In its
-> > > current state, it allows to put different sockopt on each subflow from a
-> > > same MPTCP connection (socket mark, TCP congestion algorithm, ...) using
-> > > BPF programs.
-> > >
-> > > It should also be the basis of exposing MPTCP-specific fields through BPF.
-> >
-> > Looks fine, but I'd like to see the full picture a bit better.
-> > What's the point of just 'token' ? What can be done with it?
->
-> The idea behind exposing only the token at the moment is that it is
-> the strict minimum required to identify all subflows linked to a
-> single MPTCP connection. Without that, each subflow is seen as a
-> "normal" TCP connection and it is not possible to find a link between
-> each other.
-> In other words, it allows the collection of all the subflows of a
-> MPTCP connection in a BPF map and then the application of per subflow
-> specific policies. More concrete examples of its usage are available
-> at [1].
->
-> We try to avoid exposing new fields without related use-cases, this is
-> why it is the only one currently. And this one is very important to
-> identify MPTCP connections and subflows.
->
-> > What are you thinking to add later?
->
-> The next steps would be the exposure of additional subflow context
-> data like the backup bit or some path manager fields to allow more
-> flexible / accurate BPF decisions.
-> We are also looking at implementing Packet Schedulers [2] and Path
-> Managers through BPF.
-> The ability of collecting all the paths available for a given MPTCP
-> connection - identified by its token - at the BPF level should help
-> for such decisions but more data will need to be exposed later to take
-> smart decisions or to analyse some situations.
->
-> I hope it makes the overall idea clearer.
->
-> > Also selftest for new feature is mandatory.
->
-> I will work on the selftests to add them in a v2. I was not sure a new
-> selftest was required when exposing a new field but now it is clear,
-> thanks!
->
->
-> [1] https://github.com/multipath-tcp/mptcp_net-next/tree/scripts/bpf/examples
-> [2] https://datatracker.ietf.org/doc/draft-bonaventure-iccrg-schedulers/
+On 8/26/20 10:48 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> Each nexthop group contains an indication if it has IPv4 nexthops
+> ('has_v4'). Its purpose is to prevent IPv6 routes from using groups with
+> IPv4 nexthops.
+> 
+> However, the indication is not updated when a nexthop is replaced. This
+> results in the kernel wrongly rejecting IPv6 routes from pointing to
+> groups that only contain IPv6 nexthops. Example:
+> 
+> # ip nexthop replace id 1 via 192.0.2.2 dev dummy10
+> # ip nexthop replace id 10 group 1
+> # ip nexthop replace id 1 via 2001:db8:1::2 dev dummy10
+> # ip route replace 2001:db8:10::/64 nhid 10
+> Error: IPv6 routes can not use an IPv4 nexthop.
+> 
+> Solve this by iterating over all the nexthop groups that the replaced
+> nexthop is a member of and potentially update their IPv4 indication
+> according to the new set of member nexthops.
+> 
+> Avoid wasting cycles by only performing the update in case an IPv4
+> nexthop is replaced by an IPv6 nexthop.
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/ipv4/nexthop.c | 32 ++++++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+> 
+> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+> index 5199a2815df6..bf9d4cd2d6e5 100644
+> --- a/net/ipv4/nexthop.c
+> +++ b/net/ipv4/nexthop.c
+> @@ -964,6 +964,23 @@ static int replace_nexthop_grp(struct net *net, struct nexthop *old,
+>  	return 0;
+>  }
+>  
+> +static void nh_group_v4_update(struct nh_group *nhg)
+> +{
+> +	struct nh_grp_entry *nhges;
+> +	bool has_v4 = false;
+> +	int i;
+> +
+> +	nhges = nhg->nh_entries;
+> +	for (i = 0; i < nhg->num_nh; i++) {
+> +		struct nh_info *nhi;
+> +
+> +		nhi = rtnl_dereference(nhges[i].nh->nh_info);
+> +		if (nhi->family == AF_INET)
+> +			has_v4 = true;
+> +	}
+> +	nhg->has_v4 = has_v4;
+> +}
+> +
+>  static int replace_nexthop_single(struct net *net, struct nexthop *old,
+>  				  struct nexthop *new,
+>  				  struct netlink_ext_ack *extack)
+> @@ -987,6 +1004,21 @@ static int replace_nexthop_single(struct net *net, struct nexthop *old,
+>  	rcu_assign_pointer(old->nh_info, newi);
+>  	rcu_assign_pointer(new->nh_info, oldi);
+>  
+> +	/* When replacing an IPv4 nexthop with an IPv6 nexthop, potentially
+> +	 * update IPv4 indication in all the groups using the nexthop.
+> +	 */
+> +	if (oldi->family == AF_INET && newi->family == AF_INET6) {
+> +		struct nh_grp_entry *nhge;
+> +
+> +		list_for_each_entry(nhge, &old->grp_list, nh_list) {
+> +			struct nexthop *nhp = nhge->nh_parent;
+> +			struct nh_group *nhg;
+> +
+> +			nhg = rtnl_dereference(nhp->nh_grp);
+> +			nh_group_v4_update(nhg);
+> +		}
+> +	}
+> +
+>  	return 0;
+>  }
+>  
+> 
 
-Thanks! The links are certainly helpful.
-Since long term you're considering implementing path manager in bpf
-I suggest to take a look at bpf_struct_ops and bpf based tcp congestion control.
-It would fit that use case better.
-For now the approach proposed in this patch is probably good enough
-for simple subflow marking. From the example it's not clear what the networking
-stack is supposed to do with a different sk_mark.
-Also considering using sk local storage instead of sk_mark. It's arbitrary size.
+Hopefully userspace apps create a new nexthop versus overwriting
+existing ones with different address family. Thanks for handling this
+case and adding a test case.
+
+Reviewed-by: David Ahern <dsahern@gmail.com>
+
