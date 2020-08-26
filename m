@@ -2,182 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 74141252533
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 03:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41E33252537
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 03:49:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726730AbgHZBtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 21:49:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
+        id S1726809AbgHZBt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 21:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726611AbgHZBtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 21:49:32 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183C6C061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 18:49:32 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id i10so61560ybt.11
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 18:49:32 -0700 (PDT)
+        with ESMTP id S1726766AbgHZBtw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 21:49:52 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFC4C061755
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 18:49:52 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id o21so208338wmc.0
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 18:49:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=vGkXtfCekbRYzWDnk43MYcczn7ykgtF52xiiEpLckBI=;
-        b=d/8813Wq4lKNS4ZnCl/hnZGkWhSoCbCZPOMOHM4rTpHzlVGfeTMUXZoIoLAAHkPq+w
-         grdmTL2bznlt66ByRAiqUi209T+8vEOPAmt0qGTluIn1FrcHAhmBYDLZw6MaoQkXp3Me
-         BO62XgGD42TefLamnIDSf6gkQOUCGaGMIiyZh3rcjWlhFo1RxhMw2kqYty5XLGSG5eI4
-         FCISzxUudw0EuiZ7GbZTi6VuodLp4lUkrnhZsSYfKRU6uuPOoUexAEfUjZVf9ce9HhER
-         E3dOCAlknh5AiUvoKkkU+/t+b9PQTyUnWfpWXW7BMZVYd2c2Bcbe5vhIc3b0pyLXXltT
-         dlCQ==
+        d=arista.com; s=googlenew;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FSqpiVb2VHbicFs91NoR7CGMW6s7gPW0OnsX8hYxTdk=;
+        b=OR7jYTnnl/7sfX3AWTgCn4ixomtkfiZbj9dmPl59jLvYB4wAxvvAQYP9KwBCCr0PZk
+         jhYD8aHRPiVu/DvukwWmIbdCMZqLYcIkdS+nS5kfsoH/bNkhV2MoWoATWWK9VJG3DgRP
+         vQE6g3IBDMOdgAXtgs+LUzJocokrARZoJOPkh9iZDZKXc4Ajo+F984BG34yLGmoLwXtr
+         lVLW36hRIx5lgf3awKaV90QtJi+o8gImOq4Hfnw+G4557klA7+MibaQU0k506N4D/nSU
+         RLYWeBerdZs8aRymiT32FFpDrmATQCszSfD0t7SImQc+/1hIg28l4HkChBzjGSZkCJYV
+         c8EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=vGkXtfCekbRYzWDnk43MYcczn7ykgtF52xiiEpLckBI=;
-        b=AsI23bKg3y2nnSqBEwuWG1tOtCSAVxKjPuqFOhz2ANKpWy1VUeJCGUVRis1oVZ4jQ1
-         mpD3MF+6uZaW/r4/zlTSCbT9ZQyRGnkdnqylL4VK4uEmGUoaT8I6rjg8xjB2cin+DWJl
-         QkqRvLloiYBaOfwsGvAvTrYzGeS8prUzOuuRrz9TQbSc1lLm7nZvBI5/FD9PJWuRXUs8
-         vfiA22pYumt5CfDWe4X+yTtwPIv26OZjbaKiPRq71vJwkntF2PHImBgh4R0BuIB80EcZ
-         93T920/TrLLAoqFDQIdCEcDBhgXUIImSIEEbQShvUMQVHfQBjv8dgMz0PjaEpjAd0qOx
-         YUCA==
-X-Gm-Message-State: AOAM533wT/SnBS1N6XbWavhuaDyupHaB/qP2l2XMJRatbswqZTZbQ9Uz
-        ilLqFN57tQOenMC6fDqmewC8BUPhQyLtUWOcPGXhiQ==
-X-Google-Smtp-Source: ABdhPJxW+lxpvHoVlAs/OapMa4VtXwoRQIKEbfPg2kPoIn4x+fcWDb7gQahXAfFXLjbyH9i3Lwijh5iTYYsvpuUHcCk=
-X-Received: by 2002:a25:5049:: with SMTP id e70mr18126348ybb.407.1598406570286;
- Tue, 25 Aug 2020 18:49:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200825224208.1268641-1-maheshb@google.com> <9fce7d7e-aa33-a451-ab4a-a297b1317310@infradead.org>
- <CAF2d9jiwH=GO3zd1sK-mURRV_W-_bfihbmc+ud=ZdV_SvYAuvg@mail.gmail.com> <CANP3RGdkSsjyM0vwY=f19rzsuLUCwAqDRHZT54i2BksgN58LKQ@mail.gmail.com>
-In-Reply-To: <CANP3RGdkSsjyM0vwY=f19rzsuLUCwAqDRHZT54i2BksgN58LKQ@mail.gmail.com>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Tue, 25 Aug 2020 18:49:14 -0700
-Message-ID: <CAF2d9jj9bv=mUFgAsi9Xu4NHpFoAUdxzJA4yFqitT2AhnmZAAQ@mail.gmail.com>
-Subject: Re: [PATCHv2 next] net: add option to not create fall-back tunnels in
- root-ns as well
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FSqpiVb2VHbicFs91NoR7CGMW6s7gPW0OnsX8hYxTdk=;
+        b=hRv4OzaFPhl4GiZT209yj1PErWF2FjmLYhnxA2ZIF36+61gNAJkhBnMSGkqMYdHWe0
+         GwsphwcVEWm3xKEHZFrkKLY02Oi8tswezKzTtptn83CnXXtKNsnWi3K22jMNmvPNKniy
+         /GukbgrD2IK0C8A4tL8tNDhsIyHnoTlgI8GBr+TrxhCcZ9hbfXL0VqPGmHh/TOV4iHD5
+         r2h4X81A9R3F+FMdgypwnNmYThiDk0js2DaILXd/wJHV6SCXdyP3bMlWiQR9r5c+V061
+         vRrgJ1sc0cY8YHjUpcAWs/Cx2XXCgU8nT0seImMMFk/oywfvAfrEao9ZorfaDhyY2+pN
+         m2CQ==
+X-Gm-Message-State: AOAM531K41gp//UmuY6tEJj+yLNtoi9vRAhnIIy9IqShDeRXr59ypvds
+        9Bdpr4QKtBWs2y4P0FvHOqfJEw==
+X-Google-Smtp-Source: ABdhPJwNMNkrni4rBF7mJl0ZgMtnGn8jDQ5Kr9MAaUf7fQSiMZ34ZwUojW/wTvT0Oe3KXMiZbzqt9w==
+X-Received: by 2002:a7b:cc95:: with SMTP id p21mr4321648wma.167.1598406590787;
+        Tue, 25 Aug 2020 18:49:50 -0700 (PDT)
+Received: from localhost.localdomain ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id c10sm1263661wmk.30.2020.08.25.18.49.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Aug 2020 18:49:50 -0700 (PDT)
+From:   Dmitry Safonov <dima@arista.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Dmitry Safonov <dima@arista.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Mahesh Bandewar <mahesh@bandewar.net>,
-        Jian Yang <jianyang@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        netdev@vger.kernel.org, Johannes Berg <johannes@sipsolutions.net>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: [PATCH v2 0/6] xfrm: Add compat layer
+Date:   Wed, 26 Aug 2020 02:49:43 +0100
+Message-Id: <20200826014949.644441-1-dima@arista.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 5:42 PM Maciej =C5=BBenczykowski <maze@google.com> =
-wrote:
->
-> On Tue, Aug 25, 2020 at 4:00 PM Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=
-=87=E0=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=
-=B0)
-> <maheshb@google.com> wrote:
-> >
-> > On Tue, Aug 25, 2020 at 3:47 PM Randy Dunlap <rdunlap@infradead.org> wr=
-ote:
-> > >
-> > > On 8/25/20 3:42 PM, Mahesh Bandewar wrote:
-> > > > The sysctl that was added  earlier by commit 79134e6ce2c ("net: do
-> > > > not create fallback tunnels for non-default namespaces") to create
-> > > > fall-back only in root-ns. This patch enhances that behavior to pro=
-vide
-> > > > option not to create fallback tunnels in root-ns as well. Since mod=
-ules
-> > > > that create fallback tunnels could be built-in and setting the sysc=
-tl
-> > > > value after booting is pointless, so added a kernel cmdline options=
- to
-> > > > change this default. The default setting is preseved for backward
-> > > > compatibility. The kernel command line option of fb_tunnels=3Dinitn=
-s will
-> > > > set the sysctl value to 1 and will create fallback tunnels only in =
-initns
-> > > > while kernel cmdline fb_tunnels=3Dnone will set the sysctl value to=
- 2 and
-> > > > fallback tunnels are skipped in every netns.
-> > > >
-> > > > Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-> > > > Cc: Eric Dumazet <edumazet@google.com>
-> > > > Cc: Maciej Zenczykowski <maze@google.com>
-> > > > Cc: Jian Yang <jianyang@google.com>
-> > > > ---
-> > > > v1->v2
-> > > >   Removed the Kconfig option which would force rebuild and replaced=
- with
-> > > >   kcmd-line option
-> > > >
-> > > >  .../admin-guide/kernel-parameters.txt         |  5 +++++
-> > > >  Documentation/admin-guide/sysctl/net.rst      | 20 +++++++++++++--=
-----
-> > > >  include/linux/netdevice.h                     |  7 ++++++-
-> > > >  net/core/sysctl_net_core.c                    | 17 ++++++++++++++-=
--
-> > > >  4 files changed, 40 insertions(+), 9 deletions(-)
-> > > >
-> > > > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Docu=
-mentation/admin-guide/kernel-parameters.txt
-> > > > index a1068742a6df..09a51598c792 100644
-> > > > --- a/Documentation/admin-guide/kernel-parameters.txt
-> > > > +++ b/Documentation/admin-guide/kernel-parameters.txt
-> > > > @@ -801,6 +801,11 @@
-> > > >
-> > > >       debug_objects   [KNL] Enable object debugging
-> > > >
-> > > > +     fb_tunnels=3D     [NET]
-> > > > +                     Format: { initns | none }
-> > > > +                     See Documentation/admin-guide/sysctl/net.rst =
-for
-> > > > +                     fb_tunnels_only_for_init_ns
-> > > > +
-> > >
-> > > Not at this location in this file.
-> > > Entries in this file are meant to be in alphabetical order (mostly).
-> > >
-> > > So leave debug_objects and no_debug_objects together, and insert fb_t=
-unnels
-> > > between fail_make_request=3D and floppy=3D.
-> > >
-> > I see. I'll fix it in the next revision.
-> > thanks for the suggestion.
-> > --mahesh..
-> >
-> > > Thanks.
-> > >
-> > > >       no_debug_objects
-> > > >                       [KNL] Disable object debugging
-> > > >
-> > >
-> > > --
-> > > ~Randy
->
-> Setting it to 1 via kcmdline doesn't seem all that useful, since
-> instead of that you can just use initrc/sysctl.conf/etc.
->
-> Would it be simpler if it was just 'no_fb_tunnels' or
-> 'no_fallback_tunnels' and the function just set the sysctl to 2
-> unconditionally?
-> (ie. no =3D.... parsing at all) that would also be less code...
->
-To make it simple; all methods should be able to set all values. Otherwise =
-I
-agree that it makes less sense to set value =3D 1 via kcmd. Also one can as=
-sign
-value =3D 2 to sysctl once kernel is booted, it may not produce desired res=
-ults
-always but would work if you load modules after changing the sysctl value. =
-I
-guess the idea here is to give user full control on what their
-situation is and choose
-the correct method for the desired end result.
+Changes since v1:
+- reworked patches set to use translator
+- separated the compat layer into xfrm_compat.c,
+  compiled under XFRM_USER_COMPAT config
+- 32-bit messages now being sent in frag_list (like wext-core does)
+- instead of __packed add compat_u64 members in compat structures
+- selftest reworked to kselftest lib API
+- added netlink dump testing to the selftest
 
-> btw. I also don't understand the '!IS_ENABLED(CONFIG_SYSCTL) ||'
-> piece.  Why not just delete that?
-> This seems to force fallback tunnels if you disable CONFIG_SYSCTL...
-> but (a) then the kcmdline option doesn't work,
-> and (b) that should already just happen by virtue of the sysctl defaultin=
-g to 0.
-agreed. will remove it (!IS_ENABLED(CONFIG_SYSCTL) check) in the next revis=
-ion.
+XFRM is disabled for compatible users because of the UABI difference.
+The difference is in structures paddings and in the result the size
+of netlink messages differ.
+
+Possibility for compatible application to manage xfrm tunnels was
+disabled by: the commmit 19d7df69fdb2 ("xfrm: Refuse to insert 32 bit
+userspace socket policies on 64 bit systems") and the commit 74005991b78a
+("xfrm: Do not parse 32bits compiled xfrm netlink msg on 64bits host").
+
+This is my second attempt to resolve the xfrm/compat problem by adding
+the 64=>32 and 32=>64 bit translators those non-visibly to a user
+provide translation between compatible user and kernel.
+Previous attempt was to interrupt the message ABI according to a syscall
+by xfrm_user, which resulted in over-complicated code [1].
+
+Florian Westphal provided the idea of translator and some draft patches
+in the discussion. In these patches, his idea is reused and some of his
+initial code is also present.
+
+There were a couple of attempts to solve xfrm compat problem:
+https://lkml.org/lkml/2017/1/20/733
+https://patchwork.ozlabs.org/patch/44600/
+http://netdev.vger.kernel.narkive.com/2Gesykj6/patch-net-next-xfrm-correctly-parse-netlink-msg-from-32bits-ip-command-on-64bits-host
+
+All the discussions end in the conclusion that xfrm should have a full
+compatible layer to correctly work with 32-bit applications on 64-bit
+kernels:
+https://lkml.org/lkml/2017/1/23/413
+https://patchwork.ozlabs.org/patch/433279/
+
+In some recent lkml discussion, Linus said that it's worth to fix this
+problem and not giving people an excuse to stay on 32-bit kernel:
+https://lkml.org/lkml/2018/2/13/752
+
+There is also an selftest for ipsec tunnels.
+It doesn't depend on any library and compat version can be easy
+build with: make CFLAGS=-m32 net/ipsec
+
+Patches as a .git branch:
+https://github.com/0x7f454c46/linux/tree/xfrm-compat-v2
+
+[1]: https://lkml.kernel.org/r/20180726023144.31066-1-dima@arista.com
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: Stephen Suryaputra <ssuryaextr@gmail.com>
+Cc: Dmitry Safonov <0x7f454c46@gmail.com>
+Cc: netdev@vger.kernel.org
+
+Dmitry Safonov (6):
+  xfrm/compat: Add 64=>32-bit messages translator
+  xfrm/compat: Attach xfrm dumps to 64=>32 bit translator
+  netlink/compat: Append NLMSG_DONE/extack to frag_list
+  xfrm/compat: Add 32=>64-bit messages translator
+  xfrm/compat: Translate 32-bit user_policy from sockptr
+  selftest/net/xfrm: Add test for ipsec tunnel
+
+ MAINTAINERS                            |    1 +
+ include/net/xfrm.h                     |   32 +
+ net/netlink/af_netlink.c               |   48 +-
+ net/xfrm/Kconfig                       |   11 +
+ net/xfrm/Makefile                      |    1 +
+ net/xfrm/xfrm_compat.c                 |  609 +++++++
+ net/xfrm/xfrm_state.c                  |   11 +-
+ net/xfrm/xfrm_user.c                   |   79 +-
+ tools/testing/selftests/net/.gitignore |    1 +
+ tools/testing/selftests/net/Makefile   |    1 +
+ tools/testing/selftests/net/ipsec.c    | 2195 ++++++++++++++++++++++++
+ 11 files changed, 2953 insertions(+), 36 deletions(-)
+ create mode 100644 net/xfrm/xfrm_compat.c
+ create mode 100644 tools/testing/selftests/net/ipsec.c
+
+-- 
+2.27.0
+
