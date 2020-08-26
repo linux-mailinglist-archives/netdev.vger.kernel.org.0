@@ -2,153 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B99CB2535BD
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 19:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 329A725360D
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 19:41:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727030AbgHZRJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 13:09:14 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:9273 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726739AbgHZRJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 13:09:11 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f4696bd0000>; Wed, 26 Aug 2020 10:07:09 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Wed, 26 Aug 2020 10:09:10 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Wed, 26 Aug 2020 10:09:10 -0700
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 26 Aug
- 2020 17:09:10 +0000
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.44) by
- HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Wed, 26 Aug 2020 17:09:10 +0000
+        id S1726802AbgHZRlV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 13:41:21 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:22034 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725995AbgHZRlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 13:41:20 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07QHbJhY012204;
+        Wed, 26 Aug 2020 10:41:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=3gT3kyP+h6uSL/Uf4CrZaDXHedWudk/oGGg+fqF0pNI=;
+ b=EWcquvZbxIWB4QJwAW+1QPGuNT9lfY6P3CWuQW4cBim2xyCka7QQw1ijFgsg9n+CqAI8
+ 8dwm6A7E6/SfNEI+GbbjKv0Op8LFIY0jI5/4GJOoaffWoVEci5el6FfLR4TZTyoHiHGI
+ QDMne3hRNJgvNAaMbyefTt5GI3hWl6yBuIQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 335up8g8hs-12
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 26 Aug 2020 10:41:15 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 26 Aug 2020 10:41:08 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lHFh9vWhQQ7ZqP0lYFPR7nGLyaBOK0mMYbbqWkzwfK19D1yCwF0LBKbJ4tkqMYMpLQSE34eQDNvbmSccP860CNOUZFseUnlgERFM8qSdquumfOTtFweEh1Po8jFAC5cUQDInCr3yt+fe6UITe8NuM+aA8cMJXY7pLryl8tgV57yAqqmgfxEDmjgEcr5vSIqOUjere+9zJTv4HY12hsMonX5/oYm+wwcblytXwStVLx7zk4Btq05/Bk3AP76WRrOlJbLUqY3xliIu9Rkq2cBtuI6WtddDlxsUrCizRs8BHdKebN1mdTmmpAucZrcq1d95nz+VyJrjbWdkKW8BMWnirg==
+ b=K5s1DEHUe8Y1GRSCWXbRO1g9hi/y7XJm39Iq266iZGUSqiU0UE8aNTpmDs/q0rRfVwmIcz8DLtoEXjO74NruKfT2sxdWkmLnhG3HUxmtOS6Hqi88JluBl1TWaU5fjpbeal97hVoppTfCH4TsYGhFn3a0agGSJLtWKh+mWljRM1hdrQ0zGWj3qQjU+kQNf3bV52tqfm2BXdT0kW6P35KZCqM3Fv9yhMV4Y0/6SU/C3g3hNbtE/ayzkbD/CpQCm+xdYHtnMShplNonGP7T49MX1WRjf7CKG2RUZ8i06j4k453BBK35LeIE2TMl5oKbFdSALgcgSU04kFyM+Tm3K3cvWw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+o3CLU10hq9I9/xhizsOG6AktCBTSS4Ap/lxo5+Yq6A=;
- b=X0YrsV8rWg3nfJHRaLUKdBsltJmXUXCKgf6AVFJZtZpm4tGS5gbmnixgLJsikjjpnB7C8sjssOoGknc9j4XsHJJMYxayVSVYviJX4GGXPOMextP4ZODnPh/fellQR5jLDuFsyJR8VM4DYj1yRIFq4GucfEKtpiBZNyM5AoOKbuo5/EnNbWR6XAYZOlz41Z39g6mEeba2buq9plZOU7JTDjb//+KxFh6r3uTF0VFAiFe+NxFbxMa3BUBaAuNPLcQ8bWXLxkPY1nO+ki+EhsPAmTfJd8Rs5VHKSlQm8G9cRgh6YAuqrv9ZBS8k5DoZwGveMsaq+1wtBnlWz4kk/Cu/bQ==
+ bh=3gT3kyP+h6uSL/Uf4CrZaDXHedWudk/oGGg+fqF0pNI=;
+ b=nv6vWpQm63AU34O7xjxrhC4WNGXAaxnGQw8XZbV5ZlEl5g0hnlflUGD04G9l50l9qD5tydGN0Uve5FIDkecmFDxZNF8jEmLOd+6M6eg/ePTohdv+VQq5mHdr1eAr9eCATn08sZ+DoHCIhx8i8PKJPDqFUbFplVfP3+U1DhBttpz9S89tt7ze40nZ0p+LBezZxn7CLD/aLNWptgUKM5HUTYUdHGEqn9cxMYqrv6px54iT1m6JB2KSUyo8KVjDmn7unEWpyfAEk0MQUkfkN9OpU1F4ZW9hvK7WeIHXjtesI06mrLrpSkLGZtR63qq9Q8k1bAJ+r1eOjSWtIH4BbSKFfA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
- by BY5PR12MB3683.namprd12.prod.outlook.com (2603:10b6:a03:1a5::16) with
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3gT3kyP+h6uSL/Uf4CrZaDXHedWudk/oGGg+fqF0pNI=;
+ b=PC0LSq4Vn3NDOt3uv6xkXrTqObQIgudqfIoKKXKvPNwyD9sek6aiVFTtxXxuetfe+77AdA18/dpVQijKItWsYjHKJjxUo1Jm/N9Eyfl5ApgNlzECzS2iumBPLwiV+PoLmY6P5tvafProHLdaG0NB3DF3+zrS79/uAuTxo7+Hi4c=
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2263.namprd15.prod.outlook.com (2603:10b6:a02:87::27) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Wed, 26 Aug
- 2020 17:09:09 +0000
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::e528:bb9a:b147:94a9]) by BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::e528:bb9a:b147:94a9%5]) with mapi id 15.20.3305.032; Wed, 26 Aug 2020
- 17:09:09 +0000
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     "eric.dumazet@gmail.com" <eric.dumazet@gmail.com>,
-        "tariqt@mellanox.com" <tariqt@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "moshe@mellanox.com" <moshe@mellanox.com>
-Subject: Re: [PATCH net-next 3/3] net/mlx4_en: RX, Add a prefetch command for
- small L1_CACHE_BYTES
-Thread-Topic: [PATCH net-next 3/3] net/mlx4_en: RX, Add a prefetch command for
- small L1_CACHE_BYTES
-Thread-Index: AQHWe6gd0Md2iOzeBUuB3M2EZKkp56lKeowAgAAlWwA=
-Date:   Wed, 26 Aug 2020 17:09:09 +0000
-Message-ID: <46820507065c60dc57840c6cf33f696980ed08a5.camel@nvidia.com>
-References: <20200826125418.11379-1-tariqt@mellanox.com>
-         <20200826125418.11379-4-tariqt@mellanox.com>
-         <7a5e4514-5c5c-cd7d-6300-ff491f41aefa@gmail.com>
-In-Reply-To: <7a5e4514-5c5c-cd7d-6300-ff491f41aefa@gmail.com>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.26; Wed, 26 Aug
+ 2020 17:41:07 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3326.019; Wed, 26 Aug 2020
+ 17:41:07 +0000
+Subject: Re: [PATCH v1 bpf-next] bpf: new helper bpf_get_current_pcomm
+To:     Carlos Neira <cneirabustos@gmail.com>, <netdev@vger.kernel.org>
+CC:     <ebiederm@xmission.com>, <brouer@redhat.com>,
+        <bpf@vger.kernel.org>, <andriin@fb.com>
+References: <20200826160424.14131-1-cneirabustos@gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <e3d9907a-391e-9b7e-c211-4a43b9d4f43f@fb.com>
+Date:   Wed, 26 Aug 2020 10:41:02 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
+In-Reply-To: <20200826160424.14131-1-cneirabustos@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [24.6.56.119]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6930b639-847a-4caf-7fae-08d849e2bf39
-x-ms-traffictypediagnostic: BY5PR12MB3683:
-x-microsoft-antispam-prvs: <BY5PR12MB3683E9E9DDBA04F3025366C6B3540@BY5PR12MB3683.namprd12.prod.outlook.com>
-x-ms-exchange-transport-forked: True
-x-ms-oob-tlc-oobclassifiers: OLM:3276;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3v5NOf63ViDHx4CHqjIZMZ74CRztljbOfiMcTdWsVfIvRIia9x2ksxFQEpm9gybRl9K+dihidnLiP6E++AsoAZr6SJJeLvVjRkTV8XiTCZvUPF3OFM5Lkysc5S3U0azMU2CLgbHe0EfrW0fUZgqzblZtYvgfI9okg5mtJl9ReQy0fZXcXqJXOPMCUOUVAEBJpxW/ZDpLrXYFCXo8VcbhDb3A80EEGVK1h85TqXYbOSUZwnI93GMtAonGyVgdRQa01oN/Z2J6Xy7NIV009B/zQFnVKFwaCsHVZQOdggL4b8TXzY+Z2qa9ASJz3j0Hl4lARI/zlNpvjD7K2l64NMO6uQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(376002)(396003)(39860400002)(6486002)(4326008)(478600001)(86362001)(2616005)(26005)(36756003)(186003)(5660300002)(6506007)(8936002)(6512007)(53546011)(107886003)(316002)(66556008)(83380400001)(54906003)(71200400001)(76116006)(66446008)(64756008)(66946007)(66476007)(8676002)(2906002)(110136005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: iXnfqDVanAY+vvf1WAKs0kMFipaNOuSB6qLVMKSZQUG/bZXCOhDYMh3ItvIwY8hrREsHjIb0sBMSyQvBdzofqrhTUVcqOLvfGbDaK+aMKJ6+x2wbpzuDB9QAg5ANwF2qcOdt6zzl0oSixyno7dzMtBHcWHsTwOkb2arN5V0iedb+5JydEn6nREjdpujxqyy3JrTCBws4gm/0M3tyfd35+Z7xD89kWv3G8Z3Fb7bW1vPM6ZQT971QcWs3sI5xcg7kdthXfLlQa/n19I+WuFEN4iXjwZZpY501Ru7btcqwIcO4p3MotfMK2Aqtco3jzVAofPBQG4MANRpDECGYvUkAdy3kHyeh0ENpOAxGK29rtV2t26lYIjrqg4oJ0Y2FkkRHUxrpbpGwelF7j/e1G8hvasvJaWMgNqwy9ZJKGBUqyHEwrOJ3zlq9yrCGSgGL9gsverlfxeK0plDR+9qKQmSSRrphmKd8T/0fBTkSxV/1LRUsxfNe2SHLnRLwlu2Zlz56xSpSc98/1LowJg/2QxQfkGw7QeDNpIHr/Xgim1B54mpykR8U5QhkMg2QU8ke5iv6X5Pe+K0BzYiTasLunq04nTBqotm28y1ryCOnksoysX3+/RlYsE3mwvdAr5BYfBDFw34Hnpb7UZSK6X9Flb/cBQ==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <63530604AE8E3246AF09A5910BCBBD1D@namprd12.prod.outlook.com>
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR06CA0004.namprd06.prod.outlook.com
+ (2603:10b6:208:23d::9) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from 255.255.255.255 (255.255.255.255) by MN2PR06CA0004.namprd06.prod.outlook.com (2603:10b6:208:23d::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend Transport; Wed, 26 Aug 2020 17:41:04 +0000
+X-Originating-IP: [2620:10d:c091:480::1:342c]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 69f6b458-6bbc-4392-784c-08d849e735e2
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2263:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2263381A4ECAD325C3ED3E29D3540@BYAPR15MB2263.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7152DSvMPTbEV0KtHe1jc3R8njRUDGCD5AidT9ou4FWkV5AF2xtyvb/ySra6lxdE+i1ZkjAny+AG7yaJrFkEjngW2QiVxOzGOhgZMJ/K7bK+ipnuPfp/8Am5zMc7KndI5+NgSQ5znQltbmUa45qFlG5/6aSgxWqc9/nThsnB4weIKmb/4Fb2YiL5JwsYIEHZjIwVBhNifmiD/dgxighsKvaoXkYsdLxih+tO+c8AnvbOwKnK2Kvwa5g7wuxWzP5/oAzL9cn5AUGtcUlk1jlssKktJxGqUrc6UtHavipsjZ+/u/eRP+CJPFe0/rbIDDLJ+DQEzLHNzR05VJqmr8TSuAsWIZyfRN7O2JsWLioHBFTxD7R2ACbKmI0iraQbTJl5
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(39860400002)(396003)(346002)(376002)(366004)(66946007)(4326008)(478600001)(6486002)(5660300002)(2616005)(2906002)(31696002)(83380400001)(316002)(16576012)(86362001)(66556008)(66476007)(52116002)(8936002)(53546011)(186003)(956004)(36756003)(8676002)(31686004)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: SKxS9kxwxrXnxG5e6IhK5zOdYFVhv9eRf4c3sVlPCYp70KrkbpVaC7lAoqwjMg+zdNMHnvvmRMfBoZDw8rgC+3+e0uthgdw0wnngqaTN7t/SQ12Z6FmJgVa7oodkFIo/aDL0HiA/dHWMEIMqr7OzT90qlIlwDG3nsiJzkrsleGNiBO9Bep7pLVouGoBe3FYsWo+2QvMyimq610LAtdwUTq/AOxr4YlFIZxb2eQgMclpz9TpOkVso1GQpJM8BqPl2rGLVvsGSc9H4EUNrX/cKN20HsLf7zHfbwnP66u+k9bhy3Qxu5CQAFvw0Tind1p5iiWrqDxDYY8LCj7S4NsdUn9VynQis7bY2k+GUKSPuUVEMCi8AKiRB/ZPyKAiG5AXYgqvR7seqcHYrxWRRa5eWdEeSadssFuma9aoOnQhmLppKosCP71Lzo60saUvVRFoCthn44bU3K7e7vCOANN1Aze+LWmV8qucEt+fKNdgRhyi9dcB3ofs63t6+Msv4BTpIXgf7QrgbrBjnFRry1J87Ua1PjJq7zFyS22hJ8IWVvpPo69NWwlHKmClOdMU512HeR5oCNI1h28NDAr5FgUbXuPL9GCKWt+e0oYSoGqf5NgvR7XfiKd4sQrUjjcZtsuMAkvQ77qvZlJu9neG7rjTNjlSS110dLHM4XITQB3taQZNRXdj/oI8QUrG8QVewnZHF
+X-MS-Exchange-CrossTenant-Network-Message-Id: 69f6b458-6bbc-4392-784c-08d849e735e2
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6930b639-847a-4caf-7fae-08d849e2bf39
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2020 17:09:09.1492
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2020 17:41:07.0548
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dIqBZleJsm/MQCK2rRTdHCrI154dMmvI53ngUtH7wOWun/km9VTCrUO26OgGaFZp9vsWMzj4nBwComyIILbyDA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3683
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1598461629; bh=+o3CLU10hq9I9/xhizsOG6AktCBTSS4Ap/lxo5+Yq6A=;
-        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
-         ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
-         Thread-Index:Date:Message-ID:References:In-Reply-To:
-         Accept-Language:Content-Language:X-MS-Has-Attach:
-         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
-         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
-         x-ms-traffictypediagnostic:x-microsoft-antispam-prvs:
-         x-ms-exchange-transport-forked:x-ms-oob-tlc-oobclassifiers:
-         x-ms-exchange-senderadcheck:x-microsoft-antispam:
-         x-microsoft-antispam-message-info:x-forefront-antispam-report:
-         x-ms-exchange-antispam-messagedata:Content-Type:Content-ID:
-         Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=U5tzNK+MWciS+B27WnYf5XnjQqByj1NQiXGM52t+7EmJXFsCrekElRg85H1Xw/XxH
-         uMDQcYuq7uXPfBmmffYsUpa3TZM0bIHMrJ/O5HyJfTCh3tz49qamHsKUc0KlsND4OQ
-         30nOuuqzaRYtlrld6qcy3ZQbv37qGjtWtgY3oihnMLy6hJX/l170rOgYvs0u/BLWLK
-         mdB2R+Enu20XKxWDNxr3+hzhTiTq82wapmjVPYRZUbHa13Eb04SRf/hDICgkkU/9zD
-         tuhBzw16ikLPaVDlWNIjUbeeDYVjPNz3B1pFCzgrkoQQdIgxzJR7UfGP1YZlUsCOKH
-         vB5Uqvo6qpH8Q==
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MGs332xhIvwJMlaGqOhx+QwRUcaoEyRaTYcXZebqQmo2nU5PAvdfe2CmYn3/RnEL
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2263
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-26_10:2020-08-26,2020-08-26 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ priorityscore=1501 malwarescore=0 mlxscore=0 clxscore=1011 bulkscore=0
+ spamscore=0 adultscore=0 lowpriorityscore=0 mlxlogscore=999 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008260132
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIwLTA4LTI2IGF0IDA3OjU1IC0wNzAwLCBFcmljIER1bWF6ZXQgd3JvdGU6DQo+
-IA0KPiBPbiA4LzI2LzIwIDU6NTQgQU0sIFRhcmlxIFRvdWthbiB3cm90ZToNCj4gPiBBIHNpbmds
-ZSBjYWNoZWxpbmUgbWlnaHQgbm90IGNvbnRhaW4gdGhlIHBhY2tldCBoZWFkZXIgZm9yDQo+ID4g
-c21hbGwgTDFfQ0FDSEVfQllURVMgdmFsdWVzLg0KPiA+IFVzZSBuZXRfcHJlZmV0Y2goKSBhcyBp
-dCBpc3N1ZXMgYW4gYWRkaXRpb25hbCBwcmVmZXRjaA0KPiA+IGluIHRoaXMgY2FzZS4NCj4gPiAN
-Cj4gPiBTaWduZWQtb2ZmLWJ5OiBUYXJpcSBUb3VrYW4gPHRhcmlxdEBtZWxsYW5veC5jb20+DQo+
-ID4gUmV2aWV3ZWQtYnk6IFNhZWVkIE1haGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPg0KPiA+
-IC0tLQ0KPiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg0L2VuX3J4LmMgfCAy
-ICstDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0K
-PiA+IA0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg0
-L2VuX3J4LmMNCj4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDQvZW5fcngu
-Yw0KPiA+IGluZGV4IGI1MGM1NjdlZjUwOC4uOTlkNzczN2U4YWQ2IDEwMDY0NA0KPiA+IC0tLSBh
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDQvZW5fcnguYw0KPiA+ICsrKyBiL2Ry
-aXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDQvZW5fcnguYw0KPiA+IEBAIC03MDUsNyAr
-NzA1LDcgQEAgaW50IG1seDRfZW5fcHJvY2Vzc19yeF9jcShzdHJ1Y3QgbmV0X2RldmljZQ0KPiA+
-ICpkZXYsIHN0cnVjdCBtbHg0X2VuX2NxICpjcSwgaW50IGJ1ZA0KPiA+ICANCj4gPiAgCQlmcmFn
-cyA9IHJpbmctPnJ4X2luZm8gKyAoaW5kZXggPDwgcHJpdi0+bG9nX3J4X2luZm8pOw0KPiA+ICAJ
-CXZhID0gcGFnZV9hZGRyZXNzKGZyYWdzWzBdLnBhZ2UpICsNCj4gPiBmcmFnc1swXS5wYWdlX29m
-ZnNldDsNCj4gPiAtCQlwcmVmZXRjaHcodmEpOw0KPiA+ICsJCW5ldF9wcmVmZXRjaHcodmEpOw0K
-PiA+ICAJCS8qDQo+ID4gIAkJICogbWFrZSBzdXJlIHdlIHJlYWQgdGhlIENRRSBhZnRlciB3ZSBy
-ZWFkIHRoZQ0KPiA+IG93bmVyc2hpcCBiaXQNCj4gPiAgCQkgKi8NCj4gPiANCj4gDQo+IFdoeSB0
-aGVzZSBjYWNoZSBsaW5lcyB3b3VsZCBiZSB3cml0dGVuIG5leHQgPyBQcmVzdW1hYmx5IHdlIHJl
-YWQgdGhlDQo+IGhlYWRlcnMgKHB1bGxlZCBpbnRvIHNrYi0+aGVhZCkNCj4gDQoNClhEUA0KDQo+
-IFJlYWxseSB1c2luZyBwcmVmZXRjaCgpIGZvciB0aGUgYWJvdXQgdG8gYmUgcmVhZCBwYWNrZXQg
-aXMgdG9vIGxhdGUNCj4gYW55d2F5IGZvciBjdXJyZW50IGNwdXMuDQo+IA0K
+
+
+On 8/26/20 9:04 AM, Carlos Neira wrote:
+> In multi-threaded applications bpf_get_current_comm is returning per-thread
+> names, this helper will return comm from real_parent.
+> This makes a difference for some Java applications, where get_current_comm is
+> returning per-thread names, but get_current_pcomm will return "java".
+> 
+> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> ---
+>   include/linux/bpf.h                           |  1 +
+>   include/uapi/linux/bpf.h                      | 15 ++++-
+>   kernel/bpf/core.c                             |  1 +
+>   kernel/bpf/helpers.c                          | 28 +++++++++
+>   kernel/trace/bpf_trace.c                      |  2 +
+>   tools/include/uapi/linux/bpf.h                | 15 ++++-
+>   .../selftests/bpf/prog_tests/current_pcomm.c  | 57 +++++++++++++++++++
+>   .../selftests/bpf/progs/test_current_pcomm.c  | 17 ++++++
+>   8 files changed, 134 insertions(+), 2 deletions(-)
+>   create mode 100644 tools/testing/selftests/bpf/prog_tests/current_pcomm.c
+>   create mode 100644 tools/testing/selftests/bpf/progs/test_current_pcomm.c
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 81f38e2fda78..93b0c197fd75 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1754,6 +1754,7 @@ extern const struct bpf_func_proto bpf_skc_to_tcp_sock_proto;
+>   extern const struct bpf_func_proto bpf_skc_to_tcp_timewait_sock_proto;
+>   extern const struct bpf_func_proto bpf_skc_to_tcp_request_sock_proto;
+>   extern const struct bpf_func_proto bpf_skc_to_udp6_sock_proto;
+> +extern const struct bpf_func_proto bpf_get_current_pcomm_proto;
+>   
+>   const struct bpf_func_proto *bpf_tracing_func_proto(
+>   	enum bpf_func_id func_id, const struct bpf_prog *prog);
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 544b89a64918..200a2309e5e1 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3509,6 +3509,18 @@ union bpf_attr {
+>    *
+>    *		**-EPERM** This helper cannot be used under the
+>    *			   current sock_ops->op.
+> + *
+> + * long bpf_get_current_pcomm(void *buf, u32 size_of_buf)
+> + *	Description
+> + *		Copy the **comm** attribute of the real_parent current task
+> + *		into *buf* of *size_of_buf*. The **comm** attribute contains
+> + *		the name of the executable (excluding the path) for real_parent
+> + *		of current task.
+> + *		The *size_of_buf* must be strictly positive. On success, the
+> + *		helper makes sure that the *buf* is NUL-terminated. On failure,
+> + *		it is filled with zeroes.
+> + *	Return
+> + *		0 on success, or a negative error in case of failure.
+>    */
+>   #define __BPF_FUNC_MAPPER(FN)		\
+[...]
+>   
+>   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> diff --git a/tools/testing/selftests/bpf/prog_tests/current_pcomm.c b/tools/testing/selftests/bpf/prog_tests/current_pcomm.c
+> new file mode 100644
+> index 000000000000..23b708e1c417
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/current_pcomm.c
+> @@ -0,0 +1,57 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
+> +
+> +#define _GNU_SOURCE
+> +#include <test_progs.h>
+> +#include "test_current_pcomm.skel.h"
+> +#include <sys/types.h>
+> +#include <unistd.h>
+> +#include <string.h>
+> +#include <pthread.h>
+> +
+> +void *current_pcomm(void *args)
+> +{
+> +	struct test_current_pcomm__bss  *bss;
+> +	struct test_current_pcomm *skel;
+> +	int err, duration = 0;
+> +
+> +	skel = test_current_pcomm__open_and_load();
+> +	if (CHECK(!skel, "skel_open_load", "failed to load skeleton"))
+> +		goto cleanup;
+> +
+> +	bss = skel->bss;
+> +
+> +	err = test_current_pcomm__attach(skel);
+> +	if (CHECK(err, "skel_attach", "skeleton attach failed %d", err))
+> +		goto cleanup;
+> +
+> +	/* trigger tracepoint */
+> +	usleep(10);
+> +	err = memcmp(bss->comm, "current_pcomm2", 14);
+> +	if (CHECK(!err, "pcomm ", "bss->comm: %s\n", bss->comm))
+> +		goto cleanup;
+> +cleanup:
+> +	test_current_pcomm__destroy(skel);
+> +	return NULL;
+> +}
+> +
+> +int test_current_pcomm(void)
+> +{
+> +	int err = 0, duration = 0;
+> +	pthread_t tid;
+> +
+> +	err = pthread_create(&tid, NULL, &current_pcomm, NULL);
+> +	if (CHECK(err, "thread", "thread creation failed %d", err))
+> +		return EXIT_FAILURE;
+> +	err = pthread_setname_np(tid, "current_pcomm2");
+> +	if (CHECK(err, "thread naming", "thread naming failed %d", err))
+> +		return EXIT_FAILURE;
+> +
+> +	usleep(5);
+> +
+> +	err = pthread_join(tid, NULL);
+> +	if (CHECK(err, "thread join", "thread join failed %d", err))
+> +		return EXIT_FAILURE;
+> +
+> +	return EXIT_SUCCESS;
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_current_pcomm.c b/tools/testing/selftests/bpf/progs/test_current_pcomm.c
+> new file mode 100644
+> index 000000000000..27dab17ccdd4
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_current_pcomm.c
+> @@ -0,0 +1,17 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
+> +
+> +#include <linux/bpf.h>
+> +#include <stdint.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +char comm[16] = {0};
+> +
+> +SEC("raw_tracepoint/sys_enter")
+> +int current_pcomm(const void *ctx)
+> +{
+> +	bpf_get_current_pcomm(comm, sizeof(comm));
+
+I think you want to get the pcomm of the newly created pthread. But
+the bpf program here could be triggered by other syscall as well.
+You probably want to filter based on the "curr_pcomm" pthread tid.
+
+> +	return 0;
+> +}
+> +
+> +char _license[] SEC("license") = "GPL";
+> 
