@@ -2,70 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B362E2525BB
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 05:13:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88F7D2525BF
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 05:18:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726730AbgHZDN3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 23:13:29 -0400
-Received: from smtp23.cstnet.cn ([159.226.251.23]:56508 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726672AbgHZDN3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 25 Aug 2020 23:13:29 -0400
-Received: from localhost.localdomain (unknown [159.226.5.100])
-        by APP-03 (Coremail) with SMTP id rQCowADX3ho200Vfqr_JBA--.3629S2;
-        Wed, 26 Aug 2020 11:12:54 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     richardcochran@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ptp: ptp_ines: Remove redundant null check
-Date:   Wed, 26 Aug 2020 03:12:51 +0000
-Message-Id: <20200826031251.4362-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: rQCowADX3ho200Vfqr_JBA--.3629S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Jr4xAFWUAw4DZr43Kry7GFg_yoWxZrXEkw
-        10qF1I9r4UXw40yw12kw4rurWv9a4kXr1rX3Wvqa13A39rWr15ArWv9rWkXw1Duw43CFsx
-        Jr93Wr18Ca9I9jkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2AYjsxI4VWDJwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I
-        8E87Iv6xkF7I0E14v26r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Gryq6s0DMcIj6I8E87Iv67AKxVWaoV
-        W8JcWlOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwVW8GwCF
-        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jrv_JF1lIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6Fyj6rWUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
-        6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07jtYFZUUUUU=
-X-Originating-IP: [159.226.5.100]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiAxAAA13qZUwcAQAAsT
+        id S1726716AbgHZDSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 23:18:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726672AbgHZDSd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 23:18:33 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C28FC061574;
+        Tue, 25 Aug 2020 20:18:33 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id a34so155149ybj.9;
+        Tue, 25 Aug 2020 20:18:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8OTN+ZAFhh4zGTx/WbIfAbTeq99SU0Zwk8FzOcPKJVM=;
+        b=qPpwSCmbzSj4PKKlySPKmZNIH2sU/2MtkpXHldAaltVTLT4vAiQEhDwk7C8ML4GI9V
+         mNl7lDThjPuzekTx/N+Iv6GLuhqBSeWDm7FhPdIcsiIIsDUZ4mIlX9vt8Y8ak+tn6Tkp
+         O+4mzXjwxsWzd5ZiEQZoa9QxPqTRB7EVNbrg4VGcIHrlbINkQQuJA11q8paKbrLXX4ga
+         WChdB7XXfY/j7bE+jPC9znYaDwQV0Xrr4qpLOH5+pBHjbjZWrleXIaDrK9Y3nhpv6qSk
+         sSdpWUT0H6i+rAcCt6YmrNTg0ErfGvO/PtGsdPV9XHk/4E4ceRZpRHkZQpJ/7N+7sRqj
+         3nGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8OTN+ZAFhh4zGTx/WbIfAbTeq99SU0Zwk8FzOcPKJVM=;
+        b=sTt6Qhdq6+DUbHz4UNgB93E8vFADlmhN3ku3Nrcv8o36h8M46tRV1szZsiOHNdDCmW
+         pCYK0beQpGrKg3VJmGpS8noQ9Gv4YKtLcmRyjR04m54O8zGd86TL1uj/94YUPREbWkDs
+         q9t2KN+C/8tmkZfzn5PR2N8yQ3oYzdAzz84VjZ9zmBADA7hXoHltSvHOSDLNFQd2P5Bb
+         ZdkHFh1qTmNlbmsHTJGJXNnjdxgHvZO/f4tnb3+v8h+pCaWh7D8WqWF1hslTgC0yvJmy
+         392ut8CmUz8qBsh/3wD9+vHdQaJxkEn+ZID5mR6q9sJW8Mk6OuWOAUFBrxG8WdzvgDfA
+         3SSQ==
+X-Gm-Message-State: AOAM533aIVE4OshT4s6MgmUDw8fAxkeF7gLjJwyu7gtcAWWGzOs6FzRo
+        PnHnolvChlVgxmT1uUT+d+P8FLhL5pF9rhH6EDhTnzV0doI=
+X-Google-Smtp-Source: ABdhPJz/W1I3B7CWV2dPowTFTHmUAjYmM9+691eyF7RdNKOZbY6D2BXf8ijYp1NnLz4QI0KEIQ0aRy1ZCD+USaWfiIU=
+X-Received: by 2002:a25:2ad3:: with SMTP id q202mr17765766ybq.27.1598411912561;
+ Tue, 25 Aug 2020 20:18:32 -0700 (PDT)
+MIME-Version: 1.0
+References: <CA+G9fYvWkGp9p95DQ5T87GDBmUMecEYBZC0TYHmfwHysanQ7zA@mail.gmail.com>
+In-Reply-To: <CA+G9fYvWkGp9p95DQ5T87GDBmUMecEYBZC0TYHmfwHysanQ7zA@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 25 Aug 2020 20:18:21 -0700
+Message-ID: <CAEf4BzZO_NnBSRe--V1GAu=ZeennVpZDOAzcE6e+0V=coVuXcw@mail.gmail.com>
+Subject: Re: expects argument of type 'size_t', but argument 5 has type 'Elf64_Xword
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, lkft-triage@lists.linaro.org,
+        =?UTF-8?B?RGFuaWVsIETDrWF6?= <daniel.diaz@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Because kfree_skb already checked NULL skb parameter,
-so the additional check is unnecessary, just remove it.
+On Mon, Aug 24, 2020 at 2:00 AM Naresh Kamboju
+<naresh.kamboju@linaro.org> wrote:
+>
+> while building perf with gcc 7.3.0 on linux next this warning/error is found.
+>
+> In file included from libbpf.c:55:0:
+> libbpf.c: In function 'bpf_object__elf_collect':
+> libbpf_internal.h:74:22: error: format '%zu' expects argument of type
+> 'size_t', but argument 5 has type 'Elf64_Xword {aka long long unsigned
+> int}' [-Werror=format=]
+>   libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__);
+> cc1: all warnings being treated as errors
+>
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/ptp/ptp_ines.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+You left out the most useful part:
 
-diff --git a/drivers/ptp/ptp_ines.c b/drivers/ptp/ptp_ines.c
-index 7711651ff19e..2c1fb99aa37c 100644
---- a/drivers/ptp/ptp_ines.c
-+++ b/drivers/ptp/ptp_ines.c
-@@ -663,8 +663,7 @@ static void ines_txtstamp(struct mii_timestamper *mii_ts,
- 
- 	spin_unlock_irqrestore(&port->lock, flags);
- 
--	if (old_skb)
--		kfree_skb(old_skb);
-+	kfree_skb(old_skb);
- 
- 	schedule_delayed_work(&port->ts_work, 1);
- }
--- 
-2.17.1
+| libbpf.c:2826:4: note: in expansion of macro 'pr_info'
+|     pr_info("elf: skipping section(%d) %s (size %zu)\n", idx, name,
+sh.sh_size);
+|     ^~~~~~~
+| libbpf.c:2826:50: note: format string is defined here
+|     pr_info("elf: skipping section(%d) %s (size %zu)\n", idx, name,
+sh.sh_size);
+|                                                 ~~^
+|                                                 %llu
 
+But I fixed it as part of [0], thanks.
+
+  [0] https://patchwork.ozlabs.org/project/netdev/patch/20200826030922.2591203-1-andriin@fb.com/
+
+> OE perf build long link,
+> https://ci.linaro.org/view/lkft/job/openembedded-lkft-linux-next/DISTRO=lkft,MACHINE=am57xx-evm,label=docker-lkft/846/consoleText
+>
+> - Naresh
