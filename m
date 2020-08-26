@@ -2,96 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E6E3252F2E
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 15:01:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2DB1252F4A
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 15:05:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730129AbgHZNBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 09:01:22 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:56552 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730098AbgHZNBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 09:01:17 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07QD183l079544;
-        Wed, 26 Aug 2020 08:01:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1598446868;
-        bh=fSnhnNxPqIWbIxTmir4oQNv+5CcHdFvM0yNxIQ/wC0w=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=on00NybfZK9gGkv2AsBLjXUF6owzFRP1dYQzYVnEF5bLzz/JJSMHAhrV6ak7VzmdD
-         KM13P6EzqaroGbAoTtt0/SuJA7CivYXqmzel21tf48vVEVnaNfmZY3BlI1zx2g8VP9
-         cdbq0ZcRVsjxBSo+KuMxgH6sHMoYlJ9g6oelE42o=
-Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 07QD17P7113730
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 26 Aug 2020 08:01:07 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 26
- Aug 2020 08:01:07 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 26 Aug 2020 08:01:07 -0500
-Received: from [10.250.68.181] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07QD17nT047205;
-        Wed, 26 Aug 2020 08:01:07 -0500
-Subject: Re: [PATCH] net: dp83869: Fix RGMII internal delay configuration
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Daniel Gorsulowski <daniel.gorsulowski@esd.eu>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <f.fainelli@gmail.com>, <hkallweit1@gmail.com>
-References: <20200825120721.32746-1-daniel.gorsulowski@esd.eu>
- <20200825133750.GQ2588906@lunn.ch>
- <b2c665e7-9566-6767-6ee3-39219a1bd4a3@ti.com>
- <20200826125859.GQ2403519@lunn.ch>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <aa4b2078-2adf-02a9-094d-bb9695f13cf0@ti.com>
-Date:   Wed, 26 Aug 2020 08:01:06 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1730152AbgHZNFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 09:05:06 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52356 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730163AbgHZNEs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Aug 2020 09:04:48 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kAv6X-00BwXk-DJ; Wed, 26 Aug 2020 15:04:41 +0200
+Date:   Wed, 26 Aug 2020 15:04:41 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        jiri@mellanox.com, idosch@mellanox.com,
+        oleksandr.mazur@plvision.eu, serhiy.boiko@plvision.eu,
+        serhiy.pshyk@plvision.eu, volodymyr.mytnyk@plvision.eu,
+        taras.chornyi@plvision.eu, andrii.savka@plvision.eu,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andy.shevchenko@gmail.com, mickeyr@marvell.com
+Subject: Re: [net-next v5 1/6] net: marvell: prestera: Add driver for
+ Prestera family ASIC devices
+Message-ID: <20200826130441.GR2403519@lunn.ch>
+References: <20200825122013.2844-1-vadym.kochan@plvision.eu>
+ <20200825122013.2844-2-vadym.kochan@plvision.eu>
+ <20200825.172003.1417643181819895272.davem@davemloft.net>
+ <20200826081744.GA2729@plvision.eu>
 MIME-Version: 1.0
-In-Reply-To: <20200826125859.GQ2403519@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200826081744.GA2729@plvision.eu>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew
+> There is a limitation on the DMA range. Current device can't handle
+> whole ZONE_DMA range, so there is a "backup" mechanism which copies the
+> entire packet if the mapping was failed or if the packet's mapped
+> address is out of this range, this is done on both rx and tx directions.
 
-On 8/26/20 7:58 AM, Andrew Lunn wrote:
-> On Tue, Aug 25, 2020 at 02:57:35PM -0500, Dan Murphy wrote:
->> Andrew
->>
->> On 8/25/20 8:37 AM, Andrew Lunn wrote:
->>> On Tue, Aug 25, 2020 at 02:07:21PM +0200, Daniel Gorsulowski wrote:
->>>> The RGMII control register at 0x32 indicates the states for the bits
->>>> RGMII_TX_CLK_DELAY and RGMII_RX_CLK_DELAY as follows:
->>>>
->>>>     RGMII Transmit/Receive Clock Delay
->>>>       0x0 = RGMII transmit clock is shifted with respect to transmit/receive data.
->>>>       0x1 = RGMII transmit clock is aligned with respect to transmit/receive data.
->>>>
->>>> This commit fixes the inversed behavior of these bits
->>>>
->>>> Fixes: 736b25afe284 ("net: dp83869: Add RGMII internal delay configuration")
->>> I Daniel
->>>
->>> I would like to see some sort of response from Dan Murphy about this.
->> Daniel had sent this privately to me and I encouraged him to send it in for
->> review.
->>
->> Unfortunately he did not cc me on the patch he sent to the list.
-> You should be able to reply to this email with a Reviewed-by: and
-> patchwork will do the right thing.
+If you use the DMA API correct, it should hide all this, and do the
+bounce buffers for you. But i'm no DMA expert...
 
-Yep.  I gave my ack on v2 of the patch set
-
-Dan
-
->
-> 	  Andrew
+       Andrew
