@@ -2,172 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 640C72537F0
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:13:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CA882537F4
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726940AbgHZTMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 15:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46838 "EHLO
+        id S1727061AbgHZTNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 15:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726723AbgHZTMw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:12:52 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9582C061574
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:12:51 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id h4so3314078ioe.5
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:12:51 -0700 (PDT)
+        with ESMTP id S1726998AbgHZTNF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:13:05 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410B3C061574;
+        Wed, 26 Aug 2020 12:13:04 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id t6so3627899ljk.9;
+        Wed, 26 Aug 2020 12:13:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2z2UvM3G0Gu8WjlHLYrNvAxLr1vPEVrIx6NRa9VUpps=;
-        b=PbvS9EdU6rZp3k8WnCac48woZj0+lMSvPuqyREjAMfQ2z2KN/gTKPfn9PQ8eLsR5fA
-         gsW7tM5MT1Xf3xF7aPkZ+HvlPJlDx5QvA235sDVKi/XuC+Ut766ob/egs4UUdbKlx75e
-         IgTvm6YA9ikrRot8CWnmrsF9J0aM7Hc3a6g4qSV8cLuy7ILLVM8E8JfEfQirZ+833N2f
-         7R5gEoMWIvVWFY/h3nDq2eM/Yt1Y93D+tK4mfbvgw/Q9LyJaY/VoXljuVRZH6pNd+kyS
-         UFiA6oFwH3ClvUnxnCD2J94GgbrICO6pbUEZxlNZvYb14UdS3hVsMzGP3SVBNxJbhWbM
-         1t8w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZiXOO5FpngiYweKJgzDa8Z+wo7f+rbji0luwABt9fiU=;
+        b=uoh/yV1KiL17KBpuqqT/Pg8KYgKHJgyRt8QI9gtULhHPZpMsNqAFx0Y1HJ068heVn+
+         b13VqwcGRSSRC89hxZI79yDFD1Mk3jeYx0JIIHzAnMU1zAGMIoW5beDoIIxf8vvlpWZQ
+         6GBsjUrjq37gcTof624cNMqDA6ll4tcaJ38yBJ4QLrJz0/DAGXbYBRVMBJetAhlUeZV/
+         Gb2YCo3791tw+r2G1f1zMW5ag/KX2ruXq5+nrqldOL+unnm0lSx4swjwqleMMP7v+23J
+         rWqoxv0STOWfSPP3kC6yhu22HniAkPourpfeFICL9HZwNxaZYqW/yJ/ejbt/zfgU+MBp
+         i7oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2z2UvM3G0Gu8WjlHLYrNvAxLr1vPEVrIx6NRa9VUpps=;
-        b=HYYYFoFL6So4bVEVkqeRKFRt6C0S+v+SCRR/4afeHELwD2SRDxeTdJG0tpMWMpaF8U
-         OsXvj9vzEaQmT4DPJ1uvMTwFs2R1olpRw7ThIQAbiiiwYLKa/x51eJDFbugLsTX7P0it
-         D88Zk/ESWs/j1walV1oefEb2b5aFwEZg99jjRZEEuZtLaC0I7qc9XNp48H6JFJkv6Kd5
-         qUeMb7z9FDlxcM+DZQhhEjDKDZ9b+33zJyxfEZlKrW7eREkYrpuSPRLkNpqMJ2ahNzcF
-         pXq9cbe6tCRMAfwgVQCMLU33w5XnNOWNdHtOdIMStyDgwzikP8jyU+3qTaR/uXmREDnu
-         6KQA==
-X-Gm-Message-State: AOAM530BTn8zWEFEAZRSdhxG8BnWweCvh7NWJSIE9y0WDS94CXVQea58
-        kTEVHl4xGfPGDz/tMhD/9Gw=
-X-Google-Smtp-Source: ABdhPJwISChcI0UA0g/+G0ZByN7vFDVCMmSxdIxiwhNL0cwA2I/Ur2WPfcfGGUB/y2EaYXhPqkMxDg==
-X-Received: by 2002:a02:95ae:: with SMTP id b43mr15889670jai.19.1598469171124;
-        Wed, 26 Aug 2020 12:12:51 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:305a:ae30:42e4:e2ca])
-        by smtp.googlemail.com with ESMTPSA id k2sm719127ioj.2.2020.08.26.12.12.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Aug 2020 12:12:50 -0700 (PDT)
-Subject: Re: [PATCH net-next 5/7] selftests: fib_nexthops: Test IPv6 route
- with group after removing IPv4 nexthops
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-References: <20200826164857.1029764-1-idosch@idosch.org>
- <20200826164857.1029764-6-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b36b6ece-b75b-eb2d-3004-2dac07b85cd4@gmail.com>
-Date:   Wed, 26 Aug 2020 13:12:50 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZiXOO5FpngiYweKJgzDa8Z+wo7f+rbji0luwABt9fiU=;
+        b=seXry+Kpc8QyxTpY9dLsslgUqvR1RmhvqAStaWgzU2n3PSrm9H3YJUfQrge3nc8YFL
+         G0Gvz72rv+y7DaRTPsAxD91CObAkZ+JvIQIU1Uc5NhTpg4DZhfulNgZiKie6Bw0mFBJl
+         qXp3lptisupmITOotF4hCZL8XvnI9wMSNSqGPSkmyqlnWL3t53NZUN/I1nSWq1k6Nplv
+         NyfC9Tcx6guNb54AqI1C8a5XM4uSXCHDNyC5R9XgdtONWhpQdCyTYT/0eSyPTAJfCvwS
+         tpUFGP54lKTg6xhN1DnGCQruioIkphkBpuyNNZDC66h1H3acMbWgoBN8sSi62TRX/NL6
+         VtDQ==
+X-Gm-Message-State: AOAM531PEUXeanfvxSANbONjVP76OrMACcLyCVZN3G9CfcHOxvdcUwbu
+        q9GlokNUwPjAed+mCfVsMRHbcgkh2KE0VhZ5pWS/Y7bNFuI=
+X-Google-Smtp-Source: ABdhPJzNhmbE7y+d0PydrNDvqHITPKb/PEnqf5BTksJSC/rfjR1CsNym3Gvvxvif5V+4YAkOtSKa2POe2BCY0yfGkt0=
+X-Received: by 2002:a2e:9e4e:: with SMTP id g14mr378990ljk.450.1598469182328;
+ Wed, 26 Aug 2020 12:13:02 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200826164857.1029764-6-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200821151544.1211989-1-nicolas.rybowski@tessares.net>
+ <20200824220100.y33yza2sbd7sgemh@ast-mbp.dhcp.thefacebook.com> <CACXrtpQCE-Yp9=7fbH9sB7-4k-OO12JD18JU=9GL_sYHcmnDtA@mail.gmail.com>
+In-Reply-To: <CACXrtpQCE-Yp9=7fbH9sB7-4k-OO12JD18JU=9GL_sYHcmnDtA@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 26 Aug 2020 12:12:50 -0700
+Message-ID: <CAADnVQL1O3Ncr5iwmZx_5FgVrwbXmEWZfGm_ASrTcu0j6YGbiA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/3] bpf: add MPTCP subflow support
+To:     Nicolas Rybowski <nicolas.rybowski@tessares.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        mptcp@lists.01.org, Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/20 10:48 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> Test that an IPv6 route can not use a nexthop group with mixed IPv4 and
-> IPv6 nexthops, but can use it after deleting the IPv4 nexthops.
-> 
-> Output without previous patch:
-> 
-> # ./fib_nexthops.sh -t ipv6_fcnal_runtime
-> 
-> IPv6 functional runtime
-> -----------------------
-> TEST: Route add                                                     [ OK ]
-> TEST: Route delete                                                  [ OK ]
-> TEST: Ping with nexthop                                             [ OK ]
-> TEST: Ping - multipath                                              [ OK ]
-> TEST: Ping - blackhole                                              [ OK ]
-> TEST: Ping - blackhole replaced with gateway                        [ OK ]
-> TEST: Ping - gateway replaced by blackhole                          [ OK ]
-> TEST: Ping - group with blackhole                                   [ OK ]
-> TEST: Ping - group blackhole replaced with gateways                 [ OK ]
-> TEST: IPv6 route with device only nexthop                           [ OK ]
-> TEST: IPv6 multipath route with nexthop mix - dev only + gw         [ OK ]
-> TEST: IPv6 route can not have a v4 gateway                          [ OK ]
-> TEST: Nexthop replace - v6 route, v4 nexthop                        [ OK ]
-> TEST: Nexthop replace of group entry - v6 route, v4 nexthop         [ OK ]
-> TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-> TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-> TEST: IPv6 route using a group after deleting v4 gateways           [FAIL]
-> TEST: Nexthop with default route and rpfilter                       [ OK ]
-> TEST: Nexthop with multipath default route and rpfilter             [ OK ]
-> 
-> Tests passed:  18
-> Tests failed:   1
-> 
-> Output with previous patch:
-> 
-> bash-5.0# ./fib_nexthops.sh -t ipv6_fcnal_runtime
-> 
-> IPv6 functional runtime
-> -----------------------
-> TEST: Route add                                                     [ OK ]
-> TEST: Route delete                                                  [ OK ]
-> TEST: Ping with nexthop                                             [ OK ]
-> TEST: Ping - multipath                                              [ OK ]
-> TEST: Ping - blackhole                                              [ OK ]
-> TEST: Ping - blackhole replaced with gateway                        [ OK ]
-> TEST: Ping - gateway replaced by blackhole                          [ OK ]
-> TEST: Ping - group with blackhole                                   [ OK ]
-> TEST: Ping - group blackhole replaced with gateways                 [ OK ]
-> TEST: IPv6 route with device only nexthop                           [ OK ]
-> TEST: IPv6 multipath route with nexthop mix - dev only + gw         [ OK ]
-> TEST: IPv6 route can not have a v4 gateway                          [ OK ]
-> TEST: Nexthop replace - v6 route, v4 nexthop                        [ OK ]
-> TEST: Nexthop replace of group entry - v6 route, v4 nexthop         [ OK ]
-> TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-> TEST: IPv6 route can not have a group with v4 and v6 gateways       [ OK ]
-> TEST: IPv6 route using a group after deleting v4 gateways           [ OK ]
-> TEST: Nexthop with default route and rpfilter                       [ OK ]
-> TEST: Nexthop with multipath default route and rpfilter             [ OK ]
-> 
-> Tests passed:  19
-> Tests failed:   0
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  tools/testing/selftests/net/fib_nexthops.sh | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-> index 22dc2f3d428b..06e4f12e838d 100755
-> --- a/tools/testing/selftests/net/fib_nexthops.sh
-> +++ b/tools/testing/selftests/net/fib_nexthops.sh
-> @@ -739,6 +739,21 @@ ipv6_fcnal_runtime()
->  	run_cmd "$IP nexthop replace id 81 via 172.16.1.1 dev veth1"
->  	log_test $? 2 "Nexthop replace of group entry - v6 route, v4 nexthop"
->  
-> +	run_cmd "$IP nexthop add id 86 via 2001:db8:92::2 dev veth3"
-> +	run_cmd "$IP nexthop add id 87 via 172.16.1.1 dev veth1"
-> +	run_cmd "$IP nexthop add id 88 via 172.16.1.1 dev veth1"
-> +	run_cmd "$IP nexthop add id 124 group 86/87/88"
-> +	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 124"
-> +	log_test $? 2 "IPv6 route can not have a group with v4 and v6 gateways"
-> +
-> +	run_cmd "$IP nexthop del id 88"
-> +	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 124"
-> +	log_test $? 2 "IPv6 route can not have a group with v4 and v6 gateways"
-> +
-> +	run_cmd "$IP nexthop del id 87"
-> +	run_cmd "$IP ro replace 2001:db8:101::1/128 nhid 124"
-> +	log_test $? 0 "IPv6 route using a group after removing v4 gateways"
-> +
->  	$IP nexthop flush >/dev/null 2>&1
->  
->  	#
-> 
+On Tue, Aug 25, 2020 at 11:55 AM Nicolas Rybowski
+<nicolas.rybowski@tessares.net> wrote:
+>
+> Hi Alexei,
+>
+> Thanks for the feedback!
+>
+> On Tue, Aug 25, 2020 at 12:01 AM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Fri, Aug 21, 2020 at 05:15:38PM +0200, Nicolas Rybowski wrote:
+> > > Previously it was not possible to make a distinction between plain TCP
+> > > sockets and MPTCP subflow sockets on the BPF_PROG_TYPE_SOCK_OPS hook.
+> > >
+> > > This patch series now enables a fine control of subflow sockets. In its
+> > > current state, it allows to put different sockopt on each subflow from a
+> > > same MPTCP connection (socket mark, TCP congestion algorithm, ...) using
+> > > BPF programs.
+> > >
+> > > It should also be the basis of exposing MPTCP-specific fields through BPF.
+> >
+> > Looks fine, but I'd like to see the full picture a bit better.
+> > What's the point of just 'token' ? What can be done with it?
+>
+> The idea behind exposing only the token at the moment is that it is
+> the strict minimum required to identify all subflows linked to a
+> single MPTCP connection. Without that, each subflow is seen as a
+> "normal" TCP connection and it is not possible to find a link between
+> each other.
+> In other words, it allows the collection of all the subflows of a
+> MPTCP connection in a BPF map and then the application of per subflow
+> specific policies. More concrete examples of its usage are available
+> at [1].
+>
+> We try to avoid exposing new fields without related use-cases, this is
+> why it is the only one currently. And this one is very important to
+> identify MPTCP connections and subflows.
+>
+> > What are you thinking to add later?
+>
+> The next steps would be the exposure of additional subflow context
+> data like the backup bit or some path manager fields to allow more
+> flexible / accurate BPF decisions.
+> We are also looking at implementing Packet Schedulers [2] and Path
+> Managers through BPF.
+> The ability of collecting all the paths available for a given MPTCP
+> connection - identified by its token - at the BPF level should help
+> for such decisions but more data will need to be exposed later to take
+> smart decisions or to analyse some situations.
+>
+> I hope it makes the overall idea clearer.
+>
+> > Also selftest for new feature is mandatory.
+>
+> I will work on the selftests to add them in a v2. I was not sure a new
+> selftest was required when exposing a new field but now it is clear,
+> thanks!
+>
+>
+> [1] https://github.com/multipath-tcp/mptcp_net-next/tree/scripts/bpf/examples
+> [2] https://datatracker.ietf.org/doc/draft-bonaventure-iccrg-schedulers/
 
-Thanks for adding the tests!
-
-Reviewed-by: David Ahern <dsahern@gmail.com>
-
+Thanks! The links are certainly helpful.
+Since long term you're considering implementing path manager in bpf
+I suggest to take a look at bpf_struct_ops and bpf based tcp congestion control.
+It would fit that use case better.
+For now the approach proposed in this patch is probably good enough
+for simple subflow marking. From the example it's not clear what the networking
+stack is supposed to do with a different sk_mark.
+Also considering using sk local storage instead of sk_mark. It's arbitrary size.
