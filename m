@@ -2,106 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 938B72534D3
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 18:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D17A82534E8
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 18:29:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727878AbgHZQ0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 12:26:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48702 "EHLO
+        id S1728068AbgHZQ3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 12:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726862AbgHZQ0u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 12:26:50 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9462EC061574
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 09:26:49 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id oz20so3710937ejb.5
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 09:26:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wrLEhyykKZ2RpiQ6L58VSvcplY5mu1P0J6ujk43nyVg=;
-        b=O/9hiAd9Q3zSDZYibQJ99Fnto4G86/S8cP/GMk/Lv2v7zlSNjJHyOVFW1F0klVqJSJ
-         YhSRDeGhB6fTNien1Zq2UxSQ+osqYjxLFhdpSP+OD4hAc/BUzZoZS3/7WOBN9+OrOKs/
-         IGyTe5RT6CCOd/UjyEsaBfsV/FxvpCpfmdsIbcK+Zn964dZI4nmjv9UHFEnNaP8QArd9
-         8M3Nk/LPUxDWYLuL5ydbTwbxjlpzgz+xOwGgVknDA0FUHXNF6GWsUVOoGx6djtt/ZUyD
-         uwK4rLEfUAhRZskjMchQ1K6a7Bi2iLFMR2tKjnnD5WCL7etJjUJk/e9N7vHDmis6tBfc
-         vwLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wrLEhyykKZ2RpiQ6L58VSvcplY5mu1P0J6ujk43nyVg=;
-        b=UIcw/5WqYlAY2yjwdbG/dzwVfeU9KXSUdbtSySThUfYKq1SSnzvc7yjQMIPEOlUnfh
-         FhBGf8AOW3HGmRKCSH/qxTt8cEpv6xhBE4NL1JkMDSoltZYJQh/sWxVDgYJ3u4dtgJ4T
-         5Ntw3TM54AHq+86ABhaW1mN/CsMhwK3o1RkhwKQ816PVvTGVH4cn0O9hKSDbi49m7Uth
-         3QIE6N1j5XmmvxNegfqDAbwoPo9zFB8B92OKZ4wwUn26nUYT72zTr1t853rtolTLW5po
-         VZftvL5L+olQeGsmtLX5vB/yTFNF6rsx6HXK9iArT0Xaf24N2PPYu0GRC+NyMngvWY+4
-         wgkg==
-X-Gm-Message-State: AOAM530gHsLeH48MyBdy0UBIWyZ0k936j1jfQGcfXxcavNOvUEwa2f4p
-        7MSXb7FgOyeXTC363RHOmrQ=
-X-Google-Smtp-Source: ABdhPJwQ+K7vw4yf1eJvmUcwa4TizNOb1OSmc4AglHhknphfrUj+8zslgthJAeqdxf9zKxcRyFYEpg==
-X-Received: by 2002:a17:906:b09a:: with SMTP id x26mr2656071ejy.162.1598459208260;
-        Wed, 26 Aug 2020 09:26:48 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:9d4:6f74:3951:c887? ([2003:ea:8f23:5700:9d4:6f74:3951:c887])
-        by smtp.googlemail.com with ESMTPSA id eb5sm1653060ejc.94.2020.08.26.09.26.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Aug 2020 09:26:47 -0700 (PDT)
-Subject: Re: [PATCH] net: mdiobus: fix device unregistering in
- mdiobus_register
-To:     Sascha Hauer <s.hauer@pengutronix.de>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de
-References: <20200826095141.5156-1-s.hauer@pengutronix.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <7a1f68b7-c23b-11e2-befc-105b995da89f@gmail.com>
-Date:   Wed, 26 Aug 2020 18:26:36 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        with ESMTP id S1727066AbgHZQ3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 12:29:11 -0400
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBE5C061574;
+        Wed, 26 Aug 2020 09:29:10 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4BcBBp3DBPzQlWV;
+        Wed, 26 Aug 2020 18:29:06 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aixah.de; s=MBO0001;
+        t=1598459344;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uSOvEcQaqddPwizXQnRzqoFfD6pthJq2HRRXeaGIx8M=;
+        b=F7Rn3/52abVlbiyS+9PvjmJ6SOCVWHECo3aqTkkprLLdU93By4s4UXs/jsBBxN1SoCxXrW
+        +ySjwsVnkIOD45Bm5JppLMDrvq7lbscCoVXHdW+x43Wd9H3kAdAVK9iwp9Gf2lVvslwEcf
+        nH0yWKaapXuXZv+3fkOYoPmpHUwfwpfO4xbsR0SIPK5wZxNmz71L5sOxUq1VLQv8gGiSSe
+        9fSu5FMoMJWSWJvtTLiYZ4Y+ur3Nrq8cWHZKSju1tCbsFgaJGsxl8y+0Oa4eI8Te8dIMds
+        fPxhOyUGGiZ4GVQf1IpRn79XYY3IOQoJfDAFiSRkK9glUJ4rGNgpU3EKRduJRw==
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by hefe.heinlein-support.de (hefe.heinlein-support.de [91.198.250.172]) (amavisd-new, port 10030)
+        with ESMTP id X6Skw1EjWZS6; Wed, 26 Aug 2020 18:29:02 +0200 (CEST)
+Date:   Wed, 26 Aug 2020 16:29:01 +0000
+From:   Mira Ressel <aranea@aixah.de>
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] veth: Initialize dev->perm_addr
+Message-ID: <20200826162901.4js4u5u2whusp4l4@vega>
+References: <20200824143828.5964-1-aranea@aixah.de>
+ <20200824.102545.1450838041398463071.davem@davemloft.net>
+ <20200826152000.ckxrcfyetdvuvqum@vega>
+ <20200826.082857.584544823490249841.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <20200826095141.5156-1-s.hauer@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200826.082857.584544823490249841.davem@davemloft.net>
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -2.01 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 5F31466D
+X-Rspamd-UID: cce744
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.08.2020 11:51, Sascha Hauer wrote:
-> __mdiobus_register() can fail between calling device_register() and
-> setting bus->state to MDIOBUS_REGISTERED. When this happens the caller
-> will call mdiobus_free() which then frees the mdio bus structure. This
-> is not allowed as the embedded struct device is already registered, thus
-> must be freed dropping the reference count using put_device(). To
-> accomplish this set bus->state to MDIOBUS_UNREGISTERED after having
-> registered the device. With this mdiobus_free() correctly calls
-> put_device() instead of freeing the mdio bus structure directly.
+On Wed, Aug 26, 2020 at 08:28:57AM -0700, David Miller wrote:
+> From: Mira Ressel <aranea@aixah.de>
+> Date: Wed, 26 Aug 2020 15:20:00 +0000
 > 
-> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-> ---
->  drivers/net/phy/mdio_bus.c | 2 ++
->  1 file changed, 2 insertions(+)
+> > I'm setting the peer->perm_addr, which would otherwise be zero, to its
+> > dev_addr, which has been either generated randomly by the kernel or
+> > provided by userland in a netlink attribute.
 > 
-> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> index 0af20faad69d..85cbaab4a591 100644
-> --- a/drivers/net/phy/mdio_bus.c
-> +++ b/drivers/net/phy/mdio_bus.c
-> @@ -540,6 +540,8 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
->  		return -EINVAL;
->  	}
->  
-> +	bus->state = MDIOBUS_UNREGISTERED;
-> +
->  	mutex_init(&bus->mdio_lock);
->  	mutex_init(&bus->shared_lock);
->  
-> 
-I see the point. If we bail out after having called device_register()
-then put_device() has to be called. This however isn't done by
-mdiobus_free() if state is MDIOBUS_ALLOCATED. So I think the idea is
-right. However we have to call put_device() even if device_register()
-fails, therefore setting state to MDIOBUS_UNREGISTERED should be
-moved to before calling device_register().
+> Which by definition makes it not necessarily a "permanent address" and
+> therefore is subject to being different across boots, which is exactly
+> what you don't want to happen for automatic address generation.
 
+That's true, but since veth devices aren't backed by any hardware, I
+unfortunately don't have a good source for a permanent address. The only
+inherently permanent thing about them is their name.
+
+People who use the default eui64-based address generation don't get
+persistent link-local addresses for their veth devices out of the box
+either -- the EUI64 is derived from the device's dev_addr, which is
+randomized by default.
+
+If that presents a problem for anyone, they can configure their userland
+to set the dev_addr to a static value, which handily fixes this problem
+for both address generation algorithms.
+
+I'm admittedly glancing over one problem here -- I'm only setting the
+perm_addr during device creation, whereas userland can change the
+dev_addr at any time. I'm not sure if it'd make sense here to update the
+perm_addr if the dev_addr is changed later on?
+
+-- 
+Regards,
+Mira
