@@ -2,208 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8176F252583
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 04:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61910252584
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 04:38:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726707AbgHZCi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 22:38:29 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:40994 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726635AbgHZCi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 22:38:28 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07Q2P2Ln027267;
-        Tue, 25 Aug 2020 19:38:09 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=ddWATERfla7VGEv5e7t8JREuMb1qasGyjNfoV803qDU=;
- b=ZMLFw7zsfm7aCcZqlCwpN8hxKHXeP30EuLLhBgTNbKmBmZonDp32IrHudh20w6yMFFvV
- YNFxcodx6+roA93W/nIDxuspNzO6/BYah5cvdDxpgwXwF/r3dsD36WSwEaHVAAzYj258
- BePfr6xPs3zsRwe+/EaUGtgNuq93q0bOBIU= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 335dp9raxy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 25 Aug 2020 19:38:09 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 25 Aug 2020 19:38:08 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M/vxz72fbR42Pq7eCBuSvinYjRLCm+aOOmhuoO9tPJIYre3CQRc20Q00RM+xFO2M4ZFenOAUoJJx4JJzh4u5ohWtEsod82hMRjR9HjnWwPWnD/HjYdRDPw/r1WYF+DB2qZJEpi9Ihfx7+gGTDi7JgYlRrAwuENzFQeID6wlR3AUyLOx1j10rF2i6W/qc3xYxtu67ZQ96wBPR0Bj5lstuBurG4H0QxNVbVnMME/mvCpDaQZhJ4HkYoIhwhiJ6XX9iCJHCDNQEXm0ILSZjrodJ1t0oVFh8CQ/Be4ytVDU1Sk9EzN+XvQyTOjIsAN3hCcEjOxfj/l7fNPmqST5BQZIoYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ddWATERfla7VGEv5e7t8JREuMb1qasGyjNfoV803qDU=;
- b=AQb1OL/IS2+uL1Ic93bHWYwxLKR9VY+XLi4rJuOnoM/cQSuZ2nWlIGoZyLwB4qxZAqXNJ07oHNNWiMQcJSUvNY7nSGjxSEArGHIi1zfOmIQhLJwHacjecC3AlsnDVaqnADpGcsXhDtd1thj7s0XaCA4oasr6C5bOjzveJ0gkoJj3CKB7IE2lVhKAw8IRMoBjBWpyOqe/mkUaJXGuacNdfvWi03dFXPpR7cA6GnS5CP8Y0cLrOjQRkkz7hy1U6dstmfIfbkoY8BTTLn7fRh3ML1/w0YNQxi37DmXzT6UrIgWn6yfO5lI5x5zPwhjsew31EnrO1QBC00WAsgMYr4bFVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ddWATERfla7VGEv5e7t8JREuMb1qasGyjNfoV803qDU=;
- b=e7Qj9Oq2pa6M+USPfZao1lJHNB1x9D4QJkcuWUBqlrtOubcNCMLH1SZbkjgqNYAaqSvj2QTazmLs51iSW88tx9KROXbojOXXxXFyUBo0s1v5Kepl8Zw8Td1I1zVXk5E+AWXeHbuAM2nSH9XJRK2yxFqWrlgg6zLs/LaKHBK53YU=
-Authentication-Results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
- by BYAPR15MB2215.namprd15.prod.outlook.com (2603:10b6:a02:89::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.26; Wed, 26 Aug
- 2020 02:38:05 +0000
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::354d:5296:6a28:f55e]) by BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::354d:5296:6a28:f55e%6]) with mapi id 15.20.3326.019; Wed, 26 Aug 2020
- 02:38:05 +0000
-Date:   Tue, 25 Aug 2020 19:38:02 -0700
-From:   Roman Gushchin <guro@fb.com>
-To:     Shakeel Butt <shakeelb@google.com>
-CC:     <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Linux MM <linux-mm@kvack.org>
-Subject: Re: [PATCH bpf-next v4 03/30] bpf: memcg-based memory accounting for
- bpf maps
-Message-ID: <20200826023802.GA2490802@carbon.dhcp.thefacebook.com>
-References: <20200821150134.2581465-1-guro@fb.com>
- <20200821150134.2581465-4-guro@fb.com>
- <CALvZod70cywN0-HCXUPfyLN1vQdOBb46uCRk5E3NkOTDeWcEtg@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALvZod70cywN0-HCXUPfyLN1vQdOBb46uCRk5E3NkOTDeWcEtg@mail.gmail.com>
-X-ClientProxiedBy: BYAPR07CA0034.namprd07.prod.outlook.com
- (2603:10b6:a02:bc::47) To BYAPR15MB4136.namprd15.prod.outlook.com
- (2603:10b6:a03:96::24)
+        id S1726751AbgHZCi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 22:38:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726635AbgHZCi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 22:38:56 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FC2C061574;
+        Tue, 25 Aug 2020 19:38:55 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id cs12so137096qvb.2;
+        Tue, 25 Aug 2020 19:38:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ZfdEeRkGYYJGqA9dRHE+OHZVDWc9//QHNY+B5Tdcg7c=;
+        b=BeGWowEwb9tCzzJMFPX4d67otru8ppw6l5bqmwbIc7/9vgRTitRITqEt1dxhubYx8X
+         UNDP/LRYicQckoyLd33GxPv9ljUGMUemrcn6aWuBS9rBUaVLANnakDS27y1G9Iac3ChR
+         015tRTcDnv6NT9r4FwpQXKh6sDDJ6GJHvz37/OhOSw6wphpCxZD/HLCx17LYGTUNpXQH
+         shmDrv6TCFH3zmY15E9CN5zrKvVoznBsxJO+zEmR5wq1rTOPUMNJOlHnh4osacCSo0ZT
+         SGqKRJwlVIfbz6zmaayHPfkGX/dFQ9FZ1UFvJp9aDJnz2JBnbZW0uW3a7BSDdSO91PAB
+         2GJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ZfdEeRkGYYJGqA9dRHE+OHZVDWc9//QHNY+B5Tdcg7c=;
+        b=Cgb/ypJsGc7GfcYDhn4JpNW35HVGQ7GNd8QlUXWJTSIiColeq0tZQil+ZkltxUoZsR
+         ltZ6xvERWpWve6QQT2OGYs/bLRC9k8gdJiawrNMJN4UkUZTQBUkUdVMt4nRVrfoGx7eQ
+         Fx3r/BhaMMfqVAQyIP/uhsOT0tXtOrdok06p2fpbGq4w7ZRLFo1porUfQ9V6LCQz3Fvo
+         9yocYxdON/VzAC6TH9IrA7YqN2HMlgy2Avo/7i+C755KHbxtLFKPagMGvm1y8BxeXhpa
+         Pt3m8t0xLxqDGOJsaGS2QzD1R1miEH+o8Tt2/ixOXX/azqrjorOnxSwLNbDltdtlpspk
+         OXtQ==
+X-Gm-Message-State: AOAM53344JFoodrSUCtsqzcOKczT0hy6fiLnOouGnhXaD5AE92VZuEGC
+        +x9BDrPuybQuwO33GShUL3sbqzwWRngoPbAElns=
+X-Google-Smtp-Source: ABdhPJyryS+THO4tooNNmhvHHlRhElXnGkWzzGY0fyPBKoMaie30LtiYvAFdp8ePYIYtStjn5OLmLJruVBYoeaCrkhM=
+X-Received: by 2002:a05:6214:1108:: with SMTP id e8mr12289973qvs.237.1598409534967;
+ Tue, 25 Aug 2020 19:38:54 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from 255.255.255.255 (255.255.255.255) by BYAPR07CA0034.namprd07.prod.outlook.com (2603:10b6:a02:bc::47) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend Transport; Wed, 26 Aug 2020 02:38:04 +0000
-X-Originating-IP: [2620:10d:c090:400::5:75b8]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dc66c436-9e89-4a7e-14a9-08d849690f4e
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2215:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2215DB41F0036FF8CE8BA33CBE540@BYAPR15MB2215.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n76nI93Mdj2wcPIahJDyD4p5sMK9xEr25xbAE4OYKwO2PSSsV6B//ie+ctaMds+H2zDl/yRvRnzHJzOeDMvub37y9GC+4XRtlkA4MyeFYYARDAI8LOtZPNiKdYwwOduU8y/hrR4Geh/Ix3JXgckAGD+BDueu8hQooe93qoCrSvw4RM0AULX/P2D6wMF0mw0/sLnrrhbo1hgnxIL4arfdTyp1peNUZPpY3M95y8hMykY6FJpdOLQ8vglCx1PVflKrw/KBJhzdRKrWnMgVmQzmdP4QppfKQmDcOfSY1SJ1CoEnbpBYCx1DUzrWOdLPklhubDS78ojHYMxnRsT7ZwAvOQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4136.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(136003)(396003)(39860400002)(346002)(376002)(956004)(33656002)(86362001)(66476007)(66556008)(54906003)(4326008)(52116002)(186003)(53546011)(16576012)(83380400001)(15650500001)(316002)(9686003)(8936002)(5660300002)(8676002)(2906002)(478600001)(6916009)(66946007)(1076003)(6486002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: 3dhVIPtDhBSJ/Tshe/i5y4CChUQGNlRMQusCci9Me8ZQD0Q9HmKEcw+vMWDLIV2xDPvZ6y0CTOGwgVZYCJjFNynNCCXGW5zcQm1+ke9tyx0Hw0YvnvIdC/tMb57RvVsk8NNsNGbNY9O6LeSLrjKWVuyyDZBikOCY0yrwxhM/bxuhPy55w7D8gJhH5VTOHlzVaAeF8+hDz8X9+/FnWL9IuYb5FmbcgEIpi50FpPuhimjTPx2vJkN8G7ATMYKJszUhQw2SSQHCkWtXLPzj0oI3coAfXJmLDMsE0nu5Cw9pBPpJ6qf6v8XS7NXYH4XsRYCubL7B719NdU8SLfoBZwLs9jOOR54WhEBIRwhVcjp2luxRmER5R0W0N8JqSHYuHIZat1EmL/paU/cyEyeva4AV2gg13UWMjMkO6LS3L2Z2XeJadXw7mcV9DW9V4IrMjXRBFc6GdAOhtzDh957qWwKFHBlPPnlnrLyqsGD4rZqWbrriblMBO065mERAVJeXNObeKPGmw7xhk/rP7j/jtT6JHHmf+Om6vdFGt55+I1OQFuLI3B6gq1hG/6xqVy72BF05rYMKh0n9T0lCKaQCNJ0vksyPUZLuKbcPGhtZ0P1xxPy0b/CyR6zcG+GH1pmsAwxMVpvgE5q9aWB4u2o7/7A56+SxDv2mANelUwIxEA+HJWQ=
-X-MS-Exchange-CrossTenant-Network-Message-Id: dc66c436-9e89-4a7e-14a9-08d849690f4e
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4136.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2020 02:38:05.3002
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YV1f4ucp2OhKqmWQ/W5lN/JvcfRoLxF6XQXJVlB7dRi09tyXKYfYjRKQAcC+qplD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2215
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-25_11:2020-08-25,2020-08-26 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- malwarescore=0 priorityscore=1501 impostorscore=0 mlxscore=0
- lowpriorityscore=0 bulkscore=0 spamscore=0 suspectscore=1 phishscore=0
- clxscore=1015 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2008260018
-X-FB-Internal: deliver
+References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
+ <20200623134259.8197-1-mzhivich@akamai.com> <1849b74f-163c-8cfa-baa5-f653159fefd4@akamai.com>
+ <CAM_iQpX1+dHB0kJF8gRfuDeAb9TsA9mB9H_Og8n8Hr19+EMLJA@mail.gmail.com>
+ <CAM_iQpWjQiG-zVs+e-V=8LvTFbRwgC4y4eoGERjezfAT0Fmm8g@mail.gmail.com>
+ <7fd86d97-6785-0b5f-1e95-92bc1da9df35@netrounds.com> <500b4843cb7c425ea5449fe199095edd5f7feb0c.camel@redhat.com>
+ <25ca46e4-a8c1-1c88-d6a9-603289ff44c3@akamai.com> <CANE52Ki8rZGDPLZkxY--RPeEG+0=wFeyCD6KKkeG1WREUwramw@mail.gmail.com>
+ <20200822032800.16296-1-hdanton@sina.com> <CACS=qqKhsu6waaXndO5tQL_gC9TztuUQpqQigJA2Ac0y12czMQ@mail.gmail.com>
+ <20200825032312.11776-1-hdanton@sina.com> <CACS=qqK-5g-QM_vczjY+A=3fi3gChei4cAkKweZ4Sn2L537DQA@mail.gmail.com>
+ <20200825162329.11292-1-hdanton@sina.com>
+In-Reply-To: <20200825162329.11292-1-hdanton@sina.com>
+From:   Kehuan Feng <kehuan.feng@gmail.com>
+Date:   Wed, 26 Aug 2020 10:38:43 +0800
+Message-ID: <CACS=qqKgiwdCR_5+z-vkZ0X8DfzOPD7_ooJ_imeBnx+X1zw2qg@mail.gmail.com>
+Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     Jike Song <albcamus@gmail.com>, Josh Hunt <johunt@akamai.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonas Bonn <jonas.bonn@netrounds.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Michael Zhivich <mzhivich@akamai.com>,
+        David Miller <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 04:27:09PM -0700, Shakeel Butt wrote:
-> On Fri, Aug 21, 2020 at 8:01 AM Roman Gushchin <guro@fb.com> wrote:
-> >
-> > This patch enables memcg-based memory accounting for memory allocated
-> > by __bpf_map_area_alloc(), which is used by most map types for
-> > large allocations.
-> >
-> > If a map is updated from an interrupt context, and the update
-> > results in memory allocation, the memory cgroup can't be determined
-> > from the context of the current process. To address this case,
-> > bpf map preserves a pointer to the memory cgroup of the process,
-> > which created the map. This memory cgroup is charged for allocations
-> > from interrupt context.
-> >
-> > Following patches in the series will refine the accounting for
-> > some map types.
-> >
-> > Signed-off-by: Roman Gushchin <guro@fb.com>
-> > ---
-> >  include/linux/bpf.h  |  4 ++++
-> >  kernel/bpf/helpers.c | 37 ++++++++++++++++++++++++++++++++++++-
-> >  kernel/bpf/syscall.c | 27 ++++++++++++++++++++++++++-
-> >  3 files changed, 66 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index a9b7185a6b37..b5f178afde94 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -34,6 +34,7 @@ struct btf_type;
-> >  struct exception_table_entry;
-> >  struct seq_operations;
-> >  struct bpf_iter_aux_info;
-> > +struct mem_cgroup;
-> >
-> >  extern struct idr btf_idr;
-> >  extern spinlock_t btf_idr_lock;
-> > @@ -138,6 +139,9 @@ struct bpf_map {
-> >         u32 btf_value_type_id;
-> >         struct btf *btf;
-> >         struct bpf_map_memory memory;
-> > +#ifdef CONFIG_MEMCG_KMEM
-> > +       struct mem_cgroup *memcg;
-> > +#endif
-> >         char name[BPF_OBJ_NAME_LEN];
-> >         u32 btf_vmlinux_value_type_id;
-> >         bool bypass_spec_v1;
-> > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-> > index be43ab3e619f..f8ce7bc7003f 100644
-> > --- a/kernel/bpf/helpers.c
-> > +++ b/kernel/bpf/helpers.c
-> > @@ -14,6 +14,7 @@
-> >  #include <linux/jiffies.h>
-> >  #include <linux/pid_namespace.h>
-> >  #include <linux/proc_ns.h>
-> > +#include <linux/sched/mm.h>
-> >
-> >  #include "../../lib/kstrtox.h"
-> >
-> > @@ -41,11 +42,45 @@ const struct bpf_func_proto bpf_map_lookup_elem_proto = {
-> >         .arg2_type      = ARG_PTR_TO_MAP_KEY,
-> >  };
-> >
-> > +#ifdef CONFIG_MEMCG_KMEM
-> > +static __always_inline int __bpf_map_update_elem(struct bpf_map *map, void *key,
-> > +                                                void *value, u64 flags)
-> > +{
-> > +       struct mem_cgroup *old_memcg;
-> > +       bool in_interrupt;
-> > +       int ret;
-> > +
-> > +       /*
-> > +        * If update from an interrupt context results in a memory allocation,
-> > +        * the memory cgroup to charge can't be determined from the context
-> > +        * of the current task. Instead, we charge the memory cgroup, which
-> > +        * contained a process created the map.
-> > +        */
-> > +       in_interrupt = in_interrupt();
-> > +       if (in_interrupt)
-> > +               old_memcg = memalloc_use_memcg(map->memcg);
-> > +
-> 
-> The memcg_kmem_bypass() will bypass all __GFP_ACCOUNT allocations even
-> before looking at current->active_memcg, so, this patch will be a
-> noop.
+Hi Hillf,
 
-Good point. Looks like it's a good example of kmem accounting from an interrupt
-context, which we've discussed on the Plumbers session.
+Thanks for the patch.
+I just tried it and it looks better than previous one. The issue
+appeared only once over ~30 mins stressing (without the patch , it
+shows up within 1 mins in usual, so I feel like we are getting close
+to the final fix)
+(pasted the modifications on my tree in case of any missing)
 
-It means we need some more work on the mm side.
+--- ./include/net/sch_generic.h.orig 2020-08-21 15:13:51.787952710 +0800
++++ ./include/net/sch_generic.h 2020-08-26 09:41:04.647173869 +0800
+@@ -79,6 +79,7 @@
+ #define TCQ_F_INVISIBLE 0x80 /* invisible by default in dump */
+ #define TCQ_F_NOLOCK 0x100 /* qdisc does not require locking */
+ #define TCQ_F_OFFLOADED 0x200 /* qdisc is offloaded to HW */
++ int                     pkt_seq;
+  u32 limit;
+  const struct Qdisc_ops *ops;
+  struct qdisc_size_table __rcu *stab;
+--- ./include/net/pkt_sched.h.orig 2020-08-21 15:13:51.787952710 +0800
++++ ./include/net/pkt_sched.h 2020-08-26 09:42:14.491377514 +0800
+@@ -117,8 +117,15 @@
+ static inline void qdisc_run(struct Qdisc *q)
+ {
+  if (qdisc_run_begin(q)) {
++ q->pkt_seq =3D 0;
++
+  __qdisc_run(q);
+  qdisc_run_end(q);
++
++ /* reschedule qdisc if there are packets enqueued */
++ if (q->pkt_seq !=3D 0)
++ __netif_schedule(q);
++
+  }
+ }
 
-Thanks!
+--- ./net/core/dev.c.orig 2020-03-19 16:31:27.000000000 +0800
++++ ./net/core/dev.c 2020-08-26 09:47:57.783165885 +0800
+@@ -2721,6 +2721,7 @@
+
+  local_irq_save(flags);
+  sd =3D this_cpu_ptr(&softnet_data);
++ q->pkt_seq =3D 0;
+  q->next_sched =3D NULL;
+  *sd->output_queue_tailp =3D q;
+  sd->output_queue_tailp =3D &q->next_sched;
+--- ./net/sched/sch_generic.c.orig 2020-08-24 22:02:04.589830751 +0800
++++ ./net/sched/sch_generic.c 2020-08-26 09:43:40.987852551 +0800
+@@ -403,6 +403,9 @@
+  */
+  quota -=3D packets;
+  if (quota <=3D 0 || need_resched()) {
++ /* info caller to reschedule qdisc outside q->seqlock */
++ q->pkt_seq =3D 1;
++
+  __netif_schedule(q);
+  break;
+  }
+
+
+Hillf Danton <hdanton@sina.com> =E4=BA=8E2020=E5=B9=B48=E6=9C=8826=E6=97=A5=
+=E5=91=A8=E4=B8=89 =E4=B8=8A=E5=8D=8812:26=E5=86=99=E9=81=93=EF=BC=9A
+>
+>
+> Hi Feng,
+>
+> On Tue, 25 Aug 2020 15:14:12 +0800 Fengkehuan Feng wrote:
+> > Hi Hillf,
+> >
+> > I just tried the updated version and the system can boot up now.
+>
+> Thanks again for your testing.
+>
+> > It does mitigate the issue a lot but still couldn't get rid of it
+> > thoroughly. It seems to me like the effect of Cong's patch.
+>
+> Your echoes show we're still march in the dark and let's try another
+> direction in which qdisc is rescheduled outside seqlock to make sure
+> tx softirq is raised when there're more packets on the pfifo_fast to
+> be transmitted.
+>
+>         CPU0                            CPU1
+>         ----                            ----
+>         seqlock
+>         test __QDISC_STATE_SCHED
+>                 raise tx softirq
+>                                         clear __QDISC_STATE_SCHED
+>                                         try seqlock
+>                                         __qdisc_run(q);
+>                                         sequnlock
+>         sequnlock
+>
+>
+> --- a/include/net/sch_generic.h
+> +++ b/include/net/sch_generic.h
+> @@ -79,6 +79,7 @@ struct Qdisc {
+>  #define TCQ_F_INVISIBLE                0x80 /* invisible by default in d=
+ump */
+>  #define TCQ_F_NOLOCK           0x100 /* qdisc does not require locking *=
+/
+>  #define TCQ_F_OFFLOADED                0x200 /* qdisc is offloaded to HW=
+ */
+> +       int                     pkt_seq;
+>         u32                     limit;
+>         const struct Qdisc_ops  *ops;
+>         struct qdisc_size_table __rcu *stab;
+> --- a/include/net/pkt_sched.h
+> +++ b/include/net/pkt_sched.h
+> @@ -118,6 +118,8 @@ void __qdisc_run(struct Qdisc *q);
+>  static inline void qdisc_run(struct Qdisc *q)
+>  {
+>         if (qdisc_run_begin(q)) {
+> +               q->pkt_seq =3D 0;
+> +
+>                 /* NOLOCK qdisc must check 'state' under the qdisc seqloc=
+k
+>                  * to avoid racing with dev_qdisc_reset()
+>                  */
+> @@ -125,6 +127,10 @@ static inline void qdisc_run(struct Qdis
+>                     likely(!test_bit(__QDISC_STATE_DEACTIVATED, &q->state=
+)))
+>                         __qdisc_run(q);
+>                 qdisc_run_end(q);
+> +
+> +               /* reschedule qdisc if there are packets enqueued */
+> +               if (q->pkt_seq !=3D 0)
+> +                       __netif_schedule(q);
+>         }
+>  }
+>
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -384,6 +384,8 @@ void __qdisc_run(struct Qdisc *q)
+>         while (qdisc_restart(q, &packets)) {
+>                 quota -=3D packets;
+>                 if (quota <=3D 0) {
+> +                       /* info caller to reschedule qdisc outside q->seq=
+lock */
+> +                       q->pkt_seq =3D 1;
+>                         __netif_schedule(q);
+>                         break;
+>                 }
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -3031,6 +3031,7 @@ static void __netif_reschedule(struct Qd
+>
+>         local_irq_save(flags);
+>         sd =3D this_cpu_ptr(&softnet_data);
+> +       q->pkt_seq =3D 0;
+>         q->next_sched =3D NULL;
+>         *sd->output_queue_tailp =3D q;
+>         sd->output_queue_tailp =3D &q->next_sched;
+> --
+>
