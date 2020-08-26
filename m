@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E889C252CD2
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:48:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23627252CD1
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:48:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729058AbgHZLsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 07:48:46 -0400
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:12368 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728609AbgHZLQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 07:16:58 -0400
+        id S1728786AbgHZLsi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 07:48:38 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:16935 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728659AbgHZLSI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 07:18:08 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1598440618; x=1629976618;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7cweX0mwMTY5JaWzygL6KXQ9a11XC2CnlpfVVPkYxGw=;
-  b=CaJjPWOuaaid74ZrOA3GPKTa5i/XAQd382Hw634fGzcyQ3JxCzGflaDF
-   EHUiCSItXxaboe0AjF8/8xccR3PVlkVLOfLsMwNdExhhBM+gXM8CG7Ddt
-   miWniQq4RJp/IHpuTBY4kFN8hmU7dR3KeIUtEyNyLHcPafgwEeI//5t0u
-   LI9zsF2S8ZpCZm6Syulpck6bhK9dk1b5R8iQ/ELNCdYX09EUfxQaN+gbj
-   IIspjLi5mH/iA/9ebRfXj++SY65R/DD4C2DvytIlatuELZPim0B1Tpiyt
-   NqZGZK86DicMPbRpblIsHQboaXlg5fPVb1cAnYokR37EO1RcnFdqoTM6P
-   Q==;
-IronPort-SDR: Z+AEyeI1s7G4jBcZT+LpyjJ/E59uUZle0+H3FW85xlRAhQCEB9t0CFY9V3nRo/RVJEv8l4WDjy
- xkb7NBliRt+C86M1l4dBGcHL/LJZJli5kyHi5k2VCPp94tdzLxJpX2g7boNqlq3WD/Bv8LvaIn
- zLUuJSS2dZpr4Hg0SRFmUsQ1Sgr1E08+/Hpcn/52YCshpUJqRMwN4SnCHPARyqruSezCQGMQYJ
- D5JPtP8lLwWnCC7uBM308XOL85PMXbaA9CpZ3rYhHhj00QnTfqu8z5TOBhhe7fnTstXs5P6MCe
- AHU=
+  t=1598440688; x=1629976688;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Xxv/yDjemQvZ/pge0wayJNkQ0RG4xuY7VsDnEhXS79c=;
+  b=XN6ysmclzyNYZ4jHAXoFs+w9fiy27B57EWDSkOEeq6U3UvPQxJnu79o3
+   LAEbQD88mG2tP3sDpc+8KYG8r2ckxLnKLPOgP2GKF8jYi+p8fzL+vrWD7
+   XTjjEfMPqIuDaxi4uOJK+mTiMR26A9ZetMSdIzfxNhqpCB7o8KakYUB1w
+   4azg1NCvaH9TUFSVZPbeGdBM6DQFiTh/20a6OKNW4HnWOKzeDkty93H7S
+   avp/lJtGY1azFjFBWGOmTCT0qOo8fdm6OHMFEo2ACGm8q8NmYHI8hKNVT
+   DY5b42PnCDSaw7FkoeYit7YU4+hXuXXq08tWS8g33kPVHjCM6BIlHERuI
+   g==;
+IronPort-SDR: azoK6QAb3zRhoTbBQaw8oa2QvVY+PgSwEHssbjHVgHXNZxrBgEf4zY/YN7bG2sxFgiwnI8yxSF
+ fj2YtxC3/ntl/tQbUxQYgP6Bf1Cfa9eqnyRfphC9ZUCm7vYv5oTEZiCgsb8ByfK6OBzG7FkgC7
+ uLB3UOPiagNtwNnf38XLcTWSUoT/VOw+K/Pnon8XvezybSmtOcjh4/sDywbMpq+ZDi26qt4Kcq
+ dukqSczfXP6v1O65EV0tjQlgRqSsHNlDasmsT2ZD7LJB6Dhn/U2n3tXsfoVDVQbMTop9oe7Uyi
+ Zes=
 X-IronPort-AV: E=Sophos;i="5.76,355,1592895600"; 
-   d="scan'208";a="24284527"
+   d="scan'208";a="93196279"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2020 04:16:54 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2020 04:17:25 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 26 Aug 2020 04:16:04 -0700
+ 15.1.1979.3; Wed, 26 Aug 2020 04:16:37 -0700
 Received: from xasv.mchp-main.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
  (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 26 Aug 2020 04:16:03 -0700
+ Transport; Wed, 26 Aug 2020 04:16:34 -0700
 From:   Andre Edich <andre.edich@microchip.com>
 To:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
         <steve.glendinning@shawell.net>
 CC:     <Parthiban.Veerasooran@microchip.com>,
         Andre Edich <andre.edich@microchip.com>
-Subject: [PATCH net-next v5 0/3] Add phylib support to smsc95xx
-Date:   Wed, 26 Aug 2020 13:17:14 +0200
-Message-ID: <20200826111717.405305-1-andre.edich@microchip.com>
+Subject: [PATCH net-next v5 2/3] smsc95xx: use usbnet->driver_priv
+Date:   Wed, 26 Aug 2020 13:17:16 +0200
+Message-ID: <20200826111717.405305-3-andre.edich@microchip.com>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200826111717.405305-1-andre.edich@microchip.com>
+References: <20200826111717.405305-1-andre.edich@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -57,45 +59,237 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To allow to probe external PHY drivers, this patch series adds use of
-phylib to the smsc95xx driver.
+Using `void *driver_priv` instead of `unsigned long data[]` is more
+straightforward way to recover the `struct smsc95xx_priv *` from the
+`struct net_device *`.
 
-Changes in v5:
-- Removed all phy_read calls from the smsc95xx driver.
+Signed-off-by: Andre Edich <andre.edich@microchip.com>
+---
+ drivers/net/usb/smsc95xx.c | 61 +++++++++++++++++---------------------
+ 1 file changed, 28 insertions(+), 33 deletions(-)
 
-Changes in v4:
-- Removed useless inline type qualifier.
-
-Changes in v3:
-- Moved all MDI-X functionality to the corresponding phy driver;
-- Removed field internal_phy from a struct smsc95xx_priv;
-- Initialized field is_internal of a struct phy_device;
-- Kconfig: Added selection of PHYLIB and SMSC_PHY for USB_NET_SMSC95XX.
-
-Changes in v2:
-- Moved 'net' patches from here to the separate patch series;
-- Removed redundant call of the phy_start_aneg after phy_start;
-- Removed netif_dbg tracing "speed, duplex, lcladv, and rmtadv";
-- mdiobus: added dependency from the usbnet device;
-- Moved making of the MII address from 'phy_id' and 'idx' into the
-  function mii_address;
-- Moved direct MDIO accesses under condition 'if (pdata->internal_phy)',
-  as they only need for the internal PHY;
-- To be sure, that this set of patches is git-bisectable, tested each
-  sub-set of patches to be functional for both, internal and external
-  PHYs, including suspend/resume test for the 'devices'
-  (5.7.8-1-ARCH, Raspberry Pi 3 Model B).
-
-Andre Edich (3):
-  smsc95xx: remove redundant function arguments
-  smsc95xx: use usbnet->driver_priv
-  smsc95xx: add phylib support
-
- drivers/net/phy/smsc.c     |  67 ++++++
- drivers/net/usb/Kconfig    |   2 +
- drivers/net/usb/smsc95xx.c | 475 +++++++++++++------------------------
- 3 files changed, 238 insertions(+), 306 deletions(-)
-
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 3fdf7c2b2d25..f200684875fb 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -457,7 +457,7 @@ static unsigned int smsc95xx_hash(char addr[ETH_ALEN])
+ static void smsc95xx_set_multicast(struct net_device *netdev)
+ {
+ 	struct usbnet *dev = netdev_priv(netdev);
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	unsigned long flags;
+ 	int ret;
+ 
+@@ -552,7 +552,7 @@ static int smsc95xx_phy_update_flowcontrol(struct usbnet *dev, u8 duplex,
+ 
+ static int smsc95xx_link_reset(struct usbnet *dev)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	struct mii_if_info *mii = &dev->mii;
+ 	struct ethtool_cmd ecmd = { .cmd = ETHTOOL_GSET };
+ 	unsigned long flags;
+@@ -620,7 +620,7 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+ 
+ static void set_carrier(struct usbnet *dev, bool link)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 
+ 	if (pdata->link_ok == link)
+ 		return;
+@@ -749,7 +749,7 @@ static void smsc95xx_ethtool_get_wol(struct net_device *net,
+ 				     struct ethtool_wolinfo *wolinfo)
+ {
+ 	struct usbnet *dev = netdev_priv(net);
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 
+ 	wolinfo->supported = SUPPORTED_WAKE;
+ 	wolinfo->wolopts = pdata->wolopts;
+@@ -759,7 +759,7 @@ static int smsc95xx_ethtool_set_wol(struct net_device *net,
+ 				    struct ethtool_wolinfo *wolinfo)
+ {
+ 	struct usbnet *dev = netdev_priv(net);
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	int ret;
+ 
+ 	if (wolinfo->wolopts & ~SUPPORTED_WAKE)
+@@ -798,7 +798,7 @@ static int get_mdix_status(struct net_device *net)
+ static void set_mdix_status(struct net_device *net, __u8 mdix_ctrl)
+ {
+ 	struct usbnet *dev = netdev_priv(net);
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	int buf;
+ 
+ 	if ((pdata->chip_id == ID_REV_CHIP_ID_9500A_) ||
+@@ -847,7 +847,7 @@ static int smsc95xx_get_link_ksettings(struct net_device *net,
+ 				       struct ethtool_link_ksettings *cmd)
+ {
+ 	struct usbnet *dev = netdev_priv(net);
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	int retval;
+ 
+ 	retval = usbnet_get_link_ksettings(net, cmd);
+@@ -862,7 +862,7 @@ static int smsc95xx_set_link_ksettings(struct net_device *net,
+ 				       const struct ethtool_link_ksettings *cmd)
+ {
+ 	struct usbnet *dev = netdev_priv(net);
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	int retval;
+ 
+ 	if (pdata->mdix_ctrl != cmd->base.eth_tp_mdix_ctrl)
+@@ -944,7 +944,7 @@ static int smsc95xx_set_mac_address(struct usbnet *dev)
+ /* starts the TX path */
+ static int smsc95xx_start_tx_path(struct usbnet *dev)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	unsigned long flags;
+ 	int ret;
+ 
+@@ -964,7 +964,7 @@ static int smsc95xx_start_tx_path(struct usbnet *dev)
+ /* Starts the Receive path */
+ static int smsc95xx_start_rx_path(struct usbnet *dev, int in_pm)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&pdata->mac_cr_lock, flags);
+@@ -1021,7 +1021,7 @@ static int smsc95xx_phy_initialize(struct usbnet *dev)
+ 
+ static int smsc95xx_reset(struct usbnet *dev)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	u32 read_buf, write_buf, burst_cap;
+ 	int ret = 0, timeout;
+ 
+@@ -1249,7 +1249,7 @@ static const struct net_device_ops smsc95xx_netdev_ops = {
+ 
+ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ {
+-	struct smsc95xx_priv *pdata = NULL;
++	struct smsc95xx_priv *pdata;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -1261,13 +1261,12 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ 		return ret;
+ 	}
+ 
+-	dev->data[0] = (unsigned long)kzalloc(sizeof(struct smsc95xx_priv),
+-					      GFP_KERNEL);
+-
+-	pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
+ 	if (!pdata)
+ 		return -ENOMEM;
+ 
++	dev->driver_priv = pdata;
++
+ 	spin_lock_init(&pdata->mac_cr_lock);
+ 
+ 	/* LAN95xx devices do not alter the computed checksum of 0 to 0xffff.
+@@ -1330,15 +1329,11 @@ static int smsc95xx_bind(struct usbnet *dev, struct usb_interface *intf)
+ 
+ static void smsc95xx_unbind(struct usbnet *dev, struct usb_interface *intf)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
+-
+-	if (pdata) {
+-		cancel_delayed_work_sync(&pdata->carrier_check);
+-		netif_dbg(dev, ifdown, dev->net, "free pdata\n");
+-		kfree(pdata);
+-		pdata = NULL;
+-		dev->data[0] = 0;
+-	}
++	struct smsc95xx_priv *pdata = dev->driver_priv;
++
++	cancel_delayed_work_sync(&pdata->carrier_check);
++	netif_dbg(dev, ifdown, dev->net, "free pdata\n");
++	kfree(pdata);
+ }
+ 
+ static u32 smsc_crc(const u8 *buffer, size_t len, int filter)
+@@ -1388,7 +1383,7 @@ static int smsc95xx_link_ok_nopm(struct usbnet *dev)
+ 
+ static int smsc95xx_enter_suspend0(struct usbnet *dev)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -1427,7 +1422,7 @@ static int smsc95xx_enter_suspend0(struct usbnet *dev)
+ 
+ static int smsc95xx_enter_suspend1(struct usbnet *dev)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -1474,7 +1469,7 @@ static int smsc95xx_enter_suspend1(struct usbnet *dev)
+ 
+ static int smsc95xx_enter_suspend2(struct usbnet *dev)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -1496,7 +1491,7 @@ static int smsc95xx_enter_suspend2(struct usbnet *dev)
+ 
+ static int smsc95xx_enter_suspend3(struct usbnet *dev)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -1535,7 +1530,7 @@ static int smsc95xx_enter_suspend3(struct usbnet *dev)
+ 
+ static int smsc95xx_autosuspend(struct usbnet *dev, u32 link_up)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	int ret;
+ 
+ 	if (!netif_running(dev->net)) {
+@@ -1583,7 +1578,7 @@ static int smsc95xx_autosuspend(struct usbnet *dev, u32 link_up)
+ static int smsc95xx_suspend(struct usb_interface *intf, pm_message_t message)
+ {
+ 	struct usbnet *dev = usb_get_intfdata(intf);
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 	u32 val, link_up;
+ 	int ret;
+ 
+@@ -1854,7 +1849,7 @@ static int smsc95xx_resume(struct usb_interface *intf)
+ 	u32 val;
+ 
+ 	BUG_ON(!dev);
+-	pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	pdata = dev->driver_priv;
+ 	suspend_flags = pdata->suspend_flags;
+ 
+ 	netdev_dbg(dev->net, "resume suspend_flags=0x%02x\n", suspend_flags);
+@@ -2074,7 +2069,7 @@ static struct sk_buff *smsc95xx_tx_fixup(struct usbnet *dev,
+ 
+ static int smsc95xx_manage_power(struct usbnet *dev, int on)
+ {
+-	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
++	struct smsc95xx_priv *pdata = dev->driver_priv;
+ 
+ 	dev->intf->needs_remote_wakeup = on;
+ 
 -- 
 2.28.0
 
