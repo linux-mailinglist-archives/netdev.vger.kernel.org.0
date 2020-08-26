@@ -2,75 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CDE725382C
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D413E25383A
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 21:23:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727949AbgHZTSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 15:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47694 "EHLO
+        id S1726910AbgHZTX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 15:23:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726802AbgHZTSG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:18:06 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445ABC061574
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:18:06 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id h4so3331777ioe.5
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:18:06 -0700 (PDT)
+        with ESMTP id S1726734AbgHZTXZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 15:23:25 -0400
+Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A98CC061574
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:23:25 -0700 (PDT)
+Received: by mail-ua1-x941.google.com with SMTP id 68so925188ual.3
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 12:23:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=es9Q7UGeVyvRotLvkovnauMBqWoFEz9GTys5DHBJ+g8=;
-        b=jj/sPUkzfL0wna7C5AMCplpLbH5DhB+De7JWr6eysFWNLiKcVvDUdChkqFyo74+0nv
-         vMYSbypqaUcS5VTzbVy8P7A3kdeXawwPkK9bB3hb6D4AROAsJyYTBw5H9dAf9RGFpGIe
-         SG4ohvNGGa5CyPALVDJltDgcryOHp60JH/GWrUn6LtFFhdERwE6t3bpjw8FGLtDwoop7
-         uB18u8B7SB1m9PYKNqvHuLn2f8h8SkRgJDUAbDqNpE63KCTrWEXBB+0rpBwPXeeK13d8
-         ElHHbms6WOfZnQFOzr8TL+QpyzXiv7HaNk4/ZDCrKZ4ZoS2gMcdWH14iuwdq9rqM19z7
-         DZ9g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=el5C8VGimQbhJC5S5Are2GRwW9nrAyB40KGB2ruX1Ao=;
+        b=p8gr+lwrmEmoUL1cOEuQURiU08XITIwxHPZsca3SO8J+zzcOWzr00OvAFGEHlv1ZVB
+         f6WuAs5d3tBeivzVandUbGN0VMQTUEvmynCNgCbMK9m3RDbWSQ/fUnViATSQM+dTYUPP
+         oLWJAcVEjyYxK0YpUpojpcZVNYbBn5IOtwCTiFleMdnif+IvuKM231UnZz+o0jb5HShF
+         9eRzZ0iHg+Pijyzf1kaJDzK+LcQiXjUwt/afxABHeH9NptAG7cnLyT4nuU/qPT1WhhRQ
+         Ptshems5ZJDLfMqGlvNZmwDC1c2q0III2mlYxMf2RKcaKOqWENs+W5vwXqNf8MyMCS/p
+         KIOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=es9Q7UGeVyvRotLvkovnauMBqWoFEz9GTys5DHBJ+g8=;
-        b=EEizCOUpnzGE9VmzTHbM505BRp/J2IN/DW7MK94K2BFoFJFLwccenYi/2jPezVdeZg
-         yCmfMSCmBKdSHs0d9kMOx3cN22ovjwnyhv6add9rqV8xIov9RpnBQtYSQX/+kFlXcA9K
-         zKpB8ZiTxg/QVh2J6skwh6KBi5eZ6135HGvR1tlp97nriGj2tP8N5Iqasl+Gun5CJuf1
-         /x5EqWMAwZgocXDlfxgEJ9vcb0WgAZI6CJne/uScCzyS1MRhSEM3od4EDW64nDqf155o
-         516fGTrjL4LYs1x7yj+47b7V/GeImC4OJPjGpid0w+5SxCeA8TmGfPp654w6spEfoiIx
-         QGpA==
-X-Gm-Message-State: AOAM532iIwss1k1sJlTInS4i0o55WEltkd5mY42cO8rkRC2xoi+9bjnG
-        Cvt1jzlqI4oS3H3g2Mf2k6LeekQBQCsclw==
-X-Google-Smtp-Source: ABdhPJzT2Mi8hGQPB50+91AtcY7I1hdZK7m/KfqxbJf4L7BbxB2ioOxTFKm8xyiUqcJnpGrkOQo3LQ==
-X-Received: by 2002:a02:93ca:: with SMTP id z68mr16198047jah.3.1598469485672;
-        Wed, 26 Aug 2020 12:18:05 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:305a:ae30:42e4:e2ca])
-        by smtp.googlemail.com with ESMTPSA id d19sm899755iod.38.2020.08.26.12.18.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Aug 2020 12:18:05 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/7] ipv4: nexthop: Various improvements
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-References: <20200826164857.1029764-1-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a2a9859e-9615-d9c1-1ade-e79d453106ac@gmail.com>
-Date:   Wed, 26 Aug 2020 13:18:04 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=el5C8VGimQbhJC5S5Are2GRwW9nrAyB40KGB2ruX1Ao=;
+        b=JjGTQYGlk1lRFXfd+djX9fNMgd9zTdc93VIjVfOuFi65rurx3R1as6dL1bwQ5i0oHC
+         3nXZ94A8OBj7/T313ToGAAyFJDjdmaXh7/vFMDD/NMmgcU+Rteqrl1ZVKdLqXfsbQG68
+         Sa5iVJ9R1r5MJw5zKgAzCFIF7c0rPXIZjvjQWLDHspyxFlx0GUKG1YkGNPxu9l3LCfeU
+         nj1YQg+yxtdECtATmdo+lgJuW9BYB5HP9Nb01UvC2KomQLYVh0PD5nW0ekGyh3leKYVs
+         QTTRGnQDWGnfl9goG/MhN8Y9+mvX4vO1yXv95XBAGnf8eCWm96ePBu+RDkGG767fK4WB
+         V0+Q==
+X-Gm-Message-State: AOAM5324fl2HLZj7oMNeqBNDj2TM2yCX8olq+4+dNAQtsnt5qbuMIWJm
+        GVVrKI8jspH2ORJDjvsZvWGKMoOLi4J+BuHHGlA=
+X-Google-Smtp-Source: ABdhPJxj7v2mJM2hnh9Cxlj3I1qzHpEKO6Ik8kQYebp0XkmEVpY3ngu+V1GoK90Q4DRep6Zc6yWe42JEilmV77HlWeo=
+X-Received: by 2002:ab0:37d3:: with SMTP id e19mr9452646uav.64.1598469804548;
+ Wed, 26 Aug 2020 12:23:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200826164857.1029764-1-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200824073602.70812-1-xiangxia.m.yue@gmail.com> <20200824073602.70812-2-xiangxia.m.yue@gmail.com>
+In-Reply-To: <20200824073602.70812-2-xiangxia.m.yue@gmail.com>
+From:   Pravin Shelar <pravin.ovn@gmail.com>
+Date:   Wed, 26 Aug 2020 12:23:13 -0700
+Message-ID: <CAOrHB_BaechPpGLPdTsFjcPHhzaKQ+PYePrnZdcSkJWm0oC+sA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/3] net: openvswitch: improve coding style
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        ovs dev <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/20 10:48 AM, Ido Schimmel wrote:
-> While patches #4 and #6 fix bugs, they are not regressions (never
-> worked). They also do not occur to me as critical issues, which is why I
-> am targeting them at net-next.
+On Mon, Aug 24, 2020 at 12:37 AM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> Not change the logic, just improve coding style.
+>
+> Cc: Pravin B Shelar <pshelar@ovn.org>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-I agree. Thanks for the work on this.
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
