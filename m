@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C27625266F
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 07:09:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4C83252674
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 07:09:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726790AbgHZFJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 01:09:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56572 "EHLO
+        id S1726825AbgHZFJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 01:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726716AbgHZFJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 01:09:10 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B770C0613ED
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 22:09:09 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id y3so429760wrl.4
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 22:09:09 -0700 (PDT)
+        with ESMTP id S1726759AbgHZFJM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 01:09:12 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC7BC061574
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 22:09:11 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id w13so428901wrk.5
+        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 22:09:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=zyskxP5YsesP+ANazA+/LzTkYPTZv7tA3Q9JqA2vbOM=;
-        b=MdTpdcApyaNCO2ZM3C7OevE7YQDP8CFqJjpk58a5C4c7scScj3Nqfe0Yf81TkT49Bu
-         CLCA4yGQOPqfmSfxjf8uQUs3LUqbB4ArCi61EBbuEywheBKMeI5lVqAveweoBQxVR8Rj
-         nqYn+mkR1cnVTY1GFOMTx+WQq5XZYBeSBnC6w=
+        bh=XHaGhsqTt5ZjagXMlpNlu3cCee8flkdStPbXbpx2+yI=;
+        b=YiPte4klZ9UIaYO6nJEX2vN3HMIEjj73J1TuCvX+9R2vJE9/tbsi3WBrxPGIvu/X3B
+         T576ZA4atgHIZV2BMBAoafOzPT8bCdAMpnf9KFiOHwv1hsX1DgfdmDi1EnteLCVo5Caf
+         ixC9GjqjMsSFfHUHj/cUp6oZVmA53UANK0Mc0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=zyskxP5YsesP+ANazA+/LzTkYPTZv7tA3Q9JqA2vbOM=;
-        b=GwOiF4kQHzw8mgbODz304EiFQBvqIGCkRSdVcu9e2ZHypqtzBIR7JR6F1lsf/GakuX
-         /EFXhrxaHQ9jtP/LTvkvL7ZBtfPMUb3serWQOMNZC6Rii/VZyIpuIKMZJMYAAPS1WDMJ
-         +5fI0d/lcNCHEEBR6kdZxek+Naj3wnlLfExk19vFNtILJnSkKcEGE5HJ2N49x2rkoq9q
-         IrGHbQsJNWxQd2qmVrsI14xLHv7ngqXmLJQ+NQAfWPL02nETZioBCCwBH45OzP9geeRR
-         FDCZGQX0pHdLE76mwSYyMmEtC5fdxzPADLAY2XioKYXMEpjWepVoH2nCKRMxkY/VyY5W
-         iCEA==
-X-Gm-Message-State: AOAM532DeZ31LIhy9iyOvX+8KnSKUe8BuCA3f0ri7LvicXoP/UX85VO/
-        eLipMbIaUwSn0m/BLR8L2puMhw==
-X-Google-Smtp-Source: ABdhPJx207PXOWR6O09oxgSqber22pyNSVaJVpCN0C6jKabGlnpTWASIbyLGBYg4Ilb5G9L2Wpz93A==
-X-Received: by 2002:adf:fac7:: with SMTP id a7mr845546wrs.240.1598418548004;
-        Tue, 25 Aug 2020 22:09:08 -0700 (PDT)
+        bh=XHaGhsqTt5ZjagXMlpNlu3cCee8flkdStPbXbpx2+yI=;
+        b=S7uAHI94d6SQ+Mz2w7nC3IjPB88rMX5qtqn5V/JvinxQM0PHylC7A7PM4C0OCfi67j
+         m6FbDbC3SP7uswN8Y8LfLXPWZoWd/M4BbBhf+NWyFqK/6gnWh1cKCWXildQGSP64wdfM
+         q4qo3xaAjgFaD2rr8KhMUrbAyKgwR6mvXKiPBwt9Utb3/XIDc/ZmJwMiTTdcPQTiD94m
+         pkaPo1hjjjkw9+n0S/N6WUmnzWxENWWg5hCtIc8BRs4AlDxK/Ne72bMvBrQ2tzeMB8eG
+         9NiERUf8qt9yRqs6ZLaRswNmv2dhIHanYW+D0oK/stPcNm/sKTNQdqUtn6fjUUBH4yZU
+         8qTg==
+X-Gm-Message-State: AOAM533vQDq7zqoZk8RSNrU9uO1rFOz5UeL0gtCL8cMFBPbEj66xD/ug
+        RZ43V2fmzW+xM+pl8HahauyRiQ==
+X-Google-Smtp-Source: ABdhPJxsYpS/nDg2xPEInyUUN+OPc7ONDzMVE8kVg2/08ratQD2iPMxbEZ4T1cFFq78qB+VIQ4Ppag==
+X-Received: by 2002:a5d:6a83:: with SMTP id s3mr13245899wru.125.1598418549835;
+        Tue, 25 Aug 2020 22:09:09 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q12sm2825832wrm.39.2020.08.25.22.09.06
+        by smtp.gmail.com with ESMTPSA id q12sm2825832wrm.39.2020.08.25.22.09.08
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 25 Aug 2020 22:09:07 -0700 (PDT)
+        Tue, 25 Aug 2020 22:09:09 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net 4/8] bnxt_en: Fix PCI AER error recovery flow
-Date:   Wed, 26 Aug 2020 01:08:35 -0400
-Message-Id: <1598418519-20168-5-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 5/8] bnxt_en: Fix possible crash in bnxt_fw_reset_task().
+Date:   Wed, 26 Aug 2020 01:08:36 -0400
+Message-Id: <1598418519-20168-6-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1598418519-20168-1-git-send-email-michael.chan@broadcom.com>
 References: <1598418519-20168-1-git-send-email-michael.chan@broadcom.com>
@@ -58,40 +57,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+bnxt_fw_reset_task() is run from a delayed workqueue.  The current
+code is not cancelling the workqueue in the driver's .remove()
+method and it can potentially crash if the device is removed with
+the workqueue still pending.
 
-When a PCI error is detected the PCI state could be corrupt, save
-the PCI state after initialization and restore it after the slot
-reset.
+The fix is to clear the BNXT_STATE_IN_FW_RESET flag and then cancel
+the delayed workqueue in bnxt_remove_one().  bnxt_queue_fw_reset_work()
+also needs to check that this flag is set before scheduling.  This
+will guarantee that no rescheduling will be done after it is cancelled.
 
-Fixes: 6316ea6db93d ("bnxt_en: Enable AER support.")
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Fixes: 230d1f0de754 ("bnxt_en: Handle firmware reset.")
+Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 31fb5a2..4389a74 100644
+index 4389a74..d6f3592 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -12339,6 +12339,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		    (long)pci_resource_start(pdev, 0), dev->dev_addr);
- 	pcie_print_link_status(pdev);
+@@ -1141,6 +1141,9 @@ static int bnxt_discard_rx(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
  
-+	pci_save_state(pdev);
- 	return 0;
+ static void bnxt_queue_fw_reset_work(struct bnxt *bp, unsigned long delay)
+ {
++	if (!(test_bit(BNXT_STATE_IN_FW_RESET, &bp->state)))
++		return;
++
+ 	if (BNXT_PF(bp))
+ 		queue_delayed_work(bnxt_pf_wq, &bp->fw_reset_task, delay);
+ 	else
+@@ -1157,10 +1160,12 @@ static void bnxt_queue_sp_work(struct bnxt *bp)
  
- init_err_cleanup:
-@@ -12536,6 +12537,8 @@ static pci_ers_result_t bnxt_io_slot_reset(struct pci_dev *pdev)
- 			"Cannot re-enable PCI device after reset.\n");
- 	} else {
- 		pci_set_master(pdev);
-+		pci_restore_state(pdev);
-+		pci_save_state(pdev);
+ static void bnxt_cancel_sp_work(struct bnxt *bp)
+ {
+-	if (BNXT_PF(bp))
++	if (BNXT_PF(bp)) {
+ 		flush_workqueue(bnxt_pf_wq);
+-	else
++	} else {
+ 		cancel_work_sync(&bp->sp_task);
++		cancel_delayed_work_sync(&bp->fw_reset_task);
++	}
+ }
  
- 		err = bnxt_hwrm_func_reset(bp);
- 		if (!err) {
+ static void bnxt_sched_reset(struct bnxt *bp, struct bnxt_rx_ring_info *rxr)
+@@ -11761,6 +11766,7 @@ static void bnxt_remove_one(struct pci_dev *pdev)
+ 	unregister_netdev(dev);
+ 	bnxt_dl_unregister(bp);
+ 	bnxt_shutdown_tc(bp);
++	clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
+ 	bnxt_cancel_sp_work(bp);
+ 	bp->sp_event = 0;
+ 
 -- 
 1.8.3.1
 
