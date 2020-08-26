@@ -2,94 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93560252C06
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:03:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8092A252C53
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:18:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728804AbgHZLDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 07:03:17 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:56724 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728693AbgHZLDM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 07:03:12 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1598439782;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZaAkTdOab/XFooWlber6W3bQre4hvoIBpg4is6GPMvI=;
-        b=onrC78SbMNK189bx5B9J/G6s8NfSzOML8/QswGPLaM7CNLUadKjp4RZkqQj1RpwAnqf9ND
-        WHrr0sfogurwO1T9+nL2EocVhhdSgZ0KPGI/iuexx/2JUw0YevIydPq4BgtmRVhBYRr2H9
-        kzNgRK7OBnzZ3BpBp2bRNNIjEyY+2G0JVleePH9tjONso7qd32vc+4yxT0SovbmgDtn7kX
-        BJpgVC6m9/waC/lQVCd9lNZKfx7RbcHmiwjuCHpFim0i4wEaR0GZkqDXWSSOJg7RJpHX5h
-        tUQjMpAvUqHIn7Kv266SPEKtJ5Pdfwe2BFa3tlGUAsQUziWsuUenKnL6a4+DPw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1598439782;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZaAkTdOab/XFooWlber6W3bQre4hvoIBpg4is6GPMvI=;
-        b=PfZ2hYH1I2ewe0aCaU53HrJiEJCFqmFzJ7d2d3J0q6ZM3xseBlhIbp4F8hJcGr9lQ4766W
-        KACq5LU557imvSAA==
-To:     syzbot <syzbot+51c9bdfa559769d2f897@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, anna.schumaker@netapp.com,
-        bfields@fieldses.org, bp@alien8.de, davem@davemloft.net,
-        douly.fnst@cn.fujitsu.com, hpa@zytor.com, jlayton@kernel.org,
-        konrad.wilk@oracle.com, len.brown@intel.com,
-        linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        mingo@kernel.org, mingo@redhat.com, netdev@vger.kernel.org,
-        paulmck@kernel.org, peterz@infradead.org, puwen@hygon.cn,
-        rafael.j.wysocki@intel.com, syzkaller-bugs@googlegroups.com,
-        trond.myklebust@hammerspace.com, trond.myklebust@primarydata.com,
-        vbabka@suse.cz, x86@kernel.org, David Howells <dhowells@redhat.com>
-Subject: Re: WARNING: ODEBUG bug in __do_softirq
-In-Reply-To: <000000000000e7fab005adc3f636@google.com>
-References: <000000000000e7fab005adc3f636@google.com>
-Date:   Wed, 26 Aug 2020 13:03:02 +0200
-Message-ID: <87v9h5vfdl.fsf@nanos.tec.linutronix.de>
+        id S1728786AbgHZLSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 07:18:15 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:30965 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728774AbgHZLRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 07:17:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1598440642; x=1629976642;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=QzbApBWBtmyrhmLzonYXJpEBU1WNdnSVBf6JFAeWtRs=;
+  b=vTalSfeHqRToUv8CcZIBqFEWoaCsTtZYVnhdIEAjx+XkYTvC8BHc5WYX
+   i+uy56eapBqbk0eWsqX469bK5L5dZCLbOIz5LsaTNdT0VT7ETb1z5LefX
+   KONG0Ec6Kv+goQh7u+qafgp1PhDOII5g7OpKQWnKFve5eVxOi9PK5jEUc
+   v41ndZKpsYQ8cq15377SF2tGu0gLEBcxB2fOlIaQG48rr2naLiw+kK1do
+   MYkekl1uF1jlvsHsqUXs127OCa9B/Hzu8AuA9mmmjDGeLKvk7AE79oUrL
+   0t7wEv4dMdc/iC2HzG6m0juyqBDkqokvJQlKV/oppczIW2FK7JHvsMy+q
+   A==;
+IronPort-SDR: 3WLAbxwbGeZ4oWe0+cvguUBYka/1VUoADDNZj23yQEEbqtMOuzwQCujzWueJpzclLDqfDDHHsP
+ ++L5lTfXiHhi1NvJMhKbBbQkUoMNQjCOVIZY6Uwl+jC+vc3HJ6/NtMabBC01ahK8hS70grQU6y
+ /sCMrw6xbTA5IxCOm5eIc39vsvkl0QYdAZuZw06jyKzId2tp6ykXO3TdkxktU4eZwjlh/I/MCL
+ lf7tNw6cEez7IQ04qYoWPB2LwUoDMIwLAgT5Swxa9zY/vwfJDDk89wlG5EPX3/lr9mIRL7wUZf
+ DWk=
+X-IronPort-AV: E=Sophos;i="5.76,355,1592895600"; 
+   d="scan'208";a="88605579"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2020 04:17:16 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 26 Aug 2020 04:17:13 -0700
+Received: from xasv.mchp-main.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 26 Aug 2020 04:16:24 -0700
+From:   Andre Edich <andre.edich@microchip.com>
+To:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <steve.glendinning@shawell.net>
+CC:     <Parthiban.Veerasooran@microchip.com>,
+        Andre Edich <andre.edich@microchip.com>
+Subject: [PATCH net-next v5 1/3] smsc95xx: remove redundant function arguments
+Date:   Wed, 26 Aug 2020 13:17:15 +0200
+Message-ID: <20200826111717.405305-2-andre.edich@microchip.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200826111717.405305-1-andre.edich@microchip.com>
+References: <20200826111717.405305-1-andre.edich@microchip.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 26 2020 at 01:54, syzbot wrote:
+This patch removes arguments netdev and phy_id from the functions
+smsc95xx_mdio_read_nopm and smsc95xx_mdio_write_nopm.  Both removed
+arguments are recovered from a new argument `struct usbnet *dev`.
 
-Cc+: David Howells
+Signed-off-by: Andre Edich <andre.edich@microchip.com>
+---
+ drivers/net/usb/smsc95xx.c | 35 +++++++++++++++++------------------
+ 1 file changed, 17 insertions(+), 18 deletions(-)
 
-> syzbot has found a reproducer for the following issue on:
->
-> HEAD commit:    3a00d3df Add linux-next specific files for 20200825
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=15080fa9900000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=9ef0a5f95935d447
-> dashboard link: https://syzkaller.appspot.com/bug?extid=51c9bdfa559769d2f897
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17927a2e900000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=132b8ede900000
->
-> The issue was bisected to:
->
-> commit 5b317cbf2bcb85a1e96ce87717cb991ecab1dd4d
-> Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> Date:   Fri Feb 22 09:17:11 2019 +0000
->
->     Merge branch 'pm-cpufreq-fixes'
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=171ead5d200000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=149ead5d200000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=109ead5d200000
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+51c9bdfa559769d2f897@syzkaller.appspotmail.com
-> Fixes: 5b317cbf2bcb ("Merge branch 'pm-cpufreq-fixes'")
->
-> ------------[ cut here ]------------
-> ODEBUG: free active (active state 0) object type: work_struct hint: afs_manage_cell+0x0/0x11c0 fs/afs/cell.c:498
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index bb4ccbda031a..3fdf7c2b2d25 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -261,16 +261,18 @@ static void __smsc95xx_mdio_write(struct net_device *netdev, int phy_id,
+ 	mutex_unlock(&dev->phy_mutex);
+ }
+ 
+-static int smsc95xx_mdio_read_nopm(struct net_device *netdev, int phy_id,
+-				   int idx)
++static int smsc95xx_mdio_read_nopm(struct usbnet *dev, int idx)
+ {
+-	return __smsc95xx_mdio_read(netdev, phy_id, idx, 1);
++	struct mii_if_info *mii = &dev->mii;
++
++	return __smsc95xx_mdio_read(dev->net, mii->phy_id, idx, 1);
+ }
+ 
+-static void smsc95xx_mdio_write_nopm(struct net_device *netdev, int phy_id,
+-				     int idx, int regval)
++static void smsc95xx_mdio_write_nopm(struct usbnet *dev, int idx, int regval)
+ {
+-	__smsc95xx_mdio_write(netdev, phy_id, idx, regval, 1);
++	struct mii_if_info *mii = &dev->mii;
++
++	__smsc95xx_mdio_write(dev->net, mii->phy_id, idx, regval, 1);
+ }
+ 
+ static int smsc95xx_mdio_read(struct net_device *netdev, int phy_id, int idx)
+@@ -1347,39 +1349,37 @@ static u32 smsc_crc(const u8 *buffer, size_t len, int filter)
+ 
+ static int smsc95xx_enable_phy_wakeup_interrupts(struct usbnet *dev, u16 mask)
+ {
+-	struct mii_if_info *mii = &dev->mii;
+ 	int ret;
+ 
+ 	netdev_dbg(dev->net, "enabling PHY wakeup interrupts\n");
+ 
+ 	/* read to clear */
+-	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, PHY_INT_SRC);
++	ret = smsc95xx_mdio_read_nopm(dev, PHY_INT_SRC);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	/* enable interrupt source */
+-	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, PHY_INT_MASK);
++	ret = smsc95xx_mdio_read_nopm(dev, PHY_INT_MASK);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	ret |= mask;
+ 
+-	smsc95xx_mdio_write_nopm(dev->net, mii->phy_id, PHY_INT_MASK, ret);
++	smsc95xx_mdio_write_nopm(dev, PHY_INT_MASK, ret);
+ 
+ 	return 0;
+ }
+ 
+ static int smsc95xx_link_ok_nopm(struct usbnet *dev)
+ {
+-	struct mii_if_info *mii = &dev->mii;
+ 	int ret;
+ 
+ 	/* first, a dummy read, needed to latch some MII phys */
+-	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, MII_BMSR);
++	ret = smsc95xx_mdio_read_nopm(dev, MII_BMSR);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, MII_BMSR);
++	ret = smsc95xx_mdio_read_nopm(dev, MII_BMSR);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1428,7 +1428,6 @@ static int smsc95xx_enter_suspend0(struct usbnet *dev)
+ static int smsc95xx_enter_suspend1(struct usbnet *dev)
+ {
+ 	struct smsc95xx_priv *pdata = (struct smsc95xx_priv *)(dev->data[0]);
+-	struct mii_if_info *mii = &dev->mii;
+ 	u32 val;
+ 	int ret;
+ 
+@@ -1436,17 +1435,17 @@ static int smsc95xx_enter_suspend1(struct usbnet *dev)
+ 	 * compatibility with non-standard link partners
+ 	 */
+ 	if (pdata->features & FEATURE_PHY_NLP_CROSSOVER)
+-		smsc95xx_mdio_write_nopm(dev->net, mii->phy_id,	PHY_EDPD_CONFIG,
+-			PHY_EDPD_CONFIG_DEFAULT);
++		smsc95xx_mdio_write_nopm(dev, PHY_EDPD_CONFIG,
++					 PHY_EDPD_CONFIG_DEFAULT);
+ 
+ 	/* enable energy detect power-down mode */
+-	ret = smsc95xx_mdio_read_nopm(dev->net, mii->phy_id, PHY_MODE_CTRL_STS);
++	ret = smsc95xx_mdio_read_nopm(dev, PHY_MODE_CTRL_STS);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	ret |= MODE_CTRL_STS_EDPWRDOWN_;
+ 
+-	smsc95xx_mdio_write_nopm(dev->net, mii->phy_id, PHY_MODE_CTRL_STS, ret);
++	smsc95xx_mdio_write_nopm(dev, PHY_MODE_CTRL_STS, ret);
+ 
+ 	/* enter SUSPEND1 mode */
+ 	ret = smsc95xx_read_reg_nopm(dev, PM_CTRL, &val);
+-- 
+2.28.0
 
-AFS is leaking an active work struct in a to be freed data struct.
-
-Thanks,
-
-        tglx
