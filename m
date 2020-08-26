@@ -2,67 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 484D625281A
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 09:03:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C40A252833
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 09:09:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726740AbgHZHDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 03:03:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46020 "EHLO
+        id S1726751AbgHZHJh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 03:09:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726240AbgHZHDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 03:03:50 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40EE3C061574;
-        Wed, 26 Aug 2020 00:03:50 -0700 (PDT)
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 07Q73N8G024392
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Wed, 26 Aug 2020 09:03:23 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1598425404; bh=JSuM4dKUM2nfywxTFJ0hWSXUwcdiL5ludU2CopjahqY=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=eUJFmJDSPFK1jgdbN2iYYyLcENd+E373WgO9hlVhHhEsORapOdeEamKR3VaMY2siS
-         HyLzxCYK53OT5U+fMuRBBrChG8rEwz+Q5s3cOPgkW+esFa+ViA5bHdbZnULxuXh4aa
-         hivXqjsBwKJXqBHICDBq6Bsbwk5mtmXarUugplrM=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
-        (envelope-from <bjorn@mork.no>)
-        id 1kApSt-0001tZ-4K; Wed, 26 Aug 2020 09:03:23 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <davem@davemloft.net>, <kuba@kernel.org>, <masahiroy@kernel.org>,
-        <miguel@det.uvigo.gal>, <linux-usb@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: cdc_ncm: Fix build error
-Organization: m
-References: <20200826065231.14344-1-yuehaibing@huawei.com>
-Date:   Wed, 26 Aug 2020 09:03:23 +0200
-In-Reply-To: <20200826065231.14344-1-yuehaibing@huawei.com>
-        (yuehaibing@huawei.com's message of "Wed, 26 Aug 2020 14:52:31 +0800")
-Message-ID: <87k0xl7utg.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
+        with ESMTP id S1726240AbgHZHJg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 03:09:36 -0400
+Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C845C061574
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 00:09:36 -0700 (PDT)
+Received: by mail-ua1-x944.google.com with SMTP id k18so243820uao.11
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 00:09:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yVZPtQKrFUjsTrBTBd2Ot5lsxpy+sE8QSoUTRLQdxEM=;
+        b=s1pDIVqDdScbCVy7tyVi5liKXhJmAV4ekoFMiebmFz6ZmYBv7Lk7nwfeUM2YvAMTn3
+         xQ9s0kU5T4nnlK59zt1f24/b7rXwKFwinmJNRQG4w5/260MOiQjN1UoW4cg2eHebkMht
+         C/ZVUmUY1c6CR8afSxYEwkFgmZsIEfDPlGMSoqb8Tl/yMLOXy5gKvxkIIidVnr3Ogpa1
+         QaDF1682vxeO7OZX5nM/wAgSM+IPmMQ78U0XWrfNfMw4BNGha+ldtwGMJhJsE7ZL4fyo
+         HjCvNDANTKHzwfidN6B+AKM7lAkSJW0FhEuFFS0bi9TS5Gk+LqpL/ieCLwD+e+fiF0Bq
+         U5oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yVZPtQKrFUjsTrBTBd2Ot5lsxpy+sE8QSoUTRLQdxEM=;
+        b=kkoYKfEIs78JGoJh7wQCfvQO3yVCu0Wv47MDVrWMkqPzCO2SZWWIlV0Be2RNgqaFK4
+         dzNCD54WblNgA0Q1EN1Xku9SaXX2y6XCkVwdrXR9EBOnWOlk7P9rmMq/Ok0QujYR98p1
+         JCeQrNbXxuWgXqjUV0b+qjMU/kkwy8OLJrRHb3qSLnMJJbHYAL7l4dUo1EimdlRl2qID
+         Jihobx0s2MahGQvkS9tkd3MH/3gUpyrGZ26URA+QLPIo1i86J8gX2knNbcMMvYmB+N0C
+         JYp2RF5JPhqNpAOoExGxc0GK8ZaVlG2OLEKaeYOg6o0xCRfnVrLopsXL7ysBhmQD3ohL
+         y/Pg==
+X-Gm-Message-State: AOAM532vJ+WrqwQa9f3jtCIjl6XzL3SBF9VVEi538eoGMZgryQjsYV1T
+        /+E2+iHTJBdncS/zpNCG0oG+1mpvBsJddFSITVA=
+X-Google-Smtp-Source: ABdhPJxYQZZFiDo+6A4ryh/RqY0rf8QGIFNvzceitKfNM3onh7XaRZeH5V8NlyHncDfv8vZD0M2zSKHfORpoEysmX5w=
+X-Received: by 2002:ab0:3791:: with SMTP id d17mr7471819uav.28.1598425775164;
+ Wed, 26 Aug 2020 00:09:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.4 at canardo
-X-Virus-Status: Clean
+References: <20200825050636.14153-1-xiangxia.m.yue@gmail.com> <20200825.093737.498387792119845500.davem@davemloft.net>
+In-Reply-To: <20200825.093737.498387792119845500.davem@davemloft.net>
+From:   Pravin Shelar <pravin.ovn@gmail.com>
+Date:   Wed, 26 Aug 2020 00:09:23 -0700
+Message-ID: <CAOrHB_D+uow_8t9LHH+v0syE6f_+Ty_cO39+OLPVr=nvL=SbGw@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 0/3] net: openvswitch: improve codes
+To:     David Miller <davem@davemloft.net>
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        ovs dev <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YueHaibing <yuehaibing@huawei.com> writes:
-
-> If USB_NET_CDC_NCM is y and USB_NET_CDCETHER is m, build fails:
+On Tue, Aug 25, 2020 at 9:37 AM David Miller <davem@davemloft.net> wrote:
 >
-> drivers/net/usb/cdc_ncm.o:(.rodata+0x1d8): undefined reference to `usbnet=
-_cdc_update_filter'
+> From: xiangxia.m.yue@gmail.com
+> Date: Tue, 25 Aug 2020 13:06:33 +0800
 >
-> Select USB_NET_CDCETHER for USB_NET_CDC_NCM to fix this.
-
-Ouch.  For some reason I assumed that was always selected with usbnet.
-Thanks for fixing.
-
-
-
-Bj=C3=B8rn
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > This series patches are not bug fix, just improve codes.
+>
+> Pravin, please review this patch series.
+>
+Sorry for delay. I will have a look tomorrow morning PST.
