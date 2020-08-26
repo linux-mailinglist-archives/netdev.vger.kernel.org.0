@@ -2,99 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF19E2524C1
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 02:31:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 337AF2524C2
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 02:32:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbgHZAbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 25 Aug 2020 20:31:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726541AbgHZAbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 25 Aug 2020 20:31:06 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E0CCC061574
-        for <netdev@vger.kernel.org>; Tue, 25 Aug 2020 17:31:06 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 014C211E44280;
-        Tue, 25 Aug 2020 17:14:18 -0700 (PDT)
-Date:   Tue, 25 Aug 2020 17:31:04 -0700 (PDT)
-Message-Id: <20200825.173104.1541443546408114168.davem@davemloft.net>
-To:     drt@linux.ibm.com
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        mmc@linux.vnet.ibm.com
-Subject: Re: [PATCH net v3] ibmvnic fix NULL tx_pools and rx_tools issue at
- do_reset
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200825172641.806912-1-drt@linux.ibm.com>
-References: <20200825172641.806912-1-drt@linux.ibm.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726716AbgHZAcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 25 Aug 2020 20:32:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47094 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726706AbgHZAcF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 25 Aug 2020 20:32:05 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB75020707;
+        Wed, 26 Aug 2020 00:32:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598401925;
+        bh=MsToiOnzjzM9qd5VZ9Ti1hSzs9vQPVCx0r7VsqOTjsU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=zljRmqvDf1BFxbKYN7lpZPMc7VLFEH9NaNSocswv2KajgPwaDGNg5+P13+8ud/J9N
+         6x2U3hM32bTq8kHHl+FQ1veaXo5/fhTh6KdcT0M6NZ4xH1gQoRtMYu9J+zoB3Bc2L4
+         7nGte4LHTByR/iQMVkp03O9Ht9qbAhSFIVrSqRt4=
+Date:   Tue, 25 Aug 2020 17:32:03 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, roid@mellanox.com,
+        saeedm@mellanox.com, Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next 2/3] devlink: Consider other controller while
+ building phys_port_name
+Message-ID: <20200825173203.2c80ed48@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200825135839.106796-3-parav@mellanox.com>
+References: <20200825135839.106796-1-parav@mellanox.com>
+        <20200825135839.106796-3-parav@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 25 Aug 2020 17:14:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dany Madden <drt@linux.ibm.com>
-Date: Tue, 25 Aug 2020 13:26:41 -0400
-
-> From: Mingming Cao <mmc@linux.vnet.ibm.com>
+On Tue, 25 Aug 2020 16:58:38 +0300 Parav Pandit wrote:
+> A devlink port may be for a controller consist of PCI device.
+> A devlink instance holds ports of two types of controllers.
+> (1) controller discovered on same system where eswitch resides
+> This is the case where PCI PF/VF of a controller and devlink eswitch
+> instance both are located on a single system.
+> (2) controller located on other system.
+> This is the case where a controller is located in one system and its
+> devlink eswitch ports are located in a different system. In this case
+> devlink instance of the eswitch only have access to ports of the
+> controller.
 > 
-> At the time of do_rest, ibmvnic tries to re-initalize the tx_pools
-> and rx_pools to avoid re-allocating the long term buffer. However
-> there is a window inside do_reset that the tx_pools and
-> rx_pools were freed before re-initialized making it possible to deference
-> null pointers.
-> 
-> This patch fix this issue by always check the tx_pool
-> and rx_pool are not NULL after ibmvnic_login. If so, re-allocating
-> the pools. This will avoid getting into calling reset_tx/rx_pools with
-> NULL adapter tx_pools/rx_pools pointer. Also add null pointer check in
-> reset_tx_pools and reset_rx_pools to safe handle NULL pointer case.
-> 
-> Signed-off-by: Mingming Cao <mmc@linux.vnet.ibm.com>
-> Signed-off-by: Dany Madden <drt@linux.ibm.com>
+> When a devlink eswitch instance serves the devlink ports of both
+> controllers together, PCI PF/VF numbers may overlap.
+> Due to this a unique phys_port_name cannot be constructed.
 
-Applied, but:
-
-> +	if (!adapter->rx_pool)
-> +		return -1;
-> +
-
-This driver has poor error code usage, it's a random mix of hypervisor
-error codes, normal error codes like -EINVAL, and internal error codes.
-Sometimes used all in the same function.
-
-For example:
-
-static int ibmvnic_send_crq(struct ibmvnic_adapter *adapter,
-			    union ibmvnic_crq *crq)
- ...
-	if (!adapter->crq.active &&
-	    crq->generic.first != IBMVNIC_CRQ_INIT_CMD) {
-		dev_warn(dev, "Invalid request detected while CRQ is inactive, possible device state change during reset\n");
-		return -EINVAL;
-	}
- ...
-	rc = plpar_hcall_norets(H_SEND_CRQ, ua,
-				cpu_to_be64(u64_crq[0]),
-				cpu_to_be64(u64_crq[1]));
-
-	if (rc) {
-		if (rc == H_CLOSED) {
- ...
-	return rc;
-
-So obviously this function returns a mix of negative erro codes
-and Hypervisor codes such as H_CLOSED.
-
-And stuff like:
-
-	rc = __ibmvnic_open(netdev);
-	if (rc)
-		return IBMVNIC_OPEN_FAILED;
+This description is clear as mud to me. Is it just me? Can someone
+understand this?
