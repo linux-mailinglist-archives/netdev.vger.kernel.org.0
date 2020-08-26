@@ -2,81 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88785252C7F
-	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:33:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8988252CA7
+	for <lists+netdev@lfdr.de>; Wed, 26 Aug 2020 13:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729018AbgHZLcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 07:32:14 -0400
-Received: from spam.zju.edu.cn ([61.164.42.155]:45460 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728999AbgHZLb6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Aug 2020 07:31:58 -0400
-Received: from localhost.localdomain (unknown [210.32.144.184])
-        by mail-app3 (Coremail) with SMTP id cC_KCgCnr98JSEZf_ms_Aw--.46227S4;
-        Wed, 26 Aug 2020 19:31:24 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     David Howells <dhowells@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-afs@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] rxrpc: Fix memleak in rxkad_verify_response
-Date:   Wed, 26 Aug 2020 19:31:20 +0800
-Message-Id: <20200826113120.24297-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgCnr98JSEZf_ms_Aw--.46227S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7GrWktw15JrW5WrWrtF18Krg_yoWDJFc_A3
-        yxKayUZ3yYqFy8C3y2g3y5Kw1xurnrArnYgrn3KFsxJ3yUA347C39rJr1fJryF9a1jgryY
-        yrnIqryxur1ayjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbIxFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK6I8E
-        87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_
-        Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-        xGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4kMxAIw28IcxkI7VAKI48J
-        MxAIw28IcVCjz48v1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c
-        02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_
-        GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7
-        CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAF
-        wI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa
-        7VUbeT5PUUUUU==
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAg0EBlZdtPrBDAAIsN
+        id S1729019AbgHZLm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 07:42:29 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:51332 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729024AbgHZLgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 07:36:38 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 07QBZkhU113534;
+        Wed, 26 Aug 2020 06:35:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1598441746;
+        bh=0LOBTae5LVOqEvJt5NeIXC/6mhs4gclws8Dqb6hNMc0=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=XD+94RGFu+OmnY20drv9quP2co+tnu3m2UwT+WU3xs7qdpEscV8Q1Fa/WCyz6B8nz
+         TjSHFUAieNEjzVmln+GNOXk2KhEIm9FcK3tkHasUGzZ8ZI/SZgyAxNnTNGPZS4TlMA
+         hYX2V4OYsHu7IFPsSPO4jsCicDxgiq4KidkckvFQ=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07QBZkYx125424;
+        Wed, 26 Aug 2020 06:35:46 -0500
+Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 26
+ Aug 2020 06:35:46 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 26 Aug 2020 06:35:46 -0500
+Received: from [10.250.68.181] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 07QBZkES010512;
+        Wed, 26 Aug 2020 06:35:46 -0500
+Subject: Re: [PATCH v2] net: dp83869: Fix RGMII internal delay configuration
+To:     Daniel Gorsulowski <daniel.gorsulowski@esd.eu>,
+        <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>
+References: <20200826050014.428639-1-daniel.gorsulowski@esd.eu>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <a7f527da-f28c-7a8b-3b62-acc9663cb44c@ti.com>
+Date:   Wed, 26 Aug 2020 06:35:45 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20200826050014.428639-1-daniel.gorsulowski@esd.eu>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When kmalloc() on ticket fails, response should be freed
-to prevent memleak.
+Hello
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
----
- net/rxrpc/rxkad.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On 8/26/20 12:00 AM, Daniel Gorsulowski wrote:
+> The RGMII control register at 0x32 indicates the states for the bits
+> RGMII_TX_CLK_DELAY and RGMII_RX_CLK_DELAY as follows:
+>
+>    RGMII Transmit/Receive Clock Delay
+>      0x0 = RGMII transmit clock is shifted with respect to transmit/receive data.
+>      0x1 = RGMII transmit clock is aligned with respect to transmit/receive data.
+>
+> This commit fixes the inversed behavior of these bits
+>
+> Fixes: 736b25afe284 ("net: dp83869: Add RGMII internal delay configuration")
+> Signed-off-by: Daniel Gorsulowski <daniel.gorsulowski@esd.eu>
+> ---
+> v2: fixed indentation and commit style
+>
+>   drivers/net/phy/dp83869.c | 12 ++++++------
+>   1 file changed, 6 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+> index 58103152c601..6b98d74b5102 100644
+> --- a/drivers/net/phy/dp83869.c
+> +++ b/drivers/net/phy/dp83869.c
+> @@ -427,18 +427,18 @@ static int dp83869_config_init(struct phy_device *phydev)
+>   			return ret;
+>   
+>   		val = phy_read_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL);
+> -		val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
+> -			 DP83869_RGMII_RX_CLK_DELAY_EN);
+> +		val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
+> +			DP83869_RGMII_RX_CLK_DELAY_EN);
+>   
+>   		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
+> -			val |= (DP83869_RGMII_TX_CLK_DELAY_EN |
+> -				DP83869_RGMII_RX_CLK_DELAY_EN);
+> +			val &= ~(DP83869_RGMII_TX_CLK_DELAY_EN |
+> +				 DP83869_RGMII_RX_CLK_DELAY_EN);
+>   
+>   		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
+> -			val |= DP83869_RGMII_TX_CLK_DELAY_EN;
+> +			val &= ~DP83869_RGMII_TX_CLK_DELAY_EN;
+>   
+>   		if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
+> -			val |= DP83869_RGMII_RX_CLK_DELAY_EN;
+> +			val &= ~DP83869_RGMII_RX_CLK_DELAY_EN;
+>   
+>   		ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_RGMIICTL,
+>   				    val);
 
-diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
-index 52a24d4ef5d8..e08130e5746b 100644
---- a/net/rxrpc/rxkad.c
-+++ b/net/rxrpc/rxkad.c
-@@ -1137,7 +1137,7 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
- 	ret = -ENOMEM;
- 	ticket = kmalloc(ticket_len, GFP_NOFS);
- 	if (!ticket)
--		goto temporary_error;
-+		goto temporary_error_free_resp;
- 
- 	eproto = tracepoint_string("rxkad_tkt_short");
- 	abort_code = RXKADPACKETSHORT;
-@@ -1230,6 +1230,7 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
- 
- temporary_error_free_ticket:
- 	kfree(ticket);
-+temporary_error_free_resp:
- 	kfree(response);
- temporary_error:
- 	/* Ignore the response packet if we got a temporary error such as
--- 
-2.17.1
+With the exception on bot knowing what net tree this goes to via the subject
+
+Acked-by: Dan Murphy <dmurphy@ti.com>
 
