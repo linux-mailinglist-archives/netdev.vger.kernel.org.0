@@ -2,345 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A6B253BC2
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 04:00:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7EAA253BD9
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 04:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726995AbgH0CAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 22:00:54 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54362 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726794AbgH0CAy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 26 Aug 2020 22:00:54 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kB7Dc-00C1gX-Pa; Thu, 27 Aug 2020 04:00:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v4 5/5] net: phy: Sort Kconfig and Makefile
-Date:   Thu, 27 Aug 2020 04:00:32 +0200
-Message-Id: <20200827020032.2866339-6-andrew@lunn.ch>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200827020032.2866339-1-andrew@lunn.ch>
-References: <20200827020032.2866339-1-andrew@lunn.ch>
-MIME-Version: 1.0
+        id S1726838AbgH0Ca7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 22:30:59 -0400
+Received: from mail-eopbgr150130.outbound.protection.outlook.com ([40.107.15.130]:9485
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726790AbgH0Ca7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 26 Aug 2020 22:30:59 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bj+fYjmDTTsFq7XiXEacCq1+/lzkcVbY9AULDZZVDre760W4qCOJtEj/IQAcE4chO6TXXolp2gmB4YA8voxJAWBicKc+yuue/UQGr/AaClz/8yl/SAGDbyD93JiBTPVjdLaC1l+6dhHfV6ARMt6rtOtRDcat3/tVDTGlj6Hx1QM2+tMAqnhmk4zCOtld7CluTOU8sWi2MNFZyS7EUstMKcpoQ2daMT+rFzCVNJ1u58uApVyTVjTTkoBUmidCtgKe1gX+MmYlUaZ6MwIhqqywxczy9MbeFLm5bbW4/RZbG/TRNIOoHzgEQQlPJ2LJXrL54WCiXwzqf40LUJ0ieD1/3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kMhTiZNIKqqJuGAAFPb+biVFrpmcpxRR7/VE4HOO+oI=;
+ b=RinxZL0XGtQxHYBLhPtOYaM52vISm9fxuWQThMgIdnnDOE+Wk+6/tUlttxCMt6VLDv7dEGD8u7Y5XEvhf1S1KnFetA10WSoimOmhAK6KFdP+Rsq0reD6QhTR0/pJGquCzyxaAKD0ybxP0hp3fueWKHn+AFNK2q+92etUtpDWq9nkuCfBoE8hB2Y7HcX4tR5ukWJlIASScr+e/tgwFe2orBHkLNfa5sKv5+uyyIzqQmZs4esiMytIPTonUP+y+KwlbQkzB0U8kqH/9C8hduXMjCHovWxsSDW2SLSFAMGC8/IRmsLCn7e6YA/ZCspleNqeDmgefFqXm0YWggppunfCMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kMhTiZNIKqqJuGAAFPb+biVFrpmcpxRR7/VE4HOO+oI=;
+ b=HF97BKAr4nYHWnLAT4xrnPZs48wve1IiHE09/jcuv80AsmeSr6Ly+U5hG25r78yryC87G8oLOp73rBWHFa/ItGlP3I2rZW9puaQWmBR0jgto157Jm/OkcL2alRqgW/b7IYpl5yDAA4VSE1CWks1PFjJZrwDb0hMwSP2O1KD+EVc=
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=dektech.com.au;
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
+ by VE1PR05MB7326.eurprd05.prod.outlook.com (2603:10a6:800:1a0::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Thu, 27 Aug
+ 2020 02:30:54 +0000
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::8dac:a296:42d9:e90b]) by VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::8dac:a296:42d9:e90b%7]) with mapi id 15.20.3305.026; Thu, 27 Aug 2020
+ 02:30:54 +0000
+From:   Hoang Huu Le <hoang.h.le@dektech.com.au>
+To:     jmaloy@redhat.com, maloy@donjonn.com, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Cc:     Hoang Le <hoang.h.le@dektech.com.au>
+Subject: [iproute2-next] tipc: support 128bit node identity for peer removing
+Date:   Thu, 27 Aug 2020 09:30:37 +0700
+Message-Id: <20200827023037.3204-1-hoang.h.le@dektech.com.au>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0122.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:40::26) To VI1PR05MB4605.eurprd05.prod.outlook.com
+ (2603:10a6:802:61::21)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dektech.com.au (14.161.14.188) by SG2PR01CA0122.apcprd01.prod.exchangelabs.com (2603:1096:4:40::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend Transport; Thu, 27 Aug 2020 02:30:51 +0000
+X-Mailer: git-send-email 2.25.1
+X-Originating-IP: [14.161.14.188]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c95a65ff-e27a-4bf2-a14a-08d84a31388e
+X-MS-TrafficTypeDiagnostic: VE1PR05MB7326:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VE1PR05MB732676C58E9B094C364B6314F1550@VE1PR05MB7326.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:773;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fZuZI5N1aUsIfLqAyeotV+WfXidlL81zA6slsW9L+1kpIHz4reKQXHC9tB1bN0YkXyi3Pzct/dI6v1ngd7HrH8rDQsQlb9vOctdqShqS+ke7KhUd/c/jRBcUvDW7/7g0JOTs3RO5kbp7NuFT5oPrK1kFubXQLyVHgN9bMCo0tMs7qEM0UIERMpbpHJg/u9r7yBsEITAIbDYUBo6d37hfZC9jbxhD8ykmHNgRBryF9sXlaYo2nh4//FM6PffUc/vOq/FopIEucR7XWJoq/LRsEl21USY7Ip1A0g2/M1z5XC9jUsJ//4T80+qxtwphjhVckGA09sTRR0lX4P7W98k+/Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4605.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39850400004)(376002)(136003)(396003)(366004)(107886003)(478600001)(86362001)(316002)(2906002)(7696005)(186003)(83380400001)(4326008)(52116002)(5660300002)(26005)(55016002)(16526019)(8936002)(8676002)(6666004)(66946007)(66476007)(66556008)(956004)(2616005)(36756003)(1076003)(103116003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: KRaO5BIWhKKvqVRWI3RtnlRX6ZSPtB1ZoY5EfgWPJtmjkFa8rxMNuxVJ0WKWJqksaTqXqw9iG3fOpRfQq8zYSQ5Li2POLohIH9PnFi5AQArm8dsnxNChsElVuYAtRvgloilZ79JXoaKeKJVIZK4s34Up8s2dL4ov2/+wYroShE1sQCyGJGo5za3oYDD6mHILp+LKvpoYttWuSXCdp3Sm6/VAZ9n0aEDw3uEhrgrDyAbN9JSkLgqQlIie9/hP0tI07FP2nmTShYpOqdeb2QmM2j35wMPvxSmzVCJuv00gPRsoJmkyJMJgjVADduX5QVY2aAe4E/mW8zCy+WEIgxYSys/k5X2Ql05kbWTeYEs+fG/2eiFlpbLKNtzorfGuYoWM8K2wO4+1X/RlWWTjaGyvUEzMO1RZpOx13IYB4oPR88kq3oXadzmjydt7i+PzoDOUIpNtqol+MR5dF7E40s9iNWSC6h6Bop57X7zSKlhAX+aF0PR4S9+CsJBmvr3vSVGlVmhjnQfRzb4DFJUwsd5uMEp0/41saLZwtWS70ZM6qIpS63LXAp/yCTbZMA3m6hsyiCSiH77mJLAZow6aSYj5Z6g+MQDakA/4bni4/UnACyzUO3c08JybVBGkWD3AkOktTBmN/VmihBGhZqJOw49Vvg==
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: c95a65ff-e27a-4bf2-a14a-08d84a31388e
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB4605.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2020 02:30:53.8308
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: G+C+7M96EhjMgcFANDBRJ71uRlGGUyJvQooDZrcF+im7OLAsgdR8wxInDwkWmkKwLRnGegiqEIRl6d7mFWu5jEzAJ+svmR7Ol+yjMXiRZcU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR05MB7326
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sort the Kconfig based on the text shown in make menuconfig and sort
-the Makefile by CONFIG symbol.
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+Problem:
+In kernel upstream, we add the support to set node identity with
+128bit. However, we are still using legacy format in command tipc
+peer removing. Then, we got a problem when trying to remove
+offline node i.e:
+
+$ tipc node list
+Node Identity                    Hash     State
+d6babc1c1c6d                     1cbcd7ca down
+
+$ tipc peer remove address d6babc1c1c6d
+invalid network address, syntax: Z.C.N
+error: No such device or address
+
+Solution:
+We add the support to remove a specific node down with 128bit
+node identifier, as an alternative to legacy 32-bit node address.
+
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Hoang Huu Le <hoang.h.le@dektech.com.au>
 ---
- drivers/net/phy/Kconfig  | 164 +++++++++++++++++++--------------------
- drivers/net/phy/Makefile |  10 +--
- 2 files changed, 87 insertions(+), 87 deletions(-)
+ tipc/peer.c | 53 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 52 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 20252d7487db..698bea312adc 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -45,7 +45,15 @@ config LED_TRIGGER_PHY
- 		for any speed known to the PHY.
+diff --git a/tipc/peer.c b/tipc/peer.c
+index f6380777033d..f14ec35e6f71 100644
+--- a/tipc/peer.c
++++ b/tipc/peer.c
+@@ -59,17 +59,68 @@ static int cmd_peer_rm_addr(struct nlmsghdr *nlh, const struct cmd *cmd,
+ 	return msg_doit(nlh, NULL, NULL);
+ }
  
- 
--comment "MII PHY device drivers"
-+config FIXED_PHY
-+	tristate "MDIO Bus/PHY emulation with fixed speed/link PHYs"
-+	depends on PHYLIB
-+	select SWPHY
-+	help
-+	  Adds the platform "fixed" MDIO Bus to cover the boards that use
-+	  PHYs that are not connected to the real MDIO bus.
++static int cmd_peer_rm_nodeid(struct nlmsghdr *nlh, const struct cmd *cmd,
++			      struct cmdl *cmdl, void *data)
++{
++	char buf[MNL_SOCKET_BUFFER_SIZE];
++	__u8 id[16] = {0,};
++	__u64 *w0 = (__u64 *)&id[0];
++	__u64 *w1 = (__u64 *)&id[8];
++	struct nlattr *nest;
++	char *str;
 +
-+	  Currently tested with mpc866ads and mpc8349e-mitx.
- 
- config SFP
- 	tristate "SFP cage support"
-@@ -53,6 +61,19 @@ config SFP
- 	depends on HWMON || HWMON=n
- 	select MDIO_I2C
- 
-+comment "MII PHY device drivers"
++	if (cmdl->argc != cmdl->optind + 1) {
++		fprintf(stderr, "Usage: %s peer remove identity NODEID\n",
++			cmdl->argv[0]);
++		return -EINVAL;
++	}
 +
-+config AMD_PHY
-+	tristate "AMD PHYs"
-+	help
-+	  Currently supports the am79c874
++	str = shift_cmdl(cmdl);
++	if (str2nodeid(str, id)) {
++		fprintf(stderr, "Invalid node identity\n");
++		return -EINVAL;
++	}
 +
-+config MESON_GXL_PHY
-+	tristate "Amlogic Meson GXL Internal PHY"
-+	depends on ARCH_MESON || COMPILE_TEST
-+	help
-+	  Currently has a driver for the Amlogic Meson GXL Internal PHY
++	nlh = msg_init(buf, TIPC_NL_PEER_REMOVE);
++	if (!nlh) {
++		fprintf(stderr, "error, message initialisation failed\n");
++		return -1;
++	}
 +
- config ADIN_PHY
- 	tristate "Analog Devices Industrial Ethernet PHYs"
- 	help
-@@ -62,11 +83,6 @@ config ADIN_PHY
- 	  - ADIN1300 - Robust,Industrial, Low Latency 10/100/1000 Gigabit
- 	    Ethernet PHY
- 
--config AMD_PHY
--	tristate "AMD PHYs"
--	help
--	  Currently supports the am79c874
--
- config AQUANTIA_PHY
- 	tristate "Aquantia PHYs"
- 	help
-@@ -78,6 +94,24 @@ config AX88796B_PHY
- 	  Currently supports the Asix Electronics PHY found in the X-Surf 100
- 	  AX88796B package.
- 
-+config BROADCOM_PHY
-+	tristate "Broadcom 54XX PHYs"
-+	select BCM_NET_PHYLIB
-+	help
-+	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
-+	  BCM5481, BCM54810 and BCM5482 PHYs.
++	nest = mnl_attr_nest_start(nlh, TIPC_NLA_NET);
++	mnl_attr_put_u64(nlh, TIPC_NLA_NET_NODEID, *w0);
++	mnl_attr_put_u64(nlh, TIPC_NLA_NET_NODEID_W1, *w1);
++	mnl_attr_nest_end(nlh, nest);
 +
-+config BCM54140_PHY
-+	tristate "Broadcom BCM54140 PHY"
-+	depends on PHYLIB
-+	depends on HWMON || HWMON=n
-+	select BCM_NET_PHYLIB
-+	help
-+	  Support the Broadcom BCM54140 Quad SGMII/QSGMII PHY.
++	return msg_doit(nlh, NULL, NULL);
++}
 +
-+	  This driver also supports the hardware monitoring of this PHY and
-+	  exposes voltage and temperature sensors.
+ static void cmd_peer_rm_help(struct cmdl *cmdl)
++{
++	fprintf(stderr, "Usage: %s peer remove PROPERTY\n\n"
++		"PROPERTIES\n"
++		" identity NODEID         - Remove peer node identity\n",
++		cmdl->argv[0]);
++}
 +
- config BCM63XX_PHY
- 	tristate "Broadcom 63xx SOCs internal PHY"
- 	depends on BCM63XX || COMPILE_TEST
-@@ -92,6 +126,12 @@ config BCM7XXX_PHY
- 	  Currently supports the BCM7366, BCM7439, BCM7445, and
- 	  40nm and 65nm generation of BCM7xxx Set Top Box SoCs.
++static void cmd_peer_rm_addr_help(struct cmdl *cmdl)
+ {
+ 	fprintf(stderr, "Usage: %s peer remove address ADDRESS\n",
+ 		cmdl->argv[0]);
+ }
  
-+config BCM84881_PHY
-+	tristate "Broadcom BCM84881 PHY"
-+	depends on PHYLIB
-+	help
-+	  Support the Broadcom BCM84881 PHY.
++static void cmd_peer_rm_nodeid_help(struct cmdl *cmdl)
++{
++	fprintf(stderr, "Usage: %s peer remove identity NODEID\n",
++		cmdl->argv[0]);
++}
 +
- config BCM87XX_PHY
- 	tristate "Broadcom BCM8706 and BCM8727 PHYs"
- 	help
-@@ -113,30 +153,6 @@ config BCM_CYGNUS_PHY
- config BCM_NET_PHYLIB
- 	tristate
+ static int cmd_peer_rm(struct nlmsghdr *nlh, const struct cmd *cmd,
+ 			struct cmdl *cmdl, void *data)
+ {
+ 	const struct cmd cmds[] = {
+-		{ "address",	cmd_peer_rm_addr,	cmd_peer_rm_help },
++		{ "address",  cmd_peer_rm_addr,   cmd_peer_rm_addr_help },
++		{ "identity", cmd_peer_rm_nodeid, cmd_peer_rm_nodeid_help },
+ 		{ NULL }
+ 	};
  
--config BROADCOM_PHY
--	tristate "Broadcom PHYs"
--	select BCM_NET_PHYLIB
--	help
--	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
--	  BCM5481, BCM54810 and BCM5482 PHYs.
--
--config BCM54140_PHY
--	tristate "Broadcom BCM54140 PHY"
--	depends on PHYLIB
--	depends on HWMON || HWMON=n
--	select BCM_NET_PHYLIB
--	help
--	  Support the Broadcom BCM54140 Quad SGMII/QSGMII PHY.
--
--	  This driver also supports the hardware monitoring of this PHY and
--	  exposes voltage and temperature sensors.
--
--config BCM84881_PHY
--	tristate "Broadcom BCM84881 PHY"
--	depends on PHYLIB
--	help
--	  Support the Broadcom BCM84881 PHY.
--
- config CICADA_PHY
- 	tristate "Cicada PHYs"
- 	help
-@@ -152,48 +168,16 @@ config DAVICOM_PHY
- 	help
- 	  Currently supports dm9161e and dm9131
- 
--config DP83822_PHY
--	tristate "Texas Instruments DP83822/825/826 PHYs"
--	help
--	  Supports the DP83822, DP83825I, DP83825CM, DP83825CS, DP83825S,
--	  DP83826C and DP83826NC PHYs.
--
--config DP83TC811_PHY
--	tristate "Texas Instruments DP83TC811 PHY"
--	help
--	  Supports the DP83TC811 PHY.
--
--config DP83848_PHY
--	tristate "Texas Instruments DP83848 PHY"
--	help
--	  Supports the DP83848 PHY.
--
--config DP83867_PHY
--	tristate "Texas Instruments DP83867 Gigabit PHY"
--	help
--	  Currently supports the DP83867 PHY.
--
--config DP83869_PHY
--	tristate "Texas Instruments DP83869 Gigabit PHY"
--	help
--	  Currently supports the DP83869 PHY.  This PHY supports copper and
--	  fiber connections.
--
--config FIXED_PHY
--	tristate "MDIO Bus/PHY emulation with fixed speed/link PHYs"
--	depends on PHYLIB
--	select SWPHY
--	help
--	  Adds the platform "fixed" MDIO Bus to cover the boards that use
--	  PHYs that are not connected to the real MDIO bus.
--
--	  Currently tested with mpc866ads and mpc8349e-mitx.
--
- config ICPLUS_PHY
- 	tristate "ICPlus PHYs"
- 	help
- 	  Currently supports the IP175C and IP1001 PHYs.
- 
-+config LXT_PHY
-+	tristate "Intel LXT PHYs"
-+	help
-+	  Currently supports the lxt970, lxt971
-+
- config INTEL_XWAY_PHY
- 	tristate "Intel XWAY PHYs"
- 	help
-@@ -207,27 +191,16 @@ config LSI_ET1011C_PHY
- 	help
- 	  Supports the LSI ET1011C PHY.
- 
--config LXT_PHY
--	tristate "Intel LXT PHYs"
--	help
--	  Currently supports the lxt970, lxt971
--
- config MARVELL_PHY
--	tristate "Marvell PHYs"
-+	tristate "Marvell Alaska PHYs"
- 	help
--	  Currently has a driver for the 88E1011S
-+	  Currently has a driver for the 88E1XXX
- 
- config MARVELL_10G_PHY
- 	tristate "Marvell Alaska 10Gbit PHYs"
- 	help
- 	  Support for the Marvell Alaska MV88X3310 and compatible PHYs.
- 
--config MESON_GXL_PHY
--	tristate "Amlogic Meson GXL Internal PHY"
--	depends on ARCH_MESON || COMPILE_TEST
--	help
--	  Currently has a driver for the Amlogic Meson GXL Internal PHY
--
- config MICREL_PHY
- 	tristate "Micrel PHYs"
- 	help
-@@ -278,12 +251,12 @@ config REALTEK_PHY
- 	  Supports the Realtek 821x PHY.
- 
- config RENESAS_PHY
--	tristate "Driver for Renesas PHYs"
-+	tristate "Renesas PHYs"
- 	help
- 	  Supports the Renesas PHYs uPD60620 and uPD60620A.
- 
- config ROCKCHIP_PHY
--	tristate "Driver for Rockchip Ethernet PHYs"
-+	tristate "Rockchip Ethernet PHYs"
- 	help
- 	  Currently supports the integrated Ethernet PHY.
- 
-@@ -302,6 +275,33 @@ config TERANETICS_PHY
- 	help
- 	  Currently supports the Teranetics TN2020
- 
-+config DP83822_PHY
-+	tristate "Texas Instruments DP83822/825/826 PHYs"
-+	help
-+	  Supports the DP83822, DP83825I, DP83825CM, DP83825CS, DP83825S,
-+	  DP83826C and DP83826NC PHYs.
-+
-+config DP83TC811_PHY
-+	tristate "Texas Instruments DP83TC811 PHY"
-+	help
-+	  Supports the DP83TC811 PHY.
-+
-+config DP83848_PHY
-+	tristate "Texas Instruments DP83848 PHY"
-+	help
-+	  Supports the DP83848 PHY.
-+
-+config DP83867_PHY
-+	tristate "Texas Instruments DP83867 Gigabit PHY"
-+	help
-+	  Currently supports the DP83867 PHY.
-+
-+config DP83869_PHY
-+	tristate "Texas Instruments DP83869 Gigabit PHY"
-+	help
-+	  Currently supports the DP83869 PHY.  This PHY supports copper and
-+	  fiber connections.
-+
- config VITESSE_PHY
- 	tristate "Vitesse PHYs"
- 	help
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index 3d83b648e3f0..a13e402074cf 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -37,32 +37,32 @@ ifdef CONFIG_HWMON
- aquantia-objs			+= aquantia_hwmon.o
- endif
- obj-$(CONFIG_AQUANTIA_PHY)	+= aquantia.o
--obj-$(CONFIG_AX88796B_PHY)	+= ax88796b.o
- obj-$(CONFIG_AT803X_PHY)	+= at803x.o
-+obj-$(CONFIG_AX88796B_PHY)	+= ax88796b.o
-+obj-$(CONFIG_BCM54140_PHY)	+= bcm54140.o
- obj-$(CONFIG_BCM63XX_PHY)	+= bcm63xx.o
- obj-$(CONFIG_BCM7XXX_PHY)	+= bcm7xxx.o
-+obj-$(CONFIG_BCM84881_PHY)	+= bcm84881.o
- obj-$(CONFIG_BCM87XX_PHY)	+= bcm87xx.o
- obj-$(CONFIG_BCM_CYGNUS_PHY)	+= bcm-cygnus.o
- obj-$(CONFIG_BCM_NET_PHYLIB)	+= bcm-phy-lib.o
- obj-$(CONFIG_BROADCOM_PHY)	+= broadcom.o
--obj-$(CONFIG_BCM54140_PHY)	+= bcm54140.o
--obj-$(CONFIG_BCM84881_PHY)	+= bcm84881.o
- obj-$(CONFIG_CICADA_PHY)	+= cicada.o
- obj-$(CONFIG_CORTINA_PHY)	+= cortina.o
- obj-$(CONFIG_DAVICOM_PHY)	+= davicom.o
- obj-$(CONFIG_DP83640_PHY)	+= dp83640.o
- obj-$(CONFIG_DP83822_PHY)	+= dp83822.o
--obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
- obj-$(CONFIG_DP83848_PHY)	+= dp83848.o
- obj-$(CONFIG_DP83867_PHY)	+= dp83867.o
- obj-$(CONFIG_DP83869_PHY)	+= dp83869.o
-+obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
- obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
- obj-$(CONFIG_ICPLUS_PHY)	+= icplus.o
- obj-$(CONFIG_INTEL_XWAY_PHY)	+= intel-xway.o
- obj-$(CONFIG_LSI_ET1011C_PHY)	+= et1011c.o
- obj-$(CONFIG_LXT_PHY)		+= lxt.o
--obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
- obj-$(CONFIG_MARVELL_10G_PHY)	+= marvell10g.o
-+obj-$(CONFIG_MARVELL_PHY)	+= marvell.o
- obj-$(CONFIG_MESON_GXL_PHY)	+= meson-gxl.o
- obj-$(CONFIG_MICREL_KS8995MA)	+= spi_ks8995.o
- obj-$(CONFIG_MICREL_PHY)	+= micrel.o
 -- 
-2.28.0
+2.25.1
 
