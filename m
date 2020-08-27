@@ -2,93 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6080253AE1
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 02:09:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF6B3253B1E
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 02:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726786AbgH0AJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 20:09:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
+        id S1726947AbgH0Aek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 20:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbgH0AJJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 20:09:09 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DEFC061574
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 17:09:07 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id v15so2045831pgh.6
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 17:09:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=sCDkWfuRrzyzZ2AxFN5fYL2CC8I1JuClW9TnYN0xx2o=;
-        b=Xiuel13dBAMAaThOfDU5hsqfeLjieZD2Nma3ua/QBFkoNG6FeAPYH9eG2ur5xYeXw+
-         uSw+sUKFxnpwK3VGn8xiLPYqXQ21jvKmXyhz0MnWkJo6+yocrE6x3TKO9WAZwYD2G1A5
-         FcvRyeL2+FgrOFn364BdBQ44dvYYpRpij+QH36o3+erSLHdeVkMP8AdlwzXgjVSmlz46
-         fm8c/oCZUpiSqEIeyF7YtYuzTfwL5ODOkCvVIIpX6E3XuUmLkxDZtlvpVJCrn0rXHIE0
-         dvj52mWBLZCqx6Ucuzpp1R5TiEaUsJIOS6jUpsIaVJkq1RDjoBBAQhAvdI2xKtvh/mmH
-         GXUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=sCDkWfuRrzyzZ2AxFN5fYL2CC8I1JuClW9TnYN0xx2o=;
-        b=HimXeQjVrKZqXSCRle1RNBfnZIHSmi6DvqLlsR/0hKNs0XAlQh1NNDFRzwBsY/Kcoy
-         Qhf77aiFU1qaAzpktLUTLTQV4Mz/6UVlvyfVvgKCRXRK6QEi1z/nHjeY9mQWvavIqyPI
-         IOu2TqIrA4SP3q2jWmgYwhOVNFt1spQIpjMRDRI9H6Oe1UHfld8JmxYvbkhtI8HzWfap
-         yumE3pSi3r+NxF9iv4WiHcl4DbViJrlTiWe/sl3LmPlqMxpthxSVfJ1GfPINWZKEiPKY
-         kHyKqEsxRr5/NWHXTDarVrKihRZnTePHCoTwKK9vNaescdhy7E0a1dxWpRNUEFELTzyg
-         buKA==
-X-Gm-Message-State: AOAM533XuU60pGZpCik//p9KvqydfWlxStP9talfcJfPrYzZ8lEJmvki
-        PGvkdWSruZtbvD1OW6Zwf+VdIw==
-X-Google-Smtp-Source: ABdhPJybRUGf8L2cUG0yMCX9XtOodxulRvaH6xDX2ECrO9QgWO0+tPlubF2+g9IFw9B4/Aj2ta+lRQ==
-X-Received: by 2002:aa7:9a44:: with SMTP id x4mr2994393pfj.199.1598486947002;
-        Wed, 26 Aug 2020 17:09:07 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id a200sm321392pfd.182.2020.08.26.17.09.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Aug 2020 17:09:06 -0700 (PDT)
-Subject: Re: [PATCH net-next 11/12] ionic: change queue count with no reset
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20200826164214.31792-1-snelson@pensando.io>
- <20200826164214.31792-12-snelson@pensando.io>
- <20200826141450.532ee89a@kicinski-fedora-PC1C0HJN>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <6318e105-e48c-2d1e-1099-6b3ef428c899@pensando.io>
-Date:   Wed, 26 Aug 2020 17:09:03 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
+        with ESMTP id S1726148AbgH0Aek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 20:34:40 -0400
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D17ACC061574;
+        Wed, 26 Aug 2020 17:34:39 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BcNz009m4z9sSJ;
+        Thu, 27 Aug 2020 10:34:35 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1598488476;
+        bh=9J3Z/RzmtRQDyJKD7cxNHhVKPsEKKjMqAhiaCqWxv2I=;
+        h=Date:From:To:Cc:Subject:From;
+        b=UFWD8x2L2olBkNTpbRRIUM7dWECWZiMc99uPAX0WIoRISLai8zFPDCV+WMnFvdtjg
+         PBPnqHOGQuswyRV5R3QBTQ4ePO44EFHGcWbK+2bZj8ZrqvuqKSEvNtLZD5kHhfp7vs
+         T3DAagGDrblUZXvu//6DxFHLKolN+rn3EXzAkepV9Cyau7hV4t4ZumTOqiDteRgJZQ
+         IS64ek5kA4O5UDuct0UHeCQXd3xen99XGXPmnRSP9vJXxRM8cqU68QBONvPuIeopHe
+         5/BceKJjs+6D7SUCXdKQRpUZZBIGc+nargChAR+0jJg1qsE6shXKfXkrPBLmelwQZb
+         WY82hQatXfuJQ==
+Date:   Thu, 27 Aug 2020 10:34:33 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mingming Cao <mmc@linux.vnet.ibm.com>,
+        Dany Madden <drt@linux.ibm.com>,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20200827103433.43d384c8@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20200826141450.532ee89a@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: multipart/signed; boundary="Sig_/eFsjpf3wj2EBY0NwhpmDa5W";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/20 2:14 PM, Jakub Kicinski wrote:
-> On Wed, 26 Aug 2020 09:42:13 -0700 Shannon Nelson wrote:
->> +	if (qparam->nxqs != lif->nxqs) {
->> +		err = netif_set_real_num_tx_queues(lif->netdev, lif->nxqs);
->> +		if (err)
->> +			goto err_out;
->> +		err = netif_set_real_num_rx_queues(lif->netdev, lif->nxqs);
->> +		if (err)
->> +			goto err_out;
-> does error handling reset real_num_tx_queues to previous value?
->
->> +	}
+--Sig_/eFsjpf3wj2EBY0NwhpmDa5W
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-No, the point was to not change the real_num values until we knew that 
-everything else was sorted out and swapped.  However, it looks like that 
-could be put right after the queues are stopped and before the swap, so 
-that if the real_num change fails we can reactivate everything as it was 
-and dump all the new allocations.
+Hi all,
 
-I'll work that up and see what it looks like.
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Thanks,
-sln
+  drivers/net/ethernet/ibm/ibmvnic.c
+
+between commit:
+
+  9f1345737790 ("ibmvnic fix NULL tx_pools and rx_tools issue at do_reset")
+
+from the net tree and commit:
+
+  507ebe6444a4 ("ibmvnic: Fix use-after-free of VNIC login response buffer")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/ibm/ibmvnic.c
+index d3a774331afc,86a83e53dce5..000000000000
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@@ -475,17 -467,12 +467,15 @@@ static int init_stats_token(struct ibmv
+  static int reset_rx_pools(struct ibmvnic_adapter *adapter)
+  {
+  	struct ibmvnic_rx_pool *rx_pool;
++ 	u64 buff_size;
+  	int rx_scrqs;
+  	int i, j, rc;
+- 	u64 *size_array;
+ =20
+ +	if (!adapter->rx_pool)
+ +		return -1;
+ +
+- 	size_array =3D (u64 *)((u8 *)(adapter->login_rsp_buf) +
+- 		be32_to_cpu(adapter->login_rsp_buf->off_rxadd_buff_size));
+-=20
+- 	rx_scrqs =3D be32_to_cpu(adapter->login_rsp_buf->num_rxadd_subcrqs);
++ 	buff_size =3D adapter->cur_rx_buf_sz;
++ 	rx_scrqs =3D adapter->num_active_rx_pools;
+  	for (i =3D 0; i < rx_scrqs; i++) {
+  		rx_pool =3D &adapter->rx_pool[i];
+ =20
+@@@ -652,10 -637,7 +640,10 @@@ static int reset_tx_pools(struct ibmvni
+  	int tx_scrqs;
+  	int i, rc;
+ =20
+ +	if (!adapter->tx_pool)
+ +		return -1;
+ +
+- 	tx_scrqs =3D be32_to_cpu(adapter->login_rsp_buf->num_txsubm_subcrqs);
++ 	tx_scrqs =3D adapter->num_active_tx_pools;
+  	for (i =3D 0; i < tx_scrqs; i++) {
+  		rc =3D reset_one_tx_pool(adapter, &adapter->tso_pool[i]);
+  		if (rc)
+
+--Sig_/eFsjpf3wj2EBY0NwhpmDa5W
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9G/5kACgkQAVBC80lX
+0GyqeAf9HUzAizW3e60JQkmaqI4HiLYdWb2Ko5Tig93cGN46SZ3PaO3W6zSoPsaY
+j2xUQMcn9YNl6P7Cw35va+NB5QorhswnpvlnT4CMx+dslgX3O1tHatypCITvzd7J
+VwaZPjIqbapdNMq+e99Wc8aVsV89FNm4N75/q4JDi/VITgfA/gbzCXO0ZK7ekhir
+y/vT4uHekS/zKCgKT3Mv5Uw99B52RbKrLaLswI6nWyG79D19uuR4r5LpmY/1Iel8
+XxfvPgtgNUVfDqCam4HKG6qsTng706AJ0gNQ/6xvvSFKJVBvDlvcwHCIrQqFX0rS
+4MID+hlXGoY11nhJ4s0wls4h9LAPjQ==
+=1LSu
+-----END PGP SIGNATURE-----
+
+--Sig_/eFsjpf3wj2EBY0NwhpmDa5W--
