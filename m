@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D897C253CEE
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 06:51:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 819CB253D12
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 07:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727000AbgH0EvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 00:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52130 "EHLO
+        id S1726930AbgH0FIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 01:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725909AbgH0Eu7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 00:50:59 -0400
+        with ESMTP id S1725847AbgH0FIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 01:08:09 -0400
 Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1483C0612AC;
-        Wed, 26 Aug 2020 21:50:58 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id p191so2262775ybg.0;
-        Wed, 26 Aug 2020 21:50:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B3FC061240;
+        Wed, 26 Aug 2020 22:08:08 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id m200so2259288ybf.10;
+        Wed, 26 Aug 2020 22:08:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XZYR7VNw5NZ2Jso3mPlMp39U2lgdgcQkzuZjsh+Wx0s=;
-        b=pHUt3AAkY0mIHAET71C4ze52gzab5HXSIemi92bNPACl+RQJziqidxiUr1ptgRtzkN
-         OO8Cy6i8NWrdIv9301wuoSHseBPVw1HjuppImSP5msWs+KfRCUcSD64xaen9tvajgn9o
-         GGbAG+PuU5xUr4H7BXKLJ4zvQL6qjBX63cuy2uw/QCAeli7U8s9Lp+O60FwJAx5w6x9E
-         8otqqXzWw/nUSY2b4R+RzqLPkUrAJqP085xcWqSEr+wBkc+xquxm0Jkt3qS2R8ug6Qx4
-         lGgsfVbhdNKbxKizf/5zjY8zrSCUHNWGynkiMsBePL/hcbWh4LMROKS+lXNE1HtNfza3
-         B/tg==
+        bh=NnuCL2LWhGPl49aBCTEcEvse6jLuZxO0YBkIl3Y1WWs=;
+        b=l3/EvTbyR3TjcR/vdzHwosjh5cLfCBm7jJ1Gpl+M2TGRcxB4wY1IWlZj13Wcp4BqUg
+         1mLfUeBSJcGg+Jen4K72vX91AT6G+u1w9dU3M/ErqS4ONKO2UqrWi2JJhORQzw5lTC5F
+         FMK7/syQz7If1lAEmybTHAbVisvQAVS458/lxgbjqJtJhdkMBBU77QtfINHaiwMN9sam
+         pjJBvpuxxnzmo9Ln0Qp734re+MW7PF4l5KLSyzQyhckHRbweNGr/0fQQqmlOHYM3fJIt
+         IeGTYXlnQkKnChdcKsLQUdBsnn9REQGBNtgeDRsNeBhZqiz/yCggaiaiSg9QYUNW/Ko9
+         qv3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XZYR7VNw5NZ2Jso3mPlMp39U2lgdgcQkzuZjsh+Wx0s=;
-        b=oOBphK/1edsgJSv3gzjke18E1y3aZNL2Lfrhu8avvS8XOfOatkf2BLXu2jxquZ9o+u
-         PnxxvzjjF8qnLyGqsRQFoCgJnoMKExEzo7gBVYQlZ1bTkA3UX5Zlw/9dB3CjpYwh/pkl
-         +14n4ZCkbDwCVGZLxV/vVxlx++Wf/T3Su4X5ljeNSTHwYDnIPMl8xR42zDKLHvB1dfH6
-         X36r+fPTeQjp7pXZEBXEHLRm2uOZhimF/9MhP5VyrjTy0RQKuEUUMHzRfqKsrgVf8cZX
-         SX1on6xYTOx0O2TZgLlNFNiSX2tASVqP5WVo3m/VEbHeuHp7NmCnzO0+4cwM66Hf5MJ1
-         N2Qw==
-X-Gm-Message-State: AOAM532BXQH4GA/LtE1QvG/XM3UTnVWKOCkW3XCWWDt9+MCbhCoiSt4o
-        jI6z4uXR7su4rNk1ug+iEbrAQKrC+C8lhVPNoRn0CJTx
-X-Google-Smtp-Source: ABdhPJzuSO+K4V+PMBFld61Dn+aVaPXsLSmlbpxfVY3OMltgSrbeN//ZQo6K/hZ+TZDeY0NO8iHUn5Tc/8V+bRkGu2Y=
-X-Received: by 2002:a25:ae43:: with SMTP id g3mr26766908ybe.459.1598503857838;
- Wed, 26 Aug 2020 21:50:57 -0700 (PDT)
+        bh=NnuCL2LWhGPl49aBCTEcEvse6jLuZxO0YBkIl3Y1WWs=;
+        b=e11zbepWplLhVfsefimOUq4VbiKiVGT8Y9W+LdQCStfB5mNWs993mrIlw+vccX3vnF
+         YrCsWPT3wVRW3Sq7RtT+NafZZuv/r75BqN0eLWUcwH73B0f1BXgqrs3VI0pZu5hpb60m
+         3FUEbXvhlQ69HyLPKmFSgI6/PnBjCv2O49Zur3XgPhNutXnWRMzbdAXfNxd2IUuOVkEQ
+         zcD899Ix/XegTamea9/vYN7agtKFcrylNmT8y5WQdAPI9TnbQZyG7WcGpEOmqGnfzmts
+         MlSuQ/yq9gKXgX+m7Nxsv7y/3ESJAjX1Mxp0CGc4m82rOWv8wFLtxd92YsnH1vaMV+SJ
+         syMw==
+X-Gm-Message-State: AOAM533oxV9C8nOszoN+Vc4INpyXk8Nq6zQbcexp9Tip2G7UPhoVLbjM
+        x1DDbS3a3X2cJGtPkZ28jSBKDKSvjbCFmvWKobo=
+X-Google-Smtp-Source: ABdhPJwNY3ClugK69D/iwE3Zi8Rsed5gkD/RCOfNXoQ0PeYB5pxr/JdkymT/V4HYC1U2gDw3PWdf0s3qdH2ifMlBNts=
+X-Received: by 2002:a25:2ad3:: with SMTP id q202mr24953867ybq.27.1598504887874;
+ Wed, 26 Aug 2020 22:08:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200827000618.2711826-1-yhs@fb.com> <20200827000619.2711883-1-yhs@fb.com>
-In-Reply-To: <20200827000619.2711883-1-yhs@fb.com>
+References: <20200827000618.2711826-1-yhs@fb.com> <20200827000620.2711963-1-yhs@fb.com>
+In-Reply-To: <20200827000620.2711963-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 26 Aug 2020 21:50:47 -0700
-Message-ID: <CAEf4BzZg3D=7rkWjer49GH0_MZEf0KJH3O3tMs1gkzqMOb7t6g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/5] bpf: make bpf_link_info.iter similar to bpf_iter_link_info
+Date:   Wed, 26 Aug 2020 22:07:56 -0700
+Message-ID: <CAEf4BzYBQVX-YQyZiJe+xrMUmk_k+mU=Q-RNULeS4pt-YyzQUA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/5] bpf: add main_thread_only customization for
+ task/task_file iterators
 To:     Yonghong Song <yhs@fb.com>
 Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -63,41 +64,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Aug 26, 2020 at 5:07 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> bpf_link_info.iter is used by link_query to return
-> bpf_iter_link_info to user space. Fields may be different
-> ,e.g., map_fd vs. map_id, so we cannot reuse
-> the exact structure. But make them similar, e.g.,
->   struct bpf_link_info {
->      /* common fields */
->      union {
->         struct { ... } raw_tracepoint;
->         struct { ... } tracing;
->         ...
->         struct {
->             /* common fields for iter */
->             union {
->                 struct {
->                     __u32 map_id;
->                 } map;
->                 /* other structs for other targets */
->             };
->         };
->     };
->  };
-> so the structure is extensible the same way as
-> bpf_iter_link_info.
+> Currently, task and task_file by default iterates through
+> all tasks. For task_file, by default, all files from all tasks
+> will be traversed.
 >
-> Fixes: 6b0a249a301e ("bpf: Implement link_query for bpf iterators")
+> But for a user process, the file_table is shared by all threads
+> of that process. So traversing the main thread per process should
+> be enough to traverse all files and this can save a lot of cpu
+> time if some process has large number of threads and each thread
+> has lots of open files.
+>
+> This patch implemented a customization for task/task_file iterator,
+> permitting to traverse only the kernel task where its pid equal
+> to tgid in the kernel. This includes some kernel threads, and
+> main threads of user processes. This will solve the above potential
+> performance issue for task_file. This customization may be useful
+> for task iterator too if only traversing main threads is enough.
+>
 > Signed-off-by: Yonghong Song <yhs@fb.com>
 > ---
-
-I like this change, thanks!
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  include/uapi/linux/bpf.h       | 6 ++++--
->  tools/include/uapi/linux/bpf.h | 6 ++++--
->  2 files changed, 8 insertions(+), 4 deletions(-)
+>  include/linux/bpf.h            |  3 ++-
+>  include/uapi/linux/bpf.h       |  5 ++++
+>  kernel/bpf/task_iter.c         | 46 +++++++++++++++++++++++-----------
+>  tools/include/uapi/linux/bpf.h |  5 ++++
+>  4 files changed, 43 insertions(+), 16 deletions(-)
 >
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index a6131d95e31e..058eb9b0ba78 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1220,7 +1220,8 @@ int bpf_obj_get_user(const char __user *pathname, int flags);
+>         int __init bpf_iter_ ## target(args) { return 0; }
+>
+>  struct bpf_iter_aux_info {
+> -       struct bpf_map *map;
+> +       struct bpf_map *map;    /* for iterator traversing map elements */
+> +       bool main_thread_only;  /* for task/task_file iterator */
+
+As a user of task_file iterator I'd hate to make this decision,
+honestly, especially if I can't prove that all processes share the
+same file table (I think clone() syscall allows to do weird
+combinations like that, right?). It does make sense for a task/
+iterator, though, if I need to iterate a user-space process (group of
+tasks). So can we do this:
+
+1a. Either add a new bpf_iter type process/ (or in kernel lingo
+task_group/) to iterate only main threads (group_leader in kernel
+lingo);
+1b. Or make this main_thread_only an option for only a task/ iterator
+(and maybe call it "group_leader_only" or something to reflect kernel
+terminology?)
+
+2. For task/file iterator, still iterate all tasks, but if the task's
+files struct is the same as group_leader's files struct, then go to
+the next one. This should eliminate tons of duplication of iterating
+the same files over and over. It would still iterate a bunch of tasks,
+but compared to the number of files that's generally a much smaller
+number, so should still give sizable savings. I don't think we need an
+extra option for this, tbh, this behavior was my intuitive
+expectation, so I don't think you'll be breaking any sane user of this
+iterator.
+
+Disclaimer: I haven't got a chance to look through kernel code much,
+so I'm sorry if what I'm proposing is something that is impossible to
+implement or extremely hard/unreliable. But thought I'll put this idea
+out there before we decide on this.
+
+WDYT?
 
 [...]
