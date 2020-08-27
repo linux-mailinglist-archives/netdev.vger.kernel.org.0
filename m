@@ -2,140 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6326253B2E
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 02:50:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEAFB253B46
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 03:04:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbgH0AuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 20:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
+        id S1726802AbgH0BET (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 21:04:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726444AbgH0AuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 20:50:18 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2559AC0613ED;
-        Wed, 26 Aug 2020 17:50:18 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id nv17so1723078pjb.3;
-        Wed, 26 Aug 2020 17:50:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=01YFLAfnv3/LfrQ6AMD8+CvxGlBa3HTAm4LPxhm+Idg=;
-        b=B+6UCaLJsBl1hMKapCRgSQ6Hwd2zFxjYus6Y15XT4Cy9iuC8ij/N26dD3haZb+kVkp
-         Q13NM075KRBNz2OfKiS7OD00MMpazEN/zLVx3ipNB1BkhkPJIKpnB2ekxbJ9YebgcZzn
-         ZuIJMANcMnPpHYPgx1iWWi06PvRjJwLWlFxCJsJyrfrZliFoc8lGJrG+kg4v+wa7QXJ8
-         +p2eNUTfwZe3P43Gl0ThINYRBvwEhRpQzpB0PF9UUfob6rsAwrtKFKXDd0gfMzNb1Ojj
-         YpiXAKz4EjEnaCAtbSC8Z+s6jdNhMVPFCNIavFy5HJEVDvWykUVfYwbEeriI85pTqCYQ
-         YHWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=01YFLAfnv3/LfrQ6AMD8+CvxGlBa3HTAm4LPxhm+Idg=;
-        b=PfuH5RRICPzfNudKvONBjMd3T9YhRRkkhtPuUdaSD6w1L+zshkt3UX/vCHjq48gob6
-         Bq78xcRI3qZpl+qEsdWa8yb5CAfKSBgP2xTMQ4yA3FKMBLujo4eMed2k29UQB7lvv03N
-         VA56Nocw5l9ynLZpAPFaLWzydo25TWLbTBrAH28Ri7iTJCaufyb8efAuaVMzAixDNHyu
-         bEWV2Qoa1pqpxK+aYe/htsXxi/4Z/AcoWaoKytP59sZzqRicWSIRvVYwX6w3u1H0wNsa
-         zaiA48PA7EO1QVMpbFukgKowIMMMWVoHQyEp3lBaPzFes/eA6pceMVPj4ZKCcCF46shD
-         9FdA==
-X-Gm-Message-State: AOAM530PXCvhYmSyCgfnaCOJXfd8BGiznrmJV9yfLqd7dzqTtRmLC0hI
-        p4lPy+34mosY9QkdVrN0xCY=
-X-Google-Smtp-Source: ABdhPJyWvL6MEsyGNAUHVPFOU5eGcHfZh0/qeMDJL3X6V0nlT7oVAouiH6CJpFg5RGEU7VyhfouOeg==
-X-Received: by 2002:a17:90a:c704:: with SMTP id o4mr8207536pjt.146.1598489417589;
-        Wed, 26 Aug 2020 17:50:17 -0700 (PDT)
-Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id z23sm209360pgv.57.2020.08.26.17.50.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2020 17:50:16 -0700 (PDT)
-Date:   Thu, 27 Aug 2020 09:50:10 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] staging: qlge: fix build breakage with dumping enabled
-Message-ID: <20200827005010.GA46897@f3>
-References: <20200826232735.104077-1-coiby.xu@gmail.com>
+        with ESMTP id S1726148AbgH0BES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 21:04:18 -0400
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08F0C061796;
+        Wed, 26 Aug 2020 18:04:17 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
+        (No client certificate requested)
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4BcPd82w4DzQkjS;
+        Thu, 27 Aug 2020 03:04:12 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aixah.de; s=MBO0001;
+        t=1598490246;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q6j+hA2/dONqWHhiG0eN90dTxudsQeR1jOdQOyycNIg=;
+        b=yFyF8kopQGa6vkjuFrLzQCFZfVTA39aKI3oQLg9f55qz3XJqOKPZYILZYhEQL0oJHFOnfL
+        F/oOBsL5Dwf0tb/K/RfK/mFFBNqS9CoWuiW4+zg8X2fAkxZ4iqH1Mq/WV2BuYr2aViKDQR
+        xIPhazIvb7VdraksOEtzi07nkrrXIpsJP/xF7BJjJjMHO8L7me6SHcM84wbUkItnh1e9/0
+        Svy7nyrOlEV/Ot49HkdlRhBX7PGRbA5/9BkUgpVMVulLRbogUKcRRSDKici0Wty/cc83kn
+        ywGSoIqxBJ/HetDkO/hvw9HD7lTKaFtVCPcWfzFFgWPL1StrqOHcWEyn9XIvIQ==
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id ppw00nlC4MBF; Thu, 27 Aug 2020 03:04:04 +0200 (CEST)
+Date:   Thu, 27 Aug 2020 01:04:03 +0000
+From:   Mira Ressel <aranea@aixah.de>
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] veth: Initialize dev->perm_addr
+Message-ID: <20200827010403.r3zic7s66shcjcrb@vega>
+References: <20200826152000.ckxrcfyetdvuvqum@vega>
+ <20200826.082857.584544823490249841.davem@davemloft.net>
+ <20200826162901.4js4u5u2whusp4l4@vega>
+ <20200826.093329.96316850316598868.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200826232735.104077-1-coiby.xu@gmail.com>
+In-Reply-To: <20200826.093329.96316850316598868.davem@davemloft.net>
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -1.34 / 15.00 / 15.00
+X-Rspamd-Queue-Id: F267068C
+X-Rspamd-UID: 510460
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-08-27 07:27 +0800, Coiby Xu wrote:
-> This fixes commit 0107635e15ac
-> ("staging: qlge: replace pr_err with netdev_err") which introduced an
-> build breakage of missing `struct ql_adapter *qdev` for some functions
-> and a warning of type mismatch with dumping enabled, i.e.,
+On Wed, Aug 26, 2020 at 09:33:29AM -0700, David Miller wrote:
+> From: Mira Ressel <aranea@aixah.de>
+> Date: Wed, 26 Aug 2020 16:29:01 +0000
 > 
-> $ make CFLAGS_MODULE="QL_ALL_DUMP=1 QL_OB_DUMP=1 QL_CB_DUMP=1 \
->   QL_IB_DUMP=1 QL_REG_DUMP=1 QL_DEV_DUMP=1" M=drivers/staging/qlge
+> > On Wed, Aug 26, 2020 at 08:28:57AM -0700, David Miller wrote:
+> >> From: Mira Ressel <aranea@aixah.de>
+> >> Date: Wed, 26 Aug 2020 15:20:00 +0000
+> >> 
+> >> > I'm setting the peer->perm_addr, which would otherwise be zero, to its
+> >> > dev_addr, which has been either generated randomly by the kernel or
+> >> > provided by userland in a netlink attribute.
+> >> 
+> >> Which by definition makes it not necessarily a "permanent address" and
+> >> therefore is subject to being different across boots, which is exactly
+> >> what you don't want to happen for automatic address generation.
+> > 
+> > That's true, but since veth devices aren't backed by any hardware, I
+> > unfortunately don't have a good source for a permanent address. The only
+> > inherently permanent thing about them is their name.
+> > 
+> > People who use the default eui64-based address generation don't get
+> > persistent link-local addresses for their veth devices out of the box
+> > either -- the EUI64 is derived from the device's dev_addr, which is
+> > randomized by default.
+> > 
+> > If that presents a problem for anyone, they can configure their userland
+> > to set the dev_addr to a static value, which handily fixes this problem
+> > for both address generation algorithms.
+> > 
+> > I'm admittedly glancing over one problem here -- I'm only setting the
+> > perm_addr during device creation, whereas userland can change the
+> > dev_addr at any time. I'm not sure if it'd make sense here to update the
+> > perm_addr if the dev_addr is changed later on?
 > 
-> qlge_dbg.c: In function ‘ql_dump_ob_mac_rsp’:
-> qlge_dbg.c:2051:13: error: ‘qdev’ undeclared (first use in this function); did you mean ‘cdev’?
->  2051 |  netdev_err(qdev->ndev, "%s\n", __func__);
->       |             ^~~~
-> qlge_dbg.c: In function ‘ql_dump_routing_entries’:
-> qlge_dbg.c:1435:10: warning: format ‘%s’ expects argument of type ‘char *’, but argument 3 has type ‘int’ [-Wformat=]
->  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
->       |         ~^
->       |          |
->       |          char *
->       |         %d
->  1436 |        i, value);
->       |        ~
->       |        |
->       |        int
-> qlge_dbg.c:1435:37: warning: format ‘%x’ expects a matching ‘unsigned int’ argument [-Wformat=]
->  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
->       |                                 ~~~~^
->       |                                     |
->       |                                     unsigned int
+> We are talking about which parent device address to inherit from, you
+> have choosen to use dev_addr and I am saying you should use perm_addr.
 > 
-> Fixes: 0107635e15ac ("staging: qlge: replace pr_err with netdev_err")
-> Reported-by: Benjamin Poirier <benjamin.poirier@gmail.com>
-> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
-> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
-> ---
->  drivers/staging/qlge/qlge.h      | 20 ++++++++++----------
->  drivers/staging/qlge/qlge_dbg.c  | 24 ++++++++++++++++++------
->  drivers/staging/qlge/qlge_main.c |  8 ++++----
->  3 files changed, 32 insertions(+), 20 deletions(-)
-> 
-[...]
-> @@ -1632,6 +1635,8 @@ void ql_dump_wqicb(struct wqicb *wqicb)
-> 
->  void ql_dump_tx_ring(struct tx_ring *tx_ring)
->  {
-> +	struct ql_adapter *qdev = tx_ring->qdev;
-> +
->  	if (!tx_ring)
->  		return;
+> Can you explain why this isn't clear?
 
-Given the null check for tx_ring, it seems unwise to dereference tx_ring
-before the check.
+Which parent device? This is the veth patch, not the vlan patch. I'm
+setting the perm_addrs of both sides of the veth pair to their
+respective dev_addrs that they were assigned by userland or through
+random generation. If I were to give both of them the same perm_addr,
+we'd again have the problem that they'd get conflicting link-local
+addresses and trigger DAD.
 
-Looking at ql_dump_all(), I'm not sure that the check is needed at all
-though. Maybe it should be removed.
+My apologies if I'm misunderstanding something here!
 
-Same problem in ql_dump_rx_ring().
-
->  	netdev_err(qdev->ndev, "===================== Dumping tx_ring %d ===============\n",
-> @@ -1657,6 +1662,8 @@ void ql_dump_tx_ring(struct tx_ring *tx_ring)
->  void ql_dump_ricb(struct ricb *ricb)
->  {
->  	int i;
-> +	struct ql_adapter *qdev =
-> +		container_of(ricb, struct ql_adapter, ricb);
-
-Here, davem would point out that the variables are not declared in
-"reverse xmas tree" order.
+Regards,
+Mira
