@@ -2,85 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E90912543D8
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 12:37:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D1862543D4
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 12:37:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728452AbgH0KhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 06:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726938AbgH0KhI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 06:37:08 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87C4C061264;
-        Thu, 27 Aug 2020 03:37:07 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id d189so3756414oig.12;
-        Thu, 27 Aug 2020 03:37:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KuaoIMfHLyJIWamoWVAPqeD7Ertfa+2MhldbBJUBVrw=;
-        b=XRf1ROSDi/xWvXQNoXRe2i+sqCIDghTb9H9MoXf/szhaeltqhBhDEZr/FFYCRFB6zy
-         nT2vLJXyYxaXx58AHy9WAWLZNfuzUPgt3NQ2hyTxPiptl8pTAudEQj+x1WyJqj3LXxiv
-         qkaWU243luWMez6wvjyGU+kIq2+xnDVeTMbPFDAyXZnfJW0AlNCQUOn0m3XpKI4a7bA2
-         MPXXXJVL0mgW1yH8XhoE+BfELYjzt1pUo8V52CvSRLM1xA0z2ibEeysfiwuodgDpdQee
-         C8/Qh+RfrAapjzOexaTIa/uOnj8STyggsjWQ0mqrFrWQzgcpmI6XYMtqVq7OCgr8jS+X
-         sBaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KuaoIMfHLyJIWamoWVAPqeD7Ertfa+2MhldbBJUBVrw=;
-        b=J/oWqpI1SEAFkYtWj4GcWSq4Auuhf8yi3JmpESD1xbVB9uRfAnJSeeHsbUmQX1Vfke
-         XHurjzUQLVNj2vW/rYSJvsfHakGF6R3Wtibnh9rr4i2iPzkHmsWGPlN5+Uo/fElcUNko
-         09PolrXABlYyeEK+nq5g9J8CoC8C9h6achiLh3bWZsu4XDiF1FWvlRtbhONc0wPE0Hwv
-         L/H4AtT6rpV2TGcqBI/4iBdYLxwibVlT43mVr7+ubPrFFi0zMyUT7CRvN3/HjxQSCLFL
-         8hsRzgIv6OfEO+a6Lqas5kSbvDaYtqXrznw7C9r3Fq4sowUVgZ8CARQwNQpD44D/6AAc
-         hjbQ==
-X-Gm-Message-State: AOAM531YSXANQsql1rwYk19oYAZzDeFh/Vnz6WNqb/WD8a2zDQOR7SCA
-        P8M40Y/E94hGGF/Yeht/UDu4M+icbGqFfma2ET8=
-X-Google-Smtp-Source: ABdhPJz7+RvG6aRT3j85t2k6G6j8hHFH0uz4BK7UgyYd77VKy+00pl24/6V8iV4lW2MpyTyY8+xGHgrhsAMNhs5aLhQ=
-X-Received: by 2002:a05:6808:6d2:: with SMTP id m18mr6624752oih.89.1598524627393;
- Thu, 27 Aug 2020 03:37:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1598517739.git.lukas@wunner.de>
-In-Reply-To: <cover.1598517739.git.lukas@wunner.de>
-From:   =?UTF-8?Q?Laura_Garc=C3=ADa_Li=C3=A9bana?= <nevola@gmail.com>
+        id S1728422AbgH0KhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 06:37:00 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38276 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726938AbgH0Kg5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 06:36:57 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id D39DEB817;
+        Thu, 27 Aug 2020 10:37:27 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 84498603FB; Thu, 27 Aug 2020 12:36:55 +0200 (CEST)
 Date:   Thu, 27 Aug 2020 12:36:55 +0200
-Message-ID: <CAF90-Wi4W1U4FSYqyBTqe7sANbdO6=zgr-u+YY+X-gvNmOgc6A@mail.gmail.com>
-Subject: Re: [PATCH nf-next v3 0/3] Netfilter egress hook
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [v2] ioctl: only memset non-NULL link settings
+Message-ID: <20200827103655.vyjtik4p23tzop4n@lion.mk-sys.cz>
+References: <20200827095033.3265848-1-hegtvedt@cisco.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="4xpnzbfts5mx4ci6"
+Content-Disposition: inline
+In-Reply-To: <20200827095033.3265848-1-hegtvedt@cisco.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lukas, thank you for your patches.
 
-On Thu, Aug 27, 2020 at 10:55 AM Lukas Wunner <lukas@wunner.de> wrote:
->
-> Introduce a netfilter egress hook to allow filtering outbound AF_PACKETs
-> such as DHCP and to prepare for in-kernel NAT64/NAT46.
->
+--4xpnzbfts5mx4ci6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Actually, we've found 2 additional use cases in container-based nodes
-that use the egress hook:
+On Thu, Aug 27, 2020 at 11:50:33AM +0200, Hans-Christian Noren Egtvedt wrot=
+e:
+> In commit bef780467fa ('ioctl: do not pass transceiver value back to
+> kernel') a regression slipped in. If we have a kernel that does not
+> support the ETHTOOL_xLINKSETTINGS API, then the do_ioctl_glinksettings()
+> function will return a NULL pointer.
+>=20
+> Hence before memset'ing the pointer to zero we must first check it is
+> valid, as NULL return is perfectly fine when running on old kernels.
+>=20
+> Fixes: bef780467fa7 ("ioctl: do not pass transceiver value back to kernel=
+")
+> Signed-off-by: Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
 
-1. intra-node DSR load balancing connectivity
-2. container-based outbound security policies
+Applied, thank you.
 
-We've been using your previous patch in an experimental project and
-it's working fine.
+Michal
 
-Great job!
+> ---
+>  ethtool.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/ethtool.c b/ethtool.c
+> index e32a93b..606af3e 100644
+> --- a/ethtool.c
+> +++ b/ethtool.c
+> @@ -3048,10 +3048,11 @@ static int do_sset(struct cmd_context *ctx)
+>  		struct ethtool_link_usettings *link_usettings;
+> =20
+>  		link_usettings =3D do_ioctl_glinksettings(ctx);
+> -		memset(&link_usettings->deprecated, 0,
+> -		       sizeof(link_usettings->deprecated));
+>  		if (link_usettings =3D=3D NULL)
+>  			link_usettings =3D do_ioctl_gset(ctx);
+> +		else
+> +			memset(&link_usettings->deprecated, 0,
+> +			       sizeof(link_usettings->deprecated));
+>  		if (link_usettings =3D=3D NULL) {
+>  			perror("Cannot get current device settings");
+>  			err =3D -1;
+> --=20
+> 2.25.1
+>=20
+
+--4xpnzbfts5mx4ci6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl9HjMIACgkQ538sG/LR
+dpW4qQf9FjoE73reT6BPISFOhDaajwR/tVkOW4TiPuvtuOw+CyNb/OWkVLPAX8xp
+IMJ+CIH8e2veaMq5OSEUETOhVB+GKaPUkW3gMeZjNcu5WxtC/SCZ1fz6VtMk+KQ3
+9LugQyNbcFwaHFXNDmgyYGSVoqlPDEN/jeKXQ9TVQf7cbO0yYIPZiQgQjkJ7Z3zL
+xoM/IgATlV1TlD0jy/gOPiir8xAnb15+MAxDgXFo4kGWb2D68LKUVFI2YZx6V9Ny
+vEAdXML9o4+S0ksFBmodPPwGr5GiCPxc/Vo8tHku7cilNU64Lm9JpmMh+i7gY24c
+kAe7s1MosKkyaZsbGOYm9WuSqfks9w==
+=0LTI
+-----END PGP SIGNATURE-----
+
+--4xpnzbfts5mx4ci6--
