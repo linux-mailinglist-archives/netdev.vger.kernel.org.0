@@ -2,85 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06B20255051
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 23:06:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B159A25508A
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 23:25:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727017AbgH0VGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 17:06:13 -0400
-Received: from mg.ssi.bg ([178.16.128.9]:35380 "EHLO mg.ssi.bg"
+        id S1726826AbgH0VZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 17:25:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726120AbgH0VGJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 17:06:09 -0400
-X-Greylist: delayed 392 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Aug 2020 17:06:07 EDT
-Received: from mg.ssi.bg (localhost [127.0.0.1])
-        by mg.ssi.bg (Proxmox) with ESMTP id 393092E4AD;
-        Thu, 27 Aug 2020 23:59:34 +0300 (EEST)
-Received: from ink.ssi.bg (ink.ssi.bg [178.16.128.7])
-        by mg.ssi.bg (Proxmox) with ESMTP id A945B2E3D0;
-        Thu, 27 Aug 2020 23:59:33 +0300 (EEST)
-Received: from ja.ssi.bg (unknown [178.16.129.10])
-        by ink.ssi.bg (Postfix) with ESMTPS id A90133C09C4;
-        Thu, 27 Aug 2020 23:59:27 +0300 (EEST)
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 07RKxO9Y013130;
-        Thu, 27 Aug 2020 23:59:26 +0300
-Date:   Thu, 27 Aug 2020 23:59:24 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Lach <iam@lach.pw>
-cc:     Wensong Zhang <wensong@linux-vs.org>,
-        Simon Horman <horms@verge.net.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Remove ipvs v6 dependency on iptables
-In-Reply-To: <20200827194802.1164-1-iam@lach.pw>
-Message-ID: <alpine.LFD.2.23.451.2008272357240.4567@ja.home.ssi.bg>
-References: <20200827194802.1164-1-iam@lach.pw>
+        id S1726073AbgH0VZi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 17:25:38 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DA11320825;
+        Thu, 27 Aug 2020 21:25:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598563538;
+        bh=A5It0BUySqvUM5WKtDRjc78xDg5fUydkP319uzdaroI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dYMVq359h0poiRDS/R1A/rF5QGGEab0TwFSZ+l8BCJSwj8Edjl4gj6bGFi9VF3ANg
+         mkPynb+EYMD1QaiGox8R9EfBFO2ChnsHeVXXvZfMBsoQJJnXLKMA9CCzv9EkBF/HSM
+         ADu75L92y7PiWCjxqot/1B35AiLuAdWmVEcJbMX0=
+Date:   Thu, 27 Aug 2020 14:25:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v2 net-next 07/12] ionic: reduce contiguous memory
+ allocation requirement
+Message-ID: <20200827142536.587f0ecc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <bd9b0427-6772-068e-d7bd-b1aabf1ac6ed@pensando.io>
+References: <20200827180735.38166-1-snelson@pensando.io>
+        <20200827180735.38166-8-snelson@pensando.io>
+        <20200827124625.511ef647@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <bd9b0427-6772-068e-d7bd-b1aabf1ac6ed@pensando.io>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 27 Aug 2020 12:53:17 -0700 Shannon Nelson wrote:
+> On 8/27/20 12:46 PM, Jakub Kicinski wrote:
+> > On Thu, 27 Aug 2020 11:07:30 -0700 Shannon Nelson wrote: =20
+> >> +	q_base =3D (void *)PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE); =20
+> > The point of PTR_ALIGN is to make the casts unnecessary. Does it not
+> > work? =20
+> Here's what I see from two different compiler versions:
+>=20
+> drivers/net/ethernet/pensando/ionic/ionic_lif.c:514:9: warning:=20
+> assignment makes pointer from integer without a cast [-Wint-conversion]
+>  =C2=A0 q_base =3D PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
+>=20
+>=20
+> drivers/net/ethernet/pensando/ionic/ionic_lif.c:514:9: warning:=20
+> assignment to 'void *' from 'long unsigned int' makes pointer from=20
+> integer without a cast [-Wint-conversion]
+>  =C2=A0 q_base =3D PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
 
-	Hello,
+Just
 
-On Fri, 28 Aug 2020, Lach wrote:
-
-> This dependency was added in 63dca2c0b0e7a92cb39d1b1ecefa32ffda201975, because this commit had dependency on
-> ipv6_find_hdr, which was located in iptables-specific code
-> 
-> But it is no longer required, because f8f626754ebeca613cf1af2e6f890cfde0e74d5b moved them to a more common location
-
-	May be then we should also not include ip6_tables.h from
-include/net/ip_vs.h ?
-
-> ---
->  net/netfilter/ipvs/Kconfig | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
-> index 2c1593089..eb0e329f9 100644
-> --- a/net/netfilter/ipvs/Kconfig
-> +++ b/net/netfilter/ipvs/Kconfig
-> @@ -29,7 +29,6 @@ if IP_VS
->  config	IP_VS_IPV6
->  	bool "IPv6 support for IPVS"
->  	depends on IPV6 = y || IP_VS = IPV6
-> -	select IP6_NF_IPTABLES
->  	select NF_DEFRAG_IPV6
->  	help
->  	  Add IPv6 support to IPVS.
-> -- 
-> 2.28.0
-
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
-
+	q_base =3D PTR_ALIGN(new->q_base, PAGE_SIZE);
