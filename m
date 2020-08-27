@@ -2,110 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92CBB253D67
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 08:06:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81471253D62
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 08:05:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbgH0GGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 02:06:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
+        id S1726968AbgH0GFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 02:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727099AbgH0GGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 02:06:01 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67E5C061247;
-        Wed, 26 Aug 2020 23:06:00 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id i10so5088547ljn.2;
-        Wed, 26 Aug 2020 23:06:00 -0700 (PDT)
+        with ESMTP id S1726098AbgH0GFB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 02:05:01 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CADAC061246;
+        Wed, 26 Aug 2020 23:05:01 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id q3so2317242ybp.7;
+        Wed, 26 Aug 2020 23:05:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WKk6KWPNkMHUCww/FbErLxUYYQtEUh3n/PTtmJB/IIQ=;
-        b=qLQ1i7wDv9Q3Xaxm3HkxgYB7iVc8sv2O42p4VD+k9wlAuWC3GcWW1tNXitXj3Z/Z8J
-         LD4FG7R+IhHjNW6ryE+cQg5ynJQa1Ptl3jDD2TGOGmu4TFD7wrDI9SxFi1pN6g42aMtO
-         LJKXRFRdeXciiZYHQKqPZxeh8ankvU95AW/bznMKHir8JNe0moVMAK+LWaSP17dxyp7n
-         IsJUpueYCn42JrF000SSmEXeXlkO9Yr5A1Y4Jdnq5WgIA7VULEy8fA2IsHcW/qMbqgY/
-         7zzLR8JSNoSGXv/p+1Vtiv6mWbynRcPPOY2HfGkX4D1GwFx62b4zp2oLkWUrcvAxokDC
-         NLKw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YS0E3x+rd6mFReNohPRwURMjsOh1VMEQF9vUanLTT/0=;
+        b=IFTjQNtz4TH2ktM9bD6omTwK6z8gQvROWHXKbfocfX5JvTWo06Ms8/XrAlrIy3dtMZ
+         8VJHbRmBi7VXDd4x7lDLd1u1yT/JX76vR3OHZBRrR0/Q0DtFLSb7KljcSSDEycOvMH+K
+         qGEVrz42WL57VIifN8yGNgYfqDxdt5V9azJr3EW9JdUcF2s6UmFvanEl/WCh6/rQjjCF
+         BuwbsvXjrxiJTyYgCSaDWHhCUFvhhnpRz5Aj7uPavBCLvAVQCwn3uOygMymfgKVydA9i
+         mQO2Ru/0Iu2YMJ+6tgWb7kZZh2miNc8HUOKf4XogqPd6GpUyUMDCacl0OcjWALtiwarb
+         JrPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WKk6KWPNkMHUCww/FbErLxUYYQtEUh3n/PTtmJB/IIQ=;
-        b=V2ahx8Gu879552bFOuxvWm4wrCLeeFte0kQQCjqi3Ft1pZdX3aeW2N7fYYX/h+PABH
-         mD6jFg9lfmaZQMIxvnHXbwCOlS/sERxJWeayc7KXP1J8atTlWuLJ7D+Cgiv22GrrG521
-         Jf/yZDHRZPQPt4BWF3bxaxaQjcFqVrH1e020NNvLpTl8gz0yabP7kiIqA1+QfnnQ9qwz
-         aCHG5zBvkRNqdpRYiZPjAdOaraFDRZ+BTUNcH5tAWEENNzC7jji0ERw+fz8weYjvGsvS
-         /BSm68R22E3JJx4C9CwrvNdshD2VJ+aBxcJXj7bYB8zeFNmIXBRqMJ7kib3FhIVPZwHF
-         lJEA==
-X-Gm-Message-State: AOAM532oDTV2M5VCldaH5MRCVhxUYeteZwygWl4fTj+9qSgHY/jEoXXE
-        mkUJ7JObJ2geVcaXeiu3UrY=
-X-Google-Smtp-Source: ABdhPJzrTQlLzdl6fvs+KJ8nM6o4Pq1n7ukkS0FV/jYFLwOfmV5xlKCDf2GJF4pBmm4Evv0Fhq0aXQ==
-X-Received: by 2002:a2e:98d5:: with SMTP id s21mr8116414ljj.59.1598508359172;
-        Wed, 26 Aug 2020 23:05:59 -0700 (PDT)
-Received: from localhost.localdomain (109-252-170-211.dynamic.spd-mgts.ru. [109.252.170.211])
-        by smtp.gmail.com with ESMTPSA id z7sm255295lfc.59.2020.08.26.23.05.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2020 23:05:58 -0700 (PDT)
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] brcmfmac: set F2 SDIO block size to 128 bytes for BCM4329
-Date:   Thu, 27 Aug 2020 09:04:41 +0300
-Message-Id: <20200827060441.15487-5-digetx@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200827060441.15487-1-digetx@gmail.com>
-References: <20200827060441.15487-1-digetx@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YS0E3x+rd6mFReNohPRwURMjsOh1VMEQF9vUanLTT/0=;
+        b=OpHFfK/GukplruU2rXg1Lw/dUSFVo7iKM1VnG0K6giv99VW/ehKme3CYsO9TF14FmK
+         1H6AcoCxRplWJxZkkXUBUHacggfXU2kWCpUi1bFiPWi9WWP7X7XCazYK1+qCRk24m+HC
+         Epk4nNj6RN++auzaebrQGoP6veghLMIKSX5KdUdG3LPuP3jl8+XVWf2UXcUbkQzBMeR0
+         Lnw1hhfyzXVXZNQpGR0EjLlfmUAgIPTbAamFrMwfreR6yXEaIU1eDkR+lVJWuuoHIRuO
+         kB4neczy/Y+f77dQOF3gV+AFEnb+GbW25ofTT+WB4YU8sB1kxQ9O5BVRmVEi+bo8JMAF
+         qzrw==
+X-Gm-Message-State: AOAM532vwMHsFe4QSGezFDiKXJphTS3wYmIgHUeqlyXZgCwwGYEbBf2O
+        rbf3Ty5bbl9DfUQQ990k/xiT2w7cF/dY/cNLziE=
+X-Google-Smtp-Source: ABdhPJxkd5AOFlyKfKZ9Ayi2ea1O8ksOJql6kpnE/JAyYTpEmJYhrmUoiUve3mvyb77ThYiXm979rJGxuQivakeUTxA=
+X-Received: by 2002:a25:bc50:: with SMTP id d16mr24534529ybk.230.1598508300269;
+ Wed, 26 Aug 2020 23:05:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200825232003.2877030-1-udippant@fb.com> <20200825232003.2877030-3-udippant@fb.com>
+In-Reply-To: <20200825232003.2877030-3-udippant@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 26 Aug 2020 23:04:49 -0700
+Message-ID: <CAEf4BzYsxBJf2a59L4EPKwX0eH2U7z41PSUgupwOWUXVH4sgYQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 2/4] selftests/bpf: add test for freplace
+ program with write access
+To:     Udip Pant <udippant@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Setting F2 block size to 128 bytes for BCM4329 allows to significantly
-improve RX throughput on NVIDIA Tegra20. Before this change the throughput
-was capped to 30 Mbit/s on Tegra, now throughput is at 40 Mbit/s, which is
-a maximum throughput for the BCM4329 chip. The F2 block size is borrowed
-from the downstream BCMDHD driver. The comment in the BCMDHD driver says
-that 128B improves throughput and turns out that it works for the brcmfmac
-as well.
+On Tue, Aug 25, 2020 at 4:21 PM Udip Pant <udippant@fb.com> wrote:
+>
+> This adds a selftest that tests the behavior when a freplace target program
+> attempts to make a write access on a packet. The expectation is that the read or write
+> access is granted based on the program type of the linked program and
+> not itself (which is of type, for e.g., BPF_PROG_TYPE_EXT).
+>
+> This test fails without the associated patch on the verifier.
+>
+> Signed-off-by: Udip Pant <udippant@fb.com>
+> ---
+>  .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |  1 +
+>  .../selftests/bpf/progs/fexit_bpf2bpf.c       | 27 +++++++++++++++++++
+>  .../selftests/bpf/progs/test_pkt_access.c     | 20 ++++++++++++++
+>  3 files changed, 48 insertions(+)
+>
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c | 4 ++++
- 1 file changed, 4 insertions(+)
+[...]
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-index 0dc4de2fa9f6..318bd00bf94f 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-@@ -45,6 +45,7 @@
- #define SDIO_FUNC2_BLOCKSIZE		512
- #define SDIO_4373_FUNC2_BLOCKSIZE	256
- #define SDIO_435X_FUNC2_BLOCKSIZE	256
-+#define SDIO_4329_FUNC2_BLOCKSIZE	128
- /* Maximum milliseconds to wait for F2 to come up */
- #define SDIO_WAIT_F2RDY	3000
- 
-@@ -920,6 +921,9 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
- 	case SDIO_DEVICE_ID_BROADCOM_4356:
- 		f2_blksz = SDIO_435X_FUNC2_BLOCKSIZE;
- 		break;
-+	case SDIO_DEVICE_ID_BROADCOM_4329:
-+		f2_blksz = SDIO_4329_FUNC2_BLOCKSIZE;
-+		break;
- 	default:
- 		break;
- 	}
--- 
-2.27.0
+> +__attribute__ ((noinline))
+> +int test_pkt_write_access_subprog(struct __sk_buff *skb, __u32 off)
+> +{
+> +       void *data = (void *)(long)skb->data;
+> +       void *data_end = (void *)(long)skb->data_end;
+> +       struct tcphdr *tcp = NULL;
+> +
+> +       if (off > sizeof(struct ethhdr) + sizeof(struct ipv6hdr))
+> +               return -1;
+> +
+> +       tcp = data + off;
+> +       if (tcp + 1 > data_end)
+> +               return -1;
+> +       /* make modification to the packet data */
+> +       tcp->check++;
 
+Just FYI for all BPF contributors. This change makes test_pkt_access
+BPF program to fail on kernel 5.5, which (the kernel) we use as part
+libbpf CI testing. test_pkt_access.o in turn makes few different
+selftests (see [0] for details) to fail on 5.5 (because
+test_pkt_access is used as one of BPF objects loaded as part of those
+selftests). This is ok, I'm blacklisting (at least temporarily) those
+tests, but I wanted to bring up this issue, as it did happen before
+and will keep happening in the future and will constantly decrease
+test coverage for older kernels that libbpf CI performs.
+
+I propose that when we introduce new features (like new fields in a
+BPF program's context or something along those lines) and want to test
+them, we should lean towards creating new tests, not modify existing
+ones. This will allow all already working selftests to keep working
+for older kernels. Does this sound reasonable as an approach?
+
+As for this particular breakage, I'd appreciate someone taking a look
+at the problem and checking if it's some new feature that's not
+present in 5.5 or just Clang/verifier interactions (32-bit pointer
+arithmetic, is this a new issue?). If it's something fixable, it would
+be nice to fix and restore 5.5 tests. Thanks!
+
+  [0] https://travis-ci.com/github/libbpf/libbpf/jobs/378226438
+
+Verifier complains about:
+
+; if (test_pkt_write_access_subprog(skb, (void *)tcp - data))
+
+57: (79) r1 = *(u64 *)(r10 -8)
+
+58: (bc) w2 = w1
+
+59: (1c) w2 -= w9
+
+R2 32-bit pointer arithmetic prohibited
+
+processed 198 insns (limit 1000000) max_states_per_insn 1 total_states
+8 peak_states 8 mark_read 7
+
+
+> +       return 0;
+> +}
+> +
+>  SEC("classifier/test_pkt_access")
+>  int test_pkt_access(struct __sk_buff *skb)
+>  {
+> @@ -117,6 +135,8 @@ int test_pkt_access(struct __sk_buff *skb)
+>         if (test_pkt_access_subprog3(3, skb) != skb->len * 3 * skb->ifindex)
+>                 return TC_ACT_SHOT;
+>         if (tcp) {
+> +               if (test_pkt_write_access_subprog(skb, (void *)tcp - data))
+> +                       return TC_ACT_SHOT;
+>                 if (((void *)(tcp) + 20) > data_end || proto != 6)
+>                         return TC_ACT_SHOT;
+>                 barrier(); /* to force ordering of checks */
+> --
+> 2.24.1
+>
