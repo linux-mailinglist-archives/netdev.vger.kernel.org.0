@@ -2,101 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 461E62548B9
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:11:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C863E254916
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:20:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728409AbgH0PLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 11:11:00 -0400
-Received: from mx20.baidu.com ([111.202.115.85]:36622 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728496AbgH0LpS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 07:45:18 -0400
-Received: from BC-Mail-Ex14.internal.baidu.com (unknown [172.31.51.54])
-        by Forcepoint Email with ESMTPS id 1F5F2BB29EC50F6C44C7;
-        Thu, 27 Aug 2020 18:55:00 +0800 (CST)
-Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
- BC-Mail-Ex14.internal.baidu.com (172.31.51.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1979.3; Thu, 27 Aug 2020 18:55:00 +0800
-Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
- BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
- 15.01.1979.003; Thu, 27 Aug 2020 18:55:00 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [PATCH] iavf: use kvzalloc instead of kzalloc for rx/tx_bi buffer
-Thread-Topic: [PATCH] iavf: use kvzalloc instead of kzalloc for rx/tx_bi
- buffer
-Thread-Index: AQHWfEuob38P5Px0rUW6ibAXXc3666lLpEvg//+NZACAAJSiUA==
-Date:   Thu, 27 Aug 2020 10:54:59 +0000
-Message-ID: <0c34de62642e412fbb7ff4bf2c1b123a@baidu.com>
-References: <1598514788-31039-1-git-send-email-lirongqing@baidu.com>
- <6d89955c-78a2-fa00-9f39-78648d3558a0@gmail.com>
- <4557d3ad541b4272bc1286480af5e562@baidu.com>
- <cadd738c-b7a3-fd68-4883-2f23a07fb0ae@gmail.com>
-In-Reply-To: <cadd738c-b7a3-fd68-4883-2f23a07fb0ae@gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.198.19]
-x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex14_2020-08-27 18:55:00:187
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1728169AbgH0PUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 11:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728704AbgH0LdA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 07:33:00 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A759DC06123A
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:07:01 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id c8so4514014edn.8
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:07:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qlGHUWYwoYmSS9Td5ZA6Ok8wzL3FIbAQsVvmeGf568k=;
+        b=aB7E7Yj7w0ZJ2YKcrfAg5b+XREY7tjMgMV6r0I51QIwWNMXqiUeQ38YLLDcm4DSeUj
+         oRVlHihQadS/6yiEyQp33n4I9EcCHFlhkYW8/kITfVD8rgj/CnLJMNKYZOKrUZd+D1+9
+         27vk4y6DSLSQndP34tHg6lgBIX1h9Ec/o8k9uPhIu+2nZOyGGSPqvrRObYnS3KxD8HZM
+         jSOwhzA6KblhOp2UE06rFfwHbya0a2uqLkF2SETSY7aF/Q0Kx6PKHG69dWo42e93USJR
+         OTRljzD9rfyOVJ5JZJfvtzVTC9ifXt1LwL9+Zau34GoteJ9TVzL77FEvFrLcTJ2x0EvQ
+         efmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qlGHUWYwoYmSS9Td5ZA6Ok8wzL3FIbAQsVvmeGf568k=;
+        b=LRbroT4FGi/mKsj8lLVYFccon5gwBKmPsX9epqXiTrOnjdK1nTMPFaxyWrumAmjdvt
+         p+bxrWUJSBCMiPKYNnYPGVcQPBAG5rOoZQGb/yhr/zWBkE0RU5+JTY4ifvRx0DCWim64
+         gApYJdkJ24S4sbCLG2lDSZbLc7Bv2DfbPQiWndEsOdibQjPhXfD/SiBcdSqEnG5jW2Is
+         NAeuskjlnXy2yNzkPWmP/rrHEEIONglDXhTYiwB6PveTCc0cBu3BCSbsCmwk2Yh4U4cm
+         xJT6vgI+aER0715IoacWOi/Xsg1oyZjFupJmVfKuM5s4ldVNHnlFU03MRx/1t8igSgZ6
+         D+aQ==
+X-Gm-Message-State: AOAM533veLTUvwPLxpUv7ekQ+FQfBif3m/+OTWW/jcZJFTAhhllWn5ld
+        VvVogk7xshQYrophkiL9fRc=
+X-Google-Smtp-Source: ABdhPJznWbUmO7DIKPAsDzU8dgchN3myRFa8FcuJuhInYsngw6VpA1rwbiOizjTC0xnWkw1lwiC3cw==
+X-Received: by 2002:aa7:da82:: with SMTP id q2mr14941380eds.45.1598526417932;
+        Thu, 27 Aug 2020 04:06:57 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:88d6:516:4510:4c1f? (p200300ea8f23570088d6051645104c1f.dip0.t-ipconnect.de. [2003:ea:8f23:5700:88d6:516:4510:4c1f])
+        by smtp.googlemail.com with ESMTPSA id yh29sm1658501ejb.0.2020.08.27.04.06.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Aug 2020 04:06:57 -0700 (PDT)
+Subject: Re: powering off phys on 'ip link set down'
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Network Development <netdev@vger.kernel.org>
+Cc:     Lasse Klok Mikkelsen <Lasse.Klok@prevas.se>
+References: <9e3c2b6e-b1f8-7e43-2561-30aa84d356c7@prevas.dk>
+ <7a17486d-2fee-47cb-eddc-b000e8b6d332@gmail.com>
+ <4adfeeab-937a-b722-6dd8-84c8a3efb8ac@prevas.dk>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <565ef886-18a4-b5ed-9ba5-96c2198b0caa@gmail.com>
+Date:   Thu, 27 Aug 2020 13:06:54 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
+In-Reply-To: <4adfeeab-937a-b722-6dd8-84c8a3efb8ac@prevas.dk>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRXJpYyBEdW1hemV0IFtt
-YWlsdG86ZXJpYy5kdW1hemV0QGdtYWlsLmNvbV0NCj4gU2VudDogVGh1cnNkYXksIEF1Z3VzdCAy
-NywgMjAyMCA1OjU1IFBNDQo+IFRvOiBMaSxSb25ncWluZyA8bGlyb25ncWluZ0BiYWlkdS5jb20+
-OyBFcmljIER1bWF6ZXQNCj4gPGVyaWMuZHVtYXpldEBnbWFpbC5jb20+OyBuZXRkZXZAdmdlci5r
-ZXJuZWwub3JnOw0KPiBpbnRlbC13aXJlZC1sYW5AbGlzdHMub3N1b3NsLm9yZw0KPiBTdWJqZWN0
-OiBSZTogW1BBVENIXSBpYXZmOiB1c2Uga3Z6YWxsb2MgaW5zdGVhZCBvZiBremFsbG9jIGZvciBy
-eC90eF9iaSBidWZmZXINCj4gDQo+IA0KPiANCj4gT24gOC8yNy8yMCAxOjUzIEFNLCBMaSxSb25n
-cWluZyB3cm90ZToNCj4gPg0KPiA+DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+
-ID4+IEZyb206IEVyaWMgRHVtYXpldCBbbWFpbHRvOmVyaWMuZHVtYXpldEBnbWFpbC5jb21dDQo+
-ID4+IFNlbnQ6IFRodXJzZGF5LCBBdWd1c3QgMjcsIDIwMjAgNDoyNiBQTQ0KPiA+PiBUbzogTGks
-Um9uZ3FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsN
-Cj4gPj4gaW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmcNCj4gPj4gU3ViamVjdDogUmU6
-IFtQQVRDSF0gaWF2ZjogdXNlIGt2emFsbG9jIGluc3RlYWQgb2Yga3phbGxvYyBmb3INCj4gPj4g
-cngvdHhfYmkgYnVmZmVyDQo+ID4+DQo+ID4+DQo+ID4+DQo+ID4+IE9uIDgvMjcvMjAgMTI6NTMg
-QU0sIExpIFJvbmdRaW5nIHdyb3RlOg0KPiA+Pj4gd2hlbiBjaGFuZ2VzIHRoZSByeC90eCByaW5n
-IHRvIDQwOTYsIGt6YWxsb2MgbWF5IGZhaWwgZHVlIHRvIGENCj4gPj4+IHRlbXBvcmFyeSBzaG9y
-dGFnZSBvbiBzbGFiIGVudHJpZXMuDQo+ID4+Pg0KPiA+Pj4ga3ZtYWxsb2MgaXMgdXNlZCB0byBh
-bGxvY2F0ZSB0aGlzIG1lbW9yeSBhcyB0aGVyZSBpcyBubyBuZWVkIHRvIGhhdmUNCj4gPj4+IHRo
-aXMgbWVtb3J5IGFyZWEgcGh5c2ljYWwgY29udGludW91c2x5Lg0KPiA+Pj4NCj4gPj4+IFNpZ25l
-ZC1vZmYtYnk6IExpIFJvbmdRaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4NCj4gPj4+IC0tLQ0K
-PiA+Pg0KPiA+Pg0KPiA+PiBXZWxsLCBmYWxsYmFjayB0byB2bWFsbG9jKCkgb3ZlcmhlYWQgYmVj
-YXVzZSBvcmRlci0xIHBhZ2VzIGFyZSBub3QNCj4gPj4gcmVhZGlseSBhdmFpbGFibGUgd2hlbiB0
-aGUgTklDIGlzIHNldHVwICh1c3VhbGx5IG9uZSB0aW1lIHBlciBib290KQ0KPiA+PiBpcyBhZGRp
-bmcgVExCIGNvc3QgYXQgcnVuIHRpbWUsIGZvciBiaWxsaW9ucyBvZiBwYWNrZXRzIHRvIGNvbWUs
-IG1heWJlIGZvcg0KPiBtb250aHMuDQo+ID4+DQo+ID4+IFN1cmVseSB0cnlpbmcgYSBiaXQgaGFy
-ZGVyIHRvIGdldCBvcmRlci0xIHBhZ2VzIGlzIGRlc2lyYWJsZS4NCj4gPj4NCj4gPj4gIF9fR0ZQ
-X1JFVFJZX01BWUZBSUwgaXMgc3VwcG9zZWQgdG8gaGVscCBoZXJlLg0KPiA+DQo+ID4gQ291bGQg
-d2UgYWRkIF9fR0ZQX1JFVFJZX01BWUZBSUwgdG8ga3ZtYWxsb2MsIHRvIGVuc3VyZSB0aGUgYWxs
-b2NhdGlvbg0KPiBzdWNjZXNzID8NCj4gDQo+IF9fR0ZQX1JFVFJZX01BWUZBSUwgZG9lcyBub3Qg
-X2Vuc3VyZV8gdGhlIGFsbG9jYXRpb24gc3VjY2Vzcy4NCj4gDQo+IFRoZSBpZGVhIGhlcmUgaXMg
-dGhhdCBmb3IgbGFyZ2UgYWxsb2NhdGlvbnMgKGJpZ2dlciB0aGFuIFBBR0VfU0laRSksDQo+IGt2
-bWFsbG9jX25vZGUoKSB3aWxsIG5vdCBmb3JjZSBfX0dGUF9OT1JFVFJZLCBtZWFuaW5nIHRoYXQg
-cGFnZSBhbGxvY2F0b3INCj4gd2lsbCBub3QgYmFpbG91dCBpbW1lZGlhdGVseSBpbiBjYXNlIG9m
-IG1lbW9yeSBwcmVzc3VyZS4NCj4gDQo+IFRoaXMgZ2l2ZXMgYSBjaGFuY2UgZm9yIHBhZ2UgcmVj
-bGFpbXMgdG8gaGFwcGVuLCBhbmQgZXZlbnR1YWxseSB0aGUgaGlnaCBvcmRlcg0KPiBwYWdlIGFs
-bG9jYXRpb24gd2lsbCBzdWNjZWVkIHVuZGVyIG5vcm1hbCBjaXJjdW1zdGFuY2VzLg0KPiANCj4g
-SXQgaXMgYSB0cmFkZS1vZmYsIGFuZCBvbmx5IHdvcnRoIGl0IGZvciBsb25nIGxpdmluZyBhbGxv
-Y2F0aW9ucy4NCg0KVGhhbmtzLCBFcmljOyANCkkgd2lsbCBjaGFuZ2UgaXQgYXMgYmVsb3csIHRo
-YXQga21hbGxvYyB3aWxsIGJlIHVzZWQgaW4gbW9zdCB0aW1lLCBhbmQgZW5zdXJlIGFsbG9jYXRp
-b24gc3VjY2VzcyBpZiBmYWlsIHRvIHJlY2xhaW0gbWVtb3J5IHVuZGVyIG1lbW9yeSBwcmVzc3Vy
-ZS4NCg0KQEAgLTYyMiw3ICs2MjIsNyBAQCBpbnQgaWF2Zl9zZXR1cF90eF9kZXNjcmlwdG9ycyhz
-dHJ1Y3QgaWF2Zl9yaW5nICp0eF9yaW5nKQ0KICAgICAgICAvKiB3YXJuIGlmIHdlIGFyZSBhYm91
-dCB0byBvdmVyd3JpdGUgdGhlIHBvaW50ZXIgKi8NCiAgICAgICAgV0FSTl9PTih0eF9yaW5nLT50
-eF9iaSk7DQogICAgICAgIGJpX3NpemUgPSBzaXplb2Yoc3RydWN0IGlhdmZfdHhfYnVmZmVyKSAq
-IHR4X3JpbmctPmNvdW50Ow0KLSAgICAgICB0eF9yaW5nLT50eF9iaSA9IGt6YWxsb2MoYmlfc2l6
-ZSwgR0ZQX0tFUk5FTCk7DQorICAgICAgIHR4X3JpbmctPnR4X2JpID0ga3Z6YWxsb2MoYmlfc2l6
-ZSwgR0ZQX0tFUk5FTHxfX0dGUF9SRVRSWV9NQVlGQUlMKTsNCiAgICAgICAgaWYgKCF0eF9yaW5n
-LT50eF9iaSkNCiAgICAgICAgICAgICAgICBnb3RvIGVycjsNCiANCkBAIC02NDMsNyArNjQzLDcg
-QEAgaW50IGlhdmZfc2V0dXBfdHhfZGVzY3JpcHRvcnMoc3RydWN0IGlhdmZfcmluZyAqdHhfcmlu
-ZykNCg0KDQotTGkNCg==
+On 27.08.2020 13:00, Rasmus Villemoes wrote:
+> On 27/08/2020 12.29, Heiner Kallweit wrote:
+>> On 27.08.2020 12:08, Rasmus Villemoes wrote:
+>>> Hi,
+>>>
+>>> We have a requirement that when an interface is taken down
+>>> administratively, the phy should be powered off. That also works when
+>>> the interface has link when the 'ip link set down ...' is run. But if
+>>> there's no cable plugged in, the phy stays powered on (as can be seen
+>>> both using phytool, and from the fact that a peer gets carrier once a
+>>> cable is later plugged in).
+>>>
+>>> Is this expected behaviour? Driver/device dependent? Can we do anything
+>>> to force the phy off?
+>>>
+>> This may be MAC/PHY-driver dependent. Which driver(s) do we talk about?
+> 
+> It's a Marvell 88e6250 switch (drivers/net/dsa/mv88e6xxx/).
+> 
+>> Also it may depend on whether Runtime PM is active for a PCI network
+>> device. In addition WoL should be disabled.
+> 
+> The datasheet does mention WoL, but it's either not hooked up in the
+> driver or at least default disabled, ethtool says
+> 
+>      Supports Wake-on: d
+>      Wake-on: d
+> 
+
+By the way, which kernel version are you using?
+
+> Thanks,
+> Rasmus
+> 
+
