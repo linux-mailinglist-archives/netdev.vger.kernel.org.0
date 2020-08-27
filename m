@@ -2,180 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E370254E2E
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 21:24:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26229254E90
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 21:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727981AbgH0TYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 15:24:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47802 "EHLO
+        id S1726289AbgH0TaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 15:30:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726120AbgH0TYS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 15:24:18 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638DAC061264
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 12:24:17 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id u20so4279231pfn.0
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 12:24:17 -0700 (PDT)
+        with ESMTP id S1726246AbgH0TaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 15:30:23 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEF6C061264
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 12:30:22 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id v8so5944896edl.7
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 12:30:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=pRi40klRcp+aAyK6lpkc3NZwj2D9JJNTpxfYTJ5oyZ4=;
-        b=j9sG5iODD0NXOT0kaxF4Wz4X/am0v+pk8T9D8HkS0QsPq3y1fgVtEahtZhaxYp/SgS
-         kwYHc6lbEfDnQbRminl2sP6an2z6R4e59zTyjYElexrKd0N4FYWlQPEo5VFLxAfqhJO6
-         wSej2Ad93xRLHXk6NYNZ3KG5GISPjan8DfEZjk2VRNvEjG4n+E87GZtkbe/ayzMWD9X7
-         bhbJRSqx2C5LMr2Han26K8vjg6uIRg9+MKnW/Vh2GySxMEJ/3sdK2MCkcUHFe674Zjwx
-         eswaEJ5tnj/+fBXjVK2pDaKCl1KHN0SOQRk9JNheIiFGeUH5cH/GFU33py+f1H8xtb+5
-         4CtA==
+        bh=V0nv7wQoHFBDfCKea743Tg8u0187UBuuLmeycLCt9IE=;
+        b=FrpUZP/youjPCtKM9LqQKI6rWq/hmeX+PYpwaZCE58MOs9aULbEOUD4Iz6rJOV9v86
+         kzMmDQCn52Ev45YGSetnAY0Zm7bYPpoVb1ZDDxrGQ7IVOnwAt/v/76ct3LJCAOm0LjYs
+         t+lHPbwV5vlIeg3D3P29PjAeS807e1JZrOYtTkXUIScqDeAk1oZKWXnMuL9lQYTsQRg7
+         Qs17+Og1AY2RfXqoDXhpDyjUr+UD5+p4KKOtLn3B9ZubRDpXluQW5i2GTfFHaCUFIV6T
+         Plx3KsGr4Ctbdrr2snVE0YWdOkp0m/vKoxw1hDKbo4gpWES/+w0F4NRMcoYvSSomc6ny
+         X83w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pRi40klRcp+aAyK6lpkc3NZwj2D9JJNTpxfYTJ5oyZ4=;
-        b=gpuHAlGE8VUqvBDvxfex+czREUQ9q09eGHfFG/AXRiXBfRwch7ljyKxCytGdtaEy/g
-         ZDetqrjSbmnY60Tb/bEPs78Pn8ozj5renBk2Xk9XN2zcPbkryuRcsf8eLbJ+NCQX89br
-         PVOjFqhc3LrYw4kDlgSPmc0/qt1DPZlt283fNAqhR5v5vnqr0Q9w6zkeLtDypdH0d9x2
-         +Jytw1VPiaJRK/WDJVtx7KyPDrp5RQYLkGmStJ0mbZHijkkLBSOdmrt1JG+bXxuN19Ks
-         tMslFnwePAVyOvDaKtXXvduf4a+JRgJbJ0pqA0S75E5PpQazZ7iAyWmiyQ8gm0S/se87
-         YYNQ==
-X-Gm-Message-State: AOAM532nMEzhKovD02PmLYrEN00Rr4UKxp/DFcTjDlNUtqA17G1VOlvR
-        GTT+gExwN5KAlz7Vlx9OEVl9YxwLfulolJ+glOK+Ig==
-X-Google-Smtp-Source: ABdhPJx2HjkIQBU/wzjxDQ+xZZsxImf1wwY6rEdzAIV7aZY15cBd8wA6v83WmaOFEdX6PJI3B8zNSuGHwcDbV4+IwQU=
-X-Received: by 2002:a17:902:9349:: with SMTP id g9mr17653908plp.313.1598556256703;
- Thu, 27 Aug 2020 12:24:16 -0700 (PDT)
+        bh=V0nv7wQoHFBDfCKea743Tg8u0187UBuuLmeycLCt9IE=;
+        b=XwKVDn/3VMFQ9F0P1fM5MJbZsR5hkqPz9mfcRn2gh2g36EvrQo1CNPGgg1rs0shR1T
+         QbBs2aERd32+OX6ZdGrkWMH4ah6Am7vzanNgQ3tcuZyPDCBrLtYP+6Er437CDb7xUJzg
+         8iBqUYW4sZe0z/fIIMN5KaTH4xu+yNy8VRfGK52wmc/Qf7pzrL2cGdSQIg0l9Pnxk/b1
+         5sPc5i/DyWUXmYUGDz9YpH9cCZJpw2b9lY/MrpTXjrUF0OTrouz6D5Jo8TqJQHnFgoO7
+         FXyEKUNe0a3M5mMYOfMx2SNjAZb6y2ml7eGcJg2h9dSHMiq3koyJSJLdByvueZbxgGvh
+         CMGw==
+X-Gm-Message-State: AOAM5331gFMnxJxpLc7zStk6DZYDxIziBQohVG6b/8jnjGIbIKAXbzFn
+        uyhHOQc9XmsySDNNGS1mDA6FdelccDMjV0WLishU6g==
+X-Google-Smtp-Source: ABdhPJxrUFTaTtdB3uET/8l/a6XdYU2SNVMC86F8LwhWn6NZzuQLhDwt1HrAbXd+AGqTmGHN1IUW2aCKfRrjVA8PDWU=
+X-Received: by 2002:a50:d809:: with SMTP id o9mr20639212edj.12.1598556621415;
+ Thu, 27 Aug 2020 12:30:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200818194417.2003932-1-awogbemila@google.com>
- <20200818194417.2003932-6-awogbemila@google.com> <20200818201350.58024c28@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAL9ddJcDYcn+p33nKicmp7yHm6PnZ9iXnghO4AYHNmtCFCe2eQ@mail.gmail.com>
- <20200825094635.715db5c0@kicinski-fedora-PC1C0HJN> <CAL9ddJfOWzO1v2FJAtb+qVAazR9Tb3CV8kH8V0_xA-GPgoAKXQ@mail.gmail.com>
- <20200825175306.377be2f4@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200825175306.377be2f4@kicinski-fedora-PC1C0HJN>
-From:   David Awogbemila <awogbemila@google.com>
-Date:   Thu, 27 Aug 2020 12:24:05 -0700
-Message-ID: <CAL9ddJc-U+5dgi82gqEfurGKiLX=aTvATpPeR4xOHRVvn0PRwA@mail.gmail.com>
-Subject: Re: [PATCH net-next 05/18] gve: Add Gvnic stats AQ command and
- ethtool show/set-priv-flags.
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Yangchun Fu <yangchun@google.com>, netdev@vger.kernel.org,
-        Kuo Zhao <kuozhao@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com> <CA+V-a8tZAp_oTpG2MsdC47TtGP7=oM6CubCnjBoR6UhV4=opNg@mail.gmail.com>
+In-Reply-To: <CA+V-a8tZAp_oTpG2MsdC47TtGP7=oM6CubCnjBoR6UhV4=opNg@mail.gmail.com>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Thu, 27 Aug 2020 21:30:10 +0200
+Message-ID: <CAMpxmJWv=hTgbMLSVFm=C_5qSpo=BvOByW=B+BEEzTPswXfZzQ@mail.gmail.com>
+Subject: Re: [PATCH 6/9] dt-bindings: gpio: renesas,rcar-gpio: Add r8a774e1 support
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        dmaengine <dmaengine@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I could use some help figuring out the use of rtnl_link_stats64 here.
-> > These 4 stats are per-queue stats written by the NIC. It looks like
-> > rtnl_link_stats64 is meant to sum stats for the entire device? Is the
-> > requirement here simply to use the member names in rtnl_link_stats64
-> > when reporting stats via ethtool? Thanks.
+On Thu, Aug 27, 2020 at 6:40 PM Lad, Prabhakar
+<prabhakar.csengg@gmail.com> wrote:
 >
-> If these are per queue you can report them per queue in ethtool (name
-> is up to you), but you must report the sum over all queues in
-> rtnl_link_stats64.
+> Hi Linus and Bartosz,
 >
-> FWIW the mapping I'd suggest is probably:
+> On Mon, Jul 13, 2020 at 10:35 PM Lad Prabhakar
+> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> >
+> > Document Renesas RZ/G2H (R8A774E1) GPIO blocks compatibility within the
+> > relevant dt-bindings.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> >  Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> Gentle ping.
 >
-> RX_QUEUE_DROP_CNT         -> rx_dropped
-> RX_NO_BUFFERS_POSTED      -> rx_missed_errors
-> RX_DROPS_PACKET_OVER_MRU  -> rx_length_errors
-> RX_DROPS_INVALID_CHECKSUM -> rx_crc_errors
->
-> The no-buffers-posted stat is unfortunately slightly disputable between
-> rx_missed_errors and rx_fifo_errors (even rx_over_errors). I'd go for missed.
-This is very helpful, thanks. The aggregate stats are the stats named
-in gve_gstrings_main_stats (in gve_ethtool.c). This particular patch
-does not change those. Patch 2 ("gve: Add stats for gve.") is what I
-think may have to change to conform to rtnl_link_stats64(?)
+> Cheers,
+> Prabhakar
 
-> > > > > > +static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
-> > > > > > +{
-> > > > > > +     struct gve_priv *priv = netdev_priv(netdev);
-> > > > > > +     u64 ori_flags, new_flags;
-> > > > > > +     u32 i;
-> > > > > > +
-> > > > > > +     ori_flags = READ_ONCE(priv->ethtool_flags);
-> > > > > > +     new_flags = ori_flags;
-> > > > > > +
-> > > > > > +     for (i = 0; i < GVE_PRIV_FLAGS_STR_LEN; i++) {
-> > > > > > +             if (flags & BIT(i))
-> > > > > > +                     new_flags |= BIT(i);
-> > > > > > +             else
-> > > > > > +                     new_flags &= ~(BIT(i));
-> > > > > > +             priv->ethtool_flags = new_flags;
-> > > > > > +             /* set report-stats */
-> > > > > > +             if (strcmp(gve_gstrings_priv_flags[i], "report-stats") == 0) {
-> > > > > > +                     /* update the stats when user turns report-stats on */
-> > > > > > +                     if (flags & BIT(i))
-> > > > > > +                             gve_handle_report_stats(priv);
-> > > > > > +                     /* zero off gve stats when report-stats turned off */
-> > > > > > +                     if (!(flags & BIT(i)) && (ori_flags & BIT(i))) {
-> > > > > > +                             int tx_stats_num = GVE_TX_STATS_REPORT_NUM *
-> > > > > > +                                     priv->tx_cfg.num_queues;
-> > > > > > +                             int rx_stats_num = GVE_RX_STATS_REPORT_NUM *
-> > > > > > +                                     priv->rx_cfg.num_queues;
-> > > > > > +                             memset(priv->stats_report->stats, 0,
-> > > > > > +                                    (tx_stats_num + rx_stats_num) *
-> > > > > > +                                    sizeof(struct stats));
-> > > > >
-> > > > > I don't quite get why you need the knob to disable some statistics.
-> > > > > Please remove or explain this in the cover letter. Looks unnecessary.
-> > > > We use this to give the guest the option of disabling stats reporting
-> > > > through ethtool set-priv-flags. I'll update the cover letter.
-> > >
-> > > I asked you why you reply a week later with "I want to give user the
-> > > option. I'll update the cover letter." :/ That's quite painful for the
-> > > reviewer. Please just provide the justification.
-> > I apologize for the pain; it certainly wasn't intended :) .
-> > Just to clarify, stats will always be available to the user via ethtool.
-> > This is only giving users the option of disabling the reporting of
-> > stats from the driver to the virtual NIC should the user decide they
-> > do not want to share driver stats with Google as a matter of privacy.
->
-> Okay, so this is for the to-hypervisor direction. Hopefully the patch
-> split will make this clearer.
->
-> > > > > > @@ -880,6 +953,10 @@ static void gve_handle_status(struct gve_priv *priv, u32 status)
-> > > > > >               dev_info(&priv->pdev->dev, "Device requested reset.\n");
-> > > > > >               gve_set_do_reset(priv);
-> > > > > >       }
-> > > > > > +     if (GVE_DEVICE_STATUS_REPORT_STATS_MASK & status) {
-> > > > > > +             dev_info(&priv->pdev->dev, "Device report stats on.\n");
-> > > > >
-> > > > > How often is this printed?
-> > > > Stats reporting is disabled by default. But when enabled, this would
-> > > > only get printed whenever the virtual NIC detects
-> > > > an issue and triggers a report-stats request.
-> > >
-> > > What kind of issue? Something serious? Packet drops?
-> > Sorry, to correct myself, this would get printed only at the moments
-> > when the device switches report-stats on, not on every stats report.
-> > After that, it would not get printed until it is switched off and then
-> > on again, so rarely.
-> > It would get switched on if there is a networking issue such as packet
-> > drops and help us investigate a stuck queue for example.
->
-> Reporting of the stats is a one-shot:
->
-> +       if (gve_get_do_report_stats(priv)) {
-> +               gve_handle_report_stats(priv);
-> +               gve_clear_do_report_stats(priv);
-> +       }
->
-> So the hypervisor implements some rate limiting on the requests?
-Yes, not every packet drop would trigger the request, only if the
-virtual NIC feels that "too many" are being dropped.
-When report-stats is turned on (both user ethtool setting is enabled
-and device has requested to turn it on), the stats would be updated
-once every 20 seconds.
+This doesn't apply on top of v5.9-rc1.
 
->
-> In general, I don't think users will want these messages to keep
-> popping up. A ethtool -S statistic for the number of times reporting
-> happened should be sufficient. Or if you really want them - have a
-> verbose version of the priv flag, maybe?
-An ethtool stat (counting requests to turn report-stats on from the
-virtual NIC) should suffice.
-(I think a verbose logging option should probably apply to not just
-this log, so maybe that's another patch in itself?)
+Bart
