@@ -2,121 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 051D5253C74
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 06:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10F6B253C79
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 06:12:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726073AbgH0EL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 00:11:27 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:42052 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725854AbgH0ELZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 00:11:25 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07R4BObN023568
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 21:11:24 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=ntTmQNRD+8fYl9UC4BVxTL8CF17LxuFlKlseIdHVLrQ=;
- b=BuI32tboKQV6Rnf4OCrcyB2DK2era9zpgb5MsrkM2aNo66R8ux3WafY5M+yK2CaWbkdG
- 8+d4x65QA2e9DE5XWWreB1V+pwxa3n0Qq1JmJsrTCImhpDlQL93VKUOJ73uiUTrn3pph
- NN1DKipfKrl5SjL2H3HsGM2Jx2Qdenoggug= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 335up8kaq3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 21:11:24 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 26 Aug 2020 21:11:20 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 6ABE32EC6348; Wed, 26 Aug 2020 21:11:10 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next] libbpf: fix compilation warnings for 64-bit printf args
-Date:   Wed, 26 Aug 2020 21:11:09 -0700
-Message-ID: <20200827041109.3613090-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726207AbgH0EMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 00:12:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46228 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbgH0EMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 00:12:23 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E833EC0612A8;
+        Wed, 26 Aug 2020 21:12:22 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id q3so2204912ybp.7;
+        Wed, 26 Aug 2020 21:12:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kp/u4RK/gNkc7rDaaiMxnwAkhw/8/LsUDPjsgGtLT6o=;
+        b=Kno7ShG/vp6+iFF/Xh18Xh6EhpLHZp5xUCzgjmTrbkoaDKeDtcNByvG8C+h7V0kroy
+         i2kFCVZH0iPjzHuhCAYaylJfkJXP63v+ny21BSfYoJ/0YKt7rvMthfXB/7JXZyqBIYgR
+         Jz7JBjGk1i5SWEIcXsB6Y9VvIrUMyRT9y9rbmLW58T23FekaZzAWGze9XsrU22IZBxPh
+         VLxejIENydKjzaTGnW8vpWxl2lQ+v1XymK/jC9cLPy/58T4TK1KZHWM+6rs9eygk12pP
+         JDU89KuDlIfjhi5LWcT6g16ptZcI2T7oA3+cur/vdeMOQSKX/NHIQntyy/n+OSJnaNrl
+         9mmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kp/u4RK/gNkc7rDaaiMxnwAkhw/8/LsUDPjsgGtLT6o=;
+        b=rtz+MHohax19vl6hlQSmWeqUbawQpjYAINaRq1+Fg72wAHWQrXqKWv6ENex5hkFBkd
+         KTEUDrpC1nO97E8XjRFZWFpuH5Ehqd3Suvrepz9zMZDDx3BtpUozPnIFA9vLrM1uMhIU
+         UiI14XB5PRWUOMImVAwo3InZwM82GoUN9joVK4//ooilbXK+HwqhzhHNpy5MUQjMwoxx
+         HnINEvGlvYCiTkUL5H+rZf+1lG5Tkcvpj+yy09JGaWzMZcZX2zYDqKqtLgsePS/hWIZF
+         MiFgz+HfvUCwZ3K+ckLSBn6tu3VZ4CnZrAR5PLQupbNJUhQKe4cp0PskAd5fpRqFDFDI
+         b+BQ==
+X-Gm-Message-State: AOAM530+QgwYVBeoOD3wIpKyGHgxdBNhi5UOq793+Z9z0j8/aGq5MW2b
+        Emm+6w+XLXlS3GtugtVmLMpxJ/m/C466mTKQexk=
+X-Google-Smtp-Source: ABdhPJxDT7ZRUaeQt7UkZ2F1k5QSS9nfBPz50zh2I1Wr5FsNda3NIW/M7p1/mOTLwstva5xQ4VDlktD0qNyV00429KI=
+X-Received: by 2002:a25:ad5a:: with SMTP id l26mr24810072ybe.510.1598501540763;
+ Wed, 26 Aug 2020 21:12:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-26_14:2020-08-26,2020-08-26 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- lowpriorityscore=0 mlxlogscore=999 clxscore=1015 bulkscore=0 adultscore=0
- impostorscore=0 priorityscore=1501 phishscore=0 spamscore=0 mlxscore=0
- suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008270034
-X-FB-Internal: deliver
+References: <20200826030922.2591203-1-andriin@fb.com> <20200826160852.e4hnkyvg2kzrtzjj@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200826160852.e4hnkyvg2kzrtzjj@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 26 Aug 2020 21:12:09 -0700
+Message-ID: <CAEf4BzbLj5g8PK+fTE17v4nXKDDuZMBp9g98=oaYN59d0pVeZQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix compilation warnings for 64-bit
+ printf args
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix compilation warnings due to __u64 defined differently as `unsigned lo=
-ng`
-or `unsigned long long` on different architectures (e.g., ppc64le differs=
- from
-x86-64). Also cast one argument to size_t to fix printf warning of simila=
-r
-nature.
+On Wed, Aug 26, 2020 at 9:08 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Aug 25, 2020 at 08:09:21PM -0700, Andrii Nakryiko wrote:
+> > Add __pu64 and __ps64 (sort of like "printf u64 and s64") for libbpf-internal
+> > use only in printf-like situations to avoid compilation warnings due to
+> > %lld/%llu mismatch with a __u64/__s64 due to some architecture defining the
+> > latter as either `long` or `long long`. Use that on all %lld/%llu cases in
+> > libbpf.c.
+> >
+> > Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+> > Fixes: eacaaed784e2 ("libbpf: Implement enum value-based CO-RE relocations")
+> > Fixes: 50e09460d9f8 ("libbpf: Skip well-known ELF sections when iterating ELF")
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c          | 15 ++++++++-------
+> >  tools/lib/bpf/libbpf_internal.h | 11 +++++++++++
+> >  2 files changed, 19 insertions(+), 7 deletions(-)
+> >
 
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Fixes: eacaaed784e2 ("libbpf: Implement enum value-based CO-RE relocation=
-s")
-Fixes: 50e09460d9f8 ("libbpf: Skip well-known ELF sections when iterating=
- ELF")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/libbpf.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+[...]
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 2e2523d8bb6d..c97a06226f90 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2823,7 +2823,8 @@ static int bpf_object__elf_collect(struct bpf_objec=
-t *obj)
- 			obj->efile.bss =3D data;
- 			obj->efile.bss_shndx =3D idx;
- 		} else {
--			pr_info("elf: skipping section(%d) %s (size %zu)\n", idx, name, sh.sh=
-_size);
-+			pr_info("elf: skipping section(%d) %s (size %zu)\n", idx, name,
-+				(size_t)sh.sh_size);
- 		}
- 	}
-=20
-@@ -5244,7 +5245,8 @@ static int bpf_core_patch_insn(struct bpf_program *=
-prog,
- 		if (res->validate && imm !=3D orig_val) {
- 			pr_warn("prog '%s': relo #%d: unexpected insn #%d (LDIMM64) value: go=
-t %llu, exp %u -> %u\n",
- 				bpf_program__title(prog, false), relo_idx,
--				insn_idx, imm, orig_val, new_val);
-+				insn_idx, (unsigned long long)imm,
-+				orig_val, new_val);
- 			return -EINVAL;
- 		}
-=20
-@@ -5252,7 +5254,7 @@ static int bpf_core_patch_insn(struct bpf_program *=
-prog,
- 		insn[1].imm =3D 0; /* currently only 32-bit values are supported */
- 		pr_debug("prog '%s': relo #%d: patched insn #%d (LDIMM64) imm64 %llu -=
-> %u\n",
- 			 bpf_program__title(prog, false), relo_idx, insn_idx,
--			 imm, new_val);
-+			 (unsigned long long)imm, new_val);
- 		break;
- 	}
- 	default:
---=20
-2.24.1
+> >
+> > +/* These types are for casting 64-bit arguments of printf-like functions to
+> > + * avoid compiler warnings on various architectures that define size_t, __u64,
+> > + * uint64_t, etc as either unsigned long or unsigned long long (similarly for
+> > + * signed variants). Use these typedefs only for these purposes. Alternative
+> > + * is PRIu64 (and similar) macros, requiring stitching printf format strings
+> > + * which are extremely ugly and should be avoided in libbpf code base. With
+> > + * arguments casted to __pu64/__ps64, always use %llu/%lld in format string.
+> > + */
+> > +typedef unsigned long long __pu64;
+> > +typedef long long __ps64;
+>
+> I think these extra typedefs will cause confusion. Original approach
+> of open coding type casts to long long and unsigned long long is imo cleaner.
 
+Fair enough. Sent v2 with just direct "unsigned long long" casts.
