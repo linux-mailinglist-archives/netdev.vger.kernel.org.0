@@ -2,178 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5735254CA8
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 20:13:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0CBD254CC1
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 20:17:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726953AbgH0SNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 14:13:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
+        id S1727003AbgH0SRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 14:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726845AbgH0SNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 14:13:09 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E28C0C061232
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 11:13:08 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id j10so3045712qvo.13
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 11:13:08 -0700 (PDT)
+        with ESMTP id S1726093AbgH0SRO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 14:17:14 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA113C061264
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 11:17:14 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id m8so4144394pfh.3
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 11:17:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ssRaouXMj2o/HtEZZ3R9vlEAQEleSnlrqRH6Z6mK0YM=;
-        b=hTYxcSPYcs/JpYjOgeSQeg6Xl3LxylMwCdjgvYwx1aZ0q9UMPVlNcB95FXYna3al52
-         IbTaBhRvKMuLTqjFu5nwJvvcRfM5hlW4mr0CAIw5t/TZ9K03o40d9+HsdyT9aHbx1V9u
-         6lZyigyUUK6y9vpQiHxICC3q0LPAv4EOwqGca0jbl9DK/0ufdjWzxlzp4M+vIrJCDfLD
-         rTLXzM7s1yCsMnkF3SLfrSOCuq2rWL6RINgYVQ1ynhxBGMt2E2ZfHWhIMvb97fvURbWm
-         /4HAoGwQtJz95MMLCIXruMdQ2RP37flfW+Z+PMdo9OixEUHbUjbtaq1V5cLjd1XtAf10
-         iwTw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=soeX4jUjZZZTlITUKQ5pcDSGwYI4DnugTTOq/SNIIW8=;
+        b=bwQqo9mUQZ78SYazcavWuleirnFV8qiGz4YuuoqdE7eRmQ2tSTM68j++Et8BP9GqJr
+         syUBg3Kcg7Q9OgEbN+FAt7t4lGugKe8nLewk7Ughsm9qm/jfjiWsNzpi5+yadtKvRkgD
+         9dkaxNNv0wKsa2fEmJKGhE8yW74+BwsjHwwBM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ssRaouXMj2o/HtEZZ3R9vlEAQEleSnlrqRH6Z6mK0YM=;
-        b=cZ/ZMon13EI8AXE0LAOLfZzdHUzOS8ohYxQ027zu6uALO0GXwloe1fa0pJxwXg/QD3
-         +1xm+ZoX3Un/FtkltTONHXpJKEOe0soGMAlETSqFHrSx+wa7Lpe92LDf1lFln20QaQez
-         pBfBYrgpX8qHxsmQS7XUX6CW2HYejLaPafnHUrmUPNNAWib/XcoktZEyeUCdhlvNrQ0s
-         MXw+W1eiz+mUrcFxyLt+ZKW/E/tBJ2oOUgVYOChqAMRmDMU3ILcUPy/4u8iWIcU3l9cG
-         DitYukcpo6dBSi2XtwHOx0aTJNFJTVpUmdM0lDaMWzPyzQINqcnRQ0d8z/Mz25OiyT8C
-         83TQ==
-X-Gm-Message-State: AOAM5314X63wjLQ354kx3Gka+pQ91sj7UT91wpJGvYaUQXkwn7VAv8e+
-        T2YU4XDHdph9fPuzpR52JmdhNWGS9a7/9IKQSt1CUb7kriRLrFTC
-X-Google-Smtp-Source: ABdhPJy+icwO9xKN//159CWIuCBqk8MV0Dp0jEhUL4JCTuBiRCitMg1ap+ZOEoYO7Yy4bHcgdPptWx3uVVGIwM6G+34=
-X-Received: by 2002:a05:6214:10ca:: with SMTP id r10mr232930qvs.185.1598551987724;
- Thu, 27 Aug 2020 11:13:07 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=soeX4jUjZZZTlITUKQ5pcDSGwYI4DnugTTOq/SNIIW8=;
+        b=efswD6BNMD8Ne6uze4vk5kr2/UzP3GvxVMu35DHn7ZGDiePRF2UZgidun8Ceoe+A7U
+         RB1OIE+MTSQbkm5QHRDehxE6ROW/XqXbmu45Rs5ftbWlaGroOuTLKUqmO4cjcVw13cmX
+         cOVMOxpLI3xY7M8Yby9XWsa7xPYuqn7vFVGrHqgS4jwLGHQyjnI+pTERsKjEXyQYqnfX
+         2yvBsK7usOZLhOHvdQQi/Wc+CRtETCy9YpAw6Qon/O9AbBWTkYouOMHMbxs84VmIjRjq
+         07+bnyMWu22uVCe8S88eg/ex1XUaAUdl9qvfykT83bF+KzM/DSJMlS9RjhG4NY+p1S5S
+         EGKw==
+X-Gm-Message-State: AOAM532Wa9NDlv92uBbhs3UZUuwlXWg8gz0pi7fzTevDYCP1v7oUAqlb
+        xxf6uKHNv3H+YCYzNPstmudBCQ==
+X-Google-Smtp-Source: ABdhPJxQHJQlJtOpVK3cF7+baxJUjdkujQ9/OnK25Ibx+RalSDrSK6OVeL6QkvgSiagIIwSSDUbj5Q==
+X-Received: by 2002:a17:902:b282:: with SMTP id u2mr11532811plr.47.1598552234468;
+        Thu, 27 Aug 2020 11:17:14 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id e29sm3441674pfj.92.2020.08.27.11.17.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Aug 2020 11:17:13 -0700 (PDT)
+Date:   Thu, 27 Aug 2020 11:17:12 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Allen Pais <allen.cryptic@gmail.com>, kuba@kernel.org,
+        jirislaby@kernel.org, mickflemm@gmail.com, mcgrof@kernel.org,
+        chunkeey@googlemail.com, Larry.Finger@lwfinger.net,
+        stas.yakovlev@gmail.com, helmut.schaa@googlemail.com,
+        pkshih@realtek.com, yhchuang@realtek.com, dsd@gentoo.org,
+        kune@deine-taler.de, ath11k@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, b43-dev@lists.infradead.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, Allen Pais <allen.lkml@gmail.com>,
+        Romain Perier <romain.perier@gmail.com>
+Subject: Re: [05/16] atmel: convert tasklets to use new tasklet_setup() API
+Message-ID: <202008271115.A54F087@keescook>
+References: <20200817090637.26887-6-allen.cryptic@gmail.com>
+ <20200827132320.B70A9C433AD@smtp.codeaurora.org>
 MIME-Version: 1.0
-References: <20200729212721.1ee4eef8@canb.auug.org.au> <87ft8lwxes.fsf@turtle.gmx.de>
- <CAMzD94Rz4NYnhheS8SmuL14MNM4VGxOnAW-WZ9k1JEqrbwyrvw@mail.gmail.com>
- <87y2m7gq86.fsf@turtle.gmx.de> <87pn7gh3er.fsf@turtle.gmx.de>
-In-Reply-To: <87pn7gh3er.fsf@turtle.gmx.de>
-From:   Brian Vazquez <brianvv@google.com>
-Date:   Thu, 27 Aug 2020 11:12:56 -0700
-Message-ID: <CAMzD94Rkq1RTZJG5UsEz9VhaCBbvObD1azqU2gsJzZ6gPYcfag@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Sven Joachim <svenjoac@gmx.de>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200827132320.B70A9C433AD@smtp.codeaurora.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sven,
+On Thu, Aug 27, 2020 at 01:23:20PM +0000, Kalle Valo wrote:
+> Allen Pais <allen.cryptic@gmail.com> wrote:
+> 
+> > From: Allen Pais <allen.lkml@gmail.com>
+> > 
+> > In preparation for unconditionally passing the
+> > struct tasklet_struct pointer to all tasklet
+> > callbacks, switch to using the new tasklet_setup()
+> > and from_tasklet() to pass the tasklet pointer explicitly
+> > and remove .data field.
+> > 
+> > Signed-off-by: Romain Perier <romain.perier@gmail.com>
+> > Signed-off-by: Allen Pais <allen.lkml@gmail.com>
+> 
+> 11 patches applied to wireless-drivers-next.git, thanks.
+> 
+> a36f50e5b937 atmel: convert tasklets to use new tasklet_setup() API
+> fc6722301428 b43legacy: convert tasklets to use new tasklet_setup() API
+> 427a06beb072 brcmsmac: convert tasklets to use new tasklet_setup() API
+> ae6cf59f80f7 ipw2x00: convert tasklets to use new tasklet_setup() API
+> b81b9d372ac8 iwlegacy: convert tasklets to use new tasklet_setup() API
+> 7433c9690318 intersil: convert tasklets to use new tasklet_setup() API
+> 51c41aa93ef5 mwl8k: convert tasklets to use new tasklet_setup() API
+> aff8e8d02ec2 qtnfmac: convert tasklets to use new tasklet_setup() API
+> a0d6ea9b6e1c rt2x00: convert tasklets to use new tasklet_setup() API
+> d3ccc14dfe95 rtlwifi/rtw88: convert tasklets to use new tasklet_setup() API
+> 26721b02466e zd1211rw: convert tasklets to use new tasklet_setup() API
+> 
+> -- 
+> https://patchwork.kernel.org/patch/11717451/
+> 
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-I've been trying to reproduce it with your config but I didn't
-succeed. I also looked at the file after the preprocessor and it
-looked good:
+FWIW, I don't think a revert is needed here to wait for the from_tasket()
+-> container_from() API to land since from_tasklet() is already being
+used by other trees. Let's just get this done so we can get closer to
+ripping out the old tasklet API. We'll have to do a treewide
+from_timer(), from_tasklet() -> container_from() anyway...
 
-ret = ({ __builtin_expect(!!(ops->match == fib6_rule_match), 1) ?
-fib6_rule_match(rule, fl, flags) : ops->match(rule, fl, flags); })
-
-Note that fib4_rule_match doesn't appear as the
-CONFIG_IP_MULTIPLE_TABLES is not there.
-
-Could you share more details on how you're compiling it and what
-compiler you're using??
-
-Thanks,
-Brian
-
-
-
-On Mon, Aug 24, 2020 at 1:08 AM Sven Joachim <svenjoac@gmx.de> wrote:
->
-> On 2020-08-22 08:16 +0200, Sven Joachim wrote:
->
-> > On 2020-08-21 09:23 -0700, Brian Vazquez wrote:
-> >
-> >> Hi Sven,
-> >>
-> >> Sorry for the late reply, did you still see this after:
-> >> https://patchwork.ozlabs.org/project/netdev/patch/20200803131948.41736-1-yuehaibing@huawei.com/
-> >> ??
-> >
-> > That patch is apparently already in 5.9-rc1 as commit 80fbbb1672e7, so
-> > yes I'm still seeing it.
->
-> Still present in 5.9-rc2 as of today, I have attached my .config for
-> reference.  Note that I have CONFIG_IPV6_MULTIPLE_TABLES=y, but
-> CONFIG_IP_MULTIPLE_TABLES is not mentioned at all there.
->
-> To build the kernel, I have now deselected IPV6_MULTIPLE_TABLES.  Not
-> sure why this was enabled in my .config which has grown organically over
-> many years.
->
-> Cheers,
->        Sven
->
->
-> >> On Mon, Aug 17, 2020 at 12:21 AM Sven Joachim <svenjoac@gmx.de> wrote:
-> >>
-> >>> On 2020-07-29 21:27 +1000, Stephen Rothwell wrote:
-> >>>
-> >>> > Hi all,
-> >>> >
-> >>> > After merging the net-next tree, today's linux-next build (i386
-> >>> defconfig)
-> >>> > failed like this:
-> >>> >
-> >>> > x86_64-linux-gnu-ld: net/core/fib_rules.o: in function
-> >>> `fib_rules_lookup':
-> >>> > fib_rules.c:(.text+0x5c6): undefined reference to `fib6_rule_match'
-> >>> > x86_64-linux-gnu-ld: fib_rules.c:(.text+0x5d8): undefined reference to
-> >>> `fib6_rule_match'
-> >>> > x86_64-linux-gnu-ld: fib_rules.c:(.text+0x64d): undefined reference to
-> >>> `fib6_rule_action'
-> >>> > x86_64-linux-gnu-ld: fib_rules.c:(.text+0x662): undefined reference to
-> >>> `fib6_rule_action'
-> >>> > x86_64-linux-gnu-ld: fib_rules.c:(.text+0x67a): undefined reference to
-> >>> `fib6_rule_suppress'
-> >>> > x86_64-linux-gnu-ld: fib_rules.c:(.text+0x68d): undefined reference to
-> >>> `fib6_rule_suppress'
-> >>>
-> >>> FWIW, I saw these errors in 5.9-rc1 today, so the fix in commit
-> >>> 41d707b7332f ("fib: fix fib_rules_ops indirect calls wrappers") was
-> >>> apparently not sufficient.
-> >>>
-> >>> ,----
-> >>> | $ grep IPV6 .config
-> >>> | CONFIG_IPV6=m
-> >>> | # CONFIG_IPV6_ROUTER_PREF is not set
-> >>> | # CONFIG_IPV6_OPTIMISTIC_DAD is not set
-> >>> | # CONFIG_IPV6_MIP6 is not set
-> >>> | # CONFIG_IPV6_ILA is not set
-> >>> | # CONFIG_IPV6_VTI is not set
-> >>> | CONFIG_IPV6_SIT=m
-> >>> | # CONFIG_IPV6_SIT_6RD is not set
-> >>> | CONFIG_IPV6_NDISC_NODETYPE=y
-> >>> | CONFIG_IPV6_TUNNEL=m
-> >>> | CONFIG_IPV6_MULTIPLE_TABLES=y
-> >>> | # CONFIG_IPV6_SUBTREES is not set
-> >>> | # CONFIG_IPV6_MROUTE is not set
-> >>> | # CONFIG_IPV6_SEG6_LWTUNNEL is not set
-> >>> | # CONFIG_IPV6_SEG6_HMAC is not set
-> >>> | # CONFIG_IPV6_RPL_LWTUNNEL is not set
-> >>> | # CONFIG_NF_SOCKET_IPV6 is not set
-> >>> | # CONFIG_NF_TPROXY_IPV6 is not set
-> >>> | # CONFIG_NF_DUP_IPV6 is not set
-> >>> | # CONFIG_NF_REJECT_IPV6 is not set
-> >>> | # CONFIG_NF_LOG_IPV6 is not set
-> >>> | CONFIG_NF_DEFRAG_IPV6=m
-> >>> `----
-> >>>
-> >>> > Caused by commit
-> >>> >
-> >>> >   b9aaec8f0be5 ("fib: use indirect call wrappers in the most common
-> >>> fib_rules_ops")
-> >>> >
-> >>> > # CONFIG_IPV6_MULTIPLE_TABLES is not set
-> >>> >
-> >>> > I have reverted that commit for today.
-> >>>
-> >>> Cheers,
-> >>>        Sven
-> >>>
+-- 
+Kees Cook
