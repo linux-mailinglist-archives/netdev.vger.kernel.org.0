@@ -2,105 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA9D8253F5D
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 09:38:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EED24253F5F
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 09:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728152AbgH0Hii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 03:38:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726803AbgH0Hig (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 03:38:36 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71C4C061264
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 00:38:35 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id x9so4201881wmi.2
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 00:38:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FRCkyG4TkqvXDMwoou9SdiJxe3ktjDM6K9gTtTQ6FgQ=;
-        b=glEvNq1xlRPKfqXkr+8KHjm3OUxLZAKdzG8ZdB+v+oZYQIVjXP3Th+fChzgm6Nz5vp
-         zMaYuRm6yICqJjN7MoOirtDQFVvPpcMtJl3PW5hqW1rtQPi/kjZL1LNoH+QgIe609Mwr
-         +BJetB3iNYUQ4t+4fTqYBpLXvN3IKqIuKEIQ5qlHvCIrbnwyp4Px6IPNIFjGzqsY7mGe
-         OpNplk7cbHdKY+uoD9lpni5B3yl7L8mQch1EzUIDMbJjLt1T6wieEdHiBt8mNaqaj1A2
-         Xv25BFfjBLnA76iqGgItTjbhULSwY5pckt9tgNFhyTj+7DRastBnY9pUOBjwBPez7JAw
-         8fSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FRCkyG4TkqvXDMwoou9SdiJxe3ktjDM6K9gTtTQ6FgQ=;
-        b=qJM3ybdCU6kJ00mETc80MwbV4Zhm4QJFQ73F6+KjF5aZOh4xzzpAsjidF87dQT4kYN
-         HDI4e0qJhdSMBCsMEIY+Bybe23s2yuDpP1ZsM3V3NslBd58giSkNGR16J78JCfimJpvx
-         gCcCE27K0wDYsM7mGAeHs8Ld3o2/tJxZwdlWZ5bjfWaCdxRE5wuMmcXn0Y1+TMyUsrs3
-         7Mk23dN3nOqS9s2JCmie+zm4NF09Q7p9/3oECDuy2zgE2Q6QO/QXxA36jmE4AM1ZXmkk
-         rUsV1Ayms7fnbEWXR6fUIH4l2Wqcn2F9p3FsLtOtApdDzo8ZLJ4qGeHN0aDdkDQ8ydXZ
-         7CGg==
-X-Gm-Message-State: AOAM531MreLqozghThZBGM53yyT/JVEG/jY4Q58lONyU3MhJHC9rN+k4
-        A91KNRvy+aTvycX9bZffHbDRTQ==
-X-Google-Smtp-Source: ABdhPJxNJHB/jkwvt3SnOEVnLx8LyaGLXWzXbT0AoU60y8LsDP2V8voSbM57BvSGE3BP19PVCuAX/w==
-X-Received: by 2002:a1c:740e:: with SMTP id p14mr10240105wmc.179.1598513914406;
-        Thu, 27 Aug 2020 00:38:34 -0700 (PDT)
-Received: from dell ([91.110.221.141])
-        by smtp.gmail.com with ESMTPSA id f16sm3655012wrw.67.2020.08.27.00.38.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2020 00:38:33 -0700 (PDT)
-Date:   Thu, 27 Aug 2020 08:38:32 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Maya Erez <merez@codeaurora.org>,
-        wil6210@qti.qualcomm.com
-Subject: [PATCH v2 31/32] wireless: ath: wil6210: wil_platform: Demote
- kernel-doc header to standard comment block
-Message-ID: <20200827073832.GW3248864@dell>
-References: <20200821071644.109970-1-lee.jones@linaro.org>
- <20200821071644.109970-32-lee.jones@linaro.org>
+        id S1728105AbgH0HjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 03:39:25 -0400
+Received: from sonic309-22.consmr.mail.ne1.yahoo.com ([66.163.184.148]:39787
+        "EHLO sonic309-22.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727084AbgH0HjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 03:39:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1598513963; bh=MWL01jPVJXuBFzguUnxzZVCMkBAhTvIWLeZZqdlFV60=; h=Date:From:Reply-To:Subject:References:From:Subject; b=Kls3yU2rQ29r2QG5HkE74646PjrxgHQsGB/IzsAuC68gvVNDhj9kPwdeDwh8ZnNOEkVW1Fczgna8bahiCVfpHxAPTFoxEqpNdih81y6WTPA20GSM+CGxhbj/23+3a60AGiIChaCr06qpW+FZXi2xqiOtY/qxuU269ASdJ1T+59xtUx1sGj9BTK9UXAPWa3CmetoH9VNixie3cEeCKhO3wGzo6C+fmrj8bmRMi86kuYcndLeMV4N8wr3Qgl1sxh/i/RZcE7r1gBc7jp3uWPxys+jfh6X81LDSVlZ7yndD0ZohUjEjTAKd0h56FIQJHESKGOpLxEqB7tBqMSNF8PSdKg==
+X-YMail-OSG: ZiwVlT8VM1mPsalRrNc8p6nW_nqfiMCue8UhkwefUc2j4ZEXtcGIC_YpuhnQqz9
+ Y5xWevl0NKbRc9r2HO39Hwvnt_5xIFYBg_92QFP0lkBbH4NOiDLSl5bjk1cTmT.TIuXnrYmQgUDM
+ zxkTBGgKf2eNV.5WUejrf.47YYfZra7PXXwt.OB8SJPCkePoxI3VGh68YWnhfPgo8CkK8rt3Ph6Y
+ ik02cfNkUTos.on5tXGBttpJ2zz59EO7Q18YnoveZMiQ08x8pxVFHhzH9kJtxnP9cuTE7kc9hEEw
+ 7CAL3P9eFM8yDpbhXQW0vF4CanlUTxo.Tlz6_fBVKCBPrPqKKRZw7tRhVX6duuMiYuEbFq42CkXc
+ ii_vc_p.tx5H7ezWcuJ25uSp1cQUMqSZsp_sxfi.luRixS8zGA0jsfrV7lGsnhsb0S7HY0x8mbCA
+ 3NdjsSeEzkZgSL6LEampt9U8fVlboyle898cJIXSsIR7lYIdrTReG4XJBD8MF5yJynR7F07n50yo
+ HfHNT3Pn8WLKGGX0pAoL4_GEZ7quAL1h6uU4m3XbUe02QtkR4zTDZe0t_E2dcYSBNpUNAhJdsh0x
+ nWIgqMtUMXNfEXP2Con4CncZDcvQ4P3nJSgxIXsyGXnUZzS5ZOnCuIORh2JOB1NfzyUDHAtEbkmr
+ b0cEPVKdMG1.dZ4WYTTWnj.mSwKf.FoS24DmQx5fjVjLDhlYhwf7mATf.CNxoCpCOquSv3.KOFIC
+ ABdeVCbZBGS35Ts9d_V5CF8.aE8r6Gg2_QCh1jtBBfqXGAGdRvju.d1gRDgMHAUuctjSGZMZGqV3
+ 9XHZJN7BLfEc9H8e4pcAb.q3wnhAFgSP9KsFhpswznoVy91RUCr0szBMxxziM0akbncZuqFsJ9qW
+ C2qZxTxcqcLmAcliUcrXRKgu1rGdjpttufgQ5gVwskIyaPDokwDI4FEAnRB6O69j..MBdWbucWAR
+ opOS.dlGnchQhL6ekR57mK18ShHjfnftvJNaTxxy.QLzYnBwjanfVmubb3eUJXENxMHhc_Qdg.R1
+ sU0WVwCXq53OzAc8EA0FF3evDH083e.uvryZ_95E64DrgvPPTJNP5NUsD817L2NOET8aZfAokuql
+ KX3rL93yVraQOgRSxb9.F15QhZY2REjlr9j.z2zpliKdiFV6mXiGdfoM3GB2vDsK4ElVHOWi.5kB
+ YLyPKSfrGF24H42Gs4UHXjKPCCpiuI0bayXIgjZEpb1IRkxtW9rE955T7XKfuLC99TEhhfBaMEHE
+ FdwJti0DO_AH5UmiczdyBmABoP6F4gtxbJyBHtqeYFo1._dAPpb1Eb5je4KDB83ou1c3GqX7Co9l
+ 9oBpwcREqVNgybBPZCcEOvGtNbLiiXw7vYL9rbVSkzsdi6qw6nvuuEvfFDsFtoFGC_Gp041KbYFH
+ QUCoAhIyCxm5ppExJ7a1S2IeaWj9__zyKvxLNX8OhQMKDk0DfarA-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.ne1.yahoo.com with HTTP; Thu, 27 Aug 2020 07:39:23 +0000
+Date:   Thu, 27 Aug 2020 07:39:21 +0000 (UTC)
+From:   Mrs m compola <visacarddapartbf@gmail.com>
+Reply-To: mrs.mcompola333@gmail.com
+Message-ID: <1168566880.8332029.1598513961274@mail.yahoo.com>
+Subject: Dear Friend, My present internet connection is very slow in case
+ you
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200821071644.109970-32-lee.jones@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <1168566880.8332029.1598513961274.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16455 YMailNodin Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There has been no attempt to document any of the function parameters here.
 
-Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wireless/ath/wil6210/wil_platform.c:27: warning: Function parameter or member 'dev' not described in 'wil_platform_init'
- drivers/net/wireless/ath/wil6210/wil_platform.c:27: warning: Function parameter or member 'ops' not described in 'wil_platform_init'
- drivers/net/wireless/ath/wil6210/wil_platform.c:27: warning: Function parameter or member 'rops' not described in 'wil_platform_init'
- drivers/net/wireless/ath/wil6210/wil_platform.c:27: warning: Function parameter or member 'wil_handle' not described in 'wil_platform_init'
+Dear Friend, My present internet connection is very slow in case you
+received my email in your spam
 
-Cc: Maya Erez <merez@codeaurora.org>
-Cc: Kalle Valo <kvalo@codeaurora.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linux-wireless@vger.kernel.org
-Cc: wil6210@qti.qualcomm.com
-Cc: netdev@vger.kernel.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/net/wireless/ath/wil6210/wil_platform.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+How are you today?.With due respect to your person and much sincerity
+of purpose,Well it is a pleasure to contact you on this regard and i
+pray that this will turn out to be everlasting relationship for both
+of us. However it's just my urgent need for a Foreign partner that
+made me to contact you for this Transaction,I got your contact from
+internet, while searching for a reliable someone that I can go into
+partnership with. I am Mrs.mcompola, from BURKINA FASO, West
+Africa .Presently i work in the Bank as bill and exchange manager.
 
-diff --git a/drivers/net/wireless/ath/wil6210/wil_platform.c b/drivers/net/wireless/ath/wil6210/wil_platform.c
-index 10e10dc9fedfb..e152dc29d177b 100644
---- a/drivers/net/wireless/ath/wil6210/wil_platform.c
-+++ b/drivers/net/wireless/ath/wil6210/wil_platform.c
-@@ -15,8 +15,7 @@ void wil_platform_modexit(void)
- {
- }
- 
--/**
-- * wil_platform_init() - wil6210 platform module init
-+/* wil_platform_init() - wil6210 platform module init
-  *
-  * The function must be called before all other functions in this module.
-  * It returns a handle which is used with the rest of the API
--- 
-2.25.1
+I have the opportunity of transferring the left over fund $5.4 Million
+us dollars of one of my Bank clients who died in the collapsing of the
+world trade center on september 11th 2001.I have placed this fund to
+and escrow account without name of beneficiary.i will use my position
+here in the bank to effect a hitch free transfer of the fund to your
+bank account and there will be no trace.
+
+I agree that 40% of this money will be for you as my foriegn
+partner,50% for me while 10% will be for the expenses that will occur
+in this transaction .If you are really interested in my proposal
+further details of the Transfer will be forwarded unto you as soon as
+I receive your willingness mail for successful transfer.
+
+Yours Faithfully,
+mrs.mcompola333@gmail.com
