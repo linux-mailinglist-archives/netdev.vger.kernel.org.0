@@ -2,82 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2B022543E6
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 12:40:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBDF92543F8
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 12:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728072AbgH0Kj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 06:39:58 -0400
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:3549 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727066AbgH0Kj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 06:39:56 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 893285C1741;
-        Thu, 27 Aug 2020 18:39:53 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, marcelo.leitner@gmail.com
-Subject: [PATCH net-next 2/2] openvswitch: using ip6_fragment in ipv6_stub
-Date:   Thu, 27 Aug 2020 18:39:52 +0800
-Message-Id: <1598524792-30597-3-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1598524792-30597-1-git-send-email-wenxu@ucloud.cn>
-References: <1598524792-30597-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZSkoZSB0fHkoYQ00fVkpOQkNOSU9MQkhNS0xVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVKS0tZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NAw6HBw*ET4CERkuDAMpHzIB
-        TTIKC09VSlVKTkJDTklPTEJITElKVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUlJQ0M3Bg++
-X-HM-Tid: 0a742f80a2e92087kuqy893285c1741
+        id S1726826AbgH0KpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 06:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726851AbgH0Ko7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 06:44:59 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87C50C061264;
+        Thu, 27 Aug 2020 03:44:58 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id x7so4911198wro.3;
+        Thu, 27 Aug 2020 03:44:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jHZbJ00C/f1K1DaZMLb0eY9W+8FWEJIJdHMmXmrVo2E=;
+        b=CWltxGSqJqTnBvTSqb044t2/wgwetRPVnoGQy++DNRNCyk2xQLZOMzxwDszpWyIMJO
+         2UnJmIQpyDzlX2SsQo6KZUeIr4gB5+gCrxEgFrwNWAAe/75o7PMcNI0u65YjG9YG6ODH
+         njANnMzoXh7jMcj7ZyfAyhMG12cWr+EXjyn70VNNUr3yXFGxxY6qg7GnmKH+B9u3xn/U
+         WKiUgbgzYFBxrLqgKSvDhdRXg0Y0dwRMLrkX20F3xIqpiWw+wAw3CpO2POWq2m/ACM1d
+         pTcLwlz5FB5JaFIHz4nrDrI4aWrOUp3ueVsWSo+3Om8ulic6d893MVSHuV5kUDd3kOxt
+         c7aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jHZbJ00C/f1K1DaZMLb0eY9W+8FWEJIJdHMmXmrVo2E=;
+        b=OSCJQAVR8f+kpb6cdQrdTzTV34zbkfNxUKT8ZF6krSa1Gq07gtuY9srT6Xy5Da/zGS
+         WphTRjBnmXZC3+sEvNbhEx8f0hU76D/sNTd2yrjn+AodQkX8Uiqc7DFSrdN8AZ6lqSHf
+         wq5bA6s2X8f0a64CsRbxAuhBS+ZKPQHuH4Goe4lvhTrFUn8Nqbz+ZYOWatfxmUOdhL8c
+         l802GB1FB+g2vGYDXTt3o457VpjDyJw8MREHc7cVsRIccH22M/ESsj5uhBKfZ8k/86jG
+         YH3LYoYYKbyEs4QQNU8/fRDB9YlXWwdSI8oPhzf+7xpBqi4K6zNQnzMFsE0t8yapRjRH
+         jtOQ==
+X-Gm-Message-State: AOAM530LQddgZitI/PcVQvU3Yimx91Q3iqAYkTDTuZdCHXj06rxutHdX
+        adLNa9yEcSnJb8Y5f+EMevNFeZA5WzKLeqpMz/Y=
+X-Google-Smtp-Source: ABdhPJx/nnMNZzdz51vNTwqRRAqSdXIEeo5csO5i7hm5GF700/WOBx/88e08iEWcI7Y3UO4eC2wffxgx1/oGC+i/voc=
+X-Received: by 2002:adf:f483:: with SMTP id l3mr6596174wro.148.1598525097155;
+ Thu, 27 Aug 2020 03:44:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200817090637.26887-2-allen.cryptic@gmail.com> <20200827101540.6589BC433CB@smtp.codeaurora.org>
+In-Reply-To: <20200827101540.6589BC433CB@smtp.codeaurora.org>
+From:   Allen Pais <allen.cryptic@gmail.com>
+Date:   Thu, 27 Aug 2020 16:14:45 +0530
+Message-ID: <CAEogwTB=S6M6Xp4w5dd_W3b6Depmn6Gmu3RmAf96pRankoJQqg@mail.gmail.com>
+Subject: Re: [PATCH 01/16] wireless: ath5k: convert tasklets to use new
+ tasklet_setup() API
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, jirislaby@kernel.org,
+        mickflemm@gmail.com, mcgrof@kernel.org, chunkeey@googlemail.com,
+        Larry.Finger@lwfinger.net, stas.yakovlev@gmail.com,
+        helmut.schaa@googlemail.com, pkshih@realtek.com,
+        yhchuang@realtek.com, dsd@gentoo.org, kune@deine-taler.de,
+        Kees Cook <keescook@chromium.org>, ath11k@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, b43-dev@lists.infradead.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, Allen Pais <allen.lkml@gmail.com>,
+        Romain Perier <romain.perier@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+Hi,
+>
+> Allen Pais <allen.cryptic@gmail.com> wrote:
+>
+> > In preparation for unconditionally passing the
+> > struct tasklet_struct pointer to all tasklet
+> > callbacks, switch to using the new tasklet_setup()
+> > and from_tasklet() to pass the tasklet pointer explicitly.
+> >
+> > Signed-off-by: Romain Perier <romain.perier@gmail.com>
+> > Signed-off-by: Allen Pais <allen.lkml@gmail.com>
+> > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+>
+> Patch applied to ath-next branch of ath.git, thanks.
+>
+> c068a9ec3c94 ath5k: convert tasklets to use new tasklet_setup() API
+>
+> --
+> https://patchwork.kernel.org/patch/11717393/
+>
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-Using ipv6_stub->ipv6_fragment to avoid the netfilter dependency
+Could you please drop these and wait for V2. A change was proposed
+for from_tasklet() api. The new API should be picked shortly. I will send out
+the updated version early next week.
 
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
- net/openvswitch/actions.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 2611657..1f3d406 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -9,7 +9,6 @@
- #include <linux/in.h>
- #include <linux/ip.h>
- #include <linux/openvswitch.h>
--#include <linux/netfilter_ipv6.h>
- #include <linux/sctp.h>
- #include <linux/tcp.h>
- #include <linux/udp.h>
-@@ -848,11 +847,10 @@ static void ovs_fragment(struct net *net, struct vport *vport,
- 		ip_do_fragment(net, skb->sk, skb, ovs_vport_output);
- 		refdst_drop(orig_dst);
- 	} else if (key->eth.type == htons(ETH_P_IPV6)) {
--		const struct nf_ipv6_ops *v6ops = nf_get_ipv6_ops();
- 		unsigned long orig_dst;
- 		struct rt6_info ovs_rt;
- 
--		if (!v6ops)
-+		if (!ipv6_stub->ipv6_fragment)
- 			goto err;
- 
- 		prepare_frag(vport, skb, orig_network_offset,
-@@ -866,7 +864,7 @@ static void ovs_fragment(struct net *net, struct vport *vport,
- 		skb_dst_set_noref(skb, &ovs_rt.dst);
- 		IP6CB(skb)->frag_max_size = mru;
- 
--		v6ops->fragment(net, skb->sk, skb, ovs_vport_output);
-+		ipv6_stub->ipv6_fragment(net, skb->sk, skb, ovs_vport_output);
- 		refdst_drop(orig_dst);
- 	} else {
- 		WARN_ONCE(1, "Failed fragment ->%s: eth=%04x, MRU=%d, MTU=%d.",
--- 
-1.8.3.1
-
+Thanks,
+- Allen
