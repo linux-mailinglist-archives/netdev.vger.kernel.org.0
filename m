@@ -2,225 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91C85253D50
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 07:45:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C4DA253D6C
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 08:06:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbgH0FpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 01:45:17 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:51617 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726939AbgH0FpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 01:45:17 -0400
-Received: by mail-io1-f71.google.com with SMTP id g6so2937003ioc.18
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 22:45:16 -0700 (PDT)
+        id S1727061AbgH0GF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 02:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726098AbgH0GF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 02:05:57 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA218C061247;
+        Wed, 26 Aug 2020 23:05:56 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id g6so5041811ljn.11;
+        Wed, 26 Aug 2020 23:05:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QrZ0fUUzpXVOWSAGCDeCT9RjODjg2DLDcxcKB9h7i2g=;
+        b=K9ivd9KQnV9NUYRz8mj5X/cPijNctJe6sv2ndwZaKFwf0Tsk3F2GnSMlC6iGviaXSF
+         v7Ri/8hM100UNGhr4TkCyuZ1PA7cSr+R78KEqYV6Khs1uIpPCKVr5c2bpbC8QZ9Xqa+M
+         ZtMwzFnuSQ3M8i/XA2fzItK2MLoztr+m7y4/nbcdq7/OkDXrcBlnUUO3OsfGBSJK3Mii
+         kICHQOxaksptI84o8wd/Cmfh+thlvCwhNmZRe6wEZIs/wqrO9cTTZA95hxQ/XKmSoUu7
+         SAvHBTwbjFhMRzbE/1w5Hf2DS0XCf793zRCgMnxgPWvTZN0tEesSZiLVzN9k6sID3IJK
+         OYTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=AOnJK58KWAgjckYsBB0yMrRGuMXnsjy16cofVkiVrV0=;
-        b=jxtIiyome9sBOmM5BpLe1YfMvEgkNus1Wi5l9xp/Juevnh0jTRNdD4RliUuFzevpV6
-         7d7VCxY4DMXXKB7KhDSsTfGWVrfZl40YcXi58ES6aToQlWvRxE8QMd7hzn51f0ydxYp/
-         i0oX4N4AfRK4xjYWZwxyYX3FzustoWqn5wb64SYdLImcl0w/UthX4q82CBDrUIr81Bun
-         2U/42rIo+ksBfKIL6X8Xdn99a2uQSRTSUGPmR6T2vAbuJ6v2uGWMjROEQZCNnV66TPRn
-         tcwyR7tTKGS6J2coofPgYGQC45mPn4k5SUTIT78dOXFQI3CpbnE70Rx7iArHX12zJQZs
-         Rkiw==
-X-Gm-Message-State: AOAM530asmORfqmD9TZg3AGW6ZaCYpx/P/vEtNS5ThWu/T6JmOE2rwXL
-        mnjnIbdi46eYRhuxmoIMs30R6bgKt7PKdyiq55qdcjoDGdNO
-X-Google-Smtp-Source: ABdhPJxVMcCYi0n2+hu7wGOwaonrfV3/g00xVzHNfTVQoH598Vl+9+Fsj+Bky7V9IUFN4v3+QRE+q7R2RWPfZiXwmddgVt6jiWhW
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QrZ0fUUzpXVOWSAGCDeCT9RjODjg2DLDcxcKB9h7i2g=;
+        b=R4q7nMMaohWMIuXT6WL1rYJTAp+npLR52M4YlG+rO8txjf5FzuUQXPbcBiWdnjZdEB
+         WE4/fpjwUbl1haa7R7Iqpv6sCT/lqrLKxUZWlkUrddg77GwJtZ7p3qyFI/dEU7bXpNqR
+         4sTujBH3W0H3MhNt2wcDxNmueLZvbdw8P8RRGIgY5TM9tj6zsBwio66PU4Lhb5M+uG9b
+         s7J4NWrqEQN1OQOus9Kegmav+atxj+ToVKRVcK8kRvDq49oot0cZfsOHhdEdkT1tlG4Y
+         YMJ0t6TFImZA/JmBZWt4GUTJX6HYFrSYOBueTjParJIsHqmbuVB2vvZYl9g4elD5oZ8N
+         B81g==
+X-Gm-Message-State: AOAM530ZAXbSImYSO9r0tZyW3bVIfQw5cj+Kjy3zwyoOonD5ahGH16l+
+        +yF6rPBAF8wRo7/Hd1nYHG4=
+X-Google-Smtp-Source: ABdhPJzJdF5HeE/tNfW3u5lrITEF7kT3nKactdsTfmEV5/+TXuNOvl7upSmRQf/KlcJqowbEX1TUMg==
+X-Received: by 2002:a05:651c:88:: with SMTP id 8mr9355110ljq.277.1598508355389;
+        Wed, 26 Aug 2020 23:05:55 -0700 (PDT)
+Received: from localhost.localdomain (109-252-170-211.dynamic.spd-mgts.ru. [109.252.170.211])
+        by smtp.gmail.com with ESMTPSA id z7sm255295lfc.59.2020.08.26.23.05.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Aug 2020 23:05:54 -0700 (PDT)
+From:   Dmitry Osipenko <digetx@gmail.com>
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/4] Fixes and improvements for brcmfmac driver
+Date:   Thu, 27 Aug 2020 09:04:37 +0300
+Message-Id: <20200827060441.15487-1-digetx@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:c71:: with SMTP id f17mr15347923ilj.98.1598507115751;
- Wed, 26 Aug 2020 22:45:15 -0700 (PDT)
-Date:   Wed, 26 Aug 2020 22:45:15 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000ce2f6d05add5705a@google.com>
-Subject: BUG: stack guard page was hit in __zone_watermark_ok
-From:   syzbot <syzbot+144d1f35995353c5779c@syzkaller.appspotmail.com>
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        hawk@kernel.org, jiri@mellanox.com, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@chromium.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        roopa@cumulusnetworks.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello!
 
-syzbot found the following issue on:
+Recently I was debugging WiFi performance problems on Acer A500 tablet
+device that got upstreamed recently. This is an older Android device from
+2011-2012 that is powered by NVIDIA Tegra20 SoC and it has BCM4329 chip
+that provides WiFi (SDIO) and Bluetooth (UART). I noticed that WiFi
+throughput on a recent Linux kernel wasn't as great as it could be in
+comparison to older 3.18 kernel that is uses downstream BCMDHD driver
+and this series fixes a major part of the problems that I found.
 
-HEAD commit:    85eb5bc3 net: atheros: switch from 'pci_' to 'dma_' API
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=14e32139900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a0437fdd630bee11
-dashboard link: https://syzkaller.appspot.com/bug?extid=144d1f35995353c5779c
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+Found problems:
 
-Unfortunately, I don't have any reproducer for this issue yet.
+1. The WiFi SDIO pinmux configuration had a bug in Acer A500 device-tree
+   and MMC refused to work if it was clocked above 25MHz and legacy
+   signaling mode was used. After fixing the bug, WiFi SDIO works perfectly
+   well at 50MHz and this increases TX throughput by 5-10 Mbit/s. I already
+   sent out patches that fix this bug to the Tegra ML.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+144d1f35995353c5779c@syzkaller.appspotmail.com
+2. There are occasional SDHCI CRC errors if SDIO is clocked above 25Mhz.
+   The "increase F2 watermark" patch fixes this problem.
 
-BUG: stack guard page was hit at 00000000b2f481cf (stack is 000000009cbf9546..0000000099742d14)
-kernel stack overflow (double-fault): 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 29993 Comm: syz-executor.4 Not tainted 5.9.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:instrument_atomic_read include/linux/instrumented.h:56 [inline]
-RIP: 0010:atomic64_read include/asm-generic/atomic-instrumented.h:837 [inline]
-RIP: 0010:atomic_long_read include/asm-generic/atomic-long.h:29 [inline]
-RIP: 0010:zone_page_state include/linux/vmstat.h:217 [inline]
-RIP: 0010:__zone_watermark_unusable_free mm/page_alloc.c:3508 [inline]
-RIP: 0010:__zone_watermark_ok+0x23f/0x3f0 mm/page_alloc.c:3529
-Code: c4 28 31 c0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 49 8d bc 24 98 06 00 00 be 08 00 00 00 4c 89 4c 24 20 4c 89 54 24 18 89 54 24 10 <4c> 89 44 24 08 48 89 3c 24 e8 33 78 08 00 48 8b 3c 24 48 b8 00 00
-RSP: 0018:ffffc900169f7ff0 EFLAGS: 00010046
-RAX: dffffc0000000000 RBX: 0000000000000001 RCX: 0000000000000001
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88812fffc498
-RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000001 R12: ffff88812fffbe00
-R13: 0000000000000040 R14: 0000000000000002 R15: 0000000000000000
-FS:  00007f98bc4db700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffc900169f7fe8 CR3: 00000002063a9000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- zone_watermark_fast mm/page_alloc.c:3612 [inline]
- get_page_from_freelist+0x102f/0x37f0 mm/page_alloc.c:3785
- __alloc_pages_slowpath.constprop.0+0x322/0x2860 mm/page_alloc.c:4592
- __alloc_pages_nodemask+0x62c/0x790 mm/page_alloc.c:4901
- __alloc_pages include/linux/gfp.h:509 [inline]
- __alloc_pages_node include/linux/gfp.h:522 [inline]
- kmem_getpages mm/slab.c:1376 [inline]
- cache_grow_begin+0x71/0x430 mm/slab.c:2590
- cache_alloc_refill+0x27b/0x340 mm/slab.c:2962
- ____cache_alloc mm/slab.c:3045 [inline]
- ____cache_alloc mm/slab.c:3028 [inline]
- slab_alloc_node mm/slab.c:3241 [inline]
- kmem_cache_alloc_node_trace+0x3de/0x400 mm/slab.c:3592
- __do_kmalloc_node mm/slab.c:3614 [inline]
- __kmalloc_node_track_caller+0x38/0x60 mm/slab.c:3629
- __kmalloc_reserve net/core/skbuff.c:142 [inline]
- __alloc_skb+0xae/0x550 net/core/skbuff.c:210
- alloc_skb include/linux/skbuff.h:1085 [inline]
- nlmsg_new include/net/netlink.h:944 [inline]
- rtmsg_ifinfo_build_skb+0x72/0x1a0 net/core/rtnetlink.c:3804
- rtmsg_ifinfo_event net/core/rtnetlink.c:3840 [inline]
- rtmsg_ifinfo_event net/core/rtnetlink.c:3831 [inline]
- rtnetlink_event+0x123/0x1d0 net/core/rtnetlink.c:5614
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
- call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
- call_netdevice_notifiers net/core/dev.c:2059 [inline]
- netdev_features_change net/core/dev.c:1444 [inline]
- netdev_sync_lower_features net/core/dev.c:9371 [inline]
- __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
- netdev_change_features+0x61/0xb0 net/core/dev.c:9574
- bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
- bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
- call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
- call_netdevice_notifiers net/core/dev.c:2059 [inline]
- netdev_features_change net/core/dev.c:1444 [inline]
- netdev_sync_lower_features net/core/dev.c:9371 [inline]
- __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
- netdev_change_features+0x61/0xb0 net/core/dev.c:9574
- bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
- bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
- call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
- call_netdevice_notifiers net/core/dev.c:2059 [inline]
- netdev_features_change net/core/dev.c:1444 [inline]
- netdev_sync_lower_features net/core/dev.c:9371 [inline]
- __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
- netdev_change_features+0x61/0xb0 net/core/dev.c:9574
- bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
- bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
- call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
- call_netdevice_notifiers net/core/dev.c:2059 [inline]
- netdev_features_change net/core/dev.c:1444 [inline]
- netdev_sync_lower_features net/core/dev.c:9371 [inline]
- __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
- netdev_change_features+0x61/0xb0 net/core/dev.c:9574
- bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
- bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
- call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
- call_netdevice_notifiers net/core/dev.c:2059 [inline]
- netdev_features_change net/core/dev.c:1444 [inline]
- netdev_sync_lower_features net/core/dev.c:9371 [inline]
- __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
- netdev_change_features+0x61/0xb0 net/core/dev.c:9574
- bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
- bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
- call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
- call_netdevice_notifiers net/core/dev.c:2059 [inline]
- netdev_features_change net/core/dev.c:1444 [inline]
- netdev_sync_lower_features net/core/dev.c:9371 [inline]
- __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
- netdev_change_features+0x61/0xb0 net/core/dev.c:9574
- bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
- bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
- call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
- call_netdevice_notifiers net/core/dev.c:2059 [inline]
- netdev_features_change net/core/dev.c:1444 [inline]
- netdev_sync_lower_features net/core/dev.c:9371 [inline]
- __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
- netdev_change_features+0x61/0xb0 net/core/dev.c:9574
- bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
- bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
- bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
- call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
- call_netdevice_notifiers net/core/dev.c:2059 [inline]
- netdev_features_change net/core/dev.c:1444 [inline]
- netdev_sync_lower_features net/core/dev.c:9371 [inline]
- __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
- netdev_change_features+0x61/0xb0 net/core/dev.c:9574
-Lost 504 message(s)!
----[ end trace 99fc362a1b5e94a8 ]---
-RIP: 0010:instrument_atomic_read include/linux/instrumented.h:56 [inline]
-RIP: 0010:atomic64_read include/asm-generic/atomic-instrumented.h:837 [inline]
-RIP: 0010:atomic_long_read include/asm-generic/atomic-long.h:29 [inline]
-RIP: 0010:zone_page_state include/linux/vmstat.h:217 [inline]
-RIP: 0010:__zone_watermark_unusable_free mm/page_alloc.c:3508 [inline]
-RIP: 0010:__zone_watermark_ok+0x23f/0x3f0 mm/page_alloc.c:3529
-Code: c4 28 31 c0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 49 8d bc 24 98 06 00 00 be 08 00 00 00 4c 89 4c 24 20 4c 89 54 24 18 89 54 24 10 <4c> 89 44 24 08 48 89 3c 24 e8 33 78 08 00 48 8b 3c 24 48 b8 00 00
-RSP: 0018:ffffc900169f7ff0 EFLAGS: 00010046
-RAX: dffffc0000000000 RBX: 0000000000000001 RCX: 0000000000000001
-RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88812fffc498
-RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000001 R12: ffff88812fffbe00
-R13: 0000000000000040 R14: 0000000000000002 R15: 0000000000000000
-FS:  00007f98bc4db700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffc900169f7fe8 CR3: 00000002063a9000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+3. WiFi TX throughput is lower by 10 Mbit/s than it should be using 512B
+   for maximum F2 SDIO block size. Reducing block size to 128B fixes this
+   problem. The "set F2 SDIO block size to 128 bytes" patch addresses this
+   issue. The exact reason why 128B is more efficient than 512B is unknown,
+   this optimization is borrowed from the BCMDHD driver.
 
+4. While I was bisecting upstream kernel, I found that WiFi RX/TX throughput
+   dropped by 5-10 Mbit/s after 5.2 kernel and reverting the following commit
+   from linux-next resolves the problem:
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+   commit c07a48c2651965e84d35cf193dfc0e5f7892d612
+   Author: Adrian Hunter <adrian.hunter@intel.com>
+   Date:   Fri Apr 5 15:40:20 2019 +0300
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+       mmc: sdhci: Remove finish_tasklet
+
+   I'll send a separate email for discussing this problem.
+
+After fixing all the above problems, I'm now getting a solid 40 Mbit/s
+up/down on Acer A500 on a recent linux-next in comparison to 15 Mbit/s
+that I was getting before the fixes.
+
+Big thanks to Wright Feng who helped me to find and fix some of the problems!
+
+Changelog:
+
+v2: - Added "drop chip id from debug messages" as was requested by
+      Arend Van Spriel in the review comment to v1 of the "increase F2
+      watermark" patch.
+
+    - Added patches that remove unnecessary "fallthrough" comments and
+      change F2 SDIO block size to 128 bytes for BCM4329.
+
+Dmitry Osipenko (4):
+  brcmfmac: increase F2 watermark for BCM4329
+  brcmfmac: drop unnecessary "fallthrough" comments
+  brcmfmac: drop chip id from debug messages
+  brcmfmac: set F2 SDIO block size to 128 bytes for BCM4329
+
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c | 6 ++++--
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c   | 7 +++----
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+-- 
+2.27.0
+
