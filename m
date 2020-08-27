@@ -2,78 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF10F25415D
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 11:00:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27EB225415E
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 11:00:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727935AbgH0JAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 05:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726938AbgH0JAo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 05:00:44 -0400
-Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09680C061264
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 02:00:44 -0700 (PDT)
-Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1kBDlv-0000bj-MH; Thu, 27 Aug 2020 11:00:39 +0200
-Received: from laforge by localhost.localdomain with local (Exim 4.94)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1kBDli-000eOm-GJ; Thu, 27 Aug 2020 11:00:26 +0200
-Date:   Thu, 27 Aug 2020 11:00:26 +0200
-From:   Harald Welte <laforge@gnumonks.org>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     netdev@vger.kernel.org, osmocom-net-gprs@lists.osmocom.org,
-        Gabriel Ganne <gabriel.ganne@6wind.com>, kuba@kernel.org,
-        davem@davemloft.net, pablo@netfilter.org
-Subject: Re: [PATCH net-next v2] gtp: add notification mechanism
-Message-ID: <20200827090026.GK130874@nataraja>
-References: <20200825143556.23766-1-nicolas.dichtel@6wind.com>
- <20200825155715.24006-1-nicolas.dichtel@6wind.com>
- <20200825170109.GH3822842@nataraja>
- <bd834ad7-b06e-69f0-40a6-5f4a21a1eba2@6wind.com>
- <20200826185202.GZ3739@nataraja>
- <0e2c4c04-a6dc-d081-2bdd-09f8d78607c4@6wind.com>
+        id S1727048AbgH0JAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 05:00:48 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42496 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726851AbgH0JAo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 05:00:44 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 3538FAD29;
+        Thu, 27 Aug 2020 09:01:15 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id E40C8603FB; Thu, 27 Aug 2020 11:00:42 +0200 (CEST)
+Date:   Thu, 27 Aug 2020 11:00:42 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH ethtool v2] netlink: Print and return an error when
+ features weren't changed
+Message-ID: <20200827090042.jgwp6q6bo7zdnew7@lion.mk-sys.cz>
+References: <20200825081138.10855-1-maximmi@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="gzohhcrt3heapi2j"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0e2c4c04-a6dc-d081-2bdd-09f8d78607c4@6wind.com>
+In-Reply-To: <20200825081138.10855-1-maximmi@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nicolas,
 
-On Thu, Aug 27, 2020 at 12:36:24AM +0200, Nicolas Dichtel wrote:
-> Le 26/08/2020 à 20:52, Harald Welte a écrit :
+--gzohhcrt3heapi2j
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> > Wouldn't it make sense to only allocate + fill those messages if we
-> > actually knew a subscriber existed?
->
-> In fact, this is actually how the netlink framework works.
+On Tue, Aug 25, 2020 at 11:11:38AM +0300, Maxim Mikityanskiy wrote:
+> The legacy ethtool prints an error message and returns 1 if no features
+> were changed as requested. Port this behavior to ethtool-netlink.
+> req_mask is compared to wanted_mask to detect if any feature was
+> changed. If these masks are equal, it means that the kernel hasn't
+> changed anything, and all bits got to wanted.
+>=20
+> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 
-Well, as you can tell from my responses, I've not been doing kernel work
-for a decade now, so I'm looking at things from a more distant and
-ignorant perspective.  To me it seems odd to allocate memory and copy
-data to it (cache misses, ...) if nobody every requested that data, and
-nobody will ever use it.  But if this is how it is supposed to work,
-then I will of course defer to that.  All netlink would have to expose
-is a function that returns whether or not there are any subscribers
-to the given multicast group.  Then all of the allocation +
-initialization would disappear in a branch that is not executed most of
-the time, at least for current, existing gtpnl systems.  Yes, that means
-one more branch, of course.  But that branch will happen later on
-anyway, event today: Only after the allocation + initialization.
+Applied, thank you.
 
-So having said the above, if this is how it is supposed to work with
-netlink:
+Michal
 
-Acked-by: Harald Welte <laforge@gnumonks.org>
+> ---
+>  netlink/features.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/netlink/features.c b/netlink/features.c
+> index 133529d..7622594 100644
+> --- a/netlink/features.c
+> +++ b/netlink/features.c
+> @@ -243,6 +243,7 @@ int nl_gfeatures(struct cmd_context *ctx)
+>  /* FEATURES_SET */
+> =20
+>  struct sfeatures_context {
+> +	bool			nothing_changed;
+>  	uint32_t		req_mask[0];
+>  };
+> =20
+> @@ -411,10 +412,14 @@ static void show_feature_changes(struct nl_context =
+*nlctx,
+>  	if (!wanted_val || !wanted_mask || !active_val || !active_mask)
+>  		goto err;
+> =20
+> +	sfctx->nothing_changed =3D true;
+>  	diff =3D false;
+> -	for (i =3D 0; i < words; i++)
+> +	for (i =3D 0; i < words; i++) {
+> +		if (wanted_mask[i] !=3D sfctx->req_mask[i])
+> +			sfctx->nothing_changed =3D false;
+>  		if (wanted_mask[i] || (active_mask[i] & ~sfctx->req_mask[i]))
+>  			diff =3D true;
+> +	}
+>  	if (!diff)
+>  		return;
+> =20
+> @@ -520,6 +525,10 @@ int nl_sfeatures(struct cmd_context *ctx)
+>  	if (ret < 0)
+>  		return 92;
+>  	ret =3D nlsock_process_reply(nlsk, sfeatures_reply_cb, nlctx);
+> +	if (sfctx->nothing_changed) {
+> +		fprintf(stderr, "Could not change any device features\n");
+> +		return nlctx->exit_code ?: 1;
+> +	}
+>  	if (ret =3D=3D 0)
+>  		return 0;
+>  	return nlctx->exit_code ?: 92;
+> --=20
+> 2.20.1
+>=20
 
--- 
-- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-============================================================================
-"Privacy in residential applications is a desirable marketing option."
-                                                  (ETSI EN 300 175-7 Ch. A6)
+--gzohhcrt3heapi2j
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl9HdjUACgkQ538sG/LR
+dpXwmQgAsM9/lMcEf9uFiGhMWCc2vOWnk//AUnJM2BYJcCmcJ1V9/jCOV690IUlV
+HWUfPxqJkQ7r9dbo6G/qJRTJyhq6BG/yZ4lIUO5YtAp7scYAE2lqwbaYjm/nbw1l
+R4/NjmfKRgNwPasKueaoRdTebf8kLEpyESgJQWTG+u0u3u5x/tXIrIPQc6k7rZAg
+NMdWVaY5CyPF/QRAi/HlNPJq7s5mP6Ehza6C91DzLi9DtRG9W8ty4x2SCiO2SdTT
++On9fTj1U+bAkXdlzyVN8rCmq/MJMIQyAsmLUbgPg+dnTJwzdwGsWMiKsmNcaleG
+2iEiuRIJxk5wISG52N5hgDDzOlTvSw==
+=S9KP
+-----END PGP SIGNATURE-----
+
+--gzohhcrt3heapi2j--
