@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA403253D6D
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 08:06:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 950EB253D6A
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 08:06:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727843AbgH0GGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 02:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35476 "EHLO
+        id S1727124AbgH0GGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 02:06:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727041AbgH0GF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 02:05:59 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0E8C061247;
-        Wed, 26 Aug 2020 23:05:58 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id k10so2286152lfm.5;
-        Wed, 26 Aug 2020 23:05:58 -0700 (PDT)
+        with ESMTP id S1727077AbgH0GGA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 02:06:00 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7655C06124F;
+        Wed, 26 Aug 2020 23:05:59 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id f26so5043834ljc.8;
+        Wed, 26 Aug 2020 23:05:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TyfqwcOqzI+LTCqOQsnVyQ4MKkXCO8VQFL1cTjyFH+c=;
-        b=B30mTGxXAKNYGRQstG6YWQsAmtZNP5pSXIl9+9PQRuXlC6NlfBRq9rZbMfNllycRnf
-         ExzR9IKBBRZ6JLycWvVYHsrrLIAQ45RSilxX7htvD1bwoSEecwpMQv/EHO/dlWjikyrF
-         Bb5eRAZQ8gwB6UJyZ2SIjgdq/81hBWliDdjdRECF/cme60cmaXHHRyWJ3jnPSwJnxyrB
-         EyCFym+c8dViDd4EdsPHUlFd0+AyTkJDCquy956GGE3oPaisbE6jWCXmKBfovrzdLvt5
-         K2DQCcpzOxIyZJu29J/E4iBMijX/wASVYTrqVL1s2Sdn508vLkjbsnQGcgC0B0Fxy8Pm
-         tuYg==
+        bh=85fBH067dHvKQNq6ek+W6lpUInMb+ZStwZLTCqTuQ3g=;
+        b=LAQCKf7V+H8Hfnb7BZybXxxgLvGGrihgB+KAUY1Tj+kA0EoV35K6aUEb5WXr23Q30Y
+         hQtw6kqLqLfS0UMyLBIXjMRb6LFAC0B6K5YCTROdl24fwAg/MCo3YYfLvyxVRB7IB+7J
+         wANPAygVIyQKATVHjVt3N8pk8TGRgRy3zhmjqvP8lDFVJwf4t4TyKxFoOKZnLzynj/z7
+         B7bKlnDJShUYmmO2QUG4+xGhYSflF8aCg1UvernFWssBdoZoZ2fye3j7rtr7VbvVaqgB
+         eYdTf/1z1wRP0v4UEiR6WOOEwvg/m1OyL9nDEeG+00C+SePaDOODBSGrCt0FHpuPTzFR
+         NZlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TyfqwcOqzI+LTCqOQsnVyQ4MKkXCO8VQFL1cTjyFH+c=;
-        b=Ro1lvOeuLZFq/XOXekrI89+fg2WgM7xpBO8Lagx+dYWg0Xh55GYySpHnfyHcaQ+ywM
-         hdPJliAM6FGQIno1V7cvaTX0GQjqEuTylNK3nCBGszKoKMbBZtCtue+LE6+s21O6uB9s
-         2sE2LmNFjlgSBzuQbO+xvxiAH9ZxbMEKx4Cmt9KeXpDIr7bwcTk7WB79L/XwakZfkqqR
-         cqoNYu7LbsEprBsv5nodu8pLGESR/V30H6h4zCnRLwiYjoabkrQlSpm70BcR46I5dbZ2
-         k9qXkZqaCeThb4kzo7SbEuDB9Tayo+g9RSWMWoIfHibWfz2RBlR83UVqKSZ95KJsbolS
-         EqGA==
-X-Gm-Message-State: AOAM533aAtFA6VoXrELV4sBpV3ZXbS4i1DZBYqRAApHB0UDRD2VQTKf7
-        o+Y9raOO2/QdQmyWOOVGMMEe/d1TdeQ=
-X-Google-Smtp-Source: ABdhPJzSBA/pFB2/PN21Swo9ACb5wJXp06RjoytEa+wAUxh79r1KkvtyljqbTFP1ehYkms+fLBp5WQ==
-X-Received: by 2002:a05:6512:1055:: with SMTP id c21mr9041396lfb.84.1598508357307;
-        Wed, 26 Aug 2020 23:05:57 -0700 (PDT)
+        bh=85fBH067dHvKQNq6ek+W6lpUInMb+ZStwZLTCqTuQ3g=;
+        b=nhZu2+0V97IFijj4d8vdptMZnX3sp2WIrV8OCXYFECW7ykgsLE1WI0OiER9kilKgpm
+         0+C5vrVnztpsU4v7loTyVKJf9QMvKoE8PMtHFihK9s+7ohbMjNVFEsboinntQunMpFd6
+         yP7m9gGEiwTKjn1jWgbEPNP0c/DzGkFhuntaC4yKAMx1caoL7+0NrTVJ0bSAotZeA3UE
+         2yEqDf+T+OKZ33wbthjTNHaXlM7II2896CFZc98OEcoFyv5PYWPjXLJtEjQDjs3U1Wi0
+         pmx7BYGi/eI7TolE/MbRrZ5cDEsXURnaHA9RdIW2/dl9gU3ZeBUTYaVSuJc0hXV5O+yg
+         /gxQ==
+X-Gm-Message-State: AOAM531Iafru935YWn7mcmkgFi8+KfSnura/L0G61XkSvgHKSyn4nbw8
+        hHLT6UMN1gialDSQdhs2PXE=
+X-Google-Smtp-Source: ABdhPJwoOgvB7reSaDGYFu+hqpx2fpi2Z8iky2pgXDkwAHSZ7nlUuSO623t8xrL9U8X11t6Q7cSmdg==
+X-Received: by 2002:a2e:9990:: with SMTP id w16mr8244686lji.156.1598508358235;
+        Wed, 26 Aug 2020 23:05:58 -0700 (PDT)
 Received: from localhost.localdomain (109-252-170-211.dynamic.spd-mgts.ru. [109.252.170.211])
-        by smtp.gmail.com with ESMTPSA id z7sm255295lfc.59.2020.08.26.23.05.56
+        by smtp.gmail.com with ESMTPSA id z7sm255295lfc.59.2020.08.26.23.05.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2020 23:05:56 -0700 (PDT)
+        Wed, 26 Aug 2020 23:05:57 -0700 (PDT)
 From:   Dmitry Osipenko <digetx@gmail.com>
 To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
         Franky Lin <franky.lin@broadcom.com>,
@@ -58,9 +58,9 @@ Cc:     linux-wireless@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
         brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
         linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/4] brcmfmac: drop unnecessary "fallthrough" comments
-Date:   Thu, 27 Aug 2020 09:04:39 +0300
-Message-Id: <20200827060441.15487-3-digetx@gmail.com>
+Subject: [PATCH v2 3/4] brcmfmac: drop chip id from debug messages
+Date:   Thu, 27 Aug 2020 09:04:40 +0300
+Message-Id: <20200827060441.15487-4-digetx@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200827060441.15487-1-digetx@gmail.com>
 References: <20200827060441.15487-1-digetx@gmail.com>
@@ -71,44 +71,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no need to insert the "fallthrough" comment if there is nothing
-in-between of case switches. Hence let's remove the unnecessary comments
-in order to make code cleaner a tad.
+The chip ID was already printed out at the time when debug message about
+the changed F2 watermark is printed, hence let's drop the unnecessary part
+of the debug messages. This cleans code a tad and also allows to re-use
+the F2 watermark debug messages by multiple chips.
 
+Suggested-by: Arend van Spriel <arend.vanspriel@broadcom.com>
 Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c | 2 --
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c   | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-index 1a7ab49295aa..0dc4de2fa9f6 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-@@ -916,9 +916,7 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
- 		f2_blksz = SDIO_4373_FUNC2_BLOCKSIZE;
- 		break;
- 	case SDIO_DEVICE_ID_BROADCOM_4359:
--		/* fallthrough */
- 	case SDIO_DEVICE_ID_BROADCOM_4354:
--		/* fallthrough */
- 	case SDIO_DEVICE_ID_BROADCOM_4356:
- 		f2_blksz = SDIO_435X_FUNC2_BLOCKSIZE;
- 		break;
 diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index ac3ee93a2378..b16944a898f9 100644
+index b16944a898f9..d4989e0cd7be 100644
 --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
 +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -4306,9 +4306,7 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
- 					   CY_43455_MESBUSYCTRL, &err);
+@@ -4280,7 +4280,7 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
  			break;
- 		case SDIO_DEVICE_ID_BROADCOM_4359:
--			/* fallthrough */
- 		case SDIO_DEVICE_ID_BROADCOM_4354:
--			/* fallthrough */
- 		case SDIO_DEVICE_ID_BROADCOM_4356:
- 			brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes\n",
- 				  CY_435X_F2_WATERMARK);
+ 		case SDIO_DEVICE_ID_BROADCOM_4329:
+ 		case SDIO_DEVICE_ID_BROADCOM_4339:
+-			brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes for 4339\n",
++			brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes\n",
+ 				  CY_4339_F2_WATERMARK);
+ 			brcmf_sdiod_writeb(sdiod, SBSDIO_WATERMARK,
+ 					   CY_4339_F2_WATERMARK, &err);
+@@ -4293,7 +4293,7 @@ static void brcmf_sdio_firmware_callback(struct device *dev, int err,
+ 					   CY_4339_MESBUSYCTRL, &err);
+ 			break;
+ 		case SDIO_DEVICE_ID_BROADCOM_43455:
+-			brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes for 43455\n",
++			brcmf_dbg(INFO, "set F2 watermark to 0x%x*4 bytes\n",
+ 				  CY_43455_F2_WATERMARK);
+ 			brcmf_sdiod_writeb(sdiod, SBSDIO_WATERMARK,
+ 					   CY_43455_F2_WATERMARK, &err);
 -- 
 2.27.0
 
