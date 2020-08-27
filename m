@@ -2,98 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE2625432B
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 12:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E86A25433D
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 12:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727902AbgH0KIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 06:08:37 -0400
-Received: from mail-eopbgr30103.outbound.protection.outlook.com ([40.107.3.103]:47254
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726093AbgH0KIg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 06:08:36 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R+6ZeIsmwTqWT23sH7T32GyXPcyrIQAoFNW8WF0UdvoHorZpAmaBlLCvEJuS1i1uQmMY0UCnkm9PK6uV6fR49rGpZVy3hrqBUXV98eERn5VDvAhA2UsNxqKQsAZGXRAbvzqzi2cMqC4K8Id0CQzc90SOvlFiolCOrJUA1yY7ui7pjRHI1P0SXpJjUD4KXxMEljHiqpobAmlMD67UxOyBSGA2GUHCzGKxb2ThHopHXa6Udf8TEo9uHD1Qbo9hgnYFhlt7C90QymmBBlaZAoMGFAsIaVhvUWCl86o0QPLyfNoLi+QGBvpk4L4bFgFZp67fJ3GEKd//LsRF6YxbBDOj0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oZcP9hDmPSDD3HCxoQgan2B8xhEBYnZ5BAs1S6XIgYE=;
- b=JwI59ByH44P+qgDq0ZTqaIg6yXZG7UcGtAwDkod8Mv84z1maPzxHWow8HhqhWE2CrU89T94s24M9HU4+tw36R1JRMzDMZYRoQntLpDcKG4kXn0FOKvYhNyTj4z/i9L9k/i1cWiVA9Jisq4K5Lbl/1JqQaiPcpHJIe2f/wYH4Zlfq26bH+pItfzTrOjKIL7WqiNlo68PBRDCrwuaJneeRTpRLtPfQ1QzkJX3WMTfZypMzhFcZLkjTf+BPh1xvrkEHhzodOM9KLNkPY//OpbYpaFnAS6ScbXmjj1pwTEx4/zjQkkgLc0D+5js5L2pZXFtsNF4qjs3yiVvwCAym/J9jCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
- dkim=pass header.d=prevas.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oZcP9hDmPSDD3HCxoQgan2B8xhEBYnZ5BAs1S6XIgYE=;
- b=L7My7l9bXedHgS8wsAovkQGduhiSJmAWpkRGI19QoqFJHBujV85a/ei0W7gWzhovKOmBlvBCwZm3vFD1JbjhH0cz27ddO103KENYa19vxNwnEBDPW8mumOKR7UPSX0k7xW16Ns6wR4OknzSRzuZC+miWn/MWJK3EahAnN90FRVM=
-Authentication-Results: prevas.se; dkim=none (message not signed)
- header.d=none;prevas.se; dmarc=none action=none header.from=prevas.dk;
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
- by AM0PR10MB2161.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:d9::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Thu, 27 Aug
- 2020 10:08:33 +0000
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::3cfb:a3e6:dfc0:37ec]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::3cfb:a3e6:dfc0:37ec%3]) with mapi id 15.20.3305.032; Thu, 27 Aug 2020
- 10:08:32 +0000
-To:     Network Development <netdev@vger.kernel.org>
-Cc:     Lasse Klok Mikkelsen <Lasse.Klok@prevas.se>
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: powering off phys on 'ip link set down'
-Message-ID: <9e3c2b6e-b1f8-7e43-2561-30aa84d356c7@prevas.dk>
-Date:   Thu, 27 Aug 2020 12:08:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR04CA0099.eurprd04.prod.outlook.com
- (2603:10a6:208:be::40) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:3f::10)
+        id S1728540AbgH0KMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 06:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46034 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728523AbgH0KMi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 06:12:38 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFD3C061264;
+        Thu, 27 Aug 2020 03:12:38 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1598523151;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TylHLzYobByIM/E/ha4ZGNETDJPDDGQ31gNBIO1Nims=;
+        b=2ANz293EXHRZf+hOSNPOpA+xqKlaBemYHCWXnXRHQtEApefVdeotdbukovXsc1dcJNN7yS
+        EGy8Ij/V/HcN48GhbZPPChEZo7PhgAkyhr9udT/k2URYu0HzMSyhIBlJ2jYmm9spgIkp3D
+        Gnc1Si+9rJc+9W7NDeSV/DvOk8lNASFZdoHLEnlO6gFDz6zuXx8rSwKN1JyHUpjEVqZPIu
+        dyRtsOMtMcwOaEDH1q8dhWxQBh2JW+/Uy7NXAhPx5OWnYyEg3Rto89txcVOzc8CFveTDZQ
+        3vBbn7eC+RHySWT2ngQSkR/E79FyyTJb06cNKdvSumymweSve0ezyDLXL/pjCA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1598523151;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TylHLzYobByIM/E/ha4ZGNETDJPDDGQ31gNBIO1Nims=;
+        b=8gB+5a03RZ1bDn3um/eccY3cTlQQlyFougrd//k26fxUjW8BPXTxOlTu7at199j5WBJ1GL
+        XyejErM+cEwslMCg==
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
+In-Reply-To: <878se2txp0.fsf@intel.com>
+References: <20200820081118.10105-1-kurt@linutronix.de> <20200820081118.10105-6-kurt@linutronix.de> <20200822143922.frjtog4mcyaegtyg@skbuf> <87imd8zi8z.fsf@kurt> <87y2m3txox.fsf@intel.com> <875z9712qd.fsf@kurt> <878se2txp0.fsf@intel.com>
+Date:   Thu, 27 Aug 2020 12:12:29 +0200
+Message-ID: <87zh6gcs8i.fsf@kurt>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [172.16.11.132] (81.216.59.226) by AM0PR04CA0099.eurprd04.prod.outlook.com (2603:10a6:208:be::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend Transport; Thu, 27 Aug 2020 10:08:32 +0000
-X-Originating-IP: [81.216.59.226]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 909f6d5f-a561-4701-e3a1-08d84a712780
-X-MS-TrafficTypeDiagnostic: AM0PR10MB2161:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR10MB21618CA2E6AAC8FD09EB1E0993550@AM0PR10MB2161.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: E+HB0BTAPCzk9H2CsgKy/uLQ/vJEY2IVKln+x946IuBliTMrPemcArhmoWpCx0Jpsk2I1LZTClYpr8EpweJPRGD0pnBmOOkPAbivHnkrkxZHmwURK0CotouQS4aH0+NcHTpmJl6bd9xhZ/Tzn9sYOVFQSEFHfmbudiLcKKPWTS1GKaODuFGxqwnQHy49vqtVllD8G3Kdq5SAirFXIwVDA23nUI1mLNJnkaUwEaRYM/Q7HwQbw+iPvsReSHKkCnO3/QkLUR3N7qJ/M//V7DM0hyRi/9vjmmgu2N42axulsi/I/Z3akEitSqnX0di1GssdHUSryoC8y86/X5bg2sCwA8kkTXZtDUDVduQyRagsNpiL2pkbj/CHDNsG0oRrwctD
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(396003)(136003)(39840400004)(376002)(346002)(366004)(83380400001)(186003)(31696002)(26005)(6486002)(2616005)(5660300002)(44832011)(956004)(6916009)(16526019)(52116002)(4744005)(4326008)(478600001)(107886003)(66946007)(8936002)(316002)(86362001)(36756003)(31686004)(8676002)(66476007)(2906002)(16576012)(8976002)(66556008)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: O3Xgvzy2MfnJyJHi3+x2egm3MMEpobOEHKRmhPelrqx1x9JJpOd/RCcZwRaojL2I2Dj/3o/ILqJuD1S2K1z4m7/37AOWcepeWU5GAQEUXpoTtuHR0WIlqBQGW+uMqO6su4Fwa05DCk73HI6vl1CNRhBr/Y63r9JEVKkzj7M5oQwW8j6HxDTs9sVObOmAad5PWqACod3yqJJ3l+HnvDNxwraT+1vcvNEaVezyr7P17TJ5GMs+A5BfzsEDEGFh0vajoVXat8X039Dil+9txcGfsq5zg44EMT9huM3cOFYwCx2Cw0OhQWkJ+n4iP2Ztbb2MNy95DVN/51MhvRuxyi+ZlEcvk+rn10eNk8lYtPGp0hSFdd8OtVZkjVLjbLgQIxngEZQx9bvyyit+0sid5auDK5czW+/ZpMneBgfNbX18MaBI8CTm0Ry9fyzXWLPTJOIs1gxWwSSMWOkcDqiXegEq64m39npK2tnieUT6yrFVVCsTOOYXC7FgE97+aKgZBPQG9Fk2O/6PuN/zQRusFpKpH1ONI+yx32tEOa7Oq4BM9WyktizsXBNI3tECl+fMkcjU2XKYwlhUl34gw7LC2UUSbfnO2JHfFvKSRr3IalUahlh80nfrMKFV0sqE3Vsq3m27CsWLbvOtTQyjfGM7jIT04g==
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: 909f6d5f-a561-4701-e3a1-08d84a712780
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2020 10:08:32.9622
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MZd+kO/qiQz6QDEAYDx+BX9yofwqI3uyuANTV08vCyLNJb/2W42Ii/2Y1sXaWINulbP5QIbqmSjX1CiMYKtjstp8iG8zYFUeWKfYoNarPmk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB2161
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+--=-=-=
+Content-Type: text/plain
 
-We have a requirement that when an interface is taken down
-administratively, the phy should be powered off. That also works when
-the interface has link when the 'ip link set down ...' is run. But if
-there's no cable plugged in, the phy stays powered on (as can be seen
-both using phytool, and from the fact that a peer gets carrier once a
-cable is later plugged in).
+Hi Vinicius,
 
-Is this expected behaviour? Driver/device dependent? Can we do anything
-to force the phy off?
+On Tue Aug 25 2020, Vinicius Costa Gomes wrote:
+> Hi Kurt,
+>
+> Kurt Kanzenbach <kurt@linutronix.de> writes:
+>
+>> I think so. As Vladimir pointed out, the driver should setup an identity
+>> mapping which I already did by default.
+>>
+>> Can you point me your patch?
+>
+> Just sent it for consideration:
+>
+> http://patchwork.ozlabs.org/project/netdev/patch/20200825174404.2727633-1-vinicius.gomes@intel.com/
+
+Thank you. That looks good. So the driver just has to deal with queues
+and I can setup an identity mapping in the hellcreek code.
+
+I see the patch is already merged, otherwise I'd have acked it.
 
 Thanks,
-Rasmus
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl9Hhw0ACgkQeSpbgcuY
+8KZxlQ//VnPK/fJDCN6AoLIuOxTPO4KJyOCEw2Z/APHbpN4kCgW5emjqfrFRE7EW
+Ef8aYVtZnNW/0RNeCED6rzVn7yHm3QJnhazhs9CElWA2OyBGQJnDU6Kc/DYXom9R
+QyYTq3WECDooq7F6Dfwf11Cc2FxXrUOrXlSrfcAZudW7IhCEbpW8D2L7cXy3gPrc
+PyK36LXC7Vnr7D6Tlus5blG1MgfpDYF+iGebwpx1VVYePAqAXBOxr9NaRugWSnUH
+luwSNhiG+uzEYVSOd5qtb2j8yGrvbHHtELIqMoSkMWCaPg5LVJtqcLZBrTq4IWSb
+IF0mXJAeA1nrEWoe7qpesK7rrO1XLc2sU25MaCDXwlZUpzdmjp51nB5m9POSXNaK
+/zzuWCqwEc6acXY77kL13nfBWB4gmjdRNFi9ot6O/jxGkRR9KHYlVxl2z5etuK6J
+/12Sp4RNpCiAULgfnEDwVifPd1duV1M5QMxTk8pZpkBVG+QBA6uBI78adY1gpZ2/
+XuQxsOtv1t9ViZ09uxHk8Aoi1CAcJmWCS6Vj04FLx3dkiaYNd6qn13ktiaxs1uWz
+DMdorPlf0zTAEEhVeoNQNbgwesM5t9Bcn5+8/KaqRf+8Qd1FeHJn8GBLHBHZlW+p
+H6RLoPk7PHMezKX7xYc5kgO3XHyJ7+oCpKVtLjhslH2eVZeH2qA=
+=qWWN
+-----END PGP SIGNATURE-----
+--=-=-=--
