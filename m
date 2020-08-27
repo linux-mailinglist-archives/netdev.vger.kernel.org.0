@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90D8F254472
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 13:42:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8619B254479
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 13:43:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728813AbgH0Ll2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 07:41:28 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:52428 "EHLO huawei.com"
+        id S1728856AbgH0LnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 07:43:17 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:10331 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728804AbgH0LlP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 07:41:15 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 3DB081522D01B034F7A2;
-        Thu, 27 Aug 2020 19:23:15 +0800 (CST)
+        id S1728834AbgH0Lmz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 07:42:55 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id B3045BEE75981B411CD0;
+        Thu, 27 Aug 2020 19:25:01 +0800 (CST)
 Received: from huawei.com (10.175.104.175) by DGGEMS407-HUB.china.huawei.com
  (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Thu, 27 Aug 2020
- 19:23:07 +0800
+ 19:24:51 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <pshelar@ovn.org>,
         <fw@strlen.de>, <martin.varghese@nokia.com>, <edumazet@google.com>,
@@ -25,9 +25,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <pshelar@ovn.org>,
         <kyk.segfault@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH] net: exit immediately when encounter ipv6 fragment in skb_checksum_setup_ipv6()
-Date:   Thu, 27 Aug 2020 07:21:59 -0400
-Message-ID: <20200827112159.43242-1-linmiaohe@huawei.com>
+Subject: [PATCH] net: exit immediately when off = 0 in skb_headers_offset_update()
+Date:   Thu, 27 Aug 2020 07:23:42 -0400
+Message-ID: <20200827112342.44526-1-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -39,55 +39,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-skb_checksum_setup_ipv6() always return -EPROTO if ipv6 packet is fragment.
-So we should not continue to parse other header type in this case. Also
-remove unnecessary local variable 'fragment'.
+In the case of off = 0, skb_headers_offset_update() do nothing indeed.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- net/core/skbuff.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ net/core/skbuff.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index c3496bd8e99e..4dc92290becd 100644
+index 18ed56316e56..f67f0da20a5b 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -4894,11 +4894,9 @@ static int skb_checksum_setup_ipv6(struct sk_buff *skb, bool recalculate)
- 	u8 nexthdr;
- 	unsigned int off;
- 	unsigned int len;
--	bool fragment;
- 	bool done;
- 	__sum16 *csum;
+@@ -1459,6 +1459,8 @@ EXPORT_SYMBOL(skb_clone);
  
--	fragment = false;
- 	done = false;
- 
- 	off = sizeof(struct ipv6hdr);
-@@ -4956,8 +4954,11 @@ static int skb_checksum_setup_ipv6(struct sk_buff *skb, bool recalculate)
- 
- 			hp = OPT_HDR(struct frag_hdr, skb, off);
- 
--			if (hp->frag_off & htons(IP6_OFFSET | IP6_MF))
--				fragment = true;
-+			/* Exit immediately when encounter ipv6 fragment. */
-+			if (hp->frag_off & htons(IP6_OFFSET | IP6_MF)) {
-+				err = -EPROTO;
-+				goto out;
-+			}
- 
- 			nexthdr = hp->nexthdr;
- 			off += sizeof(struct frag_hdr);
-@@ -4970,8 +4971,7 @@ static int skb_checksum_setup_ipv6(struct sk_buff *skb, bool recalculate)
- 	}
- 
- 	err = -EPROTO;
--
--	if (!done || fragment)
-+	if (!done)
- 		goto out;
- 
- 	csum = skb_checksum_setup_ip(skb, nexthdr, off);
+ void skb_headers_offset_update(struct sk_buff *skb, int off)
+ {
++	if (unlikely(off == 0))
++		return;
+ 	/* Only adjust this if it actually is csum_start rather than csum */
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL)
+ 		skb->csum_start += off;
 -- 
 2.19.1
 
