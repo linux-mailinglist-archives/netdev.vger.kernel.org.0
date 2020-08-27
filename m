@@ -2,90 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B6B2548E2
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:15:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E8E92548C4
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:12:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727935AbgH0PPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 11:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728777AbgH0Lia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 07:38:30 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B315C06123A
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:37:20 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id m23so5413328iol.8
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rcg4TIxpS2XrDTWj8mS51Tf2vGitjPKgU895pVtnQkw=;
-        b=SgvKEzvYUaEchSKyXnlDf9/rSQtJ8+7m+0GJkn97LKTQl5LEu9FPK9m43svxpmEfgt
-         iH/oN1s764d2JTNj/xWEXaVNL2GB4vqgkruQ1yKEpPqo0ll0EXg+VvWLG5Tl53EbjGJw
-         +OGgWYITwpB0yMLuSqdCB89dDAVwtP1BY+5CjKOb93e42M+8JUnLQcusWy6fNs59V4aj
-         fd7LomJjV6nuXESt9E5JoDX4+oTnHpvJgRWMGzbDO0efG3Xp49x3kgCDbQ4mLt/wG/gf
-         OWHDOiNvcZ2LxXvkoqrEFfIUTur/0rz60hcbbp+NYII6e87FUy2OcA34+YMh5WAjVxKN
-         N/Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rcg4TIxpS2XrDTWj8mS51Tf2vGitjPKgU895pVtnQkw=;
-        b=eTlRHqQsWnnX9YmnmvAU+yuca77wIMM/+uCE87YZnIb4OGcaP7Y3y3EC6NEuEzA2Nq
-         OjVAHQsGVILSzb4Zc7yfYtZ7qEmohLQB3fMnOoGbUD0gzPWr8Rbwgi0Rpk5Acd2bTTwk
-         1H90RCiIzENvKbuAt1TkNgHsAESYiDk1c5G2Qe3kzKd3XbRqzkF0/R6AwaWqTknhGDTm
-         yXQjCE/VrZS9hOeUqCNAw4bdBhFDbkp7UiE8Es8lDbPFa9WslTNTZ7JJ2NOh6r8sK4WQ
-         zIunew2BSWYGNK8ZOCBd2HfC8TGkEutUREJpIsY3rFXo/Fff+/4IpwR4Zl5y6YGm+YDc
-         kJRw==
-X-Gm-Message-State: AOAM532E5oZyEBw/2Div31ofROWCUfScqyAuI0TLsrjG5gBB4Oa6ldBa
-        yuUqBW7zQjuDGVUu+Vw8Tw5W3RolzXQKSLollOFftw==
-X-Google-Smtp-Source: ABdhPJw1N6sVjHVtii/hCb0grxGUljPwAXeuCDgAlkjVrpPoJ2ImTSGfKfLHTqtDw39I1tiyLzx6dfrl5d7CtzSMMnU=
-X-Received: by 2002:a6b:7846:: with SMTP id h6mr16736497iop.145.1598528239275;
- Thu, 27 Aug 2020 04:37:19 -0700 (PDT)
+        id S1727973AbgH0PMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 11:12:30 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:58101 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728787AbgH0Lkm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 07:40:42 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1598528436; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=w7fCvr48yy18hQcvWfj5BBx2HYb6MogSv84HemZHdz0=; b=xJXyfR+FRBdQ25BfsxCTCCWm+Pk4ZY7hv2ia1NBQ3qXvwO8xdtAd0wFsXoctOAH4mm1sI4XB
+ v7q2xT23pcJ7ORnOj43St3QQX7XreVGACsbCb1UqTMOIQtEzgQiRVoMaTaEtlUpQ1SbWB81L
+ pqHcG2CHmf8Jn0CFJ0XdxBCIqjw=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 5f479baa630b177c47077e2f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 27 Aug 2020 11:40:26
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 2DE8BC43391; Thu, 27 Aug 2020 11:40:26 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 59F14C433CA;
+        Thu, 27 Aug 2020 11:40:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 59F14C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Maya Erez <merez@codeaurora.org>, wil6210@qti.qualcomm.com
+Subject: Re: [PATCH 12/30] wireless: ath: wil6210: wmi: Correct misnamed function parameter 'ptr_'
+References: <20200826093401.1458456-13-lee.jones@linaro.org>
+        <20200826155625.A5A88C433A1@smtp.codeaurora.org>
+        <20200827063559.GP3248864@dell> <20200827074100.GX3248864@dell>
+Date:   Thu, 27 Aug 2020 14:40:21 +0300
+In-Reply-To: <20200827074100.GX3248864@dell> (Lee Jones's message of "Thu, 27
+        Aug 2020 08:41:00 +0100")
+Message-ID: <877dtkb9lm.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <20200827112342.44526-1-linmiaohe@huawei.com>
-In-Reply-To: <20200827112342.44526-1-linmiaohe@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 27 Aug 2020 04:37:08 -0700
-Message-ID: <CANn89iJ7orDEWxdBJVYqhk+1WF2ZuRpzN_XOaPoGRrn2hWjGNQ@mail.gmail.com>
-Subject: Re: [PATCH] net: exit immediately when off = 0 in skb_headers_offset_update()
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Florian Westphal <fw@strlen.de>, martin.varghese@nokia.com,
-        Davide Caratti <dcaratti@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Paolo Abeni <pabeni@redhat.com>, shmulik@metanetworks.com,
-        kyk.segfault@gmail.com, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 27, 2020 at 4:25 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
->
-> In the case of off = 0, skb_headers_offset_update() do nothing indeed.
->
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  net/core/skbuff.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 18ed56316e56..f67f0da20a5b 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -1459,6 +1459,8 @@ EXPORT_SYMBOL(skb_clone);
->
->  void skb_headers_offset_update(struct sk_buff *skb, int off)
->  {
-> +       if (unlikely(off == 0))
-> +               return;
+Lee Jones <lee.jones@linaro.org> writes:
 
-If this is unlikely, I doubt adding a test is going to save anything.
+> On Thu, 27 Aug 2020, Lee Jones wrote:
+>
+>> On Wed, 26 Aug 2020, Kalle Valo wrote:
+>> 
+>> > Lee Jones <lee.jones@linaro.org> wrote:
+>> > 
+>> > > Fixes the following W=1 kernel build warning(s):
+>> > > 
+>> > >  drivers/net/wireless/ath/wil6210/wmi.c:279: warning: Function
+>> > > parameter or member 'ptr_' not described in 'wmi_buffer_block'
+>> > >  drivers/net/wireless/ath/wil6210/wmi.c:279: warning: Excess
+>> > > function parameter 'ptr' description in 'wmi_buffer_block'
+>> > > 
+>> > > Cc: Maya Erez <merez@codeaurora.org>
+>> > > Cc: Kalle Valo <kvalo@codeaurora.org>
+>> > > Cc: "David S. Miller" <davem@davemloft.net>
+>> > > Cc: Jakub Kicinski <kuba@kernel.org>
+>> > > Cc: linux-wireless@vger.kernel.org
+>> > > Cc: wil6210@qti.qualcomm.com
+>> > > Cc: netdev@vger.kernel.org
+>> > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+>> > 
+>> > Failed to apply:
+>> > 
+>> > error: patch failed: drivers/net/wireless/ath/wil6210/wmi.c:266
+>> > error: drivers/net/wireless/ath/wil6210/wmi.c: patch does not apply
+>> > stg import: Diff does not apply cleanly
+>> > 
+>> > Patch set to Changes Requested.
+>> 
+>> Are you applying them in order?
+>> 
+>> It may be affected by:
+>> 
+>>  wireless: ath: wil6210: wmi: Fix formatting and demote
+>> non-conforming function headers
+>> 
+>> I'll also rebase onto the latest -next and resubmit.
+>
+> I just rebased all 3 sets onto the latest -next (next-20200827)
+> without issue.  Not sure what problem you're seeing.  Did you apply
+> the first set before attempting the second?
 
-This will instead add a conditional test for the 'likely' cases.
+I can't remember the order, patchwork sorts them based on the order they
+have been submitted and that's what I usually use.
+
+Do note that there's a separate tree for drivers in
+drivers/net/wireless/ath:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/
+
+And it takes a week or two before patches go to linux-next.
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
