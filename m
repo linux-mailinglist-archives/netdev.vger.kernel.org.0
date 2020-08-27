@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02D62254BF6
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 19:20:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4AED254BF2
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 19:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727817AbgH0RUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 13:20:52 -0400
-Received: from mga12.intel.com ([192.55.52.136]:2552 "EHLO mga12.intel.com"
+        id S1726939AbgH0RUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 13:20:15 -0400
+Received: from mga11.intel.com ([192.55.52.93]:20125 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726236AbgH0RUv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 13:20:51 -0400
-IronPort-SDR: dWHFIE71Vduq0P+1u5UTN04awJ+TLj5F3PoTN2gopH+IElL8AO18C4JARt42uxOVHsT4n7oGl7
- rjEpptyYmk+A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9726"; a="136077183"
+        id S1726157AbgH0RUL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 13:20:11 -0400
+IronPort-SDR: 4P42dU+vtTTYQ/N6laWTjruy4WkmRkMm8u5c1cVeCa7x7+SGuZ8GO5jOBilkROPR92aH9nlU1X
+ McB+ffsKjc4w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9726"; a="154085684"
 X-IronPort-AV: E=Sophos;i="5.76,360,1592895600"; 
-   d="scan'208";a="136077183"
+   d="scan'208";a="154085684"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2020 10:20:50 -0700
-IronPort-SDR: TmIebvGCl3N2wZLZ4OyPlgF0dzbRl1wozT7GtsaqgPg4obZ9ttz4vBVV7XxbMHm40jSS68LF9w
- 54vTLXNJ42vQ==
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2020 10:20:09 -0700
+IronPort-SDR: 4BfubxniO0fJI6oLrDP9nqrYJKVfucCwHPKleJS6PQM88B47Si/88DVRyzQnZvNITqckvU7w/t
+ LySHtBczE1zw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,360,1592895600"; 
-   d="scan'208";a="339591407"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by orsmga007.jf.intel.com with ESMTP; 27 Aug 2020 10:20:50 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+   d="scan'208";a="295808650"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga003.jf.intel.com with ESMTP; 27 Aug 2020 10:20:09 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 27 Aug 2020 10:19:32 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 27 Aug 2020 10:19:16 -0700
-Received: from FMSEDG001.ED.cps.intel.com (10.1.192.133) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.1713.5; Thu, 27 Aug 2020 10:20:00 -0700
+Received: from orsmsx112.amr.corp.intel.com (10.22.240.13) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 27 Aug 2020 10:19:16 -0700
+ via Frontend Transport; Thu, 27 Aug 2020 10:20:00 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ ORSMSX112.amr.corp.intel.com (10.22.240.13) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 27 Aug 2020 10:18:53 -0700
 Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.169)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server (TLS) id
- 14.3.439.0; Thu, 27 Aug 2020 10:17:42 -0700
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Thu, 27 Aug 2020 10:18:53 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SCB48alHfSTgqUtOVAQA4+dp/TErBTMNW4SiDU0plDDcYcwXU4yZTmCiCUwhB7Qmf2sQ/WacvOj/yTLS0keNzbc5Bn3X4qSU1b0bybI0V+U869eRLAXXldPzKXboSSf3cgXrdIPDP9q42XQi8esRC5Qn30NecrITtNN4lnR4ufYX7+1wcDXLaNg3XbclG3D/cLgr8/vjShkJmgyg78NhoWN2Ulm1gqqo7ArGQ7iQZNH+h/koUM4yu7Pe7uJZBPLqLdcJd/age0+uC6No8jcKsBxQBMvC2dsuWsAlaDzhpalHdiAh/Cy16m2ucN60Nj7sOeyw6dJOwmsHc0b9k4pZ/A==
+ b=cPNE2QfhhQuvNF33Xo3q13xlKr6hwcO4T0as9re1ehgrNn+bNBs/xwjNdo1ymd+FROptJ+46gh32xBvPFWO7KXTAJPHAGs8f4MkDZZkjjf/yUYu7tMsk0IeYArSJa/UFBIujUiPqTqppQLj9KSt3eQgq+Kk+C5jVxC4Zd2uKKR4cOcNzz4sArMNSooMHf2hvY6Ze3Y2VndM7Hajml+O1NzwfujahYmtI8ONgRJRFGrldJ4QoL5O+ytefgYqNk06C+FvAOkVzI3xcb+9ZtWsMdzIYIxAcqKl4p9CeyEfUzijo2quA3Ty2AUQF+FwbSgbqbWHRsqrM1LHOMi+UC1e4Qw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HcscwJNRi8JQFKjfiKs56cbiIbT2zbLU8/yyn2igjkA=;
- b=WXyrxpCsdns0H2A7wOUP3SaWvk5Eqfk7QYkpeW1Drm6DLcjEUpG11C/o9TWI2ZrXuJ/wirQMjUeI1fwttkyITZVWta+WHWLBZAxeM11ajhnufWKvClJSxvJF3LKnkhO4JcPJIANXPq6iBUnlZV5RmXs9lWiNzcoG3QNfqHPxXKn1DOz5hze4Am/zbC9tMFsG3DxcNc/fSoLIAFwtmbI99LNpiTYtcNRJI0qvwg5gwLoWKD/olv1kTdmKDJetVZK152fvt2d9qE6FgwxKR5zfQNkgjkFlW0z2UOnOskjEfvdVJHi2zX0a2NmJ3gi2+0kbw69FIsBrhOq8VgW1ZqKYgg==
+ bh=zmRT1hQiMKLlLHrZUo+UES9iU7oUKOwbnSBMZc8kdlA=;
+ b=Gp1WyFoa6I1rfeHq2r8+u4VNr14y1ikPU8rrAhWMkSlVgot/0AQm9xrCtUPT7pYUKR5myCs/YwUMTjeXtx+hO+tGRXTTZy9qMTB+vqwZ4WpMs2ASDswSzt/9nkfZubjuQ5vKfCmhKbS30PSZIfdqXAWQ1mRfTm1BrdI5S7G3KsnyA3cua5bcmY71bRAfjvUZ6hjlSu5HGN9rh5bOSN6o34ebWNsZJS9q1+l1TPrLnUW9nPX7qS9yHtOKTI84S1EJKKgHki7QCU7ONcgmiF4D+VThf8HhDgWR4H3/BSgLzDxFrEGvl1/PjiMJb2WXrEAtsMF3MRJD3WZwPhz7UxjgTw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
  s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HcscwJNRi8JQFKjfiKs56cbiIbT2zbLU8/yyn2igjkA=;
- b=Q8NlVm8M/roOvV/ppud7NTZL0wE6j15CT+sUERlHre7f2ohJGkpk4+m4jBsD2gtinTeoBUXtxhVU4MTfahZQA2Iopb97e14hE5AwM5HDHZbpJhHw8wIKxUGD8LaSaVyM3cvijAewBfRidVun7ZG2+1dZXzh4A7U8mnPkIktQHbI=
+ bh=zmRT1hQiMKLlLHrZUo+UES9iU7oUKOwbnSBMZc8kdlA=;
+ b=LJbY8NObwKQi9ydOKKbtgfNUKuov2YLwkSdWDpMjl7IVsVB8ti+fCyiIbRGy+CaN+fA/Nda0K6vNUBAvEujF/262j06Hvf2dwZSEoQBZNGhq75umEfYBrcMKeZYLOTyHHy3/f/DAuYIXHC732zit349XdO5n5lF/TZPuu3tAh60=
 Received: from MW3PR11MB4522.namprd11.prod.outlook.com (2603:10b6:303:2d::8)
  by MWHPR11MB1727.namprd11.prod.outlook.com (2603:10b6:300:1f::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19; Thu, 27 Aug
- 2020 17:17:08 +0000
+ 2020 17:18:25 +0000
 Received: from MW3PR11MB4522.namprd11.prod.outlook.com
  ([fe80::a43e:b4a1:3c31:aecd]) by MW3PR11MB4522.namprd11.prod.outlook.com
  ([fe80::a43e:b4a1:3c31:aecd%9]) with mapi id 15.20.3305.032; Thu, 27 Aug 2020
- 17:17:08 +0000
+ 17:18:25 +0000
 From:   "Brady, Alan" <alan.brady@intel.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
@@ -82,15 +82,17 @@ CC:     "davem@davemloft.net" <davem@davemloft.net>,
         "Skidmore, Donald C" <donald.c.skidmore@intel.com>,
         "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
         "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Subject: RE: [net-next v5 11/15] iecm: Add splitq TX/RX
-Thread-Topic: [net-next v5 11/15] iecm: Add splitq TX/RX
-Thread-Index: AQHWejy7cEsFm/B8Tkq3fnGYOJpzOqlHuT8AgAR9/hA=
-Date:   Thu, 27 Aug 2020 17:17:07 +0000
-Message-ID: <MW3PR11MB452220A9F8EFE1D90E2224248F550@MW3PR11MB4522.namprd11.prod.outlook.com>
+Subject: RE: [net-next v5 04/15] iecm: Common module introduction and function
+ stubs
+Thread-Topic: [net-next v5 04/15] iecm: Common module introduction and
+ function stubs
+Thread-Index: AQHWejy1tOSD76N110WqZPtCXyg6lalHuUyAgAR+B+A=
+Date:   Thu, 27 Aug 2020 17:18:25 +0000
+Message-ID: <MW3PR11MB4522ADD532ACCF8C7AAF89BD8F550@MW3PR11MB4522.namprd11.prod.outlook.com>
 References: <20200824173306.3178343-1-anthony.l.nguyen@intel.com>
-        <20200824173306.3178343-12-anthony.l.nguyen@intel.com>
- <20200824134054.4dd467bc@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200824134054.4dd467bc@kicinski-fedora-PC1C0HJN>
+        <20200824173306.3178343-5-anthony.l.nguyen@intel.com>
+ <20200824134105.1010fd2f@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200824134105.1010fd2f@kicinski-fedora-PC1C0HJN>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -102,29 +104,29 @@ authentication-results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
 x-originating-ip: [174.127.217.60]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c2f301c4-e71c-4ae6-c3c0-08d84aad072b
+x-ms-office365-filtering-correlation-id: 68d5ae2e-cee2-4217-471e-08d84aad3519
 x-ms-traffictypediagnostic: MWHPR11MB1727:
 x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB1727B9C67D2F871FF816E00C8F550@MWHPR11MB1727.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:494;
+x-microsoft-antispam-prvs: <MWHPR11MB1727FF5AC2A8E8B84FD244398F550@MWHPR11MB1727.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4125;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ya77dAc1HX4kaaZK2wxe53KVib0927Pp6pwHdV1Ou2W6cZMwj4/pdYteLdE88JuPeNyPS5Nn5fv9iX0OdKkNeaWEWYomdTq+fOzFkH9ewa6hLvXsuGUpSUzcgDHGz8fF+mUNuR1gxNlf3gV073uTgMKepNFD2PN/C+yfD4T2n6EzomHL12GvjNF8D/nRyRNjzGhJR7XVZGnVrYporV6z2mx7TlKIuu121PWuc9nFY8iAeKRXFkV3vXBA5qi3OX7tiSOeWQzjyoA/dlLVt6W5bvDSkMs0pIkZHE6GEzOm2YQ9/8icHazqbqwlUovPQjuoQwwOhJMtspkey2nOKBTdNg==
+x-microsoft-antispam-message-info: A3Vmbk9gAEGEurmogkFQ6N/YaESVCCK0FxHBjnXwDqjhIIxbv0fleWXRyeHs/lpz7WJtq/2Bph3q7uFzddykT6U6SESCVuNtiTLJdWm4S+U7lGoCQ5nuCci7DVW8R3u6gRYGzXFbsRO60md88FuP9lV5GLPUHKi/EWCu00pN2pPsVLZTomtUEkR8SaO8E7iJNePCIBtETFe3Ip34TCMNU8507pjElKYrqiVGUfHFMuD0AomSXkUWjlmXJPJ2dbNj/cmicscR3HwHSShl1RrZPW45NzB4tVP90kpX2EopnTGNt4Nd24C/XrxXCiqDfY71
 x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4522.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(136003)(396003)(366004)(316002)(6636002)(83380400001)(26005)(8936002)(7696005)(2906002)(110136005)(6506007)(54906003)(52536014)(5660300002)(86362001)(33656002)(53546011)(186003)(4744005)(71200400001)(55016002)(9686003)(66556008)(64756008)(66476007)(66446008)(66946007)(76116006)(478600001)(4326008)(107886003)(8676002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: iXrM4iYa835otrgwlIUIOJ83Gy2v++ri4YOERXLpZHB9lnFR1QutcoJndVvBWZH+RWBMxiDSa0H4xFeo6G8tej/iW7aNn6Tfz0q+DLeJQLLFV7HentwJmb0NSaLPq71CDzDdj1ZPquAHLxp3zCftTLTQ1V+2QmwAsnVamAhA3dYAXmpR1snYzEBsI0AwjnK/BemPvnk9zZ4WQWtUYYYSPspAPFgVBLTZ8b3YSpWKfbSeJCME9AHi1SJ8C/sYfhL4bQr+7KMPnCqD/NcjVNIcpK4+sdUYPbr80+LTDir1mZDag1OFmExJHdfdwsVi5ul5VXvyaSBd++sl5DYgOkre6XktJE1zg2MJSDNJAt0eo4kngi2UffZwvAZwCoUZW/S8rSAesli3Hqx4we70PCPTvTVxgTP1uIflDMRLtlleH5joIyl+HwAhaJHI2dSr+WtFaJ2vd+odXS61CqZvjZzukNTbAHF+jwmHYdiIM2+AEKg48GSTjx7/NooTsfaFTCzWSZf8Q9vJ5bVQZxVRtNkguIpFAl+4xDn8v6V/IrPJgW0qkwIFClHDCyYh0FDz/jLYU8taqJj9lkudG5xC1s/33g/0dETiN99sg2wWITQwdiFNzAG1YfHCQtKfJzlw8EXsu4nMA2N9Ksk2oSdad91AAQ==
+x-ms-exchange-antispam-messagedata: CSA0f7EmtMK1YokWKJzQv3mU/2cPUh1xQ7pnftpHJXtozB+NLVME8i5DzJeAt4o2SuoXprF6xqKlChvFKyf7XDJSphEM4oWUUUjGgVFDlVt5m/1K6PK0iOXxSkgZtsIQ0tCSxT/kkvia70NVh8RJYq1eRys8fulIQHgHoulQyh/QDEws7erJkjjnr0xQpzo3PkYjCl7+sZMhCBlJMrPPTnjS5nNo4OQb3zEeK210DCYVDtdS+iGBdJzuepvHh44m2tAYpI90OtOgOwyJP1nwN25l72dNo3IX57saNa9yi/rw3JsMVUyVIIbEgKx4PMgClSwlmCwYutaTv/lzR1F5O1fHiKTYS5AbDHAN6Rw4Gxj5l25IMlzveGr2hODdMAcIZydfKK6+4tsBYj8+H1hVXGcyst8d/BsCIIcRlbt3NijgYJN6VlEuGF9gvSOiKqEhUC0y7hUXQ4BnJ7BWxJqg/bdZYoUb9vA8lzxAh7svJUYBbW6p772n7txYSiPo2MeQNF0peZNgU1l7uXXJ6UCR7Gmw/0ywwSTVVB+sXIP7H02Zktr7InvzNl3Po/YCHJpbnFc+ye1rqgnKnGbCTWlIFCX69kZCOp6VOpcO9+eCXkiYbH6nGG2WCJ0Zfo2DIIBiPFxB3Gp83aG6KzxqWPEErg==
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4522.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c2f301c4-e71c-4ae6-c3c0-08d84aad072b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2020 17:17:08.0064
+X-MS-Exchange-CrossTenant-Network-Message-Id: 68d5ae2e-cee2-4217-471e-08d84aad3519
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2020 17:18:25.0495
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YjZHcE4XGKdm86Z5QKDjOG+NEqSe3BOwIFDH12DfJLG8mbrtfmPJJpYZjMYTUNCqGrFVbdJgjVd5YXJDpVlubQ==
+X-MS-Exchange-CrossTenant-userprincipalname: sqzdF9V5dji96kaJiYmI0PRIP012NPyD/UWMSlYx/V7XCCE3qs27eN257TcejEKZh8waPEMB1JK1E0JUYw64wA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1727
 X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
@@ -146,18 +148,21 @@ X-Mailing-List: netdev@vger.kernel.org
 > <donald.c.skidmore@intel.com>; Brandeburg, Jesse
 > <jesse.brandeburg@intel.com>; Samudrala, Sridhar
 > <sridhar.samudrala@intel.com>
-> Subject: Re: [net-next v5 11/15] iecm: Add splitq TX/RX
+> Subject: Re: [net-next v5 04/15] iecm: Common module introduction and
+> function stubs
 >=20
-> On Mon, 24 Aug 2020 10:33:02 -0700 Tony Nguyen wrote:
-> >  void iecm_get_stats64(struct net_device *netdev,
-> >  		      struct rtnl_link_stats64 *stats)  {
-> > -	/* stub */
-> > +	struct iecm_vport *vport =3D iecm_netdev_to_vport(netdev);
-> > +
-> > +	iecm_send_get_stats_msg(vport);
+> On Mon, 24 Aug 2020 10:32:55 -0700 Tony Nguyen wrote:
+> > +static inline bool
+> > +iecm_tx_singleq_clean_all(struct iecm_q_vector *q_vec, int budget) {
+> > +	/* stub */
+> > +}
 >=20
-> Doesn't this call sleep? This .ndo callback can't sleep.
+> Still a lot of static inlines throughout. Are they making any difference?=
+ The
+> compiler will inline static functions, anyway.
 
-Will fix
+We haven't profiled the inlines to verify they're doing anything, perhaps j=
+ust some misguided preemptive performance attempt.  We can remove them.  Wi=
+ll fix.
 
--Alan
+-alan
