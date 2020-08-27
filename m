@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A79B6254C92
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 20:07:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55347254C94
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 20:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727013AbgH0SHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 14:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
+        id S1727024AbgH0SH5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 14:07:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726971AbgH0SHw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 14:07:52 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC249C061264
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 11:07:51 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id t185so4105965pfd.13
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 11:07:51 -0700 (PDT)
+        with ESMTP id S1726995AbgH0SHx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 14:07:53 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECFFC061264
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 11:07:53 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id ls14so3001519pjb.3
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 11:07:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=9Dcu0ODgktyQopGmsvvfnLYcxiTT+wl+JncOEgcVoIU=;
-        b=iv9ua9E8ZZlu3IrlDH9jqBBa5BYrIZN6elmiD3TUbUjjwaaIS6nDukfRi1A+r86ae4
-         MQS1yDIVDjl71gzge50mzTrooWk4Hp52rxN9CbVj1xMSeH1H2NjS5mqiE9QNTrVkWwxT
-         y95HCWi//tgPWtZc4GlSoU7PwQsU+MHpylcZRGuwFSRbwZ1A54fY0MAZozUk0F2aA4tt
-         f1NHSqsWh+tgJDpKxYIk5TD4gOjjQ7XECVgA4WnJrCmheodadsK7/M3dPBI9Lnic/gjL
-         zvTfWAnjYoZChTMYm7j5ndAlqAY3n2zNZo0JIx/Kd77UFr0SQwfr3szGDiJYeuNqgyom
-         0mXg==
+        bh=R/ib6Ww1+kDrDThZznQQ5PG5P20/sGy3hQifxbMCpwI=;
+        b=iCahrkrVmGAylkYcTr8qFLmxetdzH2yv1Y/g3iyDHYCXBDi2UtSYM4b+XYRac3aX/0
+         mbK7trwWhObMnKsxA7aKvu6tdAfTz1NsxClWFNtbIuE9tCKCKbrlMhM1Z5tEnYQMcSKK
+         O2DdUGK7zeRUXNPtnFqOeo3giMWOjgVCuSeeQcktuoGyixz8qZWbmgpZVUYuCTfm7qhn
+         lU6I+6kknnETrLkttUT6mhEMN2GpTK4aTGiIl90v/6/Qsua/KxzbtYGNMW+oupHnB4x9
+         /tn1jj5QEVIoUFFrTXs6ZeKf2yyq7G1B00GCQ79h4766na45We/s0VnYmfyR9k8cm8Mr
+         UwNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=9Dcu0ODgktyQopGmsvvfnLYcxiTT+wl+JncOEgcVoIU=;
-        b=s5MOPx4H1U26bKbTZfr8Mkv/vYen3fgO7sisr0NjJxMKHEMgHidYIgmBxBNvwHvu26
-         qGtxqlS5T5RdLxfPfgst28OHpzPqFTX8I9vwg/BtAPautGMXKfRXL+jix2L6wAoB0Duo
-         9maltEEVe9EHiWM1gWaWBZ45xqQtMo7JMnkHVfWz1fAI0r7T36TH9B2PNxbUXluuNaBw
-         GgPw+Lj0IJT3nHMEtnY0VXM3oKtPyb7YosmURseliq5oiT1bQQ9EQ2vmO1tJ3UOoIqJo
-         kDHhAbcaR10M9XXEVkP4MR2FIzgbWPT8f6KkQ/tQrVPI6kDEC824pVfR2zUErhBNzLnQ
-         WfjA==
-X-Gm-Message-State: AOAM531GAzuK6ULT6ByC8x3QvOEFYb04gfhpQFvpDpOolFCoiVlVlnQT
-        TecXdYCnc6awd9R+oDigfd5kT+uwePr/Ig==
-X-Google-Smtp-Source: ABdhPJyZYRRhzLL2UlK51GXIn8dg/AlpoIwKzmBCkIfS9gI4xHPUI6rPdEU/IUNGu7nT0r+zBEETmw==
-X-Received: by 2002:a17:902:7445:: with SMTP id e5mr17511388plt.233.1598551671179;
-        Thu, 27 Aug 2020 11:07:51 -0700 (PDT)
+        bh=R/ib6Ww1+kDrDThZznQQ5PG5P20/sGy3hQifxbMCpwI=;
+        b=DHtUoimIhwzh3gjZi1c75VCzOBlx0dv2HTHc/kwZbODLxkc0r2weOzSb//G/jVDl6K
+         qr8gKetKjYyeX/21PE2VpyQnjrsttPZsr05lZNBlAw1JMJu1LiXWwazx67IwzMNvxvej
+         rncvpSUVo8sxWRuJ5Mx6N3GFe3nWSN4ePVB2gu12yIsbwa+rgVTH5/ToJaukFI7cC3mD
+         g8PveEj+8Vvlit0jNZ3boHeN7BY4BvuWA2jLr4sOEv4llyTXf2FG845mCnGNc8/Rxscw
+         HqaZzkwKtOFS0OGHe8mbxJLY9skV8gkQiZiVBEDW27YlEAl7TayQapz80Mzh9rsk9WOS
+         68Gg==
+X-Gm-Message-State: AOAM532CAK4H197qGvypr6AzxadkD8vszAwZGU90o/MLzhIxc6GCqwzh
+        5XmFzMTs9icVxqCNo/KvKa51s6rnfocwFQ==
+X-Google-Smtp-Source: ABdhPJwI7+hhYc+FA6eqtzBaArIxcZj93BDD10R6miI5Ss+wAr6nkdnoAx3Ak4wkQGnywGEtfFxWPw==
+X-Received: by 2002:a17:90a:7066:: with SMTP id f93mr91934pjk.72.1598551672201;
+        Thu, 27 Aug 2020 11:07:52 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id n1sm3480249pfu.2.2020.08.27.11.07.49
+        by smtp.gmail.com with ESMTPSA id n1sm3480249pfu.2.2020.08.27.11.07.51
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 27 Aug 2020 11:07:50 -0700 (PDT)
+        Thu, 27 Aug 2020 11:07:51 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 03/12] ionic: use kcalloc for new arrays
-Date:   Thu, 27 Aug 2020 11:07:26 -0700
-Message-Id: <20200827180735.38166-4-snelson@pensando.io>
+Subject: [PATCH v2 net-next 04/12] ionic: remove lif list concept
+Date:   Thu, 27 Aug 2020 11:07:27 -0700
+Message-Id: <20200827180735.38166-5-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200827180735.38166-1-snelson@pensando.io>
 References: <20200827180735.38166-1-snelson@pensando.io>
@@ -60,52 +60,462 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use kcalloc for allocating arrays of structures.
-
-Following along after
-commit e71642009cbdA ("ionic_lif: Use devm_kcalloc() in ionic_qcq_alloc()")
-there are a couple more array allocations that can be converted
-to using devm_kcalloc().
+As we aren't yet supporting multiple lifs, we can remove
+complexity by removing the list concept and related code,
+to be re-engineered later when actually needed.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic.h   |   4 +-
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |  32 +++--
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |   6 +-
+ .../ethernet/pensando/ionic/ionic_devlink.c   |   2 +-
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 131 +++++-------------
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  14 +-
+ 6 files changed, 62 insertions(+), 127 deletions(-)
 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
+index f5a910c458ba..f699ed19eb4f 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic.h
+@@ -42,13 +42,11 @@ struct ionic {
+ 	struct ionic_dev_bar bars[IONIC_BARS_MAX];
+ 	unsigned int num_bars;
+ 	struct ionic_identity ident;
+-	struct list_head lifs;
+-	struct ionic_lif *master_lif;
++	struct ionic_lif *lif;
+ 	unsigned int nnqs_per_lif;
+ 	unsigned int neqs_per_lif;
+ 	unsigned int ntxqs_per_lif;
+ 	unsigned int nrxqs_per_lif;
+-	DECLARE_BITMAP(lifbits, IONIC_LIFS_MAX);
+ 	unsigned int nintrs;
+ 	DECLARE_BITMAP(intrs, IONIC_INTR_CTRL_REGS_MAX);
+ 	struct work_struct nb_work;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+index 85c686c16741..d1d6fb6669e5 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
+@@ -294,21 +294,21 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto err_out_port_reset;
+ 	}
+ 
+-	err = ionic_lifs_size(ionic);
++	err = ionic_lif_size(ionic);
+ 	if (err) {
+-		dev_err(dev, "Cannot size LIFs: %d, aborting\n", err);
++		dev_err(dev, "Cannot size LIF: %d, aborting\n", err);
+ 		goto err_out_port_reset;
+ 	}
+ 
+-	err = ionic_lifs_alloc(ionic);
++	err = ionic_lif_alloc(ionic);
+ 	if (err) {
+-		dev_err(dev, "Cannot allocate LIFs: %d, aborting\n", err);
++		dev_err(dev, "Cannot allocate LIF: %d, aborting\n", err);
+ 		goto err_out_free_irqs;
+ 	}
+ 
+-	err = ionic_lifs_init(ionic);
++	err = ionic_lif_init(ionic->lif);
+ 	if (err) {
+-		dev_err(dev, "Cannot init LIFs: %d, aborting\n", err);
++		dev_err(dev, "Cannot init LIF: %d, aborting\n", err);
+ 		goto err_out_free_lifs;
+ 	}
+ 
+@@ -321,9 +321,9 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			dev_err(dev, "Cannot enable existing VFs: %d\n", err);
+ 	}
+ 
+-	err = ionic_lifs_register(ionic);
++	err = ionic_lif_register(ionic->lif);
+ 	if (err) {
+-		dev_err(dev, "Cannot register LIFs: %d, aborting\n", err);
++		dev_err(dev, "Cannot register LIF: %d, aborting\n", err);
+ 		goto err_out_deinit_lifs;
+ 	}
+ 
+@@ -336,12 +336,13 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return 0;
+ 
+ err_out_deregister_lifs:
+-	ionic_lifs_unregister(ionic);
++	ionic_lif_unregister(ionic->lif);
+ err_out_deinit_lifs:
+ 	ionic_vf_dealloc(ionic);
+-	ionic_lifs_deinit(ionic);
++	ionic_lif_deinit(ionic->lif);
+ err_out_free_lifs:
+-	ionic_lifs_free(ionic);
++	ionic_lif_free(ionic->lif);
++	ionic->lif = NULL;
+ err_out_free_irqs:
+ 	ionic_bus_free_irq_vectors(ionic);
+ err_out_port_reset:
+@@ -377,11 +378,12 @@ static void ionic_remove(struct pci_dev *pdev)
+ 	if (!ionic)
+ 		return;
+ 
+-	if (ionic->master_lif) {
++	if (ionic->lif) {
+ 		ionic_devlink_unregister(ionic);
+-		ionic_lifs_unregister(ionic);
+-		ionic_lifs_deinit(ionic);
+-		ionic_lifs_free(ionic);
++		ionic_lif_unregister(ionic->lif);
++		ionic_lif_deinit(ionic->lif);
++		ionic_lif_free(ionic->lif);
++		ionic->lif = NULL;
+ 		ionic_bus_free_irq_vectors(ionic);
+ 	}
+ 
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+index d83eff0ae0ac..25cf376f3b40 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
+@@ -21,8 +21,8 @@ static void ionic_watchdog_cb(struct timer_list *t)
+ 
+ 	hb = ionic_heartbeat_check(ionic);
+ 
+-	if (hb >= 0 && ionic->master_lif)
+-		ionic_link_status_check_request(ionic->master_lif);
++	if (hb >= 0 && ionic->lif)
++		ionic_link_status_check_request(ionic->lif);
+ }
+ 
+ void ionic_init_devinfo(struct ionic *ionic)
+@@ -126,7 +126,7 @@ int ionic_heartbeat_check(struct ionic *ionic)
+ 	/* is this a transition? */
+ 	if (fw_status != idev->last_fw_status &&
+ 	    idev->last_fw_status != 0xff) {
+-		struct ionic_lif *lif = ionic->master_lif;
++		struct ionic_lif *lif = ionic->lif;
+ 		bool trigger = false;
+ 
+ 		if (!fw_status || fw_status == 0xff) {
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+index c4f4fd469fe3..8d9fb2e19cca 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+@@ -85,7 +85,7 @@ int ionic_devlink_register(struct ionic *ionic)
+ 		dev_err(ionic->dev, "devlink_port_register failed: %d\n", err);
+ 	else
+ 		devlink_port_type_eth_set(&ionic->dl_port,
+-					  ionic->master_lif->netdev);
++					  ionic->lif->netdev);
+ 
+ 	return err;
+ }
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index e95e3fa8840a..d73beddc30cc 100644
+index d73beddc30cc..de9da16db3a8 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -522,7 +522,6 @@ static int ionic_qcq_alloc(struct ionic_lif *lif, unsigned int type,
- static int ionic_qcqs_alloc(struct ionic_lif *lif)
+@@ -2045,7 +2045,7 @@ int ionic_reset_queues(struct ionic_lif *lif, ionic_reset_cb cb, void *arg)
+ 	return err;
+ }
+ 
+-static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index)
++int ionic_lif_alloc(struct ionic *ionic)
+ {
+ 	struct device *dev = ionic->dev;
+ 	union ionic_lif_identity *lid;
+@@ -2056,7 +2056,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 
+ 	lid = kzalloc(sizeof(*lid), GFP_KERNEL);
+ 	if (!lid)
+-		return ERR_PTR(-ENOMEM);
++		return -ENOMEM;
+ 
+ 	netdev = alloc_etherdev_mqs(sizeof(*lif),
+ 				    ionic->ntxqs_per_lif, ionic->ntxqs_per_lif);
+@@ -2070,7 +2070,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 
+ 	lif = netdev_priv(netdev);
+ 	lif->netdev = netdev;
+-	ionic->master_lif = lif;
++	ionic->lif = lif;
+ 	netdev->netdev_ops = &ionic_netdev_ops;
+ 	ionic_ethtool_set_ops(netdev);
+ 
+@@ -2089,7 +2089,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 	lif->nxqs = ionic->ntxqs_per_lif;
+ 
+ 	lif->ionic = ionic;
+-	lif->index = index;
++	lif->index = 0;
+ 	lif->ntxq_descs = IONIC_DEF_TXRX_DESC;
+ 	lif->nrxq_descs = IONIC_DEF_TXRX_DESC;
+ 	lif->tx_budget = IONIC_TX_BUDGET_DEFAULT;
+@@ -2101,7 +2101,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 	lif->tx_coalesce_usecs = lif->rx_coalesce_usecs;
+ 	lif->tx_coalesce_hw = lif->rx_coalesce_hw;
+ 
+-	snprintf(lif->name, sizeof(lif->name), "lif%u", index);
++	snprintf(lif->name, sizeof(lif->name), "lif%u", lif->index);
+ 
+ 	spin_lock_init(&lif->adminq_lock);
+ 
+@@ -2121,7 +2121,8 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 
+ 	ionic_debugfs_add_lif(lif);
+ 
+-	/* allocate queues */
++	/* allocate control queues and txrx queue arrays */
++	ionic_lif_queue_identify(lif);
+ 	err = ionic_qcqs_alloc(lif);
+ 	if (err)
+ 		goto err_out_free_lif_info;
+@@ -2140,9 +2141,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 	}
+ 	netdev_rss_key_fill(lif->rss_hash_key, IONIC_RSS_HASH_KEY_SIZE);
+ 
+-	list_add_tail(&lif->list, &ionic->lifs);
+-
+-	return lif;
++	return 0;
+ 
+ err_out_free_qcqs:
+ 	ionic_qcqs_free(lif);
+@@ -2156,27 +2155,7 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ err_out_free_lid:
+ 	kfree(lid);
+ 
+-	return ERR_PTR(err);
+-}
+-
+-int ionic_lifs_alloc(struct ionic *ionic)
+-{
+-	struct ionic_lif *lif;
+-
+-	INIT_LIST_HEAD(&ionic->lifs);
+-
+-	/* only build the first lif, others are for later features */
+-	set_bit(0, ionic->lifbits);
+-
+-	lif = ionic_lif_alloc(ionic, 0);
+-	if (IS_ERR_OR_NULL(lif)) {
+-		clear_bit(0, ionic->lifbits);
+-		return -ENOMEM;
+-	}
+-
+-	ionic_lif_queue_identify(lif);
+-
+-	return 0;
++	return err;
+ }
+ 
+ static void ionic_lif_reset(struct ionic_lif *lif)
+@@ -2211,7 +2190,7 @@ static void ionic_lif_handle_fw_down(struct ionic_lif *lif)
+ 		ionic_txrx_deinit(lif);
+ 		ionic_txrx_free(lif);
+ 	}
+-	ionic_lifs_deinit(ionic);
++	ionic_lif_deinit(lif);
+ 	ionic_reset(ionic);
+ 	ionic_qcqs_free(lif);
+ 
+@@ -2234,7 +2213,7 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
+ 	if (err)
+ 		goto err_out;
+ 
+-	err = ionic_lifs_init(ionic);
++	err = ionic_lif_init(lif);
+ 	if (err)
+ 		goto err_qcqs_free;
+ 
+@@ -2263,14 +2242,14 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
+ err_txrx_free:
+ 	ionic_txrx_free(lif);
+ err_lifs_deinit:
+-	ionic_lifs_deinit(ionic);
++	ionic_lif_deinit(lif);
+ err_qcqs_free:
+ 	ionic_qcqs_free(lif);
+ err_out:
+ 	dev_err(ionic->dev, "FW Up: LIFs restart failed - err %d\n", err);
+ }
+ 
+-static void ionic_lif_free(struct ionic_lif *lif)
++void ionic_lif_free(struct ionic_lif *lif)
  {
  	struct device *dev = lif->ionic->dev;
--	unsigned int q_list_size;
- 	unsigned int flags;
+ 
+@@ -2299,23 +2278,10 @@ static void ionic_lif_free(struct ionic_lif *lif)
+ 
+ 	/* free netdev & lif */
+ 	ionic_debugfs_del_lif(lif);
+-	list_del(&lif->list);
+ 	free_netdev(lif->netdev);
+ }
+ 
+-void ionic_lifs_free(struct ionic *ionic)
+-{
+-	struct list_head *cur, *tmp;
+-	struct ionic_lif *lif;
+-
+-	list_for_each_safe(cur, tmp, &ionic->lifs) {
+-		lif = list_entry(cur, struct ionic_lif, list);
+-
+-		ionic_lif_free(lif);
+-	}
+-}
+-
+-static void ionic_lif_deinit(struct ionic_lif *lif)
++void ionic_lif_deinit(struct ionic_lif *lif)
+ {
+ 	if (!test_and_clear_bit(IONIC_LIF_F_INITED, lif->state))
+ 		return;
+@@ -2336,17 +2302,6 @@ static void ionic_lif_deinit(struct ionic_lif *lif)
+ 	ionic_lif_reset(lif);
+ }
+ 
+-void ionic_lifs_deinit(struct ionic *ionic)
+-{
+-	struct list_head *cur, *tmp;
+-	struct ionic_lif *lif;
+-
+-	list_for_each_safe(cur, tmp, &ionic->lifs) {
+-		lif = list_entry(cur, struct ionic_lif, list);
+-		ionic_lif_deinit(lif);
+-	}
+-}
+-
+ static int ionic_lif_adminq_init(struct ionic_lif *lif)
+ {
+ 	struct device *dev = lif->ionic->dev;
+@@ -2492,7 +2447,7 @@ static int ionic_station_set(struct ionic_lif *lif)
+ 	return 0;
+ }
+ 
+-static int ionic_lif_init(struct ionic_lif *lif)
++int ionic_lif_init(struct ionic_lif *lif)
+ {
+ 	struct ionic_dev *idev = &lif->ionic->idev;
+ 	struct device *dev = lif->ionic->dev;
+@@ -2582,22 +2537,6 @@ static int ionic_lif_init(struct ionic_lif *lif)
+ 	return err;
+ }
+ 
+-int ionic_lifs_init(struct ionic *ionic)
+-{
+-	struct list_head *cur, *tmp;
+-	struct ionic_lif *lif;
+-	int err;
+-
+-	list_for_each_safe(cur, tmp, &ionic->lifs) {
+-		lif = list_entry(cur, struct ionic_lif, list);
+-		err = ionic_lif_init(lif);
+-		if (err)
+-			return err;
+-	}
+-
+-	return 0;
+-}
+-
+ static void ionic_lif_notify_work(struct work_struct *ws)
+ {
+ }
+@@ -2646,45 +2585,41 @@ static int ionic_lif_notify(struct notifier_block *nb,
+ 	return NOTIFY_DONE;
+ }
+ 
+-int ionic_lifs_register(struct ionic *ionic)
++int ionic_lif_register(struct ionic_lif *lif)
+ {
  	int err;
- 	int i;
-@@ -552,9 +551,9 @@ static int ionic_qcqs_alloc(struct ionic_lif *lif)
- 		ionic_link_qcq_interrupts(lif->adminqcq, lif->notifyqcq);
+ 
+-	INIT_WORK(&ionic->nb_work, ionic_lif_notify_work);
++	INIT_WORK(&lif->ionic->nb_work, ionic_lif_notify_work);
+ 
+-	ionic->nb.notifier_call = ionic_lif_notify;
++	lif->ionic->nb.notifier_call = ionic_lif_notify;
+ 
+-	err = register_netdevice_notifier(&ionic->nb);
++	err = register_netdevice_notifier(&lif->ionic->nb);
+ 	if (err)
+-		ionic->nb.notifier_call = NULL;
++		lif->ionic->nb.notifier_call = NULL;
+ 
+ 	/* only register LIF0 for now */
+-	err = register_netdev(ionic->master_lif->netdev);
++	err = register_netdev(lif->netdev);
+ 	if (err) {
+-		dev_err(ionic->dev, "Cannot register net device, aborting\n");
++		dev_err(lif->ionic->dev, "Cannot register net device, aborting\n");
+ 		return err;
+ 	}
+-	ionic->master_lif->registered = true;
+-	ionic_lif_set_netdev_info(ionic->master_lif);
++	lif->registered = true;
++	ionic_lif_set_netdev_info(lif);
+ 
+ 	return 0;
+ }
+ 
+-void ionic_lifs_unregister(struct ionic *ionic)
++void ionic_lif_unregister(struct ionic_lif *lif)
+ {
+-	if (ionic->nb.notifier_call) {
+-		unregister_netdevice_notifier(&ionic->nb);
+-		cancel_work_sync(&ionic->nb_work);
+-		ionic->nb.notifier_call = NULL;
++	if (lif->ionic->nb.notifier_call) {
++		unregister_netdevice_notifier(&lif->ionic->nb);
++		cancel_work_sync(&lif->ionic->nb_work);
++		lif->ionic->nb.notifier_call = NULL;
  	}
  
--	q_list_size = sizeof(*lif->txqcqs) * lif->nxqs;
- 	err = -ENOMEM;
--	lif->txqcqs = devm_kzalloc(dev, q_list_size, GFP_KERNEL);
-+	lif->txqcqs = devm_kcalloc(dev, lif->ionic->ntxqs_per_lif,
-+				   sizeof(*lif->txqcqs), GFP_KERNEL);
- 	if (!lif->txqcqs)
- 		goto err_out_free_notifyqcq;
- 	for (i = 0; i < lif->nxqs; i++) {
-@@ -565,7 +564,8 @@ static int ionic_qcqs_alloc(struct ionic_lif *lif)
- 			goto err_out_free_tx_stats;
- 	}
+-	/* There is only one lif ever registered in the
+-	 * current model, so don't bother searching the
+-	 * ionic->lif for candidates to unregister
+-	 */
+-	if (ionic->master_lif &&
+-	    ionic->master_lif->netdev->reg_state == NETREG_REGISTERED)
+-		unregister_netdev(ionic->master_lif->netdev);
++	if (lif->netdev->reg_state == NETREG_REGISTERED)
++		unregister_netdev(lif->netdev);
++	lif->registered = false;
+ }
  
--	lif->rxqcqs = devm_kzalloc(dev, q_list_size, GFP_KERNEL);
-+	lif->rxqcqs = devm_kcalloc(dev, lif->ionic->nrxqs_per_lif,
-+				   sizeof(*lif->rxqcqs), GFP_KERNEL);
- 	if (!lif->rxqcqs)
- 		goto err_out_free_tx_stats;
- 	for (i = 0; i < lif->nxqs; i++) {
+ static void ionic_lif_queue_identify(struct ionic_lif *lif)
+@@ -2803,7 +2738,7 @@ int ionic_lif_identify(struct ionic *ionic, u8 lif_type,
+ 	return 0;
+ }
+ 
+-int ionic_lifs_size(struct ionic *ionic)
++int ionic_lif_size(struct ionic *ionic)
+ {
+ 	struct ionic_identity *ident = &ionic->ident;
+ 	unsigned int nintrs, dev_nintrs;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+index 1ee3b14c8d50..95d85502c18d 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+@@ -242,15 +242,15 @@ void ionic_get_stats64(struct net_device *netdev,
+ 		       struct rtnl_link_stats64 *ns);
+ void ionic_lif_deferred_enqueue(struct ionic_deferred *def,
+ 				struct ionic_deferred_work *work);
+-int ionic_lifs_alloc(struct ionic *ionic);
+-void ionic_lifs_free(struct ionic *ionic);
+-void ionic_lifs_deinit(struct ionic *ionic);
+-int ionic_lifs_init(struct ionic *ionic);
+-int ionic_lifs_register(struct ionic *ionic);
+-void ionic_lifs_unregister(struct ionic *ionic);
++int ionic_lif_alloc(struct ionic *ionic);
++int ionic_lif_init(struct ionic_lif *lif);
++void ionic_lif_free(struct ionic_lif *lif);
++void ionic_lif_deinit(struct ionic_lif *lif);
++int ionic_lif_register(struct ionic_lif *lif);
++void ionic_lif_unregister(struct ionic_lif *lif);
+ int ionic_lif_identify(struct ionic *ionic, u8 lif_type,
+ 		       union ionic_lif_identity *lif_ident);
+-int ionic_lifs_size(struct ionic *ionic);
++int ionic_lif_size(struct ionic *ionic);
+ int ionic_lif_rss_config(struct ionic_lif *lif, u16 types,
+ 			 const u8 *key, const u32 *indir);
+ 
 -- 
 2.17.1
 
