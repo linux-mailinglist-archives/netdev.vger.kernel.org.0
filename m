@@ -2,117 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3527254017
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 10:03:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32CBF254020
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 10:03:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728048AbgH0IDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 04:03:02 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:62090 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726157AbgH0IDA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 04:03:00 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598515380; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=deplzEvxYDzNg5sadmLOiZaUYk7lhFmqIsbII+EbBmw=; b=xGPsfIm7gA+qGrnKx2dBUNlSY9k8fUNlOj24F+Ips0cb+dtBrUuTA0GutgOfr8Yh0Ql+SKlI
- GNR8WmUZ9qCsj9yJ/Jd9Zk/0zd673hPmjyKUX2BP0bHiBPcm/Y9oP245qlD7zn8+j6nLQgz4
- iZJSXwejzjAS0hAI9lAMFqoV8II=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 5f47689ae2d4d29fc8d95bba (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 27 Aug 2020 08:02:34
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 661A6C43387; Thu, 27 Aug 2020 08:02:34 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 02436C433C6;
-        Thu, 27 Aug 2020 08:02:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 02436C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
+        id S1728391AbgH0IDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 04:03:36 -0400
+Received: from spam.zju.edu.cn ([61.164.42.155]:20972 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727786AbgH0ID0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 04:03:26 -0400
+Received: from localhost.localdomain (unknown [210.32.144.184])
+        by mail-app4 (Coremail) with SMTP id cS_KCgCnHXmtaEdfNtlgAQ--.29784S4;
+        Thu, 27 Aug 2020 16:02:57 +0800 (CST)
+From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
+To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "\<netdev\@vger.kernel.org\>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Kaloyan Nikolov <konik98@gmail.com>
-Subject: Re: [PATCH net] mwifiex: Increase AES key storage size to 256 bits
-References: <20200825153829.38043-1-luzmaximilian@gmail.com>
-        <CA+ASDXPoxdMb4b5d0Ayv=JFACHcq7EXub14pJtJfcCV2di95Rg@mail.gmail.com>
-Date:   Thu, 27 Aug 2020 11:02:28 +0300
-In-Reply-To: <CA+ASDXPoxdMb4b5d0Ayv=JFACHcq7EXub14pJtJfcCV2di95Rg@mail.gmail.com>
-        (Brian Norris's message of "Tue, 25 Aug 2020 12:30:28 -0700")
-Message-ID: <87mu2gldnv.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+        Scott Mayhew <smayhew@redhat.com>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] gss_krb5: Fix memleak in krb5_make_rc4_seq_num
+Date:   Thu, 27 Aug 2020 16:02:50 +0800
+Message-Id: <20200827080252.26396-1-dinghao.liu@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cS_KCgCnHXmtaEdfNtlgAQ--.29784S4
+X-Coremail-Antispam: 1UD129KBjvdXoW7XFyxJry5ur45GFWxCF17Wrg_yoWfKFX_Wa
+        y8XFs8Xa1kWFnF9w47W39xZryvkwn8Arn5WasxKFyfZa1ayFn8A3ykWr1kur15uFWrArZ7
+        GF4kAr9xt3WIkjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb-kFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
+        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
+        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2
+        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
+        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwCY02Avz4vE
+        14v_GFyl42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8uw4UJr1UMxC20s026x
+        CaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_
+        JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r
+        1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_
+        Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JV
+        W8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjNJ55UUUUU==
+X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAg0EBlZdtPrBDAAZsc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Brian Norris <briannorris@chromium.org> writes:
+When kmalloc() fails, cipher should be freed
+just like when krb5_rc4_setup_seq_key() fails.
 
-> Hi,
->
-> On Tue, Aug 25, 2020 at 8:38 AM Maximilian Luz <luzmaximilian@gmail.com> wrote:
->>
->> Following commit e18696786548 ("mwifiex: Prevent memory corruption
->> handling keys") the mwifiex driver fails to authenticate with certain
->> networks, specifically networks with 256 bit keys, and repeatedly asks
->> for the password. The kernel log repeats the following lines (id and
->> bssid redacted):
->>
->>     mwifiex_pcie 0000:01:00.0: info: trying to associate to '<id>' bssid <bssid>
->>     mwifiex_pcie 0000:01:00.0: info: associated to bssid <bssid> successfully
->>     mwifiex_pcie 0000:01:00.0: crypto keys added
->>     mwifiex_pcie 0000:01:00.0: info: successfully disconnected from <bssid>: reason code 3
->>
->> Tracking down this problem lead to the overflow check introduced by the
->> aforementioned commit into mwifiex_ret_802_11_key_material_v2(). This
->> check fails on networks with 256 bit keys due to the current storage
->> size for AES keys in struct mwifiex_aes_param being only 128 bit.
->>
->> To fix this issue, increase the storage size for AES keys to 256 bit.
->>
->> Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
->> Reported-by: Kaloyan Nikolov <konik98@gmail.com>
->> Tested-by: Kaloyan Nikolov <konik98@gmail.com>
->
-> Thanks for this! I just happened to notice this breakage here, as we
-> just merged the relevant -stable updates. I think it would be wise to
-> get the Fixes tag Dan noted, when Kalle lands this.
+Fixes: e7afe6c1d486b ("sunrpc: fix 4 more call sites that were using stack memory with a scatterlist")
+Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+---
+ net/sunrpc/auth_gss/gss_krb5_seqnum.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Ok, I'll queue this for v5.9 and add the Fixes tag.
-
-If anyone is bored it would be great to get patchwork automatically
-pickup the Fixes tags :) It already does that Acked-by, Reported-by and
-Tested-by tags:
-
-Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
-Reported-by: Kaloyan Nikolov <konik98@gmail.com>
-Tested-by: Kaloyan Nikolov <konik98@gmail.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Tested-by: Brian Norris <briannorris@chromium.org>
-
+diff --git a/net/sunrpc/auth_gss/gss_krb5_seqnum.c b/net/sunrpc/auth_gss/gss_krb5_seqnum.c
+index 507105127095..88ca58d11082 100644
+--- a/net/sunrpc/auth_gss/gss_krb5_seqnum.c
++++ b/net/sunrpc/auth_gss/gss_krb5_seqnum.c
+@@ -53,8 +53,10 @@ krb5_make_rc4_seq_num(struct krb5_ctx *kctx, int direction, s32 seqnum,
+ 		return PTR_ERR(cipher);
+ 
+ 	plain = kmalloc(8, GFP_NOFS);
+-	if (!plain)
+-		return -ENOMEM;
++	if (!plain) {
++		code = -ENOMEM;
++		goto out;
++	}
+ 
+ 	plain[0] = (unsigned char) ((seqnum >> 24) & 0xff);
+ 	plain[1] = (unsigned char) ((seqnum >> 16) & 0xff);
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.17.1
+
