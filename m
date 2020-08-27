@@ -2,69 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01664254F71
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 21:54:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C7D254F69
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 21:53:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727781AbgH0TyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 15:54:10 -0400
-Received: from forward105j.mail.yandex.net ([5.45.198.248]:35548 "EHLO
-        forward105j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726236AbgH0TyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 15:54:10 -0400
-X-Greylist: delayed 341 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Aug 2020 15:54:08 EDT
-Received: from mxback17j.mail.yandex.net (mxback17j.mail.yandex.net [IPv6:2a02:6b8:0:1619::93])
-        by forward105j.mail.yandex.net (Yandex) with ESMTP id 5611BB20D8C;
-        Thu, 27 Aug 2020 22:48:17 +0300 (MSK)
-Received: from iva7-f62245f79210.qloud-c.yandex.net (iva7-f62245f79210.qloud-c.yandex.net [2a02:6b8:c0c:2e83:0:640:f622:45f7])
-        by mxback17j.mail.yandex.net (mxback/Yandex) with ESMTP id cCPYONAQh0-mGbekdjK;
-        Thu, 27 Aug 2020 22:48:17 +0300
-Received: by iva7-f62245f79210.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id JKX2XogRXs-mEnG4U43;
-        Thu, 27 Aug 2020 22:48:15 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Lach <iam@lach.pw>
-Cc:     iam@lach.pw, Wensong Zhang <wensong@linux-vs.org>,
-        Simon Horman <horms@verge.net.au>,
-        Julian Anastasov <ja@ssi.bg>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Remove ipvs v6 dependency on iptables
-Date:   Fri, 28 Aug 2020 00:48:02 +0500
-Message-Id: <20200827194802.1164-1-iam@lach.pw>
-X-Mailer: git-send-email 2.28.0
+        id S1727020AbgH0TxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 15:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52376 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbgH0TxU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 15:53:20 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FE4C061264
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 12:53:20 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id 67so4094767pgd.12
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 12:53:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=zT+7i5F922jHW3xbSyPsodONvU+BJMw5RUOU+GrK9AQ=;
+        b=TVKHk5a2L7Dz8RyYn3vl2Tz9EeaHrWu+6ykLMI/rbaMrf4SzaRvoGZo+KQRfof1qNR
+         Sx1O0NcljRSe1YX39+iBl69ePi7jf9wmedUKHnaAyF58159dq2jD2sl7IWC4CiULbg8Y
+         dhcvEGrKcmTjYidzAcRG12FfM+W1ggs0//8ozEbsBTdyiZYmdlqu0qO9CcxRAQ6i82gP
+         AGIQ4y13LDfrQlYIg34BicEpBC9b62ZehP9cNjRPoKSAZnVgvO19u8hkos6zibCd1V76
+         HO/LY4MuRN7o0knflEwq6I1Sqk3lE79U1UxloF+IAxP5n+Gsd27sc/Grdlzm2qQwp/De
+         Rl2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=zT+7i5F922jHW3xbSyPsodONvU+BJMw5RUOU+GrK9AQ=;
+        b=FyfR0tk6snlUnT6xecmS8duWvNUYDnPtZ/xWNBZwuyxX6J1iXkuhdBCNBcpcwJ8TjB
+         XHXWAVk9QXOEcsH1S2mBvVRFdFQjvtY0gwuuIktn4kGLVqV4JjVscSK41x2EbDnsWfdt
+         ldzgsUKJ2CxYyRYF5NIxCGQiVs/r3j+maa8+NsUArZ4tlFJkzTcO2muyVVdVwttZE5D7
+         9jjqqTt9c0cAMEnk5Wi6UFT8M1t4EkaB1qV7ZoFUgTdJeXUHIH7aXCYGsCcWT8vZN44J
+         6sY5+9X82aXc/p7h0xHiwMgLAYWpJoriBzifBjwMd7Jb/l9UoqPfQNtrnA9HQ4O7PPCs
+         SDZw==
+X-Gm-Message-State: AOAM5306yRg9+Zzx4fAlaMEA7yiHIwy57kagAxq4i5UHXHd4q+RevcLI
+        Cxvc9vPebtZrmfXHo2UbT1g5y2TV6BJeXA==
+X-Google-Smtp-Source: ABdhPJwizxVMWdbPOC0ZmeXgSXjoXIaTl6mrDaGCW+wP5QhOWe2ByMj6kauuROrMUHRL20FYxQRJKQ==
+X-Received: by 2002:a17:902:d341:: with SMTP id l1mr16665249plk.36.1598557999700;
+        Thu, 27 Aug 2020 12:53:19 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id k6sm2914897pju.2.2020.08.27.12.53.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Aug 2020 12:53:18 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 07/12] ionic: reduce contiguous memory
+ allocation requirement
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20200827180735.38166-1-snelson@pensando.io>
+ <20200827180735.38166-8-snelson@pensando.io>
+ <20200827124625.511ef647@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <bd9b0427-6772-068e-d7bd-b1aabf1ac6ed@pensando.io>
+Date:   Thu, 27 Aug 2020 12:53:17 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
+In-Reply-To: <20200827124625.511ef647@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This dependency was added in 63dca2c0b0e7a92cb39d1b1ecefa32ffda201975, because this commit had dependency on
-ipv6_find_hdr, which was located in iptables-specific code
 
-But it is no longer required, because f8f626754ebeca613cf1af2e6f890cfde0e74d5b moved them to a more common location
----
- net/netfilter/ipvs/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
 
-diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
-index 2c1593089..eb0e329f9 100644
---- a/net/netfilter/ipvs/Kconfig
-+++ b/net/netfilter/ipvs/Kconfig
-@@ -29,7 +29,6 @@ if IP_VS
- config	IP_VS_IPV6
- 	bool "IPv6 support for IPVS"
- 	depends on IPV6 = y || IP_VS = IPV6
--	select IP6_NF_IPTABLES
- 	select NF_DEFRAG_IPV6
- 	help
- 	  Add IPv6 support to IPVS.
--- 
-2.28.0
+On 8/27/20 12:46 PM, Jakub Kicinski wrote:
+> On Thu, 27 Aug 2020 11:07:30 -0700 Shannon Nelson wrote:
+>> +	q_base = (void *)PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
+> The point of PTR_ALIGN is to make the casts unnecessary. Does it not
+> work?
+Here's what I see from two different compiler versions:
 
+drivers/net/ethernet/pensando/ionic/ionic_lif.c:514:9: warning: 
+assignment makes pointer from integer without a cast [-Wint-conversion]
+   q_base = PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
+
+
+drivers/net/ethernet/pensando/ionic/ionic_lif.c:514:9: warning: 
+assignment to 'void *' from 'long unsigned int' makes pointer from 
+integer without a cast [-Wint-conversion]
+   q_base = PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
+
+sln
