@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 756272548FE
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:18:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B6B2548E2
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:15:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728117AbgH0PSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 11:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58998 "EHLO
+        id S1727935AbgH0PPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 11:15:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728686AbgH0Lfu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 07:35:50 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 481CBC061264
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:35:45 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id e17so158573ils.10
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:35:45 -0700 (PDT)
+        with ESMTP id S1728777AbgH0Lia (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 07:38:30 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B315C06123A
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:37:20 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id m23so5413328iol.8
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:37:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nk3XMsscwoEZw1pfmEYAb8eP1m4cERKtDNn3BOQ6wZo=;
-        b=U/C0BJIItk4cpBQIKKHprsucVwFzLLWgqyxYVTuviqiRvJjFV00mPKgYgU/U7w4t9Q
-         Y40T9K2BvdJWBQDj0tw6ewwLwDyW1ggK0A40/SxM6ZC0MKMxWAcf8PU1zP7NJ0DL7mwD
-         mabdMS5DBW7DARO/TJRFwzlgPVu8S0VESQgV96hED2alyqd76GfOWzrgDjc3gWEb5N5f
-         ZXoX2eU3bk3e00NNtglqOZOkh7D0oiLs7icsqPvxkUgCc0SrWpmEME3fJ2zGpsL7xeGb
-         Os6qqgp8yE/vPgMSIJW3N5qhxl98XatED8SwbtCvliPqsXhjaCEIi87d3MLFeclXamQ9
-         +NzA==
+        bh=rcg4TIxpS2XrDTWj8mS51Tf2vGitjPKgU895pVtnQkw=;
+        b=SgvKEzvYUaEchSKyXnlDf9/rSQtJ8+7m+0GJkn97LKTQl5LEu9FPK9m43svxpmEfgt
+         iH/oN1s764d2JTNj/xWEXaVNL2GB4vqgkruQ1yKEpPqo0ll0EXg+VvWLG5Tl53EbjGJw
+         +OGgWYITwpB0yMLuSqdCB89dDAVwtP1BY+5CjKOb93e42M+8JUnLQcusWy6fNs59V4aj
+         fd7LomJjV6nuXESt9E5JoDX4+oTnHpvJgRWMGzbDO0efG3Xp49x3kgCDbQ4mLt/wG/gf
+         OWHDOiNvcZ2LxXvkoqrEFfIUTur/0rz60hcbbp+NYII6e87FUy2OcA34+YMh5WAjVxKN
+         N/Ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nk3XMsscwoEZw1pfmEYAb8eP1m4cERKtDNn3BOQ6wZo=;
-        b=GDgkfWujauNsOtAySNR4KcyuenaHtd9N0lic54kePIFvtEazWEbdmdlwCgz5HAFh4k
-         ClANb3u7LAan0wbqtdy/dixFBHaeW/7D6y0O/nDKgKNKIgV820mFeHheQ8lwLHa+nP7C
-         4Nc+/8j3I3EhmO0yO6g7x7SqYVf8Hj72K9+Ym6clUSiE9MSDYJ2fokr4zbePKOMn31Wx
-         +MEAvXaLinDcUmpt5RuBVcG6YHvGi5DChEtXlvOJkvr9rf+0wjkxDngcPveTBndzPuYe
-         AschOiY2RuZzE73b8Tcv5A1qNtXf62SzywdgYOwUNoOk2zObYSFL6Yo32+zX05n+ZPWn
-         gLDw==
-X-Gm-Message-State: AOAM531ad1yRGcgsWcZ2bKMSggATxXk2FqeiU5OR9Aid86Txv0DvSn3p
-        7mc2JxGu/jQjoKFE9XHVybly9lTsmay+GN8vcQCy5w==
-X-Google-Smtp-Source: ABdhPJwxSXQ2/aSL9AbPqwXrgVZPAyH+csHxjYXsclhJT00Mv6s7Ff00Pw0g3zQXn7UCx/ACkT8asEAMiK59f/Wo/HY=
-X-Received: by 2002:a92:bb0e:: with SMTP id w14mr15038915ili.68.1598528144077;
- Thu, 27 Aug 2020 04:35:44 -0700 (PDT)
+        bh=rcg4TIxpS2XrDTWj8mS51Tf2vGitjPKgU895pVtnQkw=;
+        b=eTlRHqQsWnnX9YmnmvAU+yuca77wIMM/+uCE87YZnIb4OGcaP7Y3y3EC6NEuEzA2Nq
+         OjVAHQsGVILSzb4Zc7yfYtZ7qEmohLQB3fMnOoGbUD0gzPWr8Rbwgi0Rpk5Acd2bTTwk
+         1H90RCiIzENvKbuAt1TkNgHsAESYiDk1c5G2Qe3kzKd3XbRqzkF0/R6AwaWqTknhGDTm
+         yXQjCE/VrZS9hOeUqCNAw4bdBhFDbkp7UiE8Es8lDbPFa9WslTNTZ7JJ2NOh6r8sK4WQ
+         zIunew2BSWYGNK8ZOCBd2HfC8TGkEutUREJpIsY3rFXo/Fff+/4IpwR4Zl5y6YGm+YDc
+         kJRw==
+X-Gm-Message-State: AOAM532E5oZyEBw/2Div31ofROWCUfScqyAuI0TLsrjG5gBB4Oa6ldBa
+        yuUqBW7zQjuDGVUu+Vw8Tw5W3RolzXQKSLollOFftw==
+X-Google-Smtp-Source: ABdhPJw1N6sVjHVtii/hCb0grxGUljPwAXeuCDgAlkjVrpPoJ2ImTSGfKfLHTqtDw39I1tiyLzx6dfrl5d7CtzSMMnU=
+X-Received: by 2002:a6b:7846:: with SMTP id h6mr16736497iop.145.1598528239275;
+ Thu, 27 Aug 2020 04:37:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200827112922.48889-1-linmiaohe@huawei.com>
-In-Reply-To: <20200827112922.48889-1-linmiaohe@huawei.com>
+References: <20200827112342.44526-1-linmiaohe@huawei.com>
+In-Reply-To: <20200827112342.44526-1-linmiaohe@huawei.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 27 Aug 2020 04:35:32 -0700
-Message-ID: <CANn89iK3CKrXPj5fNYys26zd8P67jz8GZEF2WjLD6Xw05SimcA@mail.gmail.com>
-Subject: Re: [PATCH] net: Set trailer iff skb1 is the last one
+Date:   Thu, 27 Aug 2020 04:37:08 -0700
+Message-ID: <CANn89iJ7orDEWxdBJVYqhk+1WF2ZuRpzN_XOaPoGRrn2hWjGNQ@mail.gmail.com>
+Subject: Re: [PATCH] net: exit immediately when off = 0 in skb_headers_offset_update()
 To:     Miaohe Lin <linmiaohe@huawei.com>
 Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -66,30 +66,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 27, 2020 at 4:31 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
+On Thu, Aug 27, 2020 at 4:25 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
 >
-> Set trailer iff skb1 is the skbuff where the tailbits space begins.
+> In the case of off = 0, skb_headers_offset_update() do nothing indeed.
 >
 > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 > ---
->  net/core/skbuff.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  net/core/skbuff.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >
 > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 0b24aed04060..18ed56316e56 100644
+> index 18ed56316e56..f67f0da20a5b 100644
 > --- a/net/core/skbuff.c
 > +++ b/net/core/skbuff.c
-> @@ -4488,8 +4488,9 @@ int skb_cow_data(struct sk_buff *skb, int tailbits, struct sk_buff **trailer)
->                         skb1 = skb2;
->                 }
->                 elt++;
-> -               *trailer = skb1;
->                 skb_p = &skb1->next;
-> +               if (!*skb_p)
-> +                       *trailer = skb1;
+> @@ -1459,6 +1459,8 @@ EXPORT_SYMBOL(skb_clone);
 >
+>  void skb_headers_offset_update(struct sk_buff *skb, int off)
+>  {
+> +       if (unlikely(off == 0))
+> +               return;
 
-Why is adding a conditional test going to help ?
+If this is unlikely, I doubt adding a test is going to save anything.
 
-cpu will have hard time predicting this one, I doubt this kind of
-change is a win.
+This will instead add a conditional test for the 'likely' cases.
