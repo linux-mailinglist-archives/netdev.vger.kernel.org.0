@@ -2,194 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26DD2253CC2
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 06:33:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B0FE253CE0
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 06:50:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726087AbgH0Eds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 00:33:48 -0400
-Received: from nat-hk.nvidia.com ([203.18.50.4]:54107 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725847AbgH0Edq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 00:33:46 -0400
-Received: from hkpgpgate102.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f4737a80000>; Thu, 27 Aug 2020 12:33:44 +0800
-Received: from HKMAIL103.nvidia.com ([10.18.16.12])
-  by hkpgpgate102.nvidia.com (PGP Universal service);
-  Wed, 26 Aug 2020 21:33:44 -0700
-X-PGP-Universal: processed;
-        by hkpgpgate102.nvidia.com on Wed, 26 Aug 2020 21:33:44 -0700
-Received: from HKMAIL101.nvidia.com (10.18.16.10) by HKMAIL103.nvidia.com
- (10.18.16.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 27 Aug
- 2020 04:31:46 +0000
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.177)
- by HKMAIL101.nvidia.com (10.18.16.10) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Thu, 27 Aug 2020 04:31:46 +0000
+        id S1726804AbgH0EuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 00:50:06 -0400
+Received: from mail-db8eur05on2079.outbound.protection.outlook.com ([40.107.20.79]:27616
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726028AbgH0EuF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 00:50:05 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KUxMku8Vif1ARAJMX6/DCOp8FOueo5Kd4+QI2RxSDcaxOnuFMdmgGYpXC+xJYIJ/uepoekBmT+HiY6UsxaqSkquXvg4e8IrdC1RGgIfX9v+EMRsgxlqxN8S8gMylgxmI/N7IUfWQBpaBqa3OCOaiOrnK95zo0JDjjvgjkiT0LnKRbQti2Wmx/dUGwjwxechL9YOf1DLngtMZX+MxUhuLuDO8hidU5Jj5bq0YRpHo6RNJAX5aBvCCmdo493jLmsZYT5of9jH/pBbH0sjHSVXWoSRS80cPlUaFbe/8Dli5kVtuoFeLC8cfM527c72tzCUWKR6diSg0j0c0uOsWjItx8g==
+ b=PE9ppHVcGk4kOhwQMpG1D63tWJRZNPdrSfE4FrXZrEMX3CAJhXJ03vtA59miyi7M9jiCB9Jw1DJN0tjn5G5UqL413kA2kCfgrR1eAn0gIH6hh93itIIZd1jKHsSyWn5PZDh0voeCeypRm6rvBopfwEsxRhMJN+PBc1J8Nznp9IWSDrSkU/CjlsHwi8B7goCPsXGH5s3RV+XXJKk4gMMVGY9chE6oIeKvmG4fg+kOZ96Obx1tnevtWeEkNyGT1wduwlktov4i60PzZkD/m2b2KD8JBhFUEBAMgNtfzfZ7vboHH36I2UZpPhOBME9p7/9WwBC6illznUtEx2phGQWisQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jdJOKRRljgPpOvqY0aBOxbW2gERyrxikzWdzCeh3d9E=;
- b=LiNnKc9mppGC0HBb0IHZsr68cB/1NrvSNvNNiVk7Hl7b0ZdUCyO1RO9OWftM7k6SS2i44y8HwLkEGjkvTtDRrSij0Gy5glNMBT+IAlSdyBtnF/ipriOGT1KhwZQZY9ooGC5jXsI+vYk8+e154Myf3sy83UbMeDu10qFj+7G/rC+hxrY4sMR53sKpYC/+dbKKBzkSLUUoWqKXHGZdKG7QUHz43KmVsIvEQdtYKqs4vmKP2tOE6QOJOcedX6+MnbVwnsd6BOhuPQzfZQqM/AjZfqjsgoiwlsR9u541VDKq6yyALcjeByrsfG6+f1nEJ+Zg8T9eboekKArgXDBi4JR49A==
+ bh=TPupukfW0cdWq5zkm7LWxLzLoDPsb73fwQiicwAas2Y=;
+ b=nmMcRWWnCvvxfSpWWqSeloyWWxvVCf/K0g9b38cYQi6nbHX83ciU1dmzlS2eWgCC9BfbRuvizUU52Jg20P2uhqK2cGq+ngzaLzn/XHxxGvwtpeT748TCOqXUdM/wfdtID8xjnScVR48eEGLdaOBsb7Q55SjPXLID1SLcqWuxeuOUvoadwmdKTKsOiJoG9PIaPVSGzGxCc9KDIJlvx2QriSAZkVi3ZRGNOvIxMhsRJuaRcsaSWXZ01Ql55x9CBzJ9ssDEeBQHjsmdsQkiNCRFw9KeefNllH4qH4GSagL6IquP+y91iPT3OwTFvpUIPUlgronrBfeSCZfxzUUWBX1x6A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
- by BY5PR12MB3955.namprd12.prod.outlook.com (2603:10b6:a03:1a2::12) with
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TPupukfW0cdWq5zkm7LWxLzLoDPsb73fwQiicwAas2Y=;
+ b=G8D/n8jJ30jDGj4o1UQIJlBVubavO8PxNYuvvxIoHPxm+zlRAbDfykavgV3E7XkzrLNgslAu3N//TIxaQaf545E+RzhpNCXkpAgPjv5/rZUwgYQ+4fClySJjEmAQ/apf6rjCIA/oXOaBjuheflxKPxCD6HgS9yEyVnbH2CFI+4s=
+Received: from VI1PR04MB4366.eurprd04.prod.outlook.com (2603:10a6:803:3d::27)
+ by VI1PR0402MB3568.eurprd04.prod.outlook.com (2603:10a6:803:f::27) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Thu, 27 Aug
- 2020 04:31:43 +0000
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::b5f0:8a21:df98:7707]) by BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::b5f0:8a21:df98:7707%7]) with mapi id 15.20.3305.032; Thu, 27 Aug 2020
- 04:31:43 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Parav Pandit <parav@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "roid@mellanox.com" <roid@mellanox.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: RE: [PATCH net-next 2/3] devlink: Consider other controller while
- building phys_port_name
-Thread-Topic: [PATCH net-next 2/3] devlink: Consider other controller while
- building phys_port_name
-Thread-Index: AQHWeugVEZjy8+Bcu0qKDL1vbGgf/KlJitKAgABAGdCAAQhmgIAAinbQ
-Date:   Thu, 27 Aug 2020 04:31:43 +0000
-Message-ID: <BY5PR12MB432276DBB3345AD328D787E4DC550@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20200825135839.106796-1-parav@mellanox.com>
-        <20200825135839.106796-3-parav@mellanox.com>
-        <20200825173203.2c80ed48@kicinski-fedora-PC1C0HJN>
-        <BY5PR12MB4322E2E21395BD1553B8E375DC540@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20200826130747.4d886a09@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200826130747.4d886a09@kicinski-fedora-PC1C0HJN>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.26; Thu, 27 Aug
+ 2020 04:50:00 +0000
+Received: from VI1PR04MB4366.eurprd04.prod.outlook.com
+ ([fe80::8937:c469:3af3:9666]) by VI1PR04MB4366.eurprd04.prod.outlook.com
+ ([fe80::8937:c469:3af3:9666%4]) with mapi id 15.20.3305.032; Thu, 27 Aug 2020
+ 04:50:00 +0000
+From:   Ganapathi Bhat <ganapathi.bhat@nxp.com>
+To:     Brian Norris <briannorris@chromium.org>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+CC:     amit karwar <amitkarwar@gmail.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Nishant Sarmukadam <nishants@marvell.com>,
+        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
+        syzbot <syzbot+373e6719b49912399d21@syzkaller.appspotmail.com>,
+        syzbot <syzbot+dc4127f950da51639216@syzkaller.appspotmail.com>
+Subject: RE: [EXT] Re: [PATCH v2] mwifiex: don't call del_timer_sync() on
+ uninitialized timer
+Thread-Topic: [EXT] Re: [PATCH v2] mwifiex: don't call del_timer_sync() on
+ uninitialized timer
+Thread-Index: AQHWekfYicXMahtYK0m70usVJQxeUalLY7Cg
+Date:   Thu, 27 Aug 2020 04:50:00 +0000
+Message-ID: <VI1PR04MB4366AFB378F2AC506D8565848F550@VI1PR04MB4366.eurprd04.prod.outlook.com>
+References: <MN2PR18MB2637D7C742BC235FE38367F0A09C0@MN2PR18MB2637.namprd18.prod.outlook.com>
+ <20200821082720.7716-1-penguin-kernel@I-love.SAKURA.ne.jp>
+ <CA+ASDXOHDU+SWmr+7aOUtbuzC22T-UWhZXJ5UXtcsev5ZTbqMw@mail.gmail.com>
+In-Reply-To: <CA+ASDXOHDU+SWmr+7aOUtbuzC22T-UWhZXJ5UXtcsev5ZTbqMw@mail.gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [49.207.209.10]
+authentication-results: chromium.org; dkim=none (message not signed)
+ header.d=none;chromium.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [106.210.253.11]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 47df37ad-d6e4-412e-da70-08d84a421a1d
-x-ms-traffictypediagnostic: BY5PR12MB3955:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR12MB39559FA256AC5E3F809C9716DC550@BY5PR12MB3955.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 32231a22-5b06-41eb-d9f4-08d84a44a7c8
+x-ms-traffictypediagnostic: VI1PR0402MB3568:
+x-microsoft-antispam-prvs: <VI1PR0402MB3568F2A951B1EC1CCB8D35428F550@VI1PR0402MB3568.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4502;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: F4te42sBi4wEfYvS5duDbCGUv7V6dE00qU2hMhRp5I912UIRtQb4j4/1Nq4TRHbwfSim8SSEVlhVoSFLnFQPTrcGLZOhJawhl1rahO1TJiPZ9HI+5FHnAM/vosLCu8/NLgU3BnECv3NZSgvqtNMCHQCJLN0ZjdVdDNiucybEmorQePEBwZbClNznfgYNdqfkw37xCD8fOoOpeCRTlV+rvaqCaZIAvioXHH6cubi2rm/1m+0fI9pd3LGQhgYA2w7OsTUNHi69wG1BHKBOtR+yQhkTyMTGdU0JseOxFTdS/WG47JTmHp52Yd/bgOZKr2R6
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(366004)(346002)(376002)(136003)(66476007)(66946007)(76116006)(52536014)(64756008)(66556008)(71200400001)(66446008)(6916009)(55236004)(7696005)(33656002)(186003)(107886003)(6506007)(8936002)(8676002)(9686003)(55016002)(4326008)(5660300002)(26005)(54906003)(2906002)(478600001)(83380400001)(316002)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: JldnjdsFU7Vr7xGCJcFuoRo4us3eAYU5wgrptB1bg7XGMGi1j4TODVpTBT0wI5HgDwi50hvgsoznSjl6vBLB3HbVbvC3Xavwsz9zq4TJO9XkVwj8GiHgW6uCFkDyqfZsRouZlYiZ+TfJbJPORQvHqpA/gX946fNqlp1TjGKrvG3jO6Chen4UU8PWwdoXqgNYUD9cBYPyXna7MMHLykSR5TKa4imSVQlI/UP+ZDp7Cr7/Ca9AS+yys4L3MvKa/3yZtqiUwrAN6FjPdi+2lSNmvVG4Fzl38IeH8t24lyItwQjgo76VvPWVEaDNKg5yKaTsCJpv1ciuBsoJMUqYmd3Zd+xTQoplH+w7ZUvXdqH28giYCmTG6KmOEVL6AKB4DWRqRni21Nh92Ae2XtPvq8LtGVK2rgF0RxtH4p8zKdcC26DEEg2rHqZcOHM2ljwTJSIZ/f1zIsKdKQRvFxOetZwOa6cd/AYK3l4vrstaT8BwSAo989ydU4IL2Qw3qvnJVgjf0Q72eNBmHI0OzhIaYFpETNDIA3jzKRXlR7qESZJa6cKKqwuN153fftq1uLaMfE2Mq8nNCHxUIvxYTNJ183l/jHn9ggHBTV4+ZP363aC2RW6P+JArzS6a5LhJvsJkFxrgy13PQD3eFXxFQRUO3HV7KQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: tpxsrNCM5eMR3e1DgxQtf7zsqYyt7zDRotdv83pv8C5kPVmW8zhybRBOeOsQQRZ41uuXHX5muV9qWRCglANgwjL8yY7ewTBeaFb4Eqyg6Icxrtq2p7iaaC1ZS3L/8KkYxd5ntSK3nUvfySg4fq/KP4dCsSWRmInvV/7mQH8x09wOBC2Q9Nrt2FjVGgeerwsbE/ygyXPtj/f9CvoQs037HL87CrYOCOLUirMJUtJXI69o3XbsSaAWJzBPjVPSqi8B9Zyf+V2GwmXYERm//9BqAfujarURClzzcKP03AUVzSmLzu+i6RFuac9fTcuB+7FQYJ1UxoEfNUqTV3UxOFwTEw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4366.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(39860400002)(346002)(396003)(136003)(2906002)(64756008)(66446008)(4744005)(478600001)(86362001)(71200400001)(55016002)(33656002)(5660300002)(54906003)(52536014)(110136005)(66476007)(6506007)(55236004)(7696005)(66946007)(4326008)(66556008)(186003)(7416002)(76116006)(26005)(44832011)(8676002)(8936002)(316002)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: zZ98yJGILYtvckjHU1TuAdTR9ytvHbUL3Oyf3gqWmNKfo/ypCOCh7h3ZCD83pPgPyZ1yra2xw6pq5Svet+B5biyPup51ZbFmt/Ile9IzCpHCrWbAxlmMMy6t0wgwN3V8xAUH0WOe3jlcTSaDAw9ES1+KleZ5gD21f/iLdKtXKz9uCTFF2CF+Q40RJjPUxcr84z3tdxN+v2kSdMXv3TBBNRgJo/sBs1EihgDLgbd08M7kO+fqfsiAFRdTP4WvuhFB72jUipE0djE3prHOwhYjPFWNRWWyWHBPJY5qi9NG5y74FZPkx5V1zdBk6PolhIXas0l+eMk+J0eClcL6OOdRxyunu5euFx3NzEwDyxHryhe6GEmZ2sJ8HQm6NKzRnfLxfPYC5RFfzW8nTgaatLE16/nDHnEdo78BfEDwqks1vcNIBP76/fbKR+z/UzgzuGPLZVuQEsWBVO2622NzXjqenbf9eFqeSUpUbRCv04ye6aQxNO1gbY2CcKGZoKb2chqKxdxKCgDA1I6q5NCJVSFn1yvO6h07V9apGZieRIAlonI8DmDcFXApMC1P0Gef47mAenunwfJlndT9TvMxTO92bGNouyy2A+QfFSEK4/y89QVTN2dOUVLU4oGjxVjoSj8SnlXcs2VTwrwNI2PjXxYbLQ==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 47df37ad-d6e4-412e-da70-08d84a421a1d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2020 04:31:43.8460
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4366.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32231a22-5b06-41eb-d9f4-08d84a44a7c8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2020 04:50:00.5435
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: uFisE+8ip3QPuse/CC4ByQd5jQDzeUNmPvj24fcNkAwnK9iKXsiHOGwXo98phF4gtDTSPr3rz0BVoM4cq6G1pQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3955
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1598502824; bh=jdJOKRRljgPpOvqY0aBOxbW2gERyrxikzWdzCeh3d9E=;
-        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
-         ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
-         Thread-Index:Date:Message-ID:References:In-Reply-To:
-         Accept-Language:Content-Language:X-MS-Has-Attach:
-         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
-         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
-         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
-         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
-         x-ms-exchange-senderadcheck:x-microsoft-antispam:
-         x-microsoft-antispam-message-info:x-forefront-antispam-report:
-         x-ms-exchange-antispam-messagedata:Content-Type:
-         Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=dc1wA+rhHH1kAQoKm1L/gA3cno/CFQmUI5GIFijAQcCiuL030S/E8w2++WU05x+73
-         1or3GFLfL7NtWNdrjkcxxrrVaU+ZIAFyuhQ+fz+qZvThmcoFscj8U0XWtvcNYME1DR
-         NmaFouOP91CLRFBdp1fygkAxgDWhgyjR7njghge4tYZROJHJv2+CZvc4MjIYzBV/h5
-         MhzG5RACbdIQPApDJQXutP11oVTLpgm/yTx4g32B16E71GX1SB0Hq8DNLQlVOqYcXp
-         MeipqI2lVGiRnNmKzmC0rW0dZuniBPkHD8/Bwzf0LSCL5mahn5MLDWsTY/MVMSOc5S
-         v9JBIY7JENPLw==
+X-MS-Exchange-CrossTenant-userprincipalname: 0d2w+xuXsnTh2R9xjUFJjH3neN2ZxilHiclcJRkUzk26OqXoeVYzKIMlM4KtXw/x6HPMBtlYE08QsSmkSvNknQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3568
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Thursday, August 27, 2020 1:38 AM
->=20
-> On Wed, 26 Aug 2020 04:27:35 +0000 Parav Pandit wrote:
-> > > On Tue, 25 Aug 2020 16:58:38 +0300 Parav Pandit wrote:
-> > > > A devlink port may be for a controller consist of PCI device.
-> > > > A devlink instance holds ports of two types of controllers.
-> > > > (1) controller discovered on same system where eswitch resides
-> > > > This is the case where PCI PF/VF of a controller and devlink
-> > > > eswitch instance both are located on a single system.
-> > > > (2) controller located on other system.
-> > > > This is the case where a controller is located in one system and
-> > > > its devlink eswitch ports are located in a different system. In
-> > > > this case devlink instance of the eswitch only have access to
-> > > > ports of the controller.
-> > > >
-> > > > When a devlink eswitch instance serves the devlink ports of both
-> > > > controllers together, PCI PF/VF numbers may overlap.
-> > > > Due to this a unique phys_port_name cannot be constructed.
-> > >
-> > > This description is clear as mud to me. Is it just me? Can someone
-> > > understand this?
-> >
-> > I would like to improve this description.
-> > Do you have an input to describe these two different controllers, each
-> > has same PF and VF numbers?
->=20
-> Not yet, I'm just trying to figure out how things come together.
->=20
-> Are some VFs of the same PF under one controller and other ones under a
-> different controller?
->=20
-Correct.
-
-> > $ devlink port show looks like below without a controller annotation.
-> > pci/0000:00:08.0/0: type eth netdev eth5 flavour physical
-> > pci/0000:00:08.0/1: type eth netdev eth6 flavour pcipf pfnum 0
-> > pci/0000:00:08.0/2: type eth netdev eth7 flavour pcipf pfnum 0
->=20
-> How can you have two PF 0? Aaah - by controller you mean hardware IP, not
-> whoever is controlling the switching! So the chip has multiple HW control=
-lers,
-> each of which can have multiple PFs?
->=20
-Hardware IP is one. This IP is plugged into two PCI root complexes.
-One is eswitch PF, this PF has its own VFs/SFs.
-Other PF(s) plugged into an second PCI Root complex serving the server syst=
-em.
-So you are right there are multiple PFs. Both the PFs have same PCI BDF.
-
-> Definitely please make that more clear.
->=20
-Ok. yeah.
-I should add above details.
-I think a text diagram might be more useful.
-
-> Why is @controller_num not under PCI port attrs, but a separate field
-> without even a mention of PCI? Are some of the controllers a different bu=
-s?
-I think It can be added under PCI attribute, but than we need to add it for=
- PF and VF and in future for SF too.
-So added it as generic. But yes, keeping it as part of PCI port attributes =
-is good too.
+SGkgVGV0c3VvLA0KDQo+ID4gImdyZXAgLUZyQjEgJ2RlbF90aW1lcicgZHJpdmVycy8gfCBncmVw
+IC1GQTEgJy5mdW5jdGlvbiknIiBzYXlzIHRoYXQNCj4gPiBjdXJyZW50bHkgdGhlcmUgYXJlIDI4
+IGxvY2F0aW9ucyB3aGljaCBjYWxsIGRlbF90aW1lcltfc3luY10oKSBvbmx5IGlmDQo+ID4gdGhh
+dCB0aW1lcidzIGZ1bmN0aW9uIGZpZWxkIHdhcyBpbml0aWFsaXplZCAoYmVjYXVzZSB0aW1lcl9z
+ZXR1cCgpDQo+ID4gc2V0cyB0aGF0IHRpbWVyJ3MgZnVuY3Rpb24gZmllbGQpLiBUaGVyZWZvcmUs
+IGxldCdzIHVzZSBzYW1lIGFwcHJvYWNoIGhlcmUuDQoNClRoYW5rcyBmb3IgdGhlIGNoYW5nZSwg
+aXQgbG9vayBjbGVhbmVyIHRoYW4gbXkgcmUtd29yazsNCg0KQWNrZWQtYnk6IEdhbmFwYXRoaSBC
+aGF0IDxnYW5hcGF0aGkuYmhhdEBueHAuY29tPg0KDQpSZWdhcmRzLA0KR2FuYXBhdGhpDQo=
