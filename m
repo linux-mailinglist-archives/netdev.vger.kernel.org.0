@@ -2,47 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D81254F1B
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 21:47:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01664254F71
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 21:54:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727911AbgH0Tr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 15:47:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40862 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726147AbgH0Tr0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 15:47:26 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 50C0D207DF;
-        Thu, 27 Aug 2020 19:47:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598557646;
-        bh=KpLe1vg8oEg36UMFWYfJE2Ed3AvRcEvpPEW2/sE9GSs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mm/mtA/a/Px5yHxzdoWVK0aqmchSsmc+T7P+O4tqEqe3aKVDCCGDAcf7jhzhVeaDn
-         J5SWWzNhsQbTJeKa/ZFzIbxyBk8ycuGDpTJZvBi1Txw75tZEvmu5jW5vF30Pt0xvWQ
-         Fp1LIc9R78TMmki07sleuXXbYkihsoe9PaMYn4B4=
-Date:   Thu, 27 Aug 2020 12:47:24 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v2 net-next 07/12] ionic: reduce contiguous memory
- allocation requirement
-Message-ID: <20200827124724.61b9904e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200827180735.38166-8-snelson@pensando.io>
-References: <20200827180735.38166-1-snelson@pensando.io>
-        <20200827180735.38166-8-snelson@pensando.io>
+        id S1727781AbgH0TyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 15:54:10 -0400
+Received: from forward105j.mail.yandex.net ([5.45.198.248]:35548 "EHLO
+        forward105j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726236AbgH0TyK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 15:54:10 -0400
+X-Greylist: delayed 341 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Aug 2020 15:54:08 EDT
+Received: from mxback17j.mail.yandex.net (mxback17j.mail.yandex.net [IPv6:2a02:6b8:0:1619::93])
+        by forward105j.mail.yandex.net (Yandex) with ESMTP id 5611BB20D8C;
+        Thu, 27 Aug 2020 22:48:17 +0300 (MSK)
+Received: from iva7-f62245f79210.qloud-c.yandex.net (iva7-f62245f79210.qloud-c.yandex.net [2a02:6b8:c0c:2e83:0:640:f622:45f7])
+        by mxback17j.mail.yandex.net (mxback/Yandex) with ESMTP id cCPYONAQh0-mGbekdjK;
+        Thu, 27 Aug 2020 22:48:17 +0300
+Received: by iva7-f62245f79210.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id JKX2XogRXs-mEnG4U43;
+        Thu, 27 Aug 2020 22:48:15 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+From:   Lach <iam@lach.pw>
+Cc:     iam@lach.pw, Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Remove ipvs v6 dependency on iptables
+Date:   Fri, 28 Aug 2020 00:48:02 +0500
+Message-Id: <20200827194802.1164-1-iam@lach.pw>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Aug 2020 11:07:30 -0700 Shannon Nelson wrote:
-> Authored-by: Neel Patel <neel@pensando.io>
+This dependency was added in 63dca2c0b0e7a92cb39d1b1ecefa32ffda201975, because this commit had dependency on
+ipv6_find_hdr, which was located in iptables-specific code
 
-Also - what's Authored-by? :S Do we need a sign-off for this?
-Perhaps Co-developed-by, which is more standard?
+But it is no longer required, because f8f626754ebeca613cf1af2e6f890cfde0e74d5b moved them to a more common location
+---
+ net/netfilter/ipvs/Kconfig | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
+index 2c1593089..eb0e329f9 100644
+--- a/net/netfilter/ipvs/Kconfig
++++ b/net/netfilter/ipvs/Kconfig
+@@ -29,7 +29,6 @@ if IP_VS
+ config	IP_VS_IPV6
+ 	bool "IPv6 support for IPVS"
+ 	depends on IPV6 = y || IP_VS = IPV6
+-	select IP6_NF_IPTABLES
+ 	select NF_DEFRAG_IPV6
+ 	help
+ 	  Add IPv6 support to IPVS.
+-- 
+2.28.0
+
