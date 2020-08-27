@@ -2,76 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7B712542C0
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 11:50:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC33E2542C1
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 11:50:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728435AbgH0Ju2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 05:50:28 -0400
-Received: from mx2.suse.de ([195.135.220.15]:53030 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726851AbgH0Ju1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 05:50:27 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id C031CAD78;
-        Thu, 27 Aug 2020 09:50:57 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 5A269603FB; Thu, 27 Aug 2020 11:50:25 +0200 (CEST)
-Date:   Thu, 27 Aug 2020 11:50:25 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Fabian Frederick <fabf@skynet.be>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/7 net-next] vxlan: add VXLAN_NL2FLAG macro
-Message-ID: <20200827095025.p4mxmuh2jwmzs5kt@lion.mk-sys.cz>
-References: <20200827065019.5787-1-fabf@skynet.be>
+        id S1728455AbgH0Jur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 05:50:47 -0400
+Received: from aer-iport-1.cisco.com ([173.38.203.51]:58843 "EHLO
+        aer-iport-1.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726266AbgH0Jur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 05:50:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=cisco.com; i=@cisco.com; l=1272; q=dns/txt; s=iport;
+  t=1598521846; x=1599731446;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=FEjUCww3X4VyfbXQTIh1F+d9DewinySBfeJRQxjDkOs=;
+  b=e+rnP18I15Xnu5OVVnw3lDcy0PnL75NbQpD4ju4XvGEn9E4HfiZWyCQx
+   H8BfDTE2ozSTDyo+znj9XQ9wJ5qjMkUfpd9OhWkmdrzG/oAG5eo+JFozB
+   cGEjUu7V7dsCZ6ufIViwxVZrKAkTy28IW/Bo6sJzNhbUKBlyiOm6oNhow
+   c=;
+X-IronPort-AV: E=Sophos;i="5.76,359,1592870400"; 
+   d="scan'208";a="29104720"
+Received: from aer-iport-nat.cisco.com (HELO aer-core-2.cisco.com) ([173.38.203.22])
+  by aer-iport-1.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 27 Aug 2020 09:50:45 +0000
+Received: from hce-anki.rd.cisco.com ([10.47.78.120])
+        by aer-core-2.cisco.com (8.15.2/8.15.2) with ESMTP id 07R9oisp012939;
+        Thu, 27 Aug 2020 09:50:45 GMT
+From:   Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+To:     netdev@vger.kernel.org
+Cc:     Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+Subject: [v2] ioctl: only memset non-NULL link settings
+Date:   Thu, 27 Aug 2020 11:50:33 +0200
+Message-Id: <20200827095033.3265848-1-hegtvedt@cisco.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200827065019.5787-1-fabf@skynet.be>
+Content-Transfer-Encoding: 8bit
+X-Outbound-SMTP-Client: 10.47.78.120, [10.47.78.120]
+X-Outbound-Node: aer-core-2.cisco.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 27, 2020 at 08:50:19AM +0200, Fabian Frederick wrote:
-> Replace common flag assignment with a macro.
-> This could yet be simplified with changelink/supported but it would
-> remove clarity
-> 
-> Signed-off-by: Fabian Frederick <fabf@skynet.be>
-> ---
-[...]
-> diff --git a/include/net/vxlan.h b/include/net/vxlan.h
-> index 3a41627cbdfe5..8a56b7a0f75f9 100644
-> --- a/include/net/vxlan.h
-> +++ b/include/net/vxlan.h
-> @@ -290,6 +290,16 @@ struct vxlan_dev {
->  					 VXLAN_F_UDP_ZERO_CSUM6_RX |	\
->  					 VXLAN_F_COLLECT_METADATA)
->  
-> +
-> +#define VXLAN_NL2FLAG(iflag, flag, changelink, changelink_supported) {   \
-> +	if (data[iflag]) {						 \
-> +		err = vxlan_nl2flag(conf, data, iflag, flag, changelink, \
-> +				    changelink_supported, extack);       \
-> +		if (err)						 \
-> +			return err;					 \
-> +	}								 \
-> +}
-> +
+In commit bef780467fa ('ioctl: do not pass transceiver value back to
+kernel') a regression slipped in. If we have a kernel that does not
+support the ETHTOOL_xLINKSETTINGS API, then the do_ioctl_glinksettings()
+function will return a NULL pointer.
 
-Hiding a goto or return in a macro is generally discouraged as it may
-confuse people reading or updating the code. See e.g. commit
-94f826b8076e ("net: fix a potential rcu_read_lock() imbalance in
-rt6_fill_node()") for an example of such problem - which was likely the
-trigger for removal of NLA_PUT() and related macros shortly after.
+Hence before memset'ing the pointer to zero we must first check it is
+valid, as NULL return is perfectly fine when running on old kernels.
 
-Michal
+Fixes: bef780467fa7 ("ioctl: do not pass transceiver value back to kernel")
+Signed-off-by: Hans-Christian Noren Egtvedt <hegtvedt@cisco.com>
+---
+ ethtool.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
->  struct net_device *vxlan_dev_create(struct net *net, const char *name,
->  				    u8 name_assign_type, struct vxlan_config *conf);
->  
-> -- 
-> 2.27.0
-> 
+diff --git a/ethtool.c b/ethtool.c
+index e32a93b..606af3e 100644
+--- a/ethtool.c
++++ b/ethtool.c
+@@ -3048,10 +3048,11 @@ static int do_sset(struct cmd_context *ctx)
+ 		struct ethtool_link_usettings *link_usettings;
+ 
+ 		link_usettings = do_ioctl_glinksettings(ctx);
+-		memset(&link_usettings->deprecated, 0,
+-		       sizeof(link_usettings->deprecated));
+ 		if (link_usettings == NULL)
+ 			link_usettings = do_ioctl_gset(ctx);
++		else
++			memset(&link_usettings->deprecated, 0,
++			       sizeof(link_usettings->deprecated));
+ 		if (link_usettings == NULL) {
+ 			perror("Cannot get current device settings");
+ 			err = -1;
+-- 
+2.25.1
+
