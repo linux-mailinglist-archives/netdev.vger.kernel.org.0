@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE4D7253B58
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 03:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49135253B5D
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 03:26:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbgH0BYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 26 Aug 2020 21:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47644 "EHLO
+        id S1726946AbgH0B0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 26 Aug 2020 21:26:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726783AbgH0BYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 21:24:20 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198D2C0617A5
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 18:24:20 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id i10so4566970ljn.2
-        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 18:24:19 -0700 (PDT)
+        with ESMTP id S1726788AbgH0B0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 26 Aug 2020 21:26:11 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EEBFC0617AB
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 18:26:11 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id v9so4549596ljk.6
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 18:26:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=eaAhVe9NZ1R5g2YS2CTJE0/6e8EYtB7aMqdHknvKesA=;
-        b=SJwPhgwUnUn2mBarnoa9bYz42e0tKRZQflSAKfXVW+1WuaJWh+0RePI1uNHutnyd2A
-         YtVQxlK3Ffu4N1UF5nmbSAY8tUkVP/fRLD1G6u72jYG2ksFuQncrACVRRuOt6NpKvUPv
-         fFXWzySHC85dONXfxUUAVinyHVrTxzc1msjDoirhDLNmiEGqoml2RaLfP/5L37cUSmEF
-         2x+SKK69lCzSR0Uv2KNHpby9FLNCjb7H8RSlrh0dQvGgW+FHpK2t/Ozqil8Gfn1CgePU
-         jjPFsyRGDg6X5bOe51QDiLaAWrD4UjhlZUsnCBSu2IvNakzMXZJxI7xDxSFVtk9hclHh
-         Ey+A==
+        bh=NwQRmtSR03e8Z95YTtgCWBM4ls338szcbW/y+WRctMo=;
+        b=PM5UARjGZl7it+68nTblaLTBd77X447PU2c/xp6hmTWdeu4ce4iJZbahk4s2Q5PFaJ
+         +v+KyatAlGog4EeZ3cfesfi2mxphBlqnUJ5TOaTqtLfNPbK/tsYe51dE9r+vh8dltGPj
+         VBNJl+/9uuOQawkQjvHhrIxa1q93amF+R24gTM/DDjJv7KT63B/rNovbI+fiLtTOY9og
+         QlilqKXxN+DnacwnLR1hZm74Zn6LtMNCX+hk7SILdthH7AofhPk49lpUCb8NTyRlUKar
+         UlBRatC9I2jMr4qpkzT8ZWALAvc+20hsVv33d1S0hF0nLPPEfOB3+C9Yo+1u1vQOn4Ui
+         20DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=eaAhVe9NZ1R5g2YS2CTJE0/6e8EYtB7aMqdHknvKesA=;
-        b=no2Ysj/4h0SD/qohCzhB/JEK4dI6oNniKSFxlKICkPk2hdV7SqM3vChrmg4lfQb+GE
-         nDZK/Mk/mEFU8HIYZT4TSqRV5dVMlD9THR9PVOYiE3KflMJ4XhxBrWfiPixfiWJHGkqq
-         UVOMufyCh+eyOtS4av30BnCuKkqkyZ4e4mjLIPTTsWa8FQ6ttRV1Ntsi2WkVcKz1W+Jv
-         Z0ty6O3PWYk+Pa7xWNGAlVA+2bMZXNnkybHSQ4b0ICNaqoufAzX1e/CG7w7RRgp1bGdm
-         FBrzzRGbvHIYB8MWEg6ASiHVLWteS8KLnjPD4FIIYqf1dMX94c/BedwBh5GIGIqCRXy0
-         7T3w==
-X-Gm-Message-State: AOAM533mJ13a1UPlH2mlfio1um10pxunLRp6LtbImFtGMcGUNqqRgdeY
-        F027aKQu4JE65icjENbbve32V2z3teYkeUjr0e7lAw==
-X-Google-Smtp-Source: ABdhPJxgDGcNP9DxOQTWxsXv8cwD05YmMvT1hmUzl2euif9r0/9glXhCkah+fd374MAxguSaIYX9w6tni5KTkeihFKQ=
-X-Received: by 2002:a2e:5d8:: with SMTP id 207mr7665336ljf.58.1598491458086;
- Wed, 26 Aug 2020 18:24:18 -0700 (PDT)
+        bh=NwQRmtSR03e8Z95YTtgCWBM4ls338szcbW/y+WRctMo=;
+        b=umnPt7ApRLrTYnydMWxQu4+xFVdmL3cIrXNdfhqOFpXhTPXT5l4f4u2CYkc0QkEfcV
+         MusjH9T8qaU9PGs1c2eww9OQ0Hrsb82tpmIUMj8iuVs/tHHb6fRLGnW/ZTObpWvuyPIL
+         RIdj5UoTI5GEQSXRHZ1whRkav0CvH2bBqNCAjKuJgHM/MKCtc4pyHSzyLSkeCjwLAnc0
+         y0xxrKZ1QJsnB6jw+MqQCwf5ttaoQIKf70F5YLjibjdIe+rkZ41WWzXdoHZobUS4DLzs
+         +/VPVQHPUVVOFTDGqh8SgSAwvM7im3uMMrwik+OnebGO7g5TVMgNREztImB1xDjJNgsI
+         Ab8g==
+X-Gm-Message-State: AOAM531w0MFVFtdfk4JbnE6DeldxiRlGofaIw/b0MIK8fqXjx0G+NxL/
+        eD8juFFMaER4z/gULrZMLE+NtP44sf0xGlUQb5eZSH2OBIY=
+X-Google-Smtp-Source: ABdhPJzfxeyQIyjqzngf0Ic3JmYBl8qWIcdHApqyuYYTCcRsQk5Fv6y+bLFRZIGKwYL6aolr76njLkTX27P4q7r9sUc=
+X-Received: by 2002:a2e:5d8:: with SMTP id 207mr7668037ljf.58.1598491569469;
+ Wed, 26 Aug 2020 18:26:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200821150134.2581465-1-guro@fb.com> <20200821150134.2581465-6-guro@fb.com>
-In-Reply-To: <20200821150134.2581465-6-guro@fb.com>
+References: <20200821150134.2581465-1-guro@fb.com> <20200821150134.2581465-7-guro@fb.com>
+In-Reply-To: <20200821150134.2581465-7-guro@fb.com>
 From:   Shakeel Butt <shakeelb@google.com>
-Date:   Wed, 26 Aug 2020 18:24:07 -0700
-Message-ID: <CALvZod5Fb50fVSC9XaYyQ3awjYU8sc4-VYh66z4U__v5Pfxd8w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 05/30] bpf: refine memcg-based memory
- accounting for cpumap maps
+Date:   Wed, 26 Aug 2020 18:25:58 -0700
+Message-ID: <CALvZod49nAYx5Uh1kSkTyZz98xJt9pgaLu0syZxfRb9bfyM1+A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 06/30] bpf: memcg-based memory accounting for
+ cgroup storage maps
 To:     Roman Gushchin <guro@fb.com>
 Cc:     bpf@vger.kernel.org, netdev <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -65,9 +65,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 21, 2020 at 8:11 AM Roman Gushchin <guro@fb.com> wrote:
+On Fri, Aug 21, 2020 at 8:17 AM Roman Gushchin <guro@fb.com> wrote:
 >
-> Include metadata and percpu data into the memcg-based memory accounting.
+> Account memory used by cgroup storage maps including the percpu memory
+> for the percpu flavor of cgroup storage and map metadata.
 >
 > Signed-off-by: Roman Gushchin <guro@fb.com>
 > Acked-by: Song Liu <songliubraving@fb.com>
