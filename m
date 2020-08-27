@@ -2,139 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC376254470
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 13:40:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A46B254481
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 13:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728782AbgH0LkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 07:40:01 -0400
-Received: from nat-hk.nvidia.com ([203.18.50.4]:17362 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728778AbgH0Lic (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 07:38:32 -0400
-Received: from hkpgpgate102.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f479b160000>; Thu, 27 Aug 2020 19:37:58 +0800
-Received: from HKMAIL101.nvidia.com ([10.18.16.10])
-  by hkpgpgate102.nvidia.com (PGP Universal service);
-  Thu, 27 Aug 2020 04:37:58 -0700
-X-PGP-Universal: processed;
-        by hkpgpgate102.nvidia.com on Thu, 27 Aug 2020 04:37:58 -0700
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 27 Aug
- 2020 11:37:58 +0000
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.173)
- by HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Thu, 27 Aug 2020 11:37:57 +0000
+        id S1728646AbgH0LrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 07:47:07 -0400
+Received: from mail-am6eur05on2109.outbound.protection.outlook.com ([40.107.22.109]:24192
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728803AbgH0Lqh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 07:46:37 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hP8BQVpoWGO9wLjX4ENeE2ipo4yTDWocziJQWLsu/WrJslTBOCXpfB9B+tpDx+c84iEyxD1LCeogQyFuXde6zIvSdnSCdQLYrkY8BlHLEDOQspq2R9JIjxBN9B8hgGIfST2C3nBF7+ewEgfbqknurFsFpsZ72IqCrXdrx6FYJmVT3JFQ/UkC5tu7p2YrrhSFnk/3hDO2pgHxXCOs2yE1TJ20Cp9L1qsJu00PsjdYRsfHrYCP73EnBrp1/FuKjHcgwCPk12q+tufnaFvUxb+jtYYvmfyUTdl40oq7WkIM09MMn7fGHsvDFOUcVNYl+B9v2YpEnusxC2F5rIh2ktpXgQ==
+ b=KPyW/Hemv8HOK+WOPdGfkAFO3+ji1se1dG06ifN8ft9NYlSre9bh078ViSCBPa+AvAa4D29gWuqyoWGJ1faMz4m/K9qGdAeY0GNuIgh0rPwB/n+u216WAacRMaONO7WmRbXkr5OKHVnXTi3LBblsvdceqM2ZXIiAzpBgOLN9ycbe22BnFy8rE2nYEGRJgl89kj1PGWGxkZHIaoYViofqMgyWQjB+D/rN6x7Uy4h50Y/X1EFsnNqJZK25Z0QeUHwWMvEjKomLAMX9JpcMdcQBdqzRcR/SLFbaeNldK3int3coZc9nwm0oYKo078UIDrdWKaRTY79poogG2WmQcE/hpA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z056gHRpSVsc1+GXEuuZQPfRDXRXHFqLIpb0xKJq0uM=;
- b=lmEg6XlwLf3UruIdLjWmndnYQSR/kTnW6Pxy4LF/ilhOJD7+a2SeXeN4qBa/rz36syTEfjgEj/joiT1yNFvvsiTBrEaqV1org1cQ0AEaMS/x7psOGwA1OzL0ZGic0idLynueCtVE+JCfayysKyMB7FhuDHDRq82UyEoTdWF9IEF0303nTI8R+jD2ymVNGCk1NsSCVZjilwK9wmiGtqHUiQg4jwOj9Zn/DO7ZOIjWp/vY8n26DgaSY3ex26e7pZk7HwqPhyYZVoQWSP8ciiCoTkPyhhF1ZsdsVnkUwQj7o1G3CSdmOyLntP3/ukvBu92Qaw99iqAOiPk5WUvchpRPww==
+ bh=2QaYW4MxBDq9WdesC7EPnbMk1teyDfMBmWVCY4qVZrI=;
+ b=loR+2pm8W/n03AQPOlJmr139ylFBcBGVJARRbT8Zcr7+h4qJQMUBRU1BeSiPUX3bhGWX49i+HY+K2OvTmsN9jtYEKHMfP2bAmbF5jjPfzPAcl7ibTdmHppyhNaQGLE2MSPJJOHouQKwU6cWJrfPQkGAncokXbC2GjXApWv72+LHt8TxXUWE07OvGJN2HL1JP6vzwc9IQHqBVEDgYCTBRSLC0M0EwIvHURUHAhRbfn5v+R8EWMEpdoDV86YsxyqSlcRZroeEbVuCmblpZr27e/bMMw8yZgdmCSjDAMdYvOMFaN4h0UCae1D9jV/oBqN/8xlyAYXaDz0HcV9Y8ZL2YPA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3514.namprd12.prod.outlook.com (2603:10b6:5:183::15) with
+ smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
+ dkim=pass header.d=prevas.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2QaYW4MxBDq9WdesC7EPnbMk1teyDfMBmWVCY4qVZrI=;
+ b=l+YLtLJ7Qqgnq3CiJoSsayMXhDFbSUxO8PA/PwVSC4l/7/hv1/2loLGsZYpfuhsYfuXoFDqPIOdKOKNkflVNnyVwpsO+MgUkhloHMiLjlffwv46D5X4JCz7e93w/fUkikd9EAcdH9nVFacKNnaNQRQOeurJSxT1dZ0zf2talYIY=
+Authentication-Results: prevas.se; dkim=none (message not signed)
+ header.d=none;prevas.se; dmarc=none action=none header.from=prevas.dk;
+Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
+ by AM0PR10MB3731.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:18a::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.24; Thu, 27 Aug
- 2020 11:37:55 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::2d79:7f96:6406:6c76]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::2d79:7f96:6406:6c76%3]) with mapi id 15.20.3305.032; Thu, 27 Aug 2020
- 11:37:55 +0000
-Date:   Thu, 27 Aug 2020 08:37:53 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        <linux-rdma@vger.kernel.org>, Maor Gottlieb <maorg@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>, <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH mlx5-next 0/2] Add DC RoCE LAG support
-Message-ID: <20200827113753.GA3991134@nvidia.com>
-References: <20200818115245.700581-1-leon@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200818115245.700581-1-leon@kernel.org>
-X-ClientProxiedBy: BL0PR1501CA0027.namprd15.prod.outlook.com
- (2603:10b6:207:17::40) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19; Thu, 27 Aug
+ 2020 11:46:33 +0000
+Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::3cfb:a3e6:dfc0:37ec]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::3cfb:a3e6:dfc0:37ec%3]) with mapi id 15.20.3305.032; Thu, 27 Aug 2020
+ 11:46:33 +0000
+Subject: Re: powering off phys on 'ip link set down'
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Cc:     Lasse Klok Mikkelsen <Lasse.Klok@prevas.se>
+References: <9e3c2b6e-b1f8-7e43-2561-30aa84d356c7@prevas.dk>
+ <7a17486d-2fee-47cb-eddc-b000e8b6d332@gmail.com>
+ <4adfeeab-937a-b722-6dd8-84c8a3efb8ac@prevas.dk>
+ <adcbe6fc-6adc-4138-a5d1-77e811f4c0eb@gmail.com>
+From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Message-ID: <b340593a-c28f-5bcf-4559-bbc23a462972@prevas.dk>
+Date:   Thu, 27 Aug 2020 13:46:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <adcbe6fc-6adc-4138-a5d1-77e811f4c0eb@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM0PR10CA0063.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:15::16) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:3f::10)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from 255.255.255.255 (255.255.255.255) by BL0PR1501CA0027.namprd15.prod.outlook.com (2603:10b6:207:17::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend Transport; Thu, 27 Aug 2020 11:37:55 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kBGE5-00GkHq-SV; Thu, 27 Aug 2020 08:37:53 -0300
-X-Originating-IP: [156.34.48.30]
+Received: from [172.16.11.132] (81.216.59.226) by AM0PR10CA0063.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:15::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend Transport; Thu, 27 Aug 2020 11:46:32 +0000
+X-Originating-IP: [81.216.59.226]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7b35dd94-3e9c-4d09-fe8f-08d84a7da3db
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3514:
+X-MS-Office365-Filtering-Correlation-Id: 2226ca47-2217-466d-765f-08d84a7ed836
+X-MS-TrafficTypeDiagnostic: AM0PR10MB3731:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM6PR12MB351497E382388B09F6635E2BC2550@DM6PR12MB3514.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-Microsoft-Antispam-PRVS: <AM0PR10MB3731543EA70499C887EF8FFE93550@AM0PR10MB3731.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2043;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: LBR+zCyza/S0RlqjaDGOvagL1Tu2ARdsaSKGGS4gnGnKvYkC74EmjLo81vgtRlBV5PjfQW9dV8+pSkYIfxmWY29t/ESyY29SPRm2cIYFgoVcHio2d4iBwvfsIr5PusgCfaIiLfr/o7wbNF1bNeK5i1niI8O/5z6tPAqA0C0RmR6jLS9YJGCc509zlYz3F9dk8MkqUSIaPkB7/l5haoHjdEaZ3EHIFgfUiMYQzCkuErKBro/V9gt+ksMlR2i/AMuhyAP1x/cbGHcHp1308GVxinzs1BlLyaQn279xabnQDQ1aN+xv9SAE+0Av3WQ4uz8dVeUf24lgSrCAx8sJHcdTRw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3834.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(376002)(366004)(346002)(39860400002)(66476007)(186003)(8936002)(426003)(2616005)(26005)(86362001)(2906002)(8676002)(9786002)(9746002)(478600001)(54906003)(36756003)(1076003)(4744005)(33656002)(316002)(107886003)(4326008)(5660300002)(6916009)(66946007)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: /NNo3cP4d8osXOTZfNLJLoh9Q9826GxG6LE7wy4ZREn8QxZFmWWttnSPHYVf8vX3knQ1NjwUPaoxlzMVGh9LGOxabOag3OufQJJFg4laPbWNKxx/zbXQsKRPtx++iGUMMlkG/qVnr7MSyGHFEtdZzWcCayQYfT218+ZD95G+fkru2K5V+6Zp7EvBNrC4fSP4pbI43piTDK/NirllSa1BbmXJ4GBSCxssI8jGs+pY55gHF0l/5fSkpKi3ZswQcY5ak8RhqKkXUQk/UMUGc/FqptOmNio4hDOsYUroT/DcALjRQ4SXGySHGZ4AR/BJhTiy5QGto9XQASN4euvLlXXmACYNYUtAuNABbtXbAtpNP6Ta/vObR/jDBeU8XtkNdLxTboFX5r/J21a6DOh/ExvXVRoIyfw2SFxdzvpO+HvnbeSfdJvxg8K7QyvRuqTn1BWf+6flw4qmbpcPTI46NcW4wV17bME4nMhb3AnRk/7r+6/WaSx2zxOLjdVEtYe2lVfKj6z7D6aIQ950RegdJUGoZMjbNn1ouQl2QzUar4wn7oUVu1bLDVrGX7SZzOinDleG55vDqoXO2dINFFMfwpiAk0KDFAeNANZDqmBIiAO6tkHn90+hjlHsYdsuJIRrjptcmhg5Tg0dKhOO4e/hcEtFhA==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b35dd94-3e9c-4d09-fe8f-08d84a7da3db
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: 05BmpzkwTaY7muPXW8d5OfkGkKxLkTnY37LcPYpzR6P3xK/RGaupDiEE0VPlR6MBdcF833aVqsF7fMaAMu3t6mUrOcbWiyY5mzo91oLooexI4ADG+p3138IpasATu+CDChhh6LpXN0ot6cA4rAINxtqS45WcNxKffJls5qqu/fw1UsDCIrZ2fRcUF9Y/1DIOtwkjVw5WoCnZpxHQiJCLQvKmqv9KnfTn37D4RmFj78EM475YGs5X73bDdz2SawVGDkbuhqc+idmfPzQO2COL1bJ4Crc42kyoHfBMXMAtcXuE/JhcstJ8AwOqziqCMcbAZjXfehxuF1abzX24Q+zMaQSqAErAF4deRtZVJ681Q1c9nmU35UThf+iRf5WH5yM6
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(39850400004)(396003)(366004)(346002)(136003)(8936002)(86362001)(186003)(52116002)(107886003)(16526019)(31696002)(2906002)(956004)(31686004)(4326008)(8976002)(2616005)(44832011)(53546011)(478600001)(36756003)(26005)(110136005)(316002)(6486002)(66476007)(66556008)(66946007)(8676002)(16576012)(5660300002)(83380400001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: gzOB7p1TfONjRcPIvPL9RP1BXvx5Qu4cfNO02m8WsRhRPOlX7hAetYETDUkDISZ49sb3LPBHpEHSp8K00FJ8mpv28EB196lPlowp7BDLZ8WkjHwRmblG2EgkxPJoS67MPTtRfiTgQiMirhsCaOeCb8FHNqr77l+ecFymEOQ/PDPv/tdPENS2R5hTn+sA8Aq1PEhnx2DadNQhGfd4D/eNS7fxVJUbmsUNtjKiF0Gk6iiRgcZKolF66lAEfet/73bT3XYxIC05Ldbp8Df7egSxLriL6MR/DD0WZRNm88CyBUhOx3bOMxsF18siacSbqE2BnYjYaZmy78XB1zQcP8IkLCarwQAcfBLb2p3rKjUf92n7A/QXJJJhezBTJAbHNP+5u8iyJ8uWMKyys+hG4yVki6o8BzmJ5R/W0YZmzHFzFOdJincYoiHTZ22AuaKFG5E5q/pb0T1jZaEzCpZVlrB4bE0eV1hsuwD84fSNDTUnPLc0SI2FDtuc/KFbswwLglAdDBpLxfgrMYhsrQkAAww9h3Bu2CZrKmfuP0XjEA3e30Bs/FRlT9McDc92PoCYXFCbiGhJwyoz31+QA6VZ6aD+jYkGYTvm4dvslm0QhrWHTrbZWAF0pXhY7qlidyBYxItRpYI0KGi905tBhwgFc8hz6w==
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2226ca47-2217-466d-765f-08d84a7ed836
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2020 11:37:55.5805
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2020 11:46:32.8956
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9hVhZkqltUGOAaht9nrX5Li5h3XGJFMh3+v9huSNuE1b81PPZxPuN2qo+VKRYOlM
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3514
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1598528278; bh=z056gHRpSVsc1+GXEuuZQPfRDXRXHFqLIpb0xKJq0uM=;
-        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
-         ARC-Authentication-Results:Authentication-Results:Date:From:To:CC:
-         Subject:Message-ID:References:Content-Type:Content-Disposition:
-         In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType:X-Originating-IP:
-         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
-         X-MS-TrafficTypeDiagnostic:X-MS-Exchange-Transport-Forked:
-         X-Microsoft-Antispam-PRVS:X-MS-Oob-TLC-OOBClassifiers:
-         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
-         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-         X-MS-Exchange-AntiSpam-MessageData:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-         X-MS-Exchange-CrossTenant-FromEntityHeader:
-         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-         X-MS-Exchange-CrossTenant-UserPrincipalName:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=hFddPBPprhsoCDneJTCpYfpTQ6DkqnNdTkdZLvdsxoRGM7KkNrOzIsoUPrQPFOVub
-         9E9qtDfJzeKKFPgU7rhsOc6a3q+j7Ub/maj9BgwtE7UADYlfI4R3F5RXR52rXz1lsI
-         wVHM5OA4SI6kqPpw1XSmpy5zU2x7e8IOVRPu7+J88LPShOufpaj6JN2/9UXagUniPs
-         pd/ZKIM6pT3s2HoMmL3TgGzAuvmPu1D5DhYC9W+XKS142IVmIydBp45y2vTlKf6oAy
-         S0vwhoWadufXZT9OrHCIv3GlnBoZ9u/XbXESkzlA42OHgIpI9Nmv7qh5FFa9ZGmMxF
-         IYxupkE+uTjwQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: S7je4ybf8dkrneEk2DrBdyZ6C+YG3lnQSM8Jv4TduB79pBoEbI69q7Ct1XMiSuOh/sww6epk6IWGm5Sh/RhY57nlVOVETcHOK3vDsgd8b2o=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3731
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 18, 2020 at 02:52:43PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Hi,
-> 
-> Two extremely short patches to enable DC RoCE LAG support.
-> 
-> Thanks
-> 
-> Mark Zhang (2):
->   IB/mlx5: Add tx_affinity support for DCI QP
->   IB/mlx5: Add DCT RoCE LAG support
+On 27/08/2020 13.14, Heiner Kallweit wrote:
+> On 27.08.2020 13:00, Rasmus Villemoes wrote:
+>> On 27/08/2020 12.29, Heiner Kallweit wrote:
+>>> On 27.08.2020 12:08, Rasmus Villemoes wrote:
+>>>> Hi,
+>>>>
+>>>> We have a requirement that when an interface is taken down
+>>>> administratively, the phy should be powered off. That also works when
+>>>> the interface has link when the 'ip link set down ...' is run. But if
+>>>> there's no cable plugged in, the phy stays powered on (as can be seen
+>>>> both using phytool, and from the fact that a peer gets carrier once a
+>>>> cable is later plugged in).
+>>>>
+>>>> Is this expected behaviour? Driver/device dependent? Can we do anything
+>>>> to force the phy off?
 
-Applied to for-next, thanks
+> 
+> Maybe your question refers to something that was changed in 5.4 with
+> the following commit:
+> 95fb8bb3181b ("net: phy: force phy suspend when calling phy_stop")
+> 
 
-Jason
+This is a 4.19-rt kernel, and yes, cherry-picking that commit does make
+things work as expected (and required). Thanks a lot, Heiner!
+
+Rasmus
