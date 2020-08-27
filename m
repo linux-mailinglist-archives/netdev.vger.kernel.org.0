@@ -2,80 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F76254D20
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 20:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E370254E2E
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 21:24:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727827AbgH0ScW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 14:32:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41460 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726266AbgH0ScT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 14:32:19 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A42372080C;
-        Thu, 27 Aug 2020 18:32:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598553139;
-        bh=kbw64wa4DLwkfhM5cC2OdeTmsKynbyzCuJVeZCgvIuQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SBoRr/TU8yWV9z7AsnL32bTAwRCsslFBSpVGd36HCjiEF3inw0xmwInBUmx1NZwDm
-         sp76kmaev9ih2ZqdSoqjL6wyTOOIoY8T7voXkKQNCh/L3mJiV+xdp24rejh0N0w7Ob
-         9sX97f2hjVjyBv2bBnbQ8u2DwLdoQJQ2V6fr/wB8=
-Date:   Thu, 27 Aug 2020 11:32:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Parav Pandit <parav@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "roid@mellanox.com" <roid@mellanox.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 2/3] devlink: Consider other controller while
- building phys_port_name
-Message-ID: <20200827113216.7b9a3a25@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <BY5PR12MB432276DBB3345AD328D787E4DC550@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20200825135839.106796-1-parav@mellanox.com>
-        <20200825135839.106796-3-parav@mellanox.com>
-        <20200825173203.2c80ed48@kicinski-fedora-PC1C0HJN>
-        <BY5PR12MB4322E2E21395BD1553B8E375DC540@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200826130747.4d886a09@kicinski-fedora-PC1C0HJN>
-        <BY5PR12MB432276DBB3345AD328D787E4DC550@BY5PR12MB4322.namprd12.prod.outlook.com>
+        id S1727981AbgH0TYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 15:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726120AbgH0TYS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 15:24:18 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 638DAC061264
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 12:24:17 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id u20so4279231pfn.0
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 12:24:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pRi40klRcp+aAyK6lpkc3NZwj2D9JJNTpxfYTJ5oyZ4=;
+        b=j9sG5iODD0NXOT0kaxF4Wz4X/am0v+pk8T9D8HkS0QsPq3y1fgVtEahtZhaxYp/SgS
+         kwYHc6lbEfDnQbRminl2sP6an2z6R4e59zTyjYElexrKd0N4FYWlQPEo5VFLxAfqhJO6
+         wSej2Ad93xRLHXk6NYNZ3KG5GISPjan8DfEZjk2VRNvEjG4n+E87GZtkbe/ayzMWD9X7
+         bhbJRSqx2C5LMr2Han26K8vjg6uIRg9+MKnW/Vh2GySxMEJ/3sdK2MCkcUHFe674Zjwx
+         eswaEJ5tnj/+fBXjVK2pDaKCl1KHN0SOQRk9JNheIiFGeUH5cH/GFU33py+f1H8xtb+5
+         4CtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pRi40klRcp+aAyK6lpkc3NZwj2D9JJNTpxfYTJ5oyZ4=;
+        b=gpuHAlGE8VUqvBDvxfex+czREUQ9q09eGHfFG/AXRiXBfRwch7ljyKxCytGdtaEy/g
+         ZDetqrjSbmnY60Tb/bEPs78Pn8ozj5renBk2Xk9XN2zcPbkryuRcsf8eLbJ+NCQX89br
+         PVOjFqhc3LrYw4kDlgSPmc0/qt1DPZlt283fNAqhR5v5vnqr0Q9w6zkeLtDypdH0d9x2
+         +Jytw1VPiaJRK/WDJVtx7KyPDrp5RQYLkGmStJ0mbZHijkkLBSOdmrt1JG+bXxuN19Ks
+         tMslFnwePAVyOvDaKtXXvduf4a+JRgJbJ0pqA0S75E5PpQazZ7iAyWmiyQ8gm0S/se87
+         YYNQ==
+X-Gm-Message-State: AOAM532nMEzhKovD02PmLYrEN00Rr4UKxp/DFcTjDlNUtqA17G1VOlvR
+        GTT+gExwN5KAlz7Vlx9OEVl9YxwLfulolJ+glOK+Ig==
+X-Google-Smtp-Source: ABdhPJx2HjkIQBU/wzjxDQ+xZZsxImf1wwY6rEdzAIV7aZY15cBd8wA6v83WmaOFEdX6PJI3B8zNSuGHwcDbV4+IwQU=
+X-Received: by 2002:a17:902:9349:: with SMTP id g9mr17653908plp.313.1598556256703;
+ Thu, 27 Aug 2020 12:24:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200818194417.2003932-1-awogbemila@google.com>
+ <20200818194417.2003932-6-awogbemila@google.com> <20200818201350.58024c28@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAL9ddJcDYcn+p33nKicmp7yHm6PnZ9iXnghO4AYHNmtCFCe2eQ@mail.gmail.com>
+ <20200825094635.715db5c0@kicinski-fedora-PC1C0HJN> <CAL9ddJfOWzO1v2FJAtb+qVAazR9Tb3CV8kH8V0_xA-GPgoAKXQ@mail.gmail.com>
+ <20200825175306.377be2f4@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200825175306.377be2f4@kicinski-fedora-PC1C0HJN>
+From:   David Awogbemila <awogbemila@google.com>
+Date:   Thu, 27 Aug 2020 12:24:05 -0700
+Message-ID: <CAL9ddJc-U+5dgi82gqEfurGKiLX=aTvATpPeR4xOHRVvn0PRwA@mail.gmail.com>
+Subject: Re: [PATCH net-next 05/18] gve: Add Gvnic stats AQ command and
+ ethtool show/set-priv-flags.
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Yangchun Fu <yangchun@google.com>, netdev@vger.kernel.org,
+        Kuo Zhao <kuozhao@google.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 27 Aug 2020 04:31:43 +0000 Parav Pandit wrote:
-> > > $ devlink port show looks like below without a controller annotation.
-> > > pci/0000:00:08.0/0: type eth netdev eth5 flavour physical
-> > > pci/0000:00:08.0/1: type eth netdev eth6 flavour pcipf pfnum 0
-> > > pci/0000:00:08.0/2: type eth netdev eth7 flavour pcipf pfnum 0  
-> > 
-> > How can you have two PF 0? Aaah - by controller you mean hardware IP, not
-> > whoever is controlling the switching! So the chip has multiple HW controllers,
-> > each of which can have multiple PFs?
-> >   
-> Hardware IP is one. This IP is plugged into two PCI root complexes.
-> One is eswitch PF, this PF has its own VFs/SFs.
-> Other PF(s) plugged into an second PCI Root complex serving the server system.
-> So you are right there are multiple PFs.
+> > I could use some help figuring out the use of rtnl_link_stats64 here.
+> > These 4 stats are per-queue stats written by the NIC. It looks like
+> > rtnl_link_stats64 is meant to sum stats for the entire device? Is the
+> > requirement here simply to use the member names in rtnl_link_stats64
+> > when reporting stats via ethtool? Thanks.
+>
+> If these are per queue you can report them per queue in ethtool (name
+> is up to you), but you must report the sum over all queues in
+> rtnl_link_stats64.
+>
+> FWIW the mapping I'd suggest is probably:
+>
+> RX_QUEUE_DROP_CNT         -> rx_dropped
+> RX_NO_BUFFERS_POSTED      -> rx_missed_errors
+> RX_DROPS_PACKET_OVER_MRU  -> rx_length_errors
+> RX_DROPS_INVALID_CHECKSUM -> rx_crc_errors
+>
+> The no-buffers-posted stat is unfortunately slightly disputable between
+> rx_missed_errors and rx_fifo_errors (even rx_over_errors). I'd go for missed.
+This is very helpful, thanks. The aggregate stats are the stats named
+in gve_gstrings_main_stats (in gve_ethtool.c). This particular patch
+does not change those. Patch 2 ("gve: Add stats for gve.") is what I
+think may have to change to conform to rtnl_link_stats64(?)
 
-I find it strange that you have pfnum 0 everywhere but then different
-controllers. For MultiHost at Netronome we've used pfnum to distinguish
-between the hosts. ASIC must have some unique identifiers for each PF.
+> > > > > > +static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
+> > > > > > +{
+> > > > > > +     struct gve_priv *priv = netdev_priv(netdev);
+> > > > > > +     u64 ori_flags, new_flags;
+> > > > > > +     u32 i;
+> > > > > > +
+> > > > > > +     ori_flags = READ_ONCE(priv->ethtool_flags);
+> > > > > > +     new_flags = ori_flags;
+> > > > > > +
+> > > > > > +     for (i = 0; i < GVE_PRIV_FLAGS_STR_LEN; i++) {
+> > > > > > +             if (flags & BIT(i))
+> > > > > > +                     new_flags |= BIT(i);
+> > > > > > +             else
+> > > > > > +                     new_flags &= ~(BIT(i));
+> > > > > > +             priv->ethtool_flags = new_flags;
+> > > > > > +             /* set report-stats */
+> > > > > > +             if (strcmp(gve_gstrings_priv_flags[i], "report-stats") == 0) {
+> > > > > > +                     /* update the stats when user turns report-stats on */
+> > > > > > +                     if (flags & BIT(i))
+> > > > > > +                             gve_handle_report_stats(priv);
+> > > > > > +                     /* zero off gve stats when report-stats turned off */
+> > > > > > +                     if (!(flags & BIT(i)) && (ori_flags & BIT(i))) {
+> > > > > > +                             int tx_stats_num = GVE_TX_STATS_REPORT_NUM *
+> > > > > > +                                     priv->tx_cfg.num_queues;
+> > > > > > +                             int rx_stats_num = GVE_RX_STATS_REPORT_NUM *
+> > > > > > +                                     priv->rx_cfg.num_queues;
+> > > > > > +                             memset(priv->stats_report->stats, 0,
+> > > > > > +                                    (tx_stats_num + rx_stats_num) *
+> > > > > > +                                    sizeof(struct stats));
+> > > > >
+> > > > > I don't quite get why you need the knob to disable some statistics.
+> > > > > Please remove or explain this in the cover letter. Looks unnecessary.
+> > > > We use this to give the guest the option of disabling stats reporting
+> > > > through ethtool set-priv-flags. I'll update the cover letter.
+> > >
+> > > I asked you why you reply a week later with "I want to give user the
+> > > option. I'll update the cover letter." :/ That's quite painful for the
+> > > reviewer. Please just provide the justification.
+> > I apologize for the pain; it certainly wasn't intended :) .
+> > Just to clarify, stats will always be available to the user via ethtool.
+> > This is only giving users the option of disabling the reporting of
+> > stats from the driver to the virtual NIC should the user decide they
+> > do not want to share driver stats with Google as a matter of privacy.
+>
+> Okay, so this is for the to-hypervisor direction. Hopefully the patch
+> split will make this clearer.
+>
+> > > > > > @@ -880,6 +953,10 @@ static void gve_handle_status(struct gve_priv *priv, u32 status)
+> > > > > >               dev_info(&priv->pdev->dev, "Device requested reset.\n");
+> > > > > >               gve_set_do_reset(priv);
+> > > > > >       }
+> > > > > > +     if (GVE_DEVICE_STATUS_REPORT_STATS_MASK & status) {
+> > > > > > +             dev_info(&priv->pdev->dev, "Device report stats on.\n");
+> > > > >
+> > > > > How often is this printed?
+> > > > Stats reporting is disabled by default. But when enabled, this would
+> > > > only get printed whenever the virtual NIC detects
+> > > > an issue and triggers a report-stats request.
+> > >
+> > > What kind of issue? Something serious? Packet drops?
+> > Sorry, to correct myself, this would get printed only at the moments
+> > when the device switches report-stats on, not on every stats report.
+> > After that, it would not get printed until it is switched off and then
+> > on again, so rarely.
+> > It would get switched on if there is a networking issue such as packet
+> > drops and help us investigate a stuck queue for example.
+>
+> Reporting of the stats is a one-shot:
+>
+> +       if (gve_get_do_report_stats(priv)) {
+> +               gve_handle_report_stats(priv);
+> +               gve_clear_do_report_stats(priv);
+> +       }
+>
+> So the hypervisor implements some rate limiting on the requests?
+Yes, not every packet drop would trigger the request, only if the
+virtual NIC feels that "too many" are being dropped.
+When report-stats is turned on (both user ethtool setting is enabled
+and device has requested to turn it on), the stats would be updated
+once every 20 seconds.
 
-I'm not aware of any practical reason for creating PFs on one RC
-without reinitializing all the others.
-
-I can see how having multiple controllers may make things clearer, but
-adding another layer of IDs while the one under it is unused (pfnum=0)
-feels very unnecessary.
-
-> Both the PFs have same PCI BDF.
-
-BDFs are irrelevant.
+>
+> In general, I don't think users will want these messages to keep
+> popping up. A ethtool -S statistic for the number of times reporting
+> happened should be sufficient. Or if you really want them - have a
+> verbose version of the priv flag, maybe?
+An ethtool stat (counting requests to turn report-stats on from the
+virtual NIC) should suffice.
+(I think a verbose logging option should probably apply to not just
+this log, so maybe that's another patch in itself?)
