@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81BC9253E25
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 08:50:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4CC1253E27
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 08:50:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727924AbgH0Gt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 02:49:58 -0400
-Received: from mailrelay116.isp.belgacom.be ([195.238.20.143]:45520 "EHLO
+        id S1727944AbgH0GuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 02:50:19 -0400
+Received: from mailrelay116.isp.belgacom.be ([195.238.20.143]:45553 "EHLO
         mailrelay116.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726123AbgH0Gtz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 02:49:55 -0400
-IronPort-SDR: s3e3tqtdf6ANvBmo3WwYoKxkWBArPy7z+/fQimz9HHrwKmDWcz8HAHWwsLpp8X2hpe3GLv2UYO
- 1UjC/EZK/YC/oM6/0x9DuY1HK52x8sNKbCasrsE+1ffcjM0hTyzAsHFOAB8zIqG/IFMBvX6mVP
- 5M025jt+yiZuY7cbeUiUvSxF7QZsH+uzpXKsUVXdzUlxn9vRypGwseyMlgrbnY/HGuQmDfjppl
- LPOjFOq4NoWtfFeTTqSfhcNStdMRipu1Lhww4SldRze3eDnC/7uRLMOb/jnFUr8/5oiC13vbba
- RnI=
+        by vger.kernel.org with ESMTP id S1726123AbgH0GuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 02:50:18 -0400
+IronPort-SDR: 5SjhM9jq+1JRj0Our1dMKcL24jpI1/OXw7rlQ/6g6ZCXZXzJV3mB1eD8hKWitGz30rJ4ViYCm+
+ G540Vr/MuDSwRBBoLPmHiAbUq5SxYhSSsoplVD3PhVKesePh5rWHIoAf2mtYzjFY/NnIqrsUHp
+ yuu/gmtmOv6G7EPkWjZ/SI80IJSkifBO/cA4xsRXcfhUljxcsvPQX691lo4e7xHENgvkOoYc9W
+ JplH2z+Ud3VHLRw9gpqNBXx0ETexXseOwKfzfro/OTffuvMvLWhfsSbYeiqXzQLuIWvbDDU/2T
+ iRU=
 X-Belgacom-Dynamic: yes
-IronPort-PHdr: =?us-ascii?q?9a23=3ACkolBxJUhJHXqgaLctmcpTZWNBhigK39O0sv0r?=
- =?us-ascii?q?FitYgXKv/6rarrMEGX3/hxlliBBdydt6sazbOM6Ou5ATBIyK3CmUhKSIZLWR?=
- =?us-ascii?q?4BhJdetC0bK+nBN3fGKuX3ZTcxBsVIWQwt1Xi6NU9IBJS2PAWK8TW94jEIBx?=
- =?us-ascii?q?rwKxd+KPjrFY7OlcS30P2594HObwlSizexfLJ/IA+roQnPuMQajpZuJro+xx?=
- =?us-ascii?q?DUvnZGZuNayH9yK1mOhRj8/MCw/JBi8yRUpf0s8tNLXLv5caolU7FWFSwqPG?=
- =?us-ascii?q?8p6sLlsxnDVhaP6WAHUmoKiBpIAhPK4w/8U5zsryb1rOt92C2dPc3rUbA5XC?=
- =?us-ascii?q?mp4ql3RBP0jioMKjg0+3zVhMNtlqJWuBKvqQJizYDaY4+bM/VxcKzGcN8GRm?=
- =?us-ascii?q?dMRNpdWjZdDo+gaYYEEuoPPfxfr4n4v1YArQGxChKtBOz1zD9Dm3/43bck3O?=
- =?us-ascii?q?s8Dw7Gxg0gEM4NsH/Jq9j1Or0dXvu7zKTT1jXDbPNX2THj54jUaBwuuu+DUK?=
- =?us-ascii?q?t2fMHMxkYhCxnLgU+MqYz5ITyVzOINvnCV4edjUe+hi28qpgFvrjWhxskhl5?=
- =?us-ascii?q?XFip8Jxl3F+it3z5s4KNOmRUNmYdOpEoVduS6GO4V4Tc0vR2FmtiYkxrACv5?=
- =?us-ascii?q?OwYSsEyIw/yhPbdvCLaZWE7xH9WOqLPDt1hXJodKiiixuz90Wr1/fyWdOu0F?=
- =?us-ascii?q?lQqypIitzMtncQ2BPN8sWHUf59/lu52TaIygDT9vlIIUAqmqrfLJ4s2rowlp?=
- =?us-ascii?q?0PvkvZGi/2mEL2jLSKdkk+/uio7Pjoba/ippCBMI90jxvxMqUomsCnAOQ4NB?=
- =?us-ascii?q?YBX3SD9Om4ybHv51D1TbZUgvEsj6XUsZDXKd4GqqO4GwNV15ws6xe7Dzeoyt?=
- =?us-ascii?q?QYmnwHIUpLeB2dlIfpNUrDIOv7Dfa/hVSjjitry+rdMbL/GpnNNGTMkK/9fb?=
- =?us-ascii?q?Zh7E5R0Bc8wspB551KD7EMO+/8VVXvtNPGCx85Nwu0w+j7CNln0IMRR36PCL?=
- =?us-ascii?q?eDMKzOqV+I+v4vI+6UaY8WpTbyMOIq6uXtjXAng18de7em3Z8NZHC/BPRmLF?=
- =?us-ascii?q?2TYWDwjdcZDWcKog0+QfTsiFKcTT5cemi9X7wn6zElB4KpE53DSpqugLOfxi?=
- =?us-ascii?q?e7GINZZmRcBlCLC3foeJ2OW+0QZyKKPs9hjjsEWKClS48g0xGuqQD7x6NkLu?=
- =?us-ascii?q?XK4C0Ys4zs1Nxu6u3NmhE96yZ0A96e026TVWF0mH0HRzss0KB4u0x9xU+J0b?=
- =?us-ascii?q?JkjPxACdxT+/RJXx80NZHG1ON6Bcv/WhnCftaJTlapXMmmDSsqQd0vkJcyZB?=
- =?us-ascii?q?NxEsuvizjP1jSnBrsSmaDNApEoturfwnL4D8Vw0XDL0O8mlVZ1bNFIMDiIj6?=
- =?us-ascii?q?R+/g6bKZTEn0iDlq2pPfAS1STD3HyA3GyDoAdSXVgjAu3+QXkDax6O/pzC7U?=
- =?us-ascii?q?TYQur2BA=3D=3D?=
+IronPort-PHdr: =?us-ascii?q?9a23=3AbPsOnROZfSOiopfUEG4l6mtUPXoX/o7sNwtQ0K?=
+ =?us-ascii?q?IMzox0K/z4psbcNUDSrc9gkEXOFd2Cra4d1ayP6furADRcqb+681k6OKRWUB?=
+ =?us-ascii?q?EEjchE1ycBO+WiTXPBEfjxciYhF95DXlI2t1uyMExSBdqsLwaK+i764jEdAA?=
+ =?us-ascii?q?jwOhRoLerpBIHSk9631+ev8JHPfglEnjWwba5zIRmssAndqMcbjYR/JqotxR?=
+ =?us-ascii?q?bCv2dFdflRyW50P1yYggzy5t23/J5t8iRQv+wu+stdWqjkfKo2UKJVAi0+P2?=
+ =?us-ascii?q?86+MPkux/DTRCS5nQHSWUZjgBIAwne4x7kWJr6rzb3ufB82CmeOs32UKw0VD?=
+ =?us-ascii?q?G/5KplVBPklCEKPCM//WrKiMJ/kbhbrQqhqRJh3oDaboKbOv1xca3SZt4WWW?=
+ =?us-ascii?q?lMU9xNWyFbHo+wc40CBPcBM+ZCqIn9okMDoxukCga3BePg0DlIjWL2060gze?=
+ =?us-ascii?q?suDB/J3BYhH90Ss3TfsdL4NKkIXu+uwqnF1i7Db/BW2Df79ofIbgotruqSUr?=
+ =?us-ascii?q?9pd8fa1EYgGR/fgFqKtYzlIy2a1v4Ls2WD4eRtVuaihW4mpgxxvDSiyMcih5?=
+ =?us-ascii?q?TVio4I1lzJ9Cp3zokoKNC2VkN2fN6pHZlOui+VK4d4TMwsTmVotig61LELvZ?=
+ =?us-ascii?q?i2dzUJxpQ/3xPSb+GLf5KV7h/gSuqdOyp0iXNldb6lmhq/8E6twfDmWMauyl?=
+ =?us-ascii?q?ZFtC9Fn8HJtnAKyhPc9NCKSuB4/ke9wTaP0B3T6v1cLUA0i6XbL5khz6Y0lp?=
+ =?us-ascii?q?oUrUvMBCv2mEXxjK+NakUo4Oyo6+P7bbr8op+TKoh0igTkPaQvnMyzGeU4Mg?=
+ =?us-ascii?q?4QUGiH4emx0KDv8VfkTLhJkPE6iLTVvZHaKMgBu6K0AhdZ0oM55Ba+Czem3s?=
+ =?us-ascii?q?4YnX4CLF9ddhKIlZPmO1/VLfDjDve+g1Ksnyl3x/zcJbLuHI3BLmLfn7f5Yb?=
+ =?us-ascii?q?Z990lcxRIuwt9F+ZJbFLQBLenuVUDrqtzXEBo5Mwizw+bpFNVxzIUeVnyTAq?=
+ =?us-ascii?q?WBKqPdrUeI5v4zI+mLfIIVuyv9JOM/6PP1jn82h0Udfa+30psTcny4Ge5mI0?=
+ =?us-ascii?q?qBa3r2ntgBCXsKvhY5TOHyjl2NTyJTaGusUKIi/Tw7Fo2mApnZRoy3g7yOwj?=
+ =?us-ascii?q?27HptIaWBCEFyMFm3od4qcUfcWdC2SOtNhkiADVbW5T48h1BeutBL1yrZ+Le?=
+ =?us-ascii?q?rb5DcYtZT929hx/ODTix4y+iJuD8iH0GGCUXt0nmUWSD8yxqx/plZ9ylib26?=
+ =?us-ascii?q?hin/NYDcBT5+9OUgoiO57T1fd1C97pVwLafdeISFCmTcu6AT0rVd0+3YxGX0?=
+ =?us-ascii?q?EoF9y8gxXr0yO0DroRkLKXQpo57uaU3GX7Lu5+xmzA2a1niEMpEeVVMmjzqK?=
+ =?us-ascii?q?d19gHVT6DTnkmUjaehduxI0ifH+k+YznuIsV0eWgMmAvaNZmwWekaD9Yex3U?=
+ =?us-ascii?q?jFVbL7Ubk=3D?=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2AwBAD4Vkdf/xCltltfgRCBQ4EeglB?=
- =?us-ascii?q?fjTiSS5AFgX0LAQEBAQEBAQEBNAECBAEBhEyCOyU2Bw4CAwEBAQMCBQEBBgE?=
- =?us-ascii?q?BAQEBAQUEAYYPRYI3IoNHCwEjI4E/EoMmglgpsxozhBCBQ4NFgUKBOIgnhRm?=
- =?us-ascii?q?BQT+BEYNOijQEmhmcOYJtgwyEXJI2DyGgRJJLoU0OgXxNIBiDJFAZDY4rF44?=
- =?us-ascii?q?mQjA3AgYKAQEDCVcBPQGQEwEB?=
-X-IPAS-Result: =?us-ascii?q?A2AwBAD4Vkdf/xCltltfgRCBQ4EeglBfjTiSS5AFgX0LA?=
- =?us-ascii?q?QEBAQEBAQEBNAECBAEBhEyCOyU2Bw4CAwEBAQMCBQEBBgEBAQEBAQUEAYYPR?=
- =?us-ascii?q?YI3IoNHCwEjI4E/EoMmglgpsxozhBCBQ4NFgUKBOIgnhRmBQT+BEYNOijQEm?=
- =?us-ascii?q?hmcOYJtgwyEXJI2DyGgRJJLoU0OgXxNIBiDJFAZDY4rF44mQjA3AgYKAQEDC?=
- =?us-ascii?q?VcBPQGQEwEB?=
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2CCBAD4Vkdf/xCltltfgRCBQ4EeglB?=
+ =?us-ascii?q?fjTiSS4pWhywLAQEBAQEBAQEBNAECBAEBhEyCOyU3Bg4CAwEBAQMCBQEBBgE?=
+ =?us-ascii?q?BAQEBAQUEAYYPRYI3IoNSASMjgT8SgyaCWCmzTYQQgUODRYFCgTiIJ4UZgUE?=
+ =?us-ascii?q?/gRGDToQEhjAEtlKCbYMMhFySNg8hgnWdTy2SHqFcgXtNIBiDJFAZDZxoQjA?=
+ =?us-ascii?q?3AgYKAQEDCVcBPQGNTYJGAQE?=
+X-IPAS-Result: =?us-ascii?q?A2CCBAD4Vkdf/xCltltfgRCBQ4EeglBfjTiSS4pWhywLA?=
+ =?us-ascii?q?QEBAQEBAQEBNAECBAEBhEyCOyU3Bg4CAwEBAQMCBQEBBgEBAQEBAQUEAYYPR?=
+ =?us-ascii?q?YI3IoNSASMjgT8SgyaCWCmzTYQQgUODRYFCgTiIJ4UZgUE/gRGDToQEhjAEt?=
+ =?us-ascii?q?lKCbYMMhFySNg8hgnWdTy2SHqFcgXtNIBiDJFAZDZxoQjA3AgYKAQEDCVcBP?=
+ =?us-ascii?q?QGNTYJGAQE?=
 Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
-  by relay.skynet.be with ESMTP; 27 Aug 2020 08:49:54 +0200
+  by relay.skynet.be with ESMTP; 27 Aug 2020 08:50:17 +0200
 From:   Fabian Frederick <fabf@skynet.be>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH 3/7 net-next] vxlan: move encapsulation warning
-Date:   Thu, 27 Aug 2020 08:49:36 +0200
-Message-Id: <20200827064936.5682-1-fabf@skynet.be>
+Subject: [PATCH 4/7 net-next] vxlan: check rtnl_configure_link return code correctly
+Date:   Thu, 27 Aug 2020 08:50:01 +0200
+Message-Id: <20200827065001.5734-1-fabf@skynet.be>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -70,41 +70,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vxlan_xmit_one() was only called from vxlan_xmit() without rdst and
-info was already tested. Emit warning in that function instead
+rtnl_configure_link is always checked if < 0 for error code.
 
 Signed-off-by: Fabian Frederick <fabf@skynet.be>
 ---
- drivers/net/vxlan.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/vxlan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index cc904f003f158..14f903d09c010 100644
+index 14f903d09c010..1e9ab1002281c 100644
 --- a/drivers/net/vxlan.c
 +++ b/drivers/net/vxlan.c
-@@ -2650,11 +2650,6 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 			udp_sum = !(flags & VXLAN_F_UDP_ZERO_CSUM6_TX);
- 		label = vxlan->cfg.label;
- 	} else {
--		if (!info) {
--			WARN_ONCE(1, "%s: Missing encapsulation instructions\n",
--				  dev->name);
--			goto drop;
--		}
- 		remote_ip.sa.sa_family = ip_tunnel_info_af(info);
- 		if (remote_ip.sa.sa_family == AF_INET) {
- 			remote_ip.sin.sin_addr.s_addr = info->key.u.ipv4.dst;
-@@ -2889,6 +2884,10 @@ static netdev_tx_t vxlan_xmit(struct sk_buff *skb, struct net_device *dev)
- 		    info->mode & IP_TUNNEL_INFO_TX) {
- 			vni = tunnel_id_to_key32(info->key.tun_id);
- 		} else {
-+			if (!info)
-+				WARN_ONCE(1, "%s: Missing encapsulation instructions\n",
-+					  dev->name);
-+
- 			if (info && info->mode & IP_TUNNEL_INFO_TX)
- 				vxlan_xmit_one(skb, dev, vni, NULL, false);
- 			else
+@@ -3890,7 +3890,7 @@ static int __vxlan_dev_create(struct net *net, struct net_device *dev,
+ 	}
+ 
+ 	err = rtnl_configure_link(dev, NULL);
+-	if (err)
++	if (err < 0)
+ 		goto unlink;
+ 
+ 	if (f) {
 -- 
 2.27.0
 
