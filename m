@@ -2,167 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 660A92544A2
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 13:56:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BCC52544F4
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 14:28:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728947AbgH0L4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 07:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
+        id S1728915AbgH0M2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 08:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728836AbgH0Lyu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 07:54:50 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16534C06121B
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:54:40 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id m23so5460319iol.8
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 04:54:40 -0700 (PDT)
+        with ESMTP id S1729044AbgH0M05 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 08:26:57 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8930AC061233
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 05:16:11 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id y3so5163685wrl.4
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 05:16:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8+USI8ikGwM1YVVvEQswp7iF6TsNadsn4yeIDHk0x60=;
-        b=iKPgt8S+hc3ldLTEfMwzYbyOW2bPHtZf2FLBepIe0Lb/Nl7GROM4sA5jMFIQ8TThaj
-         7hD0DlbjWo2OBeGZcA/E48756aEptPNWWJA9he9tP15YfRp9mnnqdyqECxAd00QowRMT
-         0Eu/H+z9WCp8lMWox8PIUwWGqikauK50Txrg7hfNybk74o0hLd5SZCKCWY48CvgdsHBr
-         UMDXtqQqGYefaCTkIv136+mfOKOK+fVqTiSkRCumjBoAS6qVWURyXWF8TPijEe9apjX4
-         JySNHI+pI2ZfhNPJNqmnQWPPj/ByOWTxtPWyc5+nKs+3dF2H6uhf69PxKNSIsQZWiLH7
-         3bZA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=vG3GFaecRjYGM2orq3QNH3b5bYkLOVwGTg6XiPpRXIc=;
+        b=yMZhFN+veq01+ehZQeqqK0HhK+dnG66FHF62HBnjdjO+Hxk1KWY1W2dTxqnSlNWsZb
+         7NrCYLjtmqs8ZZRBa1rC7WJ+Fjl6xAalt7mPJS+1ciGUOenIil2PbkxIpAV8m+xON24p
+         HlWXtWju0lBA7bVapsr3Q4oD5pC6WldpEU2YOmxfKxAcyd8K2oUU9qweG4mXKEsTB//l
+         vsz1L7puUsSszPyf/ABcYrck5b6BVOl27XPFXKmjgwOEjrDx60iguNCzKJY7rn6dfh/l
+         RTN/txEfeuFNtKyzHnl9bkOrB6H71cOMb8l4Kh0J7GQC2JCosNHe8GyzjufyIM5WRK2o
+         eZ8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8+USI8ikGwM1YVVvEQswp7iF6TsNadsn4yeIDHk0x60=;
-        b=Ea+LC5oVTok+hQXvCgdNkxAAq6k9y8NCsss5KSpIX+xN+BUk3uCOO42if2gwPBxeL6
-         daiYNhOmQN1WwPmsliG9WP+ZQI8ts4IFsR0rxoLz/bxpoEqyGVayXgX3tYe8IaqaZdyC
-         Y/+rKRoVDGDzwF1TagBAxfoDul08rSyKb8D7RpXkuNTCH5RtknK6m9qkAN3QIpWbErhx
-         2+kkukuRJvkLMDqcLUIS2QKvIKMS+svWoHdFSo9FolyR4TZ6YrwHdpHil8JCICB477lY
-         k6hqX94r1PDucLS2QMq3dyNOiVswJTYPH27ibsEu4P1FRBfXQ3dSRKL1HkblnUhjm9UN
-         t3lw==
-X-Gm-Message-State: AOAM532yRI7WTShlZJJTY82Bt0VJ7TwJRmxumbR007fh7VZXublTwvu2
-        SUKi7Pp/n67AzixOmXu/DuJFiWbot/c4XxJcy9pRUA==
-X-Google-Smtp-Source: ABdhPJxDt7pGRRQH12hccRAz5CdRFlNU9PBDsLVNqRw8lt88exBLdDxJiJ1WAlEYnsrXg/8+kO677G4mnlkkiBusRXI=
-X-Received: by 2002:a05:6638:69d:: with SMTP id i29mr5435935jab.138.1598529279389;
- Thu, 27 Aug 2020 04:54:39 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=vG3GFaecRjYGM2orq3QNH3b5bYkLOVwGTg6XiPpRXIc=;
+        b=bdBMUgwi0b4pQLDR53QhoI99HhrA28BkGZEouNDctSyLZ8i2fj87Lv/e0jU5CMwA76
+         sbm2/g2L1vTaLTuM/pOjUi78DLnwSr0ObdHhBVxC6h6Ub834dZegMxnIEuB7h4Ta25n9
+         dCnJQHBgO0XcVMa4yDDWPS3LMYOAAUYMhiCoFs7b0VjOZaR5LZJdIBIKZpQ/rLvYD7O9
+         EXLLb8cd2RDHxgf9PZvIoXizhzkatFObXeMfPCSmC5hwAe9FrIVzwTOnhQmrkicPDAIx
+         5NUjw3LTeHocsi51YnbrtUT2jqYEZkcv3KbHwHz39U+m+f06sLE+JJGXi3p/vFN1xGCo
+         TikQ==
+X-Gm-Message-State: AOAM532fuViMYBT/Gh+dMAtVE+/xUyMeNZxYh0Bt5Ne/UsLE33L0LYfh
+        6MGDl7PDmHodZGep47bmk8FCeQ==
+X-Google-Smtp-Source: ABdhPJxbyF8d5EcngGv3DhfuYhCjndliOt2vwoniXJmdB+7PavRwuar4fgzUKdUkIYi3702fUNwjyw==
+X-Received: by 2002:a5d:6987:: with SMTP id g7mr1722186wru.173.1598530570226;
+        Thu, 27 Aug 2020 05:16:10 -0700 (PDT)
+Received: from dell ([91.110.221.141])
+        by smtp.gmail.com with ESMTPSA id m10sm4756714wmi.9.2020.08.27.05.16.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Aug 2020 05:16:09 -0700 (PDT)
+Date:   Thu, 27 Aug 2020 13:16:07 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Maya Erez <merez@codeaurora.org>, wil6210@qti.qualcomm.com
+Subject: Re: [PATCH 12/30] wireless: ath: wil6210: wmi: Correct misnamed
+ function parameter 'ptr_'
+Message-ID: <20200827121607.GF1627017@dell>
+References: <20200826093401.1458456-13-lee.jones@linaro.org>
+ <20200826155625.A5A88C433A1@smtp.codeaurora.org>
+ <20200827063559.GP3248864@dell>
+ <20200827074100.GX3248864@dell>
+ <877dtkb9lm.fsf@codeaurora.org>
 MIME-Version: 1.0
-References: <20200821151544.1211989-1-nicolas.rybowski@tessares.net>
- <20200824220100.y33yza2sbd7sgemh@ast-mbp.dhcp.thefacebook.com>
- <CACXrtpQCE-Yp9=7fbH9sB7-4k-OO12JD18JU=9GL_sYHcmnDtA@mail.gmail.com> <CAADnVQL1O3Ncr5iwmZx_5FgVrwbXmEWZfGm_ASrTcu0j6YGbiA@mail.gmail.com>
-In-Reply-To: <CAADnVQL1O3Ncr5iwmZx_5FgVrwbXmEWZfGm_ASrTcu0j6YGbiA@mail.gmail.com>
-From:   Nicolas Rybowski <nicolas.rybowski@tessares.net>
-Date:   Thu, 27 Aug 2020 13:54:28 +0200
-Message-ID: <CACXrtpSe0-E5sLH4k6Jmw_FDK=+yKdsPdiR9BDniOXC6NTQ=rQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] bpf: add MPTCP subflow support
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        mptcp@lists.01.org, Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <877dtkb9lm.fsf@codeaurora.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexei,
+On Thu, 27 Aug 2020, Kalle Valo wrote:
 
-On Wed, Aug 26, 2020 at 9:13 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Aug 25, 2020 at 11:55 AM Nicolas Rybowski
-> <nicolas.rybowski@tessares.net> wrote:
+> Lee Jones <lee.jones@linaro.org> writes:
+> 
+> > On Thu, 27 Aug 2020, Lee Jones wrote:
 > >
-> > Hi Alexei,
+> >> On Wed, 26 Aug 2020, Kalle Valo wrote:
+> >> 
+> >> > Lee Jones <lee.jones@linaro.org> wrote:
+> >> > 
+> >> > > Fixes the following W=1 kernel build warning(s):
+> >> > > 
+> >> > >  drivers/net/wireless/ath/wil6210/wmi.c:279: warning: Function
+> >> > > parameter or member 'ptr_' not described in 'wmi_buffer_block'
+> >> > >  drivers/net/wireless/ath/wil6210/wmi.c:279: warning: Excess
+> >> > > function parameter 'ptr' description in 'wmi_buffer_block'
+> >> > > 
+> >> > > Cc: Maya Erez <merez@codeaurora.org>
+> >> > > Cc: Kalle Valo <kvalo@codeaurora.org>
+> >> > > Cc: "David S. Miller" <davem@davemloft.net>
+> >> > > Cc: Jakub Kicinski <kuba@kernel.org>
+> >> > > Cc: linux-wireless@vger.kernel.org
+> >> > > Cc: wil6210@qti.qualcomm.com
+> >> > > Cc: netdev@vger.kernel.org
+> >> > > Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> >> > 
+> >> > Failed to apply:
+> >> > 
+> >> > error: patch failed: drivers/net/wireless/ath/wil6210/wmi.c:266
+> >> > error: drivers/net/wireless/ath/wil6210/wmi.c: patch does not apply
+> >> > stg import: Diff does not apply cleanly
+> >> > 
+> >> > Patch set to Changes Requested.
+> >> 
+> >> Are you applying them in order?
+> >> 
+> >> It may be affected by:
+> >> 
+> >>  wireless: ath: wil6210: wmi: Fix formatting and demote
+> >> non-conforming function headers
+> >> 
+> >> I'll also rebase onto the latest -next and resubmit.
 > >
-> > Thanks for the feedback!
-> >
-> > On Tue, Aug 25, 2020 at 12:01 AM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Fri, Aug 21, 2020 at 05:15:38PM +0200, Nicolas Rybowski wrote:
-> > > > Previously it was not possible to make a distinction between plain TCP
-> > > > sockets and MPTCP subflow sockets on the BPF_PROG_TYPE_SOCK_OPS hook.
-> > > >
-> > > > This patch series now enables a fine control of subflow sockets. In its
-> > > > current state, it allows to put different sockopt on each subflow from a
-> > > > same MPTCP connection (socket mark, TCP congestion algorithm, ...) using
-> > > > BPF programs.
-> > > >
-> > > > It should also be the basis of exposing MPTCP-specific fields through BPF.
-> > >
-> > > Looks fine, but I'd like to see the full picture a bit better.
-> > > What's the point of just 'token' ? What can be done with it?
-> >
-> > The idea behind exposing only the token at the moment is that it is
-> > the strict minimum required to identify all subflows linked to a
-> > single MPTCP connection. Without that, each subflow is seen as a
-> > "normal" TCP connection and it is not possible to find a link between
-> > each other.
-> > In other words, it allows the collection of all the subflows of a
-> > MPTCP connection in a BPF map and then the application of per subflow
-> > specific policies. More concrete examples of its usage are available
-> > at [1].
-> >
-> > We try to avoid exposing new fields without related use-cases, this is
-> > why it is the only one currently. And this one is very important to
-> > identify MPTCP connections and subflows.
-> >
-> > > What are you thinking to add later?
-> >
-> > The next steps would be the exposure of additional subflow context
-> > data like the backup bit or some path manager fields to allow more
-> > flexible / accurate BPF decisions.
-> > We are also looking at implementing Packet Schedulers [2] and Path
-> > Managers through BPF.
-> > The ability of collecting all the paths available for a given MPTCP
-> > connection - identified by its token - at the BPF level should help
-> > for such decisions but more data will need to be exposed later to take
-> > smart decisions or to analyse some situations.
-> >
-> > I hope it makes the overall idea clearer.
-> >
-> > > Also selftest for new feature is mandatory.
-> >
-> > I will work on the selftests to add them in a v2. I was not sure a new
-> > selftest was required when exposing a new field but now it is clear,
-> > thanks!
-> >
-> >
-> > [1] https://github.com/multipath-tcp/mptcp_net-next/tree/scripts/bpf/examples
-> > [2] https://datatracker.ietf.org/doc/draft-bonaventure-iccrg-schedulers/
->
-> Thanks! The links are certainly helpful.
-> Since long term you're considering implementing path manager in bpf
-> I suggest to take a look at bpf_struct_ops and bpf based tcp congestion control.
-> It would fit that use case better.
+> > I just rebased all 3 sets onto the latest -next (next-20200827)
+> > without issue.  Not sure what problem you're seeing.  Did you apply
+> > the first set before attempting the second?
+> 
+> I can't remember the order, patchwork sorts them based on the order they
+> have been submitted and that's what I usually use.
+> 
+> Do note that there's a separate tree for drivers in
+> drivers/net/wireless/ath:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/
+> 
+> And it takes a week or two before patches go to linux-next.
 
-We will definitively take a look at that, thanks ! It is indeed the
-direction we should take.
+Understood.  Thank you.
 
-> For now the approach proposed in this patch is probably good enough
-> for simple subflow marking. From the example it's not clear what the networking
-> stack is supposed to do with a different sk_mark.
-> Also considering using sk local storage instead of sk_mark. It's arbitrary size.
-
-Originally, this use-case was asked by Android for some app specific behaviours.
-But the example is provided here to mainly illustrate the possibility
-to put different sockopt per subflow knowing their relations with
-other subflows.
-Indeed in this example, per se, the marking of the subflows has no
-interest, it is for illustration purpose only. It was an easy solution
-to have quick tests in the userspace through nftables.
-
-Also, the implementation of all the signals allowing dynamic subflows
-creation / removal by the path manager to comply with the RFC [1] is
-still under heavy development on the MPTCP side, so we cannot provide
-more realistic examples at the moment.
-
-[1] https://tools.ietf.org/html/rfc8684#section-3.4
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
