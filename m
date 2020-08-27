@@ -2,137 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 731A6253FB1
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 09:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1550E253FF6
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 09:58:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728515AbgH0HzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 03:55:02 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:41127 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728486AbgH0Hyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 03:54:55 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598514894; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=R3GfTB2n3TnLY699vSjPfiKPod4E8AJXYwtplDEpXT0=; b=DfEISsinezeZJX3ajJu0VK56DTSk1H/ejylpqZdngH+oZ8fyx/90CKxAkR8IX0MmSnYxWTZX
- T0+0YXuZcLGQnG0ZB+DYKRUVPbgVwbG9yrkMubD/9hSfGIxBpF0pFR3fxqHjx76kjcwjrPGc
- Fft3CLcHQt4PXJGVPgjMMi0AXxM=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
- 5f4766b44b23cecfe27dd07c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 27 Aug 2020 07:54:28
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id A4E04C433A0; Thu, 27 Aug 2020 07:54:27 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8D16FC433C6;
-        Thu, 27 Aug 2020 07:54:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8D16FC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Christian Lamparter <chunkeey@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 08/30] net: wireless: ath: carl9170: Mark 'ar9170_qmap' as __maybe_unused
-References: <20200814113933.1903438-1-lee.jones@linaro.org>
-        <20200814113933.1903438-9-lee.jones@linaro.org>
-        <7ef231f2-e6d3-904f-dc3a-7ef82beda6ef@gmail.com>
-        <9776eb47-6b83-a891-f057-dd34d14ea16e@rasmusvillemoes.dk>
-        <87eeo5mnr0.fsf@codeaurora.org> <20200818095024.GZ4354@dell>
-Date:   Thu, 27 Aug 2020 10:54:21 +0300
-In-Reply-To: <20200818095024.GZ4354@dell> (Lee Jones's message of "Tue, 18 Aug
-        2020 10:50:24 +0100")
-Message-ID: <87r1rsle1e.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728532AbgH0H6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 03:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728333AbgH0H6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 03:58:09 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD8E5C061264;
+        Thu, 27 Aug 2020 00:58:08 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id f26so5340447ljc.8;
+        Thu, 27 Aug 2020 00:58:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lEBPqYLj1Sfpoe7PvHoeVpAVjO6ud5dnyjMuhp7FHVU=;
+        b=UdpN9e9+xHs/VTWHW2V0XUZN9Egd4mwnCmlizNY/AIPcvPFUdBqRvFNQU8vo2kolFY
+         7y2T/O/r2Ov/tzGqMTcdLnb7fmAI3MyewZNKhgF/msyQT7ep+SBJ9MJYrVL3ZFSf8/lg
+         fgpStsnUu58uIXrIb6sZBB73as3h9JlklSIHZwdaI5fVlpeBSVoP3GSxdwAKRIuGJ0G3
+         uheR2DVPPCDmJOgNe4rZtOHN3FRLjX6JrxavbkinDgK7QGTDkzOPEKPBJSpozg1JeTNn
+         SVy2dKblpo1tKuycek1vObQRq14/QN8FwJFtMEbbj5T1J/lC/ZObD/EoVv5j9sc/krMV
+         mzWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=lEBPqYLj1Sfpoe7PvHoeVpAVjO6ud5dnyjMuhp7FHVU=;
+        b=GFSiPWO5CJh5RhvONpAtEqiyWLJ+ZAdW+3V27joBwBS4hlS8OesAcbieWJYG0PPviX
+         yq236/4jg/kQrdyVwhb6H1ldAnKH2xTB9p/hOfiyxU2HkUKe0tU4rKCtjV8CJBeQSEZA
+         W1IsAPkCTYzH8UhmrCVDq0rAfFSJKkwNHVCUzukIRoepVrVOjvqJhZ5C0Znt06gR0YN/
+         SerhNeqvgoadgNXAlyt/3nGzNwmChLNSlnK/dun6Lb2ZSukQuxoPq5nIa/VRhPywjRtg
+         CrFtIfV6eD9g1ncoCiubdqcPulW7+UJa7AEfNsenopA5leBr6in+EdVQwSJ/tOodA0fJ
+         pZ1Q==
+X-Gm-Message-State: AOAM5331J1dGNIESZwf11TK4h/Aph3zdKQ00E574etiUDcNlQ9nHuw7R
+        ssUId5J19zwHX/P5RsB0qCA=
+X-Google-Smtp-Source: ABdhPJwUG34ZG5RWvvEl84Os0y3M8D8sLpjg17s0tEPZza0pvwK+RE1G6cGDx9RKlYZrA7Z7NkQMOQ==
+X-Received: by 2002:a2e:a370:: with SMTP id i16mr9544469ljn.22.1598515087168;
+        Thu, 27 Aug 2020 00:58:07 -0700 (PDT)
+Received: from ?IPv6:2a00:1fa0:4853:a15:71d2:9e85:be1:5e21? ([2a00:1fa0:4853:a15:71d2:9e85:be1:5e21])
+        by smtp.gmail.com with ESMTPSA id j6sm297282lja.23.2020.08.27.00.58.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Aug 2020 00:58:06 -0700 (PDT)
+Subject: Re: [PATCH] net: usb: Fix uninit-was-stored issue in
+ asix_read_phy_addr()
+To:     Himadri Pandya <himadrispandya@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        gregkh@linuxfoundation.org
+References: <20200827065355.15177-1-himadrispandya@gmail.com>
+From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Organization: Brain-dead Software
+Message-ID: <5dd266df-33cf-f351-7253-33a7f589cd56@gmail.com>
+Date:   Thu, 27 Aug 2020 10:57:56 +0300
+User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200827065355.15177-1-himadrispandya@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lee Jones <lee.jones@linaro.org> writes:
+Hello!
 
-> On Mon, 17 Aug 2020, Kalle Valo wrote:
->
->> Rasmus Villemoes <linux@rasmusvillemoes.dk> writes:
->>=20
->> > On 14/08/2020 17.14, Christian Lamparter wrote:
->> >> On 2020-08-14 13:39, Lee Jones wrote:
->> >>> 'ar9170_qmap' is used in some source files which include carl9170.h,
->> >>> but not all of them.=C2=A0 Mark it as __maybe_unused to show that th=
-is is
->> >>> not only okay, it's expected.
->> >>>
->> >>> Fixes the following W=3D1 kernel build warning(s)
->> >>=20
->> >> Is this W=3D1 really a "must" requirement? I find it strange having
->> >> __maybe_unused in header files as this "suggests" that the
->> >> definition is redundant.
->> >
->> > In this case it seems one could replace the table lookup with a
->> >
->> > static inline u8 ar9170_qmap(u8 idx) { return 3 - idx; }
->> >
->> > gcc doesn't warn about unused static inline functions (or one would ha=
-ve
->> > a million warnings to deal with). Just my $0.02.
->>=20
->> Yeah, this is much better.
->>=20
->> And I think that static variables should not even be in the header
->> files. Doesn't it mean that there's a local copy of the variable
->> everytime the .h file is included? Sure, in this case the overhead is
->> small (4 bytes per include) but still it's wrong.
->
-> It happens a lot.
->
-> As I stated before, the 2 viable options are to a) move it into the
-> source files; ensuring code duplication, unnecessary maintenance
-> burden and probably disparity over time, or b) create (or locate if
-> there is one already) a special header file which is only to be
-> included by the users.
->
-> The later option gets really complicated if there are a variety of
-> tables which are included by any given number of source file
-> permutations.
->
-> The accepted answer in all of the other subsystems I've worked with so
-> far, is to use __maybe_unused.  It's simple, non-intrusive and doesn't
-> rely on any functional changes.
->
->> Having a static inline
->> function would solve that problem as well the compiler warning.
->
-> This time yes, but it's a hack that will only work with simple,
-> linear data.=20=20
+On 27.08.2020 9:53, Himadri Pandya wrote:
 
-To me __maybe_unused is a hack and a static inline function is a much
-better solution.
+> The buffer size is 2 Bytes and we expect to receive the same amount of
+> data. But sometimes we receive less data and run into uninit-was-stored
+> issue upon read. Hence modify the error check on the return value to match
+> with the buffer size as a prevention.
+> 
+> Reported-and-tested by: syzbot+a7e220df5a81d1ab400e@syzkaller.appspotmail.com
+> Signed-off-by: Himadri Pandya <himadrispandya@gmail.com>
+> ---
+>   drivers/net/usb/asix_common.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+> index e39f41efda3e..7bc6e8f856fe 100644
+> --- a/drivers/net/usb/asix_common.c
+> +++ b/drivers/net/usb/asix_common.c
+> @@ -296,7 +296,7 @@ int asix_read_phy_addr(struct usbnet *dev, int internal)
+>   
+>   	netdev_dbg(dev->net, "asix_get_phy_addr()\n");
+>   
+> -	if (ret < 0) {
+> +	if (ret < 2) {
+>   		netdev_err(dev->net, "Error reading PHYID register: %02x\n", ret);
 
-> Try doing that with some of the other, more complicated
-> tables, like mwifiex_sdio_sd8*.
+    Hm... printing possibly negative values as hex?
 
-Then the table should be moved to a .c file and the .h file should have
-"extern const int foo[]"
+[...]
 
---=20
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+MBR, Sergei
