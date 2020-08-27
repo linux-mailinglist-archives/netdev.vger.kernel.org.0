@@ -2,95 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB571253D3A
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 07:26:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91C85253D50
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 07:45:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726839AbgH0F0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 01:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726058AbgH0F0I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 01:26:08 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14863C061240;
-        Wed, 26 Aug 2020 22:26:08 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id q3so2276684ybp.7;
-        Wed, 26 Aug 2020 22:26:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oY4EUnOEDju3tja4wkLjWLLZvYjMGT3vB9eb0pCpq7o=;
-        b=l/oxaKglaB9lSsSwQ0lPu3+uiqwpzArlKqIbAb9MFjsbBC6tV9ozmgfoYNbEtzUcbB
-         reYA6O8v8d+O3il6G9eWCUSibi1tk8l2CzlO8yOwlMUjwJpzSeki4v1H3mV6HLmMQWlK
-         eiOTWfNP3MNqjeja4mvCPIefJjF4hFnw77jn13klS5AqAst3Td19YlJa9nZ/6OG4wTgj
-         0CToRL7cxeaT0f2kpiyw5i7T9PR3xCQQ5Edyo81yrdBxeJFqru3LF03S2e5b/cUMafjg
-         KVrt/HdtyGqyDSsV+qXrN+pMikw/1gD47iR5FXZnHpJvPzyokhsYc/AktWH//BQCc2Yu
-         Ky/A==
+        id S1727047AbgH0FpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 01:45:17 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:51617 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726939AbgH0FpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 01:45:17 -0400
+Received: by mail-io1-f71.google.com with SMTP id g6so2937003ioc.18
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 22:45:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oY4EUnOEDju3tja4wkLjWLLZvYjMGT3vB9eb0pCpq7o=;
-        b=EZvJ7Ruq/G4GDkpLGYjLlXsXsS2dhwRRAJmZ6bYmJ0OKVgZC4ltvHLyFcKJLGqG+CM
-         g/jM3LUfnmwlzwOv6ZJD3k79OcA6gaWnQLUs3nj8l114+kwzQoDQCJ8vEdIeY3wxW+9x
-         hbP7AAhiWFXO3w9dkxwjrhRMtWuahkJ8PoGaMCho5cKD7TsVtb3mkSTAb1bYJcOX+3mA
-         lAtxcAbN3I2fCNmdhPIhFwDJasmygbnr2mr5ru9l8eIMSw49jRC6hizTby6EBgzMDIrm
-         i2to8u5V8pBsoLmmTxGvLWZ41azQCWpRBqiCZ26T06zdIkb3YIUReVJaX0S+tVNwP18j
-         I6sw==
-X-Gm-Message-State: AOAM531ssuKXyFeJ+dnclTlV4Y9ayneJxSf1uVeiWCBcrPy6h1B0c9fn
-        3TkEt5qM7PiuUy0hk4f63KFo1ERpRiCjyPii084=
-X-Google-Smtp-Source: ABdhPJw4CnXJE5XdzTv9U9a4RZQ23gT5fERpmBOFlaEcDhu3ZqesEcc2gCcqFm2Na/lwudsOkoowNbj+p2ii3rf+9u4=
-X-Received: by 2002:a25:ad5a:: with SMTP id l26mr25086554ybe.510.1598505967092;
- Wed, 26 Aug 2020 22:26:07 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=AOnJK58KWAgjckYsBB0yMrRGuMXnsjy16cofVkiVrV0=;
+        b=jxtIiyome9sBOmM5BpLe1YfMvEgkNus1Wi5l9xp/Juevnh0jTRNdD4RliUuFzevpV6
+         7d7VCxY4DMXXKB7KhDSsTfGWVrfZl40YcXi58ES6aToQlWvRxE8QMd7hzn51f0ydxYp/
+         i0oX4N4AfRK4xjYWZwxyYX3FzustoWqn5wb64SYdLImcl0w/UthX4q82CBDrUIr81Bun
+         2U/42rIo+ksBfKIL6X8Xdn99a2uQSRTSUGPmR6T2vAbuJ6v2uGWMjROEQZCNnV66TPRn
+         tcwyR7tTKGS6J2coofPgYGQC45mPn4k5SUTIT78dOXFQI3CpbnE70Rx7iArHX12zJQZs
+         Rkiw==
+X-Gm-Message-State: AOAM530asmORfqmD9TZg3AGW6ZaCYpx/P/vEtNS5ThWu/T6JmOE2rwXL
+        mnjnIbdi46eYRhuxmoIMs30R6bgKt7PKdyiq55qdcjoDGdNO
+X-Google-Smtp-Source: ABdhPJxVMcCYi0n2+hu7wGOwaonrfV3/g00xVzHNfTVQoH598Vl+9+Fsj+Bky7V9IUFN4v3+QRE+q7R2RWPfZiXwmddgVt6jiWhW
 MIME-Version: 1.0
-References: <20200826160424.14131-1-cneirabustos@gmail.com>
-In-Reply-To: <20200826160424.14131-1-cneirabustos@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 26 Aug 2020 22:25:55 -0700
-Message-ID: <CAEf4BzYt3Wt5ABivJKifoW3XLL-U0B_KgXim0pUtqJUapo7raw@mail.gmail.com>
-Subject: Re: [PATCH v1 bpf-next] bpf: new helper bpf_get_current_pcomm
-To:     Carlos Neira <cneirabustos@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>
+X-Received: by 2002:a05:6e02:c71:: with SMTP id f17mr15347923ilj.98.1598507115751;
+ Wed, 26 Aug 2020 22:45:15 -0700 (PDT)
+Date:   Wed, 26 Aug 2020 22:45:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ce2f6d05add5705a@google.com>
+Subject: BUG: stack guard page was hit in __zone_watermark_ok
+From:   syzbot <syzbot+144d1f35995353c5779c@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        hawk@kernel.org, jiri@mellanox.com, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@chromium.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        roopa@cumulusnetworks.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 26, 2020 at 9:06 AM Carlos Neira <cneirabustos@gmail.com> wrote:
->
-> In multi-threaded applications bpf_get_current_comm is returning per-thread
-> names, this helper will return comm from real_parent.
-> This makes a difference for some Java applications, where get_current_comm is
-> returning per-thread names, but get_current_pcomm will return "java".
->
+Hello,
 
-Why not bpf_probe_read_kernel_str(dst, 16, task->real_parent->comm)
-for fentry/fexit/tp_btf/etc BTF-aware BPF programs or
-BPF_CORE_READ_STR_INTO(dst, task, real_parent, comm) for any BPF
-program that has bpf_probe_read_kernel[_str]() (which is pretty much
-every BPF program nowadays, I think)?
+syzbot found the following issue on:
 
-Yes, CONFIG_DEBUG_INFO_BTF=y Kconfig is a requirement, but it's a good
-idea to have that if you are using BPF anyways.
+HEAD commit:    85eb5bc3 net: atheros: switch from 'pci_' to 'dma_' API
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=14e32139900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a0437fdd630bee11
+dashboard link: https://syzkaller.appspot.com/bug?extid=144d1f35995353c5779c
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-> ---
->  include/linux/bpf.h                           |  1 +
->  include/uapi/linux/bpf.h                      | 15 ++++-
->  kernel/bpf/core.c                             |  1 +
->  kernel/bpf/helpers.c                          | 28 +++++++++
->  kernel/trace/bpf_trace.c                      |  2 +
->  tools/include/uapi/linux/bpf.h                | 15 ++++-
->  .../selftests/bpf/prog_tests/current_pcomm.c  | 57 +++++++++++++++++++
->  .../selftests/bpf/progs/test_current_pcomm.c  | 17 ++++++
->  8 files changed, 134 insertions(+), 2 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/current_pcomm.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_current_pcomm.c
->
+Unfortunately, I don't have any reproducer for this issue yet.
 
-[...]
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+144d1f35995353c5779c@syzkaller.appspotmail.com
+
+BUG: stack guard page was hit at 00000000b2f481cf (stack is 000000009cbf9546..0000000099742d14)
+kernel stack overflow (double-fault): 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 29993 Comm: syz-executor.4 Not tainted 5.9.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:instrument_atomic_read include/linux/instrumented.h:56 [inline]
+RIP: 0010:atomic64_read include/asm-generic/atomic-instrumented.h:837 [inline]
+RIP: 0010:atomic_long_read include/asm-generic/atomic-long.h:29 [inline]
+RIP: 0010:zone_page_state include/linux/vmstat.h:217 [inline]
+RIP: 0010:__zone_watermark_unusable_free mm/page_alloc.c:3508 [inline]
+RIP: 0010:__zone_watermark_ok+0x23f/0x3f0 mm/page_alloc.c:3529
+Code: c4 28 31 c0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 49 8d bc 24 98 06 00 00 be 08 00 00 00 4c 89 4c 24 20 4c 89 54 24 18 89 54 24 10 <4c> 89 44 24 08 48 89 3c 24 e8 33 78 08 00 48 8b 3c 24 48 b8 00 00
+RSP: 0018:ffffc900169f7ff0 EFLAGS: 00010046
+RAX: dffffc0000000000 RBX: 0000000000000001 RCX: 0000000000000001
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88812fffc498
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: ffff88812fffbe00
+R13: 0000000000000040 R14: 0000000000000002 R15: 0000000000000000
+FS:  00007f98bc4db700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffc900169f7fe8 CR3: 00000002063a9000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ zone_watermark_fast mm/page_alloc.c:3612 [inline]
+ get_page_from_freelist+0x102f/0x37f0 mm/page_alloc.c:3785
+ __alloc_pages_slowpath.constprop.0+0x322/0x2860 mm/page_alloc.c:4592
+ __alloc_pages_nodemask+0x62c/0x790 mm/page_alloc.c:4901
+ __alloc_pages include/linux/gfp.h:509 [inline]
+ __alloc_pages_node include/linux/gfp.h:522 [inline]
+ kmem_getpages mm/slab.c:1376 [inline]
+ cache_grow_begin+0x71/0x430 mm/slab.c:2590
+ cache_alloc_refill+0x27b/0x340 mm/slab.c:2962
+ ____cache_alloc mm/slab.c:3045 [inline]
+ ____cache_alloc mm/slab.c:3028 [inline]
+ slab_alloc_node mm/slab.c:3241 [inline]
+ kmem_cache_alloc_node_trace+0x3de/0x400 mm/slab.c:3592
+ __do_kmalloc_node mm/slab.c:3614 [inline]
+ __kmalloc_node_track_caller+0x38/0x60 mm/slab.c:3629
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0xae/0x550 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1085 [inline]
+ nlmsg_new include/net/netlink.h:944 [inline]
+ rtmsg_ifinfo_build_skb+0x72/0x1a0 net/core/rtnetlink.c:3804
+ rtmsg_ifinfo_event net/core/rtnetlink.c:3840 [inline]
+ rtmsg_ifinfo_event net/core/rtnetlink.c:3831 [inline]
+ rtnetlink_event+0x123/0x1d0 net/core/rtnetlink.c:5614
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
+ call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
+ call_netdevice_notifiers net/core/dev.c:2059 [inline]
+ netdev_features_change net/core/dev.c:1444 [inline]
+ netdev_sync_lower_features net/core/dev.c:9371 [inline]
+ __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
+ netdev_change_features+0x61/0xb0 net/core/dev.c:9574
+ bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
+ bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
+ bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
+ call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
+ call_netdevice_notifiers net/core/dev.c:2059 [inline]
+ netdev_features_change net/core/dev.c:1444 [inline]
+ netdev_sync_lower_features net/core/dev.c:9371 [inline]
+ __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
+ netdev_change_features+0x61/0xb0 net/core/dev.c:9574
+ bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
+ bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
+ bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
+ call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
+ call_netdevice_notifiers net/core/dev.c:2059 [inline]
+ netdev_features_change net/core/dev.c:1444 [inline]
+ netdev_sync_lower_features net/core/dev.c:9371 [inline]
+ __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
+ netdev_change_features+0x61/0xb0 net/core/dev.c:9574
+ bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
+ bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
+ bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
+ call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
+ call_netdevice_notifiers net/core/dev.c:2059 [inline]
+ netdev_features_change net/core/dev.c:1444 [inline]
+ netdev_sync_lower_features net/core/dev.c:9371 [inline]
+ __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
+ netdev_change_features+0x61/0xb0 net/core/dev.c:9574
+ bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
+ bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
+ bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
+ call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
+ call_netdevice_notifiers net/core/dev.c:2059 [inline]
+ netdev_features_change net/core/dev.c:1444 [inline]
+ netdev_sync_lower_features net/core/dev.c:9371 [inline]
+ __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
+ netdev_change_features+0x61/0xb0 net/core/dev.c:9574
+ bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
+ bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
+ bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
+ call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
+ call_netdevice_notifiers net/core/dev.c:2059 [inline]
+ netdev_features_change net/core/dev.c:1444 [inline]
+ netdev_sync_lower_features net/core/dev.c:9371 [inline]
+ __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
+ netdev_change_features+0x61/0xb0 net/core/dev.c:9574
+ bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
+ bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
+ bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
+ call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
+ call_netdevice_notifiers net/core/dev.c:2059 [inline]
+ netdev_features_change net/core/dev.c:1444 [inline]
+ netdev_sync_lower_features net/core/dev.c:9371 [inline]
+ __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
+ netdev_change_features+0x61/0xb0 net/core/dev.c:9574
+ bond_compute_features+0x562/0xa80 drivers/net/bonding/bond_main.c:1308
+ bond_slave_netdev_event drivers/net/bonding/bond_main.c:3375 [inline]
+ bond_netdev_event+0x871/0xb80 drivers/net/bonding/bond_main.c:3415
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2033
+ call_netdevice_notifiers_extack net/core/dev.c:2045 [inline]
+ call_netdevice_notifiers net/core/dev.c:2059 [inline]
+ netdev_features_change net/core/dev.c:1444 [inline]
+ netdev_sync_lower_features net/core/dev.c:9371 [inline]
+ __netdev_update_features+0x88d/0x1360 net/core/dev.c:9502
+ netdev_change_features+0x61/0xb0 net/core/dev.c:9574
+Lost 504 message(s)!
+---[ end trace 99fc362a1b5e94a8 ]---
+RIP: 0010:instrument_atomic_read include/linux/instrumented.h:56 [inline]
+RIP: 0010:atomic64_read include/asm-generic/atomic-instrumented.h:837 [inline]
+RIP: 0010:atomic_long_read include/asm-generic/atomic-long.h:29 [inline]
+RIP: 0010:zone_page_state include/linux/vmstat.h:217 [inline]
+RIP: 0010:__zone_watermark_unusable_free mm/page_alloc.c:3508 [inline]
+RIP: 0010:__zone_watermark_ok+0x23f/0x3f0 mm/page_alloc.c:3529
+Code: c4 28 31 c0 5b 5d 41 5c 41 5d 41 5e 41 5f c3 49 8d bc 24 98 06 00 00 be 08 00 00 00 4c 89 4c 24 20 4c 89 54 24 18 89 54 24 10 <4c> 89 44 24 08 48 89 3c 24 e8 33 78 08 00 48 8b 3c 24 48 b8 00 00
+RSP: 0018:ffffc900169f7ff0 EFLAGS: 00010046
+RAX: dffffc0000000000 RBX: 0000000000000001 RCX: 0000000000000001
+RDX: 0000000000000000 RSI: 0000000000000008 RDI: ffff88812fffc498
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: ffff88812fffbe00
+R13: 0000000000000040 R14: 0000000000000002 R15: 0000000000000000
+FS:  00007f98bc4db700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffc900169f7fe8 CR3: 00000002063a9000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
