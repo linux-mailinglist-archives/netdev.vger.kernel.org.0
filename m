@@ -2,97 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6C6725516B
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 00:58:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0538C255172
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 01:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728067AbgH0W6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 18:58:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
+        id S1728014AbgH0XAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 19:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726826AbgH0W6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 18:58:38 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C13AC061264
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 15:58:38 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id z18so3420763pjr.2
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 15:58:38 -0700 (PDT)
+        with ESMTP id S1727845AbgH0XAj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 19:00:39 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275D0C061264
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 16:00:39 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id u128so4657312pfb.6
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 16:00:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=AucB4HoH5yT0wHllUii+LFfBm/3P2Io3CKZKtUNaRjk=;
-        b=uMJE9TuvUhdZvHMgR59eGOa3tcgjwpPWJ5sCDuG5QiGXPgYrapA8S8acSzueVwTY7X
-         PkQvyYbLOgo5AtumZezT138GFgy0Rz7R5qJ3ej85GGVwG/5gDElMVzioRRD4m24qH5gW
-         u8AYyTzRq/KLPQkU+6LJmGWfHmcgnGqpgHDadS89WeHOTOkuMNo+uNK98yBeDDMyXA4q
-         GD6OZ1sUKyVDTxDJdeaRU8tPVWpYxIJWNOHQDZcfasB06YM9/kbcJsbayf1LQpRLjO5a
-         fgF982NshRiEqsT6G87MQkKAJOG12ezKzfawruOOkdmJ3hvuJsULHkfvwp5b8KiPYWRD
-         yb8g==
+        h=from:to:cc:subject:date:message-id;
+        bh=+cJuw0wMAcZ5pMpT3Duk4/qG8MTB5Up2A0ZV8SKGF/Y=;
+        b=xwTfTEBsGUsrFz0Kpl92tic4/yIEMueh6XLJ1Hx+JuaOI+037ebzDnUrx2xMyimr95
+         6ID9ihWEqZRTWuESgqChXmrRuOVBs1VM9JiMGbxZ+X0Oh6izPfl6hJK2Wu7MJ/PeQGBa
+         LxiEiWF3sf674E/ijOR+gPkekFkmBbHOSpGDYkwdPgDpVPAaNVIrd5+15zxZpyYLgSjB
+         B2i7TPjOD4LoYn8fYbzPj6ZYW5r0zRVHhrD3n+uc5tI3V5SoCZIXsWMjCdFqHWB4d6Ic
+         fVMx9RNr4Ne5PAj5fUsAF5blo1HPgOkxicjmKwNDebPSqEKGAP+kO+OKtGgNmqy9ev/X
+         P2Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=AucB4HoH5yT0wHllUii+LFfBm/3P2Io3CKZKtUNaRjk=;
-        b=XhRRFfby7kYGCp6ZP+RugzFwrEwVKncIDi6s73pYe2k8hkzZTGeJNKUVCVrV4zCZfp
-         70YLl/3CzCAGACK6dQGSkYtmAUEh2htRQa4b78EcGNn9Nfb+f8iBW76rjvukmGk2iTM7
-         5+IztHfF9Of6h5xoNlZEngD5pWPkHTvlcPtSu4fNcBByIabjHgwqk1eJYH8KgbHO5xYu
-         e938/bMNyqvjPfJcPnpS9JYUxjJp5v+L8GWhxZAkWO7XJ4CsQvTsA/ufQUvGRQqLcULm
-         S98U1WUd3m273tN0cBwijf6aRFu5O68+JCRQgjpNmgPwgHVTkFbs1gVQlUos5wViwe1h
-         mgtg==
-X-Gm-Message-State: AOAM530q3ZI03N87o15riYpAcwUI+xWziajDXtlLog03SxDffJJcy1dF
-        mBD0GpDUh/3F7M2xAVLlrDx10HdnWRQrfg==
-X-Google-Smtp-Source: ABdhPJz4M2Bx0OkDZOYIeW7er05YzjWnx2ZlC0PAiMwUbYt9XxhrVf17jR/YCWoLFZR1tYbqj5xXRg==
-X-Received: by 2002:a17:90b:4397:: with SMTP id in23mr945717pjb.102.1598569118102;
-        Thu, 27 Aug 2020 15:58:38 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id s8sm107171pfc.167.2020.08.27.15.58.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Aug 2020 15:58:37 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 07/12] ionic: reduce contiguous memory
- allocation requirement
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20200827180735.38166-1-snelson@pensando.io>
- <20200827180735.38166-8-snelson@pensando.io>
- <20200827124625.511ef647@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <bd9b0427-6772-068e-d7bd-b1aabf1ac6ed@pensando.io>
- <20200827142536.587f0ecc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+cJuw0wMAcZ5pMpT3Duk4/qG8MTB5Up2A0ZV8SKGF/Y=;
+        b=XlvDZpYNbEOAzoB0NaFf+WVZzXxuxYqdmRcdDoHoLdD5LCFWeqpsxan9YK14Grn759
+         fvPdWxcJckrp1YB0J53YQOrcQFZP+UE0W1mdGrOCRsqQiN3wzu7bsE5Fl2LevjIKVxKA
+         B2LI2P6wqn/F1bf8TqqdrCv025kfQLcfNLyWWp2gVS351LmvvqHLtqC8P4e3jxjllwpn
+         Gzd8yHDKKlJyRCbpr63ah4u4dO/oBvkMYdnIsgeR5Bhgoj2EHBx2Wf+cwtO0or/Ygu5t
+         VJ9Hyk6YL6nPkD58GuQsnr4ZWtYJJ9EEE6b1XsPS2E5aSWD+IB8bL0trXFoFnGuIykqQ
+         u4+A==
+X-Gm-Message-State: AOAM5324z16RVC8MNCcWkgdgsis3UdOvIGlKrAkKOKoRLzXiTUa8mSza
+        CNdKXXwciamRS6BHTuxZcIyGCV3jVAxq6A==
+X-Google-Smtp-Source: ABdhPJyA7HFTfSRX1YCNeNvP1cXVzQG4TT5/J0Ak3E30z7FCLbhM/y5cFOxKJcF2HP2oU16byDuAnQ==
+X-Received: by 2002:a63:4965:: with SMTP id y37mr16802873pgk.349.1598569237977;
+        Thu, 27 Aug 2020 16:00:37 -0700 (PDT)
+Received: from driver-dev1.pensando.io ([12.226.153.42])
+        by smtp.gmail.com with ESMTPSA id n22sm3137534pjq.25.2020.08.27.16.00.37
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 27 Aug 2020 16:00:37 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <87e8b976-b495-d989-25ab-ecd871f9dc16@pensando.io>
-Date:   Thu, 27 Aug 2020 15:58:36 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.11.0
-MIME-Version: 1.0
-In-Reply-To: <20200827142536.587f0ecc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     Shannon Nelson <snelson@pensando.io>
+Subject: [PATCH v3 net-next 00/12] ionic memory usage rework
+Date:   Thu, 27 Aug 2020 16:00:18 -0700
+Message-Id: <20200827230030.43343-1-snelson@pensando.io>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/27/20 2:25 PM, Jakub Kicinski wrote:
-> On Thu, 27 Aug 2020 12:53:17 -0700 Shannon Nelson wrote:
->> On 8/27/20 12:46 PM, Jakub Kicinski wrote:
->>> On Thu, 27 Aug 2020 11:07:30 -0700 Shannon Nelson wrote:
->>>> +	q_base = (void *)PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
->>> The point of PTR_ALIGN is to make the casts unnecessary. Does it not
->>> work?
->> Here's what I see from two different compiler versions:
->>
->> drivers/net/ethernet/pensando/ionic/ionic_lif.c:514:9: warning:
->> assignment makes pointer from integer without a cast [-Wint-conversion]
->>     q_base = PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
->>
->>
->> drivers/net/ethernet/pensando/ionic/ionic_lif.c:514:9: warning:
->> assignment to 'void *' from 'long unsigned int' makes pointer from
->> integer without a cast [-Wint-conversion]
->>     q_base = PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
-> Just
->
-> 	q_base = PTR_ALIGN(new->q_base, PAGE_SIZE);
+Previous review comments have suggested [1],[2] that this driver
+needs to rework how queue resources are managed and reconfigured
+so that we don't do a full driver reset and to better handle
+potential allocation failures.  This patchset is intended to
+address those comments.
 
-Got it
-sln
+The first few patches clean some general issues and
+simplify some of the memory structures.  The last 4 patches
+specifically address queue parameter changes without a full
+ionic_stop()/ionic_open().
+
+[1] https://lore.kernel.org/netdev/20200706103305.182bd727@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+[2] https://lore.kernel.org/netdev/20200724.194417.2151242753657227232.davem@davemloft.net/
+
+v3: use PTR_ALIGN without typecast
+    fix up Neel's attribution
+
+v2: use PTR_ALIGN
+    recovery if netif_set_real_num_tx/rx_queues fails
+    less racy queue bring up after reconfig
+    common-ize the reconfig queue stop and start
+
+Shannon Nelson (12):
+  ionic: set MTU floor at ETH_MIN_MTU
+  ionic: fix up a couple of debug strings
+  ionic: use kcalloc for new arrays
+  ionic: remove lif list concept
+  ionic: rework and simplify handling of the queue stats block
+  ionic: clean up unnecessary non-static functions
+  ionic: reduce contiguous memory allocation requirement
+  ionic: use index not pointer for queue tracking
+  ionic: change mtu without full queue rebuild
+  ionic: change the descriptor ring length without full reset
+  ionic: change queue count with no reset
+  ionic: pull reset_queues into tx_timeout handler
+
+ drivers/net/ethernet/pensando/ionic/ionic.h   |   4 +-
+ .../ethernet/pensando/ionic/ionic_bus_pci.c   |  32 +-
+ .../ethernet/pensando/ionic/ionic_debugfs.c   |  29 +-
+ .../net/ethernet/pensando/ionic/ionic_dev.c   |  46 +-
+ .../net/ethernet/pensando/ionic/ionic_dev.h   |  49 +-
+ .../ethernet/pensando/ionic/ionic_devlink.c   |   2 +-
+ .../ethernet/pensando/ionic/ionic_ethtool.c   | 127 ++-
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 785 +++++++++++-------
+ .../net/ethernet/pensando/ionic/ionic_lif.h   |  94 ++-
+ .../net/ethernet/pensando/ionic/ionic_main.c  |  26 +-
+ .../net/ethernet/pensando/ionic/ionic_stats.c |  48 +-
+ .../net/ethernet/pensando/ionic/ionic_txrx.c  |  82 +-
+ 12 files changed, 790 insertions(+), 534 deletions(-)
+
+-- 
+2.17.1
+
