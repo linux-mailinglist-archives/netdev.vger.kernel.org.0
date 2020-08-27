@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F74F2540BC
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 10:25:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EBC9254128
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 10:48:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728021AbgH0IZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 04:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57396 "EHLO
+        id S1727786AbgH0Is4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 04:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727961AbgH0IZm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 04:25:42 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF018C061264
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 01:25:41 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id r15so4449603wrp.13
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 01:25:41 -0700 (PDT)
+        with ESMTP id S1726988AbgH0Is4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 04:48:56 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997CDC061264
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 01:48:55 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id bo3so6557514ejb.11
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 01:48:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=fNByeHVDbFMOoS5ytnGv8lYTbDplR4L0uTAVH8FeXIc=;
-        b=Jg22yXHtJrmmzdSayxlM/zCN6OsSfAq7h2GvuU7W7Y2gwfiUPKRqMDkn09IkqPMZMA
-         r8V+4Acu5BiYn2ZTgS11CT7Vi0+nGzRB1NKvaqOijPu5sPCGXGZ7WCHxzfd8yMF/CQ77
-         +Kv3/VMrVJCs13N4SMYWudKSwwKKSpgMQaF643mGW+f44RSHBH9WOTAkmtIX34FV+r9t
-         WpmM353Cz/ohkP0W8p3otwUbJ16T3OmMgEf58cdPelk4ZmS21C/AOraZ40zCwWbVamSH
-         qsA8tBoU1s2DBxS7c0ujXyd94bPhqVwTJeE4c8OPSpysPvmGbGoWdfAwYC/Tz21Ns3+Q
-         rwgg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UPa6DuIbbKBA3/Upa+iNPRrifZuPdrNH0xaYLzyzBOw=;
+        b=NZVpZaQTbW1e9AxIT0rfBGyUOx4f3Jd5L0O86X8j+9vnoXkY6Ldhzn4RP8Q1h9G002
+         x5rmT9ti0HTR3lx9rNkyFujELqMMWO+4gDW+mM2i4bxBgBj8AB+4kSsdQQ+B6TbIsajD
+         EPEc+6X0XleLM7SZY/z1bOh0M3bQikUE4bZ6zFypky82+ZG2+8A3/UlT7JcsgpZnhH6f
+         Kgpm4QFuLwDbJuTUff/dEu/Nhc0REviHGbmCdPqpTISe8wjSY5giLDW4wju4t9d45KKz
+         Jhtp5QwjEot3X5NSmURGPPpF2SOHwnNgtlDLHBE6j9OjRFCCQCdFg9ofBw9Fl0En0kqc
+         cR9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=fNByeHVDbFMOoS5ytnGv8lYTbDplR4L0uTAVH8FeXIc=;
-        b=XPkPoxp4JpIfhA6wHc8h88TJKbSBU4GsYIq20nAy+3PoxGl1R3vMx37gqtH/1AasdL
-         P9P00yLyfZyvUOu3R8twPvTtxob7cVCfo8AMYuHFLcAlAagdj6srRw/Vsy3Ga7ZhRQUm
-         EDa4P54ItmWGKOJz0uCJ+zEFlvylTM6qcvl2BfF/Q67M7j2mv392JIbWlSa9rH3btdRo
-         ZFnKTMY03wJRzXRSdnr/yhzBvtBOHbenbGv72FKy6Z8hvc0kwZd7q0hTgLEtK34zO2hc
-         uekvcAJBsVUFUNJmR11V8d028Zx8WnDgbqPNH/X02q5HO1iw3N6hqoPpqHrSzyS7c1WF
-         NTtw==
-X-Gm-Message-State: AOAM530VwBPhJoEZCqQJosGqvPzWUR48SjnrSns4xE0WIafoPAT6dHVE
-        YcUycwU29SjEHzqDG0/fssg=
-X-Google-Smtp-Source: ABdhPJzikUzl1kIXdD/a3Q2Ptvq4OjlgHmK9EvZIaGmR2S3S8k+2Y0omrIo/r4f/bkSlHgmBvLv9Gw==
-X-Received: by 2002:a5d:5272:: with SMTP id l18mr18645010wrc.89.1598516740662;
-        Thu, 27 Aug 2020 01:25:40 -0700 (PDT)
-Received: from [192.168.8.147] ([37.171.26.29])
-        by smtp.gmail.com with ESMTPSA id j5sm3808507wma.45.2020.08.27.01.25.39
+        bh=UPa6DuIbbKBA3/Upa+iNPRrifZuPdrNH0xaYLzyzBOw=;
+        b=l/Xb3M8N8+C1KPDSYKLQ8gg0l7/zgoCqZNFJdJvUcMZfG77760t0d2LSP9z0ReyhO6
+         N0KcHsbC/nCwjYR9DkPXmTDC+MwvY12bPGDP2lnVbqjYIqCw2Xj7EodNBxdTwVUYsCJl
+         dtm1jz561AAX7JJkbJ7J8VIVxZPI1BYGn1rzYLNBwVenGe+nez8pcdilnVvktA/V8Gnb
+         tab6tuzBhDjOyeA4Jyt00sBN7Nh7ADmVniufhY/2vjIKTjz4vPTzq5rYlw9oiL8JLzgq
+         F7V6d90oUfesA6BKNCm0LHWLzDVWSbrHimq9g611OgYXLIPP+Vb8igVy9Dhvnvd9Nvkw
+         cT8g==
+X-Gm-Message-State: AOAM530/L5/NvbTRI1I10i5PRHUYI3rkKK3uwzffW+EcGWb/Hnv9Gt2E
+        MHXjlsZv475zyINmHr1E/rg=
+X-Google-Smtp-Source: ABdhPJxR8xx0twnPah855FS1JUCbKw1EX70jzQfAZZz5S9+khg7bHGQ1Vcq9opDWDgXZi0uLqbtMsw==
+X-Received: by 2002:a17:906:edc5:: with SMTP id sb5mr11426149ejb.369.1598518134145;
+        Thu, 27 Aug 2020 01:48:54 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:88d6:516:4510:4c1f? (p200300ea8f23570088d6051645104c1f.dip0.t-ipconnect.de. [2003:ea:8f23:5700:88d6:516:4510:4c1f])
+        by smtp.googlemail.com with ESMTPSA id r21sm1355298ejz.51.2020.08.27.01.48.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Aug 2020 01:25:40 -0700 (PDT)
-Subject: Re: [PATCH] iavf: use kvzalloc instead of kzalloc for rx/tx_bi buffer
-To:     Li RongQing <lirongqing@baidu.com>, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
-References: <1598514788-31039-1-git-send-email-lirongqing@baidu.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <6d89955c-78a2-fa00-9f39-78648d3558a0@gmail.com>
-Date:   Thu, 27 Aug 2020 01:25:38 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        Thu, 27 Aug 2020 01:48:53 -0700 (PDT)
+Subject: Re: [PATCHi v2] net: mdiobus: fix device unregistering in
+ mdiobus_register
+To:     Sascha Hauer <s.hauer@pengutronix.de>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de
+References: <20200827070618.26754-1-s.hauer@pengutronix.de>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <3f9daa3c-8a16-734b-da7b-e0721ddf992c@gmail.com>
+Date:   Thu, 27 Aug 2020 10:48:48 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <1598514788-31039-1-git-send-email-lirongqing@baidu.com>
+In-Reply-To: <20200827070618.26754-1-s.hauer@pengutronix.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -67,25 +69,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/27/20 12:53 AM, Li RongQing wrote:
-> when changes the rx/tx ring to 4096, kzalloc may fail due to
-> a temporary shortage on slab entries.
+On 27.08.2020 09:06, Sascha Hauer wrote:
+> After device_register has been called the device structure may not be
+> freed anymore, put_device() has to be called instead. This gets violated
+> when device_register() or any of the following steps before the mdio
+> bus is fully registered fails. In this case the caller will call
+> mdiobus_free() which then directly frees the mdio bus structure.
 > 
-> kvmalloc is used to allocate this memory as there is no need
-> to have this memory area physical continuously.
+> Set bus->state to MDIOBUS_UNREGISTERED right before calling
+> device_register(). With this mdiobus_free() calls put_device() instead
+> as it ought to be.
 > 
-> Signed-off-by: Li RongQing <lirongqing@baidu.com>
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 > ---
-
-
-Well, fallback to vmalloc() overhead because order-1 pages are not readily available
-when the NIC is setup (usually one time per boot)
-is adding TLB cost at run time, for billions of packets to come, maybe for months.
-
-Surely trying a bit harder to get order-1 pages is desirable.
-
- __GFP_RETRY_MAYFAIL is supposed to help here.
-
-
+> 
+> Changes since v1:
+> - set bus->state before calling device_register(), not afterwards
+> 
+>  drivers/net/phy/mdio_bus.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index 0af20faad69d..9434b04a11c8 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -534,6 +534,8 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+>  	bus->dev.groups = NULL;
+>  	dev_set_name(&bus->dev, "%s", bus->id);
+>  
+> +	bus->state = MDIOBUS_UNREGISTERED;
+> +
+>  	err = device_register(&bus->dev);
+>  	if (err) {
+>  		pr_err("mii_bus %s failed to register\n", bus->id);
+> 
+LGTM. Just two points:
+1. Subject has a typo (PATCHi). And it should be [PATCH net v2], because it's
+   something for the stable branch.
+2. A "Fixes" tag is needed.
