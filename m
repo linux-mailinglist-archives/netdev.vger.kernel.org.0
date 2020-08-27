@@ -2,89 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C82D1253E3D
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 08:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE727253E40
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 08:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727031AbgH0Gyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 02:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43116 "EHLO
+        id S1727769AbgH0G4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 02:56:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726123AbgH0Gyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 02:54:35 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FC1C061264;
-        Wed, 26 Aug 2020 23:54:35 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id v15so2664274pgh.6;
-        Wed, 26 Aug 2020 23:54:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=BCoL4GC0gNjAzmmMRfC/gvKA1COigx1ubzs0rhx5Lso=;
-        b=VLaHMikwWNRlOpknfV2L9wpgFm0GPiV2o5zjbJeBijU7IWF/iGoEDEtGbJ30Le5UJP
-         NoqQ+oAZ1FPOvuYv3mdRXTebnPgvys7VyNehhUDcGw10vRx67egVgmkiMU3ixxBzEb0y
-         qlHVOFlfp3X8UeIfVeaA+NDFD+PQhTi6kaWX7KXk5v1S5tKZYDb+bhEEUhN8xVPWpHcC
-         5z7XBCqEi4IpxYh7u9+migwkB6amlkIj4SKK9+mGCYqX8Tu2VImrbFBQq05jI23dJhPB
-         jrEUwfSL15fXZsi2Jg16d5kqgVDo4xTELNvBpdh4Mywl0I6sfHiRDR8rwOwy2lpvUacI
-         r9YQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=BCoL4GC0gNjAzmmMRfC/gvKA1COigx1ubzs0rhx5Lso=;
-        b=X0sqjMaWBh+fM/Vr6Rfb4W2suUWr2K7G65Eseg1/koy36hzsB3ouv+ZrvNY4rCheri
-         PCv3BYmJbJwF/TCshM8387ghhyHnXgq72rH1xaV9WsU023Bfkwz00WqQhUgd89xxiQde
-         JeV4OebA8+mAzlnyBPbsEOpK+m3QvYCP4mmTsQ5KtQanhsRU1JO8y+/xlaPQUceiXWLc
-         8uBmwOfxjOu1FIvJZZFk/Ydjua3uswnDgCr9TnIkANzEqpwebX+k98lOFD+4UpgzslCi
-         od+B2Q1FMJQ6PTSWeAwI1GXgGwhsLvmlQVfeyv63QoaMyUsvdKo2+rZBrSVZKfsHb+aa
-         g4Dg==
-X-Gm-Message-State: AOAM5307piuX2AFajqBG2Xf0F6QGjOK7G25+20TiZu7pp+BFc2XdnBKP
-        lWYW3O6KGdI/ck2pBiiBwJY=
-X-Google-Smtp-Source: ABdhPJx50mcT7++XwHrFN234jCQjWBTei+BiA76W2qY8K8ZVAoJvc/yUmoOJ7RUT03UT0V23iKGDeA==
-X-Received: by 2002:a63:1b0b:: with SMTP id b11mr14028827pgb.447.1598511274585;
-        Wed, 26 Aug 2020 23:54:34 -0700 (PDT)
-Received: from localhost.localdomain ([2405:204:810b:d5b5:fcb1:360f:550f:6dac])
-        by smtp.gmail.com with ESMTPSA id o2sm1162174pjh.4.2020.08.26.23.54.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Aug 2020 23:54:34 -0700 (PDT)
-From:   Himadri Pandya <himadrispandya@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        gregkh@linuxfoundation.org,
-        Himadri Pandya <himadrispandya@gmail.com>
-Subject: [PATCH] net: usb: Fix uninit-was-stored issue in asix_read_phy_addr()
-Date:   Thu, 27 Aug 2020 12:23:55 +0530
-Message-Id: <20200827065355.15177-1-himadrispandya@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S1726938AbgH0G4H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 02:56:07 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4FDC061264
+        for <netdev@vger.kernel.org>; Wed, 26 Aug 2020 23:56:07 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1kBBpJ-0004xz-MR; Thu, 27 Aug 2020 08:56:01 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1kBBpI-0004qx-Vw; Thu, 27 Aug 2020 08:56:00 +0200
+Date:   Thu, 27 Aug 2020 08:56:00 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de
+Subject: Re: [PATCH] net: mdiobus: fix device unregistering in
+ mdiobus_register
+Message-ID: <20200827065600.GB4498@pengutronix.de>
+References: <20200826095141.5156-1-s.hauer@pengutronix.de>
+ <7a1f68b7-c23b-11e2-befc-105b995da89f@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7a1f68b7-c23b-11e2-befc-105b995da89f@gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:53:57 up 189 days, 14:24, 145 users,  load average: 0.02, 0.10,
+ 0.09
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The buffer size is 2 Bytes and we expect to receive the same amount of
-data. But sometimes we receive less data and run into uninit-was-stored
-issue upon read. Hence modify the error check on the return value to match
-with the buffer size as a prevention.
+On Wed, Aug 26, 2020 at 06:26:36PM +0200, Heiner Kallweit wrote:
+> On 26.08.2020 11:51, Sascha Hauer wrote:
+> > __mdiobus_register() can fail between calling device_register() and
+> > setting bus->state to MDIOBUS_REGISTERED. When this happens the caller
+> > will call mdiobus_free() which then frees the mdio bus structure. This
+> > is not allowed as the embedded struct device is already registered, thus
+> > must be freed dropping the reference count using put_device(). To
+> > accomplish this set bus->state to MDIOBUS_UNREGISTERED after having
+> > registered the device. With this mdiobus_free() correctly calls
+> > put_device() instead of freeing the mdio bus structure directly.
+> > 
+> > Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> > ---
+> >  drivers/net/phy/mdio_bus.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> > index 0af20faad69d..85cbaab4a591 100644
+> > --- a/drivers/net/phy/mdio_bus.c
+> > +++ b/drivers/net/phy/mdio_bus.c
+> > @@ -540,6 +540,8 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+> >  		return -EINVAL;
+> >  	}
+> >  
+> > +	bus->state = MDIOBUS_UNREGISTERED;
+> > +
+> >  	mutex_init(&bus->mdio_lock);
+> >  	mutex_init(&bus->shared_lock);
+> >  
+> > 
+> I see the point. If we bail out after having called device_register()
+> then put_device() has to be called. This however isn't done by
+> mdiobus_free() if state is MDIOBUS_ALLOCATED. So I think the idea is
+> right. However we have to call put_device() even if device_register()
+> fails, therefore setting state to MDIOBUS_UNREGISTERED should be
+> moved to before calling device_register().
 
-Reported-and-tested by: syzbot+a7e220df5a81d1ab400e@syzkaller.appspotmail.com
-Signed-off-by: Himadri Pandya <himadrispandya@gmail.com>
----
- drivers/net/usb/asix_common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+You're right, the comment above device_register clearly states:
 
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index e39f41efda3e..7bc6e8f856fe 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -296,7 +296,7 @@ int asix_read_phy_addr(struct usbnet *dev, int internal)
- 
- 	netdev_dbg(dev->net, "asix_get_phy_addr()\n");
- 
--	if (ret < 0) {
-+	if (ret < 2) {
- 		netdev_err(dev->net, "Error reading PHYID register: %02x\n", ret);
- 		goto out;
- 	}
+/*
+ * NOTE: _Never_ directly free @dev after calling this function, even
+ * if it returned an error! Always use put_device() to give up the
+ * reference initialized in this function instead.
+ */
+
+And I read this just yesterday while preparing this patch.
+
+Will send a v2.
+
+Sascha
+
 -- 
-2.17.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
