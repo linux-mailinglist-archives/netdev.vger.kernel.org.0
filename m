@@ -2,100 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CABF254506
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 14:35:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12F6A254519
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 14:39:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729088AbgH0Med (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 08:34:33 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:55353 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729048AbgH0M2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 08:28:00 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598531279; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=cO//0luWVCYAyHjVHMw1ITNwOBiEMsNJEDqCuv4b1+A=;
- b=KMqhlbcwRJAxKeKRH+X1KdWcHjHB+LUOVUkwt7ipyHI4u9NxMwB4ftgpbpyDZWs21s9x6ZWX
- aqIrAUgJrohCfxR6LNmjZr9PBPTlNmnFH6x9MMrunm+CQ+BnY/cf5MjkKmyl+emSnVUhZmAp
- ovN406/Cvuo+KDsTWgZLcDDeKYU=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 5f47a422c598aced545ad7ca (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 27 Aug 2020 12:16:34
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 47F55C43387; Thu, 27 Aug 2020 12:16:34 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 05A78C433CA;
-        Thu, 27 Aug 2020 12:16:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 05A78C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1729106AbgH0Miw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 08:38:52 -0400
+Received: from host.76.145.23.62.rev.coltfrance.com ([62.23.145.76]:56874 "EHLO
+        proxy.6wind.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728334AbgH0M1R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 08:27:17 -0400
+Received: from bretzel.dev.6wind.com (unknown [10.16.0.19])
+        by proxy.6wind.com (Postfix) with ESMTPS id 33B3E44706A;
+        Thu, 27 Aug 2020 14:19:27 +0200 (CEST)
+Received: from dichtel by bretzel.dev.6wind.com with local (Exim 4.92)
+        (envelope-from <dichtel@bretzel.dev.6wind.com>)
+        id 1kBGsJ-0001v9-4i; Thu, 27 Aug 2020 14:19:27 +0200
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+To:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
+        laforge@gnumonks.org, osmocom-net-gprs@lists.osmocom.org
+Cc:     netdev@vger.kernel.org,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Gabriel Ganne <gabriel.ganne@6wind.com>
+Subject: [PATCH net-next v3] gtp: add notification mechanism
+Date:   Thu, 27 Aug 2020 14:19:23 +0200
+Message-Id: <20200827121923.7302-1-nicolas.dichtel@6wind.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200827090026.GK130874@nataraja>
+References: <20200827090026.GK130874@nataraja>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 05/30] atmel: Demote non-kerneldoc
- header to standard comment block
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200814113933.1903438-6-lee.jones@linaro.org>
-References: <20200814113933.1903438-6-lee.jones@linaro.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        Simon Kelley <simon@thekelleys.org.uk>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200827121634.47F55C43387@smtp.codeaurora.org>
-Date:   Thu, 27 Aug 2020 12:16:34 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lee Jones <lee.jones@linaro.org> wrote:
+Like all other network functions, let's notify gtp context on creation and
+deletion.
 
-> Fixes the following W=1 kernel build warning(s):
-> 
->  drivers/net/wireless/atmel/atmel.c:4232: warning: Cannot understand     This file is part of net.russotto.AtmelMACFW, hereto referred to
-> 
-> Cc: Simon Kelley <simon@thekelleys.org.uk>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Tested-by: Gabriel Ganne <gabriel.ganne@6wind.com>
+Acked-by: Harald Welte <laforge@gnumonks.org>
+---
 
-14 patches applied to wireless-drivers-next.git, thanks.
+v2 -> v3:
+ - add ack from Harald
+ - rebase on HEAD of net-next
 
-68fd3030ad67 atmel: Demote non-kerneldoc header to standard comment block
-64847777d05a b43: main: Add braces around empty statements
-0b6a4247dea7 airo: Place brackets around empty statement
-ba4d65132922 airo: Fix a myriad of coding style issues
-0171c6185c8f iwlegacy: common: Remove set but not used variable 'len'
-9bafe8b82306 iwlegacy: common: Demote kerneldoc headers to standard comment blocks
-b2e732081f19 ipw2200: Remove set but unused variables 'rc' and 'w'
-6214ef8a532f b43legacy: main: Provide braces around empty 'if' body
-10c3ba7dbe6e brcmfmac: fweh: Remove set but unused variable 'err'
-4e124e1fee6d brcmfmac: fweh: Fix docrot related function documentation issues
-7eae8c732977 brcmsmac: mac80211_if: Demote a few non-conformant kerneldoc headers
-5f442fe435e1 ipw2200: Demote lots of nonconformant kerneldoc comments
-c171304b42f9 b43: phy_common: Demote non-conformant kerneldoc header
-5ae6c8a696cd b43: phy_n: Add empty braces around empty statements
+v1 -> v2:
+ - fix typo in the commit title
+ - fix indentation of GTP_GENL_MCGRP
 
+ drivers/net/gtp.c        | 58 +++++++++++++++++++++++++++++++++-------
+ include/uapi/linux/gtp.h |  2 ++
+ 2 files changed, 51 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index 21640a035d7d..c84a10569388 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -928,8 +928,8 @@ static void ipv4_pdp_fill(struct pdp_ctx *pctx, struct genl_info *info)
+ 	}
+ }
+ 
+-static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+-		       struct genl_info *info)
++static struct pdp_ctx *gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
++				   struct genl_info *info)
+ {
+ 	struct pdp_ctx *pctx, *pctx_tid = NULL;
+ 	struct net_device *dev = gtp->dev;
+@@ -956,12 +956,12 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+ 
+ 	if (found) {
+ 		if (info->nlhdr->nlmsg_flags & NLM_F_EXCL)
+-			return -EEXIST;
++			return ERR_PTR(-EEXIST);
+ 		if (info->nlhdr->nlmsg_flags & NLM_F_REPLACE)
+-			return -EOPNOTSUPP;
++			return ERR_PTR(-EOPNOTSUPP);
+ 
+ 		if (pctx && pctx_tid)
+-			return -EEXIST;
++			return ERR_PTR(-EEXIST);
+ 		if (!pctx)
+ 			pctx = pctx_tid;
+ 
+@@ -974,13 +974,13 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+ 			netdev_dbg(dev, "GTPv1-U: update tunnel id = %x/%x (pdp %p)\n",
+ 				   pctx->u.v1.i_tei, pctx->u.v1.o_tei, pctx);
+ 
+-		return 0;
++		return pctx;
+ 
+ 	}
+ 
+ 	pctx = kmalloc(sizeof(*pctx), GFP_ATOMIC);
+ 	if (pctx == NULL)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	sock_hold(sk);
+ 	pctx->sk = sk;
+@@ -1018,7 +1018,7 @@ static int gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
+ 		break;
+ 	}
+ 
+-	return 0;
++	return pctx;
+ }
+ 
+ static void pdp_context_free(struct rcu_head *head)
+@@ -1036,9 +1036,12 @@ static void pdp_context_delete(struct pdp_ctx *pctx)
+ 	call_rcu(&pctx->rcu_head, pdp_context_free);
+ }
+ 
++static int gtp_tunnel_notify(struct pdp_ctx *pctx, u8 cmd);
++
+ static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	unsigned int version;
++	struct pdp_ctx *pctx;
+ 	struct gtp_dev *gtp;
+ 	struct sock *sk;
+ 	int err;
+@@ -1088,7 +1091,13 @@ static int gtp_genl_new_pdp(struct sk_buff *skb, struct genl_info *info)
+ 		goto out_unlock;
+ 	}
+ 
+-	err = gtp_pdp_add(gtp, sk, info);
++	pctx = gtp_pdp_add(gtp, sk, info);
++	if (IS_ERR(pctx)) {
++		err = PTR_ERR(pctx);
++	} else {
++		gtp_tunnel_notify(pctx, GTP_CMD_NEWPDP);
++		err = 0;
++	}
+ 
+ out_unlock:
+ 	rcu_read_unlock();
+@@ -1159,6 +1168,7 @@ static int gtp_genl_del_pdp(struct sk_buff *skb, struct genl_info *info)
+ 		netdev_dbg(pctx->dev, "GTPv1-U: deleting tunnel id = %x/%x (pdp %p)\n",
+ 			   pctx->u.v1.i_tei, pctx->u.v1.o_tei, pctx);
+ 
++	gtp_tunnel_notify(pctx, GTP_CMD_DELPDP);
+ 	pdp_context_delete(pctx);
+ 
+ out_unlock:
+@@ -1168,6 +1178,14 @@ static int gtp_genl_del_pdp(struct sk_buff *skb, struct genl_info *info)
+ 
+ static struct genl_family gtp_genl_family;
+ 
++enum gtp_multicast_groups {
++	GTP_GENL_MCGRP,
++};
++
++static const struct genl_multicast_group gtp_genl_mcgrps[] = {
++	[GTP_GENL_MCGRP] = { .name = GTP_GENL_MCGRP_NAME },
++};
++
+ static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
+ 			      int flags, u32 type, struct pdp_ctx *pctx)
+ {
+@@ -1204,6 +1222,26 @@ static int gtp_genl_fill_info(struct sk_buff *skb, u32 snd_portid, u32 snd_seq,
+ 	return -EMSGSIZE;
+ }
+ 
++static int gtp_tunnel_notify(struct pdp_ctx *pctx, u8 cmd)
++{
++	struct sk_buff *msg;
++	int ret;
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
++	if (!msg)
++		return -ENOMEM;
++
++	ret = gtp_genl_fill_info(msg, 0, 0, 0, cmd, pctx);
++	if (ret < 0) {
++		nlmsg_free(msg);
++		return ret;
++	}
++
++	ret = genlmsg_multicast_netns(&gtp_genl_family, dev_net(pctx->dev), msg,
++				      0, GTP_GENL_MCGRP, GFP_ATOMIC);
++	return ret;
++}
++
+ static int gtp_genl_get_pdp(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct pdp_ctx *pctx = NULL;
+@@ -1334,6 +1372,8 @@ static struct genl_family gtp_genl_family __ro_after_init = {
+ 	.module		= THIS_MODULE,
+ 	.ops		= gtp_genl_ops,
+ 	.n_ops		= ARRAY_SIZE(gtp_genl_ops),
++	.mcgrps		= gtp_genl_mcgrps,
++	.n_mcgrps	= ARRAY_SIZE(gtp_genl_mcgrps),
+ };
+ 
+ static int __net_init gtp_net_init(struct net *net)
+diff --git a/include/uapi/linux/gtp.h b/include/uapi/linux/gtp.h
+index c7d66755d212..79f9191bbb24 100644
+--- a/include/uapi/linux/gtp.h
++++ b/include/uapi/linux/gtp.h
+@@ -2,6 +2,8 @@
+ #ifndef _UAPI_LINUX_GTP_H_
+ #define _UAPI_LINUX_GTP_H_
+ 
++#define GTP_GENL_MCGRP_NAME	"gtp"
++
+ enum gtp_genl_cmds {
+ 	GTP_CMD_NEWPDP,
+ 	GTP_CMD_DELPDP,
 -- 
-https://patchwork.kernel.org/patch/11714411/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.26.2
 
