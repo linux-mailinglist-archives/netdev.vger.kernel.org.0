@@ -2,86 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C28D62548F9
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:18:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D47E02548AF
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728396AbgH0PRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 11:17:30 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:10285 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728753AbgH0Lge (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 07:36:34 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id EBEC1A285DC439BF461F;
-        Thu, 27 Aug 2020 19:19:15 +0800 (CST)
-Received: from huawei.com (10.175.104.175) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Thu, 27 Aug 2020
- 19:19:07 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <pshelar@ovn.org>,
-        <fw@strlen.de>, <martin.varghese@nokia.com>, <edumazet@google.com>,
-        <dcaratti@redhat.com>, <steffen.klassert@secunet.com>,
-        <pabeni@redhat.com>, <shmulik@metanetworks.com>,
-        <kyk.segfault@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] net: Call ip_hdrlen() when skbuff is not fragment
-Date:   Thu, 27 Aug 2020 07:17:59 -0400
-Message-ID: <20200827111759.40336-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.19.1
+        id S1726322AbgH0PKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 11:10:46 -0400
+Received: from [125.140.134.231] ([125.140.134.231]:54766 "EHLO
+        WIN-DAONO245HJF" rhost-flags-FAIL-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728803AbgH0Lrq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 07:47:46 -0400
+Received: from User ([185.191.231.247]) by WIN-DAONO245HJF with Microsoft SMTPSVC(8.5.9600.16384);
+         Thu, 27 Aug 2020 20:18:42 +0900
+Reply-To: <mrs.verenich_ekmaterina@yahoo.com>
+From:   "Mrs.verenich ekaterina" <ekaterinaverenich17@gmail.com>
+Subject: Dear Beloved
+Date:   Thu, 27 Aug 2020 04:18:33 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.175]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain;
+        charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2600.0000
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
+Message-ID: <WIN-DAONO245HJFpH7100cf872a@WIN-DAONO245HJF>
+X-OriginalArrivalTime: 27 Aug 2020 11:18:42.0600 (UTC) FILETIME=[D24EE280:01D67C63]
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When skbuff is fragment, we exit immediately and leave ip_hdrlen() as
-unused. And remove the unnecessary local variable fragment.
+Dear Beloved
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- net/core/skbuff.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
+Life is gradually passing away from me as a result of my present medical
+condition and my personal doctor confided in me yesterday that I have only
+but few more weeks to live.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 4dc92290becd..0b24aed04060 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4843,28 +4843,20 @@ static __sum16 *skb_checksum_setup_ip(struct sk_buff *skb,
- static int skb_checksum_setup_ipv4(struct sk_buff *skb, bool recalculate)
- {
- 	unsigned int off;
--	bool fragment;
- 	__sum16 *csum;
- 	int err;
- 
--	fragment = false;
--
- 	err = skb_maybe_pull_tail(skb,
- 				  sizeof(struct iphdr),
- 				  MAX_IP_HDR_LEN);
- 	if (err < 0)
- 		goto out;
- 
--	if (ip_is_fragment(ip_hdr(skb)))
--		fragment = true;
--
--	off = ip_hdrlen(skb);
--
- 	err = -EPROTO;
--
--	if (fragment)
-+	if (ip_is_fragment(ip_hdr(skb)))
- 		goto out;
- 
-+	off = ip_hdrlen(skb);
- 	csum = skb_checksum_setup_ip(skb, ip_hdr(skb)->protocol, off);
- 	if (IS_ERR(csum))
- 		return PTR_ERR(csum);
--- 
-2.19.1
+In view of this setback, I want to donate my estate for humanitarian
+assistance, since this has always been the plan of my late husband and
+besides I have no child.
+
+In an effort to compliment the good work of God almighty and the wish of my
+late Husband I donate the sum of $2,800,000.00 (Two Million Eight Hundred
+Thousand United States Dollars) to you.
+
+On your acknowledgment of this mail and informing me of your nationality and
+current place of resident, my Bank will facilitate due processes for
+transfer of this legacy to you.
+
+May God bless you as you use this money judiciously for the work of charity.
+
+Sincere regards,
+
+Mrs.verenich ekaterina
+
+
+
 
