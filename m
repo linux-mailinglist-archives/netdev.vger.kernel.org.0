@@ -2,94 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 742F125513B
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 00:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6C6725516B
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 00:58:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727909AbgH0Wil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 18:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49880 "EHLO
+        id S1728067AbgH0W6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 18:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726234AbgH0Wil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 18:38:41 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1620C061264
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 15:38:40 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id s15so3499732qvv.7
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 15:38:40 -0700 (PDT)
+        with ESMTP id S1726826AbgH0W6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 18:58:38 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C13AC061264
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 15:58:38 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id z18so3420763pjr.2
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 15:58:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gm9yFXXiZvCthKk4pDSHuzet7PICSEE2S3fe/9edihs=;
-        b=YBVzAHMOmZn3qLVNGdk0sBckXX9okPlan12HR7uN0U8bWXRx/qqaMDhhZEES7qBcYM
-         cHCcCvZ1T2mfzxVGP5G2uIQZ8+20PN/i6vjvAg/s9iekfuKWauOId+S9gDV3xu4t3b4z
-         Q2vYmOuJ+HaQ0m+ftwtvXUECAqpT0U4uThwGrNe6XPQ4ABKQEHpqTpFp3kXg09g1HJk7
-         zc4SEybKjJ785AcNHki4Tvu+EhJmwFVsezMH5Q4CMZYHa3y1M3pBUB+FRSfMPcXqN0zw
-         xynYWmbZ4DKOATv8TxTJ7m1fqhRf9AI/M8pCIrcYza1/XkF4NURVvje+6xECrDttLuFz
-         bCoQ==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=AucB4HoH5yT0wHllUii+LFfBm/3P2Io3CKZKtUNaRjk=;
+        b=uMJE9TuvUhdZvHMgR59eGOa3tcgjwpPWJ5sCDuG5QiGXPgYrapA8S8acSzueVwTY7X
+         PkQvyYbLOgo5AtumZezT138GFgy0Rz7R5qJ3ej85GGVwG/5gDElMVzioRRD4m24qH5gW
+         u8AYyTzRq/KLPQkU+6LJmGWfHmcgnGqpgHDadS89WeHOTOkuMNo+uNK98yBeDDMyXA4q
+         GD6OZ1sUKyVDTxDJdeaRU8tPVWpYxIJWNOHQDZcfasB06YM9/kbcJsbayf1LQpRLjO5a
+         fgF982NshRiEqsT6G87MQkKAJOG12ezKzfawruOOkdmJ3hvuJsULHkfvwp5b8KiPYWRD
+         yb8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gm9yFXXiZvCthKk4pDSHuzet7PICSEE2S3fe/9edihs=;
-        b=JJ98mQE+p2G6JgNqgsbEvwBRCmJHE4ifinCqSSswKqjeVkR/f99cH19eBNBzhdDtOO
-         zbx+7Cf/0dTjynHf7wSdKUVzMfgHX0lp1ZuEGygJqyYqd1O6HaOQP7H0jJARD5iSm9w8
-         ldJctr3nqaxtvnt7Xs5/JjoxLcIJbMiymMhITXTgXzbU+Oef+6MensvrincuPnRV6+OW
-         +B5EkKhSX0/d7im4+7+OKUKvdnvrr3W7afzlGVjd4aP2f+IT0WiYM1ca7iQ5Umz2ri7m
-         se5mVY88/n+G/yB28lf811r2kF/+1ipzi7SMOC7gFHxxO45bfnWgAZddFzmBORu16vmQ
-         1PlA==
-X-Gm-Message-State: AOAM5309g8xv3wWZMq0ACMhMZhfEB3VXZfzdgMbHFBsQ5uvQ2rFpD+r/
-        Iqa0X+dCvsHPo8KXLAbA718z29jwcN7bcw==
-X-Google-Smtp-Source: ABdhPJwn1t3A63/f77V95gilAttKAiHFOgEJE3cHx/aFnnt9WTq4CWHRZdeLDxlA/GJq3AgPTFO15g==
-X-Received: by 2002:a0c:f84b:: with SMTP id g11mr20973789qvo.184.1598567920095;
-        Thu, 27 Aug 2020 15:38:40 -0700 (PDT)
-Received: from localhost.localdomain ([177.220.174.181])
-        by smtp.gmail.com with ESMTPSA id w32sm3206790qtw.66.2020.08.27.15.38.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 27 Aug 2020 15:38:39 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 91438C1B7C; Thu, 27 Aug 2020 19:38:36 -0300 (-03)
-Date:   Thu, 27 Aug 2020 19:38:36 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     wenxu@ucloud.cn, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] ipv6: add ipv6_fragment hook in ipv6_stub
-Message-ID: <20200827223836.GB2443@localhost.localdomain>
-References: <1598524792-30597-1-git-send-email-wenxu@ucloud.cn>
- <1598524792-30597-2-git-send-email-wenxu@ucloud.cn>
- <20200827.075147.1030378285544511842.davem@davemloft.net>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=AucB4HoH5yT0wHllUii+LFfBm/3P2Io3CKZKtUNaRjk=;
+        b=XhRRFfby7kYGCp6ZP+RugzFwrEwVKncIDi6s73pYe2k8hkzZTGeJNKUVCVrV4zCZfp
+         70YLl/3CzCAGACK6dQGSkYtmAUEh2htRQa4b78EcGNn9Nfb+f8iBW76rjvukmGk2iTM7
+         5+IztHfF9Of6h5xoNlZEngD5pWPkHTvlcPtSu4fNcBByIabjHgwqk1eJYH8KgbHO5xYu
+         e938/bMNyqvjPfJcPnpS9JYUxjJp5v+L8GWhxZAkWO7XJ4CsQvTsA/ufQUvGRQqLcULm
+         S98U1WUd3m273tN0cBwijf6aRFu5O68+JCRQgjpNmgPwgHVTkFbs1gVQlUos5wViwe1h
+         mgtg==
+X-Gm-Message-State: AOAM530q3ZI03N87o15riYpAcwUI+xWziajDXtlLog03SxDffJJcy1dF
+        mBD0GpDUh/3F7M2xAVLlrDx10HdnWRQrfg==
+X-Google-Smtp-Source: ABdhPJz4M2Bx0OkDZOYIeW7er05YzjWnx2ZlC0PAiMwUbYt9XxhrVf17jR/YCWoLFZR1tYbqj5xXRg==
+X-Received: by 2002:a17:90b:4397:: with SMTP id in23mr945717pjb.102.1598569118102;
+        Thu, 27 Aug 2020 15:58:38 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id s8sm107171pfc.167.2020.08.27.15.58.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Aug 2020 15:58:37 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 07/12] ionic: reduce contiguous memory
+ allocation requirement
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20200827180735.38166-1-snelson@pensando.io>
+ <20200827180735.38166-8-snelson@pensando.io>
+ <20200827124625.511ef647@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <bd9b0427-6772-068e-d7bd-b1aabf1ac6ed@pensando.io>
+ <20200827142536.587f0ecc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <87e8b976-b495-d989-25ab-ecd871f9dc16@pensando.io>
+Date:   Thu, 27 Aug 2020 15:58:36 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200827.075147.1030378285544511842.davem@davemloft.net>
+In-Reply-To: <20200827142536.587f0ecc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 27, 2020 at 07:51:47AM -0700, David Miller wrote:
-> From: wenxu@ucloud.cn
-> Date: Thu, 27 Aug 2020 18:39:51 +0800
-> 
-> > From: wenxu <wenxu@ucloud.cn>
-> > 
-> > Add ipv6_fragment to ipv6_stub to avoid calling netfilter when
-> > access ip6_fragment.
-> > 
-> > Signed-off-by: wenxu <wenxu@ucloud.cn>
-> 
-> Please test these changes with ipv6 disabled.
-> 
-> It will crash, you have to update the default stub in
-> net/ipv6/addrconf_core.c as well.
+On 8/27/20 2:25 PM, Jakub Kicinski wrote:
+> On Thu, 27 Aug 2020 12:53:17 -0700 Shannon Nelson wrote:
+>> On 8/27/20 12:46 PM, Jakub Kicinski wrote:
+>>> On Thu, 27 Aug 2020 11:07:30 -0700 Shannon Nelson wrote:
+>>>> +	q_base = (void *)PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
+>>> The point of PTR_ALIGN is to make the casts unnecessary. Does it not
+>>> work?
+>> Here's what I see from two different compiler versions:
+>>
+>> drivers/net/ethernet/pensando/ionic/ionic_lif.c:514:9: warning:
+>> assignment makes pointer from integer without a cast [-Wint-conversion]
+>>     q_base = PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
+>>
+>>
+>> drivers/net/ethernet/pensando/ionic/ionic_lif.c:514:9: warning:
+>> assignment to 'void *' from 'long unsigned int' makes pointer from
+>> integer without a cast [-Wint-conversion]
+>>     q_base = PTR_ALIGN((uintptr_t)new->q_base, PAGE_SIZE);
+> Just
+>
+> 	q_base = PTR_ALIGN(new->q_base, PAGE_SIZE);
 
-I didn't test it myself but I'm not seeing how the crash could happen.
-The next patch does check for it being NULL before using it:
-
--               if (!v6ops)
-+               if (!ipv6_stub->ipv6_fragment)
-                        goto err;
-
-Wenxu?
-
-  Marcelo
+Got it
+sln
