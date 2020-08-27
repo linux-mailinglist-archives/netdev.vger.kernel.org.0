@@ -2,112 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48B6D2549D5
-	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:49:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 090022549FE
+	for <lists+netdev@lfdr.de>; Thu, 27 Aug 2020 17:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgH0PtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 11:49:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726200AbgH0PtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 11:49:08 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF42C061264;
-        Thu, 27 Aug 2020 08:49:07 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id j10so2789080qvo.13;
-        Thu, 27 Aug 2020 08:49:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bhg41soIay7+587Qkw7LUVijSMFtZApm/WI52siUHqo=;
-        b=r+0Z51AzGh3RpvLN7SrOrKt0OzXk1uO3gIBm2Pu/DOuix3nSPCCqDG/qHztIaXh8QN
-         HiKQC4O9rhKhDi26XChu3hE3TUHUtKZn9lndImODCUaorVuYIPQjYAx2P4/s4oXPhJLr
-         obECsPYChpudqJw0yFiMpzBRHGmzAflQMOaxX+Mr6cGcPSgwMDhh9Maz08NIpbQP5dUs
-         rugrILqOCy9Jbs6n3dzYfgVB1IyGk5ikOE4sP+wQO6OFfEhipESsiIELqzOr0tqZst49
-         TIaBzpWtk+ssgZKjAMSx4i3jtObVPBTkvz0Kb8kc8IzsXI5Bco2IwBenmb/jelgP4jQg
-         eupw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bhg41soIay7+587Qkw7LUVijSMFtZApm/WI52siUHqo=;
-        b=mXfyMg2mk5WApq8ampzsMUD6VTECn90wFOD6m3QzWoGmNYT30en8DjZ1ygsKTjIhe3
-         xsizKba6d9Eh/GYeJBu2RL7ETJAE0mL54+4gd9+VSi8HhuroxPcnmFQF823uZBhAa10j
-         Lcddcpa5z45LOslVBkq/Psrk3ZXOuWvXvQVy+pV2Rdy0K2pGDriXULYHwV1k5+atf8MY
-         qTpJadPOKVMdxA/zfrpjI1hFaWzReJaaKMsQo4WuPYIZkSzrtT3DOzkOhRjObhzdI/1j
-         2kMGtXiX6q+Ft9GweXaX2v+LsmyGLDCZqZA35tnrgBxhBPEmi/Tjv9kYkR5eaElD+SUo
-         juiQ==
-X-Gm-Message-State: AOAM531bL0KmGxKJz8LtH0bkQc/6/pik/l7J/BMefdaSJRhl6J7ANVwR
-        P0I8bpFvnotcCzdgVbOVA27Qqgr4NR+JZS7aP8jEokGQvhY=
-X-Google-Smtp-Source: ABdhPJw1Rl4RnR6X/MbtbB5gxI0GdiLcMsChgSFbr5UNmVwq/YZtYaADIxZ92er5Ilp/EDcy0juMltTIu0VNIpc1uZA=
-X-Received: by 2002:ad4:4992:: with SMTP id t18mr18408206qvx.193.1598543346813;
- Thu, 27 Aug 2020 08:49:06 -0700 (PDT)
+        id S1727053AbgH0Pz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 11:55:58 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:41311 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726009AbgH0Pz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 11:55:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598543756;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=HzUnybaSeSD+XI9aTe79I48ZH38uKEPOpQGgJzoSsCo=;
+        b=gCIxdE93PQ5YXMpq+rJ5UUq58IZ+XE17++5xQZxujTOQ+GOcKMhZYDh/25kyXh93pOLN7N
+        i04pFsZSFJ3dpNzNCo72fGr1OgLowM67oy+EXis6F/xICAMV5V8KzvwegX+t1Gua2EN8S3
+        v4OhRIAiQv9OaXacEHAdSmwSxbXmsn4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-111--yrSFVVpPci3gsvCPJ4yEQ-1; Thu, 27 Aug 2020 11:55:53 -0400
+X-MC-Unique: -yrSFVVpPci3gsvCPJ4yEQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DEA2410ABDCC;
+        Thu, 27 Aug 2020 15:55:48 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-127.rdu2.redhat.com [10.10.120.127])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 97E291972A;
+        Thu, 27 Aug 2020 15:55:47 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix memory leak in rxkad_verify_response()
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, dinghao.liu@zju.edu.cn
+Date:   Thu, 27 Aug 2020 16:55:46 +0100
+Message-ID: <159854374644.1432629.4927711289531557914.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-References: <f0a2cb7ea606f1a284d4c23cbf983da2954ce9b6.1598420968.git.mchehab+huawei@kernel.org>
-In-Reply-To: <f0a2cb7ea606f1a284d4c23cbf983da2954ce9b6.1598420968.git.mchehab+huawei@kernel.org>
-From:   Steve deRosier <derosier@gmail.com>
-Date:   Thu, 27 Aug 2020 08:48:30 -0700
-Message-ID: <CALLGbRL+duiHFd3w7hcD=u47k+JM5rLpOkMrRpW0aQm=oTfUnA@mail.gmail.com>
-Subject: Re: [PATCH] Revert "wlcore: Adding suppoprt for IGTK key in wlcore driver"
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     linuxarm@huawei.com, mauro.chehab@huawei.com,
-        John Stultz <john.stultz@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Maital Hahn <maitalm@ti.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Raz Bouganim <r-bouganim@ti.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Fuqian Huang <huangfq.daxian@gmail.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 25, 2020 at 10:49 PM Mauro Carvalho Chehab
-<mchehab+huawei@kernel.org> wrote:
->
-> This patch causes a regression betwen Kernel 5.7 and 5.8 at wlcore:
-> with it applied, WiFi stops working, and the Kernel starts printing
-> this message every second:
->
->    wlcore: PHY firmware version: Rev 8.2.0.0.242
->    wlcore: firmware booted (Rev 8.9.0.0.79)
->    wlcore: ERROR command execute failure 14
+From: Dinghao Liu <dinghao.liu@zju.edu.cn>
 
-Only if NO firmware for the device in question supports the `KEY_IGTK`
-value, then this revert is appropriate. Otherwise, it likely isn't.
- My suspicion is that the feature that `KEY_IGTK` is enabling is
-specific to a newer firmware that Mauro hasn't upgraded to. What the
-OP should do is find the updated firmware and give it a try.
+Fix a memory leak in rxkad_verify_response() whereby the response buffer
+doesn't get freed if we fail to allocate a ticket buffer.
 
-AND - since there's some firmware the feature doesn't work with, the
-driver should be fixed to detect the running firmware version and not
-do things that the firmware doesn't support.  AND the firmware writer
-should also make it so the firmware doesn't barf on bad input and
-instead rejects it politely.
+Fixes: ef68622da9cc ("rxrpc: Handle temporary errors better in rxkad security")
+Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+Signed-off-by: David Howells <dhowells@redhat.com>
+---
 
-But I will say I'm making an educated guess; while I have played with
-the TI devices in the past, it was years ago and I won't claim to be
-an expert. I also am unable to fix it myself at this time.
+ net/rxrpc/rxkad.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-I'd just rather see it fixed properly instead of a knee-jerk reaction
-of reverting it simply because the OP doesn't have current firmware.
+diff --git a/net/rxrpc/rxkad.c b/net/rxrpc/rxkad.c
+index 52a24d4ef5d8..e08130e5746b 100644
+--- a/net/rxrpc/rxkad.c
++++ b/net/rxrpc/rxkad.c
+@@ -1137,7 +1137,7 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
+ 	ret = -ENOMEM;
+ 	ticket = kmalloc(ticket_len, GFP_NOFS);
+ 	if (!ticket)
+-		goto temporary_error;
++		goto temporary_error_free_resp;
+ 
+ 	eproto = tracepoint_string("rxkad_tkt_short");
+ 	abort_code = RXKADPACKETSHORT;
+@@ -1230,6 +1230,7 @@ static int rxkad_verify_response(struct rxrpc_connection *conn,
+ 
+ temporary_error_free_ticket:
+ 	kfree(ticket);
++temporary_error_free_resp:
+ 	kfree(response);
+ temporary_error:
+ 	/* Ignore the response packet if we got a temporary error such as
 
-And let's revisit the discussion of having a kernel splat because an
-unrelated piece of code fails yet the driver does exactly what it is
-supposed to do. We shouldn't be dumping registers and stack-trace when
-the code that crashed has nothing to do with the registers and
-stack-trace outputted. It is a false positive.  A simple printk WARN
-or ERROR should output notifying us that the chip firmware has crashed
-and why.  IMHO.
 
-- Steve
