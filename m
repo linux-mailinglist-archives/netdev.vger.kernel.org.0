@@ -2,71 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5615C255E46
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 17:56:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEFC8255E95
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 18:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728348AbgH1P4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 11:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
+        id S1726877AbgH1QJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 12:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725814AbgH1P4V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 11:56:21 -0400
-Received: from caffeine.csclub.uwaterloo.ca (caffeine.csclub.uwaterloo.ca [IPv6:2620:101:f000:4901:c5c:0:caff:e12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82531C06121B;
-        Fri, 28 Aug 2020 08:56:21 -0700 (PDT)
-Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
-        id 4D92B46052C; Fri, 28 Aug 2020 11:56:16 -0400 (EDT)
-Date:   Fri, 28 Aug 2020 11:56:16 -0400
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: Re: VRRP not working on i40e X722 S2600WFT
-Message-ID: <20200828155616.3sd2ivrml2gpcvod@csclub.uwaterloo.ca>
-References: <20200827183039.hrfnb63cxq3pmv4z@csclub.uwaterloo.ca>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200827183039.hrfnb63cxq3pmv4z@csclub.uwaterloo.ca>
-User-Agent: NeoMutt/20170113 (1.7.2)
-From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
+        with ESMTP id S1726033AbgH1QJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 12:09:14 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E63CC061264;
+        Fri, 28 Aug 2020 09:09:14 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7FE321287C095;
+        Fri, 28 Aug 2020 08:52:26 -0700 (PDT)
+Date:   Fri, 28 Aug 2020 09:09:12 -0700 (PDT)
+Message-Id: <20200828.090912.720183995781297697.davem@davemloft.net>
+To:     alex.dewar90@gmail.com
+Cc:     paul@paul-moore.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] netlabel: remove unused param from
+ audit_log_format()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200828135523.12867-1-alex.dewar90@gmail.com>
+References: <CAHC9VhRtTykJVze_93ed+n+v14Ai9J5Mbre9nGEc2rkqbqKc_g@mail.gmail.com>
+        <20200828135523.12867-1-alex.dewar90@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 28 Aug 2020 08:52:26 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 27, 2020 at 02:30:39PM -0400, Lennart Sorensen wrote:
-> I have hit a new problem with the X722 chipset (Intel R1304WFT server).
-> VRRP simply does not work.
-> 
-> When keepalived registers a vmac interface, and starts transmitting
-> multicast packets with the vrp message, it never receives those packets
-> from the peers, so all nodes think they are the master.  tcpdump shows
-> transmits, but no receives.  If I stop keepalived, which deletes the
-> vmac interface, then I start to receive the multicast packets from the
-> other nodes.  Even in promisc mode, tcpdump can't see those packets.
-> 
-> So it seems the hardware is dropping all packets with a source mac that
-> matches the source mac of the vmac interface, even when the destination
-> is a multicast address that was subcribed to.  This is clearly not
-> proper behaviour.
-> 
-> I tried a stock 5.8 kernel to check if a driver update helped, and updated
-> the nvm firware to the latest 4.10 (which appears to be over a year old),
-> and nothing changes the behaviour at all.
-> 
-> Seems other people have hit this problem too:
-> http://mails.dpdk.org/archives/users/2018-May/003128.html
-> 
-> Unless someone has a way to fix this, we will have to change away from
-> this hardware very quickly.  The IPsec NAT RSS defect we could tolerate
-> although didn't like, while this is just unworkable.
-> 
-> Quite frustrated by this.  Intel network hardware was always great,
-> how did the X722 make it out in this state.
+From: Alex Dewar <alex.dewar90@gmail.com>
+Date: Fri, 28 Aug 2020 14:55:23 +0100
 
-Another case with the same problem on an X710:
+> Commit d3b990b7f327 ("netlabel: fix problems with mapping removal")
+> added a check to return an error if ret_val != 0, before ret_val is
+> later used in a log message. Now it will unconditionally print "...
+> res=1". So just drop the check.
+> 
+> Addresses-Coverity: ("Dead code")
+> Fixes: d3b990b7f327 ("netlabel: fix problems with mapping removal")
+> Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
+> ---
+> v2: Still print the res field, because it's useful (Paul)
 
-https://www.talkend.net/post/13256.html
-
--- 
-Len Sorensen
+Applied to net-next, thank you.
