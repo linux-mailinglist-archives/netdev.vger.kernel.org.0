@@ -2,129 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25FC025613D
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 21:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EC1B25615C
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 21:36:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbgH1T1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 15:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
+        id S1726524AbgH1TgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 15:36:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725911AbgH1T1S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 15:27:18 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216C0C061264
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:27:18 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id ay8so97676edb.8
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:27:18 -0700 (PDT)
+        with ESMTP id S1726033AbgH1TgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 15:36:07 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7652DC06121B
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:36:07 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id v21so243932plo.10
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:36:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ludt+w++AZ/zvssRXmf58ClW7Q8FwqVtlN0qCaWMqR8=;
-        b=jL/XrtByo1fQK28A6l3+45dXm0+1gYdr7K4NOU+06zEbHF4X5I8Q9PyJ+DYev7v1TW
-         mx9INEMW70vitPQsvwO/G0PuisAoql/1apOdY/pUi2L8I2VyG8ghAPQ+NJruPeryGe0C
-         uLMRG3Nth+40FZ1Glrmve4zCeh0PXFuSKvYgYAI5A4VtDTGWiyMuPs0/p7Qd8ATHdrsK
-         zFWB+oJp3UTcPOCBAqbTzn2yWa5fjV1U3Tlx93vFamOjdQhvzcDJe3qI8T5+gR9CgaAz
-         5/qS83G3Nah7RUV+lYAASZ7w3epsM677D6BX/hsdo3t08jZedbyHyDvqiRqgyBZPj+qC
-         AunQ==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=LIlGK/Ax6RIqxr8cZxsOwCtqjDpUNwGZQiT8jrnTk+E=;
+        b=kwhFEAelZ2iw7+50F7qlZBc5UjBpy5XCI12sSEdZm4ffEdTpdwSjZs2gQsYJTZ7pLw
+         UsdY5wF6s0OzWeyeAuTImv4Mg6+dETrbOChe6lFlfzCvr0XcwR1O0GW2a1/CvcUzxCbL
+         dyfjwwbjoSWmoYOcB1HROOLNK3hAAWHkLhd7Oc1EH5fnZGacJXON7upG84aqPi++s/cu
+         muPH1mlU+uUtN11eyLMqfnhDZ1rqtEUPkQ5Rtbq2ExHUK6eJiJyEmn70mOrQnV3e2kfZ
+         gkRWM0ngOe3WdmptwzEsadc55g/VwvPNOEaWIs0CYbUyUrUfPsV9HzQDyQGSL3ieFuX/
+         qkuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ludt+w++AZ/zvssRXmf58ClW7Q8FwqVtlN0qCaWMqR8=;
-        b=gmi8A0V6RQctrfHhaR0+zg4VYOaTf6KBLpD5reLDsO1ysZ+S6Bv4eqiENyplDUfcfo
-         kn8Ya4bOsS/f1QE9qdK8OFyB9ZitvbZnbbMXAJeGqE7s+0PqFmHyRe674UqP1iUVf3WR
-         PrHgzfq9Urq6oDN/qIwqeMlpJMqRZyv4pLPKZupp/DqF5o0rTL8jfvyNrfGF/ZX60i0C
-         spDEia6bWwhjtrihCQaJx2nde7hB4T8tSIq36YDP+y/nY3e/Qjf5NNujI3NAARmuGPio
-         qH2DnhiZM8xDSi+zP4uVwTSEZkG1oP+EIvW8ulLrPH8kE8tvwD+pmcaLHknO4HY0b2zn
-         S2Rg==
-X-Gm-Message-State: AOAM533r14vqSpBYMb8oyORYKuvjbMOkXQg2jKXtQgxpsdJNSiq0IEdb
-        KeaHYrrFWZYuXpp8oLgwFGI=
-X-Google-Smtp-Source: ABdhPJz3hVJMvmCK71GjTpffAHZpsGe82M3vrxwJMddkIxmmNhxwEDCV2I8w4m/cEO4l5asvdyLkUw==
-X-Received: by 2002:aa7:cb0a:: with SMTP id s10mr299993edt.134.1598642836744;
-        Fri, 28 Aug 2020 12:27:16 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:8d31:58e3:8dd6:df93? (p200300ea8f2357008d3158e38dd6df93.dip0.t-ipconnect.de. [2003:ea:8f23:5700:8d31:58e3:8dd6:df93])
-        by smtp.googlemail.com with ESMTPSA id a23sm92821eju.43.2020.08.28.12.27.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Aug 2020 12:27:15 -0700 (PDT)
-Subject: Re: [PATCHi v2] net: mdiobus: fix device unregistering in
- mdiobus_register
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de
-References: <20200827070618.26754-1-s.hauer@pengutronix.de>
- <3f9daa3c-8a16-734b-da7b-e0721ddf992c@gmail.com>
- <20200828141512.GF4498@pengutronix.de>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <e1a1251a-9660-af82-2bf5-e4c664dde031@gmail.com>
-Date:   Fri, 28 Aug 2020 21:27:08 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <20200828141512.GF4498@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=LIlGK/Ax6RIqxr8cZxsOwCtqjDpUNwGZQiT8jrnTk+E=;
+        b=oabRsOUr37GgdzObsKl2doO+Mnmetj2FlrvlNMwygMcLje6UuHN+LDEy/Re+uhFDLI
+         3rCr6vHCZ+D0EPZH0tzSYVauLAcPy2DJbCHESIYOlVfJ8HZS3AFeKTr7ISC78ssmmqoh
+         SyRvwvWjgj6WX+LsZPyvn+VmYwhwQdGka8ohpwrpzZRe2aLi2E81bDfsXkveFMjDHDph
+         Yyoz/t+dxIALy3NeqLkY/f46Wtb7x+ULtK7et5v0JgLTmV7HrfNcGF/RXmm6/H5qulIc
+         99xxV2/2yRT9lqVGloxpCTggwNOngOEpLJiaY5E227e0+DhDExscmmBfMIxKDQZCwZqa
+         nMdA==
+X-Gm-Message-State: AOAM5320UuDEZNQPjatpRkiD1lrvETRmRWjmbPUtg0yaVufIvneffFki
+        bNRdE0lB5XIHbWLRqMj9ICYzxBhHCA3nty7P8R7NQcv9ACvDppPfZqNytvnPs4bijgM80STpJ8L
+        0N3nPdRA/kkuDgKDjmdYXNFJq/5NNd1GmUtanKunSERPDunoo8+VPRg==
+X-Google-Smtp-Source: ABdhPJzaoLFMQZd+DCTSKo3T+4awecWgk4V+BJNR3GAE0bo0Ss6iosI5v4pNelGHvx6vqohEEyRAY/g=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:a17:902:8f91:: with SMTP id
+ z17mr330606plo.123.1598643365421; Fri, 28 Aug 2020 12:36:05 -0700 (PDT)
+Date:   Fri, 28 Aug 2020 12:35:55 -0700
+Message-Id: <20200828193603.335512-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.402.g5ffc5be6b7-goog
+Subject: [PATCH bpf-next v3 0/8] Allow storage of flexible metadata
+ information for eBPF programs
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        YiFei Zhu <zhuyifei1999@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.08.2020 16:15, Sascha Hauer wrote:
-> On Thu, Aug 27, 2020 at 10:48:48AM +0200, Heiner Kallweit wrote:
->> On 27.08.2020 09:06, Sascha Hauer wrote:
->>> After device_register has been called the device structure may not be
->>> freed anymore, put_device() has to be called instead. This gets violated
->>> when device_register() or any of the following steps before the mdio
->>> bus is fully registered fails. In this case the caller will call
->>> mdiobus_free() which then directly frees the mdio bus structure.
->>>
->>> Set bus->state to MDIOBUS_UNREGISTERED right before calling
->>> device_register(). With this mdiobus_free() calls put_device() instead
->>> as it ought to be.
->>>
->>> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
->>> ---
->>>
->>> Changes since v1:
->>> - set bus->state before calling device_register(), not afterwards
->>>
->>>  drivers/net/phy/mdio_bus.c | 2 ++
->>>  1 file changed, 2 insertions(+)
->>>
->>> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
->>> index 0af20faad69d..9434b04a11c8 100644
->>> --- a/drivers/net/phy/mdio_bus.c
->>> +++ b/drivers/net/phy/mdio_bus.c
->>> @@ -534,6 +534,8 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
->>>  	bus->dev.groups = NULL;
->>>  	dev_set_name(&bus->dev, "%s", bus->id);
->>>  
->>> +	bus->state = MDIOBUS_UNREGISTERED;
->>> +
->>>  	err = device_register(&bus->dev);
->>>  	if (err) {
->>>  		pr_err("mii_bus %s failed to register\n", bus->id);
->>>
->> LGTM. Just two points:
->> 1. Subject has a typo (PATCHi). And it should be [PATCH net v2], because it's
->>    something for the stable branch.
->> 2. A "Fixes" tag is needed.
-> 
-> Uh, AFAICT this fixes a patch from 2008, this makes for quite some
-> stable updates :)
-> 
-There's just a handful of LTS kernel versions (oldest is 4.4), therefore it
-shouldn't be that bad. But right, for things that have always been like they
-are now, sometimes it's tricky to find a proper Fixes tag.
+Currently, if a user wants to store arbitrary metadata for an eBPF
+program, for example, the program build commit hash or version, they
+could store it in a map, and conveniently libbpf uses .data section to
+populate an internal map. However, if the program does not actually
+reference the map, then the map would be de-refcounted and freed.
 
-> Sascha
-> 
-> | commit 161c8d2f50109b44b664eaf23831ea1587979a61
-> | Author: Krzysztof Halasa <khc@pm.waw.pl>
-> | Date:   Thu Dec 25 16:50:41 2008 -0800
-> | 
-> |     net: PHYLIB mdio fixes #2
-> 
+This patch set introduces a new syscall BPF_PROG_BIND_MAP to add a map
+to a program's used_maps, even if the program instructions does not
+reference the map. libbpf is extended to recognize the .metadata section
+and load it as an internal map, and use the new syscall to ensure the
+map is bound. bpftool is also extended to have a new flag to prog
+subcommand, "--metadata" to dump the contents of the metadata section
+without a separate map dump call.
+
+An example use of this would be BPF C file declaring:
+
+  char commit_hash[] SEC(".metadata") = "abcdef123456";
+
+and bpftool would emit:
+
+  $ bpftool prog --metadata
+  [...]
+        metadata:
+                commit_hash = "abcdef123456"
+
+Patch 1 protects the used_maps array and count with a mutex.
+
+Patch 2 implements the new syscall.
+
+Patch 3 extends libbpf to have a wrapper around the syscall, probe the
+kernel for support of this new syscall, and use it on .metadata section
+if supported and the section exists.
+
+Patch 4 extends bpftool so that it is able to dump metadata from prog
+show.
+
+Patch 5 extends bpftool gen skeleton to treat the metadata section like
+an rodata section so that it mmaps the map read-only at load time.
+
+Patch 6 adds a test to check the metadata loading and dumping.
+
+Changes since RFC:
+* Fixed a few missing unlocks, and missing close while iterating map fds.
+* Move mutex initialization to right after prog aux allocation, and mutex
+  destroy to right after prog aux free.
+* s/ADD_MAP/BIND_MAP/
+* Use mutex only instead of RCU to protect the used_map array & count.
+
+Changes since v1:
+* Made struct bpf_prog_bind_opts in libbpf so flags is optional.
+* Deduped probe_kern_global_data and probe_prog_bind_map into a common
+  helper.
+* Added comment regarding why EEXIST is ignored in libbpf bind map.
+* Froze all LIBBPF_MAP_METADATA internal maps.
+* Moved bpf_prog_bind_map into new LIBBPF_0.1.1 in libbpf.map.
+* Added p_err() calls on error cases in bpftool show_prog_metadata.
+* Reverse christmas tree coding style in bpftool show_prog_metadata.
+* Made bpftool gen skeleton recognize .metadata as an internal map and
+  generate datasec definition in skeleton.
+* Added C test using skeleton to see asset that the metadata is what we
+  expect and rebinding causes EEXIST.
+
+Cc: YiFei Zhu <zhuyifei1999@gmail.com>
+
+Stanislav Fomichev (2):
+  libbpf: implement bpf_prog_find_metadata
+  bpftool: mention --metadata in the documentation
+
+YiFei Zhu (6):
+  bpf: Mutex protect used_maps array and count
+  bpf: Add BPF_PROG_BIND_MAP syscall
+  libbpf: Add BPF_PROG_BIND_MAP syscall and use it on .metadata section
+  bpftool: support dumping metadata
+  bpftool: support metadata internal map in gen skeleton
+  selftests/bpf: Test load and dump metadata with btftool and skel
+
+ .../net/ethernet/netronome/nfp/bpf/offload.c  |  18 ++-
+ include/linux/bpf.h                           |   1 +
+ include/uapi/linux/bpf.h                      |   7 +
+ kernel/bpf/core.c                             |  15 +-
+ kernel/bpf/syscall.c                          |  81 ++++++++++-
+ net/core/dev.c                                |  11 +-
+ .../bpftool/Documentation/bpftool-prog.rst    |   5 +-
+ tools/bpf/bpftool/gen.c                       |   5 +
+ tools/bpf/bpftool/json_writer.c               |   6 +
+ tools/bpf/bpftool/json_writer.h               |   3 +
+ tools/bpf/bpftool/main.c                      |  10 ++
+ tools/bpf/bpftool/main.h                      |   1 +
+ tools/bpf/bpftool/prog.c                      | 132 +++++++++++++++++-
+ tools/include/uapi/linux/bpf.h                |   7 +
+ tools/lib/bpf/bpf.c                           |  87 ++++++++++++
+ tools/lib/bpf/bpf.h                           |   9 ++
+ tools/lib/bpf/libbpf.c                        | 130 ++++++++++++++---
+ tools/lib/bpf/libbpf.map                      |   2 +
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ .../selftests/bpf/prog_tests/metadata.c       |  83 +++++++++++
+ .../selftests/bpf/progs/metadata_unused.c     |  15 ++
+ .../selftests/bpf/progs/metadata_used.c       |  15 ++
+ .../selftests/bpf/test_bpftool_metadata.sh    |  82 +++++++++++
+ 23 files changed, 687 insertions(+), 41 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/metadata.c
+ create mode 100644 tools/testing/selftests/bpf/progs/metadata_unused.c
+ create mode 100644 tools/testing/selftests/bpf/progs/metadata_used.c
+ create mode 100755 tools/testing/selftests/bpf/test_bpftool_metadata.sh
+
+-- 
+2.28.0.402.g5ffc5be6b7-goog
 
