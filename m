@@ -2,77 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE95255E42
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 17:56:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5615C255E46
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 17:56:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728281AbgH1P4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 11:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41142 "EHLO
+        id S1728348AbgH1P4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 11:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726344AbgH1Pz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 11:55:57 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63981C06121B
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 08:55:57 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id u1so1594006edi.4
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 08:55:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=2evyWy0ObRa9bZqwDpGqggEPG7yQJKgmqMstO4ZWPcg=;
-        b=NQ3/PyxDGUO5KKr1TGk9vusBVbn9cjJg3scbA0jIhEnP6N6KE9XS8+CmHoULR86tBI
-         R5nVztqJiw2KfIrxXzzD7tua3fWyPriGEZIb4oVaaF0coCjvEgKkFN+3UkzH+hhiPqFq
-         uMUD2fwHniom1Hac/CRxrZyBXO/VVbv2z2pDsiEigzd1EpdNufxSPDihKA1etn1kMplz
-         bnQN6NmqQ7L9YJqAs6Ik2G7r7Lwd/WebJ5X+lYUukioVd1NUb7E7CVACzWl+cdxMmP1R
-         0eEzy2mCDbs+abGhNRZ2Pelbf+Zmp2p2wuMONtIZX3s6n5/jkdKAaSnV0oonx3niz677
-         TGSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=2evyWy0ObRa9bZqwDpGqggEPG7yQJKgmqMstO4ZWPcg=;
-        b=FxnPOvkPhF5jHMKmkk/tyUQHUQTyZ3b9NYZTARgWLnXFIl3QpbtTn8nFcVH0Yg7jYQ
-         5cQeg+ikKyG3A2vyMW/4nDi0wR//cRMbLf7wI8liqyS6XlJfJ6XlxxdHGAS9yamaZg7g
-         Iu7RVkhmD9jWsVlKJkGEZR2LSMArwa9BFP0eaDfcp9cnJ9Ks6zdtwMDryMzJ6RiqhG17
-         +Ldti/VOsGjLckK6JUzcdTpNYY0AdUksOpJkCCaxpJ0l242oSjkaVa8kvHQryrYz5F3o
-         euqz5sZWCx4oDo4UiNLmzOBBEvK4hQtW0IaaL8FdCcWNczTuI/KIHQOGMRfO0dc91gkY
-         9cAQ==
-X-Gm-Message-State: AOAM532FIaZN1GehZh9d1uwFq2cFtxRD+7FOadDgG+TRnOFZPdXb60+1
-        jw57Uc4C98/aEMPdYwDcBJ7pbjlKMfaDQ+AAFc4=
-X-Google-Smtp-Source: ABdhPJz60UYcZJ4uZbQbXCc1M5jFxEEHWZHMbckAtuQIgHKDp/DhpuGuhH01P3lIK3N81tWr+EJbH4aNXobA9ZKHBmY=
-X-Received: by 2002:a50:d78e:: with SMTP id w14mr2567734edi.229.1598630155939;
- Fri, 28 Aug 2020 08:55:55 -0700 (PDT)
+        with ESMTP id S1725814AbgH1P4V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 11:56:21 -0400
+Received: from caffeine.csclub.uwaterloo.ca (caffeine.csclub.uwaterloo.ca [IPv6:2620:101:f000:4901:c5c:0:caff:e12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82531C06121B;
+        Fri, 28 Aug 2020 08:56:21 -0700 (PDT)
+Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
+        id 4D92B46052C; Fri, 28 Aug 2020 11:56:16 -0400 (EDT)
+Date:   Fri, 28 Aug 2020 11:56:16 -0400
+To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Subject: Re: VRRP not working on i40e X722 S2600WFT
+Message-ID: <20200828155616.3sd2ivrml2gpcvod@csclub.uwaterloo.ca>
+References: <20200827183039.hrfnb63cxq3pmv4z@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-Received: by 2002:a17:906:400a:0:0:0:0 with HTTP; Fri, 28 Aug 2020 08:55:55
- -0700 (PDT)
-Reply-To: Kateflorenc@outlook.com
-From:   NOTICE <sandra124love@gmail.com>
-Date:   Fri, 28 Aug 2020 15:55:55 +0000
-Message-ID: <CAMAyocwZYHgVStDuL65xrRy2dVWOei2XhQri9iCh_fMJR1wWmA@mail.gmail.com>
-Subject: NOTIFICATION..............
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200827183039.hrfnb63cxq3pmv4z@csclub.uwaterloo.ca>
+User-Agent: NeoMutt/20170113 (1.7.2)
+From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Good day
+On Thu, Aug 27, 2020 at 02:30:39PM -0400, Lennart Sorensen wrote:
+> I have hit a new problem with the X722 chipset (Intel R1304WFT server).
+> VRRP simply does not work.
+> 
+> When keepalived registers a vmac interface, and starts transmitting
+> multicast packets with the vrp message, it never receives those packets
+> from the peers, so all nodes think they are the master.  tcpdump shows
+> transmits, but no receives.  If I stop keepalived, which deletes the
+> vmac interface, then I start to receive the multicast packets from the
+> other nodes.  Even in promisc mode, tcpdump can't see those packets.
+> 
+> So it seems the hardware is dropping all packets with a source mac that
+> matches the source mac of the vmac interface, even when the destination
+> is a multicast address that was subcribed to.  This is clearly not
+> proper behaviour.
+> 
+> I tried a stock 5.8 kernel to check if a driver update helped, and updated
+> the nvm firware to the latest 4.10 (which appears to be over a year old),
+> and nothing changes the behaviour at all.
+> 
+> Seems other people have hit this problem too:
+> http://mails.dpdk.org/archives/users/2018-May/003128.html
+> 
+> Unless someone has a way to fix this, we will have to change away from
+> this hardware very quickly.  The IPsec NAT RSS defect we could tolerate
+> although didn't like, while this is just unworkable.
+> 
+> Quite frustrated by this.  Intel network hardware was always great,
+> how did the X722 make it out in this state.
 
-I sent this mail praying for it to reach you in good health, since I
-myself are in a very critical health condition in which I sleep every
-night  without knowing if I May be alive to see the next day., I am a
-widow suffering from long time illness.
+Another case with the same problem on an X710:
 
-I have some funds I inherited from my late husband; my Doctor told me
-recently that I would not last due to the illness. Having known my
-condition, I need you to claim this money and use it for Charity work
-or any profitable venture that can help the poor and street children
-especially, I accept this decision because I do not have any child who
-will inherit  this money after I die.
+https://www.talkend.net/post/13256.html
 
-If interested please I want your sincere and urgent reply.
-
-Thank you,
-
-Kate
+-- 
+Len Sorensen
