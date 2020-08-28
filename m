@@ -2,93 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DBA82554D6
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 09:08:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA1132554EF
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 09:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728226AbgH1HIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 03:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726010AbgH1HIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 03:08:13 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5932C061264;
-        Fri, 28 Aug 2020 00:08:12 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id s2so111425pjr.4;
-        Fri, 28 Aug 2020 00:08:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QKDUbYPcPEh8IBd+SIHE5bvSSUow+Zho8PuNcnzF93Q=;
-        b=oEsScVLblMKfSEP1QEYR9B1R6dZSAtZAbml7BDMDCoTnWnSyNFtCGBgqKMjF88CEGX
-         G1FtgKUHMZfM1L3sjghPQXJ5WFFqBXjx9HIQoht/Dw+CL4vDyJNddadzkScAJLKIhHX+
-         5h8qxdXVjEx2gYOLZtDEQ9Wr89boL8zXto4DFFVsBhAbpu2zrkdm4a7FY9RV09lJl1+O
-         LydZLXT1Z1ZGuMXvS/uhWs1oqtTZ43muGe3vn8NWYi8VdrZloKnlK/qKf7/TX4/h5N/+
-         YkYG0hhWGobNv+UTexKHNpOODDcCZqUCdbQOBoOmaQvkqclWP+9tfODYuiVCRDWlfwZM
-         qASQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QKDUbYPcPEh8IBd+SIHE5bvSSUow+Zho8PuNcnzF93Q=;
-        b=fUtrceJimXtMigglEynuSf+Y4ZoQ0G9wl7XhX4TnVDrqXofcpk0QC0Nb+SrUW/jxQn
-         3xktsnnefhbyEeM67e/+rrnkD41zyiQT/IrIXAKL/mk/pIjfpL2qYwmX1YYMcYl3iiV/
-         RpH5Wa9VwYkPOjGk+YdfUzeh54Om3CrAzEEofYCghnlKMrkE6xA7BiI4HDhABdD00Slp
-         q+JuSJ4XqY10gb+YxYQFcvmJoxzpWzNz0OJqDgtJegpIwp3q2vtqF4/79nlMhKG+gEFm
-         VOzTfWsZVyPDxgotg2rwYwXVS0cDGbv2Q6qhAIWCj47G1xBDDrW+WfIG9Zbeebnf/hz0
-         rVeA==
-X-Gm-Message-State: AOAM531TZqE0T7qb2n6QW0gpFRwxpFR/KFzuCGPxwtZ/DyhRM93FnJfN
-        1MyHzpGjLL/aiS6J771TB70=
-X-Google-Smtp-Source: ABdhPJycyDfw8uZMHIfKVJw+n62ExArLbwu/fPa6q0T9K+JFC5wpBeyzT7hhgGdJrVE1mF1p5FOdlw==
-X-Received: by 2002:a17:90b:1b12:: with SMTP id nu18mr72152pjb.126.1598598492452;
-        Fri, 28 Aug 2020 00:08:12 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:b81a:ad7:9450:beeb])
-        by smtp.gmail.com with ESMTPSA id i1sm473447pgq.41.2020.08.28.00.08.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Aug 2020 00:08:11 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Halasa <khc@pm.waw.pl>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>, Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net] drivers/net/wan/hdlc_cisco: Add hard_header_len
-Date:   Fri, 28 Aug 2020 00:07:52 -0700
-Message-Id: <20200828070752.54444-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727928AbgH1HON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 03:14:13 -0400
+Received: from www62.your-server.de ([213.133.104.62]:44910 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725858AbgH1HOM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 03:14:12 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kBYaH-0007Cj-BL; Fri, 28 Aug 2020 09:14:01 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kBYaH-000QBW-2T; Fri, 28 Aug 2020 09:14:01 +0200
+Subject: Re: [PATCH nf-next v3 0/3] Netfilter egress hook
+To:     Lukas Wunner <lukas@wunner.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>, Laura Garcia <nevola@gmail.com>,
+        David Miller <davem@davemloft.net>
+References: <cover.1598517739.git.lukas@wunner.de>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <454130d7-7256-838d-515e-c7340892278c@iogearbox.net>
+Date:   Fri, 28 Aug 2020 09:14:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <cover.1598517739.git.lukas@wunner.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25912/Thu Aug 27 15:16:21 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver didn't set hard_header_len. This patch sets hard_header_len
-for it according to its header_ops->create function.
+Hi Lukas,
 
-This driver's header_ops->create function (cisco_hard_header) creates
-a header of (struct hdlc_header), so hard_header_len should be set to
-sizeof(struct hdlc_header).
+On 8/27/20 10:55 AM, Lukas Wunner wrote:
+> Introduce a netfilter egress hook to allow filtering outbound AF_PACKETs
+> such as DHCP and to prepare for in-kernel NAT64/NAT46.
 
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/hdlc_cisco.c | 1 +
- 1 file changed, 1 insertion(+)
+Thinking more about this, how will this allow to sufficiently filter AF_PACKET?
+It won't. Any AF_PACKET application can freely set PACKET_QDISC_BYPASS without
+additional privileges and then dev_queue_xmit() is being bypassed in the host ns.
+This is therefore ineffective and not sufficient. (From container side these can
+be caught w/ host veth on ingress, but not in host ns, of course, so hook won't
+be invoked.)
 
-diff --git a/drivers/net/wan/hdlc_cisco.c b/drivers/net/wan/hdlc_cisco.c
-index d8cba3625c18..444130655d8e 100644
---- a/drivers/net/wan/hdlc_cisco.c
-+++ b/drivers/net/wan/hdlc_cisco.c
-@@ -370,6 +370,7 @@ static int cisco_ioctl(struct net_device *dev, struct ifreq *ifr)
- 		memcpy(&state(hdlc)->settings, &new_settings, size);
- 		spin_lock_init(&state(hdlc)->lock);
- 		dev->header_ops = &cisco_header_ops;
-+		dev->hard_header_len = sizeof(struct hdlc_header);
- 		dev->type = ARPHRD_CISCO;
- 		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
- 		netif_dormant_on(dev);
--- 
-2.25.1
-
+Thanks,
+Daniel
