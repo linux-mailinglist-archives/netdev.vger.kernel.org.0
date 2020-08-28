@@ -2,58 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 468DB25632C
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 00:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3457A25632D
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 00:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726771AbgH1Wa3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 28 Aug 2020 18:30:29 -0400
-Received: from mx.metalurgs.lv ([81.198.125.103]:61750 "EHLO mx.metalurgs.lv"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726386AbgH1Wa2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Aug 2020 18:30:28 -0400
-Received: from mx.metalurgs.lv (localhost [127.0.0.1])
-        by mx.metalurgs.lv (Postfix) with ESMTP id D2A6C5D131
-        for <netdev@vger.kernel.org>; Sat, 29 Aug 2020 01:30:22 +0300 (EEST)
-Received: from kas30pipe.localhost (localhost [127.0.0.1])
-        by mx.metalurgs.lv (Postfix) with ESMTP id 0B39C5D47B
-        for <netdev@vger.kernel.org>; Sat, 29 Aug 2020 01:30:22 +0300 (EEST)
-Received: by mx.metalurgs.lv (Postfix, from userid 1005)
-        id CD6835CD42; Sat, 29 Aug 2020 01:29:09 +0300 (EEST)
-Received: from [192.168.8.10] (ip168-243-231-195.intercom.com.sv [168.243.231.195])
-        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: admin)
-        by mx.metalurgs.lv (Postfix) with ESMTPSA id 219495C80D
-        for <netdev@vger.kernel.org>; Sat, 29 Aug 2020 01:29:07 +0300 (EEST)
+        id S1726626AbgH1WeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 18:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46630 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726536AbgH1WeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 18:34:07 -0400
+Received: from ipv6.s19.hekko.net.pl (ipv6.s19.hekko.net.pl [IPv6:2a02:1778:113::19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCEF1C061264
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 15:34:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=arf.net.pl;
+         s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:
+        Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Q1O9CsRtHN19t4S94lJWd9Gcp7LVdGKjZcFkPSnBV3Y=; b=SzHL8sHXDcdqvrkeMfhfRP/qvc
+        lbbeN+Q703HFnokafTpMvOVgp3Vc564ueBvTI8FdxUAYuHE2YrtdHHHYp83Xwam4sMaai+hU/wFKs
+        1PcKyHe93OKTP6MnL16ElZrXamrSO/F1AaRG+zRZ77D1zHWjZpuaYqPECC83n4RHEFMrHBoi5418t
+        dLV0rmzPrEFL5M8PU975SkRUHDxQ6+pGOeShU04XXYm9RX9VgbeAtBhAflzpdLnloCUTHEE+/ArGQ
+        s3SdzTsfKv01+l8su6hUE25hRuM48dI9t2TDEIHN1TjEMZlzxHOQ9XnCmdG125PvCJGfUi1kz5IEh
+        rrgatx4w==;
+Received: from [185.135.2.46] (helo=[172.20.10.2])
+        by s19.hekko.net.pl with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92.3)
+        (envelope-from <adam.rudzinski@arf.net.pl>)
+        id 1kBmwf-00Fqv5-6z; Sat, 29 Aug 2020 00:34:05 +0200
+Subject: Re: drivers/of/of_mdio.c needs a small modification
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     robh+dt@kernel.org, frowand.list@gmail.com, f.fainelli@gmail.com,
+        netdev <netdev@vger.kernel.org>
+References: <c8b74845-b9e1-6d85-3947-56333b73d756@arf.net.pl>
+ <20200828222846.GA2403519@lunn.ch>
+From:   =?UTF-8?Q?Adam_Rudzi=c5=84ski?= <adam.rudzinski@arf.net.pl>
+Message-ID: <dcfea76d-5340-76cf-7ad0-313af334a2fd@arf.net.pl>
+Date:   Sat, 29 Aug 2020 00:34:05 +0200
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Description: Mail message body
-To:     netdev@vger.kernel.org
-From:   "Angel Investors" <info@unituscapital.com>
-Date:   Fri, 28 Aug 2020 16:28:53 -0600
-Reply-To: andrewmacklin12@gmail.com
-X-SpamTest-Envelope-From: info@unituscapital.com
-X-SpamTest-Group-ID: 00000000
-X-SpamTest-Info: Profiles 71303 [Jan 01 2015]
-X-SpamTest-Info: {RECEIVED: dynamic ip detected}
-X-SpamTest-Info: {DATE: unreal year}
-X-SpamTest-Method: none
-X-SpamTest-Rate: 35
-X-SpamTest-Status: Not detected
-X-SpamTest-Status-Extended: not_detected
-X-SpamTest-Version: SMTP-Filter Version 3.0.0 [0284], KAS30/Release
-Message-ID: <20200828222922.CD6835CD42@mx.metalurgs.lv>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8BIT
-Subject: START UP FUNDS.
-X-Anti-Virus: Kaspersky Anti-Virus for Linux Mail Server 5.6.39/RELEASE,
-         bases: 20140401 #7726142, check: 20200828 notchecked
+In-Reply-To: <20200828222846.GA2403519@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: pl
+X-Authenticated-Id: ar@arf.net.pl
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention To Email : netdev@vger.kernel.org
-Good Day Sir,
-Our Group have the financial capability to finance any investment portfolio as far as is genuine, all we need is a capable business partner that possesses investment strategies for profitable business information for good turn over within 10-30years. Our Partners are willing to invest 10million — 5billon USD. We can provide proof of funds on demand, after certification of your documents/details. Please write me back if you can work with me on this project. Thank You,
-Best Regards
-Andrew Macklin
+Hi Andrew.
+
+W dniu 2020-08-29 o 00:28, Andrew Lunn pisze:
+> Hi Adam
+>
+>> If kernel has to bring up two Ethernet interfaces, the processor has two
+>> peripherals with functionality of MACs (in i.MX6ULL these are Fast Ethernet
+>> Controllers, FECs), but uses a shared MDIO bus, then the kernel first probes
+>> one MAC, enables clock for its PHY, probes MDIO bus tryng to discover _all_
+>> PHYs, and then probes the second MAC, and enables clock for its PHY. The
+>> result is that the second PHY is still inactive during PHY discovery. Thus,
+>> one Ethernet interface is not functional.
+> What clock are you talking about? Do you have the FEC feeding a 50MHz
+> clock to the PHY? Each FEC providing its own clock to its own PHY? And
+> are you saying a PHY without its reference clock does not respond to
+> MDIO reads and hence the second PHY does not probe because it has no
+> reference clock?
+>
+> 	  Andrew
+
+Yes, exactly. In my case the PHYs are LAN8720A, and it works this way.
+Maybe this problem is PHY-related.
+I also think that my proposition allows to make device tree look better 
+and be less confusing, as a side-effect.
+
+Best regards,
+Adam
+
