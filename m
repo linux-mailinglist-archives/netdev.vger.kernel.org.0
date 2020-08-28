@@ -2,73 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61CD22558E9
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 12:53:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 672742558F0
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 12:56:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729159AbgH1Kw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 06:52:58 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:46331 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728362AbgH1Kww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 06:52:52 -0400
-X-UUID: 9b16ef4c94214323863de48c3da9b76b-20200828
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=FZ0PPk8gVzEhQ1IFGUZY31/TpdulCQ+QsyJk9Jc/ChY=;
-        b=WCKrcph+tb8D24tBlts4SXbaR4ff+/OYPgQj43iu1m8ha6oLVsWDeC8lPNe77WH/WAQfqIcJMN/3SyvCBIFqTNXxoU8vgNZs3F6ot2bYoegHrweVLaCSRgiwGpKq7t2AhbsaF1hry3YlX6iDE9A8NfNiOheXF6SMOqfs1Kt5jt0=;
-X-UUID: 9b16ef4c94214323863de48c3da9b76b-20200828
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 1714428886; Fri, 28 Aug 2020 18:52:48 +0800
-Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 28 Aug 2020 18:52:44 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas07.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 28 Aug 2020 18:52:45 +0800
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        id S1729168AbgH1K4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 06:56:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50606 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729171AbgH1Kyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 06:54:31 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C496C061233
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 03:54:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=F04cWwXc94IppBKzH0hFXeNAZ4nkLY4qTbIhgS2I0mQ=; b=yt8VqOzvEdOTuZQewr8/we1zTC
+        lZ57+2j+2FlSgkRDuo03SoZoa/tzRY9a/2dtWCH/VOOFEKcCX+4VBLmXcqPZRtZp6QphgrI6inEaI
+        /nqhLKcq4CdUVxov+O/kw87po5xNqi3JeQ1XkfaZoN27nPcg0gr2rGB1stseyRDI4iGbmfTghHnCB
+        oqBvCPAwxzFSSKYusZ+0XGbt6HUcARSNGYe+/gin4SgQ4cQbEJDHJHFgm8ss/bLdKCg9KAMMUyTft
+        kFUJT3ig9bzY31yK858EnwKzCtDiqnsH0rs/OVio+dOXg4a7oKKC5aBPNOXFHRiCh9H/ovE5GRG+3
+        aPJ/gcag==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:34388 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1kBc13-0005u4-Vt; Fri, 28 Aug 2020 11:53:54 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1kBc13-00032k-N3; Fri, 28 Aug 2020 11:53:53 +0100
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-CC:     <opensource@vdorst.com>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <frank-w@public-files.de>,
-        <dqfext@gmail.com>, Landen Chao <landen.chao@mediatek.com>
-Subject: [PATCH net v2] net: dsa: mt7530: fix advertising unsupported 1000baseT_Half
-Date:   Fri, 28 Aug 2020 18:52:44 +0800
-Message-ID: <20200828105244.9839-1-landen.chao@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] net: phylink: avoid oops during initialisation
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1kBc13-00032k-N3@rmk-PC.armlinux.org.uk>
+Date:   Fri, 28 Aug 2020 11:53:53 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UmVtb3ZlIDEwMDBiYXNlVF9IYWxmIHRvIGFkdmVydGlzZSBjb3JyZWN0IGhhcmR3YXJlIGNhcGFi
-aWxpdHkgaW4NCnBoeWxpbmtfdmFsaWRhdGUoKSBjYWxsYmFjayBmdW5jdGlvbi4NCg0KRml4ZXM6
-IDM4Zjc5MGE4MDU2MCAoIm5ldDogZHNhOiBtdDc1MzA6IEFkZCBzdXBwb3J0IGZvciBwb3J0IDUi
-KQ0KU2lnbmVkLW9mZi1ieTogTGFuZGVuIENoYW8gPGxhbmRlbi5jaGFvQG1lZGlhdGVrLmNvbT4N
-ClJldmlld2VkLWJ5OiBBbmRyZXcgTHVubiA8YW5kcmV3QGx1bm4uY2g+DQpSZXZpZXdlZC1ieTog
-RmxvcmlhbiBGYWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+DQotLS0NCnYxLT52Mg0KICAt
-IGZpeCB0aGUgY29tbWl0IHN1YmplY3Qgc3BpbGxlZCBpbnRvIHRoZSBjb21taXQgbWVzc2FnZQ0K
-LS0tDQogZHJpdmVycy9uZXQvZHNhL210NzUzMC5jIHwgMiArLQ0KIDEgZmlsZSBjaGFuZ2VkLCAx
-IGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQv
-ZHNhL210NzUzMC5jIGIvZHJpdmVycy9uZXQvZHNhL210NzUzMC5jDQppbmRleCA4ZGNiOGE0OWFi
-NjcuLjIzODQxN2RiMjZmOSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbmV0L2RzYS9tdDc1MzAuYw0K
-KysrIGIvZHJpdmVycy9uZXQvZHNhL210NzUzMC5jDQpAQCAtMTUwMSw3ICsxNTAxLDcgQEAgc3Rh
-dGljIHZvaWQgbXQ3NTMwX3BoeWxpbmtfdmFsaWRhdGUoc3RydWN0IGRzYV9zd2l0Y2ggKmRzLCBp
-bnQgcG9ydCwNCiAJCXBoeWxpbmtfc2V0KG1hc2ssIDEwMGJhc2VUX0Z1bGwpOw0KIA0KIAkJaWYg
-KHN0YXRlLT5pbnRlcmZhY2UgIT0gUEhZX0lOVEVSRkFDRV9NT0RFX01JSSkgew0KLQkJCXBoeWxp
-bmtfc2V0KG1hc2ssIDEwMDBiYXNlVF9IYWxmKTsNCisJCQkvKiBUaGlzIHN3aXRjaCBvbmx5IHN1
-cHBvcnRzIDFHIGZ1bGwtZHVwbGV4LiAqLw0KIAkJCXBoeWxpbmtfc2V0KG1hc2ssIDEwMDBiYXNl
-VF9GdWxsKTsNCiAJCQlpZiAocG9ydCA9PSA1KQ0KIAkJCQlwaHlsaW5rX3NldChtYXNrLCAxMDAw
-YmFzZVhfRnVsbCk7DQotLSANCjIuMTcuMQ0K
+If we intend to use PCS operations, mac_pcs_get_state() will not be
+implemented, so will be NULL. If we also intend to register the PCS
+operations in mac_prepare() or mac_config(), then this leads to an
+attempt to call NULL function pointer during phylink_start(). Avoid
+this, but we must report the link is down.
+
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+There are no users of the new split PCS support currently, so this
+does not require backporting, but if people think it should have a
+fixes tag, that would be:
+     Fixes: 7137e18f6f88 ("net: phylink: add struct phylink_pcs")
+
+ drivers/net/phy/phylink.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 32b4bd6a5b55..5e4cb12972eb 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -535,8 +535,10 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
+ 
+ 	if (pl->pcs_ops)
+ 		pl->pcs_ops->pcs_get_state(pl->pcs, state);
+-	else
++	else if (pl->mac_ops->mac_pcs_get_state)
+ 		pl->mac_ops->mac_pcs_get_state(pl->config, state);
++	else
++		state->link = 0;
+ }
+ 
+ /* The fixed state is... fixed except for the link state,
+-- 
+2.20.1
 
