@@ -2,170 +2,283 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EC1B25615C
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 21:36:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F36E25615E
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 21:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726524AbgH1TgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 15:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47194 "EHLO
+        id S1726338AbgH1Tg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 15:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726033AbgH1TgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 15:36:07 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7652DC06121B
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:36:07 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id v21so243932plo.10
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:36:07 -0700 (PDT)
+        with ESMTP id S1726236AbgH1TgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 15:36:09 -0400
+Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD35C061233
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:36:08 -0700 (PDT)
+Received: by mail-qk1-x749.google.com with SMTP id e63so81275qkd.14
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:36:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=LIlGK/Ax6RIqxr8cZxsOwCtqjDpUNwGZQiT8jrnTk+E=;
-        b=kwhFEAelZ2iw7+50F7qlZBc5UjBpy5XCI12sSEdZm4ffEdTpdwSjZs2gQsYJTZ7pLw
-         UsdY5wF6s0OzWeyeAuTImv4Mg6+dETrbOChe6lFlfzCvr0XcwR1O0GW2a1/CvcUzxCbL
-         dyfjwwbjoSWmoYOcB1HROOLNK3hAAWHkLhd7Oc1EH5fnZGacJXON7upG84aqPi++s/cu
-         muPH1mlU+uUtN11eyLMqfnhDZ1rqtEUPkQ5Rtbq2ExHUK6eJiJyEmn70mOrQnV3e2kfZ
-         gkRWM0ngOe3WdmptwzEsadc55g/VwvPNOEaWIs0CYbUyUrUfPsV9HzQDyQGSL3ieFuX/
-         qkuQ==
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=YZ5LeBPQpyyJvO3Gz2DvdMpJFZa5a8BnHcIIYG0Iagw=;
+        b=pY+Ggws5AtyVpGHz0EVJPQp2z9kcNcC/JTDgCH85LK0dpIfdHq+5UX0kgIDo4TBBmT
+         KinRhgEdXFzq3C/OwXz70G/gctXv6nlyK0HCFkKj/RLNhrUH5h7rMHlY6IF0txRvHwti
+         hpyN4s7d9eSgEBzquBDiwQTS4dw71miSo1z4aHNJwMC9WGFZZ2xoSrcGEsMO45H9MbFC
+         tX25lba408V799PVIGDuF9jKxWdNDoSCFzNPp74IlRkpVRz79+h8yNI0Oax+bj8ZrhPO
+         BhyU2ACeT+CJVUUD69cU+e5T8RwRguIyOv5sMISnBwnyEBUQq4X4DePOI8KkHZ+rI2LI
+         ZKnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=LIlGK/Ax6RIqxr8cZxsOwCtqjDpUNwGZQiT8jrnTk+E=;
-        b=oabRsOUr37GgdzObsKl2doO+Mnmetj2FlrvlNMwygMcLje6UuHN+LDEy/Re+uhFDLI
-         3rCr6vHCZ+D0EPZH0tzSYVauLAcPy2DJbCHESIYOlVfJ8HZS3AFeKTr7ISC78ssmmqoh
-         SyRvwvWjgj6WX+LsZPyvn+VmYwhwQdGka8ohpwrpzZRe2aLi2E81bDfsXkveFMjDHDph
-         Yyoz/t+dxIALy3NeqLkY/f46Wtb7x+ULtK7et5v0JgLTmV7HrfNcGF/RXmm6/H5qulIc
-         99xxV2/2yRT9lqVGloxpCTggwNOngOEpLJiaY5E227e0+DhDExscmmBfMIxKDQZCwZqa
-         nMdA==
-X-Gm-Message-State: AOAM5320UuDEZNQPjatpRkiD1lrvETRmRWjmbPUtg0yaVufIvneffFki
-        bNRdE0lB5XIHbWLRqMj9ICYzxBhHCA3nty7P8R7NQcv9ACvDppPfZqNytvnPs4bijgM80STpJ8L
-        0N3nPdRA/kkuDgKDjmdYXNFJq/5NNd1GmUtanKunSERPDunoo8+VPRg==
-X-Google-Smtp-Source: ABdhPJzaoLFMQZd+DCTSKo3T+4awecWgk4V+BJNR3GAE0bo0Ss6iosI5v4pNelGHvx6vqohEEyRAY/g=
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=YZ5LeBPQpyyJvO3Gz2DvdMpJFZa5a8BnHcIIYG0Iagw=;
+        b=ZgxUr5RuDq0OV8AesrBXVrv1xLzBqUwC+6CzCcMVUw4h2dQV+i9rcrjvc38FK4Xn0B
+         8fuqtqcogpBhlwxJ/IvvlkNDqjmQnfBirlK4thozq70fw8ed99oEEvwsr8m/aifbC0QZ
+         cLiF8ryIWlL5GGhhltgIpNs/rU30FvGNgv/8lC3E6RVBtUJYf7whEBTni0MZ5DoNfzIl
+         OLJx/DoLVKCPCsvHKP3HveNqXWPGShdJnfmobl+rCZGU4o6PD5DXbFASP3Ej2374+QCS
+         iX/LoIjnWTs/NEJNe9vUOd4GhOS1cWEFfHlCq154uD1Ut6FE1AFH3TqdiONqEGaiJsiQ
+         y2xw==
+X-Gm-Message-State: AOAM531mjZ8CeY2zuFsNmc0HgwKB80wfGIlskwZJPQBKND5WzXjPPVXx
+        aeEj7ZM/LlJEi4tKEwsiI2zQxAIZSuTLN96yPtmv9Cn42w7wjbWMJHXmwthv6drtuRUDZh6z2Aj
+        mfpekVt+eG+DkX22dFFlp6/KdOrg2IcOFG1vayZU9AX4OHMke5T6jog==
+X-Google-Smtp-Source: ABdhPJzGzVA7YrBKO8m6gcU3S2aTUjqbGTq3JUVU7hvPSIeIfkkU9HDAW9qeAtG3ICXvrbZZNeaT7rU=
 X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:a17:902:8f91:: with SMTP id
- z17mr330606plo.123.1598643365421; Fri, 28 Aug 2020 12:36:05 -0700 (PDT)
-Date:   Fri, 28 Aug 2020 12:35:55 -0700
-Message-Id: <20200828193603.335512-1-sdf@google.com>
+ (user=sdf job=sendgmr) by 2002:a0c:b61c:: with SMTP id f28mr128057qve.92.1598643367280;
+ Fri, 28 Aug 2020 12:36:07 -0700 (PDT)
+Date:   Fri, 28 Aug 2020 12:35:56 -0700
+In-Reply-To: <20200828193603.335512-1-sdf@google.com>
+Message-Id: <20200828193603.335512-2-sdf@google.com>
 Mime-Version: 1.0
+References: <20200828193603.335512-1-sdf@google.com>
 X-Mailer: git-send-email 2.28.0.402.g5ffc5be6b7-goog
-Subject: [PATCH bpf-next v3 0/8] Allow storage of flexible metadata
- information for eBPF programs
+Subject: [PATCH bpf-next v3 1/8] bpf: Mutex protect used_maps array and count
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        YiFei Zhu <zhuyifei1999@gmail.com>
+        YiFei Zhu <zhuyifei@google.com>,
+        YiFei Zhu <zhuyifei1999@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, if a user wants to store arbitrary metadata for an eBPF
-program, for example, the program build commit hash or version, they
-could store it in a map, and conveniently libbpf uses .data section to
-populate an internal map. However, if the program does not actually
-reference the map, then the map would be de-refcounted and freed.
+From: YiFei Zhu <zhuyifei@google.com>
 
-This patch set introduces a new syscall BPF_PROG_BIND_MAP to add a map
-to a program's used_maps, even if the program instructions does not
-reference the map. libbpf is extended to recognize the .metadata section
-and load it as an internal map, and use the new syscall to ensure the
-map is bound. bpftool is also extended to have a new flag to prog
-subcommand, "--metadata" to dump the contents of the metadata section
-without a separate map dump call.
-
-An example use of this would be BPF C file declaring:
-
-  char commit_hash[] SEC(".metadata") = "abcdef123456";
-
-and bpftool would emit:
-
-  $ bpftool prog --metadata
-  [...]
-        metadata:
-                commit_hash = "abcdef123456"
-
-Patch 1 protects the used_maps array and count with a mutex.
-
-Patch 2 implements the new syscall.
-
-Patch 3 extends libbpf to have a wrapper around the syscall, probe the
-kernel for support of this new syscall, and use it on .metadata section
-if supported and the section exists.
-
-Patch 4 extends bpftool so that it is able to dump metadata from prog
-show.
-
-Patch 5 extends bpftool gen skeleton to treat the metadata section like
-an rodata section so that it mmaps the map read-only at load time.
-
-Patch 6 adds a test to check the metadata loading and dumping.
-
-Changes since RFC:
-* Fixed a few missing unlocks, and missing close while iterating map fds.
-* Move mutex initialization to right after prog aux allocation, and mutex
-  destroy to right after prog aux free.
-* s/ADD_MAP/BIND_MAP/
-* Use mutex only instead of RCU to protect the used_map array & count.
-
-Changes since v1:
-* Made struct bpf_prog_bind_opts in libbpf so flags is optional.
-* Deduped probe_kern_global_data and probe_prog_bind_map into a common
-  helper.
-* Added comment regarding why EEXIST is ignored in libbpf bind map.
-* Froze all LIBBPF_MAP_METADATA internal maps.
-* Moved bpf_prog_bind_map into new LIBBPF_0.1.1 in libbpf.map.
-* Added p_err() calls on error cases in bpftool show_prog_metadata.
-* Reverse christmas tree coding style in bpftool show_prog_metadata.
-* Made bpftool gen skeleton recognize .metadata as an internal map and
-  generate datasec definition in skeleton.
-* Added C test using skeleton to see asset that the metadata is what we
-  expect and rebinding causes EEXIST.
+To support modifying the used_maps array, we use a mutex to protect
+the use of the counter and the array. The mutex is initialized right
+after the prog aux is allocated, and destroyed right before prog
+aux is freed. This way we guarantee it's initialized for both cBPF
+and eBPF.
 
 Cc: YiFei Zhu <zhuyifei1999@gmail.com>
+Signed-off-by: YiFei Zhu <zhuyifei@google.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ .../net/ethernet/netronome/nfp/bpf/offload.c   | 18 ++++++++++++------
+ include/linux/bpf.h                            |  1 +
+ kernel/bpf/core.c                              | 15 +++++++++++----
+ kernel/bpf/syscall.c                           | 16 ++++++++++++----
+ net/core/dev.c                                 | 11 ++++++++---
+ 5 files changed, 44 insertions(+), 17 deletions(-)
 
-Stanislav Fomichev (2):
-  libbpf: implement bpf_prog_find_metadata
-  bpftool: mention --metadata in the documentation
-
-YiFei Zhu (6):
-  bpf: Mutex protect used_maps array and count
-  bpf: Add BPF_PROG_BIND_MAP syscall
-  libbpf: Add BPF_PROG_BIND_MAP syscall and use it on .metadata section
-  bpftool: support dumping metadata
-  bpftool: support metadata internal map in gen skeleton
-  selftests/bpf: Test load and dump metadata with btftool and skel
-
- .../net/ethernet/netronome/nfp/bpf/offload.c  |  18 ++-
- include/linux/bpf.h                           |   1 +
- include/uapi/linux/bpf.h                      |   7 +
- kernel/bpf/core.c                             |  15 +-
- kernel/bpf/syscall.c                          |  81 ++++++++++-
- net/core/dev.c                                |  11 +-
- .../bpftool/Documentation/bpftool-prog.rst    |   5 +-
- tools/bpf/bpftool/gen.c                       |   5 +
- tools/bpf/bpftool/json_writer.c               |   6 +
- tools/bpf/bpftool/json_writer.h               |   3 +
- tools/bpf/bpftool/main.c                      |  10 ++
- tools/bpf/bpftool/main.h                      |   1 +
- tools/bpf/bpftool/prog.c                      | 132 +++++++++++++++++-
- tools/include/uapi/linux/bpf.h                |   7 +
- tools/lib/bpf/bpf.c                           |  87 ++++++++++++
- tools/lib/bpf/bpf.h                           |   9 ++
- tools/lib/bpf/libbpf.c                        | 130 ++++++++++++++---
- tools/lib/bpf/libbpf.map                      |   2 +
- tools/testing/selftests/bpf/Makefile          |   3 +-
- .../selftests/bpf/prog_tests/metadata.c       |  83 +++++++++++
- .../selftests/bpf/progs/metadata_unused.c     |  15 ++
- .../selftests/bpf/progs/metadata_used.c       |  15 ++
- .../selftests/bpf/test_bpftool_metadata.sh    |  82 +++++++++++
- 23 files changed, 687 insertions(+), 41 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/metadata.c
- create mode 100644 tools/testing/selftests/bpf/progs/metadata_unused.c
- create mode 100644 tools/testing/selftests/bpf/progs/metadata_used.c
- create mode 100755 tools/testing/selftests/bpf/test_bpftool_metadata.sh
-
+diff --git a/drivers/net/ethernet/netronome/nfp/bpf/offload.c b/drivers/net/ethernet/netronome/nfp/bpf/offload.c
+index ac02369174a9..53851853562c 100644
+--- a/drivers/net/ethernet/netronome/nfp/bpf/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/bpf/offload.c
+@@ -111,7 +111,9 @@ static int
+ nfp_map_ptrs_record(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
+ 		    struct bpf_prog *prog)
+ {
+-	int i, cnt, err;
++	int i, cnt, err = 0;
++
++	mutex_lock(&prog->aux->used_maps_mutex);
+ 
+ 	/* Quickly count the maps we will have to remember */
+ 	cnt = 0;
+@@ -119,13 +121,15 @@ nfp_map_ptrs_record(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
+ 		if (bpf_map_offload_neutral(prog->aux->used_maps[i]))
+ 			cnt++;
+ 	if (!cnt)
+-		return 0;
++		goto out;
+ 
+ 	nfp_prog->map_records = kmalloc_array(cnt,
+ 					      sizeof(nfp_prog->map_records[0]),
+ 					      GFP_KERNEL);
+-	if (!nfp_prog->map_records)
+-		return -ENOMEM;
++	if (!nfp_prog->map_records) {
++		err = -ENOMEM;
++		goto out;
++	}
+ 
+ 	for (i = 0; i < prog->aux->used_map_cnt; i++)
+ 		if (bpf_map_offload_neutral(prog->aux->used_maps[i])) {
+@@ -133,12 +137,14 @@ nfp_map_ptrs_record(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
+ 						 prog->aux->used_maps[i]);
+ 			if (err) {
+ 				nfp_map_ptrs_forget(bpf, nfp_prog);
+-				return err;
++				goto out;
+ 			}
+ 		}
+ 	WARN_ON(cnt != nfp_prog->map_records_cnt);
+ 
+-	return 0;
++out:
++	mutex_unlock(&prog->aux->used_maps_mutex);
++	return err;
+ }
+ 
+ static int
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index dbba82a80087..1b404b034775 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -748,6 +748,7 @@ struct bpf_prog_aux {
+ 	struct bpf_ksym ksym;
+ 	const struct bpf_prog_ops *ops;
+ 	struct bpf_map **used_maps;
++	struct mutex used_maps_mutex; /* mutex for used_maps and used_map_cnt */
+ 	struct bpf_prog *prog;
+ 	struct user_struct *user;
+ 	u64 load_time; /* ns since boottime */
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index ed0b3578867c..2a20c2833996 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -98,6 +98,7 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
+ 	fp->jit_requested = ebpf_jit_enabled();
+ 
+ 	INIT_LIST_HEAD_RCU(&fp->aux->ksym.lnode);
++	mutex_init(&fp->aux->used_maps_mutex);
+ 
+ 	return fp;
+ }
+@@ -253,6 +254,7 @@ struct bpf_prog *bpf_prog_realloc(struct bpf_prog *fp_old, unsigned int size,
+ void __bpf_prog_free(struct bpf_prog *fp)
+ {
+ 	if (fp->aux) {
++		mutex_destroy(&fp->aux->used_maps_mutex);
+ 		free_percpu(fp->aux->stats);
+ 		kfree(fp->aux->poke_tab);
+ 		kfree(fp->aux);
+@@ -1747,8 +1749,9 @@ bool bpf_prog_array_compatible(struct bpf_array *array,
+ static int bpf_check_tail_call(const struct bpf_prog *fp)
+ {
+ 	struct bpf_prog_aux *aux = fp->aux;
+-	int i;
++	int i, ret = 0;
+ 
++	mutex_lock(&aux->used_maps_mutex);
+ 	for (i = 0; i < aux->used_map_cnt; i++) {
+ 		struct bpf_map *map = aux->used_maps[i];
+ 		struct bpf_array *array;
+@@ -1757,11 +1760,15 @@ static int bpf_check_tail_call(const struct bpf_prog *fp)
+ 			continue;
+ 
+ 		array = container_of(map, struct bpf_array, map);
+-		if (!bpf_prog_array_compatible(array, fp))
+-			return -EINVAL;
++		if (!bpf_prog_array_compatible(array, fp)) {
++			ret = -EINVAL;
++			goto out;
++		}
+ 	}
+ 
+-	return 0;
++out:
++	mutex_unlock(&aux->used_maps_mutex);
++	return ret;
+ }
+ 
+ static void bpf_prog_select_func(struct bpf_prog *fp)
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index b86b1155b748..c9b8a97fbbdf 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -3155,21 +3155,25 @@ static const struct bpf_map *bpf_map_from_imm(const struct bpf_prog *prog,
+ 	const struct bpf_map *map;
+ 	int i;
+ 
++	mutex_lock(&prog->aux->used_maps_mutex);
+ 	for (i = 0, *off = 0; i < prog->aux->used_map_cnt; i++) {
+ 		map = prog->aux->used_maps[i];
+ 		if (map == (void *)addr) {
+ 			*type = BPF_PSEUDO_MAP_FD;
+-			return map;
++			goto out;
+ 		}
+ 		if (!map->ops->map_direct_value_meta)
+ 			continue;
+ 		if (!map->ops->map_direct_value_meta(map, addr, off)) {
+ 			*type = BPF_PSEUDO_MAP_VALUE;
+-			return map;
++			goto out;
+ 		}
+ 	}
++	map = NULL;
+ 
+-	return NULL;
++out:
++	mutex_unlock(&prog->aux->used_maps_mutex);
++	return map;
+ }
+ 
+ static struct bpf_insn *bpf_insn_prepare_dump(const struct bpf_prog *prog,
+@@ -3287,6 +3291,7 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+ 	memcpy(info.tag, prog->tag, sizeof(prog->tag));
+ 	memcpy(info.name, prog->aux->name, sizeof(prog->aux->name));
+ 
++	mutex_lock(&prog->aux->used_maps_mutex);
+ 	ulen = info.nr_map_ids;
+ 	info.nr_map_ids = prog->aux->used_map_cnt;
+ 	ulen = min_t(u32, info.nr_map_ids, ulen);
+@@ -3296,9 +3301,12 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+ 
+ 		for (i = 0; i < ulen; i++)
+ 			if (put_user(prog->aux->used_maps[i]->id,
+-				     &user_map_ids[i]))
++				     &user_map_ids[i])) {
++				mutex_unlock(&prog->aux->used_maps_mutex);
+ 				return -EFAULT;
++			}
+ 	}
++	mutex_unlock(&prog->aux->used_maps_mutex);
+ 
+ 	err = set_info_rec_size(&info);
+ 	if (err)
+diff --git a/net/core/dev.c b/net/core/dev.c
+index b5d1129d8310..6957b31127d9 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5441,15 +5441,20 @@ static int generic_xdp_install(struct net_device *dev, struct netdev_bpf *xdp)
+ 	if (new) {
+ 		u32 i;
+ 
++		mutex_lock(&new->aux->used_maps_mutex);
++
+ 		/* generic XDP does not work with DEVMAPs that can
+ 		 * have a bpf_prog installed on an entry
+ 		 */
+ 		for (i = 0; i < new->aux->used_map_cnt; i++) {
+-			if (dev_map_can_have_prog(new->aux->used_maps[i]))
+-				return -EINVAL;
+-			if (cpu_map_prog_allowed(new->aux->used_maps[i]))
++			if (dev_map_can_have_prog(new->aux->used_maps[i]) ||
++			    cpu_map_prog_allowed(new->aux->used_maps[i])) {
++				mutex_unlock(&new->aux->used_maps_mutex);
+ 				return -EINVAL;
++			}
+ 		}
++
++		mutex_unlock(&new->aux->used_maps_mutex);
+ 	}
+ 
+ 	switch (xdp->command) {
 -- 
 2.28.0.402.g5ffc5be6b7-goog
 
