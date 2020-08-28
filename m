@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83291255671
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 10:27:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3A2255678
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 10:28:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728757AbgH1I1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 04:27:53 -0400
-Received: from mga03.intel.com ([134.134.136.65]:23551 "EHLO mga03.intel.com"
+        id S1728777AbgH1I2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 04:28:17 -0400
+Received: from mga03.intel.com ([134.134.136.65]:23546 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728722AbgH1I1c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Aug 2020 04:27:32 -0400
-IronPort-SDR: vNgBJ1jyocbEx6igenEQRb9vyHWWo0SjyOrml6LXtvGXc61GSoBFMWZdTeWPgYIEqfTy7mOU+u
- 1oo9F13Wk7sA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9726"; a="156634026"
+        id S1728218AbgH1I1d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Aug 2020 04:27:33 -0400
+IronPort-SDR: cs1bDCGHq+ung9zkRUbBLc94sb4l4eWkpU/Rp6preod6RPc/OojdfSjOqyLKSe+5vMszUpkrDW
+ 0G0D8rJzlpsw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9726"; a="156634033"
 X-IronPort-AV: E=Sophos;i="5.76,363,1592895600"; 
-   d="scan'208";a="156634026"
+   d="scan'208";a="156634033"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2020 01:27:18 -0700
-IronPort-SDR: n8Og1iFhqtb5IrTVPS3vX/W5mpx88D+UVyV6aLFCh6wtN6KtSpxvutRJyd29ARdNhLc8PJrhDe
- /y7rX3MELQLw==
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2020 01:27:23 -0700
+IronPort-SDR: GuagjEB+7TaCDY3i4pjQyHWZsmxWQoTYy4qogpmY+DHbOKYqfHnk0qSnEsev20vW/TOINz0DE1
+ 3HbWe+WdZaqw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,363,1592895600"; 
-   d="scan'208";a="444762828"
+   d="scan'208";a="444762856"
 Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.249.36.33])
-  by orsmga004.jf.intel.com with ESMTP; 28 Aug 2020 01:27:15 -0700
+  by orsmga004.jf.intel.com with ESMTP; 28 Aug 2020 01:27:19 -0700
 From:   Magnus Karlsson <magnus.karlsson@intel.com>
 To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -34,9 +34,9 @@ To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
 Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
         anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
         maciejromanfijalkowski@gmail.com, cristian.dumitrescu@intel.com
-Subject: [PATCH bpf-next v5 10/15] xsk: i40e: ice: ixgbe: mlx5: test for dma_need_sync earlier for better performance
-Date:   Fri, 28 Aug 2020 10:26:24 +0200
-Message-Id: <1598603189-32145-11-git-send-email-magnus.karlsson@intel.com>
+Subject: [PATCH bpf-next v5 11/15] xsk: add shared umem support between queue ids
+Date:   Fri, 28 Aug 2020 10:26:25 +0200
+Message-Id: <1598603189-32145-12-git-send-email-magnus.karlsson@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1598603189-32145-1-git-send-email-magnus.karlsson@intel.com>
 References: <1598603189-32145-1-git-send-email-magnus.karlsson@intel.com>
@@ -48,132 +48,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test for dma_need_sync earlier to increase
-performance. xsk_buff_dma_sync_for_cpu() takes an xdp_buff as
-parameter and from that the xsk_buff_pool reference is dug out. Perf
-shows that this dereference causes a lot of cache misses. But as the
-buffer pool is now sent down to the driver at zero-copy initialization
-time, we might as well use this pointer directly, instead of going via
-the xsk_buff and we can do so already in xsk_buff_dma_sync_for_cpu()
-instead of in xp_dma_sync_for_cpu. This gets rid of these cache
-misses.
-
-Throughput increases with 3% for the xdpsock l2fwd sample application
-on my machine.
+Add support to share a umem between queue ids on the same
+device. This mode can be invoked with the XDP_SHARED_UMEM bind
+flag. Previously, sharing was only supported within the same
+queue id and device, and you shared one set of fill and
+completion rings. However, note that when sharing a umem between
+queue ids, you need to create a fill ring and a completion ring
+and tie them to the socket before you do the bind with the
+XDP_SHARED_UMEM flag. This so that the single-producer
+single-consumer semantics can be upheld.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 Acked-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c          | 2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c            | 2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c        | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c | 4 ++--
- include/net/xdp_sock_drv.h                          | 7 +++++--
- include/net/xsk_buff_pool.h                         | 3 ---
- 6 files changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 95b9a7e..2a1153d 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -314,7 +314,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
-
- 		bi = i40e_rx_bi(rx_ring, rx_ring->next_to_clean);
- 		(*bi)->data_end = (*bi)->data + size;
--		xsk_buff_dma_sync_for_cpu(*bi);
-+		xsk_buff_dma_sync_for_cpu(*bi, rx_ring->xsk_pool);
-
- 		xdp_res = i40e_run_xdp_zc(rx_ring, *bi);
- 		if (xdp_res) {
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index dffef37..7978865 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -595,7 +595,7 @@ int ice_clean_rx_irq_zc(struct ice_ring *rx_ring, int budget)
-
- 		rx_buf = &rx_ring->rx_buf[rx_ring->next_to_clean];
- 		rx_buf->xdp->data_end = rx_buf->xdp->data + size;
--		xsk_buff_dma_sync_for_cpu(rx_buf->xdp);
-+		xsk_buff_dma_sync_for_cpu(rx_buf->xdp, rx_ring->xsk_pool);
-
- 		xdp_res = ice_run_xdp_zc(rx_ring, rx_buf->xdp);
- 		if (xdp_res) {
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 6af34da..3771857 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -287,7 +287,7 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
- 		}
-
- 		bi->xdp->data_end = bi->xdp->data + size;
--		xsk_buff_dma_sync_for_cpu(bi->xdp);
-+		xsk_buff_dma_sync_for_cpu(bi->xdp, rx_ring->xsk_pool);
- 		xdp_res = ixgbe_run_xdp_zc(adapter, rx_ring, bi->xdp);
-
- 		if (xdp_res) {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-index a33a1f7..902ce77 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
-@@ -48,7 +48,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
-
- 	xdp->data_end = xdp->data + cqe_bcnt32;
- 	xdp_set_data_meta_invalid(xdp);
--	xsk_buff_dma_sync_for_cpu(xdp);
-+	xsk_buff_dma_sync_for_cpu(xdp, rq->xsk_pool);
- 	prefetch(xdp->data);
-
- 	rcu_read_lock();
-@@ -99,7 +99,7 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
-
- 	xdp->data_end = xdp->data + cqe_bcnt;
- 	xdp_set_data_meta_invalid(xdp);
--	xsk_buff_dma_sync_for_cpu(xdp);
-+	xsk_buff_dma_sync_for_cpu(xdp, rq->xsk_pool);
- 	prefetch(xdp->data);
-
- 	if (unlikely(get_cqe_opcode(cqe) != MLX5_CQE_RESP_SEND)) {
-diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
-index a7c7d2e..5b1ee8a 100644
---- a/include/net/xdp_sock_drv.h
-+++ b/include/net/xdp_sock_drv.h
-@@ -99,10 +99,13 @@ static inline void *xsk_buff_raw_get_data(struct xsk_buff_pool *pool, u64 addr)
- 	return xp_raw_get_data(pool, addr);
- }
-
--static inline void xsk_buff_dma_sync_for_cpu(struct xdp_buff *xdp)
-+static inline void xsk_buff_dma_sync_for_cpu(struct xdp_buff *xdp, struct xsk_buff_pool *pool)
- {
- 	struct xdp_buff_xsk *xskb = container_of(xdp, struct xdp_buff_xsk, xdp);
-
-+	if (!pool->dma_need_sync)
-+		return;
-+
- 	xp_dma_sync_for_cpu(xskb);
- }
-
-@@ -222,7 +225,7 @@ static inline void *xsk_buff_raw_get_data(struct xsk_buff_pool *pool, u64 addr)
- 	return NULL;
- }
-
--static inline void xsk_buff_dma_sync_for_cpu(struct xdp_buff *xdp)
-+static inline void xsk_buff_dma_sync_for_cpu(struct xdp_buff *xdp, struct xsk_buff_pool *pool)
- {
- }
+ include/net/xsk_buff_pool.h |  2 ++
+ net/xdp/xsk.c               | 44 ++++++++++++++++++++++++++++++--------------
+ net/xdp/xsk_buff_pool.c     | 26 ++++++++++++++++++++++++--
+ 3 files changed, 56 insertions(+), 16 deletions(-)
 
 diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
-index 38d03a6..907537d 100644
+index 907537d..0140d08 100644
 --- a/include/net/xsk_buff_pool.h
 +++ b/include/net/xsk_buff_pool.h
-@@ -114,9 +114,6 @@ static inline dma_addr_t xp_get_frame_dma(struct xdp_buff_xsk *xskb)
- void xp_dma_sync_for_cpu_slow(struct xdp_buff_xsk *xskb);
- static inline void xp_dma_sync_for_cpu(struct xdp_buff_xsk *xskb)
- {
--	if (!xskb->pool->dma_need_sync)
--		return;
+@@ -81,6 +81,8 @@ struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
+ 						struct xdp_umem *umem);
+ int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
+ 		  u16 queue_id, u16 flags);
++int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
++			 struct net_device *dev, u16 queue_id);
+ void xp_destroy(struct xsk_buff_pool *pool);
+ void xp_release(struct xdp_buff_xsk *xskb);
+ void xp_get_pool(struct xsk_buff_pool *pool);
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 067e854..ea8d2ec 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -689,12 +689,6 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+ 			goto out_unlock;
+ 		}
+ 
+-		if (xs->fq_tmp || xs->cq_tmp) {
+-			/* Do not allow setting your own fq or cq. */
+-			err = -EINVAL;
+-			goto out_unlock;
+-		}
 -
- 	xp_dma_sync_for_cpu_slow(xskb);
+ 		sock = xsk_lookup_xsk_from_fd(sxdp->sxdp_shared_umem_fd);
+ 		if (IS_ERR(sock)) {
+ 			err = PTR_ERR(sock);
+@@ -707,15 +701,41 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+ 			sockfd_put(sock);
+ 			goto out_unlock;
+ 		}
+-		if (umem_xs->dev != dev || umem_xs->queue_id != qid) {
++		if (umem_xs->dev != dev) {
+ 			err = -EINVAL;
+ 			sockfd_put(sock);
+ 			goto out_unlock;
+ 		}
+ 
+-		/* Share the buffer pool with the other socket. */
+-		xp_get_pool(umem_xs->pool);
+-		xs->pool = umem_xs->pool;
++		if (umem_xs->queue_id != qid) {
++			/* Share the umem with another socket on another qid */
++			xs->pool = xp_create_and_assign_umem(xs,
++							     umem_xs->umem);
++			if (!xs->pool) {
++				sockfd_put(sock);
++				goto out_unlock;
++			}
++
++			err = xp_assign_dev_shared(xs->pool, umem_xs->umem,
++						   dev, qid);
++			if (err) {
++				xp_destroy(xs->pool);
++				sockfd_put(sock);
++				goto out_unlock;
++			}
++		} else {
++			/* Share the buffer pool with the other socket. */
++			if (xs->fq_tmp || xs->cq_tmp) {
++				/* Do not allow setting your own fq or cq. */
++				err = -EINVAL;
++				sockfd_put(sock);
++				goto out_unlock;
++			}
++
++			xp_get_pool(umem_xs->pool);
++			xs->pool = umem_xs->pool;
++		}
++
+ 		xdp_get_umem(umem_xs->umem);
+ 		WRITE_ONCE(xs->umem, umem_xs->umem);
+ 		sockfd_put(sock);
+@@ -847,10 +867,6 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
+ 			mutex_unlock(&xs->mutex);
+ 			return -EBUSY;
+ 		}
+-		if (!xs->umem) {
+-			mutex_unlock(&xs->mutex);
+-			return -EINVAL;
+-		}
+ 
+ 		q = (optname == XDP_UMEM_FILL_RING) ? &xs->fq_tmp :
+ 			&xs->cq_tmp;
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 547eb41..795d7c8 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -123,8 +123,8 @@ static void xp_disable_drv_zc(struct xsk_buff_pool *pool)
+ 	}
  }
-
---
+ 
+-int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *netdev,
+-		  u16 queue_id, u16 flags)
++static int __xp_assign_dev(struct xsk_buff_pool *pool,
++			   struct net_device *netdev, u16 queue_id, u16 flags)
+ {
+ 	bool force_zc, force_copy;
+ 	struct netdev_bpf bpf;
+@@ -193,6 +193,28 @@ int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *netdev,
+ 	return err;
+ }
+ 
++int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
++		  u16 queue_id, u16 flags)
++{
++	return __xp_assign_dev(pool, dev, queue_id, flags);
++}
++
++int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
++			 struct net_device *dev, u16 queue_id)
++{
++	u16 flags;
++
++	/* One fill and completion ring required for each queue id. */
++	if (!pool->fq || !pool->cq)
++		return -EINVAL;
++
++	flags = umem->zc ? XDP_ZEROCOPY : XDP_COPY;
++	if (pool->uses_need_wakeup)
++		flags |= XDP_USE_NEED_WAKEUP;
++
++	return __xp_assign_dev(pool, dev, queue_id, flags);
++}
++
+ void xp_clear_dev(struct xsk_buff_pool *pool)
+ {
+ 	if (!pool->netdev)
+-- 
 2.7.4
+
