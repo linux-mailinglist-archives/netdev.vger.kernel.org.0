@@ -2,70 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12053255963
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 13:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D115C2559F4
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 14:22:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729202AbgH1LbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 07:31:15 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:18770 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728680AbgH1LbB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 07:31:01 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f48e5520001>; Fri, 28 Aug 2020 04:06:58 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Fri, 28 Aug 2020 04:09:00 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Fri, 28 Aug 2020 04:09:00 -0700
-Received: from yaviefel (172.20.13.39) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 28 Aug 2020 11:08:49
- +0000
-References: <20200827174041.13300-1-xiyou.wangcong@gmail.com>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@nvidia.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     <netdev@vger.kernel.org>,
-        <syzbot+b33c1cb0a30ebdc8a5f9@syzkaller.appspotmail.com>,
-        <syzbot+e5ea5f8a3ecfd4427a1c@syzkaller.appspotmail.com>,
-        Petr Machata <petrm@mellanox.com>
-Subject: Re: [Patch net] net_sched: fix error path in red_init()
-In-Reply-To: <20200827174041.13300-1-xiyou.wangcong@gmail.com>
-Date:   Fri, 28 Aug 2020 13:08:46 +0200
-Message-ID: <87lfhzdo3l.fsf@nvidia.com>
+        id S1729322AbgH1MV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 08:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729155AbgH1MV5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 08:21:57 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F83C061264
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 05:21:57 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id q93so488029pjq.0
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 05:21:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=A4/Z06eFxBxl8b3rX3ckNrY/1kZu8MrvWtn/z+YvYC4=;
+        b=HRtSpiku1M6b92QU5LrWLh1G/XGxkg18vr0LVr2KeZfSk7qYMCzT6SaV1mqlqKKEs5
+         d7TSlFU49GGDbILa+e58QTSppyRXnq9k1hq8b2R3zIFDvqa95rJMBjEysjzJpVSa9IFG
+         t/ULOqG+S5iMUNnTxaYA/G5ZyCw4aSH5koZAJaQN0zCw5qKG7LMu400lPJo/rQ5AzvVe
+         odd/W+YIw/wfbd5V//kcvhdTYwSZX7wqGC3TfFNnT5bH1HNVDUwXlVZwVYtVcGaMG3At
+         G5FjMQ26gAHYqjRJanx4zCMS+QD/rYo3Rkw8Pt6pewcvI+XEY/1A1p+MImSG/Rzud6S6
+         69sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=A4/Z06eFxBxl8b3rX3ckNrY/1kZu8MrvWtn/z+YvYC4=;
+        b=aTJxs6zK/LH+HCs5EuQQonSGJjMjcQ5hNojQ6sjS1L9YBAM6DVrQw1+BTBqcL+mrsD
+         KFav07W63U6f0SO2vlGyrZkKqjzPnjodQW4ND4TuZFXUgvFIHErrL0mMVtzy5SAefO/Q
+         oMwB6IVqCM1SjVq+VyVnXFMTFI/cLMcp+dxxDFH2lrTU4t9MN9kHA2Ed2AOmI4cQ39id
+         GgUqHiuUDk8JCUwn8F2J8o/hRAJ0WV2Vrm7ozt8rU2Cx3OzwJCH627f8VDxu1SVyXab2
+         AxXMvuaX7LSDnWZs+JEFXcAvOxwFwEhegypDucyAv6LYPNRIbvFLltzJo1LAZCPe0PNR
+         recw==
+X-Gm-Message-State: AOAM531s5FCdHyL/K03GRxvwKxU+WXRFYkc8g29cCh1MiENt3Jb4hmVi
+        kiffJP5jShECiJn/aIoj/2s3ojmsJwM0BUBhIrA=
+X-Google-Smtp-Source: ABdhPJxDLloEvKQgmHxNmhlKfcLZeY/gkP1xPKqULLMMJ6o8BegR/vSh8NvAwhKZfut/54ArepaZ+IiJsA+kS+WEQVw=
+X-Received: by 2002:a17:902:850b:: with SMTP id bj11mr1110794plb.81.1598617316741;
+ Fri, 28 Aug 2020 05:21:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1598612818; bh=PfgHxmOEUcuOlllkd1Mc6l1i7UPGzfbcGULMo0jpNX0=;
-        h=X-PGP-Universal:References:User-agent:From:To:CC:Subject:
-         In-Reply-To:Date:Message-ID:MIME-Version:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=FKk71lUv9ycye2Gvi17+ICt+wU7gmKeWDBp06hrslSFY2le5nceWc8b4f4woMmTbL
-         VuROgklwkpRuL2gDQa5AAt3CAvVMX8A+jptLCtNTXm8w0ZRusTW+/Vk1hUwduOtTN3
-         G3odqzzX/0ueNZBqKIH8ukUX4OwoS5mfhVSB4ms8SK+wfkd1Bgc0VhJB1bYRo9AWT1
-         vMDl9v7toJU0LnQ1qZ5Adjmqu6V/F9lgUmmYmCZsla4k8jUKewAIzwQy0N4cPfUNes
-         sORdp79NVSGVJalLksT1lxBsQt3QI8S/zJODJ1sbDARcU0R+UOnC/AQRneHpMZ0wey
-         M5Rt9u6E1CZOA==
+Reply-To: mrahmedmuzashah@gmail.com
+Received: by 2002:a17:90b:344f:0:0:0:0 with HTTP; Fri, 28 Aug 2020 05:21:55
+ -0700 (PDT)
+From:   "Mr.Ahmed Muzashah" <ahmedmuzashah@gmail.com>
+Date:   Fri, 28 Aug 2020 13:21:55 +0100
+X-Google-Sender-Auth: pYTYdxRdyxPCsR_XiXKtstU9t80
+Message-ID: <CAPHENautDVmQzdJMJftoiMoNpDEs2gUBJL77SCpikd2gwnGe8g@mail.gmail.com>
+Subject: =?UTF-8?B?U2Now7ZuZW4gVGFn?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Sch=C3=B6nen Tag,
 
-Cong Wang <xiyou.wangcong@gmail.com> writes:
+Bitte entschuldigen Sie, dass Sie einen =C3=9Cberraschungsbrief geschrieben
+haben. Ich bin Herr Ahmed Muzashah, Account Manager bei einer
+Investmentbank hier in Burkina Faso. Ich habe ein sehr wichtiges
+Gesch=C3=A4ft, das ich mit Ihnen besprechen m=C3=B6chte. In meinem Konto is=
+t ein
+Kontoentwurf er=C3=B6ffnet Ich habe die M=C3=B6glichkeit, den verbleibenden
+Fonds (15,8 Millionen US-Dollar) von f=C3=BCnfzehn Millionen
+achthunderttausend US-Dollar eines meiner Bankkunden zu =C3=BCbertragen,
+der beim Zusammenbruch der Welt gestorben ist Handelszentrum in den
+Vereinigten Staaten am 11. September 2001.
 
-> When ->init() fails, ->destroy() is called to clean up.
-> So it is unnecessary to clean up in red_init(), and it
-> would cause some refcount underflow.
+Ich m=C3=B6chte diese Mittel investieren und Sie unserer Bank f=C3=BCr dies=
+en
+Deal vorstellen. Alles, was ich ben=C3=B6tige, ist Ihre ehrliche
+Zusammenarbeit und ich garantiere Ihnen, dass dies unter einer
+legitimen Vereinbarung durchgef=C3=BChrt wird, die uns vor
+Gesetzesverst=C3=B6=C3=9Fen sch=C3=BCtzt Ich bin damit einverstanden, dass =
+40% dieses
+Geldes f=C3=BCr Sie als meinen ausl=C3=A4ndischen Partner, 50% f=C3=BCr mic=
+h und 10%
+f=C3=BCr die Schaffung der Grundlage f=C3=BCr die weniger Privilegien in Ih=
+rem
+Land bestimmt sind. Wenn Sie wirklich an meinem Vorschlag interessiert
+sind, werden weitere Einzelheiten der =C3=9Cbertragung ber=C3=BCcksichtigt =
+Sie
+werden an Sie weitergeleitet, sobald ich Ihre Bereitschaftsmail f=C3=BCr
+eine erfolgreiche =C3=9Cberweisung erhalte.
 
-Hmm, yeah, qdisc_put() would get called twice. A surprising API, the
-init needs to make sure to always bring the qdisc into destroyable
-state. But qevents are like that after kzalloc, so the fix looks
-correct.
-
-Reviewed-by: Petr Machata <petrm@nvidia.com>
-
-Thanks!
+Dein,
+Mr. Ahmed Muzashah,
