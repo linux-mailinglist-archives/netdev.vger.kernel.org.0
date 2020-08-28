@@ -2,83 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADE61255F8E
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 19:19:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55C22255FA5
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 19:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726524AbgH1RT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 13:19:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42668 "EHLO mail.kernel.org"
+        id S1727970AbgH1RWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 13:22:16 -0400
+Received: from correo.us.es ([193.147.175.20]:54698 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725814AbgH1RT1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Aug 2020 13:19:27 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        id S1727894AbgH1RV7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Aug 2020 13:21:59 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 3B1021C4374
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 19:21:58 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2E13CDA7E1
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 19:21:58 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 1D30CDA78C; Fri, 28 Aug 2020 19:21:58 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id E174EDA730;
+        Fri, 28 Aug 2020 19:21:55 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 28 Aug 2020 19:21:55 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 72F7D20848;
-        Fri, 28 Aug 2020 17:19:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598635166;
-        bh=alXfXWyjeCC+Y9Ph5sCPNsdaWdumqkWEgNkamywB1tc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UfZnx+gLqk5r6tBqGGGNmQyOoB57+KOZTJ8hZFY/o167swKJZlOOfEyyqihawwFWF
-         9NvQxcv6YhbecnPPPTiaCBdNzkB9I+M9brO4j82H6hht0nxHwzVzVfPomjJhfkEAkE
-         jIN80CXFvTvJbW/cj3rR729BUByTECidvBH6mzSs=
-Date:   Fri, 28 Aug 2020 10:19:24 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "luobin (L)" <luobin9@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
-        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
-        <chiqijun@huawei.com>
-Subject: Re: [PATCH net-next v1 3/3] hinic: add support to query function
- table
-Message-ID: <20200828101924.30372b7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <ef510fbe-8b73-a50e-445f-2b3771072529@huawei.com>
-References: <20200827111321.24272-1-luobin9@huawei.com>
-        <20200827111321.24272-4-luobin9@huawei.com>
-        <20200827124404.496ff40b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <ef510fbe-8b73-a50e-445f-2b3771072529@huawei.com>
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id A052142EF4E1;
+        Fri, 28 Aug 2020 19:21:55 +0200 (CEST)
+Date:   Fri, 28 Aug 2020 19:21:55 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees] [PATCH net-next v2] ipvs: Fix
+ uninit-value in do_ip_vs_set_ctl()
+Message-ID: <20200828172155.GA6651@salvia>
+References: <20200810220703.796718-1-yepeilin.cs@gmail.com>
+ <20200811074640.841693-1-yepeilin.cs@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200811074640.841693-1-yepeilin.cs@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Aug 2020 11:16:22 +0800 luobin (L) wrote:
-> On 2020/8/28 3:44, Jakub Kicinski wrote:
-> > On Thu, 27 Aug 2020 19:13:21 +0800 Luo bin wrote:  
-> >> +	switch (idx) {
-> >> +	case VALID:
-> >> +		return funcfg_table_elem->dw0.bs.valid;
-> >> +	case RX_MODE:
-> >> +		return funcfg_table_elem->dw0.bs.nic_rx_mode;
-> >> +	case MTU:
-> >> +		return funcfg_table_elem->dw1.bs.mtu;
-> >> +	case VLAN_MODE:
-> >> +		return funcfg_table_elem->dw1.bs.vlan_mode;
-> >> +	case VLAN_ID:
-> >> +		return funcfg_table_elem->dw1.bs.vlan_id;
-> >> +	case RQ_DEPTH:
-> >> +		return funcfg_table_elem->dw13.bs.cfg_rq_depth;
-> >> +	case QUEUE_NUM:
-> >> +		return funcfg_table_elem->dw13.bs.cfg_q_num;  
-> > 
-> > The first two patches look fairly unobjectionable to me, but here the
-> > information does not seem that driver-specific. What's vlan_mode, and
-> > vlan_id in the context of PF? Why expose mtu, is it different than
-> > netdev mtu? What's valid? rq_depth?
-> > .
-> >   
-> The vlan_mode and vlan_id in function table are provided for VF in QinQ scenario
-> and they are useless for PF. Querying VF's function table is unsupported now, so
-> there is no need to expose vlan_id and vlan mode and I'll remove them in my next
-> patchset. The function table is saved in hw and we expose the mtu to ensure the
-> mtu saved in hw is same with netdev mtu. The valid filed indicates whether this
-> function is enabled or not and the hw can judge whether the RQ buffer in host is
-> sufficient by comparing the values of rq depth, pi and ci.
+On Tue, Aug 11, 2020 at 03:46:40AM -0400, Peilin Ye wrote:
+> do_ip_vs_set_ctl() is referencing uninitialized stack value when `len` is
+> zero. Fix it.
 
-Queue depth is definitely something we can add to the ethtool API.
-You already expose raw producer and consumer indexes so the calculation
-can be done, anyway.
+Applied to nf-next, thanks.
