@@ -2,74 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C881E256083
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 20:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D8D256086
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 20:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728083AbgH1Sa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 14:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
+        id S1727056AbgH1Sce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 14:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726010AbgH1Sa5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 14:30:57 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB838C061264;
-        Fri, 28 Aug 2020 11:30:56 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id l8so22905ios.2;
-        Fri, 28 Aug 2020 11:30:56 -0700 (PDT)
+        with ESMTP id S1726010AbgH1Scb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 14:32:31 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1CBC061264
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 11:32:30 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id v2so1497454ilq.4
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 11:32:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=WtlD/YX0ISFkWguzbH4vW7Oxt2gP0SItAMBJ51jlhgA=;
-        b=u5ZZ+sOob/NWIylD3FsfSRO2o52LyPkjnkvg6BJJxLxSFcoY7xVzCeX4o5AGNyENgh
-         I0Mtklx0pRK3QUFdILooXaJLmJSj3Zur8vtXO0BEWiBRvQtlY0JKXlNT4jlCOrhFcnh1
-         1a+KUhcq6JxCCvZRlGHL2USpA9248WhAKkf261bFTE/QE+9+b+qGpsJjA2G1/hq9YJea
-         2xJpQ0Znplfsa8P4kG9U326heJw15KaQ2fmJxtG0t371dOMMZojXjDsMupXG4O0shg6S
-         ps8DwCx2MwUEbulW0xnuo1CB5WK7kUJT4sPD+0c5+8pQ7AezyP4AOp/tZahCkw7gtGuf
-         tkJg==
+        bh=mGn96G8V5rOR9isAgssuiLo5ei+EZl4WHwBBOVex/Lg=;
+        b=VyfKrBGyXLrt4hD6eiaWHNsvHYNHP05jfwaDrtLl1aPIGT637qLw1rJtRycw19E5dK
+         Q5ecJvXC9qmBiAOLOW0SwklAU4BubucxeCrzQMSXKskGhVWLFT3Kmsyx9brVormaU31j
+         TwhHFCw5+Zhb3x++Ib3R42PdkcOtKu/GbpuAxHHq9q33M7N7eCL9TqsPRqq0jPe1aCQR
+         Io4DHOEoQiukuwu5WChZdADPInIIsof5DMX/zLNZgL3MX2p9nHOONiPbZG/0k5WfLN05
+         GnxFJD4+Th7CFvx3+/aF7SH8CYXZc8/NbYY1Ct8Hof3Dp5DNh9C36kphGPfLjS8xlWQe
+         VoQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=WtlD/YX0ISFkWguzbH4vW7Oxt2gP0SItAMBJ51jlhgA=;
-        b=oFX7RbgpZQV8KdiTdcYXqvwHzLsqthzyC11O1X+oFUM4gIXRPfq5bSLv1kBMJ5xab/
-         XYtGttlKc1YEk6a/cSB3cZyxnFWAXYmRLlFSVLc3zkY1QuolV6/4NXz1UUx7lxT0cXIX
-         JVF6/dKWnkPCGWldqZnh94ONenqBN9bl/zBmrXKN0X1+qUaI2CD26xT+ej8t+icavnbV
-         F7whKLz9bMDD+W0rKmPbO3HrKrnUmcK3VeG9pkydEJR3/57qsuew2HJzRaFYfZ8MoLr4
-         c2fhcWu32+7uebxDU3sFurx0ohl5ZG/zOhH79vYtCKTBgb5NfSJhmdV6v7uCbTDcQfvy
-         gWeQ==
-X-Gm-Message-State: AOAM533IQz2Buxby9NdVj4o4Clpv0I+ckMzbBSmhIwAVVnwVkMIiJcXn
-        41brg19dhxkeuAiVU87aV4X1IPR8+DUpoALuyHta29gl2wA7y+wh
-X-Google-Smtp-Source: ABdhPJxUhh6t9XVY7PhXWTL6ZE6/DqCdX1N3g+eC6XgS+va1XX9sfw3FnM26dG5G4eZephV45h3TK5YQcgAKRGahT/w=
-X-Received: by 2002:a02:e4a:: with SMTP id 71mr2317041jae.133.1598639456198;
- Fri, 28 Aug 2020 11:30:56 -0700 (PDT)
+        bh=mGn96G8V5rOR9isAgssuiLo5ei+EZl4WHwBBOVex/Lg=;
+        b=Ns2vUkNwIG293t5sVmYrYxcRaV9kheTtwvYHyLzIjOQz6hUY28kzmy0rht/DC7ObTC
+         fVaONWwNyBfXC0/pTxbn77Yeo8o+LXNfyc0k2RoaRLTLZz6hwYXFyQnLomevUHrXYqNh
+         0SpvBucqtfUaq8sTBD5W3DAKuEuhEmTvU/DtAn6tdkxhK9lqVK7K3iz/QTvs4pfJtMd+
+         OeY7gnTkdl+/RJW0PLhZWLfnFhC6qTpMeadhrOwavzATlEmnX8ltg6eoImahL2oRZ3c1
+         gOpAllAF+D9b02uWX+23umksLzBZHe3PhJnjyyu7leeCD3yM9pTfSnRqy8mRm1CoeCXH
+         IpBg==
+X-Gm-Message-State: AOAM533Gvxamanxc9a48/1a6uOR5qMidhUdUHTWbmRc6jHQ4uNgTcc2T
+        dn6wNLQwQQA1CXUY7NBIjyYmCgcM3HstdQErLUN5S+kFlw9TSA==
+X-Google-Smtp-Source: ABdhPJwRmp3kLtA4Kgo9DY6kXYCW9VPqRztrsEH6qYKLYQNJdx7HiOgOLLVPdpZOPIMQTUk2URQsaYwCmspQYoiJrWk=
+X-Received: by 2002:a92:9a07:: with SMTP id t7mr200612ili.144.1598639550223;
+ Fri, 28 Aug 2020 11:32:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200815165030.5849-1-ztong0001@gmail.com> <20200828180742.GA20488@salvia>
- <CAA5qM4CUO47EkJ-4wRoi0wkReAXtB5isLbvBEUw045po_TY8Sw@mail.gmail.com> <20200828181928.GA14349@salvia>
-In-Reply-To: <20200828181928.GA14349@salvia>
-From:   Tong Zhang <ztong0001@gmail.com>
-Date:   Fri, 28 Aug 2020 14:30:45 -0400
-Message-ID: <CAA5qM4ACaYfdj+MwACyS1oC+GT7KoD1T73DsAMPrpO9rqbxWkw@mail.gmail.com>
-Subject: Re: [PATCH] netfilter: nf_conntrack_sip: fix parsing error
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        kuba@kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <1598335663-26503-1-git-send-email-wenxu@ucloud.cn>
+In-Reply-To: <1598335663-26503-1-git-send-email-wenxu@ucloud.cn>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 28 Aug 2020 11:32:19 -0700
+Message-ID: <CAM_iQpU3LLcm97xH8UUdDBQCny7UzkJ1=wf0Ssog-0YzzJ4=Zw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/sched: add act_ct_output support
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I think the original code complaining parsing error is there for a reason,
-A better way is to modify ct_sip_parse_numerical_param() and let it return
-a real parsing error code instead of returning FOUND(1) and NOT FOUND(0)
-if deemed necessary
-Once again I'm not an expert and I'm may suggest something stupid,
-please pardon my ignorance --
-- Tong
-
-On Fri, Aug 28, 2020 at 2:19 PM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+On Tue, Aug 25, 2020 at 1:45 AM <wenxu@ucloud.cn> wrote:
 >
-> Then probably update this code to ignore the return value?
+> From: wenxu <wenxu@ucloud.cn>
+>
+> The fragment packets do defrag in act_ct module. If the reassembled
+> packet should send out to another net device. This over mtu big packet
+> should be fragmented to send out. This patch add the act ct_output to
+> archive this.
+
+There are a lot of things missing in your changelog.
+
+For example: Why do we need a new action here? Why segmentation
+is not done on the target device?
+
+At least for the egress side, dev_queue_xmit() is called by act_mirred,
+it will perform a segmentation with skb_gso_segment() if needed.
+So why bigger packets can not be segmented here?
+
+Please add all these necessary details into your changelog.
+
+Thanks.
