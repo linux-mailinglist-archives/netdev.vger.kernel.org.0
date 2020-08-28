@@ -2,82 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA48D255D9A
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 17:17:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67C0B255DAC
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 17:20:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728241AbgH1PRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 11:17:13 -0400
-Received: from mail-proxy25223.qiye.163.com ([103.129.252.23]:12070 "EHLO
-        mail-proxy25223.qiye.163.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728222AbgH1PQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 11:16:54 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 837DA5C1646
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 23:14:33 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     netdev@vger.kernel.org
-Subject: [PATCH net-next v2 2/2] openvswitch: using ip6_fragment in ipv6_stub
-Date:   Fri, 28 Aug 2020 23:14:32 +0800
-Message-Id: <1598627672-10439-3-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1598627672-10439-1-git-send-email-wenxu@ucloud.cn>
-References: <1598627672-10439-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZGkNJSBpDSUpDSUwaVkpOQkNNSUxNTEhOTkxVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVKS0tZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6ODI6Fio6Cz4MKxk#IU4RIxMa
-        STIKFD1VSlVKTkJDTUlMTUxITE9MVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUlJSEg3Bg++
-X-HM-Tid: 0a7435a275c72087kuqy837da5c1646
+        id S1728152AbgH1PUi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 11:20:38 -0400
+Received: from mga17.intel.com ([192.55.52.151]:13213 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726321AbgH1PUh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Aug 2020 11:20:37 -0400
+IronPort-SDR: Zy+357+bIlf846PYA8VKHi7HrWMyht9FIPvFs/FcEgfE/ejbXtrtQ3gCmR9AzXnEBSutd/gHdF
+ oqo0rvmXovcg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9727"; a="136744421"
+X-IronPort-AV: E=Sophos;i="5.76,364,1592895600"; 
+   d="scan'208";a="136744421"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2020 08:20:34 -0700
+IronPort-SDR: 0gXLrwgpWXtkB9mKzimsaRRA/x9TWapBhKVEG6GxRYvodddgTy41Q0uPtObzf/FY+rRbsu/O+N
+ x4nVyPdZmGUQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,364,1592895600"; 
+   d="scan'208";a="444866264"
+Received: from silpixa00400468.ir.intel.com ([10.237.214.28])
+  by orsmga004.jf.intel.com with ESMTP; 28 Aug 2020 08:20:32 -0700
+From:   Weqaar Janjua <weqaar.a.janjua@intel.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        jonathan.lemon@gmail.com
+Cc:     Weqaar Janjua <weqaar.a.janjua@intel.com>, bpf@vger.kernel.org
+Subject: [PATCH bpf-next]  0001-samples-bpf-fix-to-xdpsock-to-avoid-recycling-frames.patch
+Date:   Fri, 28 Aug 2020 23:20:19 +0800
+Message-Id: <20200828152019.42201-1-weqaar.a.janjua@intel.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
-
-Using ipv6_stub->ipv6_fragment to avoid the netfilter dependency
-
-Signed-off-by: wenxu <wenxu@ucloud.cn>
 ---
- net/openvswitch/actions.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ ...to-xdpsock-to-avoid-recycling-frames.patch | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 0001-samples-bpf-fix-to-xdpsock-to-avoid-recycling-frames.patch
 
-diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-index 2611657..fd34089 100644
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -9,7 +9,6 @@
- #include <linux/in.h>
- #include <linux/ip.h>
- #include <linux/openvswitch.h>
--#include <linux/netfilter_ipv6.h>
- #include <linux/sctp.h>
- #include <linux/tcp.h>
- #include <linux/udp.h>
-@@ -848,13 +847,9 @@ static void ovs_fragment(struct net *net, struct vport *vport,
- 		ip_do_fragment(net, skb->sk, skb, ovs_vport_output);
- 		refdst_drop(orig_dst);
- 	} else if (key->eth.type == htons(ETH_P_IPV6)) {
--		const struct nf_ipv6_ops *v6ops = nf_get_ipv6_ops();
- 		unsigned long orig_dst;
- 		struct rt6_info ovs_rt;
- 
--		if (!v6ops)
--			goto err;
--
- 		prepare_frag(vport, skb, orig_network_offset,
- 			     ovs_key_mac_proto(key));
- 		memset(&ovs_rt, 0, sizeof(ovs_rt));
-@@ -866,7 +861,7 @@ static void ovs_fragment(struct net *net, struct vport *vport,
- 		skb_dst_set_noref(skb, &ovs_rt.dst);
- 		IP6CB(skb)->frag_max_size = mru;
- 
--		v6ops->fragment(net, skb->sk, skb, ovs_vport_output);
-+		ipv6_stub->ipv6_fragment(net, skb->sk, skb, ovs_vport_output);
- 		refdst_drop(orig_dst);
- 	} else {
- 		WARN_ONCE(1, "Failed fragment ->%s: eth=%04x, MRU=%d, MTU=%d.",
+diff --git a/0001-samples-bpf-fix-to-xdpsock-to-avoid-recycling-frames.patch b/0001-samples-bpf-fix-to-xdpsock-to-avoid-recycling-frames.patch
+new file mode 100644
+index 000000000000..ae3b99b335e2
+--- /dev/null
++++ b/0001-samples-bpf-fix-to-xdpsock-to-avoid-recycling-frames.patch
+@@ -0,0 +1,62 @@
++From df0a23a79c9dca96c0059b4d766a613eba57200e Mon Sep 17 00:00:00 2001
++From: Weqaar Janjua <weqaar.a.janjua@intel.com>
++Date: Fri, 28 Aug 2020 13:36:32 +0100
++Subject: [PATCH bpf-next] samples/bpf: fix to xdpsock to avoid recycling
++ frames
++To: magnus.karlsson@intel.com
++
++The txpush program in the xdpsock sample application is supposed
++to send out all packets in the umem in a round-robin fashion.
++The problem is that it only cycled through the first BATCH_SIZE
++worth of packets. Fixed this so that it cycles through all buffers
++in the umem as intended.
++
++Fixes: 248c7f9c0e21 ("samples/bpf: convert xdpsock to use libbpf for AF_XDP access")
++Signed-off-by: Weqaar Janjua <weqaar.a.janjua@intel.com>
++---
++ samples/bpf/xdpsock_user.c | 10 +++++-----
++ 1 file changed, 5 insertions(+), 5 deletions(-)
++
++diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
++index 19c679456a0e..c821e9867139 100644
++--- a/samples/bpf/xdpsock_user.c
+++++ b/samples/bpf/xdpsock_user.c
++@@ -1004,7 +1004,7 @@ static void rx_drop_all(void)
++ 	}
++ }
++ 
++-static void tx_only(struct xsk_socket_info *xsk, u32 frame_nb, int batch_size)
+++static void tx_only(struct xsk_socket_info *xsk, u32 *frame_nb, int batch_size)
++ {
++ 	u32 idx;
++ 	unsigned int i;
++@@ -1017,14 +1017,14 @@ static void tx_only(struct xsk_socket_info *xsk, u32 frame_nb, int batch_size)
++ 	for (i = 0; i < batch_size; i++) {
++ 		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx,
++ 								  idx + i);
++-		tx_desc->addr = (frame_nb + i) << XSK_UMEM__DEFAULT_FRAME_SHIFT;
+++		tx_desc->addr = (*frame_nb + i) << XSK_UMEM__DEFAULT_FRAME_SHIFT;
++ 		tx_desc->len = PKT_SIZE;
++ 	}
++ 
++ 	xsk_ring_prod__submit(&xsk->tx, batch_size);
++ 	xsk->outstanding_tx += batch_size;
++-	frame_nb += batch_size;
++-	frame_nb %= NUM_FRAMES;
+++	*frame_nb += batch_size;
+++	*frame_nb %= NUM_FRAMES;
++ 	complete_tx_only(xsk, batch_size);
++ }
++ 
++@@ -1080,7 +1080,7 @@ static void tx_only_all(void)
++ 		}
++ 
++ 		for (i = 0; i < num_socks; i++)
++-			tx_only(xsks[i], frame_nb[i], batch_size);
+++			tx_only(xsks[i], &frame_nb[i], batch_size);
++ 
++ 		pkt_cnt += batch_size;
++ 
++-- 
++2.20.1
++
 -- 
-1.8.3.1
+2.20.1
+
+--------------------------------------------------------------
+Intel Research and Development Ireland Limited
+Registered in Ireland
+Registered Office: Collinstown Industrial Park, Leixlip, County Kildare
+Registered Number: 308263
+
+
+This e-mail and any attachments may contain confidential material for the sole
+use of the intended recipient(s). Any review or distribution by others is
+strictly prohibited. If you are not the intended recipient, please contact the
+sender and delete all copies.
 
