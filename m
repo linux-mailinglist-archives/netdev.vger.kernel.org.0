@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0545D25527F
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 03:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAFCE25527E
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 03:18:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728211AbgH1BSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 21:18:44 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:48650 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726197AbgH1BSo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 21:18:44 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07S1IghK027840
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 18:18:42 -0700
+        id S1728209AbgH1BSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 21:18:25 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8186 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728165AbgH1BSW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 21:18:22 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07S1Apic007962
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 18:18:21 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=UJpPJAog+shu/6F08xa7Qw9Bo/b3nfzFp0Bk7N0CpR8=;
- b=X04mOYMNCDRqh5znvI9DcWUQOh+v4hnUgaL39+UiJp8D/f1Y/l4Z0Ex9SviWiMlVYH04
- pmXicqjFaSUIDb380fTGk+IoaJfQIK2NdMxyKJcUnZ45MDXko6e6j87jQnyNtOp34QNk
- Fl6l+Xm8tAIL1N3Dol2axE1DP+zD7TDO0Rk= 
+ bh=ZmBbOgr4Ws+CzFT+s76CxNRmU9CVHtqyrhhBePCAmls=;
+ b=T+SZ+3g/jBOPiSH6DlcXdGIC0ixNNkWrZLGjGCVg4Sin2Pht5zZWMSL6gsIp25uyaefl
+ E7wz8jSlR9bxIxw9Rs9Cj9XirPrHc6MyPi/EiUOPIQrKo7qq3CfLxFnwxN9wg9/SZsej
+ onVgAVxauPz7DEml7jg81UqClOQ6s7qzLsc= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 335up88j5e-1
+        by mx0a-00082601.pphosted.com with ESMTP id 335up88hbv-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 18:18:42 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 18:18:21 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 27 Aug 2020 18:18:15 -0700
+ 15.1.1979.3; Thu, 27 Aug 2020 18:18:20 -0700
 Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 28E4B2946559; Thu, 27 Aug 2020 18:18:13 -0700 (PDT)
+        id 683A72946559; Thu, 27 Aug 2020 18:18:19 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Martin KaFai Lau <kafai@fb.com>
 Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
@@ -39,9 +39,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
         <netdev@vger.kernel.org>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf-next 2/3] bpf: Relax max_entries check for most of the inner map types
-Date:   Thu, 27 Aug 2020 18:18:13 -0700
-Message-ID: <20200828011813.1970516-1-kafai@fb.com>
+Subject: [PATCH v3 bpf-next 3/3] bpf: selftests: Add test for different inner map size
+Date:   Thu, 27 Aug 2020 18:18:19 -0700
+Message-ID: <20200828011819.1970825-1-kafai@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200828011800.1970018-1-kafai@fb.com>
 References: <20200828011800.1970018-1-kafai@fb.com>
@@ -51,101 +51,131 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-08-27_14:2020-08-27,2020-08-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- suspectscore=38 adultscore=0 mlxlogscore=921 spamscore=0 impostorscore=0
- clxscore=1015 phishscore=0 priorityscore=1501 mlxscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008280010
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015 spamscore=0
+ phishscore=0 adultscore=0 impostorscore=0 priorityscore=1501
+ mlxlogscore=917 lowpriorityscore=0 bulkscore=0 mlxscore=0 malwarescore=0
+ suspectscore=13 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008280009
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most of the maps do not use max_entries during verification time.
-Thus, those map_meta_equal() do not need to enforce max_entries
-when it is inserted as an inner map during runtime.  The max_entries
-check is removed from the default implementation bpf_map_meta_equal().
+This patch tests the inner map size can be different
+for reuseport_sockarray but has to be the same for
+arraymap.  A new subtest "diff_size" is added for this.
 
-The prog_array_map and xsk_map are exception.  Its map_gen_lookup
-uses max_entries to generate inline lookup code.  Thus, they will
-implement its own map_meta_equal() to enforce max_entries.
-Since there are only two cases now, the max_entries check
-is not refactored and stays in its own .c file.
+The existing test is moved to a subtest "lookup_update".
 
 Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- kernel/bpf/arraymap.c   | 9 ++++++++-
- kernel/bpf/map_in_map.c | 3 +--
- net/xdp/xskmap.c        | 9 ++++++++-
- 3 files changed, 17 insertions(+), 4 deletions(-)
+ .../selftests/bpf/prog_tests/btf_map_in_map.c | 35 ++++++++++++++++++-
+ .../selftests/bpf/progs/test_btf_map_in_map.c | 31 ++++++++++++++++
+ 2 files changed, 65 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index 40d1f7f94307..d851ebbcf302 100644
---- a/kernel/bpf/arraymap.c
-+++ b/kernel/bpf/arraymap.c
-@@ -487,6 +487,13 @@ static int array_map_mmap(struct bpf_map *map, struc=
-t vm_area_struct *vma)
- 				   vma->vm_pgoff + pgoff);
+diff --git a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c b/to=
+ols/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+index 6ccecbd39476..540fea4c91a5 100644
+--- a/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
++++ b/tools/testing/selftests/bpf/prog_tests/btf_map_in_map.c
+@@ -53,7 +53,7 @@ static int kern_sync_rcu(void)
+ 	return err;
  }
 =20
-+static bool array_map_meta_equal(const struct bpf_map *meta0,
-+				 const struct bpf_map *meta1)
-+{
-+	return meta0->max_entries =3D=3D meta1->max_entries &&
-+		bpf_map_meta_equal(meta0, meta1);
-+}
-+
- struct bpf_iter_seq_array_map_info {
- 	struct bpf_map *map;
- 	void *percpu_value_buf;
-@@ -625,7 +632,7 @@ static const struct bpf_iter_seq_info iter_seq_info =3D=
+-void test_btf_map_in_map(void)
++static void test_lookup_update(void)
  {
-=20
- static int array_map_btf_id;
- const struct bpf_map_ops array_map_ops =3D {
--	.map_meta_equal =3D bpf_map_meta_equal,
-+	.map_meta_equal =3D array_map_meta_equal,
- 	.map_alloc_check =3D array_map_alloc_check,
- 	.map_alloc =3D array_map_alloc,
- 	.map_free =3D array_map_free,
-diff --git a/kernel/bpf/map_in_map.c b/kernel/bpf/map_in_map.c
-index e97a22dd3232..39ab0b68cade 100644
---- a/kernel/bpf/map_in_map.c
-+++ b/kernel/bpf/map_in_map.c
-@@ -75,8 +75,7 @@ bool bpf_map_meta_equal(const struct bpf_map *meta0,
- 	return meta0->map_type =3D=3D meta1->map_type &&
- 		meta0->key_size =3D=3D meta1->key_size &&
- 		meta0->value_size =3D=3D meta1->value_size &&
--		meta0->map_flags =3D=3D meta1->map_flags &&
--		meta0->max_entries =3D=3D meta1->max_entries;
-+		meta0->map_flags =3D=3D meta1->map_flags;
+ 	int err, key =3D 0, val, i;
+ 	struct test_btf_map_in_map *skel;
+@@ -143,3 +143,36 @@ void test_btf_map_in_map(void)
+ cleanup:
+ 	test_btf_map_in_map__destroy(skel);
  }
-=20
- void *bpf_map_fd_get_ptr(struct bpf_map *map,
-diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
-index f45f29f04151..2a4fd6677155 100644
---- a/net/xdp/xskmap.c
-+++ b/net/xdp/xskmap.c
-@@ -254,9 +254,16 @@ void xsk_map_try_sock_delete(struct xsk_map *map, st=
-ruct xdp_sock *xs,
- 	spin_unlock_bh(&map->lock);
- }
-=20
-+static bool xsk_map_meta_equal(const struct bpf_map *meta0,
-+			       const struct bpf_map *meta1)
++
++static void test_diff_size(void)
 +{
-+	return meta0->max_entries =3D=3D meta1->max_entries &&
-+		bpf_map_meta_equal(meta0, meta1);
++	struct test_btf_map_in_map *skel;
++	int err, inner_map_fd, zero =3D 0;
++
++	skel =3D test_btf_map_in_map__open_and_load();
++	if (CHECK(!skel, "skel_open", "failed to open&load skeleton\n"))
++		return;
++
++	inner_map_fd =3D bpf_map__fd(skel->maps.sockarr_sz2);
++	err =3D bpf_map_update_elem(bpf_map__fd(skel->maps.outer_sockarr), &zer=
+o,
++				  &inner_map_fd, 0);
++	CHECK(err, "outer_sockarr inner map size check",
++	      "cannot use a different size inner_map\n");
++
++	inner_map_fd =3D bpf_map__fd(skel->maps.inner_map_sz2);
++	err =3D bpf_map_update_elem(bpf_map__fd(skel->maps.outer_arr), &zero,
++				  &inner_map_fd, 0);
++	CHECK(!err, "outer_arr inner map size check",
++	      "incorrectly updated with a different size inner_map\n");
++
++	test_btf_map_in_map__destroy(skel);
 +}
 +
- static int xsk_map_btf_id;
- const struct bpf_map_ops xsk_map_ops =3D {
--	.map_meta_equal =3D bpf_map_meta_equal,
-+	.map_meta_equal =3D xsk_map_meta_equal,
- 	.map_alloc =3D xsk_map_alloc,
- 	.map_free =3D xsk_map_free,
- 	.map_get_next_key =3D xsk_map_get_next_key,
++void test_btf_map_in_map(void)
++{
++	if (test__start_subtest("lookup_update"))
++		test_lookup_update();
++
++	if (test__start_subtest("diff_size"))
++		test_diff_size();
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_btf_map_in_map.c b/to=
+ols/testing/selftests/bpf/progs/test_btf_map_in_map.c
+index e5093796be97..193fe0198b21 100644
+--- a/tools/testing/selftests/bpf/progs/test_btf_map_in_map.c
++++ b/tools/testing/selftests/bpf/progs/test_btf_map_in_map.c
+@@ -11,6 +11,13 @@ struct inner_map {
+ } inner_map1 SEC(".maps"),
+   inner_map2 SEC(".maps");
+=20
++struct inner_map_sz2 {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 2);
++	__type(key, int);
++	__type(value, int);
++} inner_map_sz2 SEC(".maps");
++
+ struct outer_arr {
+ 	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
+ 	__uint(max_entries, 3);
+@@ -50,6 +57,30 @@ struct outer_hash {
+ 	},
+ };
+=20
++struct sockarr_sz1 {
++	__uint(type, BPF_MAP_TYPE_REUSEPORT_SOCKARRAY);
++	__uint(max_entries, 1);
++	__type(key, int);
++	__type(value, int);
++} sockarr_sz1 SEC(".maps");
++
++struct sockarr_sz2 {
++	__uint(type, BPF_MAP_TYPE_REUSEPORT_SOCKARRAY);
++	__uint(max_entries, 2);
++	__type(key, int);
++	__type(value, int);
++} sockarr_sz2 SEC(".maps");
++
++struct outer_sockarr_sz1 {
++	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
++	__uint(max_entries, 1);
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(int));
++	__array(values, struct sockarr_sz1);
++} outer_sockarr SEC(".maps") =3D {
++	.values =3D { (void *)&sockarr_sz1 },
++};
++
+ int input =3D 0;
+=20
+ SEC("raw_tp/sys_enter")
 --=20
 2.24.1
 
