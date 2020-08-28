@@ -2,68 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3178255D3B
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 16:59:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 219AA255D42
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 17:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728004AbgH1O7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 10:59:13 -0400
-Received: from lb1-smtp-cloud7.xs4all.net ([194.109.24.24]:53493 "EHLO
-        lb1-smtp-cloud7.xs4all.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726571AbgH1O7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 10:59:12 -0400
-Received: from cust-69a1f852 ([IPv6:fc0c:c154:b0a8:48a5:61f4:988:bf85:2ed5])
-        by smtp-cloud7.xs4all.net with ESMTPSA
-        id BfqNk0dqyooQSBfqOkDwfl; Fri, 28 Aug 2020 16:59:09 +0200
-Date:   Fri, 28 Aug 2020 16:59:07 +0200
-From:   Antony Antony <antony@phenome.org>
-To:     Stephen Hemminger <stephen@networkplumber.org>
+        id S1726322AbgH1PC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 11:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726197AbgH1PCU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 11:02:20 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5259EC061232
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 08:02:11 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EA9BD12866699;
+        Fri, 28 Aug 2020 07:45:23 -0700 (PDT)
+Date:   Fri, 28 Aug 2020 08:02:07 -0700 (PDT)
+Message-Id: <20200828.080207.572688006909641471.davem@davemloft.net>
+To:     snelson@pensando.io
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH iproute2-next] ip xfrm: support printing XFRMA_SET_MARK_MASK
- attribute in states
-Message-ID: <20200828145907.GA17185@AntonyAntony.local>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-CMAE-Envelope: MS4wfOeCd9jfhzOSvvsZqT/eMjUoF49T1fnmgWXrJ7gdjR0S4z3xo4qrUZ/4Wrv1B6GROWC+IJ6kn7Ehp/aah/kmKllJ/6XIOugqxjkUjpfymwxxrDcRhxV2
- JwDrXOAKAWgTLpSZasIW/pvwqfk4JFl0uNapRAEWQ/oQKnKnqfIyXXZsjYjkdeqLjhoEcimWQlHVbTWrZGG3ssrcPNAm/KyeWpenn5F6l8IcS1r1feDc/RAM
- 4M9337yf6nLMJNmCRJKGprTnkIwIdBZsl3zVJcRoQZ0b0zUvNj0flCLeo5lCLyi26+8WrH4cLsE/mJ1kvZruLQ==
+Subject: Re: [PATCH v3 net-next 00/12] ionic memory usage rework
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200827230030.43343-1-snelson@pensando.io>
+References: <20200827230030.43343-1-snelson@pensando.io>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 28 Aug 2020 07:45:24 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The XFRMA_SET_MARK_MASK attribute is set in states (4.19+).
-It is the mask of XFRMA_SET_MARK(a.k.a. XFRMA_OUTPUT_MARK in 4.18)
+From: Shannon Nelson <snelson@pensando.io>
+Date: Thu, 27 Aug 2020 16:00:18 -0700
 
-sample output: note the output-mark mask
-ip xfrm state
-	src 192.1.2.23 dst 192.1.3.33
-	proto esp spi 0xSPISPI reqid REQID mode tunnel
-	replay-window 32 flag af-unspec
-	output-mark 0x3/0xffffff
-	aead rfc4106(gcm(aes)) 0xENCAUTHKEY 128
-	if_id 0x1
+> Previous review comments have suggested [1],[2] that this driver
+> needs to rework how queue resources are managed and reconfigured
+> so that we don't do a full driver reset and to better handle
+> potential allocation failures.  This patchset is intended to
+> address those comments.
+> 
+> The first few patches clean some general issues and
+> simplify some of the memory structures.  The last 4 patches
+> specifically address queue parameter changes without a full
+> ionic_stop()/ionic_open().
+> 
+> [1] https://lore.kernel.org/netdev/20200706103305.182bd727@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+> [2] https://lore.kernel.org/netdev/20200724.194417.2151242753657227232.davem@davemloft.net/
+ ...
 
-Signed-off-by: Antony Antony <antony@phenome.org>
----
- ip/ipxfrm.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/ip/ipxfrm.c b/ip/ipxfrm.c
-index cac8ba25..e4a72bd0 100644
---- a/ip/ipxfrm.c
-+++ b/ip/ipxfrm.c
-@@ -649,6 +649,10 @@ static void xfrm_output_mark_print(struct rtattr *tb[], FILE *fp)
- 	__u32 output_mark = rta_getattr_u32(tb[XFRMA_OUTPUT_MARK]);
- 
- 	fprintf(fp, "output-mark 0x%x", output_mark);
-+	if (tb[XFRMA_SET_MARK_MASK]) {
-+		__u32 mask = rta_getattr_u32(tb[XFRMA_SET_MARK_MASK]);
-+		fprintf(fp, "/0x%x", mask);
-+	}
- }
- 
- int xfrm_parse_mark(struct xfrm_mark *mark, int *argcp, char ***argvp)
--- 
-2.21.3
-
+Series applied, thanks for doing this work as this is an area where
+many drivers have poor behavior.
