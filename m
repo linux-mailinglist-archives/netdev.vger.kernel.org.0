@@ -2,78 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4036F2553FD
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 07:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEEA1255407
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 07:26:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbgH1FUI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 01:20:08 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:36570 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725849AbgH1FUH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Aug 2020 01:20:07 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 15DC92055E;
-        Fri, 28 Aug 2020 07:20:06 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id QiY9wRnrxaYN; Fri, 28 Aug 2020 07:20:04 +0200 (CEST)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id E939720504;
-        Fri, 28 Aug 2020 07:20:04 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Fri, 28 Aug 2020 07:20:04 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Fri, 28 Aug
- 2020 07:20:04 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id C6EAB3180662;
- Fri, 28 Aug 2020 07:20:03 +0200 (CEST)
-Date:   Fri, 28 Aug 2020 07:20:03 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Antony Antony <antony.antony@secunet.com>
-CC:     <netdev@vger.kernel.org>, Herbert Xu <herbert@gondor.apana.org.au>,
-        "Antony Antony" <antony@phenome.org>
-Subject: Re: [PATCH v2 4/4] xfrm: clone whole liftime_cur structure in
- xfrm_do_migrate
-Message-ID: <20200828052003.GD20687@gauss3.secunet.de>
-References: <20200820181158.GA19658@moon.secunet.de>
- <20200826194026.GA15058@moon.secunet.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200826194026.GA15058@moon.secunet.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+        id S1726465AbgH1F0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 01:26:51 -0400
+Received: from mx60.baidu.com ([61.135.168.60]:31503 "EHLO
+        tc-sys-mailedm01.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725809AbgH1F0u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 01:26:50 -0400
+Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
+        by tc-sys-mailedm01.tc.baidu.com (Postfix) with ESMTP id 3276B2040041;
+        Fri, 28 Aug 2020 13:26:32 +0800 (CST)
+From:   Li RongQing <lirongqing@baidu.com>
+To:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Cc:     edumazet@google.com
+Subject: [PATCH][next][v2] iavf: use kvzalloc instead of kzalloc for rx/tx_bi buffer
+Date:   Fri, 28 Aug 2020 13:26:32 +0800
+Message-Id: <1598592392-30673-1-git-send-email-lirongqing@baidu.com>
+X-Mailer: git-send-email 1.7.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 26, 2020 at 09:40:40PM +0200, Antony Antony wrote:
-> When we clone state only add_time was cloned. It missed values like
-> bytes, packets.  Now clone the all members of the structure.
-> 
-> Fixes: 80c9abaabf42 ("[XFRM]: Extension for dynamic update of endpoint address(es)")
-> Signed-off-by: Antony Antony <antony.antony@secunet.com>
-> ---
->  net/xfrm/xfrm_state.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-> index 16988303aed6..64eb4a6fcfc2 100644
-> --- a/net/xfrm/xfrm_state.c
-> +++ b/net/xfrm/xfrm_state.c
-> @@ -1550,7 +1550,7 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
->  	x->tfcpad = orig->tfcpad;
->  	x->replay_maxdiff = orig->replay_maxdiff;
->  	x->replay_maxage = orig->replay_maxage;
-> -	x->curlft.add_time = orig->curlft.add_time;
-> +	x->curlft = orig->curlft;
+when changes the rx/tx ring to 4096, kzalloc may fail due to
+a temporary shortage on slab entries.
 
-You should use memcpy if you want to copy the whole structure.
+so using kvmalloc to allocate this memory as there is no need
+that this memory area is physical continuously.
+
+and using __GFP_RETRY_MAYFAIL to allocate from kmalloc as
+far as possible, which can reduce TLB pressure than vmalloc
+as suggested by Eric Dumazet
+
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+---
+v2: __GFP_RETRY_MAYFAIL is used
+
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+index 256fa07d54d5..e7a1e9039cee 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+@@ -92,7 +92,7 @@ void iavf_clean_tx_ring(struct iavf_ring *tx_ring)
+ void iavf_free_tx_resources(struct iavf_ring *tx_ring)
+ {
+ 	iavf_clean_tx_ring(tx_ring);
+-	kfree(tx_ring->tx_bi);
++	kvfree(tx_ring->tx_bi);
+ 	tx_ring->tx_bi = NULL;
+ 
+ 	if (tx_ring->desc) {
+@@ -622,7 +622,8 @@ int iavf_setup_tx_descriptors(struct iavf_ring *tx_ring)
+ 	/* warn if we are about to overwrite the pointer */
+ 	WARN_ON(tx_ring->tx_bi);
+ 	bi_size = sizeof(struct iavf_tx_buffer) * tx_ring->count;
+-	tx_ring->tx_bi = kzalloc(bi_size, GFP_KERNEL);
++	tx_ring->tx_bi = kvzalloc(bi_size, GFP_KERNEL |
++					  __GFP_RETRY_MAYFAIL);
+ 	if (!tx_ring->tx_bi)
+ 		goto err;
+ 
+@@ -643,7 +644,7 @@ int iavf_setup_tx_descriptors(struct iavf_ring *tx_ring)
+ 	return 0;
+ 
+ err:
+-	kfree(tx_ring->tx_bi);
++	kvfree(tx_ring->tx_bi);
+ 	tx_ring->tx_bi = NULL;
+ 	return -ENOMEM;
+ }
+@@ -714,7 +715,7 @@ void iavf_clean_rx_ring(struct iavf_ring *rx_ring)
+ void iavf_free_rx_resources(struct iavf_ring *rx_ring)
+ {
+ 	iavf_clean_rx_ring(rx_ring);
+-	kfree(rx_ring->rx_bi);
++	kvfree(rx_ring->rx_bi);
+ 	rx_ring->rx_bi = NULL;
+ 
+ 	if (rx_ring->desc) {
+@@ -738,7 +739,8 @@ int iavf_setup_rx_descriptors(struct iavf_ring *rx_ring)
+ 	/* warn if we are about to overwrite the pointer */
+ 	WARN_ON(rx_ring->rx_bi);
+ 	bi_size = sizeof(struct iavf_rx_buffer) * rx_ring->count;
+-	rx_ring->rx_bi = kzalloc(bi_size, GFP_KERNEL);
++	rx_ring->rx_bi = kvzalloc(bi_size, GFP_KERNEL |
++				      __GFP_RETRY_MAYFAIL);
+ 	if (!rx_ring->rx_bi)
+ 		goto err;
+ 
+@@ -762,7 +764,7 @@ int iavf_setup_rx_descriptors(struct iavf_ring *rx_ring)
+ 
+ 	return 0;
+ err:
+-	kfree(rx_ring->rx_bi);
++	kvfree(rx_ring->rx_bi);
+ 	rx_ring->rx_bi = NULL;
+ 	return -ENOMEM;
+ }
+-- 
+2.16.2
+
