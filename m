@@ -2,117 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9060F256257
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 23:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 931CB25625E
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 23:10:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726800AbgH1VFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 17:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbgH1VFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 17:05:45 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2A5C061264;
-        Fri, 28 Aug 2020 14:05:44 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id p37so1018247pgl.3;
-        Fri, 28 Aug 2020 14:05:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5ane8DBc+f3r1w7tC8dfBuPl+fS6X/x6Y++VRwRzwLQ=;
-        b=MsL7kGa1JiTOPBkJ2PoXKt3Fr0+C/uzb9XgehxuRwK7TkBMMoeYquf8/R4btCU+W6/
-         u4BhD+TJOyVEAF0sEEGAfZ0riANm/clvP3zjEp+ZvsdVir4lQPTuJxOHYgdtPkEDC0Pt
-         5H/ArWQK/IhY3gXjFB5VHqvLUxcPkVhAlQXbNHPGIcMD0NiTJJlV450VIC24CLgYspuK
-         Y7BrPgYCcP7Fv1FRKqVi0tAee6xJiXJD6T24fLKiVTjNetC4Dc7bwD2iZG4ePxY+aMZ+
-         bGjINg5PRRtwJBDGH7ACw5kuGsRRN6RuQlrVQgvnIJmJPpPA+H/0VnfUl2/h9tx4sr9K
-         k1jQ==
+        id S1726881AbgH1VKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 17:10:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:24804 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726379AbgH1VKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 17:10:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598649015;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TqwTtONj5KNOC/pnXhqbs+sbySt/5ow/XPS2c3mPNYg=;
+        b=aSH/P/47MnzLhkZKtI6zPJbLc7nnLdvEt0TeE1CVbzURphmova5CjyD5HNRJzAMfu9O4VQ
+        hsQH39JtTbst5SmbVo1p/qJmuVB7kiHEG6G/EHYzFeBU+KIG392SrySu4hs6cizeliuAjy
+        i7GzByEKPdHh3ZMWZcKXlZrIJepOJZQ=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-256-D5R-xQskPf-KTGUK-yIOUw-1; Fri, 28 Aug 2020 17:10:13 -0400
+X-MC-Unique: D5R-xQskPf-KTGUK-yIOUw-1
+Received: by mail-ej1-f69.google.com with SMTP id by23so1113335ejb.14
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 14:10:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5ane8DBc+f3r1w7tC8dfBuPl+fS6X/x6Y++VRwRzwLQ=;
-        b=e6/xwDnL0Kj3UO/BHsh8NvTx/4YKrX/LtRAPVL5pnNC+uolM6UpO7v9NRxRlO/TfmQ
-         Xsu6MfKPUavyz24La0GKPhTtGRixWcQZHZMy8WOJFCG6xyp/f+ZO/VITNOrU5qamzYe7
-         494koFSKThaMGEGowzR0GLbbp/PkOfB7MO+C6nXPDFpwkTBqEk84GNrOZzVEQQWIJ3+R
-         MWYnBRHIsSzQC9m43Tb5lFtuAb6poWZfkXaidcMGsyRM/tS8ozIBKSKy8M5pZkb1Y/rP
-         JBZBiD2wpVys5KM5klcmsGI9C5ttD0mhDVIITRmX7i9NYOyysRZ243tqwxmtsC5a/IK+
-         DIAw==
-X-Gm-Message-State: AOAM532X/JVMxoxfYQBwqkX7W+AmQ2bNNN6FqV+ZtthWDQSlbS2Hd0ce
-        qn/HZNPGMv4kSWeJNaKCJxxXYfsamS10GAtaE+BRyF9ALlo=
-X-Google-Smtp-Source: ABdhPJzuCr+aNitJffvBCNOF3MiA7pUa312fVi1VhewBnSyhEjpIVPDYBB9N7lJJzeuTL2wOJNm5hINQn/RWXrooM10=
-X-Received: by 2002:aa7:96cf:: with SMTP id h15mr692046pfq.294.1598648743207;
- Fri, 28 Aug 2020 14:05:43 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=TqwTtONj5KNOC/pnXhqbs+sbySt/5ow/XPS2c3mPNYg=;
+        b=Tppthges22mmMbGJEoXDKwPlL4AO4cFxUfNjabNmkc7qRNYPA3xnoUyWkSOo8DSA0G
+         Th2UVy62BV+2vxtpqdb1JBjr5AM9Tr4+k3OlfpybRGmRy2l28kNtUSEmezt8W07OBKU+
+         oYEQaZBodz9Q50zqWZx4Ppn588BNfbArKAuziciGeo+HvqelVbxIEHXvQCWMosFN5iBa
+         EbyIrvcGdqrSV04RkM0CP06zescvuu7lnnZdgX0CeKopTGkqz19JidS7LOFTiR5KrwmI
+         vB737j3EbszEDR4Um/fK0kZafdPIDOnoXpmbKGGc1klszvx9Ygcyz/AL+PpQ19uMkTxq
+         5ADA==
+X-Gm-Message-State: AOAM533c3dkKavSuAWt+aBmayEnWEVuH7WVnoTy9f4sDq6ne1Fma3Woz
+        GCqEMAWYMh5S/vqvwRs2RRhmfYmj97SQ/HOgOb9y0fanH+Epfa6YpmasgWHyfm9yWdrN/f6NosU
+        GJ5FFvgetOsfj7DTF
+X-Received: by 2002:a05:6402:d8:: with SMTP id i24mr691643edu.294.1598649012316;
+        Fri, 28 Aug 2020 14:10:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxmbKmlKE7UpE06nJ0b5dBXyOxC1WdWIIjyBaw5a/W8DPMDLZAjjh3y/1hPuUPPIWWdsBYG2w==
+X-Received: by 2002:a05:6402:d8:: with SMTP id i24mr691629edu.294.1598649012008;
+        Fri, 28 Aug 2020 14:10:12 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id a18sm285837ejy.71.2020.08.28.14.10.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Aug 2020 14:10:11 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 3BB97182B5E; Fri, 28 Aug 2020 23:10:10 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        YiFei Zhu <zhuyifei1999@gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/8] libbpf: implement bpf_prog_find_metadata
+In-Reply-To: <20200828193603.335512-5-sdf@google.com>
+References: <20200828193603.335512-1-sdf@google.com>
+ <20200828193603.335512-5-sdf@google.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 28 Aug 2020 23:10:10 +0200
+Message-ID: <874koma34d.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20200828070752.54444-1-xie.he.0141@gmail.com> <m3pn7b6opa.fsf@t19.piap.pl>
-In-Reply-To: <m3pn7b6opa.fsf@t19.piap.pl>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Fri, 28 Aug 2020 14:05:32 -0700
-Message-ID: <CAJht_EOk2_L-77KDDEJTcfqhw48X0ZMA2PKdLG4+LXHAAtNtsw@mail.gmail.com>
-Subject: Re: [PATCH net] drivers/net/wan/hdlc_cisco: Add hard_header_len
-To:     =?UTF-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 28, 2020 at 3:37 AM Krzysztof Ha=C5=82asa <khalasa@piap.pl> wro=
-te:
+Stanislav Fomichev <sdf@google.com> writes:
+
+> This is a low-level function (hence in bpf.c) to find out the metadata
+> map id for the provided program fd.
+> It will be used in the next commits from bpftool.
 >
-> OTOH hdlc_setup_dev() initializes hard_header_len to 16,
-> but in this case I guess 4 bytes are better.
+> Cc: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Cc: YiFei Zhu <zhuyifei1999@gmail.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  tools/lib/bpf/bpf.c      | 74 ++++++++++++++++++++++++++++++++++++++++
+>  tools/lib/bpf/bpf.h      |  1 +
+>  tools/lib/bpf/libbpf.map |  1 +
+>  3 files changed, 76 insertions(+)
 >
-> Acked-by: Krzysztof Halasa <khc@pm.waw.pl>
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index 5f6c5676cc45..01c0ede1625d 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -885,3 +885,77 @@ int bpf_prog_bind_map(int prog_fd, int map_fd,
+>=20=20
+>  	return sys_bpf(BPF_PROG_BIND_MAP, &attr, sizeof(attr));
+>  }
+> +
+> +int bpf_prog_find_metadata(int prog_fd)
+> +{
+> +	struct bpf_prog_info prog_info =3D {};
+> +	struct bpf_map_info map_info;
+> +	__u32 prog_info_len;
+> +	__u32 map_info_len;
+> +	int saved_errno;
+> +	__u32 *map_ids;
+> +	int nr_maps;
+> +	int map_fd;
+> +	int ret;
+> +	int i;
+> +
+> +	prog_info_len =3D sizeof(prog_info);
+> +
+> +	ret =3D bpf_obj_get_info_by_fd(prog_fd, &prog_info, &prog_info_len);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!prog_info.nr_map_ids)
+> +		return -1;
+> +
+> +	map_ids =3D calloc(prog_info.nr_map_ids, sizeof(__u32));
+> +	if (!map_ids)
+> +		return -1;
+> +
+> +	nr_maps =3D prog_info.nr_map_ids;
+> +	memset(&prog_info, 0, sizeof(prog_info));
+> +	prog_info.nr_map_ids =3D nr_maps;
+> +	prog_info.map_ids =3D ptr_to_u64(map_ids);
+> +	prog_info_len =3D sizeof(prog_info);
+> +
+> +	ret =3D bpf_obj_get_info_by_fd(prog_fd, &prog_info, &prog_info_len);
+> +	if (ret)
+> +		goto free_map_ids;
+> +
+> +	ret =3D -1;
+> +	for (i =3D 0; i < prog_info.nr_map_ids; i++) {
+> +		map_fd =3D bpf_map_get_fd_by_id(map_ids[i]);
+> +		if (map_fd < 0) {
+> +			ret =3D -1;
+> +			goto free_map_ids;
+> +		}
+> +
+> +		memset(&map_info, 0, sizeof(map_info));
+> +		map_info_len =3D sizeof(map_info);
+> +		ret =3D bpf_obj_get_info_by_fd(map_fd, &map_info, &map_info_len);
+> +		saved_errno =3D errno;
+> +		close(map_fd);
+> +		errno =3D saved_errno;
+> +		if (ret)
+> +			goto free_map_ids;
 
-Thank you, Krzysztof!
+If you get to this point on the last entry in the loop, ret will be 0,
+and any of the continue statements below will end the loop, causing the
+whole function to return 0. While this is not technically a valid ID, it
+still seems odd that the function returns -1 on all error conditions
+except this one.
 
-Actually I'm thinking about changing the default value of 16 in hdlc.c to 0=
-.
+Also, it would be good to be able to unambiguously distinguish between
+"this program has no metadata associated" and "something went wrong
+while querying the kernel for metadata (e.g., permission error)". So
+something that amounts to a -ENOENT return; I guess turning all return
+values into negative error codes would do that (and also do away with
+the need for the saved_errno dance above), but id does clash a bit with
+the convention in the rest of the file (where all the other functions
+just return -1 and set errno)...
 
-I think a driver should always keep its hard_header_len consistent
-with its header_ops functions. If a driver doesn't have header_ops,
-its hard_header_len should be set to 0. This makes the driver able to
-be correctly used with AF_PACKET sockets.
+-Toke
 
-In net/packet/af_packet.c, in the function packet_snd, for
-AF_PACKET/DGRAM sockets, it would reserve a headroom of
-hard_header_len for the skb, and call dev_hard_header (which calls the
-header_ops->create function) to fill in the headroom, but for
-AF_PACKET/RAW sockets, it would not reserve the headroom of
-hard_header_len, and will check (in function dev_validate_header)
-whether the user has provided the header of length hard_header_len. So
-I think hard_header_len should be kept consistent with header_ops to
-make the driver able to work correctly with af_packet.c.
-
-If the driver really needs to use additional header space outside of
-the header_ops->create function, it should request that header space
-in dev->needed_headroom instead of hard_header_len. This avoids the
-complex header processing in af_packet.c but still gets the header
-space reserved.
-
-Currently for the 6 HDLC protocol drivers, hdlc_ppp sets
-hard_header_len and the value is consistent with its header_ops,
-hdlc_raw_eth sets both hard_header_len and header_ops correctly with
-the ether_setup function, hdlc_x25 has been previously changed by me
-to set hard_header_len to 0 because it doesn't have header_ops, and
-this patch would make hdlc_cisco set its hard_header_len to the value
-consistent with its header_ops. This leaves us hdlc_raw and hdlc_fr. I
-see that both of these 2 drivers don't set hard_header_len when
-attaching the protocol, so they will use the default value of 16. But
-because both of these drivers don't have header_ops, I think their
-hard_header_len should be set to 0. So I think maybe it's better to
-change the default value in hdlc.c to 0 and let them take the default
-value of 0.
-
-What do you think?
-
-Thanks!
-
-Xie He
