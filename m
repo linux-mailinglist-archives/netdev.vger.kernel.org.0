@@ -2,103 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 58EFF2562CB
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 00:05:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98F282562DC
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 00:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbgH1WFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 18:05:45 -0400
-Received: from www62.your-server.de ([213.133.104.62]:53140 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbgH1WFo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 18:05:44 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kBmVC-0006ID-Tv; Sat, 29 Aug 2020 00:05:42 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kBmVC-000T43-Lv; Sat, 29 Aug 2020 00:05:42 +0200
-Subject: Re: [PATCHv9 bpf-next 2/5] xdp: add a new helper for dev map
- multicast support
-To:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko B <andrii.nakryiko@gmail.com>
-References: <20200715130816.2124232-1-liuhangbin@gmail.com>
- <20200826132002.2808380-1-liuhangbin@gmail.com>
- <20200826132002.2808380-3-liuhangbin@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <800c88e5-c3a8-65f8-bc8c-c7d18b667157@iogearbox.net>
-Date:   Sat, 29 Aug 2020 00:05:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726775AbgH1WPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 18:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726338AbgH1WPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 18:15:41 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CDBFC061264
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 15:15:41 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id w3so1968614ilh.5
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 15:15:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=uLf4mZPcCyk/dyePVOQmf4G9rBCdpWELYZup+iL9LhY=;
+        b=cjz9PuoMLAAIiRzDqOT9nuOorjvEKXDn7hEFXXz5oUs+PgkDzYqZaktt8zNhS2DKBX
+         hDajk1BOrXlCc7J27BbcnIlShvJISh0jH22E/ABa5ZB3W3IxrgTBIifgP3+LcPTYaPHH
+         /SijvCxNS/HOiZUh1kLJag+FausItNt2Qu/XHmc9wzDqsDvfzwJJC+HFuO/XgNnqCYay
+         hwwgPZs2tlfKJlffOAlZ1npN+crVATHR71FjrLQjIL6bHR7DLJGWR+tOQ0ciNTxjy4Z3
+         06PtGvLNZkjHeON411vOi4/YFOBErKxH7sipcU+TFjZt3FFFSPEz8QnyNUqqNrWRFakL
+         5W9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=uLf4mZPcCyk/dyePVOQmf4G9rBCdpWELYZup+iL9LhY=;
+        b=JkJlAhv7hhYXJUN64z6NtOVLI/d5JSd+GS76RuDRxvSW7T5ieebGtJRO1BuGgHkuju
+         PXKQlhIni9UW5H4fJ97fe34KG5L73Rv3Di0MYKmAryIJvRLTbpcadgxIrIfGw0aG5s8e
+         fo5uF0+eqqo/MsgF79u66Y0wb1knEQrV7FrA0Zk43WC0A3QlccZixy+hemu3QG7B7hm9
+         Z9EZC0L6wdLiNG1e05dnPNsGFajpqDhRNaZqY4iDGPvSTwpcdjMC2B1GwC0PzXdfaUWG
+         WYa0vuR7+S5kxCyB+0eMCKXq03P33mjUkkOAWTBhnHwXNZAtFV5ldHxrd3OUDWKhCdYY
+         q3/g==
+X-Gm-Message-State: AOAM530zkOYltKoh4AMXI+EHJk6Vce7h057hSMoK+oXHSLBIEvqQFkzU
+        1Oc0+VRCfUW7FB8FIDK0sTkA/cc7pYNv6dn/1FAadl7M3Fnacw==
+X-Google-Smtp-Source: ABdhPJxy0AGtS8zdR1cNKqZO4P2hTbjV9cAEYHqvqS0WsgP5wjT3yp2K+POYIgFUA8ibzWq5pBiDm9Se0yZ0tXOipHg=
+X-Received: by 2002:a05:6e02:13e9:: with SMTP id w9mr783138ilj.211.1598652940428;
+ Fri, 28 Aug 2020 15:15:40 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200826132002.2808380-3-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25913/Fri Aug 28 15:19:15 2020)
+From:   Denis Gubin <denis.gubin@gmail.com>
+Date:   Sat, 29 Aug 2020 01:15:05 +0300
+Message-ID: <CAE_-sdmpSSNEt5R2B+v1FaSP+SYCk_khW2KieRL_7xVbR=nfHw@mail.gmail.com>
+Subject: tc filter add with handle 800::10:800
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/20 3:19 PM, Hangbin Liu wrote:
-[...]
-> +BPF_CALL_3(bpf_xdp_redirect_map_multi, struct bpf_map *, map,
-> +	   struct bpf_map *, ex_map, u64, flags)
-> +{
-> +	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-> +
-> +	/* Limit ex_map type to DEVMAP_HASH to get better performance */
-> +	if (unlikely(!map ||
+Hello, everyone!
 
-Why is test on !map needed when arg1_type is ARG_CONST_MAP_PTR? Verifier must
-guarantee that it's a valid map ptr .. are you saying this is not the case for
-this helper?
+How can I add filter rule with full handle option
 
-> +		     (ex_map && ex_map->map_type != BPF_MAP_TYPE_DEVMAP_HASH) ||
-> +		     flags & ~BPF_F_EXCLUDE_INGRESS))
-> +		return XDP_ABORTED;
-> +
-> +	ri->tgt_index = 0;
-> +	/* Set the tgt_value to NULL to distinguish with bpf_xdp_redirect_map */
-> +	ri->tgt_value = NULL;
-> +	ri->flags = flags;
-> +	ri->ex_map = ex_map;
-> +
-> +	WRITE_ONCE(ri->map, map);
-> +
-> +	return XDP_REDIRECT;
-> +}
-> +
-> +static const struct bpf_func_proto bpf_xdp_redirect_map_multi_proto = {
-> +	.func           = bpf_xdp_redirect_map_multi,
-> +	.gpl_only       = false,
-> +	.ret_type       = RET_INTEGER,
-> +	.arg1_type      = ARG_CONST_MAP_PTR,
-> +	.arg2_type      = ARG_CONST_MAP_PTR_OR_NULL,
-> +	.arg3_type      = ARG_ANYTHING,
-> +};
-> +
->   static unsigned long bpf_skb_copy(void *dst_buff, const void *skb,
->   				  unsigned long off, unsigned long len)
->   {
-> @@ -6833,6 +6933,8 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   		return &bpf_xdp_redirect_proto;
->   	case BPF_FUNC_redirect_map:
->   		return &bpf_xdp_redirect_map_proto;
-> +	case BPF_FUNC_redirect_map_multi:
-> +		return &bpf_xdp_redirect_map_multi_proto;
->   	case BPF_FUNC_xdp_adjust_tail:
->   		return &bpf_xdp_adjust_tail_proto;
->   	case BPF_FUNC_fib_lookup:
+tc filter replace dev eno5 parent ffff: pref 49100 handle 800:10:800
+protocol ip u32 match u8 0 0
+
+I get error:
+Error: cls_u32: Handle specified hash table address mismatch
+
+Why I get error?
+
+Am I right to article below?
+
+handle 800:10:888 is this:
+800 - number of hash table
+10 - number of divisor
+888 - number of filter rule
+
+I appreciate for your answers. Thanks!
+
+-- 
+Best regards,
+Denis Gubin
