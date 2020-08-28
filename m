@@ -2,157 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6858025540E
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 07:38:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC6A12554AA
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 08:49:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726797AbgH1FiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 01:38:25 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:60204 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726571AbgH1FiV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 01:38:21 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07S5YwJ0021936
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 22:38:20 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=lWhyUqCAMrh3WNjXI8GGSxZ/gB+B24TZajA1aV3gpV8=;
- b=apEnu2a1RAWMU1/WETaeLkwtzNF0oGZBmMiZVHwwUra/LJjcHxB+U4kFe6wn8WuZQ1sp
- vqVwwD10seU9qBwHZA7TsJ5il3xgAVsexHT6RGOHkx2HgBqE+jLkFdtnBKvwj4s31IHD
- k4HZkEbSPDZylrQNdhd/47HzVCQ/spOAqF4= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 335up699qx-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 22:38:20 -0700
-Received: from intmgw005.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 27 Aug 2020 22:38:18 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 23A9C370541B; Thu, 27 Aug 2020 22:38:17 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Yonghong Song <yhs@fb.com>
-Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next v2 2/2] selftests/bpf: test task_file iterator without visiting pthreads
-Date:   Thu, 27 Aug 2020 22:38:17 -0700
-Message-ID: <20200828053817.817890-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200828053815.817726-1-yhs@fb.com>
-References: <20200828053815.817726-1-yhs@fb.com>
+        id S1727008AbgH1Gtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 02:49:31 -0400
+Received: from mail-eopbgr1390073.outbound.protection.outlook.com ([40.107.139.73]:38176
+        "EHLO IND01-BO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725858AbgH1Gt2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 28 Aug 2020 02:49:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IZ4yiZ3aR/7n5/rT3KwRy239+I4s5jFVZACxvbzUDkWp5+Sp/3fu0GJn1Ik0a3pN8afHwFEw8P2DK4h9DYiRi+YX93tvvq17zDTd+zSJuPgKQmrAp5lWfUmEW22vnlmx/39Tt/LjNLDFjbGZHtqW++qUS8RUdsc64WOaTEaD6RvYEwfoHkBU0MSpYGm9FMYju500zBj8bsxDH8wLduS2yctuLLWChZv4v/MGaPhe8LH6kITax12fiMuG5UyYlhclK2Pipf9N1sHwSR5SWafJlkEi3Qp2uhdDkSshehW1BjNfG9niRW2tmHqL0Ehh6wvGBi78q8w4UvxeZnKoKhPcFQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rhhikLaoK7nWL/Rf8j0MtPxZCzP55cw23v9SiTx3pLM=;
+ b=Rrh/Ob6ZCefQmtLwBUD3DYJDZ9beQpMhmeu3VlQGRnZKiB0jy+pScVlVnrRKVb9OMlLWaLqDVQHqtmMsqE8KO29NojbdZjXKwvKgDB0rmMqa2IZQwisotmBP0DY1tTrxDjIRpF4I1bRIfyTwHoFYDfmjPEvLH/iD/0zlDoLYBHe1s/LE0urm46PPO60wdMbOohrHL/sbHf/9yDydpCE7Zy2oiTXWo4wL5vnFJuWLTTwG8w4XMFVT2Hn+IP37/fGjfSFbfpmjREFZX3t/g8GV04zQxUZP6VW1TV9RJTeF345kfiIRcJ4c1pPdQLbgxy+8xrCHml6fnTkgT19oyaRZZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=iisc.ac.in; dmarc=pass action=none header.from=iisc.ac.in;
+ dkim=pass header.d=iisc.ac.in; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iisc.ac.in;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rhhikLaoK7nWL/Rf8j0MtPxZCzP55cw23v9SiTx3pLM=;
+ b=lbB7aLEWbNUbTRXJXTYyArO22cFfrPTbHSzesSnREB4I4wkHn32SzMm+8sPXLtvhItYSnt019LwjoY99/PvAGUW8ulRy4Sn7rI6MMCBpitMyctAo6LRiECL/gM7Ew8TYJnCVz5WvNP8XjEW1leNOxB8adIGX5fmUcpbj4JJ8gq8=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=iisc.ac.in;
+Received: from MA1PR01MB2218.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:37::23)
+ by MA1PR01MB2217.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a00:44::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Fri, 28 Aug
+ 2020 06:49:23 +0000
+Received: from MA1PR01MB2218.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::b478:1d:994f:46c1]) by MA1PR01MB2218.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::b478:1d:994f:46c1%6]) with mapi id 15.20.3305.032; Fri, 28 Aug 2020
+ 06:49:23 +0000
+Date:   Fri, 28 Aug 2020 12:15:12 +0530
+From:   "S.V.R.Anand" <anandsvr@iisc.ac.in>
+To:     netdev@vger.kernel.org
+Subject: packet deadline and process scheduling
+Message-ID: <20200828064511.GD7389@iisc.ac.in>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-ClientProxiedBy: BMXPR01CA0070.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:b00:2c::34) To MA1PR01MB2218.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a00:37::23)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-28_03:2020-08-27,2020-08-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- priorityscore=1501 mlxlogscore=999 malwarescore=0 spamscore=0
- clxscore=1015 impostorscore=0 suspectscore=8 phishscore=0 bulkscore=0
- adultscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2008280046
-X-FB-Internal: deliver
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from iisc.ac.in (14.139.128.15) by BMXPR01CA0070.INDPRD01.PROD.OUTLOOK.COM (2603:1096:b00:2c::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend Transport; Fri, 28 Aug 2020 06:49:22 +0000
+X-Originating-IP: [14.139.128.15]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 34a6b1e5-5f64-43a6-61c3-08d84b1e7f46
+X-MS-TrafficTypeDiagnostic: MA1PR01MB2217:
+X-Microsoft-Antispam-PRVS: <MA1PR01MB2217B696FDA0DE333EDACD6DFC520@MA1PR01MB2217.INDPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QpSf2dLxfhXUQsWyVQZD028+IyyIGHM/zu5wRFW/wGxZWH3TCLy2OR8C19tBSHnPFc/yW7LEzzK3Q2KJaOY7V9PkYg6cwUdV/Ulc1Gkpz4EBp8MmmWFKwH2be9FvY421tn/nYzsC5svXZmd/Kg+pE7MfdnNxwSHob0J7CjqJJvHoF4A2XSkrKb4SKr1uKKrCvecD8r53Y5Lw/JoBGBeMgkHD1aO5UBjvpopk2+Trcw1VCsRyhyCUELPI6W85XPC0IdMuGVYTnEOoK9MWiqt/+bOk8LSPO7s4ixFOKlbzgrWSa6rtZ45XN/S9E2M90IiUFqeKK5Humcmb36/KsprSiQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MA1PR01MB2218.INDPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(39860400002)(136003)(396003)(366004)(1006002)(2616005)(4744005)(86362001)(66946007)(956004)(66476007)(1076003)(33656002)(66556008)(478600001)(5660300002)(16526019)(83380400001)(8676002)(316002)(6666004)(2906002)(55016002)(36756003)(186003)(6916009)(52116002)(7696005)(786003)(26005)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 0SqGczqedFQKQYBA+UOqnK3+YQLsiFowYAB4hv4ND0K9ykeOacrnFExXHrUPmdk2n6mBXGiQnvcRedxbh5j40Eg4ITzDxfHHdH8BE0ABe5nRgqBoOM3tPss/IiQzzKI5uo/dACTtM6IjPEoK3tyqt9HuSsIDsVKPQWvaCp/Ac49NYR5HW9vASukhzpzesRJCS1MSXuTQty80uWIwTRDeyasXorhbdPoUNWk2k7xyF/S5DWNU5aOokW0VW/MbpxSmCasADrvIQdPN2yZzKGWdZD0wUi0Z7DpJ3dgpridgE62bfq5fc0dPOYJ9Kiq2W4lOml6OTgUiM/2j4EWxlpQLK97Gq5SMQlzjxsxCA+TdPXVY1CAuyA9+N9hAmcrYbAjOUpAHfLfZaEmXhDGsElAWXdBUxBkAtRKi2j8Dh62UZHuE8e/AxoSxSHRubSZyTJ0hmO/LewglbtDJpeS40UKqXxcA2q5cO4gJ2NaMXySJ1SYpheFd1A7HK522JgrZsqj7FNuKfI5qMzwoIb/SeHRddO3jHK6cbEXeREu27fU9nizxNVuY1Xe2DIYXlQjGh/Gd3ucGwVJ8L1YV9wcQWxvzJyZ1J5Ju+KKzX1iJND/847KT+FcGsdnZSFpe0/u7RkGqAO8NeiT85UIC8FYaNh+FWw==
+X-OriginatorOrg: iisc.ac.in
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34a6b1e5-5f64-43a6-61c3-08d84b1e7f46
+X-MS-Exchange-CrossTenant-AuthSource: MA1PR01MB2218.INDPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2020 06:49:23.1425
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6f15cd97-f6a7-41e3-b2c5-ad4193976476
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CpqpzVhd1E6HdYns6X+s2s5HV1ZhENRwU1BHBISZNowDaQ25+YsCRF0V6c51eHIrG7GFj58ju80CAtOaV63bHw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MA1PR01MB2217
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Modified existing bpf_iter_test_file.c program to check whether
-all accessed files from the main thread or not.
+Hi,
 
-Modified existing bpf_iter_test_file program to check
-whether all accessed files from the main thread or not.
-  $ ./test_progs -n 4
-  ...
-  #4/7 task_file:OK
-  ...
-  #4 bpf_iter:OK
-  Summary: 1/24 PASSED, 0 SKIPPED, 0 FAILED
+In the control loop application I am trying to build, an incoming message from
+the network will have a deadline before which it should be delivered to the
+receiver process. This essentially calls for a way of scheduling this process
+based on the deadline information contained in the message. 
 
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- .../selftests/bpf/prog_tests/bpf_iter.c       | 21 +++++++++++++++++++
- .../selftests/bpf/progs/bpf_iter_task_file.c  | 10 ++++++++-
- 2 files changed, 30 insertions(+), 1 deletion(-)
+If not already available, I wish to  write code for such run-time ordering of
+processes in the earlist deadline first fashion. The assumption, however
+futuristic it may be, is that deadline information is contained as part of the
+packet header something like an inband-OAM. 
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/te=
-sting/selftests/bpf/prog_tests/bpf_iter.c
-index 7375d9a6d242..375ffaf85d78 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
-@@ -132,17 +132,38 @@ static void test_task_stack(void)
- 	bpf_iter_task_stack__destroy(skel);
- }
-=20
-+static void *do_nothing(void *arg)
-+{
-+	pthread_exit(arg);
-+}
-+
- static void test_task_file(void)
- {
- 	struct bpf_iter_task_file *skel;
-+	pthread_t thread_id;
-+	void *ret;
-=20
- 	skel =3D bpf_iter_task_file__open_and_load();
- 	if (CHECK(!skel, "bpf_iter_task_file__open_and_load",
- 		  "skeleton open_and_load failed\n"))
- 		return;
-=20
-+	skel->bss->tgid =3D getpid();
-+
-+	if (CHECK(pthread_create(&thread_id, NULL, &do_nothing, NULL),
-+		  "pthread_create", "pthread_create failed\n"))
-+		goto done;
-+
- 	do_dummy_read(skel->progs.dump_task_file);
-=20
-+	if (CHECK(pthread_join(thread_id, &ret) || ret !=3D NULL,
-+		  "pthread_join", "pthread_join failed\n"))
-+		goto done;
-+
-+	CHECK(skel->bss->count !=3D 0, "",
-+	      "invalid non pthread file visit %d\n", skel->bss->count);
-+
-+done:
- 	bpf_iter_task_file__destroy(skel);
- }
-=20
-diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_task_file.c b/too=
-ls/testing/selftests/bpf/progs/bpf_iter_task_file.c
-index 8b787baa2654..b2f7c7c5f952 100644
---- a/tools/testing/selftests/bpf/progs/bpf_iter_task_file.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_iter_task_file.c
-@@ -6,6 +6,9 @@
-=20
- char _license[] SEC("license") =3D "GPL";
-=20
-+int count =3D 0;
-+int tgid =3D 0;
-+
- SEC("iter/task_file")
- int dump_task_file(struct bpf_iter__task_file *ctx)
- {
-@@ -17,8 +20,13 @@ int dump_task_file(struct bpf_iter__task_file *ctx)
- 	if (task =3D=3D (void *)0 || file =3D=3D (void *)0)
- 		return 0;
-=20
--	if (ctx->meta->seq_num =3D=3D 0)
-+	if (ctx->meta->seq_num =3D=3D 0) {
-+		count =3D 0;
- 		BPF_SEQ_PRINTF(seq, "    tgid      gid       fd      file\n");
-+	}
-+
-+	if (tgid =3D=3D task->tgid && task->tgid !=3D task->pid)
-+		count++;
-=20
- 	BPF_SEQ_PRINTF(seq, "%8d %8d %8d %lx\n", task->tgid, task->pid, fd,
- 		       (long)file->f_op);
---=20
-2.24.1
+Your feedback on the above will be very helpful. 
 
+Hope the above objective will be of general interest to netdev as well.
+
+My apologies if this is not the appropriate mailing list for posting this kind
+of mails.  
+
+Anand
