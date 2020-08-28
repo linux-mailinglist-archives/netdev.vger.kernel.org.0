@@ -2,103 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 302BE255708
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 11:00:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7494255749
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 11:14:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728828AbgH1JAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 05:00:02 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:33197 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728218AbgH1I75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 04:59:57 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598605197; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=fotnpsF0EYIr+SiKtcUih+0Uan6DLmURDNPjSJ8hGBA=; b=PLuz3whksxn3bNgUzK9g6U3idKQSf19SE5d/morQ0Mi1QZqbCnNHpPDouyiDisb7mrLO2KzL
- UXRC6EKko6o0W62zfIcuc0NsesMXhwC0FAyof2pu/TEUJta3EI1l8vZoB/jVegPKQkevYHMK
- ySQrvg8PryguFEiBoR7FQhgKM8A=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 5f48c78112acec35e2f3fbc6 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 28 Aug 2020 08:59:45
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id EEEC5C433C6; Fri, 28 Aug 2020 08:59:44 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 101C9C433CB;
-        Fri, 28 Aug 2020 08:59:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 101C9C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Ondrej Zary <linux@zary.sk>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Lee Jones <lee.jones@linaro.org>, davem@davemloft.net,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        Benjamin Reed <breed@users.sourceforge.net>,
-        Javier Achirica <achirica@users.sourceforge.net>,
-        Jean Tourrilhes <jt@hpl.hp.com>,
-        "Fabrice Bellet" <fabrice@bellet.info>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 12/30] net: wireless: cisco: airo: Fix a myriad of coding style issues
-References: <20200814113933.1903438-1-lee.jones@linaro.org>
-        <202008172335.02988.linux@zary.sk> <87v9h4le9z.fsf@codeaurora.org>
-        <202008272223.57461.linux@zary.sk>
-Date:   Fri, 28 Aug 2020 11:59:37 +0300
-In-Reply-To: <202008272223.57461.linux@zary.sk> (Ondrej Zary's message of
-        "Thu, 27 Aug 2020 22:23:57 +0200")
-Message-ID: <87lfhz9mdi.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728782AbgH1JOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 05:14:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728218AbgH1JO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 05:14:29 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAF8C061264;
+        Fri, 28 Aug 2020 02:14:29 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id l7so595120wrx.8;
+        Fri, 28 Aug 2020 02:14:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=bFeVd3y76f8JCnVoxv7uErhjRJ/Acf3IGCqwDe0vYzo=;
+        b=ASAb4ZKP8q64pDUw994tv3+INDcE6zs3SLcXLuq022GJSwmDFTUIbp0r5/gUTHxImB
+         AeTldyKDlHW8yA4Y4athGifCHZUW5eInuIS/dJI4KbZmYx5/1cwuGEp2ZtwkNJO1cUZG
+         /79oGU/ew5dOOUT1MdppsyGCkaAQnNvvuQLyx32CONUDD6Gw+LgKMqTm/rvAnPtwWrc2
+         lZ0VHi/rtBY99xPPqy+HvqxGeOzRXxXvM5YXd0SgvbDwpvZoz1xjmPc+bqG51UIBu+1i
+         ijBorsf4YoOnyM+A1Y/H7B0m8z1s/UtBhuafPkhwTRpNjE2cpUI6btJfTpE/BwltRL+w
+         MjCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bFeVd3y76f8JCnVoxv7uErhjRJ/Acf3IGCqwDe0vYzo=;
+        b=GKUTSGWRAUgprAZKvYAxWfJJ9vci1S+qXvGNAQIK4n88cHPKOXrzePvaaAZmXgRpBs
+         CN0HIZgkIudSq/fJJmenHfvraCdhUt36vuBQJYbIdiWeiy9M5dUmVJNz79RcIejFulDy
+         KfuA+2t6ANwavTHdpOcf+V4bNMNw1MAHHI7EkvWgoViL2PZ2Eu1PCZuw7tJ5ps2+5hr3
+         DmXFC+buMOCgRDwJMm6lFNqYHErqPPGP/ThY4Jhi8X2VlJ8n68AP+tqf4SP4mx6LcncS
+         nuSMGOiSYcqtCr3Gtn/si0be6ZWyUcG44aBGlwzKfDu2CYiGtF4zuYZbx6i8BtBs9trg
+         pttg==
+X-Gm-Message-State: AOAM531BwQAHCwG1B0nbkf5+D1g+BUYFeJPyWc64RQ9aZOLDFkWK1qAm
+        p92gIGh7WBBMT/ftgnvmbUWSJZVVUtY=
+X-Google-Smtp-Source: ABdhPJwptDnJe4CUd3jREwjgLVQaaP6WY676T+Tlsou+GFhr1kWQhjvUYUyk9XPHFR72Jg+REhSRdw==
+X-Received: by 2002:a05:6000:1204:: with SMTP id e4mr613648wrx.95.1598606067682;
+        Fri, 28 Aug 2020 02:14:27 -0700 (PDT)
+Received: from [192.168.8.147] ([37.171.241.197])
+        by smtp.gmail.com with ESMTPSA id p1sm2713000wma.0.2020.08.28.02.14.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Aug 2020 02:14:27 -0700 (PDT)
+Subject: Re: [PATCH nf-next v3 0/3] Netfilter egress hook
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Lukas Wunner <lukas@wunner.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>, Laura Garcia <nevola@gmail.com>,
+        David Miller <davem@davemloft.net>
+References: <cover.1598517739.git.lukas@wunner.de>
+ <454130d7-7256-838d-515e-c7340892278c@iogearbox.net>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a9006cf7-f4ba-81b1-fca1-fd2e97939fdc@gmail.com>
+Date:   Fri, 28 Aug 2020 11:14:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <454130d7-7256-838d-515e-c7340892278c@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ondrej Zary <linux@zary.sk> writes:
 
-> On Thursday 27 August 2020 09:49:12 Kalle Valo wrote:
->> Ondrej Zary <linux@zary.sk> writes:
->> 
->> > On Monday 17 August 2020 20:27:06 Jesse Brandeburg wrote:
->> >> On Mon, 17 Aug 2020 16:27:01 +0300
->> >> Kalle Valo <kvalo@codeaurora.org> wrote:
->> >> 
->> >> > I was surprised to see that someone was using this driver in 2015, so
->> >> > I'm not sure anymore what to do. Of course we could still just remove
->> >> > it and later revert if someone steps up and claims the driver is still
->> >> > usable. Hmm. Does anyone any users of this driver?
->> >> 
->> >> What about moving the driver over into staging, which is generally the
->> >> way I understood to move a driver slowly out of the kernel?
->> >
->> > Please don't remove random drivers.
->> 
->> We don't want to waste time on obsolete drivers and instead prefer to
->> use our time on more productive tasks. For us wireless maintainers it's
->> really hard to know if old drivers are still in use or if they are just
->> broken.
->> 
->> > I still have the Aironet PCMCIA card and can test the driver.
->> 
->> Great. Do you know if the airo driver still works with recent kernels?
->
-> Yes, it does.
 
-Nice, I'm very surprised that so old and unmaintained driver still
-works. Thanks for testing.
+On 8/28/20 12:14 AM, Daniel Borkmann wrote:
+> Hi Lukas,
+> 
+> On 8/27/20 10:55 AM, Lukas Wunner wrote:
+>> Introduce a netfilter egress hook to allow filtering outbound AF_PACKETs
+>> such as DHCP and to prepare for in-kernel NAT64/NAT46.
+> 
+> Thinking more about this, how will this allow to sufficiently filter AF_PACKET?
+> It won't. Any AF_PACKET application can freely set PACKET_QDISC_BYPASS without
+> additional privileges and then dev_queue_xmit() is being bypassed in the host ns.
+> This is therefore ineffective and not sufficient. (From container side these can
+> be caught w/ host veth on ingress, but not in host ns, of course, so hook won't
+> be invoked.)
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+Presumably dev_direct_xmit() could be augmented to support the hook.
+
+dev_direct_xmit() (packet_direct_xmit()) was introduced to bypass qdisc,
+not to bypass everything.
+
+
