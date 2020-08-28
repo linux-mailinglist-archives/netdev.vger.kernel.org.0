@@ -2,165 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3E062560D1
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 20:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25FC025613D
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 21:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbgH1Sw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 14:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
+        id S1726379AbgH1T1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 15:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726010AbgH1Swy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 14:52:54 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6551C061264;
-        Fri, 28 Aug 2020 11:52:53 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id u20so1105260pfn.0;
-        Fri, 28 Aug 2020 11:52:53 -0700 (PDT)
+        with ESMTP id S1725911AbgH1T1S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 15:27:18 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216C0C061264
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:27:18 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id ay8so97676edb.8
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 12:27:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=wDnMtZIra7WWgmvfJglhA0fiZqRqnvU/7bnAqVFUhpo=;
-        b=l3D17DkTtbZzEoz7xBgwtmw9YL3jKyvX3GWoUoQR4cfBLfI28WoBcOtu9Z6YWdgx7+
-         qHzEmYfjkYgJSu8+1vjXyOEWx4Iz/LMTnQ2hC7bH1luwC9Z+o93CI7fOm4+5kk23HV7s
-         fAD9oX2HYMqbiAe/MjTbbXTgglPW4UBCApL7lUH6CNfLfzAZCkiR9YpJv4O1vAsiYcc7
-         UKHkbnSr6+PVvp09w0fXcE0PKgx3UN/XGJ4AV1VLzqDCt5rEEDdU08jCeDdKhKzo6HUi
-         oDHMn11B6xqZ6BKfp/v80KBW3neE4ma0z7i40dRIrRGX3svOdNuCpFjIYKdB1MZSY5Pe
-         KTsA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ludt+w++AZ/zvssRXmf58ClW7Q8FwqVtlN0qCaWMqR8=;
+        b=jL/XrtByo1fQK28A6l3+45dXm0+1gYdr7K4NOU+06zEbHF4X5I8Q9PyJ+DYev7v1TW
+         mx9INEMW70vitPQsvwO/G0PuisAoql/1apOdY/pUi2L8I2VyG8ghAPQ+NJruPeryGe0C
+         uLMRG3Nth+40FZ1Glrmve4zCeh0PXFuSKvYgYAI5A4VtDTGWiyMuPs0/p7Qd8ATHdrsK
+         zFWB+oJp3UTcPOCBAqbTzn2yWa5fjV1U3Tlx93vFamOjdQhvzcDJe3qI8T5+gR9CgaAz
+         5/qS83G3Nah7RUV+lYAASZ7w3epsM677D6BX/hsdo3t08jZedbyHyDvqiRqgyBZPj+qC
+         AunQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=wDnMtZIra7WWgmvfJglhA0fiZqRqnvU/7bnAqVFUhpo=;
-        b=U+Rvi9CkrmKQKJ2bN+NHlcyAwF+pAbyaiOfsxizK3bqISQAFq68k6mNmxeo/s6vQ/8
-         CQfc8pLPQFX6SD8nV3qp6DcOb1RnVbv91oDCW0Bumyk9wpjyNvvVTAMtcOE4QLt299lx
-         tpHzN3NRwVWU8sOnQXppHBmNhjzTzgjXSGfaBPG5qNRbQdHBGRn/dOQAm4t06HNR3uIz
-         nhGC5An4WWMOaG4IyvVaB9BF0vyzT8AoeiLUIKJhLWQXWZ5AMqgJJIVBJ8px9GbS/uLI
-         erp8aDOBgpl78NoArFiAcFjstJUmUynPIHXZXx8SSwN9GKRa7TRCsrET6vL1my0h7TVs
-         ovtQ==
-X-Gm-Message-State: AOAM530EYIqaGzRnd2wxyhFa4LqBHWZbrY+4z/iMJSUqTLK8+lP+v0ij
-        W4ydnrLEITemCgdBlRiY1O4=
-X-Google-Smtp-Source: ABdhPJwJRfEBeGrLco/maQPI391lbIdXwMlUBBDe96UeCqHSJBIvvMTLRsKvG2OnuFc2okNchqngUw==
-X-Received: by 2002:aa7:96d1:: with SMTP id h17mr336068pfq.68.1598640772141;
-        Fri, 28 Aug 2020 11:52:52 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id b26sm153047pff.54.2020.08.28.11.52.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Aug 2020 11:52:51 -0700 (PDT)
-Date:   Fri, 28 Aug 2020 11:52:42 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lukas Wunner <lukas@wunner.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, Laura Garcia <nevola@gmail.com>,
-        David Miller <davem@davemloft.net>
-Message-ID: <5f49527acaf5d_3ca6d208e3@john-XPS-13-9370.notmuch>
-In-Reply-To: <d2256c451876583bbbf8f0e82a5a43ce35c5cf2f.1598517740.git.lukas@wunner.de>
-References: <cover.1598517739.git.lukas@wunner.de>
- <d2256c451876583bbbf8f0e82a5a43ce35c5cf2f.1598517740.git.lukas@wunner.de>
-Subject: RE: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ludt+w++AZ/zvssRXmf58ClW7Q8FwqVtlN0qCaWMqR8=;
+        b=gmi8A0V6RQctrfHhaR0+zg4VYOaTf6KBLpD5reLDsO1ysZ+S6Bv4eqiENyplDUfcfo
+         kn8Ya4bOsS/f1QE9qdK8OFyB9ZitvbZnbbMXAJeGqE7s+0PqFmHyRe674UqP1iUVf3WR
+         PrHgzfq9Urq6oDN/qIwqeMlpJMqRZyv4pLPKZupp/DqF5o0rTL8jfvyNrfGF/ZX60i0C
+         spDEia6bWwhjtrihCQaJx2nde7hB4T8tSIq36YDP+y/nY3e/Qjf5NNujI3NAARmuGPio
+         qH2DnhiZM8xDSi+zP4uVwTSEZkG1oP+EIvW8ulLrPH8kE8tvwD+pmcaLHknO4HY0b2zn
+         S2Rg==
+X-Gm-Message-State: AOAM533r14vqSpBYMb8oyORYKuvjbMOkXQg2jKXtQgxpsdJNSiq0IEdb
+        KeaHYrrFWZYuXpp8oLgwFGI=
+X-Google-Smtp-Source: ABdhPJz3hVJMvmCK71GjTpffAHZpsGe82M3vrxwJMddkIxmmNhxwEDCV2I8w4m/cEO4l5asvdyLkUw==
+X-Received: by 2002:aa7:cb0a:: with SMTP id s10mr299993edt.134.1598642836744;
+        Fri, 28 Aug 2020 12:27:16 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:5700:8d31:58e3:8dd6:df93? (p200300ea8f2357008d3158e38dd6df93.dip0.t-ipconnect.de. [2003:ea:8f23:5700:8d31:58e3:8dd6:df93])
+        by smtp.googlemail.com with ESMTPSA id a23sm92821eju.43.2020.08.28.12.27.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Aug 2020 12:27:15 -0700 (PDT)
+Subject: Re: [PATCHi v2] net: mdiobus: fix device unregistering in
+ mdiobus_register
+To:     Sascha Hauer <s.hauer@pengutronix.de>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>, kernel@pengutronix.de
+References: <20200827070618.26754-1-s.hauer@pengutronix.de>
+ <3f9daa3c-8a16-734b-da7b-e0721ddf992c@gmail.com>
+ <20200828141512.GF4498@pengutronix.de>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <e1a1251a-9660-af82-2bf5-e4c664dde031@gmail.com>
+Date:   Fri, 28 Aug 2020 21:27:08 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <20200828141512.GF4498@pengutronix.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lukas Wunner wrote:
-> Commit e687ad60af09 ("netfilter: add netfilter ingress hook after
-> handle_ing() under unique static key") introduced the ability to
-> classify packets on ingress.
+On 28.08.2020 16:15, Sascha Hauer wrote:
+> On Thu, Aug 27, 2020 at 10:48:48AM +0200, Heiner Kallweit wrote:
+>> On 27.08.2020 09:06, Sascha Hauer wrote:
+>>> After device_register has been called the device structure may not be
+>>> freed anymore, put_device() has to be called instead. This gets violated
+>>> when device_register() or any of the following steps before the mdio
+>>> bus is fully registered fails. In this case the caller will call
+>>> mdiobus_free() which then directly frees the mdio bus structure.
+>>>
+>>> Set bus->state to MDIOBUS_UNREGISTERED right before calling
+>>> device_register(). With this mdiobus_free() calls put_device() instead
+>>> as it ought to be.
+>>>
+>>> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+>>> ---
+>>>
+>>> Changes since v1:
+>>> - set bus->state before calling device_register(), not afterwards
+>>>
+>>>  drivers/net/phy/mdio_bus.c | 2 ++
+>>>  1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+>>> index 0af20faad69d..9434b04a11c8 100644
+>>> --- a/drivers/net/phy/mdio_bus.c
+>>> +++ b/drivers/net/phy/mdio_bus.c
+>>> @@ -534,6 +534,8 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+>>>  	bus->dev.groups = NULL;
+>>>  	dev_set_name(&bus->dev, "%s", bus->id);
+>>>  
+>>> +	bus->state = MDIOBUS_UNREGISTERED;
+>>> +
+>>>  	err = device_register(&bus->dev);
+>>>  	if (err) {
+>>>  		pr_err("mii_bus %s failed to register\n", bus->id);
+>>>
+>> LGTM. Just two points:
+>> 1. Subject has a typo (PATCHi). And it should be [PATCH net v2], because it's
+>>    something for the stable branch.
+>> 2. A "Fixes" tag is needed.
 > 
-> Support the same on egress.  This allows filtering locally generated
-> traffic such as DHCP, or outbound AF_PACKETs in general.  It will also
-> allow introducing in-kernel NAT64 and NAT46.  A patch for nftables to
-> hook up egress rules from user space has been submitted separately.
+> Uh, AFAICT this fixes a patch from 2008, this makes for quite some
+> stable updates :)
 > 
-> Position the hook immediately before a packet is handed to traffic
-> control and then sent out on an interface, thereby mirroring the ingress
-> order.  This order allows marking packets in the netfilter egress hook
-> and subsequently using the mark in tc.  Another benefit of this order is
-> consistency with a lot of existing documentation which says that egress
-> tc is performed after netfilter hooks.
-> 
-> To avoid a performance degradation in the default case (with neither
-> netfilter nor traffic control used), Daniel Borkmann suggests "a single
-> static_key which wraps an empty function call entry which can then be
-> patched by the kernel at runtime. Inside that trampoline we can still
-> keep the ordering [between netfilter and traffic control] intact":
-> 
-> https://lore.kernel.org/netdev/20200318123315.GI979@breakpoint.cc/
-> 
-> To this end, introduce nf_sch_egress() which is dynamically patched into
-> __dev_queue_xmit(), contingent on egress_needed_key.  Inside that
-> function, nf_egress() and sch_handle_egress() is called, each contingent
-> on its own separate static_key.
-> 
-> nf_sch_egress() is declared noinline per Florian Westphal's suggestion.
-> This change alone causes a speedup if neither netfilter nor traffic
-> control is used, apparently because it reduces instruction cache
-> pressure.  The same effect was previously observed by Eric Dumazet for
-> the ingress path:
-> 
-> https://lore.kernel.org/netdev/1431387038.566.47.camel@edumazet-glaptop2.roam.corp.google.com/
-> 
-> Overall, performance improves with this commit if neither netfilter nor
-> traffic control is used. However it degrades a little if only traffic
-> control is used, due to the "noinline", the additional outer static key
-> and the added netfilter code:
-> 
-> * Before:       4730418pps 2270Mb/sec (2270600640bps)
-> * After:        4759206pps 2284Mb/sec (2284418880bps)
+There's just a handful of LTS kernel versions (oldest is 4.4), therefore it
+shouldn't be that bad. But right, for things that have always been like they
+are now, sometimes it's tricky to find a proper Fixes tag.
 
-These baseline numbers seem low to me.
-
+> Sascha
 > 
-> * Before + tc:  4063912pps 1950Mb/sec (1950677760bps)
-> * After  + tc:  4007728pps 1923Mb/sec (1923709440bps)
-> 
-> * After  + nft: 3714546pps 1782Mb/sec (1782982080bps)
-> 
-> Measured on a bare-metal Core i7-3615QM.
-
-OK I have some server class systems here I would like to run these
-benchmarks again on to be sure we don't have any performance
-regressions on that side.
-
-I'll try to get to it asap, but likely will be Monday morning
-by the time I get to it. I assume that should be no problem
-seeing we are only on rc2.
-
-Thanks.
-
-> 
-> Commands to perform a measurement:
-> ip link add dev foo type dummy
-> ip link set dev foo up
-> modprobe pktgen
-> echo "add_device foo" > /proc/net/pktgen/kpktgend_3
-> samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh -i foo -n 400000000 -m "11:11:11:11:11:11" -d 1.1.1.1
-
-Thats a single thread correct? -t option if I recall correctly.
-I think we should also try with many threads to see if
-that makes a difference. I guess probably not, but lets
-see.
-
-> 
-> Commands to enable egress traffic control:
-> tc qdisc add dev foo clsact
-> tc filter add dev foo egress bpf da bytecode '1,6 0 0 0,'
-> 
-> Commands to enable egress netfilter:
-> nft add table netdev t
-> nft add chain netdev t co \{ type filter hook egress device foo priority 0 \; \}
-> nft add rule netdev t co ip daddr 4.3.2.1/32 drop
+> | commit 161c8d2f50109b44b664eaf23831ea1587979a61
+> | Author: Krzysztof Halasa <khc@pm.waw.pl>
+> | Date:   Thu Dec 25 16:50:41 2008 -0800
+> | 
+> |     net: PHYLIB mdio fixes #2
 > 
 
-I'll give above a try.
