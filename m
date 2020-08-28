@@ -2,369 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2C1E255363
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 05:37:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5746C255366
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 05:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728406AbgH1Dha (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 23:37:30 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:35122 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727817AbgH1Dha (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 27 Aug 2020 23:37:30 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 09C35411544DE6C27D1C;
-        Fri, 28 Aug 2020 11:37:27 +0800 (CST)
-Received: from localhost.localdomain (10.175.118.36) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 28 Aug 2020 11:36:57 +0800
-From:   Luo bin <luobin9@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
-Subject: [PATCH net-next v2 3/3] hinic: add support to query function table
-Date:   Fri, 28 Aug 2020 11:37:48 +0800
-Message-ID: <20200828033748.26172-4-luobin9@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200828033748.26172-1-luobin9@huawei.com>
-References: <20200828033748.26172-1-luobin9@huawei.com>
+        id S1728115AbgH1Dmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 23:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727999AbgH1Dms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 23:42:48 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC62C061233
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 20:42:47 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id j25so10482005ejk.9
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 20:42:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Wl7POtGUJpujC577nqFjmTBAOmvQ4nTIGwkF53IPEDs=;
+        b=tq0zGDR93T6ES5KjCAtJcuuPzPguZpOtkbOunk4JUInNQbuoAVAJvp++D4hQ1yRLG9
+         oVPESLvDSvN/SxHxeQBn/z/jPgT6PJD8LEEIA9IyLij9gJ1K6+1fPJHnJ0EoDT8b3Ey3
+         WdmEq+7HQmSJcbiUqvgLSodFl+JDqVoT85Ibx6I87W+TjP1QncW/tz9j4q/JVPBsZaj1
+         gONchDfblDPomG0BR+ZL49xl0Fu5y2j9uQAVCn2UYlnN2/qTkbxSswMf4Mi3d370TMHJ
+         WHUTT1bZSwkkCnhEOOAFbmilHPa4mwjSE7kHdORspUTiVg9cDmo+mshEIyS/3rtOo+yV
+         f8NA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Wl7POtGUJpujC577nqFjmTBAOmvQ4nTIGwkF53IPEDs=;
+        b=pLn1xFrBbcY2TP7nk6LUBF1NCza9JFWiHWfel9YjYedhnAmXZ53dA6cCrBT1GMwKn2
+         2sBQEqDA+G/s7viV8/FQxIiqqCMWXPmKBHGL+BggclbC1UvZqlIU18tAWD5DAd98KjSF
+         Iki8kciQqOhWHL2Cj23SickTMgwFfDFXefT3BkRK4R3+klRqWa3iPxAF17abAQa/AnXd
+         i8cZBeAw5tyoPnmJpE/Nz+kCNNV5z0fitLO5iSddoRHAQmdtjmIqf/ou/6G6wI24T504
+         VB3kbj6bBQoeimqQ7w8UJonpUO0HfGlVLm0Mz0gN40tlgDEcB9UzBAGEoL7XUuRz8z/A
+         6bEw==
+X-Gm-Message-State: AOAM531oGL984zR4dRSQBKTS83m2m97/F47YK+Ln/OU9oBw7AnhKHeBB
+        AmrSBspnU6+4nq21G74KWIbA6xXHSTp/9r7OqeszcQ==
+X-Google-Smtp-Source: ABdhPJwk4MdYud22SSD4VMNkQ45Fwn96im/vGznNyYRJQx0E7CnsPzI55RD6/Xhy7xw6X35XN4XD+TwVA146l+SuseE=
+X-Received: by 2002:a17:906:6406:: with SMTP id d6mr23310789ejm.30.1598586165507;
+ Thu, 27 Aug 2020 20:42:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.118.36]
-X-CFilter-Loop: Reflected
+References: <20200819224030.1615203-1-haoluo@google.com> <20200819224030.1615203-9-haoluo@google.com>
+ <CAEf4BzYC0JRQusCxTrmraYQC7SZdkVjdy8DMUNECKwCbXP9-dw@mail.gmail.com>
+In-Reply-To: <CAEf4BzYC0JRQusCxTrmraYQC7SZdkVjdy8DMUNECKwCbXP9-dw@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Thu, 27 Aug 2020 20:42:34 -0700
+Message-ID: <CA+khW7jYWNT5aVe5vCinw5qwKKoB0w386qz2g+0ndv1LeeoGGg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 8/8] bpf/selftests: Test for bpf_per_cpu_ptr()
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Andrey Ignatov <rdna@fb.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add debugfs node for querying function table, for example:
-cat /sys/kernel/debug/hinic/0000:15:00.0/func_table/valid
+Thanks for taking a look!
 
-Signed-off-by: Luo bin <luobin9@huawei.com>
----
-V0~V1:
-- remove command interfaces to the read only files
-- split addition of each object into a separate patch
+On Fri, Aug 21, 2020 at 8:30 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Aug 19, 2020 at 3:42 PM Hao Luo <haoluo@google.com> wrote:
+> >
+> > Test bpf_per_cpu_ptr(). Test two paths in the kernel. If the base
+> > pointer points to a struct, the returned reg is of type PTR_TO_BTF_ID.
+> > Direct pointer dereference can be applied on the returned variable.
+> > If the base pointer isn't a struct, the returned reg is of type
+> > PTR_TO_MEM, which also supports direct pointer dereference.
+> >
+> > Signed-off-by: Hao Luo <haoluo@google.com>
+> > ---
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>
+[...]
+> >
+> >  __u64 out__runqueues = -1;
+> >  __u64 out__bpf_prog_active = -1;
+> > +__u32 out__rq_cpu = -1;
+> > +unsigned long out__process_counts = -1;
+>
+> try to not use long for variables, it is 32-bit integer in user-space
+> but always 64-bit in BPF. This causes problems when using skeleton on
+> 32-bit architecture.
+>
 
-V1~V2:
-- remove vlan_id and vlan_mode from the func_table_fields
+Ack. I will use another variable of type 'int' instead.
 
- .../net/ethernet/huawei/hinic/hinic_debugfs.c | 92 ++++++++++++++++++-
- .../net/ethernet/huawei/hinic/hinic_debugfs.h | 79 ++++++++++++++++
- drivers/net/ethernet/huawei/hinic/hinic_dev.h |  3 +
- .../net/ethernet/huawei/hinic/hinic_hw_dev.h  |  2 +
- .../net/ethernet/huawei/hinic/hinic_main.c    | 15 +++
- 5 files changed, 190 insertions(+), 1 deletion(-)
+> >
+> > -extern const struct rq runqueues __ksym; /* struct type global var. */
+> > +extern const struct rq runqueues __ksym; /* struct type percpu var. */
+> >  extern const int bpf_prog_active __ksym; /* int type global var. */
+> > +extern const unsigned long process_counts __ksym; /* int type percpu var. */
+> >
+> >  SEC("raw_tp/sys_enter")
+> >  int handler(const void *ctx)
+> >  {
+> > +       struct rq *rq;
+> > +       unsigned long *count;
+> > +
+> >         out__runqueues = (__u64)&runqueues;
+> >         out__bpf_prog_active = (__u64)&bpf_prog_active;
+> >
+> > +       rq = (struct rq *)bpf_per_cpu_ptr(&runqueues, 1);
+> > +       if (rq)
+> > +               out__rq_cpu = rq->cpu;
+>
+> this is awesome!
+>
+> Are there any per-cpu variables that are arrays? Would be nice to test
+> those too.
+>
+>
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c
-index d10d0a6d9f13..19eb839177ec 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.c
-@@ -70,6 +70,63 @@ static u64 hinic_dbg_get_rq_info(struct hinic_dev *nic_dev, struct hinic_rq *rq,
- 	return 0;
- }
- 
-+enum func_tbl_info {
-+	VALID,
-+	RX_MODE,
-+	MTU,
-+	RQ_DEPTH,
-+	QUEUE_NUM,
-+};
-+
-+static char *func_table_fields[] = {"valid", "rx_mode", "mtu", "rq_depth", "cfg_q_num"};
-+
-+static int hinic_dbg_get_func_table(struct hinic_dev *nic_dev, int idx)
-+{
-+	struct tag_sml_funcfg_tbl *funcfg_table_elem;
-+	struct hinic_cmd_lt_rd *read_data;
-+	u16 out_size = sizeof(*read_data);
-+	int err;
-+
-+	read_data = kzalloc(sizeof(*read_data), GFP_KERNEL);
-+	if (!read_data)
-+		return ~0;
-+
-+	read_data->node = TBL_ID_FUNC_CFG_SM_NODE;
-+	read_data->inst = TBL_ID_FUNC_CFG_SM_INST;
-+	read_data->entry_size = HINIC_FUNCTION_CONFIGURE_TABLE_SIZE;
-+	read_data->lt_index = HINIC_HWIF_FUNC_IDX(nic_dev->hwdev->hwif);
-+	read_data->len = HINIC_FUNCTION_CONFIGURE_TABLE_SIZE;
-+
-+	err = hinic_port_msg_cmd(nic_dev->hwdev, HINIC_PORT_CMD_RD_LINE_TBL, read_data,
-+				 sizeof(*read_data), read_data, &out_size);
-+	if (err || out_size != sizeof(*read_data) || read_data->status) {
-+		netif_err(nic_dev, drv, nic_dev->netdev,
-+			  "Failed to get func table, err: %d, status: 0x%x, out size: 0x%x\n",
-+			  err, read_data->status, out_size);
-+		kfree(read_data);
-+		return ~0;
-+	}
-+
-+	funcfg_table_elem = (struct tag_sml_funcfg_tbl *)read_data->data;
-+
-+	switch (idx) {
-+	case VALID:
-+		return funcfg_table_elem->dw0.bs.valid;
-+	case RX_MODE:
-+		return funcfg_table_elem->dw0.bs.nic_rx_mode;
-+	case MTU:
-+		return funcfg_table_elem->dw1.bs.mtu;
-+	case RQ_DEPTH:
-+		return funcfg_table_elem->dw13.bs.cfg_rq_depth;
-+	case QUEUE_NUM:
-+		return funcfg_table_elem->dw13.bs.cfg_q_num;
-+	}
-+
-+	kfree(read_data);
-+
-+	return ~0;
-+}
-+
- static ssize_t hinic_dbg_cmd_read(struct file *filp, char __user *buffer, size_t count,
- 				  loff_t *ppos)
- {
-@@ -91,6 +148,10 @@ static ssize_t hinic_dbg_cmd_read(struct file *filp, char __user *buffer, size_t
- 		out = hinic_dbg_get_rq_info(dbg->dev, dbg->object, *desc);
- 		break;
- 
-+	case HINIC_DBG_FUNC_TABLE:
-+		out = hinic_dbg_get_func_table(dbg->dev, *desc);
-+		break;
-+
- 	default:
- 		netif_warn(dbg->dev, drv, dbg->dev->netdev, "Invalid hinic debug cmd: %d\n",
- 			   dbg->type);
-@@ -136,7 +197,9 @@ static int create_dbg_files(struct hinic_dev *dev, enum hinic_dbg_type type, voi
- 
- static void rem_dbg_files(struct hinic_debug_priv *dbg)
- {
--	debugfs_remove_recursive(dbg->root);
-+	if (dbg->type != HINIC_DBG_FUNC_TABLE)
-+		debugfs_remove_recursive(dbg->root);
-+
- 	kfree(dbg);
- }
- 
-@@ -184,6 +247,21 @@ void hinic_rq_debug_rem(struct hinic_rq *rq)
- 		rem_dbg_files(rq->dbg);
- }
- 
-+int hinic_func_table_debug_add(struct hinic_dev *dev)
-+{
-+	if (HINIC_IS_VF(dev->hwdev->hwif))
-+		return 0;
-+
-+	return create_dbg_files(dev, HINIC_DBG_FUNC_TABLE, dev, dev->func_tbl_dbgfs, &dev->dbg,
-+				func_table_fields, ARRAY_SIZE(func_table_fields));
-+}
-+
-+void hinic_func_table_debug_rem(struct hinic_dev *dev)
-+{
-+	if (!HINIC_IS_VF(dev->hwdev->hwif) && dev->dbg)
-+		rem_dbg_files(dev->dbg);
-+}
-+
- void hinic_sq_dbgfs_init(struct hinic_dev *nic_dev)
- {
- 	nic_dev->sq_dbgfs = debugfs_create_dir("SQs", nic_dev->dbgfs_root);
-@@ -204,6 +282,18 @@ void hinic_rq_dbgfs_uninit(struct hinic_dev *nic_dev)
- 	debugfs_remove_recursive(nic_dev->rq_dbgfs);
- }
- 
-+void hinic_func_tbl_dbgfs_init(struct hinic_dev *nic_dev)
-+{
-+	if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
-+		nic_dev->func_tbl_dbgfs = debugfs_create_dir("func_table", nic_dev->dbgfs_root);
-+}
-+
-+void hinic_func_tbl_dbgfs_uninit(struct hinic_dev *nic_dev)
-+{
-+	if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
-+		debugfs_remove_recursive(nic_dev->func_tbl_dbgfs);
-+}
-+
- void hinic_dbg_init(struct hinic_dev *nic_dev)
- {
- 	nic_dev->dbgfs_root = debugfs_create_dir(pci_name(nic_dev->hwdev->hwif->pdev),
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.h b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.h
-index 186ca4a26919..e9e00cfa1329 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_debugfs.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_debugfs.h
-@@ -8,6 +8,77 @@
- 
- #include "hinic_dev.h"
- 
-+#define    TBL_ID_FUNC_CFG_SM_NODE                      11
-+#define    TBL_ID_FUNC_CFG_SM_INST                      1
-+
-+#define HINIC_FUNCTION_CONFIGURE_TABLE_SIZE             64
-+#define HINIC_FUNCTION_CONFIGURE_TABLE			1
-+
-+struct hinic_cmd_lt_rd {
-+	u8	status;
-+	u8	version;
-+	u8	rsvd0[6];
-+
-+	unsigned char node;
-+	unsigned char inst;
-+	unsigned char entry_size;
-+	unsigned char rsvd;
-+	unsigned int lt_index;
-+	unsigned int offset;
-+	unsigned int len;
-+	unsigned char data[100];
-+};
-+
-+struct tag_sml_funcfg_tbl {
-+	union {
-+		struct {
-+			u32 rsvd0            :8;
-+			u32 nic_rx_mode      :5;
-+			u32 rsvd1            :18;
-+			u32 valid            :1;
-+		} bs;
-+
-+		u32 value;
-+	} dw0;
-+
-+	union {
-+		struct {
-+			u32 vlan_id             :12;
-+			u32 vlan_mode           :3;
-+			u32 fast_recycled_mode  :1;
-+			u32 mtu                 :16;
-+		} bs;
-+
-+		u32 value;
-+	} dw1;
-+
-+	u32 dw2;
-+	u32 dw3;
-+	u32 dw4;
-+	u32 dw5;
-+	u32 dw6;
-+	u32 dw7;
-+	u32 dw8;
-+	u32 dw9;
-+	u32 dw10;
-+	u32 dw11;
-+	u32 dw12;
-+
-+	union {
-+		struct {
-+			u32 rsvd2               :15;
-+			u32 cfg_q_num           :9;
-+			u32 cfg_rq_depth        :6;
-+			u32 vhd_type            :2;
-+		} bs;
-+
-+		u32 value;
-+	} dw13;
-+
-+	u32 dw14;
-+	u32 dw15;
-+};
-+
- int hinic_sq_debug_add(struct hinic_dev *dev, u16 sq_id);
- 
- void hinic_sq_debug_rem(struct hinic_sq *sq);
-@@ -16,6 +87,10 @@ int hinic_rq_debug_add(struct hinic_dev *dev, u16 rq_id);
- 
- void hinic_rq_debug_rem(struct hinic_rq *rq);
- 
-+int hinic_func_table_debug_add(struct hinic_dev *dev);
-+
-+void hinic_func_table_debug_rem(struct hinic_dev *dev);
-+
- void hinic_sq_dbgfs_init(struct hinic_dev *nic_dev);
- 
- void hinic_sq_dbgfs_uninit(struct hinic_dev *nic_dev);
-@@ -24,6 +99,10 @@ void hinic_rq_dbgfs_init(struct hinic_dev *nic_dev);
- 
- void hinic_rq_dbgfs_uninit(struct hinic_dev *nic_dev);
- 
-+void hinic_func_tbl_dbgfs_init(struct hinic_dev *nic_dev);
-+
-+void hinic_func_tbl_dbgfs_uninit(struct hinic_dev *nic_dev);
-+
- void hinic_dbg_init(struct hinic_dev *nic_dev);
- 
- void hinic_dbg_uninit(struct hinic_dev *nic_dev);
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-index 0876a699d205..fb3e89141a0d 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_dev.h
-@@ -61,6 +61,7 @@ struct hinic_intr_coal_info {
- enum hinic_dbg_type {
- 	HINIC_DBG_SQ_INFO,
- 	HINIC_DBG_RQ_INFO,
-+	HINIC_DBG_FUNC_TABLE,
- };
- 
- struct hinic_debug_priv {
-@@ -114,6 +115,8 @@ struct hinic_dev {
- 	struct dentry			*dbgfs_root;
- 	struct dentry			*sq_dbgfs;
- 	struct dentry			*rq_dbgfs;
-+	struct dentry			*func_tbl_dbgfs;
-+	struct hinic_debug_priv		*dbg;
- 	struct devlink			*devlink;
- 	bool				cable_unplugged;
- 	bool				module_unrecognized;
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-index 701eb81e09a7..416492e48274 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_dev.h
-@@ -96,6 +96,8 @@ enum hinic_port_cmd {
- 
- 	HINIC_PORT_CMD_RSS_TEMP_MGR	= 49,
- 
-+	HINIC_PORT_CMD_RD_LINE_TBL	= 57,
-+
- 	HINIC_PORT_CMD_RSS_CFG		= 66,
- 
- 	HINIC_PORT_CMD_FWCTXT_INIT      = 69,
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index 27ae780d581a..797c55a1d9c6 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -1302,6 +1302,14 @@ static int nic_dev_init(struct pci_dev *pdev)
- 
- 	hinic_dbg_init(nic_dev);
- 
-+	hinic_func_tbl_dbgfs_init(nic_dev);
-+
-+	err = hinic_func_table_debug_add(nic_dev);
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to add func_table debug\n");
-+		goto err_add_func_table_dbg;
-+	}
-+
- 	err = register_netdev(netdev);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to register netdev\n");
-@@ -1311,6 +1319,9 @@ static int nic_dev_init(struct pci_dev *pdev)
- 	return 0;
- 
- err_reg_netdev:
-+	hinic_func_table_debug_rem(nic_dev);
-+err_add_func_table_dbg:
-+	hinic_func_tbl_dbgfs_uninit(nic_dev);
- 	hinic_dbg_uninit(nic_dev);
- 	hinic_free_intr_coalesce(nic_dev);
- err_init_intr:
-@@ -1434,6 +1445,10 @@ static void hinic_remove(struct pci_dev *pdev)
- 
- 	unregister_netdev(netdev);
- 
-+	hinic_func_table_debug_rem(nic_dev);
-+
-+	hinic_func_tbl_dbgfs_uninit(nic_dev);
-+
- 	hinic_dbg_uninit(nic_dev);
- 
- 	hinic_free_intr_coalesce(nic_dev);
--- 
-2.17.1
+There are currently per-cpu arrays, but not common. There is a
+'pmc_prev_left' in arch/x86, I can add that in this test.
 
+[...]
