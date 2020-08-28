@@ -2,107 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEEA1255407
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 07:26:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF70A25540D
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 07:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726465AbgH1F0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 01:26:51 -0400
-Received: from mx60.baidu.com ([61.135.168.60]:31503 "EHLO
-        tc-sys-mailedm01.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725809AbgH1F0u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 01:26:50 -0400
-Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
-        by tc-sys-mailedm01.tc.baidu.com (Postfix) with ESMTP id 3276B2040041;
-        Fri, 28 Aug 2020 13:26:32 +0800 (CST)
-From:   Li RongQing <lirongqing@baidu.com>
-To:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Cc:     edumazet@google.com
-Subject: [PATCH][next][v2] iavf: use kvzalloc instead of kzalloc for rx/tx_bi buffer
-Date:   Fri, 28 Aug 2020 13:26:32 +0800
-Message-Id: <1598592392-30673-1-git-send-email-lirongqing@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        id S1726687AbgH1FiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 01:38:21 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:28962 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726010AbgH1FiU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 01:38:20 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 07S5ZiaF030548
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 22:38:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=zhxx0x1QBZvF9GZ8DV23wHZ1bB8/D3r5LUVPZQivKKE=;
+ b=N2WPJuIxvxiH4NAmORqaSRFjKlR8jBT+SqDWA5/EjJ0nxP/0DVgmSEv8e7ElgS4c/U1P
+ /kVfoADaee1VY+mgjzcYnB5bBU2B2die3+xFiEn5U3gGS5oJuWiurnuTHlkQpdJAhp7b
+ 3QgBlaW0FBUNJQFKlT0052xId6ASkxPDmvk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 335up71be4-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 22:38:19 -0700
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 27 Aug 2020 22:38:17 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id AB2FC370541B; Thu, 27 Aug 2020 22:38:15 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Yonghong Song <yhs@fb.com>
+Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next v2 0/2] bpf: avoid iterating duplicated files for task_file iterator
+Date:   Thu, 27 Aug 2020 22:38:15 -0700
+Message-ID: <20200828053815.817726-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-28_03:2020-08-27,2020-08-28 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ mlxlogscore=999 priorityscore=1501 lowpriorityscore=0 impostorscore=0
+ phishscore=0 suspectscore=8 clxscore=1015 spamscore=0 mlxscore=0
+ bulkscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008280046
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-when changes the rx/tx ring to 4096, kzalloc may fail due to
-a temporary shortage on slab entries.
+Commit e679654a704e ("bpf: Fix a rcu_sched stall issue with
+bpf task/task_file iterator") introduced rate limiting in
+bpf_seq_read() to fix a case where traversing too many tasks
+and files (tens of millions of files) may cause kernel rcu stall.
+But rate limiting won't reduce the amount of work to traverse
+all these files.
 
-so using kvmalloc to allocate this memory as there is no need
-that this memory area is physical continuously.
+In practice, for a user process, typically all threads belongs
+to that process share the same file table and there is no need
+to visit every thread for its files.
 
-and using __GFP_RETRY_MAYFAIL to allocate from kmalloc as
-far as possible, which can reduce TLB pressure than vmalloc
-as suggested by Eric Dumazet
+This patch added additional logic for task_file iterator to
+skip tasks if those tasks are not group_leaders and their files
+are the same as those of group_leaders.
+Such reduction of unnecessary work will make iterator runtime
+much faster if there are a lot of non-main threads and open
+files for the process.
 
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
----
-v2: __GFP_RETRY_MAYFAIL is used
+Patch #1 is the kernel implementation and Patch #2 is the
+selftest.
+  v1 -> v2:
+    - for task_file, no need for additional user parameter,
+      kernel can just skip those files already visited, and
+      this should not impact user space. (Andrii)
+    - to add group_leader-only customization for task will
+      be considered later.
+    - remove Patch #1 and sent it separately as this patch set
+      won't depend on it any more.
 
- drivers/net/ethernet/intel/iavf/iavf_txrx.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+Yonghong Song (2):
+  bpf: avoid iterating duplicated files for task_file iterator
+  selftests/bpf: test task_file iterator without visiting pthreads
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-index 256fa07d54d5..e7a1e9039cee 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-@@ -92,7 +92,7 @@ void iavf_clean_tx_ring(struct iavf_ring *tx_ring)
- void iavf_free_tx_resources(struct iavf_ring *tx_ring)
- {
- 	iavf_clean_tx_ring(tx_ring);
--	kfree(tx_ring->tx_bi);
-+	kvfree(tx_ring->tx_bi);
- 	tx_ring->tx_bi = NULL;
- 
- 	if (tx_ring->desc) {
-@@ -622,7 +622,8 @@ int iavf_setup_tx_descriptors(struct iavf_ring *tx_ring)
- 	/* warn if we are about to overwrite the pointer */
- 	WARN_ON(tx_ring->tx_bi);
- 	bi_size = sizeof(struct iavf_tx_buffer) * tx_ring->count;
--	tx_ring->tx_bi = kzalloc(bi_size, GFP_KERNEL);
-+	tx_ring->tx_bi = kvzalloc(bi_size, GFP_KERNEL |
-+					  __GFP_RETRY_MAYFAIL);
- 	if (!tx_ring->tx_bi)
- 		goto err;
- 
-@@ -643,7 +644,7 @@ int iavf_setup_tx_descriptors(struct iavf_ring *tx_ring)
- 	return 0;
- 
- err:
--	kfree(tx_ring->tx_bi);
-+	kvfree(tx_ring->tx_bi);
- 	tx_ring->tx_bi = NULL;
- 	return -ENOMEM;
- }
-@@ -714,7 +715,7 @@ void iavf_clean_rx_ring(struct iavf_ring *rx_ring)
- void iavf_free_rx_resources(struct iavf_ring *rx_ring)
- {
- 	iavf_clean_rx_ring(rx_ring);
--	kfree(rx_ring->rx_bi);
-+	kvfree(rx_ring->rx_bi);
- 	rx_ring->rx_bi = NULL;
- 
- 	if (rx_ring->desc) {
-@@ -738,7 +739,8 @@ int iavf_setup_rx_descriptors(struct iavf_ring *rx_ring)
- 	/* warn if we are about to overwrite the pointer */
- 	WARN_ON(rx_ring->rx_bi);
- 	bi_size = sizeof(struct iavf_rx_buffer) * rx_ring->count;
--	rx_ring->rx_bi = kzalloc(bi_size, GFP_KERNEL);
-+	rx_ring->rx_bi = kvzalloc(bi_size, GFP_KERNEL |
-+				      __GFP_RETRY_MAYFAIL);
- 	if (!rx_ring->rx_bi)
- 		goto err;
- 
-@@ -762,7 +764,7 @@ int iavf_setup_rx_descriptors(struct iavf_ring *rx_ring)
- 
- 	return 0;
- err:
--	kfree(rx_ring->rx_bi);
-+	kvfree(rx_ring->rx_bi);
- 	rx_ring->rx_bi = NULL;
- 	return -ENOMEM;
- }
--- 
-2.16.2
+ kernel/bpf/task_iter.c                        | 14 ++++++++-----
+ .../selftests/bpf/prog_tests/bpf_iter.c       | 21 +++++++++++++++++++
+ .../selftests/bpf/progs/bpf_iter_task_file.c  | 10 ++++++++-
+ 3 files changed, 39 insertions(+), 6 deletions(-)
+
+--=20
+2.24.1
 
