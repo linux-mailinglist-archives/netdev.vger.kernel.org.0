@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC6D2551C5
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 01:59:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FEB32551FD
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 02:39:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727959AbgH0X7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 27 Aug 2020 19:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726147AbgH0X7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 27 Aug 2020 19:59:01 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD66C061264
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 16:59:00 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id u2so1683784qtf.11
-        for <netdev@vger.kernel.org>; Thu, 27 Aug 2020 16:59:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=toxicpanda-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=h57l3kyoSge+DL/hTiwIZlDn37kJsV2OpP2WH0eMUrY=;
-        b=qz2Q3oQfWqHwdBioUy7e30Wa5Uf6UQrbaKEU7/kqTwAwuCQh7v2CNEsybt6zayFeX1
-         Rh5bUhKJE0ganW7yLCaal6Za6ej5gBHrR1m1QZdX0d0E2paVj9xDkI3Mq3s24Xw4ZJPd
-         jiSlWZK/0OPd5Dd2h+a5sSFKQVNF1V8QfSb14bQtmaxM7KVYiA8lV0F8zJ5upj3RkzO/
-         YYK/vm/tf+4VuZK3kdSDqCt6BvVQv+8FqA0EIf+q1twulIFvNRn6+FR4men6ZDHuAkLw
-         0rE1MqNxz2Nk0hpbJEDm8CHaNSINvVW+5dv3pXbhrVNeBsOXpEl21VuheIkqk8uOBRbk
-         PFgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=h57l3kyoSge+DL/hTiwIZlDn37kJsV2OpP2WH0eMUrY=;
-        b=UzLwkl2PL0ojldlSs3RAcfpOYmtWIkYDyHdPgyf428bR3ORnsMnRkQcVZzhFw1j+pk
-         2TXDXbMxFSRzgwc4T2up9RINbiBq/7840xbJulO0HBX3tTjNyJdzh/Q3czWzm60ISDTW
-         3gdEkpQm1BIS/VkU8z2wkeT8jaxlqZ4A9L4zC/eteYZkrrVYEeM0nkanBWNLMNe7VBI0
-         08AWI5VoCqslIYF3g/ueAknNqMwQvf/GIXEP8Pk1N2mdbPgSIfW1d2ri0kibqbYtfEXk
-         mCG/kVFCqHI6fgoRy+BTMMf0PZYZxzOFhXQ2zCygWc2y4LyEVDW7WhJXOgsqKWtrl3JM
-         JoRw==
-X-Gm-Message-State: AOAM531AZO61azmNpkjHrdahc86uuEA6j0XCwSYfOg8uvvbSB2UknXl4
-        ThYUaZKEACAFELDI8E3ng2huWA==
-X-Google-Smtp-Source: ABdhPJx/rbRkLsrpsCZ9/p+65Is5d7p1Sr+vuIv9PqsCxxohllrQMOSFp7Kq1rbF5G2BSZ0QprMjZg==
-X-Received: by 2002:ac8:4558:: with SMTP id z24mr22041157qtn.241.1598572739603;
-        Thu, 27 Aug 2020 16:58:59 -0700 (PDT)
-Received: from localhost.localdomain (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
-        by smtp.gmail.com with ESMTPSA id 9sm3161050qky.81.2020.08.27.16.58.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 27 Aug 2020 16:58:58 -0700 (PDT)
-Subject: Re: [PATCH v3 bpf-next 1/5] mm/error_inject: Fix allow_error_inject
- function signatures.
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        davem@davemloft.net
-Cc:     daniel@iogearbox.net, bpoirier@suse.com, akpm@linux-foundation.org,
-        hannes@cmpxchg.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@fb.com
-References: <20200827220114.69225-1-alexei.starovoitov@gmail.com>
- <20200827220114.69225-2-alexei.starovoitov@gmail.com>
-From:   Josef Bacik <josef@toxicpanda.com>
-Message-ID: <9a4b6133-e0ca-c34e-6f85-1f04039109d5@toxicpanda.com>
-Date:   Thu, 27 Aug 2020 19:58:57 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728145AbgH1Aj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 27 Aug 2020 20:39:26 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:60681 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726147AbgH1AjX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 27 Aug 2020 20:39:23 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Bd11z15KFz9sSn;
+        Fri, 28 Aug 2020 10:39:18 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1598575161;
+        bh=hw2QVv72fnMpKpu16MEIWpkdlhdwHEwKMjWP0v3x6IQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=CkU0mwhiRpaERUjfUxqWh6MrG5Y1HDM5YI3ps4hH60suB+XQQeYDWG4R6Xe5yCwHt
+         U02pYP1IcKfh6L2bylbe2y4J7qLmmSHJOcAy/kWLF5NnvdfJ8GZAEiRt3G7a6Jn7Qg
+         aQPva0I3DKoWWuYJvDdWCgMDcg/qBSVNAemUJdazwBAOYDl7KA6UcWjDzUYB5BTY+g
+         qXsqolp2dpf9pFk7SOgIFoHJWZSjPHMhLXaled5nuidww9/6+7ZBiH5wzGMwkw58yB
+         +1tHEFnSPFGbP6AHXdrQf76NBjR9jtQ6au2iCgCUppEcbefkLW6vKQi/TExw5d50En
+         GARYDPU+mLkew==
+Date:   Fri, 28 Aug 2020 10:39:11 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20200828103911.7f87cc1d@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20200827220114.69225-2-alexei.starovoitov@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/rdDiGHzhoAGPz5IxfgPjeA/";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/27/20 6:01 PM, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> 'static' and 'static noinline' function attributes make no guarantees that
-> gcc/clang won't optimize them. The compiler may decide to inline 'static'
-> function and in such case ALLOW_ERROR_INJECT becomes meaningless. The compiler
-> could have inlined __add_to_page_cache_locked() in one callsite and didn't
-> inline in another. In such case injecting errors into it would cause
-> unpredictable behavior. It's worse with 'static noinline' which won't be
-> inlined, but it still can be optimized. Like the compiler may decide to remove
-> one argument or constant propagate the value depending on the callsite.
-> 
-> To avoid such issues make sure that these functions are global noinline.
-> 
-> Fixes: af3b854492f3 ("mm/page_alloc.c: allow error injection")
-> Fixes: cfcbfb1382db ("mm/filemap.c: enable error injection at add_to_page_cache()")
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+--Sig_/rdDiGHzhoAGPz5IxfgPjeA/
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
+Hi all,
 
-Thanks,
+Today's linux-next merge of the net-next tree got a conflict in:
 
-Josef
+  net/ipv4/raw.c
+
+between commit:
+
+  645f08975f49 ("net: Fix some comments")
+
+from the net tree and commit:
+
+  2bdcc73c88d2 ("net: ipv4: delete repeated words")
+
+from the net-next tree.
+
+I fixed it up (they each removed a different "and" - I kept the latter)
+and can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/rdDiGHzhoAGPz5IxfgPjeA/
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9IUi8ACgkQAVBC80lX
+0GzfOgf+LT5gCWANakQWEiMOnGhgaYVymlk03R+65rDxrxpJQjUO3EilAeO1y382
+MYXPFWIAsXyFf568qw62nviiuUxWRc/qaQh+OMdibyl8UntVK6j/+lv3Xq/S8ThH
+VMhEs57nlbdnPnL0yqbkaJlKoeZ7FqGx2oKyLJ5ddiSLk3oHI17QO94NVxKhaIGr
+W4SsAGh/J9ENFNIO5HiLSfGGnAdYjqirdyEYVdXDFS/BL/rGghwx/V0djuFxC8+D
+6qyKfJ6o2yA2eV1rp9/ddkm9yh/R8MlztIZ2aQx2InNrRNdQ2buovF49cgCNj1ZD
+6rIFIPvghwKSjmPcibIfXbf8+WqBSA==
+=/4dJ
+-----END PGP SIGNATURE-----
+
+--Sig_/rdDiGHzhoAGPz5IxfgPjeA/--
