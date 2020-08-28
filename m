@@ -2,114 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 158A32562A3
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 23:52:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 445632562B2
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 23:56:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726804AbgH1VwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 17:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726418AbgH1VwO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 17:52:14 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09C8C06121B
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 14:52:12 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id g207so1317883pfb.1
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 14:52:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BGIFgHhnj4ZZ+ZwmJ+azPNOf9dZgEALfNMtI3CFWx/o=;
-        b=iZovJBNhkq0B0uvt1ArnlCzdGbse3STj2vz7fm/5VWNq+S1otd+TvNXZEUISe40n4r
-         3tyV7aZKRDpcO8Xj0Mrnb0RFV5xmg0I8ORIUjCNCrvsgPb0d8Bun/VjtpPNSc/dfVpKT
-         uS0YwSrtAIaaZAeAitIxGI7YsF/TOi0NkB/2zD/YiJYxK4wMVhVW0mHTLZyrIXJPpESq
-         y06pufjnDraLjjx8YNwTEqj440DVB6lkZF+ldjBz/N+O4Pc4nEPAthTnNQEdzYhkK/W3
-         qIkdIyU503gGOvgOhAL7fG7yiYDGHx8m7RtnSdb1qBuDmi3Q35PlKpNHYR+hXjomtOgO
-         +BDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BGIFgHhnj4ZZ+ZwmJ+azPNOf9dZgEALfNMtI3CFWx/o=;
-        b=Y/N8pk3ebMDm9599WQ+dD4JVfpzGLtyJworxuyNbxwQCprX7SS9gztgN6xpRalO+gL
-         GsjPIwibd/iklnr0FbeTD0jFddfkyEjdKo/1JH07Essr1NSK6tY/X/COCqeGXVbd02TM
-         M2RMGjavqwEPw4E5FHhmFGpu/RR9cdKQfl9D2ROPUOARPh44pbkGJWUQqsZpvbM5mVeL
-         tr2LRzG7q9lzlVg/5M4M3GWkLQVAxtS5S8Y9WsldFPRM4SSYMGOj7bXXPZ+ayNdw/h01
-         flErRiTjURyyWhcyvricAbBCNXpWoOxqd9UiC2U2HVK2vRU/ih2r4qJ1XfaB5VqmgZZk
-         kUMA==
-X-Gm-Message-State: AOAM530Ewnziqrdfiv8Ex9S8Es4bGKoiqE/gCOh8B7dezMJf246jdtdg
-        xnTM7AUsL0hd/L+FxrRGHn9iHY6J97C9iw==
-X-Google-Smtp-Source: ABdhPJwhZJvDd6XsVHxUj8a4OFtxbQPgRKloZkMgTlDj0buCsdSbeE00LtElOYuUed4PK8i3k/2dZA==
-X-Received: by 2002:a62:5214:: with SMTP id g20mr821890pfb.168.1598651532034;
-        Fri, 28 Aug 2020 14:52:12 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id r199sm400334pfc.98.2020.08.28.14.52.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Aug 2020 14:52:11 -0700 (PDT)
-Date:   Fri, 28 Aug 2020 14:52:03 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Bart Groeneveld <avi@bartavi.nl>
-Cc:     linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v3] net: Use standardized (IANA) local port range
-Message-ID: <20200828145203.65395ad8@hermes.lan>
-In-Reply-To: <20200828204447.32838-1-avi@bartavi.nl>
-References: <20200828203959.32010-1-avi@bartavi.nl>
-        <20200828204447.32838-1-avi@bartavi.nl>
+        id S1726797AbgH1V4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 17:56:42 -0400
+Received: from www62.your-server.de ([213.133.104.62]:52428 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726033AbgH1V4l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 17:56:41 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kBmMQ-0004sy-QM; Fri, 28 Aug 2020 23:56:38 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kBmMQ-000QHj-Ig; Fri, 28 Aug 2020 23:56:38 +0200
+Subject: Re: [PATCHv9 bpf-next 1/5] bpf: add a new bpf argument type
+ ARG_CONST_MAP_PTR_OR_NULL
+To:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko B <andrii.nakryiko@gmail.com>
+References: <20200715130816.2124232-1-liuhangbin@gmail.com>
+ <20200826132002.2808380-1-liuhangbin@gmail.com>
+ <20200826132002.2808380-2-liuhangbin@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <a6ef587d-8128-a926-16b3-01e7ef7b4c8b@iogearbox.net>
+Date:   Fri, 28 Aug 2020 23:56:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200826132002.2808380-2-liuhangbin@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25913/Fri Aug 28 15:19:15 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 28 Aug 2020 22:44:47 +0200
-Bart Groeneveld <avi@bartavi.nl> wrote:
+On 8/26/20 3:19 PM, Hangbin Liu wrote:
+> Add a new bpf argument type ARG_CONST_MAP_PTR_OR_NULL which could be
+> used when we want to allow NULL pointer for map parameter. The bpf helper
+> need to take care and check if the map is NULL when use this type.
+> 
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+> 
+> v9: merge the patch from [1] in to this series.
+> v1-v8: no this patch
+> 
+> [1] https://lore.kernel.org/bpf/20200715070001.2048207-1-liuhangbin@gmail.com/
+> ---
+>   include/linux/bpf.h   |  2 ++
+>   kernel/bpf/verifier.c | 23 ++++++++++++++++-------
+>   2 files changed, 18 insertions(+), 7 deletions(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index a6131d95e31e..cb40a1281ea2 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -276,6 +276,7 @@ enum bpf_arg_type {
+>   	ARG_PTR_TO_ALLOC_MEM,	/* pointer to dynamically allocated memory */
+>   	ARG_PTR_TO_ALLOC_MEM_OR_NULL,	/* pointer to dynamically allocated memory or NULL */
+>   	ARG_CONST_ALLOC_SIZE_OR_ZERO,	/* number of allocated bytes requested */
+> +	ARG_CONST_MAP_PTR_OR_NULL,	/* const argument used as pointer to bpf_map or NULL */
+>   };
+>   
+>   /* type of values returned from helper functions */
+> @@ -369,6 +370,7 @@ enum bpf_reg_type {
+>   	PTR_TO_RDONLY_BUF_OR_NULL, /* reg points to a readonly buffer or NULL */
+>   	PTR_TO_RDWR_BUF,	 /* reg points to a read/write buffer */
+>   	PTR_TO_RDWR_BUF_OR_NULL, /* reg points to a read/write buffer or NULL */
+> +	CONST_PTR_TO_MAP_OR_NULL, /* reg points to struct bpf_map or NULL */
 
-> IANA specifies User ports as 1024-49151,
-> and Private ports (local/ephemeral/dynamic/w/e) as 49152-65535 [1].
-> 
-> This means Linux uses 32768-49151 'illegally'.
-> This is not just a matter of following specifications:
-> IANA actually assigns numbers in this range [1].
-> 
-> I understand that Linux uses 61000-65535 for masquarading/NAT [2],
-> so I left the high value at 60999.
-> This means the high value still does not follow the specification,
-> but it also doesn't conflict with it.
-> 
-> This change will effectively halve the available ephemeral ports,
-> increasing the risk of port exhaustion. But:
-> a) I don't think that warrants ignoring standards.
-> 	Consider for example setting up a (corporate) firewall blocking
-> 	all unknown external services.
-> 	It will only allow outgoing trafiic at port 80,443 and 49152-65535.
-> 	A Linux computer behind such a firewall will not be able to connect
-> 	to *any* external service *half of the time*.
-> 	Of course, the firewall can be adjusted to also allow 32768-49151,
-> 	but that allows computers to use some services against the policy.
-> b) It is only an issue with more than 11848 *outgoing* connections.
-> 	I think that is a niche case (I know, citation needed, but still).
-> 	If someone finds themselves in such a niche case,
-> 	they can still modify ip_local_port_range.
-> 
-> This patch keeps the low and high value at different parity,
-> as to optimize port assignment [3].
-> 
-> [1]: https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt
-> [2]: https://marc.info/?l=linux-kernel&m=117900026927289
-> [3]: See for example commit 1580ab63fc9a03593072cc5656167a75c4f1d173 ("tcp/dccp: better use of ephemeral ports in connect()")
-> 
-> Signed-off-by: Bart Groeneveld <avi@bartavi.nl>
+Why is this needed & where do you assign it? Also, if we were to use CONST_PTR_TO_MAP_OR_NULL
+then it's missing few things like rejection of arithmetic in adjust_ptr_min_max_vals(), handling
+in pruning logic etc.
 
-Changing the default range impacts existing users. Since Linux has been doing
-this for so long, I don't think just because a standards body decided to reserve
-some space is sufficient justification to do this.
+Either way, given no helper currently returns CONST_PTR_TO_MAP_OR_NULL, the ARG_CONST_MAP_PTR_OR_NULL
+one should be sufficient, so I'd suggest to remove the CONST_PTR_TO_MAP_OR_NULL bits.
+
+>   };
+>   
+>   /* The information passed from prog-specific *_is_valid_access
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 7e5908b83ec7..53a84335a8fd 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -411,7 +411,8 @@ static bool reg_type_may_be_null(enum bpf_reg_type type)
+>   	       type == PTR_TO_BTF_ID_OR_NULL ||
+>   	       type == PTR_TO_MEM_OR_NULL ||
+>   	       type == PTR_TO_RDONLY_BUF_OR_NULL ||
+> -	       type == PTR_TO_RDWR_BUF_OR_NULL;
+> +	       type == PTR_TO_RDWR_BUF_OR_NULL ||
+> +	       type == CONST_PTR_TO_MAP_OR_NULL;
+>   }
+>   
+>   static bool reg_may_point_to_spin_lock(const struct bpf_reg_state *reg)
+> @@ -427,7 +428,8 @@ static bool reg_type_may_be_refcounted_or_null(enum bpf_reg_type type)
+>   		type == PTR_TO_TCP_SOCK ||
+>   		type == PTR_TO_TCP_SOCK_OR_NULL ||
+>   		type == PTR_TO_MEM ||
+> -		type == PTR_TO_MEM_OR_NULL;
+> +		type == PTR_TO_MEM_OR_NULL ||
+> +		type == CONST_PTR_TO_MAP_OR_NULL;
+>   }
+>   
+>   static bool arg_type_may_be_refcounted(enum bpf_arg_type type)
+> @@ -509,6 +511,7 @@ static const char * const reg_type_str[] = {
+>   	[PTR_TO_RDONLY_BUF_OR_NULL] = "rdonly_buf_or_null",
+>   	[PTR_TO_RDWR_BUF]	= "rdwr_buf",
+>   	[PTR_TO_RDWR_BUF_OR_NULL] = "rdwr_buf_or_null",
+> +	[CONST_PTR_TO_MAP_OR_NULL] = "map_ptr_or_null",
+>   };
+>   
+>   static char slot_type_char[] = {
+> @@ -3957,9 +3960,13 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+>   		expected_type = SCALAR_VALUE;
+>   		if (type != expected_type)
+>   			goto err_type;
+> -	} else if (arg_type == ARG_CONST_MAP_PTR) {
+> +	} else if (arg_type == ARG_CONST_MAP_PTR ||
+> +		   arg_type == ARG_CONST_MAP_PTR_OR_NULL) {
+>   		expected_type = CONST_PTR_TO_MAP;
+> -		if (type != expected_type)
+> +		if (register_is_null(reg) &&
+> +		    arg_type == ARG_CONST_MAP_PTR_OR_NULL)
+> +			/* final test in check_stack_boundary() */;
+
+Where is that test in the code? Copy-paste leftover comment?
+
+> +		else if (type != expected_type)
+>   			goto err_type;
+>   	} else if (arg_type == ARG_PTR_TO_CTX ||
+>   		   arg_type == ARG_PTR_TO_CTX_OR_NULL) {
+> @@ -4076,9 +4083,9 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+>   		return -EFAULT;
+>   	}
+>   
+> -	if (arg_type == ARG_CONST_MAP_PTR) {
+> -		/* bpf_map_xxx(map_ptr) call: remember that map_ptr */
+> -		meta->map_ptr = reg->map_ptr;
+> +	if (arg_type == ARG_CONST_MAP_PTR ||
+> +	    arg_type == ARG_CONST_MAP_PTR_OR_NULL) {
+> +		meta->map_ptr = register_is_null(reg) ? NULL : reg->map_ptr;
+>   	} else if (arg_type == ARG_PTR_TO_MAP_KEY) {
+>   		/* bpf_map_xxx(..., map_ptr, ..., key) call:
+>   		 * check that [key, key + map->key_size) are within
+> @@ -6977,6 +6984,8 @@ static void mark_ptr_or_null_reg(struct bpf_func_state *state,
+>   			reg->type = PTR_TO_RDONLY_BUF;
+>   		} else if (reg->type == PTR_TO_RDWR_BUF_OR_NULL) {
+>   			reg->type = PTR_TO_RDWR_BUF;
+> +		} else if (reg->type == CONST_PTR_TO_MAP_OR_NULL) {
+> +			reg->type = CONST_PTR_TO_MAP;
+>   		}
+>   		if (is_null) {
+>   			/* We don't need id and ref_obj_id from this point
+> 
 
