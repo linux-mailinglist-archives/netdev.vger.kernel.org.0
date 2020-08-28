@@ -2,101 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A3AE255BBE
-	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 15:56:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FB55255BD6
+	for <lists+netdev@lfdr.de>; Fri, 28 Aug 2020 16:02:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727831AbgH1N4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 09:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        id S1727906AbgH1OCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 10:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726579AbgH1N4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 09:56:19 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA019C061264;
-        Fri, 28 Aug 2020 06:56:18 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id o4so1410808wrn.0;
-        Fri, 28 Aug 2020 06:56:18 -0700 (PDT)
+        with ESMTP id S1727884AbgH1OCJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 10:02:09 -0400
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67EDAC061264
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 07:02:09 -0700 (PDT)
+Received: by mail-vs1-xe34.google.com with SMTP id b16so621175vsl.6
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 07:02:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tNnC4MJvn0YjQrnjipXsey8gWX0l8zpkvsFTkYPZMtw=;
-        b=DFvfG+CV/NabXSoKc7HsspXMZviwC0JAjzPglV9m/Z7tQZwz2Mm32FnFtmXnTecyQ7
-         y4DbbKRszeuKs6Olk3lbgPsOrFYiBX70UBisAn41m4r5NXiKpxbKyBJ2IGqyBltVMDcy
-         SQDebQmU0xzznWVNqklhsKDg177XCldRwVQbj/Yc7MVrAgJEeCUHXafE1um6q13Esu7q
-         Dv01Cst5L424ZexQCWPzONb9ZehitJJ5WvMjG+1uJcbKoFC1+ph42iBwiDqO3E4qTyRK
-         Ava4Tl+KdmwmSJ9QJFMDHhNiqTSo35zKZFwmp+fNU3iE2RkkiV1wC3HBWWLsAl4Ah8qh
-         jhgg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ahg6SwLGlK3CWvua4G/j/vIMurB0g6i8M9RZ0GeLfr8=;
+        b=RB+1nEJOxm6QM0eDtjpcIvoSlUfZEqeZold/KeCX42J65KGCaR81Yz9g+E7u+FIged
+         ddbb+yvUV3zZcZYXM4NdLlWw3S0DRi2hTmhmg5AWKsMdRrX5KpI/RaCYGp5sbWoDhHNR
+         Qlf1UUFMGt2Tfyw4R7U5XIIMAh4YANrGKiwDQsWEN1cP3phMGn0q7xNTL4Tqi3cxlPjd
+         3LyvEF/2u2Cnp1+Qc6vRscIpXy6wddJXzBrOW9Y0xQ7YjU3vlKCYN6CEUMIg2gH5JoCq
+         NFSWENGYrsM7UyHlG5aIwYZDbIhHpAR56zFfJqqI4ilJx9/TT+9VDdwY2GUHRMa0fso0
+         cQZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tNnC4MJvn0YjQrnjipXsey8gWX0l8zpkvsFTkYPZMtw=;
-        b=bHwyH/6IDkW4/u3Uo+UGh68kAv6JJED7p7r9gyig3VUVAunWiPhhyjVLTXBVYkonl1
-         JgKI0zeXTzrbASElbooWk7rGDy5s3RBiKATTA9+rKjnRBlB/9LwS/yAPFE5JQbPxYiRh
-         r9JsxZVfCm6Iry6TqVckHhVqbCzbdCOr2dkL1xc6E0TrTK2YDkLKlATykXeQRTA5D3jZ
-         +r7xvv3X9cEJR9SGTykDFpAFlBPd6Kmahtubev7Z28Sa7741Kw1muwANCM6AgDUn4agH
-         2dpkc3C8HHLyekjjXiWXA153dOmFrSGandA7+OqYSdMV0l9asGlXcfU5EIX7u5BCd+QK
-         JD7g==
-X-Gm-Message-State: AOAM5328p6aRqprxH0UeoN7+6yrvQXRa1Z4sIvc1Dww4JNVibucv7bip
-        p1KLViFEOq4LSL8Bc2NesTU=
-X-Google-Smtp-Source: ABdhPJzOs7Ukf3vzvCE+JHO212o3YOfnaw8XSZwGBL6HLr2/Z+gFDcduI5jRVM3FYHa4X3MXC5gSUw==
-X-Received: by 2002:adf:fec6:: with SMTP id q6mr1651248wrs.59.1598622977484;
-        Fri, 28 Aug 2020 06:56:17 -0700 (PDT)
-Received: from lenovo-laptop.home ([2a00:23c4:4b87:b300:cc3a:c411:9a4b:dba6])
-        by smtp.gmail.com with ESMTPSA id v11sm2046865wrr.10.2020.08.28.06.56.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 28 Aug 2020 06:56:16 -0700 (PDT)
-From:   Alex Dewar <alex.dewar90@gmail.com>
-Cc:     Alex Dewar <alex.dewar90@gmail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] netlabel: remove unused param from audit_log_format()
-Date:   Fri, 28 Aug 2020 14:55:23 +0100
-Message-Id: <20200828135523.12867-1-alex.dewar90@gmail.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <CAHC9VhRtTykJVze_93ed+n+v14Ai9J5Mbre9nGEc2rkqbqKc_g@mail.gmail.com>
-References: <CAHC9VhRtTykJVze_93ed+n+v14Ai9J5Mbre9nGEc2rkqbqKc_g@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ahg6SwLGlK3CWvua4G/j/vIMurB0g6i8M9RZ0GeLfr8=;
+        b=oDlzKSE1oFiGUC+iBsXNgSGqzQFX2vsP8X99opXfpxKhX5w6KIfFqjLjQ6p5X5uxtb
+         RUUdmSTeTIWzBJa2pOmuXiChuz4NdWq4OzvdCrD+etUbK7qmLTp8xstrEHXsF5Z3QFfw
+         EBrlTUCFl13VIbGA/DGZZwVlMkgyA0fNEgcBbODFxC81eCFCaZsZQ2Q/o7sjGbwFTKoC
+         Zbwnd+v4IQrNPx72LLa0+Qr8qeA4o2SJC8p7vUCUFkuB0VBlTXsZmXylEZyQ9+J0I/8y
+         1eCLh5it0rBVR9xPD3mCdNkUGD54h0owcur0US75YdWjS7i/5UICD2G4SDx/T6Y7haR/
+         vBAw==
+X-Gm-Message-State: AOAM533tcHRIEjIxMeVh3MxpIYGZ7U2HFJ76a8w/cOmlOFdMHyM9SfDP
+        TEkDP2OE8eTzvtcyR9wYCsEhRuEkXcmX8w==
+X-Google-Smtp-Source: ABdhPJwvQX7ED9IZ6eDGsUme6BUcDYjvVdOV3tVe9dGHrgFiC/GaYcfw31h7J7LJWBIrEvJb9vmBmQ==
+X-Received: by 2002:a67:3157:: with SMTP id x84mr1018933vsx.113.1598623328166;
+        Fri, 28 Aug 2020 07:02:08 -0700 (PDT)
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
+        by smtp.gmail.com with ESMTPSA id t124sm166243vst.24.2020.08.28.07.02.07
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 28 Aug 2020 07:02:07 -0700 (PDT)
+Received: by mail-ua1-f54.google.com with SMTP id x17so399286uao.5
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 07:02:07 -0700 (PDT)
+X-Received: by 2002:ab0:60d7:: with SMTP id g23mr1046510uam.122.1598623326483;
+ Fri, 28 Aug 2020 07:02:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20200828064511.GD7389@iisc.ac.in> <c9eb6d14-cbc3-30de-4fb7-5cf18acfbe75@gmail.com>
+ <20200828085053.GA4669@iisc.ac.in>
+In-Reply-To: <20200828085053.GA4669@iisc.ac.in>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 28 Aug 2020 16:01:31 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSeOx53Vq_JW4icjV-QnuKwj+PGkPpg5XWAoHWea5bfviQ@mail.gmail.com>
+Message-ID: <CA+FuTSeOx53Vq_JW4icjV-QnuKwj+PGkPpg5XWAoHWea5bfviQ@mail.gmail.com>
+Subject: Re: packet deadline and process scheduling
+To:     "S.V.R.Anand" <anandsvr@iisc.ac.in>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit d3b990b7f327 ("netlabel: fix problems with mapping removal")
-added a check to return an error if ret_val != 0, before ret_val is
-later used in a log message. Now it will unconditionally print "...
-res=1". So just drop the check.
+On Fri, Aug 28, 2020 at 10:51 AM S.V.R.Anand <anandsvr@iisc.ac.in> wrote:
+>
+> There is an active Internet draft "Packet Delivery Deadline time in
+> 6LoWPAN Routing Header"
+> (https://datatracker.ietf.org/doc/draft-ietf-6lo-deadline-time/) which
+> is presently in the RFC Editor queue and is expected to become an RFC in
+> the near future. I happened to be one of the co-authors of this draft.
+> The main objective of the draft is to support time sensitive industrial
+> applications such as Industrial process control and automation over IP
+> networks.  While the current draft caters to 6LoWPAN networks, I would
+> assume that it can be extended to carry deadline information in other
+> encapsulations including IPv6.
+>
+> Once the packet reaches the destination at the network stack in the
+> kernel, it has to be passed on to the receiver application within the
+> deadline carried in the packet because it is the receiver application
+> running in user space is the eventual consumer of the data. My mail below is for
+> ensuring passing on the packet sitting in the socket interface to the
+> user receiver application process in a timely fashion with the help of
+> OS scheduler. Since the incoming packet experieces variable delay, the
+> remaining time left before deadline approaches too varies. There should
+> be a mechanism within the kernel, where network stack needs to
+> communicate with the OS scheduler by letting the scheduler know the
+> deadline before user application socket recv call is expected to return.
+>
+> Anand
+>
+>
+> On 20-08-28 10:14:13, Eric Dumazet wrote:
+> >
+> >
+> > On 8/27/20 11:45 PM, S.V.R.Anand wrote:
+> > > Hi,
+> > >
+> > > In the control loop application I am trying to build, an incoming message from
+> > > the network will have a deadline before which it should be delivered to the
+> > > receiver process. This essentially calls for a way of scheduling this process
+> > > based on the deadline information contained in the message.
+> > >
+> > > If not already available, I wish to  write code for such run-time ordering of
+> > > processes in the earlist deadline first fashion. The assumption, however
+> > > futuristic it may be, is that deadline information is contained as part of the
+> > > packet header something like an inband-OAM.
+> > >
+> > > Your feedback on the above will be very helpful.
+> > >
+> > > Hope the above objective will be of general interest to netdev as well.
+> > >
+> > > My apologies if this is not the appropriate mailing list for posting this kind
+> > > of mails.
+> > >
+> > > Anand
+> > >
+> >
+> > Is this described in some RFC ?
+> >
+> > If not, I guess you might have to code this in user space.
 
-Addresses-Coverity: ("Dead code")
-Fixes: d3b990b7f327 ("netlabel: fix problems with mapping removal")
-Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
----
-v2: Still print the res field, because it's useful (Paul)
-
- net/netlabel/netlabel_domainhash.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/net/netlabel/netlabel_domainhash.c b/net/netlabel/netlabel_domainhash.c
-index f73a8382c275e..dc8c39f51f7d3 100644
---- a/net/netlabel/netlabel_domainhash.c
-+++ b/net/netlabel/netlabel_domainhash.c
-@@ -612,9 +612,8 @@ int netlbl_domhsh_remove_entry(struct netlbl_dom_map *entry,
- 	audit_buf = netlbl_audit_start_common(AUDIT_MAC_MAP_DEL, audit_info);
- 	if (audit_buf != NULL) {
- 		audit_log_format(audit_buf,
--				 " nlbl_domain=%s res=%u",
--				 entry->domain ? entry->domain : "(default)",
--				 ret_val == 0 ? 1 : 0);
-+				 " nlbl_domain=%s res=1",
-+				 entry->domain ? entry->domain : "(default)");
- 		audit_log_end(audit_buf);
- 	}
- 
--- 
-2.28.0
-
+Could ingress redirect to an IFB device with FQ scheduler work for
+ingress EDT? With a BPF program at ifb device egress hook to read
+the header and write skb->tstamp.
