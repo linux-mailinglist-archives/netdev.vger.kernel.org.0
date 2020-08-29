@@ -2,178 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A783A2569BA
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 20:24:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF8972569DB
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 21:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728511AbgH2SX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Aug 2020 14:23:56 -0400
-Received: from smtprelay0164.hostedemail.com ([216.40.44.164]:53888 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728265AbgH2SXx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Aug 2020 14:23:53 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 1D990182CED5B;
-        Sat, 29 Aug 2020 18:23:51 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:966:973:988:989:1260:1277:1311:1313:1314:1345:1437:1515:1516:1518:1535:1544:1593:1594:1711:1730:1747:1777:1792:2196:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3355:3865:3866:3867:3870:3872:4117:4385:5007:6742:6743:9036:10004:10848:11026:11658:11914:12043:12048:12297:12760:13439:14096:14097:14181:14659:14721:21080:21433:21627:21990:30025:30029:30046:30054:30055:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: humor54_0f10f2427080
-X-Filterd-Recvd-Size: 6548
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf14.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 29 Aug 2020 18:23:44 +0000 (UTC)
-Message-ID: <0f837bfb394ac632241eaac3e349b2ba806bce09.camel@perches.com>
-Subject: sysfs output without newlines
-From:   Joe Perches <joe@perches.com>
-To:     LKML <linux-kernel@vger.kernel.org>,
-        Denis Efremov <efremov@linux.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Alex Dewar <alex.dewar90@gmail.com>
-Cc:     York Sun <york.sun@nxp.com>, Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Boris Brezillon <bbrezillon@kernel.org>,
-        Maxim Levitsky <maximlevitsky@gmail.com>,
-        Alex Dubov <oakad@yahoo.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Douglas Miller <dougmill@linux.ibm.com>,
-        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Kai =?ISO-8859-1?Q?M=E4kisara?= <Kai.Makisara@kolumbus.fi>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Mark Brown <broonie@kernel.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Pete Zaitcev <zaitcev@redhat.com>, linux-edac@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-i3c@lists.infradead.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org
-Date:   Sat, 29 Aug 2020 11:23:43 -0700
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.4-0ubuntu1 
+        id S1728439AbgH2T1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Aug 2020 15:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728335AbgH2T1x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Aug 2020 15:27:53 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F365CC061236;
+        Sat, 29 Aug 2020 12:27:52 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id t4so3457663iln.1;
+        Sat, 29 Aug 2020 12:27:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jlsNy+dwE1MBR5TBIEJpV1N/vsndwqO8gJ1RtyIu2VY=;
+        b=BbnK7wCaya4I9Usd//PcEjZN7YjQpXkdXnOU9yp6uie79BkSjtJoKXvZv0lq5qLZOH
+         8++Kq6V2VnPxrAF0/JBOUcvtba+UB95DCAEwnII5mRMReaxNOuvFZFCXemDRSSLmgQbI
+         cvx9Jpn0PfiICvZvUibc9MFNK/oqjZnS0+m+l8PHty/VzbhqvMvbO9m45nSU5Vv2JZS5
+         75x6Yxv9cDOeaS24wf4cNjMGEn+rkeAYUMmJoBPZVL4/FZHxM+69J1zcBrEPZ4c+m6ub
+         OmeTJvAsXCKLNeu4DjTfeiJjYuv/ysW4Rh5sCTL0uRh8LzdfFxm/Glk65TWU4qyxY0sS
+         MwTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jlsNy+dwE1MBR5TBIEJpV1N/vsndwqO8gJ1RtyIu2VY=;
+        b=pA7/MJCC/3+Ftw/AGyUaxzn4Dl/do+9KM3jSF41eO4Ut3J20SYt0AJF6xAr55o0lSE
+         GgSzNPLDLl0pMEQsEAoiiuEfVF/STVbxIEGVKzmHxBRZ8Raab3nyjYmYVw6a6qPWCXgv
+         HqpnIcoUHX22BmdTzlRYYU+JAKhod9qTUC26GzysgX6OwY/ZneZypUM+G1W6mWa1Ibx1
+         4FA/k7AfkuIWCUfRt9JlH/xDGhoPYryJs8wRvIY3YgoNIiwx9mO06/E1o9vfA+zTg9GE
+         6hx+HdBh2xRelCsVC9DCi9K1njR4uELBS1RPpAsvBt6PheUvMdVpHuQegat4Y8pmymbi
+         ZHRg==
+X-Gm-Message-State: AOAM530s+b6cKhSGJRnwoFkYvHdMSdfOVjU3tb7rgCOz53wtt4mik3Mn
+        LmJ3HjIwzDmOs0LKNuK6QpMQj+tVmsxgQA==
+X-Google-Smtp-Source: ABdhPJzeavam2avH8hjrKCcLPwcUVvweRtrKaUaYSgFdmo2zgbky0bGzhAZsTEhb/HcEwrH1MLP/2Q==
+X-Received: by 2002:a92:d1cd:: with SMTP id u13mr3509546ilg.120.1598729272066;
+        Sat, 29 Aug 2020 12:27:52 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:21a5:5fc5:213b:a337])
+        by smtp.googlemail.com with ESMTPSA id l144sm1800444ill.6.2020.08.29.12.27.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 29 Aug 2020 12:27:51 -0700 (PDT)
+Subject: Re: [PATCH] net: ipv4: remove unused arg exact_dif in compute_score
+To:     Miaohe Lin <linmiaohe@huawei.com>, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200829090151.61891-1-linmiaohe@huawei.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a17afcff-deba-90ea-7a6c-f29798d0f771@gmail.com>
+Date:   Sat, 29 Aug 2020 13:27:50 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
+In-Reply-To: <20200829090151.61891-1-linmiaohe@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While doing an investigation for a possible treewide conversion of
-sysfs output using sprintf/snprintf/scnprintf, I discovered
-several instances of sysfs output without terminating newlines.
+On 8/29/20 3:01 AM, Miaohe Lin wrote:
+> @@ -277,15 +277,13 @@ static struct sock *inet_lhash2_lookup(struct net *net,
+>  				const __be32 daddr, const unsigned short hnum,
+>  				const int dif, const int sdif)
+>  {
+> -	bool exact_dif = inet_exact_dif_match(net, skb);
 
-It seems likely all of these should have newline terminations
-or have the \n\r termination changed to a single newline.
-
-Anyone have any objection to patches adding newlines to these
-in their original forms using sprintf/snprintf/scnprintf?
-
-A few of these might be false positives as
-	"%s", string
-might already have string with a newline termination.
-
-+++ drivers/edac/fsl_ddr_edac.c
-+	return sysfs_emit(data, "0x%08x",
-+	return sysfs_emit(data, "0x%08x",
-+	return sysfs_emit(data, "0x%08x",
-+++ drivers/edac/synopsys_edac.c
-+	return sysfs_emit(data, "Data Poisoning: %s\n\r",
-+		return sysfs_emit(buf, "1");
-+		return sysfs_emit(buf, "0");
-+		return sysfs_emit(buf, "1");
-+		return sysfs_emit(buf, "0");
-+		return sysfs_emit(buf, "0");
-+		return sysfs_emit(buf, "1");
-+		return sysfs_emit(buf, "0");
-+	return sysfs_emit(buf, "%u", !!(data->status & mask));
-+	return sysfs_emit(buf, "%u", data->tcrit2[index] * 1000);
-+	return sysfs_emit(buf, "%d",
-+	return sysfs_emit(buf, "%u", data->tcrit1[index] * 1000);
-+	return sysfs_emit(buf, "%d",
-+	return sysfs_emit(buf, "%d", data->toffset[index] * 500);
-+++ drivers/i3c/master.c
-+		return sysfs_emit(buf, "i3c:dcr%02Xmanuf%04X", devinfo.dcr,
-+	return sysfs_emit(buf, "i3c:dcr%02Xmanuf%04Xpart%04Xext%04X",
-+	return sysfs_emit(buf, "%s", dd->boardversion);
-+	return sysfs_emit(buf, "%s", dd->serial);
-+	return sysfs_emit(buf, "%s", (char *)ib_qib_version);
-+	return sysfs_emit(buf, "%s", dd->boardversion);
-+	return sysfs_emit(buf, "%s", dd->lbus_info);
-+	return sysfs_emit(buf, "ipac:f%02Xv%08Xd%08X", idev->id_format,
-+++ drivers/memstick/core/mspro_block.c
-+	return sysfs_emit(buffer, "%s", (char *)s_attr->data);
-+	return sysfs_emit(buf, "%s",
-+	return sysfs_emit(buf, "%s",
-+++ drivers/misc/mei/bus.c
-+	return sysfs_emit(buf, "%s", cldev->name);
-+	return sysfs_emit(buf, "%pUl", uuid);
-+	return sysfs_emit(buf, "%02X", version);
-+	return sysfs_emit(buf, "mei:%s:%pUl:%02X:",
-+	return sysfs_emit(buf, "%d", maxconn);
-+	return sysfs_emit(buf, "%d", fixed);
-+	return sysfs_emit(buf, "%d", vt);
-+	return sysfs_emit(buf, "%u", maxlen);
-+	return sysfs_emit(buf, "%s", mei_dev_state_str(dev_state));
-+++ drivers/misc/tifm_core.c
-+	return sysfs_emit(buf, "%x", sock->type);
-+			return sysfs_emit(buf, "%s",
-+	return sysfs_emit(buf, "%d", dev->net_count);
-+++ drivers/net/ethernet/freescale/dpaa/dpaa_eth_sysfs.c
-+		return sysfs_emit(buf, "%llx",
-+		return sysfs_emit(buf, "none");
-+++ drivers/net/ethernet/ibm/ehea/ehea_main.c
-+	return sysfs_emit(buf, "%d", port->logical_port_id);
-+++ drivers/net/wireless/intel/ipw2x00/ipw2200.c
-+		return sysfs_emit(buf, "%s", priv->prom_net_dev->name);
-+	return sysfs_emit(buf, "0x%04X",
-+	return sysfs_emit(buf, "%d", il->retry_rate);
-+	return sysfs_emit(buf, "%pOF", np);
-+	return sysfs_emit(buf, "pcmcia:m%04Xc%04Xf%02Xfn%02Xpfn%02X"
-+++ drivers/platform/x86/dell-smbios-base.c
-+		return sysfs_emit(buf, "%08x", da_tokens[i].location);
-+		return sysfs_emit(buf, "%08x", da_tokens[i].value);
-+	return sysfs_emit(buf, "%08x",
-+++ drivers/scsi/st.c
-+	return sysfs_emit(buf, "%lld",
-+	return sysfs_emit(buf, "%lld",
-+	return sysfs_emit(buf, "%lld",
-+	return sysfs_emit(buf, "%lld",
-+	return sysfs_emit(buf, "%lld",
-+	return sysfs_emit(buf, "%lld",
-+	return sysfs_emit(buf, "%lld",
-+	return sysfs_emit(buf, "%lld",
-+	return sysfs_emit(buf, "%lld",
-+	return sysfs_emit(buf, "%lld",
-+++ drivers/spi/spi-tle62x0.c
-+	return sysfs_emit(buf, "%d", value);
-+++ drivers/usb/class/cdc-acm.c
-+	return sysfs_emit(buf, "%d", acm->ctrl_caps);
-+	return sysfs_emit(buf, "%d", acm->country_rel_date);
-+++ drivers/usb/class/usblp.c
-+	return sysfs_emit(buf, "%s", usblp->device_id_string+2);
-+	return sysfs_emit(buf, "usb:v%04Xp%04Xd%04Xdc%02Xdsc%02Xdp%02X"
-+++ drivers/usb/misc/cytherm.c
-+	return sysfs_emit(buf, "%i", cytherm->brightness);
-+	return sysfs_emit(buf, "%c%i.%i", sign ? '-' : '+', temp >> 1,
-+		return sysfs_emit(buf, "1");
-+		return sysfs_emit(buf, "0");
-+	return sysfs_emit(buf, "%d", retval);
-+	return sysfs_emit(buf, "%d", retval);
-
-
+inet_exact_dif_match is no longer needed after the above is removed.
