@@ -2,88 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F6F02567F0
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 15:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A41F256804
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 16:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728143AbgH2NhP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 29 Aug 2020 09:37:15 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:58058 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728069AbgH2NhG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Aug 2020 09:37:06 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-260-sruLeLQHO6G7wRvBN5rGQw-1; Sat, 29 Aug 2020 14:37:02 +0100
-X-MC-Unique: sruLeLQHO6G7wRvBN5rGQw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Sat, 29 Aug 2020 14:37:02 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Sat, 29 Aug 2020 14:37:02 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Bart Groeneveld' <avi@bartavi.nl>,
-        Patches internal <patches.internal@link.bartavi.nl>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
+        id S1728157AbgH2OAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Aug 2020 10:00:32 -0400
+Received: from forward102j.mail.yandex.net ([5.45.198.243]:46277 "EHLO
+        forward102j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728012AbgH2OAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Aug 2020 10:00:22 -0400
+Received: from forward103q.mail.yandex.net (forward103q.mail.yandex.net [IPv6:2a02:6b8:c0e:50:0:640:b21c:d009])
+        by forward102j.mail.yandex.net (Yandex) with ESMTP id 60EBDF2083F;
+        Sat, 29 Aug 2020 17:00:14 +0300 (MSK)
+Received: from mxback5q.mail.yandex.net (mxback5q.mail.yandex.net [IPv6:2a02:6b8:c0e:1ba:0:640:b716:ad89])
+        by forward103q.mail.yandex.net (Yandex) with ESMTP id 5A3E761E0009;
+        Sat, 29 Aug 2020 17:00:14 +0300 (MSK)
+Received: from vla3-b0c95643f530.qloud-c.yandex.net (vla3-b0c95643f530.qloud-c.yandex.net [2a02:6b8:c15:341d:0:640:b0c9:5643])
+        by mxback5q.mail.yandex.net (mxback/Yandex) with ESMTP id jpkCmE9VZ8-0Dv0NDrH;
+        Sat, 29 Aug 2020 17:00:14 +0300
+Received: by vla3-b0c95643f530.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id fTzMuIFaS8-09mq9T7d;
+        Sat, 29 Aug 2020 17:00:12 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+From:   Yaroslav Bolyukin <iam@lach.pw>
+To:     ja@ssi.bg
+Cc:     iam@lach.pw, "David S. Miller" <davem@davemloft.net>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2] net: Use standardized (IANA) local port range
-Thread-Topic: [PATCH v2] net: Use standardized (IANA) local port range
-Thread-Index: AQHWfXt8zR3om+J6ikuVkMpiekBWLKlPFWkw
-Date:   Sat, 29 Aug 2020 13:37:01 +0000
-Message-ID: <30c8e904e2114204a4381034e7ee06c7@AcuMS.aculab.com>
-References: <20200821142533.45694-1-avi@bartavi.nl>
- <20200828203959.32010-1-avi@bartavi.nl>
-In-Reply-To: <20200828203959.32010-1-avi@bartavi.nl>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCHv5 net-next] ipvs: remove dependency on ip6_tables
+Date:   Sat, 29 Aug 2020 18:59:53 +0500
+Message-Id: <20200829135953.20228-1-iam@lach.pw>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <alpine.LFD.2.23.451.2008291233110.3043@ja.home.ssi.bg>
+References: <alpine.LFD.2.23.451.2008291233110.3043@ja.home.ssi.bg>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0.001
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bart Groeneveld
-> Sent: 28 August 2020 21:40
-> 
-> IANA specifies User ports as 1024-49151,
-> and Private ports (local/ephemeral/dynamic/w/e) as 49152-65535 [1].
-> 
-> This means Linux uses 32768-49151 'illegally'.
-> This is not just a matter of following specifications:
-> IANA actually assigns numbers in this range [1].
+This dependency was added because ipv6_find_hdr was in iptables specific
+code but is no longer required
 
-Linux is using the 'historic' values.
-IANA shouldn't really have 'grabbed' half the port number space.
-Really the 'problem' of TCP port numbers identifying the service
-as well as the connection should have been addresses by some other
-means (eg using port 1023 and a TCP option to select the serivce).
+Fixes: f8f626754ebe ("ipv6: Move ipv6_find_hdr() out of Netfilter code.")
+Fixes: 63dca2c0b0e7 ("ipvs: Fix faulty IPv6 extension header handling in IPVS").
+Signed-off-by: Yaroslav Bolyukin <iam@lach.pw>
+---
+ Missed canonical patch format section, subsystem is now spevified
 
-Changing the default base from 32k to 48k will break some existing
-systems if/when a kernel upgrade is installed.
+ include/net/ip_vs.h        | 3 ---
+ net/netfilter/ipvs/Kconfig | 1 -
+ 2 files changed, 4 deletions(-)
 
-You are also changing the numbers for UDP.
-Anyone doing a lot of RTP (which typically requires 2 adjacent
-UDP ports) is already constrained by the availability or ports.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index 9a59a3378..d609e957a 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -25,9 +25,6 @@
+ #include <linux/ip.h>
+ #include <linux/ipv6.h>			/* for struct ipv6hdr */
+ #include <net/ipv6.h>
+-#if IS_ENABLED(CONFIG_IP_VS_IPV6)
+-#include <linux/netfilter_ipv6/ip6_tables.h>
+-#endif
+ #if IS_ENABLED(CONFIG_NF_CONNTRACK)
+ #include <net/netfilter/nf_conntrack.h>
+ #endif
+diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
+index 2c1593089..eb0e329f9 100644
+--- a/net/netfilter/ipvs/Kconfig
++++ b/net/netfilter/ipvs/Kconfig
+@@ -29,7 +29,6 @@ if IP_VS
+ config	IP_VS_IPV6
+ 	bool "IPv6 support for IPVS"
+ 	depends on IPV6 = y || IP_VS = IPV6
+-	select IP6_NF_IPTABLES
+ 	select NF_DEFRAG_IPV6
+ 	help
+ 	  Add IPv6 support to IPVS.
+--
+2.28.0
 
