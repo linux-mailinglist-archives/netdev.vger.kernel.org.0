@@ -2,102 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF462566DF
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 12:47:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AE112566D4
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 12:37:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727985AbgH2Kr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Aug 2020 06:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727022AbgH2KrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Aug 2020 06:47:21 -0400
-X-Greylist: delayed 1710 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 29 Aug 2020 03:46:50 PDT
-Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF460C061236
-        for <netdev@vger.kernel.org>; Sat, 29 Aug 2020 03:46:50 -0700 (PDT)
-Received: from localhost ([::1]:37796 helo=tatos)
-        by orbyte.nwl.cc with esmtp (Exim 4.94)
-        (envelope-from <phil@nwl.cc>)
-        id 1kBxw5-0000kM-D9; Sat, 29 Aug 2020 12:18:13 +0200
-From:   Phil Sutter <phil@nwl.cc>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: [iproute PATCH] ip link: Fix indenting in help text
-Date:   Sat, 29 Aug 2020 12:18:35 +0200
-Message-Id: <20200829101835.2372-1-phil@nwl.cc>
-X-Mailer: git-send-email 2.27.0
+        id S1727885AbgH2Kgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Aug 2020 06:36:54 -0400
+Received: from regular1.263xmail.com ([211.150.70.206]:56630 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726912AbgH2Kgw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Aug 2020 06:36:52 -0400
+Received: from localhost (unknown [192.168.167.70])
+        by regular1.263xmail.com (Postfix) with ESMTP id 818FB39E;
+        Sat, 29 Aug 2020 18:36:43 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-ANTISPAM-LEVEL: 2
+X-SKE-CHECKED: 1
+X-ABS-CHECKED: 1
+Received: from localhost.localdomain (unknown [14.18.236.70])
+        by smtp.263.net (postfix) whith ESMTP id P24394T139658713364224S1598697398926370_;
+        Sat, 29 Aug 2020 18:36:42 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <7f4d4f1dd4748de78646b41ba5878f0b>
+X-RL-SENDER: yili@winhong.com
+X-SENDER: yili@winhong.com
+X-LOGIN-NAME: yili@winhong.com
+X-FST-TO: linux-kernel@vger.kernel.org
+X-SENDER-IP: 14.18.236.70
+X-ATTACHMENT-NUM: 0
+X-DNS-TYPE: 0
+X-System-Flag: 0
+From:   Yi Li <yili@winhong.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     yilikernel@gmail.com, yili@winhong.com, kuba@kernel.org,
+        davem@davemloft.net, GR-everest-linux-l2@marvell.com,
+        skalluru@marvell.com, aelior@marvell.com
+Subject: [PATCH] bnx2x: correct a  mistake when show error code
+Date:   Sat, 29 Aug 2020 18:36:37 +0800
+Message-Id: <20200829103637.1730050-1-yili@winhong.com>
+X-Mailer: git-send-email 2.25.3
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Indenting of 'ip link set' options below 'link-netns' was wrong, they
-should be on the same level as the above.
+use rc for error code.
 
-While being at it, fix closing brackets in vf-specific options. Also
-write node/port_guid parameters in upper-case without curly braces: They
-are supposed to be replaced by values, not put literally.
-
-Fixes: 8589eb4efdf2a ("treewide: refactor help messages")
-Fixes: 5a3ec4ba64783 ("iplink: Update usage in help message")
-Signed-off-by: Phil Sutter <phil@nwl.cc>
+Signed-off-by: Yi Li <yili@winhong.com>
 ---
- ip/iplink.c | 40 ++++++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/ip/iplink.c b/ip/iplink.c
-index 7d4b244d1d266..5ec33a98b96e9 100644
---- a/ip/iplink.c
-+++ b/ip/iplink.c
-@@ -86,26 +86,26 @@ void iplink_usage(void)
- 		"		[ mtu MTU ]\n"
- 		"		[ netns { PID | NAME } ]\n"
- 		"		[ link-netns NAME | link-netnsid ID ]\n"
--		"			[ alias NAME ]\n"
--		"			[ vf NUM [ mac LLADDR ]\n"
--		"				 [ vlan VLANID [ qos VLAN-QOS ] [ proto VLAN-PROTO ] ]\n"
--		"				 [ rate TXRATE ]\n"
--		"				 [ max_tx_rate TXRATE ]\n"
--		"				 [ min_tx_rate TXRATE ]\n"
--		"				 [ spoofchk { on | off} ]\n"
--		"				 [ query_rss { on | off} ]\n"
--		"				 [ state { auto | enable | disable} ] ]\n"
--		"				 [ trust { on | off} ] ]\n"
--		"				 [ node_guid { eui64 } ]\n"
--		"				 [ port_guid { eui64 } ]\n"
--		"			[ { xdp | xdpgeneric | xdpdrv | xdpoffload } { off |\n"
--		"				  object FILE [ section NAME ] [ verbose ] |\n"
--		"				  pinned FILE } ]\n"
--		"			[ master DEVICE ][ vrf NAME ]\n"
--		"			[ nomaster ]\n"
--		"			[ addrgenmode { eui64 | none | stable_secret | random } ]\n"
--		"			[ protodown { on | off } ]\n"
--		"			[ gso_max_size BYTES ] | [ gso_max_segs PACKETS ]\n"
-+		"		[ alias NAME ]\n"
-+		"		[ vf NUM [ mac LLADDR ]\n"
-+		"			 [ vlan VLANID [ qos VLAN-QOS ] [ proto VLAN-PROTO ] ]\n"
-+		"			 [ rate TXRATE ]\n"
-+		"			 [ max_tx_rate TXRATE ]\n"
-+		"			 [ min_tx_rate TXRATE ]\n"
-+		"			 [ spoofchk { on | off} ]\n"
-+		"			 [ query_rss { on | off} ]\n"
-+		"			 [ state { auto | enable | disable} ]\n"
-+		"			 [ trust { on | off} ]\n"
-+		"			 [ node_guid EUI64 ]\n"
-+		"			 [ port_guid EUI64 ] ]\n"
-+		"		[ { xdp | xdpgeneric | xdpdrv | xdpoffload } { off |\n"
-+		"			  object FILE [ section NAME ] [ verbose ] |\n"
-+		"			  pinned FILE } ]\n"
-+		"		[ master DEVICE ][ vrf NAME ]\n"
-+		"		[ nomaster ]\n"
-+		"		[ addrgenmode { eui64 | none | stable_secret | random } ]\n"
-+		"		[ protodown { on | off } ]\n"
-+		"		[ gso_max_size BYTES ] | [ gso_max_segs PACKETS ]\n"
- 		"\n"
- 		"	ip link show [ DEVICE | group GROUP ] [up] [master DEV] [vrf NAME] [type TYPE]\n"
- 		"\n"
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
+index 1426c691c7c4..0346771396ce 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_link.c
+@@ -13562,9 +13560,8 @@ static int bnx2x_ext_phy_common_init(struct bnx2x *bp, u32 shmem_base_path[],
+ 	}
+ 
+ 	if (rc)
+-		netdev_err(bp->dev,  "Warning: PHY was not initialized,"
+-				      " Port %d\n",
+-			 0);
++		netdev_err(bp->dev, "Warning: PHY was not initialized, Port %d\n",
++			   rc);
+ 	return rc;
+ }
+ 
 -- 
-2.27.0
+2.25.3
+
+
 
