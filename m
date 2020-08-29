@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 04168256753
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 13:57:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6E6256752
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 13:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728063AbgH2L5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Aug 2020 07:57:19 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:10731 "EHLO huawei.com"
+        id S1728114AbgH2L5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Aug 2020 07:57:32 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:10732 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726876AbgH2L4K (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Aug 2020 07:56:10 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 956A9FB7F4F87F9EC5F6;
-        Sat, 29 Aug 2020 19:56:01 +0800 (CST)
-Received: from localhost (10.174.179.108) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.487.0; Sat, 29 Aug 2020
- 19:55:53 +0800
+        id S1727940AbgH2L4i (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Aug 2020 07:56:38 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 4496D399E81953EE2C57;
+        Sat, 29 Aug 2020 19:56:31 +0800 (CST)
+Received: from localhost (10.174.179.108) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Sat, 29 Aug 2020
+ 19:56:24 +0800
 From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <yuehaibing@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net: wan: slic_ds26522: Remove unused macro DRV_NAME
-Date:   Sat, 29 Aug 2020 19:55:49 +0800
-Message-ID: <20200829115549.14144-1-yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] net: dl2k: Remove unused macro DRV_NAME
+Date:   Sat, 29 Aug 2020 19:56:23 +0800
+Message-ID: <20200829115623.8076-1-yuehaibing@huawei.com>
 X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -37,22 +38,21 @@ There is no caller in tree any more.
 
 Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/wan/slic_ds26522.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/dlink/dl2k.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/wan/slic_ds26522.c b/drivers/net/wan/slic_ds26522.c
-index 29053bec694e..8e3b1c717c10 100644
---- a/drivers/net/wan/slic_ds26522.c
-+++ b/drivers/net/wan/slic_ds26522.c
-@@ -22,8 +22,6 @@
- #include <linux/io.h>
- #include "slic_ds26522.h"
+diff --git a/drivers/net/ethernet/dlink/dl2k.c b/drivers/net/ethernet/dlink/dl2k.c
+index be6d8a9ada27..e8e563d6e86b 100644
+--- a/drivers/net/ethernet/dlink/dl2k.c
++++ b/drivers/net/ethernet/dlink/dl2k.c
+@@ -7,7 +7,6 @@
  
--#define DRV_NAME "ds26522"
--
- #define SLIC_TRANS_LEN 1
- #define SLIC_TWO_LEN 2
- #define SLIC_THREE_LEN 3
+ */
+ 
+-#define DRV_NAME	"DL2000/TC902x-based linux driver"
+ #include "dl2k.h"
+ #include <linux/dma-mapping.h>
+ 
 -- 
 2.17.1
 
