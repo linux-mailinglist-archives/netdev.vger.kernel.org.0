@@ -2,76 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A217125684A
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 16:30:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA69A25688E
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 17:16:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728298AbgH2OaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Aug 2020 10:30:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56432 "EHLO mail.kernel.org"
+        id S1728246AbgH2PP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Aug 2020 11:15:58 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59882 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728276AbgH2OaJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 29 Aug 2020 10:30:09 -0400
-Received: from localhost.localdomain (unknown [194.230.155.216])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 15BED20791;
-        Sat, 29 Aug 2020 14:30:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598711408;
-        bh=CP8KqP43wOtJ8WcHsmx6axWh4HzD/Tid44BJ/kee/5I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nwBwyz80yplEZECMeZEv+mE9/bwYZaDZvhvIGUEh3Vlzdyxlg9QCDBbpHbse+7dCV
-         +6An3jubPj37vyZnEeHzZamA76+vqIdAwtenB6WHgn1PnSLlGgCoH+cY9HRsYzoxLx
-         ITu9WK2q2bie7ZBh8IIR0PHlFt1xylM44H6byLZQ=
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfc@lists.01.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Sylwester Nawrocki <snawrocki@kernel.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Inki Dae <inki.dae@samsung.com>
-Subject: [PATCH 4/4] arm64: dts: exynos: Use newer S3FWRN5 GPIO properties in Exynos5433 TM2
-Date:   Sat, 29 Aug 2020 16:29:48 +0200
-Message-Id: <20200829142948.32365-4-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200829142948.32365-1-krzk@kernel.org>
-References: <20200829142948.32365-1-krzk@kernel.org>
+        id S1728146AbgH2PP5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Aug 2020 11:15:57 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kC2a9-00CQWH-4g; Sat, 29 Aug 2020 17:15:53 +0200
+Date:   Sat, 29 Aug 2020 17:15:53 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Adam =?utf-8?Q?Rudzi=C5=84ski?= <adam.rudzinski@arf.net.pl>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        netdev <netdev@vger.kernel.org>, robh+dt@kernel.org,
+        frowand.list@gmail.com
+Subject: Re: drivers/of/of_mdio.c needs a small modification
+Message-ID: <20200829151553.GB2912863@lunn.ch>
+References: <c8b74845-b9e1-6d85-3947-56333b73d756@arf.net.pl>
+ <20200828222846.GA2403519@lunn.ch>
+ <dcfea76d-5340-76cf-7ad0-313af334a2fd@arf.net.pl>
+ <20200828225353.GB2403519@lunn.ch>
+ <6eb8c287-2d9f-2497-3581-e05a5553b88f@arf.net.pl>
+ <891d7e82-f22a-d24b-df5b-44b34dc419b5@gmail.com>
+ <113503c8-a871-1dc0-daea-48631e1a436d@arf.net.pl>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <113503c8-a871-1dc0-daea-48631e1a436d@arf.net.pl>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since "s3fwrn5" is not a valid vendor prefix, use new GPIO properties
-instead of the deprecated.
+> The driver would be able to add the new PHYs to the shared MDIO bus by
+> calling of_mdiobus_register_children. Then the device tree looks like this,
+> which is more reasonable in my opinion:
+> 
+> &fec2 {
+> (...)
+>     mdio {
+>         (phy for fec2 here)
+>     };
+> (...)
+> };
+> 
+> &fec1 {
+> (...)
+>     mdio {
+>         (phy for fec1 here)
+>     };
+> (...)
+> };
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+DT describes hardware, and the topology of the hardware. The hardware really is:
 
-diff --git a/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi b/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi
-index 250fc01de78d..24aab3ea3f52 100644
---- a/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi
-+++ b/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi
-@@ -795,8 +795,8 @@
- 		reg = <0x27>;
- 		interrupt-parent = <&gpa1>;
- 		interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
--		s3fwrn5,en-gpios = <&gpf1 4 GPIO_ACTIVE_HIGH>;
--		s3fwrn5,fw-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
-+		en-gpios = <&gpf1 4 GPIO_ACTIVE_HIGH>;
-+		wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
- 	};
- };
- 
--- 
-2.17.1
+ethernet1@83fec000 {
+	compatible = "fsl,imx51-fec", "fsl,imx27-fec";
+	reg = <0x83fec000 0x4000>;
+	interrupts = <87>;
+	phy-mode = "mii";
+	phy-reset-gpios = <&gpio2 14 GPIO_ACTIVE_LOW>; /* GPIO2_14 */
+	local-mac-address = [00 04 9F 01 1B B9];
+	phy-supply = <&reg_fec_supply>;
+	phy-handle = <&ethphy1>;
+	mdio {
+	        clock-frequency = <5000000>;
+		ethphy1: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <1>;
+			max-speed = <100>;
+		};
+		ethphy2: ethernet-phy@2 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <2>;
+			max-speed = <100>;
+		};
+	};
+};
 
+ethernet2@84fec000 {
+	compatible = "fsl,imx51-fec", "fsl,imx27-fec";
+	reg = <0x83fec000 0x4000>;
+	interrupts = <87>;
+	phy-mode = "mii";
+	phy-reset-gpios = <&gpio2 15 GPIO_ACTIVE_LOW>; /* GPIO2_15 */
+	local-mac-address = [00 04 9F 01 1B BA];
+	phy-supply = <&reg_fec_supply>;
+	phy-handle = <&ethphy2>;
+};
+
+What is missing from this is clocks. The IMX has a central clock
+provider:
+
+                        clks: clock-controller@20c4000 {
+                                compatible = "fsl,imx6ul-ccm";
+                                reg = <0x020c4000 0x4000>;
+                                interrupts = <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>,
+                                             <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>;
+                                #clock-cells = <1>;
+                                clocks = <&ckil>, <&osc>, <&ipp_di0>, <&ipp_di1>;
+                                clock-names = "ckil", "osc", "ipp_di0", "ipp_di1";
+                        };
+
+and it exports two clocks, MX6UL_CLK_ENET1_REF, MX6UL_CLK_ENET2_REF
+
+So adding the clock properties:
+
+ethernet1@83fec000 {
+	compatible = "fsl,imx51-fec", "fsl,imx27-fec";
+	reg = <0x83fec000 0x4000>;
+	interrupts = <87>;
+	phy-mode = "mii";
+	phy-reset-gpios = <&gpio2 14 GPIO_ACTIVE_LOW>; /* GPIO2_14 */
+	local-mac-address = [00 04 9F 01 1B B9];
+	phy-supply = <&reg_fec_supply>;
+	phy-handle = <&ethphy1>;
+	mdio {
+	        clock-frequency = <5000000>;
+		ethphy1: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <1>;
+			max-speed = <100>;
+			clocks = <&clks MX6UL_CLK_ENET1_REF>;
+		};
+		ethphy2: ethernet-phy@2 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <2>;
+			max-speed = <100>;
+			clocks = <&clks MX6UL_CLK_ENET2_REF>;
+		};
+	};
+};
+
+ethernet2@84fec000 {
+	compatible = "fsl,imx51-fec", "fsl,imx27-fec";
+	reg = <0x83fec000 0x4000>;
+	interrupts = <87>;
+	phy-mode = "mii";
+	phy-reset-gpios = <&gpio2 15 GPIO_ACTIVE_LOW>; /* GPIO2_15 */
+	local-mac-address = [00 04 9F 01 1B BA];
+	phy-supply = <&reg_fec_supply>;
+	phy-handle = <&ethphy2>;
+};
+
+Also look at drivers/net/phy/micrel.c. It has code to look up a FEC
+clock and use it. But that code assumes the PHY responds to MDIO reads
+when the clock is not ticking. It sounds like your PHY does not?
+Please double check that. If it does not, you need to add clock code
+to the PHY core. Florians patchset will help with that.
+
+	Andrew
