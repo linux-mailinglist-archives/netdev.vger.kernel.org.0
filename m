@@ -2,319 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E8A925648E
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 05:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABAC2256501
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 08:19:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgH2DoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 23:44:18 -0400
-Received: from nat-hk.nvidia.com ([203.18.50.4]:64061 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726395AbgH2DoM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 28 Aug 2020 23:44:12 -0400
-Received: from hkpgpgate101.nvidia.com (Not Verified[10.18.92.77]) by nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f49cf050001>; Sat, 29 Aug 2020 11:44:06 +0800
-Received: from HKMAIL102.nvidia.com ([10.18.16.11])
-  by hkpgpgate101.nvidia.com (PGP Universal service);
-  Fri, 28 Aug 2020 20:44:06 -0700
-X-PGP-Universal: processed;
-        by hkpgpgate101.nvidia.com on Fri, 28 Aug 2020 20:44:06 -0700
-Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL102.nvidia.com
- (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sat, 29 Aug
- 2020 03:44:02 +0000
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
- by HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Sat, 29 Aug 2020 03:44:02 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mfvu8DX2gdFu0QyySfbx5yFc/hyK6gdhUevshJ/tD6UP+ZsU433fjA58JJFkJuaz6a4qFcElW8xK6eBB8xlwRAN3Jlr7Qs6+9J46FjMG/jCrbdLtiK9p5S5rOZoATa323JSjTSCsmtioXtobZqE8+m/5fyyXX+h1UOqE49S4zWWB3mDN0EmeLfzFu+0SQpCwhQE3ntSSseiQDU2z9QPBrXlqoZRNiy6nWWx/OiSD7nd5qSmL3+Jwx0WEty+3QnVjHK8s8yJS+pViA9bWh4k+29WxyPcXCrpuPWpTkza7DNGw6Hp5v4gFj5Zo7oPTEEZqn3LDZXNPZPkd6vPsI8doSQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=leyokYJcO/BIM9U1WCo9uO69meP8MJ2LUZJBASuu7vA=;
- b=oCml2dbyvgROS6bf/leXhhmW3Jx9Hj9XhXhyxGjBmVYtZIt71mQxnz8fpuAIkGsoG2PMPqFTK8XVvE2KP8M6bjV972W2F4TNBjqbX1ypzgYm8HL+8z7Re1J3ISMNOtNYxLJGqVK2zGpV9W6kWf0kD0sKDXPMnmoNa9mOH56aLm/WJ8bCtPSF5HV6YOUW5U5xL+tVXUlgVL+ZlXwWguL6WvEVcsDCDbJq0I1BlZzWSNbzfsOG5v2vExKUiJe7a8WuliK2746s4NpfP1bZrcCEFtiJIj7KpRNCxvpIhk951IBi/219c1IHf4z26kHFxIXAkx3rW0NjmmivKFB7VTXrUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
- by BYAPR12MB3174.namprd12.prod.outlook.com (2603:10b6:a03:133::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3305.25; Sat, 29 Aug
- 2020 03:43:59 +0000
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::b5f0:8a21:df98:7707]) by BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::b5f0:8a21:df98:7707%7]) with mapi id 15.20.3326.023; Sat, 29 Aug 2020
- 03:43:59 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Parav Pandit <parav@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "roid@mellanox.com" <roid@mellanox.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: RE: [PATCH net-next 2/3] devlink: Consider other controller while
- building phys_port_name
-Thread-Topic: [PATCH net-next 2/3] devlink: Consider other controller while
- building phys_port_name
-Thread-Index: AQHWeugVEZjy8+Bcu0qKDL1vbGgf/KlJitKAgABAGdCAAQhmgIAAinbQgADtLwCAABeykIAAHVgAgABmzECAANgrgIAAsB0A
-Date:   Sat, 29 Aug 2020 03:43:58 +0000
-Message-ID: <BY5PR12MB43220099C235E238D6AF89EADC530@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20200825135839.106796-1-parav@mellanox.com>
-        <20200825135839.106796-3-parav@mellanox.com>
-        <20200825173203.2c80ed48@kicinski-fedora-PC1C0HJN>
-        <BY5PR12MB4322E2E21395BD1553B8E375DC540@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200826130747.4d886a09@kicinski-fedora-PC1C0HJN>
-        <BY5PR12MB432276DBB3345AD328D787E4DC550@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200827113216.7b9a3a25@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB43221CAA3D77DB7DB490B012DC550@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200827144206.3c2cad03@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB432271E4F9028831FA75B7E0DC520@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20200828094343.6c4ff16a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200828094343.6c4ff16a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [49.207.209.10]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4d6a8b10-cf74-4b47-a349-08d84bcdc367
-x-ms-traffictypediagnostic: BYAPR12MB3174:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR12MB31748E6282FF1D49AF1B600EDC530@BYAPR12MB3174.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sL5Y2sEhKrsgx9SVTfw8Opzr6lPvewtowto5oMkMZ8vZUS1+2xy/mpA9jGyHdmZJzi1+sfvxvigkZVwdQMF91d5Yt7rg7BiEdHwuxgpLJ7BgrVeqrXqtmYTufvP9SIEmcNMhjxuSTcvwkbXpN4KeWpCWW5M7CEwBUwiGM28NnyZmHfVg9CBMkcuWTQo0O+u1ZLUKI4G6atV5YeNjtaQfa7+n/IFY1Eo+kfaoA5+H/lnPwmkVYUhhwlPARCPawXAgbi3GryD6FuWMRQodVTCQq1bChwQeXO7ks3OQQmKGFEgLpahKTagDKhn8CrqwMKeo2V5Gz8ntNNyB1juwvk65BA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(396003)(39860400002)(366004)(136003)(76116006)(5660300002)(83380400001)(52536014)(7696005)(55236004)(71200400001)(66446008)(9686003)(66476007)(64756008)(86362001)(66946007)(54906003)(66556008)(2906002)(55016002)(26005)(8936002)(6506007)(4326008)(107886003)(186003)(478600001)(316002)(6916009)(33656002)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: tWU8AbFeqEICKoJUlYw/Dcm6SPIgbxX2z9AgUuLaDmtFBHA2mUaLkNnk18kd+euX5CQYjrp9sHXnVjNifh6cf3MeSthPunpq+EpQAr6i2Rxc+P3cKora6SX3/SqVNzs5ZtmgM1H89EiHNBtS4oEStTX++TG54RVgl6HonD8QRPf4+FdoYSAl7mqRccZ1vYgkc4EYm/GrHEvY4jYPgQV1ZmyAZmRTvlBkYpmYXHNwL/HDnQGfpUb1FtfW/kgr33JnHjBtwARLz1gRxoEEiniAs/STeWido1l+u2bkHPC3IvaTq3e3/5igr0hsXk12IDyMSLNbYWmDd5fWyHSVuHXk8d4Yn4DLxMvjAbHG7TLXyqMrPncTdGrEd7Iyy1UV01zzbga3+0ETcJttmL7QU+Ee+x0CKIzK679lKnjtHyqqPGZmfmMXaNOkirEkpgwF92wigtLWK3EBGxfKPYoCSipKYNaqeR95AqKCtsgUO7O1SBmtLg4+ltQWhRbsi2uFG5nJLjIPVVtPyiBSD6/RXJaW2hvtUlK+bgHNL32BXwC5bI2eZTYw7eiasVIB3EtYQ4fVsCxvrm+Z3+LQoEIllNbqC6+GrGKGp2o7uw0BwU/3D8WhZSG+aOd3jaxU6364wxg6iNklrtz4bTw/htRH/bt6TA==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726310AbgH2GJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Aug 2020 02:09:22 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:50455 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725901AbgH2GJV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 29 Aug 2020 02:09:21 -0400
+Received: by mail-il1-f197.google.com with SMTP id v15so931607ilm.17
+        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 23:09:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=/7VXp0tP8F9WGxY+yGGRP+vowS31sIWVt3YL5Y7ETAA=;
+        b=NIj325a6Yuvwt4GEX3hRzWNMn6FaUfdkro0gzEKLNMPJJrF8NZj8xH5D/k4cFdXQnA
+         QD+C26gVWWPKgPB04q6Dp0j7mVzMK1OZFtnv4R9JEB0KA7oI7KIbT/fHfclcbDwF379e
+         8ucVqgNV7Q7Jt/LMwWTROuHb+xebeeSYtnDVK1qdN9JdawX8QePGPF7O3bXbJHIPQgcC
+         SPF+hRLEc0srFbj22pwiHv8v8tMX4xFYaw2V4llPMJh5sOB2jz4bM+OU67xrXHBG5MZl
+         /BH793raRMFEvDuoAHaLr9l/8lXy/QHtwEC8Q5mv6Xu9p30l3CzwELIcJEBgcAswUjTH
+         djqg==
+X-Gm-Message-State: AOAM533iJTuVt/AxQSKRNRLPD7fCl7fYx2bFRB4v6cz7XfZbKeg9MMcE
+        F2X0fcn4f6NZ7Rtj4OFIrbjUh9VSUtZ1l39mzMlWvCGyZW8p
+X-Google-Smtp-Source: ABdhPJyemNPQ0VuZjfRt+FM355hDuF5VxMjHNSnkDS43XBOdma7xzgDy6dRiSseq2OH0IXVoLhyWuDVYWYcXP0SBcJNCADpqPkC6
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d6a8b10-cf74-4b47-a349-08d84bcdc367
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2020 03:43:58.9686
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kG6hA4tNOsBvT2t2ucgJeNWR5zAJ42bu+LeIUnfYdI0Z4TPVc8QiPND+5k0BnT3WpTwHiq/qKh7A2+M7HZmZKQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3174
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1598672646; bh=leyokYJcO/BIM9U1WCo9uO69meP8MJ2LUZJBASuu7vA=;
-        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
-         ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
-         Thread-Index:Date:Message-ID:References:In-Reply-To:
-         Accept-Language:Content-Language:X-MS-Has-Attach:
-         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
-         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
-         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
-         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
-         x-ms-exchange-senderadcheck:x-microsoft-antispam:
-         x-microsoft-antispam-message-info:x-forefront-antispam-report:
-         x-ms-exchange-antispam-messagedata:Content-Type:
-         Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=rDlhlstkTFJxcaivF7VMPAQdI0EGEejmiKZ0i7vbaqx8KaIP5DEEF1obWjJuvPDvZ
-         iq+ZjSKtx7E5RkN/U4wmJz0WMFRudgnqJZn1cTF32n6Unmkq6WaiC0NXRWO5SYkjtB
-         IeZ+dIpHvELFAnjdszg7ySXd/pJw9EDKtDSKZYpXL4uKbSHdT9yEtLrcBujL5Y76ub
-         uU8S+Exogl7SfU0549gwHHo4bs0SiCoIICb06AKD8MOTqjX5w54qHfFyMGBzJQONQK
-         YKZ3xCFVQbfJvzsNEVqxM+z2PFfl51nM4rfjZVqbGq5w1UYGkAAtr3UOyhJLs0suEM
-         FqJPiKtuhBprQ==
+X-Received: by 2002:a92:ce07:: with SMTP id b7mr1803689ilo.270.1598681360107;
+ Fri, 28 Aug 2020 23:09:20 -0700 (PDT)
+Date:   Fri, 28 Aug 2020 23:09:20 -0700
+In-Reply-To: <000000000000d3d67f05a20d2027@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000940fbe05adfe0208@google.com>
+Subject: Re: INFO: task hung in tls_sk_proto_close
+From:   syzbot <syzbot+ca1345cca66556f3d79b@syzkaller.appspotmail.com>
+To:     aviadye@mellanox.com, aviadye@nvidia.com, borisp@mellanox.com,
+        borisp@nvidia.com, daniel@iogearbox.net, davem@davemloft.net,
+        john.fastabend@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+syzbot has found a reproducer for the following issue on:
 
+HEAD commit:    b36c9697 Add linux-next specific files for 20200828
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=11ae3d61900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5e3cf99580b5542c
+dashboard link: https://syzkaller.appspot.com/bug?extid=ca1345cca66556f3d79b
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=170cdfe5900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=139a768e900000
 
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Friday, August 28, 2020 10:14 PM
->=20
-> On Fri, 28 Aug 2020 04:27:19 +0000 Parav Pandit wrote:
-> > > From: Jakub Kicinski <kuba@kernel.org>
-> > > Sent: Friday, August 28, 2020 3:12 AM
-> > >
-> > > On Thu, 27 Aug 2020 20:15:01 +0000 Parav Pandit wrote:
-> > > > > From: Jakub Kicinski <kuba@kernel.org>
-> > > > >
-> > > > > I find it strange that you have pfnum 0 everywhere but then
-> > > > > different controllers.
-> > > > There are multiple PFs, connected to different PCI RC. So device
-> > > > has same pfnum for both the PFs.
-> > > >
-> > > > > For MultiHost at Netronome we've used pfnum to distinguish
-> > > > > between the hosts. ASIC must have some unique identifiers for eac=
-h PF.
-> > > > Yes. there is. It is identified by a unique controller number;
-> > > > internally it is called host_number. But internal host_number is
-> > > > misleading term as multiple cables of same physical card can be
-> > > > plugged into single host. So identifying based on a unique
-> > > > (controller) number and matching that up on external cable is desir=
-ed.
-> > > >
-> > > > > I'm not aware of any practical reason for creating PFs on one RC
-> > > > > without reinitializing all the others.
-> > > > I may be misunderstanding, but how is initialization is related
-> > > > multiple PFs?
-> > >
-> > > If the number of PFs is static it should be possible to understand
-> > > which one is on which system.
-> >
-> > How? How do we tell that pfnum A means external system.
-> > Want to avoid such 'implicit' notion.
->=20
-> How do you tell that controller A means external system?
-Which is why I started with annotating only external controllers, mainly to=
- avoid renaming and breaking current scheme for non_smartnic cases which po=
-ssibly is the most user base.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+ca1345cca66556f3d79b@syzkaller.appspotmail.com
 
-But probably external pcipf/vf/sf port flavours are more intuitive combined=
- with controller number.
-More below.
+INFO: task syz-executor014:6815 blocked for more than 143 seconds.
+      Not tainted 5.9.0-rc2-next-20200828-syzkaller #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor014 state:D stack:23536 pid: 6815 ppid:  6814 flags:0x00004000
+Call Trace:
+ context_switch kernel/sched/core.c:3778 [inline]
+ __schedule+0x8e5/0x21e0 kernel/sched/core.c:4527
+ schedule+0xd0/0x2a0 kernel/sched/core.c:4602
+ schedule_timeout+0x1d8/0x250 kernel/time/timer.c:1855
+ do_wait_for_common kernel/sched/completion.c:85 [inline]
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x163/0x260 kernel/sched/completion.c:138
+ __flush_work+0x51f/0xab0 kernel/workqueue.c:3046
+ __cancel_work_timer+0x5de/0x700 kernel/workqueue.c:3133
+ tls_sk_proto_close+0x4a7/0xaf0 net/tls/tls_main.c:305
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:431
+ inet6_release+0x4c/0x70 net/ipv6/af_inet6.c:475
+ __sock_release+0xcd/0x280 net/socket.c:596
+ sock_close+0x18/0x20 net/socket.c:1277
+ __fput+0x285/0x920 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:141
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:140 [inline]
+ exit_to_user_mode_prepare+0x195/0x1c0 kernel/entry/common.c:167
+ syscall_exit_to_user_mode+0x59/0x2b0 kernel/entry/common.c:242
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x403950
+Code: Bad RIP value.
+RSP: 002b:00007fff6bd1cf98 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000403950
+RDX: 00000000000000d8 RSI: 00000000200005c0 RDI: 0000000000000004
+RBP: 00007fff6bd1cfa0 R08: 0000000000000000 R09: 00000000000000d8
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff6bd1cfb0
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
 
->=20
-> > > > > I can see how having multiple controllers may make things
-> > > > > clearer, but adding another layer of IDs while the one under it
-> > > > > is unused
-> > > > > (pfnum=3D0) feels very unnecessary.
-> > > > pfnum=3D0 is used today. not sure I understand your comment about
-> > > > being unused. Can you please explain?
-> > >
-> > > You examples only ever have pfnum 0:
-> > >
-> > Because both controllers have pfnum 0.
-> >
-> > > From patch 2:
-> > >
-> > > $ devlink port show pci/0000:00:08.0/2
-> > > pci/0000:00:08.0/2: type eth netdev eth7 controller 0 flavour pcivf
-> > > pfnum 0 vfnum 1 splittable false
-> > >   function:
-> > >     hw_addr 00:00:00:00:00:00
-> > >
-> > > $ devlink port show -jp pci/0000:00:08.0/2 {
-> > >     "port": {
-> > >         "pci/0000:00:08.0/1": {
-> > >             "type": "eth",
-> > >             "netdev": "eth7",
-> > >             "controller": 0,
-> > >             "flavour": "pcivf",
-> > >             "pfnum": 0,
-> > >             "vfnum": 1,
-> > >             "splittable": false,
-> > >             "function": {
-> > >                 "hw_addr": "00:00:00:00:00:00"
-> > >             }
-> > >         }
-> > >     }
-> > > }
-> > >
-> > > From earlier email:
-> > >
-> > > pci/0000:00:08.0/1: type eth netdev eth6 flavour pcipf pfnum 0
-> > > pci/0000:00:08.0/2: type eth netdev eth7 flavour pcipf pfnum 0
-> > >
-> > > If you never use pfnum, you can just put the controller ID there, lik=
-e
-> Netronome.
-> > >
-> > It likely not going to work for us. Because pfnum is not some randomly
-> generated number.
-> > It is linked to the underlying PCI pf number. {pf0, pf1...}
-> > Orchestration sw uses this to identify representor of a PF-VF pair.
->=20
-> For orchestration software which is unaware of controllers ports will sti=
-ll alias
-> on pf/vf nums.
->
-Yes.
-Orchestration which will be aware of controller, will use it.
-=20
-> Besides you have one devlink instance per port currently so I'm guessing =
-there is
-> no pf1 ever, in your case...
->
-Currently there are multiple devlink instance. One for pf0, other for pf1.
-Ports of both instances have the same switch id.
-=20
-> > Replacing pfnum with controller number breaks this; and it still doesn'=
-t tell user
-> that it's the pf on other_host.
->=20
-> Neither does the opaque controller id.=20
-Which is why I tossed the epcipf (external pci pf) port flavour that fits i=
-n current model.
-But doesn't allow multiple external hosts under same eswitch for those devi=
-ces which has same pci pf, vf numbers among those hosts. (and it is the cas=
-e for mlnx).
+Showing all locks held in the system:
+4 locks held by kworker/u4:0/7:
+1 lock held by khungtaskd/1167:
+ #0: ffffffff89c67640 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:5825
+1 lock held by in:imklog/6517:
+ #0: ffff8880a8b1c930 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:930
+1 lock held by syz-executor014/6815:
+ #0: ffff888085128750 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:779 [inline]
+ #0: ffff888085128750 (&sb->s_type->i_mutex_key#13){+.+.}-{3:3}, at: __sock_release+0x86/0x280 net/socket.c:595
+3 locks held by kworker/0:3/7021:
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
+ #0: ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x82b/0x1670 kernel/workqueue.c:2240
+ #1: ffffc90006137da8 ((work_completion)(&(&sw_ctx_tx->tx_work.work)->work)){+.+.}-{0:0}, at: process_one_work+0x85f/0x1670 kernel/workqueue.c:2244
+ #2: ffff88809dc300d8 (&ctx->tx_lock){+.+.}-{3:3}, at: tx_work_handler+0x127/0x190 net/tls/tls_sw.c:2251
 
-> Maybe now you understand better why I wanted peer objects :/
->
-I wasn't against peer object. But showing netdev of peer object assumed no_=
-smartnic, it also assume other_side is also similar Linux kernel.
-Anyways, I make humble request get over the past to move forward. :-)
+=============================================
 
-> > So it is used, and would like to continue to use even if there are mult=
-iple PFs
-> port (that has same pfnum) under the same eswitch.
-> >
-> > In an alternative,
-> > Currently we have pcipf, pcivf (and pcisf) flavours. May be if we intro=
-duce new
-> flavour say 'epcipf' to indicate external pci PF/VF/SF ports?
-> > There can be better name than epcipf. I just put epcipf to differentiat=
-e it.
-> > However these ports have same attributes as pcipf, pcivf, pcisf flavour=
-s.
->=20
-> I don't think the controllers are a terrible idea. Seems like a fairly re=
-asonable
-> extension.
-Ok.=20
-> But MLX don't seem to need them. And you have a history of trying to
-> make the Linux APIs look like your FW API.
->=20
-Because there are two devlink instances for each PF?
-I think for now an epcipf, epcivf flavour would just suffice due to lack of=
- multiple devlink instances.
-But in long run it is better to have the controller covering few topologies=
-.
-Otherwise we will break the rep naming later when multiple controllers are =
-managed by single eswitch (without notion of controller).
+NMI backtrace for cpu 0
+CPU: 0 PID: 1167 Comm: khungtaskd Not tainted 5.9.0-rc2-next-20200828-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ nmi_cpu_backtrace.cold+0x44/0xd7 lib/nmi_backtrace.c:105
+ nmi_trigger_cpumask_backtrace+0x1b3/0x223 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:147 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:253 [inline]
+ watchdog+0xd89/0xf30 kernel/hung_task.c:339
+ kthread+0x3b5/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 PID: 3893 Comm: systemd-journal Not tainted 5.9.0-rc2-next-20200828-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__read_seqcount_t_begin include/linux/seqlock.h:276 [inline]
+RIP: 0010:path_init+0x1d1/0x13c0 fs/namei.c:2218
+Code: 24 40 48 b8 00 00 00 00 00 fc ff df 4c 89 f2 48 c1 ea 03 0f b6 04 02 84 c0 74 08 3c 03 0f 8e 73 0e 00 00 44 8b 2d cf 44 de 07 <31> ff 45 89 ef 41 83 e7 01 44 89 fe e8 4e 87 b1 ff 45 84 ff 0f 85
+RSP: 0018:ffffc900052f7a48 EFLAGS: 00000246
+RAX: 0000000000000000 RBX: 0000000000000040 RCX: ffffffff81c2f109
+RDX: 1ffffffff13426c8 RSI: ffffffff81c2f117 RDI: ffffc900052f7c98
+RBP: ffffc900052f7ae8 R08: 0000000000000000 R09: ffffffff8c6a59e7
+R10: 0000000000000000 R11: 0000000000000000 R12: ffffc900052f7c58
+R13: 0000000000001444 R14: ffffffff89a13640 R15: 0000000000000000
+FS:  00007fcc879848c0(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fcc84d25000 CR3: 0000000094282000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ path_openat+0x185/0x2730 fs/namei.c:3363
+ do_filp_open+0x17e/0x3c0 fs/namei.c:3395
+ do_sys_openat2+0x16d/0x420 fs/open.c:1168
+ do_sys_open fs/open.c:1184 [inline]
+ __do_sys_open fs/open.c:1192 [inline]
+ __se_sys_open fs/open.c:1188 [inline]
+ __x64_sys_open+0x119/0x1c0 fs/open.c:1188
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7fcc86f14840
+Code: 73 01 c3 48 8b 0d 68 77 20 00 f7 d8 64 89 01 48 83 c8 ff c3 66 0f 1f 44 00 00 83 3d 89 bb 20 00 00 75 10 b8 02 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 1e f6 ff ff 48 89 04 24
+RSP: 002b:00007ffe226b7b58 EFLAGS: 00000246 ORIG_RAX: 0000000000000002
+RAX: ffffffffffffffda RBX: 00007ffe226b7e60 RCX: 00007fcc86f14840
+RDX: 00000000000001a0 RSI: 0000000000080042 RDI: 0000563cfc995a50
+RBP: 000000000000000d R08: 000000000000c0ff R09: 00000000ffffffff
+R10: 0000000000000069 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 0000563cfc989040 R14: 00007ffe226b7e20 R15: 0000563cfc995820
 
-Sometime my text is confusing. :-) so adding example of the thoughts below.
-Example: Eswitch side devlink port show for multi-host setup considering th=
-e smartnic.
-
-$ devlink port show
-pci/0000:00:08.0/0: type eth netdev enp0s8f0 flavour physical
-pci/0000:00:08.0/1: type eth netdev enp0s8f0_pf0 flavour pcipf pfnum 0
-pci/0000:00:08.0/2: type eth netdev enp0s8f0_c0pf0 flavour epcipf pfnum 0
-                                                                           =
-                                  ^^^^^ new port flavour.
-pci/0000:00:08.1/0: type eth netdev enp0s8f1 flavour physical
-pci/0000:00:08.1/1: type eth netdev enp0s8f1_pf1 flavour pcipf pfnum 1
-pci/0000:00:08.1/2: type eth netdev enp0s8f1_c0pf1 flavour epcipf pfnum 1
-
-Here one controller has two pci pfs (0,1}. Eswitch shows that they are exte=
-rnal pci ports.
-Whenever (not sure when), mlnx converts to single devlink instance, this wi=
-ll continue to work.
-It will also work when multiple controller(s) (of external host) ports have=
- same switch_id (for orchestration).
-And this doesn't break any backward compatibility for non multihost, non sm=
-atnic users.
-
-> Jiri, would you mind chiming in? What's your take?
-
-Will wait for his inputs..
