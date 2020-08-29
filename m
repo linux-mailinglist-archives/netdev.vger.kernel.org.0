@@ -2,111 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4578D256636
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 11:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 702E8256665
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 11:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726748AbgH2JMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 29 Aug 2020 05:12:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60318 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726258AbgH2JMW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 29 Aug 2020 05:12:22 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94939C061236
-        for <netdev@vger.kernel.org>; Sat, 29 Aug 2020 02:12:21 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id g128so1426059iof.11
-        for <netdev@vger.kernel.org>; Sat, 29 Aug 2020 02:12:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=/1CkLNoY9DnwtTehT+DXG92DDh+b75c924qNNG5mfDY=;
-        b=DF9lSwJ7GSnqnhcLAMo5Dsz7Hp5INjSLk1Jj9QqAdXXOki/pZ7D4S2OakVghtzhEH1
-         MEdZk7aLKfAWws1anrKI5hda/cbaXSguXrk6lcTyUAjvIUmQ1I2qyHn8iHmI/Mfi40Io
-         AGPIxWqCelINhRH+my4ieuTUp068A4U9eFj6JYMXLrtASF6cM8ds2jtcVw7SkqGHoI2h
-         s8TEhltwrDUEi1cxJF6r5Rvc080vZa3FenLRNvke6w2R3zOYrBYCY+693l46IVlYIMn0
-         hJKB9FNtC8bxfcwOs6dGgnF7MRvz5xwomqyqqBulfuTWyAIy5gVQVf9jEXWP/Kq0cZgD
-         d07Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=/1CkLNoY9DnwtTehT+DXG92DDh+b75c924qNNG5mfDY=;
-        b=k6bNQeNozHXqU4lKtI+fLoRTDTqEppP1V+/lak6XvW6hJzv9o4w7dLkWzoIS85EFGi
-         5XO8k1IyjnhoUK41cR5OCac/do3wDKFq9NWAXpyYvnQ4hZT2BN4ckGJccDYirpsxTPlZ
-         n+Y9VL91EeCqQnFx71YdOZUljS6j5hcJ3O9xjNe0Qj77799ZrOfYyqOh2/IePCGbkPl+
-         yfQoZjJMEEIgCVtdDfgOEznKIBT/c9q8CbQ4r7uCwPq0aiXdk5S87v5uydCoCIhN437a
-         AKusLWlgy3jWrQ/QL3CHCs3aVClyvjV2j4bgnGI2FekckcjsGiiDnLxPg4SQEB5CLLXe
-         B11g==
-X-Gm-Message-State: AOAM533thwMme2DmvjX83qB1+3TDiodvorxsEFoWLEPHNu5DdAdexgZa
-        oWRcXZfi5WxSxISA2ETHz/ZcakuOEkDbRwpDal0346yz05c=
-X-Google-Smtp-Source: ABdhPJyLhbFzKcP//r6DBcFxHFAL4oW9PFPJOr39B71RZpXQc4DYchEEjOemPAqAziTD6CdfAvb2uEa7IZsVNm7EXTY=
-X-Received: by 2002:a6b:e006:: with SMTP id z6mr2042886iog.118.1598692340556;
- Sat, 29 Aug 2020 02:12:20 -0700 (PDT)
+        id S1726944AbgH2JWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 29 Aug 2020 05:22:49 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:10730 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726405AbgH2JWt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 29 Aug 2020 05:22:49 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id E62AF79499588168783C;
+        Sat, 29 Aug 2020 17:22:45 +0800 (CST)
+Received: from huawei.com (10.175.104.175) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Sat, 29 Aug 2020
+ 17:22:39 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH] net: clean up codestyle
+Date:   Sat, 29 Aug 2020 05:21:30 -0400
+Message-ID: <20200829092130.26639-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-References: <CAE_-sdmpSSNEt5R2B+v1FaSP+SYCk_khW2KieRL_7xVbR=nfHw@mail.gmail.com>
-In-Reply-To: <CAE_-sdmpSSNEt5R2B+v1FaSP+SYCk_khW2KieRL_7xVbR=nfHw@mail.gmail.com>
-From:   Denis Gubin <denis.gubin@gmail.com>
-Date:   Sat, 29 Aug 2020 12:11:44 +0300
-Message-ID: <CAE_-sdmrpoq0nMegmS=7Te3bw0p8VXG6cqDOAjx90v_89HPp2A@mail.gmail.com>
-Subject: Re: tc filter add with handle 800::10:800
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.175]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In-Reply-To: CAE_-sdmpSSNEt5R2B+v1FaSP+SYCk_khW2KieRL_7xVbR=nfHw
+This is a pure codestyle cleanup patch. No functional change intended.
 
-Hi there!
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ include/net/dst.h    |  2 +-
+ include/net/sock.h   |  2 +-
+ net/ipv4/icmp.c      |  2 +-
+ net/ipv4/ip_output.c |  2 +-
+ net/ipv4/ping.c      |  6 ++++--
+ net/ipv4/route.c     | 10 +++++-----
+ 6 files changed, 13 insertions(+), 11 deletions(-)
 
-I just understand how it works?
-And I want to control by myself which hash table number will be set
-tc filter replace dev eno5 parent ffff: pref 49100 handle 800:10:800
-protocol ip u32 match u8 0 0
+diff --git a/include/net/dst.h b/include/net/dst.h
+index 6ae2e625050d..8ea8812b0b41 100644
+--- a/include/net/dst.h
++++ b/include/net/dst.h
+@@ -214,7 +214,7 @@ dst_allfrag(const struct dst_entry *dst)
+ static inline int
+ dst_metric_locked(const struct dst_entry *dst, int metric)
+ {
+-	return dst_metric(dst, RTAX_LOCK) & (1<<metric);
++	return dst_metric(dst, RTAX_LOCK) & (1 << metric);
+ }
+ 
+ static inline void dst_hold(struct dst_entry *dst)
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 064637d1ddf6..b943731fa879 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1478,7 +1478,7 @@ sk_rmem_schedule(struct sock *sk, struct sk_buff *skb, int size)
+ {
+ 	if (!sk_has_account(sk))
+ 		return true;
+-	return size<= sk->sk_forward_alloc ||
++	return size <= sk->sk_forward_alloc ||
+ 		__sk_mem_schedule(sk, size, SK_MEM_RECV) ||
+ 		skb_pfmemalloc(skb);
+ }
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 3b387dc3864f..8f2e974a1e4d 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -784,7 +784,7 @@ EXPORT_SYMBOL(icmp_ndo_send);
+ 
+ static void icmp_socket_deliver(struct sk_buff *skb, u32 info)
+ {
+-	const struct iphdr *iph = (const struct iphdr *) skb->data;
++	const struct iphdr *iph = (const struct iphdr *)skb->data;
+ 	const struct net_protocol *ipprot;
+ 	int protocol = iph->protocol;
+ 
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index f0f234727547..b931d0b02e49 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1536,7 +1536,7 @@ struct sk_buff *__ip_make_skb(struct sock *sk,
+ 	ip_select_ident(net, skb, sk);
+ 
+ 	if (opt) {
+-		iph->ihl += opt->optlen>>2;
++		iph->ihl += opt->optlen >> 2;
+ 		ip_options_build(skb, opt, cork->addr, rt, 0);
+ 	}
+ 
+diff --git a/net/ipv4/ping.c b/net/ipv4/ping.c
+index 265676fd2bbd..db364b2e2a69 100644
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -293,7 +293,8 @@ EXPORT_SYMBOL_GPL(ping_close);
+ 
+ /* Checks the bind address and possibly modifies sk->sk_bound_dev_if. */
+ static int ping_check_bind_addr(struct sock *sk, struct inet_sock *isk,
+-				struct sockaddr *uaddr, int addr_len) {
++				struct sockaddr *uaddr, int addr_len)
++{
+ 	struct net *net = sock_net(sk);
+ 	if (sk->sk_family == AF_INET) {
+ 		struct sockaddr_in *addr = (struct sockaddr_in *) uaddr;
+@@ -634,7 +635,8 @@ static int ping_v4_push_pending_frames(struct sock *sk, struct pingfakehdr *pfh,
+ }
+ 
+ int ping_common_sendmsg(int family, struct msghdr *msg, size_t len,
+-			void *user_icmph, size_t icmph_len) {
++			void *user_icmph, size_t icmph_len)
++{
+ 	u8 type, code;
+ 
+ 	if (len > 0xFFFF)
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 96fcdfb9bb26..2c05b863ae43 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -623,7 +623,7 @@ static inline u32 fnhe_hashfun(__be32 daddr)
+ 	u32 hval;
+ 
+ 	net_get_random_once(&fnhe_hashrnd, sizeof(fnhe_hashrnd));
+-	hval = jhash_1word((__force u32) daddr, fnhe_hashrnd);
++	hval = jhash_1word((__force u32)daddr, fnhe_hashrnd);
+ 	return hash_32(hval, FNHE_HASH_SHIFT);
+ }
+ 
+@@ -1062,7 +1062,7 @@ static void ip_rt_update_pmtu(struct dst_entry *dst, struct sock *sk,
+ void ipv4_update_pmtu(struct sk_buff *skb, struct net *net, u32 mtu,
+ 		      int oif, u8 protocol)
+ {
+-	const struct iphdr *iph = (const struct iphdr *) skb->data;
++	const struct iphdr *iph = (const struct iphdr *)skb->data;
+ 	struct flowi4 fl4;
+ 	struct rtable *rt;
+ 	u32 mark = IP4_REPLY_MARK(net, skb->mark);
+@@ -1097,7 +1097,7 @@ static void __ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
+ 
+ void ipv4_sk_update_pmtu(struct sk_buff *skb, struct sock *sk, u32 mtu)
+ {
+-	const struct iphdr *iph = (const struct iphdr *) skb->data;
++	const struct iphdr *iph = (const struct iphdr *)skb->data;
+ 	struct flowi4 fl4;
+ 	struct rtable *rt;
+ 	struct dst_entry *odst = NULL;
+@@ -1152,7 +1152,7 @@ EXPORT_SYMBOL_GPL(ipv4_sk_update_pmtu);
+ void ipv4_redirect(struct sk_buff *skb, struct net *net,
+ 		   int oif, u8 protocol)
+ {
+-	const struct iphdr *iph = (const struct iphdr *) skb->data;
++	const struct iphdr *iph = (const struct iphdr *)skb->data;
+ 	struct flowi4 fl4;
+ 	struct rtable *rt;
+ 
+@@ -1308,7 +1308,7 @@ static unsigned int ipv4_default_advmss(const struct dst_entry *dst)
+ 
+ static unsigned int ipv4_mtu(const struct dst_entry *dst)
+ {
+-	const struct rtable *rt = (const struct rtable *) dst;
++	const struct rtable *rt = (const struct rtable *)dst;
+ 	unsigned int mtu = rt->rt_pmtu;
+ 
+ 	if (!mtu || time_after_eq(jiffies, rt->dst.expires))
+-- 
+2.19.1
 
-and then I'll can delete this filter by command like this
-tc filter delete dev eno5 parent ffff: pref 49100 handle 800:10:800 u32
-
-And then create that filter again by command
-tc filter replace dev eno5 parent ffff: pref 49100 handle 800:10:800
-protocol ip u32 match u8 0 0
-
-Is it possible ?
-
-I pleased for your help?
-
-
-
-On Sat, Aug 29, 2020 at 1:15 AM Denis Gubin <denis.gubin@gmail.com> wrote:
->
-> Hello, everyone!
->
-> How can I add filter rule with full handle option
->
-> tc filter replace dev eno5 parent ffff: pref 49100 handle 800:10:800
-> protocol ip u32 match u8 0 0
->
-> I get error:
-> Error: cls_u32: Handle specified hash table address mismatch
->
-> Why I get error?
->
-> Am I right to article below?
->
-> handle 800:10:888 is this:
-> 800 - number of hash table
-> 10 - number of divisor
-> 888 - number of filter rule
->
-> I appreciate for your answers. Thanks!
->
-> --
-> Best regards,
-> Denis Gubin
-
-
-
---
-Best regards,
-Denis Gubin
