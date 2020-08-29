@@ -2,144 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA2025645C
-	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 05:29:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5019A25648B
+	for <lists+netdev@lfdr.de>; Sat, 29 Aug 2020 05:39:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726904AbgH2D3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 28 Aug 2020 23:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726873AbgH2D32 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 23:29:28 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64280C061264
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 20:29:28 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id g1so1332887pgm.9
-        for <netdev@vger.kernel.org>; Fri, 28 Aug 2020 20:29:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Py8IMjCBItA6sajyrMCY7as2dK1TPvDX/bq5PjdeoS0=;
-        b=teu1kkhWtu1SIbzyhXpTCIC1yxA202NtS9Z0TxAFVSMx4KjtNBP/VgcIESpJgJQfA+
-         kkFB1qKvHRVqs1iFLLmYzuKPjNW/1Mck80gJHmeDnNPqEow69VJHs/pupQkNzdQQKLmh
-         qz7PDANKOEP2kiGjgcezMtXmUGJYJ8hP9LIvwT4RdYEIzR5WZS8s8alY+f9+ioD0mdUD
-         rjYA3AhUjDnFmNPOV1+G5iU0LqKALVSidroLYDt+BL8rE1+7fi+7LU9fR1zFm7/7x7yC
-         SlfnAxInehV8iQeTX3To6YqlGLErkkhAXkGvr3Ww+DzNBFim7JPi+GFwSOTANLPO8gNb
-         9/4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Py8IMjCBItA6sajyrMCY7as2dK1TPvDX/bq5PjdeoS0=;
-        b=h/YmC+B6f+xUHEEBK7JxyVzTXAm7GxCkFim92SXRkjAiqaEpJdSTPIpY0MxDtyImSq
-         1O72GOL0J0E1t20Vo0f7K5VsslBZGQCTfhYNy26Mt88IJk9NiemLxpKuhhLEXWjYDMeT
-         P8yRqxTboUVr6i/zaRxLGFOGyWhhBGFES0JPVCNqY3VtSKRIW6qPb8YJoYNu2L1WxvlZ
-         xMxACu3Y4PEgwnE9tTpvwozJWn6gh+qYcT+0eQ/Dfh0aKaHD/9fM8QiROMqAkVIX5HDz
-         0YiUhN72cZ32pNqBvnQ3fWETcG6Sp9SmFXTGbr3BunKyafeyFKwsqnCmyb0zsuZXsoWs
-         WgOA==
-X-Gm-Message-State: AOAM533DPBGqsxDAP+2Cuxf2eHHfIRhkjt/5mS/++2mhsZbs/JIxbQB/
-        9IBGw4CS66Av9bvSfb0F0ukHwXmlcts=
-X-Google-Smtp-Source: ABdhPJzzFekPK+2srws1li1d0nYbtociAfRqgbGGzCUHQQRY4D/X5DDE+dm2wgg8pCeejERtIJPDYg==
-X-Received: by 2002:a63:d504:: with SMTP id c4mr1273285pgg.138.1598671765883;
-        Fri, 28 Aug 2020 20:29:25 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t19sm880708pfq.179.2020.08.28.20.29.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Aug 2020 20:29:25 -0700 (PDT)
-Subject: Re: drivers/of/of_mdio.c needs a small modification
-To:     =?UTF-8?Q?Adam_Rudzi=c5=84ski?= <adam.rudzinski@arf.net.pl>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     robh+dt@kernel.org, frowand.list@gmail.com,
-        netdev <netdev@vger.kernel.org>
-References: <c8b74845-b9e1-6d85-3947-56333b73d756@arf.net.pl>
- <20200828222846.GA2403519@lunn.ch>
- <dcfea76d-5340-76cf-7ad0-313af334a2fd@arf.net.pl>
- <20200828225353.GB2403519@lunn.ch>
- <6eb8c287-2d9f-2497-3581-e05a5553b88f@arf.net.pl>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <891d7e82-f22a-d24b-df5b-44b34dc419b5@gmail.com>
-Date:   Fri, 28 Aug 2020 20:29:23 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.1.1
+        id S1726912AbgH2Djm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 28 Aug 2020 23:39:42 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:2736 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726452AbgH2Djl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 28 Aug 2020 23:39:41 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f49cdd00001>; Fri, 28 Aug 2020 20:38:56 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Fri, 28 Aug 2020 20:39:40 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Fri, 28 Aug 2020 20:39:40 -0700
+Received: from DRHQMAIL107.nvidia.com (10.27.9.16) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sat, 29 Aug
+ 2020 03:39:40 +0000
+Received: from [10.2.63.130] (172.20.13.39) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sat, 29 Aug
+ 2020 03:39:40 +0000
+Subject: Re: [PATCH iproute2 net-next] iplink: add support for protodown
+ reason
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     Roopa Prabhu <roopa@cumulusnetworks.com>, <dsahern@gmail.com>,
+        <netdev@vger.kernel.org>
+References: <20200821035202.15612-1-roopa@cumulusnetworks.com>
+ <20200820213649.7cd6aa3f@hermes.lan>
+ <1ad9fc74-db30-fee7-53c8-d1c208b8f9ec@nvidia.com>
+ <78abb0f7-7043-2612-58de-e64ecefd7ac5@nvidia.com>
+ <20200821183002.7bfc7aa0@hermes.lan>
+From:   Roopa Prabhu <roopa@nvidia.com>
+Message-ID: <5bec52a4-fcbd-4efa-3d7e-9462017d61c3@nvidia.com>
+Date:   Fri, 28 Aug 2020 20:39:05 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <6eb8c287-2d9f-2497-3581-e05a5553b88f@arf.net.pl>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20200821183002.7bfc7aa0@hermes.lan>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ DRHQMAIL107.nvidia.com (10.27.9.16)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1598672337; bh=O5HgWtUssS6JGzO7NL0P9D20NEEEK1aWeY2YVnG7ZN8=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:Content-Type:
+         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=BRuB1pZG2X0LIIy9lYs5ZRvX2TJgWUruGHC7EF7WgEHN/kRsdqofRA0F+GfTeeOWL
+         xuLRKe8e1bVA2Kn9DHhiVv5plULxc/sd1I2/OTBHzjp53Tq+S/isphCBYTWXg4Ec6N
+         HB/ib2W0jh6JPJpN9NZdF1SVXCBmuda1ylR7kmtDZdn2KN1JywiyhOIIt5gB3A3xQO
+         u6W5GFnkaQ69e7HefmTl0vaEyUFHt7Wvk9aOCiD64ekkx8wgW4ez5T1Ae0fxbLYX+h
+         7CCDdjZpDnrf9FjvX+gMND+j8AnPpXXJUmQNWequHRpMedzPVfs09aNSqwkRAm8pp6
+         r6NcNdCNVmfgw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 8/28/2020 4:14 PM, Adam Rudziński wrote:
-> W dniu 2020-08-29 o 00:53, Andrew Lunn pisze:
->> On Sat, Aug 29, 2020 at 12:34:05AM +0200, Adam Rudziński wrote:
->>> Hi Andrew.
+On 8/21/20 6:30 PM, Stephen Hemminger wrote:
+> External email: Use caution opening links or attachments
+>
+>
+> On Fri, 21 Aug 2020 14:09:14 -0700
+> Roopa Prabhu <roopa@nvidia.com> wrote:
+>
+>> On 8/20/20 10:18 PM, Roopa Prabhu wrote:
+>>> On 8/20/20 9:36 PM, Stephen Hemminger wrote:
+>>>>
+>>>> On Thu, 20 Aug 2020 20:52:02 -0700
+>>>> Roopa Prabhu <roopa@cumulusnetworks.com> wrote:
+>>>>
+>>>>> +     if (tb[IFLA_PROTO_DOWN]) {
+>>>>> +             if (rta_getattr_u8(tb[IFLA_PROTO_DOWN]))
+>>>>> +                     print_bool(PRINT_ANY,
+>>>>> +                                "proto_down", " protodown on ", true=
+);
+>>>> In general my preference is to use print_null() for presence flags.
+>>>> Otherwise you have to handle the false case in JSON as a special case.
 >>>
->>> W dniu 2020-08-29 o 00:28, Andrew Lunn pisze:
->>>> Hi Adam
->>>>
->>>>> If kernel has to bring up two Ethernet interfaces, the processor 
->>>>> has two
->>>>> peripherals with functionality of MACs (in i.MX6ULL these are Fast 
->>>>> Ethernet
->>>>> Controllers, FECs), but uses a shared MDIO bus, then the kernel 
->>>>> first probes
->>>>> one MAC, enables clock for its PHY, probes MDIO bus tryng to 
->>>>> discover _all_
->>>>> PHYs, and then probes the second MAC, and enables clock for its 
->>>>> PHY. The
->>>>> result is that the second PHY is still inactive during PHY 
->>>>> discovery. Thus,
->>>>> one Ethernet interface is not functional.
->>>> What clock are you talking about? Do you have the FEC feeding a 50MHz
->>>> clock to the PHY? Each FEC providing its own clock to its own PHY? And
->>>> are you saying a PHY without its reference clock does not respond to
->>>> MDIO reads and hence the second PHY does not probe because it has no
->>>> reference clock?
->>>>
->>>>       Andrew
->>> Yes, exactly. In my case the PHYs are LAN8720A, and it works this way.
->> O.K. Boards i've seen like this have both PHYs driver from the first
->> MAC. Or the clock goes the other way, the PHY has a crystal and it
->> feeds the FEC.
+>>> ok, i will look. But this is existing code moved into a new function an=
+d
+>>> has been
+>>>
+>>> working fine for years.
 >>
->> I would say the correct way to solve this is to make the FEC a clock
->> provider. It should register its clocks with the common clock
->> framework. The MDIO bus can then request the clock from the second FEC
->> before it scans the bus. Or we add the clock to the PHY node so it
->> enables the clock before probing it. There are people who want this
->> sort of framework code, to be able to support a GPIO reset, which
->> needs releasing before probing the bus for the PHY.
+>> looked at print_null and switching to that results in a change in output
+>> for existing protodown
 >>
->> Anyway, post your patch, so we get a better idea what you are
->> proposing.
+>> attribute, so I plan to leave it as is for now.
 >>
->>     Andrew
-> 
-> Hm, this sounds reasonable, but complicated at the same time. I have 
-> spent some time searching for possible solution and never found anything 
-> teaching something similar, so I'd also speculate that it's kind of not 
-> very well documented. That doesn't mean I'm against these solutions, 
-> just that seems to be beyond capabilities of many mortals who even try 
-> to read.
-> 
-> OK, so a patch it is. Please, let me know how to make the patch so that 
-> it was useful and as convenient as possible for you. Would you like me 
-> to use some specific code/repo/branch/... as its base?
+> Sure we should really try and have some consistency in the JSON output.
+> Maybe a JSON style guide is needed, I wonder if some heavy JSON user alre=
+ady
+> has one?
 
-This is targeting the net-next tree, see the netdev-FAQ here for details:
+yes, agreed. I think we need to checkin a guide for coders and=20
+reviewers. specifically for the iproute2 json library.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst
+Its hard to catch these at review time otherwise and most of iproute2=20
+bugs are propagated due to copy-paste.
 
-I will be posting some patches for our ARCH_BRCMSTB platforms which 
-require that we turn on the internal PHY's digital clock otherwise it 
-does not respond on the MDIO bus and we cannot discover its ID and we 
-cannot bind to a PHY driver. I will make sure to copy you so you can see 
-if this would work for you.
--- 
-Florian
+I checked if the FRR project had one as they have a lot of json routing=20
+operational data. They don't and=C2=A0 rely on reviewers.
+
+In the least i think the json library api documentation and a few best=20
+practices will help.
+
+thanks for the review.
+
