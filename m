@@ -2,158 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C6F1256EF9
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 17:15:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 754BE256F05
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 17:28:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726394AbgH3PPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 11:15:15 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59257 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726023AbgH3PPK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 11:15:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598800508;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=Qe2bq4z5dTUuex6AZKp5/mRBzSkcGmSP4Euz2gp/VUE=;
-        b=QtI5mxY3f1AgipF27yW/ulAYqlGuy64EEBZnpJb0+dG5m+QX73jidsbBkcfOlLJx26YEq9
-        UlXafnlbq2KeIlOE08d7PkJFiUg/by3ERw5dalL2dUTt9GKANzhOz5br7QlCbFedDorlVD
-        YN2pmNFkt8iGsuQo9NQO7UgFXrzm2pA=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-181-wg9nx3WDNcuL75EobKH3Ig-1; Sun, 30 Aug 2020 11:15:06 -0400
-X-MC-Unique: wg9nx3WDNcuL75EobKH3Ig-1
-Received: by mail-io1-f69.google.com with SMTP id t187so2575719iof.22
-        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 08:15:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Qe2bq4z5dTUuex6AZKp5/mRBzSkcGmSP4Euz2gp/VUE=;
-        b=PodOQtsisX/Kpt6/0tp2JaDH2H3nB6MvTecviAH24/iLFIIFQGJdeJOztN86+K8GGS
-         s5VO5ZlNQPJOuUKqnAryxJenVt6SRc62AsVFn64rjHS1/P7Xr1XTOq+W2QDV5xRoNVAC
-         XB9622C5tnN2TMufb7uh8AVwC7PlWQcnJsmnZoue2mrSlYVBOOeRUGBO2Y7hDoL9MRYj
-         LjxKFvJUkeZFKI1pF2/Qu6flGAXSu/LL7eValOxfx7CptxqHFVZhkNZI+mnaTYJzLeFw
-         TBbBZSX7yZAMzAeSMFUFKB9rYBiZv6bqg9CSt5jDk7861qOZJkKqyDT8lfBlBq7Q+0bp
-         xB6w==
-X-Gm-Message-State: AOAM531+pGAfvwyQrOzMYiGt9ygI82nCtqZJzpPt5uHnAK98L46m27G+
-        6gkaRbjmPgBicAJIxBhqOstmvxnJy1FYap+r0zhoTPeeB4b3fcZ2cQRTrHWqXcDvG3gUNoTONwU
-        xww959DTJAR6YpM7X
-X-Received: by 2002:a92:364f:: with SMTP id d15mr5810928ilf.89.1598800505835;
-        Sun, 30 Aug 2020 08:15:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwRytt73N2hWbZvqwb/+WTkSxJy87W8rcdq9Uz2GipT1EUKrVIh7nlT+Fj7nl/3oUSkpRJaew==
-X-Received: by 2002:a92:364f:: with SMTP id d15mr5810915ilf.89.1598800505509;
-        Sun, 30 Aug 2020 08:15:05 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id q19sm3042288ilj.85.2020.08.30.08.15.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Aug 2020 08:15:04 -0700 (PDT)
-From:   trix@redhat.com
-To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        natechancellor@gmail.com, ndesaulniers@google.com
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] net: openvswitch: pass NULL for unused parameters
-Date:   Sun, 30 Aug 2020 08:14:59 -0700
-Message-Id: <20200830151459.4648-1-trix@redhat.com>
-X-Mailer: git-send-email 2.18.1
+        id S1726924AbgH3P2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 11:28:19 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42673 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726030AbgH3P17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 11:27:59 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
+        with SMTP; 30 Aug 2020 18:27:54 +0300
+Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 07UFRsRX029615;
+        Sun, 30 Aug 2020 18:27:54 +0300
+Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 07UFRsBe027826;
+        Sun, 30 Aug 2020 18:27:54 +0300
+Received: (from moshe@localhost)
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 07UFRpAE027823;
+        Sun, 30 Aug 2020 18:27:51 +0300
+From:   Moshe Shemesh <moshe@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>
+Subject: [PATCH net-next RFC v3 00/14] Add devlink reload action option 
+Date:   Sun, 30 Aug 2020 18:27:20 +0300
+Message-Id: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+Introduce new option on devlink reload API to enable the user to select the
+reload action required. Complete support for all actions in mlx5.
+The following reload actions are supported:
+  driver_reinit: driver entities re-initialization, applying devlink-param
+                 and devlink-resource values.
+  fw_activate: firmware activate.
+  fw_activate_no_reset: Activate new firmware image without any reset.
+                        (also known as: firmware live patching).
 
-clang static analysis flags these problems
+Each driver which support this command should expose the reload actions
+supported.
+The uAPI is backward compatible, if the reload action option is omitted
+from the reload command, the driver reinit action will be used.
+Note that when required to do firmware activation some drivers may need
+to reload the driver. On the other hand some drivers may need to reset
+the firmware to reinitialize the driver entities. Therefore, the devlink
+reload command returns the actions which were actually done.
 
-flow_table.c:713:2: warning: The expression is an uninitialized
-  value. The computed value will also be garbage
-        (*n_mask_hit)++;
-        ^~~~~~~~~~~~~~~
-flow_table.c:748:5: warning: The expression is an uninitialized
-  value. The computed value will also be garbage
-                                (*n_cache_hit)++;
-                                ^~~~~~~~~~~~~~~~
+Add reload actions counters to hold the history per reload action type.
+For example, the number of times fw_activate has been done on this
+device since the driver module was added or if the firmware activation
+was done with or without reset.
 
-These are not problems because neither pararmeter is used
-by the calling function.
+Patch 1 adds the new API reload action option to devlink.
+Patch 2 adds reload actions counters.
+Patch 3 exposes the reload actions counters on devlink dev get.
+Patches 4-9 add support on mlx5 for devlink reload action fw_activate
+            and handle the firmware reset events.
+Patches 10-11 add devlink enable remote dev reset parameter and use it
+             in mlx5.
+Patches 12-13 mlx5 add devlink reload action fw_activate_no_reset support
+              and event handling.
+Patch 14 adds documentation file devlink-reload.rst 
 
-Looking at all of the calling functions, there are many
-cases where the results are unused.  Passing unused
-parameters is a waste.
+command examples:
+$devlink dev reload pci/0000:82:00.0 action driver_reinit
+reload_actions_done:
+  driver_reinit
 
-To avoid passing unused parameters, rework the
-masked_flow_lookup() and flow_lookup() routines to check
-for NULL parameters and change the unused parameters to NULL.
+$devlink dev reload pci/0000:82:00.0 action fw_activate
+reload_actions_done:
+  driver_reinit fw_activate
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- net/openvswitch/flow_table.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+$ devlink dev reload pci/0000:82:00.0 action fw_activate no_reset
+reload_actions_done:
+  fw_activate_no_reset
 
-diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index e2235849a57e..18e7fa3aa67e 100644
---- a/net/openvswitch/flow_table.c
-+++ b/net/openvswitch/flow_table.c
-@@ -710,7 +710,8 @@ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
- 	ovs_flow_mask_key(&masked_key, unmasked, false, mask);
- 	hash = flow_hash(&masked_key, &mask->range);
- 	head = find_bucket(ti, hash);
--	(*n_mask_hit)++;
-+	if (n_mask_hit)
-+		(*n_mask_hit)++;
- 
- 	hlist_for_each_entry_rcu(flow, head, flow_table.node[ti->node_ver],
- 				lockdep_ovsl_is_held()) {
-@@ -745,7 +746,8 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
- 				u64_stats_update_begin(&ma->syncp);
- 				usage_counters[*index]++;
- 				u64_stats_update_end(&ma->syncp);
--				(*n_cache_hit)++;
-+				if (n_cache_hit)
-+					(*n_cache_hit)++;
- 				return flow;
- 			}
- 		}
-@@ -798,9 +800,8 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
- 	*n_cache_hit = 0;
- 	if (unlikely(!skb_hash || mc->cache_size == 0)) {
- 		u32 mask_index = 0;
--		u32 cache = 0;
- 
--		return flow_lookup(tbl, ti, ma, key, n_mask_hit, &cache,
-+		return flow_lookup(tbl, ti, ma, key, n_mask_hit, NULL,
- 				   &mask_index);
- 	}
- 
-@@ -849,11 +850,9 @@ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
- {
- 	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
- 	struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
--	u32 __always_unused n_mask_hit;
--	u32 __always_unused n_cache_hit;
- 	u32 index = 0;
- 
--	return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
-+	return flow_lookup(tbl, ti, ma, key, NULL, NULL, &index);
- }
- 
- struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
-@@ -865,7 +864,6 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
- 	/* Always called under ovs-mutex. */
- 	for (i = 0; i < ma->max; i++) {
- 		struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
--		u32 __always_unused n_mask_hit;
- 		struct sw_flow_mask *mask;
- 		struct sw_flow *flow;
- 
-@@ -873,7 +871,7 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
- 		if (!mask)
- 			continue;
- 
--		flow = masked_flow_lookup(ti, match->key, mask, &n_mask_hit);
-+		flow = masked_flow_lookup(ti, match->key, mask, NULL);
- 		if (flow && ovs_identifier_is_key(&flow->id) &&
- 		    ovs_flow_cmp_unmasked_key(flow, match)) {
- 			return flow;
+v2 -> v3:
+- Replace fw_live_patch action by fw_activate_no_reset
+- Devlink reload returns the actions done over netlink reply
+- Add reload actions counters
+
+v1 -> v2:
+- Instead of reload levels driver,fw_reset,fw_live_patch have reload
+  actions driver_reinit,fw_activate,fw_live_patch
+- Remove driver default level, the action driver_reinit is the default
+  action for all drivers 
+
+Moshe Shemesh (14):
+  devlink: Add reload action option to devlink reload command
+  devlink: Add reload actions counters
+  devlink: Add reload actions counters to dev get
+  net/mlx5: Add functions to set/query MFRL register
+  net/mlx5: Set cap for pci sync for fw update event
+  net/mlx5: Handle sync reset request event
+  net/mlx5: Handle sync reset now event
+  net/mlx5: Handle sync reset abort event
+  net/mlx5: Add support for devlink reload action fw activate
+  devlink: Add enable_remote_dev_reset generic parameter
+  net/mlx5: Add devlink param enable_remote_dev_reset support
+  net/mlx5: Add support for fw live patch event
+  net/mlx5: Add support for devlink reload action fw activate no reset
+  devlink: Add Documentation/networking/devlink/devlink-reload.rst
+
+ .../networking/devlink/devlink-params.rst     |   6 +
+ .../networking/devlink/devlink-reload.rst     |  68 +++
+ Documentation/networking/devlink/index.rst    |   1 +
+ drivers/net/ethernet/mellanox/mlx4/main.c     |  14 +-
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 117 ++++-
+ .../mellanox/mlx5/core/diag/fw_tracer.c       |  31 ++
+ .../mellanox/mlx5/core/diag/fw_tracer.h       |   1 +
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 453 ++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |  19 +
+ .../net/ethernet/mellanox/mlx5/core/health.c  |  35 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  13 +
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  24 +-
+ drivers/net/netdevsim/dev.c                   |  16 +-
+ include/linux/mlx5/device.h                   |   1 +
+ include/linux/mlx5/driver.h                   |   4 +
+ include/net/devlink.h                         |  13 +-
+ include/uapi/linux/devlink.h                  |  24 +
+ net/core/devlink.c                            | 174 ++++++-
+ 20 files changed, 967 insertions(+), 51 deletions(-)
+ create mode 100644 Documentation/networking/devlink/devlink-reload.rst
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+
 -- 
-2.18.1
+2.17.1
 
