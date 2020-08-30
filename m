@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B8E8256F0F
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 17:29:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05958256F07
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 17:28:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727066AbgH3P3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 11:29:09 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42768 "EHLO
+        id S1726942AbgH3P2n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 11:28:43 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42780 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726726AbgH3P2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 11:28:04 -0400
+        with ESMTP id S1726814AbgH3P2B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 11:28:01 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 30 Aug 2020 18:27:56 +0300
+        with SMTP; 30 Aug 2020 18:27:57 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 07UFRuf1029672;
-        Sun, 30 Aug 2020 18:27:56 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 07UFRvvG029680;
+        Sun, 30 Aug 2020 18:27:57 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 07UFRuBq027853;
-        Sun, 30 Aug 2020 18:27:56 +0300
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 07UFRv05027857;
+        Sun, 30 Aug 2020 18:27:57 +0300
 Received: (from moshe@localhost)
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 07UFRute027852;
-        Sun, 30 Aug 2020 18:27:56 +0300
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 07UFRvd1027856;
+        Sun, 30 Aug 2020 18:27:57 +0300
 From:   Moshe Shemesh <moshe@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next RFC v3 12/14] net/mlx5: Add support for fw live patch event
-Date:   Sun, 30 Aug 2020 18:27:32 +0300
-Message-Id: <1598801254-27764-13-git-send-email-moshe@mellanox.com>
+Subject: [PATCH net-next RFC v3 14/14] devlink: Add Documentation/networking/devlink/devlink-reload.rst
+Date:   Sun, 30 Aug 2020 18:27:34 +0300
+Message-Id: <1598801254-27764-15-git-send-email-moshe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
 References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
@@ -38,151 +38,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Firmware live patch event notifies the driver that the firmware was just
-updated using live patch. In such case the driver should not reload or
-re-initiate entities, part to updating the firmware version and
-re-initiate the firmware tracer which can be updated by live patch with
-new strings database to help debugging an issue.
+Add devlink reload rst documentation file.
+Update index file to include it.
 
 Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 ---
- .../mellanox/mlx5/core/diag/fw_tracer.c       | 31 +++++++++++++++++++
- .../mellanox/mlx5/core/diag/fw_tracer.h       |  1 +
- .../ethernet/mellanox/mlx5/core/fw_reset.c    | 27 ++++++++++++++++
- include/linux/mlx5/device.h                   |  1 +
- 4 files changed, 60 insertions(+)
+v2 -> v3:
+- Devlink reload returns the actions done
+- Replace fw_live_patch action by fw_activate_no_reset
+- Explain fw_activate meaning
+v1 -> v2:
+- Instead of reload levels driver,fw_reset,fw_live_patch have reload
+  actions driver_reinit,fw_activate,fw_live_patch
+---
+ .../networking/devlink/devlink-reload.rst     | 68 +++++++++++++++++++
+ Documentation/networking/devlink/index.rst    |  1 +
+ 2 files changed, 69 insertions(+)
+ create mode 100644 Documentation/networking/devlink/devlink-reload.rst
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-index ad3594c4afcb..08dae045d185 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-@@ -1064,6 +1064,37 @@ void mlx5_fw_tracer_destroy(struct mlx5_fw_tracer *tracer)
- 	kvfree(tracer);
- }
+diff --git a/Documentation/networking/devlink/devlink-reload.rst b/Documentation/networking/devlink/devlink-reload.rst
+new file mode 100644
+index 000000000000..44a18692bddd
+--- /dev/null
++++ b/Documentation/networking/devlink/devlink-reload.rst
+@@ -0,0 +1,68 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++==============
++Devlink Reload
++==============
++
++``devlink-reload`` provides mechanism to either reload driver entities,
++applying ``devlink-params`` and ``devlink-resources`` new values or firmware
++activation depends on reload action selected.
++
++Reload actions
++==============
++
++User may select a reload action.
++By default ``driver_reinit`` action is done.
++
++.. list-table:: Possible reload levels
++   :widths: 5 90
++
++   * - Name
++     - Description
++   * - ``driver-reinit``
++     - Devlink driver entities re-initialization, including applying
++       new values to devlink entities which are used during driver
++       load such as ``devlink-params`` in configuration mode
++       ``driverinit`` or ``devlink-resources``
++   * - ``fw_activate``
++     - Firmware activate. Activates new firmware if such image is stored and
++       pending activation. This action involves firmware reset, if no new image
++       pending this action will reload current firmware image.
++   * - ``fw_activate_no_reset``
++     - Activate new firmware image without firmware reset or reload.
++       This action is also known as live patch, applying firmware changes
++       without reset.
++
++Note that when required to do firmware activation some drivers may need
++to reload the driver. On the other hand some drivers may need to reset
++the firmware to reinitialize the driver entities. Therefore, the devlink
++reload command returns the actions which were actually done.
++However, in case fw_activate_no_reset action is selected, then no other
++reload action is allowed.
++
++Change namespace
++================
++
++All devlink instances are created in init_net and stay there for a
++lifetime. Allow user to be able to move devlink instances into
++namespaces during devlink reload operation. That ensures proper
++re-instantiation of driver objects, including netdevices.
++
++example usage
++-------------
++
++.. code:: shell
++
++    $ devlink dev reload help
++    $ devlink dev reload DEV [ netns { PID | NAME | ID } ] [ action { driver_reinit | fw_activate [no_reset] } ]
++
++    # Run reload command for devlink driver entities re-initialization:
++    $ devlink dev reload pci/0000:82:00.0 action driver_reinit
++    reload_actions_done:
++      driver_reinit
++
++    # Run reload command to activate firmware:
++    $ devlink dev reload pci/0000:82:00.0 action fw_activate
++    reload_actions_done:
++      driver_reinit fw_activate
++    # Note that the driver in this example reloads the driver while activating firmware
+diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
+index 7684ae5c4a4a..d82874760ae2 100644
+--- a/Documentation/networking/devlink/index.rst
++++ b/Documentation/networking/devlink/index.rst
+@@ -20,6 +20,7 @@ general.
+    devlink-params
+    devlink-region
+    devlink-resource
++   devlink-reload
+    devlink-trap
  
-+int mlx5_fw_tracer_recreate_strings_db(struct mlx5_fw_tracer *tracer)
-+{
-+	struct mlx5_core_dev *dev;
-+	int err;
-+
-+	if (IS_ERR_OR_NULL(tracer))
-+		return -EINVAL;
-+
-+	cancel_work_sync(&tracer->read_fw_strings_work);
-+	mlx5_fw_tracer_clean_ready_list(tracer);
-+	mlx5_fw_tracer_clean_print_hash(tracer);
-+	mlx5_fw_tracer_clean_saved_traces_array(tracer);
-+	mlx5_fw_tracer_free_strings_db(tracer);
-+
-+	dev = tracer->dev;
-+	err = mlx5_query_mtrc_caps(tracer);
-+	if (err) {
-+		mlx5_core_dbg(dev, "FWTracer: Failed to query capabilities %d\n", err);
-+		return err;
-+	}
-+
-+	err = mlx5_fw_tracer_allocate_strings_db(tracer);
-+	if (err) {
-+		mlx5_core_warn(dev, "FWTracer: Allocate strings DB failed %d\n", err);
-+		return err;
-+	}
-+	mlx5_fw_tracer_init_saved_traces_array(tracer);
-+
-+	return 0;
-+}
-+
- static int fw_tracer_event(struct notifier_block *nb, unsigned long action, void *data)
- {
- 	struct mlx5_fw_tracer *tracer = mlx5_nb_cof(nb, struct mlx5_fw_tracer, nb);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h
-index 40601fba80ba..1a755098aeeb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h
-@@ -191,5 +191,6 @@ void mlx5_fw_tracer_destroy(struct mlx5_fw_tracer *tracer);
- int mlx5_fw_tracer_trigger_core_dump_general(struct mlx5_core_dev *dev);
- int mlx5_fw_tracer_get_saved_traces_objects(struct mlx5_fw_tracer *tracer,
- 					    struct devlink_fmsg *fmsg);
-+int mlx5_fw_tracer_recreate_strings_db(struct mlx5_fw_tracer *tracer);
- 
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index 0df2ad9d555c..13a5e226d331 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -2,6 +2,7 @@
- /* Copyright (c) 2020, Mellanox Technologies inc.  All rights reserved. */
- 
- #include "fw_reset.h"
-+#include "diag/fw_tracer.h"
- 
- enum {
- 	MLX5_FW_RESET_FLAGS_RESET_REQUESTED,
-@@ -13,6 +14,7 @@ struct mlx5_fw_reset {
- 	struct mlx5_core_dev *dev;
- 	struct mlx5_nb nb;
- 	struct workqueue_struct *wq;
-+	struct work_struct fw_live_patch_work;
- 	struct work_struct reset_request_work;
- 	struct work_struct reset_reload_work;
- 	struct work_struct reset_now_work;
-@@ -187,6 +189,27 @@ static void mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
- 	mlx5_start_sync_reset_poll(dev);
- }
- 
-+static void mlx5_fw_live_patch_event(struct work_struct *work)
-+{
-+	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
-+						      fw_live_patch_work);
-+	struct mlx5_core_dev *dev = fw_reset->dev;
-+	struct mlx5_fw_tracer *tracer;
-+
-+	mlx5_core_info(dev, "Live patch updated firmware version: %d.%d.%d\n", fw_rev_maj(dev),
-+		       fw_rev_min(dev), fw_rev_sub(dev));
-+
-+	tracer = dev->tracer;
-+	if (IS_ERR_OR_NULL(tracer))
-+		return;
-+
-+	mlx5_fw_tracer_cleanup(tracer);
-+	if (mlx5_fw_tracer_recreate_strings_db(tracer))
-+		mlx5_core_err(dev, "Failed to recreate FW tracer strings DB\n");
-+	if (mlx5_fw_tracer_init(tracer))
-+		mlx5_core_err(dev, "Failed to re-initialize FW tracer\n");
-+}
-+
- static void mlx5_sync_reset_request_event(struct work_struct *work)
- {
- 	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
-@@ -360,6 +383,9 @@ static int fw_reset_event_notifier(struct notifier_block *nb, unsigned long acti
- 	struct mlx5_eqe *eqe = data;
- 
- 	switch (eqe->sub_type) {
-+	case MLX5_GENERAL_SUBTYPE_FW_LIVE_PATCH_EVENT:
-+			queue_work(fw_reset->wq, &fw_reset->fw_live_patch_work);
-+		break;
- 	case MLX5_GENERAL_SUBTYPE_PCI_SYNC_FOR_FW_UPDATE_EVENT:
- 		mlx5_sync_reset_events_handle(fw_reset, eqe);
- 		break;
-@@ -404,6 +430,7 @@ int mlx5_fw_reset_events_init(struct mlx5_core_dev *dev)
- 	fw_reset->dev = dev;
- 	dev->priv.fw_reset = fw_reset;
- 
-+	INIT_WORK(&fw_reset->fw_live_patch_work, mlx5_fw_live_patch_event);
- 	INIT_WORK(&fw_reset->reset_request_work, mlx5_sync_reset_request_event);
- 	INIT_WORK(&fw_reset->reset_reload_work, mlx5_sync_reset_reload_work);
- 	INIT_WORK(&fw_reset->reset_now_work, mlx5_sync_reset_now_event);
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 4d3376e20f5e..ab5bedd9d3d3 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -366,6 +366,7 @@ enum {
- enum {
- 	MLX5_GENERAL_SUBTYPE_DELAY_DROP_TIMEOUT = 0x1,
- 	MLX5_GENERAL_SUBTYPE_PCI_POWER_CHANGE_EVENT = 0x5,
-+	MLX5_GENERAL_SUBTYPE_FW_LIVE_PATCH_EVENT = 0x7,
- 	MLX5_GENERAL_SUBTYPE_PCI_SYNC_FOR_FW_UPDATE_EVENT = 0x8,
- };
- 
+ Driver-specific documentation
 -- 
 2.17.1
 
