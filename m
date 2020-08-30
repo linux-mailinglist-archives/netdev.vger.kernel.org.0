@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 984CB256E0C
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 15:15:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4B21256E54
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 16:04:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728899AbgH3NPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 09:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37358 "EHLO
+        id S1726490AbgH3OEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 10:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726030AbgH3NPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 09:15:20 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07528C061573;
-        Sun, 30 Aug 2020 06:15:19 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id i13so1709662pjv.0;
-        Sun, 30 Aug 2020 06:15:19 -0700 (PDT)
+        with ESMTP id S1726126AbgH3ODD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 10:03:03 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50E0C061573
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 07:03:02 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id q3so1785135pls.11
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 07:03:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+j3TxzpjcwHJjeRI7zoLPA9SPkk21BdzC8mVJDrt+pE=;
-        b=RO7NNB0jn1YTdQo4sFvc4RgowTC/uoxkT+efufWSBfiitS4HKZtox30Vjs2fgtDTgm
-         096r8JFxjZWOpbovb0/iYJ1T7/K/60oUf+JFYXhjswFFqeBMMaTRoXE/ndqoDnxvQjEO
-         LiHbx3GIBk4G9b/Ma79T1vY9tA9JfG/WtOLUhkr0qeJfFVlB9ULoeg/BBMwk6BajL5tp
-         qoqHyLIyoipO1Q86lt0Z2M04AkwdPa+vSWKQESN86gy+l0yPe6iOBM9E2VMJQqhowtHu
-         +NoifOfvf4gSdgjCdFaXVz+bojKqTEsU7hbaM0fMKc+eufCTK1XZC8XuESzsvsOjyIld
-         AjjQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gogqH3O9vhsiI/45w3wZ1pyMR2KXZsdUpUj6VC0K718=;
+        b=JYT7gbemYrJ1MvDvXCX3yVUguoeExYT+wZ31Avg1Uc8996ukk2dqhiKEq/xbPzRbHZ
+         tsEDb2inEpxkPWzZwh3WMOnI7D2c/IGQ9DAgdOksJwmJKU8DTGyeapeDzsEWbGC0QH8j
+         ljBVlTrxupboikuVmXmvkqfT5/hT99d2Lm7pqm6pIwuGcK9Za99GKuJKPKDkva+FBBoO
+         qY2z1drIvkdMvOdP0FWC3qa3wt0NJeC24vsAU9tVwxsji5lgckWipDpqsXykivKNk1lZ
+         v4jMVCasvS941qgKZJq8UtGuIxdY/UBf19fHq0t9wUeIjkgCtXsuzZmHf4tUR+7BUdd+
+         +8cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+j3TxzpjcwHJjeRI7zoLPA9SPkk21BdzC8mVJDrt+pE=;
-        b=DD0j9YOsu95+tWN541HIxVrwlBhEJcgHDoI0n20HLZzUFECfEL9rVeMVgjqXs4zcUO
-         o4EsNQF+T0mjrot/GKjPIg4KC20014LLfa38nKgAPv0yF+xFXeTW06cx2K6EgSIOeG9R
-         RYqSnKB/ncC+LZtUbywjYMXOopPapHJqS87kUwAFzkgEHlZJgljqn5C2xZlneHKzvLlc
-         tOwhZDLjTtnnSII/1x+kRjlszooIOFCtT/RCESmbJhUQYRqhcTaIn4TNBUzWqc7eEmqV
-         utzXbBICRyo/gjxk8WyZFnQFtZWINcPPYa5M3iT2ldxB+PGPbAL5r4NQvqPVbnzkBOHP
-         T3Sg==
-X-Gm-Message-State: AOAM530RVRU5UzKOBRxoQYmYIiOzE9mq1tPujxv3IzPTnnQXZLVZ3MFM
-        iOCwPlLnRg6HkO5tjesWLrQ=
-X-Google-Smtp-Source: ABdhPJy/k0e7urcYXy6mU16T992sYPbCw5F+C1+Om20UbX7j1iO43ooRy9e4dKJxAqGd/5MIDghxEQ==
-X-Received: by 2002:a17:902:e901:: with SMTP id k1mr5364502pld.189.1598793318383;
-        Sun, 30 Aug 2020 06:15:18 -0700 (PDT)
-Received: from localhost.localdomain (104.36.148.139.aurocloud.com. [104.36.148.139])
-        by smtp.gmail.com with ESMTPSA id i1sm4505185pgq.41.2020.08.30.06.15.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Aug 2020 06:15:17 -0700 (PDT)
-From:   Rustam Kovhaev <rkovhaev@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-        Rustam Kovhaev <rkovhaev@gmail.com>
-Subject: [PATCH] veth: fix memory leak in veth_newlink()
-Date:   Sun, 30 Aug 2020 06:13:36 -0700
-Message-Id: <20200830131336.275844-1-rkovhaev@gmail.com>
-X-Mailer: git-send-email 2.28.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gogqH3O9vhsiI/45w3wZ1pyMR2KXZsdUpUj6VC0K718=;
+        b=rhSFEQm8nbFpbOymR7f6muBDcymzwPV0/bDUVw8XqIpmgfxuUyRE2CMSdKRn5quCpY
+         z3jO+OXz93XW/Rlr9TPackc8bZ4w1JLBI79nn2w9N+dhXg9KNtmlg27PbMrLCMzyyJrT
+         ksrUL+4HOgjZoa+dOlLblk8SJF3Rl/je2t7Px0aRh++BEGzbOBa1g/B4eQCueqLHA2kA
+         6Yo4Z6AvNF/b1l/eAsuBSEMYWjS05SXOGLN1LImcAiXGPt8ZmndnIeEAM/8cdztJM9F0
+         dB5Ff7GYF3fR5mgeWoP3v7r/U1ktgYjduSrHLpnMDZKV/o7psztpjxIc3Ot9ziGsn8B7
+         Xx+Q==
+X-Gm-Message-State: AOAM5331OEb3ZNYB5EBlPye/bXn2ZvrFhH42NfIVFSHphNFo6ntQDIce
+        r3hGkAgY62JfUeYMI5NED4s=
+X-Google-Smtp-Source: ABdhPJzaLf6uvdRzGgcmQs+gAvmNgR+Tts5bDwtAjnGCtAujOUXBklQhNkiWT/Oax2GedKYN9WNRqA==
+X-Received: by 2002:a17:90a:b108:: with SMTP id z8mr6392083pjq.39.1598796179341;
+        Sun, 30 Aug 2020 07:02:59 -0700 (PDT)
+Received: from localhost.localdomain (fp9f1cad42.knge118.ap.nuro.jp. [159.28.173.66])
+        by smtp.gmail.com with ESMTPSA id f4sm4631361pgi.49.2020.08.30.07.02.57
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 30 Aug 2020 07:02:58 -0700 (PDT)
+From:   Yutaro Hayakawa <yhayakawa3720@gmail.com>
+X-Google-Original-From: Yutaro Hayakawa <yutaro.hayakawa@linecorp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, michio.honda@ed.ac.uk,
+        Yutaro Hayakawa <yhayakawa3720@gmail.com>
+Subject: [PATCH RFC v2 net-next] net/tls: Implement getsockopt SOL_TLS TLS_RX
+Date:   Sun, 30 Aug 2020 23:01:49 +0900
+Message-Id: <20200830140149.17949-1-yutaro.hayakawa@linecorp.com>
+X-Mailer: git-send-email 2.20.1 (Apple Git-117)
+In-Reply-To: <20200828095223.21d07617@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200828095223.21d07617@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,33 +65,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-when register_netdevice(dev) fails we should check whether struct
-veth_rq has been allocated via ndo_init callback and free it, because,
-depending on the code path, register_netdevice() might not call
-priv_destructor() callback
+From: Yutaro Hayakawa <yhayakawa3720@gmail.com>
 
-Reported-and-tested-by: syzbot+59ef240dd8f0ed7598a8@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=59ef240dd8f0ed7598a8
-Signed-off-by: Rustam Kovhaev <rkovhaev@gmail.com>
+Implement the getsockopt SOL_TLS TLS_RX which is currently missing. The
+primary usecase is to use it in conjunction with TCP_REPAIR to
+checkpoint/restore the TLS record layer state.
+
+TLS connection state usually exists on the user space library. So
+basically we can easily extract it from there, but when the TLS
+connections are delegated to the kTLS, it is not the case. We need to
+have a way to extract the TLS state from the kernel for both of TX and
+RX side.
+
+The new TLS_RX getsockopt copies the crypto_info to user in the same
+way as TLS_TX does.
+
+We have described use cases in our research work in Netdev 0x14
+Transport Workshop [1].
+
+Also, there is an TLS implementation called tlse [2] which supports
+TLS connection migration. They have support of kTLS and their code
+shows that they are expecting the future support of this option.
+
+[1] https://speakerdeck.com/yutarohayakawa/prism-proxies-without-the-pain
+[2] https://github.com/eduardsui/tlse
+
+Signed-off-by: Yutaro Hayakawa <yhayakawa3720@gmail.com>
 ---
- drivers/net/veth.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Changes in v2:
+- Remove duplicated memcpy for each cipher suites
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index a475f48d43c4..e40ca62a046a 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -1394,7 +1394,9 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
- 	return 0;
- 
- err_register_dev:
--	/* nothing to do */
-+	priv = netdev_priv(dev);
-+	if (priv->rq)
-+		veth_dev_free(dev);
- err_configure_peer:
- 	unregister_netdevice(peer);
- 	return err;
--- 
-2.28.0
+Thanks for your reply. Reflected the comments.
 
+ net/tls/tls_main.c | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
+
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index bbc52b0..0271441 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -330,12 +330,13 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+ 		tls_ctx_free(sk, ctx);
+ }
+
+-static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
+-				int __user *optlen)
++static int do_tls_getsockopt_conf(struct sock *sk, char __user *optval,
++				  int __user *optlen, int tx)
+ {
+ 	int rc = 0;
+ 	struct tls_context *ctx = tls_get_ctx(sk);
+ 	struct tls_crypto_info *crypto_info;
++	struct tls_cipher_context *cctx;
+ 	int len;
+
+ 	if (get_user(len, optlen))
+@@ -352,7 +353,13 @@ static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
+ 	}
+
+ 	/* get user crypto info */
+-	crypto_info = &ctx->crypto_send.info;
++	if (tx) {
++		crypto_info = &ctx->crypto_send.info;
++		cctx = &ctx->tx;
++	} else {
++		crypto_info = &ctx->crypto_recv.info;
++		cctx = &ctx->rx;
++	}
+
+ 	if (!TLS_CRYPTO_INFO_READY(crypto_info)) {
+ 		rc = -EBUSY;
+@@ -379,9 +386,9 @@ static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
+ 		}
+ 		lock_sock(sk);
+ 		memcpy(crypto_info_aes_gcm_128->iv,
+-		       ctx->tx.iv + TLS_CIPHER_AES_GCM_128_SALT_SIZE,
++		       cctx->iv + TLS_CIPHER_AES_GCM_128_SALT_SIZE,
+ 		       TLS_CIPHER_AES_GCM_128_IV_SIZE);
+-		memcpy(crypto_info_aes_gcm_128->rec_seq, ctx->tx.rec_seq,
++		memcpy(crypto_info_aes_gcm_128->rec_seq, cctx->rec_seq,
+ 		       TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE);
+ 		release_sock(sk);
+ 		if (copy_to_user(optval,
+@@ -403,9 +410,9 @@ static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
+ 		}
+ 		lock_sock(sk);
+ 		memcpy(crypto_info_aes_gcm_256->iv,
+-		       ctx->tx.iv + TLS_CIPHER_AES_GCM_256_SALT_SIZE,
++		       cctx->iv + TLS_CIPHER_AES_GCM_256_SALT_SIZE,
+ 		       TLS_CIPHER_AES_GCM_256_IV_SIZE);
+-		memcpy(crypto_info_aes_gcm_256->rec_seq, ctx->tx.rec_seq,
++		memcpy(crypto_info_aes_gcm_256->rec_seq, cctx->rec_seq,
+ 		       TLS_CIPHER_AES_GCM_256_REC_SEQ_SIZE);
+ 		release_sock(sk);
+ 		if (copy_to_user(optval,
+@@ -429,7 +436,9 @@ static int do_tls_getsockopt(struct sock *sk, int optname,
+
+ 	switch (optname) {
+ 	case TLS_TX:
+-		rc = do_tls_getsockopt_tx(sk, optval, optlen);
++	case TLS_RX:
++		rc = do_tls_getsockopt_conf(sk, optval, optlen,
++					    optname == TLS_TX);
+ 		break;
+ 	default:
+ 		rc = -ENOPROTOOPT;
+--
+1.8.3.1
