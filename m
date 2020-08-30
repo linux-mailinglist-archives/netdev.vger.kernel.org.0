@@ -2,159 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DDF3256ED0
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 16:58:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C6F1256EF9
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 17:15:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726955AbgH3O6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 10:58:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726820AbgH3O6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 10:58:25 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675C5C061573
-        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 07:58:25 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id b17so607624ilh.4
-        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 07:58:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=hOx/cTUh9IAdjmbbm55Ym/oYzZwtGhVDXvbLNdpw9JE=;
-        b=ov58osLTGWD67UzlelpjvthRt9qJ7ozWAs+En8Eh81UdX2o5B7xdW+XV5DLfsFkhaz
-         uE79JP+iv6aJSKoGCpJsK4Wa4vZHMzhacdqnEkyFKrwkZxapj0xb2Bx7LimWZyVuz5yr
-         3IKqnFEmi9wlzzuhgXfDe1Fx/40dpaS4sD+H7v+ZDN6F5dikClansEssPq4x2A5b5xij
-         gyWmjpxojVaZq4ZR7Rbzs2jKG/bSu5PSHfl0Cld9f+EQPVBn7QVrMkGrqyCBxGLOx6qH
-         FxzsQPe3wxJUo6HT78l2lP0GQs7SCXS3tZZk7XGdKnWHnpmGAZJ89SmE9jJWiu9RmSNe
-         mciQ==
+        id S1726394AbgH3PPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 11:15:15 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59257 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726023AbgH3PPK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 11:15:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598800508;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=Qe2bq4z5dTUuex6AZKp5/mRBzSkcGmSP4Euz2gp/VUE=;
+        b=QtI5mxY3f1AgipF27yW/ulAYqlGuy64EEBZnpJb0+dG5m+QX73jidsbBkcfOlLJx26YEq9
+        UlXafnlbq2KeIlOE08d7PkJFiUg/by3ERw5dalL2dUTt9GKANzhOz5br7QlCbFedDorlVD
+        YN2pmNFkt8iGsuQo9NQO7UgFXrzm2pA=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-181-wg9nx3WDNcuL75EobKH3Ig-1; Sun, 30 Aug 2020 11:15:06 -0400
+X-MC-Unique: wg9nx3WDNcuL75EobKH3Ig-1
+Received: by mail-io1-f69.google.com with SMTP id t187so2575719iof.22
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 08:15:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=hOx/cTUh9IAdjmbbm55Ym/oYzZwtGhVDXvbLNdpw9JE=;
-        b=Y9jveCXIPcZj0uJ5wk+OnTs1Uk7XBoRw4D47QEF+pLCVHoyY3inBshjydh7FU7ntpM
-         7f0AH65+O7zl9JyP7KorjIelNsqRRYiPzB85XyTb5sPVoFZagoM37+IuAogX+blEWLLk
-         Fl/lJaxbn5sBOM5PGu22ctNuHWHV9JZhXS1WC2NUTHsA7/DG4kVqJ/4zYL6uYt8m+6lU
-         8O75C/IB3v1DAXWeXy6L5Vp/6Zuu+ZERpYOPNAqN1j30PtXB99rHBu2QxvFctgXV9v1g
-         kgTAEnm0DesI6uGAkbJC0uO6wryv5ZjPZ2f9NBjxWrhfgU0gpQi/J0f0pi08XVLoJ+tY
-         doSg==
-X-Gm-Message-State: AOAM530foWyDNCs5RPtFKUADvkoyOdpeJevWKtJO0iK8t56Q6d96zLDd
-        LKJq8CDB+Fm4O05ojL5rnzDTukJLmIw4j5pNH9Ej+lBrxoDJbg==
-X-Google-Smtp-Source: ABdhPJxDy6TOlzr+H9rFXDbWyZd/tfJpoNAQxoYnMOskUy3OWdF4D5GguJwWdFU1fEMrDIerH+hK53k6yvBfoeGwSAk=
-X-Received: by 2002:a05:6e02:14d:: with SMTP id j13mr1113588ilr.245.1598799502297;
- Sun, 30 Aug 2020 07:58:22 -0700 (PDT)
-MIME-Version: 1.0
-From:   Denis Gubin <denis.gubin@gmail.com>
-Date:   Sun, 30 Aug 2020 17:57:46 +0300
-Message-ID: <CAE_-sd=Hfdhx1o8LmBB8eWanjLQEWe7UZ=SkqBP2wtJdDfvdzQ@mail.gmail.com>
-Subject: tc filter create hash table and filter rule
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Qe2bq4z5dTUuex6AZKp5/mRBzSkcGmSP4Euz2gp/VUE=;
+        b=PodOQtsisX/Kpt6/0tp2JaDH2H3nB6MvTecviAH24/iLFIIFQGJdeJOztN86+K8GGS
+         s5VO5ZlNQPJOuUKqnAryxJenVt6SRc62AsVFn64rjHS1/P7Xr1XTOq+W2QDV5xRoNVAC
+         XB9622C5tnN2TMufb7uh8AVwC7PlWQcnJsmnZoue2mrSlYVBOOeRUGBO2Y7hDoL9MRYj
+         LjxKFvJUkeZFKI1pF2/Qu6flGAXSu/LL7eValOxfx7CptxqHFVZhkNZI+mnaTYJzLeFw
+         TBbBZSX7yZAMzAeSMFUFKB9rYBiZv6bqg9CSt5jDk7861qOZJkKqyDT8lfBlBq7Q+0bp
+         xB6w==
+X-Gm-Message-State: AOAM531+pGAfvwyQrOzMYiGt9ygI82nCtqZJzpPt5uHnAK98L46m27G+
+        6gkaRbjmPgBicAJIxBhqOstmvxnJy1FYap+r0zhoTPeeB4b3fcZ2cQRTrHWqXcDvG3gUNoTONwU
+        xww959DTJAR6YpM7X
+X-Received: by 2002:a92:364f:: with SMTP id d15mr5810928ilf.89.1598800505835;
+        Sun, 30 Aug 2020 08:15:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwRytt73N2hWbZvqwb/+WTkSxJy87W8rcdq9Uz2GipT1EUKrVIh7nlT+Fj7nl/3oUSkpRJaew==
+X-Received: by 2002:a92:364f:: with SMTP id d15mr5810915ilf.89.1598800505509;
+        Sun, 30 Aug 2020 08:15:05 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id q19sm3042288ilj.85.2020.08.30.08.15.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Aug 2020 08:15:04 -0700 (PDT)
+From:   trix@redhat.com
+To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
+        natechancellor@gmail.com, ndesaulniers@google.com
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: openvswitch: pass NULL for unused parameters
+Date:   Sun, 30 Aug 2020 08:14:59 -0700
+Message-Id: <20200830151459.4648-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good day!
+From: Tom Rix <trix@redhat.com>
 
-I want to understand how tc fitler works.
-Could you please give me some advice for it?
+clang static analysis flags these problems
 
-I want to add and delete fitler rule by full handle but I can't do it.
-I need some article where I can read about tc utility.
+flow_table.c:713:2: warning: The expression is an uninitialized
+  value. The computed value will also be garbage
+        (*n_mask_hit)++;
+        ^~~~~~~~~~~~~~~
+flow_table.c:748:5: warning: The expression is an uninitialized
+  value. The computed value will also be garbage
+                                (*n_cache_hit)++;
+                                ^~~~~~~~~~~~~~~~
 
-For instance I want create one filter rule and then delete it.
+These are not problems because neither pararmeter is used
+by the calling function.
 
-The commands as follows:
+Looking at all of the calling functions, there are many
+cases where the results are unused.  Passing unused
+parameters is a waste.
 
-tc filter add dev eno5 parent ffff: pref 45000 handle 555:0:1 protocol
-all u32 match u8 0 0 action mirred egress mirror dev lo
+To avoid passing unused parameters, rework the
+masked_flow_lookup() and flow_lookup() routines to check
+for NULL parameters and change the unused parameters to NULL.
 
-I get an error:
-Error: cls_u32: Handle specified hash table address mismatch.
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ net/openvswitch/flow_table.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-Ok. For started I'll create hash table with number 555
-tc filter add dev eno5 parent ffff: pref 45000 protocol ip handle 555:
-u32 divisor 1
+diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+index e2235849a57e..18e7fa3aa67e 100644
+--- a/net/openvswitch/flow_table.c
++++ b/net/openvswitch/flow_table.c
+@@ -710,7 +710,8 @@ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
+ 	ovs_flow_mask_key(&masked_key, unmasked, false, mask);
+ 	hash = flow_hash(&masked_key, &mask->range);
+ 	head = find_bucket(ti, hash);
+-	(*n_mask_hit)++;
++	if (n_mask_hit)
++		(*n_mask_hit)++;
+ 
+ 	hlist_for_each_entry_rcu(flow, head, flow_table.node[ti->node_ver],
+ 				lockdep_ovsl_is_held()) {
+@@ -745,7 +746,8 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
+ 				u64_stats_update_begin(&ma->syncp);
+ 				usage_counters[*index]++;
+ 				u64_stats_update_end(&ma->syncp);
+-				(*n_cache_hit)++;
++				if (n_cache_hit)
++					(*n_cache_hit)++;
+ 				return flow;
+ 			}
+ 		}
+@@ -798,9 +800,8 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
+ 	*n_cache_hit = 0;
+ 	if (unlikely(!skb_hash || mc->cache_size == 0)) {
+ 		u32 mask_index = 0;
+-		u32 cache = 0;
+ 
+-		return flow_lookup(tbl, ti, ma, key, n_mask_hit, &cache,
++		return flow_lookup(tbl, ti, ma, key, n_mask_hit, NULL,
+ 				   &mask_index);
+ 	}
+ 
+@@ -849,11 +850,9 @@ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
+ {
+ 	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+ 	struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
+-	u32 __always_unused n_mask_hit;
+-	u32 __always_unused n_cache_hit;
+ 	u32 index = 0;
+ 
+-	return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
++	return flow_lookup(tbl, ti, ma, key, NULL, NULL, &index);
+ }
+ 
+ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+@@ -865,7 +864,6 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+ 	/* Always called under ovs-mutex. */
+ 	for (i = 0; i < ma->max; i++) {
+ 		struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+-		u32 __always_unused n_mask_hit;
+ 		struct sw_flow_mask *mask;
+ 		struct sw_flow *flow;
+ 
+@@ -873,7 +871,7 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+ 		if (!mask)
+ 			continue;
+ 
+-		flow = masked_flow_lookup(ti, match->key, mask, &n_mask_hit);
++		flow = masked_flow_lookup(ti, match->key, mask, NULL);
+ 		if (flow && ovs_identifier_is_key(&flow->id) &&
+ 		    ovs_flow_cmp_unmasked_key(flow, match)) {
+ 			return flow;
+-- 
+2.18.1
 
-I don't get an error.
-
-Then I show output
-tc -s -d filter show dev eno5 parent ffff:
-
-filter protocol ip pref 45000 u32 chain 0
-filter protocol ip pref 45000 u32 chain 0 fh 555: ht divisor 1
-filter protocol ip pref 45000 u32 chain 0 fh 827: ht divisor 1
-
-
-My question:
-Why do I see the third string  "filter protocol ip pref 45000 u32
-chain 0 fh 827: ht divisor 1" ?
-
-I think I should see only two strings, should I ?
-
-filter protocol ip pref 45000 u32 chain 0
-filter protocol ip pref 45000 u32 chain 0 fh 555: ht divisor 1
-
-
-Ok. Go ahead.
-
-I want to create filter rule with full handle 555:0:1
-
-tc filter add dev eno5 parent ffff: pref 45000 handle 555:0:1 protocol
-ip u32 match u8 0 0 action mirred egress mirror dev lo
-
-I get error:
-
-Error: cls_u32: Handle specified hash table address mismatch.
-We have an error talking to the kernel, -1
-
-Then I use 827 hash table number:
-
-tc filter add dev eno5 parent ffff: pref 45000 handle 827:0:1 protocol
-ip u32 match u8 0 0 action mirred egress mirror dev lo
-
-I don't get an error. I am showing the output below:
-
-filter protocol ip pref 45000 u32 chain 0
-filter protocol ip pref 45000 u32 chain 0 fh 555: ht divisor 1
-filter protocol ip pref 45000 u32 chain 0 fh 827: ht divisor 1
-filter protocol ip pref 45000 u32 chain 0 fh 827::1 order 1 key ht 827
-bkt 0 terminal flowid ??? not_in_hw  (rule hit 0 success 0)
-  match 00000000/00000000 at 0 (success 0 )
-action order 1: mirred (Egress Mirror to device lo) pipe
-  index 26 ref 1 bind 1 installed 7 sec used 7 sec
-  Action statistics:
-Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-backlog 0b 0p requeues 0
-
-My question:
-Why can't  I create the filter rule with 555 hash number ?
-
-If I create filter rule with handle ::1 ...
-
-tc filter add dev eno5 parent ffff: pref 33000 handle ::1 protocol ip
-u32 match u8 0 0 action mirred egress mirror dev lo
-
-And I show the output
-tc -s -d filter show dev eno5 0 parent ffff:
-
-filter protocol ip pref 33000 u32 chain 0
-filter protocol ip pref 33000 u32 chain 0 fh 829: ht divisor 1
-filter protocol ip pref 33000 u32 chain 0 fh 829::1 order 1 key ht 829
-bkt 0 terminal flowid ??? not_in_hw  (rule hit 0 success 0)
-  match 00000000/00000000 at 0 (success 0 )
-action order 1: mirred (Egress Mirror to device lo) pipe
-  index 29 ref 1 bind 1 installed 1 sec used 1 sec
-  Action statistics:
-Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-backlog 0b 0p requeues 0
-
-
-... I'll can see that hash table with 829 number with ht divisor 1 has
-created yet and rule 829::1 created yet. But I want to control hash
-table number by myself.
-I don't want tc utility do it by itself.
-
-Can I control creating hash table number by myself ?
-
-Best regards,
-Denis Gubin
