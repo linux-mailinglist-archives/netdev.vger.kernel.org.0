@@ -2,193 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C06B257091
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 22:47:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 439F32570B2
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 23:26:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726201AbgH3Urq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 16:47:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726150AbgH3Urp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 16:47:45 -0400
-Received: from ipv6.s19.hekko.net.pl (ipv6.s19.hekko.net.pl [IPv6:2a02:1778:113::19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 063C7C061573
-        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 13:47:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=arf.net.pl;
-         s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=58jyAbVOfzWgjTzqSHr61sbmqb85OHW3L1u64weCF+M=; b=hlMPGDTu4yVZX3376OIssOliEX
-        PgJFrO5yVK94JPwzqplqoevOMdOquLIUS5uVr7nIQgmlr2PPk1YiIaJLlRcptqMKGuKe/p/vxJBPh
-        QHAnbgWp3M5sxlm+/xke54zwvca4h1DxHh54JgWCWBkMIczyHM/hyZ1/yY0H+cMgskKi6MVzQz8F/
-        FKn1W184UuR3ZrgRDzcH8vjGwqT6KH5dxqpYDoljBOCfkAkd/2PCQ4n0gef6bDfc+C2Y3nhse42tU
-        /oboVBT3vunzQsu2Bmd/FVippoFhmZ0Gxkc4G8tiEIRJC7rReFgxR9dc6zkzNa85MR1u/kliOxKHF
-        ym6SIhYg==;
-Received: from [185.135.2.40] (helo=[172.20.10.2])
-        by s19.hekko.net.pl with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92.3)
-        (envelope-from <adam.rudzinski@arf.net.pl>)
-        id 1kCUEp-008y5G-CY; Sun, 30 Aug 2020 22:47:43 +0200
-Subject: Re: drivers/of/of_mdio.c needs a small modification
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>, robh+dt@kernel.org,
-        frowand.list@gmail.com
-References: <20200828222846.GA2403519@lunn.ch>
- <dcfea76d-5340-76cf-7ad0-313af334a2fd@arf.net.pl>
- <20200828225353.GB2403519@lunn.ch>
- <6eb8c287-2d9f-2497-3581-e05a5553b88f@arf.net.pl>
- <891d7e82-f22a-d24b-df5b-44b34dc419b5@gmail.com>
- <113503c8-a871-1dc0-daea-48631e1a436d@arf.net.pl>
- <20200829151553.GB2912863@lunn.ch>
- <76f88763-54b0-eb03-3bc8-3e5022173163@arf.net.pl>
- <20200829160047.GD2912863@lunn.ch>
- <79bcab16-5802-c075-1615-06c64078b6c9@arf.net.pl>
- <20200829231632.GB2966560@lunn.ch>
-From:   =?UTF-8?Q?Adam_Rudzi=c5=84ski?= <adam.rudzinski@arf.net.pl>
-Message-ID: <f1067d43-afe9-c59d-946d-54754fa602f0@arf.net.pl>
-Date:   Sun, 30 Aug 2020 22:47:41 +0200
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <20200829231632.GB2966560@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: pl
-X-Authenticated-Id: ar@arf.net.pl
+        id S1726380AbgH3V0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 17:26:43 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:21765 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726150AbgH3V0j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 17:26:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598822797;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=433hylRzd7tAV1qS/y1gHwbMIYEXzinu0vCj4lzPHz4=;
+        b=QPEzMFDGH8gBWw4/3ie2JrK66fpYXwVSd5aQUETkaEJRBNQTIGTzROpEEDGJzLw2TYXCQ2
+        5rIryO2gLqBfKZQPKkyvWnCz5c+H++1RFNvx2ZTJe+b4z+CPQSKvZUAtJoLW20+IuHgb/K
+        LA0zZ7da5qLa3A5Mr1AbHgoLFQA3OB0=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-519-xwiIGBWsPcu_JrTvdGsPTw-1; Sun, 30 Aug 2020 17:26:35 -0400
+X-MC-Unique: xwiIGBWsPcu_JrTvdGsPTw-1
+Received: by mail-ot1-f72.google.com with SMTP id z23so3147726ote.14
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 14:26:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=433hylRzd7tAV1qS/y1gHwbMIYEXzinu0vCj4lzPHz4=;
+        b=lZNSd4g1XneWmpRkr4rplqtCTJwhl1UzVQEemNOkLz/hcS3m5Q0m1k5chKzo8svGiQ
+         Pf6sVazZh9uwrgislzQh56ne8Yu5BQhJbQtoGJ12fBkSX4eV04AZpxroDCYVqCts7IOL
+         xj7fucxuWy91stQRxtbO547+kUvqjWabIcHovr5aHgdg/2p+hydQuDLRs9XC9FU6W6PP
+         xtwUzd99AeRrhEyo+d7PyOqJB3eSMHSCqhogDxWulJpJPoyJV4MFYtICbVd/8tfCo8tQ
+         ZipWNz2r5lakf8kV43wv0WbWXAP4swXRE130ij70F8uAl3kS4tpTQOD+RkbjJSbEHr/s
+         1giw==
+X-Gm-Message-State: AOAM532h6Q7ENQ5XPUpUnxTNPCzlBlHhE2oxtWhK5vHBhKYT7+WE3ezQ
+        0LMnZSkw+VHpaFSwRIwYYOb6SQMmXj/DGoKa4tzNl92UJIK5JpNhK4Jg4F5htrL4xqwE/CYWatz
+        3SZ4NLpyCKHzlhLMv
+X-Received: by 2002:a9d:3b7:: with SMTP id f52mr3903192otf.45.1598822795191;
+        Sun, 30 Aug 2020 14:26:35 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJybDLDpnxY9uSLFo6hRHL0aNUMXIi9WnqSA61aLSjk3opsO/+Bibt61vu94GFaJ8D6B6GCGfw==
+X-Received: by 2002:a9d:3b7:: with SMTP id f52mr3903187otf.45.1598822794964;
+        Sun, 30 Aug 2020 14:26:34 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id p11sm699264oif.11.2020.08.30.14.26.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Aug 2020 14:26:34 -0700 (PDT)
+From:   trix@redhat.com
+To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
+        natechancellor@gmail.com, ndesaulniers@google.com
+Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH v2] net: openvswitch: pass NULL for unused parameters
+Date:   Sun, 30 Aug 2020 14:26:30 -0700
+Message-Id: <20200830212630.32241-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-W dniu 2020-08-30 o 01:16, Andrew Lunn pisze:
->> I meant that with the split description of the mdio node the mdio bus for
->> use in the system would be selected almost automatically. Suppose that I can
->> do the device tree "my way":
->> &fec2 {
->> ...
->>      mdio { phy2 ... };
->> ...
->> };
->> &fec1 {
->> ...
->>      mdio { phy1 ... };
->> ...
->> };
->> This emphasizes which PHY is intended for use by which FEC, that's why it
->> looks more natural for me.
-> And it looks really wrong to me. It suggests there are two busses, and
-> each PHY is on its own bus. When in fact there is one MDIO bus with
-> two PHYs. Device tree should represents the real hardware, not some
-> pseudo description.
->
->       Andrew
+From: Tom Rix <trix@redhat.com>
 
-Sure, the "split" variant may cause a misleading first impression for a 
-human reader. Similarly, one might argue that having both PHYs under one 
-mdio node suggests that both PHYs are connected to the same FEC. One way 
-or another, the device tree is a pretty complex thing and requires some 
-effort to read it correctly. The important thing is if the kernel is 
-getting the correct information.
+clang static analysis flags these problems
 
-The discussion got a bit off-topic, though. I'm not advocating any 
-particular structure of the device tree, nor I'm saying any should be 
-supported, as long the existing standard(s) make(s) it possible to do 
-their job(s).
+flow_table.c:713:2: warning: The expression is an uninitialized
+  value. The computed value will also be garbage
+        (*n_mask_hit)++;
+        ^~~~~~~~~~~~~~~
+flow_table.c:748:5: warning: The expression is an uninitialized
+  value. The computed value will also be garbage
+                                (*n_cache_hit)++;
+                                ^~~~~~~~~~~~~~~~
 
-Getting back to the original problem, I have tried the solution with 
-clocks defined under phy nodes, and it didn't work. eth0 was up, but 
-eth1 again faced "fec 2188000.ethernet eth1: Unable to connect to phy". 
-Details below, maybe it was my fault.
+These are not problems because neither parameter is used
+by the calling function.
 
-imx6ull.dtsi defines:
+Looking at all of the calling functions, there are many
+cases where the results are unused.  Passing unused
+parameters is a waste.
 
-                         fec1: ethernet@2188000 {
-                                 compatible = "fsl,imx6ul-fec", 
-"fsl,imx6q-fec";
-                                 reg = <0x2188000 0x4000>;
-                                 interrupts = <GIC_SPI 118 
-IRQ_TYPE_LEVEL_HIGH>,
-                                              <GIC_SPI 119 
-IRQ_TYPE_LEVEL_HIGH>;
-                                 clocks = <&clks IMX6UL_CLK_ENET>,
-                                          <&clks IMX6UL_CLK_ENET_AHB>,
-                                          <&clks IMX6UL_CLK_ENET_PTP>,
-                                          <&clks IMX6UL_CLK_ENET_REF>,
-                                          <&clks IMX6UL_CLK_ENET_REF>;
-                                 clock-names = "ipg", "ahb", "ptp",
-                                               "enet_clk_ref", "enet_out";
-                                 stop-mode = <&gpr 0x10 3>;
-                                 fsl,num-tx-queues=<1>;
-                                 fsl,num-rx-queues=<1>;
-                                 fsl,magic-packet;
-                                 fsl,wakeup_irq = <0>;
-                                 status = "disabled";
-                         };
+In the case where the output mask index parameter of flow_lookup()
+is not used by the caller, it is always has a value of 0.
 
-                        fec2: ethernet@20b4000 {
-                                 compatible = "fsl,imx6ul-fec", 
-"fsl,imx6q-fec";
-                                 reg = <0x20b4000 0x4000>;
-                                 interrupts = <GIC_SPI 120 
-IRQ_TYPE_LEVEL_HIGH>,
-                                              <GIC_SPI 121 
-IRQ_TYPE_LEVEL_HIGH>;
-                                 clocks = <&clks IMX6UL_CLK_ENET>,
-                                          <&clks IMX6UL_CLK_ENET_AHB>,
-                                          <&clks IMX6UL_CLK_ENET_PTP>,
-                                          <&clks IMX6UL_CLK_ENET2_REF_125M>,
-                                          <&clks IMX6UL_CLK_ENET2_REF_125M>;
-                                 clock-names = "ipg", "ahb", "ptp",
-                                               "enet_clk_ref", "enet_out";
-                                 stop-mode = <&gpr 0x10 4>;
-                                 fsl,num-tx-queues=<1>;
-                                 fsl,num-rx-queues=<1>;
-                                 fsl,magic-packet;
-                                 fsl,wakeup_irq = <0>;
-                                 status = "disabled";
-                         };
+To avoid passing unused parameters, rework the
+masked_flow_lookup() and flow_lookup() routines to check
+for NULL parameters and change the unused parameters to NULL.
 
-so in my top-level dts file (which includes imx6ull.dtsi) I've tried:
+For the mask index parameter, use a local pointer to a value of
+0 if user passed in NULL.
 
-&fec1 {
-         pinctrl-names = "default";
-         pinctrl-0 = <&pinctrl_enet1>;
-         phy-mode = "rmii";
-         phy-handle = <&ethphy0>;
-         status = "okay";
-};
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+v2
+- fix spelling
+- add mask index to NULL parameters
+---
+net/openvswitch/flow_table.c | 32 +++++++++++++++-----------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
 
-&fec2 {
-         pinctrl-names = "default";
-         pinctrl-0 = <&pinctrl_enet2>, <&pinctrl_enet2_mdio>;
-         phy-mode = "rmii";
-         phy-handle = <&ethphy1>;
-         status = "okay";
-
-         mdio {
-                 #address-cells = <1>;
-                 #size-cells = <0>;
-
-                 ethphy0: ethernet-phy@0 {
-                         reg = <0>;
-                         clocks = <&clks IMX6UL_CLK_ENET_REF>;
-                 };
-
-                 ethphy1: ethernet-phy@1 {
-                         reg = <1>;
-                         clocks = <&clks IMX6UL_CLK_ENET2_REF_125M>;
-                 };
-         };
-};
-
-Adding compatible = "..." and max-speed = "..." didn't change anything.
-
-Please, let me know if I omitted something important in the test, and if 
-I should repeat it with amended device tree.
-
-Best regards,
-Adam
+diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+index e2235849a57e..eac25596e4f4 100644
+--- a/net/openvswitch/flow_table.c
++++ b/net/openvswitch/flow_table.c
+@@ -710,7 +710,8 @@ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
+ 	ovs_flow_mask_key(&masked_key, unmasked, false, mask);
+ 	hash = flow_hash(&masked_key, &mask->range);
+ 	head = find_bucket(ti, hash);
+-	(*n_mask_hit)++;
++	if (n_mask_hit)
++		(*n_mask_hit)++;
+ 
+ 	hlist_for_each_entry_rcu(flow, head, flow_table.node[ti->node_ver],
+ 				lockdep_ovsl_is_held()) {
+@@ -730,12 +731,17 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
+ 				   const struct sw_flow_key *key,
+ 				   u32 *n_mask_hit,
+ 				   u32 *n_cache_hit,
+-				   u32 *index)
++				   u32 *in_index)
+ {
+ 	u64 *usage_counters = this_cpu_ptr(ma->masks_usage_cntr);
+ 	struct sw_flow *flow;
+ 	struct sw_flow_mask *mask;
+ 	int i;
++	u32 idx = 0;
++	u32 *index = &idx;
++
++	if (in_index)
++		index = in_index;
+ 
+ 	if (likely(*index < ma->max)) {
+ 		mask = rcu_dereference_ovsl(ma->masks[*index]);
+@@ -745,7 +751,8 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
+ 				u64_stats_update_begin(&ma->syncp);
+ 				usage_counters[*index]++;
+ 				u64_stats_update_end(&ma->syncp);
+-				(*n_cache_hit)++;
++				if (n_cache_hit)
++					(*n_cache_hit)++;
+ 				return flow;
+ 			}
+ 		}
+@@ -796,13 +803,9 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
+ 
+ 	*n_mask_hit = 0;
+ 	*n_cache_hit = 0;
+-	if (unlikely(!skb_hash || mc->cache_size == 0)) {
+-		u32 mask_index = 0;
+-		u32 cache = 0;
+-
+-		return flow_lookup(tbl, ti, ma, key, n_mask_hit, &cache,
+-				   &mask_index);
+-	}
++	if (unlikely(!skb_hash || mc->cache_size == 0))
++		return flow_lookup(tbl, ti, ma, key, n_mask_hit, NULL,
++				   NULL);
+ 
+ 	/* Pre and post recirulation flows usually have the same skb_hash
+ 	 * value. To avoid hash collisions, rehash the 'skb_hash' with
+@@ -849,11 +852,7 @@ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
+ {
+ 	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+ 	struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
+-	u32 __always_unused n_mask_hit;
+-	u32 __always_unused n_cache_hit;
+-	u32 index = 0;
+-
+-	return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
++	return flow_lookup(tbl, ti, ma, key, NULL, NULL, NULL);
+ }
+ 
+ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+@@ -865,7 +864,6 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+ 	/* Always called under ovs-mutex. */
+ 	for (i = 0; i < ma->max; i++) {
+ 		struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+-		u32 __always_unused n_mask_hit;
+ 		struct sw_flow_mask *mask;
+ 		struct sw_flow *flow;
+ 
+@@ -873,7 +871,7 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+ 		if (!mask)
+ 			continue;
+ 
+-		flow = masked_flow_lookup(ti, match->key, mask, &n_mask_hit);
++		flow = masked_flow_lookup(ti, match->key, mask, NULL);
+ 		if (flow && ovs_identifier_is_key(&flow->id) &&
+ 		    ovs_flow_cmp_unmasked_key(flow, match)) {
+ 			return flow;
+-- 
+2.18.1
 
