@@ -2,116 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C95ED2570CF
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 00:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 818282570D6
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 00:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726472AbgH3WDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 18:03:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33092 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726350AbgH3WDN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 30 Aug 2020 18:03:13 -0400
-Received: from paulmck-ThinkPad-P72.home (unknown [50.45.173.55])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 300252083E;
-        Sun, 30 Aug 2020 22:03:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598824993;
-        bh=9LuOYxc5B5+rJM02abnd3x2WHpHxbVXmyaL2KDo0FwM=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=ADLJHr2sjXwfhoy5vlVQjVaLtbm1lkfd8umuuEYTu86loI4DaAn/9RjCfTjYfbTnV
-         WNumGcx+V+IXoqYztI/EPiCGCtT5OtdSyNTc+O3cq5ox6b5kCa1JDPSXXfZIM/i907
-         yKWXweKn3BrlHBtclII8AuxhVWa1gy+S2B8EmNO8=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 0EEBB35226AC; Sun, 30 Aug 2020 15:03:13 -0700 (PDT)
-Date:   Sun, 30 Aug 2020 15:03:13 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, josef@toxicpanda.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next] bpf: Fix build without BPF_SYSCALL, but with
- BPF_JIT.
-Message-ID: <20200830220313.GV2855@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200830204328.50419-1-alexei.starovoitov@gmail.com>
+        id S1726397AbgH3WUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 18:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbgH3WUm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 18:20:42 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4C2C061573
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 15:20:41 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id q8so2457650lfb.6
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 15:20:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=5epbMHtKecdcHGQzO02OmX7dhbe+wG6y2IN8/3MMKRo=;
+        b=uB5hX+n0TdILJaWBppfIjQgzwdBHryIFMh98nX4/pp+oO6BzST8+VnFktp74VH6ZjZ
+         vrB+mG4a2/YTDmih5vGrrVQyEmyoCYP47S7ewuuCQ59W+YenYaSg4haPUSoFtMT7B7pV
+         PfJdb09/trtzi0Wo751ruoBFZK2LdVTiwnvzpgq3zYhb6cLZRn/rnqpWAYz1plRRe8Ld
+         4sRQeZZqyAMlhwrbMnqenmqtcC/xr5170mduvsdOlbxfVMdm/Wa9CwB6qVsfrqI7gISx
+         AwGOLQ1UxdEE9CJXeePT21EazN67PuP8vK5F0M0bC8eB0JqNPDa9gB6Oj/TxZY9n4wAg
+         q57Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=5epbMHtKecdcHGQzO02OmX7dhbe+wG6y2IN8/3MMKRo=;
+        b=lySlRraIsMhE12t3WVx7GBYW659m5Fd8t9skV1A/AlnflSdtJUezYxHG5mz2Kiij4G
+         Cxc9XS/HREZxIVy+J5/CPeGFfjQXrY3w6E+OvGYs6CLc4YBQwLJOQj8CZd3Pfxm+k4B2
+         Zb46AaSkYQiATLT+0hW+Xm87W5jqaJTvO0oTcOkfnKy8FN1Hr3HoQKRUy8X/3vuh6l/H
+         jKTrr/d/dkVJ08lNx28+x8Q6ksKaveWjsKuYUl6SD/JYMBGs1pJgaliAeXGcMGTIz9AT
+         o8CaYhCKMevwF3tLLSQMvChT8e663Z6ITnLGgb/LVdJDmj5i9/GnXXzrLQ67+4wtr3oZ
+         7SUA==
+X-Gm-Message-State: AOAM530ekd/hxtumJiKSeny8YnWzmCA1Lb6C/H1BuOI24UEVFR5xKaYO
+        HhH2ZSqOh22JiKE4ZU2LTZ9jC5sP3c35YPZBuEw=
+X-Google-Smtp-Source: ABdhPJyTFzcsimX047cFpT8m7/Yc+Tqr+H7QXkvC7ImB6tLR5nJAv1u14der+f6jEkD3E7WZ0/4xtUhbrv8Ojfg3nHk=
+X-Received: by 2002:a19:cca:: with SMTP id 193mr4260021lfm.208.1598826038741;
+ Sun, 30 Aug 2020 15:20:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200830204328.50419-1-alexei.starovoitov@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Received: by 2002:ab3:6be1:0:0:0:0:0 with HTTP; Sun, 30 Aug 2020 15:20:37
+ -0700 (PDT)
+Reply-To: owusup021@gmail.com
+From:   Marcus <wagedwin55@gmail.com>
+Date:   Sun, 30 Aug 2020 23:20:37 +0100
+Message-ID: <CAKBS3k46355oR-Mt1w3fm7RuUVz3R6XFN7SZG17U9svL=EX65A@mail.gmail.com>
+Subject: REPLY
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 30, 2020 at 01:43:28PM -0700, Alexei Starovoitov wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
-> 
-> When CONFIG_BPF_SYSCALL is not set, but CONFIG_BPF_JIT=y
-> the kernel build fails:
-> In file included from ../kernel/bpf/trampoline.c:11:
-> ../kernel/bpf/trampoline.c: In function ‘bpf_trampoline_update’:
-> ../kernel/bpf/trampoline.c:220:39: error: ‘call_rcu_tasks_trace’ undeclared
-> ../kernel/bpf/trampoline.c: In function ‘__bpf_prog_enter_sleepable’:
-> ../kernel/bpf/trampoline.c:411:2: error: implicit declaration of function ‘rcu_read_lock_trace’
-> ../kernel/bpf/trampoline.c: In function ‘__bpf_prog_exit_sleepable’:
-> ../kernel/bpf/trampoline.c:416:2: error: implicit declaration of function ‘rcu_read_unlock_trace’
-> 
-> Add these functions to rcupdate_trace.h.
-> The JIT won't call them and BPF trampoline logic won't be used without BPF_SYSCALL.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 1e6c62a88215 ("bpf: Introduce sleepable BPF programs")
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-
-A couple of nits below, but overall:
-
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-
-> ---
->  include/linux/rcupdate_trace.h | 14 +++++++++++++-
->  1 file changed, 13 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/rcupdate_trace.h b/include/linux/rcupdate_trace.h
-> index d9015aac78c6..334840f4f245 100644
-> --- a/include/linux/rcupdate_trace.h
-> +++ b/include/linux/rcupdate_trace.h
-> @@ -82,7 +82,19 @@ static inline void rcu_read_unlock_trace(void)
->  void call_rcu_tasks_trace(struct rcu_head *rhp, rcu_callback_t func);
->  void synchronize_rcu_tasks_trace(void);
->  void rcu_barrier_tasks_trace(void);
-> -
-> +#else
-
-This formulation is a bit novel for RCU.  Could we therefore please add
-a comment something like this?
-
-// The BPF JIT forms these addresses even when it doesn't call these
-// functions, so provide definitions that result in runtime errors.
-
-> +static inline void call_rcu_tasks_trace(struct rcu_head *rhp, rcu_callback_t func)
-> +{
-> +	BUG();
-> +}
-> +static inline void rcu_read_lock_trace(void)
-> +{
-> +	BUG();
-> +}
-> +static inline void rcu_read_unlock_trace(void)
-> +{
-> +	BUG();
-> +}
-
-People have been moving towards one-liner for things like these last two:
-
-static inline void rcu_read_lock_trace(void) { BUG(); }
-static inline void rcu_read_unlock_trace(void) { BUG(); }
-
->  #endif /* #ifdef CONFIG_TASKS_TRACE_RCU */
->  
->  #endif /* __LINUX_RCUPDATE_TRACE_H */
-> -- 
-> 2.23.0
-> 
+My Greetings,
+I am a banker, a Chief Auditor in our bank, I have the ability to
+transfer unclaimed funds that belong to one of our late customer died
+in a car crash along with his family and no one came to put claim the
+funds, if left unclaimed the fund will be transferred to the state
+treasury in the bank so I invite you to a deal where we can facilitate
+the transfer of this fund, and I promise to share it equal with you
+when it is transferred into your account, meanwhile let me know if you
+are interested to do this business with me for more details.
+I wait to hear from you soon.
+Best Regards,
+Marcus.
