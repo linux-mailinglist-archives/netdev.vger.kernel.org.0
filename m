@@ -2,122 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36353256F17
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 17:31:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BC3D256F80
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 19:30:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727872AbgH3Pav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 11:30:51 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42777 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726839AbgH3P2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 11:28:02 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 30 Aug 2020 18:27:57 +0300
-Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 07UFRvwB029676;
-        Sun, 30 Aug 2020 18:27:57 +0300
-Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 07UFRv3Q027855;
-        Sun, 30 Aug 2020 18:27:57 +0300
-Received: (from moshe@localhost)
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 07UFRvUp027854;
-        Sun, 30 Aug 2020 18:27:57 +0300
-From:   Moshe Shemesh <moshe@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next RFC v3 13/14] net/mlx5: Add support for devlink reload action fw activate no reset
-Date:   Sun, 30 Aug 2020 18:27:33 +0300
-Message-Id: <1598801254-27764-14-git-send-email-moshe@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
-References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
+        id S1726396AbgH3RaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 13:30:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41060 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725934AbgH3RaD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 30 Aug 2020 13:30:03 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B598020714;
+        Sun, 30 Aug 2020 17:30:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598808602;
+        bh=BopSRUDvmAHu4C4ZgQT5LSsunJM/+eyFrpOMQmKj4+I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a/zT74G2muYeReBEmL01IvpBsAYzbg5InWmKENnYGXCe/CJs+n+lN7YGS5w2Ku2LU
+         W43mtTTjg1YBcBEAMCLFOTpRHcgS2bhXQ/tMU4azm211lZA0UXM36AIMRTSlJOAWNP
+         R5fHsy4/+y4oBWFiAvdI4SDnogWOvna90R4xEJTs=
+Date:   Sun, 30 Aug 2020 19:30:10 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Anmol Karn <anmol.karan123@gmail.com>
+Cc:     syzbot+0bef568258653cff272f@syzkaller.appspotmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net
+Subject: Re: [Linux-kernel-mentees] [PATCH] net: bluetooth: Fix null pointer
+ deref in hci_phy_link_complete_evt
+Message-ID: <20200830173010.GA1872728@kroah.com>
+References: <20200829124112.227133-1-anmol.karan123@gmail.com>
+ <20200829165712.229437-1-anmol.karan123@gmail.com>
+ <20200830091917.GB122343@kroah.com>
+ <20200830122623.GA235919@Thinkpad>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200830122623.GA235919@Thinkpad>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for devlink reload action fw_activation_no_reset which does
-firmware live patching, updating the firmware image without reset.
-The driver checks if the firmware is capable of handling the pending
-firmware changes as a live patch. If it is then it triggers firmware
-live patching flow.
+On Sun, Aug 30, 2020 at 05:56:23PM +0530, Anmol Karn wrote:
+> On Sun, Aug 30, 2020 at 11:19:17AM +0200, Greg KH wrote:
+> > On Sat, Aug 29, 2020 at 10:27:12PM +0530, Anmol Karn wrote:
+> > > Fix null pointer deref in hci_phy_link_complete_evt, there was no 
+> > > checking there for the hcon->amp_mgr->l2cap_conn->hconn, and also 
+> > > in hci_cmd_work, for hdev->sent_cmd.
+> > > 
+> > > To fix this issue Add pointer checking in hci_cmd_work and
+> > > hci_phy_link_complete_evt.
+> > > [Linux-next-20200827]
+> > > 
+> > > This patch corrected some mistakes from previous patch.
+> > > 
+> > > Reported-by: syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
+> > > Link: https://syzkaller.appspot.com/bug?id=0d93140da5a82305a66a136af99b088b75177b99
+> > > Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
+> > > ---
+> > >  net/bluetooth/hci_core.c  | 5 ++++-
+> > >  net/bluetooth/hci_event.c | 4 ++++
+> > >  2 files changed, 8 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> > > index 68bfe57b6625..996efd654e7a 100644
+> > > --- a/net/bluetooth/hci_core.c
+> > > +++ b/net/bluetooth/hci_core.c
+> > > @@ -4922,7 +4922,10 @@ static void hci_cmd_work(struct work_struct *work)
+> > >  
+> > >  		kfree_skb(hdev->sent_cmd);
+> > >  
+> > > -		hdev->sent_cmd = skb_clone(skb, GFP_KERNEL);
+> > > +		if (hdev->sent_cmd) {
+> > > +			hdev->sent_cmd = skb_clone(skb, GFP_KERNEL);
+> > > +		}
+> > 
+> > How can sent_cmd be NULL here?  Are you sure something previous to this
+> > shouldn't be fixed instead?
+> 
+> Sir, sent_cmd was freed before this condition check, thats why i checked it,
 
-Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
----
-v2 -> v3:
-- Replace fw_live_patch action by fw_activate_no_reset
-v1 -> v2:
-- Have fw_live_patch action instead of level
----
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 32 ++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+But it can not be NULL at that point in time, as nothing set it to NULL,
+correct?
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index ea759bb2a120..bfdd3499f428 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -115,6 +115,29 @@ static int mlx5_devlink_reload_fw_activate(struct devlink *devlink, struct netli
- 	return err;
- }
- 
-+static int mlx5_devlink_trigger_fw_live_patch(struct devlink *devlink,
-+					      struct netlink_ext_ack *extack)
-+{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	u8 reset_level;
-+	int err;
-+
-+	err = mlx5_reg_mfrl_query(dev, &reset_level, NULL);
-+	if (err)
-+		return err;
-+	if (!(reset_level & MLX5_MFRL_REG_RESET_LEVEL0)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "FW upgrade to the stored FW can't be done by FW live patching");
-+		return -EINVAL;
-+	}
-+
-+	err = mlx5_fw_set_live_patch(dev);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
- static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
- 				    enum devlink_reload_action action,
- 				    struct netlink_ext_ack *extack)
-@@ -127,6 +150,8 @@ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
- 		return 0;
- 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
- 		return mlx5_devlink_reload_fw_activate(devlink, extack);
-+	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE_NO_RESET:
-+		return mlx5_devlink_trigger_fw_live_patch(devlink, extack);
- 	default:
- 		/* Unsupported action should not get to this function */
- 		WARN_ON(1);
-@@ -150,6 +175,10 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
- 		if (actions_done)
- 			*actions_done = BIT(action) | BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
- 		break;
-+	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE_NO_RESET:
-+		if (actions_done)
-+			*actions_done = BIT(action);
-+		break;
- 	default:
- 		/* Unsupported action should not get to this function */
- 		WARN_ON(1);
-@@ -173,7 +202,8 @@ static const struct devlink_ops mlx5_devlink_ops = {
- 	.flash_update = mlx5_devlink_flash_update,
- 	.info_get = mlx5_devlink_info_get,
- 	.supported_reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
--				    BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
-+				    BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE) |
-+				    BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE_NO_RESET),
- 	.reload_down = mlx5_devlink_reload_down,
- 	.reload_up = mlx5_devlink_reload_up,
- };
--- 
-2.17.1
+> i think i should check it before the free of hdev->sent_cmd like,
+> 
+> if (hdev->sent_cmd)
+> 	kfree_skb(hdev->sent_cmd);
 
+No, that's not needed.
+
+What is the problem with these lines that you are trying to solve?
+
+> > > +
+> > >  		if (hdev->sent_cmd) {
+> > >  			if (hci_req_status_pend(hdev))
+> > >  				hci_dev_set_flag(hdev, HCI_CMD_PENDING);
+> > > diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> > > index 4b7fc430793c..1e7d9bee9111 100644
+> > > --- a/net/bluetooth/hci_event.c
+> > > +++ b/net/bluetooth/hci_event.c
+> > > @@ -4941,6 +4941,10 @@ static void hci_phy_link_complete_evt(struct hci_dev *hdev,
+> > >  		hci_dev_unlock(hdev);
+> > >  		return;
+> > >  	}
+> > > +	if (!(hcon->amp_mgr->l2cap_conn->hcon)) {
+> > > +		hci_dev_unlock(hdev);
+> > > +		return;
+> > > +	}
+> > 
+> > How can this be triggered?
+> 
+> syzbot showed that this line is accessed irrespective of the null value it contains, so  added a 
+> pointer check for that.
+
+But does hcon->amp_mgr->l2cap_conn->hcon become NULL here?
+
+thanks,
+
+greg k-h
