@@ -2,110 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50029257020
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 21:18:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E444825705A
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 22:02:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727932AbgH3TRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 15:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36392 "EHLO
+        id S1726479AbgH3UCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 16:02:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbgH3TPJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 15:15:09 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6439FC061239;
-        Sun, 30 Aug 2020 12:15:08 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id j15so2315593lfg.7;
-        Sun, 30 Aug 2020 12:15:08 -0700 (PDT)
+        with ESMTP id S1726150AbgH3UCj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 16:02:39 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FAB7C061573;
+        Sun, 30 Aug 2020 13:02:39 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id w7so1935527pfi.4;
+        Sun, 30 Aug 2020 13:02:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WKk6KWPNkMHUCww/FbErLxUYYQtEUh3n/PTtmJB/IIQ=;
-        b=ADD6Kq4arZJOO7Z+X6dlbNFUKa2MGhu79OcOljRz3WAcc/N3H23SdadMXUusZl7Re7
-         mavcADGOOGjw4YPLh4Bd3AHe3Wf3GrR9xszVDjKeNWBVzpgfPFpbu+G5v/ZCc1IocLez
-         Tml2HhWF++QwC8/gg0QSMJMYiVTHYrz7Mfq31KkwcMzdX/uXIwpZBuRtIx3Vf6OfTE4I
-         gSfTcZ6mcSbFla2yJur9lviMamt/2uiHZG0/UTLDqfDQ0fXciUFWXW/wU1YYVwLxynkp
-         32H0oWWSihfW4LFt7gufNGgSOCh6YMorVxHCY3+a2JagEhMaXuLn853leokAN8VD3nsO
-         IjnQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Mo5cAIcbwLzF8PLyUfTTGUYPFzb31BV6RLnWmzyqoHg=;
+        b=JBx/cGx6MfiQz2OjroWGIBtpPeLHX8W0OWHVbciuPaSKbaYQdtiC2TUFNo88TOi6J+
+         lSSALZGDzrHCwIbDmyWsTHbX9bcTCfR+Xqm50BTu9vZCe4nulNMjmvdYx5jC5uWAdXi+
+         1qrEBX1U1s4f9Mu5oGyuTli3i93AY9CAst1dDMnXHmQN58tqz/BDnvVxx7hSF/I+0Vl1
+         zQT2J06qYYginzSgt4nlzNb0uVRf4y0GCEduivD07fZVxPSPGDMndEpV/T8BkIp1XQEw
+         nDvIHS5AKXUDe5ztq8WxzxKNAg/X/UaFvWqeeiCkKXPyzVxhgvl2ScM8IwY6HfEfaRcC
+         KkSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WKk6KWPNkMHUCww/FbErLxUYYQtEUh3n/PTtmJB/IIQ=;
-        b=P70ZXffe7IiriynRgLFOrgujg3zCp+qiQV2DtraBUnPXzHbxNDRH7MnRX8RyYwJZs7
-         MDwZwyOsryxbtpv/1lQfakB0pFKDzMAqpRhxIc4amXyIBz2g4uoZIDStNSODVhXtjG5H
-         h4uPuSz9neHI7vO4/7Yp1kvBCS29fbXLIKIFGR4QrwqWxGuaMhNyeXs2Eb3K/jkyfDjn
-         1HVDqw+yW5WX2R5Rq7xkjw05AMrqSVvecbX+WV/ksoCgYd3N9bS52B0rBA3Qd6uOADTj
-         82vYn1zNANhjSnTRMC0hOTZmzmnqZsyksYdQrpbyEsdpHaKbB6GkX7ylp3TM9XDpD9xK
-         +ROQ==
-X-Gm-Message-State: AOAM532osjv7Nw1P0/HRBwzPySBJZh+vqXrZj/Ko6Yzt0eyt2qeOFDG3
-        JOT89QLhVftNg53aBYKa2p4=
-X-Google-Smtp-Source: ABdhPJzL0Cdo7AKGH5FiC2AREv1bSdtUCg+BEl1uu43NLTd1wRmGMfv3vj1BvcduUPeX7jN48VJ+7Q==
-X-Received: by 2002:ac2:41cc:: with SMTP id d12mr4018561lfi.20.1598814906867;
-        Sun, 30 Aug 2020 12:15:06 -0700 (PDT)
-Received: from localhost.localdomain (109-252-170-211.dynamic.spd-mgts.ru. [109.252.170.211])
-        by smtp.gmail.com with ESMTPSA id e23sm1409709lfj.80.2020.08.30.12.15.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Aug 2020 12:15:06 -0700 (PDT)
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/3] brcmfmac: set F2 SDIO block size to 128 bytes for BCM4329
-Date:   Sun, 30 Aug 2020 22:14:39 +0300
-Message-Id: <20200830191439.10017-4-digetx@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200830191439.10017-1-digetx@gmail.com>
-References: <20200830191439.10017-1-digetx@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Mo5cAIcbwLzF8PLyUfTTGUYPFzb31BV6RLnWmzyqoHg=;
+        b=n25tUgD+VEDdFi3bqcAaJN11X5YAY9mEY47CPMBe3DSdzxDpRaQLNMeWdWRdHrjWz9
+         fVogXdQ8F52QTVFAzScHga1RXfc/Ny0q6d/hjd16zpcBSGHV1mPwqrveDD3Te3KeVGJi
+         bL9UDwPOBMwYHlWMdDbcziXUCwFq5MBoNZqXAoLQYcdnKwgvAzm5/Aq14ByCr+YJLoUA
+         ZCqaCKtDQ1HxzSRARRMAFtu9VtWjO4IoU2c1StnCj7hFg172aH1sBT+EEFoL3rdomD4j
+         uks1W2yLafrno3qL6fwbamVU2bQhieT8m2ImHi6G+vDhCC6xSFfqWvB5++Mj6q0cRVHQ
+         jKrA==
+X-Gm-Message-State: AOAM5304zB4fUdLBDU5kUGkrGwgIWhdC2JD0+bwZJuEshIH/ysGlkzxw
+        zqMu7XwLTonzo4dBo81JcDBamJ6RcIX9uPONEN8=
+X-Google-Smtp-Source: ABdhPJxUffIbG/iCd16oJlINxEPYq4eIkGuYiKN/6PVKQddOAusN/dNB7UGQr/OGu9oykRFkFEiLYuXonN3E65r9lG0=
+X-Received: by 2002:a62:2587:: with SMTP id l129mr6826216pfl.47.1598817755781;
+ Sun, 30 Aug 2020 13:02:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200830151459.4648-1-trix@redhat.com>
+In-Reply-To: <20200830151459.4648-1-trix@redhat.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 30 Aug 2020 23:02:19 +0300
+Message-ID: <CAHp75VcdUoNMxzoQ4n2y4LrbYX5nTh3Y8rFh=5J9cv7iU-V=Hg@mail.gmail.com>
+Subject: Re: [PATCH] net: openvswitch: pass NULL for unused parameters
+To:     trix@redhat.com
+Cc:     pshelar@ovn.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev <netdev@vger.kernel.org>, dev@openvswitch.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Setting F2 block size to 128 bytes for BCM4329 allows to significantly
-improve RX throughput on NVIDIA Tegra20. Before this change the throughput
-was capped to 30 Mbit/s on Tegra, now throughput is at 40 Mbit/s, which is
-a maximum throughput for the BCM4329 chip. The F2 block size is borrowed
-from the downstream BCMDHD driver. The comment in the BCMDHD driver says
-that 128B improves throughput and turns out that it works for the brcmfmac
-as well.
+On Sun, Aug 30, 2020 at 6:17 PM <trix@redhat.com> wrote:
+>
+> From: Tom Rix <trix@redhat.com>
+>
+> clang static analysis flags these problems
+>
+> flow_table.c:713:2: warning: The expression is an uninitialized
+>   value. The computed value will also be garbage
+>         (*n_mask_hit)++;
+>         ^~~~~~~~~~~~~~~
+> flow_table.c:748:5: warning: The expression is an uninitialized
+>   value. The computed value will also be garbage
+>                                 (*n_cache_hit)++;
+>                                 ^~~~~~~~~~~~~~~~
+>
+> These are not problems because neither pararmeter is used
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c | 4 ++++
- 1 file changed, 4 insertions(+)
+parameter
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-index 0dc4de2fa9f6..318bd00bf94f 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-@@ -45,6 +45,7 @@
- #define SDIO_FUNC2_BLOCKSIZE		512
- #define SDIO_4373_FUNC2_BLOCKSIZE	256
- #define SDIO_435X_FUNC2_BLOCKSIZE	256
-+#define SDIO_4329_FUNC2_BLOCKSIZE	128
- /* Maximum milliseconds to wait for F2 to come up */
- #define SDIO_WAIT_F2RDY	3000
- 
-@@ -920,6 +921,9 @@ int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev)
- 	case SDIO_DEVICE_ID_BROADCOM_4356:
- 		f2_blksz = SDIO_435X_FUNC2_BLOCKSIZE;
- 		break;
-+	case SDIO_DEVICE_ID_BROADCOM_4329:
-+		f2_blksz = SDIO_4329_FUNC2_BLOCKSIZE;
-+		break;
- 	default:
- 		break;
- 	}
+> by the calling function.
+>
+> Looking at all of the calling functions, there are many
+> cases where the results are unused.  Passing unused
+> parameters is a waste.
+>
+> To avoid passing unused parameters, rework the
+> masked_flow_lookup() and flow_lookup() routines to check
+> for NULL parameters and change the unused parameters to NULL.
+>
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>  net/openvswitch/flow_table.c | 16 +++++++---------
+>  1 file changed, 7 insertions(+), 9 deletions(-)
+>
+> diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+> index e2235849a57e..18e7fa3aa67e 100644
+> --- a/net/openvswitch/flow_table.c
+> +++ b/net/openvswitch/flow_table.c
+> @@ -710,7 +710,8 @@ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
+>         ovs_flow_mask_key(&masked_key, unmasked, false, mask);
+>         hash = flow_hash(&masked_key, &mask->range);
+>         head = find_bucket(ti, hash);
+> -       (*n_mask_hit)++;
+> +       if (n_mask_hit)
+> +               (*n_mask_hit)++;
+>
+>         hlist_for_each_entry_rcu(flow, head, flow_table.node[ti->node_ver],
+>                                 lockdep_ovsl_is_held()) {
+> @@ -745,7 +746,8 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
+>                                 u64_stats_update_begin(&ma->syncp);
+>                                 usage_counters[*index]++;
+>                                 u64_stats_update_end(&ma->syncp);
+> -                               (*n_cache_hit)++;
+> +                               if (n_cache_hit)
+> +                                       (*n_cache_hit)++;
+>                                 return flow;
+>                         }
+>                 }
+> @@ -798,9 +800,8 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
+>         *n_cache_hit = 0;
+
+>         if (unlikely(!skb_hash || mc->cache_size == 0)) {
+>                 u32 mask_index = 0;
+> -               u32 cache = 0;
+>
+> -               return flow_lookup(tbl, ti, ma, key, n_mask_hit, &cache,
+> +               return flow_lookup(tbl, ti, ma, key, n_mask_hit, NULL,
+>                                    &mask_index);
+
+Can it be done for mask_index as well?
+
+>         }
+>
+> @@ -849,11 +850,9 @@ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
+>  {
+>         struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+>         struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
+> -       u32 __always_unused n_mask_hit;
+> -       u32 __always_unused n_cache_hit;
+>         u32 index = 0;
+>
+
+> -       return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
+> +       return flow_lookup(tbl, ti, ma, key, NULL, NULL, &index);
+
+Ditto.
+
+>  }
+>
+>  struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+> @@ -865,7 +864,6 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+>         /* Always called under ovs-mutex. */
+>         for (i = 0; i < ma->max; i++) {
+>                 struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
+> -               u32 __always_unused n_mask_hit;
+>                 struct sw_flow_mask *mask;
+>                 struct sw_flow *flow;
+>
+> @@ -873,7 +871,7 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+>                 if (!mask)
+>                         continue;
+>
+> -               flow = masked_flow_lookup(ti, match->key, mask, &n_mask_hit);
+> +               flow = masked_flow_lookup(ti, match->key, mask, NULL);
+>                 if (flow && ovs_identifier_is_key(&flow->id) &&
+>                     ovs_flow_cmp_unmasked_key(flow, match)) {
+>                         return flow;
+> --
+> 2.18.1
+>
+
+
 -- 
-2.27.0
-
+With Best Regards,
+Andy Shevchenko
