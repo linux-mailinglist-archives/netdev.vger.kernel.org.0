@@ -2,139 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0F2C256D12
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 11:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EEFD256D9F
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 14:26:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728705AbgH3JWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 05:22:18 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:52972 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725869AbgH3JWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 05:22:18 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id B3D8C1C0B81; Sun, 30 Aug 2020 11:22:13 +0200 (CEST)
-Date:   Sun, 30 Aug 2020 11:22:12 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>,
-        netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
-        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC leds + net-next v4 0/2] Add support for LEDs on
- Marvell PHYs
-Message-ID: <20200830092212.GA6861@duo.ucw.cz>
-References: <20200728150530.28827-1-marek.behun@nic.cz>
- <20200807090653.ihnt2arywqtpdzjg@duo.ucw.cz>
- <20200807132920.GB2028541@lunn.ch>
- <20200829224351.GA29564@duo.ucw.cz>
- <20200829233641.GC2966560@lunn.ch>
+        id S1728847AbgH3M0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 08:26:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728831AbgH3M0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 08:26:34 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F27C061573;
+        Sun, 30 Aug 2020 05:26:33 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id x18so516404pll.6;
+        Sun, 30 Aug 2020 05:26:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ejqO87rorFkVXw0/ByXTM9CvLRvpm4qV9tVsBbkXl5I=;
+        b=Qn/++4J3Z/bAbP0hfH0Wek8D4QXU9x5lXBOPjjGgyy3p6+DhkFdVlK0Qvg4sbZbHyi
+         CspnA895diI0L0XAsK24N+J8fESh1feelF5xwmNNhoiSTCepBgdldjloZbw4/vZe2zDP
+         MFGkygHfhqtWNHZh8kpm+fFqiz6gT1qfCwekkFSoTCejD0LBLfreK8URHXDxS9BRd0WL
+         9IGdmslXLCm0sIlbc6e9rhoSWtKYoR17FJ7W7FwGuRs1i7vfZoggNq+0lXyEQ8Z2FnOP
+         cn26BnOtUttf/mNbMH2hNrvEXPEJ7hsA82rYu1pSJEvQ93ItrDGAR4UXt4O4uI5vEPnw
+         Jt8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ejqO87rorFkVXw0/ByXTM9CvLRvpm4qV9tVsBbkXl5I=;
+        b=FWs+QFB9pM+nZa4mQ7tSTToenNuVNBmjhnI+hu5JXsOK1rsa8Se9RfdU/SHMx44uGu
+         oy9qwlkBbOn7CZurJzlnuA0K1CmGR4Ut6mJ5DqzkO0baRGihrg7OXjot85hMtJvc8Tpt
+         MNGdg7WJsfML9RzLoqUxGPUf7S6eQMtv4EiPvxpSoM3tmxZRC9afCJC6rFvpdeR5VJ+B
+         K4zjcMeJ2eERo/+XbU8iwGBTPfS9BLutrpMhXxkXr/gpL8MX1zTdVFbnJVTKgQ8lVOrc
+         Tjy2Wk4ozADuk2NVn+VYwbxQzeWsamOG+eeStZ9Uy6xHuZnsY4Jl9ShW39L4cnGPg5p+
+         JR3Q==
+X-Gm-Message-State: AOAM533FdLyVa2aD9I6SVm7VunlDI5NM42XIiWaXoZI6H1Dr/G/cQabK
+        paKTzjwSon55twUtr5PR1Yw=
+X-Google-Smtp-Source: ABdhPJzZtb1Nfg209xbdteCKN2XIoYQJIeLuvoBWNxezlKGZpJEy+OsTzIZvgQ8YxxVX/yrRKcwePw==
+X-Received: by 2002:a17:902:8347:: with SMTP id z7mr5506118pln.20.1598790391028;
+        Sun, 30 Aug 2020 05:26:31 -0700 (PDT)
+Received: from Thinkpad ([45.118.165.143])
+        by smtp.gmail.com with ESMTPSA id lj3sm4290067pjb.26.2020.08.30.05.26.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Aug 2020 05:26:30 -0700 (PDT)
+Date:   Sun, 30 Aug 2020 17:56:23 +0530
+From:   Anmol Karn <anmol.karan123@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     syzbot+0bef568258653cff272f@syzkaller.appspotmail.com,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, anmol.karan123@gmail.com
+Subject: Re: [Linux-kernel-mentees] [PATCH] net: bluetooth: Fix null pointer
+ deref in hci_phy_link_complete_evt
+Message-ID: <20200830122623.GA235919@Thinkpad>
+References: <20200829124112.227133-1-anmol.karan123@gmail.com>
+ <20200829165712.229437-1-anmol.karan123@gmail.com>
+ <20200830091917.GB122343@kroah.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="6c2NcOVqGQ03X4Wi"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200829233641.GC2966560@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200830091917.GB122343@kroah.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, Aug 30, 2020 at 11:19:17AM +0200, Greg KH wrote:
+> On Sat, Aug 29, 2020 at 10:27:12PM +0530, Anmol Karn wrote:
+> > Fix null pointer deref in hci_phy_link_complete_evt, there was no 
+> > checking there for the hcon->amp_mgr->l2cap_conn->hconn, and also 
+> > in hci_cmd_work, for hdev->sent_cmd.
+> > 
+> > To fix this issue Add pointer checking in hci_cmd_work and
+> > hci_phy_link_complete_evt.
+> > [Linux-next-20200827]
+> > 
+> > This patch corrected some mistakes from previous patch.
+> > 
+> > Reported-by: syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
+> > Link: https://syzkaller.appspot.com/bug?id=0d93140da5a82305a66a136af99b088b75177b99
+> > Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
+> > ---
+> >  net/bluetooth/hci_core.c  | 5 ++++-
+> >  net/bluetooth/hci_event.c | 4 ++++
+> >  2 files changed, 8 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> > index 68bfe57b6625..996efd654e7a 100644
+> > --- a/net/bluetooth/hci_core.c
+> > +++ b/net/bluetooth/hci_core.c
+> > @@ -4922,7 +4922,10 @@ static void hci_cmd_work(struct work_struct *work)
+> >  
+> >  		kfree_skb(hdev->sent_cmd);
+> >  
+> > -		hdev->sent_cmd = skb_clone(skb, GFP_KERNEL);
+> > +		if (hdev->sent_cmd) {
+> > +			hdev->sent_cmd = skb_clone(skb, GFP_KERNEL);
+> > +		}
+> 
+> How can sent_cmd be NULL here?  Are you sure something previous to this
+> shouldn't be fixed instead?
 
---6c2NcOVqGQ03X4Wi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sir, sent_cmd was freed before this condition check, thats why i checked it,
 
-Hi!
+i think i should check it before the free of hdev->sent_cmd like,
 
-> > > The phydev name is not particularly nice:
-> > >=20
-> > > !mdio-mux!mdio@1!switch@0!mdio:00
-=2E..
-> > > 400d0000.ethernet-1:00
-> > > 400d0000.ethernet-1:01
-> > > fixed-0:00
-> >=20
-> > Not nice, I see. In particular, it contains ":"... which would be a
-> > problem.
-> >=20
-> > > The interface name are:
-> > >=20
-> > > 1: lo:
-> > > 2: eth0:
-> > > 3: eth1:
-=2E..
-> > > 13: optical3@eth1:
-> > > 14: optical4@eth1:
-> >=20
-> > OTOH... renaming LEDs when interface is renamed... sounds like a
-> > disaster, too.
->=20
-> I don't think it is. The stack has all the needed support. There is a
-> notification before the rename, and another notification after the
-> rename. Things like bonding, combing two interfaces into one and load
-> balancing, etc. hook these notifiers. There is plenty of examples to
-> follow. What i don't know about is the lifetime of files under
-> /sys/class/led, does the destroying of an LED block while one of the
-> files is open?.
+if (hdev->sent_cmd)
+	kfree_skb(hdev->sent_cmd);
 
-Well, there may be no problems on the networking side, but I'd prefer
-not to make LED side more complex. Files could be open, and userland
-could have assumptions about LEDs not changing names...
+what's your opininon on this.
 
-> > > You could make a good guess at matching to two together, but it is
-> > > error prone. Phys are low level things which the user is not really
-> > > involved in. They interact with interface names. ethtool, ip, etc, all
-> > > use interface names. In fact, i don't know of any tool which uses
-> > > phydev names.
-> >=20
-> > So... proposal:
-> >=20
-> > Users should not be dealing with sysfs interface directly, anyway. We
-> > should have a tool for that. It can live in kernel/tools somewhere, I
-> > guess.
->=20
-> We already have one, ethtool(1).=20
+> 
+> 
+> > +
+> >  		if (hdev->sent_cmd) {
+> >  			if (hci_req_status_pend(hdev))
+> >  				hci_dev_set_flag(hdev, HCI_CMD_PENDING);
+> > diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> > index 4b7fc430793c..1e7d9bee9111 100644
+> > --- a/net/bluetooth/hci_event.c
+> > +++ b/net/bluetooth/hci_event.c
+> > @@ -4941,6 +4941,10 @@ static void hci_phy_link_complete_evt(struct hci_dev *hdev,
+> >  		hci_dev_unlock(hdev);
+> >  		return;
+> >  	}
+> > +	if (!(hcon->amp_mgr->l2cap_conn->hcon)) {
+> > +		hci_dev_unlock(hdev);
+> > +		return;
+> > +	}
+> 
+> How can this be triggered?
 
-Well... ethtool is for networking, we'll want to have a ledtool, too :-).
+syzbot showed that this line is accessed irrespective of the null value it contains, so  added a 
+pointer check for that.
 
-> > Would we name leds phy0:... (with simple incrementing number), and
-> > expose either interface name or phydev name as a attribute?
-> >=20
-> > So user could do
-> >=20
-> > cat /sys/class/leds/phy14:green:foobar/netdev
-> > lan5@eth1:
->=20
-> Which is the wrong way around. ethtool will be passed the interface
-> name and an PHY descriptor of some sort, and it has to go search
-> through all the LEDs to find the one with this attribute. I would be
-> much more likely to add a sysfs link from
-> /sys/class/net/lan5/phy:left:green to
-> /sys/class/leds/phy14:left:green.
+please give some opinions on this,
 
-Okay, that might be even better, as it provides links in the more
-useful direction.
+if (!bredr_hcon) {
+	hci_dev_unlock(hdev);
+        return;
+}
 
-Best regards,
-									Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---6c2NcOVqGQ03X4Wi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX0tvxAAKCRAw5/Bqldv6
-8gIVAJ9SudFhekKjKm3bC/uDVNilGxzJygCfZrfUDL9p+GGWmvf90udFglMRUcg=
-=fgw1
------END PGP SIGNATURE-----
-
---6c2NcOVqGQ03X4Wi--
+Thanks,
+Anmol Karn
