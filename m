@@ -2,173 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4B21256E54
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 16:04:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BF85256EAF
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 16:41:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726490AbgH3OEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 10:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726126AbgH3ODD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 10:03:03 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50E0C061573
-        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 07:03:02 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id q3so1785135pls.11
-        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 07:03:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gogqH3O9vhsiI/45w3wZ1pyMR2KXZsdUpUj6VC0K718=;
-        b=JYT7gbemYrJ1MvDvXCX3yVUguoeExYT+wZ31Avg1Uc8996ukk2dqhiKEq/xbPzRbHZ
-         tsEDb2inEpxkPWzZwh3WMOnI7D2c/IGQ9DAgdOksJwmJKU8DTGyeapeDzsEWbGC0QH8j
-         ljBVlTrxupboikuVmXmvkqfT5/hT99d2Lm7pqm6pIwuGcK9Za99GKuJKPKDkva+FBBoO
-         qY2z1drIvkdMvOdP0FWC3qa3wt0NJeC24vsAU9tVwxsji5lgckWipDpqsXykivKNk1lZ
-         v4jMVCasvS941qgKZJq8UtGuIxdY/UBf19fHq0t9wUeIjkgCtXsuzZmHf4tUR+7BUdd+
-         +8cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gogqH3O9vhsiI/45w3wZ1pyMR2KXZsdUpUj6VC0K718=;
-        b=rhSFEQm8nbFpbOymR7f6muBDcymzwPV0/bDUVw8XqIpmgfxuUyRE2CMSdKRn5quCpY
-         z3jO+OXz93XW/Rlr9TPackc8bZ4w1JLBI79nn2w9N+dhXg9KNtmlg27PbMrLCMzyyJrT
-         ksrUL+4HOgjZoa+dOlLblk8SJF3Rl/je2t7Px0aRh++BEGzbOBa1g/B4eQCueqLHA2kA
-         6Yo4Z6AvNF/b1l/eAsuBSEMYWjS05SXOGLN1LImcAiXGPt8ZmndnIeEAM/8cdztJM9F0
-         dB5Ff7GYF3fR5mgeWoP3v7r/U1ktgYjduSrHLpnMDZKV/o7psztpjxIc3Ot9ziGsn8B7
-         Xx+Q==
-X-Gm-Message-State: AOAM5331OEb3ZNYB5EBlPye/bXn2ZvrFhH42NfIVFSHphNFo6ntQDIce
-        r3hGkAgY62JfUeYMI5NED4s=
-X-Google-Smtp-Source: ABdhPJzaLf6uvdRzGgcmQs+gAvmNgR+Tts5bDwtAjnGCtAujOUXBklQhNkiWT/Oax2GedKYN9WNRqA==
-X-Received: by 2002:a17:90a:b108:: with SMTP id z8mr6392083pjq.39.1598796179341;
-        Sun, 30 Aug 2020 07:02:59 -0700 (PDT)
-Received: from localhost.localdomain (fp9f1cad42.knge118.ap.nuro.jp. [159.28.173.66])
-        by smtp.gmail.com with ESMTPSA id f4sm4631361pgi.49.2020.08.30.07.02.57
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 30 Aug 2020 07:02:58 -0700 (PDT)
-From:   Yutaro Hayakawa <yhayakawa3720@gmail.com>
-X-Google-Original-From: Yutaro Hayakawa <yutaro.hayakawa@linecorp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, michio.honda@ed.ac.uk,
-        Yutaro Hayakawa <yhayakawa3720@gmail.com>
-Subject: [PATCH RFC v2 net-next] net/tls: Implement getsockopt SOL_TLS TLS_RX
-Date:   Sun, 30 Aug 2020 23:01:49 +0900
-Message-Id: <20200830140149.17949-1-yutaro.hayakawa@linecorp.com>
-X-Mailer: git-send-email 2.20.1 (Apple Git-117)
-In-Reply-To: <20200828095223.21d07617@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200828095223.21d07617@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726565AbgH3OlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 10:41:16 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:43765 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726887AbgH3Oj0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 30 Aug 2020 10:39:26 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1598798365; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=YsxKBIKWbk9+hM99fxRravC3T6qT3Gy/CmU0L8pLAw0=; b=B5/piHQs/yOV17JkIrdbyM0F76xPkC0NVQHkk/rhJhZlaAacks50Kab50p36BlfyId1UA5jV
+ Wm6Uqbet/+XxYvysBXraAhMVp3BcTWoKvFK5we6AJsx1KrujQ/rfZnYob9TVBBLz0PQ2HDCn
+ xg5ro9Bftc/9HGFF285I4PtB93Y=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 5f4bb9f2c4154e1df2124dfe (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 30 Aug 2020 14:38:42
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 83F08C43395; Sun, 30 Aug 2020 14:38:41 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from deesin-linux.qualcomm.com (unknown [202.46.22.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: deesin)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 36322C433C6;
+        Sun, 30 Aug 2020 14:38:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 36322C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=deesin@codeaurora.org
+From:   Deepak Kumar Singh <deesin@codeaurora.org>
+To:     bjorn.andersson@linaro.org, clew@codeaurora.org
+Cc:     mathieu.poirier@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Carl Huang <cjhuang@codeaurora.org>,
+        Necip Fazil Yildiran <necip@google.com>,
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL])
+Subject: [PATCH V1 1/4] net: qrtr: Do not send packets before hello negotiation
+Date:   Sun, 30 Aug 2020 20:08:09 +0530
+Message-Id: <1598798292-5971-2-git-send-email-deesin@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1598798292-5971-1-git-send-email-deesin@codeaurora.org>
+References: <1598798292-5971-1-git-send-email-deesin@codeaurora.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yutaro Hayakawa <yhayakawa3720@gmail.com>
+From: Chris Lew <clew@codeaurora.org>
 
-Implement the getsockopt SOL_TLS TLS_RX which is currently missing. The
-primary usecase is to use it in conjunction with TCP_REPAIR to
-checkpoint/restore the TLS record layer state.
+There is a race where broadcast packets can be sent to a node that has
+not sent the hello message to the remote processor. This breaks the
+protocol expectation. Add a status variable to track when the hello
+packet has been sent.
 
-TLS connection state usually exists on the user space library. So
-basically we can easily extract it from there, but when the TLS
-connections are delegated to the kTLS, it is not the case. We need to
-have a way to extract the TLS state from the kernel for both of TX and
-RX side.
-
-The new TLS_RX getsockopt copies the crypto_info to user in the same
-way as TLS_TX does.
-
-We have described use cases in our research work in Netdev 0x14
-Transport Workshop [1].
-
-Also, there is an TLS implementation called tlse [2] which supports
-TLS connection migration. They have support of kTLS and their code
-shows that they are expecting the future support of this option.
-
-[1] https://speakerdeck.com/yutarohayakawa/prism-proxies-without-the-pain
-[2] https://github.com/eduardsui/tlse
-
-Signed-off-by: Yutaro Hayakawa <yhayakawa3720@gmail.com>
+An alternative solution attempted was to remove the nodes from the
+broadcast list until the hello packet is sent. This is not a valid
+solution because hello messages are broadcasted if the ns is restarted
+or started late. There needs to be a status variable separate from the
+broadcast list.
 ---
-Changes in v2:
-- Remove duplicated memcpy for each cipher suites
+ net/qrtr/qrtr.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Thanks for your reply. Reflected the comments.
-
- net/tls/tls_main.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
-
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index bbc52b0..0271441 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -330,12 +330,13 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
- 		tls_ctx_free(sk, ctx);
- }
-
--static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
--				int __user *optlen)
-+static int do_tls_getsockopt_conf(struct sock *sk, char __user *optval,
-+				  int __user *optlen, int tx)
- {
- 	int rc = 0;
- 	struct tls_context *ctx = tls_get_ctx(sk);
- 	struct tls_crypto_info *crypto_info;
-+	struct tls_cipher_context *cctx;
- 	int len;
-
- 	if (get_user(len, optlen))
-@@ -352,7 +353,13 @@ static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
- 	}
-
- 	/* get user crypto info */
--	crypto_info = &ctx->crypto_send.info;
-+	if (tx) {
-+		crypto_info = &ctx->crypto_send.info;
-+		cctx = &ctx->tx;
-+	} else {
-+		crypto_info = &ctx->crypto_recv.info;
-+		cctx = &ctx->rx;
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index 90c558f8..d9858a1 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -115,6 +115,7 @@ static DEFINE_MUTEX(qrtr_port_lock);
+  * @ep: endpoint
+  * @ref: reference count for node
+  * @nid: node id
++ * @hello_sent: hello packet sent to endpoint
+  * @qrtr_tx_flow: tree of qrtr_tx_flow, keyed by node << 32 | port
+  * @qrtr_tx_lock: lock for qrtr_tx_flow inserts
+  * @rx_queue: receive queue
+@@ -125,6 +126,7 @@ struct qrtr_node {
+ 	struct qrtr_endpoint *ep;
+ 	struct kref ref;
+ 	unsigned int nid;
++	atomic_t hello_sent;
+ 
+ 	struct radix_tree_root qrtr_tx_flow;
+ 	struct mutex qrtr_tx_lock; /* for qrtr_tx_flow */
+@@ -335,6 +337,11 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+ 	int rc = -ENODEV;
+ 	int confirm_rx;
+ 
++	if (!atomic_read(&node->hello_sent) && type != QRTR_TYPE_HELLO) {
++		kfree_skb(skb);
++		return rc;
 +	}
++
+ 	confirm_rx = qrtr_tx_wait(node, to->sq_node, to->sq_port, type);
+ 	if (confirm_rx < 0) {
+ 		kfree_skb(skb);
+@@ -370,6 +377,8 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+ 	 * confirm_rx flag if we dropped this one */
+ 	if (rc && confirm_rx)
+ 		qrtr_tx_flow_failed(node, to->sq_node, to->sq_port);
++	if (!rc && type == QRTR_TYPE_HELLO)
++		atomic_inc(&node->hello_sent);
+ 
+ 	return rc;
+ }
+@@ -563,6 +572,7 @@ int qrtr_endpoint_register(struct qrtr_endpoint *ep, unsigned int nid)
+ 	skb_queue_head_init(&node->rx_queue);
+ 	node->nid = QRTR_EP_NID_AUTO;
+ 	node->ep = ep;
++	atomic_set(&node->hello_sent, 0);
+ 
+ 	INIT_RADIX_TREE(&node->qrtr_tx_flow, GFP_KERNEL);
+ 	mutex_init(&node->qrtr_tx_lock);
+@@ -854,6 +864,8 @@ static int qrtr_bcast_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+ 
+ 	mutex_lock(&qrtr_node_lock);
+ 	list_for_each_entry(node, &qrtr_all_nodes, item) {
++		if (node->nid == QRTR_EP_NID_AUTO)
++			continue;
+ 		skbn = skb_clone(skb, GFP_KERNEL);
+ 		if (!skbn)
+ 			break;
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
- 	if (!TLS_CRYPTO_INFO_READY(crypto_info)) {
- 		rc = -EBUSY;
-@@ -379,9 +386,9 @@ static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
- 		}
- 		lock_sock(sk);
- 		memcpy(crypto_info_aes_gcm_128->iv,
--		       ctx->tx.iv + TLS_CIPHER_AES_GCM_128_SALT_SIZE,
-+		       cctx->iv + TLS_CIPHER_AES_GCM_128_SALT_SIZE,
- 		       TLS_CIPHER_AES_GCM_128_IV_SIZE);
--		memcpy(crypto_info_aes_gcm_128->rec_seq, ctx->tx.rec_seq,
-+		memcpy(crypto_info_aes_gcm_128->rec_seq, cctx->rec_seq,
- 		       TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE);
- 		release_sock(sk);
- 		if (copy_to_user(optval,
-@@ -403,9 +410,9 @@ static int do_tls_getsockopt_tx(struct sock *sk, char __user *optval,
- 		}
- 		lock_sock(sk);
- 		memcpy(crypto_info_aes_gcm_256->iv,
--		       ctx->tx.iv + TLS_CIPHER_AES_GCM_256_SALT_SIZE,
-+		       cctx->iv + TLS_CIPHER_AES_GCM_256_SALT_SIZE,
- 		       TLS_CIPHER_AES_GCM_256_IV_SIZE);
--		memcpy(crypto_info_aes_gcm_256->rec_seq, ctx->tx.rec_seq,
-+		memcpy(crypto_info_aes_gcm_256->rec_seq, cctx->rec_seq,
- 		       TLS_CIPHER_AES_GCM_256_REC_SEQ_SIZE);
- 		release_sock(sk);
- 		if (copy_to_user(optval,
-@@ -429,7 +436,9 @@ static int do_tls_getsockopt(struct sock *sk, int optname,
-
- 	switch (optname) {
- 	case TLS_TX:
--		rc = do_tls_getsockopt_tx(sk, optval, optlen);
-+	case TLS_RX:
-+		rc = do_tls_getsockopt_conf(sk, optval, optlen,
-+					    optname == TLS_TX);
- 		break;
- 	default:
- 		rc = -ENOPROTOOPT;
---
-1.8.3.1
