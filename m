@@ -2,92 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C60256EA7
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 16:40:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DDF3256ED0
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 16:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbgH3Oj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 10:39:58 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:50661 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727015AbgH3Oje (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 10:39:34 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598798373; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=63k57UM9aKfRQtY/EP8nhwKq5dGcYV4cF/NPx0Pmcm0=; b=sdi9d+vUk/dlIzn4y8sRdxdPYwkNiziMnsnWdgv6jnxOV7O7Y4cu5zo5dlRF4C7WNwNLBqfH
- LeqtXwklvOHr5eR39LeoeuVL5nURm04vigo5TYXlUAfSwDYrODLDalNinRBOS7qYYV94wdnH
- MXNoKAcznIBXptxqA6cCvsaoy34=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5f4bba03f4f3e646136427d3 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sun, 30 Aug 2020 14:38:59
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 076CBC433CA; Sun, 30 Aug 2020 14:38:59 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from deesin-linux.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: deesin)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A8D5FC433C6;
-        Sun, 30 Aug 2020 14:38:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A8D5FC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=deesin@codeaurora.org
-From:   Deepak Kumar Singh <deesin@codeaurora.org>
-To:     bjorn.andersson@linaro.org, clew@codeaurora.org
-Cc:     mathieu.poirier@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Arun Kumar Neelakantam <aneela@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Carl Huang <cjhuang@codeaurora.org>,
-        Necip Fazil Yildiran <necip@google.com>,
-        netdev@vger.kernel.org (open list:NETWORKING [GENERAL])
-Subject: [PATCH V1 4/4] net: qrtr: Check function pointer before calling
-Date:   Sun, 30 Aug 2020 20:08:12 +0530
-Message-Id: <1598798292-5971-5-git-send-email-deesin@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1598798292-5971-1-git-send-email-deesin@codeaurora.org>
-References: <1598798292-5971-1-git-send-email-deesin@codeaurora.org>
+        id S1726955AbgH3O6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 10:58:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726820AbgH3O6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 10:58:25 -0400
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675C5C061573
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 07:58:25 -0700 (PDT)
+Received: by mail-il1-x136.google.com with SMTP id b17so607624ilh.4
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 07:58:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=hOx/cTUh9IAdjmbbm55Ym/oYzZwtGhVDXvbLNdpw9JE=;
+        b=ov58osLTGWD67UzlelpjvthRt9qJ7ozWAs+En8Eh81UdX2o5B7xdW+XV5DLfsFkhaz
+         uE79JP+iv6aJSKoGCpJsK4Wa4vZHMzhacdqnEkyFKrwkZxapj0xb2Bx7LimWZyVuz5yr
+         3IKqnFEmi9wlzzuhgXfDe1Fx/40dpaS4sD+H7v+ZDN6F5dikClansEssPq4x2A5b5xij
+         gyWmjpxojVaZq4ZR7Rbzs2jKG/bSu5PSHfl0Cld9f+EQPVBn7QVrMkGrqyCBxGLOx6qH
+         FxzsQPe3wxJUo6HT78l2lP0GQs7SCXS3tZZk7XGdKnWHnpmGAZJ89SmE9jJWiu9RmSNe
+         mciQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=hOx/cTUh9IAdjmbbm55Ym/oYzZwtGhVDXvbLNdpw9JE=;
+        b=Y9jveCXIPcZj0uJ5wk+OnTs1Uk7XBoRw4D47QEF+pLCVHoyY3inBshjydh7FU7ntpM
+         7f0AH65+O7zl9JyP7KorjIelNsqRRYiPzB85XyTb5sPVoFZagoM37+IuAogX+blEWLLk
+         Fl/lJaxbn5sBOM5PGu22ctNuHWHV9JZhXS1WC2NUTHsA7/DG4kVqJ/4zYL6uYt8m+6lU
+         8O75C/IB3v1DAXWeXy6L5Vp/6Zuu+ZERpYOPNAqN1j30PtXB99rHBu2QxvFctgXV9v1g
+         kgTAEnm0DesI6uGAkbJC0uO6wryv5ZjPZ2f9NBjxWrhfgU0gpQi/J0f0pi08XVLoJ+tY
+         doSg==
+X-Gm-Message-State: AOAM530foWyDNCs5RPtFKUADvkoyOdpeJevWKtJO0iK8t56Q6d96zLDd
+        LKJq8CDB+Fm4O05ojL5rnzDTukJLmIw4j5pNH9Ej+lBrxoDJbg==
+X-Google-Smtp-Source: ABdhPJxDy6TOlzr+H9rFXDbWyZd/tfJpoNAQxoYnMOskUy3OWdF4D5GguJwWdFU1fEMrDIerH+hK53k6yvBfoeGwSAk=
+X-Received: by 2002:a05:6e02:14d:: with SMTP id j13mr1113588ilr.245.1598799502297;
+ Sun, 30 Aug 2020 07:58:22 -0700 (PDT)
+MIME-Version: 1.0
+From:   Denis Gubin <denis.gubin@gmail.com>
+Date:   Sun, 30 Aug 2020 17:57:46 +0300
+Message-ID: <CAE_-sd=Hfdhx1o8LmBB8eWanjLQEWe7UZ=SkqBP2wtJdDfvdzQ@mail.gmail.com>
+Subject: tc filter create hash table and filter rule
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arun Kumar Neelakantam <aneela@codeaurora.org>
+Good day!
 
-sk_error_report callback function called without validating cause the NULL
-pointer dereference.
+I want to understand how tc fitler works.
+Could you please give me some advice for it?
 
-Validate function pointer before using for error report.
----
- net/qrtr/qrtr.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I want to add and delete fitler rule by full handle but I can't do it.
+I need some article where I can read about tc utility.
 
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index e2dd38e..01cabd3 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -786,7 +786,8 @@ static void qrtr_reset_ports(void)
- 
- 		sock_hold(&ipc->sk);
- 		ipc->sk.sk_err = ENETRESET;
--		ipc->sk.sk_error_report(&ipc->sk);
-+		if (ipc->sk.sk_error_report)
-+			ipc->sk.sk_error_report(&ipc->sk);
- 		sock_put(&ipc->sk);
- 	}
- 	mutex_unlock(&qrtr_port_lock);
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+For instance I want create one filter rule and then delete it.
 
+The commands as follows:
+
+tc filter add dev eno5 parent ffff: pref 45000 handle 555:0:1 protocol
+all u32 match u8 0 0 action mirred egress mirror dev lo
+
+I get an error:
+Error: cls_u32: Handle specified hash table address mismatch.
+
+Ok. For started I'll create hash table with number 555
+tc filter add dev eno5 parent ffff: pref 45000 protocol ip handle 555:
+u32 divisor 1
+
+I don't get an error.
+
+Then I show output
+tc -s -d filter show dev eno5 parent ffff:
+
+filter protocol ip pref 45000 u32 chain 0
+filter protocol ip pref 45000 u32 chain 0 fh 555: ht divisor 1
+filter protocol ip pref 45000 u32 chain 0 fh 827: ht divisor 1
+
+
+My question:
+Why do I see the third string  "filter protocol ip pref 45000 u32
+chain 0 fh 827: ht divisor 1" ?
+
+I think I should see only two strings, should I ?
+
+filter protocol ip pref 45000 u32 chain 0
+filter protocol ip pref 45000 u32 chain 0 fh 555: ht divisor 1
+
+
+Ok. Go ahead.
+
+I want to create filter rule with full handle 555:0:1
+
+tc filter add dev eno5 parent ffff: pref 45000 handle 555:0:1 protocol
+ip u32 match u8 0 0 action mirred egress mirror dev lo
+
+I get error:
+
+Error: cls_u32: Handle specified hash table address mismatch.
+We have an error talking to the kernel, -1
+
+Then I use 827 hash table number:
+
+tc filter add dev eno5 parent ffff: pref 45000 handle 827:0:1 protocol
+ip u32 match u8 0 0 action mirred egress mirror dev lo
+
+I don't get an error. I am showing the output below:
+
+filter protocol ip pref 45000 u32 chain 0
+filter protocol ip pref 45000 u32 chain 0 fh 555: ht divisor 1
+filter protocol ip pref 45000 u32 chain 0 fh 827: ht divisor 1
+filter protocol ip pref 45000 u32 chain 0 fh 827::1 order 1 key ht 827
+bkt 0 terminal flowid ??? not_in_hw  (rule hit 0 success 0)
+  match 00000000/00000000 at 0 (success 0 )
+action order 1: mirred (Egress Mirror to device lo) pipe
+  index 26 ref 1 bind 1 installed 7 sec used 7 sec
+  Action statistics:
+Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+backlog 0b 0p requeues 0
+
+My question:
+Why can't  I create the filter rule with 555 hash number ?
+
+If I create filter rule with handle ::1 ...
+
+tc filter add dev eno5 parent ffff: pref 33000 handle ::1 protocol ip
+u32 match u8 0 0 action mirred egress mirror dev lo
+
+And I show the output
+tc -s -d filter show dev eno5 0 parent ffff:
+
+filter protocol ip pref 33000 u32 chain 0
+filter protocol ip pref 33000 u32 chain 0 fh 829: ht divisor 1
+filter protocol ip pref 33000 u32 chain 0 fh 829::1 order 1 key ht 829
+bkt 0 terminal flowid ??? not_in_hw  (rule hit 0 success 0)
+  match 00000000/00000000 at 0 (success 0 )
+action order 1: mirred (Egress Mirror to device lo) pipe
+  index 29 ref 1 bind 1 installed 1 sec used 1 sec
+  Action statistics:
+Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+backlog 0b 0p requeues 0
+
+
+... I'll can see that hash table with 829 number with ht divisor 1 has
+created yet and rule 829::1 created yet. But I want to control hash
+table number by myself.
+I don't want tc utility do it by itself.
+
+Can I control creating hash table number by myself ?
+
+Best regards,
+Denis Gubin
