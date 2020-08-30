@@ -2,193 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 439F32570B2
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 23:26:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C95ED2570CF
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 00:03:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgH3V0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 17:26:43 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:21765 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726150AbgH3V0j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 17:26:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598822797;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=433hylRzd7tAV1qS/y1gHwbMIYEXzinu0vCj4lzPHz4=;
-        b=QPEzMFDGH8gBWw4/3ie2JrK66fpYXwVSd5aQUETkaEJRBNQTIGTzROpEEDGJzLw2TYXCQ2
-        5rIryO2gLqBfKZQPKkyvWnCz5c+H++1RFNvx2ZTJe+b4z+CPQSKvZUAtJoLW20+IuHgb/K
-        LA0zZ7da5qLa3A5Mr1AbHgoLFQA3OB0=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-519-xwiIGBWsPcu_JrTvdGsPTw-1; Sun, 30 Aug 2020 17:26:35 -0400
-X-MC-Unique: xwiIGBWsPcu_JrTvdGsPTw-1
-Received: by mail-ot1-f72.google.com with SMTP id z23so3147726ote.14
-        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 14:26:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=433hylRzd7tAV1qS/y1gHwbMIYEXzinu0vCj4lzPHz4=;
-        b=lZNSd4g1XneWmpRkr4rplqtCTJwhl1UzVQEemNOkLz/hcS3m5Q0m1k5chKzo8svGiQ
-         Pf6sVazZh9uwrgislzQh56ne8Yu5BQhJbQtoGJ12fBkSX4eV04AZpxroDCYVqCts7IOL
-         xj7fucxuWy91stQRxtbO547+kUvqjWabIcHovr5aHgdg/2p+hydQuDLRs9XC9FU6W6PP
-         xtwUzd99AeRrhEyo+d7PyOqJB3eSMHSCqhogDxWulJpJPoyJV4MFYtICbVd/8tfCo8tQ
-         ZipWNz2r5lakf8kV43wv0WbWXAP4swXRE130ij70F8uAl3kS4tpTQOD+RkbjJSbEHr/s
-         1giw==
-X-Gm-Message-State: AOAM532h6Q7ENQ5XPUpUnxTNPCzlBlHhE2oxtWhK5vHBhKYT7+WE3ezQ
-        0LMnZSkw+VHpaFSwRIwYYOb6SQMmXj/DGoKa4tzNl92UJIK5JpNhK4Jg4F5htrL4xqwE/CYWatz
-        3SZ4NLpyCKHzlhLMv
-X-Received: by 2002:a9d:3b7:: with SMTP id f52mr3903192otf.45.1598822795191;
-        Sun, 30 Aug 2020 14:26:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJybDLDpnxY9uSLFo6hRHL0aNUMXIi9WnqSA61aLSjk3opsO/+Bibt61vu94GFaJ8D6B6GCGfw==
-X-Received: by 2002:a9d:3b7:: with SMTP id f52mr3903187otf.45.1598822794964;
-        Sun, 30 Aug 2020 14:26:34 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id p11sm699264oif.11.2020.08.30.14.26.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 30 Aug 2020 14:26:34 -0700 (PDT)
-From:   trix@redhat.com
-To:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        natechancellor@gmail.com, ndesaulniers@google.com
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH v2] net: openvswitch: pass NULL for unused parameters
-Date:   Sun, 30 Aug 2020 14:26:30 -0700
-Message-Id: <20200830212630.32241-1-trix@redhat.com>
-X-Mailer: git-send-email 2.18.1
+        id S1726472AbgH3WDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 18:03:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33092 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726350AbgH3WDN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 30 Aug 2020 18:03:13 -0400
+Received: from paulmck-ThinkPad-P72.home (unknown [50.45.173.55])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 300252083E;
+        Sun, 30 Aug 2020 22:03:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598824993;
+        bh=9LuOYxc5B5+rJM02abnd3x2WHpHxbVXmyaL2KDo0FwM=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=ADLJHr2sjXwfhoy5vlVQjVaLtbm1lkfd8umuuEYTu86loI4DaAn/9RjCfTjYfbTnV
+         WNumGcx+V+IXoqYztI/EPiCGCtT5OtdSyNTc+O3cq5ox6b5kCa1JDPSXXfZIM/i907
+         yKWXweKn3BrlHBtclII8AuxhVWa1gy+S2B8EmNO8=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id 0EEBB35226AC; Sun, 30 Aug 2020 15:03:13 -0700 (PDT)
+Date:   Sun, 30 Aug 2020 15:03:13 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, josef@toxicpanda.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next] bpf: Fix build without BPF_SYSCALL, but with
+ BPF_JIT.
+Message-ID: <20200830220313.GV2855@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20200830204328.50419-1-alexei.starovoitov@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200830204328.50419-1-alexei.starovoitov@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Sun, Aug 30, 2020 at 01:43:28PM -0700, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+> 
+> When CONFIG_BPF_SYSCALL is not set, but CONFIG_BPF_JIT=y
+> the kernel build fails:
+> In file included from ../kernel/bpf/trampoline.c:11:
+> ../kernel/bpf/trampoline.c: In function ‘bpf_trampoline_update’:
+> ../kernel/bpf/trampoline.c:220:39: error: ‘call_rcu_tasks_trace’ undeclared
+> ../kernel/bpf/trampoline.c: In function ‘__bpf_prog_enter_sleepable’:
+> ../kernel/bpf/trampoline.c:411:2: error: implicit declaration of function ‘rcu_read_lock_trace’
+> ../kernel/bpf/trampoline.c: In function ‘__bpf_prog_exit_sleepable’:
+> ../kernel/bpf/trampoline.c:416:2: error: implicit declaration of function ‘rcu_read_unlock_trace’
+> 
+> Add these functions to rcupdate_trace.h.
+> The JIT won't call them and BPF trampoline logic won't be used without BPF_SYSCALL.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: 1e6c62a88215 ("bpf: Introduce sleepable BPF programs")
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-clang static analysis flags these problems
+A couple of nits below, but overall:
 
-flow_table.c:713:2: warning: The expression is an uninitialized
-  value. The computed value will also be garbage
-        (*n_mask_hit)++;
-        ^~~~~~~~~~~~~~~
-flow_table.c:748:5: warning: The expression is an uninitialized
-  value. The computed value will also be garbage
-                                (*n_cache_hit)++;
-                                ^~~~~~~~~~~~~~~~
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
 
-These are not problems because neither parameter is used
-by the calling function.
+> ---
+>  include/linux/rcupdate_trace.h | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/rcupdate_trace.h b/include/linux/rcupdate_trace.h
+> index d9015aac78c6..334840f4f245 100644
+> --- a/include/linux/rcupdate_trace.h
+> +++ b/include/linux/rcupdate_trace.h
+> @@ -82,7 +82,19 @@ static inline void rcu_read_unlock_trace(void)
+>  void call_rcu_tasks_trace(struct rcu_head *rhp, rcu_callback_t func);
+>  void synchronize_rcu_tasks_trace(void);
+>  void rcu_barrier_tasks_trace(void);
+> -
+> +#else
 
-Looking at all of the calling functions, there are many
-cases where the results are unused.  Passing unused
-parameters is a waste.
+This formulation is a bit novel for RCU.  Could we therefore please add
+a comment something like this?
 
-In the case where the output mask index parameter of flow_lookup()
-is not used by the caller, it is always has a value of 0.
+// The BPF JIT forms these addresses even when it doesn't call these
+// functions, so provide definitions that result in runtime errors.
 
-To avoid passing unused parameters, rework the
-masked_flow_lookup() and flow_lookup() routines to check
-for NULL parameters and change the unused parameters to NULL.
+> +static inline void call_rcu_tasks_trace(struct rcu_head *rhp, rcu_callback_t func)
+> +{
+> +	BUG();
+> +}
+> +static inline void rcu_read_lock_trace(void)
+> +{
+> +	BUG();
+> +}
+> +static inline void rcu_read_unlock_trace(void)
+> +{
+> +	BUG();
+> +}
 
-For the mask index parameter, use a local pointer to a value of
-0 if user passed in NULL.
+People have been moving towards one-liner for things like these last two:
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
-v2
-- fix spelling
-- add mask index to NULL parameters
----
-net/openvswitch/flow_table.c | 32 +++++++++++++++-----------------
- 1 file changed, 15 insertions(+), 17 deletions(-)
+static inline void rcu_read_lock_trace(void) { BUG(); }
+static inline void rcu_read_unlock_trace(void) { BUG(); }
 
-diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index e2235849a57e..eac25596e4f4 100644
---- a/net/openvswitch/flow_table.c
-+++ b/net/openvswitch/flow_table.c
-@@ -710,7 +710,8 @@ static struct sw_flow *masked_flow_lookup(struct table_instance *ti,
- 	ovs_flow_mask_key(&masked_key, unmasked, false, mask);
- 	hash = flow_hash(&masked_key, &mask->range);
- 	head = find_bucket(ti, hash);
--	(*n_mask_hit)++;
-+	if (n_mask_hit)
-+		(*n_mask_hit)++;
- 
- 	hlist_for_each_entry_rcu(flow, head, flow_table.node[ti->node_ver],
- 				lockdep_ovsl_is_held()) {
-@@ -730,12 +731,17 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
- 				   const struct sw_flow_key *key,
- 				   u32 *n_mask_hit,
- 				   u32 *n_cache_hit,
--				   u32 *index)
-+				   u32 *in_index)
- {
- 	u64 *usage_counters = this_cpu_ptr(ma->masks_usage_cntr);
- 	struct sw_flow *flow;
- 	struct sw_flow_mask *mask;
- 	int i;
-+	u32 idx = 0;
-+	u32 *index = &idx;
-+
-+	if (in_index)
-+		index = in_index;
- 
- 	if (likely(*index < ma->max)) {
- 		mask = rcu_dereference_ovsl(ma->masks[*index]);
-@@ -745,7 +751,8 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
- 				u64_stats_update_begin(&ma->syncp);
- 				usage_counters[*index]++;
- 				u64_stats_update_end(&ma->syncp);
--				(*n_cache_hit)++;
-+				if (n_cache_hit)
-+					(*n_cache_hit)++;
- 				return flow;
- 			}
- 		}
-@@ -796,13 +803,9 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct flow_table *tbl,
- 
- 	*n_mask_hit = 0;
- 	*n_cache_hit = 0;
--	if (unlikely(!skb_hash || mc->cache_size == 0)) {
--		u32 mask_index = 0;
--		u32 cache = 0;
--
--		return flow_lookup(tbl, ti, ma, key, n_mask_hit, &cache,
--				   &mask_index);
--	}
-+	if (unlikely(!skb_hash || mc->cache_size == 0))
-+		return flow_lookup(tbl, ti, ma, key, n_mask_hit, NULL,
-+				   NULL);
- 
- 	/* Pre and post recirulation flows usually have the same skb_hash
- 	 * value. To avoid hash collisions, rehash the 'skb_hash' with
-@@ -849,11 +852,7 @@ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
- {
- 	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
- 	struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
--	u32 __always_unused n_mask_hit;
--	u32 __always_unused n_cache_hit;
--	u32 index = 0;
--
--	return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
-+	return flow_lookup(tbl, ti, ma, key, NULL, NULL, NULL);
- }
- 
- struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
-@@ -865,7 +864,6 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
- 	/* Always called under ovs-mutex. */
- 	for (i = 0; i < ma->max; i++) {
- 		struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
--		u32 __always_unused n_mask_hit;
- 		struct sw_flow_mask *mask;
- 		struct sw_flow *flow;
- 
-@@ -873,7 +871,7 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
- 		if (!mask)
- 			continue;
- 
--		flow = masked_flow_lookup(ti, match->key, mask, &n_mask_hit);
-+		flow = masked_flow_lookup(ti, match->key, mask, NULL);
- 		if (flow && ovs_identifier_is_key(&flow->id) &&
- 		    ovs_flow_cmp_unmasked_key(flow, match)) {
- 			return flow;
--- 
-2.18.1
-
+>  #endif /* #ifdef CONFIG_TASKS_TRACE_RCU */
+>  
+>  #endif /* __LINUX_RCUPDATE_TRACE_H */
+> -- 
+> 2.23.0
+> 
