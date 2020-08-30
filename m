@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AAB3256F12
-	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 17:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73C8E256F0B
+	for <lists+netdev@lfdr.de>; Sun, 30 Aug 2020 17:29:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727844AbgH3PaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 11:30:14 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42732 "EHLO
+        id S1727116AbgH3P3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 11:29:19 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:42765 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726558AbgH3P2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 11:28:04 -0400
+        with ESMTP id S1726824AbgH3P2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 11:28:02 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
-        with SMTP; 30 Aug 2020 18:27:55 +0300
+        with SMTP; 30 Aug 2020 18:27:56 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 07UFRtBJ029635;
-        Sun, 30 Aug 2020 18:27:55 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 07UFRugu029669;
+        Sun, 30 Aug 2020 18:27:56 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 07UFRtjT027841;
-        Sun, 30 Aug 2020 18:27:55 +0300
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 07UFRu1g027851;
+        Sun, 30 Aug 2020 18:27:56 +0300
 Received: (from moshe@localhost)
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 07UFRtAw027840;
-        Sun, 30 Aug 2020 18:27:55 +0300
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 07UFRuNb027850;
+        Sun, 30 Aug 2020 18:27:56 +0300
 From:   Moshe Shemesh <moshe@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next RFC v3 06/14] net/mlx5: Handle sync reset request event
-Date:   Sun, 30 Aug 2020 18:27:26 +0300
-Message-Id: <1598801254-27764-7-git-send-email-moshe@mellanox.com>
+Subject: [PATCH net-next RFC v3 11/14] net/mlx5: Add devlink param enable_remote_dev_reset support
+Date:   Sun, 30 Aug 2020 18:27:31 +0300
+Message-Id: <1598801254-27764-12-git-send-email-moshe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
 References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
@@ -38,404 +38,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Once the driver gets sync_reset_request from firmware it prepares for the
-coming reset and sends acknowledge.
-After getting this event the driver expects device reset, either it will
-trigger PCI reset on sync_reset_now event or such PCI reset will be
-triggered by another PF of the same device. So it moves to reset
-requested mode and if it gets PCI reset triggered by the other PF it
-detect the reset and reloads.
+The enable_remote_dev_reset devlink param flags that the host admin
+allows resets by other hosts. In case it is cleared mlx5 host PF driver
+will send NACK on pci sync for firmware update reset request and the
+command will fail.
+By default enable_remote_dev_reset parameter is true, so pci sync for
+firmware update reset is enabled.
 
 Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 ---
 v1 -> v2:
-- Moved handling of sync reset recovery from health to fw_reset
+- Have MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST instead of
+  MLX5_HEALTH_RESET_FLAGS_NACK_RESET_REQUEST
 ---
- .../ethernet/mellanox/mlx5/core/fw_reset.c    | 167 ++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/fw_reset.h    |   3 +
- .../net/ethernet/mellanox/mlx5/core/health.c  |  35 ++--
- .../net/ethernet/mellanox/mlx5/core/main.c    |  10 ++
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
- include/linux/mlx5/driver.h                   |   4 +
- 6 files changed, 206 insertions(+), 15 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 21 +++++++++++++
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 30 +++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |  2 ++
+ 3 files changed, 53 insertions(+)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index f2f1f4e4ef25..ea759bb2a120 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -284,6 +284,24 @@ static int mlx5_devlink_large_group_num_validate(struct devlink *devlink, u32 id
+ }
+ #endif
+ 
++static int mlx5_devlink_enable_remote_dev_reset_set(struct devlink *devlink, u32 id,
++						    struct devlink_param_gset_ctx *ctx)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++
++	mlx5_fw_enable_remote_dev_reset_set(dev, ctx->val.vbool);
++	return 0;
++}
++
++static int mlx5_devlink_enable_remote_dev_reset_get(struct devlink *devlink, u32 id,
++						    struct devlink_param_gset_ctx *ctx)
++{
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++
++	ctx->val.vbool = mlx5_fw_enable_remote_dev_reset_get(dev);
++	return 0;
++}
++
+ static const struct devlink_param mlx5_devlink_params[] = {
+ 	DEVLINK_PARAM_DRIVER(MLX5_DEVLINK_PARAM_ID_FLOW_STEERING_MODE,
+ 			     "flow_steering_mode", DEVLINK_PARAM_TYPE_STRING,
+@@ -299,6 +317,9 @@ static const struct devlink_param mlx5_devlink_params[] = {
+ 			     NULL, NULL,
+ 			     mlx5_devlink_large_group_num_validate),
+ #endif
++	DEVLINK_PARAM_GENERIC(ENABLE_REMOTE_DEV_RESET, BIT(DEVLINK_PARAM_CMODE_RUNTIME),
++			      mlx5_devlink_enable_remote_dev_reset_get,
++			      mlx5_devlink_enable_remote_dev_reset_set, NULL),
+ };
+ 
+ static void mlx5_devlink_set_params_init_values(struct devlink *devlink)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index 76d2cece29ac..0f224454b4a2 100644
+index 1f9ad1f38d92..0df2ad9d555c 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -3,6 +3,20 @@
+@@ -5,6 +5,7 @@
  
- #include "fw_reset.h"
+ enum {
+ 	MLX5_FW_RESET_FLAGS_RESET_REQUESTED,
++	MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST,
+ 	MLX5_FW_RESET_FLAGS_PENDING_COMP
+ };
  
-+enum {
-+	MLX5_FW_RESET_FLAGS_RESET_REQUESTED,
-+};
+@@ -22,6 +23,23 @@ struct mlx5_fw_reset {
+ 	int ret;
+ };
+ 
++void mlx5_fw_enable_remote_dev_reset_set(struct mlx5_core_dev *dev, bool enable)
++{
++	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
 +
-+struct mlx5_fw_reset {
-+	struct mlx5_core_dev *dev;
-+	struct mlx5_nb nb;
-+	struct workqueue_struct *wq;
-+	struct work_struct reset_request_work;
-+	struct work_struct reset_reload_work;
-+	unsigned long reset_flags;
-+	struct timer_list timer;
-+};
++	if (enable)
++		clear_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags);
++	else
++		set_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags);
++}
++
++bool mlx5_fw_enable_remote_dev_reset_get(struct mlx5_core_dev *dev)
++{
++	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
++
++	return !test_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags);
++}
 +
  static int mlx5_reg_mfrl_set(struct mlx5_core_dev *dev, u8 reset_level,
  			     u8 reset_type_sel, u8 sync_resp, bool sync_start)
  {
-@@ -44,3 +58,156 @@ int mlx5_fw_set_live_patch(struct mlx5_core_dev *dev)
- {
- 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL0, 0, 0, false);
+@@ -76,6 +94,11 @@ static int mlx5_fw_set_reset_sync_ack(struct mlx5_core_dev *dev)
+ 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 1, false);
  }
-+
-+static int mlx5_fw_set_reset_sync_ack(struct mlx5_core_dev *dev)
+ 
++static int mlx5_fw_set_reset_sync_nack(struct mlx5_core_dev *dev)
 +{
-+	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 1, false);
++	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 2, false);
 +}
 +
-+static void mlx5_sync_reset_reload_work(struct work_struct *work)
-+{
-+	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
-+						      reset_reload_work);
-+	struct mlx5_core_dev *dev = fw_reset->dev;
-+
-+	mlx5_enter_error_state(dev, true);
-+	mlx5_unload_one(dev, false);
-+	if (mlx5_health_wait_pci_up(dev)) {
-+		mlx5_core_err(dev, "reset reload flow aborted, PCI reads still not working\n");
+ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
+@@ -169,7 +192,14 @@ static void mlx5_sync_reset_request_event(struct work_struct *work)
+ 	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
+ 						      reset_request_work);
+ 	struct mlx5_core_dev *dev = fw_reset->dev;
++	int err;
+ 
++	if (test_bit(MLX5_FW_RESET_FLAGS_NACK_RESET_REQUEST, &fw_reset->reset_flags)) {
++		err = mlx5_fw_set_reset_sync_nack(dev);
++		mlx5_core_warn(dev, "PCI Sync FW Update Reset Nack %s",
++			       err ? "Failed" : "Sent");
 +		return;
 +	}
-+	mlx5_load_one(dev, false);
-+}
-+
-+static void mlx5_stop_sync_reset_poll(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
-+
-+	del_timer(&fw_reset->timer);
-+}
-+
-+static void mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
-+{
-+	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
-+
-+	mlx5_stop_sync_reset_poll(dev);
-+	clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
-+	if (poll_health)
-+		mlx5_start_health_poll(dev);
-+}
-+
-+#define MLX5_RESET_POLL_INTERVAL	(HZ / 10)
-+static void poll_sync_reset(struct timer_list *t)
-+{
-+	struct mlx5_fw_reset *fw_reset = from_timer(fw_reset, t, timer);
-+	struct mlx5_core_dev *dev = fw_reset->dev;
-+	u32 fatal_error;
-+
-+	if (!test_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags))
-+		return;
-+
-+	fatal_error = mlx5_health_check_fatal_sensors(dev);
-+
-+	if (fatal_error) {
-+		mlx5_core_warn(dev, "Got Device Reset\n");
-+		mlx5_sync_reset_clear_reset_requested(dev, false);
-+		queue_work(fw_reset->wq, &fw_reset->reset_reload_work);
-+		return;
-+	}
-+
-+	mod_timer(&fw_reset->timer, round_jiffies(jiffies + MLX5_RESET_POLL_INTERVAL));
-+}
-+
-+static void mlx5_start_sync_reset_poll(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
-+
-+	timer_setup(&fw_reset->timer, poll_sync_reset, 0);
-+	fw_reset->timer.expires = round_jiffies(jiffies + MLX5_RESET_POLL_INTERVAL);
-+	add_timer(&fw_reset->timer);
-+}
-+
-+static void mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
-+
-+	mlx5_stop_health_poll(dev, true);
-+	set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
-+	mlx5_start_sync_reset_poll(dev);
-+}
-+
-+static void mlx5_sync_reset_request_event(struct work_struct *work)
-+{
-+	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
-+						      reset_request_work);
-+	struct mlx5_core_dev *dev = fw_reset->dev;
-+
-+	mlx5_sync_reset_set_reset_requested(dev);
-+	if (mlx5_fw_set_reset_sync_ack(dev))
-+		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack Failed.\n");
-+	else
-+		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack. Device reset is expected.\n");
-+}
-+
-+static void mlx5_sync_reset_events_handle(struct mlx5_fw_reset *fw_reset, struct mlx5_eqe *eqe)
-+{
-+	struct mlx5_eqe_sync_fw_update *sync_fw_update_eqe;
-+	u8 sync_event_rst_type;
-+
-+	sync_fw_update_eqe = &eqe->data.sync_fw_update;
-+	sync_event_rst_type = sync_fw_update_eqe->sync_rst_state & SYNC_RST_STATE_MASK;
-+	switch (sync_event_rst_type) {
-+	case MLX5_SYNC_RST_STATE_RESET_REQUEST:
-+		queue_work(fw_reset->wq, &fw_reset->reset_request_work);
-+		break;
-+	}
-+}
-+
-+static int fw_reset_event_notifier(struct notifier_block *nb, unsigned long action, void *data)
-+{
-+	struct mlx5_fw_reset *fw_reset = mlx5_nb_cof(nb, struct mlx5_fw_reset, nb);
-+	struct mlx5_eqe *eqe = data;
-+
-+	switch (eqe->sub_type) {
-+	case MLX5_GENERAL_SUBTYPE_PCI_SYNC_FOR_FW_UPDATE_EVENT:
-+		mlx5_sync_reset_events_handle(fw_reset, eqe);
-+		break;
-+	default:
-+		return NOTIFY_DONE;
-+	}
-+
-+	return NOTIFY_OK;
-+}
-+
-+int mlx5_fw_reset_events_init(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_fw_reset *fw_reset = kzalloc(sizeof(*fw_reset), GFP_KERNEL);
-+
-+	if (!fw_reset)
-+		return -ENOMEM;
-+	fw_reset->wq = create_singlethread_workqueue("mlx5_fw_reset_events");
-+	if (!fw_reset->wq) {
-+		kfree(fw_reset);
-+		return -ENOMEM;
-+	}
-+
-+	fw_reset->dev = dev;
-+	dev->priv.fw_reset = fw_reset;
-+
-+	INIT_WORK(&fw_reset->reset_request_work, mlx5_sync_reset_request_event);
-+	INIT_WORK(&fw_reset->reset_reload_work, mlx5_sync_reset_reload_work);
-+
-+	MLX5_NB_INIT(&fw_reset->nb, fw_reset_event_notifier, GENERAL_EVENT);
-+	mlx5_eq_notifier_register(dev, &fw_reset->nb);
-+
-+	return 0;
-+}
-+
-+void mlx5_fw_reset_events_cleanup(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
-+
-+	mlx5_eq_notifier_unregister(dev, &fw_reset->nb);
-+	destroy_workqueue(fw_reset->wq);
-+	kvfree(dev->priv.fw_reset);
-+}
+ 	mlx5_sync_reset_set_reset_requested(dev);
+ 	if (mlx5_fw_set_reset_sync_ack(dev))
+ 		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack Failed.\n");
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
-index 1bbd95182ca6..278f538ea92a 100644
+index d7ee951a2258..fd558dfe93fc 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
-@@ -10,4 +10,7 @@ int mlx5_reg_mfrl_query(struct mlx5_core_dev *dev, u8 *reset_level, u8 *reset_ty
+@@ -6,6 +6,8 @@
+ 
+ #include "mlx5_core.h"
+ 
++void mlx5_fw_enable_remote_dev_reset_set(struct mlx5_core_dev *dev, bool enable);
++bool mlx5_fw_enable_remote_dev_reset_get(struct mlx5_core_dev *dev);
+ int mlx5_reg_mfrl_query(struct mlx5_core_dev *dev, u8 *reset_level, u8 *reset_type);
  int mlx5_fw_set_reset_sync(struct mlx5_core_dev *dev, u8 reset_type_sel);
  int mlx5_fw_set_live_patch(struct mlx5_core_dev *dev);
- 
-+int mlx5_fw_reset_events_init(struct mlx5_core_dev *dev);
-+void mlx5_fw_reset_events_cleanup(struct mlx5_core_dev *dev);
-+
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-index b31f769d2df9..54523bed16cd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
-@@ -110,7 +110,7 @@ static bool sensor_fw_synd_rfr(struct mlx5_core_dev *dev)
- 	return rfr && synd;
- }
- 
--static u32 check_fatal_sensors(struct mlx5_core_dev *dev)
-+u32 mlx5_health_check_fatal_sensors(struct mlx5_core_dev *dev)
- {
- 	if (sensor_pci_not_working(dev))
- 		return MLX5_SENSOR_PCI_COMM_ERR;
-@@ -173,7 +173,7 @@ static bool reset_fw_if_needed(struct mlx5_core_dev *dev)
- 	 * Check again to avoid a redundant 2nd reset. If the fatal erros was
- 	 * PCI related a reset won't help.
- 	 */
--	fatal_error = check_fatal_sensors(dev);
-+	fatal_error = mlx5_health_check_fatal_sensors(dev);
- 	if (fatal_error == MLX5_SENSOR_PCI_COMM_ERR ||
- 	    fatal_error == MLX5_SENSOR_NIC_DISABLED ||
- 	    fatal_error == MLX5_SENSOR_NIC_SW_RESET) {
-@@ -195,7 +195,7 @@ void mlx5_enter_error_state(struct mlx5_core_dev *dev, bool force)
- 	bool err_detected = false;
- 
- 	/* Mark the device as fatal in order to abort FW commands */
--	if ((check_fatal_sensors(dev) || force) &&
-+	if ((mlx5_health_check_fatal_sensors(dev) || force) &&
- 	    dev->state == MLX5_DEVICE_STATE_UP) {
- 		dev->state = MLX5_DEVICE_STATE_INTERNAL_ERROR;
- 		err_detected = true;
-@@ -208,7 +208,7 @@ void mlx5_enter_error_state(struct mlx5_core_dev *dev, bool force)
- 		goto unlock;
- 	}
- 
--	if (check_fatal_sensors(dev) || force) { /* protected state setting */
-+	if (mlx5_health_check_fatal_sensors(dev) || force) { /* protected state setting */
- 		dev->state = MLX5_DEVICE_STATE_INTERNAL_ERROR;
- 		mlx5_cmd_flush(dev);
- 	}
-@@ -231,7 +231,7 @@ void mlx5_error_sw_reset(struct mlx5_core_dev *dev)
- 
- 	mlx5_core_err(dev, "start\n");
- 
--	if (check_fatal_sensors(dev) == MLX5_SENSOR_FW_SYND_RFR) {
-+	if (mlx5_health_check_fatal_sensors(dev) == MLX5_SENSOR_FW_SYND_RFR) {
- 		/* Get cr-dump and reset FW semaphore */
- 		lock = lock_sem_sw_reset(dev, true);
- 
-@@ -308,26 +308,31 @@ static void mlx5_handle_bad_state(struct mlx5_core_dev *dev)
- 
- /* How much time to wait until health resetting the driver (in msecs) */
- #define MLX5_RECOVERY_WAIT_MSECS 60000
--static int mlx5_health_try_recover(struct mlx5_core_dev *dev)
-+int mlx5_health_wait_pci_up(struct mlx5_core_dev *dev)
- {
- 	unsigned long end;
- 
--	mlx5_core_warn(dev, "handling bad device here\n");
--	mlx5_handle_bad_state(dev);
- 	end = jiffies + msecs_to_jiffies(MLX5_RECOVERY_WAIT_MSECS);
- 	while (sensor_pci_not_working(dev)) {
--		if (time_after(jiffies, end)) {
--			mlx5_core_err(dev,
--				      "health recovery flow aborted, PCI reads still not working\n");
--			return -EIO;
--		}
-+		if (time_after(jiffies, end))
-+			return -ETIMEDOUT;
- 		msleep(100);
- 	}
-+	return 0;
-+}
- 
-+static int mlx5_health_try_recover(struct mlx5_core_dev *dev)
-+{
-+	mlx5_core_warn(dev, "handling bad device here\n");
-+	mlx5_handle_bad_state(dev);
-+	if (mlx5_health_wait_pci_up(dev)) {
-+		mlx5_core_err(dev, "health recovery flow aborted, PCI reads still not working\n");
-+		return -EIO;
-+	}
- 	mlx5_core_err(dev, "starting health recovery flow\n");
- 	mlx5_recover_device(dev);
- 	if (!test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state) ||
--	    check_fatal_sensors(dev)) {
-+	    mlx5_health_check_fatal_sensors(dev)) {
- 		mlx5_core_err(dev, "health recovery failed\n");
- 		return -EIO;
- 	}
-@@ -696,7 +701,7 @@ static void poll_health(struct timer_list *t)
- 	if (dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
- 		goto out;
- 
--	fatal_error = check_fatal_sensors(dev);
-+	fatal_error = mlx5_health_check_fatal_sensors(dev);
- 
- 	if (fatal_error && !health->fatal_error) {
- 		mlx5_core_err(dev, "Fatal error %u detected\n", fatal_error);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 871d28b09f8a..e833db424f11 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -57,6 +57,7 @@
- #include "lib/mpfs.h"
- #include "eswitch.h"
- #include "devlink.h"
-+#include "fw_reset.h"
- #include "lib/mlx5.h"
- #include "fpga/core.h"
- #include "fpga/ipsec.h"
-@@ -835,6 +836,12 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
- 		goto err_eq_cleanup;
- 	}
- 
-+	err = mlx5_fw_reset_events_init(dev);
-+	if (err) {
-+		mlx5_core_err(dev, "failed to initialize fw reset events\n");
-+		goto err_events_cleanup;
-+	}
-+
- 	mlx5_cq_debugfs_init(dev);
- 
- 	mlx5_init_reserved_gids(dev);
-@@ -896,6 +903,8 @@ static int mlx5_init_once(struct mlx5_core_dev *dev)
- 	mlx5_geneve_destroy(dev->geneve);
- 	mlx5_vxlan_destroy(dev->vxlan);
- 	mlx5_cq_debugfs_cleanup(dev);
-+	mlx5_fw_reset_events_cleanup(dev);
-+err_events_cleanup:
- 	mlx5_events_cleanup(dev);
- err_eq_cleanup:
- 	mlx5_eq_table_cleanup(dev);
-@@ -923,6 +932,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
- 	mlx5_cleanup_clock(dev);
- 	mlx5_cleanup_reserved_gids(dev);
- 	mlx5_cq_debugfs_cleanup(dev);
-+	mlx5_fw_reset_events_cleanup(dev);
- 	mlx5_events_cleanup(dev);
- 	mlx5_eq_table_cleanup(dev);
- 	mlx5_irq_table_cleanup(dev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index fc1649dac11b..d07a32165792 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -123,6 +123,8 @@ int mlx5_cmd_force_teardown_hca(struct mlx5_core_dev *dev);
- int mlx5_cmd_fast_teardown_hca(struct mlx5_core_dev *dev);
- void mlx5_enter_error_state(struct mlx5_core_dev *dev, bool force);
- void mlx5_error_sw_reset(struct mlx5_core_dev *dev);
-+u32 mlx5_health_check_fatal_sensors(struct mlx5_core_dev *dev);
-+int mlx5_health_wait_pci_up(struct mlx5_core_dev *dev);
- void mlx5_disable_device(struct mlx5_core_dev *dev);
- void mlx5_recover_device(struct mlx5_core_dev *dev);
- int mlx5_sriov_init(struct mlx5_core_dev *dev);
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index c145de0473bc..abf2b92133bd 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -501,6 +501,7 @@ struct mlx5_mpfs;
- struct mlx5_eswitch;
- struct mlx5_lag;
- struct mlx5_devcom;
-+struct mlx5_fw_reset;
- struct mlx5_eq_table;
- struct mlx5_irq_table;
- 
-@@ -578,6 +579,7 @@ struct mlx5_priv {
- 	struct mlx5_core_sriov	sriov;
- 	struct mlx5_lag		*lag;
- 	struct mlx5_devcom	*devcom;
-+	struct mlx5_fw_reset	*fw_reset;
- 	struct mlx5_core_roce	roce;
- 	struct mlx5_fc_stats		fc_stats;
- 	struct mlx5_rl_table            rl_table;
-@@ -944,6 +946,8 @@ void mlx5_start_health_poll(struct mlx5_core_dev *dev);
- void mlx5_stop_health_poll(struct mlx5_core_dev *dev, bool disable_health);
- void mlx5_drain_health_wq(struct mlx5_core_dev *dev);
- void mlx5_trigger_health_work(struct mlx5_core_dev *dev);
-+void mlx5_health_set_reset_requested_mode(struct mlx5_core_dev *dev);
-+void mlx5_health_clear_reset_requested_mode(struct mlx5_core_dev *dev);
- int mlx5_buf_alloc(struct mlx5_core_dev *dev,
- 		   int size, struct mlx5_frag_buf *buf);
- void mlx5_buf_free(struct mlx5_core_dev *dev, struct mlx5_frag_buf *buf);
 -- 
 2.17.1
 
