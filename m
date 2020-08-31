@@ -2,136 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C354A257BA3
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 17:07:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF034257BBE
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 17:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728140AbgHaPHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 11:07:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
+        id S1728282AbgHaPKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 11:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727902AbgHaPHo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 11:07:44 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CE9C061573;
-        Mon, 31 Aug 2020 08:07:43 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id 5so743155pgl.4;
-        Mon, 31 Aug 2020 08:07:43 -0700 (PDT)
+        with ESMTP id S1728215AbgHaPJw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 11:09:52 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FCB2C061575
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 08:09:52 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id e16so6336060wrm.2
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 08:09:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=3SmJLKrDgXgBqccBxSJYmecCh5R7fxNCtI0sf/gEQxk=;
-        b=UF7wi/z4/ARHOa8+CaY6JSik6HOqhrgezgftNqzT7SaTb81ikq2YfSr7X65gtCk/dm
-         xFJBJBX00+bs6N6zMHky48iZgSaPuXc/9Yjkzuan/P4/zZGLSQeds9/Q0z0HkFosFDp6
-         SE55tZ9COhiysM9+4BtN0MExypkHY/suyxUZph5P6GYEjkHQolmnNMlRzDj9otAXg1oW
-         kh7e8tsBbRpgsKovVvwi7u97M6Ug9Tt7XHPXQujl01u0sYuRcWPGGSJeHfVwqqjHDKSX
-         5/5IRPuMXWyKfJJ3n+nnPZqBxOBKPhkG8v2XdTbZzyWQT6TNAMNR26gXzh5Wu0hCVoU+
-         OcLw==
+        bh=9NRlvcF3T25DILTKeuqX8E3EYjoQX7UtJSzPYWLJykQ=;
+        b=UIPOyV/TX/qTZ5nPyNPqNeLqqpySpB79+88G/c5/mSiypSXVyEgV5pQF598fXK/QcJ
+         DVGzd/FB9W5miozlIm/H9n2/0VsiPmGWEBdSsOExlCshpOyY1TThKNK9CksFW4wAL+Xi
+         aqNKWIib8mhFuKp/e6q9MRAWnrPPVlscB+O9Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=3SmJLKrDgXgBqccBxSJYmecCh5R7fxNCtI0sf/gEQxk=;
-        b=japBdJsRJ6PYjbsryStIlirNOkVSWJFDriIeEGuQmlkV/I0te0bSqNa4FV29jxKmVS
-         LaPX4JC45j5Cz5Zkpg7K2gAYpDZ8IR00LKsmCJea8ZNnhLzswPf9mTgWQp5Heicpgnki
-         Wou+MjDV7XqRZ2ctfFw90YL6R6/uS1lpV05Yu21ef6oCF6ORTRbPaiOoixB+tyDs1obd
-         c08Y60KnfJqGiBvSKPcz1qDd148s7ur1tuY/rAxxi8C6Qsosvk6CyNIGtgfBXyIsS+sy
-         Fv29UmPUO5xQw94XjitiP7vxJIkY2xwVjUeuQoIHeRiBW1BnIZUp1yM8uXdjQrDbHol7
-         fUbw==
-X-Gm-Message-State: AOAM531yMd6XNFSr11Nj045K+H+mD7RoR2X+cLJ4toluFAwZ/ojNe562
-        m2iL3cWIdEgt/Xb+E0vhr8Mbr23Eru9ZmA==
-X-Google-Smtp-Source: ABdhPJz2fYwgR9K6KffXJTRCePR05PyLS82TB+AUykU0gSOs1iW5yQsF0wtJQzJZwtfWLp7g31mk+Q==
-X-Received: by 2002:aa7:8f03:: with SMTP id x3mr1543464pfr.256.1598886463096;
-        Mon, 31 Aug 2020 08:07:43 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com (fmdmzpr04-ext.fm.intel.com. [192.55.55.39])
-        by smtp.gmail.com with ESMTPSA id v22sm8353792pfe.75.2020.08.31.08.07.38
+        bh=9NRlvcF3T25DILTKeuqX8E3EYjoQX7UtJSzPYWLJykQ=;
+        b=CZGaV3WFMInNGNreNFrlDmnbS3KtqkllnS1i9Jz78caXZL1YE7kWGm0cPck2ctP+dH
+         6Zre/uaK6UoSMYPzE1wrpI0SgvrZHYaaOcDHoUkDw1OZs6ELSj3EMB1QcwasctadzSEY
+         0Y4SjTvsV9TVRYM6fNAZuyjgvkdILEIiapyxxwvky8HhADdYuHU+7+Hj+uPqUqB7DH3r
+         nfUlGeuwbuhuxW8O9z1FMrDhFQ3Io4ZqW0cukF1sKuTne4dY3h4WamfVJMAXWabAxI2p
+         XWmiVWZvrBuq7lhGY5Qi6EUhxtnsTd0EOqiOTA/pH61FiIdtpjQPvKhHFnduom5MtZeU
+         cdYQ==
+X-Gm-Message-State: AOAM533JBMaT4SqWSiJzgcbWiu6zbeSqZvCN2Hgj1Pj7ogZExB9arb79
+        KqRKdDSNlShNid1T+JRLotaMGp3TcsK7tsvn
+X-Google-Smtp-Source: ABdhPJxJGmZ6Pks4k0jiikUTCv9YL32nZcRKktFEwp4Z9bHPgq1VZqm0woD+taAUhx4CEjwz1RVQSg==
+X-Received: by 2002:a5d:4d8f:: with SMTP id b15mr2060047wru.341.1598886590422;
+        Mon, 31 Aug 2020 08:09:50 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id f6sm14181636wme.32.2020.08.31.08.09.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Aug 2020 08:07:42 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org, toke@redhat.com,
-        brouer@redhat.com
-Subject: [PATCH bpf-next] bpf: change bq_enqueue() return type from int to void
-Date:   Mon, 31 Aug 2020 17:07:30 +0200
-Message-Id: <20200831150730.35530-1-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 31 Aug 2020 08:09:49 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        davem@davemloft.net,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next 00/15] net: bridge: mcast: initial IGMPv3 support (part 1)
+Date:   Mon, 31 Aug 2020 18:08:30 +0300
+Message-Id: <20200831150845.1062447-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+Hi all,
+This patch-set implements the control plane for initial IGMPv3 support.
+Patch 01 arranges the structure better by moving the frequently used
+fields together, patches 02 and 03 add support for source lists and group
+modes per port group which are dumped. Patch 04 adds support for
+group-and-source specific queries required for IGMPv3. Patch 05 factors
+out the port group deletion code which is used in a few places, then
+patch 06 adds support for group and group-and-source query
+retransmissions via a new rexmit timer. Patches 07 and 08 make use of
+the already present mdb fill functions when sending notifications so we
+can have the full mdb entries' state filled in (with sources, mode etc).
+Patch 09 takes care of port group expiration, it switches the group mode
+to include and deletes it if there are no sources with active timers.
+Patches 10-13 are the core changes which add support for IGMPv3 reports
+and handle the source list set operations as per RFC 3376, all IGMPv3
+report types with their transitions should be supported after these
+patches. I've used RFC 3376 and FRR as a reference implementation. The
+source lists are capped at 64 entries, we can remove that limitation at
+a later point which would require a better data structure to hold them.
+IGMPv3 processing is hidden behind the bridge's multicast_igmp_version
+option which must be set to 3 in order to enable it.
+Patch 14 improves other querier processing a bit (more about this below).
+And finally patch 15 transform the src gc so it can be used with all mcast
+objects since now we have multiple timers that can be running and we
+need to make sure they have all finished before freeing the objects.
+This is part 1, it only adds control plane support and doesn't change
+the fast path. A following patch-set will take care of that.
 
-The bq_enqueue() functions for {DEV, CPU}MAP always return
-zero. Changing the return type from int to void makes the code easier
-to follow.
+Here're the sets that will come next (in order):
+ - Fast path patch-set which adds support for (S, G) mdb entries needed
+   for IGMPv3 forwarding, entry add source (kernel, user-space etc)
+   needed for IGMPv3 entry management, entry block mode needed for
+   IGMPv3 exclude mode. This set will also add iproute2 support for
+   manipulating and showing all the new state.
+ - Selftests patch-set which will verify all IGMPv3 state transitions
+   and forwarding
+ - Explicit host tracking patch-set, needed for proper fast leave and
+   with it fast leave will be enabled for IGMPv3
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- kernel/bpf/cpumap.c | 4 +---
- kernel/bpf/devmap.c | 9 ++++-----
- 2 files changed, 5 insertions(+), 8 deletions(-)
+Not implemented yet:
+ - Host IGMPv3 support (currently we handle only join/leave as before)
+ - Proper other querier source timer updates
+ - IGMPv3/v2 compat (I have a few rough patches for this one)
 
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 8d2a8623d2a7..e486a84b1fce 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -708,7 +708,7 @@ static int bq_flush_to_queue(struct xdp_bulk_queue *bq)
- /* Runs under RCU-read-side, plus in softirq under NAPI protection.
-  * Thus, safe percpu variable access.
-  */
--static int bq_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_frame *xdpf)
-+static void bq_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_frame *xdpf)
- {
- 	struct list_head *flush_list = this_cpu_ptr(&cpu_map_flush_list);
- 	struct xdp_bulk_queue *bq = this_cpu_ptr(rcpu->bulkq);
-@@ -729,8 +729,6 @@ static int bq_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_frame *xdpf)
- 
- 	if (!bq->flush_node.prev)
- 		list_add(&bq->flush_node, flush_list);
--
--	return 0;
- }
- 
- int cpu_map_enqueue(struct bpf_cpu_map_entry *rcpu, struct xdp_buff *xdp,
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index a42052b85c35..ce29ff7ba51f 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -421,8 +421,8 @@ struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 key)
- /* Runs under RCU-read-side, plus in softirq under NAPI protection.
-  * Thus, safe percpu variable access.
-  */
--static int bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
--		      struct net_device *dev_rx)
-+static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
-+		       struct net_device *dev_rx)
- {
- 	struct list_head *flush_list = this_cpu_ptr(&dev_flush_list);
- 	struct xdp_dev_bulk_queue *bq = this_cpu_ptr(dev->xdp_bulkq);
-@@ -441,8 +441,6 @@ static int bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
- 
- 	if (!bq->flush_node.prev)
- 		list_add(&bq->flush_node, flush_list);
--
--	return 0;
- }
- 
- static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
-@@ -462,7 +460,8 @@ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
- 	if (unlikely(!xdpf))
- 		return -EOVERFLOW;
- 
--	return bq_enqueue(dev, xdpf, dev_rx);
-+	bq_enqueue(dev, xdpf, dev_rx);
-+	return 0;
- }
- 
- static struct xdp_buff *dev_map_run_prog(struct net_device *dev,
+Thanks,
+ Nik
+
+
+Nikolay Aleksandrov (15):
+  net: bridge: mdb: arrange internal structs so fast-path fields are
+    close
+  net: bridge: mcast: add support for group source list
+  net: bridge: mcast: add support for src list and filter mode dumping
+  net: bridge: mcast: add support for group-and-source specific queries
+  net: bridge: mcast: factor out port group del
+  net: bridge: mcast: add support for group query retransmit
+  net: bridge: mdb: push notifications in __br_mdb_add/del
+  net: bridge: mdb: use mdb and port entries in notifications
+  net: bridge: mcast: delete expired port groups without srcs
+  net: bridge: mcast: support for IGMPv3 IGMPV3_ALLOW_NEW_SOURCES report
+  net: bridge: mcast: support for IGMPV3_MODE_IS_INCLUDE/EXCLUDE report
+  net: bridge: mcast: support for IGMPV3_CHANGE_TO_INCLUDE/EXCLUDE
+    report
+  net: bridge: mcast: support for IGMPV3_BLOCK_OLD_SOURCES report
+  net: bridge: mcast: improve v3 query processing
+  net: bridge: mcast: destroy all entries via gc
+
+ include/uapi/linux/if_bridge.h |   21 +
+ net/bridge/br_mdb.c            |  222 ++++---
+ net/bridge/br_multicast.c      | 1058 +++++++++++++++++++++++++++++---
+ net/bridge/br_private.h        |   66 +-
+ 4 files changed, 1186 insertions(+), 181 deletions(-)
+
 -- 
-2.25.1
+2.25.4
 
