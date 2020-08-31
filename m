@@ -2,71 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C97D4257ACB
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 15:49:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34377257ADA
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 15:51:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727996AbgHaNs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 09:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726384AbgHaNsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 09:48:54 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE343C061573
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 06:48:53 -0700 (PDT)
-Received: from dude02.hi.pengutronix.de ([2001:67c:670:100:1d::28])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1kCkAw-0000Li-If; Mon, 31 Aug 2020 15:48:46 +0200
-Received: from mfe by dude02.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1kCkAr-0005HK-4q; Mon, 31 Aug 2020 15:48:41 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
-        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, zhengdejin5@gmail.com,
-        richard.leitner@skidata.com
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: [PATCH 5/5] net: phy: smsc: LAN8710/LAN8720: remove PHY_RST_AFTER_CLK_EN flag
-Date:   Mon, 31 Aug 2020 15:48:36 +0200
-Message-Id: <20200831134836.20189-6-m.felsch@pengutronix.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200831134836.20189-1-m.felsch@pengutronix.de>
-References: <20200831134836.20189-1-m.felsch@pengutronix.de>
+        id S1727061AbgHaNvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 09:51:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43192 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726144AbgHaNvj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Aug 2020 09:51:39 -0400
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 06B5020FC3;
+        Mon, 31 Aug 2020 13:51:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598881899;
+        bh=0yEwFKwwju+lazUkfX15BH1WWIsj5zWxercdqfb5PDc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=QyP1LFSgNO6eg7DLMb6SA3GRZ3HCcRyb0eBdyx/llC/pvkVjG+8qXTatrwmSmUBAY
+         xHvLpELWynrMwwNrYM91Tpt8bOlX1KZ1TqKPAaE11JObunRW0fgMMTwV+b287lkB/c
+         1fjdZ0dU+rHWcZ/35cO1bviSqegf8/peTqKEVNfA=
+Received: by mail-ed1-f50.google.com with SMTP id a12so5472408eds.13;
+        Mon, 31 Aug 2020 06:51:38 -0700 (PDT)
+X-Gm-Message-State: AOAM533mNQLEW7jvSAUKnxzXBED9LPt8uXtg2Qqzo2llg8K/AkYr2DJU
+        m2vNtQzAvrSs8Vbl/IiDG9faeI/WAWEiY6f1IIQ=
+X-Google-Smtp-Source: ABdhPJygfH4EYwB4Wvpx/86s42YhV3PYxFeVDYnzUd3LC/cNJK4ok2eS8McXa6+HcbxRDAItKto4Vt1XxzC1q2kW2Kw=
+X-Received: by 2002:a05:6402:515:: with SMTP id m21mr1395416edv.348.1598881897601;
+ Mon, 31 Aug 2020 06:51:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::28
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20200829142948.32365-1-krzk@kernel.org> <CGME20200829143012eucas1p1b49614f85907091480a3b53ec70221b9@eucas1p1.samsung.com>
+ <20200829142948.32365-4-krzk@kernel.org> <8fe346a7-3c6c-f51d-f2a2-623931628a25@samsung.com>
+In-Reply-To: <8fe346a7-3c6c-f51d-f2a2-623931628a25@samsung.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Mon, 31 Aug 2020 15:51:26 +0200
+X-Gmail-Original-Message-ID: <CAJKOXPd5XpKxC4COS1GypFwV82BYxSqQkgOfay3yhkk4pbcPTg@mail.gmail.com>
+Message-ID: <CAJKOXPd5XpKxC4COS1GypFwV82BYxSqQkgOfay3yhkk4pbcPTg@mail.gmail.com>
+Subject: Re: [PATCH 4/4] arm64: dts: exynos: Use newer S3FWRN5 GPIO properties
+ in Exynos5433 TM2
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>,
+        Kukjin Kim <kgene@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-nfc@lists.01.org, linux-arm-kernel@lists.infradead.org,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Sylwester Nawrocki <snawrocki@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Inki Dae <inki.dae@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't reset the phy without respect to the phy-state-machine because
-this breaks the phy IRQ mode. We can archive the same behaviour if the
-refclk in is specified.
+On Mon, 31 Aug 2020 at 15:16, Marek Szyprowski <m.szyprowski@samsung.com> wrote:
+>
+>
+> On 29.08.2020 16:29, Krzysztof Kozlowski wrote:
+> > Since "s3fwrn5" is not a valid vendor prefix, use new GPIO properties
+> > instead of the deprecated.
+> >
+> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
----
- drivers/net/phy/smsc.c | 1 -
- 1 file changed, 1 deletion(-)
+Thanks for testing this and others in the series. Much appreciated!
 
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index b98a7845681f..67adf11ef958 100644
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -337,7 +337,6 @@ static struct phy_driver smsc_phy_driver[] = {
- 	.name		= "SMSC LAN8710/LAN8720",
- 
- 	/* PHY_BASIC_FEATURES */
--	.flags		= PHY_RST_AFTER_CLK_EN,
- 
- 	.probe		= smsc_phy_probe,
- 
--- 
-2.20.1
-
+Best regards,
+Krzysztof
