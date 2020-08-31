@@ -2,86 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3342258360
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 23:18:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B7BD258374
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 23:25:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730231AbgHaVS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 17:18:28 -0400
-Received: from correo.us.es ([193.147.175.20]:50198 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730207AbgHaVS1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Aug 2020 17:18:27 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 19A1A1C442E
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:18:24 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0C9A3DA78A
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:18:24 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id E1DF6DA84A; Mon, 31 Aug 2020 23:18:23 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8465BDA78B;
-        Mon, 31 Aug 2020 23:18:21 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 31 Aug 2020 23:18:21 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 44245426CCB9;
-        Mon, 31 Aug 2020 23:18:21 +0200 (CEST)
-Date:   Mon, 31 Aug 2020 23:18:20 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Julian Anastasov <ja@ssi.bg>
-Cc:     Yaroslav Bolyukin <iam@lach.pw>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Wensong Zhang <wensong@linux-vs.org>,
-        Simon Horman <horms@verge.net.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Subject: Re: [PATCHv5 net-next] ipvs: remove dependency on ip6_tables
-Message-ID: <20200831211820.GB24186@salvia>
-References: <alpine.LFD.2.23.451.2008291233110.3043@ja.home.ssi.bg>
- <20200829135953.20228-1-iam@lach.pw>
- <alpine.LFD.2.23.451.2008312005270.4425@ja.home.ssi.bg>
+        id S1728956AbgHaVZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 17:25:35 -0400
+Received: from www62.your-server.de ([213.133.104.62]:48980 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728352AbgHaVZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 17:25:35 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kCrIq-0001ul-7c; Mon, 31 Aug 2020 23:25:24 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kCrIq-0007yz-2B; Mon, 31 Aug 2020 23:25:24 +0200
+Subject: Re: [PATCH bpf-next] bpf: Remove bpf_lsm_file_mprotect from sleepable
+ list.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+References: <20200831201651.82447-1-alexei.starovoitov@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c6df42da-6185-3958-0528-55a43d0a9444@iogearbox.net>
+Date:   Mon, 31 Aug 2020 23:25:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <alpine.LFD.2.23.451.2008312005270.4425@ja.home.ssi.bg>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200831201651.82447-1-alexei.starovoitov@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25916/Mon Aug 31 15:26:49 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 31, 2020 at 08:12:05PM +0300, Julian Anastasov wrote:
+On 8/31/20 10:16 PM, Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
 > 
-> 	Hello,
+> Technically the bpf programs can sleep while attached to bpf_lsm_file_mprotect,
+> but such programs need to access user memory. So they're in might_fault()
+> category. Which means they cannot be called from file_mprotect lsm hook that
+> takes write lock on mm->mmap_lock.
+> Adjust the test accordingly.
 > 
-> On Sat, 29 Aug 2020, Yaroslav Bolyukin wrote:
+> Also add might_fault() to __bpf_prog_enter_sleepable() to catch such deadlocks early.
 > 
-> > This dependency was added because ipv6_find_hdr was in iptables specific
-> > code but is no longer required
-> > 
-> > Fixes: f8f626754ebe ("ipv6: Move ipv6_find_hdr() out of Netfilter code.")
-> > Fixes: 63dca2c0b0e7 ("ipvs: Fix faulty IPv6 extension header handling in IPVS").
-> > Signed-off-by: Yaroslav Bolyukin <iam@lach.pw>
+> Reported-by: Yonghong Song <yhs@fb.com>
+> Fixes: 1e6c62a88215 ("bpf: Introduce sleepable BPF programs")
+> Fixes: e68a144547fc ("selftests/bpf: Add sleepable tests")
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>   kernel/bpf/trampoline.c                 |  1 +
+>   kernel/bpf/verifier.c                   |  1 -
+>   tools/testing/selftests/bpf/progs/lsm.c | 34 ++++++++++++-------------
+>   3 files changed, 18 insertions(+), 18 deletions(-)
 > 
-> 	Looks good to me, thanks! May be maintainers will
-> remove the extra dot after the Fixes line.
+> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+> index c2b76545153c..7dd523a7e32d 100644
+> --- a/kernel/bpf/trampoline.c
+> +++ b/kernel/bpf/trampoline.c
+> @@ -409,6 +409,7 @@ void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start)
+>   void notrace __bpf_prog_enter_sleepable(void)
+>   {
+>   	rcu_read_lock_trace();
+> +	might_fault();
 
-Applied, thanks. I have also removed the extra dot.
+Makes sense, was wondering about a __might_sleep() but that will cover it internally
+too. Applied, thanks!
+
+>   }
+>   
+>   void notrace __bpf_prog_exit_sleepable(void)
