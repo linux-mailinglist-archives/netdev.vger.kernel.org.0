@@ -2,111 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00435258DC3
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 13:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EAA3258E0E
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 14:16:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728033AbgIAL6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 07:58:53 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:41211 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726144AbgIAL6r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 07:58:47 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 081Bvts2001080;
-        Tue, 1 Sep 2020 13:57:55 +0200
-Date:   Tue, 1 Sep 2020 13:57:55 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        George Spelvin <lkml@sdf.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>, tytso@mit.edu,
-        Florian Westphal <fw@strlen.de>,
-        Marc Plumb <lkml.mplumb@gmail.com>
-Subject: Re: [PATCH 2/2] random32: add noise from network and scheduling
- activity
-Message-ID: <20200901115755.GA1059@1wt.eu>
-References: <20200901064302.849-1-w@1wt.eu>
- <20200901064302.849-3-w@1wt.eu>
- <ed5d4d2a-0f8f-f202-8c4f-9fc3d4307e97@gmail.com>
+        id S1728117AbgIAMQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 08:16:37 -0400
+Received: from mail-eopbgr80114.outbound.protection.outlook.com ([40.107.8.114]:39584
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728092AbgIAMOH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 08:14:07 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lgh9RKkupP3288x7V9b3yheZI1TMCuRHWjSKnmrbOuI5RqrEfS3JH34xLDonmYBFwosGbv49iMJF/0969fKoDLQbw0OIcW/yeF/oHBxI8jAHuvrtHPn/xggp0um9X4MGDOksFHJOywHC9RMun6h7h2OlsgR6g/D89TzgdyjdWetZPAUn5yXJJLWh86UsiwbaSekSs/2H4xthKKlwS2IuWxzhsvRmBO9iLEesDI1iQFIiUaADSw0Xp/NdqmMvPGIpvzfvSGvzPANETJs1JrFtU1zoJ2kZY95fpACrTb+pIoedWui9hENUToWoVAGYryF5WoLJBe2izgxxtyl0gT4wmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YHcgBNRNeynxlvgHTlEHzjQZxwxkxEDtZ8XmtiNWnX4=;
+ b=hFjLJUdtA4Snwn/rgjnTxbc+a0/gDpiuWdqtu2bSOgjnBu9PSJa9oWPd8iTo87fT+4ZwmtILXm6HnDV1DOq9rXu++vEDuHjLT4qFBLugBYpVR8jo2Ru+Ns+UKbcGmZmJgOteHaYO+3q52TE7qWfc0Buo4qaDNVGELsknKOKOZnAEYe+8mCLrvOf432eyYoaDUetLeKW+hk08LHVCY4kmI0qRSHTubaB4+neaQiwH1M3T5C7Kesw7rqX1irYoLfhRLxX18lkCCnPjFrTxjznwUNVRGM0VzQVlHGk0FkA8NWGmYMJISINrVanKAKullxS6RsGXXey8tTRW5rxmub2KJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YHcgBNRNeynxlvgHTlEHzjQZxwxkxEDtZ8XmtiNWnX4=;
+ b=hzhgTexfMMOIBkU7C3XMFub2LlA2a3xWdWblUXQu1mqDdY+4lsbaTHzR+kxEzItlhFW7bO3pOH2YN3fCUVjZ7B75PPRNbSotqq+B9fD+d5xNEaTo9hqwCyeLKg/7dzfotOt5c/yduS98c8waeY4pFZo2cmypVtLtcyO9YDZiVL8=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none
+ header.from=dektech.com.au;
+Received: from AM8PR05MB7332.eurprd05.prod.outlook.com (2603:10a6:20b:1db::9)
+ by AM4PR05MB3314.eurprd05.prod.outlook.com (2603:10a6:205:d::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.22; Tue, 1 Sep
+ 2020 12:14:04 +0000
+Received: from AM8PR05MB7332.eurprd05.prod.outlook.com
+ ([fe80::64de:d33d:e82:b902]) by AM8PR05MB7332.eurprd05.prod.outlook.com
+ ([fe80::64de:d33d:e82:b902%7]) with mapi id 15.20.3326.025; Tue, 1 Sep 2020
+ 12:14:03 +0000
+From:   Tuong Lien <tuong.t.lien@dektech.com.au>
+To:     davem@davemloft.net, jmaloy@redhat.com, maloy@donjonn.com,
+        ying.xue@windriver.com, netdev@vger.kernel.org
+Cc:     tipc-discussion@lists.sourceforge.net
+Subject: [net-next v2 0/4] tipc: add more features to TIPC encryption
+Date:   Mon, 31 Aug 2020 15:38:13 +0700
+Message-Id: <20200831083817.3611-1-tuong.t.lien@dektech.com.au>
+X-Mailer: git-send-email 2.26.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0247.apcprd06.prod.outlook.com
+ (2603:1096:4:ac::31) To AM8PR05MB7332.eurprd05.prod.outlook.com
+ (2603:10a6:20b:1db::9)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ed5d4d2a-0f8f-f202-8c4f-9fc3d4307e97@gmail.com>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dektech.com.au (123.20.195.8) by SG2PR06CA0247.apcprd06.prod.outlook.com (2603:1096:4:ac::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19 via Frontend Transport; Tue, 1 Sep 2020 12:14:01 +0000
+X-Mailer: git-send-email 2.26.2
+X-Originating-IP: [123.20.195.8]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a5c003a7-bbde-43b0-a06c-08d84e70841b
+X-MS-TrafficTypeDiagnostic: AM4PR05MB3314:
+X-Microsoft-Antispam-PRVS: <AM4PR05MB331436D0BF94F0B84E89E0BDE22E0@AM4PR05MB3314.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cAKTUtCUvr50c4DQPjdND+yPNJLgwgVGbvdtlm2yAFjuoBxAWqRJOmgV5c5YyN/OtOSI3F8903zGyuxB0A9Hf4qzCoVie+4bYjI4C1O7BpG0rYaTyk59ydwK5guvqs9yeaNA2EG2eCnEGSmhvShtfZm/y3gOKO7y1QZF2DLn7W6VkI4yULD2XEXbRboWBR+wNVgFsVF2PPvJLjqj0h93RAEi+2+pC0cmeMGROEG0uc7kTOr82Ad1kWuzE/FfJ69DE2KwRdHld/IeHFZmEudyql28EsFj82VNKpMHZ/fu+VI9q8BHQPqGR3skW7END1le
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR05MB7332.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(39850400004)(366004)(346002)(136003)(396003)(16526019)(86362001)(478600001)(55016002)(2616005)(316002)(956004)(36756003)(6666004)(1076003)(83380400001)(4326008)(66946007)(8676002)(26005)(103116003)(186003)(5660300002)(55236004)(52116002)(8936002)(2906002)(66476007)(66556008)(7696005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: WXvzb63mUDu8Bkw1gBq3ZSgJwihaZLIn/Berwk3gj/Em4H1s1sYyp1FyctA+vam4M3bxCzikCllWeK4qga9LgG6juFYhzka6d9+tY1L6LQIVMg78NRmJjbJmwTq36iJP+bm73IGS0xyJihEPPVq7y0oOO5Zd1rsjwAldIiMINu3f5fnA/b+VazpRC0E8c2UGI1yCZwFt7U0tpdRVgzjPlK9IcMskzIEGJV0V6Gu0DzjMYApnsoJE3Rok9P84QOJXXsPC+YB6SDG9tXmLRg16pr8PoYr7EIFx+8+dgLjmOGUCXO+KSt9IruFOHZfDHXPwfXnVB6HufgsyaqcTiWHBZweB3bZMPbpGPeOZRNfPPjYTqRJC14BKslAJQcEfzTfXcnbZJNNycfEKXsBCSysqWTMzDgq/QIHq5x5LCiTT++KXiq8iORDWzKjeBoeG/sZMrJUBXu9chY6wIpsrm46ADaV6BDQNFOkN7hD3E0+KVV6+K2xAwNaZlV06m3dgi0C8nQBFCgzWZFIklsepWGU+cWGwC5sVDoBkIjepR4/IpDEvx8rPbS1wFh49nQZTvyZK6rBH4OdAzOqFX6oQCYfxzZtbFk6nrcYuxQvTslMA27UHqh1JILHRWXtI457/CFcSXZlBU6tHPDmHIVEHcy9MxQ==
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: a5c003a7-bbde-43b0-a06c-08d84e70841b
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR05MB7332.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2020 12:14:03.6634
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ngNnloTnAE9x94Toyupko7/qSSNwpTnt+2q4saw0U85TocvnrKR7qjs6mEgl+g2EnNJkRsEJ562gPhYgTxZP/ZBuQql2ZdeHpj4TvzScmFA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3314
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+This series adds some new features to TIPC encryption:
 
-On Tue, Sep 01, 2020 at 12:24:38PM +0200, Eric Dumazet wrote:
-> There is not much entropy here really :
-> 
-> 1) dev & txq are mostly constant on a typical host (at least the kind of hosts that is targeted by 
-> Amit Klein and others in their attacks.
-> 
-> 2) len is also known by the attacker, attacking an idle host.
-> 
-> 3) skb are also allocations from slab cache, which tend to recycle always the same pointers (on idle hosts)
-> 
-> 
-> 4) jiffies might be incremented every 4 ms (if HZ=250)
+- Patch 1 ("tipc: optimize key switching time and logic") optimizes the
+code and logic in preparation for the following commits.
 
-I know. The point is essentially that someone "remote" or with rare access
-to the host's memory (i.e. in a VM on the same CPU sharing L1 with some
-CPU vulnerabilities) cannot synchronize with the PRNG and easily stay
-synchronized forever. Otherwise I totally agree that these are pretty
-weak. But in my opinion they are sufficient to turn a 100% success into
-way less. I try not to forget that we're just trying to make a ~15-bit
-port require ~2^14 attempts on average. Oh and by the way the number of
-calls also counts here.
+- Patch 2 ("tipc: introduce encryption master key") introduces support
+of 'master key' for authentication of new nodes and key exchange. A
+master key can be set/changed by user via netlink (eg. using the same
+'tipc node set key' command in iproute2/tipc).
 
-> Maybe we could feed percpu prandom noise with samples of ns resolution timestamps,
-> lazily cached from ktime_get() or similar functions.
->
-> This would use one instruction on x86 to update the cache, with maybe more generic noise.
+- Patch 3 ("tipc: add automatic session key exchange") allows a session
+key to be securely exchanged between nodes as needed.
 
-Sure! I think the principle here allows to easily extend it to various
-places, and the more the better. Maybe actually we'll figure that there
-are plenty of sources of randomness that were not considered secure enough
-to feed /dev/random while they're perfectly fine for such use cases.
+- Patch 4 ("tipc: add automatic rekeying for encryption key") adds
+automatic 'rekeying' of session keys a specific interval. The new key
+will be distributed automatically to peer nodes, so become active then.
+The rekeying interval is configurable via netlink as well.
 
-> diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-> index 4c47f388a83f17860fdafa3229bba0cc605ec25a..a3e026cbbb6e8c5499ed780e57de5fa09bc010b6 100644
-> --- a/kernel/time/timekeeping.c
-> +++ b/kernel/time/timekeeping.c
-> @@ -751,7 +751,7 @@ ktime_t ktime_get(void)
->  {
->         struct timekeeper *tk = &tk_core.timekeeper;
->         unsigned int seq;
-> -       ktime_t base;
-> +       ktime_t res, base;
->         u64 nsecs;
->  
->         WARN_ON(timekeeping_suspended);
-> @@ -763,7 +763,9 @@ ktime_t ktime_get(void)
->  
->         } while (read_seqcount_retry(&tk_core.seq, seq));
->  
-> -       return ktime_add_ns(base, nsecs);
-> +       res = ktime_add_ns(base, nsecs);
-> +       __this_cpu_add(prandom_noise, (unsigned long)ktime_to_ns(res));
-> +       return res;
->  }
->  EXPORT_SYMBOL_GPL(ktime_get);
+v2: update the "tipc: add automatic session key exchange" patch to fix
+"implicit declaration" issue when built without "CONFIG_TIPC_CRYPTO".
 
-Actually it could even be nice to combine it with __builtin_return_address(0)
-given the large number of callers this one has! But I generally agree with
-your proposal.
+Tuong Lien (4):
+  tipc: optimize key switching time and logic
+  tipc: introduce encryption master key
+  tipc: add automatic session key exchange
+  tipc: add automatic rekeying for encryption key
 
-Thanks,
-Willy
+ include/uapi/linux/tipc.h         |   2 +
+ include/uapi/linux/tipc_netlink.h |   2 +
+ net/tipc/crypto.c                 | 974 ++++++++++++++++++++++--------
+ net/tipc/crypto.h                 |  41 +-
+ net/tipc/link.c                   |   5 +
+ net/tipc/msg.h                    |   8 +-
+ net/tipc/netlink.c                |   2 +
+ net/tipc/node.c                   |  91 ++-
+ net/tipc/node.h                   |   2 +
+ net/tipc/sysctl.c                 |   9 +
+ 10 files changed, 853 insertions(+), 283 deletions(-)
+
+-- 
+2.26.2
+
