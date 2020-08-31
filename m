@@ -2,86 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C67A42576C3
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 11:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CF7B2576D2
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 11:48:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726479AbgHaJoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 05:44:44 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:14176 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726312AbgHaJol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 05:44:41 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07V9NDa1013670;
-        Mon, 31 Aug 2020 02:44:37 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=xBc/b7MlULJeQkITKlogoIeCeUWYTBUbK6NFxu4fUFA=;
- b=ZVwsR/eIQ1wjHNzZ5oCxRNJs5wCIbU0HqAa6a4n5fHK5ZPSNlHFuPfnu/bfxjctUN6yX
- osODJlVqoFfsTntnnkJUkcWxVTwe1bebZXcmjMOwHvG5ROTP9sV/FvBmprrmpoiIN6KR
- MHnt3DgXjqpRQnSA1wbuSXrdNttZkdyoahC78KrEQsc7w8sE5tydPGm3M/zIE6aJ3Nda
- PbPkJG8Le9ngl1v2G0f7Z4LGD0/PLfBdmbj8jPj1kbj8R9nGzW1TTbxtTOJ/6GiQpOD1
- AOADXGzOrNFc7P+2bxtaM3vFMHso/tCPXZNEVH+cEWs75gJXtmRKSmuxyaQ4tPjIG+Mk Kg== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 337phprc4s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 31 Aug 2020 02:44:37 -0700
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 31 Aug
- 2020 02:44:36 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 31 Aug
- 2020 02:44:35 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 31 Aug 2020 02:44:36 -0700
-Received: from NN-LT0065.marvell.com (NN-LT0065.marvell.com [10.193.39.17])
-        by maili.marvell.com (Postfix) with ESMTP id 114F53F703F;
-        Mon, 31 Aug 2020 02:44:33 -0700 (PDT)
-From:   Dmitry Bogdanov <dbogdanov@marvell.com>
-To:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>
-CC:     Dmitry Bogdanov <dbogdanov@marvell.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Michal Kalderon <michal.kalderon@marvell.com>
-Subject: [PATCH v2 net 3/3] net: qed: RDMA personality shouldn't fail VF load
-Date:   Mon, 31 Aug 2020 12:43:29 +0300
-Message-ID: <a356c374d4b5456947242d27d325831f339fd569.1597833340.git.dbogdanov@marvell.com>
-X-Mailer: git-send-email 2.28.0.windows.1
-In-Reply-To: <cover.1597833340.git.dbogdanov@marvell.com>
-References: <cover.1597833340.git.dbogdanov@marvell.com>
+        id S1726144AbgHaJs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 05:48:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725972AbgHaJsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 05:48:24 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375CCC061573
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 02:48:22 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id q9so4757350wmj.2
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 02:48:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TVBu51iXRxffbTJT1ie/4/EHqQSiUlmT+OghNVHoqtY=;
+        b=iXuwELY4kIw1AJX4/8L1nVeumSqL5pJip003MOUkL43jtXSFjtF+Zj/cc6X0raVVi5
+         Ol4pHghRHHRoSc0PlAwH5Dm781edV3OximUm/iPrvDcQyP+pl30JzczOBUYQcVz+Ya8P
+         hSd50WUi5OuEpA+qDQGuNwgyGRZMz/l/RRBJy/NaGfLP76wWex3hQRqv5g8Q5bwgfWq1
+         sim+HnVxzkDEpiTt4sRiLe1UqJwTLuGqKaUiTnCv7DeoGa2lkeuEQ006q39zHZoMut/b
+         RJd2UrvmCAUBelN651uKZ6C/Y5+4652kOb2BkgNv4d1a26GRD3au4qZ/JUvWYikTTzsg
+         eUyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TVBu51iXRxffbTJT1ie/4/EHqQSiUlmT+OghNVHoqtY=;
+        b=UbQjbU6khPv2eV+vLlv9tMD8SpaVxQJLzMFX/MUVhTWqNwbS32i+ZnGZ96iiQhYPgo
+         6YqkdXocTjCu0ZNdrxW7dN6osr99EmGF9iTutx2YKFcSbqVpYBDGAmqKHmuchH0OE2ep
+         0ilXW/C6GCTLkVzfrDuA4km6UkA4YMmJLMXKwptdOgZS2SGi/ypSafJaSO23IbAngnOr
+         sD73Y9sP3I02MXP50GO2g+pgEVupa2fyRyi5TT0eC7lwIRNziPp/Q4UY/d2cEzGkLkmo
+         Lia6z+QI5kdtOR212itY39QNB3nzIscSr5Sh6Ph5mqDLNjAG7TnDa+uHQVQJI2NO+AZk
+         QbbA==
+X-Gm-Message-State: AOAM532mm7cVURkxBr6tl4XPCtItlmhhGKKS/Kk6tULBACZQiEgE+DHx
+        tXzTuJH1v2jDZwADRuFO6FE=
+X-Google-Smtp-Source: ABdhPJzV5lPlrIFPxSH0rR9rc+rF8dEYLA3wBbYvDeAsRaYZxMBdLv0Zd7kZzUWRoHgca9+KK/qYNg==
+X-Received: by 2002:a1c:a789:: with SMTP id q131mr562152wme.141.1598867300836;
+        Mon, 31 Aug 2020 02:48:20 -0700 (PDT)
+Received: from [192.168.8.147] ([37.164.5.65])
+        by smtp.gmail.com with ESMTPSA id h5sm11107452wrc.45.2020.08.31.02.48.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Aug 2020 02:48:20 -0700 (PDT)
+Subject: Re: [net] tipc: fix using smp_processor_id() in preemptible
+To:     Tuong Tong Lien <tuong.t.lien@dektech.com.au>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jmaloy@redhat.com" <jmaloy@redhat.com>,
+        "maloy@donjonn.com" <maloy@donjonn.com>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>
+References: <20200829193755.9429-1-tuong.t.lien@dektech.com.au>
+ <f81eafce-e1d1-bb18-cb70-cfdf45bb2ed0@gmail.com>
+ <AM8PR05MB733222C45D3F0CC19E909BB0E2510@AM8PR05MB7332.eurprd05.prod.outlook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <0ed21ba7-2b3b-9d4f-563e-10d329ebeecb@gmail.com>
+Date:   Mon, 31 Aug 2020 11:47:58 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
+In-Reply-To: <AM8PR05MB733222C45D3F0CC19E909BB0E2510@AM8PR05MB7332.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-31_01:2020-08-31,2020-08-31 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the assert during VF driver installation when the personality is iWARP
 
-Fixes: 1fe614d10f45 ("qed: Relax VF firmware requirements")
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
-Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_sriov.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_sriov.c b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-index f1f75b6d0421..b8dc5c4591ef 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_sriov.c
-@@ -71,6 +71,7 @@ static int qed_sp_vf_start(struct qed_hwfn *p_hwfn, struct qed_vf_info *p_vf)
- 		p_ramrod->personality = PERSONALITY_ETH;
- 		break;
- 	case QED_PCI_ETH_ROCE:
-+	case QED_PCI_ETH_IWARP:
- 		p_ramrod->personality = PERSONALITY_RDMA_AND_ETH;
- 		break;
- 	default:
--- 
-2.17.1
+On 8/31/20 1:33 AM, Tuong Tong Lien wrote:
+> Hi Eric,
+> 
+> Thanks for your comments, please see my answers inline.
+> 
+>> -----Original Message-----
+>> From: Eric Dumazet <eric.dumazet@gmail.com>
+>> Sent: Monday, August 31, 2020 3:15 PM
+>> To: Tuong Tong Lien <tuong.t.lien@dektech.com.au>; davem@davemloft.net; jmaloy@redhat.com; maloy@donjonn.com;
+>> ying.xue@windriver.com; netdev@vger.kernel.org
+>> Cc: tipc-discussion@lists.sourceforge.net
+>> Subject: Re: [net] tipc: fix using smp_processor_id() in preemptible
+>>
+>>
+>>
+>> On 8/29/20 12:37 PM, Tuong Lien wrote:
+>>> The 'this_cpu_ptr()' is used to obtain the AEAD key' TFM on the current
+>>> CPU for encryption, however the execution can be preemptible since it's
+>>> actually user-space context, so the 'using smp_processor_id() in
+>>> preemptible' has been observed.
+>>>
+>>> We fix the issue by using the 'get/put_cpu_ptr()' API which consists of
+>>> a 'preempt_disable()' instead.
+>>>
+>>> Fixes: fc1b6d6de220 ("tipc: introduce TIPC encryption & authentication")
+>>
+>> Have you forgotten ' Reported-by: syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com' ?
+> Well, really I detected the issue during my testing instead, didn't know if it was reported by syzbot too.
+> 
+>>
+>>> Acked-by: Jon Maloy <jmaloy@redhat.com>
+>>> Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+>>> ---
+>>>  net/tipc/crypto.c | 12 +++++++++---
+>>>  1 file changed, 9 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+>>> index c38babaa4e57..7c523dc81575 100644
+>>> --- a/net/tipc/crypto.c
+>>> +++ b/net/tipc/crypto.c
+>>> @@ -326,7 +326,8 @@ static void tipc_aead_free(struct rcu_head *rp)
+>>>  	if (aead->cloned) {
+>>>  		tipc_aead_put(aead->cloned);
+>>>  	} else {
+>>> -		head = *this_cpu_ptr(aead->tfm_entry);
+>>> +		head = *get_cpu_ptr(aead->tfm_entry);
+>>> +		put_cpu_ptr(aead->tfm_entry);
+>>
+>> Why is this safe ?
+>>
+>> I think that this very unusual construct needs a comment, because this is not obvious.
+>>
+>> This really looks like an attempt to silence syzbot to me.
+> No, this is not to silence syzbot but really safe.
+> This is because the "aead->tfm_entry" object is "common" between CPUs, there is only its pointer to be the "per_cpu" one. So just trying to lock the process on the current CPU or 'preempt_disable()', taking the per-cpu pointer and dereferencing to the actual "tfm_entry" object... is enough. Later on, that’s fine to play with the actual object without any locking.
+
+Why using per cpu pointers, if they all point to a common object ?
+
+This makes the code really confusing.
+
+Why no lock is required ? This seems hard to believe, given lack of clear explanations anywhere
+in commit fc1b6d6de220 ("tipc: introduce TIPC encryption & authentication").
+
+If the object can be used without locking, it should be marked const.
+
+tipc_aead_tfm_next() has side effects that I really can not understand in SMP world,
+and presumably with soft interrupts in UP as well.
+
+
+
+
 
