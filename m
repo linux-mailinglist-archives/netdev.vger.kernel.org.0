@@ -2,140 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F37257323
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 06:46:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18B61257338
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 06:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbgHaEqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 00:46:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48956 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725794AbgHaEqV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Aug 2020 00:46:21 -0400
-Received: from paulmck-ThinkPad-P72.home (unknown [50.45.173.55])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4796120738;
-        Mon, 31 Aug 2020 04:46:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598849180;
-        bh=z07VbWplmd8kSSWFmY0FC8S6ddQoGdWv7RYOj7vXwfA=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=hA4cUsX+crIRQIo8cVhAQix+pQ+n0mK3SA29ns+G5EITCchZ3Bhgw/P1g4goGmk7z
-         gyoCcF9DHqAHnAz3+Pvrgag0kqayl4u5A0BeDp7mlmQ3HOHnSv3II+YKxBnitEf2cL
-         viluqdlzhdJXdMkC4aPstOuLMjjQQMVVHu++V18s=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 2205F35226AC; Sun, 30 Aug 2020 21:46:20 -0700 (PDT)
-Date:   Sun, 30 Aug 2020 21:46:20 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, josef@toxicpanda.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next] bpf: Fix build without BPF_SYSCALL, but with
- BPF_JIT.
-Message-ID: <20200831044620.GX2855@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200830204328.50419-1-alexei.starovoitov@gmail.com>
- <20200830220313.GV2855@paulmck-ThinkPad-P72>
- <20200831005321.75g5pw2xi4gyrb2i@ast-mbp.dhcp.thefacebook.com>
+        id S1725835AbgHaE6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 00:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgHaE6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 00:58:17 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526CFC061573
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 21:58:17 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id d20so2299265qka.5
+        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 21:58:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=raGEY0z/wUD8YTB/6zbPBNpqxdjR7ahxKQxZZ1qoUCc=;
+        b=XrfIrMCGlwUo7hp0AyzGWeHjSCcAQsR6xS4nX0VBSl9LKvLFAQ1B5OJ4OKT7VjvMTL
+         p6lqNwOxgQV1tjcNJ8iynMhpqakzyv8Sa+hC3QRzw/Mr165b2u6EJI5gPUuopQnNM9cD
+         4UFBlK8HI0fBSjwaO/kTWnSEqteNYW3QOsDNk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=raGEY0z/wUD8YTB/6zbPBNpqxdjR7ahxKQxZZ1qoUCc=;
+        b=G+5l0eAKUcc0KbPXQC9rtFJ9kSpTsiXnrWSLpW42SjwoN12irf1XUYX8dtQcP9KOqF
+         qDecEa+8peWf8u7TwL1XNDTWF96Ry+xOEfqN7qDH5aLzTGsize8nHQeI6+Jx6zJWXAQe
+         7PErCTvMonsnJ+xEu4mGvGsz5MJig/oMaPchoBmtGTMTluI0oB33LMfDciIeWpCf7P+9
+         /E4PlAHEVWkfIndpUvNlczjjv+43oGuuaOE/8yprDCWb4rR/ocP6yQvfZW4UeHUgIGHh
+         WGRGL5kinBJvv7YhELvCE2lBIFFCVnAL9iTt9YtH9aVrNYbKNfoaLiw9WymkBl6bXDjE
+         Lsqw==
+X-Gm-Message-State: AOAM5334FYWeiv/GBcDRtdUxzgOcs9cKRUbJy1QUnAu4mavn1gR7dCIC
+        ++Uglq4KRa+io8+B2VGIQ/095Jjq9tbZjLFq3TXTig==
+X-Google-Smtp-Source: ABdhPJzeUb6i8GDgDgLz56XIP5StBmsjFvDuNsNvCsWTeGbZ56OB/3eUKZRL80becaNx89AX737hgqjA7xQjJDNCEo4=
+X-Received: by 2002:a37:bcc:: with SMTP id 195mr9140026qkl.287.1598849896387;
+ Sun, 30 Aug 2020 21:58:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200831005321.75g5pw2xi4gyrb2i@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <CABb8VeGOUfXOjVcoHkMZhwOoafLH5L-cY_yvrYz1a+zMQPwLsg@mail.gmail.com>
+In-Reply-To: <CABb8VeGOUfXOjVcoHkMZhwOoafLH5L-cY_yvrYz1a+zMQPwLsg@mail.gmail.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Sun, 30 Aug 2020 21:58:04 -0700
+Message-ID: <CACKFLin0kKuckRf2b7CmoAM3UyzOQZo7fRUg0-9jT5p_LLAhTA@mail.gmail.com>
+Subject: Re: rtnl_lock deadlock with tg3 driver
+To:     Baptiste Covolato <baptiste@arista.com>
+Cc:     David Christensen <drc@linux.vnet.ibm.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Netdev <netdev@vger.kernel.org>, Daniel Stodden <dns@arista.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 30, 2020 at 05:53:21PM -0700, Alexei Starovoitov wrote:
-> On Sun, Aug 30, 2020 at 03:03:13PM -0700, Paul E. McKenney wrote:
-> > On Sun, Aug 30, 2020 at 01:43:28PM -0700, Alexei Starovoitov wrote:
-> > > From: Alexei Starovoitov <ast@kernel.org>
-> > > 
-> > > When CONFIG_BPF_SYSCALL is not set, but CONFIG_BPF_JIT=y
-> > > the kernel build fails:
-> > > In file included from ../kernel/bpf/trampoline.c:11:
-> > > ../kernel/bpf/trampoline.c: In function ‘bpf_trampoline_update’:
-> > > ../kernel/bpf/trampoline.c:220:39: error: ‘call_rcu_tasks_trace’ undeclared
-> > > ../kernel/bpf/trampoline.c: In function ‘__bpf_prog_enter_sleepable’:
-> > > ../kernel/bpf/trampoline.c:411:2: error: implicit declaration of function ‘rcu_read_lock_trace’
-> > > ../kernel/bpf/trampoline.c: In function ‘__bpf_prog_exit_sleepable’:
-> > > ../kernel/bpf/trampoline.c:416:2: error: implicit declaration of function ‘rcu_read_unlock_trace’
-> > > 
-> > > Add these functions to rcupdate_trace.h.
-> > > The JIT won't call them and BPF trampoline logic won't be used without BPF_SYSCALL.
-> > > 
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > > Fixes: 1e6c62a88215 ("bpf: Introduce sleepable BPF programs")
-> > > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > 
-> > A couple of nits below, but overall:
-> > 
-> > Acked-by: Paul E. McKenney <paulmck@kernel.org>
-> > 
-> > > ---
-> > >  include/linux/rcupdate_trace.h | 14 +++++++++++++-
-> > >  1 file changed, 13 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/include/linux/rcupdate_trace.h b/include/linux/rcupdate_trace.h
-> > > index d9015aac78c6..334840f4f245 100644
-> > > --- a/include/linux/rcupdate_trace.h
-> > > +++ b/include/linux/rcupdate_trace.h
-> > > @@ -82,7 +82,19 @@ static inline void rcu_read_unlock_trace(void)
-> > >  void call_rcu_tasks_trace(struct rcu_head *rhp, rcu_callback_t func);
-> > >  void synchronize_rcu_tasks_trace(void);
-> > >  void rcu_barrier_tasks_trace(void);
-> > > -
-> > > +#else
-> > 
-> > This formulation is a bit novel for RCU.  Could we therefore please add
-> > a comment something like this?
-> > 
-> > // The BPF JIT forms these addresses even when it doesn't call these
-> > // functions, so provide definitions that result in runtime errors.
-> 
-> ok. will add.
-> The root of the problem is:
-> obj-$(CONFIG_BPF_JIT) += trampoline.o
-> obj-$(CONFIG_BPF_JIT) += dispatcher.o
-> There is a number of functions that arch/x86/net/bpf_jit_comp.c is
-> using from these two files, but none of them will be used when
-> only cBPF is on (which is the case for BPF_SYSCALL=n BPF_JIT=y).
-> Don't confuse cBPF with eBPF ;)
+On Fri, Aug 28, 2020 at 5:40 PM Baptiste Covolato <baptiste@arista.com> wrote:
+>
+> Hi David, Michael,
+>
+> I am contacting you because I'm experiencing an issue that seems to be
+> awfully close to what David attempted to fix related to the tg3 driver
+> infinite sleep while holding rtnl_lock
+> (https://lkml.org/lkml/2020/6/15/1122).
 
-Perhaps I should avoid this confusion by having you generate the actual
-comment?  ;-)
+David's remaining issue was tg3_reset_task() returning failure due to
+some hardware error.  This would leave the driver in a limbo state
+with netif_running() still true, but NAPI not enabled.  This can
+easily lead to a soft lockup with rtnl held when it tries to disable
+NAPI again.
 
-> This patch is imo the lesser of three evils. The other two:
-> - some serious refactoring of trampoline.c and dipsatcher.c into
->   multiple files
-> - add 'depends on BPF_SYSCALL' to 'config BPF_JIT' in net/Kconfig
+I think the proper fix is to close the device when tg3_reset_task()
+fails to bring it to a consistent state.  I haven't heard back from
+David in a while, so I will propose a patch to do this in the next
+day.
 
-The first of these two occurred to me, the second not, but yes, this
-sort of reasoning eventually convinced me not to complain about the
-solution you chose.
-
-> > > +static inline void call_rcu_tasks_trace(struct rcu_head *rhp, rcu_callback_t func)
-> > > +{
-> > > +	BUG();
-> > > +}
-> > > +static inline void rcu_read_lock_trace(void)
-> > > +{
-> > > +	BUG();
-> > > +}
-> > > +static inline void rcu_read_unlock_trace(void)
-> > > +{
-> > > +	BUG();
-> > > +}
-> > 
-> > People have been moving towards one-liner for things like these last two:
-> > 
-> > static inline void rcu_read_lock_trace(void) { BUG(); }
-> > static inline void rcu_read_unlock_trace(void) { BUG(); }
-> 
-> sure. will respin.
-
-Thank you!
-
-							Thanx, Paul
+Let's see if this patch will also work for you.  Thanks.
