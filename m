@@ -2,165 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 251522576A1
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 11:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B382576C0
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 11:44:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgHaJhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 05:37:15 -0400
-Received: from correo.us.es ([193.147.175.20]:40388 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726472AbgHaJhG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Aug 2020 05:37:06 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 9DB9F15AEA7
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 11:36:59 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 8F989DA78D
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 11:36:59 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 84E32DA78A; Mon, 31 Aug 2020 11:36:59 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 53955DA704;
-        Mon, 31 Aug 2020 11:36:57 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Mon, 31 Aug 2020 11:36:57 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 2AD0242EF4E0;
-        Mon, 31 Aug 2020 11:36:57 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 8/8] netfilter: conntrack: do not auto-delete clash entries on reply
-Date:   Mon, 31 Aug 2020 11:36:48 +0200
-Message-Id: <20200831093648.20765-9-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200831093648.20765-1-pablo@netfilter.org>
-References: <20200831093648.20765-1-pablo@netfilter.org>
+        id S1726249AbgHaJog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 05:44:36 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:32922 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725915AbgHaJod (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 05:44:33 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07V9NS6t014221;
+        Mon, 31 Aug 2020 02:44:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=gLSp4GUtc3fKCYG3D8uO6JQlc3j7t56s1BXqW3SqV8c=;
+ b=TWHReJ7O0RdTaHoaB4xFammL2YvSi45gmdnIufJ049udI/lPFM63kODhj8PTFg4OBnkN
+ guMI4aoy26sIy4oylGKxAh0xpDq01QgufHn/RTEzzvieyKzMzNIwu24s5ez5PlOmW7RO
+ t7/d4W73CEoMFoMe8bcmqBveL17FOaoU8u1lOkthCJxW8gccMIaL24A1uK6kYTCQuEMp
+ FzhlBrpSs5ZDPTLnr78ItIsx3GS+X3Bh6T+TkUhyFSNbGjV9WfbjtlBWp4LvRz+L2Zbs
+ +aQXJH0Rrhihg7Qy9QKzhehT4B9z4O7f7BcB/QHErGKOSbVBTA63GQ1poP4zJ7E65VLN 2g== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 337phprc49-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 31 Aug 2020 02:44:30 -0700
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 31 Aug
+ 2020 02:44:28 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 31 Aug
+ 2020 02:44:28 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 31 Aug 2020 02:44:29 -0700
+Received: from NN-LT0065.marvell.com (NN-LT0065.marvell.com [10.193.39.17])
+        by maili.marvell.com (Postfix) with ESMTP id 4E1773F703F;
+        Mon, 31 Aug 2020 02:44:27 -0700 (PDT)
+From:   Dmitry Bogdanov <dbogdanov@marvell.com>
+To:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>
+CC:     Dmitry Bogdanov <dbogdanov@marvell.com>
+Subject: [PATCH v2 net 0/3] net: qed disable aRFS in NPAR and 100G
+Date:   Mon, 31 Aug 2020 12:43:26 +0300
+Message-ID: <cover.1597833340.git.dbogdanov@marvell.com>
+X-Mailer: git-send-email 2.28.0.windows.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-31_01:2020-08-31,2020-08-31 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+This patchset fixes some recent issues found by customers.
 
-Its possible that we have more than one packet with the same ct tuple
-simultaneously, e.g. when an application emits n packets on same UDP
-socket from multiple threads.
+v2:
+  correct hash in Fixes tag
 
-NAT rules might be applied to those packets. With the right set of rules,
-n packets will be mapped to m destinations, where at least two packets end
-up with the same destination.
+Dmitry Bogdanov (3):
+  net: qed: Disable aRFS for NPAR and 100G
+  net: qede: Disable aRFS for NPAR and 100G
+  qed: RDMA personality shouldn't fail VF load
 
-When this happens, the existing clash resolution may merge the skb that
-is processed after the first has been received with the identical tuple
-already in hash table.
+ drivers/net/ethernet/qlogic/qed/qed_dev.c      | 11 ++++++++++-
+ drivers/net/ethernet/qlogic/qed/qed_l2.c       |  3 +++
+ drivers/net/ethernet/qlogic/qed/qed_main.c     |  2 ++
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c    |  1 +
+ drivers/net/ethernet/qlogic/qede/qede_filter.c |  3 +++
+ drivers/net/ethernet/qlogic/qede/qede_main.c   | 11 +++++------
+ include/linux/qed/qed_if.h                     |  1 +
+ 7 files changed, 25 insertions(+), 7 deletions(-)
 
-However, its possible that this identical tuple is a NAT_CLASH tuple.
-In that case the second skb will be sent, but no reply can be received
-since the reply that is processed first removes the NAT_CLASH tuple.
-
-Do not auto-delete, this gives a 1 second window for replies to be passed
-back to originator.
-
-Packets that are coming later (udp stream case) will not be affected:
-they match the original ct entry, not a NAT_CLASH one.
-
-Also prevent NAT_CLASH entries from getting offloaded.
-
-Fixes: 6a757c07e51f ("netfilter: conntrack: allow insertion of clashing entries")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_conntrack_proto_udp.c | 26 ++++++++++----------------
- net/netfilter/nft_flow_offload.c       |  2 +-
- 2 files changed, 11 insertions(+), 17 deletions(-)
-
-diff --git a/net/netfilter/nf_conntrack_proto_udp.c b/net/netfilter/nf_conntrack_proto_udp.c
-index 760ca2422816..af402f458ee0 100644
---- a/net/netfilter/nf_conntrack_proto_udp.c
-+++ b/net/netfilter/nf_conntrack_proto_udp.c
-@@ -81,18 +81,6 @@ static bool udp_error(struct sk_buff *skb,
- 	return false;
- }
- 
--static void nf_conntrack_udp_refresh_unreplied(struct nf_conn *ct,
--					       struct sk_buff *skb,
--					       enum ip_conntrack_info ctinfo,
--					       u32 extra_jiffies)
--{
--	if (unlikely(ctinfo == IP_CT_ESTABLISHED_REPLY &&
--		     ct->status & IPS_NAT_CLASH))
--		nf_ct_kill(ct);
--	else
--		nf_ct_refresh_acct(ct, ctinfo, skb, extra_jiffies);
--}
--
- /* Returns verdict for packet, and may modify conntracktype */
- int nf_conntrack_udp_packet(struct nf_conn *ct,
- 			    struct sk_buff *skb,
-@@ -124,12 +112,15 @@ int nf_conntrack_udp_packet(struct nf_conn *ct,
- 
- 		nf_ct_refresh_acct(ct, ctinfo, skb, extra);
- 
-+		/* never set ASSURED for IPS_NAT_CLASH, they time out soon */
-+		if (unlikely((ct->status & IPS_NAT_CLASH)))
-+			return NF_ACCEPT;
-+
- 		/* Also, more likely to be important, and not a probe */
- 		if (!test_and_set_bit(IPS_ASSURED_BIT, &ct->status))
- 			nf_conntrack_event_cache(IPCT_ASSURED, ct);
- 	} else {
--		nf_conntrack_udp_refresh_unreplied(ct, skb, ctinfo,
--						   timeouts[UDP_CT_UNREPLIED]);
-+		nf_ct_refresh_acct(ct, ctinfo, skb, timeouts[UDP_CT_UNREPLIED]);
- 	}
- 	return NF_ACCEPT;
- }
-@@ -206,12 +197,15 @@ int nf_conntrack_udplite_packet(struct nf_conn *ct,
- 	if (test_bit(IPS_SEEN_REPLY_BIT, &ct->status)) {
- 		nf_ct_refresh_acct(ct, ctinfo, skb,
- 				   timeouts[UDP_CT_REPLIED]);
-+
-+		if (unlikely((ct->status & IPS_NAT_CLASH)))
-+			return NF_ACCEPT;
-+
- 		/* Also, more likely to be important, and not a probe */
- 		if (!test_and_set_bit(IPS_ASSURED_BIT, &ct->status))
- 			nf_conntrack_event_cache(IPCT_ASSURED, ct);
- 	} else {
--		nf_conntrack_udp_refresh_unreplied(ct, skb, ctinfo,
--						   timeouts[UDP_CT_UNREPLIED]);
-+		nf_ct_refresh_acct(ct, ctinfo, skb, timeouts[UDP_CT_UNREPLIED]);
- 	}
- 	return NF_ACCEPT;
- }
-diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index 3b9b97aa4b32..3a6c84fb2c90 100644
---- a/net/netfilter/nft_flow_offload.c
-+++ b/net/netfilter/nft_flow_offload.c
-@@ -102,7 +102,7 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
- 	}
- 
- 	if (nf_ct_ext_exist(ct, NF_CT_EXT_HELPER) ||
--	    ct->status & IPS_SEQ_ADJUST)
-+	    ct->status & (IPS_SEQ_ADJUST | IPS_NAT_CLASH))
- 		goto out;
- 
- 	if (!nf_ct_is_confirmed(ct))
 -- 
-2.20.1
+2.17.1
 
