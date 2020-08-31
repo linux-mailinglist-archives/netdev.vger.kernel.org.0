@@ -2,182 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECAFE2570F1
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 00:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE65A257113
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 02:03:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726472AbgH3W4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 30 Aug 2020 18:56:17 -0400
-Received: from mail.nic.cz ([217.31.204.67]:52906 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726179AbgH3W4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 30 Aug 2020 18:56:16 -0400
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id B75E713FFFB;
-        Mon, 31 Aug 2020 00:56:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1598828173; bh=YTHzXCb4ZdLDojUITwXuoxdvQt+Vc8tV3tMINYete5U=;
-        h=Date:From:To;
-        b=InX6j2UTCOUnMtb9JVcZ9l5pcOhbEsqQeJ2i3YIu1gIyKt42g/+/fTn6s2oeHsAw2
-         cuOyst+9NclOWosVIaZ21Dkv4OBHY66dLpB7E7I1UYjgW80nxl8APYORpN4Om+VSG4
-         9W+8v+0fBFlZSVwsIsf7MwdsvGqBzXJH+4TOCsNY=
-Date:   Mon, 31 Aug 2020 00:56:13 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        jacek.anaszewski@gmail.com, Dan Murphy <dmurphy@ti.com>,
-        =?UTF-8?B?T25k?= =?UTF-8?B?xZllag==?= Jirman 
-        <megous@megous.com>, Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH RFC leds + net-next v4 0/2] Add support for LEDs on
- Marvell PHYs
-Message-ID: <20200831005613.3c00215a@nic.cz>
-In-Reply-To: <2b3604bf88082f8d8f6d21707907eff757b49362.camel@ew.tq-group.com>
-References: <20200728150530.28827-1-marek.behun@nic.cz>
-        <2b3604bf88082f8d8f6d21707907eff757b49362.camel@ew.tq-group.com>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726459AbgHaADZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 30 Aug 2020 20:03:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52444 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726396AbgHaADY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 30 Aug 2020 20:03:24 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3ADAC061573;
+        Sun, 30 Aug 2020 17:03:23 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id mt12so2203374pjb.4;
+        Sun, 30 Aug 2020 17:03:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VMDHtOS8YlHXPnzZc7eh+Kh58CtBgfBUxf6XV1KPMeY=;
+        b=pddHhBqHE+kGfFhrWuX+XAEeQE/tkqI15izclQ4EszUXC07BnlweTLLRYOPkQ/eC5x
+         RpCeAqvkyVZtisCkCHFieG6Olcmnxf4V/UqxwwDNzs9Qykds6iN9bpOT3Zp1ROUJC7az
+         F258I5nFWdxiJSdmRdb55YHirGcD78QLmzJlijgZFEjJP5WGZkv6DYK4BmL5Eea//o4Y
+         O2zElJxc7wWMaiFevwYpVFCEyYIG0LQ2jkZVfVNkctO9fscmHj+mWSftTpdXWIc6UmJB
+         Te1cxaEHboZwBDx+U3o+HgGpp6AbAB5Qs2psmMeUhxjOEKqDdOUIRGzLN4ry+LrEOKMW
+         9WPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VMDHtOS8YlHXPnzZc7eh+Kh58CtBgfBUxf6XV1KPMeY=;
+        b=PEtkLazzAoapTuH0Z/fcP4ZJ/B/eCe4jbsU70awZdQVF1tRd8/7NRq3Y1WSw9/khV6
+         L9imKZRIb55uavaDkyxYocXe7943kr/U0TVK63KJCv6gPGJy9F17EIbB1angjCfefst3
+         JtZfRxokBGZjoSwhMDfefb/ebgI1ALhDEJGUJPNX2IveYeR9GF6YC0H9CcDNPaxl2LAa
+         0LPmEpHm7cWLoFKr++MUmKbOGB78TTy4JulSIiINUDHZwDW+oolLtdPiCxMyp2wjZWra
+         0gAqrARrBFrT5gff9MlvwrkbwTaaxWTDUEgpilPmTbue7NUYJ8gFqagWR8mSuLEN0Du4
+         EHqg==
+X-Gm-Message-State: AOAM533p10JZB1kOVfYvnPbSFyyabTuhGKlVDoBG89/aU0oEa9K7fohi
+        r1Rn5047NtMQ6XrmpLkIk6w=
+X-Google-Smtp-Source: ABdhPJw8VDr2xk3YqzXRL4DZ8QHpt3WTt3QTAMMlDl9+CNUmImPs6jb1hLUvbDuUP1P5qS6YSmSCDg==
+X-Received: by 2002:a17:90b:1b09:: with SMTP id nu9mr7947999pjb.214.1598832203367;
+        Sun, 30 Aug 2020 17:03:23 -0700 (PDT)
+Received: from localhost.localdomain ([2001:470:e92d:10:a55f:6c1b:322e:f753])
+        by smtp.gmail.com with ESMTPSA id g17sm5773585pge.9.2020.08.30.17.03.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Aug 2020 17:03:22 -0700 (PDT)
+From:   Tony Ambardar <tony.ambardar@gmail.com>
+X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Tony Ambardar <Tony.Ambardar@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf v1] libbpf: fix build failure from uninitialized variable warning
+Date:   Sun, 30 Aug 2020 17:03:04 -0700
+Message-Id: <20200831000304.1696435-1-Tony.Ambardar@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
-        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 25 Aug 2020 10:13:59 +0200
-Matthias Schiffer <matthias.schiffer@ew.tq-group.com> wrote:
+While compiling libbpf, some GCC versions (at least 8.4.0) have difficulty
+determining control flow and a emit warning for potentially uninitialized
+usage of 'map', which results in a build error if using "-Werror":
 
-> On Tue, 2020-07-28 at 17:05 +0200, Marek Beh=C3=BAn wrote:
-> > Hi,
-> >=20
-> > this is v4 of my RFC adding support for LEDs connected to Marvell
-> > PHYs.
-> >=20
-> > Please note that if you want to test this, you still need to first
-> > apply
-> > the patch adding the LED private triggers support from Pavel's tree.
-> >  =20
-> https://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/comm=
-it/?h=3Dfor-next&id=3D93690cdf3060c61dfce813121d0bfc055e7fa30d
-> >=20
-> > What I still don't like about this is that the LEDs created by the
-> > code
-> > don't properly support device names. LEDs should have name in format
-> > "device:color:function", for example "eth0:green:activity".
-> >=20
-> > The code currently looks for attached netdev for a given PHY, but
-> > at the time this happens there is no netdev attached, so the LEDs
-> > gets
-> > names without the device part (ie ":green:activity").
-> >=20
-> > This can be addressed in next version by renaming the LED when a
-> > netdev
-> > is attached to the PHY, but first a API for LED device renaming needs
-> > to
-> > be proposed. I am going to try to do that. This would also solve the
-> > same problem when userspace renames an interface.
-> >=20
-> > And no, I don't want phydev name there. =20
->=20
->=20
-> Hello Marek,
->=20
-> thanks for your patches - Andrew suggested me to have a look at them as
-> I'm currently trying to add LED trigger support to the TI DP83867 PHY.
->=20
-> Is there already a plan to add support for polarity and similiar
-> settings, at least to the generic part of your changes?
->=20
+In file included from libbpf.c:56:
+libbpf.c: In function '__bpf_object__open':
+libbpf_internal.h:59:2: warning: 'map' may be used uninitialized in this function [-Wmaybe-uninitialized]
+  libbpf_print(level, "libbpf: " fmt, ##__VA_ARGS__); \
+  ^~~~~~~~~~~~
+libbpf.c:5032:18: note: 'map' was declared here
+  struct bpf_map *map, *targ_map;
+                  ^~~
 
-Hello Matthias,
+The warning/error is false based on code inspection, so silence it with a
+NULL initialization.
 
-sorry for answering with delay, I somehow overlooked your email.
-Yes, I plan to add some basic platform data properties (like polarity)
-in the generic part.
+Fixes: 646f02ffdd49 ("libbpf: Add BTF-defined map-in-map support")
+Ref: 063e68813391 ("libbpf: Fix false uninitialized variable warning")
 
-> In the TI DP83867, there are 2 separate settings for each LED:
->=20
-> - Trigger event
-> - Polarity or override (active-high/active-low/force-high/force-low -
-> the latter two would be used for led_brightness_set)
-> - (There is also a 3rd register that defines the blink frequency, but
-> as it allows only a single setting for all LEDs, I would ignore it for
-> now)
+Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+---
+ tools/lib/bpf/libbpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I think that blink frequency should be in the generic part as well.
-
->=20
-> At least the per-LED polarity setting would be essential to have for
-> this feature to be useful for our TQ-Systems mainboards with TI PHYs.
->=20
-
-I will try to send new version next week (starting 7th September).
-
-Marek
-
->=20
-> Kind regards,
-> Matthias
->=20
->=20
->=20
-> >=20
-> > Changes since v3:
-> > - addressed some of Andrew's suggestions
-> > - phy_hw_led_mode.c renamed to phy_led.c
-> > - the DT reading code is now also generic, moved to phy_led.c and
-> > called
-> >   from phy_probe
-> > - the function registering the phydev-hw-mode trigger is now called
-> > from
-> >   phy_device.c function phy_init before registering genphy drivers
-> > - PHY LED functionality now depends on CONFIG_LEDS_TRIGGERS
-> >=20
-> > Changes since v2:
-> > - to share code with other drivers which may want to also offer PHY
-> > HW
-> >   control of LEDs some of the code was refactored and now resides in
-> >   phy_hw_led_mode.c. This code is compiled in when config option
-> >   LED_TRIGGER_PHY_HW is enabled. Drivers wanting to offer PHY HW
-> > control
-> >   of LEDs should depend on this option.
-> > - the "hw-control" trigger is renamed to "phydev-hw-mode" and is
-> >   registered by the code in phy_hw_led_mode.c
-> > - the "hw_control" sysfs file is renamed to "hw_mode"
-> > - struct phy_driver is extended by three methods to support PHY HW
-> > LED
-> >   control
-> > - I renamed the various HW control modes offeret by Marvell PHYs to
-> >   conform to other Linux mode names, for example the
-> > "1000/100/10/else"
-> >   mode was renamed to "1Gbps/100Mbps/10Mbps", or "recv/else" was
-> > renamed
-> >   to "rx" (this is the name of the mode in netdev trigger).
-> >=20
-> > Marek
-> >=20
-> >=20
-> > Marek Beh=C3=BAn (2):
-> >   net: phy: add API for LEDs controlled by PHY HW
-> >   net: phy: marvell: add support for PHY LEDs via LED class
-> >=20
-> >  drivers/net/phy/Kconfig      |   4 +
-> >  drivers/net/phy/Makefile     |   1 +
-> >  drivers/net/phy/marvell.c    | 287
-> > +++++++++++++++++++++++++++++++++++
-> >  drivers/net/phy/phy_device.c |  25 ++-
-> >  drivers/net/phy/phy_led.c    | 176 +++++++++++++++++++++
-> >  include/linux/phy.h          |  51 +++++++
-> >  6 files changed, 537 insertions(+), 7 deletions(-)
-> >  create mode 100644 drivers/net/phy/phy_led.c
-> >  =20
->=20
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index b688aadf09c5..46d727b45c81 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -5804,8 +5804,8 @@ static int bpf_object__collect_map_relos(struct bpf_object *obj,
+ 	int i, j, nrels, new_sz;
+ 	const struct btf_var_secinfo *vi = NULL;
+ 	const struct btf_type *sec, *var, *def;
++	struct bpf_map *map = NULL, *targ_map;
+ 	const struct btf_member *member;
+-	struct bpf_map *map, *targ_map;
+ 	const char *name, *mname;
+ 	Elf_Data *symbols;
+ 	unsigned int moff;
+-- 
+2.25.1
 
