@@ -2,51 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 679D82574C7
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 09:56:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D2062574F1
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 10:07:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728090AbgHaH4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 03:56:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30401 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727065AbgHaH4g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 03:56:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598860594;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RkIJcMd2uK7zwoM3j+f3OaKTcRMYV8ckTILN/eVqYB8=;
-        b=SaQGjtNR5LPGCNZCj2Jc7rYnkajYUcF2I1RqFu8GEul9/NzInzHqtHjfgn2JRtBB3GlNcm
-        4JAXxIcVPkJ+9EEanE/xPVFCaFSLF8ZSk3fnpe0Cj9LJMQISOcCwAknPN5jpicyOy7LM1I
-        8V7gGzfdxbtyPPXm66K8NFCxgMqHhz8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-177-Xfxcx6j2M3WLQDghl6arrA-1; Mon, 31 Aug 2020 03:56:32 -0400
-X-MC-Unique: Xfxcx6j2M3WLQDghl6arrA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A1B3F801AC3;
-        Mon, 31 Aug 2020 07:56:30 +0000 (UTC)
-Received: from [10.36.112.162] (ovpn-112-162.ams2.redhat.com [10.36.112.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B6C4F9CBA;
-        Mon, 31 Aug 2020 07:56:28 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     trix@redhat.com
-Cc:     pshelar@ovn.org, davem@davemloft.net, kuba@kernel.org,
-        natechancellor@gmail.com, ndesaulniers@google.com,
-        netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: openvswitch: pass NULL for unused parameters
-Date:   Mon, 31 Aug 2020 09:56:27 +0200
-Message-ID: <4C15DDC1-F05E-4382-9AE9-20BD78D9677B@redhat.com>
-In-Reply-To: <398B5AF9-48CC-485C-A920-701649844719@redhat.com>
-References: <20200830212630.32241-1-trix@redhat.com>
- <398B5AF9-48CC-485C-A920-701649844719@redhat.com>
+        id S1728050AbgHaIHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 04:07:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725829AbgHaIHY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 04:07:24 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4FDC061573;
+        Mon, 31 Aug 2020 01:07:22 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id w13so4960424wrk.5;
+        Mon, 31 Aug 2020 01:07:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Kj7OGziR3MgIah9Mcm+KkptCh/JY3xwVQZr8wUniyVM=;
+        b=p9VzVxLsWY+zFrqOBhD8usiIwGyeYSin57HeGT7R6Xf8R91XweDGVUBZ6VKfH3GmBn
+         KxHKBQEi8JYTnSniF1P95yk4suvegVJ3RLh5l4j/brsOY+o+iWgjJ8Nm48/l/8hrYDcy
+         4ATHbKHUCDSmBK3O9wBA/N/U57cAMhat4YOuWe2VgeELCGhm5BVqu/2uOo8jZwcbe+W3
+         AFapjovrOT1GYeZKF8zuYBhEJxFfTHNwP4mDcdiwsPSVqefWu3eNYiEKt/xNH8a32/+i
+         Cu9uYFJAuSEJXLExTW+U4TEOJK8Ec5giI5d7PWFeQR9wyyb88PfPZFPBN8Xl+l5gR9Aw
+         C7NQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Kj7OGziR3MgIah9Mcm+KkptCh/JY3xwVQZr8wUniyVM=;
+        b=itozRpctWtKClQAmvChgwknf0uWV8wapqkr3weAy0sZV+RVdS3jJhL26ME17kXMUSo
+         IpoikaLncwGo2/7ooaMsRjQat59Oup7S3zPd1ci3+RXwZO1Anws7g/LXM90L2OPDdDLi
+         2IeJgeEdlA4SwyoOpxcmyFgJueicp/TlnICy1A8dFgq7hoL/K6lYLC37jzjdq0YdNm8u
+         j/91ez3BgjmubC4T54sNkh+aYken453fUAlPkjh/I6qewba/VQXJ+DLOtDqwvAD7tVKn
+         6Owrxe4m3WLncJ+0i0PckSYXgj0Qg3EXGTl+XInfnJiL9KS/zbpSanatwaE94F6H/OEV
+         MOEA==
+X-Gm-Message-State: AOAM5325KnZCDBmrGG2wqAxGUBu2YiyY7zpbU045mjpXmJGyPwsMvVMZ
+        Kr2F0QIHsAWhi/ogwm5yiX45DEdJ26M=
+X-Google-Smtp-Source: ABdhPJzPjGh0MYKkT+308s50rP4IFYltMNUoUmJAMlK+uKkiT8cgBV5yT/IwFBTBrbaI9hP+3C1rvQ==
+X-Received: by 2002:adf:9ed4:: with SMTP id b20mr492462wrf.206.1598861240600;
+        Mon, 31 Aug 2020 01:07:20 -0700 (PDT)
+Received: from [192.168.8.147] ([37.164.5.65])
+        by smtp.gmail.com with ESMTPSA id k22sm8675238wrd.29.2020.08.31.01.07.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Aug 2020 01:07:20 -0700 (PDT)
+Subject: Re: [PATCH v3] net: Use standardized (IANA) local port range
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Bart Groeneveld <avi@bartavi.nl>
+Cc:     linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org
+References: <20200828203959.32010-1-avi@bartavi.nl>
+ <20200828204447.32838-1-avi@bartavi.nl> <20200828145203.65395ad8@hermes.lan>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <bf42f6fd-cd06-02d6-d7b6-233a0602c437@gmail.com>
+Date:   Mon, 31 Aug 2020 10:07:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <20200828145203.65395ad8@hermes.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -54,159 +77,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 31 Aug 2020, at 9:50, Eelco Chaudron wrote:
+On 8/28/20 2:52 PM, Stephen Hemminger wrote:
+> On Fri, 28 Aug 2020 22:44:47 +0200
+> Bart Groeneveld <avi@bartavi.nl> wrote:
+> 
+>> IANA specifies User ports as 1024-49151,
+>> and Private ports (local/ephemeral/dynamic/w/e) as 49152-65535 [1].
+>>
+>> This means Linux uses 32768-49151 'illegally'.
+>> This is not just a matter of following specifications:
+>> IANA actually assigns numbers in this range [1].
+>>
+>> I understand that Linux uses 61000-65535 for masquarading/NAT [2],
+>> so I left the high value at 60999.
+>> This means the high value still does not follow the specification,
+>> but it also doesn't conflict with it.
+>>
+>> This change will effectively halve the available ephemeral ports,
+>> increasing the risk of port exhaustion. But:
+>> a) I don't think that warrants ignoring standards.
+>> 	Consider for example setting up a (corporate) firewall blocking
+>> 	all unknown external services.
+>> 	It will only allow outgoing trafiic at port 80,443 and 49152-65535.
+>> 	A Linux computer behind such a firewall will not be able to connect
+>> 	to *any* external service *half of the time*.
+>> 	Of course, the firewall can be adjusted to also allow 32768-49151,
+>> 	but that allows computers to use some services against the policy.
+>> b) It is only an issue with more than 11848 *outgoing* connections.
+>> 	I think that is a niche case (I know, citation needed, but still).
+>> 	If someone finds themselves in such a niche case,
+>> 	they can still modify ip_local_port_range.
+>>
+>> This patch keeps the low and high value at different parity,
+>> as to optimize port assignment [3].
+>>
+>> [1]: https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt
+>> [2]: https://marc.info/?l=linux-kernel&m=117900026927289
+>> [3]: See for example commit 1580ab63fc9a03593072cc5656167a75c4f1d173 ("tcp/dccp: better use of ephemeral ports in connect()")
+>>
+>> Signed-off-by: Bart Groeneveld <avi@bartavi.nl>
+> 
+> Changing the default range impacts existing users. Since Linux has been doing
+> this for so long, I don't think just because a standards body decided to reserve
+> some space is sufficient justification to do this.
+> 
 
-> On 30 Aug 2020, at 23:26, trix@redhat.com wrote:
->
->> From: Tom Rix <trix@redhat.com>
->>
->> clang static analysis flags these problems
->>
->> flow_table.c:713:2: warning: The expression is an uninitialized
->>   value. The computed value will also be garbage
->>         (*n_mask_hit)++;
->>         ^~~~~~~~~~~~~~~
->> flow_table.c:748:5: warning: The expression is an uninitialized
->>   value. The computed value will also be garbage
->>                                 (*n_cache_hit)++;
->>                                 ^~~~~~~~~~~~~~~~
->>
->> These are not problems because neither parameter is used
->> by the calling function.
->>
->> Looking at all of the calling functions, there are many
->> cases where the results are unused.  Passing unused
->> parameters is a waste.
->>
->> In the case where the output mask index parameter of flow_lookup()
->> is not used by the caller, it is always has a value of 0.
->>
->> To avoid passing unused parameters, rework the
->> masked_flow_lookup() and flow_lookup() routines to check
->> for NULL parameters and change the unused parameters to NULL.
->>
->> For the mask index parameter, use a local pointer to a value of
->> 0 if user passed in NULL.
->
->
-> Some of this code is fast path, and some of it is not. So maybe the 
-> original author did this to avoid the null checks?
->
-> Can you do some performance runs and see if it impact the performance 
-> in a negative way?
+Agreed.
 
-Forgot to add that if you do some performance tests, make sure you have 
-some 70+ masks as this is where you do a lot of null checks vs only 
-one-time use of a variable, see ovs_flow_tbl_lookup_stats().
+There is a sysctl, allowing admins/distros to opt-in to whatever IANA values of the days
+if they really want.
 
->> Signed-off-by: Tom Rix <trix@redhat.com>
->> ---
->> v2
->> - fix spelling
->> - add mask index to NULL parameters
->> ---
->> net/openvswitch/flow_table.c | 32 +++++++++++++++-----------------
->>  1 file changed, 15 insertions(+), 17 deletions(-)
->>
->> diff --git a/net/openvswitch/flow_table.c 
->> b/net/openvswitch/flow_table.c
->> index e2235849a57e..eac25596e4f4 100644
->> --- a/net/openvswitch/flow_table.c
->> +++ b/net/openvswitch/flow_table.c
->> @@ -710,7 +710,8 @@ static struct sw_flow *masked_flow_lookup(struct 
->> table_instance *ti,
->>  	ovs_flow_mask_key(&masked_key, unmasked, false, mask);
->>  	hash = flow_hash(&masked_key, &mask->range);
->>  	head = find_bucket(ti, hash);
->> -	(*n_mask_hit)++;
->> +	if (n_mask_hit)
->> +		(*n_mask_hit)++;
->>
->>  	hlist_for_each_entry_rcu(flow, head, flow_table.node[ti->node_ver],
->>  				lockdep_ovsl_is_held()) {
->> @@ -730,12 +731,17 @@ static struct sw_flow *flow_lookup(struct 
->> flow_table *tbl,
->>  				   const struct sw_flow_key *key,
->>  				   u32 *n_mask_hit,
->>  				   u32 *n_cache_hit,
->> -				   u32 *index)
->> +				   u32 *in_index)
->>  {
->>  	u64 *usage_counters = this_cpu_ptr(ma->masks_usage_cntr);
->>  	struct sw_flow *flow;
->>  	struct sw_flow_mask *mask;
->>  	int i;
->> +	u32 idx = 0;
->> +	u32 *index = &idx;
->> +
->> +	if (in_index)
->> +		index = in_index;
->>
->>  	if (likely(*index < ma->max)) {
->>  		mask = rcu_dereference_ovsl(ma->masks[*index]);
->> @@ -745,7 +751,8 @@ static struct sw_flow *flow_lookup(struct 
->> flow_table *tbl,
->>  				u64_stats_update_begin(&ma->syncp);
->>  				usage_counters[*index]++;
->>  				u64_stats_update_end(&ma->syncp);
->> -				(*n_cache_hit)++;
->> +				if (n_cache_hit)
->> +					(*n_cache_hit)++;
->>  				return flow;
->>  			}
->>  		}
->> @@ -796,13 +803,9 @@ struct sw_flow *ovs_flow_tbl_lookup_stats(struct 
->> flow_table *tbl,
->>
->>  	*n_mask_hit = 0;
->>  	*n_cache_hit = 0;
->> -	if (unlikely(!skb_hash || mc->cache_size == 0)) {
->> -		u32 mask_index = 0;
->> -		u32 cache = 0;
->> -
->> -		return flow_lookup(tbl, ti, ma, key, n_mask_hit, &cache,
->> -				   &mask_index);
->> -	}
->> +	if (unlikely(!skb_hash || mc->cache_size == 0))
->> +		return flow_lookup(tbl, ti, ma, key, n_mask_hit, NULL,
->> +				   NULL);
->>
->>  	/* Pre and post recirulation flows usually have the same skb_hash
->>  	 * value. To avoid hash collisions, rehash the 'skb_hash' with
->> @@ -849,11 +852,7 @@ struct sw_flow *ovs_flow_tbl_lookup(struct 
->> flow_table *tbl,
->>  {
->>  	struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
->>  	struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
->> -	u32 __always_unused n_mask_hit;
->> -	u32 __always_unused n_cache_hit;
->> -	u32 index = 0;
->> -
->> -	return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, 
->> &index);
->> +	return flow_lookup(tbl, ti, ma, key, NULL, NULL, NULL);
->>  }
->>
->>  struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
->> @@ -865,7 +864,6 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct 
->> flow_table *tbl,
->>  	/* Always called under ovs-mutex. */
->>  	for (i = 0; i < ma->max; i++) {
->>  		struct table_instance *ti = rcu_dereference_ovsl(tbl->ti);
->> -		u32 __always_unused n_mask_hit;
->>  		struct sw_flow_mask *mask;
->>  		struct sw_flow *flow;
->>
->> @@ -873,7 +871,7 @@ struct sw_flow *ovs_flow_tbl_lookup_exact(struct 
->> flow_table *tbl,
->>  		if (!mask)
->>  			continue;
->>
->> -		flow = masked_flow_lookup(ti, match->key, mask, &n_mask_hit);
->> +		flow = masked_flow_lookup(ti, match->key, mask, NULL);
->>  		if (flow && ovs_identifier_is_key(&flow->id) &&
->>  		    ovs_flow_cmp_unmasked_key(flow, match)) {
->>  			return flow;
->> -- 
->> 2.18.1
+We have already many issues caused by ephemeral range being too small.
+
+For instance I often have to debug issues caused by some distros
+changing sysctl_tcp_rfc1337 to 1, hurting some real applications.
 
