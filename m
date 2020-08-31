@@ -2,81 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18B61257338
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 06:58:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E953E2573B2
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 08:27:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725835AbgHaE6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 00:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgHaE6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 00:58:17 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526CFC061573
-        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 21:58:17 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id d20so2299265qka.5
-        for <netdev@vger.kernel.org>; Sun, 30 Aug 2020 21:58:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=raGEY0z/wUD8YTB/6zbPBNpqxdjR7ahxKQxZZ1qoUCc=;
-        b=XrfIrMCGlwUo7hp0AyzGWeHjSCcAQsR6xS4nX0VBSl9LKvLFAQ1B5OJ4OKT7VjvMTL
-         p6lqNwOxgQV1tjcNJ8iynMhpqakzyv8Sa+hC3QRzw/Mr165b2u6EJI5gPUuopQnNM9cD
-         4UFBlK8HI0fBSjwaO/kTWnSEqteNYW3QOsDNk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=raGEY0z/wUD8YTB/6zbPBNpqxdjR7ahxKQxZZ1qoUCc=;
-        b=G+5l0eAKUcc0KbPXQC9rtFJ9kSpTsiXnrWSLpW42SjwoN12irf1XUYX8dtQcP9KOqF
-         qDecEa+8peWf8u7TwL1XNDTWF96Ry+xOEfqN7qDH5aLzTGsize8nHQeI6+Jx6zJWXAQe
-         7PErCTvMonsnJ+xEu4mGvGsz5MJig/oMaPchoBmtGTMTluI0oB33LMfDciIeWpCf7P+9
-         /E4PlAHEVWkfIndpUvNlczjjv+43oGuuaOE/8yprDCWb4rR/ocP6yQvfZW4UeHUgIGHh
-         WGRGL5kinBJvv7YhELvCE2lBIFFCVnAL9iTt9YtH9aVrNYbKNfoaLiw9WymkBl6bXDjE
-         Lsqw==
-X-Gm-Message-State: AOAM5334FYWeiv/GBcDRtdUxzgOcs9cKRUbJy1QUnAu4mavn1gR7dCIC
-        ++Uglq4KRa+io8+B2VGIQ/095Jjq9tbZjLFq3TXTig==
-X-Google-Smtp-Source: ABdhPJzeUb6i8GDgDgLz56XIP5StBmsjFvDuNsNvCsWTeGbZ56OB/3eUKZRL80becaNx89AX737hgqjA7xQjJDNCEo4=
-X-Received: by 2002:a37:bcc:: with SMTP id 195mr9140026qkl.287.1598849896387;
- Sun, 30 Aug 2020 21:58:16 -0700 (PDT)
+        id S1727806AbgHaG1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 02:27:33 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:52668 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725794AbgHaG1c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 31 Aug 2020 02:27:32 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id BA34CD707844E969AFE0;
+        Mon, 31 Aug 2020 14:27:30 +0800 (CST)
+Received: from huawei.com (10.175.104.175) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Mon, 31 Aug 2020
+ 14:27:21 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
+        <yoshfuji@linux-ipv6.org>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH v2] net: ipv6: remove unused arg exact_dif in compute_score
+Date:   Mon, 31 Aug 2020 02:26:10 -0400
+Message-ID: <20200831062610.8078-1-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-References: <CABb8VeGOUfXOjVcoHkMZhwOoafLH5L-cY_yvrYz1a+zMQPwLsg@mail.gmail.com>
-In-Reply-To: <CABb8VeGOUfXOjVcoHkMZhwOoafLH5L-cY_yvrYz1a+zMQPwLsg@mail.gmail.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Sun, 30 Aug 2020 21:58:04 -0700
-Message-ID: <CACKFLin0kKuckRf2b7CmoAM3UyzOQZo7fRUg0-9jT5p_LLAhTA@mail.gmail.com>
-Subject: Re: rtnl_lock deadlock with tg3 driver
-To:     Baptiste Covolato <baptiste@arista.com>
-Cc:     David Christensen <drc@linux.vnet.ibm.com>,
-        Michael Chan <mchan@broadcom.com>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Netdev <netdev@vger.kernel.org>, Daniel Stodden <dns@arista.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.175]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 28, 2020 at 5:40 PM Baptiste Covolato <baptiste@arista.com> wrote:
->
-> Hi David, Michael,
->
-> I am contacting you because I'm experiencing an issue that seems to be
-> awfully close to what David attempted to fix related to the tg3 driver
-> infinite sleep while holding rtnl_lock
-> (https://lkml.org/lkml/2020/6/15/1122).
+The arg exact_dif is not used anymore, remove it. inet6_exact_dif_match()
+is no longer needed after the above is removed, remove it too.
 
-David's remaining issue was tg3_reset_task() returning failure due to
-some hardware error.  This would leave the driver in a limbo state
-with netif_running() still true, but NAPI not enabled.  This can
-easily lead to a soft lockup with rtnl held when it tries to disable
-NAPI again.
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ include/linux/ipv6.h        | 11 -----------
+ net/ipv6/inet6_hashtables.c |  6 ++----
+ 2 files changed, 2 insertions(+), 15 deletions(-)
 
-I think the proper fix is to close the device when tg3_reset_task()
-fails to bring it to a consistent state.  I haven't heard back from
-David in a while, so I will propose a patch to do this in the next
-day.
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index a44789d027cc..4d6b03803379 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -177,17 +177,6 @@ static inline int inet6_sdif(const struct sk_buff *skb)
+ 	return 0;
+ }
+ 
+-/* can not be used in TCP layer after tcp_v6_fill_cb */
+-static inline bool inet6_exact_dif_match(struct net *net, struct sk_buff *skb)
+-{
+-#if defined(CONFIG_NET_L3_MASTER_DEV)
+-	if (!net->ipv4.sysctl_tcp_l3mdev_accept &&
+-	    skb && ipv6_l3mdev_skb(IP6CB(skb)->flags))
+-		return true;
+-#endif
+-	return false;
+-}
+-
+ struct tcp6_request_sock {
+ 	struct tcp_request_sock	  tcp6rsk_tcp;
+ };
+diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+index 2d3add9e6116..55c290d55605 100644
+--- a/net/ipv6/inet6_hashtables.c
++++ b/net/ipv6/inet6_hashtables.c
+@@ -94,7 +94,7 @@ EXPORT_SYMBOL(__inet6_lookup_established);
+ static inline int compute_score(struct sock *sk, struct net *net,
+ 				const unsigned short hnum,
+ 				const struct in6_addr *daddr,
+-				const int dif, const int sdif, bool exact_dif)
++				const int dif, const int sdif)
+ {
+ 	int score = -1;
+ 
+@@ -138,15 +138,13 @@ static struct sock *inet6_lhash2_lookup(struct net *net,
+ 		const __be16 sport, const struct in6_addr *daddr,
+ 		const unsigned short hnum, const int dif, const int sdif)
+ {
+-	bool exact_dif = inet6_exact_dif_match(net, skb);
+ 	struct inet_connection_sock *icsk;
+ 	struct sock *sk, *result = NULL;
+ 	int score, hiscore = 0;
+ 
+ 	inet_lhash2_for_each_icsk_rcu(icsk, &ilb2->head) {
+ 		sk = (struct sock *)icsk;
+-		score = compute_score(sk, net, hnum, daddr, dif, sdif,
+-				      exact_dif);
++		score = compute_score(sk, net, hnum, daddr, dif, sdif);
+ 		if (score > hiscore) {
+ 			result = lookup_reuseport(net, sk, skb, doff,
+ 						  saddr, sport, daddr, hnum);
+-- 
+2.19.1
 
-Let's see if this patch will also work for you.  Thanks.
