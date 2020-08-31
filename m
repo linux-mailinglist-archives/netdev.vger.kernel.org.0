@@ -2,112 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 234DF2578A6
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 13:48:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64302257907
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 14:15:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726121AbgHaLsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 07:48:20 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:52844 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726167AbgHaLsQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 07:48:16 -0400
-Received: by mail-il1-f198.google.com with SMTP id m1so4821680iln.19
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 04:48:15 -0700 (PDT)
+        id S1726946AbgHaMPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 08:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726858AbgHaMPE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 08:15:04 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66971C061575
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 05:15:04 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id l9so1278303wme.3
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 05:15:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CXDVX0YGELPDSa9HVQRD/zIo3Ak3H4cRsj5762Lwo2k=;
+        b=Suk9Hv4XqaEVcYgIX72xD9qy6GzEbaukryuo/LPaLlbBcQl0JfpaSVflC0+G/dhh+d
+         EhDQLGm1HQjtbAzMnd9KvkCmMSrv3N1mYUpSdiHh7RJJX3h5QrrDUw7CksT9/aCb79Qa
+         y0lp3CE8bhy9iInAcoJv+cD6xQyMwU45tqSyS1rNULkYizJNQfR8NHxwFVEO9/L3TGHy
+         ePM9hcNTIrFbUrN2VGjNrXlnJLtZKYKtE7HJm6jwEAowPM1rq2gNUfuW32h5f0Z+Sjix
+         VNjoDbV4CLRdKSdWaUaEkkgN7jHFGuw1vQlDdowhlQFTi7v9rRtq9q1tPWDf45CqZ22S
+         f9fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=/iTRQyL/57CWo3c4FNSLWhOYt/YjpXSA+mhZxmmaW1c=;
-        b=Dcx0mpP7Npi9dQegP+TvQ4zlsAhQJr/Ec3lLbX+O+XE8x5qZSwnFwFvvLvuWrr/+0d
-         RzH4F7ytDrRYzKGNFbydW2hrd4ufj0LGAGYVEX6Gvx8X1DYySK19/CToZ7DCxgIgjnl5
-         xgacxTox2mfX53ieGOc/q4xrWmaOMWwE7FaScMHZ/es9LT6XqK68G0NzSc4jmagMIscU
-         wfODl3q0odp+gN4YGTKU96BA0/GDAKAbY0OtRdI0buv8AcdQUrYK4AhLl+rlQpjhHFy+
-         ebxIUEGG5AHss+3v+xbxNixz/clgnzj3aR2ZYVaicEEWjdPSqRFQrVQbPBFSdwPJQRCt
-         pbXA==
-X-Gm-Message-State: AOAM530lNd2hpbY/pG7IPRRdKFbe7b/h8TwFRDzGbRqcOtdCObxMlegC
-        lnisy4ChTHOanZi3TkRz7X/8kbQVom6kzpkimKV01vO84Vwi
-X-Google-Smtp-Source: ABdhPJyf0IWvn2xSDtVDcy9jX1mz8uFJZ2ZodF7CPXTs66vFHYZXXKd+eUzFUOOruTJFjocyhSNDf4WK9HL/mjX1bIBQdv5MigNK
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CXDVX0YGELPDSa9HVQRD/zIo3Ak3H4cRsj5762Lwo2k=;
+        b=BLPsIh/F6jS/fnGBlR/JztckaOu0kp1VxZWLe8oO5TOhL+e5dAhvqvk/oPCwatRF0K
+         vY9DmHGRHtYrgHAdXwk9aOyx/ujCUu8MTzq35rfEs1guizdYvnD22dcjimAHZFDy08i8
+         0X03lnwwyIj8W8WUlZWucy61DHKt5sVJ8bpvVHHOh4NQpI6yjZY0Yj+guVaMkSA6KwE0
+         vPZwXvj96p1mXD4TnXeYBycNTbPO4mPIHknCa9YiRKt0kgVTAYXbGrv65aXcwqJ1Pzxy
+         G/RYJ60zLCFUKIWrDx3L2NIltGGTdFfQFlnY8gd3h18FjjTaEiuoA4YZ6hSVRX3nywEE
+         C2vg==
+X-Gm-Message-State: AOAM530mwt+OVKFiSOuC5LDlSxXAoQvUn3SpZ4oQG+7Aim8NrguyMWVx
+        TL7nWyO/jR7Igsg2H1zAAYl3YA==
+X-Google-Smtp-Source: ABdhPJxI4FQAA9nLp+cBM2Zp8GbhP4AfLQr1AzKsa0RP42KutjwrSTnkJlyUuTOuzaS252dE0ZOpSg==
+X-Received: by 2002:a1c:20d3:: with SMTP id g202mr1151473wmg.54.1598876103080;
+        Mon, 31 Aug 2020 05:15:03 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id u16sm11347086wmc.7.2020.08.31.05.15.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 31 Aug 2020 05:15:02 -0700 (PDT)
+Date:   Mon, 31 Aug 2020 14:15:01 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v3 01/14] devlink: Add reload action option
+ to devlink reload command
+Message-ID: <20200831121501.GD3794@nanopsycho.orion>
+References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
+ <1598801254-27764-2-git-send-email-moshe@mellanox.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:c9ca:: with SMTP id k10mr1023132ilq.81.1598874495578;
- Mon, 31 Aug 2020 04:48:15 -0700 (PDT)
-Date:   Mon, 31 Aug 2020 04:48:15 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000059779405ae2afa90@google.com>
-Subject: KASAN: use-after-free Write in rtl_fw_do_work
-From:   syzbot <syzbot+dc3cab055dff074f2d7f@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, davem@davemloft.net, kuba@kernel.org,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pkshih@realtek.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1598801254-27764-2-git-send-email-moshe@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Sun, Aug 30, 2020 at 05:27:21PM CEST, moshe@mellanox.com wrote:
+>Add devlink reload action to allow the user to request a specific reload
+>action. The action parameter is optional, if not specified then devlink
+>driver re-init action is used (backward compatible).
+>Note that when required to do firmware activation some drivers may need
+>to reload the driver. On the other hand some drivers may need to reset
+>the firmware to reinitialize the driver entities. Therefore, the devlink
+>reload command returns the actions which were actually done.
+>However, in case fw_activate_no_reset action is selected, then no other
+>reload action is allowed.
+>Reload actions supported are:
+>driver_reinit: driver entities re-initialization, applying devlink-param
+>               and devlink-resource values.
+>fw_activate: firmware activate.
+>fw_activate_no_reset: Activate new firmware image without any reset.
+>                      (also known as: firmware live patching).
+>
+>command examples:
+>$devlink dev reload pci/0000:82:00.0 action driver_reinit
+>reload_actions_done:
+>  driver_reinit
+>
+>$devlink dev reload pci/0000:82:00.0 action fw_activate
+>reload_actions_done:
+>  driver_reinit fw_activate
+>
+>Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+>---
+>v2 -> v3:
+>- Replace fw_live_patch action by fw_activate_no_reset
+>- Devlink reload returns the actions done over netlink reply
+>v1 -> v2:
+>- Instead of reload levels driver,fw_reset,fw_live_patch have reload
+>  actions driver_reinit,fw_activate,fw_live_patch
+>- Remove driver default level, the action driver_reinit is the default
+>  action for all drivers
+>---
 
-syzbot found the following issue on:
-
-HEAD commit:    3ed8e1c2 usb: typec: tcpm: Migrate workqueue to RT priorit..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=111f9015900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ccafc70ac3d5f49c
-dashboard link: https://syzkaller.appspot.com/bug?extid=dc3cab055dff074f2d7f
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=148a00c9900000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+dc3cab055dff074f2d7f@syzkaller.appspotmail.com
-
-usb 1-1: Direct firmware load for rtlwifi/rtl8192cufw_TMSC.bin failed with error -2
-usb 1-1: Direct firmware load for rtlwifi/rtl8192cufw.bin failed with error -2
-rtlwifi: Loading alternative firmware rtlwifi/rtl8192cufw.bin
-rtlwifi: Selected firmware is not available
-==================================================================
-BUG: KASAN: use-after-free in rtl_fw_do_work.cold+0x68/0x6a drivers/net/wireless/realtek/rtlwifi/core.c:93
-Write of size 4 at addr ffff8881c9c2ff30 by task kworker/1:5/3063
-
-CPU: 1 PID: 3063 Comm: kworker/1:5 Not tainted 5.9.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events request_firmware_work_func
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0xf6/0x16e lib/dump_stack.c:118
- print_address_description.constprop.0+0x1c/0x210 mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x37/0x7c mm/kasan/report.c:530
- rtl_fw_do_work.cold+0x68/0x6a drivers/net/wireless/realtek/rtlwifi/core.c:93
- request_firmware_work_func+0x126/0x250 drivers/base/firmware_loader/main.c:1001
- process_one_work+0x94c/0x15f0 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x392/0x470 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-
-The buggy address belongs to the page:
-page:000000008323bb9d refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1c9c2f
-flags: 0x200000000000000()
-raw: 0200000000000000 0000000000000000 ffffea0007270bc8 0000000000000000
-raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8881c9c2fe00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881c9c2fe80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff8881c9c2ff00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                                     ^
- ffff8881c9c2ff80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881c9c30000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-==================================================================
+[...]
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+>diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+>index 08d101138fbe..c42b66d88884 100644
+>--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
+>+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+>@@ -1113,7 +1113,7 @@ mlxsw_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
+> 
+> static int
+> mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
+>-					  bool netns_change,
+>+					  bool netns_change, enum devlink_reload_action action,
+> 					  struct netlink_ext_ack *extack)
+> {
+> 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
+>@@ -1126,15 +1126,23 @@ mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
+> }
+> 
+> static int
+>-mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
+>-					struct netlink_ext_ack *extack)
+>+mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink, enum devlink_reload_action action,
+>+					struct netlink_ext_ack *extack, unsigned long *actions_done)
+> {
+> 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
+>+	int err;
+> 
+>-	return mlxsw_core_bus_device_register(mlxsw_core->bus_info,
+>-					      mlxsw_core->bus,
+>-					      mlxsw_core->bus_priv, true,
+>-					      devlink, extack);
+>+	err = mlxsw_core_bus_device_register(mlxsw_core->bus_info,
+>+					     mlxsw_core->bus,
+>+					     mlxsw_core->bus_priv, true,
+>+					     devlink, extack);
+>+	if (err)
+>+		return err;
+>+	if (actions_done)
+>+		*actions_done = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+>+				BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE);
+>+
+>+	return 0;
+> }
+> 
+> static int mlxsw_devlink_flash_update(struct devlink *devlink,
+>@@ -1268,6 +1276,8 @@ mlxsw_devlink_trap_policer_counter_get(struct devlink *devlink,
+> }
+> 
+> static const struct devlink_ops mlxsw_devlink_ops = {
+>+	.supported_reload_actions	= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+>+					  BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+This is confusing and open to interpretation. Does this mean that the
+driver supports:
+1) REINIT && FW_ACTIVATE
+2) REINIT || FW_ACTIVATE
+?
+
+Because mlxsw supports only 1. I guess that mlx5 supports both. This
+needs to be distinguished.
+
+I think you need an array of combinations. Or perhaps rather to extend
+the enum with combinations. You kind of have it already with
+DEVLINK_RELOAD_ACTION_FW_ACTIVATE_NO_RESET
+
+Maybe we can have something like:
+DEVLINK_RELOAD_ACTION_DRIVER_REINIT
+DEVLINK_RELOAD_ACTION_DRIVER_REINIT_FW_ACTIVATE_RESET
+DEVLINK_RELOAD_ACTION_FW_ACTIVATE_RESET
+DEVLINK_RELOAD_ACTION_FW_ACTIVATE (this is the original FW_ACTIVATE_NO_RESET)
+
+Each has very clear meaning.
+
+Also, then the "actions_done" would be a simple enum, directly returned
+to the user. No bitfield needed.
+
+
+> 	.reload_down		= mlxsw_devlink_core_bus_device_reload_down,
+> 	.reload_up		= mlxsw_devlink_core_bus_device_reload_up,
+> 	.port_type_set			= mlxsw_devlink_port_type_set,
+
+[...]
