@@ -2,87 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C51D025807D
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 20:13:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC562580FB
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 20:23:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729528AbgHaSMy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 14:12:54 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:41102 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729217AbgHaSMu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Aug 2020 14:12:50 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B988A1A0A8C;
-        Mon, 31 Aug 2020 20:12:48 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AC3781A0A8A;
-        Mon, 31 Aug 2020 20:12:48 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 7F1AE20328;
-        Mon, 31 Aug 2020 20:12:48 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next 3/3] dpaa2-eth: add a dpaa2_eth_ prefix to all functions in dpaa2-eth-dcb.c
-Date:   Mon, 31 Aug 2020 21:12:40 +0300
-Message-Id: <20200831181240.21527-4-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200831181240.21527-1-ioana.ciornei@nxp.com>
-References: <20200831181240.21527-1-ioana.ciornei@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1729794AbgHaSXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 14:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729712AbgHaSXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 14:23:03 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B157AC061575;
+        Mon, 31 Aug 2020 11:23:01 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F33CD12837DA1;
+        Mon, 31 Aug 2020 11:06:08 -0700 (PDT)
+Date:   Mon, 31 Aug 2020 11:22:52 -0700 (PDT)
+Message-Id: <20200831.112252.101534188648531041.davem@davemloft.net>
+To:     pablo@netfilter.org
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        kuba@kernel.org
+Subject: Re: [PATCH 0/8] Netfilter fixes for net
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200831093648.20765-1-pablo@netfilter.org>
+References: <20200831093648.20765-1-pablo@netfilter.org>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 31 Aug 2020 11:06:09 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some static functions in the dpaa2-eth driver don't have the dpaa2_eth_
-prefix and this is becoming an inconvenience when looking at, for
-example, a perf top output and trying to determine easily which entries
-are dpaa2-eth related. Ammend this by adding the prefix to all the
-functions.
+From: Pablo Neira Ayuso <pablo@netfilter.org>
+Date: Mon, 31 Aug 2020 11:36:40 +0200
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-dcb.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+> The following patchset contains Netfilter fixes for net:
+> 
+> 1) Do not delete clash entries on reply, let them expire instead,
+>    from Florian Westphal.
+> 
+> 2) Do not report EAGAIN to nfnetlink, otherwise this enters a busy loop.
+>    Update nfnetlink_unicast() to translate EAGAIN to ENOBUFS.
+> 
+> 3) Remove repeated words in code comments, from Randy Dunlap.
+> 
+> 4) Several patches for the flowtable selftests, from Fabian Frederick.
+> 
+> Please, pull these changes from:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-dcb.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-dcb.c
-index 83dee575c2fa..84de0644168d 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-dcb.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-dcb.c
-@@ -17,12 +17,12 @@ static int dpaa2_eth_dcbnl_ieee_getpfc(struct net_device *net_dev,
- 	return 0;
- }
- 
--static inline bool is_prio_enabled(u8 pfc_en, u8 tc)
-+static inline bool dpaa2_eth_is_prio_enabled(u8 pfc_en, u8 tc)
- {
- 	return !!(pfc_en & (1 << tc));
- }
- 
--static int set_pfc_cn(struct dpaa2_eth_priv *priv, u8 pfc_en)
-+static int dpaa2_eth_set_pfc_cn(struct dpaa2_eth_priv *priv, u8 pfc_en)
- {
- 	struct dpni_congestion_notification_cfg cfg = {0};
- 	int i, err;
-@@ -33,7 +33,7 @@ static int set_pfc_cn(struct dpaa2_eth_priv *priv, u8 pfc_en)
- 	cfg.message_ctx = 0ULL;
- 
- 	for (i = 0; i < dpaa2_eth_tc_count(priv); i++) {
--		if (is_prio_enabled(pfc_en, i)) {
-+		if (dpaa2_eth_is_prio_enabled(pfc_en, i)) {
- 			cfg.threshold_entry = DPAA2_ETH_CN_THRESH_ENTRY(priv);
- 			cfg.threshold_exit = DPAA2_ETH_CN_THRESH_EXIT(priv);
- 		} else {
-@@ -93,7 +93,7 @@ static int dpaa2_eth_dcbnl_ieee_setpfc(struct net_device *net_dev,
- 	}
- 
- 	/* Configure congestion notifications for the enabled priorities */
--	err = set_pfc_cn(priv, pfc->pfc_en);
-+	err = dpaa2_eth_set_pfc_cn(priv, pfc->pfc_en);
- 	if (err)
- 		return err;
- 
--- 
-2.25.1
-
+Pulled, thanks Pablo.
