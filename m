@@ -2,102 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1172258415
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 00:30:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F1A4258439
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 00:55:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728361AbgHaWab (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 18:30:31 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:35436 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728083AbgHaWaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 18:30:30 -0400
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07VM2ZB8027573;
-        Mon, 31 Aug 2020 18:30:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=mQ8ozyfAso7+rmhLKcsianZiY7XaOYoesJId1Z6OXxU=;
- b=pZ4hizwSEzo0INAheH/DZaFW8RoHvt+nov38SL3mUi/X30Iru6zc8EOsqqqcsIrGdpSx
- ANzWrTXkT3ivOutD7JJYK46Gcdg7+dn2EzI7I7ZSjseChoWiLYYul3npEiJQ0QVqmRBc
- jz5xMzlwxEYhyNEU4Js/MCDwxbRZDrqOgJDjfVclym0p9SZMZgCCghZoaInAyiqWyyxk
- GLthgbaFeGI/WwcDK0+EHDAQ5iJZIPdON08zmggqFUOy4rJJMSQMyvZ9nY2gayIvFBn0
- dUyfvGObSkcv/QWEpNDSIR088ZQLQiQSFq0y2+zVULtiDHG4AFpC/bYyB7eMKNHdL3sw TA== 
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3398g3j7pu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 31 Aug 2020 18:30:29 -0400
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07VMR94S018943;
-        Mon, 31 Aug 2020 22:30:27 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma05wdc.us.ibm.com with ESMTP id 337en93cgf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 31 Aug 2020 22:30:27 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07VMUR5K42336604
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 31 Aug 2020 22:30:27 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 63B722805A;
-        Mon, 31 Aug 2020 22:30:27 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B661128058;
-        Mon, 31 Aug 2020 22:30:26 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.160.96.4])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 31 Aug 2020 22:30:26 +0000 (GMT)
-Subject: Re: [PATCH net-next 5/5] ibmvnic: Provide documentation for ACL sysfs
- files
-To:     David Miller <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, drt@linux.vnet.ibm.com,
-        sukadev@linux.vnet.ibm.com, ljp@linux.vnet.ibm.com,
-        cforno12@linux.ibm.com
-References: <20200831131158.03ac2d86@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <fa1d1efb-d799-a1e1-5e1e-8795d5d6cda7@linux.ibm.com>
- <20200831150050.3cadde6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200831.151757.1112716052657607181.davem@davemloft.net>
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-Message-ID: <785321e0-aded-357a-0305-f3b2d2b7df87@linux.ibm.com>
-Date:   Mon, 31 Aug 2020 17:30:26 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1726543AbgHaWzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 18:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725934AbgHaWzI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 18:55:08 -0400
+X-Greylist: delayed 2463 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 31 Aug 2020 15:55:08 PDT
+Received: from torres.zugschlus.de (torres.zugschlus.de [IPv6:2a01:238:42bc:a101::2:100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D137C061573
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 15:55:08 -0700 (PDT)
+Received: from mh by torres.zugschlus.de with local (Exim 4.92.2)
+        (envelope-from <mh+netdev@zugschlus.de>)
+        id 1kCs3u-0003JZ-V4
+        for netdev@vger.kernel.org; Tue, 01 Sep 2020 00:14:02 +0200
+Date:   Tue, 1 Sep 2020 00:14:02 +0200
+From:   Marc Haber <mh+netdev@zugschlus.de>
+To:     netdev@vger.kernel.org
+Subject: Policy Routing and two independent, not cooperating IPv6 uplinks
+Message-ID: <20200831221402.GA30996@torres.zugschlus.de>
 MIME-Version: 1.0
-In-Reply-To: <20200831.151757.1112716052657607181.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-31_10:2020-08-31,2020-08-31 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 malwarescore=0 spamscore=0 adultscore=0
- bulkscore=0 priorityscore=1501 mlxlogscore=999 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008310130
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-On 8/31/20 5:17 PM, David Miller wrote:
-> From: Jakub Kicinski <kuba@kernel.org>
-> Date: Mon, 31 Aug 2020 15:00:50 -0700
->
->> On Mon, 31 Aug 2020 16:44:06 -0500 Thomas Falcon wrote:
->>> On 8/31/20 3:11 PM, Jakub Kicinski wrote:
->>>> This seems similar to normal SR-IOV operation, but I've not heard of
->>>> use cases for them VM to know what its pvid is. Could you elaborate?
->>> It's provided for informational purposes.
->> Seems like an information leak :S and since it's equivalent to the
->> standard SR-IOV functionality - we'd strongly prefer a common
->> interface for all use cases. sysfs won't be it. Jiri & Mellanox had
->> been working on something in devlink for quite some time.
-> Agreed, Thomas please work with Jiri et al. so that you can provide
-> this information using a standard facility.
->
-> Thanks.
+my current use case is a small machine providing Out-of-Band access to a
+bunch of routers in a small company's datacenter. The machine has IPv6
+only. It is directly connected both to the ISP's CPE router and to a
+backup router providing Internet via cellular just in case the ISP or
+its router is out. The cell router's access is severely shaped and
+expensive, so it is desired that the machine does fetch its OS updates
+through the ISP while being reachable for ssh and ICMPv6 via both
+uplinks, even in the case when one of the uplinks has completely failed.
+Both uplinks have reverse path filtering in place, will only forward
+packets with a source address from their own prefix (no, not even
+hairpin them back into the LAN), and generally should not need to know
+about each other.
 
-Thank you for the feedback. I will look into that.
+This use case does not currently look as it is supported, but may be
+I have done wrong configuration. The documentation that can easily be
+found on the net is usually grossly outdated or written by people with
+expandable network knowledge, so I don't see any other way than to ask
+here. If there is a mailing list that could help me better than
+pestering the developers, I'd appreciate a pointer.
+
+Here my config:
+|$ ip -6 rule
+|0:      from all lookup local
+|29000:  from 2001:db8:42bc:a18e::/64 lookup ka51
+|30000:  from all lookup main
+|$ ip -6 route show table ka51
+|2001:db8:42bc:a11d::/64 via 2001:db8:42bc:a18e::70:100 dev unt381 proto static metric 1024 pref medium
+|2001:db8:42bc:a180::/59 via 2001:db8:42bc:a18e::70:100 dev unt381 proto static metric 1024 pref medium
+|2001:db8:42bc:a1b0::/60 via 2001:db8:42bc:a18e::70:100 dev unt381 proto static metric 1024 pref medium
+|default via 2001:db8:42bc:a18e::70:100 dev unt381 proto static metric 1000 pref medium
+|$ ip -6 route show table main
+|::1 dev lo proto kernel metric 256 pref medium
+|2001:16b8:3037:6900::/64 dev unt381 proto ra metric 1024 expires 6801sec pref medium
+|2001:16b8:3037:6900::/56 via fe80::cece:1eff:fe29:7745 dev unt381 proto ra metric 1024 expires 1401sec pref medium
+|2001:db8:42bc:a18e::/64 dev unt381 proto kernel metric 256 pref medium
+|fe80::/64 dev unt381 proto kernel metric 256 pref medium
+|default via fe80::cece:1eff:fe29:7745 dev unt381 proto ra metric 1024 expires 1401sec mtu 1492 pref medium
+|$
+
+(ISP 1 has statically assigned 2001:db8:42bc:a180::/59,
+2001:db8:42bc:a11d::/64 and 2001:db8:42bc:a1b0::/60; ISP 2 assigns
+dynamic prefixes, here 2001:16b8:3037:6900::/56)
+
+In the addrlabel table, I have manually assigned label 8 to
+2a01:238:42bc:a180::/59:
+
+prefix ::1/128 label 0 
+prefix ::/96 label 3 
+prefix ::ffff:0.0.0.0/96 label 4 
+prefix 2a01:238:42bc:a180::/59 label 8 
+prefix 2001::/32 label 6 
+prefix 2001:10::/28 label 7 
+prefix 3ffe::/16 label 12 
+prefix 2002::/16 label 2 
+prefix fec0::/10 label 11 
+prefix fc00::/7 label 5 
+prefix ::/0 label 1 
+
+I would therefore expect that a packet going out to a destination
+address in 2a01:238:42bc:a180::/59 would automatically get assigned a
+source address from the same prefix (RFC6724 Chapter 5 Rule 6 "Prefer
+Matching Label") and routed to the default gateway listed in the ka51
+routing table.
+
+This does not work. When I ping 2001:db8:42bc:a182::1d:100 without
+explicitly specifying 2001:db8:42bc:a18e::9:100 as source address, my
+host automatically chooses the correct source address as configured per
+ip addrlabel, but chooses the wrong default router and sends out the
+following packet to the default router from the main table:
+
+|20:38:22.569941 02:48:05:c1:4b:81 > cc:ce:1e:29:77:45, ethertype IPv6 (0x86dd), length 154: 2001:db8:42bc:a18e::9:100 > 2001:db8:42bc:a182::1d:100: ICMP6, echo request, seq 1, length 100
+
+This is consistent with what I have understood about how the Linux
+routing process works: Linux first does the routing and THEN chooses the
+source IP address. In my case, the correct choice of source IP address
+has invalidated the routing process, which results in the packet being
+sent out to the wrong router (and dropped there).
+
+RFC6724 Chapter 7 has some musings about interaction of source address
+selection with the routing process that indicate that the RFC authors
+have suspected possible trouble her but didn't have policy routing in
+mind.
+
+I am also concerned that the system behaves differently when the
+application has explicitly selected an IP address. In that case, the
+routing decision is taken with the correct source address and is
+therefore correct. Also, when a packet received via the network (and
+thus already has a source address), routing is correct. The only case
+that results in the observed behavior is a locally originated packet
+where the application has indicated that it would like the OS to choose
+the source address. This is confusing and inconsistent.
+
+I might be missing something here, or have been doing something wrong,
+but to me this looks like it would be a good idea to revisit a routing
+decision when subsequent processing has changed aspects of the packet
+that might affect the correctness of the routing decision.
+
+A colleague has also advised that I might be better off by using the
+"src" selector inside a route and doing things completely without
+routing rules, but I haven't gotten that to work at all. If that is a
+promising approach, I'd appreciate a pointer towards some documentation.
+
+Thanks for your help and consideration. I hope this message is not going
+to be ignored and I would love to have this taken up by you developers
+as an every-day, but non-trivial use case from a productive network.
+
+Greetings
+Marc
+
+
+-- 
+-----------------------------------------------------------------------------
+Marc Haber         | "I don't trust Computers. They | Mailadresse im Header
+Leimen, Germany    |  lose things."    Winona Ryder | Fon: *49 6224 1600402
+Nordisch by Nature |  How to make an American Quilt | Fax: *49 6224 1600421
 
