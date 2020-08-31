@@ -2,93 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15602257FAA
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 19:35:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0B18257FBC
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 19:41:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726446AbgHaRfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 13:35:17 -0400
-Received: from mga05.intel.com ([192.55.52.43]:47928 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725954AbgHaRfR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 31 Aug 2020 13:35:17 -0400
-IronPort-SDR: QTwHxIgJ6BCmOagd6yRfqx884YIjgSBf3PLAFOJmhljjJyYiE7ZrKwY//lhXZicF59HqbNEcT4
- QAfQIWuSvFdQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9730"; a="241842693"
-X-IronPort-AV: E=Sophos;i="5.76,376,1592895600"; 
-   d="scan'208";a="241842693"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2020 10:35:15 -0700
-IronPort-SDR: cGVVcZvPecMsySxe4p+Aa46cW0pDw/6y+yCX4Qy4RfoOvq9vnu3LkaXOZowiA3OO7ZO7katJnK
- jpC/HjekF1Yg==
-X-IronPort-AV: E=Sophos;i="5.76,376,1592895600"; 
-   d="scan'208";a="340726410"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.252.138.103])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2020 10:35:14 -0700
-Date:   Mon, 31 Aug 2020 10:35:12 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>
-Subject: Re: [Intel-wired-lan] VRRP not working on i40e X722 S2600WFT
-Message-ID: <20200831103512.00001fab@intel.com>
-In-Reply-To: <20200828155616.3sd2ivrml2gpcvod@csclub.uwaterloo.ca>
-References: <20200827183039.hrfnb63cxq3pmv4z@csclub.uwaterloo.ca>
-        <20200828155616.3sd2ivrml2gpcvod@csclub.uwaterloo.ca>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1727825AbgHaRlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 13:41:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47610 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726226AbgHaRlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 13:41:09 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5E3C061575
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 10:41:08 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id b79so277621wmb.4
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 10:41:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=UlVEKyf6s1sD8/xIJm0Ch/wiRF9CdjE2dCgC1vi2vU4=;
+        b=buY9ra+hSxbweF9KIZH811XiLZXcxNPCPRWXLY/iBvEcHG3Mu1ykW2mEJ1ITXYIYOS
+         qnphKB05IZV6PJLlhCVhEvxuJo713MZCKGZphS7zrgf7eYVSVYo6hDuDHEgygnfDW/6H
+         yfiyPzk7otExE00xEprMnLBkVaErH78YGEOxs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=UlVEKyf6s1sD8/xIJm0Ch/wiRF9CdjE2dCgC1vi2vU4=;
+        b=sUEiDtmBlFKVWiNQ5id+UoYfJlggAuUZ34tTUquzYf4oiL8aw2BuC4EwDhlF17WkZO
+         2Omplb4qkmrzHFskWFbc0n8OiYjqe2Z2nSTiskgG1mHXEDxLbP1tk8Vn6aC8otAZuzjN
+         Pxnx9RfxTHJ7L+O3DfablaMpu+mLLsXiP3qb2VLy7s8OtrFrquUuktK5/n/EafH1azey
+         LKJBs5S/wJqkkxVLcEaZBIPz00hCqorGg6dPrk8P81sh5gFOfOLiVH1tgyQz81PY2nXF
+         2wk5XWD3y6HDHmYGWs8vMWYKgAqCPuDWa/N/6qQ2dvf3cuCVxteZll/msQEeRpk5AQ4O
+         HHxg==
+X-Gm-Message-State: AOAM531AeU4HTDpPOL+HzBM/5A+kUffNfUIajrZmvfUVWjTp4WLmtuvx
+        gzgvQumq4cf+/9V7WE65pvXInJIt/49P2aw30HJdzg==
+X-Google-Smtp-Source: ABdhPJxfBhwsauqJFNXQqmv0KX8AOmTiS594hNLpiPjb2i+wEBU0qHgsdJxGpxE+AUKNSfwr5dw7jdTK6iRtksb/LGo=
+X-Received: by 2002:a1c:ed15:: with SMTP id l21mr435541wmh.56.1598895666527;
+ Mon, 31 Aug 2020 10:41:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200831163132.66521-1-alexei.starovoitov@gmail.com> <3669E0C5-8982-465C-8C33-87015F4D970D@fb.com>
+In-Reply-To: <3669E0C5-8982-465C-8C33-87015F4D970D@fb.com>
+From:   KP Singh <kpsingh@chromium.org>
+Date:   Mon, 31 Aug 2020 19:40:56 +0200
+Message-ID: <CACYkzJ7xRE_WMKXr=V7SjBOX0m+V5-csbaa+zzHRAhF2HtYmhA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Fix build without BPF_LSM.
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lennart Sorensen wrote:
+On Mon, Aug 31, 2020 at 7:25 PM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Aug 31, 2020, at 9:31 AM, Alexei Starovoitov <alexei.starovoitov@gma=
+il.com> wrote:
+> >
+> > From: Alexei Starovoitov <ast@kernel.org>
+> >
+> > resolve_btfids doesn't like empty set. Add unused ID when BPF_LSM is of=
+f.
+> >
+> > Reported-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com>
+> > Fixes: 1e6c62a88215 ("bpf: Introduce sleepable BPF programs")
+> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+>
+> Thanks for the fix!
+>
+> Tested-by: Song Liu <songliubraving@fb.com>
 
-> On Thu, Aug 27, 2020 at 02:30:39PM -0400, Lennart Sorensen wrote:
-> > I have hit a new problem with the X722 chipset (Intel R1304WFT server).
-> > VRRP simply does not work.
-> > 
-> > When keepalived registers a vmac interface, and starts transmitting
-> > multicast packets with the vrp message, it never receives those packets
-> > from the peers, so all nodes think they are the master.  tcpdump shows
-> > transmits, but no receives.  If I stop keepalived, which deletes the
-> > vmac interface, then I start to receive the multicast packets from the
-> > other nodes.  Even in promisc mode, tcpdump can't see those packets.
-> > 
-> > So it seems the hardware is dropping all packets with a source mac that
-> > matches the source mac of the vmac interface, even when the destination
-> > is a multicast address that was subcribed to.  This is clearly not
-> > proper behaviour.
+Thanks Bj=C3=B6rn for reporting and Alexei for fixing!
 
-Thanks for the report Lennart, I understand your frustration, as this
-should probably work without user configuration.
-
-However, please give this command a try:
-ethtool --set-priv-flags ethX disable-source-pruning on
-
-
-> > I tried a stock 5.8 kernel to check if a driver update helped, and updated
-> > the nvm firware to the latest 4.10 (which appears to be over a year old),
-> > and nothing changes the behaviour at all.
-> > 
-> > Seems other people have hit this problem too:
-> > http://mails.dpdk.org/archives/users/2018-May/003128.html
-> > 
-> > Unless someone has a way to fix this, we will have to change away from
-> > this hardware very quickly.  The IPsec NAT RSS defect we could tolerate
-> > although didn't like, while this is just unworkable.
-> > 
-> > Quite frustrated by this.  Intel network hardware was always great,
-> > how did the X722 make it out in this state.
-> 
-> Another case with the same problem on an X710:
-> 
-> https://www.talkend.net/post/13256.html
-
-I don't know how to reply to this other thread, but it is about DPDK,
-which would require a code change or further investigation to issue the
-right command to the hardware to disable source pruning.
-
+Acked-by: KP Singh <kpsingh@google.com>
