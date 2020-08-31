@@ -2,146 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9FA257A3B
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 15:17:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90638257A41
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 15:18:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbgHaNRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 09:17:21 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:56754 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727019AbgHaNQx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 09:16:53 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20200831131651euoutp025bcd3cb2e6350c974c29a2803874e4f0~wXLec7LKY2169921699euoutp02T
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 13:16:51 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20200831131651euoutp025bcd3cb2e6350c974c29a2803874e4f0~wXLec7LKY2169921699euoutp02T
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1598879811;
-        bh=5nP5KvDT5qN8c57PFcGNX+7gNR6f6VMKSvBr/mSxdxE=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=BWvvFDdiM05PYjWtryepUCs1Mgw1S15LA3h5ikuWP1x1C1rBnU6BBBDA20qlqyVSz
-         kxNkx4imUduYdH4USGSeA43nFzCtxNYGzal3MSirAjO9YuBhnQiSfBpl5BKd0et9Ex
-         j2qO7LEXgqAH5o5w1jmPOrZ3ZRmhCJ+lnacEIC3A=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20200831131650eucas1p134722c283ee08857a38d94c048827828~wXLd7YaIe1484214842eucas1p1v;
-        Mon, 31 Aug 2020 13:16:50 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id BA.F8.06456.248FC4F5; Mon, 31
-        Aug 2020 14:16:50 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20200831131650eucas1p296e31e2ea42c8075f3defc2d449e17b3~wXLdmR5kP1084710847eucas1p27;
-        Mon, 31 Aug 2020 13:16:50 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20200831131650eusmtrp22d7506be16746006b14780816d7c5e28~wXLdlbQe63092430924eusmtrp2C;
-        Mon, 31 Aug 2020 13:16:50 +0000 (GMT)
-X-AuditID: cbfec7f2-809ff70000001938-21-5f4cf842b039
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 4B.65.06314.248FC4F5; Mon, 31
-        Aug 2020 14:16:50 +0100 (BST)
-Received: from [106.210.88.143] (unknown [106.210.88.143]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20200831131649eusmtip15b068521d7ab06a291b62c4f0d4c4872~wXLcxQKlC2717527175eusmtip1V;
-        Mon, 31 Aug 2020 13:16:49 +0000 (GMT)
-Subject: Re: [PATCH 4/4] arm64: dts: exynos: Use newer S3FWRN5 GPIO
- properties in Exynos5433 TM2
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        Kukjin Kim <kgene@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfc@lists.01.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Cc:     Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Sylwester Nawrocki <snawrocki@kernel.org>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Inki Dae <inki.dae@samsung.com>
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <8fe346a7-3c6c-f51d-f2a2-623931628a25@samsung.com>
-Date:   Mon, 31 Aug 2020 15:16:49 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
-        Thunderbird/68.12.0
+        id S1727819AbgHaNSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 09:18:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55557 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726654AbgHaNS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 09:18:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598879905;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q0o6bclwuKSh0fyVGfM/hWIeUd3ILyiWt6k5DL+CCfI=;
+        b=glpJv92SWWEkntg5aIUjSJMQBKuYksAjMrevrBwfRUtwOnNZ/OtGnnLarFPpW/s8g7SCSd
+        AUzDocaNpzZTkwmMH28Lzc/SxJ++0L4EnKBDlVl7M0z17nT214ZDlH50FhRONDVnWa/xpm
+        ZJg4GfuXfrc4AokbbUEFz0FpHJzWdHI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-30-SZorX-3YPXyNFmO4BLCvPQ-1; Mon, 31 Aug 2020 09:18:21 -0400
+X-MC-Unique: SZorX-3YPXyNFmO4BLCvPQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CFE2C1074641;
+        Mon, 31 Aug 2020 13:18:19 +0000 (UTC)
+Received: from [10.40.193.137] (unknown [10.40.193.137])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C40B85C22D;
+        Mon, 31 Aug 2020 13:18:17 +0000 (UTC)
+Subject: Re: [PATCHv2 net-next] dropwatch: Support monitoring of dropped
+ frames
+To:     izabela.bakollari@gmail.com
+Cc:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+References: <20200707171515.110818-1-izabela.bakollari@gmail.com>
+ <20200804160908.46193-1-izabela.bakollari@gmail.com>
+From:   Michal Schmidt <mschmidt@redhat.com>
+Message-ID: <e971a990-4c92-9d64-8bc6-61516d874370@redhat.com>
+Date:   Mon, 31 Aug 2020 15:18:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <20200829142948.32365-4-krzk@kernel.org>
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200804160908.46193-1-izabela.bakollari@gmail.com>
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
 Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFKsWRmVeSWpSXmKPExsWy7djPc7pOP3ziDRZsMbTYOGM9q8X1L89Z
-        Leacb2GxmH/kHKvFpPsTWCxuT5zGZtH/+DWzxfnzG9gtLmzrY7XY9Pgaq8XlXXPYLOZs2Mxu
-        MeP8PiaLYwvELFr3HmG3aH/6ktlBwGPLyptMHptWdbJ5dM/+x+KxeUm9R9+WVYwenzfJBbBF
-        cdmkpOZklqUW6dslcGXMXbSPueAWR8WqBd+ZGhjnsXcxcnJICJhIrG1pZQWxhQRWMEpsnaUD
-        YX9hlNj+0KGLkQvI/gxkX33OCtPQP38nO0TRckaJb29SIIreM0p8bfrIDJIQFkiSaG78ygiS
-        EBGYyyyxZcI2sASzwDpGieZN4SA2m4ChRNfbLjYQm1fATmL15i0sIDaLgKrEwQu9YNtEBeIk
-        jp16xAJRIyhxcuYTMJtTwFSi891WJoiZ8hLb386Bmi8ucevJfCaQxRICX9kljl5tYIE420Vi
-        1v05UC8IS7w6vgXqfxmJ/zthGpoZJR6eW8sO4fQwSlxumsEIUWUtcefcL6BTOYBWaEqs36UP
-        EXaUOHLmMRNIWEKAT+LGW0GII/gkJm2bzgwR5pXoaBOCqFaTmHV8HdzagxcuMU9gVJqF5LVZ
-        SN6ZheSdWQh7FzCyrGIUTy0tzk1PLTbMSy3XK07MLS7NS9dLzs/dxAhMcaf/Hf+0g/HrpaRD
-        jAIcjEo8vAFffOKFWBPLiitzDzFKcDArifA6nT0dJ8SbklhZlVqUH19UmpNafIhRmoNFSZzX
-        eNHLWCGB9MSS1OzU1ILUIpgsEwenVAOj7wSOp08PBzHtOCAUz/I4qUPwcuPuWUvVF1sefZQr
-        36/iemXRC7HC9JJkhxd2GnXPJrf2iNTrXAwWjtJdnm7r4Hqr94Niif7n08tDvA6YfWgLfPRv
-        0vKtb6c9VDsbO3OTiHL9w08fuDelHjzzZ3XnufypnpETHy+qO6ty7Wdv1qVwjwsnbxxtVGIp
-        zkg01GIuKk4EAB5Guo1tAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrPIsWRmVeSWpSXmKPExsVy+t/xu7pOP3ziDRrWi1tsnLGe1eL6l+es
-        FnPOt7BYzD9yjtVi0v0JLBa3J05js+h//JrZ4vz5DewWF7b1sVpsenyN1eLyrjlsFnM2bGa3
-        mHF+H5PFsQViFq17j7BbtD99yewg4LFl5U0mj02rOtk8umf/Y/HYvKTeo2/LKkaPz5vkAtii
-        9GyK8ktLUhUy8otLbJWiDS2M9AwtLfSMTCz1DI3NY62MTJX07WxSUnMyy1KL9O0S9DLmLtrH
-        XHCLo2LVgu9MDYzz2LsYOTkkBEwk+ufvBLK5OIQEljJKTNlxACohI3FyWgMrhC0s8edaFxtE
-        0VtGic6ZEAlhgSSJpS+uM4HYIgLzmSUOHFYEKWIWWMco8XpzEytEx2ZGibsXNoNVsQkYSnS9
-        BRnFycErYCexevMWFhCbRUBV4uCFXrCpogJxEmd6XkDVCEqcnPkErIZTwFSi891WsDnMAmYS
-        8zY/ZIaw5SW2v50DZYtL3Hoyn2kCo9AsJO2zkLTMQtIyC0nLAkaWVYwiqaXFuem5xYZ6xYm5
-        xaV56XrJ+bmbGIGRve3Yz807GC9tDD7EKMDBqMTDG/DFJ16INbGsuDL3EKMEB7OSCK/T2dNx
-        QrwpiZVVqUX58UWlOanFhxhNgZ6byCwlmpwPTDp5JfGGpobmFpaG5sbmxmYWSuK8HQIHY4QE
-        0hNLUrNTUwtSi2D6mDg4pRoYXdU+6nkkhj9bcdirI1BA/YGP89Lw+XGWVxqSvpp2LA64k/Fi
-        78EJMxkuJpQtncZ/2/TV7IRP6pYP/XJzz6bveJfxLCZBTtXVM6il2WqxUeWp+px7ds6uSYt/
-        FXZ1svCf/O95Xfcc3xYZS2tNsz8xrCGJQQEfJh4sVIh76Fn5/vbZRS5VPvuVWIozEg21mIuK
-        EwG42OC7AgMAAA==
-X-CMS-MailID: 20200831131650eucas1p296e31e2ea42c8075f3defc2d449e17b3
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20200829143012eucas1p1b49614f85907091480a3b53ec70221b9
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200829143012eucas1p1b49614f85907091480a3b53ec70221b9
-References: <20200829142948.32365-1-krzk@kernel.org>
-        <CGME20200829143012eucas1p1b49614f85907091480a3b53ec70221b9@eucas1p1.samsung.com>
-        <20200829142948.32365-4-krzk@kernel.org>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 29.08.2020 16:29, Krzysztof Kozlowski wrote:
-> Since "s3fwrn5" is not a valid vendor prefix, use new GPIO properties
-> instead of the deprecated.
->
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Dne 04. 08. 20 v 18:09 izabela.bakollari@gmail.com napsala:
+> From: Izabela Bakollari <izabela.bakollari@gmail.com>
+> 
+> Dropwatch is a utility that monitors dropped frames by having userspace
+> record them over the dropwatch protocol over a file. This augument
+> allows live monitoring of dropped frames using tools like tcpdump.
+> 
+> With this feature, dropwatch allows two additional commands (start and
+> stop interface) which allows the assignment of a net_device to the
+> dropwatch protocol. When assinged, dropwatch will clone dropped frames,
+> and receive them on the assigned interface, allowing tools like tcpdump
+> to monitor for them.
+> 
+> With this feature, create a dummy ethernet interface (ip link add dev
+> dummy0 type dummy), assign it to the dropwatch kernel subsystem, by using
+> these new commands, and then monitor dropped frames in real time by
+> running tcpdump -i dummy0.
+> 
+> Signed-off-by: Izabela Bakollari <izabela.bakollari@gmail.com>
 > ---
->   arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi b/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi
-> index 250fc01de78d..24aab3ea3f52 100644
-> --- a/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi
-> +++ b/arch/arm64/boot/dts/exynos/exynos5433-tm2-common.dtsi
-> @@ -795,8 +795,8 @@
->   		reg = <0x27>;
->   		interrupt-parent = <&gpa1>;
->   		interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-> -		s3fwrn5,en-gpios = <&gpf1 4 GPIO_ACTIVE_HIGH>;
-> -		s3fwrn5,fw-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
-> +		en-gpios = <&gpf1 4 GPIO_ACTIVE_HIGH>;
-> +		wake-gpios = <&gpj0 2 GPIO_ACTIVE_HIGH>;
->   	};
->   };
+> Changes in v2:
+> - protect the dummy ethernet interface from being changed by another
+> thread/cpu
+> ---
+>   include/uapi/linux/net_dropmon.h |  3 ++
+>   net/core/drop_monitor.c          | 84 ++++++++++++++++++++++++++++++++
+>   2 files changed, 87 insertions(+)
+[...]
+> @@ -255,6 +259,21 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
 >   
+>   out:
+>   	spin_unlock_irqrestore(&data->lock, flags);
+> +	spin_lock_irqsave(&interface_lock, flags);
+> +	if (interface && interface != skb->dev) {
+> +		skb = skb_clone(skb, GFP_ATOMIC);
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+I suggest naming the cloned skb "nskb". Less potential for confusion 
+that way.
+
+> +		if (skb) {
+> +			skb->dev = interface;
+> +			spin_unlock_irqrestore(&interface_lock, flags);
+> +			netif_receive_skb(skb);
+> +		} else {
+> +			spin_unlock_irqrestore(&interface_lock, flags);
+> +			pr_err("dropwatch: Not enough memory to clone dropped skb\n");
+
+Maybe avoid logging the error here. In NET_DM_ALERT_MODE_PACKET mode, 
+drop monitor does not log about the skb_clone() failure either.
+We don't want to open the possibility to flood the logs in case this 
+somehow gets triggered by every packet.
+
+A coding style suggestion - can you rearrange it so that the error path 
+code is spelled out first? Then the regular path does not have to be 
+indented further:
+
+       nskb = skb_clone(skb, GFP_ATOMIC);
+       if (!nskb) {
+               spin_unlock_irqrestore(&interface_lock, flags);
+               return;
+       }
+
+       /* ... implicit else ... Proceed normally ... */
+
+> +			return;
+> +		}
+> +	} else {
+> +		spin_unlock_irqrestore(&interface_lock, flags);
+> +	}
+>   }
+>   
+>   static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb, void *location)
+> @@ -1315,6 +1334,53 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
+>   	return -EOPNOTSUPP;
+>   }
+>   
+> +static int net_dm_interface_start(struct net *net, const char *ifname)
+> +{
+> +	struct net_device *nd = dev_get_by_name(net, ifname);
+> +
+> +	if (nd)
+> +		interface = nd;
+> +	else
+> +		return -ENODEV;
+> +
+> +	return 0;
+
+Similarly here, consider:
+
+   if (!nd)
+           return -ENODEV;
+
+   interface = nd;
+   return 0;
+
+But maybe I'm nitpicking ...
+
+> +}
+> +
+> +static int net_dm_interface_stop(struct net *net, const char *ifname)
+> +{
+> +	dev_put(interface);
+> +	interface = NULL;
+> +
+> +	return 0;
+> +}
+> +
+> +static int net_dm_cmd_ifc_trace(struct sk_buff *skb, struct genl_info *info)
+> +{
+> +	struct net *net = sock_net(skb->sk);
+> +	char ifname[IFNAMSIZ];
+> +
+> +	if (net_dm_is_monitoring())
+> +		return -EBUSY;
+> +
+> +	memset(ifname, 0, IFNAMSIZ);
+> +	nla_strlcpy(ifname, info->attrs[NET_DM_ATTR_IFNAME], IFNAMSIZ - 1);
+> +
+> +	switch (info->genlhdr->cmd) {
+> +	case NET_DM_CMD_START_IFC:
+> +		if (!interface)
+> +			return net_dm_interface_start(net, ifname);
+> +		else
+> +			return -EBUSY;
+> +	case NET_DM_CMD_STOP_IFC:
+> +		if (interface)
+> +			return net_dm_interface_stop(net, interface->name);
+> +		else
+> +			return -ENODEV;
+
+... and here too.
+
+Best regards,
+Michal
 
