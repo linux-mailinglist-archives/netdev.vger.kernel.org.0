@@ -2,83 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D7D25825F
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 22:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4685258262
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 22:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729960AbgHaUUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 16:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44210 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728129AbgHaUUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 16:20:16 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8E6C061573;
-        Mon, 31 Aug 2020 13:20:15 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id h10so7415344ioq.6;
-        Mon, 31 Aug 2020 13:20:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1AcHyU9YuFtC3DFhxq+uyC++FLYMrBvu+K8DsXLlF50=;
-        b=L57r1yIEAC4y68d5tuxwG6HxUO+Kvc7FTcQEevBspZ2lczXjuGs/WRqtev5l3AJHVR
-         2CRHwIaFxCalysWU+C370cuuM5ZVE6cubV9hrFAPLBKcTUHtY4jHPLZrP032fsBw2uWj
-         yL/5tJTSNkaGfeo+XZfYPVVHTXHDFJ8FFrjtbI54b5xr+5nY3G6VFVoHJZPS2prU7l77
-         CbM3NtRUACveM8tojUsIe99Zm1Gy4MNGu/NNLWBDoZa1BzJ4DegR9wn2lTFELh1maQf2
-         gLijELp7NdUxGXqz7p76Gb1py2GWHk4ingx9c800kqwY3NNjsNGypwVb7H1zS7gcf++x
-         WAng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1AcHyU9YuFtC3DFhxq+uyC++FLYMrBvu+K8DsXLlF50=;
-        b=E6nPmXLMSPbfHHA1e9BDHjX8aOjfB25Sl6VC1wv4NffAfGcbjaZF2PfZ4er/tiaBI+
-         4DADOkkWDsbC10RySw7+tgEetPdVpyLPK5CUAIAcn3i/flXzDwfhfTw0G4lxU8+PQA5U
-         31N/yoJG1GvdMXFO5ZCv+fXjTAQCmkT3xQD3dvE2KRYFyNlou7+r/U8Buxvny331cehH
-         PYAFUbAO3RPn/mwC/HzseSJwm6N7ZDB/4t+0F14rOpIQe+KveXhYs5Dbed+nlZ5tCGQ2
-         mIrs12Ba7wtnZphWRvO9kRuoYmjGpVk2lghBc32kFSSQsAqfziG/6UDzK+UeuqGuEOre
-         t7kg==
-X-Gm-Message-State: AOAM530Mu8JyvLjeHtD7EOBMBs74pRx3hR3HjPXyJCgiGgluGjB/83fm
-        qku/3YPp2T/IVnMYHbnFyWN3A+jf4EgVcA==
-X-Google-Smtp-Source: ABdhPJyjbMnnlGAQs2AuOdQXhylMvRrPZUx2AOiJ+p0dHfbsAwg3Edkz5G+J554Kvwn1fjYNQ+jeUQ==
-X-Received: by 2002:a5d:97cd:: with SMTP id k13mr2675127ios.164.1598905213803;
-        Mon, 31 Aug 2020 13:20:13 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:4c46:c3b0:e367:75b2])
-        by smtp.googlemail.com with ESMTPSA id e28sm4390898ill.79.2020.08.31.13.20.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Aug 2020 13:20:13 -0700 (PDT)
-Subject: Re: [PATCH v2] net: ipv4: remove unused arg exact_dif in
- compute_score
-To:     Miaohe Lin <linmiaohe@huawei.com>, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200831062634.8481-1-linmiaohe@huawei.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8028a4f8-72fc-2261-eb30-522e4b52282c@gmail.com>
-Date:   Mon, 31 Aug 2020 14:20:12 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1729917AbgHaUVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 16:21:07 -0400
+Received: from www62.your-server.de ([213.133.104.62]:40940 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728129AbgHaUVG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 16:21:06 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kCqIW-0004hx-02; Mon, 31 Aug 2020 22:21:00 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kCqIV-000IJ5-Nw; Mon, 31 Aug 2020 22:20:59 +0200
+Subject: Re: [PATCH bpf-next v5 00/15] xsk: support shared umems between
+ devices and queues
+To:     Magnus Karlsson <magnus.karlsson@intel.com>, bjorn.topel@intel.com,
+        ast@kernel.org, netdev@vger.kernel.org, jonathan.lemon@gmail.com,
+        maximmi@mellanox.com
+Cc:     bpf@vger.kernel.org, jeffrey.t.kirsher@intel.com,
+        anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com,
+        maciejromanfijalkowski@gmail.com, cristian.dumitrescu@intel.com
+References: <1598603189-32145-1-git-send-email-magnus.karlsson@intel.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <10257218-3b58-fd2e-c38f-ce320ca62de5@iogearbox.net>
+Date:   Mon, 31 Aug 2020 22:20:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200831062634.8481-1-linmiaohe@huawei.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1598603189-32145-1-git-send-email-magnus.karlsson@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25916/Mon Aug 31 15:26:49 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/31/20 12:26 AM, Miaohe Lin wrote:
-> The arg exact_dif is not used anymore, remove it. inet_exact_dif_match()
-> is no longer needed after the above is removed, so remove it too.
+On 8/28/20 10:26 AM, Magnus Karlsson wrote:
+[...]
+> v4 -> v5:
 > 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  include/net/tcp.h          | 10 ----------
->  net/ipv4/inet_hashtables.c |  6 ++----
->  2 files changed, 2 insertions(+), 14 deletions(-)
-> 
+> * Fixed performance problem with sharing a umem between different
+>    queues on the same netdev. Sharing the dma_pages array between
+>    buffer pool instances was a bad idea. It led to many cross-core
+>    snoop traffic messages that degraded performance. The solution: only
+>    map the dma mappings once as before, but copy the dma_addr_t to a per
+>    buffer pool array so that this sharing dissappears.
+> * Added patch 10 that improves performance with 3% for l2fwd with a
+>    simple fix that is now possible, as we pass the buffer pool to the driver.
+> * xp_dma_unmap() did not honor the refcount. Fixed. [Maxim]
+> * Fixed bisectabilty problem in patch 5 [Maxim]
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
-
+Applied, thanks!
