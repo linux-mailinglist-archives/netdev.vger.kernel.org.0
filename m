@@ -2,96 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22C49257F27
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 18:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0AB257F2B
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 19:00:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728885AbgHaQ6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 12:58:50 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:44400 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728777AbgHaQ6W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 12:58:22 -0400
-Received: by mail-il1-f199.google.com with SMTP id j11so1560222ilr.11
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 09:58:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Ve3fMaP+GgxKOYA2jQMbUsBIcbQ4arT97D2zd8YTu2Q=;
-        b=jqJ4Bx2bevEHXz0ZBgGHhrVeu1E5pLiWWOiqfVux86lYiYR0NU7QFfDZTNwxdEYR7e
-         B3AXucHzjenA/pHVEOk3cIQC3uw0RnTN16koAPeC422Iv7Ch9wnI6uB5fSDUiJjXgblA
-         gCcAC/dYVlLe/E5+vTm0CAZAd9vjnxgcDn0Jw8zCMPEx3aaC8Lnqd+gZdZdwipT2qtrY
-         00J/mhQsY9MQPIruyZVOG1eQiduQE3WYmH0DZLzWKzXTzCbln86UJQoRxsgwOBz22sUC
-         or6SBfC5Dk4rnX/jKY3Ns4k5OaCyH1bjQN0iq4rrIvLfJTITQ0FNmOEfcWCpZyN4qR/z
-         E/tw==
-X-Gm-Message-State: AOAM532bCR9POMF8bZbudrsOmsdP5x2L+plbZR5pBGgJ6+M/za/9CR7m
-        /cTUn9w7Al9wiQVC2yfEBFExDi3CiZk7SlkdaEYm4vJWuu/N
-X-Google-Smtp-Source: ABdhPJzebhMi2YVlQFv285w6irW+P0ujyzgsqNUG/Nz0LVkoTR+LISYvXb9Tq45g6gErJc3xGQPz6sdNe3TLeT7IuWRIkJdkg24k
-MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:ca3:: with SMTP id 3mr2232309ilg.227.1598893101210;
- Mon, 31 Aug 2020 09:58:21 -0700 (PDT)
-Date:   Mon, 31 Aug 2020 09:58:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000054e22905ae2f4fae@google.com>
-Subject: WARNING in chnl_net_uninit
-From:   syzbot <syzbot+ef72fb13d1c081833ebe@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        wangyunjian@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1728596AbgHaRAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 13:00:04 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:10498 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726249AbgHaRAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 13:00:04 -0400
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07VGrAfg009404
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 13:00:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=bZGJXJ5aC/R6G/cQtx9kS3UPqigIaMeu8ClCJiK9DCw=;
+ b=V9Vm/sOiAtRyyVVlmh2Xm6qZXjGHh9/LXP+EDcnnniQROMwBpHx0XUel/UQL3ky3i86o
+ JnedtWQHlI9q4nEn13hMuzpEtqyl0BrRHkJZSwCqTOsiX5xJKaJqVnR09VhbgZ78oid+
+ eDfCMiabQ2slLzMdx55QTEGjBc31U2b42KYousZmt39UseM+aIhVNMelN9EHg4jUkxav
+ oKwVfOAOnEdqgIrLxoEVerHPAQelZhfdacFaXANG/oZFyJxTWsBiKL2YNpuR75Rba6/O
+ lt5ZGK6z29HEZCZnh+RU8EbyA7LYyxoNT6pdAeEfR4gL5BPEf1VoBlzhkd5T2whABLc6 sw== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33954c83gf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 13:00:03 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07VGxJxB006914
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 17:00:02 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma01dal.us.ibm.com with ESMTP id 337en95vsq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 17:00:02 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07VH019Z36569450
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 31 Aug 2020 17:00:01 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ACE17124075;
+        Mon, 31 Aug 2020 17:00:01 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0E1E7124052;
+        Mon, 31 Aug 2020 17:00:01 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.160.96.4])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 31 Aug 2020 17:00:00 +0000 (GMT)
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     drt@linux.vnet.ibm.com, sukadev@linux.vnet.ibm.com,
+        ljp@linux.vnet.ibm.com, cforno12@linux.ibm.com,
+        Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: [PATCH net-next] ibmvnic: Harden device Command Response Queue handshake
+Date:   Mon, 31 Aug 2020 11:59:57 -0500
+Message-Id: <1598893197-14450-1-git-send-email-tlfalcon@linux.ibm.com>
+X-Mailer: git-send-email 1.8.3.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-31_08:2020-08-31,2020-08-31 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 malwarescore=0
+ mlxscore=0 spamscore=0 lowpriorityscore=0 impostorscore=0 adultscore=0
+ suspectscore=1 priorityscore=1501 mlxlogscore=999 phishscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008310099
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+In some cases, the device or firmware may be busy when the
+driver attempts to perform the CRQ initialization handshake.
+If the partner is busy, the hypervisor will return the H_CLOSED
+return code. The aim of this patch is that, if the device is not
+ready, to query the device a number of times, with a small wait
+time in between queries. If all initialization requests fail,
+the driver will remain in a dormant state, awaiting a signal
+from the device that it is ready for operation.
 
-syzbot found the following issue on:
-
-HEAD commit:    4d41ead6 Merge tag 'block-5.9-2020-08-28' of git://git.ker..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=100cf1de900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5ebdb650dfa501c1
-dashboard link: https://syzkaller.appspot.com/bug?extid=ef72fb13d1c081833ebe
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-userspace arch: i386
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ef72fb13d1c081833ebe@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 3 PID: 11918 at net/caif/chnl_net.c:67 robust_list_del net/caif/chnl_net.c:67 [inline]
-WARNING: CPU: 3 PID: 11918 at net/caif/chnl_net.c:67 chnl_net_uninit+0xc9/0x2dc net/caif/chnl_net.c:380
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 2 PID: 11918 Comm: syz-executor.1 Not tainted 5.9.0-rc2-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x18f/0x20d lib/dump_stack.c:118
- panic+0x2e3/0x75c kernel/panic.c:231
- __warn.cold+0x20/0x4a kernel/panic.c:600
- report_bug+0x1bd/0x210 lib/bug.c:198
- handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
- exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
-RIP: 0010:robust_list_del net/caif/chnl_net.c:67 [inline]
-RIP: 0010:chnl_net_uninit+0xc9/0x2dc net/caif/chnl_net.c:380
-Code: 89 eb e8 3a 44 b0 f9 48 89 d8 48 c1 e8 03 42 80 3c 28 00 0f 85 bf 01 00 00 48 81 fb 60 ba a5 8a 48 8b 2b 75 d0 e8 17 44 b0 f9 <0f> 0b 5b 5d 41 5c 41 5d e9 0a 44 b0 f9 4c 89 e3 e8 02 44 b0 f9 4c
-RSP: 0000:ffffc90001707070 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffffffff8aa5ba60 RCX: ffffffff87c3fa72
-RDX: ffff88802797d800 RSI: ffffffff87c3faf9 RDI: 0000000000000005
-RBP: ffffffff8aa5ba60 R08: 0000000000000000 R09: ffffffff8a7e73e7
-R10: 0000000000000000 R11: 0000000000000001 R12: ffff88805fdd6d88
-R13: ffff88805fdd6000 R14: dffffc0000000000 R15: ffff888023b07f80
- rollback_registered_many+0xa7a/0x1210 net/core/dev.c:9300
-
-
+Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/net/ethernet/ibm/ibmvnic.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 86a83e5..9943586 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -3566,14 +3566,31 @@ static int ibmvnic_send_crq(struct ibmvnic_adapter *adapter,
+ 
+ static int ibmvnic_send_crq_init(struct ibmvnic_adapter *adapter)
+ {
++	struct device *dev = &adapter->vdev->dev;
+ 	union ibmvnic_crq crq;
++	int retries = 100;
++	int rc;
+ 
+ 	memset(&crq, 0, sizeof(crq));
+ 	crq.generic.first = IBMVNIC_CRQ_INIT_CMD;
+ 	crq.generic.cmd = IBMVNIC_CRQ_INIT;
+ 	netdev_dbg(adapter->netdev, "Sending CRQ init\n");
+ 
+-	return ibmvnic_send_crq(adapter, &crq);
++	do {
++		rc = ibmvnic_send_crq(adapter, &crq);
++		if (rc != H_CLOSED)
++			break;
++		retries--;
++		msleep(50);
++
++	} while (retries > 0);
++
++	if (rc) {
++		dev_err(dev, "Failed to send init request, rc = %d\n", rc);
++		return rc;
++	}
++
++	return 0;
+ }
+ 
+ static int send_version_xchg(struct ibmvnic_adapter *adapter)
+-- 
+1.8.3.1
+
