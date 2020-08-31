@@ -2,190 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64302257907
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 14:15:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C7782579A8
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 14:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726946AbgHaMPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 08:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
+        id S1727088AbgHaMsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 08:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726858AbgHaMPE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 08:15:04 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66971C061575
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 05:15:04 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id l9so1278303wme.3
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 05:15:04 -0700 (PDT)
+        with ESMTP id S1726167AbgHaMsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 08:48:06 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66C49C061573
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 05:48:04 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id a9so1458618wmm.2
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 05:48:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CXDVX0YGELPDSa9HVQRD/zIo3Ak3H4cRsj5762Lwo2k=;
-        b=Suk9Hv4XqaEVcYgIX72xD9qy6GzEbaukryuo/LPaLlbBcQl0JfpaSVflC0+G/dhh+d
-         EhDQLGm1HQjtbAzMnd9KvkCmMSrv3N1mYUpSdiHh7RJJX3h5QrrDUw7CksT9/aCb79Qa
-         y0lp3CE8bhy9iInAcoJv+cD6xQyMwU45tqSyS1rNULkYizJNQfR8NHxwFVEO9/L3TGHy
-         ePM9hcNTIrFbUrN2VGjNrXlnJLtZKYKtE7HJm6jwEAowPM1rq2gNUfuW32h5f0Z+Sjix
-         VNjoDbV4CLRdKSdWaUaEkkgN7jHFGuw1vQlDdowhlQFTi7v9rRtq9q1tPWDf45CqZ22S
-         f9fA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kmEfJJjkfBHFuIPnxRMBrkxDx52E21YOCVEEh+kuqZQ=;
+        b=k0KdrO+WWSLZto4p21eHxQv3ZVCqjCGoqC6jNWCR7PbGviXzAJ0qmCMNWAtd+W68Fv
+         +bzcNgV7MebohiyCYqOVvO7sHz6u+KR/XKgQvbQzg9xPAE/LXn20HS4mY5Vgkfme7xL0
+         9ef70zC7w5liUyQyh9OZOGqT2Lu7+iWHel1JhKs5b1qJ/qrOKSXUu5TTwJ1BbSVEE5Yh
+         IQQ2DM6BOF1XfVW4XpiYf3XUIyWAzh3m9Az6tBBkpRf5ie85ZdbVU5JDTPLhU9YAhm/x
+         rqHKfJo+rbS51ThGQRy1tE8orqNzPoQbWEq4IvXNhGom4IvdIul+7gF+JxiKk+CVAQT8
+         p1kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CXDVX0YGELPDSa9HVQRD/zIo3Ak3H4cRsj5762Lwo2k=;
-        b=BLPsIh/F6jS/fnGBlR/JztckaOu0kp1VxZWLe8oO5TOhL+e5dAhvqvk/oPCwatRF0K
-         vY9DmHGRHtYrgHAdXwk9aOyx/ujCUu8MTzq35rfEs1guizdYvnD22dcjimAHZFDy08i8
-         0X03lnwwyIj8W8WUlZWucy61DHKt5sVJ8bpvVHHOh4NQpI6yjZY0Yj+guVaMkSA6KwE0
-         vPZwXvj96p1mXD4TnXeYBycNTbPO4mPIHknCa9YiRKt0kgVTAYXbGrv65aXcwqJ1Pzxy
-         G/RYJ60zLCFUKIWrDx3L2NIltGGTdFfQFlnY8gd3h18FjjTaEiuoA4YZ6hSVRX3nywEE
-         C2vg==
-X-Gm-Message-State: AOAM530mwt+OVKFiSOuC5LDlSxXAoQvUn3SpZ4oQG+7Aim8NrguyMWVx
-        TL7nWyO/jR7Igsg2H1zAAYl3YA==
-X-Google-Smtp-Source: ABdhPJxI4FQAA9nLp+cBM2Zp8GbhP4AfLQr1AzKsa0RP42KutjwrSTnkJlyUuTOuzaS252dE0ZOpSg==
-X-Received: by 2002:a1c:20d3:: with SMTP id g202mr1151473wmg.54.1598876103080;
-        Mon, 31 Aug 2020 05:15:03 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id u16sm11347086wmc.7.2020.08.31.05.15.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 31 Aug 2020 05:15:02 -0700 (PDT)
-Date:   Mon, 31 Aug 2020 14:15:01 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Moshe Shemesh <moshe@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v3 01/14] devlink: Add reload action option
- to devlink reload command
-Message-ID: <20200831121501.GD3794@nanopsycho.orion>
-References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
- <1598801254-27764-2-git-send-email-moshe@mellanox.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kmEfJJjkfBHFuIPnxRMBrkxDx52E21YOCVEEh+kuqZQ=;
+        b=IGTGhMASsgzz2BEM1pTdyv7dyGKa4h6Pp4RTvvogUl2vw4klIgAGxd12FwHvX1R/jI
+         kw9B8uiB/dVkT+x68jXzvpLJqmjO0r3x/6S6ZK8hKKosdMhvT3ET0okngNpbHnW3pGHR
+         HbsO57V5qTLrG+FUFBkg7sOQ/BaGSzGSIx+pVWkrquDWs+AWMnq+0hSfQaYxKsu2leV6
+         2ATn3ILYQMqwOmkfr3I+cAKPsf7BNhU1geG4IUtfHfILZxze0Li8p8mAAJztbetLF9Ar
+         BB6VR8hRNswV/CeOJSEW26VbAKOoafXx4iUZsOxmNts/eS7ya7UVTpekfJiW/IKyTfUy
+         WF5g==
+X-Gm-Message-State: AOAM531INfS/SlPwhzHrNzorGLmQ36zl2b3k/YThXbIKo5jWxMzg5bQY
+        smWZuvfZwa2TjJyGqJu0hvc=
+X-Google-Smtp-Source: ABdhPJw7HSmqcoUB7AOmmWBWjRwZUZf+V0iC2v4Xn98YjR/NBf+3OIA0xk2KQ8s7xpLC3xgZANUDWg==
+X-Received: by 2002:a05:600c:204e:: with SMTP id p14mr1185882wmg.182.1598878083125;
+        Mon, 31 Aug 2020 05:48:03 -0700 (PDT)
+Received: from [192.168.8.147] ([37.164.27.66])
+        by smtp.gmail.com with ESMTPSA id r18sm12608010wrg.64.2020.08.31.05.48.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Aug 2020 05:48:02 -0700 (PDT)
+Subject: Re: [net] tipc: fix using smp_processor_id() in preemptible
+To:     Tuong Tong Lien <tuong.t.lien@dektech.com.au>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jmaloy@redhat.com" <jmaloy@redhat.com>,
+        "maloy@donjonn.com" <maloy@donjonn.com>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>
+References: <20200829193755.9429-1-tuong.t.lien@dektech.com.au>
+ <f81eafce-e1d1-bb18-cb70-cfdf45bb2ed0@gmail.com>
+ <AM8PR05MB733222C45D3F0CC19E909BB0E2510@AM8PR05MB7332.eurprd05.prod.outlook.com>
+ <0ed21ba7-2b3b-9d4f-563e-10d329ebeecb@gmail.com>
+ <AM8PR05MB7332E91A67120D78823353F6E2510@AM8PR05MB7332.eurprd05.prod.outlook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <3f858962-4e38-0b72-4341-1304ec03cd7a@gmail.com>
+Date:   Mon, 31 Aug 2020 14:48:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1598801254-27764-2-git-send-email-moshe@mellanox.com>
+In-Reply-To: <AM8PR05MB7332E91A67120D78823353F6E2510@AM8PR05MB7332.eurprd05.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Aug 30, 2020 at 05:27:21PM CEST, moshe@mellanox.com wrote:
->Add devlink reload action to allow the user to request a specific reload
->action. The action parameter is optional, if not specified then devlink
->driver re-init action is used (backward compatible).
->Note that when required to do firmware activation some drivers may need
->to reload the driver. On the other hand some drivers may need to reset
->the firmware to reinitialize the driver entities. Therefore, the devlink
->reload command returns the actions which were actually done.
->However, in case fw_activate_no_reset action is selected, then no other
->reload action is allowed.
->Reload actions supported are:
->driver_reinit: driver entities re-initialization, applying devlink-param
->               and devlink-resource values.
->fw_activate: firmware activate.
->fw_activate_no_reset: Activate new firmware image without any reset.
->                      (also known as: firmware live patching).
->
->command examples:
->$devlink dev reload pci/0000:82:00.0 action driver_reinit
->reload_actions_done:
->  driver_reinit
->
->$devlink dev reload pci/0000:82:00.0 action fw_activate
->reload_actions_done:
->  driver_reinit fw_activate
->
->Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
->---
->v2 -> v3:
->- Replace fw_live_patch action by fw_activate_no_reset
->- Devlink reload returns the actions done over netlink reply
->v1 -> v2:
->- Instead of reload levels driver,fw_reset,fw_live_patch have reload
->  actions driver_reinit,fw_activate,fw_live_patch
->- Remove driver default level, the action driver_reinit is the default
->  action for all drivers
->---
-
-[...]
 
 
->diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
->index 08d101138fbe..c42b66d88884 100644
->--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
->+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
->@@ -1113,7 +1113,7 @@ mlxsw_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
+On 8/31/20 3:05 AM, Tuong Tong Lien wrote:
 > 
-> static int
-> mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
->-					  bool netns_change,
->+					  bool netns_change, enum devlink_reload_action action,
-> 					  struct netlink_ext_ack *extack)
-> {
-> 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
->@@ -1126,15 +1126,23 @@ mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
-> }
 > 
-> static int
->-mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
->-					struct netlink_ext_ack *extack)
->+mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink, enum devlink_reload_action action,
->+					struct netlink_ext_ack *extack, unsigned long *actions_done)
-> {
-> 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
->+	int err;
-> 
->-	return mlxsw_core_bus_device_register(mlxsw_core->bus_info,
->-					      mlxsw_core->bus,
->-					      mlxsw_core->bus_priv, true,
->-					      devlink, extack);
->+	err = mlxsw_core_bus_device_register(mlxsw_core->bus_info,
->+					     mlxsw_core->bus,
->+					     mlxsw_core->bus_priv, true,
->+					     devlink, extack);
->+	if (err)
->+		return err;
->+	if (actions_done)
->+		*actions_done = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
->+				BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE);
->+
->+	return 0;
-> }
-> 
-> static int mlxsw_devlink_flash_update(struct devlink *devlink,
->@@ -1268,6 +1276,8 @@ mlxsw_devlink_trap_policer_counter_get(struct devlink *devlink,
-> }
-> 
-> static const struct devlink_ops mlxsw_devlink_ops = {
->+	.supported_reload_actions	= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
->+					  BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
+>> -----Original Message-----
+>> From: Eric Dumazet <eric.dumazet@gmail.com>
+>> Sent: Monday, August 31, 2020 4:48 PM
+>> To: Tuong Tong Lien <tuong.t.lien@dektech.com.au>; Eric Dumazet <eric.dumazet@gmail.com>; davem@davemloft.net;
+>> jmaloy@redhat.com; maloy@donjonn.com; ying.xue@windriver.com; netdev@vger.kernel.org
+>> Cc: tipc-discussion@lists.sourceforge.net
+>> Subject: Re: [net] tipc: fix using smp_processor_id() in preemptible
+>>
+>>
+>>
+>> On 8/31/20 1:33 AM, Tuong Tong Lien wrote:
+>>> Hi Eric,
+>>>
+>>> Thanks for your comments, please see my answers inline.
+>>>
+>>>> -----Original Message-----
+>>>> From: Eric Dumazet <eric.dumazet@gmail.com>
+>>>> Sent: Monday, August 31, 2020 3:15 PM
+>>>> To: Tuong Tong Lien <tuong.t.lien@dektech.com.au>; davem@davemloft.net; jmaloy@redhat.com; maloy@donjonn.com;
+>>>> ying.xue@windriver.com; netdev@vger.kernel.org
+>>>> Cc: tipc-discussion@lists.sourceforge.net
+>>>> Subject: Re: [net] tipc: fix using smp_processor_id() in preemptible
+>>>>
+>>>>
+>>>>
+>>>> On 8/29/20 12:37 PM, Tuong Lien wrote:
+>>>>> The 'this_cpu_ptr()' is used to obtain the AEAD key' TFM on the current
+>>>>> CPU for encryption, however the execution can be preemptible since it's
+>>>>> actually user-space context, so the 'using smp_processor_id() in
+>>>>> preemptible' has been observed.
+>>>>>
+>>>>> We fix the issue by using the 'get/put_cpu_ptr()' API which consists of
+>>>>> a 'preempt_disable()' instead.
+>>>>>
+>>>>> Fixes: fc1b6d6de220 ("tipc: introduce TIPC encryption & authentication")
+>>>>
+>>>> Have you forgotten ' Reported-by: syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com' ?
+>>> Well, really I detected the issue during my testing instead, didn't know if it was reported by syzbot too.
+>>>
+>>>>
+>>>>> Acked-by: Jon Maloy <jmaloy@redhat.com>
+>>>>> Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+>>>>> ---
+>>>>>  net/tipc/crypto.c | 12 +++++++++---
+>>>>>  1 file changed, 9 insertions(+), 3 deletions(-)
+>>>>>
+>>>>> diff --git a/net/tipc/crypto.c b/net/tipc/crypto.c
+>>>>> index c38babaa4e57..7c523dc81575 100644
+>>>>> --- a/net/tipc/crypto.c
+>>>>> +++ b/net/tipc/crypto.c
+>>>>> @@ -326,7 +326,8 @@ static void tipc_aead_free(struct rcu_head *rp)
+>>>>>  	if (aead->cloned) {
+>>>>>  		tipc_aead_put(aead->cloned);
+>>>>>  	} else {
+>>>>> -		head = *this_cpu_ptr(aead->tfm_entry);
+>>>>> +		head = *get_cpu_ptr(aead->tfm_entry);
+>>>>> +		put_cpu_ptr(aead->tfm_entry);
+>>>>
+>>>> Why is this safe ?
+>>>>
+>>>> I think that this very unusual construct needs a comment, because this is not obvious.
+>>>>
+>>>> This really looks like an attempt to silence syzbot to me.
+>>> No, this is not to silence syzbot but really safe.
+>>> This is because the "aead->tfm_entry" object is "common" between CPUs, there is only its pointer to be the "per_cpu" one. So just
+>> trying to lock the process on the current CPU or 'preempt_disable()', taking the per-cpu pointer and dereferencing to the actual
+>> "tfm_entry" object... is enough. Later on, that’s fine to play with the actual object without any locking.
+>>
+>> Why using per cpu pointers, if they all point to a common object ?
+>>
+>> This makes the code really confusing.
+> Sorry for making you confused. Yes, the code is a bit ugly and could be made in some other ways... The initial idea is to not touch or change the same pointer variable in different CPUs so avoid a penalty with the cache hits/misses...
 
-This is confusing and open to interpretation. Does this mean that the
-driver supports:
-1) REINIT && FW_ACTIVATE
-2) REINIT || FW_ACTIVATE
-?
+What makes this code interrupt safe ?
 
-Because mlxsw supports only 1. I guess that mlx5 supports both. This
-needs to be distinguished.
-
-I think you need an array of combinations. Or perhaps rather to extend
-the enum with combinations. You kind of have it already with
-DEVLINK_RELOAD_ACTION_FW_ACTIVATE_NO_RESET
-
-Maybe we can have something like:
-DEVLINK_RELOAD_ACTION_DRIVER_REINIT
-DEVLINK_RELOAD_ACTION_DRIVER_REINIT_FW_ACTIVATE_RESET
-DEVLINK_RELOAD_ACTION_FW_ACTIVATE_RESET
-DEVLINK_RELOAD_ACTION_FW_ACTIVATE (this is the original FW_ACTIVATE_NO_RESET)
-
-Each has very clear meaning.
-
-Also, then the "actions_done" would be a simple enum, directly returned
-to the user. No bitfield needed.
+Having a per-cpu list is not interrupt safe without special care.
 
 
-> 	.reload_down		= mlxsw_devlink_core_bus_device_reload_down,
-> 	.reload_up		= mlxsw_devlink_core_bus_device_reload_up,
-> 	.port_type_set			= mlxsw_devlink_port_type_set,
 
-[...]
