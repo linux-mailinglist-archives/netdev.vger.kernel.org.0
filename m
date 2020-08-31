@@ -2,136 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57925258209
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 21:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28011258217
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 21:51:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729436AbgHaTsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 15:48:16 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:39610 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726714AbgHaTsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 15:48:14 -0400
-Received: by mail-il1-f198.google.com with SMTP id o1so5960197ilk.6
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 12:48:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=cK+cTlHrBH0I8dtFbbTlN1a0PMAtRS8/eA1z+aa58yA=;
-        b=Ofs/9wEabgWuNBxaNt1TN7XYFHtZZHdYX3Sq6DpbHKZwSjnZnCebXehc5qyQBahn5E
-         Pl986KNdTYM/3cfZVgt05Yuy5uFGEivI9cbJa5TuVIZipWL75wOkrWgarepzSuP/5WEw
-         MK10rCF2Vxbo1yDzQQp0TOGj+Q0zRUfP6OX9lpSFvw1u29DTbKt81uVqY3gpe2OyaBvw
-         mrJx7P5y10uHgLQxNCv56gz/5O/pCIvrbLTmnLr6Cx32hViCD3lYNZpPyRNbvNXsuT2U
-         SVIOb6iv1qJTnFUTJe9xNwygXXR3bEBOuzhkFJm1JBhzV6FxzinDhCLbrQqj55+mUEWg
-         qaiA==
-X-Gm-Message-State: AOAM531j0LX88Z3yYA9vepXtv7QwH95nj1+pmpVnZxCMGMabVd7BMHio
-        tr3hE+Msl5KMM/iETPmm0UnIgOhPHDd8Q599viYtOthglUDn
-X-Google-Smtp-Source: ABdhPJxsRKfEFgHCrDNCyrUbVf348EO4W3juNVBYdrE4wLSpbYKHk4dges1Kr5WL+zj+suSdPTbaWeY9UumBHULiDtvlNB3TrhHL
+        id S1729785AbgHaTvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 15:51:54 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:57334 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729436AbgHaTvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 15:51:53 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07VJX374061512;
+        Mon, 31 Aug 2020 15:51:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=ibg2ebrpNKeT5k+92FbeSNmHDMyn6xI4xroB48b2eFQ=;
+ b=kCdHeFPwy/3E06Sl8OVsH/Ns6AZliDrpwjRfhXXhBRNm4k5r20tu2qmbGDuJ1+FIltbc
+ prmw7xr0c2KReeSxQ9XCrB7J290oHaNVduFOZUg+EbnYKQ3NFnxBi1RN3jyF1NnqELHY
+ 9vg9OAsEffe6lGXO1WF9GDH9uHq+eaUmtEyLICKZvMf7KQaQS9mP0v9pX1Mc/nFjNjsQ
+ TEGNJrawoA1Nc5d55pQZd7zGaMZzUmjJVOuv3rXCtgCh6248gwPSJyVH/slhVyg3ginz
+ S/CuHom20tzgTTNZci6zSsn3AjA4yaHvBdj5YcFjTk2sYCpTTq0z9b0L4omiZkiCKt9v BA== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3395wntwaw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Aug 2020 15:51:52 -0400
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07VJg58l019737;
+        Mon, 31 Aug 2020 19:51:51 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma02dal.us.ibm.com with ESMTP id 337en9f6rs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 31 Aug 2020 19:51:51 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07VJpono50528722
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 31 Aug 2020 19:51:50 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D49A92805C;
+        Mon, 31 Aug 2020 19:51:50 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 50DE62805A;
+        Mon, 31 Aug 2020 19:51:50 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.160.96.4])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 31 Aug 2020 19:51:50 +0000 (GMT)
+Subject: Re: [PATCH net-next 2/5] ibmvnic: Include documentation for ibmvnic
+ sysfs files
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, drt@linux.vnet.ibm.com,
+        sukadev@linux.vnet.ibm.com, ljp@linux.vnet.ibm.com,
+        cforno12@linux.ibm.com
+References: <1598893093-14280-1-git-send-email-tlfalcon@linux.ibm.com>
+ <1598893093-14280-3-git-send-email-tlfalcon@linux.ibm.com>
+ <20200831120732.2fa09746@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+Message-ID: <c4a785ea-d5bc-4178-994f-e426e6512496@linux.ibm.com>
+Date:   Mon, 31 Aug 2020 14:51:49 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:d4cf:: with SMTP id o15mr2870758ilm.25.1598903293869;
- Mon, 31 Aug 2020 12:48:13 -0700 (PDT)
-Date:   Mon, 31 Aug 2020 12:48:13 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dc862405ae31ae9b@google.com>
-Subject: general protection fault in sock_close
-From:   syzbot <syzbot+e24baf53dc389927a7c3@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        maz@kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200831120732.2fa09746@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-31_09:2020-08-31,2020-08-31 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ impostorscore=0 adultscore=0 mlxscore=0 priorityscore=1501 suspectscore=0
+ spamscore=0 mlxlogscore=999 clxscore=1015 lowpriorityscore=0 phishscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008310114
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following issue on:
+On 8/31/20 2:07 PM, Jakub Kicinski wrote:
+> On Mon, 31 Aug 2020 11:58:10 -0500 Thomas Falcon wrote:
+>> Include documentation for existing ibmvnic sysfs files,
+>> currently only for "failover," which is used to swap
+>> the active hardware port to a backup port in redundant
+>> backing hardware or failover configurations.
+>>
+>> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+>> ---
+>>   Documentation/ABI/testing/sysfs-driver-ibmvnic | 14 ++++++++++++++
+>>   1 file changed, 14 insertions(+)
+>>   create mode 100644 Documentation/ABI/testing/sysfs-driver-ibmvnic
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-driver-ibmvnic b/Documentation/ABI/testing/sysfs-driver-ibmvnic
+>> new file mode 100644
+>> index 0000000..7fa2920
+>> --- /dev/null
+>> +++ b/Documentation/ABI/testing/sysfs-driver-ibmvnic
+>> @@ -0,0 +1,14 @@
+>> +What:		/sys/devices/vio/<our device>/failover
+>> +Date:		June 2017
+>> +KernelVersion:	4.13
+>> +Contact:	linuxppc-dev@lists.ozlabs.org
+>> +Description:	If the ibmvnic device has been configured with redundant
+>> +		physical NIC ports, the user may write "1" to the failover
+>> +		file to trigger a device failover, which will reset the
+>> +		ibmvnic device and swap to a backup physical port. If no
+>> +		redundant physical port has been configured for the device,
+>> +		the device will not reset and -EINVAL is returned. If anything
+>> +		other than "1" is written to the file, -EINVAL will also be
+>> +		returned.
+>> +Users:		Any users of the ibmvnic driver which use redundant hardware
+>> +		configurations.
+> Could you elaborate what the failover thing is? Is it what net_failover
+> does or something opposite? (you say "backup physical port" which
+> sounds like physical port is a backup.. perhaps some IBM nomenclature
+> there worth clarifying?)
 
-HEAD commit:    15bc20c6 Merge tag 'tty-5.9-rc3' of git://git.kernel.org/p..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16a85669900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=891ca5711a9f1650
-dashboard link: https://syzkaller.appspot.com/bug?extid=e24baf53dc389927a7c3
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=127d3c99900000
+Hi Jakub,
 
-The issue was bisected to:
+When creating a SRIOV VNIC device on a Power system, the user will 
+specify one or more ports to use from physical NIC's available to the 
+Power Hypervisor. These aren't visible to the Linux OS. In a failover 
+configuration, the VNIC will have one active port and at least one other 
+port in backup or standby mode. It's similar to the bonding driver's 
+active-backup mode. If the hypervisor detects a problem with the active 
+port, it will swap in the backup port and send a signal to the VNIC 
+driver that it should reset, which is needed to activate the new port. 
+There is also a mechanism through which the driver can force this 
+operation in case the hypervisor does not detect an issue with the 
+active port. This mechanism can be triggered by an administrator or with 
+userspace tools through the 'failover' device file in sysfs.
 
-commit a9ed4a6560b8562b7e2e2bed9527e88001f7b682
-Author: Marc Zyngier <maz@kernel.org>
-Date:   Wed Aug 19 16:12:17 2020 +0000
+Tom
 
-    epoll: Keep a reference on files added to the check list
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1374d7c5900000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=10f4d7c5900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1774d7c5900000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+e24baf53dc389927a7c3@syzkaller.appspotmail.com
-Fixes: a9ed4a6560b8 ("epoll: Keep a reference on files added to the check list")
-
-general protection fault, probably for non-canonical address 0xdffffc0000000002: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-CPU: 1 PID: 10933 Comm: syz-executor.0 Not tainted 5.9.0-rc2-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__sock_release net/socket.c:596 [inline]
-RIP: 0010:sock_close+0xc5/0x260 net/socket.c:1277
-Code: fc ff df 41 80 3c 04 00 74 08 4c 89 ff e8 e3 cf 49 fb 49 8b 1f 48 83 c3 10 48 89 d8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 df e8 bd cf 49 fb 4c 89 f7 ff 13 49 8d 5e
-RSP: 0018:ffffc9000535fe10 EFLAGS: 00010202
-RAX: 0000000000000002 RBX: 0000000000000010 RCX: dffffc0000000000
-RDX: 0000000000000001 RSI: 0000000000000004 RDI: 0000000000000001
-RBP: ffffffff88bbc748 R08: dffffc0000000000 R09: ffffed1010361edf
-R10: ffffed1010361edf R11: 0000000000000000 R12: 1ffff11010361eac
-R13: ffff888081b0f6e0 R14: ffff888081b0f540 R15: ffff888081b0f560
-FS:  00007fad45047700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fad45025db8 CR3: 0000000084c1d000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- __fput+0x34f/0x7b0 fs/file_table.c:281
- task_work_run+0x137/0x1c0 kernel/task_work.c:141
- tracehook_notify_resume include/linux/tracehook.h:188 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:140 [inline]
- exit_to_user_mode_prepare+0xfa/0x1b0 kernel/entry/common.c:167
- syscall_exit_to_user_mode+0x5e/0x1a0 kernel/entry/common.c:242
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x45d5b9
-Code: 5d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 2b b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fad45046c78 EFLAGS: 00000246 ORIG_RAX: 00000000000000e9
-RAX: 0000000000000000 RBX: 0000000000002ac0 RCX: 000000000045d5b9
-RDX: 0000000000000004 RSI: 0000000000000001 RDI: 0000000000000005
-RBP: 000000000118cf88 R08: 0000000000000000 R09: 0000000000000000
-R10: 00000000200003c0 R11: 0000000000000246 R12: 000000000118cf4c
-R13: 00007ffd8c03abcf R14: 00007fad450479c0 R15: 000000000118cf4c
-Modules linked in:
----[ end trace a8eab99154db8026 ]---
-RIP: 0010:__sock_release net/socket.c:596 [inline]
-RIP: 0010:sock_close+0xc5/0x260 net/socket.c:1277
-Code: fc ff df 41 80 3c 04 00 74 08 4c 89 ff e8 e3 cf 49 fb 49 8b 1f 48 83 c3 10 48 89 d8 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <80> 3c 08 00 74 08 48 89 df e8 bd cf 49 fb 4c 89 f7 ff 13 49 8d 5e
-RSP: 0018:ffffc9000535fe10 EFLAGS: 00010202
-RAX: 0000000000000002 RBX: 0000000000000010 RCX: dffffc0000000000
-RDX: 0000000000000001 RSI: 0000000000000004 RDI: 0000000000000001
-RBP: ffffffff88bbc748 R08: dffffc0000000000 R09: ffffed1010361edf
-R10: ffffed1010361edf R11: 0000000000000000 R12: 1ffff11010361eac
-R13: ffff888081b0f6e0 R14: ffff888081b0f540 R15: ffff888081b0f560
-FS:  00007fad45047700(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f6e37205010 CR3: 0000000084c1d000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
