@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 657AB258476
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 01:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E8A258475
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 01:36:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726400AbgHaXgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 19:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
+        id S1726323AbgHaXgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 19:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726068AbgHaXgO (ORCPT
+        with ESMTP id S1725929AbgHaXgO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 19:36:14 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE96C061755
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028B5C061575
         for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 16:36:13 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id g29so1621269pgl.2
+Received: by mail-pf1-x443.google.com with SMTP id c142so1588715pfb.7
         for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 16:36:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=V7QfDockLLbnm32/uHygO4bTj+4k1jhtJya2L/zQsc8=;
-        b=JRYGBKzY2wpf+8KZBkjIYZdXEXVVOmNEGiLeIGO54kAFaDF27PaYavinTnBOYkZoa6
-         3Xgyf+8XwkNkCOxWYY29kxk0KF5SLV5mKv7Wr2naNUTscwn3IrHOH2m3yima2DhcqhvN
-         qCt38a+bbz9U7IDiDuOIP/m/+dl5J0ZKUQH5hdtC1U3tLk/w9sr3yjcJRxvVU+M7H8G1
-         z7RFTAaKab7yoNIUS8cauefiX5+NighbA/ruCVRzeL5xbeTIhDU8327qrMeJcDwuLLIG
-         r5gRsxg7P0W1vZyZd2JyzCcEhzQL22fxlAF+HPv8NfVHS95F+7ewmAHhC7Gjqxrz7vrU
-         H3YA==
+        bh=DFYo8QIYjtFOqJXeDBuNjkJ3G9hImanULIk67aS8k5A=;
+        b=uidExLppvfcyV8m/yiPsgP21OKNkM5EpHyMmyW/OpqjrcAjfJcLBWKTm/WPJl311/G
+         SELJ1JcR5u0lyojnWJeoH92xOoYPuDdhW2TRqxwGR3bgrribYw9D+t/p0rmffnbVXzWd
+         //1IOinjLcxcKJtXvD29oh2q3A5QKfDQPTgH6/cvnmBwGdRNnYKyjz2XsmzVHT164q1j
+         G2KnkwYvuh/oFpRFcI9JXjOrl3V5pcagugNKSYSr3xW8DkCU2mGQtbM68JZFHcHthoG8
+         VIm+4qjMERy87sW3IW0tiM0XeP+xekYfNcg6mVJPrVl8sYt+0DmKCzX6VPSmzTOLzlZ6
+         UnKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=V7QfDockLLbnm32/uHygO4bTj+4k1jhtJya2L/zQsc8=;
-        b=WXuvvqnHKhP0EEGxU9vNqTTDu5ov932l4bIDdKLSQOT52kp07uwLIGp3/DFlP9qlfa
-         uYiBapMfMJXjWBtPmtZxJYlv/OCosxLeP2VovT+00Q8Ilmba3luxqu0lW5TjPZKIsC3f
-         WhxVAxgMZdflku6BFWfA5zEv1kIEqYTRnbJ8c5TPpVG73I+VNBuEK9bK00wplQV+N3u8
-         0KzBagxiG17ybWzTQDB0TjGgXxLEsJSMGHp3kC0UEZBZvYOhjhj6LRs6ru5LdTGNKRTB
-         nb/lIqvk1IMOUaGY8V/lOCPNSrcOgq5nIRDzM3ShjsEfKFOZNJG7ZKgr3fDGcblTsrod
-         Mzjw==
-X-Gm-Message-State: AOAM531+d8rx41MjrnMXZDYuQ3h5wOVVI36MbO8BMyeFnY7P1It2Qk/h
-        Cez+sIUGUvpmbsuubaaeVPET7GkBzVmVCw==
-X-Google-Smtp-Source: ABdhPJzJkFdGLs6AgmhMOFRh1I5W70NqKdodwEfevJ4HFmX9tbSsodllOHwvoeEenqmKe/z4FVMH4A==
-X-Received: by 2002:a63:c343:: with SMTP id e3mr2931097pgd.288.1598916971623;
-        Mon, 31 Aug 2020 16:36:11 -0700 (PDT)
+        bh=DFYo8QIYjtFOqJXeDBuNjkJ3G9hImanULIk67aS8k5A=;
+        b=py9IFp550IpcaDkTXEoGEkx+iRg+44utlcrJ/4Du5iLhwGbthuIeHXjUvrr636qH7V
+         3KOJk8oOCXr/i+0oZxXOkEBUiALL8xfPZnXuHOLJlBmRrvuYMNfemGMIGnQjDNR5V3xS
+         gchoNawSHnj1woxVnUtualTEvGQb9Qd5csKx1UOzb7WQS134NXXt+16Yx/vW48JiHkfD
+         qrFslpbjSab2rfeU2vbAksHqZNOw8p0gQrRrsHjKTV9W1X4PvARgwMQ98/mmdKOc3sFg
+         nU5YZjg4cJwrO0S5kK4yLwoz13kCU5zoTf5mb6wpOclu8lOXpuuWIO+oqF2Aq9dfHt4b
+         TC7A==
+X-Gm-Message-State: AOAM532MvlbdtOgTi6O1g64eDUDELUbTBsq+vcd/sEm4e+m0SjSazNW4
+        +SvjSiYBNTHWlGg7oFDZbF/bXL8lMLS+tg==
+X-Google-Smtp-Source: ABdhPJzvnyQagwRK4bjJL8rFlOrp6SNj7xqWTcbhRZ/rZbTus/6e92Z7VJlEY5ZBLm6XaTfUdV4FWA==
+X-Received: by 2002:a63:ca4e:: with SMTP id o14mr3182799pgi.213.1598916972958;
+        Mon, 31 Aug 2020 16:36:12 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id 65sm9082651pfx.104.2020.08.31.16.36.10
+        by smtp.gmail.com with ESMTPSA id 65sm9082651pfx.104.2020.08.31.16.36.11
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
         Mon, 31 Aug 2020 16:36:11 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>, Neel Patel <neel@pensando.io>
-Subject: [PATCH net-next 4/5] ionic: clean up desc_info and cq_info structs
-Date:   Mon, 31 Aug 2020 16:35:57 -0700
-Message-Id: <20200831233558.71417-5-snelson@pensando.io>
+Subject: [PATCH net-next 5/5] ionic: clean adminq service routine
+Date:   Mon, 31 Aug 2020 16:35:58 -0700
+Message-Id: <20200831233558.71417-6-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200831233558.71417-1-snelson@pensando.io>
 References: <20200831233558.71417-1-snelson@pensando.io>
@@ -60,165 +60,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove some unnecessary struct fields and related code.
+The only thing calling ionic_napi any more is the adminq
+processing, so combine and simplify.
 
 Signed-off-by: Neel Patel <neel@pensando.io>
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/ionic/ionic_dev.c   | 33 ++-----------------
- .../net/ethernet/pensando/ionic/ionic_dev.h   |  6 ----
- .../net/ethernet/pensando/ionic/ionic_txrx.c  |  8 +++--
- 3 files changed, 8 insertions(+), 39 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic.h   |  3 --
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 44 +++++++++++--------
+ .../net/ethernet/pensando/ionic/ionic_main.c  | 26 -----------
+ 3 files changed, 25 insertions(+), 48 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-index 3645673b4b18..6068f51a11d9 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-@@ -467,9 +467,7 @@ int ionic_cq_init(struct ionic_lif *lif, struct ionic_cq *cq,
- 		  struct ionic_intr_info *intr,
- 		  unsigned int num_descs, size_t desc_size)
- {
--	struct ionic_cq_info *cur;
- 	unsigned int ring_size;
--	unsigned int i;
- 
- 	if (desc_size == 0 || !is_power_of_2(num_descs))
- 		return -EINVAL;
-@@ -485,19 +483,6 @@ int ionic_cq_init(struct ionic_lif *lif, struct ionic_cq *cq,
- 	cq->tail_idx = 0;
- 	cq->done_color = 1;
- 
--	cur = cq->info;
--
--	for (i = 0; i < num_descs; i++) {
--		if (i + 1 == num_descs) {
--			cur->next = cq->info;
--			cur->last = true;
--		} else {
--			cur->next = cur + 1;
--		}
--		cur->index = i;
--		cur++;
--	}
--
- 	return 0;
- }
- 
-@@ -551,9 +536,7 @@ int ionic_q_init(struct ionic_lif *lif, struct ionic_dev *idev,
- 		 unsigned int num_descs, size_t desc_size,
- 		 size_t sg_desc_size, unsigned int pid)
- {
--	struct ionic_desc_info *cur;
- 	unsigned int ring_size;
--	unsigned int i;
- 
- 	if (desc_size == 0 || !is_power_of_2(num_descs))
- 		return -EINVAL;
-@@ -574,18 +557,6 @@ int ionic_q_init(struct ionic_lif *lif, struct ionic_dev *idev,
- 
- 	snprintf(q->name, sizeof(q->name), "L%d-%s%u", lif->index, name, index);
- 
--	cur = q->info;
--
--	for (i = 0; i < num_descs; i++) {
--		if (i + 1 == num_descs)
--			cur->next = q->info;
--		else
--			cur->next = cur + 1;
--		cur->index = i;
--		cur->left = num_descs - i;
--		cur++;
--	}
--
- 	return 0;
- }
- 
-@@ -652,6 +623,7 @@ void ionic_q_service(struct ionic_queue *q, struct ionic_cq_info *cq_info,
- 	struct ionic_desc_info *desc_info;
- 	ionic_desc_cb cb;
- 	void *cb_arg;
-+	u16 index;
- 
- 	/* check for empty queue */
- 	if (q->tail_idx == q->head_idx)
-@@ -665,6 +637,7 @@ void ionic_q_service(struct ionic_queue *q, struct ionic_cq_info *cq_info,
- 
- 	do {
- 		desc_info = &q->info[q->tail_idx];
-+		index = q->tail_idx;
- 		q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
- 
- 		cb = desc_info->cb;
-@@ -675,5 +648,5 @@ void ionic_q_service(struct ionic_queue *q, struct ionic_cq_info *cq_info,
- 
- 		if (cb)
- 			cb(q, desc_info, cq_info, cb_arg);
--	} while (desc_info->index != stop_index);
-+	} while (index != stop_index);
- }
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-index 87debc512755..21c3ce9ee446 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
-@@ -156,9 +156,6 @@ struct ionic_cq_info {
- 		struct ionic_admin_comp *admincq;
- 		struct ionic_notifyq_event *notifyq;
- 	};
--	struct ionic_cq_info *next;
--	unsigned int index;
--	bool last;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic.h b/drivers/net/ethernet/pensando/ionic/ionic.h
+index f699ed19eb4f..084a924431d5 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic.h
+@@ -64,9 +64,6 @@ struct ionic_admin_ctx {
+ 	union ionic_adminq_comp comp;
  };
  
- struct ionic_queue;
-@@ -186,9 +183,6 @@ struct ionic_desc_info {
- 		struct ionic_txq_sg_desc *txq_sg_desc;
- 		struct ionic_rxq_sg_desc *rxq_sgl_desc;
- 	};
--	struct ionic_desc_info *next;
--	unsigned int index;
--	unsigned int left;
- 	unsigned int npages;
- 	struct ionic_page_info pages[IONIC_RX_MAX_SG_ELEMS + 1];
- 	ionic_desc_cb cb;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index efc02b366e73..8ba14792616f 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -240,10 +240,10 @@ static bool ionic_rx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
- 	if (q->tail_idx == q->head_idx)
- 		return false;
- 
--	desc_info = &q->info[q->tail_idx];
--	if (desc_info->index != le16_to_cpu(comp->comp_index))
-+	if (q->tail_idx != le16_to_cpu(comp->comp_index))
- 		return false;
- 
-+	desc_info = &q->info[q->tail_idx];
- 	q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
- 
- 	/* clean the related q entry, only one per qc completion */
-@@ -637,6 +637,7 @@ static bool ionic_tx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
- 	struct ionic_txq_comp *comp = cq_info->cq_desc;
- 	struct ionic_queue *q = cq->bound_q;
- 	struct ionic_desc_info *desc_info;
-+	u16 index;
- 
- 	if (!color_match(comp->color, cq->done_color))
- 		return false;
-@@ -646,11 +647,12 @@ static bool ionic_tx_service(struct ionic_cq *cq, struct ionic_cq_info *cq_info)
- 	 */
- 	do {
- 		desc_info = &q->info[q->tail_idx];
-+		index = q->tail_idx;
- 		q->tail_idx = (q->tail_idx + 1) & (q->num_descs - 1);
- 		ionic_tx_clean(q, desc_info, cq_info, desc_info->cb_arg);
- 		desc_info->cb = NULL;
- 		desc_info->cb_arg = NULL;
--	} while (desc_info->index != le16_to_cpu(comp->comp_index));
-+	} while (index != le16_to_cpu(comp->comp_index));
- 
+-int ionic_napi(struct napi_struct *napi, int budget, ionic_cq_cb cb,
+-	       ionic_cq_done_cb done_cb, void *done_arg);
+-
+ int ionic_adminq_post_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx);
+ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_wait);
+ int ionic_set_dma_mask(struct ionic *ionic);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index eeaa73650986..ee683cb142a8 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -800,21 +800,6 @@ static bool ionic_notifyq_service(struct ionic_cq *cq,
  	return true;
  }
+ 
+-static int ionic_notifyq_clean(struct ionic_lif *lif, int budget)
+-{
+-	struct ionic_dev *idev = &lif->ionic->idev;
+-	struct ionic_cq *cq = &lif->notifyqcq->cq;
+-	u32 work_done;
+-
+-	work_done = ionic_cq_service(cq, budget, ionic_notifyq_service,
+-				     NULL, NULL);
+-	if (work_done)
+-		ionic_intr_credits(idev->intr_ctrl, cq->bound_intr->index,
+-				   work_done, IONIC_INTR_CRED_RESET_COALESCE);
+-
+-	return work_done;
+-}
+-
+ static bool ionic_adminq_service(struct ionic_cq *cq,
+ 				 struct ionic_cq_info *cq_info)
+ {
+@@ -830,15 +815,36 @@ static bool ionic_adminq_service(struct ionic_cq *cq,
+ 
+ static int ionic_adminq_napi(struct napi_struct *napi, int budget)
+ {
++	struct ionic_intr_info *intr = napi_to_cq(napi)->bound_intr;
+ 	struct ionic_lif *lif = napi_to_cq(napi)->lif;
++	struct ionic_dev *idev = &lif->ionic->idev;
++	unsigned int flags = 0;
+ 	int n_work = 0;
+ 	int a_work = 0;
++	int work_done;
++
++	if (lif->notifyqcq && lif->notifyqcq->flags & IONIC_QCQ_F_INITED)
++		n_work = ionic_cq_service(&lif->notifyqcq->cq, budget,
++					  ionic_notifyq_service, NULL, NULL);
+ 
+-	if (likely(lif->notifyqcq && lif->notifyqcq->flags & IONIC_QCQ_F_INITED))
+-		n_work = ionic_notifyq_clean(lif, budget);
+-	a_work = ionic_napi(napi, budget, ionic_adminq_service, NULL, NULL);
++	if (lif->adminqcq && lif->adminqcq->flags & IONIC_QCQ_F_INITED)
++		a_work = ionic_cq_service(&lif->adminqcq->cq, budget,
++					  ionic_adminq_service, NULL, NULL);
++
++	work_done = max(n_work, a_work);
++	if (work_done < budget && napi_complete_done(napi, work_done)) {
++		flags |= IONIC_INTR_CRED_UNMASK;
++		DEBUG_STATS_INTR_REARM(intr);
++	}
+ 
+-	return max(n_work, a_work);
++	if (work_done || flags) {
++		flags |= IONIC_INTR_CRED_RESET_COALESCE;
++		ionic_intr_credits(idev->intr_ctrl,
++				   intr->index,
++				   n_work + a_work, flags);
++	}
++
++	return work_done;
+ }
+ 
+ void ionic_get_stats64(struct net_device *netdev,
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+index 2b72a51be1d0..cfb90bf605fe 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+@@ -305,32 +305,6 @@ int ionic_adminq_post_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
+ 	return ionic_adminq_check_err(lif, ctx, (remaining == 0));
+ }
+ 
+-int ionic_napi(struct napi_struct *napi, int budget, ionic_cq_cb cb,
+-	       ionic_cq_done_cb done_cb, void *done_arg)
+-{
+-	struct ionic_qcq *qcq = napi_to_qcq(napi);
+-	struct ionic_cq *cq = &qcq->cq;
+-	u32 work_done, flags = 0;
+-
+-	work_done = ionic_cq_service(cq, budget, cb, done_cb, done_arg);
+-
+-	if (work_done < budget && napi_complete_done(napi, work_done)) {
+-		flags |= IONIC_INTR_CRED_UNMASK;
+-		DEBUG_STATS_INTR_REARM(cq->bound_intr);
+-	}
+-
+-	if (work_done || flags) {
+-		flags |= IONIC_INTR_CRED_RESET_COALESCE;
+-		ionic_intr_credits(cq->lif->ionic->idev.intr_ctrl,
+-				   cq->bound_intr->index,
+-				   work_done, flags);
+-	}
+-
+-	DEBUG_STATS_NAPI_POLL(qcq, work_done);
+-
+-	return work_done;
+-}
+-
+ static void ionic_dev_cmd_clean(struct ionic *ionic)
+ {
+ 	union ionic_dev_cmd_regs *regs = ionic->idev.dev_cmd_regs;
 -- 
 2.17.1
 
