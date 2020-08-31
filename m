@@ -2,116 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2D73257F24
-	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 18:58:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22C49257F27
+	for <lists+netdev@lfdr.de>; Mon, 31 Aug 2020 18:58:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728874AbgHaQ6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 12:58:42 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:46028 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728211AbgHaQ6X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 12:58:23 -0400
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 07VGjUTj186934
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 12:58:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=UhbNYWKQNFLz72Gfbsik60f05/Na1Obg3q6ckTkMXjw=;
- b=Q7ctWZuUy6+KoDvR2c36SbCyhPmiNtdEPxih4s5PHtV/7Yut1Y2tf7He/Ym+QbUSFjVo
- a3uiqVCI3f7qG2xEG3EGCA5YSyuuZZC1SKQk2JyT6rYlW3o8HfvzI/Rn7P9Zg2DXfBCN
- yffb/JWeYogPCgIipGCQf9OGFTNBQ+T+qJT3VpGfcyaQEX4pEntWFxY0mNbwhVCwZFPi
- nqBKtr/FD1U1qz6QnVEbxssGuuQIPV+3V8k6ZppkKOvRCB0ROgHSLhM/JNrrug6Jj0WR
- yzs//9u1xlgi2M9Um5xsef4a4wKVfHKXdW0E+eft1kcqkIEBriEUJoxhZSHgrkhGrjA8 og== 
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33950sr8mr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 12:58:23 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 07VGrMdv032202
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 16:58:22 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma01dal.us.ibm.com with ESMTP id 337en95vf9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 16:58:22 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 07VGwLDf16057174
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 31 Aug 2020 16:58:21 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 82F56B205F;
-        Mon, 31 Aug 2020 16:58:21 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E30D1B2065;
-        Mon, 31 Aug 2020 16:58:20 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.160.96.4])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 31 Aug 2020 16:58:20 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     drt@linux.vnet.ibm.com, sukadev@linux.vnet.ibm.com,
-        ljp@linux.vnet.ibm.com, cforno12@linux.ibm.com,
-        Thomas Falcon <tlfalcon@linux.ibm.com>
-Subject: [PATCH net-next 5/5] ibmvnic: Provide documentation for ACL sysfs files
-Date:   Mon, 31 Aug 2020 11:58:13 -0500
-Message-Id: <1598893093-14280-6-git-send-email-tlfalcon@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1598893093-14280-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <1598893093-14280-1-git-send-email-tlfalcon@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-31_07:2020-08-31,2020-08-31 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
- suspectscore=1 priorityscore=1501 bulkscore=0 lowpriorityscore=0
- spamscore=0 mlxscore=0 malwarescore=0 mlxlogscore=919 phishscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008310095
+        id S1728885AbgHaQ6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 12:58:50 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:44400 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728777AbgHaQ6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 12:58:22 -0400
+Received: by mail-il1-f199.google.com with SMTP id j11so1560222ilr.11
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 09:58:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Ve3fMaP+GgxKOYA2jQMbUsBIcbQ4arT97D2zd8YTu2Q=;
+        b=jqJ4Bx2bevEHXz0ZBgGHhrVeu1E5pLiWWOiqfVux86lYiYR0NU7QFfDZTNwxdEYR7e
+         B3AXucHzjenA/pHVEOk3cIQC3uw0RnTN16koAPeC422Iv7Ch9wnI6uB5fSDUiJjXgblA
+         gCcAC/dYVlLe/E5+vTm0CAZAd9vjnxgcDn0Jw8zCMPEx3aaC8Lnqd+gZdZdwipT2qtrY
+         00J/mhQsY9MQPIruyZVOG1eQiduQE3WYmH0DZLzWKzXTzCbln86UJQoRxsgwOBz22sUC
+         or6SBfC5Dk4rnX/jKY3Ns4k5OaCyH1bjQN0iq4rrIvLfJTITQ0FNmOEfcWCpZyN4qR/z
+         E/tw==
+X-Gm-Message-State: AOAM532bCR9POMF8bZbudrsOmsdP5x2L+plbZR5pBGgJ6+M/za/9CR7m
+        /cTUn9w7Al9wiQVC2yfEBFExDi3CiZk7SlkdaEYm4vJWuu/N
+X-Google-Smtp-Source: ABdhPJzebhMi2YVlQFv285w6irW+P0ujyzgsqNUG/Nz0LVkoTR+LISYvXb9Tq45g6gErJc3xGQPz6sdNe3TLeT7IuWRIkJdkg24k
+MIME-Version: 1.0
+X-Received: by 2002:a05:6e02:ca3:: with SMTP id 3mr2232309ilg.227.1598893101210;
+ Mon, 31 Aug 2020 09:58:21 -0700 (PDT)
+Date:   Mon, 31 Aug 2020 09:58:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000054e22905ae2f4fae@google.com>
+Subject: WARNING in chnl_net_uninit
+From:   syzbot <syzbot+ef72fb13d1c081833ebe@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        wangyunjian@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide documentation for ibmvnic device Access Control List
-files.
+Hello,
 
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+syzbot found the following issue on:
+
+HEAD commit:    4d41ead6 Merge tag 'block-5.9-2020-08-28' of git://git.ker..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=100cf1de900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5ebdb650dfa501c1
+dashboard link: https://syzkaller.appspot.com/bug?extid=ef72fb13d1c081833ebe
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+userspace arch: i386
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+ef72fb13d1c081833ebe@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 3 PID: 11918 at net/caif/chnl_net.c:67 robust_list_del net/caif/chnl_net.c:67 [inline]
+WARNING: CPU: 3 PID: 11918 at net/caif/chnl_net.c:67 chnl_net_uninit+0xc9/0x2dc net/caif/chnl_net.c:380
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 2 PID: 11918 Comm: syz-executor.1 Not tainted 5.9.0-rc2-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x18f/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:231
+ __warn.cold+0x20/0x4a kernel/panic.c:600
+ report_bug+0x1bd/0x210 lib/bug.c:198
+ handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
+ exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
+RIP: 0010:robust_list_del net/caif/chnl_net.c:67 [inline]
+RIP: 0010:chnl_net_uninit+0xc9/0x2dc net/caif/chnl_net.c:380
+Code: 89 eb e8 3a 44 b0 f9 48 89 d8 48 c1 e8 03 42 80 3c 28 00 0f 85 bf 01 00 00 48 81 fb 60 ba a5 8a 48 8b 2b 75 d0 e8 17 44 b0 f9 <0f> 0b 5b 5d 41 5c 41 5d e9 0a 44 b0 f9 4c 89 e3 e8 02 44 b0 f9 4c
+RSP: 0000:ffffc90001707070 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffffffff8aa5ba60 RCX: ffffffff87c3fa72
+RDX: ffff88802797d800 RSI: ffffffff87c3faf9 RDI: 0000000000000005
+RBP: ffffffff8aa5ba60 R08: 0000000000000000 R09: ffffffff8a7e73e7
+R10: 0000000000000000 R11: 0000000000000001 R12: ffff88805fdd6d88
+R13: ffff88805fdd6000 R14: dffffc0000000000 R15: ffff888023b07f80
+ rollback_registered_many+0xa7a/0x1210 net/core/dev.c:9300
+
+
 ---
- Documentation/ABI/testing/sysfs-driver-ibmvnic | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/Documentation/ABI/testing/sysfs-driver-ibmvnic b/Documentation/ABI/testing/sysfs-driver-ibmvnic
-index 7fa2920..8c78312 100644
---- a/Documentation/ABI/testing/sysfs-driver-ibmvnic
-+++ b/Documentation/ABI/testing/sysfs-driver-ibmvnic
-@@ -12,3 +12,29 @@ Description:	If the ibmvnic device has been configured with redundant
- 		returned.
- Users:		Any users of the ibmvnic driver which use redundant hardware
- 		configurations.
-+
-+What:		/sys/devices/vio/<our device>/mac_acls
-+Date:		August 2020
-+KernelVersion:	5.10
-+Contact:	linuxppc-dev@lists.ozlabs.org
-+Description:	Read-only file which lists the current entries in the ibmvnic
-+		device's MAC address Access Control List. Each entry is
-+		separated by a new line.
-+Users:		Any users of the ibmvnic driver
-+
-+What:		/sys/devices/vio/<our device>/vlan_acls
-+Date:		August 2020
-+KernelVersion:	5.10
-+Contact:	linuxppc-dev@lists.ozlabs.org
-+Description:	Read-only file which lists the current entries in the ibmvnic
-+		device's VLAN ID Access Control List. Each entry is separated
-+		by a new line.
-+Users:		Any users of the ibmvnic driver
-+
-+What:		/sys/devices/vio/<our device>/pvid
-+Date:		August 2020
-+KernelVersion:	5.10
-+Contact:	linuxppc-dev@lists.ozlabs.org
-+Description:	Read-only file which lists the ibmvnic device's Port VLAN
-+		ID and Priority setting. Each entry is separated by a new line.
-+Users:		Any users of the ibmvnic driver
--- 
-1.8.3.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
