@@ -2,143 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 796C5258896
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 08:55:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB25A25889C
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 08:58:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726521AbgIAGze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 02:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
+        id S1726352AbgIAG6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 02:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726006AbgIAGzd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 02:55:33 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480B2C0612AC
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:55:33 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id b79so39083wmb.4
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:55:33 -0700 (PDT)
+        with ESMTP id S1726044AbgIAG6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 02:58:05 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CECC0612AC
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:58:03 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id mv5so50042pjb.5
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:58:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EcyOcNMeJU/82mEIEPpMUaOJoG8hDM3M2omWrK0fdkc=;
-        b=ldcQ43e9NoR45E6kG3MmSTqN8tFcNxZZXj9oeKf+AtkHl7ZQ2qkWtvgQx7CDRVyR3N
-         tZl7gbfPQy8/VirXTxIlVbhGLBAnEH3+zVTMWzFDtIcWEsFGRp4C+w7yHy/2+MlEAgJf
-         lZGzc/XzuVETYCy9Sd2PUSezkYmrQE0t1CTfy8TarSiB4vqs7h35P4/yJJ6svZ7/zJr0
-         QGD74+Ul6sLLclXdkR3fswptIjJwovRETDhwx07U7xf7F+Ufup6oWCEqeTucyZDogPrb
-         me72BaQjcOOqSEiKveUiylsfe8Kij0UTYrmOoY32G/f1+8vS33FkMkxmHUjTgWhJgvx5
-         GWUw==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=R1RsPGwLgQ6M8GTAaaA8I5EBvM6vROOQRDTadyBN0fI=;
+        b=i9QLmbfLyr4EJASj7o1W8s1hA1XT2OmxHDiSCtdHb80BlrgvCsewefgyU3u92gXTlZ
+         VU/LgsJ6dU6yoqnRn5PjrdKEfgidgXnEOIz7vYXzsWTMtU0PSgmFPfVrVzL9R/Y/6Sav
+         XQ64dZPcrFFIIzk3v3P141ze2+b/umxih7NHZKV5Kxjff3xbhfPRui8AMhynEMWxE8NE
+         QDmwZlkjd+HQiCa5OxxgPK7bh6aaAS9aRYOnCJN6il0ql5FKD77fdOVNw7M3YBbqXHKn
+         jkVduxS5FnPKJcfferWDE/YtX/1zRHKzmqQYvEyuaYOByKusGNmb1uuLY/9mb1c9af9R
+         E3Hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EcyOcNMeJU/82mEIEPpMUaOJoG8hDM3M2omWrK0fdkc=;
-        b=I55Z4OQEeEBQy0sw/wwKnuToPW1FnCnm3J58r1Ima5SP/DHJpwjdlDtyA91F8f8Xuv
-         ES9lWe3QkBSpSMPjSrq7cNKyCTYYrpT1hpEHCBKqP5Lh5ojwBF3apDSojUH9e4iWKjyF
-         Mr/k3odE4BHM2lOOWe6FS1wBmSGNzup5g5lO8LgZwq0mezVErM2/p7yw0nuy2NeMolAk
-         EhwX67Ux+r2BbSFjT+8emW2SOGDAKvDri2PjxqQ/iTwUMQCMmrN4tOGOTkCkk0EHU/Jq
-         PkfwQxRj8uNqe8bQOZheEjlX8e7wTvZGFSG4TfFjOBo3fULPZ+YnJHkLg40eV6gIJ9Hh
-         /1Mw==
-X-Gm-Message-State: AOAM532JEVq9/DkOpB+vHfvN6wM3x25kKdNa8drdSVEx7QitkRXbUy33
-        WYgtYaHQ6vFXmLJupZrIA8o=
-X-Google-Smtp-Source: ABdhPJy5fXMGf8XwKZOvmDpyiBs4F15vmUH4jgfOINDE1k9Q+VOjYE8e0DF1jYxwN4owycT/3LYVkQ==
-X-Received: by 2002:a1c:f70a:: with SMTP id v10mr282528wmh.39.1598943331890;
-        Mon, 31 Aug 2020 23:55:31 -0700 (PDT)
-Received: from [192.168.8.147] ([37.166.79.47])
-        by smtp.gmail.com with ESMTPSA id r15sm426365wmn.24.2020.08.31.23.55.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Aug 2020 23:55:31 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: diag: add workaround for inode truncation
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com, zeil@yandex-team.ru,
-        khlebnikov@yandex-team.ru, pabeni@redhat.com,
-        Dave Marchevsky <davemarchevsky@fb.com>
-References: <20200831235956.2143127-1-kuba@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <26351e38-ccbc-c0ce-f12e-96f85913a6dc@gmail.com>
-Date:   Tue, 1 Sep 2020 08:55:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
-MIME-Version: 1.0
-In-Reply-To: <20200831235956.2143127-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=R1RsPGwLgQ6M8GTAaaA8I5EBvM6vROOQRDTadyBN0fI=;
+        b=VcUqLwiSgJrXWdL/Y42fc3+ep82sUa5yVuxfULQzR4/2iOIyKQ1WQkxLvayLZzRzi2
+         VrdJqsEM8PiFETYesEihQBjyjHOMfnbl+jiZMwe6aTQVksAVR9Rt0MewvQHy9+5MZyzr
+         aad13fwCZLDLSCsRvkBvF/kGrM3j+VGWRPQe+TRdvIBkRB3Xeqd4wjOKz/2LzZl4uw1D
+         vVTxmUiCH5DSNQ6PYAFDKlPGeYVsi45BPzbFNf5GGGVsfqgjwcV2ccx0vx7sJ1urH5BA
+         Z391Kiq/NfPA7D5B7eBro6JRR0ynreaBXE/Uqi1wOL3+bt50IA7jf4N7TH5YY84zFrqP
+         0NKg==
+X-Gm-Message-State: AOAM530czs3kPbi3IMe53GTOVzTlXmCuMEVC2cejVQg1lDiPr9FMPFn9
+        eA/JN3u/JyXD1mkNK6npRBIC/ptItStY
+X-Google-Smtp-Source: ABdhPJy3PPx1infkahXw5FXVuR6+lobnCfGfXBH82a8cmkfqGXGxfmUG+T2E7GLKNm/b9DjWDC4Tsmu4agQs
+X-Received: from brianvv.svl.corp.google.com ([2620:15c:2c4:201:a28c:fdff:fee1:c370])
+ (user=brianvv job=sendgmr) by 2002:a17:90b:110a:: with SMTP id
+ gi10mr236943pjb.206.1598943482728; Mon, 31 Aug 2020 23:58:02 -0700 (PDT)
+Date:   Mon, 31 Aug 2020 23:57:58 -0700
+Message-Id: <20200901065758.1141786-1-brianvv@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.402.g5ffc5be6b7-goog
+Subject: [PATCH] net: ipv6: fix __rt6_purge_dflt_routers when forwarding is
+ not set on all ifaces
+From:   Brian Vazquez <brianvv@google.com>
+To:     Brian Vazquez <brianvv.kernel@gmail.com>,
+        Brian Vazquez <brianvv@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        David Ahern <dsa@cumulusnetworks.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The problem is exposed when the system has multiple ifaces and
+forwarding is enabled on a subset of them, __rt6_purge_dflt_routers will
+clean the default route on all the ifaces which is not desired.
 
+This patches fixes that by cleaning only the routes where the iface has
+forwarding enabled.
 
-On 8/31/20 4:59 PM, Jakub Kicinski wrote:
-> Dave reports that struct inet_diag_msg::idiag_inode is 32 bit,
-> while inode's type is unsigned long. This leads to truncation.
-> 
-> Since there is nothing we can do about the size of existing
-> fields - add a new attribute to carry 64 bit inode numbers.
-> 
-> Reported-by: Dave Marchevsky <davemarchevsky@fb.com>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  include/linux/inet_diag.h      | 1 +
->  include/uapi/linux/inet_diag.h | 1 +
->  net/ipv4/inet_diag.c           | 7 ++++++-
->  3 files changed, 8 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
-> index 0ef2d800fda7..5ea0f965c173 100644
-> --- a/include/linux/inet_diag.h
-> +++ b/include/linux/inet_diag.h
-> @@ -75,6 +75,7 @@ static inline size_t inet_diag_msg_attrs_size(void)
->  #ifdef CONFIG_SOCK_CGROUP_DATA
->  		+ nla_total_size_64bit(sizeof(u64))  /* INET_DIAG_CGROUP_ID */
->  #endif
-> +		+ nla_total_size_64bit(sizeof(u64))  /* INET_DIAG_INODE */
->  		;
->  }
->  int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
-> diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-> index 5ba122c1949a..0819a473ee9c 100644
-> --- a/include/uapi/linux/inet_diag.h
-> +++ b/include/uapi/linux/inet_diag.h
-> @@ -160,6 +160,7 @@ enum {
->  	INET_DIAG_ULP_INFO,
->  	INET_DIAG_SK_BPF_STORAGES,
->  	INET_DIAG_CGROUP_ID,
-> +	INET_DIAG_INODE,
->  	__INET_DIAG_MAX,
->  };
->  
-> diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-> index 4a98dd736270..6a52947591fc 100644
-> --- a/net/ipv4/inet_diag.c
-> +++ b/net/ipv4/inet_diag.c
-> @@ -125,6 +125,7 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
->  			     bool net_admin)
->  {
->  	const struct inet_sock *inet = inet_sk(sk);
-> +	unsigned long ino;
->  
->  	if (nla_put_u8(skb, INET_DIAG_SHUTDOWN, sk->sk_shutdown))
->  		goto errout;
-> @@ -177,8 +178,12 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
->  		goto errout;
->  #endif
->  
-> +	ino = sock_i_ino(sk);
-> +	if (nla_put_u64_64bit(skb, INET_DIAG_INODE, ino, INET_DIAG_PAD))
-> +		goto errout;
-> +
->  	r->idiag_uid = from_kuid_munged(user_ns, sock_i_uid(sk));
-> -	r->idiag_inode = sock_i_ino(sk);
-> +	r->idiag_inode = ino;
->  
->  	return 0;
->  errout:
-> 
+Fixes: 830218c1add1 ("net: ipv6: Fix processing of RAs in presence of VRF")
+Cc: David Ahern <dsa@cumulusnetworks.com>
+Signed-off-by: Brian Vazquez <brianvv@google.com>
+---
+ net/ipv6/route.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 5e7e25e2523a..41181cd489ea 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4283,6 +4283,7 @@ static void __rt6_purge_dflt_routers(struct net *net,
+ 				     struct fib6_table *table)
+ {
+ 	struct fib6_info *rt;
++	bool deleted = false;
+ 
+ restart:
+ 	rcu_read_lock();
+@@ -4291,16 +4292,19 @@ static void __rt6_purge_dflt_routers(struct net *net,
+ 		struct inet6_dev *idev = dev ? __in6_dev_get(dev) : NULL;
+ 
+ 		if (rt->fib6_flags & (RTF_DEFAULT | RTF_ADDRCONF) &&
+-		    (!idev || idev->cnf.accept_ra != 2) &&
++		    (!idev || (idev->cnf.forwarding == 1 &&
++			       idev->cnf.accept_ra != 2)) &&
+ 		    fib6_info_hold_safe(rt)) {
+ 			rcu_read_unlock();
+ 			ip6_del_rt(net, rt, false);
++			deleted = true;
+ 			goto restart;
+ 		}
+ 	}
+ 	rcu_read_unlock();
+ 
+-	table->flags &= ~RT6_TABLE_HAS_DFLT_ROUTER;
++	if (deleted)
++		table->flags &= ~RT6_TABLE_HAS_DFLT_ROUTER;
+ }
+ 
+ void rt6_purge_dflt_routers(struct net *net)
+-- 
+2.28.0.402.g5ffc5be6b7-goog
 
-Last time I checked socket inode numbers were 32bit ?
-
-Is there a plan changing this ?
