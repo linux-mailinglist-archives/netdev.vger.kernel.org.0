@@ -2,171 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B529D25A1C8
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 01:03:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D46925A219
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 01:55:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727818AbgIAW7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 18:59:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
+        id S1726515AbgIAXzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 19:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726936AbgIAW7V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 18:59:21 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8511EC061244;
-        Tue,  1 Sep 2020 15:59:21 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id l191so1506170pgd.5;
-        Tue, 01 Sep 2020 15:59:21 -0700 (PDT)
+        with ESMTP id S1726173AbgIAXzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 19:55:10 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9F5C061244;
+        Tue,  1 Sep 2020 16:55:07 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id h20so1838683ybj.8;
+        Tue, 01 Sep 2020 16:55:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1Capl7CE1BoBl1tfXP6GUSFZ6V4y5GZrTYTnU4/p5G8=;
-        b=aquQ1r2imoAafGDgtP1uDrWFO+WZHgX6dYvKKJ0djcZzmFRt5QxyeX4mtCo2WRXp0b
-         bU8ViqrVKZq1ebCWjX0nHZnkFwEoaNoWxxW4RGQDgpx6tLuDmZaMoJ2kmTcJ8l+oFBMo
-         rOLThioRL6BSGF0lucJMc0aTyLfF8H1WiEr690ubApt0UFx1PztFF4pdtKrSAGrm58O0
-         WucJRvXnoQrw4yMDa74XOGWUfULG24wHKLMtlsHHylPUdfeAgLShUsP6+9gmI/hbMvLm
-         xWRwLGUGW8jDAyhdkPtGVkiSCsvInkHErM6bz9qjZzfXl/9GzuPuNJHmU+3jdjfblgjL
-         Nw3w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vTjnReDEPjguWIOztF41HeijJXQVah8EZk6UkQ2W/Jc=;
+        b=YCku2eV0DwkvFBRtisE3hNxROjz4jI0EaOyTBX25YUX8kDJwMKvBt8Di3q4geOIyGc
+         BDHcE848kxvJvq7cqAL4NnoHVTYUwT6UApbhHoEgcbsRG5Xlmrx8hRhcf+YMnyKCx0+a
+         KtXNTCureLHUQUT/UkGz6zx3kmtM2livI7Pf2+fs9841gIBHD1/NBucV7uY9gTDh2zjI
+         p0qhlQSlS1xnyLyXomfQat7VluG2Wb+qOOeusDE/CsgD7J+BIKr5DLP3winljTl6vAXd
+         IFbvMsOr051yqe3ki1MiKNjZ24vfdo2tIlLzQwjdkEORaa4wjfK1IFwXoc7GfqihM3JG
+         htiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1Capl7CE1BoBl1tfXP6GUSFZ6V4y5GZrTYTnU4/p5G8=;
-        b=QJsP5QLNk4SjUowoSzV+qsyEj9mHr3RReWWmCfe2iKcFEPGltOcmBv5Ov8KCLNqEEI
-         jY4zvrDjJt7CrqH53euZ+tSr7cL5/n1uTSrBuJNSHMWkodgTHH67cHYdhPRjxCqE+Hsz
-         EPnWxPfkbo6Hfgt6gvactNl6z6rKkMI2vFDuXyrCrLRDC1Qs/iyUDqNEhQhgUl2dca8H
-         ccGGUongy4dBxr297V5gCZhpsvJNULzLQqwyBb1C75+7qYeM9KA4IWOhJXw3WTA2Qo+g
-         h+gtCxnwHXR2NP2SwWPjlAvUD/CG8fU/4noWebR12Lj4Qc6/gE1Wp5PWCfCS/n0ncU+i
-         QvIw==
-X-Gm-Message-State: AOAM531SiQu8WZlg+UqRw0aPpn0L1oeEAS21ZLdogVyecpWjTA6mnsDq
-        gUXoQ2xB3byQawG3DhMjBR4y4xhnt7o=
-X-Google-Smtp-Source: ABdhPJz4esZZ5tEpXvTY8CYviED/LtDqd9scXVJgTmOmeQLElohb5s/wa3sKzo2o9GShAcpWYN/4XQ==
-X-Received: by 2002:a63:ab43:: with SMTP id k3mr3513902pgp.426.1599001160671;
-        Tue, 01 Sep 2020 15:59:20 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m188sm2952750pfm.220.2020.09.01.15.59.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2020 15:59:19 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS), linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next 2/3] net: dsa: bcm_sf2: request and handle clocks
-Date:   Tue,  1 Sep 2020 15:59:12 -0700
-Message-Id: <20200901225913.1587628-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200901225913.1587628-1-f.fainelli@gmail.com>
-References: <20200901225913.1587628-1-f.fainelli@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vTjnReDEPjguWIOztF41HeijJXQVah8EZk6UkQ2W/Jc=;
+        b=sa+mC4nyFDaVa19ACACpxwlrn7tKDnbwfTbFN9dm1jmG2tBb/Ak6JwL3GfnYlf8atJ
+         2ExLn4rrTFAtgy+iZ7YXuaJlOaloogQktPcTc2B089N25M3LeNzO287VwoTlewYu5uMy
+         Uhtoi+XVSXp7ZBRt38FXrBTFlHxaUIWkiHJpxGoXaiLhEQXDhH/iysuJuaJ5G1DRkHLD
+         wT+4OgItpsToqhrUd1qId0qiLOVv38fMyOJoSyZcYhsTCLov4VizfWx0OS6xg9vnPO8Q
+         tKQBrpMT05qcWKIXjsCEpzFNt8YD+pHtyF39pzwHBIDD0kRv9j078G6iB7cfgPMnqZ29
+         v4Vg==
+X-Gm-Message-State: AOAM531yvhsmuomkQAjfHpoc2YP4CcqszS9Pq4idYBFuaSb8IR/mClQ8
+        +DU6Bm8eY5Z5D7t3QfFT7BoVyBv0Hrx3CVYAV9s=
+X-Google-Smtp-Source: ABdhPJzwRhGxcnacplcteNwyqVuwN/WERg58drdjD7KpAwUJmXLLqeR8CqiNetl2tXkx1lbFzthYOgY73StetdBu170=
+X-Received: by 2002:a25:6885:: with SMTP id d127mr6093230ybc.27.1599004506146;
+ Tue, 01 Sep 2020 16:55:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200819224030.1615203-1-haoluo@google.com> <20200819224030.1615203-5-haoluo@google.com>
+ <CAEf4BzYhjUwYH_BBgtHz9-Ha-54AQ_8L3_N=cXsuud=kayk5-A@mail.gmail.com>
+ <CA+khW7jDYSvQcVvQ2dLHC9JOLFp9wC7fNtt4rzgBkdWOC=AVjQ@mail.gmail.com>
+ <CAEf4BzaO_P1LiWDvFcZ3u1f2eaUEpqb+KXg0FqLMGYDLdRNBJQ@mail.gmail.com> <CA+khW7jnzZim6h9O+JH2AnXmvtU19-FxJDZBXfHZH9Xniq8zeg@mail.gmail.com>
+In-Reply-To: <CA+khW7jnzZim6h9O+JH2AnXmvtU19-FxJDZBXfHZH9Xniq8zeg@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 1 Sep 2020 16:54:54 -0700
+Message-ID: <CAEf4BzZrn44Y-38CPmZnAYFqtGkjEHXE5F8fZS5K8D4+-YpPug@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 4/8] bpf/libbpf: BTF support for typed ksyms
+To:     Hao Luo <haoluo@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Andrey Ignatov <rdna@fb.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fetch the corresponding clock resource and enable/disable it during
-suspend/resume if and only if we have no ports defined for Wake-on-LAN.
+On Tue, Sep 1, 2020 at 1:35 PM Hao Luo <haoluo@google.com> wrote:
+>
+> On Tue, Sep 1, 2020 at 11:11 AM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> >
+> > On Thu, Aug 27, 2020 at 3:29 PM Hao Luo <haoluo@google.com> wrote:
+> > >
+> > > On Fri, Aug 21, 2020 at 3:37 PM Andrii Nakryiko
+> > > <andrii.nakryiko@gmail.com> wrote:
+> > > >
+> > > > On Wed, Aug 19, 2020 at 3:42 PM Hao Luo <haoluo@google.com> wrote:
+> > > > >
+> > > > > If a ksym is defined with a type, libbpf will try to find the ksym's btf
+> > > > > information from kernel btf. If a valid btf entry for the ksym is found,
+> > > > > libbpf can pass in the found btf id to the verifier, which validates the
+> > > > > ksym's type and value.
+> > > > >
+> > > > > Typeless ksyms (i.e. those defined as 'void') will not have such btf_id,
+> > > > > but it has the symbol's address (read from kallsyms) and its value is
+> > > > > treated as a raw pointer.
+> > > > >
+> > > > > Signed-off-by: Hao Luo <haoluo@google.com>
+> > > > > ---
+> > > > >  tools/lib/bpf/libbpf.c | 130 ++++++++++++++++++++++++++++++++++++-----
+> > > > >  1 file changed, 114 insertions(+), 16 deletions(-)
+> > > > >
+> > > > > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > > > > index 4a81c6b2d21b..94eff612c7c2 100644
+> > > > > --- a/tools/lib/bpf/libbpf.c
+> > > > > +++ b/tools/lib/bpf/libbpf.c
+> > > > > @@ -357,7 +357,16 @@ struct extern_desc {
+> > > > >                         bool is_signed;
+> > > > >                 } kcfg;
+> > > > >                 struct {
+> > > > > -                       unsigned long long addr;
+> > > > > +                       /*
+> > > > > +                        *  1. If ksym is typeless, the field 'addr' is valid.
+> > > > > +                        *  2. If ksym is typed, the field 'vmlinux_btf_id' is
+> > > > > +                        *     valid.
+> > > > > +                        */
+> > > > > +                       bool is_typeless;
+> > > > > +                       union {
+> > > > > +                               unsigned long long addr;
+> > > > > +                               int vmlinux_btf_id;
+> > > > > +                       };
+> > > >
+> > > > ksym is 16 bytes anyways, union doesn't help to save space. I propose
+> > > > to encode all this with just two fields: vmlinux_btf_id and addr. If
+> > > > btf_id == 0, then extern is typeless.
+> > >
+> > > Ack on expanding the union. But I slightly preferred keeping
+> > > is_typeless. IIUC, btf_id points a VAR_KIND, we need the following
+> > > pointer chasing every time
+> > >
+> > > t = btf__type_by_id(obj->btf, ext->btf_id);
+> > > t->type;
+> > >
+> > > which I felt is worse than keeping a is_typeless flag.
+> >
+> > Sorry, I'm not following. In all places where you would check
+> > sym->is_typeless, you'd now just do:
+> >
+> > if (ext->ksym.vmlinux_btf_id) {
+> >   /* typed, use ext->ksym.vmlinux_btf_id */
+> > } else {
+> >   /* typeless */
+> > }
+> >
+>
+> My apologies, I should be more specific.
+>
+> 'vmlinux_btf_id' gets its value in bpf_object__resolve_ksyms_btf_id().
+> Before we call this function, there are three places that need to tell
+> whether a ksym is typed, currently in v1. Specifically,
+>
+>  - in bpf_object__collect_externs(), typeless ksyms are rewritten as
+> 'int', in contrast, typed ones are left untouched (though this may
+> change in v2).
+>  - bpf_object__load_vmlinux_btf() now is called before
+> bpf_object__resolve_ksyms_btf_id(). In v1's design, if there is no
+> typed ksym, we could skip loading vmlinux_btf potentially.
+>  - even bpf_object__resolve_ksyms_btf_id() itself is conditionally
+> called, depending on whether there is any typed ksym.
+>
+> At the time when these places are called, vmlinux_btf_id is
+> unavailable and we can't use it for the purpose of telling whether a
+> ksym is typed.
+>
+> However, rather than vmlinux_btf_id, there may be an alternative. We
+> can record the ksym extern's type's btf_id and use that as
+> 'is_typeless' flag. This also solves the problem below.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/bcm_sf2.c | 20 ++++++++++++++++++--
- drivers/net/dsa/bcm_sf2.h |  2 ++
- 2 files changed, 20 insertions(+), 2 deletions(-)
+Oh, I was thinking that vmlinux_btf_id contains a local BTF ID this
+whole time (clearly ignoring the "vmlinux_" part).
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index bafddb35f3a9..b8fa0a46c5c9 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -14,6 +14,7 @@
- #include <linux/phy_fixed.h>
- #include <linux/phylink.h>
- #include <linux/mii.h>
-+#include <linux/clk.h>
- #include <linux/of.h>
- #include <linux/of_irq.h>
- #include <linux/of_address.h>
-@@ -750,6 +751,9 @@ static int bcm_sf2_sw_suspend(struct dsa_switch *ds)
- 			bcm_sf2_port_disable(ds, port);
- 	}
- 
-+	if (!priv->wol_ports_mask)
-+		clk_disable_unprepare(priv->clk);
-+
- 	return 0;
- }
- 
-@@ -758,6 +762,9 @@ static int bcm_sf2_sw_resume(struct dsa_switch *ds)
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	int ret;
- 
-+	if (!priv->wol_ports_mask)
-+		clk_prepare_enable(priv->clk);
-+
- 	ret = bcm_sf2_sw_rst(priv);
- 	if (ret) {
- 		pr_err("%s: failed to software reset switch\n", __func__);
-@@ -1189,10 +1196,16 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
- 		base++;
- 	}
- 
-+	priv->clk = devm_clk_get_optional(&pdev->dev, "sw_switch");
-+	if (IS_ERR(priv->clk))
-+		return PTR_ERR(priv->clk);
-+
-+	clk_prepare_enable(priv->clk);
-+
- 	ret = bcm_sf2_sw_rst(priv);
- 	if (ret) {
- 		pr_err("unable to software reset switch: %d\n", ret);
--		return ret;
-+		goto out_clk;
- 	}
- 
- 	bcm_sf2_gphy_enable_set(priv->dev->ds, true);
-@@ -1200,7 +1213,7 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
- 	ret = bcm_sf2_mdio_register(ds);
- 	if (ret) {
- 		pr_err("failed to register MDIO bus\n");
--		return ret;
-+		goto out_clk;
- 	}
- 
- 	bcm_sf2_gphy_enable_set(priv->dev->ds, false);
-@@ -1267,6 +1280,8 @@ static int bcm_sf2_sw_probe(struct platform_device *pdev)
- 
- out_mdio:
- 	bcm_sf2_mdio_unregister(priv);
-+out_clk:
-+	clk_disable_unprepare(priv->clk);
- 	return ret;
- }
- 
-@@ -1280,6 +1295,7 @@ static int bcm_sf2_sw_remove(struct platform_device *pdev)
- 	dsa_unregister_switch(priv->dev->ds);
- 	bcm_sf2_cfp_exit(priv->dev->ds);
- 	bcm_sf2_mdio_unregister(priv);
-+	clk_disable_unprepare(priv->clk);
- 	if (priv->type == BCM7278_DEVICE_ID && !IS_ERR(priv->rcdev))
- 		reset_control_assert(priv->rcdev);
- 
-diff --git a/drivers/net/dsa/bcm_sf2.h b/drivers/net/dsa/bcm_sf2.h
-index de386dd96d66..6dd69922e3f6 100644
---- a/drivers/net/dsa/bcm_sf2.h
-+++ b/drivers/net/dsa/bcm_sf2.h
-@@ -93,6 +93,8 @@ struct bcm_sf2_priv {
- 	/* Mask of ports enabled for Wake-on-LAN */
- 	u32				wol_ports_mask;
- 
-+	struct clk			*clk;
-+
- 	/* MoCA port location */
- 	int				moca_port;
- 
--- 
-2.25.1
+>
+> [...]
+>
+> > > > >                 } else {
+> > > > >                         pr_warn("unrecognized extern section '%s'\n", sec_name);
+> > > > >                         return -ENOTSUP;
+> > > > > @@ -2992,9 +3006,9 @@ static int bpf_object__collect_externs(struct bpf_object *obj)
+> > > > >         /* sort externs by type, for kcfg ones also by (align, size, name) */
+> > > > >         qsort(obj->externs, obj->nr_extern, sizeof(*ext), cmp_externs);
+> > > > >
+> > > > > -       /* for .ksyms section, we need to turn all externs into allocated
+> > > > > -        * variables in BTF to pass kernel verification; we do this by
+> > > > > -        * pretending that each extern is a 8-byte variable
+> > > > > +       /* for .ksyms section, we need to turn all typeless externs into
+> > > > > +        * allocated variables in BTF to pass kernel verification; we do
+> > > > > +        * this by pretending that each typeless extern is a 8-byte variable
+> > > > >          */
+> > > > >         if (ksym_sec) {
+> > > > >                 /* find existing 4-byte integer type in BTF to use for fake
+> > > > > @@ -3012,7 +3026,7 @@ static int bpf_object__collect_externs(struct bpf_object *obj)
+> > > > >
+> > > > >                 sec = ksym_sec;
+> > > > >                 n = btf_vlen(sec);
+> > > > > -               for (i = 0, off = 0; i < n; i++, off += sizeof(int)) {
+> > > > > +               for (i = 0, off = 0; i < n; i++) {
+> > > > >                         struct btf_var_secinfo *vs = btf_var_secinfos(sec) + i;
+> > > > >                         struct btf_type *vt;
+> > > > >
+> > > > > @@ -3025,9 +3039,14 @@ static int bpf_object__collect_externs(struct bpf_object *obj)
+> > > > >                                 return -ESRCH;
+> > > > >                         }
+> > > > >                         btf_var(vt)->linkage = BTF_VAR_GLOBAL_ALLOCATED;
+> > > > > -                       vt->type = int_btf_id;
+> > > > > +                       if (ext->ksym.is_typeless) {
+> > > > > +                               vt->type = int_btf_id;
+> > > > > +                               vs->size = sizeof(int);
+> > > > > +                       }
+> > > > >                         vs->offset = off;
+> > > > > -                       vs->size = sizeof(int);
+> > > > > +                       off += vs->size;
+> > > > > +                       pr_debug("ksym var_secinfo: var '%s', type #%d, size %d, offset %d\n",
+> > > > > +                                ext->name, vt->type, vs->size, vs->offset);
+> > > >
+> > > > It's a bit of a waste that we still allocate memory for those typed
+> > > > ksym externs, as they don't really need space. But modifying BTF is a
+> > > > pain right now, so I think we'll have to do it, until we have a better
+> > > > BTF API. But let's make them integers for now to take a fixed and
+> > > > small amount of space.
+> > > >
+> > >
+> > > Do you mean making typed ksym externs of type integer? If so, we can't
+> > > do that, I think. After collect_externs, we later need to compare the
+> > > declared extern's type against the type defined in kernel. Better not
+> > > rewrite their types in BTf.
+> >
+> > Then maybe we need to make btf_id to point to the actual type of the
+> > variable, not BTF_KIND_VAR? Or just additionally record type's btf_id,
+> > not sure which one makes more sense at the moment.
+> >
+> > >
+> > > I am generally against modifying BTF. I initially didn't notice that
+> > > all the ksym externs' types are modified to 'int' and the type
+> > > comparison I mentioned above always failed. I dumped the btf in
+> > > vmlinux and the btf in object file, checked the kernel variable's
+> > > source code, printed out everything I could. The experience was very
+> > > bad.
+> > >
+> >
+> > It might be confusing, I agree, but the alternative is just a waste of
+> > memory just to match the BTF definition of a DATASEC, which describes
+> > externs. It seems sloppy to allocate a bunch of unused memory just to
+> > match the kernel's variable size, while in reality we either use 8
+> > bytes used (for typeless externs, storing ksym address) or none (for
+> > typed externs).
+> >
+> > Another alternative is to not specify BTF ID for .ksyms map, but it's
+> > not great for typeless externs case, as we are losing all type info
+> > completely. Trade-offs...
+> >
+>
+> I see. It looks like rewriting all ksym externs' type to integers is
+> the most straightforward solution here, though I felt a bit hacky.
+>
+> I can record the btf_id of the var's type before rewriting, so
+> bpf_core_type_are_compat() can find the true type for comparison. One
+> good thing about recording the type's btf_id is that it can be used to
+> tell whether the ksym extern is typed or not, before vmlinux_btf_id
 
+that's what I've been getting at, but I missed that vmlinux_btf_id is
+kernel BTF type ID. So let's record both local and target BTF type IDs
+and use local_btf_id as an indicator of typed vs typeless?
+
+> gets its value. I will think about this and try the alternatives a bit
+> more and follow up if I come up with a better solution.
+>
+> Thanks!
+>
+> [...]
