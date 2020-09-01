@@ -2,112 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6C1259F0D
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 21:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A4F3259F37
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 21:29:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730653AbgIATOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 15:14:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727924AbgIATOk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 15:14:40 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEAFC061244
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 12:14:40 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id c142so1373734pfb.7
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 12:14:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=5Y354IttvjgtdXZb+ds2Rcmt/Ircm6y93JJk5DLw24M=;
-        b=qWrjwzvHjvBr/v0hL2lftK6SjEcPhv5Pu6A+vQL0tFw4F187Qp4ZaEN7t9fyANDUMl
-         2AjBt1oUZUM+c6dB8i8n4wlZUM2bMzELhbKMNGv1nEbe3rNv55Ug7pNsCSwwXsCME140
-         HaFvAyjN4RCd8NLoBl9ZvdmHX8Xl4OeYy0liAvycRzOBXpGDmmLok2V2cysn1hOMIP59
-         SYb2aQoEb5Xr4AKCH9afISNZpL0S2LA98sAWtndG7urmh2Nfc3gD8B3cN1de8R3hdzOI
-         KPUo7hYKGm8/Uxj7HGJ1uimj4NihySRkhuqLkkXmwpbxM64pGJNOf87t7yhzuGA2TUPD
-         Rfrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=5Y354IttvjgtdXZb+ds2Rcmt/Ircm6y93JJk5DLw24M=;
-        b=rACwUbDh2OJ4135fPCn034uctg9cYC4bd86vfBHIPXiiyZnlMeKr8Zp/K/06x4lASD
-         YLjfxFFQZVzDN0fdh+Vvmht6G2qA7+/LExxK8zqHZLBu3HUpcYkgr4gOgg3go4TOGrvm
-         YCj9ZS0V7yP6Bfh0WQqP3oV3P8T0cpXPGaWSPtBaE+mDww94cc3ftBGmMAxlVb3JVqfr
-         udQ0hdAWt0StgCJIhEtU25bzYQDRliox1jpk83fYBoI6IMTn2uMN9q669eUmeK7dXnbz
-         s3uYJRuMbgDMJDIRn9gB2YjEco1PH+zhSNXsUsYfDdK3ohe30Uf8yBLUbDKUGkG4fAyR
-         JEIw==
-X-Gm-Message-State: AOAM531pG3K+2pjp6mhgR+ryw65nmxTYw+Ca0PjsMxhlyyzQhB44ZxWY
-        NQSogkXaxS9pG22creStsVI=
-X-Google-Smtp-Source: ABdhPJy3To7N2SiJDDMF73Cb6dhW5Epc+Jkl9+SomPXNDLE4VSNYgMh6m+fK2VlDzytH6Te1igyRvA==
-X-Received: by 2002:a63:5552:: with SMTP id f18mr2606047pgm.298.1598987680225;
-        Tue, 01 Sep 2020 12:14:40 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b6sm2220210pjz.33.2020.09.01.12.14.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Sep 2020 12:14:39 -0700 (PDT)
-Subject: Re: [net-next PATCH 2/2 v2] net: dsa: rtl8366: Refactor VLAN/PVID
- init
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-References: <20200901190854.15528-1-linus.walleij@linaro.org>
- <20200901190854.15528-3-linus.walleij@linaro.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <15cda1ef-c145-990b-5318-eac70338c702@gmail.com>
-Date:   Tue, 1 Sep 2020 12:14:37 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.1.1
+        id S1728732AbgIAT3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 15:29:00 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47956 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728217AbgIAT27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 15:28:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598988538;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bPHc6szmZlbrOtOqbNs0/cg8yPELZXDQhp70mcSqITI=;
+        b=W7EQkesNsllP8KpcR7nfHgeGPYmO7Z/FZSDa0GUTkqvZVEjHBtRX7y/HMigUNBgO0ONm+p
+        ORIeIIJ8/axciuOxOY8/31MsgEOKHYf+CP7XFhiXOnBoLQMqbk+u86ClXpVckMjzK+iRHV
+        p3S4HDzRccEh9bhmaGfl1Yh6EZVtKnY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-260-SIVuUiKCMuis8cS7XOwf7A-1; Tue, 01 Sep 2020 15:28:56 -0400
+X-MC-Unique: SIVuUiKCMuis8cS7XOwf7A-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1AE07802B66;
+        Tue,  1 Sep 2020 19:28:55 +0000 (UTC)
+Received: from krava (unknown [10.40.193.186])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 11FA278B4F;
+        Tue,  1 Sep 2020 19:28:49 +0000 (UTC)
+Date:   Tue, 1 Sep 2020 21:28:48 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     daniel@iogearbox.net, ast@fb.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, jolsa@kernel.org
+Subject: Re: [PATCH bpf] tools/bpf: build: make sure resolve_btfids cleans up
+ after itself
+Message-ID: <20200901192848.GB470123@krava>
+References: <20200901144343.179552-1-toke@redhat.com>
+ <20200901152048.GA470123@krava>
+ <87sgc1iior.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200901190854.15528-3-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87sgc1iior.fsf@toke.dk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/1/2020 12:08 PM, Linus Walleij wrote:
-> The VLANs and PVIDs on the RTL8366 utilizes a "member
-> configuration" (MC) which is largely unexplained in the
-> code.
+On Tue, Sep 01, 2020 at 06:08:04PM +0200, Toke H�iland-J�rgensen wrote:
+> Jiri Olsa <jolsa@redhat.com> writes:
 > 
-> This set-up requires a special ordering: rtl8366_set_pvid()
-> must be called first, followed by rtl8366_set_vlan(),
-> else the MC will not be properly allocated. Relax this
-> by factoring out the code obtaining an MC and reuse
-> the helper in both rtl8366_set_pvid() and
-> rtl8366_set_vlan() so we remove this strict ordering
-> requirement.
+> > On Tue, Sep 01, 2020 at 04:43:43PM +0200, Toke Høiland-Jørgensen wrote:
+> >> The new resolve_btfids tool did not clean up the feature detection folder
+> >> on 'make clean', and also was not called properly from the clean rule in
+> >> tools/make/ folder on its 'make clean'. This lead to stale objects being
+> >> left around, which could cause feature detection to fail on subsequent
+> >> builds.
+> >> 
+> >> Fixes: fbbb68de80a4 ("bpf: Add resolve_btfids tool to resolve BTF IDs in ELF object")
+> >> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> >> ---
+> >>  tools/bpf/Makefile                | 4 ++--
+> >>  tools/bpf/resolve_btfids/Makefile | 1 +
+> >>  2 files changed, 3 insertions(+), 2 deletions(-)
+> >> 
+> >> diff --git a/tools/bpf/Makefile b/tools/bpf/Makefile
+> >> index 0a6d09a3e91f..39bb322707b4 100644
+> >> --- a/tools/bpf/Makefile
+> >> +++ b/tools/bpf/Makefile
+> >> @@ -38,7 +38,7 @@ FEATURE_TESTS = libbfd disassembler-four-args
+> >>  FEATURE_DISPLAY = libbfd disassembler-four-args
+> >>  
+> >>  check_feat := 1
+> >> -NON_CHECK_FEAT_TARGETS := clean bpftool_clean runqslower_clean
+> >> +NON_CHECK_FEAT_TARGETS := clean bpftool_clean runqslower_clean resolve_btfids_clean
+> >>  ifdef MAKECMDGOALS
+> >>  ifeq ($(filter-out $(NON_CHECK_FEAT_TARGETS),$(MAKECMDGOALS)),)
+> >>    check_feat := 0
+> >> @@ -89,7 +89,7 @@ $(OUTPUT)bpf_exp.lex.c: $(OUTPUT)bpf_exp.yacc.c
+> >>  $(OUTPUT)bpf_exp.yacc.o: $(OUTPUT)bpf_exp.yacc.c
+> >>  $(OUTPUT)bpf_exp.lex.o: $(OUTPUT)bpf_exp.lex.c
+> >>  
+> >> -clean: bpftool_clean runqslower_clean
+> >> +clean: bpftool_clean runqslower_clean resolve_btfids_clean
+> >>  	$(call QUIET_CLEAN, bpf-progs)
+> >>  	$(Q)$(RM) -r -- $(OUTPUT)*.o $(OUTPUT)bpf_jit_disasm $(OUTPUT)bpf_dbg \
+> >>  	       $(OUTPUT)bpf_asm $(OUTPUT)bpf_exp.yacc.* $(OUTPUT)bpf_exp.lex.*
+> >> diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+> >> index a88cd4426398..fe8eb537688b 100644
+> >> --- a/tools/bpf/resolve_btfids/Makefile
+> >> +++ b/tools/bpf/resolve_btfids/Makefile
+> >> @@ -80,6 +80,7 @@ libbpf-clean:
+> >>  clean: libsubcmd-clean libbpf-clean fixdep-clean
+> >>  	$(call msg,CLEAN,$(BINARY))
+> >>  	$(Q)$(RM) -f $(BINARY); \
+> >> +	$(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
+> >
+> > I forgot this one.. thanks for fixing this
 > 
-> In the process, add some better comments and debug prints
-> so people who read the code understand what is going on.
+> You're welcome - it was a bit frustrating to track down, but a simple
+> fix once I figured out what was going on.
 > 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> BTW, there's still an issue that a 'make clean' in the toplevel kernel
+> dir will not clean up this feature dir, so if someone doesn't know to do
+> 'cd tools/bpf && make clean' the main build may still break (I happened
+> upon this because my main kernel build broke :/). Couldn't figure out
+> how to convince make to fix that, so if you could take a look that would
+> be great! :)
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+will check, thanks
 
-One question below:
+jirka
 
-[snip]
-
-> +	/* Update the MC entry */
-> +	vlanmc.member |= member;
-> +	vlanmc.untag |= untag;
-> +	vlanmc.fid = fid;
-
-Is not there a problem with rtl8366_vlan_del() which is clearing the 
-entire vlanmc structure when it it should be doing:
-
-	vlanmc.member &= ~BIT(port);
-	vlanmc.untag &= ~BIT(port);
-
-or something along these lines?
--- 
-Florian
