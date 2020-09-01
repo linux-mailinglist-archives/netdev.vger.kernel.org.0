@@ -2,126 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A5992590F8
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 16:42:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 399E825910C
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 16:44:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727902AbgIAOmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 10:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728242AbgIAOl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 10:41:28 -0400
-Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE52BC061244;
-        Tue,  1 Sep 2020 07:41:27 -0700 (PDT)
-Received: by mail-oi1-x242.google.com with SMTP id j21so1336537oii.10;
-        Tue, 01 Sep 2020 07:41:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=sZhvalbA03rUwegYGv+Cay08wKnFHq0gcapj8Z9U2kk=;
-        b=Y/SqwzUN1T5jUMi6cZ2ZuDXFCwQ9pIW40bV/unURxBXPwk7DRwOLaHDwtTXPzup9gL
-         cEFKY7SCHTeJimhPAs3bFuPsn0kDmnDHqJqlzU9FZmxXnMBjVPM//99pbmwwqN6oIWte
-         cPVMbo+bJSoElNYuopQ8bm3qvB88PXV5tK4HvcEMtbO3qu1BW8WHnx9BmeYzDwOW94IC
-         ce00MEsUDYw8friyEmXWOpscVEu6BASNFxHjNF7w/Je9hjg36WLddNLUiz4ApumVkjXB
-         JCgKn4rBc2l++lCHpIQKhu6u/KNpjBU6MIMXDIe6asHbk3XQ6DA03spR28BYEr5LsOT7
-         Vn1Q==
+        id S1728116AbgIAOoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 10:44:12 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:59778 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728529AbgIAOn5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 10:43:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1598971436;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=N/3cZ45ws6CSpWNztTbFWfPu1DKoEaZi3oHeIW0RUdU=;
+        b=BuvvR6iZ52L4Ds90KROnb2wq2mlRUq0vJihy/wkIEuzYLnAOf2p/St9XIbj8jVtRaBktRQ
+        sLbCk6CUdlmoBLaG6Y0cwYxErw83OCTS7+TnKux/qOsPKVX3XYu0M6mlRoImot7Lvp/bL4
+        JS0w+FRBYEnhu5s5stKKEZUR/wI3PP4=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-316-SKfK184WOM6ED5LO_AYGdw-1; Tue, 01 Sep 2020 10:43:54 -0400
+X-MC-Unique: SKfK184WOM6ED5LO_AYGdw-1
+Received: by mail-wm1-f70.google.com with SMTP id b14so479040wmj.3
+        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 07:43:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=sZhvalbA03rUwegYGv+Cay08wKnFHq0gcapj8Z9U2kk=;
-        b=iWSNWnBFYOKBddw/tSz7QbMmjI3FiAZAfTBljY5JkN2rMNP4lzxmgnEu0fmGm51YxI
-         B5723LYRGFerK1n4bszVMYsb906SpdGa6TduhAnM/iHp7douK7d8pyDMEu1uaH6xTliY
-         tnTlk1HRTlnitzdEM9XAKHRvbl+73FEP1uZUujzXbxzvVCwJZRlU3zJDopVGGitGwKTO
-         C+oO/HDs9N/G5ybi9qyrgz/cH5vXZc/4scLBbtHhMcbPtKiDhsDE2IIcicRzvhThY+QG
-         o6o2cOCvBT7rwhxwj6k1oQFtavqgK0ImIIgiHSEmL6zkRpdmH/6bwUfCfR+KS0jnFV1w
-         lrpw==
-X-Gm-Message-State: AOAM531QHxhHXjvu7r+nYInNKQ9B3m6Z1H3FqOh/4YY/WLI/1J495FME
-        9krJuJ9kFmcPc/fvqc/VjcpoyUS/E//KCnjgBKVNg8HMbL0FtQ==
-X-Google-Smtp-Source: ABdhPJy3jGYbnV0erw5CDV78wbHykPio/a1ecP5Cmr4JMTFhJXSUqBMYPpa4dn07GhhqNIJgtM5NUmjuAwVvejaykGs=
-X-Received: by 2002:aca:d409:: with SMTP id l9mr1255941oig.70.1598971287129;
- Tue, 01 Sep 2020 07:41:27 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N/3cZ45ws6CSpWNztTbFWfPu1DKoEaZi3oHeIW0RUdU=;
+        b=FAAxrU9SfCnbgmsTA7vNMJXgZvUY4lOLe2QzXuG3SpWdg5VC9zmM9JAnfVQ6RmuPJe
+         Ixx6OtpV87ksL8FeJ9woj38ua6H5LJGSGn73VUJ2RX1wSy9SAld4fHuZqXL0jA/IlPVU
+         q14xEyooc1ET00nydfJznk/SmFCo8tF+XbY6o5WAIAjqwPEQdvD+sORSHiFhKrr04J6m
+         3PaycUjtbSP+D96MBcf5oekHfgpcjj21ourJMjCQJHhmkwMel4yfzHMYbWIf+5CYhfhu
+         NAsIuM/eTnwjC4ZfJHRA6o0mVmz84G5S8MwncAd630pbMPW6hbv21hx1FfhjEdn/uCDJ
+         Iovg==
+X-Gm-Message-State: AOAM5330yJGnbaFe9Hon+bW7GcC0cAZ2kq+ntJfSfYoi+3nj+NdfKDUl
+        aohh8Uc4yxZhNt8Gvv4mMvabbnJyrRYjNztmbpxrsKHa69RTgaf49yxys2x1csHpDftpDPOUnNU
+        3N3hnAH57ZvKyRZv/
+X-Received: by 2002:a5d:5090:: with SMTP id a16mr2445019wrt.247.1598971433243;
+        Tue, 01 Sep 2020 07:43:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwvQ7w1GqqPZe6MnWMkKZ54vl061T1Uj2BOT2lUqOpcqWj3ssZKIG7QE6NMTZ1Ts+v5nxrGtA==
+X-Received: by 2002:a5d:5090:: with SMTP id a16mr2445001wrt.247.1598971432948;
+        Tue, 01 Sep 2020 07:43:52 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id z11sm2700981wru.88.2020.09.01.07.43.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Sep 2020 07:43:52 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id A612C1804A2; Tue,  1 Sep 2020 16:43:51 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, jolsa@kernel.org
+Subject: [PATCH bpf] tools/bpf: build: make sure resolve_btfids cleans up after itself
+Date:   Tue,  1 Sep 2020 16:43:43 +0200
+Message-Id: <20200901144343.179552-1-toke@redhat.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-References: <20200901064302.849-1-w@1wt.eu>
-In-Reply-To: <20200901064302.849-1-w@1wt.eu>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Tue, 1 Sep 2020 16:41:13 +0200
-Message-ID: <CA+icZUVvOArpuR=PJBg288pJmLmYxtgZxJOHnjk943e9M22WOQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] prandom_u32: make output less predictable
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        George Spelvin <lkml@sdf.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>, tytso@mit.edu,
-        Florian Westphal <fw@strlen.de>,
-        Marc Plumb <lkml.mplumb@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 1, 2020 at 8:43 AM Willy Tarreau <w@1wt.eu> wrote:
->
-> This is the cleanup of the latest series of prandom_u32 experimentations
-> consisting in using SipHash instead of Tausworthe to produce the randoms
-> used by the network stack. The changes to the files were kept minimal,
-> and the controversial commit that used to take noise from the fast_pool
-> (f227e3ec3b5c) was reverted. Instead, a dedicated "net_rand_noise" per_cpu
-> variable is fed from various sources of activities (networking, scheduling)
-> to perturb the SipHash state using fast, non-trivially predictable data,
-> instead of keeping it fully deterministic. The goal is essentially to make
-> any occasional memory leakage or brute-force attempt useless.
->
-> The resulting code was verified to be very slightly faster on x86_64 than
-> what is was with the controversial commit above, though this remains barely
-> above measurement noise. It was only build-tested on arm & arm64.
->
-> George Spelvin (1):
->   random32: make prandom_u32() output unpredictable
->
-> Willy Tarreau (1):
->   random32: add noise from network and scheduling activity
->
->  drivers/char/random.c   |   1 -
->  include/linux/prandom.h |  55 ++++-
->  kernel/time/timer.c     |   9 +-
->  lib/random32.c          | 438 ++++++++++++++++++++++++----------------
->  net/core/dev.c          |   4 +
->  5 files changed, 326 insertions(+), 181 deletions(-)
->
-> Cc: George Spelvin <lkml@sdf.org>
-> Cc: Amit Klein <aksecurity@gmail.com>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
-> Cc: Andy Lutomirski <luto@kernel.org>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: tytso@mit.edu
-> Cc: Florian Westphal <fw@strlen.de>
-> Cc: Marc Plumb <lkml.mplumb@gmail.com>
-> Cc: Sedat Dilek <sedat.dilek@gmail.com>
->
+The new resolve_btfids tool did not clean up the feature detection folder
+on 'make clean', and also was not called properly from the clean rule in
+tools/make/ folder on its 'make clean'. This lead to stale objects being
+left around, which could cause feature detection to fail on subsequent
+builds.
 
-I have tested with the patchset from [1].
-( Later I saw, you dropped "WIP: tcp: reuse incoming skb hash in
-tcp_conn_request()". )
+Fixes: fbbb68de80a4 ("bpf: Add resolve_btfids tool to resolve BTF IDs in ELF object")
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ tools/bpf/Makefile                | 4 ++--
+ tools/bpf/resolve_btfids/Makefile | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-- Sedat -
+diff --git a/tools/bpf/Makefile b/tools/bpf/Makefile
+index 0a6d09a3e91f..39bb322707b4 100644
+--- a/tools/bpf/Makefile
++++ b/tools/bpf/Makefile
+@@ -38,7 +38,7 @@ FEATURE_TESTS = libbfd disassembler-four-args
+ FEATURE_DISPLAY = libbfd disassembler-four-args
+ 
+ check_feat := 1
+-NON_CHECK_FEAT_TARGETS := clean bpftool_clean runqslower_clean
++NON_CHECK_FEAT_TARGETS := clean bpftool_clean runqslower_clean resolve_btfids_clean
+ ifdef MAKECMDGOALS
+ ifeq ($(filter-out $(NON_CHECK_FEAT_TARGETS),$(MAKECMDGOALS)),)
+   check_feat := 0
+@@ -89,7 +89,7 @@ $(OUTPUT)bpf_exp.lex.c: $(OUTPUT)bpf_exp.yacc.c
+ $(OUTPUT)bpf_exp.yacc.o: $(OUTPUT)bpf_exp.yacc.c
+ $(OUTPUT)bpf_exp.lex.o: $(OUTPUT)bpf_exp.lex.c
+ 
+-clean: bpftool_clean runqslower_clean
++clean: bpftool_clean runqslower_clean resolve_btfids_clean
+ 	$(call QUIET_CLEAN, bpf-progs)
+ 	$(Q)$(RM) -r -- $(OUTPUT)*.o $(OUTPUT)bpf_jit_disasm $(OUTPUT)bpf_dbg \
+ 	       $(OUTPUT)bpf_asm $(OUTPUT)bpf_exp.yacc.* $(OUTPUT)bpf_exp.lex.*
+diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
+index a88cd4426398..fe8eb537688b 100644
+--- a/tools/bpf/resolve_btfids/Makefile
++++ b/tools/bpf/resolve_btfids/Makefile
+@@ -80,6 +80,7 @@ libbpf-clean:
+ clean: libsubcmd-clean libbpf-clean fixdep-clean
+ 	$(call msg,CLEAN,$(BINARY))
+ 	$(Q)$(RM) -f $(BINARY); \
++	$(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
+ 	find $(if $(OUTPUT),$(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
+ 
+ tags:
+-- 
+2.28.0
 
-https://git.kernel.org/pub/scm/linux/kernel/git/wtarreau/prandom.git/log/?h=20200901-siphash-noise
-
-
-> --
-> 2.28.0
