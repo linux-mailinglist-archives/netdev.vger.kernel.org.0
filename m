@@ -2,65 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A07C25A12B
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 00:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8211925A12D
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 00:10:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726384AbgIAWIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 18:08:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36898 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726050AbgIAWIQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 18:08:16 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kDERq-00Cow1-EX; Wed, 02 Sep 2020 00:08:14 +0200
-Date:   Wed, 2 Sep 2020 00:08:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Awogbemila <awogbemila@google.com>
-Cc:     netdev@vger.kernel.org, Catherine Sullivan <csully@google.com>,
-        Yangchun Fu <yangchun@google.com>
-Subject: Re: [PATCH net-next v2 3/9] gve: Use dev_info/err instead of
- netif_info/err.
-Message-ID: <20200901220814.GD3050651@lunn.ch>
-References: <20200901215149.2685117-1-awogbemila@google.com>
- <20200901215149.2685117-4-awogbemila@google.com>
+        id S1726380AbgIAWKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 18:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726078AbgIAWKC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 18:10:02 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED89C061244
+        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 15:10:01 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id v23so3457961ljd.1
+        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 15:10:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PNpdeAvyvBomkivi8B72RvY59fH03ofyy2JIKXAxA4c=;
+        b=wUwgUtlP+KC44b6YeXKP7KygjzJUEdy6/ZTK37OFr89lyx341bIiOdNNykIAjE6SEy
+         JO5IdPpd6N0x0uojgoG352Lii79ywKV88dzXtV2iXyKLjAR+VH2hThodIpNrvScdxJ81
+         8GtsjDO02n7n4hGPlAHocwXnfSF1tfdGJMeRaKSJ1fP62ja0fB6VSFs3NA01Y709faAd
+         KvxaYU01wms8zReIh5aUs+Y570N2oALQWkcOOSmyBcIFxpsC5qn01oTp30PdoSaDD378
+         pat3IUStgR8WXvJecy41Wcwkp1HkUlr9PrUs9MypkQ33cKWfVs+Xqu4rXFw4U7N6aXML
+         1aTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PNpdeAvyvBomkivi8B72RvY59fH03ofyy2JIKXAxA4c=;
+        b=PAqkS4B8W2UbqBsQa39HBwCvVU9NyGby/8cuyDDp4guxZq8RlhL+qpjaY5wQua31Ha
+         S0tuq1VdPo3CDlFIgxD76Ch7GZJh3nFWKtG/mMX9GK1EyeSqjq9Zd6Y+IPnOst35Au5o
+         F9ntiiwerLaVvKGb0A1fmrhoRvIv/CtRSPKJ8S0CtprdRayb/uJe4ozayzII9RjPlBdJ
+         miADhe3BJX2k3XZE6Sreo2qzsTgiR+DHv3jhgFDTnkg9S1dV0far880E8ThArLOFQfwv
+         OVIgOBHJoIbAHk8YS0Bla5oM2ECrQTsAG37qlJPYMAtB1g5fyiBX8sqV6sZWJod3RmyA
+         kCvA==
+X-Gm-Message-State: AOAM5327VWjW8e2/A1V6SpknQV8sj3L7WXRVvwPF0E7w0e4kKt5qHvEl
+        9yT/G39rv1TCjxPtfw1q8RJOxg==
+X-Google-Smtp-Source: ABdhPJyGmY7MAkuTTF4sSIcDJ63LzdUsPeCZ7vCo3btpIVk7gAfZSy6FSck9+n9266gHWNMNKl3zyQ==
+X-Received: by 2002:a2e:8193:: with SMTP id e19mr1820099ljg.80.1598998199613;
+        Tue, 01 Sep 2020 15:09:59 -0700 (PDT)
+Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
+        by smtp.gmail.com with ESMTPSA id z7sm568979lfc.59.2020.09.01.15.09.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Sep 2020 15:09:58 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Linus Walleij <linus.walleij@linaro.org>
+Subject: [net-next PATCH 0/2 v3] RTL8366 stabilization
+Date:   Wed,  2 Sep 2020 00:09:33 +0200
+Message-Id: <20200901220935.45524-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200901215149.2685117-4-awogbemila@google.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -1133,7 +1133,9 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  		goto abort_with_db_bar;
->  	}
->  	SET_NETDEV_DEV(dev, &pdev->dev);
-> +
->  	pci_set_drvdata(pdev, dev);
-> +
->  	dev->ethtool_ops = &gve_ethtool_ops;
->  	dev->netdev_ops = &gve_netdev_ops;
->  	/* advertise features */
-> @@ -1160,6 +1162,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	priv->state_flags = 0x0;
->  
->  	gve_set_probe_in_progress(priv);
-> +
->  	priv->gve_wq = alloc_ordered_workqueue("gve", 0);
->  	if (!priv->gve_wq) {
->  		dev_err(&pdev->dev, "Could not allocate workqueue");
-> @@ -1181,6 +1184,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	dev_info(&pdev->dev, "GVE version %s\n", gve_version_str);
->  	gve_clear_probe_in_progress(priv);
->  	queue_work(priv->gve_wq, &priv->service_task);
-> +
->  	return 0;
->  
->  abort_with_wq:
+This stabilizes the RTL8366 driver by checking validity
+of the passed VLANs and refactoring the member config
+(MC) code so we do not require strict call order and
+de-duplicate some code.
 
-No white space changes please. If you want these, put them into a
-patch of there own.
+Changes from v1: incorporate review comments on patch
+2.
 
-      Andrew
+Changes from v2: a oneline bug fix in patch 2.
+
+Linus Walleij (2):
+  net: dsa: rtl8366: Check validity of passed VLANs
+  net: dsa: rtl8366: Refactor VLAN/PVID init
+
+ drivers/net/dsa/realtek-smi-core.h |   4 +-
+ drivers/net/dsa/rtl8366.c          | 277 +++++++++++++++--------------
+ 2 files changed, 151 insertions(+), 130 deletions(-)
+
+-- 
+2.26.2
+
