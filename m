@@ -2,100 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69CA02586C0
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 06:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF2682586C3
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 06:20:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726068AbgIAETE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 00:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35294 "EHLO
+        id S1726107AbgIAEUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 00:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgIAETE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 00:19:04 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4725C0612FE
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 21:19:03 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id ds1so74568pjb.1
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 21:19:03 -0700 (PDT)
+        with ESMTP id S1725930AbgIAEUl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 00:20:41 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA67C0612FE
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 21:20:41 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id i10so5293pgk.1
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 21:20:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=Ax3cjPQFtoCXTia41zUFgQjl0WAQxP2tosymrfzQPTg=;
-        b=TScWChG2qDbiQz7lDWFvy1gagfh8rsVfz9FCYIogyUbFCJtPHv7fnSAZcJuoPBJ8ti
-         jfwWwwm2ljQ8kXvHjRvr6cpT3tSPkoPN9xkVBZ7Tvjy8YCRzdzaRJp96/RhiG4JfWllM
-         C5Bz4ZlORyehzCVTww7OCqmMw21R9SdRuLQdzSTj3ZZhNG81vvTO9V23sACKtCZGE/6D
-         HvLLOydsQXe2yFeFYk2J32OW992aiWEowXu4naSdzd8n77Vl8jUhVbePs2mMqHZfKuM0
-         jtEb3CcO6K28qCRazvEDYQMzN1ZshpFMZyoEnm9wJC/DkfaTS1YbtrlyLH7CNNeZMMkQ
-         da5g==
+        bh=RjPIw74c8vffPjFSoZ9zLiX/LzmRx2OfAo5bjwn53TA=;
+        b=MewO46KOTEgJeJwuNy03lCD1aqI5m4aYSrF9w6ejE2d3iObyLvtvTVwZNruJ1h2IdR
+         lxewKGJZHW/gC4UI2UDGhCYaECxOgn/vp270HB6q5/lxIYU6tNiPrbB2rt9QyS6pJ0ko
+         fN+rohF8eCI7LSPz84KqamT0DUzeVKTgjAuEeka85n/yykneafFd/5O/8Z/MJInkyGq4
+         jWQXU4GyrdAM/TjnLxWjiNttL4RMRgJl9flGF7BIjZFXRHyPeHepd1A+Qc6jxWNYm94/
+         ivdv3F+HTgSEXIUdt4bhQz+RIkXMJK+Kn49uaI7Kbij2zCtmZgJfMuwt6LyEE9a8v5lo
+         PRRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-transfer-encoding
          :content-language;
-        bh=Ax3cjPQFtoCXTia41zUFgQjl0WAQxP2tosymrfzQPTg=;
-        b=pJBjI62p+l6IRXsLlT96yBuCjHeJm6dl8MH3i+rmUEojf43Ax5huNuzhYRp6AjbUFp
-         yWA+n/5GJ+NbBLXHutK5qYGBlDpYptTXfdgHJ9jWAWC+wfkdA71p0m83zTG0bebOqaDl
-         /XhpNlvfCqDGDQXVmRKyirdUBwv13CY0dbxsd8aEv8O2uswTBqVpyzFEfzdcKtv7TAkD
-         u815bzIdZkHe4iBMdhVJ13XGBXKoQf6ClrScmshZonVR1jVeO5zdML7mrS0WX7K9K+6v
-         u8unP9W1KzgbzDSwp/zOS2iFsxvrO7D2cEe9u8R+XhwPlnjS1z3Jptpm82DTdZug0CGg
-         xAcw==
-X-Gm-Message-State: AOAM532I+tNdTy/wS1im0IycBOYqQsqKq6jP9K/8eKUB3srAefGP/KWV
-        fZ5GFUDzTXkNeHhVhh21SvE4Uw==
-X-Google-Smtp-Source: ABdhPJytLtSyZcvnJjUiwJ5rWKc0rNwFUL8lrb3RKG11JVAsdY1ncCoVmMOdw0lBkp/I6n9aanb03g==
-X-Received: by 2002:a17:90b:2341:: with SMTP id ms1mr36970pjb.80.1598933943244;
-        Mon, 31 Aug 2020 21:19:03 -0700 (PDT)
+        bh=RjPIw74c8vffPjFSoZ9zLiX/LzmRx2OfAo5bjwn53TA=;
+        b=sR0yZN1JL8zQjOVJ8UrVqqmSHSc8bypZMPhGHNVlxTpdNWd/p15EYqp+nxVuFaht8j
+         LCEj9+iLLJVOrR5EnHC1CF2IH3ziRldqN4EHiF0TOts7ilpuhfuCR3uFBeyeHIC+3rBD
+         06AxPm40AVpLSZpO53VcJP9pZWbGoqeEVEC7SKi6+PDtfXj7GL4TtT/9Tpe6oJAA06zD
+         MRwk5xwoAHeZj1AzcX5O1dUr2dz1bkHMzMUPu6i87Z20Tr/yaycvSvr0WrOsvIBcsbXi
+         uS9XQ3uejTl8OFQUejHf4ULMJLG7nC875gNUvNU19YXXFsvDgsEFgx1GSXLXqQQj8OHO
+         kk3g==
+X-Gm-Message-State: AOAM531hBqBr3ZAyq6w8bMx1ftL13WMUZAkkzQwCRbrX/xNqaVyX/2cm
+        g/ZkTowjotNF5C5KssH5sreCGILjXkF70g==
+X-Google-Smtp-Source: ABdhPJzHmtrqoD2xA3wCx2k6FEvdRAreR8jW4dnQsia15IjJpOD6Pl7E8Az5OSYXn0aDZZRhwHtvlg==
+X-Received: by 2002:a63:521c:: with SMTP id g28mr4030652pgb.247.1598934041081;
+        Mon, 31 Aug 2020 21:20:41 -0700 (PDT)
 Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id n1sm9820225pfu.154.2020.08.31.21.19.02
+        by smtp.gmail.com with ESMTPSA id fv21sm123026pjb.16.2020.08.31.21.20.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Aug 2020 21:19:02 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/5] ionic: clean up page handling code
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, neel@pensando.io
+        Mon, 31 Aug 2020 21:20:40 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/5] ionic: smaller coalesce default
+To:     David Miller <davem@davemloft.net>, kuba@kernel.org
+Cc:     netdev@vger.kernel.org
 References: <20200831233558.71417-1-snelson@pensando.io>
- <20200831233558.71417-2-snelson@pensando.io>
- <20200831.171454.2235150331629306394.davem@davemloft.net>
+ <20200831233558.71417-3-snelson@pensando.io>
+ <20200831165054.6d16f0dd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200831.171613.1392501036623240615.davem@davemloft.net>
 From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <7ba34f16-dff9-12bb-889e-b9542740f19a@pensando.io>
-Date:   Mon, 31 Aug 2020 21:19:01 -0700
+Message-ID: <4bd7c866-4b99-bf3c-460e-8edf8fbf1e15@pensando.io>
+Date:   Mon, 31 Aug 2020 21:20:39 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200831.171454.2235150331629306394.davem@davemloft.net>
+In-Reply-To: <20200831.171613.1392501036623240615.davem@davemloft.net>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/31/20 5:16 PM, David Miller wrote:
+> From: Jakub Kicinski <kuba@kernel.org>
+> Date: Mon, 31 Aug 2020 16:50:54 -0700
+>
+>> On Mon, 31 Aug 2020 16:35:55 -0700 Shannon Nelson wrote:
+>>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+>>> index 9e2ac2b8a082..2b2eb5f2a0e5 100644
+>>> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+>>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+>>> @@ -16,7 +16,7 @@
+>>>   #define IONIC_DEF_TXRX_DESC		4096
+>>>   #define IONIC_LIFS_MAX			1024
+>>>   #define IONIC_WATCHDOG_SECS		5
+>>> -#define IONIC_ITR_COAL_USEC_DEFAULT	64
+>>> +#define IONIC_ITR_COAL_USEC_DEFAULT	8
+>> 8 us interrupt coalescing does not hurt general operations?! No way.
+>>
+>> It's your customers who'll get hurt here, so your call, but I seriously
+>> doubt this. Unless the unit is not usec?
+> Agreed, 8usec is really really low.  You won't get much coalescing during
+> bulk transfers with a value like that, eliminating the gain from coalescing
+> in the first place.
 
+Thanks.  I'll drop this patch and come back to this issue when we get a 
+chance to add adaptive coalescing.
 
-On 8/31/20 5:14 PM, David Miller wrote:
-> From: Shannon Nelson <snelson@pensando.io>
-> Date: Mon, 31 Aug 2020 16:35:54 -0700
->
->> @@ -100,6 +100,8 @@ static struct sk_buff *ionic_rx_frags(struct ionic_queue *q,
->>   		frag_len = min(len, (u16)PAGE_SIZE);
->>   		len -= frag_len;
->>   
->> +		dma_sync_single_for_cpu(dev, dma_unmap_addr(page_info, dma_addr),
->> +					len, DMA_FROM_DEVICE);
->>   		dma_unmap_page(dev, dma_unmap_addr(page_info, dma_addr),
->>   			       PAGE_SIZE, DMA_FROM_DEVICE);
->>   		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-> The unmap operation performs a sync, if necessary, for you.
->
-> That's the pattern of usage:
->
-> 	map();
-> 	device read/write memory
-> 	unmap();
->
-> That's it, no more, no less.
->
-> The time to use sync is when you want to maintain the mapping and keep
-> using it.
-
-Thanks, I'll drop that part.
 sln
+
+
