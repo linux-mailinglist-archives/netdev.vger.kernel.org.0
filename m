@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B785258879
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 08:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 796C5258896
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 08:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727024AbgIAGsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 02:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
+        id S1726521AbgIAGze (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 02:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726006AbgIAGsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 02:48:17 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E6EC0612AC;
-        Mon, 31 Aug 2020 23:48:16 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id b79so23782wmb.4;
-        Mon, 31 Aug 2020 23:48:16 -0700 (PDT)
+        with ESMTP id S1726006AbgIAGzd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 02:55:33 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480B2C0612AC
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:55:33 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id b79so39083wmb.4
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:55:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=P0AD1Y/Lrkza56GStpxrrisnFk/Rh5ZF4KO+s+OS1N0=;
-        b=dQMYLRr+HeQrqvZ37hOut1a1wWXhuuNN4Ee2sj3VBzJtz6tiT5TVc0+RPU4ZPnuRBz
-         NzXPFyQZydzGs4vb8iHNqgZnK8ZlhVHCJpvgm3Dhp37Bs+w189HnBzkVv6YqZgaDHW8C
-         8PCUS8+UvaLbaWaYmg3cSOy6DTZPEeQL6n2Rz7csM62eAFiJLLyC344mqPzpobk9E0DL
-         M+GfZxFVbP1GqvT4IO4cylBzGLc4zVC81vU+VuMqDrDBcPOwPJ7km/2OHS+hLBy4mS9F
-         1id+OR8txcMmUnR4HrGS1UKPjguIi8rsHrYLDVCXRz0W4sPD7JbGq9L4054O0TnlAGMA
-         NFNg==
+        bh=EcyOcNMeJU/82mEIEPpMUaOJoG8hDM3M2omWrK0fdkc=;
+        b=ldcQ43e9NoR45E6kG3MmSTqN8tFcNxZZXj9oeKf+AtkHl7ZQ2qkWtvgQx7CDRVyR3N
+         tZl7gbfPQy8/VirXTxIlVbhGLBAnEH3+zVTMWzFDtIcWEsFGRp4C+w7yHy/2+MlEAgJf
+         lZGzc/XzuVETYCy9Sd2PUSezkYmrQE0t1CTfy8TarSiB4vqs7h35P4/yJJ6svZ7/zJr0
+         QGD74+Ul6sLLclXdkR3fswptIjJwovRETDhwx07U7xf7F+Ufup6oWCEqeTucyZDogPrb
+         me72BaQjcOOqSEiKveUiylsfe8Kij0UTYrmOoY32G/f1+8vS33FkMkxmHUjTgWhJgvx5
+         GWUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=P0AD1Y/Lrkza56GStpxrrisnFk/Rh5ZF4KO+s+OS1N0=;
-        b=R58OLQDTy5uQvqLUJDvvFOZ+btZTA2/X/zulyN4gubF7mXZXqtHyIkPhFR4niq9aNn
-         NnqCi5qbgKLBikzeQQcjgehoNWz/XauWCo4KqVHbAzKoIT4rUz1kyS/S7u1rNnzermO4
-         dqejrw4dBo1+t0NAUcRiucFZGdoBX1g/emXK8P3wINVNn8dfpIZWIiI0SK5b+4ks7vVA
-         zkmt6FdSWajXrgpo9VZWv0Fc6okg4xmTwji1SQJMzsFuDUQwOxn7NjbI2GaQzmSARO4n
-         Gb6ovQCcUJwy5p/CuYSyeict7ikEjW9sq53CjRx1+KA9E6KUk5NeUK/xZ56thjsBIekw
-         cDPA==
-X-Gm-Message-State: AOAM533m02fYYP/wD+s7kh43pnspcVzAT6TPuu/teHX728OGCgfr+R18
-        G20EQ1R/AsPDNuAnelfWcPI=
-X-Google-Smtp-Source: ABdhPJwozowH/FyzcH63GrxI3KvkT6Rv2AAo5rdl7GWlFRDB5Ggqe7IVvrtT/tBQAuJ2+0gB7cTQPg==
-X-Received: by 2002:a1c:234b:: with SMTP id j72mr248342wmj.153.1598942894686;
-        Mon, 31 Aug 2020 23:48:14 -0700 (PDT)
+        bh=EcyOcNMeJU/82mEIEPpMUaOJoG8hDM3M2omWrK0fdkc=;
+        b=I55Z4OQEeEBQy0sw/wwKnuToPW1FnCnm3J58r1Ima5SP/DHJpwjdlDtyA91F8f8Xuv
+         ES9lWe3QkBSpSMPjSrq7cNKyCTYYrpT1hpEHCBKqP5Lh5ojwBF3apDSojUH9e4iWKjyF
+         Mr/k3odE4BHM2lOOWe6FS1wBmSGNzup5g5lO8LgZwq0mezVErM2/p7yw0nuy2NeMolAk
+         EhwX67Ux+r2BbSFjT+8emW2SOGDAKvDri2PjxqQ/iTwUMQCMmrN4tOGOTkCkk0EHU/Jq
+         PkfwQxRj8uNqe8bQOZheEjlX8e7wTvZGFSG4TfFjOBo3fULPZ+YnJHkLg40eV6gIJ9Hh
+         /1Mw==
+X-Gm-Message-State: AOAM532JEVq9/DkOpB+vHfvN6wM3x25kKdNa8drdSVEx7QitkRXbUy33
+        WYgtYaHQ6vFXmLJupZrIA8o=
+X-Google-Smtp-Source: ABdhPJy5fXMGf8XwKZOvmDpyiBs4F15vmUH4jgfOINDE1k9Q+VOjYE8e0DF1jYxwN4owycT/3LYVkQ==
+X-Received: by 2002:a1c:f70a:: with SMTP id v10mr282528wmh.39.1598943331890;
+        Mon, 31 Aug 2020 23:55:31 -0700 (PDT)
 Received: from [192.168.8.147] ([37.166.79.47])
-        by smtp.gmail.com with ESMTPSA id q12sm593092wrs.48.2020.08.31.23.48.13
+        by smtp.gmail.com with ESMTPSA id r15sm426365wmn.24.2020.08.31.23.55.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 Aug 2020 23:48:14 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Yunsheng Lin <linyunsheng@huawei.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@huawei.com
-References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+        Mon, 31 Aug 2020 23:55:31 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: diag: add workaround for inode truncation
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com, zeil@yandex-team.ru,
+        khlebnikov@yandex-team.ru, pabeni@redhat.com,
+        Dave Marchevsky <davemarchevsky@fb.com>
+References: <20200831235956.2143127-1-kuba@kernel.org>
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <2d93706f-3ba6-128b-738a-b063216eba6d@gmail.com>
-Date:   Tue, 1 Sep 2020 08:48:12 +0200
+Message-ID: <26351e38-ccbc-c0ce-f12e-96f85913a6dc@gmail.com>
+Date:   Tue, 1 Sep 2020 08:55:29 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <20200831235956.2143127-1-kuba@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -73,55 +71,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 8/31/20 5:55 PM, Yunsheng Lin wrote:
-> Currently there is concurrent reset and enqueue operation for the
-> same lockless qdisc when there is no lock to synchronize the
-> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
-> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
-> out-of-bounds access for priv->ring[] in hns3 driver if user has
-> requested a smaller queue num when __dev_xmit_skb() still enqueue a
-> skb with a larger queue_mapping after the corresponding qdisc is
-> reset, and call hns3_nic_net_xmit() with that skb later.
+On 8/31/20 4:59 PM, Jakub Kicinski wrote:
+> Dave reports that struct inet_diag_msg::idiag_inode is 32 bit,
+> while inode's type is unsigned long. This leads to truncation.
 > 
-> Avoid the above concurrent op by calling synchronize_rcu_tasks()
-> after assigning new qdisc to dev_queue->qdisc and before calling
-> qdisc_deactivate() to make sure skb with larger queue_mapping
-> enqueued to old qdisc will always be reset when qdisc_deactivate()
-> is called.
+> Since there is nothing we can do about the size of existing
+> fields - add a new attribute to carry 64 bit inode numbers.
 > 
-
-We request Fixes: tag for fixes in networking land.
-
-> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> Reported-by: Dave Marchevsky <davemarchevsky@fb.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > ---
->  net/sched/sch_generic.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
+>  include/linux/inet_diag.h      | 1 +
+>  include/uapi/linux/inet_diag.h | 1 +
+>  net/ipv4/inet_diag.c           | 7 ++++++-
+>  3 files changed, 8 insertions(+), 1 deletion(-)
 > 
-> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-> index 265a61d..6e42237 100644
-> --- a/net/sched/sch_generic.c
-> +++ b/net/sched/sch_generic.c
-> @@ -1160,8 +1160,13 @@ static void dev_deactivate_queue(struct net_device *dev,
+> diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
+> index 0ef2d800fda7..5ea0f965c173 100644
+> --- a/include/linux/inet_diag.h
+> +++ b/include/linux/inet_diag.h
+> @@ -75,6 +75,7 @@ static inline size_t inet_diag_msg_attrs_size(void)
+>  #ifdef CONFIG_SOCK_CGROUP_DATA
+>  		+ nla_total_size_64bit(sizeof(u64))  /* INET_DIAG_CGROUP_ID */
+>  #endif
+> +		+ nla_total_size_64bit(sizeof(u64))  /* INET_DIAG_INODE */
+>  		;
+>  }
+>  int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
+> diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
+> index 5ba122c1949a..0819a473ee9c 100644
+> --- a/include/uapi/linux/inet_diag.h
+> +++ b/include/uapi/linux/inet_diag.h
+> @@ -160,6 +160,7 @@ enum {
+>  	INET_DIAG_ULP_INFO,
+>  	INET_DIAG_SK_BPF_STORAGES,
+>  	INET_DIAG_CGROUP_ID,
+> +	INET_DIAG_INODE,
+>  	__INET_DIAG_MAX,
+>  };
 >  
->  	qdisc = rtnl_dereference(dev_queue->qdisc);
->  	if (qdisc) {
-> -		qdisc_deactivate(qdisc);
->  		rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+> diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
+> index 4a98dd736270..6a52947591fc 100644
+> --- a/net/ipv4/inet_diag.c
+> +++ b/net/ipv4/inet_diag.c
+> @@ -125,6 +125,7 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
+>  			     bool net_admin)
+>  {
+>  	const struct inet_sock *inet = inet_sk(sk);
+> +	unsigned long ino;
+>  
+>  	if (nla_put_u8(skb, INET_DIAG_SHUTDOWN, sk->sk_shutdown))
+>  		goto errout;
+> @@ -177,8 +178,12 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
+>  		goto errout;
+>  #endif
+>  
+> +	ino = sock_i_ino(sk);
+> +	if (nla_put_u64_64bit(skb, INET_DIAG_INODE, ino, INET_DIAG_PAD))
+> +		goto errout;
 > +
-> +		/* Make sure lockless qdisc enqueuing is done with the
-> +		 * old qdisc in __dev_xmit_skb().
-> +		 */
-> +		synchronize_rcu_tasks();
-
-This seems quite wrong, there is not a single use of synchronize_rcu_tasks() in net/,
-we probably do not want this.
-
-I bet that synchronize_net() is appropriate, if not please explain/comment why we want this instead.
-
-Adding one synchronize_net() per TX queue is a killer for devices with 128 or 256 TX queues.
-
-I would rather find a way of not calling qdisc_reset() from qdisc_deactivate().
-
-This lockless pfifo_fast is a mess really.
+>  	r->idiag_uid = from_kuid_munged(user_ns, sock_i_uid(sk));
+> -	r->idiag_inode = sock_i_ino(sk);
+> +	r->idiag_inode = ino;
+>  
+>  	return 0;
+>  errout:
+> 
 
 
+Last time I checked socket inode numbers were 32bit ?
+
+Is there a plan changing this ?
