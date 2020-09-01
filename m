@@ -2,122 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68E21259033
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 16:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D75592591C2
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 16:55:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728067AbgIAOUf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 10:20:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728149AbgIAOUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 10:20:04 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A94FC06124F;
-        Tue,  1 Sep 2020 07:20:03 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1598970001;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EzXhOWsJJTl/hJbRWWE+RCFJeBmDtvEQ/oNbCJfaYgg=;
-        b=yDZNSAQRfYKaEpdbWiHiaX86IocigSeiu8kS4ExpJ5txpDEwrzW0CTfYTGw66V5PBIkYH4
-        wnU1+hBn/29UBtyjFtKu78vfcnjUqu9X4RMiSohSI2FTXLGWzkMV3z1zJ3LlKI/zJr05ii
-        UHQqsOGI0zIMpHomno679XZOM7Okk85tkSMpDSe88HZByrvt0kfOp2YCH1wTBAczvvB/tc
-        DEdsw+6C2FuUOC4NHdKZxnZlak7J+QhgY2Ugq7Hs8ynrCQVCa1ES8HgPwrlNXFWT1hEuyy
-        /pAsDgzT3mPP0EYrOfkT9Zot1SK+8NiAyaEx2bSeDqg0aIWCnkao0A35TLVQig==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1598970001;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EzXhOWsJJTl/hJbRWWE+RCFJeBmDtvEQ/oNbCJfaYgg=;
-        b=gjV3avv5uMXe0coacwOWCMRjx4JBuXbLT8wkr0D7CcBNdNfdgCudYPlg90miinYvPeDJAc
-        J5ld9ixg0gjf0DBA==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S1728772AbgIAOy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 10:54:57 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:52244 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727026AbgIALpt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 07:45:49 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1598960740; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=liKI+Th2GySsbUd2xn9K1QLhy5bhTX64G88wpmW0HAU=; b=xhhVgTq+pI3cSKpgDVH120wCn8FnDeeo63wu5PEbBgPiBfqKwj24ce/S8MOykc9HWH+5orZj
+ 8341xsdFbGm+1rUweRubyeYfaugBeT2TDN64pK98rLr8vl/LboeRBTbrTpswpdqBtNqtBgtj
+ bdNl0sfzTLPa46AQ6E5CoOhDu6k=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 5f4e34644f13e63f04d5fc8f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Sep 2020 11:45:40
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 69988C433AD; Tue,  1 Sep 2020 11:45:39 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1D073C433C9;
+        Tue,  1 Sep 2020 11:45:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1D073C433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Bouganim\, Raz" <r-bouganim@ti.com>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "linuxarm\@huawei.com" <linuxarm@huawei.com>,
+        "mauro.chehab\@huawei.com" <mauro.chehab@huawei.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
-In-Reply-To: <20200825093219.bybzzpyfbbccjanf@skbuf>
-References: <20200820081118.10105-1-kurt@linutronix.de> <20200820081118.10105-6-kurt@linutronix.de> <87pn7ftx6b.fsf@intel.com> <87bliz13kj.fsf@kurt> <20200825093219.bybzzpyfbbccjanf@skbuf>
-Date:   Tue, 01 Sep 2020 16:20:00 +0200
-Message-ID: <87v9gxefzj.fsf@kurt>
+        Jakub Kicinski <kuba@kernel.org>,
+        "Hahn\, Maital" <maitalm@ti.com>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Dinghao Liu <dinghao.liu@zju.edu.cn>,
+        Johannes Berg <johannes.berg@intel.com>,
+        "Fuqian Huang" <huangfq.daxian@gmail.com>,
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [EXTERNAL] Re: [PATCH] Revert "wlcore: Adding suppoprt for IGTK key in wlcore driver"
+References: <f0a2cb7ea606f1a284d4c23cbf983da2954ce9b6.1598420968.git.mchehab+huawei@kernel.org>
+        <20200901093129.8A0FAC433B1@smtp.codeaurora.org>
+        <49d4cdaf6aad40f591e8b2f17e09007c@ti.com>
+Date:   Tue, 01 Sep 2020 14:45:33 +0300
+In-Reply-To: <49d4cdaf6aad40f591e8b2f17e09007c@ti.com> (Raz Bouganim's message
+        of "Tue, 1 Sep 2020 10:59:47 +0000")
+Message-ID: <87k0xd67qa.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+"Bouganim, Raz" <r-bouganim@ti.com> writes:
 
-On Tue Aug 25 2020, Vladimir Oltean wrote:
-> On Tue, Aug 25, 2020 at 11:23:56AM +0200, Kurt Kanzenbach wrote:
->> On Mon Aug 24 2020, Vinicius Costa Gomes wrote:
->> > Hi,
->> >
->> > Kurt Kanzenbach <kurt@linutronix.de> writes:
->> >
->> [snip]
->> >> +	/* Setup timer for schedule switch: The IP core only allows to set a
->> >> +	 * cycle start timer 8 seconds in the future. This is why we setup =
-the
->> >> +	 * hritmer to base_time - 5 seconds. Then, we have enough time to
->> >> +	 * activate IP core's EST timer.
->> >> +	 */
->> >> +	start =3D ktime_sub_ns(schedule->base_time, (u64)5 * NSEC_PER_SEC);
->> >> +	hrtimer_start_range_ns(&hellcreek_port->cycle_start_timer, start,
->> >> +			       NSEC_PER_SEC, HRTIMER_MODE_ABS);
->> >
->> > If we are talking about seconds here, I don't think you need to use a
->> > hrtimer, you could use a workqueue/delayed_work. Should make things a
->> > bit simpler.
->>=20
->> I've used hrtimers for one reason: The hrtimer provides a way to fire at
->> an absolute base time based on CLOCK_TAI. All the other facilities such
->> as workqueues, timer list timers, etc do not.
+> We are going to release a new FW version 8.9.0.0.83 that contains
+> support with the new IGTK key.
 >
-> That still doesn't justify the complexity of irqsave spinlocks and such.
-> You could just as well schedule a workqueue from that hrtimer and have
-> process context...
+> In addition, we also going to release a new patch that mandates the
+> driver to work with an 8.9.0.0.83 FW version or above.
+>
+> We going to push it today/tomorrow.
 
-After giving this a bit more thought, it can be implemented by using
-workqueues only. That ptp time is "cached" anyway the we could just
-periodically check for the base time arrival. That should solve the
-irqsave and the being synchronized problem.
+You shouldn't break the support for old firmware, instead please
+implement it so that both old and new firmware are supported at the same
+time.
 
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl9OWJAACgkQeSpbgcuY
-8KYTTxAAzDMvQIXyzghTI8d0w/3qvioIEiOO/t/UGnf6PH6kR/aKxYsX82XZ8ahG
-knDrsGE62KZm5oAgeeJhBLfxJc2cLbbs809g2zu/7SYeE1ONiJ5cEOmto/dGaB+R
-NDLbipZV8SwbiSdXqnCjtjYccjGkmEwcg3fTIHO7oYCT7+x4g0tsjex2x/J0btBH
-X0lUI2ON1aMQP75pDEpXA2ELnrpIAq3DVLWQWlh558H7KPpLdIkPSwOSpz7rPOhR
-dWfclVDH3cZDaodbvbw2n/84O6iDBRdvr4XYmI0i407Xop0gCr8n8Db7oO4GXg3l
-pHrxlFuPCkFwfBooQRzRc79DGdRQLOOt8S0i6h3tVe4puVc4Ytnvm4yvkv9KTXrj
-F5NMrb4HVGKZVOcUAbWvRSzPedQ7Zygvu7F1BPUgEJBUyOLkuNhr4EVVRNtkTWWP
-l73RXFkAMB/eySXeOI7nWmMuWXidC23TfWIeksgFLxmY/w0Q7u1vR4AL2ErkSsX9
-vjC32uCKSXrSG06z866c13cGtFYwUnvJQ95ONNR9Um0iK1d64SbPp6RCvyzwkI7Q
-9uNKVPQSeAFhw6Qynw4cWEH2lsB/Wgsom9Ce7YlARRxQnj+7vKyFoNxHxKos4wNM
-rWQtjUHDQZmmhJ9nL0RoDVpmiEvAsixM2rQ0Z2/tjxPEbJJAvi4=
-=VIAt
------END PGP SIGNATURE-----
---=-=-=--
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
