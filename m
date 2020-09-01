@@ -2,209 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 931D125886C
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 08:44:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B785258879
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 08:48:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726941AbgIAGo3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 02:44:29 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:41149 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726050AbgIAGoS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 02:44:18 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 0816h8wd000898;
-        Tue, 1 Sep 2020 08:43:08 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Sedat Dilek <sedat.dilek@gmail.com>, George Spelvin <lkml@sdf.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>, tytso@mit.edu,
-        Florian Westphal <fw@strlen.de>,
-        Marc Plumb <lkml.mplumb@gmail.com>
-Subject: [PATCH 2/2] random32: add noise from network and scheduling activity
-Date:   Tue,  1 Sep 2020 08:43:02 +0200
-Message-Id: <20200901064302.849-3-w@1wt.eu>
-X-Mailer: git-send-email 2.9.0
-In-Reply-To: <20200901064302.849-1-w@1wt.eu>
-References: <20200901064302.849-1-w@1wt.eu>
+        id S1727024AbgIAGsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 02:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbgIAGsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 02:48:17 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E6EC0612AC;
+        Mon, 31 Aug 2020 23:48:16 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id b79so23782wmb.4;
+        Mon, 31 Aug 2020 23:48:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=P0AD1Y/Lrkza56GStpxrrisnFk/Rh5ZF4KO+s+OS1N0=;
+        b=dQMYLRr+HeQrqvZ37hOut1a1wWXhuuNN4Ee2sj3VBzJtz6tiT5TVc0+RPU4ZPnuRBz
+         NzXPFyQZydzGs4vb8iHNqgZnK8ZlhVHCJpvgm3Dhp37Bs+w189HnBzkVv6YqZgaDHW8C
+         8PCUS8+UvaLbaWaYmg3cSOy6DTZPEeQL6n2Rz7csM62eAFiJLLyC344mqPzpobk9E0DL
+         M+GfZxFVbP1GqvT4IO4cylBzGLc4zVC81vU+VuMqDrDBcPOwPJ7km/2OHS+hLBy4mS9F
+         1id+OR8txcMmUnR4HrGS1UKPjguIi8rsHrYLDVCXRz0W4sPD7JbGq9L4054O0TnlAGMA
+         NFNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=P0AD1Y/Lrkza56GStpxrrisnFk/Rh5ZF4KO+s+OS1N0=;
+        b=R58OLQDTy5uQvqLUJDvvFOZ+btZTA2/X/zulyN4gubF7mXZXqtHyIkPhFR4niq9aNn
+         NnqCi5qbgKLBikzeQQcjgehoNWz/XauWCo4KqVHbAzKoIT4rUz1kyS/S7u1rNnzermO4
+         dqejrw4dBo1+t0NAUcRiucFZGdoBX1g/emXK8P3wINVNn8dfpIZWIiI0SK5b+4ks7vVA
+         zkmt6FdSWajXrgpo9VZWv0Fc6okg4xmTwji1SQJMzsFuDUQwOxn7NjbI2GaQzmSARO4n
+         Gb6ovQCcUJwy5p/CuYSyeict7ikEjW9sq53CjRx1+KA9E6KUk5NeUK/xZ56thjsBIekw
+         cDPA==
+X-Gm-Message-State: AOAM533m02fYYP/wD+s7kh43pnspcVzAT6TPuu/teHX728OGCgfr+R18
+        G20EQ1R/AsPDNuAnelfWcPI=
+X-Google-Smtp-Source: ABdhPJwozowH/FyzcH63GrxI3KvkT6Rv2AAo5rdl7GWlFRDB5Ggqe7IVvrtT/tBQAuJ2+0gB7cTQPg==
+X-Received: by 2002:a1c:234b:: with SMTP id j72mr248342wmj.153.1598942894686;
+        Mon, 31 Aug 2020 23:48:14 -0700 (PDT)
+Received: from [192.168.8.147] ([37.166.79.47])
+        by smtp.gmail.com with ESMTPSA id q12sm593092wrs.48.2020.08.31.23.48.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 31 Aug 2020 23:48:14 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Yunsheng Lin <linyunsheng@huawei.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxarm@huawei.com
+References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <2d93706f-3ba6-128b-738a-b063216eba6d@gmail.com>
+Date:   Tue, 1 Sep 2020 08:48:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
+MIME-Version: 1.0
+In-Reply-To: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the removal of the interrupt perturbations in previous random32
-change (random32: make prandom_u32() output unpredictable), the PRNG
-has become 100% deterministic again. While SipHash is expected to be
-way more robust against brute force than the previous Tausworthe LFSR,
-there's still the risk that whoever has even one temporary access to
-the PRNG's internal state is able to predict all subsequent draws till
-the next reseed (roughly every minute). This may happen through a side
-channel attack or any data leak.
 
-This patch restores the spirit of commit f227e3ec3b5c ("random32: update
-the net random state on interrupt and activity") in that it will perturb
-the internal PRNG's statee using externally collected noise, except that
-it will not pick that noise from the random pool's bits nor upon
-interrupt, but will rather combine a few elements along the Tx path
-that are collectively hard to predict, such as dev, skb and txq
-pointers, packet length and jiffies values. These ones are combined
-using a single round of SipHash into a single long variable that is
-mixed with the net_rand_state upon each invocation.
 
-The operation was inlined because it produces very small and efficient
-code, typically 3 xor, 2 add and 2 rol. The performance was measured
-to be the same (even very slightly better) than before the switch to
-SipHash; on a 6-core 12-thread Core i7-8700k equipped with a 40G NIC
-(i40e), the connection rate dropped from 556k/s to 555k/s while the
-SYN cookie rate grew from 5.38 Mpps to 5.45 Mpps.
+On 8/31/20 5:55 PM, Yunsheng Lin wrote:
+> Currently there is concurrent reset and enqueue operation for the
+> same lockless qdisc when there is no lock to synchronize the
+> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+> out-of-bounds access for priv->ring[] in hns3 driver if user has
+> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+> skb with a larger queue_mapping after the corresponding qdisc is
+> reset, and call hns3_nic_net_xmit() with that skb later.
+> 
+> Avoid the above concurrent op by calling synchronize_rcu_tasks()
+> after assigning new qdisc to dev_queue->qdisc and before calling
+> qdisc_deactivate() to make sure skb with larger queue_mapping
+> enqueued to old qdisc will always be reset when qdisc_deactivate()
+> is called.
+> 
 
-Link: https://lore.kernel.org/netdev/20200808152628.GA27941@SDF.ORG/
-Cc: George Spelvin <lkml@sdf.org>
-Cc: Amit Klein <aksecurity@gmail.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: tytso@mit.edu
-Cc: Florian Westphal <fw@strlen.de>
-Cc: Marc Plumb <lkml.mplumb@gmail.com>
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
-Signed-off-by: Willy Tarreau <w@1wt.eu>
----
- include/linux/prandom.h | 19 +++++++++++++++++++
- kernel/time/timer.c     |  2 ++
- lib/random32.c          |  5 +++++
- net/core/dev.c          |  4 ++++
- 4 files changed, 30 insertions(+)
+We request Fixes: tag for fixes in networking land.
 
-diff --git a/include/linux/prandom.h b/include/linux/prandom.h
-index cc1e71334e53..aa7de3432e0f 100644
---- a/include/linux/prandom.h
-+++ b/include/linux/prandom.h
-@@ -16,6 +16,12 @@ void prandom_bytes(void *buf, size_t nbytes);
- void prandom_seed(u32 seed);
- void prandom_reseed_late(void);
- 
-+DECLARE_PER_CPU(unsigned long, net_rand_noise);
-+
-+#define PRANDOM_ADD_NOISE(a, b, c, d) \
-+	prandom_u32_add_noise((unsigned long)(a), (unsigned long)(b), \
-+			      (unsigned long)(c), (unsigned long)(d))
-+
- #if BITS_PER_LONG == 64
- /*
-  * The core SipHash round function.  Each line can be executed in
-@@ -50,6 +56,18 @@ void prandom_reseed_late(void);
- #error Unsupported BITS_PER_LONG
- #endif
- 
-+static inline void prandom_u32_add_noise(unsigned long a, unsigned long b,
-+					 unsigned long c, unsigned long d)
-+{
-+	/*
-+	 * This is not used cryptographically; it's just
-+	 * a convenient 4-word hash function. (3 xor, 2 add, 2 rol)
-+	 */
-+	a ^= __this_cpu_read(net_rand_noise);
-+	PRND_SIPROUND(a, b, c, d);
-+	__this_cpu_write(net_rand_noise, d);
-+}
-+
- struct rnd_state {
- 	__u32 s1, s2, s3, s4;
- };
-@@ -99,6 +117,7 @@ static inline void prandom_seed_state(struct rnd_state *state, u64 seed)
- 	state->s2 = __seed(i,   8U);
- 	state->s3 = __seed(i,  16U);
- 	state->s4 = __seed(i, 128U);
-+	PRANDOM_ADD_NOISE(state, i, 0, 0);
- }
- 
- /* Pseudo random number generator from numerical recipes. */
-diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 401fcb9d7388..bebcf2fc1226 100644
---- a/kernel/time/timer.c
-+++ b/kernel/time/timer.c
-@@ -1704,6 +1704,8 @@ void update_process_times(int user_tick)
- {
- 	struct task_struct *p = current;
- 
-+	PRANDOM_ADD_NOISE(jiffies, user_tick, p, 0);
-+
- 	/* Note: this timer irq context must be accounted for as well. */
- 	account_process_tick(p, user_tick);
- 	run_local_timers();
-diff --git a/lib/random32.c b/lib/random32.c
-index 00fa925a4487..38db382a8cf5 100644
---- a/lib/random32.c
-+++ b/lib/random32.c
-@@ -324,6 +324,8 @@ struct siprand_state {
- };
- 
- static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
-+DEFINE_PER_CPU(unsigned long, net_rand_noise);
-+EXPORT_PER_CPU_SYMBOL(net_rand_noise);
- 
- /*
-  * This is the core CPRNG function.  As "pseudorandom", this is not used
-@@ -347,9 +349,12 @@ static DEFINE_PER_CPU(struct siprand_state, net_rand_state) __latent_entropy;
- static inline u32 siprand_u32(struct siprand_state *s)
- {
- 	unsigned long v0 = s->v0, v1 = s->v1, v2 = s->v2, v3 = s->v3;
-+	unsigned long n = __this_cpu_read(net_rand_noise);
- 
-+	v3 ^= n;
- 	PRND_SIPROUND(v0, v1, v2, v3);
- 	PRND_SIPROUND(v0, v1, v2, v3);
-+	v0 ^= n;
- 	s->v0 = v0;  s->v1 = v1;  s->v2 = v2;  s->v3 = v3;
- 	return v1 + v3;
- }
-diff --git a/net/core/dev.c b/net/core/dev.c
-index b9c6f31ae96e..e075f7e0785a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -144,6 +144,7 @@
- #include <linux/indirect_call_wrapper.h>
- #include <net/devlink.h>
- #include <linux/pm_runtime.h>
-+#include <linux/prandom.h>
- 
- #include "net-sysfs.h"
- 
-@@ -3557,6 +3558,7 @@ static int xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		dev_queue_xmit_nit(skb, dev);
- 
- 	len = skb->len;
-+	PRANDOM_ADD_NOISE(skb, dev, txq, len + jiffies);
- 	trace_net_dev_start_xmit(skb, dev);
- 	rc = netdev_start_xmit(skb, dev, txq, more);
- 	trace_net_dev_xmit(skb, rc, dev, len);
-@@ -4129,6 +4131,7 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- 			if (!skb)
- 				goto out;
- 
-+			PRANDOM_ADD_NOISE(skb, dev, txq, jiffies);
- 			HARD_TX_LOCK(dev, txq, cpu);
- 
- 			if (!netif_xmit_stopped(txq)) {
-@@ -4194,6 +4197,7 @@ int dev_direct_xmit(struct sk_buff *skb, u16 queue_id)
- 
- 	skb_set_queue_mapping(skb, queue_id);
- 	txq = skb_get_tx_queue(dev, skb);
-+	PRANDOM_ADD_NOISE(skb, dev, txq, jiffies);
- 
- 	local_bh_disable();
- 
--- 
-2.28.0
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+>  net/sched/sch_generic.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+> index 265a61d..6e42237 100644
+> --- a/net/sched/sch_generic.c
+> +++ b/net/sched/sch_generic.c
+> @@ -1160,8 +1160,13 @@ static void dev_deactivate_queue(struct net_device *dev,
+>  
+>  	qdisc = rtnl_dereference(dev_queue->qdisc);
+>  	if (qdisc) {
+> -		qdisc_deactivate(qdisc);
+>  		rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+> +
+> +		/* Make sure lockless qdisc enqueuing is done with the
+> +		 * old qdisc in __dev_xmit_skb().
+> +		 */
+> +		synchronize_rcu_tasks();
+
+This seems quite wrong, there is not a single use of synchronize_rcu_tasks() in net/,
+we probably do not want this.
+
+I bet that synchronize_net() is appropriate, if not please explain/comment why we want this instead.
+
+Adding one synchronize_net() per TX queue is a killer for devices with 128 or 256 TX queues.
+
+I would rather find a way of not calling qdisc_reset() from qdisc_deactivate().
+
+This lockless pfifo_fast is a mess really.
+
 
