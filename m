@@ -2,134 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FCE82588BF
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 09:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E965258900
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 09:27:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726521AbgIAHIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 03:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726006AbgIAHIm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 03:08:42 -0400
-Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9B2C0612AC;
-        Tue,  1 Sep 2020 00:08:41 -0700 (PDT)
-Received: by mail-qt1-x844.google.com with SMTP id e7so169745qtj.11;
-        Tue, 01 Sep 2020 00:08:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GmXuUYU+0Jf5IK/tkXEzwkvIda53kaFZm8Sq7KP0sFU=;
-        b=JOWb9jTrRxl2PkSgSC8c9FlfkpWDLq5/Lhaml4xlqzfc3Un+/SGCfHVvyBP3CWgtjS
-         xPEzVDX7bb38uAwHm2qhJ/KNWWCKhGE4T8jWDULYrB8EhTXJNa8ZjVXTS10UokqP0Z/0
-         tWN0XysiJmkXbW3ZFovPFiSn4TP10N07s0iZhh6d0BCOcX5LAtnCq81WCMxwPJ6AQZaJ
-         /xcqz6qo42a8SYeLtXX3IaprSv02eawXA/LKiqSrrRoCaOo7NeNeOnoJwu571jIKO+nV
-         yFcOPttd1LWlld8MKdGnSwhDKYYv4/6ZrHMO69luWoY1bj/FDLkLT5jtRFcZ1qNkeIV/
-         i7QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GmXuUYU+0Jf5IK/tkXEzwkvIda53kaFZm8Sq7KP0sFU=;
-        b=lW0rFykP4SOtLM3Zy0OphaA5EcyHEcjqO7LHB1ZCvLq8nBArKhlxMspthTQOu/Iw6d
-         KBTpGWPbejKNpgwAdc7+MVZ9zFTjNiV5ohzaFUrL0y3FW79Sl4Q5DATvu4GR5d49HZD2
-         zoCTznxGmJv5D1gtHhGn5+XVSzjidaMj8PddWa/ezRu5RIiux/0tzXt4v26MXKD9dUU4
-         Xj53U8bFO+9tDdKQhdq6Xzwmq+W0VnsiNObdU+SOFIUXmY6S7ribfYn+nbBSXDqy4vkg
-         fFPqj9b4PaNcooJK4u2gpRoDCIfK+nPr6QWyiJEPZPswwHjXsCW9dyxqd6VD/I08O5GK
-         +a5Q==
-X-Gm-Message-State: AOAM5331EOQByRlGRXgqLl8LVH/CaI9EGOas25NgIi32rkwX/xT7t9HC
-        7ynAOPOY6fN8iS+hmsCsgX8=
-X-Google-Smtp-Source: ABdhPJzf3KOZbzItfgAW+zC8vk2ksm2e5eC805X9mt3sL0983IgO1KRkKb1qurFhVMGIZwSz2J+tIQ==
-X-Received: by 2002:ac8:72d3:: with SMTP id o19mr379699qtp.190.1598944120846;
-        Tue, 01 Sep 2020 00:08:40 -0700 (PDT)
-Received: from localhost.localdomain ([2604:1380:45d1:2600::1])
-        by smtp.gmail.com with ESMTPSA id l64sm570996qkc.21.2020.09.01.00.08.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2020 00:08:39 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Andy Lavr <andy.lavr@gmail.com>
-Subject: [PATCH] mwifiex: Remove unnecessary braces from HostCmd_SET_SEQ_NO_BSS_INFO
-Date:   Tue,  1 Sep 2020 00:08:34 -0700
-Message-Id: <20200901070834.1015754-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.28.0
+        id S1726204AbgIAH1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 03:27:53 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:35722 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726006AbgIAH1x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 03:27:53 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 6943F1D9A5E6AD60E4E8;
+        Tue,  1 Sep 2020 15:27:51 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 1 Sep 2020 15:27:43 +0800
+Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Eric Dumazet <eric.dumazet@gmail.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <john.fastabend@gmail.com>
+References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+ <2d93706f-3ba6-128b-738a-b063216eba6d@gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <2b60e7fd-a86a-89ab-2759-e7a83e0e28cd@huawei.com>
+Date:   Tue, 1 Sep 2020 15:27:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <2d93706f-3ba6-128b-738a-b063216eba6d@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A new warning in clang points out when macro expansion might result in a
-GNU C statement expression. There is an instance of this in the mwifiex
-driver:
+On 2020/9/1 14:48, Eric Dumazet wrote:
+> 
+> 
+> On 8/31/20 5:55 PM, Yunsheng Lin wrote:
+>> Currently there is concurrent reset and enqueue operation for the
+>> same lockless qdisc when there is no lock to synchronize the
+>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+>> out-of-bounds access for priv->ring[] in hns3 driver if user has
+>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+>> skb with a larger queue_mapping after the corresponding qdisc is
+>> reset, and call hns3_nic_net_xmit() with that skb later.
+>>
+>> Avoid the above concurrent op by calling synchronize_rcu_tasks()
+>> after assigning new qdisc to dev_queue->qdisc and before calling
+>> qdisc_deactivate() to make sure skb with larger queue_mapping
+>> enqueued to old qdisc will always be reset when qdisc_deactivate()
+>> is called.
+>>
+> 
+> We request Fixes: tag for fixes in networking land.
 
-drivers/net/wireless/marvell/mwifiex/cmdevt.c:217:34: warning: '}' and
-')' tokens terminating statement expression appear in different macro
-expansion contexts [-Wcompound-token-split-by-macro]
-        host_cmd->seq_num = cpu_to_le16(HostCmd_SET_SEQ_NO_BSS_INFO
-                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/wireless/marvell/mwifiex/fw.h:519:46: note: expanded from
-macro 'HostCmd_SET_SEQ_NO_BSS_INFO'
-        (((type) & 0x000f) << 12);                  }
-                                                    ^
+ok.
 
-This does not appear to be a real issue. Removing the braces and
-replacing them with parentheses will fix the warning and not change the
-meaning of the code.
+Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
 
-Fixes: 5e6e3a92b9a4 ("wireless: mwifiex: initial commit for Marvell mwifiex driver")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1146
-Reported-by: Andy Lavr <andy.lavr@gmail.com>
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/wireless/marvell/mwifiex/cmdevt.c | 4 ++--
- drivers/net/wireless/marvell/mwifiex/fw.h     | 8 ++++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
+> 
+>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+>> ---
+>>  net/sched/sch_generic.c | 7 ++++++-
+>>  1 file changed, 6 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+>> index 265a61d..6e42237 100644
+>> --- a/net/sched/sch_generic.c
+>> +++ b/net/sched/sch_generic.c
+>> @@ -1160,8 +1160,13 @@ static void dev_deactivate_queue(struct net_device *dev,
+>>  
+>>  	qdisc = rtnl_dereference(dev_queue->qdisc);
+>>  	if (qdisc) {
+>> -		qdisc_deactivate(qdisc);
+>>  		rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+>> +
+>> +		/* Make sure lockless qdisc enqueuing is done with the
+>> +		 * old qdisc in __dev_xmit_skb().
+>> +		 */
+>> +		synchronize_rcu_tasks();
+> 
+> This seems quite wrong, there is not a single use of synchronize_rcu_tasks() in net/,
+> we probably do not want this.
+> 
+> I bet that synchronize_net() is appropriate, if not please explain/comment why we want this instead.
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/cmdevt.c b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-index d068b9075c32..3a11342a6bde 100644
---- a/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-+++ b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-@@ -322,9 +322,9 @@ static int mwifiex_dnld_sleep_confirm_cmd(struct mwifiex_adapter *adapter)
- 
- 	adapter->seq_num++;
- 	sleep_cfm_buf->seq_num =
--		cpu_to_le16((HostCmd_SET_SEQ_NO_BSS_INFO
-+		cpu_to_le16(HostCmd_SET_SEQ_NO_BSS_INFO
- 					(adapter->seq_num, priv->bss_num,
--					 priv->bss_type)));
-+					 priv->bss_type));
- 
- 	mwifiex_dbg(adapter, CMD,
- 		    "cmd: DNLD_CMD: %#x, act %#x, len %d, seqno %#x\n",
-diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
-index 8047e307892e..1f02c5058aed 100644
---- a/drivers/net/wireless/marvell/mwifiex/fw.h
-+++ b/drivers/net/wireless/marvell/mwifiex/fw.h
-@@ -513,10 +513,10 @@ enum mwifiex_channel_flags {
- 
- #define RF_ANTENNA_AUTO                 0xFFFF
- 
--#define HostCmd_SET_SEQ_NO_BSS_INFO(seq, num, type) {   \
--	(((seq) & 0x00ff) |                             \
--	 (((num) & 0x000f) << 8)) |                     \
--	(((type) & 0x000f) << 12);                  }
-+#define HostCmd_SET_SEQ_NO_BSS_INFO(seq, num, type) \
-+	((((seq) & 0x00ff) |                        \
-+	 (((num) & 0x000f) << 8)) |                 \
-+	(((type) & 0x000f) << 12))
- 
- #define HostCmd_GET_SEQ_NO(seq)       \
- 	((seq) & HostCmd_SEQ_NUM_MASK)
--- 
-2.28.0
+Using synchronize_net() seems more appropriate here, thanks.
 
+> 
+> Adding one synchronize_net() per TX queue is a killer for devices with 128 or 256 TX queues.
+> 
+> I would rather find a way of not calling qdisc_reset() from qdisc_deactivate().
+
+Without calling qdisc_reset(), it seems there will always be skb left in the old qdisc.
+Is above acceptable?
+
+How about below steps to avoid the concurrent op:
+1. assign new qdisc to all queue' qdisc(which is noop_qdisc).
+2. call synchronize_net().
+3. calling qdisc_reset() with all queue' qdisc_sleeping.
+
+And the synchronize_net() in dev_deactivate_many() can be reused to
+ensure old qdisc is not touched any more when calling qdisc_reset().
+
+
+> 
+> This lockless pfifo_fast is a mess really.
+> 
+> 
+> .
+> 
