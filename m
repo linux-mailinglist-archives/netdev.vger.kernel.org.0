@@ -2,175 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16367258554
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 03:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 729D725855D
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 03:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726085AbgIABuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 31 Aug 2020 21:50:10 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:41916 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725941AbgIABuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 21:50:09 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0811nNSe011717
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 18:50:08 -0700
+        id S1726384AbgIABuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 31 Aug 2020 21:50:20 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:6878 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726130AbgIABuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 31 Aug 2020 21:50:14 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0811oCD4014914
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 18:50:12 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=Tn9kbjor7JCXB+E1hJYuKek36wNObuVYYEln4h0RKl8=;
- b=UcFytlJ7a9c7WsiaaM0Q6YVP4jk0iR/P8p91eNxjOIb2v0BCjSmMkrWzFR6JWlh8L02+
- ND+VDDu5OjFf4IHDkUqAiaSFMd3PakxkfNFl0YGDDa459vwLi/CIiS+Kja+afNbk2ply
- vfxmb58NKMzF+B5NX3t1c8tx4rnf6/zzZhM= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33879ng0rq-1
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=QW4UyBhQv4+GsYvi9VOq+Hxw6wgrRheCnzlMhUOthEI=;
+ b=XPVabcXSBSamC3tN4dF/kW6dH3Cjs6YeIcE1or0KVlaD2pYFDT+WLWxmcUhwtsXMuvUZ
+ ooCfbMr5MniHOY2gkv5Nm7hd4MY7o60W9FrVLAhVCLyeInh6OfKAwt4KotFrFjB2UEvb
+ zgVleZAoMAKKLmQLINPusRCiQ8JOHGrrjY8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 337jh03bc8-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 18:50:08 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 18:50:12 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 31 Aug 2020 18:50:08 -0700
+ 15.1.1979.3; Mon, 31 Aug 2020 18:50:10 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 2D7182EC663B; Mon, 31 Aug 2020 18:50:05 -0700 (PDT)
+        id 53F382EC663B; Mon, 31 Aug 2020 18:50:07 -0700 (PDT)
 From:   Andrii Nakryiko <andriin@fb.com>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
-Subject: [PATCH v2 bpf-next 00/14] Add libbpf full support for BPF-to-BPF calls
-Date:   Mon, 31 Aug 2020 18:49:49 -0700
-Message-ID: <20200901015003.2871861-1-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 01/14] libbpf: ensure ELF symbols table is found before further ELF processing
+Date:   Mon, 31 Aug 2020 18:49:50 -0700
+Message-ID: <20200901015003.2871861-2-andriin@fb.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200901015003.2871861-1-andriin@fb.com>
+References: <20200901015003.2871861-1-andriin@fb.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-01_01:2020-08-31,2020-09-01 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- mlxlogscore=817 spamscore=0 lowpriorityscore=0 bulkscore=0
- priorityscore=1501 adultscore=0 malwarescore=0 phishscore=0 mlxscore=0
- clxscore=1015 suspectscore=8 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009010014
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
+ spamscore=0 lowpriorityscore=0 bulkscore=0 adultscore=0 priorityscore=1501
+ phishscore=0 suspectscore=8 impostorscore=0 mlxlogscore=759 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009010014
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, libbpf supports a limited form of BPF-to-BPF subprogram calls.=
- The
-restriction is that entry-point BPF program should use *all* of defined
-sub-programs in BPF .o file. If any of the subprograms is not used, such
-entry-point BPF program will be rejected by verifier as containing unreac=
-hable
-dead code. This is not a big limitation for cases with single entry-point=
- BPF
-programs, but is quite a heavy restriction for multi-programs that use on=
-ly
-partially overlapping set of subprograms.
+libbpf ELF parsing logic might need symbols available before ELF parsing =
+is
+completed, so we need to make sure that symbols table section is found in
+a separate pass before all the subsequent sections are processed.
 
-This patch set removes all such restrictions and adds complete support fo=
-r
-using BPF sub-program calls on BPF side. This is achieved through libbpf
-tracking subprograms individually and detecting which subprograms are use=
-d by
-any given entry-point BPF program, and subsequently only appending and
-relocating code for just those used subprograms.
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/libbpf.c | 40 +++++++++++++++++++++++++++++-----------
+ 1 file changed, 29 insertions(+), 11 deletions(-)
 
-In addition, libbpf now also supports multiple entry-point BPF programs w=
-ithin
-the same ELF section. This allows to structure code so that there are few
-variants of BPF programs of the same type and attaching to the same targe=
-t
-(e.g., for tracepoints and kprobes) without the need to worry about ELF
-section name clashes.
-
-This patch set opens way for more wider adoption of BPF subprogram calls,
-especially for real-world production use-cases with complicated net of
-subprograms. This will allow to further scale BPF verification process th=
-rough
-good use of global functions, which can be verified independently. This i=
-s
-also important prerequisite for static linking which allows static BPF
-libraries to not worry about naming clashes for section names, as well as=
- use
-static non-inlined functions (subprograms) without worries of verifier
-rejecting program due to dead code.
-
-Patch set is structured as follows:
-- patched 1-6 contain all the libbpf changes necessary to support multi-p=
-rog
-  sections and bpf2bpf subcalls;
-- patch 7 adds dedicated selftests validating all combinations of possibl=
-e
-  sub-calls (within and across sections, static vs global functions);
-- patch 8 deprecated bpf_program__title() in favor of
-  bpf_program__section_name(). The intent was to also deprecate
-  bpf_object__find_program_by_title() as it's now non-sensical with multi=
-ple
-  programs per section. But there were too many selftests uses of this an=
-d
-  I didn't want to delay this patches further and make it even bigger, so=
- left
-  it for a follow up cleanup;
-- patches 9-10 remove uses for title-related APIs from bpftool and
-  bpf_program__title() use from selftests;
-- patch 11 is converting fexit_bpf2bpf to have explicit subtest (it does
-  contain 4 subtests, which are not handled as sub-tests);
-- patches 12-14 convert few complicated BPF selftests to use __noinline
-  functions to further validate correctness of libbpf's bpf2bpf processin=
-g
-  logic.
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index b688aadf09c5..ac56d4db6d3e 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -2720,14 +2720,38 @@ static int bpf_object__elf_collect(struct bpf_obj=
+ect *obj)
+ 	Elf *elf =3D obj->efile.elf;
+ 	Elf_Data *btf_ext_data =3D NULL;
+ 	Elf_Data *btf_data =3D NULL;
+-	Elf_Scn *scn =3D NULL;
+ 	int idx =3D 0, err =3D 0;
++	const char *name;
++	Elf_Data *data;
++	Elf_Scn *scn;
++	GElf_Shdr sh;
 =20
-v1->v2:
-  - rename DEPRECATED to LIBBPF_DEPRECATED to avoid name clashes;
-  - fix test_subprogs build;
-  - convert a bunch of complicated selftests to __noinline (Alexei).
-
-Andrii Nakryiko (14):
-  libbpf: ensure ELF symbols table is found before further ELF
-    processing
-  libbpf: parse multi-function sections into multiple BPF programs
-  libbpf: support CO-RE relocations for multi-prog sections
-  libbpf: make RELO_CALL work for multi-prog sections and sub-program
-    calls
-  libbpf: implement generalized .BTF.ext func/line info adjustment
-  libbpf: add multi-prog section support for struct_ops
-  selftests/bpf: add selftest for multi-prog sections and bpf-to-bpf
-    calls
-  tools/bpftool: replace bpf_program__title() with
-    bpf_program__section_name()
-  selftests/bpf: don't use deprecated libbpf APIs
-  libbpf: deprecate notion of BPF program "title" in favor of "section
-    name"
-  selftests/bpf: turn fexit_bpf2bpf into test with subtests
-  selftests/bpf: convert pyperf, strobemeta, and l4lb_noinline to
-    __noinline
-  selftests/bpf: modernize xdp_noinline test w/ skeleton and __noinline
-  selftests/bpf: convert cls_redirect selftest to use __noinline
-
- tools/bpf/bpftool/prog.c                      |    4 +-
- tools/lib/bpf/btf.h                           |   18 +-
- tools/lib/bpf/libbpf.c                        | 1198 +++++++++++------
- tools/lib/bpf/libbpf.h                        |    5 +-
- tools/lib/bpf/libbpf.map                      |    1 +
- tools/lib/bpf/libbpf_common.h                 |    2 +
- .../selftests/bpf/flow_dissector_load.h       |    8 +-
- .../selftests/bpf/prog_tests/fexit_bpf2bpf.c  |   21 +-
- .../selftests/bpf/prog_tests/l4lb_all.c       |    9 +-
- .../bpf/prog_tests/reference_tracking.c       |    2 +-
- .../selftests/bpf/prog_tests/subprogs.c       |   31 +
- .../selftests/bpf/prog_tests/xdp_noinline.c   |   49 +-
- tools/testing/selftests/bpf/progs/pyperf.h    |   10 +-
- .../testing/selftests/bpf/progs/strobemeta.h  |   15 +-
- .../selftests/bpf/progs/test_cls_redirect.c   |   99 +-
- .../selftests/bpf/progs/test_l4lb_noinline.c  |   41 +-
- .../selftests/bpf/progs/test_subprogs.c       |  103 ++
- .../selftests/bpf/progs/test_xdp_noinline.c   |   36 +-
- .../selftests/bpf/test_socket_cookie.c        |    2 +-
- 19 files changed, 1054 insertions(+), 600 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/subprogs.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_subprogs.c
-
++	/* a bunch of ELF parsing functionality depends on processing symbols,
++	 * so do the first pass and find the symbol table
++	 */
++	scn =3D NULL;
+ 	while ((scn =3D elf_nextscn(elf, scn)) !=3D NULL) {
+-		const char *name;
+-		GElf_Shdr sh;
+-		Elf_Data *data;
++		if (elf_sec_hdr(obj, scn, &sh))
++			return -LIBBPF_ERRNO__FORMAT;
++
++		if (sh.sh_type =3D=3D SHT_SYMTAB) {
++			if (obj->efile.symbols) {
++				pr_warn("elf: multiple symbol tables in %s\n", obj->path);
++				return -LIBBPF_ERRNO__FORMAT;
++			}
+=20
++			data =3D elf_sec_data(obj, scn);
++			if (!data)
++				return -LIBBPF_ERRNO__FORMAT;
++
++			obj->efile.symbols =3D data;
++			obj->efile.symbols_shndx =3D elf_ndxscn(scn);
++			obj->efile.strtabidx =3D sh.sh_link;
++		}
++	}
++
++	scn =3D NULL;
++	while ((scn =3D elf_nextscn(elf, scn)) !=3D NULL) {
+ 		idx++;
+=20
+ 		if (elf_sec_hdr(obj, scn, &sh))
+@@ -2766,13 +2790,7 @@ static int bpf_object__elf_collect(struct bpf_obje=
+ct *obj)
+ 		} else if (strcmp(name, BTF_EXT_ELF_SEC) =3D=3D 0) {
+ 			btf_ext_data =3D data;
+ 		} else if (sh.sh_type =3D=3D SHT_SYMTAB) {
+-			if (obj->efile.symbols) {
+-				pr_warn("elf: multiple symbol tables in %s\n", obj->path);
+-				return -LIBBPF_ERRNO__FORMAT;
+-			}
+-			obj->efile.symbols =3D data;
+-			obj->efile.symbols_shndx =3D idx;
+-			obj->efile.strtabidx =3D sh.sh_link;
++			/* already processed during the first pass above */
+ 		} else if (sh.sh_type =3D=3D SHT_PROGBITS && data->d_size > 0) {
+ 			if (sh.sh_flags & SHF_EXECINSTR) {
+ 				if (strcmp(name, ".text") =3D=3D 0)
 --=20
 2.24.1
 
