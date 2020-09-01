@@ -2,63 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA535259D3D
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 19:32:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CAA0259D51
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 19:38:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728972AbgIARcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 13:32:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45260 "EHLO mail.kernel.org"
+        id S1729231AbgIARiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 13:38:54 -0400
+Received: from elvis.franken.de ([193.175.24.41]:46057 "EHLO elvis.franken.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726301AbgIARcF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 13:32:05 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B1F9320866;
-        Tue,  1 Sep 2020 17:32:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598981525;
-        bh=O4vHFpIToPRhXlpSKyt985EwP3xCzYuhaSm2dqyu9fk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Rxgr3gd/PMosdiCHD0DzyN0syxnOZPa4L71MsBrDjXgEjhRXZNSwH3xKuoYg56jxf
-         uNQWjM8S5y2okdrd6nxgWBFiKFF8rWoYV3OlBS4NsZBSdjnxmtHPjFkVQEhRWBHvf/
-         CdhhH4/oEuUdMf2Sm5bzXYIjpNrJ4OktqGgH7l9M=
-Date:   Tue, 1 Sep 2020 10:32:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
-        zeil@yandex-team.ru, khlebnikov@yandex-team.ru, pabeni@redhat.com,
-        Dave Marchevsky <davemarchevsky@fb.com>
-Subject: Re: [PATCH net-next] net: diag: add workaround for inode truncation
-Message-ID: <20200901103203.223bc13a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200901093613.28a36553@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200831235956.2143127-1-kuba@kernel.org>
-        <26351e38-ccbc-c0ce-f12e-96f85913a6dc@gmail.com>
-        <20200901093613.28a36553@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1729009AbgIARiu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 13:38:50 -0400
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1kDAF0-0004vS-00; Tue, 01 Sep 2020 19:38:42 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 46A35C0E70; Tue,  1 Sep 2020 19:38:10 +0200 (CEST)
+Date:   Tue, 1 Sep 2020 19:38:10 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
+        linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        linux-mm@kvack.org, Marek Szyprowski <m.szyprowski@samsung.com>,
+        linux-samsung-soc@vger.kernel.org,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        linux-scsi@vger.kernel.org,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        linux-media@vger.kernel.org,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Pawel Osciak <pawel@osciak.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
+        netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
+        linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org
+Subject: Re: [PATCH 22/28] sgiseeq: convert from dma_cache_sync to
+ dma_sync_single_for_device
+Message-ID: <20200901173810.GA25282@alpha.franken.de>
+References: <20200819065555.1802761-1-hch@lst.de>
+ <20200819065555.1802761-23-hch@lst.de>
+ <20200901152209.GA14288@alpha.franken.de>
+ <20200901171241.GA20685@alpha.franken.de>
+ <20200901171627.GA8255@lst.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200901171627.GA8255@lst.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Sep 2020 09:36:13 -0700 Jakub Kicinski wrote:
-> On Tue, 1 Sep 2020 08:55:29 +0200 Eric Dumazet wrote:
-> > On 8/31/20 4:59 PM, Jakub Kicinski wrote:  
-> > > Dave reports that struct inet_diag_msg::idiag_inode is 32 bit,
-> > > while inode's type is unsigned long. This leads to truncation.
-> > > 
-> > > Since there is nothing we can do about the size of existing
-> > > fields - add a new attribute to carry 64 bit inode numbers.  
-> > 
-> > Last time I checked socket inode numbers were 32bit ?
-> > 
-> > Is there a plan changing this ?  
-> 
-> Ugh, you're right that appears to be a local patch :/ 
-> 
-> I should have checked, sorry for the noise.
+On Tue, Sep 01, 2020 at 07:16:27PM +0200, Christoph Hellwig wrote:
+> Well, if IP22 doesn't speculate (which I'm pretty sure is the case),
+> dma_sync_single_for_cpu should indeeed be a no-op.  But then there
+> also shouldn't be anything in the cache, as the previous
+> dma_sync_single_for_device should have invalidated it.  So it seems like
+> we are missing one (or more) ownership transfers to the device.  I'll
+> try to look at the the ownership management in a little more detail
+> tomorrow.
 
-Looking at get_next_ino() - it seems like the risk of overflow is very
-real, no?  Should we not address this?
+this is the problem:
+
+       /* Always check for received packets. */
+        sgiseeq_rx(dev, sp, hregs, sregs);
+
+so the driver will look at the rx descriptor on every interrupt, so
+we cache the rx descriptor on the first interrupt and if there was
+$no rx packet, we will only see it, if cache line gets flushed for
+some other reason. kick_tx() does a busy loop checking tx descriptors,
+with just sync_desc_cpu...
+
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
