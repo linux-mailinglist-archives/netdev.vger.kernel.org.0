@@ -2,156 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A652258B9B
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 11:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC7A4258B9D
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 11:32:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726419AbgIAJbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 05:31:40 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:36781 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726192AbgIAJbc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 05:31:32 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598952690; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=Q1lV8KhrZCAIfqPbV5rZXQBrWxtYYldKYVPcKGHRII0=;
- b=NfCQ/X1tVyTv16nx1QsyV/Q00OVAP2FSO953R1mBkbklMV+871flmJ+BEeQSEnZuUBKA6y3G
- QgHxfhSf0sYWVuaF+ig11TKisOPy0bA/1AIN2eFQHk0jxnJEIISQGCY/ZcEu3Ol37uPnz+uK
- gNPlErl9vpHI0UC8g2BuhpXQj5o=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 5f4e14f29f3347551fc768a8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Sep 2020 09:31:30
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 76516C433AF; Tue,  1 Sep 2020 09:31:29 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id BAC81C433CA;
-        Tue,  1 Sep 2020 09:31:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BAC81C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726192AbgIAJby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 05:31:54 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:12492 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726050AbgIAJbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 05:31:53 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0819Q0BR006616;
+        Tue, 1 Sep 2020 02:31:50 -0700
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 337mcq7rpf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 01 Sep 2020 02:31:50 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 1 Sep
+ 2020 02:31:49 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 1 Sep 2020 02:31:49 -0700
+Received: from machine421.caveonetworks.com (unknown [10.29.37.2])
+        by maili.marvell.com (Postfix) with ESMTP id 685773F7045;
+        Tue,  1 Sep 2020 02:31:48 -0700 (PDT)
+From:   <sunil.kovvuri@gmail.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH net-next] octeontx2-pf: Add UDP segmentation offload support
+Date:   Tue, 1 Sep 2020 15:01:42 +0530
+Message-ID: <1598952702-23946-1-git-send-email-sunil.kovvuri@gmail.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] Revert "wlcore: Adding suppoprt for IGTK key in wlcore
- driver"
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <f0a2cb7ea606f1a284d4c23cbf983da2954ce9b6.1598420968.git.mchehab+huawei@kernel.org>
-References: <f0a2cb7ea606f1a284d4c23cbf983da2954ce9b6.1598420968.git.mchehab+huawei@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     linuxarm@huawei.com, mauro.chehab@huawei.com,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Maital Hahn <maitalm@ti.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Raz Bouganim <r-bouganim@ti.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Fuqian Huang <huangfq.daxian@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200901093129.76516C433AF@smtp.codeaurora.org>
-Date:   Tue,  1 Sep 2020 09:31:29 +0000 (UTC)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-01_04:2020-09-01,2020-09-01 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
+From: Sunil Goutham <sgoutham@marvell.com>
 
-> This patch causes a regression betwen Kernel 5.7 and 5.8 at wlcore:
-> with it applied, WiFi stops working, and the Kernel starts printing
-> this message every second:
-> 
->    wlcore: PHY firmware version: Rev 8.2.0.0.242
->    wlcore: firmware booted (Rev 8.9.0.0.79)
->    wlcore: ERROR command execute failure 14
->    ------------[ cut here ]------------
->    WARNING: CPU: 0 PID: 133 at drivers/net/wireless/ti/wlcore/main.c:795 wl12xx_queue_recovery_work.part.0+0x6c/0x74 [wlcore]
->    Modules linked in: wl18xx wlcore mac80211 libarc4 cfg80211 rfkill snd_soc_hdmi_codec crct10dif_ce wlcore_sdio adv7511 cec kirin9xx_drm(C) kirin9xx_dw_drm_dsi(C) drm_kms_helper drm ip_tables x_tables ipv6 nf_defrag_ipv6
->    CPU: 0 PID: 133 Comm: kworker/0:1 Tainted: G        WC        5.8.0+ #186
->    Hardware name: HiKey970 (DT)
->    Workqueue: events_freezable ieee80211_restart_work [mac80211]
->    pstate: 60000005 (nZCv daif -PAN -UAO BTYPE=--)
->    pc : wl12xx_queue_recovery_work.part.0+0x6c/0x74 [wlcore]
->    lr : wl12xx_queue_recovery_work+0x24/0x30 [wlcore]
->    sp : ffff8000126c3a60
->    x29: ffff8000126c3a60 x28: 00000000000025de
->    x27: 0000000000000010 x26: 0000000000000005
->    x25: ffff0001a5d49e80 x24: ffff8000092cf580
->    x23: ffff0001b7c12623 x22: ffff0001b6fcf2e8
->    x21: ffff0001b7e46200 x20: 00000000fffffffb
->    x19: ffff0001a78e6400 x18: 0000000000000030
->    x17: 0000000000000001 x16: 0000000000000001
->    x15: ffff0001b7e46670 x14: ffffffffffffffff
->    x13: ffff8000926c37d7 x12: ffff8000126c37e0
->    x11: ffff800011e01000 x10: ffff8000120526d0
->    x9 : 0000000000000000 x8 : 3431206572756c69
->    x7 : 6166206574756365 x6 : 0000000000000c2c
->    x5 : 0000000000000000 x4 : ffff0001bf1361e8
->    x3 : ffff0001bf1790b0 x2 : 0000000000000000
->    x1 : ffff0001a5d49e80 x0 : 0000000000000001
->    Call trace:
->     wl12xx_queue_recovery_work.part.0+0x6c/0x74 [wlcore]
->     wl12xx_queue_recovery_work+0x24/0x30 [wlcore]
->     wl1271_cmd_set_sta_key+0x258/0x25c [wlcore]
->     wl1271_set_key+0x7c/0x2dc [wlcore]
->     wlcore_set_key+0xe4/0x360 [wlcore]
->     wl18xx_set_key+0x48/0x1d0 [wl18xx]
->     wlcore_op_set_key+0xa4/0x180 [wlcore]
->     ieee80211_key_enable_hw_accel+0xb0/0x2d0 [mac80211]
->     ieee80211_reenable_keys+0x70/0x110 [mac80211]
->     ieee80211_reconfig+0xa00/0xca0 [mac80211]
->     ieee80211_restart_work+0xc4/0xfc [mac80211]
->     process_one_work+0x1cc/0x350
->     worker_thread+0x13c/0x470
->     kthread+0x154/0x160
->     ret_from_fork+0x10/0x30
->    ---[ end trace b1f722abf9af5919 ]---
->    wlcore: WARNING could not set keys
->    wlcore: ERROR Could not add or replace key
->    wlan0: failed to set key (4, ff:ff:ff:ff:ff:ff) to hardware (-5)
->    wlcore: Hardware recovery in progress. FW ver: Rev 8.9.0.0.79
->    wlcore: pc: 0x0, hint_sts: 0x00000040 count: 39
->    wlcore: down
->    wlcore: down
->    ieee80211 phy0: Hardware restart was requested
->    mmc_host mmc0: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
->    mmc_host mmc0: Bus speed (slot 0) = 25000000Hz (slot req 25000000Hz, actual 25000000HZ div = 0)
->    wlcore: PHY firmware version: Rev 8.2.0.0.242
->    wlcore: firmware booted (Rev 8.9.0.0.79)
->    wlcore: ERROR command execute failure 14
->    ------------[ cut here ]------------
-> 
-> Tested on Hikey 970.
-> 
-> This reverts commit 2b7aadd3b9e17e8b81eeb8d9cc46756ae4658265.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Defines UDP segmentation algorithm in hardware and supports
+offloading UDP segmentation.
 
-Any updates? If I don't hear anything I will just queue this to v5.9.
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   | 89 ++++++++++++++++++++++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  5 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  6 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 25 +++++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |  3 +-
+ 5 files changed, 124 insertions(+), 4 deletions(-)
 
-Reminder to myself: remove Mauro's duplicate s-o-b tag, that's a patchwork bug
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index f893423..820fc66 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -365,6 +365,95 @@ int otx2_rss_init(struct otx2_nic *pfvf)
+ 	return 0;
+ }
+ 
++/* Setup UDP segmentation algorithm in HW */
++static void otx2_setup_udp_segmentation(struct nix_lso_format_cfg *lso, bool v4)
++{
++	struct nix_lso_format *field;
++
++	field = (struct nix_lso_format *)&lso->fields[0];
++	lso->field_mask = GENMASK(18, 0);
++
++	/* IP's Length field */
++	field->layer = NIX_TXLAYER_OL3;
++	/* In ipv4, length field is at offset 2 bytes, for ipv6 it's 4 */
++	field->offset = v4 ? 2 : 4;
++	field->sizem1 = 1; /* i.e 2 bytes */
++	field->alg = NIX_LSOALG_ADD_PAYLEN;
++	field++;
++
++	/* No ID field in IPv6 header */
++	if (v4) {
++		/* Increment IPID */
++		field->layer = NIX_TXLAYER_OL3;
++		field->offset = 4;
++		field->sizem1 = 1; /* i.e 2 bytes */
++		field->alg = NIX_LSOALG_ADD_SEGNUM;
++		field++;
++	}
++
++	/* Update length in UDP header */
++	field->layer = NIX_TXLAYER_OL4;
++	field->offset = 4;
++	field->sizem1 = 1;
++	field->alg = NIX_LSOALG_ADD_PAYLEN;
++}
++
++/* Setup segmentation algorithms in HW and retrieve algorithm index */
++void otx2_setup_segmentation(struct otx2_nic *pfvf)
++{
++	struct nix_lso_format_cfg_rsp *rsp;
++	struct nix_lso_format_cfg *lso;
++	struct otx2_hw *hw = &pfvf->hw;
++	int err;
++
++	mutex_lock(&pfvf->mbox.lock);
++
++	/* UDPv4 segmentation */
++	lso = otx2_mbox_alloc_msg_nix_lso_format_cfg(&pfvf->mbox);
++	if (!lso)
++		goto fail;
++
++	/* Setup UDP/IP header fields that HW should update per segment */
++	otx2_setup_udp_segmentation(lso, true);
++
++	err = otx2_sync_mbox_msg(&pfvf->mbox);
++	if (err)
++		goto fail;
++
++	rsp = (struct nix_lso_format_cfg_rsp *)
++			otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &lso->hdr);
++	if (IS_ERR(rsp))
++		goto fail;
++
++	hw->lso_udpv4_idx = rsp->lso_format_idx;
++
++	/* UDPv6 segmentation */
++	lso = otx2_mbox_alloc_msg_nix_lso_format_cfg(&pfvf->mbox);
++	if (!lso)
++		goto fail;
++
++	/* Setup UDP/IP header fields that HW should update per segment */
++	otx2_setup_udp_segmentation(lso, false);
++
++	err = otx2_sync_mbox_msg(&pfvf->mbox);
++	if (err)
++		goto fail;
++
++	rsp = (struct nix_lso_format_cfg_rsp *)
++			otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &lso->hdr);
++	if (IS_ERR(rsp))
++		goto fail;
++
++	hw->lso_udpv6_idx = rsp->lso_format_idx;
++	mutex_unlock(&pfvf->mbox.lock);
++	return;
++fail:
++	mutex_unlock(&pfvf->mbox.lock);
++	netdev_info(pfvf->netdev,
++		    "Failed to get LSO index for UDP GSO offload, disabling\n");
++	pfvf->netdev->hw_features &= ~NETIF_F_GSO_UDP_L4;
++}
++
+ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx)
+ {
+ 	/* Configure CQE interrupt coalescing parameters
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 689925b..ac47762 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -177,9 +177,11 @@ struct otx2_hw {
+ 	u16			rq_skid;
+ 	u8			cq_time_wait;
+ 
+-	/* For TSO segmentation */
++	/* Segmentation */
+ 	u8			lso_tsov4_idx;
+ 	u8			lso_tsov6_idx;
++	u8			lso_udpv4_idx;
++	u8			lso_udpv6_idx;
+ 	u8			hw_tso;
+ 
+ 	/* MSI-X */
+@@ -580,6 +582,7 @@ void otx2_tx_timeout(struct net_device *netdev, unsigned int txq);
+ void otx2_get_mac_from_af(struct net_device *netdev);
+ void otx2_config_irq_coalescing(struct otx2_nic *pfvf, int qidx);
+ int otx2_config_pause_frm(struct otx2_nic *pfvf);
++void otx2_setup_segmentation(struct otx2_nic *pfvf);
+ 
+ /* RVU block related APIs */
+ int otx2_attach_npa_nix(struct otx2_nic *pfvf);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index f5f874a..aac2845 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1501,6 +1501,9 @@ int otx2_open(struct net_device *netdev)
+ 	if (err)
+ 		goto err_disable_napi;
+ 
++	/* Setup segmentation algorithms, if failed, clear offload capability */
++	otx2_setup_segmentation(pf);
++
+ 	/* Initialize RSS */
+ 	err = otx2_rss_init(pf);
+ 	if (err)
+@@ -2091,7 +2094,8 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	netdev->hw_features = (NETIF_F_RXCSUM | NETIF_F_IP_CSUM |
+ 			       NETIF_F_IPV6_CSUM | NETIF_F_RXHASH |
+-			       NETIF_F_SG | NETIF_F_TSO | NETIF_F_TSO6);
++			       NETIF_F_SG | NETIF_F_TSO | NETIF_F_TSO6 |
++			       NETIF_F_GSO_UDP_L4);
+ 	netdev->features |= netdev->hw_features;
+ 
+ 	netdev->hw_features |= NETIF_F_LOOPBACK | NETIF_F_RXALL;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index 1f90426..faaa322 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -524,10 +524,33 @@ static void otx2_sqe_add_ext(struct otx2_nic *pfvf, struct otx2_snd_queue *sq,
+ 			 */
+ 			ip_hdr(skb)->tot_len =
+ 				htons(ext->lso_sb - skb_network_offset(skb));
+-		} else {
++		} else if (skb_shinfo(skb)->gso_type & SKB_GSO_TCPV6) {
+ 			ext->lso_format = pfvf->hw.lso_tsov6_idx;
++
+ 			ipv6_hdr(skb)->payload_len =
+ 				htons(ext->lso_sb - skb_network_offset(skb));
++		} else if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4) {
++			__be16 l3_proto = vlan_get_protocol(skb);
++			struct udphdr *udph = udp_hdr(skb);
++			u16 iplen;
++
++			ext->lso_sb = skb_transport_offset(skb) +
++					sizeof(struct udphdr);
++
++			/* HW adds payload size to length fields in IP and
++			 * UDP headers while segmentation, hence adjust the
++			 * lengths to just header sizes.
++			 */
++			iplen = htons(ext->lso_sb - skb_network_offset(skb));
++			if (l3_proto == htons(ETH_P_IP)) {
++				ip_hdr(skb)->tot_len = iplen;
++				ext->lso_format = pfvf->hw.lso_udpv4_idx;
++			} else {
++				ipv6_hdr(skb)->payload_len = iplen;
++				ext->lso_format = pfvf->hw.lso_udpv6_idx;
++			}
++
++			udph->len = htons(sizeof(struct udphdr));
+ 		}
+ 	} else if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) {
+ 		ext->tstmp = 1;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+index 92a3db6..70e0d4c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -553,7 +553,8 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 
+ 	netdev->hw_features = NETIF_F_RXCSUM | NETIF_F_IP_CSUM |
+ 			      NETIF_F_IPV6_CSUM | NETIF_F_RXHASH |
+-			      NETIF_F_SG | NETIF_F_TSO | NETIF_F_TSO6;
++			      NETIF_F_SG | NETIF_F_TSO | NETIF_F_TSO6 |
++			      NETIF_F_GSO_UDP_L4;
+ 	netdev->features = netdev->hw_features;
+ 
+ 	netdev->gso_max_segs = OTX2_MAX_GSO_SEGS;
 -- 
-https://patchwork.kernel.org/patch/11737193/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.7.4
 
