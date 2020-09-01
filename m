@@ -2,136 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13B05259259
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 17:10:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2796125933C
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 17:23:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728228AbgIAPKB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 11:10:01 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:51572 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726800AbgIAPJg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 11:09:36 -0400
-Received: from mail-pl1-f198.google.com ([209.85.214.198])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <po-hsu.lin@canonical.com>)
-        id 1kD7ug-00048e-80
-        for netdev@vger.kernel.org; Tue, 01 Sep 2020 15:09:34 +0000
-Received: by mail-pl1-f198.google.com with SMTP id bg5so757354plb.18
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 08:09:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JWz4w/tKyZ/PP+PlUCJ8+eDDTwAKqJWDoeBWELU6jAM=;
-        b=CaGpmEn8cuDiP56WVt94pUb5IvhmVwslrBm9fhouda3BHkx40X3Jd/8ZwEnLxwpQuV
-         sQJ6D+HDwdOWVWehhTreR15k2LrGGrmzHuGfa1ygoAZHWSC4RoqgK77T5qScKNmaGhJs
-         VTaK7deuCM2LfRdO2TDpHkp6JipPsYo6eUdoBmaKrpkrziFDD6iUM5r9CIus+ueqvIh2
-         iX92oeYkF6hf5zN7LmrZw45LG57TMr8+FbeW4TYQ1CSxWDd0MFh1dTnKQzzgBnl3EkRV
-         9Q9A47QYNkKGdbNvQCv1/TjnUXN2qm9w01ZcBp3qlH2JUiwsNSVM4rXlK0i7/SK5Ss8r
-         wQXQ==
-X-Gm-Message-State: AOAM53077r3BTZ3RT+qsL46HjF7t9kUxMUdE1iGVHE5CiJ8msaEZ2mZ2
-        srfc5rUADiu04EBJP4HX37Qntg7gk/U3dHQ1vZSsq4SBfNzqkpmWSY3XTkWHGZ//0yr2XASVyEb
-        xsVcHmnswtp8HqpRWip1d2qDZ1kkjwsyS
-X-Received: by 2002:a05:6a00:15d0:: with SMTP id o16mr1610236pfu.231.1598972972772;
-        Tue, 01 Sep 2020 08:09:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxNSfUNALPQS+9nTX7oFc7jV43D9g7tlXj9ZJWwL0ajWGT5buiowf8haAL9Usk5V2m8MfmNqA==
-X-Received: by 2002:a05:6a00:15d0:: with SMTP id o16mr1610207pfu.231.1598972972424;
-        Tue, 01 Sep 2020 08:09:32 -0700 (PDT)
-Received: from localhost.localdomain (114-136-253-112.emome-ip.hinet.net. [114.136.253.112])
-        by smtp.gmail.com with ESMTPSA id y4sm2391098pfr.46.2020.09.01.08.09.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2020 08:09:31 -0700 (PDT)
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-To:     po-hsu.lin@canonical.com, davem@davemloft.net, kuba@kernel.org,
-        skhan@linuxfoundation.org
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests/net: improve descriptions for XFAIL cases in psock_snd.sh
-Date:   Tue,  1 Sep 2020 23:09:23 +0800
-Message-Id: <20200901150923.36083-1-po-hsu.lin@canonical.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1729772AbgIAPXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 11:23:06 -0400
+Received: from bedivere.hansenpartnership.com ([66.63.167.143]:42978 "EHLO
+        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729348AbgIAPXB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 11:23:01 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 0E0068EE187;
+        Tue,  1 Sep 2020 08:22:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1598973779;
+        bh=oM6M8l0ba8Kwr86wVvWOr0ibc9GeoVF02RI3gdpRvZg=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=UvqMRf/V4bYGUnXRFYzHR0MoWszTvt72MUDJlkPgLVL7Z5C9ghIwUJJ5HYM5kfJ3n
+         5VYFPt986TvN+zbqjMT6pkl+t9bvzRZjP81gXVEMiUig/anUDkmm0cM9tI1gLXtLCF
+         UIwKWRUmpM4JixpLzQm9dVgj9tnlX6pm+UJWHqoc=
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id U-JPs2CIcW43; Tue,  1 Sep 2020 08:22:58 -0700 (PDT)
+Received: from [153.66.254.174] (c-73-35-198-56.hsd1.wa.comcast.net [73.35.198.56])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 8B8B18EE0F5;
+        Tue,  1 Sep 2020 08:22:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1598973778;
+        bh=oM6M8l0ba8Kwr86wVvWOr0ibc9GeoVF02RI3gdpRvZg=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=QlglmDYfmn+LUmPHNl9G1vxZ4WANgTGEDBcv3VoTq5jkCobGzHRwV7MDXP/8CkPRF
+         DlnAvyJzmngr5D0/wC86DqyXRPVdp/OwUQc4zsVd3Mrk54apOxtDVbGKnBnOuqrFqS
+         /e8+ps58Vp9230FkQlqzYQQbltdvuVP33ee7Vxcw=
+Message-ID: <1598973776.4238.11.camel@HansenPartnership.com>
+Subject: Re: [PATCH 07/28] 53c700: improve non-coherent DMA handling
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Pawel Osciak <pawel@osciak.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        iommu@lists.linux-foundation.org,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, linux-scsi@vger.kernel.org,
+        linux-mm@kvack.org, alsa-devel@alsa-project.org
+Date:   Tue, 01 Sep 2020 08:22:56 -0700
+In-Reply-To: <20200901150554.GN14765@casper.infradead.org>
+References: <20200819065555.1802761-1-hch@lst.de>
+         <20200819065555.1802761-8-hch@lst.de>
+         <1598971960.4238.5.camel@HansenPartnership.com>
+         <20200901150554.GN14765@casper.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before changing this it's a bit confusing to read test output:
-  raw csum_off with bad offset (fails)
-  ./psock_snd: write: Invalid argument
+On Tue, 2020-09-01 at 16:05 +0100, Matthew Wilcox wrote:
+> On Tue, Sep 01, 2020 at 07:52:40AM -0700, James Bottomley wrote:
+> > I think this looks mostly OK, except for one misnamed parameter
+> > below. Unfortunately, the last non-coherent parisc was the 700
+> > series and I no longer own a box, so I can't test that part of it
+> > (I can fire up the C360 to test it on a coherent arch).
+> 
+> I have a 715/50 that probably hasn't been powered on in 15 years if
+> you need something that old to test on (I believe the 725/100 uses
+> the 7100LC and so is coherent).  I'll need to set up a cross-compiler 
+> ...
 
-Change "fails" in the test case description to "expected to fail", so
-that the test output can be more understandable.
+I'm not going to say no to actual testing, but it's going to be a world
+of pain getting something so old going.  I do have a box of older
+systems I keep for architectural testing that I need to rummage around
+in ... I just have a vague memory that my 715 actually caught fire a
+decade ago and had to be disposed of.
 
-Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
----
- tools/testing/selftests/net/psock_snd.sh | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/tools/testing/selftests/net/psock_snd.sh b/tools/testing/selftests/net/psock_snd.sh
-index 6331d91..170be65 100755
---- a/tools/testing/selftests/net/psock_snd.sh
-+++ b/tools/testing/selftests/net/psock_snd.sh
-@@ -45,7 +45,7 @@ echo "raw vnet hdr"
- echo "raw csum_off"
- ./in_netns.sh ./psock_snd -v -c
- 
--echo "raw csum_off with bad offset (fails)"
-+echo "raw csum_off with bad offset (expected to fail)"
- (! ./in_netns.sh ./psock_snd -v -c -C)
- 
- 
-@@ -57,7 +57,7 @@ echo "raw min size"
- echo "raw mtu size"
- ./in_netns.sh ./psock_snd -l "${mss}"
- 
--echo "raw mtu size + 1 (fails)"
-+echo "raw mtu size + 1 (expected to fail)"
- (! ./in_netns.sh ./psock_snd -l "${mss_exceeds}")
- 
- # fails due to ARPHRD_ETHER check in packet_extra_vlan_len_allowed
-@@ -65,19 +65,19 @@ echo "raw mtu size + 1 (fails)"
- # echo "raw vlan mtu size"
- # ./in_netns.sh ./psock_snd -V -l "${mss}"
- 
--echo "raw vlan mtu size + 1 (fails)"
-+echo "raw vlan mtu size + 1 (expected to fail)"
- (! ./in_netns.sh ./psock_snd -V -l "${mss_exceeds}")
- 
- echo "dgram mtu size"
- ./in_netns.sh ./psock_snd -d -l "${mss}"
- 
--echo "dgram mtu size + 1 (fails)"
-+echo "dgram mtu size + 1 (expected to fail)"
- (! ./in_netns.sh ./psock_snd -d -l "${mss_exceeds}")
- 
--echo "raw truncate hlen (fails: does not arrive)"
-+echo "raw truncate hlen (expected to fail: does not arrive)"
- (! ./in_netns.sh ./psock_snd -t "$((${vnet_hlen} + ${eth_hlen}))")
- 
--echo "raw truncate hlen - 1 (fails: EINVAL)"
-+echo "raw truncate hlen - 1 (expected to fail: EINVAL)"
- (! ./in_netns.sh ./psock_snd -t "$((${vnet_hlen} + ${eth_hlen} - 1))")
- 
- 
-@@ -86,13 +86,13 @@ echo "raw truncate hlen - 1 (fails: EINVAL)"
- echo "raw gso min size"
- ./in_netns.sh ./psock_snd -v -c -g -l "${mss_exceeds}"
- 
--echo "raw gso min size - 1 (fails)"
-+echo "raw gso min size - 1 (expected to fail)"
- (! ./in_netns.sh ./psock_snd -v -c -g -l "${mss}")
- 
- echo "raw gso max size"
- ./in_netns.sh ./psock_snd -v -c -g -l "${max_mss}"
- 
--echo "raw gso max size + 1 (fails)"
-+echo "raw gso max size + 1 (expected to fail)"
- (! ./in_netns.sh ./psock_snd -v -c -g -l "${max_mss_exceeds}")
- 
- echo "OK. All tests passed"
--- 
-2.7.4
+James
 
