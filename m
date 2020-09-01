@@ -2,114 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB25A25889C
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 08:58:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BC5A2588B7
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 09:06:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726352AbgIAG6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 02:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59770 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbgIAG6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 02:58:05 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CECC0612AC
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:58:03 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id mv5so50042pjb.5
-        for <netdev@vger.kernel.org>; Mon, 31 Aug 2020 23:58:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=R1RsPGwLgQ6M8GTAaaA8I5EBvM6vROOQRDTadyBN0fI=;
-        b=i9QLmbfLyr4EJASj7o1W8s1hA1XT2OmxHDiSCtdHb80BlrgvCsewefgyU3u92gXTlZ
-         VU/LgsJ6dU6yoqnRn5PjrdKEfgidgXnEOIz7vYXzsWTMtU0PSgmFPfVrVzL9R/Y/6Sav
-         XQ64dZPcrFFIIzk3v3P141ze2+b/umxih7NHZKV5Kxjff3xbhfPRui8AMhynEMWxE8NE
-         QDmwZlkjd+HQiCa5OxxgPK7bh6aaAS9aRYOnCJN6il0ql5FKD77fdOVNw7M3YBbqXHKn
-         jkVduxS5FnPKJcfferWDE/YtX/1zRHKzmqQYvEyuaYOByKusGNmb1uuLY/9mb1c9af9R
-         E3Hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=R1RsPGwLgQ6M8GTAaaA8I5EBvM6vROOQRDTadyBN0fI=;
-        b=VcUqLwiSgJrXWdL/Y42fc3+ep82sUa5yVuxfULQzR4/2iOIyKQ1WQkxLvayLZzRzi2
-         VrdJqsEM8PiFETYesEihQBjyjHOMfnbl+jiZMwe6aTQVksAVR9Rt0MewvQHy9+5MZyzr
-         aad13fwCZLDLSCsRvkBvF/kGrM3j+VGWRPQe+TRdvIBkRB3Xeqd4wjOKz/2LzZl4uw1D
-         vVTxmUiCH5DSNQ6PYAFDKlPGeYVsi45BPzbFNf5GGGVsfqgjwcV2ccx0vx7sJ1urH5BA
-         Z391Kiq/NfPA7D5B7eBro6JRR0ynreaBXE/Uqi1wOL3+bt50IA7jf4N7TH5YY84zFrqP
-         0NKg==
-X-Gm-Message-State: AOAM530czs3kPbi3IMe53GTOVzTlXmCuMEVC2cejVQg1lDiPr9FMPFn9
-        eA/JN3u/JyXD1mkNK6npRBIC/ptItStY
-X-Google-Smtp-Source: ABdhPJy3PPx1infkahXw5FXVuR6+lobnCfGfXBH82a8cmkfqGXGxfmUG+T2E7GLKNm/b9DjWDC4Tsmu4agQs
-X-Received: from brianvv.svl.corp.google.com ([2620:15c:2c4:201:a28c:fdff:fee1:c370])
- (user=brianvv job=sendgmr) by 2002:a17:90b:110a:: with SMTP id
- gi10mr236943pjb.206.1598943482728; Mon, 31 Aug 2020 23:58:02 -0700 (PDT)
-Date:   Mon, 31 Aug 2020 23:57:58 -0700
-Message-Id: <20200901065758.1141786-1-brianvv@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.28.0.402.g5ffc5be6b7-goog
-Subject: [PATCH] net: ipv6: fix __rt6_purge_dflt_routers when forwarding is
- not set on all ifaces
-From:   Brian Vazquez <brianvv@google.com>
-To:     Brian Vazquez <brianvv.kernel@gmail.com>,
-        Brian Vazquez <brianvv@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        David Ahern <dsa@cumulusnetworks.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726586AbgIAHGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 03:06:02 -0400
+Received: from sitav-80046.hsr.ch ([152.96.80.46]:34144 "EHLO
+        mail.strongswan.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726044AbgIAHF7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 03:05:59 -0400
+X-Greylist: delayed 570 seconds by postgrey-1.27 at vger.kernel.org; Tue, 01 Sep 2020 03:05:58 EDT
+Received: from think.wlp.is (unknown [185.12.128.225])
+        by mail.strongswan.org (Postfix) with ESMTPSA id 306AD40412;
+        Tue,  1 Sep 2020 08:56:26 +0200 (CEST)
+From:   Martin Willi <martin@strongswan.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        Florent Fourcot <florent.fourcot@wifirst.fr>,
+        Romain Bellan <romain.bellan@wifirst.fr>
+Subject: [PATCH nf] netfilter: ctnetlink: fix mark based dump filtering regression
+Date:   Tue,  1 Sep 2020 08:56:19 +0200
+Message-Id: <20200901065619.4484-1-martin@strongswan.org>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The problem is exposed when the system has multiple ifaces and
-forwarding is enabled on a subset of them, __rt6_purge_dflt_routers will
-clean the default route on all the ifaces which is not desired.
+conntrack mark based dump filtering may falsely skip entries if a mask
+is given: If the mask-based check does not filter out the entry, the
+else-if check is always true and compares the mark without considering
+the mask. The if/else-if logic seems wrong.
 
-This patches fixes that by cleaning only the routes where the iface has
-forwarding enabled.
+Given that the mask during filter setup is implicitly set to 0xffffffff
+if not specified explicitly, the mark filtering flags seem to just
+complicate things. Restore the previously used approach by always
+matching against a zero mask is no filter mark is given.
 
-Fixes: 830218c1add1 ("net: ipv6: Fix processing of RAs in presence of VRF")
-Cc: David Ahern <dsa@cumulusnetworks.com>
-Signed-off-by: Brian Vazquez <brianvv@google.com>
+Fixes: cb8aa9a3affb ("netfilter: ctnetlink: add kernel side filtering for dump")
+Signed-off-by: Martin Willi <martin@strongswan.org>
 ---
- net/ipv6/route.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/netfilter/nf_conntrack_netlink.c | 19 +++----------------
+ 1 file changed, 3 insertions(+), 16 deletions(-)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 5e7e25e2523a..41181cd489ea 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -4283,6 +4283,7 @@ static void __rt6_purge_dflt_routers(struct net *net,
- 				     struct fib6_table *table)
- {
- 	struct fib6_info *rt;
-+	bool deleted = false;
- 
- restart:
- 	rcu_read_lock();
-@@ -4291,16 +4292,19 @@ static void __rt6_purge_dflt_routers(struct net *net,
- 		struct inet6_dev *idev = dev ? __in6_dev_get(dev) : NULL;
- 
- 		if (rt->fib6_flags & (RTF_DEFAULT | RTF_ADDRCONF) &&
--		    (!idev || idev->cnf.accept_ra != 2) &&
-+		    (!idev || (idev->cnf.forwarding == 1 &&
-+			       idev->cnf.accept_ra != 2)) &&
- 		    fib6_info_hold_safe(rt)) {
- 			rcu_read_unlock();
- 			ip6_del_rt(net, rt, false);
-+			deleted = true;
- 			goto restart;
- 		}
- 	}
- 	rcu_read_unlock();
- 
--	table->flags &= ~RT6_TABLE_HAS_DFLT_ROUTER;
-+	if (deleted)
-+		table->flags &= ~RT6_TABLE_HAS_DFLT_ROUTER;
+diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
+index 832eabecfbdd..9bb82fcb7d6c 100644
+--- a/net/netfilter/nf_conntrack_netlink.c
++++ b/net/netfilter/nf_conntrack_netlink.c
+@@ -851,7 +851,6 @@ static int ctnetlink_done(struct netlink_callback *cb)
  }
  
- void rt6_purge_dflt_routers(struct net *net)
+ struct ctnetlink_filter {
+-	u_int32_t cta_flags;
+ 	u8 family;
+ 
+ 	u_int32_t orig_flags;
+@@ -906,10 +905,6 @@ static int ctnetlink_parse_tuple_filter(const struct nlattr * const cda[],
+ 					 struct nf_conntrack_zone *zone,
+ 					 u_int32_t flags);
+ 
+-/* applied on filters */
+-#define CTA_FILTER_F_CTA_MARK			(1 << 0)
+-#define CTA_FILTER_F_CTA_MARK_MASK		(1 << 1)
+-
+ static struct ctnetlink_filter *
+ ctnetlink_alloc_filter(const struct nlattr * const cda[], u8 family)
+ {
+@@ -930,14 +925,10 @@ ctnetlink_alloc_filter(const struct nlattr * const cda[], u8 family)
+ #ifdef CONFIG_NF_CONNTRACK_MARK
+ 	if (cda[CTA_MARK]) {
+ 		filter->mark.val = ntohl(nla_get_be32(cda[CTA_MARK]));
+-		filter->cta_flags |= CTA_FILTER_FLAG(CTA_MARK);
+-
+-		if (cda[CTA_MARK_MASK]) {
++		if (cda[CTA_MARK_MASK])
+ 			filter->mark.mask = ntohl(nla_get_be32(cda[CTA_MARK_MASK]));
+-			filter->cta_flags |= CTA_FILTER_FLAG(CTA_MARK_MASK);
+-		} else {
++		else
+ 			filter->mark.mask = 0xffffffff;
+-		}
+ 	} else if (cda[CTA_MARK_MASK]) {
+ 		err = -EINVAL;
+ 		goto err_filter;
+@@ -1117,11 +1108,7 @@ static int ctnetlink_filter_match(struct nf_conn *ct, void *data)
+ 	}
+ 
+ #ifdef CONFIG_NF_CONNTRACK_MARK
+-	if ((filter->cta_flags & CTA_FILTER_FLAG(CTA_MARK_MASK)) &&
+-	    (ct->mark & filter->mark.mask) != filter->mark.val)
+-		goto ignore_entry;
+-	else if ((filter->cta_flags & CTA_FILTER_FLAG(CTA_MARK)) &&
+-		 ct->mark != filter->mark.val)
++	if ((ct->mark & filter->mark.mask) != filter->mark.val)
+ 		goto ignore_entry;
+ #endif
+ 
 -- 
-2.28.0.402.g5ffc5be6b7-goog
+2.25.1
 
