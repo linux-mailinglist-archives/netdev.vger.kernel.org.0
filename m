@@ -2,116 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83290258F35
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 15:35:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB589258F29
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 15:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728216AbgIANcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 09:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728177AbgIANbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 09:31:50 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0B9C061244
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 06:24:44 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id bo3so1602974ejb.11
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 06:24:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=E8TqTD++nrUiylHISSUDMf+OxADoz/N8T9Z8IuWAAxw=;
-        b=LoL0o+NtkFajnaDjUDEFrEVwCGi1SEty2SYViAwxQpJe14ZoL5ZT2tiPQaJFCfHUSw
-         p+5CnUGHgJrRqDvNrNa0iDiHgwRrEixkYHBpDLo3JQFiPnGCScQgV3BFvU6D8dtjFC8H
-         62uGNUN4XCd8cPkXEZ8FDxwTxkMlxwGXc+26JUcg+hFPh73qWLLwrKBI9KoX7Tj/2DiA
-         G+kOWFRgYW/4R8LDZdcG/4rTIEsmp9RwGJjZlT7Y5V0zWCuNzeqniZqKCQR5R6bRueED
-         LAUKkOazqxqNY2ihdqCjXpYxDG+o3QVc+u+XOBUspkUXy+zefZl5QScf0XiVVe71tjNb
-         2Cww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=E8TqTD++nrUiylHISSUDMf+OxADoz/N8T9Z8IuWAAxw=;
-        b=UfIWZnHYFTgMk6FRBfpEWNRUCR5c0rR/cqOjSaEFQjsrvgWjz6NWaj9wyncr1ptO2t
-         4T/GDgerW5In7e5OqdQz3hvKV20NSFnaP42fLoRziNwl28ftTElv/L4bVHosiO1fGjHW
-         E4C8sIShftuJP+2XASkAG0G9PtjTyrRB93ywogDmK6jTvOuTHIqc9yZG1IGHltuOX7ZU
-         3kEhViegcLFHSQ+W7ZNKHdv6DEUfroVP04DINOJ7iNXrjt4VNBMqe5f9hviquBb3ESbB
-         PslLA/SamB9Jy6NtksZAtTyqk7FSyT99Knqfolt9iGSo2BtDDW7u9ss4kmjfX/m+RdkH
-         1+VQ==
-X-Gm-Message-State: AOAM53120lUro8gM6YmLs+bBQ9YUFLpplLX1+/wY53vwTCd2pBtxebvb
-        8Uck1H611ediOL4i7RKFKuiwYOg68DwGHHXYW0U=
-X-Google-Smtp-Source: ABdhPJyzcWZLHUSYXA06kvUrxhBmhdRwlSGtDe4WUuMRafLxX4+xEsgv/12DepnoOLYdtVnBhmFWJ402gNzBfkBq7yY=
-X-Received: by 2002:a17:906:7715:: with SMTP id q21mr1428545ejm.251.1598966682752;
- Tue, 01 Sep 2020 06:24:42 -0700 (PDT)
+        id S1727930AbgIANdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 09:33:23 -0400
+Received: from elvis.franken.de ([193.175.24.41]:45627 "EHLO elvis.franken.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728129AbgIANby (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 09:31:54 -0400
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1kD6NY-0001cg-00; Tue, 01 Sep 2020 15:31:16 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id A31F7C0E44; Tue,  1 Sep 2020 15:29:05 +0200 (CEST)
+Date:   Tue, 1 Sep 2020 15:29:05 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Pawel Osciak <pawel@osciak.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        iommu@lists.linux-foundation.org,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org, linux-scsi@vger.kernel.org,
+        linux-mm@kvack.org, alsa-devel@alsa-project.org
+Subject: Re: [PATCH 06/28] lib82596: move DMA allocation into the callers of
+ i82596_probe
+Message-ID: <20200901132905.GA11506@alpha.franken.de>
+References: <20200819065555.1802761-1-hch@lst.de>
+ <20200819065555.1802761-7-hch@lst.de>
 MIME-Version: 1.0
-Received: by 2002:a50:6f87:0:0:0:0:0 with HTTP; Tue, 1 Sep 2020 06:24:41 -0700 (PDT)
-Reply-To: luitesamson@gmail.com
-From:   luite samson <luitesamson@gmail.com>
-Date:   Tue, 1 Sep 2020 06:24:41 -0700
-Message-ID: <CAOXn9EM6bzPMWpA0oGYcmN1N=8Q4UuXQF8wBgo2mHV-tqhnfQQ@mail.gmail.com>
-Subject: ATM Visa card compensation, Thanks for your past effort
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200819065555.1802761-7-hch@lst.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello dear, How are you, hope all is well with you?
+On Wed, Aug 19, 2020 at 08:55:33AM +0200, Christoph Hellwig wrote:
+> This allows us to get rid of the LIB82596_DMA_ATTR defined and prepare
+> for untangling the coherent vs non-coherent DMA allocation API.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/net/ethernet/i825xx/lasi_82596.c | 24 ++++++++++------
+>  drivers/net/ethernet/i825xx/lib82596.c   | 36 ++++++++----------------
+>  drivers/net/ethernet/i825xx/sni_82596.c  | 19 +++++++++----
+>  3 files changed, 40 insertions(+), 39 deletions(-)
+> 
+> [...]
+> diff --git a/drivers/net/ethernet/i825xx/sni_82596.c b/drivers/net/ethernet/i825xx/sni_82596.c
+> index 22f5887578b2bd..e80e790ffbd4d4 100644
+> --- a/drivers/net/ethernet/i825xx/sni_82596.c
+> +++ b/drivers/net/ethernet/i825xx/sni_82596.c
+> @@ -24,8 +24,6 @@
+>  
+>  static const char sni_82596_string[] = "snirm_82596";
+>  
+> -#define LIB82596_DMA_ATTR	0
+> -
+>  #define DMA_WBACK(priv, addr, len)     do { } while (0)
+>  #define DMA_INV(priv, addr, len)       do { } while (0)
+>  #define DMA_WBACK_INV(priv, addr, len) do { } while (0)
+> @@ -134,10 +132,19 @@ static int sni_82596_probe(struct platform_device *dev)
+>  	lp->ca = ca_addr;
+>  	lp->mpu_port = mpu_addr;
+>  
+> +	lp->dma = dma_alloc_coherent(dev->dev.parent, sizeof(struct i596_dma),
+> +				     &lp->dma_addr, GFP_KERNEL);
 
-It is a very joyful moment for me to share this good news to you
-today, although i have really missed you because you gave me the faith
-to carry on,you really brought hope to my hopeless situation then,so
-therefore i made a vow to myself that even if you fail to complete the
-transaction together,i must surely still compensate you. before
-knowing a helper appeared from nowhere and help me to finalized the
-transfer without any delay.
+this needs to use &dev->dev as device argument otherwise I get a
 
-To be very honest with you, It is a joyful moment for me and my family
-right now, so therefore am using this opportunity to also inform you
-that have successfully move to Vietnam where am currently living now
-with my new business partner who assisted me to complete the transfer,
-but due to the willingness and acceptance you showed during my pain
-have decided to willingly compensated you and show my gratitude to you
-with these sum of $750,000.00 Seven Hundred and fifty Thousand US
-Dollars).
+WARNING: CPU: 0 PID: 1 at linux/kernel/dma/mapping.c:416 dma_alloc_attrs+0x64/0x98
 
-Please accept this little amount, because it is a gift from the bottom
-of my heart,i issued the check and i instructed the bank to role the
-fund on ATM card for security reason,you can use the ATM card to
-withdrawing money from any ATM machine world wide with a maximum of
-US$10,000 daily.
+(coherent_dma_mask is set correctly).
 
-This vow have made to myself about compensating you has been in my
-mind so am here to fulfilled it to you, although I did not tell you
-what was in my mind, my bank account manager said you can receive the
-card and use it anywhere in these global world. Go ahead contact the
-Global ATM Alliance direct with this bellow information. Email
-Address: ..... atmvisacardofficebk@dr.com
+dev->dev.parent was correct when going from netdevice to underlying device,
+but now allocation is done via platform_device probe. I wonder why this works
+for parisc.
 
-Name: ........... ....... Global ATM Visa Card Alliance
-Office Address; ...... 01BP 23 Rue Des Grands Moulins.Ouagadougou, Burkina Faso
-Email Address: ..... [atmvisacardofficebk@dr.com]
-Name Of Manager In charge: Dr.Koko pedro-c
+Thomas.
 
-Ask the manager to send you the ATM card and the pin code of the ATM
-card that i gave to you as compensation, So feel free and get in
-touched direct with the ATM office and instruct him where to send you
-the ATM card so that you can start to withdraw the money. Please do
-let me know immediately you receive it so that we can share the joy of
-your success.
-
-Presently I am very busy here in Vietnam because of the investment
-projects which I and my new partner are having at hand because I want
-to finalize everything before the end of the next month. I have giving
-instruction to ATM Visa card office on your behalf to release the ATM
-card which i gave to you as compensation. Therefore feel free and get
-in touch with him and he shall send the ATM card for you in order for
-you to start withdrawing the compensation money without delay.
-
-I and my family wishes you best of luck in whatever business you shall
-invest this money into. Kindly let me know as soon you received the
-ATM visa card in your hand.
-
-Thank you
-Yours Sincerely
-Mr Luite Samson
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
