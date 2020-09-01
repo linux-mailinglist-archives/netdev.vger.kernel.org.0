@@ -2,83 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BADE258B64
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 11:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D65FD258B65
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 11:23:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726122AbgIAJWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 05:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726064AbgIAJWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 05:22:30 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2C7C061244
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 02:22:29 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id w5so676946wrp.8
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 02:22:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JId0SkVazCDez5KK5g4ks/W/j+P2ORJmNcED9SIPLI8=;
-        b=XXhM+dPf2aCaAvmFC8uGJg2kDixU79a0xCvcJZr5D6Xe/Lqc2tqiGOSrC5jGjkcgp3
-         6dQ29E5h9/rgb031e7/jwaok86ClcvNb0Nah3RJaGwandOjfYY7t3EtZbFXP4xDZJpOT
-         evpJeOcxK2Zf1NJp4xaRlNe8jw6W0vrTeZcW0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JId0SkVazCDez5KK5g4ks/W/j+P2ORJmNcED9SIPLI8=;
-        b=HaG9NEHqOE9csJz3rqV81PmVGyU7uph3E5NCbHcjg71+mkPB0OEq2f0VIr+P/OjIsr
-         RKNlvOT6cmVULxczinvZaAYF5NZ0YCRi6EYsmUgnEtz6E6k6go1RjwdjJjt+K4qy7dss
-         cI9Uh8rhwSGjm+zhhHUPr1qOw9lhSi3JcGU74o5saWcA0ErO/h8nQ4VdZ7W8SkF82j77
-         b1dZjDx/iY+Rb25khVhH5F49fy8XNArKEVG1Uh7GaON5A+X1PLYi976cdJnQjAaw9pm9
-         9MLCkhfSlLSsHA0RPM4dNx3eRic5Z4DKshvQd5+HQAFs+nl4+xiL8ijU6JaArV6nwbE+
-         SsSA==
-X-Gm-Message-State: AOAM530rywdLgBTg+gJJPbujmEHCKLHL0qF5RPdt6NBrutFfBTQ/ZRuQ
-        M9mg9BxXe9kYkavTzyK90Ydp3Q==
-X-Google-Smtp-Source: ABdhPJyYrXPBMuUuxUPwYovheCFfJFXdqwWG/2qh6u65HvgIoov/h/3lZPTljKgnKBvTshLwoWUFnw==
-X-Received: by 2002:adf:ef45:: with SMTP id c5mr807011wrp.37.1598952145695;
-        Tue, 01 Sep 2020 02:22:25 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id j7sm1462752wrs.11.2020.09.01.02.22.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Sep 2020 02:22:25 -0700 (PDT)
-Subject: Re: [PATCH net-next 00/15] net: bridge: mcast: initial IGMPv3 support
- (part 1)
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        davem@davemloft.net
-References: <20200831150845.1062447-1-nikolay@cumulusnetworks.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <d7b03d6d-90ca-5df1-13de-33f69d8c86a8@cumulusnetworks.com>
-Date:   Tue, 1 Sep 2020 12:22:23 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726192AbgIAJXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 05:23:18 -0400
+Received: from m43-7.mailgun.net ([69.72.43.7]:33689 "EHLO m43-7.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725848AbgIAJXR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 05:23:17 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1598952196; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=+3+hIhGFV1JUt+MIA6bQuq1ot+biRaEdMkNDAHqT4rI=;
+ b=lGHavipVT9j0U6z4Rd39A7TWgHXk/0IMqY2xT+76VRIG+kmzcoArmwXlLY3ix2GTP125h2bZ
+ r4q48tyB8A49kKuhGIhrINESvBMLumbAsm1f6zzwt6ZKF3OvXcofjY6c1jElj1GboyQrJRJf
+ eCjqFB1bd/O3J82n1/AUr5btGys=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 5f4e13047f21d51b301062af (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Sep 2020 09:23:16
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D6178C43387; Tue,  1 Sep 2020 09:23:15 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 85CE9C433C6;
+        Tue,  1 Sep 2020 09:23:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 85CE9C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20200831150845.1062447-1-nikolay@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Subject: Re: [16/32] brcmfmac: btcoex: Update 'brcmf_btcoex_state' and demote
+ others
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200821071644.109970-17-lee.jones@linaro.org>
+References: <20200821071644.109970-17-lee.jones@linaro.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        brcm80211-dev-list.pdl@broadcom.com, brcm80211-dev-list@cypress.com
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200901092315.D6178C43387@smtp.codeaurora.org>
+Date:   Tue,  1 Sep 2020 09:23:15 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/08/2020 18:08, Nikolay Aleksandrov wrote:
-> Hi all,
-> This patch-set implements the control plane for initial IGMPv3 support.
-[snip]
+Lee Jones <lee.jones@linaro.org> wrote:
 
-Self-NAK, my torture tests uncovered (a rather obvious) locking issue with the dump
-code. The src groups will have to be traversed with RCU, and thus RCU-friendly
-since the mdb dump code doesn't acquire multicast_lock and we don't want to block
-IGMP processing.
+> The function headers are either very weakly documented or not at all.
+> 
+> Fixes the following W=1 kernel build warning(s):
+> 
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/btcoex.c:94: warning: Function parameter or member 'reg50' not described in 'brcmf_btcoex_info'
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/btcoex.c:94: warning: Function parameter or member 'saved_regs_part2' not described in 'brcmf_btcoex_info'
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/btcoex.c:233: warning: Function parameter or member 'btci' not described in 'btcmf_btcoex_save_part1'
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/btcoex.c:253: warning: Function parameter or member 'btci' not described in 'brcmf_btcoex_restore_part1'
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/btcoex.c:273: warning: Function parameter or member 't' not described in 'brcmf_btcoex_timerfunc'
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/btcoex.c:453: warning: Function parameter or member 'vif' not described in 'brcmf_btcoex_set_mode'
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/btcoex.c:453: warning: Function parameter or member 'duration' not described in 'brcmf_btcoex_set_mode'
+>  drivers/net/wireless/broadcom/brcm80211/brcmfmac/btcoex.c:453: warning: Excess function parameter 'cfg' description in 'brcmf_btcoex_set_mode'
+> 
+> Cc: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Cc: Franky Lin <franky.lin@broadcom.com>
+> Cc: Hante Meuleman <hante.meuleman@broadcom.com>
+> Cc: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
+> Cc: Wright Feng <wright.feng@cypress.com>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: brcm80211-dev-list.pdl@broadcom.com
+> Cc: brcm80211-dev-list@cypress.com
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
 
-I'll wait with v2 to see if there are any other comments.
+7 patches applied to wireless-drivers-next.git, thanks.
 
-Thanks,
- Nik
+9d16c3859012 brcmfmac: btcoex: Update 'brcmf_btcoex_state' and demote others
+03a7c2ea609b b43: phy_ht: Remove 9 year old TODO
+5316050efdde rsi: Source file headers are not suitable for kernel-doc
+3ecf6a3d6f62 iwlegacy: 4965-rs: Demote non kernel-doc headers to standard comment blocks
+fa5768d59c53 iwlegacy: 4965-calib: Demote seemingly accidental kernel-doc header
+a940977aaf2a brcmfmac: fwsignal: Remove unused variable 'brcmf_fws_prio2fifo'
+e9cf68ff4eff rtlwifi: rtl8192c: phy_common: Remove unused variable 'bbvalue'
 
+-- 
+https://patchwork.kernel.org/patch/11728347/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
