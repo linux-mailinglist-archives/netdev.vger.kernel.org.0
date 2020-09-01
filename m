@@ -2,85 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDE58258EF0
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 15:15:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AFB1258EF9
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 15:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726858AbgIANOj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 1 Sep 2020 09:14:39 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:43717 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728057AbgIANKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 09:10:34 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-124-RgJ3VotCP16CESXx20TH0w-1; Tue, 01 Sep 2020 14:10:19 +0100
-X-MC-Unique: RgJ3VotCP16CESXx20TH0w-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 1 Sep 2020 14:10:18 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 1 Sep 2020 14:10:18 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Willy Tarreau' <w@1wt.eu>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Sedat Dilek <sedat.dilek@gmail.com>, George Spelvin <lkml@sdf.org>,
-        "Amit Klein" <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "tytso@mit.edu" <tytso@mit.edu>, Florian Westphal <fw@strlen.de>,
-        Marc Plumb <lkml.mplumb@gmail.com>
-Subject: RE: [PATCH 1/2] random32: make prandom_u32() output unpredictable
-Thread-Topic: [PATCH 1/2] random32: make prandom_u32() output unpredictable
-Thread-Index: AQHWgCtYkxpri6yNnUCyYLzB8IqNYqlTwT5w
-Date:   Tue, 1 Sep 2020 13:10:18 +0000
-Message-ID: <b460c51a3fa1473b8289d6030a46abdb@AcuMS.aculab.com>
-References: <20200901064302.849-1-w@1wt.eu> <20200901064302.849-2-w@1wt.eu>
-In-Reply-To: <20200901064302.849-2-w@1wt.eu>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728126AbgIANSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 09:18:47 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:38268 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728150AbgIANQd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 09:16:33 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1598966192; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=iZDL70iS5jOLhNK6xZEocM/uElQ9fMrM5LZHQs4smwk=;
+ b=VGsvt1mEcFZ+0jCqXWty58TFzfjdsIhEwsIaL9xRJHqEvIfcspPFEsGMJc68Gt9PQbpy2BoW
+ bi+jjOCYGYBrcr7af4cqOhm9yBK6pL/Wi7uY8kFY6oTdGf3QxIL43v4ESiK8sh0dGrfs3utB
+ o/fS1Pf6Xo0wH/P9Bgtqq0JzWRA=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 5f4e4992885efaea0a2a16a3 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Sep 2020 13:16:02
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 311B0C433AD; Tue,  1 Sep 2020 13:16:02 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2062FC433C9;
+        Tue,  1 Sep 2020 13:15:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2062FC433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0.002
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+Subject: Re: [24/30] mwifiex: wmm: Mark 'mwifiex_1d_to_wmm_queue' as
+ __maybe_unused
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200826093401.1458456-25-lee.jones@linaro.org>
+References: <20200826093401.1458456-25-lee.jones@linaro.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200901131602.311B0C433AD@smtp.codeaurora.org>
+Date:   Tue,  1 Sep 2020 13:16:02 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willy Tarreau
-> Sent: 01 September 2020 07:43
-...
-> +/*
-> + *	Generate some initially weak seeding values to allow
-> + *	the prandom_u32() engine to be started.
-> + */
-> +static int __init prandom_init_early(void)
-> +{
-> +	int i;
-> +	unsigned long v0, v1, v2, v3;
-> +
-> +	if (!arch_get_random_long(&v0))
-> +		v0 = jiffies;
+Lee Jones <lee.jones@linaro.org> wrote:
 
-Isn't jiffies likely to be zero here?
+> 'mwifiex_1d_to_wmm_queue' is used in'; main.c, txrx.c and uap_txrx.c
+> 
+> ... but not used in 14 other source files which include 'wmm.h'.
+> 
+> Fixes the following W=1 kernel build warning(s):
+> 
+>  In file included from drivers/net/wireless/marvell/mwifiex/init.c:25:
+>  drivers/net/wireless/marvell/mwifiex/wmm.h:34:18: warning: ‘mwifiex_1d_to_wmm_queue’ defined but not used [-Wunused-const-variable=]
+>  34 | static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+>  | ^~~~~~~~~~~~~~~~~~~~~~~
+>  In file included from drivers/net/wireless/marvell/mwifiex/cmdevt.c:26:
+>  drivers/net/wireless/marvell/mwifiex/wmm.h:34:18: warning: ‘mwifiex_1d_to_wmm_queue’ defined but not used [-Wunused-const-variable=]
+>  34 | static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+>  | ^~~~~~~~~~~~~~~~~~~~~~~
+>  In file included from drivers/net/wireless/marvell/mwifiex/util.c:25:
+>  drivers/net/wireless/marvell/mwifiex/wmm.h:34:18: warning: ‘mwifiex_1d_to_wmm_queue’ defined but not used [-Wunused-const-variable=]
+>  34 | static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+>  | ^~~~~~~~~~~~~~~~~~~~~~~
+>  In file included from drivers/net/wireless/marvell/mwifiex/wmm.c:25:
+>  drivers/net/wireless/marvell/mwifiex/wmm.h:34:18: warning: ‘mwifiex_1d_to_wmm_queue’ defined but not used [-Wunused-const-variable=]
+>  34 | static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+>  | ^~~~~~~~~~~~~~~~~~~~~~~
+>  In file included from drivers/net/wireless/marvell/mwifiex/11n.c:25:
+>  drivers/net/wireless/marvell/mwifiex/wmm.h:34:18: warning: ‘mwifiex_1d_to_wmm_queue’ defined but not used [-Wunused-const-variable=]
+>  34 | static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+>  | ^~~~~~~~~~~~~~~~~~~~~~~
+>  In file included from drivers/net/wireless/marvell/mwifiex/11n_aggr.c:25:
+>  drivers/net/wireless/marvell/mwifiex/wmm.h:34:18: warning: ‘mwifiex_1d_to_wmm_queue’ defined but not used [-Wunused-const-variable=]
+>  34 | static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+>  | ^~~~~~~~~~~~~~~~~~~~~~~
+>  In file included from drivers/net/wireless/marvell/mwifiex/11n_rxreorder.c:25:
+>  drivers/net/wireless/marvell/mwifiex/wmm.h:34:18: warning: ‘mwifiex_1d_to_wmm_queue’ defined but not used [-Wunused-const-variable=]
+>  34 | static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+>  | ^~~~~~~~~~~~~~~~~~~~~~~
+>  In file included from drivers/net/wireless/marvell/mwifiex/11n.h:25,
+>  from drivers/net/wireless/marvell/mwifiex/scan.c:25:
+>  drivers/net/wireless/marvell/mwifiex/wmm.h:34:18: warning: ‘mwifiex_1d_to_wmm_queue’ defined but not used [-Wunused-const-variable=]
+>  34 | static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+>  | ^~~~~~~~~~~~~~~~~~~~~~~
+> 
+>  NB: Many entries - snipped for brevity.
+> 
+> Cc: Amitkumar Karwar <amitkarwar@gmail.com>
+> Cc: Ganapathi Bhat <ganapathi.bhat@nxp.com>
+> Cc: Xinming Hu <huxinming820@gmail.com>
+> Cc: Kalle Valo <kvalo@codeaurora.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: linux-wireless@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
 
-	David
+Failed to apply:
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+fatal: sha1 information is lacking or useless (drivers/net/wireless/marvell/mwifiex/wmm.h).
+error: could not build fake ancestor
+Applying: mwifiex: wmm: Mark 'mwifiex_1d_to_wmm_queue' as __maybe_unused
+Patch failed at 0001 mwifiex: wmm: Mark 'mwifiex_1d_to_wmm_queue' as __maybe_unused
+The copy of the patch that failed is found in: .git/rebase-apply/patch
+
+Patch set to Changes Requested.
+
+-- 
+https://patchwork.kernel.org/patch/11737713/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
