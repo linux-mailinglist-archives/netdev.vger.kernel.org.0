@@ -2,89 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02882258B76
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 11:27:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CFB4258C0E
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 11:50:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726312AbgIAJ1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 05:27:16 -0400
-Received: from mail29.static.mailgun.info ([104.130.122.29]:46485 "EHLO
-        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726311AbgIAJ1O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 05:27:14 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598952433; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=6W1O5k+RdisRLbG1VpkRIZmYEt5qpBLMUShz0x/LLVU=;
- b=fJF7i/+Ff+2hg1+Odwt9tJv/tMCoi+3UHhLy5FUyOWtb424sZIngaeX3CVfPZe8aAlY1q1dS
- 7w9H6RuvXnXJMQ01mPuQT69LXox/01fJMERbNf9txtqJHcHL6KMSZ9wPskN33xSixslMXrxS
- qv48azEGspSvZPUQzA1Z+JbaDfE=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 5f4e13f14f13e63f048dee1d (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Sep 2020 09:27:13
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C6809C43391; Tue,  1 Sep 2020 09:27:12 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C48A8C433CB;
-        Tue,  1 Sep 2020 09:27:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C48A8C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] mediatek: Use fallthrough pseudo-keyword
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200821060748.GA2483@embeddedor>
-References: <20200821060748.GA2483@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
+        id S1726503AbgIAJui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 05:50:38 -0400
+Received: from k17.unixstorm.org ([91.227.123.100]:33590 "EHLO
+        k17.unixstorm.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726117AbgIAJuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 05:50:37 -0400
+X-Greylist: delayed 3051 seconds by postgrey-1.27 at vger.kernel.org; Tue, 01 Sep 2020 05:50:35 EDT
+Received: from user-5-173-184-185.play-internet.pl ([5.173.184.185] helo=localhost.localdomain)
+        by k17.unixstorm.org with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.92.3)
+        (envelope-from <kamil@re-ws.pl>)
+        id 1kD28p-0001Sq-BC; Tue, 01 Sep 2020 10:59:47 +0200
+From:   Kamil Lorenc <kamil@re-ws.pl>
+To:     Peter Korsgaard <jacmet@sunsite.dk>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20200901092712.C6809C43391@smtp.codeaurora.org>
-Date:   Tue,  1 Sep 2020 09:27:12 +0000 (UTC)
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kamil Lorenc <kamil@re-ws.pl>
+Subject: [PATCH] net: usb: dm9601: Add USB ID of Keenetic Plus DSL
+Date:   Tue,  1 Sep 2020 10:57:38 +0200
+Message-Id: <20200901085738.27482-1-kamil@re-ws.pl>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Id: kamil@re-ws.pl
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
+Keenetic Plus DSL is a xDSL modem that uses dm9620 as its USB interface.
 
-> Replace the existing /* fall through */ comments and its variants with
-> the new pseudo-keyword macro fallthrough[1]. Also, remove unnecessary
-> fall-through markings when it is the case.
-> 
-> [1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Signed-off-by: Kamil Lorenc <kamil@re-ws.pl>
+---
+ drivers/net/usb/dm9601.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Please split this into two patches, mt76 and mt7601u patches go into
-separate trees.
-
-Patch set to Changes Requested.
-
+diff --git a/drivers/net/usb/dm9601.c b/drivers/net/usb/dm9601.c
+index b91f92e4e5f2..915ac75b55fc 100644
+--- a/drivers/net/usb/dm9601.c
++++ b/drivers/net/usb/dm9601.c
+@@ -625,6 +625,10 @@ static const struct usb_device_id products[] = {
+ 	 USB_DEVICE(0x0a46, 0x1269),	/* DM9621A USB to Fast Ethernet Adapter */
+ 	 .driver_info = (unsigned long)&dm9601_info,
+ 	},
++	{
++	 USB_DEVICE(0x0586, 0x3427),	/* ZyXEL Keenetic Plus DSL xDSL modem */
++	 .driver_info = (unsigned long)&dm9601_info,
++	},
+ 	{},			// END
+ };
+ 
 -- 
-https://patchwork.kernel.org/patch/11728165/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.28.0
 
