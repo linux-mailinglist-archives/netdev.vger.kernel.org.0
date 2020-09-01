@@ -2,85 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8A5E258E54
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 14:41:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E3D2258EB0
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 14:54:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727025AbgIAMkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 08:40:55 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:28989 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727933AbgIAMjT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 08:39:19 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598963959; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=4BZWAUdP2BV+O/N6ISnmEaCGS3o7RyPMKfE16SuDwv4=; b=kWJraAL6Y+Uouhqw1WQ4GzZZpc36eiHy0kl+DZAc6RdcTYKzomt1vz2h21D3TCLetI33ogLC
- H7YB49lyAaEnzxgW0AIz2LngwosMEHg8HjVSbbKUj53CAWiCNPa1s31O4X2lKjPmLJI7v9Yf
- MsP5kWc/LiuWejIPhBbOY3n8klw=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 5f4e40eabe06707b34767a6a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Sep 2020 12:39:06
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 92071C433CA; Tue,  1 Sep 2020 12:39:06 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from tynnyri.adurom.net (tynnyri.adurom.net [51.15.11.48])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 23DD6C433C9;
-        Tue,  1 Sep 2020 12:39:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 23DD6C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jason Yan <yanaijie@huawei.com>
-Cc:     <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Hulk Robot <hulkci@huawei.com>
-Subject: Re: [PATCH] ath6kl: wmi: remove set but not used 'rate'
-References: <20200831080824.3249197-1-yanaijie@huawei.com>
-Date:   Tue, 01 Sep 2020 15:38:58 +0300
-In-Reply-To: <20200831080824.3249197-1-yanaijie@huawei.com> (Jason Yan's
-        message of "Mon, 31 Aug 2020 16:08:24 +0800")
-Message-ID: <871rjl7jtp.fsf@tynnyri.adurom.net>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1728043AbgIAMye (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 08:54:34 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:40106 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728142AbgIAMuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 08:50:39 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1598964628;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=B57xot5d+Z91drM+Hpcp8+XcTEwxmnpriJrhtSqCEjs=;
+        b=ub18kjFKZALPvWvc0acyM0duvHG7MckCm85Vkf6EbCeKwzubAtd4JSH8HzjwjHCwFjKWYA
+        qTorVkv9vWNHfwyWUfuAPz2dNWY2rA8mV5XdilIFbbq8p/ffSqE/Px8Z6S55inT5bolvG5
+        1WHyzg/x2bNo7AQh9jqB27wh5qDTmXKJhc7vV9zvSU7+Wl33kO+eK6yHxCEEaqxR6wb6qh
+        1u7Q85WjE7a0BXa1+hdi3PzkDi3x7ZOxl7uo0F/nmbKvTkhEwtrJRZK5jxGPzDWLy+WwgB
+        9o8Tiw441DXMJFsGngme84u/S49kT285wL/KD6zQDaRZaKmYkgdr3GcNro71Zw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1598964628;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=B57xot5d+Z91drM+Hpcp8+XcTEwxmnpriJrhtSqCEjs=;
+        b=ExXfoPwAPv47+uGshvceQEmxRoq9Oe3OUdacabMaRoAcugc+lsbzzNx5zoJPFTrOlSIG06
+        g/i/78Rpt7nR8eAA==
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH v4 0/7] Hirschmann Hellcreek DSA driver
+Date:   Tue,  1 Sep 2020 14:50:07 +0200
+Message-Id: <20200901125014.17801-1-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jason Yan <yanaijie@huawei.com> writes:
+Hi,
 
-> This addresses the following gcc warning with "make W=3D1":
->
-> drivers/net/wireless/ath/ath6kl/wmi.c: In function
-> =E2=80=98ath6kl_wmi_bitrate_reply_rx=E2=80=99:
-> drivers/net/wireless/ath/ath6kl/wmi.c:1204:6: warning: variable =E2=80=98=
-rate=E2=80=99
-> set but not used [-Wunused-but-set-variable]
->  1204 |  s32 rate;
->       |      ^~~~
->
-> The variable 'sgi' is alse removed because after 'rate' is removed, it
-> is not used too.
->
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Jason Yan <yanaijie@huawei.com>
+this series adds a DSA driver for the Hirschmann Hellcreek TSN switch
+IP. Characteristics of that IP:
 
-Already fixed in ath.git tree.
+ * Full duplex Ethernet interface at 100/1000 Mbps on three ports
+ * IEEE 802.1Q-compliant Ethernet Switch
+ * IEEE 802.1Qbv Time-Aware scheduling support
+ * IEEE 1588 and IEEE 802.1AS support
 
---=20
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+That IP is used e.g. in
+
+ https://www.arrow.com/en/campaigns/arrow-kairos
+
+Due to the hardware setup the switch driver is implemented using DSA. A special
+tagging protocol is leveraged. Furthermore, this driver supports PTP and
+hardware timestamping.
+
+This work is part of the AccessTSN project: https://www.accesstsn.com/
+
+The previous versions can be found here:
+
+ * https://lkml.kernel.org/netdev/20200618064029.32168-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20200710113611.3398-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20200723081714.16005-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20200820081118.10105-1-kurt@linutronix.de/
+
+Due to the changes with the compatible strings and platform data patch 2 and 7
+should be re-reviewed.
+
+Changes since v3:
+
+ * Drop TAPRIO support (David Miller)
+   => Switch to mutexes due to the lack of hrtimers
+ * Use more specific compatible strings and add platform data (Andrew Lunn)
+ * Fix Kconfig ordering (Andrew Lunn)
+
+Changes since v2:
+
+ * Make it compile by getting all requirements merged first (Jakub Kicinski, David Miller)
+ * Use "tsn" for TSN register set (Rob Herring)
+ * Fix DT binding issues (Rob Herring)
+
+Changes since v1:
+
+ * Code simplifications (Florian Fainelli, Vladimir Oltean)
+ * Fix issues with hellcreek.yaml bindings (Florian Fainelli)
+ * Clear reserved field in ptp v2 event messages (Richard Cochran)
+ * Make use of generic ptp parsing function (Richard Cochran, Vladimir Oltean)
+ * Fix Kconfig (Florian Fainelli)
+ * Add tags (Florian Fainelli, Rob Herring, Richard Cochran) 
+
+Changes since RFC ordered by reviewers:
+
+ * Andrew Lunn
+   * Use dev_dbg for debug messages
+   * Get rid of __ function names where possible
+   * Use reverse xmas tree variable ordering
+   * Remove redundant/useless checks
+   * Improve comments e.g. for PTP
+   * Fix Kconfig ordering
+   * Make LED handling more generic and provide info via DT
+   * Setup advertisement of PHYs according to hardware
+   * Drop debugfs patch
+ * Jakub Kicinski
+   * Fix compiler warnings
+ * Florian Fainelli
+   * Switch to YAML DT bindings
+ * Richard Cochran
+   * Fix typo
+   * Add missing NULL checks
+
+Kamil Alkhouri (2):
+  net: dsa: hellcreek: Add PTP clock support
+  net: dsa: hellcreek: Add support for hardware timestamping
+
+Kurt Kanzenbach (5):
+  net: dsa: Add tag handling for Hirschmann Hellcreek switches
+  net: dsa: Add DSA driver for Hirschmann Hellcreek switches
+  net: dsa: hellcreek: Add PTP status LEDs
+  dt-bindings: Add vendor prefix for Hirschmann
+  dt-bindings: net: dsa: Add documentation for Hellcreek switches
+
+ .../bindings/net/dsa/hellcreek.yaml           |  127 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ drivers/net/dsa/Kconfig                       |    2 +
+ drivers/net/dsa/Makefile                      |    1 +
+ drivers/net/dsa/hirschmann/Kconfig            |    9 +
+ drivers/net/dsa/hirschmann/Makefile           |    5 +
+ drivers/net/dsa/hirschmann/hellcreek.c        | 1262 +++++++++++++++++
+ drivers/net/dsa/hirschmann/hellcreek.h        |  282 ++++
+ .../net/dsa/hirschmann/hellcreek_hwtstamp.c   |  479 +++++++
+ .../net/dsa/hirschmann/hellcreek_hwtstamp.h   |   58 +
+ drivers/net/dsa/hirschmann/hellcreek_ptp.c    |  452 ++++++
+ drivers/net/dsa/hirschmann/hellcreek_ptp.h    |   76 +
+ .../platform_data/hirschmann-hellcreek.h      |   22 +
+ include/net/dsa.h                             |    2 +
+ net/dsa/Kconfig                               |    6 +
+ net/dsa/Makefile                              |    1 +
+ net/dsa/tag_hellcreek.c                       |  101 ++
+ 17 files changed, 2887 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/hellcreek.yaml
+ create mode 100644 drivers/net/dsa/hirschmann/Kconfig
+ create mode 100644 drivers/net/dsa/hirschmann/Makefile
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek.c
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek.h
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek_ptp.c
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek_ptp.h
+ create mode 100644 include/linux/platform_data/hirschmann-hellcreek.h
+ create mode 100644 net/dsa/tag_hellcreek.c
+
+-- 
+2.20.1
+
