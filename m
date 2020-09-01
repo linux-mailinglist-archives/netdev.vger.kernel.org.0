@@ -2,171 +2,338 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B08125982E
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 18:24:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B38725983A
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 18:24:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731905AbgIAQXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 12:23:25 -0400
-Received: from mout.gmx.net ([212.227.15.19]:50421 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729309AbgIAQXN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 12:23:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1598977327;
-        bh=VcT1PIqQZcXCFi4aQmXr+rx2ZuYJ73wnhTYMW8H7+PU=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=fFtlmKxv2Y+p2huMqlURIGwCnY+YHR3OxCrqTmR7/c09gtEsmBQajpEBeWdzANXQU
-         nOtwsOvykJoSrphCQY3l60MBSUuF98AeyYjUWc4soGvag+zKXapN25SAOhCuREYuas
-         If9yS7veEqLQYXu1KBoCsQbtBSPXTizjivA2Vmz0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.187.2]) by mail.gmx.com (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MK3W0-1jrdNg3lmA-00LUav; Tue, 01
- Sep 2020 18:22:07 +0200
-Subject: Re: [PATCH 07/28] 53c700: improve non-coherent DMA handling
-To:     James Bottomley <James.Bottomley@HansenPartnership.com>,
-        Matthew Wilcox <willy@infradead.org>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Pawel Osciak <pawel@osciak.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        linux-nvme@lists.infradead.org, linux-scsi@vger.kernel.org,
-        linux-mm@kvack.org, alsa-devel@alsa-project.org
-References: <20200819065555.1802761-1-hch@lst.de>
- <20200819065555.1802761-8-hch@lst.de>
- <1598971960.4238.5.camel@HansenPartnership.com>
- <20200901150554.GN14765@casper.infradead.org>
- <1598973776.4238.11.camel@HansenPartnership.com>
-From:   Helge Deller <deller@gmx.de>
-Autocrypt: addr=deller@gmx.de; keydata=
- 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
- c2TFWAS8k6RLkk41ZUU8ENX8+qZx/Q==
-Message-ID: <3369218e-eea4-14e9-15f1-870269e4649d@gmx.de>
-Date:   Tue, 1 Sep 2020 18:21:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1730977AbgIAQYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 12:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730928AbgIAQYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 12:24:17 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E6E6C061244;
+        Tue,  1 Sep 2020 09:24:16 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 31so929820pgy.13;
+        Tue, 01 Sep 2020 09:24:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=L4xqZw2LOzasTWrxAyg1Lx+JL33KFksLy1Osjvbr/jw=;
+        b=LJ/XuQ+cK5bEzMV4gCUE9SCWl9rVOqmhdRs5CgF1JbBoKmvR0Vs0GkXy+ia6dkCjlE
+         PjvdrxDdvgtydENg4N34zUSfGV+lfNSlEDpKGHqiyLSm4Pt5Qp6g6uuWf5x75TxiLevR
+         QE9l2kxFelYEJcWLLbXOpXrs+WzU0SFSSp56tuewDcU7nAH0Y4mNpryJYdl5zsev86y8
+         dMUbDpTaaR7sSG5LWf2IUwJiVadb5SHvz/8CpTqoJXsFVGzLMqeE6AAtTK9CF2QubgK+
+         Mvg5Y7Bn9llVSA4AJ0gfcHvMJ16F6JQ/EQ1n3ieS8BkeRvZtk+JLV56WLpd04UmveMzr
+         9RsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=L4xqZw2LOzasTWrxAyg1Lx+JL33KFksLy1Osjvbr/jw=;
+        b=bowmX7MSRZckitUMR4LBq6OjULDke9LfvZkzKo/Loi/elZ1HTOJDcVm1lhkSdwkyRL
+         SF+7Wlq33HNueO23h0ktw+aaU0QRCcTzWCgQFRtkuxUamu++TD5lw9lUuUDsmPVXn9Ew
+         LQ+v3BXYfWpy5J60UQ+XSscTX97rLhf0YKyZZmrK445GiYM0oZJ3BpzOjzAWb85R1a4z
+         ysHzStBu5lHI8ad0yPXbYk9n/VmDwvu5cW6GkgpYYPCE09p7fjaiKg4BY/hBgTWI3KGp
+         BCCQxHPTKScoUF7qb63qfjKykyxqnHZkTp/P4qdhTEFe4HmQVEEOF/q40wZMpHiZIbx4
+         Bo6Q==
+X-Gm-Message-State: AOAM531HFKP6koOjPny8CZa1JUa4bEcDxcObuKGOWv1hUgQvK/hmuewe
+        JjvH4Km/T2Zgc3DCKyymafw=
+X-Google-Smtp-Source: ABdhPJxSh3LEJ6DRxG59gPysWvrJDVjyOLVCNVXVTKD1+CTNMX3udf5Tb4BbNau4Tv59x+6qKNE97Q==
+X-Received: by 2002:a63:31d2:: with SMTP id x201mr2211909pgx.263.1598977455672;
+        Tue, 01 Sep 2020 09:24:15 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:19aa])
+        by smtp.gmail.com with ESMTPSA id x144sm2401105pfc.82.2020.09.01.09.24.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Sep 2020 09:24:14 -0700 (PDT)
+Date:   Tue, 1 Sep 2020 09:24:12 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com
+Subject: Re: [PATCH v6 bpf-next 0/6] bpf: tailcalls in BPF subprograms
+Message-ID: <20200901162412.w7ty2xrtknm2nl64@ast-mbp.dhcp.thefacebook.com>
+References: <20200731000324.2253-1-maciej.fijalkowski@intel.com>
+ <fbe6e5ca-65ba-7698-3b8d-1214b5881e88@iogearbox.net>
+ <20200801071357.GA19421@ranger.igk.intel.com>
+ <20200802030752.bnebgrr6jkl3dgnk@ast-mbp.dhcp.thefacebook.com>
+ <f37dea67-9128-a1a2-beaa-2e74b321504a@iogearbox.net>
+ <20200821173815.GA3811@ranger.igk.intel.com>
+ <20200826213525.6rtjgehjptzqutag@ast-mbp.dhcp.thefacebook.com>
+ <20200829231925.GB31692@ranger.igk.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1598973776.4238.11.camel@HansenPartnership.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:ZB4M5bHJm2lT0eoLHk37MoNKcSKNbWnO0I+HozfOxJD3VBajWa/
- 2YmeAFUi9NWtJ+BwUk/HUg0wTP7BOmNOnQ/gn+knEGQKbwqDbO3XJTfcv99kwA2MdYWpTg/
- OELXP8GWQ4gUfymXUhK/7WblA+uNciI9f2zTsxEcsgOFoyBI0fFfIrl3FCp9IVjo9r0WPlF
- dWbroS2KiZXHO835wd86Q==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:M4PZy0wxx2o=:CpsZCDcX0hTdkQnvx3IlKn
- GAUEQQNQ7kNtc917PGYWcbYooCkewvBFUfOy/DpMNfcN1K/TM2fQAhdlJz7pYCkHO94Fhq0gN
- ZgVHlpHuuqpj8B5dFc4RwNGyns9gvuyn6faJpEloMlGsraJXmxZCyEnWCI5zHgavwNmb9mrnM
- y2nWJN2L462idmrD18bFjqWCzYo3Mg/qjoCLQKn1pmFcctArxevyCDPcvyZdmsC6TJ7euxSyv
- ykFbq7WOOa2ZPdD0c+OBjlGQjFs18FuwEQ+oB7yw3KHbifQZqL94RPmG9LUHK60WQ5Cm+v1su
- AUonzRplXMtNsj0tbKoZ3XaL0Ji6dXXTAMwd4GNQzTo8sm5fUmEpNrGOT90Rei1b2axNj4mpv
- WzoTUIC74wYe2spAtIwvNMszcn8GfQCIL41q9UP7Ae1V7PioT1UQF7F1IZ7sxz63/dMqkKq77
- OVuCGhdZcTR6olpfCKP53X1ycW6molAI9F/mL4o1AIpYYYsr3Fi/ZHqtCBPTexmg9kedSbJKw
- Rphuwf8SoVT6qY+BsTFgOWeEj8Q6Uot5TFJ92NHahXyqcP5YFytIa8q0WB0jkCrAW88Dj7hMI
- 9V7zr8sJfQEIA8jnpy+xYazCGSBiyboARJyXc1q/7azwarcFqQfND0eshCJoT/9XOhEKBk4Fn
- 2Sj8bAW4K964PSpgSQAwjPQwknsqdtqA2QH9RfbiKdsXjWIYIALSzWJKl2yIv/VUU4KA298xq
- HNBYBnkFRxBsU2ILxR8zNOz36tvXvcLPHSg5DRRP7B+3C0dy81S346dnAoAVmK0DjPCXOpp67
- Lm2w80/SRje5NzG1jnygwmyNxiyaQ3kfttEXfCtwoGpgVifyhvaY80skP2iz1KLDBGS6HKB18
- BOCOBRn/deUeVee+0rc/42aFMsNRvtruHMinehuGBfqk2ou1BkKCptlWOck2S0RSxe47/AI5Y
- wnkVTwtC+iNIlU0W82GouYyLkqh55gUsh2gJvnmTvSvGwk7ArUABCJCOOnxDU5WuX3Si22AL1
- O6N/9k9J4HrnnTwOaecHKSa8k1wQdPBkKviAg1ct9KW47XyZYBDP42txCUV7IZzT6JP5J67tN
- fBdJsKU/eqipSYf4M1IfwBiE8o/h/Pcu4RKFAyIWtX7C8sFVGVyAkyY+klHrPFf+PnMGclPI7
- TDcPzNnXJQWLXNXIXHJso8DdEEU5NjEbmgcWh0RN7oBxOANTZWQ4aXOfNt5dhZsXHjR7bzg7E
- twgqH/LFHU56Rgmij
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200829231925.GB31692@ranger.igk.intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01.09.20 17:22, James Bottomley wrote:
-> On Tue, 2020-09-01 at 16:05 +0100, Matthew Wilcox wrote:
->> On Tue, Sep 01, 2020 at 07:52:40AM -0700, James Bottomley wrote:
->>> I think this looks mostly OK, except for one misnamed parameter
->>> below. Unfortunately, the last non-coherent parisc was the 700
->>> series and I no longer own a box, so I can't test that part of it
->>> (I can fire up the C360 to test it on a coherent arch).
->>
->> I have a 715/50 that probably hasn't been powered on in 15 years if
->> you need something that old to test on (I believe the 725/100 uses
->> the 7100LC and so is coherent).  I'll need to set up a cross-compiler
->> ...
->
-> I'm not going to say no to actual testing, but it's going to be a world
-> of pain getting something so old going.  I do have a box of older
-> systems I keep for architectural testing that I need to rummage around
-> in ... I just have a vague memory that my 715 actually caught fire a
-> decade ago and had to be disposed of.
+On Sun, Aug 30, 2020 at 01:19:25AM +0200, Maciej Fijalkowski wrote:
+> On Wed, Aug 26, 2020 at 02:35:25PM -0700, Alexei Starovoitov wrote:
+> > On Fri, Aug 21, 2020 at 07:38:15PM +0200, Maciej Fijalkowski wrote:
+> > > On Mon, Aug 03, 2020 at 04:00:10PM +0200, Daniel Borkmann wrote:
+> > > > On 8/2/20 5:07 AM, Alexei Starovoitov wrote:
+> > > > > On Sat, Aug 01, 2020 at 09:13:57AM +0200, Maciej Fijalkowski wrote:
+> > > > > > On Sat, Aug 01, 2020 at 03:03:19AM +0200, Daniel Borkmann wrote:
+> > > > > > > On 7/31/20 2:03 AM, Maciej Fijalkowski wrote:
+> > > > > > > > v5->v6:
+> > > > > > > > - propagate only those poke descriptors that individual subprogram is
+> > > > > > > >     actually using (Daniel)
+> > > > > > > > - drop the cumbersome check if poke desc got filled in map_poke_run()
+> > > > > > > > - move poke->ip renaming in bpf_jit_add_poke_descriptor() from patch 4
+> > > > > > > >     to patch 3 to provide bisectability (Daniel)
+> > > > > > > 
+> > > > > > > I did a basic test with Cilium on K8s with this set, spawning a few Pods
+> > > > > > > and checking connectivity & whether we're not crashing since it has bit more
+> > > > > > > elaborate tail call use. So far so good. I was inclined to push the series
+> > > > > > > out, but there is one more issue I noticed and didn't notice earlier when
+> > > > > > > reviewing, and that is overall stack size:
+> > > > > > > 
+> > > > > > > What happens when you create a single program that has nested BPF to BPF
+> > > > > > > calls e.g. either up to the maximum nesting or one call that is using up
+> > > > > > > the max stack size which is then doing another BPF to BPF call that contains
+> > > > > > > the tail call. In the tail call map, you have the same program in there.
+> > > > > > > This means we create a worst case stack from BPF size of max_stack_size *
+> > > > > > > max_tail_call_size, that is, 512*32. So that adds 16k worst case. For x86
+> > > > > > > we have a stack of arch/x86/include/asm/page_64_types.h:
+> > > > > > > 
+> > > > > > >    #define THREAD_SIZE_ORDER       (2 + KASAN_STACK_ORDER)
+> > > > > > >   #define THREAD_SIZE  (PAGE_SIZE << THREAD_SIZE_ORDER)
+> > > > > > > 
+> > > > > > > So we end up with 16k in a typical case. And this will cause kernel stack
+> > > > > > > overflow; I'm at least not seeing where we handle this situation in the
+> > > > > 
+> > > > > Not quite. The subprog is always 32 byte stack (from safety pov).
+> > > > > The real stack (when JITed) can be lower or zero.
+> > > > > So the max stack is (512 - 32) * 32 = 15360.
+> > > > > So there is no overflow, but may be a bit too close to comfort.
+> > > > 
+> > > > I did a check with adding `stack_not_used(current)` to various points which
+> > > > provides some useful data under CONFIG_DEBUG_STACK_USAGE. From tc ingress side
+> > > > I'm getting roughly 13k free stack space which is definitely less than 15k even
+> > > > at tc layer. I also checked on sk_filter_trim_cap() on ingress and worst case I
+> > > > saw is very close to 12k, so a malicious or by accident a buggy program would be
+> > > > able to cause a stack overflow as-is.
+> > > > 
+> > > > > Imo the room is ok to land the set and the better enforcement can
+> > > > > be done as a follow up later, like below idea...
+> > > > > 
+> > > > > > > set. Hm, need to think more, but maybe this needs tracking of max stack
+> > > > > > > across tail calls to force an upper limit..
+> > > > > > 
+> > > > > > My knee jerk reaction would be to decrement the allowed max tail calls,
+> > > > > > but not sure if it's an option and if it would help.
+> > > > > 
+> > > > > How about make the verifier use a lower bound for a function with a tail call ?
+> > > > > Something like 64 would work.
+> > > > > subprog_info[idx].stack_depth with tail_call will be >= 64.
+> > > > > Then the main function will be automatically limited to 512-64 and the worst
+> > > > > case stack = 14kbyte.
+> > > > 
+> > > > Even 14k is way too close, see above. Some archs that are supported by the kernel
+> > > > run under 8k total stack size. In the long run if more archs would support tail
+> > > > calls with bpf-to-bpf calls, we might need a per-arch upper cap, but I think in
+> > > > this context here an upper total cap on x86 that is 4k should be reasonable, it
+> > > > sounds broken to me if more is indeed needed for the vast majority of use cases.
+> > > > 
+> > > > > When the sub prog with tail call is not an empty body (malicious stack
+> > > > > abuser) then the lower bound won't affect anything.
+> > > > > A bit annoying that stack_depth will be used by JIT to actually allocate
+> > > > > that much. Some of it will not be used potentially, but I think it's fine.
+> > > > > It's much simpler solution than to keep two variables to track stack size.
+> > > > > Or may be check_max_stack_depth() can be a bit smarter and it can detect
+> > > > > that subprog is using tail_call without actually hacking stack_depth variable.
+> > > > 
+> > > > +1, I think that would be better, maybe we could have a different cost function
+> > > > for the tail call counter itself depending in which call-depth we are, but that
+> > > > also requires two vars for tracking (tail call counter, call depth counter), so
+> > > > more JIT changes & emitted insns required. :/ Otoh, what if tail call counter
+> > > > is limited to 4k and we subtract stack usage instead with a min cost (e.g. 128)
+> > > > if progs use less than that? Though the user experience will be really bad in
+> > > > this case given these semantics feel less deterministic / hard to debug from
+> > > > user PoV.
+> > > 
+> > > Let's get this rolling again.
+> > > I like this approach, but from the opposite way - instead of decrementing
+> > > from 4k, let's start with 0 like we did before and add up the
+> > > max(stack_size, 128) on each tailcall as you suggested.
+> > > 
+> > > Reason for that is no need for changes in prologue, we can keep the xor
+> > > eax,eax insn which occupies 2 bytes whereas mov eax, 4096 needs 5 bytes
+> > > from what I see.
+> > > 
+> > > cmp eax, 4096 also needs more bytes than what cmp eax, MAX_TAIL_CALL_CNT
+> > > needed, but that's something we need as well as change mentioned below.
+> > > 
+> > > One last change is add eax, 1 becomes the add eax, max(stack_size, 128)
+> > > and it is also encoded differently.
+> > > 
+> > > Let me know if you're fine with that and if i can post v7.
+> > > Dirty patch below that I will squash onto patch 5 if it's fine.
+> > > 
+> > > From 01d2494eed07284ea56134f40c6a304b109090ab Mon Sep 17 00:00:00 2001
+> > > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > > Date: Fri, 21 Aug 2020 14:04:27 +0200
+> > > Subject: [PATCH] bpf: track stack size in tailcall
+> > > 
+> > > WIP
+> > > 
+> > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > > ---
+> > >  arch/x86/net/bpf_jit_comp.c | 37 ++++++++++++++++++++-----------------
+> > >  include/linux/bpf.h         |  1 +
+> > >  2 files changed, 21 insertions(+), 17 deletions(-)
+> > > 
+> > > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> > > index 880f283adb66..56b38536b1dd 100644
+> > > --- a/arch/x86/net/bpf_jit_comp.c
+> > > +++ b/arch/x86/net/bpf_jit_comp.c
+> > > @@ -393,7 +393,7 @@ static int get_pop_bytes(bool *callee_regs_used)
+> > >   * ... bpf_tail_call(void *ctx, struct bpf_array *array, u64 index) ...
+> > >   *   if (index >= array->map.max_entries)
+> > >   *     goto out;
+> > > - *   if (++tail_call_cnt > MAX_TAIL_CALL_CNT)
+> > > + *   if (tail_call_stack_depth + stack_depth > MAX_TAIL_CALL_STACK_DEPTH)
+> > >   *     goto out;
+> > 
+> > I don't think we cannot use this approach because it's not correct. Adding the
+> > stack_depth of the current function doesn't count stack space accurately.
+> > The bpf_tail_call will unwind the current stack. It's the caller's stack
+> > (in case of bpf2bpf) that matters from stack overflow pov.
+> 
+> I must admit I was puzzled when I came back to this stuff after a break,
+> because as you're saying before the actual tailcall we will unwind the
+> stack frame of tailcall's caller (or the current stack frame in simpler
+> terms).
+> 
+> So, to visualize a bit and so that I'm sure I follow:
+> 
+> func1 -> sub rsp, 128
+>   subfunc1 -> sub rsp, 256
+>   tailcall1 -> add rsp, 256
+>     func2 -> sub rsp, 256 (total stack size = 128 + 256 = 384)
+>     subfunc2 -> sub rsp, 64
+>     subfunc22 -> sub rsp, 128
+>     tailcall2 -> add rsp, 128
+>       func3 -> sub rsp, 256 (total stack size 128 + 256 + 64 + 256 = 704)
+> 
+> and so on. And this is what we have to address. If that's it, then thanks
+> for making it explicit that it's about the subprog caller's stack.
 
-I still have a zoo of machines running for such testing, including a
-715/64 and two 730.
-I'm going to test this git tree on the 715/64:
-git://git.infradead.org/users/hch/misc.git dma_alloc_pages
+Right. The above is correct. Could you add it to the code as a comment?
+Please replace second and third use of 256 with a different constant to
+make it easier to see that 'sub rsp, X' in func1, func2, and func3 can
+be different.
 
-Helge
+> > But this callee (that does tail_call eventually) can be called from multiple
+> > callsites in the caller and potentially from different callers, so
+> > the callee cannot know the stack value to subtract without additional verifier help.
+> > We can try to keep the maximum depth of stack (including all call frames) in
+> > the verfier that leads to that callee with bpf_tail_call() and then pass it
+> > into JITs to do this stack accounting. It's reasonable additional complexity in
+> > the verifier, but it's painful to add the interpreter support.
+> 
+> Not sure if we're on the same page - we allow this set only for x64 arch.
+> Why do you mention the interpreter and other JITs?
+
+It's not 100% mandatory to make the interpreter compatible with JIT,
+but we should always try to keep the parity when possible.
+Like when I was working on BPF trampoline I've considered to support JITed code
+only, since generation of trampoline itself requires Just-In-Time code
+generation. But I took the extra effort to make sure invoke_bpf_prog() in
+arch/x86/net/bpf_jit_comp.c supports interpreter as well. There could be bugs
+in the interpreter or JIT. Having two ways to execute the program is useful for
+many reasons.
+
+In this case the new tail_call handling in x86 JIT will unwind the current stack,
+so existing interpreter handling of tail_call won't quite work.
+Take a look at bpf_patch_call_args(), JMP_CALL_ARGS:, and JMP_TAIL_CALL:.
+The JMP_TAIL_CALL will sort-of unwind the current stack, but the size of the stack
+will be reused for tail_call target function.
+Illustrating on your example:
+ func1 -> sub rsp, 128
+   subfunc1 -> sub rsp, 256
+   tailcall1 -> add rsp, 256
+     func2 -> sub rsp, 192 (total stack size = 128 + 192 = 320)
+     subfunc2 -> sub rsp, 64
+     subfunc22 -> sub rsp, 128
+     tailcall2 -> add rsp, 128
+       func3 -> sub rsp, 224 (total stack size 128 + 192 + 64 + 224 = 608)
+
+The interpreter will call into subfunc1 with 256 bytes of the interpreter stack
+and will reuse it for tail_call into func2.
+If func2 needs 192, it's going to work fine, but if it needs more than 256
+there will be stack overflow.
+
+We can disable mixing bpf2bpf calls and tail_calls when interpreter is used
+for now, but it would be good to support it somehow.
+
+> We could introduce one of your suggestions to verifier and surround it with
+> proper ifdefs like patch 5/6 is doing it.
+
+If we use the approach of changing JMP_TAIL_CALL pseudo insn to do:
+-               tail_call_cnt++;
++               tail_call_stack += insn->off;
+then we have to update other JITs to do the same.
+Other JITs do NOT need to support bpf2bpf calls with tail_calls.
+they do NOT need to do current stack unwinding, but they have to match
+the new behavior of JMP_TAIL_CALL otherwise such interpreter vs JIT
+discrepancy will create plenty of unhappy users.
+
+> > We would need to hack BPF_TAIL_CALL insn. Like we can store
+> > max_stack_of_all_callsites into insn->off when we do fixup_bpf_calls().
+> > Then interpreter will do:
+> > iff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index ed0b3578867c..9a8b54c1adb6 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -1532,10 +1532,10 @@ static u64 __no_fgcse ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u6
+> > 
+> >                 if (unlikely(index >= array->map.max_entries))
+> >                         goto out;
+> > -               if (unlikely(tail_call_cnt > MAX_TAIL_CALL_CNT))
+> > +               if (unlikely(tail_call_stack > MAX_TAIL_CALL_STACK /* 4096 */))
+> >                         goto out;
+> > 
+> > -               tail_call_cnt++;
+> > +               tail_call_stack += insn->off;
+> > 
+> > and similar thing JITs would have to do. That includes modifying all existing JITs.
+> 
+> Again, I don't get why we would have to address everything else besides
+> x64 JIT.
+> 
+> > 
+> > When bpf_tail_call() is called from top frame (instead of bpf-to-bpf subprog)
+> > we can init 'off' with 128, so the old 32 call limit will be preserved.
+> > But if we go with such massive user visible change I'd rather init 'off' with 32.
+> > Then the tail call cnt limit will be 4096/32 = 128 invocations.
+> > At least it will address a complain from folks that were hitting 32 limit.
+> > 
+> > Another approach is to use what I've suggested earlier.
+> > Adjust the math in check_max_stack_depth():
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index 8a097a85d01b..9c6c909a1ab9 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -2982,6 +2982,11 @@ static int check_max_stack_depth(struct bpf_verifier_env *env)
+> >         int ret_prog[MAX_CALL_FRAMES];
+> > 
+> >  process_func:
+> > +       if (idx && subprog[idx].has_tail_call && depth >= 256) {
+> > +               verbose(env, "Cannot do bpf_tail_call when call stack of previous frames is %d bytes. Too large\n",
+> > +                       depth);
+> > +               return -EACCES;
+> > +       }
+> > Then the worst case stack will be 256 * 32 = 8k while tail_call_cnt of 32 will stay as-is.
+> > And no need to change interpreter or JITs.
+> 
+> I tend to lean towards simpler solutions as this work is already complex.
+> Let's hear Daniel's opinion though.
+
+Let's go with this simpler solution. We can add fancier stack
+accounting later.
