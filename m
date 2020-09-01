@@ -2,118 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 399E825910C
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 16:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55225259135
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 16:48:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728116AbgIAOoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 10:44:12 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:59778 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728529AbgIAOn5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 10:43:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598971436;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=N/3cZ45ws6CSpWNztTbFWfPu1DKoEaZi3oHeIW0RUdU=;
-        b=BuvvR6iZ52L4Ds90KROnb2wq2mlRUq0vJihy/wkIEuzYLnAOf2p/St9XIbj8jVtRaBktRQ
-        sLbCk6CUdlmoBLaG6Y0cwYxErw83OCTS7+TnKux/qOsPKVX3XYu0M6mlRoImot7Lvp/bL4
-        JS0w+FRBYEnhu5s5stKKEZUR/wI3PP4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-316-SKfK184WOM6ED5LO_AYGdw-1; Tue, 01 Sep 2020 10:43:54 -0400
-X-MC-Unique: SKfK184WOM6ED5LO_AYGdw-1
-Received: by mail-wm1-f70.google.com with SMTP id b14so479040wmj.3
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 07:43:54 -0700 (PDT)
+        id S1728526AbgIAOsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 10:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728516AbgIAOsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 10:48:00 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E06A2C061244;
+        Tue,  1 Sep 2020 07:47:59 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id h4so2086030ejj.0;
+        Tue, 01 Sep 2020 07:47:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/LMHXr3k3JO3kQFd2w4+9nVbRwQcfH7U6hJYUZVSo9o=;
+        b=XxjYDKKXT0ZQLI7ZL7stqxP36WiWegyNzoE06ioAIqAzb46Jkp4N8IkEgMlMCNSEpJ
+         LGroqrU9XtKSCUXDKrvg3bg8+YLFdx/5AOld3EsXXH0VWNLRBbE9vzkZn2LQyeZKVDx7
+         LM601O3ox2EMX7CKqRBYv+xp1ctityBQYnkKHwqfIveqxdS5wwNBQf08fFafOHCDn1Il
+         o3M0T+MehaY0W3PIno2RhC29Mas8xLSjZJ2/p5NSylq7GjEn4P9i/910HdKvz9Z37VUy
+         vf5lmxYTITM3YA0WNGCqfKgLh/nd8YZUFqf89VsWgrlhTqQrSZSJ6bEhfoUm4u/yfUVn
+         eTVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N/3cZ45ws6CSpWNztTbFWfPu1DKoEaZi3oHeIW0RUdU=;
-        b=FAAxrU9SfCnbgmsTA7vNMJXgZvUY4lOLe2QzXuG3SpWdg5VC9zmM9JAnfVQ6RmuPJe
-         Ixx6OtpV87ksL8FeJ9woj38ua6H5LJGSGn73VUJ2RX1wSy9SAld4fHuZqXL0jA/IlPVU
-         q14xEyooc1ET00nydfJznk/SmFCo8tF+XbY6o5WAIAjqwPEQdvD+sORSHiFhKrr04J6m
-         3PaycUjtbSP+D96MBcf5oekHfgpcjj21ourJMjCQJHhmkwMel4yfzHMYbWIf+5CYhfhu
-         NAsIuM/eTnwjC4ZfJHRA6o0mVmz84G5S8MwncAd630pbMPW6hbv21hx1FfhjEdn/uCDJ
-         Iovg==
-X-Gm-Message-State: AOAM5330yJGnbaFe9Hon+bW7GcC0cAZ2kq+ntJfSfYoi+3nj+NdfKDUl
-        aohh8Uc4yxZhNt8Gvv4mMvabbnJyrRYjNztmbpxrsKHa69RTgaf49yxys2x1csHpDftpDPOUnNU
-        3N3hnAH57ZvKyRZv/
-X-Received: by 2002:a5d:5090:: with SMTP id a16mr2445019wrt.247.1598971433243;
-        Tue, 01 Sep 2020 07:43:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwvQ7w1GqqPZe6MnWMkKZ54vl061T1Uj2BOT2lUqOpcqWj3ssZKIG7QE6NMTZ1Ts+v5nxrGtA==
-X-Received: by 2002:a5d:5090:: with SMTP id a16mr2445001wrt.247.1598971432948;
-        Tue, 01 Sep 2020 07:43:52 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id z11sm2700981wru.88.2020.09.01.07.43.52
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/LMHXr3k3JO3kQFd2w4+9nVbRwQcfH7U6hJYUZVSo9o=;
+        b=Oy7J5HUGoSgBG7EB7Kp1hG6kqnSG8ghU+HOQN/bnsmFZljAf0LfHlszP6zgbuibjgq
+         F216CmHj9PeYNeYarmciXNtea5G9c3LDnEnNFZmLP0FI1MtsOU1/o3AMQxJmIiegvGOH
+         SydrnkH0n4/lzksRkLpgA0F3P51nxJmC5CcgraHabrxbR+kW709v1u/LZd19DYslqZ0P
+         SfMoPFAJzgo/rujf8wuEswjRrnjZ8fc4wZi9XlNRwZG3Z0rjjYoRPO0bKZDsvke3W3c1
+         tRz1zd773g9GRuZ7BKnyCoqCAx8ikf09iIdWYZgaUDnfreklMbQgBnBt2MfSpDGmQDWy
+         CtcQ==
+X-Gm-Message-State: AOAM530vKdcXd/7J48wJhQyVO0Sv/Uj0T0q3vr+2muzYLQd0DdCzr11E
+        3EGVap6iQHYWqwpVbt01V70=
+X-Google-Smtp-Source: ABdhPJwjO60NL00+4drwU7HBYj27ddWfKe0WiE48gtrA19FeunNZ7+deCMEDvuOF7S+RXacZZJ5fUQ==
+X-Received: by 2002:a17:906:3957:: with SMTP id g23mr1921217eje.24.1598971678516;
+        Tue, 01 Sep 2020 07:47:58 -0700 (PDT)
+Received: from skbuf ([86.126.22.216])
+        by smtp.gmail.com with ESMTPSA id n15sm1460254eja.26.2020.09.01.07.47.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2020 07:43:52 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id A612C1804A2; Tue,  1 Sep 2020 16:43:51 +0200 (CEST)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     daniel@iogearbox.net, ast@fb.com
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org, jolsa@kernel.org
-Subject: [PATCH bpf] tools/bpf: build: make sure resolve_btfids cleans up after itself
-Date:   Tue,  1 Sep 2020 16:43:43 +0200
-Message-Id: <20200901144343.179552-1-toke@redhat.com>
-X-Mailer: git-send-email 2.28.0
+        Tue, 01 Sep 2020 07:47:58 -0700 (PDT)
+Date:   Tue, 1 Sep 2020 17:47:55 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v3 5/8] net: dsa: hellcreek: Add TAPRIO offloading support
+Message-ID: <20200901144755.jd2wnmweywwvkwvl@skbuf>
+References: <20200820081118.10105-1-kurt@linutronix.de>
+ <20200820081118.10105-6-kurt@linutronix.de>
+ <87pn7ftx6b.fsf@intel.com>
+ <87bliz13kj.fsf@kurt>
+ <20200825093219.bybzzpyfbbccjanf@skbuf>
+ <87v9gxefzj.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87v9gxefzj.fsf@kurt>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new resolve_btfids tool did not clean up the feature detection folder
-on 'make clean', and also was not called properly from the clean rule in
-tools/make/ folder on its 'make clean'. This lead to stale objects being
-left around, which could cause feature detection to fail on subsequent
-builds.
+On Tue, Sep 01, 2020 at 04:20:00PM +0200, Kurt Kanzenbach wrote:
+>
+> After giving this a bit more thought, it can be implemented by using
+> workqueues only. That ptp time is "cached" anyway the we could just
+> periodically check for the base time arrival. That should solve the
+> irqsave and the being synchronized problem.
+>
+> Thanks,
+> Kurt
 
-Fixes: fbbb68de80a4 ("bpf: Add resolve_btfids tool to resolve BTF IDs in ELF object")
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- tools/bpf/Makefile                | 4 ++--
- tools/bpf/resolve_btfids/Makefile | 1 +
- 2 files changed, 3 insertions(+), 2 deletions(-)
+Ok, this sounds simple enough. If the base-time is within 8 seconds of
+the current PTP time, then apply the taprio configuration, otherwise
+reschedule a delayed workqueue after N seconds (where N has what
+value?).
 
-diff --git a/tools/bpf/Makefile b/tools/bpf/Makefile
-index 0a6d09a3e91f..39bb322707b4 100644
---- a/tools/bpf/Makefile
-+++ b/tools/bpf/Makefile
-@@ -38,7 +38,7 @@ FEATURE_TESTS = libbfd disassembler-four-args
- FEATURE_DISPLAY = libbfd disassembler-four-args
- 
- check_feat := 1
--NON_CHECK_FEAT_TARGETS := clean bpftool_clean runqslower_clean
-+NON_CHECK_FEAT_TARGETS := clean bpftool_clean runqslower_clean resolve_btfids_clean
- ifdef MAKECMDGOALS
- ifeq ($(filter-out $(NON_CHECK_FEAT_TARGETS),$(MAKECMDGOALS)),)
-   check_feat := 0
-@@ -89,7 +89,7 @@ $(OUTPUT)bpf_exp.lex.c: $(OUTPUT)bpf_exp.yacc.c
- $(OUTPUT)bpf_exp.yacc.o: $(OUTPUT)bpf_exp.yacc.c
- $(OUTPUT)bpf_exp.lex.o: $(OUTPUT)bpf_exp.lex.c
- 
--clean: bpftool_clean runqslower_clean
-+clean: bpftool_clean runqslower_clean resolve_btfids_clean
- 	$(call QUIET_CLEAN, bpf-progs)
- 	$(Q)$(RM) -r -- $(OUTPUT)*.o $(OUTPUT)bpf_jit_disasm $(OUTPUT)bpf_dbg \
- 	       $(OUTPUT)bpf_asm $(OUTPUT)bpf_exp.yacc.* $(OUTPUT)bpf_exp.lex.*
-diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-index a88cd4426398..fe8eb537688b 100644
---- a/tools/bpf/resolve_btfids/Makefile
-+++ b/tools/bpf/resolve_btfids/Makefile
-@@ -80,6 +80,7 @@ libbpf-clean:
- clean: libsubcmd-clean libbpf-clean fixdep-clean
- 	$(call msg,CLEAN,$(BINARY))
- 	$(Q)$(RM) -f $(BINARY); \
-+	$(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
- 	find $(if $(OUTPUT),$(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
- 
- tags:
--- 
-2.28.0
+If my math is correct, then N can't simply be the the delta between the
+current PTP time and the (base-time minus 8 seconds) value - i.e. just
+one schedule_delayed_work - because at large deltas, the PHC frequency
+adjustment (+/- 6.25%) starts to matter. At maximum frequency, the PHC
+can exceed the monotonic clock of the system by more than 8 seconds in
+(8 * 100 / 6.25) = 128 seconds. So if the base-time is in the future by
+more than 128 seconds and you plan for a single schedule_delayed_work,
+there's a chance that you'll miss the window. And even if you try to
+compensate using the current frequency adjustment, that's all that it is
+- the current, instantaneous frequency adjustment, not the one from 128
+seconds later.
 
+How about N being half that delta? It's not ideal, since there would
+need to be log2(delta) reschedules, but at least the error of the first
+approximation won't propagate to the next, and the delta will keep
+decreasing as time passes, therefore so will the error.
+
+Thanks,
+-Vladimir
