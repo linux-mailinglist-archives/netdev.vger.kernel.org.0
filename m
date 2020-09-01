@@ -2,143 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3F29258CB9
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 12:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 715D6258CE8
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 12:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726091AbgIAK0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 06:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35540 "EHLO
+        id S1726064AbgIAKke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 06:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725848AbgIAK0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 06:26:53 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2867C061244
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 03:26:51 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id z22so868393ejl.7
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 03:26:51 -0700 (PDT)
+        with ESMTP id S1725848AbgIAKk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 06:40:29 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 737D0C061244
+        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 03:40:27 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id y4so890357ljk.8
+        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 03:40:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=2gWDiEzQoGU9QEnWwrbhy8vPaaMS67Cca7PiSY3GhRY=;
-        b=MS9ieHnFEVfjRueMslQMhbKV+uCA5C3HJ+8jZvbYifcZnUQRqCz3FQ8SppDSh5NOWd
-         srNtP/zWClp1PAb67ZF5F+9OQzPpDFfkX+mFOi0O1x8Mkek1P5AvRmfYV9yRYu798NZB
-         xAVHb7w0YBGsxE+GQbeXWHDUfiBgi4s1tIXC75hxxHVFgAcX7oyecHoy8l5yUcHN7eJr
-         y/X/hEl1MKJQHpD3uEoXQZTWmKhR6XAhbXkfbA8ant+CwDNPxDM3aigmA4089sm7grHI
-         04lfaFDRPcM9DUD2NKcvfU6dvsBQepacTo9a59JoxVMmtS+bf3K3XXTfxi/88yZE4dlL
-         e5Gw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tSwLyEHrWwAG6w9IdRciKHg9LYv/Kbp7/VZ44uYvBT8=;
+        b=fZKUzNXDqBPoOttIm1T9qcy/9dj3NaC7cqZxYnDF14y7+4NU1VORxLGXO/mRj6f8R8
+         V68kMhpvG5gPXYQX/XNkkGk5Jb+cEo4bZ9FM3sOaoOFwKlu3hDPIGghGzd+MjseahM5Y
+         CCkRIPKP1HPZPriv80QI3aKTNmHq04qwSmJFir5iug59SkogT0UeFjJcpMawBBgyV4LJ
+         qVl2m3v2DHdduPaTyPwV0lF7OmNFqjLFI2jw5DuyUjWwJY/fBhonZe/Bj6UolbCkb1VP
+         MZVkSMzLSdVAzD77f4RNdIy3G9nrE4tyDrZgJtb+eOqQCwKKzCIyYOmgAhFrDQHQQDIr
+         6TpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2gWDiEzQoGU9QEnWwrbhy8vPaaMS67Cca7PiSY3GhRY=;
-        b=Nr3w12j7DnH6b+WzjOL525YQgmWVRF7wEARYX/v9kgFRrs9SOTgGUELoOsOON6ZHxC
-         mz/TQR4mhBnH+rTQXeLXuRSx/4Wl52dwnG84LlQwZn+tpW2CSzGaj31PHFFrK8RoPJYw
-         nfmIBdGVxgRe8kFfYdtMsAdZIDRdta2gCtmF9OJ1OG3Qi0gArIGnnKGmeRXhrS1pSwJi
-         q6FwhPvLF9vmUXLD3wcYZOr9Tvf0ASruhUZUTVyM+vY9PaQnMLwF4a54DR6UvyT5iM/q
-         U/Q5gcq53G6NbynbeWz8Ki+sZtIld08OLuSoKheo2DnfTBfY2iI1RyoMVU1nuuNE3uCc
-         /Y4Q==
-X-Gm-Message-State: AOAM531VFJmxsR1ehQxboWl3mSkS7gXrhRhNCTrhFg7/FmzTK7CAPofV
-        wWUUTpPc0voTZAzXX/D2YwYaCtzkyZCs6Q==
-X-Google-Smtp-Source: ABdhPJzIDAe50KxJRrt5e3F6rN7hB8Vl9oJrizJfrKEyRH+tUXZzGYdG4AypaQxW66yz7hvdY73L1Q==
-X-Received: by 2002:a17:906:a00d:: with SMTP id p13mr876058ejy.535.1598956010295;
-        Tue, 01 Sep 2020 03:26:50 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:5700:f8ec:6f8e:9bdb:e23a? (p200300ea8f235700f8ec6f8e9bdbe23a.dip0.t-ipconnect.de. [2003:ea:8f23:5700:f8ec:6f8e:9bdb:e23a])
-        by smtp.googlemail.com with ESMTPSA id i9sm881748ejo.1.2020.09.01.03.26.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Sep 2020 03:26:49 -0700 (PDT)
-Subject: Re: [PATCH] drivers: reduce the param length of the line
-To:     tongchen@whu.edu.cn,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <0db51a11-7849-4df3-bb8a-65e3c8fba514@email.android.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <1da6dce4-f37c-723d-ea8d-1ebaccbbc87f@gmail.com>
-Date:   Tue, 1 Sep 2020 12:26:42 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tSwLyEHrWwAG6w9IdRciKHg9LYv/Kbp7/VZ44uYvBT8=;
+        b=Rjzc1yXXnlMygSY8CwfGOlwKAbtkjPXv3N4vRFvnUfUi8jESZyDywgop9JHxUVdraB
+         e/hRIY3WOVwvoMfNo2+jlzkAJgziYlGBimAyy+8eD20VrFA3xWMI0ykLUMVX87pPWb7h
+         hypPaY9TpNGK3dOi/GEbGBv2AY+uKmQDOUNAW4o8tgpkcgJraiNeiIryouLYbBjkyTQs
+         ONMP9U2am8P+4kb9AQvujq2bR20HTq+G00e1xohRDbKhdA6bBREmhXCyiMbLV56XYrMZ
+         utHx+XlMqRf4LlRoCCOohe2tcIUQbk8Jsj9E0szjtkvqVIMmIBopdeld78FVAJXaBkPg
+         9ipg==
+X-Gm-Message-State: AOAM530iWHqGyeV5AcT0pfB27ugoFF94k/33NFEoIdYqoLwYz9t1S0Kj
+        yZ//CIKgBGBvOQCwH+NkF3UeBXSXxxztgb0B4CaP0dR6Ajy/ZA==
+X-Google-Smtp-Source: ABdhPJyL+7CL4SVB82dnDFPrDtDSVX46gOxWU3QoMSGFs+dbLoC0RPrASpM3PRfL0L64AaBw2Eh8E5rlx65C3KWGwHY=
+X-Received: by 2002:a2e:6e12:: with SMTP id j18mr278217ljc.430.1598956825906;
+ Tue, 01 Sep 2020 03:40:25 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <0db51a11-7849-4df3-bb8a-65e3c8fba514@email.android.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CANXY5y+iuzMg+4UdkPJW_Efun30KAPL1+h2S7HeSPp4zOrVC7g@mail.gmail.com>
+ <c508eeba-c62d-e4d9-98e2-333c76c90161@gmail.com> <CANXY5y+gfZuGvv+pjzDOLS8Jp8ZUFpAmNw7k53O6cDuyB1PCnw@mail.gmail.com>
+ <1b4ebdb3-8840-810a-0d5e-74e2cf7693bf@gmail.com> <CANXY5yJeCeC_FaQHx0GPn88sQCog59k2vmu8o-h6yRrikSQ3vQ@mail.gmail.com>
+ <deb7a653-a01b-da4f-c58e-15b6c0c51d75@gmail.com> <CANXY5yKNOkBWUTVjOCBBPfACTV_R89ydiOi=YiOZ92in_VEp4w@mail.gmail.com>
+ <962617e5-9dec-6715-d550-4cf3ee414cf6@gmail.com> <CANXY5yKW=+e1CsoXCb0p_+6n8ZLz4eoOQz_5OkrrjYF6mpU9ZQ@mail.gmail.com>
+In-Reply-To: <CANXY5yKW=+e1CsoXCb0p_+6n8ZLz4eoOQz_5OkrrjYF6mpU9ZQ@mail.gmail.com>
+From:   mastertheknife <mastertheknife@gmail.com>
+Date:   Tue, 1 Sep 2020 13:40:14 +0300
+Message-ID: <CANXY5yLXpS+YYVeUPGok7R=4cm2AEAoM1zR_sd6YSKqCJPGLOg@mail.gmail.com>
+Subject: Re: PMTUD broken inside network namespace with multipath routing
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01.09.2020 10:11, tongchen@whu.edu.cn wrote:
-> I run the checkpatch script against the c source, and the following output says it prefers a maximum of 75 chars per-line.
-> 
-That's wrong. As the name suggests, checkpatch is meant to be used with patches,
-not with source files.
+Hello David.
 
-> #./scripts/checkpatch.pl drivers/net/ethernet/realtek/r8169_phy_config.c 
-> WARNING: Possible unwrapped commit description (prefer a maximum 75 chars per line)
-> #1305: 
+I was able to solve it while troubleshooting some fragmentation issue.
+The VTI interfaces had MTU of 1480 by default. I reduced to them to
+the real PMTUD (1366) and now its all working just fine.
+I am not sure how its related and why, but seems like it solved the issue.
 
-This refers to line length in commit description, not source file line length.
+P.S: while reading the relevant code in the kernel, i think i spotted
+some mistake in net/ipv4/route.c, in function "update_or_create_fnhe".
+It looks like it loops over all the exceptions for the nexthop entry,
+but always overwriting the first (and only) entry, so effectively only
+1 exception can exist per nexthop entry.
+Line 678:
+"if (fnhe) {"
+Should probably be:
+"if (fnhe && fnhe->fnhe_daddr == daddr) {"
 
-> void r8169_hw_phy_config(struct rtl8169_private *tp, struct phy_device *phydev, 
-> 
-> ERROR: Does not appear to be a unified-diff format patch
-> 
-> total: 1 errors, 1 warnings, 0 lines checked
-> 
-> NOTE: For some of the reported defects, checkpatch may be able to
->       mechanically convert to the typical style using --fix or --fix-inplace.
-> 
-> drivers/net/ethernet/realtek/r8169_phy_config.c has style problems, please review.
-> 
-> NOTE: If any of the errors are false positives, please report
->       them to the maintainer, see CHECKPATCH in MAINTAINERS.
-> 
-> 2020年9月1日 下午3:57，Heiner Kallweit <hkallweit1@gmail.com>写道：
-> 
->     On 01.09.2020 09:52, tongchen@whu.edu.cn wrote:
->     > 1)So the patch title should be written like this?
->     > "net: reduce the param length of the line"
->     >
->     > 2)I have checked the patch with the checkpatch script, no warnings or errors.
->     >
->     > 3)I saw the line length exceeded 75 chars which may look better if was written on a new line (which was what checkpatch suggeted).
-> 
->     Max line length is 80 characters, therefore I don't see what should be wrong with the
->     current status. Can you send the checkpatch suggestion you're referring to?
-> 
->     > (I'm a newbie to the patch world, know not much and feel like taking your advice sincerely)
->     > 2020年9月1日 下午3:29，Heiner Kallweit <hkallweit1@gmail.com>写道：
->     >
->     >     On 01.09.2020 04:28, Tong Chen wrote:
->     >     > Reduce the param length of the line from 79 chars to 52 chars,
->     >     > which complies with kernel preferences.
->     >
->     >     Apart from formal issues with the patch (missing net/net-next
->     >     annotation, wrong prefix): Did you get a checkpatch warning?
->     >     Or what's the source of your assumed kernel preference?
->     >
->     >     > Signed-off-by: Tong Chen <tongchen@whu.edu.cn>
->     >     > ---
->     >     >  drivers/net/ethernet/realtek/r8169_phy_config.c | 3 ++-
->     >     >  1 file changed, 2 insertions(+), 1 deletion(-)
->     >     >
->     >     > diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
->     >     > index 913d030d73eb..f4b738cf8ad7 100644
->     >     > --- a/drivers/net/ethernet/realtek/r8169_phy_config.c
->     >     > +++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
->     >     > @@ -1302,7 +1302,8 @@ static void rtl8125b_hw_phy_config(struct rtl8169_private *tp,
->     >     >  rtl8125b_config_eee_phy(phydev);
->     >     >  }
->     >     > 
->     >     > -void r8169_hw_phy_config(struct rtl8169_private *tp, struct phy_device *phydev,
->     >     > +void r8169_hw_phy_config(struct rtl8169_private *tp,
->     >     > + struct phy_device *phydev,
->     >     >  enum mac_version ver)
->     >     >  {
->     >     >  static const rtl_phy_cfg_fct phy_configs[] = {
->     >     >
->     >
->     >
-> 
-> 
 
+Thank you for your efforts,
+Kfir Itzhak
+
+On Fri, Aug 14, 2020 at 10:08 AM mastertheknife
+<mastertheknife@gmail.com> wrote:
+>
+> Hello David,
+>
+> It's on a production system, vmbr2 is a bridge with eth.X VLAN
+> interface inside for the connectivity on that 252.0/24 network. vmbr2
+> has address 192.168.252.5 in that case
+> 192.168.252.250 and 192.168.252.252 are CentOS8 LXCs on another host,
+> with libreswan inside for any/any IPSECs with VTi interfaces.
+>
+> Everything is kernel 5.4.44 LTS
+>
+> I wish i could fully reproduce all of it in a script, but i am not
+> sure how to create such hops that return this ICMP
+>
+> Thank you,
+> Kfir
+>
+>
+> On Wed, Aug 12, 2020 at 10:21 PM David Ahern <dsahern@gmail.com> wrote:
+> >
+> > On 8/12/20 6:37 AM, mastertheknife wrote:
+> > > Hello David,
+> > >
+> > > I tried and it seems i can reproduce it:
+> > >
+> > > # Create test NS
+> > > root@host:~# ip netns add testns
+> > > # Create veth pair, veth0 in host, veth1 in NS
+> > > root@host:~# ip link add veth0 type veth peer name veth1
+> > > root@host:~# ip link set veth1 netns testns
+> > > # Configure veth1 (NS)
+> > > root@host:~# ip netns exec testns ip addr add 192.168.252.209/24 dev veth1
+> > > root@host:~# ip netns exec testns ip link set dev veth1 up
+> > > root@host:~# ip netns exec testns ip route add default via 192.168.252.100
+> > > root@host:~# ip netns exec testns ip route add 192.168.249.0/24
+> > > nexthop via 192.168.252.250 nexthop via 192.168.252.252
+> > > # Configure veth0 (host)
+> > > root@host:~# brctl addif vmbr2 veth0
+> >
+> > vmbr2's config is not defined.
+> >
+> > ip li add vmbr2 type bridge
+> > ip li set veth0 master vmbr2
+> > ip link set veth0 up
+> >
+> > anything else? e.g., address for vmbr2? What holds 192.168.252.250 and
+> > 192.168.252.252
