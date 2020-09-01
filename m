@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3492259E05
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 20:21:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D64B259E01
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 20:21:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730485AbgIASVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 14:21:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52396 "EHLO
+        id S1730356AbgIASUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 14:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730152AbgIASUe (ORCPT
+        with ESMTP id S1728216AbgIASUe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 14:20:34 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCB4C061245
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 11:20:32 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id nv17so1037786pjb.3
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 11:20:32 -0700 (PDT)
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7A8FC061246
+        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 11:20:33 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id t9so1282394pfq.8
+        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 11:20:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/YhURs6thIRKQENuEmMUz6hEKmtfEBpZ2ukYj2UWP5c=;
-        b=GbGrKgDtG4dfFfsPFw11x5/iiMA2l/sj2RjNniXXfjhFSDLz6WQ8kamnOGMbZ5ol5L
-         V96oA1KII23vYWGH0ODsCx7Ja1rm9i4rIxS9jloYzTNeJxwZIJByITjIJE899nWRyHhV
-         srjd5ocP/m25w1MFq09vrCwgP5s6Qh+EA1LG6ScQUdFOLVyTgh8cqxExMeHy26AiYonh
-         cWbUBDZbHV5CLHMX07r7Ji/arhIYUtR+m45FW+fJ1EMmiaWChIKm4xhmBfSOdJfNeSWX
-         WFEhL3m1vnCI/F3Ve59Y6YTkQkF4/Hu2OPUAmY+2iuttmC66tSe90F45bZMPSwG1Dxiw
-         a21A==
+        bh=d313eD54a7wBpf4xIcIfjkC0vS1lqfvdWPstPVu4Iqw=;
+        b=nC4mzWjaQJdYMTkfgDEpFZ1dR1FHJu4B1aEtQDUDt79VYBWHqpzcOt0SoNF7XKmFJf
+         oXCzacNl3ISYRJwNRi2bo97noEa2BewTFhqPHXcrmeKl99SFxO06pJTvYeh8eSl3+qyT
+         sZ/pW6Hu0xc9sOmU2FnSG710ei2DT3ErHhHOtvV87wLHWmFbDs8r4WR978ncxgfikhUX
+         Lty980B31xMITP1scTDIxInD+TbjldnFnt4k74WaRhkfCDDrG+9/avU6yoqUE+Axvkv8
+         LiZtX/Lf9rlxke+fcNXJGCiHgJ+SNiSBxdrDYWAPBwa949+YeBw9z+5JlPLeXEiYRxBm
+         5oaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=/YhURs6thIRKQENuEmMUz6hEKmtfEBpZ2ukYj2UWP5c=;
-        b=U2M57VFObKkZ2vU+KVqCd46eeaSsFpjOdv9lmHiw8NiZukGlawC01DnVbgPZpF3MHS
-         h0/SD0zGYN/Lb/wt5ned1+oTNDloFOOJzV2qqUsIqqbuRXTMn0JxSRlWEtM3r+Z2gwKe
-         CLcYssKRhOt85Tp5D0qvlcUkuexZI/k+3SPF0d4UKjjxis8nSLFaPMVtG78vRdC+ReUy
-         0oWDVDzN8Mx03t+Xpl0Q/TJXcpCpp7c/Ii+41jgZFx0w1oy9x3ELx/O1+hdIYVoSqV/h
-         isqWbW90mZd8jdVxgTzn6jhP7U61JTtxCUi2r3zkXSPD+xqyJ/ZbUEiWSdBf50rYOEVK
-         SQkw==
-X-Gm-Message-State: AOAM531gtfNFe4prLEkksSaNC1m8NfguIjcv/mNlxspo/DDLnnwqT2lx
-        RNPlFy4W24YErlMGud1nIbjPxzflGDQnUQ==
-X-Google-Smtp-Source: ABdhPJwY2qm2/RgjQ03NcAzzhw/33KzVBhoz/16xrU5GHOTCsA9jytuic9pXUXiKscR/MoHHLnfKxQ==
-X-Received: by 2002:a17:902:8690:: with SMTP id g16mr2549832plo.257.1598984431929;
-        Tue, 01 Sep 2020 11:20:31 -0700 (PDT)
+        bh=d313eD54a7wBpf4xIcIfjkC0vS1lqfvdWPstPVu4Iqw=;
+        b=Jy4PKvgMz2QW6S+556s3xllbH45nJ5XPo3CWwCnfl+GcI0mX8ItVnLzqxP626xgvJP
+         uTWhmCQMEQilqAJjkI+/jgzyASzwRMDuK8wCsopLR7KrLvRMCBD+H/eyyoZO6auUP7AN
+         R06O3H4g1MyghnFzwI4Q/sAxo+sRk/EsvbYi/vbrH3nSw+BIbaVNwguaFOBuNHR0IOXr
+         wxHIwp26+fXpTxsa57uvbuUziTCzb8sQKDcOLxA8hy4B0+KlUGP7cTRa6442B0bYeblu
+         DkLPekUVpKiw9bnjJ+SqNfas27WejbDCbCdZZou5Mv2n8YnP0NS9UyUm1g2g4wyvXxjQ
+         ITSg==
+X-Gm-Message-State: AOAM530RWsrRnoJvCcmLqdEPVdUQ95x6yC6ET2FYnVhJvRezOpZm8c7p
+        1Q7C3BVGSj4vhYszBHwtuOS+onMpCmSX8Q==
+X-Google-Smtp-Source: ABdhPJy4hUcPF6QOQRZbY+XFtCApZfJfP1xRwcDuvrWe4jj/s9U1tynLe13YLRpVawttjNL8uc9Zlw==
+X-Received: by 2002:a62:1d44:: with SMTP id d65mr3096700pfd.150.1598984433143;
+        Tue, 01 Sep 2020 11:20:33 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id j81sm2747086pfd.213.2020.09.01.11.20.30
+        by smtp.gmail.com with ESMTPSA id j81sm2747086pfd.213.2020.09.01.11.20.32
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 01 Sep 2020 11:20:31 -0700 (PDT)
+        Tue, 01 Sep 2020 11:20:32 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 1/6] ionic: clean up page handling code
-Date:   Tue,  1 Sep 2020 11:20:19 -0700
-Message-Id: <20200901182024.64101-2-snelson@pensando.io>
+Subject: [PATCH v2 net-next 2/6] ionic: struct reorder for faster access
+Date:   Tue,  1 Sep 2020 11:20:20 -0700
+Message-Id: <20200901182024.64101-3-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200901182024.64101-1-snelson@pensando.io>
 References: <20200901182024.64101-1-snelson@pensando.io>
@@ -60,150 +60,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The internal page handling can be cleaned up by passing our
-local page struct rather than dma addresses, and by putting
-more of the mgmt code into the alloc and free routines.
+Move a few active struct fields to the front of the struct
+for a little better cache use and performance.
 
-Co-developed-by: Neel Patel <neel@pensando.io>
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- .../net/ethernet/pensando/ionic/ionic_txrx.c  | 71 +++++++++++--------
- 1 file changed, 40 insertions(+), 31 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_dev.h    | 18 +++++++++---------
+ .../net/ethernet/pensando/ionic/ionic_lif.h    | 14 +++++++-------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index c3291decd4c3..bbc926bc3852 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -266,40 +266,49 @@ void ionic_rx_flush(struct ionic_cq *cq)
- 				   work_done, IONIC_INTR_CRED_RESET_COALESCE);
- }
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+index 9e2ac2b8a082..0641ca2e1780 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+@@ -199,16 +199,17 @@ struct ionic_desc_info {
  
--static struct page *ionic_rx_page_alloc(struct ionic_queue *q,
--					dma_addr_t *dma_addr)
-+static int ionic_rx_page_alloc(struct ionic_queue *q,
-+			       struct ionic_page_info *page_info)
- {
- 	struct ionic_lif *lif = q->lif;
- 	struct ionic_rx_stats *stats;
- 	struct net_device *netdev;
+ struct ionic_queue {
  	struct device *dev;
--	struct page *page;
+-	u64 dbell_count;
+-	u64 drop;
+-	u64 stop;
+-	u64 wake;
+ 	struct ionic_lif *lif;
+ 	struct ionic_desc_info *info;
+-	struct ionic_dev *idev;
+ 	u16 head_idx;
+ 	u16 tail_idx;
+ 	unsigned int index;
++	unsigned int num_descs;
++	u64 dbell_count;
++	u64 stop;
++	u64 wake;
++	u64 drop;
++	struct ionic_dev *idev;
+ 	unsigned int type;
+ 	unsigned int hw_index;
+ 	unsigned int hw_type;
+@@ -226,7 +227,6 @@ struct ionic_queue {
+ 	};
+ 	dma_addr_t base_pa;
+ 	dma_addr_t sg_base_pa;
+-	unsigned int num_descs;
+ 	unsigned int desc_size;
+ 	unsigned int sg_desc_size;
+ 	unsigned int pid;
+@@ -246,8 +246,6 @@ struct ionic_intr_info {
+ };
  
- 	netdev = lif->netdev;
- 	dev = lif->ionic->dev;
- 	stats = q_to_rx_stats(q);
--	page = alloc_page(GFP_ATOMIC);
--	if (unlikely(!page)) {
--		net_err_ratelimited("%s: Page alloc failed on %s!\n",
-+
-+	if (unlikely(!page_info)) {
-+		net_err_ratelimited("%s: %s invalid page_info in alloc\n",
-+				    netdev->name, q->name);
-+		return -EINVAL;
-+	}
-+
-+	page_info->page = dev_alloc_page();
-+	if (unlikely(!page_info->page)) {
-+		net_err_ratelimited("%s: %s page alloc failed\n",
- 				    netdev->name, q->name);
- 		stats->alloc_err++;
--		return NULL;
-+		return -ENOMEM;
- 	}
+ struct ionic_cq {
+-	void *base;
+-	dma_addr_t base_pa;
+ 	struct ionic_lif *lif;
+ 	struct ionic_cq_info *info;
+ 	struct ionic_queue *bound_q;
+@@ -255,8 +253,10 @@ struct ionic_cq {
+ 	u16 tail_idx;
+ 	bool done_color;
+ 	unsigned int num_descs;
+-	u64 compl_count;
+ 	unsigned int desc_size;
++	u64 compl_count;
++	void *base;
++	dma_addr_t base_pa;
+ };
  
--	*dma_addr = dma_map_page(dev, page, 0, PAGE_SIZE, DMA_FROM_DEVICE);
--	if (unlikely(dma_mapping_error(dev, *dma_addr))) {
--		__free_page(page);
--		net_err_ratelimited("%s: DMA single map failed on %s!\n",
-+	page_info->dma_addr = dma_map_page(dev, page_info->page, 0, PAGE_SIZE,
-+					   DMA_FROM_DEVICE);
-+	if (unlikely(dma_mapping_error(dev, page_info->dma_addr))) {
-+		put_page(page_info->page);
-+		page_info->dma_addr = 0;
-+		page_info->page = NULL;
-+		net_err_ratelimited("%s: %s dma map failed\n",
- 				    netdev->name, q->name);
- 		stats->dma_map_err++;
--		return NULL;
-+		return -EIO;
- 	}
+ struct ionic;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+index e1e6ff1a0918..11ea9e0c6a4a 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
+@@ -16,32 +16,32 @@
+ #define IONIC_TX_BUDGET_DEFAULT		256
  
--	return page;
-+	return 0;
- }
+ struct ionic_tx_stats {
+-	u64 dma_map_err;
+ 	u64 pkts;
+ 	u64 bytes;
+-	u64 clean;
+-	u64 linearize;
+ 	u64 csum_none;
+ 	u64 csum;
+-	u64 crc32_csum;
+ 	u64 tso;
+ 	u64 tso_bytes;
+ 	u64 frags;
+ 	u64 vlan_inserted;
++	u64 clean;
++	u64 linearize;
++	u64 crc32_csum;
+ 	u64 sg_cntr[IONIC_MAX_NUM_SG_CNTR];
++	u64 dma_map_err;
+ };
  
--static void ionic_rx_page_free(struct ionic_queue *q, struct page *page,
--			       dma_addr_t dma_addr)
-+static void ionic_rx_page_free(struct ionic_queue *q,
-+			       struct ionic_page_info *page_info)
- {
- 	struct ionic_lif *lif = q->lif;
- 	struct net_device *netdev;
-@@ -308,15 +317,23 @@ static void ionic_rx_page_free(struct ionic_queue *q, struct page *page,
- 	netdev = lif->netdev;
- 	dev = lif->ionic->dev;
+ struct ionic_rx_stats {
+-	u64 dma_map_err;
+-	u64 alloc_err;
+ 	u64 pkts;
+ 	u64 bytes;
+ 	u64 csum_none;
+ 	u64 csum_complete;
+-	u64 csum_error;
+ 	u64 buffers_posted;
+ 	u64 dropped;
+ 	u64 vlan_stripped;
++	u64 csum_error;
++	u64 dma_map_err;
++	u64 alloc_err;
+ };
  
--	if (unlikely(!page)) {
--		net_err_ratelimited("%s: Trying to free unallocated buffer on %s!\n",
-+	if (unlikely(!page_info)) {
-+		net_err_ratelimited("%s: %s invalid page_info in free\n",
- 				    netdev->name, q->name);
- 		return;
- 	}
- 
--	dma_unmap_page(dev, dma_addr, PAGE_SIZE, DMA_FROM_DEVICE);
-+	if (unlikely(!page_info->page)) {
-+		net_err_ratelimited("%s: %s invalid page in free\n",
-+				    netdev->name, q->name);
-+		return;
-+	}
- 
--	__free_page(page);
-+	dma_unmap_page(dev, page_info->dma_addr, PAGE_SIZE, DMA_FROM_DEVICE);
-+
-+	put_page(page_info->page);
-+	page_info->dma_addr = 0;
-+	page_info->page = NULL;
- }
- 
- void ionic_rx_fill(struct ionic_queue *q)
-@@ -352,8 +369,7 @@ void ionic_rx_fill(struct ionic_queue *q)
- 		desc->opcode = (nfrags > 1) ? IONIC_RXQ_DESC_OPCODE_SG :
- 					      IONIC_RXQ_DESC_OPCODE_SIMPLE;
- 		desc_info->npages = nfrags;
--		page_info->page = ionic_rx_page_alloc(q, &page_info->dma_addr);
--		if (unlikely(!page_info->page)) {
-+		if (unlikely(ionic_rx_page_alloc(q, page_info))) {
- 			desc->addr = 0;
- 			desc->len = 0;
- 			return;
-@@ -370,8 +386,7 @@ void ionic_rx_fill(struct ionic_queue *q)
- 				continue;
- 
- 			sg_elem = &sg_desc->elems[j];
--			page_info->page = ionic_rx_page_alloc(q, &page_info->dma_addr);
--			if (unlikely(!page_info->page)) {
-+			if (unlikely(ionic_rx_page_alloc(q, page_info))) {
- 				sg_elem->addr = 0;
- 				sg_elem->len = 0;
- 				return;
-@@ -409,14 +424,8 @@ void ionic_rx_empty(struct ionic_queue *q)
- 		desc->addr = 0;
- 		desc->len = 0;
- 
--		for (i = 0; i < desc_info->npages; i++) {
--			if (likely(desc_info->pages[i].page)) {
--				ionic_rx_page_free(q, desc_info->pages[i].page,
--						   desc_info->pages[i].dma_addr);
--				desc_info->pages[i].page = NULL;
--				desc_info->pages[i].dma_addr = 0;
--			}
--		}
-+		for (i = 0; i < desc_info->npages; i++)
-+			ionic_rx_page_free(q, &desc_info->pages[i]);
- 
- 		desc_info->cb_arg = NULL;
- 		idx = (idx + 1) & (q->num_descs - 1);
+ #define IONIC_QCQ_F_INITED		BIT(0)
 -- 
 2.17.1
 
