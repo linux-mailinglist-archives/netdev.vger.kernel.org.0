@@ -2,92 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D75592591C2
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 16:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32F0F2590FE
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 16:43:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728772AbgIAOy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 10:54:57 -0400
-Received: from m43-7.mailgun.net ([69.72.43.7]:52244 "EHLO m43-7.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727026AbgIALpt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 07:45:49 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1598960740; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=liKI+Th2GySsbUd2xn9K1QLhy5bhTX64G88wpmW0HAU=; b=xhhVgTq+pI3cSKpgDVH120wCn8FnDeeo63wu5PEbBgPiBfqKwj24ce/S8MOykc9HWH+5orZj
- 8341xsdFbGm+1rUweRubyeYfaugBeT2TDN64pK98rLr8vl/LboeRBTbrTpswpdqBtNqtBgtj
- bdNl0sfzTLPa46AQ6E5CoOhDu6k=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 5f4e34644f13e63f04d5fc8f (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Sep 2020 11:45:40
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 69988C433AD; Tue,  1 Sep 2020 11:45:39 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1D073C433C9;
-        Tue,  1 Sep 2020 11:45:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1D073C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     "Bouganim\, Raz" <r-bouganim@ti.com>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        "linuxarm\@huawei.com" <linuxarm@huawei.com>,
-        "mauro.chehab\@huawei.com" <mauro.chehab@huawei.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
+        id S1728526AbgIAOnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 10:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728114AbgIAOQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 10:16:44 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C28C061247;
+        Tue,  1 Sep 2020 07:05:46 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1598969144;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z8QqyLda18GvzgzEa2BZRAqbRhiaUAxD4HcskwEK9y8=;
+        b=OA/2WXHYfEL1UR/++jUzmCJejoAGIwlRpnMjkUSVgubq1FeRHr3OfZ9USQ1gE/CI5PT7Lj
+        RQoIowDNkgN2P3pGTSOfIn/h1ejWaWrGDqhrIiJRW8d2O63VzqJ3Zv27hezntXkpSjpwUo
+        mzXh2yi8rhhOx7j//aop9Z2O4794QHgiG6XvfTUhXZ+3mLcD2JdGee4KzM+hUfvshbu383
+        9re5Ckx1XS2hN9v0blaNStaXIjoZ5QeC9vzCGYVMPiuaVJqoDSSKw7Snx3Y+9B3/01cqNI
+        MPtCGDjI+6cboSqfFLsZtHFgP6DKpc+QKFYLNPnT09e9HoEuWyYgH8O6Wx8GWg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1598969144;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Z8QqyLda18GvzgzEa2BZRAqbRhiaUAxD4HcskwEK9y8=;
+        b=VfTHIMCqtnFBoB0HPkuNE5jEiWNFnb6IXieWGVDnItFZKuERS7C5XshV7FxiY73RqYCouS
+        SEgC49JeOGSoU0Cg==
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Hahn\, Maital" <maitalm@ti.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Johannes Berg <johannes.berg@intel.com>,
-        "Fuqian Huang" <huangfq.daxian@gmail.com>,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [EXTERNAL] Re: [PATCH] Revert "wlcore: Adding suppoprt for IGTK key in wlcore driver"
-References: <f0a2cb7ea606f1a284d4c23cbf983da2954ce9b6.1598420968.git.mchehab+huawei@kernel.org>
-        <20200901093129.8A0FAC433B1@smtp.codeaurora.org>
-        <49d4cdaf6aad40f591e8b2f17e09007c@ti.com>
-Date:   Tue, 01 Sep 2020 14:45:33 +0300
-In-Reply-To: <49d4cdaf6aad40f591e8b2f17e09007c@ti.com> (Raz Bouganim's message
-        of "Tue, 1 Sep 2020 10:59:47 +0000")
-Message-ID: <87k0xd67qa.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v4 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek switches
+In-Reply-To: <20200901134020.53vob6fis5af7nig@skbuf>
+References: <20200901125014.17801-1-kurt@linutronix.de> <20200901125014.17801-3-kurt@linutronix.de> <20200901134020.53vob6fis5af7nig@skbuf>
+Date:   Tue, 01 Sep 2020 16:05:42 +0200
+Message-ID: <87y2ltegnd.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Bouganim, Raz" <r-bouganim@ti.com> writes:
+--=-=-=
+Content-Type: text/plain
 
-> We are going to release a new FW version 8.9.0.0.83 that contains
-> support with the new IGTK key.
+Hi Vladimir,
+
+On Tue Sep 01 2020, Vladimir Oltean wrote:
+> Hi Kurt,
 >
-> In addition, we also going to release a new patch that mandates the
-> driver to work with an 8.9.0.0.83 FW version or above.
+> On Tue, Sep 01, 2020 at 02:50:09PM +0200, Kurt Kanzenbach wrote:
+[snip]
+>> +struct hellcreek {
+>> +	const struct hellcreek_platform_data *pdata;
+>> +	struct device *dev;
+>> +	struct dsa_switch *ds;
+>> +	struct hellcreek_port *ports;
+>> +	struct mutex reg_lock;	/* Switch IP register lock */
 >
-> We going to push it today/tomorrow.
+> Pardon me asking, but I went back through the previous review comments
+> and I didn't see this being asked.
 
-You shouldn't break the support for old firmware, instead please
-implement it so that both old and new firmware are supported at the same
-time.
+It was asked multiple times, why there was a spinlock without interrupts
+being registered (see e.g. [1], [2]). I've used the spinlock variant,
+because the previously used hrtimers act like interrupts. As there are
+no timers anymore, there's no need for spinlocks and mutexes can be
+used.
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Florian Fainelli also asked if the reg lock can be removed
+completely. See below.
+
+>
+> What is the register lock protecting against, exactly?
+
+A lot of the register operations work by:
+
+ * Select port, priority, vlan or counter
+ * Configure it
+
+These sequences have to be atomic. That's what I wanted to ensure.
+
+Thanks,
+Kurt
+
+[1] - https://lkml.kernel.org/netdev/def49ff6-72fe-7ca0-9e00-863c314c1c3d@gmail.com/
+[2] - https://lkml.kernel.org/netdev/20200624130318.GD7247@localhost/
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl9OVTYACgkQeSpbgcuY
+8KZR9A//fUpNGkg2ivJeRvLXtvr4FbLG0ASFeE+pyc9dVBWa1RY+yP6H0fpOP9jR
+jlPqYVUlqxtiqlwHOd8GJ/PbnBlmKHcdf8BKnbM75fffeJjZm3Y+cl+CFJwJXkGe
+sKWFxGzQVbNmUsblEUWVOpuiU8XRRD8RjPCxMBW8FC5bVbhMKK1Fw7AT5K5M2e+d
+J3hhEa3qHsIqTSQhcb27N5Z94C6k9oKcRpkyTECngcX1IfNqcit6+OY7h5u4lqLz
+RVva3j1+tQJk7TgDWG+emcY5T7dpmnC2EgquPh3fs/peF1rfNswO2QqleFM8NHkI
+1nHanLeutnkIrs5sGPHU5VM9Cb3ctnLIAQh/VpB5cUdAXfDSN/qJvlTo/ATN4rBM
+3eL9dslrMt1dBXMteI4YMBj/CMHnQOP2HE0V2AXgAs4MRUn5ZWPInap/MCUMCWQC
+L0sOgb4Ye5k8uJH8dNS5j+sPqI6oeRBeTyZixLe9uTLdbH74o7nGpN4TGlQvpO04
+OZ2vvDwoyRKVnYqsbYySZo7b6phqK5nUmDzzZRuGZKW9b/q0WWxCbJYgIjSBUVhU
+h/JrGFrnZ2uQ6B/VhbS0E5moFHob92uItlwFVl9tH81jn64cDg2Z4gI2E9WUNve6
+enD+VGtnu4+BLbZ4a6wM6mmO9m2GdXaId6sKBQzs4nVvDC4AOHk=
+=Ww3M
+-----END PGP SIGNATURE-----
+--=-=-=--
