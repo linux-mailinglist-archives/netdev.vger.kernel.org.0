@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 108CC259C70
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 19:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45256259CF1
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 19:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729142AbgIAPOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 11:14:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58760 "EHLO mail.kernel.org"
+        id S1732684AbgIARVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 13:21:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54654 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728764AbgIAPOu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 11:14:50 -0400
+        id S1727997AbgIAPMV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 11:12:21 -0400
 Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 66AB3206FA;
-        Tue,  1 Sep 2020 15:14:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4368D2078B;
+        Tue,  1 Sep 2020 15:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598973288;
-        bh=VBnpavIvqKRm9y/bhO7kKV9M1J0DcjiXg++eXLPozXQ=;
+        s=default; t=1598973140;
+        bh=5GNgPTtfXVvMA6ocoAn2mDIL7i+Q7oAG+au7SI1IFGI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e7xShHs2i3TDaO1fUMy9Lx0zLnFZHhzI1lRkFWobltCxH21G1Sz3fG/3THkUQMmom
-         KG3s5TOf8UmDdDG7WBX4wudEa1eoSJRQRvfUmXlbOwYy4vL1sMo+hGUNqy/7iFLRvq
-         Grl1ZNSk/LcSWT0qQ65JUsYeAVv9wIxIa/rQtdxo=
+        b=jQL495QJSvNoKT0ikRti2AfZT6PwI+WZJNMljvmJWWUib1X5MCncAVvxi1+v1yiQv
+         BtcOrUygYNu46Z3Np6kNCCPlYB+SYzusgngF032Rk0Ai8+Fq4owQNpIZfB0DzJUHzd
+         yLmKF71KXJ1X03XcjcxzWe8J3UpVSk3e1MLJYO9g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -32,12 +32,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         Jay Vosburgh <jay.vosburgh@canonical.com>,
         Jarod Wilson <jarod@redhat.com>
-Subject: [PATCH 4.9 02/78] bonding: show saner speed for broadcast mode
-Date:   Tue,  1 Sep 2020 17:09:38 +0200
-Message-Id: <20200901150924.836925701@linuxfoundation.org>
+Subject: [PATCH 4.4 04/62] bonding: show saner speed for broadcast mode
+Date:   Tue,  1 Sep 2020 17:09:47 +0200
+Message-Id: <20200901150920.936373256@linuxfoundation.org>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200901150924.680106554@linuxfoundation.org>
-References: <20200901150924.680106554@linuxfoundation.org>
+In-Reply-To: <20200901150920.697676718@linuxfoundation.org>
+References: <20200901150920.697676718@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -75,7 +75,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 --- a/drivers/net/bonding/bond_main.c
 +++ b/drivers/net/bonding/bond_main.c
-@@ -4132,13 +4132,23 @@ static netdev_tx_t bond_start_xmit(struc
+@@ -4057,13 +4057,23 @@ static netdev_tx_t bond_start_xmit(struc
  	return ret;
  }
  
@@ -100,7 +100,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  
  	ecmd->duplex = DUPLEX_UNKNOWN;
  	ecmd->port = PORT_OTHER;
-@@ -4150,8 +4160,13 @@ static int bond_ethtool_get_settings(str
+@@ -4075,8 +4085,13 @@ static int bond_ethtool_get_settings(str
  	 */
  	bond_for_each_slave(bond, slave, iter) {
  		if (bond_slave_can_tx(slave)) {
