@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB2F258E63
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 14:43:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3285A258E57
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 14:41:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727109AbgIAMnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 08:43:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
+        id S1727910AbgIAMlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 08:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728110AbgIAM3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 08:29:15 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD14C061247
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 05:29:15 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id b13so386809qvl.2
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 05:29:15 -0700 (PDT)
+        with ESMTP id S1726510AbgIAM3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 08:29:20 -0400
+Received: from mail-qv1-xf42.google.com (mail-qv1-xf42.google.com [IPv6:2607:f8b0:4864:20::f42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D69C061249
+        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 05:29:19 -0700 (PDT)
+Received: by mail-qv1-xf42.google.com with SMTP id cy2so392511qvb.0
+        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 05:29:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=DFLtCp2O15rju9BR/oL6lxBkSxtDKRT0NnIXl1QlTg0=;
-        b=TbBohfPROTk4wUyrL3iHsMKzIOl7yaPBz3xMDVoZHZxQ219PKFdx51eN/U4ai2jesL
-         REQ45TQjAcpEA3se+7KCLBwI8C3ViW8LHPJRMX1gyVzqELNg6FSXUPQMsmBWul6qRiFq
-         x2WmHQz8+Sya9l335do2x5STsXgLc2bDNXzwxdNujsA6LGK83pCfNsx2yWRRaeVjJ1r0
-         pfp1c4C/rE/4zBt3awYFNS65FXmRJ1N6fB1aVTkCAhavaWzgMP7TNwW3rHzQWgM3aOwC
-         abjyOEIjy0qV0qW3xrmpiQkh4YZdiW+hu8DXeY0jd5HkS62RM2LeohfqGHpJbjXIwwYt
-         25IA==
+        bh=QVdwJ+FE/ogrH2MCBk57HD52dDvLWyfsL/EvW07drLg=;
+        b=pn4Kv3SzFmYS3R8PJ3Hugg4a5VSY9AWGCLWB4joFhIKmi0m9TOki4lLXEg23kh67xu
+         OA1Twl8inc8ELF35YJCYfzTcnh58mSrKDpAxXEya9TAseYy/Ai7YPoDNsWmoB7Ehd0Hj
+         c3sNVbgeEDOPZQjRZ8oxDnqj9TMRTUjhFnQpmaBAMjBui/SQi2itaO6XpyPNWiT3IJjn
+         OZrhePct5WvXkZxPeDcN/4PnHavE9+xyvT5F9BDUs38Q+5P2Y9dhJ7frpSi16cUTLKBP
+         4zTXI4ZORN4SI9h+fd2nDwjKp7UIocqnOxVR2zalAllkzCGdQdgcmN2pLzwRhz6Gn4Ib
+         VENA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=DFLtCp2O15rju9BR/oL6lxBkSxtDKRT0NnIXl1QlTg0=;
-        b=D881vK3L0rKmmZzNk6MxJv82DtW6O8AW516D9mjDHCbTzVROk7ofcWvUhpLh+dHQUr
-         RL0BzoaZlekLl2YHze+yyObz0D9f0Bijhj6xqaJrZjhTtOUZfdkGWfaHK76CPk2BWrbK
-         lJLY5dcmCUZ0z0N5bpEyO1Ll+AZmCtCcnKorMafN5Blzea8lvhhPvP8XoFJXa+3VWnrB
-         mblsveCOcpSYYQcK+dQYJDII6tAeOmVV4uj3pT7g80nzrWJSKAFN3U8gywpaW/FjOqYf
-         VQmaPr6ZGKGA7hAO65lo+y3XzZ5GL8h4D2i0u4sFpTFXuTHzzw6p5HCx19avPZZDyNCJ
-         sGdg==
-X-Gm-Message-State: AOAM533Zm4Z8R3XT9+F7QCyVnekU53r4T2ZvkH1QNxbWmF95FCoJYSEy
-        fXLyRLIZA3gHGqxRvKXry4Y=
-X-Google-Smtp-Source: ABdhPJyYHjTiHpoz0QHFglzLLpdN6cUx2co0mVrMelDQv9H5GdcaCScxUID/uFa4RbSnaZ5tY4+H7w==
-X-Received: by 2002:a05:6214:1045:: with SMTP id l5mr1575263qvr.110.1598963354418;
-        Tue, 01 Sep 2020 05:29:14 -0700 (PDT)
+        bh=QVdwJ+FE/ogrH2MCBk57HD52dDvLWyfsL/EvW07drLg=;
+        b=GMfiNBi+crGVBZLuepLsiDFqsEapOeT+cl1ajXlbbRjH+PL3t3XxEPIRhBNN/Kffzy
+         qWv4szuujvviMfmAERhmn5OeQy/EjvjKoUIAQkcH2mOzy7636Y/wqggGsOrtZ55MtdS4
+         ko1fFSr8O/ZmwXJcbNib4ciQwtDxgzMdexj0CTLLC48cyI6ZRUqYgaIPpvFmf7b82BrY
+         dCO6TUcIjWGiPgNwVygM6fQ+85ApduAQyMRPcCN4nuyHnrwzcjB58dZZ7uOkuFq35oZu
+         E/+JEOGcUZboy6duOMWno1gp36SJKkGdlG2z2FuLIf/syaqvFd0HBIGTi4c3JRv+KbRr
+         B00g==
+X-Gm-Message-State: AOAM5316mtxNclYVxjC94kn1qGE0h1iw451HqbViIbgd6uVGvVgoGy7n
+        6poxQygadWT0Sx8EYhonfiA=
+X-Google-Smtp-Source: ABdhPJwYiJqaMQ+GcUyKLRHiXGSSqeqEv1HgBy/ts/9jMBwHczV9GTkHAq4i+LjIfcHnpSzgWTQo5g==
+X-Received: by 2002:a0c:f584:: with SMTP id k4mr1706056qvm.6.1598963358391;
+        Tue, 01 Sep 2020 05:29:18 -0700 (PDT)
 Received: from localhost.localdomain ([50.236.19.102])
-        by smtp.gmail.com with ESMTPSA id q35sm1174220qtd.75.2020.09.01.05.29.11
+        by smtp.gmail.com with ESMTPSA id q35sm1174220qtd.75.2020.09.01.05.29.14
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 01 Sep 2020 05:29:13 -0700 (PDT)
+        Tue, 01 Sep 2020 05:29:17 -0700 (PDT)
 From:   xiangxia.m.yue@gmail.com
 To:     sbrivio@redhat.com, davem@davemloft.net, pshelar@ovn.org,
         xiyou.wangcong@gmail.com
 Cc:     dev@openvswitch.org, netdev@vger.kernel.org,
         Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v4 2/3] net: openvswitch: refactor flow free function
-Date:   Tue,  1 Sep 2020 20:26:13 +0800
-Message-Id: <20200901122614.73464-3-xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v4 3/3] net: openvswitch: remove unused keep_flows
+Date:   Tue,  1 Sep 2020 20:26:14 +0800
+Message-Id: <20200901122614.73464-4-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 2.15.0
 In-Reply-To: <20200901122614.73464-1-xiangxia.m.yue@gmail.com>
 References: <20200901122614.73464-1-xiangxia.m.yue@gmail.com>
@@ -64,83 +64,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Decrease table->count and ufid_count unconditionally,
-because we only don't use count or ufid_count to count
-when flushing the flows. To simplify the codes, we
-remove the "count" argument of table_instance_flow_free.
+keep_flows was introduced by [1], which used as flag to delete flows or not.
+When rehashing or expanding the table instance, we will not flush the flows.
+Now don't use it anymore, remove it.
 
-To avoid a bug when deleting flows in the future, add
-WARN_ON in flush flows function.
-
+[1] - https://github.com/openvswitch/ovs/commit/acd051f1761569205827dc9b037e15568a8d59f8
 Cc: Pravin B Shelar <pshelar@ovn.org>
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 Acked-by: Pravin B Shelar <pshelar@ovn.org>
 ---
- net/openvswitch/flow_table.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ net/openvswitch/flow_table.c | 6 ------
+ net/openvswitch/flow_table.h | 1 -
+ 2 files changed, 7 deletions(-)
 
 diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-index 441f68cf8a13..80849bdf45d2 100644
+index 80849bdf45d2..87c286ad660e 100644
 --- a/net/openvswitch/flow_table.c
 +++ b/net/openvswitch/flow_table.c
-@@ -461,18 +461,14 @@ static void flow_tbl_destroy_rcu_cb(struct rcu_head *rcu)
- static void table_instance_flow_free(struct flow_table *table,
- 				     struct table_instance *ti,
- 				     struct table_instance *ufid_ti,
--				     struct sw_flow *flow,
--				     bool count)
-+				     struct sw_flow *flow)
+@@ -168,7 +168,6 @@ static struct table_instance *table_instance_alloc(int new_size)
+ 
+ 	ti->n_buckets = new_size;
+ 	ti->node_ver = 0;
+-	ti->keep_flows = false;
+ 	get_random_bytes(&ti->hash_seed, sizeof(u32));
+ 
+ 	return ti;
+@@ -481,9 +480,6 @@ void table_instance_flow_flush(struct flow_table *table,
  {
- 	hlist_del_rcu(&flow->flow_table.node[ti->node_ver]);
--	if (count)
--		table->count--;
-+	table->count--;
+ 	int i;
  
- 	if (ovs_identifier_is_ufid(&flow->id)) {
- 		hlist_del_rcu(&flow->ufid_table.node[ufid_ti->node_ver]);
+-	if (ti->keep_flows)
+-		return;
 -
--		if (count)
--			table->ufid_count--;
-+		table->ufid_count--;
+ 	for (i = 0; i < ti->n_buckets; i++) {
+ 		struct hlist_head *head = &ti->buckets[i];
+ 		struct hlist_node *n;
+@@ -603,8 +599,6 @@ static void flow_table_copy_flows(struct table_instance *old,
+ 						 lockdep_ovsl_is_held())
+ 				table_instance_insert(new, flow);
  	}
- 
- 	flow_mask_remove(table, flow->mask);
-@@ -497,10 +493,16 @@ void table_instance_flow_flush(struct flow_table *table,
- 					  flow_table.node[ti->node_ver]) {
- 
- 			table_instance_flow_free(table, ti, ufid_ti,
--						 flow, false);
-+						 flow);
- 			ovs_flow_free(flow, true);
- 		}
- 	}
-+
-+	if (WARN_ON(table->count != 0 ||
-+		    table->ufid_count != 0)) {
-+		table->count = 0;
-+		table->ufid_count = 0;
-+	}
+-
+-	old->keep_flows = true;
  }
  
- static void table_instance_destroy(struct table_instance *ti,
-@@ -637,8 +639,6 @@ int ovs_flow_tbl_flush(struct flow_table *flow_table)
- 	rcu_assign_pointer(flow_table->ti, new_ti);
- 	rcu_assign_pointer(flow_table->ufid_ti, new_ufid_ti);
- 	flow_table->last_rehash = jiffies;
--	flow_table->count = 0;
--	flow_table->ufid_count = 0;
+ static struct table_instance *table_instance_rehash(struct table_instance *ti,
+diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
+index 6e7d4ac59353..d8fb7a3a3dfd 100644
+--- a/net/openvswitch/flow_table.h
++++ b/net/openvswitch/flow_table.h
+@@ -53,7 +53,6 @@ struct table_instance {
+ 	struct rcu_head rcu;
+ 	int node_ver;
+ 	u32 hash_seed;
+-	bool keep_flows;
+ };
  
- 	table_instance_flow_flush(flow_table, old_ti, old_ufid_ti);
- 	table_instance_destroy(old_ti, old_ufid_ti);
-@@ -956,7 +956,7 @@ void ovs_flow_tbl_remove(struct flow_table *table, struct sw_flow *flow)
- 	struct table_instance *ufid_ti = ovsl_dereference(table->ufid_ti);
- 
- 	BUG_ON(table->count == 0);
--	table_instance_flow_free(table, ti, ufid_ti, flow, true);
-+	table_instance_flow_free(table, ti, ufid_ti, flow);
- }
- 
- static struct sw_flow_mask *mask_alloc(void)
+ struct flow_table {
 -- 
 2.23.0
 
