@@ -2,89 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A4C259E02
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 20:21:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7765F259E0D
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 20:25:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730160AbgIASUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 14:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
+        id S1729947AbgIASY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 14:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730207AbgIASUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 14:20:40 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A92DC06124F
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 11:20:39 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id q3so944051pls.11
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 11:20:39 -0700 (PDT)
+        with ESMTP id S1726107AbgIASYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 14:24:55 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA8AC061244;
+        Tue,  1 Sep 2020 11:24:55 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id m23so2410008iol.8;
+        Tue, 01 Sep 2020 11:24:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=TufAMw+f1qFVrYcW7BKTj+Sl1ZnH8GKlIrdTG0Corss=;
-        b=jPI44HmCIjol70NF+O5AoeRMK4+B4wVftxXeuium3X/zYyftpBeMqf8x2IviamZUqi
-         pjqerJpY6hg25g4NRcYNrDeQfC9U5UVgvZFYpkurHX/Svbn/CM4AZe/UUsLkZq3tW+Nu
-         BuSq/64wn+ZnX0KuoREvJ+siaih3/bbi57pkhj5qF2ROg6rdRv5zLeydPCoieDu5bH8b
-         5HomVrNYdLs5HS4dWdWQZOYmLvCUGE1Mft3Hi6pVbAs84xI1J0lXozdJHEXOcX4pxsi9
-         kQV8dQTGbh4pZ7hgNMsuI/64JAjQFNTHpmt02jpxVbwlp093B1ZV40ynNKqbQJmyfWvS
-         uOMQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=M6eOAwwv7MGhiV6uSQC+4Pepfi5boLDT2O8Y3f/TMPk=;
+        b=eLs/bSEqYDaz+P3iZLzdmLXfBxFyLMzskjfDUf8fpsbByHUl3y85wi/ROgbQ/iwIW4
+         dRVFky99AKU/3ujHtRZdfRtT28m4LsGDzPHwkG8G6s6mdQiPdDPEGdMlFB7luQe7kFue
+         t+pWkGZWaOv1L7hQlOexAu4hv02+H6RoxC6lwNcXbMqRJmdII3TBHRr9d0hnA0hJMXlB
+         pwRpqjo9SO1OpUinUBYzzdODVQyf1vMqAdaTkHs9oHQJly1b21LuhX2VZfvJWIa8z1CT
+         oSskLQNDyG/YWg/6hJ/V4g7YVvpxmmMeVysKoCxZajqQDWCXNECfhgzvc53qE54qnwWx
+         x+Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=TufAMw+f1qFVrYcW7BKTj+Sl1ZnH8GKlIrdTG0Corss=;
-        b=oMfWjj3E2gkV2M6iN0voejOVp0TTrpzF07U9670laSfLL9AR6XvTaUluldoCZYN8gz
-         AyjIQkfRvJNIr+dDppBSIr3dxxYRbe50H7qQiKzrsfdEmne0TajySc5Wrn0+Easgjbsj
-         AcIcb5PjKjSlwaGL2UB5clhFhK7/Fo5cF85UM8felS/tEb40Fqw69E6IdLRjfWHuptqh
-         89rQfx2YWjbqwBBL58EBT37nRAYFJ4QWaErqMKZFnVA7fumS7ONAJ27itcFvVIQGc9ys
-         a9s3bcwYaXbSMX9AyLqK27L56UXAPRD8jK6hziJAhEFoYb7CkB7D2LtU2L33yKIxcZc/
-         ReDg==
-X-Gm-Message-State: AOAM530iRWHobDkJY/JshrK8UNyx0CVjfmHcfH1gVGQ3gv1TgKgIkWkh
-        ocjOkFa7IVrAuggQrryZIABEZu0fa3XZBg==
-X-Google-Smtp-Source: ABdhPJy8BN1BsedfiABbmsT6coVAeojFJqYGOVl+KAEhkb42DzD0vi/AJtQHpgKCyB91ZlB8mRDp4Q==
-X-Received: by 2002:a17:902:8bc3:: with SMTP id r3mr2467682plo.238.1598984438733;
-        Tue, 01 Sep 2020 11:20:38 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id j81sm2747086pfd.213.2020.09.01.11.20.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 01 Sep 2020 11:20:38 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 6/6] ionic: clarify boolean precedence
-Date:   Tue,  1 Sep 2020 11:20:24 -0700
-Message-Id: <20200901182024.64101-7-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200901182024.64101-1-snelson@pensando.io>
-References: <20200901182024.64101-1-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M6eOAwwv7MGhiV6uSQC+4Pepfi5boLDT2O8Y3f/TMPk=;
+        b=CHzeIddLv31+f0DN3BJrVJrv9DBonWrHr2drpUBLgl0y26Bl6eO36Lc6dOJlPcDbBe
+         q3qcqrAKnQYH5ezH3HQ1MQlU1EsgNaEdvd5UwgcbQS+55MKjjAxpNB+Bwx+LYTgAX+jY
+         LTxdxtUyX3WbvZUgqKdF2uCvRE9cdrQRXIJnGZpAl+8aPgjo26KEPqgnjpfpe2rqsksZ
+         Ln/YvJ/03wZAgCqbTesHsrAnChNVrWGsDR515jbc1AhVE29UlsIes742OCO+YMBFYFet
+         U8HAhSXQ9tjCmGE42a4jK8ulCX+gb3tFr/TenwLaxSOEnGoDQnAJw9B/qks/InYm03cf
+         G/dw==
+X-Gm-Message-State: AOAM530Za96iCt94P/706zAgIIEYl8eu2tlI4YsFMlFWvqcY0KCLBQ2R
+        at0NiOuQQCHU9lhk0fa9WjikJ5yAkq5rXSbJfQw=
+X-Google-Smtp-Source: ABdhPJxLGAF9salk9TYGScrQQd96qD+61R30Het3cQa2i//udJ5YGmkLWrQMWDlE9/8Qq968iRn7sRqmKBUeKXbJdKI=
+X-Received: by 2002:a02:778e:: with SMTP id g136mr2616404jac.49.1598984694291;
+ Tue, 01 Sep 2020 11:24:54 -0700 (PDT)
+MIME-Version: 1.0
+References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+In-Reply-To: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 1 Sep 2020 11:24:43 -0700
+Message-ID: <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linuxarm@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add parenthesis to clarify a boolean usage.
+On Mon, Aug 31, 2020 at 5:59 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>
+> Currently there is concurrent reset and enqueue operation for the
+> same lockless qdisc when there is no lock to synchronize the
+> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+> out-of-bounds access for priv->ring[] in hns3 driver if user has
+> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+> skb with a larger queue_mapping after the corresponding qdisc is
+> reset, and call hns3_nic_net_xmit() with that skb later.
 
-Pointed out in https://lore.kernel.org/lkml/202008060413.VgrMuqLJ%25lkp@intel.com/
+Can you be more specific here? Which call path requests a smaller
+tx queue num? If you mean netif_set_real_num_tx_queues(), clearly
+we already have a synchronize_net() there.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic_ethtool.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> Avoid the above concurrent op by calling synchronize_rcu_tasks()
+> after assigning new qdisc to dev_queue->qdisc and before calling
+> qdisc_deactivate() to make sure skb with larger queue_mapping
+> enqueued to old qdisc will always be reset when qdisc_deactivate()
+> is called.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index 00aad7168915..0d14659fbdfd 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -298,8 +298,8 @@ static void ionic_get_pauseparam(struct net_device *netdev,
- 
- 	pause_type = lif->ionic->idev.port_info->config.pause_type;
- 	if (pause_type) {
--		pause->rx_pause = pause_type & IONIC_PAUSE_F_RX ? 1 : 0;
--		pause->tx_pause = pause_type & IONIC_PAUSE_F_TX ? 1 : 0;
-+		pause->rx_pause = (pause_type & IONIC_PAUSE_F_RX) ? 1 : 0;
-+		pause->tx_pause = (pause_type & IONIC_PAUSE_F_TX) ? 1 : 0;
- 	}
- }
- 
--- 
-2.17.1
+Like Eric said, it is not nice to call such a blocking function when
+we have a large number of TX queues. Possibly we just need to
+add a synchronize_net() as in netif_set_real_num_tx_queues(),
+if it is missing.
 
+Thanks.
