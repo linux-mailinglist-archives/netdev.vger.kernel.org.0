@@ -2,106 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C65259B65
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 19:02:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E04E1259C49
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 19:14:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730512AbgIARB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 13:01:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48653 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729509AbgIAPU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 11:20:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1598973656;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=E+FRDxhNLNckt39TazxiFRMa93vd9C3zfcopiGmMH/g=;
-        b=DUmcy3znuPEJgbHnuGJ/qdLb/1KLdI/xVj/z8yky3MMMIqX1C2ma/QH7HvN6wS/aDjSe2g
-        eBvzexLmmPooQlydiB9DOx+ZH+Id9BJA3LKcjElAGvLgF+7DQUpfP3yHojvYIcMg2DnZnm
-        dwxcz2bwzXxy1Uy/qG1hU/Har+qXhVg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-169--DhPxKgDM0m086E3ob1heQ-1; Tue, 01 Sep 2020 11:20:55 -0400
-X-MC-Unique: -DhPxKgDM0m086E3ob1heQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E567F802B49;
-        Tue,  1 Sep 2020 15:20:53 +0000 (UTC)
-Received: from krava (unknown [10.40.193.186])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 566E25C1C4;
-        Tue,  1 Sep 2020 15:20:49 +0000 (UTC)
-Date:   Tue, 1 Sep 2020 17:20:48 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     daniel@iogearbox.net, ast@fb.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, jolsa@kernel.org
-Subject: Re: [PATCH bpf] tools/bpf: build: make sure resolve_btfids cleans up
- after itself
-Message-ID: <20200901152048.GA470123@krava>
-References: <20200901144343.179552-1-toke@redhat.com>
+        id S1729723AbgIARN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 13:13:28 -0400
+Received: from elvis.franken.de ([193.175.24.41]:46009 "EHLO elvis.franken.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729705AbgIARNL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 13:13:11 -0400
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1kD9qC-0004aY-00; Tue, 01 Sep 2020 19:13:04 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id A3E0EC0E68; Tue,  1 Sep 2020 19:12:41 +0200 (CEST)
+Date:   Tue, 1 Sep 2020 19:12:41 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
+        linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        linux-mm@kvack.org, Marek Szyprowski <m.szyprowski@samsung.com>,
+        linux-samsung-soc@vger.kernel.org,
+        Joonyoung Shim <jy0922.shim@samsung.com>,
+        linux-scsi@vger.kernel.org,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        linux-media@vger.kernel.org,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Pawel Osciak <pawel@osciak.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
+        netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
+        linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org
+Subject: Re: [PATCH 22/28] sgiseeq: convert from dma_cache_sync to
+ dma_sync_single_for_device
+Message-ID: <20200901171241.GA20685@alpha.franken.de>
+References: <20200819065555.1802761-1-hch@lst.de>
+ <20200819065555.1802761-23-hch@lst.de>
+ <20200901152209.GA14288@alpha.franken.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200901144343.179552-1-toke@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+In-Reply-To: <20200901152209.GA14288@alpha.franken.de>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 01, 2020 at 04:43:43PM +0200, Toke Høiland-Jørgensen wrote:
-> The new resolve_btfids tool did not clean up the feature detection folder
-> on 'make clean', and also was not called properly from the clean rule in
-> tools/make/ folder on its 'make clean'. This lead to stale objects being
-> left around, which could cause feature detection to fail on subsequent
-> builds.
+On Tue, Sep 01, 2020 at 05:22:09PM +0200, Thomas Bogendoerfer wrote:
+> On Wed, Aug 19, 2020 at 08:55:49AM +0200, Christoph Hellwig wrote:
+> > Use the proper modern API to transfer cache ownership for incoherent DMA.
+> > 
+> > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> > ---
+> >  drivers/net/ethernet/seeq/sgiseeq.c | 12 ++++++++----
+> >  1 file changed, 8 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/seeq/sgiseeq.c b/drivers/net/ethernet/seeq/sgiseeq.c
+> > index 39599bbb5d45b6..f91dae16d69a19 100644
+> > --- a/drivers/net/ethernet/seeq/sgiseeq.c
+> > +++ b/drivers/net/ethernet/seeq/sgiseeq.c
+> > @@ -112,14 +112,18 @@ struct sgiseeq_private {
+> >  
+> >  static inline void dma_sync_desc_cpu(struct net_device *dev, void *addr)
+> >  {
+> > -	dma_cache_sync(dev->dev.parent, addr, sizeof(struct sgiseeq_rx_desc),
+> > -		       DMA_FROM_DEVICE);
+> > +	struct sgiseeq_private *sp = netdev_priv(dev);
+> > +
+> > +	dma_sync_single_for_cpu(dev->dev.parent, VIRT_TO_DMA(sp, addr),
+> > +			sizeof(struct sgiseeq_rx_desc), DMA_BIDIRECTIONAL);
+> >  }
+> >  
+> >  static inline void dma_sync_desc_dev(struct net_device *dev, void *addr)
+> >  {
+> > -	dma_cache_sync(dev->dev.parent, addr, sizeof(struct sgiseeq_rx_desc),
+> > -		       DMA_TO_DEVICE);
+> > +	struct sgiseeq_private *sp = netdev_priv(dev);
+> > +
+> > +	dma_sync_single_for_device(dev->dev.parent, VIRT_TO_DMA(sp, addr),
+> > +			sizeof(struct sgiseeq_rx_desc), DMA_BIDIRECTIONAL);
+> >  }
 > 
-> Fixes: fbbb68de80a4 ("bpf: Add resolve_btfids tool to resolve BTF IDs in ELF object")
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-> ---
->  tools/bpf/Makefile                | 4 ++--
->  tools/bpf/resolve_btfids/Makefile | 1 +
->  2 files changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/bpf/Makefile b/tools/bpf/Makefile
-> index 0a6d09a3e91f..39bb322707b4 100644
-> --- a/tools/bpf/Makefile
-> +++ b/tools/bpf/Makefile
-> @@ -38,7 +38,7 @@ FEATURE_TESTS = libbfd disassembler-four-args
->  FEATURE_DISPLAY = libbfd disassembler-four-args
->  
->  check_feat := 1
-> -NON_CHECK_FEAT_TARGETS := clean bpftool_clean runqslower_clean
-> +NON_CHECK_FEAT_TARGETS := clean bpftool_clean runqslower_clean resolve_btfids_clean
->  ifdef MAKECMDGOALS
->  ifeq ($(filter-out $(NON_CHECK_FEAT_TARGETS),$(MAKECMDGOALS)),)
->    check_feat := 0
-> @@ -89,7 +89,7 @@ $(OUTPUT)bpf_exp.lex.c: $(OUTPUT)bpf_exp.yacc.c
->  $(OUTPUT)bpf_exp.yacc.o: $(OUTPUT)bpf_exp.yacc.c
->  $(OUTPUT)bpf_exp.lex.o: $(OUTPUT)bpf_exp.lex.c
->  
-> -clean: bpftool_clean runqslower_clean
-> +clean: bpftool_clean runqslower_clean resolve_btfids_clean
->  	$(call QUIET_CLEAN, bpf-progs)
->  	$(Q)$(RM) -r -- $(OUTPUT)*.o $(OUTPUT)bpf_jit_disasm $(OUTPUT)bpf_dbg \
->  	       $(OUTPUT)bpf_asm $(OUTPUT)bpf_exp.yacc.* $(OUTPUT)bpf_exp.lex.*
-> diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-> index a88cd4426398..fe8eb537688b 100644
-> --- a/tools/bpf/resolve_btfids/Makefile
-> +++ b/tools/bpf/resolve_btfids/Makefile
-> @@ -80,6 +80,7 @@ libbpf-clean:
->  clean: libsubcmd-clean libbpf-clean fixdep-clean
->  	$(call msg,CLEAN,$(BINARY))
->  	$(Q)$(RM) -f $(BINARY); \
-> +	$(RM) -rf $(if $(OUTPUT),$(OUTPUT),.)/feature; \
+> this breaks ethernet on IP22 completely, but I haven't figured out why, yet.
 
-I forgot this one.. thanks for fixing this
+the problem is that dma_sync_single_for_cpu() doesn't flush anything
+for IP22, because it only flushes for CPUs which do speculation. So
+either MIPS arch_sync_dma_for_cpu() should always flush or sgiseeq
+needs to use a different sync funktion, when it wants to re-read descriptors
+from memory.
 
-Acked-by: Jiri Olsa <jolsa@redhat.com>
+Thomas.
 
-jirka
-
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
