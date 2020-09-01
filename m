@@ -2,126 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D24258DBD
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 13:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00435258DC3
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 13:59:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbgIAL5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 07:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727963AbgIAL53 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 07:57:29 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2582C061244
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 04:57:24 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id d26so1246541ejr.1
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 04:57:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dHfbkHKqlJNasfLkXcpOnTeNlwRUoLyY5hJuqtCUfFc=;
-        b=otSMpZbaoETFEo2TAx1vrB9dOgzWa3vAwj/3aPR3zxGQPGyWGnY2ZJoyI9gQVkN3Ag
-         tJy8S4ommUvlmj4DBgMVz6jgvM3RO+zaUs6CC5ZEcrYg/LZ/bbWjO1so2mZhtB+m2HPh
-         yrWmZ180rjT/fS/hiPh4E8UoSWp5DJ4YNzgu0zXAHewlEUgELzAk5SjIFehd5uANbn2R
-         argMki2zw6uTsfiIgV+eEM5/iq6uEOEDut0Fg882WT3R9yBHLJ3o5iQh2ULjmqm1U1db
-         c1M8++jehsmskPuW3xJA4/9SdvU9jc0HGUuR/p2W5t7SoVFvFOuEGkbfYm4Phbxe/IkH
-         8nJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dHfbkHKqlJNasfLkXcpOnTeNlwRUoLyY5hJuqtCUfFc=;
-        b=rr0M7CRL9uJAzuuSlevYeWjGs92QRv0PI8xz3oqIxPYedqJOsjIPHZPo6e+Q8V6Rih
-         PS2qC1e5YDEAn699gnhibZNurpLRwOeAn1jn9Z3Bs+XTtG5rsA7z1PnjOJBefNmk/5Tl
-         +48k2HDd7slbdsYhdnphke9v4BqyCPNiTHnE9/snQfBeMs3Wp0Vhzumyn4SExeSjb5q7
-         B3hh9d9T0jgt2bDQmn5f0BqZSs/fLPcqN913zPfjG9bxN3ZlYuBjQKCFP6DqRp0JzY71
-         9f3EcgYxG1nVUE+0X/O5pMpmB5h5cu1CJmLauQidojY5ir2GBYIintaZ5chwKynxFHdJ
-         8Vdg==
-X-Gm-Message-State: AOAM532LBFaC3SlH4t8m3/O2o13YLYKWN1T9gU7dgshdUmqBme70Rhb3
-        ovDtJpElO42SceMu99SW7ZsRmGzIP8kg15U4Vaw=
-X-Google-Smtp-Source: ABdhPJyh1TcUDbPtVSDqmijz44rzJSAyahwAkkQrzEDC1FTo2HZ/E5Wb6ccxjqqe/QmXUi407KEFcmRoMfUQazZ6mz0=
-X-Received: by 2002:a17:906:2a49:: with SMTP id k9mr1177509eje.117.1598961443492;
- Tue, 01 Sep 2020 04:57:23 -0700 (PDT)
+        id S1728033AbgIAL6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 07:58:53 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:41211 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726144AbgIAL6r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 07:58:47 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 081Bvts2001080;
+        Tue, 1 Sep 2020 13:57:55 +0200
+Date:   Tue, 1 Sep 2020 13:57:55 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        George Spelvin <lkml@sdf.org>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>, tytso@mit.edu,
+        Florian Westphal <fw@strlen.de>,
+        Marc Plumb <lkml.mplumb@gmail.com>
+Subject: Re: [PATCH 2/2] random32: add noise from network and scheduling
+ activity
+Message-ID: <20200901115755.GA1059@1wt.eu>
+References: <20200901064302.849-1-w@1wt.eu>
+ <20200901064302.849-3-w@1wt.eu>
+ <ed5d4d2a-0f8f-f202-8c4f-9fc3d4307e97@gmail.com>
 MIME-Version: 1.0
-References: <20200825050636.14153-1-xiangxia.m.yue@gmail.com>
- <20200825050636.14153-2-xiangxia.m.yue@gmail.com> <20200825235121.0d8bd3d0@elisabeth>
-In-Reply-To: <20200825235121.0d8bd3d0@elisabeth>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 1 Sep 2020 19:54:14 +0800
-Message-ID: <CAMDZJNWW96=XsLrV1GvOg_dRKhUr62473ftXdXc1BKWPMk2gUg@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 1/3] net: openvswitch: improve coding style
-To:     Stefano Brivio <sbrivio@redhat.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Pravin Shelar <pshelar@ovn.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        ovs dev <dev@openvswitch.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ed5d4d2a-0f8f-f202-8c4f-9fc3d4307e97@gmail.com>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 26, 2020 at 5:51 AM Stefano Brivio <sbrivio@redhat.com> wrote:
->
-> On Tue, 25 Aug 2020 13:06:34 +0800
-> xiangxia.m.yue@gmail.com wrote:
->
-> > +++ b/net/openvswitch/datapath.c
-> >
-> > [...]
-> >
-> > @@ -2095,7 +2099,7 @@ static void ovs_update_headroom(struct datapath *dp, unsigned int new_headroom)
-> >       dp->max_headroom = new_headroom;
-> >       for (i = 0; i < DP_VPORT_HASH_BUCKETS; i++)
->
-> While at it, you could also add curly brackets here.
->
-> > +++ b/net/openvswitch/flow_table.c
-> >
-> > [...]
-> >
-> > @@ -111,9 +111,11 @@ static void flow_free(struct sw_flow *flow)
-> >       if (ovs_identifier_is_key(&flow->id))
-> >               kfree(flow->id.unmasked_key);
-> >       if (flow->sf_acts)
-> > -             ovs_nla_free_flow_actions((struct sw_flow_actions __force *)flow->sf_acts);
-> > +             ovs_nla_free_flow_actions((struct sw_flow_actions __force *)
-> > +                                       flow->sf_acts);
-> >       /* We open code this to make sure cpu 0 is always considered */
-> > -     for (cpu = 0; cpu < nr_cpu_ids; cpu = cpumask_next(cpu, &flow->cpu_used_mask))
-> > +     for (cpu = 0; cpu < nr_cpu_ids;
-> > +          cpu = cpumask_next(cpu, &flow->cpu_used_mask))
->
-> ...and here.
->
-> > @@ -273,7 +275,7 @@ static int tbl_mask_array_add_mask(struct flow_table *tbl,
-> >
-> >       if (ma_count >= ma->max) {
-> >               err = tbl_mask_array_realloc(tbl, ma->max +
-> > -                                           MASK_ARRAY_SIZE_MIN);
-> > +                                          MASK_ARRAY_SIZE_MIN);
->
-> This is not aligned properly either, MASK_ARRAY_SIZE_MIN is added to
-> ma->max and should be aligned to it.
->
-> > @@ -448,16 +450,17 @@ int ovs_flow_tbl_init(struct flow_table *table)
-> >
-> >  static void flow_tbl_destroy_rcu_cb(struct rcu_head *rcu)
-> >  {
-> > -     struct table_instance *ti = container_of(rcu, struct table_instance, rcu);
-> > +     struct table_instance *ti =
-> > +             container_of(rcu, struct table_instance, rcu);
->
-> The assignment could very well go on a separate line.
-Hi Stefano
-Sorry for missing the comment. I update the patch in v4. Thanks.
+Hi Eric,
 
-> --
-> Stefano
+On Tue, Sep 01, 2020 at 12:24:38PM +0200, Eric Dumazet wrote:
+> There is not much entropy here really :
+> 
+> 1) dev & txq are mostly constant on a typical host (at least the kind of hosts that is targeted by 
+> Amit Klein and others in their attacks.
+> 
+> 2) len is also known by the attacker, attacking an idle host.
+> 
+> 3) skb are also allocations from slab cache, which tend to recycle always the same pointers (on idle hosts)
+> 
+> 
+> 4) jiffies might be incremented every 4 ms (if HZ=250)
+
+I know. The point is essentially that someone "remote" or with rare access
+to the host's memory (i.e. in a VM on the same CPU sharing L1 with some
+CPU vulnerabilities) cannot synchronize with the PRNG and easily stay
+synchronized forever. Otherwise I totally agree that these are pretty
+weak. But in my opinion they are sufficient to turn a 100% success into
+way less. I try not to forget that we're just trying to make a ~15-bit
+port require ~2^14 attempts on average. Oh and by the way the number of
+calls also counts here.
+
+> Maybe we could feed percpu prandom noise with samples of ns resolution timestamps,
+> lazily cached from ktime_get() or similar functions.
 >
+> This would use one instruction on x86 to update the cache, with maybe more generic noise.
 
+Sure! I think the principle here allows to easily extend it to various
+places, and the more the better. Maybe actually we'll figure that there
+are plenty of sources of randomness that were not considered secure enough
+to feed /dev/random while they're perfectly fine for such use cases.
 
--- 
-Best regards, Tonghao
+> diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+> index 4c47f388a83f17860fdafa3229bba0cc605ec25a..a3e026cbbb6e8c5499ed780e57de5fa09bc010b6 100644
+> --- a/kernel/time/timekeeping.c
+> +++ b/kernel/time/timekeeping.c
+> @@ -751,7 +751,7 @@ ktime_t ktime_get(void)
+>  {
+>         struct timekeeper *tk = &tk_core.timekeeper;
+>         unsigned int seq;
+> -       ktime_t base;
+> +       ktime_t res, base;
+>         u64 nsecs;
+>  
+>         WARN_ON(timekeeping_suspended);
+> @@ -763,7 +763,9 @@ ktime_t ktime_get(void)
+>  
+>         } while (read_seqcount_retry(&tk_core.seq, seq));
+>  
+> -       return ktime_add_ns(base, nsecs);
+> +       res = ktime_add_ns(base, nsecs);
+> +       __this_cpu_add(prandom_noise, (unsigned long)ktime_to_ns(res));
+> +       return res;
+>  }
+>  EXPORT_SYMBOL_GPL(ktime_get);
+
+Actually it could even be nice to combine it with __builtin_return_address(0)
+given the large number of callers this one has! But I generally agree with
+your proposal.
+
+Thanks,
+Willy
