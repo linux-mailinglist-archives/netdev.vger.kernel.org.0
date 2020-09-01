@@ -2,106 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1939A25A0FE
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 23:52:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B7CF25A0FC
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 23:52:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729037AbgIAVwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729188AbgIAVwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 1 Sep 2020 17:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56756 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727778AbgIAVwA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 17:52:00 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF4AC061244
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 14:51:59 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id g6so1495021pfi.1
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 14:51:59 -0700 (PDT)
+        with ESMTP id S1727833AbgIAVwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 17:52:01 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E88DC061245
+        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 14:52:00 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id x10so2663955ybj.19
+        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 14:52:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=zpezJIycHxVWgG5Kg1IymaCbaNSzY7ri3TwDD8cWjI8=;
-        b=mJSerkoIaB4tRPaDzReNNvh+GQqd/XK6Jx4BXOg0rsebO3t4XqoPcneTgI5IkV7PgF
-         E9db9x1Ew5koXEIz+1jjtUH9toBK51HohM1IVtyRHu+JyKdcSyvddxzbOTuyokrSHVX5
-         VURAMrjpagojLDvcR/a85elagfb0qpC6AAb8urxYu36Y8CnjO3ISEnWiLagQ1JVOZ6/a
-         9HZGu3Q90Zn3EPrlRCFidUo+dXdM+KAXGcEVnWBehyv3OP0ROsN/9n7Tt0QgLQPfuOrS
-         JngeXQtkEbDq9n9eet9WPtNATgNf6YEhCuv+8Yl516P5eO74BMyvOqJLKSq02nDGWAQo
-         ojHA==
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=YBDBTYJyAAyHSIMfe7u64IQoZsgba0wVm0w4On0MyKI=;
+        b=hB3MqYsBs7cw/1Ipshxwo2lyNYatyRkdhq/cgNhag9zfjGsHTfzQVndgM7pF/RHhE7
+         BZ/yHS19zCQJ8hXCk6m6mfl55T/GQClu56RJtzi+y5l3i6rEjeV8+8lh84iWXcvo1YaZ
+         RYhxvYyFYogxqRAmlIbzpR9u3XNK0bqGRZ4B0ikukCzQ2sbxrzulflng/KZq7ioDycZM
+         xfdYd97akpmbmWkPAm1jIJ7cY/GMyWOZvh7HJzlsdDxvsQ1ls1NAf9g+XT+pl4nTQgzd
+         UKI1fryC51bRCA5l9FSRjbVDDZCx18N6LxtbF9TMrQlQ7dc+enad15zwqKYX5PddhIf1
+         YUkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=zpezJIycHxVWgG5Kg1IymaCbaNSzY7ri3TwDD8cWjI8=;
-        b=PJ6uVm3GwMbHDj0lMn2ajBkReA6CO1cEhkHpCsMwCmvGTT0+ImdSkueNzq20wHSeyz
-         UuBYd5f2bEX8EyHTF0Kc/wGFQT1BU0zjZF6zcB3pPd1ybztX+CZJt4EkiltlLnu1tvRv
-         dBxA39Erc3vmuiztfm8YoHvY+YSZprjQYRNrtz/ZCTwKmpTLRLYZe+90w1RLhZtLy8Wd
-         A7uzMyB7sZrKIkGU83xVSofYZtxfMPA4y2GaRJ14vbEkLAUlk+OcG0KhQJGkDw8W9xNB
-         jGovusKVn24BrNW1lGT9uokXt7Y7Nlg3FSFmBVQ7Wno6lYD0bngiAcOs3oyJQx54r+uP
-         yXHA==
-X-Gm-Message-State: AOAM531LdMzcRG6VUq81TuMrIUOP/XTzeADMoPAbea0jhZFiFZd5GSwY
-        hPubH9JXN85nSRWASp5xW3PJqfSxZ/e1tM52Bwq6UKdO1HUH1SprPssT7IwPVAjjiIHJSthXcpU
-        pnTr5q1M+KUGO8UoacgW0Tatn8HIqUaxlRIzfkOXh4gwAF9obPWfkffSNtZ/PCZKQ6/8WGIhE
-X-Google-Smtp-Source: ABdhPJxYPgAp6cYoViUEtUBq9A9j0qkpBn2Y/pTlM8dIr95qCRACaahsoarvWAb7/Nhw82TznjaSxYLk6Mdxt7H2
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=YBDBTYJyAAyHSIMfe7u64IQoZsgba0wVm0w4On0MyKI=;
+        b=pGtMd91MSO2zD6pAf6ESQFnpSc+1GtkdQZAKxMWLAAJadv1Ru3We7ZWyyJk4CZAqQN
+         0xgALGT8yjjOJ6O080mQAFuZLuwyZTSJ2Wng/KGpJGAQ2araqlM+LZuEynZpSeX2tku/
+         Jqji+mD79FjnCnwyw4tIVzC8Juc3zM597+9CIeYNDYMN6Xlp+2lM4mqJL4hS0ooYKU+i
+         Fv0+48MX0xV3KcBgrZrh7KIOnJrOKt6uPOTud0EMV7/JenbIvNN2wY+wSeOCml9LBph9
+         xgkhDbJQ0PvJvpdMPrk8JL1T6mb/4yAkbUL1FJPmeGoOlsmAMS/AuDUGxf5c2CIWoFij
+         vkkQ==
+X-Gm-Message-State: AOAM533cEEzQhg+Aj3N7dMNpdBgmihJBE9/DjzfrrQFJWwe7NSkQ7Trn
+        kGyPbTc9/Iu8ZcvQgmoJM1W5mMA+mFF9edDpumeQkEfgpobZOsI8nPFOdF3CgsN9+cFmPt9dD0+
+        uxScZLkn8bwwSj1XUKDLYtioH+WZ3TCauO3GPKi8aFj9vmEt7H9r0O8cJk/+nhOOmkuS0DQQX
+X-Google-Smtp-Source: ABdhPJyf4yi7uQ4xUkuRMAoPEU+A59shwoVs9toIGPiSMbCERQemo5tki7J0Ngsh5KLxzvjL/+rlOiWnaFF18jxv
 X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
- (user=awogbemila job=sendgmr) by 2002:aa7:824c:0:b029:137:165:ddce with SMTP
- id e12-20020aa7824c0000b02901370165ddcemr4012985pfn.0.1598997117178; Tue, 01
- Sep 2020 14:51:57 -0700 (PDT)
-Date:   Tue,  1 Sep 2020 14:51:40 -0700
-Message-Id: <20200901215149.2685117-1-awogbemila@google.com>
+ (user=awogbemila job=sendgmr) by 2002:a25:5755:: with SMTP id
+ l82mr6008189ybb.175.1598997118828; Tue, 01 Sep 2020 14:51:58 -0700 (PDT)
+Date:   Tue,  1 Sep 2020 14:51:41 -0700
+In-Reply-To: <20200901215149.2685117-1-awogbemila@google.com>
+Message-Id: <20200901215149.2685117-2-awogbemila@google.com>
 Mime-Version: 1.0
+References: <20200901215149.2685117-1-awogbemila@google.com>
 X-Mailer: git-send-email 2.28.0.402.g5ffc5be6b7-goog
-Subject: [PATCH net-next v2 0/9] Add GVE Features
+Subject: [PATCH net-next v2 1/9] gve: Get and set Rx copybreak via ethtool
 From:   David Awogbemila <awogbemila@google.com>
 To:     netdev@vger.kernel.org
-Cc:     David Awogbemila <awogbemila@google.com>
+Cc:     Kuo Zhao <kuozhao@google.com>, Yangchun Fu <yangchun@google.com>,
+        David Awogbemila <awogbemila@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes from v1:
-Note: Patches 9 to 18 in v1 are dropped and will be uploaded in another
-patchset.
-Patch 1: Use EOPPNOTSUPP instead of EINVAL for get_tunable and set_tunable
-				 unhandled cases.
-Patch 3: Do NOT register netdev earlier.
-				 Retitle from "gve: Register netdev earlier" to
-				 "gve: Use dev_info/err instead of netif_info/err."
-Patch 5: Break up into guest->NIC stats, NIC->guest stats.
-Patch 7 (patch 6 in v1): Use reverse christmas tree in declaring tail in
-				 gve_adminq_issue_cmd.
-Patch 8 (patch 7 in v1): Add link_status Up to make logging more uniform.
-Patch 9 (patch 8 in v1): Correct declaration of link_speed_region to
-				 __be64* to fix sparse warning.
+From: Kuo Zhao <kuozhao@google.com>
 
-Catherine Sullivan (2):
-  gve: Use dev_info/err instead of netif_info/err.
-  gve: Add support for dma_mask register
+This adds support for getting and setting the RX copybreak
+value via ethtool.
 
-David Awogbemila (2):
-  gve: NIC stats for report-stats and for ethtool
-  gve: Enable Link Speed Reporting in the driver.
+Reviewed-by: Yangchun Fu <yangchun@google.com>
+Signed-off-by: Kuo Zhao <kuozhao@google.com>
+Signed-off-by: David Awogbemila <awogbemila@google.com>
+---
+ drivers/net/ethernet/google/gve/gve_ethtool.c | 34 +++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-Kuo Zhao (3):
-  gve: Get and set Rx copybreak via ethtool
-  gve: Add stats for gve.
-  gve: Add Gvnic stats AQ command and ethtool show/set-priv-flags.
-
-Patricio Noyola (1):
-  gve: Use link status register to report link status
-
-Sagi Shahar (1):
-  gve: Batch AQ commands for creating and destroying queues.
-
- drivers/net/ethernet/google/gve/gve.h         | 111 +++++-
- drivers/net/ethernet/google/gve/gve_adminq.c  | 316 +++++++++++++--
- drivers/net/ethernet/google/gve/gve_adminq.h  |  62 ++-
- drivers/net/ethernet/google/gve/gve_ethtool.c | 366 ++++++++++++++++--
- drivers/net/ethernet/google/gve/gve_main.c    | 336 ++++++++++++----
- .../net/ethernet/google/gve/gve_register.h    |   4 +-
- drivers/net/ethernet/google/gve/gve_rx.c      |  37 +-
- 7 files changed, 1053 insertions(+), 179 deletions(-)
-
+diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
+index d8fa816f4473..1a80d38e66ec 100644
+--- a/drivers/net/ethernet/google/gve/gve_ethtool.c
++++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
+@@ -230,6 +230,38 @@ static int gve_user_reset(struct net_device *netdev, u32 *flags)
+ 	return -EOPNOTSUPP;
+ }
+ 
++static int gve_get_tunable(struct net_device *netdev,
++			   const struct ethtool_tunable *etuna, void *value)
++{
++	struct gve_priv *priv = netdev_priv(netdev);
++
++	switch (etuna->id) {
++	case ETHTOOL_RX_COPYBREAK:
++		*(u32 *)value = priv->rx_copybreak;
++		return 0;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static int gve_set_tunable(struct net_device *netdev,
++			   const struct ethtool_tunable *etuna, const void *value)
++{
++	struct gve_priv *priv = netdev_priv(netdev);
++	u32 len;
++
++	switch (etuna->id) {
++	case ETHTOOL_RX_COPYBREAK:
++		len = *(u32 *)value;
++		if (len > PAGE_SIZE / 2)
++			return -EINVAL;
++		priv->rx_copybreak = len;
++		return 0;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ const struct ethtool_ops gve_ethtool_ops = {
+ 	.get_drvinfo = gve_get_drvinfo,
+ 	.get_strings = gve_get_strings,
+@@ -242,4 +274,6 @@ const struct ethtool_ops gve_ethtool_ops = {
+ 	.get_link = ethtool_op_get_link,
+ 	.get_ringparam = gve_get_ringparam,
+ 	.reset = gve_user_reset,
++	.get_tunable = gve_get_tunable,
++	.set_tunable = gve_set_tunable,
+ };
 -- 
 2.28.0.402.g5ffc5be6b7-goog
 
