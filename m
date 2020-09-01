@@ -2,71 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4D43258EFB
-	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 15:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67E6C258EFC
+	for <lists+netdev@lfdr.de>; Tue,  1 Sep 2020 15:19:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728064AbgIANTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 09:19:08 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:41229 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728172AbgIANRL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 09:17:11 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 081DGNvk001119;
-        Tue, 1 Sep 2020 15:16:23 +0200
-Date:   Tue, 1 Sep 2020 15:16:23 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        George Spelvin <lkml@sdf.org>,
-        Amit Klein <aksecurity@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "tytso@mit.edu" <tytso@mit.edu>, Florian Westphal <fw@strlen.de>,
-        Marc Plumb <lkml.mplumb@gmail.com>
-Subject: Re: [PATCH 1/2] random32: make prandom_u32() output unpredictable
-Message-ID: <20200901131623.GB1059@1wt.eu>
-References: <20200901064302.849-1-w@1wt.eu>
- <20200901064302.849-2-w@1wt.eu>
- <b460c51a3fa1473b8289d6030a46abdb@AcuMS.aculab.com>
+        id S1727796AbgIANTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 09:19:38 -0400
+Received: from mail29.static.mailgun.info ([104.130.122.29]:59214 "EHLO
+        mail29.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728185AbgIANSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 09:18:51 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1598966330; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=AEO8pEII4HuEe78jrxrLd41P2SBMxSgl0kd3vWYrMyw=;
+ b=CXohzPUOueoEVtjBtEDcJtNwDKXqZICpHlwsyGeyPYux66Wm+Zsk4oUN9YsCASKF7A1rKhzY
+ Nlx26dxJF9ydPyR0sJBJXoAF55xEmTQbfytZ/0FbcZE8Uhg38yx2MvFzfJh1YT8DNESY/nyu
+ i3+ye0JC8j70ih8GSZtqRh3wOpE=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 5f4e4a3a4ba82a82fde8c9b5 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 01 Sep 2020 13:18:50
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 4A207C433CB; Tue,  1 Sep 2020 13:18:50 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1BB0CC433C6;
+        Tue,  1 Sep 2020 13:18:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1BB0CC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b460c51a3fa1473b8289d6030a46abdb@AcuMS.aculab.com>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] libertas_tf: Remove unused macro QOS_CONTROL_LEN
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200829115924.7572-1-yuehaibing@huawei.com>
+References: <20200829115924.7572-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>, <yuehaibing@huawei.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20200901131850.4A207C433CB@smtp.codeaurora.org>
+Date:   Tue,  1 Sep 2020 13:18:50 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 01, 2020 at 01:10:18PM +0000, David Laight wrote:
-> From: Willy Tarreau
-> > Sent: 01 September 2020 07:43
-> ...
-> > +/*
-> > + *	Generate some initially weak seeding values to allow
-> > + *	the prandom_u32() engine to be started.
-> > + */
-> > +static int __init prandom_init_early(void)
-> > +{
-> > +	int i;
-> > +	unsigned long v0, v1, v2, v3;
-> > +
-> > +	if (!arch_get_random_long(&v0))
-> > +		v0 = jiffies;
+YueHaibing <yuehaibing@huawei.com> wrote:
+
+> There is no caller in tree.
 > 
-> Isn't jiffies likely to be zero here?
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-I don't know. But do we really care ? I'd personally have been fine
-with not even assigning it in this case and leaving whatever was in
-the stack in this case, though it could make some static code analyzer
-unhappy.
+Patch applied to wireless-drivers-next.git, thanks.
 
-Willy
+2c92790b1203 libertas_tf: Remove unused macro QOS_CONTROL_LEN
+
+-- 
+https://patchwork.kernel.org/patch/11744379/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
