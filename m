@@ -2,75 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9957625A788
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 10:15:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD68925A7AD
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 10:20:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726802AbgIBIPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 04:15:00 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:10791 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726140AbgIBIO5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 04:14:57 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id BB12553EDAF1BEFC43D5;
-        Wed,  2 Sep 2020 16:14:54 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 2 Sep 2020 16:14:47 +0800
-Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David Miller" <davem@davemloft.net>,
+        id S1726733AbgIBISm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 04:18:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39108 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726310AbgIBISl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Sep 2020 04:18:41 -0400
+Received: from pobox.suse.cz (nat1.prg.suse.com [195.250.132.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BADA92084C;
+        Wed,  2 Sep 2020 08:18:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599034720;
+        bh=7+JEzktISsgTMdUzuapRscBPtX4N6Y3wMNOli4jVPQ4=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=AUuruMhNnTWN9d+oIWMoSqWA8+m8sBM+oeWPLsiObVeHFiq7BNSvIvN4IuQjBGrUN
+         k+B+5u9HrYhoRwTH/Os1qWGB1TXIiwzK1gOw6wV1fQkR0xWwE/1B4a4FZP7bKSHIC9
+         PP5dp0UkLkUuQvkHkcTKYHlSgMUgvsrGj9E2u+Z4=
+Date:   Wed, 2 Sep 2020 10:18:35 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Boqun Feng <boqun.feng@gmail.com>
+cc:     linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-scsi@vger.kernel.org, "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
- <511bcb5c-b089-ab4e-4424-a83c6e718bfa@huawei.com>
- <CAM_iQpW1c1TOKWLxm4uGvCUzK0mKKeDg1Y+3dGAC04pZXeCXcw@mail.gmail.com>
- <f81b534a-5845-ae7d-b103-434232c0f5ff@huawei.com>
- <1f7208e6-8667-e542-88dd-bd80a6c59fd2@gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <6984825d-1ef7-bf58-75fe-cee1bafe3c1a@huawei.com>
-Date:   Wed, 2 Sep 2020 16:14:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Michael Kelley <mikelley@microsoft.com>
+Subject: Re: [RFC v2 09/11] HID: hyperv: Make ringbuffer at least take two
+ pages
+In-Reply-To: <20200902030107.33380-10-boqun.feng@gmail.com>
+Message-ID: <nycvar.YFH.7.76.2009021018080.4671@cbobk.fhfr.pm>
+References: <20200902030107.33380-1-boqun.feng@gmail.com> <20200902030107.33380-10-boqun.feng@gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <1f7208e6-8667-e542-88dd-bd80a6c59fd2@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/9/2 15:32, Eric Dumazet wrote:
-> 
-> 
-> On 9/1/20 11:34 PM, Yunsheng Lin wrote:
-> 
->>
->> I am not familiar with TCQ_F_CAN_BYPASS.
->> From my understanding, the problem is that there is no order between
->> qdisc enqueuing and qdisc reset.
-> 
-> Thw qdisc_reset() should be done after rcu grace period, when there is guarantee no enqueue is in progress.
-> 
-> qdisc_destroy() already has a qdisc_reset() call, I am not sure why qdisc_deactivate() is also calling qdisc_reset()
+On Wed, 2 Sep 2020, Boqun Feng wrote:
 
-That is a good point.
-Do we allow skb left in qdisc when the qdisc is deactivated state?
-And qdisc_destroy() is not always called after qdisc_deactivate() is called.
-If we allow skb left in qdisc when the qdisc is deactivated state, then it is
-huge change of semantics for qdisc_deactivate(), and I am not sure how many
-cases will affected by this change.
+> When PAGE_SIZE > HV_HYP_PAGE_SIZE, we need the ringbuffer size to be at
+> least 2 * PAGE_SIZE: one page for the header and at least one page of
+> the data part (because of the alignment requirement for double mapping).
+> 
+> So make sure the ringbuffer sizes to be at least 2 * PAGE_SIZE when
+> using vmbus_open() to establish the vmbus connection.
+> 
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
 
+Acked-by: Jiri Kosina <jkosina@suse.cz>
 
-> 
-> 
-> 
+-- 
+Jiri Kosina
+SUSE Labs
+
