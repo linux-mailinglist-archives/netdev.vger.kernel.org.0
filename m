@@ -2,99 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86BE025A628
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 09:11:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1F825A6BC
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 09:27:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726467AbgIBHKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 03:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726285AbgIBHKx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 03:10:53 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196C5C061244
-        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 00:10:52 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id z1so4037147wrt.3
-        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 00:10:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FNSYEovvGuUo8gHoJgFvzxdikJW6Apm4lLlwAui/ppc=;
-        b=a6TFR+tukUWHXZ5J4k90GxEgS3DMIIQA7Ep24SGM6qnj/YMNHJzbCsrKtrvTX5xMOP
-         Cgh2LNS5ltd2bZO0maU92bzG/1KaGHvtrRKNidURF2ZkGEkFVjRMRvsLZ/MxM0LZGzi7
-         3uucbi0IhdhfR5ECv4KQQsjQNpd9H+RmUztW8dwpn7nW9J9atz5vFrtFdYWWgE6zcMYZ
-         O2m3t0+aH9zsEUjT/OhIGMbrITe2yroyDiweA/TQbHzSa7me+EMyEN4Zwv+umuY0LP2d
-         FHcq3IuRVPSDjBW3XceBT+66ezgwEWxxR9fEnZ4H+TrSrq9BYK2Fvh2Oe0lAZazGuli0
-         kmLQ==
+        id S1726994AbgIBH12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 03:27:28 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:36639 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726323AbgIBH1Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 03:27:24 -0400
+Received: by mail-il1-f200.google.com with SMTP id f20so2859008ilg.3
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 00:27:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FNSYEovvGuUo8gHoJgFvzxdikJW6Apm4lLlwAui/ppc=;
-        b=fmmeYZFtYmkI+Iec1SgOFCJ0HeHicLQqWecu0Kzz4z6duJ7Ft34r2Cp7WHGVSlSJwU
-         09knEjmtJNrM6mWy+ya8hlRmBqdWIZDazl/b3tKDMhBkatUs1qQkrtw6qLhtanZ35VCX
-         kHluPM7yjKj/l4O5wru/B8BG6AKzGI4m8jHrU73ND0sgjhTYYsm0mJZQPQrd2kaKmEEw
-         BqM/MzqOCQTjph9lf7I6X9T11HZ+0X7x8AR4bFkKzY4aWLYo4vOIY7Mbgp8FaJbZS5dx
-         eR9Q8pWagDuDiVUw729CBpjLa6rNWV+dq07sC+3Jkky5BFO0JUOq4XWx4ISyWZjrsAQq
-         Detg==
-X-Gm-Message-State: AOAM531fkpBKlnucbFqRnxZZuCCrI5R64ajdGCcoePdbW77vvYckbD73
-        RBz6+Nad65IZnMBUsNq6O04=
-X-Google-Smtp-Source: ABdhPJzOUjW2iZga9JQpCx9yGVLW1/nYlp4MEsrdfJl3e9s+ADmsOvV57pAgKqQ743bw/Q60yUT03A==
-X-Received: by 2002:adf:e6cf:: with SMTP id y15mr5649717wrm.346.1599030651580;
-        Wed, 02 Sep 2020 00:10:51 -0700 (PDT)
-Received: from [192.168.8.147] ([37.170.201.185])
-        by smtp.gmail.com with ESMTPSA id f14sm5872830wrv.72.2020.09.02.00.10.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Sep 2020 00:10:50 -0700 (PDT)
-Subject: Re: [net] tipc: fix using smp_processor_id() in preemptible
-To:     Tuong Tong Lien <tuong.t.lien@dektech.com.au>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jmaloy@redhat.com" <jmaloy@redhat.com>,
-        "maloy@donjonn.com" <maloy@donjonn.com>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>
-References: <20200829193755.9429-1-tuong.t.lien@dektech.com.au>
- <f81eafce-e1d1-bb18-cb70-cfdf45bb2ed0@gmail.com>
- <AM8PR05MB733222C45D3F0CC19E909BB0E2510@AM8PR05MB7332.eurprd05.prod.outlook.com>
- <0ed21ba7-2b3b-9d4f-563e-10d329ebeecb@gmail.com>
- <AM8PR05MB7332E91A67120D78823353F6E2510@AM8PR05MB7332.eurprd05.prod.outlook.com>
- <3f858962-4e38-0b72-4341-1304ec03cd7a@gmail.com>
- <AM8PR05MB7332BE4B6E0381D2894E057AE22E0@AM8PR05MB7332.eurprd05.prod.outlook.com>
- <338d5df9-fe4e-7acf-1480-99984dfeab34@gmail.com>
- <AM8PR05MB7332020CE2FB9E0B416D70BAE22E0@AM8PR05MB7332.eurprd05.prod.outlook.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <2b31e772-3229-3c67-1faf-9ae88849ce77@gmail.com>
-Date:   Wed, 2 Sep 2020 09:10:49 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=bPjCsLvf4YWVwJoyZQaDFqOqvUJtCilRH+5fagQZGJY=;
+        b=pBJ0vbs5sXFJTkyfx6Fhymz5Y7DM2NrINoufZp/1vFrdEHtaUe0OwQ2Qu4gTkMQNns
+         VOIKgbAATloWMzRJsegbcU6/WHIYv97vLP3uIiIERTV1RSe0UHmWXdEfga5Homd2TuGm
+         uFQpoeh1JgnuGnQ+RLfE8eZUpGGVcd2NtgRa8CU6WYrtYqD2zxdBxyJKsJF3mCh4SfPc
+         L4xmR4+0MHL0VKovZqzCIS81XdJsEQyOvqE/9djYsxn0ax/zWsZUqnR7QHKxbsj0ivNz
+         9lh1sBPl5K1b1Oz86xKt+p7LryBn35Ny3GKqW8qQhhsexkdJloyB/Be4eYiu1bNEPx9N
+         Tnlg==
+X-Gm-Message-State: AOAM531q/BKWMDeGP82/AsV/evtLVYofgc6xPaW0lgJcLzZcfhVTTAOs
+        X85IXS9KzcnaduL5M5jcfGEIXCNraizJnfuRPqCFMkKEvMgS
+X-Google-Smtp-Source: ABdhPJx37j4oJkY7TNtoUOZeZICr35Z980EynEXxxYD5l4AiZWddQ/Uom0YH8so35oz8eZD0QABynd4WvzL4LfUymdDa2i2O8SSa
 MIME-Version: 1.0
-In-Reply-To: <AM8PR05MB7332020CE2FB9E0B416D70BAE22E0@AM8PR05MB7332.eurprd05.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:dcc3:: with SMTP id b3mr162292ilr.285.1599031642741;
+ Wed, 02 Sep 2020 00:27:22 -0700 (PDT)
+Date:   Wed, 02 Sep 2020 00:27:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000cdfec05ae4f91da@google.com>
+Subject: general protection fault in xsk_is_setup_for_bpf_map
+From:   syzbot <syzbot+febe51d44243fbc564ee@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bjorn.topel@intel.com,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        hawk@kernel.org, john.fastabend@gmail.com,
+        jonathan.lemon@gmail.com, kafai@fb.com, kpsingh@chromium.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    dc1a9bf2 octeontx2-pf: Add UDP segmentation offload support
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1442d38e900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b6856d16f78d8fa9
+dashboard link: https://syzkaller.appspot.com/bug?extid=febe51d44243fbc564ee
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1019da25900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15988279900000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+febe51d44243fbc564ee@syzkaller.appspotmail.com
+
+general protection fault, probably for non-canonical address 0xdffffc0000000020: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000100-0x0000000000000107]
+CPU: 1 PID: 8180 Comm: syz-executor241 Not tainted 5.9.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:xsk_is_setup_for_bpf_map+0xbd/0x140 net/xdp/xsk.c:39
+Code: 80 3c 02 00 0f 85 8b 00 00 00 4c 8b a3 e8 04 00 00 48 b8 00 00 00 00 00 fc ff df 49 8d bc 24 00 01 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 6f 49 83 bc 24 00 01 00 00 00 74 12 41 bc 01 00 00
+RSP: 0018:ffffc90005787c30 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff88808880f000 RCX: ffffffff87effd24
+RDX: 0000000000000020 RSI: ffffffff87efc58b RDI: 0000000000000100
+RBP: 0000000000000000 R08: 0000000000000001 R09: ffff888094f6ea00
+R10: 000000000000002c R11: 0000000000000000 R12: 0000000000000000
+R13: ffff888082808a80 R14: ffff88808880f000 R15: 000000000000002c
+FS:  0000000000767940(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000077fffb CR3: 00000000a939a000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ xsk_map_update_elem+0x1bc/0x9d0 net/xdp/xskmap.c:188
+ bpf_map_update_value.isra.0+0x715/0x900 kernel/bpf/syscall.c:200
+ map_update_elem kernel/bpf/syscall.c:1120 [inline]
+ __do_sys_bpf+0x320b/0x4b30 kernel/bpf/syscall.c:4186
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x44c4f9
+Code: e8 1c e6 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 3b 04 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffc6d766ac8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000044c4f9
+RDX: 000000000000002c RSI: 0000000020003000 RDI: 0000000000000002
+RBP: 0000000000000000 R08: fffffffffffffff5 R09: fffffffffffffff5
+R10: fffffffffffffff5 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace 6b3dd16ce201e2fa ]---
+RIP: 0010:xsk_is_setup_for_bpf_map+0xbd/0x140 net/xdp/xsk.c:39
+Code: 80 3c 02 00 0f 85 8b 00 00 00 4c 8b a3 e8 04 00 00 48 b8 00 00 00 00 00 fc ff df 49 8d bc 24 00 01 00 00 48 89 fa 48 c1 ea 03 <80> 3c 02 00 75 6f 49 83 bc 24 00 01 00 00 00 74 12 41 bc 01 00 00
+RSP: 0018:ffffc90005787c30 EFLAGS: 00010202
+RAX: dffffc0000000000 RBX: ffff88808880f000 RCX: ffffffff87effd24
+RDX: 0000000000000020 RSI: ffffffff87efc58b RDI: 0000000000000100
+RBP: 0000000000000000 R08: 0000000000000001 R09: ffff888094f6ea00
+R10: 000000000000002c R11: 0000000000000000 R12: 0000000000000000
+R13: ffff888082808a80 R14: ffff88808880f000 R15: 000000000000002c
+FS:  0000000000767940(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000077fffb CR3: 00000000a939a000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
-On 9/1/20 10:52 AM, Tuong Tong Lien wrote:
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> Ok, I've got your concern now. Actually when writing this code, I had the same thought as you, but decided to relax it because of the following reasons:
-> 1. I don't want to use any locking methods here that can lead to competition (thus affect overall performance...);
-> 2. The list is not an usual list but a fixed "ring" of persistent elements (no one will insert/remove any element after it is created);
-> 3. It does _not_ matter at all if the function calls will result in the same element, or one call points to the 1st element while another at the same time points to the 3rd one, etc. as long as it returns an element in the list. Also, the per-cpu pointer is _not_ required to exactly point to the next element, but needs to be moved on this or next time..., so just relaxing!
-> 4. Isn't a "write" to the per-cpu variable atomic?
-> 
-
-I think I will give up, this code is clearly racy, and will consider TIPC as broken.
-
-Your patch only silenced syzbot report, but the bug is still there.
-
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
