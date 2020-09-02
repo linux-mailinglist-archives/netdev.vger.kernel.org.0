@@ -2,145 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3A725AAA1
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 13:57:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1410B25AAB8
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 14:01:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726674AbgIBL5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 07:57:08 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:35828 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726124AbgIBL5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 07:57:00 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 082BsdTm176231;
-        Wed, 2 Sep 2020 11:56:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=n0FzEU4KMlYvb3jcA1hVv+tmmUwolrwfTOenwY/ICYg=;
- b=FKJ4mLiHHdZeJ5VpE+KQjfHbDvge2kpBfnVujT32b3uej4i9RuOJKeJMT6ImsOzIso7e
- wWB0zfrDARFDH4VMfHR7IV9AP5AzjX08NJ0VhVweNnuBRvuL/1Ue/+6iRB4GeSHFKVQj
- g2ieNQLihM5t72/XbtGRM33JfeSpnSjv7Xt86xkpzrWrtHo5a4uL9kCfian/QIfQZ2YJ
- A3r6xKKutgaUCkl95AzyNh/s0zS2uLnGXplXvs+xDo/WBuFoNPalGmD11O0OaBor4+9q
- o84cIl7NeyDrthpXxSfgA5j2FM/WoJDCOWI7VLdfXf7gqkeyWRBPOPK1WAWMWv80SK9c sw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 337eyma14f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 02 Sep 2020 11:56:41 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 082BtDAr144968;
-        Wed, 2 Sep 2020 11:56:41 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3030.oracle.com with ESMTP id 3380kpvnpy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 02 Sep 2020 11:56:41 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 082BucPL005076;
-        Wed, 2 Sep 2020 11:56:38 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 02 Sep 2020 04:56:38 -0700
-Date:   Wed, 2 Sep 2020 14:56:31 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Wang Hai <wanghai38@huawei.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net] net: gemini: Fix another missing clk_disable_unprepare()
- in probe
-Message-ID: <20200902115631.GA286978@mwanda>
+        id S1726714AbgIBMBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 08:01:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726140AbgIBMBI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 08:01:08 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 436F9C061244
+        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 05:00:59 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id u6so2810107ybf.1
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 05:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=fQu188afTkltHrR3sb1HUtHfPblsmAmHFIs4oHSfTdQ=;
+        b=sz6Qy/CGHCJf3c9DVwSmSl3KXPhY+B5R9dH/kUDUXqSjhGj4uagfLKHhgQMHXs0prn
+         XBMyiShYhuc9r9nGXVwhObfDgOX2ELlC5II43Uh0NTYdCaPGYEt5mJgFltm3kRk3Rj34
+         iwIicYUK1RVAEzRA1bq71Jl/sv1tnBcLk7FQguhGbsCbjMU9e4fNSZBWHjb+7T4S0j3Z
+         zyoRJs+T4HnX+ajKxIjz+OvQvzOYRl7+tQ9IQpl+pJGeiJ4JUT05n6hPDa3o66Kqpec/
+         ocf9xY2sgCNEh+pig0wre/w7ez83SgADnGxM85ZT0yYP5rs311hh3G7hsF2R8x12H8pQ
+         3Tmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=fQu188afTkltHrR3sb1HUtHfPblsmAmHFIs4oHSfTdQ=;
+        b=DLcqRDE2igjYvA6JXWv7Zwnareh1jUbNMTSsqZwtGtV4T7k+C4rXwXTowUUI9T715t
+         dnd3/iIq0Jt6x+pFv914Yq9BIVqUSciXDpB/3BVX4hv7wL1Scjk2fBniavQ2olkP8XI9
+         zC15gBBJ+Q+QIv/Ox2MXDWPqbxW0dtdD4euMK4iFs6jNq/7a/gwx2fxYUytuuGLTmmsw
+         Xr6vvejj/sGvlHRbGzRjl6K73j6fYis5611pYQkbnX1Mx3tCHQmPdPgWv+sFU4StGoV8
+         qqh00YoOfTuuX0V8O9U2714fjZQEtS50O/3C+eH0HB+uP4+/Bl+2m8M6vyb9MIWR4TO+
+         Xi2A==
+X-Gm-Message-State: AOAM531TRKzZO1YffvK4cVW4GgdI2Y0OFQ+SnpOBG8Dx91tF98iQhPIH
+        gBzRZzTMzJpTrbxErnjrkDhjgELkk1FbHTjAMW0=
+X-Google-Smtp-Source: ABdhPJxmr5SUCrF3acTahPhj+cBs3ICARztut/hHZWQgXNvu8m/fQ5KSYIYeW5KjrhSRceTZH+lPWFhTnqd3rrGTQz8=
+X-Received: by 2002:a25:bec8:: with SMTP id k8mr9254200ybm.38.1599048058457;
+ Wed, 02 Sep 2020 05:00:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9731 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0 adultscore=0
- mlxscore=0 suspectscore=0 malwarescore=0 mlxlogscore=999 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009020112
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9731 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 adultscore=0
- priorityscore=1501 phishscore=0 mlxlogscore=999 mlxscore=0
- lowpriorityscore=0 clxscore=1011 spamscore=0 bulkscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009020112
+Received: by 2002:a25:d311:0:0:0:0:0 with HTTP; Wed, 2 Sep 2020 05:00:57 -0700 (PDT)
+Reply-To: jlmv002@gmail.com
+From:   DR JIM <advocate.mary002@gmail.com>
+Date:   Wed, 2 Sep 2020 13:00:57 +0100
+Message-ID: <CA+omnrjFm9dxvQjy2EK36PoJqmzgdfOv4xzrSDmi77kxh_aCYA@mail.gmail.com>
+Subject: ATTENTION: DELIVERY OF YOUR ATM VISA CARD
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We recently added some calls to clk_disable_unprepare() but we missed
-the last error path if register_netdev() fails.
+Attention:Beneficiary,
 
-I made a couple cleanups so we avoid mistakes like this in the future.
-First I reversed the "if (!ret)" condition and pulled the code in one
-indent level.  Also, the "port->netdev = NULL;" is not required because
-"port" isn't used again outside this function so I deleted that line.
+This is to official inform you that we have been having a meeting for
+the past Seven month which ended Two days ago with Dr. David  R.
+Malpass, the World Bank President and Hon. Mrs. Christine Laggard
+(IMF) Director General, in the meeting we treated on Email programs
+victim problems.
 
-Fixes: 4d5ae32f5e1e ("net: ethernet: Add a driver for Gemini gigabit ethernet")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/cortina/gemini.c | 34 +++++++++++++--------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+United Nation have agreed to compensate you with the sum of One
+million two Hundred Thousand Dollars (USD$1.200,000.00) this also
+includes international businesses that failed due to Government
+problems etc?. We have arranged your payment through Master Card ATM
+which is the latest  instruction from World Bank Group.
 
-diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
-index 62e271aea4a5..ffec0f3dd957 100644
---- a/drivers/net/ethernet/cortina/gemini.c
-+++ b/drivers/net/ethernet/cortina/gemini.c
-@@ -2446,8 +2446,8 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
- 	port->reset = devm_reset_control_get_exclusive(dev, NULL);
- 	if (IS_ERR(port->reset)) {
- 		dev_err(dev, "no reset\n");
--		clk_disable_unprepare(port->pclk);
--		return PTR_ERR(port->reset);
-+		ret = PTR_ERR(port->reset);
-+		goto unprepare;
- 	}
- 	reset_control_reset(port->reset);
- 	usleep_range(100, 500);
-@@ -2502,25 +2502,25 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
- 					IRQF_SHARED,
- 					port_names[port->id],
- 					port);
--	if (ret) {
--		clk_disable_unprepare(port->pclk);
--		return ret;
--	}
-+	if (ret)
-+		goto unprepare;
- 
- 	ret = register_netdev(netdev);
--	if (!ret) {
-+	if (ret)
-+		goto unprepare;
-+
-+	netdev_info(netdev,
-+		    "irq %d, DMA @ 0x%pap, GMAC @ 0x%pap\n",
-+		    port->irq, &dmares->start,
-+		    &gmacres->start);
-+	ret = gmac_setup_phy(netdev);
-+	if (ret)
- 		netdev_info(netdev,
--			    "irq %d, DMA @ 0x%pap, GMAC @ 0x%pap\n",
--			    port->irq, &dmares->start,
--			    &gmacres->start);
--		ret = gmac_setup_phy(netdev);
--		if (ret)
--			netdev_info(netdev,
--				    "PHY init failed, deferring to ifup time\n");
--		return 0;
--	}
-+			    "PHY init failed, deferring to ifup time\n");
-+	return 0;
- 
--	port->netdev = NULL;
-+unprepare:
-+	clk_disable_unprepare(port->pclk);
- 	return ret;
- }
- 
--- 
-2.28.0
+For the collection of your Master Card ATM contact our representative
+Dr.JIM LAW  and forward the following details to him.
 
+1. Full Name:.........
+2. Country:........
+3. Delivery Address:..........
+4. Telephone:..............&  Occupation.......
+5. Your Age...... /Sex..........
+
+
+Contact Dr.JIM LAW  with below email  and forward all your details to
+him.Email:( jlmv002@gmail.com)Note: for the immediate collection of
+your Master Card ATM contact ourrepresentative Agent.
+
+Dr.JIM  LAW  to enable you confirm your payment without further delay
+and note any other contact  you made out side his office is at of your
+own risk.
+
+Thanks
+
+Mrs, Zongo Che
