@@ -2,197 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE5525A8CB
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 11:43:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EED4025A8D4
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 11:46:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726268AbgIBJne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 05:43:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42786 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726167AbgIBJnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 05:43:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599039810;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=sjDRzq77L5RcjBz9v6vn2oQ22UJVjvMIc/2TJOmBKnc=;
-        b=dKH8kUgu03FLJ129lT6Qefj5xGta54X1+mx4kM9sV6xVO0TEB+hK5qHRXpitiCc+b73Z7m
-        b9WcMcmCMzpXjMGsVuW+ZWKNt/Q+6aFeRjoeFRJdZKR+Fjtq3jmf9MKqPBnJbCXzioxsnP
-        nZpHrqLt9MyQcvi4+A9ZWWbGDKx2Cdc=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-215-EZRwSHzmOvmGtoG3vmJhog-1; Wed, 02 Sep 2020 05:43:29 -0400
-X-MC-Unique: EZRwSHzmOvmGtoG3vmJhog-1
-Received: by mail-ed1-f71.google.com with SMTP id n4so1939357edo.20
-        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 02:43:28 -0700 (PDT)
+        id S1726800AbgIBJqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 05:46:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726167AbgIBJqb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 05:46:31 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3FD7C061244
+        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 02:46:30 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id b79so3811767wmb.4
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 02:46:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jX2ecA2PJy/6cJDE/ynYXDewujYCxQrA9LGe6p7fwa0=;
+        b=s+tFWIJVIBL61p7DDHaqPAy9Y1On3xF+O5zL/CRvF1TShz2kOVXGa0BfN+4C08nZLe
+         FSleXSBrFmWZSt8tJw3nm3UPjrvaW2QGxylwvCLqLRc6q01cfw9J/FXwy/gpahD+1Nu/
+         eW1lgtOJD37BSpZxfm/TiaddOWbPmD95FHak3Xdf8EI2RLQPdCSa5EVbubyubg/xilUJ
+         reN4hcojOON3o+u4tA3r1+6iv3b2Z4WszZr/oZd0iN6FiQWSa1bSgSLEVLVkvOsHoU3M
+         Jx9lkoZv7VH4Tsxj3yJpbsPwI8TbO61B12Ar7mrvrZTbc03O5My6ek8ALq4moGm5Yvll
+         tJEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=sjDRzq77L5RcjBz9v6vn2oQ22UJVjvMIc/2TJOmBKnc=;
-        b=R7VupR1eGXWZcCqt4qycJ972WrVDewWD0oW1ymxSH6hpq4JtTeRe3VrG0l0FzPzNX0
-         n0CvUK9bF+QufSx3Jw7sZO14BSHHX3SrJAG75wojOYhCRUnghv8Lc2jfIkDC11RYocbp
-         +M1MvkeL+Sv8hEuGY854m2fqvCFEMH4FxQO2Y9OAKASFUCJJ+ajd0OvDtvs0rQdkbB0U
-         fUFZfo53U9rcwT3ImIWWl2NTFLkA7hKnd+DRmgU2PtTqp8XA/jtV+hmMM0S7nrFUs/QE
-         eyKuhFmlqF5VcNvpRmZK8qMGrxDljuiI00TyKt82utzXSE8bosH22+k6Z423asbrE7p2
-         xn0w==
-X-Gm-Message-State: AOAM532lh3ipm/92etV+wmEdCxKLZGvZbdwlnikaz4eOxQ90Yro9D/VT
-        mx67ntprQBDe468Tary3XfIi11ZMpteYPe6Jwe4L/IZt92WqX0rYQmQpXKgyyppnftjSXWN0xqP
-        tafIMy7DIM8WsqOyL
-X-Received: by 2002:a50:eb92:: with SMTP id y18mr5481427edr.373.1599039807980;
-        Wed, 02 Sep 2020 02:43:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy61WaMepVfpVs5T6DRdHNesNs7HCd2m4YWpZnCVZnOk1l6pdCM/qq/nGaCXHYRYiFePCENug==
-X-Received: by 2002:a50:eb92:: with SMTP id y18mr5481400edr.373.1599039807617;
-        Wed, 02 Sep 2020 02:43:27 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id l26sm3763345ejr.78.2020.09.02.02.43.26
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jX2ecA2PJy/6cJDE/ynYXDewujYCxQrA9LGe6p7fwa0=;
+        b=UY/VTkfz/Qyqxao+wpZ5V8DWKB+sWo1V2s39w0BS79AAYPujUHr4DwundrIkqd1a31
+         y1eJ3Bny712SfgVS9FdkalHzcdfeoxKv4uLbLkJIDMA4kxVs5ToT8GupdYm+OE3JEIOj
+         GCxMdCobWKaKesMsO7tS+qvtoAOIzL9QkKhcCl02iiZEwPekvspI0aDToZu3QA+An7wK
+         LUEz5woULZIY3eqB4d49IiJxeSgnY2g8zct2jCHrUtdqTTJMMQA0R5hwOw34FW1eMfKb
+         azmuLjo2SDpyxfTBWPxRYsh/8juxW8cbZWf9j28QSeCds5Bfr/D2jxivwHBsark0gxEw
+         Zh1w==
+X-Gm-Message-State: AOAM532t7eTMwLoARAu1pHhY1ZG48Ni0EeuE+bAkIcz10f4zczaj5KqA
+        2Mpx/lrRafTSIvFINJRB6h/K/06Lj1ryfKS5
+X-Google-Smtp-Source: ABdhPJyRzryUcwqo75TyJ2PL+JQ/4k6riaj+13wMpTRayJKeAUcGGy58JS/hO44sgWLczW38eGZI7w==
+X-Received: by 2002:a1c:c906:: with SMTP id f6mr6291735wmb.5.1599039989403;
+        Wed, 02 Sep 2020 02:46:29 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id t203sm5786576wmg.43.2020.09.02.02.46.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Sep 2020 02:43:26 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 810A718200B; Wed,  2 Sep 2020 11:43:26 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>, sdf@google.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net,
-        YiFei Zhu <zhuyifei1999@gmail.com>, andriin@fb.com
-Subject: Re: [PATCH bpf-next v3 4/8] libbpf: implement bpf_prog_find_metadata
-In-Reply-To: <20200901225841.qpsugarocx523dmy@ast-mbp.dhcp.thefacebook.com>
-References: <20200828193603.335512-1-sdf@google.com>
- <20200828193603.335512-5-sdf@google.com> <874koma34d.fsf@toke.dk>
- <20200831154001.GC48607@google.com>
- <20200901225841.qpsugarocx523dmy@ast-mbp.dhcp.thefacebook.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 02 Sep 2020 11:43:26 +0200
-Message-ID: <874kogike9.fsf@toke.dk>
+        Wed, 02 Sep 2020 02:46:28 -0700 (PDT)
+Date:   Wed, 2 Sep 2020 11:46:27 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v3 01/14] devlink: Add reload action option
+ to devlink reload command 
+Message-ID: <20200902094627.GB2568@nanopsycho>
+References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
+ <1598801254-27764-2-git-send-email-moshe@mellanox.com>
+ <20200831121501.GD3794@nanopsycho.orion>
+ <9fffbe80-9a2a-33de-2e11-24be34648686@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9fffbe80-9a2a-33de-2e11-24be34648686@nvidia.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-
-> On Mon, Aug 31, 2020 at 08:40:01AM -0700, sdf@google.com wrote:
->> On 08/28, Toke H=EF=BF=BDiland-J=EF=BF=BDrgensen wrote:
->> > Stanislav Fomichev <sdf@google.com> writes:
->>=20
->> > > This is a low-level function (hence in bpf.c) to find out the metada=
-ta
->> > > map id for the provided program fd.
->> > > It will be used in the next commits from bpftool.
->> > >
->> > > Cc: Toke H=EF=BF=BDiland-J=EF=BF=BDrgensen <toke@redhat.com>
->> > > Cc: YiFei Zhu <zhuyifei1999@gmail.com>
->> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
->> > > ---
->> > >  tools/lib/bpf/bpf.c      | 74 +++++++++++++++++++++++++++++++++++++=
-+++
->> > >  tools/lib/bpf/bpf.h      |  1 +
->> > >  tools/lib/bpf/libbpf.map |  1 +
->> > >  3 files changed, 76 insertions(+)
->> > >
->> > > diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
->> > > index 5f6c5676cc45..01c0ede1625d 100644
->> > > --- a/tools/lib/bpf/bpf.c
->> > > +++ b/tools/lib/bpf/bpf.c
->> > > @@ -885,3 +885,77 @@ int bpf_prog_bind_map(int prog_fd, int map_fd,
->> > >
->> > >  	return sys_bpf(BPF_PROG_BIND_MAP, &attr, sizeof(attr));
->> > >  }
->> > > +
->> > > +int bpf_prog_find_metadata(int prog_fd)
->> > > +{
->> > > +	struct bpf_prog_info prog_info =3D {};
->> > > +	struct bpf_map_info map_info;
->> > > +	__u32 prog_info_len;
->> > > +	__u32 map_info_len;
->> > > +	int saved_errno;
->> > > +	__u32 *map_ids;
->> > > +	int nr_maps;
->> > > +	int map_fd;
->> > > +	int ret;
->> > > +	int i;
->> > > +
->> > > +	prog_info_len =3D sizeof(prog_info);
->> > > +
->> > > +	ret =3D bpf_obj_get_info_by_fd(prog_fd, &prog_info, &prog_info_len=
-);
->> > > +	if (ret)
->> > > +		return ret;
->> > > +
->> > > +	if (!prog_info.nr_map_ids)
->> > > +		return -1;
->> > > +
->> > > +	map_ids =3D calloc(prog_info.nr_map_ids, sizeof(__u32));
->> > > +	if (!map_ids)
->> > > +		return -1;
->> > > +
->> > > +	nr_maps =3D prog_info.nr_map_ids;
->> > > +	memset(&prog_info, 0, sizeof(prog_info));
->> > > +	prog_info.nr_map_ids =3D nr_maps;
->> > > +	prog_info.map_ids =3D ptr_to_u64(map_ids);
->> > > +	prog_info_len =3D sizeof(prog_info);
->> > > +
->> > > +	ret =3D bpf_obj_get_info_by_fd(prog_fd, &prog_info, &prog_info_len=
-);
->> > > +	if (ret)
->> > > +		goto free_map_ids;
->> > > +
->> > > +	ret =3D -1;
->> > > +	for (i =3D 0; i < prog_info.nr_map_ids; i++) {
->> > > +		map_fd =3D bpf_map_get_fd_by_id(map_ids[i]);
->> > > +		if (map_fd < 0) {
->> > > +			ret =3D -1;
->> > > +			goto free_map_ids;
->> > > +		}
->> > > +
->> > > +		memset(&map_info, 0, sizeof(map_info));
->> > > +		map_info_len =3D sizeof(map_info);
->> > > +		ret =3D bpf_obj_get_info_by_fd(map_fd, &map_info, &map_info_len);
->> > > +		saved_errno =3D errno;
->> > > +		close(map_fd);
->> > > +		errno =3D saved_errno;
->> > > +		if (ret)
->> > > +			goto free_map_ids;
->>=20
->> > If you get to this point on the last entry in the loop, ret will be 0,
->> > and any of the continue statements below will end the loop, causing the
->> > whole function to return 0. While this is not technically a valid ID, =
-it
->> > still seems odd that the function returns -1 on all error conditions
->> > except this one.
->>=20
->> > Also, it would be good to be able to unambiguously distinguish between
->> > "this program has no metadata associated" and "something went wrong
->> > while querying the kernel for metadata (e.g., permission error)". So
->> > something that amounts to a -ENOENT return; I guess turning all return
->> > values into negative error codes would do that (and also do away with
->> > the need for the saved_errno dance above), but id does clash a bit with
->> > the convention in the rest of the file (where all the other functions
->> > just return -1 and set errno)...
->> Good point. I think I can change the function signature to:
->>=20
->> 	int bpf_prog_find_metadata(int prog_fd, int *map_id)
->>=20
->> And explicitly return map_id via argument. Then the ret can be used as
->> -1/0 error and I can set errno appropriately where it makes sense.
->> This will better match the convention we have in this file.
+Tue, Sep 01, 2020 at 09:43:00PM CEST, moshe@nvidia.com wrote:
 >
-> I don't feel great about this libbpf api. bpftool already does
-> bpf_obj_get_info_by_fd() for progs and for maps.
-> This extra step and extra set of syscalls is redundant work.
-> I think it's better to be done as part of bpftool.
-> It doesn't quite fit as generic api.
+>On 8/31/2020 3:15 PM, Jiri Pirko wrote:
+>> Sun, Aug 30, 2020 at 05:27:21PM CEST, moshe@mellanox.com wrote:
+>> > Add devlink reload action to allow the user to request a specific reload
+>> > action. The action parameter is optional, if not specified then devlink
+>> > driver re-init action is used (backward compatible).
+>> > Note that when required to do firmware activation some drivers may need
+>> > to reload the driver. On the other hand some drivers may need to reset
+>> > the firmware to reinitialize the driver entities. Therefore, the devlink
+>> > reload command returns the actions which were actually done.
+>> > However, in case fw_activate_no_reset action is selected, then no other
+>> > reload action is allowed.
+>> > Reload actions supported are:
+>> > driver_reinit: driver entities re-initialization, applying devlink-param
+>> >                and devlink-resource values.
+>> > fw_activate: firmware activate.
+>> > fw_activate_no_reset: Activate new firmware image without any reset.
+>> >                       (also known as: firmware live patching).
+>> > 
+>> > command examples:
+>> > $devlink dev reload pci/0000:82:00.0 action driver_reinit
+>> > reload_actions_done:
+>> >   driver_reinit
+>> > 
+>> > $devlink dev reload pci/0000:82:00.0 action fw_activate
+>> > reload_actions_done:
+>> >   driver_reinit fw_activate
+>> > 
+>> > Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+>> > ---
+>> > v2 -> v3:
+>> > - Replace fw_live_patch action by fw_activate_no_reset
+>> > - Devlink reload returns the actions done over netlink reply
+>> > v1 -> v2:
+>> > - Instead of reload levels driver,fw_reset,fw_live_patch have reload
+>> >   actions driver_reinit,fw_activate,fw_live_patch
+>> > - Remove driver default level, the action driver_reinit is the default
+>> >   action for all drivers
+>> > ---
+>> [...]
+>> 
+>> 
+>> > diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+>> > index 08d101138fbe..c42b66d88884 100644
+>> > --- a/drivers/net/ethernet/mellanox/mlxsw/core.c
+>> > +++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+>> > @@ -1113,7 +1113,7 @@ mlxsw_devlink_info_get(struct devlink *devlink, struct devlink_info_req *req,
+>> > 
+>> > static int
+>> > mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
+>> > -					  bool netns_change,
+>> > +					  bool netns_change, enum devlink_reload_action action,
+>> > 					  struct netlink_ext_ack *extack)
+>> > {
+>> > 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
+>> > @@ -1126,15 +1126,23 @@ mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
+>> > }
+>> > 
+>> > static int
+>> > -mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
+>> > -					struct netlink_ext_ack *extack)
+>> > +mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink, enum devlink_reload_action action,
+>> > +					struct netlink_ext_ack *extack, unsigned long *actions_done)
+>> > {
+>> > 	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
+>> > +	int err;
+>> > 
+>> > -	return mlxsw_core_bus_device_register(mlxsw_core->bus_info,
+>> > -					      mlxsw_core->bus,
+>> > -					      mlxsw_core->bus_priv, true,
+>> > -					      devlink, extack);
+>> > +	err = mlxsw_core_bus_device_register(mlxsw_core->bus_info,
+>> > +					     mlxsw_core->bus,
+>> > +					     mlxsw_core->bus_priv, true,
+>> > +					     devlink, extack);
+>> > +	if (err)
+>> > +		return err;
+>> > +	if (actions_done)
+>> > +		*actions_done = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+>> > +				BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE);
+>> > +
+>> > +	return 0;
+>> > }
+>> > 
+>> > static int mlxsw_devlink_flash_update(struct devlink *devlink,
+>> > @@ -1268,6 +1276,8 @@ mlxsw_devlink_trap_policer_counter_get(struct devlink *devlink,
+>> > }
+>> > 
+>> > static const struct devlink_ops mlxsw_devlink_ops = {
+>> > +	.supported_reload_actions	= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+>> > +					  BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
+>> This is confusing and open to interpretation. Does this mean that the
+>> driver supports:
+>> 1) REINIT && FW_ACTIVATE
+>> 2) REINIT || FW_ACTIVATE
+>> ?
+>> 
+>> Because mlxsw supports only 1. I guess that mlx5 supports both. This
+>> needs to be distinguished.
+>
+>Mlxsw supports 1, so it supports fw_activation and performs also reinit and
+>vice versa.
 
-Why not? We are establishing a convention for how to store (and read)
-metadata from a program; by having an API to get this, we make sure that
-every application that wants to access this metadata agrees on how to do
-so. If we don't have it, people will have to go look at bpftool code,
-and we'll end up with copied code snippets, which seems less than ideal.
+My point is, your bitfield does not exactly tell what the driver
+supports or not.
 
--Toke
 
+>
+>Mlx5 supports fw_activate and performs also reinit. However, it supports
+>reinit without performing fw_activate.
+>
+>> I think you need an array of combinations. Or perhaps rather to extend
+>> the enum with combinations. You kind of have it already with
+>> DEVLINK_RELOAD_ACTION_FW_ACTIVATE_NO_RESET
+>> 
+>> Maybe we can have something like:
+>> DEVLINK_RELOAD_ACTION_DRIVER_REINIT
+>> DEVLINK_RELOAD_ACTION_DRIVER_REINIT_FW_ACTIVATE_RESET
+>> DEVLINK_RELOAD_ACTION_FW_ACTIVATE_RESET
+>> DEVLINK_RELOAD_ACTION_FW_ACTIVATE (this is the original FW_ACTIVATE_NO_RESET)
+>
+>The FW_ACTIVATE_NO_RESET meant also to emphasize that driver implementation
+>for this one should not do any reset.
+>
+>So maybe we can have
+>
+>DEVLINK_RELOAD_ACTION_FW_ACTIVATE_RESET
+>DEVLINK_RELOAD_ACTION_FW_ACTIVATE_NO_RESET
+
+Okay.
+
+
+>
+>> Each has very clear meaning.
+>
+>
+>Yes, it the driver support here is more clear.
+>
+>> Also, then the "actions_done" would be a simple enum, directly returned
+>> to the user. No bitfield needed.
+>
+>
+>I agree it is more clear on the driver support side, but what about the uAPI
+
+As I said, there would be one enum value returned to the user. Clear and
+simple.
+
+
+>? Do we need such change there too or keep it as is, each action by itself
+>and return what was performed ?
+
+Well, I don't know. User asks for X, X should be performed, not Y or Z.
+So perhaps the return value is not needed.
+Just driver advertizes it supports X, Y, Z and the users says:
+1) do X, driver does X
+2) do Y, driver does Y
+3) do Z, driver does Z
+[
+I think this kindof circles back to the original proposal...
+
+>
+>> 
+>> > 	.reload_down		= mlxsw_devlink_core_bus_device_reload_down,
+>> > 	.reload_up		= mlxsw_devlink_core_bus_device_reload_up,
+>> > 	.port_type_set			= mlxsw_devlink_port_type_set,
+>> [...]
