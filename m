@@ -2,92 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E752F25B5C5
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 23:20:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3456125B5EC
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 23:37:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726942AbgIBVRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 17:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726937AbgIBVRR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 17:17:17 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C89C061244
-        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 14:17:16 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id a9so777478wmm.2
-        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 14:17:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1pwSFxqvycKxJQO/AHpUkGwc2QTfPZQNd7dZ8PUxGBE=;
-        b=ASPx+ynnMslgRMP4rf+uzrCFdA6Wx15INpf+xDXeRDTxdBm3XvWZo+vzudDETiGUze
-         wd6Wu49RJu54SNtJrB56+C+y4oUmGww5oy2fxhpjGq4bhp8Pit4Px7TlcTnI44c9TlBQ
-         umtfI0tenpgNXpoDmFsHYw9P2mTtHxerNP1pSy2C7naYrXPAYBrn8tEyZrif0DEmexfH
-         41YdgsQgeQbdqFxw8b2oFSrIt85Of4HXHb6ZaX3hOJVQ1I/tUA6SbTHaiqiSmigW5lGR
-         l+n2kDe0EBYwCXKSkID3HyJ/3WBXVc7BA/7zq/SjVAPHNR8GgKmtwWusjZ+Khi+u5QsZ
-         A0zg==
+        id S1726937AbgIBVdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 17:33:14 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:38639 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726926AbgIBVdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 17:33:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599082389;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=H368D3ZjVszsjbdmoLuZGFudZhOJwJboSRtKlrtcivk=;
+        b=Acb+rWH6SzYcv/stPlMv4sTOtHT8sC9p4rBKgNRB9wXdt2pLZNq0km460EydSE1iLfM8ot
+        8jlZ5ihAaB/Ubl5SxjKJN3EllpXCxuZpR5Ae683SERk/ZcyxkxhJXxTVsTVP6AYVCkZi1C
+        6MNIqcVpV2493J0Z+9xe/j9GuBrwnQM=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-501-8yhK8SR-MMG660Jofu-DbA-1; Wed, 02 Sep 2020 17:33:08 -0400
+X-MC-Unique: 8yhK8SR-MMG660Jofu-DbA-1
+Received: by mail-wm1-f69.google.com with SMTP id a7so249502wmc.2
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 14:33:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1pwSFxqvycKxJQO/AHpUkGwc2QTfPZQNd7dZ8PUxGBE=;
-        b=YInSdM3Yr3hqyliD2rYT1HYbruWdKuEnbfkOpvQC0pBhlI2sp0rgtd0q0pETsaVITJ
-         4VsyMG4KpN2IWGY0ZWV/+ufnyv/2PppxIi0TnKQaMaCeNXRrfqNfJJ/qFmkBFzzFLawa
-         qC3UkE+oly7vbDhWNmICAzwXfsTJGC6wwBqPOUcdK6qQ3ItAQMRSMnnVDShOMbqEILXn
-         tLF1ChRrRo4SKrWV2h+AZcIthU60Ednx6dOTMm5YoZSa7y0OobZ/pQYeYvoz05hYslvE
-         DPpdBkue6NeaDFkaMuMMIBw7ArYFO9bXpHCK4Yt5PkBUof3gxV+eDOvAMUF1oiJ4vGZ7
-         zKWA==
-X-Gm-Message-State: AOAM531fxhO+TzPS8Am0zdlaWA8jfLxKmXoGCJMJKfad7VJATjZt9tIC
-        TmMtpyTzDsLWYeLz57U3oK6qI2Iw5VQ=
-X-Google-Smtp-Source: ABdhPJzE661x3f60qKXg8nKUIErQ+hWw6l0quTekQEegchAqAfP5POm954YNRMQ712NdfewVQLiMYw==
-X-Received: by 2002:a1c:234b:: with SMTP id j72mr62192wmj.153.1599081435250;
-        Wed, 02 Sep 2020 14:17:15 -0700 (PDT)
-Received: from [192.168.8.147] ([37.171.70.17])
-        by smtp.gmail.com with ESMTPSA id q12sm1234268wrs.48.2020.09.02.14.17.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Sep 2020 14:17:14 -0700 (PDT)
-Subject: Re: [PATCH net-next] Sysctl parameter to disable TCP RST packet to
- unknown socket
-To:     Mihail Milev <mmilev_ml@icloud.com>, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com
-Cc:     netdev@vger.kernel.org
-References: <20200902195656.7538-1-mmilev_ml@icloud.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <543c135d-0076-4293-f668-54091962626a@gmail.com>
-Date:   Wed, 2 Sep 2020 23:17:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=H368D3ZjVszsjbdmoLuZGFudZhOJwJboSRtKlrtcivk=;
+        b=qTM62y5lyFDH5n5c8zYU86rEjAkthfwe+5iHXUTvIHy4ULq2BOG2RpcGtk3fBmYY1q
+         m8J0R89R9gT+joI1isq7dGf1dFsG1HIuGTA/+cSOaMWv8TRE46KvOd6trC2OIdD/kxOG
+         BPIesQp+OQBgRulvgP8/VbvrvbFoWwJXhxuGDCQsePgEaOg5BYZCqEo6GihgQJYF7xGO
+         ibV+QPeFXUHZfhvUnapoYFaD/IsfRaZzaJ9e+qZEmEdnWcS+egfW/sQOr5ls+cRL32aN
+         eGSixpQPHyA6Q+n+uyL2+Y/qI0Bon2l/6OCbtC4KqmLzIwVwW/mdCpdjHA0gWHmwk8PY
+         cZlw==
+X-Gm-Message-State: AOAM531BlaXMsmP9TOKItqvy3lYrSPgBJ83DascL+fQ4iZPQCGUWOBjd
+        +yDzpYm8qudm9lijQ48buvbLgugnnK9dYT1EoygyyuJnEA0cj/pqB8XPLbcN6HI/nsPkz3GKeo0
+        jDEdiuywSl/QOcU11
+X-Received: by 2002:adf:fed1:: with SMTP id q17mr150051wrs.85.1599082387244;
+        Wed, 02 Sep 2020 14:33:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxqjl/bk2vtNzUV5BZ+vtYlr0do4LkWozLBdXJxVrkZrd+zoFCCub4riumE9gvW2BKew1UZ3g==
+X-Received: by 2002:adf:fed1:: with SMTP id q17mr150031wrs.85.1599082386990;
+        Wed, 02 Sep 2020 14:33:06 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id l126sm1217435wmf.39.2020.09.02.14.33.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2020 14:33:06 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 03798182009; Wed,  2 Sep 2020 23:33:05 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     sdf@google.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        YiFei Zhu <zhuyifei1999@gmail.com>, andriin@fb.com
+Subject: Re: [PATCH bpf-next v3 4/8] libbpf: implement bpf_prog_find_metadata
+In-Reply-To: <20200902210838.7a26mfi54dufou5a@ast-mbp.dhcp.thefacebook.com>
+References: <20200828193603.335512-1-sdf@google.com>
+ <20200828193603.335512-5-sdf@google.com> <874koma34d.fsf@toke.dk>
+ <20200831154001.GC48607@google.com>
+ <20200901225841.qpsugarocx523dmy@ast-mbp.dhcp.thefacebook.com>
+ <874kogike9.fsf@toke.dk>
+ <20200902210838.7a26mfi54dufou5a@ast-mbp.dhcp.thefacebook.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 02 Sep 2020 23:33:05 +0200
+Message-ID: <87mu27hnji.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20200902195656.7538-1-mmilev_ml@icloud.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
+> On Wed, Sep 02, 2020 at 11:43:26AM +0200, Toke H=C3=83=C6=92=C3=82=C2=B8i=
+land-J=C3=83=C6=92=C3=82=C2=B8rgensen wrote:
+>> >
+>> > I don't feel great about this libbpf api. bpftool already does
+>> > bpf_obj_get_info_by_fd() for progs and for maps.
+>> > This extra step and extra set of syscalls is redundant work.
+>> > I think it's better to be done as part of bpftool.
+>> > It doesn't quite fit as generic api.
+>>=20
+>> Why not?=20
+>
+> It's a helper function on top of already provided api and implemented
+> in the most brute force and inefficient way.
+> bpftool implementation of the same will be more efficient.
 
-On 9/2/20 12:56 PM, Mihail Milev wrote:
-> What?
-> 
-> Create a new sysctl parameter called tcp_disable_rst_unkn_socket,
-> which by default is set to 0 - "disabled". When this parameter is
-> set to 1 - "enabled", it suppresses sending a TCP RST packet as a
-> response to received TCP packets destined for a socket, which is
-> unknown to the kernel.
-> 
+Right, certainly wouldn't mind something more efficient. But to me, the
+inefficiency is outweighed by convenience of having this canonical
+reference for 'this is the metadata map'.
 
-Well, I am not thrilled by this patch...
+>> so. If we don't have it, people will have to go look at bpftool code,
+>> and we'll end up with copied code snippets, which seems less than ideal.
+>
+> I'd like to see the real use case first before hypothesising.
 
-1) This seems hacky to only focus on RST packets, while it seems clear you
-want to be able to use a user-land TCP stack.
+For me, that would be incorporating support for this into
+libxdp/xdp-tools; which was the reason I asked for this to be split into
+a separate API in the first place. But okay, not going to keep arguing
+about this, I can copy-paste code as well as the next person.
 
-2) No ipv6 support in your patch, this is unfortunate.
-
-3) I do not see how you prevent another program using kernel stack conflicting
-with TCP listeners/flows of your user space TCP.
+-Toke
 
