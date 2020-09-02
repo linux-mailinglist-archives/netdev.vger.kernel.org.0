@@ -2,92 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1410B25AAB8
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 14:01:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0873425AAD9
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 14:07:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbgIBMBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 08:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45898 "EHLO
+        id S1726686AbgIBMHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 08:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726140AbgIBMBI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 08:01:08 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 436F9C061244
-        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 05:00:59 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id u6so2810107ybf.1
-        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 05:00:59 -0700 (PDT)
+        with ESMTP id S1726310AbgIBMHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 08:07:22 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E06AC061244;
+        Wed,  2 Sep 2020 05:07:21 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id y6so2187366plk.10;
+        Wed, 02 Sep 2020 05:07:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=fQu188afTkltHrR3sb1HUtHfPblsmAmHFIs4oHSfTdQ=;
-        b=sz6Qy/CGHCJf3c9DVwSmSl3KXPhY+B5R9dH/kUDUXqSjhGj4uagfLKHhgQMHXs0prn
-         XBMyiShYhuc9r9nGXVwhObfDgOX2ELlC5II43Uh0NTYdCaPGYEt5mJgFltm3kRk3Rj34
-         iwIicYUK1RVAEzRA1bq71Jl/sv1tnBcLk7FQguhGbsCbjMU9e4fNSZBWHjb+7T4S0j3Z
-         zyoRJs+T4HnX+ajKxIjz+OvQvzOYRl7+tQ9IQpl+pJGeiJ4JUT05n6hPDa3o66Kqpec/
-         ocf9xY2sgCNEh+pig0wre/w7ez83SgADnGxM85ZT0yYP5rs311hh3G7hsF2R8x12H8pQ
-         3Tmg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1T6EMvFFNLUZudNoOgj0s3wkvH2sPer3XRVEffmaAyo=;
+        b=ua/FvmEf5Wq5gwun7IO84daa9eJpuSmXTbhuIKr9zRgFnuAiKcoebQCqlUPnTkasvX
+         T3avIr6C/OqsTwBsKlHz5hMYhvraOcxZADtD/Kq5ThMO4NeUVDuW+YsP75wzopIAFlvf
+         +r3FgQ6972G3XLZTT0S3aIbG/iizTHeckyf46A93+WripS5P++nrPrPI/mGXF1PDdVYh
+         qViQR0WJ0zeWb8Be5XgKBHK6APkXpiBU+Fq6a7NY8Yq1aeZP8jGcA/xDccvxXvGnscqd
+         eCahaaKkxXkSjQN6qlWhkwXRiSKrJqP0KmvWgsaRjzYnYRm1FGSf451gFCnClfdhF27/
+         989w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=fQu188afTkltHrR3sb1HUtHfPblsmAmHFIs4oHSfTdQ=;
-        b=DLcqRDE2igjYvA6JXWv7Zwnareh1jUbNMTSsqZwtGtV4T7k+C4rXwXTowUUI9T715t
-         dnd3/iIq0Jt6x+pFv914Yq9BIVqUSciXDpB/3BVX4hv7wL1Scjk2fBniavQ2olkP8XI9
-         zC15gBBJ+Q+QIv/Ox2MXDWPqbxW0dtdD4euMK4iFs6jNq/7a/gwx2fxYUytuuGLTmmsw
-         Xr6vvejj/sGvlHRbGzRjl6K73j6fYis5611pYQkbnX1Mx3tCHQmPdPgWv+sFU4StGoV8
-         qqh00YoOfTuuX0V8O9U2714fjZQEtS50O/3C+eH0HB+uP4+/Bl+2m8M6vyb9MIWR4TO+
-         Xi2A==
-X-Gm-Message-State: AOAM531TRKzZO1YffvK4cVW4GgdI2Y0OFQ+SnpOBG8Dx91tF98iQhPIH
-        gBzRZzTMzJpTrbxErnjrkDhjgELkk1FbHTjAMW0=
-X-Google-Smtp-Source: ABdhPJxmr5SUCrF3acTahPhj+cBs3ICARztut/hHZWQgXNvu8m/fQ5KSYIYeW5KjrhSRceTZH+lPWFhTnqd3rrGTQz8=
-X-Received: by 2002:a25:bec8:: with SMTP id k8mr9254200ybm.38.1599048058457;
- Wed, 02 Sep 2020 05:00:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1T6EMvFFNLUZudNoOgj0s3wkvH2sPer3XRVEffmaAyo=;
+        b=j3A1XekyhFpf0FzsSzSVVIhg2PjXYSYIakLAN4H20zpc47XvrOiHqT02KOHza78ZBt
+         q7xD3H6XmV5KWVIVgV7g2HU3EZgmQoFoZvpjoWABVQPkFSoh9pjagkuOHoG5KQIvuKt3
+         lgORRm6OSgZ2B2gWbj4qRQdPeWHrM5f+O8qD1d//0GgFghyPHjsWvasD5xg58Xji5IFN
+         hl6okLLzvRdU1WRAsgVTXGnc9GFNDFEnHU2VFNV9S0sEiPQB86yfXyjVauRVDunJ1kiP
+         IoDyKMhgDtg2zoRXptuWUt2XUQ9gW7I4jOsFeGFK6YgaDQo2XSANr9UUs0VNbSc+7Vm0
+         n2sQ==
+X-Gm-Message-State: AOAM533ZugF1SN4L4qQZNKMmgWfBab9j4lGflb0DwoxWDImW7SQgrdqh
+        oooatPnnyGIf2sCWMLVAkJo=
+X-Google-Smtp-Source: ABdhPJw7e1XNN4gEZ6ZmoszPk9PZjKzChf7ECXFYSmJGGWTPvk5hu/Rr5bgNGLeacbySK35s7gsAVQ==
+X-Received: by 2002:a17:90b:95:: with SMTP id bb21mr1989091pjb.68.1599048440960;
+        Wed, 02 Sep 2020 05:07:20 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:b49f:31b6:73e2:b3d2])
+        by smtp.gmail.com with ESMTPSA id fv21sm4405169pjb.16.2020.09.02.05.07.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2020 05:07:20 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     Krzysztof Halasa <khc@pm.waw.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Xie He <xie.he.0141@gmail.com>, Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net] drivers/net/wan/hdlc: Change the default of hard_header_len to 0
+Date:   Wed,  2 Sep 2020 05:07:06 -0700
+Message-Id: <20200902120706.3411-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:a25:d311:0:0:0:0:0 with HTTP; Wed, 2 Sep 2020 05:00:57 -0700 (PDT)
-Reply-To: jlmv002@gmail.com
-From:   DR JIM <advocate.mary002@gmail.com>
-Date:   Wed, 2 Sep 2020 13:00:57 +0100
-Message-ID: <CA+omnrjFm9dxvQjy2EK36PoJqmzgdfOv4xzrSDmi77kxh_aCYA@mail.gmail.com>
-Subject: ATTENTION: DELIVERY OF YOUR ATM VISA CARD
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attention:Beneficiary,
+Change the default value of hard_header_len in hdlc.c from 16 to 0.
 
-This is to official inform you that we have been having a meeting for
-the past Seven month which ended Two days ago with Dr. David  R.
-Malpass, the World Bank President and Hon. Mrs. Christine Laggard
-(IMF) Director General, in the meeting we treated on Email programs
-victim problems.
+Currently there are 6 HDLC protocol drivers, among them:
 
-United Nation have agreed to compensate you with the sum of One
-million two Hundred Thousand Dollars (USD$1.200,000.00) this also
-includes international businesses that failed due to Government
-problems etc?. We have arranged your payment through Master Card ATM
-which is the latest  instruction from World Bank Group.
+hdlc_raw_eth, hdlc_cisco, hdlc_ppp, hdlc_x25 set hard_header_len when
+attaching the protocol, overriding the default. So this patch does not
+affect them.
 
-For the collection of your Master Card ATM contact our representative
-Dr.JIM LAW  and forward the following details to him.
+hdlc_raw and hdlc_fr don't set hard_header_len when attaching the
+protocol. So this patch will change the hard_header_len of the HDLC
+device for them from 16 to 0.
 
-1. Full Name:.........
-2. Country:........
-3. Delivery Address:..........
-4. Telephone:..............&  Occupation.......
-5. Your Age...... /Sex..........
+This is the correct change because both hdlc_raw and hdlc_fr don't have
+header_ops, and the code in net/packet/af_packet.c expects the value of
+hard_header_len to be consistent with header_ops.
 
+In net/packet/af_packet.c, in the packet_snd function,
+for AF_PACKET/DGRAM sockets it would reserve a headroom of
+hard_header_len and call dev_hard_header to fill in that headroom,
+and for AF_PACKET/RAW sockets, it does not reserve the headroom and
+does not call dev_hard_header, but checks if the user has provided a
+header of length hard_header_len (in function dev_validate_header).
 
-Contact Dr.JIM LAW  with below email  and forward all your details to
-him.Email:( jlmv002@gmail.com)Note: for the immediate collection of
-your Master Card ATM contact ourrepresentative Agent.
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Dr.JIM  LAW  to enable you confirm your payment without further delay
-and note any other contact  you made out side his office is at of your
-own risk.
+diff --git a/drivers/net/wan/hdlc.c b/drivers/net/wan/hdlc.c
+index 386ed2aa31fd..9b00708676cf 100644
+--- a/drivers/net/wan/hdlc.c
++++ b/drivers/net/wan/hdlc.c
+@@ -229,7 +229,7 @@ static void hdlc_setup_dev(struct net_device *dev)
+ 	dev->min_mtu		 = 68;
+ 	dev->max_mtu		 = HDLC_MAX_MTU;
+ 	dev->type		 = ARPHRD_RAWHDLC;
+-	dev->hard_header_len	 = 16;
++	dev->hard_header_len	 = 0;
+ 	dev->needed_headroom	 = 0;
+ 	dev->addr_len		 = 0;
+ 	dev->header_ops		 = &hdlc_null_ops;
+-- 
+2.25.1
 
-Thanks
-
-Mrs, Zongo Che
