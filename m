@@ -2,130 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 949E025AC39
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 15:45:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 312EF25AC95
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 16:09:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726586AbgIBNp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 09:45:26 -0400
-Received: from www262.sakura.ne.jp ([202.181.97.72]:50538 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727869AbgIBNpB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 09:45:01 -0400
-Received: from fsav401.sakura.ne.jp (fsav401.sakura.ne.jp [133.242.250.100])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 082DiJRQ089257;
-        Wed, 2 Sep 2020 22:44:19 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav401.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav401.sakura.ne.jp);
- Wed, 02 Sep 2020 22:44:19 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav401.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 082DiIgI089234
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
-        Wed, 2 Sep 2020 22:44:19 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Subject: [PATCH v2] tipc: fix shutdown() of connectionless socket
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-To:     syzbot <syzbot+e36f41d207137b5d12f7@syzkaller.appspotmail.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>
-Cc:     syzkaller-bugs@googlegroups.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-References: <0000000000003feb9805a9c77128@google.com>
- <1eb799fb-c6e0-3eb5-f6fe-718cd2f62e92@I-love.SAKURA.ne.jp>
-Message-ID: <8267b7c2-3dc9-41ec-5490-d1080a63be11@I-love.SAKURA.ne.jp>
-Date:   Wed, 2 Sep 2020 22:44:16 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1727970AbgIBOJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 10:09:24 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:60938 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726928AbgIBOJQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Sep 2020 10:09:16 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 167854F4ABFBBC0CE5F6;
+        Wed,  2 Sep 2020 22:09:03 +0800 (CST)
+Received: from localhost (10.174.179.108) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Wed, 2 Sep 2020
+ 22:08:53 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <amitkarwar@gmail.com>, <ganapathi.bhat@nxp.com>,
+        <huxinming820@gmail.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <yuehaibing@huawei.com>
+CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] mwifiex: wmm: Fix -Wunused-const-variable warnings
+Date:   Wed, 2 Sep 2020 22:08:46 +0800
+Message-ID: <20200902140846.29024-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-In-Reply-To: <1eb799fb-c6e0-3eb5-f6fe-718cd2f62e92@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.108]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot is reporting hung task at nbd_ioctl() [1], for there are two
-problems regarding TIPC's connectionless socket's shutdown() operation.
+In file included from drivers/net/wireless/marvell/mwifiex//cmdevt.c:26:0:
+drivers/net/wireless/marvell/mwifiex//wmm.h:41:17: warning: ‘tos_to_tid_inv’ defined but not used [-Wunused-const-variable=]
+ static const u8 tos_to_tid_inv[] = {
+                 ^~~~~~~~~~~~~~
+drivers/net/wireless/marvell/mwifiex//wmm.h:34:18: warning: ‘mwifiex_1d_to_wmm_queue’ defined but not used [-Wunused-const-variable=]
+ static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+                  ^~~~~~~~~~~~~~~~~~~~~~~
 
-----------
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <linux/nbd.h>
-#include <unistd.h>
+move the variables definition to .c file, and leave declarations
+in the header file to fix these warnings.
 
-int main(int argc, char *argv[])
-{
-        const int fd = open("/dev/nbd0", 3);
-        alarm(5);
-        ioctl(fd, NBD_SET_SOCK, socket(PF_TIPC, SOCK_DGRAM, 0));
-        ioctl(fd, NBD_DO_IT, 0); /* To be interrupted by SIGALRM. */
-        return 0;
-}
-----------
-
-One problem is that wait_for_completion() from flush_workqueue() from
-nbd_start_device_ioctl() from nbd_ioctl() cannot be completed when
-nbd_start_device_ioctl() received a signal at wait_event_interruptible(),
-for tipc_shutdown() from kernel_sock_shutdown(SHUT_RDWR) from
-nbd_mark_nsock_dead() from sock_shutdown() from nbd_start_device_ioctl()
-is failing to wake up a WQ thread sleeping at wait_woken() from
-tipc_wait_for_rcvmsg() from sock_recvmsg() from sock_xmit() from
-nbd_read_stat() from recv_work() scheduled by nbd_start_device() from
-nbd_start_device_ioctl(). Fix this problem by always invoking
-sk->sk_state_change() (like inet_shutdown() does) when tipc_shutdown() is
-called.
-
-The other problem is that tipc_wait_for_rcvmsg() cannot return when
-tipc_shutdown() is called, for tipc_shutdown() sets sk->sk_shutdown to
-SEND_SHUTDOWN (despite "how" is SHUT_RDWR) while tipc_wait_for_rcvmsg()
-needs sk->sk_shutdown set to RCV_SHUTDOWN or SHUTDOWN_MASK. Fix this
-problem by setting sk->sk_shutdown to SHUTDOWN_MASK (like inet_shutdown()
-does) when the socket is connectionless.
-
-[1] https://syzkaller.appspot.com/bug?id=3fe51d307c1f0a845485cf1798aa059d12bf18b2
-
-Reported-by: syzbot <syzbot+e36f41d207137b5d12f7@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- net/tipc/socket.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/main.c |  2 ++
+ drivers/net/wireless/marvell/mwifiex/wmm.c  | 15 +++++++++++++++
+ drivers/net/wireless/marvell/mwifiex/wmm.h  | 18 ++----------------
+ 3 files changed, 19 insertions(+), 16 deletions(-)
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 2679e97e0389..ebd280e767bd 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -2771,18 +2771,21 @@ static int tipc_shutdown(struct socket *sock, int how)
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
+index 9ee5600351a7..9ba8a8f64976 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.c
++++ b/drivers/net/wireless/marvell/mwifiex/main.c
+@@ -48,6 +48,8 @@ bool aggr_ctrl;
+ module_param(aggr_ctrl, bool, 0000);
+ MODULE_PARM_DESC(aggr_ctrl, "usb tx aggregation enable:1, disable:0");
  
- 	trace_tipc_sk_shutdown(sk, NULL, TIPC_DUMP_ALL, " ");
- 	__tipc_shutdown(sock, TIPC_CONN_SHUTDOWN);
--	sk->sk_shutdown = SEND_SHUTDOWN;
-+	if (tipc_sk_type_connectionless(sk))
-+		sk->sk_shutdown = SHUTDOWN_MASK;
-+	else
-+		sk->sk_shutdown = SEND_SHUTDOWN;
++const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
++
+ /*
+  * This function registers the device and performs all the necessary
+  * initializations.
+diff --git a/drivers/net/wireless/marvell/mwifiex/wmm.c b/drivers/net/wireless/marvell/mwifiex/wmm.c
+index a06fff199ea3..b8f19ca73414 100644
+--- a/drivers/net/wireless/marvell/mwifiex/wmm.c
++++ b/drivers/net/wireless/marvell/mwifiex/wmm.c
+@@ -40,6 +40,21 @@
+ static bool disable_tx_amsdu;
+ module_param(disable_tx_amsdu, bool, 0644);
  
- 	if (sk->sk_state == TIPC_DISCONNECTING) {
- 		/* Discard any unreceived messages */
- 		__skb_queue_purge(&sk->sk_receive_queue);
++/* This table inverses the tos_to_tid operation to get a priority
++ * which is in sequential order, and can be compared.
++ * Use this to compare the priority of two different TIDs.
++ */
++const u8 tos_to_tid_inv[] = {
++	0x02,  /* from tos_to_tid[2] = 0 */
++	0x00,  /* from tos_to_tid[0] = 1 */
++	0x01,  /* from tos_to_tid[1] = 2 */
++	0x03,
++	0x04,
++	0x05,
++	0x06,
++	0x07
++};
++
+ /* WMM information IE */
+ static const u8 wmm_info_ie[] = { WLAN_EID_VENDOR_SPECIFIC, 0x07,
+ 	0x00, 0x50, 0xf2, 0x02,
+diff --git a/drivers/net/wireless/marvell/mwifiex/wmm.h b/drivers/net/wireless/marvell/mwifiex/wmm.h
+index 04d7da95e307..1cb3d1804758 100644
+--- a/drivers/net/wireless/marvell/mwifiex/wmm.h
++++ b/drivers/net/wireless/marvell/mwifiex/wmm.h
+@@ -31,22 +31,8 @@ enum ieee_types_wmm_ecw_bitmasks {
+ 	MWIFIEX_ECW_MAX = (BIT(4) | BIT(5) | BIT(6) | BIT(7)),
+ };
  
--		/* Wake up anyone sleeping in poll */
--		sk->sk_state_change(sk);
- 		res = 0;
- 	} else {
- 		res = -ENOTCONN;
- 	}
-+	/* Wake up anyone sleeping in poll. */
-+	sk->sk_state_change(sk);
+-static const u16 mwifiex_1d_to_wmm_queue[8] = { 1, 0, 0, 1, 2, 2, 3, 3 };
+-
+-/*
+- * This table inverses the tos_to_tid operation to get a priority
+- * which is in sequential order, and can be compared.
+- * Use this to compare the priority of two different TIDs.
+- */
+-static const u8 tos_to_tid_inv[] = {
+-	0x02,  /* from tos_to_tid[2] = 0 */
+-	0x00,  /* from tos_to_tid[0] = 1 */
+-	0x01,  /* from tos_to_tid[1] = 2 */
+-	0x03,
+-	0x04,
+-	0x05,
+-	0x06,
+-	0x07};
++extern const u16 mwifiex_1d_to_wmm_queue[];
++extern const u8 tos_to_tid_inv[];
  
- 	release_sock(sk);
- 	return res;
+ /*
+  * This function retrieves the TID of the given RA list.
 -- 
-2.18.4
+2.17.1
+
 
