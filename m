@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AC8925A23D
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 02:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14FD925A243
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 02:27:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726210AbgIBA0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 20:26:15 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:63242 "EHLO
+        id S1726726AbgIBA0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 20:26:46 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:58394 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726107AbgIBA0O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 20:26:14 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0820NDKc001586
-        for <netdev@vger.kernel.org>; Tue, 1 Sep 2020 17:26:14 -0700
+        by vger.kernel.org with ESMTP id S1726625AbgIBA0k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 20:26:40 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0820Qben031315
+        for <netdev@vger.kernel.org>; Tue, 1 Sep 2020 17:26:39 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=facebook;
- bh=mq0ef9jOqeU3dqaAcGpJaqz/OttVubZ/GMgdk24nemU=;
- b=COtkyIANcfXU596rWyesohDmov+4XGIES5Fkp9OVWiQNgXANvT0VBctOaXepsA6/38Qj
- 2KU5DdhwL14Y1cq9PzBE3N6lHyFGZDIIFOSBKRqHjRjeLLwuW0OFK4YHi+pZ4bnoLteG
- vmxzd4is0L5jvfWlmbp5u90TjUCUl+ythoo= 
+ bh=lWhyUqCAMrh3WNjXI8GGSxZ/gB+B24TZajA1aV3gpV8=;
+ b=bWpf9nyLn5H9a1LnowcNfScep1DigbbxNbMuP+ZPk5keUzJIw6mOUIE2CL+rxFKXMbv7
+ Rg1w+JModHpNXo+t072aX0b3a3it1Yny8+7w0KE34j9jLox53hbgvh+QLe0kZqieBIIy
+ t6xfMv9T9AMvteAvW7pgnZppmqqOlI4buyw= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 3386ukp6ua-2
+        by mx0a-00082601.pphosted.com with ESMTP id 338734p2js-6
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 17:26:14 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 17:26:39 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1979.3; Tue, 1 Sep 2020 17:26:13 -0700
 Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 687A03705183; Tue,  1 Sep 2020 17:26:08 -0700 (PDT)
+        id A2916370518A; Tue,  1 Sep 2020 17:26:09 -0700 (PDT)
 From:   Yonghong Song <yhs@fb.com>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>
-Subject: [PATCH bpf-next v3 1/2] bpf: avoid iterating duplicated files for task_file iterator
-Date:   Tue, 1 Sep 2020 17:26:08 -0700
-Message-ID: <20200902002608.994712-1-yhs@fb.com>
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+Subject: [PATCH bpf-next v3 2/2] selftests/bpf: test task_file iterator without visiting pthreads
+Date:   Tue, 1 Sep 2020 17:26:09 -0700
+Message-ID: <20200902002609.994834-1-yhs@fb.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200902002608.994598-1-yhs@fb.com>
 References: <20200902002608.994598-1-yhs@fb.com>
@@ -49,10 +47,10 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-01_10:2020-09-01,2020-09-01 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- adultscore=0 mlxscore=0 mlxlogscore=999 suspectscore=8 clxscore=1015
- impostorscore=0 malwarescore=0 bulkscore=0 spamscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ suspectscore=8 impostorscore=0 lowpriorityscore=0 phishscore=0 mlxscore=0
+ malwarescore=0 bulkscore=0 mlxlogscore=999 priorityscore=1501 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2009020002
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -60,83 +58,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, task_file iterator iterates all files from all tasks.
-This may potentially visit a lot of duplicated files if there are
-many tasks sharing the same files, e.g., typical pthreads
-where these pthreads and the main thread are sharing the same files.
+Modified existing bpf_iter_test_file.c program to check whether
+all accessed files from the main thread or not.
 
-This patch changed task_file iterator to skip a particular task
-if that task shares the same files as its group_leader (the task
-having the same tgid and also task->tgid =3D=3D task->pid).
-This will preserve the same result, visiting all files from all
-tasks, and will reduce runtime cost significantl, e.g., if there are
-a lot of pthreads and the process has a lot of open files.
+Modified existing bpf_iter_test_file program to check
+whether all accessed files from the main thread or not.
+  $ ./test_progs -n 4
+  ...
+  #4/7 task_file:OK
+  ...
+  #4 bpf_iter:OK
+  Summary: 1/24 PASSED, 0 SKIPPED, 0 FAILED
 
-Suggested-by: Andrii Nakryiko <andriin@fb.com>
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
 Signed-off-by: Yonghong Song <yhs@fb.com>
 ---
- kernel/bpf/task_iter.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ .../selftests/bpf/prog_tests/bpf_iter.c       | 21 +++++++++++++++++++
+ .../selftests/bpf/progs/bpf_iter_task_file.c  | 10 ++++++++-
+ 2 files changed, 30 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/task_iter.c b/kernel/bpf/task_iter.c
-index 99af4cea1102..5b6af30bfbcd 100644
---- a/kernel/bpf/task_iter.c
-+++ b/kernel/bpf/task_iter.c
-@@ -22,7 +22,8 @@ struct bpf_iter_seq_task_info {
- };
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/te=
+sting/selftests/bpf/prog_tests/bpf_iter.c
+index 7375d9a6d242..375ffaf85d78 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+@@ -132,17 +132,38 @@ static void test_task_stack(void)
+ 	bpf_iter_task_stack__destroy(skel);
+ }
 =20
- static struct task_struct *task_seq_get_next(struct pid_namespace *ns,
--					     u32 *tid)
-+					     u32 *tid,
-+					     bool skip_if_dup_files)
++static void *do_nothing(void *arg)
++{
++	pthread_exit(arg);
++}
++
+ static void test_task_file(void)
  {
- 	struct task_struct *task =3D NULL;
- 	struct pid *pid;
-@@ -36,6 +37,12 @@ static struct task_struct *task_seq_get_next(struct pi=
-d_namespace *ns,
- 		if (!task) {
- 			++*tid;
- 			goto retry;
-+		} else if (skip_if_dup_files && task->tgid !=3D task->pid &&
-+			   task->files =3D=3D task->group_leader->files) {
-+			put_task_struct(task);
-+			task =3D NULL;
-+			++*tid;
-+			goto retry;
- 		}
- 	}
- 	rcu_read_unlock();
-@@ -48,7 +55,7 @@ static void *task_seq_start(struct seq_file *seq, loff_=
-t *pos)
- 	struct bpf_iter_seq_task_info *info =3D seq->private;
- 	struct task_struct *task;
+ 	struct bpf_iter_task_file *skel;
++	pthread_t thread_id;
++	void *ret;
 =20
--	task =3D task_seq_get_next(info->common.ns, &info->tid);
-+	task =3D task_seq_get_next(info->common.ns, &info->tid, false);
- 	if (!task)
- 		return NULL;
+ 	skel =3D bpf_iter_task_file__open_and_load();
+ 	if (CHECK(!skel, "bpf_iter_task_file__open_and_load",
+ 		  "skeleton open_and_load failed\n"))
+ 		return;
 =20
-@@ -65,7 +72,7 @@ static void *task_seq_next(struct seq_file *seq, void *=
-v, loff_t *pos)
- 	++*pos;
- 	++info->tid;
- 	put_task_struct((struct task_struct *)v);
--	task =3D task_seq_get_next(info->common.ns, &info->tid);
-+	task =3D task_seq_get_next(info->common.ns, &info->tid, false);
- 	if (!task)
- 		return NULL;
++	skel->bss->tgid =3D getpid();
++
++	if (CHECK(pthread_create(&thread_id, NULL, &do_nothing, NULL),
++		  "pthread_create", "pthread_create failed\n"))
++		goto done;
++
+ 	do_dummy_read(skel->progs.dump_task_file);
 =20
-@@ -148,7 +155,7 @@ task_file_seq_get_next(struct bpf_iter_seq_task_file_=
-info *info,
- 		curr_files =3D *fstruct;
- 		curr_fd =3D info->fd;
- 	} else {
--		curr_task =3D task_seq_get_next(ns, &curr_tid);
-+		curr_task =3D task_seq_get_next(ns, &curr_tid, true);
- 		if (!curr_task)
- 			return NULL;
++	if (CHECK(pthread_join(thread_id, &ret) || ret !=3D NULL,
++		  "pthread_join", "pthread_join failed\n"))
++		goto done;
++
++	CHECK(skel->bss->count !=3D 0, "",
++	      "invalid non pthread file visit %d\n", skel->bss->count);
++
++done:
+ 	bpf_iter_task_file__destroy(skel);
+ }
 =20
+diff --git a/tools/testing/selftests/bpf/progs/bpf_iter_task_file.c b/too=
+ls/testing/selftests/bpf/progs/bpf_iter_task_file.c
+index 8b787baa2654..b2f7c7c5f952 100644
+--- a/tools/testing/selftests/bpf/progs/bpf_iter_task_file.c
++++ b/tools/testing/selftests/bpf/progs/bpf_iter_task_file.c
+@@ -6,6 +6,9 @@
+=20
+ char _license[] SEC("license") =3D "GPL";
+=20
++int count =3D 0;
++int tgid =3D 0;
++
+ SEC("iter/task_file")
+ int dump_task_file(struct bpf_iter__task_file *ctx)
+ {
+@@ -17,8 +20,13 @@ int dump_task_file(struct bpf_iter__task_file *ctx)
+ 	if (task =3D=3D (void *)0 || file =3D=3D (void *)0)
+ 		return 0;
+=20
+-	if (ctx->meta->seq_num =3D=3D 0)
++	if (ctx->meta->seq_num =3D=3D 0) {
++		count =3D 0;
+ 		BPF_SEQ_PRINTF(seq, "    tgid      gid       fd      file\n");
++	}
++
++	if (tgid =3D=3D task->tgid && task->tgid !=3D task->pid)
++		count++;
+=20
+ 	BPF_SEQ_PRINTF(seq, "%8d %8d %8d %lx\n", task->tgid, task->pid, fd,
+ 		       (long)file->f_op);
 --=20
 2.24.1
 
