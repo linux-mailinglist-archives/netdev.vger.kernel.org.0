@@ -2,68 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE78C25B44B
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 21:11:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8EDE25B460
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 21:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728177AbgIBTLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 15:11:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58820 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726567AbgIBTLr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 15:11:47 -0400
-Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6070920758;
-        Wed,  2 Sep 2020 19:11:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599073906;
-        bh=WnSnslkA0WY55wziATC806B4vzwesvF3SmUSGozVyp4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rjELJqRH1dtygQUKHtxh2PN72TkvUYg/RLWeAFbJc/r1VFnEguEgCY0f9pXAt8/OV
-         lf76OXWhqnUdJbnmoY139V92IJBIWWsEU2vMS1YtG+6HGzjVSAOp4tW0NSAhyobU8B
-         f6o0zJEkYs4dfPLpfs2y/Ru52YvpB8Nxb1Ys/mzs=
-Date:   Wed, 2 Sep 2020 14:17:57 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] xsk: Fix null check on error return path
-Message-ID: <20200902191757.GD31464@embeddedor>
-References: <20200902150750.GA7257@embeddedor>
- <9b7e36c3-0532-245c-763a-8f4e7e36b358@iogearbox.net>
+        id S1728280AbgIBT1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 15:27:14 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:55142 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbgIBT1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 15:27:13 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 082JR6Ff126257;
+        Wed, 2 Sep 2020 14:27:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1599074826;
+        bh=+v1Nd8+n/OOggdgxRjBCSgV9osCcfdst9MC44sB2akY=;
+        h=From:To:CC:Subject:Date;
+        b=MPSylcV6CufnB7j6DskaCDpB4OJNwwqJsp6JsiBY0beiaijftf4L6SeGWnLpW8nML
+         K1IaFoBpnGJL84NneTOlHkfzBaH7lylOOIwdNjAV/4MITltzcmgRzaNglYdwl5Y0YR
+         9MhyRPsE/n69IsOAybI6NB79PWZtTNfPw9TruhUA=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 082JR6p4047335
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 2 Sep 2020 14:27:06 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 2 Sep
+ 2020 14:27:05 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 2 Sep 2020 14:27:05 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 082JR53Z071593;
+        Wed, 2 Sep 2020 14:27:05 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net] net: dp83867: Fix WoL SecureOn password
+Date:   Wed, 2 Sep 2020 14:27:04 -0500
+Message-ID: <20200902192704.9220-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9b7e36c3-0532-245c-763a-8f4e7e36b358@iogearbox.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 02, 2020 at 08:33:41PM +0200, Daniel Borkmann wrote:
-> On 9/2/20 5:07 PM, Gustavo A. R. Silva wrote:
-> > Currently, dma_map is being checked, when the right object identifier
-> > to be null-checked is dma_map->dma_pages, instead.
-> > 
-> > Fix this by null-checking dma_map->dma_pages.
-> > 
-> > Addresses-Coverity-ID: 1496811 ("Logically dead code")
-> > Fixes: 921b68692abb ("xsk: Enable sharing of dma mappings")
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> 
-> Applied, thanks!
+Fix the registers being written to as the values were being over written
+when writing the same registers.
 
-Thanks, Daniel. :)
+Fixes: caabee5b53f5 ("net: phy: dp83867: support Wake on LAN")
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+---
+ drivers/net/phy/dp83867.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---
-Gustavo
+diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
+index f3c04981b8da..cd7032628a28 100644
+--- a/drivers/net/phy/dp83867.c
++++ b/drivers/net/phy/dp83867.c
+@@ -215,9 +215,9 @@ static int dp83867_set_wol(struct phy_device *phydev,
+ 		if (wol->wolopts & WAKE_MAGICSECURE) {
+ 			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
+ 				      (wol->sopass[1] << 8) | wol->sopass[0]);
+-			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
++			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP2,
+ 				      (wol->sopass[3] << 8) | wol->sopass[2]);
+-			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
++			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP3,
+ 				      (wol->sopass[5] << 8) | wol->sopass[4]);
+ 
+ 			val_rxcfg |= DP83867_WOL_SEC_EN;
+-- 
+2.28.0
+
