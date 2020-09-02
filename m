@@ -2,86 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1236325B337
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 19:54:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C13225B36E
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 20:08:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727869AbgIBRyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 13:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44032 "EHLO
+        id S1726177AbgIBSHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 14:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726247AbgIBRx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 13:53:59 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2B1C061244;
-        Wed,  2 Sep 2020 10:53:59 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id mm21so166262pjb.4;
-        Wed, 02 Sep 2020 10:53:59 -0700 (PDT)
+        with ESMTP id S1727980AbgIBSHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 14:07:07 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F87BC061244
+        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 11:07:07 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id v4so295049wmj.5
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 11:07:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2c5F6S3X96hyhdqG4dHZ2yS+M0WB1TvN9cfvaXXm7WQ=;
-        b=XE7hzgI4u1UxO+RUCpIrm6WyqeFvJIAkd0NMJhMPvnZLkcTZb8I+PNOiNWqNkUVarF
-         QyXEOdtLRlGW5uLGCkz2+2k5A5snx3aMphGS4OnwnJCpuXJPIU8/ZFvcJWcPkiG9LICu
-         V3ICoo08udx/Lx3gNL/P7lEBKSPMKbrDeNfk9d3xbwYxIA+3b98i/4r1oPAMzK8BUiIr
-         5qTzjz925QvMYWl2UxTs8P/D+pbKmN6qVQSMC47SV45nN+pAbwxm/7bfn+CEsTlr1ePE
-         SEHbeM5iZgAvQMtqzb5vzBA1sfGo+eWD1Qg3n2AXA4+nbriwMMxlJinovKnlN9exeoQy
-         L67w==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5W5tADREb76SQnHT4yvnZFbzawupyGoPTSNz4PRRGZA=;
+        b=FIv7cSrz2bc2HakEJvj/cJsFAkJ3gPrFd/tmtfJTPw+XFWo20hN88WKzuRUTPWDZDV
+         xMcu+UVB/fMJL5ju0eoLztYCzwqiYNWJ1zf90PoGobnI/cJk3aZKWAfDX3PuJ4W2CsWs
+         Vb8YGE5auS4UYoFKNjOoHvoxSgxsm1Ucd9Pu4ygndQLvlkUbo/2xGCyTELOYYBtz/YuS
+         5xvkbKJX7tnHkD1JrHemgNWUi+gWMqswbfSCz3lbmK8jEa1/ik4gkrLEn56Bmd5hhGd5
+         uf5aKWrPereFeY9jYvgUFDrltKguHEPYOBwsVrK75wG5BhVho9LU0xD3e+gpMaq/FwA3
+         uBew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2c5F6S3X96hyhdqG4dHZ2yS+M0WB1TvN9cfvaXXm7WQ=;
-        b=QEjvpr/rP4hbPmN7dnDdNrHw7JwyOk5zsXbOYXi30Ij8GqUdAOnguYtcn0Z/AqZcdL
-         5JxmSuwJr995Hb2Cdw+tT2qlNmNnHCvwwwGgkRP7YO5tmfXSm6oM+4HFbZRZmZDr6o5D
-         WWRegG/iuN/HDPRd2ENph4gP/RIZ/RywbGfYoK//6dWvd3sSzAQkSozehQAhZWMOmw9Z
-         c4iHqzbWboVCPi6C67YxLejPmY2lX6UeiGnOxVMftpcN6Lstp2j2Cj4VBN34CqUptuMY
-         bkmzeZdlwsTIVt+jOWMLYIAao1Prreu6BRcaKsakPBBtTUKrhGpZMnvvA5WEBdLOwuYW
-         fvgA==
-X-Gm-Message-State: AOAM532H1K/LZvEzyHegzMMMZ5XkD9UtDU8uQHINOB36lc6rew2MZW7p
-        EmXFJ874bYuSlLwHeeD/Sr0XVEzLoiA=
-X-Google-Smtp-Source: ABdhPJyLcGBW8spXoDF8OgVqTNVgZxXgwqHtUhnbdMkv+OlmbCt43BHMuh69We2fm9QsFQqwzhFGzA==
-X-Received: by 2002:a17:90b:364c:: with SMTP id nh12mr3090546pjb.182.1599069238388;
-        Wed, 02 Sep 2020 10:53:58 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j19sm151578pfi.51.2020.09.02.10.53.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Sep 2020 10:53:57 -0700 (PDT)
-Subject: Re: [PATCH] net: bcmgenet: fix mask check in bcmgenet_validate_flow()
-To:     Denis Efremov <efremov@linux.com>, Doug Berger <opendmb@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20200902111845.9915-1-efremov@linux.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <34fb3dbf-9715-967a-1151-0b096327c97b@gmail.com>
-Date:   Wed, 2 Sep 2020 10:53:54 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.1.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5W5tADREb76SQnHT4yvnZFbzawupyGoPTSNz4PRRGZA=;
+        b=kiTKIinZ9t9thXUKS3Ujs2dIu3aPIsQBo/Wki2uTQj4h/P8Bb0q1m5PFdlMheK6UvC
+         RYXfvIY11htx+OeMt4/pUGrqRrQTztsDvIG3CVLX6L0Cx5/tOFDmY74Lebi8d6nvX8k8
+         rHK4sUyd+ajMIMgdd3KHVNSmGRz3wqgREpC8Zc1zcfyHCbkh7tx6Ez7LxxG8BCzwt6fy
+         IY6bauLbt2knkc+qUWRoLnssKo0qup+H+sZi2K7vj7YImSuSUHrad/+DD00fGwjgaA8b
+         ZX6S7tV/F6UhxfBIH0IG7fc1201GAbMqf3auNhrJOgQMqsmP/CraelKWNlLz7uadQVOP
+         yOvA==
+X-Gm-Message-State: AOAM533VYWeaWPpbmtC3Aogkm/e5PEyo/aJjgk5UpWgHr/Lr4Y4RvPTY
+        PX8Ytu5OLefVSeAEGAt3vYD2XbqLmO581fNRjFDYZg==
+X-Google-Smtp-Source: ABdhPJywua+J79SqwFQ+bswT9SFCCQHINbuvx+WoL88BpV9EOA3iKHj/Tk3OV0ZsYE8yLo8Vb8WqOzA5R5Gae2cFzi8=
+X-Received: by 2002:a7b:c14d:: with SMTP id z13mr1790276wmi.19.1599070025858;
+ Wed, 02 Sep 2020 11:07:05 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200902111845.9915-1-efremov@linux.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200901212009.1314401-1-yyd@google.com> <20200901220200.GB3050651@lunn.ch>
+ <CAPREpbaFi6Tqw+YKx=1c1nFRtUt9G2gRW2BT83siqojy=DOEmA@mail.gmail.com> <20200902070359.upkax24olhzksxhi@lion.mk-sys.cz>
+In-Reply-To: <20200902070359.upkax24olhzksxhi@lion.mk-sys.cz>
+From:   Kevin Yang <yyd@google.com>
+Date:   Wed, 2 Sep 2020 14:06:54 -0400
+Message-ID: <CAPREpbYwhte+KED5f2hq96b1oUxaM9QOwdEtqv14qWMG=ZAVrg@mail.gmail.com>
+Subject: Re: [PATCH ethtool] ethtool: add support show/set-hwtstamp
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Networking <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Sep 2, 2020 at 3:04 AM Michal Kubecek <mkubecek@suse.cz> wrote:
+>
+> On Tue, Sep 01, 2020 at 08:36:08PM -0400, Kevin Yang wrote:
+> > On Tue, Sep 1, 2020 at 6:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > > On Tue, Sep 01, 2020 at 05:20:09PM -0400, Kevin(Yudong) Yang wrote:
+> > > > Before this patch, ethtool has -T/--show-time-stamping that only
+> > > > shows the device's time stamping capabilities but not the time
+> > > > stamping policy that is used by the device.
+> > >
+> > > How does this differ from hwstamp_ctl(1)?
+> >
+> > They are pretty much the same, both use ioctl(SIOCSHWTSTAMP).
+> >
+> > Adding this to ethtool is because:
+> > - This time stamping policy is a hardware setting aligned with ethtool's
+> > purpose "query and control network device driver and hardware settings"
+> > - ethtool is widely used, system administrators don't need to install
+> > another binary to control this feature.
+>
+> Adding this feature to ethtool IMHO makes good sense, I'm just not sure
+> if it's necessary to add new subcommands, perhaps we could add the
+> "show" part to -T / --show-time-stamping and add --set-time-stamping.
 
+Thanks for the nice suggestion. This sounds good to me, I will work on v2
+to have:
+"-T / --show-time-stamping" to show capabilities AND current policy;
+and "--set-time-stamping" to change the policy.
 
-On 9/2/2020 4:18 AM, Denis Efremov wrote:
-> VALIDATE_MASK(eth_mask->h_source) is checked twice in a row in
-> bcmgenet_validate_flow(). Add VALIDATE_MASK(eth_mask->h_dest)
-> instead.
-> 
-> Fixes: 3e370952287c ("net: bcmgenet: add support for ethtool rxnfc flows")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Denis Efremov <efremov@linux.com>
-
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> However, I don't like the idea of adding a new ioctl based interface to
+> ethtool while we are working on replacing and deprecating existing one.
+> I would much rather like adding this to the netlink interface (which
+> would, of course, require also kernel side implementation).
+>
+> Michal
