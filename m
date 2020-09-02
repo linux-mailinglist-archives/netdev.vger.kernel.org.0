@@ -2,86 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA7E525B31C
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 19:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF9125B32F
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 19:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726594AbgIBRos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 13:44:48 -0400
-Received: from sonic310-14.consmr.mail.bf2.yahoo.com ([74.6.135.124]:43815
-        "EHLO sonic310-14.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726355AbgIBRor (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 13:44:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1599068686; bh=jWkEiPOACWs1i5M04y3GgVdWsjT/ugAWzGwT5xxbmKA=; h=Date:From:Reply-To:Subject:References:From:Subject; b=CB6s173sfApH0MdvgePxBLi39eXJ4iX8bWfObExgzo1CKb1vYsZblgs3wN+aM8C9aFnZqA2qz8+8m4g414hOFQRbF7dLlaJQ06a99/qu4jWIVG7w2kZcSFSLQHwGHJlq23CegkyB8bg5GSP/2c1bMsOCwsGx/2Gz3ByUJE+uJYO6VFeg108MBUoPgaIL2t0k4HcUlsHh8o/tbkT+Yw6bt++qHu2dlDKHvBbKUgzssVhjnsonNhA8Yy4kPu+Xlh8B2gxFaEoQMYLK9fBwqzfKepjaaowp5G32wUg2XdlEjzCv946X8pFvofp5lOZFa+dKTFazTpMqf3aHwvhc8ta/MA==
-X-YMail-OSG: aTgmw4EVM1nWi9k_OmLGOkpHNvUvUJLd2ITtzz9fI4g0B0_D_tgZId_3pHje0ym
- YvPj37i8sABv03.6R2NZiFAiAzQYH9HF8rkUt12Z2UaIiS_6wUboIfORYaD.C.R78ulyJ7gkvwcA
- 2FNY1Qb49hCSLcf.H7WX3Q60g1B5gDqvbqY3c3dvLA3XHeDMTa7RL2JUedvV_vVJ7Z36LTE4duI_
- qeTzcBYwwoDaK6EPYu2xdBQArSRpp00tPyjjA9UP.FKAdjhtjYC0iW62rv62LlUqvnIyG_hFAO_n
- c8kiV4HAcBEzIHYqNhPvbkvLbSxVixeQg5yVUlI6gAuKBtjWgw.wATFMTVoTEEtOAFAAC1uMV0A2
- Gbmua7G9rDKO1OhnEWzMBgGddwAIsPwJM4rsOBCXxakZgzjqhOgyaEyxORCH9U62FZNXqzf8_bvy
- Gly7Gp3c40njmWnK6.EPvj5he0xf9EFNAggNRcllnvUBau0Vxi5VADHCcv3DOfn.uby1.c5M0czO
- drRXzobPt7zfkYbk7ltFDdhbbf484BM8XYEb_BO2LzpHFGR7ykJ89haFAMjtEnX8HTDrPS4_Ebt_
- l8qOCNDtrJUddmtE7KfERN.jDtNQImSbnUW50DNafWPY.jeX.oYCS1hj21c_eugL0S71XVVWWK8c
- LcxItq2cqZWVORs7nfJRfQ5XX7rg9WvN3HOwF2HTt1lnNq8frHgnpPHDhluGiK82PlLl7bYAAosY
- 7NT4OwdzjKqzzuXdtObRyllID9B5xNYpHj1EhPf4iG.qubASBBy_YUttWPibWa48XWUErywKCzaT
- r.8Ig8nQmIzy7mnk9vqHhCJIf7IflhmcN4UUhkHKZMvDXTwCgM4ToiCRUUtb1LGLPWjULEGBP_nS
- 9ZloZdoWaeM_2XBb47sn1nIJWcUHVeuFVmixIr4rWGMp2ekY5pfNZMChtvUbTg4ieJd_QUj2Tu8h
- LcE2KS0vW2k63CMhOMD39MGaDeo3Y5m_TBZZ0icKXg.ww4uLcnThtAJ7VurIPyssPqSP0sfabP0h
- 5ciYtAlzc_Nq34V31_qoqbATs67ynhOsuscYWh6viCBlrP3tqK_aG62CII03GWBPq4n8jJCfo8Ym
- K2SZfzADEPgqr_FiYr8As6BKkHm6c3FBDdsxdtIO_baYx6u7w7OKq6W6yXvRTCoV_He0TrRLLMdS
- osGlcFI4MXxz_2zY2FgyBGeeMOgXdmI6ACWF3DlI_NxC7e5A.0wzO4BCfeaisfGBXe2wmZ8gyv_e
- BXjsuByZHAjQBmOfKloSYCUVM8Dx3mcvnMvomqnG4qfZ6PhgHO.kuLvxjsRyzHMvw52q39uTsR8d
- ELzSejKELo3.SsWmKY_EhpBfhUBRJG_ALLU13CpJlzImxE_9aIAfB_foASTFcGovXyb6j7nRhmLt
- IroO7k5HIh6xOY.72wZKNkSZp7FnlGgpUvHEyi_qXKUJC3Q--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.bf2.yahoo.com with HTTP; Wed, 2 Sep 2020 17:44:46 +0000
-Date:   Wed, 2 Sep 2020 17:44:45 +0000 (UTC)
-From:   Ms lisa Hugh <lisahugh531@gmail.com>
-Reply-To: ms.lisahugh000@gmail.com
-Message-ID: <331296667.1628467.1599068685734@mail.yahoo.com>
-Subject: REPLY TO MY EMAIL FOR BUSINESS(Ms Lisa hugh).
+        id S1727001AbgIBRup (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 13:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726247AbgIBRup (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 13:50:45 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5655C061244;
+        Wed,  2 Sep 2020 10:50:44 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id s2so155691pjr.4;
+        Wed, 02 Sep 2020 10:50:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gldkp7PW4j0DFMsRsIZxRE3Gipj4nAiWdiTeBWgOz50=;
+        b=Nwd1UqVMyXf3mjIymnk+vD+DPirEUCHett1jNK87DprBGgW+CTZZpMM7pwqUG+5+eb
+         ws8wMD7FIxnp55sJYoS8gYv7W+sGwQeOIPL9gr+WOCtSLv+r11aKmH2P5wixwMN7FWez
+         DBuYjtncHi/O5Ds0hrNbJlq6sPJ/jOr7Pv/kXdWYI9+FEui3g+jihG6CaE1x+9M4KYlb
+         Tw0HHU2nlWqVQfkF2Ka7C0P6ItecbxJnjB7Od4k4JkOLiB8HKdJUa8eoIQa82Sttb8xs
+         SuD88I3aa8IInaBr4N9RWyvvKv/JN5JavJB2K0SUEG07WSzVVTvKlUKK47Ic8bJQMDeJ
+         6D9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gldkp7PW4j0DFMsRsIZxRE3Gipj4nAiWdiTeBWgOz50=;
+        b=Zct+ESSzVbdwl76rAOPQ3xSnWSZCsZOdI2zlLLFJC3TcmA1JsNZbe+xanqJY6FOYk6
+         i8i/8sSfRPAA5Q82bDGxC9wSSZmqfHi6aeqRRP/hw7DhkSnbyyCLPms35gDdHxyOuX3T
+         P0dJM/3ZW/f1D+brWtLhbgOTsGo0R5KHkp3wjbHwNfylEegOiwyvTr2Mlf7lWz0Qa89e
+         iFe1zxwLVgNHetxh+wyZlGwv/+XkHtOeQmFwzqEOBq5YhlpjEGSGP6eNkOabtczRt3G3
+         DWVGFZc+0WvzSoAfTm0QN6Uoxx2b5wiB6U28FvuZBBTvpe+pAjFfoMKbDilQrrMh97Z+
+         ZEow==
+X-Gm-Message-State: AOAM531QT5Pi047L7gdd8+Rn8zcd5lS7vuk2wOlHycftcwFCsvHJcYG0
+        MXyn1HCU9qGHBbxyX31QUBdrGVvxCk8=
+X-Google-Smtp-Source: ABdhPJyM6VawxkZVo+/zeLvKajvna+zRWmEiEWBof7ij8IV6Rs/NJnX43gYynQXgp6nZeG4j+70QUA==
+X-Received: by 2002:a17:902:9a02:: with SMTP id v2mr3012615plp.151.1599069043990;
+        Wed, 02 Sep 2020 10:50:43 -0700 (PDT)
+Received: from [10.230.191.242] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id p11sm6764408pgh.80.2020.09.02.10.50.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Sep 2020 10:50:43 -0700 (PDT)
+Subject: Re: [PATCH] net: bcmgenet: fix mask check in bcmgenet_validate_flow()
+To:     Denis Efremov <efremov@linux.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20200902111845.9915-1-efremov@linux.com>
+From:   Doug Berger <opendmb@gmail.com>
+Message-ID: <74100a9f-5215-ed55-7077-a180a85f775a@gmail.com>
+Date:   Wed, 2 Sep 2020 10:53:51 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <331296667.1628467.1599068685734.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16565 YMailNodin Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:79.0) Gecko/20100101 Firefox/79.0
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <20200902111845.9915-1-efremov@linux.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 9/2/2020 4:18 AM, Denis Efremov wrote:
+> VALIDATE_MASK(eth_mask->h_source) is checked twice in a row in
+> bcmgenet_validate_flow(). Add VALIDATE_MASK(eth_mask->h_dest)
+> instead.
+> 
+> Fixes: 3e370952287c ("net: bcmgenet: add support for ethtool rxnfc flows")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+> ---
+> I'm not sure that h_dest check is required here, it's only my guess.
+> Compile tested only.
+> 
+>  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> index 0ca8436d2e9d..be85dad2e3bc 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> @@ -1364,7 +1364,7 @@ static int bcmgenet_validate_flow(struct net_device *dev,
+>  	case ETHER_FLOW:
+>  		eth_mask = &cmd->fs.m_u.ether_spec;
+>  		/* don't allow mask which isn't valid */
+> -		if (VALIDATE_MASK(eth_mask->h_source) ||
+> +		if (VALIDATE_MASK(eth_mask->h_dest) ||
+>  		    VALIDATE_MASK(eth_mask->h_source) ||
+>  		    VALIDATE_MASK(eth_mask->h_proto)) {
+>  			netdev_err(dev, "rxnfc: Unsupported mask\n");
+> 
+Well spotted. Thanks!
 
-
-Dear=C2=A0Friend,
-
-I=C2=A0am=C2=A0Ms=C2=A0Lisa=C2=A0hugh,=C2=A0work=C2=A0with=C2=A0the=C2=A0de=
-partment=C2=A0of=C2=A0Audit=C2=A0and=C2=A0accounting=C2=A0manager=C2=A0here=
-=C2=A0in=C2=A0the=C2=A0Bank(B.O.A).
-
-Please=C2=A0i=C2=A0need=C2=A0your=C2=A0assistance=C2=A0for=C2=A0the=C2=A0tr=
-ansferring=C2=A0of=C2=A0thIs=C2=A0fund=C2=A0to=C2=A0your=C2=A0bank=C2=A0acc=
-ount=C2=A0for=C2=A0both=C2=A0of=C2=A0us=C2=A0benefit=C2=A0for=C2=A0life=C2=
-=A0time=C2=A0investment,=C2=A0amount=C2=A0(US$4.5M=C2=A0DOLLARS).
-
-I=C2=A0have=C2=A0every=C2=A0inquiry=C2=A0details=C2=A0to=C2=A0make=C2=A0the=
-=C2=A0bank=C2=A0believe=C2=A0you=C2=A0and=C2=A0release=C2=A0the=C2=A0fund=
-=C2=A0in=C2=A0within=C2=A05=C2=A0banking=C2=A0working=C2=A0days=C2=A0with=
-=C2=A0your=C2=A0full=C2=A0co-operation=C2=A0with=C2=A0me=C2=A0for=C2=A0succ=
-ess.
-
-Note/=C2=A050%=C2=A0for=C2=A0you=C2=A0why=C2=A050%=C2=A0for=C2=A0me=C2=A0af=
-ter=C2=A0success=C2=A0of=C2=A0the=C2=A0transfer=C2=A0to=C2=A0your=C2=A0bank=
-=C2=A0account.
-
-Below=C2=A0information=C2=A0is=C2=A0what=C2=A0i=C2=A0need=C2=A0from=C2=A0yo=
-u=C2=A0so=C2=A0will=C2=A0can=C2=A0be=C2=A0reaching=C2=A0each=C2=A0other
-
-1)Full=C2=A0name=C2=A0...
-2)Private=C2=A0telephone=C2=A0number...
-3)Age...
-4)Nationality...
-5)Occupation=C2=A0...
-
-
-Thanks.
-
-Ms=C2=A0Lisa=C2=A0hugh.
+Acked-by: Doug Berger <opendmb@gmail.com>
