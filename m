@@ -2,89 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 935DA25A80F
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 10:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E31925A853
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 11:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726377AbgIBIwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 04:52:33 -0400
-Received: from mga17.intel.com ([192.55.52.151]:25498 "EHLO mga17.intel.com"
+        id S1726298AbgIBJGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 05:06:20 -0400
+Received: from mga09.intel.com ([134.134.136.24]:12124 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726177AbgIBIwd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 04:52:33 -0400
-IronPort-SDR: d1jn+xo6H0W2BGzqRojVza0hhO9bmfEDEqQ+qmatN7pOTQ5JchUVo/dWrlQFm58E7KPmJsx0G6
- 68JYn5oQZ1UA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9731"; a="137399088"
+        id S1726177AbgIBJGT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Sep 2020 05:06:19 -0400
+IronPort-SDR: jXg+rCWMUz3nH82DZB8k+5T+kHhFC75N1ejfN5yoe5mMwRpVkwkS0cAsCFoQ20T8NdOSzldzdY
+ JMFJ/WXnsbeQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9731"; a="158347329"
 X-IronPort-AV: E=Sophos;i="5.76,381,1592895600"; 
-   d="scan'208";a="137399088"
+   d="scan'208";a="158347329"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2020 01:52:29 -0700
-IronPort-SDR: pbZ4nOXstcxy8Vivo63fobNo3PfADY7U9TbS5MmN3hgMDTTg8fOSslj6+Udr+ZflxDHEz2e2rl
- Ecew4I7uFmUQ==
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2020 02:06:16 -0700
+IronPort-SDR: d3r64jTla/qkoN9iDIvSpHT+Ei+WZZCqsq4AK3zjtYOsJtV/E8W7xmSE0wrSwwXwthmXCl1qW9
+ yLO/Bjo49/yQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,381,1592895600"; 
-   d="scan'208";a="446456952"
+   d="scan'208";a="446460095"
 Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.56.60])
-  by orsmga004.jf.intel.com with ESMTP; 02 Sep 2020 01:52:27 -0700
+  by orsmga004.jf.intel.com with ESMTP; 02 Sep 2020 02:06:12 -0700
 From:   Magnus Karlsson <magnus.karlsson@intel.com>
 To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
         jonathan.lemon@gmail.com
 Cc:     bpf@vger.kernel.org
-Subject: [PATCH bpf-next] xsk: fix possible segfault in xsk umem diagnostics
-Date:   Wed,  2 Sep 2020 10:52:23 +0200
-Message-Id: <1599036743-26454-1-git-send-email-magnus.karlsson@intel.com>
+Subject: [PATCH bpf-next] xsk: fix possible segfault at xskmap entry insertion
+Date:   Wed,  2 Sep 2020 11:06:09 +0200
+Message-Id: <1599037569-26690-1-git-send-email-magnus.karlsson@intel.com>
 X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix possible segfault in the xsk diagnostics code when dumping
-information about the umem. This can happen when a umem has been
-created, but the socket has not been bound yet. In this case, the xsk
-buffer pool does not exist yet and we cannot dump the information
-that was moved from the umem to the buffer pool. Fix this by testing
-for the existence of the buffer pool and if not there, do not dump any
-of that information.
+Fix possible segfault when entry is inserted into xskmap. This can
+happen if the socket is in a state where the umem has been set up, the
+Rx ring created but it has yet to be bound to a device. In this case
+the pool has not yet been created and we cannot reference it for the
+existence of the fill ring. Fix this by removing the whole
+xsk_is_setup_for_bpf_map function. Once upon a time, it was used to
+make sure that the Rx and fill rings where set up before the driver
+could call xsk_rcv, since there are no tests for the existence of
+these rings in the data path. But these days, we have a state variable
+that we test instead. When it is XSK_BOUND, everything has been set up
+correctly and the socket has been bound. So no reason to have the
+xsk_is_setup_for_bpf_map function anymore.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Reported-by: syzbot+3f04d36b7336f7868066@syzkaller.appspotmail.com
-Fixes: c2d3d6a47462 ("xsk: Move queue_id, dev and need_wakeup to buffer pool")
-Fixes: 7361f9c3d719 ("xsk: Move fill and completion rings to buffer pool")
+Reported-by: syzbot+febe51d44243fbc564ee@syzkaller.appspotmail.com
+Fixes: 7361f9c3d719 ("xsk: move fill and completion rings to buffer pool")
 ---
- net/xdp/xsk_diag.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/xdp/xsk.c    | 6 ------
+ net/xdp/xsk.h    | 1 -
+ net/xdp/xskmap.c | 5 -----
+ 3 files changed, 12 deletions(-)
 
-diff --git a/net/xdp/xsk_diag.c b/net/xdp/xsk_diag.c
-index 5bd8ea9..3cf6435 100644
---- a/net/xdp/xsk_diag.c
-+++ b/net/xdp/xsk_diag.c
-@@ -59,8 +59,8 @@ static int xsk_diag_put_umem(const struct xdp_sock *xs, struct sk_buff *nlskb)
- 	du.num_pages = umem->npgs;
- 	du.chunk_size = umem->chunk_size;
- 	du.headroom = umem->headroom;
--	du.ifindex = pool->netdev ? pool->netdev->ifindex : 0;
--	du.queue_id = pool->queue_id;
-+	du.ifindex = (pool && pool->netdev) ? pool->netdev->ifindex : 0;
-+	du.queue_id = pool ? pool->queue_id : 0;
- 	du.flags = 0;
- 	if (umem->zc)
- 		du.flags |= XDP_DU_F_ZEROCOPY;
-@@ -68,10 +68,10 @@ static int xsk_diag_put_umem(const struct xdp_sock *xs, struct sk_buff *nlskb)
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index 5eb6662..07c3227 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -33,12 +33,6 @@
  
- 	err = nla_put(nlskb, XDP_DIAG_UMEM, sizeof(du), &du);
+ static DEFINE_PER_CPU(struct list_head, xskmap_flush_list);
  
--	if (!err && pool->fq)
-+	if (!err && pool && pool->fq)
- 		err = xsk_diag_put_ring(pool->fq,
- 					XDP_DIAG_UMEM_FILL_RING, nlskb);
--	if (!err && pool->cq) {
-+	if (!err && pool && pool->cq) {
- 		err = xsk_diag_put_ring(pool->cq, XDP_DIAG_UMEM_COMPLETION_RING,
- 					nlskb);
- 	}
+-bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs)
+-{
+-	return READ_ONCE(xs->rx) &&  READ_ONCE(xs->umem) &&
+-		(xs->pool->fq || READ_ONCE(xs->fq_tmp));
+-}
+-
+ void xsk_set_rx_need_wakeup(struct xsk_buff_pool *pool)
+ {
+ 	if (pool->cached_need_wakeup & XDP_WAKEUP_RX)
+diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+index da1f73e..b9e896c 100644
+--- a/net/xdp/xsk.h
++++ b/net/xdp/xsk.h
+@@ -39,7 +39,6 @@ static inline struct xdp_sock *xdp_sk(struct sock *sk)
+ 	return (struct xdp_sock *)sk;
+ }
+ 
+-bool xsk_is_setup_for_bpf_map(struct xdp_sock *xs);
+ void xsk_map_try_sock_delete(struct xsk_map *map, struct xdp_sock *xs,
+ 			     struct xdp_sock **map_entry);
+ int xsk_map_inc(struct xsk_map *map);
+diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+index 2a4fd66..0c5df59 100644
+--- a/net/xdp/xskmap.c
++++ b/net/xdp/xskmap.c
+@@ -185,11 +185,6 @@ static int xsk_map_update_elem(struct bpf_map *map, void *key, void *value,
+ 
+ 	xs = (struct xdp_sock *)sock->sk;
+ 
+-	if (!xsk_is_setup_for_bpf_map(xs)) {
+-		sockfd_put(sock);
+-		return -EOPNOTSUPP;
+-	}
+-
+ 	map_entry = &m->xsk_map[i];
+ 	node = xsk_map_node_alloc(m, map_entry);
+ 	if (IS_ERR(node)) {
 -- 
 2.7.4
 
