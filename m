@@ -2,156 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF1C25A571
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 08:16:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC22125A599
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 08:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726310AbgIBGQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 02:16:49 -0400
-Received: from mail-eopbgr00136.outbound.protection.outlook.com ([40.107.0.136]:25875
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        id S1726791AbgIBGec (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 02:34:32 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:10790 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726140AbgIBGQt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 02:16:49 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eY6rFyfnKsJwxYayYhZlj0HbMIc+QxySQIZNz6yObRaz0Mqma7Cv2WkS7x92g062TTIC3zicYxCFs/9Sj1JtGQ/cLY9+nBQN005ASaLNnELw938Ain2qIFpU6jnU+2AuKXP60H2o119wvTQmSNTa64kZDFFphArQZlg7GzGhB2EYAuumiE09lkRyc3MwNZs+/C0X+dVCzf0DZ2Vh9+f1QcKthektcE9xRB5xrUV1Cau2iAOth9qsfrZP93fBbtbkHVjxy/za3lTfJYGflRyQC3TeVNXoQ9gfFrPJwuf2dCmjKVWxohlKsJTO1hV+fuOlMf7Yq2uoMLEqXkajkrHt9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k4r/aycaofDryifPVOT/RrTZizaA3z5XPwgFNTWmAJU=;
- b=GchIYHIXZxZvyV0vFA7r2CgGD0GtDfz5dN6syYTt2b3tEat7kRHRv/IwG0Mtk3zb6zJu4TFJF/8+9c5jMga0h10z7oVE2u4TY3kIuFYkMoWrCalSi2iVCXYOpIBmebDUpFHr79jD3Op2f6btIcg91gKhi6p+lQHb3WW3Ji86IahA6badsp8prtnsDfrXC/C1KAL2/NL8iDogr6AcApx0+C6Xiz9lyIz6hds7WOyv+GGg5nu/5WglrVQIyakrOT2l4P0biS7r/RxjkSrt1/3aZckaqKBgWuzXQ9mKjKEArKkc2qBgy5pd8CE8T+L1kcbT9w5YLbnlZ+sVg6Vj6IW6bQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k4r/aycaofDryifPVOT/RrTZizaA3z5XPwgFNTWmAJU=;
- b=D5noxq2ySN+w7YNWuPQCRBO+bTzptArpvraptA5pqCNDPtUgk3TUQ7KoCoWYspsE3BXxVdLsS6OEe7jVr29gwUqy8FexbwMtaeHJ4ElJ/aVS61qZcTcWbP+m8lpDNlet11OHsKdBBMRby+a7Bx0M0akXOJtVtLbUfCuzO2pohz8=
-Received: from AM8PR05MB7332.eurprd05.prod.outlook.com (2603:10a6:20b:1db::9)
- by AM4PR0501MB2292.eurprd05.prod.outlook.com (2603:10a6:200:53::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.22; Wed, 2 Sep
- 2020 06:16:44 +0000
-Received: from AM8PR05MB7332.eurprd05.prod.outlook.com
- ([fe80::64de:d33d:e82:b902]) by AM8PR05MB7332.eurprd05.prod.outlook.com
- ([fe80::64de:d33d:e82:b902%7]) with mapi id 15.20.3348.015; Wed, 2 Sep 2020
- 06:16:44 +0000
-From:   Tuong Tong Lien <tuong.t.lien@dektech.com.au>
-To:     David Miller <davem@davemloft.net>
-CC:     "jmaloy@redhat.com" <jmaloy@redhat.com>,
-        "maloy@donjonn.com" <maloy@donjonn.com>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>
-Subject: RE: [net-next v2 1/4] tipc: optimize key switching time and logic
-Thread-Topic: [net-next v2 1/4] tipc: optimize key switching time and logic
-Thread-Index: AQHWgFljycnWru2qvU2zDy6vbXHU46lUWLMAgAB+fLA=
-Date:   Wed, 2 Sep 2020 06:16:44 +0000
-Message-ID: <AM8PR05MB7332A71A7237D3BB3AB29A25E22F0@AM8PR05MB7332.eurprd05.prod.outlook.com>
-References: <20200831083817.3611-1-tuong.t.lien@dektech.com.au>
-        <20200831083817.3611-2-tuong.t.lien@dektech.com.au>
- <20200901.151028.670408362469941141.davem@davemloft.net>
-In-Reply-To: <20200901.151028.670408362469941141.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none
- header.from=dektech.com.au;
-x-originating-ip: [123.20.195.8]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 56505f6f-8889-4a79-482b-08d84f07c407
-x-ms-traffictypediagnostic: AM4PR0501MB2292:
-x-microsoft-antispam-prvs: <AM4PR0501MB229285E36863449F17ACE2DEE22F0@AM4PR0501MB2292.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2512;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3HTgVaJdGEXamvTeg8+y9ESlNB39EmJGKBhcA8Ga9+vbPly7afjfOyQ6pyNScPbOO2OgduNFMUvL4vPvjSBxW/VMO6VNmswG0fYSllIbqHorvw04DzbV8zGiCIJGoW16363qiZqZdIciStVTMBmpcylnpNzjxsd7Z3H6x8jzrwehThIOeGM+Ac0iSUxnNX+CMJB8wnabtzEeNg2mk0Tl3uxMDevR8sWBseIAzZe0QFozxwL2FEDgY41c4cwGAu0Waqu2qJiYLOr+xwD5A0C7GqTWLqym32JH6jdYMBqkbYovn1BLUhTi4VB+O5SdQaHsiKYqEUQY7MxZBTWIesNG/A==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR05MB7332.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(366004)(396003)(39850400004)(376002)(136003)(55236004)(2906002)(186003)(7696005)(4326008)(316002)(8676002)(9686003)(33656002)(54906003)(6916009)(8936002)(53546011)(83380400001)(66556008)(76116006)(5660300002)(55016002)(6506007)(66946007)(52536014)(26005)(71200400001)(478600001)(66476007)(66446008)(64756008)(86362001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: +ZoUWG4bpXoyTfMlmggULYyKghBnpzHMM5hkwLmJGegLo1s8Jc2P9PQ5D1aLZ+bRh7bh6zFDklzpWZewZ4iXObtI7iuSuWYR+kwrGBJVC1icl3EWZWH0WonV6L7AIf2o6OToe4s3AHfoHQmV4s6X8V08q87ACOz5u77pHz1C1dF9qc/HDWtMXrYv5uZOa/NylhY1YFM1xo/DiVDx7Jdpglduy8CDUesV2dqQX0OsqDFphIjbYuM7ExH9U4y834zxPWvd62Y7MgPktO4yDhjwGhD9KJMTnBW4wnnpuI93+SurtEys0cYRcs9UIjY8s9mKtPPNGl7UniOJqIDo8fDT/t4Y2WB55d+yabupF8lkOVS+RkwU9Hxbc4taO0iGONYxOzouk6gNzI2oRqu4Fbp/GPTmWPAyLcD8pL8tuoFeWugK9CyY+ZAp5zODjppqgbjbdIMBlFNFLRr5Xo/SvvH6WF76spuLqfIeA9V+Yg+oWM6JTYch95CpLkN6bzo3qcwRUzLS9pSUj6kwpcKLkufVdHDx+GRf5POY9D5gokq98qAF8OsPzJ4/9FRUK76zTPcNTy1RovNx5pwHtFGDtU3asLEUOXnWOxJOhK7ziI/2EAmaZjq2xGa56G/cAdls2J1f0Tdv/Wfd6OXVHoPGl6GPQQ==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726446AbgIBGec (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Sep 2020 02:34:32 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id D9877D9EE9AF418DA077;
+        Wed,  2 Sep 2020 14:34:28 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 2 Sep 2020 14:34:20 +0800
+Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
+ <511bcb5c-b089-ab4e-4424-a83c6e718bfa@huawei.com>
+ <CAM_iQpW1c1TOKWLxm4uGvCUzK0mKKeDg1Y+3dGAC04pZXeCXcw@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <f81b534a-5845-ae7d-b103-434232c0f5ff@huawei.com>
+Date:   Wed, 2 Sep 2020 14:34:21 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR05MB7332.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56505f6f-8889-4a79-482b-08d84f07c407
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2020 06:16:44.4201
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +loD/KBD5Qzg4KmLCziapS71DM9hy3IgYPQb8H5bV6nixnYcKH1H7UiQLbHLRMAY2cMeH2oyFcjtsaVeBIyTigqRDAgHPFzt1VNnuBTR/g0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2292
+In-Reply-To: <CAM_iQpW1c1TOKWLxm4uGvCUzK0mKKeDg1Y+3dGAC04pZXeCXcw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020/9/2 12:41, Cong Wang wrote:
+> On Tue, Sep 1, 2020 at 6:42 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> On 2020/9/2 2:24, Cong Wang wrote:
+>>> On Mon, Aug 31, 2020 at 5:59 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>
+>>>> Currently there is concurrent reset and enqueue operation for the
+>>>> same lockless qdisc when there is no lock to synchronize the
+>>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+>>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+>>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
+>>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+>>>> skb with a larger queue_mapping after the corresponding qdisc is
+>>>> reset, and call hns3_nic_net_xmit() with that skb later.
+>>>
+>>> Can you be more specific here? Which call path requests a smaller
+>>> tx queue num? If you mean netif_set_real_num_tx_queues(), clearly
+>>> we already have a synchronize_net() there.
+>>
+>> When the netdevice is in active state, the synchronize_net() seems to
+>> do the correct work, as below:
+>>
+>> CPU 0:                                       CPU1:
+>> __dev_queue_xmit()                       netif_set_real_num_tx_queues()
+>> rcu_read_lock_bh();
+>> netdev_core_pick_tx(dev, skb, sb_dev);
+>>         .
+>>         .                               dev->real_num_tx_queues = txq;
+>>         .                                       .
+>>         .                                       .
+>>         .                               synchronize_net();
+>>         .                                       .
+>> q->enqueue()                                    .
+>>         .                                       .
+>> rcu_read_unlock_bh()                            .
+>>                                         qdisc_reset_all_tx_gt
+>>
+>>
+> 
+> Right.
+> 
+> 
+>> but dev->real_num_tx_queues is not RCU-protected, maybe that is a problem
+>> too.
+>>
+>> The problem we hit is as below:
+>> In hns3_set_channels(), hns3_reset_notify(h, HNAE3_DOWN_CLIENT) is called
+>> to deactive the netdevice when user requested a smaller queue num, and
+>> txq->qdisc is already changed to noop_qdisc when calling
+>> netif_set_real_num_tx_queues(), so the synchronize_net() in the function
+>> netif_set_real_num_tx_queues() does not help here.
+> 
+> How could qdisc still be running after deactivating the device?
+
+qdisc could be running during the device deactivating process.
+
+The main process of changing channel number is as below:
+
+1. dev_deactivate()
+2. hns3 handware related setup
+3. netif_set_real_num_tx_queues()
+4. netif_tx_wake_all_queues()
+5. dev_activate()
+
+During step 1, qdisc could be running while qdisc is resetting, so
+there could be skb left in the old qdisc(which will be restored back to
+txq->qdisc during dev_activate()), as below:
+
+CPU 0:                                       CPU1:
+__dev_queue_xmit():                      dev_deactivate_many():
+rcu_read_lock_bh();                      qdisc_deactivate(qdisc);
+q = rcu_dereference_bh(txq->qdisc);		.
+netdev_core_pick_tx(dev, skb, sb_dev);		.
+	.
+	.				rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+	.					.
+	.				    	.
+        .                               	.
+	.					.
+q->enqueue()					.
+	.					.
+rcu_read_unlock_bh()				.
+
+And During step 3, txq->qdisc is pointing to noop_qdisc, so the qdisc_reset()
+only reset the noop_qdisc, but not the actual qdisc, which is stored in
+txq->qdisc_sleeping, so the actual qdisc may still have skb.
+
+When hns3_link_status_change() call step 4 and 5, it will restore all queue's
+qdisc using txq->qdisc_sleeping and schedule all queue with net_tx_action().
+The skb enqueued in step 1 may be dequeued and run, which cause the problem.
+
+> 
+> 
+>>
+>>>
+>>>>
+>>>> Avoid the above concurrent op by calling synchronize_rcu_tasks()
+>>>> after assigning new qdisc to dev_queue->qdisc and before calling
+>>>> qdisc_deactivate() to make sure skb with larger queue_mapping
+>>>> enqueued to old qdisc will always be reset when qdisc_deactivate()
+>>>> is called.
+>>>
+>>> Like Eric said, it is not nice to call such a blocking function when
+>>> we have a large number of TX queues. Possibly we just need to
+>>> add a synchronize_net() as in netif_set_real_num_tx_queues(),
+>>> if it is missing.
+>>
+>> As above, the synchronize_net() in netif_set_real_num_tx_queues() seems
+>> to work when netdevice is in active state, but does not work when in
+>> deactive.
+> 
+> Please explain why deactivated device still has qdisc running?
+> 
+> At least before commit 379349e9bc3b4, we always test deactivate
+> bit before enqueueing. Are you complaining about that commit?
+> That commit is indeed suspicious, at least it does not precisely revert
+> commit ba27b4cdaaa66561aaedb21 as it claims.
+
+I am not familiar with TCQ_F_CAN_BYPASS.
+From my understanding, the problem is that there is no order between
+qdisc enqueuing and qdisc reset.
 
 
-> -----Original Message-----
-> From: David Miller <davem@davemloft.net>
-> Sent: Wednesday, September 2, 2020 5:10 AM
-> To: Tuong Tong Lien <tuong.t.lien@dektech.com.au>
-> Cc: jmaloy@redhat.com; maloy@donjonn.com; ying.xue@windriver.com; netdev@=
-vger.kernel.org; tipc-
-> discussion@lists.sourceforge.net
-> Subject: Re: [net-next v2 1/4] tipc: optimize key switching time and logi=
-c
->=20
-> From: Tuong Lien <tuong.t.lien@dektech.com.au>
-> Date: Mon, 31 Aug 2020 15:38:14 +0700
->=20
-> > We reduce the lasting time for a pending TX key to be active as well as
-> > for a passive RX key to be freed which generally helps speed up the key
-> > switching. It is not expected to be too fast but should not be too slow
-> > either. Also the key handling logic is simplified that a pending RX key
-> > will be removed automatically if it is found not working after a number
-> > of times; the probing for a pending TX key is now carried on a specific
-> > message user ('LINK_PROTOCOL' or 'LINK_CONFIG') which is more efficient
-> > than using a timer on broadcast messages, the timer is reserved for use
-> > later as needed.
-> >
-> > The kernel logs or 'pr***()' are now made as clear as possible to user.
-> > Some prints are added, removed or changed to the debug-level. The
-> > 'TIPC_CRYPTO_DEBUG' definition is removed, and the 'pr_debug()' is used
-> > instead which will be much helpful in runtime.
-> >
-> > Besides we also optimize the code in some other places as a preparation
-> > for later commits.
-> >
-> > This commit does not change the en/decryption functionalities.
-> >
-> > Acked-by: Jon Maloy <jmaloy@redhat.com>
-> > Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
->=20
-> Random log messages in response to user config requests are
-> inappropriate especially with netlink.
->=20
-> Report such informational responses to errors using the
-> genl_info->extack instead, as is standard practice across
-> the entire kernel.
->=20
-> Please remove all kernel log messages that get emitted due to
-> netlink operations and use extack notifications instead.
-Yes, the netlink extack message is fine but the fact is that we currently d=
-o not obtain such message from the user space tool (i.e. iproute2/tipc). So=
-, if really needed, we will have to update the tool as well... For now, I w=
-ill remove all the message logs as it is fine enough with the return code.
-
->=20
-> I also disagree with the commit message stating:
->=20
-> 	This commit does not change the en/decryption functionalities.
->=20
-> You are changing timer lengths and other aspects of crypto behavior,
-> so the patch is in fact changing things.
-Ok, will remove this statement (this patch was merged from two different on=
-es, so indeed made some changes).
-Thanks for the comments!
-
-BR/Tuong
+> 
+> 
+>>
+>> And we do not want skb left in the old qdisc when netdevice is deactived,
+>> right?
+> 
+> Yes, and more importantly, qdisc should not be running after deactivation.
+> 
+> Thanks.
+> .
+> 
