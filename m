@@ -2,51 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4BF325AED9
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 17:31:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B63F25AEED
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 17:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728244AbgIBP3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 11:29:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53028 "EHLO mail.kernel.org"
+        id S1728348AbgIBPcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 11:32:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56342 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728087AbgIBPYD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 11:24:03 -0400
+        id S1726625AbgIBPa1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Sep 2020 11:30:27 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2A1BE20767;
-        Wed,  2 Sep 2020 15:24:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AC1CA207D3;
+        Wed,  2 Sep 2020 15:30:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599060240;
-        bh=d3M7pbJ+TEn7khWKvkhKRnJf5xSK9xinFqy9OiKP3O4=;
+        s=default; t=1599060627;
+        bh=1yFSuoH/C7lnmRudCqwmn4PxNv6Wotrb39IdIF3mqF8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cp9Eha183o2xT+K+Ym44Pv0ockvQugxza5JA4tl+qqELYuks4LZ6QG1mX0+6fYDu1
-         kzaU3PV1NPVsQB9rSPRy/nO7ZF0Ryal8IQT2kgXoY61/Qeg1Lg/MB4xNStADC+6EOd
-         nBzDAS/EHzu9pR9f/PoYjRjbfEWYIhAzzVhPmy0U=
-Date:   Wed, 2 Sep 2020 08:23:58 -0700
+        b=TAkKjmUb9ADt8b940JXfKW/NzoXeUaE+tXnHyz8gTVCnQnnYi8VhCJhM5wRuLPsx2
+         ATM94eUjJrL5KbjR4uCcpIA/HAIdo6LP49EFLukgREoCjZd/RYIhfPR5fZ1jiMfKcj
+         Hc5NT8QqrG3gkz7q8j7GGRUrLq2ZXVzoHffW3KDs=
+Date:   Wed, 2 Sep 2020 08:30:25 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Parav Pandit <parav@nvidia.com>, Parav Pandit <parav@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "roid@mellanox.com" <roid@mellanox.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 2/3] devlink: Consider other controller while
- building phys_port_name
-Message-ID: <20200902082358.6b0c69b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200902080011.GI3794@nanopsycho.orion>
-References: <BY5PR12MB43221CAA3D77DB7DB490B012DC550@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200827144206.3c2cad03@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB432271E4F9028831FA75B7E0DC520@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200828094343.6c4ff16a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB43220099C235E238D6AF89EADC530@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200901081906.GE3794@nanopsycho.orion>
-        <BY5PR12MB43229CA19D3D8215BC9BEFECDC2E0@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200901091742.GF3794@nanopsycho.orion>
-        <20200901142840.25b6b58f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB43228D0A9B1EF43C061A5A3BDC2F0@BY5PR12MB4322.namprd12.prod.outlook.com>
-        <20200902080011.GI3794@nanopsycho.orion>
+Cc:     Moshe Shemesh <moshe@nvidia.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v3 01/14] devlink: Add reload action option
+ to devlink reload command
+Message-ID: <20200902083025.43407d8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200902094627.GB2568@nanopsycho>
+References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
+        <1598801254-27764-2-git-send-email-moshe@mellanox.com>
+        <20200831121501.GD3794@nanopsycho.orion>
+        <9fffbe80-9a2a-33de-2e11-24be34648686@nvidia.com>
+        <20200902094627.GB2568@nanopsycho>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,25 +48,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Sep 2020 10:00:11 +0200 Jiri Pirko wrote:
->>> I didn't quite get the fact that you want to not show controller ID on the local
->>> port, initially.  
->> Mainly to not_break current users.  
+On Wed, 2 Sep 2020 11:46:27 +0200 Jiri Pirko wrote:
+> >? Do we need such change there too or keep it as is, each action by itself
+> >and return what was performed ?  
 > 
-> You don't have to take it to the name, unless "external" flag is set.
-> 
-> But I don't really see the point of showing !external, cause such
-> controller number would be always 0. Jakub, why do you think it is
-> needed?
+> Well, I don't know. User asks for X, X should be performed, not Y or Z.
+> So perhaps the return value is not needed.
+> Just driver advertizes it supports X, Y, Z and the users says:
+> 1) do X, driver does X
+> 2) do Y, driver does Y
+> 3) do Z, driver does Z
+> [
+> I think this kindof circles back to the original proposal...
 
-It may seem reasonable for a smartNIC where there are only two
-controllers, and all you really need is that external flag. 
-
-In a general case when users are trying to figure out the topology
-not knowing which controller they are sitting at looks like a serious
-limitation.
-
-Example - multi-host system and you want to know which controller you
-are to run power cycle from the BMC side.
-
-We won't be able to change that because it'd change the names for you.
+Why? User does not care if you activate new devlink params when
+activating new firmware. Trust me. So why make the user figure out
+which of all possible reset option they should select? If there is 
+a legitimate use case to limit what is reset - it should be handled
+by a separate negative attribute, like --live which says don't reset
+anything.
