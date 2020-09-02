@@ -2,181 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC22125A599
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 08:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1F8F25A5A9
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 08:41:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbgIBGec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 02:34:32 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:10790 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726446AbgIBGec (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 02:34:32 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id D9877D9EE9AF418DA077;
-        Wed,  2 Sep 2020 14:34:28 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Wed, 2 Sep 2020 14:34:20 +0800
-Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
- <511bcb5c-b089-ab4e-4424-a83c6e718bfa@huawei.com>
- <CAM_iQpW1c1TOKWLxm4uGvCUzK0mKKeDg1Y+3dGAC04pZXeCXcw@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <f81b534a-5845-ae7d-b103-434232c0f5ff@huawei.com>
-Date:   Wed, 2 Sep 2020 14:34:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1726426AbgIBGlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 02:41:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726144AbgIBGlv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 02:41:51 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E63C061244
+        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 23:41:51 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id t13so4045414ile.9
+        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 23:41:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=R9alJcLxpOj2/b+OW0rD9lIgzwMWmTv7xLREP6LowXg=;
+        b=jk32QlRXuHNp7AdRbckFjG1ANh6hTg743Gmw3wLi8sJSfQHh574V/eoO5+mihGHtaj
+         4JEe/2CgQ1DwVkLrLvNt7nGomQ0H8snGefzzKIb8PuF/BEowUaKsaylJHu2mgK+ftap9
+         HFTMv6u/hox1gw3oM4G37OKLPm9IjiJcg+QzK8YvLvY3ln4O35DA68I5naX8hMkxnsgz
+         Eots825Kw8VxTRl0F5JJI/9i1Dg75WlJKkBB9H5PqrhA4JoZsElX8J2RBAk0pW+ABCTs
+         fgA+VtTFWmcINH7DfnGACBn8jVq6jhTc5yIgT4nJeNe5DvKBaY1EYZU14MVpg7oDhDlh
+         W6jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R9alJcLxpOj2/b+OW0rD9lIgzwMWmTv7xLREP6LowXg=;
+        b=nrqFs/uhZuaz1wXAw4IXOl3SJo/EPhTqpAl9d39TcBpgtLhDmHA6wFB3/BRGEkD9sz
+         aEdRG70+6vKgkD1Eb699VT5QXDnISEa3s2tkBk97529m51BvecIALVAkGTdPQpk/tWb0
+         IvWjYm37pxZgb0BQEuiD01hYBzDPEyqLNJQb9nfhuQ6C5zqq0F0ohpigZnLEDHjolfiC
+         0bNqHujp++dMSBIOvvA6gohfO9PdneJ/YPCWNlBOPGBiH9PWECWOvFAc1eqhOfVkUW+P
+         /Jjl6wWJ+Bv8/t5oxr1tz83b80p9eaSu9woF9t6bYuRpS/JZZV5oF9IJNQpKoOwm+U5G
+         ARAw==
+X-Gm-Message-State: AOAM533yjER7Vmdqh7CTbfx12Xtirj/Tp3ulwbTNPI8anH4FzZ5JFOkh
+        oh5dXtpBi5aBLTW2NYRKEjs3Xq2eL4lTdPOH8M/DTvBHIzyzkA==
+X-Google-Smtp-Source: ABdhPJxPO9T8XGeWcOhIo49WItCUgYxTGqkm1WEwoAetvQJ7iYXG3j4g8CeHVyJbi90OomVOUB+CvNvNWvb4Er70O+4=
+X-Received: by 2002:a92:9996:: with SMTP id t22mr2470017ilk.216.1599028910535;
+ Tue, 01 Sep 2020 23:41:50 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpW1c1TOKWLxm4uGvCUzK0mKKeDg1Y+3dGAC04pZXeCXcw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+References: <20200901212009.1314401-1-yyd@google.com> <20200901220200.GB3050651@lunn.ch>
+ <CAPREpbaFi6Tqw+YKx=1c1nFRtUt9G2gRW2BT83siqojy=DOEmA@mail.gmail.com>
+In-Reply-To: <CAPREpbaFi6Tqw+YKx=1c1nFRtUt9G2gRW2BT83siqojy=DOEmA@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 2 Sep 2020 08:41:38 +0200
+Message-ID: <CANn89i+3SGKw8CruFrQx2LZXOW2SNphSZHxStFsCJxY2Z+ZtxA@mail.gmail.com>
+Subject: Re: [PATCH ethtool] ethtool: add support show/set-hwtstamp
+To:     Kevin Yang <yyd@google.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>,
+        Networking <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/9/2 12:41, Cong Wang wrote:
-> On Tue, Sep 1, 2020 at 6:42 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+On Wed, Sep 2, 2020 at 2:36 AM Kevin Yang <yyd@google.com> wrote:
+>
+> Hi Andrew,
+>
+> They are pretty much the same, both use ioctl(SIOCSHWTSTAMP).
+>
+> Adding this to ethtool is because:
+> - This time stamping policy is a hardware setting aligned with ethtool's purpose "query and control network device driver and hardware settings"
+> - ethtool is widely used, system administrators don't need to install another binary to control this feature.
+>
+
+
+Absolutely. ethtool has -T support already, and is the facto tool for
+things not covered by iproute2 suite.
+
+Having to remember a myriad of binaries that basically use a single
+ioctl() is time consuming.
+
+> Kevin
+>
+> On Tue, Sep 1, 2020 at 6:02 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >>
->> On 2020/9/2 2:24, Cong Wang wrote:
->>> On Mon, Aug 31, 2020 at 5:59 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>>
->>>> Currently there is concurrent reset and enqueue operation for the
->>>> same lockless qdisc when there is no lock to synchronize the
->>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
->>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
->>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
->>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
->>>> skb with a larger queue_mapping after the corresponding qdisc is
->>>> reset, and call hns3_nic_net_xmit() with that skb later.
->>>
->>> Can you be more specific here? Which call path requests a smaller
->>> tx queue num? If you mean netif_set_real_num_tx_queues(), clearly
->>> we already have a synchronize_net() there.
+>> On Tue, Sep 01, 2020 at 05:20:09PM -0400, Kevin(Yudong) Yang wrote:
+>> > Before this patch, ethtool has -T/--show-time-stamping that only
+>> > shows the device's time stamping capabilities but not the time
+>> > stamping policy that is used by the device.
 >>
->> When the netdevice is in active state, the synchronize_net() seems to
->> do the correct work, as below:
+>> Hi Kavin
 >>
->> CPU 0:                                       CPU1:
->> __dev_queue_xmit()                       netif_set_real_num_tx_queues()
->> rcu_read_lock_bh();
->> netdev_core_pick_tx(dev, skb, sb_dev);
->>         .
->>         .                               dev->real_num_tx_queues = txq;
->>         .                                       .
->>         .                                       .
->>         .                               synchronize_net();
->>         .                                       .
->> q->enqueue()                                    .
->>         .                                       .
->> rcu_read_unlock_bh()                            .
->>                                         qdisc_reset_all_tx_gt
+>> How does this differ from hwstamp_ctl(1)?
 >>
->>
-> 
-> Right.
-> 
-> 
->> but dev->real_num_tx_queues is not RCU-protected, maybe that is a problem
->> too.
->>
->> The problem we hit is as below:
->> In hns3_set_channels(), hns3_reset_notify(h, HNAE3_DOWN_CLIENT) is called
->> to deactive the netdevice when user requested a smaller queue num, and
->> txq->qdisc is already changed to noop_qdisc when calling
->> netif_set_real_num_tx_queues(), so the synchronize_net() in the function
->> netif_set_real_num_tx_queues() does not help here.
-> 
-> How could qdisc still be running after deactivating the device?
-
-qdisc could be running during the device deactivating process.
-
-The main process of changing channel number is as below:
-
-1. dev_deactivate()
-2. hns3 handware related setup
-3. netif_set_real_num_tx_queues()
-4. netif_tx_wake_all_queues()
-5. dev_activate()
-
-During step 1, qdisc could be running while qdisc is resetting, so
-there could be skb left in the old qdisc(which will be restored back to
-txq->qdisc during dev_activate()), as below:
-
-CPU 0:                                       CPU1:
-__dev_queue_xmit():                      dev_deactivate_many():
-rcu_read_lock_bh();                      qdisc_deactivate(qdisc);
-q = rcu_dereference_bh(txq->qdisc);		.
-netdev_core_pick_tx(dev, skb, sb_dev);		.
-	.
-	.				rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
-	.					.
-	.				    	.
-        .                               	.
-	.					.
-q->enqueue()					.
-	.					.
-rcu_read_unlock_bh()				.
-
-And During step 3, txq->qdisc is pointing to noop_qdisc, so the qdisc_reset()
-only reset the noop_qdisc, but not the actual qdisc, which is stored in
-txq->qdisc_sleeping, so the actual qdisc may still have skb.
-
-When hns3_link_status_change() call step 4 and 5, it will restore all queue's
-qdisc using txq->qdisc_sleeping and schedule all queue with net_tx_action().
-The skb enqueued in step 1 may be dequeued and run, which cause the problem.
-
-> 
-> 
->>
->>>
->>>>
->>>> Avoid the above concurrent op by calling synchronize_rcu_tasks()
->>>> after assigning new qdisc to dev_queue->qdisc and before calling
->>>> qdisc_deactivate() to make sure skb with larger queue_mapping
->>>> enqueued to old qdisc will always be reset when qdisc_deactivate()
->>>> is called.
->>>
->>> Like Eric said, it is not nice to call such a blocking function when
->>> we have a large number of TX queues. Possibly we just need to
->>> add a synchronize_net() as in netif_set_real_num_tx_queues(),
->>> if it is missing.
->>
->> As above, the synchronize_net() in netif_set_real_num_tx_queues() seems
->> to work when netdevice is in active state, but does not work when in
->> deactive.
-> 
-> Please explain why deactivated device still has qdisc running?
-> 
-> At least before commit 379349e9bc3b4, we always test deactivate
-> bit before enqueueing. Are you complaining about that commit?
-> That commit is indeed suspicious, at least it does not precisely revert
-> commit ba27b4cdaaa66561aaedb21 as it claims.
-
-I am not familiar with TCQ_F_CAN_BYPASS.
-From my understanding, the problem is that there is no order between
-qdisc enqueuing and qdisc reset.
-
-
-> 
-> 
->>
->> And we do not want skb left in the old qdisc when netdevice is deactived,
->> right?
-> 
-> Yes, and more importantly, qdisc should not be running after deactivation.
-> 
-> Thanks.
-> .
-> 
+>>     Andrew
