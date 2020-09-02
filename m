@@ -2,134 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7A8025B58A
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 22:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14EC525B591
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 23:08:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgIBU7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 16:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
+        id S1726674AbgIBVDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 17:03:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726226AbgIBU7C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 16:59:02 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F61C061244;
-        Wed,  2 Sep 2020 13:59:02 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id 195so560482ybl.9;
-        Wed, 02 Sep 2020 13:59:02 -0700 (PDT)
+        with ESMTP id S1726226AbgIBVDh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 17:03:37 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5238FC061244;
+        Wed,  2 Sep 2020 14:03:37 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id w7so376643pfi.4;
+        Wed, 02 Sep 2020 14:03:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5ZfPemBjYkOodSo7EFsnzTfP5gdkrDYRzDlndFSMw+8=;
-        b=QRlkPHCcnmNz6eji4IWONJT8m+Atj+DoBEocfspqhw0714Z9K8VhP/ST74E39K1bye
-         fyTK+xRfucKFv5wO72u0p1VwsVP2ARDrLUAA5kIlZj/+mObRCghHJh9IAfxQ7ativhmx
-         /qnCgAKDKyE7Sk12kcXjBh2XCyIPx14J0k2KWc3PGVyM8+K9SNJKKcniuytPsZg11Ids
-         0mE4a5FiZCeolfXBtSEpGpoUSWIZXS5Y6uw9ugyRBKkf0HEa9bg/UY6A7plqC9GfSc3B
-         SJ3H+c3JNiH6LaJ13l0ej1GzPl5Tm5Xi2CfCB6dweAHr7aof+6tLWOmC11MaXw7aTsnW
-         CI5w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XVbnIv7pbAdrtQM6KfEJY+PSmQg9DgIQ14umlSws9rM=;
+        b=VAkpAH7eFF/XU/Ej4NBSa75xXMDcvJ9fFVwlpkRAHEwwgBsm1O2gjnQz1f1u3loW4L
+         V671inYBAEbNe9QPaEz8ER6OWKF993vB63kX6kaDOzWNANZw+lW1NYmbbB1+GlKhwdcH
+         klcPMinm8DjptPJgkLL1ktcVSWGUIAKi54LlI409YE1QePWRzTgOg8MqIKj4WP4m94EB
+         v2O/wLnHH0+WtOAcPWKdeRlGaU41bcdAmKefz70W4l5N/J3lk7JZiSZM45/O9IOmffCB
+         jCVuD/n8POMhRI1tEJJnU/KcPhUZGqxL70NzY34PDdzKgPEURUwufz3MAL0eYAgT+gyb
+         1q5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5ZfPemBjYkOodSo7EFsnzTfP5gdkrDYRzDlndFSMw+8=;
-        b=rZBOip6Jsmj2mcyI1CesoMcfKUhrV04D43UnLu7Teq2X0a3xhDYpdLdbi6teCl0+GW
-         uR1yKn0sshz9YWzXjy7oGkAg6BQixjBU5fFVphbRAdG/kGrEzS+VjFyXsk2Zoa55EhbZ
-         meXZkK7/kM3X1B44LvXdnzXPQ7azwr/UW/TrbIaWjfD9IOG2JcWbJXBB4Nnty5vLdeB7
-         9LYx9LA2eepAMn8shxIbzm1/2jBfBdUlnukDxzTIe1HqSnIAIczlYDpr8o8TFGEf+I8y
-         soiuhtj9La3QSnbzXAtFN9FtKn4Bc3IYuI9ZHv6B4EUokrwn6+IW92Vcx5zvTHdERggw
-         0hZg==
-X-Gm-Message-State: AOAM530E1zk080mgbEs5XHqsfcnXhM+2diJlANvW2YclyZv7lMAbuEov
-        mv7kdwurxNf6CzRB97ZPpO0MxGAM8FUR4aTtP0pvH8nXkd4=
-X-Google-Smtp-Source: ABdhPJzO/IczDEfTQHXjFwjRDbR1jrxJyatELa/KD/yXoHQyrF0XPe/72IqQH6pVDKrkuhBRpcLTRQFnqPc3eeAFl9Q=
-X-Received: by 2002:a5b:44d:: with SMTP id s13mr12771711ybp.403.1599080341639;
- Wed, 02 Sep 2020 13:59:01 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XVbnIv7pbAdrtQM6KfEJY+PSmQg9DgIQ14umlSws9rM=;
+        b=Ux0vbNZG6n2iLRqrZlRLC0fmQfdIQJQeXFfgbylU0TW4QwHYlp4nW2zvj9w3vMBVs7
+         ROO5Sxw1OM7zImJhBnOvMjE5AqL/U686eJuhGBjBZ4mkR8wP0yo68NqOq0YYgUyOZn2+
+         hzS/aawFyGnQMjs0ASZmp1Jnqe4uriork9TSFCnhQX8OlQL+0PrzzaEpgdjkIgSd4/WS
+         GbCS+KEvXSGMGaq/0fUY2Nrp+hlA/pXNiuqVEZcHLifup51MEd96MeDROuT9371SyQef
+         LIdIKco3uiJ7d4FGaAaaOAFBVCuXgnH3AgGELlGx21sWvq6aB9C+k4Xq5fjzBBIyNvg1
+         hc5A==
+X-Gm-Message-State: AOAM530g3PAD8ZSekYDSKzFZjilzTy51S9ws2buqHy6jBITlAGP15uVl
+        ydmJyzCeRK3XhlzRwILxbi/VIA8FxyE=
+X-Google-Smtp-Source: ABdhPJyVVhWQxTxuvXFrM5i3h+gPExpgSl5FNvOM5fqM4yUluhmAZNS32PiAVsP18J1c721kGuXd4Q==
+X-Received: by 2002:a65:62c3:: with SMTP id m3mr3304602pgv.338.1599080616385;
+        Wed, 02 Sep 2020 14:03:36 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j10sm434092pff.171.2020.09.02.14.03.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2020 14:03:35 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: dsa: bcm_sf2: Ensure that MDIO diversion is used
+Date:   Wed,  2 Sep 2020 14:03:27 -0700
+Message-Id: <20200902210328.3131578-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200902084246.1513055-1-naveen.n.rao@linux.vnet.ibm.com>
-In-Reply-To: <20200902084246.1513055-1-naveen.n.rao@linux.vnet.ibm.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Sep 2020 13:58:50 -0700
-Message-ID: <CAEf4BzZXyJsJ6rFp7pj_0PhyE_df9Z08wE9pUkZBp8i1qz_h1Q@mail.gmail.com>
-Subject: Re: [PATCH] libbpf: Remove arch-specific include path in Makefile
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Vaidyanathan Srinivasan <svaidy@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 2, 2020 at 1:43 AM Naveen N. Rao
-<naveen.n.rao@linux.vnet.ibm.com> wrote:
->
-> Ubuntu mainline builds for ppc64le are failing with the below error (*):
->     CALL    /home/kernel/COD/linux/scripts/atomic/check-atomics.sh
->     DESCEND  bpf/resolve_btfids
->
->   Auto-detecting system features:
->   ...                        libelf: [ [32mon[m  ]
->   ...                          zlib: [ [32mon[m  ]
->   ...                           bpf: [ [31mOFF[m ]
->
->   BPF API too old
->   make[6]: *** [Makefile:295: bpfdep] Error 1
->   make[5]: *** [Makefile:54: /home/kernel/COD/linux/debian/build/build-generic/tools/bpf/resolve_btfids//libbpf.a] Error 2
->   make[4]: *** [Makefile:71: bpf/resolve_btfids] Error 2
->   make[3]: *** [/home/kernel/COD/linux/Makefile:1890: tools/bpf/resolve_btfids] Error 2
->   make[2]: *** [/home/kernel/COD/linux/Makefile:335: __build_one_by_one] Error 2
->   make[2]: Leaving directory '/home/kernel/COD/linux/debian/build/build-generic'
->   make[1]: *** [Makefile:185: __sub-make] Error 2
->   make[1]: Leaving directory '/home/kernel/COD/linux'
->
-> resolve_btfids needs to be build as a host binary and it needs libbpf.
-> However, libbpf Makefile hardcodes an include path utilizing $(ARCH).
-> This results in mixing of cross-architecture headers resulting in a
-> build failure.
->
-> The specific header include path doesn't seem necessary for a libbpf
-> build. Hence, remove the same.
->
-> (*) https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.9-rc3/ppc64el/log
->
-> Reported-by: Vaidyanathan Srinivasan <svaidy@linux.ibm.com>
-> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-> ---
+Registering our slave MDIO bus outside of the OF infrastructure is
+necessary in order to avoid creating double references of the same
+Device Tree nodes, however it is not sufficient to guarantee that the
+MDIO bus diversion is used because of_phy_connect() will still resolve
+to a valid PHY phandle and it will connect to the PHY using its parent
+MDIO bus which is still the SF2 master MDIO bus.
 
-This seems to still build fine for me, so I seems fine. Not sure why
-that $(ARCH)/include/uapi path is there.
+Ensure that of_phy_connect() does not suceed by removing any phandle
+reference for the PHY we need to divert. This forces the DSA code to use
+the DSA slave_mii_bus that we register and ensures the MDIO diversion is
+being used.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/bcm_sf2.c | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
 
-> This is a simpler fix that seems to work and I saw the proper headers
-> from within tools/ being included in both cross-architecture builds as
-> well as a native ppc64le build. I am not sure if there is a better way
-> to ask kbuild to build resolve_btfids/libbpf for the host architecture,
-> and if that will set $(ARCH) appropriately.
->
-> - Naveen
->
->
->  tools/lib/bpf/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> index adbe994610f2..fccc4dcda4b6 100644
-> --- a/tools/lib/bpf/Makefile
-> +++ b/tools/lib/bpf/Makefile
-> @@ -62,7 +62,7 @@ FEATURE_USER = .libbpf
->  FEATURE_TESTS = libelf zlib bpf
->  FEATURE_DISPLAY = libelf zlib bpf
->
-> -INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/arch/$(ARCH)/include/uapi -I$(srctree)/tools/include/uapi
-> +INCLUDES = -I. -I$(srctree)/tools/include -I$(srctree)/tools/include/uapi
->  FEATURE_CHECK_CFLAGS-bpf = $(INCLUDES)
->
->  check_feat := 1
->
-> base-commit: 0697fecf7ecd8abf70d0f46e6a352818e984cc9f
-> --
-> 2.25.4
->
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 1c7fbb6f0447..8e215c148487 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -489,9 +489,11 @@ static void bcm_sf2_identify_ports(struct bcm_sf2_priv *priv,
+ static int bcm_sf2_mdio_register(struct dsa_switch *ds)
+ {
+ 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
+-	struct device_node *dn;
++	struct device_node *dn, *child;
++	struct phy_device *phydev;
++	struct property *prop;
+ 	static int index;
+-	int err;
++	int err, reg;
+ 
+ 	/* Find our integrated MDIO bus node */
+ 	dn = of_find_compatible_node(NULL, NULL, "brcm,unimac-mdio");
+@@ -534,6 +536,31 @@ static int bcm_sf2_mdio_register(struct dsa_switch *ds)
+ 	priv->slave_mii_bus->parent = ds->dev->parent;
+ 	priv->slave_mii_bus->phy_mask = ~priv->indir_phy_mask;
+ 
++	/* We need to make sure that of_phy_connect() will not work by
++	 * removing the 'phandle' and 'linux,phandle' properties and
++	 * unregister the existing PHY device that was already registered.
++	 */
++	for_each_available_child_of_node(dn, child) {
++		if (of_property_read_u32(child, "reg", &reg) ||
++		    reg >= PHY_MAX_ADDR)
++			continue;
++
++		if (!(priv->indir_phy_mask & BIT(reg)))
++			continue;
++
++		prop = of_find_property(child, "phandle", NULL);
++		if (prop)
++			of_remove_property(child, prop);
++
++		prop = of_find_property(child, "linux,phandle", NULL);
++		if (prop)
++			of_remove_property(child, prop);
++
++		phydev = of_phy_find_device(child);
++		if (phydev)
++			phy_device_remove(phydev);
++	}
++
+ 	err = mdiobus_register(priv->slave_mii_bus);
+ 	if (err && dn)
+ 		of_node_put(dn);
+-- 
+2.25.1
+
