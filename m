@@ -2,100 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ED1825A259
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 02:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADA7725A26A
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 02:46:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbgIBAmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 20:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54646 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726064AbgIBAmN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 20:42:13 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9019AC061244
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 17:42:12 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id d190so4012340iof.3
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 17:42:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VKHLvH1J2VJaorrEDWRQw/ehzOWUl6yg1KAg6n1TROo=;
-        b=I19hRBxpEcAkNRm32DFSRNfrJpGFUftTrMJGlcgwQedtviTgFN40wxw1AJ9sCAZ2aE
-         cjWx4iXTs7I8QcazQlFJAVxLDH3tmDtLvqgC9liJfuS/t+WkAyGllaIG7xtqNPJJ3Q7a
-         U8LIih1zwlmvslboF0eBhmJuyGdSzCM0DoFNX1EstvlFkgT2S8A2gtlf1Q1yQMUDs46j
-         9TO8CveRJbFGQwQv5it49m00c3InA1rhP7pKzZ83XHE9KxvWOXR18l3Dk/y62Tizu5j5
-         eOhzS6w2h6sNnho+12zWgWq8jvJmYjp4RtTcBIzBh4JzvPMw4537DXR13bN4F/MWFrRY
-         UTcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=VKHLvH1J2VJaorrEDWRQw/ehzOWUl6yg1KAg6n1TROo=;
-        b=aJfS0kw8KknHnkMXsyb9IgkJcEx/f1ZNmd37d5iK5G6HTsu2tSzNPq68OL8EO6+jQo
-         8UpM12KCAyk5XMR/RKeRKxgtZ3FM65HkJkyTzd4iBOG7pE0HIDTPZYuSLNcZtxysQnzv
-         HZm5m79V4QsE8yMN5cigroyuNJKdjrsy44523pNwYyVmEvdIIRX4HW3YcJXCFxq+WiFe
-         +20fqR4bkZFtTSlSgTSkqCcb2boHk7UFU4lB8AlRzIhv8hKizb/M8TVAZKj3YHxzFkju
-         wFHt7oOnyp/dk4zvGeI2Yx80DC0RmJRKoj7UtZ5TaWDLRVMkqt1Mclx104LASl9R0cHy
-         D7+w==
-X-Gm-Message-State: AOAM531WY+T2F7d3niZqFx6zvPIpnEjkQkEro3z4wycYYxdorPq1qg8b
-        FQwEqTEidHevCeocUrK2ySeqla5oBCxPiA==
-X-Google-Smtp-Source: ABdhPJwkkSYMfRRK3ctK0iam8JjLv3Q5ok+h/i1y5ZpmtqAeTl5uda/iwOnrOzSFwRyWfmrE75Kyfg==
-X-Received: by 2002:a6b:6e0b:: with SMTP id d11mr1443011ioh.155.1599007331818;
-        Tue, 01 Sep 2020 17:42:11 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:883e:eb9e:60a1:7cfb])
-        by smtp.googlemail.com with ESMTPSA id d19sm1292141iod.38.2020.09.01.17.42.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Sep 2020 17:42:10 -0700 (PDT)
-Subject: Re: PMTUD broken inside network namespace with multipath routing
-To:     mastertheknife <mastertheknife@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <CANXY5y+iuzMg+4UdkPJW_Efun30KAPL1+h2S7HeSPp4zOrVC7g@mail.gmail.com>
- <c508eeba-c62d-e4d9-98e2-333c76c90161@gmail.com>
- <CANXY5y+gfZuGvv+pjzDOLS8Jp8ZUFpAmNw7k53O6cDuyB1PCnw@mail.gmail.com>
- <1b4ebdb3-8840-810a-0d5e-74e2cf7693bf@gmail.com>
- <CANXY5yJeCeC_FaQHx0GPn88sQCog59k2vmu8o-h6yRrikSQ3vQ@mail.gmail.com>
- <deb7a653-a01b-da4f-c58e-15b6c0c51d75@gmail.com>
- <CANXY5yKNOkBWUTVjOCBBPfACTV_R89ydiOi=YiOZ92in_VEp4w@mail.gmail.com>
- <962617e5-9dec-6715-d550-4cf3ee414cf6@gmail.com>
- <CANXY5yKW=+e1CsoXCb0p_+6n8ZLz4eoOQz_5OkrrjYF6mpU9ZQ@mail.gmail.com>
- <CANXY5yLXpS+YYVeUPGok7R=4cm2AEAoM1zR_sd6YSKqCJPGLOg@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2f0e9d12-1780-cd1f-891d-940274f9105d@gmail.com>
-Date:   Tue, 1 Sep 2020 18:42:10 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1726489AbgIBAqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 20:46:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44158 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726078AbgIBAqB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 20:46:01 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 49FAE206EF;
+        Wed,  2 Sep 2020 00:46:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599007560;
+        bh=Xb2wiY56Zas07n/6A86D6vjbxYBDaOi9pEYZ3eVhCHA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=biveKY7hJCNmZ89A0HyaKIOEY4+ZrkQ5Q/Kj1QhO8hjQQTapMn6PdkGs1t4DH46Z0
+         5kKwoiQO2PxQ9NjYfSEOaoOf7k38L3DbUJaZnxZMQ3ZwJB6abtqfk5D7C0tYVf3aub
+         Me35kt0kO98IKInm10yg96hgmaxn+g+elatVWxgo=
+Date:   Tue, 1 Sep 2020 17:45:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Awogbemila <awogbemila@google.com>
+Cc:     netdev@vger.kernel.org, Kuo Zhao <kuozhao@google.com>,
+        Yangchun Fu <yangchun@google.com>
+Subject: Re: [PATCH net-next v2 5/9] gve: Add Gvnic stats AQ command and
+ ethtool show/set-priv-flags.
+Message-ID: <20200901174558.1745ad28@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200901215149.2685117-6-awogbemila@google.com>
+References: <20200901215149.2685117-1-awogbemila@google.com>
+        <20200901215149.2685117-6-awogbemila@google.com>
 MIME-Version: 1.0
-In-Reply-To: <CANXY5yLXpS+YYVeUPGok7R=4cm2AEAoM1zR_sd6YSKqCJPGLOg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/1/20 4:40 AM, mastertheknife wrote:
-> 
-> P.S: while reading the relevant code in the kernel, i think i spotted
-> some mistake in net/ipv4/route.c, in function "update_or_create_fnhe".
-> It looks like it loops over all the exceptions for the nexthop entry,
-> but always overwriting the first (and only) entry, so effectively only
-> 1 exception can exist per nexthop entry.
-> Line 678:
-> "if (fnhe) {"
-> Should probably be:
-> "if (fnhe && fnhe->fnhe_daddr == daddr) {"
-> 
+On Tue,  1 Sep 2020 14:51:45 -0700 David Awogbemila wrote:
 
-Right above that line is:
+> @@ -297,6 +317,22 @@ static inline void gve_clear_probe_in_progress(struct gve_priv *priv)
+>  	clear_bit(GVE_PRIV_FLAGS_PROBE_IN_PROGRESS, &priv->service_task_flags);
+>  }
+>  
+> +static inline bool gve_get_do_report_stats(struct gve_priv *priv)
+> +{
+> +	return test_bit(GVE_PRIV_FLAGS_DO_REPORT_STATS,
+> +			&priv->service_task_flags);
+> +}
+> +
+> +static inline void gve_set_do_report_stats(struct gve_priv *priv)
+> +{
+> +	set_bit(GVE_PRIV_FLAGS_DO_REPORT_STATS, &priv->service_task_flags);
+> +}
+> +
+> +static inline void gve_clear_do_report_stats(struct gve_priv *priv)
+> +{
+> +	clear_bit(GVE_PRIV_FLAGS_DO_REPORT_STATS, &priv->service_task_flags);
+> +}
+> +
+>  static inline bool gve_get_admin_queue_ok(struct gve_priv *priv)
+>  {
+>  	return test_bit(GVE_PRIV_FLAGS_ADMIN_QUEUE_OK, &priv->state_flags);
+> @@ -357,6 +393,21 @@ static inline void gve_clear_napi_enabled(struct gve_priv *priv)
+>  	clear_bit(GVE_PRIV_FLAGS_NAPI_ENABLED, &priv->state_flags);
+>  }
+>  
+> +static inline bool gve_get_report_stats(struct gve_priv *priv)
+> +{
+> +	return test_bit(GVE_PRIV_FLAGS_REPORT_STATS, &priv->ethtool_flags);
+> +}
+> +
+> +static inline void gve_set_report_stats(struct gve_priv *priv)
 
-        for (fnhe = rcu_dereference(hash->chain); fnhe;
-             fnhe = rcu_dereference(fnhe->fnhe_next)) {
-                if (fnhe->fnhe_daddr == daddr)
-                        break;
-                depth++;
-        }
+Please remove the unused helpers.
 
-so fnhe is set based on daddr match.
+> +{
+> +	set_bit(GVE_PRIV_FLAGS_REPORT_STATS, &priv->ethtool_flags);
+> +}
+> +
+> +static inline void gve_clear_report_stats(struct gve_priv *priv)
+> +{
+> +	clear_bit(GVE_PRIV_FLAGS_REPORT_STATS, &priv->ethtool_flags);
+> +}
+
+> @@ -353,6 +377,54 @@ static int gve_set_tunable(struct net_device *netdev,
+>  	}
+>  }
+>  
+> +static u32 gve_get_priv_flags(struct net_device *netdev)
+> +{
+> +	struct gve_priv *priv = netdev_priv(netdev);
+> +	u32 i, ret_flags = 0;
+> +
+> +	for (i = 0; i < GVE_PRIV_FLAGS_STR_LEN; i++) {
+
+Please remove this pointless loop.
+
+> +		if (priv->ethtool_flags & BIT(i))
+> +			ret_flags |= BIT(i);
+> +	}
+> +	return ret_flags;
+> +}
+> +
+> +static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
+> +{
+> +	struct gve_priv *priv = netdev_priv(netdev);
+> +	u64 ori_flags, new_flags;
+> +	u32 i;
+> +
+> +	ori_flags = READ_ONCE(priv->ethtool_flags);
+> +	new_flags = ori_flags;
+> +
+> +	for (i = 0; i < GVE_PRIV_FLAGS_STR_LEN; i++) {
+
+Ditto.
+
+> +		if (flags & BIT(i))
+> +			new_flags |= BIT(i);
+> +		else
+> +			new_flags &= ~(BIT(i));
+> +		priv->ethtool_flags = new_flags;
+> +		/* set report-stats */
+> +		if (strcmp(gve_gstrings_priv_flags[i], "report-stats") == 0) {
+> +			/* update the stats when user turns report-stats on */
+> +			if (flags & BIT(i))
+> +				gve_handle_report_stats(priv);
+> +			/* zero off gve stats when report-stats turned off */
+> +			if (!(flags & BIT(i)) && (ori_flags & BIT(i))) {
+> +				int tx_stats_num = GVE_TX_STATS_REPORT_NUM *
+> +					priv->tx_cfg.num_queues;
+> +				int rx_stats_num = GVE_RX_STATS_REPORT_NUM *
+> +					priv->rx_cfg.num_queues;
+
+new line here
+
+> +				memset(priv->stats_report->stats, 0,
+> +				       (tx_stats_num + rx_stats_num) *
+> +				       sizeof(struct stats));
+> +			}
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+
+
+> +static int gve_alloc_stats_report(struct gve_priv *priv)
+> +{
+> +	int tx_stats_num, rx_stats_num;
+> +
+> +	tx_stats_num = (GVE_TX_STATS_REPORT_NUM) *
+> +		       priv->tx_cfg.num_queues;
+> +	rx_stats_num = (GVE_RX_STATS_REPORT_NUM) *
+> +		       priv->rx_cfg.num_queues;
+> +	priv->stats_report_len = sizeof(struct gve_stats_report) +
+> +				 (tx_stats_num + rx_stats_num) *
+> +				 sizeof(struct stats);
+> +	priv->stats_report =
+> +		dma_alloc_coherent(&priv->pdev->dev, priv->stats_report_len,
+> +				   &priv->stats_report_bus, GFP_KERNEL);
+> +	if (!priv->stats_report)
+> +		return -ENOMEM;
+> +	/* Set up timer for periodic task */
+> +	timer_setup(&priv->service_timer, gve_service_timer, 0);
+> +	priv->service_timer_period = GVE_SERVICE_TIMER_PERIOD;
+> +	/* Start the service task timer */
+> +	mod_timer(&priv->service_timer,
+> +		  round_jiffies(jiffies +
+> +		  msecs_to_jiffies(priv->service_timer_period)));
+> +	return 0;
+> +}
+
+> @@ -1173,6 +1315,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	priv->db_bar2 = db_bar;
+>  	priv->service_task_flags = 0x0;
+>  	priv->state_flags = 0x0;
+> +	priv->ethtool_flags = 0x0;
+>  	priv->dma_mask = dma_mask;
+
+You allocate the memory and start the timer even tho the priv flag
+defaults to off?
