@@ -2,390 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F21225AC9E
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 16:12:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E15125AE08
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 16:58:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727935AbgIBOLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 10:11:41 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:34372 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727990AbgIBOK7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 10:10:59 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id B87EA5D84FDB52B783ED;
-        Wed,  2 Sep 2020 22:10:25 +0800 (CST)
-Received: from localhost (10.174.179.108) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.487.0; Wed, 2 Sep 2020
- 22:10:14 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <amitkarwar@gmail.com>, <ganapathi.bhat@nxp.com>,
-        <huxinming820@gmail.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <christophe.jaillet@wanadoo.fr>, <yuehaibing@huawei.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] mwifiex: pcie: Fix -Wunused-const-variable warnings
-Date:   Wed, 2 Sep 2020 22:09:33 +0800
-Message-ID: <20200902140933.25852-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1727821AbgIBO5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 10:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726400AbgIBOAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 10:00:09 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303C4C061245;
+        Wed,  2 Sep 2020 07:00:06 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id ls14so2383720pjb.3;
+        Wed, 02 Sep 2020 07:00:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=4dcRwjz1s1csX6AJeRsJaJoQkhF+IffbkvIIRG1ifvo=;
+        b=GxNyzBhmbUbco22yiPt89zB0uDIK5sv/wJtKrrZQZKYJYir5JrZI+VujGdPxpnrncU
+         MSE8jSu+n5w1xqLilKadjA8pGGHPFmrQIy4aivBmKA/WqhP1S5iXGxIEObGvQEx5uSlF
+         mOJldA+0y1jmqZ7A84vJdCG/MWIvbxlvqrni2aGpxpC6ukzEPFblx+GHDlFP2Y1Q0/SO
+         H25Wfovg6NZC+o2jE4XGNmE0ZCZUfd9s90s/R8XDKaywrWyouOpaCSLMpa8y+6oH5bQs
+         wjZdKSKBPtUx+g/lQAid6UaK1B8wGAxn2OynHDYHEPpotx2S96ENktBTrmBDKW3hADFN
+         vJtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=4dcRwjz1s1csX6AJeRsJaJoQkhF+IffbkvIIRG1ifvo=;
+        b=JfqVZrYrFwLjoceiQ35LUFJ9cZ8DLJrO6fMYHaUgPwZUs+exw6LSxGajxl6kE4YWHJ
+         3UhlGk/EOvIl0ez+5h7dow2n5UnxVfZdZtHWX9iiEkb/+IHqam67CE1plJ11isSA3drU
+         XtCOblOCRarPiuWB2LVRoxodHjxE7Mk6DBcV87xWenGTlG7sB71Xc/AcmOKS9Nfx/eDA
+         5XxaXbRlDfNmBmxkaqq2Fj/kSxiOU8siDXmLQHITkVy1sk3deWb7K1X0GRIlvf3Orgt7
+         FuF4cOgltUn6lqAf8D6tjMcEds+ULDtM/yLDfz9TX2kv6FTaQEK8MGnHogN/b5DvnvQX
+         FCRQ==
+X-Gm-Message-State: AOAM532M/wWawIeZEQTxFZuAlbhv70/EbarlwzlOeAPL0P0jNQHWSsaU
+        Jp0pYeMIcT+E8CWpNlp0Xr4=
+X-Google-Smtp-Source: ABdhPJw0G+CAri9uK6EPx9JuyMKErX89MtRXrDoep9PQfAEqaQUg7YZEmumP+oKYa1Im6FRNdUDsSw==
+X-Received: by 2002:a17:90a:d315:: with SMTP id p21mr2475624pju.88.1599055205640;
+        Wed, 02 Sep 2020 07:00:05 -0700 (PDT)
+Received: from localhost ([2001:e42:102:1532:160:16:113:140])
+        by smtp.gmail.com with ESMTPSA id lb1sm4321084pjb.26.2020.09.02.07.00.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2020 07:00:05 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Wed, 2 Sep 2020 22:00:00 +0800
+To:     Benjamin Poirier <benjamin.poirier@gmail.com>
+Cc:     devel@driverdev.osuosl.org, Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] staging: qlge: fix build breakage with dumping enabled
+Message-ID: <20200902140000.jcarw6eqryyergig@Rk>
+References: <20200826232735.104077-1-coiby.xu@gmail.com>
+ <20200827005010.GA46897@f3>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.108]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200827005010.GA46897@f3>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These variables only used in pcie.c, move them to .c file
-can silence these warnings:
+On Thu, Aug 27, 2020 at 09:50:10AM +0900, Benjamin Poirier wrote:
+>On 2020-08-27 07:27 +0800, Coiby Xu wrote:
+>> This fixes commit 0107635e15ac
+>> ("staging: qlge: replace pr_err with netdev_err") which introduced an
+>> build breakage of missing `struct ql_adapter *qdev` for some functions
+>> and a warning of type mismatch with dumping enabled, i.e.,
+>>
+>> $ make CFLAGS_MODULE="QL_ALL_DUMP=1 QL_OB_DUMP=1 QL_CB_DUMP=1 \
+>>   QL_IB_DUMP=1 QL_REG_DUMP=1 QL_DEV_DUMP=1" M=drivers/staging/qlge
+>>
+>> qlge_dbg.c: In function ‘ql_dump_ob_mac_rsp’:
+>> qlge_dbg.c:2051:13: error: ‘qdev’ undeclared (first use in this function); did you mean ‘cdev’?
+>>  2051 |  netdev_err(qdev->ndev, "%s\n", __func__);
+>>       |             ^~~~
+>> qlge_dbg.c: In function ‘ql_dump_routing_entries’:
+>> qlge_dbg.c:1435:10: warning: format ‘%s’ expects argument of type ‘char *’, but argument 3 has type ‘int’ [-Wformat=]
+>>  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
+>>       |         ~^
+>>       |          |
+>>       |          char *
+>>       |         %d
+>>  1436 |        i, value);
+>>       |        ~
+>>       |        |
+>>       |        int
+>> qlge_dbg.c:1435:37: warning: format ‘%x’ expects a matching ‘unsigned int’ argument [-Wformat=]
+>>  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
+>>       |                                 ~~~~^
+>>       |                                     |
+>>       |                                     unsigned int
+>>
+>> Fixes: 0107635e15ac ("staging: qlge: replace pr_err with netdev_err")
+>> Reported-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+>> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+>> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+>> ---
+>>  drivers/staging/qlge/qlge.h      | 20 ++++++++++----------
+>>  drivers/staging/qlge/qlge_dbg.c  | 24 ++++++++++++++++++------
+>>  drivers/staging/qlge/qlge_main.c |  8 ++++----
+>>  3 files changed, 32 insertions(+), 20 deletions(-)
+>>
+>[...]
+>> @@ -1632,6 +1635,8 @@ void ql_dump_wqicb(struct wqicb *wqicb)
+>>
+>>  void ql_dump_tx_ring(struct tx_ring *tx_ring)
+>>  {
+>> +	struct ql_adapter *qdev = tx_ring->qdev;
+>> +
+>>  	if (!tx_ring)
+>>  		return;
+>
+>Given the null check for tx_ring, it seems unwise to dereference tx_ring
+>before the check.
+>
+>Looking at ql_dump_all(), I'm not sure that the check is needed at all
+>though. Maybe it should be removed.
+>
+>Same problem in ql_dump_rx_ring().
 
-In file included from drivers/net/wireless/marvell/mwifiex/main.h:57:0,
-                 from drivers/net/wireless/marvell/mwifiex/init.c:24:
-drivers/net/wireless/marvell/mwifiex/pcie.h:310:41: warning: mwifiex_pcie8997 defined but not used [-Wunused-const-variable=]
- static const struct mwifiex_pcie_device mwifiex_pcie8997 = {
-                                         ^~~~~~~~~~~~~~~~
-drivers/net/wireless/marvell/mwifiex/pcie.h:300:41: warning: mwifiex_pcie8897 defined but not used [-Wunused-const-variable=]
- static const struct mwifiex_pcie_device mwifiex_pcie8897 = {
-                                         ^~~~~~~~~~~~~~~~
-drivers/net/wireless/marvell/mwifiex/pcie.h:292:41: warning: mwifiex_pcie8766 defined but not used [-Wunused-const-variable=]
- static const struct mwifiex_pcie_device mwifiex_pcie8766 = {
-                                         ^~~~~~~~~~~~~~~~
+Thank you for the spotting this issue! I'll remove the check.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/wireless/marvell/mwifiex/pcie.c | 149 ++++++++++++++++++++
- drivers/net/wireless/marvell/mwifiex/pcie.h | 149 --------------------
- 2 files changed, 149 insertions(+), 149 deletions(-)
+>
+>>  	netdev_err(qdev->ndev, "===================== Dumping tx_ring %d ===============\n",
+>> @@ -1657,6 +1662,8 @@ void ql_dump_tx_ring(struct tx_ring *tx_ring)
+>>  void ql_dump_ricb(struct ricb *ricb)
+>>  {
+>>  	int i;
+>> +	struct ql_adapter *qdev =
+>> +		container_of(ricb, struct ql_adapter, ricb);
+>
+>Here, davem would point out that the variables are not declared in
+>"reverse xmas tree" order.
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-index 3c1ad0be70a8..04739cbb74f2 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie.c
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
-@@ -39,6 +39,155 @@ static const struct of_device_id mwifiex_pcie_of_match_table[] = {
- 	{ }
- };
- 
-+static const struct mwifiex_pcie_card_reg mwifiex_reg_8766 = {
-+	.cmd_addr_lo = PCIE_SCRATCH_0_REG,
-+	.cmd_addr_hi = PCIE_SCRATCH_1_REG,
-+	.cmd_size = PCIE_SCRATCH_2_REG,
-+	.fw_status = PCIE_SCRATCH_3_REG,
-+	.cmdrsp_addr_lo = PCIE_SCRATCH_4_REG,
-+	.cmdrsp_addr_hi = PCIE_SCRATCH_5_REG,
-+	.tx_rdptr = PCIE_SCRATCH_6_REG,
-+	.tx_wrptr = PCIE_SCRATCH_7_REG,
-+	.rx_rdptr = PCIE_SCRATCH_8_REG,
-+	.rx_wrptr = PCIE_SCRATCH_9_REG,
-+	.evt_rdptr = PCIE_SCRATCH_10_REG,
-+	.evt_wrptr = PCIE_SCRATCH_11_REG,
-+	.drv_rdy = PCIE_SCRATCH_12_REG,
-+	.tx_start_ptr = 0,
-+	.tx_mask = MWIFIEX_TXBD_MASK,
-+	.tx_wrap_mask = 0,
-+	.rx_mask = MWIFIEX_RXBD_MASK,
-+	.rx_wrap_mask = 0,
-+	.tx_rollover_ind = MWIFIEX_BD_FLAG_ROLLOVER_IND,
-+	.rx_rollover_ind = MWIFIEX_BD_FLAG_ROLLOVER_IND,
-+	.evt_rollover_ind = MWIFIEX_BD_FLAG_ROLLOVER_IND,
-+	.ring_flag_sop = 0,
-+	.ring_flag_eop = 0,
-+	.ring_flag_xs_sop = 0,
-+	.ring_flag_xs_eop = 0,
-+	.ring_tx_start_ptr = 0,
-+	.pfu_enabled = 0,
-+	.sleep_cookie = 1,
-+	.msix_support = 0,
-+};
-+
-+static const struct mwifiex_pcie_card_reg mwifiex_reg_8897 = {
-+	.cmd_addr_lo = PCIE_SCRATCH_0_REG,
-+	.cmd_addr_hi = PCIE_SCRATCH_1_REG,
-+	.cmd_size = PCIE_SCRATCH_2_REG,
-+	.fw_status = PCIE_SCRATCH_3_REG,
-+	.cmdrsp_addr_lo = PCIE_SCRATCH_4_REG,
-+	.cmdrsp_addr_hi = PCIE_SCRATCH_5_REG,
-+	.tx_rdptr = PCIE_RD_DATA_PTR_Q0_Q1,
-+	.tx_wrptr = PCIE_WR_DATA_PTR_Q0_Q1,
-+	.rx_rdptr = PCIE_WR_DATA_PTR_Q0_Q1,
-+	.rx_wrptr = PCIE_RD_DATA_PTR_Q0_Q1,
-+	.evt_rdptr = PCIE_SCRATCH_10_REG,
-+	.evt_wrptr = PCIE_SCRATCH_11_REG,
-+	.drv_rdy = PCIE_SCRATCH_12_REG,
-+	.tx_start_ptr = 16,
-+	.tx_mask = 0x03FF0000,
-+	.tx_wrap_mask = 0x07FF0000,
-+	.rx_mask = 0x000003FF,
-+	.rx_wrap_mask = 0x000007FF,
-+	.tx_rollover_ind = MWIFIEX_BD_FLAG_TX_ROLLOVER_IND,
-+	.rx_rollover_ind = MWIFIEX_BD_FLAG_RX_ROLLOVER_IND,
-+	.evt_rollover_ind = MWIFIEX_BD_FLAG_EVT_ROLLOVER_IND,
-+	.ring_flag_sop = MWIFIEX_BD_FLAG_SOP,
-+	.ring_flag_eop = MWIFIEX_BD_FLAG_EOP,
-+	.ring_flag_xs_sop = MWIFIEX_BD_FLAG_XS_SOP,
-+	.ring_flag_xs_eop = MWIFIEX_BD_FLAG_XS_EOP,
-+	.ring_tx_start_ptr = MWIFIEX_BD_FLAG_TX_START_PTR,
-+	.pfu_enabled = 1,
-+	.sleep_cookie = 0,
-+	.fw_dump_ctrl = PCIE_SCRATCH_13_REG,
-+	.fw_dump_start = PCIE_SCRATCH_14_REG,
-+	.fw_dump_end = 0xcff,
-+	.fw_dump_host_ready = 0xee,
-+	.fw_dump_read_done = 0xfe,
-+	.msix_support = 0,
-+};
-+
-+static const struct mwifiex_pcie_card_reg mwifiex_reg_8997 = {
-+	.cmd_addr_lo = PCIE_SCRATCH_0_REG,
-+	.cmd_addr_hi = PCIE_SCRATCH_1_REG,
-+	.cmd_size = PCIE_SCRATCH_2_REG,
-+	.fw_status = PCIE_SCRATCH_3_REG,
-+	.cmdrsp_addr_lo = PCIE_SCRATCH_4_REG,
-+	.cmdrsp_addr_hi = PCIE_SCRATCH_5_REG,
-+	.tx_rdptr = 0xC1A4,
-+	.tx_wrptr = 0xC174,
-+	.rx_rdptr = 0xC174,
-+	.rx_wrptr = 0xC1A4,
-+	.evt_rdptr = PCIE_SCRATCH_10_REG,
-+	.evt_wrptr = PCIE_SCRATCH_11_REG,
-+	.drv_rdy = PCIE_SCRATCH_12_REG,
-+	.tx_start_ptr = 16,
-+	.tx_mask = 0x0FFF0000,
-+	.tx_wrap_mask = 0x1FFF0000,
-+	.rx_mask = 0x00000FFF,
-+	.rx_wrap_mask = 0x00001FFF,
-+	.tx_rollover_ind = BIT(28),
-+	.rx_rollover_ind = BIT(12),
-+	.evt_rollover_ind = MWIFIEX_BD_FLAG_EVT_ROLLOVER_IND,
-+	.ring_flag_sop = MWIFIEX_BD_FLAG_SOP,
-+	.ring_flag_eop = MWIFIEX_BD_FLAG_EOP,
-+	.ring_flag_xs_sop = MWIFIEX_BD_FLAG_XS_SOP,
-+	.ring_flag_xs_eop = MWIFIEX_BD_FLAG_XS_EOP,
-+	.ring_tx_start_ptr = MWIFIEX_BD_FLAG_TX_START_PTR,
-+	.pfu_enabled = 1,
-+	.sleep_cookie = 0,
-+	.fw_dump_ctrl = PCIE_SCRATCH_13_REG,
-+	.fw_dump_start = PCIE_SCRATCH_14_REG,
-+	.fw_dump_end = 0xcff,
-+	.fw_dump_host_ready = 0xcc,
-+	.fw_dump_read_done = 0xdd,
-+	.msix_support = 0,
-+};
-+
-+static struct memory_type_mapping mem_type_mapping_tbl_w8897[] = {
-+	{"ITCM", NULL, 0, 0xF0},
-+	{"DTCM", NULL, 0, 0xF1},
-+	{"SQRAM", NULL, 0, 0xF2},
-+	{"IRAM", NULL, 0, 0xF3},
-+	{"APU", NULL, 0, 0xF4},
-+	{"CIU", NULL, 0, 0xF5},
-+	{"ICU", NULL, 0, 0xF6},
-+	{"MAC", NULL, 0, 0xF7},
-+};
-+
-+static struct memory_type_mapping mem_type_mapping_tbl_w8997[] = {
-+	{"DUMP", NULL, 0, 0xDD},
-+};
-+
-+static const struct mwifiex_pcie_device mwifiex_pcie8766 = {
-+	.reg            = &mwifiex_reg_8766,
-+	.blksz_fw_dl = MWIFIEX_PCIE_BLOCK_SIZE_FW_DNLD,
-+	.tx_buf_size = MWIFIEX_TX_DATA_BUF_SIZE_2K,
-+	.can_dump_fw = false,
-+	.can_ext_scan = true,
-+};
-+
-+static const struct mwifiex_pcie_device mwifiex_pcie8897 = {
-+	.reg            = &mwifiex_reg_8897,
-+	.blksz_fw_dl = MWIFIEX_PCIE_BLOCK_SIZE_FW_DNLD,
-+	.tx_buf_size = MWIFIEX_TX_DATA_BUF_SIZE_4K,
-+	.can_dump_fw = true,
-+	.mem_type_mapping_tbl = mem_type_mapping_tbl_w8897,
-+	.num_mem_types = ARRAY_SIZE(mem_type_mapping_tbl_w8897),
-+	.can_ext_scan = true,
-+};
-+
-+static const struct mwifiex_pcie_device mwifiex_pcie8997 = {
-+	.reg            = &mwifiex_reg_8997,
-+	.blksz_fw_dl = MWIFIEX_PCIE_BLOCK_SIZE_FW_DNLD,
-+	.tx_buf_size = MWIFIEX_TX_DATA_BUF_SIZE_4K,
-+	.can_dump_fw = true,
-+	.mem_type_mapping_tbl = mem_type_mapping_tbl_w8997,
-+	.num_mem_types = ARRAY_SIZE(mem_type_mapping_tbl_w8997),
-+	.can_ext_scan = true,
-+};
-+
- static int mwifiex_pcie_probe_of(struct device *dev)
- {
- 	if (!of_match_node(mwifiex_pcie_of_match_table, dev->of_node)) {
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.h b/drivers/net/wireless/marvell/mwifiex/pcie.h
-index fc59b522f670..843d57eda820 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie.h
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie.h
-@@ -158,127 +158,6 @@ struct mwifiex_pcie_card_reg {
- 	u8 msix_support;
- };
- 
--static const struct mwifiex_pcie_card_reg mwifiex_reg_8766 = {
--	.cmd_addr_lo = PCIE_SCRATCH_0_REG,
--	.cmd_addr_hi = PCIE_SCRATCH_1_REG,
--	.cmd_size = PCIE_SCRATCH_2_REG,
--	.fw_status = PCIE_SCRATCH_3_REG,
--	.cmdrsp_addr_lo = PCIE_SCRATCH_4_REG,
--	.cmdrsp_addr_hi = PCIE_SCRATCH_5_REG,
--	.tx_rdptr = PCIE_SCRATCH_6_REG,
--	.tx_wrptr = PCIE_SCRATCH_7_REG,
--	.rx_rdptr = PCIE_SCRATCH_8_REG,
--	.rx_wrptr = PCIE_SCRATCH_9_REG,
--	.evt_rdptr = PCIE_SCRATCH_10_REG,
--	.evt_wrptr = PCIE_SCRATCH_11_REG,
--	.drv_rdy = PCIE_SCRATCH_12_REG,
--	.tx_start_ptr = 0,
--	.tx_mask = MWIFIEX_TXBD_MASK,
--	.tx_wrap_mask = 0,
--	.rx_mask = MWIFIEX_RXBD_MASK,
--	.rx_wrap_mask = 0,
--	.tx_rollover_ind = MWIFIEX_BD_FLAG_ROLLOVER_IND,
--	.rx_rollover_ind = MWIFIEX_BD_FLAG_ROLLOVER_IND,
--	.evt_rollover_ind = MWIFIEX_BD_FLAG_ROLLOVER_IND,
--	.ring_flag_sop = 0,
--	.ring_flag_eop = 0,
--	.ring_flag_xs_sop = 0,
--	.ring_flag_xs_eop = 0,
--	.ring_tx_start_ptr = 0,
--	.pfu_enabled = 0,
--	.sleep_cookie = 1,
--	.msix_support = 0,
--};
--
--static const struct mwifiex_pcie_card_reg mwifiex_reg_8897 = {
--	.cmd_addr_lo = PCIE_SCRATCH_0_REG,
--	.cmd_addr_hi = PCIE_SCRATCH_1_REG,
--	.cmd_size = PCIE_SCRATCH_2_REG,
--	.fw_status = PCIE_SCRATCH_3_REG,
--	.cmdrsp_addr_lo = PCIE_SCRATCH_4_REG,
--	.cmdrsp_addr_hi = PCIE_SCRATCH_5_REG,
--	.tx_rdptr = PCIE_RD_DATA_PTR_Q0_Q1,
--	.tx_wrptr = PCIE_WR_DATA_PTR_Q0_Q1,
--	.rx_rdptr = PCIE_WR_DATA_PTR_Q0_Q1,
--	.rx_wrptr = PCIE_RD_DATA_PTR_Q0_Q1,
--	.evt_rdptr = PCIE_SCRATCH_10_REG,
--	.evt_wrptr = PCIE_SCRATCH_11_REG,
--	.drv_rdy = PCIE_SCRATCH_12_REG,
--	.tx_start_ptr = 16,
--	.tx_mask = 0x03FF0000,
--	.tx_wrap_mask = 0x07FF0000,
--	.rx_mask = 0x000003FF,
--	.rx_wrap_mask = 0x000007FF,
--	.tx_rollover_ind = MWIFIEX_BD_FLAG_TX_ROLLOVER_IND,
--	.rx_rollover_ind = MWIFIEX_BD_FLAG_RX_ROLLOVER_IND,
--	.evt_rollover_ind = MWIFIEX_BD_FLAG_EVT_ROLLOVER_IND,
--	.ring_flag_sop = MWIFIEX_BD_FLAG_SOP,
--	.ring_flag_eop = MWIFIEX_BD_FLAG_EOP,
--	.ring_flag_xs_sop = MWIFIEX_BD_FLAG_XS_SOP,
--	.ring_flag_xs_eop = MWIFIEX_BD_FLAG_XS_EOP,
--	.ring_tx_start_ptr = MWIFIEX_BD_FLAG_TX_START_PTR,
--	.pfu_enabled = 1,
--	.sleep_cookie = 0,
--	.fw_dump_ctrl = PCIE_SCRATCH_13_REG,
--	.fw_dump_start = PCIE_SCRATCH_14_REG,
--	.fw_dump_end = 0xcff,
--	.fw_dump_host_ready = 0xee,
--	.fw_dump_read_done = 0xfe,
--	.msix_support = 0,
--};
--
--static const struct mwifiex_pcie_card_reg mwifiex_reg_8997 = {
--	.cmd_addr_lo = PCIE_SCRATCH_0_REG,
--	.cmd_addr_hi = PCIE_SCRATCH_1_REG,
--	.cmd_size = PCIE_SCRATCH_2_REG,
--	.fw_status = PCIE_SCRATCH_3_REG,
--	.cmdrsp_addr_lo = PCIE_SCRATCH_4_REG,
--	.cmdrsp_addr_hi = PCIE_SCRATCH_5_REG,
--	.tx_rdptr = 0xC1A4,
--	.tx_wrptr = 0xC174,
--	.rx_rdptr = 0xC174,
--	.rx_wrptr = 0xC1A4,
--	.evt_rdptr = PCIE_SCRATCH_10_REG,
--	.evt_wrptr = PCIE_SCRATCH_11_REG,
--	.drv_rdy = PCIE_SCRATCH_12_REG,
--	.tx_start_ptr = 16,
--	.tx_mask = 0x0FFF0000,
--	.tx_wrap_mask = 0x1FFF0000,
--	.rx_mask = 0x00000FFF,
--	.rx_wrap_mask = 0x00001FFF,
--	.tx_rollover_ind = BIT(28),
--	.rx_rollover_ind = BIT(12),
--	.evt_rollover_ind = MWIFIEX_BD_FLAG_EVT_ROLLOVER_IND,
--	.ring_flag_sop = MWIFIEX_BD_FLAG_SOP,
--	.ring_flag_eop = MWIFIEX_BD_FLAG_EOP,
--	.ring_flag_xs_sop = MWIFIEX_BD_FLAG_XS_SOP,
--	.ring_flag_xs_eop = MWIFIEX_BD_FLAG_XS_EOP,
--	.ring_tx_start_ptr = MWIFIEX_BD_FLAG_TX_START_PTR,
--	.pfu_enabled = 1,
--	.sleep_cookie = 0,
--	.fw_dump_ctrl = PCIE_SCRATCH_13_REG,
--	.fw_dump_start = PCIE_SCRATCH_14_REG,
--	.fw_dump_end = 0xcff,
--	.fw_dump_host_ready = 0xcc,
--	.fw_dump_read_done = 0xdd,
--	.msix_support = 0,
--};
--
--static struct memory_type_mapping mem_type_mapping_tbl_w8897[] = {
--	{"ITCM", NULL, 0, 0xF0},
--	{"DTCM", NULL, 0, 0xF1},
--	{"SQRAM", NULL, 0, 0xF2},
--	{"IRAM", NULL, 0, 0xF3},
--	{"APU", NULL, 0, 0xF4},
--	{"CIU", NULL, 0, 0xF5},
--	{"ICU", NULL, 0, 0xF6},
--	{"MAC", NULL, 0, 0xF7},
--};
--
--static struct memory_type_mapping mem_type_mapping_tbl_w8997[] = {
--	{"DUMP", NULL, 0, 0xDD},
--};
--
- struct mwifiex_pcie_device {
- 	const struct mwifiex_pcie_card_reg *reg;
- 	u16 blksz_fw_dl;
-@@ -289,34 +168,6 @@ struct mwifiex_pcie_device {
- 	bool can_ext_scan;
- };
- 
--static const struct mwifiex_pcie_device mwifiex_pcie8766 = {
--	.reg            = &mwifiex_reg_8766,
--	.blksz_fw_dl = MWIFIEX_PCIE_BLOCK_SIZE_FW_DNLD,
--	.tx_buf_size = MWIFIEX_TX_DATA_BUF_SIZE_2K,
--	.can_dump_fw = false,
--	.can_ext_scan = true,
--};
--
--static const struct mwifiex_pcie_device mwifiex_pcie8897 = {
--	.reg            = &mwifiex_reg_8897,
--	.blksz_fw_dl = MWIFIEX_PCIE_BLOCK_SIZE_FW_DNLD,
--	.tx_buf_size = MWIFIEX_TX_DATA_BUF_SIZE_4K,
--	.can_dump_fw = true,
--	.mem_type_mapping_tbl = mem_type_mapping_tbl_w8897,
--	.num_mem_types = ARRAY_SIZE(mem_type_mapping_tbl_w8897),
--	.can_ext_scan = true,
--};
--
--static const struct mwifiex_pcie_device mwifiex_pcie8997 = {
--	.reg            = &mwifiex_reg_8997,
--	.blksz_fw_dl = MWIFIEX_PCIE_BLOCK_SIZE_FW_DNLD,
--	.tx_buf_size = MWIFIEX_TX_DATA_BUF_SIZE_4K,
--	.can_dump_fw = true,
--	.mem_type_mapping_tbl = mem_type_mapping_tbl_w8997,
--	.num_mem_types = ARRAY_SIZE(mem_type_mapping_tbl_w8997),
--	.can_ext_scan = true,
--};
--
- struct mwifiex_evt_buf_desc {
- 	u64 paddr;
- 	u16 len;
--- 
-2.17.1
+I'll make davem happy then:)
 
-
+--
+Best regards,
+Coiby
