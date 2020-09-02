@@ -2,88 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FD2325AC25
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 15:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 949E025AC39
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 15:45:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727788AbgIBNiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 09:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726426AbgIBNcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 09:32:39 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D0CC061246
-        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 06:32:34 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id q13so6635699ejo.9
-        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 06:32:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:references:cc:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=917w7cMeyQJPmg3O5pTWvy7oizYPXb73Fu6zj/DMIu4=;
-        b=pG7+I5sv367/NzaNjp7LwTUD3lgW+Pr/Wb2m0IBkPc0v/xe9hUZTwGk0bBFDekJJ4b
-         4KaCfJAp8b9wbnLFyjXy5s78BBZeJPcxyimDtsRuvUNSFk3WmRHay1YK3LLyUVGsSX9t
-         T9alMgdDvyxL8hEDrdg9c/ookhMUq6T8k44AVs4S7v5ERshnPEl7aD5TjQFeWnxdmaBB
-         /RpIuk+pgbAXbGS4WtEbJQBsV2r8eZ5UP5pEMC5w/O0jvxTpvHwlIJ1CoMmPcSEO473E
-         J3Ny1I3sES8VW2iqvFcCNYmws9iW0si4ceeJrfMBHahsFBUxOdqVBzrxzs+DKQ/9q3FT
-         I3Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=917w7cMeyQJPmg3O5pTWvy7oizYPXb73Fu6zj/DMIu4=;
-        b=OYYI1xdtjeQlryLQW09jZGafYnnZozxTJ5xoiMcq8v7NAPSLQgf8ExhIW00tW+0fqZ
-         bBLWcwnI6MJ/1JFJYc9POD5roHj5Jd78DUIfWir0CECBx8YBXujcOsxSUf649EYnxNM3
-         k/vQxXDGfOtrb1fkZqwLiB4xoTD1NdVCDaHzTQ9pDgBF9cWVcox47gauSaOwo8QMi8X0
-         DgYN2Qeb3pyc+GyU8jyhM6AVPidQOGJT5xnG0d2uo94efHPTEWaWjCBiVqFvUiM1tkka
-         lxu6JybxEEVj2oGAe1YQRDHSRy3pa38GmYs8BE0nIBrVdNXvwGQg99vgh/T4sAB+CQUg
-         D+Iw==
-X-Gm-Message-State: AOAM533PszkeYuEtCIjZe61xsLa1iIwAAwtRb2uAKsbux3wJ5Fr437iJ
-        GPXi4uwxdNt4hJ+GLApZPaltoMRrbmfOcQ==
-X-Google-Smtp-Source: ABdhPJyFshoN8ETfAEDFIN/PNrj7dVp+MjrOxFRWs/V0+J/l182pxMw17MTvuei/5JxUwBzZm1dtgw==
-X-Received: by 2002:a17:906:37c1:: with SMTP id o1mr1297ejc.279.1599053552616;
-        Wed, 02 Sep 2020 06:32:32 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:b949:8004:3927:fdba])
-        by smtp.gmail.com with ESMTPSA id s23sm3331595edt.10.2020.09.02.06.32.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Sep 2020 06:32:31 -0700 (PDT)
-Subject: Re: [PATCH net-next] selftests: mptcp: fix typo in mptcp_connect
- usage
-To:     Davide Caratti <dcaratti@redhat.com>
-References: <6c43e5404c41f91ed9324e20c35a4e4fdb0ed1de.1599046871.git.dcaratti@redhat.com>
-Cc:     mptcp@lists.01.org, netdev@vger.kernel.org
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <022366c7-c916-8841-348b-b1981341b810@tessares.net>
-Date:   Wed, 2 Sep 2020 15:32:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1726586AbgIBNp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 09:45:26 -0400
+Received: from www262.sakura.ne.jp ([202.181.97.72]:50538 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727869AbgIBNpB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 09:45:01 -0400
+Received: from fsav401.sakura.ne.jp (fsav401.sakura.ne.jp [133.242.250.100])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 082DiJRQ089257;
+        Wed, 2 Sep 2020 22:44:19 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav401.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav401.sakura.ne.jp);
+ Wed, 02 Sep 2020 22:44:19 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav401.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 082DiIgI089234
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
+        Wed, 2 Sep 2020 22:44:19 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Subject: [PATCH v2] tipc: fix shutdown() of connectionless socket
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+To:     syzbot <syzbot+e36f41d207137b5d12f7@syzkaller.appspotmail.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>
+Cc:     syzkaller-bugs@googlegroups.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+References: <0000000000003feb9805a9c77128@google.com>
+ <1eb799fb-c6e0-3eb5-f6fe-718cd2f62e92@I-love.SAKURA.ne.jp>
+Message-ID: <8267b7c2-3dc9-41ec-5490-d1080a63be11@I-love.SAKURA.ne.jp>
+Date:   Wed, 2 Sep 2020 22:44:16 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <6c43e5404c41f91ed9324e20c35a4e4fdb0ed1de.1599046871.git.dcaratti@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
+In-Reply-To: <1eb799fb-c6e0-3eb5-f6fe-718cd2f62e92@I-love.SAKURA.ne.jp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Davide,
+syzbot is reporting hung task at nbd_ioctl() [1], for there are two
+problems regarding TIPC's connectionless socket's shutdown() operation.
 
-On 02/09/2020 13:44, Davide Caratti wrote:
-> in mptcp_connect, 's' selects IPPROTO_MPTCP / IPPROTO_TCP as the value of
-> 'protocol' in socket(), and 'm' switches between different send / receive
-> modes. Fix die_usage(): swap 'm' and 's' and add missing 'sendfile' mode.
+----------
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <linux/nbd.h>
+#include <unistd.h>
 
-Good catch!
+int main(int argc, char *argv[])
+{
+        const int fd = open("/dev/nbd0", 3);
+        alarm(5);
+        ioctl(fd, NBD_SET_SOCK, socket(PF_TIPC, SOCK_DGRAM, 0));
+        ioctl(fd, NBD_DO_IT, 0); /* To be interrupted by SIGALRM. */
+        return 0;
+}
+----------
 
-I guess we don't need this on -net or further, this test program is 
-always used with its wrapper mptcp_connect.sh.
+One problem is that wait_for_completion() from flush_workqueue() from
+nbd_start_device_ioctl() from nbd_ioctl() cannot be completed when
+nbd_start_device_ioctl() received a signal at wait_event_interruptible(),
+for tipc_shutdown() from kernel_sock_shutdown(SHUT_RDWR) from
+nbd_mark_nsock_dead() from sock_shutdown() from nbd_start_device_ioctl()
+is failing to wake up a WQ thread sleeping at wait_woken() from
+tipc_wait_for_rcvmsg() from sock_recvmsg() from sock_xmit() from
+nbd_read_stat() from recv_work() scheduled by nbd_start_device() from
+nbd_start_device_ioctl(). Fix this problem by always invoking
+sk->sk_state_change() (like inet_shutdown() does) when tipc_shutdown() is
+called.
 
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+The other problem is that tipc_wait_for_rcvmsg() cannot return when
+tipc_shutdown() is called, for tipc_shutdown() sets sk->sk_shutdown to
+SEND_SHUTDOWN (despite "how" is SHUT_RDWR) while tipc_wait_for_rcvmsg()
+needs sk->sk_shutdown set to RCV_SHUTDOWN or SHUTDOWN_MASK. Fix this
+problem by setting sk->sk_shutdown to SHUTDOWN_MASK (like inet_shutdown()
+does) when the socket is connectionless.
 
-Cheers,
-Matt
+[1] https://syzkaller.appspot.com/bug?id=3fe51d307c1f0a845485cf1798aa059d12bf18b2
+
+Reported-by: syzbot <syzbot+e36f41d207137b5d12f7@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+---
+ net/tipc/socket.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/net/tipc/socket.c b/net/tipc/socket.c
+index 2679e97e0389..ebd280e767bd 100644
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -2771,18 +2771,21 @@ static int tipc_shutdown(struct socket *sock, int how)
+ 
+ 	trace_tipc_sk_shutdown(sk, NULL, TIPC_DUMP_ALL, " ");
+ 	__tipc_shutdown(sock, TIPC_CONN_SHUTDOWN);
+-	sk->sk_shutdown = SEND_SHUTDOWN;
++	if (tipc_sk_type_connectionless(sk))
++		sk->sk_shutdown = SHUTDOWN_MASK;
++	else
++		sk->sk_shutdown = SEND_SHUTDOWN;
+ 
+ 	if (sk->sk_state == TIPC_DISCONNECTING) {
+ 		/* Discard any unreceived messages */
+ 		__skb_queue_purge(&sk->sk_receive_queue);
+ 
+-		/* Wake up anyone sleeping in poll */
+-		sk->sk_state_change(sk);
+ 		res = 0;
+ 	} else {
+ 		res = -ENOTCONN;
+ 	}
++	/* Wake up anyone sleeping in poll. */
++	sk->sk_state_change(sk);
+ 
+ 	release_sock(sk);
+ 	return res;
 -- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+2.18.4
+
