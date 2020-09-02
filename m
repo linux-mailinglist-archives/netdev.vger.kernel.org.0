@@ -2,126 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A73BE25AA12
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 13:11:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12BEA25AA20
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 13:19:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbgIBLLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 07:11:33 -0400
-Received: from www262.sakura.ne.jp ([202.181.97.72]:54864 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726193AbgIBLL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 07:11:26 -0400
-Received: from fsav106.sakura.ne.jp (fsav106.sakura.ne.jp [27.133.134.233])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 082B9xWe021165;
-        Wed, 2 Sep 2020 20:09:59 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav106.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav106.sakura.ne.jp);
- Wed, 02 Sep 2020 20:09:59 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav106.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 082B9tPc021145
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
-        Wed, 2 Sep 2020 20:09:59 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Subject: [PATCH] tipc: fix shutdown() of connectionless socket
-To:     syzbot <syzbot+e36f41d207137b5d12f7@syzkaller.appspotmail.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>
-References: <0000000000003feb9805a9c77128@google.com>
-Cc:     syzkaller-bugs@googlegroups.com,
+        id S1726526AbgIBLTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 07:19:17 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:46032 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726183AbgIBLTN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 07:19:13 -0400
+Received: by mail-lj1-f196.google.com with SMTP id c2so5373430ljj.12;
+        Wed, 02 Sep 2020 04:19:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sIqApshDOtTxlo5FK8DhBC+GEPu//rVe7EZe6AlqDB0=;
+        b=mXfRi7nPl2saIhJRyJ0d888xpn6ibcJVbojEc+k2Ap9MyLEnY0oFxzknNNB0i2LaIx
+         NdXrnFRTi3PpMaJcnEMiilmrp+QxTNyj3fQI6JUWxT5SrBe0oGKpLPR4w4bJ1ClBA86T
+         wrSgBt4CDoLxt1StCZbf2Uv/fProBV+ZKuADX5RR6H1w/muUNZZ7B4QTVJFIywTbhIGH
+         PyL7LRmiGWGMSSTZZ/+MS0lT+Eyee7bjfzD81FybkKt52IWjKqSd5Hs5Z0BQUUMf/hmi
+         ckEL15CsbfOnp+QfC2JH2/jbN79hQCi0aOEVQrpUr3hBR0o0AIe97/6ZX05+QfRUp3cP
+         tDTg==
+X-Gm-Message-State: AOAM532PaR0nsDLf7JDMlqlqCI8icuaV89x2XhYLwx4za64+QTLQpVCs
+        kFvRpqTo7C3DPw6Mj7asBK8anv6NExM=
+X-Google-Smtp-Source: ABdhPJxxkPw6jkHz1bBom1/zQNxuNhpGQd3XWzcNVPjJ0/ap1nFPYYKYWNKtXDnbixx9Dbl5Af7dFA==
+X-Received: by 2002:a2e:91d2:: with SMTP id u18mr3039908ljg.436.1599045550650;
+        Wed, 02 Sep 2020 04:19:10 -0700 (PDT)
+Received: from localhost.localdomain (broadband-37-110-38-130.ip.moscow.rt.ru. [37.110.38.130])
+        by smtp.googlemail.com with ESMTPSA id n62sm465066lfa.82.2020.09.02.04.19.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2020 04:19:09 -0700 (PDT)
+From:   Denis Efremov <efremov@linux.com>
+To:     Doug Berger <opendmb@gmail.com>
+Cc:     Denis Efremov <efremov@linux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Message-ID: <1eb799fb-c6e0-3eb5-f6fe-718cd2f62e92@I-love.SAKURA.ne.jp>
-Date:   Wed, 2 Sep 2020 20:09:54 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        Jakub Kicinski <kuba@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: [PATCH] net: bcmgenet: fix mask check in bcmgenet_validate_flow()
+Date:   Wed,  2 Sep 2020 14:18:45 +0300
+Message-Id: <20200902111845.9915-1-efremov@linux.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <0000000000003feb9805a9c77128@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot is reporting hung task at nbd_ioctl() [1], for there are two
-problems regarding TIPC's connectionless socket's shutdown() operation.
-I found C reproducer for this problem (shown below) from "no output from
-test machine (2)" report.
+VALIDATE_MASK(eth_mask->h_source) is checked twice in a row in
+bcmgenet_validate_flow(). Add VALIDATE_MASK(eth_mask->h_dest)
+instead.
 
-----------
-
-int main(int argc, char *argv[])
-{
-        const int fd = open("/dev/nbd0", 3);
-        ioctl(fd, NBD_SET_SOCK, socket(PF_TIPC, SOCK_DGRAM, 0));
-        ioctl(fd, NBD_DO_IT, 0);
-        return 0;
-}
-----------
-
-One problem is that wait_for_completion() from flush_workqueue() from
-nbd_start_device_ioctl() from nbd_ioctl() cannot be completed when
-nbd_start_device_ioctl() received a signal at wait_event_interruptible(),
-for tipc_shutdown() from kernel_sock_shutdown(SHUT_RDWR) from
-nbd_mark_nsock_dead() from sock_shutdown() from nbd_start_device_ioctl()
-is failing to wake up a WQ thread sleeping at wait_woken() from
-tipc_wait_for_rcvmsg() from sock_recvmsg() from sock_xmit() from
-nbd_read_stat() from recv_work() scheduled by nbd_start_device() from
-nbd_start_device_ioctl(). Fix this problem by always invoking
-sk->sk_state_change() (like inet_shutdown() does) when tipc_shutdown() is
-called.
-
-The other problem is that tipc_wait_for_rcvmsg() cannot return when
-tipc_shutdown() is called, for tipc_shutdown() sets sk->sk_shutdown to
-SEND_SHUTDOWN (despite "how" is SHUT_RDWR) while tipc_wait_for_rcvmsg()
-needs sk->sk_shutdown set to RCV_SHUTDOWN or SHUTDOWN_MASK. Fix this
-problem by setting sk->sk_shutdown to SHUTDOWN_MASK (like inet_shutdown()
-does) when the socket is connectionless.
-
-[1] https://syzkaller.appspot.com/bug?id=3fe51d307c1f0a845485cf1798aa059d12bf18b2
-
-Reported-by: syzbot <syzbot+e36f41d207137b5d12f7@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Fixes: 3e370952287c ("net: bcmgenet: add support for ethtool rxnfc flows")
+Cc: stable@vger.kernel.org
+Signed-off-by: Denis Efremov <efremov@linux.com>
 ---
- net/tipc/socket.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+I'm not sure that h_dest check is required here, it's only my guess.
+Compile tested only.
 
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 2679e97e0389..ebd280e767bd 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -2771,18 +2771,21 @@ static int tipc_shutdown(struct socket *sock, int how)
- 
- 	trace_tipc_sk_shutdown(sk, NULL, TIPC_DUMP_ALL, " ");
- 	__tipc_shutdown(sock, TIPC_CONN_SHUTDOWN);
--	sk->sk_shutdown = SEND_SHUTDOWN;
-+	if (tipc_sk_type_connectionless(sk))
-+		sk->sk_shutdown = SHUTDOWN_MASK;
-+	else
-+		sk->sk_shutdown = SEND_SHUTDOWN;
- 
- 	if (sk->sk_state == TIPC_DISCONNECTING) {
- 		/* Discard any unreceived messages */
- 		__skb_queue_purge(&sk->sk_receive_queue);
- 
--		/* Wake up anyone sleeping in poll */
--		sk->sk_state_change(sk);
- 		res = 0;
- 	} else {
- 		res = -ENOTCONN;
- 	}
-+	/* Wake up anyone sleeping in poll. */
-+	sk->sk_state_change(sk);
- 
- 	release_sock(sk);
- 	return res;
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 0ca8436d2e9d..be85dad2e3bc 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -1364,7 +1364,7 @@ static int bcmgenet_validate_flow(struct net_device *dev,
+ 	case ETHER_FLOW:
+ 		eth_mask = &cmd->fs.m_u.ether_spec;
+ 		/* don't allow mask which isn't valid */
+-		if (VALIDATE_MASK(eth_mask->h_source) ||
++		if (VALIDATE_MASK(eth_mask->h_dest) ||
+ 		    VALIDATE_MASK(eth_mask->h_source) ||
+ 		    VALIDATE_MASK(eth_mask->h_proto)) {
+ 			netdev_err(dev, "rxnfc: Unsupported mask\n");
 -- 
-2.18.4
-
+2.26.2
 
