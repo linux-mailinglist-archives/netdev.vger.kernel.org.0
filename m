@@ -2,68 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B63F25AEED
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 17:32:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF5F625AF0B
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 17:33:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728348AbgIBPcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 11:32:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56342 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726625AbgIBPa1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 11:30:27 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AC1CA207D3;
-        Wed,  2 Sep 2020 15:30:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599060627;
-        bh=1yFSuoH/C7lnmRudCqwmn4PxNv6Wotrb39IdIF3mqF8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TAkKjmUb9ADt8b940JXfKW/NzoXeUaE+tXnHyz8gTVCnQnnYi8VhCJhM5wRuLPsx2
-         ATM94eUjJrL5KbjR4uCcpIA/HAIdo6LP49EFLukgREoCjZd/RYIhfPR5fZ1jiMfKcj
-         Hc5NT8QqrG3gkz7q8j7GGRUrLq2ZXVzoHffW3KDs=
-Date:   Wed, 2 Sep 2020 08:30:25 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Moshe Shemesh <moshe@nvidia.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v3 01/14] devlink: Add reload action option
- to devlink reload command
-Message-ID: <20200902083025.43407d8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200902094627.GB2568@nanopsycho>
-References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
-        <1598801254-27764-2-git-send-email-moshe@mellanox.com>
-        <20200831121501.GD3794@nanopsycho.orion>
-        <9fffbe80-9a2a-33de-2e11-24be34648686@nvidia.com>
-        <20200902094627.GB2568@nanopsycho>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1728421AbgIBPdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 11:33:10 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52310 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728379AbgIBPcg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 11:32:36 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from ayal@mellanox.com)
+        with SMTP; 2 Sep 2020 18:32:28 +0300
+Received: from dev-l-vrt-210.mtl.labs.mlnx (dev-l-vrt-210.mtl.labs.mlnx [10.234.210.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 082FWSaN014692;
+        Wed, 2 Sep 2020 18:32:28 +0300
+Received: from dev-l-vrt-210.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Debian-8ubuntu1) with ESMTP id 082FWSrs026687;
+        Wed, 2 Sep 2020 18:32:28 +0300
+Received: (from ayal@localhost)
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 082FWPW4026686;
+        Wed, 2 Sep 2020 18:32:25 +0300
+From:   Aya Levin <ayal@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        linux-kernel@vger.kernel.org, Aya Levin <ayal@mellanox.com>
+Subject: [PATCH net-next RFC v1 0/4] Add devlink traps in devlink port context
+Date:   Wed,  2 Sep 2020 18:32:10 +0300
+Message-Id: <1599060734-26617-1-git-send-email-ayal@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2 Sep 2020 11:46:27 +0200 Jiri Pirko wrote:
-> >? Do we need such change there too or keep it as is, each action by itself
-> >and return what was performed ?  
-> 
-> Well, I don't know. User asks for X, X should be performed, not Y or Z.
-> So perhaps the return value is not needed.
-> Just driver advertizes it supports X, Y, Z and the users says:
-> 1) do X, driver does X
-> 2) do Y, driver does Y
-> 3) do Z, driver does Z
-> [
-> I think this kindof circles back to the original proposal...
+Implement support for devlink traps on per-port basis.
+Dropped packets in the RX flow are related to the Ethernet port and
+thus should be in port context. Traps per device should trap global
+configuration which can cause drops. On top of that, enabling a trap
+on a device level should trigger this trap on its siblings ports.
+In addition, when devlink traps is enabled, it may cause a degradation
+in performance. Hence devlink traps should be regard as a debug mode.
+Considering that, it is preferred to encapsulate the debug mode as
+much as possible and not to effect all the device.
 
-Why? User does not care if you activate new devlink params when
-activating new firmware. Trust me. So why make the user figure out
-which of all possible reset option they should select? If there is 
-a legitimate use case to limit what is reset - it should be handled
-by a separate negative attribute, like --live which says don't reset
-anything.
+Patchset:
+Patch 1: Refactors devlink trap for easier code re-use in the coming
+patches
+Patch 2: Adds devlink traps under devlink port context
+Patch 3: Adds a relation between traps in device context and traps in
+ports context. In a nutshell it allows enable/disable of a trap on
+all related ports which registered this trap.
+Patch 4: Display a use in devlink traps in port context in mlx5
+ethernet driver.
+
+Aya Levin (4):
+  devlink: Wrap trap related lists and ops in trap_mngr
+  devlink: Add devlink traps under devlink_ports context
+  devlink: Add hiererchy between traps in device level and port level
+  net/mlx5e: Add devlink trap to catch oversize packets
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   2 +
+ drivers/net/ethernet/mellanox/mlx5/core/en/traps.c |  32 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en/traps.h |  13 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  41 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  11 +-
+ drivers/net/ethernet/mellanox/mlxsw/core.c         |   5 +
+ include/net/devlink.h                              |  84 ++-
+ net/core/devlink.c                                 | 616 +++++++++++++++++----
+ 9 files changed, 665 insertions(+), 141 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/traps.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/traps.h
+
+-- 
+2.14.1
+
