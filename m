@@ -2,142 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C62D25C4D7
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 17:19:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29AFB25C4D9
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 17:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728036AbgICPTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 11:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36248 "EHLO
+        id S1729031AbgICPTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 11:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728566AbgICL2v (ORCPT
+        with ESMTP id S1728461AbgICL2v (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 07:28:51 -0400
 Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3FFC061258
-        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 04:28:27 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id k15so2785796wrn.10
-        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 04:28:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=malat-biz.20150623.gappssmtp.com; s=20150623;
-        h=resent-from:resent-date:resent-message-id:resent-to:from:to:cc
-         :subject:date:message-id:mime-version:content-transfer-encoding;
-        bh=XQkx8fUG8mwQIi4m4nThh8XuyNKND7WiqTo03rOQoiQ=;
-        b=qahoLaGmB27qfsHILXv+Zy2LZPWsFF6YqZcUrYON+UWNQQDHOOl1uEI2YjsddD3ao8
-         uzlHza4iqbuE1h+sBZC8zRra7UkLn0PiPqKzHtYUAm8pFGa0RpnxrdJf1q472Pj04hst
-         ipJeICNSW9N+eLpRx9pKX+e0edk/l6/KiNcVa0B3o8LEkcb6Ldu0mipBSPaku6B5hnLR
-         NoX2ZuXU2P+yqNZXumADDrBwIq5YSKePHoodMoJcQvefiYSnH2ttYcUCeLH72PVg1Kz/
-         Htzetyv3asZcGMM3ZPAS2SQls3fzdpyTIO3QiM1vNFqLgd1B4gleDEdsU/WODyZHUxm/
-         GmLw==
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116EBC06125E
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 04:28:39 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id x14so2778846wrl.12
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 04:28:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:resent-from:resent-date:resent-message-id
-         :resent-to:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XQkx8fUG8mwQIi4m4nThh8XuyNKND7WiqTo03rOQoiQ=;
-        b=fKQD+0A0x3mgfR4I3OrMKD421hKS/W7rw6us+rs5WqfFCNjQ2YSaVwqnCLu5GtoAly
-         23NrJFG1Rq+uhvk3y/WUC5h7mNgiZvvv2Uv5A3vqr6D4j146gUMTll79BtJPMj3y9IfQ
-         JVH9NgEk7qKaNACcJTtVyUgQZSTEhjzuaPLVwuy/dm99bo34EUttPCkjKdw7WlUaihXZ
-         d2GY/sEc3ljGq75nP2wtkqEWOdZvvFzeLVSg3ASnLRRvDuCkVCjq3fcJ2bKyEwq+McgN
-         ozqYMm38yGUOcW8kAZoNpC5gCRU3tJi40CAQQZ3GIqwgrNjnvqo2zRXya6aZSLINJ5AW
-         MLLw==
-X-Gm-Message-State: AOAM533Dl7DLL5sGzqYeY9MiIaX7UC52g+iAPVZkBGEhq/2psabLWxId
-        osXlq4hZwQXAyw3YBcKUKkPsWt9wxCHOsjgz
-X-Google-Smtp-Source: ABdhPJy/r4h5jh0fEbISzl2uMdAqhEvwj4BfbGPgZpXWnrEvi8TKjAimZDlL4NJ9JC/Vvl+/W7dVHQ==
-X-Received: by 2002:adf:e54f:: with SMTP id z15mr1895357wrm.136.1599132505773;
-        Thu, 03 Sep 2020 04:28:25 -0700 (PDT)
+         :resent-to:dkim-signature:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=S1RiOa55yyVLjjH/PtR3Ei3JtyaYp4I2Cs/IjJAIRZ8=;
+        b=bEczMfLPDnrVcoDWgcnmGrkRGbIUje3zyLxG08lHXGBmpU7HZGtHqlbS+0QU8ebcxg
+         OZ0/e0Wwmn0e60whV1epD6lIWsjhs8RcRDJuso5jW2nQcVcWoc6oYrDPEDkU9uaOZJHn
+         EowWZLky2ZRVZl+V7zEdl6VR9DUOAWH+Z1PcEZreq/3zdRW9IvaiitZgCUeWYEZ1cb/w
+         poDYGYCZZM7k8C+7mVfdMh9S0AfDLT8ZbMkjxd11bHQ0mfHNRLgw2JaGdkHOrcZVmpoc
+         Tel25eO9GEc7lpCH7O2CATTYTP7iJlWgV0s99L81EYqgDONlAYvzV4RJJzSnaXi/q/Ms
+         CJbg==
+X-Gm-Message-State: AOAM531vFshvVxu6iWWxcRnS6vY5wTxT/Gxc7QzI1CHasjwznEtoIPuy
+        92hP13awjj4TjY1PP7OVxf0X2k9zbqMShA==
+X-Google-Smtp-Source: ABdhPJzQvasN4zXBputCpgF6OpX9qdnzWeMn7N9C9jKUOkwd+3F/3aT2bwHPVYXD7L15ULWepLN/gQ==
+X-Received: by 2002:adf:94c1:: with SMTP id 59mr2101205wrr.29.1599132517380;
+        Thu, 03 Sep 2020 04:28:37 -0700 (PDT)
 Received: from bordel.klfree.net (bordel.klfree.cz. [81.201.48.42])
-        by smtp.gmail.com with ESMTPSA id h185sm4058305wme.25.2020.09.03.04.28.25
+        by smtp.gmail.com with ESMTPSA id a83sm3804595wmh.48.2020.09.03.04.28.36
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 04:28:25 -0700 (PDT)
-Received: from ntb.petris.klfree.cz (snat2.klfree.cz. [81.201.48.25])
-        by smtp.googlemail.com with ESMTPSA id j7sm1337591wrs.11.2020.09.01.02.00.25
+        Thu, 03 Sep 2020 04:28:37 -0700 (PDT)
+Received: by 2002:a9d:1283:0:0:0:0:0 with SMTP id g3csp612130otg;
+        Wed, 2 Sep 2020 07:58:38 -0700 (PDT)
+X-Received: by 2002:a37:d201:: with SMTP id f1mr7113437qkj.188.1599058718835;
+        Wed, 02 Sep 2020 07:58:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1599058718; cv=none;
+        d=google.com; s=arc-20160816;
+        b=Nk2ulclVs/8sD3Wv+WsT8KbR0PhYIdANxvbZGajvdXqF/d50UGr47qgk0f79bb08pg
+         bu2eI8TU/vfLHAt5xbOqf/jp09nPmzQXsYud/c/8bWhIRJy2qZ6v14pDPoVOI87uaRCM
+         mzmrDa4Yd4aZ5NPjxaihrixta3wlo9FBK4udhgnJ74Qagl9p34ukI0ZihkxDyzJ7VPOe
+         lOrVSL3wJGqJbW+gQthGE+MrRK6FNt9/1VQz9fqJ83yksaZPB7hc2zVt6z6NXrNxoLGn
+         EKI2R9MEZ5EnuBFDFpEkrtyl6HPfGrh7fJCIYSZxyQW1Pr4poIvSG/60ezeHaN0Oik1r
+         iGsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:dkim-signature;
+        bh=S1RiOa55yyVLjjH/PtR3Ei3JtyaYp4I2Cs/IjJAIRZ8=;
+        b=oF5Y7m/6bFAyvKXW5uiNPCE3HwpZOFMPBmQcWjSUZw6DwvhgqdepDENrEEueOcLHpk
+         hLpPrOQgNu71TZn4FQbK24LIWdQHBhi/AaDb0WZQsTkUHQImO5pFs652oFgPcR5L+ml3
+         gc7I1V7veoUOGXBTcp1jOj9JfYnVehFXf/Xzwxr9nzrkwIFoSyiruhGV8ydciI1+yy9W
+         8/cvFjWBMXFtx0x7z5gk5QEHhoEi0KW93+XpPM60TA3Mx4NcP8HNFJKTs7KBCDrwzprp
+         BoJ/EB6ZZnwZyJ1zbHLWXE5XdLiL1zOoyN1gH8EIdD1r0kbO0faIISkTN336UAKr9mC6
+         HHCw==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20161025 header.b=KVIco+kI;
+       spf=pass (google.com: domain of marcelo.leitner@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=marcelo.leitner@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+Received: from mail-sor-f65.google.com (mail-sor-f65.google.com. [209.85.220.65])
+        by mx.google.com with SMTPS id i128sor1918953qke.164.2020.09.02.07.58.38
+        for <oss@malat.biz>
+        (Google Transport Security);
+        Wed, 02 Sep 2020 07:58:38 -0700 (PDT)
+Received-SPF: pass (google.com: domain of marcelo.leitner@gmail.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=S1RiOa55yyVLjjH/PtR3Ei3JtyaYp4I2Cs/IjJAIRZ8=;
+        b=KVIco+kIEDJ0xT2+dTU/S5fz3T70uezeOIxxHLfmEdQCe4m/8lItM5/I3sXl0IAnUb
+         K0RP9dbLaU//bH8/HKQt5YEuxD8rdXaFGYs6bdQlHdemXoxcD5p8yAHO3pf4UryoNTZx
+         qivODFvExD3mFRWdLaidMx3eJZjXgWt5mbMzLEkLBx431FJxSTz3eAO8G7XcgLpx2ERo
+         KDuv0Y946Yox2K5LylE9kvI4m+p1hb4FlbtJQ+JrX+v4Q2i/p2K6hDXxsNRCT5as4I+Y
+         Wj+7A5ZNnZpBnZETv7nYgnxu/tDSDGbTpqbu66Tj/dqxa/w1fz4P23DAHX9T4BsnMFY0
+         4ANQ==
+X-Received: by 2002:a05:620a:7e9:: with SMTP id k9mr7581350qkk.415.1599058718186;
+        Wed, 02 Sep 2020 07:58:38 -0700 (PDT)
+Received: from localhost.localdomain ([177.220.174.181])
+        by smtp.gmail.com with ESMTPSA id r21sm4571617qtj.80.2020.09.02.07.58.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Sep 2020 02:00:25 -0700 (PDT)
-From:   Petr Malat <oss@malat.biz>
-To:     linux-sctp@vger.kernel.org
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
-        marcelo.leitner@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        Petr Malat <oss@malat.biz>
-Subject: [PATCH] sctp: Honour SCTP_PARTIAL_DELIVERY_POINT even under memory pressure
-Date:   Tue,  1 Sep 2020 11:00:07 +0200
-Message-Id: <20200901090007.31061-1-oss@malat.biz>
-X-Mailer: git-send-email 2.20.1
+        Wed, 02 Sep 2020 07:58:37 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 48C44C5F36; Wed,  2 Sep 2020 11:58:35 -0300 (-03)
+Date:   Wed, 2 Sep 2020 11:58:35 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Petr Malat <oss@malat.biz>
+Cc:     linux-sctp@vger.kernel.org, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org
+Subject: Re: [PATCH] sctp: Honour SCTP_PARTIAL_DELIVERY_POINT even under
+ memory pressure
+Message-ID: <20200902145835.GC2444@localhost.localdomain>
+References: <20200901090007.31061-1-oss@malat.biz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200901090007.31061-1-oss@malat.biz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Command SCTP_CMD_PART_DELIVER issued under memory pressure calls
-sctp_ulpq_partial_delivery(), which tries to fetch and partially deliver
-the first message it finds without checking if the message is longer than
-SCTP_PARTIAL_DELIVERY_POINT. According to the RFC 6458 paragraph 8.1.21.
-such a behavior is invalid. Fix it by returning the first message only if
-its part currently available is longer than SCTP_PARTIAL_DELIVERY_POINT.
+On Tue, Sep 01, 2020 at 11:00:07AM +0200, Petr Malat wrote:
+> Command SCTP_CMD_PART_DELIVER issued under memory pressure calls
+> sctp_ulpq_partial_delivery(), which tries to fetch and partially deliver
+> the first message it finds without checking if the message is longer than
+> SCTP_PARTIAL_DELIVERY_POINT. According to the RFC 6458 paragraph 8.1.21.
+> such a behavior is invalid. Fix it by returning the first message only if
+> its part currently available is longer than SCTP_PARTIAL_DELIVERY_POINT.
 
-Signed-off-by: Petr Malat <oss@malat.biz>
----
- net/sctp/ulpqueue.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+Okay but AFAICT this patch then violates the basic idea behind partial
+delivery. It will cause such small message to just not be delivered
+anymore, and keep using the receive buffer which it is trying to free
+some bits at this moment.
 
-diff --git a/net/sctp/ulpqueue.c b/net/sctp/ulpqueue.c
-index 1c6c640607c5..cada0b7f1548 100644
---- a/net/sctp/ulpqueue.c
-+++ b/net/sctp/ulpqueue.c
-@@ -610,6 +610,7 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_first(struct sctp_ulpq *ulpq)
- 	struct sctp_ulpevent *cevent;
- 	__u32 ctsn, next_tsn;
- 	struct sctp_ulpevent *retval;
-+	size_t pd_point, pd_len = 0;
- 
- 	/* The chunks are held in the reasm queue sorted by TSN.
- 	 * Walk through the queue sequentially and look for a sequence of
-@@ -633,8 +634,9 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_first(struct sctp_ulpq *ulpq)
- 				first_frag = pos;
- 				next_tsn = ctsn + 1;
- 				last_frag = pos;
-+				pd_len = pos->len;
- 			} else
--				goto done;
-+				goto check;
- 			break;
- 
- 		case SCTP_DATA_MIDDLE_FRAG:
-@@ -643,15 +645,19 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_first(struct sctp_ulpq *ulpq)
- 			if (ctsn == next_tsn) {
- 				next_tsn++;
- 				last_frag = pos;
-+				pd_len += pos->len;
- 			} else
--				goto done;
-+				goto check;
- 			break;
- 
- 		case SCTP_DATA_LAST_FRAG:
- 			if (!first_frag)
- 				return NULL;
--			else
-+			if (ctsn == next_tsn) {
-+				last_frag = pos;
- 				goto done;
-+			} else
-+				goto check;
- 			break;
- 
- 		default:
-@@ -659,6 +665,11 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_first(struct sctp_ulpq *ulpq)
- 		}
- 	}
- 
-+check:
-+	pd_point = sctp_sk(ulpq->asoc->base.sk)->pd_point;
-+	if (pd_point && pd_point > pd_len)
-+		return NULL;
-+
- 	/* We have the reassembled event. There is no need to look
- 	 * further.
- 	 */
--- 
-2.20.1
+Btw, you also need to Cc netdev@vger.kernel.org for patches to
+actually get applied by DaveM.
 
+  Marcelo
