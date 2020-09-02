@@ -2,112 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F358725B5FD
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 23:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11A9D25B603
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 23:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726926AbgIBVid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 17:38:33 -0400
-Received: from elvis.franken.de ([193.175.24.41]:49452 "EHLO elvis.franken.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726355AbgIBVic (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 17:38:32 -0400
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1kDaSO-0001KH-00; Wed, 02 Sep 2020 23:38:16 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 29A9AC0E7B; Wed,  2 Sep 2020 23:38:09 +0200 (CEST)
-Date:   Wed, 2 Sep 2020 23:38:09 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
-        linux-doc@vger.kernel.org, nouveau@lists.freedesktop.org,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        linux-mm@kvack.org, Marek Szyprowski <m.szyprowski@samsung.com>,
-        linux-samsung-soc@vger.kernel.org,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        linux-scsi@vger.kernel.org,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        linux-media@vger.kernel.org,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Pawel Osciak <pawel@osciak.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-parisc@vger.kernel.org,
-        netdev@vger.kernel.org, Seung-Woo Kim <sw0312.kim@samsung.com>,
-        linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org
-Subject: Re: [PATCH 22/28] sgiseeq: convert from dma_cache_sync to
- dma_sync_single_for_device
-Message-ID: <20200902213809.GA7998@alpha.franken.de>
-References: <20200819065555.1802761-1-hch@lst.de>
- <20200819065555.1802761-23-hch@lst.de>
- <20200901152209.GA14288@alpha.franken.de>
- <20200901171241.GA20685@alpha.franken.de>
- <20200901171627.GA8255@lst.de>
- <20200901173810.GA25282@alpha.franken.de>
+        id S1726968AbgIBVij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 17:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726355AbgIBVig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 17:38:36 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922C7C061244;
+        Wed,  2 Sep 2020 14:38:36 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id o68so456158pfg.2;
+        Wed, 02 Sep 2020 14:38:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BlMBCDtq2IAhHJSi3TJv+B6UPJ/84fOkMMchbksCaC4=;
+        b=K4Nt+d1WRBNGCjC6xnIKYHR/QQzo6k44lq9ceRInfB0/1OgiBGhI4XkA0i6Ow4RKYe
+         aEYDDfykLPquRBCRubcLnLiXiuKMurs99l5fTGDp8+Rg0awtNwytLxYLfqMAuzH3rzrT
+         cHKTiIcrvrVMFW29Jf1XusEdrNqy/eGkB3DfvID5stKmUa0DTGbbncVs0uynK0M3ME29
+         q/9RE13Kb2R9g609KeUe1rKoLqr6qB1P6bFVOxWpBiIwdguPsJAN2jJK4IDQTODdGCNp
+         nKcM5JfHBB8t9/wkyJzcPwQ2Fv3bsdsXGj9BS7zVnOiUKg3k+g+eB+TiDGArL1clKesH
+         RWsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BlMBCDtq2IAhHJSi3TJv+B6UPJ/84fOkMMchbksCaC4=;
+        b=qHTgxJPRFDWJPikCfFTCwJPU79yGhsP/GV/woVBfUBbxYKF4tcXBM3uizphKbW3sZv
+         UsZstdoYcRhOZMP3qOKam5z6NvbRjNOWN8UuQOmCaEjXOlUhu6ePvmxiCdjG2uag87Ox
+         58RFrLzFd9JewfXCutjrXciOiJbjSl7fIyCaoZf7RaZlqgh0jDZ/GQBx/aVJMBKuC7Ri
+         XG2U+RRLV4zbh+2y/AMlCcSHskxoYM+8WzVt2NNXzpsA5Js9dKSehp32UxRitOHBfTrL
+         HUwdV/Kf9VrjXFblGtH//RcBJcJN+4TrQBjgj0DXBJtnleGM0IFRzb8D0nUV7l9BKJv0
+         Q01Q==
+X-Gm-Message-State: AOAM530Nzm08N2UYwVsU3H/xO1Efj6JAshNwibW6bQJVjBgLNFUHrCjW
+        LcAz6/zN+U+Bp3f+fBYGNsk=
+X-Google-Smtp-Source: ABdhPJw7QNCG9pmgCTd8wVSL9rngdcktpkXYlExL/GNstovYY5waWD5K3SNhKcefHvqCBELXAKKCsQ==
+X-Received: by 2002:a05:6a00:23c5:: with SMTP id g5mr428877pfc.160.1599082715555;
+        Wed, 02 Sep 2020 14:38:35 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id a15sm286105pgi.69.2020.09.02.14.38.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Sep 2020 14:38:33 -0700 (PDT)
+Subject: Re: [RFC net-next 1/2] net: phy: Support enabling clocks prior to bus
+ probe
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, adam.rudzinski@arf.net.pl, m.felsch@pengutronix.de,
+        hkallweit1@gmail.com, richard.leitner@skidata.com,
+        zhengdejin5@gmail.com, devicetree@vger.kernel.org,
+        kernel@pengutronix.de, kuba@kernel.org, robh+dt@kernel.org
+References: <20200902213347.3177881-1-f.fainelli@gmail.com>
+ <20200902213347.3177881-2-f.fainelli@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <265dbcdb-6a56-0db8-73f9-7b643f5d95cf@gmail.com>
+Date:   Wed, 2 Sep 2020 14:38:32 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200901173810.GA25282@alpha.franken.de>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20200902213347.3177881-2-f.fainelli@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 01, 2020 at 07:38:10PM +0200, Thomas Bogendoerfer wrote:
-> On Tue, Sep 01, 2020 at 07:16:27PM +0200, Christoph Hellwig wrote:
-> > Well, if IP22 doesn't speculate (which I'm pretty sure is the case),
-> > dma_sync_single_for_cpu should indeeed be a no-op.  But then there
-> > also shouldn't be anything in the cache, as the previous
-> > dma_sync_single_for_device should have invalidated it.  So it seems like
-> > we are missing one (or more) ownership transfers to the device.  I'll
-> > try to look at the the ownership management in a little more detail
-> > tomorrow.
+
+
+On 9/2/2020 2:33 PM, Florian Fainelli wrote:
+> Some Ethernet PHYs may require that their clock, which typically drives
+> their logic to respond to reads on the MDIO bus be enabled before
+> issusing a MDIO bus scan.
 > 
-> this is the problem:
+> We have a chicken and egg problem though which is that we cannot enable
+> a given Ethernet PHY's device clock until we have a phy_device instance
+> create and called the driver's probe function. This will not happen
+> unless we are successful in probing the PHY device, which requires its
+> clock(s) to be turned on.
 > 
->        /* Always check for received packets. */
->         sgiseeq_rx(dev, sp, hregs, sregs);
-> 
-> so the driver will look at the rx descriptor on every interrupt, so
-> we cache the rx descriptor on the first interrupt and if there was
-> $no rx packet, we will only see it, if cache line gets flushed for
-> some other reason. kick_tx() does a busy loop checking tx descriptors,
-> with just sync_desc_cpu...
+> For DT based systems we can solve this by using of_clk_get() which
+> operates on a device_node reference, and make sure that all clocks
+> associaed with the node are enabled prior to doing any reads towards the
+> device. In order to avoid drivers having to know the a priori reference
+> count of the resources, we drop them back to 0 right before calling
+> ->probe() which is then supposed to manage the resources normally.
 
-the patch below fixes the problem.
-
-Thomas.
-
-
-diff --git a/drivers/net/ethernet/seeq/sgiseeq.c b/drivers/net/ethernet/seeq/sgiseeq.c
-index 8507ff242014..876e3700a0e4 100644
---- a/drivers/net/ethernet/seeq/sgiseeq.c
-+++ b/drivers/net/ethernet/seeq/sgiseeq.c
-@@ -112,14 +112,18 @@ struct sgiseeq_private {
- 
- static inline void dma_sync_desc_cpu(struct net_device *dev, void *addr)
- {
--       dma_cache_sync(dev->dev.parent, addr, sizeof(struct sgiseeq_rx_desc),
--                      DMA_FROM_DEVICE);
-+       struct sgiseeq_private *sp = netdev_priv(dev);
-+
-+       dma_sync_single_for_device(dev->dev.parent, VIRT_TO_DMA(sp, addr),
-+                       sizeof(struct sgiseeq_rx_desc), DMA_FROM_DEVICE);
- }
- 
- static inline void dma_sync_desc_dev(struct net_device *dev, void *addr)
- {
--       dma_cache_sync(dev->dev.parent, addr, sizeof(struct sgiseeq_rx_desc),
--                      DMA_TO_DEVICE);
-+       struct sgiseeq_private *sp = netdev_priv(dev);
-+
-+       dma_sync_single_for_device(dev->dev.parent, VIRT_TO_DMA(sp, addr),
-+                       sizeof(struct sgiseeq_rx_desc), DMA_TO_DEVICE);
- }
- 
+That last part is actually not in this patch series, I had it in an 
+intermediate version, but after chasing a clock enabling/disabling race 
+that appears specific to the platforms I am using, I eventually removed 
+it but left that part in the commit message.
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Florian
