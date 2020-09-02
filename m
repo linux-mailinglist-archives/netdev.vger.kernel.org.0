@@ -2,91 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54CD825B599
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 23:08:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E9BF25B5B4
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 23:11:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726794AbgIBVIn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 17:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45846 "EHLO
+        id S1726528AbgIBVLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 17:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726226AbgIBVIm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 17:08:42 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368D0C061244;
-        Wed,  2 Sep 2020 14:08:42 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id f18so368078pfa.10;
-        Wed, 02 Sep 2020 14:08:42 -0700 (PDT)
+        with ESMTP id S1726226AbgIBVLr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 17:11:47 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02803C061244;
+        Wed,  2 Sep 2020 14:11:45 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id d22so389900pfn.5;
+        Wed, 02 Sep 2020 14:11:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=EK6NricySUp/sEcvpqlTK1TfAw/t1m09azglRdZNI24=;
-        b=txq2eiiWYaBZ/hxF9oDeyIWwlQ+5FANBgQHOD1w/I86/pNrZoioWs1e8uG3DOE0NC8
-         8bs05yHI/tRw7C2gytWgVNFIvsyi87K0MUpcrr5PL90H8H0z069J0P6LgY+aGtIeAm+b
-         KNgnDXZqJi+dRgMLZR98QJDq3pATLZu9lzhb9XrJW6HIVbg/zFs7Nw/Hv3VC09Zzej1A
-         S53a9bX7UJ9BHwDGXmYrzhvzhEZ7//RzT4R0zE/vxlpsqnzbiFg5WfQjnHXj4r3SFgjg
-         VKZICVF4RR6/LkQogFr330c2cos101n1EXYvlsJXjlFDkI80RTSpjczqV9AFZTpjmU8B
-         OVJw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ygs/IE+McqnrSxyHqHFy4fGxAYxycxzoXo7z9MWjpSE=;
+        b=Sez8vDAIPo2dPyGnQS6dBAJTSd0ckApYKvLiT9kh86tRC6TiCt5SJAojVGqMwV2n83
+         6e7NK12P3Q7uJeGKoAS+QiuTjmYQEQ71+Ju10FG173eW/ohTlMCHtolivsvGo32sMTUZ
+         ou9a8HpwbAwXEjagxptwwJE2Ul9gxP9s4xTsBcFRb4G+NeirUs+cyAGW6bKRRsF75+hk
+         e+rHfd6C0f+L7C6bYmwmhm0uEDXgpa82OGhqWYk5Jeb0cXQXXVetmpbofL3lsNx98bbQ
+         vSqMTJqsOQ/ol2leiJwMDpMsorJ7czXI94iwpAVYdDFC5ta2EYWspEd9J4sR4vSEssAS
+         gs7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=EK6NricySUp/sEcvpqlTK1TfAw/t1m09azglRdZNI24=;
-        b=oMKljyv2JgEOZ+8+JO1AryJmD7cmZ4mMSBg8/EGDfOTSa+Z4r2saPojGoYfNGeXjzU
-         0ZynBfh5724KWfpJKl1U58jCTBAzQBMUWQbtwYVOo0gOHwgdrNP37kfDyE1G2Gwnbv70
-         XVsMqH6T9I1n92x2tFSEhL+tUAGnribFM/YHgBOyTTw8KzN/H9eR8mm5XL7bUkboHodA
-         aCiLXvB9wam0nApWlgvP/O6LDyykP7k4M1pJY/z+3y3Lldm4tyK+UtsjPzRrn9M0mxlZ
-         9oOtx4bboZJP0e4ZZfq1T/tHXO2H0yZI29YyzBeKGo9xBlJGckhES0xtlk0ySlj9c7gS
-         /Xmw==
-X-Gm-Message-State: AOAM531UVT6qAKuBMu13Wr0O5CGkKNCjy7A6tx4E06O6aNe85S+F0GDW
-        hg476Osb8YMTKEUrsbGlfa4=
-X-Google-Smtp-Source: ABdhPJzIotfeY8Ia0h0NGSoWYyGpifq5QfcTSU2eXljJFvt530GFJ5pF4Q5yaikhzLxrrpqT94UGOA==
-X-Received: by 2002:a17:902:407:: with SMTP id 7mr282399ple.167.1599080921444;
-        Wed, 02 Sep 2020 14:08:41 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:b65c])
-        by smtp.gmail.com with ESMTPSA id j19sm457778pfi.51.2020.09.02.14.08.39
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ygs/IE+McqnrSxyHqHFy4fGxAYxycxzoXo7z9MWjpSE=;
+        b=Tg7kfB3CDd12gaogG2k3/d8cjg9DQLkLwv9/kH84mJ6hr5kU/AwirpXRA+fxFMaP2P
+         b1iEHHckpERYSzyXGqdD4Ir8qm5MtoH2W8cKRMy0yKzeis+0u+h496N2poyT7TciN8mJ
+         KWq07weK8SPmZV1zOj3AR8EYd8LrCE/Of3f4XhcswpgDcccSj15A52Mppj3SNYuBalFz
+         wwUBb58HIJgBxZsthDM1rGb9Uya7s2GdKbGypMJZI2glzUMrBRHLWEf17aeMPz0Ye0fh
+         wKbLferFvvjcQk9JL9rhSKAiPvT/zVow0gdTUFzs9P/4tgNbX5HOse3rB7Q1tu+rB1oJ
+         coMA==
+X-Gm-Message-State: AOAM533yCPcZFyTxsI/9dhIbnbBbTJvpoIXoOpM4lWxVq7Ygg7+h5pSu
+        8/NcjZ4BuEAIM6+iiCpupuo=
+X-Google-Smtp-Source: ABdhPJzwflc8pRYyFM7ZKAJJz2UK59HuPj0IrOAB2Ka2pobxtUpsmQA6rXJrwy/UfT2ubcgeTptjZA==
+X-Received: by 2002:a17:902:b60d:: with SMTP id b13mr331817pls.48.1599081105327;
+        Wed, 02 Sep 2020 14:11:45 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8880:9ae0:b49f:31b6:73e2:b3d2])
+        by smtp.gmail.com with ESMTPSA id q71sm337132pja.9.2020.09.02.14.11.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Sep 2020 14:08:40 -0700 (PDT)
-Date:   Wed, 2 Sep 2020 14:08:38 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     sdf@google.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        YiFei Zhu <zhuyifei1999@gmail.com>, andriin@fb.com
-Subject: Re: [PATCH bpf-next v3 4/8] libbpf: implement bpf_prog_find_metadata
-Message-ID: <20200902210838.7a26mfi54dufou5a@ast-mbp.dhcp.thefacebook.com>
-References: <20200828193603.335512-1-sdf@google.com>
- <20200828193603.335512-5-sdf@google.com>
- <874koma34d.fsf@toke.dk>
- <20200831154001.GC48607@google.com>
- <20200901225841.qpsugarocx523dmy@ast-mbp.dhcp.thefacebook.com>
- <874kogike9.fsf@toke.dk>
+        Wed, 02 Sep 2020 14:11:44 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     Krzysztof Halasa <khc@pm.waw.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Xie He <xie.he.0141@gmail.com>, Martin Schiller <ms@dev.tdt.de>
+Subject: [PATCH net] drivers/net/wan/hdlc_fr: Add needed_headroom for PVC devices
+Date:   Wed,  2 Sep 2020 14:11:41 -0700
+Message-Id: <20200902211141.48712-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <874kogike9.fsf@toke.dk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 02, 2020 at 11:43:26AM +0200, Toke Høiland-Jørgensen wrote:
-> >
-> > I don't feel great about this libbpf api. bpftool already does
-> > bpf_obj_get_info_by_fd() for progs and for maps.
-> > This extra step and extra set of syscalls is redundant work.
-> > I think it's better to be done as part of bpftool.
-> > It doesn't quite fit as generic api.
-> 
-> Why not? 
+PVC devices are virtual devices in this driver stacked on top of the
+actual HDLC device. They are the devices normal users would use.
+PVC devices have two types: normal PVC devices and Ethernet-emulated
+PVC devices.
 
-It's a helper function on top of already provided api and implemented
-in the most brute force and inefficient way.
-bpftool implementation of the same will be more efficient.
+When transmitting data with PVC devices, the ndo_start_xmit function
+will prepend a header of 4 or 10 bytes. Currently this driver requests
+this headroom to be reserved for normal PVC devices by setting their
+hard_header_len to 10. However, this does not work when these devices
+are used with AF_PACKET/RAW sockets. Also, this driver does not request
+this headroom for Ethernet-emulated PVC devices (but deals with this
+problem by reallocating the skb when needed, which is not optimal).
 
-> so. If we don't have it, people will have to go look at bpftool code,
-> and we'll end up with copied code snippets, which seems less than ideal.
+This patch replaces hard_header_len with needed_headroom, and set
+needed_headroom for Ethernet-emulated PVC devices, too. This makes
+the driver to request headroom for all PVC devices in all cases.
 
-I'd like to see the real use case first before hypothesising.
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc_fr.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+index 9acad651ea1f..12b35404cd8e 100644
+--- a/drivers/net/wan/hdlc_fr.c
++++ b/drivers/net/wan/hdlc_fr.c
+@@ -1041,7 +1041,7 @@ static void pvc_setup(struct net_device *dev)
+ {
+ 	dev->type = ARPHRD_DLCI;
+ 	dev->flags = IFF_POINTOPOINT;
+-	dev->hard_header_len = 10;
++	dev->hard_header_len = 0;
+ 	dev->addr_len = 2;
+ 	netif_keep_dst(dev);
+ }
+@@ -1093,6 +1093,7 @@ static int fr_add_pvc(struct net_device *frad, unsigned int dlci, int type)
+ 	dev->mtu = HDLC_MAX_MTU;
+ 	dev->min_mtu = 68;
+ 	dev->max_mtu = HDLC_MAX_MTU;
++	dev->needed_headroom = 10;
+ 	dev->priv_flags |= IFF_NO_QUEUE;
+ 	dev->ml_priv = pvc;
+ 
+-- 
+2.25.1
+
