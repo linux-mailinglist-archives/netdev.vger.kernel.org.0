@@ -2,255 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B3D925AF0A
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 17:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79E0525AF1F
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 17:34:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728400AbgIBPdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 11:33:07 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52313 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728378AbgIBPch (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 11:32:37 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from ayal@mellanox.com)
-        with SMTP; 2 Sep 2020 18:32:29 +0300
-Received: from dev-l-vrt-210.mtl.labs.mlnx (dev-l-vrt-210.mtl.labs.mlnx [10.234.210.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 082FWTlq014707;
-        Wed, 2 Sep 2020 18:32:29 +0300
-Received: from dev-l-vrt-210.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Debian-8ubuntu1) with ESMTP id 082FWTDo026695;
-        Wed, 2 Sep 2020 18:32:29 +0300
-Received: (from ayal@localhost)
-        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 082FWTjE026694;
-        Wed, 2 Sep 2020 18:32:29 +0300
-From:   Aya Levin <ayal@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org
-Cc:     Moshe Shemesh <moshe@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        linux-kernel@vger.kernel.org, Aya Levin <ayal@mellanox.com>
-Subject: [PATCH net-next RFC v1 4/4] net/mlx5e: Add devlink trap to catch oversize packets
-Date:   Wed,  2 Sep 2020 18:32:14 +0300
-Message-Id: <1599060734-26617-5-git-send-email-ayal@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1599060734-26617-1-git-send-email-ayal@mellanox.com>
-References: <1599060734-26617-1-git-send-email-ayal@mellanox.com>
+        id S1728327AbgIBPeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 11:34:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728303AbgIBPeM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 11:34:12 -0400
+Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EE94C061244
+        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 08:34:11 -0700 (PDT)
+Received: by mail-qv1-xf44.google.com with SMTP id ef16so2392824qvb.8
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 08:34:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qUX9x7tN2/cZS0qqgKTf1o6WdvsTJbK/ikSJXEcKLw4=;
+        b=V1o/7C014RhbotQJeKIozZ4CGi308uNXRLf/ORULUUHb5jHw9hjQ1RrPHpcbic/jHu
+         qm8QyAv9nZPHmYy+gbwzkHlcYHvlw3ktqdnNKp3jXK1bByzkCBBI7lOtxfOQKrjVTmFj
+         ahpd0tdUMdi9O7WiDaSpdo6dC0DBz+UvFJWldCrNTCb3Au+F5veZwj8j+ZamMl9PKX7B
+         8tCX5MLR6qAGIcEORfEoGbOF7jgUx0YzoTDCSV54KNI95BnxkVqdZohOcICQG/uIpZnF
+         V0ng6keDEpLkf/A/JNdMQLFh7aCbq67r6LfGIY7RqNSqEWUNjgOQhKrtQrEa5OKAUUDX
+         94Bw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qUX9x7tN2/cZS0qqgKTf1o6WdvsTJbK/ikSJXEcKLw4=;
+        b=MXEisiormofm50hwdUugUXfGU98bb4+tHZFXdlxFFiiH14TaBinqvEkVeU9pjFBykp
+         prgdYa9s4WkHj+f0L72fhHu3SJy+Zv1LFubOSk4kCe+CuLDHaN4D5WTYVPp0KeJQEc3H
+         +HQ9TP6Bg3k0kUlZEzpUtmkIOjczzMRGaCwCe5GV+mA/6j7+lsTDLvSq13Y89Zj5ExqN
+         lBI7eJhTrMZemLr47VTTL+jdvD7WUGAJCgpKpINVDJeEGvHwqrrFSwsjHTwwJ8dfyofv
+         YpNp4ORWGCtbd6IpsGjUWvKGpvzDOLC+/F+B90EVqOmIU5c/fgTR/XzGDU8ypLZJp8zj
+         NMXQ==
+X-Gm-Message-State: AOAM530laHZCw5fI/nalLHGISZVrne0dmoky6Q/mkc1np7cc4UE5lTGR
+        HCMHjdcQoqC+qdrxxw4NxP4diUdz7w==
+X-Google-Smtp-Source: ABdhPJwSjts4yXqiGMXZavY+L2jwiWfOhJ6gYxzCcDDxM0zf/dcT1XFkq8M32389smlOzC6DzSHLCw==
+X-Received: by 2002:ad4:5101:: with SMTP id g1mr1868664qvp.104.1599060850901;
+        Wed, 02 Sep 2020 08:34:10 -0700 (PDT)
+Received: from ICIPI.localdomain ([136.56.89.69])
+        by smtp.gmail.com with ESMTPSA id z6sm4972643qkl.39.2020.09.02.08.34.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2020 08:34:10 -0700 (PDT)
+Date:   Wed, 2 Sep 2020 11:34:02 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net] ipv6: Fix sysctl max for fib_multipath_hash_policy
+Message-ID: <20200902153402.GA4801@ICIPI.localdomain>
+References: <20200902131659.2051734-1-idosch@idosch.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200902131659.2051734-1-idosch@idosch.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Register MTU error trap to allow visibility of oversize packets. Display
-a naive use of devlink trap in devlink port context.
+On Wed, Sep 02, 2020 at 04:16:59PM +0300, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> Cited commit added the possible value of '2', but it cannot be set. Fix
+> it by adjusting the maximum value to '2'. This is consistent with the
+> corresponding IPv4 sysctl.
+> 
+> Before:
+> 
+> # sysctl -w net.ipv6.fib_multipath_hash_policy=2
+> sysctl: setting key "net.ipv6.fib_multipath_hash_policy": Invalid argument
+> net.ipv6.fib_multipath_hash_policy = 2
+> # sysctl net.ipv6.fib_multipath_hash_policy
+> net.ipv6.fib_multipath_hash_policy = 0
+> 
+> After:
+> 
+> # sysctl -w net.ipv6.fib_multipath_hash_policy=2
+> net.ipv6.fib_multipath_hash_policy = 2
+> # sysctl net.ipv6.fib_multipath_hash_policy
+> net.ipv6.fib_multipath_hash_policy = 2
+> 
+> Fixes: d8f74f0975d8 ("ipv6: Support multipath hashing on inner IP pkts")
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/ipv6/sysctl_net_ipv6.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv6/sysctl_net_ipv6.c b/net/ipv6/sysctl_net_ipv6.c
+> index fac2135aa47b..5b60a4bdd36a 100644
+> --- a/net/ipv6/sysctl_net_ipv6.c
+> +++ b/net/ipv6/sysctl_net_ipv6.c
+> @@ -21,6 +21,7 @@
+>  #include <net/calipso.h>
+>  #endif
+>  
+> +static int two = 2;
+>  static int flowlabel_reflect_max = 0x7;
+>  static int auto_flowlabels_min;
+>  static int auto_flowlabels_max = IP6_AUTO_FLOW_LABEL_MAX;
+> @@ -150,7 +151,7 @@ static struct ctl_table ipv6_table_template[] = {
+>  		.mode		= 0644,
+>  		.proc_handler   = proc_rt6_multipath_hash_policy,
+>  		.extra1		= SYSCTL_ZERO,
+> -		.extra2		= SYSCTL_ONE,
+> +		.extra2		= &two,
+>  	},
+>  	{
+>  		.procname	= "seg6_flowlabel",
+> -- 
+> 2.26.2
+> 
 
-Signed-off-by: Aya Levin <ayal@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |  2 ++
- drivers/net/ethernet/mellanox/mlx5/core/en/traps.c | 32 +++++++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en/traps.h | 13 +++++++
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 41 ++++++++++++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    | 11 ++++--
- 6 files changed, 98 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/traps.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/traps.h
+Thanks for catching.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index 94268a697e1c..78e2e9107986 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -25,7 +25,7 @@ mlx5_core-$(CONFIG_MLX5_CORE_EN) += en_main.o en_common.o en_fs.o en_ethtool.o \
- 		en_tx.o en_rx.o en_dim.o en_txrx.o en/xdp.o en_stats.o \
- 		en_selftest.o en/port.o en/monitor_stats.o en/health.o \
- 		en/reporter_tx.o en/reporter_rx.o en/params.o en/xsk/umem.o \
--		en/xsk/setup.o en/xsk/rx.o en/xsk/tx.o en/devlink.o
-+		en/xsk/setup.o en/xsk/rx.o en/xsk/tx.o en/devlink.o en/traps.o
- 
- #
- # Netdev extra
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-index 0cc2080fd847..7e5581ed9311 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -814,6 +814,8 @@ struct mlx5e_priv {
- 	struct mlx5e_hv_vhca_stats_agent stats_agent;
- #endif
- 	struct mlx5e_scratchpad    scratchpad;
-+	void *trap_mtu;
-+	bool trap_oversize;
- };
- 
- struct mlx5e_rx_handlers {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/traps.c b/drivers/net/ethernet/mellanox/mlx5/core/en/traps.c
-new file mode 100644
-index 000000000000..e365e8dbd6ff
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/traps.c
-@@ -0,0 +1,32 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2020 Mellanox Technologies.
-+#include "en.h"
-+#include "traps.h"
-+#include <linux/kernel.h>
-+#include <uapi/linux/devlink.h>
-+
-+#define MLX5E_TRAP(_id, _group_id)                                      \
-+	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,                           \
-+			     DEVLINK_TRAP_GROUP_GENERIC_ID_##_group_id, \
-+			     DEVLINK_TRAP_METADATA_TYPE_F_IN_PORT)
-+static struct devlink_trap mlx5e_traps_arr[] = {
-+	MLX5E_TRAP(MTU_ERROR, L2_DROPS),
-+};
-+
-+int mlx5e_devlink_traps_create(struct mlx5e_priv *priv)
-+{
-+	struct devlink_port *dl_port = &priv->dl_port;
-+
-+	return devlink_port_traps_register(dl_port, mlx5e_traps_arr,
-+					   ARRAY_SIZE(mlx5e_traps_arr),
-+					   priv);
-+}
-+
-+void mlx5e_devlink_traps_destroy(struct mlx5e_priv *priv)
-+{
-+	struct devlink_port *dl_port = &priv->dl_port;
-+
-+	devlink_port_traps_unregister(dl_port, mlx5e_traps_arr,
-+				      ARRAY_SIZE(mlx5e_traps_arr));
-+}
-+
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/traps.h b/drivers/net/ethernet/mellanox/mlx5/core/en/traps.h
-new file mode 100644
-index 000000000000..14a32b6968ee
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/traps.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2020 Mellanox Technologies.*/
-+
-+#ifndef __MLX5E_EN_TRAPS_H
-+#define __MLX5E_EN_TRAPS_H
-+
-+#include "en.h"
-+
-+int mlx5e_devlink_traps_create(struct mlx5e_priv *priv);
-+void mlx5e_devlink_traps_destroy(struct mlx5e_priv *priv);
-+
-+#endif
-+
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index aebcf73f8546..056f34326b3d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -64,6 +64,7 @@
- #include "en/hv_vhca_stats.h"
- #include "en/devlink.h"
- #include "lib/mlx5.h"
-+#include "en/traps.h"
- 
- bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev)
- {
-@@ -4976,6 +4977,43 @@ void mlx5e_destroy_q_counters(struct mlx5e_priv *priv)
- 	}
- }
- 
-+static int mlx5e_devlink_trap_init(struct devlink *devlink,
-+				   const struct devlink_trap *trap,
-+				   void *trap_ctx)
-+{
-+	struct mlx5e_priv *priv = (struct mlx5e_priv *)devlink_trap_ctx_priv(trap_ctx);
-+
-+	priv->trap_mtu = trap_ctx;
-+	return 0;
-+}
-+
-+static void mlx5e_devlink_trap_fini(struct devlink *devlink,
-+				    const struct devlink_trap *trap,
-+				    void *trap_ctx)
-+{
-+	struct mlx5e_priv *priv = (struct mlx5e_priv *)devlink_trap_ctx_priv(trap_ctx);
-+
-+	priv->trap_mtu = NULL;
-+}
-+
-+static int mlx5e_devlink_trap_action_set(struct devlink *devlink,
-+					 const struct devlink_trap *trap,
-+					 enum devlink_trap_action action,
-+					 void *trap_ctx,
-+					 struct netlink_ext_ack *extack)
-+{
-+	struct mlx5e_priv *priv = (struct mlx5e_priv *)devlink_trap_ctx_priv(trap_ctx);
-+
-+	priv->trap_oversize = !!action;
-+	return 0;
-+}
-+
-+static const struct devlink_trap_ops mlx5e_devlink_traps_ops = {
-+	.trap_init		= mlx5e_devlink_trap_init,
-+	.trap_fini		= mlx5e_devlink_trap_fini,
-+	.trap_action_set	= mlx5e_devlink_trap_action_set,
-+};
-+
- static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
- 			  struct net_device *netdev,
- 			  const struct mlx5e_profile *profile,
-@@ -5005,12 +5043,15 @@ static int mlx5e_nic_init(struct mlx5_core_dev *mdev,
- 	if (err)
- 		mlx5_core_err(mdev, "mlx5e_devlink_port_register failed, %d\n", err);
- 	mlx5e_health_create_reporters(priv);
-+	devlink_port_traps_ops(&priv->dl_port, &mlx5e_devlink_traps_ops);
-+	mlx5e_devlink_traps_create(priv);
- 
- 	return 0;
- }
- 
- static void mlx5e_nic_cleanup(struct mlx5e_priv *priv)
- {
-+	mlx5e_devlink_traps_destroy(priv);
- 	mlx5e_health_destroy_reporters(priv);
- 	mlx5e_devlink_port_unregister(priv);
- 	mlx5e_tls_cleanup(priv);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 1e42e27eae26..4fe20a6e6d6d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1437,6 +1437,7 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 				u16 cqe_bcnt, u32 head_offset, u32 page_idx)
- {
- 	struct mlx5e_dma_info *di = &wi->umr.dma_info[page_idx];
-+	struct mlx5e_priv *priv = rq->channel->priv;
- 	u16 rx_headroom = rq->buff.headroom;
- 	u32 cqe_bcnt32 = cqe_bcnt;
- 	struct xdp_buff xdp;
-@@ -1444,11 +1445,14 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 	void *va, *data;
- 	u32 frag_size;
- 	bool consumed;
-+	bool trap;
- 
- 	/* Check packet size. Note LRO doesn't use linear SKB */
- 	if (unlikely(cqe_bcnt > rq->hw_mtu)) {
- 		rq->stats->oversize_pkts_sw_drop++;
--		return NULL;
-+		if (!priv->trap_oversize)
-+			return NULL;
-+		trap = true;
- 	}
- 
- 	va             = page_address(di->page) + head_offset;
-@@ -1475,7 +1479,10 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
- 	skb = mlx5e_build_linear_skb(rq, va, frag_size, rx_headroom, cqe_bcnt32);
- 	if (unlikely(!skb))
- 		return NULL;
--
-+	if (trap) {
-+		devlink_port_trap_report(&priv->dl_port, skb, priv->trap_mtu, NULL);
-+		return NULL;
-+	}
- 	/* queue up for recycling/reuse */
- 	page_ref_inc(di->page);
- 
--- 
-2.14.1
-
+Reviewed-by: Stephen Suryaputra <ssuryaextr@gmail.com>
