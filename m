@@ -2,92 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C514E25A2CD
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 03:56:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CAA225A2D2
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 04:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726446AbgIBBzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 21:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726131AbgIBBzJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 1 Sep 2020 21:55:09 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19A0C061244
-        for <netdev@vger.kernel.org>; Tue,  1 Sep 2020 18:55:08 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id b6so3629980iof.6
-        for <netdev@vger.kernel.org>; Tue, 01 Sep 2020 18:55:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7Ey6Or2jiS0yjdSLj1uOiOljCl8dJpBOBkaBGqaRE3k=;
-        b=ItqAtaCb9PehmJxB8FPw1AIMlHT3rwYv2EUunor4iUlaUALz4HCr44bxa7EV/40MWt
-         58AeuKzC7yVrOqbreq76IsyOnu90JVHRHkDhwYTQkI8CpKpOLQmeJ5JI0lRwdn87P05P
-         V98aWjOZgd+uws7jumnMmdiZpR/vH2T5pZnf3hf4j/L1WDz3i0qnRV3JRkZrTHcMhopj
-         SEYNL2PBAvptoCayaNONmblQ1lpId0k1tPgShULLnEknp7nqRFT9t+7XFlseU6EY2Wmc
-         NiZU3clSeOA13b9qR5FBO+9NiqGWSSQ2lyLovbW3pC2j+13h0lo9djgFB3Caafi4KamM
-         xUeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7Ey6Or2jiS0yjdSLj1uOiOljCl8dJpBOBkaBGqaRE3k=;
-        b=Nwir7FC1lrGSnqF0KkeQwfmxg3b6gRwCKSQRVZub01Y/mXFOJETRysylRpm2WfqxPT
-         KnR93epeVM4CZluXH+AqYtSHxBpKFGu4s7kFHnNA/sQAnZ9mn0AGJffNy6ZQfgtIU8ph
-         QkCMluLWMugcNRJv+TaXgDgdUNvMFSGsY8TswNSmwwmgAx4tWlSkO745CKawI9PZmV7E
-         AwOXgJHVvDpX4BlkxtJk5I8porxs+idLYUIAs75dsEwEJw3QAEw/yctadlA0Tq3kxOr/
-         bPdB6/DtEXqBZMx4Bg5wuzB21cBBc+Z/BVcZsYa43fA2DC3wPqlG41n1Mx70kV+tWmC5
-         na9w==
-X-Gm-Message-State: AOAM530e8Nu74PB4HoejZDIu2ejPx6B/Tr5tDM0EG7Ybj6GpWCwXRpgg
-        sEuwP7xUf9Y9U62RvgHmDXvRqwPaoYbUjg==
-X-Google-Smtp-Source: ABdhPJzIZ2+ZIXcgtSOV3OqcKOXcED5wpJs01g75atO0jrXZm2btbc2Qedu4kWqfuk3BdeIbdwhKKw==
-X-Received: by 2002:a6b:700f:: with SMTP id l15mr1688144ioc.168.1599011707292;
-        Tue, 01 Sep 2020 18:55:07 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:883e:eb9e:60a1:7cfb])
-        by smtp.googlemail.com with ESMTPSA id i73sm1527887ill.4.2020.09.01.18.55.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Sep 2020 18:55:06 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] ip xfrm: support printing
- XFRMA_SET_MARK_MASK attribute in states
-To:     Antony Antony <antony@phenome.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-References: <20200828145907.GA17185@AntonyAntony.local>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <93e07827-51f8-2732-e7c8-25b35453374f@gmail.com>
-Date:   Tue, 1 Sep 2020 19:55:05 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1726285AbgIBBmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 21:42:49 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:54076 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726193AbgIBBmS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 21:42:18 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 9808AA0F37ABB56A2A8D;
+        Wed,  2 Sep 2020 09:42:16 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 2 Sep 2020 09:42:10 +0800
+Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <511bcb5c-b089-ab4e-4424-a83c6e718bfa@huawei.com>
+Date:   Wed, 2 Sep 2020 09:42:10 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-In-Reply-To: <20200828145907.GA17185@AntonyAntony.local>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/28/20 8:59 AM, Antony Antony wrote:
-> The XFRMA_SET_MARK_MASK attribute is set in states (4.19+).
-> It is the mask of XFRMA_SET_MARK(a.k.a. XFRMA_OUTPUT_MARK in 4.18)
+On 2020/9/2 2:24, Cong Wang wrote:
+> On Mon, Aug 31, 2020 at 5:59 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> Currently there is concurrent reset and enqueue operation for the
+>> same lockless qdisc when there is no lock to synchronize the
+>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+>> out-of-bounds access for priv->ring[] in hns3 driver if user has
+>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+>> skb with a larger queue_mapping after the corresponding qdisc is
+>> reset, and call hns3_nic_net_xmit() with that skb later.
 > 
-> sample output: note the output-mark mask
-> ip xfrm state
-> 	src 192.1.2.23 dst 192.1.3.33
-> 	proto esp spi 0xSPISPI reqid REQID mode tunnel
-> 	replay-window 32 flag af-unspec
-> 	output-mark 0x3/0xffffff
-> 	aead rfc4106(gcm(aes)) 0xENCAUTHKEY 128
-> 	if_id 0x1
+> Can you be more specific here? Which call path requests a smaller
+> tx queue num? If you mean netif_set_real_num_tx_queues(), clearly
+> we already have a synchronize_net() there.
+
+When the netdevice is in active state, the synchronize_net() seems to
+do the correct work, as below:
+
+CPU 0:                                       CPU1:
+__dev_queue_xmit()                       netif_set_real_num_tx_queues()
+rcu_read_lock_bh();
+netdev_core_pick_tx(dev, skb, sb_dev);
+	.
+	.				dev->real_num_tx_queues = txq;
+	.					.
+	.				    	.
+        .                               synchronize_net();
+	.					.
+q->enqueue()					.
+	.					.
+rcu_read_unlock_bh()				.
+					qdisc_reset_all_tx_gt
+
+
+but dev->real_num_tx_queues is not RCU-protected, maybe that is a problem
+too.
+
+The problem we hit is as below:
+In hns3_set_channels(), hns3_reset_notify(h, HNAE3_DOWN_CLIENT) is called
+to deactive the netdevice when user requested a smaller queue num, and
+txq->qdisc is already changed to noop_qdisc when calling
+netif_set_real_num_tx_queues(), so the synchronize_net() in the function
+netif_set_real_num_tx_queues() does not help here.
+
 > 
-> Signed-off-by: Antony Antony <antony@phenome.org>
-> ---
->  ip/ipxfrm.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>>
+>> Avoid the above concurrent op by calling synchronize_rcu_tasks()
+>> after assigning new qdisc to dev_queue->qdisc and before calling
+>> qdisc_deactivate() to make sure skb with larger queue_mapping
+>> enqueued to old qdisc will always be reset when qdisc_deactivate()
+>> is called.
 > 
+> Like Eric said, it is not nice to call such a blocking function when
+> we have a large number of TX queues. Possibly we just need to
+> add a synchronize_net() as in netif_set_real_num_tx_queues(),
+> if it is missing.
 
-applied to iproute2-next. Thanks
+As above, the synchronize_net() in netif_set_real_num_tx_queues() seems
+to work when netdevice is in active state, but does not work when in
+deactive.
 
+And we do not want skb left in the old qdisc when netdevice is deactived,
+right?
 
+As reply to Eric, maybe the existing synchronize_net() in dev_deactivate_many()
+can be reused to order the qdisc assignment and qdisc reset?
+
+> 
+> Thanks.
+> .
+> 
