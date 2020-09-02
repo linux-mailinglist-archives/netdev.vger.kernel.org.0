@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E491125AEA1
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 17:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AB1325AEA5
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 17:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728157AbgIBPFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 11:05:40 -0400
+        id S1726397AbgIBPTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 11:19:34 -0400
 Received: from mail-eopbgr140100.outbound.protection.outlook.com ([40.107.14.100]:20302
         "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727894AbgIBPFH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 2 Sep 2020 11:05:07 -0400
+        id S1726380AbgIBPFl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Sep 2020 11:05:41 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=glBMJOkIuc+ibCSOCDLDSJNIBdbZIN68YXdgIKZL6VW8YAWf5Fc3Di1nqw4yvKBVkzgjZzS2WgsIQjFYfSSXEXbiEemaIRbsabhwtGcp5JXkJ5dVky8cELoDNpwE/okbwKTSeOyG+FSrSXP/4QGXnyEsutY0Y+bW0LY0fV9/4eRL5gflMUHE55ZkYBy0+yRLO4eEUW6iKKkrKPdMbKvRNEfvgNuKPZDk82QjfKQUJQeYH2fnlNP7/zL4WMvHcyTaXu6bjLym8m8oH/nJRQWh0FOWSYajdANgnDyc3Zo3o1FlVdVNkGsbA2FIl4GhOOLYmwt9pMR7XlImcz9CbTMTFQ==
+ b=NYxvFa6ZCliGi7dI5GS72N1erREyc4EVyV8zD4zor75o6G2QQAHxHSwMhvkwJ/ZtuaHtRpQy56vRo1yFALMi4FhWrlNvxAWiuxJhVeOtG7ney3M4pW6kF5cklkghe+Xs/8QvDmoFbP3WkCoDopf8hz8FiD/SlDm77qF098xlDmG/QuEX+pY3mco01Lwpxt+pAED1F069w0s4ddWKf5x++zphVAg3rlUAq66imCtCMji9WodJMDbJnQf9UMXzX9l986xuJ3Hlj1PxXcqJDdoZlCrfqsqEQW7DAWQZLs+0hSGiYRJ4BblRwVJHCO1dkVafvd6VGHe1zo2L7gI6GCnD2Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bfmSaw6c1eZSetmty6flt+2YusY2E//HQpP5YgNgt1Q=;
- b=NbNBIgt8Qq0wL9O5BkHVVVjQpVcl50dqE/FzCXzwVs6ZGhZfsYprOyuZyfVfN8hgmUhbmaA6nHF1mo17D8RkTS1Wbjqdq1JIM8/qRRsJZizBxzY6S1PPj9HyRRo8YHJNDoAsjv7puxBjLPyVycDFDCHiraosJrnBHlkIL4nxs+wV+hW0mg8OfcfoXMz+J0pRax3hHpxhFhzSwd2nNImal/NixzQs2bjMmu9UEYMBsSvX/iz/5n8f4V0DwlGyULUYjl5Sz8/jgOO9F8bP6fNS1zNboRPl7iRJSZTmLlip96CXSIi3S8ig2JOXP29BKvoWYF76L8QZqCi0nfHfNZEw3g==
+ bh=bxfGEe1mLdkDIrhvBvNTyOcqSU3jFt5VEP4sTz3rrwE=;
+ b=IKSbZpJ8YDOL0yMAPCGeBFdPGE7cfZ1MbRdFk8zogPNHxEBMKm3rb54cNPE+7Mv4wIFrYLfWWvp/Akn0Mdg4ypmg1agk5Vm+InMrLsvDbyKjMNg4tYWyWIZx5hH2OrvQPZkjNbevqPYW5193WAKuIkNAW6ryyShOupkMqn4Y7Hys/rmae4KGAM2Rrq52H4egXQ8qwRsChv5yaELfFVzD9NDsBJZj3HUyesj4oAIQMKc747QjLNRFDDjeeTwiKSo7P5fNpdbnBbM6YuXp7e3Rg9mTt16F3SpGnhi7dufp2b1rrpI8ZxPKs5vY3f+5ryfVjYJDB58SNPPHDYotNnKyTA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
  dkim=pass header.d=plvision.eu; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bfmSaw6c1eZSetmty6flt+2YusY2E//HQpP5YgNgt1Q=;
- b=T49+R5bqrk4WM+9yF4/RuQZAZuRjjylGEc4ghsN4MOfun+E28M9QHS9sVn7R3XqK8NuPo2bQjzJ4aymh+cRof1rd47LrjadZT/+UbZULvd9UXy1IdvH1Y/EHR9PH/J6SCRb6mgJyyI5ScohPoY9SGVc/MC0LYbynhBHweG0UlDg=
+ bh=bxfGEe1mLdkDIrhvBvNTyOcqSU3jFt5VEP4sTz3rrwE=;
+ b=o8bJPAgxvK5PcNB3uALd5sb2gZlSRcMrlaDiAp84coQ31uZrpvo0n1KUtsC6cJ8q9bfjZm6y62Oi4FRkT69Xn9Nzz//RcCE/zHgWtJrKn7RNJ7jJvqEluijhhOsWv8RE0/TP32L96q+Wt7qq3G4+gr71rQFIqHSLlsiyL/yP/jQ=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=plvision.eu;
 Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
  HE1P190MB0058.EURP190.PROD.OUTLOOK.COM (2603:10a6:3:ca::22) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3348.15; Wed, 2 Sep 2020 15:05:02 +0000
+ 15.20.3348.15; Wed, 2 Sep 2020 15:05:07 +0000
 Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
  ([fe80::b1a4:e5e3:a12b:1305]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
  ([fe80::b1a4:e5e3:a12b:1305%6]) with mapi id 15.20.3326.025; Wed, 2 Sep 2020
- 15:05:01 +0000
+ 15:05:07 +0000
 From:   Vadym Kochan <vadym.kochan@plvision.eu>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -53,300 +53,392 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Mickey Rachamim <mickeyr@marvell.com>,
         Vadym Kochan <vadym.kochan@plvision.eu>
-Subject: [PATCH net v6 0/6] net: marvell: prestera: Add Switchdev driver for Prestera family ASIC device 98DX3255 (AC3x)
-Date:   Wed,  2 Sep 2020 18:04:36 +0300
-Message-Id: <20200902150442.2779-1-vadym.kochan@plvision.eu>
+Subject: [PATCH net v6 3/6] net: marvell: prestera: Add basic devlink support
+Date:   Wed,  2 Sep 2020 18:04:39 +0300
+Message-Id: <20200902150442.2779-4-vadym.kochan@plvision.eu>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200902150442.2779-1-vadym.kochan@plvision.eu>
+References: <20200902150442.2779-1-vadym.kochan@plvision.eu>
 Content-Type: text/plain
 X-ClientProxiedBy: AM6P193CA0110.EURP193.PROD.OUTLOOK.COM
  (2603:10a6:209:85::15) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
  (2603:10a6:7:56::28)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM6P193CA0110.EURP193.PROD.OUTLOOK.COM (2603:10a6:209:85::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15 via Frontend Transport; Wed, 2 Sep 2020 15:05:00 +0000
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM6P193CA0110.EURP193.PROD.OUTLOOK.COM (2603:10a6:209:85::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15 via Frontend Transport; Wed, 2 Sep 2020 15:05:05 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [217.20.186.93]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6e69c9f6-7054-47f1-13d5-08d84f5190df
+X-MS-Office365-Filtering-Correlation-Id: 47d2d215-1505-4c45-f679-08d84f519415
 X-MS-TrafficTypeDiagnostic: HE1P190MB0058:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1P190MB0058402273DDE6DBD2CDDA7D952F0@HE1P190MB0058.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Microsoft-Antispam-PRVS: <HE1P190MB0058D87CA4F3E8DED94FB6E4952F0@HE1P190MB0058.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1051;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: axRZfI1sbVTa1VYsqTXi44o9oi/Cnjx2T2VcrWsKv2/WBhhGGW9xH+bUhBNz3BomL3To/qjajtPVpa0r4fiu0X/qtIkRiatwTUgrXvZNx9trFB/qYuk9iw2MhFq7y/4xcpLnbLPiLMklr2D+gdui/1mWzbuwBPoCF6lsNP/xgMS0NdM82G8W6GIIvfjhHGahHfTVr+EVu6vxVUY7tBHpKBZpcXCcFlzIYbdEU97kd/N1qRdLjbHt3yAzl73/J+9+Cq9sipBkkQQSBbY9ZRPV3b/q0kH+PN6qQqvztMPcXGmiZ3uryxlbAEEWHFvy4PSR5Wnf/KOwo/uoG2yUy6tj232vVN1L9D0JiETTMzuZRvWPAtgyTZ1T3gtXC3sxC9rJDia1JAW096/rS52o/8+awx9nVoljcfXNMyfFV56eypg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(136003)(39830400003)(396003)(346002)(366004)(107886003)(83380400001)(316002)(44832011)(478600001)(54906003)(6512007)(6486002)(6666004)(110136005)(186003)(66476007)(8936002)(4326008)(26005)(36756003)(86362001)(66556008)(2616005)(2906002)(5660300002)(1076003)(16526019)(66946007)(6506007)(956004)(52116002)(8676002)(333604002)(921003)(21314003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: ehegFYmr2Lh0eX55IoEL4jcxdcFRd5pIenD2dcJ6KHlk9RdGB/F8PA2LR+WhSyvLHnTATflI9FdbK0Ebx3ks5xrQYqOiYm61SPpDVy/FWKzR5VciaZcSK7lA2zI91PztIs6sk3ex5K+OUkUj1GXuBxi9acCMxej787S0jK/v0QxauESYiVLpPuR9vYv5iehHF5pjawxDcZnN7Tj/C9Mghe10eYcMgDRwDzBbmR2sE/Ci8O3793SVr3MVj+m+olIUzJTZ2AG+NlOMofC+K0GgUCABnXw7UFH4O5P12pnJHsoE4FvT2WS13FSpduYZG46N5eJoy3nE59+em+2lgnrwjIcbJdVwhicDxxm/+Qf/eU52XRYOazSFsVPa5Qe0u4sysDWOZFq7kxQO4ULwE7yPCmahl0ghTrkNU2CjiHsf8nqMKDMmSTm55fQNC+oKxDnLacST/CnLhK2QwUZcDp34sRXnRzl/i8EQOWrMHKM7vuLYRkxWJt9yNFtnNdpqHZ4Qb1vis+zMrdxIvE0d34gAjROpBLqs8JuFmjPTTAIocTBsZY7/L7BrrY+4gLhE6msZsj+QLMVxgcU8R10n89/VcDecQvn2b9vkY8iOghbvirVb/esHVjh7cBPRIxYFloXhCapYX4hfh1jsZRm2CoCRHA==
+X-Microsoft-Antispam-Message-Info: 03K3w+jy5PmFSD2QXYHPlnzpX3MD+8vxmsezXwUrp9m+i6ZIGFCgcQwm0/sD0mZdNB0xrUUdpXywSPx6cRDK8Qf0GKode7gHTAhbMas+WcuVPJF7CtxrRrRgHX/tdrwffnYDjfFTVVY2k0NdfSEo97h8t7sjMiWmxgTsitx10p7EaJXJ2ztXuiFIVELQQt9KHefQGnrJaY2VMrHi7E3HG0UftAevxNpbWsdyqEXBOQp4LLil9mTdu2GGe9ChKRNf9u4AxdO/xnZhf9BPy71Rr4YF+/l0TAhfgHMoub/MijJqHUb9Ak7AxEU2cHMCPbDJGDEOJ+5smy0dbf+csDhXj7OoCSzpU8/aEoNXP3Udcq4JRNx07kAArDSa4ojh99rs
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(136003)(39830400003)(396003)(346002)(366004)(107886003)(83380400001)(316002)(44832011)(478600001)(54906003)(6512007)(6486002)(6666004)(110136005)(186003)(66476007)(8936002)(4326008)(26005)(36756003)(86362001)(66556008)(2616005)(2906002)(5660300002)(1076003)(16526019)(66946007)(6506007)(956004)(52116002)(8676002)(921003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: eFgbAq71SYrbXqO5vMpqZIp6aXjAvSWuLOAIYwcMCsXgFIT6WuPxW9Jn6awKXCp8/CqAYLFZAsW3b0qrrbZEXoa9yBAF8JD798e8L1hMM5MLBX1xtgo9/i5+2vdRhGu935cX1BKGbkv4iQ13nlcMtUg00tppE26mH4AJJw9ZGZ9koUZoezvq7fv5bLsussvoM9ZJKiaaUBvFkFnON2xRtwvhG5n731t/5eB8BhZ1cAEH2GPFd6Q3EXbhqFG106OLjkBA2XmTJyGziOQ4QOKcP/hJexHXmwgeIG2aAn5ZufQLHdQgInrvF9zW7u+/i5s2ZnBP1UQkLazzxK0dbp8cm4+kRlLzQl0WAWFHh9suZsiwfEIGztvgJMGTKE8kaKBglonOfy0n7BPvXiripcZB+4qqn5Y0RoG60LVFUluVWtLerrAhaFrq7v9G3fPRZYZt9r2wEZuLQLxhnoz44mVHTTqWJq5TMzi1qYr3G9wp3zsITU46rl4OA7dw9lVhswB8ozNDs6CLh32/hVZFdvg+9PqKm+EA8CTF0PJcTclt9wqJ9c6+sftbEEfyIAatK86Wx4cXWzErX9TMkakc15C0Ns+rp0FqVHiOnaTscalGRvZJ87I7/KE4uCuTSKIfe1MqCYIS+pPbKfVZJpurM5vVTQ==
 X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6e69c9f6-7054-47f1-13d5-08d84f5190df
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47d2d215-1505-4c45-f679-08d84f519415
 X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2020 15:05:01.6597
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2020 15:05:06.9617
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FJw6nD0r3xSqrhBcb7sD1BveVLyLaylnfx2GQSqX9XnBZk9CdP3CYmxzPh/W9MRyyIIgXbjyrPMj20SK3kEGHBPL8Egy7lzEA+GkEGdnJOo=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6YZyhhfwB8Mv5V6wpK61DgQA25DQWf3eCe7F/11NxZO53fU9LJqxUhoskUUQxQk5T+4wE5DaL2+abixmgnE7ATISXj7RS2KKQMyura6X2/Q=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0058
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marvell Prestera 98DX3255 integrates up to 24 ports of 1GbE with 8
-ports of 10GbE uplinks or 2 ports of 40Gbps stacking for a largely
-wireless SMB deployment.
+Add very basic support for devlink interface:
 
-Prestera Switchdev is a firmware based driver that operates via PCI bus.  The
-current implementation supports only boards designed for the Marvell Switchdev
-solution and requires special firmware.
+    - driver name
+    - fw version
+    - devlink ports
 
-This driver implementation includes only L1, basic L2 support, and RX/TX.
-
-The core Prestera switching logic is implemented in prestera_main.c, there is
-an intermediate hw layer between core logic and firmware. It is
-implemented in prestera_hw.c, the purpose of it is to encapsulate hw
-related logic, in future there is a plan to support more devices with
-different HW related configurations.
-
-The following Switchdev features are supported:
-
-    - VLAN-aware bridge offloading
-    - VLAN-unaware bridge offloading
-    - FDB offloading (learning, ageing)
-    - Switchport configuration
-
-The original firmware image is uploaded to the linux-firmware repository.
-
-PATCH v6:
-    1) Use rwlock to protect port list on create/delete stages. The list
-       is mostly readable by fw event handler or packets receiver, but
-       updated only on create/delete port which are performed on switch init/fini
-       stages.
-
-    2) Remove not needed variable initialization in prestera_dsa.c:prestera_dsa_parse()
-
-    3) Get rid of bounce buffer used by tx handler in prestera_rxtx.c,
-       the bounce buffer should be handled by dma_xxx API via swiotlb.
-
-    4) Fix PRESTERA_SDMA_RX_DESC_PKT_LEN macro by using correct GENMASK(13, 0) in prestera_rxtx.c
-
-    Patches updated:
-        [1] net: marvell: prestera: Add driver for Prestera family ASIC devices
-
+Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+---
 PATCH v5:
-    0) add Co-developed tags for people who was involved in development.
+    1) Simplified some error path handling by simple return error code in:
 
-    1) Make SPDX license as separate comment
+       - prestera_dl_info_get(...)
 
-    2) Change 'u8 *' -> 'void *', It allows to avoid not-needed u8* casting.
+    2) Remove not-needed err assignment in:
+       - prestera_dl_info_get(...)
 
-    3) Remove "," in terminated enum's.
+    3) Use dev_err() in prestera_devlink_register(...).
 
-    4) Use GENMASK(end, start) where it is applicable in.
-
-    5) Remove not-needed 'u8 *' casting.
-
-    6) Apply common error-check pattern
-
-    7) Use ether_addr_copy instead of memcpy
-
-    8) Use define for maximum MAC address range (255)
-
-    9) Simplify prestera_port_state_set() in prestera_main.c by
-       using separate if-blocks for state setting:
-    
-        if (is_up) {
-        ...
-        } else {
-        ...
-        }
-
-      which makes logic more understandable.
-
-    10) Simplify sdma tx wait logic when checking/updating tx_ring->burst.
-
-    11) Remove not-needed packed & aligned attributes
-
-    12) Use USEC_PER_MSEC as multiplier when converting ms -> usec on calling
-        readl_poll_timeout.
-
-    13) Simplified some error path handling by simple return error code in.
-
-    14) Remove not-needed err assignment in.
-
-    15) Use dev_err() in prestera_devlink_register(...).
-
-    Patches updated:
-        [1] net: marvell: prestera: Add driver for Prestera family ASIC devices
-	[2] net: marvell: prestera: Add PCI interface support
-        [3] net: marvell: prestera: Add basic devlink support
-	[4] net: marvell: prestera: Add ethtool interface support
-	[5] net: marvell: prestera: Add Switchdev driver implementation
-
-PATCH v4:
-    1) Use prestera_ prefix in netdev_ops variable.
-
-    2) Kconfig: use 'default PRESTERA' build type for CONFIG_PRESTERA_PCI to be
-       synced by default with prestera core module.
-
-    3) Use memcpy_xxio helpers in prestera_pci.c for IO buffer copying.
-
-    4) Generate fw image path via snprintf() instead of macroses.
-
-    5) Use pcim_ helpers in prestera_pci.c which simplified the
-       probe/remove logic.
-
-    6) Removed not needed initializations of variables which are used in
-       readl_poll_xxx() helpers.
-
-    7) Fixed few grammar mistakes in patch[2] description.
-
-    8) Export only prestera_ethtool_ops struct instead of each
-       ethtool handler.
-
-    9) Add check for prestera_dev_check() in switchdev event handling to
-       make sure there is no wrong topology.
-
-    Patches updated:
-        [1] net: marvell: prestera: Add driver for Prestera family ASIC devices
-	[2] net: marvell: prestera: Add PCI interface support
-	[4] net: marvell: prestera: Add ethtool interface support
-	[5] net: marvell: prestera: Add Switchdev driver implementation
-
-PATCH v3:
-    1) Simplify __be32 type casting in prestera_dsa.c
-
-    2) Added per-patch changelog under "---" line.
-
-PATCH v2:
-    1) Use devlink_port_type_clear()
-
-    2) Add _MS prefix to timeout defines.
-
-    3) Remove not-needed packed attribute from the firmware ipc structs,
-       also the firmware image needs to be uploaded too (will do it soon).
-
-    4) Introduce prestera_hw_switch_fini(), to be mirrored with init and
-       do simple validation if the event handlers are unregistered.
-
-    5) Use kfree_rcu() for event handler unregistering.
-
-    6) Get rid of rcu-list usage when dealing with ports, not needed for
-       now.
-
-    7) Little spelling corrections in the error/info messages.
-
-    8) Make pci probe & remove logic mirrored.
-
-    9) Get rid of ETH_FCS_LEN in headroom setting, not needed.
-
-PATCH:
-    1) Fixed W=1 warnings
-
-    2) Renamed PCI driver name to be more generic "Prestera DX" because
-       there will be more devices supported.
-
-    3) Changed firmware image dir path: marvell/ -> mrvl/prestera/
-       to be aligned with location in linux-firmware.git (if such
-       will be accepted).
-
-RFC v3:
-    1) Fix prestera prefix in prestera_rxtx.c
-
-    2) Protect concurrent access from multiple ports on multiple CPU system
-       on tx path by spinlock in prestera_rxtx.c
-
-    3) Try to get base mac address from device-tree, otherwise use a random generated one.
-
-    4) Move ethtool interface support into separate prestera_ethtool.c file.
-
-    5) Add basic devlink support and get rid of physical port naming ops.
-
-    6) Add STP support in Switchdev driver.
-
-    7) Removed MODULE_AUTHOR
-
-    8) Renamed prestera.c -> prestera_main.c, and kernel module to
-       prestera.ko
-
-RFC v2:
-    1) Use "pestera_" prefix in struct's and functions instead of mvsw_pr_
-
-    2) Original series split into additional patches for Switchdev ethtool support.
-
-    3) Use major and minor firmware version numbers in the firmware image filename.
-
-    4) Removed not needed prints.
-
-    5) Use iopoll API for waiting on register's value in prestera_pci.c
-
-    6) Use standart approach for describing PCI ID matching section instead of using
-       custom wrappers in prestera_pci.c
-
-    7) Add RX/TX support in prestera_rxtx.c.
-
-    8) Rewritten prestera_switchdev.c with following changes:
-       - handle netdev events from prestera.c
-
-       - use struct prestera_bridge for bridge objects, and get rid of
-         struct prestera_bridge_device which may confuse.
-
-       - use refcount_t
-
-    9) Get rid of macro usage for sending fw requests in prestera_hw.c
-
-    10) Add base_mac setting as module parameter. base_mac is required for
-        generation default port's mac.
-
-Vadym Kochan (6):
-  net: marvell: prestera: Add driver for Prestera family ASIC devices
-  net: marvell: prestera: Add PCI interface support
-  net: marvell: prestera: Add basic devlink support
-  net: marvell: prestera: Add ethtool interface support
-  net: marvell: prestera: Add Switchdev driver implementation
-  dt-bindings: marvell,prestera: Add description for device-tree
-    bindings
-
- .../bindings/net/marvell,prestera.txt         |   34 +
- drivers/net/ethernet/marvell/Kconfig          |    1 +
- drivers/net/ethernet/marvell/Makefile         |    1 +
- drivers/net/ethernet/marvell/prestera/Kconfig |   25 +
- .../net/ethernet/marvell/prestera/Makefile    |    7 +
- .../net/ethernet/marvell/prestera/prestera.h  |  209 +++
- .../marvell/prestera/prestera_devlink.c       |  114 ++
- .../marvell/prestera/prestera_devlink.h       |   26 +
- .../ethernet/marvell/prestera/prestera_dsa.c  |  106 ++
- .../ethernet/marvell/prestera/prestera_dsa.h  |   37 +
- .../marvell/prestera/prestera_ethtool.c       |  759 ++++++++++
- .../marvell/prestera/prestera_ethtool.h       |   14 +
- .../ethernet/marvell/prestera/prestera_hw.c   | 1227 ++++++++++++++++
- .../ethernet/marvell/prestera/prestera_hw.h   |  185 +++
- .../ethernet/marvell/prestera/prestera_main.c |  665 +++++++++
- .../ethernet/marvell/prestera/prestera_pci.c  |  778 ++++++++++
- .../ethernet/marvell/prestera/prestera_rxtx.c |  834 +++++++++++
- .../ethernet/marvell/prestera/prestera_rxtx.h |   21 +
- .../marvell/prestera/prestera_switchdev.c     | 1289 +++++++++++++++++
- .../marvell/prestera/prestera_switchdev.h     |   16 +
- 20 files changed, 6348 insertions(+)
- create mode 100644 drivers/net/ethernet/marvell/prestera/Kconfig
- create mode 100644 drivers/net/ethernet/marvell/prestera/Makefile
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera.h
+ drivers/net/ethernet/marvell/prestera/Kconfig |   1 +
+ .../net/ethernet/marvell/prestera/Makefile    |   2 +-
+ .../net/ethernet/marvell/prestera/prestera.h  |   4 +
+ .../marvell/prestera/prestera_devlink.c       | 114 ++++++++++++++++++
+ .../marvell/prestera/prestera_devlink.h       |  26 ++++
+ .../ethernet/marvell/prestera/prestera_main.c |  28 ++++-
+ 6 files changed, 170 insertions(+), 5 deletions(-)
  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_devlink.c
  create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_devlink.h
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_dsa.c
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_dsa.h
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_ethtool.c
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_ethtool.h
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_hw.c
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_hw.h
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_main.c
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_pci.c
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_rxtx.c
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_rxtx.h
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_switchdev.h
 
+diff --git a/drivers/net/ethernet/marvell/prestera/Kconfig b/drivers/net/ethernet/marvell/prestera/Kconfig
+index 2a5945c455cc..b1fcc44f566a 100644
+--- a/drivers/net/ethernet/marvell/prestera/Kconfig
++++ b/drivers/net/ethernet/marvell/prestera/Kconfig
+@@ -6,6 +6,7 @@
+ config PRESTERA
+ 	tristate "Marvell Prestera Switch ASICs support"
+ 	depends on NET_SWITCHDEV && VLAN_8021Q
++	select NET_DEVLINK
+ 	help
+ 	  This driver supports Marvell Prestera Switch ASICs family.
+ 
+diff --git a/drivers/net/ethernet/marvell/prestera/Makefile b/drivers/net/ethernet/marvell/prestera/Makefile
+index 2146714eab21..babd71fba809 100644
+--- a/drivers/net/ethernet/marvell/prestera/Makefile
++++ b/drivers/net/ethernet/marvell/prestera/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_PRESTERA)	+= prestera.o
+ prestera-objs		:= prestera_main.o prestera_hw.o prestera_dsa.o \
+-			   prestera_rxtx.o
++			   prestera_rxtx.o prestera_devlink.o
+ 
+ obj-$(CONFIG_PRESTERA_PCI)	+= prestera_pci.o
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
+index 2efaa5abc3be..5e890897356e 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera.h
+@@ -11,6 +11,9 @@
+ #include <linux/notifier.h>
+ #include <uapi/linux/if_ether.h>
+ #include <linux/workqueue.h>
++#include <net/devlink.h>
++
++#define PRESTERA_DRV_NAME	"prestera"
+ 
+ struct prestera_fw_rev {
+ 	u16 maj;
+@@ -63,6 +66,7 @@ struct prestera_port_caps {
+ struct prestera_port {
+ 	struct net_device *dev;
+ 	struct prestera_switch *sw;
++	struct devlink_port dl_port;
+ 	u32 id;
+ 	u32 hw_id;
+ 	u32 dev_id;
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.c b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+new file mode 100644
+index 000000000000..abbd08dad6ab
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.c
+@@ -0,0 +1,114 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
++/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
++
++#include <net/devlink.h>
++
++#include "prestera.h"
++#include "prestera_devlink.h"
++
++static int prestera_dl_info_get(struct devlink *dl,
++				struct devlink_info_req *req,
++				struct netlink_ext_ack *extack)
++{
++	struct prestera_switch *sw = devlink_priv(dl);
++	char buf[16];
++	int err;
++
++	err = devlink_info_driver_name_put(req, PRESTERA_DRV_NAME);
++	if (err)
++		return err;
++
++	snprintf(buf, sizeof(buf), "%d.%d.%d",
++		 sw->dev->fw_rev.maj,
++		 sw->dev->fw_rev.min,
++		 sw->dev->fw_rev.sub);
++
++	return devlink_info_version_running_put(req,
++					       DEVLINK_INFO_VERSION_GENERIC_FW,
++					       buf);
++}
++
++static const struct devlink_ops prestera_dl_ops = {
++	.info_get = prestera_dl_info_get,
++};
++
++struct prestera_switch *prestera_devlink_alloc(void)
++{
++	struct devlink *dl;
++
++	dl = devlink_alloc(&prestera_dl_ops, sizeof(struct prestera_switch));
++
++	return devlink_priv(dl);
++}
++
++void prestera_devlink_free(struct prestera_switch *sw)
++{
++	struct devlink *dl = priv_to_devlink(sw);
++
++	devlink_free(dl);
++}
++
++int prestera_devlink_register(struct prestera_switch *sw)
++{
++	struct devlink *dl = priv_to_devlink(sw);
++	int err;
++
++	err = devlink_register(dl, sw->dev->dev);
++	if (err)
++		dev_err(sw->dev->dev, "devlink_register failed: %d\n", err);
++
++	return err;
++}
++
++void prestera_devlink_unregister(struct prestera_switch *sw)
++{
++	struct devlink *dl = priv_to_devlink(sw);
++
++	devlink_unregister(dl);
++}
++
++int prestera_devlink_port_register(struct prestera_port *port)
++{
++	struct devlink *dl = priv_to_devlink(port->sw);
++	struct devlink_port_attrs attrs = {};
++	struct prestera_switch *sw;
++	int err;
++
++	sw = port->sw;
++	dl = priv_to_devlink(sw);
++
++	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
++	attrs.phys.port_number = port->fp_id;
++	attrs.switch_id.id_len = sizeof(port->sw->id);
++	memcpy(attrs.switch_id.id, &port->sw->id, attrs.switch_id.id_len);
++
++	devlink_port_attrs_set(&port->dl_port, &attrs);
++
++	err = devlink_port_register(dl, &port->dl_port, port->fp_id);
++	if (err)
++		dev_err(sw->dev->dev, "devlink_port_register failed: %d\n", err);
++
++	return err;
++}
++
++void prestera_devlink_port_unregister(struct prestera_port *port)
++{
++	devlink_port_unregister(&port->dl_port);
++}
++
++void prestera_devlink_port_set(struct prestera_port *port)
++{
++	devlink_port_type_eth_set(&port->dl_port, port->dev);
++}
++
++void prestera_devlink_port_clear(struct prestera_port *port)
++{
++	devlink_port_type_clear(&port->dl_port);
++}
++
++struct devlink_port *prestera_devlink_get_port(struct net_device *dev)
++{
++	struct prestera_port *port = netdev_priv(dev);
++
++	return &port->dl_port;
++}
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_devlink.h b/drivers/net/ethernet/marvell/prestera/prestera_devlink.h
+new file mode 100644
+index 000000000000..5dd88ec84e38
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/prestera/prestera_devlink.h
+@@ -0,0 +1,26 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
++/*
++ * Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved.
++ *
++ */
++
++#ifndef _PRESTERA_DEVLINK_H_
++#define _PRESTERA_DEVLINK_H_
++
++#include "prestera.h"
++
++struct prestera_switch *prestera_devlink_alloc(void);
++void prestera_devlink_free(struct prestera_switch *sw);
++
++int prestera_devlink_register(struct prestera_switch *sw);
++void prestera_devlink_unregister(struct prestera_switch *sw);
++
++int prestera_devlink_port_register(struct prestera_port *port);
++void prestera_devlink_port_unregister(struct prestera_port *port);
++
++void prestera_devlink_port_set(struct prestera_port *port);
++void prestera_devlink_port_clear(struct prestera_port *port);
++
++struct devlink_port *prestera_devlink_get_port(struct net_device *dev);
++
++#endif /* _PRESTERA_DEVLINK_H_ */
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_main.c b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+index 0b4a61703145..3b18f3ae6e9d 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_main.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_main.c
+@@ -14,6 +14,7 @@
+ #include "prestera.h"
+ #include "prestera_hw.h"
+ #include "prestera_rxtx.h"
++#include "prestera_devlink.h"
+ 
+ #define PRESTERA_MTU_DEFAULT	1536
+ 
+@@ -187,6 +188,7 @@ static const struct net_device_ops prestera_netdev_ops = {
+ 	.ndo_change_mtu = prestera_port_change_mtu,
+ 	.ndo_get_stats64 = prestera_port_get_stats64,
+ 	.ndo_set_mac_address = prestera_port_set_mac_address,
++	.ndo_get_devlink_port = prestera_devlink_get_port,
+ };
+ 
+ static int prestera_port_autoneg_set(struct prestera_port *port, bool enable,
+@@ -250,9 +252,13 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+ 					&port->fp_id);
+ 	if (err) {
+ 		dev_err(prestera_dev(sw), "Failed to get port(%u) info\n", id);
+-		goto err_port_init;
++		goto err_port_info_get;
+ 	}
+ 
++	err = prestera_devlink_port_register(port);
++	if (err)
++		goto err_dl_port_register;
++
+ 	dev->features |= NETIF_F_NETNS_LOCAL;
+ 	dev->netdev_ops = &prestera_netdev_ops;
+ 
+@@ -310,11 +316,16 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
+ 	if (err)
+ 		goto err_register_netdev;
+ 
++	prestera_devlink_port_set(port);
++
+ 	return 0;
+ 
+ err_register_netdev:
+ 	prestera_port_list_del(port);
+ err_port_init:
++	prestera_devlink_port_unregister(port);
++err_dl_port_register:
++err_port_info_get:
+ 	free_netdev(dev);
+ 	return err;
+ }
+@@ -324,8 +335,10 @@ static void prestera_port_destroy(struct prestera_port *port)
+ 	struct net_device *dev = port->dev;
+ 
+ 	cancel_delayed_work_sync(&port->cached_hw_stats.caching_dw);
++	prestera_devlink_port_clear(port);
+ 	unregister_netdev(dev);
+ 	prestera_port_list_del(port);
++	prestera_devlink_port_unregister(port);
+ 	free_netdev(dev);
+ }
+ 
+@@ -447,6 +460,10 @@ static int prestera_switch_init(struct prestera_switch *sw)
+ 	if (err)
+ 		goto err_handlers_register;
+ 
++	err = prestera_devlink_register(sw);
++	if (err)
++		goto err_dl_register;
++
+ 	err = prestera_create_ports(sw);
+ 	if (err)
+ 		goto err_ports_create;
+@@ -454,6 +471,8 @@ static int prestera_switch_init(struct prestera_switch *sw)
+ 	return 0;
+ 
+ err_ports_create:
++	prestera_devlink_unregister(sw);
++err_dl_register:
+ 	prestera_event_handlers_unregister(sw);
+ err_handlers_register:
+ 	prestera_rxtx_switch_fini(sw);
+@@ -465,6 +484,7 @@ static int prestera_switch_init(struct prestera_switch *sw)
+ static void prestera_switch_fini(struct prestera_switch *sw)
+ {
+ 	prestera_destroy_ports(sw);
++	prestera_devlink_unregister(sw);
+ 	prestera_event_handlers_unregister(sw);
+ 	prestera_rxtx_switch_fini(sw);
+ 	prestera_hw_switch_fini(sw);
+@@ -475,7 +495,7 @@ int prestera_device_register(struct prestera_device *dev)
+ 	struct prestera_switch *sw;
+ 	int err;
+ 
+-	sw = kzalloc(sizeof(*sw), GFP_KERNEL);
++	sw = prestera_devlink_alloc();
+ 	if (!sw)
+ 		return -ENOMEM;
+ 
+@@ -484,7 +504,7 @@ int prestera_device_register(struct prestera_device *dev)
+ 
+ 	err = prestera_switch_init(sw);
+ 	if (err) {
+-		kfree(sw);
++		prestera_devlink_free(sw);
+ 		return err;
+ 	}
+ 
+@@ -497,7 +517,7 @@ void prestera_device_unregister(struct prestera_device *dev)
+ 	struct prestera_switch *sw = dev->priv;
+ 
+ 	prestera_switch_fini(sw);
+-	kfree(sw);
++	prestera_devlink_free(sw);
+ }
+ EXPORT_SYMBOL(prestera_device_unregister);
+ 
 -- 
 2.17.1
 
