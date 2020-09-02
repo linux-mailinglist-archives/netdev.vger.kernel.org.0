@@ -2,64 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B3225AE0D
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 16:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E5D925AE2A
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 17:00:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727962AbgIBO6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 10:58:44 -0400
-Received: from www62.your-server.de ([213.133.104.62]:38572 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726922AbgIBO6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 10:58:35 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kDUDY-0001dF-AP; Wed, 02 Sep 2020 16:58:32 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kDUDY-0008jg-4e; Wed, 02 Sep 2020 16:58:32 +0200
-Subject: Re: [PATCH bpf-next] xsk: fix possible segfault at xskmap entry
- insertion
-To:     Magnus Karlsson <magnus.karlsson@intel.com>, bjorn.topel@intel.com,
-        ast@kernel.org, netdev@vger.kernel.org, jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org
-References: <1599037569-26690-1-git-send-email-magnus.karlsson@intel.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <0c04fab7-8256-41ba-716c-c073fed03264@iogearbox.net>
-Date:   Wed, 2 Sep 2020 16:58:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727815AbgIBNtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 09:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726979AbgIBNrr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 09:47:47 -0400
+Received: from caffeine.csclub.uwaterloo.ca (caffeine.csclub.uwaterloo.ca [IPv6:2620:101:f000:4901:c5c:0:caff:e12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AFF7C061245;
+        Wed,  2 Sep 2020 06:47:42 -0700 (PDT)
+Received: by caffeine.csclub.uwaterloo.ca (Postfix, from userid 20367)
+        id E12B2460FF9; Wed,  2 Sep 2020 09:47:34 -0400 (EDT)
+Date:   Wed, 2 Sep 2020 09:47:34 -0400
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: Re: [Intel-wired-lan] VRRP not working on i40e X722 S2600WFT
+Message-ID: <20200902134734.fvtyn5tbhpyssrbq@csclub.uwaterloo.ca>
+References: <20200827183039.hrfnb63cxq3pmv4z@csclub.uwaterloo.ca>
+ <20200828155616.3sd2ivrml2gpcvod@csclub.uwaterloo.ca>
+ <20200831103512.00001fab@intel.com>
+ <20200901013519.rfmavd4763gdzw4r@csclub.uwaterloo.ca>
 MIME-Version: 1.0
-In-Reply-To: <1599037569-26690-1-git-send-email-magnus.karlsson@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25918/Wed Sep  2 15:41:14 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200901013519.rfmavd4763gdzw4r@csclub.uwaterloo.ca>
+User-Agent: NeoMutt/20170113 (1.7.2)
+From:   lsorense@csclub.uwaterloo.ca (Lennart Sorensen)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/2/20 11:06 AM, Magnus Karlsson wrote:
-> Fix possible segfault when entry is inserted into xskmap. This can
-> happen if the socket is in a state where the umem has been set up, the
-> Rx ring created but it has yet to be bound to a device. In this case
-> the pool has not yet been created and we cannot reference it for the
-> existence of the fill ring. Fix this by removing the whole
-> xsk_is_setup_for_bpf_map function. Once upon a time, it was used to
-> make sure that the Rx and fill rings where set up before the driver
-> could call xsk_rcv, since there are no tests for the existence of
-> these rings in the data path. But these days, we have a state variable
-> that we test instead. When it is XSK_BOUND, everything has been set up
-> correctly and the socket has been bound. So no reason to have the
-> xsk_is_setup_for_bpf_map function anymore.
+On Mon, Aug 31, 2020 at 09:35:19PM -0400,  wrote:
+> On Mon, Aug 31, 2020 at 10:35:12AM -0700, Jesse Brandeburg wrote:
+> > Thanks for the report Lennart, I understand your frustration, as this
+> > should probably work without user configuration.
+> > 
+> > However, please give this command a try:
+> > ethtool --set-priv-flags ethX disable-source-pruning on
 > 
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> Reported-by: syzbot+febe51d44243fbc564ee@syzkaller.appspotmail.com
-> Fixes: 7361f9c3d719 ("xsk: move fill and completion rings to buffer pool")
+> Hmm, our 4.9 kernel is just a touch too old to support that.  And yes
+> that really should not require a flag to be set, given the card has no
+> reason to ever do that pruning.  There is no justification you could
+> have for doing it in the first place.
 
-Applied & corrected Fixes tag, thanks!
+So backporting the patch that enabled that flag does allow it to work.
+Of course there isn't a particularly good place to put an ethtool command
+in the boot up to make sure it runs before vrrp is started.  This has to
+be the default. I know I wasted about a week trying things to get this to
+work, and clearly lots of other people have wasted a ton of time on this
+"feature" too (calling it a feature is clearly wrong, it is a bug).
+
+By default the NIC should work as expected.  Any weird questionable
+optimizations have to be turned on by the user explicitly when they
+understand the consequences.  I can't find any use case documented
+anywhere for this bug, I can only find things it has broken (like
+apparently arp monitoring on bonding, and vrrp).
+
+So who should make the patch to change this to be the default?  Clearly
+the current behaviour is harming and confusing more people than could
+possibly be impacted by changing the current default setting for the flag
+(in fact I would just about be willing to bet there are no people that
+want the current behaviour.  After all no other NIC does this, so clearly
+there is no need for it to be done).
+
+-- 
+Len Sorensen
