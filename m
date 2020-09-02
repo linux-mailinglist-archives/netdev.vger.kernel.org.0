@@ -2,42 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77C0F25A222
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 02:01:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4057B25A238
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 02:17:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbgIBABg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 1 Sep 2020 20:01:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52682 "EHLO mail.kernel.org"
+        id S1726212AbgIBARl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 1 Sep 2020 20:17:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49658 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726193AbgIBAB3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 1 Sep 2020 20:01:29 -0400
+        id S1726140AbgIBARk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 1 Sep 2020 20:17:40 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 40C85206EF;
-        Wed,  2 Sep 2020 00:01:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 09441206EF;
+        Wed,  2 Sep 2020 00:17:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599004889;
-        bh=2byf7P5pdje8ox7sGxqSU/UpVlQAQT9pJnkpvN+6Miw=;
+        s=default; t=1599005860;
+        bh=QKse6WYfFLh40BozBSJIZ8PT7epdcCRA3jriVaFdrtQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gBbMphiMHjQ1mgPGTdTf++sI6IMZWjkh9BUMZ0LMqzCy/XJ2gzRr5eLrvXhZwXrY4
-         DYlDks9wDXv4p498PjU+aa4Mc5IZHNh6uhESPtvPlPvkf8RcyiaVtQ/xytjwqFEMoe
-         Bx0r1DRTgwoDsPCDgSbeC4MZDTY3YtdmwINoHebw=
-Date:   Tue, 1 Sep 2020 17:01:27 -0700
+        b=TAj+NP2NfObIZQjL9BaXqlJlh4Q22Jlo4uwASa2sjg6CPOS1BKAshZVaf0x7C0I/V
+         022CSM0D95C1tEFCHtWyJf2F/f9JqgrfuqacNYbAo4Kn1Y7GdDRx4CNNi4tXQOFCqP
+         8KT65dqOJD8XGJbzzoZsljfASUqkgucVOgRFYFEI=
+Date:   Tue, 1 Sep 2020 17:17:38 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Moshe Shemesh <moshe@nvidia.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next RFC v3 02/14] devlink: Add reload actions
- counters
-Message-ID: <20200901170127.7bf0d045@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1fa33c3c-57b8-fe38-52d6-f50a586a8d3f@nvidia.com>
-References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
-        <1598801254-27764-3-git-send-email-moshe@mellanox.com>
-        <20200831104827.GB3794@nanopsycho.orion>
-        <1fa33c3c-57b8-fe38-52d6-f50a586a8d3f@nvidia.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Alex Elder <elder@linaro.org>, Networking <netdev@vger.kernel.org>
+Subject: Re: COMPILE_TEST
+Message-ID: <20200901171738.23af6c63@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200901214852.GA3050651@lunn.ch>
+References: <d615e441-dcee-52a8-376b-f1b83eef0789@linaro.org>
+        <20200901214852.GA3050651@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,24 +40,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 1 Sep 2020 22:05:36 +0300 Moshe Shemesh wrote:
-> >> +void devlink_reload_actions_cnts_update(struct devlink *devlink, unsigned long actions_done)
-> >> +{
-> >> +	int action;
-> >> +
-> >> +	for (action = 0; action < DEVLINK_RELOAD_ACTION_MAX; action++) {
-> >> +		if (!test_bit(action, &actions_done))
-> >> +			continue;
-> >> +		devlink->reload_actions_cnts[action]++;
-> >> +	}
-> >> +}
-> >> +EXPORT_SYMBOL_GPL(devlink_reload_actions_cnts_update);  
-> > I don't follow why this is an exported symbol if you only use it from
-> > this .c. Looks like a leftover...
-> >  
-> Not leftover, in the commit message I notified and explained why I 
-> exposed it.
+On Tue, 1 Sep 2020 23:48:52 +0200 Andrew Lunn wrote:
+> On Tue, Sep 01, 2020 at 03:22:31PM -0500, Alex Elder wrote:
+> > Jakub, you suggested/requested that the Qualcomm IPA driver get
+> > built when the COMPILE_TEST config option is enabled.  I started
+> > working on this a few months ago but didn't finish, and picked
+> > it up again today.  I'd really like to get this done soon.
+> > 
+> > The QCOM_IPA config option depends on and selects other things,
+> > and those other things depend on and select still more config
+> > options.  I've worked through some of these, but now question
+> > whether this is even the right approach.  Should I try to ensure
+> > all the code the IPA driver depends on and selects *also* gets
+> > built when COMPILE_TEST is enabled?  Or should I try to minimize
+> > the impact on other code by making IPA config dependencies and
+> > selections also depend on the value of COMPILE_TEST?
+> > 
+> > Is there anything you know of that describes best practice for
+> > enabling a config option when COMPILE_TEST is enabled?  
+> 
+> Hi Alex
+> 
+> In general everything which can be build with COMPILE_TEST should be
+> built with COMPILE_TEST. So generally it just works, because
+> everything selected should already be selected because they already
+> have COMPILE_TEST.
+> 
+> Correctly written drivers should compile for just about any
+> architecture. If they don't it suggests they are not using the APIs
+> correctly, and should be fixed.
+> 
+> If the dependencies have not had COMPILE_TEST before, you are probably
+> in for some work, but in the end all the drivers will be of better
+> quality, and get build tested a lot more.
 
-We should generate devlink notifications on this event (down and up)
-so the counters don't have to be exposed to drivers. We need a more
-thorough API.
+Nothing to add :) I'm not aware of any codified best practices.
