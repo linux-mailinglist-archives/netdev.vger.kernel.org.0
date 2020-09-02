@@ -2,129 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D772F25AC09
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 15:28:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD2325AC25
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 15:39:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbgIBN2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 09:28:18 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:54010 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727061AbgIBN1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 09:27:55 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 082DQ2qc053066;
-        Wed, 2 Sep 2020 08:26:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1599053162;
-        bh=FG0xfoVeIu6JzNEiM238ECbgeUrr1zSiaAXYcKF6hxg=;
-        h=From:To:CC:Subject:Date;
-        b=wTMt38MOKup5/ifDQFcbxERC3bV8q5mF/uoZYqNzWE+lo/aq1E19gDXzqLN31SzCC
-         YCyEgZW1jtBoww2rNva+oiLCuDtiYPhlnxj+mxzRoEfw4vsWmT5pI3038xUJeyPHGK
-         LjYGYhpCZFpXMMQ/oku0OxTFBxAPEj7ZsD74zgxM=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 082DQ20C090579
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 2 Sep 2020 08:26:02 -0500
-Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 2 Sep
- 2020 08:26:02 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Wed, 2 Sep 2020 08:26:02 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 082DQ1vf074977;
-        Wed, 2 Sep 2020 08:26:01 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next] net: dp83869: Add ability to advertise Fiber connection
-Date:   Wed, 2 Sep 2020 08:25:56 -0500
-Message-ID: <20200902132556.10285-1-dmurphy@ti.com>
-X-Mailer: git-send-email 2.27.0
+        id S1727788AbgIBNiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 09:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726426AbgIBNcj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 09:32:39 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D0CC061246
+        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 06:32:34 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id q13so6635699ejo.9
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 06:32:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:references:cc:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=917w7cMeyQJPmg3O5pTWvy7oizYPXb73Fu6zj/DMIu4=;
+        b=pG7+I5sv367/NzaNjp7LwTUD3lgW+Pr/Wb2m0IBkPc0v/xe9hUZTwGk0bBFDekJJ4b
+         4KaCfJAp8b9wbnLFyjXy5s78BBZeJPcxyimDtsRuvUNSFk3WmRHay1YK3LLyUVGsSX9t
+         T9alMgdDvyxL8hEDrdg9c/ookhMUq6T8k44AVs4S7v5ERshnPEl7aD5TjQFeWnxdmaBB
+         /RpIuk+pgbAXbGS4WtEbJQBsV2r8eZ5UP5pEMC5w/O0jvxTpvHwlIJ1CoMmPcSEO473E
+         J3Ny1I3sES8VW2iqvFcCNYmws9iW0si4ceeJrfMBHahsFBUxOdqVBzrxzs+DKQ/9q3FT
+         I3Eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:cc:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=917w7cMeyQJPmg3O5pTWvy7oizYPXb73Fu6zj/DMIu4=;
+        b=OYYI1xdtjeQlryLQW09jZGafYnnZozxTJ5xoiMcq8v7NAPSLQgf8ExhIW00tW+0fqZ
+         bBLWcwnI6MJ/1JFJYc9POD5roHj5Jd78DUIfWir0CECBx8YBXujcOsxSUf649EYnxNM3
+         k/vQxXDGfOtrb1fkZqwLiB4xoTD1NdVCDaHzTQ9pDgBF9cWVcox47gauSaOwo8QMi8X0
+         DgYN2Qeb3pyc+GyU8jyhM6AVPidQOGJT5xnG0d2uo94efHPTEWaWjCBiVqFvUiM1tkka
+         lxu6JybxEEVj2oGAe1YQRDHSRy3pa38GmYs8BE0nIBrVdNXvwGQg99vgh/T4sAB+CQUg
+         D+Iw==
+X-Gm-Message-State: AOAM533PszkeYuEtCIjZe61xsLa1iIwAAwtRb2uAKsbux3wJ5Fr437iJ
+        GPXi4uwxdNt4hJ+GLApZPaltoMRrbmfOcQ==
+X-Google-Smtp-Source: ABdhPJyFshoN8ETfAEDFIN/PNrj7dVp+MjrOxFRWs/V0+J/l182pxMw17MTvuei/5JxUwBzZm1dtgw==
+X-Received: by 2002:a17:906:37c1:: with SMTP id o1mr1297ejc.279.1599053552616;
+        Wed, 02 Sep 2020 06:32:32 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:b949:8004:3927:fdba])
+        by smtp.gmail.com with ESMTPSA id s23sm3331595edt.10.2020.09.02.06.32.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Sep 2020 06:32:31 -0700 (PDT)
+Subject: Re: [PATCH net-next] selftests: mptcp: fix typo in mptcp_connect
+ usage
+To:     Davide Caratti <dcaratti@redhat.com>
+References: <6c43e5404c41f91ed9324e20c35a4e4fdb0ed1de.1599046871.git.dcaratti@redhat.com>
+Cc:     mptcp@lists.01.org, netdev@vger.kernel.org
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <022366c7-c916-8841-348b-b1981341b810@tessares.net>
+Date:   Wed, 2 Sep 2020 15:32:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <6c43e5404c41f91ed9324e20c35a4e4fdb0ed1de.1599046871.git.dcaratti@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the ability to advertise the Fiber connection if the strap or the
-op-mode is configured for 100Base-FX.
+Hi Davide,
 
-Auto negotiation is not supported on this PHY when in fiber mode.
+On 02/09/2020 13:44, Davide Caratti wrote:
+> in mptcp_connect, 's' selects IPPROTO_MPTCP / IPPROTO_TCP as the value of
+> 'protocol' in socket(), and 'm' switches between different send / receive
+> modes. Fix die_usage(): swap 'm' and 's' and add missing 'sendfile' mode.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83869.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+Good catch!
 
-diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
-index 58103152c601..1acf498832f1 100644
---- a/drivers/net/phy/dp83869.c
-+++ b/drivers/net/phy/dp83869.c
-@@ -52,6 +52,11 @@
- 					 BMCR_FULLDPLX | \
- 					 BMCR_SPEED1000)
- 
-+#define MII_DP83869_FIBER_ADVERTISE    (ADVERTISED_TP | ADVERTISED_MII | \
-+					ADVERTISED_FIBRE | ADVERTISED_BNC |  \
-+					ADVERTISED_Pause | ADVERTISED_Asym_Pause | \
-+					ADVERTISED_100baseT_Full)
-+
- /* This is the same bit mask as the BMCR so re-use the BMCR default */
- #define DP83869_FX_CTRL_DEFAULT	MII_DP83869_BMCR_DEFAULT
- 
-@@ -300,6 +305,7 @@ static int dp83869_configure_mode(struct phy_device *phydev,
- {
- 	int phy_ctrl_val;
- 	int ret;
-+	int bmcr;
- 
- 	if (dp83869->mode < DP83869_RGMII_COPPER_ETHERNET ||
- 	    dp83869->mode > DP83869_SGMII_COPPER_ETHERNET)
-@@ -383,7 +389,36 @@ static int dp83869_configure_mode(struct phy_device *phydev,
- 
- 		break;
- 	case DP83869_RGMII_1000_BASE:
-+		break;
- 	case DP83869_RGMII_100_BASE:
-+		/* Only allow advertising what this PHY supports */
-+		linkmode_and(phydev->advertising, phydev->advertising,
-+			     phydev->supported);
-+
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
-+				 phydev->supported);
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
-+				 phydev->advertising);
-+
-+		/* Auto neg is not supported in fiber mode */
-+		bmcr = phy_read(phydev, MII_BMCR);
-+		if (bmcr < 0)
-+			return bmcr;
-+
-+		phydev->autoneg = AUTONEG_DISABLE;
-+		linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-+				   phydev->supported);
-+		linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
-+				   phydev->advertising);
-+
-+		if (bmcr & BMCR_ANENABLE) {
-+			ret =  phy_modify(phydev, MII_BMCR, BMCR_ANENABLE, 0);
-+			if (ret < 0)
-+				return ret;
-+		}
-+		ret = phy_modify_changed(phydev, MII_ADVERTISE,
-+					 MII_DP83869_FIBER_ADVERTISE,
-+					 MII_DP83869_FIBER_ADVERTISE);
- 		break;
- 	default:
- 		return -EINVAL;
+I guess we don't need this on -net or further, this test program is 
+always used with its wrapper mptcp_connect.sh.
+
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+
+Cheers,
+Matt
 -- 
-2.28.0
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
