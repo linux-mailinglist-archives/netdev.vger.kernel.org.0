@@ -2,138 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F0225AD3F
-	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 16:35:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B9D925AD3A
+	for <lists+netdev@lfdr.de>; Wed,  2 Sep 2020 16:35:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728058AbgIBOfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 10:35:31 -0400
-Received: from gateway33.websitewelcome.com ([192.185.146.119]:28407 "EHLO
-        gateway33.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726536AbgIBOez (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 10:34:55 -0400
-X-Greylist: delayed 1241 seconds by postgrey-1.27 at vger.kernel.org; Wed, 02 Sep 2020 10:34:55 EDT
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway33.websitewelcome.com (Postfix) with ESMTP id 26651411D6A
-        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 09:14:07 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id DTWZkbpXjXp2ADTWZknKXX; Wed, 02 Sep 2020 09:14:07 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=VfJ4a1TS1d2GvTG5jmxmBPb/Aevm1zxN6E7ujp5j+A8=; b=kvAX7gx5C9K0XM1Ryu373oOKpw
-        E0NaF4mn9DWrfJ1UQZLJRtCKgAK7q4wf6NLuGew17iBMPN6qev8Hp7SO9s17OV8UwPDuWjoDLA1Sm
-        lLZX33byeO4id3zQhorfp+j13HwT7fiKb4l/84pzF02Hs6NikU/+y2lgjr6SB0S6JCqJBfmCN5nhc
-        SQmoz2zofdeMPzPQXwyPn38vsmsyd6qjyU6KrkfCiZMsvLsMLhABqkl/zVi5NuFXWohL6SVQwtZAS
-        EVJ1flVGKa5f7L8b0bNo45HaEO67KpEGgrCYGYbf+sF/EvKzH7AuZYHCj47RKS6VNdtztS+R8D6cG
-        UG5drKZQ==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:47548 helo=[192.168.15.8])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1kDTWY-002Q8v-Lf; Wed, 02 Sep 2020 09:14:06 -0500
-Subject: Re: [PATCH] rt2x00: Use fallthrough pseudo-keyword macro
-To:     Leesoo Ahn <dev@ooseel.net>
-Cc:     Stanislaw Gruszka <stf_xl@wp.pl>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200902130507.227611-1-dev@ooseel.net>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- AP7RWS474w==
-Message-ID: <88a62415-5859-efb6-f608-db7dcb84ad9b@embeddedor.com>
-Date:   Wed, 2 Sep 2020 09:20:19 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727930AbgIBOeI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 10:34:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727950AbgIBOdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 10:33:54 -0400
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D18CC061244
+        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 07:33:54 -0700 (PDT)
+Received: by mail-vs1-xe41.google.com with SMTP id b123so2648771vsd.10
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 07:33:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GTgJ8jRvYHfsaCYMvrvH0r8WVjN4146hJg98Kfc6e3E=;
+        b=GqX9sYheDnvfIvKTFK/YljPYXr+3kQcZ5oeuEyfjrmPv9ynxsoVZe1l347TGAbC+Rp
+         rEvI0xz61c68O22SRUFr+GZTyhQ+UdS7P+IDlWIamL7aM5WBSJmp8LD3ICvXd6fYhJOj
+         21cSc2kz+u10AgNpfA9qcMnUMYrAYW86iQI6sUoPi7zjVTcTR2jigazQAZ25eq21E/WF
+         mjDqeDGhHfwiALlh1OkrVcNqZMcpZOqRDelWt04/+Em4OXmFpgWfbFaT1nKFsS6o8CXX
+         F7DQO15/wvL/9NZF7GjQ4HKldIVHxa7y2XhS3m6tk3zyNHM3vlL5gkmrgOhY1ubPQYu4
+         nKHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GTgJ8jRvYHfsaCYMvrvH0r8WVjN4146hJg98Kfc6e3E=;
+        b=SK0Aab71TPE3HBybevRUjGQ/vdVBRDB70NHS2ZVxak4JYaOe9WUZ8njiMi4G34bQmk
+         eRDLZAAV0QdcB2+kxCWwbS21mQy2tLiJleJiyxH24GcDgv47nBI43j3WNreqI6ZmVdpN
+         ovLIEby4/Zot1xmSM5YK5b6zH0541qXiBOVHmTvZv6xcuH9rJvLIkJbj0LygTTZP1QKj
+         Bp6K0zrOtU1D/EhdjiGjGHYxSfvXgV98/nVZksiCSUbIKy4+QXIqa2Z7a07HbFr/T3x/
+         MvmCAVmP5dBVtqVbLICq/budRfE96Egc1YZXJvuDUlLIj/Dhayv0hsgnAsfn2K7sqIGF
+         ztSQ==
+X-Gm-Message-State: AOAM530/NPs3OYfSXxBozfnUwpu4+B5w0ZyZyF+Vll7x3Vdw7HKiFA4O
+        JSExej4vTh18jvspWsjOc4iNL+4CPpbIEw==
+X-Google-Smtp-Source: ABdhPJwYZqWYk1vEF/Yf2X7Rhz3Hf4vwy6NuTxBpLon1ns4XjGj5tERETajPBafn0sfEFAVIfnJf/w==
+X-Received: by 2002:a67:1a47:: with SMTP id a68mr5791787vsa.84.1599057233273;
+        Wed, 02 Sep 2020 07:33:53 -0700 (PDT)
+Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com. [209.85.222.53])
+        by smtp.gmail.com with ESMTPSA id j21sm793457vkn.26.2020.09.02.07.33.51
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Sep 2020 07:33:52 -0700 (PDT)
+Received: by mail-ua1-f53.google.com with SMTP id v24so1630651uaj.7
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 07:33:51 -0700 (PDT)
+X-Received: by 2002:a9f:2237:: with SMTP id 52mr1270900uad.141.1599057231345;
+ Wed, 02 Sep 2020 07:33:51 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200902130507.227611-1-dev@ooseel.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1kDTWY-002Q8v-Lf
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.8]) [187.162.31.110]:47548
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 8
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <1599048911-7923-1-git-send-email-tanhuazhong@huawei.com>
+In-Reply-To: <1599048911-7923-1-git-send-email-tanhuazhong@huawei.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 2 Sep 2020 16:33:13 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSc_KOZRTdh34Vw3gTCzGMmi5XvDZKjpWMOXw7aby53wqw@mail.gmail.com>
+Message-ID: <CA+FuTSc_KOZRTdh34Vw3gTCzGMmi5XvDZKjpWMOXw7aby53wqw@mail.gmail.com>
+Subject: Re: [RFC net-next] udp: add a GSO type for UDPv6
+To:     Huazhong Tan <tanhuazhong@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        linuxarm@huawei.com, Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Sep 2, 2020 at 2:18 PM Huazhong Tan <tanhuazhong@huawei.com> wrote:
+>
+> In some cases, for UDP GSO, UDPv4 and UDPv6 need to be handled
+> separately, for example, checksum offload, so add new GSO type
+> SKB_GSO_UDPV6_L4 for UDPv6, and the old SKB_GSO_UDP_L4 stands
+> for UDPv4.
+
+This is in preparation for hardware you have that actually cares about
+this distinction, I guess?
 
 
-On 9/2/20 08:05, Leesoo Ahn wrote:
-> Replace all '/* fall through */' comments with the macro[1].
-> 
-> [1]: https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
-> 
+> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+> index 2cc3cf8..b7c1a76 100644
+> --- a/include/linux/netdev_features.h
+> +++ b/include/linux/netdev_features.h
+> @@ -54,6 +54,7 @@ enum {
+>         NETIF_F_GSO_UDP_BIT,            /* ... UFO, deprecated except tuntap */
+>         NETIF_F_GSO_UDP_L4_BIT,         /* ... UDP payload GSO (not UFO) */
+>         NETIF_F_GSO_FRAGLIST_BIT,               /* ... Fraglist GSO */
+> +       NETIF_F_GSO_UDPV6_L4_BIT,       /* ... UDPv6 payload GSO (not UFO) */
+>         /**/NETIF_F_GSO_LAST =          /* last bit, see GSO_MASK */
+>                 NETIF_F_GSO_FRAGLIST_BIT,
 
-This looks familiar...
-
-https://lore.kernel.org/lkml/20200821062052.GA8618@embeddedor/
-
-Thanks
---
-Gustavo
+Need to update NETIF_F_GSO_LAST then, too.
