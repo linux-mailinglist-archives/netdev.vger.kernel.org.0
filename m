@@ -2,78 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D774525CB22
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 22:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F41C225CB39
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 22:39:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729405AbgICUij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 16:38:39 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41264 "EHLO vps0.lunn.ch"
+        id S1729173AbgICUjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 16:39:39 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41276 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729649AbgICUid (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Sep 2020 16:38:33 -0400
+        id S1729486AbgICUjT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Sep 2020 16:39:19 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kDvzq-00D6H2-Ly; Thu, 03 Sep 2020 22:38:14 +0200
-Date:   Thu, 3 Sep 2020 22:38:14 +0200
+        id 1kDw0l-00D6Id-PR; Thu, 03 Sep 2020 22:39:11 +0200
+Date:   Thu, 3 Sep 2020 22:39:11 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 6/7] net: mvpp2: ptp: add interrupt handling
-Message-ID: <20200903203814.GA3122026@lunn.ch>
-References: <20200902161007.GN1551@shell.armlinux.org.uk>
- <E1kDVMg-0000k9-6g@rmk-PC.armlinux.org.uk>
- <20200903013940.GA3090178@lunn.ch>
- <20200903084816.GO1551@shell.armlinux.org.uk>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, adam.rudzinski@arf.net.pl,
+        m.felsch@pengutronix.de, hkallweit1@gmail.com,
+        richard.leitner@skidata.com, zhengdejin5@gmail.com,
+        devicetree@vger.kernel.org, kernel@pengutronix.de, kuba@kernel.org,
+        robh+dt@kernel.org
+Subject: Re: [PATCH net-next 1/3] net: phy: Support enabling clocks prior to
+ bus probe
+Message-ID: <20200903203911.GB3112546@lunn.ch>
+References: <20200903043947.3272453-1-f.fainelli@gmail.com>
+ <20200903043947.3272453-2-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200903084816.GO1551@shell.armlinux.org.uk>
+In-Reply-To: <20200903043947.3272453-2-f.fainelli@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 03, 2020 at 09:48:16AM +0100, Russell King - ARM Linux admin wrote:
-> On Thu, Sep 03, 2020 at 03:39:40AM +0200, Andrew Lunn wrote:
-> > > +static void mvpp2_isr_handle_ptp_queue(struct mvpp2_port *port, int nq)
-> > > +{
-> > > +	void __iomem *ptp_q;
-> > > +	u32 r0, r1, r2;
-> > > +
-> > > +	ptp_q = port->priv->iface_base + MVPP22_PTP_BASE(port->gop_id);
-> > > +	if (nq)
-> > > +		ptp_q += MVPP22_PTP_TX_Q1_R0 - MVPP22_PTP_TX_Q0_R0;
-> > > +
-> > > +	while (1) {
-> > > +		r0 = readl_relaxed(ptp_q + MVPP22_PTP_TX_Q0_R0) & 0xffff;
-> > > +		if (!r0)
-> > > +			break;
-> > > +
-> > > +		r1 = readl_relaxed(ptp_q + MVPP22_PTP_TX_Q0_R1) & 0xffff;
-> > > +		r2 = readl_relaxed(ptp_q + MVPP22_PTP_TX_Q0_R2) & 0xffff;
-> > > +	}
-> > > +}
-> > 
-> > Hi Russell
-> > 
-> > That is a rather odd interrupt handler, basically throwing everything
-> > away. Maybe add a comment about what is going on?
+On Wed, Sep 02, 2020 at 09:39:45PM -0700, Florian Fainelli wrote:
+> Some Ethernet PHYs may require that their clock, which typically drives
+> their logic to respond to reads on the MDIO bus be enabled before
+> issusing a MDIO bus scan.
+
+issuing
+
 > 
-> We end up doing something with it in the following patch. I could
-> squash 6 and 7 together, which would avoid this.
+> We have a chicken and egg problem though which is that we cannot enable
+> a given Ethernet PHY's device clock until we have a phy_device instance
+> create and called the driver's probe function. This will not happen
+> unless we are successful in probing the PHY device, which requires its
+> clock(s) to be turned on.
+> 
+> For DT based systems we can solve this by using of_clk_get() which
+> operates on a device_node reference, and make sure that all clocks
+> associaed with the node are enabled prior to doing any reads towards the
 
-Hi Russell
+associated.
 
-Yes, i noticed this when i get to the next patch. Please either squash
-it, or add something to the commit message that the following patches
-will flesh the function out some more.
+> device. In order to avoid drivers having to know the a priori reference
+> count of the resources, we drop them back to 0 right before calling
+> ->probe() which is then supposed to manage the resources normally.
 
-Thanks
-      Andrew
+  Andrew
