@@ -2,110 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B4B925C3DE
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 17:00:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C49D25C377
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 16:52:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729406AbgICO75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 10:59:57 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:47471 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728877AbgICOGa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 10:06:30 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9660F580571;
-        Thu,  3 Sep 2020 09:42:30 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Thu, 03 Sep 2020 09:42:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=nsL9vwsAlYQbc2fPQQk4f0FA2ka9eiIMrA/dba1uV4c=; b=mIg2ZoQR
-        OYjgGU/mibRm5DFZX4tagD6aXGPX4Duu4vvvKH/uyIjzfLVsKu9ijdGDnoTKLRhJ
-        DFGXM9sS2oZIT9nnHftjDgHkE7oP5w8vOPrzL+xLop9bpSdC+jquO2+oNeb5Qoha
-        /GX+zZzj0Q6h8cTmMOG5mgBlgDH/6fX5i7CNrdrSI0r5EZNojcx0vG/KC1rF4YJR
-        df2fpC7GCeGbxTiZaYAIF+9c4/zV6knqxnCfZQqvh+BsDdup4CYsKjKayhurReVc
-        TxljxBnTanIZMhRXBRopaB/cbyWqPy3wOLucfg6yD0QqTKJ4MHKw/an0gYGhBl9E
-        6jmtQ/50KOdCxQ==
-X-ME-Sender: <xms:xvJQX6Dv-nXu92AcuIjpCa-zBq7v7RDy_HpwFCYLUEOUop5HMT_YFg>
-    <xme:xvJQX0jjl566NrLrsI3IS-bpsGQ2AdhlinqARsEwkSxalUp_r4krx_Au8xaOnTRyW
-    jyJvP2Zzw0FrLc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudeguddgieelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeduteeiveffffevleekleejffekhfekhefgtdfftefhledvjefggfehgfevjeek
-    hfenucfkphepkeegrddvvdelrdefiedrjedunecuvehluhhsthgvrhfuihiivgepudenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:xvJQX9nNnupKjDl-BlyJwdzruZ3wWLiHRFZJDVsd_fPgGBB5ot81Ug>
-    <xmx:xvJQX4wHfsllvtpwq6k-FZ7HLu_EJLo4O-5FiBm5ges-EHqFbtiiSg>
-    <xmx:xvJQX_TCxJ5aMlqN82Fqk6wUVM_ejp1tX60U_rRUgwS0mZI25ixI7A>
-    <xmx:xvJQX4TPYGOKTJjsRTOpSCwgREsKNdJndJu0EyWm8ZohrMFxpXMdyA>
-Received: from shredder.mtl.com (igld-84-229-36-71.inter.net.il [84.229.36.71])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1CA1B3280060;
-        Thu,  3 Sep 2020 09:42:27 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        amcohen@nvidia.com, petrm@nvidia.com, vadimp@nvidia.com,
-        andrew@lunn.ch, mlxsw@nvidia.com, Amit Cohen <amitc@mellanox.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 2/3] mlxsw: core_hwmon: Calculate MLXSW_HWMON_ATTR_COUNT more accurately
-Date:   Thu,  3 Sep 2020 16:41:45 +0300
-Message-Id: <20200903134146.2166437-3-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200903134146.2166437-1-idosch@idosch.org>
-References: <20200903134146.2166437-1-idosch@idosch.org>
+        id S1729396AbgICOwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 10:52:00 -0400
+Received: from www62.your-server.de ([213.133.104.62]:35936 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729058AbgICONn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 10:13:43 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kDpdy-0007al-SI; Thu, 03 Sep 2020 15:51:15 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kDpdy-0008BF-Ll; Thu, 03 Sep 2020 15:51:14 +0200
+Subject: Re: [PATCH] libbpf: Remove arch-specific include path in Makefile
+To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Jiri Olsa <jolsa@redhat.com>,
+        Networking <netdev@vger.kernel.org>,
+        Vaidyanathan Srinivasan <svaidy@linux.ibm.com>
+References: <20200902084246.1513055-1-naveen.n.rao@linux.vnet.ibm.com>
+ <CAEf4BzZXyJsJ6rFp7pj_0PhyE_df9Z08wE9pUkZBp8i1qz_h1Q@mail.gmail.com>
+ <fc8b0c65-b74a-d924-4189-ff6359d1ebdc@iogearbox.net>
+ <1599111859.vtxbe8ojub.naveen@linux.ibm.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c31ef991-25d0-dab4-819f-13eb38965a86@iogearbox.net>
+Date:   Thu, 3 Sep 2020 15:51:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <1599111859.vtxbe8ojub.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25918/Wed Sep  2 15:41:14 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amitc@mellanox.com>
+On 9/3/20 7:46 AM, Naveen N. Rao wrote:
+> Daniel Borkmann wrote:
+>> On 9/2/20 10:58 PM, Andrii Nakryiko wrote:
+>>> On Wed, Sep 2, 2020 at 1:43 AM Naveen N. Rao
+>>> <naveen.n.rao@linux.vnet.ibm.com> wrote:
+>>>>
+>>>> Ubuntu mainline builds for ppc64le are failing with the below error (*):
+>>>>      CALL    /home/kernel/COD/linux/scripts/atomic/check-atomics.sh
+>>>>      DESCEND  bpf/resolve_btfids
+>>>>
+>>>>    Auto-detecting system features:
+>>>>    ...                        libelf: [ [32mon[m  ]
+>>>>    ...                          zlib: [ [32mon[m  ]
+>>>>    ...                           bpf: [ [31mOFF[m ]
+>>>>
+>>>>    BPF API too old
+>>>>    make[6]: *** [Makefile:295: bpfdep] Error 1
+>>>>    make[5]: *** [Makefile:54: /home/kernel/COD/linux/debian/build/build-generic/tools/bpf/resolve_btfids//libbpf.a] Error 2
+>>>>    make[4]: *** [Makefile:71: bpf/resolve_btfids] Error 2
+>>>>    make[3]: *** [/home/kernel/COD/linux/Makefile:1890: tools/bpf/resolve_btfids] Error 2
+>>>>    make[2]: *** [/home/kernel/COD/linux/Makefile:335: __build_one_by_one] Error 2
+>>>>    make[2]: Leaving directory '/home/kernel/COD/linux/debian/build/build-generic'
+>>>>    make[1]: *** [Makefile:185: __sub-make] Error 2
+>>>>    make[1]: Leaving directory '/home/kernel/COD/linux'
+>>>>
+>>>> resolve_btfids needs to be build as a host binary and it needs libbpf.
+>>>> However, libbpf Makefile hardcodes an include path utilizing $(ARCH).
+>>>> This results in mixing of cross-architecture headers resulting in a
+>>>> build failure.
+>>>>
+>>>> The specific header include path doesn't seem necessary for a libbpf
+>>>> build. Hence, remove the same.
+>>>>
+>>>> (*) https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.9-rc3/ppc64el/log
+>>>>
+>>>> Reported-by: Vaidyanathan Srinivasan <svaidy@linux.ibm.com>
+>>>> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+>>>> ---
+>>>
+>>> This seems to still build fine for me, so I seems fine. Not sure why
+>>> that $(ARCH)/include/uapi path is there.
+>>>
+>>> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>>
+>> Same here, builds fine from my side too. Looks like this was from the very early days,
+>> added in commit 1b76c13e4b36 ("bpf tools: Introduce 'bpf' library and add bpf feature
+>> check"). Applied, thanks!
+> 
+> Thanks!
+> 
+> Daniel, I see that this has been applied to bpf-next. Can you please consider sending this in for v5.9-rc series so as to resolve the build failures?
 
-Currently the value of MLXSW_HWMON_ATTR_COUNT is calculated not really
-accurate.
+Ok, done, I've moved it to bpf tree so its on track for 5.9.
 
-Add several defines to make the calculation clearer and easier to
-change.
-
-Calculate the precise high bound of number of attributes that may be
-needed.
-
-Signed-off-by: Amit Cohen <amitc@mellanox.com>
-Reviewed-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c b/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
-index 3f1822535bc6..f1b0c176eaeb 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_hwmon.c
-@@ -12,8 +12,17 @@
- #include "core.h"
- #include "core_env.h"
- 
--#define MLXSW_HWMON_TEMP_SENSOR_MAX_COUNT 127
--#define MLXSW_HWMON_ATTR_COUNT (MLXSW_HWMON_TEMP_SENSOR_MAX_COUNT * 4 + \
-+#define MLXSW_HWMON_SENSORS_MAX_COUNT 64
-+#define MLXSW_HWMON_MODULES_MAX_COUNT 64
-+#define MLXSW_HWMON_GEARBOXES_MAX_COUNT 32
-+
-+#define MLXSW_HWMON_ATTR_PER_SENSOR 3
-+#define MLXSW_HWMON_ATTR_PER_MODULE 5
-+#define MLXSW_HWMON_ATTR_PER_GEARBOX 4
-+
-+#define MLXSW_HWMON_ATTR_COUNT (MLXSW_HWMON_SENSORS_MAX_COUNT * MLXSW_HWMON_ATTR_PER_SENSOR + \
-+				MLXSW_HWMON_MODULES_MAX_COUNT * MLXSW_HWMON_ATTR_PER_MODULE + \
-+				MLXSW_HWMON_GEARBOXES_MAX_COUNT * MLXSW_HWMON_ATTR_PER_GEARBOX + \
- 				MLXSW_MFCR_TACHOS_MAX + MLXSW_MFCR_PWMS_MAX)
- 
- struct mlxsw_hwmon_attr {
--- 
-2.26.2
-
+Thanks,
+Daniel
