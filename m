@@ -2,171 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1808D25B8CE
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 04:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D144525B8DA
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 04:45:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727964AbgICCbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 22:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726177AbgICCbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 22:31:45 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA16C061244;
-        Wed,  2 Sep 2020 19:31:45 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id 195so1040514ybl.9;
-        Wed, 02 Sep 2020 19:31:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=atdcOErK6cxrFEvbn73lG43RctLnARy1ThuebI0BN0E=;
-        b=uthNZ6AGad7YzETHZaivxJZB9KhxMtuBuCelborCHY7OrcMZGf4AiPc+D8tHIbdBwD
-         /fjUP0e5u78Uc2wwVClC3zIQ0BJCVpbvUSbbBT5ftxFNsBvjHuBxYSKaAFoQxdJkd43C
-         bDRsbepZ1WEhgyEyl2+XSvFNXszzDNS7a35zzxQmRyBu36PLcDW4+8fXz+XO70XgAFM4
-         QLNKGdIEyMP8DTi+Ot24zvcc9RFnAE3qu5B9ofJnf9UBgk/W4X+NsSPyforXkZajceXu
-         6YhJ2CfcA2lMrmV0OgNWTz1pkMhbfpge486vdNXL6QQ10PaAKPgnmQlkerZNqFgyAedL
-         xX9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=atdcOErK6cxrFEvbn73lG43RctLnARy1ThuebI0BN0E=;
-        b=olxMqQ7xzy0Pd2VDvXAOOg+Wy2gxuhefoi2GKagYSArBA9OV/h22jHVLzxaHFxrbej
-         JOg+iPE2ulj5RbfPiyYlrCBqjL/FeHk5EbJjGnveg/WXSxMQYubjQs+MTnZm6G9ntkn6
-         gE6KXBAQMoZ0GpZYOEuTP8L3HksZAWiGQvFB92DmnimQg0bpVXECQcoiwQL4hsbS8+hH
-         hzB6VZkSnyI7hjoluuJBGL+bxIoEFDkBH+R5gW72HPKAElPS2VSqkFIM9mVnUCmwUE0b
-         wqYQkjj3SG9+9Ks1zIBk3DmAxJKerZrPWq/sXbEMa3X4MoT0uIWQXV/A7ExI9qeuMFYG
-         fdyA==
-X-Gm-Message-State: AOAM5336iktqi21jXfD15Qw5HI3mNbSGpMAWw+u1YXf0t/zRUSd5dOJN
-        1Xz3c1Xh2bfv1tCjZeTVk5/03gcOr5U+jJgodEM=
-X-Google-Smtp-Source: ABdhPJzh/CMS7BuyGFnGCvI6R1UkhweVLB3EBxJvgkB2xv4O2jpgkHdpl9Xj86wnBtqe7wAzTVJSK4IJdxDY83/P7Mk=
-X-Received: by 2002:a25:cb57:: with SMTP id b84mr974024ybg.425.1599100304411;
- Wed, 02 Sep 2020 19:31:44 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200828193603.335512-1-sdf@google.com> <20200828193603.335512-4-sdf@google.com>
-In-Reply-To: <20200828193603.335512-4-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Sep 2020 19:31:33 -0700
-Message-ID: <CAEf4BzZtYTyBT=jURkF4RQLHXORooVwXrRRRkoSWDqCemyGQeA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/8] libbpf: Add BPF_PROG_BIND_MAP syscall and
- use it on .metadata section
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1728043AbgICCpJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 22:45:09 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:13388 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726654AbgICCpC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 22:45:02 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0832eBwO024829;
+        Wed, 2 Sep 2020 19:44:48 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=SemW161e497sg3Nk+v4fgqN4Vj9UOk+PNe+r8snVM4k=;
+ b=EAOTCCShBfk132lnxKr7s33ODv9AWgNvQxqowF9yVkkrvxGR4pEAAMwgnr+F3aTHj4yj
+ Gv7hX+kDJDekprme9zebC/atne2ww0vgVgs9djrbAB24xbgN9UTBYLLMi6Ofqvg+TEt3
+ BLSzsUMobTRUarZI8c9wEN9svcWV0cJHbic= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 338gqnkhbw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 02 Sep 2020 19:44:48 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 2 Sep 2020 19:44:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=joevuKzFKE5mG1OFu/p9+vZ5HOwNJZfDPVmjk7Ty5xfdzIu08svOfQFnJdinMRpksq0XOomnMzdizaG6fDbxQtHWygF3Xvnj/UpOm7iyClbh8E+eN7h/YFSpvmqjy7TBHl//xsFUfcr6xD7Yw/tuFXmMlyw/ZUM273jOL0ch5ve8akTcFjS/3DymSJ9Qy6+M7i/Vh6u4UAJPO2+/cGHMWT18jUVlArbY3vxtuRdPgJ0gYtbyZU1JTL/ZOr3OAR/56aZuA+vzjrRapv08KIJqiNfn2y+z9IdeSqUjR7ytvHcGGPDIy/bZte6+ItM7HAM3p0ME4VPsgMTCn/4ZLMcKFQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SemW161e497sg3Nk+v4fgqN4Vj9UOk+PNe+r8snVM4k=;
+ b=f6C/ivHZE1he3Y65u776mtsSSXIy9gsLsnXI9QFA0s5jLNxOjW1i9JLcejLE5Wf6ZqKnqSljRpe7hTgxSOlcVd/IvYRRBF889v76/+h6D0NIWystqEZyiztu3Yxs+t/Zc/6ZQcG8DEEa/v25+gbsZh6ZrGFgstDtgunZC5B436Dh0bg/PTR+Mk11y0v83B/+748ZZPXDG7vFfyQ0thmOdmEeX5nXTDCs2saY9QNM1HqJxI3X8kolgs7xLHBWVym2MWk3LQVmtk0JdeWMQdhP2GNDJeIeAnNiEgMEKrf8fI3XqpkX5rMBbjavqufuerTClm/LH9UPkjdlV6jWe0sxwA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SemW161e497sg3Nk+v4fgqN4Vj9UOk+PNe+r8snVM4k=;
+ b=ewRyfAWd4oOkoQIIr14Jyns+fUDMwBSRn5J5ebY4nFOCR1vF4XRavO/wqW//S/T1c+01NRgKDu2hd2DWf7Ye1rRvngReRI9UfTnNlK488bth6STjY0jOSh0yqdl8pwV4IDFBJPwgLUd0s4Nl5zi9q3mh+ScfaS2oEIyk6Ht5uKU=
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB3095.namprd15.prod.outlook.com (2603:10b6:a03:fe::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19; Thu, 3 Sep
+ 2020 02:44:42 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3348.015; Thu, 3 Sep 2020
+ 02:44:36 +0000
+Subject: Re: [PATCH bpf 1/2] bpf: do not use bucket_lock for hashmap iterator
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        YiFei Zhu <zhuyifei@google.com>,
-        YiFei Zhu <zhuyifei1999@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Kernel Team <kernel-team@fb.com>
+References: <20200902235340.2001300-1-yhs@fb.com>
+ <20200902235340.2001375-1-yhs@fb.com>
+ <CAEf4BzaBxaPyWXOWOVRWCXcLW40FOFWkG7gUPSktGwS07duQVA@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <f93015c5-5fed-4775-93c3-6b85a8e7c0da@fb.com>
+Date:   Wed, 2 Sep 2020 19:44:34 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
+In-Reply-To: <CAEf4BzaBxaPyWXOWOVRWCXcLW40FOFWkG7gUPSktGwS07duQVA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BYAPR01CA0025.prod.exchangelabs.com (2603:10b6:a02:80::38)
+ To BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from 255.255.255.255 (255.255.255.255) by BYAPR01CA0025.prod.exchangelabs.com (2603:10b6:a02:80::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15 via Frontend Transport; Thu, 3 Sep 2020 02:44:35 +0000
+X-Originating-IP: [2620:10d:c090:400::5:d32f]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a24c8837-500a-4de3-aba8-08d84fb34b85
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3095:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB3095BF179C3198D66346CA19D32C0@BYAPR15MB3095.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +nV8tazB742D/QtM9kTLmCzFbJCkopPfTa8opeIFA4ibwzQT8QAysTyDG1Ja9V8q4LCr3AKyGG88E1Wh3OmYkzLMj5bYUK8ydKjtBi/ua2lH6eV5vi2nIBN/eWU1SIKZBlTyw499EovCr0nAZXF5NJnXJ8L6CJmHim9zWP5iQmEqC/+whWcZDRpw4hElb4s9mHySHRUoKlTC04FN4gCs7WUNi84EGv/lr1UzYR41NNjgfM+dZIQV/9O1K2X4GLzwL9Ojm9PfOMt6qT05CvJUCIPa3rszZhbiLFrPSxGG6qxXf15KFQaJL1nJ5HmddNjwCoL6M8+BecuwbMOIPr2J9nm/9kHNJ2zPGJuedIw+kVBDFbnRQzuBPycd90yRUtJg
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(396003)(136003)(366004)(39860400002)(6916009)(31686004)(316002)(5660300002)(54906003)(2616005)(8936002)(66556008)(31696002)(2906002)(83380400001)(186003)(53546011)(66476007)(66946007)(6486002)(478600001)(8676002)(86362001)(16576012)(52116002)(4326008)(36756003)(956004)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: x4BEJLOI1N4Mk3pFUPDAunjtro+KZJGqtl/0RRgeWxAqhlTKlrES5h0bNxN4t5nNp8e4nsv+C2Wh2x+Ohyktd+dOhCc6O9MHhE1lkWQOrs7igAmoQYwvXr1sQ5tSZPdBPKbl/ekj+nkou2qFhrLQRerTC5mbOXKDyoX8zZwGpXC1T6AqkBq2jGrO7M0OixVvoqp54EK6ZJg8z0f1swb1ZYGNWGGleV+2ib5YTF9InY3cvKzikiR7D4aGHxgJ+Ulp6cGyWoDmO4KNxuDN5OsuO5T5QtYebhj6iSx71W/5z/AEGs7HXFXgsMMsx1g3Or3Zb9Wn4Ks9LcYmZgTIW3CKYhz7lQyCXonEletkN5133u+NSc9NspxvqfjecrLtuRKQj/l72rLRYllvH7Ehn3uRMb2IRzR9itj/Y+NGoTe9P9bfnXvh3YoBhcuw3PmL71N/96mDDr7USCB7rckK18CMiHvzPWSDkkq6XvvTI31IxtXwJ3duACYcT2flxqxhbPoShBkJlttToeR3+UgtwekgSPhGHOK9Dw/9/mvvQNlqKsFKRhyS99t+RHVAwl6AQFpUZVfSWxAMpLf3Ayo7sne20mczwNsF4nqbNHqjYr9KnNk/Kp3RUGAeX72J9ZRCQRqELPPtwxYvOimQl+ZiagseAasLi1UryHso025M72Kkjbs=
+X-MS-Exchange-CrossTenant-Network-Message-Id: a24c8837-500a-4de3-aba8-08d84fb34b85
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Sep 2020 02:44:35.8856
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Y/4jMkQ52sLDtk3iwa/tkqSbhVPZijdOOQA4JNOxkgcXpl1i+gQUZGh4Z8XCdFQ4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3095
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-02_17:2020-09-02,2020-09-02 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ impostorscore=0 phishscore=0 clxscore=1015 suspectscore=0 malwarescore=0
+ priorityscore=1501 bulkscore=0 adultscore=0 lowpriorityscore=0 mlxscore=0
+ mlxlogscore=988 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009030024
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 28, 2020 at 12:37 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> From: YiFei Zhu <zhuyifei@google.com>
->
-> The patch adds a simple wrapper bpf_prog_bind_map around the syscall.
-> And when using libbpf to load a program, it will probe the kernel for
-> the support of this syscall, and scan for the .metadata ELF section
-> and load it as an internal map like a .data section.
->
-> In the case that kernel supports the BPF_PROG_BIND_MAP syscall and
-> a .metadata section exists, the map will be explicitly bound to
-> the program via the syscall immediately after program is loaded.
-> -EEXIST is ignored for this syscall.
-
-Here is the question I have. How important is it that all this
-metadata is in a separate map? What if libbpf just PROG_BIND_MAP all
-the maps inside a single BPF .o file to all BPF programs in that file?
-Including ARRAY maps created for .data, .rodata and .bss, even if the
-BPF program doesn't use any of the global variables? If it's too
-extreme, we could do it only for global data maps, leaving explicit
-map definitions in SEC(".maps") alone. Would that be terrible?
-Conceptually it makes sense, because when you program in user-space,
-you expect global variables to be there, even if you don't reference
-it directly, right? The only downside is that you won't have a special
-".metadata" map, rather it will be part of ".rodata" one.
 
 
->
-> Cc: YiFei Zhu <zhuyifei1999@gmail.com>
-> Signed-off-by: YiFei Zhu <zhuyifei@google.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  tools/lib/bpf/bpf.c      |  13 ++++
->  tools/lib/bpf/bpf.h      |   8 +++
->  tools/lib/bpf/libbpf.c   | 130 ++++++++++++++++++++++++++++++++-------
->  tools/lib/bpf/libbpf.map |   1 +
->  4 files changed, 131 insertions(+), 21 deletions(-)
->
+On 9/2/20 6:25 PM, Andrii Nakryiko wrote:
+> On Wed, Sep 2, 2020 at 4:56 PM Yonghong Song <yhs@fb.com> wrote:
+>>
+>> Currently, for hashmap, the bpf iterator will grab a bucket lock, a
+>> spinlock, before traversing the elements in the bucket. This can ensure
+>> all bpf visted elements are valid. But this mechanism may cause
+>> deadlock if update/deletion happens to the same bucket of the
+>> visited map in the program. For example, if we added bpf_map_update_elem()
+>> call to the same visited element in selftests bpf_iter_bpf_hash_map.c,
+>> we will have the following deadlock:
+>>
+> 
+> [...]
+> 
+>>
+>> Compared to old bucket_lock mechanism, if concurrent updata/delete happens,
+>> we may visit stale elements, miss some elements, or repeat some elements.
+>> I think this is a reasonable compromise. For users wanting to avoid
+> 
+> I agree, the only reliable way to iterate map without duplicates and
+> missed elements is to not update that map during iteration (unless we
+> start supporting point-in-time snapshots, which is a very different
+> matter).
+> 
+> 
+>> stale, missing/repeated accesses, bpf_map batch access syscall interface
+>> can be used.
+>>
+>> Signed-off-by: Yonghong Song <yhs@fb.com>
+>> ---
+>>   kernel/bpf/hashtab.c | 15 ++++-----------
+>>   1 file changed, 4 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+>> index 78dfff6a501b..7df28a45c66b 100644
+>> --- a/kernel/bpf/hashtab.c
+>> +++ b/kernel/bpf/hashtab.c
+>> @@ -1622,7 +1622,6 @@ struct bpf_iter_seq_hash_map_info {
+>>          struct bpf_map *map;
+>>          struct bpf_htab *htab;
+>>          void *percpu_value_buf; // non-zero means percpu hash
+>> -       unsigned long flags;
+>>          u32 bucket_id;
+>>          u32 skip_elems;
+>>   };
+>> @@ -1632,7 +1631,6 @@ bpf_hash_map_seq_find_next(struct bpf_iter_seq_hash_map_info *info,
+>>                             struct htab_elem *prev_elem)
+>>   {
+>>          const struct bpf_htab *htab = info->htab;
+>> -       unsigned long flags = info->flags;
+>>          u32 skip_elems = info->skip_elems;
+>>          u32 bucket_id = info->bucket_id;
+>>          struct hlist_nulls_head *head;
+>> @@ -1656,19 +1654,18 @@ bpf_hash_map_seq_find_next(struct bpf_iter_seq_hash_map_info *info,
+>>
+>>                  /* not found, unlock and go to the next bucket */
+>>                  b = &htab->buckets[bucket_id++];
+>> -               htab_unlock_bucket(htab, b, flags);
+>> +               rcu_read_unlock();
+> 
+> Just double checking as I don't yet completely understand all the
+> sleepable BPF implications. If the map is used from a sleepable BPF
+> program, we are still ok doing just rcu_read_lock/rcu_read_unlock when
+> accessing BPF map elements, right? No need for extra
+> rcu_read_lock_trace/rcu_read_unlock_trace?
+I think it is fine now since currently bpf_iter program cannot be 
+sleepable and the current sleepable program framework already allows the 
+following scenario.
+   - map1 is a preallocated hashmap shared by two programs,
+     prog1_nosleep and prog2_sleepable
 
-[...]
+...				  ...
+rcu_read_lock()			  rcu_read_lock_trace()
+run prog1_nosleep                 run prog2_sleepable
+   lookup/update/delete map1 elem    lookup/update/delete map1 elem
+rcu_read_unlock()		  rcu_read_unlock_trace()
+...				  ...
 
-> @@ -3592,18 +3619,13 @@ static int probe_kern_prog_name(void)
->         return probe_fd(ret);
->  }
->
-> -static int probe_kern_global_data(void)
-> +static void __probe_create_global_data(int *prog, int *map,
-> +                                      struct bpf_insn *insns, size_t insns_cnt)
+The prog1_nosleep could be a bpf_iter program or a networking problem.
 
-all those static functions are internal, no need for double underscore in names
+Alexei, could you confirm the above scenario is properly supported now?
 
->  {
->         struct bpf_load_program_attr prg_attr;
->         struct bpf_create_map_attr map_attr;
->         char *cp, errmsg[STRERR_BUFSIZE];
-> -       struct bpf_insn insns[] = {
-> -               BPF_LD_MAP_VALUE(BPF_REG_1, 0, 16),
-> -               BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 42),
-> -               BPF_MOV64_IMM(BPF_REG_0, 0),
-> -               BPF_EXIT_INSN(),
-> -       };
-> -       int ret, map;
-> +       int err;
->
->         memset(&map_attr, 0, sizeof(map_attr));
->         map_attr.map_type = BPF_MAP_TYPE_ARRAY;
-> @@ -3611,26 +3633,40 @@ static int probe_kern_global_data(void)
->         map_attr.value_size = 32;
->         map_attr.max_entries = 1;
->
-> -       map = bpf_create_map_xattr(&map_attr);
-> -       if (map < 0) {
-> -               ret = -errno;
-> -               cp = libbpf_strerror_r(ret, errmsg, sizeof(errmsg));
-> +       *map = bpf_create_map_xattr(&map_attr);
-> +       if (*map < 0) {
-> +               err = errno;
-> +               cp = libbpf_strerror_r(err, errmsg, sizeof(errmsg));
->                 pr_warn("Error in %s():%s(%d). Couldn't create simple array map.\n",
-> -                       __func__, cp, -ret);
-> -               return ret;
-> +                       __func__, cp, -err);
-> +               return;
->         }
->
-> -       insns[0].imm = map;
-> +       insns[0].imm = *map;
-
-you are making confusing and error prone assumptions about the first
-instruction passed in, I really-really don't like this, super easy to
-miss and super easy to screw up.
-
->
->         memset(&prg_attr, 0, sizeof(prg_attr));
->         prg_attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
->         prg_attr.insns = insns;
-> -       prg_attr.insns_cnt = ARRAY_SIZE(insns);
-> +       prg_attr.insns_cnt = insns_cnt;
->         prg_attr.license = "GPL";
->
-> -       ret = bpf_load_program_xattr(&prg_attr, NULL, 0);
-> +       *prog = bpf_load_program_xattr(&prg_attr, NULL, 0);
-> +}
-> +
-
-[...]
+> 
+>>                  skip_elems = 0;
+>>          }
+>>
+> 
+> [...]
+> 
