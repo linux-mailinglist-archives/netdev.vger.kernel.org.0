@@ -2,329 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A1D725C9F1
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 22:05:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B82DA25C9F6
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 22:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729159AbgICUFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 16:05:35 -0400
-Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:20906 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728304AbgICUFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 16:05:32 -0400
-Received: from localhost.localdomain ([93.22.39.180])
-        by mwinf5d73 with ME
-        id PY5Q2300C3tCsMp03Y5Rrf; Thu, 03 Sep 2020 22:05:29 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 03 Sep 2020 22:05:29 +0200
-X-ME-IP: 93.22.39.180
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
-        mkubecek@suse.cz, snelson@pensando.io, vaibhavgupta40@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH RESEND] epic100: switch from 'pci_' to 'dma_' API
-Date:   Thu,  3 Sep 2020 22:05:09 +0200
-Message-Id: <20200903200509.296149-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1729243AbgICUGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 16:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729100AbgICUGL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 16:06:11 -0400
+Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4F7C061246
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 13:06:11 -0700 (PDT)
+Received: by mail-qv1-xf49.google.com with SMTP id ff20so2481702qvb.7
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 13:06:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=/UWKJLPAXkkx3Yx/UTxrL8j3KiLl2CtZ9wNsas0CmuE=;
+        b=PzHnPuf93hixvMb2aF+7BlDdwkzjC0etPhPvo9SQurkewLDnKyFtIWalPovaKknZb2
+         Fe4e2WB0d036omhsG/4CRB4bG/f4l2UYghYN5ixsc5KDr9GA82fMgPV0OHeekJ2X/AyJ
+         IjEEAOMglVDisZDfffRS9noELvbMTbtyDJ1yL1FpY9tnBi2lowcfU8QaXroOa3Zjz0Zy
+         F0yWB1K9BbNwDr32UJrT4UOXcA+vzBIDP8S2Z0etxhd78EffQJTO69jmA4+pLYZ/aaI+
+         mJ8SWHx38Q11qpJVljv6QaZgdiWGpA9CmRWI+VhQuYlrdpxYA6j/+9OZbzYb7SxXDpLn
+         FIRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=/UWKJLPAXkkx3Yx/UTxrL8j3KiLl2CtZ9wNsas0CmuE=;
+        b=q95uVAbrsGbSOpyr4L+tYrR5T8YctAkqV4mqjXUuv+FBCvGsPAIbpfIHtu33UUsL2u
+         lgkRKXtWnsqCo3QTIPEZA+P+MO1MQZapsIoHxRsCBI+35gtKa13j5El1UmQqeQlnVRij
+         Nyd/qnsSkAwrWMKORF/l1iVDbEcDISlyCb314A452ODb0vUOF4qSKqJZ9d8nxXek5qNq
+         AswL9z29mm1z04iqsGjgfw+GkfFMvhGIR6wH2qDtKmcHyJXlhywCZIcGrhtzc3J0oiF/
+         8BopgejtRqizr13Co1xt6DCD7O8ysaH+JwQj05/NF35w/+lbYSna3z9oGX2pACXIDQzY
+         2koA==
+X-Gm-Message-State: AOAM533na+yebD2luaa3U5BFI68KQFSqi194iiZ2lnerK+Iu1VxFqhfC
+        phNphZwbCb3FpZpBgZ4YldLdBgOck2GFqP+jB2zDJ2Uc0Xpf7T17IMHiDFicnHgs7i0K7eMh+dE
+        OUUSeimjkqRv+vK3giOTJ+hq9rVcvsyGDZ72NJK0v9q06RwZdm2pQR7e+u5lcqQ==
+X-Google-Smtp-Source: ABdhPJyK9sfS5Vkv4dj8ZJQOHZl2X6IErVJpoiHmtkGO5YHA9LFQM3sNM26AhgovDm0AE51Lnt9kXdHfOmw=
+X-Received: from haoluo.svl.corp.google.com ([2620:15c:2cd:202:f693:9fff:fef4:e444])
+ (user=haoluo job=sendgmr) by 2002:a0c:edaa:: with SMTP id h10mr3625649qvr.12.1599163567913;
+ Thu, 03 Sep 2020 13:06:07 -0700 (PDT)
+Date:   Thu,  3 Sep 2020 13:05:28 -0700
+Message-Id: <20200903200528.747884-1-haoluo@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
+Subject: [PATCH] selftests/bpf: Fix check in global_data_init.
+From:   Hao Luo <haoluo@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "=?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?=" <toke@redhat.com>,
+        KP Singh <kpsingh@chromium.org>, Hao Luo <haoluo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+The returned value of bpf_object__open_file() should be checked with
+libbpf_get_error() rather than NULL. This fix prevents test_progs from
+crash when test_global_data.o is not present.
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
-
-When memory is allocated in 'epic_init_one()', GFP_KERNEL can be used
-because it is a probe function and no lock is acquired.
-
-
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
-
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Hao Luo <haoluo@google.com>
 ---
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+ tools/testing/selftests/bpf/prog_tests/global_data_init.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-RESEND because it was previously sent when the branch was closed
----
- drivers/net/ethernet/smsc/epic100.c | 71 +++++++++++++++++------------
- 1 file changed, 42 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/net/ethernet/smsc/epic100.c b/drivers/net/ethernet/smsc/epic100.c
-index d950b312c418..51cd7dca91cd 100644
---- a/drivers/net/ethernet/smsc/epic100.c
-+++ b/drivers/net/ethernet/smsc/epic100.c
-@@ -374,13 +374,15 @@ static int epic_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	ep->mii.phy_id_mask = 0x1f;
- 	ep->mii.reg_num_mask = 0x1f;
+diff --git a/tools/testing/selftests/bpf/prog_tests/global_data_init.c b/tools/testing/selftests/bpf/prog_tests/global_data_init.c
+index 3bdaa5a40744..ee46b11f1f9a 100644
+--- a/tools/testing/selftests/bpf/prog_tests/global_data_init.c
++++ b/tools/testing/selftests/bpf/prog_tests/global_data_init.c
+@@ -12,7 +12,8 @@ void test_global_data_init(void)
+ 	size_t sz;
  
--	ring_space = pci_alloc_consistent(pdev, TX_TOTAL_SIZE, &ring_dma);
-+	ring_space = dma_alloc_coherent(&pdev->dev, TX_TOTAL_SIZE, &ring_dma,
-+					GFP_KERNEL);
- 	if (!ring_space)
- 		goto err_out_iounmap;
- 	ep->tx_ring = ring_space;
- 	ep->tx_ring_dma = ring_dma;
+ 	obj = bpf_object__open_file(file, NULL);
+-	if (CHECK_FAIL(!obj))
++	err = libbpf_get_error(obj);
++	if (CHECK_FAIL(err))
+ 		return;
  
--	ring_space = pci_alloc_consistent(pdev, RX_TOTAL_SIZE, &ring_dma);
-+	ring_space = dma_alloc_coherent(&pdev->dev, RX_TOTAL_SIZE, &ring_dma,
-+					GFP_KERNEL);
- 	if (!ring_space)
- 		goto err_out_unmap_tx;
- 	ep->rx_ring = ring_space;
-@@ -493,9 +495,11 @@ static int epic_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	return ret;
- 
- err_out_unmap_rx:
--	pci_free_consistent(pdev, RX_TOTAL_SIZE, ep->rx_ring, ep->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, ep->rx_ring,
-+			  ep->rx_ring_dma);
- err_out_unmap_tx:
--	pci_free_consistent(pdev, TX_TOTAL_SIZE, ep->tx_ring, ep->tx_ring_dma);
-+	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, ep->tx_ring,
-+			  ep->tx_ring_dma);
- err_out_iounmap:
- 	pci_iounmap(pdev, ioaddr);
- err_out_free_netdev:
-@@ -918,8 +922,10 @@ static void epic_init_ring(struct net_device *dev)
- 		if (skb == NULL)
- 			break;
- 		skb_reserve(skb, 2);	/* 16 byte align the IP header. */
--		ep->rx_ring[i].bufaddr = pci_map_single(ep->pci_dev,
--			skb->data, ep->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+		ep->rx_ring[i].bufaddr = dma_map_single(&ep->pci_dev->dev,
-+							skb->data,
-+							ep->rx_buf_sz,
-+							DMA_FROM_DEVICE);
- 		ep->rx_ring[i].rxstatus = DescOwn;
- 	}
- 	ep->dirty_rx = (unsigned int)(i - RX_RING_SIZE);
-@@ -955,8 +961,9 @@ static netdev_tx_t epic_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	entry = ep->cur_tx % TX_RING_SIZE;
- 
- 	ep->tx_skbuff[entry] = skb;
--	ep->tx_ring[entry].bufaddr = pci_map_single(ep->pci_dev, skb->data,
--		 			            skb->len, PCI_DMA_TODEVICE);
-+	ep->tx_ring[entry].bufaddr = dma_map_single(&ep->pci_dev->dev,
-+						    skb->data, skb->len,
-+						    DMA_TO_DEVICE);
- 	if (free_count < TX_QUEUE_LEN/2) {/* Typical path */
- 		ctrl_word = 0x100000; /* No interrupt */
- 	} else if (free_count == TX_QUEUE_LEN/2) {
-@@ -1036,8 +1043,9 @@ static void epic_tx(struct net_device *dev, struct epic_private *ep)
- 
- 		/* Free the original skb. */
- 		skb = ep->tx_skbuff[entry];
--		pci_unmap_single(ep->pci_dev, ep->tx_ring[entry].bufaddr,
--				 skb->len, PCI_DMA_TODEVICE);
-+		dma_unmap_single(&ep->pci_dev->dev,
-+				 ep->tx_ring[entry].bufaddr, skb->len,
-+				 DMA_TO_DEVICE);
- 		dev_consume_skb_irq(skb);
- 		ep->tx_skbuff[entry] = NULL;
- 	}
-@@ -1178,20 +1186,21 @@ static int epic_rx(struct net_device *dev, int budget)
- 			if (pkt_len < rx_copybreak &&
- 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
- 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
--				pci_dma_sync_single_for_cpu(ep->pci_dev,
--							    ep->rx_ring[entry].bufaddr,
--							    ep->rx_buf_sz,
--							    PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_cpu(&ep->pci_dev->dev,
-+							ep->rx_ring[entry].bufaddr,
-+							ep->rx_buf_sz,
-+							DMA_FROM_DEVICE);
- 				skb_copy_to_linear_data(skb, ep->rx_skbuff[entry]->data, pkt_len);
- 				skb_put(skb, pkt_len);
--				pci_dma_sync_single_for_device(ep->pci_dev,
--							       ep->rx_ring[entry].bufaddr,
--							       ep->rx_buf_sz,
--							       PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_device(&ep->pci_dev->dev,
-+							   ep->rx_ring[entry].bufaddr,
-+							   ep->rx_buf_sz,
-+							   DMA_FROM_DEVICE);
- 			} else {
--				pci_unmap_single(ep->pci_dev,
--					ep->rx_ring[entry].bufaddr,
--					ep->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+				dma_unmap_single(&ep->pci_dev->dev,
-+						 ep->rx_ring[entry].bufaddr,
-+						 ep->rx_buf_sz,
-+						 DMA_FROM_DEVICE);
- 				skb_put(skb = ep->rx_skbuff[entry], pkt_len);
- 				ep->rx_skbuff[entry] = NULL;
- 			}
-@@ -1213,8 +1222,10 @@ static int epic_rx(struct net_device *dev, int budget)
- 			if (skb == NULL)
- 				break;
- 			skb_reserve(skb, 2);	/* Align IP on 16 byte boundaries */
--			ep->rx_ring[entry].bufaddr = pci_map_single(ep->pci_dev,
--				skb->data, ep->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+			ep->rx_ring[entry].bufaddr = dma_map_single(&ep->pci_dev->dev,
-+								    skb->data,
-+								    ep->rx_buf_sz,
-+								    DMA_FROM_DEVICE);
- 			work_done++;
- 		}
- 		/* AV: shouldn't we add a barrier here? */
-@@ -1294,8 +1305,8 @@ static int epic_close(struct net_device *dev)
- 		ep->rx_ring[i].rxstatus = 0;		/* Not owned by Epic chip. */
- 		ep->rx_ring[i].buflength = 0;
- 		if (skb) {
--			pci_unmap_single(pdev, ep->rx_ring[i].bufaddr,
--					 ep->rx_buf_sz, PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&pdev->dev, ep->rx_ring[i].bufaddr,
-+					 ep->rx_buf_sz, DMA_FROM_DEVICE);
- 			dev_kfree_skb(skb);
- 		}
- 		ep->rx_ring[i].bufaddr = 0xBADF00D0; /* An invalid address. */
-@@ -1305,8 +1316,8 @@ static int epic_close(struct net_device *dev)
- 		ep->tx_skbuff[i] = NULL;
- 		if (!skb)
- 			continue;
--		pci_unmap_single(pdev, ep->tx_ring[i].bufaddr, skb->len,
--				 PCI_DMA_TODEVICE);
-+		dma_unmap_single(&pdev->dev, ep->tx_ring[i].bufaddr, skb->len,
-+				 DMA_TO_DEVICE);
- 		dev_kfree_skb(skb);
- 	}
- 
-@@ -1502,8 +1513,10 @@ static void epic_remove_one(struct pci_dev *pdev)
- 	struct net_device *dev = pci_get_drvdata(pdev);
- 	struct epic_private *ep = netdev_priv(dev);
- 
--	pci_free_consistent(pdev, TX_TOTAL_SIZE, ep->tx_ring, ep->tx_ring_dma);
--	pci_free_consistent(pdev, RX_TOTAL_SIZE, ep->rx_ring, ep->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, ep->tx_ring,
-+			  ep->tx_ring_dma);
-+	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, ep->rx_ring,
-+			  ep->rx_ring_dma);
- 	unregister_netdev(dev);
- 	pci_iounmap(pdev, ep->ioaddr);
- 	pci_release_regions(pdev);
+ 	map = bpf_object__find_map_by_name(obj, "test_glo.rodata");
 -- 
-2.25.1
+2.28.0.526.ge36021eeef-goog
 
