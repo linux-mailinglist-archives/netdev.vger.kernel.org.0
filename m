@@ -2,125 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9931D25C8B3
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 20:29:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBE1C25C8F9
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 20:51:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728989AbgICS3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 14:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44896 "EHLO
+        id S1729169AbgICSvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 14:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726678AbgICS3E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 14:29:04 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D961C061244
-        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 11:29:04 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id 67so2780868pgd.12
-        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 11:29:04 -0700 (PDT)
+        with ESMTP id S1727065AbgICSu7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 14:50:59 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A333C061244;
+        Thu,  3 Sep 2020 11:50:59 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id s92so2892077ybi.2;
+        Thu, 03 Sep 2020 11:50:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=AaLcITQx9GcpvfBgIut8d9l0IkGgLOY8hWkZaEL339Y=;
-        b=B9O6xqyr8igoZd/JUUcJyOnyaCGB/oHP1oz0q1VQOHExSIKc7oIXQ53gzMnQ27z46O
-         7atyvfBAp/mT1XuHkn1RDm/FtxQQLDNHfP2mN2h6/QY9/ALljqsyfnDpXpZQvMmDRxmO
-         7YUvvfzj9l6sSWwdEgGsldIC3D1DuJKS2U01Q=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nWryz7cGGb7smK7ck6NRR7lmXazI3vI4tRYw7MpNE7I=;
+        b=h/H7emTHFm18MSYwIfWOY6up73kGriPotxpPDxxIzGFezb9s6u95yUSAQks1hjPic5
+         B7TGckUvsRrE54bjV/NjPRrfRjOhcj3KEqh3A0xxpc6o+MI7Xiq2cODAVYtDVoWPbsVx
+         xjEH/BWoqyncQIBs1bPC7PWP08kWzJRk3NCGuL/F3bhPWjzEE4OvMzOaI2AR1p+Dg9Na
+         IUuDSWOUf14qqYxIeFPnFy8/pj1BU+5xhAwDYUD/NIF/fPznUZdEGqonlbq/l1gtznpp
+         5Wi3oFIyeCTrkjGAG7EXbkieMz9buryVEu7+MTWRx8wXaI6SS41pvEv0gBPLnOgGw5r9
+         AQLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=AaLcITQx9GcpvfBgIut8d9l0IkGgLOY8hWkZaEL339Y=;
-        b=pIA2//k//2WTIdTlM3jzK97Pdw86FzjAUE4sbBPt8D8RWCB9ENoUyWX5RSxho0cE+o
-         glACHFRlacmflcl5e66e8zlHzWdaZ0Ixv0ELiMqHEng7Q6NpQkfdxKpqxxMhLESfHxKZ
-         MqWoDVRsfofENcwozQmuzpfiQyIbC+AHoMEu4mQ3JPo7F38mfZhSuma6tqz5EDd+lXd+
-         9XTNB1ovdcMY5yMrEiT1yz3VZkwf7YbZZejyFOARy33Mvm2PW9P9UGT4yNgpvhPnOen1
-         ctbycp2V52BeaDmQpE/TPxu3ICI5vF6Z1QoI0T5gOVB4QbCEip4GUJ5JjgQtg9NqxU6J
-         ttHQ==
-X-Gm-Message-State: AOAM533IvqxE7TbqXbuxSNVzJOIZFTAaLDv92dw/BuLeRdcDSNGwU7E1
-        hCr8i9LWdGDaWN556Ddi8Cl4woWP2uGMlg==
-X-Google-Smtp-Source: ABdhPJyUz8cAMh/gOkDcL4YX1kbAs62LyGSQl4nFiclvAJTCy/Rea6nF93Y24f+9okvgu4DViH0CSA==
-X-Received: by 2002:aa7:9598:: with SMTP id z24mr5086537pfj.223.1599157743367;
-        Thu, 03 Sep 2020 11:29:03 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q193sm3954389pfq.127.2020.09.03.11.29.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 03 Sep 2020 11:29:02 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, drc@linux.vnet.ibm.com,
-        baptiste@arista.com
-Subject: [PATCH net] tg3: Fix soft lockup when tg3_reset_task() fails.
-Date:   Thu,  3 Sep 2020 14:28:54 -0400
-Message-Id: <1599157734-16354-1-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nWryz7cGGb7smK7ck6NRR7lmXazI3vI4tRYw7MpNE7I=;
+        b=akuZ6nxiKiFj+vmtzLoXUvUbpVrv31iIgt9TKsDpdIbmZbCMIf1pKkaAFzhdBY3JHs
+         SAu/YgkIe6vuTb++j/S/cUPTE30wQmX6eucgB4gnv1m9lAdbEYxaNa0aEAR7SfzvoPAP
+         EqBEMcFarpr+uD9Y432eknXqBK9ZClWPHsT2pr1sLbmtIKrJfM1S4nuSxWBYeR2pAKGc
+         vOeEEVq9LfV0k9QuOadFsk1/+UnXeXY//2jBoo9V+mtwMYydv4b5ahzrv/q94T8gRq1K
+         +MGO5FyX1ti6rbiT3X0NGJsVgY//M27IAbO7qWdW9cCrRGrXwsimDpgRxsyHMf9jP3pc
+         7vwQ==
+X-Gm-Message-State: AOAM531dHL1DATZys+B6xZCVLBtZyuz3e0V41T6M9j8Jrp1+nCgDdd1a
+        9cVFUJ9isLY2jlQfnhNR1a4rjWGXPPDgl0jEamU=
+X-Google-Smtp-Source: ABdhPJzVM75wh06e8DGWvnQkqVJVD+7FKGtI/z06+zY+k49x0SU7qeHDl937ds5X2ENJGxl1zXe6tAF+e5RCOxxtBqc=
+X-Received: by 2002:a25:824a:: with SMTP id d10mr4891758ybn.260.1599159057296;
+ Thu, 03 Sep 2020 11:50:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200903180121.662887-1-haoluo@google.com>
+In-Reply-To: <20200903180121.662887-1-haoluo@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 3 Sep 2020 11:50:46 -0700
+Message-ID: <CAEf4BzYtr6Tki8viGt0KBAwH5FF0don+j3Td86m0Kg95kUEAhw@mail.gmail.com>
+Subject: Re: [PATCH] selftests/bpf: Fix check in global_data_init.
+To:     Hao Luo <haoluo@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        KP Singh <kpsingh@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If tg3_reset_task() fails, the device state is left in an inconsistent
-state with IFF_RUNNING still set but NAPI state not enabled.  A
-subsequent operation, such as ifdown or AER error can cause it to
-soft lock up when it tries to disable NAPI state.
+On Thu, Sep 3, 2020 at 11:02 AM Hao Luo <haoluo@google.com> wrote:
+>
+> The returned value of bpf_object__open_file() should be checked with
+> IS_ERR() rather than NULL. This fix makes test_progs not crash when
+> test_global_data.o is not present.
+>
+> Signed-off-by: Hao Luo <haoluo@google.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/global_data_init.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/global_data_init.c b/tools/testing/selftests/bpf/prog_tests/global_data_init.c
+> index 3bdaa5a40744..1ece86d5c519 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/global_data_init.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/global_data_init.c
+> @@ -12,7 +12,7 @@ void test_global_data_init(void)
+>         size_t sz;
+>
+>         obj = bpf_object__open_file(file, NULL);
+> -       if (CHECK_FAIL(!obj))
+> +       if (CHECK_FAIL(IS_ERR(obj)))
 
-Fix it by bringing down the device to !IFF_RUNNING state when
-tg3_reset_task() fails.  tg3_reset_task() running from workqueue
-will now call tg3_close() when the reset fails.  We need to
-modify tg3_reset_task_cancel() slightly to avoid tg3_close()
-calling cancel_work_sync() to cancel tg3_reset_task().  Otherwise
-cancel_work_sync() will wait forever for tg3_reset_task() to
-finish.
+Can you please use libbpf_get_error(obj) instead to set a good example
+or not relying on kernel internal macros?
 
-Reported-by: David Christensen <drc@linux.vnet.ibm.com>
-Reported-by: Baptiste Covolato <baptiste@arista.com>
-Fixes: db2199737990 ("tg3: Schedule at most one tg3_reset_task run")
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/tg3.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index ebff1fc..4515804 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -7221,8 +7221,8 @@ static inline void tg3_reset_task_schedule(struct tg3 *tp)
- 
- static inline void tg3_reset_task_cancel(struct tg3 *tp)
- {
--	cancel_work_sync(&tp->reset_task);
--	tg3_flag_clear(tp, RESET_TASK_PENDING);
-+	if (test_and_clear_bit(TG3_FLAG_RESET_TASK_PENDING, tp->tg3_flags))
-+		cancel_work_sync(&tp->reset_task);
- 	tg3_flag_clear(tp, TX_RECOVERY_PENDING);
- }
- 
-@@ -11209,18 +11209,27 @@ static void tg3_reset_task(struct work_struct *work)
- 
- 	tg3_halt(tp, RESET_KIND_SHUTDOWN, 0);
- 	err = tg3_init_hw(tp, true);
--	if (err)
-+	if (err) {
-+		tg3_full_unlock(tp);
-+		tp->irq_sync = 0;
-+		tg3_napi_enable(tp);
-+		/* Clear this flag so that tg3_reset_task_cancel() will not
-+		 * call cancel_work_sync() and wait forever.
-+		 */
-+		tg3_flag_clear(tp, RESET_TASK_PENDING);
-+		dev_close(tp->dev);
- 		goto out;
-+	}
- 
- 	tg3_netif_start(tp);
- 
--out:
- 	tg3_full_unlock(tp);
- 
- 	if (!err)
- 		tg3_phy_start(tp);
- 
- 	tg3_flag_clear(tp, RESET_TASK_PENDING);
-+out:
- 	rtnl_unlock();
- }
- 
--- 
-1.8.3.1
-
+>                 return;
+>
+>         map = bpf_object__find_map_by_name(obj, "test_glo.rodata");
+> --
+> 2.28.0.402.g5ffc5be6b7-goog
+>
