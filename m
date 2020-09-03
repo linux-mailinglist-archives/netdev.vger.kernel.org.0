@@ -2,80 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE92025CCD8
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 23:53:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11BC725CCE2
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 23:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729315AbgICVxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 17:53:35 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41600 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726679AbgICVxf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Sep 2020 17:53:35 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kDxAh-00D6wK-ED; Thu, 03 Sep 2020 23:53:31 +0200
-Date:   Thu, 3 Sep 2020 23:53:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Richard Leitner <richard.leitner@skidata.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH] net: fec: Fix PHY init after phy_reset_after_clk_enable()
-Message-ID: <20200903215331.GG3112546@lunn.ch>
-References: <20200903202712.143878-1-marex@denx.de>
- <20200903210011.GD3112546@lunn.ch>
- <b6397b39-c897-6e0a-6bf7-b6b24908de1a@denx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b6397b39-c897-6e0a-6bf7-b6b24908de1a@denx.de>
+        id S1729371AbgICVz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 17:55:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727804AbgICVzu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 17:55:50 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDE3C061244;
+        Thu,  3 Sep 2020 14:55:49 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 405C31278A41E;
+        Thu,  3 Sep 2020 14:39:02 -0700 (PDT)
+Date:   Thu, 03 Sep 2020 14:55:48 -0700 (PDT)
+Message-Id: <20200903.145548.158854976353984242.davem@davemloft.net>
+To:     geert+renesas@glider.be
+Cc:     ayush.sawal@chelsio.com, vinay.yadav@chelsio.com,
+        rohitm@chelsio.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] chelsio/chtls: CHELSIO_INLINE_CRYPTO should depend on
+ CHELSIO_T4
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200901145841.14893-1-geert+renesas@glider.be>
+References: <20200901145841.14893-1-geert+renesas@glider.be>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 03 Sep 2020 14:39:02 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 03, 2020 at 11:36:39PM +0200, Marek Vasut wrote:
-> On 9/3/20 11:00 PM, Andrew Lunn wrote:
-> > On Thu, Sep 03, 2020 at 10:27:12PM +0200, Marek Vasut wrote:
-> >> The phy_reset_after_clk_enable() does a PHY reset, which means the PHY
-> >> loses its register settings. The fec_enet_mii_probe() starts the PHY
-> >> and does the necessary calls to configure the PHY via PHY framework,
-> >> and loads the correct register settings into the PHY. Therefore,
-> >> fec_enet_mii_probe() should be called only after the PHY has been
-> >> reset, not before as it is now.
-> > 
-> > I think this patch is related to what Florian is currently doing with
-> > PHY clocks.
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Date: Tue,  1 Sep 2020 16:58:41 +0200
+
+> While CHELSIO_INLINE_CRYPTO is a guard symbol, and just enabling it does
+> not cause any additional code to be compiled in, all configuration
+> options protected by it depend on CONFIG_CHELSIO_T4.  Hence it doesn't
+> make much sense to bother the user with the guard symbol question when
+> CONFIG_CHELSIO_T4 is disabled.
 > 
-> Which is what ? Details please.
-
-Have you used b4 before?
-
-b4 am 20200903043947.3272453-1-f.fainelli@gmail.com
-
-> > I think a better fix for the original problem is for the SMSC PHY
-> > driver to control the clock itself. If it clk_prepare_enables() the
-> > clock, it knows it will not be shut off again by the FEC run time
-> > power management.
+> Fix this by moving the dependency from the individual config options to
+> the guard symbol.
 > 
-> The FEC MAC is responsible for generating the clock, the PHY clock are
-> not part of the clock framework as far as I can tell.
+> Fixes: 44fd1c1fd8219551 ("chelsio/chtls: separate chelsio tls driver from crypto driver")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-I'm not sure this is true. At least:
+Applied to net-next, thank you.
 
-https://elixir.bootlin.com/linux/latest/source/arch/arm/boot/dts/imx6ul-kontron-n6x1x-s.dtsi#L123
+Please clearly state the target tree in your future submissions,
+f.e. "Subject: [PATCH net-next] ..."
 
-and there are a few more examples:
-
-imx6ul-14x14-evk.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-imx6ul-kontron-n6x1x-s.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-imx6ul-kontron-n6x1x-som-common.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-imx6ull-myir-mys-6ulx.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-imx6ul-phytec-phycore-som.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-
-Maybe it is just IMX6?
-
-      Andrew
+Thanks again.
