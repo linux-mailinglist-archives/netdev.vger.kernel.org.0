@@ -2,92 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 269B825CC61
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 23:35:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0960D25CC67
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 23:36:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728382AbgICVfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 17:35:50 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:34466 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728037AbgICVfr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 17:35:47 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 330D860089;
-        Thu,  3 Sep 2020 21:35:47 +0000 (UTC)
-Received: from us4-mdac16-11.ut7.mdlocal (unknown [10.7.65.208])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 304AA80094;
-        Thu,  3 Sep 2020 21:35:47 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.176])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C083428004D;
-        Thu,  3 Sep 2020 21:35:46 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1729376AbgICVgz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 17:36:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45576 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726397AbgICVgy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 17:36:54 -0400
+Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A57C061244
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 14:36:54 -0700 (PDT)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4BjDf804V7z1rrjv;
+        Thu,  3 Sep 2020 23:36:41 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4BjDf108cyz1qspL;
+        Thu,  3 Sep 2020 23:36:41 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id DAVvDrl0xbGM; Thu,  3 Sep 2020 23:36:39 +0200 (CEST)
+X-Auth-Info: yKojWHgSQ3GXkOIv6BJpJfc2ykt2+30qMU41Hq3fk0Y=
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7B45C68008A;
-        Thu,  3 Sep 2020 21:35:46 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Sep 2020
- 22:35:42 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH v2 net-next 6/6] sfc: remove efx_tx_queue_partner
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <02b2bb5a-f360-68cb-3c13-b72ced1ecd7b@solarflare.com>
-Message-ID: <863040a8-002b-4afc-6db2-638eed7f292c@solarflare.com>
-Date:   Thu, 3 Sep 2020 22:35:37 +0100
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Thu,  3 Sep 2020 23:36:39 +0200 (CEST)
+Subject: Re: [PATCH] net: fec: Fix PHY init after phy_reset_after_clk_enable()
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Richard Leitner <richard.leitner@skidata.com>,
+        Shawn Guo <shawnguo@kernel.org>
+References: <20200903202712.143878-1-marex@denx.de>
+ <20200903210011.GD3112546@lunn.ch>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <b6397b39-c897-6e0a-6bf7-b6b24908de1a@denx.de>
+Date:   Thu, 3 Sep 2020 23:36:39 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <02b2bb5a-f360-68cb-3c13-b72ced1ecd7b@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
+In-Reply-To: <20200903210011.GD3112546@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25642.007
-X-TM-AS-Result: No-1.764400-8.000000-10
-X-TMASE-MatchedRID: QifGWEak2+NkukQunGNAEaiUivh0j2Pv6VTG9cZxEjJwGpdgNQ0JrEAc
-        6DyoS2rIj6kCfX0Edc7U1g4lO1dF7RXQZ3CP5OysMiMrbc70Pfcr9gVlOIN/6p+4ziUPq4LxwDS
-        YCfpWO53i8zVgXoAltkWL4rBlm20vjaPj0W1qn0SujVRFkkVsm06jPCV3lQD12/8kgG7wqjZK/e
-        jkZlThALKLwL/neQSOexBjPccZ1CTrTIWQzj4gcuWy4yH95JvdaY0lwVEsJaM7eLqX+4w4O5BEc
-        rkRxYJ4UjKnO1KVKKwSkbDwum07zqq0MV8nSMBvkLxsYTGf9c0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.764400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25642.007
-X-MDID: 1599168947-mRehQqujrnaX
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All users of this function are now gone.
+On 9/3/20 11:00 PM, Andrew Lunn wrote:
+> On Thu, Sep 03, 2020 at 10:27:12PM +0200, Marek Vasut wrote:
+>> The phy_reset_after_clk_enable() does a PHY reset, which means the PHY
+>> loses its register settings. The fec_enet_mii_probe() starts the PHY
+>> and does the necessary calls to configure the PHY via PHY framework,
+>> and loads the correct register settings into the PHY. Therefore,
+>> fec_enet_mii_probe() should be called only after the PHY has been
+>> reset, not before as it is now.
+> 
+> I think this patch is related to what Florian is currently doing with
+> PHY clocks.
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/nic_common.h | 10 ----------
- 1 file changed, 10 deletions(-)
+Which is what ? Details please.
 
-diff --git a/drivers/net/ethernet/sfc/nic_common.h b/drivers/net/ethernet/sfc/nic_common.h
-index 3f88c6444fa1..82271f0b8627 100644
---- a/drivers/net/ethernet/sfc/nic_common.h
-+++ b/drivers/net/ethernet/sfc/nic_common.h
-@@ -75,16 +75,6 @@ static inline bool efx_nic_tx_is_empty(struct efx_tx_queue *tx_queue, unsigned i
- 	return ((empty_read_count ^ write_count) & ~EFX_EMPTY_COUNT_VALID) == 0;
- }
- 
--/* Get partner of a TX queue, seen as part of the same net core queue */
--/* XXX is this a thing on EF100? */
--static inline struct efx_tx_queue *efx_tx_queue_partner(struct efx_tx_queue *tx_queue)
--{
--	if (tx_queue->label & EFX_TXQ_TYPE_OFFLOAD)
--		return tx_queue - EFX_TXQ_TYPE_OFFLOAD;
--	else
--		return tx_queue + EFX_TXQ_TYPE_OFFLOAD;
--}
--
- int efx_enqueue_skb_tso(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
- 			bool *data_mapped);
- 
+> I think a better fix for the original problem is for the SMSC PHY
+> driver to control the clock itself. If it clk_prepare_enables() the
+> clock, it knows it will not be shut off again by the FEC run time
+> power management.
+
+The FEC MAC is responsible for generating the clock, the PHY clock are
+not part of the clock framework as far as I can tell.
+
+> All this phy_reset_after_clk_enable() can then go away.
+
+I'm not sure about that. Also, this is a much simpler fix which can be
+backported easily.
