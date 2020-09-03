@@ -2,80 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8839725C6D5
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 18:31:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25B1325C6DC
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 18:32:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728583AbgICQbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 12:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54968 "EHLO
+        id S1728755AbgICQca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 12:32:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726543AbgICQb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 12:31:28 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F161C061244
-        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 09:31:28 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id u126so3494315iod.12
-        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 09:31:28 -0700 (PDT)
+        with ESMTP id S1726327AbgICQc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 12:32:26 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404A2C061244;
+        Thu,  3 Sep 2020 09:32:25 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id np15so3951907pjb.0;
+        Thu, 03 Sep 2020 09:32:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g0U5uqyM3pJk73lNvjVxrExB7i3CCpu9+kRCPVxj8v4=;
-        b=TnSflDCXCPsrs++JVO1DaZD0LPBEinHiK99neyhWlzRX6ntfWpEj0umjVas+iFe7PV
-         Fp5EC4zfvIgkNCyt1v0u3NZatnT3uKZc8+IY/NI5GO4L3XOtAAoX+NFXbnL+0BaUabSg
-         EXyeQ1369wtR/prMF457u5YRO7GqizoPI6fb6u4hhr8siBncEFAFQTnv2OrWQ+OeXV73
-         K/AfrO1R8qT089gBZgKXzC4p0qKPCuIgDnzCSo2RK+eVlp+rwXCUpx9KbklrVf8EZdRq
-         26pQ4+7dnfE/Mk4eQ2zT7xLoT1vOkxXp5xxVrPOTBG+mNf6kbXmEGX86Er1z4Ek0NtQp
-         R+TA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OrbbM9DgLdnxe1+euwEacdEqAbrZFxcjaO4/M3jujnM=;
+        b=IUjymj0/UHYW6IMRtHbsrn6e3DcUG7cIiYyWIzYS2D0E2oBsojdlwI20ybI1X51hqG
+         QxS7mZObFOLhRLD2duuRVx/vKmC4NUUoGo1A+SUu6lWDuY4r6B0iLxo2cyLyleNzE+YL
+         hRqnMu4Kgl1aUkrPtxUcjDx23xnhrHkEHkNWwTiAc59Vi84PhpaVJgFa0AlSHInBRB5D
+         rdWNALNNVByl9yGxQZGgU7/UPzT8fKVGsreuldQI1Dv13nmOFY7c6+SQVIpJUwDRfcCH
+         b9H3U7xlZgfvadKj1RMinLmFStXwStM5iZRobhzI0bxo9Utm8rkKVFoTY79C5hQHqhqn
+         FMkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g0U5uqyM3pJk73lNvjVxrExB7i3CCpu9+kRCPVxj8v4=;
-        b=hGfFDeDTY+QV6N6nfNQwEd0Kpxqh2/cxvcgwKzcvmbEPHGL9RkjHh1CA2uUunOM6lN
-         2NxOhyYd8PFMJwv8BnOMZA4gMUsRKE++lXFpk3ATw+SlD8Q5jYcnBcW01oaCAukjGLVm
-         Po1e3PwjNL9gFo0fOKy4qfgNMNYJpOt6qqEsR1nIQ5V1SP5q5Xv/b+XGtJqFDoC3MZx6
-         fgcrcHlVMp0NcSMJcUHj5uNJhOokWzYlyJDpPWeYJixT11u61eYTefhXCIJH+UJOWDJa
-         TU9imIScZlD+XGgBxv3aFI0Dho/Jsh4B6jVcU8uKIl0P9oMn8UoWTvLjwfWkHqvbPJjS
-         973A==
-X-Gm-Message-State: AOAM531fcu+g06B81bqElWg2CSoZP+0bI7/7bU//mioZkrKckhLl9GYM
-        0/4mun967gT/1Xq9cMZKacHFhFIh7CmAwOwaYu/GtQ==
-X-Google-Smtp-Source: ABdhPJyPQFg6VtNrk4mxFB9Hl8M1ceG272vSBYpJyGK6MO45XnND81qQDYMq7zk3JniNVG1wHAxfcCAMesk6LZQk7ao=
-X-Received: by 2002:a02:cd2e:: with SMTP id h14mr4237427jaq.6.1599150687075;
- Thu, 03 Sep 2020 09:31:27 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OrbbM9DgLdnxe1+euwEacdEqAbrZFxcjaO4/M3jujnM=;
+        b=jPzZQ5Qz9JwQzr5VwDYsjIqSizFpZoiYWcRC+Ou5guZG6QAh3Apwm3EaTftB+uhLkf
+         OSJsMbi4E4mvjIKm1MdtUKWPgWqE6OCzZTK13zwLRpGZnZ0/H3+gdoy1oJ9veOBacD0q
+         AUp2eK3S/0yW8gG1HPUOfCUrLV853/BHEr6bUv6VBKHjYTMfNKJQxCRczx/U48avgb5U
+         XvENBU0jJQv7eo45TlnXSYFEgOU6pmNIAyX8pzPPSOE5IewlYipQyJls3liC3KZkKVTL
+         G0xKUGa5yS2ZBe3ygmHW1muYJm0PigXhBK+p3b5n/ndDAGAjMppwp4tFLZDz+XNSvzXE
+         9nqA==
+X-Gm-Message-State: AOAM532DtO7vz2Y9zsrd/z2YBbMGdBxaOujaGNsXol8O8Bi+1Qo/aeV/
+        t6p0ZzN0IICkMwDXvFLP3l5hyVc3EVw=
+X-Google-Smtp-Source: ABdhPJycN1aKoSoawdEpEEDqOzxI/pTlR7295SDkrS1slo2Cre6TmhVDQSycptAG69QgHHiiMGz0NA==
+X-Received: by 2002:a17:90b:3717:: with SMTP id mg23mr4090514pjb.42.1599150744730;
+        Thu, 03 Sep 2020 09:32:24 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id d13sm3724864pfq.118.2020.09.03.09.32.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Sep 2020 09:32:24 -0700 (PDT)
+Subject: Re: [PATCH v4 5/7] net: dsa: hellcreek: Add PTP status LEDs
+To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>
+References: <20200901125014.17801-1-kurt@linutronix.de>
+ <20200901125014.17801-6-kurt@linutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <c8e43260-1535-6171-b9e6-f2593178a3e2@gmail.com>
+Date:   Thu, 3 Sep 2020 09:32:21 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.1.1
 MIME-Version: 1.0
-References: <20200901215149.2685117-5-awogbemila@google.com>
- <20200901173410.5ce6a087@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAL9ddJciz2MD8CYqdbFLhYCKFk=ouHzzEndQwmcfQ-UqNNgJxQ@mail.gmail.com> <20200902.160831.2194160080454145229.davem@davemloft.net>
-In-Reply-To: <20200902.160831.2194160080454145229.davem@davemloft.net>
-From:   David Awogbemila <awogbemila@google.com>
-Date:   Thu, 3 Sep 2020 09:31:16 -0700
-Message-ID: <CAL9ddJc9oCBijLtvGRmuMFNarKVcUwyPLhZD6HtLLubmXWFNmg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 4/9] gve: Add support for dma_mask register
-To:     David Miller <davem@davemloft.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Catherine Sullivan <csully@google.com>,
-        Yangchun Fu <yangchun@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200901125014.17801-6-kurt@linutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks, I'll adjust this.
 
-On Wed, Sep 2, 2020 at 4:08 PM David Miller <davem@davemloft.net> wrote:
->
-> From: David Awogbemila <awogbemila@google.com>
-> Date: Wed, 2 Sep 2020 11:42:37 -0700
->
-> > I don't think there is a specific 24-bit device in mind here, only
-> > that we have seen 32-bit addressing use cases where the guest ran out
-> > of SWIOTLB space and restricting to GFP_DMA32 helped.. so we thought
-> > it would be natural for the driver to handle the 24 bit case in case
-> > it ever came along.
->
-> You should add such support when the situation presents itself, rather
-> than prematurely like this.
->
-> Thank you.
+
+On 9/1/2020 5:50 AM, Kurt Kanzenbach wrote:
+> The switch has two controllable I/Os which are usually connected to LEDs. This
+> is useful to immediately visually see the PTP status.
+> 
+> These provide two signals:
+> 
+>   * is_gm
+> 
+>     This LED can be activated if the current device is the grand master in that
+>     PTP domain.
+> 
+>   * sync_good
+> 
+>     This LED can be activated if the current device is in sync with the network
+>     time.
+> 
+> Expose these via the LED framework to be controlled via user space
+> e.g. linuxptp.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+There appears to be quite some boilerplate code to deal with the default 
+trigger, default LED label that could presumably live in the LED 
+subsystem, nonetheless:
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
