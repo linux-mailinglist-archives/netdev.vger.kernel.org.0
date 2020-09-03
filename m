@@ -2,111 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8174625B8A7
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 04:20:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE25C25B8BC
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 04:23:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728013AbgICCPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 22:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbgICCPR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 22:15:17 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D902C061244;
-        Wed,  2 Sep 2020 19:15:17 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id x10so994799ybj.13;
-        Wed, 02 Sep 2020 19:15:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FkxEKsQG15r7PPqpQBxAtns7+5zX3DzBpFDEatgAqgw=;
-        b=sWGhvFRH7+T66bByIIL/DVxV1CPFI9PoHjQeahpPjD3SGOGo/IzIK18KexwSGXI8tc
-         UbWveS17/lgZZQSjcM2c3Jug0f9jc/+0DnyuS91XiAJNSLEIV+Mbnzw8vBOA1G6hV2IM
-         Ii9VCEeqrrPQf4H6y5txD9FQ3tGyPLTaarua7vY5USpiDl/4D8KVZkqGq2aS98Cuk5xt
-         LjuxhjapkYq0LFG+9n7ARmsrm7mXdBxedOONPWLFUQCGoEsawTsWPnm6OoIpUTZ4Iaxy
-         /sIqRWRLscekIS9uDLFphcSkAF0SNqgvy823JZ3FYjcOHmu2+fe71aoVrOSaCm9FmjQz
-         lLCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FkxEKsQG15r7PPqpQBxAtns7+5zX3DzBpFDEatgAqgw=;
-        b=dVa0oKQbXGzNKbBA9qETX6VgD7IEY29ceux983bEl9PVeSNNC3tKbYJ6U6k1aFtvH6
-         y1gYWSDG9NQsQ0b9l2sek8fJ2y7SXgw4PqG5Ys7oMgbrr4ZPx3gB2lffh274rk2prW8/
-         F5/rKQW0tnHSrSYVFNjvqNgFP/FsORz2Je8wPxIPWhM8bHk5KN5z//UY9vjthanSlu9L
-         jpkvW/4GT4tHq1DObgUzjpNpNS52hhW5qBl8LPp2xDSOsIBvmdA+GTzuDz2Hi0NpTyPo
-         6UduKCkAeNWz2KosCWC6/tS/doLzVU2KMauS3uPNOOyEhCkMj9WRsOeaGkd0yzK2J8Jv
-         N8dQ==
-X-Gm-Message-State: AOAM530SoeVEK5sosnaklnzC5CJIR/PW+VtU+sK5m4d5OVLK4XpEwNHL
-        l4TTQREftKECFsa25O0/ivCDH2PFgJPX8n/Tu/k=
-X-Google-Smtp-Source: ABdhPJzw5SncssbpjCgxLo3/YrgVLW101mlUyX7AH+Y926iGtxcsxIwYBTpM9VwiAuV6DYJYUnUyBFHFMmktxB7EQ6I=
-X-Received: by 2002:a25:ae43:: with SMTP id g3mr917464ybe.459.1599099316260;
- Wed, 02 Sep 2020 19:15:16 -0700 (PDT)
+        id S1727996AbgICCW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 22:22:57 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:52700 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726177AbgICCW4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Sep 2020 22:22:56 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 85459CA9E8ACE50B898F;
+        Thu,  3 Sep 2020 10:22:54 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 3 Sep 2020 10:22:45 +0800
+Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
+ <511bcb5c-b089-ab4e-4424-a83c6e718bfa@huawei.com>
+ <CAM_iQpW1c1TOKWLxm4uGvCUzK0mKKeDg1Y+3dGAC04pZXeCXcw@mail.gmail.com>
+ <f81b534a-5845-ae7d-b103-434232c0f5ff@huawei.com>
+ <CAM_iQpXmpMdxF2JDOROaf+Tjk-8dASiXz53K-Ph_q7jVMe0oVw@mail.gmail.com>
+ <cd773132-c98e-18e1-67fd-bbef6babbf0f@huawei.com>
+ <CAM_iQpWbZdh5-UGBi6PM19EBgV+Bq7vmifgJPdak6X=R9yztnw@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <c0543793-11fa-6ef1-f8ea-6a724ab2de8f@huawei.com>
+Date:   Thu, 3 Sep 2020 10:22:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-References: <20200828193603.335512-1-sdf@google.com> <20200828193603.335512-3-sdf@google.com>
-In-Reply-To: <20200828193603.335512-3-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 2 Sep 2020 19:15:05 -0700
-Message-ID: <CAEf4BzZ8PURFN+Omu0NMEV5s=3s1jmLTcrNDTkQHzQDPK0KAFw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/8] bpf: Add BPF_PROG_BIND_MAP syscall
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        YiFei Zhu <zhuyifei@google.com>,
-        YiFei Zhu <zhuyifei1999@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAM_iQpWbZdh5-UGBi6PM19EBgV+Bq7vmifgJPdak6X=R9yztnw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 28, 2020 at 12:37 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> From: YiFei Zhu <zhuyifei@google.com>
->
-> This syscall binds a map to a program. -EEXIST if the map is
-> already bound to the program.
->
-> Cc: YiFei Zhu <zhuyifei1999@gmail.com>
-> Signed-off-by: YiFei Zhu <zhuyifei@google.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
->  include/uapi/linux/bpf.h       |  7 ++++
->  kernel/bpf/syscall.c           | 65 ++++++++++++++++++++++++++++++++++
->  tools/include/uapi/linux/bpf.h |  7 ++++
->  3 files changed, 79 insertions(+)
->
+On 2020/9/3 9:48, Cong Wang wrote:
+> On Wed, Sep 2, 2020 at 6:22 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>
+>> On 2020/9/3 8:35, Cong Wang wrote:
+>>> On Tue, Sep 1, 2020 at 11:35 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>
+>>>> On 2020/9/2 12:41, Cong Wang wrote:
+>>>>> On Tue, Sep 1, 2020 at 6:42 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>>>
+>>>>>> On 2020/9/2 2:24, Cong Wang wrote:
+>>>>>>> On Mon, Aug 31, 2020 at 5:59 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>>>>>
+>>>>>>>> Currently there is concurrent reset and enqueue operation for the
+>>>>>>>> same lockless qdisc when there is no lock to synchronize the
+>>>>>>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+>>>>>>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+>>>>>>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
+>>>>>>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+>>>>>>>> skb with a larger queue_mapping after the corresponding qdisc is
+>>>>>>>> reset, and call hns3_nic_net_xmit() with that skb later.
+>>>>>>>
+>>>>>>> Can you be more specific here? Which call path requests a smaller
+>>>>>>> tx queue num? If you mean netif_set_real_num_tx_queues(), clearly
+>>>>>>> we already have a synchronize_net() there.
+>>>>>>
+>>>>>> When the netdevice is in active state, the synchronize_net() seems to
+>>>>>> do the correct work, as below:
+>>>>>>
+>>>>>> CPU 0:                                       CPU1:
+>>>>>> __dev_queue_xmit()                       netif_set_real_num_tx_queues()
+>>>>>> rcu_read_lock_bh();
+>>>>>> netdev_core_pick_tx(dev, skb, sb_dev);
+>>>>>>         .
+>>>>>>         .                               dev->real_num_tx_queues = txq;
+>>>>>>         .                                       .
+>>>>>>         .                                       .
+>>>>>>         .                               synchronize_net();
+>>>>>>         .                                       .
+>>>>>> q->enqueue()                                    .
+>>>>>>         .                                       .
+>>>>>> rcu_read_unlock_bh()                            .
+>>>>>>                                         qdisc_reset_all_tx_gt
+>>>>>>
+>>>>>>
+>>>>>
+>>>>> Right.
+>>>>>
+>>>>>
+>>>>>> but dev->real_num_tx_queues is not RCU-protected, maybe that is a problem
+>>>>>> too.
+>>>>>>
+>>>>>> The problem we hit is as below:
+>>>>>> In hns3_set_channels(), hns3_reset_notify(h, HNAE3_DOWN_CLIENT) is called
+>>>>>> to deactive the netdevice when user requested a smaller queue num, and
+>>>>>> txq->qdisc is already changed to noop_qdisc when calling
+>>>>>> netif_set_real_num_tx_queues(), so the synchronize_net() in the function
+>>>>>> netif_set_real_num_tx_queues() does not help here.
+>>>>>
+>>>>> How could qdisc still be running after deactivating the device?
+>>>>
+>>>> qdisc could be running during the device deactivating process.
+>>>>
+>>>> The main process of changing channel number is as below:
+>>>>
+>>>> 1. dev_deactivate()
+>>>> 2. hns3 handware related setup
+>>>> 3. netif_set_real_num_tx_queues()
+>>>> 4. netif_tx_wake_all_queues()
+>>>> 5. dev_activate()
+>>>>
+>>>> During step 1, qdisc could be running while qdisc is resetting, so
+>>>> there could be skb left in the old qdisc(which will be restored back to
+>>>> txq->qdisc during dev_activate()), as below:
+>>>>
+>>>> CPU 0:                                       CPU1:
+>>>> __dev_queue_xmit():                      dev_deactivate_many():
+>>>> rcu_read_lock_bh();                      qdisc_deactivate(qdisc);
+>>>> q = rcu_dereference_bh(txq->qdisc);             .
+>>>> netdev_core_pick_tx(dev, skb, sb_dev);          .
+>>>>         .
+>>>>         .                               rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+>>>>         .                                       .
+>>>>         .                                       .
+>>>>         .                                       .
+>>>>         .                                       .
+>>>> q->enqueue()                                    .
+>>>
+>>>
+>>> Well, like I said, if the deactivated bit were tested before ->enqueue(),
+>>> there would be no packet queued after qdisc_deactivate().
+>>
+>> Only if the deactivated bit testing is also protected by qdisc->seqlock?
+>> otherwise there is still window between setting and testing the deactivated bit.
+> 
+> Can you be more specific here? Why testing or setting a bit is not atomic?
 
-[...]
+testing a bit or setting a bit separately is atomic.
+But testing a bit and setting a bit is not atomic, right?
 
-> +
-> +       mutex_lock(&prog->aux->used_maps_mutex);
-> +
-> +       used_maps_old = prog->aux->used_maps;
-> +
-> +       for (i = 0; i < prog->aux->used_map_cnt; i++)
-> +               if (used_maps_old[i] == map) {
-> +                       ret = -EEXIST;
-> +                       goto out_unlock;
+  cpu0:                   cpu1:
+                        testing A bit
+setting A bit                .
+       .                     .
+       .               qdisc enqueuing
+qdisc reset
 
-Do we need to return any error in this case? The intent of this
-command is to make sure the map is bound to the prog, right? If it's
-already bound, good, it's a success, just no extra steps were
-performed internally. What's the use for this EEXIST if it's always
-going to be ignored?
-
-> +               }
-> +
-> +       used_maps_new = kmalloc_array(prog->aux->used_map_cnt + 1,
-> +                                     sizeof(used_maps_new[0]),
-> +                                     GFP_KERNEL);
-> +       if (!used_maps_new) {
-> +               ret = -ENOMEM;
-> +               goto out_unlock;
-> +       }
-> +
-
-[...]
+> 
+> AFAIU, qdisc->seqlock is an optimization to replace
+> __QDISC_STATE_RUNNING, which has nothing to do with deactivate bit.
+> 
+> Thanks.
+> .
+> 
