@@ -2,140 +2,398 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6963025BAB9
+	by mail.lfdr.de (Postfix) with ESMTP id D702C25BABA
 	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 08:02:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726317AbgICGBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 02:01:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42584 "EHLO
+        id S1726855AbgICGBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 02:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725919AbgICGBQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 02:01:16 -0400
-Received: from ipv6.s19.hekko.net.pl (ipv6.s19.hekko.net.pl [IPv6:2a02:1778:113::19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68D5C061244
-        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 23:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=arf.net.pl;
-         s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rp4ty/SErBOyZ1HZAUPWFuRqlNEUexFqPy4aYRBOPiI=; b=bWJh0/UkolNhardo3R7qOqOZ05
-        4dzV13GcuedwmFDwPcBoO4jC/dNgE+lT5y5IZMv1bxCGvLg4Uch7fdl5/6zEe1ScFNpWkOAbukj8e
-        NjunvZcqfdKGV9gs3KtkyGN0mwpr+w6KDzOSAXosVkolvgkVzopjNB1H9DonZb25ZsxzR7UWI2NPo
-        poRel4kC1wou8GbOLlg854qTA9gmK9Z5x9LeJaNtNnOyEjF8JzBsrLaZJeeSLemfUlcFt+PeVVhyO
-        3f8qDBWoakcsphkx8hHBmDZXyVwDUO0YF9z7tTOMjDWAbybALxLyqI9rts27/wZ7eH8Zs1vXeH86R
-        UdYa1naA==;
-Received: from 188.147.96.44.nat.umts.dynamic.t-mobile.pl ([188.147.96.44] helo=[192.168.8.103])
-        by s19.hekko.net.pl with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92.3)
-        (envelope-from <adam.rudzinski@arf.net.pl>)
-        id 1kDiJ7-001Wcs-3L; Thu, 03 Sep 2020 08:01:13 +0200
-Subject: Re: [RFC net-next 2/2] net: phy: bcm7xxx: request and manage GPHY
- clock
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, m.felsch@pengutronix.de,
-        hkallweit1@gmail.com, richard.leitner@skidata.com,
-        zhengdejin5@gmail.com, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, kuba@kernel.org, robh+dt@kernel.org
-References: <20200902213347.3177881-1-f.fainelli@gmail.com>
- <20200902213347.3177881-3-f.fainelli@gmail.com>
- <20200902222030.GJ3050651@lunn.ch>
- <7696bf30-9d7b-ecc9-041d-7d899dd07915@gmail.com>
-From:   =?UTF-8?Q?Adam_Rudzi=c5=84ski?= <adam.rudzinski@arf.net.pl>
-Message-ID: <77088212-ac93-9454-d3a0-c2eb61b5c3e0@arf.net.pl>
-Date:   Thu, 3 Sep 2020 08:00:45 +0200
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1725919AbgICGBb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 02:01:31 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F32E0C061244
+        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 23:01:30 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id l9so1576926wme.3
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 23:01:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NwIKKufKl/j82Av2HFGvwRvosVgotBJioK/8dBHv/ug=;
+        b=l5ZtIfkJVRQJJStiXkwOsvqARbV0tXTP+Y1R7ZQFWhnJ5AHH7bFYFQAgKyV69rNidO
+         JcKVvIJv/GS1EPmHysIVQmNS7ByujAXRqvZhoVwrZyBuUX/nFRh0LXJ1e+CmsFJpRTe2
+         EECwDZ17VyxCSuoID+IfZsV3wELpemizxBOpUGJss9jfMZquZezQP2FFOcGrMau16rmJ
+         adhTeM5bsuLeVNjF26T8PRJkn3Op2c7Jvf8K43sy9FyUjs+OmW3xi7jiL6PEJRISubRY
+         0GrtN6FOQ7VA7839Gcf76P5H7TClkoEAo5EQcu5aay4Y4tRYqPSc5owAVJAHOS4Wbq/E
+         iT2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NwIKKufKl/j82Av2HFGvwRvosVgotBJioK/8dBHv/ug=;
+        b=ldL+rAJdnJG/JN9Xy98ziFMZRoSqNPQEN5TwooSibpWK+WEopJORKOotTuGG1Hab1+
+         1FvjS6nSytpRwAh96GhpfL9o6SvqUCx8J+yrBmtd/UUs+yiRCZ1wbP26Tc/XDUYtDSPR
+         zHEUj2A3H6hsswF+N+Q2ctLrVYaPEmUjVbWMToo8oXZwReJQCcJYIYUnanQATR+2AOzk
+         W0Ss17KNpx3KGhwA+ZwdxRyh5l9UytjFUZOVyAvbdQ6tW2Y1B+bzSWJ92AjE1/xGygnR
+         vGYaXaouu2wYfcMmbkMuAKuK0zzI2wyWVxNuEn3BOv4FuNcjocKrEBgwisYAb9fTviR9
+         R/OA==
+X-Gm-Message-State: AOAM5315xIx5q2rESxsVyNkmv1pQZ0Sy09vSTejesAeDqyMpFOn6wxgN
+        dUJwf6/em4afEOAVr4lopD5MPVD2n9VGH1EU
+X-Google-Smtp-Source: ABdhPJzye00ayq98AN2fEbnRpbD16ddy6f0K6HiaaP8EsXSlBPvCZFpFsxGip94fzqCLRyGcOS8Z4w==
+X-Received: by 2002:a1c:ed15:: with SMTP id l21mr594857wmh.56.1599112889569;
+        Wed, 02 Sep 2020 23:01:29 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id q4sm2645229wru.65.2020.09.02.23.01.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2020 23:01:29 -0700 (PDT)
+Date:   Thu, 3 Sep 2020 08:01:28 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH net-next 2/2] ionic: add devlink firmware update
+Message-ID: <20200903060128.GC2997@nanopsycho.orion>
+References: <20200902195717.56830-1-snelson@pensando.io>
+ <20200902195717.56830-3-snelson@pensando.io>
 MIME-Version: 1.0
-In-Reply-To: <7696bf30-9d7b-ecc9-041d-7d899dd07915@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: pl
-X-Authenticated-Id: ar@arf.net.pl
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200902195717.56830-3-snelson@pensando.io>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-W dniu 2020-09-03 o 04:13, Florian Fainelli pisze:
+Wed, Sep 02, 2020 at 09:57:17PM CEST, snelson@pensando.io wrote:
+>Add support for firmware update through the devlink interface.
+>This update copies the firmware object into the device, asks
+>the current firmware to install it, then asks the firmware to
+>set the device to use the new firmware on the next boot-up.
 >
+>The install and activate steps are launched as asynchronous
+>requests, which are then followed up with status requests
+>commands.  These status request commands will be answered with
+>an EAGAIN return value and will try again until the request
+>has completed or reached the timeout specified.
 >
-> On 9/2/2020 3:20 PM, Andrew Lunn wrote:
->>> +    priv->clk = devm_clk_get_optional(&phydev->mdio.dev, "sw_gphy");
->>> +    if (IS_ERR(priv->clk))
->>> +        return PTR_ERR(priv->clk);
->>> +
->>> +    /* To get there, the mdiobus registration logic already enabled 
->>> our
->>> +     * clock otherwise we would not have probed this device since 
->>> we would
->>> +     * not be able to read its ID. To avoid artificially bumping up 
->>> the
->>> +     * clock reference count, only do the clock enable from a 
->>> phy_remove ->
->>> +     * phy_probe path (driver unbind, then rebind).
->>> +     */
->>> +    if (!__clk_is_enabled(priv->clk))
->>> +        ret = clk_prepare_enable(priv->clk);
->>
->> This i don't get. The clock subsystem does reference counting. So what
->> i would expect to happen is that during scanning of the bus, phylib
->> enables the clock and keeps it enabled until after probe. To keep
->> things balanced, phylib would disable the clock after probe.
+>Signed-off-by: Shannon Nelson <snelson@pensando.io>
+>---
+> drivers/net/ethernet/pensando/ionic/Makefile  |   2 +-
+> .../ethernet/pensando/ionic/ionic_devlink.c   |  14 ++
+> .../ethernet/pensando/ionic/ionic_devlink.h   |   3 +
+> .../net/ethernet/pensando/ionic/ionic_fw.c    | 195 ++++++++++++++++++
+> .../net/ethernet/pensando/ionic/ionic_main.c  |  13 +-
+> 5 files changed, 222 insertions(+), 5 deletions(-)
+> create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_fw.c
 >
-> That would be fine, although it assumes that the individual PHY 
-> drivers have obtained the clocks and called clk_prepare_enable(), 
-> which is a fair assumption I suppose.
+>diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
+>index 29f304d75261..8d3c2d3cb10d 100644
+>--- a/drivers/net/ethernet/pensando/ionic/Makefile
+>+++ b/drivers/net/ethernet/pensando/ionic/Makefile
+>@@ -5,4 +5,4 @@ obj-$(CONFIG_IONIC) := ionic.o
+> 
+> ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
+> 	   ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
+>-	   ionic_txrx.o ionic_stats.o
+>+	   ionic_txrx.o ionic_stats.o ionic_fw.o
+>diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+>index 8d9fb2e19cca..5348f05ebc32 100644
+>--- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+>+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
+>@@ -9,6 +9,19 @@
+> #include "ionic_lif.h"
+> #include "ionic_devlink.h"
+> 
+>+static int ionic_dl_flash_update(struct devlink *dl,
+>+				 const char *fwname,
+>+				 const char *component,
+>+				 struct netlink_ext_ack *extack)
+>+{
+>+	struct ionic *ionic = devlink_priv(dl);
+>+
+>+	if (component)
+>+		return -EOPNOTSUPP;
+>+
+>+	return ionic_firmware_update(ionic->lif, fwname, extack);
+>+}
+>+
+> static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+> 			     struct netlink_ext_ack *extack)
+> {
+>@@ -48,6 +61,7 @@ static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+> 
+> static const struct devlink_ops ionic_dl_ops = {
+> 	.info_get	= ionic_dl_info_get,
+>+	.flash_update	= ionic_dl_flash_update,
+> };
+> 
+> struct ionic *ionic_devlink_alloc(struct device *dev)
+>diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
+>index 0690172fc57a..5c01a9e306d8 100644
+>--- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
+>+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
+>@@ -6,6 +6,9 @@
+> 
+> #include <net/devlink.h>
+> 
+>+int ionic_firmware_update(struct ionic_lif *lif, const char *fw_name,
+>+			  struct netlink_ext_ack *extack);
+>+
+> struct ionic *ionic_devlink_alloc(struct device *dev);
+> void ionic_devlink_free(struct ionic *ionic);
+> int ionic_devlink_register(struct ionic *ionic);
+>diff --git a/drivers/net/ethernet/pensando/ionic/ionic_fw.c b/drivers/net/ethernet/pensando/ionic/ionic_fw.c
+>new file mode 100644
+>index 000000000000..4dc05e8bdff6
+>--- /dev/null
+>+++ b/drivers/net/ethernet/pensando/ionic/ionic_fw.c
+>@@ -0,0 +1,195 @@
+>+// SPDX-License-Identifier: GPL-2.0
+>+/* Copyright(c) 2020 Pensando Systems, Inc */
+>+
+>+#include <linux/kernel.h>
+>+#include <linux/types.h>
+>+#include <linux/errno.h>
+>+#include <linux/firmware.h>
+>+
+>+#include "ionic.h"
+>+#include "ionic_dev.h"
+>+#include "ionic_lif.h"
+>+#include "ionic_devlink.h"
+>+
+>+/* The worst case wait for the install activity is about 25 minutes when
+>+ * installing a new CPLD, which is very seldom.  Normal is about 30-35
+>+ * seconds.  Since the driver can't tell if a CPLD update will happen we
+>+ * set the timeout for the ugly case.
+>+ */
+>+#define IONIC_FW_INSTALL_TIMEOUT	(25 * 60)
+>+#define IONIC_FW_ACTIVATE_TIMEOUT	30
+>+
+>+/* Number of periodic log updates during fw file download */
+>+#define IONIC_FW_INTERVAL_FRACTION	32
+>+
+>+static void ionic_dev_cmd_firmware_download(struct ionic_dev *idev, u64 addr,
+>+					    u32 offset, u32 length)
+>+{
+>+	union ionic_dev_cmd cmd = {
+>+		.fw_download.opcode = IONIC_CMD_FW_DOWNLOAD,
+>+		.fw_download.offset = offset,
+>+		.fw_download.addr = addr,
+>+		.fw_download.length = length
+>+	};
+>+
+>+	ionic_dev_cmd_go(idev, &cmd);
+>+}
+>+
+>+static void ionic_dev_cmd_firmware_install(struct ionic_dev *idev)
+>+{
+>+	union ionic_dev_cmd cmd = {
+>+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
+>+		.fw_control.oper = IONIC_FW_INSTALL_ASYNC
+>+	};
+>+
+>+	ionic_dev_cmd_go(idev, &cmd);
+>+}
+>+
+>+static void ionic_dev_cmd_firmware_install_status(struct ionic_dev *idev)
+>+{
+>+	union ionic_dev_cmd cmd = {
+>+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
+>+		.fw_control.oper = IONIC_FW_INSTALL_STATUS
+>+	};
+>+
+>+	ionic_dev_cmd_go(idev, &cmd);
+>+}
+>+
+>+static void ionic_dev_cmd_firmware_activate(struct ionic_dev *idev, u8 slot)
+>+{
+>+	union ionic_dev_cmd cmd = {
+>+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
+>+		.fw_control.oper = IONIC_FW_ACTIVATE_ASYNC,
+>+		.fw_control.slot = slot
+>+	};
+>+
+>+	ionic_dev_cmd_go(idev, &cmd);
+>+}
+>+
+>+static void ionic_dev_cmd_firmware_activate_status(struct ionic_dev *idev)
+>+{
+>+	union ionic_dev_cmd cmd = {
+>+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
+>+		.fw_control.oper = IONIC_FW_ACTIVATE_STATUS,
+>+	};
+>+
+>+	ionic_dev_cmd_go(idev, &cmd);
+>+}
+>+
+>+int ionic_firmware_update(struct ionic_lif *lif, const char *fw_name,
+>+			  struct netlink_ext_ack *extack)
+>+{
+>+	struct ionic_dev *idev = &lif->ionic->idev;
+>+	struct net_device *netdev = lif->netdev;
+>+	struct ionic *ionic = lif->ionic;
+>+	union ionic_dev_cmd_comp comp;
+>+	u32 buf_sz, copy_sz, offset;
+>+	const struct firmware *fw;
+>+	struct devlink *dl;
+>+	int next_interval;
+>+	int err = 0;
+>+	u8 fw_slot;
+>+
+>+	netdev_info(netdev, "Installing firmware %s\n", fw_name);
+
+You don't need this dmesg messagel.
+
+
+>+
+>+	dl = priv_to_devlink(ionic);
+>+	devlink_flash_update_begin_notify(dl);
+>+	devlink_flash_update_status_notify(dl, "Preparing to flash", NULL, 0, 0);
+>+
+>+	err = request_firmware(&fw, fw_name, ionic->dev);
+>+	if (err) {
+>+		NL_SET_ERR_MSG_MOD(extack, "Unable to find firmware file");
+>+		goto err_out;
+>+	}
+>+
+>+	buf_sz = sizeof(idev->dev_cmd_regs->data);
+>+
+>+	netdev_dbg(netdev,
+>+		   "downloading firmware - size %d part_sz %d nparts %lu\n",
+>+		   (int)fw->size, buf_sz, DIV_ROUND_UP(fw->size, buf_sz));
+>+
+>+	devlink_flash_update_status_notify(dl, "Downloading", NULL, 0, fw->size);
+>+	offset = 0;
+>+	next_interval = fw->size / IONIC_FW_INTERVAL_FRACTION;
+>+	while (offset < fw->size) {
+>+		copy_sz = min_t(unsigned int, buf_sz, fw->size - offset);
+>+		mutex_lock(&ionic->dev_cmd_lock);
+>+		memcpy_toio(&idev->dev_cmd_regs->data, fw->data + offset, copy_sz);
+>+		ionic_dev_cmd_firmware_download(idev,
+>+						offsetof(union ionic_dev_cmd_regs, data),
+>+						offset, copy_sz);
+>+		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
+>+		mutex_unlock(&ionic->dev_cmd_lock);
+>+		if (err) {
+>+			netdev_err(netdev,
+>+				   "download failed offset 0x%x addr 0x%lx len 0x%x\n",
+>+				   offset, offsetof(union ionic_dev_cmd_regs, data),
+>+				   copy_sz);
+
+And this one.
+
+
+>+			NL_SET_ERR_MSG_MOD(extack, "Segment download failed");
+>+			goto err_out;
+>+		}
+>+		offset += copy_sz;
+>+
+>+		if (offset > next_interval) {
+>+			devlink_flash_update_status_notify(dl, "Downloading",
+>+							   NULL, offset, fw->size);
+>+			next_interval = offset + (fw->size / IONIC_FW_INTERVAL_FRACTION);
+>+		}
+>+	}
+>+	devlink_flash_update_status_notify(dl, "Downloading", NULL, 1, 1);
+>+
+>+	devlink_flash_update_status_notify(dl, "Installing", NULL, 0, 2);
+>+
+>+	mutex_lock(&ionic->dev_cmd_lock);
+>+	ionic_dev_cmd_firmware_install(idev);
+>+	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
+>+	ionic_dev_cmd_comp(idev, (union ionic_dev_cmd_comp *)&comp);
+>+	fw_slot = comp.fw_control.slot;
+>+	mutex_unlock(&ionic->dev_cmd_lock);
+>+	if (err) {
+>+		NL_SET_ERR_MSG_MOD(extack, "Failed to start firmware install");
+>+		goto err_out;
+>+	}
+>+
+>+	devlink_flash_update_status_notify(dl, "Installing", NULL, 1, 2);
+>+	mutex_lock(&ionic->dev_cmd_lock);
+>+	ionic_dev_cmd_firmware_install_status(idev);
+>+	err = ionic_dev_cmd_wait(ionic, IONIC_FW_INSTALL_TIMEOUT);
+>+	mutex_unlock(&ionic->dev_cmd_lock);
+>+	if (err) {
+>+		NL_SET_ERR_MSG_MOD(extack, "Firmware install failed");
+>+		goto err_out;
+>+	}
+>+	devlink_flash_update_status_notify(dl, "Installing", NULL, 2, 2);
+>+
+>+	devlink_flash_update_status_notify(dl, "Activating", NULL, 0, 2);
+>+
+>+	mutex_lock(&ionic->dev_cmd_lock);
+>+	ionic_dev_cmd_firmware_activate(idev, fw_slot);
+>+	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
+>+	mutex_unlock(&ionic->dev_cmd_lock);
+>+	if (err) {
+>+		NL_SET_ERR_MSG_MOD(extack, "Failed to start firmware activation");
+>+		goto err_out;
+>+	}
+>+
+>+	devlink_flash_update_status_notify(dl, "Activating", NULL, 1, 2);
+>+	mutex_lock(&ionic->dev_cmd_lock);
+>+	ionic_dev_cmd_firmware_activate_status(idev);
+>+	err = ionic_dev_cmd_wait(ionic, IONIC_FW_ACTIVATE_TIMEOUT);
+>+	mutex_unlock(&ionic->dev_cmd_lock);
+>+	if (err) {
+>+		NL_SET_ERR_MSG_MOD(extack, "Firmware activation failed");
+>+		goto err_out;
+>+	}
+>+	devlink_flash_update_status_notify(dl, "Activating", NULL, 2, 2);
+>+
+>+	netdev_info(netdev, "Firmware update completed\n");
+
+And this one.
+
+
+>+
+>+err_out:
+>+	if (err)
+>+		devlink_flash_update_status_notify(dl, "Flash failed", NULL, 0, 0);
+>+	release_firmware(fw);
+>+	devlink_flash_update_end_notify(dl);
+>+	return err;
+>+}
+>diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+>index f1fd9a98ae4a..4b4ff885ebf8 100644
+>--- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
+>+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+>@@ -361,17 +361,22 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
+> 	 */
+> 	max_wait = jiffies + (max_seconds * HZ);
+> try_again:
+>+	opcode = idev->dev_cmd_regs->cmd.cmd.opcode;
+> 	start_time = jiffies;
+> 	do {
+> 		done = ionic_dev_cmd_done(idev);
+> 		if (done)
+> 			break;
+>-		msleep(5);
+>-		hb = ionic_heartbeat_check(ionic);
+>+		usleep_range(100, 200);
+>+
+>+		/* Don't check the heartbeat on FW_CONTROL commands as they are
+>+		 * notorious for interrupting the firmware's heartbeat update.
+>+		 */
+>+		if (opcode != IONIC_CMD_FW_CONTROL)
+>+			hb = ionic_heartbeat_check(ionic);
+> 	} while (!done && !hb && time_before(jiffies, max_wait));
+> 	duration = jiffies - start_time;
+> 
+>-	opcode = idev->dev_cmd_regs->cmd.cmd.opcode;
+> 	dev_dbg(ionic->dev, "DEVCMD %s (%d) done=%d took %ld secs (%ld jiffies)\n",
+> 		ionic_opcode_to_str(opcode), opcode,
+> 		done, duration / HZ, duration);
+>@@ -396,7 +401,7 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
+> 	err = ionic_dev_cmd_status(&ionic->idev);
+> 	if (err) {
+> 		if (err == IONIC_RC_EAGAIN && !time_after(jiffies, max_wait)) {
+>-			dev_err(ionic->dev, "DEV_CMD %s (%d) error, %s (%d) retrying...\n",
+>+			dev_dbg(ionic->dev, "DEV_CMD %s (%d), %s (%d) retrying...\n",
+> 				ionic_opcode_to_str(opcode), opcode,
+> 				ionic_error_to_str(err), err);
+> 
+>-- 
+>2.17.1
 >
->>
->> If the driver wants the clock enabled all the time, it can enable it
->> in the probe method. The common clock framework will then have two
->> reference counts for the clock, so that when the probe exists, and
->> phylib disables the clock, the CCF keeps the clock ticking. The PHY
->> driver can then disable the clock in .remove.
->
-> But then the lowest count you will have is 1, which will lead to the 
-> clock being left on despite having unbound the PHY driver from the 
-> device (->remove was called). This does not allow saving any power 
-> unfortunately.
->
->>
->> There are some PHYs which will enumerate with the clock disabled. They
->> only need it ticking for packet transfer. Such PHY drivers can enable
->> the clock only when needed in order to save some power when the
->> interface is administratively down.
->
-> Then the best approach would be for the OF scanning code to enable all 
-> clocks reference by the Ethernet PHY node (like it does in the 
-> proposed patch), since there is no knowledge of which clock is 
-> necessary and all must be assumed to be critical for MDIO bus 
-> scanning. Right before drv->probe() we drop all resources reference 
-> counts, and from there on ->probe() is assumed to manage the necessary 
-> clocks.
->
-> It looks like another solution may be to use the assigned-clocks 
-> property which will take care of assigning clock references to devices 
-> and having those applied as soon as the clock provider is available.
-
-Hi Guys,
-
-I've just realized that a PHY may also have a reset signal connected. 
-The reset signal may be controlled by the dedicated peripheral or by GPIO.
-
-In general terms, there might be a set of control signals needed to 
-enable the PHY. It seems that the clock and the reset would be the 
-typical useful options.
-
-Going further with my imagination of how evil the hardware design could 
-be, in general the signals for the PHY may have some relations to other 
-control signals.
-
-I think that from the software point of view this comes down to 
-assumption that the PHY is to be controlled "driver only knows how".
-
-Best regards,
-Adam
-
