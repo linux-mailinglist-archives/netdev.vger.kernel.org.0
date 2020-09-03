@@ -2,150 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFDB025BA99
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 07:46:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65F7725BAA6
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 07:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726389AbgICFqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 01:46:33 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:3324 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725919AbgICFqb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 01:46:31 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0835VoCL128582;
-        Thu, 3 Sep 2020 01:46:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : mime-version : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=EEmfAEII1MFsjoFBO9r2yZjXFgAAI3FqsD9VQfebOoE=;
- b=CzIuSojQTIPntS0vdfCwj461k1Z/PaVo/M+kDUeNSxHUCviaCKeu6g8R+XYTCsP8vMig
- WSg37KR2gmDjG/pq+gQUDLflVAPXukKNbNqr7KBJTNH70+8dJzansvk2OefE6rbMv3BI
- eddut5OSAyqPikzSUyDXRa1dKu4AziD+of0g5aEWZRL09qztmgYVrXfSzGbX0w1VUQf0
- Wk6fzTDVwZYaAG3MY1WncJqyID7mb17fEvBUne8hJviu1HwxaPGWwsrdos5qEayojGpd
- Ul8BtJHIt5oYdtbziI/C+ukhleB3mxXSclPiX28xW0Xnx7tcURrlwdb5fiFpPvW01KIJ Eg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33asvus4x2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Sep 2020 01:46:19 -0400
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0835k1Ss163547;
-        Thu, 3 Sep 2020 01:46:19 -0400
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33asvus4wh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Sep 2020 01:46:19 -0400
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0835YHQ8008398;
-        Thu, 3 Sep 2020 05:46:17 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma05fra.de.ibm.com with ESMTP id 337en83b2q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Sep 2020 05:46:17 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0835kF7M32506258
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 3 Sep 2020 05:46:15 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 06DD8A4055;
-        Thu,  3 Sep 2020 05:46:15 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 960C1A4053;
-        Thu,  3 Sep 2020 05:46:14 +0000 (GMT)
-Received: from localhost (unknown [9.102.26.23])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu,  3 Sep 2020 05:46:14 +0000 (GMT)
-Date:   Thu, 03 Sep 2020 11:16:12 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH] libbpf: Remove arch-specific include path in Makefile
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        bpf <bpf@vger.kernel.org>, Jiri Olsa <jolsa@redhat.com>,
-        Networking <netdev@vger.kernel.org>,
-        Vaidyanathan Srinivasan <svaidy@linux.ibm.com>
-References: <20200902084246.1513055-1-naveen.n.rao@linux.vnet.ibm.com>
-        <CAEf4BzZXyJsJ6rFp7pj_0PhyE_df9Z08wE9pUkZBp8i1qz_h1Q@mail.gmail.com>
-        <fc8b0c65-b74a-d924-4189-ff6359d1ebdc@iogearbox.net>
-In-Reply-To: <fc8b0c65-b74a-d924-4189-ff6359d1ebdc@iogearbox.net>
+        id S1726088AbgICFym (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 01:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725851AbgICFym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 01:54:42 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEF9C061244
+        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 22:54:41 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id a9so1569110wmm.2
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 22:54:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Fac+qp7rSu/xEAP+vfdHYdPmveRFTAa4rjuOC/hkiHI=;
+        b=Jk7VFNqkmPv3DZkKrJeNtm3h9WY8jN4adckGd5aGef7z8Qem2AMrTgH0/vFxft8Rrq
+         SWB1SooS2owXXA2AJS7XeSLR8LTTkzG2jtpT3DcopFE4sgA+kqVeAuGa4YM5wlaFIxFz
+         WjxEdLU9LFZP9YhWsv8H/uM4vKFPAJz6T/3yBx/hO1tjTdbRqcjsHX70k00J8CeWQhff
+         QQwb9QrfpMNQxi4qj2qAKKkL9jqYfQ5Ai37C4nSDu0CEKtW/jDbSl0H7RFeH82prNQ/t
+         VDI7x+R/r1VcrUFAn7GLaF3YZL01CQKqxh6moQeawUyH2/czaTLcsrXtIh8SUOSnoKU6
+         r/lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Fac+qp7rSu/xEAP+vfdHYdPmveRFTAa4rjuOC/hkiHI=;
+        b=EILIyVPDtvpxlU9T1MY1C5ZUBxK8f2vDIxYxRbdDrTlwGtlfFJ6+xZO+gben9x+nqG
+         0s8BYMvOlnGLFag39CxCXghiizEUDRnFT5A+Ql1//f/dXRjeB+5gSLwpU5XbFPUsvvXw
+         OtrClccwkSLKjCcOr2Oaxn51DNV/nR0uRO5+bmEqZ8gm9uZ+ZxYCFCj4dSRuvwzAIn5E
+         7ta7eRQLjHQ/y3wqTxyE+a5cDWWWhkDUfWJn2JMS/O1WVi7RaWn0XLG9VG2hEQJd+W1F
+         c6z6S+iPqSJ3J61x72iR4Om1X5oUnnWD/eSmWVDof1dgyRupwSUmcsyMYX/vxmwBnI+M
+         Tc9Q==
+X-Gm-Message-State: AOAM532gVqiThwUf/D41wGUEMJkRy+WsoXKqgvYBA1MNx8U5IDKf0dBQ
+        YSM+6uTKB6rOFKe+ViLDCT+QkA==
+X-Google-Smtp-Source: ABdhPJw1EYnp//IWLW0UxM+lTXJGgpTadebYAA0HW/d/bmtF6WSsJgKz3M21s+sttUGHZY367Ro63Q==
+X-Received: by 2002:a05:600c:2283:: with SMTP id 3mr513669wmf.37.1599112480398;
+        Wed, 02 Sep 2020 22:54:40 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id 8sm2784134wrl.7.2020.09.02.22.54.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Sep 2020 22:54:39 -0700 (PDT)
+Date:   Thu, 3 Sep 2020 07:54:39 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Parav Pandit <parav@nvidia.com>, Parav Pandit <parav@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "roid@mellanox.com" <roid@mellanox.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next 2/3] devlink: Consider other controller while
+ building phys_port_name
+Message-ID: <20200903055439.GA2997@nanopsycho.orion>
+References: <BY5PR12MB432271E4F9028831FA75B7E0DC520@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200828094343.6c4ff16a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR12MB43220099C235E238D6AF89EADC530@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200901081906.GE3794@nanopsycho.orion>
+ <BY5PR12MB43229CA19D3D8215BC9BEFECDC2E0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200901091742.GF3794@nanopsycho.orion>
+ <20200901142840.25b6b58f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR12MB43228D0A9B1EF43C061A5A3BDC2F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200902080011.GI3794@nanopsycho.orion>
+ <20200902082358.6b0c69b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-User-Agent: astroid/v0.15-13-gb675b421
- (https://github.com/astroidmail/astroid)
-Message-Id: <1599111859.vtxbe8ojub.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-02_17:2020-09-02,2020-09-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
- lowpriorityscore=0 priorityscore=1501 bulkscore=0 spamscore=0
- suspectscore=0 phishscore=0 mlxscore=0 impostorscore=0 malwarescore=0
- mlxlogscore=979 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009030048
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200902082358.6b0c69b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann wrote:
-> On 9/2/20 10:58 PM, Andrii Nakryiko wrote:
->> On Wed, Sep 2, 2020 at 1:43 AM Naveen N. Rao
->> <naveen.n.rao@linux.vnet.ibm.com> wrote:
->>>
->>> Ubuntu mainline builds for ppc64le are failing with the below error (*)=
-:
->>>      CALL    /home/kernel/COD/linux/scripts/atomic/check-atomics.sh
->>>      DESCEND  bpf/resolve_btfids
->>>
->>>    Auto-detecting system features:
->>>    ...                        libelf: [ [32mon[m  ]
->>>    ...                          zlib: [ [32mon[m  ]
->>>    ...                           bpf: [ [31mOFF[m ]
->>>
->>>    BPF API too old
->>>    make[6]: *** [Makefile:295: bpfdep] Error 1
->>>    make[5]: *** [Makefile:54: /home/kernel/COD/linux/debian/build/build=
--generic/tools/bpf/resolve_btfids//libbpf.a] Error 2
->>>    make[4]: *** [Makefile:71: bpf/resolve_btfids] Error 2
->>>    make[3]: *** [/home/kernel/COD/linux/Makefile:1890: tools/bpf/resolv=
-e_btfids] Error 2
->>>    make[2]: *** [/home/kernel/COD/linux/Makefile:335: __build_one_by_on=
-e] Error 2
->>>    make[2]: Leaving directory '/home/kernel/COD/linux/debian/build/buil=
-d-generic'
->>>    make[1]: *** [Makefile:185: __sub-make] Error 2
->>>    make[1]: Leaving directory '/home/kernel/COD/linux'
->>>
->>> resolve_btfids needs to be build as a host binary and it needs libbpf.
->>> However, libbpf Makefile hardcodes an include path utilizing $(ARCH).
->>> This results in mixing of cross-architecture headers resulting in a
->>> build failure.
->>>
->>> The specific header include path doesn't seem necessary for a libbpf
->>> build. Hence, remove the same.
->>>
->>> (*) https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.9-rc3/ppc64el/log
->>>
->>> Reported-by: Vaidyanathan Srinivasan <svaidy@linux.ibm.com>
->>> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
->>> ---
->>=20
->> This seems to still build fine for me, so I seems fine. Not sure why
->> that $(ARCH)/include/uapi path is there.
->>=20
->> Acked-by: Andrii Nakryiko <andriin@fb.com>
->=20
-> Same here, builds fine from my side too. Looks like this was from the ver=
-y early days,
-> added in commit 1b76c13e4b36 ("bpf tools: Introduce 'bpf' library and add=
- bpf feature
-> check"). Applied, thanks!
+Wed, Sep 02, 2020 at 05:23:58PM CEST, kuba@kernel.org wrote:
+>On Wed, 2 Sep 2020 10:00:11 +0200 Jiri Pirko wrote:
+>>>> I didn't quite get the fact that you want to not show controller ID on the local
+>>>> port, initially.  
+>>> Mainly to not_break current users.  
+>> 
+>> You don't have to take it to the name, unless "external" flag is set.
+>> 
+>> But I don't really see the point of showing !external, cause such
+>> controller number would be always 0. Jakub, why do you think it is
+>> needed?
+>
+>It may seem reasonable for a smartNIC where there are only two
+>controllers, and all you really need is that external flag. 
+>
+>In a general case when users are trying to figure out the topology
+>not knowing which controller they are sitting at looks like a serious
+>limitation.
 
-Thanks!
+I think we misunderstood each other. I never proposed just "external"
+flag. What I propose is either:
+1) ecnum attribute absent for local
+   ecnum attribute absent set to 0 for external controller X
+   ecnum attribute absent set to 1 for external controller Y
+   ...
 
-Daniel, I see that this has been applied to bpf-next. Can you please=20
-consider sending this in for v5.9-rc series so as to resolve the build=20
-failures?
+or:
+2) ecnum attribute absent for local, external flag set to false
+   ecnum attribute absent set to 0 for external controller X, external flag set to true
+   ecnum attribute absent set to 1 for external controller Y, external flag set to true
 
-
-- Naveen
-
+>
+>Example - multi-host system and you want to know which controller you
+>are to run power cycle from the BMC side.
+>
+>We won't be able to change that because it'd change the names for you.
