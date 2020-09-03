@@ -2,112 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B297225C580
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 17:36:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A67B25C5F8
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 17:58:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728491AbgICPfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 11:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
+        id S1728503AbgICP6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 11:58:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726543AbgICPfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 11:35:52 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96F70C061244;
-        Thu,  3 Sep 2020 08:35:52 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id p37so2442019pgl.3;
-        Thu, 03 Sep 2020 08:35:52 -0700 (PDT)
+        with ESMTP id S1728337AbgICP6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 11:58:45 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61747C061244
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 08:58:45 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id ls14so1676996pjb.3
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 08:58:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dGY7hs5cfgBT9KAfFf+SDGAzVg53J8xbuNflx2RbbMI=;
-        b=tcVvXI2IMkSj2iECOiY04GisiyBFCXXMXcHeXn1F3pDysU8yU5gr1Ozzz5bVnqOXjN
-         Fh8xESkYnfzRQ1hf9bPKhBFJwhOg2M5mgBi03LGHMPMJSHZytHfXPnAONPiaAlK59wCn
-         xuP7SGcvuNS6stZTjXx3VOalCGvDo+/kjjeroCl5YMMB+7wjSQ8eQA311ZYP2NFjPVzx
-         G72qePOjkgsRw6NlTh6RNt+sCy4QqDxxF+4anLPGm+QYQyzYNSs7fOHGk9kHMliZSeGK
-         TkRzBYtAOH0qTiZtpZBpW0TMXwiloDssSAZlbOFiV+/9FkfDIm2Rs8/bfDA7+RDjGqCA
-         qhaw==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=58d/pu/jyUTz6K2ZEKjbUgOZoXwR4t6Pq1EPE5UMLSg=;
+        b=fIxNsrbMQgatoo9TTrFHgYcR/u19wQK0KbpOW4P82XECMkzRI3IppSjQLHuBe7O4xI
+         oX66Du2tmqjhuWABNO9cjhAaKHpVIbM/NPkW+UEXh+CUwaRaC5bPK2K3tV7Xb2DgfKSt
+         kQUO4ddft05mMssJDuFOk545rqA8+BC6fGLrn+mRo9xz42fVcpcaMHa8NRQpV8WN48aA
+         Ta90k53lTJUkxS2gj39C1T0b/IT2Lho3pXKi1L2H6FUXyjKBjumeDpvX/BpH45uExuB2
+         VUBRvjtI8QKXNebdbHc1jslnnGVSjJ/uzgqvB383iC32jGpttgwsfK6PPXqvVqJyYTB9
+         IEmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dGY7hs5cfgBT9KAfFf+SDGAzVg53J8xbuNflx2RbbMI=;
-        b=QoHylULY3rVjqsUlJZ9Y0rSpZiudCa8qpFeNJLzcR9gdaTOhimSe5t3jXOAVXqRIWa
-         0P0O3dYurQBrB6butc4WPBsd6JkDjwDwfzzW7gzvv8gD43kNW7K69crajtyaa7ZDGqLE
-         J4CV4RzWcvd9fV7Ym9nAmv6R7UR4SdyZ8LTQGwMZ3M/bE6icn2nghtjSorHR3uX6ngfl
-         50Rt/feggGi4tJxINiCkUHRoG0CsayLTQpZVAQnDi48K2cs4c4TVkSC7/ENy2vLVdQNL
-         Kbtxwujat7jgw514YT2EkVuynTSuXMpDXxNtubV8j1+6xcmSdSykFCr2Q5c2gPBBDxTr
-         5vOw==
-X-Gm-Message-State: AOAM530Opg3/NMN3rzPXoCmN4AWnTnPd1i3TAuuB6jLbokVHncnFrp/s
-        a4fF8X/MYpZlHQRPO5zfcFd+dNJZEIIrfb/kHkKyYOl5lqN+wiw8
-X-Google-Smtp-Source: ABdhPJwDybWElbO0XCzQwfjoJ05bAOdoZDBKiX0vvFFdHObiFFUsMI/h6NPVkUvOpOqeD9PkVhXVneMU3Lhyag5xxjc=
-X-Received: by 2002:a63:c543:: with SMTP id g3mr3490616pgd.203.1599147351884;
- Thu, 03 Sep 2020 08:35:51 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=58d/pu/jyUTz6K2ZEKjbUgOZoXwR4t6Pq1EPE5UMLSg=;
+        b=fIRNl7wEzpOuJ2Ks5qwdaXsUHptYXzJoZD/+dD+VfCKHW9OkTBVYUCWyrUIEC0b5GJ
+         EZ7mmOFoFZoJziGIvxb1GaLb3jxhGmeuFhAd3aIP3lelIrC67TYpyO8UcFkJpgMp+kWo
+         txdJQR9pLhg0FkkLrhiKoOPyHFdZuGLAWGUMFdb9pi/87SN01vgoeYsZtr6eOaua16Qq
+         U+jddvM/bccz6vIa36HJhI5/RSzAD6WqMSw2q6AzVVH0ERnXjBRcB5U98mkYB2vi9upP
+         Xv44RdaKuSsyBiPNgbMexNeM5amXtx5JrKsU7p94B3W+gxvZZJIK9q0VRwPrWB+vA/Aw
+         ipsQ==
+X-Gm-Message-State: AOAM533VgSgBAlRi65jsrljWYV3QmWlrgT6YK9BXvR3A7FiFpJYMXW+B
+        ArOGnlRNa6R8mjrhGSV60gz3ZaH86aCY4g==
+X-Google-Smtp-Source: ABdhPJypbVSpnh4EhgxejkU1CmtfYOdJrkgpPiWV+4GRM7jcFHXn3UgKM2wvPAExA79EEJO2sD+ijw==
+X-Received: by 2002:a17:90a:3486:: with SMTP id p6mr3784523pjb.44.1599148724894;
+        Thu, 03 Sep 2020 08:58:44 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id u8sm3577902pfm.133.2020.09.03.08.58.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Sep 2020 08:58:44 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] ionic: add devlink firmware update
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20200902195717.56830-1-snelson@pensando.io>
+ <20200902195717.56830-3-snelson@pensando.io>
+ <20200903060128.GC2997@nanopsycho.orion>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <9937d5f2-21a1-53cc-e7fb-075b3014a344@pensando.io>
+Date:   Thu, 3 Sep 2020 08:58:42 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20200902150442.2779-1-vadym.kochan@plvision.eu>
- <20200902150442.2779-2-vadym.kochan@plvision.eu> <CA+FuTSfMRhEZ5c2CWaN_F3ASDgvV7eQ4q6zVuY-FvgLqsqYecw@mail.gmail.com>
-In-Reply-To: <CA+FuTSfMRhEZ5c2CWaN_F3ASDgvV7eQ4q6zVuY-FvgLqsqYecw@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 3 Sep 2020 18:35:34 +0300
-Message-ID: <CAHp75VcmPnmgxgE+NCTN71Wq17LQjjx8cJOR34AmuLuRFQ4cRg@mail.gmail.com>
-Subject: Re: [PATCH net v6 1/6] net: marvell: prestera: Add driver for
- Prestera family ASIC devices
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Vadym Kochan <vadym.kochan@plvision.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Mickey Rachamim <mickeyr@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200903060128.GC2997@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 3, 2020 at 6:23 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
-> On Wed, Sep 2, 2020 at 5:37 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
-
-...
-
-> > +static int prestera_is_valid_mac_addr(struct prestera_port *port, u8 *addr)
-> > +{
-> > +       if (!is_valid_ether_addr(addr))
-> > +               return -EADDRNOTAVAIL;
-> > +
-> > +       if (memcmp(port->sw->base_mac, addr, ETH_ALEN - 1))
+On 9/2/20 11:01 PM, Jiri Pirko wrote:
+> Wed, Sep 02, 2020 at 09:57:17PM CEST, snelson@pensando.io wrote:
+>> Add support for firmware update through the devlink interface.
+>> This update copies the firmware object into the device, asks
+>> the current firmware to install it, then asks the firmware to
+>> set the device to use the new firmware on the next boot-up.
+>>
+>> The install and activate steps are launched as asynchronous
+>> requests, which are then followed up with status requests
+>> commands.  These status request commands will be answered with
+>> an EAGAIN return value and will try again until the request
+>> has completed or reached the timeout specified.
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+[...]
+>> +
+>> +	netdev_info(netdev, "Installing firmware %s\n", fw_name);
+> You don't need this dmesg messagel.
 >
-> Why ETH_ALEN - 1?
-
-We even have a lot of helpers specifically for ethernet MACs.
-Starting from [1] till almost the end of the file. Here [2] can be
-used (or its unaligned counterpart).
-
-[1]: https://elixir.bootlin.com/linux/latest/source/include/linux/etherdevice.h#L67
-[2]: https://elixir.bootlin.com/linux/latest/source/include/linux/etherdevice.h#L67
-
-> > +               return -EINVAL;
-> > +
-> > +       return 0;
-> > +}
-
-> > +       memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
 >
-> Is addr_len ever not ETH_ALEN for this device?
+>> +
+>> +	dl = priv_to_devlink(ionic);
+>> +	devlink_flash_update_begin_notify(dl);
+>> +	devlink_flash_update_status_notify(dl, "Preparing to flash", NULL, 0, 0);
+>> +
+[...]
+>> +		if (err) {
+>> +			netdev_err(netdev,
+>> +				   "download failed offset 0x%x addr 0x%lx len 0x%x\n",
+>> +				   offset, offsetof(union ionic_dev_cmd_regs, data),
+>> +				   copy_sz);
+> And this one.
+>
+>
+>> +			NL_SET_ERR_MSG_MOD(extack, "Segment download failed");
+>> +			goto err_out;
+>> +		}
+[...]
+>> +	devlink_flash_update_status_notify(dl, "Activating", NULL, 2, 2);
+>> +
+>> +	netdev_info(netdev, "Firmware update completed\n");
+> And this one.
+>
+>
+>> +
+>> +err_out:
+>> +	if (err)
+>> +		devlink_flash_update_status_notify(dl, "Flash failed", NULL, 0, 0);
+>> +	release_firmware(fw);
+>> +	devlink_flash_update_end_notify(dl);
+>> +	return err;
+>> +}
+>>
 
-And if it is ETH_ALEN, here is [3].
-[3]: https://elixir.bootlin.com/linux/latest/source/include/linux/etherdevice.h#L287
+True, they aren't "needed" for operational purposes, but they are rather 
+useful when inspecting a system after getting a report of bad behavior, 
+and since this should be seldom performed there should be no risk of 
+filling the log.  As far as I can tell, the devlink messages are only 
+seen at the time the flash is performed as output from the flash 
+command, or from a devlink monitor if someone started it before the 
+flash operation.  Is there any other place that can be inspected later 
+that will indicate someone was fussing with the firmware?
 
--- 
-With Best Regards,
-Andy Shevchenko
+sln
+
+
