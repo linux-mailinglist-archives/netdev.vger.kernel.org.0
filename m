@@ -2,230 +2,463 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 757CB25B877
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 03:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDCF825B88B
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 04:03:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgICByi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 21:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726177AbgICByg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 21:54:36 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA46FC061244;
-        Wed,  2 Sep 2020 18:54:33 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id m8so920936pfh.3;
-        Wed, 02 Sep 2020 18:54:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AbX3xaVNmMCXv/ZEBehiM7Hryv15WbixbRnad2CHtUg=;
-        b=ZzFyR8SHD1+4u3C7J7jw1/tujGX13Bx5EFcya7APsryvND/NRi7BLyCVvpA2Ws8Ena
-         M1nlQzEdvXCcdvPIxo6Wpxj3rGGvRi9NbwXEuErTFHGln18t8ziIUTktXDbFxPEDMrZ4
-         xqYKpebMtf1wNxgvSfjK8IsuuARWIN7oN+GZRRmaGcv729huR3rSUdYBhTkPp1n7nAre
-         HyLHmR9sClEVSL5HwwcQQ+qUL7Is/5SWZqAfLs+wqZzQcSXzHR23tzKjGTwLq+2EyJ3I
-         1KOHhnSmojF2TA6tQDgzkioNJ74GAyXtU1It7kATUMfWRfOlNirZ5BYonQgDhQIViu3W
-         Uv/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AbX3xaVNmMCXv/ZEBehiM7Hryv15WbixbRnad2CHtUg=;
-        b=ccWxFxLFdRN7dsEWOtTQV7C1xF20xGhAFObWwCW9/m8udDNe5pAOH6bfkNU6F58Nm/
-         oTuo/7qS7wR1Iygzv+LrmT8luLdM58QSQRkYGQfH+GyDdet4QSkhg9klTQPBNyAZYyQe
-         mpC3pVMipOSNyLU+lZZIU1MRwSYR69vjATJnbkmj+1gttE2WCl+BS+ePuUQO+wr7k7Nv
-         X2quSZTOvnHYiKJKFfmmcL3oXyg3IqkLqHDh6BhbnibV8I1dUWBferEhiJc3GOpHtya3
-         fxHS6GIxo+cYU2kmUcxcTCeKSbx+6lbD2MmC1Qco6LHPe05uYf5u9z0p8W/dcrrQ0urP
-         WFOA==
-X-Gm-Message-State: AOAM530NAy7nemxlW1Gx3ptBfPzjH+jJCsphLz+AfuRA3wogiKM5V0Rd
-        MgumCsc3dJPAHI0JHbjJXu2+cMOEWhw=
-X-Google-Smtp-Source: ABdhPJxDHudhWPHWrlgxHskQUXK7dkcDapJ2y21vEcm9he+gMBa63RCZCmbHjzUmyFjo4N9kH0gV1A==
-X-Received: by 2002:a62:fb05:: with SMTP id x5mr1307011pfm.121.1599098072426;
-        Wed, 02 Sep 2020 18:54:32 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 65sm846228pfx.104.2020.09.02.18.54.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Sep 2020 18:54:31 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: dsa: bcm_sf2: Ensure that MDIO diversion is
- used
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20200902210328.3131578-1-f.fainelli@gmail.com>
- <20200903011324.GE3071395@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <28177f17-1557-bd69-e96b-c11c39d71145@gmail.com>
-Date:   Wed, 2 Sep 2020 18:54:30 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.1.1
+        id S1727940AbgICCDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 22:03:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51774 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726526AbgICCDn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 2 Sep 2020 22:03:43 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B8BD22071B;
+        Thu,  3 Sep 2020 02:03:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599098622;
+        bh=ZoexGBJJ5dEySQnh2P5hrCF7LR0tuMjj93CqVjFmh/o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rk9CGACT/ssMLLFq/l8TVG2obAq0sJMw5Yu2JHQP26n362iZRYIn+OL76Mi7bADPb
+         yTw7mXx7dbJUiQhWT9okEq84rVVZEb25zxo20+xCMmO5LVHh8vH6KK/y4mhsALOtZL
+         hUof2lgx+WiTd/QaebB9DrUQU4wWReIFBPQ4yDcY=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, jwi@linux.ibm.com, f.fainelli@gmail.com,
+        andrew@lunn.ch, mkubecek@suse.cz, dsahern@gmail.com,
+        edwin.peer@broadcom.com, michael.chan@broadcom.com,
+        saeedm@mellanox.com, rmk+kernel@armlinux.org.uk,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] net: tighten the definition of interface statistics
+Date:   Wed,  2 Sep 2020 19:03:36 -0700
+Message-Id: <20200903020336.2302858-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200903011324.GE3071395@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch is born out of an investigation into which IEEE statistics
+correspond to which struct rtnl_link_stats64 members. Turns out that
+there seems to be reasonable consensus on the matter, among many drivers.
+To save others the time (and it took more time than I'm comfortable
+admitting) I'm adding comments referring to IEEE attributes to
+struct rtnl_link_stats64.
 
+Up until now we had two forms of documentation for stats - in
+Documentation/ABI/testing/sysfs-class-net-statistics and the comments
+on struct rtnl_link_stats64 itself. While the former is very cautious
+in defining the expected behavior, the latter feel quite dated and
+may not be easy to understand for modern day driver author
+(e.g. rx_over_errors). At the same time modern systems are far more
+complex and once obvious definitions lost their clarity. For example
+- does rx_packet count at the MAC layer (aFramesReceivedOK)?
+packets processed correctly by hardware? received by the driver?
+or maybe received by the stack?
 
-On 9/2/2020 6:13 PM, Andrew Lunn wrote:
-> On Wed, Sep 02, 2020 at 02:03:27PM -0700, Florian Fainelli wrote:
->> Registering our slave MDIO bus outside of the OF infrastructure is
->> necessary in order to avoid creating double references of the same
->> Device Tree nodes, however it is not sufficient to guarantee that the
->> MDIO bus diversion is used because of_phy_connect() will still resolve
->> to a valid PHY phandle and it will connect to the PHY using its parent
->> MDIO bus which is still the SF2 master MDIO bus.
->>
->> Ensure that of_phy_connect() does not suceed by removing any phandle
->> reference for the PHY we need to divert. This forces the DSA code to use
->> the DSA slave_mii_bus that we register and ensures the MDIO diversion is
->> being used.
-> 
-> Hi Florian
-> 
-> Sorry, i don't get this explanation. Can you point me towards a device
-> tree i can look at to maybe understand what is going on.
-The firmware provides the Device Tree but here is the relevant section 
-for you pasted below. The problematic device is a particular revision of 
-the silicon (D0) which got later fixed (E0) however the Device Tree was 
-created after the fixed platform, not the problematic one. Both 
-revisions of the silicon are in production.
+I tried to clarify the expectations, further clarifications from
+others are very welcome.
 
-There should have been an internal MDIO bus created for that chip 
-revision such that we could have correctly parented phy@0 (bcm53125 
-below) as child node of the internal MDIO bus, but you have to realize 
-that this was done back in 2014 when DSA was barely revived as an active 
-subsystem. The BCM53125 node should have have been converted to an 
-actual switch node at some point, I use a mdio_boardinfo overlay 
-downstream to support the switch as a proper b53/DSA switch, anyway.
+The part hardest to untangle is rx_over_errors vs rx_fifo_errors
+vs rx_missed_errors. After much deliberation I concluded that for
+modern HW only two of the counters will make sense. The distinction
+between internal FIFO overflow and packets dropped due to back-pressure
+from the host is likely too implementation (driver and device) specific
+to expose in the standard stats.
 
-The problem is that of_phy_connect() for port@1 will resolve the 
-phy-handle from the mdio@403c0 node, which bypasses the diversion 
-completely. This results in this double programming that the diversion 
-refers to. In order to force of_phy_connect() to fail, and have DSA call 
-to dsa_slave_phy_connect(), we must deactivate ethernet-phy@0 from 
-mdio@403c0, and the best way to do that is by removing the phandle 
-property completely.
+Now - which two of those counters we select to use is anyone's pick:
 
-Hope this clarifies the mess :)
+sysfs documentation suggests rx_over_errors counts packets which
+did not fit into buffers due to MTU being too small, which I reused.
+There don't seem to be many modern drivers using it (well, CAN drivers
+seem to love this statistic).
 
+Of the remaining two I picked rx_missed_errors to report device drops.
+bnxt reports it and it's folded into "drop"s in procfs (while
+rx_fifo_errors is an error, and modern devices usually receive the frame
+OK, they just can't admit it into the pipeline).
 
-		switch_top@f0b00000 {
-			#address-cells = <0x01>;
-			#size-cells = <0x01>;
-			compatible = "brcm,bcm7445-switch-top-v2.0\0simple-bus";
-			ranges = <0x00 0xf0b00000 0x40804>;
+Of the drivers I looked at only AMD Lance-like and NS8390-like use all
+three of these counters. rx_missed_errors counts missed frames,
+rx_over_errors counts overflow events, and rx_fifo_errors counts frames
+which were truncated because they didn't fit into buffers. This suggests
+that rx_fifo_errors may be the correct stat for truncated packets, but
+I'd think a FIFO stat counting truncated packets would be very confusing
+to a modern reader.
 
-			ethernet_switch@0 {
-				#address-cells = <0x02>;
-				#size-cells = <0x00>;
-				brcm,num-acb-queues = <0x40>;
-				brcm,num-gphy = <0x01>;
-				brcm,num-rgmii-ports = <0x02>;
-				compatible = "brcm,bcm7445-switch-v4.0\0brcm,bcm53012";
-				dsa,ethernet = <0x16>;
-				dsa,mii-bus = <0x17>;
-				resets = <0x18 0x1a>;
-				reset-names = "switch";
-				reg = <0x00 0x40000 0x40000 0x110 0x40340 0x30 0x40380 0x30 0x40400 
-0x34 0x40600 0x208>;
-				reg-names = "core\0reg\0intrl2_0\0intrl2_1\0fcb\0acb";
-				interrupts = <0x00 0x18 0x04 0x00 0x19 0x04>;
-				interrupt-names = "switch_0\0switch_1";
-				brcm,fcb-pause-override;
-				brcm,acb-packets-inflight;
-				clocks = <0x0a 0x6d 0x0a 0x76>;
-				clock-names = "sw_switch\0sw_switch_mdiv";
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ Documentation/networking/index.rst      |   1 +
+ Documentation/networking/statistics.rst | 123 +++++++++++++++
+ include/uapi/linux/if_link.h            | 198 ++++++++++++++++++++++--
+ 3 files changed, 305 insertions(+), 17 deletions(-)
+ create mode 100644 Documentation/networking/statistics.rst
 
-				ports {
-					#address-cells = <0x01>;
-					#size-cells = <0x00>;
-
-					port@0 {
-						phy-mode = "internal";
-						phy-handle = <0x29>;
-						linux,phandle = <0x2a>;
-						phandle = <0x2a>;
-						reg = <0x00>;
-						label = "gphy";
-					};
-
-					port@1 {
-						phy-mode = "rgmii-txid";
-						phy-handle = <0x2c>;
-						linux,phandle = <0x2d>;
-						phandle = <0x2d>;
-						reg = <0x01>;
-						label = "rgmii_1";
-					};
-
-					port@2 {
-						phy-mode = "rgmii-txid";
-						fixed-link = <0x02 0x01 0x3e8 0x00 0x00>;
-						linux,phandle = <0x2f>;
-						phandle = <0x2f>;
-						reg = <0x02>;
-						label = "rgmii_2";
-					};
-
-					port@7 {
-						phy-mode = "moca";
-						fixed-link = <0x07 0x01 0x3e8 0x00 0x00>;
-						linux,phandle = <0x31>;
-						phandle = <0x31>;
-						reg = <0x07>;
-						label = "moca";
-					};
-
-					port@8 {
-						linux,phandle = <0x33>;
-						phandle = <0x33>;
-						reg = <0x08>;
-						label = "cpu";
-						ethernet = <0x16>;
-					};
-				};
-			};
-
-			mdio@403c0 {
-				reg = <0x403c0 0x08 0x40300 0x18>;
-				#address-cells = <0x01>;
-				#size-cells = <0x00>;
-				compatible = "brcm,bcm7445-mdio-v4.0\0brcm,unimac-mdio";
-				reg-names = "mdio\0mdio_indir_rw";
-				clocks = <0x0a 0x6d>;
-				clock-names = "sw_switch";
-				linux,phandle = <0x17>;
-				phandle = <0x17>;
-
-				ethernet-phy@0 {
-					linux,phandle = <0x2c>;
-					phandle = <0x2c>;
-					broken-turn-around;
-					device_type = "ethernet-phy";
-					max-speed = <0x3e8>;
-					reg = <0x00>;
-					compatible = "brcm,bcm53125\0ethernet-phy-ieee802.3-c22";
-				};
-
-				ethernet-phy@5 {
-					linux,phandle = <0x29>;
-					phandle = <0x29>;
-					clock-names = "sw_gphy";
-					clocks = <0x0a 0x63>;
-					device_type = "ethernet-phy";
-					max-speed = <0x3e8>;
-					reg = <0x05>;
-					compatible = "brcm,28nm-gphy\0ethernet-phy-ieee802.3-c22";
-				};
-			};
-		};
+diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+index c29496fff81c..4167acc5c076 100644
+--- a/Documentation/networking/index.rst
++++ b/Documentation/networking/index.rst
+@@ -93,6 +93,7 @@ Linux Networking Documentation
+    sctp
+    secid
+    seg6-sysctl
++   statistics
+    strparser
+    switchdev
+    tc-actions-env-rules
+diff --git a/Documentation/networking/statistics.rst b/Documentation/networking/statistics.rst
+new file mode 100644
+index 000000000000..487b17c166e8
+--- /dev/null
++++ b/Documentation/networking/statistics.rst
+@@ -0,0 +1,123 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++====================
++Interface statistics
++====================
++
++This document is a guide to Linux network interface statistics.
++
++There are two main sources of interface statistics in Linux:
++
++ - standard interface statistics based on
++   :c:type:`struct rtnl_link_stats64 <rtnl_link_stats64>`; and
++ - driver-defined statistics available via ethtool.
++
++There are multiple interfaces to reach the former. Most commonly used
++is the `ip` command from `iproute2`::
++
++  $ ip -s -s link show dev ens4u1u1
++  6: ens4u1u1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP mode DEFAULT group default qlen 1000
++    link/ether 48:2a:e3:4c:b1:d1 brd ff:ff:ff:ff:ff:ff
++    RX: bytes  packets  errors  dropped overrun mcast
++    74327665117 69016965 0       0       0       0
++    RX errors: length   crc     frame   fifo    missed
++               0        0       0       0       0
++    TX: bytes  packets  errors  dropped carrier collsns
++    21405556176 44608960 0       0       0       0
++    TX errors: aborted  fifo   window heartbeat transns
++               0        0       0       0       128
++    altname enp58s0u1u1
++
++Note that `-s` has been specified twice to see all members of
++:c:type:`struct rtnl_link_stats64 <rtnl_link_stats64>`.
++If `-s` is specified once the detailed errors won't be shown.
++
++`ip` supports JSON formatting via the `-j` option.
++
++Ethtool statistics can be dumped using `ethtool -S $ifc`, e.g.::
++
++  $ ethtool -S ens4u1u1
++  NIC statistics:
++     tx_single_collisions: 0
++     tx_multi_collisions: 0
++
++uAPIs
++=====
++
++procfs
++------
++
++The historical `/proc/net/dev` text interface gives access to the list
++of interfaces as well as their statistics.
++
++Note that even though this interface is using
++:c:type:`struct rtnl_link_stats64 <rtnl_link_stats64>`
++internally it combines some of the fields.
++
++sysfs
++-----
++
++Each device directory in sysfs contains a `statistics` directory (e.g.
++`/sys/class/net/lo/statistics/`) with files corresponding to
++members of :c:type:`struct rtnl_link_stats64 <rtnl_link_stats64>`.
++
++This simple interface is convenient especially in constrained/embedded
++environments without access to tools. However, it's sightly inefficient
++when reading multiple stats as it internally performs a full dump of
++:c:type:`struct rtnl_link_stats64 <rtnl_link_stats64>`
++and reports only the stat corresponding to the accessed file.
++
++Sysfs files are documented in
++`Documentation/ABI/testing/sysfs-class-net-statistics`.
++
++
++netlink
++-------
++
++`rtnetlink` (`NETLINK_ROUTE`) is the preferred method of accessing
++:c:type:`struct rtnl_link_stats64 <rtnl_link_stats64>` stats.
++
++Statistics are reported both in the responses to link information
++requests (`RTM_GETLINK`) and statistic requests (`RTM_GETSTATS`,
++when `IFLA_STATS_LINK_64` bit is set in the `.filter_mask` of the request).
++
++ethtool
++-------
++
++Ethtool IOCTL interface allows drivers to report implementation
++specific statistics.
++
++Statistics and their string identifiers are retrieved separately.
++Identifiers via `ETHTOOL_GSTRINGS` with `string_set` set to `ETH_SS_STATS`,
++and values via `ETHTOOL_GSTATS`. User space should use `ETHTOOL_GDRVINFO`
++to retrieve the number of statistics (`.n_stats`).
++
++debugfs
++-------
++
++Some drivers expose extra statistics via `debugfs`.
++
++struct rtnl_link_stats64
++========================
++
++.. kernel-doc:: include/uapi/linux/if_link.h
++    :identifiers: rtnl_link_stats64
++
++Notes for driver authors
++========================
++
++Drivers should report all statistics which have a matching member in
++:c:type:`struct rtnl_link_stats64 <rtnl_link_stats64>` exclusively
++via `.ndo_get_stats64`. Reporting such standard stats via ethtool
++or debugfs will not be accepted.
++
++Drivers must ensure best possible compliance with
++:c:type:`struct rtnl_link_stats64 <rtnl_link_stats64>`.
++Please note for example that detailed error statistics must be
++added into the general `rx_error` / `tx_error` counters.
++
++The `.ndo_get_stats64` callback can not sleep because of accesses
++via `/proc/net/dev`. If driver may sleep when retrieving the statistics
++from the device it should do so periodically asynchronously and only return
++a recent copy from `.ndo_get_stats64`. Ethtool interrupt coalescing interface
++allows setting the frequency of refreshing statistics, if needed.
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 7fba4de511de..6ea0fb48739e 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -40,26 +40,191 @@ struct rtnl_link_stats {
+ 	__u32	rx_nohandler;		/* dropped, no handler found	*/
+ };
+ 
+-/* The main device statistics structure */
++/**
++ * struct rtnl_link_stats64 - The main device statistics structure.
++ *
++ * @rx_packets: Number of good packets received by the interface.
++ *   For hardware interfaces counts all good packets seen by the host,
++ *   including packets which host had to drop at various stages of processing
++ *   (even in the driver).
++ *
++ * @tx_packets: Number of packets successfully transmitted.
++ *   For hardware interfaces counts packets which host was able to successfully
++ *   hand over to the device, which does not necessarily mean that packets
++ *   had been successfully transmitted out of the device, only that device
++ *   acknowledged it copied them out of host memory.
++ *
++ * @rx_bytes: Number of good incoming bytes, corresponding to @rx_packets.
++ *
++ * @tx_bytes: Number of good incoming bytes, corresponding to @tx_packets.
++ *
++ * @rx_errors: Total number of bad packets received on this network device.
++ *   This counter must include events counted by @rx_length_errors,
++ *   @rx_crc_errors, @rx_frame_errors and other errors not otherwise
++ *   counted.
++ *
++ * @tx_errors: Total number of transmit problems.
++ *   This counter must include events counter by @tx_aborted_errors,
++ *   @tx_carrier_errors, @tx_fifo_errors, @tx_heartbeat_errors,
++ *   @tx_window_errors and other errors not otherwise counted.
++ *
++ * @rx_dropped: Number of packets received but not processed,
++ *   e.g. due to lack of resources or unsupported protocol.
++ *   For hardware interfaces this counter should not include packets
++ *   dropped by the device which are counted separately in
++ *   @rx_missed_errors (since procfs folds those two counters together).
++ *
++ * @tx_dropped: Number of packets dropped on their way to transmission,
++ *   e.g. due to lack of resources.
++ *
++ * @multicast: Multicast packets received.
++ *   For hardware interfaces this statistic is commonly calculated
++ *   at the device level (unlike @rx_packets) and therefore may include
++ *   packets which did not reach the host.
++ *
++ *   For Ethernet devices this counter may be equivalent to:
++ *
++ *    - 30.3.1.1.21 aMulticastFramesReceivedOK
++ *
++ * @collisions: Number of collisions during packet transmissions.
++ *
++ * @rx_length_errors: Number of packets dropped due to invalid length.
++ *   Part of aggregate "frame" errors in `/proc/net/dev`.
++ *
++ *   For Ethernet devices this counter should be equivalent to a sum
++ *   of the following attributes:
++ *
++ *    - 30.3.1.1.23 aInRangeLengthErrors
++ *    - 30.3.1.1.24 aOutOfRangeLengthField
++ *    - 30.3.1.1.25 aFrameTooLongErrors
++ *
++ * @rx_over_errors: Receiver FIFO overflow event counter.
++ *
++ *   Historically the count of overflow events. Such events may be
++ *   reported in the receive descriptors or via interrupts, and may
++ *   not correspond one-to-one with dropped packets.
++ *
++ *   The recommended interpretation for high speed interfaces is -
++ *   number of packets dropped because they did not fit into buffers
++ *   provided by the host, e.g. packets larger than MTU or next buffer
++ *   in the ring was not available for a scatter transfer.
++ *
++ *   Part of aggregate "frame" errors in `/proc/net/dev`.
++ *
++ *   This statistics was historically used interchangeably with
++ *   @rx_fifo_errors.
++ *
++ *   This statistic corresponds to hardware events and is not commonly used
++ *   on software devices.
++ *
++ * @rx_crc_errors: Number of packets received with a CRC error.
++ *   Part of aggregate "frame" errors in `/proc/net/dev`.
++ *
++ *   For Ethernet devices this counter must be equivalent to:
++ *
++ *    - 30.3.1.1.6 aFrameCheckSequenceErrors
++ *
++ * @rx_frame_errors: Receiver frame alignment errors.
++ *   Part of aggregate "frame" errors in `/proc/net/dev`.
++ *
++ *   For Ethernet devices this counter should be equivalent to:
++ *
++ *    - 30.3.1.1.7 aAlignmentErrors
++ *
++ * @rx_fifo_errors: Receiver FIFO error counter.
++ *
++ *   Historically the count of overflow events. Those events may be
++ *   reported in the receive descriptors or via interrupts, and may
++ *   not correspond one-to-one with dropped packets.
++ *
++ *   This statistics was used interchangeably with @rx_over_errors.
++ *   Not recommended for use in drivers for high speed interfaces.
++ *
++ *   This statistic is used on software devices, e.g. to count software
++ *   packet queue overflow (can) or sequencing errors (GRE).
++ *
++ * @rx_missed_errors: Count of packets missed by the host.
++ *   Folded into the "drop" counter in `/proc/net/dev`.
++ *
++ *   Counts number of packets dropped by the device due to lack
++ *   of buffer space. This usually indicates that the host interface
++ *   is slower than the network interface, or host is not keeping up
++ *   with the receive packet rate.
++ *
++ *   This statistic corresponds to hardware events and is not used
++ *   on software devices.
++ *
++ * @tx_aborted_errors:
++ *   Part of aggregate "carrier" errors in `/proc/net/dev`.
++ *   For Ethernet devices capable of half-duplex operation this counter
++ *   must be equivalent to:
++ *
++ *    - 30.3.1.1.11 aFramesAbortedDueToXSColls
++ *
++ *   High speed interfaces may use this counter as a general device
++ *   discard counter.
++ *
++ * @tx_carrier_errors: Number of frame transmission errors due to loss
++ *   of carrier during transmission.
++ *   Part of aggregate "carrier" errors in `/proc/net/dev`.
++ *
++ *   For Ethernet devices this counter must be equivalent to:
++ *
++ *    - 30.3.1.1.13 aCarrierSenseErrors
++ *
++ * @tx_fifo_errors: Number of frame transmission errors due to device
++ *   FIFO underrun / underflow. This condition occurs when the device
++ *   begins transmission of a frame but is unable to deliver the
++ *   entire frame to the transmitter in time for transmission.
++ *   Part of aggregate "carrier" errors in `/proc/net/dev`.
++ *
++ * @tx_heartbeat_errors: Number of Heartbeat / SQE Test errors for
++ *   old half-duplex Ethernet.
++ *   Part of aggregate "carrier" errors in `/proc/net/dev`.
++ *
++ *   Possibly equivalent to:
++ *
++ *    - 30.3.2.1.4 aSQETestErrors
++ *
++ * @tx_window_errors: Number of frame transmission errors due
++ *   to late collisions (for Ethernet - after the first 64B of the packet).
++ *   Part of aggregate "carrier" errors in `/proc/net/dev`.
++ *
++ *   For Ethernet devices this counter must be equivalent to:
++ *
++ *    - 30.3.1.1.10 aLateCollisions
++ *
++ * @rx_compressed: Number of correctly received compressed packets.
++ *   This counters is only meaningful for interfaces which support
++ *   packet compression (e.g. CSLIP, PPP).
++ *
++ * @tx_compressed: Number of transmitted compressed packets.
++ *   This counters is only meaningful for interfaces which support
++ *   packet compression (e.g. CSLIP, PPP).
++ *
++ * @rx_nohandler: Number of packets received on the interface
++ *   but dropped by the networking stack because the device is
++ *   not designated to receive packets (e.g. backup link in a bond).
++ */
+ struct rtnl_link_stats64 {
+-	__u64	rx_packets;		/* total packets received	*/
+-	__u64	tx_packets;		/* total packets transmitted	*/
+-	__u64	rx_bytes;		/* total bytes received 	*/
+-	__u64	tx_bytes;		/* total bytes transmitted	*/
+-	__u64	rx_errors;		/* bad packets received		*/
+-	__u64	tx_errors;		/* packet transmit problems	*/
+-	__u64	rx_dropped;		/* no space in linux buffers	*/
+-	__u64	tx_dropped;		/* no space available in linux	*/
+-	__u64	multicast;		/* multicast packets received	*/
++	__u64	rx_packets;
++	__u64	tx_packets;
++	__u64	rx_bytes;
++	__u64	tx_bytes;
++	__u64	rx_errors;
++	__u64	tx_errors;
++	__u64	rx_dropped;
++	__u64	tx_dropped;
++	__u64	multicast;
+ 	__u64	collisions;
+ 
+ 	/* detailed rx_errors: */
+ 	__u64	rx_length_errors;
+-	__u64	rx_over_errors;		/* receiver ring buff overflow	*/
+-	__u64	rx_crc_errors;		/* recved pkt with crc error	*/
+-	__u64	rx_frame_errors;	/* recv'd frame alignment error */
+-	__u64	rx_fifo_errors;		/* recv'r fifo overrun		*/
+-	__u64	rx_missed_errors;	/* receiver missed packet	*/
++	__u64	rx_over_errors;
++	__u64	rx_crc_errors;
++	__u64	rx_frame_errors;
++	__u64	rx_fifo_errors;
++	__u64	rx_missed_errors;
+ 
+ 	/* detailed tx_errors */
+ 	__u64	tx_aborted_errors;
+@@ -71,8 +236,7 @@ struct rtnl_link_stats64 {
+ 	/* for cslip etc */
+ 	__u64	rx_compressed;
+ 	__u64	tx_compressed;
+-
+-	__u64	rx_nohandler;		/* dropped, no handler found	*/
++	__u64	rx_nohandler;
+ };
+ 
+ /* The struct should be in sync with struct ifmap */
 -- 
-Florian
+2.26.2
+
