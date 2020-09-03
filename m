@@ -2,103 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0655F25C832
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 19:43:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0824925C853
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 19:59:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728419AbgICRnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 13:43:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726025AbgICRnv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 13:43:51 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14337C061244;
-        Thu,  3 Sep 2020 10:43:50 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id t16so3559401ilf.13;
-        Thu, 03 Sep 2020 10:43:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vYFQYSTb/+17+Uuu6516MdUuM986Y6u14DKyOKGcWYc=;
-        b=lDIe7CF5KDUMWGocKm7G/UyV8gRmhYQGDRCGTIRYgdBTWVP2fg0DSI64zyl1Yz3HkQ
-         zZWprpbGlgiLAhJ0Cj/FVEMcDQDo/2a/18ft6tpgWCivMWuEFKVIqqsQm45BWgLsVAAg
-         VO+5qHy5uw0D4m8fLee46jmvFtq4FsPhV3wicZevOT+Fylc1KSGW2ZbYn3KqWl4kQq+3
-         9zj4maCKAJ1vxn1TTIM7yKmFX9ofN+p7Rzhxc6EzLUkZLn7v7q2V5eVpCZjtggAOw8q2
-         ZJ+irFc04GnA1cr4U17yqm8gbatsuwQwuJ0F9KGkn+WPyT9+ZfB4OwLNPIFn5V1d+nXG
-         TKaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vYFQYSTb/+17+Uuu6516MdUuM986Y6u14DKyOKGcWYc=;
-        b=p4zqLcCpNrTQ8Qv8JtieTmdGvgOHxe5o8RIkhyF2yyu1tVLN4VflDpnpd8cqmurb/z
-         LEu435feT4dci3RlIH+YtniFmhthwS5ryLMBe5Uglqez+nvPg69CIx7ZWNOO9jVLxg1D
-         BIMdnJVp81SDd1znP2ZaMp6sYn8HBMOJyf8EvfQqCxrLnluabI9Iz5efepUR6sIlTQPi
-         VYqwNkHxJK7ZSsWeIvkYtH5RKaShGF0CzzRyHMpLnQHcaBfz6T1xAenvRmg2DdVppGHG
-         g4yimHJsZ/IqOt9PBYlAnEk9syZMJiMD6EC0l8iVEHKy2saH+PSrEtMAKItV93Uxfr7Y
-         urOw==
-X-Gm-Message-State: AOAM530FWGaTzbpPl+zpbpOUjPlMdHixnb/oHeGodeAc3LOrctMeD7Uc
-        JIJARrHUmMb1AFftTOCVV1oVIwcmxpnNqhceyw4=
-X-Google-Smtp-Source: ABdhPJx0zkJhJo3i54QacP+Oa+oDBL1udk+DNdAoRc0FIBWni3OthGQzgu/4UVLEGNHGQu1+46yOMMXqiGNlx9lWZKk=
-X-Received: by 2002:a92:9145:: with SMTP id t66mr4170348ild.305.1599155030104;
- Thu, 03 Sep 2020 10:43:50 -0700 (PDT)
+        id S1728719AbgICR7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 13:59:52 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:52918 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727786AbgICR7u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 13:59:50 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 083HWnHs176888;
+        Thu, 3 Sep 2020 13:59:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=to : cc : from : subject
+ : message-id : date : mime-version : content-type :
+ content-transfer-encoding; s=pp1;
+ bh=83xresj1d5Yam9UmN2HklPzJ1iyLjqmtWsgci2yFXwE=;
+ b=a6zmMVnJwoL8OPzwG4iJBmXU2o3rCXXhe7BpNmvKGOhEY9O1D0hGQfwhWq2FidUId+LN
+ wjCWyIln6n2z9dKSN1jPOoIpCbEqAzUf3/VCaK9VUkUMlYA2dsgaQAm1ST5Krixmqncj
+ SBZUO1ptVVhXfIYtEMg5INvoW/RNqxwclm5ltRXO8IFFr7CiqPWaDeTaLa3SJ1AsSKwS
+ 23W+xCEEA/RmACriHfZlBRFH7Gla28+/NWytodAXJ7hDpO19fQ0LpoGbbmasdAwVjxzV
+ YNSJbwYFb0hP1hJq4EtM7KOQEWkejT0v88ZjIQv0a2+fa3Yy+9SsPsGKYqUm7h40zyPn yw== 
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33b4gv1ff6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Sep 2020 13:59:49 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 083Hw06m007685;
+        Thu, 3 Sep 2020 17:59:48 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma04dal.us.ibm.com with ESMTP id 339tmvbx2q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Sep 2020 17:59:48 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 083Hxhhm36110688
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 3 Sep 2020 17:59:43 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CA17A6A04F;
+        Thu,  3 Sep 2020 17:59:46 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 641F36A047;
+        Thu,  3 Sep 2020 17:59:46 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.65.240.157])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu,  3 Sep 2020 17:59:46 +0000 (GMT)
+To:     netdev@vger.kernel.org
+Cc:     jiri@nvidia.com
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+Subject: Exposing device ACL setting through devlink
+Message-ID: <e7f76581-8525-2b98-ec4d-e772db692318@linux.ibm.com>
+Date:   Thu, 3 Sep 2020 12:59:45 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
- <20200623134259.8197-1-mzhivich@akamai.com> <1849b74f-163c-8cfa-baa5-f653159fefd4@akamai.com>
- <CAM_iQpX1+dHB0kJF8gRfuDeAb9TsA9mB9H_Og8n8Hr19+EMLJA@mail.gmail.com>
- <CAM_iQpWjQiG-zVs+e-V=8LvTFbRwgC4y4eoGERjezfAT0Fmm8g@mail.gmail.com>
- <7fd86d97-6785-0b5f-1e95-92bc1da9df35@netrounds.com> <500b4843cb7c425ea5449fe199095edd5f7feb0c.camel@redhat.com>
- <25ca46e4-a8c1-1c88-d6a9-603289ff44c3@akamai.com> <CANE52Ki8rZGDPLZkxY--RPeEG+0=wFeyCD6KKkeG1WREUwramw@mail.gmail.com>
- <20200822032800.16296-1-hdanton@sina.com> <CACS=qqKhsu6waaXndO5tQL_gC9TztuUQpqQigJA2Ac0y12czMQ@mail.gmail.com>
- <20200825032312.11776-1-hdanton@sina.com> <CACS=qqK-5g-QM_vczjY+A=3fi3gChei4cAkKweZ4Sn2L537DQA@mail.gmail.com>
- <20200825162329.11292-1-hdanton@sina.com> <CACS=qqKgiwdCR_5+z-vkZ0X8DfzOPD7_ooJ_imeBnx+X1zw2qg@mail.gmail.com>
- <CACS=qqKptAQQGiMoCs1Zgs9S4ZppHhasy1AK4df2NxnCDR+vCw@mail.gmail.com>
- <5f46032e.1c69fb81.9880c.7a6cSMTPIN_ADDED_MISSING@mx.google.com>
- <CACS=qq+Yw734DWhETNAULyBZiy_zyjuzzOL-NO30AB7fd2vUOQ@mail.gmail.com>
- <20200827125747.5816-1-hdanton@sina.com> <CACS=qq+a0H=e8yLFu95aE7Hr0bQ9ytCBBn2rFx82oJnPpkBpvg@mail.gmail.com>
- <CAM_iQpV-JMURzFApp-Zhxs3QN9j=Zdf6yqwOP=E42ERDHxe6Hw@mail.gmail.com> <dd73f551d1fc89e457ffabd106cbf0bf401b747b.camel@redhat.com>
-In-Reply-To: <dd73f551d1fc89e457ffabd106cbf0bf401b747b.camel@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 3 Sep 2020 10:43:38 -0700
-Message-ID: <CAM_iQpXZMeAGkq_=rG6KEabFNykszpRU_Hnv65Qk7yesvbRDrw@mail.gmail.com>
-Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Kehuan Feng <kehuan.feng@gmail.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Jike Song <albcamus@gmail.com>, Josh Hunt <johunt@akamai.com>,
-        Jonas Bonn <jonas.bonn@netrounds.com>,
-        Michael Zhivich <mzhivich@akamai.com>,
-        David Miller <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-03_10:2020-09-03,2020-09-03 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
+ spamscore=0 priorityscore=1501 mlxscore=0 suspectscore=1 mlxlogscore=516
+ bulkscore=0 clxscore=1015 lowpriorityscore=0 malwarescore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009030160
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 3, 2020 at 1:40 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Wed, 2020-09-02 at 22:01 -0700, Cong Wang wrote:
-> > Can you test the attached one-line fix? I think we are overthinking,
-> > probably all
-> > we need here is a busy wait.
->
-> I think that will solve, but I also think that will kill NOLOCK
-> performances due to really increased contention.
+Hello, I am trying to expose MAC/VLAN ACL and pvid settings for IBM VNIC devices to administrators through devlink (originally through sysfs files, but that was rejected in favor of devlink). Could you give any tips on how you might go about doing this?
 
-Yeah, we somehow end up with more locks (seqlock, skb array lock)
-for lockless qdisc. What an irony... ;)
+Thanks,
+Tom
 
->
-> At this point I fear we could consider reverting the NOLOCK stuff.
-> I personally would hate doing so, but it looks like NOLOCK benefits are
-> outweighed by its issues.
-
-I agree, NOLOCK brings more pains than gains. There are many race
-conditions hidden in generic qdisc layer, another one is enqueue vs.
-reset which is being discussed in another thread.
-
-Thanks.
