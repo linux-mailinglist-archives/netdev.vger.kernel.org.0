@@ -2,53 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A10625CD03
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 00:00:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F046C25CD0D
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 00:03:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729496AbgICWAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 18:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49202 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729373AbgICWAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 18:00:13 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E670AC061247
-        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 15:00:13 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E35461278BDD5;
-        Thu,  3 Sep 2020 14:43:26 -0700 (PDT)
-Date:   Thu, 03 Sep 2020 15:00:13 -0700 (PDT)
-Message-Id: <20200903.150013.1684062443303428226.davem@davemloft.net>
-To:     ecree@solarflare.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] ethtool: fix error handling in ethtool_phys_id
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <99914576-a923-b9d9-3dea-62732508b4ad@solarflare.com>
-References: <99914576-a923-b9d9-3dea-62732508b4ad@solarflare.com>
-X-Mailer: Mew version 6.8 on Emacs 26.3
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 03 Sep 2020 14:43:27 -0700 (PDT)
+        id S1728582AbgICWDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 18:03:05 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41650 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726891AbgICWDE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Sep 2020 18:03:04 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kDxJs-00D71Z-Rg; Fri, 04 Sep 2020 00:03:00 +0200
+Date:   Fri, 4 Sep 2020 00:03:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: bcm_sf2: Ensure that MDIO diversion
+ is used
+Message-ID: <20200903220300.GH3112546@lunn.ch>
+References: <20200902210328.3131578-1-f.fainelli@gmail.com>
+ <20200903011324.GE3071395@lunn.ch>
+ <28177f17-1557-bd69-e96b-c11c39d71145@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <28177f17-1557-bd69-e96b-c11c39d71145@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Edward Cree <ecree@solarflare.com>
-Date: Tue, 1 Sep 2020 18:52:32 +0100
-
-> If ops->set_phys_id() returned an error, previously we would only break
->  out of the inner loop, which neither stopped the outer loop nor returned
->  the error to the user (since 'rc' would be overwritten on the next pass
->  through the loop).
-> Thus, rewrite it to use a single loop, so that the break does the right
->  thing.  Use u64 for 'count' and 'i' to prevent overflow in case of
->  (unreasonably) large values of id.data and n.
+> The firmware provides the Device Tree but here is the relevant section for
+> you pasted below. The problematic device is a particular revision of the
+> silicon (D0) which got later fixed (E0) however the Device Tree was created
+> after the fixed platform, not the problematic one. Both revisions of the
+> silicon are in production.
 > 
-> Signed-off-by: Edward Cree <ecree@solarflare.com>
+> There should have been an internal MDIO bus created for that chip revision
+> such that we could have correctly parented phy@0 (bcm53125 below) as child
+> node of the internal MDIO bus, but you have to realize that this was done
+> back in 2014 when DSA was barely revived as an active subsystem. The
+> BCM53125 node should have have been converted to an actual switch node at
+> some point, I use a mdio_boardinfo overlay downstream to support the switch
+> as a proper b53/DSA switch, anyway.
 
-Applied, thanks.
+I was expecting something like that. I think this patch needs a
+comment in the code explaining it is a workaround for a DT blob which
+cannot be changed. Maybe also make it conditional on the board
+compatible string?
+
+Thanks
+	Andrew
