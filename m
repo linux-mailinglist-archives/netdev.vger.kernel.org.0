@@ -2,102 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C74625C359
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 16:50:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 034D525C351
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 16:49:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728886AbgICOts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 10:49:48 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3152 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729085AbgICOTD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Sep 2020 10:19:03 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.54])
-        by Forcepoint Email with ESMTP id A7780D5446FE09AD0058;
-        Thu,  3 Sep 2020 22:18:52 +0800 (CST)
-Received: from [10.174.61.242] (10.174.61.242) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Thu, 3 Sep 2020 22:18:52 +0800
-Subject: Re: [PATCH net 3/3] hinic: fix bug of send pkts while setting
- channels
-To:     Eric Dumazet <eric.dumazet@gmail.com>, <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
-References: <20200902094145.12216-1-luobin9@huawei.com>
- <20200902094145.12216-4-luobin9@huawei.com>
- <fa78a6e8-c21e-ca4a-e40b-4109fb8a78d5@gmail.com>
-From:   "luobin (L)" <luobin9@huawei.com>
-Message-ID: <533ff752-f9eb-7afb-66aa-48e411ef6040@huawei.com>
-Date:   Thu, 3 Sep 2020 22:18:51 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1729371AbgICOtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 10:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729221AbgICOV1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 10:21:27 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C049C061245
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 07:21:17 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id 67so2244398pgd.12
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 07:21:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wST4pYUWSqc0gRHAhcv+00u0n9uuPJnIUa6+ZzNGSVM=;
+        b=Fx0QB07ky8bbUELrwfh9p5GqvM976k7+YLPBViVW/0x2+LiGoh/n2/pd1BZ+3E/ljN
+         pKrsrrCaHUk46nP8Y3895+WSxRKcFkSX+RXqT8GoAx7Yo8+mPxS1XYpSMV8iK1eski8M
+         +aKypxvIE2wizO94/nvzXdHcGbEiktndkcMzPHsCSOP3LSVINnIpwmRT4WsGRrLFYYbk
+         WMMEU7w2c4/KGM5Vm6PWkKfPGPgQJEJG61uwLyA+NQVSAJZ2KCthjkGeOVSe5NpDY8gf
+         tk1Kd2N3hc5ywpffMTNoMd1Dh+KtPYvo/Ma3ROuezPz1/H+x339iiUOX6syGo2hw+gf4
+         xMTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wST4pYUWSqc0gRHAhcv+00u0n9uuPJnIUa6+ZzNGSVM=;
+        b=obY63IZYy09C5gmecvYJKlOarMKKcdCkfpwzYzmCmfwy/5C0Jq4QVcBvZjrJ3c+1vJ
+         rLJ2jZ4aBaeJNZWPHzDk1MDnnIFBm3NRl78DAS9CpZfbCK7q36L8kxJm4jOWMLQGsAfj
+         XlzHIE/v6mqFEzap8YjnisWhg3srEO/wj5p9RjEeRH1QkIcI1/Vk0vn5cq2qf4RNdxe4
+         i+LfHV2M6a2PDtvt9qmHpCmQa+8oTnzvM/LcEvDIF52hm7hE25VHCJOeGoGYC0WrqB02
+         djFWQOJdradWsBEazYCGjsL4mrSDFPFMq9nEP/4J9w1piVA8oAxZzi0BaKPfxBatdqCN
+         piig==
+X-Gm-Message-State: AOAM530IFbSkds+S2NzuRYF/dDPa1t0hM5yA3WvdHEDALiD+Xz8WWFdb
+        UNu5mE+s5Q8g1Dw6GjrmGfc1lnQ8sH0=
+X-Google-Smtp-Source: ABdhPJx745VOJummv2/LZtWMkxHeJlDh0DPv5MiiKyTqmflA3ZB4/25vMjWcndjSWkioEMBrOjaveQ==
+X-Received: by 2002:a63:ff4e:: with SMTP id s14mr917761pgk.137.1599142875695;
+        Thu, 03 Sep 2020 07:21:15 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id v17sm3358705pfn.24.2020.09.03.07.21.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Sep 2020 07:21:14 -0700 (PDT)
+Subject: Re: [PATCH 1/2] net: dsa: b53: Use dev_{err,info} instead of pr_*
+To:     Paul Barker <pbarker@konsulko.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+References: <20200903112621.379037-1-pbarker@konsulko.com>
+ <20200903112621.379037-2-pbarker@konsulko.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <817467ca-d5a1-cb0d-f50c-e4d3700df027@gmail.com>
+Date:   Thu, 3 Sep 2020 07:21:13 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.1.1
 MIME-Version: 1.0
-In-Reply-To: <fa78a6e8-c21e-ca4a-e40b-4109fb8a78d5@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20200903112621.379037-2-pbarker@konsulko.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.61.242]
-X-ClientProxiedBy: dggeme708-chm.china.huawei.com (10.1.199.104) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/9/2 18:16, Eric Dumazet wrote:
+
+
+On 9/3/2020 4:26 AM, Paul Barker wrote:
+> This change allows us to see which device the err or info messages are
+> referring to if we have multiple b53 compatible devices on a board.
 > 
+> As this removes the only pr_*() calls in this file we can drop the
+> definition of pr_fmt().
 > 
-> On 9/2/20 2:41 AM, Luo bin wrote:
->> When calling hinic_close in hinic_set_channels, netif_carrier_off
->> and netif_tx_disable are excuted, and TX host resources are freed
->> after that. Core may call hinic_xmit_frame to send pkt after
->> netif_tx_disable within a short time, so we should judge whether
->> carrier is on before sending pkt otherwise the resources that
->> have already been freed in hinic_close may be accessed.
->>
->> Fixes: 2eed5a8b614b ("hinic: add set_channels ethtool_ops support")
->> Signed-off-by: Luo bin <luobin9@huawei.com>
->> ---
->>  drivers/net/ethernet/huawei/hinic/hinic_tx.c | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_tx.c b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
->> index a97498ee6914..a0662552a39c 100644
->> --- a/drivers/net/ethernet/huawei/hinic/hinic_tx.c
->> +++ b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
->> @@ -531,6 +531,11 @@ netdev_tx_t hinic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
->>  	struct hinic_txq *txq;
->>  	struct hinic_qp *qp;
->>  
->> +	if (unlikely(!netif_carrier_ok(netdev))) {
->> +		dev_kfree_skb_any(skb);
->> +		return NETDEV_TX_OK;
->> +	}
->> +
->>  	txq = &nic_dev->txqs[q_id];
->>  	qp = container_of(txq->sq, struct hinic_qp, sq);
->>  
->>
-> 
-> Adding this kind of tests in fast path seems a big hammer to me.
-> 
-> See https://marc.info/?l=linux-netdev&m=159903844423389&w=2   for a similar problem.
-> 
-> Normally, after hinic_close() operation, no packet should be sent by core networking stack.
-> 
-> Trying to work around some core networking issue in each driver is a dead end.
-Thanks for your review. I agree with what you said. Theoretically, core can't call ndo_start_xmit
-to send packet after netif_tx_disable called by hinic_close because __QUEUE_STATE_DRV_XOFF bit is set
-and this bit is protected by __netif_tx_lock but it does call hinic_xmit_frame after netif_tx_disable
-in my debug message. I'll try to figure out why and fix it. It seems like that the patch from
-https://marc.info/?l=linux-netdev&m=159903844423389&w=2 can't fix this problem.
-> 
-> 
-> 
-> 
-> 
-> 
-> .
-> 
+> Signed-off-by: Paul Barker <pbarker@konsulko.com>
+
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
