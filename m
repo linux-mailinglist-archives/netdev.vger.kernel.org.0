@@ -2,88 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81F4A25BDC2
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 10:50:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB8E25BDE8
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 10:55:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726448AbgICIuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 04:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40210 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726292AbgICIuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 04:50:09 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16555C061245
-        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 01:50:08 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id u18so2009398wmc.3
-        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 01:50:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Al+jXmabFt6iTjs3Kkx8j5ncFOEuzdqj1tZqlKBcdF4=;
-        b=HJR5mkja6Gyifjzh0YOK0V4qgdXBNL3qp3jJwb+1DKhoJ9onltiyhkIFrpa6HRjx3R
-         Vc7tkMw9WAll3m6rQeY5dYNXJG91CeCisS85wbsRmliD2GTzXn+dcpMBb3nnZFFtebvO
-         akLfHaTl+uYJe0SAcLOPd4c3pUzauWCr7c/Vc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Al+jXmabFt6iTjs3Kkx8j5ncFOEuzdqj1tZqlKBcdF4=;
-        b=gS0kCMiS0xotBupnPv7ly5+4rHG/zQWJJRudlz0sATQ6wNGteY+XeCX5yC/la2Vvz+
-         y4/2erk49tVCt+uR7zxhGLlYqlJ2o+obiGpxs+bgtAUB5bpPVWrtS1Z2lqYeuevOpUE5
-         h2HNjVtw+T1NWwB9o74JmOEvtPuJQJmuoizNwxS+zSo0sovbFcoMVU0bJJTX8IjDjonE
-         iv0xhHAmnTGaLFl1FcJ+xtd0N6Z6Tl2VnifkIAi0PP0g7mskU6uuoqPJDsbXthFJg6xP
-         AZPO4kRcWIkaNyiqOYUvdXxUHdOx5wj+A6+n+WjASCuOC7sxzkhtUQMIGaedBPnHr12S
-         qDFg==
-X-Gm-Message-State: AOAM5327I1+GRsaF38FrmaQktma5WkZy8+CmGUnKMR08+tyChUX8M72q
-        c4b/C47mZv6aGf08ugoKFihwag==
-X-Google-Smtp-Source: ABdhPJw5sS9s1NLmXGgGO8ihMdeuqOWfDrs2++miqrmb7KJ12mmteP1MEKBD8iECormo6IoLcMB2fg==
-X-Received: by 2002:a7b:cb0e:: with SMTP id u14mr1338295wmj.158.1599123007410;
-        Thu, 03 Sep 2020 01:50:07 -0700 (PDT)
-Received: from ar2.home.b5net.uk ([213.48.11.149])
-        by smtp.gmail.com with ESMTPSA id 197sm3327090wme.10.2020.09.03.01.50.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 01:50:06 -0700 (PDT)
-From:   Paul Barker <pbarker@konsulko.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Paul Barker <pbarker@konsulko.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, trivial@kernel.org
-Subject: [PATCH] doc: net: dsa: Fix typo in config code sample
-Date:   Thu,  3 Sep 2020 09:49:25 +0100
-Message-Id: <20200903084925.124494-1-pbarker@konsulko.com>
-X-Mailer: git-send-email 2.28.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726448AbgICIzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 04:55:04 -0400
+Received: from mail.katalix.com ([3.9.82.81]:42246 "EHLO mail.katalix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726268AbgICIzD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Sep 2020 04:55:03 -0400
+Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
+        (Authenticated sender: tom)
+        by mail.katalix.com (Postfix) with ESMTPSA id 1AC2486C66;
+        Thu,  3 Sep 2020 09:55:02 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
+        t=1599123302; bh=g4i0sJ451+rEcXOWej2/gbe33j5z8x0fJ7gh9qvhvug=;
+        h=From:To:Cc:Subject:Date:Message-Id:From;
+        z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
+         rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
+         in@katalix.com>|Subject:=20[PATCH=20net-next=200/6]=20l2tp:=20misc
+         ellaneous=20cleanups|Date:=20Thu,=20=203=20Sep=202020=2009:54:46=2
+         0+0100|Message-Id:=20<20200903085452.9487-1-tparkin@katalix.com>;
+        b=aL0LWCLIHtwrZ/Pd6U7cJHcn/o9ZkVFf/ShvVETCfD6mQrgsNtR+DcgYphxH4CqOT
+         /gFd6dOdOVSJ8UaokCJQzNzXZRFFnL5j4JB9y/cQh2UOdhgY39PCZut2x3IC/psUdl
+         kbOminuPNb0rk3TFf6Ag4njFthRnb6Tr8cuq3PCBvuVyW7GayRUPZ2z8lwDfGA3Hzm
+         KY9hwSAozKgu4GSzWVXVccP3pVbzK+f19PnRjkzPOf2hys5IxsKjVyrm06VLvU1u7f
+         uHJZBo2Fh8tURDwSac3DRM8QTv0l0LInjfhkbcQhuaSXzhAkbSMCIzY14921qUhVzd
+         g3wCVUlgG04+w==
+From:   Tom Parkin <tparkin@katalix.com>
+To:     netdev@vger.kernel.org
+Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
+Subject: [PATCH net-next 0/6] l2tp: miscellaneous cleanups
+Date:   Thu,  3 Sep 2020 09:54:46 +0100
+Message-Id: <20200903085452.9487-1-tparkin@katalix.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the "single port" example code for configuring a DSA switch without
-tagging support from userspace the command to bring up the "lan2" link
-was typo'd.
-
-Signed-off-by: Paul Barker <pbarker@konsulko.com>
----
- Documentation/networking/dsa/configuration.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Documentation/networking/dsa/configuration.rst b/Documentation/networking/dsa/configuration.rst
-index af029b3ca2ab..11bd5e6108c0 100644
---- a/Documentation/networking/dsa/configuration.rst
-+++ b/Documentation/networking/dsa/configuration.rst
-@@ -180,7 +180,7 @@ The configuration can only be set up via VLAN tagging and bridge setup.
+This series of patches makes the following cleanups and improvements to
+the l2tp code:
  
-   # bring up the slave interfaces
-   ip link set lan1 up
--  ip link set lan1 up
-+  ip link set lan2 up
-   ip link set lan3 up
- 
-   # create bridge
+ * various API tweaks to remove unused parameters from function calls
+ * lightly refactor the l2tp transmission path to capture more error
+   conditions in the data plane statistics
+ * repurpose the "magic feather" validation in l2tp to check for
+   sk_user_data (ab)use as opposed to refcount debugging
+ * remove some duplicated code
+
+Tom Parkin (6):
+  l2tp: remove header length param from l2tp_xmit_skb
+  l2tp: drop data_len argument from l2tp_xmit_core
+  l2tp: drop net argument from l2tp_tunnel_create
+  l2tp: capture more tx errors in data plane stats
+  l2tp: make magic feather checks more useful
+  l2tp: avoid duplicated code in l2tp_tunnel_closeall
+
+ net/l2tp/l2tp_core.c    | 134 +++++++++++++++++++---------------------
+ net/l2tp/l2tp_core.h    |  10 ++-
+ net/l2tp/l2tp_eth.c     |   2 +-
+ net/l2tp/l2tp_ip.c      |   2 +-
+ net/l2tp/l2tp_ip6.c     |   2 +-
+ net/l2tp/l2tp_netlink.c |   2 +-
+ net/l2tp/l2tp_ppp.c     |  15 ++++-
+ 7 files changed, 87 insertions(+), 80 deletions(-)
+
 -- 
-2.28.0
+2.17.1
 
