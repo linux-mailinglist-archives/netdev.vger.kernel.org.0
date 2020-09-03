@@ -2,160 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BECB25C9B2
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 21:51:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C8EE25C9B0
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 21:51:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729020AbgICTv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 15:51:26 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:35518 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728129AbgICTvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 15:51:25 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 083JpJcZ027525;
-        Thu, 3 Sep 2020 14:51:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1599162679;
-        bh=VY4y6pKM0zD2i2DSBknAWDMhJZ1BGlyUBh7Kj5LzBHI=;
-        h=From:To:CC:Subject:Date;
-        b=NSoQszJNHq1/vdEhmurPVoX9ylotd7D2XQdWtt9KXt8jzSff04Lky6V4//m+eYCmW
-         TmCqehxlO6zdjRWKKWZUa4MmjYY1Rifkhy65Ig5sCL0ZEaQJywinMzUUD1ge5ygi23
-         nBDkDhu3U3sQ19NVZC91Gsnv4DDlkAr0eOfdtzIU=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 083JpJLF059269
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 3 Sep 2020 14:51:19 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 3 Sep
- 2020 14:51:18 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 3 Sep 2020 14:51:18 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 083JpIMV106935;
-        Thu, 3 Sep 2020 14:51:18 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v2] net: phy: dp83867: Fix various styling and space issues
-Date:   Thu, 3 Sep 2020 14:51:12 -0500
-Message-ID: <20200903195112.18868-1-dmurphy@ti.com>
-X-Mailer: git-send-email 2.27.0
+        id S1728525AbgICTvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 15:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728129AbgICTvS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 15:51:18 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B14C061244;
+        Thu,  3 Sep 2020 12:51:18 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id gl3so909016pjb.1;
+        Thu, 03 Sep 2020 12:51:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6B0Zt4L4438kTcyiY4vRFcH55d4QhrJ3dYLjLq46ZHA=;
+        b=g3VYwYg9RcspHLVhzYWQiJaF4pTz5nkQQ9LfBGc2I4Pmp9SqVb4psmYXSzTL4PtDAq
+         WMwwqaAyRipcaLM4zCMe8Qr+hNG3Y3dvezWs9ccJNsFRCwMdCGHeNJ4G5pi3brDvBRqG
+         0rYSgxBDa5GarTD/7qFFNgyzrCPZUuAlbAVop47ka5faAYUfgzT99ewAtkH/VGHyTNp+
+         1wJ3dAP9aPSiTeouKIIFp93Ym0dJ456h/a2kRWtkzaP2OH3K5TGGHNfHErocYPtwLClh
+         1c6bwFjnia7z6szXFGy2/yQvhRGFRT3Dc7mArfI9hn/MgnHvV0zMMvfkuWZEEw5UEgbP
+         aAzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6B0Zt4L4438kTcyiY4vRFcH55d4QhrJ3dYLjLq46ZHA=;
+        b=tZazdy7TcTzO2QfpYPEkquhGTFW3yqeUyRh983Mrvp6UC/ZPssV1qbCSwQuv2P6CLU
+         ZwjAJwnbnqseWfv/wOQu4/Tb925pfBBOeCb+7eVs8zAwtMmlnUFkwGKEYH7vDs8ZtYdS
+         qhxyThn/QvO0Zq/oQNDbB/PDmM5/SXcT3T19jB0AJwaV8rcPLZ3hMZYoI7yc22vXiHVd
+         UcFVyJy0yzQMif056XT1KojSoqlP62c7vIqI0LEuFmUQDXT9eIzVQurVQpk54G5SNPl/
+         fYtxs+F/VSEFy8t0u2tOh10895PVqL+xYvzfoZtWyfE3DSBbUSxN+7rpYpHEtwLkYSnD
+         n3kA==
+X-Gm-Message-State: AOAM530tK4FdYe3yU7PsdhBISLWjUQssDKc3zf3tiOroo5I4Rfq5uEDW
+        FN8FfAATv7Z0uo8b5m5RzFY=
+X-Google-Smtp-Source: ABdhPJyTNwrxwIFfiPY3hIx/VSx5VO4y+sCmlOJpYeB9esRJ+ZkIKwtzj2cHxFfZVq3ninzbWG9yHw==
+X-Received: by 2002:a17:90b:4718:: with SMTP id jc24mr2180055pjb.214.1599162677182;
+        Thu, 03 Sep 2020 12:51:17 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:7ac4])
+        by smtp.gmail.com with ESMTPSA id e12sm3234482pjl.9.2020.09.03.12.51.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Sep 2020 12:51:16 -0700 (PDT)
+Date:   Thu, 3 Sep 2020 12:51:14 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com
+Subject: Re: [PATCH v7 bpf-next 7/7] selftests: bpf: add dummy prog for
+ bpf2bpf with tailcall
+Message-ID: <20200903195114.ccfzmgcl4ngz2mqv@ast-mbp.dhcp.thefacebook.com>
+References: <20200902200815.3924-1-maciej.fijalkowski@intel.com>
+ <20200902200815.3924-8-maciej.fijalkowski@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200902200815.3924-8-maciej.fijalkowski@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix spacing issues reported for misaligned switch..case and extra new
-lines.
+On Wed, Sep 02, 2020 at 10:08:15PM +0200, Maciej Fijalkowski wrote:
+> diff --git a/tools/testing/selftests/bpf/progs/tailcall6.c b/tools/testing/selftests/bpf/progs/tailcall6.c
+> new file mode 100644
+> index 000000000000..e72ca5869b58
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/tailcall6.c
+> @@ -0,0 +1,38 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +struct {
+> +	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
+> +	__uint(max_entries, 2);
+> +	__uint(key_size, sizeof(__u32));
+> +	__uint(value_size, sizeof(__u32));
+> +} jmp_table SEC(".maps");
+> +
+> +#define TAIL_FUNC(x) 				\
+> +	SEC("classifier/" #x)			\
+> +	int bpf_func_##x(struct __sk_buff *skb)	\
+> +	{					\
+> +		return x;			\
+> +	}
+> +TAIL_FUNC(0)
+> +TAIL_FUNC(1)
+> +
+> +static __attribute__ ((noinline))
+> +int subprog_tail(struct __sk_buff *skb)
+> +{
+> +	bpf_tail_call(skb, &jmp_table, 0);
+> +
+> +	return skb->len * 2;
+> +}
+> +
+> +SEC("classifier")
+> +int entry(struct __sk_buff *skb)
+> +{
+> +	bpf_tail_call(skb, &jmp_table, 1);
+> +
+> +	return subprog_tail(skb);
+> +}
 
-Also updated the file header to comply with networking commet style.
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- drivers/net/phy/dp83867.c | 45 ++++++++++++++++++---------------------
- 1 file changed, 21 insertions(+), 24 deletions(-)
-
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index f3c04981b8da..ca26ccc6dfa4 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -1,6 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
--/*
-- * Driver for the Texas Instruments DP83867 PHY
-+/* Driver for the Texas Instruments DP83867 PHY
-  *
-  * Copyright (C) 2015 Texas Instruments Inc.
-  */
-@@ -113,7 +112,6 @@
- #define DP83867_RGMII_RX_CLK_DELAY_SHIFT	0
- #define DP83867_RGMII_RX_CLK_DELAY_INV	(DP83867_RGMII_RX_CLK_DELAY_MAX + 1)
- 
--
- /* IO_MUX_CFG bits */
- #define DP83867_IO_MUX_CFG_IO_IMPEDANCE_MASK	0x1f
- #define DP83867_IO_MUX_CFG_IO_IMPEDANCE_MAX	0x0
-@@ -384,22 +382,22 @@ static int dp83867_set_downshift(struct phy_device *phydev, u8 cnt)
- 				      DP83867_DOWNSHIFT_EN);
- 
- 	switch (cnt) {
--		case DP83867_DOWNSHIFT_1_COUNT:
--			count = DP83867_DOWNSHIFT_1_COUNT_VAL;
--			break;
--		case DP83867_DOWNSHIFT_2_COUNT:
--			count = DP83867_DOWNSHIFT_2_COUNT_VAL;
--			break;
--		case DP83867_DOWNSHIFT_4_COUNT:
--			count = DP83867_DOWNSHIFT_4_COUNT_VAL;
--			break;
--		case DP83867_DOWNSHIFT_8_COUNT:
--			count = DP83867_DOWNSHIFT_8_COUNT_VAL;
--			break;
--		default:
--			phydev_err(phydev,
--				   "Downshift count must be 1, 2, 4 or 8\n");
--			return -EINVAL;
-+	case DP83867_DOWNSHIFT_1_COUNT:
-+		count = DP83867_DOWNSHIFT_1_COUNT_VAL;
-+		break;
-+	case DP83867_DOWNSHIFT_2_COUNT:
-+		count = DP83867_DOWNSHIFT_2_COUNT_VAL;
-+		break;
-+	case DP83867_DOWNSHIFT_4_COUNT:
-+		count = DP83867_DOWNSHIFT_4_COUNT_VAL;
-+		break;
-+	case DP83867_DOWNSHIFT_8_COUNT:
-+		count = DP83867_DOWNSHIFT_8_COUNT_VAL;
-+		break;
-+	default:
-+		phydev_err(phydev,
-+			   "Downshift count must be 1, 2, 4 or 8\n");
-+		return -EINVAL;
- 	}
- 
- 	val = DP83867_DOWNSHIFT_EN;
-@@ -411,7 +409,7 @@ static int dp83867_set_downshift(struct phy_device *phydev, u8 cnt)
- }
- 
- static int dp83867_get_tunable(struct phy_device *phydev,
--				struct ethtool_tunable *tuna, void *data)
-+			       struct ethtool_tunable *tuna, void *data)
- {
- 	switch (tuna->id) {
- 	case ETHTOOL_PHY_DOWNSHIFT:
-@@ -422,7 +420,7 @@ static int dp83867_get_tunable(struct phy_device *phydev,
- }
- 
- static int dp83867_set_tunable(struct phy_device *phydev,
--				struct ethtool_tunable *tuna, const void *data)
-+			       struct ethtool_tunable *tuna, const void *data)
- {
- 	switch (tuna->id) {
- 	case ETHTOOL_PHY_DOWNSHIFT:
-@@ -524,11 +522,10 @@ static int dp83867_of_init(struct phy_device *phydev)
- 		dp83867->io_impedance = -1; /* leave at default */
- 
- 	dp83867->rxctrl_strap_quirk = of_property_read_bool(of_node,
--					"ti,dp83867-rxctrl-strap-quirk");
-+							    "ti,dp83867-rxctrl-strap-quirk");
- 
- 	dp83867->sgmii_ref_clk_en = of_property_read_bool(of_node,
--					"ti,sgmii-ref-clock-output-enable");
--
-+							  "ti,sgmii-ref-clock-output-enable");
- 
- 	dp83867->rx_id_delay = DP83867_RGMII_RX_CLK_DELAY_INV;
- 	ret = of_property_read_u32(of_node, "ti,rx-internal-delay",
--- 
-2.28.0
-
+Could you add few more tests to exercise the new feature more thoroughly?
+Something like tailcall3.c that checks 32 limit, but doing tail_call from subprog.
+And another test that consume non-trival amount of stack in each function.
+Adding 'volatile char arr[128] = {};' would do the trick.
