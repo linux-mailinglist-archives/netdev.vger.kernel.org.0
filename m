@@ -2,81 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8855A25CD29
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 00:08:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D6F625CD4A
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 00:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729373AbgICWIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 18:08:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41664 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727065AbgICWIt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Sep 2020 18:08:49 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kDxPT-00D73z-Ga; Fri, 04 Sep 2020 00:08:47 +0200
-Date:   Fri, 4 Sep 2020 00:08:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Richard Leitner <richard.leitner@skidata.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH] net: fec: Fix PHY init after phy_reset_after_clk_enable()
-Message-ID: <20200903220847.GI3112546@lunn.ch>
-References: <20200903202712.143878-1-marex@denx.de>
- <20200903210011.GD3112546@lunn.ch>
- <b6397b39-c897-6e0a-6bf7-b6b24908de1a@denx.de>
- <20200903215331.GG3112546@lunn.ch>
- <02ce2afb-7b9f-ba35-63a5-7496c7a39e6e@denx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <02ce2afb-7b9f-ba35-63a5-7496c7a39e6e@denx.de>
+        id S1729446AbgICWOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 18:14:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728129AbgICWOH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 18:14:07 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C4EC061244;
+        Thu,  3 Sep 2020 15:14:06 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 27145127A0335;
+        Thu,  3 Sep 2020 14:57:19 -0700 (PDT)
+Date:   Thu, 03 Sep 2020 15:14:04 -0700 (PDT)
+Message-Id: <20200903.151404.2085033333649714923.davem@davemloft.net>
+To:     paul.davey@alliedtelesis.co.nz
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/2] Allow more than 255 IPv4 multicast
+ interfaces
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200902032222.25109-1-paul.davey@alliedtelesis.co.nz>
+References: <20200902032222.25109-1-paul.davey@alliedtelesis.co.nz>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 03 Sep 2020 14:57:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > b4 am 20200903043947.3272453-1-f.fainelli@gmail.com
+From: Paul Davey <paul.davey@alliedtelesis.co.nz>
+Date: Wed,  2 Sep 2020 15:22:20 +1200
+
+> Currently it is not possible to use more than 255 multicast interfaces
+> for IPv4 due to the format of the igmpmsg header which only has 8 bits
+> available for the VIF ID.  There is enough space for the full VIF ID in
+> the Netlink cache notifications, however the value is currently taken
+> directly from the igmpmsg header and has thus already been truncated.
 > 
-> That might be a fix for the long run, but I doubt there's any chance to
-> backport it all to stable, is there ?
-
-No. For stable we need something simpler.
-
-> >>> I think a better fix for the original problem is for the SMSC PHY
-> >>> driver to control the clock itself. If it clk_prepare_enables() the
-> >>> clock, it knows it will not be shut off again by the FEC run time
-> >>> power management.
-> >>
-> >> The FEC MAC is responsible for generating the clock, the PHY clock are
-> >> not part of the clock framework as far as I can tell.
-> > 
-> > I'm not sure this is true. At least:
-> > 
-> > https://elixir.bootlin.com/linux/latest/source/arch/arm/boot/dts/imx6ul-kontron-n6x1x-s.dtsi#L123
-> > 
-> > and there are a few more examples:
-> > 
-> > imx6ul-14x14-evk.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-> > imx6ul-kontron-n6x1x-s.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-> > imx6ul-kontron-n6x1x-som-common.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-> > imx6ull-myir-mys-6ulx.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-> > imx6ul-phytec-phycore-som.dtsi:			clocks = <&clks IMX6UL_CLK_ENET_REF>;
-> > 
-> > Maybe it is just IMX6?
+> Using the full VIF ID in the Netlink notifications allows use of more
+> than 255 IPv4 multicast interfaces if the user space routing daemon
+> uses the Netlink notifications instead of the igmpmsg cache reports.
 > 
-> This is reference clock for the FEC inside the SoC, you probably want to
-> control the clock going out of the SoC and into the PHY, which is
-> different clock than the one described in the DT, right ?
+> However doing this reveals a deficiency in the Netlink cache report
+> notifications, they lack any means for differentiating cache reports
+> relating to different multicast routing tables.  This is easily
+> resolved by adding the multicast route table ID to the cache reports.
 
-I _think_ this is the external clock which is feed to the PHY. Why
-else put it in the phy node in DT? And it has the name "rmii-ref"
-which again suggests it is the RMII clock, not something internal to
-the FEC.
+But this means that mrouted has no way to see the full 16-bit value
+via traditional igmpmsg UAPI interfaces.
 
-To be sure, we would need to check the datasheet.
+Please instead make use of the unused3 member to store the high
+order 16-bits of the vifi_t in the igmpmsg, and then code your
+netlink changes around that.
 
-   Andrew
