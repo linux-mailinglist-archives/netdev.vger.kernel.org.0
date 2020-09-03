@@ -2,70 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61BBB25C2AB
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 16:32:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF65025C303
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 16:42:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729358AbgICOcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 10:32:11 -0400
-Received: from szxga08-in.huawei.com ([45.249.212.255]:33768 "EHLO huawei.com"
+        id S1729378AbgICOmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 10:42:24 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:45836 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729042AbgICO1q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Sep 2020 10:27:46 -0400
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.53])
-        by Forcepoint Email with ESMTP id 4E10611E9B46AAA048E3;
-        Thu,  3 Sep 2020 22:27:12 +0800 (CST)
-Received: from [10.174.61.242] (10.174.61.242) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1913.5; Thu, 3 Sep 2020 22:27:11 +0800
-Subject: Re: [PATCH net 3/3] hinic: fix bug of send pkts while setting
- channels
-To:     David Miller <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
-References: <20200902094145.12216-1-luobin9@huawei.com>
- <20200902094145.12216-4-luobin9@huawei.com>
- <20200902.125257.1961904187228004830.davem@davemloft.net>
-From:   "luobin (L)" <luobin9@huawei.com>
-Message-ID: <4846879f-92ac-3726-58c8-beb719eee22e@huawei.com>
-Date:   Thu, 3 Sep 2020 22:27:11 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1729348AbgICOgz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Sep 2020 10:36:55 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id D363CB5BC2F009DC7935;
+        Thu,  3 Sep 2020 22:36:44 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 3 Sep 2020 22:36:37 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [RFC V2 net-next 0/2] net: two updates related to UDP GSO
+Date:   Thu, 3 Sep 2020 22:34:17 +0800
+Message-ID: <1599143659-62176-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-In-Reply-To: <20200902.125257.1961904187228004830.davem@davemloft.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.61.242]
-X-ClientProxiedBy: dggeme703-chm.china.huawei.com (10.1.199.99) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/9/3 3:52, David Miller wrote:
-> From: Luo bin <luobin9@huawei.com>
-> Date: Wed, 2 Sep 2020 17:41:45 +0800
-> 
->> @@ -531,6 +531,11 @@ netdev_tx_t hinic_xmit_frame(struct sk_buff *skb, struct net_device *netdev)
->>  	struct hinic_txq *txq;
->>  	struct hinic_qp *qp;
->>  
->> +	if (unlikely(!netif_carrier_ok(netdev))) {
->> +		dev_kfree_skb_any(skb);
->> +		return NETDEV_TX_OK;
->> +	}
-> 
-> As Eric said, these kinds of tests should not be placed in the fast path
-> of the driver.
-> 
-> If you invoke close and the core networking still sends packets to the
-> driver, that's a bug that needs to be fixed in the core networking.
-> .
-> 
-Okay, I'm trying to figure out why the core networking can still call ndo_start_xmit
-after netif_tx_disable and solve the problem fundamentally. And I'll undo this patch
-temporarily.
+There are two updates relates to UDP GSO.
+#1 adds a new GSO type for UDPv6
+#2 adds check for UDP GSO when csum is disable in netdev_fix_features().
+
+Changes since V1:
+- updates NETIF_F_GSO_LAST suggested by Willem de Bruijn.
+  and add NETIF_F_GSO_UDPV6_L4 feature for each driver who support UDP GSO in #1.
+- add #2 who needs #1.
+
+Huazhong Tan (2):
+  udp: add a GSO type for UDPv6
+  net: disable UDP GSO features when CSUM is disable
+
+ drivers/net/bonding/bond_main.c                         |  4 +++-
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c         |  3 ++-
+ .../net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c   |  1 +
+ .../net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c    |  1 +
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c         |  2 +-
+ drivers/net/ethernet/chelsio/cxgb4/sge.c                | 17 ++++++++---------
+ drivers/net/ethernet/intel/i40e/i40e_main.c             |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c             |  2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c               |  3 ++-
+ drivers/net/ethernet/intel/ice/ice_txrx.c               |  2 +-
+ drivers/net/ethernet/intel/igb/igb_main.c               |  9 ++++++---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c           |  9 ++++++---
+ .../net/ethernet/marvell/octeontx2/nic/otx2_common.c    |  2 +-
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c    |  2 +-
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c    |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c       |  9 ++++++---
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c         |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c       | 11 +++++++----
+ drivers/net/team/team.c                                 |  5 +++--
+ include/linux/netdev_features.h                         |  4 +++-
+ include/linux/netdevice.h                               |  1 +
+ include/linux/skbuff.h                                  |  8 ++++++++
+ include/linux/udp.h                                     |  4 ++--
+ net/core/dev.c                                          | 12 ++++++++++++
+ net/core/filter.c                                       |  6 ++----
+ net/core/skbuff.c                                       |  2 +-
+ net/ethtool/common.c                                    |  1 +
+ net/ipv6/udp.c                                          |  2 +-
+ net/ipv6/udp_offload.c                                  |  6 +++---
+ 30 files changed, 88 insertions(+), 47 deletions(-)
+
+-- 
+2.7.4
+
