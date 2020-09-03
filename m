@@ -2,92 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A82625C052
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 13:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37B6325C083
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 13:45:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728572AbgICL3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 07:29:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728480AbgICL0q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 07:26:46 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB8BC061258
-        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 04:26:30 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id b79so2500783wmb.4
-        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 04:26:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o8lMzA8/1JzsevoeEklFRFWRCmVGXrAAGNkn7AQNDnk=;
-        b=orfh4pSc/LLmRJWqnhhwzuDZdMFvR4P6ueWKm/6nG47B/ykq+9yhuiRb9fNJdmj1JM
-         WV27oOpbcaUC6OWF+SNuhQQr9fBrO+2iunv1sSYf6RfhdgKlTXaQ28CbSrLx4gyyiIIc
-         GhQkbyRN0AAjdZTwPumoaSPqSwSEp9WFXC3W4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o8lMzA8/1JzsevoeEklFRFWRCmVGXrAAGNkn7AQNDnk=;
-        b=mGeLaLMt/6LqFKHQNbbtfGN52pc+IexJTrmywG5FMKqk5NAn/RLyzAlrUP2V3OMlog
-         DJs6LdtU7Jln12bTjNLFhf88yJBTfRMlIu5CKYE6pEoYuKH0cVQxDC/RPj0WpmnKmqWc
-         Hzn3INz02qdxbR8P/s2nnKqd0l8+Jzk6Yl9gqlY9wD7xcMeZbEFZorXmZTUWcXmC5Fiu
-         OHpiDuHKaUOyOXxU+12pyYvM+rpMmOd+zQxGlt9PkIn3LXA42qTfhm3nknNHVXVDZ7LJ
-         ZueJUQwjLApgWpYLeLfc25Tsi8MqqH4KE69JHpRKIHf9kKrMKSVafEA8VJrfkyqzPxj8
-         QCHA==
-X-Gm-Message-State: AOAM533Kd0dYF14KfD2XufREQiEEgEMJy8NOLr+yVcajKOB5n4UMUB4G
-        0tEOuRg/XnxCLnMg1aDMA58IrA==
-X-Google-Smtp-Source: ABdhPJzD3GfkceLIu/lu0T9vi1jDZ3fF+F4lQOO/4fd2HEkBn6W0e2lOomEzdBL27OhyuC2p8vcmRg==
-X-Received: by 2002:a7b:cb0e:: with SMTP id u14mr1984909wmj.158.1599132389380;
-        Thu, 03 Sep 2020 04:26:29 -0700 (PDT)
-Received: from ar2.home.b5net.uk ([213.48.11.149])
-        by smtp.gmail.com with ESMTPSA id 71sm4312734wrm.23.2020.09.03.04.26.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 04:26:28 -0700 (PDT)
-From:   Paul Barker <pbarker@konsulko.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Paul Barker <pbarker@konsulko.com>, netdev@vger.kernel.org
-Subject: [PATCH 2/2] net: dsa: b53: Print err message on SW_RST timeout
-Date:   Thu,  3 Sep 2020 12:26:21 +0100
-Message-Id: <20200903112621.379037-3-pbarker@konsulko.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200903112621.379037-1-pbarker@konsulko.com>
-References: <20200903112621.379037-1-pbarker@konsulko.com>
+        id S1728674AbgICLo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 07:44:58 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:55744 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728691AbgICLnX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 07:43:23 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 083Bh1VY022598;
+        Thu, 3 Sep 2020 06:43:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1599133381;
+        bh=ITLmzJNklqPWyaUG5IRajwAgMq3MP+y3uTnPXojVyv4=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=SagqXAYjqu8VQwG6yGogW+LQpRX107s/bXCzZbgpjCVkH0GhbftyfSvQDV6SbnC/a
+         wNdKX1MYjnELzV8QZvLL3pwELMTGuezPpWQba8Yn3dK+EyhLRkhtGlUHigTajSDk+R
+         iK0YzRYt1ehwl5PObZ2HzgxgBxCephjpCQkcMrYs=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 083Bh1px047309
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 3 Sep 2020 06:43:01 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 3 Sep
+ 2020 06:43:01 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 3 Sep 2020 06:43:01 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 083Bh1C1075415;
+        Thu, 3 Sep 2020 06:43:01 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-next v3 3/3] net: dp83869: Add speed optimization feature
+Date:   Thu, 3 Sep 2020 06:42:59 -0500
+Message-ID: <20200903114259.14013-4-dmurphy@ti.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200903114259.14013-1-dmurphy@ti.com>
+References: <20200903114259.14013-1-dmurphy@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This allows us to differentiate between the possible failure modes of
-b53_switch_reset() by looking at the dmesg output.
+Set the speed optimization bit on the DP83869 PHY.
 
-Signed-off-by: Paul Barker <pbarker@konsulko.com>
+Speed optimization, also known as link downshift, enables fallback to 100M
+operation after multiple consecutive failed attempts at Gigabit link
+establishment. Such a case could occur if cabling with only four wires
+(two twisted pairs) were connected instead of the standard cabling with
+eight wires (four twisted pairs).
+
+The number of failed link attempts before falling back to 100M operation is
+configurable. By default, four failed link attempts are required before
+falling back to 100M.
+
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
- drivers/net/dsa/b53/b53_common.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index c2ecb1cdef3f..26fcff85d881 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -765,8 +765,11 @@ static int b53_switch_reset(struct b53_device *dev)
- 			usleep_range(1000, 2000);
- 		} while (timeout-- > 0);
+v3 - Fixed checkpatch format issues
+
+ drivers/net/phy/dp83869.c | 116 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 116 insertions(+)
+
+diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+index 5045df9515a5..5d0130cf5a44 100644
+--- a/drivers/net/phy/dp83869.c
++++ b/drivers/net/phy/dp83869.c
+@@ -11,6 +11,7 @@
+ #include <linux/of.h>
+ #include <linux/phy.h>
+ #include <linux/delay.h>
++#include <linux/bitfield.h>
  
--		if (timeout == 0)
-+		if (timeout == 0) {
-+			dev_err(dev->dev,
-+				"Timeout waiting for SW_RST to clear!\n");
- 			return -ETIMEDOUT;
-+		}
- 	}
+ #include <dt-bindings/net/ti-dp83869.h>
  
- 	b53_read8(dev, B53_CTRL_PAGE, B53_SWITCH_MODE, &mgmt);
+@@ -20,6 +21,7 @@
+ #define MII_DP83869_PHYCTRL	0x10
+ #define MII_DP83869_MICR	0x12
+ #define MII_DP83869_ISR		0x13
++#define DP83869_CFG2		0x14
+ #define DP83869_CTRL		0x1f
+ #define DP83869_CFG4		0x1e
+ 
+@@ -121,6 +123,18 @@
+ #define DP83869_WOL_SEC_EN		BIT(5)
+ #define DP83869_WOL_ENH_MAC		BIT(7)
+ 
++/* CFG2 bits */
++#define DP83869_DOWNSHIFT_EN		(BIT(8) | BIT(9))
++#define DP83869_DOWNSHIFT_ATTEMPT_MASK	(BIT(10) | BIT(11))
++#define DP83869_DOWNSHIFT_1_COUNT_VAL	0
++#define DP83869_DOWNSHIFT_2_COUNT_VAL	1
++#define DP83869_DOWNSHIFT_4_COUNT_VAL	2
++#define DP83869_DOWNSHIFT_8_COUNT_VAL	3
++#define DP83869_DOWNSHIFT_1_COUNT	1
++#define DP83869_DOWNSHIFT_2_COUNT	2
++#define DP83869_DOWNSHIFT_4_COUNT	4
++#define DP83869_DOWNSHIFT_8_COUNT	8
++
+ enum {
+ 	DP83869_PORT_MIRRORING_KEEP,
+ 	DP83869_PORT_MIRRORING_EN,
+@@ -281,6 +295,99 @@ static void dp83869_get_wol(struct phy_device *phydev,
+ 		wol->wolopts = 0;
+ }
+ 
++static int dp83869_get_downshift(struct phy_device *phydev, u8 *data)
++{
++	int val, cnt, enable, count;
++
++	val = phy_read(phydev, DP83869_CFG2);
++	if (val < 0)
++		return val;
++
++	enable = FIELD_GET(DP83869_DOWNSHIFT_EN, val);
++	cnt = FIELD_GET(DP83869_DOWNSHIFT_ATTEMPT_MASK, val);
++
++	switch (cnt) {
++	case DP83869_DOWNSHIFT_1_COUNT_VAL:
++		count = DP83869_DOWNSHIFT_1_COUNT;
++		break;
++	case DP83869_DOWNSHIFT_2_COUNT_VAL:
++		count = DP83869_DOWNSHIFT_2_COUNT;
++		break;
++	case DP83869_DOWNSHIFT_4_COUNT_VAL:
++		count = DP83869_DOWNSHIFT_4_COUNT;
++		break;
++	case DP83869_DOWNSHIFT_8_COUNT_VAL:
++		count = DP83869_DOWNSHIFT_8_COUNT;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	*data = enable ? count : DOWNSHIFT_DEV_DISABLE;
++
++	return 0;
++}
++
++static int dp83869_set_downshift(struct phy_device *phydev, u8 cnt)
++{
++	int val, count;
++
++	if (cnt > DP83869_DOWNSHIFT_8_COUNT)
++		return -E2BIG;
++
++	if (!cnt)
++		return phy_clear_bits(phydev, DP83869_CFG2,
++				      DP83869_DOWNSHIFT_EN);
++
++	switch (cnt) {
++	case DP83869_DOWNSHIFT_1_COUNT:
++		count = DP83869_DOWNSHIFT_1_COUNT_VAL;
++		break;
++	case DP83869_DOWNSHIFT_2_COUNT:
++		count = DP83869_DOWNSHIFT_2_COUNT_VAL;
++		break;
++	case DP83869_DOWNSHIFT_4_COUNT:
++		count = DP83869_DOWNSHIFT_4_COUNT_VAL;
++		break;
++	case DP83869_DOWNSHIFT_8_COUNT:
++		count = DP83869_DOWNSHIFT_8_COUNT_VAL;
++		break;
++	default:
++		phydev_err(phydev,
++			   "Downshift count must be 1, 2, 4 or 8\n");
++		return -EINVAL;
++	}
++
++	val = DP83869_DOWNSHIFT_EN;
++	val |= FIELD_PREP(DP83869_DOWNSHIFT_ATTEMPT_MASK, count);
++
++	return phy_modify(phydev, DP83869_CFG2,
++			  DP83869_DOWNSHIFT_EN | DP83869_DOWNSHIFT_ATTEMPT_MASK,
++			  val);
++}
++
++static int dp83869_get_tunable(struct phy_device *phydev,
++			       struct ethtool_tunable *tuna, void *data)
++{
++	switch (tuna->id) {
++	case ETHTOOL_PHY_DOWNSHIFT:
++		return dp83869_get_downshift(phydev, data);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static int dp83869_set_tunable(struct phy_device *phydev,
++			       struct ethtool_tunable *tuna, const void *data)
++{
++	switch (tuna->id) {
++	case ETHTOOL_PHY_DOWNSHIFT:
++		return dp83869_set_downshift(phydev, *(const u8 *)data);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ static int dp83869_config_port_mirroring(struct phy_device *phydev)
+ {
+ 	struct dp83869_private *dp83869 = phydev->priv;
+@@ -558,6 +665,12 @@ static int dp83869_config_init(struct phy_device *phydev)
+ 	struct dp83869_private *dp83869 = phydev->priv;
+ 	int ret, val;
+ 
++	/* Force speed optimization for the PHY even if it strapped */
++	ret = phy_modify(phydev, DP83869_CFG2, DP83869_DOWNSHIFT_EN,
++			 DP83869_DOWNSHIFT_EN);
++	if (ret)
++		return ret;
++
+ 	ret = dp83869_configure_mode(phydev, dp83869);
+ 	if (ret)
+ 		return ret;
+@@ -656,6 +769,9 @@ static struct phy_driver dp83869_driver[] = {
+ 		.ack_interrupt	= dp83869_ack_interrupt,
+ 		.config_intr	= dp83869_config_intr,
+ 
++		.get_tunable	= dp83869_get_tunable,
++		.set_tunable	= dp83869_set_tunable,
++
+ 		.get_wol	= dp83869_get_wol,
+ 		.set_wol	= dp83869_set_wol,
+ 
 -- 
 2.28.0
 
