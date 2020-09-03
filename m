@@ -2,104 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE35725C7F6
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 19:18:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3379525C7F9
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 19:19:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728129AbgICRSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 13:18:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34096 "EHLO
+        id S1728775AbgICRTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 13:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726327AbgICRSv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 13:18:51 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480ABC061244;
-        Thu,  3 Sep 2020 10:18:51 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id 19so1010926qtp.1;
-        Thu, 03 Sep 2020 10:18:51 -0700 (PDT)
+        with ESMTP id S1727786AbgICRTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 13:19:38 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23970C061245
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 10:19:38 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id s62so2153121vsc.7
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 10:19:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=OC6IAwyfPw1L9yvFikovbkI6XXtokUDw7EIRshZgX6c=;
-        b=aVZHk5TSTqqpGJDhQdYLjQcBa2e4NXVNattZqnz2SvzWlJHD03ZT7cI/Bo+wdxP+pI
-         zRFyajZG1A5NBk5SLtcKdCtaFyJ1msmXwP2VWZHYbB1hG7ucaaW1NCz4oHgz0D/Q2aUD
-         7iggJkiZicLtBTzwxhNywDJpUaupTt5yWeXtjD7+jYo6uIJq37Mg6lGst0TExHUY9EUN
-         8i7SkA8bVkJL9H2Rc5NtM7D2IpFJ4ZN1OPre5g7oBpWPgvKsOO9uL9DwvCbcm8GsgNod
-         XuCowO6b+kU7iPuaX3ykvNzg6Xd+VLbskLkRkhigCkkRIEaVtOriWlHGgIW+eDD3SqhF
-         6ZkA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6E34pUevinBPv9nlXlIDgJMiC3srQBnGMK5fNngoX64=;
+        b=PmDkVADbtD+P3BALcHVP//xg0AuB6aWvk4S4gu9sCpMAAnIbG5kIKMRDXGJZUnOnpv
+         19dDkFukgPEmzBuz5+V4Iiuu06vmhK5xWi/Zd1gnPzov0WQoOplNfg7qsnXCHxRFg3GM
+         yOIy36WMvr9ejpSc2O4jD7r/yuxbTIRILzrbpe3p3RVDXBmL/mqj+1m0owASDioa/NpD
+         iVSUaCSYRRMtkE3z8dXToCXV53S8oS9lOUapu3JS5LvKkpb4eNNAhKeRNK88j8P3fXBX
+         ycuBYY11/Yo/W14NDIm2SBtqfqAPn8UfM9Llgpji/wRYo3yDnhvdN+eWarhXHCIxsbmy
+         bZcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OC6IAwyfPw1L9yvFikovbkI6XXtokUDw7EIRshZgX6c=;
-        b=tNyEvTT4MTPQE5i1EIDvPg/owgVATGICPLgqniQ9dQUOz0ZgUs9j5IQtSJSORsnsre
-         vhQ8+del7U9YgYhfpvqiyXcHxeose1usZJiLWXLY0YC66n+6VlKMoiEQBmMiMuUyn2mM
-         LpIaNshBc8+8PCOU5ZtK1tR7CdnfGIswFGTNrD8/U5pkHpo7UZgycAwno0/WZE8XnrO9
-         Bto80Nh1+UoC8A0iyUDnX320YFUAS/aYlVeeRacewoTjY9o6P4eyTjIAz910uCJ5y94D
-         mZ8OSHMw171QrQFSSJLdETzJDBrmnwxJ9NCW2DLPDfal63TDqaj4sEGmQVIKbBOycQXc
-         Bcyg==
-X-Gm-Message-State: AOAM533Tjw4heLgm6bgE/3fG3pgpKUI6JOAHAHgvsH3hkTfQaX2BrJjM
-        CWu8qg4+I6hh8YZ1IXOVFxI=
-X-Google-Smtp-Source: ABdhPJzGDvwiwRO3GDSmewCA9oibFMfRestqjYGRIvw/pH2aqqzdwZH4mdsFPmKWYreMPkKadfWC6A==
-X-Received: by 2002:ac8:fb3:: with SMTP id b48mr4706359qtk.16.1599153530393;
-        Thu, 03 Sep 2020 10:18:50 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f016:5ccb:a3f8:9d8c:beb:7674])
-        by smtp.gmail.com with ESMTPSA id j31sm2545455qta.6.2020.09.03.10.18.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 10:18:49 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 61780C5F36; Thu,  3 Sep 2020 14:18:47 -0300 (-03)
-Date:   Thu, 3 Sep 2020 14:18:47 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Petr Malat <oss@malat.biz>
-Cc:     linux-sctp@vger.kernel.org, vyasevich@gmail.com,
-        nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] sctp: Honour SCTP_PARTIAL_DELIVERY_POINT even under
- memory pressure
-Message-ID: <20200903171847.GD2444@localhost.localdomain>
-References: <20200901090007.31061-1-oss@malat.biz>
- <20200902145835.GC2444@localhost.localdomain>
- <20200903112147.GA17627@bordel.klfree.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6E34pUevinBPv9nlXlIDgJMiC3srQBnGMK5fNngoX64=;
+        b=dG8sEVDbFHEYozckmxBtlWoE7SR2W/F2nq3Ho3SqTvGXWH7nBJjeSmFVyC79Drtwbp
+         EZmmiW8QWU+ogZtwfMIFV1Ptz+x/PJfc1cgUDwbWoNuRRRSiw0jiw+MqopApvnHpY8Cr
+         GOxJOLtEkd67Q4XC3Q/Jft5bIBTn3yEl7Bq18r/IYLvtMpnN9DnQZ0FsZOpa0XNoPZpn
+         cBQxgYPRhLEHOsKsAuYTXAIUC/8ol5mwWkpax16Sc3Xnff8B5tqb0pfgWgqiXoWKuHCd
+         sdRqW4iKz0PKpb5IdSI8u+AVBZH0SyDqbN1EYfrVVTk/wr+42LpsHXv+RrDz7FTPON8/
+         U9dA==
+X-Gm-Message-State: AOAM5323jsR4c6X/j98ym5VR8mFK2QNz+R6jJ6r+ZjD41oHEpSx06Nvn
+        oU9uMlim+mHUz/MC8oxTyVQ+JnWwOErPTw==
+X-Google-Smtp-Source: ABdhPJzLWYFKHytbQhiwdgnJe8fCUve1fnTo5JL3Z73vpmlgGcJQnj9WyC9aHPgYyK0YxydkbafqWA==
+X-Received: by 2002:a67:ff97:: with SMTP id v23mr2383306vsq.11.1599153576992;
+        Thu, 03 Sep 2020 10:19:36 -0700 (PDT)
+Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
+        by smtp.gmail.com with ESMTPSA id w69sm590487vkd.23.2020.09.03.10.19.36
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Sep 2020 10:19:36 -0700 (PDT)
+Received: by mail-ua1-f44.google.com with SMTP id u48so1162581uau.0
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 10:19:36 -0700 (PDT)
+X-Received: by 2002:a9f:2237:: with SMTP id 52mr2117679uad.141.1599153575566;
+ Thu, 03 Sep 2020 10:19:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200903112147.GA17627@bordel.klfree.net>
+References: <20200902150442.2779-1-vadym.kochan@plvision.eu> <20200902150442.2779-6-vadym.kochan@plvision.eu>
+In-Reply-To: <20200902150442.2779-6-vadym.kochan@plvision.eu>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 3 Sep 2020 19:18:59 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSfNX0vYL2QmomVBrjXzmQ7WUUmOhtyM_9WfMkSQD1EuPw@mail.gmail.com>
+Message-ID: <CA+FuTSfNX0vYL2QmomVBrjXzmQ7WUUmOhtyM_9WfMkSQD1EuPw@mail.gmail.com>
+Subject: Re: [PATCH net v6 5/6] net: marvell: prestera: Add Switchdev driver implementation
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Mickey Rachamim <mickeyr@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+On Wed, Sep 2, 2020 at 5:07 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
+>
+> The following features are supported:
+>
+>     - VLAN-aware bridge offloading
+>     - VLAN-unaware bridge offloading
+>     - FDB offloading (learning, ageing)
+>     - Switchport configuration
+>
+> Currently there are some limitations like:
+>
+>     - Only 1 VLAN-aware bridge instance supported
+>     - FDB ageing timeout parameter is set globally per device
+>
+> Co-developed-by: Serhiy Boiko <serhiy.boiko@plvision.eu>
+> Signed-off-by: Serhiy Boiko <serhiy.boiko@plvision.eu>
+> Co-developed-by: Serhiy Pshyk <serhiy.pshyk@plvision.eu>
+> Signed-off-by: Serhiy Pshyk <serhiy.pshyk@plvision.eu>
+> Co-developed-by: Taras Chornyi <taras.chornyi@plvision.eu>
+> Signed-off-by: Taras Chornyi <taras.chornyi@plvision.eu>
+> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
 
-On Thu, Sep 03, 2020 at 01:21:48PM +0200, Petr Malat wrote:
-> Hi!
-> On Wed, Sep 02, 2020 at 11:58:35AM -0300, Marcelo Ricardo Leitner wrote:
-> > On Tue, Sep 01, 2020 at 11:00:07AM +0200, Petr Malat wrote:
-> > > Command SCTP_CMD_PART_DELIVER issued under memory pressure calls
-> > > sctp_ulpq_partial_delivery(), which tries to fetch and partially deliver
-> > > the first message it finds without checking if the message is longer than
-> > > SCTP_PARTIAL_DELIVERY_POINT. According to the RFC 6458 paragraph 8.1.21.
-> > > such a behavior is invalid. Fix it by returning the first message only if
-> > > its part currently available is longer than SCTP_PARTIAL_DELIVERY_POINT.
-> > 
-> > Okay but AFAICT this patch then violates the basic idea behind partial
-> > delivery. It will cause such small message to just not be delivered
-> > anymore, and keep using the receive buffer which it is trying to free
-> > some bits at this moment.
-> By default the pd_point is set to 0, so there will not be a change in the
-> behavior, but if the user changes it to some other value, it should be
-> respected by the stack - for example when the largest message the user
-> exchanges is 1kB and the user sets it to 1kB, his application is not
-> prepared to handle fragmented messages at all and it's not a good idea to
-> pass such a message to the app.
 
-Then, if it doesn't support fragmented messages at all, the app just
-shouldn't be setting pd_point at all. :-) Anyhow, I see how the patch
-works now.
+> +int prestera_switchdev_init(struct prestera_switch *sw)
+> +{
+> +       struct prestera_switchdev *swdev;
+> +       int err;
+> +
+> +       swdev = kzalloc(sizeof(*swdev), GFP_KERNEL);
+> +       if (!swdev)
+> +               return -ENOMEM;
+> +
+> +       sw->swdev = swdev;
+> +       swdev->sw = sw;
+> +
+> +       INIT_LIST_HEAD(&swdev->bridge_list);
+> +
+> +       swdev_wq = alloc_ordered_workqueue("%s_ordered", 0, "prestera_br");
+> +       if (!swdev_wq) {
+> +               err = -ENOMEM;
+> +               goto err_alloc_wq;
+> +       }
+> +
+> +       err = prestera_switchdev_handler_init(swdev);
+> +       if (err)
+> +               goto err_swdev_init;
+> +
+> +       err = prestera_fdb_init(sw);
+> +       if (err)
+> +               goto err_fdb_init;
+> +
+> +       return 0;
+> +
+> +err_fdb_init:
+> +err_swdev_init:
+> +err_alloc_wq:
+> +       kfree(swdev);
+> +
+> +       return err;
+> +}
+> +
+> +void prestera_switchdev_fini(struct prestera_switch *sw)
+> +{
+> +       struct prestera_switchdev *swdev = sw->swdev;
+> +
+> +       prestera_fdb_fini(sw);
+> +       prestera_switchdev_handler_fini(swdev);
+> +       destroy_workqueue(swdev_wq);
 
-The fix is also needed on sctp_intl_retrieve_first() and
-sctp_intl_retrieve_first_uo(). Same issue is in there, but for stream
-interleaving.
+this cleanup is also needed on the error path of prestera_switchdev_init
 
-Thanks.
+> +       kfree(swdev);
+> +}
