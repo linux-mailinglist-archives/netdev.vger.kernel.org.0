@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BED0C25CB9B
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 22:59:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DFFC25CB9D
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 22:59:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728629AbgICU7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 16:59:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55988 "EHLO mail.kernel.org"
+        id S1728692AbgICU7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 16:59:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726088AbgICU7H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Sep 2020 16:59:07 -0400
+        id S1726088AbgICU7P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 3 Sep 2020 16:59:15 -0400
 Received: from lore-desk.redhat.com (unknown [151.66.86.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BA944206B8;
-        Thu,  3 Sep 2020 20:59:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B53C6206C0;
+        Thu,  3 Sep 2020 20:59:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599166747;
-        bh=eNqYbb2UwOFJOvg8nHjHg56kZ9XVLK+ZfxCwWscomT0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kZIgUr895BUcIAPmCIidt3UE9H44i+OZO7OPtbF8slSvdU5mXUc4nhs+dfpG211L4
-         Lwg3UvbbK5EPpo2yWoXiEM6ZBjq162GG94eOQti9OQcWyt7l08niCOeNtSLDhO8Vd7
-         AVuNsDxXwT+58QOFuWjtLRrgOkx2u4Rg0rjj1e7I=
+        s=default; t=1599166754;
+        bh=jGFg9HepHezzAGnfdT1zopmNIIsBMcFzzfvdUYqTGvs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bHOX3U+/ytTB9CvsUP3j3x+dZF8ttjSFfq29cSyAAWFZ+Yf68+pIotIcc+tXz9ZPm
+         fvrFSvBw6kdvN/SgKUKs/dy8HydKFBwOzj2N3Cwfj+c0kd3NcZslWagzh01zymzSAU
+         TZzN5nhUJ8/CHGllxNkOgXUUtSPQABgWSW/Eh+LU=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, davem@davemloft.net,
@@ -30,10 +30,12 @@ Cc:     bpf@vger.kernel.org, davem@davemloft.net,
         echaudro@redhat.com, sameehj@amazon.com, kuba@kernel.org,
         john.fastabend@gmail.com, daniel@iogearbox.net, ast@kernel.org,
         shayagr@amazon.com
-Subject: [PATCH v2 net-next 0/9] mvneta: introduce XDP multi-buffer support
-Date:   Thu,  3 Sep 2020 22:58:44 +0200
-Message-Id: <cover.1599165031.git.lorenzo@kernel.org>
+Subject: [PATCH v2 net-next 1/9] xdp: introduce mb in xdp_buff/xdp_frame
+Date:   Thu,  3 Sep 2020 22:58:45 +0200
+Message-Id: <1e8e82f72e46264b7a7a1ac704d24e163ebed100.1599165031.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <cover.1599165031.git.lorenzo@kernel.org>
+References: <cover.1599165031.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -41,88 +43,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-- Finalize XDP multi-buffer support for mvneta driver introducing the
-  capability to map non-linear buffers on tx side.
-- Introduce multi-buffer bit (mb) in xdp_frame/xdp_buffer to specify if
-  shared_info area has been properly initialized.
-- Initialize multi-buffer bit (mb) to 0 in all XDP-capable drivers.
-- Add multi-buff support to xdp_return_{buff/frame} utility routines.
-- Introduce bpf_xdp_adjust_mb_header helper to adjust frame headers moving
-  *offset* bytes from/to the second buffer to/from the first one.
-  This helper can be used to move headers when the hw DMA SG is not able
-  to copy all the headers in the first fragment and split header and data
-  pages. A possible use case for bpf_xdp_adjust_mb_header is described
-  here [0]
-- Introduce bpf_xdp_get_frag_count and bpf_xdp_get_frags_total_size helpers to
-  report the total number/size of frags for a given xdp multi-buff.
+Introduce multi-buffer bit (mb) in xdp_frame/xdp_buffer to specify
+if shared_info area has been properly initialized for non-linear
+xdp buffers
 
-XDP multi-buffer design principles are described here [1]
-For the moment we have not implemented any self-test for the introduced the bpf
-helpers. We can address this in a follow up series if the proposed approach
-is accepted.
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ include/net/xdp.h | 8 ++++++--
+ net/core/xdp.c    | 1 +
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-Changes since v1:
-- Fix use-after-free in xdp_return_{buff/frame}
-- Introduce bpf helpers
-- Introduce xdp_mb sample program
-- access skb_shared_info->nr_frags only on the last fragment
-
-Changes since RFC:
-- squash multi-buffer bit initialization in a single patch
-- add mvneta non-linear XDP buff support for tx side
-
-[0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
-[1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
-
-Lorenzo Bianconi (7):
-  xdp: introduce mb in xdp_buff/xdp_frame
-  xdp: initialize xdp_buff mb bit to 0 in all XDP drivers
-  net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
-  xdp: add multi-buff support to xdp_return_{buff/frame}
-  net: mvneta: add multi buffer support to XDP_TX
-  bpf: helpers: add bpf_xdp_adjust_mb_header helper
-  net: mvneta: enable jumbo frames for XDP
-
-Sameeh Jubran (2):
-  bpf: helpers: add multibuffer support
-  samples/bpf: add bpf program that uses xdp mb helpers
-
- drivers/net/ethernet/amazon/ena/ena_netdev.c  |   1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   1 +
- .../net/ethernet/cavium/thunder/nicvf_main.c  |   1 +
- .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   1 +
- drivers/net/ethernet/intel/i40e/i40e_txrx.c   |   1 +
- drivers/net/ethernet/intel/ice/ice_txrx.c     |   1 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   1 +
- .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   1 +
- drivers/net/ethernet/marvell/mvneta.c         | 126 ++++++------
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   1 +
- drivers/net/ethernet/mellanox/mlx4/en_rx.c    |   1 +
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   1 +
- .../ethernet/netronome/nfp/nfp_net_common.c   |   1 +
- drivers/net/ethernet/qlogic/qede/qede_fp.c    |   1 +
- drivers/net/ethernet/sfc/rx.c                 |   1 +
- drivers/net/ethernet/socionext/netsec.c       |   1 +
- drivers/net/ethernet/ti/cpsw.c                |   1 +
- drivers/net/ethernet/ti/cpsw_new.c            |   1 +
- drivers/net/hyperv/netvsc_bpf.c               |   1 +
- drivers/net/tun.c                             |   2 +
- drivers/net/veth.c                            |   1 +
- drivers/net/virtio_net.c                      |   2 +
- drivers/net/xen-netfront.c                    |   1 +
- include/net/xdp.h                             |  26 ++-
- include/uapi/linux/bpf.h                      |  39 +++-
- net/core/dev.c                                |   1 +
- net/core/filter.c                             |  93 +++++++++
- net/core/xdp.c                                |  40 ++++
- samples/bpf/Makefile                          |   3 +
- samples/bpf/xdp_mb_kern.c                     |  68 +++++++
- samples/bpf/xdp_mb_user.c                     | 182 ++++++++++++++++++
- tools/include/uapi/linux/bpf.h                |  40 +++-
- 32 files changed, 572 insertions(+), 70 deletions(-)
- create mode 100644 samples/bpf/xdp_mb_kern.c
- create mode 100644 samples/bpf/xdp_mb_user.c
-
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 3814fb631d52..42f439f9fcda 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -72,7 +72,8 @@ struct xdp_buff {
+ 	void *data_hard_start;
+ 	struct xdp_rxq_info *rxq;
+ 	struct xdp_txq_info *txq;
+-	u32 frame_sz; /* frame size to deduce data_hard_end/reserved tailroom*/
++	u32 frame_sz:31; /* frame size to deduce data_hard_end/reserved tailroom*/
++	u32 mb:1; /* xdp non-linear buffer */
+ };
+ 
+ /* Reserve memory area at end-of data area.
+@@ -96,7 +97,8 @@ struct xdp_frame {
+ 	u16 len;
+ 	u16 headroom;
+ 	u32 metasize:8;
+-	u32 frame_sz:24;
++	u32 frame_sz:23;
++	u32 mb:1; /* xdp non-linear frame */
+ 	/* Lifetime of xdp_rxq_info is limited to NAPI/enqueue time,
+ 	 * while mem info is valid on remote CPU.
+ 	 */
+@@ -141,6 +143,7 @@ void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
+ 	xdp->data_end = frame->data + frame->len;
+ 	xdp->data_meta = frame->data - frame->metasize;
+ 	xdp->frame_sz = frame->frame_sz;
++	xdp->mb = frame->mb;
+ }
+ 
+ static inline
+@@ -167,6 +170,7 @@ int xdp_update_frame_from_buff(struct xdp_buff *xdp,
+ 	xdp_frame->headroom = headroom - sizeof(*xdp_frame);
+ 	xdp_frame->metasize = metasize;
+ 	xdp_frame->frame_sz = xdp->frame_sz;
++	xdp_frame->mb = xdp->mb;
+ 
+ 	return 0;
+ }
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 48aba933a5a8..884f140fc3be 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -454,6 +454,7 @@ struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp)
+ 	xdpf->headroom = 0;
+ 	xdpf->metasize = metasize;
+ 	xdpf->frame_sz = PAGE_SIZE;
++	xdpf->mb = xdp->mb;
+ 	xdpf->mem.type = MEM_TYPE_PAGE_ORDER0;
+ 
+ 	xsk_buff_free(xdp);
 -- 
 2.26.2
 
