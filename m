@@ -2,167 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAD3925B86A
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 03:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 757CB25B877
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 03:54:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726686AbgICBtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 2 Sep 2020 21:49:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
+        id S1726814AbgICByi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 2 Sep 2020 21:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726177AbgICBtE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 21:49:04 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57354C061244;
-        Wed,  2 Sep 2020 18:49:04 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id b6so1023319iof.6;
-        Wed, 02 Sep 2020 18:49:04 -0700 (PDT)
+        with ESMTP id S1726177AbgICByg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 2 Sep 2020 21:54:36 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA46FC061244;
+        Wed,  2 Sep 2020 18:54:33 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id m8so920936pfh.3;
+        Wed, 02 Sep 2020 18:54:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A041r2jEFTomfDx8u7avd16rEk4eRvYegHw5wHbWQMg=;
-        b=gaDMGyt8CFZEoVtbbxWAN5JkAjcMRRu+pPuNEtpms4SNTjXMkIlwuCmglykMPmkbEI
-         GbZGdG6yTHOQnfZWVdFbXTdvTcLUpvfVL43Um6QJAzl0Y4s/Nl1DYyf3mZBkyYSpUdA4
-         OhLI99hG2/RsLXjXzul2Z/LLduxwOsJszmmllCDBe/gwqZxeqis695H1yBj661g8ERbB
-         J2k5yB/duPOVNpQxNL5gXrtNr7/YT1Vma7JCLr3A7By6kE6L9q7NM9nDfMCkxi8aPh20
-         7cop2Le0OMYh/3reNWDgQ1BZcuKrrrhrsxiFCjt4sCfjxGUbyVzTHQ+tsNvSoPcRKQLF
-         KJ7g==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AbX3xaVNmMCXv/ZEBehiM7Hryv15WbixbRnad2CHtUg=;
+        b=ZzFyR8SHD1+4u3C7J7jw1/tujGX13Bx5EFcya7APsryvND/NRi7BLyCVvpA2Ws8Ena
+         M1nlQzEdvXCcdvPIxo6Wpxj3rGGvRi9NbwXEuErTFHGln18t8ziIUTktXDbFxPEDMrZ4
+         xqYKpebMtf1wNxgvSfjK8IsuuARWIN7oN+GZRRmaGcv729huR3rSUdYBhTkPp1n7nAre
+         HyLHmR9sClEVSL5HwwcQQ+qUL7Is/5SWZqAfLs+wqZzQcSXzHR23tzKjGTwLq+2EyJ3I
+         1KOHhnSmojF2TA6tQDgzkioNJ74GAyXtU1It7kATUMfWRfOlNirZ5BYonQgDhQIViu3W
+         Uv/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A041r2jEFTomfDx8u7avd16rEk4eRvYegHw5wHbWQMg=;
-        b=W3sjdJX/2LBKz5wuAdyFGMCtO0tV3Ku9SYXUfJpCcYXFZreY6KM9W44bDPqkfWgpZL
-         1SehNKZLgvxPR733xriXWmB6LruWyVynGOqjN/wfsZzVJVu2rF+QWSgSW3yNphzDibon
-         eW7LymCIEvac7Z6e+73LvhiKwBhIw4FNY2U2Nqhr7mWmQcnIlpKR2JDangMljdFdd2Bi
-         yEu21zRdJTHXHwt8Vm8iLjPMxRvi/CJEE5jnagXkieUXLrgxCl7qNbsSm9zWdcjm3PbO
-         OFNtvEatR1m0Uc+M83KjQlXx2bRwhJNnlI9h/NRerQAzMmxWemWtPe665GYWCuYAo6Vh
-         KKtw==
-X-Gm-Message-State: AOAM533pn4ELA94VOsYPUHk/16tJHRx26boSyrGQjuaIRcOExdrx/T/W
-        FbhOcBTuDvfOCKOJoinvQ/L90tj8UwN62I+JVaI=
-X-Google-Smtp-Source: ABdhPJyHbPEG1rJcAhQqB4Dwzk+bhahcKhJFsIun8nvgteGVez29nkptOCqNWo72NkqrGvJxaB1fEyhcMr/7itD1cPw=
-X-Received: by 2002:a5d:980f:: with SMTP id a15mr1070690iol.12.1599097743554;
- Wed, 02 Sep 2020 18:49:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
- <511bcb5c-b089-ab4e-4424-a83c6e718bfa@huawei.com> <CAM_iQpW1c1TOKWLxm4uGvCUzK0mKKeDg1Y+3dGAC04pZXeCXcw@mail.gmail.com>
- <f81b534a-5845-ae7d-b103-434232c0f5ff@huawei.com> <CAM_iQpXmpMdxF2JDOROaf+Tjk-8dASiXz53K-Ph_q7jVMe0oVw@mail.gmail.com>
- <cd773132-c98e-18e1-67fd-bbef6babbf0f@huawei.com>
-In-Reply-To: <cd773132-c98e-18e1-67fd-bbef6babbf0f@huawei.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 2 Sep 2020 18:48:52 -0700
-Message-ID: <CAM_iQpWbZdh5-UGBi6PM19EBgV+Bq7vmifgJPdak6X=R9yztnw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AbX3xaVNmMCXv/ZEBehiM7Hryv15WbixbRnad2CHtUg=;
+        b=ccWxFxLFdRN7dsEWOtTQV7C1xF20xGhAFObWwCW9/m8udDNe5pAOH6bfkNU6F58Nm/
+         oTuo/7qS7wR1Iygzv+LrmT8luLdM58QSQRkYGQfH+GyDdet4QSkhg9klTQPBNyAZYyQe
+         mpC3pVMipOSNyLU+lZZIU1MRwSYR69vjATJnbkmj+1gttE2WCl+BS+ePuUQO+wr7k7Nv
+         X2quSZTOvnHYiKJKFfmmcL3oXyg3IqkLqHDh6BhbnibV8I1dUWBferEhiJc3GOpHtya3
+         fxHS6GIxo+cYU2kmUcxcTCeKSbx+6lbD2MmC1Qco6LHPe05uYf5u9z0p8W/dcrrQ0urP
+         WFOA==
+X-Gm-Message-State: AOAM530NAy7nemxlW1Gx3ptBfPzjH+jJCsphLz+AfuRA3wogiKM5V0Rd
+        MgumCsc3dJPAHI0JHbjJXu2+cMOEWhw=
+X-Google-Smtp-Source: ABdhPJxDHudhWPHWrlgxHskQUXK7dkcDapJ2y21vEcm9he+gMBa63RCZCmbHjzUmyFjo4N9kH0gV1A==
+X-Received: by 2002:a62:fb05:: with SMTP id x5mr1307011pfm.121.1599098072426;
+        Wed, 02 Sep 2020 18:54:32 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 65sm846228pfx.104.2020.09.02.18.54.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 02 Sep 2020 18:54:31 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: dsa: bcm_sf2: Ensure that MDIO diversion is
+ used
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linuxarm@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+        open list <linux-kernel@vger.kernel.org>
+References: <20200902210328.3131578-1-f.fainelli@gmail.com>
+ <20200903011324.GE3071395@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <28177f17-1557-bd69-e96b-c11c39d71145@gmail.com>
+Date:   Wed, 2 Sep 2020 18:54:30 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.1.1
+MIME-Version: 1.0
+In-Reply-To: <20200903011324.GE3071395@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 2, 2020 at 6:22 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->
-> On 2020/9/3 8:35, Cong Wang wrote:
-> > On Tue, Sep 1, 2020 at 11:35 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> >>
-> >> On 2020/9/2 12:41, Cong Wang wrote:
-> >>> On Tue, Sep 1, 2020 at 6:42 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> >>>>
-> >>>> On 2020/9/2 2:24, Cong Wang wrote:
-> >>>>> On Mon, Aug 31, 2020 at 5:59 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
-> >>>>>>
-> >>>>>> Currently there is concurrent reset and enqueue operation for the
-> >>>>>> same lockless qdisc when there is no lock to synchronize the
-> >>>>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
-> >>>>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
-> >>>>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
-> >>>>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
-> >>>>>> skb with a larger queue_mapping after the corresponding qdisc is
-> >>>>>> reset, and call hns3_nic_net_xmit() with that skb later.
-> >>>>>
-> >>>>> Can you be more specific here? Which call path requests a smaller
-> >>>>> tx queue num? If you mean netif_set_real_num_tx_queues(), clearly
-> >>>>> we already have a synchronize_net() there.
-> >>>>
-> >>>> When the netdevice is in active state, the synchronize_net() seems to
-> >>>> do the correct work, as below:
-> >>>>
-> >>>> CPU 0:                                       CPU1:
-> >>>> __dev_queue_xmit()                       netif_set_real_num_tx_queues()
-> >>>> rcu_read_lock_bh();
-> >>>> netdev_core_pick_tx(dev, skb, sb_dev);
-> >>>>         .
-> >>>>         .                               dev->real_num_tx_queues = txq;
-> >>>>         .                                       .
-> >>>>         .                                       .
-> >>>>         .                               synchronize_net();
-> >>>>         .                                       .
-> >>>> q->enqueue()                                    .
-> >>>>         .                                       .
-> >>>> rcu_read_unlock_bh()                            .
-> >>>>                                         qdisc_reset_all_tx_gt
-> >>>>
-> >>>>
-> >>>
-> >>> Right.
-> >>>
-> >>>
-> >>>> but dev->real_num_tx_queues is not RCU-protected, maybe that is a problem
-> >>>> too.
-> >>>>
-> >>>> The problem we hit is as below:
-> >>>> In hns3_set_channels(), hns3_reset_notify(h, HNAE3_DOWN_CLIENT) is called
-> >>>> to deactive the netdevice when user requested a smaller queue num, and
-> >>>> txq->qdisc is already changed to noop_qdisc when calling
-> >>>> netif_set_real_num_tx_queues(), so the synchronize_net() in the function
-> >>>> netif_set_real_num_tx_queues() does not help here.
-> >>>
-> >>> How could qdisc still be running after deactivating the device?
-> >>
-> >> qdisc could be running during the device deactivating process.
-> >>
-> >> The main process of changing channel number is as below:
-> >>
-> >> 1. dev_deactivate()
-> >> 2. hns3 handware related setup
-> >> 3. netif_set_real_num_tx_queues()
-> >> 4. netif_tx_wake_all_queues()
-> >> 5. dev_activate()
-> >>
-> >> During step 1, qdisc could be running while qdisc is resetting, so
-> >> there could be skb left in the old qdisc(which will be restored back to
-> >> txq->qdisc during dev_activate()), as below:
-> >>
-> >> CPU 0:                                       CPU1:
-> >> __dev_queue_xmit():                      dev_deactivate_many():
-> >> rcu_read_lock_bh();                      qdisc_deactivate(qdisc);
-> >> q = rcu_dereference_bh(txq->qdisc);             .
-> >> netdev_core_pick_tx(dev, skb, sb_dev);          .
-> >>         .
-> >>         .                               rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
-> >>         .                                       .
-> >>         .                                       .
-> >>         .                                       .
-> >>         .                                       .
-> >> q->enqueue()                                    .
-> >
-> >
-> > Well, like I said, if the deactivated bit were tested before ->enqueue(),
-> > there would be no packet queued after qdisc_deactivate().
->
-> Only if the deactivated bit testing is also protected by qdisc->seqlock?
-> otherwise there is still window between setting and testing the deactivated bit.
 
-Can you be more specific here? Why testing or setting a bit is not atomic?
 
-AFAIU, qdisc->seqlock is an optimization to replace
-__QDISC_STATE_RUNNING, which has nothing to do with deactivate bit.
+On 9/2/2020 6:13 PM, Andrew Lunn wrote:
+> On Wed, Sep 02, 2020 at 02:03:27PM -0700, Florian Fainelli wrote:
+>> Registering our slave MDIO bus outside of the OF infrastructure is
+>> necessary in order to avoid creating double references of the same
+>> Device Tree nodes, however it is not sufficient to guarantee that the
+>> MDIO bus diversion is used because of_phy_connect() will still resolve
+>> to a valid PHY phandle and it will connect to the PHY using its parent
+>> MDIO bus which is still the SF2 master MDIO bus.
+>>
+>> Ensure that of_phy_connect() does not suceed by removing any phandle
+>> reference for the PHY we need to divert. This forces the DSA code to use
+>> the DSA slave_mii_bus that we register and ensures the MDIO diversion is
+>> being used.
+> 
+> Hi Florian
+> 
+> Sorry, i don't get this explanation. Can you point me towards a device
+> tree i can look at to maybe understand what is going on.
+The firmware provides the Device Tree but here is the relevant section 
+for you pasted below. The problematic device is a particular revision of 
+the silicon (D0) which got later fixed (E0) however the Device Tree was 
+created after the fixed platform, not the problematic one. Both 
+revisions of the silicon are in production.
 
-Thanks.
+There should have been an internal MDIO bus created for that chip 
+revision such that we could have correctly parented phy@0 (bcm53125 
+below) as child node of the internal MDIO bus, but you have to realize 
+that this was done back in 2014 when DSA was barely revived as an active 
+subsystem. The BCM53125 node should have have been converted to an 
+actual switch node at some point, I use a mdio_boardinfo overlay 
+downstream to support the switch as a proper b53/DSA switch, anyway.
+
+The problem is that of_phy_connect() for port@1 will resolve the 
+phy-handle from the mdio@403c0 node, which bypasses the diversion 
+completely. This results in this double programming that the diversion 
+refers to. In order to force of_phy_connect() to fail, and have DSA call 
+to dsa_slave_phy_connect(), we must deactivate ethernet-phy@0 from 
+mdio@403c0, and the best way to do that is by removing the phandle 
+property completely.
+
+Hope this clarifies the mess :)
+
+
+		switch_top@f0b00000 {
+			#address-cells = <0x01>;
+			#size-cells = <0x01>;
+			compatible = "brcm,bcm7445-switch-top-v2.0\0simple-bus";
+			ranges = <0x00 0xf0b00000 0x40804>;
+
+			ethernet_switch@0 {
+				#address-cells = <0x02>;
+				#size-cells = <0x00>;
+				brcm,num-acb-queues = <0x40>;
+				brcm,num-gphy = <0x01>;
+				brcm,num-rgmii-ports = <0x02>;
+				compatible = "brcm,bcm7445-switch-v4.0\0brcm,bcm53012";
+				dsa,ethernet = <0x16>;
+				dsa,mii-bus = <0x17>;
+				resets = <0x18 0x1a>;
+				reset-names = "switch";
+				reg = <0x00 0x40000 0x40000 0x110 0x40340 0x30 0x40380 0x30 0x40400 
+0x34 0x40600 0x208>;
+				reg-names = "core\0reg\0intrl2_0\0intrl2_1\0fcb\0acb";
+				interrupts = <0x00 0x18 0x04 0x00 0x19 0x04>;
+				interrupt-names = "switch_0\0switch_1";
+				brcm,fcb-pause-override;
+				brcm,acb-packets-inflight;
+				clocks = <0x0a 0x6d 0x0a 0x76>;
+				clock-names = "sw_switch\0sw_switch_mdiv";
+
+				ports {
+					#address-cells = <0x01>;
+					#size-cells = <0x00>;
+
+					port@0 {
+						phy-mode = "internal";
+						phy-handle = <0x29>;
+						linux,phandle = <0x2a>;
+						phandle = <0x2a>;
+						reg = <0x00>;
+						label = "gphy";
+					};
+
+					port@1 {
+						phy-mode = "rgmii-txid";
+						phy-handle = <0x2c>;
+						linux,phandle = <0x2d>;
+						phandle = <0x2d>;
+						reg = <0x01>;
+						label = "rgmii_1";
+					};
+
+					port@2 {
+						phy-mode = "rgmii-txid";
+						fixed-link = <0x02 0x01 0x3e8 0x00 0x00>;
+						linux,phandle = <0x2f>;
+						phandle = <0x2f>;
+						reg = <0x02>;
+						label = "rgmii_2";
+					};
+
+					port@7 {
+						phy-mode = "moca";
+						fixed-link = <0x07 0x01 0x3e8 0x00 0x00>;
+						linux,phandle = <0x31>;
+						phandle = <0x31>;
+						reg = <0x07>;
+						label = "moca";
+					};
+
+					port@8 {
+						linux,phandle = <0x33>;
+						phandle = <0x33>;
+						reg = <0x08>;
+						label = "cpu";
+						ethernet = <0x16>;
+					};
+				};
+			};
+
+			mdio@403c0 {
+				reg = <0x403c0 0x08 0x40300 0x18>;
+				#address-cells = <0x01>;
+				#size-cells = <0x00>;
+				compatible = "brcm,bcm7445-mdio-v4.0\0brcm,unimac-mdio";
+				reg-names = "mdio\0mdio_indir_rw";
+				clocks = <0x0a 0x6d>;
+				clock-names = "sw_switch";
+				linux,phandle = <0x17>;
+				phandle = <0x17>;
+
+				ethernet-phy@0 {
+					linux,phandle = <0x2c>;
+					phandle = <0x2c>;
+					broken-turn-around;
+					device_type = "ethernet-phy";
+					max-speed = <0x3e8>;
+					reg = <0x00>;
+					compatible = "brcm,bcm53125\0ethernet-phy-ieee802.3-c22";
+				};
+
+				ethernet-phy@5 {
+					linux,phandle = <0x29>;
+					phandle = <0x29>;
+					clock-names = "sw_gphy";
+					clocks = <0x0a 0x63>;
+					device_type = "ethernet-phy";
+					max-speed = <0x3e8>;
+					reg = <0x05>;
+					compatible = "brcm,28nm-gphy\0ethernet-phy-ieee802.3-c22";
+				};
+			};
+		};
+-- 
+Florian
