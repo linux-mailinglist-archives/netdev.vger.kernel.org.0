@@ -2,86 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C12C525BB30
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 08:42:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55FF325BB7C
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 09:18:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727071AbgICGmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 02:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48814 "EHLO
+        id S1727908AbgICHSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 03:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725919AbgICGmK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 02:42:10 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CCAC061244
-        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 23:42:09 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id q13so2192390ejo.9
-        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 23:42:09 -0700 (PDT)
+        with ESMTP id S1725943AbgICHSc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 03:18:32 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2460C061244
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 00:18:31 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id 5so1399588pgl.4
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 00:18:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=1DnBvyVmJ6E56trU1tEQPaDLWvCL4Jwm2s9nJo5Mp9o=;
-        b=c8pPpYsLcg0DiP6Q2M6ucCS2/V1ejPDxBryVQ35ru6knLwERqjX70W62pPqIIeMndD
-         nBZHHV6KH8oHdRBpa4o7iluD31/5S21TXSxQYrxJFIx8hYVo7lk7V92ZoCiFge4/kquK
-         y48LOzZI8w/n8W/r4IjImpzxhRjAGSsJD7l7nnirPS6fkNxHKJkUL7rB9nDiT4gzxnu9
-         CEo4+bDMB+zuJipN2oCPh0DEORlDs8uGWc6fOses47djF8v3mc0K89aFz+p49raAPNH3
-         0nQiG1y0/irxA0N6gjtk2NJr4Bug+7ZszcV5yybtvcUuTN0h/hmw6bwS8g5DHWmZgmiw
-         OAGA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=eP1VEzBZzt4J34HhNTkA04cTJhKkMZ3aln3cpKFeUE8=;
+        b=WkLfxIIFGtN8ltwPWHVwtqg4WYHb+N6sFGJ6auqAHm0S1pbsqIdqhhmUG/0N+iNnbV
+         VFZBxf8mCN5calOwogdIuS8lVFFjiwX5tiABWGEewoiH/NwnpRlEQzQL35yNZB4ZlsWE
+         MOOWoJtIW3ePaci04VdY8WPBf3rOs1XH4dQ8WCL1p2iF0Qo4ge9jcDCKzPEvx6Qpp4Do
+         DIraDt0CI7vFfyf271vvP9eO3fpMiQtO9y/xyC6xytdCrbwH96SuezuFWbAe0vuwj0aR
+         Jjvk5NieUPUBxtnZMFK82rybtBN7vcv6hVLRwdAm3TDHEMc8U8eza0L9b1t3XpNi9bU1
+         5bjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1DnBvyVmJ6E56trU1tEQPaDLWvCL4Jwm2s9nJo5Mp9o=;
-        b=PHiLjZU6pVQqEtux0h6neCtQgZZKSwCjhzmQPNagqpsUnjQiGhYl9ZV4Lzwe+DMiId
-         lgtPdTzyGXl4U0TBwRmbhE+LFdxt1Zmcni2iEIOWl/PdmMvOTB1OSGmaRLXbu33uRXIl
-         F8yaV/X0YTfkjXbgQ7R6ubFjg7O8Uo965zMlizl86MgsyJ21VWj3zvw9nHF+u/p8qtPM
-         +aTcnGjZaSrhiFOtofK91j6GoP1GPmaBz3mxbcSrO3+++F0ItFfQYx6Mg6odKzWADPiv
-         Wl+Tb+oI0qz3eNwQN8OauU4eEJ5+r7yLcrtav70LHfXeGr17WP5O2rkWakw8R0H7HX9C
-         zRBQ==
-X-Gm-Message-State: AOAM532COqB4RVxQ6L+s7DeE+aBvEaBvN2TVqQ5U3UgaOjL8Hax5/2Vt
-        6SMjCXFEppqB1UhI0eNsVm1L0dWwfSfHPg==
-X-Google-Smtp-Source: ABdhPJyLyZFn9EFu4ApFcLK/V5dDCr5fg/HVsWIdYBmE5HkJlIQJcjw7Zlya94blv0kGU3DfsWPG/g==
-X-Received: by 2002:a17:906:6d81:: with SMTP id h1mr629413ejt.436.1599115328513;
-        Wed, 02 Sep 2020 23:42:08 -0700 (PDT)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id o14sm2062759edj.77.2020.09.02.23.42.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Sep 2020 23:42:07 -0700 (PDT)
-Date:   Thu, 3 Sep 2020 08:42:07 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     kuba@kernel.org, louis.peens@netronome.com, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH net] nfp: flower: fix ABI mismatch between driver and
- firmware
-Message-ID: <20200903064206.GA32494@netronome.com>
-References: <20200902150458.10024-1-simon.horman@netronome.com>
- <20200902.160054.1576232309562383787.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200902.160054.1576232309562383787.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=eP1VEzBZzt4J34HhNTkA04cTJhKkMZ3aln3cpKFeUE8=;
+        b=rfTS3zMHF2AKZV3eQMzvA30pz4Ql4rLV4HpCRXl3pwf7julyq0iwIM0Km9UGgaRf7w
+         1HdV2BTYTc5Q7fBkYGyrCiElr0LZMBSsdYxprH8cSiqCHHXXQotPOfkqhumPKdBZ6e9n
+         OLurRGWUN/ehLnGh59yFP5Jsr+ZJAq1tkkVuiqnCjFLiSLvX9u+xiYyaOYnbkwnql0l6
+         4DyKUpdkcVDw1S60Mu5Z6cuQqfM10Hvx2UhsElb5i5mXPmdkMBVyHftHrcm4R6nQEqAI
+         LH5Do2l1i3aBcRFsIZSRvHwm9zoBLGnol5a54CeJnM+OFyQXCuWaDFc0CpOgewmJ1RHh
+         7s7w==
+X-Gm-Message-State: AOAM532YuJ5YeDQ5rReSYT6TKA1kp6+WZLa0i68ZWp/0rRuMLzu9Koua
+        h8H8djmVeoAThEIIbXkxD/A=
+X-Google-Smtp-Source: ABdhPJzwYD6JvadHQQlRaez3OVxP7Q5coV6AFr6WIR2CPoPX5aPH7VFJZdaLX95CKNXj5m8zkTqSUw==
+X-Received: by 2002:a63:338b:: with SMTP id z133mr1842769pgz.226.1599117511090;
+        Thu, 03 Sep 2020 00:18:31 -0700 (PDT)
+Received: from hyd1358.caveonetworks.com ([115.113.156.2])
+        by smtp.googlemail.com with ESMTPSA id x5sm1506266pgf.65.2020.09.03.00.18.28
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 03 Sep 2020 00:18:30 -0700 (PDT)
+From:   sundeep.lkml@gmail.com
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sgoutham@marvell.com
+Cc:     Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [net-next PATCH 0/2] Introduce mbox tracepoints for Octeontx2
+Date:   Thu,  3 Sep 2020 12:48:16 +0530
+Message-Id: <1599117498-30145-1-git-send-email-sundeep.lkml@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 02, 2020 at 04:00:54PM -0700, David Miller wrote:
-> From: Simon Horman <simon.horman@netronome.com>
-> Date: Wed,  2 Sep 2020 17:04:58 +0200
-> 
-> > From: Louis Peens <louis.peens@netronome.com>
-> > 
-> > Fix an issue where the driver wrongly detected ipv6 neighbour updates
-> > from the NFP as corrupt. Add a reserved field on the kernel side so
-> > it is similar to the ipv4 version of the struct and has space for the
-> > extra bytes from the card.
-> > 
-> > Fixes: 9ea9bfa12240 ("nfp: flower: support ipv6 tunnel keep-alive messages from fw")
-> > Signed-off-by: Louis Peens <louis.peens@netronome.com>
-> > Signed-off-by: Simon Horman <simon.horman@netronome.com>
-> 
-> Applied and queued up for -stable, thanks Simon.
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-Great, thanks Dave.
+This patchset adds tracepoints support for mailbox.
+In Octeontx2, PFs and VFs need to communicate with AF
+for allocating and freeing resources. Once all the
+configuration is done by AF for a PF/VF then packet I/O
+can happen on PF/VF queues. When an interface
+is brought up many mailbox messages are sent
+to AF for initializing queues. Say a VF is brought up
+then each message is sent to PF and PF forwards to
+AF and response also traverses from AF to PF and then VF.
+To aid debugging, tracepoints are added at places where
+messages are allocated, sent and message interrupts.
+Below is the trace of one of the messages from VF to AF
+and AF response back to VF:
+
+~ # echo 1 > /sys/kernel/tracing/events/rvu/enable
+~ # ifconfig eth20 up
+[  279.379559] eth20 NIC Link is UP 10000 Mbps Full duplex
+~ # cat /sys/kernel/tracing/trace
+# tracer: nop
+#
+# entries-in-buffer/entries-written: 880/880   #P:4
+#
+#                              _-----=> irqs-off
+#                             / _----=> need-resched
+#                            | / _---=> hardirq/softirq
+#                            || / _--=> preempt-depth
+#                            ||| /     delay
+#           TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION
+#              | |       |   ||||       |         |
+        ifconfig-171   [000] ....   275.753345: otx2_msg_alloc: [0002:02:00.1] msg:(0x400) size:40
+
+        ifconfig-171   [000] ...1   275.753347: otx2_msg_send: [0002:02:00.1] sent 1 msg(s) of size:48
+
+          <idle>-0     [001] dNh1   275.753356: otx2_msg_interrupt: [0002:02:00.0] mbox interrupt VF(s) to PF (0x1)
+
+    kworker/u9:1-90    [001] ...1   275.753364: otx2_msg_send: [0002:02:00.0] sent 1 msg(s) of size:48
+
+    kworker/u9:1-90    [001] d.h.   275.753367: otx2_msg_interrupt: [0002:01:00.0] mbox interrupt PF(s) to AF (0x2)
+
+    kworker/u9:2-167   [002] ....   275.753535: otx2_msg_process: [0002:01:00.0] msg:(0x400) error:0
+
+    kworker/u9:2-167   [002] ...1   275.753537: otx2_msg_send: [0002:01:00.0] sent 1 msg(s) of size:32
+
+          <idle>-0     [003] d.h1   275.753543: otx2_msg_interrupt: [0002:02:00.0] mbox interrupt AF to PF (0x1)
+
+          <idle>-0     [001] d.h2   275.754376: otx2_msg_interrupt: [0002:02:00.1] mbox interrupt PF to VF (0x1)
+
+
+Subbaraya Sundeep (2):
+  octeontx2-af: Introduce tracepoints for mailbox
+  octeontx2-pf: Add tracepoints for PF/VF mailbox
+
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |   3 +-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.c   |  14 ++-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |   7 ++
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |   2 +
+ .../net/ethernet/marvell/octeontx2/af/rvu_trace.c  |  15 +++
+ .../net/ethernet/marvell/octeontx2/af/rvu_trace.h  | 115 +++++++++++++++++++++
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   2 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |   6 ++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |   2 +
+ 9 files changed, 162 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.c
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.h
+
+-- 
+2.7.4
+
