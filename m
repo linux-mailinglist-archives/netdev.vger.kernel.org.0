@@ -2,78 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0824925C853
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 19:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2823725C85B
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 20:01:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728719AbgICR7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 13:59:52 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:52918 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727786AbgICR7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 13:59:50 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 083HWnHs176888;
-        Thu, 3 Sep 2020 13:59:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=to : cc : from : subject
- : message-id : date : mime-version : content-type :
- content-transfer-encoding; s=pp1;
- bh=83xresj1d5Yam9UmN2HklPzJ1iyLjqmtWsgci2yFXwE=;
- b=a6zmMVnJwoL8OPzwG4iJBmXU2o3rCXXhe7BpNmvKGOhEY9O1D0hGQfwhWq2FidUId+LN
- wjCWyIln6n2z9dKSN1jPOoIpCbEqAzUf3/VCaK9VUkUMlYA2dsgaQAm1ST5Krixmqncj
- SBZUO1ptVVhXfIYtEMg5INvoW/RNqxwclm5ltRXO8IFFr7CiqPWaDeTaLa3SJ1AsSKwS
- 23W+xCEEA/RmACriHfZlBRFH7Gla28+/NWytodAXJ7hDpO19fQ0LpoGbbmasdAwVjxzV
- YNSJbwYFb0hP1hJq4EtM7KOQEWkejT0v88ZjIQv0a2+fa3Yy+9SsPsGKYqUm7h40zyPn yw== 
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33b4gv1ff6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Sep 2020 13:59:49 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 083Hw06m007685;
-        Thu, 3 Sep 2020 17:59:48 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04dal.us.ibm.com with ESMTP id 339tmvbx2q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 03 Sep 2020 17:59:48 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 083Hxhhm36110688
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 3 Sep 2020 17:59:43 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CA17A6A04F;
-        Thu,  3 Sep 2020 17:59:46 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 641F36A047;
-        Thu,  3 Sep 2020 17:59:46 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.65.240.157])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  3 Sep 2020 17:59:46 +0000 (GMT)
-To:     netdev@vger.kernel.org
-Cc:     jiri@nvidia.com
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-Subject: Exposing device ACL setting through devlink
-Message-ID: <e7f76581-8525-2b98-ec4d-e772db692318@linux.ibm.com>
-Date:   Thu, 3 Sep 2020 12:59:45 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-03_10:2020-09-03,2020-09-03 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- spamscore=0 priorityscore=1501 mlxscore=0 suspectscore=1 mlxlogscore=516
- bulkscore=0 clxscore=1015 lowpriorityscore=0 malwarescore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009030160
+        id S1728780AbgICSBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 14:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727786AbgICSBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 14:01:42 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9949C061247
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 11:01:41 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id 129so3607924ybn.15
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 11:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=Kysrwv2vyroocCwa+tcRYatIjOGKit3xRO3evVtQFbc=;
+        b=Cq3p3J6MuBLmXs4+BsJhTAo9WFB6do5dQd5DtPvLivFpB+4Ju12w4vUq6lbWXAzjlm
+         TbcW3W73CMNquCeiwEyKd9wULH55FwWxBcJpvqcNQcSVJIerstXZYAml83qKstkbK1SU
+         okUjrP6TZJ46ow8QUFxy4cJEvShbzmqd/tMJGhc/ubslAQw5E5fKNSN+mDR7fcIMvWkl
+         T5OyxJjCB5mabyFXVA/Kv+8UqCZMU/3HwpGbWxy6Qw6coOJcnVywx1qpwbmB4Rg2DxxW
+         vRrg6aEM7P7/YB4eK0LrHrEquLEDOltwMIB5NacuCaNG7muP/MqjrNPvcOSChtXfdvOR
+         opNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=Kysrwv2vyroocCwa+tcRYatIjOGKit3xRO3evVtQFbc=;
+        b=th+u41/FMYmsm5xSrxX+A6paHyCfkyytbiVaJYL9jAs7UJVekkZvz46h6d1W0guxBy
+         1b3TsRXw+mqsnhvNuMcHtcPvuicrvEHXNwGz3Cb0f21cFn3IhMSJtGa/V1IiMIa7+fQ1
+         5YSDurP1PaN1PCNABqezzAuhKSBbpazdalPGIvmRgXXL5IsE2FY056xiQKL/7rNZNuBh
+         WfPTmtpI9VIcCKOJdyzl/wzPlAhPfsa8l2gkiW9xExPQSyCsHLpXLMrvYJV13sgf3m6K
+         uVzuDzC0bWYaYGCtfTAywlzSPZg+p9on4rJ8w0oLEoXysD0e3yOhbkalc2b58ysegbFZ
+         Q01w==
+X-Gm-Message-State: AOAM532aSZ4NMBQ5C3hwuR1X9dXdPJ7XDtQsl3p6fYDoS7E5v40faprT
+        RY8N4E7y5z+ygyhDVbrA1f8OMHrR5NPYYvPp9uG7LUlKGOTj4fwtpuOhTmEQz8NIElE5XUZYqSI
+        n3yGUP2Zt4STdAL7cdtbGaHPS+N3JrN+gRzTf7u8bHx21wGsJmSO++jAG1h/LIA==
+X-Google-Smtp-Source: ABdhPJznIT58g0Z8TdpOroAqfZSJEPyQbKcKvYMhot5h+i6tLXl0hXMlUC/qJtrEQeftD65KiOHntPOzGCQ=
+X-Received: from haoluo.svl.corp.google.com ([2620:15c:2cd:202:f693:9fff:fef4:e444])
+ (user=haoluo job=sendgmr) by 2002:a25:70c6:: with SMTP id l189mr4414948ybc.263.1599156100416;
+ Thu, 03 Sep 2020 11:01:40 -0700 (PDT)
+Date:   Thu,  3 Sep 2020 11:01:21 -0700
+Message-Id: <20200903180121.662887-1-haoluo@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.402.g5ffc5be6b7-goog
+Subject: [PATCH] selftests/bpf: Fix check in global_data_init.
+From:   Hao Luo <haoluo@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        "=?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?=" <toke@redhat.com>,
+        KP Singh <kpsingh@chromium.org>, Hao Luo <haoluo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, I am trying to expose MAC/VLAN ACL and pvid settings for IBM VNIC devices to administrators through devlink (originally through sysfs files, but that was rejected in favor of devlink). Could you give any tips on how you might go about doing this?
+The returned value of bpf_object__open_file() should be checked with
+IS_ERR() rather than NULL. This fix makes test_progs not crash when
+test_global_data.o is not present.
 
-Thanks,
-Tom
+Signed-off-by: Hao Luo <haoluo@google.com>
+---
+ tools/testing/selftests/bpf/prog_tests/global_data_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/global_data_init.c b/tools/testing/selftests/bpf/prog_tests/global_data_init.c
+index 3bdaa5a40744..1ece86d5c519 100644
+--- a/tools/testing/selftests/bpf/prog_tests/global_data_init.c
++++ b/tools/testing/selftests/bpf/prog_tests/global_data_init.c
+@@ -12,7 +12,7 @@ void test_global_data_init(void)
+ 	size_t sz;
+ 
+ 	obj = bpf_object__open_file(file, NULL);
+-	if (CHECK_FAIL(!obj))
++	if (CHECK_FAIL(IS_ERR(obj)))
+ 		return;
+ 
+ 	map = bpf_object__find_map_by_name(obj, "test_glo.rodata");
+-- 
+2.28.0.402.g5ffc5be6b7-goog
 
