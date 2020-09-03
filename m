@@ -2,97 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 029E425C6CE
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 18:30:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E958E25C6CD
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 18:30:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728431AbgICQaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 12:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
+        id S1728210AbgICQaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 12:30:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726678AbgICQ37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 12:29:59 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55914C061245
-        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 09:29:59 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id z22so3744990oid.1
-        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 09:29:59 -0700 (PDT)
+        with ESMTP id S1726368AbgICQ36 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 12:29:58 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345D7C061244;
+        Thu,  3 Sep 2020 09:29:58 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id b124so2718388pfg.13;
+        Thu, 03 Sep 2020 09:29:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l3vyZwOI3Y14uRnDnLq814uedRJ4X761HNZG25FqH9Q=;
-        b=fu0LVmozJssu/dIRMTLdooIEUJeEU+CKNlJdB8hA+ldoQgLMzoD1muHK+SQXYXE8UI
-         KrsyE35xrrEBU5wA84t7SlPL5qENw9lNfN2j267ZsaRWq2XGMPramyBuDwCAZ1goOtxi
-         ofcXZ6Q4PEFq/tgCsHT59c0MP5WLt5TtrrfD0=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Nq4Y4LX++M/uKa3i+1xjIY2hdYC3sQ5Emz4iH0w5Bus=;
+        b=HD97Fsc/y+B5kjeKHMOlfqvQFt2ZqCaTNLJdBLLowG4rLTC9o2fAaZR72bRPaUWUiR
+         kVPlVX+7qIC88NDSnRh8AstE8oPgDHIqJp6l+cY+TN7qnxLi2iFrjH9CVUhpQrJ9D23c
+         4LHISM9suprt5snYB5byAWoIqtSh/jr1z9+wTfJMc6XXR+Uu6bQplypKppzWTXxdMFX+
+         vbOGqAZiuALSlgByVapbwi/1jlPkcsGa20K4q9HMiKDuq5sOPLPvtj1EZD+4iEsoQBaF
+         pSL0CSg6oLr9SiQ+ll11FISz5JQMFOcBXeRVcSYj5rym6SfEX/gW/w1ZEY4yqmqOeM9V
+         m7Kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l3vyZwOI3Y14uRnDnLq814uedRJ4X761HNZG25FqH9Q=;
-        b=T27CFA3uc9ZYTnofvkywf6v5AmT04qO6F42ZZ7mtkl2SrUa0fWc1Lu6GrWdp8p4cGx
-         R/oEgbNiwstfywtM5MqJ9ksDhAQjgdbwDV+DCDd+lUU9W0NjHn4OKUJUsCLxHQbJXccf
-         01G+/iZCmv2hFbEjktvId6is8ez6pRH5spU+s41i9gQSldc5/Vg0W9ZNCyqqzYhB2OWM
-         IdJ9UI7FAqvSyBSAEdZ5ToATtSaoFIssmuxdO/X9YYcYn4H7xg9/jwSqQhN/di8l/ITc
-         It6Qy+dX5ZqsxgB897mw9ofE/gHPDCdyADIMq1wIcilmBqwFsdUP4Yj8h0Gksg+TNpWq
-         7nDQ==
-X-Gm-Message-State: AOAM532VW6TuEPnqBiftZeYrchCeDxedL4of52MU+HwKxbaDC9SIVASI
-        VX5PCMoKp8yxSIFevFWs0YpQad2I8AV74QbG0+KBQw==
-X-Google-Smtp-Source: ABdhPJxPhG7/I9tb8LafKkB56Rk8pJiMlEHGo8c/PIie7vZyRdBSzyT1VtaGhVYSQ2HoVHHqYNFjqs48jYMUvLB7Xwo=
-X-Received: by 2002:a54:4e10:: with SMTP id a16mr2634018oiy.166.1599150598532;
- Thu, 03 Sep 2020 09:29:58 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Nq4Y4LX++M/uKa3i+1xjIY2hdYC3sQ5Emz4iH0w5Bus=;
+        b=gT057NgWTUA8TdXiSREHtnk1e5s8Yse4jpG14l5M3hmfrj+WZg2hzFGEoNQf6oUWQP
+         /vC6MSei+3Fbzb3DHL3KSWqNjdn7EmTJTDCpORVBf57DzYTopHqcpTubzuTX240KXnQQ
+         QJF4ZpAUfOrnk0cweEiQz4xhzJQD4+i8mH+IkNcaCibW6L79vSBUgi8JuujDm7m5Dhvn
+         z43nIfwB/aub5Uc4VxVG4Wmr9GWJFMns+/f96mIFpufVJxX/7FyEZMJJ2+dbiXRCorBw
+         VAG1Hqu806H+AIxuUDOr4mzO2eMbIDwQRsH9tuYN4vrSehsDx1KjAxJ38FL8I+9B8foF
+         j3MQ==
+X-Gm-Message-State: AOAM533GsCAsPmjufe/wuQWkTZSvMfHxBv0FwPPCng9qZffFPV0Rc7Uq
+        W2QwJyDkNowhKSQFQbV3rXY=
+X-Google-Smtp-Source: ABdhPJwom6O7abQjGJ0fwb74pAHB+lr2SSA77td5Qq18sKhO6li039UwtDx+7980GEHYmNSQTdNcOA==
+X-Received: by 2002:a17:902:7083:: with SMTP id z3mr4673238plk.187.1599150597535;
+        Thu, 03 Sep 2020 09:29:57 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y7sm3674852pfm.68.2020.09.03.09.29.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Sep 2020 09:29:56 -0700 (PDT)
+Subject: Re: [PATCH v4 7/7] dt-bindings: net: dsa: Add documentation for
+ Hellcreek switches
+To:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>
+References: <20200901125014.17801-1-kurt@linutronix.de>
+ <20200901125014.17801-8-kurt@linutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <8470fd08-2a22-23b2-4735-a600ee2ea06b@gmail.com>
+Date:   Thu, 3 Sep 2020 09:29:54 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.1.1
 MIME-Version: 1.0
-References: <20200903020336.2302858-1-kuba@kernel.org>
-In-Reply-To: <20200903020336.2302858-1-kuba@kernel.org>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Thu, 3 Sep 2020 09:29:22 -0700
-Message-ID: <CAKOOJTwwZ0wug6Wn6vVmvyWX=vz_n1shu5t_Gf-NT21MP7HMxg@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: tighten the definition of interface statistics
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Julian Wiedmann <jwi@linux.ibm.com>, f.fainelli@gmail.com,
-        andrew@lunn.ch, mkubecek@suse.cz, dsahern@gmail.com,
-        Michael Chan <michael.chan@broadcom.com>, saeedm@mellanox.com,
-        rmk+kernel@armlinux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200901125014.17801-8-kurt@linutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 2, 2020 at 7:03 PM Jakub Kicinski <kuba@kernel.org> wrote:
 
-> +Drivers should report all statistics which have a matching member in
-> +:c:type:`struct rtnl_link_stats64 <rtnl_link_stats64>` exclusively
-> +via `.ndo_get_stats64`. Reporting such standard stats via ethtool
-> +or debugfs will not be accepted.
 
-Should existing drivers that currently duplicate standard stats in the
-ethtool list be revised also?
+On 9/1/2020 5:50 AM, Kurt Kanzenbach wrote:
+> Add basic documentation and example.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
 
-> + * @rx_packets: Number of good packets received by the interface.
-> + *   For hardware interfaces counts all good packets seen by the host,
-> + *   including packets which host had to drop at various stages of processing
-> + *   (even in the driver).
-
-This is perhaps a bit ambiguous. I think you mean to say packets received from
-the device, but I could also interpret the above to mean received by the device
-if 'host' is read to be the whole physical machine (ie. including NIC hardware)
-instead of the part that is apart from the NIC from the NIC's perspective.
-
-> + * @rx_bytes: Number of good incoming bytes, corresponding to @rx_packets.
-> + * @tx_bytes: Number of good incoming bytes, corresponding to @tx_packets.
-
-Including or excluding FCS?
-
-> + *   For Ethernet devices this counter may be equivalent to:
-> + *
-> + *    - 30.3.1.1.21 aMulticastFramesReceivedOK
-
-You mention the IEEE standard in your commit message, but I don't think this
-document properly cites what you are referring to here? It might be an idea to
-say "IEEE 30.3.1.1.21 aMulticastFramesReceivedOK" here and provide an
-appropriate citation reference at the end, or perhaps a link.
-
-Regards,
-Edwin Peer
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
