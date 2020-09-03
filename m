@@ -2,113 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2285325C722
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 18:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AA6125C769
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 18:49:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728896AbgICQlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 12:41:24 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:55516 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728085AbgICQlX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 12:41:23 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 083GfGwf039935;
-        Thu, 3 Sep 2020 11:41:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1599151276;
-        bh=X9QPS3a/ZCaAKG2uXIKrOUiVQHzUJ66YvXo6YsH9ZL8=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=R8L3ioD+HoPVkdB1rjJnkKJrBqEImULcZjQkm5JhGEmQu2akqeA2JYZodzmzJCyJW
-         rTEIHYre8tEbf725ap1JhM13wAIj2Pw9Hu886BraPqG9RIxTNb1kORD3nnqETBwnXd
-         Sri0nr4K8NydYdEjxk6pfJ+Q2hNWQA3R1TMcWML4=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 083GfGpW116922
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 3 Sep 2020 11:41:16 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 3 Sep
- 2020 11:41:16 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 3 Sep 2020 11:41:16 -0500
-Received: from [10.250.38.37] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 083GfF3K096927;
-        Thu, 3 Sep 2020 11:41:15 -0500
-Subject: Re: [PATCH net] net: phy: dp83867: Fix various styling and space
- issues
-To:     Florian Fainelli <f.fainelli@gmail.com>, <davem@davemloft.net>,
-        <andrew@lunn.ch>, <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20200903141510.20212-1-dmurphy@ti.com>
- <76046e32-a17d-b87c-26c7-6f48f4257916@gmail.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <4d38ac31-8646-2c4f-616c-1a1341721819@ti.com>
-Date:   Thu, 3 Sep 2020 11:41:15 -0500
+        id S1728417AbgICQs7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 12:48:59 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:51390 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726025AbgICQsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 12:48:55 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B986620062;
+        Thu,  3 Sep 2020 16:48:54 +0000 (UTC)
+Received: from us4-mdac16-41.at1.mdlocal (unknown [10.110.48.12])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B7BC0800A4;
+        Thu,  3 Sep 2020 16:48:54 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.103])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4A16940058;
+        Thu,  3 Sep 2020 16:48:54 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 13DA6980073;
+        Thu,  3 Sep 2020 16:48:53 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 3 Sep 2020
+ 17:48:49 +0100
+Subject: Re: [PATCH net-next 1/5] sfc: add and use efx_tx_send_pending in tx.c
+To:     David Miller <davem@davemloft.net>
+CC:     <linux-net-drivers@solarflare.com>, <netdev@vger.kernel.org>
+References: <d3c81ab7-6d2e-326f-e25e-e42095ce9e66@solarflare.com>
+ <1edd44e5-a73a-149f-fe0c-96969627d211@solarflare.com>
+ <20200902.155513.2158302550582662254.davem@davemloft.net>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <b9567189-c9f6-67b7-028a-3ba576fe2f18@solarflare.com>
+Date:   Thu, 3 Sep 2020 17:48:39 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <76046e32-a17d-b87c-26c7-6f48f4257916@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+In-Reply-To: <20200902.155513.2158302550582662254.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25642.007
+X-TM-AS-Result: No-8.562800-8.000000-10
+X-TMASE-MatchedRID: L8tZF6zWW2ozkUg+npt39/ZvT2zYoYOwC/ExpXrHizz0Li0ScYqKCVNp
+        x0NRruuf3jlEkfTvBl1fL846nDpxby4YlXCNHMx/naJwCyoIjbypvf+jmz45w+ZMicrOlIVJiCc
+        t0dTuiI5Gty7akqMDFtlYmtBNW3IbOpPA8Ci9bQSEv01fZOqaQDg6RKCx6bV17L2+zGEubN4jCD
+        dV372aMN+JJIA0cQZR2/Vc0kgrzVpiLjTDQZLAr02rn9j60W9b3vjS0O+N37WphB7VVHq6DKPFj
+        JEFr+olA9Mriq0CDAg9wJeM2pSaRXnN0DN7HnFmJEUehQrz9AsLIFA8+/2k1vriXzsom/sE4dBO
+        D/FsHgPJ4+FH8gjZipRMZUCEHkRt
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.562800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25642.007
+X-MDID: 1599151734-u4JWwW1pZw4k
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Florian
+On 02/09/2020 23:55, David Miller wrote:
+> From: Edward Cree <ecree@solarflare.com>
+> Date: Wed, 2 Sep 2020 15:35:53 +0100
+> 
+>> +	tx_queue->xmit_more_available = true;
+> 
+> I don't understand why you're setting xmit_more_available
+> unconditionally to true now instead of setting it to 'xmit_more' as
+> seen by this transmit attempt.  Why would you want to signal
+> that xmit_more handling might be necessary when you haven't been
+> given an xmit_more tx request?
 
-On 9/3/20 11:34 AM, Florian Fainelli wrote:
->
->
-> On 9/3/2020 7:15 AM, Dan Murphy wrote:
->> Fix spacing issues reported for misaligned switch..case and extra new
->> lines.
->>
->> Also updated the file header to comply with networking commet style.
->>
->> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->> ---
->>   drivers/net/phy/dp83867.c | 47 ++++++++++++++++++---------------------
->>   1 file changed, 22 insertions(+), 25 deletions(-)
->>
->> diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
->> index cd7032628a28..f182a8d767c6 100644
->> --- a/drivers/net/phy/dp83867.c
->> +++ b/drivers/net/phy/dp83867.c
->> @@ -1,6 +1,5 @@
->>   // SPDX-License-Identifier: GPL-2.0
->> -/*
->> - * Driver for the Texas Instruments DP83867 PHY
->> +/* Driver for the Texas Instruments DP83867 PHY
->>    *
->>    * Copyright (C) 2015 Texas Instruments Inc.
->>    */
->> @@ -35,7 +34,7 @@
->>   #define DP83867_CFG4_SGMII_ANEG_MASK (BIT(5) | BIT(6))
->>   #define DP83867_CFG4_SGMII_ANEG_TIMER_11MS   (3 << 5)
->>   #define DP83867_CFG4_SGMII_ANEG_TIMER_800US  (2 << 5)
->> -#define DP83867_CFG4_SGMII_ANEG_TIMER_2US    (1 << 5)
->> +#define DP83867_CFG4_SGMII_ANEG_TIMER_2US    BIT(5)
->
-> Now the definitions are inconsistent, you would want to drop this one 
-> and stick to the existing style.
+After this patch xmit_more_available is something of a misnomer and
+ really means "xmit pending" (I'll rename it in v2).  We unconditionally
+ set it to true here so that efx_tx_send_pending() knows there is
+ something to do on this queue; but then we only call efx_tx_send_pending
+ if !xmit_more (per the __netdev_tx_sent_queue() call).  Then
+ efx_tx_send_pending, via the efx->type->tx_write methods, sets
+ xmit_more_available to false.
+Thus xmit_more_available is only true on return from __efx_enqueue_skb()
+ if we had xmit_more (and __netdev_tx_sent_queue didn't say "ring it
+ anyway").
 
-OK I was a little conflicted making that change due to the reasons you 
-mentioned.  But if that is an acceptable warning I am ok with it.
+> If this change is in fact correct, it's something you need to explain
+> in the commit message.
+Will do so for v2, as it is indeed far from obvious.
 
-
->
-> The rest of the changes look good, so with that fixed, and the subject 
-> correct to "net-next" (this is no bug fix material), you can add:
->
-I will have to reapply this to the net-next to make sure it applies 
-cleanly there.  But not an issue.
-
-Dan
-
-
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-ed
