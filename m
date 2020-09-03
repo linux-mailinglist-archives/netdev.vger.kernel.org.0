@@ -2,77 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB47A25C495
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 17:12:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4CF525C4B4
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 17:14:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728746AbgICMEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 08:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728785AbgICMDv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 08:03:51 -0400
-X-Greylist: delayed 1885 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 03 Sep 2020 05:03:38 PDT
-Received: from lounge.grep.be (lounge.grep.be [IPv6:2a01:4f8:200:91e8::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96567C061244
-        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 05:03:38 -0700 (PDT)
-Received: from [196.251.239.242] (helo=pc181009)
-        by lounge.grep.be with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <w@uter.be>)
-        id 1kDnSz-0007fe-Qk; Thu, 03 Sep 2020 13:31:45 +0200
-Received: from wouter by pc181009 with local (Exim 4.92)
-        (envelope-from <w@uter.be>)
-        id 1kDnSw-0005x1-0G; Thu, 03 Sep 2020 13:31:42 +0200
-Date:   Thu, 3 Sep 2020 13:31:41 +0200
-From:   Wouter Verhelst <w@uter.be>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     syzbot <syzbot+e36f41d207137b5d12f7@syzkaller.appspotmail.com>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        syzkaller-bugs@googlegroups.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: Re: [PATCH] tipc: fix shutdown() of connectionless socket
-Message-ID: <20200903113141.GB8553@pc181009.grep.be>
-References: <0000000000003feb9805a9c77128@google.com>
- <1eb799fb-c6e0-3eb5-f6fe-718cd2f62e92@I-love.SAKURA.ne.jp>
+        id S1729558AbgICPOW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 11:14:22 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:39824 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728629AbgICLnP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 07:43:15 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 083Bh1FO127186;
+        Thu, 3 Sep 2020 06:43:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1599133381;
+        bh=EAbt1qPh14EomVGd85mBXEAKdAVjaqQGm+uYE8j3Roo=;
+        h=From:To:CC:Subject:Date;
+        b=ssN6UsZBbmBZz/pml+3gOmPfg+qk/t99T6v8Xyd0hYR3b5X4XAsVblZpRpN2uRu+p
+         oEvZnJsdQYvhY6HYABlWsCvRe6X5Big2UpfvQoZrVaj2iH/mLxZ0vP1XPGE8cTiY6v
+         EhtK6l3VHKRiHfsyoEBXcGjdv6qW8xAgwsvC2k6Y=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 083Bh1du047253
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 3 Sep 2020 06:43:01 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 3 Sep
+ 2020 06:43:00 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 3 Sep 2020 06:43:00 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 083Bh08N075354;
+        Thu, 3 Sep 2020 06:43:00 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-next v3 0/3] DP83869 Feature additions
+Date:   Thu, 3 Sep 2020 06:42:56 -0500
+Message-ID: <20200903114259.14013-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1eb799fb-c6e0-3eb5-f6fe-718cd2f62e92@I-love.SAKURA.ne.jp>
-X-Speed: Gates' Law: Every 18 months, the speed of software halves.
-Organization: none
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So.
+Hello
 
-On Wed, Sep 02, 2020 at 08:09:54PM +0900, Tetsuo Handa wrote:
-> syzbot is reporting hung task at nbd_ioctl() [1], for there are two
-> problems regarding TIPC's connectionless socket's shutdown() operation.
-> I found C reproducer for this problem (shown below) from "no output from
-> test machine (2)" report.
-> 
-> ----------
-> 
-> int main(int argc, char *argv[])
-> {
->         const int fd = open("/dev/nbd0", 3);
->         ioctl(fd, NBD_SET_SOCK, socket(PF_TIPC, SOCK_DGRAM, 0));
+Adding features to the DP83869 PHY.  These features are also supported in other
+TI PHYs like the DP83867 and DP83822.
 
-NBD expects a stream socket, not a datagram one.
+Fiber Advertisement:
+The DP83869 supports a 100Base-FX connection. When this mode is selected the
+driver needs to advertise that this PHY supports fiber.
 
->         ioctl(fd, NBD_DO_IT, 0);
+WoL:
+The PHY also supports Wake on Lan feature with SecureOn password.
 
-This is supposed to sit and wait until someone disconnects the device
-again (which you probably cna't do with datagram sockets). Changing that
-changes a userspace API.
+Downshift:
+Speed optimization or AKA downshift is also supported by this PHY.
+
+Dan
+
+Dan Murphy (3):
+  net: dp83869: Add ability to advertise Fiber connection
+  net: phy: dp83869: support Wake on LAN
+  net: dp83869: Add speed optimization feature
+
+ drivers/net/phy/dp83869.c | 280 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 280 insertions(+)
 
 -- 
-To the thief who stole my anti-depressants: I hope you're happy
+2.28.0
 
-  -- seen somewhere on the Internet on a photo of a billboard
