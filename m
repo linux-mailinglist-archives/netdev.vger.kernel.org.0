@@ -2,115 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C8EE25C9B0
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 21:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8949925C9BC
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 21:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728525AbgICTvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 15:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728129AbgICTvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 15:51:18 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B14C061244;
-        Thu,  3 Sep 2020 12:51:18 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id gl3so909016pjb.1;
-        Thu, 03 Sep 2020 12:51:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6B0Zt4L4438kTcyiY4vRFcH55d4QhrJ3dYLjLq46ZHA=;
-        b=g3VYwYg9RcspHLVhzYWQiJaF4pTz5nkQQ9LfBGc2I4Pmp9SqVb4psmYXSzTL4PtDAq
-         WMwwqaAyRipcaLM4zCMe8Qr+hNG3Y3dvezWs9ccJNsFRCwMdCGHeNJ4G5pi3brDvBRqG
-         0rYSgxBDa5GarTD/7qFFNgyzrCPZUuAlbAVop47ka5faAYUfgzT99ewAtkH/VGHyTNp+
-         1wJ3dAP9aPSiTeouKIIFp93Ym0dJ456h/a2kRWtkzaP2OH3K5TGGHNfHErocYPtwLClh
-         1c6bwFjnia7z6szXFGy2/yQvhRGFRT3Dc7mArfI9hn/MgnHvV0zMMvfkuWZEEw5UEgbP
-         aAzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6B0Zt4L4438kTcyiY4vRFcH55d4QhrJ3dYLjLq46ZHA=;
-        b=tZazdy7TcTzO2QfpYPEkquhGTFW3yqeUyRh983Mrvp6UC/ZPssV1qbCSwQuv2P6CLU
-         ZwjAJwnbnqseWfv/wOQu4/Tb925pfBBOeCb+7eVs8zAwtMmlnUFkwGKEYH7vDs8ZtYdS
-         qhxyThn/QvO0Zq/oQNDbB/PDmM5/SXcT3T19jB0AJwaV8rcPLZ3hMZYoI7yc22vXiHVd
-         UcFVyJy0yzQMif056XT1KojSoqlP62c7vIqI0LEuFmUQDXT9eIzVQurVQpk54G5SNPl/
-         fYtxs+F/VSEFy8t0u2tOh10895PVqL+xYvzfoZtWyfE3DSBbUSxN+7rpYpHEtwLkYSnD
-         n3kA==
-X-Gm-Message-State: AOAM530tK4FdYe3yU7PsdhBISLWjUQssDKc3zf3tiOroo5I4Rfq5uEDW
-        FN8FfAATv7Z0uo8b5m5RzFY=
-X-Google-Smtp-Source: ABdhPJyTNwrxwIFfiPY3hIx/VSx5VO4y+sCmlOJpYeB9esRJ+ZkIKwtzj2cHxFfZVq3ninzbWG9yHw==
-X-Received: by 2002:a17:90b:4718:: with SMTP id jc24mr2180055pjb.214.1599162677182;
-        Thu, 03 Sep 2020 12:51:17 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:7ac4])
-        by smtp.gmail.com with ESMTPSA id e12sm3234482pjl.9.2020.09.03.12.51.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 12:51:16 -0700 (PDT)
-Date:   Thu, 3 Sep 2020 12:51:14 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, bjorn.topel@intel.com,
-        magnus.karlsson@intel.com
-Subject: Re: [PATCH v7 bpf-next 7/7] selftests: bpf: add dummy prog for
- bpf2bpf with tailcall
-Message-ID: <20200903195114.ccfzmgcl4ngz2mqv@ast-mbp.dhcp.thefacebook.com>
-References: <20200902200815.3924-1-maciej.fijalkowski@intel.com>
- <20200902200815.3924-8-maciej.fijalkowski@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200902200815.3924-8-maciej.fijalkowski@intel.com>
+        id S1729209AbgICTxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 15:53:43 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:47600 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727065AbgICTxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 15:53:38 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 083JWrWm175416;
+        Thu, 3 Sep 2020 15:53:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=Vawr6Kbzn9YQRfu6yuG6CW4F5w8gbhcjbJo8CPUElRc=;
+ b=OKlT2txqIIWXQFAgdpq1d/VKfWhzk/FQVLYKbMqQW6Q0ECavQ+MrnQNYGnJD4OgTg9cF
+ XpEkaeaXXnnK9MciVCZcSwH6MrbZwmyNHO7Cd3+3+I3yN45ChEljllrJfnE7SasPj/9/
+ u0gIg4RF8SDskWEMhI+RzfdcVVtS3vliBZUCGSLHIMhJiI5/StmBwPittmuHaI3kQDsq
+ H19+oM/LhcgvfHYr/HB/JJ1wcfI7MBdrCmYOZE2K+NYCsxrh9qzsSfP1YgzKmqt8CLjK
+ nz0xS5WKTrnpLOtxgpBrryQc/beZwrh/JOJIarD+9vM89VejjisV26dlWkiLbn409zyQ OA== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33b62thf9v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Sep 2020 15:53:37 -0400
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 083JrYZB029078;
+        Thu, 3 Sep 2020 19:53:34 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma03ams.nl.ibm.com with ESMTP id 337en8e5fx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 03 Sep 2020 19:53:34 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 083JrV9719923358
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 3 Sep 2020 19:53:32 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B0E7911C04A;
+        Thu,  3 Sep 2020 19:53:31 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6DA6911C04C;
+        Thu,  3 Sep 2020 19:53:31 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu,  3 Sep 2020 19:53:31 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net 0/4] net/smc: fixes 2020-09-03
+Date:   Thu,  3 Sep 2020 21:53:14 +0200
+Message-Id: <20200903195318.39288-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-03_13:2020-09-03,2020-09-03 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ impostorscore=0 spamscore=0 priorityscore=1501 mlxscore=0
+ lowpriorityscore=0 mlxlogscore=679 suspectscore=1 phishscore=0
+ clxscore=1011 adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009030176
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 02, 2020 at 10:08:15PM +0200, Maciej Fijalkowski wrote:
-> diff --git a/tools/testing/selftests/bpf/progs/tailcall6.c b/tools/testing/selftests/bpf/progs/tailcall6.c
-> new file mode 100644
-> index 000000000000..e72ca5869b58
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/tailcall6.c
-> @@ -0,0 +1,38 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +struct {
-> +	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-> +	__uint(max_entries, 2);
-> +	__uint(key_size, sizeof(__u32));
-> +	__uint(value_size, sizeof(__u32));
-> +} jmp_table SEC(".maps");
-> +
-> +#define TAIL_FUNC(x) 				\
-> +	SEC("classifier/" #x)			\
-> +	int bpf_func_##x(struct __sk_buff *skb)	\
-> +	{					\
-> +		return x;			\
-> +	}
-> +TAIL_FUNC(0)
-> +TAIL_FUNC(1)
-> +
-> +static __attribute__ ((noinline))
-> +int subprog_tail(struct __sk_buff *skb)
-> +{
-> +	bpf_tail_call(skb, &jmp_table, 0);
-> +
-> +	return skb->len * 2;
-> +}
-> +
-> +SEC("classifier")
-> +int entry(struct __sk_buff *skb)
-> +{
-> +	bpf_tail_call(skb, &jmp_table, 1);
-> +
-> +	return subprog_tail(skb);
-> +}
+Please apply the following patch series for smc to netdev's net tree.
 
-Could you add few more tests to exercise the new feature more thoroughly?
-Something like tailcall3.c that checks 32 limit, but doing tail_call from subprog.
-And another test that consume non-trival amount of stack in each function.
-Adding 'volatile char arr[128] = {};' would do the trick.
+Patch 1 fixes the toleration of older SMC implementations. Patch 2
+takes care of a problem that happens when SMCR is used after SMCD
+initialization failed. Patch 3 fixes a problem with freed send buffers,
+and patch 4 corrects refcounting when SMC terminates due to device
+removal.
+
+Thanks,
+Karsten
+
+Karsten Graul (1):
+  net/smc: fix toleration of fake add_link messages
+
+Ursula Braun (3):
+  net/smc: set rx_off for SMCR explicitly
+  net/smc: reset sndbuf_desc if freed
+  net/smc: fix sock refcounting in case of termination
+
+ net/smc/smc_close.c | 15 ++++++++-------
+ net/smc/smc_core.c  |  3 +++
+ net/smc/smc_llc.c   | 15 ++++++++++++++-
+ 3 files changed, 25 insertions(+), 8 deletions(-)
+
+-- 
+2.17.1
+
