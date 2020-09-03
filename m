@@ -2,59 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 661FD25C947
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 21:18:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 459FC25C94A
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 21:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728525AbgICTSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 15:18:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37962 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728304AbgICTSG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 3 Sep 2020 15:18:06 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 544D22083B;
-        Thu,  3 Sep 2020 19:18:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599160685;
-        bh=jA9CJjgvkNQcDNJXVA/ZoKkZjnuffGg1MniFd0r7O6o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=t4sHcoeRTqM0VzAvcNUV1W3jAYT+WiVpN6PB1/IyzkqxB2NmJziQfhYptpxXbLVk4
-         DdTSGwfweXnwsmZRrcwJBYU+rideUJHx0WnfvGBTmUgUmN8u0FHA+srhiW/5L3iGze
-         huPxk/qg3h8yAaIcy/ZnY+0x3DJW+l/JXw1Ha8IE=
-Date:   Thu, 3 Sep 2020 12:18:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     sundeep.lkml@gmail.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, sgoutham@marvell.com,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: Re: [net-next PATCH 0/2] Introduce mbox tracepoints for Octeontx2
-Message-ID: <20200903121803.75fb0ade@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1599117498-30145-1-git-send-email-sundeep.lkml@gmail.com>
-References: <1599117498-30145-1-git-send-email-sundeep.lkml@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1728969AbgICTTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 15:19:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52606 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728304AbgICTTY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 15:19:24 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB2DC061244
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 12:19:23 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8823A15C9D862;
+        Thu,  3 Sep 2020 12:02:36 -0700 (PDT)
+Date:   Thu, 03 Sep 2020 12:19:22 -0700 (PDT)
+Message-Id: <20200903.121922.1139193852592250784.davem@davemloft.net>
+To:     jchapman@katalix.com
+Cc:     tparkin@katalix.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 0/6] l2tp: miscellaneous cleanups
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <655103fe-6881-1122-bbcb-62c59af2b102@katalix.com>
+References: <20200903085452.9487-1-tparkin@katalix.com>
+        <655103fe-6881-1122-bbcb-62c59af2b102@katalix.com>
+X-Mailer: Mew version 6.8 on Emacs 26.3
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 03 Sep 2020 12:02:36 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  3 Sep 2020 12:48:16 +0530 sundeep.lkml@gmail.com wrote:
-> From: Subbaraya Sundeep <sbhatta@marvell.com>
-> 
-> This patchset adds tracepoints support for mailbox.
-> In Octeontx2, PFs and VFs need to communicate with AF
-> for allocating and freeing resources. Once all the
-> configuration is done by AF for a PF/VF then packet I/O
-> can happen on PF/VF queues. When an interface
-> is brought up many mailbox messages are sent
-> to AF for initializing queues. Say a VF is brought up
-> then each message is sent to PF and PF forwards to
-> AF and response also traverses from AF to PF and then VF.
-> To aid debugging, tracepoints are added at places where
-> messages are allocated, sent and message interrupts.
-> Below is the trace of one of the messages from VF to AF
-> and AF response back to VF:
+From: James Chapman <jchapman@katalix.com>
+Date: Thu, 3 Sep 2020 14:39:30 +0100
 
-Could you use the devlink tracepoint? trace_devlink_hwmsg() ?
+> On 03/09/2020 09:54, Tom Parkin wrote:
+>> This series of patches makes the following cleanups and improvements to
+>> the l2tp code:
+>>  
+>>  * various API tweaks to remove unused parameters from function calls
+>>  * lightly refactor the l2tp transmission path to capture more error
+>>    conditions in the data plane statistics
+>>  * repurpose the "magic feather" validation in l2tp to check for
+>>    sk_user_data (ab)use as opposed to refcount debugging
+>>  * remove some duplicated code
+ ...
+> Reviewed-by: James Chapman <jchapman@katalix.com>
+
+Series applied, thanks everyone.
