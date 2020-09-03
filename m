@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C5F25BDED
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 10:55:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 460D925BDEC
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 10:55:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728150AbgICIzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 04:55:14 -0400
-Received: from mail.katalix.com ([3.9.82.81]:42252 "EHLO mail.katalix.com"
+        id S1728229AbgICIzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 04:55:17 -0400
+Received: from mail.katalix.com ([3.9.82.81]:42256 "EHLO mail.katalix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726726AbgICIzJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726855AbgICIzJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 3 Sep 2020 04:55:09 -0400
 Received: from localhost.localdomain (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
         (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 45AFB86C72;
-        Thu,  3 Sep 2020 09:55:06 +0100 (BST)
+        by mail.katalix.com (Postfix) with ESMTPSA id 0A80D86C7D;
+        Thu,  3 Sep 2020 09:55:07 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1599123306; bh=RBVGU1T3ZOMGmU8xZc6RIZhXD5Vx8GtLhe85IXLD/h0=;
+        t=1599123307; bh=rW994aukxFBDu4uo1hb1aDhDKa09HH4/k5Zz9wMtkHc=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:From;
         z=From:=20Tom=20Parkin=20<tparkin@katalix.com>|To:=20netdev@vger.ke
          rnel.org|Cc:=20jchapman@katalix.com,=0D=0A=09Tom=20Parkin=20<tpark
-         in@katalix.com>|Subject:=20[PATCH=20net-next=203/6]=20l2tp:=20drop
-         =20net=20argument=20from=20l2tp_tunnel_create|Date:=20Thu,=20=203=
-         20Sep=202020=2009:54:49=20+0100|Message-Id:=20<20200903085452.9487
-         -4-tparkin@katalix.com>|In-Reply-To:=20<20200903085452.9487-1-tpar
-         kin@katalix.com>|References:=20<20200903085452.9487-1-tparkin@kata
-         lix.com>;
-        b=ItlMc6u6oQn1hMqDzatFDElb7zCZYYwf+54BtsGQ8I01Ji9xw/Itu8WNGnX//g1ZA
-         fO4K48UkP2Api8e5cMeIDb4B1OpTIKp9LANhfjsHZmxqiURViwx6vOse9TWhx/Hw72
-         mX0lDOvdTY+p/qzaIcdBHoulwIex42Whbn8HkdTiIMFKw2MGM56HMQgdXLO9GpBTE1
-         MCGfzE4UTKJ9GEHc6ObU098Cc7fKu7WWco4Si9RyMoDJ9TrrR2p8/0+j2PqVGqnC+t
-         5zKJmYogjTSn3p7QyfjzusyoI/GEND7X5t/bHehJjUG2A9pvdMEtQ3hOGcSIXEaxxT
-         WGE9bVGLGllyQ==
+         in@katalix.com>|Subject:=20[PATCH=20net-next=204/6]=20l2tp:=20capt
+         ure=20more=20tx=20errors=20in=20data=20plane=20stats|Date:=20Thu,=
+         20=203=20Sep=202020=2009:54:50=20+0100|Message-Id:=20<202009030854
+         52.9487-5-tparkin@katalix.com>|In-Reply-To:=20<20200903085452.9487
+         -1-tparkin@katalix.com>|References:=20<20200903085452.9487-1-tpark
+         in@katalix.com>;
+        b=BORobbYt9HfNowtsdm45loWW46eqPSnQOvF2cRrgV9FXO5RVfqaKNNvml48dAJHzb
+         AcU4hdNAHodCe791EXrEuBWVSKK8SSzX9kiWczjsTARYSCffhlMcaIQo06L9Oird71
+         UMbWEcBBRMW2T/q23xqWyuOwD3HkiqXeWNXMCoIXUpNAiZ8Bx91wElN3KdNWNjau1F
+         wRD7eTyVBjzVEVB4IZJmZYO0KJah9NfLyeEiAgxGNLckuiHyt7Uoo3e5GYsU/QPVAJ
+         5OZu186V3sxwGWv73UX1ke48KQbCZN+01zFHxl7Rl1GEtiaD8Vo3VARwkRnRdfbdng
+         784N3av6YZyKg==
 From:   Tom Parkin <tparkin@katalix.com>
 To:     netdev@vger.kernel.org
 Cc:     jchapman@katalix.com, Tom Parkin <tparkin@katalix.com>
-Subject: [PATCH net-next 3/6] l2tp: drop net argument from l2tp_tunnel_create
-Date:   Thu,  3 Sep 2020 09:54:49 +0100
-Message-Id: <20200903085452.9487-4-tparkin@katalix.com>
+Subject: [PATCH net-next 4/6] l2tp: capture more tx errors in data plane stats
+Date:   Thu,  3 Sep 2020 09:54:50 +0100
+Message-Id: <20200903085452.9487-5-tparkin@katalix.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200903085452.9487-1-tparkin@katalix.com>
 References: <20200903085452.9487-1-tparkin@katalix.com>
@@ -46,68 +46,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The argument is unused, so remove it.
+l2tp_xmit_skb has a number of failure paths which are not reflected in
+the tunnel and session statistics because the stats are updated by
+l2tp_xmit_core.  Hence any errors occurring before l2tp_xmit_core is
+called are missed from the statistics.
+
+Refactor the transmit path slightly to capture all error paths.
+
+l2tp_xmit_skb now leaves all the actual work of transmission to
+l2tp_xmit_core, and updates the statistics based on l2tp_xmit_core's
+return code.
 
 Signed-off-by: Tom Parkin <tparkin@katalix.com>
 ---
- net/l2tp/l2tp_core.c    | 2 +-
- net/l2tp/l2tp_core.h    | 2 +-
- net/l2tp/l2tp_netlink.c | 2 +-
- net/l2tp/l2tp_ppp.c     | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ net/l2tp/l2tp_core.c | 71 +++++++++++++++++++++++---------------------
+ 1 file changed, 37 insertions(+), 34 deletions(-)
 
 diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 4a8fb285fada..da66a6ed8993 100644
+index da66a6ed8993..d2672df7e65a 100644
 --- a/net/l2tp/l2tp_core.c
 +++ b/net/l2tp/l2tp_core.c
-@@ -1381,7 +1381,7 @@ static int l2tp_tunnel_sock_create(struct net *net,
+@@ -985,56 +985,39 @@ static int l2tp_build_l2tpv3_header(struct l2tp_session *session, void *buf)
+ 	return bufp - optr;
+ }
  
- static struct lock_class_key l2tp_socket_class;
- 
--int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id, u32 peer_tunnel_id,
-+int l2tp_tunnel_create(int fd, int version, u32 tunnel_id, u32 peer_tunnel_id,
- 		       struct l2tp_tunnel_cfg *cfg, struct l2tp_tunnel **tunnelp)
+-static void l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb, struct flowi *fl)
++/* Queue the packet to IP for output: tunnel socket lock must be held */
++static int l2tp_xmit_queue(struct l2tp_tunnel *tunnel, struct sk_buff *skb, struct flowi *fl)
  {
- 	struct l2tp_tunnel *tunnel = NULL;
-diff --git a/net/l2tp/l2tp_core.h b/net/l2tp/l2tp_core.h
-index 5550a42dda04..3ce90c3f3491 100644
---- a/net/l2tp/l2tp_core.h
-+++ b/net/l2tp/l2tp_core.h
-@@ -235,7 +235,7 @@ struct l2tp_session *l2tp_session_get_by_ifname(const struct net *net,
-  * Creation of a new instance is a two-step process: create, then register.
-  * Destruction is triggered using the *_delete functions, and completes asynchronously.
-  */
--int l2tp_tunnel_create(struct net *net, int fd, int version, u32 tunnel_id,
-+int l2tp_tunnel_create(int fd, int version, u32 tunnel_id,
- 		       u32 peer_tunnel_id, struct l2tp_tunnel_cfg *cfg,
- 		       struct l2tp_tunnel **tunnelp);
- int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
-diff --git a/net/l2tp/l2tp_netlink.c b/net/l2tp/l2tp_netlink.c
-index 31a1e27eab20..83c015f7f20d 100644
---- a/net/l2tp/l2tp_netlink.c
-+++ b/net/l2tp/l2tp_netlink.c
-@@ -233,7 +233,7 @@ static int l2tp_nl_cmd_tunnel_create(struct sk_buff *skb, struct genl_info *info
- 	switch (cfg.encap) {
+-	struct l2tp_tunnel *tunnel = session->tunnel;
+-	unsigned int len = skb->len;
+-	int error;
++	int err;
+ 
+-	/* Queue the packet to IP for output */
+ 	skb->ignore_df = 1;
+ 	skb_dst_drop(skb);
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	if (l2tp_sk_is_v6(tunnel->sock))
+-		error = inet6_csk_xmit(tunnel->sock, skb, NULL);
++		err = inet6_csk_xmit(tunnel->sock, skb, NULL);
+ 	else
+ #endif
+-		error = ip_queue_xmit(tunnel->sock, skb, fl);
++		err = ip_queue_xmit(tunnel->sock, skb, fl);
+ 
+-	/* Update stats */
+-	if (error >= 0) {
+-		atomic_long_inc(&tunnel->stats.tx_packets);
+-		atomic_long_add(len, &tunnel->stats.tx_bytes);
+-		atomic_long_inc(&session->stats.tx_packets);
+-		atomic_long_add(len, &session->stats.tx_bytes);
+-	} else {
+-		atomic_long_inc(&tunnel->stats.tx_errors);
+-		atomic_long_inc(&session->stats.tx_errors);
+-	}
++	return err >= 0 ? NET_XMIT_SUCCESS : NET_XMIT_DROP;
+ }
+ 
+-/* If caller requires the skb to have a ppp header, the header must be
+- * inserted in the skb data before calling this function.
+- */
+-int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb)
++static int l2tp_xmit_core(struct l2tp_session *session, struct sk_buff *skb)
+ {
+-	int data_len = skb->len;
+ 	struct l2tp_tunnel *tunnel = session->tunnel;
++	unsigned int data_len = skb->len;
+ 	struct sock *sk = tunnel->sock;
+-	struct flowi *fl;
+-	struct udphdr *uh;
+-	struct inet_sock *inet;
+-	int headroom;
+-	int uhlen = (tunnel->encap == L2TP_ENCAPTYPE_UDP) ? sizeof(struct udphdr) : 0;
+-	int udp_len;
++	int headroom, uhlen, udp_len;
+ 	int ret = NET_XMIT_SUCCESS;
++	struct inet_sock *inet;
++	struct udphdr *uh;
+ 
+ 	/* Check that there's enough headroom in the skb to insert IP,
+ 	 * UDP and L2TP headers. If not enough, expand it to
+ 	 * make room. Adjust truesize.
+ 	 */
+-	headroom = NET_SKB_PAD + sizeof(struct iphdr) +
+-		uhlen + session->hdr_len;
++	uhlen = (tunnel->encap == L2TP_ENCAPTYPE_UDP) ? sizeof(*uh) : 0;
++	headroom = NET_SKB_PAD + sizeof(struct iphdr) + uhlen + session->hdr_len;
+ 	if (skb_cow_head(skb, headroom)) {
+ 		kfree_skb(skb);
+ 		return NET_XMIT_DROP;
+@@ -1048,8 +1031,7 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb)
+ 
+ 	/* Reset skb netfilter state */
+ 	memset(&(IPCB(skb)->opt), 0, sizeof(IPCB(skb)->opt));
+-	IPCB(skb)->flags &= ~(IPSKB_XFRM_TUNNEL_SIZE | IPSKB_XFRM_TRANSFORMED |
+-			      IPSKB_REROUTED);
++	IPCB(skb)->flags &= ~(IPSKB_XFRM_TUNNEL_SIZE | IPSKB_XFRM_TRANSFORMED | IPSKB_REROUTED);
+ 	nf_reset_ct(skb);
+ 
+ 	bh_lock_sock(sk);
+@@ -1069,7 +1051,6 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb)
+ 	}
+ 
+ 	inet = inet_sk(sk);
+-	fl = &inet->cork.fl;
+ 	switch (tunnel->encap) {
  	case L2TP_ENCAPTYPE_UDP:
- 	case L2TP_ENCAPTYPE_IP:
--		ret = l2tp_tunnel_create(net, fd, proto_version, tunnel_id,
-+		ret = l2tp_tunnel_create(fd, proto_version, tunnel_id,
- 					 peer_tunnel_id, &cfg, &tunnel);
+ 		/* Setup UDP header */
+@@ -1097,12 +1078,34 @@ int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb)
  		break;
  	}
-diff --git a/net/l2tp/l2tp_ppp.c b/net/l2tp/l2tp_ppp.c
-index 998e0c6abf25..68d2489fc133 100644
---- a/net/l2tp/l2tp_ppp.c
-+++ b/net/l2tp/l2tp_ppp.c
-@@ -712,7 +712,7 @@ static int pppol2tp_connect(struct socket *sock, struct sockaddr *uservaddr,
- 				goto end;
- 			}
  
--			error = l2tp_tunnel_create(sock_net(sk), info.fd,
-+			error = l2tp_tunnel_create(info.fd,
- 						   info.version,
- 						   info.tunnel_id,
- 						   info.peer_tunnel_id, &tcfg,
+-	l2tp_xmit_core(session, skb, fl);
++	ret = l2tp_xmit_queue(tunnel, skb, &inet->cork.fl);
++
+ out_unlock:
+ 	bh_unlock_sock(sk);
+ 
+ 	return ret;
+ }
++
++/* If caller requires the skb to have a ppp header, the header must be
++ * inserted in the skb data before calling this function.
++ */
++int l2tp_xmit_skb(struct l2tp_session *session, struct sk_buff *skb)
++{
++	unsigned int len = skb->len;
++	int ret;
++
++	ret = l2tp_xmit_core(session, skb);
++	if (ret == NET_XMIT_SUCCESS) {
++		atomic_long_inc(&session->tunnel->stats.tx_packets);
++		atomic_long_add(len, &session->tunnel->stats.tx_bytes);
++		atomic_long_inc(&session->stats.tx_packets);
++		atomic_long_add(len, &session->stats.tx_bytes);
++	} else {
++		atomic_long_inc(&session->tunnel->stats.tx_errors);
++		atomic_long_inc(&session->stats.tx_errors);
++	}
++	return ret;
++}
+ EXPORT_SYMBOL_GPL(l2tp_xmit_skb);
+ 
+ /*****************************************************************************
 -- 
 2.17.1
 
