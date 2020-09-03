@@ -2,248 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C26525BE98
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 11:47:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52FC925BF0E
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 12:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727908AbgICJrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 05:47:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48940 "EHLO
+        id S1726891AbgICK1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 06:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725984AbgICJrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 05:47:10 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9066BC061244;
-        Thu,  3 Sep 2020 02:47:09 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id k15so2440216wrn.10;
-        Thu, 03 Sep 2020 02:47:09 -0700 (PDT)
+        with ESMTP id S1726025AbgICK1b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 06:27:31 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D265C061244;
+        Thu,  3 Sep 2020 03:27:31 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id k15so1948747pfc.12;
+        Thu, 03 Sep 2020 03:27:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=R24cHwZc7u5oZCir7e0rXvWeZRVbDvjXit87rA6A4f0=;
-        b=D6hALueahNXxBBVIjbk/MXKKIxIeY+CKUKQxgITCWk4+QZMkataczE14Oh6vknYm/+
-         hSLaOzEQOXhFb2iquiHswNRvG5DwFoF0+gsDm1iZ9hcjXUJGm909crrxdcZ0QmQFbaEG
-         8FSe8j6MJ+XmYzQMpVn8AMiIrdZ60gyr89RLNizP81dAtUnNE1+YsDBVGDQi6F7AiGBi
-         1gXs8tVcopEER8lsMWWJrEKTKxdXM9wWyjvH0Bgb9fPRjD0s/nP1l7WpBs+K83GJ+1hO
-         0/ks1/wuNtOd6L1DlMvzqSjFWXMMzNj79bNs8Fvs243+F9UO6li2xYYmtURJGFrTK+Jz
-         6O1Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=eQe5hZks1L43GLCT5QNuM+GVxeNbTN+rmb5ukaKJwBk=;
+        b=Bvcx3aGtW9+20zhQ7vpIdottSWdHwyzUpuegX1y3bEFLgDwEzwl/8f2etof6Qy1WGH
+         mDNxjxG+7ZOlBY/362WLeYlaGvRxl6hTTFLN9sBWmqzLiKlpmo4wYrdZTes0BHVPn8v5
+         CITJT1t9vT/yczOziCGPnw9l+7IIky75pA4LGSzczJKFNHvmyRTwbBN2xFO3RzetTqJn
+         gusOClv5EzEQzKZcvuDdsbX7pjws6eB714V4ZHU8LsW97PTHRw7MWNa+mA2VvVGcDss/
+         uiUWMDlP/4kbv+rRtTARrUMI4FGCI4ndbxcabjmAk8UjXTCHRkZ2//kWiWW1ds3iqPUf
+         3w/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=R24cHwZc7u5oZCir7e0rXvWeZRVbDvjXit87rA6A4f0=;
-        b=ThzsATf1dPyllQf5vZYvoMBB97npqelpEtqxwxxJjHAPboKkf3BvAAe1nFOWaHaWXV
-         35XL7iCfiUeHr3T4VyJ1aGERVmeBaT9ZuAmX1831cnzPSV2OHlYuKd1x5OY4kb+CYFZX
-         wToG2UpXNN3fSFc/FnhQZXqZ+kCwqyyZK8xFToFDWIwsB+UzAxDguBNjL7Md7F+X9Njw
-         tHBlHzY74ud7OKas6twk6XLTQebL/bYJQfxXtthiR7/YPkh6jaXDc2xpP8uDWEsyDKdF
-         g6WV2NuHsG114ZjZzyYb7mwDJb58JfvWc1d+3w0+mRGB7YQ0XSMyKc0D1cW1FF3O/pAo
-         xScw==
-X-Gm-Message-State: AOAM5314KD2ThK6823QHHYBH/erAbmaczHQUUp+wP3QAouJ3MVWJO78R
-        KejtIVSIiyGWpEoKg4la934T2wbClBI=
-X-Google-Smtp-Source: ABdhPJx8FSOOCj9/gYfYSQzt2VrN5PAyI29AcRuHocaypruoG6b6SiRfYUyfTrDkFks+jW6oYsb13Q==
-X-Received: by 2002:adf:e9c1:: with SMTP id l1mr1551778wrn.68.1599126428080;
-        Thu, 03 Sep 2020 02:47:08 -0700 (PDT)
-Received: from [192.168.8.147] ([37.165.127.159])
-        by smtp.gmail.com with ESMTPSA id 128sm3352292wmz.43.2020.09.03.02.47.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Sep 2020 02:47:07 -0700 (PDT)
-Subject: Re: INFO: task hung in tcf_ife_init
-To:     syzbot <syzbot+80e32b5d1f9923f8ace6@syzkaller.appspotmail.com>,
-        davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-References: <00000000000014fd1405ae64d01f@google.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <af0a0922-86cb-fcab-0aeb-a842c5c34707@gmail.com>
-Date:   Thu, 3 Sep 2020 11:47:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=eQe5hZks1L43GLCT5QNuM+GVxeNbTN+rmb5ukaKJwBk=;
+        b=NFi8xSQCRvvyhsbN64TkX4eSpadr1qCzEXLuBX7qseuFL12ca8gYhNPHQA0uwvuDmb
+         OqCKCE9HK4SBi79hyABx0U5oHBpYevgP+EZ+QT7UoUemcGQRTZ8fvF5On2CxHx6BKpRT
+         bj9Z4fwCq8De0klDohxEIYJhvtzRvhkgeLdN6YqkZxUCv9zGoCIA6JQSzelYGEeZ3ZAQ
+         yCOkOKO1t5Ci3V+hWGjL0KCwWN0mh6njfOcKPyX8JUD8GpqgkxeV8VMV9IdG6R36q5yn
+         IrBa0fI4ddroMoht5BCTmsu4rC2jLYDT9yL1Xmx77qNrQ0muyLTmlmadOIJ44MK98dBc
+         9QYQ==
+X-Gm-Message-State: AOAM532nsKoNeDVSp2RikS8dgI/OVAxAfnc8lhKINg9Rgq67H8/f8Af0
+        rGllaBv4goPH4bAYUiTX5WhXF7p0bqng9NF1
+X-Google-Smtp-Source: ABdhPJzO14ksK5A4KWC4G63HW8+U3MP02mCBTJWkOE3tnk3O5fN+xmpsr15LxxKkVhOirePH+5PuDw==
+X-Received: by 2002:a17:902:ea86:: with SMTP id x6mr3218107plb.131.1599128848141;
+        Thu, 03 Sep 2020 03:27:28 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id x3sm2131929pgg.54.2020.09.03.03.27.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Sep 2020 03:27:27 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv10 bpf-next 0/5] xdp: add a new helper for dev map multicast support
+Date:   Thu,  3 Sep 2020 18:26:56 +0800
+Message-Id: <20200903102701.3913258-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20200826132002.2808380-1-liuhangbin@gmail.com>
+References: <20200826132002.2808380-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <00000000000014fd1405ae64d01f@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch is for xdp multicast support. which has been discussed before[0],
+The goal is to be able to implement an OVS-like data plane in XDP, i.e.,
+a software switch that can forward XDP frames to multiple ports.
 
+To achieve this, an application needs to specify a group of interfaces
+to forward a packet to. It is also common to want to exclude one or more
+physical interfaces from the forwarding operation - e.g., to forward a
+packet to all interfaces in the multicast group except the interface it
+arrived on. While this could be done simply by adding more groups, this
+quickly leads to a combinatorial explosion in the number of groups an
+application has to maintain.
 
-On 9/3/20 1:48 AM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    1996cf46 net: bcmgenet: fix mask check in bcmgenet_validat..
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=17233f4d900000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a0437fdd630bee11
-> dashboard link: https://syzkaller.appspot.com/bug?extid=80e32b5d1f9923f8ace6
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=161678e1900000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14f826d1900000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+80e32b5d1f9923f8ace6@syzkaller.appspotmail.com
-> 
-> INFO: task syz-executor939:6846 blocked for more than 143 seconds.
->       Not tainted 5.9.0-rc1-syzkaller #0
-> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-> task:syz-executor939 state:D stack:25032 pid: 6846 ppid:  6839 flags:0x00004004
-> Call Trace:
->  context_switch kernel/sched/core.c:3778 [inline]
->  __schedule+0x8e5/0x21e0 kernel/sched/core.c:4527
->  schedule+0xd0/0x2a0 kernel/sched/core.c:4602
->  schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:4661
->  __mutex_lock_common kernel/locking/mutex.c:1033 [inline]
->  __mutex_lock+0x3e2/0x10e0 kernel/locking/mutex.c:1103
->  load_metaops_and_vet net/sched/act_ife.c:277 [inline]
->  populate_metalist net/sched/act_ife.c:452 [inline]
->  tcf_ife_init+0x11a4/0x16f0 net/sched/act_ife.c:578
->  tcf_action_init_1+0x6a5/0xac0 net/sched/act_api.c:984
->  tcf_action_init+0x249/0x380 net/sched/act_api.c:1043
->  tcf_action_add+0xd9/0x360 net/sched/act_api.c:1451
->  tc_ctl_action+0x33a/0x439 net/sched/act_api.c:1504
->  rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5563
->  netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
->  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
->  netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
->  sock_sendmsg_nosec net/socket.c:651 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:671
->  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
->  ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
->  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x445e29
-> Code: Bad RIP value.
-> RSP: 002b:00007f9e83d9ddb8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 00000000006dac28 RCX: 0000000000445e29
-> RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000003
-> RBP: 00000000006dac20 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000006 R11: 0000000000000246 R12: 00000000006dac2c
-> R13: 00007fff2893048f R14: 00007f9e83d9e9c0 R15: 20c49ba5e353f7cf
-> 
-> Showing all locks held in the system:
-> 3 locks held by kworker/0:2/48:
->  #0: ffff888214d82538 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
->  #0: ffff888214d82538 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
->  #0: ffff888214d82538 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
->  #0: ffff888214d82538 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:616 [inline]
->  #0: ffff888214d82538 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:643 [inline]
->  #0: ffff888214d82538 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_one_work+0x82b/0x1670 kernel/workqueue.c:2240
->  #1: ffffc90000e47da8 ((addr_chk_work).work){+.+.}-{0:0}, at: process_one_work+0x85f/0x1670 kernel/workqueue.c:2244
->  #2: ffffffff8a7e76c8 (rtnl_mutex){+.+.}-{3:3}, at: addrconf_verify_work+0xa/0x20 net/ipv6/addrconf.c:4568
-> 1 lock held by khungtaskd/1166:
->  #0: ffffffff89bd6900 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:5825
-> 1 lock held by in:imklog/6548:
->  #0: ffff8880a8d05870 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:930
-> 1 lock held by syz-executor939/6846:
->  #0: ffffffff8a7e76c8 (rtnl_mutex){+.+.}-{3:3}, at: load_metaops_and_vet net/sched/act_ife.c:277 [inline]
->  #0: ffffffff8a7e76c8 (rtnl_mutex){+.+.}-{3:3}, at: populate_metalist net/sched/act_ife.c:452 [inline]
->  #0: ffffffff8a7e76c8 (rtnl_mutex){+.+.}-{3:3}, at: tcf_ife_init+0x11a4/0x16f0 net/sched/act_ife.c:578
-> 1 lock held by syz-executor939/6848:
-> 
-> =============================================
-> 
-> NMI backtrace for cpu 0
-> CPU: 0 PID: 1166 Comm: khungtaskd Not tainted 5.9.0-rc1-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x18f/0x20d lib/dump_stack.c:118
->  nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
->  nmi_trigger_cpumask_backtrace+0x1b3/0x223 lib/nmi_backtrace.c:62
->  trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
->  check_hung_uninterruptible_tasks kernel/hung_task.c:209 [inline]
->  watchdog+0xd7d/0x1000 kernel/hung_task.c:295
->  kthread+0x3b5/0x4a0 kernel/kthread.c:292
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-> Sending NMI from CPU 0 to CPUs 1:
-> NMI backtrace for cpu 1
-> CPU: 1 PID: 6848 Comm: syz-executor939 Not tainted 5.9.0-rc1-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:arch_local_irq_restore+0x2e/0x50 arch/x86/include/asm/paravirt.h:770
-> Code: 3b b6 89 53 48 89 fb 48 ba 00 00 00 00 00 fc ff df 48 c1 e8 03 80 3c 10 00 75 18 48 83 3d 41 e6 5c 08 00 74 0c 48 89 df 57 9d <0f> 1f 44 00 00 5b c3 0f 0b 48 c7 c7 c8 3b b6 89 e8 bd 01 5b 00 eb
-> RSP: 0018:ffffc9000527ec78 EFLAGS: 00000286
-> RAX: 1ffffffff136c779 RBX: 0000000000000286 RCX: 0000000000000000
-> RDX: dffffc0000000000 RSI: ffffffff89bd6840 RDI: 0000000000000286
-> RBP: ffff888093c08440 R08: ffffffff865a9e38 R09: ffff888099edb807
-> R10: ffffed10133db700 R11: 0000000000000001 R12: 0000000000000000
-> R13: ffff888093c08d28 R14: ffff888093c08d28 R15: 0000000000000286
-> FS:  00007f9e83d7d700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00007f6aa9c91000 CR3: 0000000091d8f000 CR4: 00000000001506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  lock_is_held_type+0xbb/0xf0 kernel/locking/lockdep.c:5044
->  lock_is_held include/linux/lockdep.h:267 [inline]
->  ___might_sleep+0x268/0x2f0 kernel/sched/core.c:7265
->  __mutex_lock_common kernel/locking/mutex.c:935 [inline]
->  __mutex_lock+0xa9/0x10e0 kernel/locking/mutex.c:1103
->  tcf_idr_check_alloc+0x78/0x3b0 net/sched/act_api.c:508
->  tcf_ife_init+0x3b1/0x16f0 net/sched/act_ife.c:513
->  tcf_action_init_1+0x6a5/0xac0 net/sched/act_api.c:984
->  tcf_action_init+0x249/0x380 net/sched/act_api.c:1043
->  tcf_action_add+0xd9/0x360 net/sched/act_api.c:1451
->  tc_ctl_action+0x33a/0x439 net/sched/act_api.c:1504
->  rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5563
->  netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
->  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
->  netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
->  sock_sendmsg_nosec net/socket.c:651 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:671
->  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
->  ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
->  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x445e29
-> Code: e8 bc b7 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 ab 11 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007f9e83d7cdb8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 00000000006dac38 RCX: 0000000000445e29
-> RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000004
-> RBP: 00000000006dac30 R08: 0000000000000003 R09: 0000000000000000
-> R10: 0000000000000003 R11: 0000000000000246 R12: 00000000006dac3c
-> R13: 00007fff2893048f R14: 00007f9e83d7d9c0 R15: 20c49ba5e353f7cf
-> INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 0.000 msecs
-> 
-> 
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
-> 
+To avoid the combinatorial explosion, we propose to include the ability
+to specify an "exclude group" as part of the forwarding operation. This
+needs to be a group (instead of just a single port index), because there
+may have multi interfaces you want to exclude.
 
-This commit might be related :
+Thus, the logical forwarding operation becomes a "set difference"
+operation, i.e. "forward to all ports in group A that are not also in
+group B". This series implements such an operation using device maps to
+represent the groups. This means that the XDP program specifies two
+device maps, one containing the list of netdevs to redirect to, and the
+other containing the exclude list.
 
-commit 4e407ff5cd67ec76eeeea1deec227b7982dc7f66
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun Aug 19 12:22:12 2018 -0700
+To achieve this, I re-implement a new helper bpf_redirect_map_multi()
+to accept two maps, the forwarding map and exclude map. If user
+don't want to use exclude map and just want simply stop redirecting back
+to ingress device, they can use flag BPF_F_EXCLUDE_INGRESS.
 
-    act_ife: move tcfa_lock down to where necessary
-   
-    The only time we need to take tcfa_lock is when adding
-    a new metainfo to an existing ife->metalist. We don't need
-    to take tcfa_lock so early and so broadly in tcf_ife_init().
-   
-    This means we can always take ife_mod_lock first, avoid the
-    reverse locking ordering warning as reported by Vlad.
-   
-    Reported-by: Vlad Buslov <vladbu@mellanox.com>
-    Tested-by: Vlad Buslov <vladbu@mellanox.com>
-    Cc: Vlad Buslov <vladbu@mellanox.com>
-    Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-    Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
+The 1st patch add a new bpf arg to allow NULL map pointer.
+The 2nd patch add the new bpf_redirect_map_multi() helper.
+The 3rd and 4th patches are for usage sample and testing purpose, there
+is no effort has been made on performance optimisation.
+The 5th patch added some verifier test for new bpf arg ARG_CONST_MAP_PTR_OR_NULL
+
+I did same tests with pktgen(pkt size 64) to compire with xdp_redirect_map().
+Here is the test result(the veth peer has a dummy xdp program with XDP_DROP
+directly):
+
+Version         | Test                                   | Native | Generic
+5.9 rc1         | xdp_redirect_map       i40e->i40e      |  10.4M |  1.9M
+5.9 rc1         | xdp_redirect_map       i40e->veth      |  14.2M |  2.2M
+5.9 rc1 + patch | xdp_redirect_map       i40e->i40e      |  10.3M |  1.9M
+5.9 rc1 + patch | xdp_redirect_map       i40e->veth      |  14.2M |  2.2M
+5.9 rc1 + patch | xdp_redirect_map_multi i40e->i40e      |   8.0M |  1.5M
+5.9 rc1 + patch | xdp_redirect_map_multi i40e->veth      |  11.2M |  1.6M
+5.9 rc1 + patch | xdp_redirect_map_multi i40e->i40e+veth |   3.5M |  1.1M
+
+The bpf_redirect_map_multi() is slower than bpf_redirect_map() as we loop
+the map and do clone skb/xdpf. The generic path is slower than native
+path as we send skbs by pktgen. So the result looks reasonable. There is
+some performance improvement for veth port compared with 5.8 rc1.
+
+Last but not least, thanks a lot to Toke, Jesper, Jiri and Eelco for
+suggestions and help on implementation.
+
+[0] https://xdp-project.net/#Handling-multicast
+
+v10:
+Rebase the code to latest bpf-next.
+Update helper bpf_xdp_redirect_map_multi()
+- No need to check map pointer as we will do the check in verifier.
+
+v9:
+Update helper bpf_xdp_redirect_map_multi()
+- Use ARG_CONST_MAP_PTR_OR_NULL for helper arg2
+
+v8:
+a) Update function dev_in_exclude_map():
+   - remove duplicate ex_map map_type check in
+   - lookup the element in dev map by obj dev index directly instead
+     of looping all the map
+
+v7:
+a) Fix helper flag check
+b) Limit the *ex_map* to use DEVMAP_HASH only and update function
+   dev_in_exclude_map() to get better performance.
+
+v6: converted helper return types from int to long
+
+v5:
+a) Check devmap_get_next_key() return value.
+b) Pass through flags to __bpf_tx_xdp_map() instead of bool value.
+c) In function dev_map_enqueue_multi(), consume xdpf for the last
+   obj instead of the first on.
+d) Update helper description and code comments to explain that we
+   use NULL target value to distinguish multicast and unicast
+   forwarding.
+e) Update memory model, memory id and frame_sz in xdpf_clone().
+f) Split the tests from sample and add a bpf kernel selftest patch.
+
+v4: Fix bpf_xdp_redirect_map_multi_proto arg2_type typo
+
+v3: Based on Toke's suggestion, do the following update
+a) Update bpf_redirect_map_multi() description in bpf.h.
+b) Fix exclude_ifindex checking order in dev_in_exclude_map().
+c) Fix one more xdpf clone in dev_map_enqueue_multi().
+d) Go find next one in dev_map_enqueue_multi() if the interface is not
+   able to forward instead of abort the whole loop.
+e) Remove READ_ONCE/WRITE_ONCE for ex_map.
+
+v2: Add new syscall bpf_xdp_redirect_map_multi() which could accept
+include/exclude maps directly.
+
+Hangbin Liu (5):
+  bpf: add a new bpf argument type ARG_CONST_MAP_PTR_OR_NULL
+  xdp: add a new helper for dev map multicast support
+  sample/bpf: add xdp_redirect_map_multicast test
+  selftests/bpf: add xdp_redirect_multi test
+  selftests/bpf: Add verifier tests for bpf arg
+    ARG_CONST_MAP_PTR_OR_NULL
+
+ include/linux/bpf.h                           |  21 +++
+ include/linux/filter.h                        |   1 +
+ include/net/xdp.h                             |   1 +
+ include/uapi/linux/bpf.h                      |  27 +++
+ kernel/bpf/devmap.c                           | 124 +++++++++++++
+ kernel/bpf/verifier.c                         |  20 +-
+ net/core/filter.c                             | 111 ++++++++++-
+ net/core/xdp.c                                |  29 +++
+ samples/bpf/Makefile                          |   3 +
+ samples/bpf/xdp_redirect_map_multi_kern.c     |  43 +++++
+ samples/bpf/xdp_redirect_map_multi_user.c     | 166 +++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  27 +++
+ tools/testing/selftests/bpf/Makefile          |   4 +-
+ .../bpf/progs/xdp_redirect_multi_kern.c       |  77 ++++++++
+ tools/testing/selftests/bpf/test_verifier.c   |  22 ++-
+ .../selftests/bpf/test_xdp_redirect_multi.sh  | 164 +++++++++++++++++
+ .../testing/selftests/bpf/verifier/map_ptr.c  |  70 +++++++
+ .../selftests/bpf/xdp_redirect_multi.c        | 173 ++++++++++++++++++
+ 18 files changed, 1071 insertions(+), 12 deletions(-)
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_kern.c
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_user.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_redirect_multi.c
+
+-- 
+2.25.4
+
