@@ -2,115 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65F7725BAA6
-	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 07:56:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE8B25BAAB
+	for <lists+netdev@lfdr.de>; Thu,  3 Sep 2020 07:58:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726088AbgICFym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 01:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41570 "EHLO
+        id S1726526AbgICF5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 01:57:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbgICFym (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 01:54:42 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEF9C061244
-        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 22:54:41 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id a9so1569110wmm.2
-        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 22:54:41 -0700 (PDT)
+        with ESMTP id S1725943AbgICF5c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 01:57:32 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95406C061244
+        for <netdev@vger.kernel.org>; Wed,  2 Sep 2020 22:57:31 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id z4so1766430wrr.4
+        for <netdev@vger.kernel.org>; Wed, 02 Sep 2020 22:57:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=Fac+qp7rSu/xEAP+vfdHYdPmveRFTAa4rjuOC/hkiHI=;
-        b=Jk7VFNqkmPv3DZkKrJeNtm3h9WY8jN4adckGd5aGef7z8Qem2AMrTgH0/vFxft8Rrq
-         SWB1SooS2owXXA2AJS7XeSLR8LTTkzG2jtpT3DcopFE4sgA+kqVeAuGa4YM5wlaFIxFz
-         WjxEdLU9LFZP9YhWsv8H/uM4vKFPAJz6T/3yBx/hO1tjTdbRqcjsHX70k00J8CeWQhff
-         QQwb9QrfpMNQxi4qj2qAKKkL9jqYfQ5Ai37C4nSDu0CEKtW/jDbSl0H7RFeH82prNQ/t
-         VDI7x+R/r1VcrUFAn7GLaF3YZL01CQKqxh6moQeawUyH2/czaTLcsrXtIh8SUOSnoKU6
-         r/lw==
+        bh=0cLcEDkB0cieEHnFjZFG8vgjCv+LK2cnNzMV4mmRD6o=;
+        b=V/dkrpkkQePuyRvKXGcLbyBd2E6DotZyBB7ugmZ0bXE0kVgkhNPTitGzFUvXhQ5blr
+         Akc5pzfkvLCBAG/vLVyfjU8Pql5DevAWS/R8gKH1asCEWbt5IMvZGpi+lzgWPuIhnHAw
+         TPbfN/zLnmmcRGcGV0fshOayt1NYx9SCIxwXz9285YVPvsDImWKTeL+0Mqvy7yoLBcNI
+         gTCrG6eXIikxWUIEqBn1wUcxiEGBcKhW80y/l35gdvJGU9JAcjqMi8KhIus/BITMVANx
+         ncwcHxKayEa5WjYx5CM+v01N89crOj5yGXi7DQSwygfYoZZzLcdSw2B/RfOpa+YBawaD
+         sYaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Fac+qp7rSu/xEAP+vfdHYdPmveRFTAa4rjuOC/hkiHI=;
-        b=EILIyVPDtvpxlU9T1MY1C5ZUBxK8f2vDIxYxRbdDrTlwGtlfFJ6+xZO+gben9x+nqG
-         0s8BYMvOlnGLFag39CxCXghiizEUDRnFT5A+Ql1//f/dXRjeB+5gSLwpU5XbFPUsvvXw
-         OtrClccwkSLKjCcOr2Oaxn51DNV/nR0uRO5+bmEqZ8gm9uZ+ZxYCFCj4dSRuvwzAIn5E
-         7ta7eRQLjHQ/y3wqTxyE+a5cDWWWhkDUfWJn2JMS/O1WVi7RaWn0XLG9VG2hEQJd+W1F
-         c6z6S+iPqSJ3J61x72iR4Om1X5oUnnWD/eSmWVDof1dgyRupwSUmcsyMYX/vxmwBnI+M
-         Tc9Q==
-X-Gm-Message-State: AOAM532gVqiThwUf/D41wGUEMJkRy+WsoXKqgvYBA1MNx8U5IDKf0dBQ
-        YSM+6uTKB6rOFKe+ViLDCT+QkA==
-X-Google-Smtp-Source: ABdhPJw1EYnp//IWLW0UxM+lTXJGgpTadebYAA0HW/d/bmtF6WSsJgKz3M21s+sttUGHZY367Ro63Q==
-X-Received: by 2002:a05:600c:2283:: with SMTP id 3mr513669wmf.37.1599112480398;
-        Wed, 02 Sep 2020 22:54:40 -0700 (PDT)
+        bh=0cLcEDkB0cieEHnFjZFG8vgjCv+LK2cnNzMV4mmRD6o=;
+        b=GtZRrdFceH7oKNzG2KqM8CfczVllqLIjq+uYwrhwdytZYqsKD8m/e1wIDUzRiQRXBj
+         3m84YEDTF2yLZL0E82ky+H0EHT8MtAVA72dwwWVTY2n/V6NOVc53Q0RugSC/g/0KY8A4
+         qRamIeTDnkhDMlzPCWdwcpsmN0ucljVYVHHABEeo/YOpIxG9O4KXYnurdAI0uWy1bEan
+         LajpKFohVj8tM/r1pfJ3HsASh97368k8xCw8EW6624nP1lpJy58B4G6s4Rn0ToT7sVKM
+         yZF6YiA53NYrk6vOk81p3c2YKNvLfdJuchk9syjt2TbsYDRbHKj432OboySzpPuPPPc8
+         mHRw==
+X-Gm-Message-State: AOAM533+GLTDPMQmoPhnaC6FnWSzmuuqKO02Fh4vxcHVCMd8WGoGO+kV
+        XtJU6SuPhCpvtCbJXCaY3cMg9R71cFAiE/UM
+X-Google-Smtp-Source: ABdhPJxQgkxBtohhCsr4H0v0wzSWrAQ8ofJ525rt3OzN2RstTyakQYN4Q1D8nQumpbglXOuA8l9wPA==
+X-Received: by 2002:adf:fc0a:: with SMTP id i10mr440403wrr.111.1599112650340;
+        Wed, 02 Sep 2020 22:57:30 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id 8sm2784134wrl.7.2020.09.02.22.54.39
+        by smtp.gmail.com with ESMTPSA id g12sm467061wro.89.2020.09.02.22.57.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Sep 2020 22:54:39 -0700 (PDT)
-Date:   Thu, 3 Sep 2020 07:54:39 +0200
+        Wed, 02 Sep 2020 22:57:29 -0700 (PDT)
+Date:   Thu, 3 Sep 2020 07:57:29 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Parav Pandit <parav@nvidia.com>, Parav Pandit <parav@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "roid@mellanox.com" <roid@mellanox.com>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next 2/3] devlink: Consider other controller while
- building phys_port_name
-Message-ID: <20200903055439.GA2997@nanopsycho.orion>
-References: <BY5PR12MB432271E4F9028831FA75B7E0DC520@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20200828094343.6c4ff16a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <BY5PR12MB43220099C235E238D6AF89EADC530@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20200901081906.GE3794@nanopsycho.orion>
- <BY5PR12MB43229CA19D3D8215BC9BEFECDC2E0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20200901091742.GF3794@nanopsycho.orion>
- <20200901142840.25b6b58f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <BY5PR12MB43228D0A9B1EF43C061A5A3BDC2F0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20200902080011.GI3794@nanopsycho.orion>
- <20200902082358.6b0c69b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Cc:     Moshe Shemesh <moshe@nvidia.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next RFC v3 01/14] devlink: Add reload action option
+ to devlink reload command
+Message-ID: <20200903055729.GB2997@nanopsycho.orion>
+References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
+ <1598801254-27764-2-git-send-email-moshe@mellanox.com>
+ <20200831121501.GD3794@nanopsycho.orion>
+ <9fffbe80-9a2a-33de-2e11-24be34648686@nvidia.com>
+ <20200902094627.GB2568@nanopsycho>
+ <20200902083025.43407d8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200902082358.6b0c69b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200902083025.43407d8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Sep 02, 2020 at 05:23:58PM CEST, kuba@kernel.org wrote:
->On Wed, 2 Sep 2020 10:00:11 +0200 Jiri Pirko wrote:
->>>> I didn't quite get the fact that you want to not show controller ID on the local
->>>> port, initially.  
->>> Mainly to not_break current users.  
+Wed, Sep 02, 2020 at 05:30:25PM CEST, kuba@kernel.org wrote:
+>On Wed, 2 Sep 2020 11:46:27 +0200 Jiri Pirko wrote:
+>> >? Do we need such change there too or keep it as is, each action by itself
+>> >and return what was performed ?  
 >> 
->> You don't have to take it to the name, unless "external" flag is set.
->> 
->> But I don't really see the point of showing !external, cause such
->> controller number would be always 0. Jakub, why do you think it is
->> needed?
+>> Well, I don't know. User asks for X, X should be performed, not Y or Z.
+>> So perhaps the return value is not needed.
+>> Just driver advertizes it supports X, Y, Z and the users says:
+>> 1) do X, driver does X
+>> 2) do Y, driver does Y
+>> 3) do Z, driver does Z
+>> [
+>> I think this kindof circles back to the original proposal...
 >
->It may seem reasonable for a smartNIC where there are only two
->controllers, and all you really need is that external flag. 
->
->In a general case when users are trying to figure out the topology
->not knowing which controller they are sitting at looks like a serious
->limitation.
+>Why? User does not care if you activate new devlink params when
+>activating new firmware. Trust me. So why make the user figure out
+>which of all possible reset option they should select? If there is 
+>a legitimate use case to limit what is reset - it should be handled
+>by a separate negative attribute, like --live which says don't reset
+>anything.
 
-I think we misunderstood each other. I never proposed just "external"
-flag. What I propose is either:
-1) ecnum attribute absent for local
-   ecnum attribute absent set to 0 for external controller X
-   ecnum attribute absent set to 1 for external controller Y
-   ...
-
-or:
-2) ecnum attribute absent for local, external flag set to false
-   ecnum attribute absent set to 0 for external controller X, external flag set to true
-   ecnum attribute absent set to 1 for external controller Y, external flag set to true
-
->
->Example - multi-host system and you want to know which controller you
->are to run power cycle from the BMC side.
->
->We won't be able to change that because it'd change the names for you.
+I see. Okay. Could you please sum-up the interface as you propose it?
+Thanks!
