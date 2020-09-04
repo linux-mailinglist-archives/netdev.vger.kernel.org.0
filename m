@@ -2,134 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E1B425CF13
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 03:29:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49A3B25CF19
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 03:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729486AbgIDB3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 3 Sep 2020 21:29:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53218 "EHLO
+        id S1729557AbgIDBad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 3 Sep 2020 21:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728271AbgIDB3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 21:29:13 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E830FC061244;
-        Thu,  3 Sep 2020 18:29:12 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id o16so2420907pjr.2;
-        Thu, 03 Sep 2020 18:29:12 -0700 (PDT)
+        with ESMTP id S1728134AbgIDBac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 3 Sep 2020 21:30:32 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F097FC061244;
+        Thu,  3 Sep 2020 18:30:31 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id m5so3481115pgj.9;
+        Thu, 03 Sep 2020 18:30:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GvMH0hlLtrOknCj47mhqApAyGYb83/XohGv2CTFb4SY=;
-        b=GBRYyc76jg4BzxckhAPQC6u899ObYMAc+oRzzGiT15KxaSFQOyZUA4Ebxm+k4is6SG
-         0vu/xO29fuSJA2ZbPS5bXq681/quJfO5n2BkWhZlJ2i+mopBV2736BLTcqy2PkYisyVi
-         bnAiWeZLKARKFDkOap0omMlYHj4RDtOfknTJTUjkLBXvch/4XOnJp5lwtrEUlUyxzzWd
-         KyRlMj9tDxRWgWPdm+tImlAm7tFpXabhzaD/AW9Ppo/0CqylLGz2Rv2l8ZuD04dN/3eA
-         D8iD/Jx7MkoZAZvr623hSz+xQZID5ACeIRd9+BP3F9KV/q+RcNudZulikFkuZJtQmUE0
-         mqDQ==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=0rKu87LaMJzwUoquhhu1v41dSe/z/sPZpyMOZfic+E8=;
+        b=LuD7XboExkNWwgLpEnooK55xv7AINxJ6QnLC9ttshzpSWAqhCO1SojuA/l3Yl7sJ1k
+         Hgtw3NqTuGIh00mbSCwezxDsbxME4dAWLDW05dJyEnvW0NeXMTojJiLDOD8t3G+MEr2/
+         LMjor7P7h43dzYzVHV9dUYdSuBnlaBlblJdrhyKl1/HLr8X0qBlApoIKZvVxLI58/ZSg
+         2EMErqaCRH+eEsI6xxC9sJ52PP/IyX5Xao7aPCmLKYMfv3aPPwQdpgWa+ntBHYsGLQP9
+         ux8KJDYiHolQbPA87//2KDxWD42iA6WTWc03rGPS0zh+Bg1D+T1ZluWhP6MOnznQY7Z9
+         Oikw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GvMH0hlLtrOknCj47mhqApAyGYb83/XohGv2CTFb4SY=;
-        b=X8YvLAo7cXgr1IQoQG3sy/4sZBVDBg0EtEiViCuSaiw0a7TJLbrPfJwZ/b822vE/4c
-         rLBE4ohVFqmwHrQdJIEiVDLpRFKY91zYltWttrCPR0nsaWdhtEYW503lvxCGNNJtAoVu
-         z2ElnV+K1hRnnLVH5WmheyA5B9Zjn29stKFUkxux7x+hB3iNDMybyP815nVpxRjOcaqY
-         wdjUHZebLK1330U6XU4R81WududodLLCrlTh7z9ng++Sd5OrL75N77dCq4aYRulw/YwQ
-         rHRawsbO03N9OKpKlfmUnsx95wk9S7fJmf+IJgoRsquLQwW2VgdARDocEO8rNFOlnUKH
-         WoPg==
-X-Gm-Message-State: AOAM531luvjnuoS1L57lyRZN5lRyufzHBkmN4nmu9QEh4iZcXvECr1W1
-        j7QlZJNNjbJuJpDnpHzcCUs=
-X-Google-Smtp-Source: ABdhPJzz/arDtGXQ8gm662yBuSBmd72o+cvNH3s8uLsJR1pfhUMiJFxHQqhlHPN+Q4GR6rpZgsLDMw==
-X-Received: by 2002:a17:902:43:: with SMTP id 61mr6695916pla.16.1599182952174;
-        Thu, 03 Sep 2020 18:29:12 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:8159])
-        by smtp.gmail.com with ESMTPSA id v11sm3887065pgs.22.2020.09.03.18.29.10
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=0rKu87LaMJzwUoquhhu1v41dSe/z/sPZpyMOZfic+E8=;
+        b=cYJa6sEPCOUdGIbcPFHm6656LFCJni4ubWXlBa7HrdgUVMgdj5qn2y3F+W561vUyIX
+         XNllsa1U6rl3d1FaSYqVHG9e264L7f5gLmU6UXG4zh8o1/dCWj2JT3T/NqqPuZUsw4yP
+         MxO0STbSZT8ZlwXIk1jjML2GIsG6nQCnBa6eFfE5q/SRe23J8IqTdxME1ZqDR/zGGjJG
+         DtWnL4WclZIUe4Y7XIykqPI/L1kg53Imr+EGAHcf8sHDkLOvz8yRfctLac6gJohd2ZNg
+         OEJud0XXoEDM8t1+cQRwsaK7xunv1jXlInadkoXuvuIrwNf/4YOy93584+dXYb7T1FWA
+         G1BA==
+X-Gm-Message-State: AOAM531h634r20nNAbFCmPaPHN0U6LWYQaUtkzx6QCXlbMCdqc7pp5kE
+        SCLut+tIVc67BvrhkXFfhsQ=
+X-Google-Smtp-Source: ABdhPJxGJbGabg8+4/73BBx07jWKuxPytN2bEB/x2EWaB7cDQfaIj8pzEWqMTs1ZmOb6bPNxmWqJiQ==
+X-Received: by 2002:a62:7743:0:b029:13c:1611:658e with SMTP id s64-20020a6277430000b029013c1611658emr4638359pfc.11.1599183031461;
+        Thu, 03 Sep 2020 18:30:31 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id s129sm4517487pfb.39.2020.09.03.18.30.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 18:29:11 -0700 (PDT)
-Date:   Thu, 3 Sep 2020 18:29:09 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        YiFei Zhu <zhuyifei@google.com>,
-        YiFei Zhu <zhuyifei1999@gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/8] libbpf: Add BPF_PROG_BIND_MAP syscall
- and use it on .metadata section
-Message-ID: <20200904012909.c7cx5adhy5f23ovo@ast-mbp.dhcp.thefacebook.com>
-References: <20200828193603.335512-1-sdf@google.com>
- <20200828193603.335512-4-sdf@google.com>
- <CAEf4BzZtYTyBT=jURkF4RQLHXORooVwXrRRRkoSWDqCemyGQeA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZtYTyBT=jURkF4RQLHXORooVwXrRRRkoSWDqCemyGQeA@mail.gmail.com>
+        Thu, 03 Sep 2020 18:30:30 -0700 (PDT)
+Date:   Thu, 03 Sep 2020 18:30:22 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linuxarm@huawei.com
+Message-ID: <5f5198ae79b98_361ef20824@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAM_iQpWGaTSkg+-Em6u=NSWcyswX-xN=-1p0OAdaR___U1M4rg@mail.gmail.com>
+References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
+ <511bcb5c-b089-ab4e-4424-a83c6e718bfa@huawei.com>
+ <CAM_iQpW1c1TOKWLxm4uGvCUzK0mKKeDg1Y+3dGAC04pZXeCXcw@mail.gmail.com>
+ <f81b534a-5845-ae7d-b103-434232c0f5ff@huawei.com>
+ <CAM_iQpXmpMdxF2JDOROaf+Tjk-8dASiXz53K-Ph_q7jVMe0oVw@mail.gmail.com>
+ <cd773132-c98e-18e1-67fd-bbef6babbf0f@huawei.com>
+ <CAM_iQpWbZdh5-UGBi6PM19EBgV+Bq7vmifgJPdak6X=R9yztnw@mail.gmail.com>
+ <c0543793-11fa-6ef1-f8ea-6a724ab2de8f@huawei.com>
+ <CAM_iQpWGaTSkg+-Em6u=NSWcyswX-xN=-1p0OAdaR___U1M4rg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 02, 2020 at 07:31:33PM -0700, Andrii Nakryiko wrote:
-> On Fri, Aug 28, 2020 at 12:37 PM Stanislav Fomichev <sdf@google.com> wrote:
+Cong Wang wrote:
+> On Wed, Sep 2, 2020 at 7:22 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
 > >
-> > From: YiFei Zhu <zhuyifei@google.com>
+> > On 2020/9/3 9:48, Cong Wang wrote:
+> > > On Wed, Sep 2, 2020 at 6:22 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> > >>
+> > >> On 2020/9/3 8:35, Cong Wang wrote:
+> > >>> On Tue, Sep 1, 2020 at 11:35 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> > >>>>
+> > >>>> On 2020/9/2 12:41, Cong Wang wrote:
+> > >>>>> On Tue, Sep 1, 2020 at 6:42 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> > >>>>>>
+> > >>>>>> On 2020/9/2 2:24, Cong Wang wrote:
+> > >>>>>>> On Mon, Aug 31, 2020 at 5:59 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+> > >>>>>>>>
+> > >>>>>>>> Currently there is concurrent reset and enqueue operation for the
+> > >>>>>>>> same lockless qdisc when there is no lock to synchronize the
+> > >>>>>>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+> > >>>>>>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+> > >>>>>>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
+> > >>>>>>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+> > >>>>>>>> skb with a larger queue_mapping after the corresponding qdisc is
+> > >>>>>>>> reset, and call hns3_nic_net_xmit() with that skb later.
+> > >>>>>>>
+> > >>>>>>> Can you be more specific here? Which call path requests a smaller
+> > >>>>>>> tx queue num? If you mean netif_set_real_num_tx_queues(), clearly
+> > >>>>>>> we already have a synchronize_net() there.
+> > >>>>>>
+> > >>>>>> When the netdevice is in active state, the synchronize_net() seems to
+> > >>>>>> do the correct work, as below:
+> > >>>>>>
+> > >>>>>> CPU 0:                                       CPU1:
+> > >>>>>> __dev_queue_xmit()                       netif_set_real_num_tx_queues()
+> > >>>>>> rcu_read_lock_bh();
+> > >>>>>> netdev_core_pick_tx(dev, skb, sb_dev);
+> > >>>>>>         .
+> > >>>>>>         .                               dev->real_num_tx_queues = txq;
+> > >>>>>>         .                                       .
+> > >>>>>>         .                                       .
+> > >>>>>>         .                               synchronize_net();
+> > >>>>>>         .                                       .
+> > >>>>>> q->enqueue()                                    .
+> > >>>>>>         .                                       .
+> > >>>>>> rcu_read_unlock_bh()                            .
+> > >>>>>>                                         qdisc_reset_all_tx_gt
+> > >>>>>>
+> > >>>>>>
+> > >>>>>
+> > >>>>> Right.
+> > >>>>>
+> > >>>>>
+> > >>>>>> but dev->real_num_tx_queues is not RCU-protected, maybe that is a problem
+> > >>>>>> too.
+> > >>>>>>
+> > >>>>>> The problem we hit is as below:
+> > >>>>>> In hns3_set_channels(), hns3_reset_notify(h, HNAE3_DOWN_CLIENT) is called
+> > >>>>>> to deactive the netdevice when user requested a smaller queue num, and
+> > >>>>>> txq->qdisc is already changed to noop_qdisc when calling
+> > >>>>>> netif_set_real_num_tx_queues(), so the synchronize_net() in the function
+> > >>>>>> netif_set_real_num_tx_queues() does not help here.
+> > >>>>>
+> > >>>>> How could qdisc still be running after deactivating the device?
+> > >>>>
+> > >>>> qdisc could be running during the device deactivating process.
+> > >>>>
+> > >>>> The main process of changing channel number is as below:
+> > >>>>
+> > >>>> 1. dev_deactivate()
+> > >>>> 2. hns3 handware related setup
+> > >>>> 3. netif_set_real_num_tx_queues()
+> > >>>> 4. netif_tx_wake_all_queues()
+> > >>>> 5. dev_activate()
+> > >>>>
+> > >>>> During step 1, qdisc could be running while qdisc is resetting, so
+> > >>>> there could be skb left in the old qdisc(which will be restored back to
+> > >>>> txq->qdisc during dev_activate()), as below:
+> > >>>>
+> > >>>> CPU 0:                                       CPU1:
+> > >>>> __dev_queue_xmit():                      dev_deactivate_many():
+> > >>>> rcu_read_lock_bh();                      qdisc_deactivate(qdisc);
+> > >>>> q = rcu_dereference_bh(txq->qdisc);             .
+> > >>>> netdev_core_pick_tx(dev, skb, sb_dev);          .
+> > >>>>         .
+> > >>>>         .                               rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+> > >>>>         .                                       .
+> > >>>>         .                                       .
+> > >>>>         .                                       .
+> > >>>>         .                                       .
+> > >>>> q->enqueue()                                    .
+> > >>>
+> > >>>
+> > >>> Well, like I said, if the deactivated bit were tested before ->enqueue(),
+> > >>> there would be no packet queued after qdisc_deactivate().
+
+Trying to unwind this through git history :/
+
+Original code had a test_bit in dev_xmit_skb(),
+
+	if (q->flags & TCQ_F_NOLOCK) {
+		if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED, &q->state))) {
+			__qdisc_drop(skb, &to_free);
+			rc = NET_XMIT_DROP;
+		} else {
+			rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
+			__qdisc_run(q);
+		}
+
+		if (unlikely(to_free))
+			kfree_skb_list(to_free);
+		return rc;
+	}
+
+So we would never enqueue something on top of a deactivated qdisc. And to ensure
+we don't have any in-flight enqueues we have to swap qdiscs, wait a grace
+period, and then reset the qdisc. That _should_ be OK.
+
+But, I'm still not entirely sure how you got here. In the drivers I did I always
+stop the queue before messing with these things with netif_tx_stop_queue(). Then
+we really should not get these packets into the driver.
+
+In sch_direct_xmit():
+
+	if (likely(skb)) {
+		HARD_TX_LOCK(dev, txq, smp_processor_id());
+		if (!netif_xmit_frozen_or_stopped(txq))
+			skb = dev_hard_start_xmit(skb, dev, txq, &ret);
+
+		HARD_TX_UNLOCK(dev, txq);
+	} else {
+		if (root_lock)
+			spin_lock(root_lock);
+		return true;
+	}
+
+Maybe I missed something? Does your driver use the netif_tx_stop/start APIs?
+ 
+> > >>
+> > >> Only if the deactivated bit testing is also protected by qdisc->seqlock?
+> > >> otherwise there is still window between setting and testing the deactivated bit.
+> > >
+> > > Can you be more specific here? Why testing or setting a bit is not atomic?
 > >
-> > The patch adds a simple wrapper bpf_prog_bind_map around the syscall.
-> > And when using libbpf to load a program, it will probe the kernel for
-> > the support of this syscall, and scan for the .metadata ELF section
-> > and load it as an internal map like a .data section.
+> > testing a bit or setting a bit separately is atomic.
+> > But testing a bit and setting a bit is not atomic, right?
 > >
-> > In the case that kernel supports the BPF_PROG_BIND_MAP syscall and
-> > a .metadata section exists, the map will be explicitly bound to
-> > the program via the syscall immediately after program is loaded.
-> > -EEXIST is ignored for this syscall.
+> >   cpu0:                   cpu1:
+> >                         testing A bit
+> > setting A bit                .
+> >        .                     .
+> >        .               qdisc enqueuing
+> > qdisc reset
+> >
 > 
-> Here is the question I have. How important is it that all this
-> metadata is in a separate map? What if libbpf just PROG_BIND_MAP all
-> the maps inside a single BPF .o file to all BPF programs in that file?
-> Including ARRAY maps created for .data, .rodata and .bss, even if the
-> BPF program doesn't use any of the global variables? If it's too
-> extreme, we could do it only for global data maps, leaving explicit
-> map definitions in SEC(".maps") alone. Would that be terrible?
-> Conceptually it makes sense, because when you program in user-space,
-> you expect global variables to be there, even if you don't reference
-> it directly, right? The only downside is that you won't have a special
-> ".metadata" map, rather it will be part of ".rodata" one.
+> Well, this was not a problem until commit d518d2ed8640c1cbbb.
+> Prior to that commit, qdsic can still be scheduled even with this
+> race condition, that is, the packet just enqueued after resetting can
+> still be dequeued with qdisc_run().
+> 
+> It is amazing to see how messy the lockless qdisc is now.
+> 
+> Thanks.
 
-That's an interesting idea.
-Indeed. If we have BPF_PROG_BIND_MAP command why do we need to create
-another map that behaves exactly like .rodata but has a different name?
-Wouldn't it be better to identify metadata elements some other way?
-Like by common prefix/suffix name of the variables or
-via grouping them under one structure with standard prefix?
-Like:
-struct bpf_prog_metadata_blahblah {
-  char compiler_name[];
-  int my_internal_prog_version;
-} = { .compiler_name[] = "clang v.12", ...};
 
-In the past we did this hack for 'version' and for 'license',
-but we did it because we didn't have BTF and there was no other way
-to determine the boundaries.
-I think libbpf can and should support multiple rodata sections with
-arbitrary names, but hardcoding one specific ".metadata" name?
-Hmm. Let's think through the implications.
-Multiple .o support and static linking is coming soon.
-When two .o-s with multiple bpf progs are statically linked libbpf
-won't have any choice but to merge them together under single
-".metadata" section and single map that will be BPF_PROG_BIND_MAP-ed
-to different progs. Meaning that metadata applies to final elf file
-after linking. It's _not_ per program metadata.
-May be we should talk about problem statement and goals.
-Do we actually need metadata per program or metadata per single .o
-or metadata per final .o with multiple .o linked together?
-What is this metadata?
-If it's just unreferenced by program read only data then no special names or
-prefixes are needed. We can introduce BPF_PROG_BIND_MAP to bind any map to any
-program and it would be up to tooling to decide the meaning of the data in the
-map. For example, bpftool can choose to print all variables from all read only
-maps that match "bpf_metadata_" prefix, but it will be bpftool convention only
-and not hard coded in libbpf.
