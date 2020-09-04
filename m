@@ -2,420 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9539F25E323
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 22:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A118125E336
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 23:14:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728142AbgIDU5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 16:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728054AbgIDU5Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 16:57:16 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEEDC06124F
-        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 13:57:16 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id j2so8533355wrx.7
-        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 13:57:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=To4S7LjyUWtP7KUdnpYu2HjEawfwj/tPoQQdRfIdQL8=;
-        b=SsQ50jED4ToQXn1g62l+546zd57QLcVzHkUgoxNC8aBeM+imsO+V8BvFKWfDgqbjX0
-         TypAC+OgIePl5vwioohEx/7MlR5JpWigFrLvl0PM+0UT0UzgSFZTlE1DVH9CR9jzEEPi
-         WS3+kIT06ZYySC7x9HG2f4JVI1eSRae09Iw4zJqArYYzqCdRJnjrKuLeCIYzmsAZZynE
-         UVyNZP/LVs+6ZjZX0+D4HlxqIrNvJaZY49UYgBuNZd01ycH4mnxRNIu4dthQxXMIso2P
-         oxdjPHAbBbq8GCQanPjSpVCfd1B1KG3UDDCsc92wbGf1yQz/7R1l3OlwgABwLUS3VDgn
-         H4xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=To4S7LjyUWtP7KUdnpYu2HjEawfwj/tPoQQdRfIdQL8=;
-        b=ZMzdk10R4Icryls1NcDO/D3H/97Vk6dbqbkor538rn4hU4vCrDK0Br7ClheL/FJjRF
-         S9VZoUtrOwdjUx6ic+UJxxGLpNdQhRZsm9MbOOhZciuHeoEc/vZ/Av22yhBpYfwwoOMY
-         eXUOkBKrlUsBaxJWQ6+KTz0XFUvTyEJoIH+zYkPKzbL5jEKicG9UIU7GxTUUc6NCihXL
-         5U9wAaj5Xdb8vhgKOE2qIlh0VnLQZ0rGv0nswfUZmzEk6vGqhJIOXpJb7b08tbA05iUS
-         Ubq2C+Z3dAZe0vQuG6uMTnLydh9xrbgrbxu7ACpVm/Dhra6I5RctGK1mokC5rsn0LrTL
-         v1PA==
-X-Gm-Message-State: AOAM532nGwSURw2HxDNWdA2xlvK9wcSwYk2bmBlEscurb8uQZ4Zhx6eN
-        YSdnuE6PZn0aWc+bKuL6fxLLNw==
-X-Google-Smtp-Source: ABdhPJzYQ1u4JmSEEIRjbHCIhf823iY+Uy0yhqgxodtqUhYGZ/zdOEL6g2Nk4uies7mXBjT7UtENow==
-X-Received: by 2002:adf:9c93:: with SMTP id d19mr9440821wre.275.1599253034223;
-        Fri, 04 Sep 2020 13:57:14 -0700 (PDT)
-Received: from localhost.localdomain ([194.35.117.177])
-        by smtp.gmail.com with ESMTPSA id u17sm12985395wmm.4.2020.09.04.13.57.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2020 13:57:13 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next 3/3] tools: bpftool: automate generation for "SEE ALSO" sections in man pages
-Date:   Fri,  4 Sep 2020 21:56:57 +0100
-Message-Id: <20200904205657.27922-4-quentin@isovalent.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200904205657.27922-1-quentin@isovalent.com>
-References: <20200904205657.27922-1-quentin@isovalent.com>
+        id S1728012AbgIDVOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 17:14:55 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49688 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726842AbgIDVOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 17:14:53 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kEJ2c-0001b0-J3; Fri, 04 Sep 2020 23:14:38 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kEJ2c-000Gd0-AJ; Fri, 04 Sep 2020 23:14:38 +0200
+Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
+To:     Lukas Wunner <lukas@wunner.de>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>, Laura Garcia <nevola@gmail.com>,
+        David Miller <davem@davemloft.net>
+References: <20200904162154.GA24295@wunner.de>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
+Date:   Fri, 4 Sep 2020 23:14:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200904162154.GA24295@wunner.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25920/Fri Sep  4 15:46:46 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "SEE ALSO" sections of bpftool's manual pages refer to bpf(2),
-bpf-helpers(7), then all existing bpftool man pages (save the current
-one).
+On 9/4/20 6:21 PM, Lukas Wunner wrote:
+> On Wed, Sep 02, 2020 at 10:00:32PM -0700, John Fastabend wrote:
+>> Lukas Wunner wrote:
+[...]
+>> Do you have plans to address the performance degradation? Otherwise
+>> if I was building some new components its unclear why we would
+>> choose the slower option over the tc hook. The two suggested
+>> use cases security policy and DSR sound like new features, any
+>> reason to not just use existing infrastructure?
+>>
+>> Is the use case primarily legacy things already running in
+>> nft infrastructure? I guess if you have code running now
+>> moving it to this hook is faster and even if its 10% slower
+>> than it could be that may be better than a rewrite?
+> 
+> nft and tc are orthogonal, i.e. filtering/mangling versus queueing.
+> However tc has gained the ability to filter packets as well, hence
+> there's some overlap in functionality.  Naturally tc does not allow
+> the full glory of nft filtering/mangling options as Laura has stated,
+> hence the need to add nft in the egress path.
 
-This leads to nearly-identical lists being duplicated in all manual
-pages. Ideally, when a new page is created, all lists should be updated
-accordingly, but this has led to omissions and inconsistencies multiple
-times in the past.
+Heh, really!? It sounds to me that you never looked serious enough into what
+tc/BPF is actually doing. Please check your facts before making any such claim
+since it's false.
 
-Let's take it out of the RST files and generate the "SEE ALSO" sections
-automatically in the Makefile when generating the man pages. The lists
-are not really useful in the RST anyway because all other pages are
-available in the same directory.
+Lets do a reality check for your original motivation of adding this hook and
+see whether that matches your claim ... quote [0]:
 
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- tools/bpf/bpftool/Documentation/Makefile        | 12 +++++++++++-
- tools/bpf/bpftool/Documentation/bpftool-btf.rst | 17 -----------------
- .../bpftool/Documentation/bpftool-cgroup.rst    | 16 ----------------
- .../bpftool/Documentation/bpftool-feature.rst   | 16 ----------------
- tools/bpf/bpftool/Documentation/bpftool-gen.rst | 16 ----------------
- .../bpf/bpftool/Documentation/bpftool-iter.rst  | 16 ----------------
- .../bpf/bpftool/Documentation/bpftool-link.rst  | 17 -----------------
- tools/bpf/bpftool/Documentation/bpftool-map.rst | 16 ----------------
- tools/bpf/bpftool/Documentation/bpftool-net.rst | 17 -----------------
- .../bpf/bpftool/Documentation/bpftool-perf.rst  | 17 -----------------
- .../bpf/bpftool/Documentation/bpftool-prog.rst  | 16 ----------------
- .../Documentation/bpftool-struct_ops.rst        | 17 -----------------
- tools/bpf/bpftool/Documentation/bpftool.rst     | 16 ----------------
- 13 files changed, 11 insertions(+), 198 deletions(-)
+   The module I need this for is out-of-tree:
 
-diff --git a/tools/bpf/bpftool/Documentation/Makefile b/tools/bpf/bpftool/Documentation/Makefile
-index becbb8c52257..86233619215c 100644
---- a/tools/bpf/bpftool/Documentation/Makefile
-+++ b/tools/bpf/bpftool/Documentation/Makefile
-@@ -29,11 +29,21 @@ man8: $(DOC_MAN8)
- 
- RST2MAN_DEP := $(shell command -v rst2man 2>/dev/null)
- 
-+list_pages = $(sort $(basename $(filter-out $(1),$(MAN8_RST))))
-+see_also = $(subst " ",, \
-+	"\n" \
-+	"SEE ALSO\n" \
-+	"========\n" \
-+	"\t**bpf**\ (2),\n" \
-+	"\t**bpf-helpers**\\ (7)" \
-+	$(foreach page,$(call list_pages,$(1)),",\n\t**$(page)**\\ (8)") \
-+	"\n")
-+
- $(OUTPUT)%.8: %.rst
- ifndef RST2MAN_DEP
- 	$(error "rst2man not found, but required to generate man pages")
- endif
--	$(QUIET_GEN)rst2man $< > $@
-+	$(QUIET_GEN)( cat $< ; printf $(call see_also,$<) ) | rst2man > $@
- 
- clean: helpers-clean
- 	$(call QUIET_CLEAN, Documentation)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-btf.rst b/tools/bpf/bpftool/Documentation/bpftool-btf.rst
-index 0020bb55cf7e..b3e909ef6791 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-btf.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-btf.rst
-@@ -214,20 +214,3 @@ All the standard ways to specify map or program are supported:
- **# bpftool btf dump prog tag b88e0a09b1d9759d**
- 
- **# bpftool btf dump prog pinned /sys/fs/bpf/prog_name**
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-index 3dba89db000e..790944c35602 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-@@ -143,19 +143,3 @@ EXAMPLES
- ::
- 
-     ID       AttachType      AttachFlags     Name
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-feature.rst b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-index f1aae5690e3c..dd3771bdbc57 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-@@ -72,19 +72,3 @@ DESCRIPTION
- OPTIONS
- =======
- 	.. include:: common_options.rst
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-gen.rst b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-index e3b7ff3c09d7..8b4a18463d55 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
-@@ -275,19 +275,3 @@ and global variables.
-   my_static_var: 7
- 
- This is a stripped-out version of skeleton generated for above example code.
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-iter.rst b/tools/bpf/bpftool/Documentation/bpftool-iter.rst
-index b688cf11805c..51f49bead619 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-iter.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-iter.rst
-@@ -68,19 +68,3 @@ EXAMPLES
- 
-    Create a file-based bpf iterator from bpf_iter_hashmap.o and map with
-    id 20, and pin it to /sys/fs/bpf/my_hashmap
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-link.rst b/tools/bpf/bpftool/Documentation/bpftool-link.rst
-index 001689efc7fa..8e4e28c1b78a 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-link.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-link.rst
-@@ -106,20 +106,3 @@ EXAMPLES
- ::
- 
-     -rw------- 1 root root 0 Apr 23 21:39 link
--
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-map.rst b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-index e06a65cd467e..4fe8632bb3a3 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-map.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-@@ -261,19 +261,3 @@ would be lost as soon as bpftool exits).
- 
-   key: 00 00 00 00  value: 22 02 00 00
-   Found 1 element
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-net.rst b/tools/bpf/bpftool/Documentation/bpftool-net.rst
-index 56439c32934d..d8165d530937 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-net.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-net.rst
-@@ -172,20 +172,3 @@ EXAMPLES
- ::
- 
-       xdp:
--
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-perf.rst b/tools/bpf/bpftool/Documentation/bpftool-perf.rst
-index 36d257a36e9b..e958ce91de72 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-perf.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-perf.rst
-@@ -63,20 +63,3 @@ EXAMPLES
-      {"pid":21765,"fd":5,"prog_id":7,"fd_type":"kretprobe","func":"__x64_sys_nanosleep","offset":0}, \
-      {"pid":21767,"fd":5,"prog_id":8,"fd_type":"tracepoint","tracepoint":"sys_enter_nanosleep"}, \
-      {"pid":21800,"fd":5,"prog_id":9,"fd_type":"uprobe","filename":"/home/yhs/a.out","offset":1159}]
--
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-index 9b2b18e2a3ac..358c7309d419 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-@@ -326,19 +326,3 @@ EXAMPLES
-       40176203 cycles                                                 (83.05%)
-       42518139 instructions    #   1.06 insns per cycle               (83.39%)
-            123 llc_misses      #   2.89 LLC misses per million insns  (83.15%)
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-struct_ops**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst b/tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst
-index 315f1f21f2ba..506e70ee78e9 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst
-@@ -82,20 +82,3 @@ EXAMPLES
- ::
- 
-    Registered tcp_congestion_ops cubic id 110
--
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool**\ (8),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8)
-diff --git a/tools/bpf/bpftool/Documentation/bpftool.rst b/tools/bpf/bpftool/Documentation/bpftool.rst
-index b87f8c2df49d..e7d949334961 100644
---- a/tools/bpf/bpftool/Documentation/bpftool.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool.rst
-@@ -54,19 +54,3 @@ OPTIONS
- 	-n, --nomount
- 		  Do not automatically attempt to mount any virtual file system
- 		  (such as tracefs or BPF virtual file system) when necessary.
--
--SEE ALSO
--========
--	**bpf**\ (2),
--	**bpf-helpers**\ (7),
--	**bpftool-btf**\ (8),
--	**bpftool-cgroup**\ (8),
--	**bpftool-feature**\ (8),
--	**bpftool-gen**\ (8),
--	**bpftool-iter**\ (8),
--	**bpftool-link**\ (8),
--	**bpftool-map**\ (8),
--	**bpftool-net**\ (8),
--	**bpftool-perf**\ (8),
--	**bpftool-prog**\ (8),
--	**bpftool-struct_ops**\ (8)
--- 
-2.25.1
+   https://github.com/RevolutionPi/piControl/commit/da199ccd2099
 
+   In my experience the argument that a feature is needed for an out-of-tree
+   module holds zero value upstream.  If there's no in-tree user, the feature
+   isn't merged, I've seen this more than enough.  Which is why I didn't mention
+   it in the first place.
+
+So in essence what you had in that commit is:
+
+   static unsigned int revpi_gate_nf_hook(void *priv, struct sk_buff *skb,
+				         const struct nf_hook_state *state)
+   {
+	u16 eth_proto = ntohs(eth_hdr(skb)->h_proto);
+
+	return likely(eth_proto == ETH_P_KUNBUSGW) ? NF_ACCEPT : NF_DROP;
+   }
+
+   static const struct nf_hook_ops revpi_gate_nf_hook_ops = {
+	.hook	  = revpi_gate_nf_hook,
+	.pf	  = NFPROTO_NETDEV,
+	.hooknum  = NF_NETDEV_EGRESS,
+	.priority = INT_MAX,
+   };
+
+Its trivial to achieve with tc/BPF on the existing egress hook today. Probably
+takes less time than to write up this mail ...
+
+root@x:~/x# cat foo.c
+
+#include <linux/bpf.h>
+#include <linux/if_ether.h>
+#include <arpa/inet.h>
+
+#ifndef __section
+# define __section(NAME)		\
+    __attribute__((section(NAME), used))
+#endif
+
+#define ETH_P_KUNBUSGW	0x419C
+
+#define PASS	0
+#define DROP	2
+
+int foo(struct __sk_buff *skb)
+{
+	void *data_end = (void *)(long)skb->data_end;
+	void *data = (void *)(long)skb->data;
+	struct ethhdr *eth = data;
+
+	if (data + sizeof(*eth) > data_end)
+		return DROP;
+
+	return eth->h_proto == htons(ETH_P_KUNBUSGW) ? PASS : DROP;
+}
+
+char __license[] __section("license") = "";
+
+root@x:~/x# clang -target bpf -Wall -O2 -c foo.c -o foo.o
+root@x:~/x# ip link add dev foo type dummy
+root@x:~/x# ip link set up dev foo
+root@x:~/x# tc qdisc add dev foo clsact
+root@x:~/x# tc filter add dev foo egress bpf da obj foo.o sec .text
+
+There we go, attached to the device on existing egress. Double checking it
+does what we want:
+
+root@x:~/x# cat foo.t
+{
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb,
+    0x41, 0x9c
+}
+root@x:~/x# trafgen -i foo.t -o foo -n 1 -q
+root@x:~/x# tcpdump -i foo
+[...]
+22:43:42.981112 bb:bb:bb:bb:bb:bb (oui Unknown) > aa:aa:aa:aa:aa:aa (oui Unknown), ethertype Unknown (0x419c), length 14:
+
+root@x:~/x# cat bar.t
+{
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
+    0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb,
+    0xee, 0xee
+}
+root@x:~/x# trafgen -i bar.t -o foo -n 1 -q
+root@x:~/x# tcpdump -i foo
+[... nothing/filtered ...]
+
+Done, and this is exactly intended for exotic stuff like this. It also mangles packets
+and whatnot, I guess I don't need to list all of this here (catching up on docs is
+easy enough). The tc queueing layer which is below is not the tc egress hook; the
+latter is for filtering/mangling/forwarding or helping the lower tc queueing layer to
+classify.
+
+Now given you've stated that you're not mentioning your out of tree stuff in the
+commit message in the first place, you bring up "This allows filtering locally
+generated traffic such as DHCP, or outbound AF_PACKETs in general. It will also
+allow introducing in-kernel NAT64 and NAT46."
+
+I haven't seen any NAT64/NAT46 in this set and I guess it's some sort of future
+work (fwiw, you can also already do this today with tc/BPF), and filtering AF_PACKET
+is currently broken with your approach as elaborated earlier so needs another hook...
+also slow-path DHCP filtering should rather be moved into AF_PACKET itself. Why paying
+the performance hit going into the nft interpreter for this hook for *every* other
+*unrelated* packet in the fast-path... the case is rather if distros start adding DHCP
+filtering rules by default there as per your main motivation then everyone needs to
+pay this price, which is completely unreasonable to perform in __dev_queue_xmit().
+
+Thanks,
+Daniel
+
+   [0] https://lore.kernel.org/netdev/20191123142305.g2kkaudhhyui22fq@wunner.de/
