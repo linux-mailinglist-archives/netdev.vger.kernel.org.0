@@ -2,76 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2083025DBAA
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 16:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A162725DBCB
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 16:33:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730496AbgIDO2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 10:28:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54806 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730443AbgIDO2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 10:28:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599229684;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IwmZ+bkJtm1ptxZ/ECWY3T+CE7HjdpigE1Uh+r6cTW0=;
-        b=YP4MEoPBFQKaIOtge/4YcHgdykmnj9kE4kK/odI8VpzhKMvSGvH0uiGpJGSD8a7+O4E8cz
-        7pxRCMJQhOGdtVwUJE7OBUir5jFkLFL1pflo54wLu/L7JJIzRwQOUwA1HfSQeluLK3+Hmf
-        YRaz5MNmKje4iPd4QsIPun0r58bZTz4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-40-O8hj-laNPdC0L1rxOxwNlw-1; Fri, 04 Sep 2020 10:28:02 -0400
-X-MC-Unique: O8hj-laNPdC0L1rxOxwNlw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 21AC1A0BC3;
-        Fri,  4 Sep 2020 14:28:00 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.42])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C23B5D9CC;
-        Fri,  4 Sep 2020 14:27:53 +0000 (UTC)
-Date:   Fri, 4 Sep 2020 16:27:51 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     brouer@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        davem@davemloft.net, kuba@kernel.org, john.fastabend@gmail.com,
-        intel-wired-lan@lists.osuosl.org
+        id S1730607AbgIDOdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 10:33:18 -0400
+Received: from mga05.intel.com ([192.55.52.43]:13049 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730416AbgIDOdD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 10:33:03 -0400
+IronPort-SDR: /s6PvvRowemCwoOJhRguF20WS5xxOX49f4y8V3ExaQIUh9lGVoz7YIDij1DJ0GlrR4ajOIoK7E
+ nz83Fm+57h7A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9734"; a="242567070"
+X-IronPort-AV: E=Sophos;i="5.76,389,1592895600"; 
+   d="scan'208";a="242567070"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2020 07:33:02 -0700
+IronPort-SDR: 0fQmUyCZwuWDeyZqTifDwD//sGCxUDtTpl0ayOdXn4hYYfPD01xG/YbSufAPCUvfyhHmrjAMqG
+ zewbQoeohDWQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,389,1592895600"; 
+   d="scan'208";a="332178816"
+Received: from andreyfe-mobl2.ccr.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.37.82])
+  by orsmga008.jf.intel.com with ESMTP; 04 Sep 2020 07:32:58 -0700
 Subject: Re: [PATCH bpf-next 0/6] xsk: exit NAPI loop when AF_XDP Rx ring is
  full
-Message-ID: <20200904162751.632c4443@carbon>
-In-Reply-To: <20200904135332.60259-1-bjorn.topel@gmail.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, magnus.karlsson@intel.com,
+        davem@davemloft.net, kuba@kernel.org, john.fastabend@gmail.com,
+        intel-wired-lan@lists.osuosl.org
 References: <20200904135332.60259-1-bjorn.topel@gmail.com>
+ <20200904162751.632c4443@carbon>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <27e05518-99c6-15e2-b801-cbc0310630ef@intel.com>
+Date:   Fri, 4 Sep 2020 16:32:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <20200904162751.632c4443@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  4 Sep 2020 15:53:25 +0200
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+On 2020-09-04 16:27, Jesper Dangaard Brouer wrote:
+> On Fri,  4 Sep 2020 15:53:25 +0200
+> Björn Töpel <bjorn.topel@gmail.com> wrote:
+> 
+>> On my machine the "one core scenario Rx drop" performance went from
+>> ~65Kpps to 21Mpps. In other words, from "not usable" to
+>> "usable". YMMV.
+> 
+> We have observed this kind of dropping off an edge before with softirq
+> (when userspace process runs on same RX-CPU), but I thought that Eric
+> Dumazet solved it in 4cd13c21b207 ("softirq: Let ksoftirqd do its job").
+> 
+> I wonder what makes AF_XDP different or if the problem have come back?
+> 
 
-> On my machine the "one core scenario Rx drop" performance went from
-> ~65Kpps to 21Mpps. In other words, from "not usable" to
-> "usable". YMMV.
+I would say this is not the same issue. The problem is that the softirq 
+is busy dropping packets since the AF_XDP Rx is full. So, the cycles 
+*are* split 50/50, which is not what we want in this case. :-)
 
-We have observed this kind of dropping off an edge before with softirq
-(when userspace process runs on same RX-CPU), but I thought that Eric
-Dumazet solved it in 4cd13c21b207 ("softirq: Let ksoftirqd do its job").
+This issue is more of a "Intel AF_XDP ZC drivers does stupid work", than 
+fairness. If the Rx ring is full, then there is really no use to let the 
+NAPI loop continue.
 
-I wonder what makes AF_XDP different or if the problem have come back?
+Would you agree, or am I rambling? :-P
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
 
+Björn
