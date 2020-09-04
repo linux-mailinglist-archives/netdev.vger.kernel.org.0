@@ -2,164 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92D1A25D0F1
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 07:41:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E87625D0FA
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 07:44:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727083AbgIDFlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 01:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
+        id S1726555AbgIDFoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 01:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725812AbgIDFle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 01:41:34 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3508FC061244;
-        Thu,  3 Sep 2020 22:41:34 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id o68so4010265pfg.2;
-        Thu, 03 Sep 2020 22:41:34 -0700 (PDT)
+        with ESMTP id S1726032AbgIDFoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 01:44:02 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239FBC061245
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 22:44:01 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id t10so5481812wrv.1
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 22:44:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Es+RVIZWdQ1PGQM8u6/wE9+uWwWlH7EQ/8Vj8EXs3q0=;
-        b=WFP4PhrAlqQTJAeFqYU5hv+KOUXjYERHfgQ/tor2wFXCc0kSpgaHzalRXSOmjw+iYU
-         BppLtlkxTgSDXXBCoZGNTV2ARMRJt/t3cLyu0kgJ4WZxenLkjjJbrdzBm+YDzRgRyLZf
-         7Diwn3YfVqOKE4PEj8dgrOxygte+EAZTeRU8tQVZsVwPU41b2QOsOZ/SySPyu0AfYhmt
-         qBL73bs2AhDYzMm8dPeFQ0tUtXqnGVOuSfNJt0Lx/ZxbssETrLSyTITEl0G1/C8P9/jh
-         cH8gAq2N+As+uovANyl+RAK5kRaJOVk1za0z2mnoO9Xm7SWRGwIPLsL5ZmL+A4hPScBk
-         2Ezw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jQfL+d2YiLKHDBG+R/kOnBkkolF/QX4JbzkbEv0Q6pI=;
+        b=cAvWYReh3TMe1dlwi2WbYOY4y8puEJtVYm8OGp8kRwi2OVTiv+bz7oK0sjRvY+q+zW
+         BBUZT2bDw3vFYvUT+g7PwSMXz5ZI/GT9lpKA4JRjakH8vMBQ0yRpXLqGRec35AuAGnGc
+         k7jEp5qz4U2oJC6qIiXrIEXoF2unP2IdmB7AEzx68N2vpX01wnqEclGvwwMy0OXeJWH3
+         gVNzmJfQCkq0o817DEy1pNWYnRCCTB2VbHVxEFJiLepdyrC91xNSdkL/3EOy7rFH1KZS
+         fWpvJvH03LHmeK9iuB0z7kAUG0NvIomkmgTpqhNOHDjdQnjFL2Qynd+KhnsKfCncOFSp
+         QFOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Es+RVIZWdQ1PGQM8u6/wE9+uWwWlH7EQ/8Vj8EXs3q0=;
-        b=TIQzwSZz0ea3/184kjF1RmCwwQ6k6POoL3GXBuigDKzcHnQ0vJ3ilOu5nMso7n8/nx
-         YBBeJPXP9iw/+0hf7656+LiUyrlE+lTwf8rVcH0xgjiOOqAsPGanEujaSp0byUiv9uzi
-         L63//Qph0LSuBQXPEtLySdLl5c2lq/z33CVVazW91rMnWV5IWPu70DNbuJWKGNN9Z//1
-         K/vVEl0dFVClVQSjFR8EgKWDlYMrWhjszz1Wkp1iqXEsn7ST9U+tkb8sSFFputXQWky4
-         MlysPrMpQvbWkIy3CSZYdp2wVy7l5tcQ8nBEowbuW0kkC9wFguaqoriaR9eCXFKVkBXo
-         O99Q==
-X-Gm-Message-State: AOAM532QiOiavKjKou56SUjKD7Q1RwEWU5aLGeFtJCUf6ykByEFxklDv
-        wYKQNpgGhiSaEC2+8qnYjj0=
-X-Google-Smtp-Source: ABdhPJxctx4Dre8TrYh8S8T5A1G47osu/3LDCJ50He4+wQBEQlh9RkMnC9V5DpmzjoGL5fIq/QTybA==
-X-Received: by 2002:a63:3103:: with SMTP id x3mr5971392pgx.80.1599198093758;
-        Thu, 03 Sep 2020 22:41:33 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id q34sm4285981pgl.28.2020.09.03.22.41.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 22:41:33 -0700 (PDT)
-Date:   Thu, 03 Sep 2020 22:41:26 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com,
-        echaudro@redhat.com, sameehj@amazon.com, kuba@kernel.org,
-        john.fastabend@gmail.com, daniel@iogearbox.net, ast@kernel.org,
-        shayagr@amazon.com
-Message-ID: <5f51d3869b4a4_3eceb20847@john-XPS-13-9370.notmuch>
-In-Reply-To: <cover.1599165031.git.lorenzo@kernel.org>
-References: <cover.1599165031.git.lorenzo@kernel.org>
-Subject: RE: [PATCH v2 net-next 0/9] mvneta: introduce XDP multi-buffer
- support
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jQfL+d2YiLKHDBG+R/kOnBkkolF/QX4JbzkbEv0Q6pI=;
+        b=DoAP5BHeaQtkvbo8oh0/E9gT/gwXZvIsJxxWXkSUHeJL7nK3VP8MO6awX6FmLdWR0s
+         ozovkBI9ienKaHM96BNi9wSaAB443Hg1PbXWNxYmyn6hoVu8QW6EnX4QdJjxa5p3d3xw
+         N7MlcrpqHHWODVK3/nbeWq/ARU/gI30dVZ2RYEotYgsUbWq1uMnRGg/yc1ZFsSgxiJNr
+         SSF3/po+44G3WNVN4GNs1xCR5M4XR6pNGBSt+G+ZBwr2uzSUjv0edvc4hS8DFo8JxwmG
+         U86bRjCKvhybMoKjKyb464k8oMK0bF+BQ1QlHPz018W0AjgwlW0B1Sbz/9sR81v27Jlw
+         vEsA==
+X-Gm-Message-State: AOAM5328KDss0kVa81KIEu2RFyQhRk7rTPFIw+VXpZR1VyFo8BimjPzQ
+        iRaOHEa/TexzADpzdvP0BEZBfK5yGs7tlEAu02mrlA==
+X-Google-Smtp-Source: ABdhPJybGCxrx4cEzGKIS1AOuVgwbAUhiZhd/eM5knd1tn0gdj1x3PFfwumShPXzdR+OTZq/hYSTGtvZfnzMwKLC6ns=
+X-Received: by 2002:a5d:458a:: with SMTP id p10mr5675209wrq.282.1599198239969;
+ Thu, 03 Sep 2020 22:43:59 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200728085734.609930-1-irogers@google.com> <20200728085734.609930-5-irogers@google.com>
+ <969ef797-59ea-69d0-24b9-33bcdff106a1@intel.com> <CAP-5=fUCnBGX0L0Tt3_gmVnt+hvaouJMx6XFErFKk72+xuw9fw@mail.gmail.com>
+ <86324041-aafb-f556-eda7-6250ba678f24@intel.com> <CAP-5=fXfBkXovaK3DuSCnwfsnxqW7ZR8-LigtGATgs4gMpZP9A@mail.gmail.com>
+In-Reply-To: <CAP-5=fXfBkXovaK3DuSCnwfsnxqW7ZR8-LigtGATgs4gMpZP9A@mail.gmail.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Thu, 3 Sep 2020 22:43:48 -0700
+Message-ID: <CAP-5=fXGpQ7awq7-99KJsPhwMS91hvFXEvN4YWfdoVpq7mRvDw@mail.gmail.com>
+Subject: Re: [PATCH v2 4/5] perf record: Don't clear event's period if set by
+ a term
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi wrote:
-> - Finalize XDP multi-buffer support for mvneta driver introducing the
->   capability to map non-linear buffers on tx side.
-> - Introduce multi-buffer bit (mb) in xdp_frame/xdp_buffer to specify if
->   shared_info area has been properly initialized.
-> - Initialize multi-buffer bit (mb) to 0 in all XDP-capable drivers.
-> - Add multi-buff support to xdp_return_{buff/frame} utility routines.
-> - Introduce bpf_xdp_adjust_mb_header helper to adjust frame headers moving
->   *offset* bytes from/to the second buffer to/from the first one.
->   This helper can be used to move headers when the hw DMA SG is not able
->   to copy all the headers in the first fragment and split header and data
->   pages. A possible use case for bpf_xdp_adjust_mb_header is described
->   here [0]
+On Tue, Aug 4, 2020 at 8:50 AM Ian Rogers <irogers@google.com> wrote:
+>
+> On Tue, Aug 4, 2020 at 7:49 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+> >
+> > On 4/08/20 4:33 pm, Ian Rogers wrote:
+> > > On Tue, Aug 4, 2020 at 3:08 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+> > >>
+> > >> On 28/07/20 11:57 am, Ian Rogers wrote:
+> > >>> If events in a group explicitly set a frequency or period with leader
+> > >>> sampling, don't disable the samples on those events.
+> > >>>
+> > >>> Prior to 5.8:
+> > >>> perf record -e '{cycles/period=12345000/,instructions/period=6789000/}:S'
+> > >>
+> > >> Might be worth explaining this use-case some more.
+> > >> Perhaps add it to the leader sampling documentation for perf-list.
+> > >>
+> > >>> would clear the attributes then apply the config terms. In commit
+> > >>> 5f34278867b7 leader sampling configuration was moved to after applying the
+> > >>> config terms, in the example, making the instructions' event have its period
+> > >>> cleared.
+> > >>> This change makes it so that sampling is only disabled if configuration
+> > >>> terms aren't present.
+> > >>>
+> > >>> Fixes: 5f34278867b7 ("perf evlist: Move leader-sampling configuration")
+> > >>> Signed-off-by: Ian Rogers <irogers@google.com>
+> > >>> ---
+> > >>>  tools/perf/util/record.c | 28 ++++++++++++++++++++--------
+> > >>>  1 file changed, 20 insertions(+), 8 deletions(-)
+> > >>>
+> > >>> diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
+> > >>> index a4cc11592f6b..01d1c6c613f7 100644
+> > >>> --- a/tools/perf/util/record.c
+> > >>> +++ b/tools/perf/util/record.c
+> > >>> @@ -2,6 +2,7 @@
+> > >>>  #include "debug.h"
+> > >>>  #include "evlist.h"
+> > >>>  #include "evsel.h"
+> > >>> +#include "evsel_config.h"
+> > >>>  #include "parse-events.h"
+> > >>>  #include <errno.h>
+> > >>>  #include <limits.h>
+> > >>> @@ -38,6 +39,9 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
+> > >>>       struct perf_event_attr *attr = &evsel->core.attr;
+> > >>>       struct evsel *leader = evsel->leader;
+> > >>>       struct evsel *read_sampler;
+> > >>> +     struct evsel_config_term *term;
+> > >>> +     struct list_head *config_terms = &evsel->config_terms;
+> > >>> +     int term_types, freq_mask;
+> > >>>
+> > >>>       if (!leader->sample_read)
+> > >>>               return;
+> > >>> @@ -47,16 +51,24 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
+> > >>>       if (evsel == read_sampler)
+> > >>>               return;
+> > >>>
+> > >>> +     /* Determine the evsel's config term types. */
+> > >>> +     term_types = 0;
+> > >>> +     list_for_each_entry(term, config_terms, list) {
+> > >>> +             term_types |= 1 << term->type;
+> > >>> +     }
+> > >>>       /*
+> > >>> -      * Disable sampling for all group members other than the leader in
+> > >>> -      * case the leader 'leads' the sampling, except when the leader is an
+> > >>> -      * AUX area event, in which case the 2nd event in the group is the one
+> > >>> -      * that 'leads' the sampling.
+> > >>> +      * Disable sampling for all group members except those with explicit
+> > >>> +      * config terms or the leader. In the case of an AUX area event, the 2nd
+> > >>> +      * event in the group is the one that 'leads' the sampling.
+> > >>>        */
+> > >>> -     attr->freq           = 0;
+> > >>> -     attr->sample_freq    = 0;
+> > >>> -     attr->sample_period  = 0;
+> > >>> -     attr->write_backward = 0;
+> > >>> +     freq_mask = (1 << EVSEL__CONFIG_TERM_FREQ) | (1 << EVSEL__CONFIG_TERM_PERIOD);
+> > >>> +     if ((term_types & freq_mask) == 0) {
+> > >>
+> > >> It would be nicer to have a helper e.g.
+> > >>
+> > >>         if (!evsel__have_config_term(evsel, FREQ) &&
+> > >>             !evsel__have_config_term(evsel, PERIOD)) {
+> > >
+> > > Sure. The point of doing it this way was to avoid repeatedly iterating
+> > > over the config term list.
+> >
+> > But perhaps it is premature optimization
+>
+> The alternative is more loc. I think we can bike shed on this but it's
+> not really changing the substance of the change. I'm keen to try to be
+> efficient where we can as we see issues at scale.
+>
+> Thanks,
+> Ian
 
-Are those slides available anywhere? [0] is just a link to the abstract.
+Ping. Do we want to turn this into multiple O(N) searches using a
+helper rather than 1 as coded here?
 
-> - Introduce bpf_xdp_get_frag_count and bpf_xdp_get_frags_total_size helpers to
->   report the total number/size of frags for a given xdp multi-buff.
-> 
-> XDP multi-buffer design principles are described here [1]
-> For the moment we have not implemented any self-test for the introduced the bpf
-> helpers. We can address this in a follow up series if the proposed approach
-> is accepted.
+Thanks,
+Ian
 
-Will need to include selftests with series.
-
-> 
-> Changes since v1:
-> - Fix use-after-free in xdp_return_{buff/frame}
-> - Introduce bpf helpers
-> - Introduce xdp_mb sample program
-> - access skb_shared_info->nr_frags only on the last fragment
-> 
-> Changes since RFC:
-> - squash multi-buffer bit initialization in a single patch
-> - add mvneta non-linear XDP buff support for tx side
-> 
-> [0] https://netdevconf.info/0x14/session.html?talk-the-path-to-tcp-4k-mtu-and-rx-zerocopy
-> [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
-> 
-> Lorenzo Bianconi (7):
->   xdp: introduce mb in xdp_buff/xdp_frame
->   xdp: initialize xdp_buff mb bit to 0 in all XDP drivers
->   net: mvneta: update mb bit before passing the xdp buffer to eBPF layer
->   xdp: add multi-buff support to xdp_return_{buff/frame}
->   net: mvneta: add multi buffer support to XDP_TX
->   bpf: helpers: add bpf_xdp_adjust_mb_header helper
->   net: mvneta: enable jumbo frames for XDP
-> 
-> Sameeh Jubran (2):
->   bpf: helpers: add multibuffer support
->   samples/bpf: add bpf program that uses xdp mb helpers
-> 
->  drivers/net/ethernet/amazon/ena/ena_netdev.c  |   1 +
->  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |   1 +
->  .../net/ethernet/cavium/thunder/nicvf_main.c  |   1 +
->  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   1 +
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c   |   1 +
->  drivers/net/ethernet/intel/ice/ice_txrx.c     |   1 +
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   1 +
->  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   1 +
->  drivers/net/ethernet/marvell/mvneta.c         | 126 ++++++------
->  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   1 +
->  drivers/net/ethernet/mellanox/mlx4/en_rx.c    |   1 +
->  .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   1 +
->  .../ethernet/netronome/nfp/nfp_net_common.c   |   1 +
->  drivers/net/ethernet/qlogic/qede/qede_fp.c    |   1 +
->  drivers/net/ethernet/sfc/rx.c                 |   1 +
->  drivers/net/ethernet/socionext/netsec.c       |   1 +
->  drivers/net/ethernet/ti/cpsw.c                |   1 +
->  drivers/net/ethernet/ti/cpsw_new.c            |   1 +
->  drivers/net/hyperv/netvsc_bpf.c               |   1 +
->  drivers/net/tun.c                             |   2 +
->  drivers/net/veth.c                            |   1 +
->  drivers/net/virtio_net.c                      |   2 +
->  drivers/net/xen-netfront.c                    |   1 +
->  include/net/xdp.h                             |  26 ++-
->  include/uapi/linux/bpf.h                      |  39 +++-
->  net/core/dev.c                                |   1 +
->  net/core/filter.c                             |  93 +++++++++
->  net/core/xdp.c                                |  40 ++++
->  samples/bpf/Makefile                          |   3 +
->  samples/bpf/xdp_mb_kern.c                     |  68 +++++++
->  samples/bpf/xdp_mb_user.c                     | 182 ++++++++++++++++++
->  tools/include/uapi/linux/bpf.h                |  40 +++-
->  32 files changed, 572 insertions(+), 70 deletions(-)
->  create mode 100644 samples/bpf/xdp_mb_kern.c
->  create mode 100644 samples/bpf/xdp_mb_user.c
-> 
-> -- 
-> 2.26.2
-> 
-
-
+> > >
+> > >>> +             attr->freq           = 0;
+> > >>> +             attr->sample_freq    = 0;
+> > >>> +             attr->sample_period  = 0;
+> > >>
+> > >> If we are not sampling, then maybe we should also put here:
+> > >>
+> > >>                 attr->write_backward = 0;
+> > >>
+> > >>> +     }
+> > >>
+> > >> Then, if we are sampling this evsel shouldn't the backward setting
+> > >> match the leader? e.g.
+> > >>
+> > >>         if (attr->sample_freq)
+> > >>                 attr->write_backward = leader->core.attr.write_backward;
+> > >
+> > > Perhaps that should be a follow up change? This change is trying to
+> > > make the behavior match the previous behavior.
+> >
+> > Sure
+> >
+> > >
+> > > Thanks,
+> > > Ian
+> > >
+> > >>> +     if ((term_types & (1 << EVSEL__CONFIG_TERM_OVERWRITE)) == 0)
+> > >>> +             attr->write_backward = 0;
+> > >>>
+> > >>>       /*
+> > >>>        * We don't get a sample for slave events, we make them when delivering
+> > >>>
+> > >>
+> >
