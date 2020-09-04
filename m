@@ -2,52 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBD0A25D94D
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 15:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8758C25D957
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 15:13:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730350AbgIDNJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 09:09:20 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49300 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730310AbgIDNJQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 09:09:16 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kEBSs-0000lQ-Og; Fri, 04 Sep 2020 15:09:14 +0200
-Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux.fritz.box)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kEBSs-000BQq-JG; Fri, 04 Sep 2020 15:09:14 +0200
-Subject: Re: [PATCH bpf-next 1/2] libbpf: fix another __u64 cast in printf
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
-References: <20200904041611.1695163-1-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <8efdf19f-9353-b38f-e5c6-c4f3074ff591@iogearbox.net>
-Date:   Fri, 4 Sep 2020 15:09:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730431AbgIDNNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 09:13:25 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:10816 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728588AbgIDNNP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 09:13:15 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id B0FFDF05AD95A8EF610F;
+        Fri,  4 Sep 2020 21:13:03 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Fri, 4 Sep 2020
+ 21:12:58 +0800
+From:   Wang Hai <wanghai38@huawei.com>
+To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] can: kvaser_pciefd: Remove unused macro KVASER_PCIEFD_KCAN_CTRL_EFRAME
+Date:   Fri, 4 Sep 2020 21:10:26 +0800
+Message-ID: <20200904131026.21817-1-wanghai38@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <20200904041611.1695163-1-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25919/Thu Sep  3 15:39:22 2020)
+Content-Type: text/plain
+X-Originating-IP: [10.175.113.133]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/4/20 6:16 AM, Andrii Nakryiko wrote:
-> Another issue of __u64 needing either %lu or %llu, depending on the
-> architecture. Fix with cast to `unsigned long long`.
-> 
-> Fixes: 7e06aad52929 ("libbpf: Add multi-prog section support for struct_ops")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+KVASER_PCIEFD_KCAN_CTRL_EFRAME is never used after it was introduced.
+So better to remove it.
 
-Applied, thanks!
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+---
+ drivers/net/can/kvaser_pciefd.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/can/kvaser_pciefd.c b/drivers/net/can/kvaser_pciefd.c
+index 6f766918211a..c0b18ff107c7 100644
+--- a/drivers/net/can/kvaser_pciefd.c
++++ b/drivers/net/can/kvaser_pciefd.c
+@@ -131,7 +131,6 @@ MODULE_DESCRIPTION("CAN driver for Kvaser CAN/PCIe devices");
+ 
+ /* Kvaser KCAN definitions */
+ #define KVASER_PCIEFD_KCAN_CTRL_EFLUSH (4 << 29)
+-#define KVASER_PCIEFD_KCAN_CTRL_EFRAME (5 << 29)
+ 
+ #define KVASER_PCIEFD_KCAN_CMD_SEQ_SHIFT 16
+ /* Request status packet */
+-- 
+2.17.1
+
