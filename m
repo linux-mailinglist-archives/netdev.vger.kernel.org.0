@@ -2,108 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 629CA25D12D
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 08:19:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 776B725D154
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 08:30:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726555AbgIDGTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 02:19:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725812AbgIDGT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 02:19:29 -0400
-Received: from ipv6.s19.hekko.net.pl (ipv6.s19.hekko.net.pl [IPv6:2a02:1778:113::19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64824C061244;
-        Thu,  3 Sep 2020 23:19:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=arf.net.pl;
-         s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=abh6SdwpbRfiKw2Rr/PwbvIz6rOaeyGz0EhknyPj+oI=; b=sygc+bhTEJeFYnLbVZfhxNRm4w
-        8ncYzVekHrpM45B5+DSg7BK0A4dlu1ssVwWZVza3Qjle3qNZ55eEsDN46YIFKQBD2J9N8k6QvQwTz
-        X0cde95xvtbwmPxL5wN4ZAEkMVOdIPzGSArHd+Rq8m6wTVcfx03bX4790FCkMJFziRSd71WNBiI0N
-        QavIrUE52uaF465mP7LW9N30c9EMfwChTzXCtfeoKcwkFz6ONRfwNym+jN/fwlSZ/8FoCelG8Xtve
-        u00LHN1zS6zkhbhNRLeFfA8G1UXkxNn8VZpnl/d5DZB24tWk4BO1ICX6KAV2hr/SSIdMjAJpdQiG4
-        QBMC5K9A==;
-Received: from 188.147.96.44.nat.umts.dynamic.t-mobile.pl ([188.147.96.44] helo=[192.168.8.103])
-        by s19.hekko.net.pl with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92.3)
-        (envelope-from <adam.rudzinski@arf.net.pl>)
-        id 1kE54I-00ArwX-QS; Fri, 04 Sep 2020 08:19:27 +0200
-Subject: Re: [PATCH net-next 0/3] net: phy: Support enabling clocks prior to
- bus probe
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, m.felsch@pengutronix.de, hkallweit1@gmail.com,
-        richard.leitner@skidata.com, zhengdejin5@gmail.com,
-        devicetree@vger.kernel.org, kernel@pengutronix.de, kuba@kernel.org,
-        robh+dt@kernel.org
-References: <20200903043947.3272453-1-f.fainelli@gmail.com>
- <cc6fc0f6-d4ae-9fa1-052d-6ab8e00ab32f@gmail.com>
-From:   =?UTF-8?Q?Adam_Rudzi=c5=84ski?= <adam.rudzinski@arf.net.pl>
-Message-ID: <307b343b-2e8d-cb20-c22f-0e80acdf1dc9@arf.net.pl>
-Date:   Fri, 4 Sep 2020 08:19:16 +0200
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1729572AbgIDG2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 02:28:13 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:58676 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728167AbgIDG2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 02:28:04 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1599200881;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FAh6u+MQ4MCx8OJAPKt7iX+YCAPZK7IAimf2m4wGKlY=;
+        b=OWIBExzj51zlz5XGzgBViZ0AfeVJcUPL6cGnP5DSZX1jDgDc6p+XIaiMYZ6hEjembUahmK
+        oaBtkq54KwVP2LpCtEFXC1OTo/hTeSK5I/XH2UpdvqmXWasfZcuyLwUnyzwCqOGxEhNzGZ
+        EBHIz5E+X0ykttxQf+/StXSCOJACIvGu0q5uUrn7rJhXT6vhWuVoOAJmNotJfNZvUV17+A
+        +ob4sItQXlyorVSSMmb3wt2fGUC/HYTZyg0n7q/KI0MZwAP7OM8i2oCVTKvdOLTU+Qi6LK
+        TjAFBP5n4FlQ2g/5KgTW7rsKkxg8jPgvi8IC8PMwK4DjVt8pE9u+6jZO5jRHsg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1599200881;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FAh6u+MQ4MCx8OJAPKt7iX+YCAPZK7IAimf2m4wGKlY=;
+        b=PJB3Z2fq16V00Rk+IaQoknI3rFVpX9litA/CXdxYLAgDZCd7fcDA7LTFxPj2ywXH0dByyX
+        PeK5BX9L40YafgBg==
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org, Vladimir Oltean <olteanv@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH v5 0/7] Hirschmann Hellcreek DSA driver
+Date:   Fri,  4 Sep 2020 08:27:32 +0200
+Message-Id: <20200904062739.3540-1-kurt@linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <cc6fc0f6-d4ae-9fa1-052d-6ab8e00ab32f@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: pl
-X-Authenticated-Id: ar@arf.net.pl
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-W dniu 2020-09-04 o 06:04, Florian Fainelli pisze:
->
->
-> On 9/2/2020 9:39 PM, Florian Fainelli wrote:
->> Hi all,
->>
->> This patch series takes care of enabling the Ethernet PHY clocks in
->> DT-based systems (we have no way to do it for ACPI, and ACPI would
->> likely keep all of this hardware enabled anyway).
->>
->> Please test on your respective platforms, mine still seems to have
->> a race condition that I am tracking down as it looks like we are not
->> waiting long enough post clock enable.
->>
->> The check on the clock reference count is necessary to avoid an
->> artificial bump of the clock reference count and to support the unbind
->> -> bind of the PHY driver. We could solve it in different ways.
->>
->> Comments and test results welcome!
->
-> Andrew, while we figure out a proper way to support this with the 
-> Linux device driver model, would you be opposed in a single patch to 
-> drivers/net/mdio/mdio-bcm-unimac.c which takes care of enabling the 
-> PHY's clock during bus->reset just for the sake of getting those 
-> systems to work, and later on we move over to the pre-probe mechanism?
->
-> That would allow me to continue working with upstream kernels on these 
-> systems without carrying a big pile of patches.
+this series adds a DSA driver for the Hirschmann Hellcreek TSN switch
+IP. Characteristics of that IP:
 
-Just a bunch of questions.
+ * Full duplex Ethernet interface at 100/1000 Mbps on three ports
+ * IEEE 802.1Q-compliant Ethernet Switch
+ * IEEE 802.1Qbv Time-Aware scheduling support
+ * IEEE 1588 and IEEE 802.1AS support
 
-Actually, why is it necessary to have a full MDIO bus scan already 
-during probing peripherals?
+That IP is used e.g. in
 
-If during probing the peripherals enable their resources (like clocks), 
-what's wrong in having the full MDIO bus scan after probing of all 
-peripherals is complete (and all peripherals are up)?
+ https://www.arrow.com/en/campaigns/arrow-kairos
 
-Also, what's wrong in letting the MDIO bus scan find only some PHYs in 
-the first go, and then letting each driver instance (of particular 
-peripheral) initiate scan only for its specific PHY, if it was not found 
-yet?
-(Is it thatof_mdio.h provides public function of_mdiobus_register, but 
-not something similar to add only specific devices/phys without 
-destroying the existing state?)
-I'd say that it is not necessary to have a PHY getting found before it 
-is needed to setup the complete interface.
+Due to the hardware setup the switch driver is implemented using DSA. A special
+tagging protocol is leveraged. Furthermore, this driver supports PTP and
+hardware timestamping.
 
-Best regards,
-Adam
+This work is part of the AccessTSN project: https://www.accesstsn.com/
+
+The previous versions can be found here:
+
+ * https://lkml.kernel.org/netdev/20200618064029.32168-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20200710113611.3398-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20200723081714.16005-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20200820081118.10105-1-kurt@linutronix.de/
+ * https://lkml.kernel.org/netdev/20200901125014.17801-1-kurt@linutronix.de/
+
+Changes since v4:
+
+ * Fix W=1 compiler warnings (kernel test robot)
+ * Add tags
+
+Changes since v3:
+
+ * Drop TAPRIO support (David Miller)
+   => Switch to mutexes due to the lack of hrtimers
+ * Use more specific compatible strings and add platform data (Andrew Lunn)
+ * Fix Kconfig ordering (Andrew Lunn)
+
+Changes since v2:
+
+ * Make it compile by getting all requirements merged first (Jakub Kicinski, David Miller)
+ * Use "tsn" for TSN register set (Rob Herring)
+ * Fix DT binding issues (Rob Herring)
+
+Changes since v1:
+
+ * Code simplifications (Florian Fainelli, Vladimir Oltean)
+ * Fix issues with hellcreek.yaml bindings (Florian Fainelli)
+ * Clear reserved field in ptp v2 event messages (Richard Cochran)
+ * Make use of generic ptp parsing function (Richard Cochran, Vladimir Oltean)
+ * Fix Kconfig (Florian Fainelli)
+ * Add tags (Florian Fainelli, Rob Herring, Richard Cochran) 
+
+Changes since RFC ordered by reviewers:
+
+ * Andrew Lunn
+   * Use dev_dbg for debug messages
+   * Get rid of __ function names where possible
+   * Use reverse xmas tree variable ordering
+   * Remove redundant/useless checks
+   * Improve comments e.g. for PTP
+   * Fix Kconfig ordering
+   * Make LED handling more generic and provide info via DT
+   * Setup advertisement of PHYs according to hardware
+   * Drop debugfs patch
+ * Jakub Kicinski
+   * Fix compiler warnings
+ * Florian Fainelli
+   * Switch to YAML DT bindings
+ * Richard Cochran
+   * Fix typo
+   * Add missing NULL checks
+
+Kamil Alkhouri (2):
+  net: dsa: hellcreek: Add PTP clock support
+  net: dsa: hellcreek: Add support for hardware timestamping
+
+Kurt Kanzenbach (5):
+  net: dsa: Add tag handling for Hirschmann Hellcreek switches
+  net: dsa: Add DSA driver for Hirschmann Hellcreek switches
+  net: dsa: hellcreek: Add PTP status LEDs
+  dt-bindings: Add vendor prefix for Hirschmann
+  dt-bindings: net: dsa: Add documentation for Hellcreek switches
+
+ .../bindings/net/dsa/hellcreek.yaml           |  127 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ drivers/net/dsa/Kconfig                       |    2 +
+ drivers/net/dsa/Makefile                      |    1 +
+ drivers/net/dsa/hirschmann/Kconfig            |    9 +
+ drivers/net/dsa/hirschmann/Makefile           |    5 +
+ drivers/net/dsa/hirschmann/hellcreek.c        | 1262 +++++++++++++++++
+ drivers/net/dsa/hirschmann/hellcreek.h        |  282 ++++
+ .../net/dsa/hirschmann/hellcreek_hwtstamp.c   |  479 +++++++
+ .../net/dsa/hirschmann/hellcreek_hwtstamp.h   |   58 +
+ drivers/net/dsa/hirschmann/hellcreek_ptp.c    |  452 ++++++
+ drivers/net/dsa/hirschmann/hellcreek_ptp.h    |   76 +
+ .../platform_data/hirschmann-hellcreek.h      |   22 +
+ include/net/dsa.h                             |    2 +
+ net/dsa/Kconfig                               |    6 +
+ net/dsa/Makefile                              |    1 +
+ net/dsa/tag_hellcreek.c                       |  101 ++
+ 17 files changed, 2887 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/hellcreek.yaml
+ create mode 100644 drivers/net/dsa/hirschmann/Kconfig
+ create mode 100644 drivers/net/dsa/hirschmann/Makefile
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek.c
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek.h
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek_hwtstamp.c
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek_ptp.c
+ create mode 100644 drivers/net/dsa/hirschmann/hellcreek_ptp.h
+ create mode 100644 include/linux/platform_data/hirschmann-hellcreek.h
+ create mode 100644 net/dsa/tag_hellcreek.c
+
+-- 
+2.20.1
+
