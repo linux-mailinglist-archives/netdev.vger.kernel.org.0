@@ -2,133 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DA3225D48C
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 11:19:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E15925D472
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 11:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730125AbgIDJTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 05:19:38 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:60002 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730020AbgIDJTb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 05:19:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1599211170; x=1630747170;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=o6duENUzbkFkp2C7Ma8T2ODsQTBHZTrbxuc1hJaheSQ=;
-  b=h+w2LU1Qvw9JUaZHVfiiFMrse6sMdKQmGHVcF5/KBVamyb2vu16Oj/rK
-   lraMLliTbXkyG7FbAbYYbj+evI+xuRp23gxfXgWFEZOmkN8QJR3bRvY7U
-   qIOwA70P4m966Q1hJMhozJ9wSKm4VXHIKHxosDsSsJum2YKXOykzzqlq4
-   9qhe1RfOkTJO6npud68nxaIKcDej42xW8JJu/u+RLGd+N6e+eViZB7GHf
-   gZPzRGddtFOdn2zN9ghPv/ZT2/54zb5hOM3OjVlk47h9MiBX2Kg7lpgeg
-   Qw//gFXPbJp50LYR6gF07ZIpstzUpT+WYM8kw2tsjsBRPMCnLi4/f6gAR
-   w==;
-IronPort-SDR: q2e3qpfgqw6aym00g6OqT9sIQtYpZG+Up60/WsH2lyF+bFE2bmAmOveq9aZkWMsXRP+OrrJsT+
- /ckVmdT9Okb1RCofS+Qk5fmXlVpH7iJI4DoAkjhwMxYtOTyxueOYjNJkSwfGoP8NAxCzOUdQT6
- ifhozmW/6uO24mYBzeA25o76fD5sLkZoxnwW0k9aWL3quRuRtbG6B/i9fiszVUA9gE17d66fWa
- zR5TZrm6Mm0tAL3MUskMW+A/K5OvuBrEeoLJvNnY5xZsN6NfJV1yPSAcx4WVzUJR/65d/ue5du
- Nqs=
-X-IronPort-AV: E=Sophos;i="5.76,389,1592895600"; 
-   d="scan'208";a="90552474"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 Sep 2020 02:19:26 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 4 Sep 2020 02:18:38 -0700
-Received: from soft-test08.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Fri, 4 Sep 2020 02:19:22 -0700
-From:   Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
-        <nikolay@nvidia.com>, <jiri@mellanox.com>, <idosch@mellanox.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
-CC:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH RFC 7/7] bridge: cfm: Bridge port remove.
-Date:   Fri, 4 Sep 2020 09:15:27 +0000
-Message-ID: <20200904091527.669109-8-henrik.bjoernlund@microchip.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200904091527.669109-1-henrik.bjoernlund@microchip.com>
-References: <20200904091527.669109-1-henrik.bjoernlund@microchip.com>
+        id S1730047AbgIDJRM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 05:17:12 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:47617 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729824AbgIDJRJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 05:17:09 -0400
+Received: by mail-il1-f199.google.com with SMTP id l6so2860504ilm.14
+        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 02:17:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=A0XXOCOsCKpVbiOmCtSMND7R8pvo4WiohDym5VmGicM=;
+        b=G40eY8vKJnz63Z7Jm0CYR6dkIyT5uhYFE8pQk+NiiNcdCp8NRCteWsGnpZ36NJ5Acg
+         FY5n7jArMJ+WxROL7IgI6bVFVa9qxaZ8/O2pIqBB7QwBuNwKi/0580gcZE2etIFUUv0P
+         7C9DAfaUaXd5m4C15E7S0m6QwotjKdiIqnNCrNTso04wan7n0Bn38CSEtroN7tj4yRiv
+         J5+56fXBBuXyQugnxV35QhRxO31ldPge4FGfDY+aqYL2aiKO/lHH7gFSjcPNr3z7lH7p
+         OEmZkaREkrmOwCu/5UwLO701vPzdwNQjxjTIsftueUhINO2l2jVdt0CC8RDjQvGir8a+
+         1FFg==
+X-Gm-Message-State: AOAM530SLG5+OAqqzcZfb1ThxjZNpgfn2OhlXOWY2+PWmgRdcE+ZEPW8
+        iQrOBr/e4fG4hfLckVHii4zTKAivJN1PnGZKsekjKsRJZ+ff
+X-Google-Smtp-Source: ABdhPJz4l9diDvi6JeZoFv4l/8t/lebVi6lVVRaf0FpautrVybTTmaZYgtTJ+rMvN9/aU+pvBmFLgHlR3xJZ/DGghivcPWtVoGV3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Received: by 2002:a92:6606:: with SMTP id a6mr6903338ilc.128.1599211028247;
+ Fri, 04 Sep 2020 02:17:08 -0700 (PDT)
+Date:   Fri, 04 Sep 2020 02:17:08 -0700
+In-Reply-To: <000000000000a358f905ae6b5dc6@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000427d4405ae795514@google.com>
+Subject: Re: KASAN: use-after-free Read in dump_schedule
+From:   syzbot <syzbot+621fd33c0b53d15ee8de@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, leandro.maciel.dorileo@intel.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, vedang.patel@intel.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is addition of CFM functionality to delete MEP instances
-on a port that is removed from the bridge.
-A MEP can only exist on a port that is related to a bridge.
+syzbot has bisected this issue to:
 
-Signed-off-by: Henrik Bjoernlund  <henrik.bjoernlund@microchip.com>
----
- net/bridge/br_cfm.c     | 13 +++++++++++++
- net/bridge/br_if.c      |  1 +
- net/bridge/br_private.h |  6 ++++++
- 3 files changed, 20 insertions(+)
+commit 7b9eba7ba0c1b24df42b70b62d154b284befbccf
+Author: Leandro Dorileo <leandro.maciel.dorileo@intel.com>
+Date:   Mon Apr 8 17:12:17 2019 +0000
 
-diff --git a/net/bridge/br_cfm.c b/net/bridge/br_cfm.c
-index b7fed2c1d8ec..c724ce020ce3 100644
---- a/net/bridge/br_cfm.c
-+++ b/net/bridge/br_cfm.c
-@@ -921,3 +921,16 @@ bool br_cfm_created(struct net_bridge *br)
- {
- 	return !list_empty(&br->mep_list);
- }
-+
-+/* Deletes the CFM instances on a specific bridge port
-+ * note: called under rtnl_lock
-+ */
-+void br_cfm_port_del(struct net_bridge *br, struct net_bridge_port *port)
-+{
-+	struct br_cfm_mep *mep;
-+
-+	list_for_each_entry_rcu(mep, &br->mep_list, head,
-+				lockdep_rtnl_is_held())
-+		if (mep->create.ifindex == port->dev->ifindex)
-+			mep_delete_implementation(br, mep);
-+}
-diff --git a/net/bridge/br_if.c b/net/bridge/br_if.c
-index a0e9a7937412..f7d2f472ae24 100644
---- a/net/bridge/br_if.c
-+++ b/net/bridge/br_if.c
-@@ -334,6 +334,7 @@ static void del_nbp(struct net_bridge_port *p)
- 	spin_unlock_bh(&br->lock);
- 
- 	br_mrp_port_del(br, p);
-+	br_cfm_port_del(br, p);
- 
- 	br_ifinfo_notify(RTM_DELLINK, NULL, p);
- 
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 53bcbdd21f34..5617255f0c0c 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -1369,6 +1369,7 @@ int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
- 		 struct nlattr *attr, int cmd, struct netlink_ext_ack *extack);
- int br_cfm_rx_frame_process(struct net_bridge_port *p, struct sk_buff *skb);
- bool br_cfm_created(struct net_bridge *br);
-+void br_cfm_port_del(struct net_bridge *br, struct net_bridge_port *p);
- int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge *br);
- int br_cfm_status_fill_info(struct sk_buff *skb,
- 			    struct net_bridge *br,
-@@ -1393,6 +1394,11 @@ static inline bool br_cfm_created(struct net_bridge *br)
- 	return false;
- }
- 
-+static inline void br_cfm_port_del(struct net_bridge *br,
-+				   struct net_bridge_port *p)
-+{
-+}
-+
- static inline int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge *br)
- {
- 	return -EOPNOTSUPP;
--- 
-2.28.0
+    net/sched: taprio: fix picos_per_byte miscalculation
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15464af9900000
+start commit:   fc3abb53 Merge branch 'for-linus' of git://git.kernel.org/..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=17464af9900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13464af9900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e1c560d0f4e121c9
+dashboard link: https://syzkaller.appspot.com/bug?extid=621fd33c0b53d15ee8de
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1129d0e9900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17fb6a25900000
+
+Reported-by: syzbot+621fd33c0b53d15ee8de@syzkaller.appspotmail.com
+Fixes: 7b9eba7ba0c1 ("net/sched: taprio: fix picos_per_byte miscalculation")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
