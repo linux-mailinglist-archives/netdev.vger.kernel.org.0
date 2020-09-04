@@ -2,146 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B22FA25DEEB
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 18:03:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF23B25DF79
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 18:13:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726479AbgIDQDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 12:03:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbgIDQDR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 12:03:17 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E501C061244;
-        Fri,  4 Sep 2020 09:03:16 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id mm21so3410861pjb.4;
-        Fri, 04 Sep 2020 09:03:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=KHkXwx+jqaoaCS6UX8HzJ0+ftR5FngFSLzBY4NLpaHQ=;
-        b=C1YTXxEfZmQ5IEeNYNmT8Umezg2XJu/IuxxhEW1fRiDqWU0qluZSyBTg0sW6JRq7EU
-         mV4yZMMZ0/Xm7wQg0HJyE45MTNODIZ1Q0J27b1H+OzLjogdFPygr9ToDRr8j1RLgc3Ol
-         rng/oMlR/BFdQAStpKtb2WKYlFDuuUPvd7pMrlYE34/ctCEONpH3NFw3PAULvPvZ2DKD
-         bt/57I8IW7vH4kwNQOKtsa5ab2eppkXP+bctBv89kjXhvLSypehyorj72RZNARZZg4FU
-         pDjRwoZ8yxJVdhVGawyPJmB3fYQK7/iIXSKMlpkP8iMooCBJ+Atti9jZLDeyoifr8e3m
-         mP4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=KHkXwx+jqaoaCS6UX8HzJ0+ftR5FngFSLzBY4NLpaHQ=;
-        b=J1QRVXRvKaH1JNjjUgg0kaKEVkZyxPSkU22VPQNGNH/zuSG6s6k3w3CK0EV4MtN7La
-         7oH/qvnUpRAo6LuzESAeQ0uZvnyjVLxIBFHRQxYa1jHbvSR1ocyQlQzLg9CH2HzEZhlt
-         Uo6E7rSo5yuuNXwCiKfFEQd5Hqz0IZM+6aOXv03hfIV2V/S+6kAPCh9sjJ/WUFDJoMe7
-         +W523sNAyvuoiwcgcF7XeeLljvZaLZKgvH/orJpe5dzgGMmUPLc7D0EzS1HNL5pUjl2O
-         ewUMYh4UCaqGXdOAUJxrTZTnddrnwuVCP/16A86uNqU6Ca0ACNVn0oiczWH3XTiSTGZ5
-         VT+A==
-X-Gm-Message-State: AOAM5316B3nAAtkOq1usH9plPZ9kEXnrOmt//GwItSq0rWAQsbxCg/G6
-        z04pFO0JOQ5tUMfa/bI2pDU=
-X-Google-Smtp-Source: ABdhPJw68D3zn12AwaSMv3IePjrL7SraUw8pPVUg5HAYxMdMInAXg/JKDg3oxRTe/VxqPoJtiRdqJg==
-X-Received: by 2002:a17:90a:ab11:: with SMTP id m17mr8509478pjq.236.1599235395895;
-        Fri, 04 Sep 2020 09:03:15 -0700 (PDT)
-Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id u3sm5510880pjn.29.2020.09.04.09.03.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2020 09:03:15 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Sat, 5 Sep 2020 00:03:08 +0800
-To:     Benjamin Poirier <benjamin.poirier@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3] staging: qlge: fix build breakage with dumping enabled
-Message-ID: <20200904160308.vpflvqfob7h7hz4v@Rk>
-References: <20200902140031.203374-1-coiby.xu@gmail.com>
- <20200903034918.GA227281@f3>
+        id S1726842AbgIDQNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 12:13:21 -0400
+Received: from mga11.intel.com ([192.55.52.93]:20859 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725966AbgIDQNR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 12:13:17 -0400
+IronPort-SDR: x86rRHdIYvvnkB2/EWz0kLVe7NanQrJaIs/p7RuSZsNheUt189wr3fG/UGlgZcpAN0DZoZZZ8S
+ wH5XUtbwU57Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9734"; a="155277262"
+X-IronPort-AV: E=Sophos;i="5.76,390,1592895600"; 
+   d="scan'208";a="155277262"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2020 09:13:15 -0700
+IronPort-SDR: /9d1kKYYvZtbVLOmytsIbnjlm320SsmBMO5PRuKwo8oJiwX9jtJ2WabAu3Z4/G8EqasU1koTaw
+ dobysyTpiSFA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,390,1592895600"; 
+   d="scan'208";a="315892740"
+Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
+  by orsmga002.jf.intel.com with ESMTP; 04 Sep 2020 09:13:14 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 4 Sep 2020 09:13:14 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 4 Sep 2020 09:13:14 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.57) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Fri, 4 Sep 2020 09:13:12 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lrUxiQ4YKbzwfDYGrozYGgK0EWNzuyDGvS8Kf8wHaU5PfBJNh5yD8Iwv+wm7aj+plwCW6FXNA4c+pQJaaV5Y19d0V+e228qoW08KH8so8UK8tWuXsRYFEdTG4eZXTmD/1SxZMOVm6MkgzFklLU2H7vnDBf+uuppyweOVcIPiJyu2Z1W4FVsA53XkspWPkcJo1ovqwSTMri6WaZc5J7GnFkdZ6hDI4j8NglzmDSUPgt3nr/4tzmbN3WDen/HKipFAHcyDxes4W+EKHp/KuB4P+1kXPAc7iQIEq+/oscuzRSNW8jYnw5Qm1TarxMkNW/hcWhAh3Hzi/W/XiMgcjGEjBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HI7Qr4EupUQShpnZ5k2PxVCWY/w/djukOttBGqYSVc8=;
+ b=EmrU99+prOdM6tDD9HBR7uvt4t499PNzZ3K9cd6Ol+uO2uiCRMyjRQdGjRZI/UlIv3ueMJkT6H0s1YrjMvyRZXkl30+uCuVOHUDSrQ+byZOR/QQnvAKdIT5Y3lvq9upoh8LPxsMPyIZweGuUverX70xRLke4/UjxdOh4F3Nl6h2SkVtIyJYHYOwbpVqf1XzT/VuFqNxreme7iHwyqzkPIMZvpySdh6TUi+K1h2/KLawwKt2T/oHI1dpMww7rFIxdfWwHnyD/dKBsC8AEBg6E6yQIFzZcAr5u1ZWtNOmVG18+0YzD2lB7cn9aCNLQmNSG8jlETkIHRZ596+lIXyOgmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HI7Qr4EupUQShpnZ5k2PxVCWY/w/djukOttBGqYSVc8=;
+ b=A0FsnDv7BukBRJzkFmmbBfdcXYD1Qwtigo7CdqKKw5qDiQjNRYP0eoRFKquFTHwL1INmw8i1KHZbi7dgwHl0Y/t5X6B917SX4oRBQiC2ME7DQwYyZ2UaEFMZ5SZVG9UIi+n3dPue3Mh5GXIUdamcCkVGLpyuLm1m9RyAUku9le0=
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
+ by SN6PR11MB2670.namprd11.prod.outlook.com (2603:10b6:805:61::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15; Fri, 4 Sep
+ 2020 16:12:48 +0000
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::7147:6b91:afe3:1579]) by SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::7147:6b91:afe3:1579%3]) with mapi id 15.20.3348.016; Fri, 4 Sep 2020
+ 16:12:48 +0000
+From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+To:     "kuba@kernel.org" <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: Re: [PATCH net-next v1 0/7] udp_tunnel: convert Intel drivers with
+ shared tables
+Thread-Topic: [PATCH net-next v1 0/7] udp_tunnel: convert Intel drivers with
+ shared tables
+Thread-Index: AQHWX8dIqfLMKTfuhkiHDJfcuSiXjqkUHOeAgAF8+QCAQji1AIABGlGA
+Date:   Fri, 4 Sep 2020 16:12:48 +0000
+Message-ID: <072865141ce38105a12f47051585dc8deca2b3e0.camel@intel.com>
+References: <20200722012716.2814777-1-kuba@kernel.org>
+         <1af4aea7869bdb9f3991536b6449521b214ed103.camel@intel.com>
+         <bfa03cf8613ada508774a2e6e89b9b01bfd968dd.camel@intel.com>
+         <20200903162220.061570d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200903162220.061570d0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [134.134.136.215]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 68552d88-8c16-4dc2-d070-08d850ed5ddc
+x-ms-traffictypediagnostic: SN6PR11MB2670:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN6PR11MB267061224A7BF6A95FDA96DAC62D0@SN6PR11MB2670.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: mpIhh5LCnh367sDX4I/rrnYhkkmyvFYfpQOy2IBvb3DLom48Y8+7PZmEbRGxeOVq12Yp+YJK9lEVW4KtQoIDEtRNIa8p0PUwIxJFYp2y/QQCYMK5Rpo1SvU8mcDMbbcM97QJTtGjNBRBQ9jhrEe1FcXCr0gmkVutAmxiu2/qtGq1BIyOi6TL3iJZKJi+Dc2x9RlDtV5+/HG6NlYJVXf0MFgpVBBrvHroFFed6v0xX4E0PNdGRPhc+ePI4Ik4KK19FMpKfMMA5m1XgmUPDAgxNTKiuHh3RXUb8GO0UFVPV+hx77+INmd3SiF1tS+pU4FK
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(366004)(396003)(39860400002)(346002)(8676002)(5660300002)(54906003)(186003)(316002)(8936002)(6486002)(478600001)(6916009)(36756003)(71200400001)(83380400001)(4326008)(6512007)(2906002)(66476007)(66946007)(76116006)(2616005)(66556008)(86362001)(66446008)(64756008)(91956017)(6506007)(26005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: aO8i3NM64gBtbB1hnnx1jfimqfiia5Gh2tp6oeG9UCvqIkzEcbDN4wSZIL8dF4OlPTOJSJqWgUr/G1BK+JvY+sE+kkfgZT6uRaWR2VsGYPPfwfkhYiAE/QSxav/RJ21IKbw+w9Xj4ALMf+RSop30BkzOq8kX9umZc+xHTZIRzm8zdeEFz/fSOwd/ZlR7SJZOGWtvS48e1QWTFMQ8WHc5W1fMYMAmi+e7zx5v2p2b8R13tdHvTy/7Gq2VDufJMKzO5wAPph0sHEg3HkkeShmnAF5BQ3os/FRN7POXaWSArgbJr8Xkm1iikg15NJvDErkQnT7/dPRVKKSfndzZ+6hBFIlcmKdoeIxH4ApoJ9BIrhWELtaDBqeXUfZakZZZtOg7t9/rO0V7uUBmFJzB09PNFKIFpd7kbXRJoAVL7nYLLoFobKF11j2fBIG5egjgMrso+JIm91mtWLZzXhkbNeEgVhP4qlCY+ShPGVlCQYzfkr63fgG1mSpwsaCOlQXD4+yP5wUG7Rg1JPsTILKqD/Nmv4EM6G6rqhmsghFlVQ4FMsZyCzQphZdUgK9w784N+a7wqTTRwhALZIgd88cCpBsghLMsHcwd41uTBQ+uy14WmBLTKsjUwqPsePldkDsQllRh9qQpTn/cMIlnf5Lp6m9xSQ==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5465B1625216164C94C15E8B808448D9@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200903034918.GA227281@f3>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 68552d88-8c16-4dc2-d070-08d850ed5ddc
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Sep 2020 16:12:48.4029
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: j0Hh73HzjL0KkdRSR4DXCzc5+abikcxnRVkJl0LPIJfBlWQHYBXlYicXv5mvHmZfjeoC5dgfuP6NzSxIAJdUHv43Ma4kmjZbVfHW3lP2MQ8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2670
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 03, 2020 at 12:49:18PM +0900, Benjamin Poirier wrote:
->On 2020-09-02 22:00 +0800, Coiby Xu wrote:
->> This fixes commit 0107635e15ac
->> ("staging: qlge: replace pr_err with netdev_err") which introduced an
->> build breakage of missing `struct ql_adapter *qdev` for some functions
->> and a warning of type mismatch with dumping enabled, i.e.,
->>
->> $ make CFLAGS_MODULE="QL_ALL_DUMP=1 QL_OB_DUMP=1 QL_CB_DUMP=1 \
->>   QL_IB_DUMP=1 QL_REG_DUMP=1 QL_DEV_DUMP=1" M=drivers/staging/qlge
->>
->> qlge_dbg.c: In function ‘ql_dump_ob_mac_rsp’:
->> qlge_dbg.c:2051:13: error: ‘qdev’ undeclared (first use in this function); did you mean ‘cdev’?
->>  2051 |  netdev_err(qdev->ndev, "%s\n", __func__);
->>       |             ^~~~
->> qlge_dbg.c: In function ‘ql_dump_routing_entries’:
->> qlge_dbg.c:1435:10: warning: format ‘%s’ expects argument of type ‘char *’, but argument 3 has type ‘int’ [-Wformat=]
->>  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
->>       |         ~^
->>       |          |
->>       |          char *
->>       |         %d
->>  1436 |        i, value);
->>       |        ~
->>       |        |
->>       |        int
->> qlge_dbg.c:1435:37: warning: format ‘%x’ expects a matching ‘unsigned int’ argument [-Wformat=]
->>  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
->>       |                                 ~~~~^
->>       |                                     |
->>       |                                     unsigned int
->>
->> Fixes: 0107635e15ac ("staging: qlge: replace pr_err with netdev_err")
->> Reported-by: Benjamin Poirier <benjamin.poirier@gmail.com>
->> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
->> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
->> ---
->
->Thanks for following up on this issue.
->
->[...]
->> @@ -1632,8 +1635,8 @@ void ql_dump_wqicb(struct wqicb *wqicb)
->>
->>  void ql_dump_tx_ring(struct tx_ring *tx_ring)
->>  {
->> -	if (!tx_ring)
->> -		return;
->> +	struct ql_adapter *qdev = tx_ring->qdev;
->> +
->>  	netdev_err(qdev->ndev, "===================== Dumping tx_ring %d ===============\n",
->>  		   tx_ring->wq_id);
->>  	netdev_err(qdev->ndev, "tx_ring->base = %p\n", tx_ring->wq_base);
->
->Did you actually check to confirm that the test can be removed?
-
-Thank you for the reminding! For the current code, when ql_dump_tx_ring
-is called, tx_ring would never be null.
-
->
->This is something that you should mention in the changelog at the very
->least since that change is not directly about fixing the build breakage
->and if it's wrong, it can lead to null pointer deref.
-
-I thought it is common practice in C that the caller makes sure
-the passed parameter isn't a null pointer because a QEMU developer
-also gave me the same advice after reviewing one of my patches for
-QEMU a few weeks ago. I'll mention this in the commit message. Thank
-you for the suggestion!
-
-
---
-Best regards,
-Coiby
+T24gVGh1LCAyMDIwLTA5LTAzIGF0IDE2OjIyIC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
+Cj4gT24gVGh1LCAyMyBKdWwgMjAyMCAyMDowNjoxNSArMDAwMCBOZ3V5ZW4sIEFudGhvbnkgTCB3
+cm90ZToNCj4gPiBPbiBXZWQsIDIwMjAtMDctMjIgYXQgMTQ6MjIgLTA3MDAsIFRvbnkgTmd1eWVu
+IHdyb3RlOg0KPiA+ID4gT24gVHVlLCAyMDIwLTA3LTIxIGF0IDE4OjI3IC0wNzAwLCBKYWt1YiBL
+aWNpbnNraSB3cm90ZTogIA0KPiA+ID4gPiBUaGlzIHNldCBjb252ZXJ0cyBJbnRlbCBkcml2ZXJz
+IHdoaWNoIGhhdmUgdGhlIGFiaWxpdHkgdG8gc3Bhd24NCj4gPiA+ID4gbXVsdGlwbGUgbmV0ZGV2
+cywgYnV0IGhhdmUgb25seSBvbmUgVURQIHR1bm5lbCBwb3J0IHRhYmxlLg0KPiA+ID4gPiANCj4g
+PiA+ID4gQXBwcm9wcmlhdGUgc3VwcG9ydCBpcyBhZGRlZCB0byB0aGUgY29yZSBpbmZyYSBpbiBw
+YXRjaCAxLA0KPiA+ID4gPiBmb2xsb3dlZCBieSBuZXRkZXZzaW0gc3VwcG9ydCBhbmQgYSBzZWxm
+dGVzdC4NCj4gPiA+ID4gDQo+ID4gPiA+IFRoZSB0YWJsZSBzaGFyaW5nIHdvcmtzIGJ5IGNvcmUg
+YXR0YWNoaW5nIHRoZSBzYW1lIHRhYmxlDQo+ID4gPiA+IHN0cnVjdHVyZSB0byBhbGwgZGV2aWNl
+cyBzaGFyaW5nIHRoZSB0YWJsZS4gVGhpcyBtZWFucyB0aGUNCj4gPiA+ID4gcmVmZXJlbmNlIGNv
+dW50IGhhcyB0byBhY2NvbW1vZGF0ZSBwb3RlbnRpYWxseSBsYXJnZSB2YWx1ZXMuDQo+ID4gPiA+
+IA0KPiA+ID4gPiBPbmNlIGNvcmUgaXMgcmVhZHkgaTQwZSBhbmQgaWNlIGFyZSBjb252ZXJ0ZWQu
+IFRoZXNlIGFyZQ0KPiA+ID4gPiBjb21wbGV4IGRyaXZlcnMsIGFuZCBJIGRvbid0IGhhdmUgSFcg
+dG8gdGVzdCBzbyBwbGVhc2UNCj4gPiA+ID4gcmV2aWV3Li4gIA0KPiA+ID4gDQo+ID4gPiBJJ20g
+cmVxdWVzdGluZyBvdXIgZGV2ZWxvcGVycyB0byB0YWtlIGEgbG9vayBvdmVyIGFuZCB2YWxpZGF0
+aW9uDQo+ID4gPiB0bw0KPiA+ID4gdGVzdCB0aGUgaWNlIGFuZCBpNDBlIHBhdGNoZXMuIEkgd2ls
+bCByZXBvcnQgYmFjayB3aGVuIEkgZ2V0DQo+ID4gPiByZXN1bHRzLiAgDQo+ID4gDQo+ID4gV291
+bGQgeW91IG1pbmQgaWYgSSBwaWNrIHRoZXNlIHBhdGNoZXMgdXAgaW50byBKZWZmJ3MgdHJlZT8g
+SXQgd2lsbA0KPiA+IG1ha2UgaXQgZWFzaWVyIHRvIHRlc3QgdGhhdCB3YXkuDQo+IA0KPiBJdCdz
+IGJlZW4gYSBtb250aC4gQW55IEVUQSBvbiB0aGVzZT8NCg0KU29ycnkgZm9yIHRha2luZyBzbyBs
+b25nLiBMZXQgbWUgY2hlY2sgb24gdGhlIHN0YXR1cyBhbmQgZ2V0IGJhY2sgdG8NCnlvdS4NCg0K
+VGhhbmtzLA0KVG9ueQ0K
