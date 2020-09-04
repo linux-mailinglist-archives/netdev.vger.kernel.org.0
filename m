@@ -2,84 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EE7125E187
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 20:38:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AD0F25E196
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 20:48:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbgIDSin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 14:38:43 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:43630 "EHLO vps0.lunn.ch"
+        id S1727919AbgIDSsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 14:48:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38786 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726127AbgIDSim (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Sep 2020 14:38:42 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kEGba-00DEuJ-3F; Fri, 04 Sep 2020 20:38:34 +0200
-Date:   Fri, 4 Sep 2020 20:38:34 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Srujana Challa <schalla@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        Suheil Chandran <schandran@marvell.com>,
-        Narayana Prasad Raju Athreya <pathreya@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Ard Biesheuvel <ardb@kernel.org>
-Subject: Re: [EXT] Re: [PATCH v2 2/3] drivers: crypto: add support for
- OCTEONTX2 CPT engine
-Message-ID: <20200904183834.GS3112546@lunn.ch>
-References: <1596809360-12597-1-git-send-email-schalla@marvell.com>
- <1596809360-12597-3-git-send-email-schalla@marvell.com>
- <20200813005407.GB24593@gondor.apana.org.au>
- <BYAPR18MB2791C6451CDE93CA053E0208A02D0@BYAPR18MB2791.namprd18.prod.outlook.com>
- <20200904135044.GA2836@gondor.apana.org.au>
- <BYAPR18MB2791A52DA3BF1D7BE5574F99A02D0@BYAPR18MB2791.namprd18.prod.outlook.com>
- <20200904141744.GA3092@gondor.apana.org.au>
- <BY5PR18MB32984DAF0FDED5D9CD1BEB45C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+        id S1726277AbgIDSsG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 14:48:06 -0400
+Received: from quaco.ghostprotocols.net (unknown [179.97.37.151])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 62BBC20665;
+        Fri,  4 Sep 2020 18:48:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599245285;
+        bh=PDE0If3Xa0BCychsFfVBP73AEAJpWKm1Y9RfRQZSBGs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ypnm1k438oFJq+i9TwHQtBFnd/r8W+r5fRXsR3gjcjbh7+AYmIVtCdsVnJ5SO4grv
+         ZaS1tpVK3cSZgoY+JRhzAVJMh6OSmRL9o+gLg0FTWjNIfqw0eLW03A7Bovj5qQUX8p
+         7Uoh2ObZp+g8Z768N5NlcPOEHm3eShMOwBXFT+MQ=
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 4039B40D3D; Fri,  4 Sep 2020 15:48:03 -0300 (-03)
+Date:   Fri, 4 Sep 2020 15:48:03 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v2 2/5] perf record: Prevent override of
+ attr->sample_period for libpfm4 events
+Message-ID: <20200904184803.GA3749996@kernel.org>
+References: <20200728085734.609930-1-irogers@google.com>
+ <20200728085734.609930-3-irogers@google.com>
+ <20200728155940.GC1319041@krava>
+ <20200728160954.GD1319041@krava>
+ <CAP-5=fVqto0LrwgW6dHQupp7jFA3wToRBonBaXXQW4wwYcTreg@mail.gmail.com>
+ <CAP-5=fWNniZuYfYhz_Cz7URQ+2E4T4Kg3DJqGPtDg70i38Er_A@mail.gmail.com>
+ <20200904160303.GD939481@krava>
+ <CAP-5=fWOSi4B3g1DARkh6Di-gU4FgmjnhbPYRBdvSdLSy_KC5Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BY5PR18MB32984DAF0FDED5D9CD1BEB45C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+In-Reply-To: <CAP-5=fWOSi4B3g1DARkh6Di-gU4FgmjnhbPYRBdvSdLSy_KC5Q@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 04, 2020 at 04:36:29PM +0000, Sunil Kovvuri Goutham wrote:
-> 
-> 
-> > -----Original Message-----
-> > From: Herbert Xu <herbert@gondor.apana.org.au>
-> > Sent: Friday, September 4, 2020 7:48 PM
-> > To: Srujana Challa <schalla@marvell.com>
-> > Cc: davem@davemloft.net; netdev@vger.kernel.org; linux-
-> > crypto@vger.kernel.org; Suheil Chandran <schandran@marvell.com>;
-> > Narayana Prasad Raju Athreya <pathreya@marvell.com>; Sunil Kovvuri
-> > Goutham <sgoutham@marvell.com>; Linu Cherian <lcherian@marvell.com>;
-> > Geethasowjanya Akula <gakula@marvell.com>; Jerin Jacob Kollanukkaran
-> > <jerinj@marvell.com>; Ard Biesheuvel <ardb@kernel.org>
-> > Subject: Re: [EXT] Re: [PATCH v2 2/3] drivers: crypto: add support for
-> > OCTEONTX2 CPT engine
-> > 
-> > On Fri, Sep 04, 2020 at 02:14:34PM +0000, Srujana Challa wrote:
-> > >
-> > > Since LMT store is our platform specific, it cannot be generalized to all
-> > ARM64.
-> > 
-> > I'm not asking you to generalise it to all of ARM64.  I'm asking you to move
-> > this into a header file under arch/arm64 that can then be shared by both your
-> > crypto driver and your network driver so you don't duplicate this
-> > everywhere.
-> > 
-> 
-> For ARM64 , except erratas other platform or machine dependent stuff are not allowed inside arch/arm64.
-> Also an earlier attempt by us to add few APIs addressing 128bit operations were not allowed by ARM folks
-> as they don't work in a generic way and are SOC specific.
-> http://lkml.iu.edu/hypermail/linux/kernel/1801.3/02211.html
+Em Fri, Sep 04, 2020 at 09:22:10AM -0700, Ian Rogers escreveu:
+> On Fri, Sep 4, 2020 at 9:03 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > On Thu, Sep 03, 2020 at 10:41:14PM -0700, Ian Rogers wrote:
+> > > On Wed, Jul 29, 2020 at 4:24 PM Ian Rogers <irogers@google.com> wrote:
+> > > > On Tue, Jul 28, 2020 at 9:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > > > On Tue, Jul 28, 2020 at 05:59:46PM +0200, Jiri Olsa wrote:
+> > > > > > On Tue, Jul 28, 2020 at 01:57:31AM -0700, Ian Rogers wrote:
+> > > > > [jolsa@krava perf]$ sudo ./perf test 17 -v
+> > > > > 17: Setup struct perf_event_attr                          :
 
-Maybe put it in include/linux/soc/ ?
+> > > > > running './tests/attr/test-record-C0'
+> > > > > expected sample_period=4000, got 3000
+> > > > > FAILED './tests/attr/test-record-C0' - match failure
 
-      Andrew
+> > > > I'm not able to reproduce this. Do you have a build configuration or
+> > > > something else to look at? The test doesn't seem obviously connected
+> > > > with this patch.
+
+> > > Jiri, any update? Thanks,
+
+> > sorry, I rebased and ran it again and it passes for me now,
+> > so it got fixed along the way
+
+> No worries, thanks for the update! It'd be nice to land this and the
+> other libpfm fixes.
+
+I applied it and it generated this regression:
+
+FAILED '/home/acme/libexec/perf-core/tests/attr/test-record-pfm-period' - match failure
+
+I'll look at the other patches that are pending in this regard to see
+what needs to be squashed so that we don't break bisect.
+
+- Arnaldo
