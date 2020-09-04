@@ -2,59 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D650325D94F
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 15:12:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBD0A25D94D
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 15:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730255AbgIDNM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 09:12:28 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:10815 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730414AbgIDNLQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Sep 2020 09:11:16 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 3F4DD45304F12020F37B;
-        Fri,  4 Sep 2020 21:11:14 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Fri, 4 Sep 2020
- 21:11:12 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <dhowells@redhat.com>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-afs@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] rxrpc: Remove unused macro rxrpc_min_rtt_wlen
-Date:   Fri, 4 Sep 2020 21:08:37 +0800
-Message-ID: <20200904130837.20875-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1730350AbgIDNJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 09:09:20 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49300 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730310AbgIDNJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 09:09:16 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kEBSs-0000lQ-Og; Fri, 04 Sep 2020 15:09:14 +0200
+Received: from [2001:1620:665:0:5795:5b0a:e5d5:5944] (helo=linux.fritz.box)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kEBSs-000BQq-JG; Fri, 04 Sep 2020 15:09:14 +0200
+Subject: Re: [PATCH bpf-next 1/2] libbpf: fix another __u64 cast in printf
+To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@fb.com
+Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com
+References: <20200904041611.1695163-1-andriin@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <8efdf19f-9353-b38f-e5c6-c4f3074ff591@iogearbox.net>
+Date:   Fri, 4 Sep 2020 15:09:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20200904041611.1695163-1-andriin@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25919/Thu Sep  3 15:39:22 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rxrpc_min_rtt_wlen is never used after it was introduced.
-So better to remove it.
+On 9/4/20 6:16 AM, Andrii Nakryiko wrote:
+> Another issue of __u64 needing either %lu or %llu, depending on the
+> architecture. Fix with cast to `unsigned long long`.
+> 
+> Fixes: 7e06aad52929 ("libbpf: Add multi-prog section support for struct_ops")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- net/rxrpc/rtt.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/net/rxrpc/rtt.c b/net/rxrpc/rtt.c
-index 928d8b34a3ee..a056c9bcf1d6 100644
---- a/net/rxrpc/rtt.c
-+++ b/net/rxrpc/rtt.c
-@@ -14,7 +14,6 @@
- #define RXRPC_RTO_MAX	((unsigned)(120 * HZ))
- #define RXRPC_TIMEOUT_INIT ((unsigned)(1*HZ))	/* RFC6298 2.1 initial RTO value	*/
- #define rxrpc_jiffies32 ((u32)jiffies)		/* As rxrpc_jiffies32 */
--#define rxrpc_min_rtt_wlen 300			/* As sysctl_tcp_min_rtt_wlen */
- 
- static u32 rxrpc_rto_min_us(struct rxrpc_peer *peer)
- {
--- 
-2.17.1
-
+Applied, thanks!
