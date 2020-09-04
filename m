@@ -2,109 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F5D625E0A6
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 19:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E6125E15F
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 20:10:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgIDRVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 13:21:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726426AbgIDRVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 13:21:34 -0400
-Received: from ipv6.s19.hekko.net.pl (ipv6.s19.hekko.net.pl [IPv6:2a02:1778:113::19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77325C061244;
-        Fri,  4 Sep 2020 10:21:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=arf.net.pl;
-         s=x; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=n/IY3oqw/0uQMPZxZmPsWG/3CNlj4/osbd1j5CE+lTA=; b=kN+BkP2BBBayKgPGjZBRnRjn3I
-        njTZGe80CLs7QX60EmmKavc42oMoE0I5Mqpb1CTlMfIefYQB0vcJZOeOu1Hp0oeQhWoOiO9EVQfVx
-        RkNbhu9DumG9WIjf8t0Z19KCL8DUPt+3TokvJZYSUmH6Fp70hI+YmZsibSVl5A93EzAxsQOaqm1wo
-        1gTjLmO8XV3kR6BDQBPmcDcQv8eO0iAo1hTxsf34qt2k+7mcyUzEuMv8rm+fFcGySYObqq6JpaYd9
-        lS6W2UxKV5dX2dfGKd/UV2/LYTDBMuNPQ3p/iTIs7sREKNDQsGMeAV2XeHCkXoLXsQVwDk6rY4C2j
-        Ynb6zdSg==;
-Received: from 188.147.96.44.nat.umts.dynamic.t-mobile.pl ([188.147.96.44] helo=[192.168.8.103])
-        by s19.hekko.net.pl with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92.3)
-        (envelope-from <adam.rudzinski@arf.net.pl>)
-        id 1kEFP2-0044DE-QB; Fri, 04 Sep 2020 19:21:32 +0200
-Subject: Re: [PATCH net-next 0/3] net: phy: Support enabling clocks prior to
- bus probe
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        m.felsch@pengutronix.de, hkallweit1@gmail.com,
-        richard.leitner@skidata.com, zhengdejin5@gmail.com,
-        devicetree@vger.kernel.org, kernel@pengutronix.de, kuba@kernel.org,
-        robh+dt@kernel.org
-References: <20200903043947.3272453-1-f.fainelli@gmail.com>
- <cc6fc0f6-d4ae-9fa1-052d-6ab8e00ab32f@gmail.com>
- <307b343b-2e8d-cb20-c22f-0e80acdf1dc9@arf.net.pl>
- <20200904134558.GL3112546@lunn.ch>
- <ed801431-2b46-5d6d-0cfd-a4b043702f9f@arf.net.pl>
- <20200904142347.GP3112546@lunn.ch>
-From:   =?UTF-8?Q?Adam_Rudzi=c5=84ski?= <adam.rudzinski@arf.net.pl>
-Message-ID: <3f80e13f-fc62-37e7-3ee8-5626d26c32a9@arf.net.pl>
-Date:   Fri, 4 Sep 2020 19:21:15 +0200
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1727776AbgIDSKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 14:10:51 -0400
+Received: from mga03.intel.com ([134.134.136.65]:64587 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726434AbgIDSKu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 14:10:50 -0400
+IronPort-SDR: royRppZIDof1S+qpxKehDxI7KTr3dFz863RMCXcMoxFz3qVQhd0OUZ8lJAv2RpAevqxQMorNaV
+ jZzBelVhajTw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9734"; a="157806961"
+X-IronPort-AV: E=Sophos;i="5.76,390,1592895600"; 
+   d="scan'208";a="157806961"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2020 11:10:49 -0700
+IronPort-SDR: UzStBQu2cmnROrTGoa6fND9DHGwzZ2/gLnn24WHzFsRMY2tQ+OU86XpJy00ZAZTMiwydjmtPP4
+ V56Ov9rJ1ssw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,390,1592895600"; 
+   d="scan'208";a="478604378"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga005.jf.intel.com with ESMTP; 04 Sep 2020 11:10:49 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 4 Sep 2020 11:10:48 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 4 Sep 2020 11:10:48 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.106)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Fri, 4 Sep 2020 11:10:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jAFVITwchLU663liH6ipA02mDAVaYkNSD3zCSYX4er1u9dnGwjYXfvMDjQvGTUM1y7D+wLTAjKsqgNXl5mH8Two5SdeZzEzEHQASToGZ3TdAqtiypsjsjiJ3mrH6wld5WTBK2Askn8AgNKuBgchNZzL2TjBkDfWI0y53dD6dvCbXXGspWU7GmXZZ2PgcjfCWoBILmK9sp5FvNL/siS1q9LxGP6lyun4AFTnXMBjH+J6TTTeFNDvdKtypMfeH+zsKv6b82j0YtYr8lrbmXAX/3O5KUcNp6NAZ4m8+9j68MUDUnK2vom17Y7dd5jNnqArFgeJKvligJiyUa0oQN5TJxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6Pb2kwYSEW3CaGQAOcCcq4EI+qCN5fqsQ2Ta9mzSfyM=;
+ b=SnvgZu036S2iQ5Ur1z+dKwNkoPYlmt3nMwvVZg9TZqHGoXcJtFE6BecSKLQo/J0gyhKpl9aWOIEXuRgyrwXLrq8gKCUk2TagxiFX+5jiwaufOCMtPQPXSfj7v/tyiCmKg5clwbgbIeBPbRS6zeD5411oD5zcdC9HngMx9B/s4EArOCtlLltdLY9v0MNc0FcqsWdeTvC0pZrBdn84F2Dg9fID3LixwLzzZH17ColaKE347B//90WJ4F3JLF6vJwFnxLltjTAZwYGvrdHcyTw0gCyKxgGIkRoCIrz41SKZAS51nPPKRkCUfy7U5s78eQC7xtOjSzSaxmm1jXCIwbcKBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6Pb2kwYSEW3CaGQAOcCcq4EI+qCN5fqsQ2Ta9mzSfyM=;
+ b=gDdcHNcN30LDCN3oisLIctg/5TbUhds+o2+srUSXBZfzCA30v3ygaS354JPISZl2Vik1VEXaB61nn0EmQVuo1qxXnvRUD9R65P0XmukM9BrIWegyyhn4QSDQFI0BTaAcNltLWPHI0LrjzmYtdoHvoN7+ILjGFKneK6jzAE6OIvQ=
+Received: from DM6PR11MB2890.namprd11.prod.outlook.com (2603:10b6:5:63::20) by
+ DM5PR11MB1916.namprd11.prod.outlook.com (2603:10b6:3:10a::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3348.15; Fri, 4 Sep 2020 18:10:46 +0000
+Received: from DM6PR11MB2890.namprd11.prod.outlook.com
+ ([fe80::25c4:e65e:4d75:f45f]) by DM6PR11MB2890.namprd11.prod.outlook.com
+ ([fe80::25c4:e65e:4d75:f45f%7]) with mapi id 15.20.3326.025; Fri, 4 Sep 2020
+ 18:10:46 +0000
+From:   "Brown, Aaron F" <aaron.f.brown@intel.com>
+To:     Stefan Assmann <sassmann@kpanic.de>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Loktionov, Aleksandr" <aleksandr.loktionov@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [Intel-wired-lan] [PATCH] i40e: always propagate error value in
+ i40e_set_vsi_promisc()
+Thread-Topic: [Intel-wired-lan] [PATCH] i40e: always propagate error value in
+ i40e_set_vsi_promisc()
+Thread-Index: AQHWduiWsYJ+52x91Em8keRcfr1pKKlY3mRQ
+Date:   Fri, 4 Sep 2020 18:10:46 +0000
+Message-ID: <DM6PR11MB2890E9ED7AA4ABBCCB790F2EBC2D0@DM6PR11MB2890.namprd11.prod.outlook.com>
+References: <20200820115312.28099-1-sassmann@kpanic.de>
+In-Reply-To: <20200820115312.28099-1-sassmann@kpanic.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: kpanic.de; dkim=none (message not signed)
+ header.d=none;kpanic.de; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [97.120.215.99]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 91baaf87-dabd-42f7-3008-08d850fdd8d6
+x-ms-traffictypediagnostic: DM5PR11MB1916:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR11MB1916E842FAAB5CD0AEBCBDA8BC2D0@DM5PR11MB1916.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:773;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: nsWEfyh+dZsx18YhWhQ690BKyfV/xur+BTmLgxFj9NrMTmRbgDo7IVDjmf7vj05gbM+AgWepbs3TvRb4B8naNi4lJO0wVAbM2ciDqWTO5eRKbRMXDXMLpsEJqGJDd/ZU89APTC90pdfZ3/ZAQ3tlwS1lwZCUcIs2gou1/+BA+Iof2Y9cmZ7TqI7xlxs7q08Or1AD/ggorzpj1WFwYKhoEC0I5/MR+RdHOFz+WuLa9OJUdOsZN+p/cOD/jI5M/5eX8xiwq80QZnmSaYxds2zmOLeWuFrNyZ/jnhKeIAEfK7aFdSWNsGTAygadgs2QbkB2ipppl2kQ/6iiIvc/xkscgQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2890.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(136003)(376002)(346002)(396003)(4326008)(26005)(7696005)(8936002)(66476007)(8676002)(2906002)(66946007)(66446008)(64756008)(6506007)(5660300002)(86362001)(66556008)(186003)(76116006)(53546011)(71200400001)(9686003)(33656002)(55016002)(110136005)(54906003)(316002)(83380400001)(52536014)(478600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: zc7rk316+QbnyiiFp13x3gd7K+jT5AQvnSZUnUMpyXAKgn8iwUIsGarKBvXZeJgTfFCA5q1cHAhic1GnzqDuqtE6/K2WfIJiE2w//4OOueHMEF2opYIrc7bpi9Wd970L7FQvmW0C0ODe9q6SPgaNmNjFCZZl+1qOlMfxU81i+aALHalGMAaTXKBK3z/sse9prbznuCXh2iE9jTTsSiH0eSyctn97g6sKx59X8WR0U7G4QAsmFX5sfY5W7QEslxYIeqHZ3mUj53TCS9xBCXKqjcdA3Xyq2rrsu6xV2wpKF/p01ugaSp0X2CZIBFPkG/+h3HvLEUDVkrNmZS3ZmTiO+l684+YnnvwTQWX6wAjeiBHVlYEDow1Q02hxQZqVpQVGyvUP/J8W//hlvPT8flLUCA4FFvZCEp5fSB/DfwEiC2AGzlWWAOSKFaImQAPoE9Gf3eiIngKtYwF64qGhtT/pzevBxH2yAKeO78edNrVkutprxaMPiyPpnp3pD3RxbRX5nKhDGZniRiuvvA2yKvBWhOFl2E3Imad8ZjLy5mmgg/w3oSbHkgEZuufdjvwHKPKAH1wDzGsUA089Y3CSHQETWtXa6aXeRKMOK+dBp9dk6XdjuHiFBhccOUbBYNagbE33c1hBHhRSn8a8TpChvIqU/A==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20200904142347.GP3112546@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: pl
-X-Authenticated-Id: ar@arf.net.pl
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2890.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 91baaf87-dabd-42f7-3008-08d850fdd8d6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Sep 2020 18:10:46.7488
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1eIDjNwtTSinjZMDG7DNCiKWHLjLeiC/U1ICqtB9hL3oTToV572NZMShZC+Eqegt7C6YqBKybT/ZVdU5aWg2aQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1916
+X-OriginatorOrg: intel.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-W dniu 2020-09-04 o 16:23, Andrew Lunn pisze:
-> On Fri, Sep 04, 2020 at 04:00:55PM +0200, Adam Rudziński wrote:
->> W dniu 2020-09-04 o 15:45, Andrew Lunn pisze:
->>>> Just a bunch of questions.
->>>>
->>>> Actually, why is it necessary to have a full MDIO bus scan already during
->>>> probing peripherals?
->>> That is the Linux bus model. It does not matter what sort of bus it
->>> is, PCI, USB, MDIO, etc. When the bus driver is loaded, the bus is
->>> enumerated and drivers probe for each device found on the bus.
->> OK. But is it always expected to find all the devices on the bus in the
->> first run?
-> Yes. Cold plug expects to find all the device while scanning the bus.
->
->> Does the bus model ever allow to just add any more devices? Kind of,
->> "hotplug". :)
-> Hotplug is triggered by hardware saying a new device has been
-> added/removed after cold plug.
->
-> This is not a hotplug case. The hardware has not suddenly appeared, it
-> has always been there.
->
->     Andrew
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Stefan Assmann
+> Sent: Thursday, August 20, 2020 4:53 AM
+> To: intel-wired-lan@lists.osuosl.org
+> Cc: netdev@vger.kernel.org; Loktionov, Aleksandr
+> <aleksandr.loktionov@intel.com>; sassmann@kpanic.de;
+> davem@davemloft.net
+> Subject: [Intel-wired-lan] [PATCH] i40e: always propagate error value in
+> i40e_set_vsi_promisc()
+>=20
+> The for loop in i40e_set_vsi_promisc() reports errors via dev_err() but
+> does not propage the error up the call chain. Instead it continues the
+> loop and potentially overwrites the reported error value.
+> This results in the error being recorded in the log buffer, but the
+> caller might never know anything went the wrong way.
+>=20
+> To avoid this situation i40e_set_vsi_promisc() needs to temporary store
+> the error after reporting it. This is still not optimal as multiple
+> different errors may occur, so store the first error and hope that's
+> the main issue.
+>=20
+> Fixes: 37d318d7805f (i40e: Remove scheduling while atomic possibility)
+> Reported-by: Michal Schmidt <mschmidt@redhat.com>
+> Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 12 +++++++++++-
+>  1 file changed, 11 insertions(+), 1 deletion(-)
 
-There still is something that I would like to have clarified. Let me ask 
-a bit more.
+In the summary text:
+%s/ propage/propagate/
+%s/ temporary/temporarily/
 
-Even if the hardware is fixed, in general it doesn't mean that there is 
-only one possible way of bringing it up in software (software in 
-general, not necessarily Linux). Does the Linux driver/bus model define 
-the allowed options more precisely?
-
-Or:
-
-There is "coldplug", there is "hotplug", and let's call the intermediate 
-possibility "warmplug" - the hardware is fixed, but it is discovered not 
-in the same scan. Some devices are found in scans triggered by something 
-later. For example, by a driver which doesn't have its attached devices 
-discovered yet. Let's assume for now that it makes sense, and this can 
-result in a perfectly running system.
-Does the Linux driver/bus model explicitly and strictly require 
-"coldplug" approach in the case of fixed hardware? Is "warmplug" 
-explicitly and strictly not allowed, or it just "doesn't feel right"?
-
-Best regards,
-Adam
-
+I suspect Tony can fix that up before pushing.  Aside from that,
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
