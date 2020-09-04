@@ -2,125 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F5B25D432
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 11:04:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73FBD25D44F
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 11:11:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729942AbgIDJE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 05:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729887AbgIDJEy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 05:04:54 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3C7C061245
-        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 02:04:53 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id o5so5902029wrn.13
-        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 02:04:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QQlbI4/cVI7lV7hmpd49lUjhwmM3E62iOV4cqjNwGn0=;
-        b=uvIZzRIZ8Ta/evq70yFiIpea3is+5U8CJ9nTtuEUUcNENV0B9KxuB/r2ZQ8NyWo8Ec
-         02jJ3Qv5D6JKzGhTt5xChE6RF7NmW0gbkNqfmNgaaatMC9v6cSuahhJ+KUByWXJoi6X+
-         hy5LGjlqanMviM0eDBl7WqEtsKlayZcsMZnqsGhW4I/5t+b4k8yEiLfqanmtau4RacOc
-         J8390HGbRm2BMU9cFF2CYt17O2lVTL2qGz6IcPXtxwIfj1mng/lyZSKPEsWr2CPva9AS
-         Y5URDvdDivRXJmBwgwlxj3h73VteTp/0Qw+WcLChhLx0qDWo8SgDKSDx6kBApp1FcF6v
-         Kv2g==
+        id S1729992AbgIDJLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 05:11:00 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:33240 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729958AbgIDJKz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 05:10:55 -0400
+Received: from mail-lj1-f198.google.com ([209.85.208.198])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <po-hsu.lin@canonical.com>)
+        id 1kE7kB-0004ju-Oy
+        for netdev@vger.kernel.org; Fri, 04 Sep 2020 09:10:51 +0000
+Received: by mail-lj1-f198.google.com with SMTP id z9so230034ljk.21
+        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 02:10:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QQlbI4/cVI7lV7hmpd49lUjhwmM3E62iOV4cqjNwGn0=;
-        b=XaQXpBROl4+y0To/o1ZLiiiwRpbh5iz8B3AJdUAZv0h+FODltPxt5kTb7CKKXvTJhv
-         vhSarbzgY+pfwdvcZdsmTN+PVYx1C0SLSMxTXF2QSaAVSs1byZH8aWujxQ1tpKcQYGgA
-         9iVp2SRQ6sqZUdvjGNMsKWHfTV9Le1HHaGg6swHupIdlbvYMDzt9XLxEgAXNzBO8b1Of
-         702C+gx+Rhmwwt7tPJ35vfnyfZkkiXc12W3xAGCbN4ftIpWZ+ZL4e3qWWxBG9jtZCIaZ
-         wShSx3RYDcEoN7alWbYyXVgjSD+dCDS5Q/kIbxQ3DWyLr73ySIbo2Gi155aBX41CeDbh
-         j6lQ==
-X-Gm-Message-State: AOAM533LcNFT0EksyzkCihlneFcUpvMOsSvUzfs2x5w7sIk7Y7C4+LnN
-        4wdTZJ4hr2rihH1J0LA5qhGrjA==
-X-Google-Smtp-Source: ABdhPJxfyoJZKVMcXhqJqChAKVrrr3Jvl4NNXruYQrn2aqulkTGhG/b+BXeWgex+ilGgkjRTgn29nw==
-X-Received: by 2002:a5d:518b:: with SMTP id k11mr6387051wrv.369.1599210292051;
-        Fri, 04 Sep 2020 02:04:52 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id f17sm10323532wru.13.2020.09.04.02.04.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2020 02:04:51 -0700 (PDT)
-Date:   Fri, 4 Sep 2020 11:04:50 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Moshe Shemesh <moshe@nvidia.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v3 01/14] devlink: Add reload action option
- to devlink reload command
-Message-ID: <20200904090450.GH2997@nanopsycho.orion>
-References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
- <1598801254-27764-2-git-send-email-moshe@mellanox.com>
- <20200831121501.GD3794@nanopsycho.orion>
- <9fffbe80-9a2a-33de-2e11-24be34648686@nvidia.com>
- <20200902094627.GB2568@nanopsycho>
- <20200902083025.43407d8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200903055729.GB2997@nanopsycho.orion>
- <20200903124719.75325f0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MpOzB7dmCTuCyJm4q5JJcfMsN2ZZvsAlJt0YiaUL728=;
+        b=Nr3HxYxKvflpYYWwzTuF7u7TsTJkzyLgiANf9VIjtZNlmjRMOie3E9+tQ9OvjjIa2a
+         0HmwKrMYKUenuJCOXzuKvE4EEKjXHJUolr5TaKgxHdNplFDGwaoyoo/Tp/eFdqdWylbU
+         izvkM05c/CdUODIq8dq7FXBJTVs89HSr93AB2bNUaZfOMGw4dcWaudR1x7O3AcVu1njQ
+         h9uwOZ98y1mbe3PB526MqE1QwDTt/lo2wx+egN2z1dNAB0P5PzgReiVFV3iKasDjYWUA
+         ZQ45O+yBRCKGXR14XE5f+aqMGHDOEUKNYyL3UehhYQ7nreImZIzEMoUA9ITFT5tGt6dZ
+         2PrA==
+X-Gm-Message-State: AOAM532u0eZ0JnVTlK8/a59VHM6qOX8b0CsYD+k5cBj1NcXYDxNaqMJ3
+        k4s3tghcD4MCCDVwwPKhibCQ2/LgtvvAstsWovev40NXqTH+HrqwLBOo+zjDgAYgqAHwDV95sv6
+        KaVM3tIqrfBxv4PTU1TSPlEpOCbwb34aKLKEr/h8vBhWOMLwk
+X-Received: by 2002:a2e:a16f:: with SMTP id u15mr3550079ljl.5.1599210651086;
+        Fri, 04 Sep 2020 02:10:51 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyRBBq/qjRBD6kgJssSry/FlrnrAD8qz7ovDVT+hqOyTrNsEtHy4P1ksymgoBxNoaZOC5pVhIT6RcxFjIk7xas=
+X-Received: by 2002:a2e:a16f:: with SMTP id u15mr3550055ljl.5.1599210650811;
+ Fri, 04 Sep 2020 02:10:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200903124719.75325f0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200813044422.46713-1-po-hsu.lin@canonical.com>
+In-Reply-To: <20200813044422.46713-1-po-hsu.lin@canonical.com>
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+Date:   Fri, 4 Sep 2020 17:10:39 +0800
+Message-ID: <CAMy_GT8jOOPw+esd53X2LQ4aY9eqpE0rv9vDgr_eBD6fy5Wmqg@mail.gmail.com>
+Subject: Re: [PATCHv2] selftests: rtnetlink: load fou module for kci_test_encap_fou()
+To:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Sep 03, 2020 at 09:47:19PM CEST, kuba@kernel.org wrote:
->On Thu, 3 Sep 2020 07:57:29 +0200 Jiri Pirko wrote:
->> Wed, Sep 02, 2020 at 05:30:25PM CEST, kuba@kernel.org wrote:
->> >On Wed, 2 Sep 2020 11:46:27 +0200 Jiri Pirko wrote:  
->> >> >? Do we need such change there too or keep it as is, each action by itself
->> >> >and return what was performed ?    
->> >> 
->> >> Well, I don't know. User asks for X, X should be performed, not Y or Z.
->> >> So perhaps the return value is not needed.
->> >> Just driver advertizes it supports X, Y, Z and the users says:
->> >> 1) do X, driver does X
->> >> 2) do Y, driver does Y
->> >> 3) do Z, driver does Z
->> >> [
->> >> I think this kindof circles back to the original proposal...  
->> >
->> >Why? User does not care if you activate new devlink params when
->> >activating new firmware. Trust me. So why make the user figure out
->> >which of all possible reset option they should select? If there is 
->> >a legitimate use case to limit what is reset - it should be handled
->> >by a separate negative attribute, like --live which says don't reset
->> >anything.  
->> 
->> I see. Okay. Could you please sum-up the interface as you propose it?
+Hello David,
+
+do you need more information for this V2 patch?
+
+Thank you
+PHLin
+
+On Mon, Aug 17, 2020 at 10:53 AM Po-Hsu Lin <po-hsu.lin@canonical.com> wrote:
 >
->What I proposed on v1, pass requested actions as a bitfield, driver may
->perform more actions, we can return performed actions in the response.
-
-Okay. So for example for mlxsw, user might say:
-1) I want driver reinit
-    kernel reports: fw reset and driver reinit was done
-2) I want fw reset
-    kernel reports: fw reset and driver reinit was done
-3) I want fw reset and driver reinit
-    kernel reports: fw reset and driver reinit was done
-
+> The kci_test_encap_fou() test from kci_test_encap() in rtnetlink.sh
+> needs the fou module to work. Otherwise it will fail with:
 >
->Then separate attribute to carry constraints for the request, like
->--live.
-
-Hmm, this is a bit unclear how it is supposed to work. The constraints
-apply for all? I mean, the actions are requested by a bitfield.
-So the user can say:
-I want fw reset and driver reinit --live. "--live" applies to both fw
-reset and driver reinit? That is odd.
-
+>   $ ip netns exec "$testns" ip fou add port 7777 ipproto 47
+>   RTNETLINK answers: No such file or directory
+>   Error talking to the kernel
 >
->I'd think the supported actions in devlink_ops would be fine as a
->bitfield, too. Combinations are often hard to capture in static data.
+> Add the CONFIG_NET_FOU into the config file as well. Which needs at
+> least to be set as a loadable module.
+>
+> Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+> ---
+>  tools/testing/selftests/net/config       | 1 +
+>  tools/testing/selftests/net/rtnetlink.sh | 6 ++++++
+>  2 files changed, 7 insertions(+)
+>
+> diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
+> index 3b42c06b..96d2763 100644
+> --- a/tools/testing/selftests/net/config
+> +++ b/tools/testing/selftests/net/config
+> @@ -31,3 +31,4 @@ CONFIG_NET_SCH_ETF=m
+>  CONFIG_NET_SCH_NETEM=y
+>  CONFIG_TEST_BLACKHOLE_DEV=m
+>  CONFIG_KALLSYMS=y
+> +CONFIG_NET_FOU=m
+> diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
+> index bdbf4b3..7931b65 100755
+> --- a/tools/testing/selftests/net/rtnetlink.sh
+> +++ b/tools/testing/selftests/net/rtnetlink.sh
+> @@ -521,6 +521,11 @@ kci_test_encap_fou()
+>                 return $ksft_skip
+>         fi
+>
+> +       if ! /sbin/modprobe -q -n fou; then
+> +               echo "SKIP: module fou is not found"
+> +               return $ksft_skip
+> +       fi
+> +       /sbin/modprobe -q fou
+>         ip -netns "$testns" fou add port 7777 ipproto 47 2>/dev/null
+>         if [ $? -ne 0 ];then
+>                 echo "FAIL: can't add fou port 7777, skipping test"
+> @@ -541,6 +546,7 @@ kci_test_encap_fou()
+>                 return 1
+>         fi
+>
+> +       /sbin/modprobe -q -r fou
+>         echo "PASS: fou"
+>  }
+>
+> --
+> 2.7.4
+>
