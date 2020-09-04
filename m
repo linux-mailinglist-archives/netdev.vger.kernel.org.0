@@ -2,278 +2,529 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C100625D2FF
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 09:53:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D14B025D309
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 09:54:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729906AbgIDHxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 03:53:39 -0400
-Received: from mga18.intel.com ([134.134.136.126]:23295 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730008AbgIDHxc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Sep 2020 03:53:32 -0400
-IronPort-SDR: 7Q9+Q/cKD1GLy/5boISShR5o/Un/oNwl9Qn3eY/tbLmfwAl8IOZX+yIh1hljnhICcUDV3XVX0n
- kc01+sulFh7g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9733"; a="145408186"
-X-IronPort-AV: E=Sophos;i="5.76,388,1592895600"; 
-   d="gz'50?scan'50,208,50";a="145408186"
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2020 00:53:30 -0700
-IronPort-SDR: oeXd/q+hg8bTZxUP+cj3Klqux4zCaADxot/qS4h9gMH8N+mDmrG7iupMqd+5qzsdu/lqFDmkm2
- zUeYOEC46FrQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,388,1592895600"; 
-   d="gz'50?scan'50,208,50";a="339584346"
-Received: from lkp-server02.sh.intel.com (HELO c089623da072) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 04 Sep 2020 00:53:29 -0700
-Received: from kbuild by c089623da072 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1kE6XI-000020-DT; Fri, 04 Sep 2020 07:53:28 +0000
-Date:   Fri, 4 Sep 2020 15:52:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mahesh Bandewar <maheshb@google.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
-Subject: [net-next:master 68/116] ip_tunnel.c:undefined reference to
- `sysctl_fb_tunnels_only_for_init_net'
-Message-ID: <202009041542.cN58hG4j%lkp@intel.com>
+        id S1729863AbgIDHyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 03:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729628AbgIDHyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 03:54:14 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B211C061244
+        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 00:54:13 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id y6so5733481oie.5
+        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 00:54:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S0zstZUIqLihjhsqsOfrGFrz5w7eLlJxIhSY8JdRyRE=;
+        b=VEBOOKSEgMT6tO3qhecrSi6kOHLH5Pjx3YJYDSwe73NulFkeosfjEwx4u8ORar0s7J
+         IUea6q6RoE2tg1ofqa/9l3+vUninXEB413b+HoP/cb6DvBGwkWWNJidATSY2hTFJHCkV
+         8fjDk/+aZcaD54DHxDuQ1Yd3HpPrqfjlkE1jI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S0zstZUIqLihjhsqsOfrGFrz5w7eLlJxIhSY8JdRyRE=;
+        b=Nb9AlWqTHtUXkhOVZIGE4R7vD3FQUfyeisH8o7TJQpuO+1E6FQh2QdpYKRlc9W1GGI
+         J94f1EkMghR2dsVTPfwETDs/NJQEUmEzI46UYUi6RFBh5D1E7KtxB//EeKAV5KwchAl6
+         qDjiAUgzFsYKCXE5GGw9DzVYBjLWXInxkqaNlKOoU3zTwJZDSJ9aOgWEErAi+qzCmzLM
+         g+V/gMVSSKsFsP3XGKzlqFnmWPabnQOq+OTIacwZVchFnhRbKFhQpo5MIoEaHrl06cmL
+         pjWVTKJCT4OB9RTYLoUxLT/VF2oj+COy1u4BXcvEHsQylfgKPUUfU2emZgnF1u2yTnLQ
+         WtAg==
+X-Gm-Message-State: AOAM533kQBonRZTzl7rF5Kd5OYSpYMDE1U5KMrUFRFi2LcoXTf/2xKYW
+        Tj0a+oF3SN2m3lWA3LgV1mXwPciO9LbfI2LjySbB4g==
+X-Google-Smtp-Source: ABdhPJxy16kn2bVFs9zhM16X+ypFsYqFcR4qQR88AhajpgOjnuPckLw4g3Ams+2QqL1W8fMBz9qls2IWfg2Arll/1Pw=
+X-Received: by 2002:aca:3e8b:: with SMTP id l133mr4706012oia.110.1599206050233;
+ Fri, 04 Sep 2020 00:54:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="cWoXeonUoKmBZSoM"
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200903203542.15944-1-andriin@fb.com> <20200903203542.15944-15-andriin@fb.com>
+In-Reply-To: <20200903203542.15944-15-andriin@fb.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Fri, 4 Sep 2020 08:53:59 +0100
+Message-ID: <CACAyw99QcWYBb=Dj=jqQDLq6bLGokHzUfJHxWi3RR6uHRZ6EVg@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 14/14] selftests/bpf: add __noinline variant
+ of cls_redirect selftest
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 3 Sep 2020 at 21:36, Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> As one of the most complicated and close-to-real-world programs, cls_redirect
+> is a good candidate to exercise libbpf's logic of handling bpf2bpf calls. So
+> add variant with using explicit __noinline for majority of functions except
+> few most basic ones. If those few functions are inlined, verifier starts to
+> complain about program instruction limit of 1mln instructions being exceeded,
+> most probably due to instruction overhead of doing a sub-program call.
+> Convert user-space part of selftest to have to sub-tests: with and without
+> inlining.
 
---cWoXeonUoKmBZSoM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Acked-by: Lorenz Bauer <lmb@cloudflare.com>
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   3ab1270bfa1e8ae7db0d46fee90c5db2935ac91b
-commit: 316cdaa1158af17250397054f92bb339fbd8e282 [68/116] net: add option to not create fall-back tunnels in root-ns as well
-config: m68k-amcore_defconfig (attached as .config)
-compiler: m68k-linux-gcc (GCC) 9.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git checkout 316cdaa1158af17250397054f92bb339fbd8e282
-        # save the attached .config to linux build tree
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=m68k 
+>
+> Cc: Lorenz Bauer <lmb@cloudflare.com>
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  .../selftests/bpf/prog_tests/cls_redirect.c   |  72 +++++++++---
+>  .../selftests/bpf/progs/test_cls_redirect.c   | 105 ++++++++++--------
+>  .../bpf/progs/test_cls_redirect_subprogs.c    |   2 +
+>  3 files changed, 115 insertions(+), 64 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_cls_redirect_subprogs.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/cls_redirect.c b/tools/testing/selftests/bpf/prog_tests/cls_redirect.c
+> index f259085cca6a..9781d85cb223 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/cls_redirect.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/cls_redirect.c
+> @@ -12,10 +12,13 @@
+>
+>  #include "progs/test_cls_redirect.h"
+>  #include "test_cls_redirect.skel.h"
+> +#include "test_cls_redirect_subprogs.skel.h"
+>
+>  #define ENCAP_IP INADDR_LOOPBACK
+>  #define ENCAP_PORT (1234)
+>
+> +static int duration = 0;
+> +
+>  struct addr_port {
+>         in_port_t port;
+>         union {
+> @@ -361,30 +364,18 @@ static void close_fds(int *fds, int n)
+>                         close(fds[i]);
+>  }
+>
+> -void test_cls_redirect(void)
+> +static void test_cls_redirect_common(struct bpf_program *prog)
+>  {
+> -       struct test_cls_redirect *skel = NULL;
+>         struct bpf_prog_test_run_attr tattr = {};
+>         int families[] = { AF_INET, AF_INET6 };
+>         struct sockaddr_storage ss;
+>         struct sockaddr *addr;
+>         socklen_t slen;
+>         int i, j, err;
+> -
+>         int servers[__NR_KIND][ARRAY_SIZE(families)] = {};
+>         int conns[__NR_KIND][ARRAY_SIZE(families)] = {};
+>         struct tuple tuples[__NR_KIND][ARRAY_SIZE(families)];
+>
+> -       skel = test_cls_redirect__open();
+> -       if (CHECK_FAIL(!skel))
+> -               return;
+> -
+> -       skel->rodata->ENCAPSULATION_IP = htonl(ENCAP_IP);
+> -       skel->rodata->ENCAPSULATION_PORT = htons(ENCAP_PORT);
+> -
+> -       if (CHECK_FAIL(test_cls_redirect__load(skel)))
+> -               goto cleanup;
+> -
+>         addr = (struct sockaddr *)&ss;
+>         for (i = 0; i < ARRAY_SIZE(families); i++) {
+>                 slen = prepare_addr(&ss, families[i]);
+> @@ -402,7 +393,7 @@ void test_cls_redirect(void)
+>                         goto cleanup;
+>         }
+>
+> -       tattr.prog_fd = bpf_program__fd(skel->progs.cls_redirect);
+> +       tattr.prog_fd = bpf_program__fd(prog);
+>         for (i = 0; i < ARRAY_SIZE(tests); i++) {
+>                 struct test_cfg *test = &tests[i];
+>
+> @@ -450,7 +441,58 @@ void test_cls_redirect(void)
+>         }
+>
+>  cleanup:
+> -       test_cls_redirect__destroy(skel);
+>         close_fds((int *)servers, sizeof(servers) / sizeof(servers[0][0]));
+>         close_fds((int *)conns, sizeof(conns) / sizeof(conns[0][0]));
+>  }
+> +
+> +static void test_cls_redirect_inlined(void)
+> +{
+> +       struct test_cls_redirect *skel;
+> +       int err;
+> +
+> +       skel = test_cls_redirect__open();
+> +       if (CHECK(!skel, "skel_open", "failed\n"))
+> +               return;
+> +
+> +       skel->rodata->ENCAPSULATION_IP = htonl(ENCAP_IP);
+> +       skel->rodata->ENCAPSULATION_PORT = htons(ENCAP_PORT);
+> +
+> +       err = test_cls_redirect__load(skel);
+> +       if (CHECK(err, "skel_load", "failed: %d\n", err))
+> +               goto cleanup;
+> +
+> +       test_cls_redirect_common(skel->progs.cls_redirect);
+> +
+> +cleanup:
+> +       test_cls_redirect__destroy(skel);
+> +}
+> +
+> +static void test_cls_redirect_subprogs(void)
+> +{
+> +       struct test_cls_redirect_subprogs *skel;
+> +       int err;
+> +
+> +       skel = test_cls_redirect_subprogs__open();
+> +       if (CHECK(!skel, "skel_open", "failed\n"))
+> +               return;
+> +
+> +       skel->rodata->ENCAPSULATION_IP = htonl(ENCAP_IP);
+> +       skel->rodata->ENCAPSULATION_PORT = htons(ENCAP_PORT);
+> +
+> +       err = test_cls_redirect_subprogs__load(skel);
+> +       if (CHECK(err, "skel_load", "failed: %d\n", err))
+> +               goto cleanup;
+> +
+> +       test_cls_redirect_common(skel->progs.cls_redirect);
+> +
+> +cleanup:
+> +       test_cls_redirect_subprogs__destroy(skel);
+> +}
+> +
+> +void test_cls_redirect(void)
+> +{
+> +       if (test__start_subtest("cls_redirect_inlined"))
+> +               test_cls_redirect_inlined();
+> +       if (test__start_subtest("cls_redirect_subprogs"))
+> +               test_cls_redirect_subprogs();
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_cls_redirect.c b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
+> index f0b72e86bee5..c9f8464996ea 100644
+> --- a/tools/testing/selftests/bpf/progs/test_cls_redirect.c
+> +++ b/tools/testing/selftests/bpf/progs/test_cls_redirect.c
+> @@ -22,6 +22,12 @@
+>
+>  #include "test_cls_redirect.h"
+>
+> +#ifdef SUBPROGS
+> +#define INLINING __noinline
+> +#else
+> +#define INLINING __always_inline
+> +#endif
+> +
+>  #define offsetofend(TYPE, MEMBER) \
+>         (offsetof(TYPE, MEMBER) + sizeof((((TYPE *)0)->MEMBER)))
+>
+> @@ -125,7 +131,7 @@ typedef struct buf {
+>         uint8_t *const tail;
+>  } buf_t;
+>
+> -static size_t buf_off(const buf_t *buf)
+> +static __always_inline size_t buf_off(const buf_t *buf)
+>  {
+>         /* Clang seems to optimize constructs like
+>          *    a - b + c
+> @@ -145,7 +151,7 @@ static size_t buf_off(const buf_t *buf)
+>         return off;
+>  }
+>
+> -static bool buf_copy(buf_t *buf, void *dst, size_t len)
+> +static __always_inline bool buf_copy(buf_t *buf, void *dst, size_t len)
+>  {
+>         if (bpf_skb_load_bytes(buf->skb, buf_off(buf), dst, len)) {
+>                 return false;
+> @@ -155,7 +161,7 @@ static bool buf_copy(buf_t *buf, void *dst, size_t len)
+>         return true;
+>  }
+>
+> -static bool buf_skip(buf_t *buf, const size_t len)
+> +static __always_inline bool buf_skip(buf_t *buf, const size_t len)
+>  {
+>         /* Check whether off + len is valid in the non-linear part. */
+>         if (buf_off(buf) + len > buf->skb->len) {
+> @@ -173,7 +179,7 @@ static bool buf_skip(buf_t *buf, const size_t len)
+>   * If scratch is not NULL, the function will attempt to load non-linear
+>   * data via bpf_skb_load_bytes. On success, scratch is returned.
+>   */
+> -static void *buf_assign(buf_t *buf, const size_t len, void *scratch)
+> +static __always_inline void *buf_assign(buf_t *buf, const size_t len, void *scratch)
+>  {
+>         if (buf->head + len > buf->tail) {
+>                 if (scratch == NULL) {
+> @@ -188,7 +194,7 @@ static void *buf_assign(buf_t *buf, const size_t len, void *scratch)
+>         return ptr;
+>  }
+>
+> -static bool pkt_skip_ipv4_options(buf_t *buf, const struct iphdr *ipv4)
+> +static INLINING bool pkt_skip_ipv4_options(buf_t *buf, const struct iphdr *ipv4)
+>  {
+>         if (ipv4->ihl <= 5) {
+>                 return true;
+> @@ -197,13 +203,13 @@ static bool pkt_skip_ipv4_options(buf_t *buf, const struct iphdr *ipv4)
+>         return buf_skip(buf, (ipv4->ihl - 5) * 4);
+>  }
+>
+> -static bool ipv4_is_fragment(const struct iphdr *ip)
+> +static INLINING bool ipv4_is_fragment(const struct iphdr *ip)
+>  {
+>         uint16_t frag_off = ip->frag_off & bpf_htons(IP_OFFSET_MASK);
+>         return (ip->frag_off & bpf_htons(IP_MF)) != 0 || frag_off > 0;
+>  }
+>
+> -static struct iphdr *pkt_parse_ipv4(buf_t *pkt, struct iphdr *scratch)
+> +static __always_inline struct iphdr *pkt_parse_ipv4(buf_t *pkt, struct iphdr *scratch)
+>  {
+>         struct iphdr *ipv4 = buf_assign(pkt, sizeof(*ipv4), scratch);
+>         if (ipv4 == NULL) {
+> @@ -222,7 +228,7 @@ static struct iphdr *pkt_parse_ipv4(buf_t *pkt, struct iphdr *scratch)
+>  }
+>
+>  /* Parse the L4 ports from a packet, assuming a layout like TCP or UDP. */
+> -static bool pkt_parse_icmp_l4_ports(buf_t *pkt, flow_ports_t *ports)
+> +static INLINING bool pkt_parse_icmp_l4_ports(buf_t *pkt, flow_ports_t *ports)
+>  {
+>         if (!buf_copy(pkt, ports, sizeof(*ports))) {
+>                 return false;
+> @@ -237,7 +243,7 @@ static bool pkt_parse_icmp_l4_ports(buf_t *pkt, flow_ports_t *ports)
+>         return true;
+>  }
+>
+> -static uint16_t pkt_checksum_fold(uint32_t csum)
+> +static INLINING uint16_t pkt_checksum_fold(uint32_t csum)
+>  {
+>         /* The highest reasonable value for an IPv4 header
+>          * checksum requires two folds, so we just do that always.
+> @@ -247,7 +253,7 @@ static uint16_t pkt_checksum_fold(uint32_t csum)
+>         return (uint16_t)~csum;
+>  }
+>
+> -static void pkt_ipv4_checksum(struct iphdr *iph)
+> +static INLINING void pkt_ipv4_checksum(struct iphdr *iph)
+>  {
+>         iph->check = 0;
+>
+> @@ -268,10 +274,11 @@ static void pkt_ipv4_checksum(struct iphdr *iph)
+>         iph->check = pkt_checksum_fold(acc);
+>  }
+>
+> -static bool pkt_skip_ipv6_extension_headers(buf_t *pkt,
+> -                                           const struct ipv6hdr *ipv6,
+> -                                           uint8_t *upper_proto,
+> -                                           bool *is_fragment)
+> +static INLINING
+> +bool pkt_skip_ipv6_extension_headers(buf_t *pkt,
+> +                                    const struct ipv6hdr *ipv6,
+> +                                    uint8_t *upper_proto,
+> +                                    bool *is_fragment)
+>  {
+>         /* We understand five extension headers.
+>          * https://tools.ietf.org/html/rfc8200#section-4.1 states that all
+> @@ -336,7 +343,7 @@ static bool pkt_skip_ipv6_extension_headers(buf_t *pkt,
+>   * scratch is allocated on the stack. However, this usage should be safe since
+>   * it's the callers stack after all.
+>   */
+> -static inline __attribute__((__always_inline__)) struct ipv6hdr *
+> +static __always_inline struct ipv6hdr *
+>  pkt_parse_ipv6(buf_t *pkt, struct ipv6hdr *scratch, uint8_t *proto,
+>                bool *is_fragment)
+>  {
+> @@ -354,20 +361,20 @@ pkt_parse_ipv6(buf_t *pkt, struct ipv6hdr *scratch, uint8_t *proto,
+>
+>  /* Global metrics, per CPU
+>   */
+> -struct bpf_map_def metrics_map SEC("maps") = {
+> -       .type = BPF_MAP_TYPE_PERCPU_ARRAY,
+> -       .key_size = sizeof(unsigned int),
+> -       .value_size = sizeof(metrics_t),
+> -       .max_entries = 1,
+> -};
+> -
+> -static metrics_t *get_global_metrics(void)
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
+> +       __uint(max_entries, 1);
+> +       __type(key, unsigned int);
+> +       __type(value, metrics_t);
+> +} metrics_map SEC(".maps");
+> +
+> +static INLINING metrics_t *get_global_metrics(void)
+>  {
+>         uint64_t key = 0;
+>         return bpf_map_lookup_elem(&metrics_map, &key);
+>  }
+>
+> -static ret_t accept_locally(struct __sk_buff *skb, encap_headers_t *encap)
+> +static INLINING ret_t accept_locally(struct __sk_buff *skb, encap_headers_t *encap)
+>  {
+>         const int payload_off =
+>                 sizeof(*encap) +
+> @@ -388,8 +395,8 @@ static ret_t accept_locally(struct __sk_buff *skb, encap_headers_t *encap)
+>         return bpf_redirect(skb->ifindex, BPF_F_INGRESS);
+>  }
+>
+> -static ret_t forward_with_gre(struct __sk_buff *skb, encap_headers_t *encap,
+> -                             struct in_addr *next_hop, metrics_t *metrics)
+> +static INLINING ret_t forward_with_gre(struct __sk_buff *skb, encap_headers_t *encap,
+> +                                      struct in_addr *next_hop, metrics_t *metrics)
+>  {
+>         metrics->forwarded_packets_total_gre++;
+>
+> @@ -509,8 +516,8 @@ static ret_t forward_with_gre(struct __sk_buff *skb, encap_headers_t *encap,
+>         return bpf_redirect(skb->ifindex, 0);
+>  }
+>
+> -static ret_t forward_to_next_hop(struct __sk_buff *skb, encap_headers_t *encap,
+> -                                struct in_addr *next_hop, metrics_t *metrics)
+> +static INLINING ret_t forward_to_next_hop(struct __sk_buff *skb, encap_headers_t *encap,
+> +                                         struct in_addr *next_hop, metrics_t *metrics)
+>  {
+>         /* swap L2 addresses */
+>         /* This assumes that packets are received from a router.
+> @@ -546,7 +553,7 @@ static ret_t forward_to_next_hop(struct __sk_buff *skb, encap_headers_t *encap,
+>         return bpf_redirect(skb->ifindex, 0);
+>  }
+>
+> -static ret_t skip_next_hops(buf_t *pkt, int n)
+> +static INLINING ret_t skip_next_hops(buf_t *pkt, int n)
+>  {
+>         switch (n) {
+>         case 1:
+> @@ -566,8 +573,8 @@ static ret_t skip_next_hops(buf_t *pkt, int n)
+>   * pkt is positioned just after the variable length GLB header
+>   * iff the call is successful.
+>   */
+> -static ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
+> -                         struct in_addr *next_hop)
+> +static INLINING ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
+> +                                  struct in_addr *next_hop)
+>  {
+>         if (encap->unigue.next_hop > encap->unigue.hop_count) {
+>                 return TC_ACT_SHOT;
+> @@ -601,8 +608,8 @@ static ret_t get_next_hop(buf_t *pkt, encap_headers_t *encap,
+>   * return value, and calling code works while still being "generic" to
+>   * IPv4 and IPv6.
+>   */
+> -static uint64_t fill_tuple(struct bpf_sock_tuple *tuple, void *iph,
+> -                          uint64_t iphlen, uint16_t sport, uint16_t dport)
+> +static INLINING uint64_t fill_tuple(struct bpf_sock_tuple *tuple, void *iph,
+> +                                   uint64_t iphlen, uint16_t sport, uint16_t dport)
+>  {
+>         switch (iphlen) {
+>         case sizeof(struct iphdr): {
+> @@ -630,9 +637,9 @@ static uint64_t fill_tuple(struct bpf_sock_tuple *tuple, void *iph,
+>         }
+>  }
+>
+> -static verdict_t classify_tcp(struct __sk_buff *skb,
+> -                             struct bpf_sock_tuple *tuple, uint64_t tuplen,
+> -                             void *iph, struct tcphdr *tcp)
+> +static INLINING verdict_t classify_tcp(struct __sk_buff *skb,
+> +                                      struct bpf_sock_tuple *tuple, uint64_t tuplen,
+> +                                      void *iph, struct tcphdr *tcp)
+>  {
+>         struct bpf_sock *sk =
+>                 bpf_skc_lookup_tcp(skb, tuple, tuplen, BPF_F_CURRENT_NETNS, 0);
+> @@ -663,8 +670,8 @@ static verdict_t classify_tcp(struct __sk_buff *skb,
+>         return UNKNOWN;
+>  }
+>
+> -static verdict_t classify_udp(struct __sk_buff *skb,
+> -                             struct bpf_sock_tuple *tuple, uint64_t tuplen)
+> +static INLINING verdict_t classify_udp(struct __sk_buff *skb,
+> +                                      struct bpf_sock_tuple *tuple, uint64_t tuplen)
+>  {
+>         struct bpf_sock *sk =
+>                 bpf_sk_lookup_udp(skb, tuple, tuplen, BPF_F_CURRENT_NETNS, 0);
+> @@ -681,9 +688,9 @@ static verdict_t classify_udp(struct __sk_buff *skb,
+>         return UNKNOWN;
+>  }
+>
+> -static verdict_t classify_icmp(struct __sk_buff *skb, uint8_t proto,
+> -                              struct bpf_sock_tuple *tuple, uint64_t tuplen,
+> -                              metrics_t *metrics)
+> +static INLINING verdict_t classify_icmp(struct __sk_buff *skb, uint8_t proto,
+> +                                       struct bpf_sock_tuple *tuple, uint64_t tuplen,
+> +                                       metrics_t *metrics)
+>  {
+>         switch (proto) {
+>         case IPPROTO_TCP:
+> @@ -698,7 +705,7 @@ static verdict_t classify_icmp(struct __sk_buff *skb, uint8_t proto,
+>         }
+>  }
+>
+> -static verdict_t process_icmpv4(buf_t *pkt, metrics_t *metrics)
+> +static INLINING verdict_t process_icmpv4(buf_t *pkt, metrics_t *metrics)
+>  {
+>         struct icmphdr icmp;
+>         if (!buf_copy(pkt, &icmp, sizeof(icmp))) {
+> @@ -745,7 +752,7 @@ static verdict_t process_icmpv4(buf_t *pkt, metrics_t *metrics)
+>                              sizeof(tuple.ipv4), metrics);
+>  }
+>
+> -static verdict_t process_icmpv6(buf_t *pkt, metrics_t *metrics)
+> +static INLINING verdict_t process_icmpv6(buf_t *pkt, metrics_t *metrics)
+>  {
+>         struct icmp6hdr icmp6;
+>         if (!buf_copy(pkt, &icmp6, sizeof(icmp6))) {
+> @@ -797,8 +804,8 @@ static verdict_t process_icmpv6(buf_t *pkt, metrics_t *metrics)
+>                              metrics);
+>  }
+>
+> -static verdict_t process_tcp(buf_t *pkt, void *iph, uint64_t iphlen,
+> -                            metrics_t *metrics)
+> +static INLINING verdict_t process_tcp(buf_t *pkt, void *iph, uint64_t iphlen,
+> +                                     metrics_t *metrics)
+>  {
+>         metrics->l4_protocol_packets_total_tcp++;
+>
+> @@ -819,8 +826,8 @@ static verdict_t process_tcp(buf_t *pkt, void *iph, uint64_t iphlen,
+>         return classify_tcp(pkt->skb, &tuple, tuplen, iph, tcp);
+>  }
+>
+> -static verdict_t process_udp(buf_t *pkt, void *iph, uint64_t iphlen,
+> -                            metrics_t *metrics)
+> +static INLINING verdict_t process_udp(buf_t *pkt, void *iph, uint64_t iphlen,
+> +                                     metrics_t *metrics)
+>  {
+>         metrics->l4_protocol_packets_total_udp++;
+>
+> @@ -837,7 +844,7 @@ static verdict_t process_udp(buf_t *pkt, void *iph, uint64_t iphlen,
+>         return classify_udp(pkt->skb, &tuple, tuplen);
+>  }
+>
+> -static verdict_t process_ipv4(buf_t *pkt, metrics_t *metrics)
+> +static INLINING verdict_t process_ipv4(buf_t *pkt, metrics_t *metrics)
+>  {
+>         metrics->l3_protocol_packets_total_ipv4++;
+>
+> @@ -874,7 +881,7 @@ static verdict_t process_ipv4(buf_t *pkt, metrics_t *metrics)
+>         }
+>  }
+>
+> -static verdict_t process_ipv6(buf_t *pkt, metrics_t *metrics)
+> +static INLINING verdict_t process_ipv6(buf_t *pkt, metrics_t *metrics)
+>  {
+>         metrics->l3_protocol_packets_total_ipv6++;
+>
+> diff --git a/tools/testing/selftests/bpf/progs/test_cls_redirect_subprogs.c b/tools/testing/selftests/bpf/progs/test_cls_redirect_subprogs.c
+> new file mode 100644
+> index 000000000000..eed26b70e3a2
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_cls_redirect_subprogs.c
+> @@ -0,0 +1,2 @@
+> +#define SUBPROGS
+> +#include "test_cls_redirect.c"
+> --
+> 2.24.1
+>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
-   m68k-linux-ld: net/ipv4/ip_tunnel.o: in function `ip_tunnel_init_net':
->> ip_tunnel.c:(.text+0x1be2): undefined reference to `sysctl_fb_tunnels_only_for_init_net'
-   m68k-linux-ld: net/ipv6/sit.o: in function `sit_init_net':
->> sit.c:(.init.text+0x104): undefined reference to `sysctl_fb_tunnels_only_for_init_net'
->> m68k-linux-ld: sit.c:(.init.text+0x10c): undefined reference to `sysctl_fb_tunnels_only_for_init_net'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
-
---cWoXeonUoKmBZSoM
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
-
-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
-14WQDIJGGg1GFdPxQlJnOf8PVXOj6FOhAAA=
-
---cWoXeonUoKmBZSoM--
+www.cloudflare.com
