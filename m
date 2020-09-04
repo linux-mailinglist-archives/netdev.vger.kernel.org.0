@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 362DF25DF9A
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 18:15:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD1D725DF99
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 18:15:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727977AbgIDQPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 12:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
+        id S1727969AbgIDQPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 12:15:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbgIDQPF (ORCPT
+        with ESMTP id S1726812AbgIDQPF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 12:15:05 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A43C061244
-        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 09:15:04 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id e16so7314556wrm.2
-        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 09:15:04 -0700 (PDT)
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F25C061249
+        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 09:15:05 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id z1so7332749wrt.3
+        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 09:15:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=isovalent-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BBYLUoYlj8u523gup0UCdQOvwoIvjJKPEyrX8VuLejU=;
-        b=NpGUsgc7fT5ls21oLp+qt2TjtIDc1LZECdzqThtnsyWmwpmuwahZVDJYS45FWRZLaM
-         RmkXLxiKrHXp07sjDVAzvZeqZT69Mx6IATZ8ihHoSCgY5PrsgC8PI96rJnEmHpbr5HQ5
-         Qj5Eswl7whb/h7LUr4QA7ARWfEXdvCciXoymEpMIrDe7yhwf7cj76U+fzaOogosor7d/
-         FF03vg8XWUTaifRptgXyrQ48DTKJp/PzMsAr+fN1DL91Ub/+iq5ZCv97Yz27Iv8dI7ir
-         7TX4qlV5Bze5IxWWPQRb13s8HMj5dRo212DrbM+xhjaZJVdgxn42v9bOXmzMB2gX8XTR
-         8cJQ==
+        bh=dj0v8uocnLX7SPxCOZg2mHARUJRyp9/6UtI4Yc3fo0U=;
+        b=xdPIdmu8w9q8Kg37s7sRtRU1Q7RgNDRSIFRz8ZMWrRAe8lPwVrlsis97wl3fa9vCrJ
+         qZIToHnL01U+l5ysZz30Tq96eclx6Mjr+9ysQPcxsN8Ve4w2RqTf4VfNG8QbHsuDeUdh
+         kVmSLGKyDBqPTTv6jUD2J47LzQYio6lkkL84Ml/bxFNt74sLQb+jYsSEJJoPB6fQrLXc
+         tMCqiWntdKv4demO0xtuSAMjw9bVzpj/CwiQl9YCff8WNjSh/uih6NsyGx5WutuRTiVF
+         PnulBL1+leJwFr+6UzwFG947gqvrOAqmIcpeM8Pd8uK1k0+ZHgq+n5APOAh+1yMIbPR5
+         qyrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BBYLUoYlj8u523gup0UCdQOvwoIvjJKPEyrX8VuLejU=;
-        b=ehKhmKP4vm8MCesG2a9xH4jk4MS5MyMTxGuOek1FdjCG5eSz89GvCIBcMy7W/hA0Bg
-         DGQcLnaomUXb4ckTVvDk+RcefXvMaDV6QK+I7ZUNb2Ne61apLlQb9VoPzuQ6K8EwgCmb
-         Js5cWC527FqrKE141TDkMRaLC8jQZqtB3zlrx8GnAbqGwQNxRQUOWbFyY570EdU9S4JC
-         dBxLrWQI1BfhuvGW1XpmuC2+0eNCxbLtMG2ZSeKM3Rp6Wp5n+2t9wrVdT3FTI+wAbNhs
-         hktbuw90PRWiCXLmafnyvbJty/Usb3U4bCt0CqMonYlujHoBr+cnNEuY3zHwJZF8JxoB
-         tSfQ==
-X-Gm-Message-State: AOAM533aSf1ifBrmCttpNRUPIcJL33z2QPPqc5lSzWG+HcL121cn3gGa
-        yhFtyJnXrJ7L2fB+TUr9qZmPvQ==
-X-Google-Smtp-Source: ABdhPJwbLzI1TkL6B/iHqWlZx9LYEP2Zxrud+YfY4kfdLH0Vc7Vii5Hfsz0qzY6DpXtnqVIGDpGoig==
-X-Received: by 2002:adf:e6c8:: with SMTP id y8mr9071208wrm.229.1599236102986;
-        Fri, 04 Sep 2020 09:15:02 -0700 (PDT)
+        bh=dj0v8uocnLX7SPxCOZg2mHARUJRyp9/6UtI4Yc3fo0U=;
+        b=NAjbsRdhUAj5BhKf4wzjbRdT9wrx/32heJsvbZfnOv7gCHKNCNtU3AcCrpNshsKBVb
+         M4UgoIyO+1ndXmYIapGkFEtmtrS2bnHqDa1H7EnJkmxaVOToQHxNKglbbYnrmWpQ3t4R
+         WCXoY5QcPpVGARjV6sCuMVdVPyD7dkJnaFTSrHazOwva51vZJmBvZyqEARNcXHzgq514
+         qZqLpSOjlEdO470SF8LcW+yKR9Tt4yJnOQkHtD38QWo+a6bX1ohrKIaceKjmQjlFAaPr
+         02xAwSMa17aPo4CrW1qoHqakkjGYVL6VTnr4PhyJIYsi+WO6+NK9OjLSqrzjruPbl7Ck
+         Q6Ig==
+X-Gm-Message-State: AOAM531UB8p/9OljcjS1Dpp48S6kHFKozl+M+o8akEikCL8H2EImiiVc
+        +CU5ZIkt4sGGTFPfS/VyvdkExA==
+X-Google-Smtp-Source: ABdhPJyLLBh8OQmAhPXt7AL0GttfjQqdcZzKjPHpLAeMkkr4/UGToCujKQSZFdjbkcd5d/XknP4Uew==
+X-Received: by 2002:adf:f903:: with SMTP id b3mr8722362wrr.142.1599236103851;
+        Fri, 04 Sep 2020 09:15:03 -0700 (PDT)
 Received: from localhost.localdomain ([194.35.117.187])
-        by smtp.gmail.com with ESMTPSA id p1sm28859352wma.0.2020.09.04.09.15.01
+        by smtp.gmail.com with ESMTPSA id p1sm28859352wma.0.2020.09.04.09.15.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2020 09:15:02 -0700 (PDT)
+        Fri, 04 Sep 2020 09:15:03 -0700 (PDT)
 From:   Quentin Monnet <quentin@isovalent.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next 2/3] bpf: fix formatting in documentation for BPF helpers
-Date:   Fri,  4 Sep 2020 17:14:53 +0100
-Message-Id: <20200904161454.31135-3-quentin@isovalent.com>
+Subject: [PATCH bpf-next 3/3] tools, bpf: synchronise BPF UAPI header with tools
+Date:   Fri,  4 Sep 2020 17:14:54 +0100
+Message-Id: <20200904161454.31135-4-quentin@isovalent.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200904161454.31135-1-quentin@isovalent.com>
 References: <20200904161454.31135-1-quentin@isovalent.com>
@@ -65,21 +65,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix a formatting error in the description of bpf_load_hdr_opt() (rst2man
-complains about a wrong indentation, but what is missing is actually a
-blank line before the bullet list).
-
-Fix and harmonise the formatting for other helpers.
+Synchronise the bpf.h header under tools, to report the fixes recently
+brought to the documentation for the BPF helpers.
 
 Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 ---
- include/uapi/linux/bpf.h | 87 +++++++++++++++++++++-------------------
+ tools/include/uapi/linux/bpf.h | 87 ++++++++++++++++++----------------
  1 file changed, 45 insertions(+), 42 deletions(-)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
 index 8dda13880957..90359cab501d 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
 @@ -3349,38 +3349,38 @@ union bpf_attr {
   *	Description
   *		Dynamically cast a *sk* pointer to a *tcp6_sock* pointer.
