@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F7925D92F
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 15:01:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0480925D93C
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 15:04:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730385AbgIDNBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 09:01:45 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:56920 "EHLO huawei.com"
+        id S1730358AbgIDNEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 09:04:38 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:59646 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730311AbgIDNBl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Sep 2020 09:01:41 -0400
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 61244116E2FDBEFA3C65;
-        Fri,  4 Sep 2020 21:01:36 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Fri, 4 Sep 2020
- 21:01:30 +0800
+        id S1729297AbgIDNEg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 09:04:36 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 5661F5AA6CE11C5F8329;
+        Fri,  4 Sep 2020 21:04:34 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Fri, 4 Sep 2020
+ 21:04:30 +0800
 From:   Wang Hai <wanghai38@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <gustavo@embeddedor.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] caif: Remove duplicate macro SRVL_CTRL_PKT_SIZE
-Date:   Fri, 4 Sep 2020 20:58:58 +0800
-Message-ID: <20200904125858.16204-1-wanghai38@huawei.com>
+Subject: [PATCH net-next] NFC: digital: Remove two unused macroes
+Date:   Fri, 4 Sep 2020 21:01:57 +0800
+Message-ID: <20200904130157.17812-1-wanghai38@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -33,26 +33,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove SRVL_CTRL_PKT_SIZE which is defined more than once.
+DIGITAL_NFC_DEP_REQ_RES_TAILROOM is never used after it was introduced.
+DIGITAL_NFC_DEP_REQ_RES_HEADROOM is no more used after below
+commit e8e7f4217564 ("NFC: digital: Remove useless call to skb_reserve()")
+Remove them.
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Wang Hai <wanghai38@huawei.com>
 ---
- net/caif/cfsrvl.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/nfc/digital_dep.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/net/caif/cfsrvl.c b/net/caif/cfsrvl.c
-index d0a4d0ac7045..9cef9496a707 100644
---- a/net/caif/cfsrvl.c
-+++ b/net/caif/cfsrvl.c
-@@ -21,7 +21,6 @@
- #define SRVL_FLOW_OFF 0x81
- #define SRVL_FLOW_ON  0x80
- #define SRVL_SET_PIN  0x82
--#define SRVL_CTRL_PKT_SIZE 1
+diff --git a/net/nfc/digital_dep.c b/net/nfc/digital_dep.c
+index 304b1a9bb18a..5971fb6f51cc 100644
+--- a/net/nfc/digital_dep.c
++++ b/net/nfc/digital_dep.c
+@@ -38,9 +38,6 @@
  
- #define container_obj(layr) container_of(layr, struct cfsrvl, layer)
+ #define DIGITAL_GB_BIT	0x02
  
+-#define DIGITAL_NFC_DEP_REQ_RES_HEADROOM	2 /* SoD: [SB (NFC-A)] + LEN */
+-#define DIGITAL_NFC_DEP_REQ_RES_TAILROOM	2 /* EoD: 2-byte CRC */
+-
+ #define DIGITAL_NFC_DEP_PFB_TYPE(pfb) ((pfb) & 0xE0)
+ 
+ #define DIGITAL_NFC_DEP_PFB_TIMEOUT_BIT 0x10
 -- 
 2.17.1
 
