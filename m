@@ -2,193 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0464525D568
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 11:48:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4081425D593
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 12:03:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729898AbgIDJsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 05:48:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55082 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725812AbgIDJsF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Sep 2020 05:48:05 -0400
-Received: from localhost (unknown [151.66.86.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B095A205CB;
-        Fri,  4 Sep 2020 09:48:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599212884;
-        bh=UxtsNCTGV9LM9SYs+5UCasbtdRIZ31+B+J0jaRcmsvo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Aiq303Naf5QaWqyb+A49cQgYjREBgl0TTXZw0XdWQj5jfwF2EN8Iv64j/6g4YqPzD
-         +K5oLfoZVJLIPGjNPGTzAF1dhcFNC9pG+a7CQPHkPQYuc9+ww+NKCSMKbld5qnUPQd
-         /KHUV+QMk9w9ZvGMLPZYTr3T8BzyeVY1eeK44mQs=
-Date:   Fri, 4 Sep 2020 11:47:59 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com,
-        echaudro@redhat.com, sameehj@amazon.com, kuba@kernel.org,
-        john.fastabend@gmail.com, daniel@iogearbox.net, ast@kernel.org,
-        shayagr@amazon.com
-Subject: Re: [PATCH v2 net-next 7/9] bpf: helpers: add multibuffer support
-Message-ID: <20200904094759.GG2884@lore-desk>
-References: <cover.1599165031.git.lorenzo@kernel.org>
- <e7da15edf4c152e1803b76638373527c292ee04b.1599165031.git.lorenzo@kernel.org>
- <20200903212409.GA14273@ranger.igk.intel.com>
+        id S1728658AbgIDKDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 06:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726114AbgIDKDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 06:03:20 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD630C061244
+        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 03:03:20 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id u126so6468123iod.12
+        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 03:03:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=ZV60vz7OREPGMabTbmBzheGT/NljIP/4M+G9Nac3jAU=;
+        b=Snq5EDlrgq69FDckN706yBa2zx50+HBVCn6h9b+HDgwSQf3KOzWyoyvGJqfL1VwciC
+         T5+4JQH7KPNdtNANSjJwf9iE0Hlt8W2KwPdVpAAhBYIYqgoj6vHRoUXldAWv6atw6rL1
+         f/pD/p9JH19RSbMV9hPc1UaPvFnedQQVfShpeuHvkw+fybo2FIHo5Twf3T9diLJ1r1BM
+         j300MW/wt6ryEaiqKJ5tw2oBmOu7zgvVKO+xrAgp1gqcjWjI5le1iKGrg6glhY/wv7fn
+         286fHfonPFSK6AyiJo+cDLeOtvHo1iEM9fV8XqQ9o0V7OunG8/PUJ41qIhZMcFe0zd0K
+         0wBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=ZV60vz7OREPGMabTbmBzheGT/NljIP/4M+G9Nac3jAU=;
+        b=fZcR/SdWHFuQW/Ykj6yhtg/vbuW7ocbTUk0diRGfbFjxTYQPdCMfcQbFT697HAXJA3
+         yb4sSD1dFNurwlI/C5Qbi8GcwDfj+1AA5LtDu1PORrmDQp34fnc+vmgqR2L6HvplchDr
+         2AWxI6XbupaQ5xsVhDXGhyY9sZpVHyM/NKlLXuap1Jp0G1Rnr/RYA4dOoHFpJnZh+5EI
+         T0FzHqchjsBixKyRsIAa0TA/YGVSfyIj2RSA3q5hnFaato7BSqwmcP/pUqFp332+MAYA
+         AfW0THLuoEsdFnE1xqpewY0wR2pgHkv3x9mLAr5BXot9QJJ+UqeRikH5fPCakHONgvG9
+         tHEw==
+X-Gm-Message-State: AOAM530T+U22/Sl0sqyGqcVS9Eo5c9VNiRKSpOMWGp96pn8E43zFzhbF
+        imbo8E0iQS0ssIzRj9ICV/WAJ2Jt9y5QheGp33s=
+X-Google-Smtp-Source: ABdhPJwvkecFnrl9ep6s5Xa7fkQesuarA3IU3x+3H5rtUin3wiSoTYekbQviFTu9UQtpVbUbUHTj9r+wRyFBcLNxMOU=
+X-Received: by 2002:a05:6638:c6:: with SMTP id w6mr7566491jao.143.1599213798884;
+ Fri, 04 Sep 2020 03:03:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="df+09Je9rNq3P+GE"
-Content-Disposition: inline
-In-Reply-To: <20200903212409.GA14273@ranger.igk.intel.com>
+Received: by 2002:a02:a491:0:0:0:0:0 with HTTP; Fri, 4 Sep 2020 03:03:17 -0700 (PDT)
+Reply-To: robertandersonhappy1@gmail.com
+From:   robert <robertandersongood5@gmail.com>
+Date:   Fri, 4 Sep 2020 03:03:17 -0700
+Message-ID: <CAD7QbCC2-UF+EKcdfRc_AknUX=DUA-W8oV-vRQoY+AOhr4h5wg@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---df+09Je9rNq3P+GE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> On Thu, Sep 03, 2020 at 10:58:51PM +0200, Lorenzo Bianconi wrote:
-> > From: Sameeh Jubran <sameehj@amazon.com>
-> >=20
-> > The implementation is based on this [0] draft by Jesper D. Brouer.
-> >=20
-> > Provided two new helpers:
-> >=20
-> > * bpf_xdp_get_frag_count()
-> > * bpf_xdp_get_frags_total_size()
-> >=20
-> > [0] xdp mb design - https://github.com/xdp-project/xdp-project/blob/mas=
-ter/areas/core/xdp-multi-buffer01-design.org
-> > Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  include/uapi/linux/bpf.h       | 14 ++++++++++++
-> >  net/core/filter.c              | 39 ++++++++++++++++++++++++++++++++++
-> >  tools/include/uapi/linux/bpf.h | 14 ++++++++++++
-> >  3 files changed, 67 insertions(+)
-> >=20
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index c4a6d245619c..53db75095306 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -3590,6 +3590,18 @@ union bpf_attr {
-> >   *
-> >   *	Return
-> >   *		0 on success, or a negative error in case of failure.
-
-[...]
-
-> > +
->=20
-> I only quickly jumped through series and IMHO this helper should be
-> rewritten/optimized in a way that we bail out as early as possible if
-> !xdp->mb as the rest of the code on that condition will do nothing and i'm
-> not sure if compiler would optimize it.
->=20
->=20
-> 	struct skb_shared_info *sinfo;
-> 	int nfrags, i;
-> 	int size =3D 0;
->=20
-> 	if (!xdp->mb)
-> 		return 0;
->=20
-> 	sinfo =3D xdp_get_shared_info_from_buff(xdp);
->=20
-> 	nfrags =3D min(sinfo->nr_frags, MAX_SKB_FRAGS);
->=20
-> 	for (i =3D 0; i < nfrags; i++)
-> 		size +=3D skb_frag_size(&sinfo->frags[i]);
->=20
-> 	return size;
->=20
-> Thoughts?
-
-I agree.
-
-Regards,
-Lorenzo
-
->=20
->=20
-> > +	return size;
-> > +}
-> > +
-> > +const struct bpf_func_proto bpf_xdp_get_frags_total_size_proto =3D {
-> > +	.func		=3D bpf_xdp_get_frags_total_size,
-> > +	.gpl_only	=3D false,
-> > +	.ret_type	=3D RET_INTEGER,
-> > +	.arg1_type	=3D ARG_PTR_TO_CTX,
-> > +};
-> > +
-> >  BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buff *, xdp, int, offset)
-> >  {
-> >  	void *data_hard_end =3D xdp_data_hard_end(xdp); /* use xdp->frame_sz =
-*/
-> > @@ -6889,6 +6924,10 @@ xdp_func_proto(enum bpf_func_id func_id, const s=
-truct bpf_prog *prog)
-> >  		return &bpf_xdp_adjust_tail_proto;
-> >  	case BPF_FUNC_xdp_adjust_mb_header:
-> >  		return &bpf_xdp_adjust_mb_header_proto;
-> > +	case BPF_FUNC_xdp_get_frag_count:
-> > +		return &bpf_xdp_get_frag_count_proto;
-> > +	case BPF_FUNC_xdp_get_frags_total_size:
-> > +		return &bpf_xdp_get_frags_total_size_proto;
-> >  	case BPF_FUNC_fib_lookup:
-> >  		return &bpf_xdp_fib_lookup_proto;
-> >  #ifdef CONFIG_INET
-> > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/=
-bpf.h
-> > index 392d52a2ecef..dd4669096cbb 100644
-> > --- a/tools/include/uapi/linux/bpf.h
-> > +++ b/tools/include/uapi/linux/bpf.h
-> > @@ -3591,6 +3591,18 @@ union bpf_attr {
-> >   *
-> >   *	Return
-> >   *		0 on success, or a negative error in case of failure.
-> > + *
-> > + * int bpf_xdp_get_frag_count(struct xdp_buff *xdp_md)
-> > + *	Description
-> > + *		Get the total number of frags for a given packet.
-> > + *	Return
-> > + *		The number of frags
-> > + *
-> > + * int bpf_xdp_get_frags_total_size(struct xdp_buff *xdp_md)
-> > + *	Description
-> > + *		Get the total size of frags for a given packet.
-> > + *	Return
-> > + *		The total size of frags for a given packet.
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)		\
-> >  	FN(unspec),			\
-> > @@ -3743,6 +3755,8 @@ union bpf_attr {
-> >  	FN(d_path),			\
-> >  	FN(copy_from_user),		\
-> >  	FN(xdp_adjust_mb_header),	\
-> > +	FN(xdp_get_frag_count),		\
-> > +	FN(xdp_get_frags_total_size),	\
-> >  	/* */
-> > =20
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which =
-helper
-> > --=20
-> > 2.26.2
-> >=20
-
---df+09Je9rNq3P+GE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX1INTQAKCRA6cBh0uS2t
-rHVjAP97WAiKfNSRihipCxtzlGTYWjC18+xo04yjbI/bai0swgEAjUbis8dAFtIn
-iwwFA2s5UwQp004/iE5OxM+kcwRZwQE=
-=bcjl
------END PGP SIGNATURE-----
-
---df+09Je9rNq3P+GE--
+0JTQvtCx0YDQvtCz0L4g0LLRgNC10LzQtdC90Lgg0YHRg9GC0L7QuiDQvNC+0Lkg0YXQvtGA0L7R
+iNC40Lkg0LTRgNGD0LMuDQoNCtCa0LDQuiDRgyDRgtC10LHRjyDRgdC10LPQvtC00L3RjyDQtNC1
+0LvQsD8g0K8g0LTQsNCy0L3QviDRgdC70YvRiNGDINC+0YIg0YLQtdCx0Y8sINGH0YLQviDQv9GA
+0L7QuNGB0YXQvtC00LjRgg0K0KLQstC+0Y8g0YHRgtC+0YDQvtC90LA/INCh0LXQs9C+0LTQvdGP
+INGPINC+0YfQtdC90Ywg0YDQsNC0INGB0L7QvtCx0YnQuNGC0Ywg0LLQsNC8INC+INC80L7QtdC8
+INGD0YHQv9C10YXQtSDQsg0K0L/QvtC70YPRh9C10L3QuNC1INGN0YLQuNGFINC90LDRgdC70LXQ
+tNGB0YLQstC10L3QvdGL0YUg0YHRgNC10LTRgdGC0LIsINC/0LXRgNC10LTQsNC90L3Ri9GFINC/
+0YDQuCDRgdC+0YLRgNGD0LTQvdC40YfQtdGB0YLQstC1INC90L7QstC+0LPQvg0K0L/QsNGA0YLQ
+vdC10YAg0LjQtyDQmNC90LTQuNC4INCQ0LfQuNGPLiDQntC9INC60LDQvdCw0LTQtdGGLCDQvdC+
+INC20LjQstC10YIg0LIg0JjQvdC00LjQuCwg0L3QviDQsiDQvdCw0YHRgtC+0Y/RidC10LUg0LLR
+gNC10LzRjw0K0Y8g0L/RgNC40LXQt9C20LDRjiDQsiDQmNC90LTQuNGOINC/0L4g0LjQvdCy0LXR
+gdGC0LjRhtC40L7QvdC90YvQvCDQv9GA0L7QtdC60YLQsNC8INGB0L4g0YHQstC+0LXQuSDQtNC+
+0LvQtdC5INC+0YIg0L7QsdGJ0LXQuSDRgdGD0LzQvNGLDQrQvNC40LvQu9C40L7QvdGLINC00L7Q
+u9C70LDRgNC+0LIuINCc0LXQttC00YMg0YLQtdC8LCDRjyDQvdC1INC30LDQsdGL0Lsg0YLQstC+
+0Lgg0L/RgNC+0YjQu9GL0LUg0YPRgdC40LvQuNGPINC4INC/0L7Qv9GL0YLQutC4DQrRh9GC0L7Q
+sdGLINC/0L7QvNC+0YfRjCDQvNC90LUg0L/QtdGA0LXQtNCw0YLRjCDRjdGC0Lgg0L3QsNGB0LvQ
+tdC00YHRgtCy0LXQvdC90YvQtSDRgdGA0LXQtNGB0YLQstCwLCDQvdC10YHQvNC+0YLRgNGPINC9
+0LAg0YLQviwNCtGH0YLQviDRjdGC0L4g0L3QtSDRg9C00LDQu9C+0YHRjA0K0L3QsNC8INC60LDQ
+ui3QvdC40LHRg9C00YwsINGPINGF0L7Rh9GDLCDRh9GC0L7QsdGLINCy0Ysg0YHQstGP0LfQsNC7
+0LjRgdGMINGBINC80L7QuNC8INGB0LXQutGA0LXRgtCw0YDQtdC8INCyINCb0L7QvNC1LA0K0JfQ
+sNC/0LDQtCDQotC+0LPQviDQoNC10YHQv9GD0LHQu9C40LrQuA0K0JDRhNGA0LjQutCwLCDQtdC1
+INC30L7QstGD0YIg0KHQvtC70L7QvNC+0L0g0JHRgNGN0L3QtNC4LCDRjdGC0L4g0LXQs9C+INCw
+0LTRgNC10YEg0Y3Qu9C10LrRgtGA0L7QvdC90L7QuSDQv9C+0YfRgtGLDQooc29sb21vbmJyYW5k
+eTAwNEBnbWFpbC5jb20pDQosINC/0L7Qv9GA0L7RgdC40YLQtSDQtdCz0L4g0YHQstGP0LfQsNGC
+0YzRgdGPINGBINCQ0YTRgNC40LrQsNC90YHQutC40Lwg0LHQsNC90LrQvtC8INGA0LDQt9Cy0LjR
+gtC40Y8sINC10YHQu9C4INGPDQrRgdC+0YXRgNCw0L3QuNC7INGB0YPQvNC80YMg0LIg0YDQsNC3
+0LzQtdGA0LUgMzUwIDAwMCwwMCDQtNC+0LvQu9Cw0YDQvtCyINC00LvRjyDQstCw0YjQtdC5INC6
+0L7QvNC/0LXQvdGB0LDRhtC40LgsDQrRjdGC0L7RgiDQutC+0LzQv9C10L3RgdCw0YbQuNC+0L3Q
+vdGL0Lkg0YTQvtC90LQNCtC30LAg0LLRgdC1INC/0YDQvtGI0LvRi9C1INGD0YHQuNC70LjRjyDQ
+uCDQv9C+0L/Ri9GC0LrQuCDQv9C+0LzQvtGH0Ywg0LzQvdC1INCyINC/0YDQvtC50LTQtdC90L3Q
+vtC8DQrRgdC00LXQu9C60LAuINCvINC+0YfQtdC90Ywg0YbQtdC90LjQuyDQstCw0YjQuCDRg9GB
+0LjQu9C40Y8g0LIg0YLQviDQstGA0LXQvNGPLiDRgtCw0Log0YfRg9Cy0YHRgtCy0YPRjg0K0LHQ
+tdGB0L/Qu9Cw0YLQvdC+LCDRgdCy0Y/QttC40YLQtdGB0Ywg0YEg0LzQvtC40Lwg0YHQtdC60YDQ
+tdGC0LDRgNC10LwsINC80LjRgdGC0LXRgNC+0Lwg0KHQvtC70L7QvNC+0L3QvtC8INCR0YDRjdC9
+0LTQuCwg0LgNCtGB0L7QvtCx0YnQuNGC0LUg0LXQuSwg0LPQtNC1DQrQkNGE0YDQuNC60LDQvdGB
+0LrQuNC5INCx0LDQvdC6INGA0LDQt9Cy0LjRgtC40Y8g0L/QtdGA0LXRh9C40YHQu9C40YIg0L7Q
+sdGJ0YPRjiDRgdGD0LzQvNGDINCyINGA0LDQt9C80LXRgNC1IDM1MCAwMDAg0LTQvtC70LvQsNGA
+0L7QsiDQodCo0JAuDQoNCtCf0L7QttCw0LvRg9C50YHRgtCwLCDQvdC10LzQtdC00LvQtdC90L3Q
+viDQtNCw0LnRgtC1INC80L3QtSDQt9C90LDRgtGMINC/0LXRgNC10LLQvtC0INCQ0YTRgNC40LrQ
+sNC90YHQutC+0LPQviDQsdCw0L3QutCwINGA0LDQt9Cy0LjRgtC40Y8NCtGE0L7QvdC0ICQgMzUw
+LjAwMC4wMA0K0L3QsCDRgdCy0L7QuSDQsdCw0L3QutC+0LLRgdC60LjQuSDRgdGH0LXRgiwg0YHQ
+tdC50YfQsNGBINGPINGB0LvQuNGI0LrQvtC8INC30LDQvdGP0YIg0LjQty3Qt9CwDQrQuNC90LLQ
+tdGB0YLQuNGG0LjQvtC90L3Ri9C1INC/0YDQvtC10LrRgtGLLCDQutC+0YLQvtGA0YvQtSDRjyDQ
+stC10LTRgyDRgSDQvNC+0LjQvCDQvdC+0LLRi9C8INC/0LDRgNGC0L3QtdGA0L7QvCwg0L/QvtGN
+0YLQvtC80YMNCtGB0LLRj9C20LjRgtC10YHRjCDRgSDQvNC40YHRgtC10YDQvtC8INCh0L7Qu9C+
+0LzQvtC90L7QvCDQkdGA0Y3QvdC00Lgg0L3QsCDQtdCz0L4g0LDQtNGA0LXRgSDRjdC70LXQutGC
+0YDQvtC90L3QvtC5INC/0L7Rh9GC0YssINC+0L0NCtCx0LXQtyDQv9GA0L7QvNC10LTQu9C10L3Q
+uNGPINGB0LLRj9C20LjRgtC10YHRjCDRgSDQkNGE0YDQuNC60LDQvdGB0LrQuNC8INCx0LDQvdC6
+0L7QvCDRgNCw0LfQstC40YLQuNGPINC+0YIg0LLQsNGI0LXQs9C+INC40LzQtdC90LguDQrQkdGD
+0LTRjNGC0LUg0LIg0LHQtdC30L7Qv9Cw0YHQvdC+0YHRgtC4INC+0YIgQ292aWQgMTkuDQoNCtCh
+INGD0LLQsNC20LXQvdC40LXQvCwNCtCU0L7QutGC0L7RgCDRgNC+0LHQtdGA0YIg0LDQvdC00LXR
+gNGB0L7QvQ0K
