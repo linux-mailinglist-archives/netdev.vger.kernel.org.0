@@ -2,79 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F44625E2E8
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 22:38:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B96125E321
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 22:57:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728057AbgIDUh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 16:37:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54274 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726618AbgIDUh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Sep 2020 16:37:57 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1AA60208C7;
-        Fri,  4 Sep 2020 20:37:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599251876;
-        bh=3Gc2DiIZI38/XDiSpM58Ie/d4zUcgHiZJLYp3Y5V8uI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PtrF8Dehi8jFSvoMCnBmUx0R56IAJtZMrgbpZ12veC7hBtHDyTJQY4SY0fiydLL8M
-         28OrIMpdtHQ4tJ/8ehylaESio8Smz9MdSYHWJvuWwEA/OiLfPCeu7Ie2Z0mCxV74VV
-         mgoE0ROse0jiPrk6uTFU1j5XK9fL/LyCbutwC75M=
-Date:   Fri, 4 Sep 2020 13:37:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "sundeep.lkml@gmail.com" <sundeep.lkml@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>
-Subject: Re: [EXT] Re: [net-next PATCH 0/2] Introduce mbox tracepoints for
- Octeontx2
-Message-ID: <20200904133753.77ce6bc7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <BY5PR18MB3298C4C84704BCE864133C33C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
-References: <1599117498-30145-1-git-send-email-sundeep.lkml@gmail.com>
-        <20200903121803.75fb0ade@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR18MB3298899BF15F266144EE8760C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
-        <20200904083709.GF2997@nanopsycho.orion>
-        <BY5PR18MB3298EB53D2F869D64D7F534DC62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
-        <20200904121126.GI2997@nanopsycho.orion>
-        <BY5PR18MB3298C4C84704BCE864133C33C62D0@BY5PR18MB3298.namprd18.prod.outlook.com>
+        id S1728135AbgIDU5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 16:57:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728012AbgIDU5O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 16:57:14 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D6EC061247
+        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 13:57:13 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id c15so8497785wrs.11
+        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 13:57:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s2VbCfmfs/2EKPhU6uZ6dyMExo1mi3OXRSsv4NCSYQE=;
+        b=j9ngwIedSaoYiq0eW5bXcwSkf0Vu3hKWRNw+lJX8H9alkpcwzkJd7WoXOOYvpxMmF8
+         57gmGz/YyVFhi+cB1dPhcBG4Pl73OlaJnGfR7h9aSNQ2Zi8SGGB4Srv+orgR/YSIhbuJ
+         YKi7InR/JeLZgXlu17YaSmdizrVjGGiimGn6MM9zF2fefMSlhSukaLlP4duFYp+HUYVD
+         g6xn5YthgzIxgsAIy4g7LIo43spm4eaU3w5lGqEAx1jkOcyGx06/k3mjzCOt5oFDwkoG
+         m6j/MWFnVTSgQoEptzgea4ZsZaGpN80wiACDxeYmW5iRp2S3EWKTR9JSLgt1djVKdib7
+         fjGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s2VbCfmfs/2EKPhU6uZ6dyMExo1mi3OXRSsv4NCSYQE=;
+        b=AD7og64JtPjCmUPaE62mSJwfx7XH6QHBJzf5Zupdcw3qAwQDTKPhAiDQ3vhxvEXh6k
+         QfDdAaetYasGeYDqUASVBaJWkwW4SJp9/26F010IfSutgYpDfMe4hy18pp469eciZwnn
+         EW/TesAmye3ikAgGq15mGbr0quJ26pub0KNZDPsGu1Bh6jGmFL/LDZYiCHp6RhcFXK2Z
+         Nr986W6932aF8EB2qTQeVXQq7KCkFXRZA3y/2/PZijwOFNgMUguP5Ubk9CKm8JheRW1d
+         7cTVI7n0yYeBxnAP3lmm3QRU37ecd0o4mbnQrdOGk4EfDmB73IikTnOGZSgq7IP1WJNd
+         Op3Q==
+X-Gm-Message-State: AOAM530xuZU3VFQvgB0PiQBLcDcvcbcoEUh/uBl7DsixXPpIMg+N+ihz
+        ZKrYytHGgenjFjqM2/DXU42cUw==
+X-Google-Smtp-Source: ABdhPJzffKSbbyulDjS5IdK2q00UuTG/fAXD41vOAAQ1/E+3KStJE7tT6bAIAk0gOxfNewbg9J14ew==
+X-Received: by 2002:a5d:560d:: with SMTP id l13mr9054061wrv.49.1599253030911;
+        Fri, 04 Sep 2020 13:57:10 -0700 (PDT)
+Received: from localhost.localdomain ([194.35.117.177])
+        by smtp.gmail.com with ESMTPSA id u17sm12985395wmm.4.2020.09.04.13.57.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Sep 2020 13:57:10 -0700 (PDT)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next 0/3] tools: bpftool: print built-in features, automate some of the documentation
+Date:   Fri,  4 Sep 2020 21:56:54 +0100
+Message-Id: <20200904205657.27922-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Sep 2020 12:29:04 +0000 Sunil Kovvuri Goutham wrote:
-> > >No, there are 3 drivers registering to 3 PCI device IDs and there can
-> > >be many instances of the same devices. So there can be 10's of instances of  
-> > AF, PF and VFs.
-> > 
-> > So you can still have per-pci device devlink instance and use the tracepoint
-> > Jakub suggested.
-> >   
-> 
-> Two things
-> - As I mentioned above, there is a Crypto driver which uses the same mbox APIs
->   which is in the process of upstreaming. There also we would need trace points.
->   Not sure registering to devlink just for the sake of tracepoint is proper. 
-> 
-> - The devlink trace message is like this
-> 
->    TRACE_EVENT(devlink_hwmsg,
->      . . .
->         TP_printk("bus_name=%s dev_name=%s driver_name=%s incoming=%d type=%lu buf=0x[%*phD] len=%zu",
->                   __get_str(bus_name), __get_str(dev_name),
->                   __get_str(driver_name), __entry->incoming, __entry->type,
->                   (int) __entry->len, __get_dynamic_array(buf), __entry->len)
->    );
-> 
->    Whatever debug message we want as output doesn't fit into this.
+There are two changes for bpftool in this series.
 
-Make use of the standard devlink tracepoint wherever applicable, and you
-can keep your extra ones if you want (as long as Jiri don't object).
+The first one is a modification to the "version" command, to have it print
+the status (compiled or not) of some of the optional features for bpftool.
+This is to help determine if a bpftool binary is able to, for example,
+disassemble JIT-compiled programs.
+
+The last two patches try to automate the generation of some repetitive
+sections in the man pages for bpftool, namely the description of the
+options shared by all commands, and the "see also" section. The objective
+is to make it easier to maintain the pages and to reduce the risk of
+omissions when adding the documentation for new commands.
+
+Quentin Monnet (3):
+  tools: bpftool: print optional built-in features along with version
+  tools: bpftool: include common options from separate file
+  tools: bpftool: automate generation for "SEE ALSO" sections in man
+    pages
+
+ tools/bpf/bpftool/Documentation/Makefile      | 14 ++++++--
+ .../bpf/bpftool/Documentation/bpftool-btf.rst | 34 +-----------------
+ .../bpftool/Documentation/bpftool-cgroup.rst  | 33 +----------------
+ .../bpftool/Documentation/bpftool-feature.rst | 33 +----------------
+ .../bpf/bpftool/Documentation/bpftool-gen.rst | 33 +----------------
+ .../bpftool/Documentation/bpftool-iter.rst    | 27 +-------------
+ .../bpftool/Documentation/bpftool-link.rst    | 34 +-----------------
+ .../bpf/bpftool/Documentation/bpftool-map.rst | 33 +----------------
+ .../bpf/bpftool/Documentation/bpftool-net.rst | 34 +-----------------
+ .../bpftool/Documentation/bpftool-perf.rst    | 34 +-----------------
+ .../bpftool/Documentation/bpftool-prog.rst    | 34 +-----------------
+ .../Documentation/bpftool-struct_ops.rst      | 35 +------------------
+ tools/bpf/bpftool/Documentation/bpftool.rst   | 34 +-----------------
+ .../bpftool/Documentation/common_options.rst  | 22 ++++++++++++
+ tools/bpf/bpftool/main.c                      | 22 ++++++++++++
+ 15 files changed, 68 insertions(+), 388 deletions(-)
+ create mode 100644 tools/bpf/bpftool/Documentation/common_options.rst
+
+-- 
+2.25.1
+
