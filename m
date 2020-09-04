@@ -2,106 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDB9D25D999
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 15:28:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C37A25DA32
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 15:43:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730212AbgIDN14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 09:27:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730304AbgIDN1N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 09:27:13 -0400
-Received: from mail-ua1-x942.google.com (mail-ua1-x942.google.com [IPv6:2607:f8b0:4864:20::942])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03412C061246
-        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 06:27:06 -0700 (PDT)
-Received: by mail-ua1-x942.google.com with SMTP id e41so1988134uad.6
-        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 06:27:05 -0700 (PDT)
+        id S1730517AbgIDNnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 09:43:40 -0400
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:34021 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730502AbgIDNn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 09:43:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EcvtgMkqtV+QMekKVdpR7+VGa/x86DjVYJCvIcGjyK8=;
-        b=n6QTs08VggzC4TRruzKbItvKGOXVLpbSHGflONYffbYUuhXodFEZk5rF2ce4lJVCXf
-         G/jZYiUQij/ybyYI7bQq22YLon4jSFDP5yI0O/J6OCCXtXh8xugcnhAJL5AXEPEY7i9d
-         wa6m2CbLmR2x1kqwCOezY7lUGIPtejJ2i6AzkpMb5wGrYJuwWbSqnOFbiT2iOIKdVPab
-         IdXRhxQBEzVvvJfGJNRGlw5fTGQmiw4rel47Vz7ph4VKhOfM0m8KzYBmJ5gEOHiiW+5g
-         q1s6x3oOQduGCeCPapiRP+y3UfC1IuNOsIM2t0SzVzcD/MlpLtKoSFyFsLC5HaX52JuJ
-         creg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EcvtgMkqtV+QMekKVdpR7+VGa/x86DjVYJCvIcGjyK8=;
-        b=fyox3BAU5LhoCMs8EJzlNI3uXyx8KYfFg5cGepGyywgMCLiPiZfyl86AnZCXIvbVqq
-         4VR21UkcVqbV+73O4VE5gISl63mO7yvOvt2tWC2r/uoJIXEYLAobEhve20BhrsgoT6fA
-         EN4UATDc0fLevZWgiGXKabLgxteb7fAKyszuTXSzeGEtr/vDiCa18e8lmmpKvWDDkp3H
-         LQcgN7xN+8smCNnx5wKJQtnjiQHQn6/FMZ8Vn3WUmrWhhOQfB0bRXUeW3fcQLsx4aS+u
-         MC7SAAjpQqB16hy4qNW464BNPWe1wv8uyImDWMZ7prMBYe0D6tD09JkTj4wIfzllI6RY
-         BA4Q==
-X-Gm-Message-State: AOAM531xMC0madP5qhJMAcf82nMbofYaUjRXsIOpGOgdXWWrN7yvyByz
-        UfU1WDatn7CD99hgGi7kq+BYPT4dumB1Bg==
-X-Google-Smtp-Source: ABdhPJxcVr7oxXDPQYbLv9u0llG1G/Is1iCYdquZR4CgORcEHy82wRfZBeY+zwAxAQEmLfae6fXuCQ==
-X-Received: by 2002:ab0:108:: with SMTP id 8mr4579801uak.25.1599226016217;
-        Fri, 04 Sep 2020 06:26:56 -0700 (PDT)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id w69sm1004994vkd.23.2020.09.04.06.26.54
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Sep 2020 06:26:55 -0700 (PDT)
-Received: by mail-ua1-f44.google.com with SMTP id i22so1422224uat.8
-        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 06:26:54 -0700 (PDT)
-X-Received: by 2002:ab0:2404:: with SMTP id f4mr4707114uan.108.1599226014262;
- Fri, 04 Sep 2020 06:26:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200904130608.19869-1-wanghai38@huawei.com>
-In-Reply-To: <20200904130608.19869-1-wanghai38@huawei.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 4 Sep 2020 15:26:18 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSfMO4YPGp88HYRPWwRUCg79SVyYicOowCH9oJkKPtmdLA@mail.gmail.com>
-Message-ID: <CA+FuTSfMO4YPGp88HYRPWwRUCg79SVyYicOowCH9oJkKPtmdLA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/packet: Remove unused macro BLOCK_PRIV
-To:     Wang Hai <wanghai38@huawei.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Mao Wenan <maowenan@huawei.com>, jrosen@cisco.com,
-        Arnd Bergmann <arnd@arndb.de>,
-        Colin King <colin.king@canonical.com>,
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1599227007; x=1630763007;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=SBTfKd85yjkvCUVU1mYg4+pcLmsGUnhzQ3U/pJ5HYpo=;
+  b=OAvMKFSPbXgij4mJiekp1nR+z/0KO2s397cmM+8qebXBemYG9WLW0WzA
+   62gIRYJIwkPq1DytJ99Fs8KSU66yyKCtUjjHyy6W+n9AtOqpffu9bjGYp
+   3uLJBB+BF91QTYMi/mATB6VuvogjO1A/QpObvTjdWksNDiihPa7oi+lQt
+   0=;
+X-IronPort-AV: E=Sophos;i="5.76,389,1592870400"; 
+   d="scan'208";a="72413418"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-22cc717f.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 04 Sep 2020 13:32:11 +0000
+Received: from EX13D07EUA004.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+        by email-inbound-relay-2a-22cc717f.us-west-2.amazon.com (Postfix) with ESMTPS id A92DEA2212;
+        Fri,  4 Sep 2020 13:32:09 +0000 (UTC)
+Received: from ucc1378de9e2c58.ant.amazon.com (10.43.162.38) by
+ EX13D07EUA004.ant.amazon.com (10.43.165.172) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Fri, 4 Sep 2020 13:32:04 +0000
+From:   Stefan Nuernberger <snu@amazon.com>
+To:     <orcohen@paloaltonetworks.com>
+CC:     <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Stefan Nuernberger <snu@amazon.com>,
+        David Woodhouse <dwmw@amazon.co.uk>,
+        Amit Shah <aams@amazon.com>, <stable@vger.kernel.org>
+Subject: [PATCH] net/packet: fix overflow in tpacket_rcv
+Date:   Fri, 4 Sep 2020 15:30:52 +0200
+Message-ID: <20200904133052.20299-1-snu@amazon.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <CAM6JnLf_8nwzq+UGO+amXpeApCDarJjwzOEHQd5qBhU7YKm3DQ@mail.gmail.com>
+References: <CAM6JnLf_8nwzq+UGO+amXpeApCDarJjwzOEHQd5qBhU7YKm3DQ@mail.gmail.com>
+MIME-Version: 1.0
+X-Originating-IP: [10.43.162.38]
+X-ClientProxiedBy: EX13d09UWA002.ant.amazon.com (10.43.160.186) To
+ EX13D07EUA004.ant.amazon.com (10.43.165.172)
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 4, 2020 at 3:09 PM Wang Hai <wanghai38@huawei.com> wrote:
->
-> BPDU_TYPE_TCN is never used after it was introduced.
-> So better to remove it.
+From: Or Cohen <orcohen@paloaltonetworks.com>
 
-This comment does not cover the patch contents. Otherwise the patch
-looks good to me.
+Using tp_reserve to calculate netoff can overflow as
+tp_reserve is unsigned int and netoff is unsigned short.
 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> ---
->  net/packet/af_packet.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-> index da8254e680f9..c430672c6a67 100644
-> --- a/net/packet/af_packet.c
-> +++ b/net/packet/af_packet.c
-> @@ -177,7 +177,6 @@ static int packet_set_ring(struct sock *sk, union tpacket_req_u *req_u,
->  #define BLOCK_LEN(x)           ((x)->hdr.bh1.blk_len)
->  #define BLOCK_SNUM(x)          ((x)->hdr.bh1.seq_num)
->  #define BLOCK_O2PRIV(x)        ((x)->offset_to_priv)
-> -#define BLOCK_PRIV(x)          ((void *)((char *)(x) + BLOCK_O2PRIV(x)))
->
->  struct packet_sock;
->  static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
-> --
-> 2.17.1
->
+This may lead to macoff receving a smaller value then
+sizeof(struct virtio_net_hdr), and if po->has_vnet_hdr
+is set, an out-of-bounds write will occur when
+calling virtio_net_hdr_from_skb.
+
+The bug is fixed by converting netoff to unsigned int
+and checking if it exceeds USHRT_MAX.
+
+This addresses CVE-2020-14386
+
+Fixes: 8913336a7e8d ("packet: add PACKET_RESERVE sockopt")
+Signed-off-by: Or Cohen <orcohen@paloaltonetworks.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+
+[ snu: backported to 4.9, changed tp_drops counting/locking ]
+
+Signed-off-by: Stefan Nuernberger <snu@amazon.com>
+CC: David Woodhouse <dwmw@amazon.co.uk>
+CC: Amit Shah <aams@amazon.com>
+CC: stable@vger.kernel.org
+---
+ net/packet/af_packet.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index fb643945e424..b5b79f501541 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -2161,7 +2161,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 	int skb_len = skb->len;
+ 	unsigned int snaplen, res;
+ 	unsigned long status = TP_STATUS_USER;
+-	unsigned short macoff, netoff, hdrlen;
++	unsigned short macoff, hdrlen;
++	unsigned int netoff;
+ 	struct sk_buff *copy_skb = NULL;
+ 	struct timespec ts;
+ 	__u32 ts_status;
+@@ -2223,6 +2224,12 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+ 		}
+ 		macoff = netoff - maclen;
+ 	}
++	if (netoff > USHRT_MAX) {
++		spin_lock(&sk->sk_receive_queue.lock);
++		po->stats.stats1.tp_drops++;
++		spin_unlock(&sk->sk_receive_queue.lock);
++		goto drop_n_restore;
++	}
+ 	if (po->tp_version <= TPACKET_V2) {
+ 		if (macoff + snaplen > po->rx_ring.frame_size) {
+ 			if (po->copy_thresh &&
+-- 
+2.28.0
+
+
+
+
+Amazon Development Center Germany GmbH
+Krausenstr. 38
+10117 Berlin
+Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
+Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
+Sitz: Berlin
+Ust-ID: DE 289 237 879
+
+
+
