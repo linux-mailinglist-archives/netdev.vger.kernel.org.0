@@ -2,262 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E78925D349
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 10:14:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA05925D3B2
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 10:31:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729759AbgIDIOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 04:14:54 -0400
-Received: from mail.intenta.de ([178.249.25.132]:25292 "EHLO mail.intenta.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726575AbgIDIOx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Sep 2020 04:14:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=intenta.de; s=dkim1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:CC:To:From:Date; bh=bXn6wmF/hHdN9tDvH9JvMypOeF/2TeewJ7vPlvMgXMM=;
-        b=YBAL3HvF4QXr84wIg2WpBpwSBqi9rNXUECuotCF4BKveEsEdsBK2BZC3OGmdadb+M/ByLIM61zQJlvaMSmqlRqvX4BCWYDwecI1fAo0uMq/+ZDfqZcETHImDi8IrBxqTFm74G5nO6al6t1FEZLV7avkePaZHzNyyByW5Jp5nFsxLVqRWk3hqndw3t7Bb4ooAH63ax1GqFRTbiy6WnaFq3NV//gQr/z8h8Y+D46ZeWcdgiIwlYPAF1qT+a14H/8AJ4OqO27SEW2WE70BzBHJY7DWICN1cNWyqfKgt5foVrpYJVpTqoBmm2kqTFGvdK59QAx+tLtNsSnPVH+JlQekz9A==;
-Date:   Fri, 4 Sep 2020 10:14:42 +0200
-From:   Helmut Grohne <helmut.grohne@intenta.de>
-To:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v2] net: dsa: microchip: look for phy-mode in port nodes
-Message-ID: <20200904081438.GA14387@laureti-dev>
-References: <20200824.153738.1423061044322742575.davem@davemloft.net>
+        id S1729863AbgIDIbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 04:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729707AbgIDIbp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 04:31:45 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6EAC061244
+        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 01:31:45 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id c19so7007410wmd.1
+        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 01:31:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=suUQ7WIdhqwk50H5z4NVhYXy4Z+GJL5LbpX6c91ONvA=;
+        b=uwR7d883hwS/MxVq/iVHFyn41Py6PMltA9NnTLoDyfs3UmhEthSLsuocJh2y8uPXl1
+         wGJZeEGThQp9vUxYG6lowRI3HEH57RzvUuBuOKXHi+Ckb3aaJEG9fIUyArjFX2tUEEkq
+         l1gyvp4gPHCEjDdyoCk8UgDejWdU0+yTWDES9lVEW5vWfsXPASR5/TkW5A5NaUMnXzfn
+         v+E2H6yODiXHY3Le4pwF8xSTlkWjewKOvTQ4c5irP95PQ0eii15ywaeoO+NG8bo9bv7v
+         7FQJfvOUciYGqSPJDahBYxFdns3vO2zsglW1v91fOwC2z3UWWzjiKOvlm1WhqhdshnqL
+         e3jw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=suUQ7WIdhqwk50H5z4NVhYXy4Z+GJL5LbpX6c91ONvA=;
+        b=oBJGKaBp+ns3DjpqbUnHEdRiwMDvNQP80CCwmdcgg4Mkkh+xG0ugcCaOohadtZK0lV
+         IKB0W6QWtc3AiIV3c/X0AJUFAm/Y1wP16Ex+wverDWyFRJOq+KpPSRkmEDLDpHuApvt4
+         5mj7eDXvw1337dOahb9+PLi3blWd5NgtnaOWOsQOe5xX6P8oUbHUiNDGinau3cyBCpU3
+         4QbqR2A3F8TSmIcwYRsSmp+6ouNZXDBKhBeRPxRT3bmLySdV4REWg1Vy4a0dICjHJu6f
+         lSC2veqWSRupa9efjG6rURk1W5LNLH/k1KPeo1cYKZBKZJ4C6ZuX5pX672xkQ1/6YWNr
+         +ANw==
+X-Gm-Message-State: AOAM531ggOqcuKB7MRTOeb8IWnJ/jm79l53LCDkBNxhmPGZOqCtDa5rM
+        J/8OqreNyApgTmgeIWqEYU0mLg==
+X-Google-Smtp-Source: ABdhPJxgbU2OSMZTygUl5y3oQwo+jX5kG7iwisav38Q0Rp8cjE9/3V0EaLimEQ/wED3plby2oeS71w==
+X-Received: by 2002:a1c:31d7:: with SMTP id x206mr6136139wmx.2.1599208303412;
+        Fri, 04 Sep 2020 01:31:43 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id q18sm9835871wre.78.2020.09.04.01.31.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Sep 2020 01:31:42 -0700 (PDT)
+Date:   Fri, 4 Sep 2020 10:31:41 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, jiri@nvidia.com
+Subject: Re: Exposing device ACL setting through devlink
+Message-ID: <20200904083141.GE2997@nanopsycho.orion>
+References: <e7f76581-8525-2b98-ec4d-e772db692318@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200824.153738.1423061044322742575.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ICSMA002.intenta.de (10.10.16.48) To ICSMA002.intenta.de
- (10.10.16.48)
+In-Reply-To: <e7f76581-8525-2b98-ec4d-e772db692318@linux.ibm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Documentation/devicetree/bindings/net/dsa/dsa.txt says that the phy-mode
-property should be specified on port nodes. However, the microchip
-drivers read it from the switch node.
+Thu, Sep 03, 2020 at 07:59:45PM CEST, tlfalcon@linux.ibm.com wrote:
+>Hello, I am trying to expose MAC/VLAN ACL and pvid settings for IBM VNIC devices to administrators through devlink (originally through sysfs files, but that was rejected in favor of devlink). Could you give any tips on how you might go about doing this?
 
-Let the driver use the per-port property and fall back to the old
-location with a warning.
-
-Fix in-tree users.
-
-Signed-off-by: Helmut Grohne <helmut.grohne@intenta.de>
-Link: https://lore.kernel.org/netdev/20200617082235.GA1523@laureti-dev/
----
- arch/arm/boot/dts/at91-sama5d2_icp.dts |  2 +-
- drivers/net/dsa/microchip/ksz8795.c    | 17 +++++++++++-----
- drivers/net/dsa/microchip/ksz9477.c    | 28 +++++++++++++++++---------
- drivers/net/dsa/microchip/ksz_common.c | 13 +++++++++++-
- drivers/net/dsa/microchip/ksz_common.h |  3 ++-
- 5 files changed, 45 insertions(+), 18 deletions(-)
-
-Changes since v1:
- * Preserve the reverse christmas tree ordering of local variables.
-   Reported by David Miller.
-
-Reason for resending v1:
- * While Andrew Lunn agreed to the semantic change, he found the
-   implementation unnecessarily complex. He suggested going without a
-   per-port interface attribute, but that happened to not work out. The
-   information of which port will become the cpu port is only realized
-   in a later initialization step.
-
-There were no further replies, so here goes a v2 with minimal changes.
-
-Helmut
-
-diff --git a/arch/arm/boot/dts/at91-sama5d2_icp.dts b/arch/arm/boot/dts/at91-sama5d2_icp.dts
-index 8d19925fc09e..6783cf16ff81 100644
---- a/arch/arm/boot/dts/at91-sama5d2_icp.dts
-+++ b/arch/arm/boot/dts/at91-sama5d2_icp.dts
-@@ -116,7 +116,6 @@
- 		switch0: ksz8563@0 {
- 			compatible = "microchip,ksz8563";
- 			reg = <0>;
--			phy-mode = "mii";
- 			reset-gpios = <&pioA PIN_PD4 GPIO_ACTIVE_LOW>;
- 
- 			spi-max-frequency = <500000>;
-@@ -140,6 +139,7 @@
- 					reg = <2>;
- 					label = "cpu";
- 					ethernet = <&macb0>;
-+					phy-mode = "mii";
- 					fixed-link {
- 						speed = <100>;
- 						full-duplex;
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 8f1d15ea15d9..cae77eafd533 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -932,11 +932,18 @@ static void ksz8795_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 	ksz_port_cfg(dev, port, P_PRIO_CTRL, PORT_802_1P_ENABLE, true);
- 
- 	if (cpu_port) {
-+		if (!p->interface && dev->compat_interface) {
-+			dev_warn(dev->dev,
-+				 "Using legacy switch \"phy-mode\" missing on port %d node. Please update your device tree.\n",
-+				 port);
-+			p->interface = dev->compat_interface;
-+		}
-+
- 		/* Configure MII interface for proper network communication. */
- 		ksz_read8(dev, REG_PORT_5_CTRL_6, &data8);
- 		data8 &= ~PORT_INTERFACE_TYPE;
- 		data8 &= ~PORT_GMII_1GPS_MODE;
--		switch (dev->interface) {
-+		switch (p->interface) {
- 		case PHY_INTERFACE_MODE_MII:
- 			p->phydev.speed = SPEED_100;
- 			break;
-@@ -952,11 +959,11 @@ static void ksz8795_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 		default:
- 			data8 &= ~PORT_RGMII_ID_IN_ENABLE;
- 			data8 &= ~PORT_RGMII_ID_OUT_ENABLE;
--			if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    dev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+			    p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
- 				data8 |= PORT_RGMII_ID_IN_ENABLE;
--			if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    dev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+			    p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
- 				data8 |= PORT_RGMII_ID_OUT_ENABLE;
- 			data8 |= PORT_GMII_1GPS_MODE;
- 			data8 |= PORT_INTERFACE_RGMII;
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 3cb22d149813..89e8934bc60b 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1208,7 +1208,7 @@ static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 
- 		/* configure MAC to 1G & RGMII mode */
- 		ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
--		switch (dev->interface) {
-+		switch (p->interface) {
- 		case PHY_INTERFACE_MODE_MII:
- 			ksz9477_set_xmii(dev, 0, &data8);
- 			ksz9477_set_gbit(dev, false, &data8);
-@@ -1229,11 +1229,11 @@ static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 			ksz9477_set_gbit(dev, true, &data8);
- 			data8 &= ~PORT_RGMII_ID_IG_ENABLE;
- 			data8 &= ~PORT_RGMII_ID_EG_ENABLE;
--			if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    dev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
-+			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+			    p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
- 				data8 |= PORT_RGMII_ID_IG_ENABLE;
--			if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--			    dev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
-+			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-+			    p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
- 				data8 |= PORT_RGMII_ID_EG_ENABLE;
- 			p->phydev.speed = SPEED_1000;
- 			break;
-@@ -1269,23 +1269,31 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
- 			dev->cpu_port = i;
- 			dev->host_mask = (1 << dev->cpu_port);
- 			dev->port_mask |= dev->host_mask;
-+			p = &dev->ports[i];
- 
- 			/* Read from XMII register to determine host port
- 			 * interface.  If set specifically in device tree
- 			 * note the difference to help debugging.
- 			 */
- 			interface = ksz9477_get_interface(dev, i);
--			if (!dev->interface)
--				dev->interface = interface;
--			if (interface && interface != dev->interface)
-+			if (!p->interface) {
-+				if (dev->compat_interface) {
-+					dev_warn(dev->dev,
-+						 "Using legacy switch \"phy-mode\" missing on port %d node. Please update your device tree.\n",
-+						 i);
-+					p->interface = dev->compat_interface;
-+				} else {
-+					p->interface = interface;
-+				}
-+			}
-+			if (interface && interface != p->interface)
- 				dev_info(dev->dev,
- 					 "use %s instead of %s\n",
--					  phy_modes(dev->interface),
-+					  phy_modes(p->interface),
- 					  phy_modes(interface));
- 
- 			/* enable cpu port */
- 			ksz9477_port_setup(dev, i, true);
--			p = &dev->ports[dev->cpu_port];
- 			p->vid_member = dev->port_mask;
- 			p->on = 1;
- 		}
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 8d53b12d40a8..8e755b50c9c1 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -388,6 +388,8 @@ int ksz_switch_register(struct ksz_device *dev,
- 			const struct ksz_dev_ops *ops)
- {
- 	phy_interface_t interface;
-+	struct device_node *port;
-+	unsigned int port_num;
- 	int ret;
- 
- 	if (dev->pdata)
-@@ -421,10 +423,19 @@ int ksz_switch_register(struct ksz_device *dev,
- 	/* Host port interface will be self detected, or specifically set in
- 	 * device tree.
- 	 */
-+	for (port_num = 0; port_num < dev->port_cnt; ++port_num)
-+		dev->ports[port_num].interface = PHY_INTERFACE_MODE_NA;
- 	if (dev->dev->of_node) {
- 		ret = of_get_phy_mode(dev->dev->of_node, &interface);
- 		if (ret == 0)
--			dev->interface = interface;
-+			dev->compat_interface = interface;
-+		for_each_available_child_of_node(dev->dev->of_node, port) {
-+			if (of_property_read_u32(port, "reg", &port_num))
-+				continue;
-+			if (port_num >= dev->port_cnt)
-+				return -EINVAL;
-+			of_get_phy_mode(port, &dev->ports[port_num].interface);
-+		}
- 		dev->synclko_125 = of_property_read_bool(dev->dev->of_node,
- 							 "microchip,synclko-125");
- 	}
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 206838160f49..cf866e48ff66 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -39,6 +39,7 @@ struct ksz_port {
- 	u32 freeze:1;			/* MIB counter freeze is enabled */
- 
- 	struct ksz_port_mib mib;
-+	phy_interface_t interface;
- };
- 
- struct ksz_device {
-@@ -72,7 +73,7 @@ struct ksz_device {
- 	int mib_cnt;
- 	int mib_port_cnt;
- 	int last_port;			/* ports after that not used */
--	phy_interface_t interface;
-+	phy_interface_t compat_interface;
- 	u32 regs_size;
- 	bool phy_errata_9477;
- 	bool synclko_125;
--- 
-2.20.1
-
+Tom, I believe you need to provide more info about what exactly do you
+need to setup. But from what you wrote, it seems like you are looking
+for bridge/tc offload. The infra is already in place and drivers are
+implementing it. See mlxsw for example.
