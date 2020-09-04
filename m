@@ -2,196 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06BD725D0CF
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 07:08:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2931C25D0E8
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 07:39:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726402AbgIDFII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 01:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
+        id S1726275AbgIDFjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 01:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725765AbgIDFIG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 01:08:06 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01FA9C061244;
-        Thu,  3 Sep 2020 22:08:05 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id o68so3972387pfg.2;
-        Thu, 03 Sep 2020 22:08:05 -0700 (PDT)
+        with ESMTP id S1725812AbgIDFjS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 01:39:18 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD42C061244
+        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 22:39:15 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id l9so4882419wme.3
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 22:39:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=ecJ6br0bOEqdX8tcGVb8URqHSI/ob4YFt4Jw7wg6Ia0=;
-        b=b8nlPOOlOHQn+lEuwRWvHwAQqNuifcifVvLhsW8dvfjkY2mdTgiNGgEZxWaJmpzntt
-         Hn5HT5oTuWCRlToi3q+vgzgSY5+yDEcx96qOfweqjZtU8k35kLoDOGUt0WyUgPQkeX/K
-         jxcDECeyA4ppLcPAegF1f6k6xyvXc2oxUiUaUz6iGTU+qAH14iUfq8ih9LwBhAenkeTC
-         654edaVTafviomkG9HcSFRCR1Jvv85Rl3uLJNKrRY9efCwuKgTiWSPWqmQwYFrtxW9vg
-         smwup7jheDRfTdfWyEHUenuexoJk5EO/aHfVZM3nRrUD2Hu5EzTVHCQtXJCsnn7M38P/
-         wxrQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Olcgjo2cp3SzbVgj9VEdIW4pjN91mBbsvBxdvxCRLJo=;
+        b=f15p0Ep32YArP4LXBLiAkExie0hAem2FPAH0okI/cr+oL76ljWPQYqXHjM5IpBpPUl
+         zbtS1hPYSEFeBReM1bLva9wCyscIzoTN8U6jRZ/CT3zvnfy0njGa5v9OwP+Nrg2Ltc1h
+         b5FZa89xEwj/zhdrZ9gf6CSsfF1DkYInPJi4pFlD+bTRmiHybV/jooIHz1DWQ4rEdqiF
+         cu/RYQXhUHTm2lcqze04jfkA6rt3eeZMqlPVnESfnl8wypve67LNYwy2WajnUZHrOoiB
+         R5HFIzEzjPmkz2eNVIPLvOu+WCShfm/DgumDzFTockUEVofDevhr6CgHkt8j0d3euYkC
+         PCaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=ecJ6br0bOEqdX8tcGVb8URqHSI/ob4YFt4Jw7wg6Ia0=;
-        b=fjTIkzaltBvB1IKehc4LTibjnpYzKVHDMlQtG56/dOPLxdUI2dkruNvXBhRMychrUL
-         Outgo6/TOB/DrrdwV9DQTGDJ3J3ZkBF//BNz/hMkaqEz/Q3D/fooxAMpZ+DSkMNj08MB
-         qb+zhvg+6RPj7qsgdrGdV1V8MAYutpczSFJDrwRlxVgHo0fcBGDM6avJfPRNhRAvyKZL
-         KeSOrcH/c7oASKHHZGO813mcHCJurfoGYNwHV9kKFzP5TnFkzTm8DWfnFxz3EJEZ9oDZ
-         RD7O170Bqq73cNON9vuu/oIjQaAJwWX/9BsZn9ZVSwAqoZwJpgEV8K2V8RbJRdrVCYNG
-         5lnA==
-X-Gm-Message-State: AOAM532StL1QltuiR5ban617H1s5G84oOGlWI+Ij+e1QTmut4O7DaTEd
-        4U5Lt7ocYm7dIH4byENGVnc=
-X-Google-Smtp-Source: ABdhPJzeF5lk/iuosObv9Ll4NXB/zgMfsHAkWm96fxL4NlgqZBhQmtxFHr4hu82v5C4PM6zQQ+qTzw==
-X-Received: by 2002:a63:43c7:: with SMTP id q190mr5619640pga.6.1599196085186;
-        Thu, 03 Sep 2020 22:08:05 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id d17sm2406504pfq.157.2020.09.03.22.08.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 22:08:04 -0700 (PDT)
-Date:   Thu, 03 Sep 2020 22:07:57 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Kehuan Feng <kehuan.feng@gmail.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Jike Song <albcamus@gmail.com>, Josh Hunt <johunt@akamai.com>,
-        Jonas Bonn <jonas.bonn@netrounds.com>,
-        Michael Zhivich <mzhivich@akamai.com>,
-        David Miller <davem@davemloft.net>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Olcgjo2cp3SzbVgj9VEdIW4pjN91mBbsvBxdvxCRLJo=;
+        b=hDlK5+mVEIBGi4ozGKuV6CoI59VedWsAC2VTPmwa1jdztDDqTy/7L4ze5gATA2rDDE
+         nSg+2yPFbOHvbFCMaMAveMuFWzNPfL5kgPeELBxkLWoXSCGKNXoaO9pvS8RzdZHpwoIE
+         W8U3upmr6SzcMyOWZ40JdFm7onrdYlJPkKXOPynTVaevxfajN9SPm88HrFP+DBtht0pL
+         +uaN9ds/YJyhghlKfzdoNxm5U+uw/NOBUfFfoYMRsV1+5ZSWouqvN0O+4GPFG7e+rINv
+         BjQ7hy8ryVZplu/kJUtVVRwr5B8e/kmHXs/xRUIDrcuxoG9ZNn/Ow88StiavGpdidJxh
+         w91Q==
+X-Gm-Message-State: AOAM530ipxzB/eD2teO0q0+kiuQ/R3bn7Sl8HoDV8vwj/wQiXKX1Dvcb
+        7fk3nmlDZLug0L0tyvgqadBteu7lqB09x0CLQi4J9Q==
+X-Google-Smtp-Source: ABdhPJziswYikgl/jGPR1gjMEEpxF6fEBNmx3b/HSs5t0TXQ0QsMijI6ieW+i4mlSTk97QvH5RD9z7lrELtjMYBaBHo=
+X-Received: by 2002:a05:600c:22d1:: with SMTP id 17mr1793416wmg.58.1599197952693;
+ Thu, 03 Sep 2020 22:39:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200728085734.609930-1-irogers@google.com> <20200728085734.609930-2-irogers@google.com>
+ <20200729185212.GB433799@kernel.org> <CAP-5=fUJW+UkL-jZkzkCKqTLh7DC0XnFx06kdfYiu2CK85Wq1w@mail.gmail.com>
+In-Reply-To: <CAP-5=fUJW+UkL-jZkzkCKqTLh7DC0XnFx06kdfYiu2CK85Wq1w@mail.gmail.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Thu, 3 Sep 2020 22:39:01 -0700
+Message-ID: <CAP-5=fXbLtiX5Syji7X=-tV8r=PbbTw7X63h4PfggT-XvUemtQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/5] perf record: Set PERF_RECORD_PERIOD if attr->freq
+ is set.
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
         LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Message-ID: <5f51cbad3cc2_3eceb208fc@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAM_iQpXZMeAGkq_=rG6KEabFNykszpRU_Hnv65Qk7yesvbRDrw@mail.gmail.com>
-References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
- <20200623134259.8197-1-mzhivich@akamai.com>
- <1849b74f-163c-8cfa-baa5-f653159fefd4@akamai.com>
- <CAM_iQpX1+dHB0kJF8gRfuDeAb9TsA9mB9H_Og8n8Hr19+EMLJA@mail.gmail.com>
- <CAM_iQpWjQiG-zVs+e-V=8LvTFbRwgC4y4eoGERjezfAT0Fmm8g@mail.gmail.com>
- <7fd86d97-6785-0b5f-1e95-92bc1da9df35@netrounds.com>
- <500b4843cb7c425ea5449fe199095edd5f7feb0c.camel@redhat.com>
- <25ca46e4-a8c1-1c88-d6a9-603289ff44c3@akamai.com>
- <CANE52Ki8rZGDPLZkxY--RPeEG+0=wFeyCD6KKkeG1WREUwramw@mail.gmail.com>
- <20200822032800.16296-1-hdanton@sina.com>
- <CACS=qqKhsu6waaXndO5tQL_gC9TztuUQpqQigJA2Ac0y12czMQ@mail.gmail.com>
- <20200825032312.11776-1-hdanton@sina.com>
- <CACS=qqK-5g-QM_vczjY+A=3fi3gChei4cAkKweZ4Sn2L537DQA@mail.gmail.com>
- <20200825162329.11292-1-hdanton@sina.com>
- <CACS=qqKgiwdCR_5+z-vkZ0X8DfzOPD7_ooJ_imeBnx+X1zw2qg@mail.gmail.com>
- <CACS=qqKptAQQGiMoCs1Zgs9S4ZppHhasy1AK4df2NxnCDR+vCw@mail.gmail.com>
- <5f46032e.1c69fb81.9880c.7a6cSMTPIN_ADDED_MISSING@mx.google.com>
- <CACS=qq+Yw734DWhETNAULyBZiy_zyjuzzOL-NO30AB7fd2vUOQ@mail.gmail.com>
- <20200827125747.5816-1-hdanton@sina.com>
- <CACS=qq+a0H=e8yLFu95aE7Hr0bQ9ytCBBn2rFx82oJnPpkBpvg@mail.gmail.com>
- <CAM_iQpV-JMURzFApp-Zhxs3QN9j=Zdf6yqwOP=E42ERDHxe6Hw@mail.gmail.com>
- <dd73f551d1fc89e457ffabd106cbf0bf401b747b.camel@redhat.com>
- <CAM_iQpXZMeAGkq_=rG6KEabFNykszpRU_Hnv65Qk7yesvbRDrw@mail.gmail.com>
-Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> On Thu, Sep 3, 2020 at 1:40 AM Paolo Abeni <pabeni@redhat.com> wrote:
+On Wed, Jul 29, 2020 at 2:43 PM Ian Rogers <irogers@google.com> wrote:
+>
+> On Wed, Jul 29, 2020 at 11:52 AM Arnaldo Carvalho de Melo
+> <acme@kernel.org> wrote:
 > >
-> > On Wed, 2020-09-02 at 22:01 -0700, Cong Wang wrote:
-> > > Can you test the attached one-line fix? I think we are overthinking,
-> > > probably all
-> > > we need here is a busy wait.
+> > Em Tue, Jul 28, 2020 at 01:57:30AM -0700, Ian Rogers escreveu:
+> > > From: David Sharp <dhsharp@google.com>
+> > >
+> > > evsel__config() would only set PERF_RECORD_PERIOD if it set attr->freq
 > >
-> > I think that will solve, but I also think that will kill NOLOCK
-> > performances due to really increased contention.
-> 
-> Yeah, we somehow end up with more locks (seqlock, skb array lock)
-> for lockless qdisc. What an irony... ;)
-
-I went back to the original nolock implementation code to try and figure
-out how this was working in the first place.
-
-After initial patch series we have this in __dev_xmit_skb()
-
-	if (q->flags & TCQ_F_NOLOCK) {
-		if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED, &q->state))) {
-			__qdisc_drop(skb, &to_free);
-			rc = NET_XMIT_DROP;
-		} else {
-			rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
-			__qdisc_run(q);
-		}
-
-		if (unlikely(to_free))
-			kfree_skb_list(to_free);
-		return rc;
-	}
-
-One important piece here is we used __qdisc_run(q) instead of
-what we have there now qdisc_run(q). Here is the latest code,
-
-
-	if (q->flags & TCQ_F_NOLOCK) { 
-		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
-		qdisc_run(q);
-		...
-
-__qdisc_run is going to always go into a qdisc_restart loop and
-dequeue packets. There is no check here to see if another CPU
-is running or not. Compare that to qdisc_run()
-
-	static inline void qdisc_run(struct Qdisc *q)
-	{
-		if (qdisc_run_begin(q)) {
-			__qdisc_run(q);
-			qdisc_run_end(q);
-		}
-	}
-
-Here we have all the racing around qdisc_is_running() that seems
-unsolvable.
-
-Seems we flipped __qdisc_run to qdisc_run here 32f7b44d0f566
-("sched: manipulate __QDISC_STATE_RUNNING in qdisc_run_* helpers"). 
-Its not clear to me from thatpatch though why it was even done
-there?
-
-Maybe this would unlock us,
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 7df6c9617321..9b09429103f1 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3749,7 +3749,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
- 
- 	if (q->flags & TCQ_F_NOLOCK) {
- 		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
--		qdisc_run(q);
-+		__qdisc_run(q);
- 
- 		if (unlikely(to_free))
- 			kfree_skb_list(to_free);
-
-
-Per other thread we also need the state deactivated check added
-back.
-
-> 
+> > There is no such thing as 'PERF_RECORD_PERIOD', its PERF_SAMPLE_PERIOD,
+> > also...
 > >
-> > At this point I fear we could consider reverting the NOLOCK stuff.
-> > I personally would hate doing so, but it looks like NOLOCK benefits are
-> > outweighed by its issues.
-> 
-> I agree, NOLOCK brings more pains than gains. There are many race
-> conditions hidden in generic qdisc layer, another one is enqueue vs.
-> reset which is being discussed in another thread.
+> > > from perf record options. When it is set by libpfm events, it would not
+> > > get set. This changes evsel__config to see if attr->freq is set outside of
+> > > whether or not it changes attr->freq itself.
+> > >
+> > > Signed-off-by: David Sharp <dhsharp@google.com>
+> > > Signed-off-by: Ian Rogers <irogers@google.com>
+> > > ---
+> > >  tools/perf/util/evsel.c | 7 ++++++-
+> > >  1 file changed, 6 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
+> > > index ef802f6d40c1..811f538f7d77 100644
+> > > --- a/tools/perf/util/evsel.c
+> > > +++ b/tools/perf/util/evsel.c
+> > > @@ -979,13 +979,18 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
+> > >       if (!attr->sample_period || (opts->user_freq != UINT_MAX ||
+> > >                                    opts->user_interval != ULLONG_MAX)) {
+> > >               if (opts->freq) {
+> > > -                     evsel__set_sample_bit(evsel, PERIOD);
+> > >                       attr->freq              = 1;
+> > >                       attr->sample_freq       = opts->freq;
+> > >               } else {
+> > >                       attr->sample_period = opts->default_interval;
+> > >               }
+> > >       }
+> > > +     /*
+> > > +      * If attr->freq was set (here or earlier), ask for period
+> > > +      * to be sampled.
+> > > +      */
+> > > +     if (attr->freq)
+> > > +             evsel__set_sample_bit(evsel, PERIOD);
+> >
+> > Why can't the libpfm code set opts?
+> >
+> > With this patch we will end up calling evsel__set_sample_bit(evsel,
+> > PERIOD) twice, which isn't a problem but looks strange.
+>
+> Thanks Arnaldo! The case I was looking at was something like:
+> perf record --pfm-events cycles:freq=1000
+>
+> For regular events this would be:
+> perf record -e cycles/freq=1000/
+>
+> With libpfm4 events the perf_event_attr is set up (a public API in
+> linux/perf_event.h) and then parse_events__add_event is used (an
+> internal API) to make the evsel and this added to the evlist
+> (parse_libpfm_events_option). This is similar to the parse_events
+> function except rather than set up a perf_event_attr the regular
+> parsing sets up config terms that are then applied to evsel and attr
+> later in evsel__config, via evsel__apply_config_terms.
+>
+> I think we can  update this change so that in pfm.c after
+> parse_events__add_event we do:
+> if (attr.freq)
+>   evsel__set_sample_bit(evsel, PERIOD);
+>
+> This code could also be part of parse_events__add_event. I think the
+> intent in placing this code here was that it is close to the similar
+> evsel__apply_config_terms and setting of sample bits in the evsel. The
+> logic here is already dependent on reading the attr->sample_period.
+>
+> I'm not sure I follow the double setting case - I think that is only
+> possible with a config term or with period_set (-P).
+>
+> Thanks,
+> Ian
 
-Sure. Seems they crept in over time. I had some plans to write a
-lockless HTB implementation. But with fq+EDT with BPF it seems that
-it is no longer needed, we have a more generic/better solution.  So
-I dropped it. Also most folks should really be using fq, fq_codel,
-etc. by default anyways. Using pfifo_fast alone is not ideal IMO.
+Polite ping. Thanks,
+Ian
 
-Thanks,
-John
+>
+> > - Arnaldo
+> >
+> > >
+> > >       if (opts->no_samples)
+> > >               attr->sample_freq = 0;
+> > > --
+> > > 2.28.0.163.g6104cc2f0b6-goog
+> > >
+> >
+> > --
+> >
+> > - Arnaldo
