@@ -2,133 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE8E625DEEE
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 18:03:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B22FA25DEEB
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 18:03:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726937AbgIDQDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 12:03:34 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:30374 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726722AbgIDQDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 12:03:33 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-540-hb8g6iE0O5mrNFWlNdWvUA-1; Fri, 04 Sep 2020 12:03:28 -0400
-X-MC-Unique: hb8g6iE0O5mrNFWlNdWvUA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 22B2E108050D;
-        Fri,  4 Sep 2020 16:03:15 +0000 (UTC)
-Received: from krava (ovpn-112-34.ams2.redhat.com [10.36.112.34])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 86FEE88F2A;
-        Fri,  4 Sep 2020 16:03:09 +0000 (UTC)
-Date:   Fri, 4 Sep 2020 18:03:03 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v2 2/5] perf record: Prevent override of
- attr->sample_period for libpfm4 events
-Message-ID: <20200904160303.GD939481@krava>
-References: <20200728085734.609930-1-irogers@google.com>
- <20200728085734.609930-3-irogers@google.com>
- <20200728155940.GC1319041@krava>
- <20200728160954.GD1319041@krava>
- <CAP-5=fVqto0LrwgW6dHQupp7jFA3wToRBonBaXXQW4wwYcTreg@mail.gmail.com>
- <CAP-5=fWNniZuYfYhz_Cz7URQ+2E4T4Kg3DJqGPtDg70i38Er_A@mail.gmail.com>
+        id S1726479AbgIDQDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 12:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726005AbgIDQDR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 12:03:17 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E501C061244;
+        Fri,  4 Sep 2020 09:03:16 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id mm21so3410861pjb.4;
+        Fri, 04 Sep 2020 09:03:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=KHkXwx+jqaoaCS6UX8HzJ0+ftR5FngFSLzBY4NLpaHQ=;
+        b=C1YTXxEfZmQ5IEeNYNmT8Umezg2XJu/IuxxhEW1fRiDqWU0qluZSyBTg0sW6JRq7EU
+         mV4yZMMZ0/Xm7wQg0HJyE45MTNODIZ1Q0J27b1H+OzLjogdFPygr9ToDRr8j1RLgc3Ol
+         rng/oMlR/BFdQAStpKtb2WKYlFDuuUPvd7pMrlYE34/ctCEONpH3NFw3PAULvPvZ2DKD
+         bt/57I8IW7vH4kwNQOKtsa5ab2eppkXP+bctBv89kjXhvLSypehyorj72RZNARZZg4FU
+         pDjRwoZ8yxJVdhVGawyPJmB3fYQK7/iIXSKMlpkP8iMooCBJ+Atti9jZLDeyoifr8e3m
+         mP4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=KHkXwx+jqaoaCS6UX8HzJ0+ftR5FngFSLzBY4NLpaHQ=;
+        b=J1QRVXRvKaH1JNjjUgg0kaKEVkZyxPSkU22VPQNGNH/zuSG6s6k3w3CK0EV4MtN7La
+         7oH/qvnUpRAo6LuzESAeQ0uZvnyjVLxIBFHRQxYa1jHbvSR1ocyQlQzLg9CH2HzEZhlt
+         Uo6E7rSo5yuuNXwCiKfFEQd5Hqz0IZM+6aOXv03hfIV2V/S+6kAPCh9sjJ/WUFDJoMe7
+         +W523sNAyvuoiwcgcF7XeeLljvZaLZKgvH/orJpe5dzgGMmUPLc7D0EzS1HNL5pUjl2O
+         ewUMYh4UCaqGXdOAUJxrTZTnddrnwuVCP/16A86uNqU6Ca0ACNVn0oiczWH3XTiSTGZ5
+         VT+A==
+X-Gm-Message-State: AOAM5316B3nAAtkOq1usH9plPZ9kEXnrOmt//GwItSq0rWAQsbxCg/G6
+        z04pFO0JOQ5tUMfa/bI2pDU=
+X-Google-Smtp-Source: ABdhPJw68D3zn12AwaSMv3IePjrL7SraUw8pPVUg5HAYxMdMInAXg/JKDg3oxRTe/VxqPoJtiRdqJg==
+X-Received: by 2002:a17:90a:ab11:: with SMTP id m17mr8509478pjq.236.1599235395895;
+        Fri, 04 Sep 2020 09:03:15 -0700 (PDT)
+Received: from localhost ([2001:e42:102:1532:160:16:113:140])
+        by smtp.gmail.com with ESMTPSA id u3sm5510880pjn.29.2020.09.04.09.03.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Sep 2020 09:03:15 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Sat, 5 Sep 2020 00:03:08 +0800
+To:     Benjamin Poirier <benjamin.poirier@gmail.com>
+Cc:     devel@driverdev.osuosl.org, Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] staging: qlge: fix build breakage with dumping enabled
+Message-ID: <20200904160308.vpflvqfob7h7hz4v@Rk>
+References: <20200902140031.203374-1-coiby.xu@gmail.com>
+ <20200903034918.GA227281@f3>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CAP-5=fWNniZuYfYhz_Cz7URQ+2E4T4Kg3DJqGPtDg70i38Er_A@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200903034918.GA227281@f3>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 03, 2020 at 10:41:14PM -0700, Ian Rogers wrote:
-> On Wed, Jul 29, 2020 at 4:24 PM Ian Rogers <irogers@google.com> wrote:
-> >
-> > On Tue, Jul 28, 2020 at 9:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> > >
-> > > On Tue, Jul 28, 2020 at 05:59:46PM +0200, Jiri Olsa wrote:
-> > > > On Tue, Jul 28, 2020 at 01:57:31AM -0700, Ian Rogers wrote:
-> > > > > From: Stephane Eranian <eranian@google.com>
-> > > > >
-> > > > > Before:
-> > > > > $ perf record -c 10000 --pfm-events=cycles:period=77777
-> > > > >
-> > > > > Would yield a cycles event with period=10000, instead of 77777.
-> > > > >
-> > > > > This was due to an ordering issue between libpfm4 parsing
-> > > > > the event string and perf record initializing the event.
-> > > > >
-> > > > > This patch fixes the problem by preventing override for
-> > > > > events with attr->sample_period != 0 by the time
-> > > > > perf_evsel__config() is invoked. This seems to have been the
-> > > > > intent of the author.
-> > > > >
-> > > > > Signed-off-by: Stephane Eranian <eranian@google.com>
-> > > > > Reviewed-by: Ian Rogers <irogers@google.com>
-> > > > > ---
-> > > > >  tools/perf/util/evsel.c | 3 +--
-> > > > >  1 file changed, 1 insertion(+), 2 deletions(-)
-> > > > >
-> > > > > diff --git a/tools/perf/util/evsel.c b/tools/perf/util/evsel.c
-> > > > > index 811f538f7d77..8afc24e2ec52 100644
-> > > > > --- a/tools/perf/util/evsel.c
-> > > > > +++ b/tools/perf/util/evsel.c
-> > > > > @@ -976,8 +976,7 @@ void evsel__config(struct evsel *evsel, struct record_opts *opts,
-> > > > >      * We default some events to have a default interval. But keep
-> > > > >      * it a weak assumption overridable by the user.
-> > > > >      */
-> > > > > -   if (!attr->sample_period || (opts->user_freq != UINT_MAX ||
-> > > > > -                                opts->user_interval != ULLONG_MAX)) {
-> > > > > +   if (!attr->sample_period) {
-> > > >
-> > > > I was wondering why this wouldn't break record/top
-> > > > but we take care of the via record_opts__config
-> > > >
-> > > > as long as 'perf test attr' works it looks ok to me
-> > >
-> > > hum ;-)
-> > >
-> > > [jolsa@krava perf]$ sudo ./perf test 17 -v
-> > > 17: Setup struct perf_event_attr                          :
-> > > ...
-> > > running './tests/attr/test-record-C0'
-> > > expected sample_period=4000, got 3000
-> > > FAILED './tests/attr/test-record-C0' - match failure
-> >
-> > I'm not able to reproduce this. Do you have a build configuration or
-> > something else to look at? The test doesn't seem obviously connected
-> > with this patch.
-> >
-> > Thanks,
-> > Ian
-> 
-> Jiri, any update? Thanks,
+On Thu, Sep 03, 2020 at 12:49:18PM +0900, Benjamin Poirier wrote:
+>On 2020-09-02 22:00 +0800, Coiby Xu wrote:
+>> This fixes commit 0107635e15ac
+>> ("staging: qlge: replace pr_err with netdev_err") which introduced an
+>> build breakage of missing `struct ql_adapter *qdev` for some functions
+>> and a warning of type mismatch with dumping enabled, i.e.,
+>>
+>> $ make CFLAGS_MODULE="QL_ALL_DUMP=1 QL_OB_DUMP=1 QL_CB_DUMP=1 \
+>>   QL_IB_DUMP=1 QL_REG_DUMP=1 QL_DEV_DUMP=1" M=drivers/staging/qlge
+>>
+>> qlge_dbg.c: In function ‘ql_dump_ob_mac_rsp’:
+>> qlge_dbg.c:2051:13: error: ‘qdev’ undeclared (first use in this function); did you mean ‘cdev’?
+>>  2051 |  netdev_err(qdev->ndev, "%s\n", __func__);
+>>       |             ^~~~
+>> qlge_dbg.c: In function ‘ql_dump_routing_entries’:
+>> qlge_dbg.c:1435:10: warning: format ‘%s’ expects argument of type ‘char *’, but argument 3 has type ‘int’ [-Wformat=]
+>>  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
+>>       |         ~^
+>>       |          |
+>>       |          char *
+>>       |         %d
+>>  1436 |        i, value);
+>>       |        ~
+>>       |        |
+>>       |        int
+>> qlge_dbg.c:1435:37: warning: format ‘%x’ expects a matching ‘unsigned int’ argument [-Wformat=]
+>>  1435 |        "%s: Routing Mask %d = 0x%.08x\n",
+>>       |                                 ~~~~^
+>>       |                                     |
+>>       |                                     unsigned int
+>>
+>> Fixes: 0107635e15ac ("staging: qlge: replace pr_err with netdev_err")
+>> Reported-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+>> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+>> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+>> ---
+>
+>Thanks for following up on this issue.
+>
+>[...]
+>> @@ -1632,8 +1635,8 @@ void ql_dump_wqicb(struct wqicb *wqicb)
+>>
+>>  void ql_dump_tx_ring(struct tx_ring *tx_ring)
+>>  {
+>> -	if (!tx_ring)
+>> -		return;
+>> +	struct ql_adapter *qdev = tx_ring->qdev;
+>> +
+>>  	netdev_err(qdev->ndev, "===================== Dumping tx_ring %d ===============\n",
+>>  		   tx_ring->wq_id);
+>>  	netdev_err(qdev->ndev, "tx_ring->base = %p\n", tx_ring->wq_base);
+>
+>Did you actually check to confirm that the test can be removed?
 
-sorry, I rebased and ran it again and it passes for me now,
-so it got fixed along the way
+Thank you for the reminding! For the current code, when ql_dump_tx_ring
+is called, tx_ring would never be null.
 
-jirka
+>
+>This is something that you should mention in the changelog at the very
+>least since that change is not directly about fixing the build breakage
+>and if it's wrong, it can lead to null pointer deref.
 
+I thought it is common practice in C that the caller makes sure
+the passed parameter isn't a null pointer because a QEMU developer
+also gave me the same advice after reviewing one of my patches for
+QEMU a few weeks ago. I'll mention this in the commit message. Thank
+you for the suggestion!
+
+
+--
+Best regards,
+Coiby
