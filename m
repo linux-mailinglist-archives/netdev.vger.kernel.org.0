@@ -2,150 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5576525DE16
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 17:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EA8025DE7D
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 17:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726245AbgIDPqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 11:46:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
+        id S1727821AbgIDPuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 11:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726032AbgIDPq3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 11:46:29 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD08AC061244
-        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 08:46:28 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id b16so3871598vsl.6
-        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 08:46:28 -0700 (PDT)
+        with ESMTP id S1726594AbgIDPql (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 11:46:41 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C87CC061260;
+        Fri,  4 Sep 2020 08:46:36 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id np15so5351459pjb.0;
+        Fri, 04 Sep 2020 08:46:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gBjj6Z6R/+X4N410jUAaQIpfhsJ1Uab1XRHbJdH8dAw=;
-        b=YPEHwTgWCTHCsBvkvb5iNWOgPL18jzf9kn1lZwE7bMbG/qsoaRUJRlLUiUvn7UsbRU
-         xWLq78s6Zjx5M+gG58MQqK96A/z90GODiLUBY2tVybORIeD8qd024KcU4cb1NR6XsgSn
-         k983Ey58HmvF9RsaKL58l0jJP0KrwZnsNQM8PoZHbbnvUCuJHhjEw1GXNIBVxpF62edn
-         KMo2pe2VNgqUeJmIdtchr7g/1nTuwFfqudj/hGk0bfmJ7rFSBscLHMQulfYZ5FocwPKN
-         /nX3LomJ6Z444F3tjBV8ady3IH3z3bUSgaLw/RDtnRvhpMA957RyTett0X5LUpPhocoX
-         KTSw==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=P3kdadb7or6VPI0n3EicueQkmOf+NTRhMs4WyoKsTS8=;
+        b=L9UuAZYO63fn3JLL3ywvMMoxd5eBh4vocJvzFlIQy7Yi6HkPZ/GWG+zV6gRFlo30NR
+         Oo8jbDoT7O79MrMbZEIolZphNLuZz1On53t9ny3aM1Y0bS8j5H84Drbb/7Nnn3nIHAU8
+         mdxI2/l/klXwEua8206/fBJ0KSgzvHb72285Wk43WKUmni2z971vbJQHM1LzktI6mHEE
+         yqQWjEmZZC3mIeJ3qqpE3giesqVMLgyb2f4qSBjmb09h1Irn0OUOF9QqLzQowG+fFGBQ
+         dMjS3ogIMJD3vNAhSgNg1ylLQo4LiTdtiJGoOXK8SBobMltqBvSX1v7sUACll9BdXgha
+         tM+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gBjj6Z6R/+X4N410jUAaQIpfhsJ1Uab1XRHbJdH8dAw=;
-        b=Y4u428SfK4RLOUgZq7Rpfg+ocqvZvm7Yk2DVJ3h49MqZJ/PfOlcxvsdD3icpRt2JQc
-         ioBSGMi2hTWyPM00rmJJqpCTegmAp41RSg30TgtvSHAy08pG5qsEN0cc4M2LaHEaWfAf
-         d9J5B3/zH6Ww9MCAXq7oP/XzWSCuqSdAoUQNdV9jmh7Tq8CxBgRXHfkMiA0HXthFRL+J
-         tBPpNR5WqRHbVSo0zYnEYbRGelAZN7tJ0+5QFeepz1nZ83efv+Tot4k6FV5Wh5Uc81lm
-         TINXV1Nen2iNlAU74enKmcnCwLFaWNJ1Uem9TLc591eE5cQ8NrL1D/W0gASUKfjXOgcb
-         hVzQ==
-X-Gm-Message-State: AOAM533w+lk0Mz2eHsBo4lgPeyBf+xMKmgmq8mn+RzCApWU7nPNveaCv
-        dMNeK4sg5wLrz4nilA5+U4rF750TQMFEYA==
-X-Google-Smtp-Source: ABdhPJy5F10yJmcY32yoranv8bryUDyzIwVos9pQzpkYgT28Uovzj+WeHKP4d+b3bU1czKiX3fiNAg==
-X-Received: by 2002:a67:2f0a:: with SMTP id v10mr5606923vsv.7.1599234387585;
-        Fri, 04 Sep 2020 08:46:27 -0700 (PDT)
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
-        by smtp.gmail.com with ESMTPSA id l134sm1063543vkl.55.2020.09.04.08.46.26
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 04 Sep 2020 08:46:26 -0700 (PDT)
-Received: by mail-vs1-f48.google.com with SMTP id j185so3887965vsc.3
-        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 08:46:26 -0700 (PDT)
-X-Received: by 2002:a67:8783:: with SMTP id j125mr5978201vsd.174.1599234385835;
- Fri, 04 Sep 2020 08:46:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200901195415.4840-1-m-karicheri2@ti.com> <20200901195415.4840-2-m-karicheri2@ti.com>
-In-Reply-To: <20200901195415.4840-2-m-karicheri2@ti.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 4 Sep 2020 17:45:48 +0200
-X-Gmail-Original-Message-ID: <CA+FuTScPZ5sfHBwbFKQza6w4G1UcO8DaqrcpFuSvr9svgMEepw@mail.gmail.com>
-Message-ID: <CA+FuTScPZ5sfHBwbFKQza6w4G1UcO8DaqrcpFuSvr9svgMEepw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/1] net: hsr/prp: add vlan support
-To:     Murali Karicheri <m-karicheri2@ti.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, nsekhar@ti.com,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=P3kdadb7or6VPI0n3EicueQkmOf+NTRhMs4WyoKsTS8=;
+        b=MvaK4glYDuxGWF8t3TxtTlucTBZSBUEWwTNiAgKmGT0ti/YxQJYsVHA5qk6qUd3grX
+         sjSZuowlX/gu6IhwI5nf/7O1fh2JkIdfkVAtIBG7Y+JnzxZIGAJYTYQL9HW7nmI0oFRg
+         Cj+qMo065wWr+ERiEDyJK5ozacB6YXGioyM8Goubl/bJda4yLL4Ftn+AcwfDnxyVAjb/
+         f5RZgC51pAsAZeNR7Y1f213D5/rt+Y8qezps91ZpErsimm8cbgMz4gyFd5RF4ZhYSFhe
+         ORZqrRm/gmtQGwM38Uvn5AkVyj53dCy20Y0naiiAUiew3ped4H/AV56n3lniuHd6y94d
+         DoHw==
+X-Gm-Message-State: AOAM533htVjxTmr+9j31B5PJywrG+HZPvbwAO0XPpF4fckm76xVAwbF2
+        ADDZO59CIm9z8dvEut6WyEc=
+X-Google-Smtp-Source: ABdhPJy9bZWz1Upu/lBNU9Hd4PEA0NL8q01xlyoQkFXBRcT4qQARIH8TVQAKJIFKthZf3xrCUhu7tg==
+X-Received: by 2002:a17:90b:4d10:: with SMTP id mw16mr8744069pjb.100.1599234395499;
+        Fri, 04 Sep 2020 08:46:35 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id y128sm6726949pfy.74.2020.09.04.08.46.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Sep 2020 08:46:34 -0700 (PDT)
+Date:   Fri, 04 Sep 2020 08:46:27 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?TGF1cmEgR2FyY8OtYSBMacOpYmFuYQ==?= <nevola@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
+Message-ID: <5f5261535a32a_1932208c8@john-XPS-13-9370.notmuch>
+In-Reply-To: <CAF90-WgMiJkFsZaGBJQVVrmQz9==cq22NErpcWuE7z-Q+A8PzQ@mail.gmail.com>
+References: <cover.1598517739.git.lukas@wunner.de>
+ <d2256c451876583bbbf8f0e82a5a43ce35c5cf2f.1598517740.git.lukas@wunner.de>
+ <5f49527acaf5d_3ca6d208e3@john-XPS-13-9370.notmuch>
+ <5f5078705304_9154c2084c@john-XPS-13-9370.notmuch>
+ <CAF90-WgMiJkFsZaGBJQVVrmQz9==cq22NErpcWuE7z-Q+A8PzQ@mail.gmail.com>
+Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 1, 2020 at 9:54 PM Murali Karicheri <m-karicheri2@ti.com> wrote:
->
-> This patch add support for creating vlan interfaces
-> over hsr/prp interface.
->
-> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
-> ---
->  net/hsr/hsr_device.c  |  4 ----
->  net/hsr/hsr_forward.c | 16 +++++++++++++---
->  2 files changed, 13 insertions(+), 7 deletions(-)
->
-> diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-> index ab953a1a0d6c..e1951579a3ad 100644
-> --- a/net/hsr/hsr_device.c
-> +++ b/net/hsr/hsr_device.c
-> @@ -477,10 +477,6 @@ void hsr_dev_setup(struct net_device *dev)
->
->         /* Prevent recursive tx locking */
->         dev->features |= NETIF_F_LLTX;
-> -       /* VLAN on top of HSR needs testing and probably some work on
-> -        * hsr_header_create() etc.
-> -        */
-> -       dev->features |= NETIF_F_VLAN_CHALLENGED;
->         /* Not sure about this. Taken from bridge code. netdev_features.h says
->          * it means "Does not change network namespaces".
->          */
-> diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-> index cadfccd7876e..de21df30b0d9 100644
-> --- a/net/hsr/hsr_forward.c
-> +++ b/net/hsr/hsr_forward.c
-> @@ -208,6 +208,7 @@ static struct sk_buff *hsr_fill_tag(struct sk_buff *skb,
->                                     struct hsr_port *port, u8 proto_version)
->  {
->         struct hsr_ethhdr *hsr_ethhdr;
-> +       unsigned char *pc;
->         int lsdu_size;
->
->         /* pad to minimum packet size which is 60 + 6 (HSR tag) */
-> @@ -218,7 +219,18 @@ static struct sk_buff *hsr_fill_tag(struct sk_buff *skb,
->         if (frame->is_vlan)
->                 lsdu_size -= 4;
->
-> -       hsr_ethhdr = (struct hsr_ethhdr *)skb_mac_header(skb);
-> +       pc = skb_mac_header(skb);
-> +       if (frame->is_vlan)
-> +               /* This 4-byte shift (size of a vlan tag) does not
-> +                * mean that the ethhdr starts there. But rather it
-> +                * provides the proper environment for accessing
-> +                * the fields, such as hsr_tag etc., just like
-> +                * when the vlan tag is not there. This is because
-> +                * the hsr tag is after the vlan tag.
-> +                */
-> +               hsr_ethhdr = (struct hsr_ethhdr *)(pc + VLAN_HLEN);
-> +       else
-> +               hsr_ethhdr = (struct hsr_ethhdr *)pc;
+Laura Garc=C3=ADa Li=C3=A9bana wrote:
+> Hi,
+> =
 
-Instead, I would pass the header from the caller, which knows the
-offset because it moves the previous headers to make space.
+> On Thu, Sep 3, 2020 at 7:00 AM John Fastabend <john.fastabend@gmail.com=
+> wrote:
+> >
+> [...]
+> >
+> > I don't think it actualy improves performance at least I didn't obser=
+ve
+> > that. From the code its not clear why this would be the case either. =
+As
+> > a nit I would prefer that line removed from the commit message.
+> >
+> =
 
-Also, supporting VLAN probably also requires supporting 802.1ad QinQ,
-which means code should parse the headers instead of hardcoding
-VLAN_HLEN.
+> It hasn't been proven to be untrue either.
 
->         hsr_set_path_id(hsr_ethhdr, port);
->         set_hsr_tag_LSDU_size(&hsr_ethhdr->hsr_tag, lsdu_size);
-> @@ -511,8 +523,6 @@ static int fill_frame_info(struct hsr_frame_info *frame,
->         if (frame->is_vlan) {
->                 vlan_hdr = (struct hsr_vlan_ethhdr *)ethhdr;
->                 proto = vlan_hdr->vlanhdr.h_vlan_encapsulated_proto;
-> -               /* FIXME: */
-> -               netdev_warn_once(skb->dev, "VLAN not yet supported");
->         }
->
->         frame->is_from_san = false;
-> --
-> 2.17.1
->
+huh? Its stated in the commit message with no reason for why it might
+be the case and I can't reproduce it. Also the numbers posted show such a=
+
+slight increase (~1%) its likely just random system noise.
+
+Sorry maybe that was a joke? Just poured some coffee so might be missing =
+it.
+
+> =
+
+> =
+
+> [...]
+> >
+> > Do you have plans to address the performance degradation? Otherwise
+> > if I was building some new components its unclear why we would
+> > choose the slower option over the tc hook. The two suggested
+> > use cases security policy and DSR sound like new features, any
+> > reason to not just use existing infrastructure?
+> >
+> =
+
+> Unfortunately, tc is not an option as it is required to interact with
+> nft objects (sets, maps, chains, etc), more complex than just a drop.
+> Also, when building new features we try to maintain the application
+> stack as simple as possible, not trying to do ugly integrations.
+
+We have code that interacts with iptables as well. How I read the
+above is in your case you have a bunch of existing software and you
+want something slightly faster. Even if its not as fast the 10%
+overhead is OK in your case and/or you believe the overhead of all
+the other components is much higher so it will be lost in the noise.
+
+> I understand that you measure performance with a drop, but using this
+> hook we reduce the datapath consistently for these use cases and
+> hence, improving traffic performance.
+
+I measured drops because it was the benchmark provided in the patch
+series. Also it likely looks a lot like any DDOS that might be put
+there. You mentioned security policies which should probably include
+DDOS so I would expect drop performance to be at least a useful
+metric even if its not the only or most important in your case.
+
+Lets post a selftest that represents the use case so folks like
+myself can understand and benchmark correctly. This gives the extra
+benefit of ensuring we don't regress going forward and can add it
+to CI.
+
+> =
+
+> Thank you for your time!=
