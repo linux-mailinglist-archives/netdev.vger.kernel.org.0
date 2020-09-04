@@ -2,277 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1D725DF99
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 18:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EDBE25DF92
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 18:15:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727969AbgIDQPw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 12:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726812AbgIDQPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 12:15:05 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F25C061249
-        for <netdev@vger.kernel.org>; Fri,  4 Sep 2020 09:15:05 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id z1so7332749wrt.3
-        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 09:15:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dj0v8uocnLX7SPxCOZg2mHARUJRyp9/6UtI4Yc3fo0U=;
-        b=xdPIdmu8w9q8Kg37s7sRtRU1Q7RgNDRSIFRz8ZMWrRAe8lPwVrlsis97wl3fa9vCrJ
-         qZIToHnL01U+l5ysZz30Tq96eclx6Mjr+9ysQPcxsN8Ve4w2RqTf4VfNG8QbHsuDeUdh
-         kVmSLGKyDBqPTTv6jUD2J47LzQYio6lkkL84Ml/bxFNt74sLQb+jYsSEJJoPB6fQrLXc
-         tMCqiWntdKv4demO0xtuSAMjw9bVzpj/CwiQl9YCff8WNjSh/uih6NsyGx5WutuRTiVF
-         PnulBL1+leJwFr+6UzwFG947gqvrOAqmIcpeM8Pd8uK1k0+ZHgq+n5APOAh+1yMIbPR5
-         qyrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dj0v8uocnLX7SPxCOZg2mHARUJRyp9/6UtI4Yc3fo0U=;
-        b=NAjbsRdhUAj5BhKf4wzjbRdT9wrx/32heJsvbZfnOv7gCHKNCNtU3AcCrpNshsKBVb
-         M4UgoIyO+1ndXmYIapGkFEtmtrS2bnHqDa1H7EnJkmxaVOToQHxNKglbbYnrmWpQ3t4R
-         WCXoY5QcPpVGARjV6sCuMVdVPyD7dkJnaFTSrHazOwva51vZJmBvZyqEARNcXHzgq514
-         qZqLpSOjlEdO470SF8LcW+yKR9Tt4yJnOQkHtD38QWo+a6bX1ohrKIaceKjmQjlFAaPr
-         02xAwSMa17aPo4CrW1qoHqakkjGYVL6VTnr4PhyJIYsi+WO6+NK9OjLSqrzjruPbl7Ck
-         Q6Ig==
-X-Gm-Message-State: AOAM531UB8p/9OljcjS1Dpp48S6kHFKozl+M+o8akEikCL8H2EImiiVc
-        +CU5ZIkt4sGGTFPfS/VyvdkExA==
-X-Google-Smtp-Source: ABdhPJyLLBh8OQmAhPXt7AL0GttfjQqdcZzKjPHpLAeMkkr4/UGToCujKQSZFdjbkcd5d/XknP4Uew==
-X-Received: by 2002:adf:f903:: with SMTP id b3mr8722362wrr.142.1599236103851;
-        Fri, 04 Sep 2020 09:15:03 -0700 (PDT)
-Received: from localhost.localdomain ([194.35.117.187])
-        by smtp.gmail.com with ESMTPSA id p1sm28859352wma.0.2020.09.04.09.15.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Sep 2020 09:15:03 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next 3/3] tools, bpf: synchronise BPF UAPI header with tools
-Date:   Fri,  4 Sep 2020 17:14:54 +0100
-Message-Id: <20200904161454.31135-4-quentin@isovalent.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200904161454.31135-1-quentin@isovalent.com>
-References: <20200904161454.31135-1-quentin@isovalent.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727866AbgIDQPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 12:15:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57070 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726892AbgIDQPH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 12:15:07 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9CE6220772;
+        Fri,  4 Sep 2020 16:15:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599236105;
+        bh=MLCvWs5mMUOuDyA36Cda3ffiqLz/l2nBWOyu6v+gLSI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ylfjen9OVhEAldXi2YL5m/SJwvfw2FzkZFvwilNCdh//faS7ZM2l3F7NBZHyuuMOT
+         2tltCwR2Liv05wA0nPm3STMQXq/1gsz1GB65Ha8dkr1Lg/8YBMQLZ0/LAbMqvW4Ck6
+         qBtu3UNBt0zyLCENgs3p6q75rIvyDtJsoqKi9zP4=
+Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <maz@kernel.org>)
+        id 1kEEMh-009Dk6-W6; Fri, 04 Sep 2020 17:15:04 +0100
+Date:   Fri, 04 Sep 2020 17:15:01 +0100
+Message-ID: <87eenhr01m.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianyong Wu <jianyong.wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, richardcochran@gmail.com,
+        Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com,
+        steven.price@arm.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, Steve.Capper@arm.com, justin.he@arm.com,
+        nd@arm.com
+Subject: Re: [PATCH v14 07/10] arm64/kvm: Add hypercall service for kvm ptp.
+In-Reply-To: <20200904092744.167655-8-jianyong.wu@arm.com>
+References: <20200904092744.167655-1-jianyong.wu@arm.com>
+        <20200904092744.167655-8-jianyong.wu@arm.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 EasyPG/1.0.0 Emacs/26.3
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 62.31.163.78
+X-SA-Exim-Rcpt-To: jianyong.wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, sean.j.christopherson@intel.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com, steven.price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, justin.he@arm.com, nd@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Synchronise the bpf.h header under tools, to report the fixes recently
-brought to the documentation for the BPF helpers.
+On Fri, 04 Sep 2020 10:27:41 +0100,
+Jianyong Wu <jianyong.wu@arm.com> wrote:
+> 
+> ptp_kvm will get this service through smccc call.
+> The service offers wall time and counter cycle of host for guest.
+> caller must explicitly determines which cycle of virtual counter or
+> physical counter to return if it needs counter cycle.
+> 
+> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> ---
+>  arch/arm64/kvm/Kconfig       |  6 +++++
+>  arch/arm64/kvm/arch_timer.c  |  2 +-
+>  arch/arm64/kvm/hypercalls.c  | 49 ++++++++++++++++++++++++++++++++++++
+>  include/kvm/arm_arch_timer.h |  1 +
+>  include/linux/arm-smccc.h    | 16 ++++++++++++
+>  5 files changed, 73 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
+> index 318c8f2df245..bbdfacec4813 100644
+> --- a/arch/arm64/kvm/Kconfig
+> +++ b/arch/arm64/kvm/Kconfig
+> @@ -60,6 +60,12 @@ config KVM_ARM_PMU
+>  config KVM_INDIRECT_VECTORS
+>  	def_bool HARDEN_BRANCH_PREDICTOR || RANDOMIZE_BASE
+>  
+> +config ARM64_KVM_PTP_HOST
+> +	bool "KVM PTP clock host service for arm64"
 
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- tools/include/uapi/linux/bpf.h | 87 ++++++++++++++++++----------------
- 1 file changed, 45 insertions(+), 42 deletions(-)
+The "for arm64" is not that useful.
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 8dda13880957..90359cab501d 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3349,38 +3349,38 @@ union bpf_attr {
-  *	Description
-  *		Dynamically cast a *sk* pointer to a *tcp6_sock* pointer.
-  *	Return
-- *		*sk* if casting is valid, or NULL otherwise.
-+ *		*sk* if casting is valid, or **NULL** otherwise.
-  *
-  * struct tcp_sock *bpf_skc_to_tcp_sock(void *sk)
-  *	Description
-  *		Dynamically cast a *sk* pointer to a *tcp_sock* pointer.
-  *	Return
-- *		*sk* if casting is valid, or NULL otherwise.
-+ *		*sk* if casting is valid, or **NULL** otherwise.
-  *
-  * struct tcp_timewait_sock *bpf_skc_to_tcp_timewait_sock(void *sk)
-  * 	Description
-  *		Dynamically cast a *sk* pointer to a *tcp_timewait_sock* pointer.
-  *	Return
-- *		*sk* if casting is valid, or NULL otherwise.
-+ *		*sk* if casting is valid, or **NULL** otherwise.
-  *
-  * struct tcp_request_sock *bpf_skc_to_tcp_request_sock(void *sk)
-  * 	Description
-  *		Dynamically cast a *sk* pointer to a *tcp_request_sock* pointer.
-  *	Return
-- *		*sk* if casting is valid, or NULL otherwise.
-+ *		*sk* if casting is valid, or **NULL** otherwise.
-  *
-  * struct udp6_sock *bpf_skc_to_udp6_sock(void *sk)
-  * 	Description
-  *		Dynamically cast a *sk* pointer to a *udp6_sock* pointer.
-  *	Return
-- *		*sk* if casting is valid, or NULL otherwise.
-+ *		*sk* if casting is valid, or **NULL** otherwise.
-  *
-  * long bpf_get_task_stack(struct task_struct *task, void *buf, u32 size, u64 flags)
-  *	Description
-  *		Return a user or a kernel stack in bpf program provided buffer.
-  *		To achieve this, the helper needs *task*, which is a valid
-- *		pointer to struct task_struct. To store the stacktrace, the
-- *		bpf program provides *buf* with	a nonnegative *size*.
-+ *		pointer to **struct task_struct**. To store the stacktrace, the
-+ *		bpf program provides *buf* with a nonnegative *size*.
-  *
-  *		The last argument, *flags*, holds the number of stack frames to
-  *		skip (from 0 to 255), masked with
-@@ -3410,12 +3410,12 @@ union bpf_attr {
-  * long bpf_load_hdr_opt(struct bpf_sock_ops *skops, void *searchby_res, u32 len, u64 flags)
-  *	Description
-  *		Load header option.  Support reading a particular TCP header
-- *		option for bpf program (BPF_PROG_TYPE_SOCK_OPS).
-+ *		option for bpf program (**BPF_PROG_TYPE_SOCK_OPS**).
-  *
-  *		If *flags* is 0, it will search the option from the
-- *		sock_ops->skb_data.  The comment in "struct bpf_sock_ops"
-+ *		*skops*\ **->skb_data**.  The comment in **struct bpf_sock_ops**
-  *		has details on what skb_data contains under different
-- *		sock_ops->op.
-+ *		*skops*\ **->op**.
-  *
-  *		The first byte of the *searchby_res* specifies the
-  *		kind that it wants to search.
-@@ -3435,7 +3435,7 @@ union bpf_attr {
-  *		[ 254, 4, 0xeB, 0x9F, 0, 0, .... 0 ].
-  *
-  *		To search for the standard window scale option (3),
-- *		the searchby_res should be [ 3, 0, 0, .... 0 ].
-+ *		the *searchby_res* should be [ 3, 0, 0, .... 0 ].
-  *		Note, kind-length must be 0 for regular option.
-  *
-  *		Searching for No-Op (0) and End-of-Option-List (1) are
-@@ -3445,27 +3445,30 @@ union bpf_attr {
-  *		of a header option.
-  *
-  *		Supported flags:
-+ *
-  *		* **BPF_LOAD_HDR_OPT_TCP_SYN** to search from the
-  *		  saved_syn packet or the just-received syn packet.
-  *
-  *	Return
-- *		>0 when found, the header option is copied to *searchby_res*.
-- *		The return value is the total length copied.
-+ *		> 0 when found, the header option is copied to *searchby_res*.
-+ *		The return value is the total length copied. On failure, a
-+ *		negative error code is returned:
-  *
-- *		**-EINVAL** If param is invalid
-+ *		**-EINVAL** if a parameter is invalid.
-  *
-- *		**-ENOMSG** The option is not found
-+ *		**-ENOMSG** if the option is not found.
-  *
-- *		**-ENOENT** No syn packet available when
-- *			    **BPF_LOAD_HDR_OPT_TCP_SYN** is used
-+ *		**-ENOENT** if no syn packet is available when
-+ *		**BPF_LOAD_HDR_OPT_TCP_SYN** is used.
-  *
-- *		**-ENOSPC** Not enough space.  Only *len* number of
-- *			    bytes are copied.
-+ *		**-ENOSPC** if there is not enough space.  Only *len* number of
-+ *		bytes are copied.
-  *
-- *		**-EFAULT** Cannot parse the header options in the packet
-+ *		**-EFAULT** on failure to parse the header options in the
-+ *		packet.
-  *
-- *		**-EPERM** This helper cannot be used under the
-- *			   current sock_ops->op.
-+ *		**-EPERM** if the helper cannot be used under the current
-+ *		*skops*\ **->op**.
-  *
-  * long bpf_store_hdr_opt(struct bpf_sock_ops *skops, const void *from, u32 len, u64 flags)
-  *	Description
-@@ -3483,44 +3486,44 @@ union bpf_attr {
-  *		by searching the same option in the outgoing skb.
-  *
-  *		This helper can only be called during
-- *		BPF_SOCK_OPS_WRITE_HDR_OPT_CB.
-+ *		**BPF_SOCK_OPS_WRITE_HDR_OPT_CB**.
-  *
-  *	Return
-  *		0 on success, or negative error in case of failure:
-  *
-- *		**-EINVAL** If param is invalid
-+ *		**-EINVAL** If param is invalid.
-  *
-- *		**-ENOSPC** Not enough space in the header.
-- *			    Nothing has been written
-+ *		**-ENOSPC** if there is not enough space in the header.
-+ *		Nothing has been written
-  *
-- *		**-EEXIST** The option has already existed
-+ *		**-EEXIST** if the option already exists.
-  *
-- *		**-EFAULT** Cannot parse the existing header options
-+ *		**-EFAULT** on failrue to parse the existing header options.
-  *
-- *		**-EPERM** This helper cannot be used under the
-- *			   current sock_ops->op.
-+ *		**-EPERM** if the helper cannot be used under the current
-+ *		*skops*\ **->op**.
-  *
-  * long bpf_reserve_hdr_opt(struct bpf_sock_ops *skops, u32 len, u64 flags)
-  *	Description
-  *		Reserve *len* bytes for the bpf header option.  The
-- *		space will be used by bpf_store_hdr_opt() later in
-- *		BPF_SOCK_OPS_WRITE_HDR_OPT_CB.
-+ *		space will be used by **bpf_store_hdr_opt**\ () later in
-+ *		**BPF_SOCK_OPS_WRITE_HDR_OPT_CB**.
-  *
-- *		If bpf_reserve_hdr_opt() is called multiple times,
-+ *		If **bpf_reserve_hdr_opt**\ () is called multiple times,
-  *		the total number of bytes will be reserved.
-  *
-  *		This helper can only be called during
-- *		BPF_SOCK_OPS_HDR_OPT_LEN_CB.
-+ *		**BPF_SOCK_OPS_HDR_OPT_LEN_CB**.
-  *
-  *	Return
-  *		0 on success, or negative error in case of failure:
-  *
-- *		**-EINVAL** if param is invalid
-+ *		**-EINVAL** if a parameter is invalid.
-  *
-- *		**-ENOSPC** Not enough space in the header.
-+ *		**-ENOSPC** if there is not enough space in the header.
-  *
-- *		**-EPERM** This helper cannot be used under the
-- *			   current sock_ops->op.
-+ *		**-EPERM** if the helper cannot be used under the current
-+ *		*skops*\ **->op**.
-  *
-  * void *bpf_inode_storage_get(struct bpf_map *map, void *inode, void *value, u64 flags)
-  *	Description
-@@ -3560,9 +3563,9 @@ union bpf_attr {
-  *
-  * long bpf_d_path(struct path *path, char *buf, u32 sz)
-  *	Description
-- *		Return full path for given 'struct path' object, which
-- *		needs to be the kernel BTF 'path' object. The path is
-- *		returned in the provided buffer 'buf' of size 'sz' and
-+ *		Return full path for given **struct path** object, which
-+ *		needs to be the kernel BTF *path* object. The path is
-+ *		returned in the provided buffer *buf* of size *sz* and
-  *		is zero terminated.
-  *
-  *	Return
-@@ -3573,7 +3576,7 @@ union bpf_attr {
-  * long bpf_copy_from_user(void *dst, u32 size, const void *user_ptr)
-  * 	Description
-  * 		Read *size* bytes from user space address *user_ptr* and store
-- * 		the data in *dst*. This is a wrapper of copy_from_user().
-+ * 		the data in *dst*. This is a wrapper of **copy_from_user**\ ().
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-  */
+> +	default y
+> +	help
+> +	  virtual kvm ptp clock hypercall service for arm64
+> +
+
+I'm not keen on making this a compile option, because whatever is not
+always on ends up bit-rotting. Please drop the option.
+
+>  endif # KVM
+>  
+>  endif # VIRTUALIZATION
+> diff --git a/arch/arm64/kvm/arch_timer.c b/arch/arm64/kvm/arch_timer.c
+> index 32ba6fbc3814..eb85f6701845 100644
+> --- a/arch/arm64/kvm/arch_timer.c
+> +++ b/arch/arm64/kvm/arch_timer.c
+> @@ -81,7 +81,7 @@ u64 timer_get_cval(struct arch_timer_context *ctxt)
+>  	}
+>  }
+>  
+> -static u64 timer_get_offset(struct arch_timer_context *ctxt)
+> +u64 timer_get_offset(struct arch_timer_context *ctxt)
+>  {
+>  	struct kvm_vcpu *vcpu = ctxt->vcpu;
+>  
+> diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
+> index 901c60f119c2..2628ddc13abd 100644
+> --- a/arch/arm64/kvm/hypercalls.c
+> +++ b/arch/arm64/kvm/hypercalls.c
+> @@ -3,6 +3,7 @@
+>  
+>  #include <linux/arm-smccc.h>
+>  #include <linux/kvm_host.h>
+> +#include <linux/clocksource_ids.h>
+>  
+>  #include <asm/kvm_emulate.h>
+>  
+> @@ -11,6 +12,10 @@
+>  
+>  int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+>  {
+> +#ifdef CONFIG_ARM64_KVM_PTP_HOST
+> +	struct system_time_snapshot systime_snapshot;
+> +	u64 cycles = -1;
+> +#endif
+
+Please move all the PTP-related code to its own function, rather than
+keeping it in the main HVC dispatcher. Also assigning a negative value
+to something that is unsigned hurts my eyes. Consider using ~0UL instead.
+See the comment below though.
+
+>  	u32 func_id = smccc_get_function(vcpu);
+>  	u64 val[4] = {SMCCC_RET_NOT_SUPPORTED};
+>  	u32 feature;
+> @@ -21,6 +26,10 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+>  		val[0] = ARM_SMCCC_VERSION_1_1;
+>  		break;
+>  	case ARM_SMCCC_ARCH_FEATURES_FUNC_ID:
+> +		/*
+> +		 * Note: keep in mind that feature is u32 and smccc_get_arg1
+> +		 * will return u64, so need auto cast here.
+> +		 */
+>  		feature = smccc_get_arg1(vcpu);
+>  		switch (feature) {
+>  		case ARM_SMCCC_ARCH_WORKAROUND_1:
+> @@ -70,7 +79,47 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+>  		break;
+>  	case ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID:
+>  		val[0] = BIT(ARM_SMCCC_KVM_FUNC_FEATURES);
+> +#ifdef CONFIG_ARM64_KVM_PTP_HOST
+> +		val[0] |= BIT(ARM_SMCCC_KVM_FUNC_KVM_PTP);
+> +#endif
+>  		break;
+> +#ifdef CONFIG_ARM64_KVM_PTP_HOST
+> +	/*
+> +	 * This serves virtual kvm_ptp.
+> +	 * Four values will be passed back.
+> +	 * reg0 stores high 32-bit host ktime;
+> +	 * reg1 stores low 32-bit host ktime;
+> +	 * reg2 stores high 32-bit difference of host cycles and cntvoff;
+> +	 * reg3 stores low 32-bit difference of host cycles and cntvoff.
+
+This comment doesn't match what I read below.
+
+> +	 */
+> +	case ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID:
+> +		/*
+> +		 * system time and counter value must captured in the same
+> +		 * time to keep consistency and precision.
+> +		 */
+> +		ktime_get_snapshot(&systime_snapshot);
+> +		if (systime_snapshot.cs_id != CSID_ARM_ARCH_COUNTER)
+> +			break;
+> +		val[0] = systime_snapshot.real;
+> +		/*
+> +		 * which of virtual counter or physical counter being
+> +		 * asked for is decided by the r1 value of smccc
+
+nit: s/smccc/SMCCC/
+
+> +		 * call. If no invalid r1 value offered, default cycle
+
+nit: If r1 is an invalid value...
+
+> +		 * value(-1) will return.
+
+nit: will be returned.
+
+> +		 */
+> +		feature = smccc_get_arg1(vcpu);
+> +		switch (feature) {
+> +		case ARM_PTP_VIRT_COUNTER:
+> +			cycles = systime_snapshot.cycles -
+> +				 vcpu_read_sys_reg(vcpu, CNTVOFF_EL2);
+
+nit: On a single line, please.
+
+> +			break;
+> +		case ARM_PTP_PHY_COUNTER:
+> +			cycles = systime_snapshot.cycles;
+> +			break;
+
+It'd be a lot clearer if you had a default: case here, handling the
+invalid case.
+
+> +		}
+> +		val[1] = cycles;
+
+Given that cycles is a 64bit value, how does it work for a 32bit
+guest? Or have you removed support for 32bit guests altogether?
+
+> +		break;
+> +#endif
+>  	default:
+>  		return kvm_psci_call(vcpu);
+>  	}
+> diff --git a/include/kvm/arm_arch_timer.h b/include/kvm/arm_arch_timer.h
+> index 51c19381108c..5a2b6da9be7a 100644
+> --- a/include/kvm/arm_arch_timer.h
+> +++ b/include/kvm/arm_arch_timer.h
+> @@ -105,5 +105,6 @@ void kvm_arm_timer_write_sysreg(struct kvm_vcpu *vcpu,
+>  /* Needed for tracing */
+>  u32 timer_get_ctl(struct arch_timer_context *ctxt);
+>  u64 timer_get_cval(struct arch_timer_context *ctxt);
+> +u64 timer_get_offset(struct arch_timer_context *ctxt);
+>  
+>  #endif
+> diff --git a/include/linux/arm-smccc.h b/include/linux/arm-smccc.h
+> index f7b5dd7dbf9f..0724840eb5f7 100644
+> --- a/include/linux/arm-smccc.h
+> +++ b/include/linux/arm-smccc.h
+> @@ -103,6 +103,7 @@
+>  
+>  /* KVM "vendor specific" services */
+>  #define ARM_SMCCC_KVM_FUNC_FEATURES		0
+> +#define ARM_SMCCC_KVM_FUNC_KVM_PTP		1
+>  #define ARM_SMCCC_KVM_FUNC_FEATURES_2		127
+>  #define ARM_SMCCC_KVM_NUM_FUNCS			128
+>  
+> @@ -112,6 +113,21 @@
+>  			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
+>  			   ARM_SMCCC_KVM_FUNC_FEATURES)
+>  
+> +/*
+> + * ptp_kvm is a feature used for time sync between vm and host.
+> + * ptp_kvm module in guest kernel will get service from host using
+> + * this hypercall ID.
+> + */
+> +#define ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID                           \
+> +	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,                         \
+> +			   ARM_SMCCC_SMC_32,                            \
+> +			   ARM_SMCCC_OWNER_VENDOR_HYP,                  \
+> +			   ARM_SMCCC_KVM_FUNC_KVM_PTP)
+> +
+> +/* ptp_kvm counter type ID */
+> +#define ARM_PTP_VIRT_COUNTER			0
+> +#define ARM_PTP_PHY_COUNTER			1
+> +
+>  /* Paravirtualised time calls (defined by ARM DEN0057A) */
+>  #define ARM_SMCCC_HV_PV_TIME_FEATURES				\
+>  	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
+> -- 
+> 2.17.1
+> 
+> 
+
+Thanks,
+
+	M.
+
 -- 
-2.20.1
-
+Without deviation from the norm, progress is not possible.
