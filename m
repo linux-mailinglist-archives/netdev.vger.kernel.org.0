@@ -2,112 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E9D925D032
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 06:05:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5138525D03E
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 06:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726032AbgIDEFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 00:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725765AbgIDEFi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 00:05:38 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE30BC061244
-        for <netdev@vger.kernel.org>; Thu,  3 Sep 2020 21:05:37 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id y7so2719777pjt.1
-        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 21:05:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=MXO78SgvM84Gs6K+9ENMwYPEaoByjHp37K3hV3V71RA=;
-        b=vHCV0yRSCuX+IQBLhgPqB/bChBLQ9BVdbpS5na7gF+WPtRgf1fB2NIqd2zbJ5hPC/w
-         NnLFAh7yQDsBUfq9rrzyysvy42fKbuV8AgnYBkGZsrMCZsmQzqtKc2vDvcHv9t0DogAr
-         GXdlgtQCHCqrLz5U9/7mBJBqwHtJd/Nj01kwQCDZo3UKkU1pJ3mvYbfxcp4Lxcc+OiLS
-         sEYhjvNIYfA63tVl70rCc+7nSvHAXYXaNCUSQWqYS3zzVf4cm6njGc5cM6w3I7zW++df
-         WriCppYPLMnOZ9eVju4tqPBOlkcK1MHs807xuBN7/WHoZ/ISmMR+n5sDFllqVARNTK/H
-         8V3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=MXO78SgvM84Gs6K+9ENMwYPEaoByjHp37K3hV3V71RA=;
-        b=Lm2neiMZRssHn6rPJQXmWyij0miDqy4ncbFWvHgVp2ptLUY/7QbTj97XD5faiqv/F4
-         p4EL8UIbgT860jkZrwcwtdJv8+TlgaDVYNzGqqcTV4e6vNYAT4pwOiGX6YYTR28vcI+W
-         u26BR/4tEmzMkwQXY7kE7qHB325bHvHqX0lT5/VH0wEzFbiCsbZ+tnYUKzm+UC9qCpre
-         46Q0Javg+JxwcG2J8aPcR9pnTbf82pCyEL5227xRAsvRzVumyUNu+8WwE9caIQIKsaZZ
-         24TH8iUVg20fN+ejmdNsgeeaWVasYCAsuPVpCDRs5jqoeb+C7IqWS0NBUYphtU9FTyUy
-         tthg==
-X-Gm-Message-State: AOAM531x1M7MmvwUBhd2POGS3IWh039rj5Pyk+4hnWv4NHbGczSlcghm
-        QJDZ8WLq5ORbtOwOpcUOKPosCrRTAJttJA==
-X-Google-Smtp-Source: ABdhPJyaJilo19xbefiHSk4xNbva3Cgs+S1CY0Chq8OUREAiTng1AYIpxqrxXDrHJElW5kENURch+C39tT/M+w==
-X-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
- (user=edumazet job=sendgmr) by 2002:a65:4389:: with SMTP id
- m9mr5490329pgp.127.1599192337138; Thu, 03 Sep 2020 21:05:37 -0700 (PDT)
-Date:   Thu,  3 Sep 2020 21:05:28 -0700
-Message-Id: <20200904040528.3635711-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
-Subject: [PATCH net] net/packet: fix overflow in tpacket_rcv
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Or Cohen <orcohen@paloaltonetworks.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726133AbgIDEQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 00:16:23 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:5274 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725765AbgIDEQW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 00:16:22 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0844EueD009349
+        for <netdev@vger.kernel.org>; Thu, 3 Sep 2020 21:16:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=k3BnDn9Pjj5o4CEbupjgzlLI4384iKFFs/2ktBDkssE=;
+ b=WBFcpWazK8PGCCMXCWEHC6ov0uQaPV96tpaopP7tzfLOBXlX5dSfPHmVHVeK1m1fA0Xg
+ tMfLCFM/mO38swebMHr9b6xDdtTXEIXFlBEoz9an67B56OBfcidJ214IhFTzTzt4wM+W
+ v3nCC+z5tP0iMTa9fQu4UjkL7cFwJflnJVc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 33b2heutmh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 03 Sep 2020 21:16:21 -0700
+Received: from intmgw003.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 3 Sep 2020 21:16:20 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id DA1BF2EC6841; Thu,  3 Sep 2020 21:16:14 -0700 (PDT)
+From:   Andrii Nakryiko <andriin@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: [PATCH bpf-next 1/2] libbpf: fix another __u64 cast in printf
+Date:   Thu, 3 Sep 2020 21:16:10 -0700
+Message-ID: <20200904041611.1695163-1-andriin@fb.com>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-04_02:2020-09-03,2020-09-04 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
+ mlxlogscore=865 mlxscore=0 priorityscore=1501 malwarescore=0
+ impostorscore=0 phishscore=0 lowpriorityscore=0 spamscore=0 clxscore=1015
+ bulkscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009040038
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Or Cohen <orcohen@paloaltonetworks.com>
+Another issue of __u64 needing either %lu or %llu, depending on the
+architecture. Fix with cast to `unsigned long long`.
 
-Using tp_reserve to calculate netoff can overflow as
-tp_reserve is unsigned int and netoff is unsigned short.
-
-This may lead to macoff receving a smaller value then
-sizeof(struct virtio_net_hdr), and if po->has_vnet_hdr
-is set, an out-of-bounds write will occur when
-calling virtio_net_hdr_from_skb.
-
-The bug is fixed by converting netoff to unsigned int
-and checking if it exceeds USHRT_MAX.
-
-This addresses CVE-2020-14386
-
-Fixes: 8913336a7e8d ("packet: add PACKET_RESERVE sockopt")
-Signed-off-by: Or Cohen <orcohen@paloaltonetworks.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Fixes: 7e06aad52929 ("libbpf: Add multi-prog section support for struct_o=
+ps")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- net/packet/af_packet.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 479c257ded7335616da35aa5f7880b54aa2f9fe0..1377a485d45109da8e5f241ff8f64d4f37180592 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -2170,7 +2170,8 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
- 	int skb_len = skb->len;
- 	unsigned int snaplen, res;
- 	unsigned long status = TP_STATUS_USER;
--	unsigned short macoff, netoff, hdrlen;
-+	unsigned short macoff, hdrlen;
-+	unsigned int netoff;
- 	struct sk_buff *copy_skb = NULL;
- 	struct timespec64 ts;
- 	__u32 ts_status;
-@@ -2239,6 +2240,10 @@ static int tpacket_rcv(struct sk_buff *skb, struct net_device *dev,
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 47b43c13eee5..53be32a2b9fc 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8224,7 +8224,7 @@ static int bpf_object__collect_st_ops_relos(struct =
+bpf_object *obj,
  		}
- 		macoff = netoff - maclen;
- 	}
-+	if (netoff > USHRT_MAX) {
-+		atomic_inc(&po->tp_drops);
-+		goto drop_n_restore;
-+	}
- 	if (po->tp_version <= TPACKET_V2) {
- 		if (macoff + snaplen > po->rx_ring.frame_size) {
- 			if (po->copy_thresh &&
--- 
-2.28.0.526.ge36021eeef-goog
+ 		if (sym.st_value % BPF_INSN_SZ) {
+ 			pr_warn("struct_ops reloc %s: invalid target program offset %llu\n",
+-				map->name, (__u64)sym.st_value);
++				map->name, (unsigned long long)sym.st_value);
+ 			return -LIBBPF_ERRNO__FORMAT;
+ 		}
+ 		insn_idx =3D sym.st_value / BPF_INSN_SZ;
+--=20
+2.24.1
 
