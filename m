@@ -2,81 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A162725DBCB
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 16:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8C4725DBE3
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 16:36:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730607AbgIDOdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 10:33:18 -0400
-Received: from mga05.intel.com ([192.55.52.43]:13049 "EHLO mga05.intel.com"
+        id S1730395AbgIDOgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 10:36:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730416AbgIDOdD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Sep 2020 10:33:03 -0400
-IronPort-SDR: /s6PvvRowemCwoOJhRguF20WS5xxOX49f4y8V3ExaQIUh9lGVoz7YIDij1DJ0GlrR4ajOIoK7E
- nz83Fm+57h7A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9734"; a="242567070"
-X-IronPort-AV: E=Sophos;i="5.76,389,1592895600"; 
-   d="scan'208";a="242567070"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2020 07:33:02 -0700
-IronPort-SDR: 0fQmUyCZwuWDeyZqTifDwD//sGCxUDtTpl0ayOdXn4hYYfPD01xG/YbSufAPCUvfyhHmrjAMqG
- zewbQoeohDWQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,389,1592895600"; 
-   d="scan'208";a="332178816"
-Received: from andreyfe-mobl2.ccr.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.37.82])
-  by orsmga008.jf.intel.com with ESMTP; 04 Sep 2020 07:32:58 -0700
-Subject: Re: [PATCH bpf-next 0/6] xsk: exit NAPI loop when AF_XDP Rx ring is
- full
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, magnus.karlsson@intel.com,
-        davem@davemloft.net, kuba@kernel.org, john.fastabend@gmail.com,
-        intel-wired-lan@lists.osuosl.org
-References: <20200904135332.60259-1-bjorn.topel@gmail.com>
- <20200904162751.632c4443@carbon>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <27e05518-99c6-15e2-b801-cbc0310630ef@intel.com>
-Date:   Fri, 4 Sep 2020 16:32:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1730416AbgIDOg2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 10:36:28 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5DF80206F2;
+        Fri,  4 Sep 2020 14:36:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599230187;
+        bh=SJlEO4N5TR/khQclPBpz+ffvQxoaMzhtcy+BXKr8CN4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RSsNrw0B7NTAEh5S2xDcxMCwg9oo3qOuYcnBcEO9fUkmRH51/vrsJYuf5TNAGBLN7
+         QHceADKwaHesQ7q1qSl51AelLujPDfeZRNKCIhPXCdXy7NEKN1Rn4AJe2wyyN/12Ra
+         k+2NmfnZGXK1Xah4n6Wy2wOBczhAFf6b6uowzIj0=
+Date:   Fri, 4 Sep 2020 16:36:48 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     "Nuernberger, Stefan" <snu@amazon.de>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "orcohen@paloaltonetworks.com" <orcohen@paloaltonetworks.com>,
+        "Woodhouse, David" <dwmw@amazon.co.uk>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Shah, Amit" <aams@amazon.de>
+Subject: Re: [PATCH] net/packet: fix overflow in tpacket_rcv
+Message-ID: <20200904143648.GA3212511@kroah.com>
+References: <CAM6JnLf_8nwzq+UGO+amXpeApCDarJjwzOEHQd5qBhU7YKm3DQ@mail.gmail.com>
+ <20200904133052.20299-1-snu@amazon.com>
+ <20200904141617.GA3185752@kroah.com>
+ <1599229365.17829.3.camel@amazon.de>
 MIME-Version: 1.0
-In-Reply-To: <20200904162751.632c4443@carbon>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <1599229365.17829.3.camel@amazon.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-09-04 16:27, Jesper Dangaard Brouer wrote:
-> On Fri,  4 Sep 2020 15:53:25 +0200
-> Bj√∂rn T√∂pel <bjorn.topel@gmail.com> wrote:
+On Fri, Sep 04, 2020 at 02:22:46PM +0000, Nuernberger, Stefan wrote:
+> On Fri, 2020-09-04 at 16:16 +0200, Greg Kroah-Hartman wrote:
+> > On Fri, Sep 04, 2020 at 03:30:52PM +0200, Stefan Nuernberger wrote:
+> > > 
+> > > From: Or Cohen <orcohen@paloaltonetworks.com>
+> > > 
+> > > Using tp_reserve to calculate netoff can overflow as
+> > > tp_reserve is unsigned int and netoff is unsigned short.
+> > > 
+> > > This may lead to macoff receving a smaller value then
+> > > sizeof(struct virtio_net_hdr), and if po->has_vnet_hdr
+> > > is set, an out-of-bounds write will occur when
+> > > calling virtio_net_hdr_from_skb.
+> > > 
+> > > The bug is fixed by converting netoff to unsigned int
+> > > and checking if it exceeds USHRT_MAX.
+> > > 
+> > > This addresses CVE-2020-14386
+> > > 
+> > > Fixes: 8913336a7e8d ("packet: add PACKET_RESERVE sockopt")
+> > > Signed-off-by: Or Cohen <orcohen@paloaltonetworks.com>
+> > > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > > 
+> > > [ snu: backported to 4.9, changed tp_drops counting/locking ]
+> > > 
+> > > Signed-off-by: Stefan Nuernberger <snu@amazon.com>
+> > > CC: David Woodhouse <dwmw@amazon.co.uk>
+> > > CC: Amit Shah <aams@amazon.com>
+> > > CC: stable@vger.kernel.org
+> > > ---
+> > > †net/packet/af_packet.c | 9 ++++++++-
+> > > †1 file changed, 8 insertions(+), 1 deletion(-)
+> > What is the git commit id of this patch in Linus's tree?
+> > 
 > 
->> On my machine the "one core scenario Rx drop" performance went from
->> ~65Kpps to 21Mpps. In other words, from "not usable" to
->> "usable". YMMV.
-> 
-> We have observed this kind of dropping off an edge before with softirq
-> (when userspace process runs on same RX-CPU), but I thought that Eric
-> Dumazet solved it in 4cd13c21b207 ("softirq: Let ksoftirqd do its job").
-> 
-> I wonder what makes AF_XDP different or if the problem have come back?
-> 
+> Sorry, this isn't merged on Linus' tree yet. It's a heads up that the
+> backport isn't straightforward.
 
-I would say this is not the same issue. The problem is that the softirq 
-is busy dropping packets since the AF_XDP Rx is full. So, the cycles 
-*are* split 50/50, which is not what we want in this case. :-)
+Ok, please be more specific about this when sending patches out...
 
-This issue is more of a "Intel AF_XDP ZC drivers does stupid work", than 
-fairness. If the Rx ring is full, then there is really no use to let the 
-NAPI loop continue.
-
-Would you agree, or am I rambling? :-P
-
-
-Bj√∂rn
+greg k-h
