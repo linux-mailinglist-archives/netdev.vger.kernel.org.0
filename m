@@ -2,108 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02D0525D332
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 10:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51D1425D335
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 10:08:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728118AbgIDIHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 04:07:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58546 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726251AbgIDIHe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 4 Sep 2020 04:07:34 -0400
-Received: from localhost (unknown [151.66.86.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8D7E6206B8;
-        Fri,  4 Sep 2020 08:07:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599206854;
-        bh=51bpI3bjUxtI3call4hbqi7swrIWd58IgrWWgN9xq2Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ONgBD/NZslOJRQaxaczJvCMCkeIiitiu14SkFQFkBkVTPYvwevHMUue8u28vZT6uX
-         qnQ2He8SFFye5W1la0Ww+mUxrAtR5QS1S6FjU/QOC5c3VgY18JzC3nkHOoGdP2gGlf
-         EtmdXOqPDO8kqAuR7wkxptdpB9c0o8VVr0672RWw=
-Date:   Fri, 4 Sep 2020 10:07:29 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com,
-        echaudro@redhat.com, sameehj@amazon.com, kuba@kernel.org,
-        john.fastabend@gmail.com, daniel@iogearbox.net, ast@kernel.org,
-        shayagr@amazon.com
-Subject: Re: [PATCH v2 net-next 6/9] bpf: helpers: add
- bpf_xdp_adjust_mb_header helper
-Message-ID: <20200904080729.GE2884@lore-desk>
-References: <cover.1599165031.git.lorenzo@kernel.org>
- <b7475687bb09aac6ec051596a8ccbb311a54cb8a.1599165031.git.lorenzo@kernel.org>
- <20200904010924.m7h434gms27a3r77@ast-mbp.dhcp.thefacebook.com>
+        id S1729654AbgIDII0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 04:08:26 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:10767 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726251AbgIDIIW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 04:08:22 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id EFEB2D3A099A398AECF3;
+        Fri,  4 Sep 2020 16:08:16 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 4 Sep 2020 16:08:08 +0800
+Subject: Re: [PATCH net-next] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        "David Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+References: <1598921718-79505-1-git-send-email-linyunsheng@huawei.com>
+ <CAM_iQpVtb3Cks-LacZ865=C8r-_8ek1cy=n3SxELYGxvNgkPtw@mail.gmail.com>
+ <511bcb5c-b089-ab4e-4424-a83c6e718bfa@huawei.com>
+ <CAM_iQpW1c1TOKWLxm4uGvCUzK0mKKeDg1Y+3dGAC04pZXeCXcw@mail.gmail.com>
+ <f81b534a-5845-ae7d-b103-434232c0f5ff@huawei.com>
+ <CAM_iQpXmpMdxF2JDOROaf+Tjk-8dASiXz53K-Ph_q7jVMe0oVw@mail.gmail.com>
+ <cd773132-c98e-18e1-67fd-bbef6babbf0f@huawei.com>
+ <CAM_iQpWbZdh5-UGBi6PM19EBgV+Bq7vmifgJPdak6X=R9yztnw@mail.gmail.com>
+ <c0543793-11fa-6ef1-f8ea-6a724ab2de8f@huawei.com>
+ <CAM_iQpWGaTSkg+-Em6u=NSWcyswX-xN=-1p0OAdaR___U1M4rg@mail.gmail.com>
+ <5f5198ae79b98_361ef20824@john-XPS-13-9370.notmuch>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <968db64f-a139-541f-e046-fba25e037d3e@huawei.com>
+Date:   Fri, 4 Sep 2020 16:08:07 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="a+b56+3nqLzpiR9O"
-Content-Disposition: inline
-In-Reply-To: <20200904010924.m7h434gms27a3r77@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <5f5198ae79b98_361ef20824@john-XPS-13-9370.notmuch>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020/9/4 9:30, John Fastabend wrote:
+> Cong Wang wrote:
+>> On Wed, Sep 2, 2020 at 7:22 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>
+>>> On 2020/9/3 9:48, Cong Wang wrote:
+>>>> On Wed, Sep 2, 2020 at 6:22 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>>
+>>>>> On 2020/9/3 8:35, Cong Wang wrote:
+>>>>>> On Tue, Sep 1, 2020 at 11:35 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>>>>
+>>>>>>> On 2020/9/2 12:41, Cong Wang wrote:
+>>>>>>>> On Tue, Sep 1, 2020 at 6:42 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>>>>>>
+>>>>>>>>> On 2020/9/2 2:24, Cong Wang wrote:
+>>>>>>>>>> On Mon, Aug 31, 2020 at 5:59 PM Yunsheng Lin <linyunsheng@huawei.com> wrote:
+>>>>>>>>>>>
+>>>>>>>>>>> Currently there is concurrent reset and enqueue operation for the
+>>>>>>>>>>> same lockless qdisc when there is no lock to synchronize the
+>>>>>>>>>>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+>>>>>>>>>>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+>>>>>>>>>>> out-of-bounds access for priv->ring[] in hns3 driver if user has
+>>>>>>>>>>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+>>>>>>>>>>> skb with a larger queue_mapping after the corresponding qdisc is
+>>>>>>>>>>> reset, and call hns3_nic_net_xmit() with that skb later.
+>>>>>>>>>>
+>>>>>>>>>> Can you be more specific here? Which call path requests a smaller
+>>>>>>>>>> tx queue num? If you mean netif_set_real_num_tx_queues(), clearly
+>>>>>>>>>> we already have a synchronize_net() there.
+>>>>>>>>>
+>>>>>>>>> When the netdevice is in active state, the synchronize_net() seems to
+>>>>>>>>> do the correct work, as below:
+>>>>>>>>>
+>>>>>>>>> CPU 0:                                       CPU1:
+>>>>>>>>> __dev_queue_xmit()                       netif_set_real_num_tx_queues()
+>>>>>>>>> rcu_read_lock_bh();
+>>>>>>>>> netdev_core_pick_tx(dev, skb, sb_dev);
+>>>>>>>>>         .
+>>>>>>>>>         .                               dev->real_num_tx_queues = txq;
+>>>>>>>>>         .                                       .
+>>>>>>>>>         .                                       .
+>>>>>>>>>         .                               synchronize_net();
+>>>>>>>>>         .                                       .
+>>>>>>>>> q->enqueue()                                    .
+>>>>>>>>>         .                                       .
+>>>>>>>>> rcu_read_unlock_bh()                            .
+>>>>>>>>>                                         qdisc_reset_all_tx_gt
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Right.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>> but dev->real_num_tx_queues is not RCU-protected, maybe that is a problem
+>>>>>>>>> too.
+>>>>>>>>>
+>>>>>>>>> The problem we hit is as below:
+>>>>>>>>> In hns3_set_channels(), hns3_reset_notify(h, HNAE3_DOWN_CLIENT) is called
+>>>>>>>>> to deactive the netdevice when user requested a smaller queue num, and
+>>>>>>>>> txq->qdisc is already changed to noop_qdisc when calling
+>>>>>>>>> netif_set_real_num_tx_queues(), so the synchronize_net() in the function
+>>>>>>>>> netif_set_real_num_tx_queues() does not help here.
+>>>>>>>>
+>>>>>>>> How could qdisc still be running after deactivating the device?
+>>>>>>>
+>>>>>>> qdisc could be running during the device deactivating process.
+>>>>>>>
+>>>>>>> The main process of changing channel number is as below:
+>>>>>>>
+>>>>>>> 1. dev_deactivate()
+>>>>>>> 2. hns3 handware related setup
+>>>>>>> 3. netif_set_real_num_tx_queues()
+>>>>>>> 4. netif_tx_wake_all_queues()
+>>>>>>> 5. dev_activate()
+>>>>>>>
+>>>>>>> During step 1, qdisc could be running while qdisc is resetting, so
+>>>>>>> there could be skb left in the old qdisc(which will be restored back to
+>>>>>>> txq->qdisc during dev_activate()), as below:
+>>>>>>>
+>>>>>>> CPU 0:                                       CPU1:
+>>>>>>> __dev_queue_xmit():                      dev_deactivate_many():
+>>>>>>> rcu_read_lock_bh();                      qdisc_deactivate(qdisc);
+>>>>>>> q = rcu_dereference_bh(txq->qdisc);             .
+>>>>>>> netdev_core_pick_tx(dev, skb, sb_dev);          .
+>>>>>>>         .
+>>>>>>>         .                               rcu_assign_pointer(dev_queue->qdisc, qdisc_default);
+>>>>>>>         .                                       .
+>>>>>>>         .                                       .
+>>>>>>>         .                                       .
+>>>>>>>         .                                       .
+>>>>>>> q->enqueue()                                    .
+>>>>>>
+>>>>>>
+>>>>>> Well, like I said, if the deactivated bit were tested before ->enqueue(),
+>>>>>> there would be no packet queued after qdisc_deactivate().
+> 
+> Trying to unwind this through git history :/
+> 
+> Original code had a test_bit in dev_xmit_skb(),
+> 
+> 	if (q->flags & TCQ_F_NOLOCK) {
+> 		if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED, &q->state))) {
+> 			__qdisc_drop(skb, &to_free);
+> 			rc = NET_XMIT_DROP;
+> 		} else {
+> 			rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
+> 			__qdisc_run(q);
+> 		}
+> 
+> 		if (unlikely(to_free))
+> 			kfree_skb_list(to_free);
+> 		return rc;
+> 	}
+> 
+> So we would never enqueue something on top of a deactivated qdisc. And to ensure
+> we don't have any in-flight enqueues we have to swap qdiscs, wait a grace
+> period, and then reset the qdisc. That _should_ be OK.
 
---a+b56+3nqLzpiR9O
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Actually, the deactivated is not really needed to be checked after swapping qdiscs
+and waiting a grace period, because __dev_xmit_skb() only see the noop_qdisc now,
+so qdisc_reset() in safe from q->enqueue()?
 
-On Sep 03, Alexei Starovoitov wrote:
-> On Thu, Sep 03, 2020 at 10:58:50PM +0200, Lorenzo Bianconi wrote:
-> > Introduce bpf_xdp_adjust_mb_header helper in order to adjust frame
-> > headers moving *offset* bytes from/to the second buffer to/from the
-> > first one.
-> > This helper can be used to move headers when the hw DMA SG is not able
-> > to copy all the headers in the first fragment and split header and data
-> > pages.
-> >=20
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  include/uapi/linux/bpf.h       | 25 ++++++++++++----
-> >  net/core/filter.c              | 54 ++++++++++++++++++++++++++++++++++
-> >  tools/include/uapi/linux/bpf.h | 26 ++++++++++++----
-> >  3 files changed, 95 insertions(+), 10 deletions(-)
-> >=20
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 8dda13880957..c4a6d245619c 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -3571,11 +3571,25 @@ union bpf_attr {
-> >   *		value.
-> >   *
-> >   * long bpf_copy_from_user(void *dst, u32 size, const void *user_ptr)
-> > - * 	Description
-> > - * 		Read *size* bytes from user space address *user_ptr* and store
-> > - * 		the data in *dst*. This is a wrapper of copy_from_user().
-> > - * 	Return
-> > - * 		0 on success, or a negative error in case of failure.
-> > + *	Description
-> > + *		Read *size* bytes from user space address *user_ptr* and store
-> > + *		the data in *dst*. This is a wrapper of copy_from_user().
-> > + *
-> > + * long bpf_xdp_adjust_mb_header(struct xdp_buff *xdp_md, int offset)
->=20
-> botched rebase?
+> 
+> But, I'm still not entirely sure how you got here. In the drivers I did I always
+> stop the queue before messing with these things with netif_tx_stop_queue(). Then
+> we really should not get these packets into the driver.
+> 
+> In sch_direct_xmit():
+> 
+> 	if (likely(skb)) {
+> 		HARD_TX_LOCK(dev, txq, smp_processor_id());
+> 		if (!netif_xmit_frozen_or_stopped(txq))
+> 			skb = dev_hard_start_xmit(skb, dev, txq, &ret);
+> 
+> 		HARD_TX_UNLOCK(dev, txq);
+> 	} else {
+> 		if (root_lock)
+> 			spin_lock(root_lock);
+> 		return true;
+> 	}
+> 
+> Maybe I missed something? Does your driver use the netif_tx_stop/start APIs?
 
-Yes, sorry. I will fix in v3.
+The hns3 driver uses netif_tx_stop_all_queues() in hns3_nic_net_stop() before
+calling netif_carrier_off()
 
-Regards,
-Lorenzo
+and call netif_tx_wake_all_queues() and netif_carrier_on() when link is detected
+in hns3_link_status_change()
 
---a+b56+3nqLzpiR9O
-Content-Type: application/pgp-signature; name="signature.asc"
+The main process of changing channel number is as below:
+1. dev_deactivate()
+2. hns3 handware related setup
+3. netif_set_real_num_tx_queues()
+4. netif_tx_wake_all_queues()
+5. dev_activate()
 
------BEGIN PGP SIGNATURE-----
+During step 1, qdisc could be running while qdisc is resetting, so
+there could be skb left in the old qdisc(which will be restored back to
+txq->qdisc during dev_activate()), and the skb left in the old qdisc does not
+get called with hns3's xmit function in step 1, but get called with hns3's xmit
+function after step 5, because the old qdisc will be restored back to dev_queue->qdisc
+after step 5, which still has the skb left.
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX1H1vgAKCRA6cBh0uS2t
-rCQoAQDRwbWXFa91rQQ9h2A9he7g5Xkx6pPbCEP4tbMem4t8nQD9ErfxhYill3pH
-BnPLXhzHRZzMm1LDVjmKxyLHBCWS9gA=
-=RhEV
------END PGP SIGNATURE-----
+Hope I did not misunderstand your question.
 
---a+b56+3nqLzpiR9O--
+>  
+>>>>>
+>>>>> Only if the deactivated bit testing is also protected by qdisc->seqlock?
+>>>>> otherwise there is still window between setting and testing the deactivated bit.
+>>>>
+>>>> Can you be more specific here? Why testing or setting a bit is not atomic?
+>>>
+>>> testing a bit or setting a bit separately is atomic.
+>>> But testing a bit and setting a bit is not atomic, right?
+>>>
+>>>   cpu0:                   cpu1:
+>>>                         testing A bit
+>>> setting A bit                .
+>>>        .                     .
+>>>        .               qdisc enqueuing
+>>> qdisc reset
+>>>
+>>
+>> Well, this was not a problem until commit d518d2ed8640c1cbbb.
+>> Prior to that commit, qdsic can still be scheduled even with this
+>> race condition, that is, the packet just enqueued after resetting can
+>> still be dequeued with qdisc_run().
+>>
+>> It is amazing to see how messy the lockless qdisc is now.
+>>
+>> Thanks.
+> 
+> 
+> .
+> 
