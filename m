@@ -2,73 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F069F25DC27
-	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 16:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B8025DCAB
+	for <lists+netdev@lfdr.de>; Fri,  4 Sep 2020 17:01:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730469AbgIDOoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 10:44:14 -0400
-Received: from mail-il1-f207.google.com ([209.85.166.207]:55616 "EHLO
-        mail-il1-f207.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730429AbgIDOoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 10:44:10 -0400
-Received: by mail-il1-f207.google.com with SMTP id a15so4910691ilb.22
-        for <netdev@vger.kernel.org>; Fri, 04 Sep 2020 07:44:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=GE20mkCJFx34V9csXbBi5MpSPEm23j5O5gEKMXhuGs4=;
-        b=UKb5NeYDUSnrcBTcmbefyWkh6+YhP7+rLaPE3KMCOoOm0JukAB4TstBYIWKJ62mTMl
-         k/tiWPDI4v3k0005Bvav3JWy1P3dmDiFp4ZkBq9bAAuNYuLWmV4OXlZ0jgxjJqhm1La5
-         76jitARWSO3DCPRpmyx/nvxn6dQjkJpqF0C8XxpcO22fM9+FRLKERRIj/dVw+9ph4i27
-         FWy6EPWXYXzKM9JZNf8lOZuAKLLmvGUHnRgBrvZCv7NQCLs+b73qqPvwq2KxddsTO4+N
-         jRRs2AZrrRgPbOXuumdxyssGM1DyQaBsYNzOgA3NdVLhXeCGCC94Idf+spcx6CAYl/HU
-         jhaA==
-X-Gm-Message-State: AOAM5317VYJGdsS6uu4VgMbD+NHRqNgNQk/ulUW0Gc9E19BZdol8ECVb
-        xgx1jrivBdSVm9hSzmzukkvrqWMurOKCj/xRDcZsrqhStA6l
-X-Google-Smtp-Source: ABdhPJxZCmzJJSBtD6oipaJudDBJ1GQFFB0c3Y+RmR7v/iFXEsAA2X6Ph+jfCB/546LXa6E6JWGbeRIObehShZ2GPeZnQjV295Tv
+        id S1730429AbgIDPBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 11:01:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52994 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730220AbgIDPBd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 11:01:33 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C1492073B;
+        Fri,  4 Sep 2020 15:01:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599231692;
+        bh=x7Uz1wo0AnOwROnBkDUJMp7U+rADv+5/ZghVeKySSi0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U9q72NIEAPA+Vffj16VmYPcvqAY7QPHTC0mr+5AdEbczeU+MeSCAto99sPQPj4OHC
+         Es7aEMybUWwVieDU3ifPa3LaN0ewsZTKvz5fe2IlStXJ6n2BveEeJPWUj8Zmnv7jX4
+         QZ9ZTRK0xgAs4tVMuy+bYzItLS5Z61BIIgXHLj4Y=
+Date:   Fri, 4 Sep 2020 08:01:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH v2 net-next 0/2] ionic: add devlink dev flash support
+Message-ID: <20200904080130.53a66f32@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200904000534.58052-1-snelson@pensando.io>
+References: <20200904000534.58052-1-snelson@pensando.io>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1303:: with SMTP id g3mr4832562ilr.218.1599230649567;
- Fri, 04 Sep 2020 07:44:09 -0700 (PDT)
-Date:   Fri, 04 Sep 2020 07:44:09 -0700
-In-Reply-To: <00000000000055e1a9059f9e169f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c8101605ae7de686@google.com>
-Subject: Re: KASAN: use-after-free Write in refcount_warn_saturate
-From:   syzbot <syzbot+7dd7f2f77a7a01d1dc14@syzkaller.appspotmail.com>
-To:     abhishekpandit@chromium.org, alainm@chromium.org,
-        davem@davemloft.net, johan.hedberg@gmail.com,
-        johan.hedberg@intel.com, josua.mayer@jm0.eu,
-        jukka.rissanen@linux.intel.com, keescook@chromium.org,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, marcel@holtmann.org,
-        mcchou@chromium.org, mike@foundries.io, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+On Thu,  3 Sep 2020 17:05:32 -0700 Shannon Nelson wrote:
+> Add support for using devlink's dev flash facility to update the
+> firmware on an ionic device.  This is a simple model of pushing the
+> firmware file to the NIC, asking the NIC to unpack and install the file
+> into the device, and then selecting it for the next boot.  If any of
+> these steps fail, the whole transaction is failed.
+> 
+> We don't currently support doing these steps individually.  In the future
+> we want to be able to list the FW that is installed and selectable but
+> don't yet have the API to fully support that.
+> 
+> v2: change "Activate" to "Select" in status messages
 
-commit b83764f9220a4a14525657466f299850bbc98de9
-Author: Miao-chen Chou <mcchou@chromium.org>
-Date:   Tue Jun 30 03:15:00 2020 +0000
+Thanks!
 
-    Bluetooth: Fix kernel oops triggered by hci_adv_monitors_clear()
+Slightly off-topic for these patches but every new C file in ionic adds
+a set of those warnings (from sparse, I think, because it still builds):
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10f92e3e900000
-start commit:   c0842fbc random32: move the pseudo-random 32-bit definitio..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cf567e8c7428377e
-dashboard link: https://syzkaller.appspot.com/bug?extid=7dd7f2f77a7a01d1dc14
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15b606dc900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=123e87cc900000
+../drivers/net/ethernet/pensando/ionic/ionic_debugfs.c: note: in included file (through ../drivers/net/ethernet/pensando/ionic/ionic.h):
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:37:1: error: static assertion failed: "sizeof(union ionic_dev_regs) == 4096"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:39:1: error: static assertion failed: "sizeof(union ionic_dev_cmd_regs) == 2048"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:55:1: error: static assertion failed: "sizeof(struct ionic_dev_getattr_comp) == 16"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:56:1: error: static assertion failed: "sizeof(struct ionic_dev_setattr_cmd) == 64"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:57:1: error: static assertion failed: "sizeof(struct ionic_dev_setattr_comp) == 16"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:67:1: error: static assertion failed: "sizeof(struct ionic_port_getattr_comp) == 16"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:77:1: error: static assertion failed: "sizeof(struct ionic_lif_getattr_comp) == 16"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:78:1: error: static assertion failed: "sizeof(struct ionic_lif_setattr_cmd) == 64"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:79:1: error: static assertion failed: "sizeof(struct ionic_lif_setattr_comp) == 16"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:81:1: error: static assertion failed: "sizeof(struct ionic_q_init_cmd) == 64"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:118:1: error: static assertion failed: "sizeof(struct ionic_vf_setattr_cmd) == 64"
+../drivers/net/ethernet/pensando/ionic/ionic_dev.h:121:1: error: static assertion failed: "sizeof(struct ionic_vf_getattr_comp) == 16"
 
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: Bluetooth: Fix kernel oops triggered by hci_adv_monitors_clear()
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Any ideas on why?
