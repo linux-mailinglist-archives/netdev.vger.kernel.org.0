@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DD7525E3A8
-	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 00:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DACF25E3C6
+	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 00:37:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728116AbgIDWYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 4 Sep 2020 18:24:33 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57684 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727057AbgIDWYd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 4 Sep 2020 18:24:33 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kEK8F-0000pm-K0; Sat, 05 Sep 2020 00:24:31 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kEK8F-00053M-EK; Sat, 05 Sep 2020 00:24:31 +0200
-Subject: Re: [PATCH bpf-next 1/2] samples: bpf: Replace bpf_program__title()
- with bpf_program__section_name()
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20200904063434.24963-1-danieltimlee@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <b24c21f4-23dc-b704-4d46-9edcd3bbecad@iogearbox.net>
-Date:   Sat, 5 Sep 2020 00:24:30 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728161AbgIDWhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 4 Sep 2020 18:37:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44132 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728076AbgIDWhx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 4 Sep 2020 18:37:53 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 30C9B2083B;
+        Fri,  4 Sep 2020 22:37:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599259073;
+        bh=BuMxqvOBIWVktRGkHZ7UqG587bQO293E7TWSTxjeje0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=wyuXlWrw+QYnGXxvidjL5uirkBa6BpC0bsBRvJtPsTXLgG8ybZLv/VYUMllouQuAq
+         BV2f+etfLgYBIu0+deci0rhEvI2bPMIwx5FHnFj1zfvzHBGbY5nrD94aU7GODFu89J
+         +oQmiQg0TE+8hvvmNREgbT7jZWscqqNQvRyMHkNY=
+Date:   Fri, 4 Sep 2020 15:37:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>, netdev@vger.kernel.org,
+        jiri@nvidia.com
+Subject: Re: Exposing device ACL setting through devlink
+Message-ID: <20200904153751.17ad4b48@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200904083141.GE2997@nanopsycho.orion>
+References: <e7f76581-8525-2b98-ec4d-e772db692318@linux.ibm.com>
+        <20200904083141.GE2997@nanopsycho.orion>
 MIME-Version: 1.0
-In-Reply-To: <20200904063434.24963-1-danieltimlee@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25920/Fri Sep  4 15:46:46 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/4/20 8:34 AM, Daniel T. Lee wrote:
->  From commit 521095842027 ("libbpf: Deprecate notion of BPF program
-> "title" in favor of "section name""), the term title has been replaced
-> with section name in libbpf.
+On Fri, 4 Sep 2020 10:31:41 +0200 Jiri Pirko wrote:
+> Thu, Sep 03, 2020 at 07:59:45PM CEST, tlfalcon@linux.ibm.com wrote:
+> >Hello, I am trying to expose MAC/VLAN ACL and pvid settings for IBM
+> >VNIC devices to administrators through devlink (originally through
+> >sysfs files, but that was rejected in favor of devlink). Could you
+> >give any tips on how you might go about doing this?  
 > 
-> Since the bpf_program__title() has been deprecated, this commit
-> switches this function to bpf_program__section_name(). Due to
-> this commit, the compilation warning issue has also been resolved.
-> 
-> Fixes: 521095842027 ("libbpf: Deprecate notion of BPF program "title" in favor of "section name"")
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> Tom, I believe you need to provide more info about what exactly do you
+> need to setup. But from what you wrote, it seems like you are looking
+> for bridge/tc offload. The infra is already in place and drivers are
+> implementing it. See mlxsw for example.
 
-Both applied, thanks!
+I think Tom's use case is effectively exposing the the VF which VLANs
+and what MAC addrs it can use. Plus it's pvid. See:
+
+https://www.spinics.net/lists/netdev/msg679750.html
