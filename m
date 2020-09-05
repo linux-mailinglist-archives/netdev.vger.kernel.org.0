@@ -2,72 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A28425E6AC
-	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 11:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8112825E6DD
+	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 11:55:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726653AbgIEJUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 05:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35968 "EHLO
+        id S1726888AbgIEJzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 05:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726372AbgIEJUr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 05:20:47 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BB45C061244;
-        Sat,  5 Sep 2020 02:20:47 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id e33so5579378pgm.0;
-        Sat, 05 Sep 2020 02:20:47 -0700 (PDT)
+        with ESMTP id S1726372AbgIEJzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 05:55:47 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4EE4C061244
+        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 02:55:45 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id z13so5470707iom.8
+        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 02:55:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e3y7TtM1JD4U0ZffjOd3KNj7XrU0K7i58kkxLru4syI=;
-        b=MjMGYubx0SYscDX2p1a1H6uD7JtzYiTkJ4Y1Eb/7x5ZYYCtql/QvlEcR+Os+gYIN0n
-         HjBqaDTtetEHIB5P0ArJkahJLDgozRXx4AlmRXhKAL1UHwjmKh/irsvnGqS2fphfwr0l
-         zhcfa0wyuN5VQbsQHZfQ2TxuCuFiPGYVxmlg7fEgGk/Thhpr6j0kKmC8j75ou0w4axQ+
-         4I6lFGOZ60pBeBqQ7Mjie2PBxJFRP6k7VM0qENR4BOGrPah1ocprsdoZSXClX+dwQ5lk
-         kMSxxPQAHo8U6u1iPTG8QjeDyXnrMzrTeoYcG0gFFBK+Sf7ZqEdvTG1RuBAVPCYHiuwD
-         4L7g==
+        h=mime-version:from:date:message-id:subject:to;
+        bh=k8MDyZxdBBao8m9iinM1gQ4tGAh4+ECPw8DN14IcAHc=;
+        b=tjrBj5+0a5I7DwDGsRUd/Jl2i5XE12Z+KlJw2LGQvTN3yoa/W8H3kWlJpGTMs+LtHo
+         +Pe4M2lMRk2pYdpocfDQdShbUByD0AzoQSlTuUFUeenQ8NyczT8A17jTVLp4r+A4PnOh
+         fPhq9bBKk4hejoDzKLzCW7kf3v/fUy5vEVBdxJIetVcN2N/+jUsGyEG174IZZuR+vJ38
+         mctZBbD0phi26VtsLS8Q0NAeLYKxk06ogb5oniMGvf/rD0KE4svAT9s5fcqB2mg7VNCb
+         wmFSavlft8Wy5paWxavQbMPg1pTGcGTI9om0kOBSuzztkFmoJzHuDJ+G02OnAN3t7kyb
+         pXMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e3y7TtM1JD4U0ZffjOd3KNj7XrU0K7i58kkxLru4syI=;
-        b=qZZl9E1FWoQ8dnBAk+F1zhgHLHnyiZ1ybhVWmENNq/CTRuwzga9e5gsaug3OkzeCmc
-         ZxTBcSZ/OU9V6oGhuzMvQDy+pAGeQNKW/NHSke0f2RDHGyDRrUTdb1juRMntR77rnLcz
-         qWDvAe884U32UZn4mSfgzHVg+lI+d+PvFC31eetlafrx4b+WpyN3V8t+soVhirp7K43U
-         pNKgGXUhNZNEKAXTcZF/ecc8dOR5qeux1AJQR2u1lXgm1PcsEmVE495ARrXijm3ySs5n
-         E84euzlsrAAvp3HL6rzkXFt8xceE6nR/Z6hlD9o6br/qru/lvkeNqfahNEN/ILMMjc0O
-         dYkQ==
-X-Gm-Message-State: AOAM530lJmENl1qmNSOLnoUaEtFOluAyDh3npytey/CpObdEGO4uDrT2
-        tjN0ZDAadVb3IIoBWft9tWW7bQyz1VQaUQoG0Rw=
-X-Google-Smtp-Source: ABdhPJyg4/3ir6a2udyWDViNAOHiA6KwVTSKIsQHw/1Ee+7elKMhbRgdi8MSL/gai9YKpK6BCJG4+VBzYraH4AzzzyI=
-X-Received: by 2002:a63:4923:: with SMTP id w35mr10042456pga.368.1599297646736;
- Sat, 05 Sep 2020 02:20:46 -0700 (PDT)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=k8MDyZxdBBao8m9iinM1gQ4tGAh4+ECPw8DN14IcAHc=;
+        b=hgJ3sAzAoh7B8sZp//MmsO1F3FlvmHJQIMu06fNbvW0GBZ683WV3OVsa6t2bHk6avD
+         o97QA3WIU7tudsgTrYYfIj24KHqwKnYwsKkaSTC+1vORbv8sHZ14pjhkRj3X+oOA4buX
+         +18yzv4DGIANpiSsbIe/s6vhwSgm++cSMUBXSdMQmAFeQlAQZQjJvp3JEkZEYI84kYTQ
+         eIcAFxUtr4wKQf0dsVkPUg+K17XWgrwBht0qfgXE07bX/PTDqgtjWJU0hEBrruoD7uTx
+         +GKewUDxkoGSMcNlqmsqlTtlSzu+jaDHuRjvRq9TW1e1KTKPc+FWzt0bqq3m6KuS2vbU
+         ufkw==
+X-Gm-Message-State: AOAM532D8VIuduCQg8ZelTp9ImB0U15TyhlqRMscmRmvwoHwKzetJOcx
+        3k9PXWneobfMcrXVvBzi8hg573Y+0dIKKGvAiYk=
+X-Google-Smtp-Source: ABdhPJwCmX8nBrfHZF5YgLQ7DKSSr9jfOdu/mPhB1vse/QznwrRi8/5t7ICYR01/rrsQ5GiXM6oIQpspkypILvKphW8=
+X-Received: by 2002:a05:6602:25c9:: with SMTP id d9mr10786338iop.150.1599299745077;
+ Sat, 05 Sep 2020 02:55:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200903000658.89944-1-xie.he.0141@gmail.com> <20200904151441.27c97d80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAJht_EN+=WTuduvm43_Lq=XWL78AcF5q6Zoyg8S5fao_udL=+Q@mail.gmail.com>
- <CAJht_ENKyfMm7wAxcVSThEG63oVe72FvMs-5VaLWemKvveY+dQ@mail.gmail.com> <20200904213621.05dd6462@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200904213621.05dd6462@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sat, 5 Sep 2020 02:20:35 -0700
-Message-ID: <CAJht_EPf2Ht-mGEiim0oR7emkTwarpjv8uUvuQ439U1KCzsV-w@mail.gmail.com>
-Subject: Re: [PATCH net v2] drivers/net/wan/hdlc_fr: Add needed_headroom for
- PVC devices
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Krzysztof Halasa <khc@pm.waw.pl>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Received: by 2002:a4f:f6b3:0:0:0:0:0 with HTTP; Sat, 5 Sep 2020 02:55:44 -0700 (PDT)
+From:   "Shirley A. Campbell" <p.kofi.smith@gmail.com>
+Date:   Sat, 5 Sep 2020 10:55:44 +0100
+Message-ID: <CAMRfb-AP-oZK9TPqreJTPUY70XNEx8Mnjj7RuGSqTpibVR--+Q@mail.gmail.com>
+Subject: GET BACK TO US FOR OUR SERVICES
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 4, 2020 at 9:36 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Applied to net, thank you!
+Hi Everyone,
 
-Thank you, Jakub!
+My name is Shirley A. Campbell the Manager Investment Dept. of
+Manulife Investments an accredited Insurance and Finance broker with
+leading financial institution with extensive policies as one of the
+largest insurers and financial services.
+
+Meanwhile, we refer to our previous email regarding our interest in
+high return and low risk plan investment projects funding, Exchange
+traded funds (ETFs) and loan grants with low interest rate.
+
+Feel free to contact us if our offer have receive your interest, while
+awaiting your reply.
+
+Yours faithfully,
+Shirley A. Campbell / Manager Investment Dept.
+Manulife Investments Corp.
+500 King Street North Waterloo,
+ON N2J 4C6 Canada
+
+Our Services are :-
+
+Exchange Trading Funds/Loan Grants
+ETF Trading and Loan Grants Platform
+Exchange Traded Funds Trading and Investment Platform
+Investment Trends Funds /Loan Grants
+Exchange Traded Funds Trading Platform/Loan Grants
+Exchange Traded Funds (ETFs)/Loan Grants
+Loan Grants/Exchange Traded Funds (ETFs)
