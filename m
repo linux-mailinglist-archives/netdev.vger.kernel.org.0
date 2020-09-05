@@ -2,105 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B540525E59A
-	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 07:24:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A05725E5B1
+	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 08:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726476AbgIEFYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 01:24:06 -0400
-Received: from bmailout1.hostsharing.net ([83.223.95.100]:32783 "EHLO
-        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726261AbgIEFYG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 01:24:06 -0400
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id DA25F30006A1E;
-        Sat,  5 Sep 2020 07:24:03 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id B07D61175FD; Sat,  5 Sep 2020 07:24:03 +0200 (CEST)
-Date:   Sat, 5 Sep 2020 07:24:03 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, Laura Garcia <nevola@gmail.com>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
-Message-ID: <20200905052403.GA10306@wunner.de>
-References: <20200904162154.GA24295@wunner.de>
- <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
+        id S1726807AbgIEGNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 02:13:50 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:10818 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726596AbgIEGNt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Sep 2020 02:13:49 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id C86D6B3233B13E01E560;
+        Sat,  5 Sep 2020 14:13:44 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
+ 14.3.487.0; Sat, 5 Sep 2020 14:13:37 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 0/2] net: two updates related to UDP GSO
+Date:   Sat, 5 Sep 2020 14:11:11 +0800
+Message-ID: <1599286273-26553-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 04, 2020 at 11:14:37PM +0200, Daniel Borkmann wrote:
-> On 9/4/20 6:21 PM, Lukas Wunner wrote:
-> > nft and tc are orthogonal, i.e. filtering/mangling versus queueing.
-> > However tc has gained the ability to filter packets as well, hence
-> > there's some overlap in functionality.  Naturally tc does not allow
-> > the full glory of nft filtering/mangling options as Laura has stated,
-> > hence the need to add nft in the egress path.
-> 
-> Heh, really!? It sounds to me that you never looked serious enough into what
-> tc/BPF is actually doing.
+There are two updates relates to UDP GSO.
+#1 adds a new GSO type for UDPv6
+#2 adds check for UDP GSO when csum is disable in netdev_fix_features().
 
-It wasn't my intention to denigrate or belittle tc's capabilities
-with the above statement.
+Changes since RFC V2:
+- modifies the timing of setting UDP GSO type when doing UDP GRO in #1.
 
-I don't dispute that the original use case for which these patches
-were developed might be solved equally well with tc.  As I've stated
-before, I chose netfilter over tc because I needed an in-kernel API,
-which netfilter provides with nf_register_net_hook():
+Changes since RFC V1:
+- updates NETIF_F_GSO_LAST suggested by Willem de Bruijn.
+  and add NETIF_F_GSO_UDPV6_L4 feature for each driver who support UDP GSO in #1.
+  - add #2 who needs #1.
 
-https://lore.kernel.org/netdev/20191123142305.g2kkaudhhyui22fq@wunner.de/
+previous version:
+RFC V2: https://lore.kernel.org/netdev/1599143659-62176-1-git-send-email-tanhuazhong@huawei.com/
+RFC V1: https://lore.kernel.org/netdev/1599048911-7923-1-git-send-email-tanhuazhong@huawei.com/
 
-The motivation for these patches has pivoted away from my original
-use case, which is why I no longer mentioned it in the commit message.
+Huazhong Tan (2):
+  udp: add a GSO type for UDPv6
+  net: disable UDP GSO features when CSUM is disable
 
+ drivers/net/bonding/bond_main.c                         |  4 +++-
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c         |  3 ++-
+ .../net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c   |  1 +
+ .../net/ethernet/aquantia/atlantic/hw_atl2/hw_atl2.c    |  1 +
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c         |  2 +-
+ drivers/net/ethernet/chelsio/cxgb4/sge.c                | 17 ++++++++---------
+ drivers/net/ethernet/intel/i40e/i40e_main.c             |  1 +
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c             |  2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c               |  3 ++-
+ drivers/net/ethernet/intel/ice/ice_txrx.c               |  2 +-
+ drivers/net/ethernet/intel/igb/igb_main.c               |  9 ++++++---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c           |  9 ++++++---
+ .../net/ethernet/marvell/octeontx2/nic/otx2_common.c    |  2 +-
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c    |  2 +-
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c  |  2 +-
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c    |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c       |  9 ++++++---
+ drivers/net/ethernet/mellanox/mlx5/core/en_tx.c         |  2 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c       | 11 +++++++----
+ drivers/net/team/team.c                                 |  5 +++--
+ include/linux/netdev_features.h                         |  4 +++-
+ include/linux/netdevice.h                               |  1 +
+ include/linux/skbuff.h                                  |  8 ++++++++
+ include/linux/udp.h                                     |  4 ++--
+ net/core/dev.c                                          | 12 ++++++++++++
+ net/core/filter.c                                       |  6 ++----
+ net/core/skbuff.c                                       |  2 +-
+ net/ethtool/common.c                                    |  1 +
+ net/ipv6/udp.c                                          |  2 +-
+ net/ipv6/udp_offload.c                                  |  6 +++---
+ 31 files changed, 89 insertions(+), 48 deletions(-)
 
-> The tc queueing layer which is below is not the tc egress hook; the
-> latter is for filtering/mangling/forwarding or helping the lower tc
-> queueing layer to classify.
+-- 
+2.7.4
 
-People want to apply netfilter rules on egress, so either we need an
-egress hook in the xmit path or we'd have to teach tc to filter and
-mangle based on netfilter rules.  The former seemed more straight-forward
-to me but I'm happy to pursue other directions.
-
-
-> Why paying the performance hit going into the nft interpreter for this
-> hook for *every* other *unrelated* packet in the fast-path...
-
-As long as neither tc nor nft is used, *no* packet goes through the
-nft interpreter and I'm measuring a speedup as a result of moving
-the two out of the hotpath.
-
-If nft is used, only those interfaces for which netfilter rules have
-been hooked up go through the nft interpreter.
-
-
-> the case is rather if distros start adding DHCP
-> filtering rules by default there as per your main motivation then
-> everyone needs to pay this price, which is completely unreasonable
-> to perform in __dev_queue_xmit().
-
-So first you're saying that the patches are unnecessary and everything
-they do can be achieved with tc... and then you're saying distros are
-going to use the nft hook to filter DHCP by default, which will cost
-performance.  That seems contradictory.  Why aren't distros using tc
-today to filter DHCP?
-
-Thanks,
-
-Lukas
