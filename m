@@ -2,113 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9C1525E6F4
-	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 12:36:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BEF525E718
+	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 12:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728302AbgIEKck (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 06:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46880 "EHLO
+        id S1728434AbgIEKhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 06:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726302AbgIEKcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 06:32:39 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78F8C061244
-        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 03:32:38 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id z19so5143861lfr.4
-        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 03:32:38 -0700 (PDT)
+        with ESMTP id S1726597AbgIEKhN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 06:37:13 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A716CC061244;
+        Sat,  5 Sep 2020 03:37:12 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id b12so8302841edz.11;
+        Sat, 05 Sep 2020 03:37:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iKozwlzrBwDOZZQyoYHJabN4r3Vpg15uwW4kvVojjxI=;
-        b=TO3rfIfiwSe8RuXHcYLMdP7GiXtvfHyOkB5OeCUqgp3hO/LBwESBmOkLQiYLAvZ5qW
-         WUlnKZ+WmepflXs+HcTD1j70+/az9aU5fGp8O0XN4TOQG1phL7UkH1wlBaE+oH1HM3R8
-         blxGPWj08YFqGKUSw5urpzKQIkMkBydVHukwAOCVfWGjvvRAhlrfGczbq9o8MIwrJnyR
-         waBFmc56vp652rBT82J0K1i5jsopHZv7GBKBMyHkSOr8nr6Bq86nxWGnrB0Orp8GQu0o
-         ZYYsxGo1KIdB/fpcXfx6E1gmv5nNqg4UzeB819AApYACNiVbM/f4WInPZJDjzUsF+Xqv
-         vQ1A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=odY6KbSbKxqDrhObNYwd42zXyBsKpopwTCHslkv93Yg=;
+        b=ZBSeGqh+yeSHUuXd83cOOCh0FqhV/gbWL0FZZuwh3fcRbWKbFjQnc78qMMoGeNbDmE
+         zfMWGtn1wH6hVpeDBgR4/DFdcM+AgH/kXGqCnkIWsjZHeX8kaE0O7oljQltvU3hZ+xpV
+         2nlQdOtVznfq7G6lFS1OIdIHIhWiIPMwQA6f048xqe+WnT7Oxcv4jIJLV6/kGYMsqDrh
+         OJoZ0p5jp22XMRQKZtyclLPAO6fraEiVvavYnlG8CmNG0G1LLPqHWuNkH+4XLzU0oD4k
+         K7GAFc0nnpd1lw9FMjODkwR3F4WFiB2j9eUobIoHwy84UYGsrWwJUOmHuqjNmWTP8ad/
+         wITg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iKozwlzrBwDOZZQyoYHJabN4r3Vpg15uwW4kvVojjxI=;
-        b=kBK3O1KOLLW8yejHZbZqypNvBFaIbKSXLY1DYCpAcpy7/e6kgJqCYHONd2h8MJP4N1
-         X0KUkNEeXB69s1u8ziKq/S5SHXAFxj4b7+KxJDDFL5WJRHK/P+PxKMtOlmQCM+REVwUx
-         l9ENRcRifw6m+YwXfYWwdpTwbfxGIh8cLaCHlRXbPoK6nF9legnJC1JAFAbW/hQvKJjh
-         gzLISS5HsI0sA24QXjHVJjbtHWSmIJ7dHFCW0IVjMICUcRsg0+v1bA0/UrBGjiDlUcIm
-         9PHZrrrqORF8tGDahpjVm2SLbmOigD7WNyeE2W6QTphdNdKQHOM9PiT8UhuV7fQnMEze
-         8ruw==
-X-Gm-Message-State: AOAM531i3vhFI6nTqL1YrCY+eHhNTvsuLlaUXnom223lp/1TyXRU2nGP
-        CrRXDK3WHyQPDbMUWsfCBRxlqQ==
-X-Google-Smtp-Source: ABdhPJzt/A9+9bGxnMg2R4xraEZaJ9hQd57fqTdmYYo5CDCDUHNbSXGSou9VYYDJy+8L2cJxIzTzfQ==
-X-Received: by 2002:a05:6512:6cd:: with SMTP id u13mr2608373lff.17.1599301956275;
-        Sat, 05 Sep 2020 03:32:36 -0700 (PDT)
-Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id 10sm1951292lfq.64.2020.09.05.03.32.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=odY6KbSbKxqDrhObNYwd42zXyBsKpopwTCHslkv93Yg=;
+        b=SDy9FqqE3yc+FxVnB5Ld8s/kYJ99PH607imLxBAG30hIZVirSHN5BErUWNKp9+rax/
+         4Sq3Oy3q4SxbVTOQ5B8R1IvDdMT9NbJ6R5DA+zHUhO0i6IYl+GEAs3hABclQBL6MnFFp
+         7zCVjC4nFABObO3y6SarZuMUeuqOL0NtkWcKEuNx3haHi6XerDzIddkO/pkyYbu/Zw/9
+         z6uzIVT2+N8hnNhIsZWuVA8byooCi1ji4l+m8Dffe6L1ZL0nenTpn0YnVgUlH6KHbi94
+         d5QYJIPils8y6x7Laeu1G4w8xrj7MeaU2zp19WAZKkNyyFoIqDdTTnH5spMXf6hwjIch
+         x6CQ==
+X-Gm-Message-State: AOAM530vupt2p0e3opv00qkUTGbY6eGmQLAozHeZ07zuNU1jwiRYePFH
+        d8Mxnb5X6EIqzrYTZ0FoG17S6uxvCXDjmA==
+X-Google-Smtp-Source: ABdhPJzMEMnlHTtnM7c8zslsF/1YvBY6tY4FsARQfTRiVmLXlohH/ZHNQpDZkoYogmnLc2ijSzyp4w==
+X-Received: by 2002:a50:9fa5:: with SMTP id c34mr5652879edf.2.1599302229721;
+        Sat, 05 Sep 2020 03:37:09 -0700 (PDT)
+Received: from felia.fritz.box ([2001:16b8:2d30:ea00:952f:5889:9d53:77b0])
+        by smtp.gmail.com with ESMTPSA id k6sm8709692ejr.104.2020.09.05.03.37.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2020 03:32:35 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Cc:     Linus Walleij <linus.walleij@linaro.org>
-Subject: [net-next PATCH] net: dsa: rtl8366: Properly clear member config
-Date:   Sat,  5 Sep 2020 12:32:33 +0200
-Message-Id: <20200905103233.16922-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 05 Sep 2020 03:37:08 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>,
+        Pia Eichinger <pia.eichinger@st.oth-regensburg.de>,
+        Joe Perches <joe@perches.com>, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: repair reference in LYNX PCS MODULE
+Date:   Sat,  5 Sep 2020 12:37:00 +0200
+Message-Id: <20200905103700.17162-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When removing a port from a VLAN we are just erasing the
-member config for the VLAN, which is wrong: other ports
-can be using it.
+Commit 0da4c3d393e4 ("net: phy: add Lynx PCS module") added the files in
+./drivers/net/pcs/, but the new LYNX PCS MODULE section refers to
+./drivers/net/phy/.
 
-Just mask off the port and only zero out the rest of the
-member config once ports using of the VLAN are removed
-from it.
+Hence, ./scripts/get_maintainer.pl --self-test=patterns complains:
 
-Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+  warning: no file matches    F:    drivers/net/phy/pcs-lynx.c
+
+Repair the LYNX PCS MODULE section by referring to the right location.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- drivers/net/dsa/rtl8366.c | 20 +++++++++++++-------
- 1 file changed, 13 insertions(+), 7 deletions(-)
+applies cleanly on next-20200903
 
-diff --git a/drivers/net/dsa/rtl8366.c b/drivers/net/dsa/rtl8366.c
-index 2dcde7a91721..bd3c947976ce 100644
---- a/drivers/net/dsa/rtl8366.c
-+++ b/drivers/net/dsa/rtl8366.c
-@@ -471,13 +471,19 @@ int rtl8366_vlan_del(struct dsa_switch *ds, int port,
- 				return ret;
+Ioana, please ack.
+David, please pick this minor non-urgent patch into your net-next.
  
- 			if (vid == vlanmc.vid) {
--				/* clear VLAN member configurations */
--				vlanmc.vid = 0;
--				vlanmc.priority = 0;
--				vlanmc.member = 0;
--				vlanmc.untag = 0;
--				vlanmc.fid = 0;
--
-+				/* Remove this port from the VLAN */
-+				vlanmc.member &= ~BIT(port);
-+				vlanmc.untag &= ~BIT(port);
-+				/*
-+				 * If no ports are members of this VLAN
-+				 * anymore then clear the whole member
-+				 * config so it can be reused.
-+				 */
-+				if (!vlanmc.member && vlanmc.untag) {
-+					vlanmc.vid = 0;
-+					vlanmc.priority = 0;
-+					vlanmc.fid = 0;
-+				}
- 				ret = smi->ops->set_vlan_mc(smi, i, &vlanmc);
- 				if (ret) {
- 					dev_err(smi->dev,
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index bb0cb31d323b..918deaa1d96e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10350,7 +10350,7 @@ LYNX PCS MODULE
+ M:	Ioana Ciornei <ioana.ciornei@nxp.com>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+-F:	drivers/net/phy/pcs-lynx.c
++F:	drivers/net/pcs/pcs-lynx.c
+ F:	include/linux/pcs-lynx.h
+ 
+ M68K ARCHITECTURE
 -- 
-2.26.2
+2.17.1
 
