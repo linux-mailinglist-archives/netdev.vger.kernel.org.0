@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ACE825EB17
-	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 23:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8CB025EB27
+	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 23:59:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728731AbgIEVtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 17:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37356 "EHLO
+        id S1728491AbgIEV7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 17:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728103AbgIEVtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 17:49:02 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D2DAC061244;
-        Sat,  5 Sep 2020 14:49:02 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id v15so6145007pgh.6;
-        Sat, 05 Sep 2020 14:49:02 -0700 (PDT)
+        with ESMTP id S1728103AbgIEV7q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 17:59:46 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B7EC061244
+        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 14:59:45 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id k25so11856972ljg.9
+        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 14:59:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=h9kxAFny5FJw8YnE6dK8aDApZjgYQA9YlON014R67oU=;
-        b=D1L1wvm0MIJsymgAugs62yQbiC53LsvCzN6jysg32pb23GBUx2uy8pZ7O1TUJzXjgy
-         Qi99s6ctCegyX6FO+viYaUf6OcGUYbn/yGgBu/PKBQwGEL/pAha+ePQquRyArTveBMkL
-         DKWmhraBOOAloF1JAyxK3IB/mlqpKZqi+nGgK59SqyJh1IMfmKavvnhmyeYsKICtCyzz
-         83kFPygDZYjMbKk9wOoys/A/qbuoK6+alUbNBeqxA3NH8Dpe65pihhk06T4upOKUwRVG
-         cYrOY7cGj75ATgjybjox721jDRhg9+9jK1cvzTuLr3rLxwt/U2sf2dPEpRP9RKzett/A
-         rrQQ==
+        bh=8zpEhhNtfBbtx0B6RqWPmSpARaYFGkA/S04KBRTF+ak=;
+        b=m3JazldCGOrQ04pd27AVKvkNoyoks2IBfd/HBzpaJSwTpbRjdIgnimLjcJRWZHvMkX
+         wdO2e70/Q31BfbPzDFw5BoEJd5AqOSS5e7lQcUjgkp0JFB301e6lJwC8HvanphB4QNoR
+         ISV9sQ27plbcPmzHts8WyM2Yr3RxtxJhIeWKbi7CLrGAbibutGux79QQ+2ehSvNEG1Rw
+         mD8saFpdIdDGllF2JwefrEuXFPhng2UfnWc6IbZcshEJdqYBqsvuD1vUAm/VnJdRNelf
+         Bom7D3dPHhhX/eI5GimfNwgb4qTAYVB/1xxE2bY5sDtKtH+sB+Px5ZeRKkRlFL57J8UO
+         fErg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=h9kxAFny5FJw8YnE6dK8aDApZjgYQA9YlON014R67oU=;
-        b=GN9M843jUr1V/4wwd7EHEtD26B9bL3NU5U6AMNzfug7hzzrD2r8CGd+LTDoeZHMu/d
-         gX80HD3bWmd3wChAChLokv3p516xZap7MlwBu5AX7MqPlOkznbTm6aELzHB7C212qhUc
-         DqyBOVWSLDOoCZ8nHo2XhqGi9wbqYN2hGQg+ie8wDTQvVh2kw0GQEl4PK/MuRRMBHzA+
-         gOox/q1b2z61YoeL3lfzdWPbWaeUdevE1DA9tQrlGt8Zx5udV5HlpZs0BRNPCvAlBVce
-         3yE+dJQlIjl3I8Omz3uOX/6c0GHl+KkcuL9BB4yeUCymKStFePuxWY1bs7dwG6xzPrMJ
-         n2tQ==
-X-Gm-Message-State: AOAM532H2FEb8gSvO5WWgFoyQxelyOk8QAOAqqkZL9XGRP7R9/WEeisU
-        8glfYd8s6S9IdLC5yECF0/z8/ROtdhndOg==
-X-Google-Smtp-Source: ABdhPJzPDXsjtTUp6flqeq21tWPefZfr1H/UbsW1i1xDxOQaZLnILrOJ/4AwYQ8S/5i/dMFc1knthA==
-X-Received: by 2002:a63:af01:: with SMTP id w1mr12015829pge.23.1599342536963;
-        Sat, 05 Sep 2020 14:48:56 -0700 (PDT)
-Received: from localhost.localdomain ([2001:470:e92d:10:79f7:a90d:5997:d01])
-        by smtp.gmail.com with ESMTPSA id s129sm10611842pfb.39.2020.09.05.14.48.56
+        bh=8zpEhhNtfBbtx0B6RqWPmSpARaYFGkA/S04KBRTF+ak=;
+        b=HxvnbNjsmKcihBF77XYyuNGCUgtX6M7Gonftm0TiOd8L2Yxn0VwF7pkil7AdiE86L8
+         FhPx5y4x2IUt14xEZ8hVlgZcnVQfd1jvJmXnt7iFZryEiqm23xe8MXbGBmPyadwAhdvK
+         Gt/M+sIvz8Vox4rFj0hcgvTBJ5c6+cngfiaE7+uclKrP4B3TxjBa2vvM3Af9DWt/ZIKa
+         BDj9+VIWej7zWPuNq8FJcGnMHBDnnn5hbZOTxYRBOYaOT457U88eYv4wwcuVpZicupZi
+         MTA44rgN4GsjNSl0qovYt6iQursaMEPu39N/doS+qN4DXC+Puv86OAYeiaWqUBpvdrdY
+         kuBg==
+X-Gm-Message-State: AOAM533XWFpqcKyq/q310IMT9zmH7RY9F6zN7t/4GO5NO+qhHovgX9Wx
+        z0xL2iYXpztX9CkM0qmYPlI9Ig3jWInzXw==
+X-Google-Smtp-Source: ABdhPJwoHUoJ8+5neX0wnF1j9iOxXhgu+EpgkpWQKCyNyo62Fi70nfE4Mm6kE5ZLwm77NBy5T29zpg==
+X-Received: by 2002:a2e:9e0a:: with SMTP id e10mr4120588ljk.454.1599343183792;
+        Sat, 05 Sep 2020 14:59:43 -0700 (PDT)
+Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
+        by smtp.gmail.com with ESMTPSA id i26sm2818516ljj.102.2020.09.05.14.59.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2020 14:48:56 -0700 (PDT)
-From:   Tony Ambardar <tony.ambardar@gmail.com>
-X-Google-Original-From: Tony Ambardar <Tony.Ambardar@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Tony Ambardar <Tony.Ambardar@gmail.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrey Ignatov <rdna@fb.com>
-Subject: [PATCH bpf v1] tools/libbpf: avoid counting local symbols in ABI check
-Date:   Sat,  5 Sep 2020 14:48:31 -0700
-Message-Id: <20200905214831.1565465-1-Tony.Ambardar@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 05 Sep 2020 14:59:43 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] net: dsa: rtl8366rb: Support setting MTU
+Date:   Sat,  5 Sep 2020 23:59:14 +0200
+Message-Id: <20200905215914.77640-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -64,67 +64,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Encountered the following failure building libbpf from kernel 5.8.5 sources
-with GCC 8.4.0 and binutils 2.34: (long paths shortened)
+This implements the missing MTU setting for the RTL8366RB
+switch.
 
-  Warning: Num of global symbols in sharedobjs/libbpf-in.o (234) does NOT
-  match with num of versioned symbols in libbpf.so (236). Please make sure
-  all LIBBPF_API symbols are versioned in libbpf.map.
-  --- libbpf_global_syms.tmp    2020-09-02 07:30:58.920084380 +0000
-  +++ libbpf_versioned_syms.tmp 2020-09-02 07:30:58.924084388 +0000
-  @@ -1,3 +1,5 @@
-  +_fini
-  +_init
-   bpf_btf_get_fd_by_id
-   bpf_btf_get_next_id
-   bpf_create_map
-  make[4]: *** [Makefile:210: check_abi] Error 1
+Apart from supporting jumboframes, this rids us of annoying
+boot messages like this:
+realtek-smi switch: nonfatal error -95 setting MTU on port 0
 
-Investigation shows _fini and _init are actually local symbols counted
-amongst global ones:
-
-  $ readelf --dyn-syms --wide libbpf.so|head -10
-
-  Symbol table '.dynsym' contains 343 entries:
-     Num:    Value  Size Type    Bind   Vis      Ndx Name
-       0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND
-       1: 00004098     0 SECTION LOCAL  DEFAULT   11
-       2: 00004098     8 FUNC    LOCAL  DEFAULT   11 _init@@LIBBPF_0.0.1
-       3: 00023040     8 FUNC    LOCAL  DEFAULT   14 _fini@@LIBBPF_0.0.1
-       4: 00000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.0.4
-       5: 00000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.0.1
-       6: 0000ffa4     8 FUNC    GLOBAL DEFAULT   12 bpf_object__find_map_by_offset@@LIBBPF_0.0.1
-
-A previous commit filtered global symbols in sharedobjs/libbpf-in.o. Do the
-same with the libbpf.so DSO for consistent comparison.
-
-Fixes: 306b267cb3c4 ("libbpf: Verify versioned symbols")
-
-Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- tools/lib/bpf/Makefile | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/dsa/rtl8366rb.c | 38 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index b78484e7a608..9ae8f4ef0aac 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -152,6 +152,7 @@ GLOBAL_SYM_COUNT = $(shell readelf -s --wide $(BPF_IN_SHARED) | \
- 			   awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
- 			   sort -u | wc -l)
- VERSIONED_SYM_COUNT = $(shell readelf --dyn-syms --wide $(OUTPUT)libbpf.so | \
-+			      awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}' | \
- 			      grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 | sort -u | wc -l)
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index 48f1ff746799..f763f93f600f 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -35,7 +35,7 @@
+ #define RTL8366RB_SGCR_MAX_LENGTH_1522		RTL8366RB_SGCR_MAX_LENGTH(0x0)
+ #define RTL8366RB_SGCR_MAX_LENGTH_1536		RTL8366RB_SGCR_MAX_LENGTH(0x1)
+ #define RTL8366RB_SGCR_MAX_LENGTH_1552		RTL8366RB_SGCR_MAX_LENGTH(0x2)
+-#define RTL8366RB_SGCR_MAX_LENGTH_9216		RTL8366RB_SGCR_MAX_LENGTH(0x3)
++#define RTL8366RB_SGCR_MAX_LENGTH_16000		RTL8366RB_SGCR_MAX_LENGTH(0x3)
+ #define RTL8366RB_SGCR_EN_VLAN			BIT(13)
+ #define RTL8366RB_SGCR_EN_VLAN_4KTB		BIT(14)
  
- CMD_TARGETS = $(LIB_TARGET) $(PC_FILE)
-@@ -219,6 +220,7 @@ check_abi: $(OUTPUT)libbpf.so
- 		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
- 		    sort -u > $(OUTPUT)libbpf_global_syms.tmp;		 \
- 		readelf --dyn-syms --wide $(OUTPUT)libbpf.so |		 \
-+		    awk '/GLOBAL/ && /DEFAULT/ && !/UND/ {print $$NF}'|  \
- 		    grep -Eo '[^ ]+@LIBBPF_' | cut -d@ -f1 |		 \
- 		    sort -u > $(OUTPUT)libbpf_versioned_syms.tmp; 	 \
- 		diff -u $(OUTPUT)libbpf_global_syms.tmp			 \
+@@ -1077,6 +1077,40 @@ rtl8366rb_port_disable(struct dsa_switch *ds, int port)
+ 	rb8366rb_set_port_led(smi, port, false);
+ }
+ 
++static int rtl8366rb_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
++{
++	struct realtek_smi *smi = ds->priv;
++	u32 len;
++
++	/* The first setting, 1522 bytes, is max IP packet 1500 bytes,
++	 * plus ethernet header, 1518 bytes, plus CPU tag, 4 bytes.
++	 * This function should consider the parameter an SDU, so the
++	 * MTU passed for this setting is 1518 bytes. The same logic
++	 * of subtracting the DSA tag of 4 bytes apply to the other
++	 * settings.
++	 */
++	if (new_mtu <= 1518)
++		len = RTL8366RB_SGCR_MAX_LENGTH_1522;
++	else if (new_mtu > 1518 && new_mtu <= 1532)
++		len = RTL8366RB_SGCR_MAX_LENGTH_1536;
++	else if (new_mtu > 1532 && new_mtu <= 1548)
++		len = RTL8366RB_SGCR_MAX_LENGTH_1552;
++	else
++		len = RTL8366RB_SGCR_MAX_LENGTH_16000;
++
++	return regmap_update_bits(smi->map, RTL8366RB_SGCR,
++				  RTL8366RB_SGCR_MAX_LENGTH_MASK,
++				  len);
++}
++
++static int rtl8366rb_max_mtu(struct dsa_switch *ds, int port)
++{
++	/* The max MTU is 16000 bytes, so we subtract the CPU tag
++	 * and the max presented to the system is 15996 bytes.
++	 */
++	return 15996;
++}
++
+ static int rtl8366rb_get_vlan_4k(struct realtek_smi *smi, u32 vid,
+ 				 struct rtl8366_vlan_4k *vlan4k)
+ {
+@@ -1415,6 +1449,8 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
+ 	.port_vlan_del = rtl8366_vlan_del,
+ 	.port_enable = rtl8366rb_port_enable,
+ 	.port_disable = rtl8366rb_port_disable,
++	.port_change_mtu = rtl8366rb_change_mtu,
++	.port_max_mtu = rtl8366rb_max_mtu,
+ };
+ 
+ static const struct realtek_smi_ops rtl8366rb_smi_ops = {
 -- 
-2.25.1
+2.26.2
 
