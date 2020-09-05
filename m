@@ -2,143 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8CB025EB27
-	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 23:59:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A95D25EB37
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 00:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728491AbgIEV7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 17:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39002 "EHLO
+        id S1728713AbgIEWFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 18:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728103AbgIEV7q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 17:59:46 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B7EC061244
-        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 14:59:45 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id k25so11856972ljg.9
-        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 14:59:45 -0700 (PDT)
+        with ESMTP id S1728327AbgIEWFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 18:05:51 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0A4C061244
+        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 15:05:50 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id t7so1669906pjd.3
+        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 15:05:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8zpEhhNtfBbtx0B6RqWPmSpARaYFGkA/S04KBRTF+ak=;
-        b=m3JazldCGOrQ04pd27AVKvkNoyoks2IBfd/HBzpaJSwTpbRjdIgnimLjcJRWZHvMkX
-         wdO2e70/Q31BfbPzDFw5BoEJd5AqOSS5e7lQcUjgkp0JFB301e6lJwC8HvanphB4QNoR
-         ISV9sQ27plbcPmzHts8WyM2Yr3RxtxJhIeWKbi7CLrGAbibutGux79QQ+2ehSvNEG1Rw
-         mD8saFpdIdDGllF2JwefrEuXFPhng2UfnWc6IbZcshEJdqYBqsvuD1vUAm/VnJdRNelf
-         Bom7D3dPHhhX/eI5GimfNwgb4qTAYVB/1xxE2bY5sDtKtH+sB+Px5ZeRKkRlFL57J8UO
-         fErg==
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=YnaMCdeWvZXYvgvIk9eHrbMNqT0nfMk9PTITFH8gDAQ=;
+        b=joecbzDbQAQ3Mstnk3x60Ovy1MQ/UN47TH3qMV0heHJ6LVcpaUloL7XZ8KULPH6fQH
+         A8c9Etg2NB6KsnvHUbPOiFEewP4qtndYs/4vA4tkdec7IvgtCXusKhE87ePaJJEFOubr
+         Lq9L50pjIwUZHXU96kDmO7I0s+s9apyukzibH72RUu/0MmSyLXH5geXhW616zLJo+Ytn
+         7+YYcxMJLeZhOvfy6PDfruTGGqQFPdGVOfXDOZVyeSu5XRdknLf7u8aqV8FtRtMAEBAR
+         laXG0BE7/AHmtaHo4QZNAhqRtDUvWnmeeOhfhKQB1W6xgokizeWFZg2kb9mWdCKClhPV
+         hyEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8zpEhhNtfBbtx0B6RqWPmSpARaYFGkA/S04KBRTF+ak=;
-        b=HxvnbNjsmKcihBF77XYyuNGCUgtX6M7Gonftm0TiOd8L2Yxn0VwF7pkil7AdiE86L8
-         FhPx5y4x2IUt14xEZ8hVlgZcnVQfd1jvJmXnt7iFZryEiqm23xe8MXbGBmPyadwAhdvK
-         Gt/M+sIvz8Vox4rFj0hcgvTBJ5c6+cngfiaE7+uclKrP4B3TxjBa2vvM3Af9DWt/ZIKa
-         BDj9+VIWej7zWPuNq8FJcGnMHBDnnn5hbZOTxYRBOYaOT457U88eYv4wwcuVpZicupZi
-         MTA44rgN4GsjNSl0qovYt6iQursaMEPu39N/doS+qN4DXC+Puv86OAYeiaWqUBpvdrdY
-         kuBg==
-X-Gm-Message-State: AOAM533XWFpqcKyq/q310IMT9zmH7RY9F6zN7t/4GO5NO+qhHovgX9Wx
-        z0xL2iYXpztX9CkM0qmYPlI9Ig3jWInzXw==
-X-Google-Smtp-Source: ABdhPJwoHUoJ8+5neX0wnF1j9iOxXhgu+EpgkpWQKCyNyo62Fi70nfE4Mm6kE5ZLwm77NBy5T29zpg==
-X-Received: by 2002:a2e:9e0a:: with SMTP id e10mr4120588ljk.454.1599343183792;
-        Sat, 05 Sep 2020 14:59:43 -0700 (PDT)
-Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id i26sm2818516ljj.102.2020.09.05.14.59.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2020 14:59:43 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Cc:     Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH] net: dsa: rtl8366rb: Support setting MTU
-Date:   Sat,  5 Sep 2020 23:59:14 +0200
-Message-Id: <20200905215914.77640-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.26.2
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=YnaMCdeWvZXYvgvIk9eHrbMNqT0nfMk9PTITFH8gDAQ=;
+        b=cCPoA7MII8bBLOq9+eEo+eMda8jJw0HZhj90O7n60hSpqS6fmDldvTtihQNBvaM3R8
+         hkbFLy1gzHYE2I6t4ZA/rTpNtu7humG4rLy960ZP+vcYTsShLqKFp31eOaZAYvOUEEwP
+         /5g4IVVK/LQxbOBJwKlamfAg1h55qBY8GetaI2XdB+Tss/hljaY0Djynrrd2gdktFGit
+         L4WRRcui3VktvfzzgXHkaW9PklFKCvxX4RbVGUoyUVND2Vj4aKrIgOzehCu6OohquYza
+         bhjJW5ku53EbZRilWbysQKwR+MXHGIq2dtilcJuS2ehzj5ljjDWQ7XuJqD2/aCc3MZ3Q
+         FhyQ==
+X-Gm-Message-State: AOAM533uxrUrt7G2FOQAX5CUtUndlLKaz3Y9GEVztkhjnkQiDyFAu22b
+        xqZp2rifrUX0eK+L7qwp4+KmmhoNJQgmp/q4
+X-Google-Smtp-Source: ABdhPJyNT6JzP9tAQQAakzXED+WSYM1u8xEvmfUjLp9imnj4afow1LI3D9491zXwUYpILsOIPCQ/Zg==
+X-Received: by 2002:a17:90a:aa15:: with SMTP id k21mr6963736pjq.22.1599343549913;
+        Sat, 05 Sep 2020 15:05:49 -0700 (PDT)
+Received: from [192.168.1.182] ([66.219.217.173])
+        by smtp.gmail.com with ESMTPSA id p9sm8819686pjm.1.2020.09.05.15.05.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 05 Sep 2020 15:05:49 -0700 (PDT)
+To:     Networking <netdev@vger.kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>
+From:   Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH for-next] net: provide __sys_shutdown_sock() that takes a
+ socket
+Message-ID: <d3973f5b-2d86-665d-a5f3-95d017f9c79f@kernel.dk>
+Date:   Sat, 5 Sep 2020 16:05:48 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This implements the missing MTU setting for the RTL8366RB
-switch.
+No functional changes in this patch, needed to provide io_uring support
+for shutdown(2).
 
-Apart from supporting jumboframes, this rids us of annoying
-boot messages like this:
-realtek-smi switch: nonfatal error -95 setting MTU on port 0
+Cc: netdev@vger.kernel.org
+Cc: David S. Miller <davem@davemloft.net>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/net/dsa/rtl8366rb.c | 38 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 37 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index 48f1ff746799..f763f93f600f 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -35,7 +35,7 @@
- #define RTL8366RB_SGCR_MAX_LENGTH_1522		RTL8366RB_SGCR_MAX_LENGTH(0x0)
- #define RTL8366RB_SGCR_MAX_LENGTH_1536		RTL8366RB_SGCR_MAX_LENGTH(0x1)
- #define RTL8366RB_SGCR_MAX_LENGTH_1552		RTL8366RB_SGCR_MAX_LENGTH(0x2)
--#define RTL8366RB_SGCR_MAX_LENGTH_9216		RTL8366RB_SGCR_MAX_LENGTH(0x3)
-+#define RTL8366RB_SGCR_MAX_LENGTH_16000		RTL8366RB_SGCR_MAX_LENGTH(0x3)
- #define RTL8366RB_SGCR_EN_VLAN			BIT(13)
- #define RTL8366RB_SGCR_EN_VLAN_4KTB		BIT(14)
+There's a trivial io_uring patch that depends on this one. If this one
+is acceptable to you, I'd like to queue it up in the io_uring branch for
+5.10.
+
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index e9cb30d8cbfb..385894b4a8bb 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -436,6 +436,7 @@ extern int __sys_getpeername(int fd, struct sockaddr __user *usockaddr,
+ 			     int __user *usockaddr_len);
+ extern int __sys_socketpair(int family, int type, int protocol,
+ 			    int __user *usockvec);
++extern int __sys_shutdown_sock(struct socket *sock, int how);
+ extern int __sys_shutdown(int fd, int how);
  
-@@ -1077,6 +1077,40 @@ rtl8366rb_port_disable(struct dsa_switch *ds, int port)
- 	rb8366rb_set_port_led(smi, port, false);
- }
+ extern struct ns_common *get_net_ns(struct ns_common *ns);
+diff --git a/net/socket.c b/net/socket.c
+index dbbe8ea7d395..59307db6097e 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -2192,6 +2192,17 @@ SYSCALL_DEFINE5(getsockopt, int, fd, int, level, int, optname,
+  *	Shutdown a socket.
+  */
  
-+static int rtl8366rb_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
++int __sys_shutdown_sock(struct socket *sock, int how)
 +{
-+	struct realtek_smi *smi = ds->priv;
-+	u32 len;
++	int err;
 +
-+	/* The first setting, 1522 bytes, is max IP packet 1500 bytes,
-+	 * plus ethernet header, 1518 bytes, plus CPU tag, 4 bytes.
-+	 * This function should consider the parameter an SDU, so the
-+	 * MTU passed for this setting is 1518 bytes. The same logic
-+	 * of subtracting the DSA tag of 4 bytes apply to the other
-+	 * settings.
-+	 */
-+	if (new_mtu <= 1518)
-+		len = RTL8366RB_SGCR_MAX_LENGTH_1522;
-+	else if (new_mtu > 1518 && new_mtu <= 1532)
-+		len = RTL8366RB_SGCR_MAX_LENGTH_1536;
-+	else if (new_mtu > 1532 && new_mtu <= 1548)
-+		len = RTL8366RB_SGCR_MAX_LENGTH_1552;
-+	else
-+		len = RTL8366RB_SGCR_MAX_LENGTH_16000;
++	err = security_socket_shutdown(sock, how);
++	if (!err)
++		err = sock->ops->shutdown(sock, how);
 +
-+	return regmap_update_bits(smi->map, RTL8366RB_SGCR,
-+				  RTL8366RB_SGCR_MAX_LENGTH_MASK,
-+				  len);
++	return err;
 +}
 +
-+static int rtl8366rb_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	/* The max MTU is 16000 bytes, so we subtract the CPU tag
-+	 * and the max presented to the system is 15996 bytes.
-+	 */
-+	return 15996;
-+}
-+
- static int rtl8366rb_get_vlan_4k(struct realtek_smi *smi, u32 vid,
- 				 struct rtl8366_vlan_4k *vlan4k)
+ int __sys_shutdown(int fd, int how)
  {
-@@ -1415,6 +1449,8 @@ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
- 	.port_vlan_del = rtl8366_vlan_del,
- 	.port_enable = rtl8366rb_port_enable,
- 	.port_disable = rtl8366rb_port_disable,
-+	.port_change_mtu = rtl8366rb_change_mtu,
-+	.port_max_mtu = rtl8366rb_max_mtu,
- };
+ 	int err, fput_needed;
+@@ -2199,9 +2210,7 @@ int __sys_shutdown(int fd, int how)
  
- static const struct realtek_smi_ops rtl8366rb_smi_ops = {
+ 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
+ 	if (sock != NULL) {
+-		err = security_socket_shutdown(sock, how);
+-		if (!err)
+-			err = sock->ops->shutdown(sock, how);
++		err = __sys_shutdown_sock(sock, how);
+ 		fput_light(sock->file, fput_needed);
+ 	}
+ 	return err;
+
 -- 
-2.26.2
+Jens Axboe
 
