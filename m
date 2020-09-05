@@ -2,148 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D9DF25E73E
-	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 13:23:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BD1025E74A
+	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 13:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728405AbgIELXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 07:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726597AbgIELSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 07:18:54 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F692C061244;
-        Sat,  5 Sep 2020 04:18:49 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id d189so9065427oig.12;
-        Sat, 05 Sep 2020 04:18:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u0IiXGtqdVhPBP8lypoHpnMMZjPnrNzat1vDiguO3/w=;
-        b=imojGsDfX9o3sISaUmP+ekDfe+wEkw4hcXh16I+lmcZFsLPw3eJV+66Ao9Mho2M2R0
-         lo0xZnnlGf7tHHVmHqPmAWF5xQFGMMDZLYTcgpWAFltwCvPnqtKNybQidOiwkBkpKE20
-         sL0l9Zsl9niBUAQYRF2HrD/4Y9RaU/meyHtysjANHaaoNExpNlH+2KNekwuYJnVzohdv
-         0FdS1yGaijCUKFVbZeoKZEki/WCDEHY4pOjsBQO5aRq7Lo6bA8K07rS3hGUosIEewXWO
-         BtMxAJu+XnIBHymTHmyPIWnHIrBr5H3T2PR4u/QIQvm/b3N6bxSzJBN4PN/p2cm7z3OZ
-         XhWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u0IiXGtqdVhPBP8lypoHpnMMZjPnrNzat1vDiguO3/w=;
-        b=QAG06Ryjv8AgYE9m7XSh2pAzq9iE6lE/hjEHrKlmslHq/f0aftP49129kWtCQpxJVi
-         lucl0kA/1/3R76iV3B0LN2ShGeCu4Bko010LpLCIyWB6lwlM2XFSNRI2RXTyORxDWcit
-         kH+6iQgT2WJTfa/dImEJGah2J42N2sqk0e0fZ6kC8vmk/BAxJTp6O1WjaX6XD246HXGs
-         USGBcd3nx44tBXp+pn0yC5efBVQFF2SMmeuuymyPl8dWU58AKfA6MBtTQ/VSzr3qonFV
-         rUCKcbLx0niu2OZFki0RvS+RjL4O4p5Ii3FsSzMqYuIdHcwXIHEA8JsLUWgshPyhZObH
-         E7TQ==
-X-Gm-Message-State: AOAM530pPCZ98vFnn64RsjwcR6/MjUL8Dq+MYQe5FypPjGF3Iq9qRFk1
-        lImtrIiyqK+0y5MutLZ6QAza/WZ+laghxz3jklU=
-X-Google-Smtp-Source: ABdhPJxTEHXBi2TidmZO09UM27LyyZZJr1CpyAZVOQPu6doAHTWAtUKAU5t7KV7Jtyne2NYAfEovB0V/pV4K50na/J8=
-X-Received: by 2002:a54:4688:: with SMTP id k8mr7804768oic.163.1599304728501;
- Sat, 05 Sep 2020 04:18:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200904162154.GA24295@wunner.de> <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
-In-Reply-To: <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
-From:   =?UTF-8?Q?Laura_Garc=C3=ADa_Li=C3=A9bana?= <nevola@gmail.com>
-Date:   Sat, 5 Sep 2020 13:18:37 +0200
-Message-ID: <CAF90-WhWpiAPcpU81P3cPTUmRD-xGkuZ9GZA8Q3cPN7RQKhXeA@mail.gmail.com>
-Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728494AbgIELdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 07:33:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40724 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726597AbgIELd0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 5 Sep 2020 07:33:26 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 372082074B;
+        Sat,  5 Sep 2020 11:33:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599305605;
+        bh=nkMhL0eOj9pYn7M+50vdhkwtCvET0nh1reybf9oODE8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=L0KqukYgmLuAblRHiBH8FnIhTLTpryxmse6oKwTmAoR39advkk9fWfWTXV1aLiCUo
+         xbliFRMTXQuYuwbWTsHZrCtUa+UHuch5JLtS7Jh34Gs4ni4dXVQmaQ48p/mvng4voo
+         UsBLOIPloPtQUHUBpfyO8+KUm14ePBzJc9W1t/+w=
+Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <maz@kernel.org>)
+        id 1kEWRf-009MI9-AC; Sat, 05 Sep 2020 12:33:23 +0100
+Date:   Sat, 05 Sep 2020 12:33:22 +0100
+Message-ID: <871rjgmpa5.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianyong Wu <jianyong.wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, richardcochran@gmail.com,
+        Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com,
+        steven.price@arm.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm@vger.kernel.org, Steve.Capper@arm.com, justin.he@arm.com,
+        nd@arm.com
+Subject: Re: [PATCH v14 08/10] ptp: arm64: Enable ptp_kvm for arm64
+In-Reply-To: <20200904092744.167655-9-jianyong.wu@arm.com>
+References: <20200904092744.167655-1-jianyong.wu@arm.com>
+        <20200904092744.167655-9-jianyong.wu@arm.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 EasyPG/1.0.0 Emacs/26.3
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 62.31.163.78
+X-SA-Exim-Rcpt-To: jianyong.wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, sean.j.christopherson@intel.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, suzuki.poulose@arm.com, steven.price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, justin.he@arm.com, nd@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+On Fri, 04 Sep 2020 10:27:42 +0100,
+Jianyong Wu <jianyong.wu@arm.com> wrote:
+> 
+> Currently, there is no mechanism to keep time sync between guest and host
+> in arm64 virtualization environment. Time in guest will drift compared
+> with host after boot up as they may both use third party time sources
+> to correct their time respectively. The time deviation will be in order
+> of milliseconds. But in some scenarios,like in cloud envirenment, we ask
+> for higher time precision.
+> 
+> kvm ptp clock, which choose the host clock source as a reference
+> clock to sync time between guest and host, has been adopted by x86
+> which makes the time sync order from milliseconds to nanoseconds.
+> 
+> This patch enables kvm ptp clock for arm64 and improve clock sync precison
+> significantly.
+> 
+> Test result comparisons between with kvm ptp clock and without it in arm64
+> are as follows. This test derived from the result of command 'chronyc
+> sources'. we should take more care of the last sample column which shows
+> the offset between the local clock and the source at the last measurement.
+> 
+> no kvm ptp in guest:
+> MS Name/IP address   Stratum Poll Reach LastRx Last sample
+> ========================================================================
+> ^* dns1.synet.edu.cn      2   6   377    13  +1040us[+1581us] +/-   21ms
+> ^* dns1.synet.edu.cn      2   6   377    21  +1040us[+1581us] +/-   21ms
+> ^* dns1.synet.edu.cn      2   6   377    29  +1040us[+1581us] +/-   21ms
+> ^* dns1.synet.edu.cn      2   6   377    37  +1040us[+1581us] +/-   21ms
+> ^* dns1.synet.edu.cn      2   6   377    45  +1040us[+1581us] +/-   21ms
+> ^* dns1.synet.edu.cn      2   6   377    53  +1040us[+1581us] +/-   21ms
+> ^* dns1.synet.edu.cn      2   6   377    61  +1040us[+1581us] +/-   21ms
+> ^* dns1.synet.edu.cn      2   6   377     4   -130us[ +796us] +/-   21ms
+> ^* dns1.synet.edu.cn      2   6   377    12   -130us[ +796us] +/-   21ms
+> ^* dns1.synet.edu.cn      2   6   377    20   -130us[ +796us] +/-   21ms
+> 
+> in host:
+> MS Name/IP address   Stratum Poll Reach LastRx Last sample
+> ========================================================================
+> ^* 120.25.115.20          2   7   377    72   -470us[ -603us] +/-   18ms
+> ^* 120.25.115.20          2   7   377    92   -470us[ -603us] +/-   18ms
+> ^* 120.25.115.20          2   7   377   112   -470us[ -603us] +/-   18ms
+> ^* 120.25.115.20          2   7   377     2   +872ns[-6808ns] +/-   17ms
+> ^* 120.25.115.20          2   7   377    22   +872ns[-6808ns] +/-   17ms
+> ^* 120.25.115.20          2   7   377    43   +872ns[-6808ns] +/-   17ms
+> ^* 120.25.115.20          2   7   377    63   +872ns[-6808ns] +/-   17ms
+> ^* 120.25.115.20          2   7   377    83   +872ns[-6808ns] +/-   17ms
+> ^* 120.25.115.20          2   7   377   103   +872ns[-6808ns] +/-   17ms
+> ^* 120.25.115.20          2   7   377   123   +872ns[-6808ns] +/-   17ms
+> 
+> The dns1.synet.edu.cn is the network reference clock for guest and
+> 120.25.115.20 is the network reference clock for host. we can't get the
+> clock error between guest and host directly, but a roughly estimated value
+> will be in order of hundreds of us to ms.
+> 
+> with kvm ptp in guest:
+> chrony has been disabled in host to remove the disturb by network clock.
+> 
+> MS Name/IP address         Stratum Poll Reach LastRx Last sample
+> ========================================================================
+> * PHC0                    0   3   377     8     -7ns[   +1ns] +/-    3ns
+> * PHC0                    0   3   377     8     +1ns[  +16ns] +/-    3ns
+> * PHC0                    0   3   377     6     -4ns[   -0ns] +/-    6ns
+> * PHC0                    0   3   377     6     -8ns[  -12ns] +/-    5ns
+> * PHC0                    0   3   377     5     +2ns[   +4ns] +/-    4ns
+> * PHC0                    0   3   377    13     +2ns[   +4ns] +/-    4ns
+> * PHC0                    0   3   377    12     -4ns[   -6ns] +/-    4ns
+> * PHC0                    0   3   377    11     -8ns[  -11ns] +/-    6ns
+> * PHC0                    0   3   377    10    -14ns[  -20ns] +/-    4ns
+> * PHC0                    0   3   377     8     +4ns[   +5ns] +/-    4ns
+> 
+> The PHC0 is the ptp clock which choose the host clock as its source
+> clock. So we can see that the clock difference between host and guest
+> is in order of ns.
+> 
+> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> ---
+>  drivers/clocksource/arm_arch_timer.c | 24 +++++++++++++
+>  drivers/ptp/Kconfig                  |  2 +-
+>  drivers/ptp/ptp_kvm_arm64.c          | 53 ++++++++++++++++++++++++++++
+>  3 files changed, 78 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/ptp/ptp_kvm_arm64.c
 
-On Fri, Sep 4, 2020 at 11:14 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-[...]
->
-> Its trivial to achieve with tc/BPF on the existing egress hook today. Probably
-> takes less time than to write up this mail ...
->
-> root@x:~/x# cat foo.c
->
-> #include <linux/bpf.h>
-> #include <linux/if_ether.h>
-> #include <arpa/inet.h>
->
-> #ifndef __section
-> # define __section(NAME)                \
->     __attribute__((section(NAME), used))
-> #endif
->
-> #define ETH_P_KUNBUSGW  0x419C
->
-> #define PASS    0
-> #define DROP    2
->
-> int foo(struct __sk_buff *skb)
-> {
->         void *data_end = (void *)(long)skb->data_end;
->         void *data = (void *)(long)skb->data;
->         struct ethhdr *eth = data;
->
->         if (data + sizeof(*eth) > data_end)
->                 return DROP;
->
->         return eth->h_proto == htons(ETH_P_KUNBUSGW) ? PASS : DROP;
-> }
->
-> char __license[] __section("license") = "";
->
-> root@x:~/x# clang -target bpf -Wall -O2 -c foo.c -o foo.o
-> root@x:~/x# ip link add dev foo type dummy
-> root@x:~/x# ip link set up dev foo
-> root@x:~/x# tc qdisc add dev foo clsact
-> root@x:~/x# tc filter add dev foo egress bpf da obj foo.o sec .text
->
-> There we go, attached to the device on existing egress. Double checking it
-> does what we want:
->
-> root@x:~/x# cat foo.t
-> {
->     0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
->     0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb,
->     0x41, 0x9c
-> }
-> root@x:~/x# trafgen -i foo.t -o foo -n 1 -q
-> root@x:~/x# tcpdump -i foo
-> [...]
-> 22:43:42.981112 bb:bb:bb:bb:bb:bb (oui Unknown) > aa:aa:aa:aa:aa:aa (oui Unknown), ethertype Unknown (0x419c), length 14:
->
-> root@x:~/x# cat bar.t
-> {
->     0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
->     0xbb, 0xbb, 0xbb, 0xbb, 0xbb, 0xbb,
->     0xee, 0xee
-> }
-> root@x:~/x# trafgen -i bar.t -o foo -n 1 -q
-> root@x:~/x# tcpdump -i foo
-> [... nothing/filtered ...]
->
+And I missed that one earlier:
 
-Something like this seems more trivial to me:
+> diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
+> index d55acffb0b90..aaf286e90092 100644
+> --- a/drivers/clocksource/arm_arch_timer.c
+> +++ b/drivers/clocksource/arm_arch_timer.c
+> @@ -1650,3 +1650,27 @@ static int __init arch_timer_acpi_init(struct acpi_table_header *table)
+>  }
+>  TIMER_ACPI_DECLARE(arch_timer, ACPI_SIG_GTDT, arch_timer_acpi_init);
+>  #endif
+> +
+> +#if IS_ENABLED(CONFIG_PTP_1588_CLOCK_KVM)
+> +#include <linux/arm-smccc.h>
 
-table netdev mytable {
-    chain mychain {
-        type filter hook egress device "eth0" priority 100; policy drop;
-        meta protocol != 0x419C accept
-    }
-}
+No conditional includes, please.
 
-Cheers.
+> +int kvm_arch_ptp_get_crosststamp(unsigned long *cycle, struct timespec64 *ts,
+> +			      struct clocksource **cs)
+> +{
+> +	struct arm_smccc_res hvc_res;
+> +	ktime_t ktime;
+> +
+> +	/* Currently, linux guest will always use the virtual counter */
+> +	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
+> +			     ARM_PTP_VIRT_COUNTER, &hvc_res);
+
+You don't need to assume anything. This driver already provides you
+with the information you need to tell the hypervisor which counter to
+use:
+
+	if (arch_timer_uses_ppi == ARCH_TIMER_VIRT_PPI)
+		ptp_counter = ARM_PTP_VIRT_COUNTER;
+	else
+		ptp_counter = ARM_PTP_PHYS_COUNTER;
+	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID,
+			     ptp_counter, &hvc_res);
+
+At least, this is vaguely future proof.
+
+The hypervisor will still have to discriminate between a call between
+a call from vEL1 or vEL2 to decide whether to subtract the offset from
+the counter value, but that's out of scope for now.
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
