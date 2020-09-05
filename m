@@ -2,59 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D7E625EA6B
-	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 22:36:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E9D25EA70
+	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 22:42:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728660AbgIEUgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 16:36:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44984 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728103AbgIEUgh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Sep 2020 16:36:37 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 230EB20738;
-        Sat,  5 Sep 2020 20:36:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599338197;
-        bh=cs7rrEwHik/Su4uXsEY7WRBvMHghd/7hkKnFHM+VebQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zdtZtatn/kqpKdEIxI4FrGk03ElUXhFKU4IfSxcj/2d+WDFKEoJYA4iWPx/e0Trbu
-         CqKRLF8IX3YZNwMCIKyhFSxhrR1RP8bOSvLvyHvy6iisIEyAQLgeodTV4c7AbOm51O
-         9jUHUmMtUrIx3QDhGaYqcD3ucXOMzjYsFvm6G9BM=
-Date:   Sat, 5 Sep 2020 13:36:35 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ralf Ramsauer <ralf.ramsauer@oth-regensburg.de>,
-        Pia Eichinger <pia.eichinger@st.oth-regensburg.de>,
-        Joe Perches <joe@perches.com>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: repair reference in LYNX PCS MODULE
-Message-ID: <20200905133635.497c3663@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200905103700.17162-1-lukas.bulwahn@gmail.com>
-References: <20200905103700.17162-1-lukas.bulwahn@gmail.com>
+        id S1728651AbgIEUmB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 16:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728103AbgIEUmB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 16:42:01 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23A0C061244
+        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 13:42:00 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id v23so11834922ljd.1
+        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 13:42:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0TjMg+H4n4Mtk7IDrkZ3duB88XWTjQ347I2g9xibVG0=;
+        b=LdQl2s+5fpivlARAzbvQOyhLF5WBKWBZLc7wqLX6ZG45TrTCIHI6xaHgKbpIUl6kt8
+         2yYCFBGmubZvcJpikc66b62VVAlhNi/jSslMgPvv9MJ4dEXmba0woDvCw2V4u/XuQAm9
+         kVSdEVXXzjpfYdeq7QEjx93VG8GvhIJKtJ9RHpMAb/T+n4CXYTeJcZaQC+ubuU/j9fHj
+         Z2tti52u8J2GL+MDGgHxWvYKXX+MJpjX19QlK158qGFCjvqvk9VwgPBdh7V9+LQI8okD
+         28AL6hIoDuUf7zxTk2FD59rDonzXGmt2aHLgAn6Uv1oPYX+UhL4ZIol1sXgZlnr+Y9bG
+         yDvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0TjMg+H4n4Mtk7IDrkZ3duB88XWTjQ347I2g9xibVG0=;
+        b=mo2cC5JLNbfDmk8GRrJ3xqsW2YVIdEiyoVddvRENjf4MwXaWpZaANAZQunODU+J9WL
+         KWx7EYf0FiOl+gmI2Y95m0P4cjB4RBdvlmSwnBTOPRu684rn3vzvPwVQoXhGixSb1Jbi
+         IepRVHTOl9Dim3fKjFhN5ydJUEGOWcmtYdm8YK+BuICYPYMBUSfpZQGw+2HmPMW2iasj
+         Jn5Y+oeF3BK60AIW0DJveqfGeY1ROjFvidN4MY0FNwYCZqOeG+Gmcqh1WOX92yuYZJ8V
+         yzSKcEh4w+wzW1kIiJAQTAVkptrfL3l9fOjEFpD9UbZ1w5WpJl08sfcd45Psz3Va4tju
+         x46A==
+X-Gm-Message-State: AOAM531gEFbUpaVJEAlTuFCzZvM7PBXaBS77LTEKn7ANp3rhLzMY9KE1
+        e397KKMJYx4RhBMbCtVlFbIfY0KqtF9izECckCLWd7LyXyw=
+X-Google-Smtp-Source: ABdhPJyF86Z2zRkKz9b960HfG/Br4HoqWRZqMSMAJ0DwD4EIjCcs/T7112OCGyvFMQNgy/aiRwq6dGZE3m8SAPKj5gY=
+X-Received: by 2002:a2e:4e01:: with SMTP id c1mr6561471ljb.144.1599338519050;
+ Sat, 05 Sep 2020 13:41:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200905104530.29998-1-linus.walleij@linaro.org> <20200905155052.GI3164319@lunn.ch>
+In-Reply-To: <20200905155052.GI3164319@lunn.ch>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 5 Sep 2020 22:41:48 +0200
+Message-ID: <CACRpkdYJvVwRgjJyP9AYcp1rppCi_BB4SAge-7Liknv2FM_qzw@mail.gmail.com>
+Subject: Re: [net-next PATCH] net: gemini: Try to register phy before netdev
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  5 Sep 2020 12:37:00 +0200 Lukas Bulwahn wrote:
-> Commit 0da4c3d393e4 ("net: phy: add Lynx PCS module") added the files in
-> ./drivers/net/pcs/, but the new LYNX PCS MODULE section refers to
-> ./drivers/net/phy/.
-> 
-> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains:
-> 
->   warning: no file matches    F:    drivers/net/phy/pcs-lynx.c
-> 
-> Repair the LYNX PCS MODULE section by referring to the right location.
-> 
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+On Sat, Sep 5, 2020 at 5:50 PM Andrew Lunn <andrew@lunn.ch> wrote:
 
-Applied, thanks!
+> The PHY handling in this driver is all a bit odd.
+>
+> gmac_open() will also try to connect the PHY if it has not already
+> been found. gmac_stop() does not seem to have a symmetrical
+> phy_disconnect. However, gmac_uninit does?
+>
+> I do wonder if more cleanup should be done while you are at it?
+
+OK I send a new more invasive version :)
+
+Thanks,
+Linus Walleij
