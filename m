@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 482E425E842
-	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 16:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A17825E83F
+	for <lists+netdev@lfdr.de>; Sat,  5 Sep 2020 16:04:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728604AbgIEOEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 10:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50902 "EHLO
+        id S1728486AbgIEOD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 10:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728371AbgIEODp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 10:03:45 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C586C061244
-        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 07:03:44 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id t10so10239638wrv.1
-        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 07:03:44 -0700 (PDT)
+        with ESMTP id S1726591AbgIEODk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 10:03:40 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCC0C061245
+        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 07:03:39 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id o21so9303800wmc.0
+        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 07:03:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=konsulko.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=n6w3nK8xHEZQLDx1ZWmkRM/JPSMFVDVJw4W6fxo3ljM=;
-        b=Jg9foA5T+vE8UB0F0p6HvIxR1kp9W7w92wbu1Ilm9BfEAKEmAs4K8P7vq07u4Rpwjq
-         Eyul5BazBuIASEUBLKmK7QdvyHP6xlRMMiCm5nkVwlOTVTpY3OYJBFlQIOLqCPhwB+aV
-         9d3I+Cer4gxwjPTLqvUwqckCv4HTa5ReKCgvA=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=r8t3Bq+9skdVRp16Sgumk9QASfxctZ6a3tE/UOz3Dr0=;
+        b=Gria/rGZtf5NviLuBNOj1xcUjLakfLU0YYMYCY1Srrxmvda1Jtf/1IY5bd2SRNBPxf
+         3mFM3UJaAby/XtcbVlFw8iE0iXPRMFYnCqv3B1nYi3oZBuhms/61/ayYQm9jR2p7kYnn
+         z4fvyqbZwJW4JGwrT51CK1prPgmKIqnWltI84=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=n6w3nK8xHEZQLDx1ZWmkRM/JPSMFVDVJw4W6fxo3ljM=;
-        b=QiUzOb7ddP3mbs3KYK4FsAAOWW6xHjr8vClBtm3ZqkkCZcrXPts6LCYdml7tvRPnCx
-         HQFQ75jET7vtySxe4ipjZtSvVEl2W00fcaDtKWoeBdEJziqO4ePdL9maujw3uqy+cwgh
-         OoKFXrZDBo1MkIaRFPpYmmvAhBcR3ZoM5UxQi2YLWIFmWvCBf79TvjvQUCV0lk4+Z1i0
-         F5uz32H0YI40/n/sEAGgqWC4ndWekCwwg5Mnj5LMUMNfnChnu14dw1kpcVy2OZUDm5Cp
-         f5t9wQIsbZ98droNVQTIk1wZJorTPRCC/fpJ2sMOJdCeidgYxuNrtQMYMOzzar2rdUj3
-         fGjw==
-X-Gm-Message-State: AOAM531ve3X1zQwGSy644I+PcIyn+RcpxDB45mfBjEUdClqmEshnH+GK
-        T2llQRIxwCRGu9RyrtuRV5qEOHnh5BqG7g==
-X-Google-Smtp-Source: ABdhPJwJ7tJYzDg5p0OGI5bYLnXP/js17rroymPdiKsxEC9s7qXF/iLO6ZWswXDTH6QMKGUkmK+m3A==
-X-Received: by 2002:a5d:6547:: with SMTP id z7mr12429103wrv.322.1599314616513;
-        Sat, 05 Sep 2020 07:03:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=r8t3Bq+9skdVRp16Sgumk9QASfxctZ6a3tE/UOz3Dr0=;
+        b=s0x+tvbWD2gRDFQmEFvfzoTnZ4udkNLtqYPU3NV1FsnY/X6gGpL/RbNdsthzfgiaTu
+         ash5k/ftx0JRkhn2YcLp+DCNZ8Ko790ub5mrgPYeIlGFP2RjTdAFRHVAtxRjJ4wkY2w7
+         4HgGbxAObPgS1gSRkrYhpgJgCacxaxnFvgMasqq+v9K2WazlYNlPsqmOXTqPMR63U9l4
+         mz5aN8f24InD4zJ3Naqvqk+90vh80IJQxHkjRIdMfHNfEQf8i15wtBoI+YbWHSERmZfd
+         S67xluKAUCIYqvoMjz7Ts5m5S241EXYvhKGAhD2by05GHdM/4ml6jOtVEnQ82+M+HIlk
+         dGKQ==
+X-Gm-Message-State: AOAM533L+wAsEu779ouaXWEDOWKpCdoU0LUX7TKVMKM8HVaOft5HstI/
+        W4cYXKPuV9MvoY7ndw3atAcbuQ==
+X-Google-Smtp-Source: ABdhPJworfGD5wUy1AnwxD8eagfKJNqIiq5UmENXJDNcoe6f2+TMHNr2wvEBc3nBVx6+YaxNVRvX5g==
+X-Received: by 2002:a1c:56d6:: with SMTP id k205mr12253247wmb.88.1599314617538;
+        Sat, 05 Sep 2020 07:03:37 -0700 (PDT)
 Received: from ar2.home.b5net.uk ([213.48.11.149])
-        by smtp.gmail.com with ESMTPSA id b2sm17390369wmh.47.2020.09.05.07.03.34
+        by smtp.gmail.com with ESMTPSA id b2sm17390369wmh.47.2020.09.05.07.03.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 05 Sep 2020 07:03:35 -0700 (PDT)
+        Sat, 05 Sep 2020 07:03:37 -0700 (PDT)
 From:   Paul Barker <pbarker@konsulko.com>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
@@ -52,10 +52,12 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>
 Cc:     Paul Barker <pbarker@konsulko.com>, netdev@vger.kernel.org
-Subject: [PATCH 0/4] ksz9477 dsa switch driver improvements
-Date:   Sat,  5 Sep 2020 15:03:21 +0100
-Message-Id: <20200905140325.108846-1-pbarker@konsulko.com>
+Subject: [PATCH 1/4] net: dsa: microchip: Make switch detection more informative
+Date:   Sat,  5 Sep 2020 15:03:22 +0100
+Message-Id: <20200905140325.108846-2-pbarker@konsulko.com>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200905140325.108846-1-pbarker@konsulko.com>
+References: <20200905140325.108846-1-pbarker@konsulko.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,22 +65,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These changes were made while debugging the ksz9477 driver for use on a
-custom board which uses the ksz9893 switch supported by this driver. The
-patches have been runtime tested on top of Linux 5.8.4, I couldn't
-runtime test them on top of 5.9-rc3 due to unrelated issues. They have
-been build tested on top of 5.9-rc3.
+To make switch detection more informative print the result of the
+ksz9477/ksz9893 compatibility check. With debug output enabled also
+print the contents of the Chip ID registers as a 40-bit hex string.
 
-Paul Barker (4):
-  net: dsa: microchip: Make switch detection more informative
-  net: dsa: microchip: Add debug print for XMII port mode
-  net: dsa: microchip: Disable RGMII in-band status on KSZ9893
-  net: dsa: microchip: Implement recommended reset timing
+As this detection is the first communication with the switch performed
+by the driver, making it easy to see any errors here will help identify
+issues with SPI data corruption or reset sequencing.
 
- drivers/net/dsa/microchip/ksz9477.c    | 11 +++++++++++
- drivers/net/dsa/microchip/ksz_common.c |  3 ++-
- 2 files changed, 13 insertions(+), 1 deletion(-)
+Signed-off-by: Paul Barker <pbarker@konsulko.com>
+---
+ drivers/net/dsa/microchip/ksz9477.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 3cb22d149813..a48f5edab561 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -13,6 +13,7 @@
+ #include <linux/if_bridge.h>
+ #include <net/dsa.h>
+ #include <net/switchdev.h>
++#include <linux/printk.h>
+ 
+ #include "ksz9477_reg.h"
+ #include "ksz_common.h"
+@@ -1426,10 +1427,12 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
+ 	/* Default capability is gigabit capable. */
+ 	dev->features = GBIT_SUPPORT;
+ 
++	dev_dbg(dev->dev, "Switch detect: ID=%08x%02x\n", id32, data8);
+ 	id_hi = (u8)(id32 >> 16);
+ 	id_lo = (u8)(id32 >> 8);
+ 	if ((id_lo & 0xf) == 3) {
+ 		/* Chip is from KSZ9893 design. */
++		dev_info(dev->dev, "Found KSZ9893\n");
+ 		dev->features |= IS_9893;
+ 
+ 		/* Chip does not support gigabit. */
+@@ -1438,6 +1441,7 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
+ 		dev->mib_port_cnt = 3;
+ 		dev->phy_port_cnt = 2;
+ 	} else {
++		dev_info(dev->dev, "Found KSZ9477 or compatible\n");
+ 		/* Chip uses new XMII register definitions. */
+ 		dev->features |= NEW_XMII;
+ 
 -- 
 2.28.0
 
