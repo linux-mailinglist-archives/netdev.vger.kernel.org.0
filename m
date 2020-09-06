@@ -2,128 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7445525EC2F
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 04:46:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 642EC25EC35
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 04:56:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728327AbgIFCqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 22:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
+        id S1728692AbgIFCz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 22:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728662AbgIFCqN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 22:46:13 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389C5C061755
-        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 19:46:11 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id q21so9492260edv.1
-        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 19:46:11 -0700 (PDT)
+        with ESMTP id S1728327AbgIFCzv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 22:55:51 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F901C061574
+        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 19:55:51 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id gf14so4800177pjb.5
+        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 19:55:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fZqDWW5vNAoJJAbX0kuyb7Ud5+qbw+9T/B7X+7yryh8=;
-        b=DmhPGb7AyMoKvO+EZ6qSA6y0mbdaxr6Hf+3iisa/FrUxspdnpBXYMQLIrBlGXFwX/I
-         msIH1xrcZozf6lMLykq8tZh1ognEbytLSE67zNmMiBFjNvGt923/zAuglw0hFw87dbRc
-         A1nyUIALkitD3VJq/qWFJuvK+ZkX1gzGCVZ+BrlG+poI90JAyIDZaw4uM0Ck9giFZ+Gg
-         F6AfmR4omPmNAUbd9YHfF7akFNYhRd5gAvcLH1JH7gjnFQE9VKaNDBHNXkVikQ+++umT
-         2W6r1to8acOWY7IG4HMbK5dMFncajEXDc1z81RDr8E9youj5oQovA0CzpF8j+MGWg1Y0
-         VZ+w==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=zoYGT8aRD6gpzBpu8ArLrX0oOsYBryT38/R4M68WAlk=;
+        b=L4Ruubk5ElbjsnZEsCBs4nhuc6q7vCa6/Vzpdvyu+/j+yW/77GNXcPjJDOuCOXQJrV
+         jZxF5LjORz7g2XHUg9SgrFwKowicOouYrEzdWIZsMi9hSt1s69PFm8P4+d+1uf2DYrXs
+         xOW+Zt/X+1eBtzJ4F030Ur//tjXoTUng1L/7g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fZqDWW5vNAoJJAbX0kuyb7Ud5+qbw+9T/B7X+7yryh8=;
-        b=fEGeOb4KwMEMfU/qN9FBp6aD538Kkzwspm8gEjNs9iEAqHwvfAvRkPF0yL/MUYhAJK
-         C/LoipDeMwTzfyqwHZgd1r68sN58Ci025lUYPJ7bTAMdF5gd9Cwg/YbhwgcBi9tLZd0z
-         pTdmyxdaGzxhg26ZmRD4GXlxSfZlJ8/IuBbx74XkN1wQKSSeXi+8jxOj0CpXEizVkNmY
-         sULmjgq4ySUx0O06rKTuoynraXuX/BK1DuRUEscAD4VTyM4Ja9K8G7tWIk0mWJhIDld1
-         CljGMkFlEEMLJoTLToJvRlcpKukBPjm8u05FX3qHz2AafiX7niJDQwuVYrtDoiH/phKq
-         6CaQ==
-X-Gm-Message-State: AOAM531Mv7OuTeGr6IYjs9TDMWPdVyJ26lT98Hs7izamdWLA2Z7hJi+9
-        51dhz6FmcQFq6P+Q+1l7VXE7pf1GVvXtdp426F68
-X-Google-Smtp-Source: ABdhPJwEnqc7V1NRJVUfKvCRxDcLWxHKwC04LW/AslJ8t3tHT+VIhkM1GtvHSi9RzbnnsIGUXVyYSmBJ5klezGQfiL8=
-X-Received: by 2002:aa7:ce97:: with SMTP id y23mr16089395edv.128.1599360369151;
- Sat, 05 Sep 2020 19:46:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200826145247.10029-1-casey@schaufler-ca.com> <20200826145247.10029-15-casey@schaufler-ca.com>
-In-Reply-To: <20200826145247.10029-15-casey@schaufler-ca.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Sat, 5 Sep 2020 22:45:57 -0400
-Message-ID: <CAHC9VhQmEgNgsXmk8MeMsfkvZ82GuHBguoBvG5WR9mcoztBDOA@mail.gmail.com>
-Subject: Re: [PATCH v20 14/23] LSM: Ensure the correct LSM context releaser
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     casey.schaufler@intel.com, James Morris <jmorris@namei.org>,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-audit@redhat.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        Stephen Smalley <sds@tycho.nsa.gov>,
-        linux-integrity@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=zoYGT8aRD6gpzBpu8ArLrX0oOsYBryT38/R4M68WAlk=;
+        b=AzcDskGcrE0XSh6t61WoXoMGjgXqEjS+ow6mYGgpZJUPY8rfv0w5sTUqboPEBe3tBa
+         cJ/yP7hPUd+J0P1NXyuld6ULi6fnlXnm26fECbOU67FWpeQkzkP9bui5YgNEuaJIPjMy
+         RS0wEYXdU7R/us9BaIbAhFcoUyV0looL/5moFLRs8M4nSC5HOv57nqKMZmnruRv1pS0D
+         /j9etiI4CO654/vbiLREAGSPP3+KYmVxMI9BobxT0NqWqlg4E6p9THZ1bOwfeIj8N0gt
+         qvCNSgOOn8RZTPff+eCPwa1cUOlFP5ZyL9BzVLR+GngBNE7f5NnJRr7EMwIDxJo70LGI
+         N8jw==
+X-Gm-Message-State: AOAM531SvEXb99mfMrh7nc6UTjTizSmn8uGyqaVCrXJG4uRR96kUCWmc
+        +ESjD/fixgbEvDb4P96gd9lBEOkMH5/vRg==
+X-Google-Smtp-Source: ABdhPJzhT9gy5x2H85s4Hydko01i7VEG7RLSxtzXjetWt3uubWTKVBrBWuGgMS6in+dy0Ymv5sJH2g==
+X-Received: by 2002:a17:902:bcc2:: with SMTP id o2mr14509876pls.87.1599360948647;
+        Sat, 05 Sep 2020 19:55:48 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id h5sm1346959pgn.75.2020.09.05.19.55.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 05 Sep 2020 19:55:47 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 0/2] bnxt_en: Two bug fixes.
+Date:   Sat,  5 Sep 2020 22:55:35 -0400
+Message-Id: <1599360937-26197-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 26, 2020 at 11:16 AM Casey Schaufler <casey@schaufler-ca.com> wrote:
->
-> Add a new lsmcontext data structure to hold all the information
-> about a "security context", including the string, its size and
-> which LSM allocated the string. The allocation information is
-> necessary because LSMs have different policies regarding the
-> lifecycle of these strings. SELinux allocates and destroys
-> them on each use, whereas Smack provides a pointer to an entry
-> in a list that never goes away.
->
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-> Reviewed-by: John Johansen <john.johansen@canonical.com>
-> Acked-by: Stephen Smalley <sds@tycho.nsa.gov>
-> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-> Cc: linux-integrity@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> ---
->  drivers/android/binder.c                | 10 ++++---
->  fs/ceph/xattr.c                         |  6 ++++-
->  fs/nfs/nfs4proc.c                       |  8 ++++--
->  fs/nfsd/nfs4xdr.c                       |  7 +++--
->  include/linux/security.h                | 35 +++++++++++++++++++++++--
->  include/net/scm.h                       |  5 +++-
->  kernel/audit.c                          | 14 +++++++---
->  kernel/auditsc.c                        | 12 ++++++---
->  net/ipv4/ip_sockglue.c                  |  4 ++-
->  net/netfilter/nf_conntrack_netlink.c    |  4 ++-
->  net/netfilter/nf_conntrack_standalone.c |  4 ++-
->  net/netfilter/nfnetlink_queue.c         | 13 ++++++---
->  net/netlabel/netlabel_unlabeled.c       | 19 +++++++++++---
->  net/netlabel/netlabel_user.c            |  4 ++-
->  security/security.c                     | 11 ++++----
->  15 files changed, 121 insertions(+), 35 deletions(-)
+The first patch fixes AER recovery by reducing the time from several
+minutes to a more reasonable 20 - 30 seconds.  The second patch fixes
+a possible NULL pointer crash during firmware reset.
 
-One small comment below, but otherwise ...
+Please queue for -stable also.  Thanks.
 
-Acked-by: Paul Moore <paul@paul-moore.com>
+Vasundhara Volam (2):
+  bnxt_en: Avoid sending firmware messages when AER error is detected.
+  bnxt_en: Fix NULL ptr dereference crash in bnxt_fw_reset_task()
 
-> +/**
-> + * lsmcontext_init - initialize an lsmcontext structure.
-> + * @cp: Pointer to the context to initialize
-> + * @context: Initial context, or NULL
-> + * @size: Size of context, or 0
-> + * @slot: Which LSM provided the context
-> + *
-> + * Fill in the lsmcontext from the provided information.
-> + * This is a scaffolding function that will be removed when
-> + * lsmcontext integration is complete.
-> + */
-> +static inline void lsmcontext_init(struct lsmcontext *cp, char *context,
-> +                                  u32 size, int slot)
-> +{
-> +       cp->slot = slot;
-> +       cp->context = context;
-> +       cp->len = size;
-> +}
-
-Here is another case where some of the intermediate code, and perhaps
-some of the final code, can probably be simplified if
-lsmcontext_init() returns the lsmcontext pointer.
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 13 +++++++------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  4 ++++
+ 2 files changed, 11 insertions(+), 6 deletions(-)
 
 -- 
-paul moore
-www.paul-moore.com
+1.8.3.1
+
