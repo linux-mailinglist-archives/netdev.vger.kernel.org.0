@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9211725EEB5
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 17:40:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91A6C25EED0
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 17:45:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729054AbgIFPjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 11:39:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48152 "EHLO mail.kernel.org"
+        id S1728946AbgIFPpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 11:45:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48230 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728986AbgIFPhl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Sep 2020 11:37:41 -0400
+        id S1728991AbgIFPhp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Sep 2020 11:37:45 -0400
 Received: from localhost.localdomain (unknown [194.230.155.174])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F38A420DD4;
-        Sun,  6 Sep 2020 15:37:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C1D72080A;
+        Sun,  6 Sep 2020 15:37:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599406661;
-        bh=ipXNcf/TRHvf+ZR7u/TpP2y/IWKhoPj+ksZzOBS6oeY=;
+        s=default; t=1599406664;
+        bh=zplVVIgMQojsbwVzaG1n4QTE3TMlBcAZb0xfKeub8eE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EN5QpLwReQiJ4Glm7ap6/s/E+bad2seEm2qD979OOsHwJO6NxtBNuVQWXu46iwk5I
-         sb3UUYxeaQVGzwhn/yk/g0OKHsuRUBZzCte1FsF7UN0HpJnSG3crg3+F0ct4b95UNf
-         r+XbvXDH1sBVNqzlUD1VNdYoeJsBOswU5qejeKUM=
+        b=gM4O+hP07ABQ3OZHrIxBfLvCcF0ZYd26PkkTUQ+rorh3Xx91bwMDTtNFD8RkxIK+1
+         z/Qkl5EAQlzG9TfC1U7bzfUPncpacZNX/zSMpP4FScdUctxBXzf3WjQqWVVn9LGpAd
+         rbeUWmBvFw3pIvloB4BL/jt3hQo6g9hWh8x+ZTvM=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -37,9 +37,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         linux-samsung-soc@vger.kernel.org
 Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
         Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH v2 3/9] nfc: s3fwrn5: Remove wrong vendor prefix from GPIOs
-Date:   Sun,  6 Sep 2020 17:36:48 +0200
-Message-Id: <20200906153654.2925-4-krzk@kernel.org>
+Subject: [PATCH v2 4/9] nfc: s3fwrn5: Remove unneeded 'ret' variable
+Date:   Sun,  6 Sep 2020 17:36:49 +0200
+Message-Id: <20200906153654.2925-5-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200906153654.2925-1-krzk@kernel.org>
 References: <20200906153654.2925-1-krzk@kernel.org>
@@ -48,50 +48,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The device tree property prefix describes the vendor, which in case of
-S3FWRN5 chip is Samsung.  Therefore the "s3fwrn5" prefix for "en-gpios"
-and "fw-gpios" is not correct and should be deprecated.  Introduce
-properly named properties for these GPIOs but still support deprecated
-ones.
+The local variable 'ret' can be removed:
+
+  drivers/nfc/s3fwrn5/i2c.c:167:6: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/nfc/s3fwrn5/i2c.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/nfc/s3fwrn5/i2c.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
-index b4eb926d220a..557279492503 100644
+index 557279492503..dc995286be84 100644
 --- a/drivers/nfc/s3fwrn5/i2c.c
 +++ b/drivers/nfc/s3fwrn5/i2c.c
-@@ -200,13 +200,21 @@ static int s3fwrn5_i2c_parse_dt(struct i2c_client *client)
- 	if (!np)
- 		return -ENODEV;
+@@ -164,7 +164,6 @@ static int s3fwrn5_i2c_read(struct s3fwrn5_i2c_phy *phy)
+ static irqreturn_t s3fwrn5_i2c_irq_thread_fn(int irq, void *phy_id)
+ {
+ 	struct s3fwrn5_i2c_phy *phy = phy_id;
+-	int ret = 0;
  
--	phy->gpio_en = of_get_named_gpio(np, "s3fwrn5,en-gpios", 0);
--	if (!gpio_is_valid(phy->gpio_en))
--		return -ENODEV;
-+	phy->gpio_en = of_get_named_gpio(np, "en-gpios", 0);
-+	if (!gpio_is_valid(phy->gpio_en)) {
-+		/* Support also deprecated property */
-+		phy->gpio_en = of_get_named_gpio(np, "s3fwrn5,en-gpios", 0);
-+		if (!gpio_is_valid(phy->gpio_en))
-+			return -ENODEV;
-+	}
+ 	if (!phy || !phy->ndev) {
+ 		WARN_ON_ONCE(1);
+@@ -179,10 +178,9 @@ static irqreturn_t s3fwrn5_i2c_irq_thread_fn(int irq, void *phy_id)
+ 	switch (phy->mode) {
+ 	case S3FWRN5_MODE_NCI:
+ 	case S3FWRN5_MODE_FW:
+-		ret = s3fwrn5_i2c_read(phy);
++		s3fwrn5_i2c_read(phy);
+ 		break;
+ 	case S3FWRN5_MODE_COLD:
+-		ret = -EREMOTEIO;
+ 		break;
+ 	}
  
--	phy->gpio_fw_wake = of_get_named_gpio(np, "s3fwrn5,fw-gpios", 0);
--	if (!gpio_is_valid(phy->gpio_fw_wake))
--		return -ENODEV;
-+	phy->gpio_fw_wake = of_get_named_gpio(np, "wake-gpios", 0);
-+	if (!gpio_is_valid(phy->gpio_fw_wake)) {
-+		/* Support also deprecated property */
-+		phy->gpio_fw_wake = of_get_named_gpio(np, "s3fwrn5,fw-gpios", 0);
-+		if (!gpio_is_valid(phy->gpio_fw_wake))
-+			return -ENODEV;
-+	}
- 
- 	return 0;
- }
 -- 
 2.17.1
 
