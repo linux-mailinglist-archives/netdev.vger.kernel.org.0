@@ -2,44 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1686F25EF50
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 19:20:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91AAD25EF5B
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 19:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729090AbgIFRUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 13:20:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55278 "EHLO mail.kernel.org"
+        id S1729156AbgIFRZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 13:25:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59026 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725816AbgIFRUP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Sep 2020 13:20:15 -0400
+        id S1725816AbgIFRZS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Sep 2020 13:25:18 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 132E520709;
-        Sun,  6 Sep 2020 17:20:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D84A220738;
+        Sun,  6 Sep 2020 17:25:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599412815;
-        bh=gY0MbL1YxNuEnkMuu3vubZVNy3OOd3AYpKVyrrMY72s=;
+        s=default; t=1599413118;
+        bh=YA6BXBaVAzMARXXVWIRzJEr/Ljjjo9xio4vkwKodA8I=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aij6baaKG0nixHhLci5OgaZ/ZqJ11xCeBozFrig23KcdyETOBY3CfnRwUjkTuqZ+A
-         T+NHpXd91Q06JNC15sGETUTpwgl/qeHTP/KfEpqEupZo7ne1g9K9yFepVb4zqAEgM/
-         7arZV7LqyDVJORsf6hD5BQn/EnQAefuuX6CY01Mc=
-Date:   Sun, 6 Sep 2020 10:20:13 -0700
+        b=Y1k/cLgtlwkbC5QtE7GzggDZx53kECoiysZ8zN9+CR4uJuf1NdhdyHbMmBJaAuvss
+         kwK+kQ0mffaInUzSP4njgtYtKil7lyfsMkDWAOS7YbIAlLwvF58Dug3HUJeSRnParC
+         SE/V1z7H+wEFEoTGpqCw1RKXUs3u2/LnYOJ1DyVw=
+Date:   Sun, 6 Sep 2020 10:25:16 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Wang Hai <wanghai38@huawei.com>,
-        David Miller <davem@davemloft.net>,
-        John Ogness <john.ogness@linutronix.de>,
-        Mao Wenan <maowenan@huawei.com>, jrosen@cisco.com,
-        Arnd Bergmann <arnd@arndb.de>,
-        Colin King <colin.king@canonical.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net/packet: Remove unused macro BLOCK_PRIV
-Message-ID: <20200906102013.7b7553cf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CA+FuTSfWP+=Lm8h_PLNsrAaV5s-ACbS=YMBqjy=UpCuDEMhzKA@mail.gmail.com>
-References: <20200905085058.68312-1-wanghai38@huawei.com>
-        <CA+FuTSfWP+=Lm8h_PLNsrAaV5s-ACbS=YMBqjy=UpCuDEMhzKA@mail.gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [net-next PATCH v2] net: gemini: Clean up phy registration
+Message-ID: <20200906102516.5d1f4014@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200905204257.51044-1-linus.walleij@linaro.org>
+References: <20200905204257.51044-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -48,15 +41,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 5 Sep 2020 11:15:05 +0200 Willem de Bruijn wrote:
-> On Sat, Sep 5, 2020 at 10:53 AM Wang Hai <wanghai38@huawei.com> wrote:
-> >
-> > BLOCK_PRIV is never used after it was introduced.
-> > So better to remove it.
-> >
-> > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > Signed-off-by: Wang Hai <wanghai38@huawei.com>  
-> 
-> Acked-by: Willem de Bruijn <willemb@google.com>
+On Sat,  5 Sep 2020 22:42:57 +0200 Linus Walleij wrote:
+> diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+> index ffec0f3dd957..94707c9dda88 100644
+> --- a/drivers/net/ethernet/cortina/gemini.c
+> +++ b/drivers/net/ethernet/cortina/gemini.c
 
-Applied, thanks!
+> @@ -2505,6 +2491,13 @@ static int gemini_ethernet_port_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		goto unprepare;
+>  
+> +	ret = gmac_setup_phy(netdev);
+> +	if (ret) {
+> +		netdev_err(netdev,
+> +			   "PHY init failed\n");
+> +		return ret;
+
+goto unprepare?
+
+> +	}
+> +
+>  	ret = register_netdev(netdev);
+>  	if (ret)
+>  		goto unprepare;
