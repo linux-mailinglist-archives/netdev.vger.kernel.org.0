@@ -2,161 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6756325EEF4
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 17:59:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 634AE25EF1B
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 18:26:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729008AbgIFP7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 11:59:13 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:43975 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726931AbgIFP7C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 11:59:02 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 481885C00E0;
-        Sun,  6 Sep 2020 11:59:01 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sun, 06 Sep 2020 11:59:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=GrRz/e
-        qbtlSmrGyXDaaMCTI6gWJzvvz6fXmQgN53lF8=; b=OVCEDwoZ78E5mfRCc4xRwU
-        p17rmeNoYd5+EmZwxfREiFG1UjAcPxIVriBR8a1SQP8zera0GcpiHEc50c0khn0Z
-        Qx3tb2y6mWmoEtBr2B7bR1TibZyyYd7uNANKpAIaN1thQPUpj6qRJ86oLxx9NuW7
-        ZxzTLoV3eibDCh2CaoRMvkh39+p+vpByn8PhlPq1mp8dk+CCuUygrMpiTCtwrvvc
-        w6TpnMdK6LqgK6MJIObgvJTEYrN4t4FSFo3nAglXPRqE7R5EPaJ45M0HBpBApXCY
-        ZYgWg000pxC0FbALeTBRMjeQx9meLQaIy/BkAVWNiu85ZrPz2/s1DZpV2O6aQYWw
-        ==
-X-ME-Sender: <xms:RAdVX8hxfi6zidFCNMU0YPhLopyUWBHUHCDqvv-0CKkYFpqpLMJB4w>
-    <xme:RAdVX1A-ZgKzKctDDovRnGlco_vOFVVDiowMjVhlG3_OP6ibQbuYdr6IDk7exhqj-
-    oiJEgCT_L5RcPo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudegjedgleejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdefiedruddvkeenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:RAdVX0HApKojEA1pE1h0OOKCswkTQ_ctnUcKSsH0uQQ1oJ5khLiaAQ>
-    <xmx:RAdVX9Str4vLVbHckiepFJ_rk-qQgHMuvDVeVTewW_ySgL-Ndzq8lw>
-    <xmx:RAdVX5w_raOSfflJ5z-L7NRKnIdmQ8mLhjjr7tpEbrpr_5_XYqKpZg>
-    <xmx:RQdVX8r209k1aRhd6UYrEauKkgXPYPvw1cl1kDAYpYa1wzxlpVddPg>
-Received: from localhost (igld-84-229-36-128.inter.net.il [84.229.36.128])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 74B6C328005D;
-        Sun,  6 Sep 2020 11:59:00 -0400 (EDT)
-Date:   Sun, 6 Sep 2020 18:58:58 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Aya Levin <ayal@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v1 3/4] devlink: Add hierarchy between traps
- in device level and port level
-Message-ID: <20200906155858.GB2431016@shredder>
-References: <1599060734-26617-1-git-send-email-ayal@mellanox.com>
- <1599060734-26617-4-git-send-email-ayal@mellanox.com>
+        id S1726931AbgIFQ01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 12:26:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60658 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725816AbgIFQ0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Sep 2020 12:26:24 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C0B820709;
+        Sun,  6 Sep 2020 16:26:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599409583;
+        bh=hJp+qATOFylIa3y0vlxW2BD+WH7p8cy8K26upvnrakI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZGYWf5GvVkRR144ONX9qVMifl9mCy4NpoNHh9qJHRJnvQ0+OdTn2omykDa9IXuQq2
+         9lC43miWxqIbIqOWwhtjLqLOUQuC1Qp5ZgrnZQdTqYjPdfwHhMeunSHUOMKUEHtpxm
+         3c42pKtZ9tOEvusFFR+kGv8Eb2CCOaUkvhjFnqDg=
+Date:   Sun, 6 Sep 2020 09:26:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dexuan Cui <decui@microsoft.com>
+Cc:     "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>
+Subject: Re: [PATCH net] hv_netvsc: Fix hibernation for mlx5 VF driver
+Message-ID: <20200906092621.72005293@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <KU1P153MB012097D6AA971EC957D854B2BF2B0@KU1P153MB0120.APCP153.PROD.OUTLOOK.COM>
+References: <20200905025218.45268-1-decui@microsoft.com>
+        <20200905162712.65b886a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <KU1P153MB012097D6AA971EC957D854B2BF2B0@KU1P153MB0120.APCP153.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1599060734-26617-4-git-send-email-ayal@mellanox.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 02, 2020 at 06:32:13PM +0300, Aya Levin wrote:
-> Managing large scale port's traps may be complicated. This patch
-> introduces a shortcut: when setting a trap on a device and this trap is
-> not registered on this device, the action will take place on all related
-> ports that did register this trap.
+On Sun, 6 Sep 2020 03:05:48 +0000 Dexuan Cui wrote:
+> > > @@ -2635,6 +2632,10 @@ static int netvsc_resume(struct hv_device *dev)
+> > >  	netvsc_devinfo_put(device_info);
+> > >  	net_device_ctx->saved_netvsc_dev_info = NULL;
+> > >
+> > > +	vf_netdev = rtnl_dereference(net_device_ctx->vf_netdev);
+> > > +	if (vf_netdev && netvsc_vf_changed(vf_netdev) != NOTIFY_OK)
+> > > +		ret = -EINVAL;  
+> > 
+> > Should you perhaps remove the VF in case of the failure?  
+> IMO this failure actually should not happen since we're resuming the netvsc
+> NIC, so we're sure we have a valid pointer to the netvsc net device, and
+> netvsc_vf_changed() should be able to find the netvsc pointer and return
+> NOTIFY_OK. In case of a failure, something really bad must be happening,
+> and I'm not sure if it's safe to simply remove the VF, so I just return
+> -EINVAL for simplicity, since I believe the failure should not happen in practice.
 
-I'm not really a fan of this and I'm not sure there is precedent for
-something similar. Also, it's an optimization, so I wouldn't put it as
-part of the first submission before you gather some operational
-experience with the initial interface.
+Okay, I see that the errors propagated by netvsc_vf_changed() aren't
+actually coming from netvsc_switch_datapath(), so you're right. The
+failures here won't be meaningful.
 
-In addition, I find it very unintuitive for users. When I do 'devlink
-trap show' I will not see anything. I will only see the traps when I
-issue 'devlink port trap show', yet 'devlink trap set ...' is expected
-to work.
+> I would rather keep the code as-is, but I'm OK to add a WARN_ON(1) if you
+> think that's necessary.
 
-Lets assume that this is a valid change, it would be better implemented
-with my suggestion from the previous patch: When devlink sees that a
-trap is registered on all the ports it can auto-register a new
-per-device trap and user space gets the appropriate notification.
-
-> 
-> Signed-off-by: Aya Levin <ayal@mellanox.com>
-> ---
->  net/core/devlink.c | 43 +++++++++++++++++++++++++++++++++----------
->  1 file changed, 33 insertions(+), 10 deletions(-)
-> 
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index b13e1b40bf1c..dea5482b2517 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -6501,23 +6501,46 @@ static int devlink_nl_cmd_trap_set_doit(struct sk_buff *skb,
->  	struct devlink *devlink = info->user_ptr[0];
->  	struct devlink_trap_mngr *trap_mngr;
->  	struct devlink_trap_item *trap_item;
-> +	struct devlink_port *devlink_port;
->  	int err;
->  
-> -	trap_mngr = devlink_trap_get_trap_mngr_from_info(devlink, info);
-> -	if (list_empty(&trap_mngr->trap_list))
-> -		return -EOPNOTSUPP;
-> +	devlink_port = devlink_port_get_from_attrs(devlink, info->attrs);
-> +	if (IS_ERR(devlink_port)) {
-> +		trap_mngr =  &devlink->trap_mngr;
-> +		if (list_empty(&trap_mngr->trap_list))
-> +			goto loop_over_ports;
->  
-> -	trap_item = devlink_trap_item_get_from_info(trap_mngr, info);
-> -	if (!trap_item) {
-> -		NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap");
-> -		return -ENOENT;
-> +		trap_item = devlink_trap_item_get_from_info(trap_mngr, info);
-> +		if (!trap_item)
-> +			goto loop_over_ports;
-> +	} else {
-> +		trap_mngr = &devlink_port->trap_mngr;
-> +		if (list_empty(&trap_mngr->trap_list))
-> +			return -EOPNOTSUPP;
-> +
-> +		trap_item = devlink_trap_item_get_from_info(trap_mngr, info);
-> +		if (!trap_item) {
-> +			NL_SET_ERR_MSG_MOD(extack, "Port did not register this trap");
-> +			return -ENOENT;
-> +		}
->  	}
->  	return devlink_trap_action_set(devlink, trap_mngr, trap_item, info);
->  
-> -	err = devlink_trap_action_set(devlink, trap_mngr, trap_item, info);
-> -	if (err)
-> -		return err;
-> +loop_over_ports:
-> +	if (list_empty(&devlink->port_list))
-> +		return -EOPNOTSUPP;
-> +	list_for_each_entry(devlink_port, &devlink->port_list, list) {
-> +		trap_mngr = &devlink_port->trap_mngr;
-> +		if (list_empty(&trap_mngr->trap_list))
-> +			continue;
->  
-> +		trap_item = devlink_trap_item_get_from_info(trap_mngr, info);
-> +		if (!trap_item)
-> +			continue;
-> +		err = devlink_trap_action_set(devlink, trap_mngr, trap_item, info);
-> +		if (err)
-> +			return err;
-> +	}
->  	return 0;
->  }
->  
-> -- 
-> 2.14.1
-> 
+No need, I think core will complain when resume callback fails. That
+should be sufficient.
