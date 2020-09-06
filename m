@@ -2,45 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 634AE25EF1B
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 18:26:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4746625EF26
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 18:33:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726931AbgIFQ01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 12:26:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60658 "EHLO mail.kernel.org"
+        id S1726422AbgIFQdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 12:33:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34256 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725816AbgIFQ0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Sep 2020 12:26:24 -0400
+        id S1725816AbgIFQdH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Sep 2020 12:33:07 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C0B820709;
-        Sun,  6 Sep 2020 16:26:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B23C520709;
+        Sun,  6 Sep 2020 16:33:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599409583;
-        bh=hJp+qATOFylIa3y0vlxW2BD+WH7p8cy8K26upvnrakI=;
+        s=default; t=1599409987;
+        bh=JufQVAIIPQnj/VnYRwkF5YTXrluEZWFgHXv3wmmLd2I=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZGYWf5GvVkRR144ONX9qVMifl9mCy4NpoNHh9qJHRJnvQ0+OdTn2omykDa9IXuQq2
-         9lC43miWxqIbIqOWwhtjLqLOUQuC1Qp5ZgrnZQdTqYjPdfwHhMeunSHUOMKUEHtpxm
-         3c42pKtZ9tOEvusFFR+kGv8Eb2CCOaUkvhjFnqDg=
-Date:   Sun, 6 Sep 2020 09:26:21 -0700
+        b=g6lRDB2vUEQWwY79IzN2cVcWlre/UQU/Rmm/eas2WpU45a2dz4aAtnTio29vBgxCR
+         SfCWnIgkFVPGdkxZb3KF/P43qdxbD12GxYm6+0f1s/9bljYKpLdzxYc4lvbmDDlnRI
+         1aeO2w7h3HCN9WJ78DfVGZv/ZKd7VajZe/y03NHk=
+Date:   Sun, 6 Sep 2020 09:33:05 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>
-Subject: Re: [PATCH net] hv_netvsc: Fix hibernation for mlx5 VF driver
-Message-ID: <20200906092621.72005293@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <KU1P153MB012097D6AA971EC957D854B2BF2B0@KU1P153MB0120.APCP153.PROD.OUTLOOK.COM>
-References: <20200905025218.45268-1-decui@microsoft.com>
-        <20200905162712.65b886a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <KU1P153MB012097D6AA971EC957D854B2BF2B0@KU1P153MB0120.APCP153.PROD.OUTLOOK.COM>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
+        tariqt@mellanox.com, yishaih@mellanox.com,
+        linux-rdma@vger.kernel.org, jiri@resnulli.us
+Subject: Re: [PATCH net-next] mlx4: make sure to always set the port type
+Message-ID: <20200906093305.5c901cc5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200906072759.GC55261@unreal>
+References: <20200904200621.2407839-1-kuba@kernel.org>
+        <20200906072759.GC55261@unreal>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -49,29 +42,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 6 Sep 2020 03:05:48 +0000 Dexuan Cui wrote:
-> > > @@ -2635,6 +2632,10 @@ static int netvsc_resume(struct hv_device *dev)
-> > >  	netvsc_devinfo_put(device_info);
-> > >  	net_device_ctx->saved_netvsc_dev_info = NULL;
-> > >
-> > > +	vf_netdev = rtnl_dereference(net_device_ctx->vf_netdev);
-> > > +	if (vf_netdev && netvsc_vf_changed(vf_netdev) != NOTIFY_OK)
-> > > +		ret = -EINVAL;  
-> > 
-> > Should you perhaps remove the VF in case of the failure?  
-> IMO this failure actually should not happen since we're resuming the netvsc
-> NIC, so we're sure we have a valid pointer to the netvsc net device, and
-> netvsc_vf_changed() should be able to find the netvsc pointer and return
-> NOTIFY_OK. In case of a failure, something really bad must be happening,
-> and I'm not sure if it's safe to simply remove the VF, so I just return
-> -EINVAL for simplicity, since I believe the failure should not happen in practice.
+On Sun, 6 Sep 2020 10:27:59 +0300 Leon Romanovsky wrote:
+> On Fri, Sep 04, 2020 at 01:06:21PM -0700, Jakub Kicinski wrote:
+> > Even tho mlx4_core registers the devlink ports, it's mlx4_en
+> > and mlx4_ib which set their type. In situations where one of
+> > the two is not built yet the machine has ports of given type
+> > we see the devlink warning from devlink_port_type_warn() trigger.
+> >
+> > Having ports of a type not supported by the kernel may seem
+> > surprising, but it does occur in practice - when the unsupported
+> > port is not plugged in to a switch anyway users are more than happy
+> > not to see it (and potentially allocate any resources to it).
+> >
+> > Set the type in mlx4_core if type-specific driver is not built.
+> >
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > ---
+> >  drivers/net/ethernet/mellanox/mlx4/main.c | 11 +++++++++++
+> >  1 file changed, 11 insertions(+)
+> >
+> > diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
+> > index 258c7a96f269..70cf24ba71e4 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx4/main.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
+> > @@ -3031,6 +3031,17 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
+> >  	if (err)
+> >  		return err;
+> >
+> > +	/* Ethernet and IB drivers will normally set the port type,
+> > +	 * but if they are not built set the type now to prevent
+> > +	 * devlink_port_type_warn() from firing.
+> > +	 */
+> > +	if (!IS_ENABLED(CONFIG_MLX4_EN) &&
+> > +	    dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH)
+> > +		devlink_port_type_eth_set(&info->devlink_port, NULL);  
+>                                                                ^^^^^
+> 
+> Won't it crash in devlink_port_type_eth_set()?
+> The first line there dereferences pointer.
+>   7612         const struct net_device_ops *ops = netdev->netdev_ops;
 
-Okay, I see that the errors propagated by netvsc_vf_changed() aren't
-actually coming from netvsc_switch_datapath(), so you're right. The
-failures here won't be meaningful.
+Damn, good catch. It's not supposed to be required. I'll patch devlink.
+ 
+> And can we call to devlink_port_type_*_set() without IS_ENABLED() check?
 
-> I would rather keep the code as-is, but I'm OK to add a WARN_ON(1) if you
-> think that's necessary.
-
-No need, I think core will complain when resume callback fails. That
-should be sufficient.
+It'll generate two netlink notifications - not the end of the world but
+also doesn't feel super clean.
