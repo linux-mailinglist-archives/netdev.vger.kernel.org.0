@@ -2,85 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB94E25EC18
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 04:03:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7445525EC2F
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 04:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728832AbgIFB6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 21:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
+        id S1728327AbgIFCqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 22:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728409AbgIFB6N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 21:58:13 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B321DC061573
-        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 18:58:10 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id s10so2884378plp.1
-        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 18:58:10 -0700 (PDT)
+        with ESMTP id S1728662AbgIFCqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 22:46:13 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389C5C061755
+        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 19:46:11 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id q21so9492260edv.1
+        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 19:46:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=TjUJAmoGNFhUd9H5GcN7KblsjtZXG6sZylgWUDpMDmE=;
-        b=iyIllifnApcPYoxh5ykWAvTEf1HyfejbI1IlCWDbe/Q87aHqGYgnuOLkMsOpkj0kt3
-         i6KxB139YHWLzTfuJ98Y+MU4LtqHmXpFfM3/aX+S5cfKlmHsixNsse3WUXbU9fXuBwGW
-         pw0jGceWmCrs2gzt5L3s3XZBMVpPZxsgLGQYBhk+6Inlc/fMT6PxJHvLGv3tF4djXdyc
-         /KU0xhJJyOGG1M/fca9YK6jskQkjyNTwvOUv0d/aYwz3qtazRsj0c+w6d3mjdNKvsBjM
-         sMIklL1xK9XXyhF2ie79uKqsFYFNJXtFNTQhnNvASNWV030kxIeEFJV5BmUr0EocQSbO
-         aaPA==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fZqDWW5vNAoJJAbX0kuyb7Ud5+qbw+9T/B7X+7yryh8=;
+        b=DmhPGb7AyMoKvO+EZ6qSA6y0mbdaxr6Hf+3iisa/FrUxspdnpBXYMQLIrBlGXFwX/I
+         msIH1xrcZozf6lMLykq8tZh1ognEbytLSE67zNmMiBFjNvGt923/zAuglw0hFw87dbRc
+         A1nyUIALkitD3VJq/qWFJuvK+ZkX1gzGCVZ+BrlG+poI90JAyIDZaw4uM0Ck9giFZ+Gg
+         F6AfmR4omPmNAUbd9YHfF7akFNYhRd5gAvcLH1JH7gjnFQE9VKaNDBHNXkVikQ+++umT
+         2W6r1to8acOWY7IG4HMbK5dMFncajEXDc1z81RDr8E9youj5oQovA0CzpF8j+MGWg1Y0
+         VZ+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TjUJAmoGNFhUd9H5GcN7KblsjtZXG6sZylgWUDpMDmE=;
-        b=reo7LDp7An5szwQeWmMre5FnCMhReiQLSUQYloWcm5hxr02J+dKoq8/z6nf9dOy08C
-         7PeFw6dk3uC/Zn2Ix/U/1scCGGLD1mg7ZEqFn/iWCBBre1zPWl+LsHOBM+mCybjp3snl
-         NVqDMbr1ySf2g1WZ+hthb9Vr47el/jcURUjEY4oqudtg5WGBM5feHqQDT/v/oZ4M777d
-         LonxBZLI/aWssrw6Fg6s/w9wz3302IHoRP6Fn8q4R3Ygc8eqPVISid5gqb8DRUkGz5kz
-         mPIwr0BIXYNM+n/yGonhEIcFeJSHqA9JYl+8tXK6+cG+V++zURsavOXN85BS8/U/C7ej
-         +YEA==
-X-Gm-Message-State: AOAM530DJP1BLC0E8R568v3kwhAuQIoZRGbY/76Z9pPOOjSYarbDiMMo
-        uMhU/oC6dNc5kFGnz+mCv2+R3nGwVt0=
-X-Google-Smtp-Source: ABdhPJxPeqX4UHvBKGgcxib3jFJ7/sSQzOOlKE1UqMucrl18zH0hyr5Ts2oJrNXJCfwJfA7SEZhPdQ==
-X-Received: by 2002:a17:90a:81:: with SMTP id a1mr2475275pja.136.1599357490216;
-        Sat, 05 Sep 2020 18:58:10 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id 25sm3620526pjh.57.2020.09.05.18.58.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Sep 2020 18:58:09 -0700 (PDT)
-Subject: Re: [PATCH] net: dsa: rtl8366rb: Support setting MTU
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-References: <20200905215914.77640-1-linus.walleij@linaro.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <8c5a87e1-a8db-3a48-8311-cf6537723de4@gmail.com>
-Date:   Sat, 5 Sep 2020 18:58:08 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fZqDWW5vNAoJJAbX0kuyb7Ud5+qbw+9T/B7X+7yryh8=;
+        b=fEGeOb4KwMEMfU/qN9FBp6aD538Kkzwspm8gEjNs9iEAqHwvfAvRkPF0yL/MUYhAJK
+         C/LoipDeMwTzfyqwHZgd1r68sN58Ci025lUYPJ7bTAMdF5gd9Cwg/YbhwgcBi9tLZd0z
+         pTdmyxdaGzxhg26ZmRD4GXlxSfZlJ8/IuBbx74XkN1wQKSSeXi+8jxOj0CpXEizVkNmY
+         sULmjgq4ySUx0O06rKTuoynraXuX/BK1DuRUEscAD4VTyM4Ja9K8G7tWIk0mWJhIDld1
+         CljGMkFlEEMLJoTLToJvRlcpKukBPjm8u05FX3qHz2AafiX7niJDQwuVYrtDoiH/phKq
+         6CaQ==
+X-Gm-Message-State: AOAM531Mv7OuTeGr6IYjs9TDMWPdVyJ26lT98Hs7izamdWLA2Z7hJi+9
+        51dhz6FmcQFq6P+Q+1l7VXE7pf1GVvXtdp426F68
+X-Google-Smtp-Source: ABdhPJwEnqc7V1NRJVUfKvCRxDcLWxHKwC04LW/AslJ8t3tHT+VIhkM1GtvHSi9RzbnnsIGUXVyYSmBJ5klezGQfiL8=
+X-Received: by 2002:aa7:ce97:: with SMTP id y23mr16089395edv.128.1599360369151;
+ Sat, 05 Sep 2020 19:46:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200905215914.77640-1-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200826145247.10029-1-casey@schaufler-ca.com> <20200826145247.10029-15-casey@schaufler-ca.com>
+In-Reply-To: <20200826145247.10029-15-casey@schaufler-ca.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Sat, 5 Sep 2020 22:45:57 -0400
+Message-ID: <CAHC9VhQmEgNgsXmk8MeMsfkvZ82GuHBguoBvG5WR9mcoztBDOA@mail.gmail.com>
+Subject: Re: [PATCH v20 14/23] LSM: Ensure the correct LSM context releaser
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     casey.schaufler@intel.com, James Morris <jmorris@namei.org>,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-audit@redhat.com, keescook@chromium.org,
+        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
+        Stephen Smalley <sds@tycho.nsa.gov>,
+        linux-integrity@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Aug 26, 2020 at 11:16 AM Casey Schaufler <casey@schaufler-ca.com> wrote:
+>
+> Add a new lsmcontext data structure to hold all the information
+> about a "security context", including the string, its size and
+> which LSM allocated the string. The allocation information is
+> necessary because LSMs have different policies regarding the
+> lifecycle of these strings. SELinux allocates and destroys
+> them on each use, whereas Smack provides a pointer to an entry
+> in a list that never goes away.
+>
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+> Reviewed-by: John Johansen <john.johansen@canonical.com>
+> Acked-by: Stephen Smalley <sds@tycho.nsa.gov>
+> Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+> Cc: linux-integrity@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> ---
+>  drivers/android/binder.c                | 10 ++++---
+>  fs/ceph/xattr.c                         |  6 ++++-
+>  fs/nfs/nfs4proc.c                       |  8 ++++--
+>  fs/nfsd/nfs4xdr.c                       |  7 +++--
+>  include/linux/security.h                | 35 +++++++++++++++++++++++--
+>  include/net/scm.h                       |  5 +++-
+>  kernel/audit.c                          | 14 +++++++---
+>  kernel/auditsc.c                        | 12 ++++++---
+>  net/ipv4/ip_sockglue.c                  |  4 ++-
+>  net/netfilter/nf_conntrack_netlink.c    |  4 ++-
+>  net/netfilter/nf_conntrack_standalone.c |  4 ++-
+>  net/netfilter/nfnetlink_queue.c         | 13 ++++++---
+>  net/netlabel/netlabel_unlabeled.c       | 19 +++++++++++---
+>  net/netlabel/netlabel_user.c            |  4 ++-
+>  security/security.c                     | 11 ++++----
+>  15 files changed, 121 insertions(+), 35 deletions(-)
 
+One small comment below, but otherwise ...
 
-On 9/5/2020 2:59 PM, Linus Walleij wrote:
-> This implements the missing MTU setting for the RTL8366RB
-> switch.
-> 
-> Apart from supporting jumboframes, this rids us of annoying
-> boot messages like this:
-> realtek-smi switch: nonfatal error -95 setting MTU on port 0
-> 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Acked-by: Paul Moore <paul@paul-moore.com>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> +/**
+> + * lsmcontext_init - initialize an lsmcontext structure.
+> + * @cp: Pointer to the context to initialize
+> + * @context: Initial context, or NULL
+> + * @size: Size of context, or 0
+> + * @slot: Which LSM provided the context
+> + *
+> + * Fill in the lsmcontext from the provided information.
+> + * This is a scaffolding function that will be removed when
+> + * lsmcontext integration is complete.
+> + */
+> +static inline void lsmcontext_init(struct lsmcontext *cp, char *context,
+> +                                  u32 size, int slot)
+> +{
+> +       cp->slot = slot;
+> +       cp->context = context;
+> +       cp->len = size;
+> +}
+
+Here is another case where some of the intermediate code, and perhaps
+some of the final code, can probably be simplified if
+lsmcontext_init() returns the lsmcontext pointer.
+
 -- 
-Florian
+paul moore
+www.paul-moore.com
