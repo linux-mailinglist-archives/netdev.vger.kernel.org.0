@@ -2,573 +2,428 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0307D25EDD7
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 14:47:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EF6025EDFC
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 15:40:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728889AbgIFMq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 08:46:58 -0400
-Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:31243 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728873AbgIFMpx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 08:45:53 -0400
-Received: from localhost.localdomain ([93.22.36.58])
-        by mwinf5d13 with ME
-        id Qclj2300a1FFwYV03clkf7; Sun, 06 Sep 2020 14:45:47 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 06 Sep 2020 14:45:47 +0200
-X-ME-IP: 93.22.36.58
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     benve@cisco.com, govind@gmx.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] enic: switch from 'pci_' to 'dma_' API
-Date:   Sun,  6 Sep 2020 14:45:41 +0200
-Message-Id: <20200906124541.309003-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1728726AbgIFNkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 09:40:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47364 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728891AbgIFNgp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Sep 2020 09:36:45 -0400
+Received: from localhost (unknown [151.66.86.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AC06620760;
+        Sun,  6 Sep 2020 13:36:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599399382;
+        bh=nEloTPaT/0aLose1iS1izcHESMbU05uQXq7UpdamaLU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QSGkBpuNAOXNwJvavRTSq38wxv4gy20ysVePUfpZlJ1/y5fETDNbEIH0M9lgVMRYm
+         gBDHZJDtj2b8sr6mTZjY95aA1P4YquXbz+F8yUYNkg3oLdUiH0xNZvSyuG0RfU0dPI
+         lwGmfo/M/9uD8xRSNk+M+hBphwKUGN+A7o2PveXY=
+Date:   Sun, 6 Sep 2020 15:36:17 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com,
+        echaudro@redhat.com, sameehj@amazon.com, kuba@kernel.org,
+        daniel@iogearbox.net, ast@kernel.org, shayagr@amazon.com,
+        edumazet@google.com
+Subject: Re: [PATCH v2 net-next 6/9] bpf: helpers: add
+ bpf_xdp_adjust_mb_header helper
+Message-ID: <20200906133617.GC2785@lore-desk>
+References: <cover.1599165031.git.lorenzo@kernel.org>
+ <b7475687bb09aac6ec051596a8ccbb311a54cb8a.1599165031.git.lorenzo@kernel.org>
+ <5f51e2f2eb22_3eceb20837@john-XPS-13-9370.notmuch>
+ <20200904094511.GF2884@lore-desk>
+ <5f525be3da548_1932208b6@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="8NvZYKFJsRX2Djef"
+Content-Disposition: inline
+In-Reply-To: <5f525be3da548_1932208b6@john-XPS-13-9370.notmuch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
+--8NvZYKFJsRX2Djef
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-When memory is allocated in 'vnic_dev_classifier()', 'vnic_dev_fw_info()',
-'vnic_dev_notify_set()' and 'vnic_dev_stats_dump()' (vnic_dev.c) GFP_ATOMIC
-must be used because its callers take a spinlock before calling these
-functions.
+> Lorenzo Bianconi wrote:
+> > > Lorenzo Bianconi wrote:
 
-When memory is allocated in '__enic_set_rsskey()' and 'enic_set_rsscpu()'
-GFP_ATOMIC must be used because they can be called with a spinlock.
-The call chain is:
-  enic_reset                         <-- takes 'enic->enic_api_lock'
-    --> enic_set_rss_nic_cfg
-      --> enic_set_rsskey
-        --> __enic_set_rsskey        <-- uses dma_alloc_coherent
-      --> enic_set_rsscpu            <-- uses dma_alloc_coherent
+[...]
 
-When memory is allocated in 'vnic_dev_init_prov2()' GFP_ATOMIC must be used
-because a spinlock is hidden in the ENIC_DEVCMD_PROXY_BY_INDEX macro, when
-this function is called in 'enic_set_port_profile()'.
+> > > > + *	Description
+> > > > + *		Adjust frame headers moving *offset* bytes from/to the second
+> > > > + *		buffer to/from the first one. This helper can be used to move
+> > > > + *		headers when the hw DMA SG does not copy all the headers in
+> > > > + *		the first fragment.
+> >=20
+> > + Eric to the discussion
+> >=20
+> > >=20
+> > > This is confusing to read. Does this mean I can "move bytes to the se=
+cond
+> > > buffer from the first one" or "move bytes from the second buffer to t=
+he first
+> > > one" And what are frame headers? I'm sure I can read below code and w=
+ork
+> > > it out, but users reading the header file should be able to parse thi=
+s.
+> >=20
+> > Our main goal with this helper is to fix the use-case where we request =
+the hw
+> > to put L2/L3/L4 headers (and all the TCP options) in the first fragment=
+ and TCP
+> > data starting from the second fragment (headers split) but for some rea=
+sons
+> > the hw puts the TCP options in the second fragment (if we understood co=
+rrectly
+> > this issue has been introduced by Eric @ NetDevConf 0x14).
+> > bpf_xdp_adjust_mb_header() can fix this use-case moving bytes from the =
+second fragment
+> > to the first one (offset > 0) or from the first buffer to the second on=
+e (offset < 0).
+>=20
+> Ah OK, so the description needs the information about how to use offset t=
+hen it
+> would have been clear I think. Something like that last line "moving byte=
+s from
+> the second fragment ...."
 
-When memory is allocated in 'vnic_dev_alloc_desc_ring()' GFP_KERNEL can be
-used because it is only called from 5 functions ('vnic_dev_init_devcmd2()',
-'vnic_cq_alloc()', 'vnic_rq_alloc()', 'vnic_wq_alloc()' and
-'enic_wq_devcmd2_alloc()'.
+ack, right. I will do in v3.
 
-  'vnic_dev_init_devcmd2()': already uses GFP_KERNEL and no lock is taken
-     in the between.
-  'enic_wq_devcmd2_alloc()': is called from ' vnic_dev_init_devcmd2()'
-     which already uses GFP_KERNEL and no lock is taken in the between.
-  'vnic_cq_alloc()', 'vnic_rq_alloc()', 'vnic_wq_alloc()': are called
-     from 'enic_alloc_vnic_resources()'
-'enic_alloc_vnic_resources()' has only 2 call chains:
+>=20
+> So this is to fixup header-spit for RX zerocopy? Add that to the commit
+> message then.
 
-  1) enic_probe
-      --> enic_dev_init
-        --> enic_alloc_vnic_resources
-'enic_probe()' is a probe function and no lock is taken in the between
+Right. I will improve comments in v3.
 
-  2) enic_set_ringparam
-      --> enic_alloc_vnic_resources
-'enic_set_ringparam()' is a .set_ringparam function (see struct
-ethtool_ops). It seems to only take a mutex and no spinlock.
+>=20
+> >=20
+> > >=20
+> > > Also we want to be able to read all data not just headers. Reading the
+> > > payload of a TCP packet is equally important for many l7 load balance=
+rs.
+> > >=20
+> >=20
+> > In order to avoid to slow down performances we require that eBPF sandbo=
+x can
+> > read/write only buff0 in a xdp multi-buffer. The xdp program can only
+> > perform some restricted changes to buff<n> (n >=3D 1) (e.g. what we did=
+ in
+> > bpf_xdp_adjust_mb_header()).
+> > You can find the xdp multi-buff design principles here [0][1]
+> >=20
+> > [0] https://github.com/xdp-project/xdp-project/blob/master/areas/core/x=
+dp-multi-buffer01-design.org
+> > [1] http://people.redhat.com/lbiancon/conference/NetDevConf2020-0x14/ad=
+d-xdp-on-driver.html - XDP multi-buffers section (slide 40)
+> >=20
+> > > > + *
+> > > > + *		A call to this helper is susceptible to change the underlying
+> > > > + *		packet buffer. Therefore, at load time, all checks on pointers
+> > > > + *		previously done by the verifier are invalidated and must be
+> > > > + *		performed again, if the helper is used in combination with
+> > > > + *		direct packet access.
+> > > > + *
+> > > > + *	Return
+> > > > + *		0 on success, or a negative error in case of failure.
+> > > >   */
+> > > >  #define __BPF_FUNC_MAPPER(FN)		\
+> > > >  	FN(unspec),			\
+> > > > @@ -3727,6 +3741,7 @@ union bpf_attr {
+> > > >  	FN(inode_storage_delete),	\
+> > > >  	FN(d_path),			\
+> > > >  	FN(copy_from_user),		\
+> > > > +	FN(xdp_adjust_mb_header),	\
+> > > >  	/* */
+> > > > =20
+> > > >  /* integer value in 'imm' field of BPF_CALL instruction selects wh=
+ich helper
+> > > > diff --git a/net/core/filter.c b/net/core/filter.c
+> > > > index 47eef9a0be6a..ae6b10cf062d 100644
+> > > > --- a/net/core/filter.c
+> > > > +++ b/net/core/filter.c
+> > > > @@ -3475,6 +3475,57 @@ static const struct bpf_func_proto bpf_xdp_a=
+djust_head_proto =3D {
+> > > >  	.arg2_type	=3D ARG_ANYTHING,
+> > > >  };
+> > > > =20
+> > > > +BPF_CALL_2(bpf_xdp_adjust_mb_header, struct  xdp_buff *, xdp,
+> > > > +	   int, offset)
+> > > > +{
+> > > > +	void *data_hard_end, *data_end;
+> > > > +	struct skb_shared_info *sinfo;
+> > > > +	int frag_offset, frag_len;
+> > > > +	u8 *addr;
+> > > > +
+> > > > +	if (!xdp->mb)
+> > > > +		return -EOPNOTSUPP;
+>=20
+> Not required for this patch necessarily but I think it would be better us=
+er
+> experience if instead of EOPNOTSUPP here we did the header split. This
+> would allocate a frag and copy the bytes around as needed. Yes it might
+> be slow if you don't have a frag free in the driver, but if user wants to
+> do header split and their hardware can't do it we would have a way out.
+>=20
+> I guess it could be an improvement for later though.
 
+I have no a strong opinion on this, I did it in this way to respect the rul=
+e "we
+do not allocate memory for XDP".
 
-So all paths are safe to use GFP_KERNEL.
+@Jesper, David: thoughts?
 
+>=20
+>=20
+> > > > +
+> > > > +	sinfo =3D xdp_get_shared_info_from_buff(xdp);
+> > > > +
+> > > > +	frag_len =3D skb_frag_size(&sinfo->frags[0]);
+> > > > +	if (offset > frag_len)
+> > > > +		return -EINVAL;
+> > >=20
+> > > What if we want data in frags[1] and so on.
+> > >=20
+> > > > +
+> > > > +	frag_offset =3D skb_frag_off(&sinfo->frags[0]);
+> > > > +	data_end =3D xdp->data_end + offset;
+> > > > +
+> > > > +	if (offset < 0 && (-offset > frag_offset ||
+> > > > +			   data_end < xdp->data + ETH_HLEN))
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	data_hard_end =3D xdp_data_hard_end(xdp); /* use xdp->frame_sz */
+> > > > +	if (data_end > data_hard_end)
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	addr =3D page_address(skb_frag_page(&sinfo->frags[0])) + frag_off=
+set;
+> > > > +	if (offset > 0) {
+> > > > +		memcpy(xdp->data_end, addr, offset);
+> > >=20
+> > > But this could get expensive for large amount of data? And also
+> > > limiting because we require the room to do the copy. Presumably
+> > > the reason we have fargs[1] is because the normal page or half
+> > > page is in use?
+> > >=20
+> > > > +	} else {
+> > > > +		memcpy(addr + offset, xdp->data_end + offset, -offset);
+> > > > +		memset(xdp->data_end + offset, 0, -offset);
+> > > > +	}
+> > > > +
+> > > > +	skb_frag_size_sub(&sinfo->frags[0], offset);
+> > > > +	skb_frag_off_add(&sinfo->frags[0], offset);
+> > > > +	xdp->data_end =3D data_end;
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > >=20
+> > > So overall I don't see the point of copying bytes from one frag to
+> > > another. Create an API that adjusts the data pointers and then
+> > > copies are avoided and manipulating frags is not needed.
+> >=20
+> > please see above.
+>=20
+> OK it makes more sense with the context. It doesn't have much if anything
+> to do about making data visible to the BPF program. This is about
+> changing the layout of the frags list.
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
+correct.
 
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
+>=20
+> How/when does the header split go wrong on the mvneta device? I guess
+> this is to fix a real bug/issue not some theoritical one? An example
+> in the commit message would make this concrete. Soemthing like,
+> "When using RX zerocopy to mmap data into userspace application if
+> a packet with [all these wild headers] is received rx zerocopy breaks
+> because header split puts headers X in the data frag confusing apps".
 
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
+This issue does not occur with mvneta since the driver is not capable of
+performing header split AFAIK. The helper has been introduced to cover the
+"issue" reported by Eric in his NetDevConf presentation. In order to test t=
+he
+helper I modified the mventa rx napi loop in a controlled way (this patch c=
+an't
+be sent upstream, it is for testing only :))
+I will improve commit message in v3.
 
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
+>=20
+> >=20
+> > >=20
+> > > Also and even more concerning I think this API requires the
+> > > driver to populate shinfo. If we use TX_REDIRECT a lot or TX_XMIT
+> > > this means we need to populate shinfo when its probably not ever
+> > > used. If our driver is smart L2/L3 headers are in the readable
+> > > data and prefetched. Writing frags into the end of a page is likely
+> > > not free.
+> >=20
+> > Sorry I did not get what you mean with "populate shinfo" here. We need =
+to
+> > properly set shared_info in order to create the xdp multi-buff.
+> > Apart of header splits, please consider the main uses-cases for
+> > xdp multi-buff are XDP with TSO and Jumbo frames.
+>=20
+> The use case I have in mind is a XDP_TX or XDP_REDIRECT load balancer.
+> I wont know this at the driver level and now I'll have to write into
+> the back of every page with this shinfo just in case. If header
+> split is working I should never need to even touch the page outside
+> the first N bytes that were DMAd and in cache with DDIO. So its extra
+> overhead for something that is unlikely to happen in the LB case.
 
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+So far the skb_shared_info in constructed in mvneta only if the hw splits
+the received data in multiple buffers (so if the MTU is greater than 1 PAGE,
+please see comments below). Moreover the shared_info is present only in the
+first buffer.
 
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+>=20
+> If you take the simplest possible program that just returns XDP_TX
+> and run a pkt generator against it. I believe (haven't run any
+> tests) that you will see overhead now just from populating this
+> shinfo. I think it needs to only be done when its needed e.g. when
+> user makes this helper call or we need to build the skb and populate
+> the frags there.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
+sure, I will carry out some tests.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
+>=20
+> I think a smart driver will just keep the frags list in whatever
+> form it has them (rx descriptors?) and push them over to the
+> tx descriptors without having to do extra work with frag lists.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
+I think there are many use-cases where we want to have this info available =
+in
+xdp_buff/xdp_frame. E.g: let's consider the following Jumbo frame example:
+- MTU > 1 PAGE (so we the driver will split the received data in multiple rx
+  descriptors)
+- the driver performs a XDP_REDIRECT to a veth or cpumap
 
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
+Relying on the proposed architecture we could enable GRO in veth or cpumap I
+guess since we can build a non-linear skb from the xdp multi-buff, right?
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
+>=20
+> >=20
+> > >=20
+> > > Did you benchmark this?
+> >=20
+> > will do, I need to understand if we can use tiny buffers in mvneta.
+>=20
+> Why tiny buffers? How does mvneta layout the frags when doing
+> header split? Can we just benchmark what mvneta is doing at the
+> end of this patch series?
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
+for the moment mvneta can split the received data when the previous buffer =
+is
+full (e.g. when we the first page is completely written). I want to explore=
+ if
+I can set a tiny buffer (e.g. 128B) as max received buffer to run some perf=
+ormance
+tests and have some "comparable" results respect to the ones I got when I a=
+dded XDP
+support to mvneta.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
+>=20
+> Also can you try the basic XDP_TX case mentioned above.
+> I don't want this to degrade existing use cases if at all
+> possible.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+sure, will do.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+>=20
+> >=20
+> > >=20
+> > > In general users of this API should know the bytes they want
+> > > to fetch. Use an API like this,
+> > >=20
+> > >   bpf_xdp_adjust_bytes(xdp, start, end)
+> > >=20
+> > > Where xdp is the frame, start is the first byte the user wants
+> > > and end is the last byte. Then usually you can skip the entire
+> > > copy part and just move the xdp pointesr around. The ugly case
+> > > is if the user puts start/end across a frag boundary and a copy
+> > > is needed. In that case maybe we use end as a hint and not a
+> > > hard requirement.
+> > >=20
+> > > The use case I see is I read L2/L3/L4 headers and I need the
+> > > first N bytes of the payload. I know where the payload starts
+> > > and I know how many bytes I need so,
+> > >=20
+> > >   bpf_xdp_adjust_bytes(xdp, payload_offset, bytes_needed);
+> > >=20
+> > > Then hopefully that is all in one frag. If its not I'll need
+> > > to do a second helper call. Still nicer than forcing drivers
+> > > to populate this shinfo I think. If you think I'm wrong try
+> > > a benchmark. Benchmarks aside I get stuck when data_end and
+> > > data_hard_end are too close together.
+> >=20
+> > IIUC what you mean here is to expose L2/L3/L4 headers + some data to
+> > the ebpf program to perform like L7 load-balancing, right?
+>=20
+> Correct, but with extra context I see in this patch you are trying
+> to build an XDP controlled header split. This seems like a different
+> use case from mine.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+I agree.
 
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+>=20
+> > Let's consider the Jumbo frames use-case (so the data are split in mult=
+iple
+> > buffers). I can see to issues here:
+> > - since in XDP we can't linearize the buffer if start and end are on the
+> >   different pages (like we do in bpf_msg_pull_data()), are we ending up
+> >   in the case where requested data are all in buff0?=20
+>=20
+> In this case I would expect either the helper returns how many bytes
+> were pulled in, maybe just (start, end_of_frag) or user can find
+> it from data_end pointer. Here end is just a hint.
+>=20
+> > - if  start and end are in buff<2>, we should report the fragment numbe=
+r to the
+> >   ebpf program to "fetch" the data. Are we exposing too low-level detai=
+ls to
+> >   user-space?
+>=20
+> Why do you need the frag number? Just say I want bytes (X,Y) if that
+> happens to be on buff<2> let the helper find it.
+>=20
+> I think having a helper to read/write any bytes is important and
+> necessary, but the helper implemented in this patch is something
+> else. I get naming is hard what if we called it xdp_header_split().
 
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
+ack, sure. I will fix it in v3.
 
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
+Regards,
+Lorenzo
 
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
+>=20
+> >=20
+> > Regards,
+> > Lorenzo
+> >=20
+> > >=20
+> > > Thanks,
+> > > John
+>=20
+>=20
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+--8NvZYKFJsRX2Djef
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-This patch and its explanation is a bit tricky, so review carefully !
-Tricky means error prone, so maybe it would be safer to keep GFP_ATOMIC in
-'vnic_dev_alloc_desc_ring()'
----
- drivers/net/ethernet/cisco/enic/enic_main.c | 76 +++++++++++----------
- drivers/net/ethernet/cisco/enic/vnic_dev.c  | 66 +++++++++---------
- 2 files changed, 72 insertions(+), 70 deletions(-)
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX1TlzgAKCRA6cBh0uS2t
+rEQGAP4gsJGAQc0wkLn/ke+OHX7pBPvlFAnbpAZIhWPX+5PrqQEA5KtGjrK+zopP
+DIpLGx2zyK9LI8dsUbS3EtmYZP451A8=
+=Bngg
+-----END PGP SIGNATURE-----
 
-diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethernet/cisco/enic/enic_main.c
-index 552d89fdf54a..bcf3c0adedb0 100644
---- a/drivers/net/ethernet/cisco/enic/enic_main.c
-+++ b/drivers/net/ethernet/cisco/enic/enic_main.c
-@@ -326,11 +326,11 @@ static void enic_free_wq_buf(struct vnic_wq *wq, struct vnic_wq_buf *buf)
- 	struct enic *enic = vnic_dev_priv(wq->vdev);
- 
- 	if (buf->sop)
--		pci_unmap_single(enic->pdev, buf->dma_addr,
--			buf->len, PCI_DMA_TODEVICE);
-+		dma_unmap_single(&enic->pdev->dev, buf->dma_addr, buf->len,
-+				 DMA_TO_DEVICE);
- 	else
--		pci_unmap_page(enic->pdev, buf->dma_addr,
--			buf->len, PCI_DMA_TODEVICE);
-+		dma_unmap_page(&enic->pdev->dev, buf->dma_addr, buf->len,
-+			       DMA_TO_DEVICE);
- 
- 	if (buf->os_buf)
- 		dev_kfree_skb_any(buf->os_buf);
-@@ -574,8 +574,8 @@ static int enic_queue_wq_skb_vlan(struct enic *enic, struct vnic_wq *wq,
- 	dma_addr_t dma_addr;
- 	int err = 0;
- 
--	dma_addr = pci_map_single(enic->pdev, skb->data, head_len,
--				  PCI_DMA_TODEVICE);
-+	dma_addr = dma_map_single(&enic->pdev->dev, skb->data, head_len,
-+				  DMA_TO_DEVICE);
- 	if (unlikely(enic_dma_map_check(enic, dma_addr)))
- 		return -ENOMEM;
- 
-@@ -605,8 +605,8 @@ static int enic_queue_wq_skb_csum_l4(struct enic *enic, struct vnic_wq *wq,
- 	dma_addr_t dma_addr;
- 	int err = 0;
- 
--	dma_addr = pci_map_single(enic->pdev, skb->data, head_len,
--				  PCI_DMA_TODEVICE);
-+	dma_addr = dma_map_single(&enic->pdev->dev, skb->data, head_len,
-+				  DMA_TO_DEVICE);
- 	if (unlikely(enic_dma_map_check(enic, dma_addr)))
- 		return -ENOMEM;
- 
-@@ -693,8 +693,9 @@ static int enic_queue_wq_skb_tso(struct enic *enic, struct vnic_wq *wq,
- 	 */
- 	while (frag_len_left) {
- 		len = min(frag_len_left, (unsigned int)WQ_ENET_MAX_DESC_LEN);
--		dma_addr = pci_map_single(enic->pdev, skb->data + offset, len,
--					  PCI_DMA_TODEVICE);
-+		dma_addr = dma_map_single(&enic->pdev->dev,
-+					  skb->data + offset, len,
-+					  DMA_TO_DEVICE);
- 		if (unlikely(enic_dma_map_check(enic, dma_addr)))
- 			return -ENOMEM;
- 		enic_queue_wq_desc_tso(wq, skb, dma_addr, len, mss, hdr_len,
-@@ -752,8 +753,8 @@ static inline int enic_queue_wq_skb_encap(struct enic *enic, struct vnic_wq *wq,
- 	dma_addr_t dma_addr;
- 	int err = 0;
- 
--	dma_addr = pci_map_single(enic->pdev, skb->data, head_len,
--				  PCI_DMA_TODEVICE);
-+	dma_addr = dma_map_single(&enic->pdev->dev, skb->data, head_len,
-+				  DMA_TO_DEVICE);
- 	if (unlikely(enic_dma_map_check(enic, dma_addr)))
- 		return -ENOMEM;
- 
-@@ -1222,8 +1223,8 @@ static void enic_free_rq_buf(struct vnic_rq *rq, struct vnic_rq_buf *buf)
- 	if (!buf->os_buf)
- 		return;
- 
--	pci_unmap_single(enic->pdev, buf->dma_addr,
--		buf->len, PCI_DMA_FROMDEVICE);
-+	dma_unmap_single(&enic->pdev->dev, buf->dma_addr, buf->len,
-+			 DMA_FROM_DEVICE);
- 	dev_kfree_skb_any(buf->os_buf);
- 	buf->os_buf = NULL;
- }
-@@ -1248,8 +1249,8 @@ static int enic_rq_alloc_buf(struct vnic_rq *rq)
- 	if (!skb)
- 		return -ENOMEM;
- 
--	dma_addr = pci_map_single(enic->pdev, skb->data, len,
--				  PCI_DMA_FROMDEVICE);
-+	dma_addr = dma_map_single(&enic->pdev->dev, skb->data, len,
-+				  DMA_FROM_DEVICE);
- 	if (unlikely(enic_dma_map_check(enic, dma_addr))) {
- 		dev_kfree_skb(skb);
- 		return -ENOMEM;
-@@ -1281,8 +1282,8 @@ static bool enic_rxcopybreak(struct net_device *netdev, struct sk_buff **skb,
- 	new_skb = netdev_alloc_skb_ip_align(netdev, len);
- 	if (!new_skb)
- 		return false;
--	pci_dma_sync_single_for_cpu(enic->pdev, buf->dma_addr, len,
--				    DMA_FROM_DEVICE);
-+	dma_sync_single_for_cpu(&enic->pdev->dev, buf->dma_addr, len,
-+				DMA_FROM_DEVICE);
- 	memcpy(new_skb->data, (*skb)->data, len);
- 	*skb = new_skb;
- 
-@@ -1331,8 +1332,8 @@ static void enic_rq_indicate_buf(struct vnic_rq *rq,
- 				enic->rq_truncated_pkts++;
- 		}
- 
--		pci_unmap_single(enic->pdev, buf->dma_addr, buf->len,
--				 PCI_DMA_FROMDEVICE);
-+		dma_unmap_single(&enic->pdev->dev, buf->dma_addr, buf->len,
-+				 DMA_FROM_DEVICE);
- 		dev_kfree_skb_any(skb);
- 		buf->os_buf = NULL;
- 
-@@ -1346,8 +1347,8 @@ static void enic_rq_indicate_buf(struct vnic_rq *rq,
- 
- 		if (!enic_rxcopybreak(netdev, &skb, buf, bytes_written)) {
- 			buf->os_buf = NULL;
--			pci_unmap_single(enic->pdev, buf->dma_addr, buf->len,
--					 PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&enic->pdev->dev, buf->dma_addr,
-+					 buf->len, DMA_FROM_DEVICE);
- 		}
- 		prefetch(skb->data - NET_IP_ALIGN);
- 
-@@ -1420,8 +1421,8 @@ static void enic_rq_indicate_buf(struct vnic_rq *rq,
- 		/* Buffer overflow
- 		 */
- 
--		pci_unmap_single(enic->pdev, buf->dma_addr, buf->len,
--				 PCI_DMA_FROMDEVICE);
-+		dma_unmap_single(&enic->pdev->dev, buf->dma_addr, buf->len,
-+				 DMA_FROM_DEVICE);
- 		dev_kfree_skb_any(skb);
- 		buf->os_buf = NULL;
- 	}
-@@ -2178,9 +2179,9 @@ int __enic_set_rsskey(struct enic *enic)
- 	dma_addr_t rss_key_buf_pa;
- 	int i, kidx, bidx, err;
- 
--	rss_key_buf_va = pci_zalloc_consistent(enic->pdev,
--					       sizeof(union vnic_rss_key),
--					       &rss_key_buf_pa);
-+	rss_key_buf_va = dma_alloc_coherent(&enic->pdev->dev,
-+					    sizeof(union vnic_rss_key),
-+					    &rss_key_buf_pa, GFP_ATOMIC);
- 	if (!rss_key_buf_va)
- 		return -ENOMEM;
- 
-@@ -2195,8 +2196,8 @@ int __enic_set_rsskey(struct enic *enic)
- 		sizeof(union vnic_rss_key));
- 	spin_unlock_bh(&enic->devcmd_lock);
- 
--	pci_free_consistent(enic->pdev, sizeof(union vnic_rss_key),
--		rss_key_buf_va, rss_key_buf_pa);
-+	dma_free_coherent(&enic->pdev->dev, sizeof(union vnic_rss_key),
-+			  rss_key_buf_va, rss_key_buf_pa);
- 
- 	return err;
- }
-@@ -2215,8 +2216,9 @@ static int enic_set_rsscpu(struct enic *enic, u8 rss_hash_bits)
- 	unsigned int i;
- 	int err;
- 
--	rss_cpu_buf_va = pci_alloc_consistent(enic->pdev,
--		sizeof(union vnic_rss_cpu), &rss_cpu_buf_pa);
-+	rss_cpu_buf_va = dma_alloc_coherent(&enic->pdev->dev,
-+					    sizeof(union vnic_rss_cpu),
-+					    &rss_cpu_buf_pa, GFP_ATOMIC);
- 	if (!rss_cpu_buf_va)
- 		return -ENOMEM;
- 
-@@ -2229,8 +2231,8 @@ static int enic_set_rsscpu(struct enic *enic, u8 rss_hash_bits)
- 		sizeof(union vnic_rss_cpu));
- 	spin_unlock_bh(&enic->devcmd_lock);
- 
--	pci_free_consistent(enic->pdev, sizeof(union vnic_rss_cpu),
--		rss_cpu_buf_va, rss_cpu_buf_pa);
-+	dma_free_coherent(&enic->pdev->dev, sizeof(union vnic_rss_cpu),
-+			  rss_cpu_buf_va, rss_cpu_buf_pa);
- 
- 	return err;
- }
-@@ -2699,21 +2701,21 @@ static int enic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	 * fail to 32-bit.
- 	 */
- 
--	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(47));
-+	err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(47));
- 	if (err) {
--		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
-+		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
- 		if (err) {
- 			dev_err(dev, "No usable DMA configuration, aborting\n");
- 			goto err_out_release_regions;
- 		}
--		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
-+		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
- 		if (err) {
- 			dev_err(dev, "Unable to obtain %u-bit DMA "
- 				"for consistent allocations, aborting\n", 32);
- 			goto err_out_release_regions;
- 		}
- 	} else {
--		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(47));
-+		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(47));
- 		if (err) {
- 			dev_err(dev, "Unable to obtain %u-bit DMA "
- 				"for consistent allocations, aborting\n", 47);
-diff --git a/drivers/net/ethernet/cisco/enic/vnic_dev.c b/drivers/net/ethernet/cisco/enic/vnic_dev.c
-index 901e44b0b795..45015931b335 100644
---- a/drivers/net/ethernet/cisco/enic/vnic_dev.c
-+++ b/drivers/net/ethernet/cisco/enic/vnic_dev.c
-@@ -193,9 +193,10 @@ int vnic_dev_alloc_desc_ring(struct vnic_dev *vdev, struct vnic_dev_ring *ring,
- {
- 	vnic_dev_desc_ring_size(ring, desc_count, desc_size);
- 
--	ring->descs_unaligned = pci_alloc_consistent(vdev->pdev,
--		ring->size_unaligned,
--		&ring->base_addr_unaligned);
-+	ring->descs_unaligned = dma_alloc_coherent(&vdev->pdev->dev,
-+						   ring->size_unaligned,
-+						   &ring->base_addr_unaligned,
-+						   GFP_KERNEL);
- 
- 	if (!ring->descs_unaligned) {
- 		vdev_err(vdev, "Failed to allocate ring (size=%d), aborting\n",
-@@ -218,10 +219,9 @@ int vnic_dev_alloc_desc_ring(struct vnic_dev *vdev, struct vnic_dev_ring *ring,
- void vnic_dev_free_desc_ring(struct vnic_dev *vdev, struct vnic_dev_ring *ring)
- {
- 	if (ring->descs) {
--		pci_free_consistent(vdev->pdev,
--			ring->size_unaligned,
--			ring->descs_unaligned,
--			ring->base_addr_unaligned);
-+		dma_free_coherent(&vdev->pdev->dev, ring->size_unaligned,
-+				  ring->descs_unaligned,
-+				  ring->base_addr_unaligned);
- 		ring->descs = NULL;
- 	}
- }
-@@ -551,9 +551,9 @@ int vnic_dev_fw_info(struct vnic_dev *vdev,
- 	int err = 0;
- 
- 	if (!vdev->fw_info) {
--		vdev->fw_info = pci_zalloc_consistent(vdev->pdev,
--						      sizeof(struct vnic_devcmd_fw_info),
--						      &vdev->fw_info_pa);
-+		vdev->fw_info = dma_alloc_coherent(&vdev->pdev->dev,
-+						   sizeof(struct vnic_devcmd_fw_info),
-+						   &vdev->fw_info_pa, GFP_ATOMIC);
- 		if (!vdev->fw_info)
- 			return -ENOMEM;
- 
-@@ -603,8 +603,9 @@ int vnic_dev_stats_dump(struct vnic_dev *vdev, struct vnic_stats **stats)
- 	int wait = 1000;
- 
- 	if (!vdev->stats) {
--		vdev->stats = pci_alloc_consistent(vdev->pdev,
--			sizeof(struct vnic_stats), &vdev->stats_pa);
-+		vdev->stats = dma_alloc_coherent(&vdev->pdev->dev,
-+						 sizeof(struct vnic_stats),
-+						 &vdev->stats_pa, GFP_ATOMIC);
- 		if (!vdev->stats)
- 			return -ENOMEM;
- 	}
-@@ -852,9 +853,9 @@ int vnic_dev_notify_set(struct vnic_dev *vdev, u16 intr)
- 		return -EINVAL;
- 	}
- 
--	notify_addr = pci_alloc_consistent(vdev->pdev,
--			sizeof(struct vnic_devcmd_notify),
--			&notify_pa);
-+	notify_addr = dma_alloc_coherent(&vdev->pdev->dev,
-+					 sizeof(struct vnic_devcmd_notify),
-+					 &notify_pa, GFP_ATOMIC);
- 	if (!notify_addr)
- 		return -ENOMEM;
- 
-@@ -882,10 +883,9 @@ static int vnic_dev_notify_unsetcmd(struct vnic_dev *vdev)
- int vnic_dev_notify_unset(struct vnic_dev *vdev)
- {
- 	if (vdev->notify) {
--		pci_free_consistent(vdev->pdev,
--			sizeof(struct vnic_devcmd_notify),
--			vdev->notify,
--			vdev->notify_pa);
-+		dma_free_coherent(&vdev->pdev->dev,
-+				  sizeof(struct vnic_devcmd_notify),
-+				  vdev->notify, vdev->notify_pa);
- 	}
- 
- 	return vnic_dev_notify_unsetcmd(vdev);
-@@ -1046,18 +1046,17 @@ void vnic_dev_unregister(struct vnic_dev *vdev)
- {
- 	if (vdev) {
- 		if (vdev->notify)
--			pci_free_consistent(vdev->pdev,
--				sizeof(struct vnic_devcmd_notify),
--				vdev->notify,
--				vdev->notify_pa);
-+			dma_free_coherent(&vdev->pdev->dev,
-+					  sizeof(struct vnic_devcmd_notify),
-+					  vdev->notify, vdev->notify_pa);
- 		if (vdev->stats)
--			pci_free_consistent(vdev->pdev,
--				sizeof(struct vnic_stats),
--				vdev->stats, vdev->stats_pa);
-+			dma_free_coherent(&vdev->pdev->dev,
-+					  sizeof(struct vnic_stats),
-+					  vdev->stats, vdev->stats_pa);
- 		if (vdev->fw_info)
--			pci_free_consistent(vdev->pdev,
--				sizeof(struct vnic_devcmd_fw_info),
--				vdev->fw_info, vdev->fw_info_pa);
-+			dma_free_coherent(&vdev->pdev->dev,
-+					  sizeof(struct vnic_devcmd_fw_info),
-+					  vdev->fw_info, vdev->fw_info_pa);
- 		if (vdev->devcmd2)
- 			vnic_dev_deinit_devcmd2(vdev);
- 
-@@ -1127,7 +1126,7 @@ int vnic_dev_init_prov2(struct vnic_dev *vdev, u8 *buf, u32 len)
- 	void *prov_buf;
- 	int ret;
- 
--	prov_buf = pci_alloc_consistent(vdev->pdev, len, &prov_pa);
-+	prov_buf = dma_alloc_coherent(&vdev->pdev->dev, len, &prov_pa, GFP_ATOMIC);
- 	if (!prov_buf)
- 		return -ENOMEM;
- 
-@@ -1137,7 +1136,7 @@ int vnic_dev_init_prov2(struct vnic_dev *vdev, u8 *buf, u32 len)
- 
- 	ret = vnic_dev_cmd(vdev, CMD_INIT_PROV_INFO2, &a0, &a1, wait);
- 
--	pci_free_consistent(vdev->pdev, len, prov_buf, prov_pa);
-+	dma_free_coherent(&vdev->pdev->dev, len, prov_buf, prov_pa);
- 
- 	return ret;
- }
-@@ -1217,7 +1216,8 @@ int vnic_dev_classifier(struct vnic_dev *vdev, u8 cmd, u16 *entry,
- 		tlv_size = sizeof(struct filter) +
- 			   sizeof(struct filter_action) +
- 			   2 * sizeof(struct filter_tlv);
--		tlv_va = pci_alloc_consistent(vdev->pdev, tlv_size, &tlv_pa);
-+		tlv_va = dma_alloc_coherent(&vdev->pdev->dev, tlv_size,
-+					    &tlv_pa, GFP_ATOMIC);
- 		if (!tlv_va)
- 			return -ENOMEM;
- 		tlv = tlv_va;
-@@ -1240,7 +1240,7 @@ int vnic_dev_classifier(struct vnic_dev *vdev, u8 cmd, u16 *entry,
- 
- 		ret = vnic_dev_cmd(vdev, CMD_ADD_FILTER, &a0, &a1, wait);
- 		*entry = (u16)a0;
--		pci_free_consistent(vdev->pdev, tlv_size, tlv_va, tlv_pa);
-+		dma_free_coherent(&vdev->pdev->dev, tlv_size, tlv_va, tlv_pa);
- 	} else if (cmd == CLSF_DEL) {
- 		a0 = *entry;
- 		ret = vnic_dev_cmd(vdev, CMD_DEL_FILTER, &a0, &a1, wait);
--- 
-2.25.1
-
+--8NvZYKFJsRX2Djef--
