@@ -2,90 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDFF525F019
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 21:23:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59D5425F01A
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 21:25:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726352AbgIFTXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 15:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725833AbgIFTXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 15:23:50 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AAF6C061573
-        for <netdev@vger.kernel.org>; Sun,  6 Sep 2020 12:23:50 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id s205so13631114lja.7
-        for <netdev@vger.kernel.org>; Sun, 06 Sep 2020 12:23:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kto4oLuGRLaPt+lV2wXWAROrxXQZC5JtvWVyufd1qpk=;
-        b=pdNSxgWxbgkEv+rzE1CR9jCVxU1GtmPg2fz6JAVrc6fnTEc3gEX+LN4ytg3hfJA3Z0
-         fUxcNTQbwyxfRquIntdZNDEAorDgHSfs9qMNXNOlrl9Ipx1Tkfkyz+XRyHaaugoq1BmX
-         tmZgCJjl4bqNnvGgLXY++RxTof/3e2VSRZAdOYjbbLlXoXcf01FjeNG0mw1iYT0MxWJj
-         vkaggKDzVsjPup3y1YLe013t/3kNB7fNFuiTy8rsmr2Yk0do55ooeYhHKZ3Uwlo15q8q
-         B6i34NQlpJ0OWt9YunFGfnRdHOm/g03IXjXm9Bm/IZd7ZjXzJv1aS5f5st/GVPxNMHAL
-         i9Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kto4oLuGRLaPt+lV2wXWAROrxXQZC5JtvWVyufd1qpk=;
-        b=HnD/1lcU8JaCQBvHarJFFgoLM7aXD2cI9fbbPw9PVLK7Rtm67p/FMn1NQ+wxSKFGzv
-         7qycdwgnbnuSRdPrOkYVFxUQZy3PIbhKXyMX23fhkOUAz/KJTbyqrNa9o71fvPzYD1tc
-         2o+AajrZ4ggFr1WnW64XYMPvz9z45z8AVANmTHFswyp2oGpD9ke6124bcbQoQvPef4O/
-         eps8tEEGZk+h71I8ZiZUlxOLsqFmjrvUKAvt2ohXj4xdxlcq7aIucwSafr/K+Up18v2D
-         ZtVT2TJepnmWavS8n3qK5lFpNXRJEyTOGq+dnOXyxGPo1RJH76r8HsZzoLPa4LWWwdmD
-         Sslw==
-X-Gm-Message-State: AOAM53306tuXAfIwH7Ps5UcvObRZoXWa9SFEquS1yXJm9p07saYq+K1f
-        ai54vcaHoL8NaUlqLKswGwG1S5SiGUoK3GeB5dQtiQ==
-X-Google-Smtp-Source: ABdhPJzJ8hRL8/w3OPe0XUWSVufQDBZJfzpfaq8DPLo1+hx1GtElPzqJJNO9c4BBPsofMk6Uq85f9sWGQa0WIbPvM9Q=
-X-Received: by 2002:a2e:4e09:: with SMTP id c9mr9104885ljb.283.1599420228703;
- Sun, 06 Sep 2020 12:23:48 -0700 (PDT)
+        id S1726318AbgIFTZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 15:25:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46008 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725833AbgIFTZh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Sep 2020 15:25:37 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8EE79207BB;
+        Sun,  6 Sep 2020 19:25:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599420336;
+        bh=r3R00rWeAW5JeWRxeGbtOmX+LmGpILhnS+TlH8J8a0U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tZj1Ic537J9/fzZs/1Ytdjto8YHjQVouenpxUv9k29HDjz4lsiF966dXQsQyZV4nL
+         TtzAlDt/ukfuQZRcrag/JDLhmydergxKBVXy5U5I9T0117gND6oAIOaBexPG4OUlfu
+         1wBzdip3xdpUdcqm0hmhxYLxhdvBRHd541m1Em7I=
+Date:   Sun, 6 Sep 2020 12:25:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: Re: [PATCH net 2/2] bnxt_en: Fix NULL ptr dereference crash in
+ bnxt_fw_reset_task()
+Message-ID: <20200906122534.54e16e08@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1599360937-26197-3-git-send-email-michael.chan@broadcom.com>
+References: <1599360937-26197-1-git-send-email-michael.chan@broadcom.com>
+        <1599360937-26197-3-git-send-email-michael.chan@broadcom.com>
 MIME-Version: 1.0
-References: <20200905103233.16922-1-linus.walleij@linaro.org> <20200906104058.1b0ac9bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200906104058.1b0ac9bc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 6 Sep 2020 21:23:37 +0200
-Message-ID: <CACRpkdYyaQtptvaTUieEsSyHCB+PYHvgmzNfvhuaJ-Lc9dreFA@mail.gmail.com>
-Subject: Re: [net-next PATCH] net: dsa: rtl8366: Properly clear member config
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 6, 2020 at 7:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> On Sat,  5 Sep 2020 12:32:33 +0200 Linus Walleij wrote:
-> > When removing a port from a VLAN we are just erasing the
-> > member config for the VLAN, which is wrong: other ports
-> > can be using it.
-> >
-> > Just mask off the port and only zero out the rest of the
-> > member config once ports using of the VLAN are removed
-> > from it.
-> >
-> > Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->
-> I see you labeled this for net-net, but it reads like a fix, is it not?
->
-> Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
->
-> Like commit 15ab7906cc92 ("net: dsa: rtl8366: Fix VLAN semantics") had?
+On Sat,  5 Sep 2020 22:55:37 -0400 Michael Chan wrote:
+> From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> 
+> bnxt_fw_reset_task() which runs from a workqueue can race with
+> bnxt_remove_one().  For example, if firmware reset and VF FLR are
+> happening at about the same time.
+> 
+> bnxt_remove_one() already cancels the workqueue and waits for it
+> to finish, but we need to do this earlier before the devlink
+> reporters are destroyed.  This will guarantee that
+> the devlink reporters will always be valid when bnxt_fw_reset_task()
+> is still running.
+> 
+> Fixes: b148bb238c02 ("bnxt_en: Fix possible crash in bnxt_fw_reset_task().")
+> Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+> ---
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> index 619eb55..8eb73fe 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+> @@ -11779,6 +11779,10 @@ static void bnxt_remove_one(struct pci_dev *pdev)
+>  	if (BNXT_PF(bp))
+>  		bnxt_sriov_disable(bp);
+>  
+> +	clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
+> +	bnxt_cancel_sp_work(bp);
+> +	bp->sp_event = 0;
+> +
+>  	bnxt_dl_fw_reporters_destroy(bp, true);
+>  	if (BNXT_PF(bp))
+>  		devlink_port_type_clear(&bp->dl_port);
+> @@ -11786,9 +11790,6 @@ static void bnxt_remove_one(struct pci_dev *pdev)
+>  	unregister_netdev(dev);
+>  	bnxt_dl_unregister(bp);
+>  	bnxt_shutdown_tc(bp);
+> -	clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
+> -	bnxt_cancel_sp_work(bp);
+> -	bp->sp_event = 0;
+>  
+>  	bnxt_clear_int_mode(bp);
+>  	bnxt_hwrm_func_drv_unrgtr(bp);
 
-Yes you're right, also it is pretty separate from the other patches to
-this driver so there shouldn't be any annoying conflicts.
+devlink can itself scheduler a recovery via:
 
-If you're applying the patch could you add it
-in the process, or do you want me to resend?
+  bnxt_fw_fatal_recover() -> bnxt_fw_reset()
 
-Yours,
-Linus Walleij
+no? Maybe don't make the devlink recovery path need to go via a
+workqueue?
