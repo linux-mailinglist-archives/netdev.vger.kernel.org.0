@@ -2,163 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD9D825EC3F
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 05:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3FA525EC40
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 05:08:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728740AbgIFDGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 23:06:09 -0400
-Received: from mail-eopbgr1310124.outbound.protection.outlook.com ([40.107.131.124]:6174
-        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728257AbgIFDGG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 5 Sep 2020 23:06:06 -0400
+        id S1728589AbgIFDIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 23:08:51 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:4708 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728257AbgIFDIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 23:08:49 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f5452900000>; Sat, 05 Sep 2020 20:08:00 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Sat, 05 Sep 2020 20:08:48 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Sat, 05 Sep 2020 20:08:48 -0700
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 6 Sep
+ 2020 03:08:48 +0000
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.168)
+ by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Sun, 6 Sep 2020 03:08:48 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RDAPRLyOxvFrkkfpjVE4ubMffeRti2XJaG5l/r61pq+t62zy83POMTSvmu0VumGVIOWOsgvmyNJBUHx+n6CJ+VpY7mqE+TALlKDxdr6bJ5ax4wSgoZHkHcU63unhS5KvhpgdlT8zGXdqf3TsE5gUHuR3MzUcTFTHShahi2GRlV12CeE3/54pINtJhUGytzydfB/L0rLBbXHYT0p6s/eKRDAm95RM7vIQbmBEIMhim3Efw0ckbRYASL1PwQ18cD6Q4ZyNAcDb4J2St0mGlf+bFuR2STWRkm6t5UVSviZy1vmli1sqkfBHQsNftk0tnkeW50nNsFGTB1nISU9vDviPcA==
+ b=dp8MZsZjRxsQV2k72mAJ0arNXGrklBS379LPPPBPp5UWhcdmAPNzxdNaGrFZTW/FuH3Jjep3JtetGb1sYhVZt41znPypiGvcoh8NrDIixYZz9GGNFTkQmM6upIkWWTlTneyppVKu7wr94C5l2sap+NJWDzix5d68cZcOVQ/2FNILjIMPmKA6LeqNR0ZSIHNGLrM39bMnFeXex3le6VaZP6HMqJukjiyAiNVZ6FLID2xdaAYFKsSEOhJHwZezVCwKPILn69bf1uxKGQ26vANLFs+JPngFu3W9fCwxM+BvjhO9Pz91JTvc//JwUlv5oc3s+P8+UAOdHNDIxlzp+WHBpQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5gUmpkpWadBQcVnnqWTfnMX9TQ11ck8d09AL9r9Uzaw=;
- b=oaDSi35hOb6DBmZKbFV9SDPKBiU4LvFbhVjBOzlnEY1RYfzCDD2iGEJk8XPjAwXYHj3hnGLM9kYvsECRjWlOX5BPoppqywMZvmUblG9uaLuIFbi1R47w0luRi05MFSvj2LFNt/2HksazOzfD6LWEe1plk9kijzFyHbMdLtjX3zNbhpEjyTQDRaYt0AAXTLLqHKajUNxdd/hVBH3bNifmEbyNVOVunUHWppy1wVH4MYtZInVMtqrdquvW+12XEL4AJue+yZoHlB42E3MGm6SGylh3SsINj5uUzUf56oPbhb4Rh8CLY/B4s4BYoYAJazKYxFMVq5GblloH0RrpmaBqtA==
+ bh=pzJqAQ6fRVdmkHsb0kWKW5qKUylvDuOWekI6MegxpRQ=;
+ b=MTk13sWatUem7cQFWxBo7FtPCjJJPV2m8Z44nhA3vjsYPTqtg/LqAg/Pbs2kHgCxAxX+LctFofq+7ZppbD3FUMqD0Z25knJMQtyiiXvvLPBn+nr+YJxwL7ikScUf1cez0QrSudohP+G4lPunpZ7qkoHah/GigyL5bnbrFntOcVv3INNlQR4L7B/7AfuGrPx20V3KSANzJW2GjkaCcDF85EMZE1riNb5hXal5ivCsdZAJ9wsn7bTziKaLCXkEogZW8oU3F9E+Ta7tJ7V79O7caorz3zTkNl76WHEsj6kIGakDpmi8CosExuUH5NOYycYDvtqryA041gkNKyo6A+3A3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5gUmpkpWadBQcVnnqWTfnMX9TQ11ck8d09AL9r9Uzaw=;
- b=O3wTivthBU3SBCYYwvW/SmGjHNeYI0lvbV/seXMK+vIZpfr3aea+aD0PZwGIUYpoAOx113alCZey6jbiu33K9XDUhTl39rVdQTAjM6vfOpFH26QCSezCpMcBPaypdrOIZXxXqLPtwB5JABRNN86RjN1+qwj+wyyS7eXHL4kNa8c=
-Received: from KU1P153MB0120.APCP153.PROD.OUTLOOK.COM (2603:1096:802:1a::17)
- by KU1P153MB0104.APCP153.PROD.OUTLOOK.COM (2603:1096:802:1a::13) with
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
+ by BYAPR12MB2646.namprd12.prod.outlook.com (2603:10b6:a03:65::31) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3391.0; Sun, 6 Sep
- 2020 03:05:49 +0000
-Received: from KU1P153MB0120.APCP153.PROD.OUTLOOK.COM
- ([fe80::800c:633d:2d74:4f61]) by KU1P153MB0120.APCP153.PROD.OUTLOOK.COM
- ([fe80::800c:633d:2d74:4f61%6]) with mapi id 15.20.3370.014; Sun, 6 Sep 2020
- 03:05:49 +0000
-From:   Dexuan Cui <decui@microsoft.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.19; Sun, 6 Sep
+ 2020 03:08:45 +0000
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::b5f0:8a21:df98:7707]) by BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::b5f0:8a21:df98:7707%7]) with mapi id 15.20.3348.019; Sun, 6 Sep 2020
+ 03:08:45 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
+CC:     Parav Pandit <parav@mellanox.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>
-Subject: RE: [PATCH net] hv_netvsc: Fix hibernation for mlx5 VF driver
-Thread-Topic: [PATCH net] hv_netvsc: Fix hibernation for mlx5 VF driver
-Thread-Index: AQHWg9waxn3spG+TLEOE6i32cCwrKala5JwQ
-Date:   Sun, 6 Sep 2020 03:05:48 +0000
-Message-ID: <KU1P153MB012097D6AA971EC957D854B2BF2B0@KU1P153MB0120.APCP153.PROD.OUTLOOK.COM>
-References: <20200905025218.45268-1-decui@microsoft.com>
- <20200905162712.65b886a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200905162712.65b886a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        "roid@mellanox.com" <roid@mellanox.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: RE: [PATCH net-next 2/3] devlink: Consider other controller while
+ building phys_port_name
+Thread-Topic: [PATCH net-next 2/3] devlink: Consider other controller while
+ building phys_port_name
+Thread-Index: AQHWeugVEZjy8+Bcu0qKDL1vbGgf/KlJitKAgABAGdCAAQhmgIAAinbQgADtLwCAABeykIAAHVgAgABmzECAANgrgIAAsB0AgAUMOQCAAAZkMIAACfwAgADMOwCAAHEaAIAAP1eAgAB7/gCAAPNEgIAA5DGAgADdRoCAAsRjkA==
+Date:   Sun, 6 Sep 2020 03:08:45 +0000
+Message-ID: <BY5PR12MB43229A748C15AB08C233A792DC2B0@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <BY5PR12MB43220099C235E238D6AF89EADC530@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200901081906.GE3794@nanopsycho.orion>
+ <BY5PR12MB43229CA19D3D8215BC9BEFECDC2E0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200901091742.GF3794@nanopsycho.orion>
+ <20200901142840.25b6b58f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR12MB43228D0A9B1EF43C061A5A3BDC2F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200902080011.GI3794@nanopsycho.orion>
+ <20200902082358.6b0c69b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200903055439.GA2997@nanopsycho.orion>
+ <20200903123123.7e6025ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200904084321.GG2997@nanopsycho.orion>
+In-Reply-To: <20200904084321.GG2997@nanopsycho.orion>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=11b1139d-3963-4435-8fc3-3579038ac03e;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-09-06T02:33:55Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [73.140.237.219]
+authentication-results: resnulli.us; dkim=none (message not signed)
+ header.d=none;resnulli.us; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [49.207.209.10]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 19eb6bd2-2de9-4377-1970-08d85211c1d8
-x-ms-traffictypediagnostic: KU1P153MB0104:
+x-ms-office365-filtering-correlation-id: 3907a57e-1836-4fda-51bb-08d852122af8
+x-ms-traffictypediagnostic: BYAPR12MB2646:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <KU1P153MB010489C2146CD5177DB0C93CBF2B0@KU1P153MB0104.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-microsoft-antispam-prvs: <BYAPR12MB2646278CEAB07CDABB74FD6EDC2B0@BYAPR12MB2646.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qbB5MCFHyECCJ6UGbmgbEWWNJLGJIzTlR8Jx6XNTY7HAicbQx526rpiku4RImWGijUw0pjzYE4b7AX8mVOFKf+2b/mRjMSBK2yKibrsv5fZCEVllss/Wfv6fZPKE7nv63SVjybBrNWamTaucG6XX8tUAHkYdc8SvjHkJ24FsNMFX/9/kIMwgAK+UfGt5mRhU2C9LA7ciQP3gZDVu9LdEaGonHjlQQfmRX2JPR/f8oKnyCEzg1B/cMakThtTrtaAgE2SvFn7jr/CU8UMUvLLdC5q2cMmawZPy5Z+Cosgp/Mbe9TBHdW3+PuRjnFQxIA/yZfOFUAjzq0Uagpx6xDkLhydr9k6cUMBTqUP8ELXyIDtRw+U3HIoi8ZrD71koXuXM
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:KU1P153MB0120.APCP153.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(136003)(376002)(39860400002)(396003)(66556008)(82950400001)(107886003)(33656002)(55016002)(4326008)(54906003)(9686003)(82960400001)(6506007)(2906002)(10290500003)(7696005)(478600001)(83380400001)(8990500004)(6916009)(86362001)(186003)(66446008)(64756008)(71200400001)(66946007)(66476007)(52536014)(76116006)(26005)(8676002)(5660300002)(8936002)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: DvLqs8xqPMYN9+9H1Rf2PLHKviaO5VPltV1WiPKr3bxQTyxjoTF/5xN92FdmX9XnviiGjAiaMVg/fNgwSopIGNrmaoni46ywCO5YPtv9i32dlGowghHSJIseRiSq1hpv08pv1JKCdNFoZBXcZoBwAj7wlD0ZCqY8aHq0uiHs5urAcchIESp25cMsGr/NtCvICKqcXsGJz3d8T4AuXQC9GQWSo7pLYPzG78B6OcX3k71T4kVu4UvY5TTK0pAq2Xmbtdjr9QNfCWKraxyOpV1s5GFLIb8xTFmNSKvGPg/9/IADV7xHkThl2nxc3+qNTzOrB1YFjm2T0vZTzA2ShmdRx7NPum1VxcCMnKI8+rJzPl7YMo8OSiQ2j6jUAHBRvaJT8PNQfW9fVRbU1CBF1ixPRaYdo0iCOdfLYPSJ/lfYSpU5iX5J53IPF7fwgG+IZkL+XSgnPNvnevcKV5RBrAKSLrr3Z4piyKqAFEN7UFKVvea+rNq5kAuOCUT9mGlAFjF197Lt9DWthqSQAbV0+RsgUjUZ3nFgkinVTghc9+aUmcO4EcZJVgWVp2C7J/MyuFKuZ3mDTMfHnvF7OVRSwkn3zBb4aKX7AaATuRtO3vyrK+vVBr00vdC23lhvhJHvYOjxCm/m/EDaRgz+3n/Q1rOlhQ==
+x-microsoft-antispam-message-info: ofdHtmUBh1YSqBrPIDHljJ6UOz+ccAJxZxl33aBDtP7/nhQ+I4C0gBX9q3vtb3nS8yCjUl/nP5sX6PrgbUvBR6gNEQ2nk/wrb0ryBnbZYQwKUm3jokiY74o2YFBa2TMVbRzDtZxAfZhGJNf0LwqBzpvIVc6tCgtsLoI9ABeShqzn062j7Dz7vsy7jcKHHPKc8kahcpj+WOAtoSoMFxFE2h67CfRbU/04r/dLiaVzih6ne1oVPfwj/f5Y8sHvE8WHW73nD6ZhVE1XqFoKFoPUUVlQspPg+o9D1CzKy+OuPRNoTlV/8AvCQIJrR6/M/1JyY2kR65UKJezISgHJP8I5wQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(346002)(136003)(376002)(39850400004)(33656002)(7696005)(83380400001)(4326008)(86362001)(9686003)(6506007)(107886003)(110136005)(54906003)(71200400001)(55016002)(2906002)(5660300002)(186003)(66946007)(66446008)(64756008)(66556008)(66476007)(26005)(76116006)(52536014)(8676002)(8936002)(478600001)(55236004)(316002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: Ita9QTE8EtPH/DZksXN9ZR88Yrx8ZuBBLmm3VNMTCHu1XEE4G+HcQNC0GiqQ3qW6HcIzsLjQMJDFMKXlJ+N6FP+hUjuBa+D+2VINQubv0NH0HGB8r3S+PryJT32xD8ANlwHci2dmZJuKcjLHxmjXhJfnKTfVczX+W8/cykSJ9TjdiPSk9lDok17kGom7ay0nTbsHC74T2wCji3YMc9zV526S0FCu1TinBntfJ/m+w4I78+FXdQ68/Plf8l8eLeKtSYhFuKIybPi5aUjt3+kzoS01iBi+xGjTSGf8fm2AZ35liBtO7tTSTTcC9HlXDm2d2sXsKCUoX1j5KP2sRKMVJYuyaIPzQtR73Jh8sJvABv2AqzeeT0WhScgpiCTwzlPJLDuKy68JmF/9yoMUW9tqzZsYbjEyQLgl3qqnyzD+igJkjbYaLoRwGS5z+Mha48TqrQoyOm3ThhwR5YQwZ14LBHWKQgyrQGg1+W33XkMM2hnlnxhHUN8U1M4HA9dvteaVQ3Kbc/sD4hLguaIEWwoc43lMQvYvcmoUUkwFPR/TFKQ1SH9ZZb6DO2r99Qel13VzV1qCXZEINOJkWvXInKJNAAtH5X6ViLZr8xAjk0XqA99HatqjHH/oxqKZJox5l357dTqVBl+4+0xQkfLJCE0spQ==
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: KU1P153MB0120.APCP153.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19eb6bd2-2de9-4377-1970-08d85211c1d8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Sep 2020 03:05:48.8804
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3907a57e-1836-4fda-51bb-08d852122af8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Sep 2020 03:08:45.4739
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ucKJjxPNBa+MYSZTY48fZpHwFxdXjHHhWfktB/ngxDk1yHDuhX3JMQ6FeE+1C0FEbKGw8vBGbN5gkOoNsZ1E6w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: KU1P153MB0104
+X-MS-Exchange-CrossTenant-userprincipalname: YWCT5Rt9I7w8COq490USvK+4cIoLLP1AU58ApaKpBYpSuBrz5lhyI9kGbPzYbRaiGycYH86zeNG5WzprvVLTnw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2646
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1599361680; bh=pzJqAQ6fRVdmkHsb0kWKW5qKUylvDuOWekI6MegxpRQ=;
+        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+         ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
+         Thread-Index:Date:Message-ID:References:In-Reply-To:
+         Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
+         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
+         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
+         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
+         x-ms-exchange-senderadcheck:x-microsoft-antispam:
+         x-microsoft-antispam-message-info:x-forefront-antispam-report:
+         x-ms-exchange-antispam-messagedata:Content-Type:
+         Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=bzO5FZczFkNT/PBGBwZo/d1Kc+FpvEkNcEptvFmpc1pEdQfa3HLo/XrCWeCoSnrf5
+         Lil54qhvlKFq3diHbIsHES7KKpyePSfMbJhimE3Saof9MfRpbIciuZeIgEUzEe5lof
+         IwvXebTmkhGNKToV1vspcX5gkB5HkJMzPzf3ePsoMUrZiv1okVpETWsX56m3ghWpoS
+         7Q+wLU7qbYK/t8hDPkB2mdKm7OTcpTnBDjZXYH61rDAdTLKwfo7AZx2MpC6qrVxqUA
+         qPG2qVTfpT7VEtn3IvV+4bf+JiFO8XPpsYZfXbndO9SXx9YHZlL4WyNfYcXqVd0exm
+         KFDGkHpVYA8ig==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Saturday, September 5, 2020 4:27 PM
-> [...]
-> On Fri,  4 Sep 2020 19:52:18 -0700 Dexuan Cui wrote:
-> > mlx5_suspend()/resume() keep the network interface, so during hibernati=
-on
-> > netvsc_unregister_vf() and netvsc_register_vf() are not called, and hen=
-ce
-> > netvsc_resume() should call netvsc_vf_changed() to switch the data path
-> > back to the VF after hibernation.
+
+
+> From: Jiri Pirko <jiri@resnulli.us>
+> Sent: Friday, September 4, 2020 2:13 PM
 >=20
-> Does suspending the system automatically switch back to the synthetic
-> datapath?=20
-Yes.=20
-
-For mlx4, since the VF network interafce is explicitly destroyed and re-cre=
-ated
-during hibernation (i.e. suspend + resume), hv_netvsc explicitly switches t=
-he
-data path from and to the VF.
-
-For mlx5, the VF network interface persists across hibernation, so there is=
- no
-explicit switch-over, but after we close and re-open the vmbus channel of
-the netvsc NIC in netvsc_suspend() and netvsc_resume(), the data path is
-implicitly switched to the netvsc NIC, and with this patch netvsc_resume() =
-->
-netvsc_vf_changed() switches the data path back to the mlx5 NIC.
-
-> Please clarify this in the commit message and/or add a code
-> comment.
-I will add a comment in the commit message and the code.
-=20
-> > @@ -2587,7 +2587,7 @@ static int netvsc_remove(struct hv_device *dev)
-> >  static int netvsc_suspend(struct hv_device *dev)
-> >  {
-> >  	struct net_device_context *ndev_ctx;
-> > -	struct net_device *vf_netdev, *net;
-> > +	struct net_device *net;
-> >  	struct netvsc_device *nvdev;
-> >  	int ret;
->=20
-> Please keep reverse xmas tree variable ordering.
-
-Will do.
-
-> > @@ -2635,6 +2632,10 @@ static int netvsc_resume(struct hv_device *dev)
-> >  	netvsc_devinfo_put(device_info);
-> >  	net_device_ctx->saved_netvsc_dev_info =3D NULL;
+> Thu, Sep 03, 2020 at 09:31:23PM CEST, kuba@kernel.org wrote:
+> >On Thu, 3 Sep 2020 07:54:39 +0200 Jiri Pirko wrote:
+> >> Wed, Sep 02, 2020 at 05:23:58PM CEST, kuba@kernel.org wrote:
+> >> >On Wed, 2 Sep 2020 10:00:11 +0200 Jiri Pirko wrote:
+> >> >>>> I didn't quite get the fact that you want to not show controller =
+ID on the
+> local
+> >> >>>> port, initially.
+> >> >>> Mainly to not_break current users.
+> >> >>
+> >> >> You don't have to take it to the name, unless "external" flag is se=
+t.
+> >> >>
+> >> >> But I don't really see the point of showing !external, cause such
+> >> >> controller number would be always 0. Jakub, why do you think it is
+> >> >> needed?
+> >> >
+> >> >It may seem reasonable for a smartNIC where there are only two
+> >> >controllers, and all you really need is that external flag.
+> >> >
+> >> >In a general case when users are trying to figure out the topology
+> >> >not knowing which controller they are sitting at looks like a
+> >> >serious limitation.
+> >>
+> >> I think we misunderstood each other. I never proposed just "external"
+> >> flag.
 > >
-> > +	vf_netdev =3D rtnl_dereference(net_device_ctx->vf_netdev);
-> > +	if (vf_netdev && netvsc_vf_changed(vf_netdev) !=3D NOTIFY_OK)
-> > +		ret =3D -EINVAL;
+> >Sorry, I was just saying that assuming a single host SmartNIC the
+> >controller ID is not necessary at all. You never suggested that, I did.
+> >Looks like I just confused everyone with that comment :(
+> >
+> >Different controller ID for different PFs but the same PCIe link would
+> >be very wrong. So please clarify - if I have a 2 port smartNIC, with on
+> >PCIe link to the host, and the embedded controller - what would I see?
 >=20
-> Should you perhaps remove the VF in case of the failure?
-IMO this failure actually should not happen since we're resuming the netvsc
-NIC, so we're sure we have a valid pointer to the netvsc net device, and
-netvsc_vf_changed() should be able to find the netvsc pointer and return
-NOTIFY_OK. In case of a failure, something really bad must be happening,
-and I'm not sure if it's safe to simply remove the VF, so I just return
--EINVAL for simplicity, since I believe the failure should not happen in pr=
-actice.
+> Parav?
+>
+One controller id for both such PFs.
+I liked the idea of putting controller number for all the ports but not emb=
+edded for local ports.
 
-I would rather keep the code as-is, but I'm OK to add a WARN_ON(1) if you
-think that's necessary.
+>=20
+> >
+> >> What I propose is either:
+> >> 1) ecnum attribute absent for local
+> >>    ecnum attribute absent set to 0 for external controller X
+> >>    ecnum attribute absent set to 1 for external controller Y
+> >>    ...
+> >>
+> >> or:
+> >> 2) ecnum attribute absent for local, external flag set to false
+> >>    ecnum attribute absent set to 0 for external controller X, external=
+ flag set
+> to true
+> >>    ecnum attribute absent set to 1 for external controller Y,
+> >> external flag set to true
+> >
+> >I'm saying that I do want to see the the controller ID for all ports.
+> >
+> >So:
+> >
+> >3) local:   { "controller ID": x }
+> >   remote1: { "controller ID": y, "external": true }
+> >   remote1: { "controller ID": z, "external": true }
+> >
+> >We don't have to put the controller ID in the name for local ports, but
+> >the attribute should be reported. AFAIU name was your main concern, no?
+>=20
+> Okay. Sounds fine. Let's put the controller number there for all ports.
+> ctrlnum X external true
+> ctrlnum Y external false
+>=20
+> if (!external)
+> 	ignore the ctrlnum when generating the name
+>=20
 
-Thanks,
--- Dexuan
+Putting little more realistic example for Jakub's and your suggestion below=
+.
+
+Below is the output for 3 controllers. ( 2 external + 1 local )
+Each external controller consist of 2 PCI PFs for a external host via singl=
+e PCIe cable.
+Each local controller consist of 1 PCI PF.
+
+$ devlink port show
+pci/0000:00:08.0/0: type eth netdev enp0s8f0_pf0 flavour pcipf pfnum 0 cnum=
+ 0 external false
+pci/0000:00:08.0/1: type eth netdev enp0s8f0_c1pf0 flavour pcipf pfnum 0 cn=
+um 1 external true
+pci/0000:00:08.1/1: type eth netdev enp0s8f1_c1pf1 flavour pcipf pfnum 1 cn=
+um 1 external true
+
+Looks ok?
+
+>=20
+> >
+> >> >Example - multi-host system and you want to know which controller
+> >> >you are to run power cycle from the BMC side.
+> >> >
+> >> >We won't be able to change that because it'd change the names for you=
+.
