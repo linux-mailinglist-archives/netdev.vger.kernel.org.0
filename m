@@ -2,169 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5132025F09F
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 23:24:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F3F25F0A3
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 23:26:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbgIFVYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 17:24:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726154AbgIFVY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 17:24:29 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98031C061573
-        for <netdev@vger.kernel.org>; Sun,  6 Sep 2020 14:24:28 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id a15so13872691ljk.2
-        for <netdev@vger.kernel.org>; Sun, 06 Sep 2020 14:24:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TeL7Sn0wISyA/6rSw+Hft+Lnn/YVl9Ra+xPig7T0bfs=;
-        b=Qhd8lT08TiAxip70LQex3VWm9OP78VLieG3ENYkBcy0xO0txedyeIJVm13fuNSxq4d
-         JHVSj/d5JBje+HflBcGGYRbHDWSYOWrRxJNbX9tXDhYHpMghGcxhFjNyjaAQtOxz8RYW
-         gU/UVSCI+OAp5Dv3495hzRuA/dl3G/o5iP3ndgS98uA4VgfvxO3Zo6DyALv3LrXaYkoX
-         GVaBx4+P2NLybJz71cFeSXTD72F+45HOG6b/JvjvuT4tg6Vf/5VSEq7TJTaoQ03cCyw5
-         AHwt8R4XO7poIO4dBaD1rxisykHHMvfG+bqI3j0pyu1QDrCpyoJYUKkQf4qsXizzFWKP
-         nHEQ==
+        id S1726613AbgIFV0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 17:26:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53097 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726339AbgIFV0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 17:26:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599427593;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=+C6m0PVka75w2yKn4NnD8dgwNKYONinv/V5y0NmFCqI=;
+        b=iiw9ZTGa52+9rXHhg+r2KMcrv8QHDDzw2jHlqSiuaeUpP7ZC2OyYQsY9KhA7KpZdB+bcwC
+        13ICtU2VoKW/Dz9RWqul5GVrM4SVve7DUed8xxM0M00YrMWfh+OflER96nhKFIkotO2NVE
+        kULf/wHnokEhM93/CtKIp0sy0MnpGsY=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-163-XTgwe9_uN6u6WxpHpOIASA-1; Sun, 06 Sep 2020 17:26:31 -0400
+X-MC-Unique: XTgwe9_uN6u6WxpHpOIASA-1
+Received: by mail-qk1-f200.google.com with SMTP id m203so6655228qke.16
+        for <netdev@vger.kernel.org>; Sun, 06 Sep 2020 14:26:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TeL7Sn0wISyA/6rSw+Hft+Lnn/YVl9Ra+xPig7T0bfs=;
-        b=IMwvOqSQFxHvfYiIIdL+9npjwNqJsy1r97CAURyXKc8AuCHMvowSAmipN2J9fEDNRM
-         u+rIDy7JViJRn9fhpWUE5Sl0Mmhpr8RmUwnIrICR/Erj81Gr3Qx12VBJ9E3woHMRkTxk
-         zcf2xc02mmHX6iQ2UW4yhhgLdCYYYp1YRw+GqNTvIincudVZFQzP0HDoCLslPBmk01zn
-         CefRgPKsN3qMooj+SVT0DmMbVQg1lZLWNEWLiFWIgW/YWiym3/XjO1X8TDNhVpEwQHCX
-         u0RXEinLZuGEOgSra/jZOv5jafnj6umm9v/+9hEbl+Id3XiMphmHMEtRidJxzJFjaYen
-         3U8g==
-X-Gm-Message-State: AOAM531VJLULHw/vWBRhEeQ9LO65AcWtItXNX0aY0bXTG9lK1cJFp4BS
-        WneKWDOeldUJAv3DpXoecsmkdw==
-X-Google-Smtp-Source: ABdhPJy/+ErhnNda81bRYCsjHCIGE8B6BUsKoWjJ51S25h2/oMv9CCd0A4t4dNUJEg0y7IaqgHBEtQ==
-X-Received: by 2002:a2e:b0fc:: with SMTP id h28mr9242314ljl.114.1599427459065;
-        Sun, 06 Sep 2020 14:24:19 -0700 (PDT)
-Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id m15sm5151188ljh.62.2020.09.06.14.24.18
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+C6m0PVka75w2yKn4NnD8dgwNKYONinv/V5y0NmFCqI=;
+        b=SgL7GjG4Nfd/5BZtDcUWiKuvlikmTk2YOKf75eLD8Qa4b3C1qWUn7qZayhC208maOD
+         LOwGw60X6YvIowoZsUS7yFnszVEN156r/NofxD2WOY707P/yFcCxLeYoStBa/c8iDBLk
+         vsqy7HVqkWN0nn8fQI8m3Y8/oVJLzUkwqQ8Wj29EIGPe3mOEu2x/4+/qX4kZLV/ByYxJ
+         ExujJsGYBaLQR08apAMNZsMWjhe9JcKE2yVgqprKjZQYs8R+rw7NOYVYvUecSOD7xRha
+         BYs3xYLr+XCAE+na3GdiACaluIbCjbijWbp3pVoglLRlluCi3icQx1ekNg/TGQDVxYqZ
+         lxFA==
+X-Gm-Message-State: AOAM532O8pTzgXdDD6y7Kyh2V60pKDFbauoM4pLqAszw0MwM+Dpya83p
+        YvsGR7d5mmsqVF5g69+AntN9XcABnawt9vS2wcHosV/ORzuCmcyWe53TDCQe8783G4W/9rfmzdz
+        JBYEbtaJAY/xwDoZA
+X-Received: by 2002:a05:620a:2006:: with SMTP id c6mr2372104qka.240.1599427591260;
+        Sun, 06 Sep 2020 14:26:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyR82s18wWVkyR16S1pfORo4d0KJZMFU6czX4ESIPjhfBt+0VVaE3uGrfuNh/vEQlB+KG5uFQ==
+X-Received: by 2002:a05:620a:2006:: with SMTP id c6mr2372091qka.240.1599427590987;
+        Sun, 06 Sep 2020 14:26:30 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id k6sm9888276qti.23.2020.09.06.14.26.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Sep 2020 14:24:18 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Cc:     Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v2] net: dsa: rtl8366rb: Switch to phylink
-Date:   Sun,  6 Sep 2020 23:24:15 +0200
-Message-Id: <20200906212415.99415-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.26.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sun, 06 Sep 2020 14:26:30 -0700 (PDT)
+From:   trix@redhat.com
+To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        natechancellor@gmail.com, ndesaulniers@google.com,
+        mkenna@codeaurora.org, vnaralas@codeaurora.org,
+        rmanohar@codeaurora.org, john@phrozen.org
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com, Tom Rix <trix@redhat.com>
+Subject: [PATCH] ath11k: fix a double free and a memory leak
+Date:   Sun,  6 Sep 2020 14:26:25 -0700
+Message-Id: <20200906212625.17059-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This switches the RTL8366RB over to using phylink callbacks
-instead of .adjust_link(). This is a pretty template
-switchover. All we adjust is the CPU port so that is why
-the code only inspects this port.
+From: Tom Rix <trix@redhat.com>
 
-We enhance by adding proper error messages, also disabling
-the CPU port on the way down and moving dev_info() to
-dev_dbg().
+clang static analyzer reports this problem
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+mac.c:6204:2: warning: Attempt to free released memory
+        kfree(ar->mac.sbands[NL80211_BAND_2GHZ].channels);
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The channels pointer is allocated in ath11k_mac_setup_channels_rates()
+When it fails midway, it cleans up the memory it has already allocated.
+So the error handling needs to skip freeing the memory.
+
+There is a second problem.
+ath11k_mac_setup_channels_rates(), allocates 3 channels. err_free
+misses releasing ar->mac.sbands[NL80211_BAND_6GHZ].channels
+
+Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
-ChangeLog v1->v2:
-- Fix the function declarations to be static.
----
- drivers/net/dsa/rtl8366rb.c | 44 +++++++++++++++++++++++++++++++------
- 1 file changed, 37 insertions(+), 7 deletions(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index f763f93f600f..ddc24f5e4123 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -969,8 +969,10 @@ static enum dsa_tag_protocol rtl8366_get_tag_protocol(struct dsa_switch *ds,
- 	return DSA_TAG_PROTO_RTL4_A;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index f4a085baff38..f1a964b01a83 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -6089,7 +6089,7 @@ static int __ath11k_mac_register(struct ath11k *ar)
+ 	ret = ath11k_mac_setup_channels_rates(ar,
+ 					      cap->supported_bands);
+ 	if (ret)
+-		goto err_free;
++		goto err;
+ 
+ 	ath11k_mac_setup_ht_vht_cap(ar, cap, &ht_cap);
+ 	ath11k_mac_setup_he_cap(ar, cap);
+@@ -6203,7 +6203,8 @@ static int __ath11k_mac_register(struct ath11k *ar)
+ err_free:
+ 	kfree(ar->mac.sbands[NL80211_BAND_2GHZ].channels);
+ 	kfree(ar->mac.sbands[NL80211_BAND_5GHZ].channels);
+-
++	kfree(ar->mac.sbands[NL80211_BAND_6GHZ].channels);
++err:
+ 	SET_IEEE80211_DEV(ar->hw, NULL);
+ 	return ret;
  }
- 
--static void rtl8366rb_adjust_link(struct dsa_switch *ds, int port,
--				  struct phy_device *phydev)
-+static void
-+rtl8366rb_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
-+		      phy_interface_t interface, struct phy_device *phydev,
-+		      int speed, int duplex, bool tx_pause, bool rx_pause)
- {
- 	struct realtek_smi *smi = ds->priv;
- 	int ret;
-@@ -978,25 +980,52 @@ static void rtl8366rb_adjust_link(struct dsa_switch *ds, int port,
- 	if (port != smi->cpu_port)
- 		return;
- 
--	dev_info(smi->dev, "adjust link on CPU port (%d)\n", port);
-+	dev_dbg(smi->dev, "MAC link up on CPU port (%d)\n", port);
- 
- 	/* Force the fixed CPU port into 1Gbit mode, no autonegotiation */
- 	ret = regmap_update_bits(smi->map, RTL8366RB_MAC_FORCE_CTRL_REG,
- 				 BIT(port), BIT(port));
--	if (ret)
-+	if (ret) {
-+		dev_err(smi->dev, "failed to force 1Gbit on CPU port\n");
- 		return;
-+	}
- 
- 	ret = regmap_update_bits(smi->map, RTL8366RB_PAACR2,
- 				 0xFF00U,
- 				 RTL8366RB_PAACR_CPU_PORT << 8);
--	if (ret)
-+	if (ret) {
-+		dev_err(smi->dev, "failed to set PAACR on CPU port\n");
- 		return;
-+	}
- 
- 	/* Enable the CPU port */
- 	ret = regmap_update_bits(smi->map, RTL8366RB_PECR, BIT(port),
- 				 0);
--	if (ret)
-+	if (ret) {
-+		dev_err(smi->dev, "failed to enable the CPU port\n");
-+		return;
-+	}
-+}
-+
-+static void
-+rtl8366rb_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
-+			phy_interface_t interface)
-+{
-+	struct realtek_smi *smi = ds->priv;
-+	int ret;
-+
-+	if (port != smi->cpu_port)
- 		return;
-+
-+	dev_dbg(smi->dev, "MAC link down on CPU port (%d)\n", port);
-+
-+	/* Disable the CPU port */
-+	ret = regmap_update_bits(smi->map, RTL8366RB_PECR, BIT(port),
-+				 BIT(port));
-+	if (ret) {
-+		dev_err(smi->dev, "failed to disable the CPU port\n");
-+		return;
-+	}
- }
- 
- static void rb8366rb_set_port_led(struct realtek_smi *smi,
-@@ -1439,7 +1468,8 @@ static int rtl8366rb_detect(struct realtek_smi *smi)
- static const struct dsa_switch_ops rtl8366rb_switch_ops = {
- 	.get_tag_protocol = rtl8366_get_tag_protocol,
- 	.setup = rtl8366rb_setup,
--	.adjust_link = rtl8366rb_adjust_link,
-+	.phylink_mac_link_up = rtl8366rb_mac_link_up,
-+	.phylink_mac_link_down = rtl8366rb_mac_link_down,
- 	.get_strings = rtl8366_get_strings,
- 	.get_ethtool_stats = rtl8366_get_ethtool_stats,
- 	.get_sset_count = rtl8366_get_sset_count,
 -- 
-2.26.2
+2.18.1
 
