@@ -2,71 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 911E025EBE5
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 03:10:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8800025EC14
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 03:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728780AbgIFBHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 5 Sep 2020 21:07:07 -0400
-Received: from mail-il1-f205.google.com ([209.85.166.205]:35066 "EHLO
-        mail-il1-f205.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728505AbgIFBHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 21:07:06 -0400
-Received: by mail-il1-f205.google.com with SMTP id p16so7581074ilp.2
-        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 18:07:05 -0700 (PDT)
+        id S1728776AbgIFB4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 5 Sep 2020 21:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728409AbgIFB4s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 5 Sep 2020 21:56:48 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134A9C061573
+        for <netdev@vger.kernel.org>; Sat,  5 Sep 2020 18:56:47 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id a9so1753604pjg.1
+        for <netdev@vger.kernel.org>; Sat, 05 Sep 2020 18:56:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=7WPkdTehgW9sSNpu+KhxUtXcjqffOjrsmBnhQ4xxDXc=;
+        b=Q7TW9wzmS0UGtnsak92LdHfHujWlSjPh+zz6KbCJ70NCJzVhYD3Qn9a/vpQiKiJymn
+         ZANLG9sAVjWUpw6XxUp2M1IF5ePI7PIpAMwfExu3THX5lCYDzLsn2HLQHDxk9UufIOgX
+         UrKUUyTErp+Of7S5LieFO3cO0AbniXpsshoyA2uC695TJyZt6lM2SziftHT1LpSnMWqa
+         o29nVpC0qNa3d40Hh9Ph8NZ0ByHprLSpdOFhnidW5tnkhv248V9KxzhJrx03/p8BF+An
+         aspeIHts8zBH54yyt8cCsPCjfYfLSTe2aJCHnvIBUvHWxNbJeFWc6AloYNpO/TWkd0ET
+         c7rQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=uErToetCtxM2LxDa/nunGNpiTq3iUJM6c1gSOFYhqVE=;
-        b=nKin7cfnjHiP8OYxA9KOHOy6TNVAY6nx6QG7PQydY8htCHlXya/9QudhO/EM5XCzlj
-         Jcyo93G/kVP3q88ujSl3VrhBJ3kdxRzISmtYtm/QB0A2z9nXNsq37q7HS6rj7D/H5KuU
-         XEKeqwYrlDEIjA1U7U80RTffBwVSClIe0blk0SDynUlQ100pNxUaZOzoYpyMDewq7aAr
-         yz5B4fSQTt8BEiXyI/NTV4EQufkKoD2iPFcsSdchGbEmssfIyWDCbrNXfnvOx18Z/ZZy
-         2deBn3cijLY05qpDZJIM6Eue1Q7HMvdKN1xRV5Kos4aDpxy8BOnit+UcH8gfMQXGoErR
-         ZMGw==
-X-Gm-Message-State: AOAM530LGA0xz+emj0JrZ6poVHVGoIhZfykqIpi7vfN9TIEQrfS8xCA7
-        4c8u4PVBMPtXaFZh6QQOfXhgZu53U1g2BLQjRqtQH8La7N68
-X-Google-Smtp-Source: ABdhPJym3N6qwjYEE5uH53mipM2L77NAqTDZN1skGYxJ5p38lVrxFf0yXeNgvWFwORCMUNrX5wE8e7Ubtqufgb0mrh/6nKA86/PQ
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7WPkdTehgW9sSNpu+KhxUtXcjqffOjrsmBnhQ4xxDXc=;
+        b=ViUfN+pJJF7Ue+Dq79KIVxb7bQxDrIegaGtonbKpGZrqsw5dgMVSDSAnoc99A91E09
+         2FlIdsdr8L7KZ9OEgtVi6BMzxC4Ln6X9xs0n/Yn6/uhQONSCmczX4NQeuuiJoDIInUkL
+         jbtpLtKnO7pnlIea6f9kWMpNAGXmxLZ5/R+oVOZSM0QVTL3XGmxsdc7BWHFaIakZu5JJ
+         cvC3Bd0m0FMtfi4IKgJlF6/LC3bMFFpqr4gduMsuvjRPzTesAHRpz/aDE9dD64GX2vXi
+         bBEIWHceNEw4gQ/vF9t+HTodNIQsWAPeM5wdTyN/02veW7Hd0L9I3w/6HEu9c7QC5Jl7
+         DRDQ==
+X-Gm-Message-State: AOAM532ScLca/W2iQf7SdstM2qLlPLkPxSoetxVXbHRuAf6i5F809bv9
+        B9+VJshsjfP5V1ba3dD7Ods=
+X-Google-Smtp-Source: ABdhPJxihLu/ZXDhO9zwhBiP+O0jC3OT7qH270fWDHxCZOmUE7o3k80yjLaPZiKC8f/15YpDFIYqzA==
+X-Received: by 2002:a17:90a:ca98:: with SMTP id y24mr14358099pjt.98.1599357406991;
+        Sat, 05 Sep 2020 18:56:46 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id v205sm11042082pfc.110.2020.09.05.18.56.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 05 Sep 2020 18:56:46 -0700 (PDT)
+Subject: Re: [net-next PATCH] net: dsa: rtl8366rb: Switch to phylink
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>
+References: <20200905224828.90980-1-linus.walleij@linaro.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <bd776604-0285-1dbc-1a97-51829d037a9a@gmail.com>
+Date:   Sat, 5 Sep 2020 18:56:45 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.1
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8042:: with SMTP id b2mr13018336ior.60.1599354425033;
- Sat, 05 Sep 2020 18:07:05 -0700 (PDT)
-Date:   Sat, 05 Sep 2020 18:07:05 -0700
-In-Reply-To: <0000000000000cce30059f4e27e9@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005fc62d05ae9ab8c2@google.com>
-Subject: Re: WARNING: refcount bug in l2cap_chan_put
-From:   syzbot <syzbot+198362c76088d1515529@syzkaller.appspotmail.com>
-To:     abhishekpandit@chromium.org, alainm@chromium.org,
-        bliniob53@gmail.com, davem@davemloft.net, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, mcchou@chromium.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200905224828.90980-1-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
++Russell,
 
-commit b83764f9220a4a14525657466f299850bbc98de9
-Author: Miao-chen Chou <mcchou@chromium.org>
-Date:   Tue Jun 30 03:15:00 2020 +0000
+On 9/5/2020 3:48 PM, Linus Walleij wrote:
+> This switches the RTL8366RB over to using phylink callbacks
+> instead of .adjust_link(). This is a pretty template
+> switchover. All we adjust is the CPU port so that is why
+> the code only inspects this port.
+> 
+> We enhance by adding proper error messages, also disabling
+> the CPU port on the way down and moving dev_info() to
+> dev_dbg().
+> 
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-    Bluetooth: Fix kernel oops triggered by hci_adv_monitors_clear()
+The part of the former adjust_link, especially the part that forces the 
+link to 1Gbit/sec, full duplex and no-autonegotiation probably belongs 
+to a phylink_mac_config() implementation.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11aaff5d900000
-start commit:   fffe3ae0 Merge tag 'for-linus-hmm' of git://git.kernel.org..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=18bb86f2e4ebfda2
-dashboard link: https://syzkaller.appspot.com/bug?extid=198362c76088d1515529
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=152a482c900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=109b781a900000
-
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: Bluetooth: Fix kernel oops triggered by hci_adv_monitors_clear()
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Assuming that someone connects such a switch to a 10/100 Ethernet MAC 
+and provides a fixed-link property in Device Tree, we should at least 
+attempt to configure the CPU port interface based on those link 
+settings, that is not happening today.
+-- 
+Florian
