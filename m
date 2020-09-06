@@ -2,79 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11B4D25F096
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 23:15:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5132025F09F
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 23:24:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726367AbgIFVO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 17:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
+        id S1726559AbgIFVYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 17:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726154AbgIFVO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 17:14:57 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015A6C061573
-        for <netdev@vger.kernel.org>; Sun,  6 Sep 2020 14:14:56 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id x23so2157834wmi.3
-        for <netdev@vger.kernel.org>; Sun, 06 Sep 2020 14:14:56 -0700 (PDT)
+        with ESMTP id S1726154AbgIFVY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 17:24:29 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98031C061573
+        for <netdev@vger.kernel.org>; Sun,  6 Sep 2020 14:24:28 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id a15so13872691ljk.2
+        for <netdev@vger.kernel.org>; Sun, 06 Sep 2020 14:24:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Jx/2AQJ19GgF5GMqfvKOGk4UBA5cUToV3mcDGBZKY0M=;
-        b=fhmW+fC2PmioUdyyeuNSunMjhlR4qJ2lZZGtlYKxTJR3KMU9Ujv6Lhc7LgQ4BBVHlG
-         NyZWuH8GlRz54X0DUGci+HlYmYOQif6XyoPJPiDDZx6/suJwWtNKVNcKjnG6aNJwMrKQ
-         8VavQF54Sr+nIii/kNlkV2PW2OuMxlGb3cwWc=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TeL7Sn0wISyA/6rSw+Hft+Lnn/YVl9Ra+xPig7T0bfs=;
+        b=Qhd8lT08TiAxip70LQex3VWm9OP78VLieG3ENYkBcy0xO0txedyeIJVm13fuNSxq4d
+         JHVSj/d5JBje+HflBcGGYRbHDWSYOWrRxJNbX9tXDhYHpMghGcxhFjNyjaAQtOxz8RYW
+         gU/UVSCI+OAp5Dv3495hzRuA/dl3G/o5iP3ndgS98uA4VgfvxO3Zo6DyALv3LrXaYkoX
+         GVaBx4+P2NLybJz71cFeSXTD72F+45HOG6b/JvjvuT4tg6Vf/5VSEq7TJTaoQ03cCyw5
+         AHwt8R4XO7poIO4dBaD1rxisykHHMvfG+bqI3j0pyu1QDrCpyoJYUKkQf4qsXizzFWKP
+         nHEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Jx/2AQJ19GgF5GMqfvKOGk4UBA5cUToV3mcDGBZKY0M=;
-        b=MyZgVefq0rg5zBSMt1rNiXJkoPII6q2JMJNBNlRvWDsgOFCBrC2NmSO23Zig3gqplT
-         bMxZLScoYRpruczOKq5LDct3lTig9IF4+pr1FVcXTYh6t8whLQNS1XH+Ys6XB695kjQn
-         VcMKZL2iBFIr98g6C6WcruDnr0x3N+qNN5AAwDDQndr0smRCOL9rtg0gnEPfSbZ7+X2p
-         uerzMgOrGNU8jLbAo2QunTIu219hrIsddniV12mbjIzqtKjIFdsGBgtukM5JdOzrJRh/
-         A+IHnqSM6e36za5+HgWtgnSYwbpxP3oyQgxhZuAaBLYBOJiL+VFp+JNAh9F2zmuUAybT
-         ouQw==
-X-Gm-Message-State: AOAM533VtOmNhS2/yU0gT0Yl+dAM5pkPOV+TxbF5aUNkIANC3y/+HYXC
-        RzdoZqsCvdTcJVyPJC4nVA+zyg==
-X-Google-Smtp-Source: ABdhPJx6VgyIgp3B6hY9iDES8IcTXexiYYix88fGOdcqnAH3S7QJjVStQYozTReUd+eCBzWNryxveg==
-X-Received: by 2002:a1c:3886:: with SMTP id f128mr17685983wma.121.1599426895517;
-        Sun, 06 Sep 2020 14:14:55 -0700 (PDT)
-Received: from [192.168.0.112] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.googlemail.com with ESMTPSA id n124sm24149928wmn.29.2020.09.06.14.14.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 06 Sep 2020 14:14:54 -0700 (PDT)
-Subject: Re: [PATCH net-next v3 06/15] net: bridge: mcast: add support for
- group query retransmit
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
-        bridge@lists.linux-foundation.org, davem@davemloft.net
-References: <20200905082410.2230253-1-nikolay@cumulusnetworks.com>
- <20200905082410.2230253-7-nikolay@cumulusnetworks.com>
- <20200906140136.77ae178d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <4f8ec4f0-6311-3b18-c7c4-a3a49b8d94b4@cumulusnetworks.com>
-Date:   Mon, 7 Sep 2020 00:14:51 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        bh=TeL7Sn0wISyA/6rSw+Hft+Lnn/YVl9Ra+xPig7T0bfs=;
+        b=IMwvOqSQFxHvfYiIIdL+9npjwNqJsy1r97CAURyXKc8AuCHMvowSAmipN2J9fEDNRM
+         u+rIDy7JViJRn9fhpWUE5Sl0Mmhpr8RmUwnIrICR/Erj81Gr3Qx12VBJ9E3woHMRkTxk
+         zcf2xc02mmHX6iQ2UW4yhhgLdCYYYp1YRw+GqNTvIincudVZFQzP0HDoCLslPBmk01zn
+         CefRgPKsN3qMooj+SVT0DmMbVQg1lZLWNEWLiFWIgW/YWiym3/XjO1X8TDNhVpEwQHCX
+         u0RXEinLZuGEOgSra/jZOv5jafnj6umm9v/+9hEbl+Id3XiMphmHMEtRidJxzJFjaYen
+         3U8g==
+X-Gm-Message-State: AOAM531VJLULHw/vWBRhEeQ9LO65AcWtItXNX0aY0bXTG9lK1cJFp4BS
+        WneKWDOeldUJAv3DpXoecsmkdw==
+X-Google-Smtp-Source: ABdhPJy/+ErhnNda81bRYCsjHCIGE8B6BUsKoWjJ51S25h2/oMv9CCd0A4t4dNUJEg0y7IaqgHBEtQ==
+X-Received: by 2002:a2e:b0fc:: with SMTP id h28mr9242314ljl.114.1599427459065;
+        Sun, 06 Sep 2020 14:24:19 -0700 (PDT)
+Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
+        by smtp.gmail.com with ESMTPSA id m15sm5151188ljh.62.2020.09.06.14.24.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Sep 2020 14:24:18 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
+Cc:     Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v2] net: dsa: rtl8366rb: Switch to phylink
+Date:   Sun,  6 Sep 2020 23:24:15 +0200
+Message-Id: <20200906212415.99415-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200906140136.77ae178d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/7/20 12:01 AM, Jakub Kicinski wrote:
-> On Sat,  5 Sep 2020 11:24:01 +0300 Nikolay Aleksandrov wrote:
->> We need to be able to retransmit group-specific and group-and-source
->> specific queries. The new timer takes care of those.
-> 
-> What guarantees that timer will not use pg after free? Do timer
-> callbacks hold the RCU read lock?
-> 
+This switches the RTL8366RB over to using phylink callbacks
+instead of .adjust_link(). This is a pretty template
+switchover. All we adjust is the CPU port so that is why
+the code only inspects this port.
 
-See the last patch, it guarantees no entry timer will be used when it's freed.
+We enhance by adding proper error messages, also disabling
+the CPU port on the way down and moving dev_info() to
+dev_dbg().
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Fix the function declarations to be static.
+---
+ drivers/net/dsa/rtl8366rb.c | 44 +++++++++++++++++++++++++++++++------
+ 1 file changed, 37 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
+index f763f93f600f..ddc24f5e4123 100644
+--- a/drivers/net/dsa/rtl8366rb.c
++++ b/drivers/net/dsa/rtl8366rb.c
+@@ -969,8 +969,10 @@ static enum dsa_tag_protocol rtl8366_get_tag_protocol(struct dsa_switch *ds,
+ 	return DSA_TAG_PROTO_RTL4_A;
+ }
+ 
+-static void rtl8366rb_adjust_link(struct dsa_switch *ds, int port,
+-				  struct phy_device *phydev)
++static void
++rtl8366rb_mac_link_up(struct dsa_switch *ds, int port, unsigned int mode,
++		      phy_interface_t interface, struct phy_device *phydev,
++		      int speed, int duplex, bool tx_pause, bool rx_pause)
+ {
+ 	struct realtek_smi *smi = ds->priv;
+ 	int ret;
+@@ -978,25 +980,52 @@ static void rtl8366rb_adjust_link(struct dsa_switch *ds, int port,
+ 	if (port != smi->cpu_port)
+ 		return;
+ 
+-	dev_info(smi->dev, "adjust link on CPU port (%d)\n", port);
++	dev_dbg(smi->dev, "MAC link up on CPU port (%d)\n", port);
+ 
+ 	/* Force the fixed CPU port into 1Gbit mode, no autonegotiation */
+ 	ret = regmap_update_bits(smi->map, RTL8366RB_MAC_FORCE_CTRL_REG,
+ 				 BIT(port), BIT(port));
+-	if (ret)
++	if (ret) {
++		dev_err(smi->dev, "failed to force 1Gbit on CPU port\n");
+ 		return;
++	}
+ 
+ 	ret = regmap_update_bits(smi->map, RTL8366RB_PAACR2,
+ 				 0xFF00U,
+ 				 RTL8366RB_PAACR_CPU_PORT << 8);
+-	if (ret)
++	if (ret) {
++		dev_err(smi->dev, "failed to set PAACR on CPU port\n");
+ 		return;
++	}
+ 
+ 	/* Enable the CPU port */
+ 	ret = regmap_update_bits(smi->map, RTL8366RB_PECR, BIT(port),
+ 				 0);
+-	if (ret)
++	if (ret) {
++		dev_err(smi->dev, "failed to enable the CPU port\n");
++		return;
++	}
++}
++
++static void
++rtl8366rb_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
++			phy_interface_t interface)
++{
++	struct realtek_smi *smi = ds->priv;
++	int ret;
++
++	if (port != smi->cpu_port)
+ 		return;
++
++	dev_dbg(smi->dev, "MAC link down on CPU port (%d)\n", port);
++
++	/* Disable the CPU port */
++	ret = regmap_update_bits(smi->map, RTL8366RB_PECR, BIT(port),
++				 BIT(port));
++	if (ret) {
++		dev_err(smi->dev, "failed to disable the CPU port\n");
++		return;
++	}
+ }
+ 
+ static void rb8366rb_set_port_led(struct realtek_smi *smi,
+@@ -1439,7 +1468,8 @@ static int rtl8366rb_detect(struct realtek_smi *smi)
+ static const struct dsa_switch_ops rtl8366rb_switch_ops = {
+ 	.get_tag_protocol = rtl8366_get_tag_protocol,
+ 	.setup = rtl8366rb_setup,
+-	.adjust_link = rtl8366rb_adjust_link,
++	.phylink_mac_link_up = rtl8366rb_mac_link_up,
++	.phylink_mac_link_down = rtl8366rb_mac_link_down,
+ 	.get_strings = rtl8366_get_strings,
+ 	.get_ethtool_stats = rtl8366_get_ethtool_stats,
+ 	.get_sset_count = rtl8366_get_sset_count,
+-- 
+2.26.2
+
