@@ -2,428 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EF6025EDFC
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 15:40:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3344925EE45
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 16:37:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728726AbgIFNkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 09:40:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47364 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728891AbgIFNgp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 6 Sep 2020 09:36:45 -0400
-Received: from localhost (unknown [151.66.86.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AC06620760;
-        Sun,  6 Sep 2020 13:36:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599399382;
-        bh=nEloTPaT/0aLose1iS1izcHESMbU05uQXq7UpdamaLU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QSGkBpuNAOXNwJvavRTSq38wxv4gy20ysVePUfpZlJ1/y5fETDNbEIH0M9lgVMRYm
-         gBDHZJDtj2b8sr6mTZjY95aA1P4YquXbz+F8yUYNkg3oLdUiH0xNZvSyuG0RfU0dPI
-         lwGmfo/M/9uD8xRSNk+M+hBphwKUGN+A7o2PveXY=
-Date:   Sun, 6 Sep 2020 15:36:17 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com,
-        echaudro@redhat.com, sameehj@amazon.com, kuba@kernel.org,
-        daniel@iogearbox.net, ast@kernel.org, shayagr@amazon.com,
-        edumazet@google.com
-Subject: Re: [PATCH v2 net-next 6/9] bpf: helpers: add
- bpf_xdp_adjust_mb_header helper
-Message-ID: <20200906133617.GC2785@lore-desk>
-References: <cover.1599165031.git.lorenzo@kernel.org>
- <b7475687bb09aac6ec051596a8ccbb311a54cb8a.1599165031.git.lorenzo@kernel.org>
- <5f51e2f2eb22_3eceb20837@john-XPS-13-9370.notmuch>
- <20200904094511.GF2884@lore-desk>
- <5f525be3da548_1932208b6@john-XPS-13-9370.notmuch>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="8NvZYKFJsRX2Djef"
-Content-Disposition: inline
-In-Reply-To: <5f525be3da548_1932208b6@john-XPS-13-9370.notmuch>
+        id S1728896AbgIFOhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 10:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728953AbgIFOeN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 10:34:13 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F7FC061573
+        for <netdev@vger.kernel.org>; Sun,  6 Sep 2020 07:34:12 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id w186so6772419pgb.8
+        for <netdev@vger.kernel.org>; Sun, 06 Sep 2020 07:34:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=+bM41kxyml6yCth4Mwty5ISSovAMLgFnRSP5d7bmRoI=;
+        b=qBcpUOloL5ia9n4PEVanDagAnsqu2HMa0xNODwvIiNZ/2qsTDtusl47aXH9ontj5zY
+         iLb+jS0vTtCLZDqu8G7B7eGyVeiTSzkBbTDXrR05JWESbdpoo4Gtda1Y5Jyb26bjdC63
+         HsSXH7Jidifo+g/LBYgYunodw2P+VAz3Hgl+bmj72FzyBA1WJBBelyHFjYrcCRMgLFHk
+         aVTyIVbVBCY3AQBcG9WSlBAW4nmpB79XiOIs95Xz8gv0IxWmdvvWU3xGfYptdyuFU2Ag
+         eeSkuPGLwoBnBlZwg0ToD6RT0Uis4ZOixtIcYboXcXDP3xlCrK6E7YtHr4Ft6e1Qxg5c
+         NwFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+bM41kxyml6yCth4Mwty5ISSovAMLgFnRSP5d7bmRoI=;
+        b=BEVdKN9hei45p4lJp7M2fle1qtkHqGbm6rUAxv26eF27b41Xv8iQRcUEA1e85bOjav
+         5XWE0mQ6x2urhtWQ+sVROUhxoKqMwcbqjkI5k3Kvwu4vIqWgF6Hjd3nEI28fiU+5L/a+
+         wxVlLGBS4f8s0DZtwD/MUn7oglnCd4pQj2g+XyhFmmfaZHk64iqwy8EBW7emkEuarFDi
+         1fh4MgDjOG0YqWrwsk/aLmwhVzN6F74DMGMbP3Dy4uWN8R1eX7fj+iSLwsy17gUbpaMn
+         ueiTYwrAkCUC+tf904sN7+87XIacx2XqZKeozvKtRQwaE4tz3eHPi9pJlWS7NKToxRhd
+         +PGA==
+X-Gm-Message-State: AOAM531LeMsQLXWylr85LZfIkC9ZdWRGZv0PVyft8jonIiD0bFCEqbfy
+        ZjxpksDiVeTtVrHAhMvcemc=
+X-Google-Smtp-Source: ABdhPJyyIq9qmJzPGbvA9LCVSQmv3gKACxlZpl/5BiMP59oXCZ8+Uc05zRiHpxLDFaeZMXvzjtk5YQ==
+X-Received: by 2002:a62:1b81:: with SMTP id b123mr16900443pfb.149.1599402852159;
+        Sun, 06 Sep 2020 07:34:12 -0700 (PDT)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id x9sm10450823pgi.87.2020.09.06.07.34.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Sep 2020 07:34:10 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com, gnault@redhat.com
+Subject: [PATCH net] netns: fix a deadlock in peernet2id_alloc()
+Date:   Sun,  6 Sep 2020 14:34:04 +0000
+Message-Id: <20200906143404.31445-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+To protect netns id, the nsid_lock is used when netns id is being
+allocated and removed by peernet2id_alloc() and unhash_nsid().
+The nsid_lock can be used in BH context but only spin_lock() is used
+in this code.
+Using spin_lock() instead of spin_lock_bh() can result in a deadlock in
+the following scenario reported by the lockdep.
+In order to avoid a deadlock, the spin_lock_bh() should be used instead
+of spin_lock() to acquire nsid_lock.
 
---8NvZYKFJsRX2Djef
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Test commands:
+    ip netns del nst
+    ip netns add nst
+    ip link add veth1 type veth peer name veth2
+    ip link set veth1 netns nst
+    ip netns exec nst ip link add name br1 type bridge vlan_filtering 1
+    ip netns exec nst ip link set dev br1 up
+    ip netns exec nst ip link set dev veth1 master br1
+    ip netns exec nst ip link set dev veth1 up
+    ip netns exec nst ip link add macvlan0 link br1 up type macvlan
 
-> Lorenzo Bianconi wrote:
-> > > Lorenzo Bianconi wrote:
+Splat looks like:
+[   33.615860][  T607] WARNING: SOFTIRQ-safe -> SOFTIRQ-unsafe lock order detected
+[   33.617194][  T607] 5.9.0-rc1+ #665 Not tainted
+[ ... ]
+[   33.670615][  T607] Chain exists of:
+[   33.670615][  T607]   &mc->mca_lock --> &bridge_netdev_addr_lock_key --> &net->nsid_lock
+[   33.670615][  T607]
+[   33.673118][  T607]  Possible interrupt unsafe locking scenario:
+[   33.673118][  T607]
+[   33.674599][  T607]        CPU0                    CPU1
+[   33.675557][  T607]        ----                    ----
+[   33.676516][  T607]   lock(&net->nsid_lock);
+[   33.677306][  T607]                                local_irq_disable();
+[   33.678517][  T607]                                lock(&mc->mca_lock);
+[   33.679725][  T607]                                lock(&bridge_netdev_addr_lock_key);
+[   33.681166][  T607]   <Interrupt>
+[   33.681791][  T607]     lock(&mc->mca_lock);
+[   33.682579][  T607]
+[   33.682579][  T607]  *** DEADLOCK ***
+[ ... ]
+[   33.922046][  T607] stack backtrace:
+[   33.922999][  T607] CPU: 3 PID: 607 Comm: ip Not tainted 5.9.0-rc1+ #665
+[   33.924099][  T607] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+[   33.925714][  T607] Call Trace:
+[   33.926238][  T607]  dump_stack+0x78/0xab
+[   33.926905][  T607]  check_irq_usage+0x70b/0x720
+[   33.927708][  T607]  ? iterate_chain_key+0x60/0x60
+[   33.928507][  T607]  ? check_path+0x22/0x40
+[   33.929201][  T607]  ? check_noncircular+0xcf/0x180
+[   33.930024][  T607]  ? __lock_acquire+0x1952/0x1f20
+[   33.930860][  T607]  __lock_acquire+0x1952/0x1f20
+[   33.931667][  T607]  lock_acquire+0xaf/0x3a0
+[   33.932366][  T607]  ? peernet2id_alloc+0x3a/0x170
+[   33.933147][  T607]  ? br_port_fill_attrs+0x54c/0x6b0 [bridge]
+[   33.934140][  T607]  ? br_port_fill_attrs+0x5de/0x6b0 [bridge]
+[   33.935113][  T607]  ? kvm_sched_clock_read+0x14/0x30
+[   33.935974][  T607]  _raw_spin_lock+0x30/0x70
+[   33.936728][  T607]  ? peernet2id_alloc+0x3a/0x170
+[   33.937523][  T607]  peernet2id_alloc+0x3a/0x170
+[   33.938313][  T607]  rtnl_fill_ifinfo+0xb5e/0x1400
+[   33.939091][  T607]  rtmsg_ifinfo_build_skb+0x8a/0xf0
+[   33.939953][  T607]  rtmsg_ifinfo_event.part.39+0x17/0x50
+[   33.940863][  T607]  rtmsg_ifinfo+0x1f/0x30
+[   33.941571][  T607]  __dev_notify_flags+0xa5/0xf0
+[   33.942376][  T607]  ? __irq_work_queue_local+0x49/0x50
+[   33.943249][  T607]  ? irq_work_queue+0x1d/0x30
+[   33.943993][  T607]  ? __dev_set_promiscuity+0x7b/0x1a0
+[   33.944878][  T607]  __dev_set_promiscuity+0x7b/0x1a0
+[   33.945758][  T607]  dev_set_promiscuity+0x1e/0x50
+[   33.946582][  T607]  br_port_set_promisc+0x1f/0x40 [bridge]
+[   33.947487][  T607]  br_manage_promisc+0x8b/0xe0 [bridge]
+[   33.948388][  T607]  __dev_set_promiscuity+0x123/0x1a0
+[   33.949244][  T607]  __dev_set_rx_mode+0x68/0x90
+[   33.950021][  T607]  dev_uc_add+0x50/0x60
+[   33.950720][  T607]  macvlan_open+0x18e/0x1f0 [macvlan]
+[   33.951601][  T607]  __dev_open+0xd6/0x170
+[   33.952269][  T607]  __dev_change_flags+0x181/0x1d0
+[   33.953056][  T607]  rtnl_configure_link+0x2f/0xa0
+[   33.953884][  T607]  __rtnl_newlink+0x6b9/0x8e0
+[   33.954665][  T607]  ? __lock_acquire+0x95d/0x1f20
+[   33.955450][  T607]  ? lock_acquire+0xaf/0x3a0
+[   33.956193][  T607]  ? is_bpf_text_address+0x5/0xe0
+[   33.956999][  T607]  rtnl_newlink+0x47/0x70
 
-[...]
+Fixes: 8d7e5dee972f ("netns: don't disable BHs when locking "nsid_lock"")
+Reported-by: syzbot+3f960c64a104eaa2c813@syzkaller.appspotmail.com
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+ net/core/net_namespace.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-> > > > + *	Description
-> > > > + *		Adjust frame headers moving *offset* bytes from/to the second
-> > > > + *		buffer to/from the first one. This helper can be used to move
-> > > > + *		headers when the hw DMA SG does not copy all the headers in
-> > > > + *		the first fragment.
-> >=20
-> > + Eric to the discussion
-> >=20
-> > >=20
-> > > This is confusing to read. Does this mean I can "move bytes to the se=
-cond
-> > > buffer from the first one" or "move bytes from the second buffer to t=
-he first
-> > > one" And what are frame headers? I'm sure I can read below code and w=
-ork
-> > > it out, but users reading the header file should be able to parse thi=
-s.
-> >=20
-> > Our main goal with this helper is to fix the use-case where we request =
-the hw
-> > to put L2/L3/L4 headers (and all the TCP options) in the first fragment=
- and TCP
-> > data starting from the second fragment (headers split) but for some rea=
-sons
-> > the hw puts the TCP options in the second fragment (if we understood co=
-rrectly
-> > this issue has been introduced by Eric @ NetDevConf 0x14).
-> > bpf_xdp_adjust_mb_header() can fix this use-case moving bytes from the =
-second fragment
-> > to the first one (offset > 0) or from the first buffer to the second on=
-e (offset < 0).
->=20
-> Ah OK, so the description needs the information about how to use offset t=
-hen it
-> would have been clear I think. Something like that last line "moving byte=
-s from
-> the second fragment ...."
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index dcd61aca343e..944ab214e5ae 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -251,10 +251,10 @@ int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp)
+ 	if (refcount_read(&net->count) == 0)
+ 		return NETNSA_NSID_NOT_ASSIGNED;
+ 
+-	spin_lock(&net->nsid_lock);
++	spin_lock_bh(&net->nsid_lock);
+ 	id = __peernet2id(net, peer);
+ 	if (id >= 0) {
+-		spin_unlock(&net->nsid_lock);
++		spin_unlock_bh(&net->nsid_lock);
+ 		return id;
+ 	}
+ 
+@@ -264,12 +264,12 @@ int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp)
+ 	 * just been idr_remove()'d from there in cleanup_net().
+ 	 */
+ 	if (!maybe_get_net(peer)) {
+-		spin_unlock(&net->nsid_lock);
++		spin_unlock_bh(&net->nsid_lock);
+ 		return NETNSA_NSID_NOT_ASSIGNED;
+ 	}
+ 
+ 	id = alloc_netid(net, peer, -1);
+-	spin_unlock(&net->nsid_lock);
++	spin_unlock_bh(&net->nsid_lock);
+ 
+ 	put_net(peer);
+ 	if (id < 0)
+@@ -534,20 +534,20 @@ static void unhash_nsid(struct net *net, struct net *last)
+ 	for_each_net(tmp) {
+ 		int id;
+ 
+-		spin_lock(&tmp->nsid_lock);
++		spin_lock_bh(&tmp->nsid_lock);
+ 		id = __peernet2id(tmp, net);
+ 		if (id >= 0)
+ 			idr_remove(&tmp->netns_ids, id);
+-		spin_unlock(&tmp->nsid_lock);
++		spin_unlock_bh(&tmp->nsid_lock);
+ 		if (id >= 0)
+ 			rtnl_net_notifyid(tmp, RTM_DELNSID, id, 0, NULL,
+ 					  GFP_KERNEL);
+ 		if (tmp == last)
+ 			break;
+ 	}
+-	spin_lock(&net->nsid_lock);
++	spin_lock_bh(&net->nsid_lock);
+ 	idr_destroy(&net->netns_ids);
+-	spin_unlock(&net->nsid_lock);
++	spin_unlock_bh(&net->nsid_lock);
+ }
+ 
+ static LLIST_HEAD(cleanup_list);
+@@ -760,9 +760,9 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return PTR_ERR(peer);
+ 	}
+ 
+-	spin_lock(&net->nsid_lock);
++	spin_lock_bh(&net->nsid_lock);
+ 	if (__peernet2id(net, peer) >= 0) {
+-		spin_unlock(&net->nsid_lock);
++		spin_unlock_bh(&net->nsid_lock);
+ 		err = -EEXIST;
+ 		NL_SET_BAD_ATTR(extack, nla);
+ 		NL_SET_ERR_MSG(extack,
+@@ -771,7 +771,7 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	}
+ 
+ 	err = alloc_netid(net, peer, nsid);
+-	spin_unlock(&net->nsid_lock);
++	spin_unlock_bh(&net->nsid_lock);
+ 	if (err >= 0) {
+ 		rtnl_net_notifyid(net, RTM_NEWNSID, err, NETLINK_CB(skb).portid,
+ 				  nlh, GFP_KERNEL);
+-- 
+2.17.1
 
-ack, right. I will do in v3.
-
->=20
-> So this is to fixup header-spit for RX zerocopy? Add that to the commit
-> message then.
-
-Right. I will improve comments in v3.
-
->=20
-> >=20
-> > >=20
-> > > Also we want to be able to read all data not just headers. Reading the
-> > > payload of a TCP packet is equally important for many l7 load balance=
-rs.
-> > >=20
-> >=20
-> > In order to avoid to slow down performances we require that eBPF sandbo=
-x can
-> > read/write only buff0 in a xdp multi-buffer. The xdp program can only
-> > perform some restricted changes to buff<n> (n >=3D 1) (e.g. what we did=
- in
-> > bpf_xdp_adjust_mb_header()).
-> > You can find the xdp multi-buff design principles here [0][1]
-> >=20
-> > [0] https://github.com/xdp-project/xdp-project/blob/master/areas/core/x=
-dp-multi-buffer01-design.org
-> > [1] http://people.redhat.com/lbiancon/conference/NetDevConf2020-0x14/ad=
-d-xdp-on-driver.html - XDP multi-buffers section (slide 40)
-> >=20
-> > > > + *
-> > > > + *		A call to this helper is susceptible to change the underlying
-> > > > + *		packet buffer. Therefore, at load time, all checks on pointers
-> > > > + *		previously done by the verifier are invalidated and must be
-> > > > + *		performed again, if the helper is used in combination with
-> > > > + *		direct packet access.
-> > > > + *
-> > > > + *	Return
-> > > > + *		0 on success, or a negative error in case of failure.
-> > > >   */
-> > > >  #define __BPF_FUNC_MAPPER(FN)		\
-> > > >  	FN(unspec),			\
-> > > > @@ -3727,6 +3741,7 @@ union bpf_attr {
-> > > >  	FN(inode_storage_delete),	\
-> > > >  	FN(d_path),			\
-> > > >  	FN(copy_from_user),		\
-> > > > +	FN(xdp_adjust_mb_header),	\
-> > > >  	/* */
-> > > > =20
-> > > >  /* integer value in 'imm' field of BPF_CALL instruction selects wh=
-ich helper
-> > > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > > index 47eef9a0be6a..ae6b10cf062d 100644
-> > > > --- a/net/core/filter.c
-> > > > +++ b/net/core/filter.c
-> > > > @@ -3475,6 +3475,57 @@ static const struct bpf_func_proto bpf_xdp_a=
-djust_head_proto =3D {
-> > > >  	.arg2_type	=3D ARG_ANYTHING,
-> > > >  };
-> > > > =20
-> > > > +BPF_CALL_2(bpf_xdp_adjust_mb_header, struct  xdp_buff *, xdp,
-> > > > +	   int, offset)
-> > > > +{
-> > > > +	void *data_hard_end, *data_end;
-> > > > +	struct skb_shared_info *sinfo;
-> > > > +	int frag_offset, frag_len;
-> > > > +	u8 *addr;
-> > > > +
-> > > > +	if (!xdp->mb)
-> > > > +		return -EOPNOTSUPP;
->=20
-> Not required for this patch necessarily but I think it would be better us=
-er
-> experience if instead of EOPNOTSUPP here we did the header split. This
-> would allocate a frag and copy the bytes around as needed. Yes it might
-> be slow if you don't have a frag free in the driver, but if user wants to
-> do header split and their hardware can't do it we would have a way out.
->=20
-> I guess it could be an improvement for later though.
-
-I have no a strong opinion on this, I did it in this way to respect the rul=
-e "we
-do not allocate memory for XDP".
-
-@Jesper, David: thoughts?
-
->=20
->=20
-> > > > +
-> > > > +	sinfo =3D xdp_get_shared_info_from_buff(xdp);
-> > > > +
-> > > > +	frag_len =3D skb_frag_size(&sinfo->frags[0]);
-> > > > +	if (offset > frag_len)
-> > > > +		return -EINVAL;
-> > >=20
-> > > What if we want data in frags[1] and so on.
-> > >=20
-> > > > +
-> > > > +	frag_offset =3D skb_frag_off(&sinfo->frags[0]);
-> > > > +	data_end =3D xdp->data_end + offset;
-> > > > +
-> > > > +	if (offset < 0 && (-offset > frag_offset ||
-> > > > +			   data_end < xdp->data + ETH_HLEN))
-> > > > +		return -EINVAL;
-> > > > +
-> > > > +	data_hard_end =3D xdp_data_hard_end(xdp); /* use xdp->frame_sz */
-> > > > +	if (data_end > data_hard_end)
-> > > > +		return -EINVAL;
-> > > > +
-> > > > +	addr =3D page_address(skb_frag_page(&sinfo->frags[0])) + frag_off=
-set;
-> > > > +	if (offset > 0) {
-> > > > +		memcpy(xdp->data_end, addr, offset);
-> > >=20
-> > > But this could get expensive for large amount of data? And also
-> > > limiting because we require the room to do the copy. Presumably
-> > > the reason we have fargs[1] is because the normal page or half
-> > > page is in use?
-> > >=20
-> > > > +	} else {
-> > > > +		memcpy(addr + offset, xdp->data_end + offset, -offset);
-> > > > +		memset(xdp->data_end + offset, 0, -offset);
-> > > > +	}
-> > > > +
-> > > > +	skb_frag_size_sub(&sinfo->frags[0], offset);
-> > > > +	skb_frag_off_add(&sinfo->frags[0], offset);
-> > > > +	xdp->data_end =3D data_end;
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > >=20
-> > > So overall I don't see the point of copying bytes from one frag to
-> > > another. Create an API that adjusts the data pointers and then
-> > > copies are avoided and manipulating frags is not needed.
-> >=20
-> > please see above.
->=20
-> OK it makes more sense with the context. It doesn't have much if anything
-> to do about making data visible to the BPF program. This is about
-> changing the layout of the frags list.
-
-correct.
-
->=20
-> How/when does the header split go wrong on the mvneta device? I guess
-> this is to fix a real bug/issue not some theoritical one? An example
-> in the commit message would make this concrete. Soemthing like,
-> "When using RX zerocopy to mmap data into userspace application if
-> a packet with [all these wild headers] is received rx zerocopy breaks
-> because header split puts headers X in the data frag confusing apps".
-
-This issue does not occur with mvneta since the driver is not capable of
-performing header split AFAIK. The helper has been introduced to cover the
-"issue" reported by Eric in his NetDevConf presentation. In order to test t=
-he
-helper I modified the mventa rx napi loop in a controlled way (this patch c=
-an't
-be sent upstream, it is for testing only :))
-I will improve commit message in v3.
-
->=20
-> >=20
-> > >=20
-> > > Also and even more concerning I think this API requires the
-> > > driver to populate shinfo. If we use TX_REDIRECT a lot or TX_XMIT
-> > > this means we need to populate shinfo when its probably not ever
-> > > used. If our driver is smart L2/L3 headers are in the readable
-> > > data and prefetched. Writing frags into the end of a page is likely
-> > > not free.
-> >=20
-> > Sorry I did not get what you mean with "populate shinfo" here. We need =
-to
-> > properly set shared_info in order to create the xdp multi-buff.
-> > Apart of header splits, please consider the main uses-cases for
-> > xdp multi-buff are XDP with TSO and Jumbo frames.
->=20
-> The use case I have in mind is a XDP_TX or XDP_REDIRECT load balancer.
-> I wont know this at the driver level and now I'll have to write into
-> the back of every page with this shinfo just in case. If header
-> split is working I should never need to even touch the page outside
-> the first N bytes that were DMAd and in cache with DDIO. So its extra
-> overhead for something that is unlikely to happen in the LB case.
-
-So far the skb_shared_info in constructed in mvneta only if the hw splits
-the received data in multiple buffers (so if the MTU is greater than 1 PAGE,
-please see comments below). Moreover the shared_info is present only in the
-first buffer.
-
->=20
-> If you take the simplest possible program that just returns XDP_TX
-> and run a pkt generator against it. I believe (haven't run any
-> tests) that you will see overhead now just from populating this
-> shinfo. I think it needs to only be done when its needed e.g. when
-> user makes this helper call or we need to build the skb and populate
-> the frags there.
-
-sure, I will carry out some tests.
-
->=20
-> I think a smart driver will just keep the frags list in whatever
-> form it has them (rx descriptors?) and push them over to the
-> tx descriptors without having to do extra work with frag lists.
-
-I think there are many use-cases where we want to have this info available =
-in
-xdp_buff/xdp_frame. E.g: let's consider the following Jumbo frame example:
-- MTU > 1 PAGE (so we the driver will split the received data in multiple rx
-  descriptors)
-- the driver performs a XDP_REDIRECT to a veth or cpumap
-
-Relying on the proposed architecture we could enable GRO in veth or cpumap I
-guess since we can build a non-linear skb from the xdp multi-buff, right?
-
->=20
-> >=20
-> > >=20
-> > > Did you benchmark this?
-> >=20
-> > will do, I need to understand if we can use tiny buffers in mvneta.
->=20
-> Why tiny buffers? How does mvneta layout the frags when doing
-> header split? Can we just benchmark what mvneta is doing at the
-> end of this patch series?
-
-for the moment mvneta can split the received data when the previous buffer =
-is
-full (e.g. when we the first page is completely written). I want to explore=
- if
-I can set a tiny buffer (e.g. 128B) as max received buffer to run some perf=
-ormance
-tests and have some "comparable" results respect to the ones I got when I a=
-dded XDP
-support to mvneta.
-
->=20
-> Also can you try the basic XDP_TX case mentioned above.
-> I don't want this to degrade existing use cases if at all
-> possible.
-
-sure, will do.
-
->=20
-> >=20
-> > >=20
-> > > In general users of this API should know the bytes they want
-> > > to fetch. Use an API like this,
-> > >=20
-> > >   bpf_xdp_adjust_bytes(xdp, start, end)
-> > >=20
-> > > Where xdp is the frame, start is the first byte the user wants
-> > > and end is the last byte. Then usually you can skip the entire
-> > > copy part and just move the xdp pointesr around. The ugly case
-> > > is if the user puts start/end across a frag boundary and a copy
-> > > is needed. In that case maybe we use end as a hint and not a
-> > > hard requirement.
-> > >=20
-> > > The use case I see is I read L2/L3/L4 headers and I need the
-> > > first N bytes of the payload. I know where the payload starts
-> > > and I know how many bytes I need so,
-> > >=20
-> > >   bpf_xdp_adjust_bytes(xdp, payload_offset, bytes_needed);
-> > >=20
-> > > Then hopefully that is all in one frag. If its not I'll need
-> > > to do a second helper call. Still nicer than forcing drivers
-> > > to populate this shinfo I think. If you think I'm wrong try
-> > > a benchmark. Benchmarks aside I get stuck when data_end and
-> > > data_hard_end are too close together.
-> >=20
-> > IIUC what you mean here is to expose L2/L3/L4 headers + some data to
-> > the ebpf program to perform like L7 load-balancing, right?
->=20
-> Correct, but with extra context I see in this patch you are trying
-> to build an XDP controlled header split. This seems like a different
-> use case from mine.
-
-I agree.
-
->=20
-> > Let's consider the Jumbo frames use-case (so the data are split in mult=
-iple
-> > buffers). I can see to issues here:
-> > - since in XDP we can't linearize the buffer if start and end are on the
-> >   different pages (like we do in bpf_msg_pull_data()), are we ending up
-> >   in the case where requested data are all in buff0?=20
->=20
-> In this case I would expect either the helper returns how many bytes
-> were pulled in, maybe just (start, end_of_frag) or user can find
-> it from data_end pointer. Here end is just a hint.
->=20
-> > - if  start and end are in buff<2>, we should report the fragment numbe=
-r to the
-> >   ebpf program to "fetch" the data. Are we exposing too low-level detai=
-ls to
-> >   user-space?
->=20
-> Why do you need the frag number? Just say I want bytes (X,Y) if that
-> happens to be on buff<2> let the helper find it.
->=20
-> I think having a helper to read/write any bytes is important and
-> necessary, but the helper implemented in this patch is something
-> else. I get naming is hard what if we called it xdp_header_split().
-
-ack, sure. I will fix it in v3.
-
-Regards,
-Lorenzo
-
->=20
-> >=20
-> > Regards,
-> > Lorenzo
-> >=20
-> > >=20
-> > > Thanks,
-> > > John
->=20
->=20
-
---8NvZYKFJsRX2Djef
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX1TlzgAKCRA6cBh0uS2t
-rEQGAP4gsJGAQc0wkLn/ke+OHX7pBPvlFAnbpAZIhWPX+5PrqQEA5KtGjrK+zopP
-DIpLGx2zyK9LI8dsUbS3EtmYZP451A8=
-=Bngg
------END PGP SIGNATURE-----
-
---8NvZYKFJsRX2Djef--
