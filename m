@@ -2,201 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A500525ED1E
-	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 09:22:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1CE625ED2D
+	for <lists+netdev@lfdr.de>; Sun,  6 Sep 2020 09:28:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726209AbgIFHWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 03:22:20 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:63126 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbgIFHWU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 03:22:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1599376939; x=1630912939;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=cI/9r3WvHRaTPdMYu+pZL9+p2q8E1umiAPSLgKcrqiU=;
-  b=MsYJRp8CYX2B8jtMTba6Yzg2hJnMefHxxV5IQlJ1wZgnSLWB7d+meNWC
-   w9NR1FIcBNSHtjro3HJ9CLSWH/O0ZYfqm7GUT62dglFkYtJ6isLm6vA2s
-   QcZHsLWq9+8PQUMSzYnNZyx4VFvtxKU0Ev+fE+BpQ3jjtRyrSjGWQkJTO
-   E=;
-X-IronPort-AV: E=Sophos;i="5.76,397,1592870400"; 
-   d="scan'208";a="52087062"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-67b371d8.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 06 Sep 2020 07:22:12 +0000
-Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1a-67b371d8.us-east-1.amazon.com (Postfix) with ESMTPS id D0075A1F2E;
-        Sun,  6 Sep 2020 07:22:09 +0000 (UTC)
-Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.160.215) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 6 Sep 2020 07:22:03 +0000
-References: <cover.1599165031.git.lorenzo@kernel.org> <2a5b39dd780f9d3ef7ff060699beca57413c3761.1599165031.git.lorenzo@kernel.org>
-User-agent: mu4e 1.4.12; emacs 26.3
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <davem@davemloft.net>, <lorenzo.bianconi@redhat.com>,
-        <brouer@redhat.com>, <echaudro@redhat.com>, <sameehj@amazon.com>,
-        <kuba@kernel.org>, <john.fastabend@gmail.com>,
-        <daniel@iogearbox.net>, <ast@kernel.org>
-Subject: Re: [PATCH v2 net-next 5/9] net: mvneta: add multi buffer support to XDP_TX
-In-Reply-To: <2a5b39dd780f9d3ef7ff060699beca57413c3761.1599165031.git.lorenzo@kernel.org>
-Date:   Sun, 6 Sep 2020 10:20:18 +0300
-Message-ID: <pj41zl1rjfqslp.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        id S1726211AbgIFH2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 03:28:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56266 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725306AbgIFH2E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 6 Sep 2020 03:28:04 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7FA6920759;
+        Sun,  6 Sep 2020 07:28:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599377284;
+        bh=JrVJMtZcdq+987pFwB6tTOE0p/AgWQHYp+H0uqhxXDQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gogbtmjosUBTjuyj4iHSGQ18Mmw/AvkWT1iRki9lhTe2SNu0UaP9oWyhehS+0OoJv
+         snzttz5I50urqTnUM/NZtNAIurRI68vnvAXO4bEfWcSoGZM9CFML1Pg2LI1HTcuNL5
+         MVdG6jCQSqB76/l4ywp8fWsLOq7xB3RbFPd/zJsw=
+Date:   Sun, 6 Sep 2020 10:27:59 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
+        tariqt@mellanox.com, yishaih@mellanox.com,
+        linux-rdma@vger.kernel.org, jiri@resnulli.us
+Subject: Re: [PATCH net-next] mlx4: make sure to always set the port type
+Message-ID: <20200906072759.GC55261@unreal>
+References: <20200904200621.2407839-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.160.215]
-X-ClientProxiedBy: EX13D02UWB004.ant.amazon.com (10.43.161.11) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200904200621.2407839-1-kuba@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-Lorenzo Bianconi <lorenzo@kernel.org> writes:
-
-> Introduce the capability to map non-linear xdp buffer running
-> mvneta_xdp_submit_frame() for XDP_TX and XDP_REDIRECT
+On Fri, Sep 04, 2020 at 01:06:21PM -0700, Jakub Kicinski wrote:
+> Even tho mlx4_core registers the devlink ports, it's mlx4_en
+> and mlx4_ib which set their type. In situations where one of
+> the two is not built yet the machine has ports of given type
+> we see the devlink warning from devlink_port_type_warn() trigger.
 >
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Having ports of a type not supported by the kernel may seem
+> surprising, but it does occur in practice - when the unsupported
+> port is not plugged in to a switch anyway users are more than happy
+> not to see it (and potentially allocate any resources to it).
+>
+> Set the type in mlx4_core if type-specific driver is not built.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > ---
->  drivers/net/ethernet/marvell/mvneta.c | 79 
->  +++++++++++++++++----------
->  1 file changed, 49 insertions(+), 30 deletions(-)
+>  drivers/net/ethernet/mellanox/mlx4/main.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 >
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c 
-> b/drivers/net/ethernet/marvell/mvneta.c
-> index 4f745a2b702a..65fbed957e4f 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -1854,8 +1854,8 @@ static void mvneta_txq_bufs_free(struct 
-> mvneta_port *pp,
->  			bytes_compl += buf->skb->len;
->  			pkts_compl++;
->  			dev_kfree_skb_any(buf->skb);
-> -		} else if (buf->type == MVNETA_TYPE_XDP_TX ||
-> -			   buf->type == MVNETA_TYPE_XDP_NDO) {
-> +		} else if ((buf->type == MVNETA_TYPE_XDP_TX ||
-> +			    buf->type == MVNETA_TYPE_XDP_NDO) && 
-> buf->xdpf) {
->  			xdp_return_frame(buf->xdpf);
->  		}
->  	}
-> @@ -2040,43 +2040,62 @@ static int
->  mvneta_xdp_submit_frame(struct mvneta_port *pp, struct 
->  mvneta_tx_queue *txq,
->  			struct xdp_frame *xdpf, bool dma_map)
->  {
-> -	struct mvneta_tx_desc *tx_desc;
-> -	struct mvneta_tx_buf *buf;
-> -	dma_addr_t dma_addr;
-> +	struct skb_shared_info *sinfo = 
-> xdp_get_shared_info_from_frame(xdpf);
-> +	int i, num_frames = xdpf->mb ? sinfo->nr_frags + 1 : 1;
-> +	struct mvneta_tx_desc *tx_desc = NULL;
-> +	struct page *page;
->  
-> -	if (txq->count >= txq->tx_stop_threshold)
-> +	if (txq->count + num_frames >= txq->tx_stop_threshold)
->  		return MVNETA_XDP_DROPPED;
->  
-> -	tx_desc = mvneta_txq_next_desc_get(txq);
-> +	for (i = 0; i < num_frames; i++) {
-> +		struct mvneta_tx_buf *buf = 
-> &txq->buf[txq->txq_put_index];
-> +		skb_frag_t *frag = i ? &sinfo->frags[i - 1] : 
-> NULL;
-> +		int len = frag ? skb_frag_size(frag) : xdpf->len;
-> +		dma_addr_t dma_addr;
->  
-> -	buf = &txq->buf[txq->txq_put_index];
-> -	if (dma_map) {
-> -		/* ndo_xdp_xmit */
-> -		dma_addr = dma_map_single(pp->dev->dev.parent, 
-> xdpf->data,
-> -					  xdpf->len, 
-> DMA_TO_DEVICE);
-> -		if (dma_mapping_error(pp->dev->dev.parent, 
-> dma_addr)) {
-> -			mvneta_txq_desc_put(txq);
-> -			return MVNETA_XDP_DROPPED;
-> +		tx_desc = mvneta_txq_next_desc_get(txq);
-> +		if (dma_map) {
-> +			/* ndo_xdp_xmit */
-> +			void *data;
+> diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
+> index 258c7a96f269..70cf24ba71e4 100644
+> --- a/drivers/net/ethernet/mellanox/mlx4/main.c
+> +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
+> @@ -3031,6 +3031,17 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
+>  	if (err)
+>  		return err;
+>
+> +	/* Ethernet and IB drivers will normally set the port type,
+> +	 * but if they are not built set the type now to prevent
+> +	 * devlink_port_type_warn() from firing.
+> +	 */
+> +	if (!IS_ENABLED(CONFIG_MLX4_EN) &&
+> +	    dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH)
+> +		devlink_port_type_eth_set(&info->devlink_port, NULL);
+                                                               ^^^^^
+
+Won't it crash in devlink_port_type_eth_set()?
+The first line there dereferences pointer.
+  7612         const struct net_device_ops *ops = netdev->netdev_ops;
+
+And can we call to devlink_port_type_*_set() without IS_ENABLED() check?
+
+Thanks
+
+
+> +	else if (!IS_ENABLED(CONFIG_MLX4_INFINIBAND) &&
+> +		 dev->caps.port_type[port] == MLX4_PORT_TYPE_IB)
+> +		devlink_port_type_ib_set(&info->devlink_port, NULL);
 > +
-> +			data = frag ? 
-> page_address(skb_frag_page(frag))
-> +				    : xdpf->data;
-> +			dma_addr = 
-> dma_map_single(pp->dev->dev.parent, data,
-> +						  len, 
-> DMA_TO_DEVICE);
-> +			if (dma_mapping_error(pp->dev->dev.parent, 
-> dma_addr)) {
-> +				for (; i >= 0; i--)
-> +					mvneta_txq_desc_put(txq);
-> +				return MVNETA_XDP_DROPPED;
-> +			}
-> +			buf->type = MVNETA_TYPE_XDP_NDO;
-> +		} else {
-> +			page = frag ? skb_frag_page(frag)
-> +				    : virt_to_page(xdpf->data);
-> +			dma_addr = page_pool_get_dma_addr(page);
-> +			if (!frag)
-> +				dma_addr += sizeof(*xdpf) + 
-> xdpf->headroom;
-> + 
-> dma_sync_single_for_device(pp->dev->dev.parent,
-> +						   dma_addr, len,
-> + 
-> DMA_BIDIRECTIONAL);
-> +			buf->type = MVNETA_TYPE_XDP_TX;
->  		}
-> -		buf->type = MVNETA_TYPE_XDP_NDO;
-> -	} else {
-> -		struct page *page = virt_to_page(xdpf->data);
-> +		buf->xdpf = i ? NULL : xdpf;
->  
-> -		dma_addr = page_pool_get_dma_addr(page) +
-> -			   sizeof(*xdpf) + xdpf->headroom;
-> -		dma_sync_single_for_device(pp->dev->dev.parent, 
-> dma_addr,
-> -					   xdpf->len, 
-> DMA_BIDIRECTIONAL);
-> -		buf->type = MVNETA_TYPE_XDP_TX;
-> +		if (!i)
-> +			tx_desc->command = MVNETA_TXD_F_DESC;
-> +		tx_desc->buf_phys_addr = dma_addr;
-> +		tx_desc->data_size = len;
-> +
-> +		mvneta_txq_inc_put(txq);
->  	}
-> -	buf->xdpf = xdpf;
->  
-> -	tx_desc->command = MVNETA_TXD_FLZ_DESC;
-> -	tx_desc->buf_phys_addr = dma_addr;
-> -	tx_desc->data_size = xdpf->len;
-> +	/*last descriptor */
-> +	if (tx_desc)
-> +		tx_desc->command |= MVNETA_TXD_L_DESC | 
-> MVNETA_TXD_Z_PAD;
-
-        When is this condition not taken ? You initialize tx_desc 
-        to NULL, but it seems to me like you always set it inside 
-        the for loop to the output of mvneta_txq_next_desc_get() 
-        which doesn't look like it returns NULL. The for loop runs 1 iteration or `sinfo->nr_frage 
-+ 1` iterations (which also equals or larger than 1).
-
->  
-> -	mvneta_txq_inc_put(txq);
-> -	txq->pending++;
-> -	txq->count++;
-> +	txq->pending += num_frames;
-> +	txq->count += num_frames;
->  
->  	return MVNETA_XDP_TX;
->  }
-
+>  	info->dev = dev;
+>  	info->port = port;
+>  	if (!mlx4_is_slave(dev)) {
+> --
+> 2.26.2
+>
