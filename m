@@ -2,88 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 054F325F43E
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 09:45:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5257325F457
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 09:51:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727800AbgIGHpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 03:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37184 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbgIGHpp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 03:45:45 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3701CC061573;
-        Mon,  7 Sep 2020 00:45:44 -0700 (PDT)
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 0877jMO6027725
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Mon, 7 Sep 2020 09:45:23 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1599464723; bh=F/cpKEbPOeBiiYDZm58dXUDkbQv3QMMupiIUIMsLI98=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=IYmxvA7XZxgTNjZdtiqqNQwmZylArahmbbj/z7bCvG82Axg//Sookx8SobMq9UqaI
-         t6dAaNzoTauNcm4HbfjQ+zOFZSWARTUXFxLdiqWSut9ln1Ba7hQKhHX7xNPu8TPKLR
-         RNXHnG56jYmVtDz9vSS6SL8QU5Ik98kxwQJytvQY=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
-        (envelope-from <bjorn@mork.no>)
-        id 1kFBq5-000zls-55; Mon, 07 Sep 2020 09:45:21 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Kristian Evensen <kristian.evensen@gmail.com>
-Cc:     Daniele Palmas <dnlplm@gmail.com>,
-        Paul Gildea <paul.gildea@gmail.com>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: usb: qmi_wwan: Fix for packets being rejected in the ring buffer used by the xHCI controller.
-Organization: m
-References: <CA+4pmEueEiz0Act8X6t4y3+4LOaOh_-ZfzScH0CbOKT99x91NA@mail.gmail.com>
-        <87wo7una02.fsf@miraculix.mork.no>
-        <CAGRyCJE-VYRthco5=rZ_PX0hkzhXmQ45yGJe_Gm1UvYJBKYQvQ@mail.gmail.com>
-        <CAKfDRXg2xRbLu=ZcQYdJUuYbfMQbav9pUDwcVMc-S+hwV3Johw@mail.gmail.com>
-Date:   Mon, 07 Sep 2020 09:45:21 +0200
-In-Reply-To: <CAKfDRXg2xRbLu=ZcQYdJUuYbfMQbav9pUDwcVMc-S+hwV3Johw@mail.gmail.com>
-        (Kristian Evensen's message of "Mon, 7 Sep 2020 09:25:16 +0200")
-Message-ID: <87v9gqghda.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
+        id S1727874AbgIGHvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 03:51:44 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:12009 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727001AbgIGHvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 03:51:43 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f55e6810000>; Mon, 07 Sep 2020 00:51:29 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 07 Sep 2020 00:51:43 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Mon, 07 Sep 2020 00:51:43 -0700
+Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 7 Sep
+ 2020 07:51:40 +0000
+Date:   Mon, 7 Sep 2020 10:51:36 +0300
+From:   Eli Cohen <elic@nvidia.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, Cindy Lu <lulu@redhat.com>,
+        <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: [PATCH] vdpa/mlx5: Setup driver only if VIRTIO_CONFIG_S_DRIVER_OK
+Message-ID: <20200907075136.GA114876@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.4 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1599465089; bh=4wJx5vySYqIKYNmdXnK44k/rmIs1k26+0WdFAFm17FE=;
+        h=X-PGP-Universal:Date:From:To:Subject:Message-ID:MIME-Version:
+         Content-Type:Content-Disposition:User-Agent:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=kdXknpWgcDYHYWHbrIVU4SSDhYV+2akWdvxxdYa42SFt4QB1BNir/IsCTXGiIkDVR
+         LYBTk+X9tYykpPz9b847XvDLf8es7l/EOnjNDcgCVE2213sd37X/ilju7TgZRlMj5P
+         WxvM4Z9vk0BGCUsHgM26npM/I+lvIqKKfRk9n76Bis+X3gJqcab1YMIxz8ChN7sItI
+         7LaHIPfP36SURi4FXxNaG6uouWIHiA4DfunWZWn7OEQA1RefEXzHsw6phPyosVpy/h
+         MG1Vev3dtNDEdUUHLf0J1wo0Kfmlk2gjpgUJpOvhcVzCj+NyVO4JTpK93bFfVxMJEZ
+         UW7YoobqlQzIg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kristian Evensen <kristian.evensen@gmail.com> writes:
+If the memory map changes before the driver status is
+VIRTIO_CONFIG_S_DRIVER_OK, don't attempt to create resources because it
+may fail. For example, if the VQ is not ready there is no point in
+creating resources.
 
-> Hi all,
->
-> I was able to trigger the same issue as reported by Paul, and came
-> across this patch (+ Daniele's other patch and thread on the libqmi
-> mailing list). Applying Paul's fix solved the problem for me, changing
-> the MTU of the QMI interface now works fine. Thanks a lot to everyone
-> involved!
->
-> I just have one question, is there a specific reason for the patch not
-> being resubmitted or Daniele's work not resumed? I do not use any of
-> the aggregation-stuff, so I don't know how that is affected by for
-> example Paul's change. If there is anything I can do to help, please
-> let me know.
+Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+---
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Thanks for bringing this back into our collective memory.  The patch
-never made it to patchwork, probably due to the formatting issues, and
-was just forgotten.
-
-There are no other reasons than Daniele's concerns in the email you are
-replying to, AFAIK.  The issue pointed out by Paull should be fixed, but
-the fix must not break aggregation..
-
-This is a great opportunity for you to play with QMAP aggregation :-)
-Wouldn't it be good to do some measurements to document why it is such a
-bad idea?
-
-
-Bj=C3=B8rn
+diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+index 9df69d5efe8c..c89cd48a0aab 100644
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -1645,6 +1645,9 @@ static int mlx5_vdpa_change_map(struct mlx5_vdpa_net *ndev, struct vhost_iotlb *
+ 	if (err)
+ 		goto err_mr;
+ 
++	if (!(ndev->mvdev.status & VIRTIO_CONFIG_S_DRIVER_OK))
++		return 0;
++
+ 	restore_channels_info(ndev);
+ 	err = setup_driver(ndev);
+ 	if (err)
+-- 
+2.26.0
 
