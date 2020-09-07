@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B852260719
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 01:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B29260727
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 01:26:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727769AbgIGXHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 19:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40236 "EHLO
+        id S1727792AbgIGX0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 19:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726929AbgIGXHC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 19:07:02 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 600C5C061573
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 16:07:01 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id n13so14042612edo.10
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 16:07:01 -0700 (PDT)
+        with ESMTP id S1726929AbgIGX0G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 19:26:06 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609E3C061573
+        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 16:26:03 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id c10so14079233edk.6
+        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 16:26:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+YGoySMSKTqlyBmRjFMBYPju8lGCTQ4AdFGLzFcqKmM=;
-        b=kfKBmz2rwiIq2Xyd1pMChb6Is07n5zR8ArR2BsyjSrTNwa8fdbTF0cFFgY6YDzV/w1
-         CvDmVt1rk+lIgMVKXa0aXgQsn3usGulkMhdbpPZVZBpHImHJzeHb4R3iEiTEF1tLbPI+
-         WFzLmkIz/4KDRy6x80F2Uvd7qtxfc6Z0t/atLqbwmBieyT7ouzx5vNUrJi+Des09Lk+N
-         pY1SBlNCvv5c9P0MxB5mvZ6DmZr/t7KOuYT6fMSQPF/cJOJZJO+cUTirhYPL95+iVseg
-         069h9qmKTGRv4CaHN0oOAC0PWJyPEn48ZcvaJ0+wnQJgzit8vm3Vh8vBWv6JYLHofuUg
-         0qWw==
+        bh=qOe9Z+eIzPeBSRDTKJc25mcni3JXKr4Z82tTC9XnlDk=;
+        b=A4OkkcGj0fBZu5RMF7s8+CndPjYjVGqln4KOvxj7gyNCeQt79B94LDFavprWw89diX
+         lNmChXNNzBvBdkHP6uo95pwhbh4P6AR8sd9T1+kbxE9vsKSFwWlJICUGePCNYOJ8T47f
+         MAvrrd47tGe9ZorKNwbF7DTtxSP223YpkjdW5vQW8ZxQcItBn6TGGrWy1OC+G26E8Qp0
+         Qz7g5gKEW0d/LgO7YbL9cXCyekdEOTAzis5Q0fX5zSTgrtxlWTLC5syTqeDDYgJ2CG5D
+         yfOYeCS7qpfdKUixZ6jv/IBWzMuyAnHKdv3AMYEyb61o++jqvDZo4UgUoofr31HfRYBp
+         ssjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+YGoySMSKTqlyBmRjFMBYPju8lGCTQ4AdFGLzFcqKmM=;
-        b=AzALlwQ8ncR23ethrlzH+j8M/tqWdBqeTqNJnB3qcRE/PTuxxFXbnfQivlLUyK0te1
-         3UGwnpaCPiwLVtjhl17fgCU5aURnGxxD+yR4D6sYy8SeBaF4c3Or02OrX1Oez4Lno5oP
-         V2kaWhwZZcsWdtVQYNaa15t9Cdv64099VY6kw/972eXmsB6RQB5+PL+AMSx4hE6WJAhe
-         8/fCyhjEw2aU8r6hcizH/ZK6JZeOAMD0B8yp21Oi3NpMFRf2NH2VSJPl4bia+wYCP+92
-         rwmBmdDos0MvpIhLdmRw3yXrQx/1c3ryqwVDYf+5114DOcsEDUgnpBkyRb6UD067KvbG
-         Us0w==
-X-Gm-Message-State: AOAM532pMnDtW+CqL1rUqT6Vk4DSHhKSVT65xGcxiC0zFsH3Nlum2N1p
-        dX7i87nDlpJjA8Bnd+8cZNfx5UYy9EU=
-X-Google-Smtp-Source: ABdhPJxvZns94aA2Uh+Wp4S9LeAyPtrMc8NYzSPwcGof7U1c4imCGw4E6Q3Yuq++1jhwy8F830Bczw==
-X-Received: by 2002:a50:8e17:: with SMTP id 23mr23545981edw.42.1599520019857;
-        Mon, 07 Sep 2020 16:06:59 -0700 (PDT)
+        bh=qOe9Z+eIzPeBSRDTKJc25mcni3JXKr4Z82tTC9XnlDk=;
+        b=ILVskgKIb63qkGyP280dJgBMHloMe/Mwchre0M2yjNGWT7G5YUAEI9dkqK/l81RsMl
+         xhPdJAAYoVS3379tGNoUtePMbT7pw/V+zrR2u67o5NrZ774yz3fnUCSoTk/AFJ7fX8Fi
+         Aa4hwU+vazAgAPXesJvEUgaCCxhLUhTnp+bqPiAIc70u+L1OHW9+QjUhVQ0NzndU57S5
+         WDU/L2v7WRWoMKrJNUBUlr/Z01McmmFVOy+GyIl/ExcwWbW2frJ31dXt/53yKAdi2cBB
+         tc10A7jRGGpAu7QbwLybvYeWa/M1MCtuZ33DhKbhtkaYIySO5elxyC7eVaBWtvre/iAY
+         NLRw==
+X-Gm-Message-State: AOAM531OBdtt7DyrFoUODUeMRaxtM6usdpMeIjWLk03A4h47Ys0k0N4g
+        pkuVl64eJzay4dbLSqfkpR8=
+X-Google-Smtp-Source: ABdhPJzbsDtGfWnboSPzxTsneYWKrkADp+HI3UJYtV3dC0nAa3630/wXbdBCmpwtRLsJwaka3/n7Uw==
+X-Received: by 2002:a50:ccd2:: with SMTP id b18mr23851948edj.51.1599521162186;
+        Mon, 07 Sep 2020 16:26:02 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id n20sm16347406ejg.65.2020.09.07.16.06.58
+        by smtp.gmail.com with ESMTPSA id a18sm16499273ejy.71.2020.09.07.16.26.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 16:06:59 -0700 (PDT)
+        Mon, 07 Sep 2020 16:26:01 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net
+To:     kuba@kernel.org
 Cc:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         netdev@vger.kernel.org
-Subject: [PATCH v2 net-next] net: dsa: change PHY error message again
-Date:   Tue,  8 Sep 2020 02:06:56 +0300
-Message-Id: <20200907230656.1666974-1-olteanv@gmail.com>
+Subject: [PATCH net-next] net: dsa: don't print non-fatal MTU error if not supported
+Date:   Tue,  8 Sep 2020 02:25:56 +0300
+Message-Id: <20200907232556.1671828-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -62,64 +62,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-slave_dev->name is only populated at this stage if it was specified
-through a label in the device tree. However that is not mandatory.
-When it isn't, the error message looks like this:
-
-[    5.037057] fsl_enetc 0000:00:00.2 eth2: error -19 setting up slave PHY for eth%d
-[    5.044672] fsl_enetc 0000:00:00.2 eth2: error -19 setting up slave PHY for eth%d
-[    5.052275] fsl_enetc 0000:00:00.2 eth2: error -19 setting up slave PHY for eth%d
-[    5.059877] fsl_enetc 0000:00:00.2 eth2: error -19 setting up slave PHY for eth%d
-
-which is especially confusing since the error gets printed on behalf of
-the DSA master (fsl_enetc in this case).
-
-Printing an error message that contains a valid reference to the DSA
-port's name is difficult at this point in the initialization stage, so
-at least we should print some info that is more reliable, even if less
-user-friendly. That may be the driver name and the hardware port index.
-
-After this change, the error is printed as:
-
-[    6.051587] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 0
-[    6.061192] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 1
-[    6.070765] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 2
-[    6.080324] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 3
+Commit 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set
+the MTU") changed, for some reason, the "err && err != -EOPNOTSUPP"
+check into a simple "err". This causes the MTU warning to be printed
+even for drivers that don't have the MTU operations implemented.
+Fix that.
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
-The reason why I did not attempt to call dev_alloc_name() as Andrew
-suggested:
-https://patchwork.ozlabs.org/project/netdev/patch/20200823213520.2445615-1-olteanv@gmail.com/
-is that, in the case of a persistent error, all interfaces would get the
-same name, and this would create more confusion than it would solve.
-Also, that interface name would appear in the kernel log exactly once,
-because this is an error path and we're going to free it right away. So,
-if a label is not in use, better not print anything.
-
-[    6.051587] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 0, name eth3
-[    6.061192] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 1, name eth3
-[    6.070765] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 2, name eth3
-[    6.080324] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 3, name eth3
-
- net/dsa/slave.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/dsa/slave.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 9af1a2d0cec4..27931141d30f 100644
+index 27931141d30f..4987f94a8f52 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -1792,8 +1792,9 @@ int dsa_slave_create(struct dsa_port *port)
- 
- 	ret = dsa_slave_phy_setup(slave_dev);
- 	if (ret) {
--		netdev_err(master, "error %d setting up slave PHY for %s\n",
--			   ret, slave_dev->name);
-+		netdev_err(slave_dev,
-+			   "error %d setting up PHY for tree %d, switch %d, port %d\n",
-+			   ret, ds->dst->index, ds->index, port->index);
- 		goto out_gcells;
- 	}
+@@ -1784,7 +1784,7 @@ int dsa_slave_create(struct dsa_port *port)
+ 	rtnl_lock();
+ 	ret = dsa_slave_change_mtu(slave_dev, ETH_DATA_LEN);
+ 	rtnl_unlock();
+-	if (ret)
++	if (ret && ret != -EOPNOTSUPP)
+ 		dev_warn(ds->dev, "nonfatal error %d setting MTU on port %d\n",
+ 			 ret, port->index);
  
 -- 
 2.25.1
