@@ -2,117 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5048F25F59C
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EC3825F5A2
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:49:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728251AbgIGItK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 04:49:10 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46374 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726978AbgIGItG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 04:49:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599468545;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RyuK4QheFNs+ZzxmRLfvINj0ku6nCHpjGbKxWgmmADk=;
-        b=MY9613CHX18uT3MnaUbK7FK/EHrkjSqVE/C9pCYMy5NzckAmftRDyZfjyMgzDkfVjLeDFA
-        n/9ZctSYeJyzJjdYg+2Vbi/q9l7C9wqm5vqAABkYCuApdjYyP8h+eLCJ9idNdEmDFfcZ0f
-        HOD7ZIkWd6/lm8OxwKl9B3SDKFfg29U=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-543-484IhzAFNXCaZFurRjDWMA-1; Mon, 07 Sep 2020 04:49:03 -0400
-X-MC-Unique: 484IhzAFNXCaZFurRjDWMA-1
-Received: by mail-wm1-f72.google.com with SMTP id w3so3744672wmg.4
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 01:49:03 -0700 (PDT)
+        id S1728328AbgIGIts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 04:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728272AbgIGItq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 04:49:46 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C97C061573;
+        Mon,  7 Sep 2020 01:49:46 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id y5so11683957otg.5;
+        Mon, 07 Sep 2020 01:49:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U3euzQ0Swe5yymHZPecrNgR6N5TksT5qVYOuQ4FkYtc=;
+        b=ZAP2S7DZI5vT7BHFsnBBOKOhCb2zFyruwKgW++3sF+IVjBUKHUsOt8v+ufKBbv0qUD
+         VJcKDlrSeabFQdul2azOOhbYEak24M9fdot4l16Mrwc43zlXQeutqm40FBGwnkxSSDDd
+         3DT+6lUsm1FjeBhiEmT31WCRr7i9pShb6qH32osuTlSK+TPHVJUwqwQQ42h0MBRZyA4z
+         g79/4VwkpQsRS/45RWtdAwZQZQOvMCOoe5vMfPjjX2c98IpSQ8eOEyamuA//6BGQdOmx
+         Bj215qtZ6WjSmicwu3zLUH/v+UUf4rnK8dwwmmspBnYrzbgwkTVrjVm63Yc3F3NOLw9h
+         c7YA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=RyuK4QheFNs+ZzxmRLfvINj0ku6nCHpjGbKxWgmmADk=;
-        b=Hs9f+MR8eM8UmEoQygzIZ/dmIRwri6s/cRAG+vp6lWH4+E4Oo/I6qH8zqJxQKfYST4
-         3NDa04hO02GQ7gdjOVVjNH07aufZbfw0WO94wj/ZAf04FBouhktkEcESOay8zrjP5Kn3
-         C2Iz1j4y6ETmu2VmN14NtTVI0tr19IZOFTv6xc4vz7lkZ5HPgcWr72MJ+Q1dbFsYMzvn
-         SvvkU+3vvgKJnWdHfivgWOYImae1Qu/fB09qhDUWlVlYDu5gFOQG0Oj8ChYF5OmuGcrp
-         cl1ArdOcXqcPBgTIDNH+lm68fvf0PNvKGJlxXOvnnXNplPbkesF5V8bsHdfDAHjJXs6S
-         Ju8Q==
-X-Gm-Message-State: AOAM530xokeAK9crztZDb5dyWIdwOJfWRyQKLvmoejjqCM5nd010JfCV
-        Se8AosRb9JWzJAiCSkjhzJFP9pKTo+LF/vGfkRBgaoW6Y61borz4+2tSduv1AWqaz+k4gD2tbt2
-        G1OQpKd9vlMxdHU7I
-X-Received: by 2002:adf:cc8c:: with SMTP id p12mr21255466wrj.92.1599468542283;
-        Mon, 07 Sep 2020 01:49:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwqcqexWNGCJc6p20AynkOEQeme23ZbVnd40KRuFY0Z6fGMqlUuXaSqHbyECjS5GsllJaaJ4g==
-X-Received: by 2002:adf:cc8c:: with SMTP id p12mr21255446wrj.92.1599468542093;
-        Mon, 07 Sep 2020 01:49:02 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id h186sm26638375wmf.24.2020.09.07.01.49.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 01:49:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id ECF78180497; Mon,  7 Sep 2020 10:49:00 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        YiFei Zhu <zhuyifei@google.com>,
-        YiFei Zhu <zhuyifei1999@gmail.com>,
-        Andrey Ignatov <rdna@fb.com>
-Subject: Re: [PATCH bpf-next v3 3/8] libbpf: Add BPF_PROG_BIND_MAP syscall
- and use it on .metadata section
-In-Reply-To: <CAEf4BzZp4ODLbjEiv=W7byoR9XzTqAQ052wZM_wD4=aTPmkjbw@mail.gmail.com>
-References: <20200828193603.335512-1-sdf@google.com>
- <20200828193603.335512-4-sdf@google.com>
- <CAEf4BzZtYTyBT=jURkF4RQLHXORooVwXrRRRkoSWDqCemyGQeA@mail.gmail.com>
- <20200904012909.c7cx5adhy5f23ovo@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzZp4ODLbjEiv=W7byoR9XzTqAQ052wZM_wD4=aTPmkjbw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 07 Sep 2020 10:49:00 +0200
-Message-ID: <87mu22ottv.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U3euzQ0Swe5yymHZPecrNgR6N5TksT5qVYOuQ4FkYtc=;
+        b=bNreNQlqCKvrlPhvbd+qNUumI0vG6oRUFM9M7+71bi9eEn0kI++rzIs5dwxJ0NEJmU
+         al3I5HZtaTTG0rfknVKorjzrwCQjaGizwNdj1ROfld9eT3zPvRGb50yT+GVPlgz4LQ6u
+         fF3OpQoL6CGIePz5L1fchxuN+cNVxzx4rf7XCnqrR6QlLArIVHYpHS4TemFG++MPypDV
+         O+HqJi43905+SpVGkY9uXgE9uowHgPz6P5oLZvTKNL3xPjruj2VEUibiTVifL6xV3UlW
+         yV4QKVQ5Yq7SunFKWcA8mbv7cR2fjJRNOa2B9dBeX26dhGMxSTxO0Y5fzL73BSxv40NS
+         mgDg==
+X-Gm-Message-State: AOAM530qg6onmy7sEf0hK/EkrZYQZe/gfo5rX/hRi5KRZHNw47vaQgt6
+        YfBfhauVSZbSxD2oOmvCRTp2e7mnuyobWogkdSg=
+X-Google-Smtp-Source: ABdhPJzF+TwUsvyBcUC5Igw0RzmgIn/yJwLk/28MlDO8QiD1vOSkudFQXkePOwUmc5tMyeeVGBDajuygXy/aFVRP8Uk=
+X-Received: by 2002:a9d:7745:: with SMTP id t5mr13692171otl.114.1599468584605;
+ Mon, 07 Sep 2020 01:49:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CA+4pmEueEiz0Act8X6t4y3+4LOaOh_-ZfzScH0CbOKT99x91NA@mail.gmail.com>
+ <87wo7una02.fsf@miraculix.mork.no> <CAGRyCJE-VYRthco5=rZ_PX0hkzhXmQ45yGJe_Gm1UvYJBKYQvQ@mail.gmail.com>
+ <CAKfDRXg2xRbLu=ZcQYdJUuYbfMQbav9pUDwcVMc-S+hwV3Johw@mail.gmail.com>
+ <87v9gqghda.fsf@miraculix.mork.no> <CAGRyCJFcDZzfahSsexnVN0tA6DU=LYYL2erSHJaOXZWAr=Sn6A@mail.gmail.com>
+In-Reply-To: <CAGRyCJFcDZzfahSsexnVN0tA6DU=LYYL2erSHJaOXZWAr=Sn6A@mail.gmail.com>
+From:   Kristian Evensen <kristian.evensen@gmail.com>
+Date:   Mon, 7 Sep 2020 10:49:33 +0200
+Message-ID: <CAKfDRXjLmT32sFB40OV8ywm9vwNkn3-n_a2zcC-3o2wJa-tvFg@mail.gmail.com>
+Subject: Re: [PATCH] net: usb: qmi_wwan: Fix for packets being rejected in the
+ ring buffer used by the xHCI controller.
+To:     Daniele Palmas <dnlplm@gmail.com>
+Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
+        Paul Gildea <paul.gildea@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+Hi Daniele,
 
->> May be we should talk about problem statement and goals.
->> Do we actually need metadata per program or metadata per single .o
->> or metadata per final .o with multiple .o linked together?
->> What is this metadata?
+On Mon, Sep 7, 2020 at 10:35 AM Daniele Palmas <dnlplm@gmail.com> wrote:
+> there was also another recent thread about this and the final plan was
+> to simply increase the rx urb size setting to the highest value we are
+> aware of (see https://www.spinics.net/lists/linux-usb/msg198858.html):
+> this should solve the babble issue without breaking aggregation.
 >
-> Yep, that's a very valid question. I've also CC'ed Andrey.
+> The change should be simple, I was just waiting to perform some sanity
+> tests with different models I have. Hope to have it done by this week.
 
-For the libxdp use case, I need metadata per program. But I'm already
-sticking that in a single section and disambiguating by struct name
-(just prefixing the function name with a _ ), so I think it's fine to
-have this kind of "concatenated metadata" per elf file and parse out the
-per-program information from that. This is similar to the BTF-encoded
-"metadata" we can do today.
+Thanks for letting me know. Looking forward to the patch and dropping
+my own work-around :)
 
->> If it's just unreferenced by program read only data then no special names or
->> prefixes are needed. We can introduce BPF_PROG_BIND_MAP to bind any map to any
->> program and it would be up to tooling to decide the meaning of the data in the
->> map. For example, bpftool can choose to print all variables from all read only
->> maps that match "bpf_metadata_" prefix, but it will be bpftool convention only
->> and not hard coded in libbpf.
->
-> Agree as well. It feels a bit odd for libbpf to handle ".metadata"
-> specially, given libbpf itself doesn't care about its contents at all.
->
-> So thanks for bringing this up, I think this is an important
-> discussion to have.
-
-I'm fine with having this be part of .rodata. One drawback, though, is
-that if any metadata is defined, it becomes a bit more complicated to
-use bpf_map__set_initial_value() because that now also has to include
-the metadata. Any way we can improve upon that?
-
--Toke
-
+Kristian
