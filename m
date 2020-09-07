@@ -2,96 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE15425F530
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:29:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F70A25F538
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:30:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728056AbgIGI3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 04:29:37 -0400
-Received: from a27-18.smtp-out.us-west-2.amazonses.com ([54.240.27.18]:47292
-        "EHLO a27-18.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726971AbgIGI3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 04:29:35 -0400
+        id S1728188AbgIGIaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 04:30:07 -0400
+Received: from a27-55.smtp-out.us-west-2.amazonses.com ([54.240.27.55]:56484
+        "EHLO a27-55.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726971AbgIGIaF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 04:30:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1599467374;
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1599467405;
         h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date;
-        bh=9xmQDpOP5iANBlM3ftlWzlsH00WaOADPBTmWJq3fQoQ=;
-        b=lV2RQWaISNpmNCgbvYVawVCIrDbsFkie0ZCARMNf0MCeHUjJDlEK+nlMGUYVmqzf
-        +EEAE2qiS3MwBYPEBF002O0DavKsF/8qWybZEFiWp6+Sv6TEykRhKoiIMffscwONE+z
-        G5Yc1g0+QWLhS6QzadBt2guLKCgGJUqKn1oKztiU=
+        bh=8o5pkbbwRSOnppHz4VSCmTzwH503Kp85jZQlaDj4Y44=;
+        b=KcbctPC1C/d1jToY6xUZyNu1rt/NrQTO6WuESP1OETz5MsvTPLCli2axpyenYgb6
+        zIvcYTfG0vXi866YoSvGqfGlFBY+WPL2ASNaGgty8kAVeF6qPQ0ncEg883RFjT6O6R9
+        Iovfp+UfWCNWOre0WJ66bbe+cHuQfYqa1tjydxt8=
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1599467374;
+        s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1599467405;
         h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date:Feedback-ID;
-        bh=9xmQDpOP5iANBlM3ftlWzlsH00WaOADPBTmWJq3fQoQ=;
-        b=Dr8GOjQ/BWGI+PQlcK9vrwCtRSv8Hsn64jt0g2QQIPp/iFjvL5WzS6w6gajqzMWG
-        kqWf/7ZhXFWcOs05Ak6ajqF/wMUnCngxjtjziBpyUyaVdXgJBC7Pt1wMc2a9mRM0iny
-        ZP8ADKjHGSahgB8MWG/8YNYk7k2t9iLHClOoIkHo=
+        bh=8o5pkbbwRSOnppHz4VSCmTzwH503Kp85jZQlaDj4Y44=;
+        b=IjLmgzULlvN26OpPRwi/Veyp3cho5f2k9/Q4JdBSz95rrniwV7F6+Lz7gOZAe/7I
+        EKOmXvCkwZk6wxBEGkBcKca79SuLmj2S5PmvTLOsGvPOpQfXIQZbutBVNXAviJBqGLH
+        dvaiteMad3/yTlhq+O8ETDmZjG+CyQPbeQqrrNJU=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
         MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
         version=3.4.0
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AA80DC4345B
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 780D9C4345E
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] mwifiex: Remove unnecessary braces from
- HostCmd_SET_SEQ_NO_BSS_INFO
+Subject: Re: [PATCH][next] mt7601u: Use fallthrough pseudo-keyword
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200901070834.1015754-1-natechancellor@gmail.com>
-References: <20200901070834.1015754-1-natechancellor@gmail.com>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
+In-Reply-To: <20200901173603.GA2701@embeddedor>
+References: <20200901173603.GA2701@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Jakub Kicinski <kubakici@wp.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Andy Lavr <andy.lavr@gmail.com>
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-ID: <0101017467af484e-3cb25a00-4120-4134-a519-be68ab3a49ca-000000@us-west-2.amazonses.com>
-Date:   Mon, 7 Sep 2020 08:29:34 +0000
-X-SES-Outgoing: 2020.09.07-54.240.27.18
+Message-ID: <0101017467afbeb3-7ebdc2a5-2cf5-4b51-b524-6577c593ecc7-000000@us-west-2.amazonses.com>
+Date:   Mon, 7 Sep 2020 08:30:05 +0000
+X-SES-Outgoing: 2020.09.07-54.240.27.55
 Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nathan Chancellor <natechancellor@gmail.com> wrote:
+"Gustavo A. R. Silva" <gustavoars@kernel.org> wrote:
 
-> A new warning in clang points out when macro expansion might result in a
-> GNU C statement expression. There is an instance of this in the mwifiex
-> driver:
+> Replace the existing /* fall through */ comments and its variants with
+> the new pseudo-keyword macro fallthrough[1]. Also, remove unnecessary
+> fall-through markings when it is the case.
 > 
-> drivers/net/wireless/marvell/mwifiex/cmdevt.c:217:34: warning: '}' and
-> ')' tokens terminating statement expression appear in different macro
-> expansion contexts [-Wcompound-token-split-by-macro]
->         host_cmd->seq_num = cpu_to_le16(HostCmd_SET_SEQ_NO_BSS_INFO
->                                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> drivers/net/wireless/marvell/mwifiex/fw.h:519:46: note: expanded from
-> macro 'HostCmd_SET_SEQ_NO_BSS_INFO'
->         (((type) & 0x000f) << 12);                  }
->                                                     ^
+> [1] https://www.kernel.org/doc/html/v5.7/process/deprecated.html?highlight=fallthrough#implicit-switch-case-fall-through
 > 
-> This does not appear to be a real issue. Removing the braces and
-> replacing them with parentheses will fix the warning and not change the
-> meaning of the code.
-> 
-> Fixes: 5e6e3a92b9a4 ("wireless: mwifiex: initial commit for Marvell mwifiex driver")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1146
-> Reported-by: Andy Lavr <andy.lavr@gmail.com>
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-6a953dc4dbd1 mwifiex: Remove unnecessary braces from HostCmd_SET_SEQ_NO_BSS_INFO
+1808191dca82 mt7601u: Use fallthrough pseudo-keyword
 
 -- 
-https://patchwork.kernel.org/patch/11747495/
+https://patchwork.kernel.org/patch/11749303/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
