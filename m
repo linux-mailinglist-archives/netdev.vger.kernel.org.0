@@ -2,105 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB42425F9AF
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 13:41:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CFD925F9C3
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 13:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728880AbgIGL1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 07:27:02 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:4636 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729011AbgIGLZ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 07:25:56 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f56138a0000>; Mon, 07 Sep 2020 04:03:38 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Mon, 07 Sep 2020 04:03:52 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Mon, 07 Sep 2020 04:03:52 -0700
-Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 7 Sep
- 2020 11:03:44 +0000
-Date:   Mon, 7 Sep 2020 14:03:35 +0300
-From:   Eli Cohen <elic@nvidia.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     "Michael S. Tsirkin" <mst@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH] vdpa/mlx5: Setup driver only if VIRTIO_CONFIG_S_DRIVER_OK
-Message-ID: <20200907110335.GA121033@mtl-vdi-166.wap.labs.mlnx>
-References: <20200907075136.GA114876@mtl-vdi-166.wap.labs.mlnx>
- <507166908.16038290.1599476003292.JavaMail.zimbra@redhat.com>
+        id S1729085AbgIGLoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 07:44:23 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:38180 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728973AbgIGLYV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 07:24:21 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 01FBD2019C;
+        Mon,  7 Sep 2020 13:24:13 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id CLT690AUOpRN; Mon,  7 Sep 2020 13:24:12 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 8AE202008D;
+        Mon,  7 Sep 2020 13:24:12 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 7 Sep 2020 13:24:12 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Mon, 7 Sep 2020
+ 13:24:12 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id E2400318450A; Mon,  7 Sep 2020 13:24:11 +0200 (CEST)
+Date:   Mon, 7 Sep 2020 13:24:11 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Dmitry Safonov <dima@arista.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 1/6] xfrm/compat: Add 64=>32-bit messages translator
+Message-ID: <20200907112411.GK20687@gauss3.secunet.de>
+References: <20200826014949.644441-1-dima@arista.com>
+ <20200826014949.644441-2-dima@arista.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <507166908.16038290.1599476003292.JavaMail.zimbra@redhat.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1599476618; bh=LMINtOPqRpD4/qKaVjsYmBlP/+l8N4T31Ra1fzRuNvw=;
-        h=X-PGP-Universal:Date:From:To:CC:Subject:Message-ID:References:
-         MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-         User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=U+LfzrCE1qXlV5Yn6jDnkds7trQBDDmYItyFQMxX1MoMqSuJmtNK53pNNcczWzbUo
-         H+QV6phVU8H808RJk3hv3GDA/RW9Iq59OamE4WXWEaovO0uPfHmBdu6IU9TMxwyb45
-         ibdZRbLgsyj6q13xMcce+aZcduR5jRQ+iAqDQ7cEAY7qqeV7tnRjTqJOcboebTnE9Y
-         EPDkXpuND9DVgbithHbEZp4nDXzyWNDfMh+FZDQZGVBbMRCW50PuKexfYGltFkyO/X
-         rJeWLUaFt1JWC5mEzoRrYX7bBekwT9Yf2vWXtPztSS7LGafFYfqxlPxBWafpf4EUeh
-         9v6spsKZi4NXQ==
+In-Reply-To: <20200826014949.644441-2-dima@arista.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 07, 2020 at 06:53:23AM -0400, Jason Wang wrote:
+On Wed, Aug 26, 2020 at 02:49:44AM +0100, Dmitry Safonov wrote:
+> XFRM is disabled for compatible users because of the UABI difference.
+> The difference is in structures paddings and in the result the size
+> of netlink messages differ.
 > 
+> Possibility for compatible application to manage xfrm tunnels was
+> disabled by: the commmit 19d7df69fdb2 ("xfrm: Refuse to insert 32 bit
+> userspace socket policies on 64 bit systems") and the commit 74005991b78a
+> ("xfrm: Do not parse 32bits compiled xfrm netlink msg on 64bits host").
 > 
-> ----- Original Message -----
-> > If the memory map changes before the driver status is
-> > VIRTIO_CONFIG_S_DRIVER_OK, don't attempt to create resources because it
-> > may fail. For example, if the VQ is not ready there is no point in
-> > creating resources.
-> > 
-> > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > ---
-> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > index 9df69d5efe8c..c89cd48a0aab 100644
-> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > @@ -1645,6 +1645,9 @@ static int mlx5_vdpa_change_map(struct mlx5_vdpa_net
-> > *ndev, struct vhost_iotlb *
-> >  	if (err)
-> >  		goto err_mr;
-> >  
-> > +	if (!(ndev->mvdev.status & VIRTIO_CONFIG_S_DRIVER_OK))
-> > +		return 0;
-> > +
+> This is my second attempt to resolve the xfrm/compat problem by adding
+> the 64=>32 and 32=>64 bit translators those non-visibly to a user
+> provide translation between compatible user and kernel.
+> Previous attempt was to interrupt the message ABI according to a syscall
+> by xfrm_user, which resulted in over-complicated code [1].
 > 
-> I'm not sure I get this.
-> 
-> It looks to me if set_map() is called before DRIVER_OK, we won't build
-> any mapping?
-> 
-What would prevent that? Is it some qemu logic you're relying upon?
-With current qemu 5.1 with lack of batching support, I get plenty calls
-to set_map which result in calls to mlx5_vdpa_change_map().
-If that happens before VIRTIO_CONFIG_S_DRIVER_OK then Imay fail (in case
-I was not called to set VQs ready).
+> Florian Westphal provided the idea of translator and some draft patches
+> in the discussion. In these patches, his idea is reused and some of his
+> initial code is also present.
 
-> 
-> >  	restore_channels_info(ndev);
-> >  	err = setup_driver(ndev);
-> >  	if (err)
-> > --
-> > 2.26.0
-> > 
-> > 
-> 
+One comment on this. Looks like the above is the same in all
+commit messages. Please provide that generic information
+with the patch 0/n and remove it from the other patches.
+
+
