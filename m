@@ -2,103 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FAF025FEC9
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:23:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB41D25FEC1
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:23:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730523AbgIGQXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 12:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730433AbgIGQXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 12:23:40 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5604C061575
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 09:23:39 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id n3so7606026pjq.1
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 09:23:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sslab.ics.keio.ac.jp; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=SDxUUQ+8c+YEIDDJur8rYrh3CcLj60cM5IrQcltAbJU=;
-        b=Wy+lY5pi2y0MXKbzHqJ4nxyLK8FkoENJ+OWduamenQCm/MHiU+zeaS9LOSSiSk7TmX
-         OQwBenpNoA2RRwW+bDYWYnuPBVvGkPeIZJXm0ZMBz4gBd2pC5Kw5z5E0N3ZbM34nAw+k
-         OdteM1Ed8drJUGv6ZCa9m6kJPpuG9BZzrYu+w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=SDxUUQ+8c+YEIDDJur8rYrh3CcLj60cM5IrQcltAbJU=;
-        b=PGRC/035u/WtD0GwCESHcYRSwILJZdQ4+cMTE5mY0nccTEHZ7JQhP9WgN9ZmBabiZ9
-         nt8YZKSayR/8RKaf+SzS7oCflkszuX+MyHcGg+KJWdIJ3qkFrV5CU14ODpvjBB0qNn7A
-         QxzvrgMpe1n1X+SSUZ7bzTujRZk3MbAs43ak8NjFW1SBN6B3T+/hQnC/j3AMU3U6+0Ke
-         oP/XV40YERo+RSoK9p0nmr/9R3iZR8/ZRjh/aLnjisY62slCwO+Qz418L1774VlmdeUz
-         ww7M4tSn3Om3N96uqUrquzxtmV/MHZFj0q1gOMccFKN7j9AKjDkLuUgBVQVt4rvzyE4J
-         Aa9A==
-X-Gm-Message-State: AOAM531UUEdGDuU1HhSYw58TTmCIBPG8An+Ekqm/NGJEQ1XbPGSvIkVP
-        RvrBvXh0e8WHaye+Yoezmnk5nA==
-X-Google-Smtp-Source: ABdhPJyt1f1puArMGZEw7H7IWnsOdW3BtYIeDECpZMGG2uhioAhtb/hu+XxvwnoXRKkOXMIXD2nqUQ==
-X-Received: by 2002:a17:902:d353:: with SMTP id l19mr9227410plk.220.1599495818901;
-        Mon, 07 Sep 2020 09:23:38 -0700 (PDT)
-Received: from brooklyn.i.sslab.ics.keio.ac.jp (sslab-relay.ics.keio.ac.jp. [131.113.126.173])
-        by smtp.googlemail.com with ESMTPSA id v1sm3229622pjn.1.2020.09.07.09.23.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 09:23:38 -0700 (PDT)
-From:   Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
-Cc:     keitasuzuki.park@sslab.ics.keio.ac.jp,
-        takafumi@sslab.ics.keio.ac.jp,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
-        Wright Feng <wright.feng@cypress.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org (open list:BROADCOM BRCM80211
-        IEEE802.11n WIRELESS DRIVER),
-        brcm80211-dev-list.pdl@broadcom.com (open list:BROADCOM BRCM80211
-        IEEE802.11n WIRELESS DRIVER),
-        brcm80211-dev-list@cypress.com (open list:BROADCOM BRCM80211
-        IEEE802.11n WIRELESS DRIVER),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] brcmsmac: fix potential memory leak in wlc_phy_attach_lcnphy
-Date:   Mon,  7 Sep 2020 16:22:43 +0000
-Message-Id: <20200907162245.17997-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        id S1730409AbgIGQXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:23:17 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:31467 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730551AbgIGQXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 12:23:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599495782;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aPy7rrCRB44NlIKcp0QfwMMoW7w8N3OpHV9IYyOBp/w=;
+        b=QhbmWG+AiUU0TH4YuPsqZfl7VjTbvXHGHjC7aeKsAqONF0Nh/Hg8sOzxxILryygekPy24K
+        cGyMCRIqMUuKRCyf7KZiJaCPmd7vpcDnQqssl1RG1s37dvVNokWfMdDYhvxnXvaUt2BamT
+        g+RAWRzHxI5S5iZA1AU9FUWdLAr3VLw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-419-ieV3bkZdMQaPES9txDWpUg-1; Mon, 07 Sep 2020 12:22:58 -0400
+X-MC-Unique: ieV3bkZdMQaPES9txDWpUg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 84BC8801ADD;
+        Mon,  7 Sep 2020 16:22:56 +0000 (UTC)
+Received: from krava (unknown [10.40.192.73])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 689467C452;
+        Mon,  7 Sep 2020 16:22:50 +0000 (UTC)
+Date:   Mon, 7 Sep 2020 18:22:49 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Tobias Klauser <tklauser@distanz.ch>
+Cc:     Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH] perf tools: Do not use deprecated bpf_program__title
+Message-ID: <20200907162249.GO1199773@krava>
+References: <20200907110237.1329532-1-jolsa@kernel.org>
+ <20200907110549.GI1199773@krava>
+ <20200907155945.2ynl7dojgx572j62@distanz.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200907155945.2ynl7dojgx572j62@distanz.ch>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When wlc_phy_txpwr_srom_read_lcnphy fails in wlc_phy_attach_lcnphy,
-the allocated pi->u.pi_lcnphy is leaked, since struct brcms_phy will be
-freed in the caller function.
+On Mon, Sep 07, 2020 at 05:59:46PM +0200, Tobias Klauser wrote:
+> On 2020-09-07 at 13:05:49 +0200, Jiri Olsa <jolsa@redhat.com> wrote:
+> > On Mon, Sep 07, 2020 at 01:02:37PM +0200, Jiri Olsa wrote:
+> > > The bpf_program__title function got deprecated in libbpf,
+> > > use the suggested alternative.
+> > > 
+> > > Fixes: 521095842027 ("libbpf: Deprecate notion of BPF program "title" in favor of "section name"")
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > 
+> > Arnaldo,
+> > the commit in 'Fixes' is not yet in your tree yet and the patch
+> > below will make the perf compilation fail in your perf/core..
+> > 
+> > it fixes perf compilation on top of bpf-next tree.. so I think it
+> > should go in through bpf-next tree
+> > 
+> > thanks,
+> > jirka
+> > 
+> > > ---
+> > >  tools/perf/util/bpf-loader.c | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > 
+> > > diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
+> > > index 2feb751516ab..73de3973c8ec 100644
+> > > --- a/tools/perf/util/bpf-loader.c
+> > > +++ b/tools/perf/util/bpf-loader.c
+> > > @@ -328,7 +328,7 @@ config_bpf_program(struct bpf_program *prog)
+> > >  	probe_conf.no_inlines = false;
+> > >  	probe_conf.force_add = false;
+> > >  
+> > > -	config_str = bpf_program__title(prog, false);
+> > > +	config_str = bpf_program__section_name(prog);
+> > >  	if (IS_ERR(config_str)) {
+> > >  		pr_debug("bpf: unable to get title for program\n");
+> > >  		return PTR_ERR(config_str);
+> > > @@ -454,7 +454,7 @@ preproc_gen_prologue(struct bpf_program *prog, int n,
+> > >  	if (err) {
+> > >  		const char *title;
+> > >  
+> > > -		title = bpf_program__title(prog, false);
+> > > +		title = bpf_program__section_name(prog);
+> > >  		if (!title)
+> > >  			title = "[unknown]";
+> 
+> I think bpf_program__title at line 457 in preproc_gen_prologue also needs to be
+> changed given the following build failure:
 
-Fix this by calling wlc_phy_detach_lcnphy in the error handler of
-wlc_phy_txpwr_srom_read_lcnphy before returning.
+hum, that's where the 2nd hunk, right? I dont see any other instance
+of bpf_program__title after the patch is applied
 
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
----
- .../net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c    | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+thanks,
+jirka
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
-index 7ef36234a25d..6d70f51b2ddf 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
-@@ -5065,8 +5065,10 @@ bool wlc_phy_attach_lcnphy(struct brcms_phy *pi)
- 	pi->pi_fptr.radioloftget = wlc_lcnphy_get_radio_loft;
- 	pi->pi_fptr.detach = wlc_phy_detach_lcnphy;
- 
--	if (!wlc_phy_txpwr_srom_read_lcnphy(pi))
-+	if (!wlc_phy_txpwr_srom_read_lcnphy(pi)) {
-+		wlc_phy_detach_lcnphy(pi);
- 		return false;
-+	}
- 
- 	if (LCNREV_IS(pi->pubpi.phy_rev, 1)) {
- 		if (pi_lcn->lcnphy_tempsense_option == 3) {
--- 
-2.17.1
+> 
+> util/bpf-loader.c: In function 'preproc_gen_prologue':
+> util/bpf-loader.c:457:3: error: 'bpf_program__title' is deprecated: BPF program title is confusing term; please use bpf_program__section_name() instead [-Werror=deprecated-declarations]
+>   457 |   title = bpf_program__title(prog, false);
+>       |   ^~~~~
+> In file included from util/bpf-loader.c:10:
+> /home/tklauser/src/linux/tools/lib/bpf/libbpf.h:203:13: note: declared here
+>   203 | const char *bpf_program__title(const struct bpf_program *prog, bool needs_copy);
+>       |             ^~~~~~~~~~~~~~~~~~
+> 
 
