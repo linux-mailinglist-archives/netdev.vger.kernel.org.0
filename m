@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D574826002B
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:45:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB73C260027
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731055AbgIGQo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 12:44:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49526 "EHLO mail.kernel.org"
+        id S1730994AbgIGQoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:44:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49548 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730840AbgIGQfj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:35:39 -0400
+        id S1730842AbgIGQfk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:35:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B7EA7221E7;
-        Mon,  7 Sep 2020 16:35:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1EB8C221E9;
+        Mon,  7 Sep 2020 16:35:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599496538;
-        bh=zPaXF53HJOhCMm4iH+1r//KMldENlKCw7dZCzzwKWwo=;
+        s=default; t=1599496539;
+        bh=0xZQn08ge8u1b7LENZ75nSqgq2FnbOiaRR1KLQ2HahE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b3LNhgAhKqC3b9Izg6hJfFWV+Vaxbmn3x/S8b3Hpu5sFPNcUgyCi0vu2WIRvknkXv
-         XrwZY7iBRvA6OoWoW+7QPF6od9I46YlQIihCk0BxhiBpiaC3PbxI4kLLRxNJy1E1yL
-         ZlI8zK9fACgIL1ZP53/ulWQL5skbCtestWJOCdGw=
+        b=mSwr1Lyaea7/EO/933pUYNVoNgjOtMR27cOlQmwYFhIcucAC0gTAW9JeWMgy08qxk
+         +zEB2RIaDtsZO3KdF0fNsEzCtRa4IWTJziGq4L5rKzvGbLOXmpbDyVZGou0AWX0cDe
+         kdkwzUESowsphhzqC5OjofHChmCIh7QSl0BWRgMk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>, Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>,
+Cc:     Kamil Lorenc <kamil@re-ws.pl>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 10/13] drivers/net/wan/hdlc_cisco: Add hard_header_len
-Date:   Mon,  7 Sep 2020 12:35:21 -0400
-Message-Id: <20200907163524.1281734-10-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 11/13] net: usb: dm9601: Add USB ID of Keenetic Plus DSL
+Date:   Mon,  7 Sep 2020 12:35:22 -0400
+Message-Id: <20200907163524.1281734-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200907163524.1281734-1-sashal@kernel.org>
 References: <20200907163524.1281734-1-sashal@kernel.org>
@@ -44,38 +44,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xie He <xie.he.0141@gmail.com>
+From: Kamil Lorenc <kamil@re-ws.pl>
 
-[ Upstream commit 1a545ebe380bf4c1433e3c136e35a77764fda5ad ]
+[ Upstream commit a609d0259183a841621f252e067f40f8cc25d6f6 ]
 
-This driver didn't set hard_header_len. This patch sets hard_header_len
-for it according to its header_ops->create function.
+Keenetic Plus DSL is a xDSL modem that uses dm9620 as its USB interface.
 
-This driver's header_ops->create function (cisco_hard_header) creates
-a header of (struct hdlc_header), so hard_header_len should be set to
-sizeof(struct hdlc_header).
-
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
-Acked-by: Krzysztof Halasa <khc@pm.waw.pl>
+Signed-off-by: Kamil Lorenc <kamil@re-ws.pl>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wan/hdlc_cisco.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/usb/dm9601.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/wan/hdlc_cisco.c b/drivers/net/wan/hdlc_cisco.c
-index a408abc25512a..7f99fb666f196 100644
---- a/drivers/net/wan/hdlc_cisco.c
-+++ b/drivers/net/wan/hdlc_cisco.c
-@@ -377,6 +377,7 @@ static int cisco_ioctl(struct net_device *dev, struct ifreq *ifr)
- 		memcpy(&state(hdlc)->settings, &new_settings, size);
- 		spin_lock_init(&state(hdlc)->lock);
- 		dev->header_ops = &cisco_header_ops;
-+		dev->hard_header_len = sizeof(struct hdlc_header);
- 		dev->type = ARPHRD_CISCO;
- 		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
- 		netif_dormant_on(dev);
+diff --git a/drivers/net/usb/dm9601.c b/drivers/net/usb/dm9601.c
+index 0b4bdd39106b0..fb18801d0fe7b 100644
+--- a/drivers/net/usb/dm9601.c
++++ b/drivers/net/usb/dm9601.c
+@@ -624,6 +624,10 @@ static const struct usb_device_id products[] = {
+ 	 USB_DEVICE(0x0a46, 0x1269),	/* DM9621A USB to Fast Ethernet Adapter */
+ 	 .driver_info = (unsigned long)&dm9601_info,
+ 	},
++	{
++	 USB_DEVICE(0x0586, 0x3427),	/* ZyXEL Keenetic Plus DSL xDSL modem */
++	 .driver_info = (unsigned long)&dm9601_info,
++	},
+ 	{},			// END
+ };
+ 
 -- 
 2.25.1
 
