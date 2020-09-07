@@ -2,148 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5198325F605
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 11:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C85C225F60B
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 11:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728290AbgIGJGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 05:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727989AbgIGJGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 05:06:13 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E79C061573
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 02:06:13 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id a16so6966033vsp.12
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 02:06:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3oRTx/EEw7OvkP6TqTj990KKl+YkLOb6ElATdVMgf+c=;
-        b=ca/oRwxvnOIcH5J4vfm1v0v+QoBEOoIldZVZh7YMa3WP1dtN77B3B+K7IlXxmTHeMQ
-         qxbxI6EGosDBjKPZXRvSeZDDQwptN8R3Gbxf7e5ReVyVIfzXB2BO95B+cr94ZG0Qh/1P
-         bufJ3LftknpuZXaBuflAmHJZHdD4DNUIF53MIdqR+rDExN5l7h/CXX2m6jTJ/dJtd75v
-         5xSQOdXdoPCEUbZpbzaNA74ow4J0rtRf9gqde/k9H1NzfV9PHmQWsEKtFFZU9GAVEdk/
-         z4/IOTWFLfv0kmLVLl3bX4P2zuUYQMCZ7M6kBXQJu/BMR8qSylkIxhKNlBVtdG8+mfZc
-         zrDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3oRTx/EEw7OvkP6TqTj990KKl+YkLOb6ElATdVMgf+c=;
-        b=o8gu3wEDTcDxBYrpP2gbSQQk1RInZaNB2N7JwaoiCX/HRY3VJKEKIED6ivqxqtUwkD
-         CcMExbIf9nIU1sQdSf6PG3N20tqZsC1OV16Lk+vwTTnQ3TGhg4+4UGdw2NrkLrGHi1xN
-         gFNS+w+FQK/qPt2ure9m/vZMaPYdJz8/B/Ag4hUbtmhNAkQJNb/iPeU43KyJTDlhGt5S
-         vj/jM6flUB1+DhUHUt095BjNH6zJxmhge5M0fg8hbdXBo4JLbQ2LHupBXJMbzz0+mBQT
-         SW5ItbPYJRnDXQCEWzwQvm8ZoSOscTMG5iTEl415Bu6jTDxJceJlRbupbVs+hMGkLPN7
-         msOw==
-X-Gm-Message-State: AOAM531ObGK603A6lAv4TzZcFUBPGarLYAPGUoFYRJgMSMvlGR0q3prO
-        uIIngpXx/WdNITVF5sYWimkTj+l4ivYGfA==
-X-Google-Smtp-Source: ABdhPJzM7AXNtUKeg5NEs6fye0w3f3mDmjyI66fYFVtg/mQtVlP29kv1z4xnRYnt+tRRA5QaIn75DQ==
-X-Received: by 2002:a67:8882:: with SMTP id k124mr11128914vsd.27.1599469571325;
-        Mon, 07 Sep 2020 02:06:11 -0700 (PDT)
-Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
-        by smtp.gmail.com with ESMTPSA id s70sm32053vss.9.2020.09.07.02.06.10
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Sep 2020 02:06:10 -0700 (PDT)
-Received: by mail-ua1-f49.google.com with SMTP id i22so3392140uat.8
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 02:06:10 -0700 (PDT)
-X-Received: by 2002:ab0:24cd:: with SMTP id k13mr10181505uan.92.1599469569684;
- Mon, 07 Sep 2020 02:06:09 -0700 (PDT)
+        id S1728141AbgIGJKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 05:10:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60060 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727953AbgIGJKM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 05:10:12 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DDDD62145D;
+        Mon,  7 Sep 2020 09:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599469811;
+        bh=y8Yf6R2NSNJScN/RAMacxJxngNkANZjz4XWYW3mG3OU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=m1Nv9saLpS0RyBSXVQjRz16ETNBw/Rc0WeckzloMvodYmh01CSV/9EFEjmhcybBZ3
+         49OZVpICKyP8qiV9MV3d8u7zG5ScRsicCl42kHb4z0ESL6e9wT6vpzBL2z/39WHbQH
+         qOAGWcLsyH2rXXPGP+HVk0a+a7gPucaMjI4gyjYE=
+Date:   Mon, 7 Sep 2020 12:10:07 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, kernel-team@fb.com, tariqt@mellanox.com,
+        yishaih@mellanox.com, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next] mlx4: make sure to always set the port type
+Message-ID: <20200907091007.GN55261@unreal>
+References: <20200904200621.2407839-1-kuba@kernel.org>
+ <20200906072759.GC55261@unreal>
+ <20200906093305.5c901cc5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200907062135.GJ2997@nanopsycho.orion>
+ <20200907064830.GK55261@unreal>
+ <20200907071939.GK2997@nanopsycho.orion>
 MIME-Version: 1.0
-References: <CAJht_EOu8GKvdTAeF_rHsaKu7iYOmW8C64bQA21bgKuiANE5Zw@mail.gmail.com>
- <CAJht_EP=g02o2ygihNo=EWd1OuL3HSjmhqgGiwUGrMde=urSUA@mail.gmail.com>
-In-Reply-To: <CAJht_EP=g02o2ygihNo=EWd1OuL3HSjmhqgGiwUGrMde=urSUA@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 7 Sep 2020 11:05:31 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSdm35x9nA259JgOWcCWJto9MVMHGGgamPPsgnpsTmPO8g@mail.gmail.com>
-Message-ID: <CA+FuTSdm35x9nA259JgOWcCWJto9MVMHGGgamPPsgnpsTmPO8g@mail.gmail.com>
-Subject: Re: Question about dev_validate_header used in af_packet.c
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200907071939.GK2997@nanopsycho.orion>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 6, 2020 at 1:21 AM Xie He <xie.he.0141@gmail.com> wrote:
+On Mon, Sep 07, 2020 at 09:19:39AM +0200, Jiri Pirko wrote:
+> Mon, Sep 07, 2020 at 08:48:30AM CEST, leon@kernel.org wrote:
+> >On Mon, Sep 07, 2020 at 08:21:35AM +0200, Jiri Pirko wrote:
+> >> Sun, Sep 06, 2020 at 06:33:05PM CEST, kuba@kernel.org wrote:
+> >> >On Sun, 6 Sep 2020 10:27:59 +0300 Leon Romanovsky wrote:
+> >> >> On Fri, Sep 04, 2020 at 01:06:21PM -0700, Jakub Kicinski wrote:
+> >> >> > Even tho mlx4_core registers the devlink ports, it's mlx4_en
+> >> >> > and mlx4_ib which set their type. In situations where one of
+> >> >> > the two is not built yet the machine has ports of given type
+> >> >> > we see the devlink warning from devlink_port_type_warn() trigger.
+> >> >> >
+> >> >> > Having ports of a type not supported by the kernel may seem
+> >> >> > surprising, but it does occur in practice - when the unsupported
+> >> >> > port is not plugged in to a switch anyway users are more than happy
+> >> >> > not to see it (and potentially allocate any resources to it).
+> >> >> >
+> >> >> > Set the type in mlx4_core if type-specific driver is not built.
+> >> >> >
+> >> >> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> >> >> > ---
+> >> >> >  drivers/net/ethernet/mellanox/mlx4/main.c | 11 +++++++++++
+> >> >> >  1 file changed, 11 insertions(+)
+> >> >> >
+> >> >> > diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
+> >> >> > index 258c7a96f269..70cf24ba71e4 100644
+> >> >> > --- a/drivers/net/ethernet/mellanox/mlx4/main.c
+> >> >> > +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
+> >> >> > @@ -3031,6 +3031,17 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
+> >> >> >  	if (err)
+> >> >> >  		return err;
+> >> >> >
+> >> >> > +	/* Ethernet and IB drivers will normally set the port type,
+> >> >> > +	 * but if they are not built set the type now to prevent
+> >> >> > +	 * devlink_port_type_warn() from firing.
+> >> >> > +	 */
+> >> >> > +	if (!IS_ENABLED(CONFIG_MLX4_EN) &&
+> >> >> > +	    dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH)
+> >> >> > +		devlink_port_type_eth_set(&info->devlink_port, NULL);
+> >> >>                                                                ^^^^^
+> >> >>
+> >> >> Won't it crash in devlink_port_type_eth_set()?
+> >> >> The first line there dereferences pointer.
+> >> >>   7612         const struct net_device_ops *ops = netdev->netdev_ops;
+> >> >
+> >> >Damn, good catch. It's not supposed to be required. I'll patch devlink.
+> >>
+> >> When you set the port type to ethernet, you should have the net_device
+> >> instance. Why wouldn't you?
+> >
+> >It is how mlx4 is implemented, see mlx4_dev_cap() function:
+> >588         for (i = 1; i <= dev->caps.num_ports; ++i) {
+> >589                 dev->caps.port_type[i] = MLX4_PORT_TYPE_NONE;
+> >....
+> >
+> >The port type is being set to IB or ETH without relation to net_device,
+> >fixing it will require very major code rewrite for the stable driver
+> >that in maintenance mode.
 >
-> On Sat, Sep 5, 2020 at 3:24 PM Xie He <xie.he.0141@gmail.com> wrote:
-> >
-> > Hi Willem,
-> >
-> > I have a question about the function dev_validate_header used in
-> > af_packet.c. Can you help me? Thanks!
-> >
-> > I see when the length of the data is smaller than hard_header_len, and
-> > when the user is "capable" enough, the function will accept it and pad
-> > it with 0s, without validating the header with header_ops->validate.
-> >
-> > But I think if the driver is able to accept variable-length LL
-> > headers, shouldn't we just pass the data to header_ops->validate and
-> > let it check the header's validity, and then just pass the validated
-> > data to the driver for transmission?
-> >
-> > Why when the user is "capable" enough, can it bypass the
-> > header_ops->validate check? And why do we need to pad the data with
-> > 0s? Won't this make the driver confused about the real length of the
-> > data?
+> Because the eth driver is not loaded, I see. The purpose of the
+> WARN in devlink_port_type_eth_set is to prevent drivers from registering
+> particular port without netdev/ibdev. That is what was repeatedly
+> happening in the past as the driver developers didn't know they need to
+> do it or were just lazy to do so.
 >
-> Oh. I just realized that the padding of zeros won't actually make the
-> data longer. The padded zeros are not part of the data so the length
-> of the data is kept unchanged. The padding is probably because some
-> weird drivers are expecting this. (What drivers are them? Can we fix
-> them?)
+> I wonder if there is any possibility to do both...
+
+It is hard to say, hope that Jakub will take a look.
+
+Thanks
+
 >
-> I can also understand now the ability of a "capable" user to bypass
-> the header_ops->validate check. It is probably for testing purposes.
-> (Does this mean the root user will always bypass this check?)
-
-Apologies for the delay.
-
-The commit that introduced the code probably summarizes state better
-than I would write off the cuff:
-
-"
-commit 2793a23aacbd754dbbb5cb75093deb7e4103bace
-Author: Willem de Bruijn <willemb@google.com>
-Date:   Wed Mar 9 21:58:32 2016 -0500
-
-    net: validate variable length ll headers
-
-    Netdevice parameter hard_header_len is variously interpreted both as
-    an upper and lower bound on link layer header length. The field is
-    used as upper bound when reserving room at allocation, as lower bound
-    when validating user input in PF_PACKET.
-
-    Clarify the definition to be maximum header length. For validation
-    of untrusted headers, add an optional validate member to header_ops.
-
-    Allow bypassing of validation by passing CAP_SYS_RAWIO, for instance
-    for deliberate testing of corrupt input. In this case, pad trailing
-    bytes, as some device drivers expect completely initialized headers.
-
-    See also http://comments.gmane.org/gmane.linux.network/401064
-
-    Signed-off-by: Willem de Bruijn <willemb@google.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-"
-
-The CAP_SYS_RAWIO exception indeed was requested to be able to
-purposely test devices against bad inputs. The gmane link
-unfortunately no longer works, but this was the discussion thread:
-https://www.mail-archive.com/netdev@vger.kernel.org/msg99920.html
-
-It zeroes the packet up max_header_len to ensure that an unintentional
-short packet will at least not result in reading undefined data. Now
-that the dust has settled around the min_header_len/max_header_len
-changes, maybe now is a good time to revisit removing that
-CAP_SYS_RAWIO loophole.
+> >
+> >>
+> >>
+> >> >
+> >> >> And can we call to devlink_port_type_*_set() without IS_ENABLED() check?
+> >> >
+> >> >It'll generate two netlink notifications - not the end of the world but
+> >> >also doesn't feel super clean.
+> >
+> >I would say that such a situation is corner case during the driver init and
+> >not an end of the world to see double netlink message.
+> >
+> >Thanks
