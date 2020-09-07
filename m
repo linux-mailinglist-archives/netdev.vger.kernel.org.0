@@ -2,82 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EC3825F5A2
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:49:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 895CE25F5A7
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:50:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728328AbgIGIts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 04:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728272AbgIGItq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 04:49:46 -0400
-Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69C97C061573;
-        Mon,  7 Sep 2020 01:49:46 -0700 (PDT)
-Received: by mail-ot1-x341.google.com with SMTP id y5so11683957otg.5;
-        Mon, 07 Sep 2020 01:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U3euzQ0Swe5yymHZPecrNgR6N5TksT5qVYOuQ4FkYtc=;
-        b=ZAP2S7DZI5vT7BHFsnBBOKOhCb2zFyruwKgW++3sF+IVjBUKHUsOt8v+ufKBbv0qUD
-         VJcKDlrSeabFQdul2azOOhbYEak24M9fdot4l16Mrwc43zlXQeutqm40FBGwnkxSSDDd
-         3DT+6lUsm1FjeBhiEmT31WCRr7i9pShb6qH32osuTlSK+TPHVJUwqwQQ42h0MBRZyA4z
-         g79/4VwkpQsRS/45RWtdAwZQZQOvMCOoe5vMfPjjX2c98IpSQ8eOEyamuA//6BGQdOmx
-         Bj215qtZ6WjSmicwu3zLUH/v+UUf4rnK8dwwmmspBnYrzbgwkTVrjVm63Yc3F3NOLw9h
-         c7YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U3euzQ0Swe5yymHZPecrNgR6N5TksT5qVYOuQ4FkYtc=;
-        b=bNreNQlqCKvrlPhvbd+qNUumI0vG6oRUFM9M7+71bi9eEn0kI++rzIs5dwxJ0NEJmU
-         al3I5HZtaTTG0rfknVKorjzrwCQjaGizwNdj1ROfld9eT3zPvRGb50yT+GVPlgz4LQ6u
-         fF3OpQoL6CGIePz5L1fchxuN+cNVxzx4rf7XCnqrR6QlLArIVHYpHS4TemFG++MPypDV
-         O+HqJi43905+SpVGkY9uXgE9uowHgPz6P5oLZvTKNL3xPjruj2VEUibiTVifL6xV3UlW
-         yV4QKVQ5Yq7SunFKWcA8mbv7cR2fjJRNOa2B9dBeX26dhGMxSTxO0Y5fzL73BSxv40NS
-         mgDg==
-X-Gm-Message-State: AOAM530qg6onmy7sEf0hK/EkrZYQZe/gfo5rX/hRi5KRZHNw47vaQgt6
-        YfBfhauVSZbSxD2oOmvCRTp2e7mnuyobWogkdSg=
-X-Google-Smtp-Source: ABdhPJzF+TwUsvyBcUC5Igw0RzmgIn/yJwLk/28MlDO8QiD1vOSkudFQXkePOwUmc5tMyeeVGBDajuygXy/aFVRP8Uk=
-X-Received: by 2002:a9d:7745:: with SMTP id t5mr13692171otl.114.1599468584605;
- Mon, 07 Sep 2020 01:49:44 -0700 (PDT)
+        id S1728061AbgIGIui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 04:50:38 -0400
+Received: from mout.gmx.net ([212.227.17.21]:44261 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727921AbgIGIuh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 04:50:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1599468599;
+        bh=yIFXqy7te6Dvn3pYvMyPkuWrR4YLQ/+MWx//ZLlZYaY=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=bRo8iPrwMHC0DJe/haJ3kaxpNWARu+Ri/j9suBTgbTZ0RHtJjXSwlVqCmePSq/iZX
+         ekUsSWyyf/38cfwUQqjR1VpJvU5yP5xyQlRtIEk6N74ctL2ARkQydFwimyEepkM3vL
+         NdLKIXyAMkjvyLKQSsnShIFu4ySqg7A3QDr4f/9A=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [185.76.97.104] ([185.76.97.104]) by web-mail.gmx.net
+ (3c-app-gmx-bs77.server.lan [172.19.170.225]) (via HTTP); Mon, 7 Sep 2020
+ 10:49:59 +0200
 MIME-Version: 1.0
-References: <CA+4pmEueEiz0Act8X6t4y3+4LOaOh_-ZfzScH0CbOKT99x91NA@mail.gmail.com>
- <87wo7una02.fsf@miraculix.mork.no> <CAGRyCJE-VYRthco5=rZ_PX0hkzhXmQ45yGJe_Gm1UvYJBKYQvQ@mail.gmail.com>
- <CAKfDRXg2xRbLu=ZcQYdJUuYbfMQbav9pUDwcVMc-S+hwV3Johw@mail.gmail.com>
- <87v9gqghda.fsf@miraculix.mork.no> <CAGRyCJFcDZzfahSsexnVN0tA6DU=LYYL2erSHJaOXZWAr=Sn6A@mail.gmail.com>
-In-Reply-To: <CAGRyCJFcDZzfahSsexnVN0tA6DU=LYYL2erSHJaOXZWAr=Sn6A@mail.gmail.com>
-From:   Kristian Evensen <kristian.evensen@gmail.com>
-Date:   Mon, 7 Sep 2020 10:49:33 +0200
-Message-ID: <CAKfDRXjLmT32sFB40OV8ywm9vwNkn3-n_a2zcC-3o2wJa-tvFg@mail.gmail.com>
-Subject: Re: [PATCH] net: usb: qmi_wwan: Fix for packets being rejected in the
- ring buffer used by the xHCI controller.
-To:     Daniele Palmas <dnlplm@gmail.com>
-Cc:     =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>,
-        Paul Gildea <paul.gildea@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <trinity-b698e161-35b7-44f9-bcec-836d9e5d0fb4-1599468599322@3c-app-gmx-bs77>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Landen Chao <landen.chao@mediatek.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, dqfext@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>, opensource@vdorst.com,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Aw: [PATCH net-next v3 0/6] net-next: dsa: mt7530: add support for
+ MT7531
+Content-Type: text/plain; charset=UTF-8
+Date:   Mon, 7 Sep 2020 10:49:59 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <trinity-03089c68-65a5-4572-95c3-c75b9f7e330a-1599295554893@3c-app-gmx-bap15>
+References: <cover.1599228079.git.landen.chao@mediatek.com>
+ <trinity-03089c68-65a5-4572-95c3-c75b9f7e330a-1599295554893@3c-app-gmx-bap15>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:5M30BJ8gJxoqt26/8TkrNWB7b+NM0kRlZhPhhBoI5O2cy17TFMaA3mzeqE2Si0IMOtAEq
+ Yz28gdLhQIT/CnxJADDM7S3yER2A3ls5lzRhGXPDMMPUB4kwiXD7YqdE71sMTNHrvCtsCH4pKzse
+ gc4k9Z6AFc2NuKA8yAN0jUeoZOINsxiEm2H6OtwllW2QNYVcLa7nmyfM00yYUU1lnH0qDj5VkPRi
+ H3o0M+b+uHBZXEGActBnRvDg6GCh9zhj6JQaP1xD3yjQ5oI1CQ/714bUH8j9cNau9TO+Y4ErKuqF
+ z8=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:mtESfRCsrx0=:U0gdxCOgB6lC8cs3snZAic
+ uQrccbrevnkwZ/3MHYlHZiZZJhEcnzvP5Wm0RORcEs11npiY3NPS17Qed7VydsvDCLFvdvHG7
+ 6f1JEpkf7LM7P/bup6s1kEkb0tfm7jZM47NGrT6dWzPx4TN5cOQuQa/39iqXJVSpXscrq3tVS
+ s20dYnyFWAE7d1F3UvgOT8XLl2WPmgOlYByKdaCcKwzTPg8bnO/QPvc0ydvQI1OHBd5XLLb3a
+ Z55Fll+AbBq+4dnaIg6CO0sMNzkbGePwt1Ab85UMj/U9Sh24esFF6I8Nv2qMc1JNgUofRD0TI
+ JJpODQma6JDKRKs9WRdYvw273DC9cw3VkzyaP3kWnbC/MgmYqAYIrn77r5docseWZMhHJK6tS
+ 68uaWlNTfRZtJ+6rVgrkBNmwxX/hZC1SQDGGEGNHVoKQmvvqnCysz4VIunkLVJMeMEuahUL9f
+ nCGCUICkn7QHvFFY7smcp37LvrS5blNi4Vnv9OnN6z+mFjR7hkfAmz9CLIHdZwSg/WRjDRmBH
+ 5fpuhk7zomTx5e6zLoqjEziRflvCxv4wjpP5N0fpGp+ngGXV+P+YBEjyPmmOYgygF6Q2IHxhf
+ rqTeIHK0MQuS7BUX+bGDXPM/0YGsnUBmwygI10uWAaN/tmXtIClAxa1G/4SAwAwOuoyFff3Xo
+ egW/qOXvRKuLR2HwzMSbQt7jFPqCBaJ1/TfNUp/k2r/hToD56B9etzJhDWVT+FideUKQ=
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniele,
+Hi
 
-On Mon, Sep 7, 2020 at 10:35 AM Daniele Palmas <dnlplm@gmail.com> wrote:
-> there was also another recent thread about this and the final plan was
-> to simply increase the rx urb size setting to the highest value we are
-> aware of (see https://www.spinics.net/lists/linux-usb/msg198858.html):
-> this should solve the babble issue without breaking aggregation.
+> Gesendet: Samstag, 05. September 2020 um 10:45 Uhr
+> Von: "Frank Wunderlich" <frank-w@public-files.de>
+> similar to bananapi-r2 (mt7530)
+...
+> reverse-mode:
 >
-> The change should be simple, I was just waiting to perform some sanity
-> tests with different models I have. Hope to have it done by this week.
+> [ ID] Interval           Transfer     Bitrate         Retr
+> [  5]   0.00-10.01  sec  1.05 GBytes   905 Mbits/sec  14533             =
+sender <<<<<<<<<<<
+> [  5]   0.00-10.00  sec  1.05 GBytes   905 Mbits/sec                  re=
+ceiver
 
-Thanks for letting me know. Looking forward to the patch and dropping
-my own work-around :)
+these retransmitts are caused by missing pause-statement in devicetree of =
+bananapi-r2. I got them with mainline driver too.
 
-Kristian
+After fixing it [1], i got the expected results with these mt7531-Patches:
+
+iperf3-client on r2
+
+normal mode:
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  1.10 GBytes   943 Mbits/sec    0             send=
+er
+[  5]   0.00-10.00  sec  1.10 GBytes   941 Mbits/sec                  rece=
+iver
+
+reverse mode:
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  1.09 GBytes   939 Mbits/sec    0             send=
+er
+[  5]   0.00-10.00  sec  1.09 GBytes   937 Mbits/sec                  rece=
+iver
+
+Tested-By: Frank Wunderlich <frank-w@public-files.de>
+
+[1] https://patchwork.kernel.org/patch/11760003/
+
+regards Frank
