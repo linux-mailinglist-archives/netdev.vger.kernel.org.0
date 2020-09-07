@@ -2,83 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F77425FC02
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 16:26:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E497825FC27
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 16:34:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729661AbgIGOZQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 10:25:16 -0400
-Received: from www62.your-server.de ([213.133.104.62]:55104 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729803AbgIGOWG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 10:22:06 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kFI1L-0008Bi-TZ; Mon, 07 Sep 2020 16:21:23 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kFI1L-0001xa-M0; Mon, 07 Sep 2020 16:21:23 +0200
-Subject: Re: [PATCH bpf-next 1/2] bpf: permit map_ptr arithmetic with opcode
- add and offset 0
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-References: <20200904194900.3031319-1-yhs@fb.com>
- <20200904194900.3031377-1-yhs@fb.com>
- <CAEf4BzboqpYa7Zq=6xcpGez+jk--NTDA0=FQi5utwcFaHwC7bA@mail.gmail.com>
- <c016695c-3d22-ac74-5e2f-9210fb5b58af@fb.com>
- <CAEf4BzaWZqLnR78B3F38bkDP62aDy81oQSAiZMXDULembVyhkA@mail.gmail.com>
- <CAADnVQJrjPynzVZTDvDh7qosBVFO8+iKEKDbC4=yK+4HVZ6Tng@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <417158cc-4b80-83df-0544-e8e6defb44b4@iogearbox.net>
-Date:   Mon, 7 Sep 2020 16:21:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1729941AbgIGOeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 10:34:20 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:58938 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729899AbgIGOb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 10:31:57 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 087EVkVB057797;
+        Mon, 7 Sep 2020 09:31:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1599489106;
+        bh=tX8DK8xZjn8fqh86L7Vc1gKvxU7j7mDqVA7MKwRMSnM=;
+        h=From:To:CC:Subject:Date;
+        b=KVHDvHWsseW/2QRvni5kjIwubEp/e3Rs55VtSVWkoE8GsWl7waLCt8C++GL6sXahq
+         11vfKE/l6teCGpkq828m5YrInsc3/iqqB65WnPHDbwQwYYraSsZ18xSgR3EC7P+j8x
+         wvmNbFymuKRx7XfeXmuoKmFabp4xfNbjUMT7fuRE=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 087EVkwC001279;
+        Mon, 7 Sep 2020 09:31:46 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 7 Sep
+ 2020 09:31:46 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 7 Sep 2020 09:31:46 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 087EVjuB048383;
+        Mon, 7 Sep 2020 09:31:46 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next v2 0/9] net: ethernet: ti: ale: add static configuration 
+Date:   Mon, 7 Sep 2020 17:31:34 +0300
+Message-ID: <20200907143143.13735-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQJrjPynzVZTDvDh7qosBVFO8+iKEKDbC4=yK+4HVZ6Tng@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25922/Sun Sep  6 15:39:20 2020)
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/5/20 2:10 AM, Alexei Starovoitov wrote:
-> On Fri, Sep 4, 2020 at 5:08 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
->> On Fri, Sep 4, 2020 at 4:20 PM Yonghong Song <yhs@fb.com> wrote:
-[...]
->>> for scalar constant, reg->var_off.mask should be 0. so we will have
->>> reg->smin_value = reg->smax_value = (s64)reg->var_off.value.
->>>
->>> The smin_val is also used below, e.g., BPF_ADD, for a known value.
->>> That is why I am using smin_val here.
->>>
->>> Will add a comment and submit v2.
->>
->> it would be way-way more obvious (and reliable in the long run,
->> probably) if you just used (known && reg->var_off.value == 0). or just
->> tnum_equals_const(reg->var_off, 0)?
-> 
-> Pls dont. smin_val == 0 is a standard way to do this.
-> Just check all other places in this function and everywhere else.
+Hi All,
 
-Also, we taint the reg earlier in that function if its known and min != max:
+As existing, as newly introduced CPSW ALE versions have differences in 
+supported features and ALE table formats. Especially it's actual for the
+recent AM65x/J721E/J7200 and future AM64x SoCs, which supports more
+features like: auto-aging, classifiers, Link aggregation, additional HW
+filtering, etc.
 
-         if ((known && (smin_val != smax_val || umin_val != umax_val)) ||
-             smin_val > smax_val || umin_val > umax_val) {
-                 /* Taint dst register if offset had invalid bounds derived from
-                  * e.g. dead branches.
-                  */
-                 __mark_reg_unknown(env, dst_reg);
-                 return 0;
-         }
+The existing ALE configuration interface is not practical in terms of 
+adding new features and requires consumers to program a lot static
+parameters. And any attempt to add new features will case endless adding
+and maintaining different combination of flags and options. Because CPSW
+ALE configuration is static and fixed for SoC (or set of SoC), It is
+reasonable to add support for static ALE configurations inside ALE module.
+
+This series introduces static ALE configuration table for different ALE 
+variants and provides option for consumers to select required ALE
+configuration by providing ALE const char *dev_id identifier (Patch 2).
+And all existing driver have been switched to use new approach (Patches 3-6).
+
+After this ALE HW auto-ageing feature can be enabled for AM65x CPSW ALE 
+variant (Patch 7).
+
+Finally, Patches 8-9 introduces tables to describe the ALE VLAN entries 
+fields as the ALE VLAN entries are too much differ between different TI
+CPSW ALE versions. So, handling them using flags, defines and get/set
+functions are became over-complicated.
+
+Patch 1 - is preparation patch
+
+Changes in v2:
+- fixed sparse warnings
+
+v1:https://lore.kernel.org/patchwork/cover/1301048/
+
+Grygorii Strashko (9):
+  net: ethernet: ti: ale: add cpsw_ale_get_num_entries api
+  net: ethernet: ti: ale: add static configuration
+  net: ethernet: ti: cpsw: use dev_id for ale configuration
+  net: netcp: ethss: use dev_id for ale configuration
+  net: ethernet: ti: am65-cpsw: use dev_id for ale configuration
+  net: ethernet: ti: ale: make usage of ale dev_id mandatory
+  net: ethernet: ti: am65-cpsw: enable hw auto ageing
+  net: ethernet: ti: ale: switch to use tables for vlan entry
+    description
+  net: ethernet: ti: ale: add support for multi port k3 cpsw versions
+
+ drivers/net/ethernet/ti/am65-cpsw-ethtool.c |  10 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c    |  16 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h    |   1 +
+ drivers/net/ethernet/ti/cpsw.c              |   6 -
+ drivers/net/ethernet/ti/cpsw_ale.c          | 421 ++++++++++++++++----
+ drivers/net/ethernet/ti/cpsw_ale.h          |   7 +
+ drivers/net/ethernet/ti/cpsw_ethtool.c      |   3 +-
+ drivers/net/ethernet/ti/cpsw_new.c          |   1 -
+ drivers/net/ethernet/ti/cpsw_priv.c         |   2 +-
+ drivers/net/ethernet/ti/cpsw_priv.h         |   2 -
+ drivers/net/ethernet/ti/netcp_ethss.c       |  18 +-
+ 11 files changed, 388 insertions(+), 99 deletions(-)
+
+-- 
+2.17.1
+
