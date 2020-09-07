@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE2322601A8
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 19:11:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 329792601A7
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 19:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730993AbgIGRK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 13:10:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46570 "EHLO mail.kernel.org"
+        id S1730748AbgIGRK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 13:10:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46524 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730651AbgIGQcn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:32:43 -0400
+        id S1730653AbgIGQcp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:32:45 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D6FC21775;
-        Mon,  7 Sep 2020 16:32:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B2B6B2177B;
+        Mon,  7 Sep 2020 16:32:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599496363;
-        bh=DwG1sBgFRudgjt/efP3AlPsg1CgNduDPpdP1AxBu/t0=;
+        s=default; t=1599496364;
+        bh=0Szs6Xbj6uEv6yMuq/ROsBND+F0HzpKX80tnhTB6vNI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H+oSb1FMUspk4XShV/zVB4+McsZuKkMvtpU8kzUU5tl4SCRepFNjYWxmEvoPZDQxZ
-         ODblMfbn5GvmTTYLbbdP8UHHcxV0rqhF0Fyp4SsldMgsdwdU0LGjNPZRA4dR33eF1A
-         I3mHsSOsPfBFpoQsH+7e3HYxyi0cY39W99TnaBgE=
+        b=fNtWZDZny9+93MIRQSnqfurOQAW/qjwyEGsELOoB5lXq3zBu1/pjKrG0oOXFUuu0K
+         kZrbgbp1mEnvNFVmO/3G8fhMaiSzWFB5mY/+KX6ZF5QJkul3J9JOZi7/yW5MGF1HbK
+         li9OwwGSPrRxywmwuRgVds1TWlv34C5CgCKmZTbE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>, Martin Schiller <ms@dev.tdt.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 17/53] drivers/net/wan/lapbether: Set network_header before transmitting
-Date:   Mon,  7 Sep 2020 12:31:43 -0400
-Message-Id: <20200907163220.1280412-17-sashal@kernel.org>
+Cc:     Shay Bar <shay.bar@celeno.com>,
+        Aviad Brikman <aviad.brikman@celeno.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 18/53] wireless: fix wrong 160/80+80 MHz setting
+Date:   Mon,  7 Sep 2020 12:31:44 -0400
+Message-Id: <20200907163220.1280412-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200907163220.1280412-1-sashal@kernel.org>
 References: <20200907163220.1280412-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -43,51 +46,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xie He <xie.he.0141@gmail.com>
+From: Shay Bar <shay.bar@celeno.com>
 
-[ Upstream commit 91244d108441013b7367b3b4dcc6869998676473 ]
+[ Upstream commit 3579994476b65cb5e272ff0f720a1fd31322e53f ]
 
-Set the skb's network_header before it is passed to the underlying
-Ethernet device for transmission.
+Fix cfg80211_chandef_usable():
+consider IEEE80211_VHT_CAP_EXT_NSS_BW when verifying 160/80+80 MHz.
 
-This patch fixes the following issue:
+Based on:
+"Table 9-272 — Setting of the Supported Channel Width Set subfield and Extended NSS BW
+Support subfield at a STA transmitting the VHT Capabilities Information field"
+From "Draft P802.11REVmd_D3.0.pdf"
 
-When we use this driver with AF_PACKET sockets, there would be error
-messages of:
-   protocol 0805 is buggy, dev (Ethernet interface name)
-printed in the system "dmesg" log.
-
-This is because skbs passed down to the Ethernet device for transmission
-don't have their network_header properly set, and the dev_queue_xmit_nit
-function in net/core/dev.c complains about this.
-
-Reason of setting the network_header to this place (at the end of the
-Ethernet header, and at the beginning of the Ethernet payload):
-
-Because when this driver receives an skb from the Ethernet device, the
-network_header is also set at this place.
-
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Aviad Brikman <aviad.brikman@celeno.com>
+Signed-off-by: Shay Bar <shay.bar@celeno.com>
+Link: https://lore.kernel.org/r/20200826143139.25976-1-shay.bar@celeno.com
+[reformat the code a bit and use u32_get_bits()]
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wan/lapbether.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/wireless/chan.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index cc297ea9c6ece..e61616b0b91c7 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -210,6 +210,8 @@ static void lapbeth_data_transmit(struct net_device *ndev, struct sk_buff *skb)
+diff --git a/net/wireless/chan.c b/net/wireless/chan.c
+index cddf92c5d09ef..7a7cc4ade2b36 100644
+--- a/net/wireless/chan.c
++++ b/net/wireless/chan.c
+@@ -10,6 +10,7 @@
+  */
  
- 	skb->dev = dev = lapbeth->ethdev;
+ #include <linux/export.h>
++#include <linux/bitfield.h>
+ #include <net/cfg80211.h>
+ #include "core.h"
+ #include "rdev-ops.h"
+@@ -892,6 +893,7 @@ bool cfg80211_chandef_usable(struct wiphy *wiphy,
+ 	struct ieee80211_sta_vht_cap *vht_cap;
+ 	struct ieee80211_edmg *edmg_cap;
+ 	u32 width, control_freq, cap;
++	bool support_80_80 = false;
  
-+	skb_reset_network_header(skb);
-+
- 	dev_hard_header(skb, dev, ETH_P_DEC, bcast_addr, NULL, 0);
- 
- 	dev_queue_xmit(skb);
+ 	if (WARN_ON(!cfg80211_chandef_valid(chandef)))
+ 		return false;
+@@ -944,9 +946,13 @@ bool cfg80211_chandef_usable(struct wiphy *wiphy,
+ 			return false;
+ 		break;
+ 	case NL80211_CHAN_WIDTH_80P80:
+-		cap = vht_cap->cap & IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_MASK;
+-		if (chandef->chan->band != NL80211_BAND_6GHZ &&
+-		    cap != IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160_80PLUS80MHZ)
++		cap = vht_cap->cap;
++		support_80_80 =
++			(cap & IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160_80PLUS80MHZ) ||
++			(cap & IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160MHZ &&
++			 cap & IEEE80211_VHT_CAP_EXT_NSS_BW_MASK) ||
++			u32_get_bits(cap, IEEE80211_VHT_CAP_EXT_NSS_BW_MASK) > 1;
++		if (chandef->chan->band != NL80211_BAND_6GHZ && !support_80_80)
+ 			return false;
+ 		/* fall through */
+ 	case NL80211_CHAN_WIDTH_80:
+@@ -966,7 +972,8 @@ bool cfg80211_chandef_usable(struct wiphy *wiphy,
+ 			return false;
+ 		cap = vht_cap->cap & IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_MASK;
+ 		if (cap != IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160MHZ &&
+-		    cap != IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160_80PLUS80MHZ)
++		    cap != IEEE80211_VHT_CAP_SUPP_CHAN_WIDTH_160_80PLUS80MHZ &&
++		    !(vht_cap->cap & IEEE80211_VHT_CAP_EXT_NSS_BW_MASK))
+ 			return false;
+ 		break;
+ 	default:
 -- 
 2.25.1
 
