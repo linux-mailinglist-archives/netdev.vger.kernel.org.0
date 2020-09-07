@@ -2,121 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 152EE25F6C6
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 11:43:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6C8E25F6D0
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 11:47:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728381AbgIGJnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 05:43:20 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:60318 "EHLO a.mx.secunet.com"
+        id S1728381AbgIGJrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 05:47:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44148 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726301AbgIGJnT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 05:43:19 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 368CF201CC;
-        Mon,  7 Sep 2020 11:43:16 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id DrTO_au6XWdt; Mon,  7 Sep 2020 11:43:15 +0200 (CEST)
-Received: from mail-essen-02.secunet.de (mail-essen-02.secunet.de [10.53.40.205])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1726301AbgIGJrE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 05:47:04 -0400
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org [51.254.78.96])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 65E4D2009B;
-        Mon,  7 Sep 2020 11:43:15 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Mon, 7 Sep 2020 11:43:15 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Mon, 7 Sep 2020
- 11:43:15 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id B50913180513;
- Mon,  7 Sep 2020 11:43:14 +0200 (CEST)
-Date:   Mon, 7 Sep 2020 11:43:14 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Dmitry Safonov <dima@arista.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        <netdev@vger.kernel.org>,
-        "Johannes Berg" <johannes@sipsolutions.net>,
-        Shuah Khan <shuah@kernel.org>,
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH v2 0/6] xfrm: Add compat layer
-Message-ID: <20200907094314.GI20687@gauss3.secunet.de>
-References: <20200826014949.644441-1-dima@arista.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 49EFA2078E;
+        Mon,  7 Sep 2020 09:47:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599472023;
+        bh=cFHskjvmHO3vzxD+eGBoRNZ+sFpiHGFme6jLOuWP8Uc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=19AbdD+EC1bO4XviCsVbOEsgKBlvuTcIcRwYpDXdAbiyDIC2ngljNeSByIj6g2WwR
+         pwHlJAa2zca7ViqS+HXJHlbRqiyn/WpxFytm5SMsvxtaqOBqDi0a5jaudF1eVdGURu
+         jTZbUs3gK3gLc/gZXJVqSV1JOAEE6FHqZ7nCuP54=
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <maz@kernel.org>)
+        id 1kFDjp-009iuT-BE; Mon, 07 Sep 2020 10:47:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200826014949.644441-1-dima@arista.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 07 Sep 2020 10:47:01 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianyong Wu <Jianyong.Wu@arm.com>
+Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, richardcochran@gmail.com,
+        Mark Rutland <Mark.Rutland@arm.com>, will@kernel.org,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve Capper <Steve.Capper@arm.com>,
+        Justin He <Justin.He@arm.com>, nd <nd@arm.com>
+Subject: Re: [PATCH v14 08/10] ptp: arm64: Enable ptp_kvm for arm64
+In-Reply-To: <HE1PR0802MB25551446DC85DB3684D09211F4280@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+References: <20200904092744.167655-1-jianyong.wu@arm.com>
+ <20200904092744.167655-9-jianyong.wu@arm.com> <874kocmqqx.wl-maz@kernel.org>
+ <HE1PR0802MB2555CC56351616836A95FB19F4280@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+ <366387fa507f9c5d5044549cea958ce1@kernel.org>
+ <HE1PR0802MB25551446DC85DB3684D09211F4280@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+User-Agent: Roundcube Webmail/1.4.8
+Message-ID: <67f3381467d02c8d3f25682cd99898e9@kernel.org>
+X-Sender: maz@kernel.org
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: Jianyong.Wu@arm.com, netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org, tglx@linutronix.de, pbonzini@redhat.com, sean.j.christopherson@intel.com, richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org, Suzuki.Poulose@arm.com, Steven.Price@arm.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, Steve.Capper@arm.com, Justin.He@arm.com, nd@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 26, 2020 at 02:49:43AM +0100, Dmitry Safonov wrote:
-> Changes since v1:
-> - reworked patches set to use translator
-> - separated the compat layer into xfrm_compat.c,
->   compiled under XFRM_USER_COMPAT config
-> - 32-bit messages now being sent in frag_list (like wext-core does)
-> - instead of __packed add compat_u64 members in compat structures
-> - selftest reworked to kselftest lib API
-> - added netlink dump testing to the selftest
-> 
-> XFRM is disabled for compatible users because of the UABI difference.
-> The difference is in structures paddings and in the result the size
-> of netlink messages differ.
-> 
-> Possibility for compatible application to manage xfrm tunnels was
-> disabled by: the commmit 19d7df69fdb2 ("xfrm: Refuse to insert 32 bit
-> userspace socket policies on 64 bit systems") and the commit 74005991b78a
-> ("xfrm: Do not parse 32bits compiled xfrm netlink msg on 64bits host").
-> 
-> This is my second attempt to resolve the xfrm/compat problem by adding
-> the 64=>32 and 32=>64 bit translators those non-visibly to a user
-> provide translation between compatible user and kernel.
-> Previous attempt was to interrupt the message ABI according to a syscall
-> by xfrm_user, which resulted in over-complicated code [1].
-> 
-> Florian Westphal provided the idea of translator and some draft patches
-> in the discussion. In these patches, his idea is reused and some of his
-> initial code is also present.
-> 
-> There were a couple of attempts to solve xfrm compat problem:
-> https://lkml.org/lkml/2017/1/20/733
-> https://patchwork.ozlabs.org/patch/44600/
-> http://netdev.vger.kernel.narkive.com/2Gesykj6/patch-net-next-xfrm-correctly-parse-netlink-msg-from-32bits-ip-command-on-64bits-host
-> 
-> All the discussions end in the conclusion that xfrm should have a full
-> compatible layer to correctly work with 32-bit applications on 64-bit
-> kernels:
-> https://lkml.org/lkml/2017/1/23/413
-> https://patchwork.ozlabs.org/patch/433279/
-> 
-> In some recent lkml discussion, Linus said that it's worth to fix this
-> problem and not giving people an excuse to stay on 32-bit kernel:
-> https://lkml.org/lkml/2018/2/13/752
-> 
-> There is also an selftest for ipsec tunnels.
-> It doesn't depend on any library and compat version can be easy
-> build with: make CFLAGS=-m32 net/ipsec
-> 
-> Patches as a .git branch:
-> https://github.com/0x7f454c46/linux/tree/xfrm-compat-v2
-> 
-> [1]: https://lkml.kernel.org/r/20180726023144.31066-1-dima@arista.com
+On 2020-09-07 10:28, Jianyong Wu wrote:
+>> -----Original Message-----
+>> From: Marc Zyngier <maz@kernel.org>
+>> Sent: Monday, September 7, 2020 4:55 PM
+>> To: Jianyong Wu <Jianyong.Wu@arm.com>
 
-Thanks for the patches, looks good!
+[...]
 
-Please fix the issue reported from 'kernel test robot' and resend.
+>> >> 	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_FEATUR
+>> >> ES_FUNC_ID,
+>> >> > +			     &hvc_res);
+>> >> > +	if (!(hvc_res.a0 | BIT(ARM_SMCCC_KVM_FUNC_KVM_PTP)))
+>> >> > +		return -EOPNOTSUPP;
+>> >> > +
+>> >> > +	return 0;
+>> >>
+>> >> What happens if the
+>> >> ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID function isn't
+>> implemented
+>> >> (on an old kernel or a non-KVM hypervisor)? The expected behaviour is
+>> >> that a0 will contain SMCCC_RET_NOT_SUPPORTED, which is -1.
+>> >> The result is that this function always returns "supported". Not an
+>> >> acceptable behaviour.
+>> >>
+>> > Oh!  it's really a stupid mistake, should be "&" not "|".
+>> 
+>> But even then. (-1 & whatever) is always true.
+> 
+> Yeah, what about checking if a0 is non-negative first? Like:
+> if (hvc_res.a0 < 0 || !(hvc_res.a0 & BIT(ARM_SMCCC_KVM_FUNC_KVM_PTP)))
+> 	return -EOPNOTSUPP;
 
-Thanks!
+I don't get it. You already carry a patch from Will that gives
+you a way to check for a service (kvm_arm_hyp_service_available()).
+
+Why do you need to reinvent the wheel?
+
+         M.
+-- 
+Jazz is not dead. It just smells funny...
