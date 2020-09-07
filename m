@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FF36260043
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:46:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3167E25FFA2
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:35:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730986AbgIGQpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 12:45:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49084 "EHLO mail.kernel.org"
+        id S1730853AbgIGQfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:35:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729895AbgIGQfd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:35:33 -0400
+        id S1730837AbgIGQfe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:35:34 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6CE9322207;
-        Mon,  7 Sep 2020 16:35:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4F6A21D92;
+        Mon,  7 Sep 2020 16:35:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599496533;
-        bh=K2PGk4ztZK2SavoJZdLUu6GbXFrGLphmmGLkD0+uLbU=;
+        s=default; t=1599496534;
+        bh=Je6ILfHYlBQoJYkE6845cqQ6HK7HkqPNvcVNY+12xo4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mWaJkSrr4Csxlt3mWQPZ77MLXIG4wpmO1RZAVHk65kUQBzeP0VOAOTC+tg3xwADCi
-         xotkoLq25IlDEJr7e7bodXZf4Hbu0fj8kIdwxRILQ8vBKWNCMiiNIMm8d5tnyPfGk6
-         3zUEh0GWgNF0CKd4NDcwmOAEPbv/w+70Xgp8X81c=
+        b=wL/baOzfX6UcWHNugkOb6Sh1HhfQKzWxvA53WLcEUymDjh44//8fqnOQahTihgZsT
+         FhqjM2Tmp8VeBA9NPEzZp46/ZY6meywEDYXUDZwYD7Ec2xrHfDuOOtI1BgCfYLG0tv
+         4gURn0sN5YM76ReOmm+wiZ7WYMpug3OXen9H/sno=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        syzbot+d451401ffd00a60677ee@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 06/13] cfg80211: regulatory: reject invalid hints
-Date:   Mon,  7 Sep 2020 12:35:17 -0400
-Message-Id: <20200907163524.1281734-6-sashal@kernel.org>
+Cc:     Himadri Pandya <himadrispandya@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 07/13] net: usb: Fix uninit-was-stored issue in asix_read_phy_addr()
+Date:   Mon,  7 Sep 2020 12:35:18 -0400
+Message-Id: <20200907163524.1281734-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200907163524.1281734-1-sashal@kernel.org>
 References: <20200907163524.1281734-1-sashal@kernel.org>
@@ -44,36 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Himadri Pandya <himadrispandya@gmail.com>
 
-[ Upstream commit 47caf685a6854593348f216e0b489b71c10cbe03 ]
+[ Upstream commit a092b7233f0e000cc6f2c71a49e2ecc6f917a5fc ]
 
-Reject invalid hints early in order to not cause a kernel
-WARN later if they're restored to or similar.
+The buffer size is 2 Bytes and we expect to receive the same amount of
+data. But sometimes we receive less data and run into uninit-was-stored
+issue upon read. Hence modify the error check on the return value to match
+with the buffer size as a prevention.
 
-Reported-by: syzbot+d451401ffd00a60677ee@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=d451401ffd00a60677ee
-Link: https://lore.kernel.org/r/20200819084648.13956-1-johannes@sipsolutions.net
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reported-and-tested by: syzbot+a7e220df5a81d1ab400e@syzkaller.appspotmail.com
+Signed-off-by: Himadri Pandya <himadrispandya@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/reg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/usb/asix_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/wireless/reg.c b/net/wireless/reg.c
-index 6d5f3f737207d..a649763b854d5 100644
---- a/net/wireless/reg.c
-+++ b/net/wireless/reg.c
-@@ -2321,6 +2321,9 @@ int regulatory_hint_user(const char *alpha2,
- 	if (WARN_ON(!alpha2))
- 		return -EINVAL;
+diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+index 3dbb0646b0245..541c06c884e55 100644
+--- a/drivers/net/usb/asix_common.c
++++ b/drivers/net/usb/asix_common.c
+@@ -277,7 +277,7 @@ int asix_read_phy_addr(struct usbnet *dev, int internal)
  
-+	if (!is_world_regdom(alpha2) && !is_an_alpha2(alpha2))
-+		return -EINVAL;
-+
- 	request = kzalloc(sizeof(struct regulatory_request), GFP_KERNEL);
- 	if (!request)
- 		return -ENOMEM;
+ 	netdev_dbg(dev->net, "asix_get_phy_addr()\n");
+ 
+-	if (ret < 0) {
++	if (ret < 2) {
+ 		netdev_err(dev->net, "Error reading PHYID register: %02x\n", ret);
+ 		goto out;
+ 	}
 -- 
 2.25.1
 
