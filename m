@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61FD725FE68
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:15:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAAF325FE66
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:15:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730497AbgIGQPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 12:15:47 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:44176 "EHLO
+        id S1730396AbgIGQPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:15:40 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:44860 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730488AbgIGQPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 12:15:18 -0400
+        by vger.kernel.org with ESMTP id S1730490AbgIGQPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 12:15:32 -0400
 Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9342B60085;
-        Mon,  7 Sep 2020 16:15:17 +0000 (UTC)
-Received: from us4-mdac16-21.ut7.mdlocal (unknown [10.7.65.245])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 91F57800A4;
-        Mon,  7 Sep 2020 16:15:17 +0000 (UTC)
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 54FEC6008F;
+        Mon,  7 Sep 2020 16:15:27 +0000 (UTC)
+Received: from us4-mdac16-22.ut7.mdlocal (unknown [10.7.65.246])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 533B9800A4;
+        Mon,  7 Sep 2020 16:15:27 +0000 (UTC)
 X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.41])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E81098005B;
-        Mon,  7 Sep 2020 16:15:16 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.175])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E11B580051;
+        Mon,  7 Sep 2020 16:15:26 +0000 (UTC)
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 83B174C0073;
-        Mon,  7 Sep 2020 16:15:16 +0000 (UTC)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 98D44700066;
+        Mon,  7 Sep 2020 16:15:26 +0000 (UTC)
 Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
  (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 7 Sep 2020
- 17:15:11 +0100
+ 17:15:21 +0100
 From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 4/6] sfc: handle limited FEC support
+Subject: [PATCH net-next 5/6] sfc: remove EFX_DRIVER_VERSION
 To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>
 References: <4634ee2f-728d-fa64-aa2c-490f607fc9fd@solarflare.com>
-Message-ID: <67198e21-a679-b059-3eed-e579ada05a78@solarflare.com>
-Date:   Mon, 7 Sep 2020 17:15:08 +0100
+Message-ID: <1e935241-f79f-ed5a-b90e-ecdd8e0632d6@solarflare.com>
+Date:   Mon, 7 Sep 2020 17:15:18 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
@@ -47,148 +47,73 @@ X-Originating-IP: [10.17.20.203]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25650.007
-X-TM-AS-Result: No-3.083900-8.000000-10
-X-TMASE-MatchedRID: Kw18Xv5S6HfqZd/Q8VPrjE+zv2ByYSDQffXpER5TkJEAjiw/nJICh3WQ
-        EG9fkFjn8XVI39JCRnSjfNAVYAJRAq0iin8P0KjVPwKTD1v8YV5MkOX0Uoduud1bPD+cmI6DTca
-        4Swg2I6PaXrpD+znxDfr698DDTYToZ/mERv8EXlVQ+S0N05fR+xfbPFE2GHrV3kqU4/bhfXCNp9
-        wlZtMgueLzNWBegCW2RYvisGWbbS+No+PRbWqfRMZW5ai5WKlyoiEmB1SnJujWihxlHESXdmpaH
-        NLcWSGpeYL5zWXWlILXluR+Pc5deWZ6i/1Q1iTCvxVmi6VaWZaPb9ieSc6fOkcED6gT62htkERy
-        uRHFgnhSMqc7UpUorBKRsPC6bTvOqrQxXydIwG8AF83WedHbhQ==
+X-TM-AS-Result: No-3.309600-8.000000-10
+X-TMASE-MatchedRID: KZs+m1wVwKlI4wna8AoJYDfu+RTlciXgeouvej40T4gd0WOKRkwsh1ym
+        Rv3NQjsE4aBLis6ititw5T4Iaj538mJZXQNDzktSGjzBgnFZvQ62+OflY2YjKV7Q5CwTjM06oex
+        gGLUVYyM77ZXb57t/G3UJW3hxVXl59xb6r5VfoomL6q5RsNhv5LMiB//a6ucWxKLCLOyCW5BWXR
+        dFScRW4tAaXEhW9X9ekZOl7WKIImrvXOvQVlExsGodc419PBJCxEHRux+uk8ifEzJ5hPndGcA8s
+        vHCVHdBeB36GkuM8rpk2fa4F6U2qttxIw5N1A4YmpFhlfxtuRpDXVGg4bxk/85e6afRG1BaMNV9
+        9ZVnrjRSwMEIv6jfKRoQVhcDKUH1JRIzmbBpwaQgJCm6ypGLZ6Ol5oRXyhFEVlxr1FJij9s=
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.083900-8.000000
+X-TMASE-Result: 10--3.309600-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25650.007
-X-MDID: 1599495317-zLHUzhCmWcCF
+X-MDID: 1599495327-f89nuIaQA3cl
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the reported PHY capabilities do not include a given FEC mode, don't
- attempt to select that FEC mode anyway.  If the user tries to set a mode
- through ethtool that is not supported, return an error.
-The _REQUESTED bits don't appear in the supported caps, but are implied
- by the corresponding FEC bits.
+Per-module versions for in-tree drivers are deprecated.
 
 Signed-off-by: Edward Cree <ecree@solarflare.com>
 ---
- drivers/net/ethernet/sfc/mcdi_port_common.c | 48 +++++++++++++++------
- drivers/net/ethernet/sfc/mcdi_port_common.h |  2 +-
- 2 files changed, 36 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/sfc/efx.c            | 3 +--
+ drivers/net/ethernet/sfc/ethtool_common.c | 1 -
+ drivers/net/ethernet/sfc/net_driver.h     | 2 --
+ 3 files changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.c b/drivers/net/ethernet/sfc/mcdi_port_common.c
-index 71c76a6a6b0e..c0e1c88a652c 100644
---- a/drivers/net/ethernet/sfc/mcdi_port_common.c
-+++ b/drivers/net/ethernet/sfc/mcdi_port_common.c
-@@ -308,7 +308,7 @@ void efx_mcdi_phy_decode_link(struct efx_nic *efx,
-  * Both RS and BASER (whether AUTO or not) means use FEC if cable and link
-  * partner support it, preferring RS to BASER.
-  */
--u32 ethtool_fec_caps_to_mcdi(u32 ethtool_cap)
-+u32 ethtool_fec_caps_to_mcdi(u32 supported_cap, u32 ethtool_cap)
+diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/efx.c
+index aad6710c0afb..58b043f946b4 100644
+--- a/drivers/net/ethernet/sfc/efx.c
++++ b/drivers/net/ethernet/sfc/efx.c
+@@ -1329,7 +1329,7 @@ static int __init efx_init_module(void)
  {
- 	u32 ret = 0;
- 
-@@ -316,17 +316,21 @@ u32 ethtool_fec_caps_to_mcdi(u32 ethtool_cap)
- 		return 0;
- 
- 	if (ethtool_cap & ETHTOOL_FEC_AUTO)
--		ret |= (1 << MC_CMD_PHY_CAP_BASER_FEC_LBN) |
--		       (1 << MC_CMD_PHY_CAP_25G_BASER_FEC_LBN) |
--		       (1 << MC_CMD_PHY_CAP_RS_FEC_LBN);
--	if (ethtool_cap & ETHTOOL_FEC_RS)
-+		ret |= ((1 << MC_CMD_PHY_CAP_BASER_FEC_LBN) |
-+			(1 << MC_CMD_PHY_CAP_25G_BASER_FEC_LBN) |
-+			(1 << MC_CMD_PHY_CAP_RS_FEC_LBN)) & supported_cap;
-+	if (ethtool_cap & ETHTOOL_FEC_RS &&
-+	    supported_cap & (1 << MC_CMD_PHY_CAP_RS_FEC_LBN))
- 		ret |= (1 << MC_CMD_PHY_CAP_RS_FEC_LBN) |
- 		       (1 << MC_CMD_PHY_CAP_RS_FEC_REQUESTED_LBN);
--	if (ethtool_cap & ETHTOOL_FEC_BASER)
--		ret |= (1 << MC_CMD_PHY_CAP_BASER_FEC_LBN) |
--		       (1 << MC_CMD_PHY_CAP_25G_BASER_FEC_LBN) |
--		       (1 << MC_CMD_PHY_CAP_BASER_FEC_REQUESTED_LBN) |
--		       (1 << MC_CMD_PHY_CAP_25G_BASER_FEC_REQUESTED_LBN);
-+	if (ethtool_cap & ETHTOOL_FEC_BASER) {
-+		if (supported_cap & (1 << MC_CMD_PHY_CAP_BASER_FEC_LBN))
-+			ret |= (1 << MC_CMD_PHY_CAP_BASER_FEC_LBN) |
-+			       (1 << MC_CMD_PHY_CAP_BASER_FEC_REQUESTED_LBN);
-+		if (supported_cap & (1 << MC_CMD_PHY_CAP_25G_BASER_FEC_LBN))
-+			ret |= (1 << MC_CMD_PHY_CAP_25G_BASER_FEC_LBN) |
-+			       (1 << MC_CMD_PHY_CAP_25G_BASER_FEC_REQUESTED_LBN);
-+	}
- 	return ret;
- }
- 
-@@ -577,7 +581,7 @@ int efx_mcdi_phy_set_link_ksettings(struct efx_nic *efx, const struct ethtool_li
- 		}
- 	}
- 
--	caps |= ethtool_fec_caps_to_mcdi(efx->fec_config);
-+	caps |= ethtool_fec_caps_to_mcdi(phy_cfg->supported_cap, efx->fec_config);
- 
- 	rc = efx_mcdi_set_link(efx, caps, efx_get_mcdi_phy_flags(efx),
- 			       efx->loopback_mode, 0);
-@@ -645,12 +649,30 @@ int efx_mcdi_phy_get_fecparam(struct efx_nic *efx, struct ethtool_fecparam *fec)
- 	return 0;
- }
- 
-+/* Basic validation to ensure that the caps we are going to attempt to set are
-+ * in fact supported by the adapter.  Note that 'no FEC' is always supported.
-+ */
-+static int ethtool_fec_supported(u32 supported_cap, u32 ethtool_cap)
-+{
-+	if (ethtool_cap & ETHTOOL_FEC_OFF)
-+		return 0;
-+
-+	if (ethtool_cap &&
-+	    !ethtool_fec_caps_to_mcdi(supported_cap, ethtool_cap))
-+		return -EINVAL;
-+	return 0;
-+}
-+
- int efx_mcdi_phy_set_fecparam(struct efx_nic *efx, const struct ethtool_fecparam *fec)
- {
- 	struct efx_mcdi_phy_data *phy_cfg = efx->phy_data;
- 	u32 caps;
  	int rc;
  
-+	rc = ethtool_fec_supported(phy_cfg->supported_cap, fec->fec);
-+	if (rc)
-+		return rc;
-+
- 	/* Work out what efx_mcdi_phy_set_link_ksettings() would produce from
- 	 * saved advertising bits
- 	 */
-@@ -660,7 +682,7 @@ int efx_mcdi_phy_set_fecparam(struct efx_nic *efx, const struct ethtool_fecparam
- 	else
- 		caps = phy_cfg->forced_cap;
+-	printk(KERN_INFO "Solarflare NET driver v" EFX_DRIVER_VERSION "\n");
++	printk(KERN_INFO "Solarflare NET driver\n");
  
--	caps |= ethtool_fec_caps_to_mcdi(fec->fec);
-+	caps |= ethtool_fec_caps_to_mcdi(phy_cfg->supported_cap, fec->fec);
- 	rc = efx_mcdi_set_link(efx, caps, efx_get_mcdi_phy_flags(efx),
- 			       efx->loopback_mode, 0);
+ 	rc = register_netdevice_notifier(&efx_netdev_notifier);
  	if (rc)
-@@ -699,7 +721,7 @@ int efx_mcdi_port_reconfigure(struct efx_nic *efx)
- 		    ethtool_linkset_to_mcdi_cap(efx->link_advertising) :
- 		    phy_cfg->forced_cap);
+@@ -1391,4 +1391,3 @@ MODULE_AUTHOR("Solarflare Communications and "
+ MODULE_DESCRIPTION("Solarflare network driver");
+ MODULE_LICENSE("GPL");
+ MODULE_DEVICE_TABLE(pci, efx_pci_table);
+-MODULE_VERSION(EFX_DRIVER_VERSION);
+diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/ethtool_common.c
+index 622a72eb153a..b18a4bcfccdf 100644
+--- a/drivers/net/ethernet/sfc/ethtool_common.c
++++ b/drivers/net/ethernet/sfc/ethtool_common.c
+@@ -106,7 +106,6 @@ void efx_ethtool_get_drvinfo(struct net_device *net_dev,
+ 	struct efx_nic *efx = netdev_priv(net_dev);
  
--	caps |= ethtool_fec_caps_to_mcdi(efx->fec_config);
-+	caps |= ethtool_fec_caps_to_mcdi(phy_cfg->supported_cap, efx->fec_config);
+ 	strlcpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
+-	strlcpy(info->version, EFX_DRIVER_VERSION, sizeof(info->version));
+ 	efx_mcdi_print_fwver(efx, info->fw_version,
+ 			     sizeof(info->fw_version));
+ 	strlcpy(info->bus_info, pci_name(efx->pci_dev), sizeof(info->bus_info));
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index c3015f258ba0..3fd0b59107d1 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -38,8 +38,6 @@
+  *
+  **************************************************************************/
  
- 	return efx_mcdi_set_link(efx, caps, efx_get_mcdi_phy_flags(efx),
- 				 efx->loopback_mode, 0);
-diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.h b/drivers/net/ethernet/sfc/mcdi_port_common.h
-index 9d214079f699..f37e18adbc37 100644
---- a/drivers/net/ethernet/sfc/mcdi_port_common.h
-+++ b/drivers/net/ethernet/sfc/mcdi_port_common.h
-@@ -41,7 +41,7 @@ u8 mcdi_to_ethtool_media(u32 media);
- void efx_mcdi_phy_decode_link(struct efx_nic *efx,
- 			      struct efx_link_state *link_state,
- 			      u32 speed, u32 flags, u32 fcntl);
--u32 ethtool_fec_caps_to_mcdi(u32 ethtool_cap);
-+u32 ethtool_fec_caps_to_mcdi(u32 supported_cap, u32 ethtool_cap);
- u32 mcdi_fec_caps_to_ethtool(u32 caps, bool is_25g);
- void efx_mcdi_phy_check_fcntl(struct efx_nic *efx, u32 lpa);
- bool efx_mcdi_phy_poll(struct efx_nic *efx);
+-#define EFX_DRIVER_VERSION	"4.1"
+-
+ #ifdef DEBUG
+ #define EFX_WARN_ON_ONCE_PARANOID(x) WARN_ON_ONCE(x)
+ #define EFX_WARN_ON_PARANOID(x) WARN_ON(x)
 
