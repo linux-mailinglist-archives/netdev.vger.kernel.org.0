@@ -2,74 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05FBD2605F4
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 22:51:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8EC52605FF
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 22:58:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726916AbgIGUvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 16:51:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47396 "EHLO mail.kernel.org"
+        id S1727044AbgIGU6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 16:58:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49034 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726446AbgIGUvF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 16:51:05 -0400
+        id S1726853AbgIGU6p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 16:58:45 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9FBD2215A4;
-        Mon,  7 Sep 2020 20:51:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 561CA215A4;
+        Mon,  7 Sep 2020 20:58:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599511864;
-        bh=moHE2fS5SWr+Q90roWsS4gsQyYjLus/LW9s9udWd1Nk=;
+        s=default; t=1599512324;
+        bh=XXdJdrXSDXXRuKqiD07l3whQ+kMfrHo1hVSzCvy3FBU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LQ/2FOlmeD6SbiVafipbjXeesAhQ26/vuXrKYJkt9ywKt43vf+9LzkD9sOXZjJL1D
-         4G2Jnepu5AFnxFKxshkkIeP1G36IwyrRKmKfMO5EMPY4kzW2v16WMn41QCe2ETLAcj
-         Kkf/JBDthXbdIiHd8TktH6rVt0LkMSspBTITDTfE=
-Date:   Mon, 7 Sep 2020 13:51:02 -0700
+        b=f6w0qWtwCnfg0gdQDKslSFNp8X6yyTJYQ0jJMUW7IVqQp+HyMVb+7MHVpr6tZgfFu
+         530Ri/dV1aaN2AuwAX8veEqNb975usJT5jVm5bPMRHqQye6Q8zy6/P5APn6e/aRgVg
+         QEpRYUxy8eRfCoIkG8vBbLqfNWrr+fJBg/wpMN+k=
+Date:   Mon, 7 Sep 2020 13:58:42 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>
-Subject: Re: [PATCH net-next] netlink: add spaces around '&' in
- netlink_recvmsg()
-Message-ID: <20200907135102.27e07aff@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200907132144.3144704-1-yangyingliang@huawei.com>
-References: <20200907132144.3144704-1-yangyingliang@huawei.com>
+To:     Wang Hai <wanghai38@huawei.com>
+Cc:     <davem@davemloft.net>, <f.fainelli@gmail.com>, <timur@kernel.org>,
+        <zhengdejin5@gmail.com>, <hkallweit1@gmail.com>, <leon@kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: ethernet: dnet: Remove set but unused
+ variable 'len'
+Message-ID: <20200907135842.38f0c211@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200907141207.11778-1-wanghai38@huawei.com>
+References: <20200907141207.11778-1-wanghai38@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 7 Sep 2020 21:21:44 +0800 Yang Yingliang wrote:
-> Spaces preferred around '&'.
+On Mon, 7 Sep 2020 22:12:07 +0800 Wang Hai wrote:
+> Fixes gcc '-Wunused-but-set-variable' warning:
+>=20
+> drivers/net/ethernet/dnet.c: In function dnet_start_xmit
+> drivers/net/ethernet/dnet.c:511:15: warning: variable =E2=80=98len=E2=80=
+=99 set but not used [-Wunused-but-set-variable]
+>=20
+> commit 4796417417a6 ("dnet: Dave DNET ethernet controller driver (updated=
+)")
+> involved this unused variable, remove it.
+>=20
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Wang Hai <wanghai38@huawei.com>
 
-This in itself is not a sufficient justification to touch code that
-pre-dates the git era.
-
-IMHO '&' without spaces around it is particularly hard to read, and 
-the code is actively used, which makes the change worth considering.
-
-But I'm not sure why you decided to fix recvmsg but not sendmsg.
-
-Please provide a better commit message.
-
-> diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-> index d2d1448274f5..5a86bf4f80b1 100644
-> --- a/net/netlink/af_netlink.c
-> +++ b/net/netlink/af_netlink.c
-> @@ -1929,12 +1929,12 @@ static int netlink_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
->  	struct scm_cookie scm;
->  	struct sock *sk = sock->sk;
->  	struct netlink_sock *nlk = nlk_sk(sk);
-> -	int noblock = flags&MSG_DONTWAIT;
-> +	int noblock = flags & MSG_DONTWAIT;
->  	size_t copied;
->  	struct sk_buff *skb, *data_skb;
->  	int err, ret;
->  
-> -	if (flags&MSG_OOB)
-> +	if (flags & MSG_OOB)
->  		return -EOPNOTSUPP;
->  
->  	copied = 0;
-
+tx_status is also not used. But I guess one change per commit,=20
+so applied. Thanks!
