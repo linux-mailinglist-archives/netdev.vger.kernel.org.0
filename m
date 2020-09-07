@@ -2,215 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B852925F4F1
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:22:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5651025F520
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:27:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728031AbgIGIWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 04:22:24 -0400
-Received: from mail-vi1eur05on2099.outbound.protection.outlook.com ([40.107.21.99]:26400
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727807AbgIGIWT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 04:22:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NGIzRLD1ZfCM/kS3id+L/VH1HvV4yxPlDKBgw7ESPI64EAs7JYog8EiRAhjqK3f7712xxw89U7hJ0JC/nN9MWcGn6ag7kCUb5AOpSqzfv9VmfOnNq9QbTt74XwJOMIgnQ6HQrCCPLEZip3/52Se73cMaQskl1qFh5X6qypxBvUhohPZ5sGDUS+2NuFrBVAVgWKFQrE2curm2lFAqv17R+BNAD0KwyeTFDDhxCLNI0iZeGmtgCr796D/UIRRMotM0v6sNXTS9IMmyN0ol7A0NwqPLltPhd8wVdrmSkPdAuX6HRgv/picp7h5J8MDB/KY7Os/z3ZbwyyStnzFPxAG8Ow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tEZVnYjlmZVy4ySpCumI0EsLnTRx38na9WL5sSVBJq0=;
- b=Ojj1WBYTw9cds38x285ganSkLCZRlkBgTtzKho9hE/WXJ8IbNk3lBDOlOrXDMAkpCenxY1JW3guJXT6gqA/EfOX6TNQZMjqr0h7jPIi8bScoX0PAT/QnoV73OebldbLqzJEEYDxa/8noMyBtvlqJPd6Ir2ziAlyPxhPWJaTsfrTOSW9Qy0+kHTzJwsfhMxWJ8Zghh2dYBpkUCzOcxMH47J0wfYmrdksMuD5+iXj+Pzc6yvsRdcb/FXjSMsrbkvn6U7LAQoquQfn+ZxDZj4jZOr/bCHuZEjqk6SEVAGQi2PyJ480IE2U+Uwvc8Trl/yPfRJXMpyDeg6AhgCI0Q8VtwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tEZVnYjlmZVy4ySpCumI0EsLnTRx38na9WL5sSVBJq0=;
- b=focfFPTwk/AWSPNBDsZp0INC4PqikOmujSiNQnYKtkwjG/3FtYkx162lOY2HjOdarXdo5a/RM8M9R7i24Z2GpGwmiupSraf2kXbNgx0E/9FE9L1CvFpKu2ctDmjHWRpwG0+LxfV1V4vScwWI03UU6hVH+hzBwf+rGoWVMNRjNYM=
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
- by VE1PR05MB7247.eurprd05.prod.outlook.com (2603:10a6:800:1ae::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15; Mon, 7 Sep
- 2020 08:22:14 +0000
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::20b1:691e:b3c7:2f58]) by VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::20b1:691e:b3c7:2f58%7]) with mapi id 15.20.3348.019; Mon, 7 Sep 2020
- 08:22:14 +0000
-From:   Hoang Huu Le <hoang.h.le@dektech.com.au>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jmaloy@redhat.com" <jmaloy@redhat.com>,
-        "maloy@donjonn.com" <maloy@donjonn.com>,
-        "syzbot+d5aa7e0385f6a5d0f4fd@syzkaller.appspotmail.com" 
-        <syzbot+d5aa7e0385f6a5d0f4fd@syzkaller.appspotmail.com>
-Subject: RE: [net-next] tipc: fix a deadlock when flushing scheduled work
-Thread-Topic: [net-next] tipc: fix a deadlock when flushing scheduled work
-Thread-Index: AQHWgz9oRsKA4NIcaEOUMsICoFtZsqlb57kAgADxZiA=
-Date:   Mon, 7 Sep 2020 08:22:14 +0000
-Message-ID: <VI1PR05MB46059906049E2ECEE1D2D0BCF1280@VI1PR05MB4605.eurprd05.prod.outlook.com>
-References: <20200905044518.3282-1-hoang.h.le@dektech.com.au>
- <20200906105656.0e997c96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200906105656.0e997c96@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=dektech.com.au;
-x-originating-ip: [123.20.195.8]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 80ddd045-9f0e-4dee-599a-08d853072040
-x-ms-traffictypediagnostic: VE1PR05MB7247:
-x-microsoft-antispam-prvs: <VE1PR05MB724754DD9EC2FB5A3A2F2355F1280@VE1PR05MB7247.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1122;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5hd2uzznfO9x1JIa+ZdRDpg1usf3892PziuTeRKjfagknGV4EEkzkMxCL+jAUBII12jEh+ZGFOgq3K/0qEumkQTpeCJlk1wlSYUulU+2fHnIjzm4GZX7aSyOd98i8WNL3EFQrDSCMWei0Q66IeVyqSEV609Wkthfq07njWh4dMUFxy2nBeT0BM4QJmJsPUuQXWodcLyf5b9HHz2xqEmqFCxhoiMzfaQL3605VBK1KspQr+PX06XdlyXxW7KqDdEM+7+GV4bvD87U6a1m+S15SKYTxK3OYKliUDGhe+KkxLDiFfIhIhYHoCOVDfNDD/Xco/U8W73bCzBToFW6xkaJiQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4605.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(376002)(396003)(39840400004)(366004)(6506007)(6916009)(4326008)(86362001)(8676002)(316002)(478600001)(8936002)(2906002)(54906003)(7696005)(55016002)(9686003)(186003)(5660300002)(52536014)(53546011)(55236004)(64756008)(66556008)(66476007)(66946007)(83380400001)(71200400001)(33656002)(66446008)(26005)(76116006);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: IIvfqZZoApOHJ+DlDUi6/KVc3gusY982B+vJOhAh13dHJIgB2rNxxpZRMdF0phlFKaDn5fZQQVvmYqMhlmSeGNaI1qba9MVgs8Pq2qJqjJo7e2b3s8XHn88VJNT7VWvnIANk3FP8tmGwq5tchpfBsxL0ITXksyYlA0yzmj96YoskdK7JnPtMZQKz7vPf/s2BSc7/fPdxB4x75dRRxG1pLh2NclQzxGMZWCQLrK3RS2VKGLRvuqq7yV1FSEs/nlnK9J2PiXda8N2ZEIaugYsQ4oTt8DP5k6XUHVz+OMs3B0II2KzNrM59QOJqDXDaGxaVcu2erYAMoWOxna5bkFiB0AGO8DPfbjEQPY8N5FECZKtKb+nvIgvAR5DeCcI3ny25IGaiLDRc36UgxyyP6swQ9nCoUcs7wnEBvuZbMDeTmu84USCacghhhaZDGfWOiZ0mlikelye47+RKLUEq77QNhjXpGJofkFsQugjmnlsDHZ0SF4OwX5tWwOFlo9NEhWE2Nasrsg9hl6xLUl3jU2O3ExorzesZjDDhTV/81NvCGR6oGvDA0WrUHt3P5p6CHtTMS+mPq1yMvxgkcR7o8fft4ckfSAxXOwQI/lX+JOfA0GIQARL8VVZfYPhJpmGj+Wmm0KC/+OUwqoGsWy18yM4q+g==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728036AbgIGI1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 04:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728238AbgIGI1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 04:27:44 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA0EC061573;
+        Mon,  7 Sep 2020 01:27:42 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id n3so7178667pjq.1;
+        Mon, 07 Sep 2020 01:27:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rr+tlxBlRV0PoWeqX9mz0+xlIagOpr5ULHpySgGVztQ=;
+        b=dgIru0ODmLstoJLyrspsCDMLyxdTzAlbU7IVyuMjRVxwt3PozXloG1kxIJe2hCo1lk
+         rq1vDu55VydI1+6+PRSKEkpNP7f5j0LRzf4jQP08ZxCJiMWayJ9kM8kCzDjC5yiG7Gyd
+         0CbOIMstczK3dv/VQb/U/4fP0lLEKOJcUaWtIH5Hh9T3v3bOnaMN4DKv+BCft86/Owjo
+         ArGCt6ReZsIc7Z+lwYAf9LmaTHLssY5NbVdlsMankVDABVnGRgXFIX29bJDLARpGTKEj
+         TiPrUawJBuAFnJfL2Jglos/5k48c7vYvaFbUSVOREcjfNwqnJ9/OvblnoQaZcmaX/Qmj
+         LrIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rr+tlxBlRV0PoWeqX9mz0+xlIagOpr5ULHpySgGVztQ=;
+        b=kwnRTYQc/m9CBeaF4sS962wPROvXHmBgbaEQ3aG0V32VTV5ZzffF2UF61xImhZzurq
+         f5NVTfIh/6FtIsT/wLdZKvLa8fEJ7L/qIma9Y3PCPyfq3mQ9uYnFQcrMZw3qhkuNw4sW
+         Q0Zh4WItsdU10anJbiEAsGG+1G+Z90Jz4b/3f+f8+pxEOAeay7b1bMLF7LMPCLfIx7dE
+         xZfkfVRaoBCQujC4UNlvQRt8mxXeFw9l8qq0/Reux3Lc8mS+6g6m0SOO5AVz5Ns0Bdt9
+         UxHXpn0ITGAocmc/NI9+qdbp8RXWHVv/a1ohtSKb31v6s6Zlx3bficQ9IT8d8h/0DzSN
+         d5uA==
+X-Gm-Message-State: AOAM532zODeUHzQIrFb9ogP1e4M5hPTxKSAWlqZ1uogDloB7Pe4aeT1D
+        3aXrn3rjDDASzOCJ3Hjwo2g7FFXxF46gkg==
+X-Google-Smtp-Source: ABdhPJzfo47EnUdeAD8E4vdBhToqKTqRCPWTPywz+s55TbngdxsanU4mzd+WlwVCzL8ngs+Ym0S0GA==
+X-Received: by 2002:a17:90a:d246:: with SMTP id o6mr12371805pjw.211.1599467261760;
+        Mon, 07 Sep 2020 01:27:41 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id i20sm11756311pgk.77.2020.09.07.01.27.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Sep 2020 01:27:41 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv11 bpf-next 0/5] xdp: add a new helper for dev map multicast support
+Date:   Mon,  7 Sep 2020 16:27:19 +0800
+Message-Id: <20200907082724.1721685-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20200903102701.3913258-1-liuhangbin@gmail.com>
+References: <20200903102701.3913258-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB4605.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80ddd045-9f0e-4dee-599a-08d853072040
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Sep 2020 08:22:14.2480
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RmPWc1bJavoyNApVhxyGkhmp3gyLwFsLH6k/OCqcJzEGu59dYa2W/My2/N87ZEkXjGhj611AdYCCLj27Xs4rnaE9JrzUykvBN++3YqLcjkY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR05MB7247
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch is for xdp multicast support. which has been discussed before[0],
+The goal is to be able to implement an OVS-like data plane in XDP, i.e.,
+a software switch that can forward XDP frames to multiple ports.
 
+To achieve this, an application needs to specify a group of interfaces
+to forward a packet to. It is also common to want to exclude one or more
+physical interfaces from the forwarding operation - e.g., to forward a
+packet to all interfaces in the multicast group except the interface it
+arrived on. While this could be done simply by adding more groups, this
+quickly leads to a combinatorial explosion in the number of groups an
+application has to maintain.
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Monday, September 7, 2020 12:57 AM
-> To: Hoang Huu Le <hoang.h.le@dektech.com.au>
-> Cc: ying.xue@windriver.com; netdev@vger.kernel.org; jmaloy@redhat.com; ma=
-loy@donjonn.com;
-> syzbot+d5aa7e0385f6a5d0f4fd@syzkaller.appspotmail.com
-> Subject: Re: [net-next] tipc: fix a deadlock when flushing scheduled work
->=20
-> On Sat,  5 Sep 2020 11:45:18 +0700 Hoang Huu Le wrote:
-> > In the commit fdeba99b1e58
-> > ("tipc: fix use-after-free in tipc_bcast_get_mode"), we're trying
-> > to make sure the tipc_net_finalize_work work item finished if it
-> > enqueued. But calling flush_scheduled_work() is not just affecting
-> > above work item but either any scheduled work. This has turned out
-> > to be overkill and caused to deadlock as syzbot reported:
-> >
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-> > WARNING: possible circular locking dependency detected
-> > 5.9.0-rc2-next-20200828-syzkaller #0 Not tainted
-> > ------------------------------------------------------
-> > kworker/u4:6/349 is trying to acquire lock:
-> > ffff8880aa063d38 ((wq_completion)events){+.+.}-{0:0}, at: flush_workque=
-ue+0xe1/0x13e0 kernel/workqueue.c:2777
-> >
-> > but task is already holding lock:
-> > ffffffff8a879430 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0=
-xb10 net/core/net_namespace.c:565
-> >
-> > [...]
-> >  Possible unsafe locking scenario:
-> >
-> >        CPU0                    CPU1
-> >        ----                    ----
-> >   lock(pernet_ops_rwsem);
-> >                                lock(&sb->s_type->i_mutex_key#13);
-> >                                lock(pernet_ops_rwsem);
-> >   lock((wq_completion)events);
-> >
-> >  *** DEADLOCK ***
-> > [...]
-> >
-> > To fix the original issue, we replace above calling by introducing
-> > a bit flag. When a namespace cleaned-up, bit flag is set to zero and:
-> > - tipc_net_finalize functionial just does return immediately.
-> > - tipc_net_finalize_work does not enqueue into the scheduled work queue=
-.
->=20
-> Is struct tipc_net not going to be freed right after tipc_exit_net()
-> returns? In that case you'd be back to UAF if the flag is in this
-> structure.
->=20
-I rework the fix with version 2. In there, I use cancel_work_sync() API to
-cancel the specific tipc_net_finalize_work work.
-> > @@ -110,10 +111,6 @@ static void __net_exit tipc_exit_net(struct net *n=
-et)
-> >  	tipc_detach_loopback(net);
-> >  	tipc_net_stop(net);
-> >
-> > -	/* Make sure the tipc_net_finalize_work stopped
-> > -	 * before releasing the resources.
-> > -	 */
-> > -	flush_scheduled_work();
-> >  	tipc_bcast_stop(net);
-> >  	tipc_nametbl_stop(net);
-> >  	tipc_sk_rht_destroy(net);
-> > @@ -124,6 +121,9 @@ static void __net_exit tipc_exit_net(struct net *ne=
-t)
-> >
-> >  static void __net_exit tipc_pernet_pre_exit(struct net *net)
-> >  {
-> > +	struct tipc_net *tn =3D tipc_net(net);
-> > +
-> > +	clear_bit_unlock(0, &tn->net_exit_flag);
-> >  	tipc_node_pre_cleanup_net(net);
-> >  }
-> >
-> > diff --git a/net/tipc/core.h b/net/tipc/core.h
-> > index 631d83c9705f..aa75882dd932 100644
-> > --- a/net/tipc/core.h
-> > +++ b/net/tipc/core.h
-> > @@ -143,6 +143,7 @@ struct tipc_net {
-> >  	/* TX crypto handler */
-> >  	struct tipc_crypto *crypto_tx;
-> >  #endif
-> > +	unsigned long net_exit_flag;
-> >  };
-> >
-> >  static inline struct tipc_net *tipc_net(struct net *net)
-> > diff --git a/net/tipc/net.c b/net/tipc/net.c
-> > index 85400e4242de..8ad5b9ad89c0 100644
-> > --- a/net/tipc/net.c
-> > +++ b/net/tipc/net.c
-> > @@ -132,6 +132,9 @@ static void tipc_net_finalize(struct net *net, u32 =
-addr)
-> >  {
-> >  	struct tipc_net *tn =3D tipc_net(net);
-> >
-> > +	if (unlikely(!test_bit(0, &tn->net_exit_flag)))
-> > +		return;
-> > +
-> >  	if (cmpxchg(&tn->node_addr, 0, addr))
-> >  		return;
-> >  	tipc_set_node_addr(net, addr);
-> > @@ -153,8 +156,13 @@ static void tipc_net_finalize_work(struct work_str=
-uct *work)
-> >
-> >  void tipc_sched_net_finalize(struct net *net, u32 addr)
-> >  {
-> > -	struct tipc_net_work *fwork =3D kzalloc(sizeof(*fwork), GFP_ATOMIC);
-> > +	struct tipc_net *tn =3D tipc_net(net);
-> > +	struct tipc_net_work *fwork;
-> > +
-> > +	if (unlikely(!test_bit(0, &tn->net_exit_flag)))
-> > +		return;
-> >
-> > +	fwork =3D kzalloc(sizeof(*fwork), GFP_ATOMIC);
-> >  	if (!fwork)
-> >  		return;
-> >  	INIT_WORK(&fwork->work, tipc_net_finalize_work);
+To avoid the combinatorial explosion, we propose to include the ability
+to specify an "exclude group" as part of the forwarding operation. This
+needs to be a group (instead of just a single port index), because there
+may have multi interfaces you want to exclude.
+
+Thus, the logical forwarding operation becomes a "set difference"
+operation, i.e. "forward to all ports in group A that are not also in
+group B". This series implements such an operation using device maps to
+represent the groups. This means that the XDP program specifies two
+device maps, one containing the list of netdevs to redirect to, and the
+other containing the exclude list.
+
+To achieve this, I re-implement a new helper bpf_redirect_map_multi()
+to accept two maps, the forwarding map and exclude map. If user
+don't want to use exclude map and just want simply stop redirecting back
+to ingress device, they can use flag BPF_F_EXCLUDE_INGRESS.
+
+The 1st patch add a new bpf arg to allow NULL map pointer.
+The 2nd patch add the new bpf_redirect_map_multi() helper.
+The 3rd and 4th patches are for usage sample and testing purpose, there
+is no effort has been made on performance optimisation.
+The 5th patch added some verifier test for new bpf arg ARG_CONST_MAP_PTR_OR_NULL
+
+I did same tests with pktgen(pkt size 64) to compire with xdp_redirect_map().
+Here is the test result(the veth peer has a dummy xdp program with XDP_DROP
+directly):
+
+Version         | Test                                   | Native | Generic
+5.9 rc1         | xdp_redirect_map       i40e->i40e      |  10.4M |  1.9M
+5.9 rc1         | xdp_redirect_map       i40e->veth      |  14.2M |  2.2M
+5.9 rc1 + patch | xdp_redirect_map       i40e->i40e      |  10.3M |  1.9M
+5.9 rc1 + patch | xdp_redirect_map       i40e->veth      |  14.2M |  2.2M
+5.9 rc1 + patch | xdp_redirect_map_multi i40e->i40e      |   8.0M |  1.5M
+5.9 rc1 + patch | xdp_redirect_map_multi i40e->veth      |  11.2M |  1.6M
+5.9 rc1 + patch | xdp_redirect_map_multi i40e->i40e+veth |   3.5M |  1.1M
+
+The bpf_redirect_map_multi() is slower than bpf_redirect_map() as we loop
+the map and do clone skb/xdpf. The generic path is slower than native
+path as we send skbs by pktgen. So the result looks reasonable. There is
+some performance improvement for veth port compared with 5.8 rc1.
+
+Last but not least, thanks a lot to Toke, Jesper, Jiri and Eelco for
+suggestions and help on implementation.
+
+[0] https://xdp-project.net/#Handling-multicast
+
+v11:
+Fix bpf_redirect_map_multi() helper description typo.
+Add loop limit for devmap_get_next_obj() and dev_map_redirect_multi().
+
+v10:
+Rebase the code to latest bpf-next.
+Update helper bpf_xdp_redirect_map_multi()
+- No need to check map pointer as we will do the check in verifier.
+
+v9:
+Update helper bpf_xdp_redirect_map_multi()
+- Use ARG_CONST_MAP_PTR_OR_NULL for helper arg2
+
+v8:
+a) Update function dev_in_exclude_map():
+   - remove duplicate ex_map map_type check in
+   - lookup the element in dev map by obj dev index directly instead
+     of looping all the map
+
+v7:
+a) Fix helper flag check
+b) Limit the *ex_map* to use DEVMAP_HASH only and update function
+   dev_in_exclude_map() to get better performance.
+
+v6: converted helper return types from int to long
+
+v5:
+a) Check devmap_get_next_key() return value.
+b) Pass through flags to __bpf_tx_xdp_map() instead of bool value.
+c) In function dev_map_enqueue_multi(), consume xdpf for the last
+   obj instead of the first on.
+d) Update helper description and code comments to explain that we
+   use NULL target value to distinguish multicast and unicast
+   forwarding.
+e) Update memory model, memory id and frame_sz in xdpf_clone().
+f) Split the tests from sample and add a bpf kernel selftest patch.
+
+v4: Fix bpf_xdp_redirect_map_multi_proto arg2_type typo
+
+v3: Based on Toke's suggestion, do the following update
+a) Update bpf_redirect_map_multi() description in bpf.h.
+b) Fix exclude_ifindex checking order in dev_in_exclude_map().
+c) Fix one more xdpf clone in dev_map_enqueue_multi().
+d) Go find next one in dev_map_enqueue_multi() if the interface is not
+   able to forward instead of abort the whole loop.
+e) Remove READ_ONCE/WRITE_ONCE for ex_map.
+
+v2: Add new syscall bpf_xdp_redirect_map_multi() which could accept
+include/exclude maps directly.
+
+Hangbin Liu (5):
+  bpf: add a new bpf argument type ARG_CONST_MAP_PTR_OR_NULL
+  xdp: add a new helper for dev map multicast support
+  sample/bpf: add xdp_redirect_map_multicast test
+  selftests/bpf: add xdp_redirect_multi test
+  selftests/bpf: Add verifier tests for bpf arg
+    ARG_CONST_MAP_PTR_OR_NULL
+
+ include/linux/bpf.h                           |  21 +++
+ include/linux/filter.h                        |   1 +
+ include/net/xdp.h                             |   1 +
+ include/uapi/linux/bpf.h                      |  27 +++
+ kernel/bpf/devmap.c                           | 132 +++++++++++++
+ kernel/bpf/verifier.c                         |  20 +-
+ net/core/filter.c                             | 118 +++++++++++-
+ net/core/xdp.c                                |  29 +++
+ samples/bpf/Makefile                          |   3 +
+ samples/bpf/xdp_redirect_map_multi_kern.c     |  43 +++++
+ samples/bpf/xdp_redirect_map_multi_user.c     | 166 +++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |  27 +++
+ tools/testing/selftests/bpf/Makefile          |   4 +-
+ .../bpf/progs/xdp_redirect_multi_kern.c       |  77 ++++++++
+ tools/testing/selftests/bpf/test_verifier.c   |  22 ++-
+ .../selftests/bpf/test_xdp_redirect_multi.sh  | 164 +++++++++++++++++
+ .../testing/selftests/bpf/verifier/map_ptr.c  |  70 +++++++
+ .../selftests/bpf/xdp_redirect_multi.c        | 173 ++++++++++++++++++
+ 18 files changed, 1086 insertions(+), 12 deletions(-)
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_kern.c
+ create mode 100644 samples/bpf/xdp_redirect_map_multi_user.c
+ create mode 100644 tools/testing/selftests/bpf/progs/xdp_redirect_multi_kern.c
+ create mode 100755 tools/testing/selftests/bpf/test_xdp_redirect_multi.sh
+ create mode 100644 tools/testing/selftests/bpf/xdp_redirect_multi.c
+
+-- 
+2.25.4
 
