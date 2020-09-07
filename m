@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFEC625F954
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 13:25:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB42425F9AF
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 13:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728996AbgIGLZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 07:25:23 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:52626 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728588AbgIGLZL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 07:25:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599477910;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DVXpD394ENZfUXuAbhjrpM4nV+8/n/+Aiiu1MAlDqfY=;
-        b=baiRR+HEK99LG8kiq3biikFJQlm3wjJzYRgTRoww/MgtrlDTpLtZSoJSK9LNY9kfdj364V
-        jy+AVP8kUi/bKbICpM0kyDHs1bqQrtpBa62ZUAwdyr1YwtLfCPwaNqnViyDP/wmeTaqIvR
-        9gBk4uV81i+Pvx7nwZs6FMva2x/vtWI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-158-2AYx_M5GO3KM1K91XFl6cQ-1; Mon, 07 Sep 2020 07:05:58 -0400
-X-MC-Unique: 2AYx_M5GO3KM1K91XFl6cQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4599C2FD0B;
-        Mon,  7 Sep 2020 11:05:56 +0000 (UTC)
-Received: from krava (ovpn-112-180.ams2.redhat.com [10.36.112.180])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 682E29CBA;
-        Mon,  7 Sep 2020 11:05:50 +0000 (UTC)
-Date:   Mon, 7 Sep 2020 13:05:49 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH] perf tools: Do not use deprecated bpf_program__title
-Message-ID: <20200907110549.GI1199773@krava>
-References: <20200907110237.1329532-1-jolsa@kernel.org>
+        id S1728880AbgIGL1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 07:27:02 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:4636 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729011AbgIGLZ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 07:25:56 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f56138a0000>; Mon, 07 Sep 2020 04:03:38 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Mon, 07 Sep 2020 04:03:52 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Mon, 07 Sep 2020 04:03:52 -0700
+Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 7 Sep
+ 2020 11:03:44 +0000
+Date:   Mon, 7 Sep 2020 14:03:35 +0300
+From:   Eli Cohen <elic@nvidia.com>
+To:     Jason Wang <jasowang@redhat.com>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>, Cindy Lu <lulu@redhat.com>,
+        <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH] vdpa/mlx5: Setup driver only if VIRTIO_CONFIG_S_DRIVER_OK
+Message-ID: <20200907110335.GA121033@mtl-vdi-166.wap.labs.mlnx>
+References: <20200907075136.GA114876@mtl-vdi-166.wap.labs.mlnx>
+ <507166908.16038290.1599476003292.JavaMail.zimbra@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20200907110237.1329532-1-jolsa@kernel.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <507166908.16038290.1599476003292.JavaMail.zimbra@redhat.com>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1599476618; bh=LMINtOPqRpD4/qKaVjsYmBlP/+l8N4T31Ra1fzRuNvw=;
+        h=X-PGP-Universal:Date:From:To:CC:Subject:Message-ID:References:
+         MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+         User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=U+LfzrCE1qXlV5Yn6jDnkds7trQBDDmYItyFQMxX1MoMqSuJmtNK53pNNcczWzbUo
+         H+QV6phVU8H808RJk3hv3GDA/RW9Iq59OamE4WXWEaovO0uPfHmBdu6IU9TMxwyb45
+         ibdZRbLgsyj6q13xMcce+aZcduR5jRQ+iAqDQ7cEAY7qqeV7tnRjTqJOcboebTnE9Y
+         EPDkXpuND9DVgbithHbEZp4nDXzyWNDfMh+FZDQZGVBbMRCW50PuKexfYGltFkyO/X
+         rJeWLUaFt1JWC5mEzoRrYX7bBekwT9Yf2vWXtPztSS7LGafFYfqxlPxBWafpf4EUeh
+         9v6spsKZi4NXQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 07, 2020 at 01:02:37PM +0200, Jiri Olsa wrote:
-> The bpf_program__title function got deprecated in libbpf,
-> use the suggested alternative.
+On Mon, Sep 07, 2020 at 06:53:23AM -0400, Jason Wang wrote:
 > 
-> Fixes: 521095842027 ("libbpf: Deprecate notion of BPF program "title" in favor of "section name"")
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-
-Arnaldo,
-the commit in 'Fixes' is not yet in your tree yet and the patch
-below will make the perf compilation fail in your perf/core..
-
-it fixes perf compilation on top of bpf-next tree.. so I think it
-should go in through bpf-next tree
-
-thanks,
-jirka
-
-> ---
->  tools/perf/util/bpf-loader.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
-> index 2feb751516ab..73de3973c8ec 100644
-> --- a/tools/perf/util/bpf-loader.c
-> +++ b/tools/perf/util/bpf-loader.c
-> @@ -328,7 +328,7 @@ config_bpf_program(struct bpf_program *prog)
->  	probe_conf.no_inlines = false;
->  	probe_conf.force_add = false;
->  
-> -	config_str = bpf_program__title(prog, false);
-> +	config_str = bpf_program__section_name(prog);
->  	if (IS_ERR(config_str)) {
->  		pr_debug("bpf: unable to get title for program\n");
->  		return PTR_ERR(config_str);
-> @@ -454,7 +454,7 @@ preproc_gen_prologue(struct bpf_program *prog, int n,
->  	if (err) {
->  		const char *title;
->  
-> -		title = bpf_program__title(prog, false);
-> +		title = bpf_program__section_name(prog);
->  		if (!title)
->  			title = "[unknown]";
->  
-> -- 
-> 2.26.2
+> ----- Original Message -----
+> > If the memory map changes before the driver status is
+> > VIRTIO_CONFIG_S_DRIVER_OK, don't attempt to create resources because it
+> > may fail. For example, if the VQ is not ready there is no point in
+> > creating resources.
+> > 
+> > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+> > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > ---
+> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > index 9df69d5efe8c..c89cd48a0aab 100644
+> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > @@ -1645,6 +1645,9 @@ static int mlx5_vdpa_change_map(struct mlx5_vdpa_net
+> > *ndev, struct vhost_iotlb *
+> >  	if (err)
+> >  		goto err_mr;
+> >  
+> > +	if (!(ndev->mvdev.status & VIRTIO_CONFIG_S_DRIVER_OK))
+> > +		return 0;
+> > +
 > 
+> I'm not sure I get this.
+> 
+> It looks to me if set_map() is called before DRIVER_OK, we won't build
+> any mapping?
+> 
+What would prevent that? Is it some qemu logic you're relying upon?
+With current qemu 5.1 with lack of batching support, I get plenty calls
+to set_map which result in calls to mlx5_vdpa_change_map().
+If that happens before VIRTIO_CONFIG_S_DRIVER_OK then Imay fail (in case
+I was not called to set VQs ready).
 
+> 
+> >  	restore_channels_info(ndev);
+> >  	err = setup_driver(ndev);
+> >  	if (err)
+> > --
+> > 2.26.0
+> > 
+> > 
+> 
