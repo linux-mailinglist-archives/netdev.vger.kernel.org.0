@@ -2,128 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93ADE25FD42
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 17:38:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1355925FD6B
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 17:48:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730185AbgIGPgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 11:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53550 "EHLO
+        id S1730241AbgIGPsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 11:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730065AbgIGPgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 11:36:37 -0400
-Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892FDC061574
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 08:36:29 -0700 (PDT)
-Received: by mail-vs1-xe43.google.com with SMTP id c127so1828767vsc.1
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 08:36:29 -0700 (PDT)
+        with ESMTP id S1730119AbgIGPry (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 11:47:54 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DF6C061573
+        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 08:47:53 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id k25so16593962ljg.9
+        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 08:47:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nJEsEWjWRZObVJF4DyxZILWVHWpY6Co2ImRdKDFB6Bk=;
-        b=Rmd0HzKEhIYWj4J0+ibVku7J26nrdN7aK/pIQ5FwuU+LGlR797B1TVsy0Nn8QC3JoE
-         sQCrtCQxeOYzHfyZPBDBdk/aH9ZL8wgJhgnKbNJMVpxK76oXl2mu4RbUixYjke0kQ6B4
-         7+ukuVyPkqyHD8iWKJlOojYj9GQLZwiqIhpprzIq2dh4YVrCiGyCfAkT1cSkReyJOc0+
-         4Dn+QZbIgHOBVHxeDhl3FazNXEkLOScRWu+/YR9LZNTM3pU02c8jeT5l4dhpODuJbMAL
-         D/SfkC2vIbbt6wBqh/p1/AKsQ4L1CIzC0aq2/1K3p6VHBHVlxvNUeYNM4/Q/IESfHskU
-         XPtA==
+        bh=ivQvsyE6a4cVeG5qhqN0tKh2Wm00/o3zG/1de7fdJ3o=;
+        b=fHn63fYdMmYIGEmMXk9OX0ES6Z5SSwmbsfIFS3UyRjG56TFTr8/V1aRh2BcFMzqZSb
+         IsSEKSvaXPDI6/gwLsPP68WodTuUcOiJZmFe2VTgxazfRwmHNVDmj+6wB4rtn41iBNuJ
+         k8EXU9a+Pf6qMxHf/aulIyydP1LkAVRbndQWKjMejHXjbJNuPlNfgSYD0uIwUDVF2jG/
+         tAHEsPhjN+Tq5vG/OIkdEssp9HkBqP0CIEcq5NS18EUFsQZKgH/NnIOLGmoZ9cN0kr87
+         tOafiN54pzk6/sh2RyRLeHeTgIqcytzWYONhhk41ZaItqvpPelckGVsdf+iuN80zKied
+         zCLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nJEsEWjWRZObVJF4DyxZILWVHWpY6Co2ImRdKDFB6Bk=;
-        b=RY5BM5NSZFHNSOz7PzrvH4hTjYKZytHGrQ+7nVtv+z7Jm97G5tg9UvxENDYGeK21tx
-         iCKlurcKAx8dg34AKA8oxHPR2q/l4/vmqHT9LdjxQUv99apWn3AbTotCcyJiOS4nqPK9
-         p8zQtzfjeoDAhfWaNWidLIHbIDOu8PumzxqDvlgHpOUP73grxxOTcmM5iYAezji/JxZW
-         p5FVc8cqgfGyMMaU94IRiiFWZN39Elh064Ggil67k1PF0xZdKIEPA1jKjYv48mOl6vAW
-         WyHpDHD6N48I+uQCfWEpoIRm3Em5iyyocOjR/J9ISZITsViMKCBkZx+QlGc967dD3hb4
-         /uxA==
-X-Gm-Message-State: AOAM530cp1YYfav6UlH90aMi1sbgmFS9RbAkqyMPhuAKrG9GlCzb43kx
-        RosuPjmg5P9ypNSyYg5+EvQa22ILytpDKA==
-X-Google-Smtp-Source: ABdhPJxq9Y/fMgaGe0n6hxqyQ1YpjYvkiltsh0qXvFao/PhJJw8Rbu81ETszdSrK5YkaXjre8+NXJQ==
-X-Received: by 2002:a67:c31d:: with SMTP id r29mr11997736vsj.0.1599492987828;
-        Mon, 07 Sep 2020 08:36:27 -0700 (PDT)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id p3sm2429204vkd.41.2020.09.07.08.36.26
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Sep 2020 08:36:27 -0700 (PDT)
-Received: by mail-ua1-f52.google.com with SMTP id y15so4256806uan.9
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 08:36:26 -0700 (PDT)
-X-Received: by 2002:ab0:60d7:: with SMTP id g23mr11098331uam.122.1599492985684;
- Mon, 07 Sep 2020 08:36:25 -0700 (PDT)
+        bh=ivQvsyE6a4cVeG5qhqN0tKh2Wm00/o3zG/1de7fdJ3o=;
+        b=tvve6XCUlcyGJg/0uYthB0epIs1Epd+PmF4jhtEl08jrtfyEwFXOUZC9KlswpIcsmw
+         EqVdUNZHOLP5XI7d8cPWirBWoe2p5AG4r9BSUxYqcFxt1e64iZ+wxuQm5bZZDJJceO+k
+         EuzrZQT13AXnZkrxVNgoW07Z2rp7bRhpIWHYJ1GgjSvc1hZtjzs9zkd166AYGMun3+ha
+         f3uLM3ua2ojbQ3zeKm3TJDw/kQdmD6BNGHLaAsGvBip8tB3xD3LisVHhb5311vRde5Xg
+         wDbImkBvO8Pti/Z/xJOQ1UkgbQ2g0856vl8u6PO2QkZaQuDNBWFJznkhMWtRlxB3wDNp
+         Mvtg==
+X-Gm-Message-State: AOAM530hzS9yGtxpkNB3c7asHcWDcgA2vrUbcv8zmexS/yv98Er6989m
+        +mom/5nw9Bco+zXAQVAdQnY8WFtZfx3n10YYFPIKBl1aQBs=
+X-Google-Smtp-Source: ABdhPJxYrtrzU/+gT+VSp6JiIm8DGripduonziS4ofjimliDNyNQK1NK7zUXQ8IBCbAXkwC9I+dLAOh6BLcld/h68iI=
+X-Received: by 2002:a2e:6f17:: with SMTP id k23mr11094146ljc.245.1599493669251;
+ Mon, 07 Sep 2020 08:47:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <1599286273-26553-1-git-send-email-tanhuazhong@huawei.com>
- <20200906114153.7dccce5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CA+FuTSfeEuTLAGJZkzoMUvx+0j3dY265i8okPLyDO6S-8KHdbQ@mail.gmail.com> <126e5424-2453-eef4-d5b6-adeaedbb6eca@huawei.com>
-In-Reply-To: <126e5424-2453-eef4-d5b6-adeaedbb6eca@huawei.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 7 Sep 2020 17:35:48 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSecsVRsOt7asv7aHGvAXCacHGYwbG1a1X9ynL83dqP8Bw@mail.gmail.com>
-Message-ID: <CA+FuTSecsVRsOt7asv7aHGvAXCacHGYwbG1a1X9ynL83dqP8Bw@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/2] net: two updates related to UDP GSO
-To:     tanhuazhong <tanhuazhong@huawei.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+References: <20200906143404.31445-1-ap420073@gmail.com> <20200907135520.GA3529@pc-2.home>
+In-Reply-To: <20200907135520.GA3529@pc-2.home>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Tue, 8 Sep 2020 00:47:37 +0900
+Message-ID: <CAMArcTXP-3q5WLR5wzCVCYKa2pHakGo=__dK1thT55p3GCPa4w@mail.gmail.com>
+Subject: Re: [PATCH net] netns: fix a deadlock in peernet2id_alloc()
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
-        linuxarm@huawei.com
+        Netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 7, 2020 at 3:38 PM tanhuazhong <tanhuazhong@huawei.com> wrote:
+On Mon, 7 Sep 2020 at 22:55, Guillaume Nault <gnault@redhat.com> wrote:
 >
->
->
-> On 2020/9/7 17:22, Willem de Bruijn wrote:
-> > On Sun, Sep 6, 2020 at 8:42 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >>
-> >> On Sat, 5 Sep 2020 14:11:11 +0800 Huazhong Tan wrote:
-> >>> There are two updates relates to UDP GSO.
-> >>> #1 adds a new GSO type for UDPv6
-> >>> #2 adds check for UDP GSO when csum is disable in netdev_fix_features().
-> >>>
-> >>> Changes since RFC V2:
-> >>> - modifies the timing of setting UDP GSO type when doing UDP GRO in #1.
-> >>>
-> >>> Changes since RFC V1:
-> >>> - updates NETIF_F_GSO_LAST suggested by Willem de Bruijn.
-> >>>    and add NETIF_F_GSO_UDPV6_L4 feature for each driver who support UDP GSO in #1.
-> >>>    - add #2 who needs #1.
-> >>
-> >> Please CC people who gave you feedback (Willem).
-> >>
-> >> I don't feel good about this series. IPv6 is not optional any more.
-> >> AFAIU you have some issues with csum support in your device? Can you
-> >> use .ndo_features_check() to handle this?
-> >>
-> >> The change in semantics of NETIF_F_GSO_UDP_L4 from "v4 and v6" to
-> >> "just v4" can trip people over; this is not a new feature people
-> >> may be depending on the current semantics.
-> >>
-> >> Willem, what are your thoughts on this?
-> >
-> > If that is the only reason, +1 on fixing it up in the driver's
-> > ndo_features_check.
-> >
->
-> Hi, Willem & Jakub.
->
-> This series mainly fixes the feature dependency between hardware
-> checksum and UDP GSO.
-> When turn off hardware checksum offload, run 'ethtool -k [devname]'
-> we can see TSO is off as well, but udp gso still is on.
 
-I see. That does not entirely require separate IPv4 and IPv6 flags. It
-can be disabled if either checksum offload is disabled. I'm not aware
-of any hardware that only supports checksum offload for one of the two
-network protocols.
+Hi Guillaume,
+Thank you for the review!
 
-Alternatively, the real value of splitting the type is in advertising
-the features separately through ethtool. That requires additional
-changes.
+> On Sun, Sep 06, 2020 at 02:34:04PM +0000, Taehee Yoo wrote:
+> > To protect netns id, the nsid_lock is used when netns id is being
+> > allocated and removed by peernet2id_alloc() and unhash_nsid().
+> > The nsid_lock can be used in BH context but only spin_lock() is used
+> > in this code.
+> > Using spin_lock() instead of spin_lock_bh() can result in a deadlock in
+> > the following scenario reported by the lockdep.
+> > In order to avoid a deadlock, the spin_lock_bh() should be used instead
+> > of spin_lock() to acquire nsid_lock.
+> >
+> > Test commands:
+> >     ip netns del nst
+> >     ip netns add nst
+> >     ip link add veth1 type veth peer name veth2
+> >     ip link set veth1 netns nst
+> >     ip netns exec nst ip link add name br1 type bridge vlan_filtering 1
+> >     ip netns exec nst ip link set dev br1 up
+> >     ip netns exec nst ip link set dev veth1 master br1
+> >     ip netns exec nst ip link set dev veth1 up
+> >     ip netns exec nst ip link add macvlan0 link br1 up type macvlan
+> >
+> > Splat looks like:
+> > [   33.615860][  T607] WARNING: SOFTIRQ-safe -> SOFTIRQ-unsafe lock order detected
+> > [   33.617194][  T607] 5.9.0-rc1+ #665 Not tainted
+> > [ ... ]
+> > [   33.670615][  T607] Chain exists of:
+> > [   33.670615][  T607]   &mc->mca_lock --> &bridge_netdev_addr_lock_key --> &net->nsid_lock
+> > [   33.670615][  T607]
+> > [   33.673118][  T607]  Possible interrupt unsafe locking scenario:
+> > [   33.673118][  T607]
+> > [   33.674599][  T607]        CPU0                    CPU1
+> > [   33.675557][  T607]        ----                    ----
+> > [   33.676516][  T607]   lock(&net->nsid_lock);
+> > [   33.677306][  T607]                                local_irq_disable();
+> > [   33.678517][  T607]                                lock(&mc->mca_lock);
+> > [   33.679725][  T607]                                lock(&bridge_netdev_addr_lock_key);
+> > [   33.681166][  T607]   <Interrupt>
+> > [   33.681791][  T607]     lock(&mc->mca_lock);
+> > [   33.682579][  T607]
+> > [   33.682579][  T607]  *** DEADLOCK ***
+> > [ ... ]
+> > [   33.922046][  T607] stack backtrace:
+> > [   33.922999][  T607] CPU: 3 PID: 607 Comm: ip Not tainted 5.9.0-rc1+ #665
+> > [   33.924099][  T607] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
+> > [   33.925714][  T607] Call Trace:
+> > [   33.926238][  T607]  dump_stack+0x78/0xab
+> > [   33.926905][  T607]  check_irq_usage+0x70b/0x720
+> > [   33.927708][  T607]  ? iterate_chain_key+0x60/0x60
+> > [   33.928507][  T607]  ? check_path+0x22/0x40
+> > [   33.929201][  T607]  ? check_noncircular+0xcf/0x180
+> > [   33.930024][  T607]  ? __lock_acquire+0x1952/0x1f20
+> > [   33.930860][  T607]  __lock_acquire+0x1952/0x1f20
+> > [   33.931667][  T607]  lock_acquire+0xaf/0x3a0
+> > [   33.932366][  T607]  ? peernet2id_alloc+0x3a/0x170
+> > [   33.933147][  T607]  ? br_port_fill_attrs+0x54c/0x6b0 [bridge]
+> > [   33.934140][  T607]  ? br_port_fill_attrs+0x5de/0x6b0 [bridge]
+> > [   33.935113][  T607]  ? kvm_sched_clock_read+0x14/0x30
+> > [   33.935974][  T607]  _raw_spin_lock+0x30/0x70
+> > [   33.936728][  T607]  ? peernet2id_alloc+0x3a/0x170
+> > [   33.937523][  T607]  peernet2id_alloc+0x3a/0x170
+> > [   33.938313][  T607]  rtnl_fill_ifinfo+0xb5e/0x1400
+> > [   33.939091][  T607]  rtmsg_ifinfo_build_skb+0x8a/0xf0
+> > [   33.939953][  T607]  rtmsg_ifinfo_event.part.39+0x17/0x50
+> > [   33.940863][  T607]  rtmsg_ifinfo+0x1f/0x30
+> > [   33.941571][  T607]  __dev_notify_flags+0xa5/0xf0
+> > [   33.942376][  T607]  ? __irq_work_queue_local+0x49/0x50
+> > [   33.943249][  T607]  ? irq_work_queue+0x1d/0x30
+> > [   33.943993][  T607]  ? __dev_set_promiscuity+0x7b/0x1a0
+> > [   33.944878][  T607]  __dev_set_promiscuity+0x7b/0x1a0
+> > [   33.945758][  T607]  dev_set_promiscuity+0x1e/0x50
+> > [   33.946582][  T607]  br_port_set_promisc+0x1f/0x40 [bridge]
+> > [   33.947487][  T607]  br_manage_promisc+0x8b/0xe0 [bridge]
+> > [   33.948388][  T607]  __dev_set_promiscuity+0x123/0x1a0
+> > [   33.949244][  T607]  __dev_set_rx_mode+0x68/0x90
+> > [   33.950021][  T607]  dev_uc_add+0x50/0x60
+> > [   33.950720][  T607]  macvlan_open+0x18e/0x1f0 [macvlan]
+> > [   33.951601][  T607]  __dev_open+0xd6/0x170
+> > [   33.952269][  T607]  __dev_change_flags+0x181/0x1d0
+> > [   33.953056][  T607]  rtnl_configure_link+0x2f/0xa0
+> > [   33.953884][  T607]  __rtnl_newlink+0x6b9/0x8e0
+> > [   33.954665][  T607]  ? __lock_acquire+0x95d/0x1f20
+> > [   33.955450][  T607]  ? lock_acquire+0xaf/0x3a0
+> > [   33.956193][  T607]  ? is_bpf_text_address+0x5/0xe0
+> > [   33.956999][  T607]  rtnl_newlink+0x47/0x70
+>
+> Thanks Taehee. I thought I had checked all the possible code paths
+> before letting BH enabled. Looks like I missed some.
+>
+> Just one nit: this is a plain revert of 8d7e5dee972f ("netns:
+> don't disable BHs when locking "nsid_lock""). So it would be clearer to
+> use the regular git revert message template.
+>
+
+Okay, I will send a v2 patch, which uses the regular git revert
+message template.
+
+Thank you!
+Taehee
+
+> Apart from that,
+> Acked-by: Guillaume Nault <gnault@redhat.com>
+>
+> > Fixes: 8d7e5dee972f ("netns: don't disable BHs when locking "nsid_lock"")
+> > Reported-by: syzbot+3f960c64a104eaa2c813@syzkaller.appspotmail.com
+> > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> > ---
+> >  net/core/net_namespace.c | 22 +++++++++++-----------
+> >  1 file changed, 11 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+> > index dcd61aca343e..944ab214e5ae 100644
+> > --- a/net/core/net_namespace.c
+> > +++ b/net/core/net_namespace.c
+> > @@ -251,10 +251,10 @@ int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp)
+> >       if (refcount_read(&net->count) == 0)
+> >               return NETNSA_NSID_NOT_ASSIGNED;
+> >
+> > -     spin_lock(&net->nsid_lock);
+> > +     spin_lock_bh(&net->nsid_lock);
+> >       id = __peernet2id(net, peer);
+> >       if (id >= 0) {
+> > -             spin_unlock(&net->nsid_lock);
+> > +             spin_unlock_bh(&net->nsid_lock);
+> >               return id;
+> >       }
+> >
+> > @@ -264,12 +264,12 @@ int peernet2id_alloc(struct net *net, struct net *peer, gfp_t gfp)
+> >        * just been idr_remove()'d from there in cleanup_net().
+> >        */
+> >       if (!maybe_get_net(peer)) {
+> > -             spin_unlock(&net->nsid_lock);
+> > +             spin_unlock_bh(&net->nsid_lock);
+> >               return NETNSA_NSID_NOT_ASSIGNED;
+> >       }
+> >
+> >       id = alloc_netid(net, peer, -1);
+> > -     spin_unlock(&net->nsid_lock);
+> > +     spin_unlock_bh(&net->nsid_lock);
+> >
+> >       put_net(peer);
+> >       if (id < 0)
+> > @@ -534,20 +534,20 @@ static void unhash_nsid(struct net *net, struct net *last)
+> >       for_each_net(tmp) {
+> >               int id;
+> >
+> > -             spin_lock(&tmp->nsid_lock);
+> > +             spin_lock_bh(&tmp->nsid_lock);
+> >               id = __peernet2id(tmp, net);
+> >               if (id >= 0)
+> >                       idr_remove(&tmp->netns_ids, id);
+> > -             spin_unlock(&tmp->nsid_lock);
+> > +             spin_unlock_bh(&tmp->nsid_lock);
+> >               if (id >= 0)
+> >                       rtnl_net_notifyid(tmp, RTM_DELNSID, id, 0, NULL,
+> >                                         GFP_KERNEL);
+> >               if (tmp == last)
+> >                       break;
+> >       }
+> > -     spin_lock(&net->nsid_lock);
+> > +     spin_lock_bh(&net->nsid_lock);
+> >       idr_destroy(&net->netns_ids);
+> > -     spin_unlock(&net->nsid_lock);
+> > +     spin_unlock_bh(&net->nsid_lock);
+> >  }
+> >
+> >  static LLIST_HEAD(cleanup_list);
+> > @@ -760,9 +760,9 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
+> >               return PTR_ERR(peer);
+> >       }
+> >
+> > -     spin_lock(&net->nsid_lock);
+> > +     spin_lock_bh(&net->nsid_lock);
+> >       if (__peernet2id(net, peer) >= 0) {
+> > -             spin_unlock(&net->nsid_lock);
+> > +             spin_unlock_bh(&net->nsid_lock);
+> >               err = -EEXIST;
+> >               NL_SET_BAD_ATTR(extack, nla);
+> >               NL_SET_ERR_MSG(extack,
+> > @@ -771,7 +771,7 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
+> >       }
+> >
+> >       err = alloc_netid(net, peer, nsid);
+> > -     spin_unlock(&net->nsid_lock);
+> > +     spin_unlock_bh(&net->nsid_lock);
+> >       if (err >= 0) {
+> >               rtnl_net_notifyid(net, RTM_NEWNSID, err, NETLINK_CB(skb).portid,
+> >                                 nlh, GFP_KERNEL);
+> > --
+> > 2.17.1
+> >
+>
