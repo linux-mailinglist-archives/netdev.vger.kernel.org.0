@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB73C260027
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3E5B260010
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:43:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730994AbgIGQoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 12:44:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49548 "EHLO mail.kernel.org"
+        id S1730524AbgIGQf5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:35:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49646 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730842AbgIGQfk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:35:40 -0400
+        id S1730852AbgIGQfq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:35:46 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1EB8C221E9;
-        Mon,  7 Sep 2020 16:35:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B6B8321927;
+        Mon,  7 Sep 2020 16:35:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599496539;
-        bh=0xZQn08ge8u1b7LENZ75nSqgq2FnbOiaRR1KLQ2HahE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mSwr1Lyaea7/EO/933pUYNVoNgjOtMR27cOlQmwYFhIcucAC0gTAW9JeWMgy08qxk
-         +zEB2RIaDtsZO3KdF0fNsEzCtRa4IWTJziGq4L5rKzvGbLOXmpbDyVZGou0AWX0cDe
-         kdkwzUESowsphhzqC5OjofHChmCIh7QSl0BWRgMk=
+        s=default; t=1599496545;
+        bh=HPVoBkwWM2VEuHSnaDmJ4BHUWkB/Y6RRhjh/6SvnQNY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=0aTFBBV8P+v0zqC7QWVaRcZkcwKXHmW8cCQXd5Vv+4KaBUzGBHShoIQGCglS+5iZi
+         BFwOsxeXUwn4G8qff1vHpoq2xD+QGhNepzeMLE8kstRLdH81L3WLQkliM5ZtTb/Kq9
+         Nb4VmGktHmCLGHVYnF4MYcRDatJJWojgB1U+S3Vc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kamil Lorenc <kamil@re-ws.pl>,
+Cc:     Xie He <xie.he.0141@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Martin Schiller <ms@dev.tdt.de>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 11/13] net: usb: dm9601: Add USB ID of Keenetic Plus DSL
-Date:   Mon,  7 Sep 2020 12:35:22 -0400
-Message-Id: <20200907163524.1281734-11-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 01/10] drivers/net/wan/lapbether: Added needed_tailroom
+Date:   Mon,  7 Sep 2020 12:35:34 -0400
+Message-Id: <20200907163543.1281889-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200907163524.1281734-1-sashal@kernel.org>
-References: <20200907163524.1281734-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,34 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kamil Lorenc <kamil@re-ws.pl>
+From: Xie He <xie.he.0141@gmail.com>
 
-[ Upstream commit a609d0259183a841621f252e067f40f8cc25d6f6 ]
+[ Upstream commit 1ee39c1448c4e0d480c5b390e2db1987561fb5c2 ]
 
-Keenetic Plus DSL is a xDSL modem that uses dm9620 as its USB interface.
+The underlying Ethernet device may request necessary tailroom to be
+allocated by setting needed_tailroom. This driver should also set
+needed_tailroom to request the tailroom needed by the underlying
+Ethernet device to be allocated.
 
-Signed-off-by: Kamil Lorenc <kamil@re-ws.pl>
+Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/dm9601.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wan/lapbether.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/usb/dm9601.c b/drivers/net/usb/dm9601.c
-index 0b4bdd39106b0..fb18801d0fe7b 100644
---- a/drivers/net/usb/dm9601.c
-+++ b/drivers/net/usb/dm9601.c
-@@ -624,6 +624,10 @@ static const struct usb_device_id products[] = {
- 	 USB_DEVICE(0x0a46, 0x1269),	/* DM9621A USB to Fast Ethernet Adapter */
- 	 .driver_info = (unsigned long)&dm9601_info,
- 	},
-+	{
-+	 USB_DEVICE(0x0586, 0x3427),	/* ZyXEL Keenetic Plus DSL xDSL modem */
-+	 .driver_info = (unsigned long)&dm9601_info,
-+	},
- 	{},			// END
- };
+diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
+index 6eb0f7a85e531..5befc7f3f0e7a 100644
+--- a/drivers/net/wan/lapbether.c
++++ b/drivers/net/wan/lapbether.c
+@@ -343,6 +343,7 @@ static int lapbeth_new_device(struct net_device *dev)
+ 	 */
+ 	ndev->needed_headroom = -1 + 3 + 2 + dev->hard_header_len
+ 					   + dev->needed_headroom;
++	ndev->needed_tailroom = dev->needed_tailroom;
  
+ 	lapbeth = netdev_priv(ndev);
+ 	lapbeth->axdev = ndev;
 -- 
 2.25.1
 
