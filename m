@@ -2,234 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD90C260580
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 22:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DF6F2605AB
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 22:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729478AbgIGUTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 16:19:52 -0400
-Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:53668 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729432AbgIGUTv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 16:19:51 -0400
-Received: from localhost.localdomain ([93.23.12.185])
-        by mwinf5d87 with ME
-        id R8Kk230023zZ2cD038KkTY; Mon, 07 Sep 2020 22:19:49 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Mon, 07 Sep 2020 22:19:49 +0200
-X-ME-IP: 93.23.12.185
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        lee.jones@linaro.org, mpe@ellerman.id.au, adobriyan@gmail.com,
-        dan.carpenter@oracle.com, vulab@iscas.ac.cn
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] airo: switch from 'pci_' to 'dma_' API
-Date:   Mon,  7 Sep 2020 22:19:42 +0200
-Message-Id: <20200907201942.321568-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1729280AbgIGU1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 16:27:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41494 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728622AbgIGU1U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 16:27:20 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 27C7821556;
+        Mon,  7 Sep 2020 20:27:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599510439;
+        bh=nKy/rzLAWRf54aoPo+PrRowJ1euqWN4cWkwUgQ9wVQU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MHqV1K+eSoZXTqutpE73tF/indnyd5zB18ZGfKs7+tzfjr14/eotE5g3WCzEHJcF0
+         pcfwfRvNa7Kh5rBXqzIkFfD/T/Jg7oBaN25jbSle7WZ8sTbvNrGX797etkoN6WT3nZ
+         wE/l6rELydzqdaicPGbkn+327KHu7QgufkcKb4Mg=
+Date:   Mon, 7 Sep 2020 13:27:17 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     netdev@vger.kernel.org, roopa@nvidia.com,
+        bridge@lists.linux-foundation.org, davem@davemloft.net
+Subject: Re: [PATCH net-next v4 00/15] net: bridge: mcast: initial
+ IGMPv3/MLDv2 support (part 1)
+Message-ID: <20200907132717.5fdb04d9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200907095619.11216-1-nikolay@cumulusnetworks.com>
+References: <20200907095619.11216-1-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+On Mon,  7 Sep 2020 12:56:04 +0300 Nikolay Aleksandrov wrote:
+> Hi all,
+> This patch-set implements the control plane for initial IGMPv3/MLDv2
+> support which takes care of include/exclude sets and state transitions
+> based on the different report types.
+> Patch 01 arranges the structure better by moving the frequently used
+> fields together, patch 02 factors out the port group deletion code which is
+> used in a few places. Patches 03 and 04 add support for source lists and
+> group modes per port group which are dumped. Patch 05 adds support for
+> group-and-source specific queries required for IGMPv3/MLDv2. Then patch 06
+> adds support for group and group-and-source query retransmissions via a new
+> rexmit timer. Patches 07 and 08 make use of the already present mdb fill
+> functions when sending notifications so we can have the full mdb entries'
+> state filled in (with sources, mode etc). Patch 09 takes care of port group
+> expiration, it switches the group mode to include and deletes it if there
+> are no sources with active timers. Patches 10-13 are the core changes which
+> add support for IGMPv3/MLDv2 reports and handle the source list set
+> operations as per RFCs 3376 and 3810, all IGMPv3/MLDv2 report types with
+> their transitions should be supported after these patches. I've used RFCs
+> 3376, 3810 and FRR as a reference implementation. The source lists are
+> capped at 32 entries, we can remove that limitation at a later point which
+> would require a better data structure to hold them. IGMPv3 processing is
+> hidden behind the bridge's multicast_igmp_version option which must be set
+> to 3 in order to enable it. MLDv2 processing is hidden behind the bridge's
+> multicast_mld_version which must be set to 2 in order to enable it.
+> Patch 14 improves other querier processing a bit (more about this below).
+> And finally patch 15 transforms the src gc so it can be used with all mcast
+> objects since now we have multiple timers that can be running and we
+> need to make sure they have all finished before freeing the objects.
+> This is part 1, it only adds control plane support and doesn't change
+> the fast path. A following patch-set will take care of that.
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
-
-When memory is allocated in 'mpi_map_card()' GFP_KERNEL can be used because
-this function is called from a probe or a module_init() function and no
-spinlock is taken in the between.
-
-The call chains are:
-  airo_init_module				module_init function in 'airo.c'
-or
-  airo_probe				.probe function in 'airo_cs.c'
-    --> airo_config
-
-followed in both cases by:
-      --> init_airo_card
-        --> _init_airo_card
-          --> mpi_map_card
-
-
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
-
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/wireless/cisco/airo.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/wireless/cisco/airo.c b/drivers/net/wireless/cisco/airo.c
-index dd78c415d6e7..87b9398b03fd 100644
---- a/drivers/net/wireless/cisco/airo.c
-+++ b/drivers/net/wireless/cisco/airo.c
-@@ -2430,8 +2430,8 @@ void stop_airo_card(struct net_device *dev, int freeres)
- 				iounmap(ai->pcimem);
- 			if (ai->pciaux)
- 				iounmap(ai->pciaux);
--			pci_free_consistent(ai->pci, PCI_SHARED_LEN,
--				ai->shared, ai->shared_dma);
-+			dma_free_coherent(&ai->pci->dev, PCI_SHARED_LEN,
-+					  ai->shared, ai->shared_dma);
- 		}
-         }
- 	crypto_free_sync_skcipher(ai->tfm);
-@@ -2581,9 +2581,10 @@ static int mpi_map_card(struct airo_info *ai, struct pci_dev *pci)
- 	}
- 
- 	/* Reserve PKTSIZE for each fid and 2K for the Rids */
--	ai->shared = pci_alloc_consistent(pci, PCI_SHARED_LEN, &ai->shared_dma);
-+	ai->shared = dma_alloc_coherent(&pci->dev, PCI_SHARED_LEN,
-+					&ai->shared_dma, GFP_KERNEL);
- 	if (!ai->shared) {
--		airo_print_err("", "Couldn't alloc_consistent %d",
-+		airo_print_err("", "Couldn't alloc_coherent %d",
- 			PCI_SHARED_LEN);
- 		goto free_auxmap;
- 	}
-@@ -2643,7 +2644,8 @@ static int mpi_map_card(struct airo_info *ai, struct pci_dev *pci)
- 
- 	return 0;
-  free_shared:
--	pci_free_consistent(pci, PCI_SHARED_LEN, ai->shared, ai->shared_dma);
-+	dma_free_coherent(&pci->dev, PCI_SHARED_LEN, ai->shared,
-+			  ai->shared_dma);
-  free_auxmap:
- 	iounmap(ai->pciaux);
-  free_memmap:
-@@ -2930,7 +2932,8 @@ static struct net_device *_init_airo_card(unsigned short irq, int port,
- 	unregister_netdev(dev);
- err_out_map:
- 	if (test_bit(FLAG_MPI,&ai->flags) && pci) {
--		pci_free_consistent(pci, PCI_SHARED_LEN, ai->shared, ai->shared_dma);
-+		dma_free_coherent(&pci->dev, PCI_SHARED_LEN, ai->shared,
-+				  ai->shared_dma);
- 		iounmap(ai->pciaux);
- 		iounmap(ai->pcimem);
- 		mpi_unmap_card(ai->pci);
--- 
-2.25.1
-
+Applied thank you.
