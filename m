@@ -2,87 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE2325FCD6
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 17:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 705D225FDA8
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 17:54:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730170AbgIGPSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 11:18:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730046AbgIGPRy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 11:17:54 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1BDC061573;
-        Mon,  7 Sep 2020 08:17:52 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id b17so4489253pji.1;
-        Mon, 07 Sep 2020 08:17:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WmxQ1TCWh9ErVx2o7p8NTViaLgMIqPcYEFusknZqwqI=;
-        b=t1cgqo7rKZqSJBgPGK8D56Ubf/mtwCDe1ZmLC6+tmdllzkFVR+ZoJEY3W0UuaK0VeG
-         5x6pKpNiYya7bk79v4Rjg+rNA5p/MTUOGknwieskyteX78UX0a4MIF5JBNgulsLZkose
-         0R2HBWg2w/BpJmYOX/Jp5AVKwewEhEYsR6v0+DvevJyIa84S5IsOxgPvP6jEcPO6eXRQ
-         mZSoJnevEBi92fp76Jzwcf36hZ/UuuD+zuyBWmrYwF0QjJPwXQocS83l8BsLjuRnNWjC
-         5QYai+9/Lk/avqm7Tu1q8AY2EwLF4swsi0FmiLpHcYEpjUaKN56XMyutuKyvSPbFZhgH
-         tQ4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WmxQ1TCWh9ErVx2o7p8NTViaLgMIqPcYEFusknZqwqI=;
-        b=nPae7tITWc990Yr7feP9VutTO5TFMBsuhNOodId75mwRBvgmB4Ks/T18AbBnO+s1NI
-         Z/hpkL0yKpZpU3OusvxHz/5xSVN98hKTXYcKRbO2KqHWSMDLqsGXj7L7H3iMSKWaFcNq
-         LrRWCY1uuaq/rGLCe2W7mL2di6n3MeX+x2+NOZTjnMnWUq2XH0MItZ2xqG5mb3yqwm29
-         vNNdYi6BvUts4kZkliSLbhnGUJz8ty7AcZUPDkLnv0Jyi9OjVP6be1DN3vN1AXKn3mAb
-         KoRyurkZoJUxCTZ+Wcp9jqmWcCGfs8OIFMScuK/apEShP2lM+RWqb+csOH2RjuSLGBdL
-         o70A==
-X-Gm-Message-State: AOAM533xzI83a1eDj11T7fIgFFvjySVhAFnVKhOUVslN0VKlShdzvXJz
-        mKJ88XkvOru+RbBg9Mvdr5tYe9IpGg4=
-X-Google-Smtp-Source: ABdhPJwIdV3RZW5cLJtksbg7hpSJsZniyydTuAeZPd2xB4V+NmxnZfBXPUjdHbh/2h/7NC1+I+IPJA==
-X-Received: by 2002:a17:90a:46cd:: with SMTP id x13mr4319600pjg.101.1599491872287;
-        Mon, 07 Sep 2020 08:17:52 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id k4sm16698129pfp.189.2020.09.07.08.17.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 08:17:51 -0700 (PDT)
-Date:   Mon, 7 Sep 2020 08:17:49 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH v5 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek
- switches
-Message-ID: <20200907151749.GB31299@hoboy>
-References: <20200904062739.3540-1-kurt@linutronix.de>
- <20200904062739.3540-3-kurt@linutronix.de>
- <20200905204235.f6b5til4sc3hoglr@skbuf>
- <875z8qazq2.fsf@kurt>
- <20200907104821.kvu7bxvzwazzg7cv@skbuf>
+        id S1730293AbgIGPyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 11:54:19 -0400
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:39026 "EHLO
+        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730011AbgIGOuo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 10:50:44 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0U8F-iz8_1599489875;
+Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0U8F-iz8_1599489875)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 07 Sep 2020 22:44:35 +0800
+From:   Dust Li <dust.li@linux.alibaba.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideo Aoki <haoki@redhat.com>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] net/sock: don't drop udp packets if udp_mem[2] not reached
+Date:   Mon,  7 Sep 2020 22:44:35 +0800
+Message-Id: <20200907144435.43165-1-dust.li@linux.alibaba.com>
+X-Mailer: git-send-email 2.19.1.3.ge56e4f7
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200907104821.kvu7bxvzwazzg7cv@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 07, 2020 at 01:48:21PM +0300, Vladimir Oltean wrote:
-> So, I think that's not ok. I think the only proper way to solve this is
-> to inform the IP designers that VLANs are no substitute for a port
-> forwarding matrix
+We encoutered udp packets drop under a pretty low pressure
+with net.ipv4.udp_mem[0] set to a small value (4096).
 
-Somebody should tell TI that.  (cpts anyone?)
+After some tracing and debugging, we found that for udp
+protocol, __sk_mem_raise_allocated() will possiblly drop
+packets if:
+  udp_mem[0] < udp_prot.memory_allocated < udp_mem[2]
 
-Thanks,
-Richard
+That's because __sk_mem_raise_allocated() didn't handle
+the above condition for protocols like udp who doesn't
+have sk_has_memory_pressure()
+
+We can reproduce this with the following condition
+1. udp_mem[0] is relateive small,
+2. net.core.rmem_default/max > udp_mem[0] * 4K
+3. The udp server receive slowly, causing the udp_prot->memory_allocated
+   exceed udp_mem[0], but still under udp_mem[2]
+
+I wrote a test script to reproduce this:
+https://github.com/dust-li/kernel-test/blob/master/exceed_udp_mem_min_drop/exceed_udp_mem_min_drop.sh
+
+Obviously, we should not drop packets when udp_prot.memory_allocated
+just exceed udp_mem[0] but still under hard limit.
+
+For protocols with memory_pressure callbacks (like TCP), this is
+not a problem, because there is an extra check:
+```
+  if (sk_has_memory_pressure(sk)) {
+  	u64 alloc;
+
+  	if (!sk_under_memory_pressure(sk))
+  		return 1;
+  	alloc = sk_sockets_allocated_read_positive(sk);
+  	if (sk_prot_mem_limits(sk, 2) > alloc *
+  			sk_mem_pages(sk->sk_wmem_queued +
+  				atomic_read(&sk->sk_rmem_alloc) +
+  				sk->sk_forward_alloc))
+  		return 1;
+  }
+```
+
+But UDP didn't check this, so I add an extra check here
+to make sure UDP packets are not dropped until the hard limit
+is reached.
+
+Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
+---
+ net/core/sock.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 6c5c6b18eff4..fed8211d8dbe 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2648,6 +2648,12 @@ int __sk_mem_raise_allocated(struct sock *sk, int size, int amt, int kind)
+ 				 atomic_read(&sk->sk_rmem_alloc) +
+ 				 sk->sk_forward_alloc))
+ 			return 1;
++	} else {
++		/* for prots without memory_pressure callbacks, we should not
++		 * drop until hard limit reached
++		 */
++		if (allocated <= sk_prot_mem_limits(sk, 2))
++			return 1;
+ 	}
+ 
+ suppress_allocation:
+-- 
+2.19.1.3.ge56e4f7
+
