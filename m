@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E98225FF9B
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:35:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A9B12600B9
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:53:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730817AbgIGQfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 12:35:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48574 "EHLO mail.kernel.org"
+        id S1730980AbgIGQxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:53:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48568 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730762AbgIGQek (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1730761AbgIGQek (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 7 Sep 2020 12:34:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9AF7F21D7D;
-        Mon,  7 Sep 2020 16:34:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 14A3921D94;
+        Mon,  7 Sep 2020 16:34:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599496474;
-        bh=SVM4W5wXaNyf73xv0yoCvz8VhLonYYqx0D7XUUIDUVk=;
+        s=default; t=1599496476;
+        bh=OYWucVYP7dD+UA/1BSwGw/P5H+lgPztv1OB0A580bek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mwAnsLrhNl17UYIvMJVRZVOWhHQQyWDfow+m75oWBayPXjjQRVJ1xwztuM1U9lrHg
-         w897Z6M+TBGNH3g7CqPqwFb0Fz/yqrkNxfKtNW3NZvhW81vKpi4F0WafrLwGWthGE9
-         pf2eH5sIjMyQmaKQfbyZOQOxsV4JpG1Ovr2xBD1Q=
+        b=A20kiOSuLpBt5Afsk/kK0jxO9PNUi6Qrm2PfMkNMmXRiNjSKO+ws11cv/dBR55h1K
+         E+yjZ0o04/0slNSiIa/U1fzfe320mR5/6OUyJLAygu6TdBPzjiR1R2LclQLxZmamBL
+         TxXvfQsOY+eG/g5AUMFaHmlSvxe7l0PZO7z9aTP4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dinghao Liu <dinghao.liu@zju.edu.cn>,
+Cc:     Xie He <xie.he.0141@gmail.com>, Martin Schiller <ms@dev.tdt.de>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 06/26] firestream: Fix memleak in fs_open
-Date:   Mon,  7 Sep 2020 12:34:06 -0400
-Message-Id: <20200907163426.1281284-6-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 08/26] drivers/net/wan/lapbether: Set network_header before transmitting
+Date:   Mon,  7 Sep 2020 12:34:08 -0400
+Message-Id: <20200907163426.1281284-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200907163426.1281284-1-sashal@kernel.org>
 References: <20200907163426.1281284-1-sashal@kernel.org>
@@ -44,32 +43,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dinghao Liu <dinghao.liu@zju.edu.cn>
+From: Xie He <xie.he.0141@gmail.com>
 
-[ Upstream commit 15ac5cdafb9202424206dc5bd376437a358963f9 ]
+[ Upstream commit 91244d108441013b7367b3b4dcc6869998676473 ]
 
-When make_rate() fails, vcc should be freed just
-like other error paths in fs_open().
+Set the skb's network_header before it is passed to the underlying
+Ethernet device for transmission.
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+This patch fixes the following issue:
+
+When we use this driver with AF_PACKET sockets, there would be error
+messages of:
+   protocol 0805 is buggy, dev (Ethernet interface name)
+printed in the system "dmesg" log.
+
+This is because skbs passed down to the Ethernet device for transmission
+don't have their network_header properly set, and the dev_queue_xmit_nit
+function in net/core/dev.c complains about this.
+
+Reason of setting the network_header to this place (at the end of the
+Ethernet header, and at the beginning of the Ethernet payload):
+
+Because when this driver receives an skb from the Ethernet device, the
+network_header is also set at this place.
+
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/atm/firestream.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wan/lapbether.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
-index 112b1001c2694..ef395b238816c 100644
---- a/drivers/atm/firestream.c
-+++ b/drivers/atm/firestream.c
-@@ -1013,6 +1013,7 @@ static int fs_open(struct atm_vcc *atm_vcc)
- 				error = make_rate (pcr, r, &tmc0, NULL);
- 				if (error) {
- 					kfree(tc);
-+					kfree(vcc);
- 					return error;
- 				}
- 			}
+diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
+index 6b2553e893aca..15177a54b17d7 100644
+--- a/drivers/net/wan/lapbether.c
++++ b/drivers/net/wan/lapbether.c
+@@ -213,6 +213,8 @@ static void lapbeth_data_transmit(struct net_device *ndev, struct sk_buff *skb)
+ 
+ 	skb->dev = dev = lapbeth->ethdev;
+ 
++	skb_reset_network_header(skb);
++
+ 	dev_hard_header(skb, dev, ETH_P_DEC, bcast_addr, NULL, 0);
+ 
+ 	dev_queue_xmit(skb);
 -- 
 2.25.1
 
