@@ -2,73 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EE0D26063B
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 23:25:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D02B5260644
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 23:28:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727784AbgIGVZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 17:25:45 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45304 "EHLO mx2.suse.de"
+        id S1727861AbgIGV2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 17:28:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56484 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726929AbgIGVZo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 17:25:44 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 90EB1ABA2;
-        Mon,  7 Sep 2020 21:25:43 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 8D162603AD; Mon,  7 Sep 2020 23:25:42 +0200 (CEST)
-Date:   Mon, 7 Sep 2020 23:25:42 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "Kevin(Yudong) Yang" <yyd@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>
-Subject: Re: [PATCH ethtool,v2] ethtool: add support show/set-time-stamping
-Message-ID: <20200907212542.rnwzu3cn24uewyk4@lion.mk-sys.cz>
-References: <20200903140714.1781654-1-yyd@google.com>
- <20200907125312.evg6kio5dt3ar6c6@lion.mk-sys.cz>
- <CANn89iKZ19+AJOf5_5orPrUObYef+L-HrwF_Oay6o75ZbG7UhQ@mail.gmail.com>
+        id S1727088AbgIGV2g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 17:28:36 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D3F0215A4;
+        Mon,  7 Sep 2020 21:28:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599514116;
+        bh=BJZvKDJY9C0f4CMK+61SF1pC5Mi/osPFC1w7YiXBVg4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tBzUUZNGi9nHbfBr41ZDevX3KGZg9+RN+6irT1AoJuWSJQssBZBKdaUaNLYuaGACR
+         /rP6eTxLrx+RB0dxaYUgKKyvkAbb04uUXMYDYYysmxUZKSdv8cmSXRxmJjqqEYn5l+
+         wMdzZC/T3ilbM7LIYRpSaH3XEL8AHnoiTAa3jg4E=
+Date:   Mon, 7 Sep 2020 14:28:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luo bin <luobin9@huawei.com>
+Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <luoxianjun@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
+        <chiqijun@huawei.com>
+Subject: Re: [PATCH net] hinic: fix rewaking txq after netif_tx_disable
+Message-ID: <20200907142834.368b9bae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200907141516.16817-1-luobin9@huawei.com>
+References: <20200907141516.16817-1-luobin9@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iKZ19+AJOf5_5orPrUObYef+L-HrwF_Oay6o75ZbG7UhQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 07, 2020 at 06:56:20PM +0200, Eric Dumazet wrote:
-> On Mon, Sep 7, 2020 at 2:53 PM Michal Kubecek <mkubecek@suse.cz> wrote:
-> >
-> > As I said in response to v1 patch, I don't like the idea of adding a new
-> > ioctl interface to ethool when we are working on replacing and
-> > deprecating the existing ones. Is there a strong reason why this feature
-> > shouldn't be implemented using netlink?
-> 
-> I do not think this is a fair request.
-> 
-> All known kernels support the ioctl(), none of them support netlink so far.
+On Mon, 7 Sep 2020 22:15:16 +0800 Luo bin wrote:
+> When calling hinic_close in hinic_set_channels, all queues are
+> stopped after netif_tx_disable, but some queue may be rewaken in
+> free_tx_poll by mistake while drv is handling tx irq. If one queue
+> is rewaken core may call hinic_xmit_frame to send pkt after
+> netif_tx_disable within a short time which may results in accessing
+> memory that has been already freed in hinic_close. So we judge
+> whether the netdev is in down state before waking txq in free_tx_poll
+> to fix this bug.
 
-Several years ago, exactly the same was true for bonding, bridge or vlan
-configuration: all known kernels supported ioctl() or sysfs interfaces
-for them, none supported netlink at that point. By your logic, the right
-course of action would have been using ioctl() and sysfs for iproute2
-support. Instead, rtnetlink interfaces were implemented and used by
-iproute2. I believe it was the right choice.
-
-> Are you working on the netlink interface, or are you requesting us to
-> implement it ?
-
-If it helps, I'm willing to write the kernel side. Or both, if
-necessary, just to avoid adding another ioctl monument that would have
-to be kept and maintained for many years, maybe forever.
-
-> The ioctl has been added years ago, and Kevin patch is reasonable enough.
-
-And there is a utility using the ioctl, as Andrew pointed out. Just like
-there were brctl and vconfig and ioctl they were using. The existence of
-those ioctl was not considered sufficient reason to use them when bridge
-and vlan support was added to iproute2. I don't believe today's
-situation with ethtool is different.
-
-Michal
+The right fix is to call napi_disable() _before_ you call
+netif_tx_disable(), not after, like hinic_close() does.
