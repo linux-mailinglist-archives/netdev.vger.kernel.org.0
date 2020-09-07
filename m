@@ -2,150 +2,446 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3585725F574
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:38:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75AAC25F580
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 10:40:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728216AbgIGIii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 04:38:38 -0400
-Received: from a27-56.smtp-out.us-west-2.amazonses.com ([54.240.27.56]:59014
-        "EHLO a27-56.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727897AbgIGIih (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 04:38:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1599467916;
-        h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date;
-        bh=I8fOqclJWXPRgQ4JVNxpFHrT/lck1MQGbss6hJodofM=;
-        b=eXE2bA8KblDd4HcTyerQmcE6GHmZtqLst1vzNvc6rIAgDClvkr8ihGpU8uroJMqI
-        QUtUQT7XlsabNAW4Apgw0b3lUtqLbUkod/cuZyNuW27jf3ko0z6sPd2mMln6KM2RdUs
-        1G6kuV49qIZyWP2bpDhnV0SSwwbpKsGI0XPMYDWQ=
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1599467916;
-        h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date:Feedback-ID;
-        bh=I8fOqclJWXPRgQ4JVNxpFHrT/lck1MQGbss6hJodofM=;
-        b=AHb672B5fbYzo1/tl0l1Q7cGof8ddfhCUh7GmiZP9lx9903/R9r6ae/AouB1CHhF
-        g2GDkt1Qf8ata2om95Nwl+6nWLOZtCMMYiVIJB1Vuz+2k0NgyK+S795q2IIYmUGFWmd
-        PMBYVRldSiH/qrUhfd6lvAUEikj/cWh39Cc0EN04=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B2087C43463
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728314AbgIGIkz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 04:40:55 -0400
+Received: from mail-eopbgr80084.outbound.protection.outlook.com ([40.107.8.84]:13796
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728298AbgIGIku (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 04:40:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/F46zTBEG7jPqbH0Xek3LbfaBA0a1ttbag9I+ByAH4Y=;
+ b=KAXnGL15F6sTuZBaYiNHOz8YA6P8T2xUl1DsUJvLzhmOxY+SwTCQRmiROFUfm1oyz7m14hMLvh2FKPnKzRafWtTvSI1Vsm5wWK78xq3PIMerzf9dqKig0Rhq4Ehu7uXzxnPPXimmlvZZJiIhWuQYKUak1Ppr7aba2cbUHAAMoOk=
+Received: from DB6PR07CA0081.eurprd07.prod.outlook.com (2603:10a6:6:2b::19) by
+ VI1PR0801MB1837.eurprd08.prod.outlook.com (2603:10a6:800:5a::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.16; Mon, 7 Sep
+ 2020 08:40:42 +0000
+Received: from DB5EUR03FT023.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:6:2b:cafe::fb) by DB6PR07CA0081.outlook.office365.com
+ (2603:10a6:6:2b::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.11 via Frontend
+ Transport; Mon, 7 Sep 2020 08:40:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
+ smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
+ header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=bestguesspass
+ action=none header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
+ client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
+Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
+ DB5EUR03FT023.mail.protection.outlook.com (10.152.20.68) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3348.16 via Frontend Transport; Mon, 7 Sep 2020 08:40:42 +0000
+Received: ("Tessian outbound 7fc8f57bdedc:v64"); Mon, 07 Sep 2020 08:40:42 +0000
+X-CR-MTA-TID: 64aa7808
+Received: from a29f4acfd86b.2
+        by 64aa7808-outbound-1.mta.getcheckrecipient.com id E17A232C-7AA1-4B77-A410-2BE4039E7784.1;
+        Mon, 07 Sep 2020 08:40:37 +0000
+Received: from EUR02-HE1-obe.outbound.protection.outlook.com
+    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id a29f4acfd86b.2
+    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
+    Mon, 07 Sep 2020 08:40:37 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H0eDa7r/gGUI/oad5l1Rqf7EYtATgQ0fsz9NsGOsYL97SHITHfDhxQx4z9xfw/K00BL56G9oLpU3rXoL/FxuSBUb46jTZlKTlfgTGHU7nEOpONSrkOg3WKt7J761mgjFIt6Ga7k9l3aOtQBRwzK47/EvV2NLN6Aujw/aXxi46KpbAaylms/Lm8RySYfixgTmmtE7tvzSF2wMjGarS0drr3h7/hGxlKYEC8cHpx6lX4xtB9amm3rJu/5nydkCNtt+eAoroKC3x+8/NOkEBg4rwpaRWiUQQ4pCGTakGDrEWdrtsE9SoT40zlASFuvlw6tEYYEt0vXkaympiUQoMkRvpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/F46zTBEG7jPqbH0Xek3LbfaBA0a1ttbag9I+ByAH4Y=;
+ b=FhRUQr0pWAa13HCuvH1VQBkln8edeqFttEH/XEvzZBN5NGjl35xq0n5KvrciRitr7rkWvPUPdyxAu6RmztsOOfJPtLYsaesU0Eb0DbECIhLuHzINcMXZXY21rtWccgBp+COXB4exymSdLBagpArkjd/wWz5WVhPBJSxlyZOV1K03nf11Qceey8T/a1g94VFcl4wwdjRCMaca2dsfRiRsfKRuJpg1rGyc6Nb63hmPbE6wWN0FWP/nqpCs6sj3H56glkyqGUYAtVtu5qFr2Z7UsutcGrUJ3D987ICeVppRCHI/jjWKKRHBC/lhRDgwpTmW8xjBU5Bba7J+ol1MNo20cw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/F46zTBEG7jPqbH0Xek3LbfaBA0a1ttbag9I+ByAH4Y=;
+ b=KAXnGL15F6sTuZBaYiNHOz8YA6P8T2xUl1DsUJvLzhmOxY+SwTCQRmiROFUfm1oyz7m14hMLvh2FKPnKzRafWtTvSI1Vsm5wWK78xq3PIMerzf9dqKig0Rhq4Ehu7uXzxnPPXimmlvZZJiIhWuQYKUak1Ppr7aba2cbUHAAMoOk=
+Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com (2603:10a6:3:e0::7)
+ by HE1PR0801MB1723.eurprd08.prod.outlook.com (2603:10a6:3:7b::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15; Mon, 7 Sep
+ 2020 08:40:35 +0000
+Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com
+ ([fe80::74f7:5759:4e9e:6e00]) by HE1PR0802MB2555.eurprd08.prod.outlook.com
+ ([fe80::74f7:5759:4e9e:6e00%5]) with mapi id 15.20.3348.019; Mon, 7 Sep 2020
+ 08:40:35 +0000
+From:   Jianyong Wu <Jianyong.Wu@arm.com>
+To:     Marc Zyngier <maz@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "john.stultz@linaro.org" <john.stultz@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        Justin He <Justin.He@arm.com>, nd <nd@arm.com>
+Subject: RE: [PATCH v14 08/10] ptp: arm64: Enable ptp_kvm for arm64
+Thread-Topic: [PATCH v14 08/10] ptp: arm64: Enable ptp_kvm for arm64
+Thread-Index: AQHWgp4Q48WtGxJp4kuFSJTL6o01LqlZ4qMAgAL3/tA=
+Date:   Mon, 7 Sep 2020 08:40:34 +0000
+Message-ID: <HE1PR0802MB2555CC56351616836A95FB19F4280@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+References: <20200904092744.167655-1-jianyong.wu@arm.com>
+        <20200904092744.167655-9-jianyong.wu@arm.com> <874kocmqqx.wl-maz@kernel.org>
+In-Reply-To: <874kocmqqx.wl-maz@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ts-tracking-id: 05439A53E400A545A8EE379138E1C161.0
+x-checkrecipientchecked: true
+Authentication-Results-Original: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=arm.com;
+x-originating-ip: [203.126.0.111]
+x-ms-publictraffictype: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 9c5f064b-0012-4336-7d28-08d85309b4d3
+x-ms-traffictypediagnostic: HE1PR0801MB1723:|VI1PR0801MB1837:
+x-ms-exchange-transport-forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR0801MB1837308D676A36324B43F5B6F4280@VI1PR0801MB1837.eurprd08.prod.outlook.com>
+x-checkrecipientrouted: true
+nodisclaimer: true
+x-ms-oob-tlc-oobclassifiers: OLM:4714;OLM:4714;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: 8o2ttfJ7g0aB7CFSbNEUOGOB3im5cJZHBfBad4KzMIeHHv7kWO8S6I2LSsxty+HC3cVjjV62ZZWTpaq6vFhyaNXL8zlYgB7QyxAVvDKa9K7lj6f2ECWGGjy+DGacfHfr8V4DiJW1aupVlCgsZN8Vm19PvJw9HDfmOQSJRjCbKjwN/ZKYJ90AywE/OM+J/yM72xT9Gk2s1nvGYaujqWLhURneUcC24RHDrVxsw+MVX3LX+xjlrlJiUC3OQaZmriMYtyskXJMcpzun1S1rkI/jniT0ZbqSXk2O8XJiLqUuskrkSVhCD+eUP3Iq+Ax9WRk4n+yQf0Cy1xNJBNqpw+lrLg==
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2555.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(366004)(376002)(346002)(39860400002)(53546011)(66476007)(26005)(4326008)(64756008)(66556008)(2906002)(66946007)(66446008)(186003)(54906003)(6916009)(76116006)(83380400001)(9686003)(478600001)(55016002)(86362001)(7696005)(6506007)(316002)(71200400001)(8936002)(8676002)(5660300002)(52536014)(33656002)(7416002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: lsOWCE7O0tevz3AhdOuy//g2OGwZjvIcNr5xRD5vrzj9FDDozQUmpGJI5FVk0lNdBpWnzye5SJKIGtI6Gc1Sora/nIxDtf3Kakmm3ufdJ3aCYwMPtddUofPKrRptqwWVwVcL8ki+E05v+AqakQdrL64M1fL0vtoaDSvp9VKMvDO/Qubc1iimMmqptdXcvVtX3tp2sZc6n+Bijf79m33pSLsw44oU/Qae9pPUasPWGMXl6e8SS8NZtlQ5rBxpBSmdkFukBHeg0QGAtNeXze4TAeqsK0Qqd4I1orVXoNmLOXfVm3YG4VAqRQjyP5njuQrdesZ+9ceqUsLDbnSnBltQXk383X7xkE9b+z4cszHT+vfz6xMRZzjHJjENHpfSHeNEAzTu+/loCvJOOJch9UXmWNO+s0gxzSxDSL1eXyCnl9Pa4BiZV2X7tJXsslxk006UvJOZaRq68Na1dFWdLUMhbxKwSsuv/9x/BRDYqrvE6BJZzrc4azDW/39cV9p+j25F66RxoSaVw6hKxoJW7rzsWteqF0xe2dW3es/WWP+FxNV51hWw4ed9AZzzkAoLR98i38+3Sjhfj87j2F+Kbt5ykT4dpImNgXvV8jmg+zvgLXSBh5QnFh4x+inICP+S567qbyOkpcVdo/tWu7hzNIxY2w==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] Revert "wlcore: Adding suppoprt for IGTK key in wlcore
- driver"
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <f0a2cb7ea606f1a284d4c23cbf983da2954ce9b6.1598420968.git.mchehab+huawei@kernel.org>
-References: <f0a2cb7ea606f1a284d4c23cbf983da2954ce9b6.1598420968.git.mchehab+huawei@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     linuxarm@huawei.com, mauro.chehab@huawei.com,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Maital Hahn <maitalm@ti.com>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Raz Bouganim <r-bouganim@ti.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Dinghao Liu <dinghao.liu@zju.edu.cn>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Fuqian Huang <huangfq.daxian@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-ID: <0101017467b78ceb-36db3199-b46c-4a42-890a-a9b236326b25-000000@us-west-2.amazonses.com>
-Date:   Mon, 7 Sep 2020 08:38:36 +0000
-X-SES-Outgoing: 2020.09.07-54.240.27.56
-Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0801MB1723
+Original-Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=arm.com;
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB5EUR03FT023.eop-EUR03.prod.protection.outlook.com
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 9df72dc2-10a0-4b53-b5fb-08d85309b054
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: I7jMWxC0F//NQLf+B0rxPl9ZZkSwXyAhAjoYWxi8rdFwQUc3vpUFAFoBLvTyioiTkO7Edww5D12tvu7+EmESqRZUI+K+n1XQZX2bXUF2iY2pfKDqwauGhIfeWf+dUMO+C3CoeY4Ot0JeiUhUrZSG2YIgVu7zQFwv7GwXijsUwOJNRMb0O5F13r2I5XGecjbwiwy3A60pr059MqDt8ORvE03gJuIOW+s1X+9mouqbh/T1iH3u2aSEZ1X09siQve/OnJe4WLy29fP90S+gU4S+r6uQCQtPqDhdFgh6W+NymMLc3VbsGXsVgDSscpXGrLPBeW9xd0/JopkED+z3/wL96BsMgGMgzq9+E/YcPnBPRmErvRY4MOk8cGE1d+TdOm5o0ZLorVwI/ZKxPrf07XmZwA==
+X-Forefront-Antispam-Report: CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFS:(4636009)(39860400002)(396003)(136003)(346002)(376002)(46966005)(82740400003)(186003)(52536014)(336012)(86362001)(2906002)(478600001)(55016002)(70206006)(9686003)(70586007)(54906003)(316002)(6862004)(5660300002)(83380400001)(33656002)(81166007)(47076004)(8936002)(356005)(82310400003)(8676002)(7696005)(4326008)(450100002)(26005)(6506007)(53546011);DIR:OUT;SFP:1101;
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Sep 2020 08:40:42.6375
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c5f064b-0012-4336-7d28-08d85309b4d3
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
+X-MS-Exchange-CrossTenant-AuthSource: DB5EUR03FT023.eop-EUR03.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0801MB1837
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
+Hi Marc,
 
-> This patch causes a regression betwen Kernel 5.7 and 5.8 at wlcore:
-> with it applied, WiFi stops working, and the Kernel starts printing
-> this message every second:
-> 
->    wlcore: PHY firmware version: Rev 8.2.0.0.242
->    wlcore: firmware booted (Rev 8.9.0.0.79)
->    wlcore: ERROR command execute failure 14
->    ------------[ cut here ]------------
->    WARNING: CPU: 0 PID: 133 at drivers/net/wireless/ti/wlcore/main.c:795 wl12xx_queue_recovery_work.part.0+0x6c/0x74 [wlcore]
->    Modules linked in: wl18xx wlcore mac80211 libarc4 cfg80211 rfkill snd_soc_hdmi_codec crct10dif_ce wlcore_sdio adv7511 cec kirin9xx_drm(C) kirin9xx_dw_drm_dsi(C) drm_kms_helper drm ip_tables x_tables ipv6 nf_defrag_ipv6
->    CPU: 0 PID: 133 Comm: kworker/0:1 Tainted: G        WC        5.8.0+ #186
->    Hardware name: HiKey970 (DT)
->    Workqueue: events_freezable ieee80211_restart_work [mac80211]
->    pstate: 60000005 (nZCv daif -PAN -UAO BTYPE=--)
->    pc : wl12xx_queue_recovery_work.part.0+0x6c/0x74 [wlcore]
->    lr : wl12xx_queue_recovery_work+0x24/0x30 [wlcore]
->    sp : ffff8000126c3a60
->    x29: ffff8000126c3a60 x28: 00000000000025de
->    x27: 0000000000000010 x26: 0000000000000005
->    x25: ffff0001a5d49e80 x24: ffff8000092cf580
->    x23: ffff0001b7c12623 x22: ffff0001b6fcf2e8
->    x21: ffff0001b7e46200 x20: 00000000fffffffb
->    x19: ffff0001a78e6400 x18: 0000000000000030
->    x17: 0000000000000001 x16: 0000000000000001
->    x15: ffff0001b7e46670 x14: ffffffffffffffff
->    x13: ffff8000926c37d7 x12: ffff8000126c37e0
->    x11: ffff800011e01000 x10: ffff8000120526d0
->    x9 : 0000000000000000 x8 : 3431206572756c69
->    x7 : 6166206574756365 x6 : 0000000000000c2c
->    x5 : 0000000000000000 x4 : ffff0001bf1361e8
->    x3 : ffff0001bf1790b0 x2 : 0000000000000000
->    x1 : ffff0001a5d49e80 x0 : 0000000000000001
->    Call trace:
->     wl12xx_queue_recovery_work.part.0+0x6c/0x74 [wlcore]
->     wl12xx_queue_recovery_work+0x24/0x30 [wlcore]
->     wl1271_cmd_set_sta_key+0x258/0x25c [wlcore]
->     wl1271_set_key+0x7c/0x2dc [wlcore]
->     wlcore_set_key+0xe4/0x360 [wlcore]
->     wl18xx_set_key+0x48/0x1d0 [wl18xx]
->     wlcore_op_set_key+0xa4/0x180 [wlcore]
->     ieee80211_key_enable_hw_accel+0xb0/0x2d0 [mac80211]
->     ieee80211_reenable_keys+0x70/0x110 [mac80211]
->     ieee80211_reconfig+0xa00/0xca0 [mac80211]
->     ieee80211_restart_work+0xc4/0xfc [mac80211]
->     process_one_work+0x1cc/0x350
->     worker_thread+0x13c/0x470
->     kthread+0x154/0x160
->     ret_from_fork+0x10/0x30
->    ---[ end trace b1f722abf9af5919 ]---
->    wlcore: WARNING could not set keys
->    wlcore: ERROR Could not add or replace key
->    wlan0: failed to set key (4, ff:ff:ff:ff:ff:ff) to hardware (-5)
->    wlcore: Hardware recovery in progress. FW ver: Rev 8.9.0.0.79
->    wlcore: pc: 0x0, hint_sts: 0x00000040 count: 39
->    wlcore: down
->    wlcore: down
->    ieee80211 phy0: Hardware restart was requested
->    mmc_host mmc0: Bus speed (slot 0) = 400000Hz (slot req 400000Hz, actual 400000HZ div = 0)
->    mmc_host mmc0: Bus speed (slot 0) = 25000000Hz (slot req 25000000Hz, actual 25000000HZ div = 0)
->    wlcore: PHY firmware version: Rev 8.2.0.0.242
->    wlcore: firmware booted (Rev 8.9.0.0.79)
->    wlcore: ERROR command execute failure 14
->    ------------[ cut here ]------------
-> 
-> Tested on Hikey 970.
-> 
-> This reverts commit 2b7aadd3b9e17e8b81eeb8d9cc46756ae4658265.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> Signed-off-by: Raz Bouganim <r-bouganim@ti.com>
+> -----Original Message-----
+> From: Marc Zyngier <maz@kernel.org>
+> Sent: Saturday, September 5, 2020 7:02 PM
+> To: Jianyong Wu <Jianyong.Wu@arm.com>
+> Cc: netdev@vger.kernel.org; yangbo.lu@nxp.com; john.stultz@linaro.org;
+> tglx@linutronix.de; pbonzini@redhat.com; sean.j.christopherson@intel.com;
+> richardcochran@gmail.com; Mark Rutland <Mark.Rutland@arm.com>;
+> will@kernel.org; Suzuki Poulose <Suzuki.Poulose@arm.com>; Steven Price
+> <Steven.Price@arm.com>; linux-kernel@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; kvmarm@lists.cs.columbia.edu;
+> kvm@vger.kernel.org; Steve Capper <Steve.Capper@arm.com>; Justin He
+> <Justin.He@arm.com>; nd <nd@arm.com>
+> Subject: Re: [PATCH v14 08/10] ptp: arm64: Enable ptp_kvm for arm64
+>=20
+> On Fri, 04 Sep 2020 10:27:42 +0100,
+> Jianyong Wu <jianyong.wu@arm.com> wrote:
+> >
+> > Currently, there is no mechanism to keep time sync between guest and
+> > host in arm64 virtualization environment. Time in guest will drift
+> > compared with host after boot up as they may both use third party time
+> > sources to correct their time respectively. The time deviation will be
+> > in order of milliseconds. But in some scenarios,like in cloud
+> > envirenment, we ask for higher time precision.
+> >
+> > kvm ptp clock, which choose the host clock source as a reference clock
+> > to sync time between guest and host, has been adopted by x86 which
+> > makes the time sync order from milliseconds to nanoseconds.
+> >
+> > This patch enables kvm ptp clock for arm64 and improve clock sync
+> > precison significantly.
+> >
+> > Test result comparisons between with kvm ptp clock and without it in
+> > arm64 are as follows. This test derived from the result of command
+> > 'chronyc sources'. we should take more care of the last sample column
+> > which shows the offset between the local clock and the source at the la=
+st
+> measurement.
+> >
+> > no kvm ptp in guest:
+> > MS Name/IP address   Stratum Poll Reach LastRx Last sample
+> >
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > ^* dns1.synet.edu.cn      2   6   377    13  +1040us[+1581us] +/-   21m=
+s
+> > ^* dns1.synet.edu.cn      2   6   377    21  +1040us[+1581us] +/-   21m=
+s
+> > ^* dns1.synet.edu.cn      2   6   377    29  +1040us[+1581us] +/-   21m=
+s
+> > ^* dns1.synet.edu.cn      2   6   377    37  +1040us[+1581us] +/-   21m=
+s
+> > ^* dns1.synet.edu.cn      2   6   377    45  +1040us[+1581us] +/-   21m=
+s
+> > ^* dns1.synet.edu.cn      2   6   377    53  +1040us[+1581us] +/-   21m=
+s
+> > ^* dns1.synet.edu.cn      2   6   377    61  +1040us[+1581us] +/-   21m=
+s
+> > ^* dns1.synet.edu.cn      2   6   377     4   -130us[ +796us] +/-   21m=
+s
+> > ^* dns1.synet.edu.cn      2   6   377    12   -130us[ +796us] +/-   21m=
+s
+> > ^* dns1.synet.edu.cn      2   6   377    20   -130us[ +796us] +/-   21m=
+s
+> >
+> > in host:
+> > MS Name/IP address   Stratum Poll Reach LastRx Last sample
+> >
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > ^* 120.25.115.20          2   7   377    72   -470us[ -603us] +/-   18m=
+s
+> > ^* 120.25.115.20          2   7   377    92   -470us[ -603us] +/-   18m=
+s
+> > ^* 120.25.115.20          2   7   377   112   -470us[ -603us] +/-   18m=
+s
+> > ^* 120.25.115.20          2   7   377     2   +872ns[-6808ns] +/-   17m=
+s
+> > ^* 120.25.115.20          2   7   377    22   +872ns[-6808ns] +/-   17m=
+s
+> > ^* 120.25.115.20          2   7   377    43   +872ns[-6808ns] +/-   17m=
+s
+> > ^* 120.25.115.20          2   7   377    63   +872ns[-6808ns] +/-   17m=
+s
+> > ^* 120.25.115.20          2   7   377    83   +872ns[-6808ns] +/-   17m=
+s
+> > ^* 120.25.115.20          2   7   377   103   +872ns[-6808ns] +/-   17m=
+s
+> > ^* 120.25.115.20          2   7   377   123   +872ns[-6808ns] +/-   17m=
+s
+> >
+> > The dns1.synet.edu.cn is the network reference clock for guest and
+> > 120.25.115.20 is the network reference clock for host. we can't get
+> > the clock error between guest and host directly, but a roughly
+> > estimated value will be in order of hundreds of us to ms.
+> >
+> > with kvm ptp in guest:
+> > chrony has been disabled in host to remove the disturb by network clock=
+.
+> >
+> > MS Name/IP address         Stratum Poll Reach LastRx Last sample
+> >
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > * PHC0                    0   3   377     8     -7ns[   +1ns] +/-    3n=
+s
+> > * PHC0                    0   3   377     8     +1ns[  +16ns] +/-    3n=
+s
+> > * PHC0                    0   3   377     6     -4ns[   -0ns] +/-    6n=
+s
+> > * PHC0                    0   3   377     6     -8ns[  -12ns] +/-    5n=
+s
+> > * PHC0                    0   3   377     5     +2ns[   +4ns] +/-    4n=
+s
+> > * PHC0                    0   3   377    13     +2ns[   +4ns] +/-    4n=
+s
+> > * PHC0                    0   3   377    12     -4ns[   -6ns] +/-    4n=
+s
+> > * PHC0                    0   3   377    11     -8ns[  -11ns] +/-    6n=
+s
+> > * PHC0                    0   3   377    10    -14ns[  -20ns] +/-    4n=
+s
+> > * PHC0                    0   3   377     8     +4ns[   +5ns] +/-    4n=
+s
+> >
+> > The PHC0 is the ptp clock which choose the host clock as its source
+> > clock. So we can see that the clock difference between host and guest
+> > is in order of ns.
+> >
+> > Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> > ---
+> >  drivers/clocksource/arm_arch_timer.c | 24 +++++++++++++
+> >  drivers/ptp/Kconfig                  |  2 +-
+> >  drivers/ptp/ptp_kvm_arm64.c          | 53
+> ++++++++++++++++++++++++++++
+> >  3 files changed, 78 insertions(+), 1 deletion(-)  create mode 100644
+> > drivers/ptp/ptp_kvm_arm64.c
+> >
+> > diff --git a/drivers/clocksource/arm_arch_timer.c
+> > b/drivers/clocksource/arm_arch_timer.c
+> > index d55acffb0b90..aaf286e90092 100644
+> > --- a/drivers/clocksource/arm_arch_timer.c
+> > +++ b/drivers/clocksource/arm_arch_timer.c
+> > @@ -1650,3 +1650,27 @@ static int __init arch_timer_acpi_init(struct
+> > acpi_table_header *table)  }  TIMER_ACPI_DECLARE(arch_timer,
+> > ACPI_SIG_GTDT, arch_timer_acpi_init);  #endif
+> > +
+> > +#if IS_ENABLED(CONFIG_PTP_1588_CLOCK_KVM)
+> > +#include <linux/arm-smccc.h>
+> > +int kvm_arch_ptp_get_crosststamp(unsigned long *cycle, struct
+> timespec64 *ts,
+> > +			      struct clocksource **cs)
+> > +{
+> > +	struct arm_smccc_res hvc_res;
+> > +	ktime_t ktime;
+> > +
+> > +	/* Currently, linux guest will always use the virtual counter */
+> > +
+> 	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FU
+> NC_ID,
+> > +			     ARM_PTP_VIRT_COUNTER, &hvc_res);
+> > +	if ((long long)(hvc_res.a0) < 0)
+> > +		return -EOPNOTSUPP;
+> > +
+> > +	ktime =3D (long long)hvc_res.a0;
+> > +	*ts =3D ktime_to_timespec64(ktime);
+> > +	*cycle =3D (long long)hvc_res.a1;
+> > +	*cs =3D &clocksource_counter;
+> > +
+> > +	return 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(kvm_arch_ptp_get_crosststamp);
+> > +#endif
+> > diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig index
+> > 942f72d8151d..127e96f14f89 100644
+> > --- a/drivers/ptp/Kconfig
+> > +++ b/drivers/ptp/Kconfig
+> > @@ -106,7 +106,7 @@ config PTP_1588_CLOCK_PCH  config
+> > PTP_1588_CLOCK_KVM
+> >  	tristate "KVM virtual PTP clock"
+> >  	depends on PTP_1588_CLOCK
+> > -	depends on KVM_GUEST && X86
+> > +	depends on KVM_GUEST && X86 || ARM64 && ARM_ARCH_TIMER
+> &&
+> > +ARM_PSCI_FW
+> >  	default y
+> >  	help
+> >  	  This driver adds support for using kvm infrastructure as a PTP
+> > diff --git a/drivers/ptp/ptp_kvm_arm64.c b/drivers/ptp/ptp_kvm_arm64.c
+> > new file mode 100644 index 000000000000..961abed93dfd
+> > --- /dev/null
+> > +++ b/drivers/ptp/ptp_kvm_arm64.c
+> > @@ -0,0 +1,53 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + *  Virtual PTP 1588 clock for use with KVM guests
+> > + *  Copyright (C) 2019 ARM Ltd.
+> > + *  All Rights Reserved
+> > + */
+> > +
+> > +#include <linux/kernel.h>
+> > +#include <linux/err.h>
+> > +#include <asm/hypervisor.h>
+> > +#include <linux/module.h>
+> > +#include <linux/psci.h>
+> > +#include <linux/arm-smccc.h>
+> > +#include <linux/timecounter.h>
+> > +#include <linux/sched/clock.h>
+> > +#include <asm/arch_timer.h>
+> > +
+> > +int kvm_arch_ptp_init(void)
+> > +{
+> > +	struct arm_smccc_res hvc_res;
+> > +
+> > +
+> 	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_FEATUR
+> ES_FUNC_ID,
+> > +			     &hvc_res);
+> > +	if (!(hvc_res.a0 | BIT(ARM_SMCCC_KVM_FUNC_KVM_PTP)))
+> > +		return -EOPNOTSUPP;
+> > +
+> > +	return 0;
+>=20
+> What happens if the
+> ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID function isn't
+> implemented (on an old kernel or a non-KVM hypervisor)? The expected
+> behaviour is that a0 will contain SMCCC_RET_NOT_SUPPORTED, which is -1.
+> The result is that this function always returns "supported". Not an accep=
+table
+> behaviour.
+>=20
+Oh!  it's really a stupid mistake, should be "&" not "|".
 
-I'm going to apply this revert now and queue for v5.9. The feature can be added
-again for v5.10 with proper support for older firmware versions.
+> > +}
+> > +
+> > +int kvm_arch_ptp_get_clock_generic(struct timespec64 *ts,
+> > +				   struct arm_smccc_res *hvc_res)
+>=20
+> Why isn't this static?
+>
+ yeah, should be static.
 
--- 
-https://patchwork.kernel.org/patch/11737193/
+> > +{
+> > +	ktime_t ktime;
+> > +
+> > +
+> 	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_PTP_FU
+> NC_ID,
+> > +			     hvc_res);
+> > +	if ((long long)(hvc_res->a0) < 0)
+> > +		return -EOPNOTSUPP;
+>=20
+> Really? What if the cycle counter is a full 64 bit value, as it is
+> *mandated* on ARMv8.6? It means that the counter is now invalid for half
+> the lifetime of the system. Not acceptable either.
+>=20
+> > +
+> > +	ktime =3D (long long)hvc_res->a0;
+> > +	*ts =3D ktime_to_timespec64(ktime);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +int kvm_arch_ptp_get_clock(struct timespec64 *ts) {
+> > +	struct arm_smccc_res hvc_res;
+> > +
+> > +	kvm_arch_ptp_get_clock_generic(ts, &hvc_res);
+> > +
+> > +	return 0;
+> > +}
+> > --
+> > 2.17.1
+> >
+> >
+>=20
+> It is now obvious that the API between kernel and hypervisor is pretty
+> busted, and it goes beyond the 32bit support. I wish you paid more attent=
+ion
+> to this kind of detail.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Yeah,  I will.
 
+Thanks
+Jianyong=20
+>=20
+> 	M.
+>=20
+> --
+> Without deviation from the norm, progress is not possible.
