@@ -2,97 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7099D26045C
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 20:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1132826046B
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 20:19:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729433AbgIGSP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 14:15:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35472 "EHLO mail.kernel.org"
+        id S1729760AbgIGSTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 14:19:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48154 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728421AbgIGSPy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 14:15:54 -0400
-Received: from localhost (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2C21020732;
-        Mon,  7 Sep 2020 18:15:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599502553;
-        bh=HMfH03YFktrnGLz7Ry3s392p+fH+S8X4kWzPrjgbpkg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GN5qZaqazHD+wnnLvGnY7Ql7WNXe00bPkZfEj04TvlxU74gIxyU8QfuLcT7DKuPb0
-         FlHntndMazrilYZA8KUGV7d4kkArPspIbgMNJle3rBSelJVBUsHqSalYlL9j3C1tGN
-         PrX4gFYZlOayburJhKjSmt4f2COWcO+/zPXAIqTE=
-Date:   Mon, 7 Sep 2020 14:15:52 -0400
-From:   Sasha Levin <sashal@kernel.org>
-To:     Kristian Evensen <kristian.evensen@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, stable <stable@vger.kernel.org>,
-        Daniele Palmas <dnlplm@gmail.com>,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 4.14 17/33] net: usb: qmi_wwan: add Telit 0x1050
- composition
-Message-ID: <20200907181552.GN8670@sasha-vm>
-References: <20191026132110.4026-1-sashal@kernel.org>
- <20191026132110.4026-17-sashal@kernel.org>
- <CAKfDRXjjuW4VM03HeVoeEyG=cULUK8ZXexWu48rfFvJE+DD8_g@mail.gmail.com>
+        id S1729290AbgIGSTG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 14:19:06 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kFLjC-00DfCu-N3; Mon, 07 Sep 2020 20:18:54 +0200
+Date:   Mon, 7 Sep 2020 20:18:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukasz Stelmach <l.stelmach@samsung.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, b.zolnierkie@samsung.com,
+        m.szyprowski@samsung.com
+Subject: Re: [PATCH 1/3] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
+ Driver
+Message-ID: <20200907181854.GD3254313@lunn.ch>
+References: <20200825180134.GN2403519@lunn.ch>
+ <CGME20200907173945eucas1p240c0d7ebff3010a3bf752eaf8e619eb1@eucas1p2.samsung.com>
+ <dleftjwo15qyei.fsf%l.stelmach@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKfDRXjjuW4VM03HeVoeEyG=cULUK8ZXexWu48rfFvJE+DD8_g@mail.gmail.com>
+In-Reply-To: <dleftjwo15qyei.fsf%l.stelmach@samsung.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 07, 2020 at 11:36:37AM +0200, Kristian Evensen wrote:
->Hi,
->
->On Sat, Oct 26, 2019 at 3:27 PM Sasha Levin <sashal@kernel.org> wrote:
->>
->> From: Daniele Palmas <dnlplm@gmail.com>
->>
->> [ Upstream commit e0ae2c578d3909e60e9448207f5d83f785f1129f ]
->>
->> This patch adds support for Telit FN980 0x1050 composition
->>
->> 0x1050: tty, adb, rmnet, tty, tty, tty, tty
->>
->> Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
->> Acked-by: Bj�rn Mork <bjorn@mork.no>
->> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
->> Signed-off-by: Sasha Levin <sashal@kernel.org>
->> ---
->>  drivers/net/usb/qmi_wwan.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
->> index e406a05e79dcd..57e9166b4bff3 100644
->> --- a/drivers/net/usb/qmi_wwan.c
->> +++ b/drivers/net/usb/qmi_wwan.c
->> @@ -1252,6 +1252,7 @@ static const struct usb_device_id products[] = {
->>         {QMI_FIXED_INTF(0x2357, 0x0201, 4)},    /* TP-LINK HSUPA Modem MA180 */
->>         {QMI_FIXED_INTF(0x2357, 0x9000, 4)},    /* TP-LINK MA260 */
->>         {QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)}, /* Telit LE922A */
->> +       {QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)}, /* Telit FN980 */
->>         {QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},    /* Telit ME910 */
->>         {QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},    /* Telit ME910 dual modem */
->>         {QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},    /* Telit LE920 */
->> --
->> 2.20.1
->>
->
->When testing the FN980 with kernel 4.14, I noticed that the qmi device
->was not there. Checking the git log, I see that this patch was never
->applied. The patch applies fine, so I guess it was just missed
->somewhere. If it could be added to the next 4.14 release, it would be
->much appreciated.
+> > On Tue, Aug 25, 2020 at 07:03:09PM +0200, Łukasz Stelmach wrote:
+> >> +++ b/drivers/net/ethernet/asix/ax88796c_ioctl.c
+> >
+> > This is an odd filename. The ioctl code is wrong anyway, but there is
+> > a lot more than ioctl in here. I suggest you give it a new name.
+> >
+> 
+> Sure, any suggestions?
 
-Interesting, yes - I'm not sure why it's missing. I'll queue it up.
+Sorry, i have forgotten what is actually contained. Does it even need
+to be a separate file?
 
--- 
-Thanks,
-Sasha
+> >> +u8 ax88796c_check_power(struct ax88796c_device *ax_local)
+> >
+> > bool ?
+> 
+> OK.
+> 
+> It appears, however, that 0 means OK and 1 !OK. Do you think changing to
+> TRUE and FALSE (or FALSE and TRUE) is required?
+
+Or change the name, ax88796c_check_power_off()? I don't really care,
+so long as it is logical and not surprising.
+
+> >> +	AX_READ_STATUS(&ax_local->ax_spi, &ax_status);
+> >> +	if (!(ax_status.status & AX_STATUS_READY)) {
+> >> +
+> >> +		/* AX88796C in power saving mode */
+> >> +		AX_WAKEUP(&ax_local->ax_spi);
+> >> +
+> >> +		/* Check status */
+> >> +		start_time = jiffies;
+> >> +		do {
+> >> +			if (time_after(jiffies, start_time + HZ/2)) {
+> >> +				netdev_err(ax_local->ndev,
+> >> +					"timeout waiting for wakeup"
+> >> +					" from power saving\n");
+> >> +				break;
+> >> +			}
+> >> +
+> >> +			AX_READ_STATUS(&ax_local->ax_spi, &ax_status);
+> >> +
+> >> +		} while (!(ax_status.status & AX_STATUS_READY));
+> >
+> > include/linux/iopoll.h
+> >
+> 
+> Done. The result seems only slightly more elegant since the generic
+> read_poll_timeout() needs to be employed.
+
+Often code like this has bugs in it, not correctly handling the
+scheduler sleeping longer than expected. That is why i point people at
+iopoll, no bugs, not elegance.
+
+> The manufacturer says
+> 
+>     The AX88796C integrates on-chip Fast Ethernet MAC and PHY, […]
+> 
+> There is a single integrated PHY in this chip and no possiblity to
+> connect external one. Do you think it makes sense in such case to
+> introduce the additional layer of abstraction?
+
+Yes it does, because it then uses all the standard phylib code to
+drive the PHY which many people understand, is well tested, etc. It
+will make the MAC driver smaller and probably less buggy.
+
+> >> +static char *macaddr;
+> >> +module_param(macaddr, charp, 0);
+> >> +MODULE_PARM_DESC(macaddr, "MAC address");
+> >
+> > No Module parameters. You can get the MAC address from DT.
+> 
+> What about systems without DT? Not every bootloader is sophisicated
+> enough to edit DT before starting kernel. AX88786C is a chip that can be
+> used in a variety of systems and I'd like to avoid too strong
+> assumptions.
+
+There is also a standardised way to read it from ACPI. And you can set
+it using ip link set. DaveM will likely NACK a module parameter.
+
+> >> +MODULE_AUTHOR("ASIX");
+> >
+> > Do you expect ASIX to support this? 
+> 
+> No.
+> 
+> > You probably want to put your name here.
+> 
+> I don't want to be considered as the only author and as far as I can
+> tell being mentioned as an author does not imply being a
+> maintainer. Do you think two MODULE_AUTHOR()s be OK?
+
+Can you have two? One with two names listed is O.K.
+
+> >> +
+> >> +	phy_status = AX_READ(&ax_local->ax_spi, P0_PSCR);
+> >> +	if (phy_status & PSCR_PHYLINK) {
+> >> +
+> >> +		ax_local->w_state = ax_nop;
+> >> +		time_to_chk = 0;
+> >> +
+> >> +	} else if (!(phy_status & PSCR_PHYCOFF)) {
+> >> +		/* The ethernet cable has been plugged */
+> >> +		if (ax_local->w_state == chk_cable) {
+> >> +			if (netif_msg_timer(ax_local))
+> >> +				netdev_info(ndev, "Cable connected\n");
+> >> +
+> >> +			ax_local->w_state = chk_link;
+> >> +			ax_local->w_ticks = 0;
+> >> +		} else {
+> >> +			if (netif_msg_timer(ax_local))
+> >> +				netdev_info(ndev, "Check media status\n");
+> >> +
+> >> +			if (++ax_local->w_ticks == AX88796C_WATCHDOG_RESTART) {
+> >> +				if (netif_msg_timer(ax_local))
+> >> +					netdev_info(ndev, "Restart autoneg\n");
+> >> +				ax88796c_mdio_write(ndev,
+> >> +					ax_local->mii.phy_id, MII_BMCR,
+> >> +					(BMCR_SPEED100 | BMCR_ANENABLE |
+> >> +					BMCR_ANRESTART));
+> >> +
+> >> +				if (netif_msg_hw(ax_local))
+> >> +					ax88796c_dump_phy_regs(ax_local);
+> >> +				ax_local->w_ticks = 0;
+> >> +			}
+> >> +		}
+> >> +	} else {
+> >> +		if (netif_msg_timer(ax_local))
+> >> +			netdev_info(ndev, "Check cable status\n");
+> >> +
+> >> +		ax_local->w_state = chk_cable;
+> >> +	}
+> >> +
+> >> +	ax88796c_set_power_saving(ax_local, ax_local->ps_level);
+> >> +
+> >> +	if (time_to_chk)
+> >> +		mod_timer(&ax_local->watchdog, jiffies + time_to_chk);
+> >> +}
+> >
+> > This is not the normal use of a watchdog in network drivers. The
+> > normal case is the network stack as asked the driver to do something,
+> > normally a TX, and the driver has not reported the action has
+> > completed.  The state of the cable should not make any
+> > difference. This does not actually appear to do anything useful, like
+> > kick the hardware to bring it back to life.
+> >
+> 
+> Maybe it's the naming that is a problem. Yes, it is not a watchdog, but
+> rather a periodic housekeeping and it kicks hw if it can't negotiate
+> the connection. The question is: should the settings be reset in such case.
+
+Let see what is left once you convert to phylib.
+
+> >> +	struct net_device *ndev = ax_local->ndev;
+> >> +	int status;
+> >> +
+> >> +	do {
+> >> +		if (!(ax_local->checksum & AX_RX_CHECKSUM))
+> >> +			break;
+> >> +
+> >> +		/* checksum error bit is set */
+> >> +		if ((rxhdr->flags & RX_HDR3_L3_ERR) ||
+> >> +		    (rxhdr->flags & RX_HDR3_L4_ERR))
+> >> +			break;
+> >> +
+> >> +		if ((rxhdr->flags & RX_HDR3_L4_TYPE_TCP) ||
+> >> +		    (rxhdr->flags & RX_HDR3_L4_TYPE_UDP)) {
+> >> +			skb->ip_summed = CHECKSUM_UNNECESSARY;
+> >> +		}
+> >> +	} while (0);
+> >
+> >
+> > ??
+> >
+> 
+> if() break; Should I use goto?
+
+Sorry, i was too ambiguous. Why:
+
+do {
+} while (0);
+
+It is an odd construct.
+
+   Andrew
