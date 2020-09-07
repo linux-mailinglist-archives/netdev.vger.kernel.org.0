@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF7CA25FFEF
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:41:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 697B126002A
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:45:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731035AbgIGQlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 12:41:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35288 "EHLO
+        id S1729751AbgIGQpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730610AbgIGQlD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 12:41:03 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36750C061574
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 09:41:03 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id t10so16475119wrv.1
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 09:41:03 -0700 (PDT)
+        with ESMTP id S1731063AbgIGQpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 12:45:03 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20121C061573
+        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 09:45:03 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id o68so8886377pfg.2
+        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 09:45:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6HzmAVHlN6inWuhNR/qi7K/O/N8qBgMh/gLHImP3oLI=;
-        b=Rhl6gyeocRUMRqArAntovDuFoSik3QlgtAtzFotLuXqcpSRMRkqtNsIv5Gcb9Fnw0e
-         N/C/m4yQ5ky/du94q5SXnkioiql9UDJriC3NLtyFKxqOjpCS6j6HsXlJU+KoORAAK054
-         5t4BCXfaclazE189avFgwVgxqYI0mokQOcsUErfyVofMTwu5z/kxWSugjP7H8Ic89MCN
-         Yr2LriQYIN1sgWopbfmKeM1rhyMgk6hHOwOVM/TW8uCwOLJ9wPgV3wuJDZDTt3lcpt+n
-         XqyjICws/7JQsA0tlT5s/wKwXFpkcMKeZETFvzg9ltUJnKqljlYh+9QbrE0QKEdgi9R0
-         WHrw==
+        bh=m8ZlCKxD9/ekWe1bnHgiNEQQ5EftHREOxYf4uHOlNXk=;
+        b=zOIVpnp+SSqmjR/3uK/YitVDxeG/vRqVuzg3q0ZVT8rh3hvEDSSoUiW91L0XGbcuGR
+         UiBuamD70WOkfEmGUp1Lgj7Lw11CzhLSmNnOkPkCkSIZP1Rgd+hw9P/p1JenM1QYFaSg
+         atlLHoFUiGmHxgCzZRP/Ya0NXiO33BmCi6lYPXWmgiZV/CrCbu08F+8Y3ne3ZoX6Odsb
+         +4cTgEPRJw197B7AJygPc6TE/NwxVKaWCOZqp7DV3mK965xB8YZCDs3guSxlJolqIDN2
+         IorwSvuZSQf9keglAFX4Vc9uzDAdQmCc64G4f3LGDIVGBB+P9Mmd4Jg/fHQISEIBHQyL
+         vRrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=6HzmAVHlN6inWuhNR/qi7K/O/N8qBgMh/gLHImP3oLI=;
-        b=l15O0bso88iwQoyusJ6oYaotyj6i3IQSJ33cr/qEWlykbZ8jTiGc7yWvIbANOz8YU0
-         XYs1x3IDO06jBbT3dfjhZShQYbxqonNjAuTl/tGJq4E9zEdAxzm5hCP+Zz98k/z/FBeH
-         RgdcPVJY6sCm0BATwmJBQKiWuWbI5CuSFpNt6WlJMXk+ug0HAEpFVItYBIfW7KSBuIu6
-         y6vJKXDZNc+X63PdrnxjJEeveK66PQMkxNtkhUTy5kU6F2le9xBiJbDWJA1pgXiU1Csv
-         +Y2lPjfTerO+xD7Pg08SaL/EHXDbY/j/Ub/uaGx3Bzg+TfRUNmDz/h+bgWzc59OvdfYs
-         HaYA==
-X-Gm-Message-State: AOAM530tK9WOeG56oCU1vEm8N2hxg3R9bWfAomPKLLGCya+N9GT/KERE
-        GTXW9951qIPTgDdw9JP2SZdfk392VvR3vid6
-X-Google-Smtp-Source: ABdhPJwwFuqsNpeKNr2Xcj0G7bwyHTIOXQSxqV9C4cdGzfqKQXz/HEY2/yNVuuYEC8tByhO7f/FTTA==
-X-Received: by 2002:adf:f082:: with SMTP id n2mr16879077wro.35.1599496861873;
-        Mon, 07 Sep 2020 09:41:01 -0700 (PDT)
-Received: from ?IPv6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
-        by smtp.gmail.com with ESMTPSA id i1sm34957035wrc.49.2020.09.07.09.41.00
+        bh=m8ZlCKxD9/ekWe1bnHgiNEQQ5EftHREOxYf4uHOlNXk=;
+        b=SG5K/2sftsNHw9iY1drni52pDwpnPUtPdGjT6aXS+1fmJ4vrQ69RxmKB2z/IxDSmAT
+         gWkXV9kEUn4jeGmWX34pz6SalmFJHgZ95YjxD45YS8nPbwkPZCC/8XLgPQicuz6Y4NiE
+         oDBkmyroat9FjW8ExjLRn6goZSbL8OP+E9raiWprgQYZoo8AJdFKAV6zjXK4Jl3HVoIQ
+         M4sspJ8xhA8vh1RIYwwEp7QKfiY8BAh38t2rsHteAaLkPp6wrNg/XgblMtQiUzb6kcyV
+         E1TYP4kbPG/ZpYunGrNtnARdNuLMn5xwn/z0k0FLaxbTYuvaZkICmvOOMpHwZiGtrVS7
+         DmSA==
+X-Gm-Message-State: AOAM532wDI+4X1L6UN4liCdWtvhvsrA5tkKVs6WyaAchUkESSmJxNVNc
+        /jB7oD5e8+ouxYsmrG/qVVc38w==
+X-Google-Smtp-Source: ABdhPJw8RrGb6FUr3A2ui6aV0tWTRTvL2LTfVn4srVE0ccGmmdvbbRHjgjP5NN1HVMW4pasecyhzQg==
+X-Received: by 2002:a63:516:: with SMTP id 22mr17753556pgf.316.1599497102450;
+        Mon, 07 Sep 2020 09:45:02 -0700 (PDT)
+Received: from [192.168.1.182] ([66.219.217.173])
+        by smtp.gmail.com with ESMTPSA id s6sm13035629pjn.48.2020.09.07.09.45.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Sep 2020 09:41:01 -0700 (PDT)
-Subject: Re: [PATCH v2 3/6] netlink/compat: Append NLMSG_DONE/extack to
- frag_list
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        netdev@vger.kernel.org
-References: <20200826014949.644441-1-dima@arista.com>
- <20200826014949.644441-4-dima@arista.com>
- <f579efc1375e46d9c2ff999ada1bcfed40ec2a8f.camel@sipsolutions.net>
-From:   Dmitry Safonov <dima@arista.com>
-Message-ID: <ff2e3bfb-f97b-6982-05d8-5448193225ab@arista.com>
-Date:   Mon, 7 Sep 2020 17:41:00 +0100
+        Mon, 07 Sep 2020 09:45:01 -0700 (PDT)
+Subject: Re: [PATCH for-next] net: provide __sys_shutdown_sock() that takes a
+ socket
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+References: <d3973f5b-2d86-665d-a5f3-95d017f9c79f@kernel.dk>
+ <20200907054836.GA8956@infradead.org>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <378cfa5a-eb06-d04c-bbbc-07b377f60c11@kernel.dk>
+Date:   Mon, 7 Sep 2020 10:45:00 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <f579efc1375e46d9c2ff999ada1bcfed40ec2a8f.camel@sipsolutions.net>
+In-Reply-To: <20200907054836.GA8956@infradead.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -78,20 +70,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/20 8:19 AM, Johannes Berg wrote:
-> On Wed, 2020-08-26 at 02:49 +0100, Dmitry Safonov wrote:
-[..]
->> +	nl_dump_check_consistent(cb, nlh);
->> +	memcpy(nlmsg_data(nlh), &nlk->dump_done_errno,
->> +			sizeof(nlk->dump_done_errno));
+On 9/6/20 11:48 PM, Christoph Hellwig wrote:
+> On Sat, Sep 05, 2020 at 04:05:48PM -0600, Jens Axboe wrote:
+>> There's a trivial io_uring patch that depends on this one. If this one
+>> is acceptable to you, I'd like to queue it up in the io_uring branch for
+>> 5.10.
 > 
-> nit: indentation here looks odd.
-> 
-> Other than that, looks reasonable to me.
-> 
-> Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+> Can you give it a better name?  These __ names re just horrible.
+> sock_shutdown_sock?
 
-Thank you for the review!
+Sure, I don't really care, just following what is mostly done already. And
+it is meant to be internal in the sense that it's not exported to modules.
+
+I'll let the net guys pass the final judgement on that, I'm obviously fine
+with anything in terms of naming :-)
 
 -- 
-          Dmitry
+Jens Axboe
+
