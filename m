@@ -2,84 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 760B725F426
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 09:37:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 054F325F43E
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 09:45:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727776AbgIGHh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 03:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35926 "EHLO
+        id S1727800AbgIGHpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 03:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726833AbgIGHh2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 03:37:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E90AC061573
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 00:37:27 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1kFBiN-0004tM-Ph; Mon, 07 Sep 2020 09:37:23 +0200
-Received: from mfe by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1kFBiN-00056o-F0; Mon, 07 Sep 2020 09:37:23 +0200
-Date:   Mon, 7 Sep 2020 09:37:23 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, adam.rudzinski@arf.net.pl,
-        hkallweit1@gmail.com, richard.leitner@skidata.com,
-        zhengdejin5@gmail.com, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, kuba@kernel.org, robh+dt@kernel.org
-Subject: Re: [PATCH net-next 3/3] net: phy: bcm7xxx: request and manage GPHY
- clock
-Message-ID: <20200907073723.oz6cvgohy37by4nk@pengutronix.de>
-References: <20200903043947.3272453-1-f.fainelli@gmail.com>
- <20200903043947.3272453-4-f.fainelli@gmail.com>
- <20200904061821.h67rmeare4n6l4d3@pengutronix.de>
- <11e7a470-fabb-d679-e254-2a7acc354fc6@gmail.com>
+        with ESMTP id S1726821AbgIGHpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 03:45:45 -0400
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3701CC061573;
+        Mon,  7 Sep 2020 00:45:44 -0700 (PDT)
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 0877jMO6027725
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Mon, 7 Sep 2020 09:45:23 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1599464723; bh=F/cpKEbPOeBiiYDZm58dXUDkbQv3QMMupiIUIMsLI98=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=IYmxvA7XZxgTNjZdtiqqNQwmZylArahmbbj/z7bCvG82Axg//Sookx8SobMq9UqaI
+         t6dAaNzoTauNcm4HbfjQ+zOFZSWARTUXFxLdiqWSut9ln1Ba7hQKhHX7xNPu8TPKLR
+         RNXHnG56jYmVtDz9vSS6SL8QU5Ik98kxwQJytvQY=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
+        (envelope-from <bjorn@mork.no>)
+        id 1kFBq5-000zls-55; Mon, 07 Sep 2020 09:45:21 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Kristian Evensen <kristian.evensen@gmail.com>
+Cc:     Daniele Palmas <dnlplm@gmail.com>,
+        Paul Gildea <paul.gildea@gmail.com>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usb: qmi_wwan: Fix for packets being rejected in the ring buffer used by the xHCI controller.
+Organization: m
+References: <CA+4pmEueEiz0Act8X6t4y3+4LOaOh_-ZfzScH0CbOKT99x91NA@mail.gmail.com>
+        <87wo7una02.fsf@miraculix.mork.no>
+        <CAGRyCJE-VYRthco5=rZ_PX0hkzhXmQ45yGJe_Gm1UvYJBKYQvQ@mail.gmail.com>
+        <CAKfDRXg2xRbLu=ZcQYdJUuYbfMQbav9pUDwcVMc-S+hwV3Johw@mail.gmail.com>
+Date:   Mon, 07 Sep 2020 09:45:21 +0200
+In-Reply-To: <CAKfDRXg2xRbLu=ZcQYdJUuYbfMQbav9pUDwcVMc-S+hwV3Johw@mail.gmail.com>
+        (Kristian Evensen's message of "Mon, 7 Sep 2020 09:25:16 +0200")
+Message-ID: <87v9gqghda.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <11e7a470-fabb-d679-e254-2a7acc354fc6@gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 09:34:45 up 296 days, 22:53, 278 users,  load average: 0.10, 0.07,
- 0.07
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.4 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20-09-04 08:38, Florian Fainelli wrote:
-> 
-> 
-> On 9/3/2020 11:18 PM, Marco Felsch wrote:
-> > On 20-09-02 21:39, Florian Fainelli wrote:
-> > > The internal Gigabit PHY on Broadcom STB chips has a digital clock which
-> > > drives its MDIO interface among other things, the driver now requests
-> > > and manage that clock during .probe() and .remove() accordingly.
-> > 
-> > Hi Florian,
-> > 
-> > Seems like you added the same support here like I did for the smsc
-> > driver. So should I go with my proposed patch which can be adapted later
-> > after you guys figured out who to enable the required resources?
-> 
-> That seems fine to me, on your platform there appears to be an assumption
-> that we will be able to probe the SMSC PHY because everything we need is
-> already enabled, right? If so, this patch series does not change that state.
+Kristian Evensen <kristian.evensen@gmail.com> writes:
 
-Unfortunately yes.. The imx-fec driver enables all DT-specified clock
-and then the mdio-bus probe is initiated. The good point is that my
-patchset do not require a clock-id so the generic way can replace my
-work later.
+> Hi all,
+>
+> I was able to trigger the same issue as reported by Paul, and came
+> across this patch (+ Daniele's other patch and thread on the libqmi
+> mailing list). Applying Paul's fix solved the problem for me, changing
+> the MTU of the QMI interface now works fine. Thanks a lot to everyone
+> involved!
+>
+> I just have one question, is there a specific reason for the patch not
+> being resubmitted or Daniele's work not resumed? I do not use any of
+> the aggregation-stuff, so I don't know how that is affected by for
+> example Paul's change. If there is anything I can do to help, please
+> let me know.
 
-Regards,
-  Marco
+Thanks for bringing this back into our collective memory.  The patch
+never made it to patchwork, probably due to the formatting issues, and
+was just forgotten.
+
+There are no other reasons than Daniele's concerns in the email you are
+replying to, AFAIK.  The issue pointed out by Paull should be fixed, but
+the fix must not break aggregation..
+
+This is a great opportunity for you to play with QMAP aggregation :-)
+Wouldn't it be good to do some measurements to document why it is such a
+bad idea?
+
+
+Bj=C3=B8rn
+
