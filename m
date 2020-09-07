@@ -2,131 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C85C225F60B
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 11:10:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F7BC25F661
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 11:23:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728141AbgIGJKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 05:10:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60060 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727953AbgIGJKM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 05:10:12 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DDDD62145D;
-        Mon,  7 Sep 2020 09:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599469811;
-        bh=y8Yf6R2NSNJScN/RAMacxJxngNkANZjz4XWYW3mG3OU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m1Nv9saLpS0RyBSXVQjRz16ETNBw/Rc0WeckzloMvodYmh01CSV/9EFEjmhcybBZ3
-         49OZVpICKyP8qiV9MV3d8u7zG5ScRsicCl42kHb4z0ESL6e9wT6vpzBL2z/39WHbQH
-         qOAGWcLsyH2rXXPGP+HVk0a+a7gPucaMjI4gyjYE=
-Date:   Mon, 7 Sep 2020 12:10:07 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, kernel-team@fb.com, tariqt@mellanox.com,
-        yishaih@mellanox.com, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next] mlx4: make sure to always set the port type
-Message-ID: <20200907091007.GN55261@unreal>
-References: <20200904200621.2407839-1-kuba@kernel.org>
- <20200906072759.GC55261@unreal>
- <20200906093305.5c901cc5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200907062135.GJ2997@nanopsycho.orion>
- <20200907064830.GK55261@unreal>
- <20200907071939.GK2997@nanopsycho.orion>
+        id S1728135AbgIGJXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 05:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52192 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728034AbgIGJXQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 05:23:16 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD56C061573
+        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 02:23:15 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id y194so7047210vsc.4
+        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 02:23:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GBjC6LgsXmyRTFlOrXgXx23bviroU6DrK6ZiFWBgik0=;
+        b=Ix+SP49aOyHAg/LDL0Qfvoem123dBoUolQTXi7YjAo0uuVk0297CdTiC3zll82eiwX
+         OIFk0d2c4pI1jm7uoNB+hwGS3lkU8t7LXUp6g4NOn2lP+TWO8ZA8MyLksvKmEndRpFb0
+         G/uPQAgjEp3FLZCxIan72e6ghxZ7gtTcR/E7gbQDdNupo19nZ9Nml1dklJqEMvRmhUnm
+         ZIzaYQ+BE1Fejp3GRiEF1iqePsK/WCtnvvWykHLUtCg4WE52KTCMDSEim0hNOIqhrgTl
+         S+YIF8ZYPswYhgGPHgM0VYOfnPiGcDLpV5YPbvmiINDTKy+5aqHrG7Xpm2O1jGCzxrdO
+         Cubw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GBjC6LgsXmyRTFlOrXgXx23bviroU6DrK6ZiFWBgik0=;
+        b=oPMzjy0bSs+J69v8jWf/he9VQEyuLTagqheu8m91N5nF9Oefut2u2FXKeQdG9ZEgh/
+         SIVEVJoe8qt0nU4joO/ONolG3AZl4kvtMUTLtd634BIH0T924pXWlYY7gTMI6Id/kuZY
+         n5Dnw7X8pnW7/I/of6XGlzJypIA480zynkiv/jJkhMrvKpQ8Dyx2Snjr3iGB5V48/ytT
+         f2CJQWK8IQ/QcWJvZpwFtXaqswLFc4M8mH605YQGaDZxz4ajlG7++gJes1J/4HM1DTuH
+         P53EsdkyM3njz/Z+Jc+j0EDn3Vx8k9JgZ7Zatnx7Fx/XdtuFgT0H0jlYRy9N57qM7IMF
+         1v0g==
+X-Gm-Message-State: AOAM531QTGqJPGHrhyXS6HMbKlygHuRnH3wf/spR7Djxiw3aNdH+ZLkX
+        PikNeNhSkupdVHy/FUpXB72Auw8VCZ2HIQ==
+X-Google-Smtp-Source: ABdhPJzDJARdWNMA/gWFthuiWO3b6F5Q+1otA62Eq4pRqe+XieQmv/c7t8+59TNScn6MNjIyTKlypQ==
+X-Received: by 2002:a67:e190:: with SMTP id e16mr1856001vsl.5.1599470594154;
+        Mon, 07 Sep 2020 02:23:14 -0700 (PDT)
+Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com. [209.85.217.45])
+        by smtp.gmail.com with ESMTPSA id n8sm2353815vkk.13.2020.09.07.02.23.12
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Sep 2020 02:23:13 -0700 (PDT)
+Received: by mail-vs1-f45.google.com with SMTP id c127so1311398vsc.1
+        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 02:23:12 -0700 (PDT)
+X-Received: by 2002:a67:ebc4:: with SMTP id y4mr11763629vso.119.1599470592359;
+ Mon, 07 Sep 2020 02:23:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200907071939.GK2997@nanopsycho.orion>
+References: <1599286273-26553-1-git-send-email-tanhuazhong@huawei.com> <20200906114153.7dccce5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200906114153.7dccce5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 7 Sep 2020 11:22:33 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSfeEuTLAGJZkzoMUvx+0j3dY265i8okPLyDO6S-8KHdbQ@mail.gmail.com>
+Message-ID: <CA+FuTSfeEuTLAGJZkzoMUvx+0j3dY265i8okPLyDO6S-8KHdbQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/2] net: two updates related to UDP GSO
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Huazhong Tan <tanhuazhong@huawei.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
+        linuxarm@huawei.com,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 07, 2020 at 09:19:39AM +0200, Jiri Pirko wrote:
-> Mon, Sep 07, 2020 at 08:48:30AM CEST, leon@kernel.org wrote:
-> >On Mon, Sep 07, 2020 at 08:21:35AM +0200, Jiri Pirko wrote:
-> >> Sun, Sep 06, 2020 at 06:33:05PM CEST, kuba@kernel.org wrote:
-> >> >On Sun, 6 Sep 2020 10:27:59 +0300 Leon Romanovsky wrote:
-> >> >> On Fri, Sep 04, 2020 at 01:06:21PM -0700, Jakub Kicinski wrote:
-> >> >> > Even tho mlx4_core registers the devlink ports, it's mlx4_en
-> >> >> > and mlx4_ib which set their type. In situations where one of
-> >> >> > the two is not built yet the machine has ports of given type
-> >> >> > we see the devlink warning from devlink_port_type_warn() trigger.
-> >> >> >
-> >> >> > Having ports of a type not supported by the kernel may seem
-> >> >> > surprising, but it does occur in practice - when the unsupported
-> >> >> > port is not plugged in to a switch anyway users are more than happy
-> >> >> > not to see it (and potentially allocate any resources to it).
-> >> >> >
-> >> >> > Set the type in mlx4_core if type-specific driver is not built.
-> >> >> >
-> >> >> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> >> >> > ---
-> >> >> >  drivers/net/ethernet/mellanox/mlx4/main.c | 11 +++++++++++
-> >> >> >  1 file changed, 11 insertions(+)
-> >> >> >
-> >> >> > diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-> >> >> > index 258c7a96f269..70cf24ba71e4 100644
-> >> >> > --- a/drivers/net/ethernet/mellanox/mlx4/main.c
-> >> >> > +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-> >> >> > @@ -3031,6 +3031,17 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
-> >> >> >  	if (err)
-> >> >> >  		return err;
-> >> >> >
-> >> >> > +	/* Ethernet and IB drivers will normally set the port type,
-> >> >> > +	 * but if they are not built set the type now to prevent
-> >> >> > +	 * devlink_port_type_warn() from firing.
-> >> >> > +	 */
-> >> >> > +	if (!IS_ENABLED(CONFIG_MLX4_EN) &&
-> >> >> > +	    dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH)
-> >> >> > +		devlink_port_type_eth_set(&info->devlink_port, NULL);
-> >> >>                                                                ^^^^^
-> >> >>
-> >> >> Won't it crash in devlink_port_type_eth_set()?
-> >> >> The first line there dereferences pointer.
-> >> >>   7612         const struct net_device_ops *ops = netdev->netdev_ops;
-> >> >
-> >> >Damn, good catch. It's not supposed to be required. I'll patch devlink.
-> >>
-> >> When you set the port type to ethernet, you should have the net_device
-> >> instance. Why wouldn't you?
-> >
-> >It is how mlx4 is implemented, see mlx4_dev_cap() function:
-> >588         for (i = 1; i <= dev->caps.num_ports; ++i) {
-> >589                 dev->caps.port_type[i] = MLX4_PORT_TYPE_NONE;
-> >....
-> >
-> >The port type is being set to IB or ETH without relation to net_device,
-> >fixing it will require very major code rewrite for the stable driver
-> >that in maintenance mode.
+On Sun, Sep 6, 2020 at 8:42 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Because the eth driver is not loaded, I see. The purpose of the
-> WARN in devlink_port_type_eth_set is to prevent drivers from registering
-> particular port without netdev/ibdev. That is what was repeatedly
-> happening in the past as the driver developers didn't know they need to
-> do it or were just lazy to do so.
+> On Sat, 5 Sep 2020 14:11:11 +0800 Huazhong Tan wrote:
+> > There are two updates relates to UDP GSO.
+> > #1 adds a new GSO type for UDPv6
+> > #2 adds check for UDP GSO when csum is disable in netdev_fix_features().
+> >
+> > Changes since RFC V2:
+> > - modifies the timing of setting UDP GSO type when doing UDP GRO in #1.
+> >
+> > Changes since RFC V1:
+> > - updates NETIF_F_GSO_LAST suggested by Willem de Bruijn.
+> >   and add NETIF_F_GSO_UDPV6_L4 feature for each driver who support UDP GSO in #1.
+> >   - add #2 who needs #1.
 >
-> I wonder if there is any possibility to do both...
-
-It is hard to say, hope that Jakub will take a look.
-
-Thanks
-
+> Please CC people who gave you feedback (Willem).
 >
-> >
-> >>
-> >>
-> >> >
-> >> >> And can we call to devlink_port_type_*_set() without IS_ENABLED() check?
-> >> >
-> >> >It'll generate two netlink notifications - not the end of the world but
-> >> >also doesn't feel super clean.
-> >
-> >I would say that such a situation is corner case during the driver init and
-> >not an end of the world to see double netlink message.
-> >
-> >Thanks
+> I don't feel good about this series. IPv6 is not optional any more.
+> AFAIU you have some issues with csum support in your device? Can you
+> use .ndo_features_check() to handle this?
+>
+> The change in semantics of NETIF_F_GSO_UDP_L4 from "v4 and v6" to
+> "just v4" can trip people over; this is not a new feature people
+> may be depending on the current semantics.
+>
+> Willem, what are your thoughts on this?
+
+If that is the only reason, +1 on fixing it up in the driver's
+ndo_features_check.
