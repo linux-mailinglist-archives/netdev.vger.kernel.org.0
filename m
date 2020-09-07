@@ -2,152 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 675F525FB88
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 15:40:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ADBF25FB98
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 15:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729604AbgIGNhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 09:37:03 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:40020 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729585AbgIGNek (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 09:34:40 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 1AD2C804481131BD0AD1;
-        Mon,  7 Sep 2020 21:32:33 +0800 (CST)
-Received: from [127.0.0.1] (10.74.149.191) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Mon, 7 Sep 2020
- 21:32:23 +0800
-Subject: Re: [PATCH net-next 0/2] net: two updates related to UDP GSO
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>
-References: <1599286273-26553-1-git-send-email-tanhuazhong@huawei.com>
- <20200906114153.7dccce5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CA+FuTSfeEuTLAGJZkzoMUvx+0j3dY265i8okPLyDO6S-8KHdbQ@mail.gmail.com>
-From:   tanhuazhong <tanhuazhong@huawei.com>
-Message-ID: <126e5424-2453-eef4-d5b6-adeaedbb6eca@huawei.com>
-Date:   Mon, 7 Sep 2020 21:32:22 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        id S1729636AbgIGNmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 09:42:42 -0400
+Received: from mga11.intel.com ([192.55.52.93]:19032 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729602AbgIGNk6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 09:40:58 -0400
+IronPort-SDR: n4o/aJ8XEyaz/Uv0s/LrYbfq2lLtMTG5d4t9A5/tkUZvcRMTCLgbXjQYQYGY8jjHtF/FUIQqtm
+ aRU1nwFDJIvg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9736"; a="155500088"
+X-IronPort-AV: E=Sophos;i="5.76,401,1592895600"; 
+   d="scan'208";a="155500088"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2020 06:37:47 -0700
+IronPort-SDR: MXbziBHXdLofMRVjhmFogHuU7akOLzGtpfMQCHdquu/U/fDRatsd7XICx8Fn931ptEmH5CxKBM
+ MUZVua/bUfcA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,401,1592895600"; 
+   d="scan'208";a="333166580"
+Received: from clroth-mobl2.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.57.7])
+  by orsmga008.jf.intel.com with ESMTP; 07 Sep 2020 06:37:41 -0700
+Subject: Re: [PATCH bpf-next 0/6] xsk: exit NAPI loop when AF_XDP Rx ring is
+ full
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, davem@davemloft.net,
+        john.fastabend@gmail.com, intel-wired-lan@lists.osuosl.org
+References: <20200904135332.60259-1-bjorn.topel@gmail.com>
+ <20200904162751.632c4443@carbon>
+ <27e05518-99c6-15e2-b801-cbc0310630ef@intel.com>
+ <20200904165837.16d8ecfd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <1d2e781e-b26d-4cf0-0178-25b8835dbe26@intel.com>
+Date:   Mon, 7 Sep 2020 15:37:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSfeEuTLAGJZkzoMUvx+0j3dY265i8okPLyDO6S-8KHdbQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <20200904165837.16d8ecfd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.149.191]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020-09-05 01:58, Jakub Kicinski wrote:
+ > On Fri, 4 Sep 2020 16:32:56 +0200 Björn Töpel wrote:
+ >> On 2020-09-04 16:27, Jesper Dangaard Brouer wrote:
+ >>> On Fri,  4 Sep 2020 15:53:25 +0200
+ >>> Björn Töpel <bjorn.topel@gmail.com> wrote:
+ >>>
+ >>>> On my machine the "one core scenario Rx drop" performance went from
+ >>>> ~65Kpps to 21Mpps. In other words, from "not usable" to
+ >>>> "usable". YMMV.
+ >>>
+ >>> We have observed this kind of dropping off an edge before with softirq
+ >>> (when userspace process runs on same RX-CPU), but I thought that Eric
+ >>> Dumazet solved it in 4cd13c21b207 ("softirq: Let ksoftirqd do its 
+job").
+ >>>
+ >>> I wonder what makes AF_XDP different or if the problem have come back?
+ >>>
+ >>
+ >> I would say this is not the same issue. The problem is that the softirq
+ >> is busy dropping packets since the AF_XDP Rx is full. So, the cycles
+ >> *are* split 50/50, which is not what we want in this case. :-)
+ >>
+ >> This issue is more of a "Intel AF_XDP ZC drivers does stupid work", than
+ >> fairness. If the Rx ring is full, then there is really no use to let the
+ >> NAPI loop continue.
+ >>
+ >> Would you agree, or am I rambling? :-P
+ >
+ > I wonder if ksoftirqd never kicks in because we are able to discard
+ > the entire ring before we run out of softirq "slice".
+ >
+
+This is exactly what's happening, so we're entering a "busy poll like"
+behavior; syscall, return from syscall softirq/napi, userland.
+
+ >
+ > I've been pondering the exact problem you're solving with Maciej
+ > recently. The efficiency of AF_XDP on one core with the NAPI processing.
+ >
+ > Your solution (even though it admittedly helps, and is quite simple)
+ > still has the application potentially not able to process packets
+ > until the queue fills up. This will be bad for latency.
+ >
+ > Why don't we move closer to application polling? Never re-arm the NAPI
+ > after RX, let the application ask for packets, re-arm if 0 polled.
+ > You'd get max batching, min latency.
+ >
+ > Who's the rambling one now? :-D
+ >
+
+:-D No, these are all very good ideas! We've actually experimented
+with it with the busy-poll series a while back -- NAPI busy-polling
+does exactly "application polling".
+
+However, I wonder if the busy-polling would have better performance
+than the scenario above (i.e. when the ksoftirqd never kicks in)?
+Executing the NAPI poll *explicitly* in the syscall, or implicitly
+from the softirq.
+
+Hmm, thinking out loud here. A simple(r) patch enabling busy poll;
+Exporting the napi_id to the AF_XDP socket (xdp->rxq->napi_id to
+sk->sk_napi_id), and do the sk_busy_poll_loop() in sendmsg.
+
+Or did you have something completely different in mind?
+
+As for this patch set, I think it would make sense to pull it in since
+it makes the single-core scenario *much* better, and it is pretty
+simple. Then do the application polling as another, potentially,
+improvement series.
 
 
-On 2020/9/7 17:22, Willem de Bruijn wrote:
-> On Sun, Sep 6, 2020 at 8:42 PM Jakub Kicinski <kuba@kernel.org> wrote:
->>
->> On Sat, 5 Sep 2020 14:11:11 +0800 Huazhong Tan wrote:
->>> There are two updates relates to UDP GSO.
->>> #1 adds a new GSO type for UDPv6
->>> #2 adds check for UDP GSO when csum is disable in netdev_fix_features().
->>>
->>> Changes since RFC V2:
->>> - modifies the timing of setting UDP GSO type when doing UDP GRO in #1.
->>>
->>> Changes since RFC V1:
->>> - updates NETIF_F_GSO_LAST suggested by Willem de Bruijn.
->>>    and add NETIF_F_GSO_UDPV6_L4 feature for each driver who support UDP GSO in #1.
->>>    - add #2 who needs #1.
->>
->> Please CC people who gave you feedback (Willem).
->>
->> I don't feel good about this series. IPv6 is not optional any more.
->> AFAIU you have some issues with csum support in your device? Can you
->> use .ndo_features_check() to handle this?
->>
->> The change in semantics of NETIF_F_GSO_UDP_L4 from "v4 and v6" to
->> "just v4" can trip people over; this is not a new feature people
->> may be depending on the current semantics.
->>
->> Willem, what are your thoughts on this?
-> 
-> If that is the only reason, +1 on fixing it up in the driver's
-> ndo_features_check.
-> 
-
-Hi, Willem & Jakub.
-
-This series mainly fixes the feature dependency between hardware 
-checksum and UDP GSO.
-When turn off hardware checksum offload, run 'ethtool -k [devname]'
-we can see TSO is off as well, but udp gso still is on.
-
-[root@localhost ~]# ethtool -K eth0 tx off
-Actual changes:
-tx-checksumming: off
-	tx-checksum-ipv4: off
-	tx-checksum-ipv6: off
-	tx-checksum-sctp: off
-tcp-segmentation-offload: off
-	tx-tcp-segmentation: off [requested on]
-	tx-tcp-ecn-segmentation: off [requested on]
-	tx-tcp6-segmentation: off [requested on]
-[root@localhost ~]# ethtool -k eth0
-Features for eth0:
-rx-checksumming: on
-tx-checksumming: off
-	tx-checksum-ipv4: off
-	tx-checksum-ip-generic: off [fixed]
-	tx-checksum-ipv6: off
-	tx-checksum-fcoe-crc: off [fixed]
-	tx-checksum-sctp: off
-...
-tcp-segmentation-offload: off
-	tx-tcp-segmentation: off [requested on]
-	tx-tcp-ecn-segmentation: off [requested on]
-	tx-tcp-mangleid-segmentation: off
-	tx-tcp6-segmentation: off [requested on]
-udp-fragmentation-offload: off
-generic-segmentation-offload: on
-generic-receive-offload: on
-...
-tx-udp-segmentation: on
-...
-
-.ndo_feature_check seems unnecessary.
-Because the stack has already do this check.
-in __ip_append_data() below if branch will not run if hardware checksum 
-offload is off.
-         if (transhdrlen &&
-             length + fragheaderlen <= mtu &&
-             rt->dst.dev->features & (NETIF_F_HW_CSUM | NETIF_F_IP_CSUM) &&
-             (!(flags & MSG_MORE) || cork->gso_size) &&
-             (!exthdrlen || (rt->dst.dev->features & 
-NETIF_F_HW_ESP_TX_CSUM)))
-                 csummode = CHECKSUM_PARTIAL;
-...
-so skb->ip_summed set as CHECKSUM_NONE,
-then in udp_send_skb()
-         if (cork->gso_size) {
-		...
-                 if (skb->ip_summed != CHECKSUM_PARTIAL || is_udplite ||
-                     dst_xfrm(skb_dst(skb))) {
-                         kfree_skb(skb); 
- 
-
-                         return -EIO;
-                 }
-the packet who needs udp gso will return ERROR.
-
-For this kind of problem how could we fix it?
-
-Thanks.
-Huazhong.
-
-> .
-> 
-
+Thoughts? Thanks a lot for the feedback!
+Björn
