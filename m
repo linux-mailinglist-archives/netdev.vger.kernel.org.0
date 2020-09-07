@@ -2,107 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC50C260412
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 20:03:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86513260429
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 20:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728916AbgIGSDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 14:03:11 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:30135 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728897AbgIGSDG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 14:03:06 -0400
+        id S1731297AbgIGSFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 14:05:42 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:23772 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729726AbgIGSEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 14:04:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599501784;
+        s=mimecast20190719; t=1599501890;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0yqo1lsdLkRhOfjW7UHT4yV+lc6hHGYfKUzEMxekKbg=;
-        b=fz4IwXLWeR1GwL/X5SvbZUFqGeJ9kvBLDK9oLqQn2/5tLN7M9cbMHTvP4r7jj8XHAYptqp
-        w3BwaUmZQYeksRqGSwKgPpoUKwF/ukzvhgX6R+KkYPe+IocaHpKyAdozXvQhBAf+DH4Apx
-        zn7XLnb1JVv473E13Fra/nmzGeaBZD8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-205-2n510tkfOXepvjf57EsPaQ-1; Mon, 07 Sep 2020 14:03:00 -0400
-X-MC-Unique: 2n510tkfOXepvjf57EsPaQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D0C7801AAD;
-        Mon,  7 Sep 2020 18:02:58 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.42])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 61BB819C4F;
-        Mon,  7 Sep 2020 18:02:47 +0000 (UTC)
-Date:   Mon, 7 Sep 2020 20:02:45 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net,
-        lorenzo.bianconi@redhat.com, echaudro@redhat.com,
-        sameehj@amazon.com, kuba@kernel.org, john.fastabend@gmail.com,
-        daniel@iogearbox.net, ast@kernel.org, shayagr@amazon.com,
-        David Ahern <dsahern@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        brouer@redhat.com
-Subject: Re: [PATCH v2 net-next 1/9] xdp: introduce mb in xdp_buff/xdp_frame
-Message-ID: <20200907200245.0cdb63f1@carbon>
-In-Reply-To: <107260d3-1fea-b582-84d3-2d092f3112b1@gmail.com>
-References: <cover.1599165031.git.lorenzo@kernel.org>
-        <1e8e82f72e46264b7a7a1ac704d24e163ebed100.1599165031.git.lorenzo@kernel.org>
-        <20200904010705.jm6dnuyj3oq4cpjd@ast-mbp.dhcp.thefacebook.com>
-        <20200904091939.069592e4@carbon>
-        <1c3e478c-5000-1726-6ce9-9b0a3ccfe1e5@gmail.com>
-        <20200904175946.6be0f565@carbon>
-        <107260d3-1fea-b582-84d3-2d092f3112b1@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+         to:to:cc:cc; bh=wEV7c2hoejQ1ixum50rA5xwKvNmSW5uoo1V8Pac1bKo=;
+        b=E4pUSDNFVNkGaVDsM5mr5Og+r+k6Zt2TFwU6Jgk2I2ArPo6I89LVTSdSzSvzASzwe8CUCw
+        4qmd0Slo+xq/4K5OZmavcX45yVn8kk+Ohvl8t63w6ImEteogqjqtNxvozBpFRq2OIDx0Ot
+        6LPSkLu9FopmPqoi52/5lqRYgAFfhnw=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-296-jqEXeUu2NeuXPN3o0uRmiQ-1; Mon, 07 Sep 2020 14:04:48 -0400
+X-MC-Unique: jqEXeUu2NeuXPN3o0uRmiQ-1
+Received: by mail-qt1-f200.google.com with SMTP id b54so7681740qtk.17
+        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 11:04:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=wEV7c2hoejQ1ixum50rA5xwKvNmSW5uoo1V8Pac1bKo=;
+        b=egJXOBvUCLeJAoUXhN8yfx+2tEjGdHY4+oXsEdQ8ApOgdCTOgohE7D43EEX5xW9jTS
+         /RQFhuTZIY2OYNhqFx9hZ70jmaW9ksFALLD+YpRV/f5uaI33C7cU9cDsWnyCy9NPYvDY
+         t/Ha0dPeu00pNmBBUjirH7Cq1GjZH9d50A5SUJEE/8LwsCkf+in9BGJiM9YV2b3t2vHH
+         A0X3qUdMNPI9RSQ6ce8iAuah2vODJPAw8rOmRtJILcD8tCn/R/BR47+t9EhhoM/kzmbD
+         8Jl5sOLyua8qJx9MLkG9r1/9TENoC15W7AYnGobDoTPlEiLnXeHFl/vdyyTNOQ15z46u
+         Y/Dw==
+X-Gm-Message-State: AOAM530UbMU9IJT5exc2ne72biaiI/Kg+kLEEg/IdWmlbg/3b+P9lmWG
+        n1DYSTaKcYLeDBO1CVMO6aB/mMwykhaDDtZ4HgUxYtYHTV2nZGKQhmJJKlPyGps2bTnugr3tiYy
+        SHCoXpYIy4HRYe88x
+X-Received: by 2002:a37:8c02:: with SMTP id o2mr18932748qkd.461.1599501888001;
+        Mon, 07 Sep 2020 11:04:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzc9bmRu1RY4kwHcHrlv9A879aAJwVxMmr05CDWzHdIf5f9kZB3pGIWJMKzUyS2DL1f0/pOQg==
+X-Received: by 2002:a37:8c02:: with SMTP id o2mr18932729qkd.461.1599501887741;
+        Mon, 07 Sep 2020 11:04:47 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id e24sm11088555qka.76.2020.09.07.11.04.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Sep 2020 11:04:47 -0700 (PDT)
+From:   trix@redhat.com
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: sched: skip an unnecessay check
+Date:   Mon,  7 Sep 2020 11:04:38 -0700
+Message-Id: <20200907180438.11983-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 4 Sep 2020 10:30:48 -0600
-David Ahern <dsahern@gmail.com> wrote:
+From: Tom Rix <trix@redhat.com>
 
-> On 9/4/20 9:59 AM, Jesper Dangaard Brouer wrote:
-> >> dev_rx for example seems like it could just be the netdev
-> >> index rather than a pointer or perhaps can be removed completely. I
-> >> believe it is only used for 1 use case (redirects to CPUMAP); maybe that
-> >> code can be refactored to handle the dev outside of xdp_frame.  
-> > 
-> > The dev_rx is needed when creating an SKB from a xdp_frame (basically
-> > skb->dev = rx_dev). Yes, that is done in cpumap, but I want to
-> > generalize this.  The veth also creates SKBs from xdp_frame, but use
-> > itself as skb->dev.
-> > 
-> > And yes, we could save some space storing the index instead, and trade
-> > space for cycles in a lookup.  
-> 
-> I think this can be managed without adding a reference to the xdp_frame.
-> I'll start a separate thread on that.
-> 
-> >>
-> >> As for frame_sz, why does it need to be larger than a u16?  
-> > 
-> > Because PAGE_SIZE can be 64KiB on some archs.
-> >   
+Reviewing the error handling in tcf_action_init_1()
+most of the early handling uses
 
-I also believe syzbot managed to create packets for generic-XDP with
-frame_sz 128KiB, which was a bit weird (it's on my todo list to
-investigate and fix).
+err_out:
+	if (cookie) {
+		kfree(cookie->data);
+		kfree(cookie);
+	}
 
-> ok, is there any alignment requirement? can frame_sz be number of 32-bit
-> words? I believe bit shifts are cheap.
+before cookie could ever be set.
 
-No that is not possible, because some drivers and generic-XDP have a
-fully dynamic frame_sz.
+So skip the unnecessay check.
 
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ net/sched/act_api.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 063d8aaf2900..f64af9d9dfee 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -976,7 +976,7 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ #endif
+ 		NL_SET_ERR_MSG(extack, "Failed to load TC action module");
+ 		err = -ENOENT;
+-		goto err_out;
++		goto err_free;
+ 	}
+ 
+ 	/* backward compatibility for policer */
+@@ -1013,11 +1013,12 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ 
+ err_mod:
+ 	module_put(a_o->owner);
+-err_out:
++err_free:
+ 	if (cookie) {
+ 		kfree(cookie->data);
+ 		kfree(cookie);
+ 	}
++err_out:
+ 	return ERR_PTR(err);
+ }
+ 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.18.1
 
