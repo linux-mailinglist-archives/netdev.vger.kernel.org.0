@@ -2,95 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC63260630
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 23:19:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EE0D26063B
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 23:25:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728101AbgIGVTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 17:19:30 -0400
-Received: from mail-il1-f205.google.com ([209.85.166.205]:44884 "EHLO
-        mail-il1-f205.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728104AbgIGVTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 17:19:17 -0400
-Received: by mail-il1-f205.google.com with SMTP id j11so10575502ilr.11
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 14:19:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=KDsIY9T/YTTlKMwesQyoJ6ofuhbIdzhOayQF73PmSbw=;
-        b=ibT3YCzbTZmmaP15rANd6QDS5qmXEOnyRaFvMnw6j8DzpkSUhpePPilFU0mXayag6Y
-         9d45qORAOhSjUIg3YLsotx3qd48xs7XvfPmSAaolkn6ysxaagNvs9SNqZifrpb7Hoe2g
-         ll7GeY0ho3tTzCRmvoXTzJvIK/S7OGMDPkR/Bbd1ietBkXEUAdANtXh8LL+m200Fid6m
-         fnzQ5VNucLUPb2mMRiwHgnUjotlk4tBxBs+tT0IOPp38RbrFB7b2JBfXlnyHc9XodtcM
-         3ac+FIr/xbhVzhxWihdMXw2Ulu4OhQgmI9xmknZWp5OzXOF9BO594Oj64V2Y0TvXd6pl
-         x5gg==
-X-Gm-Message-State: AOAM530VrQRg2fdTBjQ35rnhJvgNnpEqtwN4WzFN+V9N9Ywr7HyDwBX/
-        Jbv9meU3Acj2rVNZSEbBBQWshRvnexw8a1fWvigv9vlKW61x
-X-Google-Smtp-Source: ABdhPJw22dwmVAPZ9SruiFpMv44NnluSWWCi0x/WHYJ6GOkdMfP+JrrrAJQjP7aqkLwToAMWPQMWs9Sz4aA+PKlNIPULyb1thvlz
+        id S1727784AbgIGVZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 17:25:45 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45304 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726929AbgIGVZo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 17:25:44 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 90EB1ABA2;
+        Mon,  7 Sep 2020 21:25:43 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 8D162603AD; Mon,  7 Sep 2020 23:25:42 +0200 (CEST)
+Date:   Mon, 7 Sep 2020 23:25:42 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "Kevin(Yudong) Yang" <yyd@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>
+Subject: Re: [PATCH ethtool,v2] ethtool: add support show/set-time-stamping
+Message-ID: <20200907212542.rnwzu3cn24uewyk4@lion.mk-sys.cz>
+References: <20200903140714.1781654-1-yyd@google.com>
+ <20200907125312.evg6kio5dt3ar6c6@lion.mk-sys.cz>
+ <CANn89iKZ19+AJOf5_5orPrUObYef+L-HrwF_Oay6o75ZbG7UhQ@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:60c:: with SMTP id t12mr2508124ils.200.1599513556041;
- Mon, 07 Sep 2020 14:19:16 -0700 (PDT)
-Date:   Mon, 07 Sep 2020 14:19:16 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005244f405aebfc5ba@google.com>
-Subject: INFO: trying to register non-static key in update_defense_level
-From:   syzbot <syzbot+80eac45c3b92882289f6@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
-        horms@verge.net.au, ja@ssi.bg, kadlec@netfilter.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com, wensong@linux-vs.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iKZ19+AJOf5_5orPrUObYef+L-HrwF_Oay6o75ZbG7UhQ@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Sep 07, 2020 at 06:56:20PM +0200, Eric Dumazet wrote:
+> On Mon, Sep 7, 2020 at 2:53 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+> >
+> > As I said in response to v1 patch, I don't like the idea of adding a new
+> > ioctl interface to ethool when we are working on replacing and
+> > deprecating the existing ones. Is there a strong reason why this feature
+> > shouldn't be implemented using netlink?
+> 
+> I do not think this is a fair request.
+> 
+> All known kernels support the ioctl(), none of them support netlink so far.
 
-syzbot found the following issue on:
+Several years ago, exactly the same was true for bonding, bridge or vlan
+configuration: all known kernels supported ioctl() or sysfs interfaces
+for them, none supported netlink at that point. By your logic, the right
+course of action would have been using ioctl() and sysfs for iproute2
+support. Instead, rtnetlink interfaces were implemented and used by
+iproute2. I believe it was the right choice.
 
-HEAD commit:    9322c47b Merge tag 'xfs-5.9-fixes-2' of git://git.kernel.o..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1670fe59900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=bd46548257448703
-dashboard link: https://syzkaller.appspot.com/bug?extid=80eac45c3b92882289f6
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+> Are you working on the netlink interface, or are you requesting us to
+> implement it ?
 
-Unfortunately, I don't have any reproducer for this issue yet.
+If it helps, I'm willing to write the kernel side. Or both, if
+necessary, just to avoid adding another ioctl monument that would have
+to be kept and maintained for many years, maybe forever.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+80eac45c3b92882289f6@syzkaller.appspotmail.com
+> The ioctl has been added years ago, and Kevin patch is reasonable enough.
 
-INFO: trying to register non-static key.
-the code is fine but needs lockdep annotation.
-turning off the locking correctness validator.
-CPU: 0 PID: 607 Comm: kworker/0:12 Not tainted 5.9.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events_long defense_work_handler
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x198/0x1fd lib/dump_stack.c:118
- assign_lock_key kernel/locking/lockdep.c:894 [inline]
- register_lock_class+0x157d/0x1630 kernel/locking/lockdep.c:1206
- __lock_acquire+0xf9/0x5570 kernel/locking/lockdep.c:4305
- lock_acquire+0x1f3/0xae0 kernel/locking/lockdep.c:5006
- __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
- _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
- spin_lock include/linux/spinlock.h:354 [inline]
- update_defense_level+0xdc/0x10f0 net/netfilter/ipvs/ip_vs_ctl.c:113
- defense_work_handler+0x25/0xe0 net/netfilter/ipvs/ip_vs_ctl.c:235
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+And there is a utility using the ioctl, as Andrew pointed out. Just like
+there were brctl and vconfig and ioctl they were using. The existence of
+those ioctl was not considered sufficient reason to use them when bridge
+and vlan support was added to iproute2. I don't believe today's
+situation with ethtool is different.
 
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Michal
