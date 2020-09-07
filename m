@@ -2,76 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C5EE2600E1
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DC50260104
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731182AbgIGQzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 12:55:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48028 "EHLO mail.kernel.org"
+        id S1730965AbgIGQ5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:57:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730745AbgIGQeR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:34:17 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1730616AbgIGQeG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:34:06 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 42F2921D93;
-        Mon,  7 Sep 2020 16:34:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BA0AD21D79;
+        Mon,  7 Sep 2020 16:34:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599496457;
-        bh=pWPCQxYkwcrRSwkB1/hw9MYm8NdGPFIuQ7QBFDTRK/A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pnzYR6c6DA0Im7z9C8mKGUO4kT6Up/q7JgyXlYaKFptodP2KHXzy8IxRC8wA9QZ6D
-         6X2zQZu44iy2pTsHR2ev8t6hRYuusAWF1Q7yre2dT+0IbTe77auPI7lI6E+yyojVUo
-         EsOKkD+iOlcdG7bPhSwq80pfIwSKhF9feVm1mlts=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kamil Lorenc <kamil@re-ws.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 37/43] net: usb: dm9601: Add USB ID of Keenetic Plus DSL
-Date:   Mon,  7 Sep 2020 12:33:23 -0400
-Message-Id: <20200907163329.1280888-37-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200907163329.1280888-1-sashal@kernel.org>
-References: <20200907163329.1280888-1-sashal@kernel.org>
+        s=default; t=1599496443;
+        bh=uuUO6kHcVDNnH/wIg6TTJneR+OJeQf6S+KS0dfYWZg4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=l3AP9kkfMZPza+CT7MMGseWtaia9gWdxCjq8GzyUIQ2dUF+NRkeX3QVnNL4Zub7Pe
+         aBHvkt52suoBfF2NK9BDhLA46veiltLcIBcZmVS0uXs6RsqqwUqXOTFOHmAuJ00dT/
+         P9tAukcGBYn8QKVVLZG/54Bd/8NR1qXrZWD+VIcA=
+Date:   Mon, 7 Sep 2020 09:34:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Leon Romanovsky <leon@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, kernel-team@fb.com, tariqt@mellanox.com,
+        yishaih@mellanox.com, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next] mlx4: make sure to always set the port type
+Message-ID: <20200907093401.547ae9b8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200907071939.GK2997@nanopsycho.orion>
+References: <20200904200621.2407839-1-kuba@kernel.org>
+        <20200906072759.GC55261@unreal>
+        <20200906093305.5c901cc5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200907062135.GJ2997@nanopsycho.orion>
+        <20200907064830.GK55261@unreal>
+        <20200907071939.GK2997@nanopsycho.orion>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kamil Lorenc <kamil@re-ws.pl>
+On Mon, 7 Sep 2020 09:19:39 +0200 Jiri Pirko wrote:
+> >The port type is being set to IB or ETH without relation to net_device,
+> >fixing it will require very major code rewrite for the stable driver
+> >that in maintenance mode.  
+> 
+> Because the eth driver is not loaded, I see. The purpose of the
+> WARN in devlink_port_type_eth_set is to prevent drivers from registering
+> particular port without netdev/ibdev. That is what was repeatedly
+> happening in the past as the driver developers didn't know they need to
+> do it or were just lazy to do so.
+> 
+> I wonder if there is any possibility to do both...
 
-[ Upstream commit a609d0259183a841621f252e067f40f8cc25d6f6 ]
+I think we have two options in this case:
+ - set type to eth without the netdev
+ - selectively mute the warning
 
-Keenetic Plus DSL is a xDSL modem that uses dm9620 as its USB interface.
+I think the former is better, because we still want to see what the
+port type is. Perhaps we should add a:
 
-Signed-off-by: Kamil Lorenc <kamil@re-ws.pl>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/usb/dm9601.c | 4 ++++
- 1 file changed, 4 insertions(+)
+  dev_warn("devlink port type set without software interface
+            reference, device type not supported by the kernel?");
 
-diff --git a/drivers/net/usb/dm9601.c b/drivers/net/usb/dm9601.c
-index b91f92e4e5f22..915ac75b55fc7 100644
---- a/drivers/net/usb/dm9601.c
-+++ b/drivers/net/usb/dm9601.c
-@@ -625,6 +625,10 @@ static const struct usb_device_id products[] = {
- 	 USB_DEVICE(0x0a46, 0x1269),	/* DM9621A USB to Fast Ethernet Adapter */
- 	 .driver_info = (unsigned long)&dm9601_info,
- 	},
-+	{
-+	 USB_DEVICE(0x0586, 0x3427),	/* ZyXEL Keenetic Plus DSL xDSL modem */
-+	 .driver_info = (unsigned long)&dm9601_info,
-+	},
- 	{},			// END
- };
- 
--- 
-2.25.1
+That way people won't just pass NULL out of laziness, hopefully.
 
+WDYT?
