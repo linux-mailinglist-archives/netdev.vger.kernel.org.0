@@ -2,71 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5944260551
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 21:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EA3826056A
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 22:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728907AbgIGT5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 15:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37386 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728834AbgIGT5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 15:57:30 -0400
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE83AC061573
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 12:57:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=dhJwYxcrL8N8oLjXGhjsLOC1RU4xAcvTtpyKRfTXb+8=; b=BreetQWaTglU7EXNsC3SypeAug
-        /0XCyDmax9yA1Row/pRMkqJt8zml1dLoec7x+F6K0Ra1JL/RCpPtxApVkD4EMbOuYE0rns7cjK6MS
-        h0gFGMYE61zgDC28MKMh/qEYprkYnt4aXA7JCWgsBLeHiETALadMG/oGHejOhPeKBuZV3Y2Ru9xOW
-        dnquVgAdRxRqFpDfZeKVZVNR9t0sNLzx65OBoY1Ga9kwRQ5WH0HHpWeKvrqul91rGTn7u5HDxCPKj
-        pfOw1T1nYCCbFqHkBk4v5rNCJhJbnuM3wjqyCas3QHZouh0o2sbOv7Ol/dNs/pQrje01gpdaca/60
-        iu6T9Nrw==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kFNGQ-0004qf-Sq; Mon, 07 Sep 2020 19:57:21 +0000
-Subject: Re: [PATCH net] netdevice.h: fix proto_down_reason kernel-doc warning
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-References: <7275c711-b313-b78c-bea5-e836f323b0ef@infradead.org>
- <20200907124951.044d34be@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <390aab79-1577-a4aa-be59-d51966126a99@infradead.org>
-Date:   Mon, 7 Sep 2020 12:57:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1729222AbgIGUMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 16:12:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37782 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728834AbgIGUMV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 16:12:21 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7271921556;
+        Mon,  7 Sep 2020 20:12:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599509540;
+        bh=EOaPtAh03DeyQBLF3axC14+NF/h3MulP7m20/5/Q5C8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KKif5jRX8IOQ8WTb4utcN3D8+wCpPYWY2XIAkT80zR4sHa9khMmoUJgrVkFSRgVJj
+         6Wcn6cr07ZkKlwuCBD3vrniXrzWm6JKKDw8PiDdL/bzw8oPngw040M78WzsOFDICmE
+         +BtmCr1sAzo7cEjqL2ton0nsI3i8Zl2qSoXCgZq8=
+Date:   Mon, 7 Sep 2020 13:12:17 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Po-Hsu Lin <po-hsu.lin@canonical.com>
+Cc:     davem@davemloft.net, skhan@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCHv3] selftests: rtnetlink: load fou module for
+ kci_test_encap_fou() test
+Message-ID: <20200907131217.61643ada@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200907035010.9154-1-po-hsu.lin@canonical.com>
+References: <20200907035010.9154-1-po-hsu.lin@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <20200907124951.044d34be@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/7/20 12:49 PM, Jakub Kicinski wrote:
-> On Sun, 6 Sep 2020 20:31:16 -0700 Randy Dunlap wrote:
->> From: Randy Dunlap <rdunlap@infradead.org>
->>
->> Fix kernel-doc warning in <linux/netdevice.h>:
->>
->> ../include/linux/netdevice.h:2158: warning: Function parameter or member 'proto_down_reason' not described in 'net_device'
->>
->> Fixes: 829eb208e80d ("rtnetlink: add support for protodown reason")
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->> Cc: Roopa Prabhu <roopa@cumulusnetworks.com>
+On Mon,  7 Sep 2020 11:50:10 +0800 Po-Hsu Lin wrote:
+> The kci_test_encap_fou() test from kci_test_encap() in rtnetlink.sh
+> needs the fou module to work. Otherwise it will fail with:
 > 
-> Applied, but I had to fix a checkpatch warning about a space before a
-> tab..
+>   $ ip netns exec "$testns" ip fou add port 7777 ipproto 47
+>   RTNETLINK answers: No such file or directory
+>   Error talking to the kernel
+> 
+> Add the CONFIG_NET_FOU into the config file as well. Which needs at
+> least to be set as a loadable module.
+> 
+> Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
 
-Ohhh, thanks.
-I blame that on (g)vim providing some automatic indentation that I didn't want.
+> diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
+> index 7c38a90..a711b3e 100755
+> --- a/tools/testing/selftests/net/rtnetlink.sh
+> +++ b/tools/testing/selftests/net/rtnetlink.sh
+> @@ -520,6 +520,11 @@ kci_test_encap_fou()
+>  		return $ksft_skip
+>  	fi
+>  
+> +	if ! /sbin/modprobe -q -n fou; then
+> +		echo "SKIP: module fou is not found"
+> +		return $ksft_skip
+> +	fi
+> +	/sbin/modprobe -q fou
+>  	ip -netns "$testns" fou add port 7777 ipproto 47 2>/dev/null
+>  	if [ $? -ne 0 ];then
+>  		echo "FAIL: can't add fou port 7777, skipping test"
+> @@ -540,6 +545,7 @@ kci_test_encap_fou()
+>  		return 1
+>  	fi
+>  
+> +	/sbin/modprobe -q -r fou
 
--- 
-~Randy
+I think the common practice is to not remove the module at the end of
+the test. It may be used by something else than the test itself.
+
+>  	echo "PASS: fou"
+>  }
+>  
 
