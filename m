@@ -2,98 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4576625F234
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 05:48:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A0A925F237
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 05:50:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbgIGDsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 6 Sep 2020 23:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726318AbgIGDsl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 23:48:41 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5110EC061573
-        for <netdev@vger.kernel.org>; Sun,  6 Sep 2020 20:48:41 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id d20so11715846qka.5
-        for <netdev@vger.kernel.org>; Sun, 06 Sep 2020 20:48:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T5+Gm9SZ6Wqi/wgrqZYei3E5B+AkWfk6Mbef5VKH1tk=;
-        b=ajg9zEP5eDTv2jaqV20baQYBhsZhURUAM57O2blaK7oaG+ZuuMjXIpqGQGtp3SjYR+
-         nQUjZ9SPVjvuvzkzIz1IrxISTBWScq7Vk9qX6s3tRZtVjGymbeWNZlm92Rb30YbNxGzj
-         Zb6vsOEZKMwHzNIuIdssfS1co4RYKD+9kGz7o=
+        id S1726318AbgIGDuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 6 Sep 2020 23:50:25 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:49299 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726278AbgIGDuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 6 Sep 2020 23:50:23 -0400
+Received: from mail-pf1-f200.google.com ([209.85.210.200])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <po-hsu.lin@canonical.com>)
+        id 1kF8Ae-0005v3-A7
+        for netdev@vger.kernel.org; Mon, 07 Sep 2020 03:50:20 +0000
+Received: by mail-pf1-f200.google.com with SMTP id o184so7732026pfb.12
+        for <netdev@vger.kernel.org>; Sun, 06 Sep 2020 20:50:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T5+Gm9SZ6Wqi/wgrqZYei3E5B+AkWfk6Mbef5VKH1tk=;
-        b=SZZRLdGu2vzqlocK62uV5cXiHCsrhiWaspFiw93nd3Tirv6y3Qs5q22jJ/mj5tFJaX
-         STdamqcKb5VeTutQmLZIh8rk9keerC4pGvGvYxuypNelYbfP+Az5dtYHHCd//bkyi97Y
-         WPNk1KttVGT4WVCPJS4QZW0TkOA/VcpORZa7vhfpmHU7FZ9CyiWnLm6O5CExFdeOVOWy
-         ttg9Sui5JqKteSMlkcNTkXlNUZMZsJDdIUkQFgFvrbmB2zI4W7QuxfVpOuqSQkMSdQCS
-         +aIh5pKQJ1CnRSm4mixtpCzyOJHqTUK5cbf5SVrRw55ltTvfutLZcP5+O/GaMe383ZJu
-         qMkA==
-X-Gm-Message-State: AOAM53057D6kxozck9FVyZduLLMXp6LuBXFTo0b4bpQ0mCEJZBSHnmg6
-        5zhSVnwtEMkfNncZbUmapMoi+8L2gAjg7BynbdTFrw3vKCn2kw==
-X-Google-Smtp-Source: ABdhPJzH6Fijq5jV+Dc4ZZLycljbPu9y3Uq4qy6tOF0No8CkxqMl6m1IPUEjRIeXTCdEzlWIMY0thg8Z4Tnb8IwiDG4=
-X-Received: by 2002:a37:bcc:: with SMTP id 195mr17480892qkl.287.1599450520226;
- Sun, 06 Sep 2020 20:48:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <1599360937-26197-1-git-send-email-michael.chan@broadcom.com>
- <1599360937-26197-3-git-send-email-michael.chan@broadcom.com>
- <20200906122534.54e16e08@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACKFLin=-9=2x0MFuRfXM1HwFQ7uZSZ4i0HymRZDBVKcnK73NA@mail.gmail.com> <20200906201311.0873ad59@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200906201311.0873ad59@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Sun, 6 Sep 2020 20:48:04 -0700
-Message-ID: <CACKFLimwdvnCWw6qG1ReCRW3XgSS1UEwNa=cuPFZKeb+VG2hZQ@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] bnxt_en: Fix NULL ptr dereference crash in bnxt_fw_reset_task()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3g3V+QNt3GCtg2Hc+UJaZtxoWISK1rJHJzXJXHO3wbk=;
+        b=VwGsXTRE8XWOc2KUEMOJUnsmC4vNW6uektgiexcKkvDGo7MPyWxC9DC7GdQWDBcIeW
+         I/cJvNm0peL+JbrhoVJSk4Fk74wfRN07f7clpcUZ1B+ZQ7E3bfWMNgFmaCOgxVDbTXU4
+         T2qLgVSnGc8X/U3eXh3UOWhtIdUGkW4T3OYoV3mBQluoosK1ZVa4u5w7RVMV3IzDhjul
+         crqTszSqN2uiluypzRrRxwZ5DEenquAkIeMRjCNezNbO2mrgZYyAChJFKGyHvqLkBXJP
+         y9eMIubgKu1FMYm8jcy7gJkSjXKw4KRUCw8nv+yXoNlnJPAshTvCunxJuQUgSntSS3Cf
+         k0vg==
+X-Gm-Message-State: AOAM53123cnFM9fLaGttkVcNxo9iRYNt/LHSFItPborz8N69ubzmQ91p
+        Y0izY0pGD59SCbQCWo2Nj3OB7lJqk1YKIGc0qUV005dcVxmDNBqwiNIb6YXxNBSWj3t1u9sMTV6
+        f2SymhVaeoFeScU7iyfLJ72sW2PDSsMq6
+X-Received: by 2002:aa7:8b02:: with SMTP id f2mr17326306pfd.59.1599450618942;
+        Sun, 06 Sep 2020 20:50:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwiw6zva7WG2JalWfZO5CnnUA49jrjPIHrcrSaL3UTwr1qmqpBYYx79C1OGaVQ4e1GVoN+a1g==
+X-Received: by 2002:aa7:8b02:: with SMTP id f2mr17326293pfd.59.1599450618608;
+        Sun, 06 Sep 2020 20:50:18 -0700 (PDT)
+Received: from Leggiero.taipei.internal (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
+        by smtp.gmail.com with ESMTPSA id e1sm10828706pjv.17.2020.09.06.20.50.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 06 Sep 2020 20:50:17 -0700 (PDT)
+From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
+To:     davem@davemloft.net, kuba@kernel.org, skhan@linuxfoundation.org
+Cc:     po-hsu.lin@canonical.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCHv3] selftests: rtnetlink: load fou module for kci_test_encap_fou() test
+Date:   Mon,  7 Sep 2020 11:50:10 +0800
+Message-Id: <20200907035010.9154-1-po-hsu.lin@canonical.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 6, 2020 at 8:13 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Sun, 6 Sep 2020 15:07:02 -0700 Michael Chan wrote:
-> > On Sun, Sep 6, 2020 at 12:25 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > >
-> > > devlink can itself scheduler a recovery via:
-> > >
-> > >   bnxt_fw_fatal_recover() -> bnxt_fw_reset()
-> > >
-> >
-> > Yes, this is how it is initiated when we call devlink_health_report()
-> > to report the error condition.  From bnxt_fw_reset(), we use a
-> > workqueue because we have to go through many states, requiring
-> > sleeping/polling to transition through the states.
-> >
-> > > no? Maybe don't make the devlink recovery path need to go via a
-> > > workqueue?
-> >
-> > Current implementation is going through a work queue.
->
-> What I'm saying is the code looks like this after this patch:
->
-> +       clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
-> +       bnxt_cancel_sp_work(bp);
-> +       bp->sp_event = 0;
-> +
->         bnxt_dl_fw_reporters_destroy(bp, true);
->
-> It cancels the work, _then_ destroys the reporter. But I think the
-> reported can be used to schedule a recovery from command line. So the
-> work may get re-scheduled after it has been canceled.
+The kci_test_encap_fou() test from kci_test_encap() in rtnetlink.sh
+needs the fou module to work. Otherwise it will fail with:
 
-bnxt_en does not support recovery from the command line.  We return
--EOPNOTSUPP when it comes from the command line.
+  $ ip netns exec "$testns" ip fou add port 7777 ipproto 47
+  RTNETLINK answers: No such file or directory
+  Error talking to the kernel
 
-Recovery has to be triggered from a firmware reported error or a
-driver detected error.
+Add the CONFIG_NET_FOU into the config file as well. Which needs at
+least to be set as a loadable module.
+
+Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+---
+ tools/testing/selftests/net/config       | 1 +
+ tools/testing/selftests/net/rtnetlink.sh | 6 ++++++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
+index 3b42c06b..c5e50ab 100644
+--- a/tools/testing/selftests/net/config
++++ b/tools/testing/selftests/net/config
+@@ -31,3 +31,4 @@ CONFIG_NET_SCH_ETF=m
+ CONFIG_NET_SCH_NETEM=y
+ CONFIG_TEST_BLACKHOLE_DEV=m
+ CONFIG_KALLSYMS=y
++CONFIG_NET_FOU=m
+diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
+index 7c38a90..a711b3e 100755
+--- a/tools/testing/selftests/net/rtnetlink.sh
++++ b/tools/testing/selftests/net/rtnetlink.sh
+@@ -520,6 +520,11 @@ kci_test_encap_fou()
+ 		return $ksft_skip
+ 	fi
+ 
++	if ! /sbin/modprobe -q -n fou; then
++		echo "SKIP: module fou is not found"
++		return $ksft_skip
++	fi
++	/sbin/modprobe -q fou
+ 	ip -netns "$testns" fou add port 7777 ipproto 47 2>/dev/null
+ 	if [ $? -ne 0 ];then
+ 		echo "FAIL: can't add fou port 7777, skipping test"
+@@ -540,6 +545,7 @@ kci_test_encap_fou()
+ 		return 1
+ 	fi
+ 
++	/sbin/modprobe -q -r fou
+ 	echo "PASS: fou"
+ }
+ 
+-- 
+2.7.4
+
