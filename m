@@ -2,83 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFF1D260219
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 19:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B6AD2603CD
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 19:55:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730717AbgIGRTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 13:19:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46297 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730690AbgIGRS4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 13:18:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599499135;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=aqxls+vd0L6OoeYJ1sv9momKp6wV4VzyFbepTInsujU=;
-        b=IXOvQOo+q94HWDQXonpgq4QXIRjdtfYW+6LdbZxILMttscb991ZFLeizHc4AkfOoZX3B6b
-        k6XrLtgJwBwo4sB1gBIZh1d7eKKbElOuKqbJ4GIVpKJpvfpGWJTk0fh//8xwDFDqkdssKA
-        rHbwHqvjAQJ4m/wXmyr9jMKndEZgWIU=
+        id S1728548AbgIGLWR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 7 Sep 2020 07:22:17 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:53210 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728811AbgIGLV4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 07:21:56 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-9-jEPQOEf6NJK-FXrVFj2dJg-1; Mon, 07 Sep 2020 13:18:51 -0400
-X-MC-Unique: jEPQOEf6NJK-FXrVFj2dJg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-164-jBWXxxlPOsqCyMA0FODBgg-1; Mon, 07 Sep 2020 07:02:47 -0400
+X-MC-Unique: jBWXxxlPOsqCyMA0FODBgg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8EB35807335;
-        Mon,  7 Sep 2020 17:18:50 +0000 (UTC)
-Received: from ovpn-114-245.ams2.redhat.com (ovpn-114-245.ams2.redhat.com [10.36.114.245])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5AC5B5D9DD;
-        Mon,  7 Sep 2020 17:18:49 +0000 (UTC)
-Message-ID: <428dae2552915c42b9144d7489fd912493433c1e.camel@redhat.com>
-Subject: Re: [PATCH] net/sock: don't drop udp packets if udp_mem[2] not
- reached
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Dust Li <dust.li@linux.alibaba.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org
-Date:   Mon, 07 Sep 2020 19:18:48 +0200
-In-Reply-To: <20200907144435.43165-1-dust.li@linux.alibaba.com>
-References: <20200907144435.43165-1-dust.li@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9EA9D18B9EC1;
+        Mon,  7 Sep 2020 11:02:45 +0000 (UTC)
+Received: from krava.redhat.com (ovpn-112-180.ams2.redhat.com [10.36.112.180])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1F4661A3D7;
+        Mon,  7 Sep 2020 11:02:38 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: [PATCH] perf tools: Do not use deprecated bpf_program__title
+Date:   Mon,  7 Sep 2020 13:02:37 +0200
+Message-Id: <20200907110237.1329532-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0.001
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The bpf_program__title function got deprecated in libbpf,
+use the suggested alternative.
 
-On Mon, 2020-09-07 at 22:44 +0800, Dust Li wrote:
-> We encoutered udp packets drop under a pretty low pressure
-> with net.ipv4.udp_mem[0] set to a small value (4096).
-> 
-> After some tracing and debugging, we found that for udp
-> protocol, __sk_mem_raise_allocated() will possiblly drop
-> packets if:
->   udp_mem[0] < udp_prot.memory_allocated < udp_mem[2]
-> 
-> That's because __sk_mem_raise_allocated() didn't handle
-> the above condition for protocols like udp who doesn't
-> have sk_has_memory_pressure()
-> 
-> We can reproduce this with the following condition
-> 1. udp_mem[0] is relateive small,
-> 2. net.core.rmem_default/max > udp_mem[0] * 4K
+Fixes: 521095842027 ("libbpf: Deprecate notion of BPF program "title" in favor of "section name"")
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ tools/perf/util/bpf-loader.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-This looks like something that could/should be addressed at
-configuration level ?!?
-
-udp_mem[0] should accomodate confortably at least a socket.
-
-Cheers,
-
-Paolo
+diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
+index 2feb751516ab..73de3973c8ec 100644
+--- a/tools/perf/util/bpf-loader.c
++++ b/tools/perf/util/bpf-loader.c
+@@ -328,7 +328,7 @@ config_bpf_program(struct bpf_program *prog)
+ 	probe_conf.no_inlines = false;
+ 	probe_conf.force_add = false;
+ 
+-	config_str = bpf_program__title(prog, false);
++	config_str = bpf_program__section_name(prog);
+ 	if (IS_ERR(config_str)) {
+ 		pr_debug("bpf: unable to get title for program\n");
+ 		return PTR_ERR(config_str);
+@@ -454,7 +454,7 @@ preproc_gen_prologue(struct bpf_program *prog, int n,
+ 	if (err) {
+ 		const char *title;
+ 
+-		title = bpf_program__title(prog, false);
++		title = bpf_program__section_name(prog);
+ 		if (!title)
+ 			title = "[unknown]";
+ 
+-- 
+2.26.2
 
