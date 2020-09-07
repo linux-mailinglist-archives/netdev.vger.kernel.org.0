@@ -2,131 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC20025F8AC
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 12:43:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AF0D25F8B0
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 12:44:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728566AbgIGKm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 06:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728395AbgIGKmu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 06:42:50 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E25C061573;
-        Mon,  7 Sep 2020 03:42:48 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id a9so3349081pjg.1;
-        Mon, 07 Sep 2020 03:42:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=GvP4iFXXoq3p0iFcUHKogS3wXUFF8Mnk3rfmYJaO3RA=;
-        b=eDY6abH6Dateob4AYMJ6MPQQ1R2iYfe4O2yNRABJidUvO8MYRbtZ5RhEoVFl+uRKXD
-         C6uN+Lyxuolk0K/hvsDnqHjf5oCG6Ap5Raav38u4YBk0NR3M+LJAR2t8YzFmldQ69+cK
-         C1DdYxj/C+/anY9n4U2udccI3XvxJm9ZMaI9SY2lMuoiIm1f+pAcC2EcyetTNJ9ljDdA
-         I/0nglFJfMKERaHwXUpyUxDCsuSxOlHEEietpPwAlyKRiLgyZ05ShStLsZskbrbrlfsP
-         DOas1nAVihDvtkYsAMuU53T68+j68MoLcULTL7MFwSOu5GAnPe8oTDMLb6wFVIT3Pd/s
-         vk6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=GvP4iFXXoq3p0iFcUHKogS3wXUFF8Mnk3rfmYJaO3RA=;
-        b=XJV3M16pRspbxB42n5mhXtedtObju8V7K7VsRRuLZ/vdVKfX3QG1jmV6DUhcr83dP4
-         ldd5jYjVCVoTO9Gifa6quLDjaql8UfJOLsU06uXU2eQqwk46OfwG85SZ/T4iQLp0Kec5
-         vTTHkbjOUfXX5PIWWx4sxm0CxGmHGf8NZ5LcOmzSfR4unS5a61eh5bFflYcP9xdlkS/1
-         OeQBD8lPKrckNwGGUymlhd8hB5XfB2eHi3VPLe3i9ViAqYR05X7+7uT7v5jLDch/KYbz
-         m7O1cuAaNS20Ov9j2ty8pmL+25hKSKAKwz+FCun4FWlBjCUpoMRF91eYrJrqzKH1fOC0
-         CyfQ==
-X-Gm-Message-State: AOAM53017y7+9UJ0nQrljBtR4abqnAKRUlzY6wsxT1kA07trgLduij1j
-        +odhvS5s4mRG8r1gkjSq0T8=
-X-Google-Smtp-Source: ABdhPJyC4BGRwYAxiQNOGTDt8RFlE+FrU3E3jwKV7jZMEpweVm0hIav0i+zEEEcHeVZkWB1VkOV61Q==
-X-Received: by 2002:a17:90a:414e:: with SMTP id m14mr18861206pjg.186.1599475367509;
-        Mon, 07 Sep 2020 03:42:47 -0700 (PDT)
-Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id m190sm14307294pfm.184.2020.09.07.03.42.46
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 07 Sep 2020 03:42:46 -0700 (PDT)
-From:   Geliang Tang <geliangtang@gmail.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [MPTCP][PATCH net 2/2] mptcp: fix subflow's remote_id issues
-Date:   Mon,  7 Sep 2020 18:29:54 +0800
-Message-Id: <7187516ee5a9f17a7bf1e4aa9a849da2dd56a734.1599474422.git.geliangtang@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <f24ee917e4043d2befe2a0f96cd57aa74d2a4b26.1599474422.git.geliangtang@gmail.com>
-References: <f24ee917e4043d2befe2a0f96cd57aa74d2a4b26.1599474422.git.geliangtang@gmail.com>
-In-Reply-To: <f24ee917e4043d2befe2a0f96cd57aa74d2a4b26.1599474422.git.geliangtang@gmail.com>
-References: <f24ee917e4043d2befe2a0f96cd57aa74d2a4b26.1599474422.git.geliangtang@gmail.com>
+        id S1728622AbgIGKoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 06:44:01 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:40761 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728501AbgIGKn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 06:43:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599475435;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=c1vAH2sOnIecyBuC1bgws2niE0JgFrbZ244nIj8c+DU=;
+        b=ELT9WAfQ9lZ9di6q8gu5ELBsQ3QbQFgQ/sV1dUGT+mdTPKNd0ETpiFQtkFAfDvQGTw0kKm
+        Yynf0darHZYjkXoE2V6UfWGgunRIh21fyqxA/GJioQqyuAKN25yBH3FEJjhKwuhNShzJH5
+        DM1Z97ikZvzO/atuyfF1cuAENuQC+WM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-404-uykzQjHlNiu2lD-lNSLY4w-1; Mon, 07 Sep 2020 06:43:54 -0400
+X-MC-Unique: uykzQjHlNiu2lD-lNSLY4w-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BA64E1084CA6;
+        Mon,  7 Sep 2020 10:43:52 +0000 (UTC)
+Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-12-108.pek2.redhat.com [10.72.12.108])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4BEAA60C0F;
+        Mon,  7 Sep 2020 10:43:45 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     lulu@redhat.com, Eli Cohen <elic@nvidia.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH] vhost-vdpa: fix backend feature ioctls
+Date:   Mon,  7 Sep 2020 18:43:43 +0800
+Message-Id: <20200907104343.31141-1-jasowang@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set the init remote_id to zero, otherwise it will be a random
-number.
+Commit 653055b9acd4 ("vhost-vdpa: support get/set backend features")
+introduces two malfunction backend features ioctls:
 
-Then it added the missing subflow's remote_id setting code both in
-__mptcp_subflow_connect and in subflow_ulp_clone.
+1) the ioctls was blindly added to vring ioctl instead of vdpa device
+   ioctl
+2) vhost_set_backend_features() was called when dev mutex has already
+   been held which will lead a deadlock
 
-Reviewed-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
+This patch fixes the above issues.
+
+Cc: Eli Cohen <elic@nvidia.com>
+Reported-by: Zhu Lingshan <lingshan.zhu@intel.com>
+Fixes: 653055b9acd4 ("vhost-vdpa: support get/set backend features")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- net/mptcp/pm_netlink.c | 2 +-
- net/mptcp/subflow.c    | 7 +++++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/vhost/vdpa.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index dc2c57860d2d..255695221309 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -186,7 +186,7 @@ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
- {
- 	struct sock *sk = (struct sock *)msk;
- 	struct mptcp_pm_addr_entry *local;
--	struct mptcp_addr_info remote;
-+	struct mptcp_addr_info remote = { 0 };
- 	struct pm_nl_pernet *pernet;
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 3fab94f88894..796fe979f997 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -353,8 +353,6 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+ 	struct vdpa_callback cb;
+ 	struct vhost_virtqueue *vq;
+ 	struct vhost_vring_state s;
+-	u64 __user *featurep = argp;
+-	u64 features;
+ 	u32 idx;
+ 	long r;
  
- 	pernet = net_generic(sock_net((struct sock *)msk), pm_nl_pernet_id);
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index e8cac2655c82..9ead43f79023 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1063,6 +1063,7 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 	struct mptcp_subflow_context *subflow;
- 	struct sockaddr_storage addr;
-+	int remote_id = remote->id;
- 	int local_id = loc->id;
- 	struct socket *sf;
- 	struct sock *ssk;
-@@ -1107,10 +1108,11 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
- 		goto failed;
+@@ -381,18 +379,6 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
  
- 	mptcp_crypto_key_sha(subflow->remote_key, &remote_token, NULL);
--	pr_debug("msk=%p remote_token=%u local_id=%d", msk, remote_token,
--		 local_id);
-+	pr_debug("msk=%p remote_token=%u local_id=%d remote_id=%d", msk,
-+		 remote_token, local_id, remote_id);
- 	subflow->remote_token = remote_token;
- 	subflow->local_id = local_id;
-+	subflow->remote_id = remote_id;
- 	subflow->request_join = 1;
- 	subflow->request_bkup = 1;
- 	mptcp_info2sockaddr(remote, &addr);
-@@ -1347,6 +1349,7 @@ static void subflow_ulp_clone(const struct request_sock *req,
- 		new_ctx->fully_established = 1;
- 		new_ctx->backup = subflow_req->backup;
- 		new_ctx->local_id = subflow_req->local_id;
-+		new_ctx->remote_id = subflow_req->remote_id;
- 		new_ctx->token = subflow_req->token;
- 		new_ctx->thmac = subflow_req->thmac;
+ 		vq->last_avail_idx = vq_state.avail_index;
+ 		break;
+-	case VHOST_GET_BACKEND_FEATURES:
+-		features = VHOST_VDPA_BACKEND_FEATURES;
+-		if (copy_to_user(featurep, &features, sizeof(features)))
+-			return -EFAULT;
+-		return 0;
+-	case VHOST_SET_BACKEND_FEATURES:
+-		if (copy_from_user(&features, featurep, sizeof(features)))
+-			return -EFAULT;
+-		if (features & ~VHOST_VDPA_BACKEND_FEATURES)
+-			return -EOPNOTSUPP;
+-		vhost_set_backend_features(&v->vdev, features);
+-		return 0;
  	}
+ 
+ 	r = vhost_vring_ioctl(&v->vdev, cmd, argp);
+@@ -440,8 +426,20 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+ 	struct vhost_vdpa *v = filep->private_data;
+ 	struct vhost_dev *d = &v->vdev;
+ 	void __user *argp = (void __user *)arg;
++	u64 __user *featurep = argp;
++	u64 features;
+ 	long r;
+ 
++	if (cmd == VHOST_SET_BACKEND_FEATURES) {
++		r = copy_from_user(&features, featurep, sizeof(features));
++		if (r)
++			return r;
++		if (features & ~VHOST_VDPA_BACKEND_FEATURES)
++			return -EOPNOTSUPP;
++		vhost_set_backend_features(&v->vdev, features);
++		return 0;
++	}
++
+ 	mutex_lock(&d->mutex);
+ 
+ 	switch (cmd) {
+@@ -476,6 +474,10 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+ 	case VHOST_VDPA_SET_CONFIG_CALL:
+ 		r = vhost_vdpa_set_config_call(v, argp);
+ 		break;
++	case VHOST_GET_BACKEND_FEATURES:
++		features = VHOST_VDPA_BACKEND_FEATURES;
++		r = copy_to_user(featurep, &features, sizeof(features));
++		break;
+ 	default:
+ 		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+ 		if (r == -ENOIOCTLCMD)
 -- 
-2.17.1
+2.20.1
 
