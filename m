@@ -2,106 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C00625FF18
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:27:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49CF025FF73
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730305AbgIGQ1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 12:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730372AbgIGQ13 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 12:27:29 -0400
-Received: from sym2.noone.org (sym2.noone.org [IPv6:2a01:4f8:120:4161::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3D1C061573;
-        Mon,  7 Sep 2020 09:27:28 -0700 (PDT)
-Received: by sym2.noone.org (Postfix, from userid 1002)
-        id 4BlYbL5f6Gzvjc1; Mon,  7 Sep 2020 18:27:26 +0200 (CEST)
-Date:   Mon, 7 Sep 2020 18:27:26 +0200
-From:   Tobias Klauser <tklauser@distanz.ch>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH] perf tools: Do not use deprecated bpf_program__title
-Message-ID: <20200907162726.o36peh673a7l46kn@distanz.ch>
-References: <20200907110237.1329532-1-jolsa@kernel.org>
- <20200907110549.GI1199773@krava>
- <20200907155945.2ynl7dojgx572j62@distanz.ch>
- <20200907162249.GO1199773@krava>
+        id S1730620AbgIGQc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:32:28 -0400
+Received: from a27-18.smtp-out.us-west-2.amazonses.com ([54.240.27.18]:33858
+        "EHLO a27-18.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729912AbgIGQcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 12:32:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1599496342;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type;
+        bh=ie/UW1q7qYJ7A4l1wEZedjb4fjgyJgYXxjxBmypAwX8=;
+        b=oWMY50Auq9LvOD4CpwfSjzCuNKaCr+YMQZrnir40m3uVqfq/O004FAQrzUOnztcR
+        2sVdVrja2EkpdesG3/FwPFsi0w9AnStxjbl+aniyT9ZGCaiQBMYOxQoHDsR5PW+U9h6
+        EimUfz7yy55SqW5EqPkC338KJQFE5CFVIx+GZPus=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1599496342;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:Message-ID:MIME-Version:Content-Type:Feedback-ID;
+        bh=ie/UW1q7qYJ7A4l1wEZedjb4fjgyJgYXxjxBmypAwX8=;
+        b=UQTtLpmFEEBiai2avOiuWb51RIbjT799Ld09K/lG0gzgSs2bK50b2qceOIB6U4Hc
+        VfjONddx7DT76kkYznZbTy8xkUsDjp9/8Y6110pSQZyB/x0erK429gbPy5hYu7/vSlY
+        gnxcOlrVqtgBT22AV6amiBbekwEC7IFQz6U3Mr74=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3B4B3C560F9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Allen Pais <allen.cryptic@gmail.com>
+Cc:     Allen Pais <allen.lkml@gmail.com>, chunkeey@googlemail.com,
+        jirislaby@kernel.org, brcm80211-dev-list@cypress.com,
+        pkshih@realtek.com, b43-dev@lists.infradead.org, dsd@gentoo.org,
+        ath11k@lists.infradead.org, kune@deine-taler.de,
+        mickflemm@gmail.com, Kees Cook <keescook@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        brcm80211-dev-list.pdl@broadcom.com, yhchuang@realtek.com,
+        netdev@vger.kernel.org, helmut.schaa@googlemail.com,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mcgrof@kernel.org, stas.yakovlev@gmail.com,
+        Romain Perier <romain.perier@gmail.com>,
+        Larry.Finger@lwfinger.net
+Subject: Re: [PATCH 01/16] wireless: ath5k: convert tasklets to use new tasklet_setup() API
+References: <20200817090637.26887-2-allen.cryptic@gmail.com>
+        <20200827101540.6589BC433CB@smtp.codeaurora.org>
+        <CAEogwTB=S6M6Xp4w5dd_W3b6Depmn6Gmu3RmAf96pRankoJQqg@mail.gmail.com>
+Date:   Mon, 7 Sep 2020 16:32:22 +0000
+In-Reply-To: <CAEogwTB=S6M6Xp4w5dd_W3b6Depmn6Gmu3RmAf96pRankoJQqg@mail.gmail.com>
+        (Allen Pais's message of "Thu, 27 Aug 2020 16:14:45 +0530")
+Message-ID: <0101017469694cc1-f6a00b6e-46ef-44be-b476-3aabf0fb4a55-000000@us-west-2.amazonses.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200907162249.GO1199773@krava>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain
+X-SES-Outgoing: 2020.09.07-54.240.27.18
+Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-09-07 at 18:22:49 +0200, Jiri Olsa <jolsa@redhat.com> wrote:
-> On Mon, Sep 07, 2020 at 05:59:46PM +0200, Tobias Klauser wrote:
-> > On 2020-09-07 at 13:05:49 +0200, Jiri Olsa <jolsa@redhat.com> wrote:
-> > > On Mon, Sep 07, 2020 at 01:02:37PM +0200, Jiri Olsa wrote:
-> > > > The bpf_program__title function got deprecated in libbpf,
-> > > > use the suggested alternative.
-> > > > 
-> > > > Fixes: 521095842027 ("libbpf: Deprecate notion of BPF program "title" in favor of "section name"")
-> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > > 
-> > > Arnaldo,
-> > > the commit in 'Fixes' is not yet in your tree yet and the patch
-> > > below will make the perf compilation fail in your perf/core..
-> > > 
-> > > it fixes perf compilation on top of bpf-next tree.. so I think it
-> > > should go in through bpf-next tree
-> > > 
-> > > thanks,
-> > > jirka
-> > > 
-> > > > ---
-> > > >  tools/perf/util/bpf-loader.c | 4 ++--
-> > > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > > 
-> > > > diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
-> > > > index 2feb751516ab..73de3973c8ec 100644
-> > > > --- a/tools/perf/util/bpf-loader.c
-> > > > +++ b/tools/perf/util/bpf-loader.c
-> > > > @@ -328,7 +328,7 @@ config_bpf_program(struct bpf_program *prog)
-> > > >  	probe_conf.no_inlines = false;
-> > > >  	probe_conf.force_add = false;
-> > > >  
-> > > > -	config_str = bpf_program__title(prog, false);
-> > > > +	config_str = bpf_program__section_name(prog);
-> > > >  	if (IS_ERR(config_str)) {
-> > > >  		pr_debug("bpf: unable to get title for program\n");
-> > > >  		return PTR_ERR(config_str);
-> > > > @@ -454,7 +454,7 @@ preproc_gen_prologue(struct bpf_program *prog, int n,
-> > > >  	if (err) {
-> > > >  		const char *title;
-> > > >  
-> > > > -		title = bpf_program__title(prog, false);
-> > > > +		title = bpf_program__section_name(prog);
-> > > >  		if (!title)
-> > > >  			title = "[unknown]";
-> > 
-> > I think bpf_program__title at line 457 in preproc_gen_prologue also needs to be
-> > changed given the following build failure:
-> 
-> hum, that's where the 2nd hunk, right? I dont see any other instance
-> of bpf_program__title after the patch is applied
+Allen Pais <allen.cryptic@gmail.com> writes:
 
-Sorry for the noise, I didn't read the patch correctly. You're of course
-correct. I was confused because it is still assigned to variable
-`title`.
+> Hi,
+>>
+>> Allen Pais <allen.cryptic@gmail.com> wrote:
+>>
+>> > In preparation for unconditionally passing the
+>> > struct tasklet_struct pointer to all tasklet
+>> > callbacks, switch to using the new tasklet_setup()
+>> > and from_tasklet() to pass the tasklet pointer explicitly.
+>> >
+>> > Signed-off-by: Romain Perier <romain.perier@gmail.com>
+>> > Signed-off-by: Allen Pais <allen.lkml@gmail.com>
+>> > Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+>>
+>> Patch applied to ath-next branch of ath.git, thanks.
+>>
+>> c068a9ec3c94 ath5k: convert tasklets to use new tasklet_setup() API
+>>
+>> --
+>> https://patchwork.kernel.org/patch/11717393/
+>>
+>> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>
+> Could you please drop these and wait for V2. A change was proposed
+> for from_tasklet() api. The new API should be picked shortly. I will send out
+> the updated version early next week.
 
-Reviewed-by: Tobias Klauser <tklauser@distanz.ch>
+Too late, I don't normally rebase my trees as it's just too much of a
+hassle. Please don't submit patches which are not ready to be applied!
 
-Thanks
-Tobias
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
