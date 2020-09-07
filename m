@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FB5825FE24
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B0E225FF12
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:27:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729952AbgIGOea (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 10:34:30 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:58960 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729819AbgIGOcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 10:32:54 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 087EVvim057833;
-        Mon, 7 Sep 2020 09:31:57 -0500
+        id S1730597AbgIGQZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:25:58 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:39226 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729906AbgIGOcz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 10:32:55 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 087EVxV9078601;
+        Mon, 7 Sep 2020 09:31:59 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1599489118;
-        bh=HrZ4Mx/oHWVRRLQAVP1FDSf+iiLcOYDsomSCa4jZahw=;
+        s=ti-com-17Q1; t=1599489119;
+        bh=T0vEyaZIzK+YOhVL1aT2Hj7/oC3d1nw3F+zKDemup3A=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=QbABM8cROcn773eu8TUcXC5IF1fjXWQ8a3xr7D5zW2TKj4dpWJqFvOI3LTW2mJQb8
-         Kpn+dN8B9EHQP5pCJEWf0mYyfYiZ1zAUYhJdJMfRXcjQoNLeoqlxpaDQ3rOnplcFRg
-         K7H9+FdqkZFgv36AoB7IWKVmAy7ke/f3GEa3byEI=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 087EVvPp001448;
-        Mon, 7 Sep 2020 09:31:57 -0500
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+        b=sAySucemIdR0gWvIWqyaP7EOrbj9EC0r69XbDvO5s3TeKm4ES6Jnk0DYk5aB0zLHP
+         GdPuhJt6pQzP4eY6oyXV6Q+bdW1OePqEOAH4zooPyHQZCnI6jNZIkwS0sfA0P2GFeJ
+         docmuzVpv1OnNK/jyFGyJkI7F+qcqUReernypGZY=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 087EVxgA095485
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 7 Sep 2020 09:31:59 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 7 Sep
- 2020 09:31:57 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ 2020 09:31:59 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 7 Sep 2020 09:31:57 -0500
+ Frontend Transport; Mon, 7 Sep 2020 09:31:59 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 087EVu2I048692;
-        Mon, 7 Sep 2020 09:31:57 -0500
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 087EVwPe106549;
+        Mon, 7 Sep 2020 09:31:58 -0500
 From:   Grygorii Strashko <grygorii.strashko@ti.com>
 To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -43,9 +44,9 @@ To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
 CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
         <linux-omap@vger.kernel.org>,
         Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next v2 7/9] net: ethernet: ti: am65-cpsw: enable hw auto ageing
-Date:   Mon, 7 Sep 2020 17:31:41 +0300
-Message-ID: <20200907143143.13735-8-grygorii.strashko@ti.com>
+Subject: [PATCH net-next v2 8/9] net: ethernet: ti: ale: switch to use tables for vlan entry description
+Date:   Mon, 7 Sep 2020 17:31:42 +0300
+Message-ID: <20200907143143.13735-9-grygorii.strashko@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200907143143.13735-1-grygorii.strashko@ti.com>
 References: <20200907143143.13735-1-grygorii.strashko@ti.com>
@@ -57,185 +58,458 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The AM65x ALE supports HW auto-ageing which can be enabled by programming
-ageing interval in ALE_AGING_TIMER register. For this CPSW fck_clk
-frequency has to be know by ALE.
+The ALE VLAN entries are too much differ between different TI CPSW ALE
+versions. So, handling them using flags, defines and get/set functions
+became over-complicated.
 
-This patch extends cpsw_ale_params with bus_freq field and enables ALE HW
-auto ageing for AM65x CPSW2G ALE version.
+This patch introduces tables to describe the ALE VLAN entries fields, which
+are different between TI CPSW ALE versions, and new get/set access
+functions. It also allows to detect incorrect access to not available ALL
+entry fields.
 
 Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 13 +++++
- drivers/net/ethernet/ti/am65-cpsw-nuss.h |  1 +
- drivers/net/ethernet/ti/cpsw_ale.c       | 61 +++++++++++++++++++++---
- drivers/net/ethernet/ti/cpsw_ale.h       |  1 +
- 4 files changed, 70 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/ti/cpsw_ale.c | 239 ++++++++++++++++++++++-------
+ drivers/net/ethernet/ti/cpsw_ale.h |   3 +
+ 2 files changed, 188 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index bec47e794359..501d676fd88b 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -5,6 +5,7 @@
-  *
-  */
- 
-+#include <linux/clk.h>
- #include <linux/etherdevice.h>
- #include <linux/if_vlan.h>
- #include <linux/interrupt.h>
-@@ -2038,6 +2039,7 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
- 	struct am65_cpsw_common *common;
- 	struct device_node *node;
- 	struct resource *res;
-+	struct clk *clk;
- 	int ret, i;
- 
- 	common = devm_kzalloc(dev, sizeof(struct am65_cpsw_common), GFP_KERNEL);
-@@ -2086,6 +2088,16 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
- 	if (!common->ports)
- 		return -ENOMEM;
- 
-+	clk = devm_clk_get(dev, "fck");
-+	if (IS_ERR(clk)) {
-+		ret = PTR_ERR(clk);
-+
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(dev, "error getting fck clock %d\n", ret);
-+		return ret;
-+	}
-+	common->bus_freq = clk_get_rate(clk);
-+
- 	pm_runtime_enable(dev);
- 	ret = pm_runtime_get_sync(dev);
- 	if (ret < 0) {
-@@ -2134,6 +2146,7 @@ static int am65_cpsw_nuss_probe(struct platform_device *pdev)
- 	ale_params.ale_ports = common->port_num + 1;
- 	ale_params.ale_regs = common->cpsw_base + AM65_CPSW_NU_ALE_BASE;
- 	ale_params.dev_id = "am65x-cpsw2g";
-+	ale_params.bus_freq = common->bus_freq;
- 
- 	common->ale = cpsw_ale_create(&ale_params);
- 	if (IS_ERR(common->ale)) {
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.h b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-index 94f666ea0e53..993e1d4d3222 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.h
-@@ -106,6 +106,7 @@ struct am65_cpsw_common {
- 
- 	u32			nuss_ver;
- 	u32			cpsw_ver;
-+	unsigned long		bus_freq;
- 	bool			pf_p0_rx_ptype_rrobin;
- 	struct am65_cpts	*cpts;
- 	int			est_enabled;
 diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
-index 524920a4bff0..7b54e9911b1e 100644
+index 7b54e9911b1e..0dd0c3329dee 100644
 --- a/drivers/net/ethernet/ti/cpsw_ale.c
 +++ b/drivers/net/ethernet/ti/cpsw_ale.c
-@@ -32,6 +32,7 @@
- #define ALE_STATUS		0x04
- #define ALE_CONTROL		0x08
- #define ALE_PRESCALE		0x10
-+#define ALE_AGING_TIMER		0x14
- #define ALE_UNKNOWNVLAN		0x18
- #define ALE_TABLE_CONTROL	0x20
- #define ALE_TABLE		0x34
-@@ -46,6 +47,9 @@
+@@ -50,6 +50,18 @@
+ /* ALE_AGING_TIMER */
+ #define ALE_AGING_TIMER_MASK	GENMASK(23, 0)
  
- #define AM65_CPSW_ALE_THREAD_DEF_REG 0x134
- 
-+/* ALE_AGING_TIMER */
-+#define ALE_AGING_TIMER_MASK	GENMASK(23, 0)
++/**
++ * struct ale_entry_fld - The ALE tbl entry field description
++ * @start_bit: field start bit
++ * @num_bits: field bit length
++ * @flags: field flags
++ */
++struct ale_entry_fld {
++	u8 start_bit;
++	u8 num_bits;
++	u8 flags;
++};
 +
  enum {
  	CPSW_ALE_F_STATUS_REG = BIT(0), /* Status register present */
  	CPSW_ALE_F_HW_AUTOAGING = BIT(1), /* HW auto aging */
-@@ -982,21 +986,66 @@ static void cpsw_ale_timer(struct timer_list *t)
- 	}
- }
- 
-+static void cpsw_ale_hw_aging_timer_start(struct cpsw_ale *ale)
-+{
-+	u32 aging_timer;
-+
-+	aging_timer = ale->params.bus_freq / 1000000;
-+	aging_timer *= ale->params.ale_ageout;
-+
-+	if (aging_timer & ~ALE_AGING_TIMER_MASK) {
-+		aging_timer = ALE_AGING_TIMER_MASK;
-+		dev_warn(ale->params.dev,
-+			 "ALE aging timer overflow, set to max\n");
-+	}
-+
-+	writel(aging_timer, ale->params.ale_regs + ALE_AGING_TIMER);
-+}
-+
-+static void cpsw_ale_hw_aging_timer_stop(struct cpsw_ale *ale)
-+{
-+	writel(0, ale->params.ale_regs + ALE_AGING_TIMER);
-+}
-+
-+static void cpsw_ale_aging_start(struct cpsw_ale *ale)
-+{
-+	if (!ale->params.ale_ageout)
-+		return;
-+
-+	if (ale->features & CPSW_ALE_F_HW_AUTOAGING) {
-+		cpsw_ale_hw_aging_timer_start(ale);
-+		return;
-+	}
-+
-+	timer_setup(&ale->timer, cpsw_ale_timer, 0);
-+	ale->timer.expires = jiffies + ale->ageout;
-+	add_timer(&ale->timer);
-+}
-+
-+static void cpsw_ale_aging_stop(struct cpsw_ale *ale)
-+{
-+	if (!ale->params.ale_ageout)
-+		return;
-+
-+	if (ale->features & CPSW_ALE_F_HW_AUTOAGING) {
-+		cpsw_ale_hw_aging_timer_stop(ale);
-+		return;
-+	}
-+
-+	del_timer_sync(&ale->timer);
-+}
-+
- void cpsw_ale_start(struct cpsw_ale *ale)
- {
- 	cpsw_ale_control_set(ale, 0, ALE_ENABLE, 1);
- 	cpsw_ale_control_set(ale, 0, ALE_CLEAR, 1);
- 
--	timer_setup(&ale->timer, cpsw_ale_timer, 0);
--	if (ale->ageout) {
--		ale->timer.expires = jiffies + ale->ageout;
--		add_timer(&ale->timer);
--	}
-+	cpsw_ale_aging_start(ale);
- }
- 
- void cpsw_ale_stop(struct cpsw_ale *ale)
- {
--	del_timer_sync(&ale->timer);
-+	cpsw_ale_aging_stop(ale);
- 	cpsw_ale_control_set(ale, 0, ALE_CLEAR, 1);
- 	cpsw_ale_control_set(ale, 0, ALE_ENABLE, 0);
- }
-diff --git a/drivers/net/ethernet/ti/cpsw_ale.h b/drivers/net/ethernet/ti/cpsw_ale.h
-index 27b30802b384..9c6da58183c9 100644
---- a/drivers/net/ethernet/ti/cpsw_ale.h
-+++ b/drivers/net/ethernet/ti/cpsw_ale.h
-@@ -25,6 +25,7 @@ struct cpsw_ale_params {
- 	 */
- 	u32			major_ver_mask;
- 	const char		*dev_id;
-+	unsigned long		bus_freq;
+@@ -64,6 +76,7 @@ enum {
+  * @tbl_entries: number of ALE entries
+  * @major_ver_mask: mask of ALE Major Version Value in ALE_IDVER reg.
+  * @nu_switch_ale: NU Switch ALE
++ * @vlan_entry_tbl: ALE vlan entry fields description tbl
+  */
+ struct cpsw_ale_dev_id {
+ 	const char *dev_id;
+@@ -71,6 +84,7 @@ struct cpsw_ale_dev_id {
+ 	u32 tbl_entries;
+ 	u32 major_ver_mask;
+ 	bool nu_switch_ale;
++	const struct ale_entry_fld *vlan_entry_tbl;
  };
  
+ #define ALE_TABLE_WRITE		BIT(31)
+@@ -132,6 +146,51 @@ static inline void cpsw_ale_set_##name(u32 *ale_entry, u32 value,	\
+ 	cpsw_ale_set_field(ale_entry, start, bits, value);		\
+ }
+ 
++enum {
++	ALE_ENT_VID_MEMBER_LIST = 0,
++	ALE_ENT_VID_UNREG_MCAST_MSK,
++	ALE_ENT_VID_REG_MCAST_MSK,
++	ALE_ENT_VID_FORCE_UNTAGGED_MSK,
++	ALE_ENT_VID_UNREG_MCAST_IDX,
++	ALE_ENT_VID_REG_MCAST_IDX,
++	ALE_ENT_VID_LAST,
++};
++
++#define ALE_FLD_ALLOWED			BIT(0)
++#define ALE_FLD_SIZE_PORT_MASK_BITS	BIT(1)
++#define ALE_FLD_SIZE_PORT_NUM_BITS	BIT(2)
++
++#define ALE_ENTRY_FLD(id, start, bits)	\
++[id] = {				\
++	.start_bit = start,		\
++	.num_bits = bits,		\
++	.flags = ALE_FLD_ALLOWED,	\
++}
++
++#define ALE_ENTRY_FLD_DYN_MSK_SIZE(id, start)	\
++[id] = {					\
++	.start_bit = start,			\
++	.num_bits = 0,				\
++	.flags = ALE_FLD_ALLOWED |		\
++		 ALE_FLD_SIZE_PORT_MASK_BITS,	\
++}
++
++/* dm814x, am3/am4/am5, k2hk */
++static const struct ale_entry_fld vlan_entry_cpsw[ALE_ENT_VID_LAST] = {
++	ALE_ENTRY_FLD(ALE_ENT_VID_MEMBER_LIST, 0, 3),
++	ALE_ENTRY_FLD(ALE_ENT_VID_UNREG_MCAST_MSK, 8, 3),
++	ALE_ENTRY_FLD(ALE_ENT_VID_REG_MCAST_MSK, 16, 3),
++	ALE_ENTRY_FLD(ALE_ENT_VID_FORCE_UNTAGGED_MSK, 24, 3),
++};
++
++/* k2e/k2l, k3 am65/j721e cpsw2g  */
++static const struct ale_entry_fld vlan_entry_nu[ALE_ENT_VID_LAST] = {
++	ALE_ENTRY_FLD_DYN_MSK_SIZE(ALE_ENT_VID_MEMBER_LIST, 0),
++	ALE_ENTRY_FLD(ALE_ENT_VID_UNREG_MCAST_IDX, 20, 3),
++	ALE_ENTRY_FLD_DYN_MSK_SIZE(ALE_ENT_VID_FORCE_UNTAGGED_MSK, 24),
++	ALE_ENTRY_FLD(ALE_ENT_VID_REG_MCAST_IDX, 44, 3),
++};
++
+ DEFINE_ALE_FIELD(entry_type,		60,	2)
+ DEFINE_ALE_FIELD(vlan_id,		48,	12)
+ DEFINE_ALE_FIELD(mcast_state,		62,	2)
+@@ -141,17 +200,76 @@ DEFINE_ALE_FIELD(ucast_type,		62,     2)
+ DEFINE_ALE_FIELD1(port_num,		66)
+ DEFINE_ALE_FIELD(blocked,		65,     1)
+ DEFINE_ALE_FIELD(secure,		64,     1)
+-DEFINE_ALE_FIELD1(vlan_untag_force,	24)
+-DEFINE_ALE_FIELD1(vlan_reg_mcast,	16)
+-DEFINE_ALE_FIELD1(vlan_unreg_mcast,	8)
+-DEFINE_ALE_FIELD1(vlan_member_list,	0)
+ DEFINE_ALE_FIELD(mcast,			40,	1)
+-/* ALE NetCP nu switch specific */
+-DEFINE_ALE_FIELD(vlan_unreg_mcast_idx,	20,	3)
+-DEFINE_ALE_FIELD(vlan_reg_mcast_idx,	44,	3)
+ 
+ #define NU_VLAN_UNREG_MCAST_IDX	1
+ 
++static int cpsw_ale_entry_get_fld(struct cpsw_ale *ale,
++				  u32 *ale_entry,
++				  const struct ale_entry_fld *entry_tbl,
++				  int fld_id)
++{
++	const struct ale_entry_fld *entry_fld;
++	u32 bits;
++
++	if (!ale || !ale_entry)
++		return -EINVAL;
++
++	entry_fld = &entry_tbl[fld_id];
++	if (!(entry_fld->flags & ALE_FLD_ALLOWED)) {
++		dev_err(ale->params.dev, "get: wrong ale fld id %d\n", fld_id);
++		return -ENOENT;
++	}
++
++	bits = entry_fld->num_bits;
++	if (entry_fld->flags & ALE_FLD_SIZE_PORT_MASK_BITS)
++		bits = ale->port_mask_bits;
++
++	return cpsw_ale_get_field(ale_entry, entry_fld->start_bit, bits);
++}
++
++static void cpsw_ale_entry_set_fld(struct cpsw_ale *ale,
++				   u32 *ale_entry,
++				   const struct ale_entry_fld *entry_tbl,
++				   int fld_id,
++				   u32 value)
++{
++	const struct ale_entry_fld *entry_fld;
++	u32 bits;
++
++	if (!ale || !ale_entry)
++		return;
++
++	entry_fld = &entry_tbl[fld_id];
++	if (!(entry_fld->flags & ALE_FLD_ALLOWED)) {
++		dev_err(ale->params.dev, "set: wrong ale fld id %d\n", fld_id);
++		return;
++	}
++
++	bits = entry_fld->num_bits;
++	if (entry_fld->flags & ALE_FLD_SIZE_PORT_MASK_BITS)
++		bits = ale->port_mask_bits;
++
++	cpsw_ale_set_field(ale_entry, entry_fld->start_bit, bits, value);
++}
++
++static int cpsw_ale_vlan_get_fld(struct cpsw_ale *ale,
++				 u32 *ale_entry,
++				 int fld_id)
++{
++	return cpsw_ale_entry_get_fld(ale, ale_entry,
++				      ale->vlan_entry_tbl, fld_id);
++}
++
++static void cpsw_ale_vlan_set_fld(struct cpsw_ale *ale,
++				  u32 *ale_entry,
++				  int fld_id,
++				  u32 value)
++{
++	cpsw_ale_entry_set_fld(ale, ale_entry,
++			       ale->vlan_entry_tbl, fld_id, value);
++}
++
+ /* The MAC address field in the ALE entry cannot be macroized as above */
+ static inline void cpsw_ale_get_addr(u32 *ale_entry, u8 *addr)
+ {
+@@ -446,19 +564,22 @@ static void cpsw_ale_set_vlan_mcast(struct cpsw_ale *ale, u32 *ale_entry,
+ 	int idx;
+ 
+ 	/* Set VLAN registered multicast flood mask */
+-	idx = cpsw_ale_get_vlan_reg_mcast_idx(ale_entry);
++	idx = cpsw_ale_vlan_get_fld(ale, ale_entry,
++				    ALE_ENT_VID_REG_MCAST_IDX);
+ 	writel(reg_mcast, ale->params.ale_regs + ALE_VLAN_MASK_MUX(idx));
+ 
+ 	/* Set VLAN unregistered multicast flood mask */
+-	idx = cpsw_ale_get_vlan_unreg_mcast_idx(ale_entry);
++	idx = cpsw_ale_vlan_get_fld(ale, ale_entry,
++				    ALE_ENT_VID_UNREG_MCAST_IDX);
+ 	writel(unreg_mcast, ale->params.ale_regs + ALE_VLAN_MASK_MUX(idx));
+ }
+ 
+ static void cpsw_ale_set_vlan_untag(struct cpsw_ale *ale, u32 *ale_entry,
+ 				    u16 vid, int untag_mask)
+ {
+-	cpsw_ale_set_vlan_untag_force(ale_entry,
+-				      untag_mask, ale->vlan_field_bits);
++	cpsw_ale_vlan_set_fld(ale, ale_entry,
++			      ALE_ENT_VID_FORCE_UNTAGGED_MSK,
++			      untag_mask);
+ 	if (untag_mask & ALE_PORT_HOST)
+ 		bitmap_set(ale->p0_untag_vid_mask, vid, 1);
+ 	else
+@@ -480,17 +601,19 @@ int cpsw_ale_add_vlan(struct cpsw_ale *ale, u16 vid, int port_mask, int untag,
+ 	cpsw_ale_set_vlan_untag(ale, ale_entry, vid, untag);
+ 
+ 	if (!ale->params.nu_switch_ale) {
+-		cpsw_ale_set_vlan_reg_mcast(ale_entry, reg_mcast,
+-					    ale->vlan_field_bits);
+-		cpsw_ale_set_vlan_unreg_mcast(ale_entry, unreg_mcast,
+-					      ale->vlan_field_bits);
++		cpsw_ale_vlan_set_fld(ale, ale_entry,
++				      ALE_ENT_VID_REG_MCAST_MSK, reg_mcast);
++		cpsw_ale_vlan_set_fld(ale, ale_entry,
++				      ALE_ENT_VID_UNREG_MCAST_MSK, unreg_mcast);
+ 	} else {
+-		cpsw_ale_set_vlan_unreg_mcast_idx(ale_entry,
+-						  NU_VLAN_UNREG_MCAST_IDX);
++		cpsw_ale_vlan_set_fld(ale, ale_entry,
++				      ALE_ENT_VID_UNREG_MCAST_IDX,
++				      NU_VLAN_UNREG_MCAST_IDX);
+ 		cpsw_ale_set_vlan_mcast(ale, ale_entry, reg_mcast, unreg_mcast);
+ 	}
+-	cpsw_ale_set_vlan_member_list(ale_entry, port_mask,
+-				      ale->vlan_field_bits);
++
++	cpsw_ale_vlan_set_fld(ale, ale_entry,
++			      ALE_ENT_VID_MEMBER_LIST, port_mask);
+ 
+ 	if (idx < 0)
+ 		idx = cpsw_ale_match_free(ale);
+@@ -509,20 +632,20 @@ static void cpsw_ale_del_vlan_modify(struct cpsw_ale *ale, u32 *ale_entry,
+ 	int reg_mcast, unreg_mcast;
+ 	int members, untag;
+ 
+-	members = cpsw_ale_get_vlan_member_list(ale_entry,
+-						ale->vlan_field_bits);
++	members = cpsw_ale_vlan_get_fld(ale, ale_entry,
++					ALE_ENT_VID_MEMBER_LIST);
+ 	members &= ~port_mask;
+ 	if (!members) {
+ 		cpsw_ale_set_entry_type(ale_entry, ALE_TYPE_FREE);
+ 		return;
+ 	}
+ 
+-	untag = cpsw_ale_get_vlan_untag_force(ale_entry,
+-					      ale->vlan_field_bits);
+-	reg_mcast = cpsw_ale_get_vlan_reg_mcast(ale_entry,
+-						ale->vlan_field_bits);
+-	unreg_mcast = cpsw_ale_get_vlan_unreg_mcast(ale_entry,
+-						    ale->vlan_field_bits);
++	untag = cpsw_ale_vlan_get_fld(ale, ale_entry,
++				      ALE_ENT_VID_FORCE_UNTAGGED_MSK);
++	reg_mcast = cpsw_ale_vlan_get_fld(ale, ale_entry,
++					  ALE_ENT_VID_REG_MCAST_MSK);
++	unreg_mcast = cpsw_ale_vlan_get_fld(ale, ale_entry,
++					    ALE_ENT_VID_UNREG_MCAST_MSK);
+ 	untag &= members;
+ 	reg_mcast &= members;
+ 	unreg_mcast &= members;
+@@ -530,16 +653,16 @@ static void cpsw_ale_del_vlan_modify(struct cpsw_ale *ale, u32 *ale_entry,
+ 	cpsw_ale_set_vlan_untag(ale, ale_entry, vid, untag);
+ 
+ 	if (!ale->params.nu_switch_ale) {
+-		cpsw_ale_set_vlan_reg_mcast(ale_entry, reg_mcast,
+-					    ale->vlan_field_bits);
+-		cpsw_ale_set_vlan_unreg_mcast(ale_entry, unreg_mcast,
+-					      ale->vlan_field_bits);
++		cpsw_ale_vlan_set_fld(ale, ale_entry,
++				      ALE_ENT_VID_REG_MCAST_MSK, reg_mcast);
++		cpsw_ale_vlan_set_fld(ale, ale_entry,
++				      ALE_ENT_VID_UNREG_MCAST_MSK, unreg_mcast);
+ 	} else {
+ 		cpsw_ale_set_vlan_mcast(ale, ale_entry, reg_mcast,
+ 					unreg_mcast);
+ 	}
+-	cpsw_ale_set_vlan_member_list(ale_entry, members,
+-				      ale->vlan_field_bits);
++	cpsw_ale_vlan_set_fld(ale, ale_entry,
++			      ALE_ENT_VID_MEMBER_LIST, members);
+ }
+ 
+ int cpsw_ale_del_vlan(struct cpsw_ale *ale, u16 vid, int port_mask)
+@@ -577,15 +700,15 @@ int cpsw_ale_vlan_add_modify(struct cpsw_ale *ale, u16 vid, int port_mask,
+ 	if (idx >= 0)
+ 		cpsw_ale_read(ale, idx, ale_entry);
+ 
+-	vlan_members = cpsw_ale_get_vlan_member_list(ale_entry,
+-						     ale->vlan_field_bits);
+-	reg_mcast_members = cpsw_ale_get_vlan_reg_mcast(ale_entry,
+-							ale->vlan_field_bits);
++	vlan_members = cpsw_ale_vlan_get_fld(ale, ale_entry,
++					     ALE_ENT_VID_MEMBER_LIST);
++	reg_mcast_members = cpsw_ale_vlan_get_fld(ale, ale_entry,
++						  ALE_ENT_VID_REG_MCAST_MSK);
+ 	unreg_mcast_members =
+-		cpsw_ale_get_vlan_unreg_mcast(ale_entry,
+-					      ale->vlan_field_bits);
+-	untag_members = cpsw_ale_get_vlan_untag_force(ale_entry,
+-						      ale->vlan_field_bits);
++		cpsw_ale_vlan_get_fld(ale, ale_entry,
++				      ALE_ENT_VID_UNREG_MCAST_MSK);
++	untag_members = cpsw_ale_vlan_get_fld(ale, ale_entry,
++					      ALE_ENT_VID_FORCE_UNTAGGED_MSK);
+ 
+ 	vlan_members |= port_mask;
+ 	untag_members = (untag_members & ~port_mask) | untag_mask;
+@@ -618,14 +741,15 @@ void cpsw_ale_set_unreg_mcast(struct cpsw_ale *ale, int unreg_mcast_mask,
+ 			continue;
+ 
+ 		unreg_members =
+-			cpsw_ale_get_vlan_unreg_mcast(ale_entry,
+-						      ale->vlan_field_bits);
++			cpsw_ale_vlan_get_fld(ale, ale_entry,
++					      ALE_ENT_VID_UNREG_MCAST_MSK);
+ 		if (add)
+ 			unreg_members |= unreg_mcast_mask;
+ 		else
+ 			unreg_members &= ~unreg_mcast_mask;
+-		cpsw_ale_set_vlan_unreg_mcast(ale_entry, unreg_members,
+-					      ale->vlan_field_bits);
++		cpsw_ale_vlan_set_fld(ale, ale_entry,
++				      ALE_ENT_VID_UNREG_MCAST_MSK,
++				      unreg_members);
+ 		cpsw_ale_write(ale, idx, ale_entry);
+ 	}
+ }
+@@ -635,15 +759,15 @@ static void cpsw_ale_vlan_set_unreg_mcast(struct cpsw_ale *ale, u32 *ale_entry,
+ {
+ 	int unreg_mcast;
+ 
+-	unreg_mcast =
+-		cpsw_ale_get_vlan_unreg_mcast(ale_entry,
+-					      ale->vlan_field_bits);
++	unreg_mcast = cpsw_ale_vlan_get_fld(ale, ale_entry,
++					    ALE_ENT_VID_UNREG_MCAST_MSK);
+ 	if (allmulti)
+ 		unreg_mcast |= ALE_PORT_HOST;
+ 	else
+ 		unreg_mcast &= ~ALE_PORT_HOST;
+-	cpsw_ale_set_vlan_unreg_mcast(ale_entry, unreg_mcast,
+-				      ale->vlan_field_bits);
++
++	cpsw_ale_vlan_set_fld(ale, ale_entry,
++			      ALE_ENT_VID_UNREG_MCAST_MSK, unreg_mcast);
+ }
+ 
+ static void
+@@ -653,7 +777,8 @@ cpsw_ale_vlan_set_unreg_mcast_idx(struct cpsw_ale *ale, u32 *ale_entry,
+ 	int unreg_mcast;
+ 	int idx;
+ 
+-	idx = cpsw_ale_get_vlan_unreg_mcast_idx(ale_entry);
++	idx = cpsw_ale_vlan_get_fld(ale, ale_entry,
++				    ALE_ENT_VID_UNREG_MCAST_IDX);
+ 
+ 	unreg_mcast = readl(ale->params.ale_regs + ALE_VLAN_MASK_MUX(idx));
+ 
+@@ -677,9 +802,9 @@ void cpsw_ale_set_allmulti(struct cpsw_ale *ale, int allmulti, int port)
+ 		type = cpsw_ale_get_entry_type(ale_entry);
+ 		if (type != ALE_TYPE_VLAN)
+ 			continue;
+-		vlan_members =
+-			cpsw_ale_get_vlan_member_list(ale_entry,
+-						      ale->vlan_field_bits);
++
++		vlan_members = cpsw_ale_vlan_get_fld(ale, ale_entry,
++						     ALE_ENT_VID_MEMBER_LIST);
+ 
+ 		if (port != -1 && !(vlan_members & BIT(port)))
+ 			continue;
+@@ -1056,18 +1181,21 @@ static const struct cpsw_ale_dev_id cpsw_ale_id_match[] = {
+ 		.dev_id = "cpsw",
+ 		.tbl_entries = 1024,
+ 		.major_ver_mask = 0xff,
++		.vlan_entry_tbl = vlan_entry_cpsw,
+ 	},
+ 	{
+ 		/* 66ak2h_xgbe */
+ 		.dev_id = "66ak2h-xgbe",
+ 		.tbl_entries = 2048,
+ 		.major_ver_mask = 0xff,
++		.vlan_entry_tbl = vlan_entry_cpsw,
+ 	},
+ 	{
+ 		.dev_id = "66ak2el",
+ 		.features = CPSW_ALE_F_STATUS_REG,
+ 		.major_ver_mask = 0x7,
+ 		.nu_switch_ale = true,
++		.vlan_entry_tbl = vlan_entry_nu,
+ 	},
+ 	{
+ 		.dev_id = "66ak2g",
+@@ -1075,6 +1203,7 @@ static const struct cpsw_ale_dev_id cpsw_ale_id_match[] = {
+ 		.tbl_entries = 64,
+ 		.major_ver_mask = 0x7,
+ 		.nu_switch_ale = true,
++		.vlan_entry_tbl = vlan_entry_nu,
+ 	},
+ 	{
+ 		.dev_id = "am65x-cpsw2g",
+@@ -1082,6 +1211,7 @@ static const struct cpsw_ale_dev_id cpsw_ale_id_match[] = {
+ 		.tbl_entries = 64,
+ 		.major_ver_mask = 0x7,
+ 		.nu_switch_ale = true,
++		.vlan_entry_tbl = vlan_entry_nu,
+ 	},
+ 	{ },
+ };
+@@ -1129,6 +1259,7 @@ struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
+ 	ale->params = *params;
+ 	ale->ageout = ale->params.ale_ageout * HZ;
+ 	ale->features = ale_dev_id->features;
++	ale->vlan_entry_tbl = ale_dev_id->vlan_entry_tbl;
+ 
+ 	rev = readl_relaxed(ale->params.ale_regs + ALE_IDVER);
+ 	ale->version =
+diff --git a/drivers/net/ethernet/ti/cpsw_ale.h b/drivers/net/ethernet/ti/cpsw_ale.h
+index 9c6da58183c9..5e4a69662c5f 100644
+--- a/drivers/net/ethernet/ti/cpsw_ale.h
++++ b/drivers/net/ethernet/ti/cpsw_ale.h
+@@ -28,6 +28,8 @@ struct cpsw_ale_params {
+ 	unsigned long		bus_freq;
+ };
+ 
++struct ale_entry_fld;
++
  struct cpsw_ale {
+ 	struct cpsw_ale_params	params;
+ 	struct timer_list	timer;
+@@ -39,6 +41,7 @@ struct cpsw_ale {
+ 	u32			port_num_bits;
+ 	u32			vlan_field_bits;
+ 	unsigned long		*p0_untag_vid_mask;
++	const struct ale_entry_fld *vlan_entry_tbl;
+ };
+ 
+ enum cpsw_ale_control {
 -- 
 2.17.1
 
