@@ -2,83 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BB5C2606CE
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 00:04:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B9712606C7
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 00:04:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728210AbgIGWEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 18:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728104AbgIGWEU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 18:04:20 -0400
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7D1C061756
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 15:04:19 -0700 (PDT)
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id DBF1A84487;
-        Tue,  8 Sep 2020 10:04:14 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1599516254;
-        bh=7JNB/ELAvKPdDOSBGNHPPqtpnOjczRJOS+hfHYsRwmQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=DJz1EeaEyq9ne4h7WBSgn4dvh6B4K9N9mozgld+pnJFExoMHenZNO0lz6TSr8+71h
-         3Lngoamx7HLmX6dAIxb5V+ErlFdJTpsJrii19W+GmerlfY5Rpr51MPkPtZ+HMW9+tg
-         Kh+JxCxMS+8+1x+Hr0sBaFAeJy6lnJwBiS20DpyYKHE6WKdsWl9MTMIoBpjXREiQBL
-         v1GhXCaC0PXhZxfhEQJvDKb0HbMyjulT+fR0GYdEA2RNWJbAevd7upcetDaK42xoXB
-         KHeZP9d2lAaxDdz6D8oG8otkPjEPFv6JqWQ3nEHE8WsiK33I/qGQssh95SVIATD1vj
-         nC6vAr0xhSxGg==
-Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5f56ae5e0003>; Tue, 08 Sep 2020 10:04:14 +1200
-Received: from pauld-dl.ws.atlnz.lc (pauld-dl.ws.atlnz.lc [10.33.23.16])
-        by smtp (Postfix) with ESMTP id CD77913EF9B;
-        Tue,  8 Sep 2020 10:04:13 +1200 (NZST)
-Received: by pauld-dl.ws.atlnz.lc (Postfix, from userid 1684)
-        id 82EF91E0978; Tue,  8 Sep 2020 10:04:14 +1200 (NZST)
-From:   Paul Davey <paul.davey@alliedtelesis.co.nz>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paul Davey <paul.davey@alliedtelesis.co.nz>
-Subject: [PATCH net-next v2 3/3] ipmr: Use full VIF ID in netlink cache reports
-Date:   Tue,  8 Sep 2020 10:04:08 +1200
-Message-Id: <20200907220408.32385-4-paul.davey@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200907220408.32385-1-paul.davey@alliedtelesis.co.nz>
-References: <20200907220408.32385-1-paul.davey@alliedtelesis.co.nz>
+        id S1728098AbgIGWES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 18:04:18 -0400
+Received: from www62.your-server.de ([213.133.104.62]:60164 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727088AbgIGWES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 18:04:18 -0400
+Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kFPFI-0002ZX-A5; Tue, 08 Sep 2020 00:04:16 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     ast@kernel.org
+Cc:     bryce.kahle@datadoghq.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH bpf] bpf: Fix clobbering of r2 in bpf_gen_ld_abs
+Date:   Tue,  8 Sep 2020 00:04:10 +0200
+Message-Id: <cace836e4d07bb63b1a53e49c5dfb238a040c298.1599512096.git.daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-x-atlnz-ls: pat
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25923/Mon Sep  7 15:37:02 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Insert the full 16 bit VIF ID into ipmr Netlink cache reports.
+Bryce reported that he saw the following with:
 
-The VIF_ID attribute has 32 bits of space so can store the full VIF ID
-extracted from the high and low byte fields in the igmpmsg.
+  0:  r6 = r1
+  1:  r1 = 12
+  2:  r0 = *(u16 *)skb[r1]
 
-Signed-off-by: Paul Davey <paul.davey@alliedtelesis.co.nz>
+The xlated sequence was incorrectly clobbering r2 with pointer
+value of r6 ...
+
+  0: (bf) r6 = r1
+  1: (b7) r1 = 12
+  2: (bf) r1 = r6
+  3: (bf) r2 = r1
+  4: (85) call bpf_skb_load_helper_16_no_cache#7692160
+
+... and hence call to the load helper never succeeded given the
+offset was too high. Fix it by reordering the load of r6 to r1.
+
+Other than that the insn has similar calling convention than BPF
+helpers, that is, r0 - r5 are scratch regs, so nothing else
+affected after the insn.
+
+Fixes: e0cea7ce988c ("bpf: implement ld_abs/ld_ind in native bpf")
+Reported-by: Bryce Kahle <bryce.kahle@datadoghq.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 ---
- net/ipv4/ipmr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/filter.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 4809318f591b..939792a38814 100644
---- a/net/ipv4/ipmr.c
-+++ b/net/ipv4/ipmr.c
-@@ -2432,7 +2432,7 @@ static void igmpmsg_netlink_event(struct mr_table *=
-mrt, struct sk_buff *pkt)
- 	rtgenm =3D nlmsg_data(nlh);
- 	rtgenm->rtgen_family =3D RTNL_FAMILY_IPMR;
- 	if (nla_put_u8(skb, IPMRA_CREPORT_MSGTYPE, msg->im_msgtype) ||
--	    nla_put_u32(skb, IPMRA_CREPORT_VIF_ID, msg->im_vif) ||
-+	    nla_put_u32(skb, IPMRA_CREPORT_VIF_ID, msg->im_vif | (msg->im_vif_h=
-i << 8)) ||
- 	    nla_put_in_addr(skb, IPMRA_CREPORT_SRC_ADDR,
- 			    msg->im_src.s_addr) ||
- 	    nla_put_in_addr(skb, IPMRA_CREPORT_DST_ADDR,
---=20
-2.28.0
+diff --git a/net/core/filter.c b/net/core/filter.c
+index b2df52086445..2d62c25e0395 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7065,8 +7065,6 @@ static int bpf_gen_ld_abs(const struct bpf_insn *orig,
+ 	bool indirect = BPF_MODE(orig->code) == BPF_IND;
+ 	struct bpf_insn *insn = insn_buf;
+ 
+-	/* We're guaranteed here that CTX is in R6. */
+-	*insn++ = BPF_MOV64_REG(BPF_REG_1, BPF_REG_CTX);
+ 	if (!indirect) {
+ 		*insn++ = BPF_MOV64_IMM(BPF_REG_2, orig->imm);
+ 	} else {
+@@ -7074,6 +7072,8 @@ static int bpf_gen_ld_abs(const struct bpf_insn *orig,
+ 		if (orig->imm)
+ 			*insn++ = BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, orig->imm);
+ 	}
++	/* We're guaranteed here that CTX is in R6. */
++	*insn++ = BPF_MOV64_REG(BPF_REG_1, BPF_REG_CTX);
+ 
+ 	switch (BPF_SIZE(orig->code)) {
+ 	case BPF_B:
+-- 
+2.21.0
 
