@@ -2,148 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02AC825F3C3
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 09:19:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C11825F3CE
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 09:22:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726422AbgIGHTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 03:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33190 "EHLO
+        id S1726776AbgIGHWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 03:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726410AbgIGHTm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 03:19:42 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F668C061573
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 00:19:41 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id w5so14602381wrp.8
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 00:19:41 -0700 (PDT)
+        with ESMTP id S1726286AbgIGHV4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 03:21:56 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64850C061573
+        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 00:21:55 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id c15so14573827wrs.11
+        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 00:21:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=iHAh9k3RLvG0ayLeESM8RhfwH1hL5cASS4K5eiNZw6s=;
-        b=TuhOSMmUrglov49OE2JxL7acpRJDCZpoo6uZrI/5y59J2xZpiUcY5tOpHfifRKbVl/
-         DrTefRkoawXlbfi3LuZEP6431LfLXLKYHO5ggaHNmsfYVLpBQ0lbegwoyTVdednBhzVi
-         m8kWVXJnILySGqlfZzdhliVMxPXcIIZ0rTE+IHRlguq/8OioYO6t40uNfLr9CO9XSX07
-         GlXePGJOlPDJyJ9xlZl131FV6raIF4wm35VOC1LGDDcApW0Ak+6xes8CnnTeJfyRtriw
-         34kNdu1AlfMYyCHu0zl5qu/gtH7U20FGX6YRkywMgqGIXr4YX8+XxCtGH1/7shZPTneN
-         pY0Q==
+        bh=jauK4zLGfuAWi/L+qiHe6GhHl7upaTyCpwAKtsz6c9Y=;
+        b=c3PZeovtqTz1OgocS3JYVbsGYl0ZPTSsCH8XTPYDORXQjIs+oOxKRIP/OjZPv8xh6R
+         WUpZWYfuSVsCKSHab3aF74I1Xzvi4rmWos0RpEGVe6G7KBHbJY+HcSeyerpM/bmZZWZy
+         eH6W6+qKiV20g21yXxo/xXqMMOn/Gs2A2oygHdmy86YYmaGCw4kisZ/c2DU4ZsdaBxRk
+         j9KvVAlajKbQYjotsnAWIbxwNMLyFGq+zJpJy/1hF2QDmAZI59YQMUkTev/2jrNXwiwD
+         F20qyxAdNgLIrXm+XN0qmnDHKiSzSS51ReIsCxGs0mjj735n36bxH6LPUnck1hh5BZps
+         TmFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=iHAh9k3RLvG0ayLeESM8RhfwH1hL5cASS4K5eiNZw6s=;
-        b=jfY82dwJ208niijU2yqjY+phdTtyaJU2z8i5vph9CgATVpNbAlPM9h+h3+7AX26Vf0
-         nIrvfGy4SyMEMXALGDNsXtfr5J2c/pA61TJFt9ba4FUUVrljJP5K+NDoD2Gx5fWBFrv6
-         1rqrnKqzV+gJ3N/ZbkyupSvn1UCiklRqlfXSS8YeLpGVJ2exx1oDwK3wZl7mkQrqOpjL
-         xpISEDYiu2Fd34dhicI9j8NyXpnc2aQXGCQL5xZ9nggRYCx9H7UwQQuQamg6caeACxiL
-         LwLkkV0YbJv5f+jIO59gwCZxJtd9Jj+uPgyZCh2vwqGS2dHlbPnaNrtzpdjGdYaZz83a
-         i82g==
-X-Gm-Message-State: AOAM532eKlldLCPxnmM/0pRw3fDtBRgf1q1U5mqjIRBZ5/oMJ/rGJu1p
-        TZ19U3vpKlqXoag9dljGJi3ocA==
-X-Google-Smtp-Source: ABdhPJyc4EXJ6y51A5Y0W0GQqdg91GUCHHC8SUh4xBc7IiZtePR/n0A/3WAS3DV1PQFpFwKeoRVDGg==
-X-Received: by 2002:a5d:6784:: with SMTP id v4mr14614478wru.215.1599463180209;
-        Mon, 07 Sep 2020 00:19:40 -0700 (PDT)
+        bh=jauK4zLGfuAWi/L+qiHe6GhHl7upaTyCpwAKtsz6c9Y=;
+        b=Ks3/1gw2iXAOq0mT7SdsXOHlZRWXTIKcyFj/+/qlQ8oReV5QZhwzWvLYnSUQ0XabNQ
+         QmizZ1/zAXexRmciZ0/UZmKAFAhIkwonLruBkVrzckUQf7djZQ6exAslE18U03JDy9/Z
+         ntUhLIJirIhJzZRejNyieXnl1RAHHRx2blNGVdHTiWp4nWrwdiu+MRb1UNeV0JJBTZDS
+         lL62qZhcGOvc8yfAMDqMAqBaDeE0+bdkGRT9FOr7JJCslaukNeInm4MPrsMuGAPF0EiV
+         Kyl8eVUcR9fZeNkgqr3pV6VVpkbgu9G9xfb71PCx4xbYNd31YRQSm0loti17F4O+CFwp
+         BeGA==
+X-Gm-Message-State: AOAM533J7bU+tAMMNjzBAAfIUXJHPRBIbjZhS5LBAPaY8yjrPnoQyS/j
+        bNMOww0r5s4v6q+jbpE8Cv03dQ==
+X-Google-Smtp-Source: ABdhPJwmvwX9zI+PHBShS4ELM2BxmcotTdHi/RFIaeF94VIXezMK0c+dMrjRvEaWhzanRmRugc73aA==
+X-Received: by 2002:a5d:66c1:: with SMTP id k1mr20257018wrw.34.1599463314658;
+        Mon, 07 Sep 2020 00:21:54 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id o4sm23240591wru.55.2020.09.07.00.19.39
+        by smtp.gmail.com with ESMTPSA id 92sm29130294wra.19.2020.09.07.00.21.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 00:19:39 -0700 (PDT)
-Date:   Mon, 7 Sep 2020 09:19:39 +0200
+        Mon, 07 Sep 2020 00:21:54 -0700 (PDT)
+Date:   Mon, 7 Sep 2020 09:21:53 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, kernel-team@fb.com, tariqt@mellanox.com,
-        yishaih@mellanox.com, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next] mlx4: make sure to always set the port type
-Message-ID: <20200907071939.GK2997@nanopsycho.orion>
-References: <20200904200621.2407839-1-kuba@kernel.org>
- <20200906072759.GC55261@unreal>
- <20200906093305.5c901cc5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200907062135.GJ2997@nanopsycho.orion>
- <20200907064830.GK55261@unreal>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Parav Pandit <parav@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "roid@mellanox.com" <roid@mellanox.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next 2/3] devlink: Consider other controller while
+ building phys_port_name
+Message-ID: <20200907072153.GL2997@nanopsycho.orion>
+References: <BY5PR12MB43229CA19D3D8215BC9BEFECDC2E0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200901091742.GF3794@nanopsycho.orion>
+ <20200901142840.25b6b58f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <BY5PR12MB43228D0A9B1EF43C061A5A3BDC2F0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20200902080011.GI3794@nanopsycho.orion>
+ <20200902082358.6b0c69b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200903055439.GA2997@nanopsycho.orion>
+ <20200903123123.7e6025ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200904084321.GG2997@nanopsycho.orion>
+ <BY5PR12MB43229A748C15AB08C233A792DC2B0@BY5PR12MB4322.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200907064830.GK55261@unreal>
+In-Reply-To: <BY5PR12MB43229A748C15AB08C233A792DC2B0@BY5PR12MB4322.namprd12.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 07, 2020 at 08:48:30AM CEST, leon@kernel.org wrote:
->On Mon, Sep 07, 2020 at 08:21:35AM +0200, Jiri Pirko wrote:
->> Sun, Sep 06, 2020 at 06:33:05PM CEST, kuba@kernel.org wrote:
->> >On Sun, 6 Sep 2020 10:27:59 +0300 Leon Romanovsky wrote:
->> >> On Fri, Sep 04, 2020 at 01:06:21PM -0700, Jakub Kicinski wrote:
->> >> > Even tho mlx4_core registers the devlink ports, it's mlx4_en
->> >> > and mlx4_ib which set their type. In situations where one of
->> >> > the two is not built yet the machine has ports of given type
->> >> > we see the devlink warning from devlink_port_type_warn() trigger.
+Sun, Sep 06, 2020 at 05:08:45AM CEST, parav@nvidia.com wrote:
+>
+>
+>> From: Jiri Pirko <jiri@resnulli.us>
+>> Sent: Friday, September 4, 2020 2:13 PM
+>> 
+>> Thu, Sep 03, 2020 at 09:31:23PM CEST, kuba@kernel.org wrote:
+>> >On Thu, 3 Sep 2020 07:54:39 +0200 Jiri Pirko wrote:
+>> >> Wed, Sep 02, 2020 at 05:23:58PM CEST, kuba@kernel.org wrote:
+>> >> >On Wed, 2 Sep 2020 10:00:11 +0200 Jiri Pirko wrote:
+>> >> >>>> I didn't quite get the fact that you want to not show controller ID on the
+>> local
+>> >> >>>> port, initially.
+>> >> >>> Mainly to not_break current users.
+>> >> >>
+>> >> >> You don't have to take it to the name, unless "external" flag is set.
+>> >> >>
+>> >> >> But I don't really see the point of showing !external, cause such
+>> >> >> controller number would be always 0. Jakub, why do you think it is
+>> >> >> needed?
 >> >> >
->> >> > Having ports of a type not supported by the kernel may seem
->> >> > surprising, but it does occur in practice - when the unsupported
->> >> > port is not plugged in to a switch anyway users are more than happy
->> >> > not to see it (and potentially allocate any resources to it).
+>> >> >It may seem reasonable for a smartNIC where there are only two
+>> >> >controllers, and all you really need is that external flag.
 >> >> >
->> >> > Set the type in mlx4_core if type-specific driver is not built.
->> >> >
->> >> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->> >> > ---
->> >> >  drivers/net/ethernet/mellanox/mlx4/main.c | 11 +++++++++++
->> >> >  1 file changed, 11 insertions(+)
->> >> >
->> >> > diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
->> >> > index 258c7a96f269..70cf24ba71e4 100644
->> >> > --- a/drivers/net/ethernet/mellanox/mlx4/main.c
->> >> > +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
->> >> > @@ -3031,6 +3031,17 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
->> >> >  	if (err)
->> >> >  		return err;
->> >> >
->> >> > +	/* Ethernet and IB drivers will normally set the port type,
->> >> > +	 * but if they are not built set the type now to prevent
->> >> > +	 * devlink_port_type_warn() from firing.
->> >> > +	 */
->> >> > +	if (!IS_ENABLED(CONFIG_MLX4_EN) &&
->> >> > +	    dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH)
->> >> > +		devlink_port_type_eth_set(&info->devlink_port, NULL);
->> >>                                                                ^^^^^
+>> >> >In a general case when users are trying to figure out the topology
+>> >> >not knowing which controller they are sitting at looks like a
+>> >> >serious limitation.
 >> >>
->> >> Won't it crash in devlink_port_type_eth_set()?
->> >> The first line there dereferences pointer.
->> >>   7612         const struct net_device_ops *ops = netdev->netdev_ops;
+>> >> I think we misunderstood each other. I never proposed just "external"
+>> >> flag.
 >> >
->> >Damn, good catch. It's not supposed to be required. I'll patch devlink.
->>
->> When you set the port type to ethernet, you should have the net_device
->> instance. Why wouldn't you?
->
->It is how mlx4 is implemented, see mlx4_dev_cap() function:
->588         for (i = 1; i <= dev->caps.num_ports; ++i) {
->589                 dev->caps.port_type[i] = MLX4_PORT_TYPE_NONE;
->....
->
->The port type is being set to IB or ETH without relation to net_device,
->fixing it will require very major code rewrite for the stable driver
->that in maintenance mode.
-
-Because the eth driver is not loaded, I see. The purpose of the
-WARN in devlink_port_type_eth_set is to prevent drivers from registering
-particular port without netdev/ibdev. That is what was repeatedly
-happening in the past as the driver developers didn't know they need to
-do it or were just lazy to do so.
-
-I wonder if there is any possibility to do both...
-
->
->>
->>
+>> >Sorry, I was just saying that assuming a single host SmartNIC the
+>> >controller ID is not necessary at all. You never suggested that, I did.
+>> >Looks like I just confused everyone with that comment :(
 >> >
->> >> And can we call to devlink_port_type_*_set() without IS_ENABLED() check?
+>> >Different controller ID for different PFs but the same PCIe link would
+>> >be very wrong. So please clarify - if I have a 2 port smartNIC, with on
+>> >PCIe link to the host, and the embedded controller - what would I see?
+>> 
+>> Parav?
+>>
+>One controller id for both such PFs.
+>I liked the idea of putting controller number for all the ports but not embedded for local ports.
+>
+>> 
 >> >
->> >It'll generate two netlink notifications - not the end of the world but
->> >also doesn't feel super clean.
+>> >> What I propose is either:
+>> >> 1) ecnum attribute absent for local
+>> >>    ecnum attribute absent set to 0 for external controller X
+>> >>    ecnum attribute absent set to 1 for external controller Y
+>> >>    ...
+>> >>
+>> >> or:
+>> >> 2) ecnum attribute absent for local, external flag set to false
+>> >>    ecnum attribute absent set to 0 for external controller X, external flag set
+>> to true
+>> >>    ecnum attribute absent set to 1 for external controller Y,
+>> >> external flag set to true
+>> >
+>> >I'm saying that I do want to see the the controller ID for all ports.
+>> >
+>> >So:
+>> >
+>> >3) local:   { "controller ID": x }
+>> >   remote1: { "controller ID": y, "external": true }
+>> >   remote1: { "controller ID": z, "external": true }
+>> >
+>> >We don't have to put the controller ID in the name for local ports, but
+>> >the attribute should be reported. AFAIU name was your main concern, no?
+>> 
+>> Okay. Sounds fine. Let's put the controller number there for all ports.
+>> ctrlnum X external true
+>> ctrlnum Y external false
+>> 
+>> if (!external)
+>> 	ignore the ctrlnum when generating the name
+>> 
 >
->I would say that such a situation is corner case during the driver init and
->not an end of the world to see double netlink message.
+>Putting little more realistic example for Jakub's and your suggestion below.
 >
->Thanks
+>Below is the output for 3 controllers. ( 2 external + 1 local )
+>Each external controller consist of 2 PCI PFs for a external host via single PCIe cable.
+>Each local controller consist of 1 PCI PF.
+>
+>$ devlink port show
+>pci/0000:00:08.0/0: type eth netdev enp0s8f0_pf0 flavour pcipf pfnum 0 cnum 0 external false
+>pci/0000:00:08.0/1: type eth netdev enp0s8f0_c1pf0 flavour pcipf pfnum 0 cnum 1 external true
+>pci/0000:00:08.1/1: type eth netdev enp0s8f1_c1pf1 flavour pcipf pfnum 1 cnum 1 external true
+
+I see cnum 0 and cnum 1, yet you talk about 3 controllers. What did I
+miss?
+
+
+>
+>Looks ok?
+>
+>> 
+>> >
+>> >> >Example - multi-host system and you want to know which controller
+>> >> >you are to run power cycle from the BMC side.
+>> >> >
+>> >> >We won't be able to change that because it'd change the names for you.
