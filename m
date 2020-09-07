@@ -2,108 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0BF325FD14
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 17:28:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE2325FCD6
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 17:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730111AbgIGP2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 11:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50538 "EHLO
+        id S1730170AbgIGPSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 11:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730150AbgIGPRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 11:17:08 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55E75C061755
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 08:07:36 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id c10so13094914edk.6
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 08:07:36 -0700 (PDT)
+        with ESMTP id S1730046AbgIGPRy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 11:17:54 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1BDC061573;
+        Mon,  7 Sep 2020 08:17:52 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id b17so4489253pji.1;
+        Mon, 07 Sep 2020 08:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BsqSCPCPiaLJ8Go+KX+dmTuaOJyEKP9pJrk437CGKxg=;
-        b=l3gYcQrwwdOR9fijZnyUEmRnV41Jn1GPXnCDbFgLE3/DycIWBY+5xj64K+P4kaRsS/
-         jWcZgNfSWwU8vJc22qhfcZOz9MyrpKUMuSIf9Ab+agdioBrleVzplVKE38nLSY5cBUX1
-         ucE+0iOfFSSJCPm8cPHdOGfAEHGc6PTo2aks7VEfJc3QFzqYJEKBjF6QHscBNiJWDZFL
-         yro4UN8yf3Q34nB4re9cCV6hQxXMtz9ndNbsnZ3Ynh5pQZXM9ySv7MuphzR07H6p9bMn
-         FtQUT68lqjxh7HJ0iD4WVyQAd/X2+uiq9CM4zPbJCnZXBEPp0n3sfqRnrw0ggdAGClnB
-         VzNg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WmxQ1TCWh9ErVx2o7p8NTViaLgMIqPcYEFusknZqwqI=;
+        b=t1cgqo7rKZqSJBgPGK8D56Ubf/mtwCDe1ZmLC6+tmdllzkFVR+ZoJEY3W0UuaK0VeG
+         5x6pKpNiYya7bk79v4Rjg+rNA5p/MTUOGknwieskyteX78UX0a4MIF5JBNgulsLZkose
+         0R2HBWg2w/BpJmYOX/Jp5AVKwewEhEYsR6v0+DvevJyIa84S5IsOxgPvP6jEcPO6eXRQ
+         mZSoJnevEBi92fp76Jzwcf36hZ/UuuD+zuyBWmrYwF0QjJPwXQocS83l8BsLjuRnNWjC
+         5QYai+9/Lk/avqm7Tu1q8AY2EwLF4swsi0FmiLpHcYEpjUaKN56XMyutuKyvSPbFZhgH
+         tQ4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BsqSCPCPiaLJ8Go+KX+dmTuaOJyEKP9pJrk437CGKxg=;
-        b=ExolTfNDmqmL4JNAWYDgHHh2TBNTMd0InqsSfgoJTyTY/3LbjXjgJJg4vYsIBqTUh/
-         AxRFx966aObb79b2dLrdfFu5hUCwljRZzABquT8yaYbwYVOPpDUmX3Qdt/oLrAjK68TS
-         uxR2l3hmIBNxmnvy5l6MeLxIQ49fArjgeWVvRlH3lnnqiHvJ6Ejgsrn8DFpnSgm3VJGL
-         I/dplvDGBRHdJK/7gZNO9HdkXPYgrOvh2j1Yy5OwznW77npHmB1+pw0jtP2ZTAKhNOIo
-         ygXDgwWoe7AsQQjeCRq661s0dZh1kHLy3HbzrNtV4Mhna2PICWAv0axgYXQCVpI7A9Nm
-         YenQ==
-X-Gm-Message-State: AOAM532HL3gHvu2Dbrvocm+3bFC+jhrZFItHCvYog7ITaM1Pil7vWsns
-        JDgxjQPNkAxAAiTIpdSLzXRolg==
-X-Google-Smtp-Source: ABdhPJz4KjCatnUJFTsRS8yPpcGqriKrL3EhPhWrN7yE7V6S7tBAHkHGZ5mzppwc0wjk5DI/rOsxiQ==
-X-Received: by 2002:aa7:d15a:: with SMTP id r26mr22499081edo.181.1599491254960;
-        Mon, 07 Sep 2020 08:07:34 -0700 (PDT)
-Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:8ddf:bedd:580e:7a7e])
-        by smtp.gmail.com with ESMTPSA id o11sm15104926edw.80.2020.09.07.08.07.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Sep 2020 08:07:34 -0700 (PDT)
-Subject: Re: [MPTCP][PATCH net 2/2] mptcp: fix subflow's remote_id issues
-To:     Geliang Tang <geliangtang@gmail.com>
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WmxQ1TCWh9ErVx2o7p8NTViaLgMIqPcYEFusknZqwqI=;
+        b=nPae7tITWc990Yr7feP9VutTO5TFMBsuhNOodId75mwRBvgmB4Ks/T18AbBnO+s1NI
+         Z/hpkL0yKpZpU3OusvxHz/5xSVN98hKTXYcKRbO2KqHWSMDLqsGXj7L7H3iMSKWaFcNq
+         LrRWCY1uuaq/rGLCe2W7mL2di6n3MeX+x2+NOZTjnMnWUq2XH0MItZ2xqG5mb3yqwm29
+         vNNdYi6BvUts4kZkliSLbhnGUJz8ty7AcZUPDkLnv0Jyi9OjVP6be1DN3vN1AXKn3mAb
+         KoRyurkZoJUxCTZ+Wcp9jqmWcCGfs8OIFMScuK/apEShP2lM+RWqb+csOH2RjuSLGBdL
+         o70A==
+X-Gm-Message-State: AOAM533xzI83a1eDj11T7fIgFFvjySVhAFnVKhOUVslN0VKlShdzvXJz
+        mKJ88XkvOru+RbBg9Mvdr5tYe9IpGg4=
+X-Google-Smtp-Source: ABdhPJwIdV3RZW5cLJtksbg7hpSJsZniyydTuAeZPd2xB4V+NmxnZfBXPUjdHbh/2h/7NC1+I+IPJA==
+X-Received: by 2002:a17:90a:46cd:: with SMTP id x13mr4319600pjg.101.1599491872287;
+        Mon, 07 Sep 2020 08:17:52 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id k4sm16698129pfp.189.2020.09.07.08.17.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Sep 2020 08:17:51 -0700 (PDT)
+Date:   Mon, 7 Sep 2020 08:17:49 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, linux-kernel@vger.kernel.org
-References: <f24ee917e4043d2befe2a0f96cd57aa74d2a4b26.1599474422.git.geliangtang@gmail.com>
- <7187516ee5a9f17a7bf1e4aa9a849da2dd56a734.1599474422.git.geliangtang@gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-Message-ID: <a62124ba-bb3e-bd19-e2b4-50e8cb1465ea@tessares.net>
-Date:   Mon, 7 Sep 2020 17:07:33 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH v5 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek
+ switches
+Message-ID: <20200907151749.GB31299@hoboy>
+References: <20200904062739.3540-1-kurt@linutronix.de>
+ <20200904062739.3540-3-kurt@linutronix.de>
+ <20200905204235.f6b5til4sc3hoglr@skbuf>
+ <875z8qazq2.fsf@kurt>
+ <20200907104821.kvu7bxvzwazzg7cv@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <7187516ee5a9f17a7bf1e4aa9a849da2dd56a734.1599474422.git.geliangtang@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200907104821.kvu7bxvzwazzg7cv@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Geliang,
+On Mon, Sep 07, 2020 at 01:48:21PM +0300, Vladimir Oltean wrote:
+> So, I think that's not ok. I think the only proper way to solve this is
+> to inform the IP designers that VLANs are no substitute for a port
+> forwarding matrix
 
-On 07/09/2020 12:29, Geliang Tang wrote:
-> This patch set the init remote_id to zero, otherwise it will be a random
-> number.
-> 
-> Then it added the missing subflow's remote_id setting code both in
-> __mptcp_subflow_connect and in subflow_ulp_clone.
+Somebody should tell TI that.  (cpts anyone?)
 
-Thank you for this other patch!
-
-Here as well, may you add a "Fixes:" tag please?
-
-(...)
-
-> diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-> index dc2c57860d2d..255695221309 100644
-> --- a/net/mptcp/pm_netlink.c
-> +++ b/net/mptcp/pm_netlink.c
-> @@ -186,7 +186,7 @@ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
->   {
->   	struct sock *sk = (struct sock *)msk;
->   	struct mptcp_pm_addr_entry *local;
-> -	struct mptcp_addr_info remote;
-> +	struct mptcp_addr_info remote = { 0 };
-
-To respect the "reversed Xmas tree" way to declare variables, may you 
-move this line up to be the first one in the list please?
-
-The rest looks good to me, thank you!
-
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
+Thanks,
+Richard
