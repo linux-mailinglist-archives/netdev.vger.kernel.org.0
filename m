@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E53AD25F9BF
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 13:45:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ABE125FA42
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 14:15:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729098AbgIGLpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 07:45:19 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:16940 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728948AbgIGLoJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 07:44:09 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f561c7b0001>; Mon, 07 Sep 2020 04:41:47 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 07 Sep 2020 04:44:00 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 07 Sep 2020 04:44:00 -0700
-Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 7 Sep
- 2020 11:43:57 +0000
-Date:   Mon, 7 Sep 2020 14:43:51 +0300
-From:   Eli Cohen <elic@nvidia.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-CC:     Jason Wang <jasowang@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH] vdpa/mlx5: Setup driver only if VIRTIO_CONFIG_S_DRIVER_OK
-Message-ID: <20200907114351.GC121033@mtl-vdi-166.wap.labs.mlnx>
-References: <20200907075136.GA114876@mtl-vdi-166.wap.labs.mlnx>
- <20200907073319-mutt-send-email-mst@kernel.org>
+        id S1729274AbgIGMO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 08:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729255AbgIGMMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 08:12:44 -0400
+Received: from mail.buslov.dev (mail.buslov.dev [IPv6:2001:19f0:5001:2e3f:5400:1ff:feed:a259])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719E5C061574
+        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 05:12:43 -0700 (PDT)
+Received: from vlad-x1g6 (u5543.alfa-inet.net [62.205.135.152])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.buslov.dev (Postfix) with ESMTPSA id A3ED8202B0;
+        Mon,  7 Sep 2020 15:12:34 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=buslov.dev; s=2019;
+        t=1599480754;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cfw1hsZQ2GoLLkPQ7588pgIpqmJQq5HRampRNds2KTw=;
+        b=lWhQu+P4xrkbQXOmhYCryLBh5p9FQLIXgru7sWhLHTO/6CUfWNvqOSH/tL8azZ4JDkN/dc
+        1GsgIGULaO2MekArm7XFPRG5neOkWPO6kNYJ0GsfjE0hXfjdPaxij+baRAz56RinzhlwOB
+        dpXZI2GGiZy8Vu6tBlxi+8bgCzit+qnnLviWEeai3hA8b85mEP4L47k0jNU54naZ2t/+Yi
+        ODaeUGYX1vjXoyAwAXT7fUMm4VIiX6CuyDlU5JP3bvBC77pDI77j6BoH6lNNaSxpqe7Wqd
+        lvyTKsuMzdTChYYTQI+HSTkLQneZ6HAriF/N0ZNfnGLjvWXSPiysCrAjhnXO5g==
+References: <20200904021011.27002-1-xiyou.wangcong@gmail.com>
+User-agent: mu4e 1.4.13; emacs 26.3
+From:   Vlad Buslov <vlad@buslov.dev>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        syzbot+80e32b5d1f9923f8ace6@syzkaller.appspotmail.com,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [Patch net] act_ife: load meta modules before tcf_idr_check_alloc()
+In-reply-to: <20200904021011.27002-1-xiyou.wangcong@gmail.com>
+Date:   Mon, 07 Sep 2020 15:12:34 +0300
+Message-ID: <87a6y1bxal.fsf@buslov.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20200907073319-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1599478907; bh=rPuSpQ+AI3waLwWQgYXQb/+jowBU3/p6fNwDC282AtI=;
-        h=X-PGP-Universal:Date:From:To:CC:Subject:Message-ID:References:
-         MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-         User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=ZpwZhzPUClNq+HpTlMqZEJw4z2gHdbem7InAMzz4hGyHXNuj91gBUvbnqKG9BItth
-         krAefaUm1Sk7ZoKbegbV3I+zCJ3LBV4BtkZhSIy/qo4GhJZF3m5vhZHtsav7hvpdDp
-         lbXpNqm7asLBGOGF6Z3SEyWMQReVATeOBR4dpYvL6etl0UJGGmlMew2sOi/pqEiQQh
-         yI8y/t3P5rmbU4KP8Voa1fuauhhm2zLBla81rJTPbefOsbPb5DwIFioonOh+T5okHQ
-         zaol5QsvyR3Y5IpdqKaylPBj90JEB4gkc6VGvIyKYIX4CRDx8JAVyw9Afv4eQ9wDwl
-         TmLV7Ji5zVSBw==
+Content-Type: text/plain
+Authentication-Results: ORIGINATING;
+        auth=pass smtp.auth=vlad@buslov.dev smtp.mailfrom=vlad@buslov.dev
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 07, 2020 at 07:34:00AM -0400, Michael S. Tsirkin wrote:
-> On Mon, Sep 07, 2020 at 10:51:36AM +0300, Eli Cohen wrote:
-> > If the memory map changes before the driver status is
-> > VIRTIO_CONFIG_S_DRIVER_OK, don't attempt to create resources because it
-> > may fail. For example, if the VQ is not ready there is no point in
-> > creating resources.
-> > 
-> > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> 
-> 
-> Could you add a bit more data about the problem to the log?
-> To be more exact, what exactly happens right now?
+On Fri 04 Sep 2020 at 05:10, Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> The following deadlock scenario is triggered by syzbot:
 >
+> Thread A:				Thread B:
+> tcf_idr_check_alloc()
+> ...
+> populate_metalist()
+>   rtnl_unlock()
+> 					rtnl_lock()
+> 					...
+>   request_module()			tcf_idr_check_alloc()
+>   rtnl_lock()
+>
+> At this point, thread A is waiting for thread B to release RTNL
+> lock, while thread B is waiting for thread A to commit the IDR
+> change with tcf_idr_insert() later.
+>
+> Break this deadlock situation by preloading ife modules earlier,
+> before tcf_idr_check_alloc(), this is fine because we only need
+> to load modules we need potentially.
+>
+> Reported-and-tested-by: syzbot+80e32b5d1f9923f8ace6@syzkaller.appspotmail.com
+> Fixes: 0190c1d452a9 ("net: sched: atomically check-allocate action")
+> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> Cc: Vlad Buslov <vladbu@mellanox.com>
+> Cc: Jiri Pirko <jiri@resnulli.us>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> ---
 
-Sure I can.
+Thanks for fixing this, Cong! I've verified that all tdc ife tests pass
+with this patch.
 
-set_map() is used by mlx5 vdpa to create a memory region based on the
-address map passed by the iotlb argument. If I get successive calls, I
-will destroy the current memory region and build another one based on
-the new address mapping. I also need to setup the hardware resources
-since they depend on the memory region.
-
-If these calls happen before DRIVER_OK, It means it that driver VQs may
-also not been setup and I may not create them yet. In this case I want
-to avoid setting up the other resources and defer this till I get DRIVER
-OK.
-
-Let me know if that answers your question so I can post another patch.
-
-> > ---
-> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > index 9df69d5efe8c..c89cd48a0aab 100644
-> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > @@ -1645,6 +1645,9 @@ static int mlx5_vdpa_change_map(struct mlx5_vdpa_net *ndev, struct vhost_iotlb *
-> >  	if (err)
-> >  		goto err_mr;
-> >  
-> > +	if (!(ndev->mvdev.status & VIRTIO_CONFIG_S_DRIVER_OK))
-> > +		return 0;
-> > +
-> >  	restore_channels_info(ndev);
-> >  	err = setup_driver(ndev);
-> >  	if (err)
-> > -- 
-> > 2.26.0
-> 
+Reviewed-by: Vlad Buslov <vlad@buslov.dev>
+Tested-by: Vlad Buslov <vlad@buslov.dev>
