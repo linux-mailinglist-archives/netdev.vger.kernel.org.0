@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E2425F76E
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 12:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CAFB25F770
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 12:13:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728546AbgIGKMn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 06:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
+        id S1728525AbgIGKNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 06:13:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728409AbgIGKMV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 06:12:21 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 733C6C061755
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 03:12:21 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id y15so1011272wmi.0
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 03:12:21 -0700 (PDT)
+        with ESMTP id S1728580AbgIGKMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 06:12:22 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677B3C061756
+        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 03:12:22 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id s13so13794488wmh.4
+        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 03:12:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=konsulko.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aIuHXFTT8iNlPReahxS4AxVZc+AV0svGQsmfuvJB638=;
-        b=SNTV8BHaruyvyyhiibjlyWpTha0xScucliRh0jRwUFtVM3zSePtusSkCCUYgh9u6Oh
-         MGZsqBtC7pSaftd4V6pNSJMJZo/767RnEpqeicNPitCD89VR+KzXs5RBBMNCeVsK02xa
-         itVDCRVNDSYd5MBqJ9zPqcb4WI0zsqr6ky3JY=
+        bh=+CmuBvHSLrJBh6+25r6fCP8C8dEsiulNskkxE4j9PUw=;
+        b=DxE2NOyxZGuGlM+N84MBbRHboXyrobgPdcrERsi9jcGoo5k+sl5VpL83kePZaK9J06
+         WCcjG7CN1YbqmFrkOx6bZm+WOzKQcKGNY8qlR/cptXUW+GMa2hI9vKt32FsWL0tTpWRC
+         SxjV6a+wljQkDUd0BRf8gBJs09ZQYaJh4wKhs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aIuHXFTT8iNlPReahxS4AxVZc+AV0svGQsmfuvJB638=;
-        b=uQIXB852QFeqd9wDDxz7YZr2ftR8hOz1RePZM/d0N2ji8u2REc5Nc50+5RkBZDZqeo
-         b8hIteZRByuN1USxkGKBW6AjOz7j5alFTcCEYic2IOvPhIHkA92qJqVYEJajE2Ig5vAY
-         4tbwU1b7o5Gfin/2WrouFWufjlOE0mR5gN6j9uP9eKVhS2NO7Hgiqk2nPgmwu+UVD+C7
-         6cQi6yUcXIEJrqlo+O/Z3Fvolpwvm5y5vM54jmHhsX81imPEuxDrV8M7LOJIvhBnVbK6
-         oumlgFR7oytJSMdCkp23WX/V1Nq7mIE3wTOLGeu/B3bHmZKXh6la6lj24Yssjxlb+FIN
-         XqbA==
-X-Gm-Message-State: AOAM531eSb8I0HLziagjHrRSDcIzEf0EcnIYZdttXZJHEhFmbJwZcUqq
-        O24XUqS0aCUaJDKwfmH0WPIDiw==
-X-Google-Smtp-Source: ABdhPJzrBd06xztwhsQa6CrjESbvkiuY7MO0bb9in6tdBtfv/dcZIuPN3mFHpGLsCcDQ8eTeyjwA0A==
-X-Received: by 2002:a1c:9883:: with SMTP id a125mr21056219wme.133.1599473540003;
-        Mon, 07 Sep 2020 03:12:20 -0700 (PDT)
+        bh=+CmuBvHSLrJBh6+25r6fCP8C8dEsiulNskkxE4j9PUw=;
+        b=aYRmE9t1UQNAcg6AvBECBSz/mgd0KvBIe46tuiHD6ciMPwtjJi/FBj1g3P7sy3Yz/3
+         t+GmprZHI9fmFO4/EhomlXGSsTLKwb5uKtb60TxY98Ti8V2p8ZxcC4CUj0cCHhCefB9k
+         M+UmNZQ1fv23oJcqo6fzrsrS562ujOfUwz6qGtaezfN32aVVQJU8wKMvNUMgbmMc3tWb
+         lMksXlwVk65NDJRjiFcvh9z+pNZBqH7PcaKQRqT+4vFf/gqxR3aPrzlI1Ioh1o++KtHB
+         NWD/VTpklJEMbtVpMgU+BvaDNLAHEVcdHd/dxuy8zwTTsLVf66F20lnVCtveS+lXidp0
+         vHKg==
+X-Gm-Message-State: AOAM532x12zZSfeAdyCRwz1GZvVrTvwthjYJD8kGm80TYfKihCg4NBZS
+        4v/JAljRSGk+djqehvcOXoB5rw==
+X-Google-Smtp-Source: ABdhPJyVAZ4DvZdxVZOXIUHHju8Zzlypi4Q2XtKa3FXrc114yHIrpcIWbwQN5sroI1N75StkNXcPRw==
+X-Received: by 2002:a7b:c1d3:: with SMTP id a19mr13876530wmj.19.1599473541137;
+        Mon, 07 Sep 2020 03:12:21 -0700 (PDT)
 Received: from ar2.home.b5net.uk ([213.48.11.149])
-        by smtp.gmail.com with ESMTPSA id i16sm24173748wrq.73.2020.09.07.03.12.19
+        by smtp.gmail.com with ESMTPSA id i16sm24173748wrq.73.2020.09.07.03.12.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 03:12:19 -0700 (PDT)
+        Mon, 07 Sep 2020 03:12:20 -0700 (PDT)
 From:   Paul Barker <pbarker@konsulko.com>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
@@ -52,9 +52,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>
 Cc:     Paul Barker <pbarker@konsulko.com>, netdev@vger.kernel.org
-Subject: [PATCH v2 3/4] net: dsa: microchip: Disable RGMII in-band status on KSZ9893
-Date:   Mon,  7 Sep 2020 11:12:07 +0100
-Message-Id: <20200907101208.1223-4-pbarker@konsulko.com>
+Subject: [PATCH v2 4/4] net: dsa: microchip: Implement recommended reset timing
+Date:   Mon,  7 Sep 2020 11:12:08 +0100
+Message-Id: <20200907101208.1223-5-pbarker@konsulko.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200907101208.1223-1-pbarker@konsulko.com>
 References: <20200907101208.1223-1-pbarker@konsulko.com>
@@ -65,30 +65,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can't assume that the link partner supports the in-band status
-reporting which is enabled by default on the KSZ9893 when using RGMII
-for the upstream port.
+The datasheet for the ksz9893 and ksz9477 switches recommend waiting at
+least 100us after the de-assertion of reset before trying to program the
+device through any interface.
+
+Also switch the existing msleep() call to usleep_range() as recommended
+in Documentation/timers/timers-howto.rst. The 2ms range used here is
+somewhat arbitrary, as long as the reset is asserted for at least 10ms
+we should be ok.
 
 Signed-off-by: Paul Barker <pbarker@konsulko.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/microchip/ksz9477.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/dsa/microchip/ksz_common.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 9513af057793..f379ea8242e0 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1235,6 +1235,9 @@ static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 			if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
- 			    dev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
- 				data8 |= PORT_RGMII_ID_EG_ENABLE;
-+			/* On KSZ9893, disable RGMII in-band status support */
-+			if (dev->features & IS_9893)
-+				data8 &= ~PORT_MII_MAC_MODE;
- 			p->phydev.speed = SPEED_1000;
- 			break;
- 		}
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 8d53b12d40a8..a31738662d95 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -400,8 +400,9 @@ int ksz_switch_register(struct ksz_device *dev,
+ 
+ 	if (dev->reset_gpio) {
+ 		gpiod_set_value_cansleep(dev->reset_gpio, 1);
+-		mdelay(10);
++		usleep_range(10000, 12000);
+ 		gpiod_set_value_cansleep(dev->reset_gpio, 0);
++		usleep_range(100, 1000);
+ 	}
+ 
+ 	mutex_init(&dev->dev_mutex);
 -- 
 2.28.0
 
