@@ -2,84 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C2DE260385
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 19:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF32526039E
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 19:52:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729229AbgIGRuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 13:50:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54592 "EHLO mail.kernel.org"
+        id S1728924AbgIGRwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 13:52:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55508 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729161AbgIGRud (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 13:50:33 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        id S1729422AbgIGRwA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 13:52:00 -0400
+Received: from localhost (unknown [213.57.247.131])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BB9F0206B5;
-        Mon,  7 Sep 2020 17:50:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 26A092080A;
+        Mon,  7 Sep 2020 17:51:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599501033;
-        bh=zfiMDHSm/3DxWRI4PM6CSYLMm6VbRQOG91VXXMxoeQE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BWYD2OmcAzM52JYsE5SExWc8mxH1azryhC30jgeDIt2Lk1rRISSDR6wwVi+Ay8lNt
-         jWBm0c37BhaYKr/tm/gAYS+1PKNjDMiNKboS2XHf2MKiFJOysvP+Fiq8v3rt0g8ifO
-         VfNXJHbKhlYZuwqHNHrDDL3f15llwHygs1W/9W28=
-Date:   Mon, 7 Sep 2020 10:50:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dust Li <dust.li@linux.alibaba.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Satoru Moriya <satoru.moriya@hds.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: tracepoint: fix print wrong sysctl_mem value
-Message-ID: <20200907105030.6e70adc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200907144757.43389-1-dust.li@linux.alibaba.com>
-References: <20200907144757.43389-1-dust.li@linux.alibaba.com>
+        s=default; t=1599501119;
+        bh=Hqa9s+doomo9cBO9eKXZjZCGDgl5B/JLzs4maHo8b6U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VbL5CAmTopZu8i3760hA5mo4J5WlioayGSCx8q9OVMg0WwF0YG+/2Xr67l9mukSIh
+         aneVCCImdHfFc/hZa9m/6lRZola3AXXALtV7l/o66yLJhEu65HCRg+yQdSEXktvKwj
+         SRE99a8zbFuwxh6vhWnRr8lI6dHfgFRs285LyVuI=
+Date:   Mon, 7 Sep 2020 20:51:55 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>, davem@davemloft.net,
+        netdev@vger.kernel.org, kernel-team@fb.com, tariqt@mellanox.com,
+        yishaih@mellanox.com, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next] mlx4: make sure to always set the port type
+Message-ID: <20200907175155.GD421756@unreal>
+References: <20200904200621.2407839-1-kuba@kernel.org>
+ <20200906072759.GC55261@unreal>
+ <20200906093305.5c901cc5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200907062135.GJ2997@nanopsycho.orion>
+ <20200907064830.GK55261@unreal>
+ <20200907093614.12231d6b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200907093614.12231d6b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  7 Sep 2020 22:47:57 +0800 Dust Li wrote:
-> sysctl_mem is an point, and tracepoint entry do not support
-> been visited like an array. Use 3 long type to get sysctl_mem
-> instead.
-> 
-> tracpoint output with and without this fix:
-> - without fix:
->    28821.074 sock:sock_exceed_buf_limit:proto:UDP
->    sysctl_mem=-1741233440,19,322156906942464 allocated=19 sysctl_rmem=4096
->    rmem_alloc=75008 sysctl_wmem=4096 wmem_alloc=1 wmem_queued=0
->    kind=SK_MEM_RECV
-> 
-> - with fix:
->   2126.136 sock:sock_exceed_buf_limit:proto:UDP
->   sysctl_mem=18,122845,184266 allocated=19 sysctl_rmem=4096
->   rmem_alloc=73728 sysctl_wmem=4096 wmem_alloc=1 wmem_queued=0
->   kind=SK_MEM_RECV
-> 
-> Fixes: 3847ce32aea9fdf ("core: add tracepoints for queueing skb to rcvbuf")
-> Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
-> ---
->  include/trace/events/sock.h | 14 +++++++++-----
->  1 file changed, 9 insertions(+), 5 deletions(-)
-> 
-> diff --git a/include/trace/events/sock.h b/include/trace/events/sock.h
-> index a966d4b5ab37..9118dd2353b7 100644
-> --- a/include/trace/events/sock.h
-> +++ b/include/trace/events/sock.h
-> @@ -98,7 +98,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
->  
->  	TP_STRUCT__entry(
->  		__array(char, name, 32)
-> -		__field(long *, sysctl_mem)
-> +		__field(long, sysctl_mem0)
-> +		__field(long, sysctl_mem1)
-> +		__field(long, sysctl_mem2)
+On Mon, Sep 07, 2020 at 09:36:14AM -0700, Jakub Kicinski wrote:
+> On Mon, 7 Sep 2020 09:48:30 +0300 Leon Romanovsky wrote:
+> >>>> And can we call to devlink_port_type_*_set() without IS_ENABLED() check?
+> >>>
+> >>> It'll generate two netlink notifications - not the end of the world but
+> >>> also doesn't feel super clean.
+> >
+> > I would say that such a situation is corner case during the driver init and
+> > not an end of the world to see double netlink message.
+>
+> Could you spell out your reasoning here? Are you concerned about
+> out-of-tree drivers?
 
-Why not make it an __array() ?
+Nothing fancy, I just didn't see users who compiled mlx4_core and used
+it without eth/ib.
 
->  		__field(long, allocated)
->  		__field(int, sysctl_rmem)
->  		__field(int, rmem_alloc)
+The corner case is because this double netlink can be seen only during
+driver reload and only if port type wasn't set.
+
+>
+> I don't see how adding IS_ENABLED() to the condition outweighs
+> the benefit of not having duplicated netlink notifications.
+
+Readability?
+
+Anyway, it doesn't matter.
+
+Thanks
