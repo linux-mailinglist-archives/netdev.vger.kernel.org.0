@@ -2,368 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4102C25F717
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 12:00:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B511425F769
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 12:12:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728575AbgIGKAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 06:00:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728520AbgIGKAi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 06:00:38 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82A6DC061575
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 03:00:37 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id m6so15181330wrn.0
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 03:00:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=O7XRJD3fu3d4+sci4GlpJ/2XFrLgoEqEaGnQ88muBlM=;
-        b=fCjW8HszXba3964Ii5dy+2elUXq3NDR//C45sfI0J3HYWwImwD2Vp/Z7dlEArkrmFc
-         KNWdbDQj3jHMAVe8RkJMX1ArjW0qWcc+oqNOmftnzDy5jiGm2DmXo0QWb+S6EreRpxec
-         NgWA8OGnokDvYCZBMGTcwa3DJugi6KhKcUGNk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=O7XRJD3fu3d4+sci4GlpJ/2XFrLgoEqEaGnQ88muBlM=;
-        b=GfWCBxnnX4XFidZY0MB319hOf2WPrIOpvR/mf7+TV0DEyGbALmoF3YbqlhK6clPySS
-         4TXdoAck2AnvZ2qu4Pi7iq8b6f+KSmpOVZlfvmQ5zUFx6NBmcONMJap3okSc8rmhQgKv
-         yucPxI7OZfsK/tcPhYigfu5eGpK2RuwaCFIXE9LPUAeOsBKLj3LRKScW2bHu2uzcvuMm
-         oosqAqcwPrR8cVsnonKJN8DRBfU5ipzvRqAJYo1pURjm8rIOCLTfjdYFMtcp3SpPdVjU
-         JZx4Rm0TKpY9yYtBzTDskwWnsi1lwS08b2h/unXR5K0+qH69I0tm237a1fm0nkqaCMgE
-         yFzQ==
-X-Gm-Message-State: AOAM530SgPRM7TYhdU0Qwf9pdbAmSg7iijEONJPqOQ3PzhWPZSL3nWlf
-        eaUtIJ4WacMxSeqF8NEifpa1tAK6bMrIg1HY
-X-Google-Smtp-Source: ABdhPJwqm2LN14e+EDj8SKlnyJ1DKq1gPZsr8KJ2TX1maDIf4X1HVjUE7/5mWt8FM0qxmjbx845Adw==
-X-Received: by 2002:a5d:5583:: with SMTP id i3mr6170811wrv.119.1599472833956;
-        Mon, 07 Sep 2020 03:00:33 -0700 (PDT)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id 9sm6686289wmf.7.2020.09.07.03.00.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 03:00:33 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        kuba@kernel.org, davem@davemloft.net,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next v4 15/15] net: bridge: mcast: destroy all entries via gc
-Date:   Mon,  7 Sep 2020 12:56:19 +0300
-Message-Id: <20200907095619.11216-16-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20200907095619.11216-1-nikolay@cumulusnetworks.com>
-References: <20200907095619.11216-1-nikolay@cumulusnetworks.com>
+        id S1728491AbgIGKLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 06:11:48 -0400
+Received: from mail-am6eur05on2087.outbound.protection.outlook.com ([40.107.22.87]:37760
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728400AbgIGKLr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 06:11:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vvzw5DhaKrGwAtB8KKuKhk66j1wAgDbGFCqeFtR93TA=;
+ b=3vyRu4LrPoXZrJXlpJmbtJPVyXa0+B3ovZ586c+D21aXpC0aqNfoJd2AI3d5hIXwzduvr+TL6fCwqNCgGcfqlZ6JtlKh5x6Hh2NaGBZXShKmL4q02GxpZpDoKtCvZEivTcoTqi9mHApcuqBNkeIwpFlHv52LgCuiy5IqufSGusg=
+Received: from AM7PR02CA0004.eurprd02.prod.outlook.com (2603:10a6:20b:100::14)
+ by HE1PR0802MB2572.eurprd08.prod.outlook.com (2603:10a6:3:db::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15; Mon, 7 Sep
+ 2020 10:11:41 +0000
+Received: from VE1EUR03FT034.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:20b:100:cafe::17) by AM7PR02CA0004.outlook.office365.com
+ (2603:10a6:20b:100::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15 via Frontend
+ Transport; Mon, 7 Sep 2020 10:11:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
+ smtp.mailfrom=arm.com; vger.kernel.org; dkim=pass (signature was verified)
+ header.d=armh.onmicrosoft.com;vger.kernel.org; dmarc=bestguesspass
+ action=none header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
+ client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
+Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
+ VE1EUR03FT034.mail.protection.outlook.com (10.152.18.85) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3348.16 via Frontend Transport; Mon, 7 Sep 2020 10:11:40 +0000
+Received: ("Tessian outbound e8cdb8c6f386:v64"); Mon, 07 Sep 2020 10:11:40 +0000
+X-CR-MTA-TID: 64aa7808
+Received: from 8898891310c6.2
+        by 64aa7808-outbound-1.mta.getcheckrecipient.com id DFF1148A-ECE5-4434-AB08-59DBF40F3874.1;
+        Mon, 07 Sep 2020 10:11:35 +0000
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com
+    by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id 8898891310c6.2
+    (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
+    Mon, 07 Sep 2020 10:11:35 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Gb4ZrTmuDaPW7xZoQmi2zDtIEiOTQggZXebilw0U1SvsaJ/HHH8F1e6GrMguokwPdJqJK+/zEwvudUU66/QyulvmqBosK7bsxqJ9zbT5aC+OOTv9Ybrf4zFOnLcQ2jpYrFpgpSMoK/iwFdbhTxB4gMK1Q/QQL7wpgo5PzaGqR44KGcM4686aP0VuE6jLYHNbNeofbWV03gKqVEZeadyWWButfld5F01z+72dtUYruLJLYTuXeLla+ZmzzcssO27YrHvNqBALk5x8mBqEUrno7YVX4EUn4Yu3dNRJ8ipkTukMRQ3XvJ3oOvA0icI1POQdYuUbG48JiHdXeIDshaX8AQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vvzw5DhaKrGwAtB8KKuKhk66j1wAgDbGFCqeFtR93TA=;
+ b=HNG0r5rjPai/ui7ULeKtwnvKpRza9o9HpGL+oEq3iBGBYcI9kCsDUIOk27OIpH3CXoNm63pW4Rd4LFy88dVCQwaFD47tEmsNE4o/oy6vtYAz893o2ZNah5pU0GNDsEcRq4q5QI4yBkKjvwHkwZltcyZnmo4eu+LHghV/W0aZ8XCK7JIDqUj1Vb9EKVMym0qWyjWylhT027WzHXVV+1Um2uttKCWinfpaSQeJAuIXR8jyb1f3rCMiXOhTwCWFueYfi7i8WU1gewZvpfyMNj0y5qtl/Kj1O3V9iEL06SHHhW48zwnPDCK9sYe33nTD0TSQXz1PpipLybeydRPOiS79pQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com;
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vvzw5DhaKrGwAtB8KKuKhk66j1wAgDbGFCqeFtR93TA=;
+ b=3vyRu4LrPoXZrJXlpJmbtJPVyXa0+B3ovZ586c+D21aXpC0aqNfoJd2AI3d5hIXwzduvr+TL6fCwqNCgGcfqlZ6JtlKh5x6Hh2NaGBZXShKmL4q02GxpZpDoKtCvZEivTcoTqi9mHApcuqBNkeIwpFlHv52LgCuiy5IqufSGusg=
+Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com (2603:10a6:3:e0::7)
+ by HE1PR0802MB2556.eurprd08.prod.outlook.com (2603:10a6:3:e1::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15; Mon, 7 Sep
+ 2020 10:11:32 +0000
+Received: from HE1PR0802MB2555.eurprd08.prod.outlook.com
+ ([fe80::74f7:5759:4e9e:6e00]) by HE1PR0802MB2555.eurprd08.prod.outlook.com
+ ([fe80::74f7:5759:4e9e:6e00%5]) with mapi id 15.20.3348.019; Mon, 7 Sep 2020
+ 10:11:32 +0000
+From:   Jianyong Wu <Jianyong.Wu@arm.com>
+To:     Marc Zyngier <maz@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "yangbo.lu@nxp.com" <yangbo.lu@nxp.com>,
+        "john.stultz@linaro.org" <john.stultz@linaro.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "sean.j.christopherson@intel.com" <sean.j.christopherson@intel.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        Mark Rutland <Mark.Rutland@arm.com>,
+        "will@kernel.org" <will@kernel.org>,
+        Suzuki Poulose <Suzuki.Poulose@arm.com>,
+        Steven Price <Steven.Price@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Steve Capper <Steve.Capper@arm.com>,
+        Justin He <Justin.He@arm.com>, nd <nd@arm.com>
+Subject: RE: [PATCH v14 08/10] ptp: arm64: Enable ptp_kvm for arm64
+Thread-Topic: [PATCH v14 08/10] ptp: arm64: Enable ptp_kvm for arm64
+Thread-Index: AQHWgp4Q48WtGxJp4kuFSJTL6o01LqlZ4qMAgAL3/tCAAAlCgIAABDCQgAAKXICAAAXbMA==
+Date:   Mon, 7 Sep 2020 10:11:31 +0000
+Message-ID: <HE1PR0802MB25551E16B77F968412E2D456F4280@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+References: <20200904092744.167655-1-jianyong.wu@arm.com>
+ <20200904092744.167655-9-jianyong.wu@arm.com> <874kocmqqx.wl-maz@kernel.org>
+ <HE1PR0802MB2555CC56351616836A95FB19F4280@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+ <366387fa507f9c5d5044549cea958ce1@kernel.org>
+ <HE1PR0802MB25551446DC85DB3684D09211F4280@HE1PR0802MB2555.eurprd08.prod.outlook.com>
+ <67f3381467d02c8d3f25682cd99898e9@kernel.org>
+In-Reply-To: <67f3381467d02c8d3f25682cd99898e9@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ts-tracking-id: B5C9977602E0B848B1A8C8F7B329373C.0
+x-checkrecipientchecked: true
+Authentication-Results-Original: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=arm.com;
+x-originating-ip: [203.126.0.111]
+x-ms-publictraffictype: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: ece71d9d-5e80-4c94-95ee-08d853166a40
+x-ms-traffictypediagnostic: HE1PR0802MB2556:|HE1PR0802MB2572:
+x-ms-exchange-transport-forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR0802MB257215EAE6AC21F514D86823F4280@HE1PR0802MB2572.eurprd08.prod.outlook.com>
+x-checkrecipientrouted: true
+nodisclaimer: true
+x-ms-oob-tlc-oobclassifiers: OLM:97;OLM:97;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: O1Wy0JjDZD1moM4VTdp+QMXxhuOoV/dzGKt2Eue7xzwvnAGesOGlpOuToQ9L5rwaElVfYJKf9+JBtGhMHN1V9r4O3Q4vcz5bXvmy98iKHlmzH/zSo7ibQfRmVGbPtI96aJDRwma4Wt/HQQJ1XURC2Q0GK4tBszv+ZeGy6scWuGtM4eOLin2L00FoNYtV97K0HnlAmHpBs7ISIdxVZq+OOvVBq1r/5IOSUuOCgsem/vxutauuKbeYfBHPpv6ka9yzU3ZhjULf28OnN06okrH9RjA0+2qcAhZFvAQ19dNNpA+sXFYVF7vC3YWdpFVW6oHh6lmVFKZno1kRkvXaVNOJEQ==
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2555.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39860400002)(366004)(376002)(346002)(136003)(86362001)(66446008)(478600001)(64756008)(66556008)(66946007)(66476007)(52536014)(76116006)(7416002)(6916009)(53546011)(83380400001)(71200400001)(6506007)(5660300002)(8676002)(316002)(54906003)(8936002)(4326008)(55016002)(33656002)(9686003)(186003)(26005)(7696005)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: vP2VINxfpSa+OUVIIK+3tV7saqH8rWvKNYVJ298y8fKZv+fju6VHrxehV26C1DrNHbPTgBkYGvOps6pNI4MUxWFW7ZnigG3uahJI5LZBTuZpLeLwZVdvSFtHkoTMx1SUYNZ5MthkjRhYwBSUfkT03Vce/pULvYXPIW/Rbn9fmjpqyTWsskSpHOREnRvKLgZAHU1VIBnV96tDqaSg0sB5AGGKlktRIIK63d7j8tjnp38r08LlaLwJI4f0FHHp6iE2bZiXvwbFFXWw+LvCSW5Svi5bfbwAO2yN0CgjDHqzvHVO2ppqEJrIkXHB+Zt2SfHabSA3LkZLz/gn+iUMeO+vyqRKv99EEOZYs01wsZ081XtlGyuDGp7VtLLCmW8+9kc8HBi+9O44r6EXKQYrxNseg+Pni8k99drwVwtO1ks+dDWRXb+Z/FtpM6qJ4k6MI79+FYvLuNmF4JfUvKBKFmaVURey9RmnhpEH6WQW23FL8nbzA+GaB1sPFhteY0N6Y2Mr0q8j1f5Uf96ov1SMK5CkrtmGDDyHDjZUsvFS9cq0AneSD5ZzkSwfwEcy5awan/+EOUwYvrVQGHunWIVJjDO/kU8He5aSB+Ae38h/Ef6mx0dvFpvCczRxKnB1l4Sa6dMfwhi/sedDGpamZuQ5MLM4Gg==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0802MB2556
+Original-Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=arm.com;
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: VE1EUR03FT034.eop-EUR03.prod.protection.outlook.com
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 3c78c92b-c022-4d5a-75df-08d853166509
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YuvB9wnoOIxvutWmudMn37TrmVkCHPQu8HZVpYZGV8l1QQU2GKMqW9NwV+kDslU9fnvEu98J1VDNv+iq1DmzzswvvjzBSzS1y1KGfigl6KIB3YOQ048/HLsfL1UchpjPGPoJiCfZ4xQz+Qjxi0bjDt7DIj1ZW1IU9YCDB3GuITrmuCu2bu2mjbHDyp8kKYP5l/YXx0fNJUAt1+K0XyB6Lkd2GFHARp6jdAA8LIIZBNIzJzeDRofcsyXGptbWDbyufRzhtgLsxIj8u/PibJmcLdIRn/iP9bp9zh2xIO9iKVcdl7Qc9Qvx81IpbjAZHiWWtTQBpqKdlHRWgJ5tvXF56XsTJcOUEOA73Tb8deZRWOfi7Ix1uVthnJFfiJ3+JGq9utKzJBwNbOj3TIaJfQ8BpQ==
+X-Forefront-Antispam-Report: CIP:63.35.35.123;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:64aa7808-outbound-1.mta.getcheckrecipient.com;PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com;CAT:NONE;SFS:(4636009)(346002)(376002)(136003)(396003)(39860400002)(46966005)(26005)(5660300002)(47076004)(82740400003)(52536014)(86362001)(478600001)(4326008)(36906005)(450100002)(54906003)(33656002)(6862004)(70206006)(82310400003)(316002)(2906002)(8936002)(55016002)(83380400001)(336012)(7696005)(9686003)(53546011)(186003)(6506007)(8676002)(81166007)(70586007)(356005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Sep 2020 10:11:40.7609
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ece71d9d-5e80-4c94-95ee-08d853166a40
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[63.35.35.123];Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
+X-MS-Exchange-CrossTenant-AuthSource: VE1EUR03FT034.eop-EUR03.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0802MB2572
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since each entry type has timers that can be running simultaneously we need
-to make sure that entries are not freed before their timers have finished.
-In order to do that generalize the src gc work to mcast gc work and use a
-callback to free the entries (mdb, port group or src).
 
-v3: add IPv6 support
-v2: force mcast gc on port del to make sure all port group timers have
-    finished before freeing the bridge port
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- net/bridge/br_multicast.c | 118 +++++++++++++++++++++++++-------------
- net/bridge/br_private.h   |  13 ++++-
- 2 files changed, 89 insertions(+), 42 deletions(-)
+> -----Original Message-----
+> From: Marc Zyngier <maz@kernel.org>
+> Sent: Monday, September 7, 2020 5:47 PM
+> To: Jianyong Wu <Jianyong.Wu@arm.com>
+> Cc: netdev@vger.kernel.org; yangbo.lu@nxp.com; john.stultz@linaro.org;
+> tglx@linutronix.de; pbonzini@redhat.com; sean.j.christopherson@intel.com;
+> richardcochran@gmail.com; Mark Rutland <Mark.Rutland@arm.com>;
+> will@kernel.org; Suzuki Poulose <Suzuki.Poulose@arm.com>; Steven Price
+> <Steven.Price@arm.com>; linux-kernel@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; kvmarm@lists.cs.columbia.edu;
+> kvm@vger.kernel.org; Steve Capper <Steve.Capper@arm.com>; Justin He
+> <Justin.He@arm.com>; nd <nd@arm.com>
+> Subject: Re: [PATCH v14 08/10] ptp: arm64: Enable ptp_kvm for arm64
+>=20
+> On 2020-09-07 10:28, Jianyong Wu wrote:
+> >> -----Original Message-----
+> >> From: Marc Zyngier <maz@kernel.org>
+> >> Sent: Monday, September 7, 2020 4:55 PM
+> >> To: Jianyong Wu <Jianyong.Wu@arm.com>
+>=20
+> [...]
+>=20
+> >> >> 	arm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_FEATUR
+> >> >> ES_FUNC_ID,
+> >> >> > +			     &hvc_res);
+> >> >> > +	if (!(hvc_res.a0 | BIT(ARM_SMCCC_KVM_FUNC_KVM_PTP)))
+> >> >> > +		return -EOPNOTSUPP;
+> >> >> > +
+> >> >> > +	return 0;
+> >> >>
+> >> >> What happens if the
+> >> >> ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID function isn't
+> >> implemented
+> >> >> (on an old kernel or a non-KVM hypervisor)? The expected behaviour
+> >> >> is that a0 will contain SMCCC_RET_NOT_SUPPORTED, which is -1.
+> >> >> The result is that this function always returns "supported". Not
+> >> >> an acceptable behaviour.
+> >> >>
+> >> > Oh!  it's really a stupid mistake, should be "&" not "|".
+> >>
+> >> But even then. (-1 & whatever) is always true.
+> >
+> > Yeah, what about checking if a0 is non-negative first? Like:
+> > if (hvc_res.a0 < 0 || !(hvc_res.a0 &
+> BIT(ARM_SMCCC_KVM_FUNC_KVM_PTP)))
+> > 	return -EOPNOTSUPP;
+>=20
+> I don't get it. You already carry a patch from Will that gives you a way =
+to check
+> for a service (kvm_arm_hyp_service_available()).
+>=20
+> Why do you need to reinvent the wheel?
 
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 0bf791ed0f56..b83f11228948 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -140,6 +140,29 @@ struct net_bridge_mdb_entry *br_mdb_get(struct net_bridge *br,
- 	return br_mdb_ip_get_rcu(br, &ip);
- }
- 
-+static void br_multicast_destroy_mdb_entry(struct net_bridge_mcast_gc *gc)
-+{
-+	struct net_bridge_mdb_entry *mp;
-+
-+	mp = container_of(gc, struct net_bridge_mdb_entry, mcast_gc);
-+	WARN_ON(!hlist_unhashed(&mp->mdb_node));
-+	WARN_ON(mp->ports);
-+
-+	del_timer_sync(&mp->timer);
-+	kfree_rcu(mp, rcu);
-+}
-+
-+static void br_multicast_del_mdb_entry(struct net_bridge_mdb_entry *mp)
-+{
-+	struct net_bridge *br = mp->br;
-+
-+	rhashtable_remove_fast(&br->mdb_hash_tbl, &mp->rhnode,
-+			       br_mdb_rht_params);
-+	hlist_del_init_rcu(&mp->mdb_node);
-+	hlist_add_head(&mp->mcast_gc.gc_node, &br->mcast_gc_list);
-+	queue_work(system_long_wq, &br->mcast_gc_work);
-+}
-+
- static void br_multicast_group_expired(struct timer_list *t)
- {
- 	struct net_bridge_mdb_entry *mp = from_timer(mp, t, timer);
-@@ -153,15 +176,20 @@ static void br_multicast_group_expired(struct timer_list *t)
- 
- 	if (mp->ports)
- 		goto out;
-+	br_multicast_del_mdb_entry(mp);
-+out:
-+	spin_unlock(&br->multicast_lock);
-+}
- 
--	rhashtable_remove_fast(&br->mdb_hash_tbl, &mp->rhnode,
--			       br_mdb_rht_params);
--	hlist_del_rcu(&mp->mdb_node);
-+static void br_multicast_destroy_group_src(struct net_bridge_mcast_gc *gc)
-+{
-+	struct net_bridge_group_src *src;
- 
--	kfree_rcu(mp, rcu);
-+	src = container_of(gc, struct net_bridge_group_src, mcast_gc);
-+	WARN_ON(!hlist_unhashed(&src->node));
- 
--out:
--	spin_unlock(&br->multicast_lock);
-+	del_timer_sync(&src->timer);
-+	kfree_rcu(src, rcu);
- }
- 
- static void br_multicast_del_group_src(struct net_bridge_group_src *src)
-@@ -170,8 +198,21 @@ static void br_multicast_del_group_src(struct net_bridge_group_src *src)
- 
- 	hlist_del_init_rcu(&src->node);
- 	src->pg->src_ents--;
--	hlist_add_head(&src->del_node, &br->src_gc_list);
--	queue_work(system_long_wq, &br->src_gc_work);
-+	hlist_add_head(&src->mcast_gc.gc_node, &br->mcast_gc_list);
-+	queue_work(system_long_wq, &br->mcast_gc_work);
-+}
-+
-+static void br_multicast_destroy_port_group(struct net_bridge_mcast_gc *gc)
-+{
-+	struct net_bridge_port_group *pg;
-+
-+	pg = container_of(gc, struct net_bridge_port_group, mcast_gc);
-+	WARN_ON(!hlist_unhashed(&pg->mglist));
-+	WARN_ON(!hlist_empty(&pg->src_list));
-+
-+	del_timer_sync(&pg->rexmit_timer);
-+	del_timer_sync(&pg->timer);
-+	kfree_rcu(pg, rcu);
- }
- 
- void br_multicast_del_pg(struct net_bridge_mdb_entry *mp,
-@@ -184,12 +225,11 @@ void br_multicast_del_pg(struct net_bridge_mdb_entry *mp,
- 
- 	rcu_assign_pointer(*pp, pg->next);
- 	hlist_del_init(&pg->mglist);
--	del_timer(&pg->timer);
--	del_timer(&pg->rexmit_timer);
- 	hlist_for_each_entry_safe(ent, tmp, &pg->src_list, node)
- 		br_multicast_del_group_src(ent);
- 	br_mdb_notify(br->dev, mp, pg, RTM_DELMDB);
--	kfree_rcu(pg, rcu);
-+	hlist_add_head(&pg->mcast_gc.gc_node, &br->mcast_gc_list);
-+	queue_work(system_long_wq, &br->mcast_gc_work);
- 
- 	if (!mp->ports && !mp->host_joined && netif_running(br->dev))
- 		mod_timer(&mp->timer, jiffies);
-@@ -254,6 +294,17 @@ static void br_multicast_port_group_expired(struct timer_list *t)
- 	spin_unlock(&br->multicast_lock);
- }
- 
-+static void br_multicast_gc(struct hlist_head *head)
-+{
-+	struct net_bridge_mcast_gc *gcent;
-+	struct hlist_node *tmp;
-+
-+	hlist_for_each_entry_safe(gcent, tmp, head, gc_node) {
-+		hlist_del_init(&gcent->gc_node);
-+		gcent->destroy(gcent);
-+	}
-+}
-+
- static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
- 						    struct net_bridge_port_group *pg,
- 						    __be32 ip_dst, __be32 group,
-@@ -622,6 +673,7 @@ struct net_bridge_mdb_entry *br_multicast_new_group(struct net_bridge *br,
- 
- 	mp->br = br;
- 	mp->addr = *group;
-+	mp->mcast_gc.destroy = br_multicast_destroy_mdb_entry;
- 	timer_setup(&mp->timer, br_multicast_group_expired, 0);
- 	err = rhashtable_lookup_insert_fast(&br->mdb_hash_tbl, &mp->rhnode,
- 					    br_mdb_rht_params);
-@@ -710,6 +762,7 @@ br_multicast_new_group_src(struct net_bridge_port_group *pg, struct br_ip *src_i
- 	grp_src->pg = pg;
- 	grp_src->br = pg->port->br;
- 	grp_src->addr = *src_ip;
-+	grp_src->mcast_gc.destroy = br_multicast_destroy_group_src;
- 	timer_setup(&grp_src->timer, br_multicast_group_src_expired, 0);
- 
- 	hlist_add_head_rcu(&grp_src->node, &pg->src_list);
-@@ -736,6 +789,7 @@ struct net_bridge_port_group *br_multicast_new_port_group(
- 	p->port = port;
- 	p->flags = flags;
- 	p->filter_mode = filter_mode;
-+	p->mcast_gc.destroy = br_multicast_destroy_port_group;
- 	INIT_HLIST_HEAD(&p->src_list);
- 	rcu_assign_pointer(p->next, next);
- 	timer_setup(&p->timer, br_multicast_port_group_expired, 0);
-@@ -1163,13 +1217,16 @@ void br_multicast_del_port(struct net_bridge_port *port)
- {
- 	struct net_bridge *br = port->br;
- 	struct net_bridge_port_group *pg;
-+	HLIST_HEAD(deleted_head);
- 	struct hlist_node *n;
- 
- 	/* Take care of the remaining groups, only perm ones should be left */
- 	spin_lock_bh(&br->multicast_lock);
- 	hlist_for_each_entry_safe(pg, n, &port->mglist, mglist)
- 		br_multicast_find_del_pg(br, pg);
-+	hlist_move_list(&br->mcast_gc_list, &deleted_head);
- 	spin_unlock_bh(&br->multicast_lock);
-+	br_multicast_gc(&deleted_head);
- 	del_timer_sync(&port->multicast_router_timer);
- 	free_percpu(port->mcast_stats);
- }
-@@ -2733,29 +2790,17 @@ static void br_ip6_multicast_query_expired(struct timer_list *t)
- }
- #endif
- 
--static void __grp_src_gc(struct hlist_head *head)
--{
--	struct net_bridge_group_src *ent;
--	struct hlist_node *tmp;
--
--	hlist_for_each_entry_safe(ent, tmp, head, del_node) {
--		hlist_del_init(&ent->del_node);
--		del_timer_sync(&ent->timer);
--		kfree_rcu(ent, rcu);
--	}
--}
--
--static void br_multicast_src_gc(struct work_struct *work)
-+static void br_multicast_gc_work(struct work_struct *work)
- {
- 	struct net_bridge *br = container_of(work, struct net_bridge,
--					     src_gc_work);
-+					     mcast_gc_work);
- 	HLIST_HEAD(deleted_head);
- 
- 	spin_lock_bh(&br->multicast_lock);
--	hlist_move_list(&br->src_gc_list, &deleted_head);
-+	hlist_move_list(&br->mcast_gc_list, &deleted_head);
- 	spin_unlock_bh(&br->multicast_lock);
- 
--	__grp_src_gc(&deleted_head);
-+	br_multicast_gc(&deleted_head);
- }
- 
- void br_multicast_init(struct net_bridge *br)
-@@ -2798,8 +2843,8 @@ void br_multicast_init(struct net_bridge *br)
- 		    br_ip6_multicast_query_expired, 0);
- #endif
- 	INIT_HLIST_HEAD(&br->mdb_list);
--	INIT_HLIST_HEAD(&br->src_gc_list);
--	INIT_WORK(&br->src_gc_work, br_multicast_src_gc);
-+	INIT_HLIST_HEAD(&br->mcast_gc_list);
-+	INIT_WORK(&br->mcast_gc_work, br_multicast_gc_work);
- }
- 
- static void br_ip4_multicast_join_snoopers(struct net_bridge *br)
-@@ -2907,18 +2952,13 @@ void br_multicast_dev_del(struct net_bridge *br)
- 	struct hlist_node *tmp;
- 
- 	spin_lock_bh(&br->multicast_lock);
--	hlist_for_each_entry_safe(mp, tmp, &br->mdb_list, mdb_node) {
--		del_timer(&mp->timer);
--		rhashtable_remove_fast(&br->mdb_hash_tbl, &mp->rhnode,
--				       br_mdb_rht_params);
--		hlist_del_rcu(&mp->mdb_node);
--		kfree_rcu(mp, rcu);
--	}
--	hlist_move_list(&br->src_gc_list, &deleted_head);
-+	hlist_for_each_entry_safe(mp, tmp, &br->mdb_list, mdb_node)
-+		br_multicast_del_mdb_entry(mp);
-+	hlist_move_list(&br->mcast_gc_list, &deleted_head);
- 	spin_unlock_bh(&br->multicast_lock);
- 
--	__grp_src_gc(&deleted_head);
--	cancel_work_sync(&br->src_gc_work);
-+	br_multicast_gc(&deleted_head);
-+	cancel_work_sync(&br->mcast_gc_work);
- 
- 	rcu_barrier();
- }
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index fb35a73fc559..a23d2bae56e1 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -219,6 +219,11 @@ struct net_bridge_fdb_entry {
- #define BR_SGRP_F_DELETE	BIT(0)
- #define BR_SGRP_F_SEND		BIT(1)
- 
-+struct net_bridge_mcast_gc {
-+	struct hlist_node		gc_node;
-+	void				(*destroy)(struct net_bridge_mcast_gc *gc);
-+};
-+
- struct net_bridge_group_src {
- 	struct hlist_node		node;
- 
-@@ -229,7 +234,7 @@ struct net_bridge_group_src {
- 	struct timer_list		timer;
- 
- 	struct net_bridge		*br;
--	struct hlist_node		del_node;
-+	struct net_bridge_mcast_gc	mcast_gc;
- 	struct rcu_head			rcu;
- };
- 
-@@ -248,6 +253,7 @@ struct net_bridge_port_group {
- 	struct timer_list		rexmit_timer;
- 	struct hlist_node		mglist;
- 
-+	struct net_bridge_mcast_gc	mcast_gc;
- 	struct rcu_head			rcu;
- };
- 
-@@ -261,6 +267,7 @@ struct net_bridge_mdb_entry {
- 	struct timer_list		timer;
- 	struct hlist_node		mdb_node;
- 
-+	struct net_bridge_mcast_gc	mcast_gc;
- 	struct rcu_head			rcu;
- };
- 
-@@ -434,7 +441,7 @@ struct net_bridge {
- 
- 	struct rhashtable		mdb_hash_tbl;
- 
--	struct hlist_head		src_gc_list;
-+	struct hlist_head		mcast_gc_list;
- 	struct hlist_head		mdb_list;
- 	struct hlist_head		router_list;
- 
-@@ -448,7 +455,7 @@ struct net_bridge {
- 	struct bridge_mcast_own_query	ip6_own_query;
- 	struct bridge_mcast_querier	ip6_querier;
- #endif /* IS_ENABLED(CONFIG_IPV6) */
--	struct work_struct		src_gc_work;
-+	struct work_struct		mcast_gc_work;
- #endif
- 
- 	struct timer_list		hello_timer;
--- 
-2.25.4
+Sorry, I should have changed this code according to Will's patch. Thanks fo=
+r reminder!
 
+Thanks
+jianyong
+>=20
+>          M.
+> --
+> Jazz is not dead. It just smells funny...
