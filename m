@@ -2,67 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B20682601E5
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 19:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFB812601C9
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 19:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731157AbgIGROT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 13:14:19 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:11249 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729636AbgIGOO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 10:14:56 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id C94C9136E6560B3A4875;
-        Mon,  7 Sep 2020 22:14:18 +0800 (CST)
-Received: from localhost.localdomain (10.175.118.36) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 7 Sep 2020 22:14:08 +0800
-From:   Luo bin <luobin9@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <luoxianjun@huawei.com>, <yin.yinshi@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <chiqijun@huawei.com>
-Subject: [PATCH net] hinic: fix rewaking txq after netif_tx_disable
-Date:   Mon, 7 Sep 2020 22:15:16 +0800
-Message-ID: <20200907141516.16817-1-luobin9@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1731261AbgIGRMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 13:12:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46346 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730617AbgIGQc1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:32:27 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 331F92080A;
+        Mon,  7 Sep 2020 16:32:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599496346;
+        bh=N2TzsaDDwqM6tAPNhthsqRzY7Ob4UQpx+wDCC0gnkxQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gqoK64BhITZA1wY5V5vAzv/4aQAu/OTImrKxhm3Y8OeJnGGgDpulpMDei8UXcPlHi
+         ZqhMsLUYhnefbD/aF28UHZiWhqHISvWMfgPJvK8uUKSmLHUWbdyY5rDhO8iKzsOrZl
+         59V0ZZQxlT1URmaLk1PaXBBJpCUJJWGPkZWYNvs0=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 04/53] netfilter: conntrack: allow sctp hearbeat after connection re-use
+Date:   Mon,  7 Sep 2020 12:31:30 -0400
+Message-Id: <20200907163220.1280412-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200907163220.1280412-1-sashal@kernel.org>
+References: <20200907163220.1280412-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.118.36]
-X-CFilter-Loop: Reflected
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling hinic_close in hinic_set_channels, all queues are
-stopped after netif_tx_disable, but some queue may be rewaken in
-free_tx_poll by mistake while drv is handling tx irq. If one queue
-is rewaken core may call hinic_xmit_frame to send pkt after
-netif_tx_disable within a short time which may results in accessing
-memory that has been already freed in hinic_close. So we judge
-whether the netdev is in down state before waking txq in free_tx_poll
-to fix this bug.
+From: Florian Westphal <fw@strlen.de>
 
-Signed-off-by: Luo bin <luobin9@huawei.com>
+[ Upstream commit cc5453a5b7e90c39f713091a7ebc53c1f87d1700 ]
+
+If an sctp connection gets re-used, heartbeats are flagged as invalid
+because their vtag doesn't match.
+
+Handle this in a similar way as TCP conntrack when it suspects that the
+endpoints and conntrack are out-of-sync.
+
+When a HEARTBEAT request fails its vtag validation, flag this in the
+conntrack state and accept the packet.
+
+When a HEARTBEAT_ACK is received with an invalid vtag in the reverse
+direction after we allowed such a HEARTBEAT through, assume we are
+out-of-sync and re-set the vtag info.
+
+v2: remove left-over snippet from an older incarnation that moved
+    new_state/old_state assignments, thats not needed so keep that
+    as-is.
+
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_tx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/netfilter/nf_conntrack_sctp.h |  2 ++
+ net/netfilter/nf_conntrack_proto_sctp.c     | 39 ++++++++++++++++++---
+ 2 files changed, 37 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_tx.c b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-index a97498ee6914..6eac6bdf164e 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-@@ -718,7 +718,8 @@ static int free_tx_poll(struct napi_struct *napi, int budget)
+diff --git a/include/linux/netfilter/nf_conntrack_sctp.h b/include/linux/netfilter/nf_conntrack_sctp.h
+index 9a33f171aa822..625f491b95de8 100644
+--- a/include/linux/netfilter/nf_conntrack_sctp.h
++++ b/include/linux/netfilter/nf_conntrack_sctp.h
+@@ -9,6 +9,8 @@ struct ip_ct_sctp {
+ 	enum sctp_conntrack state;
  
- 		__netif_tx_lock(netdev_txq, smp_processor_id());
+ 	__be32 vtag[IP_CT_DIR_MAX];
++	u8 last_dir;
++	u8 flags;
+ };
  
--		netif_wake_subqueue(nic_dev->netdev, qp->q_id);
-+		if (nic_dev->flags & HINIC_INTF_UP)
-+			netif_wake_subqueue(nic_dev->netdev, qp->q_id);
+ #endif /* _NF_CONNTRACK_SCTP_H */
+diff --git a/net/netfilter/nf_conntrack_proto_sctp.c b/net/netfilter/nf_conntrack_proto_sctp.c
+index 4f897b14b6069..810cca24b3990 100644
+--- a/net/netfilter/nf_conntrack_proto_sctp.c
++++ b/net/netfilter/nf_conntrack_proto_sctp.c
+@@ -62,6 +62,8 @@ static const unsigned int sctp_timeouts[SCTP_CONNTRACK_MAX] = {
+ 	[SCTP_CONNTRACK_HEARTBEAT_ACKED]	= 210 SECS,
+ };
  
- 		__netif_tx_unlock(netdev_txq);
++#define	SCTP_FLAG_HEARTBEAT_VTAG_FAILED	1
++
+ #define sNO SCTP_CONNTRACK_NONE
+ #define	sCL SCTP_CONNTRACK_CLOSED
+ #define	sCW SCTP_CONNTRACK_COOKIE_WAIT
+@@ -369,6 +371,7 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
+ 	u_int32_t offset, count;
+ 	unsigned int *timeouts;
+ 	unsigned long map[256 / sizeof(unsigned long)] = { 0 };
++	bool ignore = false;
  
+ 	if (sctp_error(skb, dataoff, state))
+ 		return -NF_ACCEPT;
+@@ -427,15 +430,39 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
+ 			/* Sec 8.5.1 (D) */
+ 			if (sh->vtag != ct->proto.sctp.vtag[dir])
+ 				goto out_unlock;
+-		} else if (sch->type == SCTP_CID_HEARTBEAT ||
+-			   sch->type == SCTP_CID_HEARTBEAT_ACK) {
++		} else if (sch->type == SCTP_CID_HEARTBEAT) {
++			if (ct->proto.sctp.vtag[dir] == 0) {
++				pr_debug("Setting %d vtag %x for dir %d\n", sch->type, sh->vtag, dir);
++				ct->proto.sctp.vtag[dir] = sh->vtag;
++			} else if (sh->vtag != ct->proto.sctp.vtag[dir]) {
++				if (test_bit(SCTP_CID_DATA, map) || ignore)
++					goto out_unlock;
++
++				ct->proto.sctp.flags |= SCTP_FLAG_HEARTBEAT_VTAG_FAILED;
++				ct->proto.sctp.last_dir = dir;
++				ignore = true;
++				continue;
++			} else if (ct->proto.sctp.flags & SCTP_FLAG_HEARTBEAT_VTAG_FAILED) {
++				ct->proto.sctp.flags &= ~SCTP_FLAG_HEARTBEAT_VTAG_FAILED;
++			}
++		} else if (sch->type == SCTP_CID_HEARTBEAT_ACK) {
+ 			if (ct->proto.sctp.vtag[dir] == 0) {
+ 				pr_debug("Setting vtag %x for dir %d\n",
+ 					 sh->vtag, dir);
+ 				ct->proto.sctp.vtag[dir] = sh->vtag;
+ 			} else if (sh->vtag != ct->proto.sctp.vtag[dir]) {
+-				pr_debug("Verification tag check failed\n");
+-				goto out_unlock;
++				if (test_bit(SCTP_CID_DATA, map) || ignore)
++					goto out_unlock;
++
++				if ((ct->proto.sctp.flags & SCTP_FLAG_HEARTBEAT_VTAG_FAILED) == 0 ||
++				    ct->proto.sctp.last_dir == dir)
++					goto out_unlock;
++
++				ct->proto.sctp.flags &= ~SCTP_FLAG_HEARTBEAT_VTAG_FAILED;
++				ct->proto.sctp.vtag[dir] = sh->vtag;
++				ct->proto.sctp.vtag[!dir] = 0;
++			} else if (ct->proto.sctp.flags & SCTP_FLAG_HEARTBEAT_VTAG_FAILED) {
++				ct->proto.sctp.flags &= ~SCTP_FLAG_HEARTBEAT_VTAG_FAILED;
+ 			}
+ 		}
+ 
+@@ -470,6 +497,10 @@ int nf_conntrack_sctp_packet(struct nf_conn *ct,
+ 	}
+ 	spin_unlock_bh(&ct->lock);
+ 
++	/* allow but do not refresh timeout */
++	if (ignore)
++		return NF_ACCEPT;
++
+ 	timeouts = nf_ct_timeout_lookup(ct);
+ 	if (!timeouts)
+ 		timeouts = nf_sctp_pernet(nf_ct_net(ct))->timeouts;
 -- 
-2.17.1
+2.25.1
 
