@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 521D225FE31
-	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:09:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1300825FF04
+	for <lists+netdev@lfdr.de>; Mon,  7 Sep 2020 18:26:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729937AbgIGOeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 10:34:18 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:53906 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729900AbgIGOb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 10:31:56 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 087EVph6015786;
-        Mon, 7 Sep 2020 09:31:51 -0500
+        id S1730604AbgIGQZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 12:25:59 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:39198 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729901AbgIGOcy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 10:32:54 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 087EVra6078584;
+        Mon, 7 Sep 2020 09:31:53 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1599489111;
-        bh=zRevarR8bBHB46h6T67QBWgaS+xUykO9TW3TMcjN6qY=;
+        s=ti-com-17Q1; t=1599489113;
+        bh=scvlOAiGSgD3OrgroUOlwub3qAe8XPMOn8s7uBm6JO0=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=n/aJ0Ev9k5KpVjrm1XYHHRkZjjThAGY1HI54EUx7sMTs6uztxiuwKE+A+NinfJwT1
-         kaMTT0Pb74dJQiDQJ99eSeXKDc/ilGxPQJFh4iFYJd5HGGEE0L6pZ1WaErJ/rs85Gv
-         9d8CsSw5ftKIsIde0kaeswuNV7crLXmT2TI/S4FU=
+        b=IUhN0vEiH11b9Re0vTmNyQqM7u1/IrtzaKgTFGx0OkpWdU0vkGQ45Py52h+iRQADq
+         DH933ZfhqUQT4EybXkV4+KKDGaiemBVJY40HaCIdO02Q8EgY/6oBmxKnb/uWi1zmsV
+         FNvmbYaOcQv8Tdh5nBHStZQboW5Ha1lT8g0BAkwM=
 Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 087EVpA4066777
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 087EVrOO095432
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 7 Sep 2020 09:31:51 -0500
-Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE108.ent.ti.com
+        Mon, 7 Sep 2020 09:31:53 -0500
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE108.ent.ti.com
  (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 7 Sep
- 2020 09:31:51 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ 2020 09:31:52 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 7 Sep 2020 09:31:51 -0500
+ Frontend Transport; Mon, 7 Sep 2020 09:31:52 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 087EVo5r072974;
-        Mon, 7 Sep 2020 09:31:50 -0500
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 087EVpWP106437;
+        Mon, 7 Sep 2020 09:31:52 -0500
 From:   Grygorii Strashko <grygorii.strashko@ti.com>
 To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -44,9 +44,9 @@ To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
 CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
         <linux-omap@vger.kernel.org>,
         Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next v2 3/9] net: ethernet: ti: cpsw: use dev_id for ale configuration
-Date:   Mon, 7 Sep 2020 17:31:37 +0300
-Message-ID: <20200907143143.13735-4-grygorii.strashko@ti.com>
+Subject: [PATCH net-next v2 4/9] net: netcp: ethss: use dev_id for ale configuration
+Date:   Mon, 7 Sep 2020 17:31:38 +0300
+Message-ID: <20200907143143.13735-5-grygorii.strashko@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200907143143.13735-1-grygorii.strashko@ti.com>
 References: <20200907143143.13735-1-grygorii.strashko@ti.com>
@@ -59,80 +59,79 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 The previous patch has introduced possibility to select CPSW ALE by using
-ALE dev_id identifier. Switch TI cpsw driver to use dev_id="cpsw" and
+ALE dev_id identifier. Switch TI Keystone 2 NETCP driver to use dev_id and
 perform clean up by removing "ale_entries" configuration code.
 
 Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 ---
- drivers/net/ethernet/ti/cpsw.c      | 6 ------
- drivers/net/ethernet/ti/cpsw_new.c  | 1 -
- drivers/net/ethernet/ti/cpsw_priv.c | 2 +-
- drivers/net/ethernet/ti/cpsw_priv.h | 2 --
- 4 files changed, 1 insertion(+), 10 deletions(-)
+ drivers/net/ethernet/ti/netcp_ethss.c | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 4a65edc5a375..9b425f184f3c 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -1278,12 +1278,6 @@ static int cpsw_probe_dt(struct cpsw_platform_data *data,
- 	}
- 	data->channels = prop;
+diff --git a/drivers/net/ethernet/ti/netcp_ethss.c b/drivers/net/ethernet/ti/netcp_ethss.c
+index 28093923a7fb..33c1592d5381 100644
+--- a/drivers/net/ethernet/ti/netcp_ethss.c
++++ b/drivers/net/ethernet/ti/netcp_ethss.c
+@@ -51,7 +51,6 @@
+ #define GBE13_CPTS_OFFSET		0x500
+ #define GBE13_ALE_OFFSET		0x600
+ #define GBE13_HOST_PORT_NUM		0
+-#define GBE13_NUM_ALE_ENTRIES		1024
  
--	if (of_property_read_u32(node, "ale_entries", &prop)) {
--		dev_err(&pdev->dev, "Missing ale_entries property in the DT.\n");
--		return -EINVAL;
+ /* 1G Ethernet NU SS defines */
+ #define GBENU_MODULE_NAME		"netcp-gbenu"
+@@ -101,7 +100,6 @@
+ #define XGBE10_ALE_OFFSET		0x700
+ #define XGBE10_HW_STATS_OFFSET		0x800
+ #define XGBE10_HOST_PORT_NUM		0
+-#define XGBE10_NUM_ALE_ENTRIES		2048
+ 
+ #define	GBE_TIMER_INTERVAL			(HZ / 2)
+ 
+@@ -711,7 +709,6 @@ struct gbe_priv {
+ 	struct netcp_device		*netcp_device;
+ 	struct timer_list		timer;
+ 	u32				num_slaves;
+-	u32				ale_entries;
+ 	u32				ale_ports;
+ 	bool				enable_ale;
+ 	u8				max_num_slaves;
+@@ -3309,7 +3306,6 @@ static int set_xgbe_ethss10_priv(struct gbe_priv *gbe_dev,
+ 	gbe_dev->cpts_reg = gbe_dev->switch_regs + XGBE10_CPTS_OFFSET;
+ 	gbe_dev->ale_ports = gbe_dev->max_num_ports;
+ 	gbe_dev->host_port = XGBE10_HOST_PORT_NUM;
+-	gbe_dev->ale_entries = XGBE10_NUM_ALE_ENTRIES;
+ 	gbe_dev->stats_en_mask = (1 << (gbe_dev->max_num_ports)) - 1;
+ 
+ 	/* Subsystem registers */
+@@ -3433,7 +3429,6 @@ static int set_gbe_ethss14_priv(struct gbe_priv *gbe_dev,
+ 	gbe_dev->ale_reg = gbe_dev->switch_regs + GBE13_ALE_OFFSET;
+ 	gbe_dev->ale_ports = gbe_dev->max_num_ports;
+ 	gbe_dev->host_port = GBE13_HOST_PORT_NUM;
+-	gbe_dev->ale_entries = GBE13_NUM_ALE_ENTRIES;
+ 	gbe_dev->stats_en_mask = GBE13_REG_VAL_STAT_ENABLE_ALL;
+ 
+ 	/* Subsystem registers */
+@@ -3697,12 +3692,15 @@ static int gbe_probe(struct netcp_device *netcp_device, struct device *dev,
+ 	ale_params.dev		= gbe_dev->dev;
+ 	ale_params.ale_regs	= gbe_dev->ale_reg;
+ 	ale_params.ale_ageout	= GBE_DEFAULT_ALE_AGEOUT;
+-	ale_params.ale_entries	= gbe_dev->ale_entries;
+ 	ale_params.ale_ports	= gbe_dev->ale_ports;
+-	if (IS_SS_ID_MU(gbe_dev)) {
+-		ale_params.major_ver_mask = 0x7;
+-		ale_params.nu_switch_ale = true;
 -	}
--	data->ale_entries = prop;
--
- 	if (of_property_read_u32(node, "bd_ram_size", &prop)) {
- 		dev_err(&pdev->dev, "Missing bd_ram_size property in the DT.\n");
- 		return -EINVAL;
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 8ed78577cded..a3528c5c823f 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -1243,7 +1243,6 @@ static int cpsw_probe_dt(struct cpsw_common *cpsw)
- 
- 	data->active_slave = 0;
- 	data->channels = CPSW_MAX_QUEUES;
--	data->ale_entries = CPSW_ALE_NUM_ENTRIES;
- 	data->dual_emac = true;
- 	data->bd_ram_size = CPSW_BD_RAM_SIZE;
- 	data->mac_control = 0;
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index 482a1a451e43..51cc29f39038 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -500,8 +500,8 @@ int cpsw_init_common(struct cpsw_common *cpsw, void __iomem *ss_regs,
- 
- 	ale_params.dev			= dev;
- 	ale_params.ale_ageout		= ale_ageout;
--	ale_params.ale_entries		= data->ale_entries;
- 	ale_params.ale_ports		= CPSW_ALE_PORTS_NUM;
-+	ale_params.dev_id		= "cpsw";
- 
- 	cpsw->ale = cpsw_ale_create(&ale_params);
- 	if (IS_ERR(cpsw->ale)) {
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.h b/drivers/net/ethernet/ti/cpsw_priv.h
-index bf4e179b4ca4..7b7f3596b20d 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.h
-+++ b/drivers/net/ethernet/ti/cpsw_priv.h
-@@ -117,7 +117,6 @@ do {								\
- #define CPSW_MAX_QUEUES		8
- #define CPSW_CPDMA_DESCS_POOL_SIZE_DEFAULT 256
- #define CPSW_ALE_AGEOUT_DEFAULT		10 /* sec */
--#define CPSW_ALE_NUM_ENTRIES		1024
- #define CPSW_FIFO_QUEUE_TYPE_SHIFT	16
- #define CPSW_FIFO_SHAPE_EN_SHIFT	16
- #define CPSW_FIFO_RATE_EN_SHIFT		20
-@@ -294,7 +293,6 @@ struct cpsw_platform_data {
- 	u32	channels;	/* number of cpdma channels (symmetric) */
- 	u32	slaves;		/* number of slave cpgmac ports */
- 	u32	active_slave;/* time stamping, ethtool and SIOCGMIIPHY slave */
--	u32	ale_entries;	/* ale table size */
- 	u32	bd_ram_size;	/*buffer descriptor ram size */
- 	u32	mac_control;	/* Mac control register */
- 	u16	default_vlan;	/* Def VLAN for ALE lookup in VLAN aware mode*/
++	ale_params.dev_id	= "cpsw";
++	if (IS_SS_ID_NU(gbe_dev))
++		ale_params.dev_id = "66ak2el";
++	else if (IS_SS_ID_2U(gbe_dev))
++		ale_params.dev_id = "66ak2g";
++	else if (IS_SS_ID_XGBE(gbe_dev))
++		ale_params.dev_id = "66ak2h-xgbe";
++
+ 	gbe_dev->ale = cpsw_ale_create(&ale_params);
+ 	if (IS_ERR(gbe_dev->ale)) {
+ 		dev_err(gbe_dev->dev, "error initializing ale engine\n");
 -- 
 2.17.1
 
