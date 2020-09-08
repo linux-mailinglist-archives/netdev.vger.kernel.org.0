@@ -2,80 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEC0B2623BE
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 01:54:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD2F72623C1
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 01:55:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbgIHXyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 19:54:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35270 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726369AbgIHXyg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 19:54:36 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 555BA206A1;
-        Tue,  8 Sep 2020 23:54:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599609275;
-        bh=tJnTyQgikg4cDk4nM6e6lv3ZnMyPUSEZ7OoT2akTE9E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Bzkkll0rapTAcPqm0jOj223uKUy5Z07td7y/vi0nz8ZCB05ldKZFaBn0wi+e/z8IT
-         SC6mPUF/dru6eyTlFZ6hJu6K0FD+zF3wQLfGcqpqVkpyMv0ycmJiwCDw0skDU5XODG
-         Z8UwtwZuCUGSVcy9Xn6wAujrQo1oSU9sGb06On0Q=
-Date:   Tue, 8 Sep 2020 16:54:33 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
-Message-ID: <20200908165433.08afb9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200908224812.63434-3-snelson@pensando.io>
-References: <20200908224812.63434-1-snelson@pensando.io>
-        <20200908224812.63434-3-snelson@pensando.io>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1728633AbgIHXzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 19:55:45 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:32529 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726694AbgIHXzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 19:55:42 -0400
+X-IronPort-AV: E=Sophos;i="5.76,407,1592838000"; 
+   d="scan'208";a="56499160"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 09 Sep 2020 08:55:41 +0900
+Received: from localhost.localdomain (unknown [10.166.252.89])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id EB8A341293B9;
+        Wed,  9 Sep 2020 08:55:40 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, Jisheng.Zhang@synaptics.com
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v2] net: phy: call phy_disable_interrupts() in phy_attach_direct() instead
+Date:   Wed,  9 Sep 2020 08:55:38 +0900
+Message-Id: <1599609338-17732-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Sep 2020 15:48:12 -0700 Shannon Nelson wrote:
-> +	dl = priv_to_devlink(ionic);
-> +	devlink_flash_update_status_notify(dl, label, NULL, 1, timeout);
-> +	start_time = jiffies;
-> +	end_time = start_time + (timeout * HZ);
-> +	do {
-> +		mutex_lock(&ionic->dev_cmd_lock);
-> +		ionic_dev_cmd_go(&ionic->idev, &cmd);
-> +		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-> +		mutex_unlock(&ionic->dev_cmd_lock);
-> +
-> +		devlink_flash_update_status_notify(dl, label, NULL,
-> +						   (jiffies - start_time) / HZ,
-> +						   timeout);
+Since the micrel phy driver calls phy_init_hw() as a workaround,
+the commit 9886a4dbd2aa ("net: phy: call phy_disable_interrupts()
+in phy_init_hw()") disables the interrupt unexpectedly. So,
+call phy_disable_interrupts() in phy_attach_direct() instead.
+Otherwise, the phy cannot link up after the ethernet cable was
+disconnected.
 
-That's not what I meant. I think we can plumb proper timeout parameter
-through devlink all the way to user space.
+Note that other drivers (like at803x.c) also calls phy_init_hw().
+So, perhaps, the driver caused a similar issue too.
 
-> +	} while (time_before(jiffies, end_time) && (err == -EAGAIN || err == -ETIMEDOUT));
-> +
-> +	if (err == -EAGAIN || err == -ETIMEDOUT) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Firmware wait timed out");
-> +		dev_err(ionic->dev, "DEV_CMD firmware wait %s timed out\n", label);
-> +	} else if (err) {
-> +		NL_SET_ERR_MSG_MOD(extack, "Firmware wait failed");
-> +	} else {
-> +		devlink_flash_update_status_notify(dl, label, NULL, timeout, timeout);
-> +	}
+Fixes: 9886a4dbd2aa ("net: phy: call phy_disable_interrupts() in phy_init_hw()")
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ Changes from v1:
+ - Fix build error.
 
+ drivers/net/phy/phy_device.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> +		if (offset > next_interval) {
-> +			devlink_flash_update_status_notify(dl, "Downloading",
-> +							   NULL, offset, fw->size);
-> +			next_interval = offset + (fw->size / IONIC_FW_INTERVAL_FRACTION);
-> +		}
-> +	}
-> +	devlink_flash_update_status_notify(dl, "Downloading", NULL, 1, 1);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 8adfbad..b93b40c 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1143,10 +1143,6 @@ int phy_init_hw(struct phy_device *phydev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = phy_disable_interrupts(phydev);
+-	if (ret)
+-		return ret;
+-
+ 	if (phydev->drv->config_init)
+ 		ret = phydev->drv->config_init(phydev);
+ 
+@@ -1423,6 +1419,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+ 	if (err)
+ 		goto error;
+ 
++	err = phy_disable_interrupts(phydev);
++	if (err)
++		return err;
++
+ 	phy_resume(phydev);
+ 	phy_led_triggers_register(phydev);
+ 
+-- 
+2.7.4
 
-This one wasn't updated.
