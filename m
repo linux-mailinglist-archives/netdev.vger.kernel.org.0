@@ -2,127 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC745261879
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:56:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ABD7261898
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:58:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728301AbgIHR4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 13:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731947AbgIHR4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 13:56:08 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21728C061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 10:56:08 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id t13so16230429ile.9
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 10:56:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8T+PCf94axCuwCpZHubJbkrjzROS0OankrEuKHVfywM=;
-        b=u7pwCHSwhWF2FMPxtsKqWqKsYCP7fhmxp6H6Hvsh+qoJBe8FLWePqz/wz61zDEWZk/
-         gJv+LgmgmsBSrIysj7mZSn15rzrdbq95xbjp7P4pfMTouOxjvJ0DVn3hZzgyORADQwqp
-         wZXYrHPTN+uBHa3Y+KPyA4M05odS8cN0YTlnG8rCROlo9HVOY6KpdieEejIEwQROIP+R
-         ThcCOb/trbh3E85bqmMECrv9YJdGE0Er843fnebokJtpt48QrX7avq1pqnDWaf84yw57
-         be5QID+ri/Ex0SB2GFKqK0S63Ukq3J5aGx33XBl51zXRmzgnDTJEBuJcA9iClbr97v9s
-         wPBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8T+PCf94axCuwCpZHubJbkrjzROS0OankrEuKHVfywM=;
-        b=haQta2xiGgA6GYyOKDGzAiBshGaSaWYKL4GYlR+yEKeQIH+s+Rvm1uN2pWLeq6o1Wz
-         AQBxbtEW9JXQLdTZFzcEwAxRKwCksRR+7hmmkV4VuUOx1aAmaWBRSC4H20CkvL6Ya+re
-         w7b1hfSEgBo0PBkCKC/QkEe9CIdNS24OwN5t2AsYGFneUEmeXHwjBET/I78iheA+vfC7
-         jK8bbk+4xUoWwn+LrROmPwY4dwbihxgJJQKwgJZdBNdpmkgdwSfG/SsKi3hc5WqT3zRV
-         LdEzWnOCWHejXJcXqTsWM4V/kAyt7OV6bimp1iVAJr20HKEoyxB1pEiiDz7ec2RfBb7i
-         cwpg==
-X-Gm-Message-State: AOAM531R0cd69sRRgNun8Dmr3/Onb3Dy4ULl0c7c5cd6cN4mjk92gP93
-        SvIkXmoGx5mSaITGcD4pfOw=
-X-Google-Smtp-Source: ABdhPJyZj1s1z4gCfOqU/XLy3cgde2kfVeaN+7W6GIzchJ1A1aJb2vKX7WRC8d6FCxgSCHe7ds1g/A==
-X-Received: by 2002:a92:3007:: with SMTP id x7mr24731770ile.48.1599587767515;
-        Tue, 08 Sep 2020 10:56:07 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:ec70:7b06:eed6:6e35])
-        by smtp.googlemail.com with ESMTPSA id m87sm10777941ilb.58.2020.09.08.10.56.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Sep 2020 10:56:06 -0700 (PDT)
-Subject: Re: [PATCH net] ipv6: avoid lockdep issue in fib6_del()
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <20200908082023.3690438-1-edumazet@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <11b1b766-5eb8-4306-605c-a423fc3e1544@gmail.com>
-Date:   Tue, 8 Sep 2020 11:56:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1732099AbgIHR6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 13:58:01 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8328 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731779AbgIHR5K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 13:57:10 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 088HtVJA016561
+        for <netdev@vger.kernel.org>; Tue, 8 Sep 2020 10:57:09 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=facebook;
+ bh=sX1lDjbtcr4lFFYhSncUWs+xJYEs/aYPfXw8eZepxVs=;
+ b=Qux6/HX6X1AuBjD7LNpeKdFEXi4ELxXuKHfjGmqOOoAT9Ipao/3CSW1/J/lPhb28cT1+
+ uIB3dEG2rSS3leZNlR2RdvyU7yC8jHdFGJL8ETtqXjNAbW9ioEHNIzng/u0Cc+ocxvRe
+ av0cpMpSjEFVXbfdT+JiGcq98nvvWwGbvLc= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33ct69js1k-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 10:57:09 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 8 Sep 2020 10:57:09 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id A91643704E21; Tue,  8 Sep 2020 10:57:02 -0700 (PDT)
+From:   Yonghong Song <yhs@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+Subject: [PATCH bpf-next v3 1/2] bpf: permit map_ptr arithmetic with opcode add and offset 0
+Date:   Tue, 8 Sep 2020 10:57:02 -0700
+Message-ID: <20200908175702.2463625-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200908175702.2463416-1-yhs@fb.com>
+References: <20200908175702.2463416-1-yhs@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <20200908082023.3690438-1-edumazet@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-08_09:2020-09-08,2020-09-08 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ priorityscore=1501 mlxscore=0 spamscore=0 phishscore=0 clxscore=1015
+ mlxlogscore=999 impostorscore=0 bulkscore=0 malwarescore=0 adultscore=0
+ suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009080170
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/8/20 2:20 AM, Eric Dumazet wrote:
-> syzbot reported twice a lockdep issue in fib6_del() [1]
-> which I think is caused by net->ipv6.fib6_null_entry
-> having a NULL fib6_table pointer.
-> 
-> fib6_del() already checks for fib6_null_entry special
-> case, we only need to return earlier.
-> 
-> Bug seems to occur very rarely, I have thus chosen
-> a 'bug origin' that makes backports not too complex.
+Commit 41c48f3a98231 ("bpf: Support access
+to bpf map fields") added support to access map fields
+with CORE support. For example,
 
-Make sense.
-> 
-> [1]
-...
-> 
-> Fixes: 421842edeaf6 ("net/ipv6: Add fib6_null_entry")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: David Ahern <dsahern@gmail.com>
-> ---
->  net/ipv6/ip6_fib.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-> index 25a90f3f705c7e6d53615f490f36c5722f3bd8b1..4a664ad4f4d4bb2b521f67e8433a06c77bd301ee 100644
-> --- a/net/ipv6/ip6_fib.c
-> +++ b/net/ipv6/ip6_fib.c
-> @@ -1993,14 +1993,19 @@ static void fib6_del_route(struct fib6_table *table, struct fib6_node *fn,
->  /* Need to own table->tb6_lock */
->  int fib6_del(struct fib6_info *rt, struct nl_info *info)
->  {
-> -	struct fib6_node *fn = rcu_dereference_protected(rt->fib6_node,
-> -				    lockdep_is_held(&rt->fib6_table->tb6_lock));
-> -	struct fib6_table *table = rt->fib6_table;
->  	struct net *net = info->nl_net;
->  	struct fib6_info __rcu **rtp;
->  	struct fib6_info __rcu **rtp_next;
-> +	struct fib6_table *table;
-> +	struct fib6_node *fn;
->  
-> -	if (!fn || rt == net->ipv6.fib6_null_entry)
-> +	if (rt == net->ipv6.fib6_null_entry)
-> +		return -ENOENT;
-> +
-> +	table = rt->fib6_table;
-> +	fn = rcu_dereference_protected(rt->fib6_node,
-> +				       lockdep_is_held(&table->tb6_lock));
-> +	if (!fn)
->  		return -ENOENT;
->  
->  	WARN_ON(!(fn->fn_flags & RTN_RTINFO));
-> 
+            struct bpf_map {
+                    __u32 max_entries;
+            } __attribute__((preserve_access_index));
 
-seems like a reasonable refactoring for the noted problem.
+            struct bpf_array {
+                    struct bpf_map map;
+                    __u32 elem_size;
+            } __attribute__((preserve_access_index));
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+            struct {
+                    __uint(type, BPF_MAP_TYPE_ARRAY);
+                    __uint(max_entries, 4);
+                    __type(key, __u32);
+                    __type(value, __u32);
+            } m_array SEC(".maps");
+
+            SEC("cgroup_skb/egress")
+            int cg_skb(void *ctx)
+            {
+                    struct bpf_array *array =3D (struct bpf_array *)&m_ar=
+ray;
+
+                    /* .. array->map.max_entries .. */
+            }
+
+In kernel, bpf_htab has similar structure,
+
+	    struct bpf_htab {
+		    struct bpf_map map;
+                    ...
+            }
+
+In the above cg_skb(), to access array->map.max_entries, with CORE, the c=
+lang will
+generate two builtin's.
+            base =3D &m_array;
+            /* access array.map */
+            map_addr =3D __builtin_preserve_struct_access_info(base, 0, 0=
+);
+            /* access array.map.max_entries */
+            max_entries_addr =3D __builtin_preserve_struct_access_info(ma=
+p_addr, 0, 0);
+	    max_entries =3D *max_entries_addr;
+
+In the current llvm, if two builtin's are in the same function or
+in the same function after inlining, the compiler is smart enough to chai=
+n
+them together and generates like below:
+            base =3D &m_array;
+            max_entries =3D *(base + reloc_offset); /* reloc_offset =3D 0=
+ in this case */
+and we are fine.
+
+But if we force no inlining for one of functions in test_map_ptr() selfte=
+st, e.g.,
+check_default(), the above two __builtin_preserve_* will be in two differ=
+ent
+functions. In this case, we will have code like:
+   func check_hash():
+            reloc_offset_map =3D 0;
+            base =3D &m_array;
+            map_base =3D base + reloc_offset_map;
+            check_default(map_base, ...)
+   func check_default(map_base, ...):
+            max_entries =3D *(map_base + reloc_offset_max_entries);
+
+In kernel, map_ptr (CONST_PTR_TO_MAP) does not allow any arithmetic.
+The above "map_base =3D base + reloc_offset_map" will trigger a verifier =
+failure.
+  ; VERIFY(check_default(&hash->map, map));
+  0: (18) r7 =3D 0xffffb4fe8018a004
+  2: (b4) w1 =3D 110
+  3: (63) *(u32 *)(r7 +0) =3D r1
+   R1_w=3DinvP110 R7_w=3Dmap_value(id=3D0,off=3D4,ks=3D4,vs=3D8,imm=3D0) =
+R10=3Dfp0
+  ; VERIFY_TYPE(BPF_MAP_TYPE_HASH, check_hash);
+  4: (18) r1 =3D 0xffffb4fe8018a000
+  6: (b4) w2 =3D 1
+  7: (63) *(u32 *)(r1 +0) =3D r2
+   R1_w=3Dmap_value(id=3D0,off=3D0,ks=3D4,vs=3D8,imm=3D0) R2_w=3DinvP1 R7=
+_w=3Dmap_value(id=3D0,off=3D4,ks=3D4,vs=3D8,imm=3D0) R10=3Dfp0
+  8: (b7) r2 =3D 0
+  9: (18) r8 =3D 0xffff90bcb500c000
+  11: (18) r1 =3D 0xffff90bcb500c000
+  13: (0f) r1 +=3D r2
+  R1 pointer arithmetic on map_ptr prohibited
+
+To fix the issue, let us permit map_ptr + 0 arithmetic which will
+result in exactly the same map_ptr.
+
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ kernel/bpf/verifier.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index b4e9c56b8b32..814bc6c1ad16 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5317,6 +5317,10 @@ static int adjust_ptr_min_max_vals(struct bpf_veri=
+fier_env *env,
+ 			dst, reg_type_str[ptr_reg->type]);
+ 		return -EACCES;
+ 	case CONST_PTR_TO_MAP:
++		/* smin_val represents the known value */
++		if (known && smin_val =3D=3D 0 && opcode =3D=3D BPF_ADD)
++			break;
++		/* fall-through */
+ 	case PTR_TO_PACKET_END:
+ 	case PTR_TO_SOCKET:
+ 	case PTR_TO_SOCKET_OR_NULL:
+--=20
+2.24.1
 
