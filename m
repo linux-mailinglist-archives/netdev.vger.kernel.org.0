@@ -2,116 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0AC32615D1
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27CD3261586
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:52:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732067AbgIHQ4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58236 "EHLO
+        id S1732091AbgIHQwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 12:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731807AbgIHQWl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:22:41 -0400
-Received: from www62.your-server.de (www62.your-server.de [IPv6:2a01:4f8:d0a:276a::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C23F0C0611E1;
-        Tue,  8 Sep 2020 06:33:35 -0700 (PDT)
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kFd9t-0003Q5-MN; Tue, 08 Sep 2020 14:55:37 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kFd9t-000LSc-Cs; Tue, 08 Sep 2020 14:55:37 +0200
-Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, Laura Garcia <nevola@gmail.com>,
-        David Miller <davem@davemloft.net>
-References: <20200904162154.GA24295@wunner.de>
- <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
- <20200905052403.GA10306@wunner.de>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e8aecc2b-80cb-8ee5-8efe-7ae5c4eafc70@iogearbox.net>
-Date:   Tue, 8 Sep 2020 14:55:36 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S1730595AbgIHQwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:52:38 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F58C0619E9
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 06:56:37 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id y194so9047612vsc.4
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 06:56:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=n4KG5CW+7TEOr9AorGHeiLF2hEUgTMjhM8Tr7m3GReM=;
+        b=Pk2vE9e4uOYo8BaBgIoksZND1qYOLdRCkV7yBIAP8XFJWRheQ0psIJ5Vw6dnUYi969
+         VCcu7JcAioh8LWaUvomdYIsAMA0LnwIedCxM7o2gnVMW8pIogTcnSZ7kNiWG2kStXzxk
+         fhMbect2yCjP1U7hdvNrwXXOuiz5n17D3PVTTlNbe6W3qyBWU2DkGkvkh9aZVoceGnK6
+         DEzMd9aDm8Fp1UYRxeSOLD40OPMxZuVSQ2kVA914hoz3lF3GeqNIBP3MK1ZcuXzmDhi+
+         Ck7E0vhAuV/zT/prTPWAOtraedlqObAd2Cgj2oxb5aKopY652flfkEXcbcG8XUKzvmUq
+         0GpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=n4KG5CW+7TEOr9AorGHeiLF2hEUgTMjhM8Tr7m3GReM=;
+        b=ZuFuw6HD2+s2lVB+sYNTd4t8/ZrJlgGANyuVugxXhcw3tyggrJvXOTIU5DAhi1Uyij
+         Sy8Ytqlmb7IKAXGqKSxQ4PeqkWjoNGlqsRvha5YvQH76fMOGh3ig1M34kSxdvcsi6iju
+         AMzGFXi4RP68nA2OTxAb8xc3dQ275X4dnCGDCIsDxETPo66xEyH81XkYlKJq8xFsUTSv
+         mzr5ew7Pv+SpHZU0Zm+b1J5mDwgc+rgGImcE9T1+wgpVyczFZi4I7cTT/wdEvTrG096k
+         VNWo15ZVnGBd/5r52mBwRO2IBuYSWjPVMqR+WOEca2wE/okk7PtvSVLysI3Uw7hiQASN
+         PaNA==
+X-Gm-Message-State: AOAM530qBSZtjW2MJhycy1GGmFlcBYBxUF5z7CyNeaBE6hv1PCQj5c7+
+        CcNjfLrtbHO77JbwmTn7++UKeKujCMur2g==
+X-Google-Smtp-Source: ABdhPJy7UX//7jFuQDTNcBfKDS6MxfioaefiXcEnQGMQGAKuJJWdwqIXDvWNOoFkeNKCCRA8fHPPCA==
+X-Received: by 2002:a05:6102:525:: with SMTP id m5mr5027456vsa.86.1599573393879;
+        Tue, 08 Sep 2020 06:56:33 -0700 (PDT)
+Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
+        by smtp.gmail.com with ESMTPSA id t15sm2141191vso.27.2020.09.08.06.56.32
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 06:56:33 -0700 (PDT)
+Received: by mail-ua1-f52.google.com with SMTP id g16so5084900uan.5
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 06:56:32 -0700 (PDT)
+X-Received: by 2002:a9f:2648:: with SMTP id 66mr13625593uag.37.1599573392132;
+ Tue, 08 Sep 2020 06:56:32 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200905052403.GA10306@wunner.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25923/Mon Sep  7 15:37:02 2020)
+References: <20200906031827.16819-1-xie.he.0141@gmail.com> <CA+FuTSfOeMB7Wv1t12VCTOqPYcTLq2WKdG4AJUO=gxotVRZiQw@mail.gmail.com>
+ <CAJht_EO13aYPXBV7sEgOTuUhuHFTFFfdg7NBN2cEKAo6LK0DMQ@mail.gmail.com>
+ <CA+FuTSdK6qgKwgie5Bqof8V5FR__dx-HgHUcDS5sgTQmH9B9uQ@mail.gmail.com> <CAJht_ENHmL322bS4BnarXLW+GjOC4ioQ8MMtnsqwOhF_gee5Yw@mail.gmail.com>
+In-Reply-To: <CAJht_ENHmL322bS4BnarXLW+GjOC4ioQ8MMtnsqwOhF_gee5Yw@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 8 Sep 2020 15:55:54 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSdGXF-gxEvfOxZd1dNXfBmaDKFqGTH8EzNXZpYLcrwzjA@mail.gmail.com>
+Message-ID: <CA+FuTSdGXF-gxEvfOxZd1dNXfBmaDKFqGTH8EzNXZpYLcrwzjA@mail.gmail.com>
+Subject: Re: [PATCH net] net/packet: Fix a comment about hard_header_len and
+ headroom allocation
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Or Cohen <orcohen@paloaltonetworks.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lukas,
+> > > > More about the older comment, but if reusing: it's not entirely clear
+> > > > to me what "outside of the device" means. The upper layers that
+> > > > receive data from the device and send data to it, including
+> > > > packet_snd, I suppose? Not the lower layers, clearly. Maybe that can
+> > > > be more specific.
+> > >
+> > > Yes, right. If a header is visible "outside of the device", it means
+> > > the header is exposed to upper layers via "header_ops". If a header is
+> > > not visible "outside of the device" and is only used "internally", it
+> > > means the header is not exposed to upper layers via "header_ops".
+> > > Maybe we can change it to "outside of the device driver"? We can
+> > > borrow the idea of encapsulation in object-oriented programming - some
+> > > things that happen inside a software component should not be visible
+> > > outside of that software component.
+> >
+> > How about "above"? If sketched as a network stack diagram, the code
+> > paths and devices below the (possibly tunnel) device do see packets
+> > with link layer header.
+>
+> OK. I understand what you mean now. We need to make it clear that the
+> header is only invisible to upper layers but not to "lower layers"
+> that the device may rely on.
+>
+> I'm thinking about a way to clearly phrase this. "Above the device"
+> might be confusing to people. Do you think this is good: "invisible to
+> upper-layer code including the code in af_packet.c"? Or simply
+> "invisible to upper-layer code"? Or just "invisible to upper layers"?
+> (I don't like the last one because I feel according to the network
+> stack diagram "upper layers" should already and always not care about
+> the LL header.)
 
-On 9/5/20 7:24 AM, Lukas Wunner wrote:
-> On Fri, Sep 04, 2020 at 11:14:37PM +0200, Daniel Borkmann wrote:
->> On 9/4/20 6:21 PM, Lukas Wunner wrote:
-[...]
->> The tc queueing layer which is below is not the tc egress hook; the
->> latter is for filtering/mangling/forwarding or helping the lower tc
->> queueing layer to classify.
-> 
-> People want to apply netfilter rules on egress, so either we need an
-> egress hook in the xmit path or we'd have to teach tc to filter and
-> mangle based on netfilter rules.  The former seemed more straight-forward
-> to me but I'm happy to pursue other directions.
-
-I would strongly prefer something where nf integrates into existing tc hook,
-not only due to the hook reuse which would be better, but also to allow for a
-more flexible interaction between tc/BPF use cases and nf, to name one
-example... consider two different entities in the system setting up the two, that
-is, one adding rules for nf ingress/egress on the phys device for host fw and
-the other one for routing traffic into/from containers at the tc layer,
-then traffic going into host ns will hit nf ingress and on egress side the
-nf egress part; however, traffic going to containers via existing tc redirect
-will not see the nf ingress as expected but would on reverse path incorrectly
-hit the nf egress one which is /not/ the case for dev_queue_xmit() today. So
-there would need to be more flexible coordination between the two so these
-subsystems don't step on each other and the orchestration system can flexibly
-arrange those needs depending on the use case. Conceptually the tc/nf
-ingress/egress hook would be the same anyway in the sense that we have
-some sort of a list or array with callbacks performing actions on the skb,
-passing on, dropping or forwarding, so this should be consolidated where
-both can register into an array of callbacks as processing pipeline that
-can be atomically swapped at runtime, and then similar as with tc or LSMs
-allow to delegate or terminate the processing in a generic way.
-
-[...]
->> the case is rather if distros start adding DHCP
->> filtering rules by default there as per your main motivation then
->> everyone needs to pay this price, which is completely unreasonable
->> to perform in __dev_queue_xmit().
-> 
-> So first you're saying that the patches are unnecessary and everything
-> they do can be achieved with tc... and then you're saying distros are
-> going to use the nft hook to filter DHCP by default, which will cost
-> performance.  That seems contradictory.  Why aren't distros using tc
-> today to filter DHCP?
-
-Again, I'm not sure why you ask me, you guys brought up lack of DHCP filtering
-as why this hook is needed. My gut feeling why it is not there today, because the
-use case was not strong enough to do it on nf or tc layer that anyone cared to fix
-it over the last few decades (!). And if you check a typical DHCP client that is
-present on major modern distros like systemd-networkd's DHCP client then they
-already implement filtering of malicious packets via BPF at socket layer including
-checking for cookies in the DHCP header that are set by the application itself to
-prevent spoofing [0].
-
-Thanks,
-Daniel
-
-   [0] https://github.com/systemd/systemd/blob/master/src/libsystemd-network/dhcp-network.c#L28
+Upper layers is often understood to imply the network stack diagram
+indeed, excluding other stacks, such as virtual devices or packet
+sockets. Hence above. But either works. The commit message will
+disambiguate.
