@@ -2,88 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32FC1260A46
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 07:45:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29A9D260ABB
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 08:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728786AbgIHFpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 01:45:05 -0400
-Received: from a27-186.smtp-out.us-west-2.amazonses.com ([54.240.27.186]:41064
-        "EHLO a27-186.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725903AbgIHFpA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 01:45:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1599543899;
-        h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date;
-        bh=ImcKZNGZhT2VPva+AhpxhJiRLLMhIKVbY5swSQnUfa8=;
-        b=fEAMzW1sM7/TIXzzekdscfENz0Ron6+YsIKIJ1LZWE8g3P9m35o9l/zrSIgSZpCc
-        CydNzFap+sAACK+mmd85unUvSOTbO6qRCNqcJUL2HOQUoMcL+7atM6jrkIcIMOJ9ebR
-        f9cdbI9xdTCVT+kASIgbPA6MV8l9yLkLDQJvu8gs=
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1599543899;
-        h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date:Feedback-ID;
-        bh=ImcKZNGZhT2VPva+AhpxhJiRLLMhIKVbY5swSQnUfa8=;
-        b=e+NSInE4kRn2pnT8uPPBGIDimedBygpktFVgNre2miGJZBc5gHeUIpprqVyj1CoS
-        f54RQP+5aFdT/ynD4xlKEbd8Evc6VmMsBRco9CnVHNtCPwzEIaxeL2Jv2CV9qXnr/Ds
-        pWE0w3pC/Pi+dkuQm8F5iyeFaULKV0RPKhF8suXQ=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0635AC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728229AbgIHGTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 02:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49548 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726787AbgIHGTo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 02:19:44 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84FA8C061573;
+        Mon,  7 Sep 2020 23:19:43 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id c10so13911233otm.13;
+        Mon, 07 Sep 2020 23:19:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=O6IpCwnpVtuGiVfJIjlwB8wH7sUVjdjhn0wXwD10MTI=;
+        b=uP2Fx1u17fd93yAjsHtJWGchrz7RZ2ywazWvuDld9ZK5zydAWJ8wes1PlVcqECWVpE
+         IY/cmwCrpRC3FOaG90diGm4+pfRbmZIuR1YczmGjFAsaArDShQbWc1dBw73ZIOgOLRhJ
+         1DNH6FWN5BQps7sQUlP8vnjcLs1yPA77tVYV90HpBJOcKs020rGgURxipCEibHKlndWI
+         lmIyH2dhGxo0534Ybz6iSUZsS8DWkfLKGqCkuDv6P4QQjPV2dwYvOeVr9NTw11OLEPxP
+         fYPdb9/ap+NPfkK9qbbkIX1BBx7iAdls1qHvIgZG2JDTv0KaWOgS2KMtmARs5q/zXKPr
+         Zbog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=O6IpCwnpVtuGiVfJIjlwB8wH7sUVjdjhn0wXwD10MTI=;
+        b=fr+kddgMQkAW2EL1jgI37W5D1hvTHevCRhYjEoTTuAA7jawjE0vJJeVNfniCfEt/k4
+         fv3MieXUQMbtzVVHdcQkwU5a20WSNrwyM/t1UY++Jm0A9w/tM6P3pwXPG0vMOKo4rX2L
+         52SO0ckwbdogE+q4WzypOXccLnESoH1wBw3LQNp96ZndGJWimA9nf9kXG/IQVolU9pmQ
+         pNYFzJaz7VJ3CDd+hx4niDMS9uo7DgsbHBllKN93MiaeLitviGbAPZLp15V9Q1MG2exY
+         X5hPdpijcKhUG7LD/+Z7i7+IGlaONUkeQucgIRwkVC2eGLDtokl9few0+D+0hDI4U4+B
+         DK/Q==
+X-Gm-Message-State: AOAM53395ugeFdmzQxvh7smL6t4zmC5iDwlbjq7KMTQojs/dh+/VDGvm
+        FYjv1tQ6JzfzUaC2eoMEryaLZyVJsDkOGHPyhZs=
+X-Google-Smtp-Source: ABdhPJwPVozyVw2sgKIYfk4YB+lMYcydSx1Iyg5o+9TfaKmqOSlJ6yvBOGNKcX9PGZPtulqcEd0HWDjDn69Shq0NALY=
+X-Received: by 2002:a9d:315:: with SMTP id 21mr305769otv.278.1599545982863;
+ Mon, 07 Sep 2020 23:19:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath11k: fix a double free and a memory leak
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200906212625.17059-1-trix@redhat.com>
-References: <20200906212625.17059-1-trix@redhat.com>
-To:     trix@redhat.com
-Cc:     davem@davemloft.net, kuba@kernel.org, natechancellor@gmail.com,
-        ndesaulniers@google.com, mkenna@codeaurora.org,
-        vnaralas@codeaurora.org, rmanohar@codeaurora.org, john@phrozen.org,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com, Tom Rix <trix@redhat.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-ID: <010101746c3ef483-c70d07ff-655d-4d78-867e-66ed6eea1c82-000000@us-west-2.amazonses.com>
-Date:   Tue, 8 Sep 2020 05:44:59 +0000
-X-SES-Outgoing: 2020.09.08-54.240.27.186
-Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
+References: <20200904162154.GA24295@wunner.de> <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
+ <CAF90-WhWpiAPcpU81P3cPTUmRD-xGkuZ9GZA8Q3cPN7RQKhXeA@mail.gmail.com> <b1ae75ac-82b5-aa24-c59a-3988d94d6a10@iogearbox.net>
+In-Reply-To: <b1ae75ac-82b5-aa24-c59a-3988d94d6a10@iogearbox.net>
+From:   =?UTF-8?Q?Laura_Garc=C3=ADa_Li=C3=A9bana?= <nevola@gmail.com>
+Date:   Tue, 8 Sep 2020 08:19:31 +0200
+Message-ID: <CAF90-WjhAS6V_UFYpsnxUDH=sH+1j_2y+Sz2RHU7CWo4iPiC7w@mail.gmail.com>
+Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Netfilter Development Mailing list 
+        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-trix@redhat.com wrote:
+Hi Daniel,
 
-> clang static analyzer reports this problem
-> 
-> mac.c:6204:2: warning: Attempt to free released memory
->         kfree(ar->mac.sbands[NL80211_BAND_2GHZ].channels);
->         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> The channels pointer is allocated in ath11k_mac_setup_channels_rates()
-> When it fails midway, it cleans up the memory it has already allocated.
-> So the error handling needs to skip freeing the memory.
-> 
-> There is a second problem.
-> ath11k_mac_setup_channels_rates(), allocates 3 channels. err_free
-> misses releasing ar->mac.sbands[NL80211_BAND_6GHZ].channels
-> 
-> Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+On Tue, Sep 8, 2020 at 12:11 AM Daniel Borkmann <daniel@iogearbox.net> wrot=
+e:
+>
+> On 9/5/20 1:18 PM, Laura Garc=C3=ADa Li=C3=A9bana wrote:
+> > On Fri, Sep 4, 2020 at 11:14 PM Daniel Borkmann <daniel@iogearbox.net> =
+wrote:
+> [...]
+> > Something like this seems more trivial to me:
+> >
+> > table netdev mytable {
+> >      chain mychain {
+> >          type filter hook egress device "eth0" priority 100; policy dro=
+p;
+> >          meta protocol !=3D 0x419C accept
+> >      }
+> > }
+>
+> Sure, different frontends, so what?! You could also wrap that code into a
+> simple a.out or have nft style syntax jit to bpf ...
 
-Patch applied to ath-next branch of ath.git, thanks.
+Not only syntax but get rid of bpf and tc from the application stack
+and only maintain 1 interface.
 
-7e8453e35e40 ath11k: fix a double free and a memory leak
-
--- 
-https://patchwork.kernel.org/patch/11759745/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Thanks!
