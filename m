@@ -2,121 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE4CA260981
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 06:26:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07F93260996
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 06:31:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726358AbgIHE0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 00:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbgIHE0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 00:26:05 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90D3C061573;
-        Mon,  7 Sep 2020 21:26:04 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id o5so14152486qke.12;
-        Mon, 07 Sep 2020 21:26:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6wIvzc8U9COMkIGKunN+WS3730A3DmsP+jQFwcsoR08=;
-        b=XGIgUmdp/WMDIdcOZhT0JMYaODhrVSDvwHBKJv5L4Jckzwu2Nt0vE3loo0Gg7Pwz/E
-         XNu3yy+0iasK4VDg5yY9pw4jhxu0fQpYhTzPlyrUsybUI8K0/21cUZoBSjLVFCUeJboO
-         cTF1dAOT5YiR6Wr/n3WFUA4PRJGV8t6FVhIYWn7oPsgUowoMz92YSJzXQ9yX8noij2ik
-         zz9mdQgufHBnz7mitvUyHxsioNXQtA7szhQWxkvQ4ZsvCcFOPWwKjsBmrKYGeH1tUZiJ
-         ebAG24j+2Pq5VChtR/j3CZhcqqhG5igvdfcDuf/SC1xZSYeKzDQOytS2hJJ0HZBQp0dH
-         TTfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6wIvzc8U9COMkIGKunN+WS3730A3DmsP+jQFwcsoR08=;
-        b=k1vtuhUBCq6WzyROYEjVdpY8yIB8JD7heVOk/T48EQcWi+S6+T+ENwbCI28AaOcA09
-         j/5kFgoICfCL3ysDV32ldqW9lqnjnxkGDJOeNg3E7KswsjkwTsPlG9v11LbKRdB5jvnS
-         OHy3taTEP7ZlGqn1pG74ZJK0xqrPhOqcsApkpvHwXtlPBWp/SkzoGA9sNJTFcHgXKhOb
-         /eJUk2zSo/I/egIpPRS0vTP21F/1QbfbJOLceBW+34SS4eTbeV0FDOQZ/QDalWqiqvPH
-         g2QKIX32DATHSG9B0yRbcYpr3yt9ZkHZGcn8r3uLgzeCG/mOw1Mmk7kAkM/RSP30aVNa
-         DT2w==
-X-Gm-Message-State: AOAM532fuKTixQpbdxMA30rv2ZAOlysFW5hCaKol84DWd4sX3KHo9XHn
-        N1S9/aqWX25GpohFF/WU0Hnm9o7PaEA=
-X-Google-Smtp-Source: ABdhPJxknd7Tzqi8PHGiWn6w9zwv3Wp6f1fXH1+0QYxLjAxL5aSnzlwKisngzsoLVVZzkBWAfRtZ2g==
-X-Received: by 2002:a37:a495:: with SMTP id n143mr21941493qke.394.1599539163498;
-        Mon, 07 Sep 2020 21:26:03 -0700 (PDT)
-Received: from ubuntu-n2-xlarge-x86 ([2604:1380:45d1:2600::1])
-        by smtp.gmail.com with ESMTPSA id p29sm8096819qtu.68.2020.09.07.21.26.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 21:26:02 -0700 (PDT)
-Date:   Mon, 7 Sep 2020 21:26:01 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     trix@redhat.com
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        ndesaulniers@google.com, mkenna@codeaurora.org,
-        vnaralas@codeaurora.org, rmanohar@codeaurora.org, john@phrozen.org,
-        ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH] ath11k: fix a double free and a memory leak
-Message-ID: <20200908042601.GB111690@ubuntu-n2-xlarge-x86>
-References: <20200906212625.17059-1-trix@redhat.com>
+        id S1728003AbgIHEbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 00:31:25 -0400
+Received: from sonic311-10.consmr.mail.ne1.yahoo.com ([66.163.188.240]:34929
+        "EHLO sonic311-10.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725802AbgIHEbY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 00:31:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1599539483; bh=aQBm+9Bca4ejs9ftzYnk89bfX4ekoPZ6NeQWeQKD++E=; h=Date:From:Reply-To:Subject:References:From:Subject; b=QinnxJB4BywnQIIxfw8iovOshpEJppl9gVRAfWQW1r2ENHoYU4cdBCzsluWTYsc4jAqfCOR3zPy0qYGuunUGBKP0JVRO7fSHL8F7TYUo19LyqF19LCqsRNAA8zON0xhg0UNsBq+7EliZwLRNVcYDAV6CR/Xo+ErlRV3CJoZMKnpHAhs8eWYsNflUKd71TYDD3xFAJKA6CNY7sQ53qoH2hq7fDTtVREdv2SMpHizJX6kdkYbXwBp1L6CrtPT1ve3GHTG35iW3XHhRnd7jMGy9pbF73EVTl1gJbUHyawPi3DUx1f+2N4TBwt0ka3r4enzTxXvbosiuyZbWtgV389o6Uw==
+X-YMail-OSG: UR3fK6cVM1moNqU5MIaQW.u0CAzKEqMe2O4rUd_vEIf_l93U4dxRLmzMZTLSzGI
+ lqyDQpYzpLr6oEW97avX8YXhjqRtQtL6P1ZP4o9P7okS6K6vtc6..F4JJwUiwRyiXmBy_lnVun1g
+ gJh11Qf9m8aXES5YtfhNtKGK3VD48D8H2ESo3AFZ0XOd73bhm1_0euemVIXDfTV43An2YzAgYmEb
+ fKWvM63590tJiDM3uc1t48nJ_y0HfOmFx5yxzVMYhZRFYj3sIE1hhISrtUTOYryaT1D5M5Bz.OBB
+ Irj8UtvY2.L.5ry0ADcJpJ0bqsgSWvkxwe_oFbTUDphglESgW9uNuXrJogWzB2svzUX42IUxolG2
+ AdwEXrn6MvB31XNjOa5rLNDGDL9jT0drnhF9H0UNy6dPgT4aavveJJnlN8indojbaH7ImLxWwmd5
+ uZcuhQGn4bnkU7OQ0MEIJk7lRRkTfiAwZ0s7iTYToxD1K8yZoEUhmMa0zYB4kVjjxjvWPA2YqKcY
+ 5T7OSTPpj6kVX1rW3yYbLb78cCsMXWIC_8n67apwyeHusAVWYV2Ud5.EsdOomfpsErwzLdgEOKE6
+ LtlvXuvakMGomZfLs.zUASbwUkjzox_s4aXBb_yznEr7RtbOT5n6xFugrMqXj6UaNaf7ym5rxMHf
+ zmU4NwZUdclMCEFEuQf1N8bEcMEyPRh0pUnj_KtyMS1A4DDN5eS.j_CGH8bEbCxtugAPv5VgHwAw
+ .qYGN8aBBH2h0b.tCcXJn8dAZ4Slq97AA_r_nkfJu._rkrvKSbbMBxko_41iCaZBpn6bdKbyBxo9
+ ZA_hW98q2_i9E4ktPfOABKu6b8HdJV.zVpPIhzfWTUY4MLx9CUzQCezsenQ7Z_U2IJsJRkjsyFFz
+ qEo7nNFUH4DsYdPSsBEdwsz0GOAU.e_rKbqZ1WSXcA7wgEK4NLPObMs7hgYYWownZQCZhc2ezFY7
+ dMQ4mBVB80HXhAggStkGtwj2eNabIgGFC3bbbW8i8lNPvsbj0n6F1i4FhzGIWZktCA_3hR4vwNvh
+ .KD2ajETLvah1ikFt3r.6OquY0WjV8Qd9Bb8qG4X3yrhEgKviPMb3K6f_kCjDsTl79mRbGgSj93E
+ dutP3TJ7cqPczy2HOU.u3DhRzFOnfaneZ.dMyG4o0TRGOiXQS5KHNpU0d_dVf3TT1nAj5S4rWiVg
+ hcZ2HnTbEsHrOn31GQlwzF8prLhsriyfINWVVTQsJQILISPEe50o0_afVWsC6eyEdEW0VkeKxnRZ
+ WybZLJxLJSUbFA3nZ8GaaeY9BjtXQVhitBKTpg7BLIKwtGvTCy14zG2S0KIoG0GV.w4Tf_Yv4LYA
+ PszhBNDskuFdEg2_82yjmdg4fpdHJEJxewonqKgZclsIaxQ0PpQ1pTJuufJJ_RsTaKs15DeGAcmI
+ og8WBx.8jlTdfW2RNV3PCJGAY5oiJOK8YHZum3qZOhT7gQ5y7Qp3cz_yZC1oJ9dgNbNsViT4vs12
+ HvfA9eQ--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.ne1.yahoo.com with HTTP; Tue, 8 Sep 2020 04:31:23 +0000
+Date:   Tue, 8 Sep 2020 04:29:23 +0000 (UTC)
+From:   "Mrs. Maureen Hinckley" <mau15@blikxy.online>
+Reply-To: maurhinck5@gmail.com
+Message-ID: <1642723452.4216975.1599539363042@mail.yahoo.com>
+Subject: RE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200906212625.17059-1-trix@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+References: <1642723452.4216975.1599539363042.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16565 YMailNodin Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 06, 2020 at 02:26:25PM -0700, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> clang static analyzer reports this problem
-> 
-> mac.c:6204:2: warning: Attempt to free released memory
->         kfree(ar->mac.sbands[NL80211_BAND_2GHZ].channels);
->         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> The channels pointer is allocated in ath11k_mac_setup_channels_rates()
-> When it fails midway, it cleans up the memory it has already allocated.
-> So the error handling needs to skip freeing the memory.
-> 
-> There is a second problem.
-> ath11k_mac_setup_channels_rates(), allocates 3 channels. err_free
-> misses releasing ar->mac.sbands[NL80211_BAND_6GHZ].channels
-> 
-> Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-> Signed-off-by: Tom Rix <trix@redhat.com>
 
-Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
 
-> ---
->  drivers/net/wireless/ath/ath11k/mac.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-> index f4a085baff38..f1a964b01a83 100644
-> --- a/drivers/net/wireless/ath/ath11k/mac.c
-> +++ b/drivers/net/wireless/ath/ath11k/mac.c
-> @@ -6089,7 +6089,7 @@ static int __ath11k_mac_register(struct ath11k *ar)
->  	ret = ath11k_mac_setup_channels_rates(ar,
->  					      cap->supported_bands);
->  	if (ret)
-> -		goto err_free;
-> +		goto err;
->  
->  	ath11k_mac_setup_ht_vht_cap(ar, cap, &ht_cap);
->  	ath11k_mac_setup_he_cap(ar, cap);
-> @@ -6203,7 +6203,8 @@ static int __ath11k_mac_register(struct ath11k *ar)
->  err_free:
->  	kfree(ar->mac.sbands[NL80211_BAND_2GHZ].channels);
->  	kfree(ar->mac.sbands[NL80211_BAND_5GHZ].channels);
-> -
-> +	kfree(ar->mac.sbands[NL80211_BAND_6GHZ].channels);
-> +err:
->  	SET_IEEE80211_DEV(ar->hw, NULL);
->  	return ret;
->  }
-> -- 
-> 2.18.1
-> 
+I am Maureen Hinckley and my foundation is donating (Five hundred and fifty=
+ thousand USD) to you. Contact us via my email at (maurhinck5@gmail.com) fo=
+r further details.
+
+Best Regards,
+Mrs. Maureen Hinckley,
+Copyright =C2=A92020 The Maureen Hinckley Foundation All Rights Reserved.
