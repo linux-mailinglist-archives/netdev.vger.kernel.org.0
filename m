@@ -2,128 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90FA5261F6C
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 22:03:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AE4A261F61
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 22:02:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732558AbgIHUDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 16:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730462AbgIHPYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 11:24:02 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D5A5C0619C7
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 08:21:10 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id d190so17507425iof.3
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 08:21:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XVUHodVNw+FgDFIw+2wBkiqJS96IEMfn+BC80vbJRiY=;
-        b=nJrHRyhtkO4Sv2uew8Ez2DTdGq2DrW5VuvlhU3Ra3MbCX/tO3Y4nfcKicr1ZUoL5kM
-         eql5JxdB6Bf9UMiSPVBV7tdp42YRosmn/cQrlCERYPi8iVGkxsCfXyp2LvMh1C09wr4x
-         M5QZgh/NkZes6woi69niQWAIwscfM8HylFCZmdA2tepDiCYHZDMeZoKMNltbe0Bp91Qj
-         d12NBNan1QfmRsJS5BJx1EmUEB7iozx3eaPNwtwxXqICiWL7tLPMBnx6v6K2JKiWj7fg
-         Pj+HeInXLMe7MMqOdUxNvpfJVRb5lKTKCWmCw/2u90jywEDSWFZocDKDD11x8X1F0OfU
-         jq2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XVUHodVNw+FgDFIw+2wBkiqJS96IEMfn+BC80vbJRiY=;
-        b=OOPytbPs71c5QZPrL5/qslGBwpi8OGRJw9RhCwHPa9gx5AJ8U8XQ2gSVp6seHjpN9F
-         d5+BZt+8ZDC/8xEZ5e8L2EfKH9e+XBGiNj4tA4999pQEP70PAjKfI2Hbj2BP7Gis+wIV
-         AGdaXabxro33PaQuK6RrcfHThOQSg91UEi8Of0v0EUI031YE/hDG5b8QMhH91ZfZK8Aq
-         kGEaYk2skassIqG00pmX1oi4FXl+bG7X9/aDvuksXDMW9VV/2pfmuzGYR3WtRfascb5g
-         gwckRusGzlO89dvNLSmVI9ezL0/Aiwo3Liu6mIGljSRnPS6T2YTWh4hi8sD2++dk3mQn
-         VHIQ==
-X-Gm-Message-State: AOAM5316a0ZlK/7FkSPsgO4JEQnJNXp3lOYONoqYKJwMoz2F2oJ5fwKP
-        TpEQm/bFYXHNsID16JnOgJ8=
-X-Google-Smtp-Source: ABdhPJwtMCa7GXA5G6R6jb6W9zVx7AEfihbuGL1XsD3ce3kmX9NmgUvnzvGaiTh52pnogaLuTZgsUw==
-X-Received: by 2002:a6b:c843:: with SMTP id y64mr20910348iof.47.1599578469547;
-        Tue, 08 Sep 2020 08:21:09 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:ec70:7b06:eed6:6e35])
-        by smtp.googlemail.com with ESMTPSA id p65sm10753420ill.23.2020.09.08.08.21.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Sep 2020 08:21:09 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 11/22] nexthop: Emit a notification when a
- nexthop is added
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-References: <20200908091037.2709823-1-idosch@idosch.org>
- <20200908091037.2709823-12-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8568a626-0597-0904-c67c-a8badc4e270a@gmail.com>
-Date:   Tue, 8 Sep 2020 09:21:08 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1732646AbgIHUC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 16:02:26 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:51343 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730504AbgIHPel (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 11:34:41 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 83cb8164
+        for <netdev@vger.kernel.org>;
+        Tue, 8 Sep 2020 14:57:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=7N+w6kF7E0t5Uk3YN/81VBi5JP8=; b=VuAkIl
+        Itj15IoZZINWbVlMfqt095SNhfstPxIdR6wCEt20s57hwB4f4rqo3Qc0yB6QHyTX
+        dVjiyrTW5xs1xYlPvR7fVQ7GVhW0AwTw3KuxxFlovgIXnzUknqj46uvE6DP1z1Mf
+        AgAzDXSZ51xmQQ8PDAOV3z9SzvhEWiKLE4WP4ETBL7qpfPIsB4AygmzTFzBd6NnZ
+        ovWVeaLmXS0x564P24DaHk/FmMRhhWQCjx/h603GRtc4H0UwhD16J6B04EaBiC3o
+        ruDnrMIPdSfV3CNhKUs0JG0RY0DbH+0xR67Dqg+jNUMNK0KIfwOur4YlAQhRLFLu
+        U7E2fCG+JL6mDtvw==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a94ea228 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO)
+        for <netdev@vger.kernel.org>;
+        Tue, 8 Sep 2020 14:57:15 +0000 (UTC)
+Received: by mail-io1-f52.google.com with SMTP id d190so17526588iof.3
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 08:26:09 -0700 (PDT)
+X-Gm-Message-State: AOAM531CaQhh7MYgDtbMEfaEQXF8PM6dggiOG5wsmtCROFFbez0aHMUi
+        IvrqsSfF+KsJ2CY0jztVdsb+8L1ax2Ttd6dpIKY=
+X-Google-Smtp-Source: ABdhPJw9Fax3meqqSqqUE1/U9G0Fj74FgZShwJy2QUoc8l2nSwvdSkxd/y/U0NP2RxNtMkno7Plyroz+rmnjcspNDrc=
+X-Received: by 2002:a6b:7112:: with SMTP id q18mr21017767iog.79.1599578768890;
+ Tue, 08 Sep 2020 08:26:08 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200908091037.2709823-12-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200908145911.4090480-1-edumazet@google.com>
+In-Reply-To: <20200908145911.4090480-1-edumazet@google.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 8 Sep 2020 17:25:58 +0200
+X-Gmail-Original-Message-ID: <CAHmME9qG6ceo+ZYncHOJ1+PE_bv74suN5LAv1gFUTHaBy31p7A@mail.gmail.com>
+Message-ID: <CAHmME9qG6ceo+ZYncHOJ1+PE_bv74suN5LAv1gFUTHaBy31p7A@mail.gmail.com>
+Subject: Re: [PATCH net] wireguard: fix race in wg_index_hashtable_replace()
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/8/20 3:10 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> Emit a notification in the nexthop notification chain when a new nexthop
-> is added (not replaced). The nexthop can either be a new group or a
-> single nexthop.
+Hey Eric,
 
-Add a comment about why EVENT_REPLACE is generated on an 'added (not
-replaced)' event.
+On Tue, Sep 8, 2020 at 4:59 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> syzbot got a NULL dereference in wg_index_hashtable_replace() [1]
+>
+> Issue here is that right after checking hlist_unhashed(&old->index_hash)
+> another cpu might have removed @old already from the hash.
+>
+> Since we are dealing with a very unlikely case, we can simply
+> acquire the table lock earlier.
 
-> 
-> The notification is sent after the nexthop is inserted into the
-> red-black tree, as listeners might need to callback into the nexthop
-> code with the nexthop ID in order to mark the nexthop as offloaded.
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  include/net/nexthop.h | 3 ++-
->  net/ipv4/nexthop.c    | 6 +++++-
->  2 files changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/net/nexthop.h b/include/net/nexthop.h
-> index 4147681e86d2..6431ff8cdb89 100644
-> --- a/include/net/nexthop.h
-> +++ b/include/net/nexthop.h
-> @@ -106,7 +106,8 @@ struct nexthop {
->  
->  enum nexthop_event_type {
->  	NEXTHOP_EVENT_ADD,
+That's a nice bug. It looks like this is triggered by a teardown race,
+when wg_index_hashtable_replace races with wg_index_hashtable_remove.
 
-looks like the ADD event is not used and can be removed.
+Since all the other hashtable mutator functions are protected by that
+spinlock, it doesn't seem harmful to fix this by doing the same, even
+if formally that spinlock is supposed to protect hash bucket heads
+rather than entry pointers.
 
-> -	NEXTHOP_EVENT_DEL
-> +	NEXTHOP_EVENT_DEL,
-> +	NEXTHOP_EVENT_REPLACE,
->  };
->  
->  struct nh_notifier_single_info {
-> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-> index 71605c612458..1fa249facd46 100644
-> --- a/net/ipv4/nexthop.c
-> +++ b/net/ipv4/nexthop.c
-> @@ -1277,7 +1277,11 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
->  
->  	rb_link_node_rcu(&new_nh->rb_node, parent, pp);
->  	rb_insert_color(&new_nh->rb_node, root);
-> -	rc = 0;
-> +
-> +	rc = call_nexthop_notifiers(net, NEXTHOP_EVENT_REPLACE, new_nh, extack);
-> +	if (rc)
-> +		rb_erase(&new_nh->rb_node, &net->nexthop.rb_root);
-> +
->  out:
->  	if (!rc) {
->  		nh_base_seq_inc(net);
-> 
+I'm playing with your patch and a variant of it, which I'll have
+queued up in my tree in the next hour or so.
 
+Thanks a lot for triaging this.
+
+Jason
