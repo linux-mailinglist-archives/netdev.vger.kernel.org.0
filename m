@@ -2,160 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D266026175E
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:32:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DEEC2617C5
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:42:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731717AbgIHRaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 13:30:12 -0400
-Received: from mail-eopbgr80048.outbound.protection.outlook.com ([40.107.8.48]:49369
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731598AbgIHQQD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 12:16:03 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HC5lyTmL9lE+SSMppLoR3LMGqm3bIjCHXacd6kafFAGELbIC6e/ge2o+QY3WZ3zl8DZjOfnBZMiPW0PuRP1PjOyxUvtj+hi3JG9F2j7lENzN2zy59va1DZhkIfEOfbGdRa3xIJSYKV+sJ+81DOcmdju8CQ9jMmWLzTDgqMZIO88WZARXgZ3VgNm5OzgMKaQYHQTFUPlmS3F+alMGcw4AZmnBjj5VwH9PyvhLfQSiN4q8ccR1gFINO/524rl5Dm41INfWM5E8DoGBPytrvcWPrufvbRmuw3/HDyAMZBSVRwy53DTtPVYqYmLuWu45mxFXKae9ZsnJffmljrJWZWLPfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JSVIp5U1kSAv7+3GQEyfDd9ho/84r7x/HedE7a1jg8U=;
- b=HrxzzzFuMDZDSx5YCuSWXi+PHFQCLRxIkVHckD7/DJYgC8E/7dphrCv2bJguOTU5fSavdBLy38BI9WxeodBdqjX47UZC2FfcfyUrhSQ0WYhf6b5OuIpBMiyseqtuEtvUy7bDa+p9JxM0IY642P8HSihTMPL3FWwneBegqyy10w6MENe4kUGe7xrdAwoAouPYQaJ2KnWTMPPCyON3UcOQpHhj2/+dzOsDpDf1MQokbRwC3gduHKp8HnYoA/rFHMuhAyIN2SFuT9EYKSA/+olzTRFEgI0x1l1pGqZgU4v6n66XDWU3544315bzI2AzdmnEx4JWYhMXzwB4ksnnvAOKNQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JSVIp5U1kSAv7+3GQEyfDd9ho/84r7x/HedE7a1jg8U=;
- b=WvT/lvy9f6YVa6UQ6tMIfWEgVX9f1WveNcGMGPeor/Nvlo5dGkfgw8ChSyVFoezxF2ktFNFjNXvhKVzrxj/nlEe5MXsFx95iseqXeM29jaCWeI/egTtPoCplLvbS0P+SdpxgW00VIXqIYVeb8Rm/oM50vHw4NDzYAXbXeKBXL64=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=mellanox.com;
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (2603:10a6:208:c0::32)
- by AM0PR05MB4353.eurprd05.prod.outlook.com (2603:10a6:208:67::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15; Tue, 8 Sep
- 2020 14:43:10 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::349f:cbf4:ddcf:ce18]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::349f:cbf4:ddcf:ce18%3]) with mapi id 15.20.3348.019; Tue, 8 Sep 2020
- 14:43:10 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>
-Subject: [PATCH net-next v2 1/6] net/mlx5: E-switch, Read controller number from device
-Date:   Tue,  8 Sep 2020 17:42:36 +0300
-Message-Id: <20200908144241.21673-2-parav@mellanox.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200908144241.21673-1-parav@mellanox.com>
-References: <20200825135839.106796-1-parav@mellanox.com>
- <20200908144241.21673-1-parav@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SA9PR11CA0020.namprd11.prod.outlook.com
- (2603:10b6:806:6e::25) To AM0PR05MB4866.eurprd05.prod.outlook.com
- (2603:10a6:208:c0::32)
+        id S1731836AbgIHRmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 13:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731667AbgIHQOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:14:04 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDDCC09B04A
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 07:44:02 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id j2so17304770ioj.7
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 07:44:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Fe8zfIBhDwxKpbqi1swwI2f1Y/PtImvzPTCMuyO8osY=;
+        b=GW+XKo+F/OFv9+S0A9wwaVNIhRTtEi16/lwCe/cRnXh+Qr38Y+X0d8770MHf2cOzIM
+         6lemYGlxEOHk8EDuGQh2JQ6dx8t0IPj0VzJWZM+dJ1N7YEAAhFr8yBkcuAqqDQMWiUlw
+         DEo40lGaw1iPQfz4JpUBw5IeNvWSzt+rCz7Dk6qjY/UfauTSPARVH1c25tiszhdNA51s
+         JSL3EpYtdT3bZNvWXSs9/Il7cgMajpE27tsdfvf7aXF6xpFBgXa0mSBhioJ/bWM7nDLu
+         ZjgDaBTCAmfjJpQfEkspQgZobGotnxFW9/Cs3rvT01sMrv/3kKyhSTqbwWm4fIcIG6Yf
+         zC/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Fe8zfIBhDwxKpbqi1swwI2f1Y/PtImvzPTCMuyO8osY=;
+        b=H7/X/13w3IWtChC5bbhN3A5f09+Hxgsj10j9XK9tVDzUVVXo2VybSTP/mgL0qW8M67
+         dicUc2hPfdqJtSlgvK+/SHeaQmq8AjfiOuW0f5Sth1Idaue5uC/PLuNVuyf05Vx+pn0q
+         9p1B7hsJNISrfs8w2p0CsixsHMgy9C6idSGKr7rzVrVRn3/HKI+CoS8eQD9ePDarKZxU
+         vWmNaSjfcB1ocTDcB8PQiFrzS+Ik9qLWULcZ8Wru+th958n+f/MwXEYTkzd6VKj1KLDT
+         7ZbsqFPhBbVYMN5wFstN3tHXwSV3LATMLYncOjnz8/hOTPVTMS9oU0GLSNvLtf6IXfrP
+         0FXg==
+X-Gm-Message-State: AOAM5335+Mnb5LoGfl5TcrJESs+6Ta0fLPHZuxeytRS/l4abHnfTMPGM
+        MOrTyVB5KQp6ssmb5amifeE=
+X-Google-Smtp-Source: ABdhPJwvNEzLUvptG19z0UF3Jwx/Og+YsXmeTyvurOU/mCpDnopzypqUP2dJ2BUECg/Q29bCmkrLmQ==
+X-Received: by 2002:a6b:15c3:: with SMTP id 186mr21410642iov.161.1599576241939;
+        Tue, 08 Sep 2020 07:44:01 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:ec70:7b06:eed6:6e35])
+        by smtp.googlemail.com with ESMTPSA id o12sm5386206ilq.29.2020.09.08.07.44.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 07:44:01 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 06/22] nexthop: Pass extack to nexthop
+ notifier
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+References: <20200908091037.2709823-1-idosch@idosch.org>
+ <20200908091037.2709823-7-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <80a556da-f68f-7c6a-8029-30fd9c6aa63a@gmail.com>
+Date:   Tue, 8 Sep 2020 08:44:00 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from sw-mtx-036.mtx.labs.mlnx (208.176.44.194) by SA9PR11CA0020.namprd11.prod.outlook.com (2603:10b6:806:6e::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16 via Frontend Transport; Tue, 8 Sep 2020 14:43:08 +0000
-X-Mailer: git-send-email 2.26.2
-X-Originating-IP: [208.176.44.194]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 822a48b5-2d6b-46ef-2c24-08d854058192
-X-MS-TrafficTypeDiagnostic: AM0PR05MB4353:
-X-LD-Processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-X-Microsoft-Antispam-PRVS: <AM0PR05MB4353652ADD7761BA3812092AD1290@AM0PR05MB4353.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:161;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UCP5cql0prpdd+DOhPcL7cbgg7ENIifPoL6jQHFxc5Vr3YAs6PfHs5DGhuyG3Vaj9KBJVNdpBc3+t1mOwL5J/2LTXmDjQVLBgGJGUWbpGS44LFScSartyAnY2LQgDhUtHrcmz6NWISAjo3yPw5ohm3jjZYZu8qjLfKMjB6xTSytbmzKMukupVKEol70f8EAPerWHLxSHDdTgX1cFvJWjLsL9yCT1H+I2lsbLFOuI9ZV5r43sMiAEi2CmHGJ5zWX7fC7G450Fqk6KDmxVcwidT8Jxr6zVnrb/eqPqkgT9ImN1CSqSbkTEEFm9PlVvz0ja2MD9OY4Ut+XqLxe040gZeQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4866.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6486002)(6666004)(498600001)(26005)(1076003)(6512007)(6506007)(86362001)(4326008)(52116002)(54906003)(5660300002)(2906002)(36756003)(66946007)(8676002)(83380400001)(66556008)(66476007)(956004)(16526019)(8936002)(2616005)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: UczzYlzoke+wYj0qArL5oerz4383Pxs1jgZhmkQ7EOSOwH7CYXXGTLPKRosRt4juib+h+yQOJ9Zcgr+XPfPEAqHuOsJRGigpnVZfoXfOI44KLy52mSKDwu0MgAoiZvGfmGAEH+RyxVuKeo6aLFE0iyFnBHWJkfW+L21uNeU24ZOh+2XIjjXdkaxBbyMk29kMoOhk28IbzDPtvyCrFTxJsH34OnxV5RfYzYbjhXLDu6BvTvcNooLX9WYPY7gMPk5tZCuvcActCDhsx7fd9tVzjwcnHRjQoMua8RSJMaFcvKUntXqu+ijJR/DFqVS9JPxWG4hKDejnjf27vYRIfOqKzGoj7SVR6EV6fJNLiiie+86uOqk9ufoVov5FkccZubhV1rtVnBFsX1dVGgInTSPUcRobfkLSx7FX3tLUN4tRLilxUb66Hth6Zqwu2EweJEtvs9aMk5NcC6vVcs9A+bXa2P8CMURFtHRa3JikauoHq5ZYD/2UzsjsU0ZJDE2emuIhMfUbPGmLWMOYtLsBOPDXFOAIm96c/ZNPOne7TNoMxq+gA7MxsJ3ZEF3GKl9OrypRyb7nczn1jJj58CpHMVbadzN5GQI4GpnaLtHXh7YfuxBxKQlOoo130nc4RyRlimgEK+FL7d3TtnD77xzzAYnXKA==
-X-MS-Exchange-Transport-Forked: True
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 822a48b5-2d6b-46ef-2c24-08d854058192
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4866.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2020 14:43:10.0234
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aZe552WMrhP4aJWnaDyPypgXIB5ugZCsGvS+pei5BJhz0qjTi8uhSuswvATqWpZkqcU3jl3YVX14zS8VUK51rA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4353
+In-Reply-To: <20200908091037.2709823-7-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+On 9/8/20 3:10 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> The next patch will add extack to the notification info. This allows
+> listeners to veto notifications and communicate the reason to user space.
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/ipv4/nexthop.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+> index 8c0f17c6863c..dafcb9f17250 100644
+> --- a/net/ipv4/nexthop.c
+> +++ b/net/ipv4/nexthop.c
+> @@ -38,7 +38,8 @@ static const struct nla_policy rtm_nh_policy[NHA_MAX + 1] = {
+>  
+>  static int call_nexthop_notifiers(struct net *net,
+>  				  enum nexthop_event_type event_type,
+> -				  struct nexthop *nh)
+> +				  struct nexthop *nh,
+> +				  struct netlink_ext_ack *extack)
+>  {
+>  	int err;
+>  
+> @@ -907,7 +908,7 @@ static void __remove_nexthop(struct net *net, struct nexthop *nh,
+>  static void remove_nexthop(struct net *net, struct nexthop *nh,
+>  			   struct nl_info *nlinfo)
+>  {
+> -	call_nexthop_notifiers(net, NEXTHOP_EVENT_DEL, nh);
+> +	call_nexthop_notifiers(net, NEXTHOP_EVENT_DEL, nh, NULL);
+>  
+>  	/* remove from the tree */
+>  	rb_erase(&nh->rb_node, &net->nexthop.rb_root);
+> 
 
-ECPF supports one external host controller. Read controller number
-from the device.
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
----
-Changelog:
-v1->v2:
- - Removed controller number setting invocation as it
-   is part of different API
----
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  1 +
- .../mellanox/mlx5/core/eswitch_offloads.c     | 22 +++++++++++++++++++
- 2 files changed, 23 insertions(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-index 867d8120b8a5..7455fbd21a0a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -217,6 +217,7 @@ struct mlx5_esw_offload {
- 	atomic64_t num_flows;
- 	enum devlink_eswitch_encap_mode encap;
- 	struct ida vport_metadata_ida;
-+	unsigned int host_number; /* ECPF supports one external host */
- };
- 
- /* E-Switch MC FDB table hash node */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index d2516922d867..b381cbca5852 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2110,6 +2110,24 @@ int mlx5_esw_funcs_changed_handler(struct notifier_block *nb, unsigned long type
- 	return NOTIFY_OK;
- }
- 
-+static int mlx5_esw_host_number_init(struct mlx5_eswitch *esw)
-+{
-+	const u32 *query_host_out;
-+
-+	if (!mlx5_core_is_ecpf_esw_manager(esw->dev))
-+		return 0;
-+
-+	query_host_out = mlx5_esw_query_functions(esw->dev);
-+	if (IS_ERR(query_host_out))
-+		return PTR_ERR(query_host_out);
-+
-+	/* Mark non local controller with non zero controller number. */
-+	esw->offloads.host_number = MLX5_GET(query_esw_functions_out, query_host_out,
-+					     host_params_context.host_number);
-+	kvfree(query_host_out);
-+	return 0;
-+}
-+
- int esw_offloads_enable(struct mlx5_eswitch *esw)
- {
- 	struct mlx5_vport *vport;
-@@ -2124,6 +2142,10 @@ int esw_offloads_enable(struct mlx5_eswitch *esw)
- 	mutex_init(&esw->offloads.termtbl_mutex);
- 	mlx5_rdma_enable_roce(esw->dev);
- 
-+	err = mlx5_esw_host_number_init(esw);
-+	if (err)
-+		goto err_vport_metadata;
-+
- 	err = esw_set_passing_vport_metadata(esw, true);
- 	if (err)
- 		goto err_vport_metadata;
--- 
-2.26.2
-
+Reviewed-by: David Ahern <dsahern@gmail.com>
