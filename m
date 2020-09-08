@@ -2,65 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F75B2611C4
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 15:05:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACFDA261213
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 15:37:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730263AbgIHNFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 09:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729738AbgIHLhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 07:37:38 -0400
-Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F81C061755
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 04:34:13 -0700 (PDT)
-Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:8982:ed8c:62b1:c0c8])
-        by mail.nic.cz (Postfix) with ESMTPSA id A968A14085D;
-        Tue,  8 Sep 2020 13:33:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1599564787; bh=gqMctQWgY8AVqR4b1tmHLbntyd2feNj8b9JqhcG4QBk=;
-        h=Date:From:To;
-        b=mVZuTg5xyLy/F/ffIomo3OFwqcPGEC7HnSGJFxvz5vJXCj++RAo6Rb/bqu/G0EVXI
-         27eyHbnaK2hMd07G23iYWwN/awuLNyjFErO0AoLbk0sF5olRPxBkzjlHwC88fHXRaw
-         8Eshwlyv3LK/WnvuLw+ochtuX97laxNXzbbyFUXM=
-Date:   Tue, 8 Sep 2020 13:33:07 +0200
-From:   Marek =?ISO-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next v2 1/7] net: dsa: Add helper to convert from
- devlink to ds
-Message-ID: <20200908133307.2dfd9f03@dellmb.labs.office.nic.cz>
-In-Reply-To: <20200908005155.3267736-2-andrew@lunn.ch>
-References: <20200908005155.3267736-1-andrew@lunn.ch>
-        <20200908005155.3267736-2-andrew@lunn.ch>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1730030AbgIHNhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 09:37:07 -0400
+Received: from mga05.intel.com ([192.55.52.43]:41206 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729545AbgIHLMP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 07:12:15 -0400
+IronPort-SDR: KA3BG1x0/KIeeZJWRQ2PSqK8SdoysORIFBjUVTrWzEd0/GJiop6netUoDF9Xu/eYG7gKtiTT34
+ zaQ4BB/gYHaw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9737"; a="242925918"
+X-IronPort-AV: E=Sophos;i="5.76,405,1592895600"; 
+   d="scan'208";a="242925918"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2020 04:12:15 -0700
+IronPort-SDR: ebvqiBbYWXapEz4ci64bdBQOaYcK2mF5S/5oFyorAuRylRf//LSSu5CczC0iF3r2Si+jwAY83+
+ zoimXcqZvq6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,405,1592895600"; 
+   d="scan'208";a="284479300"
+Received: from pgierasi-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.39.2])
+  by fmsmga007.fm.intel.com with ESMTP; 08 Sep 2020 04:12:13 -0700
+Subject: Re: [Intel-wired-lan] [PATCH bpf-next 4/4] ixgbe, xsk: use
+ XSK_NAPI_WEIGHT as NAPI poll budget
+To:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kuba@kernel.org, intel-wired-lan@lists.osuosl.org,
+        magnus.karlsson@intel.com
+References: <20200907150217.30888-1-bjorn.topel@gmail.com>
+ <20200907150217.30888-5-bjorn.topel@gmail.com>
+ <82901368-8e17-a63d-0e46-2434b5777c04@molgen.mpg.de>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <0fb03a39-d098-8fc9-ba70-e919ef8e091e@intel.com>
+Date:   Tue, 8 Sep 2020 13:12:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
-        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+In-Reply-To: <82901368-8e17-a63d-0e46-2434b5777c04@molgen.mpg.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Sep 2020 02:51:49 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+On 2020-09-08 12:12, Paul Menzel wrote:
+> Dear Björn,
+> 
+> 
+> Am 07.09.20 um 17:02 schrieb Björn Töpel:
+>> From: Björn Töpel <bjorn.topel@intel.com>
+>>
+>> Start using XSK_NAPI_WEIGHT as NAPI poll budget for the AF_XDP Rx
+>> zero-copy path.
+> 
+> Could you please add the description from the patch series cover letter 
+> to this commit too? To my knowledge, the message in the cover letter 
+> won’t be stored in the git repository.
+>
 
-> +struct dsa_switch *dsa_devlink_to_ds(struct devlink *dl)
-> +{
-> +	struct dsa_devlink_priv *dl_priv = devlink_priv(dl);
-> +
-> +	return dl_priv->ds;
-> +}
-> +EXPORT_SYMBOL_GPL(dsa_devlink_to_ds);
+Paul, thanks for the input! The netdev/bpf trees always include the 
+cover letter in the merge commit.
 
-Hi Andrew,
-why not  make this a static inline function?
-Marek
+
+Cheers,
+Björn
+
+>> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+>> ---
+>>   drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> […]
+> 
+> 
+> Kind regards,
+> 
+> Paul
