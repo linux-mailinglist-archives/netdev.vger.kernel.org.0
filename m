@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7FCF261467
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:19:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4653261473
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731823AbgIHQT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:19:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57574 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731797AbgIHQTT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 12:19:19 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 90DAC2065E;
-        Tue,  8 Sep 2020 16:00:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599580851;
-        bh=vc0BtnP6e5D+73bIKGbLBXslTUB0qhWkmKMc6lLPNYs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tY9q47mLC5nxcwiDjVTOUhv10PekE8tSUyJZKcDM7OW9d9LIn84lXDBT0FTEItjcY
-         TLQZbgtZ4DXQjSRgP3Xv8CYaKB24bDY+lYJd/E2HOzObxb/tsGbMI0Y2sV8oJj3Amh
-         TWM/ZAYKxKupO62l3eR6QeBx61MzDUrKf+9ZBqjw=
-Date:   Tue, 8 Sep 2020 09:00:49 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, roopa@nvidia.com,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH net-next] net: bridge: mcast: fix unused br var when
- lockdep isn't defined
-Message-ID: <20200908090049.7e528e7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200908071713.916165-1-nikolay@cumulusnetworks.com>
-References: <20200908130000.7d33d787@canb.auug.org.au>
-        <20200908071713.916165-1-nikolay@cumulusnetworks.com>
+        id S1731889AbgIHQVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 12:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731442AbgIHQUe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:20:34 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454E1C061755;
+        Tue,  8 Sep 2020 09:20:34 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id k25so8241784ljk.0;
+        Tue, 08 Sep 2020 09:20:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+wPlOm5QGCDqS1iz36b73Yrjc2ZOjFBBzVPqfqSTkRU=;
+        b=q9ep2VefGV3tnh1gc6k2bD4tOieJ9IWqWneNunCFsbLBb4ERqckJ+2JeLGZEK4XW/a
+         JJEfzALL4HkOtfXCEc6yb/WPGrI38fGy7D7rIN+RZCeFkc9lS716ATlu/6BP8T0+HMO3
+         qZrgQNobDnTlp+5/Pe67V8RekhvXZdWT4PnihyvRuo6mO5JjenjIfxpr0j2K0Se1oMic
+         rBYc6FOCdLoc+vcEuYQztTqYYE5mARtYmSyCSU/U8WKotCPvtsDA0kmCVB5LpR/s72i9
+         j6k0emAoVQbnPDgWntWVPGO+mtgoO/gTfOEe3Jxz4mhhsxvdVpWY0qQbNprMD/srILNx
+         37gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+wPlOm5QGCDqS1iz36b73Yrjc2ZOjFBBzVPqfqSTkRU=;
+        b=K4XhcKkD1FceLECP1km0SQ01x0TWty67O6hPK5sv38nKtdVCWpphDjXByzPQgzZGi5
+         uUAAc16QiiTbjSnvJ27gcO7qktJbFSYLAoEjz7pwpiIWtDBwb7/pLdR1dD+UYVoaAR4r
+         bq6BqQ0bG7ghEVTJSUHwSbjnG/XXggbV2Qj6xPPZ7JEdsBKDfMRTW7BK2q73PiIMxNLE
+         NychsvSjfh0kdEtXzhRoY9Ou8ZgdywkAyEfqEUb+dzXQl++9kzg3KAzpSKD7AMtNMzqe
+         IKk0KTwIFNjXKq1//Jn8ATD6A6HzKFRTctjiUTbCcVzqlqPanOgThMKywkP1ZYTsCnhm
+         AZAg==
+X-Gm-Message-State: AOAM530FoZgc2r/6v51FvSGi7DSEwqRR2LHQTOtGum2IBVrrjsObI1kk
+        26Pzl60PUCASTZbD7Y5szX45jTVXLKeIC/D6ljQ=
+X-Google-Smtp-Source: ABdhPJza0z8ybBhHjq6D1GgCSx5raB9QWiBPxOGch4dtPYCzvpBunYHBeGM0H23wmyTQrtglEspqjh6+FU+Y/dC/qkw=
+X-Received: by 2002:a2e:9782:: with SMTP id y2mr13292774lji.91.1599582032702;
+ Tue, 08 Sep 2020 09:20:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <cace836e4d07bb63b1a53e49c5dfb238a040c298.1599512096.git.daniel@iogearbox.net>
+In-Reply-To: <cace836e4d07bb63b1a53e49c5dfb238a040c298.1599512096.git.daniel@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 8 Sep 2020 09:20:21 -0700
+Message-ID: <CAADnVQ+woTCQ5JaEJvtWWsgU5OC+EA9NuRXhd2RmywU6mEYoEg@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: Fix clobbering of r2 in bpf_gen_ld_abs
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bryce.kahle@datadoghq.com,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Sep 2020 10:17:13 +0300 Nikolay Aleksandrov wrote:
-> Stephen reported the following warning:
->  net/bridge/br_multicast.c: In function 'br_multicast_find_port':
->  net/bridge/br_multicast.c:1818:21: warning: unused variable 'br' [-Wunused-variable]
->   1818 |  struct net_bridge *br = mp->br;
->        |                     ^~
-> 
-> It happens due to bridge's mlock_dereference() when lockdep isn't defined.
-> Silence the warning by annotating the variable as __maybe_unused.
-> 
-> Fixes: 0436862e417e ("net: bridge: mcast: support for IGMPv3/MLDv2 ALLOW_NEW_SOURCES report")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-> ---
->  net/bridge/br_multicast.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-> index b83f11228948..33adf44ef7ec 100644
-> --- a/net/bridge/br_multicast.c
-> +++ b/net/bridge/br_multicast.c
-> @@ -1814,8 +1814,8 @@ br_multicast_find_port(struct net_bridge_mdb_entry *mp,
->  		       struct net_bridge_port *p,
->  		       const unsigned char *src)
->  {
-> +	struct net_bridge *br __maybe_unused = mp->br;
->  	struct net_bridge_port_group *pg;
-> -	struct net_bridge *br = mp->br;
->  
->  	for (pg = mlock_dereference(mp->ports, br);
->  	     pg;
+On Mon, Sep 7, 2020 at 3:04 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Bryce reported that he saw the following with:
+>
+>   0:  r6 = r1
+>   1:  r1 = 12
+>   2:  r0 = *(u16 *)skb[r1]
+>
+> The xlated sequence was incorrectly clobbering r2 with pointer
+> value of r6 ...
+>
+>   0: (bf) r6 = r1
+>   1: (b7) r1 = 12
+>   2: (bf) r1 = r6
+>   3: (bf) r2 = r1
+>   4: (85) call bpf_skb_load_helper_16_no_cache#7692160
+>
+> ... and hence call to the load helper never succeeded given the
+> offset was too high. Fix it by reordering the load of r6 to r1.
+>
+> Other than that the insn has similar calling convention than BPF
+> helpers, that is, r0 - r5 are scratch regs, so nothing else
+> affected after the insn.
+>
+> Fixes: e0cea7ce988c ("bpf: implement ld_abs/ld_ind in native bpf")
+> Reported-by: Bryce Kahle <bryce.kahle@datadoghq.com>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 
-That's a lazy fix :( Is everyone using lockdep annotations going to
-sprinkle __maybe_unused throughout the code? Macros should also always
-evaluate their arguments.
+Applied. Thanks
