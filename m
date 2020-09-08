@@ -2,103 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 237DB261478
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8E65261475
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731904AbgIHQXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
+        id S1731641AbgIHQXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 12:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731192AbgIHQWM (ORCPT
+        with ESMTP id S1731754AbgIHQWM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:22:12 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC261C061374;
-        Tue,  8 Sep 2020 05:45:38 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id b16so8234990pjp.0;
-        Tue, 08 Sep 2020 05:45:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jhHypeLTRA4WXxhhuo6Z6j83RXXSW7eZ7o0xAUpwRko=;
-        b=WYKxTMjhCEq3m5vySflh4N7bV6WzAwoHVDwnzWmDuvMlUJQQTYUjRRQrQ1HRFyImD6
-         ARHK1Gga6jFz0A0tT9XZCQOyxKpp2fSboNAWVfGB7Fc9x5CDDDVQTESefH43SmG5Ubag
-         0O7upG16zrl5k74HF5oKkZlLqAYvSAv9dK2XPLZSOC6w1xowlI4LXHsW1Z7CqsmB03Vh
-         +3OTgSWBIMK36QOK71xW0sjXtkESECjQEqIycmMsrjdzZc/+KT54hSVfaOj0R6Aro5Mb
-         2ZXppdSSRwH+2qL2ZJqr6KHK4j8mLTt5Dh19wFsqNl5SjHS542eBkah5tHd30rej+n+7
-         uwHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jhHypeLTRA4WXxhhuo6Z6j83RXXSW7eZ7o0xAUpwRko=;
-        b=r+4yPV9ulkUASdNbZ3E6zAO5hYQ6kobKbCu6LKqhgAiZc+tnCm+3GxZNs7EkPjLTsJ
-         4heTHCTF97pUsCZfdjKo9TJFMnlcYw+GLI4IbIukRAvPimrWT9n4698Rb3XIkIjjm2WU
-         Nstaqd/qUV7+MK4IOHDWHHTYOLSEk4is8U4X8RgcmedKZF4ceIvzjaRHjV6UbJJ8zBhZ
-         ukPRjJPpCoY4AmsR57L613auaQDKqmccStMP7jhsJvWHrCfs1uHcD+DbjLr8NJTYjfop
-         NP5n1iQPRgRVnntY9ZkdwXtmnIQ975Ooj3lJyZlSg7orjwSNyRlxvDNf2xB35X1GwTa9
-         Fq3Q==
-X-Gm-Message-State: AOAM533UOHS4nPtWAp7ePBuOz8Zx9YTMgoUYFCf+OYu30lDW3uDF7q4r
-        7STX9k/9fw8vi8zkozGbj9iezMbJbej068VC21Y=
-X-Google-Smtp-Source: ABdhPJw8LTt+XXaAgFIKLhZcvCAflJODmJdMFXBFRgAFnhCwPcvxTBBWUsyrjeSl3fonexRUaflNzJYkjYk5w6tS5WE=
-X-Received: by 2002:a17:90a:bd02:: with SMTP id y2mr3900886pjr.66.1599569138277;
- Tue, 08 Sep 2020 05:45:38 -0700 (PDT)
+X-Greylist: delayed 1958 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Sep 2020 06:33:35 PDT
+Received: from www62.your-server.de (www62.your-server.de [IPv6:2a01:4f8:d0a:276a::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B84EC0611E0;
+        Tue,  8 Sep 2020 06:33:35 -0700 (PDT)
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kFdee-00075V-FO; Tue, 08 Sep 2020 15:27:24 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kFdee-000498-6K; Tue, 08 Sep 2020 15:27:24 +0200
+Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
+To:     Arturo Borrero Gonzalez <arturo@debian.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>, Laura Garcia <nevola@gmail.com>,
+        David Miller <davem@davemloft.net>
+References: <20200904162154.GA24295@wunner.de>
+ <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
+ <0b7ca97e-9548-b0a8-cdd1-5200cb3b997d@debian.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <9bef756d-d17e-263e-c018-2908f2626bfe@iogearbox.net>
+Date:   Tue, 8 Sep 2020 15:27:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <CAJht_EOu8GKvdTAeF_rHsaKu7iYOmW8C64bQA21bgKuiANE5Zw@mail.gmail.com>
- <CAJht_EP=g02o2ygihNo=EWd1OuL3HSjmhqgGiwUGrMde=urSUA@mail.gmail.com>
- <CA+FuTSdm35x9nA259JgOWcCWJto9MVMHGGgamPPsgnpsTmPO8g@mail.gmail.com>
- <CAJht_EPEqUMXNdQLL9d5OtzbZ92Jms7nSUR8bS+cw2Ah5mv6cQ@mail.gmail.com>
- <CA+FuTSeJS22R2VYSzcEVvXiUhX79RYE0o3G6V3NKGzQ4UGaJQg@mail.gmail.com>
- <CAJht_EN7SXAex-1W49eY7q5p2UqLYvXA8D6hptJGquXdJULLcA@mail.gmail.com> <CA+FuTSfgxt6uqcxy=wnOXo8HxMJ3J0HAqQNiDJBLCs22Ukb_gQ@mail.gmail.com>
-In-Reply-To: <CA+FuTSfgxt6uqcxy=wnOXo8HxMJ3J0HAqQNiDJBLCs22Ukb_gQ@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Tue, 8 Sep 2020 05:45:27 -0700
-Message-ID: <CAJht_EN-aBo8rfHAxYxwW2Jb38S2PW3WtxhWuHn5HS1fAWeA1w@mail.gmail.com>
-Subject: Re: Question about dev_validate_header used in af_packet.c
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <0b7ca97e-9548-b0a8-cdd1-5200cb3b997d@debian.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25923/Mon Sep  7 15:37:02 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 4:53 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Tue, Sep 8, 2020 at 1:04 PM Xie He <xie.he.0141@gmail.com> wrote:
-> >
-> > I was recently looking at some drivers, and I felt that if af_packet.c
-> > could help me filter out the invalid RAW frames, I didn't need to
-> > check the validity of the frames myself (in the driver when
-> > transmitting). But now I guess I still need to check that.
-> >
-> > I feel this makes the dev_validate_header's variable-length header
-> > check not very useful, because drivers need to do this check again
-> > (when transmitting) anyway.
-> >
-> > I was thinking, after I saw dev_validate_header, that we could
-> > eventually make it completely take over the responsibility for a
-> > driver to validate the header when transmitting RAW frames. But now it
-> > seems we would not be able to do this.
->
-> Agreed. As is, it is mainly useful to block users who are ns_capable,
-> but not capable.
->
-> A third option is to move it behind a sysctl (with static_branch). Your
-> point is valid that there really is no need for testing of drivers against
-> bad packets if the data is validated directly on kernel entry.
+On 9/8/20 1:46 PM, Arturo Borrero Gonzalez wrote:
+> On 2020-09-04 23:14, Daniel Borkmann wrote:
+>> root@x:~/x# clang -target bpf -Wall -O2 -c foo.c -o foo.o
+> 
+> In my honest opinion (debian hat), the simplification of the stack is a key
+> point for end users/developers. A gain in usability might justify a small
+> performance penalty.
 
-I was thinking about this again and it came to me that maybe sometimes
-people actually wanted to send invalid frames on wire (for testing the
-network device on the other end of the wire)? Having thought about
-this possibility I think it might be good to keep the ability for
-people to have 2 choices (either having their RAW frames validated, or
-not validated) through "capability" or through "sysctl" as you
-mentioned. We can keep the default to be not validating the RAW frames
-because RAW sockets are already intended for very special use and are
-not for normal use.
+Not really, both are independent from each other. Usability is typically achieved
+through abstractions, e.g. hiding complexity in libraries (think of raw syscalls
+vs libc). Same with the example of bpf or any other kernel subsystem fwiw, users
+don't need to be aware of the details as applications abstract this away entirely
+but they can benefit from efficiency underneath nevertheless. One example is how
+systemd implements cgroup-aware firewalling and accounting for its services via bpf
+[0]. Zero knowledge required while it presents meta data in user friendly way via
+systemctl status. I'm not trying to convince you of bpf (or systemd), just that
+this argument is moot.
+
+> I can think on both sysadmins and network apps developers, or even casual
+> advanced users. For many people, dealing with the network stack is already
+> challenging enough.
+
+In the age of containers and distributed computing there is no such thing as
+sysadmin anymore as we know it from our university days where a bunch of grey
+bearded admins maintained a bunch of old sun boxes, printers, etc manually. ;-)
+But yes, devops these days is complex, hence abstractions to improve usability
+and gain introspection, but kernel is just a tiny fraction in the overall stack.
+
+> Also, ideally, servers would be clean of the GCC or CLANG suites.
+
+Yes agree, one can compile out all other backends (in case of clang at least) that
+would generate executable code though.
+
+   [0] http://0pointer.net/blog/ip-accounting-and-access-lists-with-systemd.html
