@@ -2,81 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE52260E40
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:00:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA384260E49
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:05:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728556AbgIHJAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 05:00:14 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:6009 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727995AbgIHJAK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:00:10 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f5747940004>; Tue, 08 Sep 2020 01:57:56 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 08 Sep 2020 02:00:10 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 08 Sep 2020 02:00:10 -0700
-Received: from [172.27.14.146] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 8 Sep
- 2020 08:59:57 +0000
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-Subject: Re: [net-next 06/10] net/mlx5e: Support multiple SKBs in a TX WQE
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        "Maxim Mikityanskiy" <maximmi@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-References: <20200903210022.22774-1-saeedm@nvidia.com>
- <20200903210022.22774-7-saeedm@nvidia.com>
- <20200903154609.363e8c00@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Message-ID: <489a69c6-d288-4cb4-fe32-8d4bd6f37667@nvidia.com>
-Date:   Tue, 8 Sep 2020 11:59:54 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1728804AbgIHJFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 05:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728739AbgIHJFC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:05:02 -0400
+Received: from mail-vk1-xa41.google.com (mail-vk1-xa41.google.com [IPv6:2607:f8b0:4864:20::a41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33009C061573
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 02:05:02 -0700 (PDT)
+Received: by mail-vk1-xa41.google.com with SMTP id n7so3883029vkq.5
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 02:05:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CwVo4IAPIk+boOD3HK3VVHdTIHQTTXxp5+uKxnmqy+k=;
+        b=XNiUJeXACLLFkSCFizYYYWB6PK3Rf7k0kiYAnVldT0pvc+PevJ1fuPFURXPH4a+0mx
+         s7fERGkdGvAxOJvt3dp7BiyxPii+SB0/amVj+NnOGZqxFKYwgFF9WD1u55P8iwLMc8Mu
+         KaKIR2tAEb4FDlh3NIttXtzmJ7siFlwhmPyQxOsdgszmadC49+r1nkiYRpuHZnqc0eyW
+         YK5fapuNfAokkiXbP36UxLZV3HbfBzKJoZ7EvrSMogRuvilv0O76IfyDdQrJoV1BFcdX
+         qL0XtB6aGGhj2BMW4MNA/djfFQUmBzUiTIJjHeL+Vmkjt+4+XDp7ZIejSOkmy9XJFwmp
+         gR3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CwVo4IAPIk+boOD3HK3VVHdTIHQTTXxp5+uKxnmqy+k=;
+        b=dM3IkA5z1U0B81tdVpBmN71vQP6bmgqPiQUIE4aNqRvFBLQd378A0bxAm1dwnNJJ1N
+         lbFBQdoWJhqdX8+4NWHwAKiZ2pqUBpjke429YTS6zdaVq5w+TjH+03W17DefW31J3RSO
+         9c+/Pd3bn8PKw+psVKzrgBRMNZQBHPecKK3bGbMjK7OXpx8LwPDdf2j1gjh9igu9bFKa
+         IQPlmwarP9BRbHhKx+9bxWkORXi/v9qE6v/Ri50aiYVE1Z1cKfxJr+wskAriYDKnaYAW
+         QUTcOENAxAP4S8por/z6jMWW20i8Ydmk3QGc9eFJyIZjMv7F7Ao7Kx6otN6gpx4+Xw+T
+         BwPw==
+X-Gm-Message-State: AOAM531w88xjGGiIShrLQG0GMMclAYHlnRYaIESB8QdW4f+rEDOGp0DP
+        5q3YjyLYufmoGgwghOZh4jbtOmj0U1JeMA==
+X-Google-Smtp-Source: ABdhPJxBfX/U+11ZZ4uJ3jnCuSpoNTj1JGxzhyFrpoTRmx3LQHWxL+pZCAkfcl+sIyH8j5VGZ1ydVA==
+X-Received: by 2002:a1f:2e54:: with SMTP id u81mr116980vku.10.1599555900778;
+        Tue, 08 Sep 2020 02:05:00 -0700 (PDT)
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com. [209.85.217.54])
+        by smtp.gmail.com with ESMTPSA id m6sm443455vsr.32.2020.09.08.02.04.59
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 02:05:00 -0700 (PDT)
+Received: by mail-vs1-f54.google.com with SMTP id e14so8561316vsa.9
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 02:04:59 -0700 (PDT)
+X-Received: by 2002:a67:c78b:: with SMTP id t11mr13738763vsk.109.1599555899405;
+ Tue, 08 Sep 2020 02:04:59 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200903154609.363e8c00@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1599555476; bh=ALMal4jy9PWZMW2FvJlVxMmR82iKdDN56XTOokFJIsE=;
-        h=X-PGP-Universal:From:Subject:To:CC:References:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=MPgECDGrNQLQggsx/3nq/cFst8iSCx1Stb4BhT8cLctJPUa1w5QG1Uhr4TZ62uYUO
-         ta6g7GZsblGA3bD9JczvEsff/3CY6cS142ljtFgNGTWdGt8RBRtHsxa7Y5nPh6xhyH
-         DQIwyBUJVAXSSwXqFNgaknDJWHEkpIXORoYmUJdqHkFn2Pb5mRhfF6GvpakCjQ7WUP
-         zI311XpM9/w3ygJMsZ1l0Pofoh7torIAjNkE4bQ9dRIL4+gg+B6NsY7C+dR0IW9sSA
-         uRmx5wCqrsPa1vh/A951qKatuX9rv4UbZPsHW2Kix+38vN1XrNdE4e2sQOOz4wGFzw
-         D7xI2/6P6K+Ig==
+References: <20200903210022.22774-1-saeedm@nvidia.com> <20200903210022.22774-10-saeedm@nvidia.com>
+ <CA+FuTSdoUHM=8Z1FQ8L_eOGwKyzQyO3PD-FHvsf2Q0wBOJ9X7Q@mail.gmail.com> <3cadeba3-bf14-428a-5783-9b8ec547f716@nvidia.com>
+In-Reply-To: <3cadeba3-bf14-428a-5783-9b8ec547f716@nvidia.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 8 Sep 2020 11:04:22 +0200
+X-Gmail-Original-Message-ID: <CA+FuTScVsah+=DeQ3EYnK92fr_S9F+gvn0F2hJ5_cMtx1L3fjA@mail.gmail.com>
+Message-ID: <CA+FuTScVsah+=DeQ3EYnK92fr_S9F+gvn0F2hJ5_cMtx1L3fjA@mail.gmail.com>
+Subject: Re: [net-next 09/10] net/mlx5e: Move TX code into functions to be
+ used by MPWQE
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-09-04 01:46, Jakub Kicinski wrote:
-> On Thu, 3 Sep 2020 14:00:18 -0700 Saeed Mahameed wrote:
->> +static inline void mlx5e_tx_wi_consume_fifo_skbs(struct mlx5e_txqsq *sq,
->> +						 struct mlx5e_tx_wqe_info *wi,
->> +						 struct mlx5_cqe64 *cqe,
->> +						 int napi_budget)
->> +{
->> +	int i;
->> +
->> +	for (i = 0; i < wi->num_fifo_pkts; i++) {
->> +		struct sk_buff *skb = mlx5e_skb_fifo_pop(sq);
->> +
->> +		mlx5e_consume_skb(sq, skb, cqe, napi_budget);
->> +	}
->> +}
-> 
-> The compiler was not inlining this one either?
+On Tue, Sep 8, 2020 at 11:00 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+>
+> On 2020-09-04 18:06, Willem de Bruijn wrote:
+> > On Thu, Sep 3, 2020 at 11:01 PM Saeed Mahameed <saeedm@nvidia.com> wrote:
+> >>
+> >> From: Maxim Mikityanskiy <maximmi@mellanox.com>
+> >>
+> >> mlx5e_txwqe_complete performs some actions that can be taken to separate
+> >> functions:
+> >>
+> >> 1. Update the flags needed for hardware timestamping.
+> >>
+> >> 2. Stop the TX queue if it's full.
+> >>
+> >> Take these actions into separate functions to be reused by the MPWQE
+> >> code in the following commit and to maintain clear responsibilities of
+> >> functions.
+> >>
+> >> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+> >> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> >> ---
+> >>   .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 23 ++++++++++++++-----
+> >>   1 file changed, 17 insertions(+), 6 deletions(-)
+> >>
+> >> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+> >> index 9ced350150b3..3b68c8333875 100644
+> >> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+> >> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+> >> @@ -311,6 +311,20 @@ static inline void mlx5e_sq_calc_wqe_attr(struct sk_buff *skb,
+> >>          };
+> >>   }
+> >>
+> >> +static inline void mlx5e_tx_skb_update_hwts_flags(struct sk_buff *skb)
+> >> +{
+> >> +       if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
+> >> +               skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+> >> +}
+> >
+> > Subjective, but this helper adds a level of indirection and introduces
+> > code churn without simplying anything, imho.
+>
+> It's added for the sake of being reused in non-MPWQE and MPWQE flows.
 
-Regarding this one, gcc inlines it automatically, but I went on the safe 
-side and inlined it explicitly - it's small and called for every WQE, so 
-we never want it to be non-inline.
+I understand. I'm just saying that a helper for two lines whose
+function is clear just adds a layer of obfuscation. As said, that is
+subjective, so just keep as is as you disagree.
