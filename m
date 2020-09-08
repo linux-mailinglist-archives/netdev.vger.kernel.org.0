@@ -2,82 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D24B2607EE
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 03:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CA162607FE
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 03:22:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728238AbgIHBIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 21:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
+        id S1728293AbgIHBWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 21:22:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726918AbgIHBIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 21:08:12 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7EEC061573
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 18:08:11 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id l17so14193325edq.12
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 18:08:10 -0700 (PDT)
+        with ESMTP id S1728272AbgIHBWm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 21:22:42 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA19C061573;
+        Mon,  7 Sep 2020 18:22:42 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id h4so15406728ioe.5;
+        Mon, 07 Sep 2020 18:22:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aMxTA5hMeRHlB7QEUVotIMvd37GA7LvdlT/HUpiUX3Q=;
-        b=tOFUTIpa5dWFOX40OuoW37NucAgHJwZ6iK6D1XWaq8TikMJnIgtsGIUEkOzD0Co6Pb
-         jnDZsj3GtJBESS+CrNAagy0TNCDj4fLSES0S3oYB9U887qdOw5fucO6z+xnGi4P1OTUW
-         bO4BvDcG1uZw+Fw4xcNNi+hfIzBFsAplVDBrhn7gNZRrYxj7vFDEAeGbuteeiwoTETlZ
-         ji8vC21Jckx5kEpUi3/Q2RGkoqUI79toHXf0kicXO6GAd/eGg3oAgpVFxLYNyIX2t20S
-         u7MIA5NfkrpcttHcU0TjrSoQHB8Fc2go5bgGZWQoLLMEkZRRStizo6SZS+lA78lO2kpC
-         S6Vg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GYsBegW1E1w/duSqDumQ/6BnVkxD+sj7KRg+kol7Kug=;
+        b=l5oEidU4eqtXGLWGLe1fzYnlCUDss0wiSthgavfD3Ks/2ByU6oI+lRZfV6wcmbMaIm
+         zpPJtrZOHi9kheoXQrloUsnaXWl2XWIusXpAwukjvo4YoBvF68JZcxjgCgLUBTknPcRW
+         oZq7D8hBdTJqzaG/mYESCHT1WpGMw7+mnu/AtV8NrT1rcd7uKbCL14+oI0dsKgTgxZ+U
+         uEh97oUWAXeyY33QnNjR6dTrEQwQ6c9B/3emFNKb765aCWWsXzChz1Ompoa68g0TcCA5
+         WDb7j/BiAUKKIXWFy7uLVUCwPiDqfLlDJmpiJjry46zFUm+0DXaVJ4aSzDArF/6HxhM/
+         0wMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aMxTA5hMeRHlB7QEUVotIMvd37GA7LvdlT/HUpiUX3Q=;
-        b=n4UDvd9Usm1Qh7/7vmJ2w1qKBNOBMIJdbKiv6BBeVss/1u+FIZsN4SI+GFv37pK0PQ
-         f0105lnis9u9DoAs6RpLzlBI7E80s/UAkz+MQJAzmKsjSMMEZEzUPKxcadKiu4p9USM8
-         7/Kxpx6uccXk1q4POzSkSVerCrqSOUAoqtpa8HBGa5JV+Mmf3LvWWRo3kTq5h2hsq2LE
-         FNrjwbTWb4UAPdBtf/4MiVbR8WuJzCOZoJnEcpqbnAW7HndPEfhug2okv0F7QQKbvLs2
-         xFFfsoggMllknrzpmP+O4bPg30DJUneDnUZJcXtCET+KUpiD/Ub7q2X0b8esv6x5K+ex
-         oL1w==
-X-Gm-Message-State: AOAM533etsOhCccp3f8jmOURMKxXbXi2XMkgBZyB3OwoNPNiMj/J8RtD
-        lR7vmkelChrLUGNJDMK+JLaM2mq/A+g=
-X-Google-Smtp-Source: ABdhPJw32RdDo3W1An+LENVw08NjCwOPkYeWY5Gf9a6TbhV3jAIwbM4q7XWzI4OcP1W3zMtpQ/hI/A==
-X-Received: by 2002:a50:8c24:: with SMTP id p33mr18959170edp.330.1599527289352;
-        Mon, 07 Sep 2020 18:08:09 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id k6sm16713348ejr.104.2020.09.07.18.08.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 18:08:08 -0700 (PDT)
-Date:   Tue, 8 Sep 2020 04:08:06 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     kuba@kernel.org, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: don't print non-fatal MTU error if
- not supported
-Message-ID: <20200908010806.innpkij2q7uf6s2p@skbuf>
-References: <20200907232556.1671828-1-olteanv@gmail.com>
- <20200908005709.GB3267902@lunn.ch>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GYsBegW1E1w/duSqDumQ/6BnVkxD+sj7KRg+kol7Kug=;
+        b=c8sf04au4W3mQalZcs+HdE7Rp5JtqfcKKRZG/CMlzdkopkb7MMGhNurWV6Rvv5sM9F
+         9Pot5Kmjbk/l+X7xmQZrJZF0wgiULgzaBS6/puXJDIo7gUvclpHqnpD+9BjNevMSf9So
+         r7v7YXNw91nafqrtq45HZKpW86nrscv4lLIEL623x451s6hkEMy0PCXsz5622RvPsOo3
+         I60ZuZovCcAuuQ3ByQS6jMz/22wJ2thm65IFU7MjVVrn4sWnwE61oN0qgLueUEq5/vTT
+         L/63ByLc2q7uocI4nZtuaB+gA/NSmgAGAzGWwDVQ09bxybLIekbkbC+B9NBbkH+mx+qJ
+         Lesg==
+X-Gm-Message-State: AOAM532Il2eXN9HbLFuhB8fBNjL1IlYYq7a/WZ/7KNeDF7cGPxyP0nPe
+        /m1gWWyiE3rcAsO6jG2RrZg=
+X-Google-Smtp-Source: ABdhPJwERJE2LQcnaY1cCja1hcI+xA8jnnTh2yEeIvsOumlVGQ+OPL6svAhcQHGsH+B5Gxm2xduyNA==
+X-Received: by 2002:a05:6638:2a6:: with SMTP id d6mr10971376jaq.132.1599528161672;
+        Mon, 07 Sep 2020 18:22:41 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:55f5:1bb7:a67a:a2c6])
+        by smtp.googlemail.com with ESMTPSA id m15sm2006038iow.9.2020.09.07.18.22.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Sep 2020 18:22:40 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 1/9] xdp: introduce mb in xdp_buff/xdp_frame
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net,
+        lorenzo.bianconi@redhat.com, echaudro@redhat.com,
+        sameehj@amazon.com, kuba@kernel.org, john.fastabend@gmail.com,
+        daniel@iogearbox.net, ast@kernel.org, shayagr@amazon.com,
+        David Ahern <dsahern@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <cover.1599165031.git.lorenzo@kernel.org>
+ <1e8e82f72e46264b7a7a1ac704d24e163ebed100.1599165031.git.lorenzo@kernel.org>
+ <20200904010705.jm6dnuyj3oq4cpjd@ast-mbp.dhcp.thefacebook.com>
+ <20200904091939.069592e4@carbon>
+ <1c3e478c-5000-1726-6ce9-9b0a3ccfe1e5@gmail.com>
+ <20200904175946.6be0f565@carbon>
+ <107260d3-1fea-b582-84d3-2d092f3112b1@gmail.com>
+ <20200907200245.0cdb63f1@carbon>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <51b88537-877a-c6bb-b4fb-0d629f37c0e6@gmail.com>
+Date:   Mon, 7 Sep 2020 19:22:39 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200908005709.GB3267902@lunn.ch>
+In-Reply-To: <20200907200245.0cdb63f1@carbon>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 02:57:09AM +0200, Andrew Lunn wrote:
-> Hi Vladimir
->
-> In some ways, this has been good. A lot more DSA drivers now have MTU
-> support and jumbo packet support.
+On 9/7/20 12:02 PM, Jesper Dangaard Brouer wrote:
+> 
+>> ok, is there any alignment requirement? can frame_sz be number of 32-bit
+>> words? I believe bit shifts are cheap.
+> 
+> No that is not possible, because some drivers and generic-XDP have a
+> fully dynamic frame_sz.
+> 
 
-Yes, I suspect this is because many people wanted to experiment with
-jumbo frames anyway, and the warning in dmesg acted as a sort of
-reminder that the infrastructure is there. If it weren't for this
-pre-existing interest, I would have expected a patch that silenced this
-warning sooner, and not from me (the switches that I have don't print
-this message).
+frame_sz represents allocated memory right? What is the real range that
+needs to be supported for frame_sz? Surely there is some upper limit,
+and I thought it was 64kB.
 
-Thanks,
--Vladimir
+Allocated memory will not be on an odd number, so fair to assume at a
+minimum it is a multiple of 2. correct? At a minimum we should be able
+to shift frame_sz by 1 which now covers 64kB in a u16.
