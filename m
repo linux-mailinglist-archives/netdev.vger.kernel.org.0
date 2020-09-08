@@ -2,112 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2B5261645
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:07:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA6A261654
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:09:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731845AbgIHRHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 13:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37032 "EHLO
+        id S1732145AbgIHRJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 13:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731816AbgIHRGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 13:06:37 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A14CC061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 10:06:37 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id q6so16058849ild.12
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 10:06:37 -0700 (PDT)
+        with ESMTP id S1732152AbgIHRJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 13:09:02 -0400
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4ACC061756
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 10:09:01 -0700 (PDT)
+Received: by mail-vs1-xe2c.google.com with SMTP id b123so9413731vsd.10
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 10:09:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nP2eTHm0HLp1NJvN8Ksk3K5JaxC4dOo3fpyeorLIMDg=;
-        b=GpPIYpLhfnGa6FoUdveZCt5KrYgzH3ly2Ky3MrsGKo75CdD1ovPDtlIeVxRKa1dpDY
-         wcc1yeFEnQIiGU1iNQHPWZ8oqcYLEGpYJ+sOsdE1ZdzB4Vjj1fzRQ9iDxOhpfkcpOLUR
-         Ffm9VIBi0Iq/cuwfPOHST4QCbii5UUtqBAeUj8q1PiLPeiUVktI+kqbhZDWVn29pNkJ5
-         Vi9YNGvzWC4bCoBh55WEXcaWbn6oHyoGScl+jyhfXLodXP2r5UqT63wk2Oj9D2VrUiPA
-         ZuK1o4zUStouImsCfi5xysEg4NlZP2JlLatVnazwxPMyK/DESvyrsccduhav6VCPupqy
-         PMgA==
+        bh=uxqwH7GZBnEMFxjmA1dYQN29QuSs6NC/OtdCV0Jyouk=;
+        b=dqmW3Vd3XOIXohmkuHyoBu+pD6bpqoalFXzjFXRuZxBqw4z3PXroPnxf6am6dhBWvo
+         qJQGL6tmjieqKDd+3plyj037k/DsTzb+MpCTCRUYC128bEsa1SY0bfoFYEtjCV/qRKba
+         p+sQMxE2dYUwnfD+1E958TNquOG573qSX6pAMpTBv6KAFeTC3lfZz4mlxijLrWdEU1gs
+         IlF4u4G4+Ln8wacwDtx44YT7RyK/lLSlacUSb9TxzQ7QjJcjxrHKbq4zMlmiQP9QS9r2
+         UwJDsfhG4kNpOTcKgYyVfx9d3SRuIz+utNrv1Amz5NvOgKVB3vHAql0wEnsNcpQh7ZiA
+         mGxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nP2eTHm0HLp1NJvN8Ksk3K5JaxC4dOo3fpyeorLIMDg=;
-        b=H/1Y3XWJkIvqPOH5JswWL7d7HYOhth9KR0Svoy8CS6Kpgd4tfCg9Hw0p8MUt2qAw9a
-         YIJ49Hi2el4WxhAEDScVs+mkltjNOXlHkCffXmPC+Jebwi+00ugPR/cBt+QmLbm5qXPb
-         id8qrB58NNCxLNGPiBj6q0JrAXR9yXKCExyu1MNjIv+hpbCDpHC9qI15bPYkJ3nj1xCC
-         8dpheXDt8su/nzDI9sIzdD36bsObAomNuuYYmIUTS9+MpXUPZPlAgDronCVyIRATs6E1
-         jnHfcxZ52kiJXGdiROHTnB1EhnsMF8jLU9xK3a6XaF6tbfR/rZ0aFKfayYR3powcOUer
-         3+nw==
-X-Gm-Message-State: AOAM5307MwYvCt0z+U13WjgF3ClxZrtKlSkWPWJfn58wpb7FJ+UnYF+T
-        /T8z6uQnJK7Kjfs6uG9z+B0IliGrfFT+3PPiJmb2GA==
-X-Google-Smtp-Source: ABdhPJwDwWXPzn0PaSCTKPU8PwaffIQ8sH1y+ci39LgNhbY+O5RvSofEb1BcQxIx/gddaZ8WrRNMHyzkp/GZIQrb/I0=
-X-Received: by 2002:a92:4001:: with SMTP id n1mr24507622ila.69.1599584796466;
- Tue, 08 Sep 2020 10:06:36 -0700 (PDT)
+        bh=uxqwH7GZBnEMFxjmA1dYQN29QuSs6NC/OtdCV0Jyouk=;
+        b=hTgeQN63QMDYkZk8tqbpGGHIRuUTF/k5kULubZPOiN4W5n4hyERPqqvWvjoBEf9CbP
+         lmUbDh5X64oyZ1VTMpyZksCfvj3b0rQ8wDNA1EM4j8xl5KT6bFyXLDuXe7/NcQwf0hHc
+         D5z6WzNdckmeMHJoFKvlN8GJYTk7zPBk05h+E+/oBpX31twwY7l0IGprdVmlnOBkIvXn
+         NEI/PzvjHHh2fHHh0hOmgDvolbHnsgVKK9nSZIdgSfHZJkLsufgEX8gX1m9GR9NlzpoA
+         8Q07AdjCJPSZaWdYQVfWP7DpMx7I8zSwZ/qnwnoDGR9pgTqBKnBh7Pp4OelzsNWKTUnw
+         13YQ==
+X-Gm-Message-State: AOAM531qZc/AHsoQPqXIOPCw957KN5rv2i73tcEifUXjbNU3TGLNItaa
+        l8pcOZDPIzpeaPDV4jdDoazHuAvpJFERkQ==
+X-Google-Smtp-Source: ABdhPJzWcu+I4IYP6kJOc7kWiwZ/dxIKyyegc5O4+Tcislx58MSQp6qYEec45bblzwNN7edmlr+1Pg==
+X-Received: by 2002:a67:31cb:: with SMTP id x194mr1589998vsx.19.1599584937918;
+        Tue, 08 Sep 2020 10:08:57 -0700 (PDT)
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
+        by smtp.gmail.com with ESMTPSA id s4sm2496932vsc.2.2020.09.08.10.08.56
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 10:08:56 -0700 (PDT)
+Received: by mail-ua1-f49.google.com with SMTP id y15so5287332uan.9
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 10:08:56 -0700 (PDT)
+X-Received: by 2002:ab0:60d7:: with SMTP id g23mr92852uam.122.1599584935769;
+ Tue, 08 Sep 2020 10:08:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200908082023.3690438-1-edumazet@google.com> <7f56f2d0-e741-bc24-c671-14e53607be2b@gmail.com>
-In-Reply-To: <7f56f2d0-e741-bc24-c671-14e53607be2b@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 8 Sep 2020 19:06:25 +0200
-Message-ID: <CANn89iLxQB7HQRq7fFBp7DoypkzbTeR-=p_04FoUn9uw-s+jig@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: avoid lockdep issue in fib6_del()
-To:     David Ahern <dsahern@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+References: <CAJht_EOu8GKvdTAeF_rHsaKu7iYOmW8C64bQA21bgKuiANE5Zw@mail.gmail.com>
+ <CAJht_EP=g02o2ygihNo=EWd1OuL3HSjmhqgGiwUGrMde=urSUA@mail.gmail.com>
+ <CA+FuTSdm35x9nA259JgOWcCWJto9MVMHGGgamPPsgnpsTmPO8g@mail.gmail.com>
+ <CAJht_EPEqUMXNdQLL9d5OtzbZ92Jms7nSUR8bS+cw2Ah5mv6cQ@mail.gmail.com>
+ <CA+FuTSeJS22R2VYSzcEVvXiUhX79RYE0o3G6V3NKGzQ4UGaJQg@mail.gmail.com>
+ <CAJht_EN7SXAex-1W49eY7q5p2UqLYvXA8D6hptJGquXdJULLcA@mail.gmail.com>
+ <CA+FuTSfgxt6uqcxy=wnOXo8HxMJ3J0HAqQNiDJBLCs22Ukb_gQ@mail.gmail.com> <CAJht_EN-aBo8rfHAxYxwW2Jb38S2PW3WtxhWuHn5HS1fAWeA1w@mail.gmail.com>
+In-Reply-To: <CAJht_EN-aBo8rfHAxYxwW2Jb38S2PW3WtxhWuHn5HS1fAWeA1w@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 8 Sep 2020 19:08:17 +0200
+X-Gmail-Original-Message-ID: <CA+FuTScyyE_s8PodEQhj3=s2wO3kGnWP3nL9SESJddf=U6DEfQ@mail.gmail.com>
+Message-ID: <CA+FuTScyyE_s8PodEQhj3=s2wO3kGnWP3nL9SESJddf=U6DEfQ@mail.gmail.com>
+Subject: Re: Question about dev_validate_header used in af_packet.c
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 6:50 PM David Ahern <dsahern@gmail.com> wrote:
+On Tue, Sep 8, 2020 at 6:23 PM Xie He <xie.he.0141@gmail.com> wrote:
 >
-> On 9/8/20 2:20 AM, Eric Dumazet wrote:
-> > syzbot reported twice a lockdep issue in fib6_del() [1]
-> > which I think is caused by net->ipv6.fib6_null_entry
-> > having a NULL fib6_table pointer.
+> On Tue, Sep 8, 2020 at 4:53 AM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
 > >
-> > fib6_del() already checks for fib6_null_entry special
-> > case, we only need to return earlier.
+> > On Tue, Sep 8, 2020 at 1:04 PM Xie He <xie.he.0141@gmail.com> wrote:
+> > >
+> > > I was recently looking at some drivers, and I felt that if af_packet.c
+> > > could help me filter out the invalid RAW frames, I didn't need to
+> > > check the validity of the frames myself (in the driver when
+> > > transmitting). But now I guess I still need to check that.
+> > >
+> > > I feel this makes the dev_validate_header's variable-length header
+> > > check not very useful, because drivers need to do this check again
+> > > (when transmitting) anyway.
+> > >
+> > > I was thinking, after I saw dev_validate_header, that we could
+> > > eventually make it completely take over the responsibility for a
+> > > driver to validate the header when transmitting RAW frames. But now it
+> > > seems we would not be able to do this.
 > >
-> > Bug seems to occur very rarely, I have thus chosen
-> > a 'bug origin' that makes backports not too complex.
+> > Agreed. As is, it is mainly useful to block users who are ns_capable,
+> > but not capable.
 > >
-> > [1]
-> > WARNING: suspicious RCU usage
-> > 5.9.0-rc4-syzkaller #0 Not tainted
-> > -----------------------------
-> > net/ipv6/ip6_fib.c:1996 suspicious rcu_dereference_protected() usage!
-> >
-> > other info that might help us debug this:
-> >
-> > rcu_scheduler_active = 2, debug_locks = 1
-> > 4 locks held by syz-executor.5/8095:
-> >  #0: ffffffff8a7ea708 (rtnl_mutex){+.+.}-{3:3}, at: ppp_release+0x178/0x240 drivers/net/ppp/ppp_generic.c:401
-> >  #1: ffff88804c422dd8 (&net->ipv6.fib6_gc_lock){+.-.}-{2:2}, at: spin_trylock_bh include/linux/spinlock.h:414 [inline]
-> >  #1: ffff88804c422dd8 (&net->ipv6.fib6_gc_lock){+.-.}-{2:2}, at: fib6_run_gc+0x21b/0x2d0 net/ipv6/ip6_fib.c:2312
-> >  #2: ffffffff89bd6a40 (rcu_read_lock){....}-{1:2}, at: __fib6_clean_all+0x0/0x290 net/ipv6/ip6_fib.c:2613
-> >  #3: ffff8880a82e6430 (&tb->tb6_lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:359 [inline]
-> >  #3: ffff8880a82e6430 (&tb->tb6_lock){+.-.}-{2:2}, at: __fib6_clean_all+0x107/0x290 net/ipv6/ip6_fib.c:2245
-> >
-> > stack backtrace:
-> > CPU: 1 PID: 8095 Comm: syz-executor.5 Not tainted 5.9.0-rc4-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > Call Trace:
-> >  __dump_stack lib/dump_stack.c:77 [inline]
-> >  dump_stack+0x198/0x1fd lib/dump_stack.c:118
-> >  fib6_del+0x12b4/0x1630 net/ipv6/ip6_fib.c:1996
-> >  fib6_clean_node+0x39b/0x570 net/ipv6/ip6_fib.c:2180
-> >  fib6_walk_continue+0x4aa/0x8e0 net/ipv6/ip6_fib.c:2102
-> >  fib6_walk+0x182/0x370 net/ipv6/ip6_fib.c:2150
-> >  fib6_clean_tree+0xdb/0x120 net/ipv6/ip6_fib.c:2230
-> >  __fib6_clean_all+0x120/0x290 net/ipv6/ip6_fib.c:2246
+> > A third option is to move it behind a sysctl (with static_branch). Your
+> > point is valid that there really is no need for testing of drivers against
+> > bad packets if the data is validated directly on kernel entry.
 >
-> This is walking a table and __fib6_clean_all takes the lock for the
-> table (and you can see that above), so puzzling how fib6_del can be
-> called for an entry with NULL fib6_table.
+> I was thinking about this again and it came to me that maybe sometimes
+> people actually wanted to send invalid frames on wire (for testing the
+> network device on the other end of the wire)? Having thought about
+> this possibility I think it might be good to keep the ability for
+> people to have 2 choices (either having their RAW frames validated, or
+> not validated) through "capability" or through "sysctl" as you
+> mentioned. We can keep the default to be not validating the RAW frames
+> because RAW sockets are already intended for very special use and are
+> not for normal use.
 
-So you think the test for  (rt == net->ipv6.fib6_null_entry)
-should be replaced by
-
-BUG_ON(rt == net->ipv6.fib6_null_entry); ?
+That offers some configurability. But really, I would just leave it as is.
