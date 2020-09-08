@@ -2,263 +2,498 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDFC9261AC5
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:40:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 030E1261AC3
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731860AbgIHSkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 14:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
+        id S1731704AbgIHSkH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 14:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731849AbgIHSj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 14:39:26 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C30C061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 11:39:25 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id 207so16208999ybd.13
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 11:39:25 -0700 (PDT)
+        with ESMTP id S1731932AbgIHSj2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 14:39:28 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AABC061755
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 11:39:27 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id g6so100244pfi.1
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 11:39:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=SiaamnNXN+MdLB7ZpqKV09NC4MLS3TsUYmRqfBqlvos=;
-        b=vbnFwgVfcNW8ao8bOU5wS+3xQKu2SKymd/YC+6wG9YjotxdbT47XV/HToNsQexyp8P
-         yqhB3moJBGVlzG5HTsPuyP/LzN+DjvMV539m6JGTGcF9x+tItEAUOg+nYmW2dfR58nDB
-         yv64+uqRyCqdT1dc2t24g8MCBYfMIsthVMMNxOFEMeOT17NrkzNvrWa7H8Qfzsa5CR3R
-         LeLLKHnF9upYI/07z9NnObimutPIgIMjelOmVXqhjm2/ZFshdGK8/YBeO59bR/JEwUkl
-         MMBUXiBjcntLnKvZg3DAmyXRE+mnelRB+Jm29O/ujhjG+p4KBKfmobca2mx8+86i1AeK
-         vpIA==
+        bh=retMpEjrcTeWhZEOxwTAlsioV4w7SmVLUkVlecvAG1s=;
+        b=eSsZ7ExgO8Co4U01FTVq0FNJ3swaICtNo0y5hkT6DYY6RCpCljxI3C7KZrArINk1ky
+         czKBU9MKuQIu9rtHgzdv9QbPfD/wT3Ur+rB0k9Eb6DSmQM6jwuQT3QhxMR96AUXCB+HI
+         cQLZKYTOlq/7yKRPPu8ykjG4EGJnOqMCek6ewlK4DbLxbWYNWc3OjqDchQ5kVzETcQDi
+         5ppN2UDaSwf3qlcIDbJ9Pg4ToKlAlCJi5yxtjVBlvurVRqf0A5VJtipEsDHaGVc8WpB5
+         tOATnVybcs05dOizKpHJGcaMljuHHYgb4b2YQbTSGadX2SfrviL3mX/VGuQeFmHErmhL
+         fFaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=SiaamnNXN+MdLB7ZpqKV09NC4MLS3TsUYmRqfBqlvos=;
-        b=irbMoXT6qkGP03q4A6riHlOxyq2p5cnznlIX+mwLCxY4e/kHwtayXkO7u4h9fM5P4C
-         JhLE7qqN2C6SbkOKt7P/q8LGk8qAlyYHMVsnhc7+MsUb1UWGC/DO/uJTz4Lh7Lwgwnet
-         xb9SYHSlBlbf5d+LD3+MwYDRqQ/8M5U1KbrkRxfQ/M1AtH+4HQ1zFZ0p3kEMQrgFNcj5
-         j5gd++3Trh7aGYweZ9vmeXKRBTz3PZUQ5cd1o8T8ErJXMLvEu3XSxCj0cYqZgwUW1V6z
-         JZp/fmiUQUk3mMdWj5WVdrv9NtFmiCygtLUv1bbMkyZUi5QDD/DiXrofyfFjy8x3oGKh
-         Ck1w==
-X-Gm-Message-State: AOAM5305D8aANadIy8QFbpa0sUupmwoFI8VNo2zGLuV01Jf2I1epPqx0
-        2w4cFZA4qM5eBEsUE1mIgG2zYXvELc8NzFfU21UUFL+xWFp27SK8IErz1W8ieLCISGCeIdWxkqm
-        9LRIcX5JuoNfHuOnrWCyTs0cDBtsFkrKVq5M0sAhqfzYA8RX6gVtYKOkRAKYb7Xos54P0kQjJ
-X-Google-Smtp-Source: ABdhPJzFbbo0WfTS1IfZABeMG2rYr9e1LIYYQiRB7i7LE8e4OTSH+5XLYn2uvqotps6IXuAK6AZ7TAid9k9fKHfz
+        bh=retMpEjrcTeWhZEOxwTAlsioV4w7SmVLUkVlecvAG1s=;
+        b=A1L9rHpAQdS0D/d0UOSsooCEW4do+TB5+I0vvjk2TCT6CURrynyM0E5lEcradeoXs1
+         S/PhiR+6S702Y9wJN9A1poqpTO/L95zbc8ubDWEdHTTtYYUHE04Y0jGuBjQ5yYmiUMY+
+         /Y/9rf7PshfxUtBu+mkyCiOMlo61OaRQkrqg/KtsX4OmjF7mjp0f+sPCZTxTMLo4sk5e
+         I+i/NpdF/kcE1V5gdtbmOr5e79jPkAY/U/kf0HdAD6NSwTcrl+/oohUyjm168HxIf4D7
+         cnSCyRIZK0GgUVq8rL1cBlcymfjRhipslUE8JZPl946Iyw8iJpLGTzJ305GHq8nfu46G
+         J7xg==
+X-Gm-Message-State: AOAM532rkOMIMt7KoX3A2mnJc08BQa3llG7EyE8HY84Jmdc9pRA6/qxa
+        pIadxfPrfkElVnhpdh8JwVlBPs/cGsn9rdeTJ7/D2bMhT5G1VrEsCbD2UwBJ2lUt8Kq0X4Xk12d
+        EZ/PfDVmFuLJu/Dk2wuddXnAgWwQ4n0clNqMb8K+ka7yEqndBgeR8i0Kp/B3reqA1DGQCSNf5
+X-Google-Smtp-Source: ABdhPJyra36hinVDx/zbbNbFPbHEKMR0uj95aHRTmA3Us5lkbielUDkwACXA1BX9joKfgRD5isNpdR5Uke9jBoSJ
 X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
- (user=awogbemila job=sendgmr) by 2002:a25:640e:: with SMTP id
- y14mr313163ybb.340.1599590364911; Tue, 08 Sep 2020 11:39:24 -0700 (PDT)
-Date:   Tue,  8 Sep 2020 11:39:06 -0700
+ (user=awogbemila job=sendgmr) by 2002:a17:90a:4687:: with SMTP id
+ z7mr184652pjf.144.1599590366710; Tue, 08 Sep 2020 11:39:26 -0700 (PDT)
+Date:   Tue,  8 Sep 2020 11:39:07 -0700
 In-Reply-To: <20200908183909.4156744-1-awogbemila@google.com>
-Message-Id: <20200908183909.4156744-7-awogbemila@google.com>
+Message-Id: <20200908183909.4156744-8-awogbemila@google.com>
 Mime-Version: 1.0
 References: <20200908183909.4156744-1-awogbemila@google.com>
 X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
-Subject: [PATCH net-next v3 6/9] gve: NIC stats for report-stats and for ethtool
+Subject: [PATCH net-next v3 7/9] gve: Batch AQ commands for creating and
+ destroying queues.
 From:   David Awogbemila <awogbemila@google.com>
 To:     netdev@vger.kernel.org
-Cc:     David Awogbemila <awogbemila@google.com>
+Cc:     Sagi Shahar <sagis@google.com>, Yangchun Fu <yangchun@google.com>,
+        David Awogbemila <awogbemila@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds per queue NIC stats to ethtool stats and to report-stats.
-These stats are always exposed to guest whether or not the
-report-stats flag is turned on.
+From: Sagi Shahar <sagis@google.com>
 
+Adds support for batching AQ commands and uses it for creating and
+destroying queues.
+
+Reviewed-by: Yangchun Fu <yangchun@google.com>
+Signed-off-by: Sagi Shahar <sagis@google.com>
 Signed-off-by: David Awogbemila <awogbemila@google.com>
 ---
- drivers/net/ethernet/google/gve/gve.h         |  4 +
- drivers/net/ethernet/google/gve/gve_adminq.h  |  5 ++
- drivers/net/ethernet/google/gve/gve_ethtool.c | 83 ++++++++++++++++++-
- drivers/net/ethernet/google/gve/gve_main.c    |  4 +-
- 4 files changed, 93 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/google/gve/gve_adminq.c | 188 ++++++++++++++++---
+ drivers/net/ethernet/google/gve/gve_adminq.h |  10 +-
+ drivers/net/ethernet/google/gve/gve_main.c   |  94 +++++-----
+ 3 files changed, 211 insertions(+), 81 deletions(-)
 
-diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
-index e1183cc35b1c..b348eb360cd0 100644
---- a/drivers/net/ethernet/google/gve/gve.h
-+++ b/drivers/net/ethernet/google/gve/gve.h
-@@ -31,6 +31,10 @@
- #define GVE_TX_STATS_REPORT_NUM	5
- #define GVE_RX_STATS_REPORT_NUM	2
+diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
+index 69cdf92a2f21..341a17b36f06 100644
+--- a/drivers/net/ethernet/google/gve/gve_adminq.c
++++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+@@ -135,20 +135,71 @@ static int gve_adminq_parse_err(struct gve_priv *priv, u32 status)
+ 	}
+ }
  
-+/* Numbers of NIC tx/rx stats in stats report. */
-+#define NIC_TX_STATS_REPORT_NUM	0
-+#define NIC_RX_STATS_REPORT_NUM	4
++/* Flushes all AQ commands currently queued and waits for them to complete.
++ * If there are failures, it will return the first error.
++ */
++static int gve_adminq_kick_and_wait(struct gve_priv *priv)
++{
++	u32 tail, head;
++	int i;
 +
- /* Interval to schedule a service task, 20000ms. */
- #define GVE_SERVICE_TIMER_PERIOD	20000
++	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
++	head = priv->adminq_prod_cnt;
++
++	gve_adminq_kick_cmd(priv, head);
++	if (!gve_adminq_wait_for_cmd(priv, head)) {
++		dev_err(&priv->pdev->dev, "AQ commands timed out, need to reset AQ\n");
++		priv->adminq_timeouts++;
++		return -ENOTRECOVERABLE;
++	}
++
++	for (i = tail; i < head; i++) {
++		union gve_adminq_command *cmd;
++		u32 status, err;
++
++		cmd = &priv->adminq[i & priv->adminq_mask];
++		status = be32_to_cpu(READ_ONCE(cmd->status));
++		err = gve_adminq_parse_err(priv, status);
++		if (err)
++			// Return the first error if we failed.
++			return err;
++	}
++
++	return 0;
++}
++
+ /* This function is not threadsafe - the caller is responsible for any
+  * necessary locks.
+  */
+-int gve_adminq_execute_cmd(struct gve_priv *priv,
+-			   union gve_adminq_command *cmd_orig)
++static int gve_adminq_issue_cmd(struct gve_priv *priv,
++				union gve_adminq_command *cmd_orig)
+ {
+ 	union gve_adminq_command *cmd;
+-	u32 status = 0;
+-	u32 prod_cnt;
+ 	u32 opcode;
++	u32 tail;
++
++	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
++
++	// Check if next command will overflow the buffer.
++	if (((priv->adminq_prod_cnt + 1) & priv->adminq_mask) == tail) {
++		int err;
++
++		// Flush existing commands to make room.
++		err = gve_adminq_kick_and_wait(priv);
++		if (err)
++			return err;
++
++		// Retry.
++		tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
++		if (((priv->adminq_prod_cnt + 1) & priv->adminq_mask) == tail) {
++			// This should never happen. We just flushed the
++			// command queue so there should be enough space.
++			return -ENOMEM;
++		}
++	}
  
+ 	cmd = &priv->adminq[priv->adminq_prod_cnt & priv->adminq_mask];
+ 	priv->adminq_prod_cnt++;
+-	prod_cnt = priv->adminq_prod_cnt;
+ 
+ 	memcpy(cmd, cmd_orig, sizeof(*cmd_orig));
+ 	opcode = be32_to_cpu(READ_ONCE(cmd->opcode));
+@@ -191,16 +242,30 @@ int gve_adminq_execute_cmd(struct gve_priv *priv,
+ 		dev_err(&priv->pdev->dev, "unknown AQ command opcode %d\n", opcode);
+ 	}
+ 
+-	gve_adminq_kick_cmd(priv, prod_cnt);
+-	if (!gve_adminq_wait_for_cmd(priv, prod_cnt)) {
+-		dev_err(&priv->pdev->dev, "AQ command timed out, need to reset AQ\n");
+-		priv->adminq_timeouts++;
+-		return -ENOTRECOVERABLE;
+-	}
++	return 0;
++}
+ 
+-	memcpy(cmd_orig, cmd, sizeof(*cmd));
+-	status = be32_to_cpu(READ_ONCE(cmd->status));
+-	return gve_adminq_parse_err(priv, status);
++/* This function is not threadsafe - the caller is responsible for any
++ * necessary locks.
++ * The caller is also responsible for making sure there are no commands
++ * waiting to be executed.
++ */
++static int gve_adminq_execute_cmd(struct gve_priv *priv, union gve_adminq_command *cmd_orig)
++{
++	u32 tail, head;
++	int err;
++
++	tail = ioread32be(&priv->reg_bar0->adminq_event_counter);
++	head = priv->adminq_prod_cnt;
++	if (tail != head)
++		// This is not a valid path
++		return -EINVAL;
++
++	err = gve_adminq_issue_cmd(priv, cmd_orig);
++	if (err)
++		return err;
++
++	return gve_adminq_kick_and_wait(priv);
+ }
+ 
+ /* The device specifies that the management vector can either be the first irq
+@@ -245,29 +310,50 @@ int gve_adminq_deconfigure_device_resources(struct gve_priv *priv)
+ 	return gve_adminq_execute_cmd(priv, &cmd);
+ }
+ 
+-int gve_adminq_create_tx_queue(struct gve_priv *priv, u32 queue_index)
++static int gve_adminq_create_tx_queue(struct gve_priv *priv, u32 queue_index)
+ {
+ 	struct gve_tx_ring *tx = &priv->tx[queue_index];
+ 	union gve_adminq_command cmd;
++	int err;
+ 
+ 	memset(&cmd, 0, sizeof(cmd));
+ 	cmd.opcode = cpu_to_be32(GVE_ADMINQ_CREATE_TX_QUEUE);
+ 	cmd.create_tx_queue = (struct gve_adminq_create_tx_queue) {
+ 		.queue_id = cpu_to_be32(queue_index),
+ 		.reserved = 0,
+-		.queue_resources_addr = cpu_to_be64(tx->q_resources_bus),
++		.queue_resources_addr =
++			cpu_to_be64(tx->q_resources_bus),
+ 		.tx_ring_addr = cpu_to_be64(tx->bus),
+ 		.queue_page_list_id = cpu_to_be32(tx->tx_fifo.qpl->id),
+ 		.ntfy_id = cpu_to_be32(tx->ntfy_id),
+ 	};
+ 
+-	return gve_adminq_execute_cmd(priv, &cmd);
++	err = gve_adminq_issue_cmd(priv, &cmd);
++	if (err)
++		return err;
++
++	return 0;
+ }
+ 
+-int gve_adminq_create_rx_queue(struct gve_priv *priv, u32 queue_index)
++int gve_adminq_create_tx_queues(struct gve_priv *priv, u32 num_queues)
++{
++	int err;
++	int i;
++
++	for (i = 0; i < num_queues; i++) {
++		err = gve_adminq_create_tx_queue(priv, i);
++		if (err)
++			return err;
++	}
++
++	return gve_adminq_kick_and_wait(priv);
++}
++
++static int gve_adminq_create_rx_queue(struct gve_priv *priv, u32 queue_index)
+ {
+ 	struct gve_rx_ring *rx = &priv->rx[queue_index];
+ 	union gve_adminq_command cmd;
++	int err;
+ 
+ 	memset(&cmd, 0, sizeof(cmd));
+ 	cmd.opcode = cpu_to_be32(GVE_ADMINQ_CREATE_RX_QUEUE);
+@@ -282,12 +368,31 @@ int gve_adminq_create_rx_queue(struct gve_priv *priv, u32 queue_index)
+ 		.queue_page_list_id = cpu_to_be32(rx->data.qpl->id),
+ 	};
+ 
+-	return gve_adminq_execute_cmd(priv, &cmd);
++	err = gve_adminq_issue_cmd(priv, &cmd);
++	if (err)
++		return err;
++
++	return 0;
+ }
+ 
+-int gve_adminq_destroy_tx_queue(struct gve_priv *priv, u32 queue_index)
++int gve_adminq_create_rx_queues(struct gve_priv *priv, u32 num_queues)
++{
++	int err;
++	int i;
++
++	for (i = 0; i < num_queues; i++) {
++		err = gve_adminq_create_rx_queue(priv, i);
++		if (err)
++			return err;
++	}
++
++	return gve_adminq_kick_and_wait(priv);
++}
++
++static int gve_adminq_destroy_tx_queue(struct gve_priv *priv, u32 queue_index)
+ {
+ 	union gve_adminq_command cmd;
++	int err;
+ 
+ 	memset(&cmd, 0, sizeof(cmd));
+ 	cmd.opcode = cpu_to_be32(GVE_ADMINQ_DESTROY_TX_QUEUE);
+@@ -295,12 +400,31 @@ int gve_adminq_destroy_tx_queue(struct gve_priv *priv, u32 queue_index)
+ 		.queue_id = cpu_to_be32(queue_index),
+ 	};
+ 
+-	return gve_adminq_execute_cmd(priv, &cmd);
++	err = gve_adminq_issue_cmd(priv, &cmd);
++	if (err)
++		return err;
++
++	return 0;
+ }
+ 
+-int gve_adminq_destroy_rx_queue(struct gve_priv *priv, u32 queue_index)
++int gve_adminq_destroy_tx_queues(struct gve_priv *priv, u32 num_queues)
++{
++	int err;
++	int i;
++
++	for (i = 0; i < num_queues; i++) {
++		err = gve_adminq_destroy_tx_queue(priv, i);
++		if (err)
++			return err;
++	}
++
++	return gve_adminq_kick_and_wait(priv);
++}
++
++static int gve_adminq_destroy_rx_queue(struct gve_priv *priv, u32 queue_index)
+ {
+ 	union gve_adminq_command cmd;
++	int err;
+ 
+ 	memset(&cmd, 0, sizeof(cmd));
+ 	cmd.opcode = cpu_to_be32(GVE_ADMINQ_DESTROY_RX_QUEUE);
+@@ -308,7 +432,25 @@ int gve_adminq_destroy_rx_queue(struct gve_priv *priv, u32 queue_index)
+ 		.queue_id = cpu_to_be32(queue_index),
+ 	};
+ 
+-	return gve_adminq_execute_cmd(priv, &cmd);
++	err = gve_adminq_issue_cmd(priv, &cmd);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++int gve_adminq_destroy_rx_queues(struct gve_priv *priv, u32 num_queues)
++{
++	int err;
++	int i;
++
++	for (i = 0; i < num_queues; i++) {
++		err = gve_adminq_destroy_rx_queue(priv, i);
++		if (err)
++			return err;
++	}
++
++	return gve_adminq_kick_and_wait(priv);
+ }
+ 
+ int gve_adminq_describe_device(struct gve_priv *priv)
 diff --git a/drivers/net/ethernet/google/gve/gve_adminq.h b/drivers/net/ethernet/google/gve/gve_adminq.h
-index b81a3bb76d5e..a6c8c29f0d13 100644
+index a6c8c29f0d13..784830f75b7c 100644
 --- a/drivers/net/ethernet/google/gve/gve_adminq.h
 +++ b/drivers/net/ethernet/google/gve/gve_adminq.h
-@@ -205,6 +205,11 @@ enum gve_stat_names {
- 	TX_LAST_COMPLETION_PROCESSED	= 5,
- 	RX_NEXT_EXPECTED_SEQUENCE	= 6,
- 	RX_BUFFERS_POSTED		= 7,
-+	// stats from NIC
-+	RX_QUEUE_DROP_CNT		= 65,
-+	RX_NO_BUFFERS_POSTED		= 66,
-+	RX_DROPS_PACKET_OVER_MRU	= 67,
-+	RX_DROPS_INVALID_CHECKSUM	= 68,
- };
- 
- union gve_adminq_command {
-diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
-index e3987faf4b2e..50cadf8755af 100644
---- a/drivers/net/ethernet/google/gve/gve_ethtool.c
-+++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
-@@ -43,6 +43,8 @@ static const char gve_gstrings_main_stats[][ETH_GSTRING_LEN] = {
- static const char gve_gstrings_rx_stats[][ETH_GSTRING_LEN] = {
- 	"rx_posted_desc[%u]", "rx_completed_desc[%u]", "rx_bytes[%u]",
- 	"rx_dropped_pkt[%u]", "rx_copybreak_pkt[%u]", "rx_copied_pkt[%u]",
-+	"rx_queue_drop_cnt[%u]", "rx_no_buffers_posted[%u]",
-+	"rx_drops_packet_over_mru[%u]", "rx_drops_invalid_checksum[%u]",
- };
- 
- static const char gve_gstrings_tx_stats[][ETH_GSTRING_LEN] = {
-@@ -138,14 +140,30 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 		tmp_rx_desc_err_dropped_pkt, tmp_tx_pkts, tmp_tx_bytes;
- 	u64 rx_buf_alloc_fail, rx_desc_err_dropped_pkt, rx_pkts,
- 		rx_skb_alloc_fail, rx_bytes, tx_pkts, tx_bytes;
-+	int stats_idx, base_stats_idx, max_stats_idx;
-+	struct stats *report_stats;
-+	int *rx_qid_to_stats_idx;
-+	int *tx_qid_to_stats_idx;
- 	struct gve_priv *priv;
-+	bool skip_nic_stats;
- 	unsigned int start;
- 	int ring;
--	int i;
-+	int i, j;
- 
- 	ASSERT_RTNL();
- 
- 	priv = netdev_priv(netdev);
-+	report_stats = priv->stats_report->stats;
-+	rx_qid_to_stats_idx = kmalloc_array(priv->rx_cfg.num_queues,
-+					    sizeof(int), GFP_KERNEL);
-+	if (!rx_qid_to_stats_idx)
-+		return;
-+	tx_qid_to_stats_idx = kmalloc_array(priv->tx_cfg.num_queues,
-+					    sizeof(int), GFP_KERNEL);
-+	if (!tx_qid_to_stats_idx) {
-+		kfree(rx_qid_to_stats_idx);
-+		return;
-+	}
- 	for (rx_pkts = 0, rx_bytes = 0, rx_skb_alloc_fail = 0,
- 	     rx_buf_alloc_fail = 0, rx_desc_err_dropped_pkt = 0, ring = 0;
- 	     ring < priv->rx_cfg.num_queues; ring++) {
-@@ -207,6 +225,25 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 	data[i++] = priv->stats_report_trigger_cnt;
- 	i = GVE_MAIN_STATS_LEN;
- 
-+	/* For rx cross-reporting stats, start from nic rx stats in report */
-+	base_stats_idx = GVE_TX_STATS_REPORT_NUM * priv->tx_cfg.num_queues +
-+		GVE_RX_STATS_REPORT_NUM * priv->rx_cfg.num_queues;
-+	max_stats_idx = NIC_RX_STATS_REPORT_NUM * priv->rx_cfg.num_queues +
-+		base_stats_idx;
-+	/* Preprocess the stats report for rx, map queue id to start index */
-+	skip_nic_stats = false;
-+	for (stats_idx = base_stats_idx; stats_idx < max_stats_idx;
-+		stats_idx += NIC_RX_STATS_REPORT_NUM) {
-+		u32 stat_name = be32_to_cpu(report_stats[stats_idx].stat_name);
-+		u32 queue_id = be32_to_cpu(report_stats[stats_idx].queue_id);
-+
-+		if (stat_name == 0) {
-+			/* no stats written by NIC yet */
-+			skip_nic_stats = true;
-+			break;
-+		}
-+		rx_qid_to_stats_idx[queue_id] = stats_idx;
-+	}
- 	/* walk RX rings */
- 	if (priv->rx) {
- 		for (ring = 0; ring < priv->rx_cfg.num_queues; ring++) {
-@@ -231,11 +268,41 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 				tmp_rx_desc_err_dropped_pkt;
- 			data[i++] = rx->rx_copybreak_pkt;
- 			data[i++] = rx->rx_copied_pkt;
-+			/* stats from NIC */
-+			if (skip_nic_stats) {
-+				/* skip NIC rx stats */
-+				i += NIC_RX_STATS_REPORT_NUM;
-+				continue;
-+			}
-+			for (j = 0; j < NIC_RX_STATS_REPORT_NUM; j++) {
-+				u64 value =
-+				be64_to_cpu(report_stats[rx_qid_to_stats_idx[ring] + j].value);
-+
-+				data[i++] = value;
-+			}
- 		}
- 	} else {
- 		i += priv->rx_cfg.num_queues * NUM_GVE_RX_CNTS;
- 	}
- 
-+	/* For tx cross-reporting stats, start from nic tx stats in report */
-+	base_stats_idx = max_stats_idx;
-+	max_stats_idx = NIC_TX_STATS_REPORT_NUM * priv->tx_cfg.num_queues +
-+		max_stats_idx;
-+	/* Preprocess the stats report for tx, map queue id to start index */
-+	skip_nic_stats = false;
-+	for (stats_idx = base_stats_idx; stats_idx < max_stats_idx;
-+		stats_idx += NIC_TX_STATS_REPORT_NUM) {
-+		u32 stat_name = be32_to_cpu(report_stats[stats_idx].stat_name);
-+		u32 queue_id = be32_to_cpu(report_stats[stats_idx].queue_id);
-+
-+		if (stat_name == 0) {
-+			/* no stats written by NIC yet */
-+			skip_nic_stats = true;
-+			break;
-+		}
-+		tx_qid_to_stats_idx[queue_id] = stats_idx;
-+	}
- 	/* walk TX rings */
- 	if (priv->tx) {
- 		for (ring = 0; ring < priv->tx_cfg.num_queues; ring++) {
-@@ -254,11 +321,25 @@ gve_get_ethtool_stats(struct net_device *netdev,
- 			data[i++] = tx->stop_queue;
- 			data[i++] = be32_to_cpu(gve_tx_load_event_counter(priv,
- 									  tx));
-+			/* stats from NIC */
-+			if (skip_nic_stats) {
-+				/* skip NIC tx stats */
-+				i += NIC_TX_STATS_REPORT_NUM;
-+				continue;
-+			}
-+			for (j = 0; j < NIC_TX_STATS_REPORT_NUM; j++) {
-+				u64 value =
-+				be64_to_cpu(report_stats[tx_qid_to_stats_idx[ring] + j].value);
-+				data[i++] = value;
-+			}
- 		}
- 	} else {
- 		i += priv->tx_cfg.num_queues * NUM_GVE_TX_CNTS;
- 	}
- 
-+	kfree(rx_qid_to_stats_idx);
-+	kfree(tx_qid_to_stats_idx);
-+
- 	/* AQ Stats */
- 	data[i++] = priv->adminq_prod_cnt;
- 	data[i++] = priv->adminq_cmd_fail;
+@@ -238,8 +238,6 @@ static_assert(sizeof(union gve_adminq_command) == 64);
+ int gve_adminq_alloc(struct device *dev, struct gve_priv *priv);
+ void gve_adminq_free(struct device *dev, struct gve_priv *priv);
+ void gve_adminq_release(struct gve_priv *priv);
+-int gve_adminq_execute_cmd(struct gve_priv *priv,
+-			   union gve_adminq_command *cmd_orig);
+ int gve_adminq_describe_device(struct gve_priv *priv);
+ int gve_adminq_configure_device_resources(struct gve_priv *priv,
+ 					  dma_addr_t counter_array_bus_addr,
+@@ -247,10 +245,10 @@ int gve_adminq_configure_device_resources(struct gve_priv *priv,
+ 					  dma_addr_t db_array_bus_addr,
+ 					  u32 num_ntfy_blks);
+ int gve_adminq_deconfigure_device_resources(struct gve_priv *priv);
+-int gve_adminq_create_tx_queue(struct gve_priv *priv, u32 queue_id);
+-int gve_adminq_destroy_tx_queue(struct gve_priv *priv, u32 queue_id);
+-int gve_adminq_create_rx_queue(struct gve_priv *priv, u32 queue_id);
+-int gve_adminq_destroy_rx_queue(struct gve_priv *priv, u32 queue_id);
++int gve_adminq_create_tx_queues(struct gve_priv *priv, u32 num_queues);
++int gve_adminq_destroy_tx_queues(struct gve_priv *priv, u32 queue_id);
++int gve_adminq_create_rx_queues(struct gve_priv *priv, u32 num_queues);
++int gve_adminq_destroy_rx_queues(struct gve_priv *priv, u32 queue_id);
+ int gve_adminq_register_page_list(struct gve_priv *priv,
+ 				  struct gve_queue_page_list *qpl);
+ int gve_adminq_unregister_page_list(struct gve_priv *priv, u32 page_list_id);
 diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index c84f74cc750b..7e380fdc3aa5 100644
+index 7e380fdc3aa5..ea35589ac0d6 100644
 --- a/drivers/net/ethernet/google/gve/gve_main.c
 +++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -101,9 +101,9 @@ static int gve_alloc_stats_report(struct gve_priv *priv)
- {
- 	int tx_stats_num, rx_stats_num;
+@@ -443,36 +443,37 @@ static int gve_create_rings(struct gve_priv *priv)
+ 	int err;
+ 	int i;
  
--	tx_stats_num = (GVE_TX_STATS_REPORT_NUM) *
-+	tx_stats_num = (GVE_TX_STATS_REPORT_NUM + NIC_TX_STATS_REPORT_NUM) *
- 		       priv->tx_cfg.num_queues;
--	rx_stats_num = (GVE_RX_STATS_REPORT_NUM) *
-+	rx_stats_num = (GVE_RX_STATS_REPORT_NUM + NIC_RX_STATS_REPORT_NUM) *
- 		       priv->rx_cfg.num_queues;
- 	priv->stats_report_len = sizeof(struct gve_stats_report) +
- 				 (tx_stats_num + rx_stats_num) *
+-	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
+-		err = gve_adminq_create_tx_queue(priv, i);
+-		if (err) {
+-			netif_err(priv, drv, priv->dev, "failed to create tx queue %d\n",
+-				  i);
+-			/* This failure will trigger a reset - no need to clean
+-			 * up
+-			 */
+-			return err;
+-		}
+-		netif_dbg(priv, drv, priv->dev, "created tx queue %d\n", i);
++	err = gve_adminq_create_tx_queues(priv, priv->tx_cfg.num_queues);
++	if (err) {
++		netif_err(priv, drv, priv->dev, "failed to create %d tx queues\n",
++			  priv->tx_cfg.num_queues);
++		/* This failure will trigger a reset - no need to clean
++		 * up
++		 */
++		return err;
+ 	}
+-	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
+-		err = gve_adminq_create_rx_queue(priv, i);
+-		if (err) {
+-			netif_err(priv, drv, priv->dev, "failed to create rx queue %d\n",
+-				  i);
+-			/* This failure will trigger a reset - no need to clean
+-			 * up
+-			 */
+-			return err;
+-		}
+-		/* Rx data ring has been prefilled with packet buffers at
+-		 * queue allocation time.
+-		 * Write the doorbell to provide descriptor slots and packet
+-		 * buffers to the NIC.
++	netif_dbg(priv, drv, priv->dev, "created %d tx queues\n",
++		  priv->tx_cfg.num_queues);
++
++	err = gve_adminq_create_rx_queues(priv, priv->rx_cfg.num_queues);
++	if (err) {
++		netif_err(priv, drv, priv->dev, "failed to create %d rx queues\n",
++			  priv->rx_cfg.num_queues);
++		/* This failure will trigger a reset - no need to clean
++		 * up
+ 		 */
+-		gve_rx_write_doorbell(priv, &priv->rx[i]);
+-		netif_dbg(priv, drv, priv->dev, "created rx queue %d\n", i);
++		return err;
+ 	}
++	netif_dbg(priv, drv, priv->dev, "created %d rx queues\n",
++		  priv->rx_cfg.num_queues);
++
++	/* Rx data ring has been prefilled with packet buffers at queue
++	 * allocation time.
++	 * Write the doorbell to provide descriptor slots and packet buffers
++	 * to the NIC.
++	 */
++	for (i = 0; i < priv->rx_cfg.num_queues; i++)
++		gve_rx_write_doorbell(priv, &priv->rx[i]);
+ 
+ 	return 0;
+ }
+@@ -530,34 +531,23 @@ static int gve_alloc_rings(struct gve_priv *priv)
+ static int gve_destroy_rings(struct gve_priv *priv)
+ {
+ 	int err;
+-	int i;
+ 
+-	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
+-		err = gve_adminq_destroy_tx_queue(priv, i);
+-		if (err) {
+-			netif_err(priv, drv, priv->dev,
+-				  "failed to destroy tx queue %d\n",
+-				  i);
+-			/* This failure will trigger a reset - no need to clean
+-			 * up
+-			 */
+-			return err;
+-		}
+-		netif_dbg(priv, drv, priv->dev, "destroyed tx queue %d\n", i);
++	err = gve_adminq_destroy_tx_queues(priv, priv->tx_cfg.num_queues);
++	if (err) {
++		netif_err(priv, drv, priv->dev,
++			  "failed to destroy tx queues\n");
++		/* This failure will trigger a reset - no need to clean up */
++		return err;
+ 	}
+-	for (i = 0; i < priv->rx_cfg.num_queues; i++) {
+-		err = gve_adminq_destroy_rx_queue(priv, i);
+-		if (err) {
+-			netif_err(priv, drv, priv->dev,
+-				  "failed to destroy rx queue %d\n",
+-				  i);
+-			/* This failure will trigger a reset - no need to clean
+-			 * up
+-			 */
+-			return err;
+-		}
+-		netif_dbg(priv, drv, priv->dev, "destroyed rx queue %d\n", i);
++	netif_dbg(priv, drv, priv->dev, "destroyed tx queues\n");
++	err = gve_adminq_destroy_rx_queues(priv, priv->rx_cfg.num_queues);
++	if (err) {
++		netif_err(priv, drv, priv->dev,
++			  "failed to destroy rx queues\n");
++		/* This failure will trigger a reset - no need to clean up */
++		return err;
+ 	}
++	netif_dbg(priv, drv, priv->dev, "destroyed rx queues\n");
+ 	return 0;
+ }
+ 
 -- 
 2.28.0.526.ge36021eeef-goog
 
