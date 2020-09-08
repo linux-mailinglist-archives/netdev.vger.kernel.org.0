@@ -2,103 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67C5326202D
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 22:10:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B872620D1
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 22:16:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730464AbgIHUK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 16:10:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52610 "EHLO mail.kernel.org"
+        id S1730064AbgIHUQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 16:16:05 -0400
+Received: from correo.us.es ([193.147.175.20]:60742 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730269AbgIHPQT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 11:16:19 -0400
-Received: from localhost.localdomain (unknown [194.230.155.174])
+        id S1730083AbgIHPKD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 11:10:03 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 0410A1F0CF4
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 17:09:54 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id EAE24DA792
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 17:09:53 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id DFC1CDA793; Tue,  8 Sep 2020 17:09:53 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C1F7DDA789;
+        Tue,  8 Sep 2020 17:09:51 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 08 Sep 2020 17:09:51 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B5ED822C9C;
-        Tue,  8 Sep 2020 14:59:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599577202;
-        bh=5e2FeFGeBsQ08Xbq+c6ro2JvZjXm8XuuPBlwX6Hax+g=;
-        h=From:To:Subject:Date:From;
-        b=qgJeyzEPOC/OZb4p2XNSaZQ1LKhhDQM0wSLJswkbINraU//gjo2q3iNVapN3KlpoX
-         LD+GSH763ArX4beMKDc/0Nj2S3pV0mCEZWbQmWOXULN3x+JV5TJFK99hlwhsNBhvOo
-         gvUcAsfw4BUb54G+Juq4Zw3m4IWCuT7C6nZvAl08=
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Dan Murphy <dmurphy@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: net: Correct interrupt flags in examples
-Date:   Tue,  8 Sep 2020 16:59:39 +0200
-Message-Id: <20200908145939.4569-1-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id 98CF94301DE0;
+        Tue,  8 Sep 2020 17:09:51 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH 0/5] Netfilter fixes for net
+Date:   Tue,  8 Sep 2020 17:09:42 +0200
+Message-Id: <20200908150947.12623-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GPIO_ACTIVE_x flags are not correct in the context of interrupt flags.
-These are simple defines so they could be used in DTS but they will not
-have the same meaning:
-1. GPIO_ACTIVE_HIGH = 0 = IRQ_TYPE_NONE
-2. GPIO_ACTIVE_LOW  = 1 = IRQ_TYPE_EDGE_RISING
+Hi,
 
-Correct the interrupt flags, assuming the author of the code wanted some
-logical behavior behind the name "ACTIVE_xxx", this is:
-  ACTIVE_LOW  => IRQ_TYPE_LEVEL_LOW
-  ACTIVE_HIGH => IRQ_TYPE_LEVEL_HIGH
+The following patchset contains Netfilter fixes for net:
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- Documentation/devicetree/bindings/net/can/tcan4x5x.txt | 2 +-
- Documentation/devicetree/bindings/net/nfc/nxp-nci.txt  | 2 +-
- Documentation/devicetree/bindings/net/nfc/pn544.txt    | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+1) Allow conntrack entries with l3num == NFPROTO_IPV4 or == NFPROTO_IPV6
+   only via ctnetlink, from Will McVicker.
 
-diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-index 3613c2c8f75d..0968b40aef1e 100644
---- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-+++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-@@ -33,7 +33,7 @@ tcan4x5x: tcan4x5x@0 {
- 		spi-max-frequency = <10000000>;
- 		bosch,mram-cfg = <0x0 0 0 32 0 0 1 1>;
- 		interrupt-parent = <&gpio1>;
--		interrupts = <14 GPIO_ACTIVE_LOW>;
-+		interrupts = <14 IRQ_TYPE_LEVEL_LOW>;
- 		device-state-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
- 		device-wake-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
- 		reset-gpios = <&gpio1 27 GPIO_ACTIVE_HIGH>;
-diff --git a/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt b/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
-index cfaf88998918..9e4dc510a40a 100644
---- a/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
-+++ b/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
-@@ -25,7 +25,7 @@ Example (for ARM-based BeagleBone with NPC100 NFC controller on I2C2):
- 		clock-frequency = <100000>;
- 
- 		interrupt-parent = <&gpio1>;
--		interrupts = <29 GPIO_ACTIVE_HIGH>;
-+		interrupts = <29 IRQ_TYPE_LEVEL_HIGH>;
- 
- 		enable-gpios = <&gpio0 30 GPIO_ACTIVE_HIGH>;
- 		firmware-gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
-diff --git a/Documentation/devicetree/bindings/net/nfc/pn544.txt b/Documentation/devicetree/bindings/net/nfc/pn544.txt
-index 92f399ec22b8..2bd82562ce8e 100644
---- a/Documentation/devicetree/bindings/net/nfc/pn544.txt
-+++ b/Documentation/devicetree/bindings/net/nfc/pn544.txt
-@@ -25,7 +25,7 @@ Example (for ARM-based BeagleBone with PN544 on I2C2):
- 		clock-frequency = <400000>;
- 
- 		interrupt-parent = <&gpio1>;
--		interrupts = <17 GPIO_ACTIVE_HIGH>;
-+		interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
- 
- 		enable-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
- 		firmware-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
--- 
-2.17.1
+2) Batch notifications to userspace to improve netlink socket receive
+   utilization.
 
+3) Restore mark based dump filtering via ctnetlink, from Martin Willi.
+
+4) nf_conncount_init() fails with -EPROTO with CONFIG_IPV6, from
+   Eelco Chaudron.
+
+5) Containers fail to match on meta skuid and skgid, use socket user_ns
+   to retrieve meta skuid and skgid.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 19162fd4063a3211843b997a454b505edb81d5ce:
+
+  hv_netvsc: Fix hibernation for mlx5 VF driver (2020-09-07 21:04:36 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 0c92411bb81de9bc516d6924f50289d8d5f880e5:
+
+  netfilter: nft_meta: use socket user_ns to retrieve skuid and skgid (2020-09-08 13:04:56 +0200)
+
+----------------------------------------------------------------
+Eelco Chaudron (1):
+      netfilter: conntrack: nf_conncount_init is failing with IPv6 disabled
+
+Martin Willi (1):
+      netfilter: ctnetlink: fix mark based dump filtering regression
+
+Pablo Neira Ayuso (2):
+      netfilter: nf_tables: coalesce multiple notifications into one skbuff
+      netfilter: nft_meta: use socket user_ns to retrieve skuid and skgid
+
+Will McVicker (1):
+      netfilter: ctnetlink: add a range check for l3/l4 protonum
+
+ include/net/netns/nftables.h         |  1 +
+ net/netfilter/nf_conntrack_netlink.c | 22 +++---------
+ net/netfilter/nf_conntrack_proto.c   |  2 ++
+ net/netfilter/nf_tables_api.c        | 70 +++++++++++++++++++++++++++++-------
+ net/netfilter/nft_meta.c             |  4 +--
+ 5 files changed, 67 insertions(+), 32 deletions(-)
