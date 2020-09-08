@@ -2,144 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 532DC2614F6
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:41:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F6F52615C0
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:55:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732070AbgIHQlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:41:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60582 "EHLO
+        id S1732088AbgIHQzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 12:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732045AbgIHQhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:37:15 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FA5C061A0C
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 07:04:13 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id i1so15977247edv.2
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 07:04:12 -0700 (PDT)
+        with ESMTP id S1731903AbgIHQXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:23:19 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447EAC061573;
+        Tue,  8 Sep 2020 09:23:19 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id p65so12377741qtd.2;
+        Tue, 08 Sep 2020 09:23:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pFSueD/PsgBNg5dRi4zohukePJNmnDKu8o6l7DjyJKo=;
-        b=NDNqSTa7fZTWmXjbEiT8n88ebqol0L6AQtiZu/8Oqe+mwkyHcxNQJF45p8QJ0vEHmj
-         7vURBe4Ohu2fjAEu7i/ry1GBIIfFl5TaPBxPz79QVbYcSu/nefGedb+ubeX8CBrtqttl
-         vRGrgNRtPpVQZ+TMKn4V+lOBfVl8T3XmT0sIYxxoJEu8HiVHdWijgtU1BxjViT0f9tcH
-         voD1jgHdPNU8GQLdGstctvcCBJ8Zt6MVhQfE/PW9Z+rDarmVbuJR0lGYHgfbnujN7om3
-         y37QDLUOfw5y6g0/x4GMg5xEeVirg0uNqjcdA2LuSj5fJgji6JndSYaglSRH3naDUxq7
-         R8/g==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K5Evq+uTbM4yLIZD5njkPq4LQ+o2UWYUAtT6x7n9zzY=;
+        b=b8XlRhZM0nQYdZDtTmmJqoRSSCLrq5Tf1z6fz22S7BgxJx7oiBUDvz8CG8BVD03LGJ
+         /Hqpko9dlT/YILpdP7W81LAHXAsYE7VD69DbJEjcfSbnt7/dJSukr+Q4XcEsM1xdRW8k
+         6SQ+7dbUdg72bZISIzIPBTTgklLK6CM60qsi/XIxt/0J63b3U0hYGs6n9VDgiuWoljLk
+         wqNTj7y994lcrXpz+r/X1x/I6pZo8Q6yl6ePVF+FolPbXjcZZUPdtvmIGt49Pm5n6o68
+         EI28Qr3lAckzbqLxuWfLF8YM9nAR+JmSpvBO+1XVFB7uX02Wzlqhoc58PmhiOrH8w7HM
+         yGNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pFSueD/PsgBNg5dRi4zohukePJNmnDKu8o6l7DjyJKo=;
-        b=DqLDmHJGMQ5N5QryG1B5ZU0vN9xRLVGrkj0BLse2Xj1ibNDkxsMQadCmVbVaMXtelP
-         U4vPjot2aqIcpOcaw49onbFgXg7nGTXXEiVn6xtPBTwzjAJb0sfw/RMZVb3KksrtAitq
-         Cp9B4icmy58WOFcX/c8yobGcP75Aa+4aORwHtAbXt5Mech0AqR1ETCukvBV7OmrLaSYp
-         +qL4ENSXrHeyb0yUBmik4Pw1WxeZykBNt5Yb9jiPrUo55yB4Gu2Ybh+P2gwF2fOeteQs
-         23J3aRSZkmC94+GtKLYljAoakJt5KSgmaVqRQ1XVZdVSb85H/z6o95LbpDhNSBY+kOyJ
-         Uo+Q==
-X-Gm-Message-State: AOAM53238/7zzD6g/KhZu1yQUz59Xi742FPS66PQIyU84poUWTmFWACK
-        /tFMHbKThbFwbVvyDkYP/82oQg==
-X-Google-Smtp-Source: ABdhPJyJCTFd0pn3p9yrebWEYoQaThaFvclLZLNU4bDenEbLK2WJOX0hyPvDit0IltNHfqOzyUsBQQ==
-X-Received: by 2002:a50:8e17:: with SMTP id 23mr26671696edw.42.1599573851439;
-        Tue, 08 Sep 2020 07:04:11 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id v4sm17839598eje.39.2020.09.08.07.04.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K5Evq+uTbM4yLIZD5njkPq4LQ+o2UWYUAtT6x7n9zzY=;
+        b=gBfzdBI6JfPgbtpjtSZa8K+g/SyylCZ5T7zfK7FNwxFdfvh/HHfSveTvwgq/1e971b
+         dSNqj3YqJsEh3irmQKNaa2DNte/5hpn6Xp11VucMP3LxpYYexumQyabW0toCQ1mYhx5r
+         fCa5NixmWjQRqwfkBvnO9jeG4VhPzr+rQcHszYIpgpMn+reY3kfvm3NdyrWs8MZsZrk9
+         XWHg/J+aAGyINSD66w/6Usxleb5eA9l8tZvGZ1ONsINevms/D/8HjVz/n2zoBPxmogqp
+         knsCI1Jx7qQtVbP+LAOPAKgs8KdoImfrrzwN7032bULPW9osfRSWzii5dfLvBg/8fg3v
+         HmZQ==
+X-Gm-Message-State: AOAM530O30KrviBw1aHKHn1qZLgzvI2IvbodLtMuaDwxRWdOAqqnOy2m
+        E4f0y8VkBUxx1G5OM4IcBHs=
+X-Google-Smtp-Source: ABdhPJzZAn3gEyTZN6G+TEQsP9eRJ97UWpa7Yi39ANb1CJ8Jzcek+peqEBJX2lfkWIxVJHp9CNGryw==
+X-Received: by 2002:ac8:66da:: with SMTP id m26mr880116qtp.111.1599582198312;
+        Tue, 08 Sep 2020 09:23:18 -0700 (PDT)
+Received: from tong-desktop.local ([2601:5c0:c100:b9d:393c:836a:3c13:11a6])
+        by smtp.googlemail.com with ESMTPSA id p205sm13879596qke.2.2020.09.08.09.23.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2020 07:04:10 -0700 (PDT)
-Date:   Tue, 8 Sep 2020 16:04:09 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Aya Levin <ayal@mellanox.com>,
+        Tue, 08 Sep 2020 09:23:17 -0700 (PDT)
+From:   Tong Zhang <ztong0001@gmail.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v1 2/4] devlink: Add devlink traps under
- devlink_ports context
-Message-ID: <20200908140409.GN2997@nanopsycho.orion>
-References: <1599060734-26617-1-git-send-email-ayal@mellanox.com>
- <1599060734-26617-3-git-send-email-ayal@mellanox.com>
- <20200906154428.GA2431016@shredder>
+Cc:     ztong0001@gmail.com
+Subject: [PATCH] e1000: do not panic on malformed rx_desc
+Date:   Tue,  8 Sep 2020 12:22:31 -0400
+Message-Id: <20200908162231.4592-1-ztong0001@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200906154428.GA2431016@shredder>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Sep 06, 2020 at 05:44:28PM CEST, idosch@idosch.org wrote:
->On Wed, Sep 02, 2020 at 06:32:12PM +0300, Aya Levin wrote:
+length may be corrupted in rx_desc and lead to panic, so check the
+sanity before passing it to skb_put
 
-[...]
+[  167.667701] skbuff: skb_over_panic: text:ffffffffb1e32cc1 len:60224 put:60224 head:ffff888055ac5000 data:ffff888055ac5040 tail:0xeb80 end:0x6c0 dev:e
+th0
+[  167.668429] ------------[ cut here ]------------
+[  167.668661] kernel BUG at net/core/skbuff.c:109!
+[  167.668910] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+[  167.669220] CPU: 1 PID: 170 Comm: sd-resolve Tainted: G        W         5.8.0+ #1
+[  167.670161] RIP: 0010:skb_panic+0xc4/0xc6
+[  167.670363] Code: 89 f0 48 c7 c7 60 f2 de b2 55 48 8b 74 24 18 4d 89 f9 56 48 8b 54 24 18 4c 89 e6 52 48 8b 44 24 18 4c 89 ea 50 e8 31 c5 2a ff <0f>
+0b 4c 8b 64 24 18 e8 f1 b4 48 ff 48 c7 c1 00 fc de b2 44 89 ee
+[  167.671272] RSP: 0018:ffff88806d109c68 EFLAGS: 00010286
+[  167.671527] RAX: 000000000000008c RBX: ffff888065e9af40 RCX: 0000000000000000
+[  167.671878] RDX: 1ffff1100da24c91 RSI: 0000000000000008 RDI: ffffed100da21380
+[  167.672227] RBP: ffff88806bde4000 R08: 000000000000008c R09: ffffed100da25cfb
+[  167.672583] R10: ffff88806d12e7d7 R11: ffffed100da25cfa R12: ffffffffb2defc40
+[  167.672931] R13: ffffffffb1e32cc1 R14: 000000000000eb40 R15: ffff888055ac5000
+[  167.673286] FS:  00007fc5f5375700(0000) GS:ffff88806d100000(0000) knlGS:0000000000000000
+[  167.673681] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  167.673973] CR2: 0000000000cb3008 CR3: 0000000063d36000 CR4: 00000000000006e0
+[  167.674330] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  167.674677] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  167.675035] Call Trace:
+[  167.675168]  <IRQ>
+[  167.675315]  ? e1000_clean_rx_irq+0x311/0x630
+[  167.687459]  skb_put.cold+0x1f/0x1f
+[  167.687637]  e1000_clean_rx_irq+0x311/0x630
+[  167.687852]  e1000e_poll+0x19a/0x4d0
+[  167.688038]  ? e1000_watchdog_task+0x9d0/0x9d0
+[  167.688262]  ? credit_entropy_bits.constprop.0+0x6f/0x1c0
+[  167.688527]  net_rx_action+0x26e/0x650
 
->
->I understand how this struct allows you to re-use a lot of code between
->per-device and per-port traps, but it's mainly enabled by the fact that
->you use the same netlink commands for both per-device and per-port
->traps. Is this OK?
->
->I see this is already done for health reporters, but it's inconsistent
->with the devlink-param API:
->
->DEVLINK_CMD_PARAM_GET
->DEVLINK_CMD_PARAM_SET
->DEVLINK_CMD_PARAM_NEW
->DEVLINK_CMD_PARAM_DEL
->
->DEVLINK_CMD_PORT_PARAM_GET
->DEVLINK_CMD_PORT_PARAM_SET
->DEVLINK_CMD_PORT_PARAM_NEW
->DEVLINK_CMD_PORT_PARAM_DEL
->
->And also with the general device/port commands:
->
->DEVLINK_CMD_GET
->DEVLINK_CMD_SET
->DEVLINK_CMD_NEW
->DEVLINK_CMD_DEL
->
->DEVLINK_CMD_PORT_GET
->DEVLINK_CMD_PORT_SET
->DEVLINK_CMD_PORT_NEW
->DEVLINK_CMD_PORT_DEL
->
->Wouldn't it be cleaner to add new commands?
->
->DEVLINK_CMD_PORT_TRAP_GET
->DEVLINK_CMD_PORT_TRAP_SET
->DEVLINK_CMD_PORT_TRAP_NEW
->DEVLINK_CMD_PORT_TRAP_DEL
->
->I think the health API is the exception in this case and therefore might
->not be the best thing to mimic. IIUC, existing per-port health reporters
->were exposed as per-device and later moved to be exposed as per-port
->[1]:
->
->"This patchset comes to fix a design issue as some health reporters
->report on errors and run recovery on device level while the actual
->functionality is on port level. As for the current implemented devlink
->health reporters it is relevant only to Tx and Rx reporters of mlx5,
->which has only one port, so no real effect on functionality, but this
->should be fixed before more drivers will use devlink health reporters."
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+---
+ drivers/net/ethernet/intel/e1000/e1000_main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Yeah, this slipped trough my fingers unfortunatelly :/ But with
-introduction of per-port health reporters, we could introduce new
-commands, that would be no problem. Pity :/
+diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
+index 1e6ec081fd9d..29e2ecb0358a 100644
+--- a/drivers/net/ethernet/intel/e1000/e1000_main.c
++++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
+@@ -4441,8 +4441,13 @@ static bool e1000_clean_rx_irq(struct e1000_adapter *adapter,
+ 			 */
+ 			length -= 4;
+ 
+-		if (buffer_info->rxbuf.data == NULL)
++		if (buffer_info->rxbuf.data == NULL)  {
++			/* check length sanity */
++			if (skb->tail + length > skb->end) {
++				length = skb->end - skb->tail;
++			}
+ 			skb_put(skb, length);
++		}
+ 		else /* copybreak skb */
+ 			skb_trim(skb, length);
+ 
+-- 
+2.25.1
 
-
->
->[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ac4cd4781eacd1fd185c85522e869bd5d3254b96
->
->Since we still don't have per-port traps, we can design it better from
->the start.
-
-I agree. Let's have a separate commands for per-port.
-
-
-[...]
