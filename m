@@ -2,90 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4653261473
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:22:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3CD261480
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:24:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731889AbgIHQVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
+        id S1731932AbgIHQYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 12:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731442AbgIHQUe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:20:34 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454E1C061755;
-        Tue,  8 Sep 2020 09:20:34 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id k25so8241784ljk.0;
-        Tue, 08 Sep 2020 09:20:34 -0700 (PDT)
+        with ESMTP id S1731643AbgIHQXt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:23:49 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D6FC061573;
+        Tue,  8 Sep 2020 09:23:47 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id v123so4397715qkd.9;
+        Tue, 08 Sep 2020 09:23:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+wPlOm5QGCDqS1iz36b73Yrjc2ZOjFBBzVPqfqSTkRU=;
-        b=q9ep2VefGV3tnh1gc6k2bD4tOieJ9IWqWneNunCFsbLBb4ERqckJ+2JeLGZEK4XW/a
-         JJEfzALL4HkOtfXCEc6yb/WPGrI38fGy7D7rIN+RZCeFkc9lS716ATlu/6BP8T0+HMO3
-         qZrgQNobDnTlp+5/Pe67V8RekhvXZdWT4PnihyvRuo6mO5JjenjIfxpr0j2K0Se1oMic
-         rBYc6FOCdLoc+vcEuYQztTqYYE5mARtYmSyCSU/U8WKotCPvtsDA0kmCVB5LpR/s72i9
-         j6k0emAoVQbnPDgWntWVPGO+mtgoO/gTfOEe3Jxz4mhhsxvdVpWY0qQbNprMD/srILNx
-         37gg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fG9sh+VJ6ct/M0MnobHjuUiWeXeXy8C/WxdALo1qBnU=;
+        b=cE8tyE/9HSYIG8dk3jsI1IxOkrH/eptnzh4Gvmdc/AbZVFA6bAqu5dG7OZZmqU6x+s
+         uhEaBckRV9fI7izootzbkWI0/Gu7bWIsC6MqvRZE5TaNFrX5VjIbTHQC+QtCS+9bnfgH
+         mWDRlS1vbqKv33sfcSbLJZVY52ns82Zb4XwWKLKm78ai0sTE3lRnZFLYEriGvssZvDOm
+         HbcmgN+ualzlwRwasHwef0u4ab5YywzT8VwK/+uwiTnAH7YuKkJu7060G2eX6yNDF/3e
+         HlPXnSqpoOLlI1BCJ172oG2mcfpscGHHCp8YE53Jxjh+ZfdxNN4mtPvU9HsdBuULEHLt
+         uO3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+wPlOm5QGCDqS1iz36b73Yrjc2ZOjFBBzVPqfqSTkRU=;
-        b=K4XhcKkD1FceLECP1km0SQ01x0TWty67O6hPK5sv38nKtdVCWpphDjXByzPQgzZGi5
-         uUAAc16QiiTbjSnvJ27gcO7qktJbFSYLAoEjz7pwpiIWtDBwb7/pLdR1dD+UYVoaAR4r
-         bq6BqQ0bG7ghEVTJSUHwSbjnG/XXggbV2Qj6xPPZ7JEdsBKDfMRTW7BK2q73PiIMxNLE
-         NychsvSjfh0kdEtXzhRoY9Ou8ZgdywkAyEfqEUb+dzXQl++9kzg3KAzpSKD7AMtNMzqe
-         IKk0KTwIFNjXKq1//Jn8ATD6A6HzKFRTctjiUTbCcVzqlqPanOgThMKywkP1ZYTsCnhm
-         AZAg==
-X-Gm-Message-State: AOAM530FoZgc2r/6v51FvSGi7DSEwqRR2LHQTOtGum2IBVrrjsObI1kk
-        26Pzl60PUCASTZbD7Y5szX45jTVXLKeIC/D6ljQ=
-X-Google-Smtp-Source: ABdhPJza0z8ybBhHjq6D1GgCSx5raB9QWiBPxOGch4dtPYCzvpBunYHBeGM0H23wmyTQrtglEspqjh6+FU+Y/dC/qkw=
-X-Received: by 2002:a2e:9782:: with SMTP id y2mr13292774lji.91.1599582032702;
- Tue, 08 Sep 2020 09:20:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fG9sh+VJ6ct/M0MnobHjuUiWeXeXy8C/WxdALo1qBnU=;
+        b=GKyOqpWpTfUJiWV50KYDSOy0sUhZrEamDxqDQbBZH53hrcQkQZ1KjopVrsOC6NstVY
+         pNuKDyRmW1u1+LO3HyljxBFSGBXiJxGjXW0EMwPEM3YT11N+oazyoQtXxPa2zl8oGO7C
+         S4/yADN6zRRrcQnCqOiNy2NmyAcKMmOzFKxCG1noWR2Ywu3LgHjlEbBtwXRchonqh+3x
+         6jhVP5NdiqdoQ5ja5sDiQS2qehwua0/zdt1Jd0z+lb6MFfJ/sBHL4NAKF3rsbps35cUo
+         j+qOECTTeSJSQKS1UgXu5pVsJaRB+iryF9zqsfrxohJ7QFF46YjKq6wbO7SG36CH+QDZ
+         srKQ==
+X-Gm-Message-State: AOAM532ktdjSI475jyld5JsMR+H2Btf2XwEsoeaT9ei/lj+y3icwf4wg
+        N1DOkzwuRQHq4evIaiwqjGI=
+X-Google-Smtp-Source: ABdhPJxpfm3QpXHAuIeFeYJLCfoUzaXZ4W3uRDAZdu3BeDGMwUmXEx9JOTLuway4RWSv8KI1muehmw==
+X-Received: by 2002:a37:62c3:: with SMTP id w186mr803137qkb.227.1599582227058;
+        Tue, 08 Sep 2020 09:23:47 -0700 (PDT)
+Received: from tong-desktop.local ([2601:5c0:c100:b9d:393c:836a:3c13:11a6])
+        by smtp.googlemail.com with ESMTPSA id z3sm6186348qkf.92.2020.09.08.09.23.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Sep 2020 09:23:46 -0700 (PDT)
+From:   Tong Zhang <ztong0001@gmail.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     ztong0001@gmail.com
+Subject: [PATCH] e1000e: do not panic on malformed rx_desc
+Date:   Tue,  8 Sep 2020 12:23:30 -0400
+Message-Id: <20200908162330.4681-1-ztong0001@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <cace836e4d07bb63b1a53e49c5dfb238a040c298.1599512096.git.daniel@iogearbox.net>
-In-Reply-To: <cace836e4d07bb63b1a53e49c5dfb238a040c298.1599512096.git.daniel@iogearbox.net>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 8 Sep 2020 09:20:21 -0700
-Message-ID: <CAADnVQ+woTCQ5JaEJvtWWsgU5OC+EA9NuRXhd2RmywU6mEYoEg@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: Fix clobbering of r2 in bpf_gen_ld_abs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, bryce.kahle@datadoghq.com,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 7, 2020 at 3:04 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Bryce reported that he saw the following with:
->
->   0:  r6 = r1
->   1:  r1 = 12
->   2:  r0 = *(u16 *)skb[r1]
->
-> The xlated sequence was incorrectly clobbering r2 with pointer
-> value of r6 ...
->
->   0: (bf) r6 = r1
->   1: (b7) r1 = 12
->   2: (bf) r1 = r6
->   3: (bf) r2 = r1
->   4: (85) call bpf_skb_load_helper_16_no_cache#7692160
->
-> ... and hence call to the load helper never succeeded given the
-> offset was too high. Fix it by reordering the load of r6 to r1.
->
-> Other than that the insn has similar calling convention than BPF
-> helpers, that is, r0 - r5 are scratch regs, so nothing else
-> affected after the insn.
->
-> Fixes: e0cea7ce988c ("bpf: implement ld_abs/ld_ind in native bpf")
-> Reported-by: Bryce Kahle <bryce.kahle@datadoghq.com>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+length may be corrupted in rx_desc and lead to panic, so check the
+sanity before passing it to skb_put
 
-Applied. Thanks
+[  103.840572] skbuff: skb_over_panic: text:ffffffff8f432cc1 len:61585 put:61585 head:ffff88805642b800 data:ffff88805642b840 tail:0xf0d1 end:0x6c0 dev:e
+th0
+[  103.841283] ------------[ cut here ]------------
+[  103.841515] kernel BUG at net/core/skbuff.c:109!
+[  103.841749] invalid opcode: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
+[  103.842063] CPU: 1 PID: 276 Comm: ping Tainted: G        W         5.8.0+ #4
+[  103.842857] RIP: 0010:skb_panic+0xc4/0xc6
+[  103.843022] Code: 89 f0 48 c7 c7 60 f2 3e 90 55 48 8b 74 24 18 4d 89 f9 56 48 8b 54 24 18 4c 89 e6 52 48 8b 44 24 18 4c 89 ea 50 e8 01 c5 2a ff <0f>
+0b 4c 8b 64 24 18 e8 c1 b4 48 ff 48 c7 c1 e0 fc 3e 90 44 89 ee
+[  103.843766] RSP: 0018:ffff88806d109c58 EFLAGS: 00010282
+[  103.843976] RAX: 000000000000008c RBX: ffff8880683407c0 RCX: 0000000000000000
+[  103.844262] RDX: 1ffff1100da24c91 RSI: 0000000000000008 RDI: ffffed100da2137e
+[  103.844548] RBP: ffff88806bdcc000 R08: 000000000000008c R09: ffffed100da25cfb
+[  103.844834] R10: ffff88806d12e7d7 R11: ffffed100da25cfa R12: ffffffff903efd20
+[  103.845123] R13: ffffffff8f432cc1 R14: 000000000000f091 R15: ffff88805642b800
+[  103.845410] FS:  00007efcd06852c0(0000) GS:ffff88806d100000(0000) knlGS:0000000000000000
+[  103.845734] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  103.845966] CR2: 00007efccf94f8dc CR3: 0000000064810000 CR4: 00000000000006e0
+[  103.846254] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  103.846539] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  103.846823] Call Trace:
+[  103.846925]  <IRQ>
+[  103.847013]  ? e1000_clean_rx_irq+0x311/0x630
+[  103.847190]  skb_put.cold+0x2b/0x4d
+[  103.847334]  e1000_clean_rx_irq+0x311/0x630
+
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+---
+ drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 664e8ccc88d2..f12bd00b2dbf 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -1047,6 +1047,10 @@ static bool e1000_clean_rx_irq(struct e1000_ring *rx_ring, int *work_done,
+ 			}
+ 			/* else just continue with the old one */
+ 		}
++		/* check length sanity */
++		if (skb->tail + length > skb->end) {
++			length = skb->end - skb->tail;
++		}
+ 		/* end copybreak code */
+ 		skb_put(skb, length);
+ 
+-- 
+2.25.1
+
