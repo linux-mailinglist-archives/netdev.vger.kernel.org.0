@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C96402608C8
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 04:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5372E2608CC
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 04:56:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728401AbgIHCyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 22:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
+        id S1728485AbgIHC4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 22:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728149AbgIHCyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 22:54:10 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB39C061573;
-        Mon,  7 Sep 2020 19:54:09 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id 5so9021817pgl.4;
-        Mon, 07 Sep 2020 19:54:09 -0700 (PDT)
+        with ESMTP id S1728241AbgIHC4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 22:56:24 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D357EC061573;
+        Mon,  7 Sep 2020 19:56:23 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id v196so9764771pfc.1;
+        Mon, 07 Sep 2020 19:56:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=yyzJ/s/iIy93G8Neie/jyd8WFkJl+mIOVm/D6MxtDMA=;
-        b=qgev+G4ZGCA64TCbnB3CNJIMO3JW7eY+/mKY9B00bzS+BGG0H/3ELT+FfDOOuuc/oW
-         uozmgOlexicMpqTHjUBcbYKK5rVgFFMWIH5TkW94hF39cODeQ5YtLVw7g8ZOQEUTcaae
-         tyKlHarMmmveoHimv5Oraq3cDPSc0wI3WTXkkbg8dYCQbLnMjm6qO7MBi+l9YynWT49j
-         RjF8B3EUoPKY73FB2RX1rtORtM6q611o8qyTuOdkDtBoypXfaGeFmOEI/oyDfLN2Aok4
-         fEaoW5k0LR9h7Ois5Pwlicl6R4fqOdpl+OCw12cOFtjd+oC3P9q7g5gTdDrurRdXXum+
-         462g==
+        bh=kmcZx1efgyiwxd8i4daWvO803rq/Bn4EFGyYaODUC10=;
+        b=WpljHXZ4qcFl5YflPHEhUG/uib5qeFPcnUyiXgXNWuaG7tJc0QYQRWd3pwM24dhDwX
+         h/rZwSDflBgkgQGbC8EM8exKBM0UjlUgRYe9sDQaL6EfnbBMSwSEP3aFhZORmKRFjlTs
+         hnONKlRVEY4356lL93i4O9g64fyAxG7jUpT9qTxoILjx+sD3w4GcWfGVjbSmZCdyLXDV
+         PyHCecyI4a5j9yhaWf3o2+99z7o3ioOOKaOyqFmvYB6eHr+TL8V8bWQ5muAEvWnI5TqH
+         Q4FHldJN/Wa9iNPNQNNiBEFM15Z+8ia0gUjmmm/YySoGiFZTwStCjfa2znx2cH5uaU+T
+         pj8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=yyzJ/s/iIy93G8Neie/jyd8WFkJl+mIOVm/D6MxtDMA=;
-        b=NB6st9w0Gx1u6+7lI+p5bra8Nv6L1OypRoqnkEf7VBLokQIvgqNk/ijGnCwPfWAY6v
-         8G+Kpn6thaBLCr0PKWP/rG8etSkEjDtsPj3aHbLrlDlxd21YZMu1y4K7eLt590iVsroe
-         5TYAfmPD8P73Q78cA/kSAnIzlfhNHwxnqCP2ET6Z5M80SltCFUHfn6mnzqsHzIkwZHk9
-         0H0xtmfZlm1ZzA40yzEIfFwdqkeYlfgpNxfWeSVJVKOcTj5MfJv8NqwSsxZyN8WNom0R
-         wnjrMEvKBesNxLaBw3OWtnzsiwIGUuCuZuhrFF26czLgT4hyGbhPr26GWxot8XmTfxMB
-         npHA==
-X-Gm-Message-State: AOAM5315MvXUVoe96nMJi8XnnWY3cyvzIMHjDlglXjk95GvRFxtuYy5+
-        IpTbJm+2vPbPzxvP680HzPY=
-X-Google-Smtp-Source: ABdhPJwyX91J7MrtQtxan2fBXP2PCgs2x4JRLmCZRVezjasuue5+G9AYhGipHjR7vKj+vsw6GL9h/w==
-X-Received: by 2002:a63:146:: with SMTP id 67mr5181147pgb.331.1599533649382;
-        Mon, 07 Sep 2020 19:54:09 -0700 (PDT)
+        bh=kmcZx1efgyiwxd8i4daWvO803rq/Bn4EFGyYaODUC10=;
+        b=VElKbh1M7HA8Kgd3xy8IT/5mmWhfFxQHVgGuYV+kFgTDdPgkm6RaTBJoJxGJh+7IRk
+         zcl2Ui+XBeYYsaKsHByzWHQeIYKBgAa/bI8TyEQ0iSTH0EiOe4WczDExLbk0iyCei6dJ
+         EFJM7MLNTjwZx5uyEojpBkJJ+7tjlA3Ep/mjV03FzCEECcqs1t7ciJD7unq/+Er74nds
+         BBozJFSoRxcr5GM1WIUndpu4nKDwUdiWBDyozlTY3sQrHKF6EG/Oy0eDAWwSk4YfWpAz
+         4JyvmUHXoiQ3HeaFJ6qBfM7xl6hM9LPE/wKyuENnyU3xTbXvFJA1+ZOnr/OQ6T0hzFav
+         /N5g==
+X-Gm-Message-State: AOAM5307+yNKAoUhODmFMqyzk1/Q8rfolkJpC/VAEizOXS4MDM+xThtI
+        KvQpMDxOj3SHDqonRp/+XHY=
+X-Google-Smtp-Source: ABdhPJyEKABSDzk6tjhsePwW4+cKhjbi8DxSguLX9VEnwzvFwEbNc2+VfZZhbZbet5n/0l6YVn9dTw==
+X-Received: by 2002:a63:5f03:: with SMTP id t3mr18573059pgb.258.1599533780451;
+        Mon, 07 Sep 2020 19:56:20 -0700 (PDT)
 Received: from localhost ([43.224.245.180])
-        by smtp.gmail.com with ESMTPSA id 204sm9185163pfc.200.2020.09.07.19.54.08
+        by smtp.gmail.com with ESMTPSA id gn24sm384247pjb.8.2020.09.07.19.56.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 07 Sep 2020 19:54:08 -0700 (PDT)
+        Mon, 07 Sep 2020 19:56:19 -0700 (PDT)
 From:   Geliang Tang <geliangtang@gmail.com>
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Matthieu Baerts <matthieu.baerts@tessares.net>,
@@ -57,73 +57,83 @@ To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Peter Krystad <peter.krystad@linux.intel.com>
 Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
         mptcp@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [MPTCP][PATCH v2 net 1/2] mptcp: fix subflow's local_id issues
-Date:   Tue,  8 Sep 2020 10:49:38 +0800
-Message-Id: <110eaa273bf313fb1a2a668a446956d27aba05a8.1599532593.git.geliangtang@gmail.com>
+Subject: [MPTCP][PATCH v2 net 2/2] mptcp: fix subflow's remote_id issues
+Date:   Tue,  8 Sep 2020 10:49:39 +0800
+Message-Id: <0127c08400bdf65c03438b0b6e90e4ab72ea1576.1599532593.git.geliangtang@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1599532593.git.geliangtang@gmail.com>
 References: <cover.1599532593.git.geliangtang@gmail.com>
-In-Reply-To: <cover.1599532593.git.geliangtang@gmail.com>
-References: <cover.1599532593.git.geliangtang@gmail.com>
+In-Reply-To: <110eaa273bf313fb1a2a668a446956d27aba05a8.1599532593.git.geliangtang@gmail.com>
+References: <cover.1599532593.git.geliangtang@gmail.com> <110eaa273bf313fb1a2a668a446956d27aba05a8.1599532593.git.geliangtang@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In mptcp_pm_nl_get_local_id, skc_local is the same as msk_local, so it
-always return 0. Thus every subflow's local_id is 0. It's incorrect.
+This patch set the init remote_id to zero, otherwise it will be a random
+number.
 
-This patch fixed this issue.
-
-Also, we need to ignore the zero address here, like 0.0.0.0 in IPv4. When
-we use the zero address as a local address, it means that we can use any
-one of the local addresses. The zero address is not a new address, we don't
-need to add it to PM, so this patch added a new function address_zero to
-check whether an address is the zero address, if it is, we ignore this
-address.
+Then it added the missing subflow's remote_id setting code both in
+__mptcp_subflow_connect and in subflow_ulp_clone.
 
 Fixes: 01cacb00b35cb ("mptcp: add netlink-based PM")
+Fixes: ec3edaa7ca6ce ("mptcp: Add handling of outgoing MP_JOIN requests")
+Fixes: f296234c98a8f ("mptcp: Add handling of incoming MP_JOIN requests")
 Signed-off-by: Geliang Tang <geliangtang@gmail.com>
 ---
- net/mptcp/pm_netlink.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ net/mptcp/pm_netlink.c | 2 +-
+ net/mptcp/subflow.c    | 7 +++++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 2c208d2e65cd..3e70d848033d 100644
+index 3e70d848033d..bd88e9c0bf71 100644
 --- a/net/mptcp/pm_netlink.c
 +++ b/net/mptcp/pm_netlink.c
-@@ -66,6 +66,16 @@ static bool addresses_equal(const struct mptcp_addr_info *a,
- 	return a->port == b->port;
- }
+@@ -181,9 +181,9 @@ static void check_work_pending(struct mptcp_sock *msk)
  
-+static bool address_zero(const struct mptcp_addr_info *addr)
-+{
-+	struct mptcp_addr_info zero;
-+
-+	memset(&zero, 0, sizeof(zero));
-+	zero.family = addr->family;
-+
-+	return addresses_equal(addr, &zero, false);
-+}
-+
- static void local_address(const struct sock_common *skc,
- 			  struct mptcp_addr_info *addr)
+ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
  {
-@@ -323,10 +333,13 @@ int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
- 	 * addr
- 	 */
- 	local_address((struct sock_common *)msk, &msk_local);
--	local_address((struct sock_common *)msk, &skc_local);
-+	local_address((struct sock_common *)skc, &skc_local);
- 	if (addresses_equal(&msk_local, &skc_local, false))
- 		return 0;
++	struct mptcp_addr_info remote = { 0 };
+ 	struct sock *sk = (struct sock *)msk;
+ 	struct mptcp_pm_addr_entry *local;
+-	struct mptcp_addr_info remote;
+ 	struct pm_nl_pernet *pernet;
  
-+	if (address_zero(&skc_local))
-+		return 0;
-+
  	pernet = net_generic(sock_net((struct sock *)msk), pm_nl_pernet_id);
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index e8cac2655c82..9ead43f79023 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -1063,6 +1063,7 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+ 	struct mptcp_subflow_context *subflow;
+ 	struct sockaddr_storage addr;
++	int remote_id = remote->id;
+ 	int local_id = loc->id;
+ 	struct socket *sf;
+ 	struct sock *ssk;
+@@ -1107,10 +1108,11 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
+ 		goto failed;
  
- 	rcu_read_lock();
+ 	mptcp_crypto_key_sha(subflow->remote_key, &remote_token, NULL);
+-	pr_debug("msk=%p remote_token=%u local_id=%d", msk, remote_token,
+-		 local_id);
++	pr_debug("msk=%p remote_token=%u local_id=%d remote_id=%d", msk,
++		 remote_token, local_id, remote_id);
+ 	subflow->remote_token = remote_token;
+ 	subflow->local_id = local_id;
++	subflow->remote_id = remote_id;
+ 	subflow->request_join = 1;
+ 	subflow->request_bkup = 1;
+ 	mptcp_info2sockaddr(remote, &addr);
+@@ -1347,6 +1349,7 @@ static void subflow_ulp_clone(const struct request_sock *req,
+ 		new_ctx->fully_established = 1;
+ 		new_ctx->backup = subflow_req->backup;
+ 		new_ctx->local_id = subflow_req->local_id;
++		new_ctx->remote_id = subflow_req->remote_id;
+ 		new_ctx->token = subflow_req->token;
+ 		new_ctx->thmac = subflow_req->thmac;
+ 	}
 -- 
 2.17.1
 
