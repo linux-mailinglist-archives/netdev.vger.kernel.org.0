@@ -2,137 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16D0F2608AC
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 04:32:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED40A2608C4
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 04:52:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728275AbgIHCcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 22:32:45 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:11250 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728188AbgIHCco (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 22:32:44 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id AE010DC4C4B66C34BA9E;
-        Tue,  8 Sep 2020 10:32:41 +0800 (CST)
-Received: from [127.0.0.1] (10.74.149.191) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Tue, 8 Sep 2020
- 10:32:35 +0800
-Subject: Re: [PATCH net-next 0/2] net: two updates related to UDP GSO
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>
-References: <1599286273-26553-1-git-send-email-tanhuazhong@huawei.com>
- <20200906114153.7dccce5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CA+FuTSfeEuTLAGJZkzoMUvx+0j3dY265i8okPLyDO6S-8KHdbQ@mail.gmail.com>
- <126e5424-2453-eef4-d5b6-adeaedbb6eca@huawei.com>
- <CA+FuTSecsVRsOt7asv7aHGvAXCacHGYwbG1a1X9ynL83dqP8Bw@mail.gmail.com>
-From:   tanhuazhong <tanhuazhong@huawei.com>
-Message-ID: <6cb146b5-8e0d-ed22-a0c1-b54c59685aa5@huawei.com>
-Date:   Tue, 8 Sep 2020 10:32:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
-MIME-Version: 1.0
-In-Reply-To: <CA+FuTSecsVRsOt7asv7aHGvAXCacHGYwbG1a1X9ynL83dqP8Bw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.149.191]
-X-CFilter-Loop: Reflected
+        id S1728327AbgIHCwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 22:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728149AbgIHCv4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 22:51:56 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5168C061573;
+        Mon,  7 Sep 2020 19:51:56 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id n14so1798688pff.6;
+        Mon, 07 Sep 2020 19:51:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=oYDQkL/bhnoRNoIQa0c7xAEVzjxqq6GJrC183rKt6Lg=;
+        b=qjhBzU/ktIT+996SR13I7qu6tR5w4rnVNPI/KdWfzO5x5ovw9FLEPKRhvuPNhfMHMM
+         AirY4ODw9Fqn1u4Li8WTehIaR/aehfnENJ1+3kkyVsX7sTienFRV8lh8654MtJrLCwJ9
+         EkcBslNcgxj5QbBh2b4DdX7TM0IDOUv0RRbVnmS8cjxQRPdBlckzgvufa9Z0bv6a8CU4
+         yiOgKE5BSu9uRsKuo/t7gUFj5gQMv79YtF7AW4HMMvBexEG3mIorXOuIJ5lrVUWzAEd4
+         nfW87FtroKxgqFwyAuVQ5UD+VSGfYHJS+HWbQTC2cTnfUxAZOq5yy5s2XvRZsUpCLYVY
+         OXcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=oYDQkL/bhnoRNoIQa0c7xAEVzjxqq6GJrC183rKt6Lg=;
+        b=hC/D0WU0Tqhu1/RmdkrwVb6glLcC4sSmOUkGneaueS3MnEnLfG1I3+xw7Z/jMVLDog
+         t/m83Zx2vlNkR5sioibkTMErLhIu0kHgWks+P69l7rpaUEvCQ3GWwA6XHXkcLG0urHh9
+         bUFySweVCyeXEm52CHqHpBd8+NhxpyQPqaYyb98yeQeroEHRpllvqLdIj+Y/ASDYcZqY
+         pm4PMWWE613OLoN91m+16x2ZSOycLSJfZaj4mYrSH2qjB2I/EWIA0w6ZPWaV75jWIFR+
+         28zxyks9UXva6IbR/ldpa3iZ/Ay5gJTPxw77U0iSLoBCOSLDqzuYGD9+FWZjXcVhf6ov
+         J/qQ==
+X-Gm-Message-State: AOAM531o4mBllAf6+yAYIRzrAqlP1ReFwMXo2eBYX8i0DLilyi7BdW1K
+        qzKqVv798yHQI+cX60IGlSCQ0ndP0UicQg==
+X-Google-Smtp-Source: ABdhPJwZEF+U6TzpxaWIyfzpAmO3edmRZOifGzPLkRav+uOSiwVxU/nW6Rhna9enTwb9QL4ledEC3A==
+X-Received: by 2002:a62:1cc4:0:b029:13c:1611:653d with SMTP id c187-20020a621cc40000b029013c1611653dmr21753392pfc.15.1599533515384;
+        Mon, 07 Sep 2020 19:51:55 -0700 (PDT)
+Received: from localhost ([43.224.245.180])
+        by smtp.gmail.com with ESMTPSA id g32sm13275288pgl.89.2020.09.07.19.51.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 07 Sep 2020 19:51:54 -0700 (PDT)
+From:   Geliang Tang <geliangtang@gmail.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Westphal <fw@strlen.de>,
+        Peter Krystad <peter.krystad@linux.intel.com>
+Cc:     Geliang Tang <geliangtang@gmail.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [MPTCP][PATCH v2 net 0/2] mptcp: fix subflow's local_id/remote_id issues
+Date:   Tue,  8 Sep 2020 10:49:37 +0800
+Message-Id: <cover.1599532593.git.geliangtang@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+v2:
+ - add Fixes tags;
+ - simply with 'return addresses_equal';
+ - use 'reversed Xmas tree' way.
 
+Geliang Tang (2):
+  mptcp: fix subflow's local_id issues
+  mptcp: fix subflow's remote_id issues
 
-On 2020/9/7 23:35, Willem de Bruijn wrote:
-> On Mon, Sep 7, 2020 at 3:38 PM tanhuazhong <tanhuazhong@huawei.com> wrote:
->>
->>
->>
->> On 2020/9/7 17:22, Willem de Bruijn wrote:
->>> On Sun, Sep 6, 2020 at 8:42 PM Jakub Kicinski <kuba@kernel.org> wrote:
->>>>
->>>> On Sat, 5 Sep 2020 14:11:11 +0800 Huazhong Tan wrote:
->>>>> There are two updates relates to UDP GSO.
->>>>> #1 adds a new GSO type for UDPv6
->>>>> #2 adds check for UDP GSO when csum is disable in netdev_fix_features().
->>>>>
->>>>> Changes since RFC V2:
->>>>> - modifies the timing of setting UDP GSO type when doing UDP GRO in #1.
->>>>>
->>>>> Changes since RFC V1:
->>>>> - updates NETIF_F_GSO_LAST suggested by Willem de Bruijn.
->>>>>     and add NETIF_F_GSO_UDPV6_L4 feature for each driver who support UDP GSO in #1.
->>>>>     - add #2 who needs #1.
->>>>
->>>> Please CC people who gave you feedback (Willem).
->>>>
->>>> I don't feel good about this series. IPv6 is not optional any more.
->>>> AFAIU you have some issues with csum support in your device? Can you
->>>> use .ndo_features_check() to handle this?
->>>>
->>>> The change in semantics of NETIF_F_GSO_UDP_L4 from "v4 and v6" to
->>>> "just v4" can trip people over; this is not a new feature people
->>>> may be depending on the current semantics.
->>>>
->>>> Willem, what are your thoughts on this?
->>>
->>> If that is the only reason, +1 on fixing it up in the driver's
->>> ndo_features_check.
->>>
->>
->> Hi, Willem & Jakub.
->>
->> This series mainly fixes the feature dependency between hardware
->> checksum and UDP GSO.
->> When turn off hardware checksum offload, run 'ethtool -k [devname]'
->> we can see TSO is off as well, but udp gso still is on.
-> 
-> I see. That does not entirely require separate IPv4 and IPv6 flags. It
-> can be disabled if either checksum offload is disabled. I'm not aware
-> of any hardware that only supports checksum offload for one of the two
-> network protocols.
-> 
+ net/mptcp/pm_netlink.c | 17 +++++++++++++++--
+ net/mptcp/subflow.c    |  7 +++++--
+ 2 files changed, 20 insertions(+), 4 deletions(-)
 
-below patch is acceptable? i have sent this patch before
-(https://patchwork.ozlabs.org/project/netdev/patch/1594180136-15912-3-git-send-email-tanhuazhong@huawei.com/)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index c02bae9..dcb6b35 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9095,6 +9095,12 @@ static netdev_features_t 
-netdev_fix_features(struct net_device *dev,
-  		features &= ~NETIF_F_TSO6;
-  	}
-
-+	if ((features & NETIF_F_GSO_UDP_L4) && !(features & NETIF_F_HW_CSUM) &&
-+	    (!(features & NETIF_F_IP_CSUM) || !(features & NETIF_F_IPV6_CSUM))) {
-+		netdev_dbg(dev, "Dropping UDP GSO features since no CSUM feature.\n");
-+		features &= ~NETIF_F_GSO_UDP_L4;
-+	}
-+
-  	/* TSO with IPv4 ID mangling requires IPv4 TSO be enabled */
-  	if ((features & NETIF_F_TSO_MANGLEID) && !(features & NETIF_F_TSO))
-  		features &= ~NETIF_F_TSO_MANGLEID;
-
-As Eric Dumazet commented "This would prevent a device providing IPv4
-checksum only (no IPv6 csum support) from sending IPv4 UDP GSO packets ?",
-so i send this series to decouple them. Is there any good ways to
-shuttle this issue? Or as you said there is not device only support
-checksum offload for one of the two network protocols.
-
-> Alternatively, the real value of splitting the type is in advertising
-> the features separately through ethtool. That requires additional
-> changes.
-> 
-
-
-> .
-> 
+-- 
+2.17.1
 
