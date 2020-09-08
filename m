@@ -2,93 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9569260FDA
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 12:31:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E06260FEB
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 12:32:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729851AbgIHKaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 06:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59724 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730092AbgIHKaA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 06:30:00 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445C3C061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 03:30:00 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id i1so15318020edv.2
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 03:30:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MkPxwm2nE4lIk6cwU906mCxyOMitI0GVkWi2ifNB63M=;
-        b=QhILP995YGfGIAxEm4NUHUMlOxnPLx7pHtyh+hZyanabRN0vhDmF1uIYuXTkWSwtjv
-         yEUQXcjAzxng1Seu2uuoGzKHImXQjefZl9EjEF49WAPHb2tJnBby9bMMOEn2M2H1lYRY
-         RIr3lq5PGFjAPhYSnamiwYsmJODg0/0GZQ6UFHu5sycpopQK+60HaOuXFFPVxnW70uum
-         Mv/3FqSOAAKa3npF3icGpfu0lU0j58MBWAnU/1RgMfzc7YifAknoP/2UzprRsuLpql4G
-         kthFb8Deho56kW9rVtf0uSCnm/h8LDoyLtOAomGvB6fYwmE7qDsq/dLCbSV99g58mTyk
-         mmUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MkPxwm2nE4lIk6cwU906mCxyOMitI0GVkWi2ifNB63M=;
-        b=k9LkmVFo2MIQgzbO1vC9UXQxr8ndqu2Nr4Tc6lk8OUVQdBsvKbeqMAyRy2nORXompP
-         zFtUJ/RYPX/OZWxMENVM9P2IJX+DuzHDcH8pqwt9iaYIP4QYhsWv+E2HB/4tU9S+H88C
-         EAxVXFjfMmogqFhJEBMh2Ddj44+5Lil08ZWfkbYJphOPpsE2AJuPo1TA8EfUF//8jeZ+
-         9WmD7HlOuCzVdu5praRTx5HZF/2HaAh7ZKI1daWsOmA1zAU9wqL141HHLVR39qse3bOT
-         anvPDo1cnu8wsNFNPleieu7s95ksTYXD6avi5dBjoQxAS6ZCwW2lZ1R8U+i0MOsF+jep
-         /pJQ==
-X-Gm-Message-State: AOAM530lRBxqMjS1S1LtnMP+vXWsRsT71TnqVgGzqQ8RGsMZVGOJhaSv
-        nJsb2NxCB8sBB/4p+s54VlQCM4TtpkE=
-X-Google-Smtp-Source: ABdhPJzH+vgw97aIvjKvVSmuB5zI0m1Ggqle51wHvDxiAxcE/2Em+db7i8JBqZYMEEkLIeClvUaobQ==
-X-Received: by 2002:a50:bb26:: with SMTP id y35mr27304032ede.234.1599560998947;
-        Tue, 08 Sep 2020 03:29:58 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id e15sm14386036eds.5.2020.09.08.03.29.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2020 03:29:58 -0700 (PDT)
-Date:   Tue, 8 Sep 2020 13:29:56 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-Cc:     davem@davemloft.net, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 4/4] net: dsa: set
- configure_vlan_while_not_filtering to true by default
-Message-ID: <20200908102956.ked67svjhhkxu4ku@skbuf>
-References: <20200907182910.1285496-1-olteanv@gmail.com>
- <20200907182910.1285496-5-olteanv@gmail.com>
- <87y2lkshhn.fsf@kurt>
+        id S1729378AbgIHKch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 06:32:37 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:17570 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729434AbgIHKc2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 06:32:28 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f575d850000>; Tue, 08 Sep 2020 03:31:33 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Tue, 08 Sep 2020 03:32:23 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Tue, 08 Sep 2020 03:32:23 -0700
+Received: from [172.27.14.146] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 8 Sep
+ 2020 10:32:05 +0000
+Subject: Re: [PATCH bpf-next 0/6] xsk: exit NAPI loop when AF_XDP Rx ring is
+ full
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        <ast@kernel.org>, <daniel@iogearbox.net>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        <magnus.karlsson@intel.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <hawk@kernel.org>, <john.fastabend@gmail.com>,
+        <intel-wired-lan@lists.osuosl.org>
+References: <20200904135332.60259-1-bjorn.topel@gmail.com>
+ <0257f769-0f43-a5b7-176d-7c5ff8eaac3a@intel.com>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+Message-ID: <11f663ec-5ea7-926c-370d-0b67d3052583@nvidia.com>
+Date:   Tue, 8 Sep 2020 13:32:01 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87y2lkshhn.fsf@kurt>
+In-Reply-To: <0257f769-0f43-a5b7-176d-7c5ff8eaac3a@intel.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1599561093; bh=v6mhnh0su9v5m+w8veFytksrof4F394OprHMwmmpBy0=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=NweBCg0vQg3H++2Z9mv64cLVpasFCCTDtu3rKUeaYphHzYA/ZaXBqUay9cu53bakc
+         7bp2KLXtttBBu1IdDHP0p8AKlzyP7XOfXhJiOi/Zr0SReXeWxliybu13hSXnu+j+oF
+         mB/wBb8/VRqpQxDMBsn80JBtf5S5+A4no4pHXQ55B3Bh25QXRsfkhacGt0//RtUrz6
+         u4csIH2CPa8+r3hG4RiUVtJ/Ye9mzX2dT4dIZEs3xd72WawnEVXFlCwM4dFlt9gLRa
+         QW7PAuhpWkboTNJjEkLAkU1KWJsvvqEpDKv7S/IlB8jf9HqhCVwYjuGvuCLjANmXPM
+         9MZfq3ywVe33Q==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 12:14:12PM +0200, Kurt Kanzenbach wrote:
-> On Mon Sep 07 2020, Vladimir Oltean wrote:
-> > New drivers always seem to omit setting this flag, for some reason.
->
-> Yes, because it's not well documented, or is it? Before writing the
-> hellcreek DSA driver, I've read dsa.rst documentation to find out what
-> callback function should to what. Did I miss something?
+On 2020-09-04 16:59, Bj=C3=B6rn T=C3=B6pel wrote:
+> On 2020-09-04 15:53, Bj=C3=B6rn T=C3=B6pel wrote:
+>> This series addresses a problem that arises when AF_XDP zero-copy is=20
+>> enabled, and the kernel softirq Rx processing and userland process
+>> is running on the same core.
+>>
+> [...]
+>>
+>=20
+> @Maxim I'm not well versed in Mellanox drivers. Would this be relevant=20
+> to mlx5 as well?
 
-Honestly, Documentation/networking/dsa/dsa.rst is out of date by quite a
-bit. And this trend of having boolean flags in struct dsa_switch started
-after the documentation stopped being updated.
+Thanks for letting me know about this series! So the basic idea is to=20
+stop processing hardware completions if the RX ring gets full, because=20
+the application didn't have chance to run? Yes, I think it's also=20
+relevant to mlx5, the issue is not driver-specific, and a similar fix is=20
+applicable. However, it may lead to completion queue overflows - some=20
+analysis is needed to understand what happens then and how to handle it.
 
-But I didn't say it's your fault for not setting the flag, it is easy to
-miss, and that's what this patch is trying to improve.
+Regarding the feature, I think it should be opt-in (disabled by=20
+default), because old applications may not wakeup RX after they process=20
+packets in the RX ring. Is it required to change xdpsock accordingly?=20
+Also, when need_wakeup is disabled, your driver implementation seems to=20
+quit NAPI anyway, but it shouldn't happen, because no one will send a=20
+wakeup.
 
-> > So let's reverse the logic: the DSA core sets it by default to true
-> > before the .setup() callback, and legacy drivers can turn it off. This
-> > way, new drivers get the new behavior by default, unless they
-> > explicitly set the flag to false, which is more obvious during review.
->
-> Yeah, that behavior makes more sense to me. Thank you.
+Waiting until the RX ring fills up, then passing control to the=20
+application and waiting until the hardware completion queue fills up,=20
+and so on increases latency - the busy polling approach sounds more=20
+legit here.
 
-Ok, thanks.
+The behavior may be different depending on the driver implementation:
 
--Vladimir
+1. If you arm the completion queue and leave interrupts enabled on early=20
+exit too, the application will soon be interrupted anyway and won't have=20
+much time to process many packets, leading to app <-> NAPI ping-pong one=20
+packet at a time, making NAPI inefficient.
+
+2. If you don't arm the completion queue on early exit and wait for the=20
+explicit wakeup from the application, it will easily overflow the=20
+hardware completion queue, because we don't have a symmetric mechanism=20
+to stop the application on imminent hardware queue overflow. It doesn't=20
+feel correct and may be trickier to handle: if the application is too=20
+slow, such drops should happen on driver/kernel level, not in hardware.
+
+Which behavior is used in your drivers? Or am I missing some more options?
+
+BTW, it should be better to pass control to the application before the=20
+first dropped packet, not after it has been dropped.
+
+Some workloads different from pure AF_XDP, for example, 50/50 AF_XDP and=20
+XDP_TX may suffer from such behavior, so it's another point to make a=20
+knob on the application layer to enable/disable it.
+
+ From the driver API perspective, I would prefer to see a simpler API if=20
+possible. The current API exposes things that the driver shouldn't know=20
+(BPF map type), and requires XSK-specific handling. It would be better=20
+if some specific error code returned from xdp_do_redirect was reserved=20
+to mean "exit NAPI early if you support it". This way we wouldn't need=20
+two new helpers, two xdp_do_redirect functions, and this approach would=20
+be extensible to other non-XSK use cases without further changes in the=20
+driver, and also the logic to opt-in the feature could be put inside the=20
+kernel.
+
+Thanks,
+Max
+
+>=20
+> Cheers,
+> Bj=C3=B6rn
+
