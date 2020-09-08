@@ -2,115 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A7B260DC9
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 10:41:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B25E4260DE1
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 10:46:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730115AbgIHIlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 04:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729564AbgIHIlJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 04:41:09 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD35C061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 01:41:08 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id y194so8567059vsc.4
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 01:41:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WRTNSAPWPCI5iQTaMgS28e7ZlEiCgAQz9GOhoqHIZ8c=;
-        b=dEc205CC8/4AIZ8O0GSYBNX7L5fb8sHXU5jEhBMJScwpGfMVei74/KwzvqX0QW349P
-         85kuC0osIJECUKgljnPnnZE1WvIGKtL4W7GLWDPrpsAuYBGgq2FlCI/dXKE93aCZ964w
-         0o6rlIfF/xRlcygOaU6HJtORZ/LZE6mhwADhuasXUBA7Xnyx2QbTrPX8LkgidS500DbM
-         WdP/dSQEtuy/mwGgtiyhhuWrLX6PZ+AOgTTGItFwMsOb7vXbC8Krk5JPQnsX4hMLtmCK
-         0OVobASijrwcRYvu7tik2WhEQRnXeklYoPH0LJ5FDKX0m1WjW0SvXJqT+i3MMVnav8/0
-         FI+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WRTNSAPWPCI5iQTaMgS28e7ZlEiCgAQz9GOhoqHIZ8c=;
-        b=jLSyxGBHmnb3+jK0LC8IaIjllzkzgVc2wIGeNB3Z29lX82+7Ol78qM23NEHi2laqan
-         xj9aODn4JaKiot9UKs/TkSPHHm6UepY41Mg1+028603nBMG++wGcDHtGhgwOjaxqEUTi
-         W8zgLyYW0brG0V778ZIzehQMyVcLWepo59uqhi+TeCkLhgCesZnHH6l8fjNf3NqAt+n0
-         ilgikp9H823ok5RgejHppYasceqUkr/oeNuxO0OnLW1neypJdQF2ob/ZP0NC8J2Ms2m7
-         ThisQ+SinC0lb3pUGNRcfxGiiLLRh3pxrFoMZ/KjRlGENImp14bgfR++xw+mpzfZnJUQ
-         vSTQ==
-X-Gm-Message-State: AOAM533kNIq0wUyVvuzhhCVznSG1tXKrR9NYjzX4hszwaYepoRneXoOm
-        CNkKT+EHwYjrKnB9ZqK5SDAxWv0OiJR02A==
-X-Google-Smtp-Source: ABdhPJx6Nj3JVN7T19nc38cDubpjYvp8zd3nLlHY30LOv9ho9oxV44/988OQYIkouq1pjJbO/bXJzQ==
-X-Received: by 2002:a67:6952:: with SMTP id e79mr13500184vsc.11.1599554467181;
-        Tue, 08 Sep 2020 01:41:07 -0700 (PDT)
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com. [209.85.217.46])
-        by smtp.gmail.com with ESMTPSA id o198sm2858536vkd.43.2020.09.08.01.41.06
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Sep 2020 01:41:06 -0700 (PDT)
-Received: by mail-vs1-f46.google.com with SMTP id q67so8566393vsd.5
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 01:41:06 -0700 (PDT)
-X-Received: by 2002:a05:6102:150:: with SMTP id a16mr12591106vsr.99.1599554465860;
- Tue, 08 Sep 2020 01:41:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAJht_EOu8GKvdTAeF_rHsaKu7iYOmW8C64bQA21bgKuiANE5Zw@mail.gmail.com>
- <CAJht_EP=g02o2ygihNo=EWd1OuL3HSjmhqgGiwUGrMde=urSUA@mail.gmail.com>
- <CA+FuTSdm35x9nA259JgOWcCWJto9MVMHGGgamPPsgnpsTmPO8g@mail.gmail.com> <CAJht_EPEqUMXNdQLL9d5OtzbZ92Jms7nSUR8bS+cw2Ah5mv6cQ@mail.gmail.com>
-In-Reply-To: <CAJht_EPEqUMXNdQLL9d5OtzbZ92Jms7nSUR8bS+cw2Ah5mv6cQ@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 8 Sep 2020 10:40:28 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSeJS22R2VYSzcEVvXiUhX79RYE0o3G6V3NKGzQ4UGaJQg@mail.gmail.com>
-Message-ID: <CA+FuTSeJS22R2VYSzcEVvXiUhX79RYE0o3G6V3NKGzQ4UGaJQg@mail.gmail.com>
-Subject: Re: Question about dev_validate_header used in af_packet.c
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        id S1729993AbgIHIq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 04:46:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54922 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729775AbgIHIqX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 04:46:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599554782;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4joEUBT7SaaHzNBA3jfKAT1e8ocC7+4gm+izXspXMHc=;
+        b=JKJCE8aW9Nmr+8u434N31H5s76qYRymJBClErL+jnb6nnMaBDW3JZpHp3KpoeiadJMKGHo
+        9xjK3enPAxVUCJ1BffRUJB2Jpyh7/pq0mcCVlgWW8QdY0LaspOBHxDN0tj6Gf7EyeItQAn
+        ML39Q92nPNKYwLfcIgS4HZJcE7dwMhk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-160-B7gekK4PO8KW5V62l_uEug-1; Tue, 08 Sep 2020 04:46:17 -0400
+X-MC-Unique: B7gekK4PO8KW5V62l_uEug-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48B5980EDB0;
+        Tue,  8 Sep 2020 08:46:16 +0000 (UTC)
+Received: from ovpn-114-216.ams2.redhat.com (ovpn-114-216.ams2.redhat.com [10.36.114.216])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F028F7E438;
+        Tue,  8 Sep 2020 08:46:14 +0000 (UTC)
+Message-ID: <f13eaa33c4f73bce9bdcf08b072aeaf23b0551d5.camel@redhat.com>
+Subject: Re: [PATCH] net/sock: don't drop udp packets if udp_mem[2] not
+ reached
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     dust.li@linux.alibaba.com,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org
+Date:   Tue, 08 Sep 2020 10:46:13 +0200
+In-Reply-To: <20200908031506.GC56680@linux.alibaba.com>
+References: <20200907144435.43165-1-dust.li@linux.alibaba.com>
+         <428dae2552915c42b9144d7489fd912493433c1e.camel@redhat.com>
+         <20200908031506.GC56680@linux.alibaba.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 7, 2020 at 11:17 PM Xie He <xie.he.0141@gmail.com> wrote:
->
-> On Mon, Sep 7, 2020 at 2:06 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > The CAP_SYS_RAWIO exception indeed was requested to be able to
-> > purposely test devices against bad inputs. The gmane link
-> > unfortunately no longer works, but this was the discussion thread:
-> > https://www.mail-archive.com/netdev@vger.kernel.org/msg99920.html
-> >
-> > It zeroes the packet up max_header_len to ensure that an unintentional
-> > short packet will at least not result in reading undefined data. Now
-> > that the dust has settled around the min_header_len/max_header_len
-> > changes, maybe now is a good time to revisit removing that
-> > CAP_SYS_RAWIO loophole.
->
-> Thank you for your explanation! I can now understand the logic of
-> dev_hard_header. Thanks!
->
-> Do you mean we can now consider removing the ability to bypass the
-> header_ops->validate check? That is what I am thinking about, too!
->
-> I looked at the link you gave me. I see that Alan Cox wanted to keep
-> the ability of intentionally feeding corrupt frames to drivers, to
-> test whether drivers are able to handle incomplete headers. However, I
-> think after we added the header validation in af_packet.c, drivers no
-> longer need to ensure they can handle incomplete headers correctly
-> (because this is already handled by us).
+Hi,
 
-Which header validation are you referring to?
+On Tue, 2020-09-08 at 11:15 +0800, dust.li wrote:
+> Actually, with more udp sockets, I can always make it large
+> enough to exceed udp_mem[0], and drop packets before udp_mem[1]
+> and udp_mem[2].
 
-The intent is to bypass such validation to be able to test device
-drivers. Note that removing that may cause someone's test to start
-failing.
+Sure, but with enough sockets you can also exceeeds any limits ;).
 
->  So there's no point in
-> keeping the ability to test this, either.
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index 6c5c6b18eff4..fed8211d8dbe 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -2648,6 +2648,12 @@ int __sk_mem_raise_allocated(struct sock *sk, int size, int amt, int kind)
+>                                  atomic_read(&sk->sk_rmem_alloc) +
+>                                  sk->sk_forward_alloc))
+>                         return 1;
+> +       } else {
+> +               /* for prots without memory_pressure callbacks, we should not
+> +                * drop until hard limit reached
+> +                */
+> +               if (allocated <= sk_prot_mem_limits(sk, 2))
+> +                       return 1;
 
-I don't disagree in principle, but do note the failing tests. Bar any
-strong reasons for change, I'd leave as is.
+At this point, the above condition is always true, due to an earlier
+check. Additionally, accepting any value below udp_mem[2] would make
+the previous checks to allow a minimum per socket memory useless.
+
+You can obtain the same result setting udp_mem[0] = udp_mem[2], without
+any kernel change. 
+
+But with this change applied you can't guarantee anymore a minimum per
+socket amount of memory.
+
+I think you are possibly mislead by your own comment: the point is that
+we should never allow allocation above the hard limit, but the protocol
+is allowed to drop as soon as the memory allocated raises above the
+lower limit.
+
+Note that the current behavior is correctly documented
+in Documentation/networking/ip-sysctl.rst.
+
+Your problem must be solved in another way e.g. raising udp_mem[0] -
+and keeping udp_mem[2] above that value.
+
+Cheers,
+
+Paolo
+
