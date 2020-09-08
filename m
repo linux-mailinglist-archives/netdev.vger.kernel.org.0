@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D04260E6A
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:12:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B365260E65
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:12:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729339AbgIHJMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 05:12:48 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:48805 "EHLO
+        id S1729271AbgIHJMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 05:12:17 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:52507 "EHLO
         wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729123AbgIHJLz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:11:55 -0400
+        by vger.kernel.org with ESMTP id S1729124AbgIHJL5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:11:57 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 93C48F48;
-        Tue,  8 Sep 2020 05:11:54 -0400 (EDT)
+        by mailout.west.internal (Postfix) with ESMTP id 1EBA5386;
+        Tue,  8 Sep 2020 05:11:56 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 08 Sep 2020 05:11:55 -0400
+  by compute4.internal (MEProxy); Tue, 08 Sep 2020 05:11:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=k84INhbDo6u7feuPKxCc+uoDw+6SG8XrLakANxANwis=; b=qAVlletv
-        3qQbUT5cOJRKqOMO5/FiccxGCwD5FTQHkq83GFKmJ/GSr85IHhrjRwKmgYgZHatD
-        Ahe1T/C9gwhnYt2tksIaWARmBLA/kuwP0bT5TKeKqH1jkzAS7mFAwDNz2NWm6MSL
-        ySrZqHHRGo9TJ9XM9VuW2clTXrAIrU6VN7KyjYE+VclyMoosJrmZ5a+nVpQrIBGz
-        Es7zAR80ocAWNpAu5+LDL51qMPJSVnV9lUyyjE0e8w/yAYrmwQUPdmGRlle2WmMN
-        bA2OXjJnnYffY0LysXO12Y6GDRJzwcG85KUl2LjYKhP8Y7b6r4gGvFcN7PeKx70d
-        BkvczQtn9d9xMw==
-X-ME-Sender: <xms:2kpXX0ySaKD96B28lBdEhM4ou7ZFkBUrMrjmHEZTik7bj10NZepS5A>
-    <xme:2kpXX4Su_E1V7JqoOWe7xWFR8yQtwWi_9M6HnQ7ubzMZXms-lTph2pyuiFVG-y96C
-    nqxzNfKGIOh-hs>
+        fm3; bh=hDXhsSn/I+yPTiT2ofVCnkTI0j5EpZozPLPr7PAGbvA=; b=XqCHNPEE
+        Up5nbDCpfDEi5Idi3D2hmKUIm4q0HMxKe2DDEqV3jLbNcM+6j6eNtYSL4Q7t4Qoa
+        VCxbLAfJLeg/JPIqu74fh235MYZXm5SOo+ZNgTAXiELj+HNB6A4STWRpine/rk8V
+        AQ/mI+k9qCJuPrg/vshP7/I5Q1sTyORaaUnhWplNz29BryrUfwZEn4x5b/P5Ymgl
+        AYZNswK3sKDNoFSnKPlPQtT1VqNAI2lwLtcAXqUjia4u4vxcbxLhtZtNCyG1aLyf
+        ZOnxdTSpwukuVwVgY3eRqm3YKM3FvlGhZysmdxnceBk1ixBwzmEo3tlSzoKX4g79
+        tO4QRNAkGU1p4g==
+X-ME-Sender: <xms:20pXX2Gb_PRA3ehXkIX3gAl4N4MbZrbbgqYtBZ9RN2P8doVHXWVMuw>
+    <xme:20pXX3VqieY8HPiBILymxkWdLNgTr27EBQ_e5uvwnfWTuysNtAMN7LV5mQKr8jwE4
+    8CzgqKBDbqGbYg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehvddguddvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,21 +38,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehvddguddvucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrfeeirdduvdek
     necuvehluhhsthgvrhfuihiivgepudejnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
     hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:2kpXX2U-cYr_XCCk934OHJTeWS7cYSVuZAxNnLV0_hXiLBnpqGlTSA>
-    <xmx:2kpXXyi7RRCMQEIGJ8HvcNAtcZzwWd6Gbw3ptk0G5WziAAJ3QSgNbA>
-    <xmx:2kpXX2Bk-ggUP5urW1_ey0CUQs8HD8jYpNhUvZGuJ7Upk-0CRe5FGQ>
-    <xmx:2kpXXxMzbT5PPsBBtOhoPdgBMRu0xKSMnOaQww3NcKDvRyC6pFNqFg>
+X-ME-Proxy: <xmx:20pXXwLKYy9VAcaUqM4PcALvhASBSGOF3cWU_aDOwqepIUTYYV6Tgg>
+    <xmx:20pXXwE7tg_SQfJwUqOcV1r_1uoEK0CVtnF5MzoTMSb1o1tGmaZgbw>
+    <xmx:20pXX8XJyegwJFLkOW4xnqbgy2jatN60SMFEpJjOCooVpx9s89gD7A>
+    <xmx:20pXXzT8yJ4pPI-622STJNKwmi7iSMcyuRcV9ag61_e9cjNJR7SBMw>
 Received: from shredder.mtl.com (igld-84-229-36-128.inter.net.il [84.229.36.128])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CD0B4306467E;
-        Tue,  8 Sep 2020 05:11:52 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 53B303064605;
+        Tue,  8 Sep 2020 05:11:54 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         roopa@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 19/22] netdevsim: Add devlink resource for nexthops
-Date:   Tue,  8 Sep 2020 12:10:34 +0300
-Message-Id: <20200908091037.2709823-20-idosch@idosch.org>
+Subject: [RFC PATCH net-next 20/22] netdevsim: Add dummy implementation for nexthop offload
+Date:   Tue,  8 Sep 2020 12:10:35 +0300
+Message-Id: <20200908091037.2709823-21-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200908091037.2709823-1-idosch@idosch.org>
 References: <20200908091037.2709823-1-idosch@idosch.org>
@@ -65,162 +65,320 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-The Spectrum ASIC has a dedicated table where nexthops (i.e., adjacency
-entries) are populated. The size of this table can be controlled via
-devlink-resource.
+Implement dummy nexthop "offload" in the driver by storing currently
+"programmed" nexthops in a hash table. Each nexthop in the hash table is
+marked with "trap" indication and increments the nexthops resource
+occupancy.
 
-Add such a resource to netdevsim so that its occupancy will reflect the
-number of nexthop objects currently programmed to the device.
-
-By limiting the size of the resource, error paths could be exercised and
-tested.
-
-Example output:
-
-# devlink resource show netdevsim/netdevsim10
-netdevsim/netdevsim10:
-  name IPv4 size unlimited unit entry size_min 0 size_max unlimited size_gran 1 dpipe_tables none
-    resources:
-      name fib size unlimited occ 4 unit entry size_min 0 size_max unlimited size_gran 1 dpipe_tables none
-      name fib-rules size unlimited occ 3 unit entry size_min 0 size_max unlimited size_gran 1 dpipe_tables none
-  name IPv6 size unlimited unit entry size_min 0 size_max unlimited size_gran 1 dpipe_tables none
-    resources:
-      name fib size unlimited occ 1 unit entry size_min 0 size_max unlimited size_gran 1 dpipe_tables none
-      name fib-rules size unlimited occ 2 unit entry size_min 0 size_max unlimited size_gran 1 dpipe_tables none
-  name nexthops size unlimited occ 0 unit entry size_min 0 size_max unlimited size_gran 1 dpipe_tables none
+This will later allow us to test the nexthop offload API on top of
+netdevsim.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../networking/devlink/netdevsim.rst          |  3 ++-
- drivers/net/netdevsim/dev.c                   |  6 +++++
- drivers/net/netdevsim/fib.c                   | 23 ++++++++++++++++++-
- drivers/net/netdevsim/netdevsim.h             |  1 +
- 4 files changed, 31 insertions(+), 2 deletions(-)
+ drivers/net/netdevsim/fib.c | 232 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 229 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/networking/devlink/netdevsim.rst b/Documentation/networking/devlink/netdevsim.rst
-index 2a266b7e7b38..02c2d20dc673 100644
---- a/Documentation/networking/devlink/netdevsim.rst
-+++ b/Documentation/networking/devlink/netdevsim.rst
-@@ -46,7 +46,7 @@ Resources
- =========
- 
- The ``netdevsim`` driver exposes resources to control the number of FIB
--entries and FIB rule entries that the driver will allow.
-+entries, FIB rule entries and nexthops that the driver will allow.
- 
- .. code:: shell
- 
-@@ -54,6 +54,7 @@ entries and FIB rule entries that the driver will allow.
-     $ devlink resource set netdevsim/netdevsim0 path /IPv4/fib-rules size 16
-     $ devlink resource set netdevsim/netdevsim0 path /IPv6/fib size 64
-     $ devlink resource set netdevsim/netdevsim0 path /IPv6/fib-rules size 16
-+    $ devlink resource set netdevsim/netdevsim0 path /nexthops size 16
-     $ devlink dev reload netdevsim/netdevsim0
- 
- Driver-specific Traps
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 32f339fedb21..d4f3a1eea800 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -320,6 +320,12 @@ static int nsim_dev_resources_register(struct devlink *devlink)
- 		return err;
- 	}
- 
-+	/* Resources for nexthops */
-+	err = devlink_resource_register(devlink, "nexthops", (u64)-1,
-+					NSIM_RESOURCE_NEXTHOPS,
-+					DEVLINK_RESOURCE_ID_PARENT_TOP,
-+					&params);
-+
- out:
- 	return err;
- }
 diff --git a/drivers/net/netdevsim/fib.c b/drivers/net/netdevsim/fib.c
-index deea17a0e79c..3ec0f8896efe 100644
+index 3ec0f8896efe..196deed0aa97 100644
 --- a/drivers/net/netdevsim/fib.c
 +++ b/drivers/net/netdevsim/fib.c
-@@ -42,6 +42,7 @@ struct nsim_fib_data {
- 	struct notifier_block fib_nb;
- 	struct nsim_per_fib_data ipv4;
- 	struct nsim_per_fib_data ipv6;
-+	struct nsim_fib_entry nexthops;
+@@ -25,6 +25,7 @@
+ #include <net/ip6_fib.h>
+ #include <net/fib_rules.h>
+ #include <net/net_namespace.h>
++#include <net/nexthop.h>
+ 
+ #include "netdevsim.h"
+ 
+@@ -46,6 +47,8 @@ struct nsim_fib_data {
  	struct rhashtable fib_rt_ht;
  	struct list_head fib_rt_list;
  	spinlock_t fib_lock;	/* Protects hashtable, list and accounting */
-@@ -104,6 +105,9 @@ u64 nsim_fib_get_val(struct nsim_fib_data *fib_data,
- 	case NSIM_RESOURCE_IPV6_FIB_RULES:
- 		entry = &fib_data->ipv6.rules;
- 		break;
-+	case NSIM_RESOURCE_NEXTHOPS:
-+		entry = &fib_data->nexthops;
-+		break;
- 	default:
- 		return 0;
- 	}
-@@ -129,6 +133,9 @@ static void nsim_fib_set_max(struct nsim_fib_data *fib_data,
- 	case NSIM_RESOURCE_IPV6_FIB_RULES:
- 		entry = &fib_data->ipv6.rules;
- 		break;
-+	case NSIM_RESOURCE_NEXTHOPS:
-+		entry = &fib_data->nexthops;
-+		break;
- 	default:
- 		WARN_ON(1);
- 		return;
-@@ -866,12 +873,20 @@ static u64 nsim_fib_ipv6_rules_res_occ_get(void *priv)
- 	return nsim_fib_get_val(data, NSIM_RESOURCE_IPV6_FIB_RULES, false);
- }
- 
-+static u64 nsim_fib_nexthops_res_occ_get(void *priv)
-+{
-+	struct nsim_fib_data *data = priv;
-+
-+	return nsim_fib_get_val(data, NSIM_RESOURCE_NEXTHOPS, false);
-+}
-+
- static void nsim_fib_set_max_all(struct nsim_fib_data *data,
- 				 struct devlink *devlink)
- {
- 	enum nsim_resource_id res_ids[] = {
- 		NSIM_RESOURCE_IPV4_FIB, NSIM_RESOURCE_IPV4_FIB_RULES,
--		NSIM_RESOURCE_IPV6_FIB, NSIM_RESOURCE_IPV6_FIB_RULES
-+		NSIM_RESOURCE_IPV6_FIB, NSIM_RESOURCE_IPV6_FIB_RULES,
-+		NSIM_RESOURCE_NEXTHOPS,
- 	};
- 	int i;
- 
-@@ -929,6 +944,10 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
- 					  NSIM_RESOURCE_IPV6_FIB_RULES,
- 					  nsim_fib_ipv6_rules_res_occ_get,
- 					  data);
-+	devlink_resource_occ_get_register(devlink,
-+					  NSIM_RESOURCE_NEXTHOPS,
-+					  nsim_fib_nexthops_res_occ_get,
-+					  data);
- 	return data;
- 
- err_rhashtable_destroy:
-@@ -941,6 +960,8 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
- 
- void nsim_fib_destroy(struct devlink *devlink, struct nsim_fib_data *data)
- {
-+	devlink_resource_occ_get_unregister(devlink,
-+					    NSIM_RESOURCE_NEXTHOPS);
- 	devlink_resource_occ_get_unregister(devlink,
- 					    NSIM_RESOURCE_IPV6_FIB_RULES);
- 	devlink_resource_occ_get_unregister(devlink,
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 284f7092241d..5e01169da01f 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -145,6 +145,7 @@ enum nsim_resource_id {
- 	NSIM_RESOURCE_IPV6,
- 	NSIM_RESOURCE_IPV6_FIB,
- 	NSIM_RESOURCE_IPV6_FIB_RULES,
-+	NSIM_RESOURCE_NEXTHOPS,
++	struct notifier_block nexthop_nb;
++	struct rhashtable nexthop_ht;
+ 	struct devlink *devlink;
  };
  
- struct nsim_dev_health {
+@@ -87,6 +90,19 @@ static const struct rhashtable_params nsim_fib_rt_ht_params = {
+ 	.automatic_shrinking = true,
+ };
+ 
++struct nsim_nexthop {
++	struct rhash_head ht_node;
++	u64 occ;
++	u32 id;
++};
++
++static const struct rhashtable_params nsim_nexthop_ht_params = {
++	.key_offset = offsetof(struct nsim_nexthop, id),
++	.head_offset = offsetof(struct nsim_nexthop, ht_node),
++	.key_len = sizeof(u32),
++	.automatic_shrinking = true,
++};
++
+ u64 nsim_fib_get_val(struct nsim_fib_data *fib_data,
+ 		     enum nsim_resource_id res_id, bool max)
+ {
+@@ -845,6 +861,196 @@ static void nsim_fib_dump_inconsistent(struct notifier_block *nb)
+ 	data->ipv6.rules.num = 0ULL;
+ }
+ 
++static struct nsim_nexthop *nsim_nexthop_create(struct nsim_fib_data *data,
++						struct nh_notifier_info *info)
++{
++	struct nsim_nexthop *nexthop;
++	u64 occ = 0;
++	int i;
++
++	nexthop = kzalloc(sizeof(*nexthop), GFP_KERNEL);
++	if (!nexthop)
++		return NULL;
++
++	nexthop->id = info->id;
++
++	/* Determine the number of nexthop entries the new nexthop will
++	 * occupy.
++	 */
++
++	if (!info->is_grp) {
++		occ = 1;
++		goto out;
++	}
++
++	for (i = 0; i < info->nh_grp->num_nh; i++)
++		occ += info->nh_grp->nh_entries[i].weight;
++
++out:
++	nexthop->occ = occ;
++	return nexthop;
++}
++
++static void nsim_nexthop_destroy(struct nsim_nexthop *nexthop)
++{
++	kfree(nexthop);
++}
++
++static int nsim_nexthop_account(struct nsim_fib_data *data, u64 occ,
++				bool add, struct netlink_ext_ack *extack)
++{
++	int err = 0;
++
++	if (add) {
++		if (data->nexthops.num + occ <= data->nexthops.max) {
++			data->nexthops.num += occ;
++		} else {
++			err = -ENOSPC;
++			NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported nexthops");
++		}
++	} else {
++		if (WARN_ON(occ > data->nexthops.num))
++			return -EINVAL;
++		data->nexthops.num -= occ;
++	}
++
++	return err;
++}
++
++static int nsim_nexthop_add(struct nsim_fib_data *data,
++			    struct nsim_nexthop *nexthop,
++			    struct netlink_ext_ack *extack)
++{
++	struct net *net = devlink_net(data->devlink);
++	int err;
++
++	err = nsim_nexthop_account(data, nexthop->occ, true, extack);
++	if (err)
++		return err;
++
++	err = rhashtable_insert_fast(&data->nexthop_ht, &nexthop->ht_node,
++				     nsim_nexthop_ht_params);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Failed to insert nexthop");
++		goto err_nexthop_dismiss;
++	}
++
++	nexthop_hw_flags_set(net, nexthop->id, false, true);
++
++	return 0;
++
++err_nexthop_dismiss:
++	nsim_nexthop_account(data, nexthop->occ, false, extack);
++	return err;
++}
++
++static int nsim_nexthop_replace(struct nsim_fib_data *data,
++				struct nsim_nexthop *nexthop,
++				struct nsim_nexthop *nexthop_old,
++				struct netlink_ext_ack *extack)
++{
++	struct net *net = devlink_net(data->devlink);
++	int err;
++
++	err = nsim_nexthop_account(data, nexthop->occ, true, extack);
++	if (err)
++		return err;
++
++	err = rhashtable_replace_fast(&data->nexthop_ht,
++				      &nexthop_old->ht_node, &nexthop->ht_node,
++				      nsim_nexthop_ht_params);
++	if (err) {
++		NL_SET_ERR_MSG_MOD(extack, "Failed to replace nexthop");
++		goto err_nexthop_dismiss;
++	}
++
++	nexthop_hw_flags_set(net, nexthop->id, false, true);
++	nsim_nexthop_account(data, nexthop_old->occ, false, extack);
++	nsim_nexthop_destroy(nexthop_old);
++
++	return 0;
++
++err_nexthop_dismiss:
++	nsim_nexthop_account(data, nexthop->occ, false, extack);
++	return err;
++}
++
++static int nsim_nexthop_insert(struct nsim_fib_data *data,
++			       struct nh_notifier_info *info)
++{
++	struct nsim_nexthop *nexthop, *nexthop_old;
++	int err;
++
++	nexthop = nsim_nexthop_create(data, info);
++	if (!nexthop)
++		return -ENOMEM;
++
++	nexthop_old = rhashtable_lookup_fast(&data->nexthop_ht, &info->id,
++					     nsim_nexthop_ht_params);
++	if (!nexthop_old)
++		err = nsim_nexthop_add(data, nexthop, info->extack);
++	else
++		err = nsim_nexthop_replace(data, nexthop, nexthop_old,
++					   info->extack);
++
++	if (err)
++		nsim_nexthop_destroy(nexthop);
++
++	return err;
++}
++
++static void nsim_nexthop_remove(struct nsim_fib_data *data,
++				struct nh_notifier_info *info)
++{
++	struct nsim_nexthop *nexthop;
++
++	nexthop = rhashtable_lookup_fast(&data->nexthop_ht, &info->id,
++					 nsim_nexthop_ht_params);
++	if (!nexthop)
++		return;
++
++	rhashtable_remove_fast(&data->nexthop_ht, &nexthop->ht_node,
++			       nsim_nexthop_ht_params);
++	nsim_nexthop_account(data, nexthop->occ, false, info->extack);
++	nsim_nexthop_destroy(nexthop);
++}
++
++static int nsim_nexthop_event_nb(struct notifier_block *nb, unsigned long event,
++				 void *ptr)
++{
++	struct nsim_fib_data *data = container_of(nb, struct nsim_fib_data,
++						  nexthop_nb);
++	struct nh_notifier_info *info = ptr;
++	int err = 0;
++
++	ASSERT_RTNL();
++
++	switch (event) {
++	case NEXTHOP_EVENT_REPLACE:
++		err = nsim_nexthop_insert(data, info);
++		break;
++	case NEXTHOP_EVENT_DEL:
++		nsim_nexthop_remove(data, info);
++		break;
++	default:
++		break;
++	}
++
++	return notifier_from_errno(err);
++}
++
++static void nsim_nexthop_free(void *ptr, void *arg)
++{
++	struct nsim_nexthop *nexthop = ptr;
++	struct nsim_fib_data *data = arg;
++	struct net *net;
++
++	net = devlink_net(data->devlink);
++	nexthop_hw_flags_set(net, nexthop->id, false, false);
++	nsim_nexthop_account(data, nexthop->occ, false, NULL);
++	nsim_nexthop_destroy(nexthop);
++}
++
+ static u64 nsim_fib_ipv4_resource_occ_get(void *priv)
+ {
+ 	struct nsim_fib_data *data = priv;
+@@ -912,20 +1118,32 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
+ 		return ERR_PTR(-ENOMEM);
+ 	data->devlink = devlink;
+ 
++	err = rhashtable_init(&data->nexthop_ht, &nsim_nexthop_ht_params);
++	if (err)
++		goto err_data_free;
++
+ 	spin_lock_init(&data->fib_lock);
+ 	INIT_LIST_HEAD(&data->fib_rt_list);
+ 	err = rhashtable_init(&data->fib_rt_ht, &nsim_fib_rt_ht_params);
+ 	if (err)
+-		goto err_data_free;
++		goto err_rhashtable_nexthop_destroy;
+ 
+ 	nsim_fib_set_max_all(data, devlink);
+ 
++	data->nexthop_nb.notifier_call = nsim_nexthop_event_nb;
++	err = register_nexthop_notifier(devlink_net(devlink), &data->nexthop_nb,
++					extack);
++	if (err) {
++		pr_err("Failed to register nexthop notifier\n");
++		goto err_rhashtable_fib_destroy;
++	}
++
+ 	data->fib_nb.notifier_call = nsim_fib_event_nb;
+ 	err = register_fib_notifier(devlink_net(devlink), &data->fib_nb,
+ 				    nsim_fib_dump_inconsistent, extack);
+ 	if (err) {
+ 		pr_err("Failed to register fib notifier\n");
+-		goto err_rhashtable_destroy;
++		goto err_nexthop_nb_unregister;
+ 	}
+ 
+ 	devlink_resource_occ_get_register(devlink,
+@@ -950,9 +1168,14 @@ struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
+ 					  data);
+ 	return data;
+ 
+-err_rhashtable_destroy:
++err_nexthop_nb_unregister:
++	unregister_nexthop_notifier(devlink_net(devlink), &data->nexthop_nb);
++err_rhashtable_fib_destroy:
+ 	rhashtable_free_and_destroy(&data->fib_rt_ht, nsim_fib_rt_free,
+ 				    data);
++err_rhashtable_nexthop_destroy:
++	rhashtable_free_and_destroy(&data->nexthop_ht, nsim_nexthop_free,
++				    data);
+ err_data_free:
+ 	kfree(data);
+ 	return ERR_PTR(err);
+@@ -971,8 +1194,11 @@ void nsim_fib_destroy(struct devlink *devlink, struct nsim_fib_data *data)
+ 	devlink_resource_occ_get_unregister(devlink,
+ 					    NSIM_RESOURCE_IPV4_FIB);
+ 	unregister_fib_notifier(devlink_net(devlink), &data->fib_nb);
++	unregister_nexthop_notifier(devlink_net(devlink), &data->nexthop_nb);
+ 	rhashtable_free_and_destroy(&data->fib_rt_ht, nsim_fib_rt_free,
+ 				    data);
++	rhashtable_free_and_destroy(&data->nexthop_ht, nsim_nexthop_free,
++				    data);
+ 	WARN_ON_ONCE(!list_empty(&data->fib_rt_list));
+ 	kfree(data);
+ }
 -- 
 2.26.2
 
