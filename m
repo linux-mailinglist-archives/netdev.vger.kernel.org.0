@@ -2,19 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CE797262253
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 00:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 712E5262256
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 00:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729037AbgIHWC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 18:02:59 -0400
-Received: from mail.nic.cz ([217.31.204.67]:52778 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726002AbgIHWC5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 18:02:57 -0400
+        id S1730150AbgIHWDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 18:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726002AbgIHWDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 18:03:12 -0400
+X-Greylist: delayed 79203 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Sep 2020 15:03:11 PDT
+Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F5AC061573;
+        Tue,  8 Sep 2020 15:03:11 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
-        by mail.nic.cz (Postfix) with ESMTPSA id 9ECD2140AE4;
-        Wed,  9 Sep 2020 00:02:54 +0200 (CEST)
-Date:   Wed, 9 Sep 2020 00:02:54 +0200
+        by mail.nic.cz (Postfix) with ESMTPSA id E27F7140BBD;
+        Wed,  9 Sep 2020 00:03:05 +0200 (CEST)
+Date:   Wed, 9 Sep 2020 00:03:05 +0200
 From:   Marek Behun <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
@@ -26,7 +30,7 @@ Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         Rob Herring <robh+dt@kernel.org>
 Subject: Re: [PATCH net-next v1 1/3] dt-bindings: net: ethernet-phy: add
  description for PHY LEDs
-Message-ID: <20200909000254.13ce9923@nic.cz>
+Message-ID: <20200909000305.69cdfdd6@nic.cz>
 In-Reply-To: <20200908000300.6982-2-marek.behun@nic.cz>
 References: <20200908000300.6982-1-marek.behun@nic.cz>
         <20200908000300.6982-2-marek.behun@nic.cz>
@@ -45,4 +49,4 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please ignore this patch, still refactoring...
+Please ignore this series, still refactoring...
