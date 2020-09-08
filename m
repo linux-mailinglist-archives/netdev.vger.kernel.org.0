@@ -2,148 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0F71260EC9
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:38:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B38E3260EF7
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:45:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728804AbgIHJi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 05:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        id S1728973AbgIHJpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 05:45:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727995AbgIHJi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:38:26 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02874C061573;
-        Tue,  8 Sep 2020 02:38:23 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id u3so4513709pjr.3;
-        Tue, 08 Sep 2020 02:38:23 -0700 (PDT)
+        with ESMTP id S1728591AbgIHJpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:45:21 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F0AC061573;
+        Tue,  8 Sep 2020 02:45:21 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id x14so18337034wrl.12;
+        Tue, 08 Sep 2020 02:45:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jApnbaGdNy0XZvmrHRfVLH08NM0ISkHskFMyba/3Dz8=;
-        b=MJgUDYj8lMeog10h/pcRqjqbqd4X6zcLeZsrh/MY0BGBr/BLaGO/3pkJz37iAaPw7O
-         OKhZsUpuQ2bIXXpe9BNkGpRexLHz10IX4Pa1nflggIzhohPRQmZzpDSo0CSz+x/ap6D8
-         2y8YaVq1RHfwDSZ3pYjVMWqanp5hDxiIRqmXANxRiAaeSoxxHpCFxIxXistH/ZCdro4L
-         JJ20dsUOKC3/2LZjn2zl6a3T9LEZmIIEX35TFizLxw1yTErjuHlmGmEKMVQXGbfA3vZZ
-         6D3AucxfnJP7UApg9bsullWCQBoQGs2Fi8iq8w5RRA9jkDeeMTonTWpEjbf6Q6THXiK6
-         s9Sg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IbF4MU0tO5pswZ6Pf+mZyMeSB7RqS4XxH2UG10CWEPo=;
+        b=vSOqIB7TrF49RNzF6LTLMvuhqUHbu8pPkNld+Ur5otxVnKNYsiB1iNOCtJGl+Q36A+
+         NKd9Yro0J90rkuTvX3Op+Q8U455lgryWCQXRDQC5tW+252tWx+Bg69jbPsGfYqbnWXHq
+         lsqX+O7hXeK8th7dl0rhZaXJte3OVd49hBoEMFe5hDvd6IVmY08C8+g75Ovmt/tG3o5B
+         SOG0zRcUJSD6N9wLqVPOBmTAcLIR2U35k8GO5saXaHZMyupT5GJ50BPj+DFoNyyukIwt
+         K/Uj41EYey5yLcAGPdzh3BdM/GAELuBQWQdUdkzz7af2ohKcg/Dc9PNi4xXkayaFNChZ
+         Ywmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jApnbaGdNy0XZvmrHRfVLH08NM0ISkHskFMyba/3Dz8=;
-        b=r152M3A7NeNPMJvwp8R0RUSdQWTtdrgJntrgUt2wEbBgEwpsf6tJGsrgFoLtsWUcXV
-         b9m+68WRQkIy7VWu+PWv4j2a2KI0l/q7d1Ly4S/M9TdKf3gyOemTowqYCs9EF/TeUHol
-         9zXwNXN2hKigwQZKjAgDY5k7LwS4f3c91/ASWgfvqU7NffU9iVe0uofDdQTKPgS1UiVZ
-         vKtAsg4gtXM1XA0+TpwsYxOKzk93O94hC5VLB8SyDcyOmGD08c+3Kkv8QPd7YZxf2A4S
-         pVI3TLWIaj5krdA74tYNI7yBtUkRuA5stv+D1lYW2kuqMINWtGZvhkye4bmnX5I8/9n/
-         aQyg==
-X-Gm-Message-State: AOAM531O6QZOPEx/fO86+lwHtBjPbZU9B6GuP7vAh+20lW5Z6bI7vfRB
-        +0JpnDI2YyiIW3MMoVCxc816B8jvdf+7JacDkpY=
-X-Google-Smtp-Source: ABdhPJyxAbCwnDQR7EXhbAKVRK/L1mgougVfa4ksNuqH1dcnUnGkAUwBxsj7BOSjmWVm1lw4MgxRSvmwQq4xy2GW4u4=
-X-Received: by 2002:a17:90a:fd98:: with SMTP id cx24mr3015644pjb.181.1599557902306;
- Tue, 08 Sep 2020 02:38:22 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IbF4MU0tO5pswZ6Pf+mZyMeSB7RqS4XxH2UG10CWEPo=;
+        b=cK4DTxFb39mTAM5k7sPcluP8tiwUq98RTdKt8lUBf/kRWkLbcrzf2EDDpVVLPJMPDn
+         YAlwk92uVKGJVHExQ3v4Zwz3ha0FnI4tXSplOHoqAzhLeoYyIgUAo0jDdVBOycRWwOEJ
+         RA8Arp+S7C4KE65KubC80Lo1ReNfJrau42GSyLvFhbF7V1Lb4Be5AQR6/h2qfc1N3vP2
+         hQC+/JpLPXadux3II/m5NyPqnzWVYhoa/sXV5lXBSnAvQ3zJunTmdIko+wImLEZueFtO
+         5eFB/HJ3lNnfUGKn4fThhcT5Cyo/WYToZTcfxtRs23Q6VQjufB0Z0TYziH5cqe8tFljU
+         OhBQ==
+X-Gm-Message-State: AOAM533zVcoPv/IdOaNN8KYM4VIp8uXQYzNl/6Ji1kugPPkikUR35923
+        nOjpYvwFq8QCeeLM53gy3ng=
+X-Google-Smtp-Source: ABdhPJxUlZ5lo45dizuZCwuKoIJvidv7xhWhsQPD4SzFzSoSVpatc9q0HJU6UuhnfmNdW5wMVzvisg==
+X-Received: by 2002:adf:eb86:: with SMTP id t6mr19271165wrn.411.1599558319684;
+        Tue, 08 Sep 2020 02:45:19 -0700 (PDT)
+Received: from [192.168.8.147] ([37.172.73.222])
+        by smtp.gmail.com with ESMTPSA id v204sm31915261wmg.20.2020.09.08.02.45.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 02:45:19 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 4/4] ixgbe, xsk: use XSK_NAPI_WEIGHT as NAPI poll
+ budget
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, kuba@kernel.org,
+        intel-wired-lan@lists.osuosl.org
+References: <20200907150217.30888-1-bjorn.topel@gmail.com>
+ <20200907150217.30888-5-bjorn.topel@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <6bbf1793-d2be-b724-eec4-65546d4cbc9c@gmail.com>
+Date:   Tue, 8 Sep 2020 11:45:13 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <20200904165222.18444-1-vadym.kochan@plvision.eu>
- <20200904165222.18444-2-vadym.kochan@plvision.eu> <CAHp75Vc_MN-tD+iQNbUcB6fbYizyfKJSJnm1W7uXCT6JAvPauA@mail.gmail.com>
- <20200908083514.GB3562@plvision.eu>
-In-Reply-To: <20200908083514.GB3562@plvision.eu>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 8 Sep 2020 12:38:04 +0300
-Message-ID: <CAHp75VdyahsNyOK9_7mFGHFg_O47jVQWro-mhU0n=1K17Eeg8Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 1/6] net: marvell: prestera: Add driver for
- Prestera family ASIC devices
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mickey Rachamim <mickeyr@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200907150217.30888-5-bjorn.topel@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 11:35 AM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
-> On Fri, Sep 04, 2020 at 10:12:07PM +0300, Andy Shevchenko wrote:
-> > On Fri, Sep 4, 2020 at 7:52 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
 
-...
 
-> > > +       words[3] |= FIELD_PREP(PRESTERA_W3_HW_DEV_NUM, (dsa->hw_dev_num >> 5));
-> >
-> > Ditto.
-> >
-> I am not sure 5 needs to be defined as macro as it just moves
-> hw_dev_num's higher bits into the last word.
+On 9/7/20 5:02 PM, Björn Töpel wrote:
+> From: Björn Töpel <bjorn.topel@intel.com>
+> 
+> Start using XSK_NAPI_WEIGHT as NAPI poll budget for the AF_XDP Rx
+> zero-copy path.
+> 
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> index 3771857cf887..f32c1ba0d237 100644
+> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+> @@ -239,7 +239,7 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
+>  	bool failure = false;
+>  	struct sk_buff *skb;
+>  
+> -	while (likely(total_rx_packets < budget)) {
+> +	while (likely(total_rx_packets < XSK_NAPI_WEIGHT)) {
+>  		union ixgbe_adv_rx_desc *rx_desc;
+>  		struct ixgbe_rx_buffer *bi;
+>  		unsigned int size
 
-And why 5? I want 6, for example!
+This is a violation of NAPI API. IXGBE is already diverging a bit from best practices.
 
-...
+There are reasons we want to control the budget from callers,
+if you want bigger budget just increase it instead of using your own ?
 
-> > > +       err = prestera_switch_init(sw);
-> > > +       if (err) {
-> > > +               kfree(sw);
-> >
-> > > +               return err;
-> > > +       }
-> > > +
-> > > +       return 0;
-> >
-> > return err;
-> >
-> why not keep 'return 0' as indication of success point ?
+I would rather use a generic patch.
 
-Simple longer, but I'm not insisting. Your choice.
-
-...
-
-> > > +                       if (b == 0)
-> > > +                               continue;
-> > > +
-> > > +                       prestera_sdma_rx_desc_set_next(sdma,
-> > > +                                                      ring->bufs[b - 1].desc,
-> > > +                                                      buf->desc_dma);
-> > > +
-> > > +                       if (b == PRESTERA_SDMA_RX_DESC_PER_Q - 1)
-> > > +                               prestera_sdma_rx_desc_set_next(sdma, buf->desc,
-> > > +                                                              head->desc_dma);
-> >
-> > I guess knowing what the allowed range of bnum the above can be optimized.
-> >
-> You mean to replace PRESTERA_SDMA_RX_DESC_PER_Q by bnum ?
-
-I don't know what you meant in above. It might be a bug, it might be
-that bnum is redundant and this definition may be used everywhere...
-But I believe there is room for improvement when I see pattern like
-
-  for (i < X) {
-    ...
-    if (i == 0) {
-      ...
-    } else if (i == X - 1) {
-      ...
-    }
-  }
-
-Either it can be while-loop (or do-while) with better semantics for
-the first and last item to handle or something else.
-Example from another review [1] in case you wonder how changes can be
-made. Just think about it.
-
-[1]: https://www.spinics.net/lists/linux-pci/msg60826.html (before)
-https://www.spinics.net/lists/linux-pci/msg62043.html (after)
-
--- 
-With Best Regards,
-Andy Shevchenko
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 7bd4fcdd0738a718d8b0f7134523cd87e4dcdb7b..33bcbdb6fef488983438c6584e3cbb0a44febb1a 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -2311,11 +2311,14 @@ static inline void *netdev_priv(const struct net_device *dev)
+  */
+ #define SET_NETDEV_DEVTYPE(net, devtype)       ((net)->dev.type = (devtype))
+ 
+-/* Default NAPI poll() weight
+- * Device drivers are strongly advised to not use bigger value
+- */
++/* Default NAPI poll() weight. Highly recommended. */
+ #define NAPI_POLL_WEIGHT 64
+ 
++/* Device drivers are strongly advised to not use bigger value,
++ * as this might cause latencies in stress conditions.
++ */
++#define NAPI_POLL_WEIGHT_MAX 256
++
+ /**
+  *     netif_napi_add - initialize a NAPI context
+  *     @dev:  network device
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 4086d335978c1bf62bd3965bd2ea96a4ac06b13d..496713fb6075bd8e5e22725e7c817172858e1dd7 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6608,7 +6608,7 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+        INIT_LIST_HEAD(&napi->rx_list);
+        napi->rx_count = 0;
+        napi->poll = poll;
+-       if (weight > NAPI_POLL_WEIGHT)
++       if (weight > NAPI_POLL_WEIGHT_MAX)
+                netdev_err_once(dev, "%s() called with weight %d\n", __func__,
+                                weight);
+        napi->weight = weight;
