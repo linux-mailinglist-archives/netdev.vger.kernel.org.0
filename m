@@ -2,72 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1999260F10
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:56:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42FD1260F58
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 12:12:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728963AbgIHJ4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 05:56:24 -0400
-Received: from correo.us.es ([193.147.175.20]:52732 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728798AbgIHJ4W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 05:56:22 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id E238BF2582
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 11:56:18 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CB557DA796
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 11:56:18 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id B78B2DA730; Tue,  8 Sep 2020 11:56:18 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
-        version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9E1D3DA7B6;
-        Tue,  8 Sep 2020 11:56:16 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 08 Sep 2020 11:56:16 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729200AbgIHKMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 06:12:37 -0400
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:44639 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726801AbgIHKMc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 06:12:32 -0400
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 7D0A64301DE0;
-        Tue,  8 Sep 2020 11:56:16 +0200 (CEST)
-Date:   Tue, 8 Sep 2020 11:56:16 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Martin Willi <martin@strongswan.org>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        Florent Fourcot <florent.fourcot@wifirst.fr>,
-        Romain Bellan <romain.bellan@wifirst.fr>
-Subject: Re: [PATCH nf] netfilter: ctnetlink: fix mark based dump filtering
- regression
-Message-ID: <20200908095616.GA3446@salvia>
-References: <20200901065619.4484-1-martin@strongswan.org>
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 4B020206462B7;
+        Tue,  8 Sep 2020 12:12:30 +0200 (CEST)
+Subject: Re: [Intel-wired-lan] [PATCH bpf-next 4/4] ixgbe, xsk: use
+ XSK_NAPI_WEIGHT as NAPI poll budget
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kuba@kernel.org,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        intel-wired-lan@lists.osuosl.org, magnus.karlsson@intel.com
+References: <20200907150217.30888-1-bjorn.topel@gmail.com>
+ <20200907150217.30888-5-bjorn.topel@gmail.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Message-ID: <82901368-8e17-a63d-0e46-2434b5777c04@molgen.mpg.de>
+Date:   Tue, 8 Sep 2020 12:12:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200901065619.4484-1-martin@strongswan.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200907150217.30888-5-bjorn.topel@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 01, 2020 at 08:56:19AM +0200, Martin Willi wrote:
-> conntrack mark based dump filtering may falsely skip entries if a mask
-> is given: If the mask-based check does not filter out the entry, the
-> else-if check is always true and compares the mark without considering
-> the mask. The if/else-if logic seems wrong.
-> 
-> Given that the mask during filter setup is implicitly set to 0xffffffff
-> if not specified explicitly, the mark filtering flags seem to just
-> complicate things. Restore the previously used approach by always
-> matching against a zero mask is no filter mark is given.
+Dear Björn,
 
-Applied, thanks.
+
+Am 07.09.20 um 17:02 schrieb Björn Töpel:
+> From: Björn Töpel <bjorn.topel@intel.com>
+> 
+> Start using XSK_NAPI_WEIGHT as NAPI poll budget for the AF_XDP Rx
+> zero-copy path.
+
+Could you please add the description from the patch series cover letter 
+to this commit too? To my knowledge, the message in the cover letter 
+won’t be stored in the git repository.
+
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+> ---
+>   drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+
+[…]
+
+
+Kind regards,
+
+Paul
