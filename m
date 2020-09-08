@@ -2,470 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF6E26075B
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 02:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9432260769
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 02:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728229AbgIHADQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 20:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
+        id S1728085AbgIHAHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 20:07:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727769AbgIHADJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 20:03:09 -0400
-Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27687C061573
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 17:03:07 -0700 (PDT)
-Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:8982:ed8c:62b1:c0c8])
-        by mail.nic.cz (Postfix) with ESMTP id F0D8B14087C;
-        Tue,  8 Sep 2020 02:03:01 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1599523382; bh=f7Vmyv6xSzwV+8MY82mGpSsCAiNrFjxM9nldBqmL9JE=;
-        h=From:To:Date;
-        b=QWY/g8DBWru6ad+NWbj/3soYeUp+V0F8iNnaqNNIdSG8tK05Y4RGgVeD8gYuOkzO2
-         1QW2RaMyRcO3iFNxH4krUzZvyCXrkTIRrZz0wjhiiGGf8D7J2fTfS7HE29ORn6pjIC
-         UAlQl/MfB66QVjQVnJA5aHdVljhEOkBLA2wz6qQw=
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-To:     netdev@vger.kernel.org
-Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        Dan Murphy <dmurphy@ti.com>,
-        =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megous@megous.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH net-next v1 3/3] net: phy: marvell: add support for LEDs controlled by Marvell PHYs
-Date:   Tue,  8 Sep 2020 02:03:00 +0200
-Message-Id: <20200908000300.6982-4-marek.behun@nic.cz>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200908000300.6982-1-marek.behun@nic.cz>
-References: <20200908000300.6982-1-marek.behun@nic.cz>
+        with ESMTP id S1727058AbgIHAHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 20:07:30 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D5FC061573;
+        Mon,  7 Sep 2020 17:07:29 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id c196so3993066pfc.0;
+        Mon, 07 Sep 2020 17:07:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vz3cuK28svOZPnhCoZFGAJ1iHJ+oq8uAsj8UZuAV9AQ=;
+        b=adQfRvGujXsDFIcFGwS50H+CpaFf0MLimM2eCW9xUsWsgQsgxIe41lCs/JRVVtqgge
+         szKv3a7YjI+rVqujsQ8wIqpC/qiPTNE8H2K7sU+MhMOaGEuajhd+9Z38KOLnKnXpKxZn
+         gLwnmBm8SjjwHMoA0sio3dJ5g3NTVAPSRFB3A7WOeXgshisiOvhXJDAEo+6QUAXlOU8A
+         OK+tbbTrekEjvB4RfElpNUsKcbElpouA7mRU0gwYUayCBnzgBGCim7pTsY5Ll9UAuR+z
+         kyUU/MiPo1G2cVBJcEq3fvTIvJnN9K5Lau5f9l93wYcOMMdAvrieXZO65LZXZloNRuYz
+         L3Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vz3cuK28svOZPnhCoZFGAJ1iHJ+oq8uAsj8UZuAV9AQ=;
+        b=UEC94F+aYEgo7NSr8wAUUM7SZVLwDpPlYfnUFcGvvMgF6KwUgmhm0Z2aX43Glop8nv
+         403O/RmCeKzL76ZgBbQWedtcsxu5LTzxXySM3n1k6aBxPbL5AuLmjE8JpqDhfXAibkU7
+         Zlnbu66TkJdQjFj00dm965vsiVub6YNkWCLZUmqPk2OJfrqmY3Cfx6mPLiFAXILH2r1R
+         xFiBFN3UmqQ2JPId7y/MYUJPfipvl1ifPzXHp1A81yKu2deVe5+7+YaMsN37O3q7GO3d
+         aqHsi7A03aX4XxhGxxV6AgVii/dcv/MUyx9jF94D43Nsy9oMGRomsrGXoZ7T969Xc2vb
+         nH8Q==
+X-Gm-Message-State: AOAM530ZXrRJc0HGDdIpKRqTnHZYuEDWRjliVUddyXq0x5chJVT4ntrv
+        irIN5uAnPfNvwUE5Y98WAjGbcWVebssdmnMMKR0=
+X-Google-Smtp-Source: ABdhPJzj5PB769OQ1za3X5AWPdeDF3Md+vAq8OR4nXR6wAMUVBkJWNg6Nck6ycmE6wRdV2YKCSUCP/trOcyViMhR/x8=
+X-Received: by 2002:a63:4923:: with SMTP id w35mr17818837pga.368.1599523648346;
+ Mon, 07 Sep 2020 17:07:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Spam-Status: No, score=0.00
-X-Spamd-Bar: /
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+References: <20200906031827.16819-1-xie.he.0141@gmail.com> <CA+FuTSfOeMB7Wv1t12VCTOqPYcTLq2WKdG4AJUO=gxotVRZiQw@mail.gmail.com>
+In-Reply-To: <CA+FuTSfOeMB7Wv1t12VCTOqPYcTLq2WKdG4AJUO=gxotVRZiQw@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Mon, 7 Sep 2020 17:07:17 -0700
+Message-ID: <CAJht_EO13aYPXBV7sEgOTuUhuHFTFFfdg7NBN2cEKAo6LK0DMQ@mail.gmail.com>
+Subject: Re: [PATCH net] net/packet: Fix a comment about hard_header_len and
+ headroom allocation
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Or Cohen <orcohen@paloaltonetworks.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for controlling the LEDs connected to several
-families of Marvell PHYs via the PHY HW LED trigger API. These families
-are: 88E1112, 88E1121R, 88E1240, 88E1340S, 88E1510 and 88E1545. More can
-be added.
+Thank you for your comment!
 
-This patch does not yet add support for compound LED modes. This could
-be achieved via the LED multicolor framework.
+On Mon, Sep 7, 2020 at 2:41 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Sun, Sep 6, 2020 at 5:18 AM Xie He <xie.he.0141@gmail.com> wrote:
+> >
+> > This comment is outdated and no longer reflects the actual implementation
+> > of af_packet.c.
+>
+> If it was previously true, can you point to a commit that changes the behavior?
 
-Settings such as HW blink rate or pulse stretch duration are not yet
-supported.
+This is my understanding about the history of "af_packet.c":
 
-Signed-off-by: Marek Behún <marek.behun@nic.cz>
----
- drivers/net/phy/marvell.c | 309 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 307 insertions(+), 2 deletions(-)
+1. Pre git history
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index bb86ac0bd0920..e0293f309644a 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -148,6 +148,13 @@
- #define MII_88E1510_PHY_LED_DEF		0x1177
- #define MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE	0x1040
- 
-+#define MII_PHY_LED_POLARITY_CTRL	17
-+#define MII_PHY_LED_TIMER_CTRL		18
-+#define MII_PHY_LED45_CTRL		19
-+
-+#define MII_PHY_LED_CTRL_FORCE_ON	0x9
-+#define MII_PHY_LED_CTRL_FORCE_OFF	0x8
-+
- #define MII_M1011_PHY_STATUS		0x11
- #define MII_M1011_PHY_STATUS_1000	0x8000
- #define MII_M1011_PHY_STATUS_100	0x4000
-@@ -252,6 +259,8 @@
- #define LPA_PAUSE_FIBER		0x180
- #define LPA_PAUSE_ASYM_FIBER	0x100
- 
-+#define MARVELL_PHY_MAX_LEDS	6
-+
- #define NB_FIBER_STATS	1
- 
- MODULE_DESCRIPTION("Marvell PHY driver");
-@@ -280,6 +289,7 @@ struct marvell_priv {
- 	u32 last;
- 	u32 step;
- 	s8 pair;
-+	u16 legacy_led_config_mask;
- };
- 
- static int marvell_read_page(struct phy_device *phydev)
-@@ -662,8 +672,295 @@ static int m88e1510_config_aneg(struct phy_device *phydev)
- 	return err;
- }
- 
-+#if IS_ENABLED(CONFIG_PHY_LEDS)
-+
-+enum {
-+	COMMON			= BIT(0),
-+	L1V0_RECV		= BIT(1),
-+	L1V0_COPPER		= BIT(2),
-+	L1V5_100_FIBER		= BIT(3),
-+	L1V5_100_10		= BIT(4),
-+	L2V2_INIT		= BIT(5),
-+	L2V2_PTP		= BIT(6),
-+	L2V2_DUPLEX		= BIT(7),
-+	L3V0_FIBER		= BIT(8),
-+	L3V0_LOS		= BIT(9),
-+	L3V5_TRANS		= BIT(10),
-+	L3V7_FIBER		= BIT(11),
-+	L3V7_DUPLEX		= BIT(12),
-+};
-+
-+struct marvell_led_mode_info {
-+	const char *name;
-+	s8 regval[MARVELL_PHY_MAX_LEDS];
-+	u32 flags;
-+};
-+
-+static const struct marvell_led_mode_info marvell_led_mode_info[] = {
-+	{ "link",			{ 0x0,  -1, 0x0,  -1,  -1,  -1, }, COMMON },
-+	{ "link/act",			{ 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, }, COMMON },
-+	{ "1Gbps/100Mbps/10Mbps",	{ 0x2,  -1,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "act",			{ 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, }, COMMON },
-+	{ "blink-act",			{ 0x4, 0x4, 0x4, 0x4, 0x4, 0x4, }, COMMON },
-+	{ "tx",				{ 0x5,  -1, 0x5,  -1, 0x5, 0x5, }, COMMON },
-+	{ "tx",				{  -1,  -1,  -1, 0x5,  -1,  -1, }, L3V5_TRANS },
-+	{ "rx",				{  -1,  -1,  -1,  -1, 0x0, 0x0, }, COMMON },
-+	{ "rx",				{  -1, 0x0,  -1,  -1,  -1,  -1, }, L1V0_RECV },
-+	{ "copper",			{ 0x6,  -1,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "copper",			{  -1, 0x0,  -1,  -1,  -1,  -1, }, L1V0_COPPER },
-+	{ "1Gbps",			{ 0x7,  -1,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "link/rx",			{  -1, 0x2,  -1, 0x2, 0x2, 0x2, }, COMMON },
-+	{ "100Mbps-fiber",		{  -1, 0x5,  -1,  -1,  -1,  -1, }, L1V5_100_FIBER },
-+	{ "100Mbps-10Mbps",		{  -1, 0x5,  -1,  -1,  -1,  -1, }, L1V5_100_10 },
-+	{ "1Gbps-100Mbps",		{  -1, 0x6,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "1Gbps-10Mbps",		{  -1,  -1, 0x6, 0x6,  -1,  -1, }, COMMON },
-+	{ "100Mbps",			{  -1, 0x7,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "10Mbps",			{  -1,  -1, 0x7,  -1,  -1,  -1, }, COMMON },
-+	{ "fiber",			{  -1,  -1,  -1, 0x0,  -1,  -1, }, L3V0_FIBER },
-+	{ "fiber",			{  -1,  -1,  -1, 0x7,  -1,  -1, }, L3V7_FIBER },
-+	{ "FullDuplex",			{  -1,  -1,  -1, 0x7,  -1,  -1, }, L3V7_DUPLEX },
-+	{ "FullDuplex",			{  -1,  -1,  -1,  -1, 0x6, 0x6, }, COMMON },
-+	{ "FullDuplex/collision",	{  -1,  -1,  -1,  -1, 0x7, 0x7, }, COMMON },
-+	{ "FullDuplex/collision",	{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_DUPLEX },
-+	{ "ptp",			{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_PTP },
-+	{ "init",			{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_INIT },
-+	{ "los",			{  -1,  -1,  -1, 0x0,  -1,  -1, }, L3V0_LOS },
-+	{ "blink",			{ 0xb, 0xb, 0xb, 0xb, 0xb, 0xb, }, COMMON },
-+};
-+
-+struct marvell_leds_info {
-+	u32 family;
-+	int nleds;
-+	u32 flags;
-+};
-+
-+#define LED(fam, n, flg)							\
-+	{									\
-+		.family = MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E##fam),	\
-+		.nleds = (n),							\
-+		.flags = (flg),							\
-+	}									\
-+
-+static const struct marvell_leds_info marvell_leds_info[] = {
-+	LED(1112,  4, COMMON | L1V0_COPPER | L1V5_100_FIBER | L2V2_INIT | L3V0_LOS | L3V5_TRANS |
-+		      L3V7_FIBER),
-+	LED(1121R, 3, COMMON | L1V5_100_10),
-+	LED(1240,  6, COMMON | L3V5_TRANS),
-+	LED(1340S, 6, COMMON | L1V0_COPPER | L1V5_100_FIBER | L2V2_PTP | L3V0_FIBER | L3V7_DUPLEX),
-+	LED(1510,  3, COMMON | L1V0_RECV | L1V5_100_FIBER | L2V2_DUPLEX),
-+	LED(1545,  6, COMMON | L1V0_COPPER | L1V5_100_FIBER | L3V0_FIBER | L3V7_DUPLEX),
-+};
-+
-+static inline int marvell_led_reg(int led)
-+{
-+	switch (led) {
-+	case 0 ... 3:
-+		return MII_PHY_LED_CTRL;
-+	case 4 ... 5:
-+		return MII_PHY_LED45_CTRL;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int marvell_led_set_regval(struct phy_device *phydev, int led, u16 val)
-+{
-+	u16 mask;
-+	int reg;
-+
-+	reg = marvell_led_reg(led);
-+	if (reg < 0)
-+		return reg;
-+
-+	val <<= (led % 4) * 4;
-+	mask = 0xf << ((led % 4) * 4);
-+
-+	return phy_modify_paged(phydev, MII_MARVELL_LED_PAGE, reg, mask, val);
-+}
-+
-+static int marvell_led_get_regval(struct phy_device *phydev, int led)
-+{
-+	int reg, val;
-+
-+	reg = marvell_led_reg(led);
-+	if (reg < 0)
-+		return reg;
-+
-+	val = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, reg);
-+	if (val < 0)
-+		return val;
-+
-+	val >>= (led % 4) * 4;
-+	val &= 0xf;
-+
-+	return val;
-+}
-+
-+static int marvell_led_set_polarity(struct phy_device *phydev, int led, bool active_low,
-+				    bool open_drain)
-+{
-+	int reg, shift;
-+	u16 mask, val;
-+
-+	switch (led) {
-+	case 0 ... 3:
-+		reg = MII_PHY_LED_POLARITY_CTRL;
-+		break;
-+	case 4 ... 5:
-+		reg = MII_PHY_LED45_CTRL;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	val = 0;
-+	if (!active_low)
-+		val |= BIT(0);
-+	if (open_drain)
-+		val |= BIT(1);
-+
-+	shift = led * 2;
-+	val <<= shift;
-+	mask = 0x3 << shift;
-+
-+	return phy_modify_paged(phydev, MII_MARVELL_LED_PAGE, reg, mask, val);
-+}
-+
-+static int marvell_led_brightness_set(struct phy_device *phydev, struct phy_device_led *led,
-+				      enum led_brightness brightness)
-+{
-+	u8 val;
-+
-+	/* don't do anything if HW control is enabled */
-+	if (led->cdev.trigger == &phy_hw_led_trig)
-+		return 0;
-+
-+	val = brightness ? MII_PHY_LED_CTRL_FORCE_ON : MII_PHY_LED_CTRL_FORCE_OFF;
-+
-+	return marvell_led_set_regval(phydev, led->addr, val);
-+}
-+
-+static inline bool is_valid_led_mode(struct phy_device_led *led,
-+				     const struct marvell_led_mode_info *mode)
-+{
-+	return mode->regval[led->addr] != -1 && (led->flags & mode->flags);
-+}
-+
-+static const char *marvell_led_iter_hw_mode(struct phy_device *phydev, struct phy_device_led *led,
-+					    void **iter)
-+{
-+	const struct marvell_led_mode_info *mode = *iter;
-+
-+	if (!mode)
-+		mode = marvell_led_mode_info;
-+
-+	if (mode - marvell_led_mode_info == ARRAY_SIZE(marvell_led_mode_info))
-+		goto end;
-+
-+	while (!is_valid_led_mode(led, mode)) {
-+		++mode;
-+		if (mode - marvell_led_mode_info == ARRAY_SIZE(marvell_led_mode_info))
-+			goto end;
-+	}
-+
-+	*iter = (void *)(mode + 1);
-+	return mode->name;
-+end:
-+	*iter = NULL;
-+	return NULL;
-+}
-+
-+static int marvell_led_set_hw_mode(struct phy_device *phydev, struct phy_device_led *led,
-+				   const char *name)
-+{
-+	const struct marvell_led_mode_info *mode;
-+	int i;
-+
-+	if (!name)
-+		return 0;
-+
-+	for (i = 0; i < ARRAY_SIZE(marvell_led_mode_info); ++i) {
-+		mode = &marvell_led_mode_info[i];
-+
-+		if (!is_valid_led_mode(led, mode))
-+			continue;
-+
-+		if (sysfs_streq(name, mode->name))
-+			return marvell_led_set_regval(phydev, led->addr, mode->regval[led->addr]);
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const char *marvell_led_get_hw_mode(struct phy_device *phydev, struct phy_device_led *led)
-+{
-+	const struct marvell_led_mode_info *mode;
-+	int i, regval;
-+
-+	regval = marvell_led_get_regval(phydev, led->addr);
-+	if (regval < 0)
-+		return NULL;
-+
-+	for (i = 0; i < ARRAY_SIZE(marvell_led_mode_info); ++i) {
-+		mode = &marvell_led_mode_info[i];
-+
-+		if (!is_valid_led_mode(led, mode))
-+			continue;
-+
-+		if (mode->regval[led->addr] == regval)
-+			return mode->name;
-+	}
-+
-+	return NULL;
-+}
-+
-+static int marvell_led_init(struct phy_device *phydev, struct phy_device_led *led,
-+			    const struct phy_device_led_init_data *pdata)
-+{
-+	const struct marvell_leds_info *info = NULL;
-+	struct marvell_priv *priv = phydev->priv;
-+	int ret, i;
-+
-+	for (i = 0; i < ARRAY_SIZE(marvell_leds_info); ++i) {
-+		if (MARVELL_PHY_FAMILY_ID(phydev->phy_id) == marvell_leds_info[i].family) {
-+			info = &marvell_leds_info[i];
-+			break;
-+		}
-+	}
-+
-+	if (!info)
-+		return -EOPNOTSUPP;
-+
-+	if (led->addr >= info->nleds)
-+		return -EINVAL;
-+
-+	led->flags = info->flags;
-+	led->cdev.max_brightness = 1;
-+
-+	ret = marvell_led_set_polarity(phydev, led->addr, pdata->active_low, pdata->open_drain);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* ensure marvell_config_led below does not change settings we have set for this LED */
-+	if (led->addr < 3)
-+		priv->legacy_led_config_mask &= ~(0xf << (led->addr * 4));
-+
-+	return 0;
-+}
-+
-+static const struct phy_device_led_ops marvell_led_ops = {
-+	.led_init = marvell_led_init,
-+	.led_brightness_set = marvell_led_brightness_set,
-+	.led_iter_hw_mode = marvell_led_iter_hw_mode,
-+	.led_set_hw_mode = marvell_led_set_hw_mode,
-+	.led_get_hw_mode = marvell_led_get_hw_mode,
-+};
-+
-+#endif /* IS_ENABLED(CONFIG_PHY_LEDS) */
-+
- static void marvell_config_led(struct phy_device *phydev)
- {
-+	struct marvell_priv *priv = phydev->priv;
- 	u16 def_config;
- 	int err;
- 
-@@ -688,8 +985,9 @@ static void marvell_config_led(struct phy_device *phydev)
- 		return;
- 	}
- 
--	err = phy_write_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
--			      def_config);
-+	def_config &= priv->legacy_led_config_mask;
-+	err = phy_modify_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
-+			       priv->legacy_led_config_mask, def_config);
- 	if (err < 0)
- 		phydev_warn(phydev, "Fail to config marvell phy LED.\n");
- }
-@@ -2580,6 +2878,7 @@ static int marvell_probe(struct phy_device *phydev)
- 	if (!priv)
- 		return -ENOMEM;
- 
-+	priv->legacy_led_config_mask = 0xffff;
- 	phydev->priv = priv;
- 
- 	return 0;
-@@ -2656,6 +2955,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_stats = marvell_get_stats,
- 		.get_tunable = m88e1011_get_tunable,
- 		.set_tunable = m88e1011_set_tunable,
-+		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1111,
-@@ -2717,6 +3017,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_stats = marvell_get_stats,
- 		.get_tunable = m88e1011_get_tunable,
- 		.set_tunable = m88e1011_set_tunable,
-+		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1318S,
-@@ -2796,6 +3097,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_sset_count = marvell_get_sset_count,
- 		.get_strings = marvell_get_strings,
- 		.get_stats = marvell_get_stats,
-+		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1116R,
-@@ -2844,6 +3146,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_start = marvell_vct7_cable_test_start,
- 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
-+		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1540,
-@@ -2896,6 +3199,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_start = marvell_vct7_cable_test_start,
- 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
-+		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E3016,
-@@ -2964,6 +3268,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_stats = marvell_get_stats,
- 		.get_tunable = m88e1540_get_tunable,
- 		.set_tunable = m88e1540_set_tunable,
-+		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1548P,
--- 
-2.26.2
+At first, before "needed_headroom" was introduced, "hard_header_len"
+was the only way for a driver to request headroom. However,
+"hard_header_len" was also used in "af_packet.c" for processing the
+header. There was a confusion / disagreement between "af_packet.c"
+developers and driver developers about the use of "hard_header_len".
+"af_packet.c" developers would assume that all headers were visible to
+them through dev->header_ops (called dev->hard_header at that time?).
+But the developers of some drivers were not able to expose all their
+headers to "af_packet.c" through header_ops (for example, in tunnel
+drivers). These drivers still requested the headroom via
+"hard_header_len" but this created bugs for "af_packet.c" because
+"af_packet.c" would assume "hard_header_len" was the length of the
+header visible to them through header_ops.
 
+Therefore, in Linux version 2.1.43pre1, the FIXME comment was added.
+In this comment, "af_packet.c" developers clearly stated that not
+exposing the header through header_ops was a bug that needed to be
+fixed in the drivers. But I think driver developers were not able to
+agree because some drivers really had a need to add their own header
+without using header_ops (for example in tunnel drivers).
+
+In Linux version 2.1.68, the developer of "af_packet.c" compromised
+and recognized the use of "hard_header_len" even when there is no
+header_ops, by adding the comment I'm trying to change now. But I
+guess some other developers of "af_packet.c" continued to treat
+"hard_header_len" to be the length of header of header_ops and created
+a lot of problems.
+
+2. Introduction of "needed_headroom"
+
+Because this issue has troubled for developers for long, in 2008,
+developers introduced "needed_headroom" to solve this problem.
+"needed_headroom" has only one purpose - reserve headroom. It is not
+used in af_packet.c for processing so drivers can safely use it to
+request headroom without exposing the header via header_ops.
+
+The commit was:
+commit f5184d267c1a ("net: Allow netdevices to specify needed head/tailroom")
+
+After "needed_headroom" was introduced, all drivers that needed to
+reserve the headroom but didn't want "af_packet.c" to interfere should
+change to "needed_headroom".
+
+From this point on, "af_packet.c" developers were able to assume
+"hard_header_len" was only used for header processing purposes in
+"af_packet.c".
+
+3. Not reserving the headroom of hard_header_len for RAW sockets
+
+Another very important point in history is these two commits in 2018:
+commit b84bbaf7a6c8 ("packet: in packet_snd start writing at link
+layer allocation")
+commit 9aad13b087ab ("packet: fix reserve calculation")
+
+These two commits changed packet_snd to the present state and made it
+no long reserve the headroom of hard_header_len for RAW sockets. This
+made drivers' switching from hard_header_len to needed_headroom became
+urgent because otherwise they might have a kernel panic when used with
+RAW sockets.
+
+> > In this file, the function packet_snd first reserves a headroom of
+> > length (dev->hard_header_len + dev->needed_headroom).
+> > Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
+> > which calls dev->header_ops->create, to create the link layer header.
+> > If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
+> > length (dev->hard_header_len), and checks if the user has provided a
+> > header of length (dev->hard_header_len) (in dev_validate_header).
+>
+> Not entirely, a header greater than dev->min_header_len that passes
+> dev_validate_header.
+
+Yes, I understand. The function checks both hard_header_len and
+min_header_len. I want to explain the role of hard_header_len in
+dev_validate_header. But I feel a little hard to concisely explain
+this without simplifying a little bit.
+
+> >  /*
+> >     Assumptions:
+> > -   - if device has no dev->hard_header routine, it adds and removes ll header
+> > -     inside itself. In this case ll header is invisible outside of device,
+> > -     but higher levels still should reserve dev->hard_header_len.
+> > -     Some devices are enough clever to reallocate skb, when header
+> > -     will not fit to reserved space (tunnel), another ones are silly
+> > -     (PPP).
+> > +   - If the device has no dev->header_ops, there is no LL header visible
+> > +     outside of the device. In this case, its hard_header_len should be 0.
+>
+> Such a constraint is more robustly captured with a compile time
+> BUILD_BUG_ON check. Please do add a comment that summarizes why the
+> invariant holds.
+
+I'm not sure how to do this. I guess both header_ops and
+hard_header_len are assigned at runtime. (Right?) I guess we are not
+able to check this at compile-time.
+
+> More about the older comment, but if reusing: it's not entirely clear
+> to me what "outside of the device" means. The upper layers that
+> receive data from the device and send data to it, including
+> packet_snd, I suppose? Not the lower layers, clearly. Maybe that can
+> be more specific.
+
+Yes, right. If a header is visible "outside of the device", it means
+the header is exposed to upper layers via "header_ops". If a header is
+not visible "outside of the device" and is only used "internally", it
+means the header is not exposed to upper layers via "header_ops".
+Maybe we can change it to "outside of the device driver"? We can
+borrow the idea of encapsulation in object-oriented programming - some
+things that happen inside a software component should not be visible
+outside of that software component.
