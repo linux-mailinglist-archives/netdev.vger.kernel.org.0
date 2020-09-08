@@ -2,229 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F912614D8
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:38:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EA8D261576
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:51:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732057AbgIHQiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:38:51 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:35560 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731159AbgIHQib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:38:31 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 088GcK6r101294;
-        Tue, 8 Sep 2020 11:38:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1599583100;
-        bh=Zy3z+/BHoA+oz6zF/b9ei0+HV/TBYphaUikRkWL2/KA=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=AFuz8Am3r+6XqaywOgD/QkP3/RGOPnYKfEgLMWcpyf8yCGS/ev3l4FmYhAb5SLxa7
-         /M0lO+YcyulTQ4SYbby/bS5M+B4y8Nxi/TRdXO1nYV4x6pIq8nyiLfesoLThIX7/oS
-         2uwsuGbqbtKF3d7ct4MD+f5xERh90YxGQ4USCJ+E=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 088GcKYl016657
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Sep 2020 11:38:20 -0500
-Received: from DFLE102.ent.ti.com (10.64.6.23) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 8 Sep
- 2020 11:38:20 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE102.ent.ti.com
- (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 8 Sep 2020 11:38:20 -0500
-Received: from [10.250.53.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 088GcJUT113732;
-        Tue, 8 Sep 2020 11:38:19 -0500
-Subject: Re: [PATCH net-next 1/1] net: hsr/prp: add vlan support
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, <nsekhar@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-References: <20200901195415.4840-1-m-karicheri2@ti.com>
- <20200901195415.4840-2-m-karicheri2@ti.com>
- <CA+FuTScPZ5sfHBwbFKQza6w4G1UcO8DaqrcpFuSvr9svgMEepw@mail.gmail.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <581a90d0-243e-f62e-1c2e-a9683807805c@ti.com>
-Date:   Tue, 8 Sep 2020 12:38:14 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1731962AbgIHQuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 12:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731990AbgIHQuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:50:06 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55609C061573
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 09:50:06 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id z13so23835iom.8
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 09:50:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=knw0Phyf4lcxPfcI+W+2G/ZQ7pW6xZfsdOiqIM6ktqw=;
+        b=gbVS6FD2jUIirMZ0VSiBlkGctJK8YHe/D8r+K9iY2h+A9JQ9vPz6K1tZrTJuzLXJGc
+         wi0+81UIoyLpFFeCDdRpdHs/+gv6KbTw8R5ez+2HciXibKXG1DEcpeWNKlLZZN+7eKmf
+         RZd1oh+AKzab39/uY286Owbbv+xiYPnkusIqSlnLLqHDRGzdMiX9IRqLVzTWWoahUpCo
+         HayJ2AekQvXOIyANrIMFKkGidp+8DZSdBLvQjVV1Cm9Eb1JYBYmFj6GLZvZOv0D+bnGA
+         6P26x73X5oslpxs2NlOrdpbeAOH1XCVtA0N00DCUzlZ+Jr6h7zU/tH9inCeS1tpqcgSS
+         YwfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=knw0Phyf4lcxPfcI+W+2G/ZQ7pW6xZfsdOiqIM6ktqw=;
+        b=llHe9u6qj6dZrScWYeQqLBho60vFLgwZ1mUPo0pTqqaml/VWmVmRQPPFbSmyiVw4U9
+         xQFEaekP6Wt1mGmAMblXPBfatK23N9KNzWHT7cIhPHCHdKDJXVOCEz/bU2+gKjnhjRb/
+         UwXhLpRS82QSPoEP30aeZTLRMYAxSRWrA5afxPuh+dPEl2Dmv1xGrACnEFHfwHZHCoQH
+         N3dLpQwXcTlZ5BS5I0bGfUHsW7h2IhKscWmG3BZvDV8fy4sz+mQ6vtysT29VYaoWZ/bV
+         S6tvFYh/G+ByHAUCMftYhuvt7VsgGFrcm7zr5638Qrc3xJHGYnhBuZkOQo/UOpBbnpsU
+         X1kQ==
+X-Gm-Message-State: AOAM5313kCw5ZjizjIbzhAEFjYrga1NBwxVYcjL61uQkmvteNvb4coQQ
+        E3AD7aUu8W0FD9mSG51U1b0=
+X-Google-Smtp-Source: ABdhPJw498jKHpRYHw6YA9+jmWpGnowOUF6/uVy8G4HXSJ5ORVxXsXpkR5oCD3jdLA9HMR27W9ckIw==
+X-Received: by 2002:a6b:37d5:: with SMTP id e204mr21133351ioa.104.1599583805553;
+        Tue, 08 Sep 2020 09:50:05 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:ec70:7b06:eed6:6e35])
+        by smtp.googlemail.com with ESMTPSA id q23sm3656982iob.19.2020.09.08.09.50.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 09:50:04 -0700 (PDT)
+Subject: Re: [PATCH net] ipv6: avoid lockdep issue in fib6_del()
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <20200908082023.3690438-1-edumazet@google.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7f56f2d0-e741-bc24-c671-14e53607be2b@gmail.com>
+Date:   Tue, 8 Sep 2020 10:50:03 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTScPZ5sfHBwbFKQza6w4G1UcO8DaqrcpFuSvr9svgMEepw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <20200908082023.3690438-1-edumazet@google.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Willem,
-
-Thanks for the response!
-On 9/4/20 11:45 AM, Willem de Bruijn wrote:
-> On Tue, Sep 1, 2020 at 9:54 PM Murali Karicheri <m-karicheri2@ti.com> wrote:
->>
->> This patch add support for creating vlan interfaces
->> over hsr/prp interface.
->>
->> Signed-off-by: Murali Karicheri <m-karicheri2@ti.com>
->> ---
->>   net/hsr/hsr_device.c  |  4 ----
->>   net/hsr/hsr_forward.c | 16 +++++++++++++---
->>   2 files changed, 13 insertions(+), 7 deletions(-)
->>
->> diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
->> index ab953a1a0d6c..e1951579a3ad 100644
->> --- a/net/hsr/hsr_device.c
->> +++ b/net/hsr/hsr_device.c
->> @@ -477,10 +477,6 @@ void hsr_dev_setup(struct net_device *dev)
->>
->>          /* Prevent recursive tx locking */
->>          dev->features |= NETIF_F_LLTX;
->> -       /* VLAN on top of HSR needs testing and probably some work on
->> -        * hsr_header_create() etc.
->> -        */
->> -       dev->features |= NETIF_F_VLAN_CHALLENGED;
->>          /* Not sure about this. Taken from bridge code. netdev_features.h says
->>           * it means "Does not change network namespaces".
->>           */
->> diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
->> index cadfccd7876e..de21df30b0d9 100644
->> --- a/net/hsr/hsr_forward.c
->> +++ b/net/hsr/hsr_forward.c
->> @@ -208,6 +208,7 @@ static struct sk_buff *hsr_fill_tag(struct sk_buff *skb,
->>                                      struct hsr_port *port, u8 proto_version)
->>   {
->>          struct hsr_ethhdr *hsr_ethhdr;
->> +       unsigned char *pc;
->>          int lsdu_size;
->>
->>          /* pad to minimum packet size which is 60 + 6 (HSR tag) */
->> @@ -218,7 +219,18 @@ static struct sk_buff *hsr_fill_tag(struct sk_buff *skb,
->>          if (frame->is_vlan)
->>                  lsdu_size -= 4;
->>
->> -       hsr_ethhdr = (struct hsr_ethhdr *)skb_mac_header(skb);
->> +       pc = skb_mac_header(skb);
->> +       if (frame->is_vlan)
->> +               /* This 4-byte shift (size of a vlan tag) does not
->> +                * mean that the ethhdr starts there. But rather it
->> +                * provides the proper environment for accessing
->> +                * the fields, such as hsr_tag etc., just like
->> +                * when the vlan tag is not there. This is because
->> +                * the hsr tag is after the vlan tag.
->> +                */
->> +               hsr_ethhdr = (struct hsr_ethhdr *)(pc + VLAN_HLEN);
->> +       else
->> +               hsr_ethhdr = (struct hsr_ethhdr *)pc;
+On 9/8/20 2:20 AM, Eric Dumazet wrote:
+> syzbot reported twice a lockdep issue in fib6_del() [1]
+> which I think is caused by net->ipv6.fib6_null_entry
+> having a NULL fib6_table pointer.
 > 
-> Instead, I would pass the header from the caller, which knows the
-> offset because it moves the previous headers to make space.
+> fib6_del() already checks for fib6_null_entry special
+> case, we only need to return earlier.
 > 
-So if I understood you correctly a diff for the above would like this
-where pass dst + movelen as  struct hsr_ethhdr *hsr_ethhdr
-pointer to hsr_fill_tag(), right?
-
-a0868495local@uda0868495:~/Projects/upstream-kernel$ git diff
-diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-index de21df30b0d9..4d9192c8bcf8 100644
---- a/net/hsr/hsr_forward.c
-+++ b/net/hsr/hsr_forward.c
-@@ -204,11 +204,10 @@ static void hsr_set_path_id(struct hsr_ethhdr 
-*hsr_ethhdr,
-  }
-
-  static struct sk_buff *hsr_fill_tag(struct sk_buff *skb,
-+                                   struct hsr_ethhdr *hsr_ethhdr,
-                                     struct hsr_frame_info *frame,
-                                     struct hsr_port *port, u8 
-proto_version)
-  {
--       struct hsr_ethhdr *hsr_ethhdr;
--       unsigned char *pc;
-         int lsdu_size;
-
-         /* pad to minimum packet size which is 60 + 6 (HSR tag) */
-@@ -219,19 +218,6 @@ static struct sk_buff *hsr_fill_tag(struct sk_buff 
-*skb,
-         if (frame->is_vlan)
-                 lsdu_size -= 4;
-
--       pc = skb_mac_header(skb);
--       if (frame->is_vlan)
--               /* This 4-byte shift (size of a vlan tag) does not
--                * mean that the ethhdr starts there. But rather it
--                * provides the proper environment for accessing
--                * the fields, such as hsr_tag etc., just like
--                * when the vlan tag is not there. This is because
--                * the hsr tag is after the vlan tag.
--                */
--               hsr_ethhdr = (struct hsr_ethhdr *)(pc + VLAN_HLEN);
--       else
--               hsr_ethhdr = (struct hsr_ethhdr *)pc;
--
-         hsr_set_path_id(hsr_ethhdr, port);
-         set_hsr_tag_LSDU_size(&hsr_ethhdr->hsr_tag, lsdu_size);
-         hsr_ethhdr->hsr_tag.sequence_nr = htons(frame->sequence_nr);
-@@ -280,10 +266,12 @@ struct sk_buff *hsr_create_tagged_frame(struct 
-hsr_frame_info *frame,
-         memmove(dst, src, movelen);
-         skb_reset_mac_header(skb);
-
--       /* skb_put_padto free skb on error and hsr_fill_tag returns NULL in
--        * that case
-+       /* dst point to the start of hsr tag. So pass it to fill the
-+        * hsr info. Also skb_put_padto free skb on error and hsr_fill_tag
-+        * returns NULL in that case.
-          */
--       return hsr_fill_tag(skb, frame, port, port->hsr->prot_version);
-+       return hsr_fill_tag(skb, (struct hsr_ethhdr *)(dst + movelen),
-+                           frame, port, port->hsr->prot_version);
-  }
-
-
-> Also, supporting VLAN probably also requires supporting 802.1ad QinQ,
-> which means code should parse the headers instead of hardcoding
-> VLAN_HLEN.
+> Bug seems to occur very rarely, I have thus chosen
+> a 'bug origin' that makes backports not too complex.
 > 
+> [1]
+> WARNING: suspicious RCU usage
+> 5.9.0-rc4-syzkaller #0 Not tainted
+> -----------------------------
+> net/ipv6/ip6_fib.c:1996 suspicious rcu_dereference_protected() usage!
+> 
+> other info that might help us debug this:
+> 
+> rcu_scheduler_active = 2, debug_locks = 1
+> 4 locks held by syz-executor.5/8095:
+>  #0: ffffffff8a7ea708 (rtnl_mutex){+.+.}-{3:3}, at: ppp_release+0x178/0x240 drivers/net/ppp/ppp_generic.c:401
+>  #1: ffff88804c422dd8 (&net->ipv6.fib6_gc_lock){+.-.}-{2:2}, at: spin_trylock_bh include/linux/spinlock.h:414 [inline]
+>  #1: ffff88804c422dd8 (&net->ipv6.fib6_gc_lock){+.-.}-{2:2}, at: fib6_run_gc+0x21b/0x2d0 net/ipv6/ip6_fib.c:2312
+>  #2: ffffffff89bd6a40 (rcu_read_lock){....}-{1:2}, at: __fib6_clean_all+0x0/0x290 net/ipv6/ip6_fib.c:2613
+>  #3: ffff8880a82e6430 (&tb->tb6_lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:359 [inline]
+>  #3: ffff8880a82e6430 (&tb->tb6_lock){+.-.}-{2:2}, at: __fib6_clean_all+0x107/0x290 net/ipv6/ip6_fib.c:2245
+> 
+> stack backtrace:
+> CPU: 1 PID: 8095 Comm: syz-executor.5 Not tainted 5.9.0-rc4-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x198/0x1fd lib/dump_stack.c:118
+>  fib6_del+0x12b4/0x1630 net/ipv6/ip6_fib.c:1996
+>  fib6_clean_node+0x39b/0x570 net/ipv6/ip6_fib.c:2180
+>  fib6_walk_continue+0x4aa/0x8e0 net/ipv6/ip6_fib.c:2102
+>  fib6_walk+0x182/0x370 net/ipv6/ip6_fib.c:2150
+>  fib6_clean_tree+0xdb/0x120 net/ipv6/ip6_fib.c:2230
+>  __fib6_clean_all+0x120/0x290 net/ipv6/ip6_fib.c:2246
 
-iec-62439-3 standard only talks about VLAN (TPID 0x8100), not about
-QinQ. So what I could do is to check and bail out if 802.1ad frame is
-received at the interface from upper layer. Something like below and
-frame will get dropped.
-
-@@ -519,6 +507,8 @@ static int fill_frame_info(struct hsr_frame_info *frame,
-
-         if (proto == htons(ETH_P_8021Q))
-                 frame->is_vlan = true;
-+       else if (proto == htons(ETH_P_8021AD))
-+               return -1; /* Don't support 802.1ad */
-
-         if (frame->is_vlan) {
-                 vlan_hdr = (struct hsr_vlan_ethhdr *)ethhdr;
-
-What do you think?
-
-Thanks.
->>          hsr_set_path_id(hsr_ethhdr, port);
->>          set_hsr_tag_LSDU_size(&hsr_ethhdr->hsr_tag, lsdu_size);
->> @@ -511,8 +523,6 @@ static int fill_frame_info(struct hsr_frame_info *frame,
->>          if (frame->is_vlan) {
->>                  vlan_hdr = (struct hsr_vlan_ethhdr *)ethhdr;
->>                  proto = vlan_hdr->vlanhdr.h_vlan_encapsulated_proto;
->> -               /* FIXME: */
->> -               netdev_warn_once(skb->dev, "VLAN not yet supported");
->>          }
->>
->>          frame->is_from_san = false;
->> --
->> 2.17.1
->>
-
--- 
-Murali Karicheri
-Texas Instruments
+This is walking a table and __fib6_clean_all takes the lock for the
+table (and you can see that above), so puzzling how fib6_del can be
+called for an entry with NULL fib6_table.
