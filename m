@@ -2,91 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C638C261EB5
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 21:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 696D5261EB2
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 21:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731605AbgIHTyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 15:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        id S1732039AbgIHTxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 15:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730634AbgIHPhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 11:37:36 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDACAC0A5533
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 08:22:33 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id d190so17512749iof.3
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 08:22:33 -0700 (PDT)
+        with ESMTP id S1730644AbgIHPh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 11:37:56 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC54C0619C7
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 08:29:50 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id c10so16425695edk.6
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 08:29:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wv47zvinBhKg0vq/6EAnZ39ueq4uvNH/PtA8bcvftxQ=;
-        b=GakHKna5vrBVVaJesL5Q3UZyQ6H/ra8rIsoElc4u8dgLJnYm3Hx5jUg7cZuA7GEMOC
-         j8gETqMrvIKEhz8z99J/sEnH9SqnHhmwiSg9LwQicaxzogKlVCziTUkJmlE5PDwaMo5t
-         Y6f+XKzYDwYqPvBjnfADY777J3QJoyBSz0bSxsGF3NMrXrFabeWq43tGyM7Cj32i6ye0
-         sRj/nRz+bETVE/WP2yfeNoVHTA8zzKu3kQHTuWEafxfpRbKciEuC2ZTNY6S9NE7lsaC7
-         IK/CWVmEzS4LZjLWhpbS11qH4jkro4qZeicuK93azkizcAA8pCccC3JrVB0yvGowTaoI
-         O0dw==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=WBFtkoXKzCGu8CR8DRKenURQamdfStsf5DLlbMSWX/Q=;
+        b=Q+a4Z3XkwnivUhpVNbJtUCKUtDD2Uss7OxPAhzgiW1HbxeiCc1zx86SwC1lVbsv4jP
+         G2Ynx2Dxs85g3AuUWQQrhGliop6U77JdOFpQrQlXyO55feOYerOeP8jPXhsjcrQE0UKl
+         4+BfGsdy70I3AEFhKnUiFi2chn5rCA4otFyBh64hoB+ugkqD7/gEdfM9aenBsAUxv+PL
+         kmb5ij6zk3JGOStzTS1jk6So44EJ1YP0ZEJQRlAcqCnPC4iYfbtkg+LCBJXqLQAp6Ez6
+         4b/HnfOLqI1yFsImaeAgIYxfg5wFsHs6JX/6G9ROmEtoOnQK6C3QzS2YhB/8UGVUGNGU
+         ECBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wv47zvinBhKg0vq/6EAnZ39ueq4uvNH/PtA8bcvftxQ=;
-        b=EYhMd3JHmiR+g1mnjX6vHaEgzQV+8bPhJux0pNT/GKGCuFFqHxGG+YGvV/GC/mNHMc
-         LT8BR1TYnR7cQxMmQlZPyH2cwBKJoCSJdFoTUHkj+aiTIjnAjPj4sqYLnPh3+mOUFwif
-         1fE6p66HleITUGlPBqPYOPgJL/FW9O/JM07+yamVfDG6oowSlVv6xCEW4xn8yNvyq6F9
-         HGDq29/jSk8rFmP9Go7HiYkkK1o+3nBxRGLuAbiUCTj/FzZ5kbFcax+Y+RvS3Y4ZCd4P
-         XsMTI4ibzKQBHmX/BnVkfz4Dn43rjQDIb9g1hdIOYFEKoNYyvULrArhPoj8lnyo/4Yt0
-         oTtA==
-X-Gm-Message-State: AOAM533BDgi+Jv0Jj5Zv0UQfOlN7eB6p+ZDaJ0ufIaEmkewhnACs0XMT
-        /1GP3OWpabeL8DSX/tJn+wqXZI0N3uDJeQ==
-X-Google-Smtp-Source: ABdhPJz6RYf7DstdZv29CDtF0Bxiz9zDyL8VZ+lrg3fQsMKMt6+miTtaGwJ3TkiCmstf1GFoNpGJgg==
-X-Received: by 2002:a05:6638:168c:: with SMTP id f12mr22166158jat.16.1599578553211;
-        Tue, 08 Sep 2020 08:22:33 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:ec70:7b06:eed6:6e35])
-        by smtp.googlemail.com with ESMTPSA id m23sm8720222ion.6.2020.09.08.08.22.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Sep 2020 08:22:32 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 12/22] nexthop: Emit a notification when a
- nexthop group is replaced
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-References: <20200908091037.2709823-1-idosch@idosch.org>
- <20200908091037.2709823-13-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d7d4e5e1-201e-a553-3240-ae83226ebf47@gmail.com>
-Date:   Tue, 8 Sep 2020 09:22:32 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=WBFtkoXKzCGu8CR8DRKenURQamdfStsf5DLlbMSWX/Q=;
+        b=Aus+/inrmgekBM/oeayGTTQRPLtWTx2UqamwjeVRFD07+p4YkNbWynV9zDy8JZJ/e7
+         4d/LT9SA1yeprxUb28BoURzc1cdE5eCiVlLPPQ3quocQXroXAj1P9zpspH2lU+mm6tbq
+         JIY0KEUMKw9exSeYwGUwBdQXModslXgl34YQ4vb1uKf6N/6npFpUyvoajCZl+D2RlsO2
+         qS9avKaF/W3jHj99et91m0LdrhtiF2UyVHcd+66wdxGW0eCoMTnl5cZH0x6D9wJ7lK+x
+         Pc/NuQxxIpIRkix/DCyXoBSdQY4YxuShTOGJBlQwViR0r55HaVkmdfCAWFZsRR1O0CfL
+         1EKw==
+X-Gm-Message-State: AOAM532sMLzmlhKxcQSiklu7j/x3NZ815Xpbowk5UOzTpJc8ixIkFApM
+        wPKCqnu//Wv38OiP6NSjiaLd4O+td8vCTeGaNbA=
+X-Google-Smtp-Source: ABdhPJy/zWBFAO0Ls0xGDiQYUt/pz/R3O1sDdz7t6URmbFx3cny+/4h9fhNYrXurV4tEaXEEZ9iPYTn31gSg8Ol240g=
+X-Received: by 2002:aa7:da0f:: with SMTP id r15mr27000606eds.321.1599578989082;
+ Tue, 08 Sep 2020 08:29:49 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200908091037.2709823-13-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a50:354c:0:0:0:0:0 with HTTP; Tue, 8 Sep 2020 08:29:48 -0700 (PDT)
+Reply-To: andrewcnwaogu@gmail.com
+From:   =?UTF-8?Q?Lib=C3=A9nandame_KOMBATE?= <kombatelibenandame@gmail.com>
+Date:   Tue, 8 Sep 2020 16:29:48 +0100
+Message-ID: <CADODSOqCzGd35kh_wauv5+jQQehiDZKJGW87Ts=wfj1ZTf_f=w@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/8/20 3:10 AM, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> Emit a notification in the nexthop notification chain when an existing
-> nexthop group is replaced.
-> 
-> The notification is emitted after all the validation checks were
-> performed, but before the new configuration (i.e., 'struct nh_grp') is
-> pointed at by the old shell (i.e., 'struct nexthop'). This prevents the
-> need to perform rollback in case the notification is vetoed.
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  net/ipv4/nexthop.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-
-Reviewed-by: David Ahern <dsahern@gmail.com>
-
-
+I emailed you earlier without a response, Haven't you received it?
+Please update me urgently for more clarification on time.
