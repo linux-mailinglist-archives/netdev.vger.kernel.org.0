@@ -2,85 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32716260823
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 04:09:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D0F2608AC
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 04:32:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728188AbgIHCJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 22:09:45 -0400
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:38431 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728085AbgIHCJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 22:09:44 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R301e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=dust.li@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0U8GuXYh_1599530980;
-Received: from localhost(mailfrom:dust.li@linux.alibaba.com fp:SMTPD_---0U8GuXYh_1599530980)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 08 Sep 2020 10:09:40 +0800
-From:   Dust Li <dust.li@linux.alibaba.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Satoru Moriya <satoru.moriya@hds.com>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH v2] net: tracepoint: fix print wrong sysctl_mem value
-Date:   Tue,  8 Sep 2020 10:09:39 +0800
-Message-Id: <20200908020939.7653-1-dust.li@linux.alibaba.com>
-X-Mailer: git-send-email 2.19.1.3.ge56e4f7
+        id S1728275AbgIHCcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 22:32:45 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:11250 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728188AbgIHCco (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 22:32:44 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id AE010DC4C4B66C34BA9E;
+        Tue,  8 Sep 2020 10:32:41 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Tue, 8 Sep 2020
+ 10:32:35 +0800
+Subject: Re: [PATCH net-next 0/2] net: two updates related to UDP GSO
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>
+References: <1599286273-26553-1-git-send-email-tanhuazhong@huawei.com>
+ <20200906114153.7dccce5d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CA+FuTSfeEuTLAGJZkzoMUvx+0j3dY265i8okPLyDO6S-8KHdbQ@mail.gmail.com>
+ <126e5424-2453-eef4-d5b6-adeaedbb6eca@huawei.com>
+ <CA+FuTSecsVRsOt7asv7aHGvAXCacHGYwbG1a1X9ynL83dqP8Bw@mail.gmail.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <6cb146b5-8e0d-ed22-a0c1-b54c59685aa5@huawei.com>
+Date:   Tue, 8 Sep 2020 10:32:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+FuTSecsVRsOt7asv7aHGvAXCacHGYwbG1a1X9ynL83dqP8Bw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sysctl_mem is an point, and tracepoint entry do not support
-been visited like an array. Use an __array(3) to store sysctl_mem
-instead.
 
-tracpoint output with and without this fix:
-- without fix:
-   28821.074 sock:sock_exceed_buf_limit:proto:UDP
-   sysctl_mem=-1741233440,19,322156906942464 allocated=19 sysctl_rmem=4096
-   rmem_alloc=75008 sysctl_wmem=4096 wmem_alloc=1 wmem_queued=0
-   kind=SK_MEM_RECV
 
-- with fix:
-  2126.136 sock:sock_exceed_buf_limit:proto:UDP
-  sysctl_mem=18,122845,184266 allocated=19 sysctl_rmem=4096
-  rmem_alloc=73728 sysctl_wmem=4096 wmem_alloc=1 wmem_queued=0
-  kind=SK_MEM_RECV
+On 2020/9/7 23:35, Willem de Bruijn wrote:
+> On Mon, Sep 7, 2020 at 3:38 PM tanhuazhong <tanhuazhong@huawei.com> wrote:
+>>
+>>
+>>
+>> On 2020/9/7 17:22, Willem de Bruijn wrote:
+>>> On Sun, Sep 6, 2020 at 8:42 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>>>>
+>>>> On Sat, 5 Sep 2020 14:11:11 +0800 Huazhong Tan wrote:
+>>>>> There are two updates relates to UDP GSO.
+>>>>> #1 adds a new GSO type for UDPv6
+>>>>> #2 adds check for UDP GSO when csum is disable in netdev_fix_features().
+>>>>>
+>>>>> Changes since RFC V2:
+>>>>> - modifies the timing of setting UDP GSO type when doing UDP GRO in #1.
+>>>>>
+>>>>> Changes since RFC V1:
+>>>>> - updates NETIF_F_GSO_LAST suggested by Willem de Bruijn.
+>>>>>     and add NETIF_F_GSO_UDPV6_L4 feature for each driver who support UDP GSO in #1.
+>>>>>     - add #2 who needs #1.
+>>>>
+>>>> Please CC people who gave you feedback (Willem).
+>>>>
+>>>> I don't feel good about this series. IPv6 is not optional any more.
+>>>> AFAIU you have some issues with csum support in your device? Can you
+>>>> use .ndo_features_check() to handle this?
+>>>>
+>>>> The change in semantics of NETIF_F_GSO_UDP_L4 from "v4 and v6" to
+>>>> "just v4" can trip people over; this is not a new feature people
+>>>> may be depending on the current semantics.
+>>>>
+>>>> Willem, what are your thoughts on this?
+>>>
+>>> If that is the only reason, +1 on fixing it up in the driver's
+>>> ndo_features_check.
+>>>
+>>
+>> Hi, Willem & Jakub.
+>>
+>> This series mainly fixes the feature dependency between hardware
+>> checksum and UDP GSO.
+>> When turn off hardware checksum offload, run 'ethtool -k [devname]'
+>> we can see TSO is off as well, but udp gso still is on.
+> 
+> I see. That does not entirely require separate IPv4 and IPv6 flags. It
+> can be disabled if either checksum offload is disabled. I'm not aware
+> of any hardware that only supports checksum offload for one of the two
+> network protocols.
+> 
 
-v2: use __array(3) instead of 3 long type to store sysctl_mem
+below patch is acceptable? i have sent this patch before
+(https://patchwork.ozlabs.org/project/netdev/patch/1594180136-15912-3-git-send-email-tanhuazhong@huawei.com/)
 
-Fixes: 3847ce32aea9fdf ("core: add tracepoints for queueing skb to rcvbuf")
-Signed-off-by: Dust Li <dust.li@linux.alibaba.com>
----
- include/trace/events/sock.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+diff --git a/net/core/dev.c b/net/core/dev.c
+index c02bae9..dcb6b35 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9095,6 +9095,12 @@ static netdev_features_t 
+netdev_fix_features(struct net_device *dev,
+  		features &= ~NETIF_F_TSO6;
+  	}
 
-diff --git a/include/trace/events/sock.h b/include/trace/events/sock.h
-index a966d4b5ab37..914e58938480 100644
---- a/include/trace/events/sock.h
-+++ b/include/trace/events/sock.h
-@@ -98,7 +98,7 @@ TRACE_EVENT(sock_exceed_buf_limit,
- 
- 	TP_STRUCT__entry(
- 		__array(char, name, 32)
--		__field(long *, sysctl_mem)
-+		__array(long, sysctl_mem, 3)
- 		__field(long, allocated)
- 		__field(int, sysctl_rmem)
- 		__field(int, rmem_alloc)
-@@ -110,7 +110,9 @@ TRACE_EVENT(sock_exceed_buf_limit,
- 
- 	TP_fast_assign(
- 		strncpy(__entry->name, prot->name, 32);
--		__entry->sysctl_mem = prot->sysctl_mem;
-+		__entry->sysctl_mem[0] = prot->sysctl_mem[0];
-+		__entry->sysctl_mem[1] = prot->sysctl_mem[1];
-+		__entry->sysctl_mem[2] = prot->sysctl_mem[2];
- 		__entry->allocated = allocated;
- 		__entry->sysctl_rmem = sk_get_rmem0(sk, prot);
- 		__entry->rmem_alloc = atomic_read(&sk->sk_rmem_alloc);
--- 
-2.19.1.3.ge56e4f7
++	if ((features & NETIF_F_GSO_UDP_L4) && !(features & NETIF_F_HW_CSUM) &&
++	    (!(features & NETIF_F_IP_CSUM) || !(features & NETIF_F_IPV6_CSUM))) {
++		netdev_dbg(dev, "Dropping UDP GSO features since no CSUM feature.\n");
++		features &= ~NETIF_F_GSO_UDP_L4;
++	}
++
+  	/* TSO with IPv4 ID mangling requires IPv4 TSO be enabled */
+  	if ((features & NETIF_F_TSO_MANGLEID) && !(features & NETIF_F_TSO))
+  		features &= ~NETIF_F_TSO_MANGLEID;
+
+As Eric Dumazet commented "This would prevent a device providing IPv4
+checksum only (no IPv6 csum support) from sending IPv4 UDP GSO packets ?",
+so i send this series to decouple them. Is there any good ways to
+shuttle this issue? Or as you said there is not device only support
+checksum offload for one of the two network protocols.
+
+> Alternatively, the real value of splitting the type is in advertising
+> the features separately through ethtool. That requires additional
+> changes.
+> 
+
+
+> .
+> 
 
