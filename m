@@ -2,119 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D88192610EF
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 13:48:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CB3E2610F9
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 13:51:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729726AbgIHLsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 07:48:17 -0400
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:46899 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730128AbgIHLju (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 07:39:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1599565189; x=1631101189;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=F+j0JCQ1GOVdffMe15XLwWeslfZg0hQxxi1+nRfhBWA=;
-  b=Uu8U1vN2aiZ9U6xUDsslhIanSUG2YoGzxD1V36m6HqK5UatUCVs42V/K
-   iT5dJ/OxM67dceCsGUngssNgeygGopbssKHzVws6W4oMaIWwn3VG2MJx6
-   3pY9gRnQGguCPNGX2RrJnjbq126x2GOYDF0Jiv2og86nxRRN39tPwpoB1
-   spxBQok4vFWlCJ1wjfi8D4DkcqHJAuQX+j/VERg4ErXDND9IxFaN8mGfB
-   fIIWM7ZdWwt5ZrHL+1pzfKfopKCy1rye+kjJM47TxvFEJ1i334FHv2NHV
-   qM4GaWqtWIWEBod5vDvxSoWyhswuQNqcT1nuMs9/ZHJXQgXU8cZAZzbFT
-   A==;
-IronPort-SDR: UJwLxQvuqzI6LGuw+ZcNKEC8YY1cbiWNN1jw9hkfPBc15ECt57fXIKNF87X+91CTWoeakQp5Y/
- RkBY/39EGW9iU/VBjbvfE17VrReQ7tgOjNnmC41ElliW39jSfmKdW/eLhaBwhK6idhdfOTizZb
- txxCGTlnKakYI5A9+OXP+TrSrj3PtV6QmP8kjBnY5GhbDIm4uAli/m+WH/hvEfV4Dzf00Ip7vW
- QfKKx+xwVTvS2Fa2cnoLaAvS8UeGmGvAjcIcs7Ly8VkSRz9c7FEb+k/A5PDTZ32TvR7T2j/Fl5
- xMI=
-X-IronPort-AV: E=Sophos;i="5.76,405,1592895600"; 
-   d="scan'208";a="94807242"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 08 Sep 2020 04:35:10 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 8 Sep 2020 04:34:51 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 8 Sep 2020 04:34:37 -0700
-Date:   Tue, 8 Sep 2020 13:35:09 +0200
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Henrik Bjoernlund - M31679 <Henrik.Bjoernlund@microchip.com>
-CC:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        Horatiu Vultur - M31836 <Horatiu.Vultur@microchip.com>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jiri@mellanox.com" <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "idosch@mellanox.com" <idosch@mellanox.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH RFC 0/7] net: bridge: cfm: Add support for Connectivity
- Fault Management(CFM)
-Message-ID: <20200908113509.hvuknvmr54no2cy4@lx-anielsen.microsemi.net>
-References: <20200904091527.669109-1-henrik.bjoernlund@microchip.com>
- <20200904154406.4fe55b9d@hermes.lan>
- <20200906182129.274fimjyo7l52puj@soft-dev3.localdomain>
- <b36a32dbf3b4b315fc4cbfdf06084b75a7c58729.camel@nvidia.com>
- <BY5PR11MB3928DF9AC75B8AEC2FBD2256ED290@BY5PR11MB3928.namprd11.prod.outlook.com>
+        id S1729717AbgIHLuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 07:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729305AbgIHLjl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 07:39:41 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A55C061796;
+        Tue,  8 Sep 2020 04:37:36 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id l191so9844490pgd.5;
+        Tue, 08 Sep 2020 04:37:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=qZQdroSdlZPgLxB0axJE1VbD4VyjCyb0ExGeUn8jyYA=;
+        b=feiWwlY5m5X/poukLCIXVUznp1v6YzwSnrYGs57mOqH1uqdlruhrRqUXK9I+yCkwZ9
+         TF9cPtT9oE2gaTO+H5qgQMOhzLHULt6x95wPpYqi73TT+wh162RuJGlxgT4x5J3l2TUX
+         bsPEd55MsOgYs51TVmFn7DzrVe2Bfmf2bAi33wH5MMn/0cmsigP3X/AmTWo5r/7r0wkE
+         9UeTIMSmUGXeEZ++AVhACt6VwszBqAtDxBco7t032wfN79Q56dSW5aZIrCivqshweMYz
+         ICQvCrqVZT2sJq4QXZbwl8HlqAVNrZZb3FL8Q/8Hf6HVOq4HtGAIy44KzVq2mX2eVPWm
+         kzIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qZQdroSdlZPgLxB0axJE1VbD4VyjCyb0ExGeUn8jyYA=;
+        b=SR09nKTG2nJeqGo7KDF/SMcid2EnWVWQOYXgJYunjrp3fjWYFHpAPwAiu7y7V3sJAO
+         ctCmHpd+odNaA+7+Cyyew46x5bXdCEHIqO4giHugij7VxOOsCVZd92dkt4GMFO2B/bPS
+         iUx6Zo1XmgBAa3ChK84nK3Gt7BqBLwueMzPql2GELY2zq3wLTpwSyPUH5WBdX+5CxK/R
+         fseqnrwwOpQXsrK1WaU0JrnPKPNOd86cMj+yPKy0ZA9hsyOFFjlleDQ1lFHhWLQ05zNd
+         1+o/DPXoRCX3WwMcDvbE59vDu6zyu5RnjIwjbdA95aN6xsWag7n92VXQ3SBpAdi1AHPi
+         JP6w==
+X-Gm-Message-State: AOAM532hFGG9fofJLKOjOvG9io/OvMcY1vvIgJS2GVlkuR8w3jcoa7CL
+        /R9Q5sR9rT+XGHClFpTp3AqgmlK0niR74d9Yjp8=
+X-Google-Smtp-Source: ABdhPJxvB/UAQ9/+LyteEXl5IYO+BqxIZARWPRi6EvCAUoapDZUTrScpa0vMM9G7scfpXEiQ5GcqmCkc4UEDn+aEC5k=
+X-Received: by 2002:aa7:80d3:: with SMTP id a19mr24557164pfn.102.1599565055486;
+ Tue, 08 Sep 2020 04:37:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Disposition: inline
-In-Reply-To: <BY5PR11MB3928DF9AC75B8AEC2FBD2256ED290@BY5PR11MB3928.namprd11.prod.outlook.com>
+References: <20200904135332.60259-1-bjorn.topel@gmail.com> <0257f769-0f43-a5b7-176d-7c5ff8eaac3a@intel.com>
+ <11f663ec-5ea7-926c-370d-0b67d3052583@nvidia.com>
+In-Reply-To: <11f663ec-5ea7-926c-370d-0b67d3052583@nvidia.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 8 Sep 2020 13:37:24 +0200
+Message-ID: <CAJ8uoz3WbS7E1OiC5p8x+o48vwkN43R9JxMwvRvgVk4n3SNiZg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/6] xsk: exit NAPI loop when AF_XDP Rx ring is full
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        hawk@kernel.org, John Fastabend <john.fastabend@gmail.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Sep 8, 2020 at 12:33 PM Maxim Mikityanskiy <maximmi@nvidia.com> wro=
+te:
+>
+> On 2020-09-04 16:59, Bj=C3=B6rn T=C3=B6pel wrote:
+> > On 2020-09-04 15:53, Bj=C3=B6rn T=C3=B6pel wrote:
+> >> This series addresses a problem that arises when AF_XDP zero-copy is
+> >> enabled, and the kernel softirq Rx processing and userland process
+> >> is running on the same core.
+> >>
+> > [...]
+> >>
+> >
+> > @Maxim I'm not well versed in Mellanox drivers. Would this be relevant
+> > to mlx5 as well?
+>
+> Thanks for letting me know about this series! So the basic idea is to
+> stop processing hardware completions if the RX ring gets full, because
+> the application didn't have chance to run? Yes, I think it's also
+> relevant to mlx5, the issue is not driver-specific, and a similar fix is
+> applicable. However, it may lead to completion queue overflows - some
+> analysis is needed to understand what happens then and how to handle it.
+>
+> Regarding the feature, I think it should be opt-in (disabled by
+> default), because old applications may not wakeup RX after they process
+> packets in the RX ring.
 
-On 08.09.2020 11:04, Henrik Bjoernlund - M31679 wrote:
->>On Sun, 2020-09-06 at 20:21 +0200, Horatiu Vultur wrote:
->>> The 09/04/2020 15:44, Stephen Hemminger wrote:
->>> > On Fri, 4 Sep 2020 09:15:20 +0000 Henrik Bjoernlund
->>> > <henrik.bjoernlund@microchip.com> wrote:
->>Hi, I also had the same initial thought - this really doesn't seem to
->>affect the bridge in any way, it's only collecting and transmitting
->>information. I get that you'd like to use the bridge as a passthrough
->>device to switchdev to program your hw, could you share what would be
->>offloaded more specifically ?
->Yes.
->
->The HW will offload the periodic sending of CCM frames, and the
->reception.
->
->If CCM frames are not received as expected, it will raise an interrupt.
->
->This means that all the functionality provided in this series will be
->offloaded to HW.
->
->The offloading is very important on our HW where we have a small CPU,
->serving many ports, with a high frequency of CFM frames.
->
->The HW also support Link-Trace and Loop-back, which we may come back to
->later.
->
->>All you do - snooping and blocking these packets can easily be done
->>from user- space with the help of ebtables, but since we need to have
->>a software implementation/fallback of anything being offloaded via
->>switchdev we might need this after all, I'd just prefer to push as
->>much as possible to user-space.
-In addition to Henriks comment, it is worth mentioning that we are
-trying to push as much of the functionallity to user-space (learnings
-from the MRP discussions).
+How about need_wakeup enable/disable at bind time being that opt-in,
+instead of a new option? It is off by default, and when it is off, the
+driver busy-spins on the Rx ring until it can put an entry there. It
+will not yield to the application by returning something less than
+budget. Applications need not check the need_wakeup flag. If
+need_wakeup is enabled by the user, the contract is that user-space
+needs to check the need_wakeup flag and act on it. If it does not,
+then that is a programming error and it can be set for any unspecified
+reason. No reason to modify the application, if it checks need_wakeup.
+But if this patch behaves like that I have not checked.
 
-This is why there are currently no in-kernel users of the CCM-lose
-singnal. When a CCM-defect is happening the network typically needs to
-be re-configured. This we are trying to keep in user-space.
+Good points in the rest of the mail, that I think should be addressed.
 
->>I plan to review the individual patches tomorrow.
-Thanks.
+/Magnus
 
-/Allan
+> Is it required to change xdpsock accordingly?
+> Also, when need_wakeup is disabled, your driver implementation seems to
+> quit NAPI anyway, but it shouldn't happen, because no one will send a
+> wakeup.
+>
+> Waiting until the RX ring fills up, then passing control to the
+> application and waiting until the hardware completion queue fills up,
+> and so on increases latency - the busy polling approach sounds more
+> legit here.
+>
+> The behavior may be different depending on the driver implementation:
+>
+> 1. If you arm the completion queue and leave interrupts enabled on early
+> exit too, the application will soon be interrupted anyway and won't have
+> much time to process many packets, leading to app <-> NAPI ping-pong one
+> packet at a time, making NAPI inefficient.
+>
+> 2. If you don't arm the completion queue on early exit and wait for the
+> explicit wakeup from the application, it will easily overflow the
+> hardware completion queue, because we don't have a symmetric mechanism
+> to stop the application on imminent hardware queue overflow. It doesn't
+> feel correct and may be trickier to handle: if the application is too
+> slow, such drops should happen on driver/kernel level, not in hardware.
+>
+> Which behavior is used in your drivers? Or am I missing some more options=
+?
+>
+> BTW, it should be better to pass control to the application before the
+> first dropped packet, not after it has been dropped.
+>
+> Some workloads different from pure AF_XDP, for example, 50/50 AF_XDP and
+> XDP_TX may suffer from such behavior, so it's another point to make a
+> knob on the application layer to enable/disable it.
+>
+>  From the driver API perspective, I would prefer to see a simpler API if
+> possible. The current API exposes things that the driver shouldn't know
+> (BPF map type), and requires XSK-specific handling. It would be better
+> if some specific error code returned from xdp_do_redirect was reserved
+> to mean "exit NAPI early if you support it". This way we wouldn't need
+> two new helpers, two xdp_do_redirect functions, and this approach would
+> be extensible to other non-XSK use cases without further changes in the
+> driver, and also the logic to opt-in the feature could be put inside the
+> kernel.
+>
+> Thanks,
+> Max
+>
+> >
+> > Cheers,
+> > Bj=C3=B6rn
+>
