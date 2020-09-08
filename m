@@ -2,160 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BE28261C96
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 21:23:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F7B1261C95
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 21:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731141AbgIHTW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 15:22:56 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:33938 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732025AbgIHTWi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 15:22:38 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 0FE646007D;
-        Tue,  8 Sep 2020 19:22:35 +0000 (UTC)
-Received: from us4-mdac16-50.ut7.mdlocal (unknown [10.7.66.17])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 0D8F8200A4;
-        Tue,  8 Sep 2020 19:22:35 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.36])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7B90E22005C;
-        Tue,  8 Sep 2020 19:22:34 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 096A9B40056;
-        Tue,  8 Sep 2020 19:22:34 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 8 Sep 2020
- 20:22:28 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next] sfc: coding style cleanups in mcdi_port_common.c
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <kuba@kernel.org>, <netdev@vger.kernel.org>
-Message-ID: <f0b8cbd8-ef52-a23a-2dca-41443203d2f1@solarflare.com>
-Date:   Tue, 8 Sep 2020 20:22:19 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726605AbgIHTWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 15:22:48 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50720 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732029AbgIHTWq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 15:22:46 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kFjCJ-00Dpav-N9; Tue, 08 Sep 2020 21:22:31 +0200
+Date:   Tue, 8 Sep 2020 21:22:31 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH net-next v2 5/7] net: dsa: mv88e6xxx: Add devlink regions
+Message-ID: <20200908192231.GB3290129@lunn.ch>
+References: <20200908005155.3267736-1-andrew@lunn.ch>
+ <20200908005155.3267736-6-andrew@lunn.ch>
+ <20200908120100.77cfcfa1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25652.007
-X-TM-AS-Result: No-10.592500-8.000000-10
-X-TMASE-MatchedRID: EHnJIs8Lfgsm7rIJPLyX6cn9tWHiLD2GcQ43DruBJVyDy8d72OLzYi9K
-        xKOWRM488XVI39JCRnSjfNAVYAJRAq0iin8P0KjVPwKTD1v8YV5MkOX0UoduuRpX1zEL4nq3KKq
-        yc9Qq8Xo77YAfpQmyVFBMneTPTCN+B/TKGEQxH0Wejeo11iW0N6KRkGOW2z9yUYvAleUDiYjlbM
-        hsZmLJPSg3N6/Mq46hlIPOLuLWA1glPqZXjEJJlub3p4cnIXGNZ/rAPfrtWC1HZg0gWH5yURTjm
-        soJ9VExfRvCo8kOueMH4jvnDtS/yk1+zyfzlN7ygxsfzkNRlfLdB/CxWTRRu25FeHtsUoHu3pFB
-        1wZ7tGzRNK2NCjtWuC1o8tIvtO+YyNQe+dPerVMchXTZ3Wukbw==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--10.592500-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25652.007
-X-MDID: 1599592955-oK9MOV0SIMaT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200908120100.77cfcfa1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The code recently moved into this file contained a number of coding style
- issues, about which checkpatch and xmastree complained.  Fix them.
+On Tue, Sep 08, 2020 at 12:01:06PM -0700, Jakub Kicinski wrote:
+> On Tue,  8 Sep 2020 02:51:53 +0200 Andrew Lunn wrote:
+> > Allow ports, the global registers, and the ATU to be snapshot via
+> > devlink regions.
+> > 
+> > v2:
+> > Remove left over debug prints
+> > Comment ATU format is generic for mv88e6xxx, not wider
+> > 
+> > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> 
+> Probably best CCing devlink maintainers on devlink patches.
+> 
+> Also - it's always useful to include show command outputs in the commit
+> message for devlink patches.
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/mcdi_port_common.c | 23 +++++++++++----------
- drivers/net/ethernet/sfc/mcdi_port_common.h |  2 +-
- 2 files changed, 13 insertions(+), 12 deletions(-)
+Hi Jakub
 
-diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.c b/drivers/net/ethernet/sfc/mcdi_port_common.c
-index c0e1c88a652c..4bd3ef8f3384 100644
---- a/drivers/net/ethernet/sfc/mcdi_port_common.c
-+++ b/drivers/net/ethernet/sfc/mcdi_port_common.c
-@@ -484,15 +484,15 @@ int efx_mcdi_phy_probe(struct efx_nic *efx)
- 	if (rc != 0)
- 		goto fail;
- 	/* The MC indicates that LOOPBACK_NONE is a valid loopback mode,
--	 * but by convention we don't */
-+	 * but by convention we don't
-+	 */
- 	efx->loopback_modes &= ~(1 << LOOPBACK_NONE);
- 
- 	/* Set the initial link mode */
--	efx_mcdi_phy_decode_link(
--		efx, &efx->link_state,
--		MCDI_DWORD(outbuf, GET_LINK_OUT_LINK_SPEED),
--		MCDI_DWORD(outbuf, GET_LINK_OUT_FLAGS),
--		MCDI_DWORD(outbuf, GET_LINK_OUT_FCNTL));
-+	efx_mcdi_phy_decode_link(efx, &efx->link_state,
-+				 MCDI_DWORD(outbuf, GET_LINK_OUT_LINK_SPEED),
-+				 MCDI_DWORD(outbuf, GET_LINK_OUT_FLAGS),
-+				 MCDI_DWORD(outbuf, GET_LINK_OUT_FCNTL));
- 
- 	/* Record the initial FEC configuration (or nearest approximation
- 	 * representable in the ethtool configuration space)
-@@ -798,7 +798,7 @@ static int efx_mcdi_bist(struct efx_nic *efx, unsigned int bist_mode,
- 	return rc;
- }
- 
--int efx_mcdi_phy_run_tests(struct efx_nic *efx, int *results, unsigned flags)
-+int efx_mcdi_phy_run_tests(struct efx_nic *efx, int *results, unsigned int flags)
- {
- 	struct efx_mcdi_phy_data *phy_cfg = efx->phy_data;
- 	u32 mode;
-@@ -813,7 +813,8 @@ int efx_mcdi_phy_run_tests(struct efx_nic *efx, int *results, unsigned flags)
- 	}
- 
- 	/* If we support both LONG and SHORT, then run each in response to
--	 * break or not. Otherwise, run the one we support */
-+	 * break or not. Otherwise, run the one we support
-+	 */
- 	mode = 0;
- 	if (phy_cfg->flags & (1 << MC_CMD_GET_PHY_CFG_OUT_BIST_CABLE_SHORT_LBN)) {
- 		if ((flags & ETH_TEST_FL_OFFLINE) &&
-@@ -888,9 +889,9 @@ static int efx_mcdi_phy_get_module_eeprom_page(struct efx_nic *efx,
- {
- 	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_PHY_MEDIA_INFO_OUT_LENMAX);
- 	MCDI_DECLARE_BUF(inbuf, MC_CMD_GET_PHY_MEDIA_INFO_IN_LEN);
--	size_t outlen;
- 	unsigned int payload_len;
- 	unsigned int to_copy;
-+	size_t outlen;
- 	int rc;
- 
- 	if (offset > SFP_PAGE_SIZE)
-@@ -925,8 +926,8 @@ static int efx_mcdi_phy_get_module_eeprom_byte(struct efx_nic *efx,
- 					       unsigned int page,
- 					       u8 byte)
- {
--	int rc;
- 	u8 data;
-+	int rc;
- 
- 	rc = efx_mcdi_phy_get_module_eeprom_page(efx, page, &data, byte, 1);
- 	if (rc == 1)
-@@ -1049,7 +1050,7 @@ int efx_mcdi_phy_get_module_info(struct efx_nic *efx, struct ethtool_modinfo *mo
- 		 */
- 		diag_type = efx_mcdi_phy_diag_type(efx);
- 
--		if ((sff_8472_level == 0) ||
-+		if (sff_8472_level == 0 ||
- 		    (diag_type & SFF_DIAG_ADDR_CHANGE)) {
- 			modinfo->type = ETH_MODULE_SFF_8079;
- 			modinfo->eeprom_len = ETH_MODULE_SFF_8079_LEN;
-diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.h b/drivers/net/ethernet/sfc/mcdi_port_common.h
-index f37e18adbc37..ed31690e591c 100644
---- a/drivers/net/ethernet/sfc/mcdi_port_common.h
-+++ b/drivers/net/ethernet/sfc/mcdi_port_common.h
-@@ -53,7 +53,7 @@ int efx_mcdi_phy_get_fecparam(struct efx_nic *efx, struct ethtool_fecparam *fec)
- int efx_mcdi_phy_set_fecparam(struct efx_nic *efx, const struct ethtool_fecparam *fec);
- int efx_mcdi_phy_test_alive(struct efx_nic *efx);
- int efx_mcdi_port_reconfigure(struct efx_nic *efx);
--int efx_mcdi_phy_run_tests(struct efx_nic *efx, int *results, unsigned flags);
-+int efx_mcdi_phy_run_tests(struct efx_nic *efx, int *results, unsigned int flags);
- const char *efx_mcdi_phy_test_name(struct efx_nic *efx, unsigned int index);
- int efx_mcdi_phy_get_module_eeprom(struct efx_nic *efx, struct ethtool_eeprom *ee, u8 *data);
- int efx_mcdi_phy_get_module_info(struct efx_nic *efx, struct ethtool_modinfo *modinfo);
+root@rap:~# devlink region dump mdio_bus/gpio-0:00/port5 snapshot 42
+0000000000000000 0f 10 03 00 00 00 01 39 7c 00 00 00 df 07 01 00 
+0000000000000010 80 20 01 00 00 80 20 00 00 00 00 00 00 00 00 91 
+0000000000000020 00 00 00 00 00 00 00 00 00 00 00 00 22 00 00 00 
+0000000000000030 00 00 00 00 c0 01 00 80 00 00 00 00 00 00 00 00 
+
+Not very informative. The whole point of devlink regions is that they
+are suppose to be specific to a device, and you need intimate
+knowledge of the device to decode it.
+
+> > +#define PORT_REGION_OPS(_X_)						\
+> > +static struct devlink_region_ops mv88e6xxx_region_port_ ## _X_ ## _ops = { \
+> > +	.name = "port" #_X_,						\
+> > +	.snapshot = mv88e6xxx_region_port_ ## _X_ ## _snapshot,		\
+> > +	.destructor = kfree,						\
+> > +}
+> 
+> This is a little awkward, can we make devlink pass the region pointer
+> back to the callback instead? Plus perhaps an ability to allocate "priv"
+> data inside the region would also h
+
+Yes, this API is not easy to use. I suspect it is because it was
+developed to support 'core dump' of the firmware, and you only have
+one core to dump.
+
+> > +PORT_REGION_OPS(0);
+> > +PORT_REGION_OPS(1);
+> > +PORT_REGION_OPS(2);
+> > +PORT_REGION_OPS(3);
+> > +PORT_REGION_OPS(4);
+> > +PORT_REGION_OPS(5);
+> > +PORT_REGION_OPS(6);
+> > +PORT_REGION_OPS(7);
+> > +PORT_REGION_OPS(8);
+> > +PORT_REGION_OPS(9);
+> > +PORT_REGION_OPS(10);
+> > +PORT_REGION_OPS(11);
+> > +
+> > +static const struct devlink_region_ops *mv88e6xxx_region_port_ops[] = {
+> > +	&mv88e6xxx_region_port_0_ops,
+> > +	&mv88e6xxx_region_port_1_ops,
+> > +	&mv88e6xxx_region_port_2_ops,
+> > +	&mv88e6xxx_region_port_3_ops,
+> > +	&mv88e6xxx_region_port_4_ops,
+> > +	&mv88e6xxx_region_port_5_ops,
+> > +	&mv88e6xxx_region_port_6_ops,
+> > +	&mv88e6xxx_region_port_7_ops,
+> > +	&mv88e6xxx_region_port_8_ops,
+> > +	&mv88e6xxx_region_port_9_ops,
+> > +	&mv88e6xxx_region_port_10_ops,
+> > +	&mv88e6xxx_region_port_11_ops,
+> > +};
+> 
+> Ahh, seems like regions will get a per-port incarnation as some point as
+> well..
+
+Again, i think this is back to the history of dumping firmware core.
+I guess the existing users don't have per port CPUs which could dump a
+core.
+
+	Andrew
