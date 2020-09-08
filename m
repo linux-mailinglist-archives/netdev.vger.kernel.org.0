@@ -2,106 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B25E4260DE1
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 10:46:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FDB5260DE3
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 10:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729993AbgIHIq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 04:46:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54922 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729775AbgIHIqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 04:46:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599554782;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4joEUBT7SaaHzNBA3jfKAT1e8ocC7+4gm+izXspXMHc=;
-        b=JKJCE8aW9Nmr+8u434N31H5s76qYRymJBClErL+jnb6nnMaBDW3JZpHp3KpoeiadJMKGHo
-        9xjK3enPAxVUCJ1BffRUJB2Jpyh7/pq0mcCVlgWW8QdY0LaspOBHxDN0tj6Gf7EyeItQAn
-        ML39Q92nPNKYwLfcIgS4HZJcE7dwMhk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-160-B7gekK4PO8KW5V62l_uEug-1; Tue, 08 Sep 2020 04:46:17 -0400
-X-MC-Unique: B7gekK4PO8KW5V62l_uEug-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 48B5980EDB0;
-        Tue,  8 Sep 2020 08:46:16 +0000 (UTC)
-Received: from ovpn-114-216.ams2.redhat.com (ovpn-114-216.ams2.redhat.com [10.36.114.216])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F028F7E438;
-        Tue,  8 Sep 2020 08:46:14 +0000 (UTC)
-Message-ID: <f13eaa33c4f73bce9bdcf08b072aeaf23b0551d5.camel@redhat.com>
-Subject: Re: [PATCH] net/sock: don't drop udp packets if udp_mem[2] not
- reached
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     dust.li@linux.alibaba.com,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org
-Date:   Tue, 08 Sep 2020 10:46:13 +0200
-In-Reply-To: <20200908031506.GC56680@linux.alibaba.com>
-References: <20200907144435.43165-1-dust.li@linux.alibaba.com>
-         <428dae2552915c42b9144d7489fd912493433c1e.camel@redhat.com>
-         <20200908031506.GC56680@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1730177AbgIHIql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 04:46:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730159AbgIHIqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 04:46:35 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 741EAC061756
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 01:46:33 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id m6so18230989wrn.0
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 01:46:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=zxSReaeKsWNMqXHUrN/wepLZJeaGHtV4Xq/Uiup0Lq0=;
+        b=cr10Cch9Nj+ChkzYu7awIXU7u2p6g+HckAnw0AN03Ju+nc4hZTJtgmLXQnnssbVsA4
+         JyplKDgV9jP7cqGeWflqT3QoH1Q6HGTr3zOCTB6f6bPRW0+WDpUe4RsIN/aiwq/eFpEY
+         MSNz+OBZiVwLOO/M8167ynnFuRcd049fa650TjugZQ7OsntRCb3mMm84Mcz0epk+5oNM
+         7X/q3mUJDh5Pw2OuVzr1rvLrvpWers2I61YhPiRIF43Lqqg3ebYawDwdSsR1mXvTMrzv
+         WbTJRcAz6L+88F8cL/ZFpH3pYQE7Ykt66Z75OGXAUhEOLXM04t5OPaHzEuH+oHNlXEKW
+         5JJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=zxSReaeKsWNMqXHUrN/wepLZJeaGHtV4Xq/Uiup0Lq0=;
+        b=A5BRcGUWj79aarW58Uq8pBP6/ct38/ec+bOAtHXggk3hjPBZ57zCvNvaMg/BmOIvG8
+         fFor4y0fe+cbtnnphTTxzMSWsDs+cqXOlanYashWF0beN4Mg741+as1TMBFuVjuj2SrG
+         4q7QU78uuDzfnaBBaDNKN5t8tNzw7LPxt/Y8yGLexbBQ1U7QgiVEptyBbFmyKnQ+vxCu
+         PuNvKD9/cSmVyXzEnROhOmykZ/ZicMaYQCKUSroh/BH6Z5HHA4w/mY6uSEYCRBOxlxip
+         8QH87aVBY6QzR1xmpmfwACiBCUxPqCcUaGhFXMs99OH2h5cjl3rVbO8Tj4/jhLgulhFs
+         15ag==
+X-Gm-Message-State: AOAM531XbYi7hBp1J9rEXs3LJkAB81TTcFhK04+d+259owybhGHsmKsZ
+        vN2pzZCCspPejGIonad0U8vHhw==
+X-Google-Smtp-Source: ABdhPJxZbaSYb25L3hU2Pkh9dQuXeFyxa4dIIIyjnSG68UCmKVekbt2t/B5nwBHgLaYIh1vOZBLLLg==
+X-Received: by 2002:a05:6000:11cd:: with SMTP id i13mr6416895wrx.140.1599554792285;
+        Tue, 08 Sep 2020 01:46:32 -0700 (PDT)
+Received: from dell ([91.110.221.204])
+        by smtp.gmail.com with ESMTPSA id 9sm11623485wmf.7.2020.09.08.01.46.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Sep 2020 01:46:31 -0700 (PDT)
+Date:   Tue, 8 Sep 2020 09:46:29 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 00/32] Set 2: Rid W=1 warnings in Wireless
+Message-ID: <20200908084629.GI4400@dell>
+References: <20200821071644.109970-1-lee.jones@linaro.org>
+ <87o8mp6epv.fsf@codeaurora.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87o8mp6epv.fsf@codeaurora.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 01 Sep 2020, Kalle Valo wrote:
 
-On Tue, 2020-09-08 at 11:15 +0800, dust.li wrote:
-> Actually, with more udp sockets, I can always make it large
-> enough to exceed udp_mem[0], and drop packets before udp_mem[1]
-> and udp_mem[2].
+> Lee Jones <lee.jones@linaro.org> writes:
+> 
+> > This set is part of a larger effort attempting to clean-up W=1
+> > kernel builds, which are currently overwhelmingly riddled with
+> > niggly little warnings.
+> >
+> > There are quite a few W=1 warnings in the Wireless.  My plan
+> > is to work through all of them over the next few weeks.
+> > Hopefully it won't be too long before drivers/net/wireless
+> > builds clean with W=1 enabled.
+> 
+> BTW, now the patches are in random order and it's quite annoying to
+> review when there's no logic. Grouping them by the driver would be a lot
+> more pleasent for reviewers.
 
-Sure, but with enough sockets you can also exceeeds any limits ;).
+My script makes a best effort attempt to group changes by file.  It
+takes the first warning presented by the compiler then greps the
+output for all issues pertaining to that file.  I then split the patch
+by issue (i.e. different patches for; kernel-doc, unused variables,
+bracketing etc).
 
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 6c5c6b18eff4..fed8211d8dbe 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -2648,6 +2648,12 @@ int __sk_mem_raise_allocated(struct sock *sk, int size, int amt, int kind)
->                                  atomic_read(&sk->sk_rmem_alloc) +
->                                  sk->sk_forward_alloc))
->                         return 1;
-> +       } else {
-> +               /* for prots without memory_pressure callbacks, we should not
-> +                * drop until hard limit reached
-> +                */
-> +               if (allocated <= sk_prot_mem_limits(sk, 2))
-> +                       return 1;
+One issue you might be seeing is the potential for one fixed issue to
+cause another i.e. when one unused variable is removed which was the
+only user of another, leading to a subsequent fix of the newly unused
+variable.
 
-At this point, the above condition is always true, due to an earlier
-check. Additionally, accepting any value below udp_mem[2] would make
-the previous checks to allow a minimum per socket memory useless.
+Other than that, I'm not sure why they would end up out of order.
 
-You can obtain the same result setting udp_mem[0] = udp_mem[2], without
-any kernel change. 
-
-But with this change applied you can't guarantee anymore a minimum per
-socket amount of memory.
-
-I think you are possibly mislead by your own comment: the point is that
-we should never allow allocation above the hard limit, but the protocol
-is allowed to drop as soon as the memory allocated raises above the
-lower limit.
-
-Note that the current behavior is correctly documented
-in Documentation/networking/ip-sysctl.rst.
-
-Your problem must be solved in another way e.g. raising udp_mem[0] -
-and keeping udp_mem[2] above that value.
-
-Cheers,
-
-Paolo
-
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
