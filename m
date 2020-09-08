@@ -2,223 +2,884 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB68E260E2E
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 10:56:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B9BC260E3B
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 10:59:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729533AbgIHI4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 04:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45408 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728957AbgIHI4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 04:56:13 -0400
-Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528C4C061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 01:56:13 -0700 (PDT)
-Received: by mail-vs1-xe41.google.com with SMTP id x203so8556527vsc.11
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 01:56:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HtS1yuZDIHrpYA/uA91Yd0uc5pmwzeQDnQE4jOwxY9U=;
-        b=IBeCm4C0ZPMqPfLyWmdZksg/KxnRqbXrDuxxbVoWNvsW9jyI2uD2Nk4/Xe0e13BrYr
-         L9ALlDdRsEUFyZlmyNdIOyzA5CCkan4M2snDdO9Dee88QDfjR26JGfCTj+orNzb9fnW/
-         5GdIjVNknnY10KbHn93mN2KKpFxjCXm4wrJoKb5L8Nn2SB8onzr6xgp3Pqqi+1/QvCCD
-         lsqywvBRwTTldsnVwgDKNK/Xi9uzWgrL7gHaD13qQf2iT9DKK7+JT8KVXYQA2My+A6F4
-         wS7CY/hoDuJ7Ud1Wn8diOaFnTSNSKiyHz9BWeSRrtOp7n+Y14khH9ZKfNTAstCOfZ4yE
-         RoGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HtS1yuZDIHrpYA/uA91Yd0uc5pmwzeQDnQE4jOwxY9U=;
-        b=nKJfjIx9UmJ19kh9XuoLDNiRAQJvpMortdUzsDM48O1DahOU21wQPJrM00U0CF1Jcm
-         pnzpZZMCIMqyqeM9sa499/wUvDpmN0jAczg0SLmOUSyDQEZX4szIoht3aMyuHpTxLxUs
-         13li79/lepffZsqR9A5mkbK3WByd4R00OsHsguWW7CdWN6haaKxQTsyC06txg+mi+l4A
-         dXBFninQHRr9/49DyVrAaryjjxI5CW4YwFQlfYvkwFDlhxb0GSPrMFUZP9rnjZfWfjaM
-         5gyuoZh0KbbcaWPQ4aP0ScP9UDxwvFXqdTFMpaZUrmYSDpomSj9lOK4ii6SOjkPnjAuL
-         /cUQ==
-X-Gm-Message-State: AOAM532Pz7isKnJrR9CAa7S6jmAvYxSx1zaxGZJIAN887qH1EufGnJsM
-        tWLXRlBbuSTZZ5NpqPLFt/ycqlbuQtoutg==
-X-Google-Smtp-Source: ABdhPJznQ1pmDw1mmfpljdNf5NBSrwoPnVc9E43wJEoQm37wo/yIGB3xki/9/tXQFbrtbBmZtqoCwA==
-X-Received: by 2002:a67:ef52:: with SMTP id k18mr105972vsr.25.1599555370485;
-        Tue, 08 Sep 2020 01:56:10 -0700 (PDT)
-Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com. [209.85.217.54])
-        by smtp.gmail.com with ESMTPSA id 132sm1204588vkz.56.2020.09.08.01.56.09
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Sep 2020 01:56:09 -0700 (PDT)
-Received: by mail-vs1-f54.google.com with SMTP id c127so2854286vsc.1
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 01:56:09 -0700 (PDT)
-X-Received: by 2002:a67:c78b:: with SMTP id t11mr13725165vsk.109.1599555368447;
- Tue, 08 Sep 2020 01:56:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200906031827.16819-1-xie.he.0141@gmail.com> <CA+FuTSfOeMB7Wv1t12VCTOqPYcTLq2WKdG4AJUO=gxotVRZiQw@mail.gmail.com>
- <CAJht_EO13aYPXBV7sEgOTuUhuHFTFFfdg7NBN2cEKAo6LK0DMQ@mail.gmail.com>
-In-Reply-To: <CAJht_EO13aYPXBV7sEgOTuUhuHFTFFfdg7NBN2cEKAo6LK0DMQ@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 8 Sep 2020 10:55:30 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSdK6qgKwgie5Bqof8V5FR__dx-HgHUcDS5sgTQmH9B9uQ@mail.gmail.com>
-Message-ID: <CA+FuTSdK6qgKwgie5Bqof8V5FR__dx-HgHUcDS5sgTQmH9B9uQ@mail.gmail.com>
-Subject: Re: [PATCH net] net/packet: Fix a comment about hard_header_len and
- headroom allocation
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1729052AbgIHI7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 04:59:21 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:17119 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727995AbgIHI7V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 04:59:21 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f5747da0000>; Tue, 08 Sep 2020 01:59:06 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Tue, 08 Sep 2020 01:59:20 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Tue, 08 Sep 2020 01:59:20 -0700
+Received: from [172.27.14.146] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 8 Sep
+ 2020 08:59:08 +0000
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+Subject: Re: [net-next 02/10] net/mlx5e: Refactor xmit functions
+To:     Willem de Bruijn <willemb@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Eric Dumazet <edumazet@google.com>,
-        Or Cohen <orcohen@paloaltonetworks.com>,
-        Arnd Bergmann <arnd@arndb.de>,
         Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Maxim Mikityanskiy <maximmi@mellanox.com>
+References: <20200903210022.22774-1-saeedm@nvidia.com>
+ <20200903210022.22774-3-saeedm@nvidia.com>
+ <CA+FuTSdP5=OPKsJHNW737JP+jDa-rDYDm0vLfX7vqnFX8yur1w@mail.gmail.com>
+Message-ID: <bee9e22e-f28f-cbc8-52df-6445f4955a01@nvidia.com>
+Date:   Tue, 8 Sep 2020 11:58:52 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <CA+FuTSdP5=OPKsJHNW737JP+jDa-rDYDm0vLfX7vqnFX8yur1w@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1599555546; bh=lqEILSnpL4dhgKBF4vmJaYTtGTebGtBc/jIn+javg1Y=;
+        h=X-PGP-Universal:From:Subject:To:CC:References:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=KTO2IsFTXcsS476EaRuuZ7+sOzk5qbeL4yavAL/lvChHAUP5ruHoLYbWFhVakFqnC
+         jw9jRFjFd01YpdSESsilLXDbLgarp2lPvlsm6je99HFANfOOwQ4+AzN+5U/rgTP2AG
+         qresb2sI/4EhbvMBlTFKbTnebhzfPM4cu4gFz9WVlBEVveckPen5RA6heblBRUzV8e
+         OUkeaDPaNEQIneaHn/VI1zdTvDEGf96qmKGYm2FdYQxB8z+iPkQrPqgXY8SVDTgFHf
+         bDItcuGb8IuwOhIgdjTd3IsmObAo+stIAKUA3l3KdFlAnxB+6wdv5RphFqO6O7sRn9
+         CdYtzYZRtpzkg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 2:07 AM Xie He <xie.he.0141@gmail.com> wrote:
->
-> Thank you for your comment!
->
-> On Mon, Sep 7, 2020 at 2:41 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > On Sun, Sep 6, 2020 at 5:18 AM Xie He <xie.he.0141@gmail.com> wrote:
-> > >
-> > > This comment is outdated and no longer reflects the actual implementation
-> > > of af_packet.c.
-> >
-> > If it was previously true, can you point to a commit that changes the behavior?
->
-> This is my understanding about the history of "af_packet.c":
->
-> 1. Pre git history
->
-> At first, before "needed_headroom" was introduced, "hard_header_len"
-> was the only way for a driver to request headroom. However,
-> "hard_header_len" was also used in "af_packet.c" for processing the
-> header. There was a confusion / disagreement between "af_packet.c"
-> developers and driver developers about the use of "hard_header_len".
-> "af_packet.c" developers would assume that all headers were visible to
-> them through dev->header_ops (called dev->hard_header at that time?).
-> But the developers of some drivers were not able to expose all their
-> headers to "af_packet.c" through header_ops (for example, in tunnel
-> drivers). These drivers still requested the headroom via
-> "hard_header_len" but this created bugs for "af_packet.c" because
-> "af_packet.c" would assume "hard_header_len" was the length of the
-> header visible to them through header_ops.
->
-> Therefore, in Linux version 2.1.43pre1, the FIXME comment was added.
-> In this comment, "af_packet.c" developers clearly stated that not
-> exposing the header through header_ops was a bug that needed to be
-> fixed in the drivers. But I think driver developers were not able to
-> agree because some drivers really had a need to add their own header
-> without using header_ops (for example in tunnel drivers).
->
-> In Linux version 2.1.68, the developer of "af_packet.c" compromised
-> and recognized the use of "hard_header_len" even when there is no
-> header_ops, by adding the comment I'm trying to change now. But I
-> guess some other developers of "af_packet.c" continued to treat
-> "hard_header_len" to be the length of header of header_ops and created
-> a lot of problems.
->
-> 2. Introduction of "needed_headroom"
->
-> Because this issue has troubled for developers for long, in 2008,
-> developers introduced "needed_headroom" to solve this problem.
-> "needed_headroom" has only one purpose - reserve headroom. It is not
-> used in af_packet.c for processing so drivers can safely use it to
-> request headroom without exposing the header via header_ops.
->
-> The commit was:
-> commit f5184d267c1a ("net: Allow netdevices to specify needed head/tailroom")
->
-> After "needed_headroom" was introduced, all drivers that needed to
-> reserve the headroom but didn't want "af_packet.c" to interfere should
-> change to "needed_headroom".
->
-> From this point on, "af_packet.c" developers were able to assume
-> "hard_header_len" was only used for header processing purposes in
-> "af_packet.c".
+On 2020-09-04 18:27, Willem de Bruijn wrote:
+> On Thu, Sep 3, 2020 at 11:00 PM Saeed Mahameed <saeedm@nvidia.com> wrote:
+>>
+>> From: Maxim Mikityanskiy <maximmi@mellanox.com>
+>>
+>> A huge function mlx5e_sq_xmit was split into several to achieve multiple
+>> goals:
+>>
+>> 1. Reuse the code in IPoIB.
+>>
+>> 2. Better intergrate with TLS, IPSEC, GENEVE and checksum offloads. Now
+>> it's possible to reserve space in the WQ before running eseg-based
+>> offloads, so:
+>>
+>> 2.1. It's not needed to copy cseg and eseg after mlx5e_fill_sq_frag_edge
+>> anymore.
+>>
+>> 2.2. mlx5e_txqsq_get_next_pi will be used instead of the legacy
+>> mlx5e_fill_sq_frag_edge for better code maintainability and reuse.
+>>
+>> 3. Prepare for the upcoming TX MPWQE for SKBs. It will intervene after
+>> mlx5e_sq_calc_wqe_attr to check if it's possible to use MPWQE, and the
+>> code flow will split into two paths: MPWQE and non-MPWQE.
+>>
+>> Two high-level functions are provided to send packets:
+>>
+>> * mlx5e_xmit is called by the networking stack, runs offloads and sends
+>> the packet. In one of the following patches, MPWQE support will be added
+>> to this flow.
+>>
+>> * mlx5e_sq_xmit_simple is called by the TLS offload, runs only the
+>> checksum offload and sends the packet.
+>>
+>> This change has no performance impact in TCP single stream test and
+>> XDP_TX single stream test.
+>>
+>> UDP pktgen (burst 32), single stream:
+>>    Packet rate: 17.55 Mpps -> 19.23 Mpps
+>>    Instructions per packet: 420 -> 360
+>>    Cycles per packet: 165 -> 142
+>>
+>> CPU: Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz (x86_64)
+>> NIC: Mellanox ConnectX-6 Dx
+>>
+>> To get this performance gain, manual optimizations of function inlining
+>> were performed. It's important to have mlx5e_sq_xmit_wqe inline,
+>> otherwise the packet rate will be 1 Mpps less in UDP pktgen test.
+>> __always_inline is required, because gcc uninlines it when it's called
+>> from two places (mlx5e_xmit and mlx5e_sq_xmit_simple).
+>>
+>> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+>> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+>> ---
+>>   .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  63 +--
+>>   .../mellanox/mlx5/core/en_accel/en_accel.h    |   5 +
+>>   .../mellanox/mlx5/core/en_accel/tls_rxtx.c    |   6 +-
+>>   .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 391 ++++++++++--------
+>>   4 files changed, 243 insertions(+), 222 deletions(-)
+> 
+> This combines a lot of changes. Including supposed noops, but with
+> subtle changes, like converting to struct initializers.
 
-Very nice archeology!
+Struct initializers are mostly used in the new code. I can split out the 
+only converted occurrence.
 
-Thanks for summarizing.
+> Probably deserves to be broken up a bit more.
+> 
+> For instance, a pure noop patch that moves
+> mlx5e_txwqe_build_eseg_csum,
 
-> 3. Not reserving the headroom of hard_header_len for RAW sockets
->
-> Another very important point in history is these two commits in 2018:
-> commit b84bbaf7a6c8 ("packet: in packet_snd start writing at link
-> layer allocation")
-> commit 9aad13b087ab ("packet: fix reserve calculation")
->
-> These two commits changed packet_snd to the present state and made it
-> no long reserve the headroom of hard_header_len for RAW sockets. This
-> made drivers' switching from hard_header_len to needed_headroom became
-> urgent because otherwise they might have a kernel panic when used with
-> RAW sockets.
->
-> > > In this file, the function packet_snd first reserves a headroom of
-> > > length (dev->hard_header_len + dev->needed_headroom).
-> > > Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
-> > > which calls dev->header_ops->create, to create the link layer header.
-> > > If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
-> > > length (dev->hard_header_len), and checks if the user has provided a
-> > > header of length (dev->hard_header_len) (in dev_validate_header).
-> >
-> > Not entirely, a header greater than dev->min_header_len that passes
-> > dev_validate_header.
->
-> Yes, I understand. The function checks both hard_header_len and
-> min_header_len. I want to explain the role of hard_header_len in
-> dev_validate_header. But I feel a little hard to concisely explain
-> this without simplifying a little bit.
+OK. Not sure I really need to move it though.
 
-Ack.
+> a separate patch for
+> mlx5e_tx_wqe_inline_mode (the change to which is not trivial in
+> itself),
 
-> > >  /*
-> > >     Assumptions:
-> > > -   - if device has no dev->hard_header routine, it adds and removes ll header
-> > > -     inside itself. In this case ll header is invisible outside of device,
-> > > -     but higher levels still should reserve dev->hard_header_len.
-> > > -     Some devices are enough clever to reallocate skb, when header
-> > > -     will not fit to reserved space (tunnel), another ones are silly
-> > > -     (PPP).
-> > > +   - If the device has no dev->header_ops, there is no LL header visible
-> > > +     outside of the device. In this case, its hard_header_len should be 0.
-> >
-> > Such a constraint is more robustly captured with a compile time
-> > BUILD_BUG_ON check. Please do add a comment that summarizes why the
-> > invariant holds.
->
-> I'm not sure how to do this. I guess both header_ops and
-> hard_header_len are assigned at runtime. (Right?) I guess we are not
-> able to check this at compile-time.
+The change to this function is trivial:
 
-header_ops should be compile constant, and most devices use
-struct initializers for hard_header_len, but of course you're right.
+-       if (mlx5e_transport_inline_tx_wqe(cseg))
++#ifdef CONFIG_MLX5_EN_TLS
++       if (accel && accel->tls.tls_tisn)
+                 return MLX5_INLINE_MODE_TCP_UDP;
++#endif
 
-Perhaps a WARN_ON_ONCE, then.
+I can't do this change in a separate patch, as `accel` is introduced by 
+this patch. I can do the movement of this function in a separate patch, 
+though.
 
-> > More about the older comment, but if reusing: it's not entirely clear
-> > to me what "outside of the device" means. The upper layers that
-> > receive data from the device and send data to it, including
-> > packet_snd, I suppose? Not the lower layers, clearly. Maybe that can
-> > be more specific.
->
-> Yes, right. If a header is visible "outside of the device", it means
-> the header is exposed to upper layers via "header_ops". If a header is
-> not visible "outside of the device" and is only used "internally", it
-> means the header is not exposed to upper layers via "header_ops".
-> Maybe we can change it to "outside of the device driver"? We can
-> borrow the idea of encapsulation in object-oriented programming - some
-> things that happen inside a software component should not be visible
-> outside of that software component.
+> introduction of mlx5e_sq_xmit_prepare, ..
 
-How about "above"? If sketched as a network stack diagram, the code
-paths and devices below the (possibly tunnel) device do see packets
-with link layer header.
+While it's possible to introduce mlx5e_sq_xmit_prepare and 
+mlx5e_sq_calc_wqe_attr in separate patches, I don't think it makes sense 
+to do so. First of all, it's one logical change, second, such separation 
+will produce a lot of changes like `ihs` -> `attr->ihs`, which will be 
+overwritten in the second patch.
+
+> Is, especially after this refactoring, mlx5e_xmit still considerably
+> more complex than mlx5e_sq_xmit_simple? It does not look like that
+> separate function is really necessary.
+
+The purpose of the simple version is to be called in cases where the 
+driver needs to produce an SKB by itself (e.g., in the kTLS offload), 
+and we don't want to call acceleration offloads (including kTLS) and 
+MPWQE from such contexts. It's not about saving a few CPU cycles, it's 
+about making it safer by skipping all code that shouldn't run in such 
+contexts anyway.
+
+> At least after this patch.
+
+Well, if you look at the final version, the difference is more 
+significant :)
+
+> 
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+>> index 9334c9c3e208..d4ee22789ab0 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
+>> @@ -41,8 +41,6 @@ void mlx5e_free_rx_in_progress_descs(struct mlx5e_rq *rq);
+>>   u16 mlx5e_select_queue(struct net_device *dev, struct sk_buff *skb,
+>>                         struct net_device *sb_dev);
+>>   netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev);
+>> -void mlx5e_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>> -                  struct mlx5e_tx_wqe *wqe, u16 pi, bool xmit_more);
+>>   bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget);
+>>   void mlx5e_free_txqsq_descs(struct mlx5e_txqsq *sq);
+>>
+>> @@ -188,23 +186,6 @@ static inline u16 mlx5e_icosq_get_next_pi(struct mlx5e_icosq *sq, u16 size)
+>>          return pi;
+>>   }
+>>
+>> -static inline void
+>> -mlx5e_fill_sq_frag_edge(struct mlx5e_txqsq *sq, struct mlx5_wq_cyc *wq,
+>> -                       u16 pi, u16 nnops)
+>> -{
+>> -       struct mlx5e_tx_wqe_info *edge_wi, *wi = &sq->db.wqe_info[pi];
+>> -
+>> -       edge_wi = wi + nnops;
+>> -
+>> -       /* fill sq frag edge with nops to avoid wqe wrapping two pages */
+>> -       for (; wi < edge_wi; wi++) {
+>> -               memset(wi, 0, sizeof(*wi));
+>> -               wi->num_wqebbs = 1;
+>> -               mlx5e_post_nop(wq, sq->sqn, &sq->pc);
+>> -       }
+>> -       sq->stats->nop += nnops;
+>> -}
+>> -
+>>   static inline void
+>>   mlx5e_notify_hw(struct mlx5_wq_cyc *wq, u16 pc, void __iomem *uar_map,
+>>                  struct mlx5_wqe_ctrl_seg *ctrl)
+>> @@ -223,29 +204,6 @@ mlx5e_notify_hw(struct mlx5_wq_cyc *wq, u16 pc, void __iomem *uar_map,
+>>          mlx5_write64((__be32 *)ctrl, uar_map);
+>>   }
+>>
+>> -static inline bool mlx5e_transport_inline_tx_wqe(struct mlx5_wqe_ctrl_seg *cseg)
+>> -{
+>> -       return cseg && !!cseg->tis_tir_num;
+>> -}
+>> -
+>> -static inline u8
+>> -mlx5e_tx_wqe_inline_mode(struct mlx5e_txqsq *sq, struct mlx5_wqe_ctrl_seg *cseg,
+>> -                        struct sk_buff *skb)
+>> -{
+>> -       u8 mode;
+>> -
+>> -       if (mlx5e_transport_inline_tx_wqe(cseg))
+>> -               return MLX5_INLINE_MODE_TCP_UDP;
+>> -
+>> -       mode = sq->min_inline_mode;
+>> -
+>> -       if (skb_vlan_tag_present(skb) &&
+>> -           test_bit(MLX5E_SQ_STATE_VLAN_NEED_L2_INLINE, &sq->state))
+>> -               mode = max_t(u8, MLX5_INLINE_MODE_L2, mode);
+>> -
+>> -       return mode;
+>> -}
+>> -
+>>   static inline void mlx5e_cq_arm(struct mlx5e_cq *cq)
+>>   {
+>>          struct mlx5_core_cq *mcq;
+>> @@ -286,6 +244,27 @@ mlx5e_tx_dma_unmap(struct device *pdev, struct mlx5e_sq_dma *dma)
+>>          }
+>>   }
+>>
+>> +static inline void mlx5e_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq,
+>> +                                              struct sk_buff *skb,
+>> +                                              struct mlx5_wqe_eth_seg *eseg)
+>> +{
+>> +       if (likely(skb->ip_summed == CHECKSUM_PARTIAL)) {
+>> +               eseg->cs_flags = MLX5_ETH_WQE_L3_CSUM;
+>> +               if (skb->encapsulation) {
+>> +                       eseg->cs_flags |= MLX5_ETH_WQE_L3_INNER_CSUM |
+>> +                                         MLX5_ETH_WQE_L4_INNER_CSUM;
+>> +                       sq->stats->csum_partial_inner++;
+>> +               } else {
+>> +                       eseg->cs_flags |= MLX5_ETH_WQE_L4_CSUM;
+>> +                       sq->stats->csum_partial++;
+>> +               }
+>> +       } else {
+>> +               sq->stats->csum_none++;
+>> +       }
+>> +}
+>> +
+>> +void mlx5e_sq_xmit_simple(struct mlx5e_txqsq *sq, struct sk_buff *skb, bool xmit_more);
+>> +
+>>   static inline void mlx5e_rqwq_reset(struct mlx5e_rq *rq)
+>>   {
+>>          if (rq->wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+>> index 110476bdeffb..23d4ef5ab9c5 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/en_accel.h
+>> @@ -145,6 +145,11 @@ static inline bool mlx5e_accel_tx_finish(struct mlx5e_priv *priv,
+>>          }
+>>   #endif
+>>
+>> +#if IS_ENABLED(CONFIG_GENEVE)
+>> +       if (skb->encapsulation)
+>> +               mlx5e_tx_tunnel_accel(skb, &wqe->eth);
+>> +#endif
+>> +
+>>          return true;
+>>   }
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
+>> index b0c31d49ff8d..c36560b3e93d 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/tls_rxtx.c
+>> @@ -189,12 +189,10 @@ static bool mlx5e_tls_handle_ooo(struct mlx5e_tls_offload_context_tx *context,
+>>                                   struct mlx5e_tls *tls)
+>>   {
+>>          u32 tcp_seq = ntohl(tcp_hdr(skb)->seq);
+>> -       struct mlx5e_tx_wqe *wqe;
+>>          struct sync_info info;
+>>          struct sk_buff *nskb;
+>>          int linear_len = 0;
+>>          int headln;
+>> -       u16 pi;
+>>          int i;
+>>
+>>          sq->stats->tls_ooo++;
+>> @@ -246,9 +244,7 @@ static bool mlx5e_tls_handle_ooo(struct mlx5e_tls_offload_context_tx *context,
+>>          sq->stats->tls_resync_bytes += nskb->len;
+>>          mlx5e_tls_complete_sync_skb(skb, nskb, tcp_seq, headln,
+>>                                      cpu_to_be64(info.rcd_sn));
+>> -       pi = mlx5_wq_cyc_ctr2ix(&sq->wq, sq->pc);
+>> -       wqe = MLX5E_TX_FETCH_WQE(sq, pi);
+>> -       mlx5e_sq_xmit(sq, nskb, wqe, pi, true);
+>> +       mlx5e_sq_xmit_simple(sq, nskb, true);
+>>
+>>          return true;
+>>
+>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+>> index e15aa53ff83e..f967bc0573c0 100644
+>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
+>> @@ -144,23 +144,6 @@ static inline void mlx5e_insert_vlan(void *start, struct sk_buff *skb, u16 ihs)
+>>          memcpy(&vhdr->h_vlan_encapsulated_proto, skb->data + cpy1_sz, cpy2_sz);
+>>   }
+>>
+>> -static inline void
+>> -mlx5e_txwqe_build_eseg_csum(struct mlx5e_txqsq *sq, struct sk_buff *skb, struct mlx5_wqe_eth_seg *eseg)
+>> -{
+>> -       if (likely(skb->ip_summed == CHECKSUM_PARTIAL)) {
+>> -               eseg->cs_flags = MLX5_ETH_WQE_L3_CSUM;
+>> -               if (skb->encapsulation) {
+>> -                       eseg->cs_flags |= MLX5_ETH_WQE_L3_INNER_CSUM |
+>> -                                         MLX5_ETH_WQE_L4_INNER_CSUM;
+>> -                       sq->stats->csum_partial_inner++;
+>> -               } else {
+>> -                       eseg->cs_flags |= MLX5_ETH_WQE_L4_CSUM;
+>> -                       sq->stats->csum_partial++;
+>> -               }
+>> -       } else
+>> -               sq->stats->csum_none++;
+>> -}
+>> -
+>>   static inline u16
+>>   mlx5e_tx_get_gso_ihs(struct mlx5e_txqsq *sq, struct sk_buff *skb)
+>>   {
+>> @@ -232,22 +215,121 @@ mlx5e_txwqe_build_dsegs(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>>          return -ENOMEM;
+>>   }
+>>
+>> +struct mlx5e_tx_attr {
+>> +       u32 num_bytes;
+>> +       u16 headlen;
+>> +       u16 ihs;
+>> +       __be16 mss;
+>> +       u8 opcode;
+>> +};
+>> +
+>> +struct mlx5e_tx_wqe_attr {
+>> +       u16 ds_cnt;
+>> +       u16 ds_cnt_inl;
+>> +       u8 num_wqebbs;
+>> +};
+>> +
+>> +static inline u8
+>> +mlx5e_tx_wqe_inline_mode(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>> +                        struct mlx5e_accel_tx_state *accel)
+>> +{
+>> +       u8 mode;
+>> +
+>> +#ifdef CONFIG_MLX5_EN_TLS
+>> +       if (accel && accel->tls.tls_tisn)
+>> +               return MLX5_INLINE_MODE_TCP_UDP;
+>> +#endif
+>> +
+>> +       mode = sq->min_inline_mode;
+>> +
+>> +       if (skb_vlan_tag_present(skb) &&
+>> +           test_bit(MLX5E_SQ_STATE_VLAN_NEED_L2_INLINE, &sq->state))
+>> +               mode = max_t(u8, MLX5_INLINE_MODE_L2, mode);
+>> +
+>> +       return mode;
+>> +}
+>> +
+>> +static inline void mlx5e_sq_xmit_prepare(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>> +                                        struct mlx5e_accel_tx_state *accel,
+>> +                                        struct mlx5e_tx_attr *attr)
+>> +{
+>> +       struct mlx5e_sq_stats *stats = sq->stats;
+>> +
+>> +       if (skb_is_gso(skb)) {
+>> +               u16 ihs = mlx5e_tx_get_gso_ihs(sq, skb);
+>> +
+>> +               *attr = (struct mlx5e_tx_attr) {
+>> +                       .opcode    = MLX5_OPCODE_LSO,
+>> +                       .mss       = cpu_to_be16(skb_shinfo(skb)->gso_size),
+>> +                       .ihs       = ihs,
+>> +                       .num_bytes = skb->len + (skb_shinfo(skb)->gso_segs - 1) * ihs,
+>> +                       .headlen   = skb_headlen(skb) - ihs,
+>> +               };
+>> +
+>> +               stats->packets += skb_shinfo(skb)->gso_segs;
+>> +       } else {
+>> +               u8 mode = mlx5e_tx_wqe_inline_mode(sq, skb, accel);
+>> +               u16 ihs = mlx5e_calc_min_inline(mode, skb);
+>> +
+>> +               *attr = (struct mlx5e_tx_attr) {
+>> +                       .opcode    = MLX5_OPCODE_SEND,
+>> +                       .mss       = cpu_to_be16(0),
+>> +                       .ihs       = ihs,
+>> +                       .num_bytes = max_t(unsigned int, skb->len, ETH_ZLEN),
+>> +                       .headlen   = skb_headlen(skb) - ihs,
+>> +               };
+>> +
+>> +               stats->packets++;
+>> +       }
+>> +
+>> +       stats->bytes += attr->num_bytes;
+>> +}
+>> +
+>> +static inline void mlx5e_sq_calc_wqe_attr(struct sk_buff *skb,
+>> +                                         const struct mlx5e_tx_attr *attr,
+>> +                                         struct mlx5e_tx_wqe_attr *wqe_attr)
+>> +{
+>> +       u16 ds_cnt = sizeof(struct mlx5e_tx_wqe) / MLX5_SEND_WQE_DS;
+>> +       u16 ds_cnt_inl = 0;
+>> +
+>> +       ds_cnt += !!attr->headlen + skb_shinfo(skb)->nr_frags;
+>> +
+>> +       if (attr->ihs) {
+>> +               u16 inl = attr->ihs - INL_HDR_START_SZ;
+>> +
+>> +               if (skb_vlan_tag_present(skb))
+>> +                       inl += VLAN_HLEN;
+>> +
+>> +               ds_cnt_inl = DIV_ROUND_UP(inl, MLX5_SEND_WQE_DS);
+>> +               ds_cnt += ds_cnt_inl;
+>> +       }
+>> +
+>> +       *wqe_attr = (struct mlx5e_tx_wqe_attr) {
+>> +               .ds_cnt     = ds_cnt,
+>> +               .ds_cnt_inl = ds_cnt_inl,
+>> +               .num_wqebbs = DIV_ROUND_UP(ds_cnt, MLX5_SEND_WQEBB_NUM_DS),
+>> +       };
+>> +}
+>> +
+>>   static inline void
+>>   mlx5e_txwqe_complete(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>> -                    u8 opcode, u16 ds_cnt, u8 num_wqebbs, u32 num_bytes, u8 num_dma,
+>> +                    const struct mlx5e_tx_attr *attr,
+>> +                    const struct mlx5e_tx_wqe_attr *wqe_attr, u8 num_dma,
+>>                       struct mlx5e_tx_wqe_info *wi, struct mlx5_wqe_ctrl_seg *cseg,
+>>                       bool xmit_more)
+>>   {
+>>          struct mlx5_wq_cyc *wq = &sq->wq;
+>>          bool send_doorbell;
+>>
+>> -       wi->num_bytes = num_bytes;
+>> -       wi->num_dma = num_dma;
+>> -       wi->num_wqebbs = num_wqebbs;
+>> -       wi->skb = skb;
+>> +       *wi = (struct mlx5e_tx_wqe_info) {
+>> +               .skb = skb,
+>> +               .num_bytes = attr->num_bytes,
+>> +               .num_dma = num_dma,
+>> +               .num_wqebbs = wqe_attr->num_wqebbs,
+>> +       };
+>>
+>> -       cseg->opmod_idx_opcode = cpu_to_be32((sq->pc << 8) | opcode);
+>> -       cseg->qpn_ds           = cpu_to_be32((sq->sqn << 8) | ds_cnt);
+>> +       cseg->opmod_idx_opcode = cpu_to_be32((sq->pc << 8) | attr->opcode);
+>> +       cseg->qpn_ds           = cpu_to_be32((sq->sqn << 8) | wqe_attr->ds_cnt);
+>>
+>>          if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP))
+>>                  skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+>> @@ -258,105 +340,44 @@ mlx5e_txwqe_complete(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>>                  sq->stats->stopped++;
+>>          }
+>>
+>> -       send_doorbell = __netdev_tx_sent_queue(sq->txq, num_bytes,
+>> -                                              xmit_more);
+>> +       send_doorbell = __netdev_tx_sent_queue(sq->txq, attr->num_bytes, xmit_more);
+>>          if (send_doorbell)
+>>                  mlx5e_notify_hw(wq, sq->pc, sq->uar_map, cseg);
+>>   }
+>>
+>> -void mlx5e_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>> -                  struct mlx5e_tx_wqe *wqe, u16 pi, bool xmit_more)
+>> +static __always_inline void
+>> +mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>> +                 const struct mlx5e_tx_attr *attr, const struct mlx5e_tx_wqe_attr *wqe_attr,
+>> +                 struct mlx5e_tx_wqe *wqe, u16 pi, bool xmit_more)
+>>   {
+>> -       struct mlx5_wq_cyc *wq = &sq->wq;
+>>          struct mlx5_wqe_ctrl_seg *cseg;
+>>          struct mlx5_wqe_eth_seg  *eseg;
+>>          struct mlx5_wqe_data_seg *dseg;
+>>          struct mlx5e_tx_wqe_info *wi;
+>>
+>>          struct mlx5e_sq_stats *stats = sq->stats;
+>> -       u16 headlen, ihs, contig_wqebbs_room;
+>> -       u16 ds_cnt, ds_cnt_inl = 0;
+>> -       u8 num_wqebbs, opcode;
+>> -       u32 num_bytes;
+>>          int num_dma;
+>> -       __be16 mss;
+>>
+>> -       /* Calc ihs and ds cnt, no writes to wqe yet */
+>> -       ds_cnt = sizeof(*wqe) / MLX5_SEND_WQE_DS;
+>> -       if (skb_is_gso(skb)) {
+>> -               opcode    = MLX5_OPCODE_LSO;
+>> -               mss       = cpu_to_be16(skb_shinfo(skb)->gso_size);
+>> -               ihs       = mlx5e_tx_get_gso_ihs(sq, skb);
+>> -               num_bytes = skb->len + (skb_shinfo(skb)->gso_segs - 1) * ihs;
+>> -               stats->packets += skb_shinfo(skb)->gso_segs;
+>> -       } else {
+>> -               u8 mode = mlx5e_tx_wqe_inline_mode(sq, &wqe->ctrl, skb);
+>> -
+>> -               opcode    = MLX5_OPCODE_SEND;
+>> -               mss       = 0;
+>> -               ihs       = mlx5e_calc_min_inline(mode, skb);
+>> -               num_bytes = max_t(unsigned int, skb->len, ETH_ZLEN);
+>> -               stats->packets++;
+>> -       }
+>> -
+>> -       stats->bytes     += num_bytes;
+>>          stats->xmit_more += xmit_more;
+>>
+>> -       headlen = skb->len - ihs - skb->data_len;
+>> -       ds_cnt += !!headlen;
+>> -       ds_cnt += skb_shinfo(skb)->nr_frags;
+>> -
+>> -       if (ihs) {
+>> -               u16 inl = ihs + !!skb_vlan_tag_present(skb) * VLAN_HLEN - INL_HDR_START_SZ;
+>> -
+>> -               ds_cnt_inl = DIV_ROUND_UP(inl, MLX5_SEND_WQE_DS);
+>> -               ds_cnt += ds_cnt_inl;
+>> -       }
+>> -
+>> -       num_wqebbs = DIV_ROUND_UP(ds_cnt, MLX5_SEND_WQEBB_NUM_DS);
+>> -       contig_wqebbs_room = mlx5_wq_cyc_get_contig_wqebbs(wq, pi);
+>> -       if (unlikely(contig_wqebbs_room < num_wqebbs)) {
+>> -#ifdef CONFIG_MLX5_EN_IPSEC
+>> -               struct mlx5_wqe_eth_seg cur_eth = wqe->eth;
+>> -#endif
+>> -#ifdef CONFIG_MLX5_EN_TLS
+>> -               struct mlx5_wqe_ctrl_seg cur_ctrl = wqe->ctrl;
+>> -#endif
+>> -               mlx5e_fill_sq_frag_edge(sq, wq, pi, contig_wqebbs_room);
+>> -               pi = mlx5_wq_cyc_ctr2ix(wq, sq->pc);
+>> -               wqe = MLX5E_TX_FETCH_WQE(sq, pi);
+>> -#ifdef CONFIG_MLX5_EN_IPSEC
+>> -               wqe->eth = cur_eth;
+>> -#endif
+>> -#ifdef CONFIG_MLX5_EN_TLS
+>> -               wqe->ctrl = cur_ctrl;
+>> -#endif
+>> -       }
+>> -
+>>          /* fill wqe */
+>>          wi   = &sq->db.wqe_info[pi];
+>>          cseg = &wqe->ctrl;
+>>          eseg = &wqe->eth;
+>>          dseg =  wqe->data;
+>>
+>> -#if IS_ENABLED(CONFIG_GENEVE)
+>> -       if (skb->encapsulation)
+>> -               mlx5e_tx_tunnel_accel(skb, eseg);
+>> -#endif
+>> -       mlx5e_txwqe_build_eseg_csum(sq, skb, eseg);
+>> -
+>> -       eseg->mss = mss;
+>> +       eseg->mss = attr->mss;
+>>
+>> -       if (ihs) {
+>> +       if (attr->ihs) {
+>>                  if (skb_vlan_tag_present(skb)) {
+>> -                       eseg->inline_hdr.sz = cpu_to_be16(ihs + VLAN_HLEN);
+>> -                       mlx5e_insert_vlan(eseg->inline_hdr.start, skb, ihs);
+>> +                       eseg->inline_hdr.sz = cpu_to_be16(attr->ihs + VLAN_HLEN);
+>> +                       mlx5e_insert_vlan(eseg->inline_hdr.start, skb, attr->ihs);
+>>                          stats->added_vlan_packets++;
+>>                  } else {
+>> -                       eseg->inline_hdr.sz = cpu_to_be16(ihs);
+>> -                       memcpy(eseg->inline_hdr.start, skb->data, ihs);
+>> +                       eseg->inline_hdr.sz = cpu_to_be16(attr->ihs);
+>> +                       memcpy(eseg->inline_hdr.start, skb->data, attr->ihs);
+>>                  }
+>> -               dseg += ds_cnt_inl;
+>> +               dseg += wqe_attr->ds_cnt_inl;
+>>          } else if (skb_vlan_tag_present(skb)) {
+>>                  eseg->insert.type = cpu_to_be16(MLX5_ETH_WQE_INSERT_VLAN);
+>>                  if (skb->vlan_proto == cpu_to_be16(ETH_P_8021AD))
+>> @@ -365,12 +386,12 @@ void mlx5e_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>>                  stats->added_vlan_packets++;
+>>          }
+>>
+>> -       num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + ihs, headlen, dseg);
+>> +       num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr->ihs,
+>> +                                         attr->headlen, dseg);
+>>          if (unlikely(num_dma < 0))
+>>                  goto err_drop;
+>>
+>> -       mlx5e_txwqe_complete(sq, skb, opcode, ds_cnt, num_wqebbs, num_bytes,
+>> -                            num_dma, wi, cseg, xmit_more);
+>> +       mlx5e_txwqe_complete(sq, skb, attr, wqe_attr, num_dma, wi, cseg, xmit_more);
+>>
+>>          return;
+>>
+>> @@ -383,6 +404,8 @@ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev)
+>>   {
+>>          struct mlx5e_priv *priv = netdev_priv(dev);
+>>          struct mlx5e_accel_tx_state accel = {};
+>> +       struct mlx5e_tx_wqe_attr wqe_attr;
+>> +       struct mlx5e_tx_attr attr;
+>>          struct mlx5e_tx_wqe *wqe;
+>>          struct mlx5e_txqsq *sq;
+>>          u16 pi;
+>> @@ -393,19 +416,64 @@ netdev_tx_t mlx5e_xmit(struct sk_buff *skb, struct net_device *dev)
+>>          if (unlikely(!mlx5e_accel_tx_begin(dev, sq, skb, &accel)))
+>>                  goto out;
+>>
+>> -       pi = mlx5_wq_cyc_ctr2ix(&sq->wq, sq->pc);
+>> +       mlx5e_sq_xmit_prepare(sq, skb, &accel, &attr);
+>> +       mlx5e_sq_calc_wqe_attr(skb, &attr, &wqe_attr);
+>> +       pi = mlx5e_txqsq_get_next_pi(sq, wqe_attr.num_wqebbs);
+>>          wqe = MLX5E_TX_FETCH_WQE(sq, pi);
+>>
+>>          /* May update the WQE, but may not post other WQEs. */
+>>          if (unlikely(!mlx5e_accel_tx_finish(priv, sq, skb, wqe, &accel)))
+>>                  goto out;
+>>
+>> -       mlx5e_sq_xmit(sq, skb, wqe, pi, netdev_xmit_more());
+>> +       mlx5e_txwqe_build_eseg_csum(sq, skb, &wqe->eth);
+>> +       mlx5e_sq_xmit_wqe(sq, skb, &attr, &wqe_attr, wqe, pi, netdev_xmit_more());
+>>
+>>   out:
+>>          return NETDEV_TX_OK;
+>>   }
+>>
+>> +void mlx5e_sq_xmit_simple(struct mlx5e_txqsq *sq, struct sk_buff *skb, bool xmit_more)
+>> +{
+>> +       struct mlx5e_tx_wqe_attr wqe_attr;
+>> +       struct mlx5e_tx_attr attr;
+>> +       struct mlx5e_tx_wqe *wqe;
+>> +       u16 pi;
+>> +
+>> +       mlx5e_sq_xmit_prepare(sq, skb, NULL, &attr);
+>> +       mlx5e_sq_calc_wqe_attr(skb, &attr, &wqe_attr);
+>> +       pi = mlx5e_txqsq_get_next_pi(sq, wqe_attr.num_wqebbs);
+>> +       wqe = MLX5E_TX_FETCH_WQE(sq, pi);
+>> +       mlx5e_txwqe_build_eseg_csum(sq, skb, &wqe->eth);
+>> +       mlx5e_sq_xmit_wqe(sq, skb, &attr, &wqe_attr, wqe, pi, xmit_more);
+>> +}
+>> +
+>> +static inline void mlx5e_tx_wi_dma_unmap(struct mlx5e_txqsq *sq,
+>> +                                        struct mlx5e_tx_wqe_info *wi,
+>> +                                        u32 *dma_fifo_cc)
+>> +{
+>> +       int i;
+>> +
+>> +       for (i = 0; i < wi->num_dma; i++) {
+>> +               struct mlx5e_sq_dma *dma = mlx5e_dma_get(sq, (*dma_fifo_cc)++);
+>> +
+>> +               mlx5e_tx_dma_unmap(sq->pdev, dma);
+>> +       }
+>> +}
+>> +
+>> +static inline void mlx5e_consume_skb(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>> +                                    struct mlx5_cqe64 *cqe, int napi_budget)
+>> +{
+>> +       if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
+>> +               struct skb_shared_hwtstamps hwts = {};
+>> +               u64 ts = get_cqe_ts(cqe);
+>> +
+>> +               hwts.hwtstamp = mlx5_timecounter_cyc2time(sq->clock, ts);
+>> +               skb_tstamp_tx(skb, &hwts);
+>> +       }
+>> +
+>> +       napi_consume_skb(skb, napi_budget);
+>> +}
+>> +
+>>   bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget)
+>>   {
+>>          struct mlx5e_sq_stats *stats;
+>> @@ -452,7 +520,6 @@ bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget)
+>>
+>>                  do {
+>>                          struct sk_buff *skb;
+>> -                       int j;
+>>
+>>                          last_wqe = (sqcc == wqe_counter);
+>>
+>> @@ -460,33 +527,18 @@ bool mlx5e_poll_tx_cq(struct mlx5e_cq *cq, int napi_budget)
+>>                          wi = &sq->db.wqe_info[ci];
+>>                          skb = wi->skb;
+>>
+>> +                       sqcc += wi->num_wqebbs;
+>> +
+>>                          if (unlikely(!skb)) {
+>>                                  mlx5e_ktls_tx_handle_resync_dump_comp(sq, wi, &dma_fifo_cc);
+>> -                               sqcc += wi->num_wqebbs;
+>>                                  continue;
+>>                          }
+>>
+>> -                       if (unlikely(skb_shinfo(skb)->tx_flags &
+>> -                                    SKBTX_HW_TSTAMP)) {
+>> -                               struct skb_shared_hwtstamps hwts = {};
+>> -
+>> -                               hwts.hwtstamp =
+>> -                                       mlx5_timecounter_cyc2time(sq->clock,
+>> -                                                                 get_cqe_ts(cqe));
+>> -                               skb_tstamp_tx(skb, &hwts);
+>> -                       }
+>> -
+>> -                       for (j = 0; j < wi->num_dma; j++) {
+>> -                               struct mlx5e_sq_dma *dma =
+>> -                                       mlx5e_dma_get(sq, dma_fifo_cc++);
+>> -
+>> -                               mlx5e_tx_dma_unmap(sq->pdev, dma);
+>> -                       }
+>> +                       mlx5e_tx_wi_dma_unmap(sq, wi, &dma_fifo_cc);
+>> +                       mlx5e_consume_skb(sq, wi->skb, cqe, napi_budget);
+>>
+>>                          npkts++;
+>>                          nbytes += wi->num_bytes;
+>> -                       sqcc += wi->num_wqebbs;
+>> -                       napi_consume_skb(skb, napi_budget);
+>>                  } while (!last_wqe);
+>>
+>>                  if (unlikely(get_cqe_opcode(cqe) == MLX5_CQE_REQ_ERR)) {
+>> @@ -531,7 +583,6 @@ void mlx5e_free_txqsq_descs(struct mlx5e_txqsq *sq)
+>>          u32 dma_fifo_cc, nbytes = 0;
+>>          u16 ci, sqcc, npkts = 0;
+>>          struct sk_buff *skb;
+>> -       int i;
+>>
+>>          sqcc = sq->cc;
+>>          dma_fifo_cc = sq->dma_fifo_cc;
+>> @@ -541,23 +592,18 @@ void mlx5e_free_txqsq_descs(struct mlx5e_txqsq *sq)
+>>                  wi = &sq->db.wqe_info[ci];
+>>                  skb = wi->skb;
+>>
+>> +               sqcc += wi->num_wqebbs;
+>> +
+>>                  if (!skb) {
+>>                          mlx5e_ktls_tx_handle_resync_dump_comp(sq, wi, &dma_fifo_cc);
+>> -                       sqcc += wi->num_wqebbs;
+>>                          continue;
+>>                  }
+>>
+>> -               for (i = 0; i < wi->num_dma; i++) {
+>> -                       struct mlx5e_sq_dma *dma =
+>> -                               mlx5e_dma_get(sq, dma_fifo_cc++);
+>> -
+>> -                       mlx5e_tx_dma_unmap(sq->pdev, dma);
+>> -               }
+>> -
+>> +               mlx5e_tx_wi_dma_unmap(sq, wi, &dma_fifo_cc);
+>>                  dev_kfree_skb_any(skb);
+>> +
+>>                  npkts++;
+>>                  nbytes += wi->num_bytes;
+>> -               sqcc += wi->num_wqebbs;
+>>          }
+>>
+>>          sq->dma_fifo_cc = dma_fifo_cc;
+>> @@ -576,9 +622,34 @@ mlx5i_txwqe_build_datagram(struct mlx5_av *av, u32 dqpn, u32 dqkey,
+>>          dseg->av.key.qkey.qkey = cpu_to_be32(dqkey);
+>>   }
+>>
+>> +static void mlx5i_sq_calc_wqe_attr(struct sk_buff *skb,
+>> +                                  const struct mlx5e_tx_attr *attr,
+>> +                                  struct mlx5e_tx_wqe_attr *wqe_attr)
+>> +{
+>> +       u16 ds_cnt = sizeof(struct mlx5i_tx_wqe) / MLX5_SEND_WQE_DS;
+>> +       u16 ds_cnt_inl = 0;
+>> +
+>> +       ds_cnt += !!attr->headlen + skb_shinfo(skb)->nr_frags;
+>> +
+>> +       if (attr->ihs) {
+>> +               u16 inl = attr->ihs - INL_HDR_START_SZ;
+>> +
+>> +               ds_cnt_inl = DIV_ROUND_UP(inl, MLX5_SEND_WQE_DS);
+>> +               ds_cnt += ds_cnt_inl;
+>> +       }
+>> +
+>> +       *wqe_attr = (struct mlx5e_tx_wqe_attr) {
+>> +               .ds_cnt     = ds_cnt,
+>> +               .ds_cnt_inl = ds_cnt_inl,
+>> +               .num_wqebbs = DIV_ROUND_UP(ds_cnt, MLX5_SEND_WQEBB_NUM_DS),
+>> +       };
+>> +}
+>> +
+>>   void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>>                     struct mlx5_av *av, u32 dqpn, u32 dqkey, bool xmit_more)
+>>   {
+>> +       struct mlx5e_tx_wqe_attr wqe_attr;
+>> +       struct mlx5e_tx_attr attr;
+>>          struct mlx5i_tx_wqe *wqe;
+>>
+>>          struct mlx5_wqe_datagram_seg *datagram;
+>> @@ -588,47 +659,17 @@ void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>>          struct mlx5e_tx_wqe_info *wi;
+>>
+>>          struct mlx5e_sq_stats *stats = sq->stats;
+>> -       u16 ds_cnt, ds_cnt_inl = 0;
+>> -       u8 num_wqebbs, opcode;
+>> -       u16 headlen, ihs, pi;
+>> -       u32 num_bytes;
+>>          int num_dma;
+>> -       __be16 mss;
+>> +       u16 pi;
+>>
+>> -       /* Calc ihs and ds cnt, no writes to wqe yet */
+>> -       ds_cnt = sizeof(*wqe) / MLX5_SEND_WQE_DS;
+>> -       if (skb_is_gso(skb)) {
+>> -               opcode    = MLX5_OPCODE_LSO;
+>> -               mss       = cpu_to_be16(skb_shinfo(skb)->gso_size);
+>> -               ihs       = mlx5e_tx_get_gso_ihs(sq, skb);
+>> -               num_bytes = skb->len + (skb_shinfo(skb)->gso_segs - 1) * ihs;
+>> -               stats->packets += skb_shinfo(skb)->gso_segs;
+>> -       } else {
+>> -               u8 mode = mlx5e_tx_wqe_inline_mode(sq, NULL, skb);
+>> +       mlx5e_sq_xmit_prepare(sq, skb, NULL, &attr);
+>> +       mlx5i_sq_calc_wqe_attr(skb, &attr, &wqe_attr);
+>>
+>> -               opcode    = MLX5_OPCODE_SEND;
+>> -               mss       = 0;
+>> -               ihs       = mlx5e_calc_min_inline(mode, skb);
+>> -               num_bytes = max_t(unsigned int, skb->len, ETH_ZLEN);
+>> -               stats->packets++;
+>> -       }
+>> +       pi = mlx5e_txqsq_get_next_pi(sq, wqe_attr.num_wqebbs);
+>> +       wqe = MLX5I_SQ_FETCH_WQE(sq, pi);
+>>
+>> -       stats->bytes     += num_bytes;
+>>          stats->xmit_more += xmit_more;
+>>
+>> -       headlen = skb->len - ihs - skb->data_len;
+>> -       ds_cnt += !!headlen;
+>> -       ds_cnt += skb_shinfo(skb)->nr_frags;
+>> -
+>> -       if (ihs) {
+>> -               ds_cnt_inl = DIV_ROUND_UP(ihs - INL_HDR_START_SZ, MLX5_SEND_WQE_DS);
+>> -               ds_cnt += ds_cnt_inl;
+>> -       }
+>> -
+>> -       num_wqebbs = DIV_ROUND_UP(ds_cnt, MLX5_SEND_WQEBB_NUM_DS);
+>> -       pi = mlx5e_txqsq_get_next_pi(sq, num_wqebbs);
+>> -       wqe = MLX5I_SQ_FETCH_WQE(sq, pi);
+>> -
+>>          /* fill wqe */
+>>          wi       = &sq->db.wqe_info[pi];
+>>          cseg     = &wqe->ctrl;
+>> @@ -640,20 +681,20 @@ void mlx5i_sq_xmit(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+>>
+>>          mlx5e_txwqe_build_eseg_csum(sq, skb, eseg);
+>>
+>> -       eseg->mss = mss;
+>> +       eseg->mss = attr.mss;
+>>
+>> -       if (ihs) {
+>> -               memcpy(eseg->inline_hdr.start, skb->data, ihs);
+>> -               eseg->inline_hdr.sz = cpu_to_be16(ihs);
+>> -               dseg += ds_cnt_inl;
+>> +       if (attr.ihs) {
+>> +               memcpy(eseg->inline_hdr.start, skb->data, attr.ihs);
+>> +               eseg->inline_hdr.sz = cpu_to_be16(attr.ihs);
+>> +               dseg += wqe_attr.ds_cnt_inl;
+>>          }
+>>
+>> -       num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + ihs, headlen, dseg);
+>> +       num_dma = mlx5e_txwqe_build_dsegs(sq, skb, skb->data + attr.ihs,
+>> +                                         attr.headlen, dseg);
+>>          if (unlikely(num_dma < 0))
+>>                  goto err_drop;
+>>
+>> -       mlx5e_txwqe_complete(sq, skb, opcode, ds_cnt, num_wqebbs, num_bytes,
+>> -                            num_dma, wi, cseg, xmit_more);
+>> +       mlx5e_txwqe_complete(sq, skb, &attr, &wqe_attr, num_dma, wi, cseg, xmit_more);
+>>
+>>          return;
+>>
+>> --
+>> 2.26.2
+>>
+
