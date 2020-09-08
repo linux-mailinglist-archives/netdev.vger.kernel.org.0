@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05035260E74
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:13:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA45B260E63
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:12:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729397AbgIHJNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 05:13:12 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:45637 "EHLO
+        id S1729224AbgIHJMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 05:12:08 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:45391 "EHLO
         wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729052AbgIHJLj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:11:39 -0400
+        by vger.kernel.org with ESMTP id S1729053AbgIHJLk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:11:40 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 0238D3C6;
-        Tue,  8 Sep 2020 05:11:37 -0400 (EDT)
+        by mailout.west.internal (Postfix) with ESMTP id 7CB85874;
+        Tue,  8 Sep 2020 05:11:39 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 08 Sep 2020 05:11:38 -0400
+  by compute4.internal (MEProxy); Tue, 08 Sep 2020 05:11:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=NkaXZepXzpaomR4hXyyn0XleJZwI74iwndY/nQLwW3A=; b=g7jjH+2B
-        atD/GphWPAwoUZaU/CPomcsP/d78M/3pAElxK8k/SVjGldKelvt5f/iDmRxRu+++
-        xXeUqCuGOO4Lz2yqZZvdmk/EEfNu2/KuFAtarhosGkpOu7J2jXMbYe8CX6wP4IkV
-        ezs1mjWhRrQCG/nGQRV4Ny2ze8DMsIlYtARYYyMTgoVfLrVV0um63XptaM5QRDIv
-        UwU2MoGr68JG3lUytqweh6WI2G0BkdbPDkAJs529toxQ/vUVOTzzi7d5nokmhdLv
-        S3cx7DNGLZHjQ8TXMys2XJ+cCHeeimvdwowM/6fpVnL1SuHnWlyhExadodE8/w5y
-        WP8leUHSvLbXUA==
-X-ME-Sender: <xms:yUpXX4pGhBQhaL7bV7Ez3mNeMYrQMyydplx82Bm2rhDKQH2O5uK1YA>
-    <xme:yUpXX-og4I6O3ALvX26XCX3IWzvt0KI6omYK1LlJcfki5V49y63WnQLreDfo3Okxd
-    pL1DLy7hJ51YLI>
+        fm3; bh=XKb0zbAbIxWK3KH/ZPc6UgKfOwvCBii/5AO1KSny4OQ=; b=rIGmKS4/
+        y0xAtCtLHBLob44AGnnoTZAgDg1WlfDqRmPXMDBDWVUyNVPH79i+yfAUD2NwBhkq
+        V0zDIMMuxgGAQHXZX35W/lHosyv75298xjCmoCQ4fRVvLgUEM6Co55NXzU1i4B23
+        rldRDmmWpcd4WWnJsHHaF40JIFrJAdE6ohsp2OvcyvH2uUu5u0V9pRnbdFE//I8a
+        CZ4Kq3w5xrqAr3qsHdTY6myPt2tIFSOphdrcxs1xXJy8IhVNuMG2Tl/Pbc/u2of9
+        SoXH+nQHgrybl6ORHcZrZlR4LzOC35k9O/Cto+FoZmP8kf+mMvqNfS054kRp/uRH
+        IrtH33cpeIBAJA==
+X-ME-Sender: <xms:y0pXX5iuRldVAMMhuRGNcbMg57SeEkIwTHqEJBNhy1ukKSEy2Kburw>
+    <xme:y0pXX-ACC7aV_YN8TG_auRhWUcwVNBP1XlaeJQa_LtOrFDXROiDXo8bh9jcHeDQ-x
+    Nw--idYEIYtB4A>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehvddguddvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,21 +38,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehvddguddvucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrfeeirdduvdek
     necuvehluhhsthgvrhfuihiivgepheenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
     hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:yUpXX9OXGG6fDP0-N8fuY3ED_C_ZdtuNgEkLGqcGsetDItAb83Hmlg>
-    <xmx:yUpXX_6iRy6HLQwJ0R1BCl172CO4FWnQuw9CCQufZY072dzgFkpzmw>
-    <xmx:yUpXX35eXNNbEg6ol52auO2ZiMKL8IgnaS79Qwekkj15EHuSDc_xOw>
-    <xmx:yUpXX5n4OM3b6nt_Afo5oIfGnBDSPNuLMmR-wsP2QHeOYpztxUdoFg>
+X-ME-Proxy: <xmx:y0pXX5HRJUXSBjjT3PME7owwJg7pBq86iYM5rxUwMUSe2MXwvi87sw>
+    <xmx:y0pXX-Ts8Z_gp8GsWYYoFKZ7sznHesAFPW9eiHNce9HT0Pf76LdYgw>
+    <xmx:y0pXX2x5SssQgVXAYmEy4glRfHWHN3vUINSDcI9PnkI7YIw3y21FyQ>
+    <xmx:y0pXX68Y1mFeYXkMynyc_CMFXZWZ_mRnEphPKFvOOkmAAXQOubdVNg>
 Received: from shredder.mtl.com (igld-84-229-36-128.inter.net.il [84.229.36.128])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3A609306467E;
-        Tue,  8 Sep 2020 05:11:36 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id B5F71306467D;
+        Tue,  8 Sep 2020 05:11:37 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         roopa@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 08/22] nexthop: vxlan: Convert to new notification info
-Date:   Tue,  8 Sep 2020 12:10:23 +0300
-Message-Id: <20200908091037.2709823-9-idosch@idosch.org>
+Subject: [RFC PATCH net-next 09/22] rtnetlink: Add RTNH_F_TRAP flag
+Date:   Tue,  8 Sep 2020 12:10:24 +0300
+Message-Id: <20200908091037.2709823-10-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200908091037.2709823-1-idosch@idosch.org>
 References: <20200908091037.2709823-1-idosch@idosch.org>
@@ -65,49 +65,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@nvidia.com>
 
-Convert the sole listener of the nexthop notification chain (the VXLAN
-driver) to the new notification info.
+The flag indicates to user space that the nexthop is not programmed to
+forward packets in hardware, but rather to trap them.
+
+The flag will be used in subsequent patches by netdevsim to test nexthop
+objects programming to device drivers and in the future by mlxsw as
+well.
 
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/vxlan.c | 9 +++++++--
- net/ipv4/nexthop.c  | 2 +-
- 2 files changed, 8 insertions(+), 3 deletions(-)
+ include/uapi/linux/rtnetlink.h | 6 ++++--
+ net/ipv4/fib_semantics.c       | 2 ++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index b9fefe27e3e8..29deedee6ef4 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -4687,9 +4687,14 @@ static void vxlan_fdb_nh_flush(struct nexthop *nh)
- static int vxlan_nexthop_event(struct notifier_block *nb,
- 			       unsigned long event, void *ptr)
- {
--	struct nexthop *nh = ptr;
-+	struct nh_notifier_info *info = ptr;
-+	struct nexthop *nh;
-+
-+	if (event != NEXTHOP_EVENT_DEL)
-+		return NOTIFY_DONE;
+diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
+index 9b814c92de12..0ca2057d3269 100644
+--- a/include/uapi/linux/rtnetlink.h
++++ b/include/uapi/linux/rtnetlink.h
+@@ -396,11 +396,13 @@ struct rtnexthop {
+ #define RTNH_F_DEAD		1	/* Nexthop is dead (used by multipath)	*/
+ #define RTNH_F_PERVASIVE	2	/* Do recursive gateway lookup	*/
+ #define RTNH_F_ONLINK		4	/* Gateway is forced on link	*/
+-#define RTNH_F_OFFLOAD		8	/* offloaded route */
++#define RTNH_F_OFFLOAD		8	/* Nexthop is offloaded */
+ #define RTNH_F_LINKDOWN		16	/* carrier-down on nexthop */
+ #define RTNH_F_UNRESOLVED	32	/* The entry is unresolved (ipmr) */
++#define RTNH_F_TRAP		64	/* Nexthop is trapping packets */
  
--	if (!nh || event != NEXTHOP_EVENT_DEL)
-+	nh = nexthop_find_by_id(info->net, info->id);
-+	if (!nh)
- 		return NOTIFY_DONE;
+-#define RTNH_COMPARE_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN | RTNH_F_OFFLOAD)
++#define RTNH_COMPARE_MASK	(RTNH_F_DEAD | RTNH_F_LINKDOWN | \
++				 RTNH_F_OFFLOAD | RTNH_F_TRAP)
  
- 	vxlan_fdb_nh_flush(nh);
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 68fd25c6eec7..70c8ab6906ec 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -150,7 +150,7 @@ static int call_nexthop_notifiers(struct net *net,
- 	}
+ /* Macros to handle hexthops */
  
- 	err = blocking_notifier_call_chain(&net->nexthop.notifier_chain,
--					   event_type, nh);
-+					   event_type, &info);
- 	nh_notifier_info_fini(&info);
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index 1f75dc686b6b..f70b9a0c4957 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -1644,6 +1644,8 @@ int fib_nexthop_info(struct sk_buff *skb, const struct fib_nh_common *nhc,
+ 	*flags |= (nhc->nhc_flags & RTNH_F_ONLINK);
+ 	if (nhc->nhc_flags & RTNH_F_OFFLOAD)
+ 		*flags |= RTNH_F_OFFLOAD;
++	if (nhc->nhc_flags & RTNH_F_TRAP)
++		*flags |= RTNH_F_TRAP;
  
- 	return notifier_to_errno(err);
+ 	if (!skip_oif && nhc->nhc_dev &&
+ 	    nla_put_u32(skb, RTA_OIF, nhc->nhc_dev->ifindex))
 -- 
 2.26.2
 
