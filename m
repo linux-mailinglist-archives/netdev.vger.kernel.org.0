@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DDE426075C
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 02:03:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DF6E26075B
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 02:03:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728236AbgIHADQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728229AbgIHADQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 7 Sep 2020 20:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727819AbgIHADK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 20:03:10 -0400
+        with ESMTP id S1727769AbgIHADJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 20:03:09 -0400
 Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439DAC061575
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 17:03:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27687C061573
+        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 17:03:07 -0700 (PDT)
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:8982:ed8c:62b1:c0c8])
-        by mail.nic.cz (Postfix) with ESMTP id C3BC314085D;
+        by mail.nic.cz (Postfix) with ESMTP id F0D8B14087C;
         Tue,  8 Sep 2020 02:03:01 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1599523381; bh=paU03e2esrN0TVh4GiRVFK6N0gxWf+6bIDfOeUqP8AA=;
+        t=1599523382; bh=f7Vmyv6xSzwV+8MY82mGpSsCAiNrFjxM9nldBqmL9JE=;
         h=From:To:Date;
-        b=ttjYfFTQcdq1ffrXcznhEfsmpc5oJkp6pr26/pkFpMmC2ZeUjjIg44KAB2TIkPA/b
-         2HH/UWAZZ7WsbganG1vRMYCF2R+A8zPBrdvgd3834NqYkndMKkusGrhvqh0n2plv8i
-         LN6Eb8i0sAOVua33wfrrMnJEgeyBtlgAJTxgeZi4=
+        b=QWY/g8DBWru6ad+NWbj/3soYeUp+V0F8iNnaqNNIdSG8tK05Y4RGgVeD8gYuOkzO2
+         1QW2RaMyRcO3iFNxH4krUzZvyCXrkTIRrZz0wjhiiGGf8D7J2fTfS7HE29ORn6pjIC
+         UAlQl/MfB66QVjQVnJA5aHdVljhEOkBLA2wz6qQw=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
@@ -32,9 +32,9 @@ Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH net-next v1 2/3] net: phy: add API for LEDs controlled by ethernet PHY chips
-Date:   Tue,  8 Sep 2020 02:02:59 +0200
-Message-Id: <20200908000300.6982-3-marek.behun@nic.cz>
+Subject: [PATCH net-next v1 3/3] net: phy: marvell: add support for LEDs controlled by Marvell PHYs
+Date:   Tue,  8 Sep 2020 02:03:00 +0200
+Message-Id: <20200908000300.6982-4-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200908000300.6982-1-marek.behun@nic.cz>
 References: <20200908000300.6982-1-marek.behun@nic.cz>
@@ -51,514 +51,421 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Many an ethernet PHY supports various HW control modes for LEDs
-connected directly to the PHY chip.
+This patch adds support for controlling the LEDs connected to several
+families of Marvell PHYs via the PHY HW LED trigger API. These families
+are: 88E1112, 88E1121R, 88E1240, 88E1340S, 88E1510 and 88E1545. More can
+be added.
 
-This patch adds code for registering such LEDs when described in device
-tree and also adds a new private LED trigger called phydev-hw-mode.
-When this trigger is enabled for a LED, the various HW control modes
-which are supported by the PHY for given LED cat be get/set via hw_mode
-sysfs file.
+This patch does not yet add support for compound LED modes. This could
+be achieved via the LED multicolor framework.
 
-A PHY driver wishing to utilize this API needs to implement all the
-methods in the phy_device_led_ops structure.
+Settings such as HW blink rate or pulse stretch duration are not yet
+supported.
 
 Signed-off-by: Marek Behún <marek.behun@nic.cz>
 ---
- drivers/net/phy/Kconfig      |   4 +
- drivers/net/phy/Makefile     |   1 +
- drivers/net/phy/phy_device.c |  28 +++--
- drivers/net/phy/phy_led.c    | 224 +++++++++++++++++++++++++++++++++++
- include/linux/phy.h          |  91 ++++++++++++++
- 5 files changed, 341 insertions(+), 7 deletions(-)
- create mode 100644 drivers/net/phy/phy_led.c
+ drivers/net/phy/marvell.c | 309 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 307 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 698bea312adc6..6ab8956c49b06 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -61,6 +61,10 @@ config SFP
- 	depends on HWMON || HWMON=n
- 	select MDIO_I2C
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index bb86ac0bd0920..e0293f309644a 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -148,6 +148,13 @@
+ #define MII_88E1510_PHY_LED_DEF		0x1177
+ #define MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE	0x1040
  
-+config PHY_LEDS
-+	bool
-+	default y if LEDS_TRIGGERS
++#define MII_PHY_LED_POLARITY_CTRL	17
++#define MII_PHY_LED_TIMER_CTRL		18
++#define MII_PHY_LED45_CTRL		19
 +
- comment "MII PHY device drivers"
- 
- config AMD_PHY
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index a13e402074cf8..8a54fb30a729d 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -20,6 +20,7 @@ endif
- obj-$(CONFIG_MDIO_DEVRES)	+= mdio_devres.o
- libphy-$(CONFIG_SWPHY)		+= swphy.o
- libphy-$(CONFIG_LED_TRIGGER_PHY)	+= phy_led_triggers.o
-+libphy-$(CONFIG_PHY_LEDS)		+= phy_led.o
- 
- obj-$(CONFIG_PHYLINK)		+= phylink.o
- obj-$(CONFIG_PHYLIB)		+= libphy.o
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 8adfbad0a1e8f..8a28134841ec3 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -9,6 +9,7 @@
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/atomic.h>
- #include <linux/bitmap.h>
- #include <linux/delay.h>
- #include <linux/errno.h>
-@@ -892,6 +893,7 @@ EXPORT_SYMBOL(get_phy_device);
-  */
- int phy_device_register(struct phy_device *phydev)
- {
-+	static atomic_t phyindex;
- 	int err;
- 
- 	err = mdiobus_register_device(&phydev->mdio);
-@@ -908,6 +910,7 @@ int phy_device_register(struct phy_device *phydev)
- 		goto out;
- 	}
- 
-+	phydev->phyindex = atomic_inc_return(&phyindex) - 1;
- 	err = device_add(&phydev->mdio.dev);
- 	if (err) {
- 		phydev_err(phydev, "failed to add\n");
-@@ -2909,6 +2912,8 @@ static int phy_probe(struct device *dev)
- 				 phydev->supported);
- 	}
- 
-+	of_phy_register_leds(phydev);
++#define MII_PHY_LED_CTRL_FORCE_ON	0x9
++#define MII_PHY_LED_CTRL_FORCE_OFF	0x8
 +
- 	/* Set the state to READY by default */
- 	phydev->state = PHY_READY;
+ #define MII_M1011_PHY_STATUS		0x11
+ #define MII_M1011_PHY_STATUS_1000	0x8000
+ #define MII_M1011_PHY_STATUS_100	0x4000
+@@ -252,6 +259,8 @@
+ #define LPA_PAUSE_FIBER		0x180
+ #define LPA_PAUSE_ASYM_FIBER	0x100
  
-@@ -3040,24 +3045,32 @@ static int __init phy_init(void)
- {
- 	int rc;
- 
--	rc = mdio_bus_init();
-+	rc = phy_leds_init();
- 	if (rc)
- 		return rc;
- 
-+	rc = mdio_bus_init();
-+	if (rc)
-+		goto err_leds;
++#define MARVELL_PHY_MAX_LEDS	6
 +
- 	ethtool_set_ethtool_phy_ops(&phy_ethtool_phy_ops);
- 	features_init();
+ #define NB_FIBER_STATS	1
  
- 	rc = phy_driver_register(&genphy_c45_driver, THIS_MODULE);
- 	if (rc)
--		goto err_c45;
-+		goto err_mdio;
+ MODULE_DESCRIPTION("Marvell PHY driver");
+@@ -280,6 +289,7 @@ struct marvell_priv {
+ 	u32 last;
+ 	u32 step;
+ 	s8 pair;
++	u16 legacy_led_config_mask;
+ };
  
- 	rc = phy_driver_register(&genphy_driver, THIS_MODULE);
--	if (rc) {
--		phy_driver_unregister(&genphy_c45_driver);
--err_c45:
--		mdio_bus_exit();
--	}
-+	if (rc)
-+		goto err_c45;
- 
-+	return 0;
-+err_c45:
-+	phy_driver_unregister(&genphy_c45_driver);
-+err_mdio:
-+	mdio_bus_exit();
-+err_leds:
-+	phy_leds_exit();
- 	return rc;
+ static int marvell_read_page(struct phy_device *phydev)
+@@ -662,8 +672,295 @@ static int m88e1510_config_aneg(struct phy_device *phydev)
+ 	return err;
  }
- 
-@@ -3067,6 +3080,7 @@ static void __exit phy_exit(void)
- 	phy_driver_unregister(&genphy_driver);
- 	mdio_bus_exit();
- 	ethtool_set_ethtool_phy_ops(NULL);
-+	phy_leds_exit();
- }
- 
- subsys_initcall(phy_init);
-diff --git a/drivers/net/phy/phy_led.c b/drivers/net/phy/phy_led.c
-new file mode 100644
-index 0000000000000..80d203b41c92e
---- /dev/null
-+++ b/drivers/net/phy/phy_led.c
-@@ -0,0 +1,224 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/* drivers/net/phy/phy_hw_led_mode.c
-+ *
-+ * PHY HW LED mode trigger
-+ *
-+ * Copyright (C) 2020 Marek Behun <marek.behun@nic.cz>
-+ */
-+#include <linux/leds.h>
-+#include <linux/netdevice.h>
-+#include <linux/of.h>
-+#include <linux/phy.h>
-+
-+int phy_led_brightness_set(struct led_classdev *cdev, enum led_brightness brightness)
-+{
-+	struct phy_device_led *led = led_cdev_to_phy_device_led(cdev);
-+	struct phy_device *phydev = to_phy_device(cdev->dev->parent);
-+	int ret;
-+
-+	mutex_lock(&phydev->lock);
-+	ret = phydev->led_ops->led_brightness_set(phydev, led, brightness);
-+	mutex_unlock(&phydev->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(phy_led_brightness_set);
-+
-+static int of_phy_register_led(struct phy_device *phydev, struct device_node *np)
-+{
-+	struct phy_device_led_init_data pdata = {};
-+	struct led_init_data init_data = {};
-+	struct phy_device_led *led;
-+	char devicename[16];
-+	u32 reg;
-+	int ret;
-+
-+	ret = of_property_read_u32(np, "reg", &reg);
-+	if (ret < 0)
-+		return ret;
-+
-+	led = devm_kzalloc(&phydev->mdio.dev, sizeof(struct phy_device_led), GFP_KERNEL);
-+	if (!led)
-+		return -ENOMEM;
-+
-+	led->cdev.brightness_set_blocking = phy_led_brightness_set;
-+	led->cdev.trigger_type = &phy_hw_led_trig_type;
-+	led->addr = reg;
-+
-+	of_property_read_string(np, "linux,default-trigger", &led->cdev.default_trigger);
-+	of_property_read_string(np, "linux,default-hw-mode", &led->hw_mode);
-+
-+	pdata.active_low = !of_property_read_bool(np, "enable-active-high");
-+	pdata.open_drain = of_property_read_bool(np, "led-open-drain");
-+
-+	init_data.fwnode = &np->fwnode;
-+	init_data.devname_mandatory = true;
-+	snprintf(devicename, sizeof(devicename), "phy%d", phydev->phyindex);
-+	init_data.devicename = devicename;
-+
-+	ret = phydev->led_ops->led_init(phydev, led, &pdata);
-+	if (ret < 0)
-+		goto err_free;
-+
-+	ret = devm_led_classdev_register_ext(&phydev->mdio.dev, &led->cdev, &init_data);
-+	if (ret < 0)
-+		goto err_free;
-+
-+	led->flags |= PHY_DEVICE_LED_REGISTERED;
-+
-+	return 0;
-+err_free:
-+	devm_kfree(&phydev->mdio.dev, led);
-+	return ret;
-+}
-+
-+int of_phy_register_leds(struct phy_device *phydev)
-+{
-+	struct device_node *node = phydev->mdio.dev.of_node;
-+	struct device_node *leds, *led;
-+	int ret;
-+
-+	if (!IS_ENABLED(CONFIG_OF_MDIO))
-+		return 0;
-+
-+	if (!phydev->drv->led_ops)
-+		return 0;
-+
-+	phydev->led_ops = phydev->drv->led_ops;
-+
-+	leds = of_get_child_by_name(node, "leds");
-+	if (!leds)
-+		return 0;
-+
-+	for_each_available_child_of_node(leds, led) {
-+		ret = of_phy_register_led(phydev, led);
-+		if (ret < 0)
-+			phydev_err(phydev, "Nonfatal error: cannot register LED from node %pOFn: %i\n",
-+				   led, ret);
-+	}
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(of_phy_register_leds);
-+
-+static int phy_hw_led_trig_activate(struct led_classdev *cdev)
-+{
-+	struct phy_device *phydev = to_phy_device(cdev->dev->parent);
-+	struct phy_device_led *led;
-+	int ret;
-+
-+	led = led_cdev_to_phy_device_led(cdev);
-+
-+	if (!led->hw_mode)
-+		return 0;
-+
-+	/* When this trigger is being activated from devm_led_classdev_register_ext, the mutex is
-+	 * already locked (in phy_probe), so only lock/unlock it if the LED is already registered.
-+	 */
-+	if (led->flags & PHY_DEVICE_LED_REGISTERED)
-+		mutex_lock(&phydev->lock);
-+
-+	ret = phydev->led_ops->led_set_hw_mode(phydev, led, led->hw_mode);
-+
-+	if (led->flags & PHY_DEVICE_LED_REGISTERED)
-+		mutex_unlock(&phydev->lock);
-+
-+	if (ret < 0)
-+		phydev_warn(phydev, "could not set HW mode %s on LED %s: %i\n", led->hw_mode,
-+			    cdev->name, ret);
-+
-+	/* don't fail to activate this trigger so that user can write hw_mode file */
-+	return 0;
-+}
-+
-+static void phy_hw_led_trig_deactivate(struct led_classdev *cdev)
-+{
-+	struct phy_device *phydev = to_phy_device(cdev->dev->parent);
-+	struct phy_device_led *led;
-+	int ret;
-+
-+	led = led_cdev_to_phy_device_led(cdev);
-+
-+	mutex_lock(&phydev->lock);
-+
-+	/* store HW mode before deactivation */
-+	led->hw_mode = phydev->led_ops->led_get_hw_mode(phydev, led);
-+
-+	ret = phydev->led_ops->led_set_hw_mode(phydev, led_cdev_to_phy_device_led(cdev), NULL);
-+
-+	mutex_unlock(&phydev->lock);
-+
-+	if (ret < 0)
-+		phydev_err(phydev, "failed deactivating HW mode on LED %s\n", cdev->name);
-+}
-+
-+static ssize_t hw_mode_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct phy_device *phydev = to_phy_device(dev->parent);
-+	const char *mode, *cur_mode;
-+	struct phy_device_led *led;
-+	void *iter = NULL;
-+	int len = 0;
-+
-+	led = led_cdev_to_phy_device_led(led_trigger_get_led(dev));
-+
-+	mutex_lock(&phydev->lock);
-+
-+	cur_mode = phydev->led_ops->led_get_hw_mode(phydev, led);
-+
-+	for (mode = phydev->led_ops->led_iter_hw_mode(phydev, led, &iter);
-+	     mode;
-+	     mode = phydev->led_ops->led_iter_hw_mode(phydev, led, &iter)) {
-+		bool sel;
-+
-+		sel = cur_mode && !strcmp(mode, cur_mode);
-+
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "%s%s%s ", sel ? "[" : "", mode,
-+				 sel ? "]" : "");
-+	}
-+
-+	if (buf[len - 1] == ' ')
-+		buf[len - 1] = '\n';
-+
-+	mutex_unlock(&phydev->lock);
-+
-+	return len;
-+}
-+
-+static ssize_t hw_mode_store(struct device *dev, struct device_attribute *attr, const char *buf,
-+			     size_t count)
-+{
-+	struct phy_device *phydev = to_phy_device(dev->parent);
-+	struct phy_device_led *led;
-+	int ret;
-+
-+	led = led_cdev_to_phy_device_led(led_trigger_get_led(dev));
-+
-+	mutex_lock(&phydev->lock);
-+	ret = phydev->led_ops->led_set_hw_mode(phydev, led, buf);
-+	mutex_unlock(&phydev->lock);
-+	if (ret < 0)
-+		return ret;
-+
-+	return count;
-+}
-+
-+static DEVICE_ATTR_RW(hw_mode);
-+
-+static struct attribute *phy_hw_led_trig_attrs[] = {
-+	&dev_attr_hw_mode.attr,
-+	NULL
-+};
-+ATTRIBUTE_GROUPS(phy_hw_led_trig);
-+
-+struct led_hw_trigger_type phy_hw_led_trig_type;
-+EXPORT_SYMBOL_GPL(phy_hw_led_trig_type);
-+
-+struct led_trigger phy_hw_led_trig = {
-+	.name		= "phydev-hw-mode",
-+	.activate	= phy_hw_led_trig_activate,
-+	.deactivate	= phy_hw_led_trig_deactivate,
-+	.trigger_type	= &phy_hw_led_trig_type,
-+	.groups		= phy_hw_led_trig_groups,
-+};
-+EXPORT_SYMBOL_GPL(phy_hw_led_trig);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 3a09d2bf69ea4..2c651375becd1 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -14,6 +14,7 @@
- #include <linux/compiler.h>
- #include <linux/spinlock.h>
- #include <linux/ethtool.h>
-+#include <linux/leds.h>
- #include <linux/linkmode.h>
- #include <linux/netlink.h>
- #include <linux/mdio.h>
-@@ -406,6 +407,7 @@ struct macsec_ops;
- /* phy_device: An instance of a PHY
-  *
-  * drv: Pointer to the driver for this PHY instance
-+ * phyindex: a simple incrementing PHY index
-  * phy_id: UID for this device found during discovery
-  * c45_ids: 802.3-c45 Device Identifers if is_c45.
-  * is_c45:  Set to true if this phy uses clause 45 addressing.
-@@ -420,6 +422,7 @@ struct macsec_ops;
-  * downshifted_rate: Set true if link speed has been downshifted.
-  * state: state of the PHY for management purposes
-  * dev_flags: Device-specific flags used by the PHY driver.
-+ * led_ops: PHY connected LEDs ops
-  * irq: IRQ number of the PHY's interrupt (-1 if none)
-  * phy_timer: The timer for handling the state machine
-  * sfp_bus_attached: flag indicating whether the SFP bus has been attached
-@@ -446,6 +449,8 @@ struct phy_device {
- 	/* And management functions */
- 	struct phy_driver *drv;
- 
-+	int phyindex;
-+
- 	u32 phy_id;
- 
- 	struct phy_c45_device_ids c45_ids;
-@@ -505,6 +510,10 @@ struct phy_device {
- 	struct phy_led_trigger *led_link_trigger;
- #endif
  
 +#if IS_ENABLED(CONFIG_PHY_LEDS)
-+	const struct phy_device_led_ops *led_ops;
-+#endif
 +
- 	/*
- 	 * Interrupt number for this PHY
- 	 * -1 means no interrupt
-@@ -562,6 +571,85 @@ struct phy_tdr_config {
- };
- #define PHY_PAIR_ALL -1
- 
-+struct phy_device_led_init_data {
-+	bool active_low;
-+	bool open_drain;
++enum {
++	COMMON			= BIT(0),
++	L1V0_RECV		= BIT(1),
++	L1V0_COPPER		= BIT(2),
++	L1V5_100_FIBER		= BIT(3),
++	L1V5_100_10		= BIT(4),
++	L2V2_INIT		= BIT(5),
++	L2V2_PTP		= BIT(6),
++	L2V2_DUPLEX		= BIT(7),
++	L3V0_FIBER		= BIT(8),
++	L3V0_LOS		= BIT(9),
++	L3V5_TRANS		= BIT(10),
++	L3V7_FIBER		= BIT(11),
++	L3V7_DUPLEX		= BIT(12),
 +};
 +
-+#define PHY_DEVICE_LED_REGISTERED	BIT(31)
-+
-+/* PHY LEDs support */
-+struct phy_device_led {
-+	struct led_classdev cdev;
-+	const char *hw_mode;
-+	int addr;
++struct marvell_led_mode_info {
++	const char *name;
++	s8 regval[MARVELL_PHY_MAX_LEDS];
 +	u32 flags;
 +};
-+#define led_cdev_to_phy_device_led(l) container_of(l, struct phy_device_led, cdev)
 +
-+/* struct phy_device_led_ops: Operations on LEDs controlled by PHY chips
-+ *
-+ * All the following operations must be implemented:
-+ * @led_init: Should initialize LED from init_data (and check whether they are correct).
-+ *            This should also set led->cdev.max_brightness, for example.
-+ * @led_brightness_set: Sets brightness.
-+ * @led_iter_hw_mode: Iterates available HW control mode names for this LED.
-+ * @led_set_hw_mode: Sets HW control mode to value specified by given name.
-+ * @led_get_hw_mode: Returns current HW control mode name.
-+ *
-+ * This methods must not lock the phy_device lock mutex. When they are called, the mutex
-+ * is already locked.
-+ */
-+struct phy_device_led_ops {
-+	int (*led_init)(struct phy_device *dev, struct phy_device_led *led,
-+			const struct phy_device_led_init_data *pdata);
-+	int (*led_brightness_set)(struct phy_device *dev, struct phy_device_led *led,
-+				  enum led_brightness brightness);
-+	const char *(*led_iter_hw_mode)(struct phy_device *dev, struct phy_device_led *led,
-+					void **iter);
-+	int (*led_set_hw_mode)(struct phy_device *dev, struct phy_device_led *led,
-+			       const char *mode);
-+	const char *(*led_get_hw_mode)(struct phy_device *dev, struct phy_device_led *led);
++static const struct marvell_led_mode_info marvell_led_mode_info[] = {
++	{ "link",			{ 0x0,  -1, 0x0,  -1,  -1,  -1, }, COMMON },
++	{ "link/act",			{ 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, }, COMMON },
++	{ "1Gbps/100Mbps/10Mbps",	{ 0x2,  -1,  -1,  -1,  -1,  -1, }, COMMON },
++	{ "act",			{ 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, }, COMMON },
++	{ "blink-act",			{ 0x4, 0x4, 0x4, 0x4, 0x4, 0x4, }, COMMON },
++	{ "tx",				{ 0x5,  -1, 0x5,  -1, 0x5, 0x5, }, COMMON },
++	{ "tx",				{  -1,  -1,  -1, 0x5,  -1,  -1, }, L3V5_TRANS },
++	{ "rx",				{  -1,  -1,  -1,  -1, 0x0, 0x0, }, COMMON },
++	{ "rx",				{  -1, 0x0,  -1,  -1,  -1,  -1, }, L1V0_RECV },
++	{ "copper",			{ 0x6,  -1,  -1,  -1,  -1,  -1, }, COMMON },
++	{ "copper",			{  -1, 0x0,  -1,  -1,  -1,  -1, }, L1V0_COPPER },
++	{ "1Gbps",			{ 0x7,  -1,  -1,  -1,  -1,  -1, }, COMMON },
++	{ "link/rx",			{  -1, 0x2,  -1, 0x2, 0x2, 0x2, }, COMMON },
++	{ "100Mbps-fiber",		{  -1, 0x5,  -1,  -1,  -1,  -1, }, L1V5_100_FIBER },
++	{ "100Mbps-10Mbps",		{  -1, 0x5,  -1,  -1,  -1,  -1, }, L1V5_100_10 },
++	{ "1Gbps-100Mbps",		{  -1, 0x6,  -1,  -1,  -1,  -1, }, COMMON },
++	{ "1Gbps-10Mbps",		{  -1,  -1, 0x6, 0x6,  -1,  -1, }, COMMON },
++	{ "100Mbps",			{  -1, 0x7,  -1,  -1,  -1,  -1, }, COMMON },
++	{ "10Mbps",			{  -1,  -1, 0x7,  -1,  -1,  -1, }, COMMON },
++	{ "fiber",			{  -1,  -1,  -1, 0x0,  -1,  -1, }, L3V0_FIBER },
++	{ "fiber",			{  -1,  -1,  -1, 0x7,  -1,  -1, }, L3V7_FIBER },
++	{ "FullDuplex",			{  -1,  -1,  -1, 0x7,  -1,  -1, }, L3V7_DUPLEX },
++	{ "FullDuplex",			{  -1,  -1,  -1,  -1, 0x6, 0x6, }, COMMON },
++	{ "FullDuplex/collision",	{  -1,  -1,  -1,  -1, 0x7, 0x7, }, COMMON },
++	{ "FullDuplex/collision",	{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_DUPLEX },
++	{ "ptp",			{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_PTP },
++	{ "init",			{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_INIT },
++	{ "los",			{  -1,  -1,  -1, 0x0,  -1,  -1, }, L3V0_LOS },
++	{ "blink",			{ 0xb, 0xb, 0xb, 0xb, 0xb, 0xb, }, COMMON },
 +};
 +
-+#if IS_ENABLED(CONFIG_PHY_LEDS)
++struct marvell_leds_info {
++	u32 family;
++	int nleds;
++	u32 flags;
++};
 +
-+#define phy_device_led_ops_ptr(s) (s)
++#define LED(fam, n, flg)							\
++	{									\
++		.family = MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E##fam),	\
++		.nleds = (n),							\
++		.flags = (flg),							\
++	}									\
 +
-+int of_phy_register_leds(struct phy_device *phydev);
++static const struct marvell_leds_info marvell_leds_info[] = {
++	LED(1112,  4, COMMON | L1V0_COPPER | L1V5_100_FIBER | L2V2_INIT | L3V0_LOS | L3V5_TRANS |
++		      L3V7_FIBER),
++	LED(1121R, 3, COMMON | L1V5_100_10),
++	LED(1240,  6, COMMON | L3V5_TRANS),
++	LED(1340S, 6, COMMON | L1V0_COPPER | L1V5_100_FIBER | L2V2_PTP | L3V0_FIBER | L3V7_DUPLEX),
++	LED(1510,  3, COMMON | L1V0_RECV | L1V5_100_FIBER | L2V2_DUPLEX),
++	LED(1545,  6, COMMON | L1V0_COPPER | L1V5_100_FIBER | L3V0_FIBER | L3V7_DUPLEX),
++};
 +
-+extern struct led_hw_trigger_type phy_hw_led_trig_type;
-+extern struct led_trigger phy_hw_led_trig;
-+int phy_led_brightness_set(struct led_classdev *cdev, enum led_brightness brightness);
-+
-+static inline int phy_leds_init(void)
++static inline int marvell_led_reg(int led)
 +{
-+	return led_trigger_register(&phy_hw_led_trig);
++	switch (led) {
++	case 0 ... 3:
++		return MII_PHY_LED_CTRL;
++	case 4 ... 5:
++		return MII_PHY_LED45_CTRL;
++	default:
++		return -EINVAL;
++	}
 +}
 +
-+static inline void phy_leds_exit(void)
++static int marvell_led_set_regval(struct phy_device *phydev, int led, u16 val)
 +{
-+	led_trigger_unregister(&phy_hw_led_trig);
++	u16 mask;
++	int reg;
++
++	reg = marvell_led_reg(led);
++	if (reg < 0)
++		return reg;
++
++	val <<= (led % 4) * 4;
++	mask = 0xf << ((led % 4) * 4);
++
++	return phy_modify_paged(phydev, MII_MARVELL_LED_PAGE, reg, mask, val);
 +}
-+#else /* !IS_ENABLED(CONFIG_PHY_LEDS) */
 +
-+#define phy_device_led_ops_ptr(s) NULL
-+
-+static inline int of_phy_register_leds(struct phy_device *phydev)
++static int marvell_led_get_regval(struct phy_device *phydev, int led)
 +{
++	int reg, val;
++
++	reg = marvell_led_reg(led);
++	if (reg < 0)
++		return reg;
++
++	val = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, reg);
++	if (val < 0)
++		return val;
++
++	val >>= (led % 4) * 4;
++	val &= 0xf;
++
++	return val;
++}
++
++static int marvell_led_set_polarity(struct phy_device *phydev, int led, bool active_low,
++				    bool open_drain)
++{
++	int reg, shift;
++	u16 mask, val;
++
++	switch (led) {
++	case 0 ... 3:
++		reg = MII_PHY_LED_POLARITY_CTRL;
++		break;
++	case 4 ... 5:
++		reg = MII_PHY_LED45_CTRL;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	val = 0;
++	if (!active_low)
++		val |= BIT(0);
++	if (open_drain)
++		val |= BIT(1);
++
++	shift = led * 2;
++	val <<= shift;
++	mask = 0x3 << shift;
++
++	return phy_modify_paged(phydev, MII_MARVELL_LED_PAGE, reg, mask, val);
++}
++
++static int marvell_led_brightness_set(struct phy_device *phydev, struct phy_device_led *led,
++				      enum led_brightness brightness)
++{
++	u8 val;
++
++	/* don't do anything if HW control is enabled */
++	if (led->cdev.trigger == &phy_hw_led_trig)
++		return 0;
++
++	val = brightness ? MII_PHY_LED_CTRL_FORCE_ON : MII_PHY_LED_CTRL_FORCE_OFF;
++
++	return marvell_led_set_regval(phydev, led->addr, val);
++}
++
++static inline bool is_valid_led_mode(struct phy_device_led *led,
++				     const struct marvell_led_mode_info *mode)
++{
++	return mode->regval[led->addr] != -1 && (led->flags & mode->flags);
++}
++
++static const char *marvell_led_iter_hw_mode(struct phy_device *phydev, struct phy_device_led *led,
++					    void **iter)
++{
++	const struct marvell_led_mode_info *mode = *iter;
++
++	if (!mode)
++		mode = marvell_led_mode_info;
++
++	if (mode - marvell_led_mode_info == ARRAY_SIZE(marvell_led_mode_info))
++		goto end;
++
++	while (!is_valid_led_mode(led, mode)) {
++		++mode;
++		if (mode - marvell_led_mode_info == ARRAY_SIZE(marvell_led_mode_info))
++			goto end;
++	}
++
++	*iter = (void *)(mode + 1);
++	return mode->name;
++end:
++	*iter = NULL;
++	return NULL;
++}
++
++static int marvell_led_set_hw_mode(struct phy_device *phydev, struct phy_device_led *led,
++				   const char *name)
++{
++	const struct marvell_led_mode_info *mode;
++	int i;
++
++	if (!name)
++		return 0;
++
++	for (i = 0; i < ARRAY_SIZE(marvell_led_mode_info); ++i) {
++		mode = &marvell_led_mode_info[i];
++
++		if (!is_valid_led_mode(led, mode))
++			continue;
++
++		if (sysfs_streq(name, mode->name))
++			return marvell_led_set_regval(phydev, led->addr, mode->regval[led->addr]);
++	}
++
++	return -EINVAL;
++}
++
++static const char *marvell_led_get_hw_mode(struct phy_device *phydev, struct phy_device_led *led)
++{
++	const struct marvell_led_mode_info *mode;
++	int i, regval;
++
++	regval = marvell_led_get_regval(phydev, led->addr);
++	if (regval < 0)
++		return NULL;
++
++	for (i = 0; i < ARRAY_SIZE(marvell_led_mode_info); ++i) {
++		mode = &marvell_led_mode_info[i];
++
++		if (!is_valid_led_mode(led, mode))
++			continue;
++
++		if (mode->regval[led->addr] == regval)
++			return mode->name;
++	}
++
++	return NULL;
++}
++
++static int marvell_led_init(struct phy_device *phydev, struct phy_device_led *led,
++			    const struct phy_device_led_init_data *pdata)
++{
++	const struct marvell_leds_info *info = NULL;
++	struct marvell_priv *priv = phydev->priv;
++	int ret, i;
++
++	for (i = 0; i < ARRAY_SIZE(marvell_leds_info); ++i) {
++		if (MARVELL_PHY_FAMILY_ID(phydev->phy_id) == marvell_leds_info[i].family) {
++			info = &marvell_leds_info[i];
++			break;
++		}
++	}
++
++	if (!info)
++		return -EOPNOTSUPP;
++
++	if (led->addr >= info->nleds)
++		return -EINVAL;
++
++	led->flags = info->flags;
++	led->cdev.max_brightness = 1;
++
++	ret = marvell_led_set_polarity(phydev, led->addr, pdata->active_low, pdata->open_drain);
++	if (ret < 0)
++		return ret;
++
++	/* ensure marvell_config_led below does not change settings we have set for this LED */
++	if (led->addr < 3)
++		priv->legacy_led_config_mask &= ~(0xf << (led->addr * 4));
++
 +	return 0;
 +}
 +
-+static inline int phy_leds_init(void)
-+{
-+	return 0;
-+}
++static const struct phy_device_led_ops marvell_led_ops = {
++	.led_init = marvell_led_init,
++	.led_brightness_set = marvell_led_brightness_set,
++	.led_iter_hw_mode = marvell_led_iter_hw_mode,
++	.led_set_hw_mode = marvell_led_set_hw_mode,
++	.led_get_hw_mode = marvell_led_get_hw_mode,
++};
 +
-+static inline void phy_leds_exit(void)
-+{
-+}
-+#endif /* !IS_ENABLED(CONFIG_PHY_LEDS) */
++#endif /* IS_ENABLED(CONFIG_PHY_LEDS) */
 +
- /* struct phy_driver: Driver structure for a particular PHY type
-  *
-  * driver_data: static driver data
-@@ -738,6 +826,9 @@ struct phy_driver {
- 	int (*set_loopback)(struct phy_device *dev, bool enable);
- 	int (*get_sqi)(struct phy_device *dev);
- 	int (*get_sqi_max)(struct phy_device *dev);
-+
-+	/* PHY connected LEDs operations */
-+	const struct phy_device_led_ops *led_ops;
- };
- #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
- 				      struct phy_driver, mdiodrv)
+ static void marvell_config_led(struct phy_device *phydev)
+ {
++	struct marvell_priv *priv = phydev->priv;
+ 	u16 def_config;
+ 	int err;
+ 
+@@ -688,8 +985,9 @@ static void marvell_config_led(struct phy_device *phydev)
+ 		return;
+ 	}
+ 
+-	err = phy_write_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
+-			      def_config);
++	def_config &= priv->legacy_led_config_mask;
++	err = phy_modify_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
++			       priv->legacy_led_config_mask, def_config);
+ 	if (err < 0)
+ 		phydev_warn(phydev, "Fail to config marvell phy LED.\n");
+ }
+@@ -2580,6 +2878,7 @@ static int marvell_probe(struct phy_device *phydev)
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
++	priv->legacy_led_config_mask = 0xffff;
+ 	phydev->priv = priv;
+ 
+ 	return 0;
+@@ -2656,6 +2955,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
++		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1111,
+@@ -2717,6 +3017,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
++		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1318S,
+@@ -2796,6 +3097,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_sset_count = marvell_get_sset_count,
+ 		.get_strings = marvell_get_strings,
+ 		.get_stats = marvell_get_stats,
++		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1116R,
+@@ -2844,6 +3146,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.cable_test_start = marvell_vct7_cable_test_start,
+ 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
+ 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
++		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1540,
+@@ -2896,6 +3199,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.cable_test_start = marvell_vct7_cable_test_start,
+ 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
+ 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
++		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E3016,
+@@ -2964,6 +3268,7 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1540_get_tunable,
+ 		.set_tunable = m88e1540_set_tunable,
++		.led_ops = phy_device_led_ops_ptr(&marvell_led_ops),
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1548P,
 -- 
 2.26.2
 
