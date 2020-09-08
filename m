@@ -2,114 +2,272 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EA8D261576
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:51:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BB372615BB
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731962AbgIHQuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:50:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731990AbgIHQuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:50:06 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55609C061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 09:50:06 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id z13so23835iom.8
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 09:50:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=knw0Phyf4lcxPfcI+W+2G/ZQ7pW6xZfsdOiqIM6ktqw=;
-        b=gbVS6FD2jUIirMZ0VSiBlkGctJK8YHe/D8r+K9iY2h+A9JQ9vPz6K1tZrTJuzLXJGc
-         wi0+81UIoyLpFFeCDdRpdHs/+gv6KbTw8R5ez+2HciXibKXG1DEcpeWNKlLZZN+7eKmf
-         RZd1oh+AKzab39/uY286Owbbv+xiYPnkusIqSlnLLqHDRGzdMiX9IRqLVzTWWoahUpCo
-         HayJ2AekQvXOIyANrIMFKkGidp+8DZSdBLvQjVV1Cm9Eb1JYBYmFj6GLZvZOv0D+bnGA
-         6P26x73X5oslpxs2NlOrdpbeAOH1XCVtA0N00DCUzlZ+Jr6h7zU/tH9inCeS1tpqcgSS
-         YwfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=knw0Phyf4lcxPfcI+W+2G/ZQ7pW6xZfsdOiqIM6ktqw=;
-        b=llHe9u6qj6dZrScWYeQqLBho60vFLgwZ1mUPo0pTqqaml/VWmVmRQPPFbSmyiVw4U9
-         xQFEaekP6Wt1mGmAMblXPBfatK23N9KNzWHT7cIhPHCHdKDJXVOCEz/bU2+gKjnhjRb/
-         UwXhLpRS82QSPoEP30aeZTLRMYAxSRWrA5afxPuh+dPEl2Dmv1xGrACnEFHfwHZHCoQH
-         N3dLpQwXcTlZ5BS5I0bGfUHsW7h2IhKscWmG3BZvDV8fy4sz+mQ6vtysT29VYaoWZ/bV
-         S6tvFYh/G+ByHAUCMftYhuvt7VsgGFrcm7zr5638Qrc3xJHGYnhBuZkOQo/UOpBbnpsU
-         X1kQ==
-X-Gm-Message-State: AOAM5313kCw5ZjizjIbzhAEFjYrga1NBwxVYcjL61uQkmvteNvb4coQQ
-        E3AD7aUu8W0FD9mSG51U1b0=
-X-Google-Smtp-Source: ABdhPJw498jKHpRYHw6YA9+jmWpGnowOUF6/uVy8G4HXSJ5ORVxXsXpkR5oCD3jdLA9HMR27W9ckIw==
-X-Received: by 2002:a6b:37d5:: with SMTP id e204mr21133351ioa.104.1599583805553;
-        Tue, 08 Sep 2020 09:50:05 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:ec70:7b06:eed6:6e35])
-        by smtp.googlemail.com with ESMTPSA id q23sm3656982iob.19.2020.09.08.09.50.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Sep 2020 09:50:04 -0700 (PDT)
-Subject: Re: [PATCH net] ipv6: avoid lockdep issue in fib6_del()
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <20200908082023.3690438-1-edumazet@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <7f56f2d0-e741-bc24-c671-14e53607be2b@gmail.com>
-Date:   Tue, 8 Sep 2020 10:50:03 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1731925AbgIHQz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 12:55:27 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:58930 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731816AbgIHQzM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:55:12 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 088Gt7MS086519;
+        Tue, 8 Sep 2020 11:55:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1599584107;
+        bh=nlL2npsKlyOY3ft+6UJrgJZRAj6uLlrQ2DMNVsNBne0=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=K2KpKLMn/djBX+ja+slW0iNsT4quD82h6ynB8M9SLsahqXM1ZGHh6Go8RA/eXWUUU
+         q2c1JcVFReazFZWWyMvEu6lE4zAR3JeXayEzExR98sE5X3Hx27c/jKvYvjLIlpHMM4
+         Hy5KD70FjlcUCJwIV3FjobtV9oUgYDSPzIDlrIZ0=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 088Gt7WW022793
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 8 Sep 2020 11:55:07 -0500
+Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 8 Sep
+ 2020 11:55:07 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Tue, 8 Sep 2020 11:55:07 -0500
+Received: from [10.250.53.226] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 088Gt7qp024121;
+        Tue, 8 Sep 2020 11:55:07 -0500
+Subject: Re: [PATCH net-next 0/1] Support for VLAN interface over HSR/PRP
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, <nsekhar@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+References: <20200901195415.4840-1-m-karicheri2@ti.com>
+ <d93fbc54-1721-ebec-39ca-dc8b45e6e534@ti.com>
+ <15bbf7d2-627b-1d52-f130-5bae7b7889de@ti.com>
+ <CA+FuTSeri93irC9eaQqrFrY2++d0zJ4-F0YAfCXfX6XVVqU6Pw@mail.gmail.com>
+From:   Murali Karicheri <m-karicheri2@ti.com>
+Message-ID: <bf8a22c2-0ebe-7a52-2e79-7dde72d444ba@ti.com>
+Date:   Tue, 8 Sep 2020 12:55:01 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200908082023.3690438-1-edumazet@google.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CA+FuTSeri93irC9eaQqrFrY2++d0zJ4-F0YAfCXfX6XVVqU6Pw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/8/20 2:20 AM, Eric Dumazet wrote:
-> syzbot reported twice a lockdep issue in fib6_del() [1]
-> which I think is caused by net->ipv6.fib6_null_entry
-> having a NULL fib6_table pointer.
-> 
-> fib6_del() already checks for fib6_null_entry special
-> case, we only need to return earlier.
-> 
-> Bug seems to occur very rarely, I have thus chosen
-> a 'bug origin' that makes backports not too complex.
-> 
-> [1]
-> WARNING: suspicious RCU usage
-> 5.9.0-rc4-syzkaller #0 Not tainted
-> -----------------------------
-> net/ipv6/ip6_fib.c:1996 suspicious rcu_dereference_protected() usage!
-> 
-> other info that might help us debug this:
-> 
-> rcu_scheduler_active = 2, debug_locks = 1
-> 4 locks held by syz-executor.5/8095:
->  #0: ffffffff8a7ea708 (rtnl_mutex){+.+.}-{3:3}, at: ppp_release+0x178/0x240 drivers/net/ppp/ppp_generic.c:401
->  #1: ffff88804c422dd8 (&net->ipv6.fib6_gc_lock){+.-.}-{2:2}, at: spin_trylock_bh include/linux/spinlock.h:414 [inline]
->  #1: ffff88804c422dd8 (&net->ipv6.fib6_gc_lock){+.-.}-{2:2}, at: fib6_run_gc+0x21b/0x2d0 net/ipv6/ip6_fib.c:2312
->  #2: ffffffff89bd6a40 (rcu_read_lock){....}-{1:2}, at: __fib6_clean_all+0x0/0x290 net/ipv6/ip6_fib.c:2613
->  #3: ffff8880a82e6430 (&tb->tb6_lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:359 [inline]
->  #3: ffff8880a82e6430 (&tb->tb6_lock){+.-.}-{2:2}, at: __fib6_clean_all+0x107/0x290 net/ipv6/ip6_fib.c:2245
-> 
-> stack backtrace:
-> CPU: 1 PID: 8095 Comm: syz-executor.5 Not tainted 5.9.0-rc4-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x198/0x1fd lib/dump_stack.c:118
->  fib6_del+0x12b4/0x1630 net/ipv6/ip6_fib.c:1996
->  fib6_clean_node+0x39b/0x570 net/ipv6/ip6_fib.c:2180
->  fib6_walk_continue+0x4aa/0x8e0 net/ipv6/ip6_fib.c:2102
->  fib6_walk+0x182/0x370 net/ipv6/ip6_fib.c:2150
->  fib6_clean_tree+0xdb/0x120 net/ipv6/ip6_fib.c:2230
->  __fib6_clean_all+0x120/0x290 net/ipv6/ip6_fib.c:2246
+Hi Willem,
 
-This is walking a table and __fib6_clean_all takes the lock for the
-table (and you can see that above), so puzzling how fib6_del can be
-called for an entry with NULL fib6_table.
+On 9/4/20 11:52 AM, Willem de Bruijn wrote:
+> On Thu, Sep 3, 2020 at 12:30 AM Murali Karicheri <m-karicheri2@ti.com> wrote:
+>>
+>> All,
+>>
+>> On 9/2/20 12:14 PM, Murali Karicheri wrote:
+>>> All,
+>>>
+>>> On 9/1/20 3:54 PM, Murali Karicheri wrote:
+>>>> This series add support for creating VLAN interface over HSR or
+>>>> PRP interface. Typically industrial networks uses VLAN in
+>>>> deployment and this capability is needed to support these
+>>>> networks.
+>>>>
+>>>> This is tested using two TI AM572x IDK boards connected back
+>>>> to back over CPSW  ports (eth0 and eth1).
+>>>>
+>>>> Following is the setup
+>>>>
+>>>>                   Physical Setup
+>>>>                   ++++++++++++++
+>>>>    _______________    (CPSW)     _______________
+>>>>    |              |----eth0-----|               |
+>>>>    |TI AM572x IDK1|             | TI AM572x IDK2|
+>>>>    |______________|----eth1-----|_______________|
+>>>>
+>>>>
+>>>>                   Network Topolgy
+>>>>                   +++++++++++++++
+>>>>
+>>>>                          TI AM571x IDK  TI AM572x IDK
+>>>>
+>>>> 192.168.100.10                 CPSW ports                 192.168.100.20
+>>>>                IDK-1                                        IDK-2
+>>>> hsr0/prp0.100--| 192.168.2.10  |--eth0--| 192.168.2.20 |--hsr0/prp0.100
+>>>>                  |----hsr0/prp0--|        |---hsr0/prp0--|
+>>>> hsr0/prp0.101--|               |--eth1--|              |--hsr0/prp0/101
+>>>>
+>>>> 192.168.101.10                                            192.168.101.20
+>>>>
+>>>> Following tests:-
+>>>>    - create hsr or prp interface and ping the interface IP address
+>>>>      and verify ping is successful.
+>>>>    - Create 2 VLANs over hsr or prp interface on both IDKs (VID 100 and
+>>>>      101). Ping between the IP address of the VLAN interfaces
+>>>>    - Do iperf UDP traffic test with server on one IDK and client on the
+>>>>      other. Do this using 100 and 101 subnet IP addresses
+>>>>    - Dump /proc/net/vlan/{hsr|prp}0.100 and verify frames are transmitted
+>>>>      and received at these interfaces.
+>>>>    - Delete the vlan and hsr/prp interface and verify interfaces are
+>>>>      removed cleanly.
+>>>>
+>>>> Logs for IDK-1 at https://pastebin.ubuntu.com/p/NxF83yZFDX/
+>>>> Logs for IDK-2 at https://pastebin.ubuntu.com/p/YBXBcsPgVK/
+>>>>
+>>>> Murali Karicheri (1):
+>>>>     net: hsr/prp: add vlan support
+>>>>
+>>>>    net/hsr/hsr_device.c  |  4 ----
+>>>>    net/hsr/hsr_forward.c | 16 +++++++++++++---
+>>>>    2 files changed, 13 insertions(+), 7 deletions(-)
+>>>>
+>>> I am not sure if the packet flow is right for this?
+>>>
+>>> VLAN over HSR frame format is like this.
+>>>
+>>> <Start of Frame><VLAN tag><HSR Tag><IP><CRC>
+>>>
+>>> My ifconfig stats shows both hsr and hsr0.100 interfaces receiving
+>>> frames.
+>>>
+>>> So I did a WARN_ON() in HSR driver before frame is forwarded to upper
+>>> layer.
+>>>
+>>> a0868495local@uda0868495:~/Projects/upstream-kernel$ git diff
+>>> diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
+>>> index de21df30b0d9..545a3cd8c71b 100644
+>>> --- a/net/hsr/hsr_forward.c
+>>> +++ b/net/hsr/hsr_forward.c
+>>> @@ -415,9 +415,11 @@ static void hsr_forward_do(struct hsr_frame_info
+>>> *frame)
+>>>                   }
+>>>
+>>>                   skb->dev = port->dev;
+>>> -               if (port->type == HSR_PT_MASTER)
+>>> +               if (port->type == HSR_PT_MASTER) {
+>>> +                       if (skb_vlan_tag_present(skb))
+>>> +                               WARN_ON(1);
+>>>                           hsr_deliver_master(skb, port->dev,
+>>> frame->node_src);
+>>> -               else
+>>> +               } else
+>>>                           hsr_xmit(skb, port, frame);
+>>>           }
+>>>    }
+>>>
+>>> And I get the trace shown below.
+>>>
+>>> [  275.125431] WARNING: CPU: 0 PID: 0 at net/hsr/hsr_forward.c:420
+>>> hsr_forward_skb+0x460/0x564
+>>> [  275.133822] Modules linked in: snd_soc_omap_hdmi snd_soc_ti_sdma
+>>> snd_soc_core snd_pcm_dmaengine snd_pcm snd_time4
+>>> [  275.199705] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W
+>>> 5.9.0-rc1-00658-g473e463812c2-dirty #8
+>>> [  275.209573] Hardware name: Generic DRA74X (Flattened Device Tree)
+>>> [  275.215703] [<c011177c>] (unwind_backtrace) from [<c010b6f0>]
+>>> (show_stack+0x10/0x14)
+>>> [  275.223487] [<c010b6f0>] (show_stack) from [<c055690c>]
+>>> (dump_stack+0xc4/0xe4)
+>>> [  275.230747] [<c055690c>] (dump_stack) from [<c01386ac>]
+>>> (__warn+0xc0/0xf4)
+>>> [  275.237656] [<c01386ac>] (__warn) from [<c0138a3c>]
+>>> (warn_slowpath_fmt+0x58/0xb8)
+>>> [  275.245177] [<c0138a3c>] (warn_slowpath_fmt) from [<c09564bc>]
+>>> (hsr_forward_skb+0x460/0x564)
+>>> [  275.253657] [<c09564bc>] (hsr_forward_skb) from [<c0955534>]
+>>> (hsr_handle_frame+0x15c/0x190)
+>>> [  275.262047] [<c0955534>] (hsr_handle_frame) from [<c07c6704>]
+>>> (__netif_receive_skb_core+0x23c/0xc88)
+>>> [  275.271223] [<c07c6704>] (__netif_receive_skb_core) from [<c07c7180>]
+>>> (__netif_receive_skb_one_core+0x30/0x74)
+>>> [  275.281266] [<c07c7180>] (__netif_receive_skb_one_core) from
+>>> [<c07c72a4>] (netif_receive_skb+0x50/0x1c4)
+>>> [  275.290793] [<c07c72a4>] (netif_receive_skb) from [<c071a55c>]
+>>> (cpsw_rx_handler+0x230/0x308)
+>>> [  275.299272] [<c071a55c>] (cpsw_rx_handler) from [<c0715ee8>]
+>>> (__cpdma_chan_process+0xf4/0x188)
+>>> [  275.307925] [<c0715ee8>] (__cpdma_chan_process) from [<c0717294>]
+>>> (cpdma_chan_process+0x3c/0x5c)
+>>> [  275.316754] [<c0717294>] (cpdma_chan_process) from [<c071dd14>]
+>>> (cpsw_rx_mq_poll+0x44/0x98)
+>>> [  275.325145] [<c071dd14>] (cpsw_rx_mq_poll) from [<c07c8ae0>]
+>>> (net_rx_action+0xf0/0x400)
+>>> [  275.333185] [<c07c8ae0>] (net_rx_action) from [<c0101370>]
+>>> (__do_softirq+0xf0/0x3ac)
+>>> [  275.340965] [<c0101370>] (__do_softirq) from [<c013f5ec>]
+>>> (irq_exit+0xa8/0xe4)
+>>> [  275.348224] [<c013f5ec>] (irq_exit) from [<c0199344>]
+>>> (__handle_domain_irq+0x6c/0xe0)
+>>> [  275.356093] [<c0199344>] (__handle_domain_irq) from [<c056f8fc>]
+>>> (gic_handle_irq+0x4c/0xa8)
+>>> [  275.364481] [<c056f8fc>] (gic_handle_irq) from [<c0100b6c>]
+>>> (__irq_svc+0x6c/0x90)
+>>> [  275.371996] Exception stack(0xc0e01f18 to 0xc0e01f60)
+>>>
+>>> Shouldn't it show vlan_do_receive() ?
+>>>
+>>>       if (skb_vlan_tag_present(skb)) {
+>>>           if (pt_prev) {
+>>>               ret = deliver_skb(skb, pt_prev, orig_dev);
+>>>               pt_prev = NULL;
+>>>           }
+>>>           if (vlan_do_receive(&skb))
+>>>               goto another_round;
+>>>           else if (unlikely(!skb))
+>>>               goto out;
+>>>       }
+>>>
+>>> Thanks
+>>>
+>>
+>> I did an ftrace today and I find vlan_do_receive() is called for the
+>> incoming frames before passing SKB to hsr_handle_frame(). If someone
+>> can review this, it will help. Thanks.
+>>
+>> https://pastebin.ubuntu.com/p/CbRzXjwjR5/
+> 
+> hsr_handle_frame is an rx_handler called after
+> __netif_receive_skb_core called vlan_do_receive and jumped back to
+> another_round.
+
+Yes. hsr_handle_frame() is a rx_handler() after the above code that
+does vlan_do_receive(). The ftrace shows vlan_do_receive() is called
+followed by call to hsr_handle_frame(). From ifconfig I can see both
+hsr and vlan interface stats increments by same count. So I assume,
+vlan_do_receive() is called initially and it removes the tag, update
+stats and then return true and go for another round. Do you think that
+is the case?
+
+vlan_do_receive() calls vlan_find_dev(skb->dev, vlan_proto, vlan_id)
+to retrieve the real netdevice (real device). However VLAN device is
+attached to hsr device (real device), but SKB will have HSR slave 
+Ethernet netdevice (in our case it is cpsw device) and vlan_find_dev()
+would have failed since there is no vlan_info in cpsw netdev struct. So
+below code  in vlan_do_receive() should have failed and return false.
+
+	vlan_dev = vlan_find_dev(skb->dev, vlan_proto, vlan_id);
+	if (!vlan_dev)
+		return false;
+
+So how does it goes for another_round ? May be vlan_find_dev is
+finding the hsr netdevice?
+
+I am not an expert and so the question. Probably I can put a
+traceprintk() to confirm this, but if someone can clarify this
+it will be great. But for that, I will spin v2 with the above comments
+addressed as in my reply and post.
+
+Thanks
+> 
+> That's how it should work right?
+> 
+
+-- 
+Murali Karicheri
+Texas Instruments
