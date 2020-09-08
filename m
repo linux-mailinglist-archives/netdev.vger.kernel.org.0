@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F5A261AC7
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF0A3261ACB
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:40:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731849AbgIHSkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1731431AbgIHSkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 8 Sep 2020 14:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51372 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731867AbgIHSjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 14:39:19 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45059C061757
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 11:39:19 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id q21so204472pgj.4
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 11:39:19 -0700 (PDT)
+        with ESMTP id S1731802AbgIHSjV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 14:39:21 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9497C0613ED
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 11:39:20 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id nk7so63287pjb.8
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 11:39:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=N/+vqe9kt4/7PabpwUAZkR63g5pOjQWJ8oQ2unDSBQQ=;
-        b=N6r9XFIA6nn4B99OCtwi5LRjY3LmZakr8eX0svEfC4rtpS0TtDcgcc0l7VzOBxpB5Z
-         um8FiMptB3IQKUJXh3ltMfjAJl2TzRjGPGYkaGlj7+IzWarDoe+gKBLBoxq/4zrBxRgA
-         H9Soums8f5j59YjY/gBy6qdjRPXBty0OfNs3WBJKsPhvAVHo/rkVV8ITFo6rnSSEIrS3
-         FJgrSmoXO+RrR4MWMu6R8l1GWa/j/M5zpPoXMMlGoJZxhCD4V6ybHd5xUp49wVt/ZppS
-         XajzRh/DvZQC2seSHdSw1H3Lv5x/vIGF8nBS2OoXthq/m30a60BEPGJjkOeYnBmUPk+m
-         sGdQ==
+        bh=IuiqVKPIEeo+hZloP1AleOOYs96h20tcL+kHXJxfM58=;
+        b=D/Oj5jzwmqBM/SmKP2UAeM/UTtrQsd8lqWZV9F2Rz7039kWzNsz6uB9t9O/V5Zg40Q
+         h6UQa5lagm8kfrhsPX+vYiiLgbz2p2366fy0MMuc8mAYpqqCOEjaBR+1wVbkSSvhAbub
+         yhn3CQPISuI1mFbnyPWZC8+vEc6Sf/GLcdV2wEchg56BA/vCZoToWyaasKikV/EHQEzP
+         mwak/ckRwSP+zjFiP4+T0y0kWY5fuzeTTUsQrb5jkCU99KH+nbCoLInJfhdaE2UpwYmz
+         YMwEE1KTVEgb5WTRMQ4xXKqXP9r44bALt2PVM0TghzktkzC/DqeSDN/2TICWCkfQEtkZ
+         eFyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=N/+vqe9kt4/7PabpwUAZkR63g5pOjQWJ8oQ2unDSBQQ=;
-        b=Bf07UVufy4uEYXuTpRQfutoL1XjtMiRs3mVIqVqBpSBrStK7z74sJGIuf+YgcLdCcB
-         FHHYHpHVF1+suj0HTWqXPqiU/ZyG9hPPcU0p9jaDfiwRfglnEhkAxquudNMfCi7ZqjJb
-         Ok10QXOgTeTxv7WKoxrtgBtoXj5Z1U4BYDOjgAZYzIg0X0+3aGWKuf8LHkBWTqod6AA8
-         73pfvHa8Vq7HoXRp99hmKH42u958tyONSRiP4fD+BUuugBxOJVZlFQY+lQhE8WMgk9gk
-         qWSupsQjXM1BeMU++fhKKZHwQJKYbfvKSm4o8bpUk9WZL2VFo+fYio9vhWIedUU7pRiS
-         REdw==
-X-Gm-Message-State: AOAM531gya85OTfM9Kms3zZiktKlQRS8pCtFSkkbeoENESxK4lmbUj6s
-        3VNvK34K4A0ORDff5PVSaDQtxRQRH24VwyMFurfpgGhU3/OAmHp6IXXXdghe9DO21CH2wJOucfG
-        eDHVun61UiB05La0EijRHpQbwCb1/xXb8tRIsMBzpLF0Ea7SmSHIy+Alhd0o7RTCu9PZJ0DZ7
-X-Google-Smtp-Source: ABdhPJzJL05Df75hOEDbK0dXyXBNCSrFPMfiJAA3v5LBo6JO0+JEfUtzIleiFwRLa9HUxxOew5VmUJj6sNrEW5a7
+        bh=IuiqVKPIEeo+hZloP1AleOOYs96h20tcL+kHXJxfM58=;
+        b=PR5nVWnr8hI7x95MAoqrmsqOjaBLAMxe1zj7xfw38Ye/bWlnsctkJInpYoKT6JN1+o
+         UdPEjAN4w5XfO9dfzHd4i5dC+dbVNEb4wFceBbU27nuXmTNBq/WQLvQY/2iL3LnX4229
+         3qurVUNuerwLtEzFIxMltoOHiJ5CHJmyDGabfjUSLpCzejBaoN9jvckoA1j9gNi49T4G
+         wcD1Jd8bLauIzF6w7twzXp3morcCinEX5JQHJj46VFhLYjjAxfL0jEOaCVHYVDJmgGjS
+         zQ6QGOcECHk/dhYvROgmYAKsf6mj+mcYDtrt3MCl9o1V3nhK2FvYn4xugnK6A7RSy/n0
+         coXQ==
+X-Gm-Message-State: AOAM531O/MYyh3qWSPIDkIsKfghisk3fE4CU3tjHJSV5Uf6Y8r0dC5QM
+        uSPSerTDJgiNNZSu5jv/74681pXNPQKW3wuR5EnwTxmCF8ErOSPTzGcJ1Da7uM0cy4P4jnWwPgV
+        3jZAm2RQ8xeNbRtpQcfJ8UIZOCqJX2UESZeFC7w0E2pq1M421ncGkYx+gVPykGS6eG5n33wjy
+X-Google-Smtp-Source: ABdhPJyzyNW5N/R92QlI/8f5++XUFQOsq6lXthYY6n423Ev+F2wEKcWDAfG8Z9LRhKkWlAbjl8rIx53HeiKfX1aO
 X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
- (user=awogbemila job=sendgmr) by 2002:a62:1451:0:b029:13e:d13d:a058 with SMTP
- id 78-20020a6214510000b029013ed13da058mr362245pfu.30.1599590358418; Tue, 08
- Sep 2020 11:39:18 -0700 (PDT)
-Date:   Tue,  8 Sep 2020 11:39:03 -0700
+ (user=awogbemila job=sendgmr) by 2002:aa7:864c:0:b029:13c:1611:6591 with SMTP
+ id a12-20020aa7864c0000b029013c16116591mr360200pfo.14.1599590360329; Tue, 08
+ Sep 2020 11:39:20 -0700 (PDT)
+Date:   Tue,  8 Sep 2020 11:39:04 -0700
 In-Reply-To: <20200908183909.4156744-1-awogbemila@google.com>
-Message-Id: <20200908183909.4156744-4-awogbemila@google.com>
+Message-Id: <20200908183909.4156744-5-awogbemila@google.com>
 Mime-Version: 1.0
 References: <20200908183909.4156744-1-awogbemila@google.com>
 X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
-Subject: [PATCH net-next v3 3/9] gve: Use dev_info/err instead of netif_info/err.
+Subject: [PATCH net-next v3 4/9] gve: Add support for dma_mask register
 From:   David Awogbemila <awogbemila@google.com>
 To:     netdev@vger.kernel.org
 Cc:     Catherine Sullivan <csully@google.com>,
@@ -66,94 +66,144 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Catherine Sullivan <csully@google.com>
 
-Update the driver to use dev_info/err instead of netif_info/err.
+Add the dma_mask register and read it to set the dma_masks.
+
+gve_alloc_page will alloc_page with:
+ GFP_DMA32 if priv->dma_mask is 32.
+This helps in 32-bit device address cases where the guest would
+run out of SWIOTLB space. Since its buffers would be allocated
+GFP_DMA32, there would be less pressure on SWIOTLB.
 
 Reviewed-by: Yangchun Fu <yangchun@google.com>
 Signed-off-by: Catherine Sullivan <csully@google.com>
 Signed-off-by: David Awogbemila <awogbemila@google.com>
 ---
- drivers/net/ethernet/google/gve/gve_adminq.c | 15 ++++++---------
- drivers/net/ethernet/google/gve/gve_main.c   | 10 +++++-----
- 2 files changed, 11 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/google/gve/gve.h         |  6 ++-
+ drivers/net/ethernet/google/gve/gve_main.c    | 40 ++++++++++++-------
+ .../net/ethernet/google/gve/gve_register.h    |  3 +-
+ 3 files changed, 32 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
-index 529de756ff9b..d9aed217c1d6 100644
---- a/drivers/net/ethernet/google/gve/gve_adminq.c
-+++ b/drivers/net/ethernet/google/gve/gve_adminq.c
-@@ -334,8 +334,7 @@ int gve_adminq_describe_device(struct gve_priv *priv)
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index 55b34b437764..37a3bbced36a 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -232,6 +232,9 @@ struct gve_priv {
+ 	struct work_struct service_task;
+ 	unsigned long service_task_flags;
+ 	unsigned long state_flags;
++
++  /* Gvnic device's dma mask, set during probe. */
++	u8 dma_mask;
+ };
  
- 	priv->tx_desc_cnt = be16_to_cpu(descriptor->tx_queue_entries);
- 	if (priv->tx_desc_cnt * sizeof(priv->tx->desc[0]) < PAGE_SIZE) {
--		netif_err(priv, drv, priv->dev, "Tx desc count %d too low\n",
--			  priv->tx_desc_cnt);
-+		dev_err(&priv->pdev->dev, "Tx desc count %d too low\n", priv->tx_desc_cnt);
- 		err = -EINVAL;
- 		goto free_device_descriptor;
- 	}
-@@ -344,8 +343,7 @@ int gve_adminq_describe_device(struct gve_priv *priv)
- 	    < PAGE_SIZE ||
- 	    priv->rx_desc_cnt * sizeof(priv->rx->data.data_ring[0])
- 	    < PAGE_SIZE) {
--		netif_err(priv, drv, priv->dev, "Rx desc count %d too low\n",
--			  priv->rx_desc_cnt);
-+		dev_err(&priv->pdev->dev, "Rx desc count %d too low\n", priv->rx_desc_cnt);
- 		err = -EINVAL;
- 		goto free_device_descriptor;
- 	}
-@@ -353,8 +351,7 @@ int gve_adminq_describe_device(struct gve_priv *priv)
- 				be64_to_cpu(descriptor->max_registered_pages);
- 	mtu = be16_to_cpu(descriptor->mtu);
- 	if (mtu < ETH_MIN_MTU) {
--		netif_err(priv, drv, priv->dev, "MTU %d below minimum MTU\n",
--			  mtu);
-+		dev_err(&priv->pdev->dev, "MTU %d below minimum MTU\n", mtu);
- 		err = -EINVAL;
- 		goto free_device_descriptor;
- 	}
-@@ -362,12 +359,12 @@ int gve_adminq_describe_device(struct gve_priv *priv)
- 	priv->num_event_counters = be16_to_cpu(descriptor->counters);
- 	ether_addr_copy(priv->dev->dev_addr, descriptor->mac);
- 	mac = descriptor->mac;
--	netif_info(priv, drv, priv->dev, "MAC addr: %pM\n", mac);
-+	dev_info(&priv->pdev->dev, "MAC addr: %pM\n", mac);
- 	priv->tx_pages_per_qpl = be16_to_cpu(descriptor->tx_pages_per_qpl);
- 	priv->rx_pages_per_qpl = be16_to_cpu(descriptor->rx_pages_per_qpl);
- 	if (priv->rx_pages_per_qpl < priv->rx_desc_cnt) {
--		netif_err(priv, drv, priv->dev, "rx_pages_per_qpl cannot be smaller than rx_desc_cnt, setting rx_desc_cnt down to %d.\n",
--			  priv->rx_pages_per_qpl);
-+		dev_err(&priv->pdev->dev, "rx_pages_per_qpl cannot be smaller than rx_desc_cnt, setting rx_desc_cnt down to %d.\n",
-+			priv->rx_pages_per_qpl);
- 		priv->rx_desc_cnt = priv->rx_pages_per_qpl;
- 	}
- 	priv->default_num_queues = be16_to_cpu(descriptor->default_num_queues);
+ enum gve_service_task_flags {
+@@ -451,8 +454,7 @@ static inline bool gve_can_recycle_pages(struct net_device *dev)
+ }
+ 
+ /* buffers */
+-int gve_alloc_page(struct gve_priv *priv, struct device *dev,
+-		   struct page **page, dma_addr_t *dma,
++int gve_alloc_page(struct gve_priv *priv, struct device *dev, struct page **page, dma_addr_t *dma,
+ 		   enum dma_data_direction);
+ void gve_free_page(struct device *dev, struct page *page, dma_addr_t dma,
+ 		   enum dma_data_direction);
 diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 4f6c1fc9c58d..0fc68f844edf 100644
+index 0fc68f844edf..c69ec044f47c 100644
 --- a/drivers/net/ethernet/google/gve/gve_main.c
 +++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -930,7 +930,7 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
- 		priv->dev->max_mtu = PAGE_SIZE;
- 		err = gve_adminq_set_mtu(priv, priv->dev->mtu);
- 		if (err) {
--			netif_err(priv, drv, priv->dev, "Could not set mtu");
-+			dev_err(&priv->pdev->dev, "Could not set mtu");
- 			goto err;
- 		}
- 	}
-@@ -970,10 +970,10 @@ static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
- 						priv->rx_cfg.num_queues);
+@@ -518,7 +518,12 @@ int gve_alloc_page(struct gve_priv *priv, struct device *dev,
+ 		   struct page **page, dma_addr_t *dma,
+ 		   enum dma_data_direction dir)
+ {
+-	*page = alloc_page(GFP_KERNEL);
++	gfp_t gfp_flags = GFP_KERNEL;
++
++	if (priv->dma_mask == 32)
++		gfp_flags |= GFP_DMA32;
++
++	*page = alloc_page(gfp_flags);
+ 	if (!*page) {
+ 		priv->page_alloc_fail++;
+ 		return -ENOMEM;
+@@ -1083,6 +1088,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	__be32 __iomem *db_bar;
+ 	struct gve_registers __iomem *reg_bar;
+ 	struct gve_priv *priv;
++	u8 dma_mask;
+ 	int err;
+ 
+ 	err = pci_enable_device(pdev);
+@@ -1095,19 +1101,6 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	pci_set_master(pdev);
+ 
+-	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
+-	if (err) {
+-		dev_err(&pdev->dev, "Failed to set dma mask: err=%d\n", err);
+-		goto abort_with_pci_region;
+-	}
+-
+-	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+-	if (err) {
+-		dev_err(&pdev->dev,
+-			"Failed to set consistent dma mask: err=%d\n", err);
+-		goto abort_with_pci_region;
+-	}
+-
+ 	reg_bar = pci_iomap(pdev, GVE_REGISTER_BAR, 0);
+ 	if (!reg_bar) {
+ 		dev_err(&pdev->dev, "Failed to map pci bar!\n");
+@@ -1122,10 +1115,28 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto abort_with_reg_bar;
  	}
  
--	netif_info(priv, drv, priv->dev, "TX queues %d, RX queues %d\n",
--		   priv->tx_cfg.num_queues, priv->rx_cfg.num_queues);
--	netif_info(priv, drv, priv->dev, "Max TX queues %d, Max RX queues %d\n",
--		   priv->tx_cfg.max_queues, priv->rx_cfg.max_queues);
-+	dev_info(&priv->pdev->dev, "TX queues %d, RX queues %d\n",
-+		 priv->tx_cfg.num_queues, priv->rx_cfg.num_queues);
-+	dev_info(&priv->pdev->dev, "Max TX queues %d, Max RX queues %d\n",
-+		 priv->tx_cfg.max_queues, priv->rx_cfg.max_queues);
++	dma_mask = readb(&reg_bar->dma_mask);
++	// Default to 64 if the register isn't set
++	if (!dma_mask)
++		dma_mask = 64;
+ 	gve_write_version(&reg_bar->driver_version);
+ 	/* Get max queues to alloc etherdev */
+ 	max_rx_queues = ioread32be(&reg_bar->max_tx_queues);
+ 	max_tx_queues = ioread32be(&reg_bar->max_rx_queues);
++
++	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
++	if (err) {
++		dev_err(&pdev->dev, "Failed to set dma mask: err=%d\n", err);
++		goto abort_with_reg_bar;
++	}
++
++	err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
++	if (err) {
++		dev_err(&pdev->dev,
++			"Failed to set consistent dma mask: err=%d\n", err);
++		goto abort_with_reg_bar;
++	}
++
+ 	/* Alloc and setup the netdev and priv */
+ 	dev = alloc_etherdev_mqs(sizeof(*priv), max_tx_queues, max_rx_queues);
+ 	if (!dev) {
+@@ -1158,6 +1169,7 @@ static int gve_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	priv->db_bar2 = db_bar;
+ 	priv->service_task_flags = 0x0;
+ 	priv->state_flags = 0x0;
++	priv->dma_mask = dma_mask;
  
- setup_device:
- 	err = gve_setup_device_resources(priv);
+ 	gve_set_probe_in_progress(priv);
+ 	priv->gve_wq = alloc_ordered_workqueue("gve", 0);
+diff --git a/drivers/net/ethernet/google/gve/gve_register.h b/drivers/net/ethernet/google/gve/gve_register.h
+index 84ab8893aadd..fad8813d1bb1 100644
+--- a/drivers/net/ethernet/google/gve/gve_register.h
++++ b/drivers/net/ethernet/google/gve/gve_register.h
+@@ -16,7 +16,8 @@ struct gve_registers {
+ 	__be32	adminq_pfn;
+ 	__be32	adminq_doorbell;
+ 	__be32	adminq_event_counter;
+-	u8	reserved[3];
++	u8	reserved[2];
++	u8	dma_mask;
+ 	u8	driver_version;
+ };
+ 
 -- 
 2.28.0.526.ge36021eeef-goog
 
