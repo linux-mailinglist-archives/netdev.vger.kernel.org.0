@@ -2,124 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 989F8261938
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:11:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB2722619BC
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732090AbgIHSLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 14:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46906 "EHLO
+        id S1731453AbgIHSUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 14:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731734AbgIHSKx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 14:10:53 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6AEC061573;
-        Tue,  8 Sep 2020 11:10:52 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id p81so37140ybc.12;
-        Tue, 08 Sep 2020 11:10:52 -0700 (PDT)
+        with ESMTP id S1731470AbgIHSQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 14:16:14 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731FFC061755
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 11:16:03 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id c18so181639wrm.9
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 11:16:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Wk35TRg0KarJCkBorT18pPV0KW1IK21mPUdma5sS7zA=;
-        b=sjC5cL15c0YwdTtbJkcnmitN0NKT4Y8Cm++eqUlJuNf72GwLxOZvGOcSiMBNlrcvBM
-         JNfsd0Cwk8wM+cwVWpGCqzGwdLelpMPhPq9mw1Hb67gA+ULvW/edCuPX7CdOhm/+2xiv
-         6sgz1qC9YhHzV/vnDZkx6OQ8FEF0W6ZjXtDm4NyrPUllWUXf0JeXW620SfRvV1H7D+3W
-         5955ka2sW7r7F8ztDiX57HEWzN6PZMWGLfNgTG/pN766n0zo0HTLqEuaL1pGtGdyQ6QU
-         qkleTky8k84yR3PTqciBEyFgWWtEPz4+W6N58ER22/1gOSRfmuybq1ZjvHremawf+ndR
-         u00w==
+        d=cumulusnetworks.com; s=google;
+        h=date:in-reply-to:references:mime-version:content-transfer-encoding
+         :subject:to:cc:from:message-id;
+        bh=N8TtjF7op38Ipqdy8ruAYnD1+q0nv/cwpgUpeRIlsl4=;
+        b=CHlchrubAIs2/TXBCYJlGSccVe9N3WapZsFSCeBRMAT5eqVJ1Sto6lGc1Qm4aHLvKZ
+         77fyP2eOqYSrVurkxn6cJ1AGLN6eCJ8cSO+zNkLYiiUhwyHLQZHhgEVOMvYdGm8G0ZMC
+         BI4fdF9wJLg03IznD6Fq0zC8BqWjXhU8LP+yk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Wk35TRg0KarJCkBorT18pPV0KW1IK21mPUdma5sS7zA=;
-        b=ITqWKRjljOpzZge/8SLl4iaBYdTKGe/EFVwlq6xLoteIVJWSF1bhtbfRveVbvyamdq
-         gXol+oWmkngi+APHIlvFx9+JTo22d4a53ipe7hC5fyd6ipEW51g4bpXKAckd0fy61FrV
-         6KWthHrLnEb2Tzf/bL5Vra15HB74hzQLRbPdvBQVWoFlBwPPhlUcDdWjgTsyHXxSsvYu
-         qBXUFYi3z7jhiQ6B5eIP6yIgb5j7UEZFOxO99DB8qRw5/rY13RGmoTNS1cmOdF0VkY4k
-         PP8oT2oBaVgwPG788mW3qNe4QdCI2psd8A2R50p5xW76QDGYSuau/6hzxfKVXffcGy5y
-         IUKQ==
-X-Gm-Message-State: AOAM533LNyr1l+R/PhyJPSLZRYkTVaNBGhhDCuJuuJ3SH3bxfInKEktS
-        yl+moLxJgqlZ0pRUe+XWpAd3/z2na/4Iqp3EMKM=
-X-Google-Smtp-Source: ABdhPJxt3fKeoMPdw/BJfj+oqrvydTt1wNmzyDDQSOSa5L2V4KlUFx7zqXe/pCxFyyOB6j70A2oM2Vz/0W57w0b6OGY=
-X-Received: by 2002:a25:ad5a:: with SMTP id l26mr140392ybe.510.1599588651271;
- Tue, 08 Sep 2020 11:10:51 -0700 (PDT)
+        h=x-gm-message-state:date:in-reply-to:references:mime-version
+         :content-transfer-encoding:subject:to:cc:from:message-id;
+        bh=N8TtjF7op38Ipqdy8ruAYnD1+q0nv/cwpgUpeRIlsl4=;
+        b=irJ0aAlTMj88YD053S5WSsLHHd4/7QHWq0e0/jJ+m3+TZPMP+7XhwRqUXtNWtcKqFX
+         NqfFzCTGY4woDmYAVoP9IG5TFBFn2aIS2AHiI+cWmUC7//qE/rmoy2HpX1OhxCmSlRmM
+         i5fAqP1jq3CXJco3o/m2bvc9XKLKOpnhM7ACGwjocRKJcuvth/zMT6pkPdn1i4EGnMUS
+         fkOD8kbuuf0wf+0zssWuGMyz3s8k3xhlYE5gncykFFDI8uUdzqOS30JPKRt4DJMKSxLP
+         aE1XJ2pK34xjNmbd2IIEneNfxSb+RyzpPyZrkLIenuyGnZ05hXyRFxBsXan4GP0hb1Nx
+         EMig==
+X-Gm-Message-State: AOAM532UrDdp/u2Oj6Cfx2WbIJZd8gL/RnmH6mYIW+F9Y0XtCm4k6xOU
+        VvtcgBoJpzLbuBfKctwvOuX9iw==
+X-Google-Smtp-Source: ABdhPJzbN47yDdBOPE080tCOdGXZ05JHWTv5GvJlEr+LWJF2CDWB4rLzZDRfY9ynGEmyFVzR+kbsNQ==
+X-Received: by 2002:adf:f3cd:: with SMTP id g13mr877997wrp.298.1599588960755;
+        Tue, 08 Sep 2020 11:16:00 -0700 (PDT)
+Received: from localhost ([149.62.205.110])
+        by smtp.gmail.com with ESMTPSA id p11sm262199wma.11.2020.09.08.11.15.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 11:16:00 -0700 (PDT)
+Date:   Tue, 08 Sep 2020 21:15:56 +0300
+In-Reply-To: <20200908173624.160024-1-kuba@kernel.org>
+References: <20200908090049.7e528e7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <20200908173624.160024-1-kuba@kernel.org>
 MIME-Version: 1.0
-References: <20200828193603.335512-1-sdf@google.com> <20200828193603.335512-4-sdf@google.com>
- <CAEf4BzZtYTyBT=jURkF4RQLHXORooVwXrRRRkoSWDqCemyGQeA@mail.gmail.com>
- <20200904012909.c7cx5adhy5f23ovo@ast-mbp.dhcp.thefacebook.com>
- <CAEf4BzZp4ODLbjEiv=W7byoR9XzTqAQ052wZM_wD4=aTPmkjbw@mail.gmail.com> <87mu22ottv.fsf@toke.dk>
-In-Reply-To: <87mu22ottv.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 8 Sep 2020 11:10:40 -0700
-Message-ID: <CAEf4BzbywFBSW+KypeWkG7CF8rNSu5XxS8HZz7BFuUsC9kZ1ug@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/8] libbpf: Add BPF_PROG_BIND_MAP syscall and
- use it on .metadata section
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        YiFei Zhu <zhuyifei@google.com>,
-        YiFei Zhu <zhuyifei1999@gmail.com>,
-        Andrey Ignatov <rdna@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH net-next] rcu: prevent RCU_LOCKDEP_WARN() from swallowing the condition
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+CC:     netdev@vger.kernel.org, paulmck@kernel.org, joel@joelfernandes.org,
+        josh@joshtriplett.org, peterz@infradead.org,
+        christian.brauner@ubuntu.com, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org, sfr@canb.auug.org.au,
+        roopa@nvidia.com
+From:   nikolay@cumulusnetworks.com
+Message-ID: <5ABC15D5-3709-4CA4-A747-6A7812BB12DD@cumulusnetworks.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 7, 2020 at 1:49 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
+On 8 September 2020 20:36:24 EEST, Jakub Kicinski <kuba@kernel=2Eorg> wrote=
+:
+>We run into a unused variable warning in bridge code when
+>variable is only used inside the condition of
+>rcu_dereference_protected()=2E
 >
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> #define mlock_dereference(X, br) \
+>	rcu_dereference_protected(X, lockdep_is_held(&br->multicast_lock))
 >
-> >> May be we should talk about problem statement and goals.
-> >> Do we actually need metadata per program or metadata per single .o
-> >> or metadata per final .o with multiple .o linked together?
-> >> What is this metadata?
-> >
-> > Yep, that's a very valid question. I've also CC'ed Andrey.
+>Since on builds with CONFIG_PROVE_RCU=3Dn rcu_dereference_protected()
+>compiles to nothing the compiler doesn't see the variable use=2E
 >
-> For the libxdp use case, I need metadata per program. But I'm already
-> sticking that in a single section and disambiguating by struct name
-> (just prefixing the function name with a _ ), so I think it's fine to
-> have this kind of "concatenated metadata" per elf file and parse out the
-> per-program information from that. This is similar to the BTF-encoded
-> "metadata" we can do today.
+>Prevent the warning by adding the condition as dead code=2E
+>We need to un-hide the declaration of lockdep_tasklist_lock_is_held()
+>and fix a bug the crept into a net/sched header=2E
 >
-> >> If it's just unreferenced by program read only data then no special na=
-mes or
-> >> prefixes are needed. We can introduce BPF_PROG_BIND_MAP to bind any ma=
-p to any
-> >> program and it would be up to tooling to decide the meaning of the dat=
-a in the
-> >> map. For example, bpftool can choose to print all variables from all r=
-ead only
-> >> maps that match "bpf_metadata_" prefix, but it will be bpftool convent=
-ion only
-> >> and not hard coded in libbpf.
-> >
-> > Agree as well. It feels a bit odd for libbpf to handle ".metadata"
-> > specially, given libbpf itself doesn't care about its contents at all.
-> >
-> > So thanks for bringing this up, I think this is an important
-> > discussion to have.
+>Signed-off-by: Jakub Kicinski <kuba@kernel=2Eorg>
+>---
+> include/linux/rcupdate=2Eh   | 2 +-
+> include/linux/sched/task=2Eh | 2 --
+> include/net/sch_generic=2Eh  | 2 +-
+> 3 files changed, 2 insertions(+), 4 deletions(-)
 >
-> I'm fine with having this be part of .rodata. One drawback, though, is
-> that if any metadata is defined, it becomes a bit more complicated to
-> use bpf_map__set_initial_value() because that now also has to include
-> the metadata. Any way we can improve upon that?
+>diff --git a/include/linux/rcupdate=2Eh b/include/linux/rcupdate=2Eh
+>index d15d46db61f7=2E=2Ecf3d3ba3f3e4 100644
+>--- a/include/linux/rcupdate=2Eh
+>+++ b/include/linux/rcupdate=2Eh
+>@@ -320,7 +320,7 @@ static inline void rcu_preempt_sleep_check(void) {
+>}
+>=20
+> #else /* #ifdef CONFIG_PROVE_RCU */
+>=20
+>-#define RCU_LOCKDEP_WARN(c, s) do { } while (0)
+>+#define RCU_LOCKDEP_WARN(c, s) do { } while (0 && (c))
+> #define rcu_sleep_check() do { } while (0)
+>=20
+> #endif /* #else #ifdef CONFIG_PROVE_RCU */
+>diff --git a/include/linux/sched/task=2Eh b/include/linux/sched/task=2Eh
+>index a98965007eef=2E=2E9f943c391df9 100644
+>--- a/include/linux/sched/task=2Eh
+>+++ b/include/linux/sched/task=2Eh
+>@@ -47,9 +47,7 @@ extern spinlock_t mmlist_lock;
+> extern union thread_union init_thread_union;
+> extern struct task_struct init_task;
+>=20
+>-#ifdef CONFIG_PROVE_RCU
+> extern int lockdep_tasklist_lock_is_held(void);
+>-#endif /* #ifdef CONFIG_PROVE_RCU */
+>=20
+> extern asmlinkage void schedule_tail(struct task_struct *prev);
+> extern void init_idle(struct task_struct *idle, int cpu);
+>diff --git a/include/net/sch_generic=2Eh b/include/net/sch_generic=2Eh
+>index d60e7c39d60c=2E=2Eeb68cc6e4e79 100644
+>--- a/include/net/sch_generic=2Eh
+>+++ b/include/net/sch_generic=2Eh
+>@@ -443,7 +443,7 @@ static inline bool
+>lockdep_tcf_proto_is_locked(struct tcf_proto *tp)
+> 	return lockdep_is_held(&tp->lock);
+> }
+> #else
+>-static inline bool lockdep_tcf_chain_is_locked(struct tcf_block
+>*chain)
+>+static inline bool lockdep_tcf_chain_is_locked(struct tcf_chain
+>*chain)
+> {
+> 	return true;
+> }
 
-I know that skeleton is not an answer for you, so you'll have to find
-DATASEC and corresponding variable offset and size (libbpf provides
-APIs for all those operations, but you'll need to combine them
-together). Then mmap() map and then you can do partial updates. There
-is no other way to update only portions of an ARRAY map, except
-through memory-mapping.
+Ah, you want to solve it for all=2E :)=20
+Looks and sounds good to me,=20
+Reviewed-by: Nikolay Aleksandrov <nikolay@cumulusnetworks=2Ecom>
 
->
-> -Toke
->
