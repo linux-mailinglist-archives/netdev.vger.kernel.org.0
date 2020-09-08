@@ -2,86 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 312B9261341
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 17:14:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7582F2613DD
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 17:53:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730133AbgIHPNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 11:13:54 -0400
-Received: from correo.us.es ([193.147.175.20]:33110 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730158AbgIHPLS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 11:11:18 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 2D72D1F0D08
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 17:09:57 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2322EDA791
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 17:09:57 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 18C52DA73D; Tue,  8 Sep 2020 17:09:57 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 030FCDA73D;
-        Tue,  8 Sep 2020 17:09:55 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 08 Sep 2020 17:09:55 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id C723B4301DE0;
-        Tue,  8 Sep 2020 17:09:54 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 5/5] netfilter: nft_meta: use socket user_ns to retrieve skuid and skgid
-Date:   Tue,  8 Sep 2020 17:09:47 +0200
-Message-Id: <20200908150947.12623-6-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200908150947.12623-1-pablo@netfilter.org>
-References: <20200908150947.12623-1-pablo@netfilter.org>
+        id S1730606AbgIHPxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 11:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730872AbgIHPwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 11:52:37 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BBDC061797
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 05:02:49 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id t10so18871700wrv.1
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 05:02:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sslab.ics.keio.ac.jp; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fHKZGBn8DYDZmUzkcQdtFyocASRnUskXF0G0c14zQIY=;
+        b=I49U5h01ldadqbGBSJ+JPwaa/XpVL1RHekltbw+5yb9vJdeb7HlxO2SH/MxU+AXAwy
+         mFX3smUOgYMCiRiMYtlhJgNbB0x45bfB59AcCGTmRd7oJw5HUypGbJ+wDCYeJroaA4or
+         rnyPXVVdanOQ2bOVqv7iQHTy8xceM8lkCF844=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fHKZGBn8DYDZmUzkcQdtFyocASRnUskXF0G0c14zQIY=;
+        b=bF2wY3jYC1fbzhTyUkxlQTMd8iJ16DeWvvkH+BreoJKVwkJR91UNQaMmKdbWTgIYGd
+         NNu07BeKNk50Uv68ETXaYC5yNEpv08RxD0dkexQE8Cy/2dnnl6rMRKds6xyMCG+7WSjI
+         RWjTJ+yODeTVdb/4IUuYCEukMlINR2hGGYGFlzMraYRKMXvRgPFmb10U7lSL8LpvL81x
+         88Cyu1zZmgVz2ldQzXQkex9f0osal276b6WjQKvmonN1zGSTXQFgeLO0KEZlqUHfuh/D
+         8zS2huncw5wBnJn1xibPQH3g8kxnJr6AvPjWdk3EnElD3nrTsowRBzfglXReXJQujKb5
+         AGrA==
+X-Gm-Message-State: AOAM53286iA+Pbaub3W+QMM3KH6TqAIDB+dAmyhfxftj6ssKCsONXivP
+        JYIJzK9HFr+qqeXOHsIia9lDU7YpmVJVAtpn0S8eZw==
+X-Google-Smtp-Source: ABdhPJxLDgBM+s6ZLA0Xk5AyltkUhSxI4KJM4wlm9qfxvCvlS9XOiwZ2ahmKEQRp2PPZaiGtIw02aY3u8gSTeR+ZTXc=
+X-Received: by 2002:adf:eecb:: with SMTP id a11mr26936125wrp.356.1599566568481;
+ Tue, 08 Sep 2020 05:02:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <bad4e33a-af2f-b44f-63e5-56386c312a91@broadcom.com>
+ <20200908001324.8215-1-keitasuzuki.park@sslab.ics.keio.ac.jp> <c13ee142-d69d-6d21-6373-acb56507c9ec@broadcom.com>
+In-Reply-To: <c13ee142-d69d-6d21-6373-acb56507c9ec@broadcom.com>
+From:   Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Date:   Tue, 8 Sep 2020 21:02:35 +0900
+Message-ID: <CAEYrHjmG-R4RHn=59AGK8E0jKDXE5sbxQj49VpBvDMvBuBGiig@mail.gmail.com>
+Subject: Re: [PATCH] brcmsmac: fix memory leak in wlc_phy_attach_lcnphy
+To:     Arend Van Spriel <arend.vanspriel@broadcom.com>
+Cc:     Takafumi Kubota <takafumi@sslab.ics.keio.ac.jp>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list@cypress.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-... instead of using init_user_ns.
+Thank you for your comment. I am relatively new to the Linux
+kernel community, so I am more than happy to receive comments.
+Please let me know if I'm violating any other rules.
 
-Fixes: 96518518cc41 ("netfilter: add nftables")
-Tested-by: Phil Sutter <phil@nwl.cc>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nft_meta.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> > Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+> > ---
+> ... changelog here describing difference between previous patch and this
+> version.
 
-diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
-index 7bc6537f3ccb..b37bd02448d8 100644
---- a/net/netfilter/nft_meta.c
-+++ b/net/netfilter/nft_meta.c
-@@ -147,11 +147,11 @@ nft_meta_get_eval_skugid(enum nft_meta_keys key,
- 
- 	switch (key) {
- 	case NFT_META_SKUID:
--		*dest = from_kuid_munged(&init_user_ns,
-+		*dest = from_kuid_munged(sock_net(sk)->user_ns,
- 					 sock->file->f_cred->fsuid);
- 		break;
- 	case NFT_META_SKGID:
--		*dest =	from_kgid_munged(&init_user_ns,
-+		*dest =	from_kgid_munged(sock_net(sk)->user_ns,
- 					 sock->file->f_cred->fsgid);
- 		break;
- 	default:
--- 
-2.20.1
+I will re-send the patch with the change log.
 
+Thanks,
+Keita
+
+2020=E5=B9=B49=E6=9C=888=E6=97=A5(=E7=81=AB) 20:18 Arend Van Spriel <arend.=
+vanspriel@broadcom.com>:
+>
+> On 9/8/2020 2:13 AM, Keita Suzuki wrote:
+> > When wlc_phy_txpwr_srom_read_lcnphy fails in wlc_phy_attach_lcnphy,
+> > the allocated pi->u.pi_lcnphy is leaked, since struct brcms_phy will be
+> > freed in the caller function.
+> >
+> > Fix this by calling wlc_phy_detach_lcnphy in the error handler of
+> > wlc_phy_txpwr_srom_read_lcnphy before returning.
+>
+> Thanks for resubmitting the patch addressing my comment. For clarity it
+> is recommended to mark the subject with '[PATCH V2]' and add a ...
+>
+> > Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+> > ---
+> ... changelog here describing difference between previous patch and this
+> version.
+>
+> Regards,
+> Arend
+> ---
+> >   .../net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c    | 4 +++=
+-
+> >   1 file changed, 3 insertions(+), 1 deletion(-)
