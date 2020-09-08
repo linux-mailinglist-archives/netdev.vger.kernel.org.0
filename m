@@ -2,165 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EA3B26132D
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 17:06:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 312B9261341
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 17:14:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729781AbgIHPG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 11:06:29 -0400
-Received: from mail-eopbgr80070.outbound.protection.outlook.com ([40.107.8.70]:62631
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729773AbgIHPEa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 11:04:30 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T3/54HbzFlpfHa57qy+20Z8yr+pCvScbwhOuf/o6MpIAnF0s7wxo7mySOcgHB0tSdQLCfBLOEQTnSbMQxMwv417sFG0pxw5+PNxZzTEnYE9vA0un7G4XfTPozKrzBnfu9RisA10QyU9wTLYS0oTnzCFxS/OWdPdW6E05njjXgOsQ7dZHG4XuN5nMULAW1lk/0P9t87NefvplbnbBkxciVjR6rYWsDHv4sC4VxEMH+1jJ0MJtvmqotaOHbLVj1lzowC0p9qLDKHMIXHych5ovd1/eTl7gc9G6YQx34xPkqGfBA3GFEg68zrOu9ti5VUXu4jY84sMhynR4pt96O/YQgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VZfo7fw2oXyFycIP8mBNtK3m0omfP7EdL7Y5sj4CvVw=;
- b=EBTmjczQgUM1Zzv6PwYXRps7NWN+7uy63zOpg3f9UsMbEsYLFN9mGQg8UylbDRP2JdL5cRzQ9ghgv5VX6HEgrRKXDg3grNCYb7T5O//x6wEu9r2jpa3GMcII1tQi/qb8lNLsbSNYdSjQzCEMiJiEqeYIx+S/AWzN9r/u3fIrZE/5YA47zoxoeQJ6NgTVRxtiL6l0IGiBJCvd9TgQdEP1jnHgs+kaQ8FsRXYsMQX+ziEs82OYSR981rAnWGIT0bgQ9Se/NQUYWsUeIAsyaSL28F75fOvnprYTwuAhm04ic35VvSj0016GLVARKDHo8KmovEoCQ2iv9jiA6lnSFhk2Yg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VZfo7fw2oXyFycIP8mBNtK3m0omfP7EdL7Y5sj4CvVw=;
- b=EYVDhTO8xQMMsBUT4eh3lt3y17SfrtEhCGTjaS+uMHYq6WhEUtgMB+LvahzXsMKdWZlSMoTVED95JllyxJuDbf/ox0xr4lRSWBZzSaPa364YDqP8ob5irH5ImvIWKgkEGcyp+iFQxaEpkil/UbMPBi+IysO3gGE6dGoRQ+BV0pw=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=mellanox.com;
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (2603:10a6:208:c0::32)
- by AM8PR05MB7331.eurprd05.prod.outlook.com (2603:10a6:20b:1dd::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Tue, 8 Sep
- 2020 14:43:21 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::349f:cbf4:ddcf:ce18]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::349f:cbf4:ddcf:ce18%3]) with mapi id 15.20.3348.019; Tue, 8 Sep 2020
- 14:43:21 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next v2 6/6] devlink: Use controller while building phys_port_name
-Date:   Tue,  8 Sep 2020 17:42:41 +0300
-Message-Id: <20200908144241.21673-7-parav@mellanox.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200908144241.21673-1-parav@mellanox.com>
-References: <20200825135839.106796-1-parav@mellanox.com>
- <20200908144241.21673-1-parav@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SA9PR11CA0020.namprd11.prod.outlook.com
- (2603:10b6:806:6e::25) To AM0PR05MB4866.eurprd05.prod.outlook.com
- (2603:10a6:208:c0::32)
+        id S1730133AbgIHPNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 11:13:54 -0400
+Received: from correo.us.es ([193.147.175.20]:33110 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730158AbgIHPLS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 11:11:18 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 2D72D1F0D08
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 17:09:57 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2322EDA791
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 17:09:57 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 18C52DA73D; Tue,  8 Sep 2020 17:09:57 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 030FCDA73D;
+        Tue,  8 Sep 2020 17:09:55 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 08 Sep 2020 17:09:55 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id C723B4301DE0;
+        Tue,  8 Sep 2020 17:09:54 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH 5/5] netfilter: nft_meta: use socket user_ns to retrieve skuid and skgid
+Date:   Tue,  8 Sep 2020 17:09:47 +0200
+Message-Id: <20200908150947.12623-6-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200908150947.12623-1-pablo@netfilter.org>
+References: <20200908150947.12623-1-pablo@netfilter.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from sw-mtx-036.mtx.labs.mlnx (208.176.44.194) by SA9PR11CA0020.namprd11.prod.outlook.com (2603:10b6:806:6e::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16 via Frontend Transport; Tue, 8 Sep 2020 14:43:20 +0000
-X-Mailer: git-send-email 2.26.2
-X-Originating-IP: [208.176.44.194]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a878b64c-6a09-4acd-7839-08d854058859
-X-MS-TrafficTypeDiagnostic: AM8PR05MB7331:
-X-LD-Processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-X-Microsoft-Antispam-PRVS: <AM8PR05MB7331AD05D9A91791CF55EB61D1290@AM8PR05MB7331.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:513;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uMPcH+v9z38wMTZGc9NFTd8sSJTQeCcYJETMy6aoGiT/WVhfXMeu8oxkOx4EkxbbklL5oAdf4dQ6gyoB2Yxz/VjwM43c/zKj8/QMLYaX5MN0ofXv8TzfGb4YNyfS2q/UivTpsH9lknTllH/eGn5n9BEONNS9Qryq5Riokku5wBcnlxMxGhmcyOE+Fgu2003SiLfz8j/KyAR3GZeE/wJ5GWuKOP9qB/VqYn64qPyif7E4zbma0Ult/ENMdF2YxX+1yXEf6Rz/NbcH9vkbW0Im44iQM4g7TvteTGgFbJHOXrxZfae+6rgaEIbMK+msvGousehS37RqNh3vAOpclbmYZQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4866.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6512007)(8676002)(5660300002)(66476007)(66946007)(66556008)(2906002)(36756003)(2616005)(956004)(54906003)(186003)(8936002)(86362001)(498600001)(16526019)(6506007)(26005)(6486002)(1076003)(52116002)(6666004)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: MVDh8PfTUGW7JQvyQEo1JDtiJYIEjExNnHVf2gm8r8ZTolAU96Chcv5DPfhl9/mOLV/GcQlk0BqcekeYr5hrn223mv3v5qg9wi5+cRhca6Ii9HTfKBn8TsYqouCT+AGI32zKTkTzfZO3b29cPc7/4eq5sIgB58CS9JUCUZMiPzRJ7VPEGc0DPyEvOzSewlk+fZjsV21O3/Tt1lI5a0AYpfUUV8cFIpmVHLxpoCO9VBk37Hscy5CPzkj2NGkNraw5mG42CTOjc09ihW9cNeF8hUKnY7wm3M0mEGb6NWbfobegB7fVRjoqzqMNR16/DVmeg7OZhF5T9MBmVkeOJIrkQ938qY1V8y3SP5pmcoQBAU7I8ih1qlRsrd+ctG1p/0pWQH4iA5IGHmKOgflmHeCr9E71EDLczj+h5307Psu6Yq1SiJ58oOaGsKt0IP2do2U4Hb3d35y3slWqMIj6mesXohY5qa/50hm12KP97Q/GzvPQT0H+XYfjJgdC/S+XeVsCslQVH+zqNHaINdyHHg8C3Afj0/38KtGg40ccmrUv6cHHd1DG977Op6Mb/dPOgMR09UtMyvSJPgfSfW2J+bmH1NOoqRLsP6pgBLmhHAE/eJRjaz5zBZso52s0lBE2Ca1L3zRJngWaU1gPac3fXN4a+A==
-X-MS-Exchange-Transport-Forked: True
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a878b64c-6a09-4acd-7839-08d854058859
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4866.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2020 14:43:21.7096
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dCZvppl9ZG4LYNiK94pfjk+PQ/rOyh4tg3RNAAOo6+BxVhmFV6oDaAFmDRqZCDgnU+m50hizaJ+jUJQSK2seJg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR05MB7331
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+... instead of using init_user_ns.
 
-Now that controller number attribute is available, use it when
-building phsy_port_name for external controller ports.
-
-An example devlink port and representor netdev name consist of controller
-annotation for external controller with controller number = 1,
-for a VF 1 of PF 0:
-
-$ devlink port show pci/0000:06:00.0/2
-pci/0000:06:00.0/2: type eth netdev ens2f0c1pf0vf1 flavour pcivf controller 1 pfnum 0 vfnum 1 external true splittable false
-  function:
-    hw_addr 00:00:00:00:00:00
-
-$ devlink port show pci/0000:06:00.0/2 -jp
-{
-    "port": {
-        "pci/0000:06:00.0/2": {
-            "type": "eth",
-            "netdev": "ens2f0c1pf0vf1",
-            "flavour": "pcivf",
-            "controller": 1,
-            "pfnum": 0,
-            "vfnum": 1,
-            "external": true,
-            "splittable": false,
-            "function": {
-                "hw_addr": "00:00:00:00:00:00"
-            }
-        }
-    }
-}
-
-Controller number annotation is skipped for non external controllers to
-maintain backward compatibility.
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Fixes: 96518518cc41 ("netfilter: add nftables")
+Tested-by: Phil Sutter <phil@nwl.cc>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
-Changelog:
-v1->v2:
- - New patch
----
- net/core/devlink.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ net/netfilter/nft_meta.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 9cf5b118253b..91c12612f2b7 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -7793,9 +7793,23 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
- 		WARN_ON(1);
- 		return -EINVAL;
- 	case DEVLINK_PORT_FLAVOUR_PCI_PF:
-+		if (attrs->pci_pf.external) {
-+			n = snprintf(name, len, "c%u", attrs->pci_pf.controller);
-+			if (n >= len)
-+				return -EINVAL;
-+			len -= n;
-+			name += n;
-+		}
- 		n = snprintf(name, len, "pf%u", attrs->pci_pf.pf);
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index 7bc6537f3ccb..b37bd02448d8 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -147,11 +147,11 @@ nft_meta_get_eval_skugid(enum nft_meta_keys key,
+ 
+ 	switch (key) {
+ 	case NFT_META_SKUID:
+-		*dest = from_kuid_munged(&init_user_ns,
++		*dest = from_kuid_munged(sock_net(sk)->user_ns,
+ 					 sock->file->f_cred->fsuid);
  		break;
- 	case DEVLINK_PORT_FLAVOUR_PCI_VF:
-+		if (attrs->pci_vf.external) {
-+			n = snprintf(name, len, "c%u", attrs->pci_vf.controller);
-+			if (n >= len)
-+				return -EINVAL;
-+			len -= n;
-+			name += n;
-+		}
- 		n = snprintf(name, len, "pf%uvf%u",
- 			     attrs->pci_vf.pf, attrs->pci_vf.vf);
+ 	case NFT_META_SKGID:
+-		*dest =	from_kgid_munged(&init_user_ns,
++		*dest =	from_kgid_munged(sock_net(sk)->user_ns,
+ 					 sock->file->f_cred->fsgid);
  		break;
+ 	default:
 -- 
-2.26.2
+2.20.1
 
