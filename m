@@ -2,119 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03F99260B62
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 08:57:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEC15260B69
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 08:58:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729210AbgIHG5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 02:57:41 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:58427 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728501AbgIHG5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 02:57:41 -0400
-Received: from mail-lj1-f200.google.com ([209.85.208.200])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <po-hsu.lin@canonical.com>)
-        id 1kFXZQ-0002qR-SA
-        for netdev@vger.kernel.org; Tue, 08 Sep 2020 06:57:36 +0000
-Received: by mail-lj1-f200.google.com with SMTP id s14so4311158ljj.6
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 23:57:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vzp7zmy16qSTY1Tj4XpNRu/ljIgkqSbcbe8XDlpXvi4=;
-        b=qc/QupfuK4091OguZb5sP0lVPh78LFPrH/bX6zct7vUPNthR9Sn1RHYYY0uT3iuEle
-         Rh9PjgXmNqridR8AYKLWS5du8ewZzziQUhIuq8Sd1fGgOaETeDiz6iEEhhCljZiQWX0H
-         XURj7mq2meBrxTXw2hIiZ4IjGLngITBRNz5ZkcS/a+TRoL+ph2LA4rfdy7fcsMJv4jN5
-         sQZ7L1tjlIowk2Plh3K9HqHh9XgnEK0L7DQz0E5TFpC1ra44pT4XMesAbzotDL/Wwk9q
-         SsgSLUBqEPXnTiOccGBU75qtP0zW0deNqcwir8UO4vRilG1t/kkj8+zSFyqVezkIA7gQ
-         LdZA==
-X-Gm-Message-State: AOAM530fZGcpj+llDH1YHgJeoVFJuK8Z40UE1kZdIAnbipQCDN8Y9H+B
-        LUYP3D4T6zPQ7QI9ED/YyuAk8SvF6h4qOw7x7++ylHXt2OeJF8hLLtsMFlpnHM49I8sYcUuHrjk
-        UkJKCB8MWqZpk9ek5oGkO6KWOdNyHIxxvp8BsJCAgMQib0ODA
-X-Received: by 2002:a19:a411:: with SMTP id q17mr11860165lfc.203.1599548256274;
-        Mon, 07 Sep 2020 23:57:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJygp/Cy9i5kwwqPW29UqRHI61VnfUXcFf9tILlkpm11JRKPQHotL77csl2OK1RXodhDbYgfkWa4aatVJw3RBRA=
-X-Received: by 2002:a19:a411:: with SMTP id q17mr11860150lfc.203.1599548255889;
- Mon, 07 Sep 2020 23:57:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200907035010.9154-1-po-hsu.lin@canonical.com> <20200907131217.61643ada@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200907131217.61643ada@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-Date:   Tue, 8 Sep 2020 14:57:24 +0800
-Message-ID: <CAMy_GT-kaqkcdR+0q5eKoW3CJn7dZSCfr+UxRf6e5iRzZMiKTA@mail.gmail.com>
-Subject: Re: [PATCHv3] selftests: rtnetlink: load fou module for
- kci_test_encap_fou() test
+        id S1729123AbgIHG6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 02:58:37 -0400
+Received: from mga18.intel.com ([134.134.136.126]:50924 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728995AbgIHG6f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 02:58:35 -0400
+IronPort-SDR: xEZZKvi9hBbldzomTvzax1JKi0SryvMnN1xlLY7eeuLcmZt2UF6QuPDH3OGMoNF8lSCcVb0Q6S
+ Fr6TXqLNSy7A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9737"; a="145794041"
+X-IronPort-AV: E=Sophos;i="5.76,404,1592895600"; 
+   d="scan'208";a="145794041"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2020 23:58:34 -0700
+IronPort-SDR: ZCsyxjpZdlssSDVMWz1a+wSYlNMW9xTXtHkrzhvvxurk+Xaud2pzNZ4rembEvZls8pBMZ7FPP5
+ 1WdxQgCygCVw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,404,1592895600"; 
+   d="scan'208";a="284413920"
+Received: from pgierasi-mobl.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.39.2])
+  by fmsmga007.fm.intel.com with ESMTP; 07 Sep 2020 23:58:31 -0700
+Subject: Re: [PATCH bpf-next 0/6] xsk: exit NAPI loop when AF_XDP Rx ring is
+ full
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, davem@davemloft.net,
+        john.fastabend@gmail.com, intel-wired-lan@lists.osuosl.org
+References: <20200904135332.60259-1-bjorn.topel@gmail.com>
+ <20200904162751.632c4443@carbon>
+ <27e05518-99c6-15e2-b801-cbc0310630ef@intel.com>
+ <20200904165837.16d8ecfd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <1d2e781e-b26d-4cf0-0178-25b8835dbe26@intel.com>
+ <20200907114055.27c95483@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <8f698ac5-916f-9bb0-cce2-f00fba6ba407@intel.com>
+Date:   Tue, 8 Sep 2020 08:58:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20200907114055.27c95483@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 4:12 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On 2020-09-07 20:40, Jakub Kicinski wrote:
+> On Mon, 7 Sep 2020 15:37:40 +0200 Björn Töpel wrote:
+>>   > I've been pondering the exact problem you're solving with Maciej
+>>   > recently. The efficiency of AF_XDP on one core with the NAPI processing.
+>>   >
+>>   > Your solution (even though it admittedly helps, and is quite simple)
+>>   > still has the application potentially not able to process packets
+>>   > until the queue fills up. This will be bad for latency.
+>>   >
+>>   > Why don't we move closer to application polling? Never re-arm the NAPI
+>>   > after RX, let the application ask for packets, re-arm if 0 polled.
+>>   > You'd get max batching, min latency.
+>>   >
+>>   > Who's the rambling one now? :-D
+>>   >
+>>
+>> :-D No, these are all very good ideas! We've actually experimented
+>> with it with the busy-poll series a while back -- NAPI busy-polling
+>> does exactly "application polling".
+>>
+>> However, I wonder if the busy-polling would have better performance
+>> than the scenario above (i.e. when the ksoftirqd never kicks in)?
+>> Executing the NAPI poll *explicitly* in the syscall, or implicitly
+>> from the softirq.
+>>
+>> Hmm, thinking out loud here. A simple(r) patch enabling busy poll;
+>> Exporting the napi_id to the AF_XDP socket (xdp->rxq->napi_id to
+>> sk->sk_napi_id), and do the sk_busy_poll_loop() in sendmsg.
+>>
+>> Or did you have something completely different in mind?
+> 
+> My understanding is that busy-polling is allowing application to pick
+> up packets from the ring before the IRQ fires.
+> 
+> What we're more concerned about is the IRQ firing in the first place.
+> 
+>   application:   busy    | needs packets | idle
+>   -----------------------+---------------+----------------------
+>     standard   |         |   polls NAPI  | keep polling? sleep?
+>     busy poll  | IRQ on  |    IRQ off    |  IRQ off      IRQ on
+>   -------------+---------+---------------+----------------------
+>                |         |   polls once  |
+>      AF_XDP    | IRQ off |    IRQ off    |  IRQ on
+> 
+> 
+> So busy polling is pretty orthogonal. It only applies to the
+> "application needs packets" time. What we'd need is for the application
+> to be able to suppress NAPI polls, promising the kernel that it will
+> busy poll when appropriate.
 >
-> On Mon,  7 Sep 2020 11:50:10 +0800 Po-Hsu Lin wrote:
-> > The kci_test_encap_fou() test from kci_test_encap() in rtnetlink.sh
-> > needs the fou module to work. Otherwise it will fail with:
-> >
-> >   $ ip netns exec "$testns" ip fou add port 7777 ipproto 47
-> >   RTNETLINK answers: No such file or directory
-> >   Error talking to the kernel
-> >
-> > Add the CONFIG_NET_FOU into the config file as well. Which needs at
-> > least to be set as a loadable module.
-> >
-> > Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
->
-> > diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
-> > index 7c38a90..a711b3e 100755
-> > --- a/tools/testing/selftests/net/rtnetlink.sh
-> > +++ b/tools/testing/selftests/net/rtnetlink.sh
-> > @@ -520,6 +520,11 @@ kci_test_encap_fou()
-> >               return $ksft_skip
-> >       fi
-> >
-> > +     if ! /sbin/modprobe -q -n fou; then
-> > +             echo "SKIP: module fou is not found"
-> > +             return $ksft_skip
-> > +     fi
-> > +     /sbin/modprobe -q fou
-> >       ip -netns "$testns" fou add port 7777 ipproto 47 2>/dev/null
-> >       if [ $? -ne 0 ];then
-> >               echo "FAIL: can't add fou port 7777, skipping test"
-> > @@ -540,6 +545,7 @@ kci_test_encap_fou()
-> >               return 1
-> >       fi
-> >
-> > +     /sbin/modprobe -q -r fou
->
-> I think the common practice is to not remove the module at the end of
-> the test. It may be used by something else than the test itself.
->
-Hello Jakub,
-Thanks for your feedback.
 
-For this case I think it's safe to remove the module here, as it was
-never loaded before and thus causing this test to fail.
-If other tests in this rtnetlink.sh need this fou module, we should be
-able to spot those failures too, however this is the only failure as I
-can see.
-(pmtu.sh will need fou module to run as well, but it will be loaded there.)
+Ah, nice write-up! Thanks! A strict busy-poll mechanism, not the
+opportunistic (existing) NAPI busy-poll.
 
-Shouldn't we insert the required module whenever the test needs it? So
-that we can run the test itself directly, without depending on other
-tests.
-Also, I can see modules for tests were being unloaded in other tests as well.
+This would be a new kind of mechanism, and a very much welcome one in
+AF_XDP-land. More below.
 
-Thanks
+>> As for this patch set, I think it would make sense to pull it in since
+>> it makes the single-core scenario *much* better, and it is pretty
+>> simple. Then do the application polling as another, potentially,
+>> improvement series.
+> 
+> Up to you, it's extra code in the driver so mostly your code to
+> maintain.
+> 
+> I think that if we implement what I described above - everyone will
+> use that on a single core setup, so this set would be dead code
+> (assuming RQ is sized appropriately). But again, your call :)
+> 
 
-> >       echo "PASS: fou"
-> >  }
-> >
->
+Now, I agree that the busy-poll you describe above would be the best
+option, but from my perspective it's a much larger set that involves
+experimenting. I will explore that, but I still think this series should
+go in sooner to make the single core scenario usable *today*.
+
+Ok, back to the busy-poll ideas. I'll call your idea "strict busy-poll",
+i.e. the NAPI loop is *only* driven by userland, and interrupts stay
+disabled. "Syscall driven poll-mode driver". :-)
+
+On the driver side (again, only talking Intel here, since that's what I
+know the details of), the NAPI context would only cover AF_XDP queues,
+so that other queues are not starved.
+
+Any ideas how strict busy-poll would look, API/implmentation-wise? An
+option only for AF_XDP sockets? Would this make sense to regular
+sockets? If so, maybe extend the existing NAPI busy-poll with a "strict"
+mode?
+
+I'll start playing around a bit, but again, I think this simple series
+should go in just to make AF_XDP single core usable *today*.
+
+
+Thanks!
+Björn
