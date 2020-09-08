@@ -2,412 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51BE4262336
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 00:48:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE68F26233C
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 00:49:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730025AbgIHWsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 18:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
+        id S1729908AbgIHWtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 18:49:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726694AbgIHWsY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 18:48:24 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4703BC061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 15:48:23 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id 67so571929pgd.12
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 15:48:23 -0700 (PDT)
+        with ESMTP id S1729275AbgIHWtv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 18:49:51 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28C1C061755
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 15:49:51 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id 16so769141qkf.4
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 15:49:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=WpK8MHQXp2E5KnljcHJej1vo7BxW5s9/A4q1UAoNN/g=;
-        b=osJnU6jigMSy09JMAV36GoOnxJGMoVjt+2Zbgr1jr+FeEq7rON4OXG5OTuWC0CSAi0
-         TboqMRrGqMkxks+l6ZaYwMJvaWqX8cxtSYGf5LmsG2lug+uPpletylrid3TCrjs39ql6
-         gPzhb4IaZ9Nt2mQpDkLDjudeKlOGjm62iSd6fDc/62w1SYlr4sTD0bgX+Tyb8YBfwh1D
-         vawqN4jDCxGltg3U3AnVH0fy18Krc9CFTZnoQEFDmIHhPVtZwitwfJQTyxIRdALw2nkB
-         oypbQm1SeO5m+qbgyLOswZUoIv9LIcEQnmsx9pQG+LPbkl9wBWT02nXnt4V0RTpFOXeW
-         oXuw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2HU8g9qnV1VDaV0c9lrq6EKArLaVEN3j7/XSwFN0QqM=;
+        b=Z90ztMUO1TxEDOS9VSXxPep7MEvzQ/PUL1Gm19hoct4oUV5LuIm+DMe1gEeeWMknn4
+         vG8AxfZ8PSDvxl3CDJywWkGtfBDYb3RxDgOhi+OhQfRKObpTO9Z7V/Lw6pjYQdgjEbKJ
+         ByFOHgE6rAsm1E5Sx5iqan6ySYKvh39UM/cnfJmnmKQ/W8M9g0uB4BdREry8hmgaRfs2
+         w9YtCtPe/YCyD8ZGQePI6zXSmaKMvaIcOXzAm94JQzuz/hPcwJWcYOxY9Rt127vuwhvK
+         gVgXFiO97+fFsW5/d5uvvbR3ZQGH4lpE4VUrarKeAXqvUYbTDqUWCxxiq78jFMWAMHxk
+         jl8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=WpK8MHQXp2E5KnljcHJej1vo7BxW5s9/A4q1UAoNN/g=;
-        b=beXig56asm4krUUybbqw+kgE8xVDbUD2aR8Dp4WTkHUYY97Al91/C9auosRTGBHn5H
-         yxK8jnC3qM0cttSkygoWkjGBPxPcSE/OcqHldzCiKuSdRrtXrxDn3wkp67LXgrLtXWML
-         xGjr0sDYXIKCd6YJeIUxERFjcfswKLN3A1SLW5bTzpIgFEmND4Mapa6ozcAuSCSMsoJ3
-         ih4hfDg6281CVS8voC6Ofue+FfYh9K9LTEKMm0AgFECd2Qkj0UewDw/uyNbxJtEA9D0n
-         EgKuT31ZJiPSSAAUoYM3nglOMdeIjKRg/HeZKJR8LouKq25XnczdXw0fj/63yDnKCvOA
-         ylFA==
-X-Gm-Message-State: AOAM532o037wSZhyfhUpxYgzCf3+32iLXY//bCrK60fvpwXdk3x0ppUz
-        ZVeRMdOwk7R6ccmO5UQhNaZq/KNLOO5x0Q==
-X-Google-Smtp-Source: ABdhPJwo4XgnjYlN3ajqyDeLzS5oITXPcrE3DeX7w46WEzdgNlP+AoJHNfrjhuPAV85EYrEthvcZaw==
-X-Received: by 2002:a63:2fc7:: with SMTP id v190mr723991pgv.250.1599605302290;
-        Tue, 08 Sep 2020 15:48:22 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id v6sm435515pfi.38.2020.09.08.15.48.21
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 08 Sep 2020 15:48:21 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
-Date:   Tue,  8 Sep 2020 15:48:12 -0700
-Message-Id: <20200908224812.63434-3-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200908224812.63434-1-snelson@pensando.io>
-References: <20200908224812.63434-1-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2HU8g9qnV1VDaV0c9lrq6EKArLaVEN3j7/XSwFN0QqM=;
+        b=cOMIWLr/ST22/tmZLkc0xDLaUseKsJ5BrxAMrno81KFogbNB4Yn8CPdV+pTKP0UGU9
+         yiU074/ygv/h3CU5q+WjNnxBJ2gH9aJD19PLmHuTQqHqZQPRuDVovUHhtQaAXlRxjcrV
+         dcoNpf3IGRwLa04lDcjVxVUpvc9ionivwxfe0MSe0JQv6R6QpwIRMA20+PyzAhpey3FB
+         LIk0YJ+fdPDjTJPhiIvKCVgSjZp7A83TnaudWj0nMm4i/ByMA2uB0CgXAGnx0pbMkTBi
+         Ut2St8G/vtKecWkj4hEQGCs9mMeRBavl8UnJL6SMirQFQJoIftEaAVS3xNQKPLqWpFnh
+         YdeA==
+X-Gm-Message-State: AOAM533wVq+t7el3/WuQH904UndjdgfqqbAMpAickv7u4MeJbxXsCLSF
+        SLdUH8RPvIkzIaV2EqCj8tWOqPuP0/MwBUZbdZiqDA==
+X-Google-Smtp-Source: ABdhPJwMZr5tfILQWxCkB86iuiDFlgJCHkE0UTPXQEawQTrBnbi+P36FkaZN87wIx5usm4wSKq3JjZkYSY4YExbhvhg=
+X-Received: by 2002:a37:4a57:: with SMTP id x84mr776229qka.17.1599605389903;
+ Tue, 08 Sep 2020 15:49:49 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200828193603.335512-1-sdf@google.com> <20200828193603.335512-6-sdf@google.com>
+ <CAEf4BzZcb+CKwL72mgC5B+2wAi8hfT_OoVUNZCcZjKgu4zRxiA@mail.gmail.com>
+ <CAKH8qBvkRrRWGX8HjKuCCoE1x2BB7tXmyJv1HotEyp7D_D+mLg@mail.gmail.com> <CAEf4BzYi+DjDHZTWWOPyJaU13civjeFRO-bGOzvEPjsimk906A@mail.gmail.com>
+In-Reply-To: <CAEf4BzYi+DjDHZTWWOPyJaU13civjeFRO-bGOzvEPjsimk906A@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 8 Sep 2020 15:49:38 -0700
+Message-ID: <CAKH8qBvCQ0q+R0RPX-nhSwXqybKHFYZ0ovu08W6Z6tiFSkzsGA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 5/8] bpftool: support dumping metadata
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        YiFei Zhu <zhuyifei@google.com>,
+        YiFei Zhu <zhuyifei1999@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for firmware update through the devlink interface.
-This update copies the firmware object into the device, asks
-the current firmware to install it, then asks the firmware to
-select the new firmware for the next boot-up.
+On Tue, Sep 8, 2020 at 3:35 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, Sep 8, 2020 at 1:53 PM Stanislav Fomichev <sdf@google.com> wrote:
+> >
+> > On Wed, Sep 2, 2020 at 10:00 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Fri, Aug 28, 2020 at 12:37 PM Stanislav Fomichev <sdf@google.com> wrote:
+> > > >
+> > > > From: YiFei Zhu <zhuyifei@google.com>
+> > > >
+> > > > Added a flag "--metadata" to `bpftool prog list` to dump the metadata
+> > > > contents. For some formatting some BTF code is put directly in the
+> > > > metadata dumping. Sanity checks on the map and the kind of the btf_type
+> > > > to make sure we are actually dumping what we are expecting.
+> > > >
+> > > > A helper jsonw_reset is added to json writer so we can reuse the same
+> > > > json writer without having extraneous commas.
+> > > >
+> > > > Sample output:
+> > > >
+> > > >   $ bpftool prog --metadata
+> > > >   6: cgroup_skb  name prog  tag bcf7977d3b93787c  gpl
+> > > >   [...]
+> > > >         btf_id 4
+> > > >         metadata:
+> > > >                 metadata_a = "foo"
+> > > >                 metadata_b = 1
+> > > >
+> > > >   $ bpftool prog --metadata --json --pretty
+> > > >   [{
+> > > >           "id": 6,
+> > > >   [...]
+> > > >           "btf_id": 4,
+> > > >           "metadata": {
+> > > >               "metadata_a": "foo",
+> > > >               "metadata_b": 1
+> > > >           }
+> > > >       }
+> > > >   ]
+> > > >
+> > > > Cc: YiFei Zhu <zhuyifei1999@gmail.com>
+> > > > Signed-off-by: YiFei Zhu <zhuyifei@google.com>
+> > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > ---
+> > > >  tools/bpf/bpftool/json_writer.c |   6 ++
+> > > >  tools/bpf/bpftool/json_writer.h |   3 +
+> > > >  tools/bpf/bpftool/main.c        |  10 +++
+> > > >  tools/bpf/bpftool/main.h        |   1 +
+> > > >  tools/bpf/bpftool/prog.c        | 130 ++++++++++++++++++++++++++++++++
+> > > >  5 files changed, 150 insertions(+)
+> > > >
+> > >
+> > > [...]
+> > >
+> > > > +
+> > > > +       if (bpf_map_lookup_elem(map_fd, &key, value)) {
+> > > > +               p_err("metadata map lookup failed: %s", strerror(errno));
+> > > > +               goto out_free;
+> > > > +       }
+> > > > +
+> > > > +       err = btf__get_from_id(map_info.btf_id, &btf);
+> > >
+> > > what if the map has no btf_id associated (e.g., because of an old
+> > > kernel?); why fail in this case?
+> > Thank you for the review, coming back at it a bit late :-(
+> >
+> > This functionality is guarded by --metadata bpftool flag (off by default).
+> > In case of no btf_id, it might be helpful to show why we don't have
+> > the metadata rather than just quietly failing.
+> > WDYT?
+>
+> we might do it similarly to PID info I added with bpf_iter: if it's
+> supported -- emit it, if not -- skip and still succeed. So maybe we
+> don't really need extra --metadata flag and should do all this always?
+Sounds reasonable, especially if there is an existing precedent.
+Let me explore that option.
 
-The install and select steps are launched as asynchronous
-requests, which are then followed up with status request
-commands.  These status request commands will be answered with
-an EAGAIN return value and will try again until the request
-has completed or reached the timeout specified.
+> > > > +       if (err || !btf) {
+> > > > +               p_err("metadata BTF get failed: %s", strerror(-err));
+> > > > +               goto out_free;
+> > > > +       }
+> > > > +
+> > > > +       t_datasec = btf__type_by_id(btf, map_info.btf_value_type_id);
+> > > > +       if (BTF_INFO_KIND(t_datasec->info) != BTF_KIND_DATASEC) {
+> > >
+> > > btf_is_datasec(t_datasec)
+> > >
+> > > > +               p_err("bad metadata BTF");
+> > > > +               goto out_free;
+> > > > +       }
+> > > > +
+> > > > +       vlen = BTF_INFO_VLEN(t_datasec->info);
+> > >
+> > > btf_vlen(t_datasec)
+> > >
+> > > > +       vsi = (struct btf_var_secinfo *)(t_datasec + 1);
+> > >
+> > > btf_var_secinfos(t_datasec)
+> > >
+> > > > +
+> > > > +       /* We don't proceed to check the kinds of the elements of the DATASEC.
+> > > > +        * The verifier enforce then to be BTF_KIND_VAR.
+> > >
+> > > typo: then -> them
+> > >
+> > > > +        */
+> > > > +
+> > > > +       if (json_output) {
+> > > > +               struct btf_dumper d = {
+> > > > +                       .btf = btf,
+> > > > +                       .jw = json_wtr,
+> > > > +                       .is_plain_text = false,
+> > > > +               };
+> > > > +
+> > > > +               jsonw_name(json_wtr, "metadata");
+> > > > +
+> > > > +               jsonw_start_object(json_wtr);
+> > > > +               for (i = 0; i < vlen; i++) {
+> > >
+> > > nit: doing ++vsi here
+> > Agreed with all the above, except this one.
+> > It feels like it's safer to do [i] in case somebody adds a 'continue'
+> > clause later and we miss that '++vsi'.
+> > Let me know if you feel strongly about it.
+>
+> I meant to add vsi++ inside the for clause, no way to miss it:
+>
+> for (i = 0; i < vlen, i++, vsi++) {
+>   continue/break/whatever you want, except extra i++ or vsi++
+> }
+>
+> it's the safest way, imo
+Ack, I can do that, thanks!
 
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/Makefile  |   2 +-
- .../ethernet/pensando/ionic/ionic_devlink.c   |  14 ++
- .../ethernet/pensando/ionic/ionic_devlink.h   |   3 +
- .../net/ethernet/pensando/ionic/ionic_fw.c    | 209 ++++++++++++++++++
- .../net/ethernet/pensando/ionic/ionic_main.c  |  23 +-
- 5 files changed, 242 insertions(+), 9 deletions(-)
- create mode 100644 drivers/net/ethernet/pensando/ionic/ionic_fw.c
-
-diff --git a/drivers/net/ethernet/pensando/ionic/Makefile b/drivers/net/ethernet/pensando/ionic/Makefile
-index 29f304d75261..8d3c2d3cb10d 100644
---- a/drivers/net/ethernet/pensando/ionic/Makefile
-+++ b/drivers/net/ethernet/pensando/ionic/Makefile
-@@ -5,4 +5,4 @@ obj-$(CONFIG_IONIC) := ionic.o
- 
- ionic-y := ionic_main.o ionic_bus_pci.o ionic_devlink.o ionic_dev.o \
- 	   ionic_debugfs.o ionic_lif.o ionic_rx_filter.o ionic_ethtool.o \
--	   ionic_txrx.o ionic_stats.o
-+	   ionic_txrx.o ionic_stats.o ionic_fw.o
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-index 8d9fb2e19cca..5348f05ebc32 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.c
-@@ -9,6 +9,19 @@
- #include "ionic_lif.h"
- #include "ionic_devlink.h"
- 
-+static int ionic_dl_flash_update(struct devlink *dl,
-+				 const char *fwname,
-+				 const char *component,
-+				 struct netlink_ext_ack *extack)
-+{
-+	struct ionic *ionic = devlink_priv(dl);
-+
-+	if (component)
-+		return -EOPNOTSUPP;
-+
-+	return ionic_firmware_update(ionic->lif, fwname, extack);
-+}
-+
- static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 			     struct netlink_ext_ack *extack)
- {
-@@ -48,6 +61,7 @@ static int ionic_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 
- static const struct devlink_ops ionic_dl_ops = {
- 	.info_get	= ionic_dl_info_get,
-+	.flash_update	= ionic_dl_flash_update,
- };
- 
- struct ionic *ionic_devlink_alloc(struct device *dev)
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
-index 0690172fc57a..5c01a9e306d8 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_devlink.h
-@@ -6,6 +6,9 @@
- 
- #include <net/devlink.h>
- 
-+int ionic_firmware_update(struct ionic_lif *lif, const char *fw_name,
-+			  struct netlink_ext_ack *extack);
-+
- struct ionic *ionic_devlink_alloc(struct device *dev);
- void ionic_devlink_free(struct ionic *ionic);
- int ionic_devlink_register(struct ionic *ionic);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_fw.c b/drivers/net/ethernet/pensando/ionic/ionic_fw.c
-new file mode 100644
-index 000000000000..c8d699e219d4
---- /dev/null
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_fw.c
-@@ -0,0 +1,209 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright(c) 2020 Pensando Systems, Inc */
-+
-+#include <linux/kernel.h>
-+#include <linux/types.h>
-+#include <linux/errno.h>
-+#include <linux/firmware.h>
-+
-+#include "ionic.h"
-+#include "ionic_dev.h"
-+#include "ionic_lif.h"
-+#include "ionic_devlink.h"
-+
-+/* The worst case wait for the install activity is about 25 minutes when
-+ * installing a new CPLD, which is very seldom.  Normal is about 30-35
-+ * seconds.  Since the driver can't tell if a CPLD update will happen we
-+ * set the timeout for the ugly case.
-+ */
-+#define IONIC_FW_INSTALL_TIMEOUT	(25 * 60)
-+#define IONIC_FW_SELECT_TIMEOUT		30
-+
-+/* Number of periodic log updates during fw file download */
-+#define IONIC_FW_INTERVAL_FRACTION	32
-+
-+static void ionic_dev_cmd_firmware_download(struct ionic_dev *idev, u64 addr,
-+					    u32 offset, u32 length)
-+{
-+	union ionic_dev_cmd cmd = {
-+		.fw_download.opcode = IONIC_CMD_FW_DOWNLOAD,
-+		.fw_download.offset = offset,
-+		.fw_download.addr = addr,
-+		.fw_download.length = length
-+	};
-+
-+	ionic_dev_cmd_go(idev, &cmd);
-+}
-+
-+static void ionic_dev_cmd_firmware_install(struct ionic_dev *idev)
-+{
-+	union ionic_dev_cmd cmd = {
-+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
-+		.fw_control.oper = IONIC_FW_INSTALL_ASYNC
-+	};
-+
-+	ionic_dev_cmd_go(idev, &cmd);
-+}
-+
-+static void ionic_dev_cmd_firmware_activate(struct ionic_dev *idev, u8 slot)
-+{
-+	union ionic_dev_cmd cmd = {
-+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
-+		.fw_control.oper = IONIC_FW_ACTIVATE_ASYNC,
-+		.fw_control.slot = slot
-+	};
-+
-+	ionic_dev_cmd_go(idev, &cmd);
-+}
-+
-+static int ionic_fw_status_long_wait(struct ionic *ionic,
-+				     const char *label,
-+				     unsigned long timeout,
-+				     u8 fw_cmd,
-+				     struct netlink_ext_ack *extack)
-+{
-+	union ionic_dev_cmd cmd = {
-+		.fw_control.opcode = IONIC_CMD_FW_CONTROL,
-+		.fw_control.oper = fw_cmd,
-+	};
-+	unsigned long start_time;
-+	unsigned long end_time;
-+	struct devlink *dl;
-+	int err;
-+
-+	dl = priv_to_devlink(ionic);
-+	devlink_flash_update_status_notify(dl, label, NULL, 1, timeout);
-+	start_time = jiffies;
-+	end_time = start_time + (timeout * HZ);
-+	do {
-+		mutex_lock(&ionic->dev_cmd_lock);
-+		ionic_dev_cmd_go(&ionic->idev, &cmd);
-+		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+		mutex_unlock(&ionic->dev_cmd_lock);
-+
-+		devlink_flash_update_status_notify(dl, label, NULL,
-+						   (jiffies - start_time) / HZ,
-+						   timeout);
-+	} while (time_before(jiffies, end_time) && (err == -EAGAIN || err == -ETIMEDOUT));
-+
-+	if (err == -EAGAIN || err == -ETIMEDOUT) {
-+		NL_SET_ERR_MSG_MOD(extack, "Firmware wait timed out");
-+		dev_err(ionic->dev, "DEV_CMD firmware wait %s timed out\n", label);
-+	} else if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Firmware wait failed");
-+	} else {
-+		devlink_flash_update_status_notify(dl, label, NULL, timeout, timeout);
-+	}
-+
-+	return err;
-+}
-+
-+int ionic_firmware_update(struct ionic_lif *lif, const char *fw_name,
-+			  struct netlink_ext_ack *extack)
-+{
-+	struct ionic_dev *idev = &lif->ionic->idev;
-+	struct net_device *netdev = lif->netdev;
-+	struct ionic *ionic = lif->ionic;
-+	union ionic_dev_cmd_comp comp;
-+	u32 buf_sz, copy_sz, offset;
-+	const struct firmware *fw;
-+	struct devlink *dl;
-+	int next_interval;
-+	int err = 0;
-+	u8 fw_slot;
-+
-+	netdev_info(netdev, "Installing firmware %s\n", fw_name);
-+
-+	dl = priv_to_devlink(ionic);
-+	devlink_flash_update_begin_notify(dl);
-+	devlink_flash_update_status_notify(dl, "Preparing to flash", NULL, 0, 0);
-+
-+	err = request_firmware(&fw, fw_name, ionic->dev);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unable to find firmware file");
-+		goto err_out;
-+	}
-+
-+	buf_sz = sizeof(idev->dev_cmd_regs->data);
-+
-+	netdev_dbg(netdev,
-+		   "downloading firmware - size %d part_sz %d nparts %lu\n",
-+		   (int)fw->size, buf_sz, DIV_ROUND_UP(fw->size, buf_sz));
-+
-+	devlink_flash_update_status_notify(dl, "Downloading", NULL, 0, fw->size);
-+	offset = 0;
-+	next_interval = fw->size / IONIC_FW_INTERVAL_FRACTION;
-+	while (offset < fw->size) {
-+		copy_sz = min_t(unsigned int, buf_sz, fw->size - offset);
-+		mutex_lock(&ionic->dev_cmd_lock);
-+		memcpy_toio(&idev->dev_cmd_regs->data, fw->data + offset, copy_sz);
-+		ionic_dev_cmd_firmware_download(idev,
-+						offsetof(union ionic_dev_cmd_regs, data),
-+						offset, copy_sz);
-+		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+		mutex_unlock(&ionic->dev_cmd_lock);
-+		if (err) {
-+			netdev_err(netdev,
-+				   "download failed offset 0x%x addr 0x%lx len 0x%x\n",
-+				   offset, offsetof(union ionic_dev_cmd_regs, data),
-+				   copy_sz);
-+			NL_SET_ERR_MSG_MOD(extack, "Segment download failed");
-+			goto err_out;
-+		}
-+		offset += copy_sz;
-+
-+		if (offset > next_interval) {
-+			devlink_flash_update_status_notify(dl, "Downloading",
-+							   NULL, offset, fw->size);
-+			next_interval = offset + (fw->size / IONIC_FW_INTERVAL_FRACTION);
-+		}
-+	}
-+	devlink_flash_update_status_notify(dl, "Downloading", NULL, 1, 1);
-+
-+	devlink_flash_update_status_notify(dl, "Installing", NULL, 0, 2);
-+
-+	mutex_lock(&ionic->dev_cmd_lock);
-+	ionic_dev_cmd_firmware_install(idev);
-+	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+	ionic_dev_cmd_comp(idev, (union ionic_dev_cmd_comp *)&comp);
-+	fw_slot = comp.fw_control.slot;
-+	mutex_unlock(&ionic->dev_cmd_lock);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to start firmware install");
-+		goto err_out;
-+	}
-+
-+	err = ionic_fw_status_long_wait(ionic, "Installing",
-+					IONIC_FW_INSTALL_TIMEOUT,
-+					IONIC_FW_INSTALL_STATUS,
-+					extack);
-+	if (err)
-+		goto err_out;
-+
-+	devlink_flash_update_status_notify(dl, "Selecting", NULL, 0, 2);
-+
-+	mutex_lock(&ionic->dev_cmd_lock);
-+	ionic_dev_cmd_firmware_activate(idev, fw_slot);
-+	err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
-+	mutex_unlock(&ionic->dev_cmd_lock);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to start firmware select");
-+		goto err_out;
-+	}
-+
-+	err = ionic_fw_status_long_wait(ionic, "Selecting",
-+					IONIC_FW_SELECT_TIMEOUT,
-+					IONIC_FW_ACTIVATE_STATUS,
-+					extack);
-+	if (err)
-+		goto err_out;
-+
-+	netdev_info(netdev, "Firmware update completed\n");
-+
-+err_out:
-+	if (err)
-+		devlink_flash_update_status_notify(dl, "Flash failed", NULL, 0, 0);
-+	release_firmware(fw);
-+	devlink_flash_update_end_notify(dl);
-+	return err;
-+}
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index f1fd9a98ae4a..c0979b9e38fc 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -361,17 +361,22 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 	 */
- 	max_wait = jiffies + (max_seconds * HZ);
- try_again:
-+	opcode = idev->dev_cmd_regs->cmd.cmd.opcode;
- 	start_time = jiffies;
- 	do {
- 		done = ionic_dev_cmd_done(idev);
- 		if (done)
- 			break;
--		msleep(5);
--		hb = ionic_heartbeat_check(ionic);
-+		usleep_range(100, 200);
-+
-+		/* Don't check the heartbeat on FW_CONTROL commands as they are
-+		 * notorious for interrupting the firmware's heartbeat update.
-+		 */
-+		if (opcode != IONIC_CMD_FW_CONTROL)
-+			hb = ionic_heartbeat_check(ionic);
- 	} while (!done && !hb && time_before(jiffies, max_wait));
- 	duration = jiffies - start_time;
- 
--	opcode = idev->dev_cmd_regs->cmd.cmd.opcode;
- 	dev_dbg(ionic->dev, "DEVCMD %s (%d) done=%d took %ld secs (%ld jiffies)\n",
- 		ionic_opcode_to_str(opcode), opcode,
- 		done, duration / HZ, duration);
-@@ -395,8 +400,9 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 
- 	err = ionic_dev_cmd_status(&ionic->idev);
- 	if (err) {
--		if (err == IONIC_RC_EAGAIN && !time_after(jiffies, max_wait)) {
--			dev_err(ionic->dev, "DEV_CMD %s (%d) error, %s (%d) retrying...\n",
-+		if (err == IONIC_RC_EAGAIN &&
-+		    time_before(jiffies, (max_wait - HZ))) {
-+			dev_dbg(ionic->dev, "DEV_CMD %s (%d), %s (%d) retrying...\n",
- 				ionic_opcode_to_str(opcode), opcode,
- 				ionic_error_to_str(err), err);
- 
-@@ -406,9 +412,10 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 			goto try_again;
- 		}
- 
--		dev_err(ionic->dev, "DEV_CMD %s (%d) error, %s (%d) failed\n",
--			ionic_opcode_to_str(opcode), opcode,
--			ionic_error_to_str(err), err);
-+		if (!(opcode == IONIC_CMD_FW_CONTROL && err == IONIC_RC_EAGAIN))
-+			dev_err(ionic->dev, "DEV_CMD %s (%d) error, %s (%d) failed\n",
-+				ionic_opcode_to_str(opcode), opcode,
-+				ionic_error_to_str(err), err);
- 
- 		return ionic_error_to_errno(err);
- 	}
--- 
-2.17.1
-
+> > > > +                       t_var = btf__type_by_id(btf, vsi[i].type);
+> > >
+> > > and vsi->type here and below would look a bit cleaner
+> > >
+> > > > +
+> > > > +                       jsonw_name(json_wtr, btf__name_by_offset(btf, t_var->name_off));
+> > > > +                       err = btf_dumper_type(&d, t_var->type, value + vsi[i].offset);
+> > > > +                       if (err) {
+> > > > +                               p_err("btf dump failed");
+> > > > +                               break;
+> > > > +                       }
+> > > > +               }
+> > > > +               jsonw_end_object(json_wtr);
+> > >
+> > > [...]
