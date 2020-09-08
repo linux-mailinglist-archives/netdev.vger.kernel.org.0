@@ -2,113 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E392608EA
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 05:09:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF8322608E6
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 05:08:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728516AbgIHDJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 23:09:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728241AbgIHDJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 23:09:10 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D116BC061573;
-        Mon,  7 Sep 2020 20:09:09 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id h4so15585669ioe.5;
-        Mon, 07 Sep 2020 20:09:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rBq6L8j6VXoV9kBXKeeyWs5lIar9dvrGK6LriY/bemU=;
-        b=dgcbDcv5+Wc8PKQMo1siPE6CbXStP0BwfrR3dBoESevR1ySVkrfGJvRsAK6WxudbMs
-         tJrDc9XJUj+U2fFKE0uveTXwu9LvvdlYUTY9g3WDwcwxrEnRCthG2lDvCJ+gEs1fVrfi
-         zaFY0JUHbduPQ42Yo01YyL0Na6laN6swR3y+O/lsZBuuTfdMXD+78rZFEtBLWx1bgqF5
-         zPwhQH1DIT/mv1vKN/2o/h2U5QSDUzEEjI6kgMkzvDqsxtzNB3p9Xkk+36/Kt4D8wvxa
-         qSyD34CaT04MW9CjnwvqqZl1iBPmV6s+dEI8kr4KF5roOQu4Wf0Koe718rpIYHPlq0Hd
-         EAnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rBq6L8j6VXoV9kBXKeeyWs5lIar9dvrGK6LriY/bemU=;
-        b=ciZPIFOPqn0NYL8TawDRVUcjs+YiIywm+20IpBOfQkgI4q+BhO99Sl6hBqq/yu+9IC
-         tumlE7sYxhkER8gHjVizrW2s4No0A3Zq+4gO7q4vq0ctfRX6tHNwC77JSUKj6liqYda0
-         ZNZ7N1o997xPZtpv+4+ha2Y/eXT0hqzqmwyrDBxdZzuoIT9wQAiOoUQ6IQNi66JIlVia
-         ReIJPw1EnZ8Q1CgMgphnipTu69uK5b5CLHcLF30kKqI+zT1+ZB1twUmxn0BZIpPdOcdT
-         gQej0HfZcW/is/xT8OBQjZh2sZ+OkAXmrAAdl39/xuZQUPW1aorRj1jnFXkC0hG3dCsG
-         60iQ==
-X-Gm-Message-State: AOAM533IdES/rnM0Bpbu/xvqxUf0KeMszI/5nMRuZjoU6MuNQwqajOBw
-        e+YQUwAmyuHL0sOZ+SaOOoeUgCV1TS8=
-X-Google-Smtp-Source: ABdhPJzCd21arCbtl6Ci687epIwl9O9Ql/OkCtD7cuxgSfMkxemjdGkFrNnMRt7Oito4GFPrl3DorQ==
-X-Received: by 2002:a02:8791:: with SMTP id t17mr21129203jai.89.1599534549063;
-        Mon, 07 Sep 2020 20:09:09 -0700 (PDT)
-Received: from localhost.localdomain (c-73-242-81-227.hsd1.mn.comcast.net. [73.242.81.227])
-        by smtp.gmail.com with ESMTPSA id b8sm7923367ioa.33.2020.09.07.20.09.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Sep 2020 20:09:08 -0700 (PDT)
-From:   Ross Schmidt <ross.schm.dev@gmail.com>
-To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
-        gregkh@linuxfoundation.org
-Cc:     netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Ross Schmidt <ross.schm.dev@gmail.com>
-Subject: [PATCH] staging: qlge: fix quoted string split across lines
-Date:   Mon,  7 Sep 2020 22:07:57 -0500
-Message-Id: <20200908030757.101278-1-ross.schm.dev@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        id S1728396AbgIHDIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 23:08:49 -0400
+Received: from ozlabs.org ([203.11.71.1]:58529 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728241AbgIHDIo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 23:08:44 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4BlqqG3Nkjz9sT6;
+        Tue,  8 Sep 2020 13:08:41 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1599534522;
+        bh=ZR9wZ/taI/ANXKFzUcL1I23XkZtFH+PchbQ6gdX4XAk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=nzKO7XEYJgC4rFcpwit82xayFpTQ2XuvjK880wvJgio4gkDvQpP6iO6A/TspIwbsD
+         YNuU6l6amOpZ9vyUXY7HPS8Kln2uQntJgkQ7FfDSj3Ow2ECoXEPesqH4Und3dswl0B
+         x4pD+UDrplQ5u326ROkrF+fhNtyN1DSaNxgOF7U2fqsqRdVu/hnvkYHT0VUAIiJtz6
+         CJ566Q4ic9k+nTsnvhBN1cerboa6GatlTSeZWDAtibJcyhbO55tSObbuPuM3gP0qKN
+         p7U+JIyYSuOEpsQTiDKNMV3xAtzWTzBNi3TFlG0hp8vSTvGphZUVXPntY/P2sV9cvx
+         MyoOl0O/9gbKw==
+Date:   Tue, 8 Sep 2020 13:08:41 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: linux-next: build failure after merge of the bpf-next tree
+Message-ID: <20200908130841.21980cd9@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/EVnkw0V8cQxuqowQN4un1cS";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixed a coding style issue by merging split quoted strings in qlge_main.c
-to fix checkpatch warnings.
+--Sig_/EVnkw0V8cQxuqowQN4un1cS
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Ross Schmidt <ross.schm.dev@gmail.com>
----
- drivers/staging/qlge/qlge_main.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+Hi all,
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 2028458bea6f..e4c9f5d3bfdd 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -2079,9 +2079,9 @@ static void ql_process_chip_ae_intr(struct ql_adapter *qdev,
- 		break;
- 
- 	case PCI_ERR_ANON_BUF_RD:
--		netdev_err(qdev->ndev, "PCI error occurred when reading "
--					"anonymous buffers from rx_ring %d.\n",
--					ib_ae_rsp->q_id);
-+		netdev_err(qdev->ndev,
-+			   "PCI error occurred when reading anonymous buffers from rx_ring %d.\n",
-+			   ib_ae_rsp->q_id);
- 		ql_queue_asic_error(qdev);
- 		break;
- 
-@@ -2415,8 +2415,7 @@ static irqreturn_t qlge_isr(int irq, void *dev_id)
- 		ql_queue_asic_error(qdev);
- 		netdev_err(qdev->ndev, "Got fatal error, STS = %x.\n", var);
- 		var = ql_read32(qdev, ERR_STS);
--		netdev_err(qdev->ndev, "Resetting chip. "
--					"Error Status Register = 0x%x\n", var);
-+		netdev_err(qdev->ndev, "Resetting chip. Error Status Register = 0x%x\n", var);
- 		return IRQ_HANDLED;
- 	}
- 
-@@ -3739,8 +3738,7 @@ static void ql_display_dev_info(struct net_device *ndev)
- 	struct ql_adapter *qdev = netdev_priv(ndev);
- 
- 	netif_info(qdev, probe, qdev->ndev,
--		   "Function #%d, Port %d, NIC Roll %d, NIC Rev = %d, "
--		   "XG Roll = %d, XG Rev = %d.\n",
-+		   "Function #%d, Port %d, NIC Roll %d, NIC Rev = %d, XG Roll = %d, XG Rev = %d.\n",
- 		   qdev->func,
- 		   qdev->port,
- 		   qdev->chip_rev_id & 0x0000000f,
--- 
-2.26.2
+After merging the bpf-next tree, today's linux-next build (powerpcle perf)
+failed like this:
 
+util/bpf-loader.c: In function 'config_bpf_program':
+util/bpf-loader.c:331:2: error: 'bpf_program__title' is deprecated: BPF pro=
+gram title is confusing term; please use bpf_program__section_name() instea=
+d [-Werror=3Ddeprecated-declarations]
+  331 |  config_str =3D bpf_program__title(prog, false);
+      |  ^~~~~~~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:203:13: note: declared here
+  203 | const char *bpf_program__title(const struct bpf_program *prog, bool=
+ needs_copy);
+      |             ^~~~~~~~~~~~~~~~~~
+util/bpf-loader.c: In function 'preproc_gen_prologue':
+util/bpf-loader.c:457:3: error: 'bpf_program__title' is deprecated: BPF pro=
+gram title is confusing term; please use bpf_program__section_name() instea=
+d [-Werror=3Ddeprecated-declarations]
+  457 |   title =3D bpf_program__title(prog, false);
+      |   ^~~~~
+In file included from util/bpf-loader.c:10:
+tools/lib/bpf/libbpf.h:203:13: note: declared here
+  203 | const char *bpf_program__title(const struct bpf_program *prog, bool=
+ needs_copy);
+      |             ^~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
+
+Caused or exposed by commit
+
+  521095842027 ("libbpf: Deprecate notion of BPF program "title" in favor o=
+f "section name"")
+
+I have used the bpf-next tree from next-20200903 for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/EVnkw0V8cQxuqowQN4un1cS
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9W9bkACgkQAVBC80lX
+0Gzh1gf+PJd9XLf10ut0GPKVjjxhbx9z/2qDaZLqToFE7l54BFaQt6ZfSQdK1PCh
+VY9Ng1ddhUTti0rcs61HnsIZFSb14E74xQknxZk9M+cLx6LZ371w+gt8CQxd3ZDx
+fqkx6Ryt/ZRwGjmtGclmzeCLydf39eq0vnPMejen+wHa+lrgsDh7aF1YY8nzLv3r
+elEKZ0P9onFePvxHPVGxusjh9bBnJdQVDifyNOcktw9TL1tIQ4kEKFH8gkHluKh/
+iJ7DXgebBYEsDYzfQekHsaFt6HcB6YigHoF3tn/fxRgLfdcf3iHhAAE0dHXmeLV+
+yPjmSaNqArjW2zTqEej6qA0YqBmFJA==
+=b3ET
+-----END PGP SIGNATURE-----
+
+--Sig_/EVnkw0V8cQxuqowQN4un1cS--
