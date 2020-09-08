@@ -2,145 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE816261452
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:15:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 237DB261478
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731250AbgIHQOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56694 "EHLO
+        id S1731904AbgIHQXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 12:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731601AbgIHQNo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:13:44 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A4CC0617BC
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 05:17:19 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id k18so1805896wmj.5
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 05:17:19 -0700 (PDT)
+        with ESMTP id S1731192AbgIHQWM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:22:12 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC261C061374;
+        Tue,  8 Sep 2020 05:45:38 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id b16so8234990pjp.0;
+        Tue, 08 Sep 2020 05:45:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Xc7i9lFK8Z9R/MbK0MEH717j2fSmQT53OR6EzTp19b0=;
-        b=lYC28hVZNplpFlJguFTo17ufEt4v1awGCLlyg53LDahG1qLKkk2iSqo4q5/BXpF1tP
-         mYYZh6zrtoYhycnLgwHULltqyyIyWY6Yo5mxnHZMOBx3b3nPR3Oc/IhnvmR0JqAkoVew
-         JHhfPTj/embJyrxkmS1f5C9vrO1r0N2xl5Athz/e5qwnJuYUmjzaCZeYqCsMHUsljg96
-         eRbZrszeSGw76h3YoKo9+GB/gnsos1P2uVf4FurbAeWGkBuGDP5Tw/Hzw9xq5vdUCMzb
-         OY5dq7iH6YNBm0tXXp4cJ71ksPLYvIx1E8P+FIOn+xFjqmLEVPnO3GdXjtY0FUpJA5Jz
-         x4OQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jhHypeLTRA4WXxhhuo6Z6j83RXXSW7eZ7o0xAUpwRko=;
+        b=WYKxTMjhCEq3m5vySflh4N7bV6WzAwoHVDwnzWmDuvMlUJQQTYUjRRQrQ1HRFyImD6
+         ARHK1Gga6jFz0A0tT9XZCQOyxKpp2fSboNAWVfGB7Fc9x5CDDDVQTESefH43SmG5Ubag
+         0O7upG16zrl5k74HF5oKkZlLqAYvSAv9dK2XPLZSOC6w1xowlI4LXHsW1Z7CqsmB03Vh
+         +3OTgSWBIMK36QOK71xW0sjXtkESECjQEqIycmMsrjdzZc/+KT54hSVfaOj0R6Aro5Mb
+         2ZXppdSSRwH+2qL2ZJqr6KHK4j8mLTt5Dh19wFsqNl5SjHS542eBkah5tHd30rej+n+7
+         uwHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Xc7i9lFK8Z9R/MbK0MEH717j2fSmQT53OR6EzTp19b0=;
-        b=ZbNXaec56LnlGtokyRTRyaBUNYlC9LJ6N/+EkpHANVvdJfHQE+9B0BrNBVOQo6wCD3
-         xmsf/0wbhXRGuxFocmVTkZKengjEW4IfdTS+z7dOfn7JnubumIs3SGqgbmGs4C8tPcPs
-         XIKQ5xDP5ZuIEHzPu+pi7sbZlJnA2sO5WlfPZqROxFln0Z798f9AHRYgDDE9dHCxpYXg
-         ABpJmu4OyaGc3P+FurhqyhqV6dwj8bc9JOYXFYWenAfO96jg70R+JAIcXcqUYFSPgvh0
-         rdCPN5RaJ10hGePjrjmdiNSr+c1ylHY1EbWeVh9vrk5Bifh3wIXnvLhwDjhGZXpbBIQ4
-         Fz+Q==
-X-Gm-Message-State: AOAM5334VscGJRg7E0iWfCqwjUWipwh3nkdG84nCKqlVs6Jz6PPrTAIv
-        d6blXueK8M3Ln7WG0mvsR1/WYA==
-X-Google-Smtp-Source: ABdhPJxyI6Xo3tu8zWV1QA/p9cNs1Pi+FbS/Si2RJHDJ9AAZhjuqTxhTHzOs3t4qITlTvFu8PwIiCA==
-X-Received: by 2002:a05:600c:c5:: with SMTP id u5mr4044015wmm.14.1599567438139;
-        Tue, 08 Sep 2020 05:17:18 -0700 (PDT)
-Received: from dell ([91.110.221.179])
-        by smtp.gmail.com with ESMTPSA id g186sm13774918wmg.25.2020.09.08.05.17.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2020 05:17:17 -0700 (PDT)
-Date:   Tue, 8 Sep 2020 13:17:15 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>
-Subject: Re: [PATCH 16/28] wireless: marvell: mwifiex: init: Move
- 'tos_to_tid_inv' to where it's used
-Message-ID: <20200908121715.GS4400@dell>
-References: <20200819072402.3085022-17-lee.jones@linaro.org>
- <20200831155151.0DCB5C4339C@smtp.codeaurora.org>
- <20200908084953.GJ4400@dell>
- <010101746d98d278-67bb0cbd-fe22-4344-8c2a-9c65e04ff501-000000@us-west-2.amazonses.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jhHypeLTRA4WXxhhuo6Z6j83RXXSW7eZ7o0xAUpwRko=;
+        b=r+4yPV9ulkUASdNbZ3E6zAO5hYQ6kobKbCu6LKqhgAiZc+tnCm+3GxZNs7EkPjLTsJ
+         4heTHCTF97pUsCZfdjKo9TJFMnlcYw+GLI4IbIukRAvPimrWT9n4698Rb3XIkIjjm2WU
+         Nstaqd/qUV7+MK4IOHDWHHTYOLSEk4is8U4X8RgcmedKZF4ceIvzjaRHjV6UbJJ8zBhZ
+         ukPRjJPpCoY4AmsR57L613auaQDKqmccStMP7jhsJvWHrCfs1uHcD+DbjLr8NJTYjfop
+         NP5n1iQPRgRVnntY9ZkdwXtmnIQ975Ooj3lJyZlSg7orjwSNyRlxvDNf2xB35X1GwTa9
+         Fq3Q==
+X-Gm-Message-State: AOAM533UOHS4nPtWAp7ePBuOz8Zx9YTMgoUYFCf+OYu30lDW3uDF7q4r
+        7STX9k/9fw8vi8zkozGbj9iezMbJbej068VC21Y=
+X-Google-Smtp-Source: ABdhPJw8LTt+XXaAgFIKLhZcvCAflJODmJdMFXBFRgAFnhCwPcvxTBBWUsyrjeSl3fonexRUaflNzJYkjYk5w6tS5WE=
+X-Received: by 2002:a17:90a:bd02:: with SMTP id y2mr3900886pjr.66.1599569138277;
+ Tue, 08 Sep 2020 05:45:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <010101746d98d278-67bb0cbd-fe22-4344-8c2a-9c65e04ff501-000000@us-west-2.amazonses.com>
+References: <CAJht_EOu8GKvdTAeF_rHsaKu7iYOmW8C64bQA21bgKuiANE5Zw@mail.gmail.com>
+ <CAJht_EP=g02o2ygihNo=EWd1OuL3HSjmhqgGiwUGrMde=urSUA@mail.gmail.com>
+ <CA+FuTSdm35x9nA259JgOWcCWJto9MVMHGGgamPPsgnpsTmPO8g@mail.gmail.com>
+ <CAJht_EPEqUMXNdQLL9d5OtzbZ92Jms7nSUR8bS+cw2Ah5mv6cQ@mail.gmail.com>
+ <CA+FuTSeJS22R2VYSzcEVvXiUhX79RYE0o3G6V3NKGzQ4UGaJQg@mail.gmail.com>
+ <CAJht_EN7SXAex-1W49eY7q5p2UqLYvXA8D6hptJGquXdJULLcA@mail.gmail.com> <CA+FuTSfgxt6uqcxy=wnOXo8HxMJ3J0HAqQNiDJBLCs22Ukb_gQ@mail.gmail.com>
+In-Reply-To: <CA+FuTSfgxt6uqcxy=wnOXo8HxMJ3J0HAqQNiDJBLCs22Ukb_gQ@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Tue, 8 Sep 2020 05:45:27 -0700
+Message-ID: <CAJht_EN-aBo8rfHAxYxwW2Jb38S2PW3WtxhWuHn5HS1fAWeA1w@mail.gmail.com>
+Subject: Re: Question about dev_validate_header used in af_packet.c
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 08 Sep 2020, Kalle Valo wrote:
+On Tue, Sep 8, 2020 at 4:53 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Tue, Sep 8, 2020 at 1:04 PM Xie He <xie.he.0141@gmail.com> wrote:
+> >
+> > I was recently looking at some drivers, and I felt that if af_packet.c
+> > could help me filter out the invalid RAW frames, I didn't need to
+> > check the validity of the frames myself (in the driver when
+> > transmitting). But now I guess I still need to check that.
+> >
+> > I feel this makes the dev_validate_header's variable-length header
+> > check not very useful, because drivers need to do this check again
+> > (when transmitting) anyway.
+> >
+> > I was thinking, after I saw dev_validate_header, that we could
+> > eventually make it completely take over the responsibility for a
+> > driver to validate the header when transmitting RAW frames. But now it
+> > seems we would not be able to do this.
+>
+> Agreed. As is, it is mainly useful to block users who are ns_capable,
+> but not capable.
+>
+> A third option is to move it behind a sysctl (with static_branch). Your
+> point is valid that there really is no need for testing of drivers against
+> bad packets if the data is validated directly on kernel entry.
 
-> Lee Jones <lee.jones@linaro.org> writes:
-> 
-> > On Mon, 31 Aug 2020, Kalle Valo wrote:
-> >
-> >> Lee Jones <lee.jones@linaro.org> wrote:
-> >> 
-> >> > 'tos_to_tid_inv' is only used in 2 of 17 files it's current being
-> >> > included into.
-> >> > 
-> >> > Fixes the following W=1 kernel build warning(s):
-> >> > 
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/main.c:23:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/cmdevt.c:26:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/util.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/txrx.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/11n.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/wmm.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/11n_aggr.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/11n_rxreorder.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/join.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/sta_cmd.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/sta_ioctl.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/sta_event.c:25:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/uap_txrx.c:23:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/sdio.c:27:
-> >> >  In file included from drivers/net/wireless/marvell/mwifiex/sta_tx.c:25:
-> >> >  drivers/net/wireless/marvell/mwifiex/wmm.h:41:17: warning:
-> >> > ‘tos_to_tid_inv’ defined but not used [-Wunused-const-variable=]
-> >> >  41 | static const u8 tos_to_tid_inv[] = {
-> >> > 
-> >> >  NB: Snipped for brevity
-> >> > 
-> >> > Cc: Amitkumar Karwar <amitkarwar@gmail.com>
-> >> > Cc: Ganapathi Bhat <ganapathi.bhat@nxp.com>
-> >> > Cc: Xinming Hu <huxinming820@gmail.com>
-> >> > Cc: Kalle Valo <kvalo@codeaurora.org>
-> >> > Cc: "David S. Miller" <davem@davemloft.net>
-> >> > Cc: Jakub Kicinski <kuba@kernel.org>
-> >> > Cc: linux-wireless@vger.kernel.org
-> >> > Cc: netdev@vger.kernel.org
-> >> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> >> 
-> >> The patch creates two duplicate arrays, this makes it worse than it was
-> >> before.
-> >
-> > We have a choice (and you don't like either of them). :)
-> >
-> > Either add the variable into the file(s) they are used or tell the
-> > compiler that it's okay for other files to declare but not used them
-> > (mark as __maybe_unused).
-> >
-> > What is your preferred solution?
-> 
-> Yue already sent a patch for this (at least I think so, not 100% sure if
-> this is the same case):
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git/commit/?id=d56ee19a148edaa9972ca12f817e395ba436078b
-> 
-> But that's the solution I like :) There's only one array and it's shared
-> by all the users.
-
-Any idea if this results in anything different from making use of
-__maybe_unused once compiled?
-
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+I was thinking about this again and it came to me that maybe sometimes
+people actually wanted to send invalid frames on wire (for testing the
+network device on the other end of the wire)? Having thought about
+this possibility I think it might be good to keep the ability for
+people to have 2 choices (either having their RAW frames validated, or
+not validated) through "capability" or through "sysctl" as you
+mentioned. We can keep the default to be not validating the RAW frames
+because RAW sockets are already intended for very special use and are
+not for normal use.
