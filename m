@@ -2,109 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD03226178A
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:37:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B98AC261789
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:37:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730976AbgIHRfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 13:35:46 -0400
-Received: from proxima.lasnet.de ([78.47.171.185]:48526 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731699AbgIHRfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 13:35:36 -0400
-Received: from PC192.168.2.51 (p200300e9d72b66a2cea394247181a3e4.dip0.t-ipconnect.de [IPv6:2003:e9:d72b:66a2:cea3:9424:7181:a3e4])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S1731836AbgIHRhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 13:37:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36524 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731792AbgIHRgi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 13:36:38 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id EA5E9C0702;
-        Tue,  8 Sep 2020 19:35:20 +0200 (CEST)
-Subject: Re: [PATCH net] mac802154: tx: fix use-after-free
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        linux-wpan@vger.kernel.org
-References: <20200908104025.4009085-1-edumazet@google.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <26f56ee9-e4f8-7464-dab7-356d84db7efb@datenfreihafen.org>
-Date:   Tue, 8 Sep 2020 19:35:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 74EA020738;
+        Tue,  8 Sep 2020 17:36:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599586597;
+        bh=humf0A3eNdO8QjtSSneT0F+BBfk0pmqd3HPslVbaHBk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DciE04eFKvHvjJ7XF6N0n3Si+qtHP9qGXwdngsUmp+sAPCiJpzZ0Lnf1LlQXuixLU
+         emhBnuqX8+n90KJXCys2P5uVNRbfcN4s/r3deI31XhIjzLFcN65eCf2g5Kd1KJfo3b
+         lRUvkTrPdssWJQMoaqD/rHGw2DbZC5peMFgsd3kc=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, paulmck@kernel.org, joel@joelfernandes.org,
+        josh@joshtriplett.org, peterz@infradead.org,
+        christian.brauner@ubuntu.com, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org, nikolay@cumulusnetworks.com,
+        sfr@canb.auug.org.au, roopa@nvidia.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next] rcu: prevent RCU_LOCKDEP_WARN() from swallowing the condition
+Date:   Tue,  8 Sep 2020 10:36:24 -0700
+Message-Id: <20200908173624.160024-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200908090049.7e528e7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200908090049.7e528e7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <20200908104025.4009085-1-edumazet@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Eric.
+We run into a unused variable warning in bridge code when
+variable is only used inside the condition of
+rcu_dereference_protected().
 
-On 08.09.20 12:40, Eric Dumazet wrote:
-> syzbot reported a bug in ieee802154_tx() [1]
-> 
-> A similar issue in ieee802154_xmit_worker() is also fixed in this patch.
-> 
+ #define mlock_dereference(X, br) \
+	rcu_dereference_protected(X, lockdep_is_held(&br->multicast_lock))
 
-[ snip]
+Since on builds with CONFIG_PROVE_RCU=n rcu_dereference_protected()
+compiles to nothing the compiler doesn't see the variable use.
 
-> 
-> Fixes: 409c3b0c5f03 ("mac802154: tx: move stats tx increment")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Cc: Alexander Aring <alex.aring@gmail.com>
-> Cc: Stefan Schmidt <stefan@datenfreihafen.org>
-> Cc: linux-wpan@vger.kernel.org
-> ---
->   net/mac802154/tx.c | 8 +++++---
->   1 file changed, 5 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> index ab52811523e992f33f0855cdb711a2752b602e15..c829e4a7532564d401c0d2d1f90f56c2fe030b2c 100644
-> --- a/net/mac802154/tx.c
-> +++ b/net/mac802154/tx.c
-> @@ -34,11 +34,11 @@ void ieee802154_xmit_worker(struct work_struct *work)
->   	if (res)
->   		goto err_tx;
->   
-> -	ieee802154_xmit_complete(&local->hw, skb, false);
-> -
->   	dev->stats.tx_packets++;
->   	dev->stats.tx_bytes += skb->len;
->   
-> +	ieee802154_xmit_complete(&local->hw, skb, false);
-> +
->   	return;
->   
->   err_tx:
-> @@ -78,6 +78,8 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
->   
->   	/* async is priority, otherwise sync is fallback */
->   	if (local->ops->xmit_async) {
-> +		unsigned int len = skb->len;
-> +
->   		ret = drv_xmit_async(local, skb);
->   		if (ret) {
->   			ieee802154_wake_queue(&local->hw);
-> @@ -85,7 +87,7 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
->   		}
->   
->   		dev->stats.tx_packets++;
-> -		dev->stats.tx_bytes += skb->len;
-> +		dev->stats.tx_bytes += len;
->   	} else {
->   		local->tx_skb = skb;
->   		queue_work(local->workqueue, &local->tx_work);
-> 
+Prevent the warning by adding the condition as dead code.
+We need to un-hide the declaration of lockdep_tasklist_lock_is_held()
+and fix a bug the crept into a net/sched header.
 
-Thanks for catching this!
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ include/linux/rcupdate.h   | 2 +-
+ include/linux/sched/task.h | 2 --
+ include/net/sch_generic.h  | 2 +-
+ 3 files changed, 2 insertions(+), 4 deletions(-)
 
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
+diff --git a/include/linux/rcupdate.h b/include/linux/rcupdate.h
+index d15d46db61f7..cf3d3ba3f3e4 100644
+--- a/include/linux/rcupdate.h
++++ b/include/linux/rcupdate.h
+@@ -320,7 +320,7 @@ static inline void rcu_preempt_sleep_check(void) { }
+ 
+ #else /* #ifdef CONFIG_PROVE_RCU */
+ 
+-#define RCU_LOCKDEP_WARN(c, s) do { } while (0)
++#define RCU_LOCKDEP_WARN(c, s) do { } while (0 && (c))
+ #define rcu_sleep_check() do { } while (0)
+ 
+ #endif /* #else #ifdef CONFIG_PROVE_RCU */
+diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
+index a98965007eef..9f943c391df9 100644
+--- a/include/linux/sched/task.h
++++ b/include/linux/sched/task.h
+@@ -47,9 +47,7 @@ extern spinlock_t mmlist_lock;
+ extern union thread_union init_thread_union;
+ extern struct task_struct init_task;
+ 
+-#ifdef CONFIG_PROVE_RCU
+ extern int lockdep_tasklist_lock_is_held(void);
+-#endif /* #ifdef CONFIG_PROVE_RCU */
+ 
+ extern asmlinkage void schedule_tail(struct task_struct *prev);
+ extern void init_idle(struct task_struct *idle, int cpu);
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index d60e7c39d60c..eb68cc6e4e79 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -443,7 +443,7 @@ static inline bool lockdep_tcf_proto_is_locked(struct tcf_proto *tp)
+ 	return lockdep_is_held(&tp->lock);
+ }
+ #else
+-static inline bool lockdep_tcf_chain_is_locked(struct tcf_block *chain)
++static inline bool lockdep_tcf_chain_is_locked(struct tcf_chain *chain)
+ {
+ 	return true;
+ }
+-- 
+2.24.1
 
-regards
-Stefan Schmidt
