@@ -2,492 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F368260E66
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:12:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0F71260EC9
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:38:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729285AbgIHJMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 05:12:20 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:60023 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729135AbgIHJMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:12:00 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 0F3322CA;
-        Tue,  8 Sep 2020 05:11:58 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 08 Sep 2020 05:11:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=peh/PVuk/VbY7BPLApEr1KjTeqBPArLj+c6V93wR8Ps=; b=eOIfn1jD
-        wFyGKcCHgGDAczIqSRToOyPUEmXhfn54ykislRs6nMQSYqZZv7dFTCSU2RcG1YML
-        ulq1mWf0B/L4gKtpwXPc9jc2Cgzi6ct0F1LtRRI3zmIRvEgJHZWkTQ0ucH++WWA9
-        eW7JHQtL9QT7Eid4xZALG6tQ+N/SwZVWn0jvWFk24zkogV+xWmvMeSsaKpRnSOso
-        EuvZ5yzo4lutdPsk5P+cegkizdlZv5OPaS3eayhc2Nw2xqhk2BM/OT+I70cZqtXn
-        Jlb7bPvUpyNdiJRTVCn1AbOZN1Tv8JFVccu8qG1uznociLld5vPnUeTFUU0FboYe
-        nxbjv4Db4HBo/A==
-X-ME-Sender: <xms:3kpXX-dIxhxtOw7ckRZsmb2fZaerNlse5B30WIw69iANkf5wtFDsxA>
-    <xme:3kpXX4Ow1jQXJb_yRw6SLNpyHaeZSsjDjAoaA9LhHMGuLm7_Y7hpNwI3rq--__QPj
-    VmyWV_d7_hgqFQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehvddguddvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrfeeirdduvdek
-    necuvehluhhsthgvrhfuihiivgepvddunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:3kpXX_gxI6yl9aARX1qApVbD4RL6RXWUYTJcZ0jETacZxqTLvnoC1g>
-    <xmx:3kpXX7-CZE8KW1A3abAo4KFtRQJ3hYTAANzXfbaqsO0KcfXPiJfpJQ>
-    <xmx:3kpXX6sJm4EIS6RitzNycCJjRwOAMAsCsMOnuOzq8xdVNtJMXRwMEQ>
-    <xmx:3kpXX-LEjsfzID4HIuJtkvpBmwacXF766KE4NHkamyMLRCEbCdoyuw>
-Received: from shredder.mtl.com (igld-84-229-36-128.inter.net.il [84.229.36.128])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 5612D3064680;
-        Tue,  8 Sep 2020 05:11:57 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
-        roopa@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [RFC PATCH net-next 22/22] selftests: netdevsim: Add test for nexthop offload API
-Date:   Tue,  8 Sep 2020 12:10:37 +0300
-Message-Id: <20200908091037.2709823-23-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200908091037.2709823-1-idosch@idosch.org>
-References: <20200908091037.2709823-1-idosch@idosch.org>
+        id S1728804AbgIHJi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 05:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727995AbgIHJi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:38:26 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02874C061573;
+        Tue,  8 Sep 2020 02:38:23 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id u3so4513709pjr.3;
+        Tue, 08 Sep 2020 02:38:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jApnbaGdNy0XZvmrHRfVLH08NM0ISkHskFMyba/3Dz8=;
+        b=MJgUDYj8lMeog10h/pcRqjqbqd4X6zcLeZsrh/MY0BGBr/BLaGO/3pkJz37iAaPw7O
+         OKhZsUpuQ2bIXXpe9BNkGpRexLHz10IX4Pa1nflggIzhohPRQmZzpDSo0CSz+x/ap6D8
+         2y8YaVq1RHfwDSZ3pYjVMWqanp5hDxiIRqmXANxRiAaeSoxxHpCFxIxXistH/ZCdro4L
+         JJ20dsUOKC3/2LZjn2zl6a3T9LEZmIIEX35TFizLxw1yTErjuHlmGmEKMVQXGbfA3vZZ
+         6D3AucxfnJP7UApg9bsullWCQBoQGs2Fi8iq8w5RRA9jkDeeMTonTWpEjbf6Q6THXiK6
+         s9Sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jApnbaGdNy0XZvmrHRfVLH08NM0ISkHskFMyba/3Dz8=;
+        b=r152M3A7NeNPMJvwp8R0RUSdQWTtdrgJntrgUt2wEbBgEwpsf6tJGsrgFoLtsWUcXV
+         b9m+68WRQkIy7VWu+PWv4j2a2KI0l/q7d1Ly4S/M9TdKf3gyOemTowqYCs9EF/TeUHol
+         9zXwNXN2hKigwQZKjAgDY5k7LwS4f3c91/ASWgfvqU7NffU9iVe0uofDdQTKPgS1UiVZ
+         vKtAsg4gtXM1XA0+TpwsYxOKzk93O94hC5VLB8SyDcyOmGD08c+3Kkv8QPd7YZxf2A4S
+         pVI3TLWIaj5krdA74tYNI7yBtUkRuA5stv+D1lYW2kuqMINWtGZvhkye4bmnX5I8/9n/
+         aQyg==
+X-Gm-Message-State: AOAM531O6QZOPEx/fO86+lwHtBjPbZU9B6GuP7vAh+20lW5Z6bI7vfRB
+        +0JpnDI2YyiIW3MMoVCxc816B8jvdf+7JacDkpY=
+X-Google-Smtp-Source: ABdhPJyxAbCwnDQR7EXhbAKVRK/L1mgougVfa4ksNuqH1dcnUnGkAUwBxsj7BOSjmWVm1lw4MgxRSvmwQq4xy2GW4u4=
+X-Received: by 2002:a17:90a:fd98:: with SMTP id cx24mr3015644pjb.181.1599557902306;
+ Tue, 08 Sep 2020 02:38:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200904165222.18444-1-vadym.kochan@plvision.eu>
+ <20200904165222.18444-2-vadym.kochan@plvision.eu> <CAHp75Vc_MN-tD+iQNbUcB6fbYizyfKJSJnm1W7uXCT6JAvPauA@mail.gmail.com>
+ <20200908083514.GB3562@plvision.eu>
+In-Reply-To: <20200908083514.GB3562@plvision.eu>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 8 Sep 2020 12:38:04 +0300
+Message-ID: <CAHp75VdyahsNyOK9_7mFGHFg_O47jVQWro-mhU0n=1K17Eeg8Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v7 1/6] net: marvell: prestera: Add driver for
+ Prestera family ASIC devices
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Serhiy Boiko <serhiy.boiko@plvision.eu>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Andrii Savka <andrii.savka@plvision.eu>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mickey Rachamim <mickeyr@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Tue, Sep 8, 2020 at 11:35 AM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
+> On Fri, Sep 04, 2020 at 10:12:07PM +0300, Andy Shevchenko wrote:
+> > On Fri, Sep 4, 2020 at 7:52 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
 
-Test various aspects of the nexthop offload API on top of the netdevsim
-implementation. Both good and bad flows are tested.
+...
 
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- .../drivers/net/netdevsim/nexthop.sh          | 408 ++++++++++++++++++
- 1 file changed, 408 insertions(+)
- create mode 100755 tools/testing/selftests/drivers/net/netdevsim/nexthop.sh
+> > > +       words[3] |= FIELD_PREP(PRESTERA_W3_HW_DEV_NUM, (dsa->hw_dev_num >> 5));
+> >
+> > Ditto.
+> >
+> I am not sure 5 needs to be defined as macro as it just moves
+> hw_dev_num's higher bits into the last word.
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/nexthop.sh b/tools/testing/selftests/drivers/net/netdevsim/nexthop.sh
-new file mode 100755
-index 000000000000..16d5175e4e27
---- /dev/null
-+++ b/tools/testing/selftests/drivers/net/netdevsim/nexthop.sh
-@@ -0,0 +1,408 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# This test is for checking the nexthop offload API. It makes use of netdevsim
-+# which registers a listener to the nexthop notification chain.
-+
-+lib_dir=$(dirname $0)/../../../net/forwarding
-+
-+ALL_TESTS="
-+	nexthop_single_add_test
-+	nexthop_single_add_err_test
-+	nexthop_group_add_test
-+	nexthop_group_add_err_test
-+	nexthop_group_replace_test
-+	nexthop_group_replace_err_test
-+	nexthop_single_replace_test
-+	nexthop_single_replace_err_test
-+	nexthop_single_in_group_replace_test
-+	nexthop_single_in_group_replace_err_test
-+	nexthop_single_in_group_delete_test
-+	nexthop_replay_test
-+	nexthop_replay_err_test
-+"
-+NETDEVSIM_PATH=/sys/bus/netdevsim/
-+DEV_ADDR=1337
-+DEV=netdevsim${DEV_ADDR}
-+DEVLINK_DEV=netdevsim/${DEV}
-+SYSFS_NET_DIR=/sys/bus/netdevsim/devices/$DEV/net/
-+NUM_NETIFS=0
-+source $lib_dir/lib.sh
-+source $lib_dir/devlink_lib.sh
-+
-+nexthop_check()
-+{
-+	local nharg="$1"; shift
-+	local expected="$1"; shift
-+
-+	out=$($IP nexthop show ${nharg} | sed -e 's/ *$//')
-+	if [[ "$out" != "$expected" ]]; then
-+		return 1
-+	fi
-+
-+	return 0
-+}
-+
-+nexthop_resource_check()
-+{
-+	local expected_occ=$1; shift
-+
-+	occ=$($DEVLINK -jp resource show $DEVLINK_DEV \
-+		| jq '.[][][] | select(.name=="nexthops") | .["occ"]')
-+
-+	if [ $expected_occ -ne $occ ]; then
-+		return 1
-+	fi
-+
-+	return 0
-+}
-+
-+nexthop_resource_set()
-+{
-+	local size=$1; shift
-+
-+	$DEVLINK resource set $DEVLINK_DEV path nexthops size $size
-+	$DEVLINK dev reload $DEVLINK_DEV
-+}
-+
-+nexthop_single_add_test()
-+{
-+	RET=0
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	nexthop_check "id 1" "id 1 via 192.0.2.2 dev dummy1 scope link trap"
-+	check_err $? "Unexpected nexthop entry"
-+
-+	nexthop_resource_check 1
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	$IP nexthop del id 1
-+	nexthop_resource_check 0
-+	check_err $? "Wrong nexthop occupancy after delete"
-+
-+	log_test "Single nexthop add and delete"
-+}
-+
-+nexthop_single_add_err_test()
-+{
-+	RET=0
-+
-+	nexthop_resource_set 1
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1 &> /dev/null
-+	check_fail $? "Nexthop addition succeeded when should fail"
-+
-+	nexthop_resource_check 1
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	log_test "Single nexthop add failure"
-+
-+	$IP nexthop flush &> /dev/null
-+	nexthop_resource_set 9999
-+}
-+
-+nexthop_group_add_test()
-+{
-+	RET=0
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
-+
-+	$IP nexthop add id 10 group 1/2
-+	nexthop_check "id 10" "id 10 group 1/2 trap"
-+	check_err $? "Unexpected nexthop group entry"
-+
-+	nexthop_resource_check 4
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	$IP nexthop del id 10
-+	nexthop_resource_check 2
-+	check_err $? "Wrong nexthop occupancy after delete"
-+
-+	$IP nexthop add id 10 group 1,20/2,39
-+	nexthop_check "id 10" "id 10 group 1,20/2,39 trap"
-+	check_err $? "Unexpected weighted nexthop group entry"
-+
-+	nexthop_resource_check 61
-+	check_err $? "Wrong weighted nexthop occupancy"
-+
-+	$IP nexthop del id 10
-+	nexthop_resource_check 2
-+	check_err $? "Wrong nexthop occupancy after delete"
-+
-+	log_test "Nexthop group add and delete"
-+
-+	$IP nexthop flush &> /dev/null
-+}
-+
-+nexthop_group_add_err_test()
-+{
-+	RET=0
-+
-+	nexthop_resource_set 2
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
-+
-+	$IP nexthop add id 10 group 1/2 &> /dev/null
-+	check_fail $? "Nexthop group addition succeeded when should fail"
-+
-+	nexthop_resource_check 2
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	log_test "Nexthop group add failure"
-+
-+	$IP nexthop flush &> /dev/null
-+	nexthop_resource_set 9999
-+}
-+
-+nexthop_group_replace_test()
-+{
-+	RET=0
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
-+	$IP nexthop add id 3 via 192.0.2.4 dev dummy1
-+	$IP nexthop add id 10 group 1/2
-+
-+	$IP nexthop replace id 10 group 1/2/3
-+	nexthop_check "id 10" "id 10 group 1/2/3 trap"
-+	check_err $? "Unexpected nexthop group entry"
-+
-+	nexthop_resource_check 6
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	log_test "Nexthop group replace"
-+
-+	$IP nexthop flush &> /dev/null
-+}
-+
-+nexthop_group_replace_err_test()
-+{
-+	RET=0
-+
-+	nexthop_resource_set 5
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
-+	$IP nexthop add id 3 via 192.0.2.4 dev dummy1
-+	$IP nexthop add id 10 group 1/2
-+
-+	$IP nexthop replace id 10 group 1/2/3 &> /dev/null
-+	check_fail $? "Nexthop group replacement succeeded when should fail"
-+
-+	nexthop_check "id 10" "id 10 group 1/2 trap"
-+	check_err $? "Unexpected nexthop group entry after failure"
-+
-+	nexthop_resource_check 5
-+	check_err $? "Wrong nexthop occupancy after failure"
-+
-+	log_test "Nexthop group replace failure"
-+
-+	$IP nexthop flush &> /dev/null
-+	nexthop_resource_set 9999
-+}
-+
-+nexthop_single_replace_test()
-+{
-+	RET=0
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+
-+	$IP nexthop replace id 1 via 192.0.2.3 dev dummy1
-+	nexthop_check "id 1" "id 1 via 192.0.2.3 dev dummy1 scope link trap"
-+	check_err $? "Unexpected nexthop entry"
-+
-+	nexthop_resource_check 1
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	log_test "Single nexthop replace"
-+
-+	$IP nexthop flush &> /dev/null
-+}
-+
-+nexthop_single_replace_err_test()
-+{
-+	RET=0
-+
-+	# This is supposed to cause the replace to fail because the new nexthop
-+	# is programmed before deleting the replaced one.
-+	nexthop_resource_set 1
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+
-+	$IP nexthop replace id 1 via 192.0.2.3 dev dummy1 &> /dev/null
-+	check_fail $? "Nexthop replace succeeded when should fail"
-+
-+	nexthop_check "id 1" "id 1 via 192.0.2.2 dev dummy1 scope link trap"
-+	check_err $? "Unexpected nexthop entry after failure"
-+
-+	nexthop_resource_check 1
-+	check_err $? "Wrong nexthop occupancy after failure"
-+
-+	log_test "Single nexthop replace failure"
-+
-+	$IP nexthop flush &> /dev/null
-+	nexthop_resource_set 9999
-+}
-+
-+nexthop_single_in_group_replace_test()
-+{
-+	RET=0
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
-+	$IP nexthop add id 10 group 1/2
-+
-+	$IP nexthop replace id 1 via 192.0.2.4 dev dummy1
-+	check_err $? "Failed to replace nexthop when should not"
-+
-+	nexthop_check "id 10" "id 10 group 1/2 trap"
-+	check_err $? "Unexpected nexthop group entry"
-+
-+	nexthop_resource_check 4
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	log_test "Single nexthop replace while in group"
-+
-+	$IP nexthop flush &> /dev/null
-+}
-+
-+nexthop_single_in_group_replace_err_test()
-+{
-+	RET=0
-+
-+	nexthop_resource_set 5
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
-+	$IP nexthop add id 10 group 1/2
-+
-+	$IP nexthop replace id 1 via 192.0.2.4 dev dummy1 &> /dev/null
-+	check_fail $? "Nexthop replacement succeeded when should fail"
-+
-+	nexthop_check "id 1" "id 1 via 192.0.2.2 dev dummy1 scope link trap"
-+	check_err $? "Unexpected nexthop entry after failure"
-+
-+	nexthop_check "id 10" "id 10 group 1/2 trap"
-+	check_err $? "Unexpected nexthop group entry after failure"
-+
-+	nexthop_resource_check 4
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	log_test "Single nexthop replace while in group failure"
-+
-+	$IP nexthop flush &> /dev/null
-+	nexthop_resource_set 9999
-+}
-+
-+nexthop_single_in_group_delete_test()
-+{
-+	RET=0
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
-+	$IP nexthop add id 10 group 1/2
-+
-+	$IP nexthop del id 1
-+	nexthop_check "id 10" "id 10 group 2 trap"
-+	check_err $? "Unexpected nexthop group entry"
-+
-+	nexthop_resource_check 2
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	log_test "Single nexthop delete while in group"
-+
-+	$IP nexthop flush &> /dev/null
-+}
-+
-+nexthop_replay_test()
-+{
-+	RET=0
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
-+	$IP nexthop add id 10 group 1/2
-+
-+	$DEVLINK dev reload $DEVLINK_DEV
-+	check_err $? "Failed to reload when should not"
-+
-+	nexthop_check "id 1" "id 1 via 192.0.2.2 dev dummy1 scope link trap"
-+	check_err $? "Unexpected nexthop entry after reload"
-+
-+	nexthop_check "id 2" "id 2 via 192.0.2.3 dev dummy1 scope link trap"
-+	check_err $? "Unexpected nexthop entry after reload"
-+
-+	nexthop_check "id 10" "id 10 group 1/2 trap"
-+	check_err $? "Unexpected nexthop group entry after reload"
-+
-+	nexthop_resource_check 4
-+	check_err $? "Wrong nexthop occupancy"
-+
-+	log_test "Nexthop replay"
-+
-+	$IP nexthop flush &> /dev/null
-+}
-+
-+nexthop_replay_err_test()
-+{
-+	RET=0
-+
-+	$IP nexthop add id 1 via 192.0.2.2 dev dummy1
-+	$IP nexthop add id 2 via 192.0.2.3 dev dummy1
-+	$IP nexthop add id 10 group 1/2
-+
-+	# Reduce size of nexthop resource so that reload will fail.
-+	$DEVLINK resource set $DEVLINK_DEV path nexthops size 3
-+	$DEVLINK dev reload $DEVLINK_DEV &> /dev/null
-+	check_fail $? "Reload succeeded when should fail"
-+
-+	$DEVLINK resource set $DEVLINK_DEV path nexthops size 9999
-+	$DEVLINK dev reload $DEVLINK_DEV
-+	check_err $? "Failed to reload when should not"
-+
-+	log_test "Nexthop replay failure"
-+
-+	$IP nexthop flush &> /dev/null
-+}
-+
-+setup_prepare()
-+{
-+	local netdev
-+
-+	modprobe netdevsim &> /dev/null
-+
-+	echo "$DEV_ADDR 1" > ${NETDEVSIM_PATH}/new_device
-+	while [ ! -d $SYSFS_NET_DIR ] ; do :; done
-+
-+	set -e
-+
-+	ip netns add testns1
-+	devlink dev reload $DEVLINK_DEV netns testns1
-+
-+	IP="ip -netns testns1"
-+	DEVLINK="devlink -N testns1"
-+
-+	$IP link add name dummy1 up type dummy
-+	$IP address add 192.0.2.1/24 dev dummy1
-+
-+	set +e
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+	ip netns del testns1
-+	echo "$DEV_ADDR" > ${NETDEVSIM_PATH}/del_device
-+	modprobe -r netdevsim &> /dev/null
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+
-+tests_run
-+
-+exit $EXIT_STATUS
+And why 5? I want 6, for example!
+
+...
+
+> > > +       err = prestera_switch_init(sw);
+> > > +       if (err) {
+> > > +               kfree(sw);
+> >
+> > > +               return err;
+> > > +       }
+> > > +
+> > > +       return 0;
+> >
+> > return err;
+> >
+> why not keep 'return 0' as indication of success point ?
+
+Simple longer, but I'm not insisting. Your choice.
+
+...
+
+> > > +                       if (b == 0)
+> > > +                               continue;
+> > > +
+> > > +                       prestera_sdma_rx_desc_set_next(sdma,
+> > > +                                                      ring->bufs[b - 1].desc,
+> > > +                                                      buf->desc_dma);
+> > > +
+> > > +                       if (b == PRESTERA_SDMA_RX_DESC_PER_Q - 1)
+> > > +                               prestera_sdma_rx_desc_set_next(sdma, buf->desc,
+> > > +                                                              head->desc_dma);
+> >
+> > I guess knowing what the allowed range of bnum the above can be optimized.
+> >
+> You mean to replace PRESTERA_SDMA_RX_DESC_PER_Q by bnum ?
+
+I don't know what you meant in above. It might be a bug, it might be
+that bnum is redundant and this definition may be used everywhere...
+But I believe there is room for improvement when I see pattern like
+
+  for (i < X) {
+    ...
+    if (i == 0) {
+      ...
+    } else if (i == X - 1) {
+      ...
+    }
+  }
+
+Either it can be while-loop (or do-while) with better semantics for
+the first and last item to handle or something else.
+Example from another review [1] in case you wonder how changes can be
+made. Just think about it.
+
+[1]: https://www.spinics.net/lists/linux-pci/msg60826.html (before)
+https://www.spinics.net/lists/linux-pci/msg62043.html (after)
+
 -- 
-2.26.2
-
+With Best Regards,
+Andy Shevchenko
