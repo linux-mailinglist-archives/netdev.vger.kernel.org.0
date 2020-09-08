@@ -2,110 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01A672618C1
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:02:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18CF9261923
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:08:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731548AbgIHSBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 14:01:46 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:29206 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726925AbgIHSBk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 14:01:40 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 088I1Xww026329
-        for <netdev@vger.kernel.org>; Tue, 8 Sep 2020 11:01:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=QcZNytBp4an3COkPG96D0v1/8brsO2t1w7s3YhRQU10=;
- b=EOcbAo98BXA8LhDMedyDPSy02HpF+yGxiPASAbqoakKdkmaD5ZRF7eB4sd7jn8IefMEH
- rkXrcXqbgWuSdINMTtwVkDk4gkkaKedCeOilWhA6WM67YNT+r/Pe9WXnzFXr0rXAA4QE
- D7RBRrh8Fi7X35qcBAOkiVRHoNYlhTP9nOg= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 33ct69jssx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 11:01:38 -0700
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 8 Sep 2020 11:01:33 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 1FA902EC6B09; Tue,  8 Sep 2020 11:01:31 -0700 (PDT)
-From:   Andrii Nakryiko <andriin@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <acme@kernel.org>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: [PATCH bpf-next] perf: stop using deprecated bpf_program__title()
-Date:   Tue, 8 Sep 2020 11:01:27 -0700
-Message-ID: <20200908180127.1249-1-andriin@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1731946AbgIHSIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 14:08:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52684 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732301AbgIHSIA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 14:08:00 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A93A62078E;
+        Tue,  8 Sep 2020 18:07:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599588480;
+        bh=wD+PevNu9ZUwbSWWPVHeFyyXrhPgm4ZFmuFPJ/b6e9A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e+Iv4MmmfEMy4/anNYsIUr99BEDCerhQ9y+EwZ8uzcPAyUiAILmk3SAWNVb3XdUCZ
+         DCjIEtQcHKfJEyb2LJNZQ+QKHAsLrfKVRlfqxOYVazdi+7I3Ec43IAGza54rmVPd/h
+         /G2ONatqqm5sOrb1v0LZGue4GyjlNGP7logB/YR4=
+Date:   Tue, 8 Sep 2020 11:07:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, <netdev@vger.kernel.org>,
+        "Maxim Mikityanskiy" <maximmi@mellanox.com>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: Re: [net-next 06/10] net/mlx5e: Support multiple SKBs in a TX WQE
+Message-ID: <20200908110757.477bacb8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <489a69c6-d288-4cb4-fe32-8d4bd6f37667@nvidia.com>
+References: <20200903210022.22774-1-saeedm@nvidia.com>
+        <20200903210022.22774-7-saeedm@nvidia.com>
+        <20200903154609.363e8c00@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <489a69c6-d288-4cb4-fe32-8d4bd6f37667@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-08_09:2020-09-08,2020-09-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- priorityscore=1501 mlxscore=0 spamscore=0 phishscore=0 clxscore=1015
- mlxlogscore=976 impostorscore=0 bulkscore=0 malwarescore=0 adultscore=0
- suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009080171
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Switch from deprecated bpf_program__title() API to
-bpf_program__section_name(). Also drop unnecessary error checks because
-neither bpf_program__title() nor bpf_program__section_name() can fail or
-return NULL.
+On Tue, 8 Sep 2020 11:59:54 +0300 Maxim Mikityanskiy wrote:
+> On 2020-09-04 01:46, Jakub Kicinski wrote:
+> > On Thu, 3 Sep 2020 14:00:18 -0700 Saeed Mahameed wrote:  
+> >> +static inline void mlx5e_tx_wi_consume_fifo_skbs(struct mlx5e_txqsq *sq,
+> >> +						 struct mlx5e_tx_wqe_info *wi,
+> >> +						 struct mlx5_cqe64 *cqe,
+> >> +						 int napi_budget)
+> >> +{
+> >> +	int i;
+> >> +
+> >> +	for (i = 0; i < wi->num_fifo_pkts; i++) {
+> >> +		struct sk_buff *skb = mlx5e_skb_fifo_pop(sq);
+> >> +
+> >> +		mlx5e_consume_skb(sq, skb, cqe, napi_budget);
+> >> +	}
+> >> +}  
+> > 
+> > The compiler was not inlining this one either?  
+> 
+> Regarding this one, gcc inlines it automatically, but I went on the safe 
+> side and inlined it explicitly - it's small and called for every WQE, so 
+> we never want it to be non-inline.
 
-Fixes: 521095842027 ("libbpf: Deprecate notion of BPF program "title" in =
-favor of "section name"")
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/perf/util/bpf-loader.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
-
-diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
-index 2feb751516ab..0374adcb223c 100644
---- a/tools/perf/util/bpf-loader.c
-+++ b/tools/perf/util/bpf-loader.c
-@@ -328,12 +328,6 @@ config_bpf_program(struct bpf_program *prog)
- 	probe_conf.no_inlines =3D false;
- 	probe_conf.force_add =3D false;
-=20
--	config_str =3D bpf_program__title(prog, false);
--	if (IS_ERR(config_str)) {
--		pr_debug("bpf: unable to get title for program\n");
--		return PTR_ERR(config_str);
--	}
--
- 	priv =3D calloc(sizeof(*priv), 1);
- 	if (!priv) {
- 		pr_debug("bpf: failed to alloc priv\n");
-@@ -341,6 +335,7 @@ config_bpf_program(struct bpf_program *prog)
- 	}
- 	pev =3D &priv->pev;
-=20
-+	config_str =3D bpf_program__section_name(prog);
- 	pr_debug("bpf: config program '%s'\n", config_str);
- 	err =3D parse_prog_config(config_str, &main_str, &is_tp, pev);
- 	if (err)
-@@ -454,10 +449,7 @@ preproc_gen_prologue(struct bpf_program *prog, int n=
-,
- 	if (err) {
- 		const char *title;
-=20
--		title =3D bpf_program__title(prog, false);
--		if (!title)
--			title =3D "[unknown]";
--
-+		title =3D bpf_program__section_name(prog);
- 		pr_debug("Failed to generate prologue for program %s\n",
- 			 title);
- 		return err;
---=20
-2.24.1
-
+Everyone always wants to be on the safe side :/ That's not an argument
+we accept in this context.
