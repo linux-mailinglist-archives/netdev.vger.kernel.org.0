@@ -2,111 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8C822608F7
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 05:24:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28F05260919
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 05:49:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728401AbgIHDYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 23:24:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728327AbgIHDYS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 23:24:18 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89456C061573
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 20:24:17 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id v15so9058855pgh.6
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 20:24:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hk2onWbIeXwajOVtABKbeyGyntomXoHMbYFJEtUeYaA=;
-        b=fnR5IWMBBXt/aTw77zYEyJYGccNyt6WrI30TcG3CqSsQJILdRfcVg5J4y3bC7Zf58Q
-         Y/rF1K63XbXZltAA6qLuFfod/fcZfb3VDcgt4moTtfS3kj70aGBkIl/p3xD2SWGFuTjB
-         82j+AX0Kw7igzlt4qbwYyDhhaB5vgWc7zFV57pefdq8OsHBzKhFHgT+hOrZRHcVX11Fd
-         966/enEz9NtzonUy956HyJgujeOMyjt0Ef0xfbeafFZ39msfYTN0XqLnZdcXDT97hblQ
-         /YIuusKoqyG1pf8zjDY9l2J7ixo1/Z7MHCR3APGyNRK+lce3rV1kiD+9aUyLqr2sioPF
-         OHZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hk2onWbIeXwajOVtABKbeyGyntomXoHMbYFJEtUeYaA=;
-        b=L/hfuZZdLL6JbygZG9TQU2RxD8aZzB0KIsHWZTRTA83OMx4/CTPz8eVvxKXDpBmGRu
-         odSJX27wCnZcvavmlb3b1d9x5WazCYADxt3Nnqv2Mc2L0CzKwlDpsdmSeiUI0BIXNU8D
-         ST1QKaIuvi0/nJgqUsUjBmKKlKdE5h0JMxmXSB17Qlh6W6FcZjC15/TILMkQ+sBOUCzr
-         FzqdxGU4qoUj0PSTplnlNC9PI42DOqHZwW9oYyFcgF5n0SwxhnSXGDLfjQUmOGSISH1a
-         Zh+O+gB0JpP0FtSFh2kkg5EhgFGR4ahnSCMMm5XGKh9Ev5QGmxWcp52N0g31vCngAdkc
-         iRjw==
-X-Gm-Message-State: AOAM531oLXaei8bZ4IY68FEcaVUBU2FRc7rQklK72vQN+7Xtw/UQhp8s
-        GqQa1sCEUfxBbOV0crfl/8w=
-X-Google-Smtp-Source: ABdhPJyoOwHsW8sB/otOOYsq1a0wd9yYHXbat805TpPHIliZOgjEDP4GPMeZyO4SidiitLq2iyKjWw==
-X-Received: by 2002:a17:902:d210:b029:d0:81cc:a649 with SMTP id t16-20020a170902d210b02900d081cca649mr20581171ply.1.1599535456823;
-        Mon, 07 Sep 2020 20:24:16 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id a13sm13825568pjq.36.2020.09.07.20.24.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Sep 2020 20:24:16 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 0/7] net: dsa: mv88e6xxx: Add devlink regions
- support
-To:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>
-References: <20200908005155.3267736-1-andrew@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <0400390b-a31a-578d-e882-2bc142786fcb@gmail.com>
-Date:   Mon, 7 Sep 2020 20:24:14 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.1
+        id S1728531AbgIHDtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 23:49:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43826 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728327AbgIHDtY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 7 Sep 2020 23:49:24 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CA1C2080A;
+        Tue,  8 Sep 2020 03:49:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599536963;
+        bh=1JF9ErwwV+qLjfbssjhvOAA1nzkFV5n0GXMMuBk2Sa8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kv1F3mm49dkxGSDp+x5x+JDeQbZIzZ6QhGmkLA17nzvHXRe/Tj3cgl1i++Gj2z1Hu
+         ogXA/0F7v0FBxAWLSz4vxShs+rbOmhQd2poEqFncqcCW7rYWe2dgAjoWOtdw84GD3u
+         wClHz0qCGdRmz9/87u+HV2NPmTPM9AgJnrBA1MYY=
+Date:   Mon, 7 Sep 2020 20:49:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the net-next tree
+Message-ID: <20200907204921.130dd6ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200908130000.7d33d787@canb.auug.org.au>
+References: <20200908130000.7d33d787@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20200908005155.3267736-1-andrew@lunn.ch>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/7/2020 5:51 PM, Andrew Lunn wrote:
-> Make use of devlink regions to allow read access to some of the
-> internal of the switches. The switch itself will never trigger a
-> region snapshot, it is assumed it is performed from user space as
-> needed.
+On Tue, 8 Sep 2020 13:00:00 +1000 Stephen Rothwell wrote:
+> Hi all,
 > 
-> v2:
-> Remove left of debug print
-> Comment ATU format is generic to mv88e6xxx
-> Combine declaration and the assignment on a single line.
-
-Andrew, can you run scripts/get_maintainters.pl for your patch 
-submissions and copy the various DSA maintainers as Vladimir who gives 
-valuable feedback? Thanks
-
+> After merging the net-next tree, today's linux-next build (powerpc
+> ppc64_defconfig) produced this warning:
 > 
-> Andrew Lunn (7):
->    net: dsa: Add helper to convert from devlink to ds
->    net: dsa: Add devlink regions support to DSA
->    net: dsa: mv88e6xxx: Move devlink code into its own file
->    net: dsa: mv88e6xxx: Create helper for FIDs in use
->    net: dsa: mv88e6xxx: Add devlink regions
->    net: dsa: wire up devlink info get
->    net: dsa: mv88e6xxx: Implement devlink info get callback
+> net/bridge/br_multicast.c: In function 'br_multicast_find_port':
+> net/bridge/br_multicast.c:1818:21: warning: unused variable 'br' [-Wunused-variable]
+>  1818 |  struct net_bridge *br = mp->br;
+>       |                     ^~
 > 
->   drivers/net/dsa/mv88e6xxx/Makefile  |   1 +
->   drivers/net/dsa/mv88e6xxx/chip.c    | 290 ++----------
->   drivers/net/dsa/mv88e6xxx/chip.h    |  14 +
->   drivers/net/dsa/mv88e6xxx/devlink.c | 686 ++++++++++++++++++++++++++++
->   drivers/net/dsa/mv88e6xxx/devlink.h |  21 +
->   include/net/dsa.h                   |  13 +-
->   net/dsa/dsa.c                       |  36 +-
->   net/dsa/dsa2.c                      |  19 +-
->   8 files changed, 807 insertions(+), 273 deletions(-)
->   create mode 100644 drivers/net/dsa/mv88e6xxx/devlink.c
->   create mode 100644 drivers/net/dsa/mv88e6xxx/devlink.h
+> Introduced by commit
 > 
+>   0436862e417e ("net: bridge: mcast: support for IGMPv3/MLDv2 ALLOW_NEW_SOURCES report")
+> 
+> Maybe turning mlock_dereference into a static inline function would help.
 
--- 
-Florian
+Or perhaps provide a better definition of whatever is making the
+reference disappear? RCU_LOCKDEP_WARN()?
+
+Thanks for the report!
