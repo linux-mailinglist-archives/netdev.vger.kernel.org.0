@@ -2,130 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D463261E09
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 21:45:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D3BA261D0D
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 21:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732340AbgIHTpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 15:45:30 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:50794 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730831AbgIHPux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 11:50:53 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 088FoCKC016185
-        for <netdev@vger.kernel.org>; Tue, 8 Sep 2020 08:50:40 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=facebook;
- bh=9JwYIjoC0IbU1GFXnenfpT1paK1+I3w8jYW2p5RWCz8=;
- b=qLXdLXVzdzmH5lrYSPk0A3W2CT8YxrmmoQq/RQaeWhUWvlJBtkM32QtdiqJdFuh7uPz3
- pAGJrocbkyLtcYDoFBok5CyEQszyAGzWyGUPv/D/MO/+Li0/dDf0SK2oOzDB7MCeSKuN
- a6CjEXmMkrKhziwEU12CFnkLljMf3OCEz9Y= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 33c6624xpb-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 08:50:40 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 8 Sep 2020 08:50:39 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 2E0AD3701AD2; Tue,  8 Sep 2020 08:50:33 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next v2 2/2] selftests/bpf: add test for map_ptr arithmetic
-Date:   Tue, 8 Sep 2020 08:50:33 -0700
-Message-ID: <20200908155033.1502860-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200908155032.1502450-1-yhs@fb.com>
-References: <20200908155032.1502450-1-yhs@fb.com>
+        id S1731101AbgIHTbH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 15:31:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39016 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730938AbgIHTaj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 15:30:39 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 644222078E;
+        Tue,  8 Sep 2020 19:30:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599593438;
+        bh=GDfjYWhyymA1/5HL9dC27Ql5pXoa70KT4y1y1TOnti8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sTlrE5cOrg1HldMmcXwb6L3AojDFqEvIMf4M9MCT4vSto6fcXrXRGoFselkk/LWF7
+         qOWd1a8odz+xh4DHujke/jSgjz0x5Ac68BTXpF2YAhq28IEiAIDhbwOgGeAZs/j4FR
+         O/o+3gygWHHgKhhWleyoTGDV5HjTsYsKn4RhKgIA=
+Date:   Tue, 8 Sep 2020 12:30:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [PATCH net-next v2 5/7] net: dsa: mv88e6xxx: Add devlink
+ regions
+Message-ID: <20200908123036.0d879b57@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200908192231.GB3290129@lunn.ch>
+References: <20200908005155.3267736-1-andrew@lunn.ch>
+        <20200908005155.3267736-6-andrew@lunn.ch>
+        <20200908120100.77cfcfa1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200908192231.GB3290129@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-08_08:2020-09-08,2020-09-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- adultscore=0 mlxscore=0 mlxlogscore=961 impostorscore=0 lowpriorityscore=0
- malwarescore=0 bulkscore=0 spamscore=0 suspectscore=8 phishscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009080151
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-change selftest map_ptr_kern.c which will fail without previous
-verifier change. Also added to verifier test for both
-"map_ptr +=3D scalar" and "scalar +=3D map_ptr" arithmetic.
+On Tue, 8 Sep 2020 21:22:31 +0200 Andrew Lunn wrote:
+> On Tue, Sep 08, 2020 at 12:01:06PM -0700, Jakub Kicinski wrote:
+> > On Tue,  8 Sep 2020 02:51:53 +0200 Andrew Lunn wrote:  
+> > > Allow ports, the global registers, and the ATU to be snapshot via
+> > > devlink regions.
+> > > 
+> > > v2:
+> > > Remove left over debug prints
+> > > Comment ATU format is generic for mv88e6xxx, not wider
+> > > 
+> > > Signed-off-by: Andrew Lunn <andrew@lunn.ch>  
+> > 
+> > Probably best CCing devlink maintainers on devlink patches.
+> > 
+> > Also - it's always useful to include show command outputs in the commit
+> > message for devlink patches.  
+> 
+> Hi Jakub
+> 
+> root@rap:~# devlink region dump mdio_bus/gpio-0:00/port5 snapshot 42
+> 0000000000000000 0f 10 03 00 00 00 01 39 7c 00 00 00 df 07 01 00 
+> 0000000000000010 80 20 01 00 00 80 20 00 00 00 00 00 00 00 00 91 
+> 0000000000000020 00 00 00 00 00 00 00 00 00 00 00 00 22 00 00 00 
+> 0000000000000030 00 00 00 00 c0 01 00 80 00 00 00 00 00 00 00 00 
+> 
+> Not very informative. The whole point of devlink regions is that they
+> are suppose to be specific to a device, and you need intimate
+> knowledge of the device to decode it.
 
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- .../selftests/bpf/progs/map_ptr_kern.c        |  4 +--
- .../testing/selftests/bpf/verifier/map_ptr.c  | 32 +++++++++++++++++++
- 2 files changed, 34 insertions(+), 2 deletions(-)
+I meant the list of regions the device would create.
 
-diff --git a/tools/testing/selftests/bpf/progs/map_ptr_kern.c b/tools/tes=
-ting/selftests/bpf/progs/map_ptr_kern.c
-index 982a2d8aa844..d93413d24128 100644
---- a/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-+++ b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-@@ -74,8 +74,8 @@ static inline int check(struct bpf_map *indirect, struc=
-t bpf_map *direct,
- 	return 1;
- }
-=20
--static inline int check_default(struct bpf_map *indirect,
--				struct bpf_map *direct)
-+static __attribute__ ((noinline)) int
-+check_default(struct bpf_map *indirect, struct bpf_map *direct)
- {
- 	VERIFY(check(indirect, direct, sizeof(__u32), sizeof(__u32),
- 		     MAX_ENTRIES));
-diff --git a/tools/testing/selftests/bpf/verifier/map_ptr.c b/tools/testi=
-ng/selftests/bpf/verifier/map_ptr.c
-index b52209db8250..637f9293bda8 100644
---- a/tools/testing/selftests/bpf/verifier/map_ptr.c
-+++ b/tools/testing/selftests/bpf/verifier/map_ptr.c
-@@ -60,3 +60,35 @@
- 	.result =3D ACCEPT,
- 	.retval =3D 1,
- },
-+{
-+	"bpf_map_ptr: r =3D 0, map_ptr =3D map_ptr + r",
-+	.insns =3D {
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_1, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_16b =3D { 4 },
-+	.result =3D ACCEPT,
-+},
-+{
-+	"bpf_map_ptr: r =3D 0, r =3D r + map_ptr",
-+	.insns =3D {
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_MOV64_IMM(BPF_REG_1, 0),
-+	BPF_LD_MAP_FD(BPF_REG_0, 0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_1, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_16b =3D { 4 },
-+	.result =3D ACCEPT,
-+},
---=20
-2.24.1
+> > > +PORT_REGION_OPS(0);
+> > > +PORT_REGION_OPS(1);
+> > > +PORT_REGION_OPS(2);
+> > > +PORT_REGION_OPS(3);
+> > > +PORT_REGION_OPS(4);
+> > > +PORT_REGION_OPS(5);
+> > > +PORT_REGION_OPS(6);
+> > > +PORT_REGION_OPS(7);
+> > > +PORT_REGION_OPS(8);
+> > > +PORT_REGION_OPS(9);
+> > > +PORT_REGION_OPS(10);
+> > > +PORT_REGION_OPS(11);
+> > > +
+> > > +static const struct devlink_region_ops *mv88e6xxx_region_port_ops[] = {
+> > > +	&mv88e6xxx_region_port_0_ops,
+> > > +	&mv88e6xxx_region_port_1_ops,
+> > > +	&mv88e6xxx_region_port_2_ops,
+> > > +	&mv88e6xxx_region_port_3_ops,
+> > > +	&mv88e6xxx_region_port_4_ops,
+> > > +	&mv88e6xxx_region_port_5_ops,
+> > > +	&mv88e6xxx_region_port_6_ops,
+> > > +	&mv88e6xxx_region_port_7_ops,
+> > > +	&mv88e6xxx_region_port_8_ops,
+> > > +	&mv88e6xxx_region_port_9_ops,
+> > > +	&mv88e6xxx_region_port_10_ops,
+> > > +	&mv88e6xxx_region_port_11_ops,
+> > > +};  
+> > 
+> > Ahh, seems like regions will get a per-port incarnation as some point as
+> > well..  
+> 
+> Again, i think this is back to the history of dumping firmware core.
+> I guess the existing users don't have per port CPUs which could dump a
+> core.
 
+Ack, I'm referring to the fact that we recently converted health
+reporters to per-port and now traps are getting the same treatment.
