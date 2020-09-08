@@ -2,97 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3BB02615C5
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:56:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 953FF261725
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:26:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731910AbgIHQ4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:56:16 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:55416 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732109AbgIHQ4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:56:08 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 088GfhFU145349;
-        Tue, 8 Sep 2020 12:55:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Mx8Q0RuPZTnd71/9NfZq1lVXeIOooylyhqozqU4QG3k=;
- b=ZobXdbrhR1ODYkTO4XHI+litlVhzK4JhbkRxh76pViTzBGzmbbvymEYlKQGMWLn3ISVG
- 3v50JT5AIhYocqg8NmaEF4BCcV1LnbTS2e/JLTE3FJwMa1vpxVVUTA8Tkxhghdww7R05
- iuUWzGqL/xtBUwYWOoqQNNjPXvizbYc5PVF5Gut2kvOm+7PX0cDKJT1gyjCWsDQSq4eE
- VToygI04sx1RWTs7ltnN4a7NEBfBg8tJHevQAdb80UtHhT7TzvYIKwMik3G68zLPe8TB
- PQ1WeDdpwA1IFPHpi+Dr8v60UkyKyMV6Jfow0J1VisnJcpTvkplfihMepRNNj/ijDSrz UA== 
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 33edq08ewf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Sep 2020 12:55:53 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 088Gpq65019622;
-        Tue, 8 Sep 2020 16:55:48 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma01dal.us.ibm.com with ESMTP id 33d46mhtr3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 08 Sep 2020 16:55:48 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 088Gtlp455771562
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 8 Sep 2020 16:55:47 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 91D8F124058;
-        Tue,  8 Sep 2020 16:55:47 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D535D124052;
-        Tue,  8 Sep 2020 16:55:46 +0000 (GMT)
-Received: from Davids-MBP.randomparity.org (unknown [9.163.69.225])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue,  8 Sep 2020 16:55:46 +0000 (GMT)
-Subject: Re: [PATCH net] tg3: Fix soft lockup when tg3_reset_task() fails.
-To:     Michael Chan <michael.chan@broadcom.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, baptiste@arista.com
-References: <1599157734-16354-1-git-send-email-michael.chan@broadcom.com>
-From:   David Christensen <drc@linux.vnet.ibm.com>
-Message-ID: <726c3fa7-9090-d8d1-d9f0-97e9f4445033@linux.vnet.ibm.com>
-Date:   Tue, 8 Sep 2020 09:55:46 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        id S1729212AbgIHRZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 13:25:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731272AbgIHQRM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:17:12 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFB5C0617A1
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 05:12:20 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id b124so10761646pfg.13
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 05:12:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4cTTNM2LfB0ZKQtokAlGtAKTl5Gj9gXx4yYPrBUZ2LI=;
+        b=FSjMfGshmgfnWWC3U1YIBx7DE7b7W/6phz3fnwef0gKYOPsk8l7rM9PaF1LdGQy6XF
+         WmriscNv+tWq3wLFbD3vC0aszsLJds7gWEYwfq3AfjZz1C6EWnzGFboWt+UsVWUFseaj
+         1sBDmcRmbvonzTJacW/pB9DmX3xU4DO3FX3ko=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4cTTNM2LfB0ZKQtokAlGtAKTl5Gj9gXx4yYPrBUZ2LI=;
+        b=KzcUUe2btOaf/ZGY8NHt0ksdFsMWhZEfTDKZIbZCyIL/O4jGtEqAouHMAHW74xi7JJ
+         GBNIBd/7Td1PnkDJngp+qJw0mjCSLqgAFnvJ4yPE3d4w0EeoDdmAYYMmg7NzvKvQmJrr
+         6YZaXHelIgtPGhtY0uG2GYkZu9bsLH19wVVzGvAuaYeZn0jaT9v4mtentrol2/QEOcUw
+         98C/rsryZzIb51okdvWzHbjlYW+/rsU7TyAWvgy/gwPeJanK4vZkDQudH4xODvDEFxLO
+         hTmji9kw8PM7EuoZSe6T/XcJM9Jrt36ckmZofdBc1+qp1WKF0pVWqInF+Dm7AJj5rvgX
+         jIWg==
+X-Gm-Message-State: AOAM531VpVGq3i/SrBgNz5bLAs5aTGeXW1BnHVDjZ1TfbH2Ot9USugia
+        Kc3ZlUZ55+8++2Q6Pj37SkhinvCjmDlH7WVL
+X-Google-Smtp-Source: ABdhPJzaP8k6OK/iQH1v2SvEVSnGPEtqyLPkJUIOp6ScETEYqxTNqDc4Tope5wDw9XDBQ7aoitAf2Q==
+X-Received: by 2002:a17:902:d702:: with SMTP id w2mr24215594ply.53.1599567139350;
+        Tue, 08 Sep 2020 05:12:19 -0700 (PDT)
+Received: from [10.230.32.194] ([192.19.148.250])
+        by smtp.gmail.com with ESMTPSA id z9sm12049463pfk.118.2020.09.08.05.12.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 05:12:18 -0700 (PDT)
+Subject: Re: [PATCH] brcmsmac: fix memory leak in wlc_phy_attach_lcnphy
+To:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Cc:     Takafumi Kubota <takafumi@sslab.ics.keio.ac.jp>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list@cypress.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <bad4e33a-af2f-b44f-63e5-56386c312a91@broadcom.com>
+ <20200908001324.8215-1-keitasuzuki.park@sslab.ics.keio.ac.jp>
+ <c13ee142-d69d-6d21-6373-acb56507c9ec@broadcom.com>
+ <CAEYrHjmG-R4RHn=59AGK8E0jKDXE5sbxQj49VpBvDMvBuBGiig@mail.gmail.com>
+From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
+Message-ID: <2a11074f-e155-0af1-aa37-108c8cd120e7@broadcom.com>
+Date:   Tue, 8 Sep 2020 14:12:14 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <1599157734-16354-1-git-send-email-michael.chan@broadcom.com>
+In-Reply-To: <CAEYrHjmG-R4RHn=59AGK8E0jKDXE5sbxQj49VpBvDMvBuBGiig@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-08_08:2020-09-08,2020-09-08 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 phishscore=0 mlxlogscore=999 mlxscore=0 malwarescore=0
- lowpriorityscore=0 clxscore=1011 bulkscore=0 impostorscore=0 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009080153
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/3/20 11:28 AM, Michael Chan wrote:
-> If tg3_reset_task() fails, the device state is left in an inconsistent
-> state with IFF_RUNNING still set but NAPI state not enabled.  A
-> subsequent operation, such as ifdown or AER error can cause it to
-> soft lock up when it tries to disable NAPI state.
-> 
-> Fix it by bringing down the device to !IFF_RUNNING state when
-> tg3_reset_task() fails.  tg3_reset_task() running from workqueue
-> will now call tg3_close() when the reset fails.  We need to
-> modify tg3_reset_task_cancel() slightly to avoid tg3_close()
-> calling cancel_work_sync() to cancel tg3_reset_task().  Otherwise
-> cancel_work_sync() will wait forever for tg3_reset_task() to
-> finish.
-> 
-> Reported-by: David Christensen <drc@linux.vnet.ibm.com>
-> Reported-by: Baptiste Covolato <baptiste@arista.com>
-> Fixes: db2199737990 ("tg3: Schedule at most one tg3_reset_task run")
-> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+On 9/8/2020 2:02 PM, Keita Suzuki wrote:
+> Thank you for your comment. I am relatively new to the Linux
+> kernel community, so I am more than happy to receive comments.
+> Please let me know if I'm violating any other rules.
 
-Thanks for the patch, I'll have some test time scheduled and let you know.
+Sure ;-)
 
-Dave
+Here a useful link that Kalle (wireless drivers maintainer) is always 
+sharing in his email signature:
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+Regards,
+Arend
