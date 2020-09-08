@@ -2,136 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AE9E261F7D
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 22:04:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BBAD261F70
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 22:03:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732592AbgIHUEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 16:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48124 "EHLO
+        id S1731533AbgIHUC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 16:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730397AbgIHPXv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 11:23:51 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C28C0610E5
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 07:12:46 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id z22so22741655ejl.7
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 07:12:46 -0700 (PDT)
+        with ESMTP id S1730491AbgIHPek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 11:34:40 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC59C08E826
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 07:34:47 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id q6so15541463ild.12
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 07:34:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3sHaSQTtEpVgxZUhYIXCbmOjlv1gJeOQFw7S/Ryj3Pc=;
-        b=N+McjpguiDc1n2EPL915Ma7152SAViSTeH5vg+8E2QpOulQuWlPUZ3LyTfQVBU+7m6
-         +M9vLe8Pja0QusLmo+vTDbDgyyLzhiOiEypL8xPNu6N3QXXgG3MrnudvKDgVjprnS0Hm
-         QCzY2WSk02O3OpNLKbcRu6PBeXb1bqiUtfIPErkmpkBjggnmbeJCXAwk/9J8LEGHiZ0o
-         QfRVvy6MUF4lPe/vMD8uXnFrvsoq+0iADzFL+EOuwtcNnRrwblYGBN2ZDZUda4lWArS7
-         +4e+KhcoqGkTtd6H3/OcOsFq7Ahnhb0q1JCtMoBoQ4E31Yirm4gnEqXYhX4EyIPuIGOB
-         FHmg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FubCRxUQOSL1Vu5kICRZAzmRwuTQdv9sXq51B7zYU6o=;
+        b=exmwMdxhK4kwnWCVf3LRBCIFKZE+P+xTh778CFSsHfjkNUMl5tYNEQMjR7X1ZVpAfL
+         lC0VkApnn5lqjvJaS+J1mQ8BgOBzMcWxIzplLPm54Ot4rKLIh9Bk+XZUYx5f3E3VfY+n
+         N3CaDSKRfi2FmilpFqpv6jHKeOgyvWEH55qfWBe/shQxprvCROaWaGGsCZ6tIETfcnbV
+         fIEXeEyxoMUQt2oez4Vpb90rGAPVFuKyAtebnIoCki7Zt3VjVi+jsYI+8mkH2MBd2S1p
+         iqV9TNdK5c7E0mrLxThAzU2//15yHW18mFMmk7hqyEoMDAHdrkxc4mAOZkk3xKH4abvq
+         5Tqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3sHaSQTtEpVgxZUhYIXCbmOjlv1gJeOQFw7S/Ryj3Pc=;
-        b=oJPWaqH+8/xKlSqch/1fC3nc9lJ5wJsY/2tutfFAzdaDkCwsbOzElV9AVX4/TzoejZ
-         naKP7rE8iEGJAMA5Rc18OnXz9Ex7rXldv5Rp34I4VjctpaOdLYPULvgvq/1ptAyfucCb
-         nwDeKx5ajBwx8PInSRcaMK5nQFx/xFTJj8FPtpaacP49AXbA+nuBNM3pSLvs1bBU5k+U
-         mx2+BAt4V/X3GAvLna07E8UCpWS4+bbxdyoWeZPJOP+1OY9j78UJw2beinj6XeUfj7ss
-         PrzLcokZPQoDcxczAx9ohKG6GpmYiHgSf6EJ402f3qZcjbiQXsoQj5idJ22QUlg+X48t
-         Fjrg==
-X-Gm-Message-State: AOAM533PQ0Aab36A4zOjOsAhKOyI9xHY1FZgMFu+VqiSDyOLk02MtwRu
-        NCTZOLfSc7xCSFN2D7m5qhz57w==
-X-Google-Smtp-Source: ABdhPJz+/Ym87EdWBFw9jeyyDYLiDue8fyg2iZF9/6qckGGEuWKGDmW4AoA72uFBjuToGO5yEP8i5Q==
-X-Received: by 2002:a17:906:2b06:: with SMTP id a6mr25615230ejg.209.1599574365078;
-        Tue, 08 Sep 2020 07:12:45 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id w14sm17826958ejn.36.2020.09.08.07.12.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2020 07:12:44 -0700 (PDT)
-Date:   Tue, 8 Sep 2020 16:12:43 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Aya Levin <ayal@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v1 1/4] devlink: Wrap trap related lists and
- ops in trap_mngr
-Message-ID: <20200908141243.GO2997@nanopsycho.orion>
-References: <1599060734-26617-1-git-send-email-ayal@mellanox.com>
- <1599060734-26617-2-git-send-email-ayal@mellanox.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FubCRxUQOSL1Vu5kICRZAzmRwuTQdv9sXq51B7zYU6o=;
+        b=oG2MT2SUcae3f+3Jqmpto/q9V4lhykKKD+4Tech9v7HBauvbVoqLNQwBL6P4HaK92S
+         PYkUZDdhcbkuTqOO0FqzUqCLM4m0FWSdqQq8A4l1VVFG/w0fVs0OiHBi9xjfZDzoE4pb
+         jJxhFMc9vt+1qCycWzkZNLa1Ky7+gMQecLkgDFWLJU4UguT4YGoDQhJtSeBjnNBf0h5V
+         k8ilHPyUt+Sr4ojS0lhIXRdHDUh2/gtBRgBMf5jxtkNVSwDceDMOWl2x+t2/9uHuc7/O
+         oWMmm0+dkK/80xxpHdxDFj5OHqEuYi0yh2UQUPXt8rBIFdLS6r8XDk7ykFSLiz6Vj5U6
+         aO1g==
+X-Gm-Message-State: AOAM531wIcnPIdRoO8P1vr7wMv37QWr/EaCjy9QhWEFLs31HfJ4t0LVw
+        01V2WVpW6GQXq6U4acSfPcQ=
+X-Google-Smtp-Source: ABdhPJy+Dp5WdcDrgQVj2gWUYBdDEVrgex9Z15JOdmrLb2qfcytq1lHWse929DwhhrlzymHPbuGqXQ==
+X-Received: by 2002:a92:c009:: with SMTP id q9mr23948613ild.73.1599575686428;
+        Tue, 08 Sep 2020 07:34:46 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:ec70:7b06:eed6:6e35])
+        by smtp.googlemail.com with ESMTPSA id r5sm4104710ilc.2.2020.09.08.07.34.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 07:34:45 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 03/22] nexthop: Only emit a notification when
+ nexthop is actually deleted
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+References: <20200908091037.2709823-1-idosch@idosch.org>
+ <20200908091037.2709823-4-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b0168f8b-8a45-680b-80d8-ed58294774a5@gmail.com>
+Date:   Tue, 8 Sep 2020 08:34:45 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1599060734-26617-2-git-send-email-ayal@mellanox.com>
+In-Reply-To: <20200908091037.2709823-4-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Sep 02, 2020 at 05:32:11PM CEST, ayal@mellanox.com wrote:
->Bundle the trap related lists: trap_list, trap_group_list and
->trap_policer_list and trap ops like: trap_init, trap_fini,
->trap_action_set... together in trap_mngr. This will be handy in the
->coming patches in the set introducing traps in devlink port context.
->With trap_mngr, code reuse is much simpler.
->
->Signed-off-by: Aya Levin <ayal@mellanox.com>
->---
-> drivers/net/ethernet/mellanox/mlxsw/core.c |   4 +
-> include/net/devlink.h                      |  59 ++++---
-> net/core/devlink.c                         | 255 +++++++++++++++++------------
-
-You need to split this. You do at least 2 separate things in one patch.
-Please check it.
-
-
-> 3 files changed, 188 insertions(+), 130 deletions(-)
->
->diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
->index 08d101138fbe..97460f47e537 100644
->--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
->+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
->@@ -1285,6 +1285,9 @@ static const struct devlink_ops mlxsw_devlink_ops = {
-> 	.sb_occ_tc_port_bind_get	= mlxsw_devlink_sb_occ_tc_port_bind_get,
-> 	.info_get			= mlxsw_devlink_info_get,
-> 	.flash_update			= mlxsw_devlink_flash_update,
->+};
->+
->+static const struct devlink_trap_ops mlxsw_devlink_traps_ops = {
-> 	.trap_init			= mlxsw_devlink_trap_init,
-> 	.trap_fini			= mlxsw_devlink_trap_fini,
-> 	.trap_action_set		= mlxsw_devlink_trap_action_set,
->@@ -1321,6 +1324,7 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
-> 			err = -ENOMEM;
-> 			goto err_devlink_alloc;
-> 		}
->+		devlink_traps_ops(devlink, &mlxsw_devlink_traps_ops);
-> 	}
+On 9/8/20 3:10 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@nvidia.com>
 > 
-> 	mlxsw_core = devlink_priv(devlink);
->diff --git a/include/net/devlink.h b/include/net/devlink.h
->index 8f3c8a443238..d387ea5518c3 100644
->--- a/include/net/devlink.h
->+++ b/include/net/devlink.h
->@@ -21,6 +21,13 @@
-> #include <linux/xarray.h>
+> Currently, the delete notification is emitted from the error path of
+> nexthop_add() and replace_nexthop(), which can be confusing to listeners
+> as they are not familiar with the nexthop.
 > 
-> struct devlink_ops;
->+struct devlink_trap_ops;
->+struct devlink_trap_mngr {
+> Instead, only emit the notification when the nexthop is actually
+> deleted. The following sub-cases are covered:
+> 
+> 1. User space deletes the nexthop
+> 2. The nexthop is deleted by the kernel due to a netdev event (e.g.,
+>    nexthop device going down)
+> 3. A group is deleted because its last nexthop is being deleted
+> 4. The network namespace of the nexthop device is deleted
+> 
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/ipv4/nexthop.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
 
-"Mngr" is odd. This is not a manager. Just a common place to store
-trap-related things. Perhaps just "devlink_traps"?
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
-
->+	struct list_head trap_list;
->+	struct list_head trap_group_list;
->+	struct list_head trap_policer_list;
->+	const struct devlink_trap_ops *trap_ops;
->+};
-
-[...]
 
