@@ -2,107 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 480132621E8
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 23:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF152621EF
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 23:29:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730204AbgIHVXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 17:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49414 "EHLO
+        id S1728647AbgIHV3d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 17:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726683AbgIHVXf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 17:23:35 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F3AC061756
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 14:23:35 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id o8so437840ejb.10
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 14:23:35 -0700 (PDT)
+        with ESMTP id S1726369AbgIHV3d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 17:29:33 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48544C061573
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 14:29:31 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id v3so408847ybb.22
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 14:29:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=br7kqX/EdOL7Dtz4xbsGL/PqgcQRS1tChb51PYcN8dE=;
-        b=OynqUYlbUs7iBeqSmkGzesj47qaR8oT14XhnS7OUMJ8ajmWM6PyfFHscblZlW8coxp
-         gusIhiL4efHs5JVE1NoJTZVljm3SPUoWS14ie7DFYGj1mb9rZ2nAe36PaSY0JTCZf/No
-         Y+awcP6yavDk5i99+yoIn9LGQcWj606RFY3pzc2hlVH6e+m1CsNU7n2ajDLCgcUGwSm2
-         5kja8Q74WbHcBLAqdE/RJi/nBeyDwd7eLXb1kJvFb8QR7QSRYft0FNWZmChgQ/hYLWQf
-         eA8xAaAx6fkB5F2/o1J2+c+LxWW98Ye0c3ibHpjqrkeCTkZb7P+gXpcL6qQMU7dqN9bm
-         UalQ==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=JCqQvADuzCwutYreVJR8w/9wOOJud5Wrr6GetaxH47s=;
+        b=tmC/E8D1sQjt8ZZVTIZLr3aSk2px9LLOul5ZK5SE+wxRZ5RGvCDy2rIYh20+tATWvZ
+         EbEnaMxVreonGxTucXcqYzBrw5AVigTrbH24wCLmJHY9W3RCG56FDSzdJtkuvmTNRS4y
+         hczjLm/UWHHrBfxTiM84kloiRT+UjOe+y5FCae2WaRxi3S5Nw6MA7GUkIMSyxt/NsyBg
+         PEDBLm09LxF1Zlbk4/KAEW+EVK+uZddtdIuRJylKHIpc0kxDf2CBlroDEuj88+58mKYL
+         2GJlC3tBYP0CO8Y6fnv5ytBQEixQsrxAcpVOwhzMnAQVhrAy6VZCFkxpaD0csIlg9u3Q
+         2AnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=br7kqX/EdOL7Dtz4xbsGL/PqgcQRS1tChb51PYcN8dE=;
-        b=YYbOUQD8Y1cCQC2kApwt6l7o+75jQnvZi6gTAYP+HSVgjN668uZerGjK5DQnYH7I1y
-         68phQO8d0MJ0eZ6FOVuuY2UmPqt9/5/CP4J7zaVo3UodxkiZ7Hr4Me0nNJc5L0EyBWhs
-         07YEl1fE7IweF2WNibbUliiOkmLOGzMDG2RZ9dKlpysEjhSOxDM286sV6ma+9meE7Nyv
-         tCv5ksf31Q9Rczwny+y+x1SkW3BQ86VD+rOCNC4GHg+OZPl1idQ72uzyNl+97FU+7TM5
-         OTPfXGjuxvol+Hhe6M/ruFCbGeAyvn3p8EhnIUOUT+XEaVARYOPZKAN42zAYHrHHUBfU
-         U+eQ==
-X-Gm-Message-State: AOAM533IO2oBHkBcR17Ero6AM2FoHNmqF/+44zU0w1G9ktA6gKkrkMTN
-        SseqH5S451xL6XkcstEN23EQSIN3YrAG5lCrDcaHAEI0IA==
-X-Google-Smtp-Source: ABdhPJw0uILieaMH3Md5pDW6MLvdTIEjLkaUHI8McMxvysOSsWSpCu7dFxVboDb/ZbuayzuGCaPRAGD9wnbbUoyVsfI=
-X-Received: by 2002:a17:906:8c8:: with SMTP id o8mr419310eje.91.1599600213831;
- Tue, 08 Sep 2020 14:23:33 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200908140543.25514-1-wanghai38@huawei.com>
-In-Reply-To: <20200908140543.25514-1-wanghai38@huawei.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 8 Sep 2020 17:23:22 -0400
-Message-ID: <CAHC9VhRGzWd+SSQvMqapzLwo3dAJGShJOq-3Wyx0SNZ+TvmjqQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] netlabel: Fix some kernel-doc warnings
-To:     Wang Hai <wanghai38@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=JCqQvADuzCwutYreVJR8w/9wOOJud5Wrr6GetaxH47s=;
+        b=QyrN5V8t9fZXa2d0y20vk0Xj4JwLG9ahRLhIry/3KCYYI5PadV1yQv6O4kP1BN3/w2
+         Z4I/sA+ILWQQYKia1Xcz0jqL3Zg8XbylE4WSYY8SZhe3EaZpEHTmc9VbPGI7PNzk0Nfu
+         D5kzx2y6KK84euhSPLW/VkWHaW9GCmwV859XOxJGrUSVacjnTEP05oME+9jOT/RVtMZF
+         gL1y24fAdkCXlxETjuH/EpdENdPwPDH3GOf+JB1qv0XJIKAC7YX7b2uxpR3cBgWmbP0e
+         XS16QjFGbMa6KZzWapl8LutjkG+kKCi4f6sjcvIUgoo+VETG0vO0gqPZ1YSdSuEcV7ES
+         QQvQ==
+X-Gm-Message-State: AOAM5315PhEqts/5HNOmeiEKpJYIm7XEoQZrNhbZ4JzoxahByyHAXfmw
+        vy4waHqF4vQ6j5cXDvjb+1Sw+NO3WM4=
+X-Google-Smtp-Source: ABdhPJyspW9K4JvlFdnMZn5JhooY1GiGSWZIuPqvH568rkWZjzfm8FvTuvsT7bigPbrmapYV1tvY7E5sDRw=
+X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:1ea0:b8ff:fe75:cf08])
+ (user=weiwan job=sendgmr) by 2002:a25:9c87:: with SMTP id y7mr1479189ybo.18.1599600570466;
+ Tue, 08 Sep 2020 14:29:30 -0700 (PDT)
+Date:   Tue,  8 Sep 2020 14:29:02 -0700
+Message-Id: <20200908212902.3525935-1-weiwan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
+Subject: [PATCH net-next] ipv6: add tos reflection in TCP reset and ack
+From:   Wei Wang <weiwan@google.com>
+To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Wei Wang <weiwan@google.com>, Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 10:09 AM Wang Hai <wanghai38@huawei.com> wrote:
->
-> Fixes the following W=1 kernel build warning(s):
->
-> net/netlabel/netlabel_calipso.c:438: warning: Excess function parameter 'audit_secid' description in 'calipso_doi_remove'
-> net/netlabel/netlabel_calipso.c:605: warning: Excess function parameter 'reg' description in 'calipso_req_delattr'
->
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Wang Hai <wanghai38@huawei.com>
-> ---
->  net/netlabel/netlabel_calipso.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Currently, ipv6 stack does not do any TOS reflection. To make the
+behavior consistent with v4 stack, this commit adds TOS reflection in
+tcp_v6_reqsk_send_ack() and tcp_v6_send_reset(). We clear the lower
+2-bit ECN value of the received TOS in compliance with RFC 3168 6.1.5
+robustness principles.
 
-Looks good to me, thanks.
+Signed-off-by: Wei Wang <weiwan@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/ipv6/tcp_ipv6.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Acked-by: Paul Moore <paul@paul-moore.com>
-
-> diff --git a/net/netlabel/netlabel_calipso.c b/net/netlabel/netlabel_calipso.c
-> index 249da67d50a2..1a98247ab148 100644
-> --- a/net/netlabel/netlabel_calipso.c
-> +++ b/net/netlabel/netlabel_calipso.c
-> @@ -426,7 +426,7 @@ void calipso_doi_free(struct calipso_doi *doi_def)
->  /**
->   * calipso_doi_remove - Remove an existing DOI from the CALIPSO protocol engine
->   * @doi: the DOI value
-> - * @audit_secid: the LSM secid to use in the audit message
-> + * @audit_info: NetLabel audit information
->   *
->   * Description:
->   * Removes a DOI definition from the CALIPSO engine.  The NetLabel routines will
-> @@ -595,7 +595,7 @@ int calipso_req_setattr(struct request_sock *req,
->
->  /**
->   * calipso_req_delattr - Delete the CALIPSO option from a request socket
-> - * @reg: the request socket
-> + * @req: the request socket
->   *
->   * Description:
->   * Removes the CALIPSO option from a request socket, if present.
-> --
-> 2.17.1
->
-
-
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 87a633e1fbef..04efa3ee80ef 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -959,8 +959,8 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
+ 	dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
+ 	if (!IS_ERR(dst)) {
+ 		skb_dst_set(buff, dst);
+-		ip6_xmit(ctl_sk, buff, &fl6, fl6.flowi6_mark, NULL, tclass,
+-			 priority);
++		ip6_xmit(ctl_sk, buff, &fl6, fl6.flowi6_mark, NULL,
++			 tclass & ~INET_ECN_MASK, priority);
+ 		TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+ 		if (rst)
+ 			TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
+@@ -1068,8 +1068,8 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 			label = ip6_flowlabel(ipv6h);
+ 	}
+ 
+-	tcp_v6_send_response(sk, skb, seq, ack_seq, 0, 0, 0, oif, key, 1, 0,
+-			     label, priority);
++	tcp_v6_send_response(sk, skb, seq, ack_seq, 0, 0, 0, oif, key, 1,
++			     ipv6_get_dsfield(ipv6h), label, priority);
+ 
+ #ifdef CONFIG_TCP_MD5SIG
+ out:
+@@ -1122,7 +1122,7 @@ static void tcp_v6_reqsk_send_ack(const struct sock *sk, struct sk_buff *skb,
+ 			tcp_time_stamp_raw() + tcp_rsk(req)->ts_off,
+ 			req->ts_recent, sk->sk_bound_dev_if,
+ 			tcp_v6_md5_do_lookup(sk, &ipv6_hdr(skb)->saddr, l3index),
+-			0, 0, sk->sk_priority);
++			ipv6_get_dsfield(ipv6_hdr(skb)), 0, sk->sk_priority);
+ }
+ 
+ 
 -- 
-paul moore
-www.paul-moore.com
+2.28.0.526.ge36021eeef-goog
+
