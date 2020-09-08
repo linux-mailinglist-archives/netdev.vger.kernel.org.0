@@ -2,272 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BB372615BB
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:55:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3BB02615C5
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 18:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731925AbgIHQz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 12:55:27 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:58930 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731816AbgIHQzM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:55:12 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 088Gt7MS086519;
-        Tue, 8 Sep 2020 11:55:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1599584107;
-        bh=nlL2npsKlyOY3ft+6UJrgJZRAj6uLlrQ2DMNVsNBne0=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=K2KpKLMn/djBX+ja+slW0iNsT4quD82h6ynB8M9SLsahqXM1ZGHh6Go8RA/eXWUUU
-         q2c1JcVFReazFZWWyMvEu6lE4zAR3JeXayEzExR98sE5X3Hx27c/jKvYvjLIlpHMM4
-         Hy5KD70FjlcUCJwIV3FjobtV9oUgYDSPzIDlrIZ0=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 088Gt7WW022793
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Sep 2020 11:55:07 -0500
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 8 Sep
- 2020 11:55:07 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 8 Sep 2020 11:55:07 -0500
-Received: from [10.250.53.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 088Gt7qp024121;
-        Tue, 8 Sep 2020 11:55:07 -0500
-Subject: Re: [PATCH net-next 0/1] Support for VLAN interface over HSR/PRP
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, <nsekhar@ti.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-References: <20200901195415.4840-1-m-karicheri2@ti.com>
- <d93fbc54-1721-ebec-39ca-dc8b45e6e534@ti.com>
- <15bbf7d2-627b-1d52-f130-5bae7b7889de@ti.com>
- <CA+FuTSeri93irC9eaQqrFrY2++d0zJ4-F0YAfCXfX6XVVqU6Pw@mail.gmail.com>
-From:   Murali Karicheri <m-karicheri2@ti.com>
-Message-ID: <bf8a22c2-0ebe-7a52-2e79-7dde72d444ba@ti.com>
-Date:   Tue, 8 Sep 2020 12:55:01 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1731910AbgIHQ4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 12:56:16 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:55416 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732109AbgIHQ4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:56:08 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 088GfhFU145349;
+        Tue, 8 Sep 2020 12:55:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Mx8Q0RuPZTnd71/9NfZq1lVXeIOooylyhqozqU4QG3k=;
+ b=ZobXdbrhR1ODYkTO4XHI+litlVhzK4JhbkRxh76pViTzBGzmbbvymEYlKQGMWLn3ISVG
+ 3v50JT5AIhYocqg8NmaEF4BCcV1LnbTS2e/JLTE3FJwMa1vpxVVUTA8Tkxhghdww7R05
+ iuUWzGqL/xtBUwYWOoqQNNjPXvizbYc5PVF5Gut2kvOm+7PX0cDKJT1gyjCWsDQSq4eE
+ VToygI04sx1RWTs7ltnN4a7NEBfBg8tJHevQAdb80UtHhT7TzvYIKwMik3G68zLPe8TB
+ PQ1WeDdpwA1IFPHpi+Dr8v60UkyKyMV6Jfow0J1VisnJcpTvkplfihMepRNNj/ijDSrz UA== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 33edq08ewf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Sep 2020 12:55:53 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 088Gpq65019622;
+        Tue, 8 Sep 2020 16:55:48 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+        by ppma01dal.us.ibm.com with ESMTP id 33d46mhtr3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 08 Sep 2020 16:55:48 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 088Gtlp455771562
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 8 Sep 2020 16:55:47 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 91D8F124058;
+        Tue,  8 Sep 2020 16:55:47 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D535D124052;
+        Tue,  8 Sep 2020 16:55:46 +0000 (GMT)
+Received: from Davids-MBP.randomparity.org (unknown [9.163.69.225])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue,  8 Sep 2020 16:55:46 +0000 (GMT)
+Subject: Re: [PATCH net] tg3: Fix soft lockup when tg3_reset_task() fails.
+To:     Michael Chan <michael.chan@broadcom.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, baptiste@arista.com
+References: <1599157734-16354-1-git-send-email-michael.chan@broadcom.com>
+From:   David Christensen <drc@linux.vnet.ibm.com>
+Message-ID: <726c3fa7-9090-d8d1-d9f0-97e9f4445033@linux.vnet.ibm.com>
+Date:   Tue, 8 Sep 2020 09:55:46 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSeri93irC9eaQqrFrY2++d0zJ4-F0YAfCXfX6XVVqU6Pw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <1599157734-16354-1-git-send-email-michael.chan@broadcom.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-08_08:2020-09-08,2020-09-08 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 phishscore=0 mlxlogscore=999 mlxscore=0 malwarescore=0
+ lowpriorityscore=0 clxscore=1011 bulkscore=0 impostorscore=0 spamscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009080153
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Willem,
-
-On 9/4/20 11:52 AM, Willem de Bruijn wrote:
-> On Thu, Sep 3, 2020 at 12:30 AM Murali Karicheri <m-karicheri2@ti.com> wrote:
->>
->> All,
->>
->> On 9/2/20 12:14 PM, Murali Karicheri wrote:
->>> All,
->>>
->>> On 9/1/20 3:54 PM, Murali Karicheri wrote:
->>>> This series add support for creating VLAN interface over HSR or
->>>> PRP interface. Typically industrial networks uses VLAN in
->>>> deployment and this capability is needed to support these
->>>> networks.
->>>>
->>>> This is tested using two TI AM572x IDK boards connected back
->>>> to back over CPSW  ports (eth0 and eth1).
->>>>
->>>> Following is the setup
->>>>
->>>>                   Physical Setup
->>>>                   ++++++++++++++
->>>>    _______________    (CPSW)     _______________
->>>>    |              |----eth0-----|               |
->>>>    |TI AM572x IDK1|             | TI AM572x IDK2|
->>>>    |______________|----eth1-----|_______________|
->>>>
->>>>
->>>>                   Network Topolgy
->>>>                   +++++++++++++++
->>>>
->>>>                          TI AM571x IDK  TI AM572x IDK
->>>>
->>>> 192.168.100.10                 CPSW ports                 192.168.100.20
->>>>                IDK-1                                        IDK-2
->>>> hsr0/prp0.100--| 192.168.2.10  |--eth0--| 192.168.2.20 |--hsr0/prp0.100
->>>>                  |----hsr0/prp0--|        |---hsr0/prp0--|
->>>> hsr0/prp0.101--|               |--eth1--|              |--hsr0/prp0/101
->>>>
->>>> 192.168.101.10                                            192.168.101.20
->>>>
->>>> Following tests:-
->>>>    - create hsr or prp interface and ping the interface IP address
->>>>      and verify ping is successful.
->>>>    - Create 2 VLANs over hsr or prp interface on both IDKs (VID 100 and
->>>>      101). Ping between the IP address of the VLAN interfaces
->>>>    - Do iperf UDP traffic test with server on one IDK and client on the
->>>>      other. Do this using 100 and 101 subnet IP addresses
->>>>    - Dump /proc/net/vlan/{hsr|prp}0.100 and verify frames are transmitted
->>>>      and received at these interfaces.
->>>>    - Delete the vlan and hsr/prp interface and verify interfaces are
->>>>      removed cleanly.
->>>>
->>>> Logs for IDK-1 at https://pastebin.ubuntu.com/p/NxF83yZFDX/
->>>> Logs for IDK-2 at https://pastebin.ubuntu.com/p/YBXBcsPgVK/
->>>>
->>>> Murali Karicheri (1):
->>>>     net: hsr/prp: add vlan support
->>>>
->>>>    net/hsr/hsr_device.c  |  4 ----
->>>>    net/hsr/hsr_forward.c | 16 +++++++++++++---
->>>>    2 files changed, 13 insertions(+), 7 deletions(-)
->>>>
->>> I am not sure if the packet flow is right for this?
->>>
->>> VLAN over HSR frame format is like this.
->>>
->>> <Start of Frame><VLAN tag><HSR Tag><IP><CRC>
->>>
->>> My ifconfig stats shows both hsr and hsr0.100 interfaces receiving
->>> frames.
->>>
->>> So I did a WARN_ON() in HSR driver before frame is forwarded to upper
->>> layer.
->>>
->>> a0868495local@uda0868495:~/Projects/upstream-kernel$ git diff
->>> diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
->>> index de21df30b0d9..545a3cd8c71b 100644
->>> --- a/net/hsr/hsr_forward.c
->>> +++ b/net/hsr/hsr_forward.c
->>> @@ -415,9 +415,11 @@ static void hsr_forward_do(struct hsr_frame_info
->>> *frame)
->>>                   }
->>>
->>>                   skb->dev = port->dev;
->>> -               if (port->type == HSR_PT_MASTER)
->>> +               if (port->type == HSR_PT_MASTER) {
->>> +                       if (skb_vlan_tag_present(skb))
->>> +                               WARN_ON(1);
->>>                           hsr_deliver_master(skb, port->dev,
->>> frame->node_src);
->>> -               else
->>> +               } else
->>>                           hsr_xmit(skb, port, frame);
->>>           }
->>>    }
->>>
->>> And I get the trace shown below.
->>>
->>> [  275.125431] WARNING: CPU: 0 PID: 0 at net/hsr/hsr_forward.c:420
->>> hsr_forward_skb+0x460/0x564
->>> [  275.133822] Modules linked in: snd_soc_omap_hdmi snd_soc_ti_sdma
->>> snd_soc_core snd_pcm_dmaengine snd_pcm snd_time4
->>> [  275.199705] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W
->>> 5.9.0-rc1-00658-g473e463812c2-dirty #8
->>> [  275.209573] Hardware name: Generic DRA74X (Flattened Device Tree)
->>> [  275.215703] [<c011177c>] (unwind_backtrace) from [<c010b6f0>]
->>> (show_stack+0x10/0x14)
->>> [  275.223487] [<c010b6f0>] (show_stack) from [<c055690c>]
->>> (dump_stack+0xc4/0xe4)
->>> [  275.230747] [<c055690c>] (dump_stack) from [<c01386ac>]
->>> (__warn+0xc0/0xf4)
->>> [  275.237656] [<c01386ac>] (__warn) from [<c0138a3c>]
->>> (warn_slowpath_fmt+0x58/0xb8)
->>> [  275.245177] [<c0138a3c>] (warn_slowpath_fmt) from [<c09564bc>]
->>> (hsr_forward_skb+0x460/0x564)
->>> [  275.253657] [<c09564bc>] (hsr_forward_skb) from [<c0955534>]
->>> (hsr_handle_frame+0x15c/0x190)
->>> [  275.262047] [<c0955534>] (hsr_handle_frame) from [<c07c6704>]
->>> (__netif_receive_skb_core+0x23c/0xc88)
->>> [  275.271223] [<c07c6704>] (__netif_receive_skb_core) from [<c07c7180>]
->>> (__netif_receive_skb_one_core+0x30/0x74)
->>> [  275.281266] [<c07c7180>] (__netif_receive_skb_one_core) from
->>> [<c07c72a4>] (netif_receive_skb+0x50/0x1c4)
->>> [  275.290793] [<c07c72a4>] (netif_receive_skb) from [<c071a55c>]
->>> (cpsw_rx_handler+0x230/0x308)
->>> [  275.299272] [<c071a55c>] (cpsw_rx_handler) from [<c0715ee8>]
->>> (__cpdma_chan_process+0xf4/0x188)
->>> [  275.307925] [<c0715ee8>] (__cpdma_chan_process) from [<c0717294>]
->>> (cpdma_chan_process+0x3c/0x5c)
->>> [  275.316754] [<c0717294>] (cpdma_chan_process) from [<c071dd14>]
->>> (cpsw_rx_mq_poll+0x44/0x98)
->>> [  275.325145] [<c071dd14>] (cpsw_rx_mq_poll) from [<c07c8ae0>]
->>> (net_rx_action+0xf0/0x400)
->>> [  275.333185] [<c07c8ae0>] (net_rx_action) from [<c0101370>]
->>> (__do_softirq+0xf0/0x3ac)
->>> [  275.340965] [<c0101370>] (__do_softirq) from [<c013f5ec>]
->>> (irq_exit+0xa8/0xe4)
->>> [  275.348224] [<c013f5ec>] (irq_exit) from [<c0199344>]
->>> (__handle_domain_irq+0x6c/0xe0)
->>> [  275.356093] [<c0199344>] (__handle_domain_irq) from [<c056f8fc>]
->>> (gic_handle_irq+0x4c/0xa8)
->>> [  275.364481] [<c056f8fc>] (gic_handle_irq) from [<c0100b6c>]
->>> (__irq_svc+0x6c/0x90)
->>> [  275.371996] Exception stack(0xc0e01f18 to 0xc0e01f60)
->>>
->>> Shouldn't it show vlan_do_receive() ?
->>>
->>>       if (skb_vlan_tag_present(skb)) {
->>>           if (pt_prev) {
->>>               ret = deliver_skb(skb, pt_prev, orig_dev);
->>>               pt_prev = NULL;
->>>           }
->>>           if (vlan_do_receive(&skb))
->>>               goto another_round;
->>>           else if (unlikely(!skb))
->>>               goto out;
->>>       }
->>>
->>> Thanks
->>>
->>
->> I did an ftrace today and I find vlan_do_receive() is called for the
->> incoming frames before passing SKB to hsr_handle_frame(). If someone
->> can review this, it will help. Thanks.
->>
->> https://pastebin.ubuntu.com/p/CbRzXjwjR5/
+On 9/3/20 11:28 AM, Michael Chan wrote:
+> If tg3_reset_task() fails, the device state is left in an inconsistent
+> state with IFF_RUNNING still set but NAPI state not enabled.  A
+> subsequent operation, such as ifdown or AER error can cause it to
+> soft lock up when it tries to disable NAPI state.
 > 
-> hsr_handle_frame is an rx_handler called after
-> __netif_receive_skb_core called vlan_do_receive and jumped back to
-> another_round.
-
-Yes. hsr_handle_frame() is a rx_handler() after the above code that
-does vlan_do_receive(). The ftrace shows vlan_do_receive() is called
-followed by call to hsr_handle_frame(). From ifconfig I can see both
-hsr and vlan interface stats increments by same count. So I assume,
-vlan_do_receive() is called initially and it removes the tag, update
-stats and then return true and go for another round. Do you think that
-is the case?
-
-vlan_do_receive() calls vlan_find_dev(skb->dev, vlan_proto, vlan_id)
-to retrieve the real netdevice (real device). However VLAN device is
-attached to hsr device (real device), but SKB will have HSR slave 
-Ethernet netdevice (in our case it is cpsw device) and vlan_find_dev()
-would have failed since there is no vlan_info in cpsw netdev struct. So
-below code  in vlan_do_receive() should have failed and return false.
-
-	vlan_dev = vlan_find_dev(skb->dev, vlan_proto, vlan_id);
-	if (!vlan_dev)
-		return false;
-
-So how does it goes for another_round ? May be vlan_find_dev is
-finding the hsr netdevice?
-
-I am not an expert and so the question. Probably I can put a
-traceprintk() to confirm this, but if someone can clarify this
-it will be great. But for that, I will spin v2 with the above comments
-addressed as in my reply and post.
-
-Thanks
+> Fix it by bringing down the device to !IFF_RUNNING state when
+> tg3_reset_task() fails.  tg3_reset_task() running from workqueue
+> will now call tg3_close() when the reset fails.  We need to
+> modify tg3_reset_task_cancel() slightly to avoid tg3_close()
+> calling cancel_work_sync() to cancel tg3_reset_task().  Otherwise
+> cancel_work_sync() will wait forever for tg3_reset_task() to
+> finish.
 > 
-> That's how it should work right?
-> 
+> Reported-by: David Christensen <drc@linux.vnet.ibm.com>
+> Reported-by: Baptiste Covolato <baptiste@arista.com>
+> Fixes: db2199737990 ("tg3: Schedule at most one tg3_reset_task run")
+> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 
--- 
-Murali Karicheri
-Texas Instruments
+Thanks for the patch, I'll have some test time scheduled and let you know.
+
+Dave
