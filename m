@@ -2,107 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DB0E26238E
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 01:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E52FC262391
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 01:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729455AbgIHXYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 19:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39800 "EHLO
+        id S1729457AbgIHX1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 19:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbgIHXYi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 19:24:38 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8FCC061573;
-        Tue,  8 Sep 2020 16:24:37 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id x10so534214ybj.13;
-        Tue, 08 Sep 2020 16:24:37 -0700 (PDT)
+        with ESMTP id S1726591AbgIHX1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 19:27:49 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78656C061573;
+        Tue,  8 Sep 2020 16:27:48 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id r24so1109494ljm.3;
+        Tue, 08 Sep 2020 16:27:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=TYVhovqs2j3KoA4gmhQq+5OptjVoJrHHS0XWbOyxGCc=;
-        b=tEpfTrc+ty8RUU8NDitrBu0EmiVv9VDw/35KowfWS/DwVr2cX2wt7NwJLdTN8HLw7/
-         ucoCALkuuHxElquHx9kv/fx4rvaqVo19yM3CebYTF8QzMT+QUc3AYEJza5n4gy5k8J9P
-         x/PWTZWbzfU2GvV96PW6SVIkpvj99FOq/64rHhQL/MeQf3BsXkwkqYl4gvVj2xWsXuu7
-         EbE5YlZuuabnXsdu4vEYitbSIf96lKfCKVpOGQnWUnkD2WrcfqXHRluMERtnOc2yiGmT
-         s/MbnFXCyH2MqPMdMzNbqjHZLMnqJFDk4PWQS5UCM/d4tvZ1KyxXPM+2Hw5IygK7CF8X
-         37Sg==
+        bh=BZLv64E9iX6vMYMgu7cql00jwI+aNGqHeU3sAICtz6A=;
+        b=OzvOSNnKRpFC83G2xLmy29NuaGc62o+QwwhuJt3Ep3NAd3lGgbsGc6e+0h/62YzQFr
+         nBkTSpTme6SXKATJV2LgvBD1XzfJNSzhAbLw0ud1IV+C1Rt7+WKymSqMtEQtE4rucstM
+         1RV7RuTaAEfFsHmHqdUoAE9Rq9M1cQVL4Ebl3Qyc2G4W/SvwbWlBrEfCi6OQrx9l6wB7
+         fkLhN2CFEYNdzuy3nBN9PZQ0PoYkjecP1vCiAsS5SWrjADGad73W975fSHXyneviUOjR
+         LPQBktMD2G9DFkuSCz2aZvEyy/jAGuPqCw2DcZkEcaBRMYPCyDnwDiT4EHrH/Suin7Gu
+         foMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=TYVhovqs2j3KoA4gmhQq+5OptjVoJrHHS0XWbOyxGCc=;
-        b=Y1ujONOhV1MUKU48i3eMYN3jiMMygEE4GJhfzo45g35upGiSDNueVvEdyVzZ15ct9j
-         sBYiVYoqibY9ZZZ9NvkDQx0Qx9Iot95MqFnmkz8e6my9UY2pUSgdqRDUR8W3K4+IlQA3
-         LLgyHIB9LQO68hDOewc66v3uigFQqPqY4LAsLk3hE00LqjG/m1gWcN3Rgrg2A4A5XIlw
-         Vh4JmfJDpyIOKRwRneiDS/Xstx7NeJZjudMPTVR45KQxNNP/zNc15gspvN4MkvhhLOpJ
-         xV7BOU4sm9q0YdX1z0G+iomFl3umEOf/HdK6SS9K33aO5J183AaQwaP/MZ+cfq84pp1g
-         OYpA==
-X-Gm-Message-State: AOAM530efzTU2tb0F4UVpZIUrbU2hnC4AiiqmjyNHojhhK5mW4ZWOaTh
-        mvGeWNXS62Q3y5TW/EgzmLGG4NRun3ea7Gm9MBfx7saV
-X-Google-Smtp-Source: ABdhPJygsGJhQUDXh7pikpKR2SLK+zH4iLYyUljjsRRD1kLZ0P3OfC9Ua6h44FzidajC+SOdhKOS1FI+8Qirw0SMmJg=
-X-Received: by 2002:a25:ef43:: with SMTP id w3mr1763333ybm.230.1599607476570;
- Tue, 08 Sep 2020 16:24:36 -0700 (PDT)
+        bh=BZLv64E9iX6vMYMgu7cql00jwI+aNGqHeU3sAICtz6A=;
+        b=HfLlUQuuiRGzLzgJHm7QwZ6hqngmUUIoB2dB6CGotQyvBMoFcYT+3YPthJchXLcyTS
+         pnzSyLLtCyPWsP2qNSdt84BWgXmjeeaEDVqYYDe2N2JHueEiwfE9Zrpxw4ze3FmP+YKv
+         UL23XvhpbNQciAgKjuSRbq3PiQiS5kqk1ZxP4Cx5gkeHc+D/WrUFr/YZP7P7XFoHM9uD
+         mwklsiXf9x3pCOVstQhe+/WTVzeK/oUY/PIcRL5YJdEMWVVWH8wu5cudNP7TMOb06zf7
+         LrGZJj4ciz+gR7KMNz8ONBD/PWCKds3OhmRX68jZKQn86/fMNNhAlfZvtNHr+eIM84Jd
+         UVQg==
+X-Gm-Message-State: AOAM533EZkU/AlIBTb7MOTg4/sb1QCMDHYN3bss80INj4YYQH533hh4w
+        MyCh9D7dh3W0rWFKlLvfMd8VRHh1PcX7/8kO//E=
+X-Google-Smtp-Source: ABdhPJzZbZ7aWtVf/S5ICwzcEkfOfBdUWwNY78rT8KIIWZtqaAoKBo8vmO+MWeqK1xl7wdxaek/YwpNobozhN3hhKuU=
+X-Received: by 2002:a05:651c:cb:: with SMTP id 11mr453236ljr.2.1599607666714;
+ Tue, 08 Sep 2020 16:27:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200905154137.24800-1-danieltimlee@gmail.com>
-In-Reply-To: <20200905154137.24800-1-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 8 Sep 2020 16:24:25 -0700
-Message-ID: <CAEf4BzZ+tGgeqpPiKmChRYQ7FH==3AHXUK5V+Sy2tjZiO58u+w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] samples: bpf: refactor xdp_sample_pkts_kern with
- BTF-defined map
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+References: <20200905214831.1565465-1-Tony.Ambardar@gmail.com> <CAEf4BzYmHLvnMrg-b5rgLCU2fg3C1q1SHbonao96fFOPYagC8w@mail.gmail.com>
+In-Reply-To: <CAEf4BzYmHLvnMrg-b5rgLCU2fg3C1q1SHbonao96fFOPYagC8w@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 8 Sep 2020 16:27:35 -0700
+Message-ID: <CAADnVQ+wvZX8-2rW6KwZPTyv10+9LrOFVJMkQNYX2VxcRoS0oQ@mail.gmail.com>
+Subject: Re: [PATCH bpf v1] tools/libbpf: avoid counting local symbols in ABI check
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Tony Ambardar <tony.ambardar@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 5, 2020 at 8:41 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+On Tue, Sep 8, 2020 at 12:53 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> Most of the samples were converted to use the new BTF-defined MAP as
-> they moved to libbbpf, but some of the samples were missing.
->
-> Instead of using the previous BPF MAP definition, this commit refactors
-> xdp_sample_pkts_kern MAP definition with the new BTF-defined MAP format.
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  samples/bpf/xdp_sample_pkts_kern.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->
-> diff --git a/samples/bpf/xdp_sample_pkts_kern.c b/samples/bpf/xdp_sample_pkts_kern.c
-> index 33377289e2a8..b15172b7d455 100644
-> --- a/samples/bpf/xdp_sample_pkts_kern.c
-> +++ b/samples/bpf/xdp_sample_pkts_kern.c
-> @@ -7,12 +7,12 @@
->  #define SAMPLE_SIZE 64ul
->  #define MAX_CPUS 128
->
-> -struct bpf_map_def SEC("maps") my_map = {
-> -       .type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
-> -       .key_size = sizeof(int),
-> -       .value_size = sizeof(u32),
-> -       .max_entries = MAX_CPUS,
-> -};
-> +struct {
-> +       __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
-> +       __uint(key_size, sizeof(int));
-> +       __uint(value_size, sizeof(u32));
-> +       __uint(max_entries, MAX_CPUS);
+> On Sat, Sep 5, 2020 at 2:49 PM Tony Ambardar <tony.ambardar@gmail.com> wrote:
+> >
+> > Encountered the following failure building libbpf from kernel 5.8.5 sources
+> > with GCC 8.4.0 and binutils 2.34: (long paths shortened)
+> >
+> >   Warning: Num of global symbols in sharedobjs/libbpf-in.o (234) does NOT
+> >   match with num of versioned symbols in libbpf.so (236). Please make sure
+> >   all LIBBPF_API symbols are versioned in libbpf.map.
+> >   --- libbpf_global_syms.tmp    2020-09-02 07:30:58.920084380 +0000
+> >   +++ libbpf_versioned_syms.tmp 2020-09-02 07:30:58.924084388 +0000
+> >   @@ -1,3 +1,5 @@
+> >   +_fini
+> >   +_init
+> >    bpf_btf_get_fd_by_id
+> >    bpf_btf_get_next_id
+> >    bpf_create_map
+> >   make[4]: *** [Makefile:210: check_abi] Error 1
+> >
+> > Investigation shows _fini and _init are actually local symbols counted
+> > amongst global ones:
+> >
+> >   $ readelf --dyn-syms --wide libbpf.so|head -10
+> >
+> >   Symbol table '.dynsym' contains 343 entries:
+> >      Num:    Value  Size Type    Bind   Vis      Ndx Name
+> >        0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND
+> >        1: 00004098     0 SECTION LOCAL  DEFAULT   11
+> >        2: 00004098     8 FUNC    LOCAL  DEFAULT   11 _init@@LIBBPF_0.0.1
+> >        3: 00023040     8 FUNC    LOCAL  DEFAULT   14 _fini@@LIBBPF_0.0.1
+> >        4: 00000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.0.4
+> >        5: 00000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.0.1
+> >        6: 0000ffa4     8 FUNC    GLOBAL DEFAULT   12 bpf_object__find_map_by_offset@@LIBBPF_0.0.1
+> >
+> > A previous commit filtered global symbols in sharedobjs/libbpf-in.o. Do the
+> > same with the libbpf.so DSO for consistent comparison.
+> >
+> > Fixes: 306b267cb3c4 ("libbpf: Verify versioned symbols")
+> >
+> > Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
 
-if you drop max_entries property, libbpf will set it to the maximum
-configured number of CPUs on the host, which is what you probably
-want. Do you might sending v2 without MAX_CPUS (check if macro is
-still used anywhere else). Thanks!
-
-> +} my_map SEC(".maps");
->
->  SEC("xdp_sample")
->  int xdp_sample_prog(struct xdp_md *ctx)
-> --
-> 2.25.1
->
+Applied. Thanks
