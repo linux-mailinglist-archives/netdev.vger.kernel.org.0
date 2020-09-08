@@ -2,102 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8DCE261B08
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C27261B01
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 20:52:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731298AbgIHSwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 14:52:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49406 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726229AbgIHSuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 14:50:09 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EC1DC2067C;
-        Tue,  8 Sep 2020 18:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599591008;
-        bh=voXxilmhkYPYQ5Z7f5rN9GxX8n8POHXdRLscYxWLJa8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=R7nG8sfcxe7vlJkhN8P7WQNgIAATDpguIRYuUAl+0tPSMwgi8g4NGAX4EPaaj415U
-         dZrmW+bObw2eJR1EB0RJuY2EEqVJQ7oytOJMJ7iPwO8dGoW89XTa6seOgo3jSppd1G
-         htGlV2aSq8TI7D99BiyN9vGDUEhonwQQiXr8s5f8=
-Date:   Tue, 8 Sep 2020 11:50:06 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: Re: [PATCH net-next v2 5/6] devlink: Introduce controller number
-Message-ID: <20200908115006.3b9ba943@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200908144241.21673-6-parav@mellanox.com>
-References: <20200825135839.106796-1-parav@mellanox.com>
-        <20200908144241.21673-1-parav@mellanox.com>
-        <20200908144241.21673-6-parav@mellanox.com>
+        id S1731500AbgIHSvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 14:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731124AbgIHSvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 14:51:09 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01603C061755
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 11:51:08 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id y194so9613470vsc.4
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 11:51:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zOlhJ759ELcXKOOqGfeV77lWnqUEXIcww3cWbaCaKkc=;
+        b=asMCyCblUJ33Hh1IyVh0VZu7tMxhHYb406jcoN65/Ckc5Cy3HmZxaGc0l3YM2bM6ZS
+         7vuWk/QUhenCg2yMvFRCoESv3ihcogVS4LwbQZeaUpckhZQmDueM/rWLsXoGdHU4bDTH
+         bQfqdBpWSrdeiCNhpGCiHj/vNPk/xDZ4QGTXiRLdR618sMBpoS7HEFfmgqZmGsMLDK48
+         S8Hb29RJnLYz1jUUekIIgDiQufX1Gqo3nz73aWI7EkBdhySBUP17SoGbxQdhX1PNhtyH
+         137QcCqMVVx92Ej8bRIugQs6Bv5StdTuPOajKPLbZNwHIfFyh9386HCNfNYLOCtUenIA
+         L2YA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zOlhJ759ELcXKOOqGfeV77lWnqUEXIcww3cWbaCaKkc=;
+        b=SZbkt5MJJ9a6fmuUsPZUE5j8FTGqdPFfs88z7fDwMrQuNU4rdcVpPb0GwlHJKD6i5p
+         J38TkMvROMqkO+Fv0Ah2tpAzQrOs6uorxU5IqPL+NMkRMa4cDnvfC6yTACfdskpq23JJ
+         Ze3U8DbHDRoAycADZ1DEL3XULMYt5537L3aZgswb2voP001wDA+NVgCdIo5CtD3VgPfs
+         VUvaq1kXH2x2VahKYvvSNBqY7WOTUe7WT6quf8mtF/35RdgUw6yqUhQ7ozWyVlJcxoEu
+         OrKXpYLUMpiPoa5jMxp+M8GxGuMQJ0wS1lcr8LbTQaUDbI6HZJo5Ue7DqOqRRPG4UOiT
+         fMDQ==
+X-Gm-Message-State: AOAM531KuCt/1Thuznv/9+Zt6/SPGNlr936mT8+sjcamoWSF4CSXQCVR
+        iuE9jGexcnugyYo98HLDa9hUqS0aSiljMA==
+X-Google-Smtp-Source: ABdhPJzTMT1yL78s1WAzIChebAgXR0ubWNo8n4jSLuMiIGfid+3d6geas6gjgAOrfQ7fXvX3EesKOQ==
+X-Received: by 2002:a05:6102:1173:: with SMTP id k19mr394746vsg.91.1599591066934;
+        Tue, 08 Sep 2020 11:51:06 -0700 (PDT)
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
+        by smtp.gmail.com with ESMTPSA id r64sm23377vsr.8.2020.09.08.11.51.05
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 11:51:05 -0700 (PDT)
+Received: by mail-ua1-f45.google.com with SMTP id e41so67334uad.6
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 11:51:05 -0700 (PDT)
+X-Received: by 2002:ab0:24cd:: with SMTP id k13mr348997uan.92.1599591064900;
+ Tue, 08 Sep 2020 11:51:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200901195415.4840-1-m-karicheri2@ti.com> <d93fbc54-1721-ebec-39ca-dc8b45e6e534@ti.com>
+ <15bbf7d2-627b-1d52-f130-5bae7b7889de@ti.com> <CA+FuTSeri93irC9eaQqrFrY2++d0zJ4-F0YAfCXfX6XVVqU6Pw@mail.gmail.com>
+ <bf8a22c2-0ebe-7a52-2e79-7dde72d444ba@ti.com> <CA+FuTSeE_O_XozfnzDED_S4of-NwtRCN+oWr=O3JPpByfCz3Vg@mail.gmail.com>
+In-Reply-To: <CA+FuTSeE_O_XozfnzDED_S4of-NwtRCN+oWr=O3JPpByfCz3Vg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 8 Sep 2020 20:50:26 +0200
+X-Gmail-Original-Message-ID: <CA+FuTSde4fAiy6t-Q4o1C8wdU4ZYqNt0Qd2F8PsrnXvA8q03=A@mail.gmail.com>
+Message-ID: <CA+FuTSde4fAiy6t-Q4o1C8wdU4ZYqNt0Qd2F8PsrnXvA8q03=A@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/1] Support for VLAN interface over HSR/PRP
+To:     Murali Karicheri <m-karicheri2@ti.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, nsekhar@ti.com,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  8 Sep 2020 17:42:40 +0300 Parav Pandit wrote:
-> A devlink port may be for a controller consist of PCI device.
+> > >>>
+> > >>> Shouldn't it show vlan_do_receive() ?
+> > >>>
+> > >>>       if (skb_vlan_tag_present(skb)) {
+> > >>>           if (pt_prev) {
+> > >>>               ret = deliver_skb(skb, pt_prev, orig_dev);
+> > >>>               pt_prev = NULL;
+> > >>>           }
+> > >>>           if (vlan_do_receive(&skb))
+> > >>>               goto another_round;
+> > >>>           else if (unlikely(!skb))
+> > >>>               goto out;
+> > >>>       }
+> > >>>
+> > >>> Thanks
+> > >>>
+> > >>
+> > >> I did an ftrace today and I find vlan_do_receive() is called for the
+> > >> incoming frames before passing SKB to hsr_handle_frame(). If someone
+> > >> can review this, it will help. Thanks.
+> > >>
+> > >> https://pastebin.ubuntu.com/p/CbRzXjwjR5/
+> > >
+> > > hsr_handle_frame is an rx_handler called after
+> > > __netif_receive_skb_core called vlan_do_receive and jumped back to
+> > > another_round.
+> >
+> > Yes. hsr_handle_frame() is a rx_handler() after the above code that
+> > does vlan_do_receive(). The ftrace shows vlan_do_receive() is called
+> > followed by call to hsr_handle_frame(). From ifconfig I can see both
+> > hsr and vlan interface stats increments by same count. So I assume,
+> > vlan_do_receive() is called initially and it removes the tag, update
+> > stats and then return true and go for another round. Do you think that
+> > is the case?
+>
+> That was my understanding.
+>
+> > vlan_do_receive() calls vlan_find_dev(skb->dev, vlan_proto, vlan_id)
+> > to retrieve the real netdevice (real device). However VLAN device is
+> > attached to hsr device (real device), but SKB will have HSR slave
+> > Ethernet netdevice (in our case it is cpsw device) and vlan_find_dev()
+> > would have failed since there is no vlan_info in cpsw netdev struct. So
+> > below code  in vlan_do_receive() should have failed and return false.
+> >
+> >         vlan_dev = vlan_find_dev(skb->dev, vlan_proto, vlan_id);
+> >         if (!vlan_dev)
+> >                 return false;
+> >
+> > So how does it goes for another_round ? May be vlan_find_dev is
+> > finding the hsr netdevice?
+>
+> It's good to answer this through code inspection and/or
+> instrumentation. I do not have the answer immediately either.
 
-Humm?
+Agreed that from reading the code I would vlan_do_receive to not find
+a vlan dev associated with the physical nic, then passes the packet
+unmodified to hsr_handle_frame.
 
-> A devlink instance holds ports of two types of controllers.
-> (1) controller discovered on same system where eswitch resides
-> This is the case where PCI PF/VF of a controller and devlink eswitch
-> instance both are located on a single system.
-> (2) controller located on external host system.
-> This is the case where a controller is located in one system and its
-> devlink eswitch ports are located in a different system.
-> 
-> When a devlink eswitch instance serves the devlink ports of both
-> controllers together, PCI PF/VF numbers may overlap.
-> Due to this a unique phys_port_name cannot be constructed.
-> 
-> For example in below such system controller-A and controller-B, each has
-> PCI PF pf0 whose eswitch ports are present in controller-A.
-> These results in phys_port_name as "pf0" for both.
-> Similar problem exists for VFs and upcoming Sub functions.
-> 
-> An example view of two controller systems:
-> 
->                 -----------------------------------------------------
->                 |                                                   |
->                 |           --------- ---------                     |
-> -------------   |           | vf(s) | | sf(s) |                     |
-> | server    |   | -------   ----/---- ---/-----  -------            |
-> | pci rc    |=====| pf0 |______/________/        | pf1 |            |
-> | connection|   | -------                        -------            |
-> -------------   |     | controller-B (no eswitch) (controller num=1)|
->                 ------|----------------------------------------------
->                 (internal wire)
->                       |
->                 -----------------------------------------------------
->                 |  devlink eswitch ports and reps                   |
->                 |  ---------------------------------------------    |
->                 |  |ctrl-A | ctrl-B | ctrl-A | ctrl-B | ctrl-B |    |
->                 |  |pf0    | pf0    | pf0vfN | pf0vfN | pf0sfN |    |
->                 |  ---------------------------------------------    |
+Perhaps this seems to work because skb_vlan_untag has already
+pulled the tag out of the packet?
 
-                                       ^^^^^^^^
-
-ctrl-A doesn't have VFs, but sfs below.
-
-pf1 reprs are not listed.
-
-Perhaps it'd be clearer if controllers where not interleaved?
-
->                 |                                                   |
->                 |           ---------                               |
->                 |           | sf(s) |                               |
->                 | -------   ---/-----    -------                    |
->                 | | pf0 |_____/          | pf1 |                    |
->                 | -------                -------                    |
->                 |                                                   |
->                 |  local controller-A (eswitch) (controller num=0)  |
->                 -----------------------------------------------------
+But then you should not see counters increased on the vlan dev.
