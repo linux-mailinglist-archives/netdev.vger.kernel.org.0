@@ -2,107 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E52FC262391
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 01:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7B3B26239C
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 01:34:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729457AbgIHX1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 19:27:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40286 "EHLO
+        id S1728483AbgIHXdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 19:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbgIHX1t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 19:27:49 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78656C061573;
-        Tue,  8 Sep 2020 16:27:48 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id r24so1109494ljm.3;
-        Tue, 08 Sep 2020 16:27:48 -0700 (PDT)
+        with ESMTP id S1726434AbgIHXdx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 19:33:53 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96A79C061573;
+        Tue,  8 Sep 2020 16:33:53 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id d9so500301pfd.3;
+        Tue, 08 Sep 2020 16:33:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BZLv64E9iX6vMYMgu7cql00jwI+aNGqHeU3sAICtz6A=;
-        b=OzvOSNnKRpFC83G2xLmy29NuaGc62o+QwwhuJt3Ep3NAd3lGgbsGc6e+0h/62YzQFr
-         nBkTSpTme6SXKATJV2LgvBD1XzfJNSzhAbLw0ud1IV+C1Rt7+WKymSqMtEQtE4rucstM
-         1RV7RuTaAEfFsHmHqdUoAE9Rq9M1cQVL4Ebl3Qyc2G4W/SvwbWlBrEfCi6OQrx9l6wB7
-         fkLhN2CFEYNdzuy3nBN9PZQ0PoYkjecP1vCiAsS5SWrjADGad73W975fSHXyneviUOjR
-         LPQBktMD2G9DFkuSCz2aZvEyy/jAGuPqCw2DcZkEcaBRMYPCyDnwDiT4EHrH/Suin7Gu
-         foMA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DY5gbi/kg3mlXEWhK+AT4noIdeJ5tpruTcO86qQV2fw=;
+        b=gD/1uUIjxxvndXA66bjpe84ydOX7OCQ6pi8H39SCb1WcPm9hzkQBnoZFpEvLIgTf6B
+         oAOvXXy3rXuK0i4ORtK7eJJFZNYcD9cD/HIOKI+ioF69hJKgSwlOZ9hlW0hsOlbCtXKu
+         WoMBhlib6KwG6qMtjiXjXPPka8kCdQNheTBjyeSlzLe0i+GfJJvCObe8WRNFsDW/G0eb
+         7gEu970QLGJlhG9fc6NdH/sL7yN94Lr784NdQN+UKXs7sG2FC3dpzjpAuxl1E55ZBPdB
+         qguXxEEs1ocql+7X/dMt4av1HnCsEPFTjLADZLIIof6W5BbyfDBNZvbjE9b3oMEE1802
+         bRdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BZLv64E9iX6vMYMgu7cql00jwI+aNGqHeU3sAICtz6A=;
-        b=HfLlUQuuiRGzLzgJHm7QwZ6hqngmUUIoB2dB6CGotQyvBMoFcYT+3YPthJchXLcyTS
-         pnzSyLLtCyPWsP2qNSdt84BWgXmjeeaEDVqYYDe2N2JHueEiwfE9Zrpxw4ze3FmP+YKv
-         UL23XvhpbNQciAgKjuSRbq3PiQiS5kqk1ZxP4Cx5gkeHc+D/WrUFr/YZP7P7XFoHM9uD
-         mwklsiXf9x3pCOVstQhe+/WTVzeK/oUY/PIcRL5YJdEMWVVWH8wu5cudNP7TMOb06zf7
-         LrGZJj4ciz+gR7KMNz8ONBD/PWCKds3OhmRX68jZKQn86/fMNNhAlfZvtNHr+eIM84Jd
-         UVQg==
-X-Gm-Message-State: AOAM533EZkU/AlIBTb7MOTg4/sb1QCMDHYN3bss80INj4YYQH533hh4w
-        MyCh9D7dh3W0rWFKlLvfMd8VRHh1PcX7/8kO//E=
-X-Google-Smtp-Source: ABdhPJzZbZ7aWtVf/S5ICwzcEkfOfBdUWwNY78rT8KIIWZtqaAoKBo8vmO+MWeqK1xl7wdxaek/YwpNobozhN3hhKuU=
-X-Received: by 2002:a05:651c:cb:: with SMTP id 11mr453236ljr.2.1599607666714;
- Tue, 08 Sep 2020 16:27:46 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DY5gbi/kg3mlXEWhK+AT4noIdeJ5tpruTcO86qQV2fw=;
+        b=diDXYBLo/yZHmj2Tl4yu8j8aKcMo1lhnn/S1BSHiRuJTHB1s5GoXqN6hEOdA7c3AW1
+         M7df9XXZNwWhFG9TPEzO0ISw08shS+DiPmds9Q5nws63S50Yh0Fk1PdeIgqZQz5bQ7xP
+         PoecTQ0Yj0Mt4VHElJaZwSgPWW8HEkF9tv4Delm4QQPCzK9HDWxER9TuXfqLNaT+mDeE
+         hTmDcyFswmVfhPwPvdhJqJIlNWKmCViUdzCivQxFizYm5TuDw+oYif61za9QyA/TVy/l
+         3wAT6gkzmRG4Mc+k2hwap8QN4yHofna7K9hU/GDFSyXnLDtkhOQ8/8bjE5SGsmA1Hbth
+         pcSQ==
+X-Gm-Message-State: AOAM531fAyeliN0iW5KlOLLsDf5btQ0DkcmlTVSVauWkA3sFKv0yZJ3C
+        FTWV2oP1hGBFaJ8MZmyJ51I=
+X-Google-Smtp-Source: ABdhPJyb8T9C7v1d33kdgNugE+3TPB7VCXh6XyWU6MplW7h01SgEPXkLa6ESccu35w5loo09tNI3iA==
+X-Received: by 2002:a17:902:b088:b029:d1:8388:e6f8 with SMTP id p8-20020a170902b088b02900d18388e6f8mr71790plr.40.1599608032937;
+        Tue, 08 Sep 2020 16:33:52 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.193.206])
+        by smtp.gmail.com with ESMTPSA id c7sm473216pfj.100.2020.09.08.16.33.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Sep 2020 16:33:52 -0700 (PDT)
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        Anant Thazhemadam <anant.thazhemadam@gmail.com>,
+        syzbot+c613e88b3093ebf3686e@syzkaller.appspotmail.com,
+        syzbot+d0f27d9af17914bf253b@syzkaller.appspotmail.com,
+        syzbot+3025b9294f8cb0ede850@syzkaller.appspotmail.com,
+        syzbot+0f84f6eed90503da72fc@syzkaller.appspotmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: qrtr: Reintroduce ARCH_QCOM as a dependency for QRTR
+Date:   Wed,  9 Sep 2020 05:03:28 +0530
+Message-Id: <20200908233329.200473-1-anant.thazhemadam@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200905214831.1565465-1-Tony.Ambardar@gmail.com> <CAEf4BzYmHLvnMrg-b5rgLCU2fg3C1q1SHbonao96fFOPYagC8w@mail.gmail.com>
-In-Reply-To: <CAEf4BzYmHLvnMrg-b5rgLCU2fg3C1q1SHbonao96fFOPYagC8w@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 8 Sep 2020 16:27:35 -0700
-Message-ID: <CAADnVQ+wvZX8-2rW6KwZPTyv10+9LrOFVJMkQNYX2VxcRoS0oQ@mail.gmail.com>
-Subject: Re: [PATCH bpf v1] tools/libbpf: avoid counting local symbols in ABI check
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Tony Ambardar <tony.ambardar@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Andrey Ignatov <rdna@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 12:53 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Sat, Sep 5, 2020 at 2:49 PM Tony Ambardar <tony.ambardar@gmail.com> wrote:
-> >
-> > Encountered the following failure building libbpf from kernel 5.8.5 sources
-> > with GCC 8.4.0 and binutils 2.34: (long paths shortened)
-> >
-> >   Warning: Num of global symbols in sharedobjs/libbpf-in.o (234) does NOT
-> >   match with num of versioned symbols in libbpf.so (236). Please make sure
-> >   all LIBBPF_API symbols are versioned in libbpf.map.
-> >   --- libbpf_global_syms.tmp    2020-09-02 07:30:58.920084380 +0000
-> >   +++ libbpf_versioned_syms.tmp 2020-09-02 07:30:58.924084388 +0000
-> >   @@ -1,3 +1,5 @@
-> >   +_fini
-> >   +_init
-> >    bpf_btf_get_fd_by_id
-> >    bpf_btf_get_next_id
-> >    bpf_create_map
-> >   make[4]: *** [Makefile:210: check_abi] Error 1
-> >
-> > Investigation shows _fini and _init are actually local symbols counted
-> > amongst global ones:
-> >
-> >   $ readelf --dyn-syms --wide libbpf.so|head -10
-> >
-> >   Symbol table '.dynsym' contains 343 entries:
-> >      Num:    Value  Size Type    Bind   Vis      Ndx Name
-> >        0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND
-> >        1: 00004098     0 SECTION LOCAL  DEFAULT   11
-> >        2: 00004098     8 FUNC    LOCAL  DEFAULT   11 _init@@LIBBPF_0.0.1
-> >        3: 00023040     8 FUNC    LOCAL  DEFAULT   14 _fini@@LIBBPF_0.0.1
-> >        4: 00000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.0.4
-> >        5: 00000000     0 OBJECT  GLOBAL DEFAULT  ABS LIBBPF_0.0.1
-> >        6: 0000ffa4     8 FUNC    GLOBAL DEFAULT   12 bpf_object__find_map_by_offset@@LIBBPF_0.0.1
-> >
-> > A previous commit filtered global symbols in sharedobjs/libbpf-in.o. Do the
-> > same with the libbpf.so DSO for consistent comparison.
-> >
-> > Fixes: 306b267cb3c4 ("libbpf: Verify versioned symbols")
-> >
-> > Signed-off-by: Tony Ambardar <Tony.Ambardar@gmail.com>
+Removing ARCH_QCOM, as a dependency for QRTR begins to give rise to
+issues with respect to maintaining reference count integrity and
+suspicious rcu usage.
 
-Applied. Thanks
+The bugs resolved by making QRTR dependent on ARCH_QCOM include:
+
+* WARNING: refcount bug in qrtr_node_lookup
+Reported-by: syzbot+c613e88b3093ebf3686e@syzkaller.appspotmail.com
+* WARNING: refcount bug in qrtr_recvmsg
+Reported-by: syzbot+d0f27d9af17914bf253b@syzkaller.appspotmail.com
+* WARNING: suspicious RCU usage in ctrl_cmd_new_lookup
+Reported-by: syzbot+3025b9294f8cb0ede850@syzkaller.appspotmail.com
+* WARNING: suspicious RCU usage in qrtr_ns_worker
+Reported-by: syzbot+0f84f6eed90503da72fc@syzkaller.appspotmail.com
+
+Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+---
+As I understand it, QRTR was initially dependent upon ARCH_QCOM, but was 
+removed since not all modems using IPC Router protocol required the 
+support provided for Qualcomm platforms. 
+However, wouldn't ARCH_QCOM be required by the modems that require the 
+support provided for Qualcomm platforms?
+The configuration ARCH_QCOM isn't exactly the easiest to find, especially, 
+for those who don't know what they're looking for (syzbot included, I 
+guess).
+I don't feel like the tradeoff of not depending on ARCH_QCOM over giving 
+rise to potential bugs is worth it. 
+Is NOT having QRTR depend on ARCH_QCOM so critical that it supersedes the 
+priority of not giving rise to potential bugs?
+
+ net/qrtr/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
+index b4020b84760f..8156d0f3656b 100644
+--- a/net/qrtr/Kconfig
++++ b/net/qrtr/Kconfig
+@@ -4,6 +4,7 @@
+ 
+ config QRTR
+ 	tristate "Qualcomm IPC Router support"
++	depends on ARCH_QCOM
+ 	help
+ 	  Say Y if you intend to use Qualcomm IPC router protocol.  The
+ 	  protocol is used to communicate with services provided by other
+-- 
+2.25.1
+
