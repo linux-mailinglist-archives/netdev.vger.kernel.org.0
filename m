@@ -2,87 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62EAE260FF5
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 12:33:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B37B26100E
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 12:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729643AbgIHKdY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 06:33:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729351AbgIHKdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 06:33:15 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72983C061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 03:33:14 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id i22so21748833eja.5
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 03:33:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yen+UkpGMwjbV/4ZvWWGCTFtyU/qsgs4/bX+ZkxHae0=;
-        b=LXgHFRKlFS2q3LV2Ls2BUhdhmUSuKxXYaTDpiasFffMzvmG3qiXo4PLBYcaJpOBhAL
-         JshG7adkv2ZStcdaO9be8YpRe6jT6fYGAbVIcgp/pLP7gkJiWwVD4e0BNmsmGeyPFLp6
-         pVkKzGcrQbWwp9rC822La/AYCrNHSaPGBYoKuVeMtC1f7D2FgXhdWxUYbAqG9wZSuCBG
-         WdDt16LzMm2kkbtOyTAvmh7bDxyvY3MnBNaw/I/0JDcXftZMxEUbwIYBqYhUHmMddMW0
-         K9W+LY81rg1hyT62RhhtGsnmHFhu0PHuGBHUXP6T+85HTj7xD/MEv+xCyJbfkM15Npvi
-         RW3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yen+UkpGMwjbV/4ZvWWGCTFtyU/qsgs4/bX+ZkxHae0=;
-        b=i9B3cnDIr/R4mqlhPGmE7rG+0Z5cUWPjxemXXa0wcD6HGXhFLwQL9kN4q1N3Wu7OiV
-         tdPgz4BORjT6ERwk62WJSfpa5Td+O0jNAUHpFi0XkTcGNJ0n/jvEeBJ3idIBuYpt+en8
-         BZ17GG0ihfNzNh9butbKvcR7Jl7fvSanejvapgwwIeog3z+VwAf3Q94zjLcxkzZNBLWD
-         imCoY8AxUw8+OhB/7pcawC4IpzcCxNb6OG7S3KcccIPVr1LRcFXX/8uBszv8hd7v2SQK
-         JFE0w+gEiYXzEp/YjN1I0GkWIdDyhgZX1IhFWlU7keNXli+/jpTtJTt3FY/+637mHtyI
-         O6jA==
-X-Gm-Message-State: AOAM532sp4jpRMjUFK18EJboenWztDF1ChD9ZsolXv/6SrI30BvKrfTZ
-        K4V6cdzHlZ+/whL71Ho1HNWLCxeldcM=
-X-Google-Smtp-Source: ABdhPJw5XmLdtsQnvCKJ+/baq0Gudk8/fsOnI+Z95ouicOeXK1UkV7V/v9Rv1xZhBiq4uNF0V7NNmg==
-X-Received: by 2002:a17:906:fb8c:: with SMTP id lr12mr26608239ejb.9.1599561193094;
-        Tue, 08 Sep 2020 03:33:13 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id g11sm17191083edt.88.2020.09.08.03.33.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2020 03:33:12 -0700 (PDT)
-Date:   Tue, 8 Sep 2020 13:33:10 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     davem@davemloft.net, vivien.didelot@gmail.com, andrew@lunn.ch,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 4/4] net: dsa: set
- configure_vlan_while_not_filtering to true by default
-Message-ID: <20200908103310.ttqh56cr2jyugblw@skbuf>
-References: <20200907182910.1285496-1-olteanv@gmail.com>
- <20200907182910.1285496-5-olteanv@gmail.com>
- <961ac1bd-6744-23ef-046f-4b7d8c4413a4@gmail.com>
+        id S1729646AbgIHKhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 06:37:50 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37066 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729595AbgIHKhZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 06:37:25 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 69E58AF3F;
+        Tue,  8 Sep 2020 10:37:24 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 5D0F460566; Tue,  8 Sep 2020 12:37:23 +0200 (CEST)
+Date:   Tue, 8 Sep 2020 12:37:23 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "Kevin(Yudong) Yang" <yyd@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>
+Subject: Re: [PATCH ethtool,v2] ethtool: add support show/set-time-stamping
+Message-ID: <20200908103723.e4klmj5u6hvh6s4d@lion.mk-sys.cz>
+References: <20200903140714.1781654-1-yyd@google.com>
+ <20200907125312.evg6kio5dt3ar6c6@lion.mk-sys.cz>
+ <CANn89iKZ19+AJOf5_5orPrUObYef+L-HrwF_Oay6o75ZbG7UhQ@mail.gmail.com>
+ <20200907212542.rnwzu3cn24uewyk4@lion.mk-sys.cz>
+ <CANn89iKyES49xnuQWDmAbg1gqkrzcoQvMfXD02GEhc2HBZ25GA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <961ac1bd-6744-23ef-046f-4b7d8c4413a4@gmail.com>
+In-Reply-To: <CANn89iKyES49xnuQWDmAbg1gqkrzcoQvMfXD02GEhc2HBZ25GA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 07, 2020 at 09:07:34PM -0700, Florian Fainelli wrote:
-> You should be able to make b53 and bcm_sf2 also use
-> configure_vlan_while_not_filtering to true (or rather not specify it), give
-> me until tomorrow to run various tests if you don't mind.
+On Tue, Sep 08, 2020 at 07:35:58AM +0200, Eric Dumazet wrote:
+> On Mon, Sep 7, 2020 at 11:25 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+> > On Mon, Sep 07, 2020 at 06:56:20PM +0200, Eric Dumazet wrote:
+> > > On Mon, Sep 7, 2020 at 2:53 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+> > > >
+> > > > As I said in response to v1 patch, I don't like the idea of
+> > > > adding a new ioctl interface to ethool when we are working on
+> > > > replacing and deprecating the existing ones. Is there a strong
+> > > > reason why this feature shouldn't be implemented using netlink?
+> > >
+> > > I do not think this is a fair request.
+> > >
+> > > All known kernels support the ioctl(), none of them support
+> > > netlink so far.
+> >
+> > Several years ago, exactly the same was true for bonding, bridge or
+> > vlan configuration: all known kernels supported ioctl() or sysfs
+> > interfaces for them, none supported netlink at that point. By your
+> > logic, the right course of action would have been using ioctl() and
+> > sysfs for iproute2 support. Instead, rtnetlink interfaces were
+> > implemented and used by iproute2. I believe it was the right choice.
+> 
+> Sure, but netlink does not yet provide the needed functionality for
+> our use case.
+> 
+> netlink was a medium/long term plan, for the kernel side at least. I
+> would totally understand and support a new iocl() in the kernel being
+> blocked. (In fact I have blocked Kevin from adding a sysfs and advised
+> to use existing ioctl())
+> 
+> Here we are not changing the kernel, we let ethtool use existing ABI
+> and old kernels.
+> 
+> I think you are mixing your own long term plans with simply letting
+> ethtool to meet existing kernel functionality.
 
-Ok, but I would prefer not doing that in this patch.
+In other words, the situation is exactly as it was with bridge
+configuration back in 2014 or vlan configuration in 2007. There was
+existing ioctl interface to configure them and no netlink interface. It
+was also the same for bonding, except bonding was using sysfs and module
+parameters, not ioctl.
 
-Note that, given a choice, I try to avoid introducing functional changes
-in drivers where I don't have the hardware to test, or somebody to
-confirm that it works, at the very least.
+But rather than using these existing interfaces for iproute2 support,
+(rt)netlink interface was implemented and used by iproute2 instead.
+I believe it was the right choice then and I believe it would be the
+right choice now. That's why I'm asking for a strong reason not to add
+and use a netlink based interface.
 
-For that reason, mv88e6xxx doesn't even have this flag set, even though
-Russell had sent a patch for it with the old name:
-https://lore.kernel.org/netdev/E1ij6pq-00084C-47@rmk-PC.armlinux.org.uk/
+> > > Are you working on the netlink interface, or are you requesting us to
+> > > implement it ?
+> >
+> > If it helps, I'm willing to write the kernel side.
+> 
+> Yes please, that would help, but will still require months of
+> deployments at Google scale.
+[...] 
+> We do not have hwstamp_ctl deployed at this very moment, and for us it
+> is simply much faster to deploy a new ethtool version than having to
+> get security teams
+> approval to install a new binary.
+> 
+> Honestly, if this was an option, we would not have even bothered
+> writing ethtool support.
+> 
+> Now, you want netlink support instead of ioctl(), that is a very
+> different scope and amount of work.
 
-Somebody with a Marvell switch should probably pick that up and resend.
+All this sounds as if the actual reason why you want this in ethtool -
+and implemented using existing ioctl - were to provide a workaround for
+your internal company processes which make it way harder to add a small
+utility than to embed essentially the same code into another which has
+been approved already. I understand that company processes sometimes
+work like that (we have a customer who once asked us to patch kernel for
+something that could be easily achieved by setting one sysctl on boot
+becuse it was easier for them to deploy an updated kernel than to edit
+a config file in their image) but I don't think this is a convincing
+argument for upstream code inclusion.
 
-Thanks,
--Vladimir
+> > Or both, if necessary, just to avoid adding another ioctl monument
+> > that would have to be kept and maintained for many years, maybe
+> > forever.
+> 
+> The kernel part is there, and lack of equivalent  netlink support
+> means we have to keep it for ten years at least.
+
+I meant the (proposed) userspace part. The kernel part is already there
+and we cannot stop providing the SIOC[GS]HWTSTAMP ioctl any time soon.
+But we don't have to use it in ethtool utility and I believe that rather
+than using it, we should implement the feature via netlink from the
+start to get all related benefits (extensibility, notifications, altname
+support, dump support etc.).
+
+BtW, I realized now that the way the patch is written, it would not
+show the new information on systems with recent kernel supporting
+ETHTOOL_MSG_TSINFO_GET netlink request (5.7 and newer) because then
+ethtool >= 5.7 would use nl_tsinfo() rather than do_tsinfo().
+
+Michal
