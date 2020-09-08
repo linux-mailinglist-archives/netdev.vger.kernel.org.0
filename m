@@ -2,83 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC6092608E4
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 05:06:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E392608EA
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 05:09:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728444AbgIHDGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 23:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S1728516AbgIHDJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 23:09:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728188AbgIHDGH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 23:06:07 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADB8C061573
-        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 20:06:05 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id d9so3482582pfd.3
-        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 20:06:05 -0700 (PDT)
+        with ESMTP id S1728241AbgIHDJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 7 Sep 2020 23:09:10 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D116BC061573;
+        Mon,  7 Sep 2020 20:09:09 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id h4so15585669ioe.5;
+        Mon, 07 Sep 2020 20:09:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MGwGZR4Ny9bU3K0pcaanfkMtPGrFMNw8YIxN3PWz/Nw=;
-        b=bW6diCA8evSHJ00RuBMNPGOPnijGra05RU4RcLlrpA1zV45PguK6EEfWAV/oMFWZhu
-         Sii+omIHMImDAzrzTKLUYUg+f+lHvTGPMddJv6viEauSOPaPCUq3fGehYeG++Tn8qneI
-         2O73i9HrS5xIhaG01w2mnoqAL8YWyADZypjsLSLn7Eh8EUDnWw3fffG4Hp9lQa//RRyX
-         P+V+gXOWRa7fY5LHbcMm9H+/pf155e3ygnVMxfGbogLOsx/IqXLle4J5F/uBaKJiTdlS
-         1zmUA38lOAdNDQAI97dPtZp6z5seVYEd7cKz/AkTlnM27D8dJNIERWqI0fSCI5sXvG7D
-         ZY1A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rBq6L8j6VXoV9kBXKeeyWs5lIar9dvrGK6LriY/bemU=;
+        b=dgcbDcv5+Wc8PKQMo1siPE6CbXStP0BwfrR3dBoESevR1ySVkrfGJvRsAK6WxudbMs
+         tJrDc9XJUj+U2fFKE0uveTXwu9LvvdlYUTY9g3WDwcwxrEnRCthG2lDvCJ+gEs1fVrfi
+         zaFY0JUHbduPQ42Yo01YyL0Na6laN6swR3y+O/lsZBuuTfdMXD+78rZFEtBLWx1bgqF5
+         zPwhQH1DIT/mv1vKN/2o/h2U5QSDUzEEjI6kgMkzvDqsxtzNB3p9Xkk+36/Kt4D8wvxa
+         qSyD34CaT04MW9CjnwvqqZl1iBPmV6s+dEI8kr4KF5roOQu4Wf0Koe718rpIYHPlq0Hd
+         EAnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=MGwGZR4Ny9bU3K0pcaanfkMtPGrFMNw8YIxN3PWz/Nw=;
-        b=DTkwkBmuxE7qFzcbweriKBx1ItCeJBj3iJkIWgkPscUC2uesGh5NGWQGiUNpuDvQiU
-         Q4ddt4LBwppgTA7Jh7/76Wns0tUdMd4LkbZyGX8ebmG+ZQZhGtj9sXYaEyUwFzlsYMzl
-         DZhDGgWhSftuEkNKLbkc6IK3/rrRBetqx/CINeH+96XmUTPw6TMmNauBLX6RNjlCej1S
-         Af/GHkAbCb+Fvc1tvxo0kXzy6zw+l3BKenqzokq99IVIJzCfHp1hi2Yc//W9uVlPICjz
-         lMr1x6yvMNIi/AP6X1OUAJEBdKpiSeHwBztYiuj+ip5bX66G0km21ObSUdxTmHau+sLM
-         ybGw==
-X-Gm-Message-State: AOAM5301Yncz10XAXqYxixq07Ovona9i1DrLTctgx1lVc+ExpuyxmIIS
-        7wU4McHCvOeUCACsL82phkD7SS5F6SI=
-X-Google-Smtp-Source: ABdhPJwBf0RCnoedj7R2R01xbLepei8beAu+4vKMXTi5CvpUU2XEWGUkO5Tn9zOax2hwgdB8UtQZtg==
-X-Received: by 2002:a63:f1d:: with SMTP id e29mr5070618pgl.358.1599534364288;
-        Mon, 07 Sep 2020 20:06:04 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id hg16sm13662646pjb.37.2020.09.07.20.06.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 07 Sep 2020 20:06:03 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: dsa: don't print non-fatal MTU error if not
- supported
-To:     Vladimir Oltean <olteanv@gmail.com>, kuba@kernel.org
-Cc:     vivien.didelot@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org
-References: <20200907232556.1671828-1-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <6ad5f703-8e03-1d0b-2f93-393e2525b47b@gmail.com>
-Date:   Mon, 7 Sep 2020 20:06:02 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.1
+        bh=rBq6L8j6VXoV9kBXKeeyWs5lIar9dvrGK6LriY/bemU=;
+        b=ciZPIFOPqn0NYL8TawDRVUcjs+YiIywm+20IpBOfQkgI4q+BhO99Sl6hBqq/yu+9IC
+         tumlE7sYxhkER8gHjVizrW2s4No0A3Zq+4gO7q4vq0ctfRX6tHNwC77JSUKj6liqYda0
+         ZNZ7N1o997xPZtpv+4+ha2Y/eXT0hqzqmwyrDBxdZzuoIT9wQAiOoUQ6IQNi66JIlVia
+         ReIJPw1EnZ8Q1CgMgphnipTu69uK5b5CLHcLF30kKqI+zT1+ZB1twUmxn0BZIpPdOcdT
+         gQej0HfZcW/is/xT8OBQjZh2sZ+OkAXmrAAdl39/xuZQUPW1aorRj1jnFXkC0hG3dCsG
+         60iQ==
+X-Gm-Message-State: AOAM533IdES/rnM0Bpbu/xvqxUf0KeMszI/5nMRuZjoU6MuNQwqajOBw
+        e+YQUwAmyuHL0sOZ+SaOOoeUgCV1TS8=
+X-Google-Smtp-Source: ABdhPJzCd21arCbtl6Ci687epIwl9O9Ql/OkCtD7cuxgSfMkxemjdGkFrNnMRt7Oito4GFPrl3DorQ==
+X-Received: by 2002:a02:8791:: with SMTP id t17mr21129203jai.89.1599534549063;
+        Mon, 07 Sep 2020 20:09:09 -0700 (PDT)
+Received: from localhost.localdomain (c-73-242-81-227.hsd1.mn.comcast.net. [73.242.81.227])
+        by smtp.gmail.com with ESMTPSA id b8sm7923367ioa.33.2020.09.07.20.09.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Sep 2020 20:09:08 -0700 (PDT)
+From:   Ross Schmidt <ross.schm.dev@gmail.com>
+To:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        gregkh@linuxfoundation.org
+Cc:     netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Ross Schmidt <ross.schm.dev@gmail.com>
+Subject: [PATCH] staging: qlge: fix quoted string split across lines
+Date:   Mon,  7 Sep 2020 22:07:57 -0500
+Message-Id: <20200908030757.101278-1-ross.schm.dev@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200907232556.1671828-1-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fixed a coding style issue by merging split quoted strings in qlge_main.c
+to fix checkpatch warnings.
 
+Signed-off-by: Ross Schmidt <ross.schm.dev@gmail.com>
+---
+ drivers/staging/qlge/qlge_main.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-On 9/7/2020 4:25 PM, Vladimir Oltean wrote:
-> Commit 72579e14a1d3 ("net: dsa: don't fail to probe if we couldn't set
-> the MTU") changed, for some reason, the "err && err != -EOPNOTSUPP"
-> check into a simple "err". This causes the MTU warning to be printed
-> even for drivers that don't have the MTU operations implemented.
-> Fix that.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+index 2028458bea6f..e4c9f5d3bfdd 100644
+--- a/drivers/staging/qlge/qlge_main.c
++++ b/drivers/staging/qlge/qlge_main.c
+@@ -2079,9 +2079,9 @@ static void ql_process_chip_ae_intr(struct ql_adapter *qdev,
+ 		break;
+ 
+ 	case PCI_ERR_ANON_BUF_RD:
+-		netdev_err(qdev->ndev, "PCI error occurred when reading "
+-					"anonymous buffers from rx_ring %d.\n",
+-					ib_ae_rsp->q_id);
++		netdev_err(qdev->ndev,
++			   "PCI error occurred when reading anonymous buffers from rx_ring %d.\n",
++			   ib_ae_rsp->q_id);
+ 		ql_queue_asic_error(qdev);
+ 		break;
+ 
+@@ -2415,8 +2415,7 @@ static irqreturn_t qlge_isr(int irq, void *dev_id)
+ 		ql_queue_asic_error(qdev);
+ 		netdev_err(qdev->ndev, "Got fatal error, STS = %x.\n", var);
+ 		var = ql_read32(qdev, ERR_STS);
+-		netdev_err(qdev->ndev, "Resetting chip. "
+-					"Error Status Register = 0x%x\n", var);
++		netdev_err(qdev->ndev, "Resetting chip. Error Status Register = 0x%x\n", var);
+ 		return IRQ_HANDLED;
+ 	}
+ 
+@@ -3739,8 +3738,7 @@ static void ql_display_dev_info(struct net_device *ndev)
+ 	struct ql_adapter *qdev = netdev_priv(ndev);
+ 
+ 	netif_info(qdev, probe, qdev->ndev,
+-		   "Function #%d, Port %d, NIC Roll %d, NIC Rev = %d, "
+-		   "XG Roll = %d, XG Rev = %d.\n",
++		   "Function #%d, Port %d, NIC Roll %d, NIC Rev = %d, XG Roll = %d, XG Rev = %d.\n",
+ 		   qdev->func,
+ 		   qdev->port,
+ 		   qdev->chip_rev_id & 0x0000000f,
 -- 
-Florian
+2.26.2
+
