@@ -2,60 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F93260996
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 06:31:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4FF9260A26
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 07:36:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728003AbgIHEbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 00:31:25 -0400
-Received: from sonic311-10.consmr.mail.ne1.yahoo.com ([66.163.188.240]:34929
-        "EHLO sonic311-10.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725802AbgIHEbY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 00:31:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1599539483; bh=aQBm+9Bca4ejs9ftzYnk89bfX4ekoPZ6NeQWeQKD++E=; h=Date:From:Reply-To:Subject:References:From:Subject; b=QinnxJB4BywnQIIxfw8iovOshpEJppl9gVRAfWQW1r2ENHoYU4cdBCzsluWTYsc4jAqfCOR3zPy0qYGuunUGBKP0JVRO7fSHL8F7TYUo19LyqF19LCqsRNAA8zON0xhg0UNsBq+7EliZwLRNVcYDAV6CR/Xo+ErlRV3CJoZMKnpHAhs8eWYsNflUKd71TYDD3xFAJKA6CNY7sQ53qoH2hq7fDTtVREdv2SMpHizJX6kdkYbXwBp1L6CrtPT1ve3GHTG35iW3XHhRnd7jMGy9pbF73EVTl1gJbUHyawPi3DUx1f+2N4TBwt0ka3r4enzTxXvbosiuyZbWtgV389o6Uw==
-X-YMail-OSG: UR3fK6cVM1moNqU5MIaQW.u0CAzKEqMe2O4rUd_vEIf_l93U4dxRLmzMZTLSzGI
- lqyDQpYzpLr6oEW97avX8YXhjqRtQtL6P1ZP4o9P7okS6K6vtc6..F4JJwUiwRyiXmBy_lnVun1g
- gJh11Qf9m8aXES5YtfhNtKGK3VD48D8H2ESo3AFZ0XOd73bhm1_0euemVIXDfTV43An2YzAgYmEb
- fKWvM63590tJiDM3uc1t48nJ_y0HfOmFx5yxzVMYhZRFYj3sIE1hhISrtUTOYryaT1D5M5Bz.OBB
- Irj8UtvY2.L.5ry0ADcJpJ0bqsgSWvkxwe_oFbTUDphglESgW9uNuXrJogWzB2svzUX42IUxolG2
- AdwEXrn6MvB31XNjOa5rLNDGDL9jT0drnhF9H0UNy6dPgT4aavveJJnlN8indojbaH7ImLxWwmd5
- uZcuhQGn4bnkU7OQ0MEIJk7lRRkTfiAwZ0s7iTYToxD1K8yZoEUhmMa0zYB4kVjjxjvWPA2YqKcY
- 5T7OSTPpj6kVX1rW3yYbLb78cCsMXWIC_8n67apwyeHusAVWYV2Ud5.EsdOomfpsErwzLdgEOKE6
- LtlvXuvakMGomZfLs.zUASbwUkjzox_s4aXBb_yznEr7RtbOT5n6xFugrMqXj6UaNaf7ym5rxMHf
- zmU4NwZUdclMCEFEuQf1N8bEcMEyPRh0pUnj_KtyMS1A4DDN5eS.j_CGH8bEbCxtugAPv5VgHwAw
- .qYGN8aBBH2h0b.tCcXJn8dAZ4Slq97AA_r_nkfJu._rkrvKSbbMBxko_41iCaZBpn6bdKbyBxo9
- ZA_hW98q2_i9E4ktPfOABKu6b8HdJV.zVpPIhzfWTUY4MLx9CUzQCezsenQ7Z_U2IJsJRkjsyFFz
- qEo7nNFUH4DsYdPSsBEdwsz0GOAU.e_rKbqZ1WSXcA7wgEK4NLPObMs7hgYYWownZQCZhc2ezFY7
- dMQ4mBVB80HXhAggStkGtwj2eNabIgGFC3bbbW8i8lNPvsbj0n6F1i4FhzGIWZktCA_3hR4vwNvh
- .KD2ajETLvah1ikFt3r.6OquY0WjV8Qd9Bb8qG4X3yrhEgKviPMb3K6f_kCjDsTl79mRbGgSj93E
- dutP3TJ7cqPczy2HOU.u3DhRzFOnfaneZ.dMyG4o0TRGOiXQS5KHNpU0d_dVf3TT1nAj5S4rWiVg
- hcZ2HnTbEsHrOn31GQlwzF8prLhsriyfINWVVTQsJQILISPEe50o0_afVWsC6eyEdEW0VkeKxnRZ
- WybZLJxLJSUbFA3nZ8GaaeY9BjtXQVhitBKTpg7BLIKwtGvTCy14zG2S0KIoG0GV.w4Tf_Yv4LYA
- PszhBNDskuFdEg2_82yjmdg4fpdHJEJxewonqKgZclsIaxQ0PpQ1pTJuufJJ_RsTaKs15DeGAcmI
- og8WBx.8jlTdfW2RNV3PCJGAY5oiJOK8YHZum3qZOhT7gQ5y7Qp3cz_yZC1oJ9dgNbNsViT4vs12
- HvfA9eQ--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.ne1.yahoo.com with HTTP; Tue, 8 Sep 2020 04:31:23 +0000
-Date:   Tue, 8 Sep 2020 04:29:23 +0000 (UTC)
-From:   "Mrs. Maureen Hinckley" <mau15@blikxy.online>
-Reply-To: maurhinck5@gmail.com
-Message-ID: <1642723452.4216975.1599539363042@mail.yahoo.com>
-Subject: RE
+        id S1728601AbgIHFgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 01:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726773AbgIHFgO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 01:36:14 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749F8C061573
+        for <netdev@vger.kernel.org>; Mon,  7 Sep 2020 22:36:12 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id y2so14236528ilp.7
+        for <netdev@vger.kernel.org>; Mon, 07 Sep 2020 22:36:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i3lMzmjoRPdH2I7SD3ucUuOLulsT37jkUsavzIliyvs=;
+        b=vmnhCMp1Bsrl6d2gLmJ9svwlb3/ILDr0ZHIHDk3K95/gix4sOOjU6ELt3xA+7tY/mh
+         wfufYxQrycLZ0lAsxoYrkFBOuYq3e28F2zbM89LMFPYxEeN79lro8LkX+gukAW1TbNVY
+         ClpT1wCA/RrNFDGiTjrLIm5sRzm2DuoqUL/8M8g1bN/N0FLcOXXAFOOQvq8t3PTdrYI6
+         BbSAK3ijmsu5a5NOInPdp0RPpRm/50o6sL/ZL4lfiFEhwMsWB0g9jUGcbUb00zKjcOOK
+         yUkejmeoUk4u/HYK07Wbcq22L2kuUovYDdhzxtdpdTqHlI6qhtRKBBmZ9IalUq/Yuhf/
+         VxLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i3lMzmjoRPdH2I7SD3ucUuOLulsT37jkUsavzIliyvs=;
+        b=YAKGmpLI0Q68SyJvxHLihv5T4OPb/7dVfDA6ziDkaGwNZXDWX/Fu25RNNKquzfdZtt
+         28LKSuerqndSr6ol7Vxe8hsydaRB1at1TQDbU6ONbQ8aczoig7kO/+s+mHjLynKMoUPW
+         3jXJ6IGR82p8f7nAcEcCx4eD1K7YzscSk7BEDLkKxynmy05bysionrh8YzZ7k5FKgRin
+         29NPG5af7jdlr3JDgoUeWbdNJbTvknwcDYWRLY3IfhIgpgeARAzmgKb5yEzk/+0b+xJF
+         bIOukrC9Gf5m9arsSWDNExPfUznQiQZsafGr7RHaLHOAwkznLxAZhatiAaqQzXjKf9+e
+         E4Ng==
+X-Gm-Message-State: AOAM530t5dZ67xkR1ShrMM6aFXmxBv5NTbxvyFR3E3oBkYvYNyusJLPZ
+        6L02gNwpNjB2DT0RZq+J/YYwP4QToAItEf1yM04GVg==
+X-Google-Smtp-Source: ABdhPJwLPPg8/LDEFFHwZ1CmjHzlRoMyoZVj8/Jcs/g/TcIbWGzvPrPGdp2Ix8ADHpEIcdZzotm8yI2Z+JFl8M4w5WI=
+X-Received: by 2002:a92:2c0f:: with SMTP id t15mr22144954ile.205.1599543370189;
+ Mon, 07 Sep 2020 22:36:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <1642723452.4216975.1599539363042.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16565 YMailNodin Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+References: <20200903140714.1781654-1-yyd@google.com> <20200907125312.evg6kio5dt3ar6c6@lion.mk-sys.cz>
+ <CANn89iKZ19+AJOf5_5orPrUObYef+L-HrwF_Oay6o75ZbG7UhQ@mail.gmail.com> <20200907212542.rnwzu3cn24uewyk4@lion.mk-sys.cz>
+In-Reply-To: <20200907212542.rnwzu3cn24uewyk4@lion.mk-sys.cz>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 8 Sep 2020 07:35:58 +0200
+Message-ID: <CANn89iKyES49xnuQWDmAbg1gqkrzcoQvMfXD02GEhc2HBZ25GA@mail.gmail.com>
+Subject: Re: [PATCH ethtool,v2] ethtool: add support show/set-time-stamping
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     "Kevin(Yudong) Yang" <yyd@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Sep 7, 2020 at 11:25 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+>
+> On Mon, Sep 07, 2020 at 06:56:20PM +0200, Eric Dumazet wrote:
+> > On Mon, Sep 7, 2020 at 2:53 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+> > >
+> > > As I said in response to v1 patch, I don't like the idea of adding a new
+> > > ioctl interface to ethool when we are working on replacing and
+> > > deprecating the existing ones. Is there a strong reason why this feature
+> > > shouldn't be implemented using netlink?
+> >
+> > I do not think this is a fair request.
+> >
+> > All known kernels support the ioctl(), none of them support netlink so far.
+>
+> Several years ago, exactly the same was true for bonding, bridge or vlan
+> configuration: all known kernels supported ioctl() or sysfs interfaces
+> for them, none supported netlink at that point. By your logic, the right
+> course of action would have been using ioctl() and sysfs for iproute2
+> support. Instead, rtnetlink interfaces were implemented and used by
+> iproute2. I believe it was the right choice.
+
+Sure, but netlink does not yet provide the needed functionality for
+our use case.
+
+netlink was a medium/long term plan, for the kernel side at least.
+I would totally understand and support a new iocl() in the kernel being blocked.
+(In fact I have blocked Kevin from adding a sysfs and advised to use
+existing ioctl())
+
+Here we are not changing the kernel, we let ethtool use existing ABI
+and old kernels.
+
+I think you are mixing your own long term plans with simply letting ethtool
+to meet existing kernel functionality.
+
+>
+> > Are you working on the netlink interface, or are you requesting us to
+> > implement it ?
+>
+> If it helps, I'm willing to write the kernel side.
+
+Yes please, that would help, but will still require months of
+deployments at Google scale.
 
 
-I am Maureen Hinckley and my foundation is donating (Five hundred and fifty=
- thousand USD) to you. Contact us via my email at (maurhinck5@gmail.com) fo=
-r further details.
+Or both, if
+> necessary, just to avoid adding another ioctl monument that would have
+> to be kept and maintained for many years, maybe forever.
 
-Best Regards,
-Mrs. Maureen Hinckley,
-Copyright =C2=A92020 The Maureen Hinckley Foundation All Rights Reserved.
+The kernel part is there, and lack of equivalent  netlink support
+means we have to keep it for ten years at least.
+
+>
+> > The ioctl has been added years ago, and Kevin patch is reasonable enough.
+>
+> And there is a utility using the ioctl, as Andrew pointed out. Just like
+> there were brctl and vconfig and ioctl they were using. The existence of
+> those ioctl was not considered sufficient reason to use them when bridge
+> and vlan support was added to iproute2. I don't believe today's
+> situation with ethtool is different.
+
+I suspect Richard Cochran wrote the 190 lines of code outside of
+ethtool because it was easier to not have to convince the ethtool
+maintainer at that time :)
+
+We do not have hwstamp_ctl deployed at this very moment, and for us it
+is simply much faster to deploy a new ethtool version than having to
+get security teams
+approval to install a new binary.
+
+Honestly, if this was an option, we would not have even bothered
+writing ethtool support.
+
+Now, you want netlink support instead of ioctl(), that is a very
+different scope and amount of work.
+
+Thanks.
