@@ -2,92 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA3526091F
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 05:53:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCA8826092C
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 06:01:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728516AbgIHDxI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 23:53:08 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:34288 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728327AbgIHDxH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 7 Sep 2020 23:53:07 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id B35312A3C66C3DC1D735;
-        Tue,  8 Sep 2020 11:53:05 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.58) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 8 Sep 2020 11:53:00 +0800
-From:   Wei Xu <xuwei5@hisilicon.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <xuwei5@hisilicon.com>,
-        <linuxarm@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
-        <jonathan.cameron@huawei.com>, <john.garry@huawei.com>,
-        <salil.mehta@huawei.com>, <shiju.jose@huawei.com>,
-        <jinying@hisilicon.com>, <zhangyi.ac@huawei.com>,
-        <liguozhu@hisilicon.com>, <tangkunshan@huawei.com>,
-        <huangdaode@hisilicon.com>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [net-next] net: smsc911x: Remove unused variables
-Date:   Tue, 8 Sep 2020 11:49:25 +0800
-Message-ID: <1599536965-162578-1-git-send-email-xuwei5@hisilicon.com>
-X-Mailer: git-send-email 2.8.1
+        id S1725935AbgIHEBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 00:01:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45352 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725844AbgIHEBY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 8 Sep 2020 00:01:24 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AD8482087D;
+        Tue,  8 Sep 2020 04:01:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599537684;
+        bh=GqCayTmWwyDfWtRsKK1nlSzta0dDcdLkOkfevyt74oI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U/yQPy/9gSq7qXayTS+MBRnguMSq2lARYoUEROrOhSGGjihrubGcNgiEChRYQ5gqT
+         EDiFYBXpOWpH1FD1JUXbR+cWhwKgOaA0koJLHUL5FU6Y0k9Jm8hWiwUPQyL9h8rBk9
+         I8aR40S5qek6lxEQAIr3iCOJHXUIViKUPRLluHCw=
+Date:   Mon, 7 Sep 2020 21:01:22 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next] net: dsa: change PHY error message again
+Message-ID: <20200907210122.0bd7a11e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200907230656.1666974-1-olteanv@gmail.com>
+References: <20200907230656.1666974-1-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.69.192.58]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes the following W=1 kernel build warning(s):
+On Tue,  8 Sep 2020 02:06:56 +0300 Vladimir Oltean wrote:
+> slave_dev->name is only populated at this stage if it was specified
+> through a label in the device tree. However that is not mandatory.
+> When it isn't, the error message looks like this:
+> 
+> [    5.037057] fsl_enetc 0000:00:00.2 eth2: error -19 setting up slave PHY for eth%d
+> [    5.044672] fsl_enetc 0000:00:00.2 eth2: error -19 setting up slave PHY for eth%d
+> [    5.052275] fsl_enetc 0000:00:00.2 eth2: error -19 setting up slave PHY for eth%d
+> [    5.059877] fsl_enetc 0000:00:00.2 eth2: error -19 setting up slave PHY for eth%d
+> 
+> which is especially confusing since the error gets printed on behalf of
+> the DSA master (fsl_enetc in this case).
+> 
+> Printing an error message that contains a valid reference to the DSA
+> port's name is difficult at this point in the initialization stage, so
+> at least we should print some info that is more reliable, even if less
+> user-friendly. That may be the driver name and the hardware port index.
+> 
+> After this change, the error is printed as:
+> 
+> [    6.051587] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 0
+> [    6.061192] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 1
+> [    6.070765] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 2
+> [    6.080324] mscc_felix 0000:00:00.5: error -19 setting up PHY for tree 0, switch 0, port 3
+> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
- drivers/net/ethernet/smsc/smsc911x.c: In function ‘smsc911x_rx_fastforward’:
- drivers/net/ethernet/smsc/smsc911x.c:1199:16: warning: variable ‘temp’ set but not used [-Wunused-but-set-variable]
-
- drivers/net/ethernet/smsc/smsc911x.c: In function ‘smsc911x_eeprom_write_location’:
- drivers/net/ethernet/smsc/smsc911x.c:2058:6: warning: variable ‘temp’ set but not used [-Wunused-but-set-variable]
-
-Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
----
- drivers/net/ethernet/smsc/smsc911x.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/smsc/smsc911x.c b/drivers/net/ethernet/smsc/smsc911x.c
-index fc168f8..823d9a7 100644
---- a/drivers/net/ethernet/smsc/smsc911x.c
-+++ b/drivers/net/ethernet/smsc/smsc911x.c
-@@ -1196,9 +1196,8 @@ smsc911x_rx_fastforward(struct smsc911x_data *pdata, unsigned int pktwords)
- 			SMSC_WARN(pdata, hw, "Timed out waiting for "
- 				  "RX FFWD to finish, RX_DP_CTRL: 0x%08X", val);
- 	} else {
--		unsigned int temp;
- 		while (pktwords--)
--			temp = smsc911x_reg_read(pdata, RX_DATA_FIFO);
-+			smsc911x_reg_read(pdata, RX_DATA_FIFO);
- 	}
- }
- 
-@@ -2055,7 +2054,6 @@ static int smsc911x_eeprom_write_location(struct smsc911x_data *pdata,
- 					  u8 address, u8 data)
- {
- 	u32 op = E2P_CMD_EPC_CMD_ERASE_ | address;
--	u32 temp;
- 	int ret;
- 
- 	SMSC_TRACE(pdata, drv, "address 0x%x, data 0x%x", address, data);
-@@ -2066,7 +2064,7 @@ static int smsc911x_eeprom_write_location(struct smsc911x_data *pdata,
- 		smsc911x_reg_write(pdata, E2P_DATA, (u32)data);
- 
- 		/* Workaround for hardware read-after-write restriction */
--		temp = smsc911x_reg_read(pdata, BYTE_TEST);
-+		smsc911x_reg_read(pdata, BYTE_TEST);
- 
- 		ret = smsc911x_eeprom_send_cmd(pdata, op);
- 	}
--- 
-2.8.1
-
+Applied.
