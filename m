@@ -2,154 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 20A13260E54
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:09:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E28D2260E5B
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 11:11:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728936AbgIHJJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 05:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728490AbgIHJJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:09:08 -0400
-Received: from mail-vk1-xa42.google.com (mail-vk1-xa42.google.com [IPv6:2607:f8b0:4864:20::a42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6E9C061573
-        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 02:09:07 -0700 (PDT)
-Received: by mail-vk1-xa42.google.com with SMTP id x142so3903079vke.0
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 02:09:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xa7xtiDUR5RV/cSQB5POhuYJlwhl4FEMKcEMcGkz8dg=;
-        b=ponikEIgesq5XMY4a7Lvx5i8bSPfrnEf6J9ng5iFm6ce0r8Rxb2rxNe9nYtF7QeYrW
-         k78nWi74LeA4km+tIsOEXZHD/RYZWTgeSVzLWamYujW9Ne7sXTYXhjro12JTay3If3xr
-         c5yV/dyntqW6tmyQvQfvj0N5jWYVGLsGR3LDcKCu7ZsO+AJ5sm2YEVlAtV0o32B5F9/a
-         UVcQBLcaGnkDt3JPXcN9kExmHbnp0cvOPGAoznR+/Re5e7f1aSDrKv5lXAqnUQ4R8rxP
-         axf5fQiSS1HCLuQjrezSyzHBgJleo6i/aLYq5xnP4Rjp/f970yL3rKkn8MuSFD2/6rfj
-         llog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xa7xtiDUR5RV/cSQB5POhuYJlwhl4FEMKcEMcGkz8dg=;
-        b=dziR9mMUD93gcpEwT/xUdJhdOERGmGMOrX6/lOw9mNOYAj86fdbSqpvvUSBodtX2+O
-         jcvQxAH02txhY3sQ2T79N/duEAhYfCgjwirnHtiRjCcfld1GIWpxthHwQ4EMWEEbwsRD
-         zoHmzMVuO84QDFuIoJlkrn4psWiccEbAAG+FL9vgR+yHhVmBNtNs/jx0JTP0xl5HaU47
-         QLNC+oVoPaG7YI9ELChGAZF/liYYOYW64QFShR/r2RMbh8b47AunrFCNNEfwLluPe8nH
-         B0V18VSwPEV8vHj00dBxVHjtJR/jJTYdWsNHlD4WmqWmE9v164Je+NBuMw9QvI1Nr9Cs
-         +czw==
-X-Gm-Message-State: AOAM53019EqOyqOGK54jAIq+qCwcHx3vOIf0+a6FBZQNaIkaOiKh10SP
-        t6BZTXbgAz0LauNP4rw0R9ScWCHuIGfMdA==
-X-Google-Smtp-Source: ABdhPJydl3YfLjMAN2wohSqzrV2J/eFSi49Mhs8CI+LlA2VOVWJlSzu7qG7uLz1A7ggvOLRTrlvFyA==
-X-Received: by 2002:a1f:4357:: with SMTP id q84mr13561328vka.4.1599556146324;
-        Tue, 08 Sep 2020 02:09:06 -0700 (PDT)
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com. [209.85.217.52])
-        by smtp.gmail.com with ESMTPSA id b17sm1187406vsr.17.2020.09.08.02.09.05
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Sep 2020 02:09:05 -0700 (PDT)
-Received: by mail-vs1-f52.google.com with SMTP id e14so8566575vsa.9
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 02:09:05 -0700 (PDT)
-X-Received: by 2002:a67:f5d4:: with SMTP id t20mr13221933vso.1.1599556144891;
- Tue, 08 Sep 2020 02:09:04 -0700 (PDT)
+        id S1728656AbgIHJL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 05:11:27 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:34159 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727995AbgIHJL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 05:11:27 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 4507CE88;
+        Tue,  8 Sep 2020 05:11:26 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Tue, 08 Sep 2020 05:11:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=FlKzlICP6X7d1d0Tm
+        9n3dnKw23n/U3hVZEh5dotLIKo=; b=butCl+6NxTBNsvBSb23Ss2Fn9jQ8f4QXd
+        V+dxFrKv9AbXE3ALST7pnfeJWTIUWcFWBxaAS4pokun/DvT6xwsy6OVJpcVApXst
+        xbs8PMwBk+rdsk81QTsEXUDvN3ofkcOFHmws3bNxeNG2jt6r1havJWbogoU5Ixdg
+        +AWWojLCtF4dnjb4wDluvSsWdEowN+tL/3EUMOm8VBRj32KYYRFw7atz55VWhkxb
+        b2AQwvmLBSxeKpCV94h+XFL0e5Hewr2PCBZ3jizqO9oJLmwki+RHJtZ7NC1mDoLd
+        xjJun42kiJ7YK4FuGs75IyRzlpQJFnnQUWJp4F91sYIhIFZjAs6YQ==
+X-ME-Sender: <xms:vUpXX7gw1FIVX3jCrjAw5OIU17v5HXkEz-UqdWV79XYqPYaLVBrjhA>
+    <xme:vUpXX4AqtKlCCru0ZmOosYLM0UPRtbKdwQ7yyJHl0PNMgc8cOk5SR8fF8Bs7oYd7l
+    RUnwnsZ0Nd7Qvo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehvddguddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrfeeirdduvdeknecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:vUpXX7FwRUXD3IG7GpVGnOFQe72eCs3OSFqZklxymw6tyEIjcd7QwA>
+    <xmx:vUpXX4Rt34cEzjnW86czMaf3a3z3gylieDtgvkMaKGsAEPlDKX0jOw>
+    <xmx:vUpXX4z9eUBYGVFAf8m-OpvmsdoVPhOTrerZiZHyCLR8TDM8w5baIQ>
+    <xmx:vUpXX0-uaCCs162xXtvEpxUyaFp5ZXbuhNJ08A5IYBISlA-OzG0l_w>
+Received: from shredder.mtl.com (igld-84-229-36-128.inter.net.il [84.229.36.128])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3678D306467D;
+        Tue,  8 Sep 2020 05:11:24 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
+        roopa@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [RFC PATCH net-next 00/22] nexthop: Add support for nexthop objects offload
+Date:   Tue,  8 Sep 2020 12:10:15 +0300
+Message-Id: <20200908091037.2709823-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20200903210022.22774-1-saeedm@nvidia.com> <20200903210022.22774-3-saeedm@nvidia.com>
- <CA+FuTSdP5=OPKsJHNW737JP+jDa-rDYDm0vLfX7vqnFX8yur1w@mail.gmail.com> <bee9e22e-f28f-cbc8-52df-6445f4955a01@nvidia.com>
-In-Reply-To: <bee9e22e-f28f-cbc8-52df-6445f4955a01@nvidia.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 8 Sep 2020 11:08:28 +0200
-X-Gmail-Original-Message-ID: <CA+FuTSdNm1+sTwM-gikcHG6qyA9jXYqVtd3B0mrhir9F-mrrfA@mail.gmail.com>
-Message-ID: <CA+FuTSdNm1+sTwM-gikcHG6qyA9jXYqVtd3B0mrhir9F-mrrfA@mail.gmail.com>
-Subject: Re: [net-next 02/10] net/mlx5e: Refactor xmit functions
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 10:59 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->
-> On 2020-09-04 18:27, Willem de Bruijn wrote:
-> > On Thu, Sep 3, 2020 at 11:00 PM Saeed Mahameed <saeedm@nvidia.com> wrote:
-> >>
-> >> From: Maxim Mikityanskiy <maximmi@mellanox.com>
-> >>
-> >> A huge function mlx5e_sq_xmit was split into several to achieve multiple
-> >> goals:
-> >>
-> >> 1. Reuse the code in IPoIB.
-> >>
-> >> 2. Better intergrate with TLS, IPSEC, GENEVE and checksum offloads. Now
-> >> it's possible to reserve space in the WQ before running eseg-based
-> >> offloads, so:
-> >>
-> >> 2.1. It's not needed to copy cseg and eseg after mlx5e_fill_sq_frag_edge
-> >> anymore.
-> >>
-> >> 2.2. mlx5e_txqsq_get_next_pi will be used instead of the legacy
-> >> mlx5e_fill_sq_frag_edge for better code maintainability and reuse.
-> >>
-> >> 3. Prepare for the upcoming TX MPWQE for SKBs. It will intervene after
-> >> mlx5e_sq_calc_wqe_attr to check if it's possible to use MPWQE, and the
-> >> code flow will split into two paths: MPWQE and non-MPWQE.
-> >>
-> >> Two high-level functions are provided to send packets:
-> >>
-> >> * mlx5e_xmit is called by the networking stack, runs offloads and sends
-> >> the packet. In one of the following patches, MPWQE support will be added
-> >> to this flow.
-> >>
-> >> * mlx5e_sq_xmit_simple is called by the TLS offload, runs only the
-> >> checksum offload and sends the packet.
-> >>
-> >> This change has no performance impact in TCP single stream test and
-> >> XDP_TX single stream test.
-> >>
-> >> UDP pktgen (burst 32), single stream:
-> >>    Packet rate: 17.55 Mpps -> 19.23 Mpps
-> >>    Instructions per packet: 420 -> 360
-> >>    Cycles per packet: 165 -> 142
-> >>
-> >> CPU: Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz (x86_64)
-> >> NIC: Mellanox ConnectX-6 Dx
-> >>
-> >> To get this performance gain, manual optimizations of function inlining
-> >> were performed. It's important to have mlx5e_sq_xmit_wqe inline,
-> >> otherwise the packet rate will be 1 Mpps less in UDP pktgen test.
-> >> __always_inline is required, because gcc uninlines it when it's called
-> >> from two places (mlx5e_xmit and mlx5e_sq_xmit_simple).
-> >>
-> >> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> >> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-> >> ---
-> >>   .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  63 +--
-> >>   .../mellanox/mlx5/core/en_accel/en_accel.h    |   5 +
-> >>   .../mellanox/mlx5/core/en_accel/tls_rxtx.c    |   6 +-
-> >>   .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 391 ++++++++++--------
-> >>   4 files changed, 243 insertions(+), 222 deletions(-)
-> >
-> > This combines a lot of changes. Including supposed noops, but with
-> > subtle changes, like converting to struct initializers.
->
-> Struct initializers are mostly used in the new code. I can split out the
-> only converted occurrence.
->
-> > Probably deserves to be broken up a bit more.
-> >
-> > For instance, a pure noop patch that moves
-> > mlx5e_txwqe_build_eseg_csum,
->
-> OK. Not sure I really need to move it though.
+From: Ido Schimmel <idosch@nvidia.com>
 
-Even better.
+Note: I'm aware that 22 patches is a lot and I will split it for the
+non-RFC submission. Sending all in one piece to see if there are general
+comments regarding the interface. Also, most of the patches are very
+small.
 
-In general, I don't really care how this patch is simplified, but as
-is it is long and combines code moves, refactors that are supposedly a
-noop and new functionality. I imagine that there must be some strategy
-to break it up into sensible manageable chunks.
+This patch set adds support for nexthop objects offload with a dummy
+implementation over netdevsim. mlxsw support will be added later.
+
+The general idea is very similar to route offload in that notifications
+are sent whenever nexthop objects are changed. A listener can veto the
+change and the error will be communicated to user space with extack.
+
+To keep listeners as simple as possible, they not only receive
+notifications for the nexthop object that is changed, but also for all
+the other objects affected by this change. For example, when a single
+nexthop is replaced, a replace notification is sent for the single
+nexthop, but also for all the nexthop groups this nexthop is member in.
+This relieves listeners from the need to track such dependencies.
+
+To simplify things further for listeners, the notification info does not
+contain the raw nexthop data structures (e.g., 'struct nexthop'), but
+less complex data structures into which the raw data structures are
+parsed into.
+
+Tested with a new selftest over netdevsim and with fib_nexthops.sh:
+
+Tests passed: 164
+Tests failed:   0
+
+Patch set overview:
+
+Patches #1-#4 perform small cleanups and covert the existing nexthop
+notification chain to a blocking one, so that device drivers could block
+when programming nexthops to hardware. This is safe because all
+notifications are emitted from a process context.
+
+Patches #5-#8 introduce the aforementioned data structures and convert
+existing listeners (i.e., the VXLAN driver) to use them.
+
+Patches #9-#10 add a new RTNH_F_TRAP flag and the ability to set it and
+RTNH_F_OFFLOAD on nexthops. This flag is used by netdevsim for testing
+purposes and will also be used by mlxsw. These flags are consistent with
+the existing RTM_F_OFFLOAD and RTM_F_TRAP flags.
+
+Patches #11-#18 gradually add the new nexthop notifications.
+
+Patches #19-#22 add a dummy implementation for nexthop offload over
+netdevsim and a selftest to exercise both good and bad flows.
+
+Ido Schimmel (22):
+  nexthop: Remove unused function declaration from header file
+  nexthop: Convert to blocking notification chain
+  nexthop: Only emit a notification when nexthop is actually deleted
+  selftests: fib_nexthops: Test cleanup of FDB entries following nexthop
+    deletion
+  nexthop: Add nexthop notification data structures
+  nexthop: Pass extack to nexthop notifier
+  nexthop: Prepare new notification info
+  nexthop: vxlan: Convert to new notification info
+  rtnetlink: Add RTNH_F_TRAP flag
+  nexthop: Allow setting "offload" and "trap" indications on nexthops
+  nexthop: Emit a notification when a nexthop is added
+  nexthop: Emit a notification when a nexthop group is replaced
+  nexthop: Emit a notification when a single nexthop is replaced
+  nexthop: Emit a notification when a nexthop group is modified
+  nexthop: Emit a notification when a nexthop group is reduced
+  nexthop: Pass extack to register_nexthop_notifier()
+  nexthop: Replay nexthops when registering a notifier
+  nexthop: Remove in-kernel route notifications when nexthop changes
+  netdevsim: Add devlink resource for nexthops
+  netdevsim: Add dummy implementation for nexthop offload
+  netdevsim: Allow programming routes with nexthop objects
+  selftests: netdevsim: Add test for nexthop offload API
+
+ .../networking/devlink/netdevsim.rst          |   3 +-
+ drivers/net/netdevsim/dev.c                   |   6 +
+ drivers/net/netdevsim/fib.c                   | 265 +++++++++++-
+ drivers/net/netdevsim/netdevsim.h             |   1 +
+ drivers/net/vxlan.c                           |  12 +-
+ include/net/netns/nexthop.h                   |   2 +-
+ include/net/nexthop.h                         |  45 +-
+ include/uapi/linux/rtnetlink.h                |   6 +-
+ net/ipv4/fib_semantics.c                      |   2 +
+ net/ipv4/fib_trie.c                           |   9 -
+ net/ipv4/nexthop.c                            | 262 ++++++++++-
+ net/ipv6/route.c                              |   5 -
+ .../drivers/net/netdevsim/nexthop.sh          | 408 ++++++++++++++++++
+ tools/testing/selftests/net/fib_nexthops.sh   |  14 +
+ 14 files changed, 985 insertions(+), 55 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/netdevsim/nexthop.sh
+
+-- 
+2.26.2
+
