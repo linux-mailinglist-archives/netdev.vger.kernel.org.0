@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E560A2608D8
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 05:02:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DACC2608DC
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 05:03:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728601AbgIHDCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 7 Sep 2020 23:02:48 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:11254 "EHLO huawei.com"
+        id S1728712AbgIHDDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 7 Sep 2020 23:03:02 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:47872 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728408AbgIHDCa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728241AbgIHDCa (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 7 Sep 2020 23:02:30 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id A8BDF3E1FE4D015A6D72;
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id CC0E3FF86FAEEF52E2C4;
         Tue,  8 Sep 2020 11:02:27 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
@@ -22,10 +22,11 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Guojia Liao <liaoguojia@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 6/7] net: hns3: remove some unused macros related to queue
-Date:   Tue, 8 Sep 2020 10:59:53 +0800
-Message-ID: <1599533994-32744-7-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 7/7] net: hns3: remove some unused function hns3_update_promisc_mode()
+Date:   Tue, 8 Sep 2020 10:59:54 +0800
+Message-ID: <1599533994-32744-8-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1599533994-32744-1-git-send-email-tanhuazhong@huawei.com>
 References: <1599533994-32744-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,32 +39,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are several macros related queue defined, but never
-used, so remove them.
+From: Guojia Liao <liaoguojia@huawei.com>
 
+hns3_update_promisc_mode is defined, but not be used, so remove it.
+
+Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h | 5 -----
- 1 file changed, 5 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 14 --------------
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h |  1 -
+ 2 files changed, 15 deletions(-)
 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index 1d66f84..93825a4 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -623,20 +623,6 @@ void hns3_request_update_promisc_mode(struct hnae3_handle *handle)
+ 		ops->request_update_promisc_mode(handle);
+ }
+ 
+-int hns3_update_promisc_mode(struct net_device *netdev, u8 promisc_flags)
+-{
+-	struct hns3_nic_priv *priv = netdev_priv(netdev);
+-	struct hnae3_handle *h = priv->ae_handle;
+-
+-	if (h->ae_algo->ops->set_promisc_mode) {
+-		return h->ae_algo->ops->set_promisc_mode(h,
+-						promisc_flags & HNAE3_UPE,
+-						promisc_flags & HNAE3_MPE);
+-	}
+-
+-	return 0;
+-}
+-
+ void hns3_enable_vlan_filter(struct net_device *netdev, bool enable)
+ {
+ 	struct hns3_nic_priv *priv = netdev_priv(netdev);
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 0c146e7..cef6f9a 100644
+index cef6f9a..98ca6ea 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -42,13 +42,8 @@ enum hns3_nic_state {
- #define HNS3_RING_TX_RING_PKTNUM_RECORD_REG	0x0006C
- #define HNS3_RING_TX_RING_EBD_OFFSET_REG	0x00070
- #define HNS3_RING_TX_RING_BD_ERR_REG		0x00074
--#define HNS3_RING_PREFETCH_EN_REG		0x0007C
--#define HNS3_RING_CFG_VF_NUM_REG		0x00080
--#define HNS3_RING_ASID_REG			0x0008C
- #define HNS3_RING_EN_REG			0x00090
+@@ -601,7 +601,6 @@ void hns3_set_vector_coalesce_rl(struct hns3_enet_tqp_vector *tqp_vector,
+ 				 u32 rl_value);
  
--#define HNS3_TX_REG_OFFSET			0x40
--
- #define HNS3_RX_HEAD_SIZE			256
+ void hns3_enable_vlan_filter(struct net_device *netdev, bool enable);
+-int hns3_update_promisc_mode(struct net_device *netdev, u8 promisc_flags);
+ void hns3_request_update_promisc_mode(struct hnae3_handle *handle);
  
- #define HNS3_TX_TIMEOUT (5 * HZ)
+ #ifdef CONFIG_HNS3_DCB
 -- 
 2.7.4
 
