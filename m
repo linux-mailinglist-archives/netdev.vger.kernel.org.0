@@ -2,81 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 530DF2616F6
-	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BDF9261715
+	for <lists+netdev@lfdr.de>; Tue,  8 Sep 2020 19:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731834AbgIHRXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 13:23:13 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:34520 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731712AbgIHRXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 13:23:07 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 088E7Sj8038986;
-        Tue, 8 Sep 2020 09:07:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1599574048;
-        bh=QLaKQ/Q1xV0ZUM+n4xuaJnI1s6Kz1NtLSH7K2BZHlbg=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=mSpTbyOZzMrkwv7gbHo0YJhf9UTEzpVNmmVOe2ff4WdUA9iLJA9ZDGxF+RIxVQ7Um
-         CHy68IZrFc8zttfeP1yp/9o5O3JF/eFqrWBySoQQTbTs6NOWJhtphBmx2SzJv9PKQH
-         nCTSJGfdmqEbcVGi+AUZXjD7WoD9OGIH3v2HMZBw=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 088E7Sfu043635
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Sep 2020 09:07:28 -0500
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 8 Sep
- 2020 09:07:27 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 8 Sep 2020 09:07:27 -0500
-Received: from [10.250.38.37] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 088E7RSx043677;
-        Tue, 8 Sep 2020 09:07:27 -0500
-Subject: Re: [PATCH net-next v3 3/3] net: dp83869: Add speed optimization
- feature
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
-        <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20200903114259.14013-1-dmurphy@ti.com>
- <20200903114259.14013-4-dmurphy@ti.com>
- <20200905113818.7962b6d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <9848c3ee-51c2-2e06-a51b-3aacc1384557@ti.com>
-Date:   Tue, 8 Sep 2020 09:07:22 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1731910AbgIHRYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 13:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731318AbgIHQRN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 12:17:13 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8ABC09B047
+        for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 07:42:11 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id z25so17293347iol.10
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 07:42:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gsrAxoxUNH6lfuGDbSj+1z2HxiLhobFyYbwLHOHikiU=;
+        b=iLFedLecNcoAGZ8L6wLZnY4qSM7sWxjQNwRUvlTn9iySZ7ecwMZUkEQUSRt/sqezr1
+         UrOE+LbHexWta86Vr+feWztNuLvIyNnfPwLCX0j2lRmfB3AT8cvsnurTxfyU4aj7XiOc
+         96XVHj6xvjHud9qFcgxNFY02A1WGb9uvbGO8WIHTDwa4/eLn3sSJAksmGndyD7JYvgnq
+         iL+BHVlzjVKti5JioCoKe3DyRgmeys6BSCd5pdHoutkzsmPGpoxSmtpaloqKGTHXEVQ5
+         wqudeIyJRcsDWTPw2blF/iWj2Yyja9USMyKq7uXPV1aE+mKmoJ/I6XbuWPco0cQ/bpdM
+         FchQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gsrAxoxUNH6lfuGDbSj+1z2HxiLhobFyYbwLHOHikiU=;
+        b=OeD6lndl9y1kuQNlhbMMW3HnvDcc5rhrJoXJDsNUeRx0Aw4M/1qlb4aNCeTSIsdv9w
+         fLjuswwwSa84sD1ay9ennAPbZJXv0ERTmMlnKYLGbhFOIxxTMIriBA1ozTsC0hzoo+h5
+         mVDtU2zkHNaWUpGur3pzOU1ojCS/6uoGGRfllNUOE2+XyldYfdn3+Dj77oxJ0Qeao5yT
+         cTu8JJEqIKap0fMtFMwcJ2qOQb2MwoC0BtXUVDQbjoVrcj+tt7FovgA2KdOmhfKnWCwQ
+         bvqEeka1tAtr10aGOfFlKAQe7sZuZcRmhOxH0dzAmk3N63wETJaD/bdq0l/I3H9SoEfM
+         OJlw==
+X-Gm-Message-State: AOAM531km0g8P6DMHTnaQwYWkJWq+5HaXHBn+WbfIaesiFRucsG0nDzH
+        QTGkJmHoaj0E1eix1ntMttU=
+X-Google-Smtp-Source: ABdhPJzewf6eF3/gDPHpJPXHiX+zfFEHdfK0by6kSg+G5W33nLcP5kozAIiEsnRgrQRHtIS1d5Z6dA==
+X-Received: by 2002:a02:3445:: with SMTP id z5mr23721935jaz.134.1599576129568;
+        Tue, 08 Sep 2020 07:42:09 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:ec70:7b06:eed6:6e35])
+        by smtp.googlemail.com with ESMTPSA id j66sm10638643ili.71.2020.09.08.07.42.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Sep 2020 07:42:08 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next 03/22] nexthop: Only emit a notification when
+ nexthop is actually deleted
+To:     Jiri Pirko <jiri@resnulli.us>, Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        roopa@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+References: <20200908091037.2709823-1-idosch@idosch.org>
+ <20200908091037.2709823-4-idosch@idosch.org>
+ <20200908143959.GP2997@nanopsycho.orion>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <00d926ce-7ac9-fecd-5edc-cb30ad31828e@gmail.com>
+Date:   Tue, 8 Sep 2020 08:42:08 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20200905113818.7962b6d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200908143959.GP2997@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub
+On 9/8/20 8:39 AM, Jiri Pirko wrote:
+> Tue, Sep 08, 2020 at 11:10:18AM CEST, idosch@idosch.org wrote:
+>> From: Ido Schimmel <idosch@nvidia.com>
+>>
+>> Currently, the delete notification is emitted from the error path of
+>> nexthop_add() and replace_nexthop(), which can be confusing to listeners
+>> as they are not familiar with the nexthop.
+>>
+>> Instead, only emit the notification when the nexthop is actually
+>> deleted. The following sub-cases are covered:
+> 
+> Well, in theory, this might break some very odd app that is adding a
+> route and checking the errors using this notification. My opinion is to
+> allow this breakage to happen, but I'm usually too benevolent :)
+> 
 
-On 9/5/20 1:38 PM, Jakub Kicinski wrote:
-> On Thu, 3 Sep 2020 06:42:59 -0500 Dan Murphy wrote:
->> +static int dp83869_set_downshift(struct phy_device *phydev, u8 cnt)
->> +{
->> +	int val, count;
->> +
->> +	if (cnt > DP83869_DOWNSHIFT_8_COUNT)
->> +		return -E2BIG;
-> ERANGE
+That would be a very twisted app.
 
-This is not checking a range but making sure it is not bigger then 8.
-
-IMO I would use ERANGE if the check was a boundary check for upper and 
-lower bounds.
-
-Dan
+No other notifications go out on failure to add / replace and nexthops
+should be consistent.
 
