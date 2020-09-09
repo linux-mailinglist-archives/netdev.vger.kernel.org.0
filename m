@@ -2,121 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5A9262848
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 09:18:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A384262858
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 09:19:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728363AbgIIHSE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 03:18:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55788 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725772AbgIIHR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 03:17:59 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF3AC061573;
-        Wed,  9 Sep 2020 00:17:58 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id l191so1418823pgd.5;
-        Wed, 09 Sep 2020 00:17:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=64Bt6kd9gxNJLRVuqcxKj5M+pb5+qbe839Gm0r/zIvo=;
-        b=BOZkXJ6/UZfd/Smz8exM0/GCMabLwdZY0S7okls6rxu14xZzEAcX+7DHmsZISbkkg1
-         yI+W8ytZ2T8AY61EhOAtxyLw/FXWXvZ8zE3VvXxr0LX0FbUVdMosXzPdv7nuDZzbWrkz
-         Mq+leo06/a5x3b+9W+6QJAP+RWsyDJrKakDSaqjR+ch+HTVPMwA9vL25n4E5ufexmJfx
-         5RuG0VmZbBZydIVVUfcO+9WXm3igrUCRTWEIvanjZY4RmigvsMwz8KyfXu7TDXj/DuGZ
-         6uQ8GIDFcht7e76ccDGhc/3kIpHbgTIfiJpCWNpM8Bqdg88VJuTWxAKDS8rVfZYDUBLN
-         YyNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=64Bt6kd9gxNJLRVuqcxKj5M+pb5+qbe839Gm0r/zIvo=;
-        b=Y4UYQGpzbXyxbhQZ1aliF6qPEQZzplLB6I+ccPiRFr1nycbAdokz4qsPJHczBahpXA
-         xUXkHHDO1cw3CvGQl/OoHuULY0UPRCs+seMKNEY6ToEREgukGt7CoqpEQxGvGCvM9oHH
-         VmDgPQyXFEUiu9WW6UP19dWTdHYjB+/gBwIq8NcljM+nlIDi1kl+n6WyPiiDbu1Qtve0
-         rWJ54RgD4ydPjcLTGtNW0Zq96wylaDzp3794Z6kdzAya83DCyKQmzJiOG4goNNVS3Q8F
-         5cZ4Vkmv44w4oZ6i7v4PM+yHvRo8yPDXUZCqf9eP13GBAHBEh+tviJgSowQxyBJ1nse5
-         YWIQ==
-X-Gm-Message-State: AOAM530UuglL65IWHw1WU0h5LWsBEVIuGGPmzlQ+Pn/18I104/MI1wFP
-        WZTSA7Ze0ZLyjXW9Hyoo1A==
-X-Google-Smtp-Source: ABdhPJxuGhKjFWPHlV7tWVd/A6dvlcDQsvdVZO4mWSI4b/JsVgqaXXITNfUrG/50JWsRL7CjUveweg==
-X-Received: by 2002:a17:902:7203:b029:d0:cbe1:e73a with SMTP id ba3-20020a1709027203b02900d0cbe1e73amr2786781plb.21.1599635878103;
-        Wed, 09 Sep 2020 00:17:58 -0700 (PDT)
-Received: from localhost.localdomain (n11212042027.netvigator.com. [112.120.42.27])
-        by smtp.gmail.com with ESMTPSA id y3sm1699661pfb.18.2020.09.09.00.17.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 00:17:57 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org
-Subject: [Linux-kernel-mentees] [PATCH net v2] Bluetooth: Fix slab-out-of-bounds read in hci_le_direct_adv_report_evt()
-Date:   Wed,  9 Sep 2020 03:17:00 -0400
-Message-Id: <20200909071700.1100748-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200805180902.684024-1-yepeilin.cs@gmail.com>
-References: <20200805180902.684024-1-yepeilin.cs@gmail.com>
+        id S1729767AbgIIHTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 03:19:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56055 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726534AbgIIHTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 03:19:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599635974;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4/Zhf5Z+jZ436SZtx+o89mZ+e13eKs2R9HrVqMiSNpw=;
+        b=cJm8cw4jENeQgto9zKC/OqMZQVDvWGu9/66bBU9uoFRD80NKUYW7FcBvJeHTW4QiU7vSGJ
+        1I6/nqGaAc44t4phcrATs4eJqt9xGMxDqfk8HlY/koEMr1IXcDv6cYZXiw/EJlnp3XaLF9
+        oXSs+Di0EL54CSnhol8ReXHd+tGI+fI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-379-vgLGSoqxNfKm1BQ10I75BA-1; Wed, 09 Sep 2020 03:19:26 -0400
+X-MC-Unique: vgLGSoqxNfKm1BQ10I75BA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5CFFB801AFF;
+        Wed,  9 Sep 2020 07:19:24 +0000 (UTC)
+Received: from krava (unknown [10.40.194.91])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 654945D9E8;
+        Wed,  9 Sep 2020 07:19:21 +0000 (UTC)
+Date:   Wed, 9 Sep 2020 09:19:20 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH] perf tools: Do not use deprecated bpf_program__title
+Message-ID: <20200909071920.GA1498025@krava>
+References: <20200907110237.1329532-1-jolsa@kernel.org>
+ <CAEf4BzZpD2mjEA2Qo2cZ4Bp01fSwZkMPFAZOSw8VvOSAqOWNsA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZpD2mjEA2Qo2cZ4Bp01fSwZkMPFAZOSw8VvOSAqOWNsA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-`num_reports` is not being properly checked. A malformed event packet with
-a large `num_reports` number makes hci_le_direct_adv_report_evt() read out
-of bounds. Fix it.
+On Tue, Sep 08, 2020 at 01:11:36PM -0700, Andrii Nakryiko wrote:
+> On Mon, Sep 7, 2020 at 10:57 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > The bpf_program__title function got deprecated in libbpf,
+> > use the suggested alternative.
+> >
+> > Fixes: 521095842027 ("libbpf: Deprecate notion of BPF program "title" in favor of "section name"")
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> 
+> Hey Jiri,
+> 
+> Didn't see your patch before I sent mine against bpf-next. I also
+> removed some unnecessary checks there. Please see [0]. I don't care
+> which one gets applied, btw.
+> 
+>   [0] https://patchwork.ozlabs.org/project/netdev/patch/20200908180127.1249-1-andriin@fb.com/
 
-Cc: stable@vger.kernel.org
-Fixes: 2f010b55884e ("Bluetooth: Add support for handling LE Direct Advertising Report events")
-Reported-and-tested-by: syzbot+24ebd650e20bd263ca01@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?extid=24ebd650e20bd263ca01
-Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
----
-Change in v2:
-    - add "Cc: stable@" tag.
+perfect, let's take yours with that extra check removed
 
- net/bluetooth/hci_event.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+thanks,
+jirka
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 4b7fc430793c..aec43ae488d1 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5863,21 +5863,19 @@ static void hci_le_direct_adv_report_evt(struct hci_dev *hdev,
- 					 struct sk_buff *skb)
- {
- 	u8 num_reports = skb->data[0];
--	void *ptr = &skb->data[1];
-+	struct hci_ev_le_direct_adv_info *ev = (void *)&skb->data[1];
- 
--	hci_dev_lock(hdev);
-+	if (!num_reports || skb->len < num_reports * sizeof(*ev) + 1)
-+		return;
- 
--	while (num_reports--) {
--		struct hci_ev_le_direct_adv_info *ev = ptr;
-+	hci_dev_lock(hdev);
- 
-+	for (; num_reports; num_reports--, ev++)
- 		process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
- 				   ev->bdaddr_type, &ev->direct_addr,
- 				   ev->direct_addr_type, ev->rssi, NULL, 0,
- 				   false);
- 
--		ptr += sizeof(*ev);
--	}
--
- 	hci_dev_unlock(hdev);
- }
- 
--- 
-2.25.1
+> 
+> >  tools/perf/util/bpf-loader.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
+> > index 2feb751516ab..73de3973c8ec 100644
+> > --- a/tools/perf/util/bpf-loader.c
+> > +++ b/tools/perf/util/bpf-loader.c
+> > @@ -328,7 +328,7 @@ config_bpf_program(struct bpf_program *prog)
+> >         probe_conf.no_inlines = false;
+> >         probe_conf.force_add = false;
+> >
+> > -       config_str = bpf_program__title(prog, false);
+> > +       config_str = bpf_program__section_name(prog);
+> >         if (IS_ERR(config_str)) {
+> >                 pr_debug("bpf: unable to get title for program\n");
+> >                 return PTR_ERR(config_str);
+> > @@ -454,7 +454,7 @@ preproc_gen_prologue(struct bpf_program *prog, int n,
+> >         if (err) {
+> >                 const char *title;
+> >
+> > -               title = bpf_program__title(prog, false);
+> > +               title = bpf_program__section_name(prog);
+> >                 if (!title)
+> >                         title = "[unknown]";
+> >
+> > --
+> > 2.26.2
+> >
+> 
 
