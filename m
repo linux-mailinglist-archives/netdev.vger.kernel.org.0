@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7500A262C3C
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:44:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 708C0262C39
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:43:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730270AbgIIJn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 05:43:57 -0400
-Received: from correo.us.es ([193.147.175.20]:35024 "EHLO mail.us.es"
+        id S1730277AbgIIJni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 05:43:38 -0400
+Received: from correo.us.es ([193.147.175.20]:34950 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729785AbgIIJmh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729940AbgIIJmh (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 9 Sep 2020 05:42:37 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 3AAF1303D06
+        by mail.us.es (Postfix) with ESMTP id E19B3303D0B
         for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 11:42:32 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2D82CDA704
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D362FE150A
         for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 11:42:32 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 227EBE1501; Wed,  9 Sep 2020 11:42:32 +0200 (CEST)
+        id C8AC2E1505; Wed,  9 Sep 2020 11:42:32 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
         autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id EF191DA704;
-        Wed,  9 Sep 2020 11:42:29 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8A4CADA8FF;
+        Wed,  9 Sep 2020 11:42:30 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 09 Sep 2020 11:42:29 +0200 (CEST)
+ Wed, 09 Sep 2020 11:42:26 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from localhost.localdomain (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id BF8414301DE1;
-        Wed,  9 Sep 2020 11:42:29 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPSA id 60D904301DE4;
+        Wed,  9 Sep 2020 11:42:30 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 09/13] netfilter: nft_socket: add wildcard support
-Date:   Wed,  9 Sep 2020 11:42:15 +0200
-Message-Id: <20200909094219.17732-10-pablo@netfilter.org>
+Subject: [PATCH 10/13] ipvs: remove dependency on ip6_tables
+Date:   Wed,  9 Sep 2020 11:42:16 +0200
+Message-Id: <20200909094219.17732-11-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200909094219.17732-1-pablo@netfilter.org>
 References: <20200909094219.17732-1-pablo@netfilter.org>
@@ -55,86 +55,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Balazs Scheidler <bazsi77@gmail.com>
+From: Yaroslav Bolyukin <iam@lach.pw>
 
-Add NFT_SOCKET_WILDCARD to match to wildcard socket listener.
+This dependency was added because ipv6_find_hdr was in iptables specific
+code but is no longer required
 
-Signed-off-by: Balazs Scheidler <bazsi77@gmail.com>
+Fixes: f8f626754ebe ("ipv6: Move ipv6_find_hdr() out of Netfilter code.")
+Fixes: 63dca2c0b0e7 ("ipvs: Fix faulty IPv6 extension header handling in IPVS")
+Signed-off-by: Yaroslav Bolyukin <iam@lach.pw>
+Acked-by: Julian Anastasov <ja@ssi.bg>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/uapi/linux/netfilter/nf_tables.h |  2 ++
- net/netfilter/nft_socket.c               | 27 ++++++++++++++++++++++++
- 2 files changed, 29 insertions(+)
+ include/net/ip_vs.h        | 3 ---
+ net/netfilter/ipvs/Kconfig | 1 -
+ 2 files changed, 4 deletions(-)
 
-diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
-index aeb88cbd303e..543dc697b796 100644
---- a/include/uapi/linux/netfilter/nf_tables.h
-+++ b/include/uapi/linux/netfilter/nf_tables.h
-@@ -1010,10 +1010,12 @@ enum nft_socket_attributes {
-  *
-  * @NFT_SOCKET_TRANSPARENT: Value of the IP(V6)_TRANSPARENT socket option
-  * @NFT_SOCKET_MARK: Value of the socket mark
-+ * @NFT_SOCKET_WILDCARD: Whether the socket is zero-bound (e.g. 0.0.0.0 or ::0)
-  */
- enum nft_socket_keys {
- 	NFT_SOCKET_TRANSPARENT,
- 	NFT_SOCKET_MARK,
-+	NFT_SOCKET_WILDCARD,
- 	__NFT_SOCKET_MAX
- };
- #define NFT_SOCKET_MAX	(__NFT_SOCKET_MAX - 1)
-diff --git a/net/netfilter/nft_socket.c b/net/netfilter/nft_socket.c
-index 637ce3e8c575..a28aca5124ce 100644
---- a/net/netfilter/nft_socket.c
-+++ b/net/netfilter/nft_socket.c
-@@ -14,6 +14,25 @@ struct nft_socket {
- 	};
- };
- 
-+static void nft_socket_wildcard(const struct nft_pktinfo *pkt,
-+				struct nft_regs *regs, struct sock *sk,
-+				u32 *dest)
-+{
-+	switch (nft_pf(pkt)) {
-+	case NFPROTO_IPV4:
-+		nft_reg_store8(dest, inet_sk(sk)->inet_rcv_saddr == 0);
-+		break;
-+#if IS_ENABLED(CONFIG_NF_TABLES_IPV6)
-+	case NFPROTO_IPV6:
-+		nft_reg_store8(dest, ipv6_addr_any(&sk->sk_v6_rcv_saddr));
-+		break;
-+#endif
-+	default:
-+		regs->verdict.code = NFT_BREAK;
-+		return;
-+	}
-+}
-+
- static void nft_socket_eval(const struct nft_expr *expr,
- 			    struct nft_regs *regs,
- 			    const struct nft_pktinfo *pkt)
-@@ -59,6 +78,13 @@ static void nft_socket_eval(const struct nft_expr *expr,
- 			return;
- 		}
- 		break;
-+	case NFT_SOCKET_WILDCARD:
-+		if (!sk_fullsock(sk)) {
-+			regs->verdict.code = NFT_BREAK;
-+			return;
-+		}
-+		nft_socket_wildcard(pkt, regs, sk, dest);
-+		break;
- 	default:
- 		WARN_ON(1);
- 		regs->verdict.code = NFT_BREAK;
-@@ -97,6 +123,7 @@ static int nft_socket_init(const struct nft_ctx *ctx,
- 	priv->key = ntohl(nla_get_u32(tb[NFTA_SOCKET_KEY]));
- 	switch(priv->key) {
- 	case NFT_SOCKET_TRANSPARENT:
-+	case NFT_SOCKET_WILDCARD:
- 		len = sizeof(u8);
- 		break;
- 	case NFT_SOCKET_MARK:
+diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
+index 9a59a33787cb..d609e957a3ec 100644
+--- a/include/net/ip_vs.h
++++ b/include/net/ip_vs.h
+@@ -25,9 +25,6 @@
+ #include <linux/ip.h>
+ #include <linux/ipv6.h>			/* for struct ipv6hdr */
+ #include <net/ipv6.h>
+-#if IS_ENABLED(CONFIG_IP_VS_IPV6)
+-#include <linux/netfilter_ipv6/ip6_tables.h>
+-#endif
+ #if IS_ENABLED(CONFIG_NF_CONNTRACK)
+ #include <net/netfilter/nf_conntrack.h>
+ #endif
+diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
+index 2c1593089ede..eb0e329f9b8d 100644
+--- a/net/netfilter/ipvs/Kconfig
++++ b/net/netfilter/ipvs/Kconfig
+@@ -29,7 +29,6 @@ if IP_VS
+ config	IP_VS_IPV6
+ 	bool "IPv6 support for IPVS"
+ 	depends on IPV6 = y || IP_VS = IPV6
+-	select IP6_NF_IPTABLES
+ 	select NF_DEFRAG_IPV6
+ 	help
+ 	  Add IPv6 support to IPVS.
 -- 
 2.20.1
 
