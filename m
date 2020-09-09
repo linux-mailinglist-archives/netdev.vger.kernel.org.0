@@ -2,72 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCCB126277E
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 08:57:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C98E262777
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 08:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727804AbgIIG5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 02:57:16 -0400
-Received: from smtp.h3c.com ([60.191.123.56]:26376 "EHLO h3cspam01-ex.h3c.com"
+        id S1726726AbgIIG4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 02:56:37 -0400
+Received: from mga02.intel.com ([134.134.136.20]:10875 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725897AbgIIG5P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 02:57:15 -0400
-Received: from DAG2EX03-BASE.srv.huawei-3com.com ([10.8.0.66])
-        by h3cspam01-ex.h3c.com with ESMTPS id 0896u51D043736
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 9 Sep 2020 14:56:05 +0800 (GMT-8)
-        (envelope-from tian.xianting@h3c.com)
-Received: from localhost.localdomain (10.99.212.201) by
- DAG2EX03-BASE.srv.huawei-3com.com (10.8.0.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 9 Sep 2020 14:56:07 +0800
-From:   Xianting Tian <tian.xianting@h3c.com>
-To:     <axboe@kernel.dk>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <andriin@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@chromium.org>
-CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        Xianting Tian <tian.xianting@h3c.com>
-Subject: [PATCH] block: remove redundant empty check of mq_list
-Date:   Wed, 9 Sep 2020 14:48:14 +0800
-Message-ID: <20200909064814.5704-1-tian.xianting@h3c.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.99.212.201]
-X-ClientProxiedBy: BJSMTP02-EX.srv.huawei-3com.com (10.63.20.133) To
- DAG2EX03-BASE.srv.huawei-3com.com (10.8.0.66)
-X-DNSRBL: 
-X-MAIL: h3cspam01-ex.h3c.com 0896u51D043736
+        id S1725863AbgIIG4h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 02:56:37 -0400
+IronPort-SDR: 2SvAl+G/BBmNFyTcPIeDYMX6xILvbkNkmw6PnVjtPAqkTH0xy7j0N0Bd1sA6tTkGyMdKdGU8Ro
+ PPxLWr7PTyKg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9738"; a="146000131"
+X-IronPort-AV: E=Sophos;i="5.76,408,1592895600"; 
+   d="scan'208";a="146000131"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Sep 2020 23:56:34 -0700
+IronPort-SDR: 5UP/sIfL/rWJEF3Ko3MrK1EBOkpl5CzTGdDbSw9ZvoV/o2a9F2zZoWAtExymUduV/YcJ6dFlR4
+ nSD6w6q5KsyA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,408,1592895600"; 
+   d="scan'208";a="449094397"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.192.131])
+  by orsmga004.jf.intel.com with ESMTP; 08 Sep 2020 23:56:32 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     jasowang@redhat.com, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH] vhost_vdpa: remove unnecessary spin_lock in vhost_vring_call
+Date:   Wed,  9 Sep 2020 14:52:34 +0800
+Message-Id: <20200909065234.3313-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.18.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-blk_mq_flush_plug_list() itself will do the empty check of mq_list,
-so remove such check in blk_flush_plug_list().
-Actually normally mq_list is not empty when blk_flush_plug_list is
-called.
+This commit removed unnecessary spin_locks in vhost_vring_call
+and related operations. Because we manipulate irq offloading
+contents in vhost_vdpa ioctl code path which is already
+protected by dev mutex and vq mutex.
 
-Signed-off-by: Xianting Tian <tian.xianting@h3c.com>
+Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 ---
- block/blk-core.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/vhost/vdpa.c  | 8 +-------
+ drivers/vhost/vhost.c | 3 ---
+ drivers/vhost/vhost.h | 1 -
+ 3 files changed, 1 insertion(+), 11 deletions(-)
 
-diff --git a/block/blk-core.c b/block/blk-core.c
-index 10c08ac50..dda301610 100644
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -1864,8 +1864,7 @@ void blk_flush_plug_list(struct blk_plug *plug, bool from_schedule)
- {
- 	flush_plug_callbacks(plug, from_schedule);
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 3fab94f88894..bc679d0b7b87 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -97,26 +97,20 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+ 		return;
  
--	if (!list_empty(&plug->mq_list))
--		blk_mq_flush_plug_list(plug, from_schedule);
-+	blk_mq_flush_plug_list(plug, from_schedule);
+ 	irq = ops->get_vq_irq(vdpa, qid);
+-	spin_lock(&vq->call_ctx.ctx_lock);
+ 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+-	if (!vq->call_ctx.ctx || irq < 0) {
+-		spin_unlock(&vq->call_ctx.ctx_lock);
++	if (!vq->call_ctx.ctx || irq < 0)
+ 		return;
+-	}
+ 
+ 	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+ 	vq->call_ctx.producer.irq = irq;
+ 	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
+-	spin_unlock(&vq->call_ctx.ctx_lock);
  }
  
- /**
+ static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
+ {
+ 	struct vhost_virtqueue *vq = &v->vqs[qid];
+ 
+-	spin_lock(&vq->call_ctx.ctx_lock);
+ 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+-	spin_unlock(&vq->call_ctx.ctx_lock);
+ }
+ 
+ static void vhost_vdpa_reset(struct vhost_vdpa *v)
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index b45519ca66a7..99f27ce982da 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -302,7 +302,6 @@ static void vhost_vring_call_reset(struct vhost_vring_call *call_ctx)
+ {
+ 	call_ctx->ctx = NULL;
+ 	memset(&call_ctx->producer, 0x0, sizeof(struct irq_bypass_producer));
+-	spin_lock_init(&call_ctx->ctx_lock);
+ }
+ 
+ static void vhost_vq_reset(struct vhost_dev *dev,
+@@ -1637,9 +1636,7 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
+ 			break;
+ 		}
+ 
+-		spin_lock(&vq->call_ctx.ctx_lock);
+ 		swap(ctx, vq->call_ctx.ctx);
+-		spin_unlock(&vq->call_ctx.ctx_lock);
+ 		break;
+ 	case VHOST_SET_VRING_ERR:
+ 		if (copy_from_user(&f, argp, sizeof f)) {
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index 9032d3c2a9f4..486dcf371e06 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -64,7 +64,6 @@ enum vhost_uaddr_type {
+ struct vhost_vring_call {
+ 	struct eventfd_ctx *ctx;
+ 	struct irq_bypass_producer producer;
+-	spinlock_t ctx_lock;
+ };
+ 
+ /* The virtqueue structure describes a queue attached to a device. */
 -- 
-2.17.1
+2.18.4
 
