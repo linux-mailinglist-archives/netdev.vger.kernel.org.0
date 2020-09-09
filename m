@@ -2,117 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D758E262873
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 09:21:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABFB72628B5
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 09:30:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729993AbgIIHV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 03:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725984AbgIIHVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 03:21:54 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B76CEC061573
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 00:21:53 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id r7so2007306ejs.11
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 00:21:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=EZbxsoBtaq8AxW3mkLwv1ac/GP0gLmflCPSHg4QJve8=;
-        b=jgslk48pfrUL6cyEbgwn9eqCqWPziUNzZUdUkpjJ/ezfiCCXYBkSa9JQyOWifoyUGh
-         Ea8no0UeeW8ahVNg5sSP5kHzaDNGy2HdmShLJzxnUyRVOS5K+n++WpKx+uCYAFKsTX/A
-         TZ4v6HTPUGWOi71sO1nkcXQYPD7BwyqmptZaSeUTNdaYtPS1xIsMuoaaa6juTW8IMxDC
-         sGD4eQOGXEMQ511Dkec5MhmfOPG1QitRG5IBp5+Al1trMd4bl4NmQY58sL+CckIqceUI
-         gV3C2Vztf1YZXdElprn/5lY/CVK+abS1ToWRcy0dIRuoUR/viebIeeoJlAb2kH7elFpL
-         4NQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=EZbxsoBtaq8AxW3mkLwv1ac/GP0gLmflCPSHg4QJve8=;
-        b=e7KNc+QpMtp0Y1lkLZP3gAXkyBo7hjV6KswJ9VolKQY+obNoNfOH4Y0doB+ElbdFVQ
-         WhSagw1l0p/vsoCnY5tQoFLkOg1hFAdq0gMmAaxEv8CPOTIXJVuhB6M/kVz5eYl0ao+f
-         mxbrk6WoKuCnP1+LGsi4VUvBnChyhB/U0J4hx7TOyHJxotTMjoCTXSW86ABVRmtZqRcR
-         ZST6Wep6yJQxQRibVaD5eicPZy1VVBXzOXqPJ5jDFq0IXjygRJ8jcOKBKXjMR9aXjA8u
-         y2NSShO3AV8iFIE72i3gCk43u5F87xS/ZjlO4zAemtcih+8oiXV79a+dehsTZzclKRKj
-         uodQ==
-X-Gm-Message-State: AOAM531ALe3cCnAmMbJfPJ4UjMkxVVmQE9mQjAwWgicZEsXQrcpyV7dR
-        G3CR6U75zvd0jzewTWGXlmA=
-X-Google-Smtp-Source: ABdhPJwIXNSVCe6FjvK7ep/ghx47oygYDuPMYyWVAxSE8k6PSjjc70elcc0b/deCYpetxxmFxj6e6w==
-X-Received: by 2002:a17:906:3e08:: with SMTP id k8mr2282430eji.480.1599636112441;
-        Wed, 09 Sep 2020 00:21:52 -0700 (PDT)
-Received: from [192.168.0.108] ([77.127.52.212])
-        by smtp.gmail.com with ESMTPSA id o23sm1233620eju.17.2020.09.09.00.21.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Sep 2020 00:21:51 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/2] mlx4: make sure to always set the port
- type
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com, tariqt@mellanox.com,
-        ogerlitz@mellanox.com, yishaih@mellanox.com, saeedm@mellanox.com,
-        leonro@nvidia.com
-References: <20200908222114.190718-1-kuba@kernel.org>
- <20200908222114.190718-3-kuba@kernel.org>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Message-ID: <db239d72-e4f7-b8d3-a50d-254311281dcd@gmail.com>
-Date:   Wed, 9 Sep 2020 10:21:39 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1729779AbgIIHaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 03:30:08 -0400
+Received: from a27-21.smtp-out.us-west-2.amazonses.com ([54.240.27.21]:50466
+        "EHLO a27-21.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725959AbgIIHaH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 03:30:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1599636607;
+        h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date;
+        bh=jXXUptAJfgSYS6ebgreurAMtuKrLbZ+qmG2W4SgenfY=;
+        b=lZ1FxVvzi9GCgVr4H7oNnOLoyEjLDyu8WFBLOBVZhoUE+qTT76ZXt6DdNMxKFnIi
+        Wiss+JiC81iwDRftN/kk6mGxqLjWON4XslmBRz9M44ey+et+30qycxxjJ3RobYMRyof
+        Lze6y1HZLg8T4IxaVpDlDQMMkS+X8T/zkjMusA4c=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+        s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1599636607;
+        h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:From:In-Reply-To:References:To:Cc:Message-Id:Date:Feedback-ID;
+        bh=jXXUptAJfgSYS6ebgreurAMtuKrLbZ+qmG2W4SgenfY=;
+        b=ayM2Mw8V+V/AvbirjCvlRYTXXHbuADK90v0aI4Qoe1RQVXPMO+mhL2u/WF1YhI0x
+        KjvBACLT1p7cpUZmeP7q8d6oqKqEaZO1eaZjqaUaxBdjCdmvWbBUqv/V0RCHc4Q0aqh
+        A/eIFC4SuBiQSBc7DYlT0HpUmNjkdyd21RUWjkgc=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7A1D1C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20200908222114.190718-3-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] rtl8xxxu: prevent potential memory leak
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200906040424.22022-1-chiu@endlessm.com>
+References: <20200906040424.22022-1-chiu@endlessm.com>
+To:     Chris Chiu <chiu@endlessm.com>
+Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chris Chiu <chiu@endlessm.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-ID: <0101017471c58fb6-37aeeb66-9a11-4846-b395-eae69f2b466c-000000@us-west-2.amazonses.com>
+Date:   Wed, 9 Sep 2020 07:30:06 +0000
+X-SES-Outgoing: 2020.09.09-54.240.27.21
+Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Chris Chiu <chiu@endlessm.com> wrote:
 
+> Free the skb if usb_submit_urb fails on rx_urb. And free the urb
+> no matter usb_submit_urb succeeds or not in rtl8xxxu_submit_int_urb.
+> 
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
 
-On 9/9/2020 1:21 AM, Jakub Kicinski wrote:
-> Even tho mlx4_core registers the devlink ports, it's mlx4_en
-> and mlx4_ib which set their type. In situations where one of
-> the two is not built yet the machine has ports of given type
-> we see the devlink warning from devlink_port_type_warn() trigger.
-> 
-> Having ports of a type not supported by the kernel may seem
-> surprising, but it does occur in practice - when the unsupported
-> port is not plugged in to a switch anyway users are more than happy
-> not to see it (and potentially allocate any resources to it).
-> 
-> Set the type in mlx4_core if type-specific driver is not built.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->   drivers/net/ethernet/mellanox/mlx4/main.c | 11 +++++++++++
->   1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-> index 258c7a96f269..70cf24ba71e4 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-> @@ -3031,6 +3031,17 @@ static int mlx4_init_port_info(struct mlx4_dev *dev, int port)
->   	if (err)
->   		return err;
->   
-> +	/* Ethernet and IB drivers will normally set the port type,
-> +	 * but if they are not built set the type now to prevent
-> +	 * devlink_port_type_warn() from firing.
-> +	 */
-> +	if (!IS_ENABLED(CONFIG_MLX4_EN) &&
-> +	    dev->caps.port_type[port] == MLX4_PORT_TYPE_ETH)
-> +		devlink_port_type_eth_set(&info->devlink_port, NULL);
-> +	else if (!IS_ENABLED(CONFIG_MLX4_INFINIBAND) &&
-> +		 dev->caps.port_type[port] == MLX4_PORT_TYPE_IB)
-> +		devlink_port_type_ib_set(&info->devlink_port, NULL);
-> +
->   	info->dev = dev;
->   	info->port = port;
->   	if (!mlx4_is_slave(dev)) {
-> 
+Patch applied to wireless-drivers-next.git, thanks.
 
-Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
+86279456a4d4 rtl8xxxu: prevent potential memory leak
+
+-- 
+https://patchwork.kernel.org/patch/11759447/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
