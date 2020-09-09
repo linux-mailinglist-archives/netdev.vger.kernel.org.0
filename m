@@ -2,111 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2569263439
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:17:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4ECB263382
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:05:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731054AbgIIRQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 13:16:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43873 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730178AbgIIP2P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 11:28:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599665254;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+BCz3wPlVfUrMQm65Je9XbtrGnOGZT7lnY6dkRWqnmM=;
-        b=NpNnzOgw9kc7CEFbCAdEmBWdA9JGfgmoQO5Y3zXbvjEJfROgh+lAiQkW2SWpjn4tfOmy5D
-        xf+8Tm3jLO5DF0QPS6Ko2P8+Brjm26NWa+K5gxzJslHxqvEZRbR9gUtxSvrgGs387MWnO8
-        eWANiB3CdMP12zLt6inSttyp/LVr4F8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-359-6B6-ByPUO9KRZAKC5KxUow-1; Wed, 09 Sep 2020 11:09:14 -0400
-X-MC-Unique: 6B6-ByPUO9KRZAKC5KxUow-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6D82318BA290;
-        Wed,  9 Sep 2020 15:09:12 +0000 (UTC)
-Received: from wsfd-advnetlab06.anl.lab.eng.bos.redhat.com (wsfd-advnetlab06.anl.lab.eng.bos.redhat.com [10.19.107.15])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5242A19C4F;
-        Wed,  9 Sep 2020 15:09:06 +0000 (UTC)
-From:   Nitesh Narayan Lal <nitesh@redhat.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, frederic@kernel.org,
-        mtosatti@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        jlelli@redhat.com, hch@infradead.org, bhelgaas@google.com,
-        mike.marciniszyn@intel.com, dennis.dalessandro@intel.com,
-        thomas.lendacky@amd.com, jerinj@marvell.com,
-        mathias.nyman@intel.com, jiri@nvidia.com
-Subject: [RFC][Patch v1 3/3] PCI: Limit pci_alloc_irq_vectors as per housekeeping CPUs
-Date:   Wed,  9 Sep 2020 11:08:18 -0400
-Message-Id: <20200909150818.313699-4-nitesh@redhat.com>
-In-Reply-To: <20200909150818.313699-1-nitesh@redhat.com>
-References: <20200909150818.313699-1-nitesh@redhat.com>
+        id S1730426AbgIIRFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 13:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730324AbgIIPnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 11:43:41 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8CEC061756;
+        Wed,  9 Sep 2020 08:43:29 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id t14so2331525pgl.10;
+        Wed, 09 Sep 2020 08:43:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Bag69EkP6yWpG6o97y6tb9Dx12HOS7lqs0dtZkutxMY=;
+        b=I3TpjY9OqoIWqRDmbOdwnQ1v+SEE8q2kipgTuTQ99D/jb4fdUvNQ42Npk1f2N2moQ8
+         hA96XhKtfXOP1cIDKqmNZ3HutjQzuS7KU1ezoTl7quKGKt195K6GzxcUmZJ2AP5G/mjl
+         zZsJ9LitWY4+4k27OW6uS98j+uNvs+CW1Ne/s1ms25lFxvbZoyekI7PvDds4dBsVXCAO
+         ZJXfFX9VFSIBSvzQv6Q9YI9dVZ+MKF+ckl9f42t4OUbKn5reaxl+Sifj0lrRP6rwWBtA
+         b+416QHIyes+UmYMKFXfRWDHD0xekgFwouveGfk03Y18NaPCXUUtic3vcURx9tUNQoF1
+         ay7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Bag69EkP6yWpG6o97y6tb9Dx12HOS7lqs0dtZkutxMY=;
+        b=CJja6/KBQq/uTndLeGe6oL0tUqNyNlikOjOmzd55IEWKfBHOceW/Pr+oep+q8AZXk8
+         AXBHkGeN2HZqP8892hSIQ6H6xeAicIYGtMo6c8wjpbx9wPC1FFD9TgDPwO5z4oF8xJrF
+         U3qe177e5z32Mw442LH+KZX0qqBy4BnJQ9nBrAMrpuOUgsSM7LVanrlNynpBv8gNTh8b
+         TFfQMdSFbmwxkRh0snOPAQf7lYNf/9wiuN4QzXCoav2ft2uHsnsGx3SZJaeBjg2e5y9o
+         skeDpc5h0dMovaw6fvMbKBTHUQOTwIbbMt6FkYF6gWeiI2xpfEZ4zMyl+cHWKEqHf2V1
+         z94w==
+X-Gm-Message-State: AOAM5326pMVZQPLIh+2uF+Tcp+t5oEmDJC5/b1jZNvPIlNQ2EltyAccO
+        2BodhNDKQuBktkxGg1rxXO3N9RXrw1A=
+X-Google-Smtp-Source: ABdhPJwnEgUHmTVRl7qwxsDMuaptWc41HPiKDn4u5JYbhBAjgYaDhpwTk4w5nhshZWtOkRZKI/zYVw==
+X-Received: by 2002:a17:902:c206:: with SMTP id 6mr1337188pll.93.1599666208262;
+        Wed, 09 Sep 2020 08:43:28 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id v4sm2339311pjh.38.2020.09.09.08.43.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Sep 2020 08:43:27 -0700 (PDT)
+Subject: Re: [PATCH v3 5/5] net: phy: smsc: LAN8710/20: remove
+ PHY_RST_AFTER_CLK_EN flag
+To:     Marco Felsch <m.felsch@pengutronix.de>, davem@davemloft.net,
+        kuba@kernel.org, robh+dt@kernel.org, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, zhengdejin5@gmail.com,
+        richard.leitner@skidata.com
+Cc:     netdev@vger.kernel.org, kernel@pengutronix.de,
+        devicetree@vger.kernel.org
+References: <20200909134501.32529-1-m.felsch@pengutronix.de>
+ <20200909134501.32529-6-m.felsch@pengutronix.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <a1ed4093-41af-21a8-2ca3-4e1457d23750@gmail.com>
+Date:   Wed, 9 Sep 2020 08:43:25 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <20200909134501.32529-6-m.felsch@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch limits the pci_alloc_irq_vectors max vectors that is passed on
-by the caller based on the available housekeeping CPUs by only using the
-minimum of the two.
 
-A minimum of the max_vecs passed and available housekeeping CPUs is
-derived to ensure that we don't create excess vectors which can be
-problematic specifically in an RT environment. This is because for an RT
-environment unwanted IRQs are moved to the housekeeping CPUs from
-isolated CPUs to keep the latency overhead to a minimum. If the number of
-housekeeping CPUs are significantly lower than that of the isolated CPUs
-we can run into failures while moving these IRQs to housekeeping due to
-per CPU vector limit.
 
-Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
----
- include/linux/pci.h | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+On 9/9/2020 6:45 AM, Marco Felsch wrote:
+> Don't reset the phy without respect to the PHY library state machine
+> because this breaks the phy IRQ mode. The same behaviour can be archived
+> now by specifying the refclk.
+> 
+> Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 835530605c0d..750ba927d963 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -38,6 +38,7 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/resource_ext.h>
-+#include <linux/sched/isolation.h>
- #include <uapi/linux/pci.h>
- 
- #include <linux/pci_ids.h>
-@@ -1797,6 +1798,21 @@ static inline int
- pci_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
- 		      unsigned int max_vecs, unsigned int flags)
- {
-+	unsigned int num_housekeeping = num_housekeeping_cpus();
-+	unsigned int num_online = num_online_cpus();
-+
-+	/*
-+	 * Try to be conservative and at max only ask for the same number of
-+	 * vectors as there are housekeeping CPUs. However, skip any
-+	 * modification to the of max vectors in two conditions:
-+	 * 1. If the min_vecs requested are higher than that of the
-+	 *    housekeeping CPUs as we don't want to prevent the initialization
-+	 *    of a device.
-+	 * 2. If there are no isolated CPUs as in this case the driver should
-+	 *    already have taken online CPUs into consideration.
-+	 */
-+	if (min_vecs < num_housekeeping && num_housekeeping != num_online)
-+		max_vecs = min_t(int, max_vecs, num_housekeeping);
- 	return pci_alloc_irq_vectors_affinity(dev, min_vecs, max_vecs, flags,
- 					      NULL);
- }
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.27.0
-
+Florian
