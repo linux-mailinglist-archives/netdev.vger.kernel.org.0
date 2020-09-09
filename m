@@ -2,146 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3BAF262C77
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:49:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C925A262CAA
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:57:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729692AbgIIJtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 05:49:42 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:59436 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729413AbgIIJtg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 05:49:36 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0899mW1t100048;
-        Wed, 9 Sep 2020 09:49:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type : in-reply-to;
- s=corp-2020-01-29; bh=tB4+7qqod85cCWo7gq3iXkCyjRmxVFGHTo3ktJFTHXA=;
- b=JYbaL79OI6WJ4Xk0k8tFcd4vl3E+ZVTfN785frqi2eNvwvmUiFx5FkzO+Mr3tIZevbl4
- Tw44lJ50TnTkOl66419sBuVM/DGtKRFXmTLDnEU1BDDPDsgTyKzC+IsNIEKyg2/w/tT9
- n+aXVF9pkmWQD0Xd8IkO4HPWHkTXNidoHPthK01rpk+AVhUUiqs+tAzlTxBDA2SwXMjc
- rsW4tAZxlrMTENdWUKM7+yL4j/T/XPAOYm+5BbVpIebHC75Lvyp3fMwRMSMuyyqOCokS
- WqYTe7VQk+MTLJrQ+pAsT3M73TAqMrLxJoBueQFa0NcLS4lbpYvR9iu2EY3H0a165iDO Qg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 33c2mm0pe9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 09 Sep 2020 09:49:26 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0899eMqQ175199;
-        Wed, 9 Sep 2020 09:47:25 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 33cmkxfqg4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Sep 2020 09:47:25 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0899lNn3032418;
-        Wed, 9 Sep 2020 09:47:23 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 09 Sep 2020 02:47:22 -0700
-Date:   Wed, 9 Sep 2020 12:46:48 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Krzysztof Halasa <khc@pm.waw.pl>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        security@kernel.org, nan chen <whutchennan@gmail.com>,
-        Greg KH <greg@kroah.com>
-Subject: [PATCH v2 net] hdlc_ppp: add range checks in ppp_cp_parse_cr()
-Message-ID: <20200909094648.GC420136@mwanda>
+        id S1728350AbgIIJ5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 05:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726399AbgIIJ5Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 05:57:16 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E177EC061573;
+        Wed,  9 Sep 2020 02:57:15 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id q9so1669645wmj.2;
+        Wed, 09 Sep 2020 02:57:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vzJ2+owmiLfYv0cJPn9WGDrp2m6lL87kIpE3iI2zcfI=;
+        b=UymuNGiU1rRtNtj90xat6K+VNYkIHfxXx0aUubLRLV8Vt+X7JbbSYF7mdrJwurXZUH
+         8G09VZqoOuUHiHg2Gzj1bzgJH5zZKHG/6etP5k9kZ/MZNrxOZm/7H2avBYfRYQZpVpFL
+         Pb2K1VVkQoJ7gODU+yfDEpCo5eUOLllMC+S+9fSyp2EMYvyOYBnzYnwBCU2qNhc0/nQQ
+         gNozl3Jnh/FbxYbRcE4aHUXH9L0DIG6aPM2msSNk2BZ1oriiEdim+nfGGH7OlMKdg+09
+         /d5clbtplgGXCcRDUExBOMNQR2bcvlqVbuBLlhDk2kTxelR/cKvW/u1pCRp3vJ0F0IUR
+         TSwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vzJ2+owmiLfYv0cJPn9WGDrp2m6lL87kIpE3iI2zcfI=;
+        b=LQilAuqMUwXWdjIyZMQS8YoALTjHjxzWK0Vw0Tb1LMt1minfthoUEk1eFV2bDloQGp
+         V3rPKigsGn/f62Qt1TwUogHGcdwZk1dt+/Hoc84BbIHsoxmq81ehJ4WTGDH0z/L9bmRF
+         KfXYU8J3sWgCZ2l2uZj7cK+XGpmd2bnozjkhstbBV9JF8o+kkEt/5eUhfMcWzYhsraGW
+         7hXEeEW5Mvy9pC7kLYRl4gVsK+DbkFlJka88DZwmWM6fOqxFsbQhoFQ4Qn+expsaAObH
+         UJR+FtegyiGNMhf4jjQkUA5dHnk4TlfdyMT6XC6NF0poBEi9Dc3P8Z4aD4AW/ud6FAoY
+         Oi1A==
+X-Gm-Message-State: AOAM533PZbGD+9melJAdQ6WPpzzGxqMHr5yorQbvmgvsra961Smy4JcW
+        mL0vPlo8qN/+MUJIEKYhtJNvuLHjT1b3SQ==
+X-Google-Smtp-Source: ABdhPJx0pAEeNLqqBK/0LW0KyVkmWPS/hnK0xBnBcd/aCzJZ0k8zTYt12mQMUj9IICUolv71rfhAHA==
+X-Received: by 2002:a1c:14e:: with SMTP id 75mr2897019wmb.114.1599645434391;
+        Wed, 09 Sep 2020 02:57:14 -0700 (PDT)
+Received: from localhost.localdomain ([85.153.229.216])
+        by smtp.gmail.com with ESMTPSA id l15sm3381621wrt.81.2020.09.09.02.57.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2020 02:57:13 -0700 (PDT)
+From:   Necip Fazil Yildiran <fazilyildiran@gmail.com>
+To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
+Cc:     ard.biesheuvel@linaro.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        paul@pgazz.com, jeho@cs.utexas.edu,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>
+Subject: [PATCH] net: wireless: fix unmet direct dependendices config warning when !CRYPTO
+Date:   Wed,  9 Sep 2020 12:54:53 +0300
+Message-Id: <20200909095452.3080-1-fazilyildiran@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMnVd19nWToENW3X7v_PZN4snoXAoLgqKqn=dezXnd=z89zL7Q@mail.gmail.com>
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9738 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 phishscore=0 suspectscore=0
- spamscore=0 mlxlogscore=999 adultscore=0 malwarescore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009090086
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9738 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 priorityscore=1501
- phishscore=0 adultscore=0 bulkscore=0 clxscore=1015 mlxlogscore=999
- malwarescore=0 suspectscore=0 lowpriorityscore=0 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009090087
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are a couple bugs here:
-1) If opt[1] is zero then this results in a forever loop.  If the value
-   is less than 2 then it is invalid.
-2) It assumes that "len" is more than sizeof(valid_accm) or 6 which can
-   result in memory corruption.
+When LIB80211_CRYPT_CCMP is enabled and CRYPTO is disabled, it results in unmet
+direct dependencies config warning. The reason is that LIB80211_CRYPT_CCMP
+selects CRYPTO_AES and CRYPTO_CCM, which are subordinate to CRYPTO. This is
+reproducible with CRYPTO disabled and R8188EU enabled, where R8188EU selects
+LIB80211_CRYPT_CCMP but does not select or depend on CRYPTO.
 
-In the case of LCP_OPTION_ACCM, then  we should check "opt[1]" instead
-of "len" because, if "opt[1]" is less than sizeof(valid_accm) then
-"nak_len" gets out of sync and it can lead to memory corruption in the
-next iterations through the loop.  In case of LCP_OPTION_MAGIC, the
-only valid value for opt[1] is 6, but the code is trying to log invalid
-data so we should only discard the data when "len" is less than 6
-because that leads to a read overflow.
+Honor the kconfig menu hierarchy to remove kconfig dependency warnings.
 
-Reported-by: ChenNan Of Chaitin Security Research Lab  <whutchennan@gmail.com>
-Fixes: e022c2f07ae5 ("WAN: new synchronous PPP implementation for generic HDLC.")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a11e2f85481c ("lib80211: use crypto API ccm(aes) transform for CCMP processing")
+Signed-off-by: Necip Fazil Yildiran <fazilyildiran@gmail.com>
 ---
-v2: check opt[1] < 6 instead of len < 6 for the LCP_OPTION_ACCM case.
+ net/wireless/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/net/wan/hdlc_ppp.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/wan/hdlc_ppp.c b/drivers/net/wan/hdlc_ppp.c
-index 48ced3912576..16f33d1ffbfb 100644
---- a/drivers/net/wan/hdlc_ppp.c
-+++ b/drivers/net/wan/hdlc_ppp.c
-@@ -383,11 +383,8 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
- 	}
+diff --git a/net/wireless/Kconfig b/net/wireless/Kconfig
+index faf74850a1b5..27026f587fa6 100644
+--- a/net/wireless/Kconfig
++++ b/net/wireless/Kconfig
+@@ -217,6 +217,7 @@ config LIB80211_CRYPT_WEP
  
- 	for (opt = data; len; len -= opt[1], opt += opt[1]) {
--		if (len < 2 || len < opt[1]) {
--			dev->stats.rx_errors++;
--			kfree(out);
--			return; /* bad packet, drop silently */
--		}
-+		if (len < 2 || opt[1] < 2 || len < opt[1])
-+			goto err_out;
+ config LIB80211_CRYPT_CCMP
+ 	tristate
++	select CRYPTO
+ 	select CRYPTO_AES
+ 	select CRYPTO_CCM
  
- 		if (pid == PID_LCP)
- 			switch (opt[0]) {
-@@ -395,6 +392,8 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
- 				continue; /* MRU always OK and > 1500 bytes? */
- 
- 			case LCP_OPTION_ACCM: /* async control character map */
-+				if (opt[1] < sizeof(valid_accm))
-+					goto err_out;
- 				if (!memcmp(opt, valid_accm,
- 					    sizeof(valid_accm)))
- 					continue;
-@@ -406,6 +405,8 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
- 				}
- 				break;
- 			case LCP_OPTION_MAGIC:
-+				if (len < 6)
-+					goto err_out;
- 				if (opt[1] != 6 || (!opt[2] && !opt[3] &&
- 						    !opt[4] && !opt[5]))
- 					break; /* reject invalid magic number */
-@@ -424,6 +425,11 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
- 		ppp_cp_event(dev, pid, RCR_GOOD, CP_CONF_ACK, id, req_len, data);
- 
- 	kfree(out);
-+	return;
-+
-+err_out:
-+	dev->stats.rx_errors++;
-+	kfree(out);
- }
- 
- static int ppp_rx(struct sk_buff *skb)
 -- 
-2.28.0
+2.25.1
 
