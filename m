@@ -2,72 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 314242624B7
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 04:02:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE1F32624CA
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 04:06:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728463AbgIICCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 22:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726489AbgIICCg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 22:02:36 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C6FC061573;
-        Tue,  8 Sep 2020 19:02:35 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id l191so896164pgd.5;
-        Tue, 08 Sep 2020 19:02:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FENKYd7gG4l5D+EsL5UZvuCgItXppeJ5z3Kb6CaxrH8=;
-        b=O1lpFdjxh59Bfoqb4FlBwn6Dq8U+SMXbBqWRISScyc0DsUGCl7mzw+lRNFSn/FjIlG
-         ii/khcfQDcJQ3AEnU3tOPQug2ocN4rJFdU26wmFcoz02sESMoM0BZxp1qrwWxpzqvtYP
-         /BkF/UYfK+eDvrwiqe4nXXixI3AwvkXAax/Et61PnZhopn8y4YXcRojv5oW05r/RNR9U
-         zx0Mfgvc/KdakH/ILNzOrjzZjSnWotu5+zJgAW5T6GCxo0rAJCkP1pAQ3EIL9cYTTotY
-         zXgTf+LZgMMYQ48zRcLn4EK6H/DriBZsLp67rRs+CrCmcJnmNObVyH3DCzcn83eg39Iq
-         mRAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FENKYd7gG4l5D+EsL5UZvuCgItXppeJ5z3Kb6CaxrH8=;
-        b=maADnsyXOHCEo9AcuGjl9ceVW0BGfx7n8NTwP7RGMhOsGMiE4mbcAQqO6MZRkLue8G
-         SbfZ1LFNeMKalv0k7sXNUtr10akpV/Uf4pjD/kWLu/fMxJjewoYM3X8uejyrUdc4q81v
-         BSsOX26+FRZykPx6HygDFn1rCgd+qQpXCT6ZOZboZU1A3YTcCXVudwMtgq1kb3HIkup8
-         cVF0xtkGVj9rkvs1qHNoYyU0ZcBJJaYF56VG6a4QFIJXmwFFA0MO1Hp54HRIJQe8cg4u
-         q73QBfMt6PiTX3Ab2GFDDMtTAxDrSjpZaUhSyiLpgsikb0JL1GvfYS/Apsj9Pb9cZ8ZK
-         OmMg==
-X-Gm-Message-State: AOAM530ZJzoePbiKdwgZ1McG5mRdKHJhCEFFX8D4mBLWR8e5XddVc9eS
-        pOnAnHJJDrX9CcZJd4RK79nx3Q6WGDw=
-X-Google-Smtp-Source: ABdhPJw/1cqx6OjdcI8CknXPtkM8JS/MdJCmpABG15hyBrGljmto6uylclSImDOH5Shs55OS7cP0qQ==
-X-Received: by 2002:a17:902:b409:b029:d0:cbe1:e771 with SMTP id x9-20020a170902b409b02900d0cbe1e771mr1933870plr.24.1599616954743;
-        Tue, 08 Sep 2020 19:02:34 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d1sm398792pjs.17.2020.09.08.19.02.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 08 Sep 2020 19:02:34 -0700 (PDT)
-Subject: Re: [PATCH v2 4/5] net: phy: smsc: LAN8710/20: add phy refclk in
- support
-To:     Marco Felsch <m.felsch@pengutronix.de>, davem@davemloft.net,
-        kuba@kernel.org, robh+dt@kernel.org, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, zhengdejin5@gmail.com,
-        richard.leitner@skidata.com
-Cc:     netdev@vger.kernel.org, kernel@pengutronix.de,
-        devicetree@vger.kernel.org
-References: <20200908112520.3439-1-m.felsch@pengutronix.de>
- <20200908112520.3439-5-m.felsch@pengutronix.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <3fc73707-1cff-f42f-c96d-dc522bef61e5@gmail.com>
-Date:   Tue, 8 Sep 2020 19:02:32 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.1
+        id S1727088AbgIICG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 22:06:56 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:40912 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726369AbgIICGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 22:06:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599617214;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hetGJHzKmQX4NCLO2RauAhNQ86rD2R/wYZkTPA6dH3k=;
+        b=HTD3tx2JKhzwD62Cc9ZIEUugPUt9WG1td8CHtUMlaLTN0GCUOWBRrUgxx8CtRxg+9obqPA
+        iXV1+/0mssmdf5Fb9SeIC8HWsq1+ivZsxpKKMQgKgNBlWnMdv7BOEX0D5dREUz/UWa/z+Y
+        xer6AZ4piZTdznnfaPU7uQor7UrSnPk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-31-SA-GsSztMSGKQP9QCaubLg-1; Tue, 08 Sep 2020 22:06:53 -0400
+X-MC-Unique: SA-GsSztMSGKQP9QCaubLg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0EBC2824FAB;
+        Wed,  9 Sep 2020 02:06:52 +0000 (UTC)
+Received: from colo-mx.corp.redhat.com (colo-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.20])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 064127E8CD;
+        Wed,  9 Sep 2020 02:06:51 +0000 (UTC)
+Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
+        by colo-mx.corp.redhat.com (Postfix) with ESMTP id DFC2118095FF;
+        Wed,  9 Sep 2020 02:06:51 +0000 (UTC)
+Date:   Tue, 8 Sep 2020 22:06:50 -0400 (EDT)
+From:   Jason Wang <jasowang@redhat.com>
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, Cindy Lu <lulu@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>
+Message-ID: <1815785246.16284907.1599617210463.JavaMail.zimbra@redhat.com>
+In-Reply-To: <20200907110335.GA121033@mtl-vdi-166.wap.labs.mlnx>
+References: <20200907075136.GA114876@mtl-vdi-166.wap.labs.mlnx> <507166908.16038290.1599476003292.JavaMail.zimbra@redhat.com> <20200907110335.GA121033@mtl-vdi-166.wap.labs.mlnx>
+Subject: Re: [PATCH] vdpa/mlx5: Setup driver only if
+ VIRTIO_CONFIG_S_DRIVER_OK
 MIME-Version: 1.0
-In-Reply-To: <20200908112520.3439-5-m.felsch@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.68.5.20, 10.4.195.30]
+Thread-Topic: vdpa/mlx5: Setup driver only if VIRTIO_CONFIG_S_DRIVER_OK
+Thread-Index: NIGZWNwiAp0eeznMYcEYZRw78nk6JA==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -75,30 +61,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 9/8/2020 4:25 AM, Marco Felsch wrote:
-> Add support to specify the clock provider for the phy refclk and don't
-> rely on 'magic' host clock setup. Commit [1] tried to address this by
-> introducing a flag and fixing the corresponding host. But this commit
-> breaks the IRQ support since the irq setup during .config_intr() is
-> thrown away because the reset comes from the side without respecting the
-> current phy-state within the phy-state-machine. Furthermore the commit
-> fixed the problem only for FEC based hosts other hosts acting like the
-> FEC are not covered.
+----- Original Message -----
+> On Mon, Sep 07, 2020 at 06:53:23AM -0400, Jason Wang wrote:
+> > 
+> > 
+> > ----- Original Message -----
+> > > If the memory map changes before the driver status is
+> > > VIRTIO_CONFIG_S_DRIVER_OK, don't attempt to create resources because it
+> > > may fail. For example, if the VQ is not ready there is no point in
+> > > creating resources.
+> > > 
+> > > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5
+> > > devices")
+> > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > ---
+> > >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 3 +++
+> > >  1 file changed, 3 insertions(+)
+> > > 
+> > > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > index 9df69d5efe8c..c89cd48a0aab 100644
+> > > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > > @@ -1645,6 +1645,9 @@ static int mlx5_vdpa_change_map(struct
+> > > mlx5_vdpa_net
+> > > *ndev, struct vhost_iotlb *
+> > >  	if (err)
+> > >  		goto err_mr;
+> > >  
+> > > +	if (!(ndev->mvdev.status & VIRTIO_CONFIG_S_DRIVER_OK))
+> > > +		return 0;
+> > > +
+> > 
+> > I'm not sure I get this.
+> > 
+> > It looks to me if set_map() is called before DRIVER_OK, we won't build
+> > any mapping?
+> > 
+> What would prevent that? Is it some qemu logic you're relying upon?
+
+Ok, I think the map is still there, we just avoid to create some
+resources.
+
+> With current qemu 5.1 with lack of batching support, I get plenty calls
+> to set_map which result in calls to mlx5_vdpa_change_map().
+> If that happens before VIRTIO_CONFIG_S_DRIVER_OK then Imay fail (in case
+> I was not called to set VQs ready).
+
+Right, this could be solved by adding the batched IOTLB updating.
+
+Thanks
+
 > 
-> This commit goes the other way around to address the bug fixed by [1].
-> Instead of resetting the device from the side every time the refclk gets
-> (re-)enabled it requests and enables the clock till the device gets
-> removed. The phy is still rest but now within the phylib and  with
-> respect to the phy-state-machine.
+> > 
+> > >  	restore_channels_info(ndev);
+> > >  	err = setup_driver(ndev);
+> > >  	if (err)
+> > > --
+> > > 2.26.0
+> > > 
+> > > 
+> > 
+> 
+> 
 
-s/rest/reset/
-s/phy/PHY/
-s/phy-state-machine/PHY library state machine/
-
-(this applies to patch #5 as well)
-
-With those things corrected:
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
