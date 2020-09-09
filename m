@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8AD2638F7
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 00:28:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA8652638F9
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 00:28:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728631AbgIIW2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 18:28:03 -0400
-Received: from mga07.intel.com ([134.134.136.100]:30342 "EHLO mga07.intel.com"
+        id S1728954AbgIIW2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 18:28:06 -0400
+Received: from mga07.intel.com ([134.134.136.100]:30343 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727087AbgIIW1w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 18:27:52 -0400
-IronPort-SDR: yaXziyvQPRUkkQSZKElLnrnUi1uGDFK7Gj/1PLXTvbuDWwl9jJkBDod9yrH4fUUQQ37upYlXP9
- RO5PJPKKdOmQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="222627349"
+        id S1727782AbgIIW1x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 18:27:53 -0400
+IronPort-SDR: zoXVtdJEkZHfbyIXU2Wo5bKuFIPjcAraC6ReR4M10yohAPAQmHMZDKOG+IgxbXzG/c9vOidle3
+ 4ff0iBTzWeZg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="222627350"
 X-IronPort-AV: E=Sophos;i="5.76,410,1592895600"; 
-   d="scan'208";a="222627349"
+   d="scan'208";a="222627350"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 15:27:48 -0700
-IronPort-SDR: mzuWA03al82/5rHLbkkxtRFzN6+4IQoCERTQ9XBUOTnRQoWcm++99zI2liiiyfpmDUhxoLdtuA
- 18Wv7iE5dffw==
+IronPort-SDR: +mictdA8gtMi+sj8kwmwwMHj5uYos5l0J95LZhuAm7/FayLJHNOhmS449YUab9OOQr2bW+mKn5
+ lrEd1LMxfpIg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,410,1592895600"; 
-   d="scan'208";a="285017350"
+   d="scan'208";a="285017353"
 Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.4])
   by fmsmga007.fm.intel.com with ESMTP; 09 Sep 2020 15:27:48 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Jacob Keller <jacob.e.keller@intel.com>
-Subject: [net-next v4 4/5] devlink: add support for overwrite mask to netdevsim
-Date:   Wed,  9 Sep 2020 15:26:52 -0700
-Message-Id: <20200909222653.32994-5-jacob.e.keller@intel.com>
+Subject: [net-next v4 5/5] ice: add support for flash update overwrite mask
+Date:   Wed,  9 Sep 2020 15:26:53 -0700
+Message-Id: <20200909222653.32994-6-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.28.0.218.ge27853923b9d.dirty
 In-Reply-To: <20200909222653.32994-1-jacob.e.keller@intel.com>
 References: <20200909222653.32994-1-jacob.e.keller@intel.com>
@@ -43,113 +43,170 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The devlink interface recently gained support for a new "overwrite mask"
-parameter that allows specifying how various sub-sections of a flash
-component are modified when updating.
+Support the recently added DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK
+parameter in the ice flash update handler. Convert the overwrite mask
+bitfield into the appropriate preservation level used by the firmware
+when updating.
 
-Add support for this to netdevsim, to enable easily testing the
-interface. Make the allowed overwrite mask values controllable via
-a debugfs parameter. This enables testing a flow where the driver
-rejects an unsupportable overwrite mask.
+Because there is no equivalent preservation level for overwriting only
+identifiers, this combination is rejected by the driver as not supported
+with an appropriate extended ACK message.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 ---
-This patch is new in v4
+ Documentation/networking/devlink/ice.rst      | 31 +++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_devlink.c  | 19 +++++++++++-
+ .../net/ethernet/intel/ice/ice_fw_update.c    | 16 ++++++++--
+ .../net/ethernet/intel/ice/ice_fw_update.h    |  2 +-
+ 4 files changed, 64 insertions(+), 4 deletions(-)
 
- drivers/net/netdevsim/dev.c                    | 10 +++++++++-
- drivers/net/netdevsim/netdevsim.h              |  1 +
- .../selftests/drivers/net/netdevsim/devlink.sh | 18 ++++++++++++++++++
- 3 files changed, 28 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index ebfc4a698809..74a869fbaa67 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -201,6 +201,8 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
- 		return PTR_ERR(nsim_dev->ports_ddir);
- 	debugfs_create_bool("fw_update_status", 0600, nsim_dev->ddir,
- 			    &nsim_dev->fw_update_status);
-+	debugfs_create_u32("fw_update_overwrite_mask", 0600, nsim_dev->ddir,
-+			    &nsim_dev->fw_update_overwrite_mask);
- 	debugfs_create_u32("max_macs", 0600, nsim_dev->ddir,
- 			   &nsim_dev->max_macs);
- 	debugfs_create_bool("test1", 0600, nsim_dev->ddir,
-@@ -747,6 +749,9 @@ static int nsim_dev_flash_update(struct devlink *devlink,
- 	struct nsim_dev *nsim_dev = devlink_priv(devlink);
- 	int i;
+diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
+index 237848d56f9b..8eb50ba41f1a 100644
+--- a/Documentation/networking/devlink/ice.rst
++++ b/Documentation/networking/devlink/ice.rst
+@@ -81,6 +81,37 @@ The ``ice`` driver reports the following versions
+       - 0xee16ced7
+       - The first 4 bytes of the hash of the netlist module contents.
  
-+	if ((params->overwrite_mask & ~nsim_dev->fw_update_overwrite_mask) != 0)
-+		return -EOPNOTSUPP;
++Flash Update
++============
 +
- 	if (nsim_dev->fw_update_status) {
- 		devlink_flash_update_begin_notify(devlink);
- 		devlink_flash_update_status_notify(devlink,
-@@ -875,7 +880,8 @@ nsim_dev_devlink_trap_policer_counter_get(struct devlink *devlink,
++The ``ice`` driver implements support for flash update using the
++``devlink-flash`` interface. It supports updating the device flash using a
++combined flash image that contains the ``fw.mgmt``, ``fw.undi``, and
++``fw.netlist`` components.
++
++.. list-table:: List of supported overwrite modes
++   :widths: 5 95
++
++   * - Bits
++     - Behavior
++   * - ``DEVLINK_FLASH_OVERWRITE_SETTINGS``
++     - Do not preserve settings stored in the flash components being
++       updated. This includes overwriting the port configuration that
++       determines the number of physical functions the device will
++       initialize with.
++   * - ``DEVLINK_FLASH_OVERWRITE_SETTINGS`` and ``DEVLINK_FLASH_OVERWRITE_IDENTIFIERS``
++     - Do not preserve either settings or identifiers. Overwrite everything
++       in the flash with the contents from the provided image, without
++       performing any preservation. This includes overwriting device
++       identifying fields such as the MAC address, VPD area, and device
++       serial number. It is expected that this combination be used with an
++       image customized for the specific device.
++
++The ice hardware does not support overwriting only identifiers while
++preserving settings, and thus ``DEVLINK_FLASH_OVERWRITE_IDENTIFIERS`` on its
++own will be rejected. If no overwrite mask is provided, the firmware will be
++instructed to preserve all settings and identifying fields when updating.
++
+ Regions
+ =======
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index 4f8f9e229080..c2726932b2d1 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -250,8 +250,24 @@ ice_devlink_flash_update(struct devlink *devlink,
+ 	struct device *dev = &pf->pdev->dev;
+ 	struct ice_hw *hw = &pf->hw;
+ 	const struct firmware *fw;
++	u8 preservation;
+ 	int err;
+ 
++	if (!params->overwrite_mask) {
++		/* preserve all settings and identifiers */
++		preservation = ICE_AQC_NVM_PRESERVE_ALL;
++	} else if (params->overwrite_mask == DEVLINK_FLASH_OVERWRITE_SETTINGS) {
++		/* overwrite settings, but preserve the vital device identifiers */
++		preservation = ICE_AQC_NVM_PRESERVE_SELECTED;
++	} else if (params->overwrite_mask == (DEVLINK_FLASH_OVERWRITE_SETTINGS |
++					      DEVLINK_FLASH_OVERWRITE_IDENTIFIERS)) {
++		/* overwrite both settings and identifiers, preserve nothing */
++		preservation = ICE_AQC_NVM_NO_PRESERVATION;
++	} else {
++		NL_SET_ERR_MSG_MOD(extack, "Requested overwrite mask is not supported");
++		return -EOPNOTSUPP;
++	}
++
+ 	if (!hw->dev_caps.common_cap.nvm_unified_update) {
+ 		NL_SET_ERR_MSG_MOD(extack, "Current firmware does not support unified update");
+ 		return -EOPNOTSUPP;
+@@ -269,7 +285,7 @@ ice_devlink_flash_update(struct devlink *devlink,
+ 
+ 	devlink_flash_update_begin_notify(devlink);
+ 	devlink_flash_update_status_notify(devlink, "Preparing to flash", NULL, 0, 0);
+-	err = ice_flash_pldm_image(pf, fw, extack);
++	err = ice_flash_pldm_image(pf, fw, preservation, extack);
+ 	devlink_flash_update_end_notify(devlink);
+ 
+ 	release_firmware(fw);
+@@ -278,6 +294,7 @@ ice_devlink_flash_update(struct devlink *devlink,
  }
  
- static const struct devlink_ops nsim_dev_devlink_ops = {
--	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT,
-+	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT |
-+					 DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
- 	.reload_down = nsim_dev_reload_down,
- 	.reload_up = nsim_dev_reload_up,
- 	.info_get = nsim_dev_info_get,
-@@ -990,6 +996,7 @@ static int nsim_dev_reload_create(struct nsim_dev *nsim_dev,
- 	INIT_LIST_HEAD(&nsim_dev->port_list);
- 	mutex_init(&nsim_dev->port_list_lock);
- 	nsim_dev->fw_update_status = true;
-+	nsim_dev->fw_update_overwrite_mask = 0;
+ static const struct devlink_ops ice_devlink_ops = {
++	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
+ 	.info_get = ice_devlink_info_get,
+ 	.flash_update = ice_devlink_flash_update,
+ };
+diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.c b/drivers/net/ethernet/intel/ice/ice_fw_update.c
+index deaefe00c9c0..c81273000d88 100644
+--- a/drivers/net/ethernet/intel/ice/ice_fw_update.c
++++ b/drivers/net/ethernet/intel/ice/ice_fw_update.c
+@@ -630,6 +630,7 @@ static const struct pldmfw_ops ice_fwu_ops = {
+  * ice_flash_pldm_image - Write a PLDM-formatted firmware image to the device
+  * @pf: private device driver structure
+  * @fw: firmware object pointing to the relevant firmware file
++ * @preservation: preservation level to request from firmware
+  * @extack: netlink extended ACK structure
+  *
+  * Parse the data for a given firmware file, verifying that it is a valid PLDM
+@@ -643,7 +644,7 @@ static const struct pldmfw_ops ice_fwu_ops = {
+  * Returns: zero on success or a negative error code on failure.
+  */
+ int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
+-			 struct netlink_ext_ack *extack)
++			 u8 preservation, struct netlink_ext_ack *extack)
+ {
+ 	struct device *dev = ice_pf_to_dev(pf);
+ 	struct ice_hw *hw = &pf->hw;
+@@ -651,13 +652,24 @@ int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
+ 	enum ice_status status;
+ 	int err;
  
- 	nsim_dev->fib_data = nsim_fib_create(devlink, extack);
- 	if (IS_ERR(nsim_dev->fib_data))
-@@ -1048,6 +1055,7 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- 	INIT_LIST_HEAD(&nsim_dev->port_list);
- 	mutex_init(&nsim_dev->port_list_lock);
- 	nsim_dev->fw_update_status = true;
-+	nsim_dev->fw_update_overwrite_mask = 0;
- 	nsim_dev->max_macs = NSIM_DEV_MAX_MACS_DEFAULT;
- 	nsim_dev->test1 = NSIM_DEV_TEST1_DEFAULT;
- 	spin_lock_init(&nsim_dev->fa_cookie_lock);
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 284f7092241d..48ba33501450 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -185,6 +185,7 @@ struct nsim_dev {
- 	struct list_head port_list;
- 	struct mutex port_list_lock; /* protects port list */
- 	bool fw_update_status;
-+	u32 fw_update_overwrite_mask;
- 	u32 max_macs;
- 	bool test1;
- 	bool dont_allow_reload;
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-index 1e7541688978..40909c254365 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-@@ -26,6 +26,24 @@ fw_flash_test()
- 	devlink dev flash $DL_HANDLE file dummy component fw.mgmt
- 	check_err $? "Failed to flash with component attribute"
++	switch (preservation) {
++	case ICE_AQC_NVM_PRESERVE_ALL:
++	case ICE_AQC_NVM_PRESERVE_SELECTED:
++	case ICE_AQC_NVM_NO_PRESERVATION:
++	case ICE_AQC_NVM_FACTORY_DEFAULT:
++		break;
++	default:
++		WARN(1, "Unexpected preservation level request %u", preservation);
++		return -EINVAL;
++	}
++
+ 	memset(&priv, 0, sizeof(priv));
  
-+	devlink dev flash $DL_HANDLE file dummy overwrite settings
-+	check_fail $? "Flash with overwrite settings should be rejected"
-+
-+	echo "1"> $DEBUGFS_DIR/fw_update_overwrite_mask
-+	check_err $? "Failed to change allowed overwrite mask"
-+
-+	devlink dev flash $DL_HANDLE file dummy overwrite settings
-+	check_err $? "Failed to flash with settings overwrite enabled"
-+
-+	devlink dev flash $DL_HANDLE file dummy overwrite identifiers
-+	check_fail $? "Flash with overwrite settings should be identifiers"
-+
-+	echo "3"> $DEBUGFS_DIR/fw_update_overwrite_mask
-+	check_err $? "Failed to change allowed overwrite mask"
-+
-+	devlink dev flash $DL_HANDLE file dummy overwrite identifiers overwrite settings
-+	check_err $? "Failed to flash with settings and identifiers overwrite enabled"
-+
- 	echo "n"> $DEBUGFS_DIR/fw_update_status
- 	check_err $? "Failed to disable status updates"
+ 	priv.context.ops = &ice_fwu_ops;
+ 	priv.context.dev = dev;
+ 	priv.extack = extack;
+ 	priv.pf = pf;
+-	priv.activate_flags = ICE_AQC_NVM_PRESERVE_ALL;
++	priv.activate_flags = preservation;
+ 
+ 	status = ice_acquire_nvm(hw, ICE_RES_WRITE);
+ 	if (status) {
+diff --git a/drivers/net/ethernet/intel/ice/ice_fw_update.h b/drivers/net/ethernet/intel/ice/ice_fw_update.h
+index 79472cc618b4..c6390f6851ff 100644
+--- a/drivers/net/ethernet/intel/ice/ice_fw_update.h
++++ b/drivers/net/ethernet/intel/ice/ice_fw_update.h
+@@ -5,7 +5,7 @@
+ #define _ICE_FW_UPDATE_H_
+ 
+ int ice_flash_pldm_image(struct ice_pf *pf, const struct firmware *fw,
+-			 struct netlink_ext_ack *extack);
++			 u8 preservation, struct netlink_ext_ack *extack);
+ int ice_check_for_pending_update(struct ice_pf *pf, const char *component,
+ 				 struct netlink_ext_ack *extack);
  
 -- 
 2.28.0.218.ge27853923b9d.dirty
