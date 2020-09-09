@@ -2,130 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D85F3262AA1
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:42:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48F82262AB2
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:44:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728360AbgIIImU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 04:42:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29143 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728405AbgIIImL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:42:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599640929;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DtMgeTKjCn17clYv2JEnI3ffDcOPCVRLd/V3CjCE3+4=;
-        b=bHjGmcvqF0tE71baoI3XsazFtb7Y1uRgSepgFwfvZVBUz2TXHY8Z/uH6eebU85ovLLOVAz
-        8Nqr+bGQj37LIpdfjuv1znQF6+mxZvW2ANflJEEkIPlnQsSYLPWcy89D/Y/TxGeQPqjGSH
-        KjlZ03LQQkKXOnZ+4HXNy1MWu3PbLgY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-23-_Ya4rfJ9P0yaQlRETl-ZPw-1; Wed, 09 Sep 2020 04:42:06 -0400
-X-MC-Unique: _Ya4rfJ9P0yaQlRETl-ZPw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D592981F02E;
-        Wed,  9 Sep 2020 08:42:03 +0000 (UTC)
-Received: from [10.72.12.24] (ovpn-12-24.pek2.redhat.com [10.72.12.24])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D6F760C15;
-        Wed,  9 Sep 2020 08:41:46 +0000 (UTC)
-Subject: Re: [RFC PATCH 00/22] Enhance VHOST to enable SoC-to-SoC
- communication
-To:     Cornelia Huck <cohuck@redhat.com>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-ntb@googlegroups.com,
-        linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20200702082143.25259-1-kishon@ti.com>
- <20200702055026-mutt-send-email-mst@kernel.org>
- <603970f5-3289-cd53-82a9-aa62b292c552@redhat.com>
- <14c6cad7-9361-7fa4-e1c6-715ccc7e5f6b@ti.com>
- <59fd6a0b-8566-44b7-3dae-bb52b468219b@redhat.com>
- <ce9eb6a5-cd3a-a390-5684-525827b30f64@ti.com>
- <da2b671c-b05d-a57f-7bdf-8b1043a41240@redhat.com>
- <fee8a0fb-f862-03bd-5ede-8f105b6af529@ti.com>
- <b2178e1d-2f5c-e8a3-72fb-70f2f8d6aa45@redhat.com>
- <45a8a97c-2061-13ee-5da8-9877a4a3b8aa@ti.com>
- <c8739d7f-e12e-f6a2-7018-9eeaf6feb054@redhat.com>
- <20200828123409.4cd2a812.cohuck@redhat.com>
- <ac8f7e4f-9f46-919a-f5c2-89b07794f0ab@ti.com>
- <9cd58cd1-0041-3d98-baf7-6e5bc2e7e317@redhat.com>
- <20200908183701.60b93441.cohuck@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <d6e4be52-78d8-546c-20a4-23bdaea68ba5@redhat.com>
-Date:   Wed, 9 Sep 2020 16:41:44 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728214AbgIIIoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 04:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726728AbgIIIoN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:44:13 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448A8C061573
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:44:12 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1kFvhq-0007Uz-VG; Wed, 09 Sep 2020 10:43:54 +0200
+Received: from mfe by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1kFvhl-0000xY-8I; Wed, 09 Sep 2020 10:43:49 +0200
+Date:   Wed, 9 Sep 2020 10:43:49 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        zhengdejin5@gmail.com, richard.leitner@skidata.com,
+        netdev@vger.kernel.org, kernel@pengutronix.de,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] net: phy: smsc: skip ENERGYON interrupt if
+ disabled
+Message-ID: <20200909084349.mst4xbayjsukt7dy@pengutronix.de>
+References: <20200908112520.3439-1-m.felsch@pengutronix.de>
+ <20200908112520.3439-2-m.felsch@pengutronix.de>
+ <c1e70a48-794a-5fc5-822e-ad153679d58d@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200908183701.60b93441.cohuck@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c1e70a48-794a-5fc5-822e-ad153679d58d@gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:42:52 up 299 days, 1 min, 303 users,  load average: 0.01, 0.08,
+ 0.08
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 20-09-08 18:58, Florian Fainelli wrote:
+> 
+> 
+> On 9/8/2020 4:25 AM, Marco Felsch wrote:
+> > Don't enable the interrupt if the platform disable the energy detection
+> > by "smsc,disable-energy-detect".
+> > 
+> > Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> > ---
+> > v2:
+> > - Add Andrew's tag
+> > 
+> >   drivers/net/phy/smsc.c | 15 +++++++++++----
+> >   1 file changed, 11 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+> > index 74568ae16125..fa539a867de6 100644
+> > --- a/drivers/net/phy/smsc.c
+> > +++ b/drivers/net/phy/smsc.c
+> > @@ -37,10 +37,17 @@ struct smsc_phy_priv {
+> >   static int smsc_phy_config_intr(struct phy_device *phydev)
+> >   {
+> > -	int rc = phy_write (phydev, MII_LAN83C185_IM,
+> > -			((PHY_INTERRUPT_ENABLED == phydev->interrupts)
+> > -			? MII_LAN83C185_ISF_INT_PHYLIB_EVENTS
+> > -			: 0));
+> > +	struct smsc_phy_priv *priv = phydev->priv;
+> > +	u16 intmask = 0;
+> > +	int rc;
+> > +
+> > +	if (phydev->interrupts) {
+> 
+> Not that it changes the code functionally, but it would be nice to preserve
+> the phydev->interrupts == PHY_INTERRUPT_ENABLED.
 
-On 2020/9/9 上午12:37, Cornelia Huck wrote:
->> Then you need something that is functional equivalent to virtio PCI
->> which is actually the concept of vDPA (e.g vDPA provides alternatives if
->> the queue_sel is hard in the EP implementation).
-> It seems I really need to read up on vDPA more... do you have a pointer
-> for diving into this alternatives aspect?
+Okay, I will apply this and add your reviewed-by tag.
 
+Thanks,
+  Marco
 
-See vpda_config_ops in include/linux/vdpa.h
+> 
+> > +		intmask = MII_LAN83C185_ISF_INT4 | MII_LAN83C185_ISF_INT6;
+> > +		if (priv->energy_enable)
+> > +			intmask |= MII_LAN83C185_ISF_INT7;
+> > +	}
+> 
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> -- 
+> Florian
+> 
+> 
 
-Especially this part:
-
-     int (*set_vq_address)(struct vdpa_device *vdev,
-                   u16 idx, u64 desc_area, u64 driver_area,
-                   u64 device_area);
-
-This means for the devices (e.g endpoint device) that is hard to 
-implement virtio-pci layout, it can use any other register layout or 
-vendor specific way to configure the virtqueue.
-
-
->
->>> "Virtio Over NTB" should anyways be a new transport.
->>>> Does that make any sense?
->>> yeah, in the approach I used the initial features are hard-coded in
->>> vhost-rpmsg (inherent to the rpmsg) but when we have to use adapter
->>> layer (vhost only for accessing virtio ring and use virtio drivers on
->>> both front end and backend), based on the functionality (e.g, rpmsg),
->>> the vhost should be configured with features (to be presented to the
->>> virtio) and that's why additional layer or APIs will be required.
->> A question here, if we go with vhost bus approach, does it mean the
->> virtio device can only be implemented in EP's userspace?
-> Can we maybe implement an alternative bus as well that would allow us
-> to support different virtio device implementations (in addition to the
-> vhost bus + userspace combination)?
-
-
-That should be fine, but I'm not quite sure that implementing the device 
-in kerne (kthread) is the good approach.
-
-Thanks
-
-
->
-
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
