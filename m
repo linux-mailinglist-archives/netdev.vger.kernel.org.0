@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A986262612
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 06:08:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB52262616
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 06:08:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726060AbgIIEIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 00:08:19 -0400
-Received: from mail-eopbgr750098.outbound.protection.outlook.com ([40.107.75.98]:2155
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        id S1726534AbgIIEIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 00:08:36 -0400
+Received: from mail-bn8nam11on2090.outbound.protection.outlook.com ([40.107.236.90]:15745
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725300AbgIIEIO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 00:08:14 -0400
+        id S1725300AbgIIEIf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 00:08:35 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OY4aHqteMUXh0uR4sI2nooc7r4qkLORFqsYKGjX3unZ9Fd6qtzWrBobKVbNZuZtCp7JX0VWqUSTmSHQ6fGlP/oJuk+0cIx4nHQcm6o4OnvkIsCqLT28Djhfun7s97XgIZeOSMkj0WnespoCB0i6ct8Ld/F043zxjgUqClkgzcXYJoe4NyXXV0LM30Glb7lTD+WE/uQqhZqSRoK+7ZMoVDvDGvI6a9lNDgfnoCBNgEoPyvXAITin0jWhYxtY7Zsu+S6TCz0RuiB3QqGoXJT8dgXcae2yvk61v4jaHzTwRfWfbCV04LolRb0fmYHBgfcGfM/RTTirC73ajbNRZbT/mfg==
+ b=RTTfe01AjGxEV/61d+5FsJGIdiep/KRD/CzxjTpAPORLC5fSHbShrih5JUsVjdNYG7xx0IxX+a4rhmtfe5ZgmQv/JSNWpHoaHpqHoc2cm8HF6oB70zGOUuWGoM/uz09c53pXs9FsxtF/rJB4k1Rso6fv/A4eXM6LxXE/nzyS0zAIlplaloRtzTiukwDdAaObmD8o0RXvIXX3hfo7ZGCitGmx5BxNHu3iHr5n66NdM+9idTSlr5435O604e9C6cZ4YnpMLyykAOHqOCNkndfWfLqAozlTxsWEB3XlayRMdT8m3stBc/B926sGRXcYIOP7I308lyPygTT9IXjZdWD6Ug==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pPQvYCsrO060JXZuS50ZLOidghTMJVVVrYfxEOeTuP8=;
- b=bB8a4On30mR/CZCCQWczij5IUmChFVtatLrNhuASRkpwcXZ0DlpN+ZkrBiS6dznWHap95o1dgUpzpvtYJDMiENs5f0XYO8Die7rn3cJSinWU70WRDSITorwaOnchrkrSKGbmogzxALLMy24GqsrFgZgsYz01En5+efckHA3+8cpS+ELXtlAj2efbU87QveHg/IIocB+J0XUv0KavbDVyiNYmYSdJE2hR6ghRmIbgRe7Rgepy1eWxGzue8YOoqpVmPYtsa5ETN11J0mDR698cScay/3EV7JmfCYwe1cRFWc4TPomeP2q7+TDqLPfx+cRN9RfcLcTiMD1oL+pbcUeZTw==
+ bh=sAZEOVX7g1a1ZcTGNjuqSfur8+qlUrOwMcXOjA5HnGU=;
+ b=gOWspdFi6XUON4LuL7hpJaeA/IBvoyU3tq35WTsqC6/h0/Pn18nEhreVyimpCAnGN1EYRCn6qtH0aPKsMfAO1CKzgJBNH1s+JWEyi011/wxZtZxRXlYmGdi3iPTebAJMZox6xiZ0GuygiJ4Gz6HHi596IssN9r1/qQSvdSW13vz2W5WMs9KdBrmBPDuu/N6owCb/RBVSznqTmXB3AKzCzudd+RP/ctCW8vQdTMh6FDqED65y8s/0iMmLOXy0UrECbuIGaSBCqOEouLFsLzp0FVmO9Q0nmOhJcuGNTyO5vVBwys9AcXXlUYUimqTZLT0UwDf+Nk8cTVZB5BlI3KwzeQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pPQvYCsrO060JXZuS50ZLOidghTMJVVVrYfxEOeTuP8=;
- b=aFCb6jKZFEvNt4Gbsg2PlinF0MuN4XS/zMz+S30BYiMkakWrOPHf/DhxN2kOFML22Y0gt2gX9BlCFV84apj9IxhIvtdAdcpI4RA7w8W9D3wzE05WJCS+16FpObdIx8Fn2bgM0JqV5qj/7gsO7OVCCttAI/rMt404DcV8YGbz0R8=
+ bh=sAZEOVX7g1a1ZcTGNjuqSfur8+qlUrOwMcXOjA5HnGU=;
+ b=RAJxkAUX8evBWTb2HiKwHPc5hQKcge2T+GaA7VPFdi+y8Un3TMShYPup/HHa2ZztgTp2OBpE7N6aJObwqGvcL0rHkXQGTP4X2sQMDCxfUczl/fkSDvsmieNhKjNwr/xEFJijResgRqRr5YxyEuINHKRdQp+j25Aq00Osm3ZDC9M=
 Authentication-Results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=microsoft.com;
 Received: from BN6PR21MB0162.namprd21.prod.outlook.com (10.173.200.8) by
  BN7PR21MB1618.namprd21.prod.outlook.com (52.135.254.15) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3391.3; Wed, 9 Sep 2020 04:08:10 +0000
+ 15.20.3391.3; Wed, 9 Sep 2020 04:08:32 +0000
 Received: from BN6PR21MB0162.namprd21.prod.outlook.com
  ([fe80::c189:fa0c:eb39:9b39]) by BN6PR21MB0162.namprd21.prod.outlook.com
  ([fe80::c189:fa0c:eb39:9b39%7]) with mapi id 15.20.3391.004; Wed, 9 Sep 2020
- 04:08:10 +0000
+ 04:08:32 +0000
 From:   Dexuan Cui <decui@microsoft.com>
 To:     kuba@kernel.org, wei.liu@kernel.org, kys@microsoft.com,
         haiyangz@microsoft.com, sthemmin@microsoft.com,
@@ -45,96 +45,118 @@ To:     kuba@kernel.org, wei.liu@kernel.org, kys@microsoft.com,
         mikelley@microsoft.com
 Cc:     saeedm@mellanox.com, markb@mellanox.com,
         Dexuan Cui <decui@microsoft.com>
-Subject: [PATCH net 1/2] hv_netvsc: Switch the data path at the right time during hibernation
-Date:   Tue,  8 Sep 2020 21:07:32 -0700
-Message-Id: <20200909040732.18993-1-decui@microsoft.com>
+Subject: [PATCH net 2/2] hv_netvsc: Cache the current data path to avoid duplicate call and message
+Date:   Tue,  8 Sep 2020 21:08:19 -0700
+Message-Id: <20200909040819.19053-1-decui@microsoft.com>
 X-Mailer: git-send-email 2.17.1
 Reply-To: decui@microsoft.com
 Content-Type: text/plain
-X-Originating-IP: [2001:4898:80e8:7:fe0e:50ca:c8bf:219c]
-X-ClientProxiedBy: CO2PR05CA0091.namprd05.prod.outlook.com
- (2603:10b6:104:1::17) To BN6PR21MB0162.namprd21.prod.outlook.com
+X-Originating-IP: [2001:4898:80e8:1:fe14:50ca:c8bf:219c]
+X-ClientProxiedBy: MWHPR22CA0004.namprd22.prod.outlook.com
+ (2603:10b6:300:ef::14) To BN6PR21MB0162.namprd21.prod.outlook.com
  (2603:10b6:404:94::8)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from decui-u1804.corp.microsoft.com (2001:4898:80e8:7:fe0e:50ca:c8bf:219c) by CO2PR05CA0091.namprd05.prod.outlook.com (2603:10b6:104:1::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.8 via Frontend Transport; Wed, 9 Sep 2020 04:08:08 +0000
+Received: from decui-u1804.corp.microsoft.com (2001:4898:80e8:1:fe14:50ca:c8bf:219c) by MWHPR22CA0004.namprd22.prod.outlook.com (2603:10b6:300:ef::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16 via Frontend Transport; Wed, 9 Sep 2020 04:08:30 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 2db76353-7dc6-49ee-d7f3-08d85475f697
+X-MS-Office365-Filtering-Correlation-Id: 152cd3a0-6106-4be2-57dd-08d8547603d1
 X-MS-TrafficTypeDiagnostic: BN7PR21MB1618:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BN7PR21MB1618FD22C6F26033C706E46ABF260@BN7PR21MB1618.namprd21.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-Microsoft-Antispam-PRVS: <BN7PR21MB16181CED55D5B6E170A2DD46BF260@BN7PR21MB1618.namprd21.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:98;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HE4rmVSQwcotRTV54HwBmLWO3ZrhikeR3h5xx/6R5Kn3L9tDMeCrIgty6Pht+SdCvQeGW1XH3vB9fiW0T9Q1Touwn7SJFF4CPiYs6CUjLYWtjqpPR9pigefmmKpsXzMLTA6dT9Bjdyn5eO/zYPAqOU0GW+7vHCUagGXJESFreUAo9NEea9IoZnTpb7+WwOu/kRCVsGSODEFFy0KI5ldBOd3N7LQPFi52L95ekMulh5RFWWVP/qL01JYN2GwcYO5pZEogPf/LtEJjaP1lG9COUAKsa7xwGxPNR6hc3/bg5uw3YjfpKXNcU4c9rmRIz/MCdAuBdt29uMDh5JEksK4ZhhRqvMHiYdYFGCNph480Gx1al+m14uzANblVNkv4FIKRhQADqjay6JvDDVszDD47XCsh9fzvzdJI5bs3ST3qQSo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR21MB0162.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(366004)(346002)(136003)(376002)(6666004)(2616005)(86362001)(8936002)(186003)(16526019)(83380400001)(107886003)(10290500003)(6636002)(8676002)(1076003)(316002)(478600001)(52116002)(66556008)(66476007)(66946007)(5660300002)(36756003)(4326008)(6486002)(82950400001)(82960400001)(3450700001)(7696005)(2906002)(921003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: g8Z95UpsGYrXMLaiUbnpGKUsQM6N1XF58/nJ+T3LnrPxdTOULT4/XRzfXgVH1PGV6Mri9Z5h/Nv61KNynyG3GHq0UQ7aOS/ZqbALhCcp3OMwU4i18oPIEt4XcNSncatZRsHnQMnsCPqPKOmHzWosrZ8Sl8eO59+Afbn1OrF/+v7/pYyaEkXPu32eyCUa17kFS0U2i8CKBurY+nICC6M1KT9HjwJn7uZg9CAipIuhvu8XMfJs4dinORuC0RmJwNgiiF3AU6jkaunX7/wek9cv8/qbI3pboMyftGgIDJOyM5rzCr52fOt4cFuvesynckx9tTOS6nIdFDFEM9QQV+GG603DWvGY9Nj1Qh+zhNd590lPaLvtwyteMjrIDrXJzVvd34gVhsZNqvY88ghZBgT211zHnFygeTA1N+qqjtBwwzJoEGyYzeFcr522oSO/mVSvqFjpeluZoIN1R5eVhw/gHAoztA2xfizG5vGP7SLVFX6O72sX5iqO65BDayPjFgzWfrQpZSs4HrP6SQBnUC3ttgAwB379unXPqemuEJnWG3oePb+H7cvR+NnkJwrSxQD7Vhz3AMaHQ5xuB3OTMWt8d/eJaLkB5IS9JPBn/1w2Cnl67WYUl4Nk9uavum41ypYN7Xmoai6WZuxcpPLRfsHQ57MhVzv2AKBE8YJ4ghaXRg1cs8phrt8RuWFYpN2T0rDFzIVqtcum6QuR2DAE5Q9nDg==
+X-Microsoft-Antispam-Message-Info: WCkMNrVdniXyfEvPEra3fQenZh7vb/FSTqx8/t5xpBntnY2N8iH6GwcQS4zxEq6BwDfXyx3aBLn4TttLNmLJ4YW3PPi52JE97kCt3acfs0M6EeLBCUEZei/R1Lh3vViXQEE8TKV0kyqR+PZrFXH/O0jrj/U54hQf6bklSdp2ePkuAx9KYhCd0F9BomCNFLJYSXx9lQQ5mnwrJpsRg4DxRdyswC+zBvZ30nk5mQfY6Sa+ahzXKyEXCQ5MRM30kopaFCdKKwSlIxrxS8oFLppVSdwtWV1xo03lgmAqpJO2XzVcpyHzt1X/8ucqB5fkxs6lH5CVZCysaGi0kK17u8EbWCimTTNjxW0DiQZTTnP3K1kQF26WP9GLJmb8rkM0byYnoCa9jLISzEXFJjRnjyiUiMoUaepDMMeninUKIox6bPk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR21MB0162.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(136003)(366004)(396003)(39860400002)(36756003)(5660300002)(4326008)(66556008)(66476007)(66946007)(2906002)(7696005)(52116002)(6486002)(3450700001)(82950400001)(82960400001)(83380400001)(186003)(16526019)(15650500001)(107886003)(6666004)(2616005)(86362001)(8936002)(316002)(478600001)(10290500003)(8676002)(1076003)(6636002)(921003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 1YWj4xwi6HuSoZ0zTK+tWbzQxiLpuFca1hNMH7szk6PQGy0u1JopROLv+0XnPNwlImcriCHSE5gQUJxf8wwtFMum6TFoPckS85ICTFsobhUIwXL5xTBTp8PTYmjItCdJ3a9m2BkZy0kVXRm7tzen6AsylKjYvrOMyIO/rB1uRMEbOzn7By0B8SylNpaCiz/Yku0FCL4eIgF01PFkIkeFJY+s9HWgstH8SDGiBJYTSZh5s9nCbyxdHakmIvD+YnydJG4gsUR1Svj/AOt7XBs5ZCYF+HO7oX+zU46jMjOUSC+BXv4Lp8rXBwMUA8orm6qjIJx0YmMvzyfsjyqluNQKsaHfvUyVGVDzd+HgkxwN2e9tLujfCCSXOqXoxHs+oXEtlQbl8A0ybCQpVCWMFrrSbClthDC3Ytw4qWF5dYYhmso+dd3inlxhkzAawe3LRREcwo6SYl4p81PAhX8DU7Z3EaTWTFjhYn2TDU3SlHsJEYwVRLqs/wU/iyuQ0VW1klHmd1suIOr+TdJH6P7DjuiqeOWNmilG6iNXbGhJFwp34oW0XkhDj68Zk6FbCQqHJC53JhSpjDki9EuEQT+dMysIy6H3dyTySMUK9x91qhmkuE0X/cdHsfXBwx9WAf+KzytB9IOE1VIq6pK2p/Q/ZYdbnF09e8Km2bDsbRsr/Ul8rf2NRQThXH3MeOkUHukLVZf8yUmyMw6PdkqiU0FivO5fkQ==
 X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2db76353-7dc6-49ee-d7f3-08d85475f697
+X-MS-Exchange-CrossTenant-Network-Message-Id: 152cd3a0-6106-4be2-57dd-08d8547603d1
 X-MS-Exchange-CrossTenant-AuthSource: BN6PR21MB0162.namprd21.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2020 04:08:10.1786
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2020 04:08:32.2249
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AN50k459PyDZAGitfXR6P0ai3fE7O+tP0d6D28l3y17dsFdqI8AxyR1asye2jjzu+YtLzRjaLIZPyXN7Xlctmw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: z5omDCj2tyUs0/D/Rd9VXhY5YEFmrtCLIOhgiZWsjM53C3ongAa2K53irVNDmebWE+BSatIGbds5CcfhjCjyWA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR21MB1618
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When netvsc_resume() is called, the mlx5 VF NIC has not been resumed yet,
-so in the future the host might sliently fail the call netvsc_vf_changed()
--> netvsc_switch_datapath() there, even if the call works now.
+The previous change "hv_netvsc: Switch the data path at the right time
+during hibernation" adds the call of netvsc_vf_changed() upon
+NETDEV_CHANGE, so it's necessary to avoid the duplicate call and message
+when the VF is brought UP or DOWN.
 
-Call netvsc_vf_changed() in the NETDEV_CHANGE event handler: at that time
-the mlx5 VF NIC has been resumed.
-
-Fixes: 19162fd4063a ("hv_netvsc: Fix hibernation for mlx5 VF driver")
 Signed-off-by: Dexuan Cui <decui@microsoft.com>
 ---
- drivers/net/hyperv/netvsc_drv.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ drivers/net/hyperv/hyperv_net.h |  3 +++
+ drivers/net/hyperv/netvsc_drv.c | 21 ++++++++++++++++++++-
+ 2 files changed, 23 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+index 2181d4538ab7..ff33f27cdcd3 100644
+--- a/drivers/net/hyperv/hyperv_net.h
++++ b/drivers/net/hyperv/hyperv_net.h
+@@ -974,6 +974,9 @@ struct net_device_context {
+ 	/* Serial number of the VF to team with */
+ 	u32 vf_serial;
+ 
++	/* Is the current data path through the VF NIC? */
++	bool  data_path_is_vf;
++
+ 	/* Used to temporarily save the config info across hibernation */
+ 	struct netvsc_device_info *saved_netvsc_dev_info;
+ };
 diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 81c5c70b616a..4a25886e2346 100644
+index 4a25886e2346..b7db3766f5b9 100644
 --- a/drivers/net/hyperv/netvsc_drv.c
 +++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -2619,7 +2619,6 @@ static int netvsc_resume(struct hv_device *dev)
- 	struct net_device *net = hv_get_drvdata(dev);
+@@ -2366,7 +2366,16 @@ static int netvsc_register_vf(struct net_device *vf_netdev)
+ 	return NOTIFY_OK;
+ }
+ 
+-/* VF up/down change detected, schedule to change data path */
++/* Change the data path when VF UP/DOWN/CHANGE are detected.
++ *
++ * Typically a UP or DOWN event is followed by a CHANGE event, so
++ * net_device_ctx->data_path_is_vf is used to cache the current data path
++ * to avoid the duplicate call of netvsc_switch_datapath() and the duplicate
++ * message.
++ *
++ * During hibernation, if a VF NIC driver (e.g. mlx5) preserves the network
++ * interface, there is only the CHANGE event and no UP or DOWN event.
++ */
+ static int netvsc_vf_changed(struct net_device *vf_netdev)
+ {
  	struct net_device_context *net_device_ctx;
- 	struct netvsc_device_info *device_info;
--	struct net_device *vf_netdev;
- 	int ret;
- 
- 	rtnl_lock();
-@@ -2632,15 +2631,6 @@ static int netvsc_resume(struct hv_device *dev)
- 	netvsc_devinfo_put(device_info);
- 	net_device_ctx->saved_netvsc_dev_info = NULL;
- 
--	/* A NIC driver (e.g. mlx5) may keep the VF network interface across
--	 * hibernation, but here the data path is implicitly switched to the
--	 * netvsc NIC since the vmbus channel is closed and re-opened, so
--	 * netvsc_vf_changed() must be used to switch the data path to the VF.
--	 */
--	vf_netdev = rtnl_dereference(net_device_ctx->vf_netdev);
--	if (vf_netdev && netvsc_vf_changed(vf_netdev) != NOTIFY_OK)
--		ret = -EINVAL;
--
- 	rtnl_unlock();
- 
- 	return ret;
-@@ -2701,6 +2691,7 @@ static int netvsc_netdev_event(struct notifier_block *this,
- 		return netvsc_unregister_vf(event_dev);
- 	case NETDEV_UP:
- 	case NETDEV_DOWN:
-+	case NETDEV_CHANGE:
- 		return netvsc_vf_changed(event_dev);
- 	default:
+@@ -2383,6 +2392,10 @@ static int netvsc_vf_changed(struct net_device *vf_netdev)
+ 	if (!netvsc_dev)
  		return NOTIFY_DONE;
+ 
++	if (net_device_ctx->data_path_is_vf == vf_is_up)
++		return NOTIFY_OK;
++	net_device_ctx->data_path_is_vf = vf_is_up;
++
+ 	netvsc_switch_datapath(ndev, vf_is_up);
+ 	netdev_info(ndev, "Data path switched %s VF: %s\n",
+ 		    vf_is_up ? "to" : "from", vf_netdev->name);
+@@ -2624,6 +2637,12 @@ static int netvsc_resume(struct hv_device *dev)
+ 	rtnl_lock();
+ 
+ 	net_device_ctx = netdev_priv(net);
++
++	/* Reset the data path to the netvsc NIC before re-opening the vmbus
++	 * channel. Later netvsc_netdev_event() will switch the data path to
++	 * the VF upon the UP or CHANGE event.
++	 */
++	net_device_ctx->data_path_is_vf = false;
+ 	device_info = net_device_ctx->saved_netvsc_dev_info;
+ 
+ 	ret = netvsc_attach(net, device_info);
 -- 
 2.19.1
 
