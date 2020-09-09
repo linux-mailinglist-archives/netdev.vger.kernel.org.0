@@ -2,24 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B35FC2631CB
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:27:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 224982631CF
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:28:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730614AbgIIQ1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 12:27:31 -0400
-Received: from mail.nic.cz ([217.31.204.67]:34622 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731052AbgIIQ0D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 12:26:03 -0400
+        id S1730469AbgIIQ1x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 12:27:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731071AbgIIQ0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:26:04 -0400
+Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3966DC0613ED;
+        Wed,  9 Sep 2020 09:26:03 -0700 (PDT)
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id C2F08140A64;
-        Wed,  9 Sep 2020 18:25:54 +0200 (CEST)
+        by mail.nic.cz (Postfix) with ESMTP id 790C0140A76;
+        Wed,  9 Sep 2020 18:25:55 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1599668754; bh=GiMyA6x4ElsGNt3VmolCaxWgc8p8+8SuvAMrXWbJfso=;
+        t=1599668755; bh=ZrVlwYH21zVLENLWv1RHoCy4rTc2/MBngwHI5nVk+sk=;
         h=From:To:Date;
-        b=f87YnBrkbGhc0mIVSyThy0I8tEFadbY7bRevzKURZ9u8FsqdUpA2/lTT/7rnUADVz
-         YpnEVtE4a7UcqDL5SUwko8Q7h8/8pJC0mgawuhLM6VqjkGqnUJPvleJRn4k2ROwRdS
-         kCtCRgAacYXe2/ZszbGkdU37lhlonyDym53MpG/s=
+        b=FFePVVajsmNyWURu2rdDUSTaREBB6CsBiagszeJWJJvVROiUuJAsaAutbMfKIWmne
+         miPgZK4F4TJZZ5btbfM5Yr7dznZvo9mCmBllbTd2fJXm1BsP4kW8cLJGIWILtokaIE
+         T+bKddxLiBE5IfZIVViPov4YFIOz9cEKJWkZ1dpU=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
@@ -29,11 +32,10 @@ Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
         Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH net-next + leds v2 1/7] dt-bindings: leds: document binding for HW controlled LEDs
-Date:   Wed,  9 Sep 2020 18:25:46 +0200
-Message-Id: <20200909162552.11032-2-marek.behun@nic.cz>
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH net-next + leds v2 5/7] net: phy: add support for LEDs controlled by ethernet PHY chips
+Date:   Wed,  9 Sep 2020 18:25:50 +0200
+Message-Id: <20200909162552.11032-6-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200909162552.11032-1-marek.behun@nic.cz>
 References: <20200909162552.11032-1-marek.behun@nic.cz>
@@ -50,122 +52,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document binding for LEDs connected to and controlled by various chips
-(such as ethernet PHY chips).
+This patch uses the new API for HW controlled LEDs to add support for
+probing and control of LEDs connected to an ethernet PHY chip.
+
+A PHY driver wishing to utilize this API needs to implement the methods
+in struct hw_controlled_led_ops and set the member led_ops in struct
+phy_driver to point to that structure.
 
 Signed-off-by: Marek Behún <marek.behun@nic.cz>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: devicetree@vger.kernel.org
 ---
- .../leds/linux,hw-controlled-leds.yaml        | 99 +++++++++++++++++++
- 1 file changed, 99 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/leds/linux,hw-controlled-leds.yaml
+ drivers/net/phy/phy_device.c | 103 +++++++++++++++++++++++++++++++++++
+ include/linux/phy.h          |   4 ++
+ 2 files changed, 107 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/leds/linux,hw-controlled-leds.yaml b/Documentation/devicetree/bindings/leds/linux,hw-controlled-leds.yaml
-new file mode 100644
-index 0000000000000..eaf6e5d80c5f5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/leds/linux,hw-controlled-leds.yaml
-@@ -0,0 +1,99 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/leds/linux,hw-controlled-leds.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 38f56d39f1229..54d5c88e4d4b2 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -2820,6 +2820,103 @@ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+ 	return phydrv->config_intr && phydrv->ack_interrupt;
+ }
+ 
++#if IS_ENABLED(CONFIG_LEDS_HW_CONTROLLED)
 +
-+title: LEDs that can be controlled by hardware (eg. by an ethernet PHY chip)
++/* PHY mutex lock wrappers for operations on PHY HW controlled LEDs, so that PHY drivers
++ * implementing these operations don't have to lock phydev->lock themselves.
++ */
++static int phy_led_init(struct device *dev, struct hw_controlled_led *led)
++{
++	struct phy_device *phydev = to_phy_device(dev);
++	int ret;
 +
-+maintainers:
-+  - Marek Behún <marek.behun@nic.cz>
++	mutex_lock(&phydev->lock);
++	ret = phydev->drv->led_ops->led_init(dev, led);
++	mutex_unlock(&phydev->lock);
 +
-+description:
-+  Many an ethernet PHY (and other chips) supports various HW control modes
-+  for LEDs connected directly to them. With this binding such LEDs can be
-+  described.
++	return ret;
++}
 +
-+properties:
-+  compatible:
-+    const: linux,hw-controlled-leds
++static int phy_led_brightness_set(struct device *dev, struct hw_controlled_led *led,
++				  enum led_brightness brightness)
++{
++	struct phy_device *phydev = to_phy_device(dev);
++	int ret;
 +
-+  "#address-cells":
-+    const: 1
++	mutex_lock(&phydev->lock);
++	ret = phydev->drv->led_ops->led_brightness_set(dev, led, brightness);
++	mutex_unlock(&phydev->lock);
 +
-+  "#size-cells":
-+    const: 0
++	return ret;
++}
 +
-+patternProperties:
-+  "^led@[0-9a-f]+$":
-+    type: object
-+    allOf:
-+      - $ref: common.yaml#
-+    description:
-+      This node represents a LED device connected to a chip that can control
-+      the LED in various HW controlled modes.
++static const char *phy_led_iter_hw_mode(struct device *dev, struct hw_controlled_led *led,
++					void **iter)
++{
++	struct phy_device *phydev = to_phy_device(dev);
++	const char *ret;
 +
-+    properties:
-+      reg:
-+        maxItems: 1
-+        description:
-+          This property identifies the LED to the chip the LED is connected to
-+          (eg. an ethernet PHY chip can have multiple LEDs connected to it).
++	mutex_lock(&phydev->lock);
++	ret = phydev->drv->led_ops->led_iter_hw_mode(dev, led, iter);
++	mutex_unlock(&phydev->lock);
 +
-+      enable-active-high:
-+        description:
-+          Polarity of LED is active high. If missing, assumed default is active
-+          low.
-+        type: boolean
++	return ret;
++}
 +
-+      led-tristate:
-+        description:
-+          LED pin is tristate type. If missing, assumed false.
-+        type: boolean
++static int phy_led_set_hw_mode(struct device *dev, struct hw_controlled_led *led, const char *mode)
++{
++	struct phy_device *phydev = to_phy_device(dev);
++	int ret;
 +
-+      linux,default-hw-mode:
-+        description:
-+          This parameter, if present, specifies the default HW triggering mode
-+          of the LED when LED trigger is set to `dev-hw-mode`.
-+          Available values are specific per device the LED is connected to and
-+          per LED itself.
-+        $ref: /schemas/types.yaml#definitions/string
++	mutex_lock(&phydev->lock);
++	ret = phydev->drv->led_ops->led_set_hw_mode(dev, led, mode);
++	mutex_unlock(&phydev->lock);
 +
-+    required:
-+      - reg
++	return ret;
++}
 +
-+additionalProperties: false
++static const char *phy_led_get_hw_mode(struct device *dev, struct hw_controlled_led *led)
++{
++	struct phy_device *phydev = to_phy_device(dev);
++	const char *ret;
 +
-+examples:
-+  - |
++	mutex_lock(&phydev->lock);
++	ret = phydev->drv->led_ops->led_get_hw_mode(dev, led);
++	mutex_unlock(&phydev->lock);
 +
-+    #include <dt-bindings/leds/common.h>
++	return ret;
++}
 +
-+    ethernet-phy@0 {
-+        compatible = "ethernet-phy-ieee802.3-c45";
-+        reg = <0>;
++static const struct hw_controlled_led_ops phy_hw_controlled_led_ops = {
++	.led_init		= phy_led_init,
++	.led_brightness_set	= phy_led_brightness_set,
++	.led_iter_hw_mode	= phy_led_iter_hw_mode,
++	.led_set_hw_mode	= phy_led_set_hw_mode,
++	.led_get_hw_mode	= phy_led_get_hw_mode,
++};
 +
-+        leds {
-+            compatible = "linux,hw-controlled-leds";
-+            #address-cells = <1>;
-+            #size-cells = <0>;
++static int of_phy_probe_leds(struct phy_device *phydev)
++{
++	char devicename[32];
 +
-+            led@0 {
-+                reg = <0>;
-+                color = <LED_COLOR_ID_GREEN>;
-+                function = <LED_FUNCTION_STATUS>;
-+                linux,default-trigger = "dev-hw-mode";
-+                linux,default-hw-mode = "1Gbps";
-+            };
++	if (!phydev->drv->led_ops)
++		return 0;
 +
-+            led@1 {
-+                reg = <1>;
-+                color = <LED_COLOR_ID_YELLOW>;
-+                function = <LED_FUNCTION_ACTIVITY>;
-+                linux,default-trigger = "dev-hw-mode";
-+                linux,default-hw-mode = "activity";
-+            };
-+        };
-+    };
++	snprintf(devicename, sizeof(devicename), "ethernet-phy%i", phydev->phyindex);
 +
-+...
++	return of_register_hw_controlled_leds(&phydev->mdio.dev, devicename,
++					      &phy_hw_controlled_led_ops);
++}
++
++#else /* !IS_ENABLED(CONFIG_LEDS_HW_CONTROLLED) */
++
++static inline int of_phy_probe_leds(struct phy_device *phydev)
++{
++	return 0;
++}
++
++#endif /* !IS_ENABLED(CONFIG_LEDS_HW_CONTROLLED) */
++
+ /**
+  * phy_probe - probe and init a PHY device
+  * @dev: device to probe and init
+@@ -2922,6 +3019,12 @@ static int phy_probe(struct device *dev)
+ 
+ 	mutex_unlock(&phydev->lock);
+ 
++	/* LEDs have to be registered with phydev mutex unlocked, because some operations can be
++	 * called during registration that lock the mutex themselves
++	 */
++	if (!err)
++		of_phy_probe_leds(phydev);
++
+ 	return err;
+ }
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 52881e21ad951..8a4ab72c74dd4 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -14,6 +14,7 @@
+ #include <linux/compiler.h>
+ #include <linux/spinlock.h>
+ #include <linux/ethtool.h>
++#include <linux/leds-hw-controlled.h>
+ #include <linux/linkmode.h>
+ #include <linux/netlink.h>
+ #include <linux/mdio.h>
+@@ -741,6 +742,9 @@ struct phy_driver {
+ 	int (*set_loopback)(struct phy_device *dev, bool enable);
+ 	int (*get_sqi)(struct phy_device *dev);
+ 	int (*get_sqi_max)(struct phy_device *dev);
++
++	/* PHY connected and controlled LEDs */
++	const struct hw_controlled_led_ops *led_ops;
+ };
+ #define to_phy_driver(d) container_of(to_mdio_common_driver(d),		\
+ 				      struct phy_driver, mdiodrv)
 -- 
 2.26.2
 
