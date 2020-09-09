@@ -2,114 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7D9263390
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:06:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1576F26335A
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:02:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730716AbgIIRGX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Sep 2020 13:06:23 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:55311 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730321AbgIIPkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 11:40:24 -0400
-Received: from mail-pf1-f200.google.com ([209.85.210.200])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <kai.heng.feng@canonical.com>)
-        id 1kG0eZ-0003l4-8I
-        for netdev@vger.kernel.org; Wed, 09 Sep 2020 14:00:51 +0000
-Received: by mail-pf1-f200.google.com with SMTP id q2so2157892pfc.17
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 07:00:51 -0700 (PDT)
+        id S1730553AbgIIPsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 11:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730526AbgIIPr0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 11:47:26 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC6DC06137A
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 07:21:31 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id h11so2457064ilj.11
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 07:21:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mtr65x6fK5IlIQRtZLNh/NxFbA0Ukhq43XJmWOA2CUc=;
+        b=1kTWQ0Rx17CB3a3l6zRYbeWVNhCtQNdeO1Nyt31G782X3qOLON4LuUwU2Tfa2HcPBh
+         eo2G7kbcA/xqYT4dUkojSxg3+vNGmZt2EyubttIOhQWjesQdymM00mjaHjpLaShFMpCn
+         61y8hoz4MVq8xiOPf9zkqwlAvhn2qYSfAPRjcDSAc5CspVC43c4n4VpfDyNYwdPamoJz
+         3A4tvoOXFutN7GNfYhYGLEIamInVZSviooYPkuI1G9U0ii130k/rjOPPzldqxP1mJCqV
+         nyFrsR/dfjygylN1VDNcS5jSBh1M2gvITzl/AbNA5+8HifN1lQdBIlmucO5fQ/pzz1+Y
+         LMJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=UerQpWjJx3zsxSv3XMGQ5IVVVoYrVWKrJqPq+tgaZ10=;
-        b=XUvwJiqbTyF4steAhlKC8fHRA6/W+EMeJA1W12UW1ldHjLvHaYe3eVS918tb+OWnTP
-         aPwiqV1dwVVDOAQstEVH0QwZk+V/ypc6arc21JfMPDEd1Vkhjzw5/S+gzfo4cYyqi/7e
-         4NYgC6tvUloY2Y+mUuhd54C7R8O/JNmdatqjsZA4pv6S3Eo1rDAQYbpSg94R36wrDTQf
-         ppVFiyVGBGfyYWtrcCw+9fXbjo3jebhJG2LbPajCU9DgcPALUd/xTAlHdFz2KsnAbb43
-         HN+XkY623Y7ha3tmz92JBOEu00UtfwVn2mYOdWaMzeomOFngntBw1mqZCE39+eoc8IGm
-         lStw==
-X-Gm-Message-State: AOAM532dxwqXrTJin64vO5jCgBdzynFjsTJA7q1SStXP5Z67HWottZPT
-        6rMAwoIBS2HzIII3ryPRw+jA5BvNvMyxDpDGGOBiYRltLZ5on4QhkAilRbUsyjhz48kpq00mzpI
-        MOjhJ9yfF06h7alX38tbagDyZI08oJ/ydZw==
-X-Received: by 2002:a17:90a:528a:: with SMTP id w10mr920282pjh.107.1599660049893;
-        Wed, 09 Sep 2020 07:00:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyAVNY/MPKZMX7OIaxd4G9JHrM+Ztrkv6RcCSI8EBNgFRgFk435b1SjpHlYvCKVazyifx3ojQ==
-X-Received: by 2002:a17:90a:528a:: with SMTP id w10mr920244pjh.107.1599660049443;
-        Wed, 09 Sep 2020 07:00:49 -0700 (PDT)
-Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
-        by smtp.gmail.com with ESMTPSA id n7sm2871604pfq.114.2020.09.09.07.00.47
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 09 Sep 2020 07:00:48 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH] rtw88: pci: Power cycle device during shutdown
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-In-Reply-To: <CA+ASDXOizniWUk3pUM1X5UHyGcrJy=ybAwp6_jjXfEGjNPe27g@mail.gmail.com>
-Date:   Wed, 9 Sep 2020 22:00:45 +0800
-Cc:     Tony Chuang <yhchuang@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:REALTEK WIRELESS DRIVER (rtw88)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <D2AE780E-6ED6-4732-8A51-D6431E472C7E@canonical.com>
-References: <20200824093225.13689-1-kai.heng.feng@canonical.com>
- <CA+ASDXOizniWUk3pUM1X5UHyGcrJy=ybAwp6_jjXfEGjNPe27g@mail.gmail.com>
-To:     Brian Norris <briannorris@chromium.org>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mtr65x6fK5IlIQRtZLNh/NxFbA0Ukhq43XJmWOA2CUc=;
+        b=bXl5SV0bBJU10sRSUmlI4CkqBShfbHbcFHDfoFTU0HPtEHGQ6K3kYqt2C5WGRYcHbn
+         BiDiPn4Zl7F0cLdOkq6GWen1manUfTi/s9LTbW2I0Cwe/QSm2guHVrrx3n94IWGwf+Wl
+         GOQUYPkVIIIsdM7XBlQmpG9Q+MRGrWsDuOStZA/PIxmHR+9m5nmx/Qc0Uxb8brvGTEwY
+         jIY3uUZDlFVhKPpxO42x5aq1zKDN6mPx6FNhLCHjEhO4lY5PprxNOhXEVOPqcz3MIBBA
+         ARnk4uLjWNOToslHDyOCnEMXdzAI+463pJmqw36FVhb4F9CsbJggFp77Oa0nc9+wgjzf
+         /jIA==
+X-Gm-Message-State: AOAM533iWI5F8GVf4TVnqB7AHG+5N0kItBZk43A9uOrxfgVWYJZva4PX
+        o4W+lA2KEEqjLbO8xvAxisagnw==
+X-Google-Smtp-Source: ABdhPJweYTpuCpa5hQXVyCKu1HNYd1h5alEfQqDr7iNE+D2ODqGnoa1Ri0/JOkdr4eXiKi7PQPRmEw==
+X-Received: by 2002:a05:6e02:d2:: with SMTP id r18mr3681539ilq.303.1599661290531;
+        Wed, 09 Sep 2020 07:21:30 -0700 (PDT)
+Received: from [192.168.1.10] ([65.144.74.34])
+        by smtp.gmail.com with ESMTPSA id j62sm1286878iof.53.2020.09.09.07.21.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Sep 2020 07:21:30 -0700 (PDT)
+Subject: Re: [PATCH] block: remove redundant empty check of mq_list
+To:     Xianting Tian <tian.xianting@h3c.com>, ast@kernel.org,
+        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, andriin@fb.com, john.fastabend@gmail.com,
+        kpsingh@chromium.org
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20200909064814.5704-1-tian.xianting@h3c.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <466b8c40-9d53-8a40-6c5b-f76db2974c04@kernel.dk>
+Date:   Wed, 9 Sep 2020 08:21:29 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <20200909064814.5704-1-tian.xianting@h3c.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 9/9/20 12:48 AM, Xianting Tian wrote:
+> blk_mq_flush_plug_list() itself will do the empty check of mq_list,
+> so remove such check in blk_flush_plug_list().
+> Actually normally mq_list is not empty when blk_flush_plug_list is
+> called.
 
+It's cheaper to do in the caller, instead of doing the function call
+and then aborting if it's empty. So I'd suggest just leaving it alone.
+Right now this is the only caller, but it's nicer to assume we can
+be called in any state vs not having the check.
 
-> On Aug 26, 2020, at 08:27, Brian Norris <briannorris@chromium.org> wrote:
-> 
-> On Mon, Aug 24, 2020 at 2:32 AM Kai-Heng Feng
-> <kai.heng.feng@canonical.com> wrote:
->> 
->> Sometimes system freeze on cold/warm boot when rtw88 is probing.
->> 
->> According to [1], platform firmware may not properly power manage the
->> device during shutdown. I did some expirements and putting the device to
->> D3 can workaround the issue.
->> 
->> So let's power cycle the device by putting the device to D3 at shutdown
->> to prevent the issue from happening.
->> 
->> [1] https://bugzilla.kernel.org/show_bug.cgi?id=206411#c9
->> 
->> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> 
-> Can you at least include some more details, like which hardware
-> version and firmware?
-
-8723DE, 8822BE and 8822CE are affected [1].
-
-> And which platform?
-
-Many x86 laptops.
-
-Some users claim BIOS update can fix the issue, however some are still affected.
-
-> It seems a bit harsh to
-> include a platform workaround to run for everyone, unless there's
-> truly no downside. But even then, it's good to log what you're working
-> with, in case there are ever problems with this in the future.
-
-Ok. I can send V2 with more detailed commit message.
-
-[1] https://bugs.launchpad.net/bugs/1872984
-
-Kai-Heng
-
-> 
-> Brian
+-- 
+Jens Axboe
 
