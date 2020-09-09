@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32950263287
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:45:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76F86263299
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730435AbgIIQpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 12:45:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59270 "EHLO
+        id S1730721AbgIIQqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 12:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731062AbgIIQpV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:45:21 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4A2C061573;
-        Wed,  9 Sep 2020 09:45:20 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id h206so2168086ybc.11;
-        Wed, 09 Sep 2020 09:45:20 -0700 (PDT)
+        with ESMTP id S1731122AbgIIQqm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:46:42 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29D3C061573;
+        Wed,  9 Sep 2020 09:46:41 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id h20so2184373ybj.8;
+        Wed, 09 Sep 2020 09:46:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=AFhTg63zzzBwgd7SFdeI2btVFUo5PkQMb0jFKCFf5bI=;
-        b=lUJzbbW4FRWUCxYAwKcAXsM8Cus2X4Pbo0YBylbNcCzBMs/wlCe5XKzfcCyvxEUT77
-         WpINh0ne5xtFHAguUGCWdSUQrYyVb8cG5L6ce7HA3EJzII2Wb+B1bmiNajiXpC/KbCV1
-         2R1MnghY540jPmiQo2I8e1KwUrYFP/cNiqxZMYA8MoDIUf5TKTXlHVEZ8Pwt3xc2RwRU
-         +YM7WGmQjXQC/6S3uUw35d79zz4bZAtHcw3gxCqeh3Wt4vUqFoRCM7lgd6i48BoYAX4d
-         YMFFm1inq6ejFOlyZ7jtvBnEULMgyuVfQE2GfJOB0LfnOGgJ7D68Dcm2P/u+MHvIMgia
-         hfaw==
+        bh=Xjky72/eXkU1IWx1SYAxUfxbytZkGrTfS89mScUWxRM=;
+        b=layTVNFeoOAhMnKFQAHUSpSRwnn98zi5mVWD93/jTfTVB/uDuvt7xxGroy3euXb6uW
+         GiPMTI9B4JdG5McuSc2uTwPYl17fBMWkHHjoXgOXFy7hZShBZ9elvR8x+fHSQ0efORUZ
+         hziZon92f8msXlsw0dPHltZvY6/UUa7OwpW+8syhHh4zgRVhzXasXi2Bh0IT4mJ59NXW
+         AZmy25H9+IVWsXlAfV81R3vei0rgGUDqGSBbXhGLE68AzEYAzEazJ4Dgjx6ZbvmpKhiI
+         sgZJuCOOJFgp2iyCUmEnxPQHcLS+3Qf2GhRLfAcmIiN15ZyUgnREZ1yoRpGuhtE4GDZQ
+         2ngA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=AFhTg63zzzBwgd7SFdeI2btVFUo5PkQMb0jFKCFf5bI=;
-        b=VIwRxgEDAZsmofC7uar0XgT4/oLW2gtsOTc9toNc43YMgIThJSJAE6nL2cliQgZ9kv
-         3cj9YJ6Tjsh/EelQIMaJQ+MKR+GgfSo+X0MtDRJpJw5ThTcP1p9BPm4VMI7yHcSIpDBn
-         jR08bl561EQlQk9X8Emhi/vflrAcM6OpwNSxkohi2ux5TL4y8tWG4iYfSZPZH2qgG9J0
-         ZcXhQCtbxW+8AdJLkcmf056qJBGqAaIpKJnhDVB9YaSzj6TKuwC6/nSHGTVBsCU/2MKX
-         M2cksfr20xrsZV5/cOP51LFUbdBE1mxppJJrwPmW4ccZbiXhszuVPX/w/3J9X7+HGxVn
-         M0EQ==
-X-Gm-Message-State: AOAM533Dc1mfrk2/Djsj4OmCNznmScU+m5i6WpLtDn+M0efiHUpmNhei
-        igAgDdTEhMHH6bebEgcYpNS3RJu2aVsewIUFpOI=
-X-Google-Smtp-Source: ABdhPJw2ib6SGKMqLa6LL4Afci7xdiW2SHxa3MesLNRJKLHRKJLKsmJWommKqI8FS54OFEYXR4JuxawpBpyGc2a/pt0=
-X-Received: by 2002:a25:ef43:: with SMTP id w3mr6275421ybm.230.1599669919880;
- Wed, 09 Sep 2020 09:45:19 -0700 (PDT)
+        bh=Xjky72/eXkU1IWx1SYAxUfxbytZkGrTfS89mScUWxRM=;
+        b=KSdBQBMi1vFIQWWIZj3rIQnNNfldfBd9p9vQbzFmoU9fZiDmWnDVGJ0XI7ipWIpgeq
+         h3XiVSNoKYxGrQlzNq/yFkQNe+4NuLqj0alv/LQ2v/uQehOxYnX3v2gL0MD+VCu86whQ
+         kB87Gnn96+55CIEBwYnSTzJA6F9v3vE+loRSIfJxCFnzf94VHcP9bmHmaSrKFxn0Lxh3
+         ZRxgstyVf8ygMIeAkv/EMjNlTk3tb+ywzqYfRKp98Ys0NKxGFVcfcVutPGxf08wmV6H+
+         CWNtywhQ8jpZ8y28LOWWcq79ggSU2tEJhp4EIwzEDukmB2vkR9jmsjQvtUtMJEVl4swI
+         9vrg==
+X-Gm-Message-State: AOAM531mQUB5znL1B7BO1mTKOB+0jtu5O0I8csCVTO2RkO/HYkUc0vHA
+        /43nJJTaNToWnBhlzfhG+IKzrE8BhY9T5sdzob0=
+X-Google-Smtp-Source: ABdhPJwx64fE2sXx+vfSwZu4lfiGkLK1h8oSb1aaNGLGfpIBEexAcm1FHFTi7ydhCSsn0ro1N+1bJ8sz0tR49xHRLT4=
+X-Received: by 2002:a25:7b81:: with SMTP id w123mr7233898ybc.260.1599670001028;
+ Wed, 09 Sep 2020 09:46:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200909162251.15498-1-quentin@isovalent.com> <20200909162251.15498-3-quentin@isovalent.com>
-In-Reply-To: <20200909162251.15498-3-quentin@isovalent.com>
+References: <20200907163634.27469-1-quentin@isovalent.com> <20200907163634.27469-2-quentin@isovalent.com>
+ <CAEf4Bzb8QLVdjBY9hRCP7QdnqE-JwWqDn8hFytOL40S=Z+KW-w@mail.gmail.com>
+ <b89b4bbd-a28e-4dde-b400-4d64fc391bfe@isovalent.com> <CAEf4Bzb0SdZBfDfd2ZBXOBgpneAc6mKFhzULj_Msd0MoNSG5ng@mail.gmail.com>
+ <5a002828-c082-3cd7-9ee3-7d783cce2a2a@isovalent.com>
+In-Reply-To: <5a002828-c082-3cd7-9ee3-7d783cce2a2a@isovalent.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 9 Sep 2020 09:45:09 -0700
-Message-ID: <CAEf4BzYaXsGFtX2K9pQF7U-e5ZcHFxMYanvjKanLORk6iF1+Xw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/2] selftests, bpftool: add bpftool (and eBPF
- helpers) documentation build
+Date:   Wed, 9 Sep 2020 09:46:30 -0700
+Message-ID: <CAEf4BzZA3Zcf9imXVEQ_x0cTiC8JV8jXV-iaaQC+NP4mqt_V_Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/2] tools: bpftool: clean up function to dump
+ map entry
 To:     Quentin Monnet <quentin@isovalent.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -61,41 +64,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 9, 2020 at 9:22 AM Quentin Monnet <quentin@isovalent.com> wrote:
+On Wed, Sep 9, 2020 at 9:38 AM Quentin Monnet <quentin@isovalent.com> wrote:
 >
-> eBPF selftests include a script to check that bpftool builds correctly
-> with different command lines. Let's add one build for bpftool's
-> documentation so as to detect errors or warning reported by rst2man when
-> compiling the man pages. Also add a build to the selftests Makefile to
-> make sure we build bpftool documentation along with bpftool when
-> building the selftests.
+> On 09/09/2020 17:30, Andrii Nakryiko wrote:
+> > On Wed, Sep 9, 2020 at 1:19 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>
+> >> On 09/09/2020 04:25, Andrii Nakryiko wrote:
+> >>> On Mon, Sep 7, 2020 at 9:36 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>>>
+> >>>> The function used to dump a map entry in bpftool is a bit difficult to
+> >>>> follow, as a consequence to earlier refactorings. There is a variable
+> >>>> ("num_elems") which does not appear to be necessary, and the error
+> >>>> handling would look cleaner if moved to its own function. Let's clean it
+> >>>> up. No functional change.
+> >>>>
+> >>>> v2:
+> >>>> - v1 was erroneously removing the check on fd maps in an attempt to get
+> >>>>   support for outer map dumps. This is already working. Instead, v2
+> >>>>   focuses on cleaning up the dump_map_elem() function, to avoid
+> >>>>   similar confusion in the future.
+> >>>>
+> >>>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> >>>> ---
+> >>>>  tools/bpf/bpftool/map.c | 101 +++++++++++++++++++++-------------------
+> >>>>  1 file changed, 52 insertions(+), 49 deletions(-)
+> >>>>
+> >>>> diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
+> >>>> index bc0071228f88..c8159cb4fb1e 100644
+> >>>> --- a/tools/bpf/bpftool/map.c
+> >>>> +++ b/tools/bpf/bpftool/map.c
+> >>>> @@ -213,8 +213,9 @@ static void print_entry_json(struct bpf_map_info *info, unsigned char *key,
+> >>>>         jsonw_end_object(json_wtr);
+> >>>>  }
+> >>>>
+> >>>> -static void print_entry_error(struct bpf_map_info *info, unsigned char *key,
+> >>>> -                             const char *error_msg)
+> >>>> +static void
+> >>>> +print_entry_error_msg(struct bpf_map_info *info, unsigned char *key,
+> >>>> +                     const char *error_msg)
+> >>>>  {
+> >>>>         int msg_size = strlen(error_msg);
+> >>>>         bool single_line, break_names;
+> >>>> @@ -232,6 +233,40 @@ static void print_entry_error(struct bpf_map_info *info, unsigned char *key,
+> >>>>         printf("\n");
+> >>>>  }
+> >>>>
+> >>>> +static void
+> >>>> +print_entry_error(struct bpf_map_info *map_info, void *key, int lookup_errno)
+> >>>> +{
+> >>>> +       /* For prog_array maps or arrays of maps, failure to lookup the value
+> >>>> +        * means there is no entry for that key. Do not print an error message
+> >>>> +        * in that case.
+> >>>> +        */
+> >>>
+> >>> this is the case when error is ENOENT, all the other ones should be
+> >>> treated the same, no?
+> >>
+> >> Do you mean all map types should be treated the same? If so, I can
+> >> remove the check below, as in v1. Or do you mean there is a missing
+> >> check on the error value? In which case I can extend this check to
+> >> verify we have ENOENT.
+> >
+> > The former, probably. I don't see how map-in-map is different for
+> > lookups and why it needs special handling.
 >
-> This also builds and checks warnings for the man page for eBPF helpers,
-> which is built along bpftool's documentation.
+> I didn't find a particular reason in the logs. My guess is that they may
+> be more likely to have "empty" entries than other types, and that it
+> might be more difficult to spot the existing entries in the middle of a
+> list of "<no entry>" messages.
 >
-> This change adds rst2man as a dependency for selftests (it comes with
-> Python's "docutils").
+> But I agree, let's get rid of this special case and have the same output
+> for all types. I'll respin.
+
+Oh, wait, I think what I had in mind is to special case ENOENT for
+map-in-map and just skip those. So yeah, sorry, there is still a bit
+of a special handling, but **only** for -ENOENT. When I was replying I
+forgot bpftool emits "<no entry>" for each -ENOENT by default.
+
 >
-> v2:
-> - Use "--exit-status=1" option for rst2man instead of counting lines
->   from stderr.
-
-It's a sane default to have non-zero exit code on error/warning, so
-why not specifying it all the time?
-
-> - Also build bpftool as part as the selftests build (and not only when
->   the tests are actually run).
->
-> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> ---
-
-LGTM.
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  tools/testing/selftests/bpf/Makefile          |  5 +++++
->  .../selftests/bpf/test_bpftool_build.sh       | 21 +++++++++++++++++++
->  2 files changed, 26 insertions(+)
->
-
-[...]
+> Thanks again,
+> Quentin
