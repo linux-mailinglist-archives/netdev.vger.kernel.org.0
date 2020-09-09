@@ -2,160 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AF28262A0D
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:19:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F8B9262A24
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728936AbgIIITo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 04:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726642AbgIIITl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:19:41 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902A4C061755
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:19:40 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id g4so1918270wrs.5
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:19:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3Oevd7iVtCDsmoMCjCDsQDgHNREENuQUSSMZLjv8SJY=;
-        b=oTUiET38UXprPQVuamW2Qi51yJm2OStVaxWSwfBBZrM+OIrPco4rVDJOpW9ZebC1tW
-         0hfWTkvnGQMVyVjd0Qoc8YGYw+IIZ4ewIEToCCXcZjRHYQrCYTEo3+Ci2rjGIUhEdsTn
-         jQtyvCa1SzINq+J/VEkhwFFs8WCuv9/Ue8M8mki8LTpu75uRHvLJk7PMIjdi6Z6VqMm/
-         YVZekZ7m/1aEEYiCf35Wd+DW1ePa34HxPXn4oeQucAbI+OB3O2gLtHfWFliqIDYf9n9g
-         2Rkm5HaYZzj9vHe5jkVLxx+xeZx5Yjau9MVN4SzXiG81ZIsjpuYflryeyM08rEjE4R5f
-         pgdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3Oevd7iVtCDsmoMCjCDsQDgHNREENuQUSSMZLjv8SJY=;
-        b=ZIDsUSGkvN+tOoJm5w5m4DAuz3GVNJsRJnW0IMArWkLSD/Qvsm8wFUHZb0heYOQf+C
-         z/0BCYQGwFH9+C93TnMQg2qv2pVn5HXZwM+Yp4QXzMy8rXDEp6NZ71zdEehsdl9bFFAe
-         NTkvCqRVoy4HcJgBRtdGeNRhSPTPxorpTAfcXQmXQGi+pqYEuJxuvY+AT3hvIdrR/1Z+
-         wlPqcwU9FdaydehTTXNYYNKHQ24NlqeJ/moQQyVhBWsO0Vg/+9EjX6Gtb43JCwbGgDRh
-         inrsrk9rdSMml7r5/GXGGYelUxWwGh150s26kBZTLqYURDok8Zes/DOMzrvsb3ZBhzlh
-         +eJg==
-X-Gm-Message-State: AOAM532BSc1zjYJbIwdfAsMGpIqueVZJ2Tbx5ajPNvJojuCUozAaDLpq
-        9MoWrgRX47wJhCgOYdjnKiY/y0hppvh/eCPqjJQ=
-X-Google-Smtp-Source: ABdhPJzuIUQ3D0Sn6FNu5ARK7tlponD66y4IQe7I9qqRksdNKM/7Te7pLVhcjZZfgYIPUqoxIj0o2Q==
-X-Received: by 2002:adf:cc8c:: with SMTP id p12mr2876875wrj.92.1599639578773;
-        Wed, 09 Sep 2020 01:19:38 -0700 (PDT)
-Received: from [192.168.1.12] ([194.35.119.152])
-        by smtp.gmail.com with ESMTPSA id s11sm3015593wrt.43.2020.09.09.01.19.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Sep 2020 01:19:38 -0700 (PDT)
-Subject: Re: [PATCH bpf-next v2 1/2] tools: bpftool: clean up function to dump
- map entry
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>
-References: <20200907163634.27469-1-quentin@isovalent.com>
- <20200907163634.27469-2-quentin@isovalent.com>
- <CAEf4Bzb8QLVdjBY9hRCP7QdnqE-JwWqDn8hFytOL40S=Z+KW-w@mail.gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <b89b4bbd-a28e-4dde-b400-4d64fc391bfe@isovalent.com>
-Date:   Wed, 9 Sep 2020 09:19:37 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.1
+        id S1727782AbgIIIWt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Sep 2020 04:22:49 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45575 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725975AbgIIIWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:22:47 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-580-fBFSYcAiPF-74OjipI43Wg-1; Wed, 09 Sep 2020 04:22:42 -0400
+X-MC-Unique: fBFSYcAiPF-74OjipI43Wg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F955801AE9;
+        Wed,  9 Sep 2020 08:22:41 +0000 (UTC)
+Received: from p50.redhat.com (ovpn-113-171.ams2.redhat.com [10.36.113.171])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 918E810013D0;
+        Wed,  9 Sep 2020 08:22:39 +0000 (UTC)
+From:   Stefan Assmann <sassmann@kpanic.de>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jeffrey.t.kirsher@intel.com, lihong.yang@intel.com,
+        sassmann@kpanic.de
+Subject: [PATCH] i40e: report correct VF link speed when link state is set to enable
+Date:   Wed,  9 Sep 2020 10:22:12 +0200
+Message-Id: <20200909082212.67583-1-sassmann@kpanic.de>
 MIME-Version: 1.0
-In-Reply-To: <CAEf4Bzb8QLVdjBY9hRCP7QdnqE-JwWqDn8hFytOL40S=Z+KW-w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sassmann@kpanic.de
+X-Mimecast-Spam-Score: 0.002
+X-Mimecast-Originator: kpanic.de
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/09/2020 04:25, Andrii Nakryiko wrote:
-> On Mon, Sep 7, 2020 at 9:36 AM Quentin Monnet <quentin@isovalent.com> wrote:
->>
->> The function used to dump a map entry in bpftool is a bit difficult to
->> follow, as a consequence to earlier refactorings. There is a variable
->> ("num_elems") which does not appear to be necessary, and the error
->> handling would look cleaner if moved to its own function. Let's clean it
->> up. No functional change.
->>
->> v2:
->> - v1 was erroneously removing the check on fd maps in an attempt to get
->>   support for outer map dumps. This is already working. Instead, v2
->>   focuses on cleaning up the dump_map_elem() function, to avoid
->>   similar confusion in the future.
->>
->> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
->> ---
->>  tools/bpf/bpftool/map.c | 101 +++++++++++++++++++++-------------------
->>  1 file changed, 52 insertions(+), 49 deletions(-)
->>
->> diff --git a/tools/bpf/bpftool/map.c b/tools/bpf/bpftool/map.c
->> index bc0071228f88..c8159cb4fb1e 100644
->> --- a/tools/bpf/bpftool/map.c
->> +++ b/tools/bpf/bpftool/map.c
->> @@ -213,8 +213,9 @@ static void print_entry_json(struct bpf_map_info *info, unsigned char *key,
->>         jsonw_end_object(json_wtr);
->>  }
->>
->> -static void print_entry_error(struct bpf_map_info *info, unsigned char *key,
->> -                             const char *error_msg)
->> +static void
->> +print_entry_error_msg(struct bpf_map_info *info, unsigned char *key,
->> +                     const char *error_msg)
->>  {
->>         int msg_size = strlen(error_msg);
->>         bool single_line, break_names;
->> @@ -232,6 +233,40 @@ static void print_entry_error(struct bpf_map_info *info, unsigned char *key,
->>         printf("\n");
->>  }
->>
->> +static void
->> +print_entry_error(struct bpf_map_info *map_info, void *key, int lookup_errno)
->> +{
->> +       /* For prog_array maps or arrays of maps, failure to lookup the value
->> +        * means there is no entry for that key. Do not print an error message
->> +        * in that case.
->> +        */
-> 
-> this is the case when error is ENOENT, all the other ones should be
-> treated the same, no?
+When the virtual link state was set to "enable" ethtool would report
+link speed as 40000Mb/s regardless of the underlying device.
+Report the correct link speed.
 
-Do you mean all map types should be treated the same? If so, I can
-remove the check below, as in v1. Or do you mean there is a missing
-check on the error value? In which case I can extend this check to
-verify we have ENOENT.
+Example from a XXV710 NIC.
+Before:
+$ ip link set ens3f0 vf 0 state auto
+$  ethtool enp8s2 | grep Speed
+        Speed: 25000Mb/s
+$ ip link set ens3f0 vf 0 state enable
+$ ethtool enp8s2 | grep Speed
+        Speed: 40000Mb/s
+After:
+$ ip link set ens3f0 vf 0 state auto
+$  ethtool enp8s2 | grep Speed
+        Speed: 25000Mb/s
+$ ip link set ens3f0 vf 0 state enable
+$ ethtool enp8s2 | grep Speed
+        Speed: 25000Mb/s
 
->> +       if (map_is_map_of_maps(map_info->type) ||
->> +           map_is_map_of_progs(map_info->type))
->> +               return;
->> +
->> +       if (json_output) {
->> +               jsonw_start_object(json_wtr);   /* entry */
->> +               jsonw_name(json_wtr, "key");
->> +               print_hex_data_json(key, map_info->key_size);
->> +               jsonw_name(json_wtr, "value");
->> +               jsonw_start_object(json_wtr);   /* error */
->> +               jsonw_string_field(json_wtr, "error", strerror(lookup_errno));
->> +               jsonw_end_object(json_wtr);     /* error */
->> +               jsonw_end_object(json_wtr);     /* entry */
->> +       } else {
->> +               const char *msg = NULL;
->> +
->> +               if (lookup_errno == ENOENT)
->> +                       msg = "<no entry>";
->> +               else if (lookup_errno == ENOSPC &&
->> +                        map_info->type == BPF_MAP_TYPE_REUSEPORT_SOCKARRAY)
->> +                       msg = "<cannot read>";
->> +
->> +               print_entry_error_msg(map_info, key,
->> +                                     msg ? : strerror(lookup_errno));
->> +       }
->> +}
->> +
-> 
-> [...]
-> 
+Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+---
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index 8e133d6545bd..9c4b166f3346 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -63,7 +63,7 @@ static void i40e_vc_notify_vf_link_state(struct i40e_vf *vf)
+ 	} else if (vf->link_forced) {
+ 		pfe.event_data.link_event.link_status = vf->link_up;
+ 		pfe.event_data.link_event.link_speed =
+-			(vf->link_up ? VIRTCHNL_LINK_SPEED_40GB : 0);
++			(vf->link_up ? i40e_virtchnl_link_speed(ls->link_speed) : 0);
+ 	} else {
+ 		pfe.event_data.link_event.link_status =
+ 			ls->link_info & I40E_AQ_LINK_UP;
+@@ -4404,6 +4404,7 @@ int i40e_ndo_set_vf_link_state(struct net_device *netdev, int vf_id, int link)
+ {
+ 	struct i40e_netdev_priv *np = netdev_priv(netdev);
+ 	struct i40e_pf *pf = np->vsi->back;
++	struct i40e_link_status *ls = &pf->hw.phy.link_info;
+ 	struct virtchnl_pf_event pfe;
+ 	struct i40e_hw *hw = &pf->hw;
+ 	struct i40e_vf *vf;
+@@ -4441,7 +4442,7 @@ int i40e_ndo_set_vf_link_state(struct net_device *netdev, int vf_id, int link)
+ 		vf->link_forced = true;
+ 		vf->link_up = true;
+ 		pfe.event_data.link_event.link_status = true;
+-		pfe.event_data.link_event.link_speed = VIRTCHNL_LINK_SPEED_40GB;
++		pfe.event_data.link_event.link_speed = i40e_virtchnl_link_speed(ls->link_speed);
+ 		break;
+ 	case IFLA_VF_LINK_STATE_DISABLE:
+ 		vf->link_forced = true;
+-- 
+2.26.2
 
