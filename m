@@ -2,325 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34C6C2635E8
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 20:24:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AA5F2635EE
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 20:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729529AbgIISYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 14:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728363AbgIISYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 14:24:22 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C4CC061799
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 11:24:18 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id l14so2381522pgm.6
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 11:24:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=uSHodFLWlUfGlLydQ5jSJNN2VPiTPUOh7WGERwhNze8=;
-        b=iLN622kq/vPefBvo2kPG5W5adhvxLANF+wV1Nk6ycxoV/BbV2A6BoBw5VL5Z0b2azc
-         AHL87109oHIfZ+F5GpZ4iy0gxZvHLuE3oqr6O8zAon6AY+bBvT9bYwVXRo/rYqtfMQg5
-         77vnED+/SKD+zcP9Qx/WmQk9+loVQ0gVXTZr/pkourwKw4oAiDuRLdsh0Bgkbul3iT9p
-         vgRthcuVZ41veOS4yc7CYekDU71HxGjfRr/KDpMAlw7pa4jAIXmc1ag0DhjfvmLyS3hM
-         1uRynXIj/orGCKBMunYdvdbkmDi0MhhC7H0uxJMo14qXLN1dogw3PVRxYpZMoX+f9iBj
-         jEQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=uSHodFLWlUfGlLydQ5jSJNN2VPiTPUOh7WGERwhNze8=;
-        b=ktqqmZN77WhIFgTyMcRsI1r59nxHtYtozpuFyFflGdYX3oZnUVQsv86/gfUj1C7Hw0
-         ZlIWRFKKssCl9Z5oeZ8z0b5b4fSJ5wkOGYoY2iDbAio+Z8faZlCnuriTFcdWyG9U1AP8
-         LVITIhXqc7TEpVJ5jqSQoCshWEANQNtASVXmtPeFU9Oe4JmYg3+sFBupNsDzUu9ukDqp
-         mO2T498fhfRN9+MW3CY0alJ5/l7lriJ+dB+S93JLLqMRDO+cP4t34xI762v3wZ3CkKa6
-         sUS333uBTtomFcxT/9/W7kJQTahb/gTiKnuCydtU2onQN31K3QyWzEwlJp7ZnY0ZZRGm
-         9GZQ==
-X-Gm-Message-State: AOAM531D0JwD9Uz+Uv/RftYcdjTMvp6v16h7LBhRXfuKKRe0fpJCov7r
-        siVuBu1C3juw10CKEWpbsDkBkg/2sJw33hnUNavkZNnFR+MYdUA9HCFbGz9yO4RWgRDlL3ANPfX
-        MEgiv/I4XLi1vtqqH4nyAlBb4iMAC14E1UrGyU9bisidjPIfNDcJGZQ==
-X-Google-Smtp-Source: ABdhPJz+bGhWOfL72GGVzPXMqEYGoHT6OqqWTwt85QJ6f4FAo2TklVE2vVi6Uxr435KfPw3mne+Fp6M=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:aa7:9548:0:b029:13e:d13d:a08d with SMTP id
- w8-20020aa795480000b029013ed13da08dmr1952356pfq.36.1599675857829; Wed, 09 Sep
- 2020 11:24:17 -0700 (PDT)
-Date:   Wed,  9 Sep 2020 11:24:06 -0700
-In-Reply-To: <20200909182406.3147878-1-sdf@google.com>
-Message-Id: <20200909182406.3147878-6-sdf@google.com>
-Mime-Version: 1.0
-References: <20200909182406.3147878-1-sdf@google.com>
-X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
-Subject: [PATCH bpf-next v4 5/5] selftests/bpf: Test load and dump metadata
- with btftool and skel
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        YiFei Zhu <zhuyifei@google.com>,
-        YiFei Zhu <zhuyifei1999@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726801AbgIIS0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 14:26:08 -0400
+Received: from mailrelay105.isp.belgacom.be ([195.238.20.132]:5249 "EHLO
+        mailrelay105.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725975AbgIIS0G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 14:26:06 -0400
+IronPort-SDR: zA9XNXEXspEXpvQAk0e0EupO3hw14WwrAkNg2p18c00um0kWtImOjXUXDKjIKJ6dn+mKrW/8ik
+ f3jPcfGEfL8I/U+QWJSotKeaqR/5cjXRhHyBqr1Whyek7Pdk8Ppbw7/VAiGlQTB5TypClQZvpL
+ sZrb7XFOu1kQeXlm+Qj5eLnJxAcAOtxzli+ga8bvvwyBgDSC2mZZj4vec7h1xvtgMwgTImibVl
+ QF6Nma1Gnsf8D2Ssnh/+7o8B9licIZ535M83fniN+HXuoGLLQfn2h1Rz32rjv0RT6V5KjLACWr
+ pt4=
+X-Belgacom-Dynamic: yes
+IronPort-PHdr: =?us-ascii?q?9a23=3AeDLf1BBpoPA3EDn6N3DJUyQJP3N1i/DPJgcQr6?=
+ =?us-ascii?q?AfoPdwSP36oc+wAkXT6L1XgUPTWs2DsrQY0rSQ6v29EjxRqb+681k6OKRWUB?=
+ =?us-ascii?q?EEjchE1ycBO+WiTXPBEfjxciYhF95DXlI2t1uyMExSBdqsLwaK+i764jEdAA?=
+ =?us-ascii?q?jwOhRoLerpBIHSk9631+ev8JHPfglEnjWwba5zIRmssAnctskbjYRhJ6s11x?=
+ =?us-ascii?q?DEvmZGd+NKyG1yOFmdhQz85sC+/J5i9yRfpfcs/NNeXKv5Yqo1U6VWACwpPG?=
+ =?us-ascii?q?4p6sLrswLDTRaU6XsHTmoWiBtIDBPb4xz8Q5z8rzH1tut52CmdIM32UbU5Ui?=
+ =?us-ascii?q?ms4qt3VBPljjoMOjgk+2/Vl8NwlrpWrhK/qRJizYDaY4abO/VxcK7GYd8XRn?=
+ =?us-ascii?q?BMUtpLWiBdHo+xaZYEAeobPeZfqonwv1sAogGlCgmtHuzvzCJDiH/s3aIkzu?=
+ =?us-ascii?q?suDxvG3A08ENINrX/Zq9v1O70JXuC716TI1jbDbvNQ2Tjj9IjEaAsuru+VUL?=
+ =?us-ascii?q?92bMHexlUhGRnfgVWMtYzqISmV1uIVvmaV7OdtUeKhhm8npg1vrDWhxtohhp?=
+ =?us-ascii?q?XUio4Jy13K+ip3zZs7KNCmVUN2YdypHYVfuS2GOYV4TccvTWFotiokzrALv4?=
+ =?us-ascii?q?OwcisSyJk/wxPTduaLf5WL7x79TuqdPDZ1iXJ/dL6ihhu/91WrxPfmWcmuyl?=
+ =?us-ascii?q?lKqzJIktzLtn8QyRPe8tOHSv5h/ke53jaPyhzT5vlEIU8qkarbLIYswro3lp?=
+ =?us-ascii?q?UPq0vDGi/2mELtjK+KbEkk/u+o5Pj9bbXiu5CcMIp0hRv/MqQogsC/AOI4PR?=
+ =?us-ascii?q?YSX2WD/emwyafv8VD6TblUlPE6j6jUvZDAKcgGp6O1GwpV3Zwi6xa7ATemyt?=
+ =?us-ascii?q?MYnXwfIVJLYh2IlIbpNkrVIPD7Dfa/hUqjkCtxy//dILLtGo/NIWTbkLf9Yb?=
+ =?us-ascii?q?Z97FZRyBIpwt9E45JUDaoMIPTtVU/tutzYDxs5MxCqzOb9Etl90ZkeWW2XCK?=
+ =?us-ascii?q?+DLKzSqUOI5v4oI+SUZ48aoivyK/w76PHylnI5n0ESfbWn3ZsWbHC4AuppI1?=
+ =?us-ascii?q?+DbXrrmNcBHn8AvhAiQ+zylF2CTTlTam68X6My/Tw7E56mDZ3HRo+zhryNxj?=
+ =?us-ascii?q?q0EYNObGBcFl+MCWvod5mDW/oUbiKdPNNhkjIFVbilV48uywuuuBbnxLV5MO?=
+ =?us-ascii?q?rb5CkYuIn91Nh6+eLTjws+9T9qAMSH1WGCUWV0knkPRz8s06B1uVZ9xUub0a?=
+ =?us-ascii?q?hkn/xYEsRe6O9OUgcgK5Hc0/J1BMr3Wg/aeNeGVkqmQtunATE1UtI+3cUOb1?=
+ =?us-ascii?q?x6G9W4gRDJxzCqDKMNl7yXGJw09brR337vKMZh1nnJyrchgkI4QstAK2KmnL?=
+ =?us-ascii?q?Rz9wvNCI7TlUWWiaKqeb4b3C7X+2eJ1XCOs11AUA5sTaXFWmgSZkXMotvi6E?=
+ =?us-ascii?q?PPVKSuCbcnMwtH18GCNrFGZcb3ggYOePC2IN3UZ2WZnWqsCxeM2r6WKo3wdC?=
+ =?us-ascii?q?FV3yzRDEUPuwYe4XiHMRQzHGGmuW2aRDJxPUnzeUfh969ypSCVVEgxmi+DZU?=
+ =?us-ascii?q?xo0fKb4BMZiOadQPBbirwNsikJsDZlGluhmdjbXYnT7zF9dblRNItuqGxM0n?=
+ =?us-ascii?q?jU4lRw?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2AdEgCXHVlf/xCltltfHAEBATwBAQQ?=
+ =?us-ascii?q?EAQECAQEHAQEcgUqBHCACAQEBgVdVX406klGQGYFpCwEBAQEBAQEBASMRAQI?=
+ =?us-ascii?q?EAQGES4IUJTgTAgMBAQEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDUgEjI4E/EoM?=
+ =?us-ascii?q?mAYJXKbUihBCEdYFCgTYCAQEBAQGIJ4UZgUE/hF+EJIYQBJonnEOCb4MNhF1?=
+ =?us-ascii?q?+kTsPIaBWklGhaoF6TSAYgyQJRxkNnGhCMDcCBgoBAQMJVwE9AY0yAQE?=
+X-IPAS-Result: =?us-ascii?q?A2AdEgCXHVlf/xCltltfHAEBATwBAQQEAQECAQEHAQEcg?=
+ =?us-ascii?q?UqBHCACAQEBgVdVX406klGQGYFpCwEBAQEBAQEBASMRAQIEAQGES4IUJTgTA?=
+ =?us-ascii?q?gMBAQEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDUgEjI4E/EoMmAYJXKbUihBCEd?=
+ =?us-ascii?q?YFCgTYCAQEBAQGIJ4UZgUE/hF+EJIYQBJonnEOCb4MNhF1+kTsPIaBWklGha?=
+ =?us-ascii?q?oF6TSAYgyQJRxkNnGhCMDcCBgoBAQMJVwE9AY0yAQE?=
+Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
+  by relay.skynet.be with ESMTP; 09 Sep 2020 20:26:01 +0200
+From:   Fabian Frederick <fabf@skynet.be>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Fabian Frederick <fabf@skynet.be>
+Subject: [PATCH 1/3 nf] selftests: netfilter: add cpu counter check
+Date:   Wed,  9 Sep 2020 20:25:36 +0200
+Message-Id: <20200909182536.23730-1-fabf@skynet.be>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YiFei Zhu <zhuyifei@google.com>
+run task on first CPU with netfilter counters reset and check
+cpu meta after another ping
 
-This is a simple test to check that loading and dumping metadata
-in btftool works, whether or not metadata contents are used by the
-program.
-
-A C test is also added to make sure the skeleton code can read the
-metadata values.
-
-Cc: YiFei Zhu <zhuyifei1999@gmail.com>
-Signed-off-by: YiFei Zhu <zhuyifei@google.com>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Signed-off-by: Fabian Frederick <fabf@skynet.be>
 ---
- tools/testing/selftests/bpf/Makefile          |  3 +-
- .../selftests/bpf/prog_tests/metadata.c       | 81 ++++++++++++++++++
- .../selftests/bpf/progs/metadata_unused.c     | 15 ++++
- .../selftests/bpf/progs/metadata_used.c       | 15 ++++
- .../selftests/bpf/test_bpftool_metadata.sh    | 82 +++++++++++++++++++
- 5 files changed, 195 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/metadata.c
- create mode 100644 tools/testing/selftests/bpf/progs/metadata_unused.c
- create mode 100644 tools/testing/selftests/bpf/progs/metadata_used.c
- create mode 100755 tools/testing/selftests/bpf/test_bpftool_metadata.sh
+ tools/testing/selftests/netfilter/nft_meta.sh | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 65d3d9aaeb31..3c92db8a189a 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -68,7 +68,8 @@ TEST_PROGS := test_kmod.sh \
- 	test_tc_edt.sh \
- 	test_xdping.sh \
- 	test_bpftool_build.sh \
--	test_bpftool.sh
-+	test_bpftool.sh \
-+	test_bpftool_metadata.sh \
+diff --git a/tools/testing/selftests/netfilter/nft_meta.sh b/tools/testing/selftests/netfilter/nft_meta.sh
+index d250b84dd5bc3..17b2d6eaa2044 100755
+--- a/tools/testing/selftests/netfilter/nft_meta.sh
++++ b/tools/testing/selftests/netfilter/nft_meta.sh
+@@ -33,6 +33,7 @@ table inet filter {
+ 	counter infproto4count {}
+ 	counter il4protocounter {}
+ 	counter imarkcounter {}
++	counter icpu0counter {}
  
- TEST_PROGS_EXTENDED := with_addr.sh \
- 	with_tunnels.sh \
-diff --git a/tools/testing/selftests/bpf/prog_tests/metadata.c b/tools/testing/selftests/bpf/prog_tests/metadata.c
-new file mode 100644
-index 000000000000..dea8fa86b5fb
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/metadata.c
-@@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+/*
-+ * Copyright 2020 Google LLC.
-+ */
-+
-+#include <test_progs.h>
-+#include <cgroup_helpers.h>
-+#include <network_helpers.h>
-+
-+#include "metadata_unused.skel.h"
-+#include "metadata_used.skel.h"
-+
-+static int duration;
-+
-+static void test_metadata_unused(void)
-+{
-+	struct metadata_unused *obj;
-+	int err;
-+
-+	obj = metadata_unused__open_and_load();
-+	if (CHECK(!obj, "skel-load", "errno %d", errno))
-+		return;
-+
-+	/* Assert that we can access the metadata in skel and the values are
-+	 * what we expect.
-+	 */
-+	if (CHECK(strncmp(obj->rodata->bpf_metadata_a, "foo",
-+			  sizeof(obj->rodata->bpf_metadata_a)),
-+		  "bpf_metadata_a", "expected \"foo\", value differ"))
-+		goto close_bpf_object;
-+	if (CHECK(obj->rodata->bpf_metadata_b != 1, "bpf_metadata_b",
-+		  "expected 1, got %d", obj->rodata->bpf_metadata_b))
-+		goto close_bpf_object;
-+
-+	/* Assert that binding metadata map to prog again succeeds. */
-+	err = bpf_prog_bind_map(bpf_program__fd(obj->progs.prog),
-+				bpf_map__fd(obj->maps.rodata), NULL);
-+	CHECK(err, "rebind_map", "errno %d, expected 0", errno);
-+
-+close_bpf_object:
-+	metadata_unused__destroy(obj);
-+}
-+
-+static void test_metadata_used(void)
-+{
-+	struct metadata_used *obj;
-+	int err;
-+
-+	obj = metadata_used__open_and_load();
-+	if (CHECK(!obj, "skel-load", "errno %d", errno))
-+		return;
-+
-+	/* Assert that we can access the metadata in skel and the values are
-+	 * what we expect.
-+	 */
-+	if (CHECK(strncmp(obj->rodata->bpf_metadata_a, "bar",
-+			  sizeof(obj->rodata->bpf_metadata_a)),
-+		  "metadata_a", "expected \"bar\", value differ"))
-+		goto close_bpf_object;
-+	if (CHECK(obj->rodata->bpf_metadata_b != 2, "metadata_b",
-+		  "expected 2, got %d", obj->rodata->bpf_metadata_b))
-+		goto close_bpf_object;
-+
-+	/* Assert that binding metadata map to prog again succeeds. */
-+	err = bpf_prog_bind_map(bpf_program__fd(obj->progs.prog),
-+				bpf_map__fd(obj->maps.rodata), NULL);
-+	CHECK(err, "rebind_map", "errno %d, expected 0", errno);
-+
-+close_bpf_object:
-+	metadata_used__destroy(obj);
-+}
-+
-+void test_metadata(void)
-+{
-+	if (test__start_subtest("unused"))
-+		test_metadata_unused();
-+
-+	if (test__start_subtest("used"))
-+		test_metadata_used();
-+}
-diff --git a/tools/testing/selftests/bpf/progs/metadata_unused.c b/tools/testing/selftests/bpf/progs/metadata_unused.c
-new file mode 100644
-index 000000000000..db5b804f6f4c
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/metadata_unused.c
-@@ -0,0 +1,15 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+const char bpf_metadata_a[] SEC(".rodata") = "foo";
-+const int bpf_metadata_b SEC(".rodata") = 1;
-+
-+SEC("cgroup_skb/egress")
-+int prog(struct xdp_md *ctx)
-+{
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/metadata_used.c b/tools/testing/selftests/bpf/progs/metadata_used.c
-new file mode 100644
-index 000000000000..0dcb1ba2f0ae
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/metadata_used.c
-@@ -0,0 +1,15 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+const char bpf_metadata_a[] SEC(".rodata") = "bar";
-+const int bpf_metadata_b SEC(".rodata") = 2;
-+
-+SEC("cgroup_skb/egress")
-+int prog(struct xdp_md *ctx)
-+{
-+	return bpf_metadata_b ? 1 : 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/test_bpftool_metadata.sh b/tools/testing/selftests/bpf/test_bpftool_metadata.sh
-new file mode 100755
-index 000000000000..1bf81b49457a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_bpftool_metadata.sh
-@@ -0,0 +1,82 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+TESTNAME=bpftool_metadata
-+BPF_FS=$(awk '$3 == "bpf" {print $2; exit}' /proc/mounts)
-+BPF_DIR=$BPF_FS/test_$TESTNAME
-+
-+_cleanup()
-+{
-+	set +e
-+	rm -rf $BPF_DIR 2> /dev/null
-+}
-+
-+cleanup_skip()
-+{
-+	echo "selftests: $TESTNAME [SKIP]"
-+	_cleanup
-+
-+	exit $ksft_skip
-+}
-+
-+cleanup()
-+{
-+	if [ "$?" = 0 ]; then
-+		echo "selftests: $TESTNAME [PASS]"
-+	else
-+		echo "selftests: $TESTNAME [FAILED]"
-+	fi
-+	_cleanup
-+}
-+
-+if [ $(id -u) -ne 0 ]; then
-+	echo "selftests: $TESTNAME [SKIP] Need root privileges"
-+	exit $ksft_skip
+ 	counter oifcount {}
+ 	counter oifnamecount {}
+@@ -54,6 +55,7 @@ table inet filter {
+ 		meta nfproto ipv4 counter name "infproto4count"
+ 		meta l4proto icmp counter name "il4protocounter"
+ 		meta mark 42 counter name "imarkcounter"
++		meta cpu 0 counter name "icpu0counter"
+ 	}
+ 
+ 	chain output {
+@@ -119,6 +121,18 @@ check_one_counter omarkcounter "1" true
+ 
+ if [ $ret -eq 0 ];then
+ 	echo "OK: nftables meta iif/oif counters at expected values"
++else
++	exit $ret
 +fi
 +
-+if [ -z "$BPF_FS" ]; then
-+	echo "selftests: $TESTNAME [SKIP] Could not run test without bpffs mounted"
-+	exit $ksft_skip
-+fi
++#First CPU execution and counter
++taskset -p 01 $$ > /dev/null
++ip netns exec "$ns0" nft reset counters > /dev/null
++ip netns exec "$ns0" ping -q -c 1 127.0.0.1 > /dev/null
++check_one_counter icpu0counter "2" true
 +
-+if ! bpftool version > /dev/null 2>&1; then
-+	echo "selftests: $TESTNAME [SKIP] Could not run test without bpftool"
-+	exit $ksft_skip
-+fi
-+
-+set -e
-+
-+trap cleanup_skip EXIT
-+
-+mkdir $BPF_DIR
-+
-+trap cleanup EXIT
-+
-+bpftool prog load metadata_unused.o $BPF_DIR/unused
-+
-+METADATA_PLAIN="$(bpftool prog)"
-+echo "$METADATA_PLAIN" | grep 'a = "foo"' > /dev/null
-+echo "$METADATA_PLAIN" | grep 'b = 1' > /dev/null
-+
-+bpftool prog --json | grep '"metadata":{"a":"foo","b":1}' > /dev/null
-+
-+bpftool map | grep 'metadata.rodata' > /dev/null
-+
-+rm $BPF_DIR/unused
-+
-+bpftool prog load metadata_used.o $BPF_DIR/used
-+
-+METADATA_PLAIN="$(bpftool prog)"
-+echo "$METADATA_PLAIN" | grep 'a = "bar"' > /dev/null
-+echo "$METADATA_PLAIN" | grep 'b = 2' > /dev/null
-+
-+bpftool prog --json | grep '"metadata":{"a":"bar","b":2}' > /dev/null
-+
-+bpftool map | grep 'metadata.rodata' > /dev/null
-+
-+rm $BPF_DIR/used
-+
-+exit 0
++if [ $ret -eq 0 ];then
++	echo "OK: nftables meta cpu counter at expected values"
+ fi
+ 
+ exit $ret
 -- 
-2.28.0.526.ge36021eeef-goog
+2.27.0
 
