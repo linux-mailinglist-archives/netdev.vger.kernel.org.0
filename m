@@ -2,66 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 831F526335B
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:02:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42299263451
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730633AbgIIRCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 13:02:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50902 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728363AbgIIPuO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 11:50:14 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 60D802078E;
-        Wed,  9 Sep 2020 15:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599666614;
-        bh=6U/Z1wCvHSwUz/RwTs9h9VrlQQnCLRNr2JqtiTKJ+v0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kB8Ss9OxWzllPVBIOQv47glIzJ134aP6DgZqK3itLUmn3AG1QXEgmhd70XqA6dz97
-         xiSr0WBrwoCQ4jNbQBOcPdnKCJ6yGwfHe/CVo5MHvR7lYkT/2YISUFEcIBbG31h9Rn
-         +T+xvFH10ZUQHd2U49zluHUAojuC4Cp/ZzCbxBdE=
-Date:   Wed, 9 Sep 2020 08:50:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <sameehj@amazon.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>,
-        Shay Agroskin <shayagr@amazon.com>
-Subject: Re: [PATCH V3 net-next 4/4] net: ena: xdp: add queue counters for
- xdp actions
-Message-ID: <20200909085011.7af75de0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200909064627.30104-5-sameehj@amazon.com>
-References: <20200909064627.30104-1-sameehj@amazon.com>
-        <20200909064627.30104-5-sameehj@amazon.com>
+        id S1730928AbgIIRSr convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Sep 2020 13:18:47 -0400
+Received: from mail.lintas.net.id ([103.242.106.86]:33990 "EHLO
+        mail.lintas.net.id" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728631AbgIIRSk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 13:18:40 -0400
+X-Greylist: delayed 2287 seconds by postgrey-1.27 at vger.kernel.org; Wed, 09 Sep 2020 13:18:39 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.lintas.net.id (Postfix) with ESMTP id 30F9232C6B9B2;
+        Wed,  9 Sep 2020 23:05:23 +0700 (WIB)
+Received: from mail.lintas.net.id ([127.0.0.1])
+        by localhost (mail.lintas.net.id [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 5DV8UEfZEl6l; Wed,  9 Sep 2020 23:05:23 +0700 (WIB)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.lintas.net.id (Postfix) with ESMTP id 9619D32C6DC05;
+        Wed,  9 Sep 2020 23:03:46 +0700 (WIB)
+X-Virus-Scanned: amavisd-new at lintas.net.id
+Received: from mail.lintas.net.id ([127.0.0.1])
+        by localhost (mail.lintas.net.id [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 3_P3kow7_ekM; Wed,  9 Sep 2020 23:03:46 +0700 (WIB)
+Received: from [192.168.100.7] (unknown [175.100.20.232])
+        by mail.lintas.net.id (Postfix) with ESMTPSA id C6A6E32C70EB8;
+        Wed,  9 Sep 2020 23:01:17 +0700 (WIB)
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: Good Day
+To:     Recipients <merchant@gudangfurniture.com>
+From:   David Cheung <merchant@gudangfurniture.com>
+Date:   Wed, 09 Sep 2020 23:01:28 +0700
+Reply-To: mrd517341@gmail.com
+Message-Id: <20200909160117.C6A6E32C70EB8@mail.lintas.net.id>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Sep 2020 06:46:27 +0000 sameehj@amazon.com wrote:
-> @@ -374,17 +375,31 @@ static int ena_xdp_execute(struct ena_ring *rx_ring,
->  
->  	verdict = bpf_prog_run_xdp(xdp_prog, xdp);
->  
-> -	if (verdict == XDP_TX)
-> +	if (verdict == XDP_TX) {
->  		ena_xdp_xmit_buff(rx_ring->netdev,
-> -				  xdp,
-> -				  rx_ring->qid + rx_ring->adapter->num_io_queues,
-> -				  rx_info);
-> -	else if (unlikely(verdict == XDP_ABORTED))
-> +				xdp,
-> +				rx_ring->qid + rx_ring->adapter->num_io_queues,
-> +				rx_info);
+Hello,
 
-You broke the alignment here, for no reason.
+My name is David I am a senior staff in public Bank here in Cambodia. I have a business proposal to share with you.
 
-Otherwise the series looks good.
+Contact me back for more details.
+
+Kind Regards,
+David Cheung
