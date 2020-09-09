@@ -2,165 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE7026267A
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 06:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A74382626B9
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 07:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbgIIEvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 00:51:36 -0400
-Received: from mail-eopbgr150077.outbound.protection.outlook.com ([40.107.15.77]:49412
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726555AbgIIEv3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 00:51:29 -0400
+        id S1725974AbgIIFTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 01:19:50 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:12390 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725772AbgIIFTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 01:19:45 -0400
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0895IbU4015553;
+        Tue, 8 Sep 2020 22:19:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=w3cp035Oil/+9V1xPArCE/jnPAa46F7BxZBzPpTuzQg=;
+ b=Pg2aAv4jJomYxxtNrddG3VjbtNLXZ/ajDqKIDUi5uGoz5/7UIdW84ZY98hOq9B4pzGn3
+ VL2P7BSQAfqgtiVXJGJuXfUNNo7uCnDsKNVJCPNAztHct84AZQIG74dsmUfk8ZSC3OlE
+ qEntYvkOr5scpqImYGcGqdUzdLlXmn9G3M4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 33ctxn5ecc-10
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 08 Sep 2020 22:19:30 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 8 Sep 2020 22:19:26 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MPDY+Nec/rUc62JcCnCYALyMDOOQ6moc1iuCznpdS5PPgXbVCg4OYxcCcG2zCqFNr2TKh2ynwT0CcXcgoYj8cvPxxDAioVdLvTyHoeNCYGUQlIwTdEvMEsB9/CDgXBHuWPy+Xlgo6Lq2abG93+6oIyviqM3KimJhjZFbpKZFphuP9woZMDz8W3vaDDxQb2QmmnYhb+755NQabPxc1QdsMEGk2u8/JeRHB9ROkKGpKN1pFJMpdVpa2OZ1prssnEVV7Qi/vxVBwkmeiEnDwfUeo3TZ/VqXxcqIvbw5AKJ51lH3eZYYUlk7VepjrFvY4NSD5KkztSJJoYNdqvN4vnHUGg==
+ b=HM+13X0g8SOkBEfV2cD2FWw+jLv6XjRiPQ25OxM9MBRMeULqKX0e2E17J4zcfVI5TPriTFW/RXumVUrRcaaEB1bjJWHI+F+RmHHjU0xffkSWMkBB212omXkJNWLObLLBPVoQihK0JiMCZERSQ8TdrdCMhj5Dfk+jOBAiIpwiePlMPxewsFD8QuRBdy8EDe/2Sr6twB+f3ymLE0PD9DOAJpdpiOvhnuJIf7qiwUgBc+DP5aiWXLgxuMlPQm7VwZSzGRmYKKAs/t8BYz5tkap7uh+hnOSINQUnr/3LXFFn0qs0ya9YzyU9nOfVuT/CbdXO3oI1we8+g297gvw5uKgnUA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VZfo7fw2oXyFycIP8mBNtK3m0omfP7EdL7Y5sj4CvVw=;
- b=hdgz/slnvpbNWvOfpBF88QLrb0TGL0UQAl+unKzCCqE1g8zo5JJM/SVswCr9fkTjgxeuAKMN+FnjF7Z4UlGxEKJYy07ZrEJOxjNNkPZlTQq4Qvom3mKC+imYNUfZ7u/Gkv5ayx7KW2l9iGDNtrcbk5iQG3N3WX7krPM1Dq7+c6Otm7lssSr1vm1aDeadnY66omAJNVaN2wnXQau6u7SY0Zhq+yKq1G41QoYvCWx9S+wrGl0b9TFuVdqAGDVGf3dRJuPcVxBwQAo4tQUg+6V9oDqjjIlfbp1zNOjjLTX2yWLrrOtuBiyXrBkHxclKhc3M0SXlwXN2es9dYeLgWkIe7Q==
+ bh=w3cp035Oil/+9V1xPArCE/jnPAa46F7BxZBzPpTuzQg=;
+ b=JxWuJFAgD7aQCDECJOR1HMcZovu69y4OZ/wSOvIblN75vDzWSEj2LY0AZXi2ZHZh/F8V/8k1Nph5enOIVVn/3K6aofBWbn0bR3ne7hL7yUQ1nFxjXVSnibpCn9g9KvNGbXbJ9bWup+ZQ50LeuuYKaYP3/pLRyPEz/91F/R55Ei88CTVHLiotCf2+C4P9bXJnsUMk0Ju2K4BUmnduUJBOTl4P7ckN5jGwuU50qwcgc/pu/8Fk36RT8dqqlT1TOxkEKP5WxUK9rGr5PtuOVCr2/9fjm6SGvZuV2atTsJhpnlSTjm8ZSqwqHvb1SJjIVbvCucSq7l1KIn7yHicKrgfb3w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VZfo7fw2oXyFycIP8mBNtK3m0omfP7EdL7Y5sj4CvVw=;
- b=UrbOfNcQk8CojzJBATpZgCeNs0pwBg9ksYb9vYn4iPpGAJH+LpRooend8XOTXThgJoBgYXLEngsJPRJ60mImne7pAL3BLyZuhhSJ2dZMRB2SapHv4sbKrIL4gMKjNieBVTYNpz95gsQVeONHnMETdvXekeVO6HPpAf8B62wZVeI=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=mellanox.com;
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (2603:10a6:208:c0::32)
- by AM0PR05MB5907.eurprd05.prod.outlook.com (2603:10a6:208:12c::28) with
+ bh=w3cp035Oil/+9V1xPArCE/jnPAa46F7BxZBzPpTuzQg=;
+ b=cfZvhYITGrm0NQbQdBqTLXlfwNxUEu4r+XsLrNzJh22TcdJGeorMbQs2GvnazGEbOCSQ2fcG8bR+idXp87qFlzWaNsIPv7EuMzoIvFvbud8hqT9WQS+oYv9B7gURbJf7MwcKzUF6vLNASEuksqSvAXBBRLknGq1MeiCInU72hZw=
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB3464.namprd15.prod.outlook.com (2603:10b6:a03:10a::33) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3348.15; Wed, 9 Sep
- 2020 04:51:15 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::349f:cbf4:ddcf:ce18]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::349f:cbf4:ddcf:ce18%3]) with mapi id 15.20.3370.016; Wed, 9 Sep 2020
- 04:51:15 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net-next v3 6/6] devlink: Use controller while building phys_port_name
-Date:   Wed,  9 Sep 2020 07:50:38 +0300
-Message-Id: <20200909045038.63181-7-parav@mellanox.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200909045038.63181-1-parav@mellanox.com>
-References: <20200825135839.106796-1-parav@mellanox.com>
- <20200909045038.63181-1-parav@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SN6PR04CA0091.namprd04.prod.outlook.com
- (2603:10b6:805:f2::32) To AM0PR05MB4866.eurprd05.prod.outlook.com
- (2603:10a6:208:c0::32)
+ 2020 05:19:24 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::56b:2925:8762:2d80%7]) with mapi id 15.20.3348.019; Wed, 9 Sep 2020
+ 05:19:24 +0000
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix test_sysctl_loop{1,2} failure
+ due to clang change
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+References: <20200909031227.963161-1-yhs@fb.com>
+ <CAADnVQKgZyAMgChwtnHPY2VTgNQN_s+dn2rwFqySiMq_c+C5iw@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <32cd16a4-35a8-d2aa-1c0c-dae02bf2b434@fb.com>
+Date:   Tue, 8 Sep 2020 22:19:23 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
+In-Reply-To: <CAADnVQKgZyAMgChwtnHPY2VTgNQN_s+dn2rwFqySiMq_c+C5iw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BY5PR03CA0018.namprd03.prod.outlook.com
+ (2603:10b6:a03:1e0::28) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from sw-mtx-036.mtx.labs.mlnx (208.176.44.194) by SN6PR04CA0091.namprd04.prod.outlook.com (2603:10b6:805:f2::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16 via Frontend Transport; Wed, 9 Sep 2020 04:51:14 +0000
-X-Mailer: git-send-email 2.26.2
-X-Originating-IP: [208.176.44.194]
+Received: from [IPv6:2620:10d:c085:21c1::10a4] (2620:10d:c090:400::5:ca4d) by BY5PR03CA0018.namprd03.prod.outlook.com (2603:10b6:a03:1e0::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16 via Frontend Transport; Wed, 9 Sep 2020 05:19:24 +0000
+X-Originating-IP: [2620:10d:c090:400::5:ca4d]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: bb84b04f-db69-4464-794a-08d8547bfb95
-X-MS-TrafficTypeDiagnostic: AM0PR05MB5907:
-X-LD-Processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-X-Microsoft-Antispam-PRVS: <AM0PR05MB59077D3DC97F598BEC654D41D1260@AM0PR05MB5907.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:513;
+X-MS-Office365-Filtering-Correlation-Id: 3dc4c445-38be-4d71-fe11-08d8547fea7d
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3464:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB34646D208E9962F2B6B68161D3260@BYAPR15MB3464.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xGfQqIH7b6j/YL8Jg/DxL8J6jlr7xnV1dIo53D+V9Zu89RrVSjbm9H8bBhcBm5pe9arpx4secwLR7g80Pq2tumSeFcaf4W2OO8CM0ROSxyTpWPDpW/Oid3jBuAYt+BfQ2xKIh587KRKKbJ7HD6tXOOj+QKh6DQ3m1WDv3MGSYhcIVhMy5kc3tQBhKBKy2pcUQCU4adjg50d8vPvTT4s1T71TCAkAz3eJ3p5DZCYXiN0TIjCdCTWitzF05gNiKZBdU0gU1chBQ3jhJzbCp8pxLD4QCuCTpyIB38Bv9XHtrdMzMHAL/gT1CCFNd9ARmEtlSVtn5DDAWOwBTDv9c01K7w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4866.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(346002)(376002)(136003)(366004)(396003)(1076003)(86362001)(16526019)(54906003)(52116002)(4326008)(2906002)(26005)(6506007)(186003)(2616005)(316002)(508600001)(956004)(6486002)(8676002)(66946007)(8936002)(66556008)(66476007)(6666004)(6512007)(5660300002)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: DDQT+/76iVfnsdk9ZdZ2OfXPnvItQWSsqgCx5MrrP4O0uhuLDbPckGzvY2khO7f12KrfvGxTa3oCuT4GXnfCcWe4bE3cZ6OovBQRQ+lfE81uJXQR6wjpWTb8pwj1k9//YBbTJQznqvHYnhCLGSlTDONSX3ixz/MGah04QHkFuIRTkAMnb/8DOztV0YuJ5T9bvc90whxjhOgtPy5RgJ9B3sOP6I6IjmEPSLQaZojZFHUoEgGmoHdPg12ApLzdluf0aqoqf+09xEEHJqgO0KnSfxSXPh+4ESFCLGVd1ab1/0vLETdoYHPbTnkvpM69p1bQXEgE4GpcblxgLUOvoPTB4CCIiipsHwUH+fXi5XSp+SHpmKrZ1s5tr6RIaiACCRZKoE9D/Db19UhDISGJRJXucgZkFoF05ieJTTz3hZ+oGZP6M5LwM+13YfGbh4OTFYFBlFoeZYWjG0VrMDNpzkp4r9ng1gZ4xWdszamPYJ60SqW/ZqtrnHtXDNuQON8oPK8DzaqqX5ZwQ+gd5gNUqc3cdTAr2PpyRDE4lISoQrhji/dNug5OVZ3meS8hq/Yb9aeRQe37iajs38xDeV3JiMVBvnTI03YQ03lsIwxqnhkDaCNHBFmxTaPkiqi4gG8ALorWvn+0DDfCgnpjcvam5FXuOA==
-X-MS-Exchange-Transport-Forked: True
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb84b04f-db69-4464-794a-08d8547bfb95
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR05MB4866.eurprd05.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: GPAPxnFVdW5vAo6uHEWxHnnlCcBu+IhWEl7K+qRH1xSefogdoFIyZc5ek7eVa2sYKQCbfLH3yIPOB4MsHE20fj/ViwH0CdE7Tk3QVz1b3CDH+ynivNYJ8Qzu8xO8eXcpI7CtTW9j53njf6kLvZWSbOMlINH/Yfjt23o6x75uFwZcg/tTr+xGiaayuPmzEWQy1SCFpg9WSJ8JlQLt+JjrVQ7ZZ6N/d2ttqa6DcDRPYmfeMD0oOkJBsn+CEu/KsMNKsgitzjRcNAO4a6n5incABiSg0qY2Ze0DYFAshqyDTmz7KW7ZbgYIUbRBNf30f1C/o2+HdVFEgM5YIE6lc+fMz4Uue6CIifb+83vpwKCv0yo9S3OzodtDx+ZJYc+TrYqElqsmytx0u65jsne7ewKJDViB2PtpBH3AuykjIw9o22jHLt8ApCuj2GEedsJDVHCDnNbS3CWleSFx8YnIZi3eTQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(396003)(39860400002)(366004)(376002)(66946007)(66556008)(66476007)(53546011)(6486002)(36756003)(8936002)(83380400001)(316002)(2616005)(8676002)(31686004)(31696002)(52116002)(16526019)(86362001)(4326008)(186003)(478600001)(2906002)(6916009)(54906003)(5660300002)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: F75K5dkirxd5Q+ycFibVi+8luu1xk9Xc9kenAXsmM74SjBIDXbUbQLPxTpyhn7fjqWh7e3J2qyCwE+toFjo6G71qm6061Zz91aEx2rGrkWrb9OeX4Vh7pE9fsvz7R99lXqhyGG+RmWEdUj01Kqew8yFJYNLMSObOVnDmbzqD2iOeKve1RKQe67GPQ3GjU33D9BMILMVvE46UaDVIKZ0b9Uh475DpPJMuBfaViZnTvc0PldV9ZMzOjOYf9H0pZPheADYqHP2n7yfBLLAaVjfz5/CG3QCyvyQyvo2RkRrbF/xP8beUpnqMMXBt7nPn2oqn7dqZpS0EQlQb2gzTPZ9V/zKbL5mjz+F0YBancmlNQIFa0rvKTtGXNetxLibHLhQa1DDkhwMB8BBaONLfVYYnHmzLUQxMusXuwiPS8W+/fto7feM/SdLzvR3nBEs4PRa/OTVntYE7X4nAnakuRccl8brIOyKIhPsjq03BsmqVMSYNNUoG3AhreLRZdhHIDqgQIdXhBIb2DAtflEoa8uUpjZWOBsgL/SUIXx8RgdrjwX89f5ZSv1qeA9ZWeS/nSTsvUMlXEpJ5rOZnvtqJnvuXn7q5AZ3YA22dzH6KyGdLrD7si8/MEhGmqJo40IzaGwGbucI9FBhVV05wYGBskdoh3oxOVkmvrRNfoG++T+WVZto=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3dc4c445-38be-4d71-fe11-08d8547fea7d
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2020 04:51:15.6170
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2020 05:19:24.6749
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5WPaysfDvqwtTQ1LBlyQX1Vi134Oj7jWYZEvmLG+PLEqT79p4acnOru0e/KxNOKG33WGgwI+7Ke2PFRx6ipjDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5907
+X-MS-Exchange-CrossTenant-UserPrincipalName: efrCkK34k+5OlHTYFX+E3TxsVf0ChhIMmBRxD4QmFl6uaQoKj3ZSyQL21B1T9FBK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3464
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-09_03:2020-09-08,2020-09-09 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ impostorscore=0 lowpriorityscore=0 malwarescore=0 phishscore=0
+ clxscore=1015 mlxscore=0 spamscore=0 suspectscore=0 bulkscore=0
+ priorityscore=1501 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009090048
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
 
-Now that controller number attribute is available, use it when
-building phsy_port_name for external controller ports.
 
-An example devlink port and representor netdev name consist of controller
-annotation for external controller with controller number = 1,
-for a VF 1 of PF 0:
+On 9/8/20 9:04 PM, Alexei Starovoitov wrote:
+> On Tue, Sep 8, 2020 at 8:12 PM Yonghong Song <yhs@fb.com> wrote:
+>> diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c b/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
+>> index b2e6f9b0894d..3c292c087395 100644
+>> --- a/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
+>> +++ b/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
+>> @@ -18,9 +18,9 @@
+>>   #define MAX_ULONG_STR_LEN 7
+>>   #define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
+>>
+>> +const char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string_to_stress_byte_loop";
+>>   static __attribute__((noinline)) int is_tcp_mem(struct bpf_sysctl *ctx)
+>>   {
+>> -       volatile char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string_to_stress_byte_loop";
+> 
+> It fixes the issue with new llvm, but breaks slightly older llvm:
 
-$ devlink port show pci/0000:06:00.0/2
-pci/0000:06:00.0/2: type eth netdev ens2f0c1pf0vf1 flavour pcivf controller 1 pfnum 0 vfnum 1 external true splittable false
-  function:
-    hw_addr 00:00:00:00:00:00
+Let me take a look.
 
-$ devlink port show pci/0000:06:00.0/2 -jp
-{
-    "port": {
-        "pci/0000:06:00.0/2": {
-            "type": "eth",
-            "netdev": "ens2f0c1pf0vf1",
-            "flavour": "pcivf",
-            "controller": 1,
-            "pfnum": 0,
-            "vfnum": 1,
-            "external": true,
-            "splittable": false,
-            "function": {
-                "hw_addr": "00:00:00:00:00:00"
-            }
-        }
-    }
-}
-
-Controller number annotation is skipped for non external controllers to
-maintain backward compatibility.
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
-Changelog:
-v1->v2:
- - New patch
----
- net/core/devlink.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 9cf5b118253b..91c12612f2b7 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -7793,9 +7793,23 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
- 		WARN_ON(1);
- 		return -EINVAL;
- 	case DEVLINK_PORT_FLAVOUR_PCI_PF:
-+		if (attrs->pci_pf.external) {
-+			n = snprintf(name, len, "c%u", attrs->pci_pf.controller);
-+			if (n >= len)
-+				return -EINVAL;
-+			len -= n;
-+			name += n;
-+		}
- 		n = snprintf(name, len, "pf%u", attrs->pci_pf.pf);
- 		break;
- 	case DEVLINK_PORT_FLAVOUR_PCI_VF:
-+		if (attrs->pci_vf.external) {
-+			n = snprintf(name, len, "c%u", attrs->pci_vf.controller);
-+			if (n >= len)
-+				return -EINVAL;
-+			len -= n;
-+			name += n;
-+		}
- 		n = snprintf(name, len, "pf%uvf%u",
- 			     attrs->pci_vf.pf, attrs->pci_vf.vf);
- 		break;
--- 
-2.26.2
-
+>   ./test_progs -n 7/21
+> libbpf: load bpf program failed: Permission denied
+> libbpf: -- BEGIN DUMP LOG ---
+> libbpf:
+> invalid stack off=0 size=1
+> verification time 6975 usec
+> stack depth 160+64
+> processed 889 insns (limit 1000000) max_states_per_insn 4 total_states
+> 14 peak_states 14 mark_read 10
+> 
+> libbpf: -- END LOG --
+> libbpf: failed to load program 'sysctl_tcp_mem'
+> libbpf: failed to load object 'test_sysctl_loop2.o'
+> test_bpf_verif_scale:FAIL:114
+> #7/21 test_sysctl_loop2.o:FAIL
+> 
+> clang --version
+> clang version 12.0.0 (https://github.com/llvm/llvm-project.git
+> 6f3511a01a5227358a334803c264cfce4175ca5d)
+> 
