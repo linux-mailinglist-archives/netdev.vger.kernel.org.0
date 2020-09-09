@@ -2,187 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 100F32631C6
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:26:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56DB82631D0
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:28:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731030AbgIIQ0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 12:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56084 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730598AbgIIQZp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:25:45 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1CEC0613ED
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 09:25:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ATlz+OS+8eqk12Yw6kBHmkSIN4Gg6FnxaYGfskajSxk=; b=y86ePh0gkZklAvD27x/d+QMl0g
-        dvFSgWkloss5brgPp+3z/N59zhpDKIevtoKm52R9295rScWO3LaiAjjJPZ5kDhwIF1L1jplN3/i3r
-        yx8KRoVnm8W/En7I5MLSd7n6bjRjoOAFE+3nvPkmfTnVHcsg1YO/WpEBSxgG3x6CT6+z8T0v6/Z9r
-        w3w2o1WWXWhdPslbz3w8jpPF6RqfMCavt6ctz0OY/XVXxWK03UJE5vGK6tg+mJouTjZBlYq5wOUX9
-        xLl/0dLxNfZPMsQw7qyIACRdrFiZTce1whkZ9SmGRtotkF2dhfAT/JuA8e3G45WXiEGemz6Vwdg3+
-        5R1/uv/w==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46306 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1kG2ui-00051r-Oo; Wed, 09 Sep 2020 17:25:40 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1kG2ui-0002yh-IN; Wed, 09 Sep 2020 17:25:40 +0100
-In-Reply-To: <20200909162501.GB1551@shell.armlinux.org.uk>
-References: <20200909162501.GB1551@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     Matteo Croce <mcroce@redhat.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
+        id S1731136AbgIIQ1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 12:27:41 -0400
+Received: from lists.nic.cz ([217.31.204.67]:34602 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731047AbgIIQ0D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 12:26:03 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id 8AA9E140A42;
+        Wed,  9 Sep 2020 18:25:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1599668754; bh=Byqhpkt88AGMr7fbJQ6x5kqirnMwwK568K6GogkECRY=;
+        h=From:To:Date;
+        b=kJ2MEVTPZ3gj1RWjziMeqw89exEkd7fW7wELHVUdD53018wV1xLWpTAS0Od/BbWxU
+         KVslhDJqPz+EA5luY2kIRBT+d0pqLy3WX0mS8+gzeT3wQmspUK0xXkZCn9fr6pe2kE
+         xU1DsH4OFKUSc303J/M0KnafEFih6wYzLjDVUCyU=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+To:     netdev@vger.kernel.org
+Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Dan Murphy <dmurphy@ti.com>,
+        =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 2/6] net: mvpp2: rename mis-named "link status"
- interrupt
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH net-next + leds v2 0/7] PLEASE REVIEW: Add support for LEDs on Marvell PHYs
+Date:   Wed,  9 Sep 2020 18:25:45 +0200
+Message-Id: <20200909162552.11032-1-marek.behun@nic.cz>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1kG2ui-0002yh-IN@rmk-PC.armlinux.org.uk>
-Date:   Wed, 09 Sep 2020 17:25:40 +0100
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Spam-Status: No, score=0.00
+X-Spamd-Bar: /
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The link interrupt is used for way more than just the link status; it
-comes from a collection of units to do with the port. The Marvell
-documentation describes the interrupt as "GOP port X interrupt".
+Hello Andrew and Pavel,
 
-Since we are adding PTP support, and the PTP interrupt uses this,
-rename it to be more inline with the documentation.
+please review these patches adding support for HW controlled LEDs.
+The main difference from previous version is that the API is now generalized
+and lives in drivers/leds, so that part needs to be reviewed (and maybe even
+applied) by Pavel.
 
-This interrupt is also mis-named in the DT binding, but we leave that
-alone.
+As discussed previously between you two, I made it so that the devicename
+part of the LED is now in the form `ethernet-phy%i` when the LED is probed
+for an ethernet PHY. Userspace utility wanting to control LEDs for a specific
+network interface can access them via /sys/class/net/eth0/phydev/leds:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |  2 +-
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 35 ++++++++++---------
- 2 files changed, 19 insertions(+), 18 deletions(-)
+  mox ~ # ls /sys/class/net/eth0/phydev/leds
+  ethernet-phy0:green:status  ethernet-phy0:yellow:activity
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index ecb5f4616a36..a2f787c83756 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -915,7 +915,7 @@ struct mvpp2_port {
- 	 */
- 	int gop_id;
- 
--	int link_irq;
-+	int port_irq;
- 
- 	struct mvpp2 *priv;
- 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index bb7284306ee4..d85ba26ba886 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3036,7 +3036,7 @@ static void mvpp2_isr_handle_gmac_internal(struct mvpp2_port *port)
- }
- 
- /* Per-port interrupt for link status changes */
--static irqreturn_t mvpp2_link_status_isr(int irq, void *dev_id)
-+static irqreturn_t mvpp2_port_isr(int irq, void *dev_id)
- {
- 	struct mvpp2_port *port = (struct mvpp2_port *)dev_id;
- 
-@@ -4230,12 +4230,13 @@ static int mvpp2_open(struct net_device *dev)
- 		valid = true;
- 	}
- 
--	if (priv->hw_version == MVPP22 && port->link_irq) {
--		err = request_irq(port->link_irq, mvpp2_link_status_isr, 0,
-+	if (priv->hw_version == MVPP22 && port->port_irq) {
-+		err = request_irq(port->port_irq, mvpp2_port_isr, 0,
- 				  dev->name, port);
- 		if (err) {
--			netdev_err(port->dev, "cannot request link IRQ %d\n",
--				   port->link_irq);
-+			netdev_err(port->dev,
-+				   "cannot request port link/ptp IRQ %d\n",
-+				   port->port_irq);
- 			goto err_free_irq;
- 		}
- 
-@@ -4246,7 +4247,7 @@ static int mvpp2_open(struct net_device *dev)
- 
- 		valid = true;
- 	} else {
--		port->link_irq = 0;
-+		port->port_irq = 0;
- 	}
- 
- 	if (!valid) {
-@@ -4290,8 +4291,8 @@ static int mvpp2_stop(struct net_device *dev)
- 
- 	if (port->phylink)
- 		phylink_disconnect_phy(port->phylink);
--	if (port->link_irq)
--		free_irq(port->link_irq, port);
-+	if (port->port_irq)
-+		free_irq(port->port_irq, port);
- 
- 	mvpp2_irqs_deinit(port);
- 	if (!port->has_tx_irqs) {
-@@ -6056,16 +6057,16 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 		goto err_free_netdev;
- 
- 	if (port_node)
--		port->link_irq = of_irq_get_byname(port_node, "link");
-+		port->port_irq = of_irq_get_byname(port_node, "link");
- 	else
--		port->link_irq = fwnode_irq_get(port_fwnode, port->nqvecs + 1);
--	if (port->link_irq == -EPROBE_DEFER) {
-+		port->port_irq = fwnode_irq_get(port_fwnode, port->nqvecs + 1);
-+	if (port->port_irq == -EPROBE_DEFER) {
- 		err = -EPROBE_DEFER;
- 		goto err_deinit_qvecs;
- 	}
--	if (port->link_irq <= 0)
-+	if (port->port_irq <= 0)
- 		/* the link irq is optional */
--		port->link_irq = 0;
-+		port->port_irq = 0;
- 
- 	if (fwnode_property_read_bool(port_fwnode, "marvell,loopback"))
- 		port->flags |= MVPP2_F_LOOPBACK;
-@@ -6229,8 +6230,8 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- err_free_stats:
- 	free_percpu(port->stats);
- err_free_irq:
--	if (port->link_irq)
--		irq_dispose_mapping(port->link_irq);
-+	if (port->port_irq)
-+		irq_dispose_mapping(port->port_irq);
- err_deinit_qvecs:
- 	mvpp2_queue_vectors_deinit(port);
- err_free_netdev:
-@@ -6251,8 +6252,8 @@ static void mvpp2_port_remove(struct mvpp2_port *port)
- 	for (i = 0; i < port->ntxqs; i++)
- 		free_percpu(port->txqs[i]->pcpu);
- 	mvpp2_queue_vectors_deinit(port);
--	if (port->link_irq)
--		irq_dispose_mapping(port->link_irq);
-+	if (port->port_irq)
-+		irq_dispose_mapping(port->port_irq);
- 	free_netdev(port->dev);
- }
- 
+  mox ~ # ls /sys/class/net/eth0/phydev/leds/ethernet-phy0:green:status
+  brightness  device  hw_mode  max_brightness  power  subsystem  trigger  uevent
+
+  mox ~ # cat /sys/class/net/eth0/phydev/leds/ethernet-phy0:green:status/trigger
+  none [dev-hw-mode] timer oneshot heartbeat default-on mmc0 mmc1
+
+  mox ~ # cat /sys/class/net/eth0/phydev/leds/ethernet-phy0:green:status/hw_mode
+  link link/act [1Gbps/100Mbps/10Mbps] act blink-act tx copper 1Gbps blink
+
+Thank you.
+
+Marek
+
+PS: After this series is applied, we can update some device trees of various
+devices which use the `marvell,reg-init` property to initialize LEDs into
+specific modes so that instead of using `marvell,reg-init` they can register
+LEDs via this subsystem. The `marvell,reg-init` property does not comply with
+the idea that the device tree should only describe how devices are connected
+to each other on the board. Maybe this property could then be proclaimed as
+legacy and a warning could be printed if it is used.
+
+Changes since v1:
+- the HW controlled LEDs API is now generalized (so not only for ethernet
+  PHYs), and lives in drivers/leds/leds-hw-controlled.c.
+  I did this because I am thinking forward for when I'll be adding support
+  for LEDs connected to Marvell ethernet switches (mv88e6xxx driver).
+  The LEDs there should be described as descendants of the `port` nodes, not
+  `phy` nodes, because:
+    - some ports don't have PHYs and yet can have LEDs
+    - some ports have SERDES PHYs which are currently not described in any
+      way in device-tree
+    - some LEDs can be made to blink on activity/other event on multiple
+      ports at once
+- hence the private LED trigger was renamed from `phydev-hw-mode` to
+  `dev-hw-mode`
+- the `led-open-drain` DT property was renamed to `led-tristate` property,
+  because I learned that the two things mean something different and in
+  Marvell PHYs the polarity on off state can be put into tristate mode, not
+  open drain mode
+- the devicename part of PHY LEDs is now in the format `ethernet-phy%i`,
+  instead of `phy%i`
+- the code adding `phyindex` member to struct phy_device is now in separate
+  patch
+- YAML device-tree binding schema for HW controlled LEDs now lives in it's
+  own file and the ethernet-phy.yaml file now contains a reference to the
+  this schema
+- added a patch adding nodes for PHY controlled LEDs for Turris MOX' device
+  tree
+
+Changes since RFC v4:
+- added device-tree binding documentation.
+- the OF code now checks for linux,default-hw-mode property so that
+  default HW mode can be set in device tree (like linux,default-trigger)
+  (this was suggested by Andrew)
+- the OF code also checks for enable-active-high and led-open-drain
+  properties, and the marvell PHY driver now understands uses these
+  settings when initializing the LEDs
+- the LED operations were moved to their own struct phy_device_led_ops
+- a new member was added into struct phy_device: phyindex. This is an
+  incrementing integer, new for each registered phy_device. This is used
+  for a simple naming scheme for the devicename part of a LED, as was
+  suggested in a discussion by Andrew and Pavel. A PHY controlled LED
+  now has a name in form:
+    phy%i:color:function
+  When a PHY is attached to a netdevice, userspace can control available
+  PHY controlled LEDs via /sys/class/net/<ifname>/phydev/leds/
+- legacy LED configuration in Marvell PHY driver (in function
+  marvell_config_led) now writes only to registers which do not
+  correspond to any registered LED
+
+Changes since RFC v3:
+- addressed some of Andrew's suggestions
+- phy_hw_led_mode.c renamed to phy_led.c
+- the DT reading code is now also generic, moved to phy_led.c and called
+  from phy_probe
+- the function registering the phydev-hw-mode trigger is now called from
+  phy_device.c function phy_init before registering genphy drivers
+- PHY LED functionality now depends on CONFIG_LEDS_TRIGGERS
+
+Changes since RFC v2:
+- to share code with other drivers which may want to also offer PHY HW
+  control of LEDs some of the code was refactored and now resides in
+  phy_hw_led_mode.c. This code is compiled in when config option
+  LED_TRIGGER_PHY_HW is enabled. Drivers wanting to offer PHY HW control
+  of LEDs should depend on this option.
+- the "hw-control" trigger is renamed to "phydev-hw-mode" and is
+  registered by the code in phy_hw_led_mode.c
+- the "hw_control" sysfs file is renamed to "hw_mode"
+- struct phy_driver is extended by three methods to support PHY HW LED
+  control
+- I renamed the various HW control modes offeret by Marvell PHYs to
+  conform to other Linux mode names, for example the "1000/100/10/else"
+  mode was renamed to "1Gbps/100Mbps/10Mbps", or "recv/else" was renamed
+  to "rx" (this is the name of the mode in netdev trigger).
+
+Marek Behún (7):
+  dt-bindings: leds: document binding for HW controlled LEDs
+  leds: add generic API for LEDs that can be controlled by hardware
+  net: phy: add simple incrementing phyindex member to phy_device struct
+  dt-bindings: net: ethernet-phy: add description for PHY LEDs
+  net: phy: add support for LEDs controlled by ethernet PHY chips
+  net: phy: marvell: add support for LEDs controlled by Marvell PHYs
+  arm64: dts: armada-3720-turris-mox: add nodes for ethernet PHY LEDs
+
+ .../sysfs-class-led-trigger-dev-hw-mode       |   8 +
+ .../leds/linux,hw-controlled-leds.yaml        |  99 ++++++
+ .../devicetree/bindings/net/ethernet-phy.yaml |   8 +
+ .../dts/marvell/armada-3720-turris-mox.dts    |  23 ++
+ drivers/leds/Kconfig                          |  10 +
+ drivers/leds/Makefile                         |   1 +
+ drivers/leds/leds-hw-controlled.c             | 227 +++++++++++++
+ drivers/net/phy/marvell.c                     | 314 +++++++++++++++++-
+ drivers/net/phy/phy_device.c                  | 106 ++++++
+ include/linux/leds-hw-controlled.h            |  74 +++++
+ include/linux/phy.h                           |   7 +
+ 11 files changed, 875 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-led-trigger-dev-hw-mode
+ create mode 100644 Documentation/devicetree/bindings/leds/linux,hw-controlled-leds.yaml
+ create mode 100644 drivers/leds/leds-hw-controlled.c
+ create mode 100644 include/linux/leds-hw-controlled.h
+
 -- 
-2.20.1
+2.26.2
 
