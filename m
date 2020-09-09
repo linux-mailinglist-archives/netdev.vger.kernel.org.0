@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 334742623F3
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 02:22:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DED92623F1
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 02:22:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729413AbgIIAVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729614AbgIIAVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 8 Sep 2020 20:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727935AbgIIAVd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 20:21:33 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B95DC061755
+        with ESMTP id S1727940AbgIIAVe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 20:21:34 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4391C061756
         for <netdev@vger.kernel.org>; Tue,  8 Sep 2020 17:21:33 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id b6so1329371iof.6
-        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 17:21:32 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id y2so673403ilp.7
+        for <netdev@vger.kernel.org>; Tue, 08 Sep 2020 17:21:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8tybThLlRbjVkLUpKNVR8TAToijTPsCOvNfuIS/nQe4=;
-        b=QnZqESsuB1xtnKr2wBGGEtm9HSR6eH4UoS3XsVWZszlNFjgNmIEoI10+ya6jXE8Kac
-         0ncF2dLsd89AjLeCRkaQWwU/8HrQKfHDi1OF1aEfcRgAMaSsAnR8Sotz73iNZvjGP5BZ
-         8z+u+qqjrCc3PZJWhccmJEbW/yumTy5rFeZNWVGQNHiPlgi4+GMDaUjy74Y94jnFmyX1
-         LfwmSrZixq17zeKcBOP3uw6qkMwfTH0jzmgtI/pVO/SldF5C3AzKlvxsIzwh72wF6E+o
-         kQ3C+Xwiqk878ETf6sj8wPOkOCM4eyHJQfpn4Cwk9J7pYNdMnsCwGhFeGc3YOwNyz53y
-         enaA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4AO2162Bte/ulZ9CvnofKmBqr4RKglDOxVaujf63iCE=;
+        b=a1TuTK4MtJFjMI99KomH5XteYCTQYRkUTzIPMFhkGS3RBppusrMHJ1452iq2Akobdl
+         mOT92hlud7Ezx19XbZ+Q+T9GD2D2QAwRSz5xDLCmueKASaMZy7Fb3pua5Yny9LJpyjay
+         qt6AwEKqxOBcn/baHxGgfksCzuBagajdJD1ykKc5VUALsLpxNjjBwTKC0CHdWkdMD2qx
+         nx20wh0CxVzBoW0f1K06wYNTOXdnEuNVA37OuJfS/CoWDbhAuF5OxGSlSQkGrrrpFy9O
+         K4pJ6ejXwWaKa6UJegzqfqzGQDyIBFMGd9oYYDfdw1U7fttRIVZLGTzWtP1kF68lcN/j
+         ukIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8tybThLlRbjVkLUpKNVR8TAToijTPsCOvNfuIS/nQe4=;
-        b=qV91RpQd/BZ38OV1NPhrQGQQ/OiQ7JwxH+ilmc6YnH5JCeGRBF6/TjMKDP5G2oyPhp
-         SXQVMR1o4Eo8nxzKFaIU2GEvY5pP5aSg3CWy8tXTKZeF9K6kawsA6WwlUO9mP+/ZZ9rz
-         1aAz20weIjjLREr4JNDmQB4kUwsYzu81JVG9J6DQQul7174EZgPtNsPH2j59uBA+z5RL
-         ynsTU7UdNLgxP7Ul+KHc8Mh0QbmZvCA0MHw7rOyNMeJxsO4oqVjmSWSi4eV7dm4natW5
-         39F7hWFXI5sr7oeO5zpTxnbvE0sJzEtK/8xGgkkmfznng736zgFNtv7qjDF0BVE6yz6J
-         ne3g==
-X-Gm-Message-State: AOAM532HeS0U+kv65CuJN1xajdyByuOsrx4mxAWxn8W0UEMdo66ky/JL
-        W0rGTBHMUdou0SVMY559yXZyOg==
-X-Google-Smtp-Source: ABdhPJwsJruqibBWhLh59+eqHvJcw029rPxA1ngSj8jmGqUV0XB2L32F0MOWqPFaXUjdnHn6+X1sZQ==
-X-Received: by 2002:a02:8384:: with SMTP id z4mr1577253jag.121.1599610892152;
-        Tue, 08 Sep 2020 17:21:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4AO2162Bte/ulZ9CvnofKmBqr4RKglDOxVaujf63iCE=;
+        b=t/EkyhclHaMKaR+vM0UiEbMq6kpIaf3Q3yhZfmxlSlP15FzcNvRp5EdVgE88zn/Rdh
+         feG7XIFBAuvCZS2lkn50BhlCcXb1CqVmWRFBq8xy9NAn5BiYiABF7mHgQj1elESkTOb/
+         4zos+LzNZEUVHkJ8stOjPXZ3eMqv14pEjC09IkSUlNnyMBSuXT9m3FEMQustvJiUsPnw
+         2PkKdif36Sk/Acq+fO9uVNYTxR+7mN4wRl6kffnlBEmKwpI84JwJiz3lOUs1WBROIdKV
+         eSGjnWk4uho0d4ipjcro3JLgiW91WMFAOHSvyNiffE/L+hyuRo1F96JzUnIx/RCy/19Z
+         rNNA==
+X-Gm-Message-State: AOAM532zXMIVjasdVhDyDMOE+wouMVS5araEMPQ+4MVH6xDBF6BEPCX6
+        QQVMGuMgJORYcQ0HduDd936RSQ==
+X-Google-Smtp-Source: ABdhPJxJHNJvd6vjUWApZQY6Iihzu397LyiVMDZUtmGPGDmu/Zlt6omKQG/F4Y+EvlSaPNiE71np+A==
+X-Received: by 2002:a92:9604:: with SMTP id g4mr1495062ilh.6.1599610893171;
+        Tue, 08 Sep 2020 17:21:33 -0700 (PDT)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id f21sm457739ioh.1.2020.09.08.17.21.30
+        by smtp.gmail.com with ESMTPSA id f21sm457739ioh.1.2020.09.08.17.21.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Sep 2020 17:21:31 -0700 (PDT)
+        Tue, 08 Sep 2020 17:21:32 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/5] net: ipa: wake up system on RX available
-Date:   Tue,  8 Sep 2020 19:21:22 -0500
-Message-Id: <20200909002127.21089-1-elder@linaro.org>
+Subject: [PATCH net-next 1/5] net: ipa: use atomic exchange for suspend reference
+Date:   Tue,  8 Sep 2020 19:21:23 -0500
+Message-Id: <20200909002127.21089-2-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200909002127.21089-1-elder@linaro.org>
+References: <20200909002127.21089-1-elder@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,58 +65,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series arranges for the IPA driver to wake up a suspended
-system if the IPA hardware has a packet to deliver to the AP.
+We take a single IPA clock reference to keep the clock running
+until we get a system suspend operation.  When a system suspend
+request arrives, we drop that reference, and if that's the last
+reference (likely) we'll proceed with suspending endpoints and
+disabling the IPA core clock and interconnects.
 
-Currently, the GSI interrupt is set up to be a waking interrupt.
-But the GSI interrupt won't actually fire for a stopped channel (or
-a channel that underlies a suspended endpoint).  The fix involves
-having the IPA rather than GSI interrupt wake up the AP.
+In most places we simply set the reference count to 0 or 1
+atomically.  Instead--primarily to catch coding errors--use an
+atomic exchange to update the reference count value, and report
+an error in the event the previous value was unexpected.
 
-The IPA hardware clock is managed by both the modem and the AP.
-Even if the AP is in a fully-suspended state, the modem can clock
-the IPA hardware, and can send a packet through IPA that is destined
-for an endpoint on the AP.
+In a few cases it's not hard to see that the error message should
+never be reported.  Report them anyway, but add some excitement
+to the message by ending it with an exclamation point.
 
-When the IPA hardware finds a packet's destination is stopped or
-suspended, it sends an *IPA interrupt* to the destination "execution
-environment" (EE--in this case, the AP).  The desired behavior is
-for the EE (even if suspended) to be able to handle the incoming
-packet.
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ drivers/net/ipa/ipa_main.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-To do this, we arrange for the IPA interrupt to be a wakeup
-interrupt.  And if the system is suspended when that interrupt
-fires, we trigger a system resume operation.  While resuming the
-system, the IPA driver starts all its channels (or for SDM845, take
-its endpoints out of suspend mode).
-
-Whenever an RX channel is started, if it has a packet ready to be
-consumed, the GSI interrupt will fire.  At this point the inbound
-packet that caused this wakeup activity will be received.
-
-The first patch just checks the previous value of a reference
-counter used for suspend, as precaution to catch bugs.  The next
-three arrange for the IPA interrupt wake up the system.  Finally,
-with this design, we no longer want the GSI interrupt to wake a
-suspended system, so that is removed by the last patch.`
-
-					-Alex
-
-Alex Elder (5):
-  net: ipa: use atomic exchange for suspend reference
-  net: ipa: manage endpoints separate from clock
-  net: ipa: use device_init_wakeup()
-  net: ipa: enable wakeup on IPA interrupt
-  net: ipa: do not enable GSI interrupt for wakeup
-
- drivers/net/ipa/gsi.c           | 17 +++------
- drivers/net/ipa/gsi.h           |  1 -
- drivers/net/ipa/ipa.h           |  2 --
- drivers/net/ipa/ipa_clock.c     |  4 ---
- drivers/net/ipa/ipa_interrupt.c | 14 ++++++++
- drivers/net/ipa/ipa_main.c      | 62 ++++++++++++++++++---------------
- 6 files changed, 51 insertions(+), 49 deletions(-)
-
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index 1fdfec41e4421..6b843fc989122 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -83,6 +83,7 @@ static void ipa_suspend_handler(struct ipa *ipa, enum ipa_irq_id irq_id)
+ 	/* Take a a single clock reference to prevent suspend.  All
+ 	 * endpoints will be resumed as a result.  This reference will
+ 	 * be dropped when we get a power management suspend request.
++	 * The first call activates the clock; ignore any others.
+ 	 */
+ 	if (!atomic_xchg(&ipa->suspend_ref, 1))
+ 		ipa_clock_get(ipa);
+@@ -502,13 +503,15 @@ static void ipa_resource_deconfig(struct ipa *ipa)
+  */
+ static int ipa_config(struct ipa *ipa, const struct ipa_data *data)
+ {
++	struct device *dev = &ipa->pdev->dev;
+ 	int ret;
+ 
+ 	/* Get a clock reference to allow initialization.  This reference
+ 	 * is held after initialization completes, and won't get dropped
+ 	 * unless/until a system suspend request arrives.
+ 	 */
+-	atomic_set(&ipa->suspend_ref, 1);
++	if (atomic_xchg(&ipa->suspend_ref, 1))
++		dev_err(dev, "suspend clock reference already taken!\n");
+ 	ipa_clock_get(ipa);
+ 
+ 	ipa_hardware_config(ipa);
+@@ -544,7 +547,8 @@ static int ipa_config(struct ipa *ipa, const struct ipa_data *data)
+ err_hardware_deconfig:
+ 	ipa_hardware_deconfig(ipa);
+ 	ipa_clock_put(ipa);
+-	atomic_set(&ipa->suspend_ref, 0);
++	if (!atomic_xchg(&ipa->suspend_ref, 0))
++		dev_err(dev, "suspend clock reference already dropped!\n");
+ 
+ 	return ret;
+ }
+@@ -562,7 +566,8 @@ static void ipa_deconfig(struct ipa *ipa)
+ 	ipa_endpoint_deconfig(ipa);
+ 	ipa_hardware_deconfig(ipa);
+ 	ipa_clock_put(ipa);
+-	atomic_set(&ipa->suspend_ref, 0);
++	if (!atomic_xchg(&ipa->suspend_ref, 0))
++		dev_err(&ipa->pdev->dev, "no suspend clock reference\n");
+ }
+ 
+ static int ipa_firmware_load(struct device *dev)
+@@ -913,7 +918,8 @@ static int ipa_suspend(struct device *dev)
+ 	struct ipa *ipa = dev_get_drvdata(dev);
+ 
+ 	ipa_clock_put(ipa);
+-	atomic_set(&ipa->suspend_ref, 0);
++	if (!atomic_xchg(&ipa->suspend_ref, 0))
++		dev_err(dev, "suspend: missing suspend clock reference\n");
+ 
+ 	return 0;
+ }
+@@ -933,7 +939,8 @@ static int ipa_resume(struct device *dev)
+ 	/* This clock reference will keep the IPA out of suspend
+ 	 * until we get a power management suspend request.
+ 	 */
+-	atomic_set(&ipa->suspend_ref, 1);
++	if (atomic_xchg(&ipa->suspend_ref, 1))
++		dev_err(dev, "resume: duplicate suspend clock reference\n");
+ 	ipa_clock_get(ipa);
+ 
+ 	return 0;
 -- 
 2.20.1
 
