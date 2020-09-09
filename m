@@ -2,92 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C02E262AE7
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:49:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 768E3262B00
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:55:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728347AbgIIItj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 04:49:39 -0400
-Received: from mail-io1-f79.google.com ([209.85.166.79]:46974 "EHLO
-        mail-io1-f79.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728970AbgIIItY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:49:24 -0400
-Received: by mail-io1-f79.google.com with SMTP id c22so1480086iom.13
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:49:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Hmc2r7eesuS8hDT5sY5ndDBpeHvg0B9Mp2Q2pIVeAhQ=;
-        b=B2VKN2z4lzuLMzidqRsRPTnXlelOx/XWifiH9g1KaysxJRA5UeSvq7ukHp6+GkAY4c
-         B8TtfsNbueR4dpLcWeq2Rv+RD28rFsLFzD9ppZ8nt1UG9RHjS9dtFNCghySZxDwZw4qh
-         UhXHAZGpIsbUvIkxucazzUX0qbYgeoxUP3r+SChKv35kULlPB30Iw76cUqAbjuztq8c7
-         Oz1DIE7eM2KA1JiSrpIHU+JrnpTpaI7mL3eQthtnypNwD4BuhvHbgNm5IZc9ttgbT9Cr
-         JKKdTemZS5OpdiwawwMB0lQ21mTZr7+l/5JT8BY/9ZNCt4a3X1FLO4OaQDEdctpDiGij
-         r77w==
-X-Gm-Message-State: AOAM531Q/tLTbgvbDK+PWhln5y49fDLxKEcPLB2VRDMFWSK3Cp+fmY/E
-        pVZHnPXha+eL1YY+fmM889glZz6pifMPY5U2Q8oItLzL9GXg
-X-Google-Smtp-Source: ABdhPJxoMRKRTwWdxdXUfgMHZQIkaFn/xWyh4vyruirgPIBRjn9gLzghekwhJjrYO7UQ2Zc99DWXrwQldvZR/amubDmOOitKbaCk
+        id S1729507AbgIIIzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 04:55:00 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:11290 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726408AbgIIIy5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 04:54:57 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id CABAE1E26E649B123902;
+        Wed,  9 Sep 2020 16:54:55 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.58) by
+ DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
+ 14.3.487.0; Wed, 9 Sep 2020 16:54:45 +0800
+From:   Wei Xu <xuwei5@hisilicon.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <xuwei5@hisilicon.com>,
+        <linuxarm@huawei.com>, <shameerali.kolothum.thodi@huawei.com>,
+        <jonathan.cameron@huawei.com>, <john.garry@huawei.com>,
+        <salil.mehta@huawei.com>, <shiju.jose@huawei.com>,
+        <jinying@hisilicon.com>, <zhangyi.ac@huawei.com>,
+        <liguozhu@hisilicon.com>, <tangkunshan@huawei.com>,
+        <huangdaode@hisilicon.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        <intel-wired-lan@lists.osuosl.org>, <linux-kernel@vger.kernel.org>
+Subject: [net-next] net: iavf: Use the ARRAY_SIZE macro for aq_to_posix
+Date:   Wed, 9 Sep 2020 16:51:11 +0800
+Message-ID: <1599641471-204919-1-git-send-email-xuwei5@hisilicon.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-X-Received: by 2002:a92:c002:: with SMTP id q2mr2827066ild.171.1599641363124;
- Wed, 09 Sep 2020 01:49:23 -0700 (PDT)
-Date:   Wed, 09 Sep 2020 01:49:23 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003798d705aedd870d@google.com>
-Subject: memory leak in mgmt_cmd_status
-From:   syzbot <syzbot+80f5bab4eb14d14e7386@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Use the ARRAY_SIZE macro to calculate the size of an array.
+This code was detected with the help of Coccinelle.
 
-syzbot found the following issue on:
-
-HEAD commit:    6f6a73c8 Merge tag 'drm-fixes-2020-09-08' of git://anongit..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=152e3245900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=7954285d6e960c0f
-dashboard link: https://syzkaller.appspot.com/bug?extid=80f5bab4eb14d14e7386
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16877335900000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+80f5bab4eb14d14e7386@syzkaller.appspotmail.com
-
-2020/09/09 02:38:52 executed programs: 3
-2020/09/09 02:38:58 executed programs: 5
-2020/09/09 02:39:03 executed programs: 7
-BUG: memory leak
-unreferenced object 0xffff888119d41a00 (size 224):
-  comm "kworker/u5:0", pid 1520, jiffies 4294954656 (age 28.430s)
-  hex dump (first 32 bytes):
-    d0 30 1c 2b 81 88 ff ff d0 30 1c 2b 81 88 ff ff  .0.+.....0.+....
-    00 00 00 00 00 00 00 00 00 30 1c 2b 81 88 ff ff  .........0.+....
-  backtrace:
-    [<000000007a3b2b8a>] __alloc_skb+0x5e/0x250 net/core/skbuff.c:198
-    [<000000003fe180cd>] alloc_skb include/linux/skbuff.h:1094 [inline]
-    [<000000003fe180cd>] mgmt_cmd_status+0x31/0x140 net/bluetooth/mgmt_util.c:102
-    [<00000000a98852de>] mgmt_set_discoverable_complete+0x18e/0x1c0 net/bluetooth/mgmt.c:1351
-    [<000000000d6aa222>] discoverable_update_work+0x7a/0xa0 net/bluetooth/hci_request.c:2595
-    [<00000000159838c7>] process_one_work+0x213/0x4d0 kernel/workqueue.c:2269
-    [<0000000087b95ef0>] worker_thread+0x58/0x4b0 kernel/workqueue.c:2415
-    [<0000000059403542>] kthread+0x164/0x190 kernel/kthread.c:292
-    [<00000000d35ee226>] ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-
-
-
+Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/net/ethernet/intel/iavf/iavf_adminq.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_adminq.h b/drivers/net/ethernet/intel/iavf/iavf_adminq.h
+index baf2fe2..eead12c 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_adminq.h
++++ b/drivers/net/ethernet/intel/iavf/iavf_adminq.h
+@@ -120,7 +120,7 @@ static inline int iavf_aq_rc_to_posix(int aq_ret, int aq_rc)
+ 	if (aq_ret == IAVF_ERR_ADMIN_QUEUE_TIMEOUT)
+ 		return -EAGAIN;
+ 
+-	if (!((u32)aq_rc < (sizeof(aq_to_posix) / sizeof((aq_to_posix)[0]))))
++	if (!((u32)aq_rc < ARRAY_SIZE(aq_to_posix)))
+ 		return -ERANGE;
+ 
+ 	return aq_to_posix[aq_rc];
+-- 
+2.8.1
+
