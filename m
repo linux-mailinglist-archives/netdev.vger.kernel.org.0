@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 386E4262AD6
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6302B262ACB
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:46:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730021AbgIIIqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 04:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41242 "EHLO
+        id S1730116AbgIIIqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 04:46:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729507AbgIIIqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:46:06 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41ADEC061755
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:46:06 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id gf14so999817pjb.5
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:46:06 -0700 (PDT)
+        with ESMTP id S1726426AbgIIIqL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:46:11 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBBBFC061573
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:46:09 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id 7so1556507pgm.11
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:46:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aKqaUZboWy0wN9WJcktjpPy7JqOWlde4Agb9SDYLCws=;
-        b=vNPVEMgCLkVbYGt+a4R86QQaSpM41cAaUrs9c6nlqWVbDAOIoiQFNi2Aqg8RgzUJnX
-         oeVrWf/JYw1hQUuFPdPLrs4eqKGBGns1ZP2jVMQ8RWa3ZG/xpskq45bYORRp59e9K7tm
-         JWrRkeS1mgczeEhlRTb4ixB4sKCVYRaH0M0cJcoca8OIsy8X+LnbsuKS0FEPBsxDY7LH
-         SirGSP7+c3Mm9jYqYVtMKywcJI/bg5X3EGye/vdTRHrcpe7AEHWvb/kaY8/7suvpXau0
-         68CC3EOWzUtQjuTHc/ogooIRuGyf7PCvXfnY9BCWfmHxidrKkwI/HBaepBHrZqKfarDd
-         KeTg==
+        bh=x+vfSm1yZ1eR3JadcSzJY6I4W3670E5ZjWQPr/OYozg=;
+        b=uFnwHD9WO77HXD+72QxGPT/ZvJyLKXvo6OIq4FleTpkFG56RItVSzT+R3Jn0YFflYh
+         2p4QUWlBoqAvpG3J2JKfEKjRoAt0ZIPZ7QknVSRtydMGLvcz3KFwyeWP4ml0ofmvdlQW
+         QGqHKJT5PbsRWZyDuPILOtqJLu+8utMppVXTpu/aBOzrICAltruBmqBSY49ePOuwYwxr
+         INVU2TPJxAfAr3H3MKgTLgTpZxs4QFxXp9d6/YxYa1sarb6Ho2aNuvsLeSTGQT5mmsVv
+         sxyshKJTUWz+Dsgjw/PVtnFP/ekca6KpHElLFZA9fZiPps7UmN+6klUFgH2y9+7RaJ3c
+         IWzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aKqaUZboWy0wN9WJcktjpPy7JqOWlde4Agb9SDYLCws=;
-        b=SDakWn48dTwkHdYpA1A4QrL337Ajh64FytBAlmVqmLfO2oCdcMJYpxhvytxveZ+ueg
-         F0Gjh/oIRrXCOUsL7vtthPJw8hcS0fr8/xsDZ3xw87x4n5ddjO3RcW6Rnl2IGYwBrWzk
-         ywgo4TIkDTDRqvxCXZSHIPKpecFYS+H91ZKuSXTAO4OOCpc/vq4KFGBSyb9+gXsqiD5m
-         Jdyhcar8s+g8EGdobrZurITAwL1tSW6kj0NcGz8sq1LUpVUV8NguIRE+gD9b3TEOQfdy
-         wjvdlNEEB1K1Zegyn5p3irLpdQlbntkRXuzvxRKgGSZQxeQR6SfU7jkLWuk1AELJcPC+
-         fh4g==
-X-Gm-Message-State: AOAM532CtoEqLRJNbp4fEbDF7jhIy2l3xzj8oROfN5AYh6MJGfuJFXtH
-        JsnfRuvpvVdgirH4nf++qfQ=
-X-Google-Smtp-Source: ABdhPJxNdFEkHu33wpmPoVZPpmBYnnsmI6IvOcjl2koSqc5wxufX4IqObaxMYYaGNk0dh8lwbtZrmQ==
-X-Received: by 2002:a17:90a:7bcf:: with SMTP id d15mr2641732pjl.230.1599641165879;
-        Wed, 09 Sep 2020 01:46:05 -0700 (PDT)
+        bh=x+vfSm1yZ1eR3JadcSzJY6I4W3670E5ZjWQPr/OYozg=;
+        b=Opj12rIy4p639fUwU5fBZ+qA7p5yIlQUnhSH0NQOVg4unEwOUC60pR/v/yJWAEopuX
+         +6IlknotWyJSaiDM/+QesKEG3woDzW79VA+jxM08a07pyNbinc4DGtCtZdMnYHaA61NP
+         lnkNBkPOs5ca86HLgOHrUJSbiSdrfF2At8i9WDtVhPSg5yy5OMNrzReBlvFiEK7qrAlt
+         enyFhknYr/zJ9du74KGh/+JJZRkv5rHoL/zmjvB0S8b185isVPPBiHQYfOWn5y26GN/P
+         w0yBdl/4ocR/7TnAkFrFfxrQbEebkNr2kQi7AgksjX91+UWuVuvTPeucG89MgNJJr/Ng
+         CG/Q==
+X-Gm-Message-State: AOAM531fTVWlpGPCglxVYHUgDYeCJhE5M3SW1oFwhQsyGHpzp3JDBFrS
+        a+HybgWGnKcsu6BdKKpqbsM=
+X-Google-Smtp-Source: ABdhPJzRxsgd9qzISJ4YQO7xn6GCSS+u0JLs4dPzpb51tv7B0mo90B/jM1tOo+GA00rnXq09PaD66Q==
+X-Received: by 2002:a65:5689:: with SMTP id v9mr2283456pgs.271.1599641169386;
+        Wed, 09 Sep 2020 01:46:09 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.214.52])
-        by smtp.gmail.com with ESMTPSA id u21sm1468355pjn.27.2020.09.09.01.46.02
+        by smtp.gmail.com with ESMTPSA id u21sm1468355pjn.27.2020.09.09.01.46.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 01:46:05 -0700 (PDT)
+        Wed, 09 Sep 2020 01:46:08 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
@@ -54,9 +54,9 @@ Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
         stephen@networkplumber.org, borisp@mellanox.com,
         netdev@vger.kernel.org, Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH v2 12/20] ethernet: marvell: convert tasklets to use new tasklet_setup() API
-Date:   Wed,  9 Sep 2020 14:15:02 +0530
-Message-Id: <20200909084510.648706-13-allen.lkml@gmail.com>
+Subject: [PATCH v2 13/20] ethernet: mellanox: convert tasklets to use new tasklet_setup() API
+Date:   Wed,  9 Sep 2020 14:15:03 +0530
+Message-Id: <20200909084510.648706-14-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200909084510.648706-1-allen.lkml@gmail.com>
 References: <20200909084510.648706-1-allen.lkml@gmail.com>
@@ -75,34 +75,178 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/net/ethernet/marvell/skge.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/cq.c             |  4 ++--
+ drivers/net/ethernet/mellanox/mlx4/eq.c             |  3 +--
+ drivers/net/ethernet/mellanox/mlx4/mlx4.h           |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/cq.c        |  4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c        |  3 +--
+ drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c |  7 +++----
+ drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h    |  2 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci.c           | 12 ++++++------
+ 8 files changed, 17 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/skge.c b/drivers/net/ethernet/marvell/skge.c
-index 6a930351cb23..8a9c0f490bfb 100644
---- a/drivers/net/ethernet/marvell/skge.c
-+++ b/drivers/net/ethernet/marvell/skge.c
-@@ -3338,9 +3338,9 @@ static void skge_error_irq(struct skge_hw *hw)
-  * because accessing phy registers requires spin wait which might
-  * cause excess interrupt latency.
-  */
--static void skge_extirq(unsigned long arg)
-+static void skge_extirq(struct tasklet_struct *t)
+diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
+index 65f8a4b6ed0c..3b8576b9c2f9 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/cq.c
++++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
+@@ -55,11 +55,11 @@
+ #define TASKLET_MAX_TIME 2
+ #define TASKLET_MAX_TIME_JIFFIES msecs_to_jiffies(TASKLET_MAX_TIME)
+ 
+-void mlx4_cq_tasklet_cb(unsigned long data)
++void mlx4_cq_tasklet_cb(struct tasklet_struct *t)
  {
--	struct skge_hw *hw = (struct skge_hw *) arg;
-+	struct skge_hw *hw = from_tasklet(hw, t, phy_task);
- 	int port;
+ 	unsigned long flags;
+ 	unsigned long end = jiffies + TASKLET_MAX_TIME_JIFFIES;
+-	struct mlx4_eq_tasklet *ctx = (struct mlx4_eq_tasklet *)data;
++	struct mlx4_eq_tasklet *ctx = from_tasklet(ctx, t, task);
+ 	struct mlx4_cq *mcq, *temp;
  
- 	for (port = 0; port < hw->ports; port++) {
-@@ -3927,7 +3927,7 @@ static int skge_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	hw->pdev = pdev;
- 	spin_lock_init(&hw->hw_lock);
- 	spin_lock_init(&hw->phy_lock);
--	tasklet_init(&hw->phy_task, skge_extirq, (unsigned long) hw);
-+	tasklet_setup(&hw->phy_task, skge_extirq);
+ 	spin_lock_irqsave(&ctx->lock, flags);
+diff --git a/drivers/net/ethernet/mellanox/mlx4/eq.c b/drivers/net/ethernet/mellanox/mlx4/eq.c
+index ae305c2e9225..9e48509ed3b2 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx4/eq.c
+@@ -1057,8 +1057,7 @@ static int mlx4_create_eq(struct mlx4_dev *dev, int nent,
+ 	INIT_LIST_HEAD(&eq->tasklet_ctx.list);
+ 	INIT_LIST_HEAD(&eq->tasklet_ctx.process_list);
+ 	spin_lock_init(&eq->tasklet_ctx.lock);
+-	tasklet_init(&eq->tasklet_ctx.task, mlx4_cq_tasklet_cb,
+-		     (unsigned long)&eq->tasklet_ctx);
++	tasklet_setup(&eq->tasklet_ctx.task, mlx4_cq_tasklet_cb);
  
- 	hw->regs = ioremap(pci_resource_start(pdev, 0), 0x4000);
- 	if (!hw->regs) {
+ 	return err;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4.h b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
+index 527b52e48276..64bed7ac3836 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/mlx4.h
++++ b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
+@@ -1217,7 +1217,7 @@ void mlx4_cmd_use_polling(struct mlx4_dev *dev);
+ int mlx4_comm_cmd(struct mlx4_dev *dev, u8 cmd, u16 param,
+ 		  u16 op, unsigned long timeout);
+ 
+-void mlx4_cq_tasklet_cb(unsigned long data);
++void mlx4_cq_tasklet_cb(struct tasklet_struct *t);
+ void mlx4_cq_completion(struct mlx4_dev *dev, u32 cqn);
+ void mlx4_cq_event(struct mlx4_dev *dev, u32 cqn, int event_type);
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cq.c b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
+index 8379b24cb838..df3e4938ecdd 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cq.c
+@@ -42,11 +42,11 @@
+ #define TASKLET_MAX_TIME 2
+ #define TASKLET_MAX_TIME_JIFFIES msecs_to_jiffies(TASKLET_MAX_TIME)
+ 
+-void mlx5_cq_tasklet_cb(unsigned long data)
++void mlx5_cq_tasklet_cb(struct tasklet_struct *t)
+ {
+ 	unsigned long flags;
+ 	unsigned long end = jiffies + TASKLET_MAX_TIME_JIFFIES;
+-	struct mlx5_eq_tasklet *ctx = (struct mlx5_eq_tasklet *)data;
++	struct mlx5_eq_tasklet *ctx = from_tasklet(ctx, t, task);
+ 	struct mlx5_core_cq *mcq;
+ 	struct mlx5_core_cq *temp;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 31ef9f8420c8..ec38405d467f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -788,8 +788,7 @@ static int create_comp_eqs(struct mlx5_core_dev *dev)
+ 		INIT_LIST_HEAD(&eq->tasklet_ctx.list);
+ 		INIT_LIST_HEAD(&eq->tasklet_ctx.process_list);
+ 		spin_lock_init(&eq->tasklet_ctx.lock);
+-		tasklet_init(&eq->tasklet_ctx.task, mlx5_cq_tasklet_cb,
+-			     (unsigned long)&eq->tasklet_ctx);
++		tasklet_setup(&eq->tasklet_ctx.task, mlx5_cq_tasklet_cb);
+ 
+ 		eq->irq_nb.notifier_call = mlx5_eq_comp_int;
+ 		param = (struct mlx5_eq_param) {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c b/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c
+index 831d2c39e153..9f6d97eae0ae 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/conn.c
+@@ -388,9 +388,9 @@ static inline void mlx5_fpga_conn_cqes(struct mlx5_fpga_conn *conn,
+ 	mlx5_fpga_conn_arm_cq(conn);
+ }
+ 
+-static void mlx5_fpga_conn_cq_tasklet(unsigned long data)
++static void mlx5_fpga_conn_cq_tasklet(struct tasklet_struct *t)
+ {
+-	struct mlx5_fpga_conn *conn = (void *)data;
++	struct mlx5_fpga_conn *conn = from_tasklet(conn, t, cq.tasklet);
+ 
+ 	if (unlikely(!conn->qp.active))
+ 		return;
+@@ -478,8 +478,7 @@ static int mlx5_fpga_conn_create_cq(struct mlx5_fpga_conn *conn, int cq_size)
+ 	conn->cq.mcq.comp       = mlx5_fpga_conn_cq_complete;
+ 	conn->cq.mcq.irqn       = irqn;
+ 	conn->cq.mcq.uar        = fdev->conn_res.uar;
+-	tasklet_init(&conn->cq.tasklet, mlx5_fpga_conn_cq_tasklet,
+-		     (unsigned long)conn);
++	tasklet_setup(&conn->cq.tasklet, mlx5_fpga_conn_cq_tasklet);
+ 
+ 	mlx5_fpga_dbg(fdev, "Created CQ #0x%x\n", conn->cq.mcq.cqn);
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h
+index 4aaca7400fb2..078a7cc29bf0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h
+@@ -77,7 +77,7 @@ int mlx5_eq_add_cq(struct mlx5_eq *eq, struct mlx5_core_cq *cq);
+ void mlx5_eq_del_cq(struct mlx5_eq *eq, struct mlx5_core_cq *cq);
+ struct mlx5_eq_comp *mlx5_eqn2comp_eq(struct mlx5_core_dev *dev, int eqn);
+ struct mlx5_eq *mlx5_get_async_eq(struct mlx5_core_dev *dev);
+-void mlx5_cq_tasklet_cb(unsigned long data);
++void mlx5_cq_tasklet_cb(struct tasklet_struct *t);
+ struct cpumask *mlx5_eq_comp_cpumask(struct mlx5_core_dev *dev, int ix);
+ 
+ u32 mlx5_eq_poll_irq_disabled(struct mlx5_eq_comp *eq);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index 1c64b03ff48e..641cdd81882b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -620,9 +620,9 @@ static char *mlxsw_pci_cq_sw_cqe_get(struct mlxsw_pci_queue *q)
+ 	return elem;
+ }
+ 
+-static void mlxsw_pci_cq_tasklet(unsigned long data)
++static void mlxsw_pci_cq_tasklet(struct tasklet_struct *t)
+ {
+-	struct mlxsw_pci_queue *q = (struct mlxsw_pci_queue *) data;
++	struct mlxsw_pci_queue *q = from_tasklet(q, t, tasklet);
+ 	struct mlxsw_pci *mlxsw_pci = q->pci;
+ 	char *cqe;
+ 	int items = 0;
+@@ -733,9 +733,9 @@ static char *mlxsw_pci_eq_sw_eqe_get(struct mlxsw_pci_queue *q)
+ 	return elem;
+ }
+ 
+-static void mlxsw_pci_eq_tasklet(unsigned long data)
++static void mlxsw_pci_eq_tasklet(struct tasklet_struct *t)
+ {
+-	struct mlxsw_pci_queue *q = (struct mlxsw_pci_queue *) data;
++	struct mlxsw_pci_queue *q = from_tasklet(q, t, tasklet);
+ 	struct mlxsw_pci *mlxsw_pci = q->pci;
+ 	u8 cq_count = mlxsw_pci_cq_count(mlxsw_pci);
+ 	unsigned long active_cqns[BITS_TO_LONGS(MLXSW_PCI_CQS_MAX)];
+@@ -792,7 +792,7 @@ struct mlxsw_pci_queue_ops {
+ 		    struct mlxsw_pci_queue *q);
+ 	void (*fini)(struct mlxsw_pci *mlxsw_pci,
+ 		     struct mlxsw_pci_queue *q);
+-	void (*tasklet)(unsigned long data);
++	void (*tasklet)(struct tasklet_struct *t);
+ 	u16 (*elem_count_f)(const struct mlxsw_pci_queue *q);
+ 	u8 (*elem_size_f)(const struct mlxsw_pci_queue *q);
+ 	u16 elem_count;
+@@ -855,7 +855,7 @@ static int mlxsw_pci_queue_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 	q->pci = mlxsw_pci;
+ 
+ 	if (q_ops->tasklet)
+-		tasklet_init(&q->tasklet, q_ops->tasklet, (unsigned long) q);
++		tasklet_setup(&q->tasklet, q_ops->tasklet);
+ 
+ 	mem_item->size = MLXSW_PCI_AQ_SIZE;
+ 	mem_item->buf = pci_alloc_consistent(mlxsw_pci->pdev,
 -- 
 2.25.1
 
