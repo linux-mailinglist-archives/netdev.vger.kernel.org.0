@@ -2,78 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6879A262A3D
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3441262A3F
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:27:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728442AbgIII1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1728617AbgIII1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 9 Sep 2020 04:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbgIII1o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:27:44 -0400
-Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D650EC061573
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:27:43 -0700 (PDT)
-Received: by mail-qt1-x84a.google.com with SMTP id g1so1264182qtc.22
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:27:43 -0700 (PDT)
+        with ESMTP id S1726726AbgIII1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:27:46 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C59C061573
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:27:46 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id g8so1548543pfq.15
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:27:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=yRE3fIcUYviNrW1rvrVhLf2lyWpk2aadxVQcBuiEOD8=;
-        b=MaR8GzbZ3LPxgQDYfuUiyvpx7rSr+8ngXZiZ95Ucd4i087Qe+LkicMGpg+RT/r89xJ
-         IoddHLZywkZkAq2rwp7SkxdrHZAPz8DluixBpvUdwlyF/w4iRS9oeKUnUx26OMAdVqBK
-         gzlpmUo9CkDbpHZcGiQSZ8Xc0pb2wY2ZJwrGEr4ASjfpzZcn2iWr6Zye7vEklnNegIEj
-         F3Q6qD2qmpZsXwHjyldHYknwRMzC5HZRjiofOtapvKiMibFeVVAaRL/bbf749MlHY/9p
-         8Msk5uYrB2CV1RfI5xpEin4vPyL8lgHgymCGvNdm0/2rhUqee8pDwLQEoyR/5hV5MjgL
-         /u3w==
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=EhqSI6CF4H0BN2q/M1eIQ2zm0rLVF9NNM27HedtNRq8=;
+        b=s7S1I+dMXqEfPSiQGAQt7ub7dh9pA1GvT+kTdof7bP/wyuuvRvBUn8IiX4/qOm6PJV
+         tcYSPrugN8AHR05+krO4Tfz6Sh4su+gFbFIPD4lHJz33PvobJt4LKvmRm/cOwqn0tk7E
+         CohDL+Ttkk38TEVGUDS5C715KT5dSAyHBVUIQRyRSYPxj/67i0oAWeem6RuP+Tw2C7yH
+         xJXjhvKV0X9P6Z7x6cgvK/ryJtBqSRGnIXOFmTDGEzyY9AU9GxW8OCf2pqG5Vru84Xf4
+         LjZK6DQMa2KkGxyavkcY9rYm5M02ijvy7W0A7SGtPIu6YzwlY2GSvpnVw8FJ/I1N7QZB
+         3z6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=yRE3fIcUYviNrW1rvrVhLf2lyWpk2aadxVQcBuiEOD8=;
-        b=QMJl44UX/PbnLgvZRhJ8M0JgJ0ktL/ILRWRMdhD78mmrXtALnbztNcABcLZfvMyiap
-         htpzLolKKo32UeFCdcnTXLK6GerHkxYSDspeTMiOdJFEW+EBrUW1JxuyzHxx6COs1/sJ
-         UwWLCZstQ4fhqwZe/XO9tAS8k7L4FaP2JtWzh+3lht+L/ggzD4eJ7+oKfYFH5pESloiL
-         i+TUc6pC0ziYs/5b2r74EuuP4nizerHfnV8fXJVAkd6nlIZCvkqXZ7zxG4wRnOpla8o1
-         wRKQygyz4OOeJHrHXQVViIcw2aTMVDDnpJjkNddYkxyQesfOH+cjM/rj5ZhuIX+rAvnt
-         Myew==
-X-Gm-Message-State: AOAM5330giWEDi7ygillSEfRhDxbHMzWAMwAgM1Basow9qRdeZyBrAjn
-        b+Y0BpUMTUpG6PeWehYXH3jPQXqjnk4reg==
-X-Google-Smtp-Source: ABdhPJyC2278IQRVutMs3IhSDh2fUF2ZeEuJpxj6mvMNaIER7b4XLaf8Hwm9KisRji0WZgn5KK6AOixRVw9GZA==
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=EhqSI6CF4H0BN2q/M1eIQ2zm0rLVF9NNM27HedtNRq8=;
+        b=T1llwxk/c5y/+BCsto9kgDIB/8pOzJDIghllGHlvlW+6aWCWegaRGEQ2q8/TkAZVHG
+         sedz8eJ1th41S3KM4kurxT7r1r/iL1oc652kK8C63NVKQP/y/zL0i7hUQLrp2ReTKrAF
+         RvtGyb37vSS6MXpslg71eyrU4lt3KO1Izfv7oczE70NlQNAxcAJIQ9vo26a463MQnPYy
+         CbeBBmCdhIM9gNQBdPunqsuUJwFaWwLLlNzfJejQGDVUMlaBmr7jPSSEVdWGP5EhWNAj
+         T/qABFRDFC8eJT4luEUXnM/y0iW5OLqDhxb+1/RumCYecvtmxfwTSqmBEgjVSrTPFCdT
+         shaQ==
+X-Gm-Message-State: AOAM533w5htC73PrFihCLDS2noKD5lOdNI5yvTgHwj1OfMZYeJ05rKRE
+        9u0hPcKsUFlL0r1naDhWjArXQB0kV/ISrA==
+X-Google-Smtp-Source: ABdhPJx32Xk507xgAIr3EclpIO9prfUFRRY3kAA8G3zwmvlpjMphJSo5vhW+7HZMvaY+aVkf1UkY0DhzSYFKrA==
 X-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
- (user=edumazet job=sendgmr) by 2002:a0c:a9d6:: with SMTP id
- c22mr3081297qvb.102.1599640063001; Wed, 09 Sep 2020 01:27:43 -0700 (PDT)
-Date:   Wed,  9 Sep 2020 01:27:38 -0700
-Message-Id: <20200909082740.204752-1-edumazet@google.com>
+ (user=edumazet job=sendgmr) by 2002:a17:90b:3444:: with SMTP id
+ lj4mr2527190pjb.78.1599640065785; Wed, 09 Sep 2020 01:27:45 -0700 (PDT)
+Date:   Wed,  9 Sep 2020 01:27:39 -0700
+In-Reply-To: <20200909082740.204752-1-edumazet@google.com>
+Message-Id: <20200909082740.204752-2-edumazet@google.com>
 Mime-Version: 1.0
+References: <20200909082740.204752-1-edumazet@google.com>
 X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
-Subject: [PATCH net 0/2] net: skb_put_padto() fixes
+Subject: [PATCH net 1/2] net: qrtr: check skb_put_padto() return value
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Carl Huang <cjhuang@codeaurora.org>,
+        Wen Gong <wgong@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sysbot reported a bug in qrtr leading to use-after-free.
+If skb_put_padto() returns an error, skb has been freed.
+Better not touch it anymore, as reported by syzbot [1]
 
-First patch fixes the issue.
+Note to qrtr maintainers : this suggests qrtr_sendmsg()
+should adjust sock_alloc_send_skb() second parameter
+to account for the potential added alignment to avoid
+reallocation.
 
-Second patch addes __must_check attribute to avoid similar
-issues in the future.
+[1]
 
-Eric Dumazet (2):
-  net: qrtr: check skb_put_padto() return value
-  net: add __must_check to skb_put_padto()
+BUG: KASAN: use-after-free in __skb_insert include/linux/skbuff.h:1907 [inline]
+BUG: KASAN: use-after-free in __skb_queue_before include/linux/skbuff.h:2016 [inline]
+BUG: KASAN: use-after-free in __skb_queue_tail include/linux/skbuff.h:2049 [inline]
+BUG: KASAN: use-after-free in skb_queue_tail+0x6b/0x120 net/core/skbuff.c:3146
+Write of size 8 at addr ffff88804d8ab3c0 by task syz-executor.4/4316
 
- include/linux/skbuff.h |  7 ++++---
- net/qrtr/qrtr.c        | 21 +++++++++++----------
- 2 files changed, 15 insertions(+), 13 deletions(-)
+CPU: 1 PID: 4316 Comm: syz-executor.4 Not tainted 5.9.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1d6/0x29e lib/dump_stack.c:118
+ print_address_description+0x66/0x620 mm/kasan/report.c:383
+ __kasan_report mm/kasan/report.c:513 [inline]
+ kasan_report+0x132/0x1d0 mm/kasan/report.c:530
+ __skb_insert include/linux/skbuff.h:1907 [inline]
+ __skb_queue_before include/linux/skbuff.h:2016 [inline]
+ __skb_queue_tail include/linux/skbuff.h:2049 [inline]
+ skb_queue_tail+0x6b/0x120 net/core/skbuff.c:3146
+ qrtr_tun_send+0x1a/0x40 net/qrtr/tun.c:23
+ qrtr_node_enqueue+0x44f/0xc00 net/qrtr/qrtr.c:364
+ qrtr_bcast_enqueue+0xbe/0x140 net/qrtr/qrtr.c:861
+ qrtr_sendmsg+0x680/0x9c0 net/qrtr/qrtr.c:960
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg net/socket.c:671 [inline]
+ sock_write_iter+0x317/0x470 net/socket.c:998
+ call_write_iter include/linux/fs.h:1882 [inline]
+ new_sync_write fs/read_write.c:503 [inline]
+ vfs_write+0xa96/0xd10 fs/read_write.c:578
+ ksys_write+0x11b/0x220 fs/read_write.c:631
+ do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45d5b9
+Code: 5d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 2b b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f84b5b81c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 0000000000038b40 RCX: 000000000045d5b9
+RDX: 0000000000000055 RSI: 0000000020001240 RDI: 0000000000000003
+RBP: 00007f84b5b81ca0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000000f
+R13: 00007ffcbbf86daf R14: 00007f84b5b829c0 R15: 000000000118cf4c
 
+Allocated by task 4316:
+ kasan_save_stack mm/kasan/common.c:48 [inline]
+ kasan_set_track mm/kasan/common.c:56 [inline]
+ __kasan_kmalloc+0x100/0x130 mm/kasan/common.c:461
+ slab_post_alloc_hook+0x3e/0x290 mm/slab.h:518
+ slab_alloc mm/slab.c:3312 [inline]
+ kmem_cache_alloc+0x1c1/0x2d0 mm/slab.c:3482
+ skb_clone+0x1b2/0x370 net/core/skbuff.c:1449
+ qrtr_bcast_enqueue+0x6d/0x140 net/qrtr/qrtr.c:857
+ qrtr_sendmsg+0x680/0x9c0 net/qrtr/qrtr.c:960
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg net/socket.c:671 [inline]
+ sock_write_iter+0x317/0x470 net/socket.c:998
+ call_write_iter include/linux/fs.h:1882 [inline]
+ new_sync_write fs/read_write.c:503 [inline]
+ vfs_write+0xa96/0xd10 fs/read_write.c:578
+ ksys_write+0x11b/0x220 fs/read_write.c:631
+ do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Freed by task 4316:
+ kasan_save_stack mm/kasan/common.c:48 [inline]
+ kasan_set_track+0x3d/0x70 mm/kasan/common.c:56
+ kasan_set_free_info+0x17/0x30 mm/kasan/generic.c:355
+ __kasan_slab_free+0xdd/0x110 mm/kasan/common.c:422
+ __cache_free mm/slab.c:3418 [inline]
+ kmem_cache_free+0x82/0xf0 mm/slab.c:3693
+ __skb_pad+0x3f5/0x5a0 net/core/skbuff.c:1823
+ __skb_put_padto include/linux/skbuff.h:3233 [inline]
+ skb_put_padto include/linux/skbuff.h:3252 [inline]
+ qrtr_node_enqueue+0x62f/0xc00 net/qrtr/qrtr.c:360
+ qrtr_bcast_enqueue+0xbe/0x140 net/qrtr/qrtr.c:861
+ qrtr_sendmsg+0x680/0x9c0 net/qrtr/qrtr.c:960
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg net/socket.c:671 [inline]
+ sock_write_iter+0x317/0x470 net/socket.c:998
+ call_write_iter include/linux/fs.h:1882 [inline]
+ new_sync_write fs/read_write.c:503 [inline]
+ vfs_write+0xa96/0xd10 fs/read_write.c:578
+ ksys_write+0x11b/0x220 fs/read_write.c:631
+ do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+The buggy address belongs to the object at ffff88804d8ab3c0
+ which belongs to the cache skbuff_head_cache of size 224
+The buggy address is located 0 bytes inside of
+ 224-byte region [ffff88804d8ab3c0, ffff88804d8ab4a0)
+The buggy address belongs to the page:
+page:00000000ea8cccfb refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88804d8abb40 pfn:0x4d8ab
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea0002237ec8 ffffea00029b3388 ffff88821bb66800
+raw: ffff88804d8abb40 ffff88804d8ab000 000000010000000b 0000000000000000
+page dumped because: kasan: bad access detected
+
+Fixes: ce57785bf91b ("net: qrtr: fix len of skb_put_padto in qrtr_node_enqueue")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Carl Huang <cjhuang@codeaurora.org>
+Cc: Wen Gong <wgong@codeaurora.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ net/qrtr/qrtr.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index 90c558f89d46565ee5d5845d0ca97c095a8287a8..957aa9263ba4ce10dbb8d94c4e4bbcaef8b6e84b 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -332,8 +332,7 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+ {
+ 	struct qrtr_hdr_v1 *hdr;
+ 	size_t len = skb->len;
+-	int rc = -ENODEV;
+-	int confirm_rx;
++	int rc, confirm_rx;
+ 
+ 	confirm_rx = qrtr_tx_wait(node, to->sq_node, to->sq_port, type);
+ 	if (confirm_rx < 0) {
+@@ -357,15 +356,17 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+ 	hdr->size = cpu_to_le32(len);
+ 	hdr->confirm_rx = !!confirm_rx;
+ 
+-	skb_put_padto(skb, ALIGN(len, 4) + sizeof(*hdr));
+-
+-	mutex_lock(&node->ep_lock);
+-	if (node->ep)
+-		rc = node->ep->xmit(node->ep, skb);
+-	else
+-		kfree_skb(skb);
+-	mutex_unlock(&node->ep_lock);
++	rc = skb_put_padto(skb, ALIGN(len, 4) + sizeof(*hdr));
+ 
++	if (!rc) {
++		mutex_lock(&node->ep_lock);
++		rc = -ENODEV;
++		if (node->ep)
++			rc = node->ep->xmit(node->ep, skb);
++		else
++			kfree_skb(skb);
++		mutex_unlock(&node->ep_lock);
++	}
+ 	/* Need to ensure that a subsequent message carries the otherwise lost
+ 	 * confirm_rx flag if we dropped this one */
+ 	if (rc && confirm_rx)
 -- 
 2.28.0.526.ge36021eeef-goog
 
