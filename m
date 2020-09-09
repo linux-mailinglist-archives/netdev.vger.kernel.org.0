@@ -2,102 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B80402630E8
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 17:48:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0097A2630C8
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 17:43:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729298AbgIIPsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 11:48:55 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:40364 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730460AbgIIPsr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 11:48:47 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 57B99F08137A5C2B9BFE;
-        Wed,  9 Sep 2020 21:45:42 +0800 (CST)
-Received: from localhost (10.174.179.108) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.487.0; Wed, 9 Sep 2020
- 21:45:35 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <kvalo@codeaurora.org>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <ath11k@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH] ath11k: Remove unused inline function htt_htt_stats_debug_dump()
-Date:   Wed, 9 Sep 2020 21:45:33 +0800
-Message-ID: <20200909134533.19604-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1730434AbgIIPnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 11:43:45 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:52596 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730423AbgIIPnO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 11:43:14 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kG0Qo-00DvEn-Ru; Wed, 09 Sep 2020 15:46:38 +0200
+Date:   Wed, 9 Sep 2020 15:46:38 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     David Miller <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Jisheng.Zhang@synaptics.com" <Jisheng.Zhang@synaptics.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>
+Subject: Re: [PATCH v2] net: phy: call phy_disable_interrupts() in
+ phy_attach_direct() instead
+Message-ID: <20200909134638.GF3290129@lunn.ch>
+References: <1599609338-17732-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <20200908.202524.1861811044367438406.davem@davemloft.net>
+ <TY2PR01MB36921A4404E47B78C42CF2DED8260@TY2PR01MB3692.jpnprd01.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.108]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <TY2PR01MB36921A4404E47B78C42CF2DED8260@TY2PR01MB3692.jpnprd01.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no caller in tree, so can remove it.
+On Wed, Sep 09, 2020 at 04:18:56AM +0000, Yoshihiro Shimoda wrote:
+> Hi David,
+> 
+> > From: David Miller, Sent: Wednesday, September 9, 2020 12:25 PM
+> > 
+> > From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> > Date: Wed,  9 Sep 2020 08:55:38 +0900
+> > 
+> > >  Changes from v1:
+> > >  - Fix build error.
+> > 
+> > When such a fundamental build failure is fixed (it could never have
+> > built for anyone, even you), I want it explained why this happened
+> > and how this was functionally tested if it did not even compile.
+> 
+> I'm sorry about this. I used two PCs now:
+>  PC 1 = for testing at local
+>  PC 2 = for submitting patches at remote (because corporate network situation)
+> 
+> I tested on the PC 1.
+> But, after that, I modified the code on the PC 2 again. And, it seemed
+> I didn't do a compile.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- .../net/wireless/ath/ath11k/debug_htt_stats.c | 44 -------------------
- 1 file changed, 44 deletions(-)
+This sort of split setup is always a bad idea. Always do the git
+format-patch on PC 1 and somehow get the patch files off it, and use
+PC 2 only for git send-email, never any development work. That way you
+will avoid issues like this.
 
-diff --git a/drivers/net/wireless/ath/ath11k/debug_htt_stats.c b/drivers/net/wireless/ath/ath11k/debug_htt_stats.c
-index 6b532dc99c98..ad3f08a5b031 100644
---- a/drivers/net/wireless/ath/ath11k/debug_htt_stats.c
-+++ b/drivers/net/wireless/ath/ath11k/debug_htt_stats.c
-@@ -3895,50 +3895,6 @@ static inline void htt_print_backpressure_stats_tlv_v(const u32 *tag_buf,
- 	}
- }
- 
--static inline void htt_htt_stats_debug_dump(const u32 *tag_buf,
--					    struct debug_htt_stats_req *stats_req)
--{
--	u8 *buf = stats_req->buf;
--	u32 len = stats_req->buf_len;
--	u32 buf_len = ATH11K_HTT_STATS_BUF_SIZE;
--	u32 tlv_len = 0, i = 0, word_len = 0;
--
--	tlv_len  = FIELD_GET(HTT_TLV_LEN, *tag_buf) + HTT_TLV_HDR_LEN;
--	word_len = (tlv_len % 4) == 0 ? (tlv_len / 4) : ((tlv_len / 4) + 1);
--	len += HTT_DBG_OUT(buf + len, buf_len - len,
--			   "============================================");
--	len += HTT_DBG_OUT(buf + len, buf_len - len,
--			   "HKDBG TLV DUMP: (tag_len=%u bytes, words=%u)",
--			   tlv_len, word_len);
--
--	for (i = 0; i + 3 < word_len; i += 4) {
--		len += HTT_DBG_OUT(buf + len, buf_len - len,
--				   "0x%08x 0x%08x 0x%08x 0x%08x",
--				   tag_buf[i], tag_buf[i + 1],
--				   tag_buf[i + 2], tag_buf[i + 3]);
--	}
--
--	if (i + 3 == word_len) {
--		len += HTT_DBG_OUT(buf + len, buf_len - len, "0x%08x 0x%08x 0x%08x ",
--				tag_buf[i], tag_buf[i + 1], tag_buf[i + 2]);
--	} else if (i + 2 == word_len) {
--		len += HTT_DBG_OUT(buf + len, buf_len - len, "0x%08x 0x%08x ",
--				tag_buf[i], tag_buf[i + 1]);
--	} else if (i + 1 == word_len) {
--		len += HTT_DBG_OUT(buf + len, buf_len - len, "0x%08x ",
--				tag_buf[i]);
--	}
--	len += HTT_DBG_OUT(buf + len, buf_len - len,
--			   "============================================");
--
--	if (len >= buf_len)
--		buf[buf_len - 1] = 0;
--	else
--		buf[len] = 0;
--
--	stats_req->buf_len = len;
--}
--
- static int ath11k_dbg_htt_ext_stats_parse(struct ath11k_base *ab,
- 					  u16 tag, u16 len, const void *tag_buf,
- 					  void *user_data)
--- 
-2.17.1
-
-
+     Andrew
