@@ -2,203 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78FE5263430
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:16:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8D2F263486
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:22:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730211AbgIIRPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 13:15:54 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:15574 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730206AbgIIRPw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 13:15:52 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 089HFoOw012433
-        for <netdev@vger.kernel.org>; Wed, 9 Sep 2020 10:15:51 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=UZH6YSBNmrbYIy7e8KjRWyEqMdxtWGYvbvWLaxPejcY=;
- b=cxOm2AWNAywgrMflQ4mqDRsdKy1XwqJkBHOb9oOXTpIo4vMHf+KwPnJbOd3Xb0iBU75G
- nNpvGG1Uu3DFYtHDZRkDyHaVl1dMEArmm8XWkQVWO6OawY2y3dT8QVt8jXKxVne56d9f
- 8bE7HfIjywrDSgv8KCjG3ulFqJQ/VVehpSM= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33ctr6gcp7-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 10:15:50 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 9 Sep 2020 10:15:44 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 7DB733702A55; Wed,  9 Sep 2020 10:15:42 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: [PATCH bpf-next v3] selftests/bpf: fix test_sysctl_loop{1,2} failure due to clang change
-Date:   Wed, 9 Sep 2020 10:15:42 -0700
-Message-ID: <20200909171542.3673449-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1729298AbgIIRWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 13:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727005AbgIIRWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 13:22:47 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F2AC061573
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 10:22:45 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id w186so2546457pgb.8
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 10:22:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=7apD7CVmi5dm0cFYLhEy/3jRiVk1Oh36VdsX+2SvrOc=;
+        b=Gqr50zvHnBY1tLQDnzxbBKwwq/V/Z7H2GdRwuhgoLovPKZyALkIae66rK40mqa8K0J
+         Yhw/nl3tOXds1soQEF77H6WrIwSnbFBgSzWLm2fuDWOW/bKHMGlmEogsieJNBRmRap/2
+         nBebre0XlzYR6SydWmZGrp0Ov2u+d3aBvRhvjozFA7od4BhIeXI1TuYpQU4JMSoydtNW
+         rQsfbaGGUSbIUByoMVUbblnttRHGYGmj3Xck1jD/jVuF+UeHjP17bpy1dWWvcLYWAQgc
+         SfozkG0qb2fxQ8XJIhikKAOl1rZwnVwZbXyg7oLO2nCBczhkrkCaqejvtcziQEr9O5Z4
+         OvXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=7apD7CVmi5dm0cFYLhEy/3jRiVk1Oh36VdsX+2SvrOc=;
+        b=DDwnB6mYeJtcL6PuP5h60lUvibik1cixGw4iAKrq7LF4kS9SOHB+A0CS+xizvq6ho8
+         eKm0koY4Qt1+2pTYoYtRsxKFn3RSFfQdUzjOfv4kPHG94I68qY9ofrTt2A2fDYr6vGGB
+         XQt5NpExsM+cuUVZZE5xaZpcv1WqdkZqJFBeFoRZbK5zM3EeRXIe7lKwF/ypqz8UiRZU
+         3xz+NsvQ/f/PAOqyix/0tc9/6D/AbtgvR4A1gw9VgT7JQXSQeQPe4lK+mI54G0t3sfG7
+         Edsmsnraegq96ilhVUxUGc1Zmt8JQTPYe5TnCspfeswuKU5Fd7LQcarBUmE7Eq9gw+A9
+         3+Ig==
+X-Gm-Message-State: AOAM532gnyQKRzvW+UFNerA5Kqy9dfD1tf+MFlExyAaJuVeZFIT9t6gT
+        rPEOL91VeT5e6UPZ+MBwZhq3yZhh7XU=
+X-Google-Smtp-Source: ABdhPJznv7RiHj3kcfBcsw4Yk9g1qy/xLfx2q6vjpG9Xg4vf8dF9sGIDj78bzI8b1Y3XZgu0ZOpTSg==
+X-Received: by 2002:a63:6b08:: with SMTP id g8mr1416179pgc.325.1599672164430;
+        Wed, 09 Sep 2020 10:22:44 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id s6sm2559283pjn.48.2020.09.09.10.22.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Sep 2020 10:22:43 -0700 (PDT)
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, vivien.didelot@gmail.com, andrew@lunn.ch,
+        netdev@vger.kernel.org
+References: <20200907182910.1285496-1-olteanv@gmail.com>
+ <20200907182910.1285496-5-olteanv@gmail.com>
+ <961ac1bd-6744-23ef-046f-4b7d8c4413a4@gmail.com>
+ <a5e6cb01-88d0-a479-3262-b53dec0682cd@gmail.com>
+ <f0217ae5-7897-17e2-a807-fc0ba0246c74@gmail.com>
+ <20200909163105.nynkw5jvwqapzx2z@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next 4/4] net: dsa: set
+ configure_vlan_while_not_filtering to true by default
+Message-ID: <11268219-286d-7daf-9f4e-50bdc6466469@gmail.com>
+Date:   Wed, 9 Sep 2020 10:22:42 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-09_12:2020-09-09,2020-09-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- impostorscore=0 lowpriorityscore=0 priorityscore=1501 mlxscore=0
- mlxlogscore=999 phishscore=0 bulkscore=0 malwarescore=0 clxscore=1015
- adultscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009090154
-X-FB-Internal: deliver
+In-Reply-To: <20200909163105.nynkw5jvwqapzx2z@skbuf>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii reported that with latest clang, when building selftests, we have
-error likes:
-  error: progs/test_sysctl_loop1.c:23:16: in function sysctl_tcp_mem i32 =
-(%struct.bpf_sysctl*):
-  Looks like the BPF stack limit of 512 bytes is exceeded.
-  Please move large on stack variables into BPF per-cpu array map.
 
-The error is triggered by the following LLVM patch:
-  https://reviews.llvm.org/D87134
 
-For example, the following code is from test_sysctl_loop1.c:
-  static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
-  {
-    volatile char tcp_mem_name[] =3D "net/ipv4/tcp_mem/very_very_very_ver=
-y_long_pointless_string";
-    ...
-  }
-Without the above LLVM patch, the compiler did optimization to load the s=
-tring
-(59 bytes long) with 7 64bit loads, 1 8bit load and 1 16bit load,
-occupying 64 byte stack size.
+On 9/9/2020 9:31 AM, Vladimir Oltean wrote:
+> On Tue, Sep 08, 2020 at 05:02:06PM -0700, Florian Fainelli wrote:
+>> Found the problem, we do not allow the CPU port to be configured as
+>> untagged, and when we toggle vlan_filtering we actually incorrectly "move"
+>> the PVID from 1 to 0,
+> 
+> pvid 1 must be coming from the default_pvid of the bridge, I assume.
+> Where is pvid 0 (aka dev->ports[port].pvid) coming from? Is it simply
+> the cached value from B53_VLAN_PORT_DEF_TAG, from a previous
+> b53_vlan_filtering() call? Strange.
 
-With the above LLVM patch, the compiler only uses 8bit loads, but subregi=
-ster is 32bit.
-So stack requirements become 4 * 59 =3D 236 bytes. Together with other st=
-uff on
-the stack, total stack size exceeds 512 bytes, hence compiler complains a=
-nd quits.
+The logic that writes to B53_VLAN_PORT_DEF_TAG does not update the 
+shadow copy in dev->ports[port].pvid which is how they are out of sync.
 
-To fix the issue, removing "volatile" key word or changing "volatile" to
-"const"/"static const" does not work, the string is put in .rodata.str1.1=
- section,
-which libbpf did not process it and errors out with
-  libbpf: elf: skipping unrecognized data section(6) .rodata.str1.1
-  libbpf: prog 'sysctl_tcp_mem': bad map relo against '.L__const.is_tcp_m=
-em.tcp_mem_name'
-          in section '.rodata.str1.1'
+> 
+>> which is incorrect, but since the CPU is also untagged in VID 0 this
+>> is why it "works" or rather two mistakes canceling it each other.
+> 
+> How does the CPU end up untagged in VLAN 0?
 
-Defining the string const as global variable can fix the issue as it puts=
- the string constant
-in '.rodata' section which is recognized by libbpf. In the future, when l=
-ibbpf can process
-'.rodata.str*.*' properly, the global definition can be changed back to l=
-ocal definition.
+The CPU port gets also programmed with 0 in B53_VLAN_PORT_DEF_TAG.
 
-Defining tcp_mem_name as a global, however, triggered a verifier failure.
-   ./test_progs -n 7/21
-  libbpf: load bpf program failed: Permission denied
-  libbpf: -- BEGIN DUMP LOG ---
-  libbpf:
-  invalid stack off=3D0 size=3D1
-  verification time 6975 usec
-  stack depth 160+64
-  processed 889 insns (limit 1000000) max_states_per_insn 4 total_states
-  14 peak_states 14 mark_read 10
+> 
+>> I still need to confirm this, but the bridge in VLAN filtering mode seems to
+>> support receiving frames with the default_pvid as tagged, and it will untag
+>> it for the bridge master device transparently.
+> 
+> So it seems.
+> 
+>> The reason for not allowing the CPU port to be untagged
+>> (ca8931948344c485569b04821d1f6bcebccd376b) was because the CPU port could be
+>> added as untagged in several VLANs, e.g.: when port0-3 are PVID 1 untagged,
+>> and port 4 is PVID 2 untagged. Back then there was no support for Broadcom
+>> tags, so the only way to differentiate traffic properly was to also add a
+>> pair of tagged VIDs to the DSA master.
+>> I am still trying to remember whether there were other concerns that
+>> prompted me to make that change and would appreciate some thoughts on that.
+> 
+> I think it makes some sense to always configure the VLANs on the CPU
+> port as tagged either way. I did the same in Felix and it's ok. But that
+> was due to a hardware limitation. On sja1105 I'm keeping the same flags
+> as on the user port, and that is ok too.
 
-  libbpf: -- END LOG --
-  libbpf: failed to load program 'sysctl_tcp_mem'
-  libbpf: failed to load object 'test_sysctl_loop2.o'
-  test_bpf_verif_scale:FAIL:114
-  #7/21 test_sysctl_loop2.o:FAIL
-This actually exposed a bpf program bug. In test_sysctl_loop{1,2}, we hav=
-e code
-like
-  const char tcp_mem_name[] =3D "<...long string...>";
-  ...
-  char name[64];
-  ...
-  for (i =3D 0; i < sizeof(tcp_mem_name); ++i)
-      if (name[i] !=3D tcp_mem_name[i])
-          return 0;
-In the above code, if sizeof(tcp_mem_name) > 64, name[i] access may be
-out of bound. The sizeof(tcp_mem_name) is 59 for test_sysctl_loop1.c and
-79 for test_sysctl_loop2.c.
+How do you make sure that the CPU port sees the frame untagged which 
+would be necessary for a VLAN-unaware bridge? Do you have a special 
+remapping rule?
 
-Without promotion-to-global change, old compiler generates code where
-the overflowed stack access is actually filled with valid value, so hidin=
-g
-the bpf program bug. With promotion-to-global change, the code is differe=
-nt,
-more specifically, the previous loading constants to stack is gone, and
-"name" occupies stack[-64:0] and overflow access triggers a verifier erro=
-r.
-To fix the issue, adjust "name" buffer size properly.
+Initially the concern I had was with the use case described above which 
+was a 802.1Q separation, but in hindsight MAC address learning would 
+result in the frames going to the appropriate ports/VLANs anyway.
 
-Reported-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- tools/testing/selftests/bpf/progs/test_sysctl_loop1.c | 4 ++--
- tools/testing/selftests/bpf/progs/test_sysctl_loop2.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+> 
+>> Tangentially, maybe we should finally add support for programming the CPU
+>> port's VLAN membership independently from the other ports.
+> 
+> How?
 
-Changelog:
-  v2 -> v3:
-    . using sizeof(tcp_mem_name) instead of hardcoded value for
-      local buf "name". (Andrii)
-  v1 -> v2:
-    . The tcp_mem_name change actually triggers a verifier failure due to
-      a bpf program bug. Fixing the bpf program bug can make test pass
-      with both old and latest llvm. (Alexei)
+Something like this:
 
-diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c b/tool=
-s/testing/selftests/bpf/progs/test_sysctl_loop1.c
-index 458b0d69133e..553a282d816a 100644
---- a/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-+++ b/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-@@ -18,11 +18,11 @@
- #define MAX_ULONG_STR_LEN 7
- #define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
-=20
-+const char tcp_mem_name[] =3D "net/ipv4/tcp_mem/very_very_very_very_long=
-_pointless_string";
- static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
- {
--	volatile char tcp_mem_name[] =3D "net/ipv4/tcp_mem/very_very_very_very_=
-long_pointless_string";
- 	unsigned char i;
--	char name[64];
-+	char name[sizeof(tcp_mem_name)];
- 	int ret;
-=20
- 	memset(name, 0, sizeof(name));
-diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c b/tool=
-s/testing/selftests/bpf/progs/test_sysctl_loop2.c
-index b2e6f9b0894d..2b64bc563a12 100644
---- a/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-+++ b/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-@@ -18,11 +18,11 @@
- #define MAX_ULONG_STR_LEN 7
- #define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
-=20
-+const char tcp_mem_name[] =3D "net/ipv4/tcp_mem/very_very_very_very_long=
-_pointless_string_to_stress_byte_loop";
- static __attribute__((noinline)) int is_tcp_mem(struct bpf_sysctl *ctx)
- {
--	volatile char tcp_mem_name[] =3D "net/ipv4/tcp_mem/very_very_very_very_=
-long_pointless_string_to_stress_byte_loop";
- 	unsigned char i;
--	char name[64];
-+	char name[sizeof(tcp_mem_name)];
- 	int ret;
-=20
- 	memset(name, 0, sizeof(name));
---=20
-2.24.1
+https://lore.kernel.org/lkml/20180625091713.GA13442@apalos/T/
 
+> 
+>> The following appears to work nicely now and allows us to get rid of the
+>> b53_vlan_filtering() logic, which would no longer work now because it
+>> assumed that toggling vlan_filtering implied that there would be no VLAN
+>> configuration when filtering was off.
+>>
+>> diff --git a/drivers/net/dsa/b53/b53_common.c
+>> b/drivers/net/dsa/b53/b53_common.c
+>> index 26fcff85d881..fac033730f4a 100644
+>> --- a/drivers/net/dsa/b53/b53_common.c
+>> +++ b/drivers/net/dsa/b53/b53_common.c
+>> @@ -1322,23 +1322,6 @@ EXPORT_SYMBOL(b53_phylink_mac_link_up);
+>>   int b53_vlan_filtering(struct dsa_switch *ds, int port, bool
+>> vlan_filtering)
+>>   {
+>>          struct b53_device *dev = ds->priv;
+>> -       u16 pvid, new_pvid;
+>> -
+>> -       b53_read16(dev, B53_VLAN_PAGE, B53_VLAN_PORT_DEF_TAG(port), &pvid);
+>> -       if (!vlan_filtering) {
+>> -               /* Filtering is currently enabled, use the default PVID
+>> since
+>> -                * the bridge does not expect tagging anymore
+>> -                */
+>> -               dev->ports[port].pvid = pvid;
+>> -               new_pvid = b53_default_pvid(dev);
+>> -       } else {
+>> -               /* Filtering is currently disabled, restore the previous
+>> PVID */
+>> -               new_pvid = dev->ports[port].pvid;
+>> -       }
+>> -
+>> -       if (pvid != new_pvid)
+>> -               b53_write16(dev, B53_VLAN_PAGE, B53_VLAN_PORT_DEF_TAG(port),
+>> -                           new_pvid);
+> 
+> Yes, much simpler.
+> 
+>>
+>>          b53_enable_vlan(dev, dev->vlan_enabled, vlan_filtering);
+>>
+>> @@ -1389,7 +1372,7 @@ void b53_vlan_add(struct dsa_switch *ds, int port,
+>>                          untagged = true;
+>>
+>>                  vl->members |= BIT(port);
+>> -               if (untagged && !dsa_is_cpu_port(ds, port))
+>> +               if (untagged)
+>>                          vl->untag |= BIT(port);
+>>                  else
+>>                          vl->untag &= ~BIT(port);
+>> @@ -1427,7 +1410,7 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
+>>                  if (pvid == vid)
+>>                          pvid = b53_default_pvid(dev);
+>>
+>> -               if (untagged && !dsa_is_cpu_port(ds, port))
+>> +               if (untagged)
+> 
+> Ok, so you're removing this workaround now. A welcome simplification.
+> 
+>>                          vl->untag &= ~(BIT(port));
+>>
+>>                  b53_set_vlan_entry(dev, vid, vl);
+>> @@ -2563,6 +2546,8 @@ struct b53_device *b53_switch_alloc(struct device
+>> *base,
+>>          dev->priv = priv;
+>>          dev->ops = ops;
+>>          ds->ops = &b53_switch_ops;
+>> +       ds->configure_vlan_while_not_filtering = true;
+>> +       dev->vlan_enabled = ds->configure_vlan_while_not_filtering;
+>>          mutex_init(&dev->reg_mutex);
+>>          mutex_init(&dev->stats_mutex);
+>>
+>>
+>> -- 
+>> Florian
+> 
+> Looks good!
+> 
+> I'm going to hold off with my configure_vlan_while_not_filtering patch.
+> You can send this one before me.
+
+That's the plan, thanks!
+-- 
+Florian
