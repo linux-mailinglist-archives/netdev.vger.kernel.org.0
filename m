@@ -2,116 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A425262E61
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 14:16:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2B08262E7F
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 14:27:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbgIIMPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 08:15:51 -0400
-Received: from a27-10.smtp-out.us-west-2.amazonses.com ([54.240.27.10]:34064
-        "EHLO a27-10.smtp-out.us-west-2.amazonses.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728631AbgIIMND (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 08:13:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1599653488;
-        h=Content-Type:MIME-Version:Content-Transfer-Encoding:From:Subject:To:Cc:Message-Id:Date;
-        bh=fJRFmxcz+0+lsv3xVw49rIbLoNivGfL+jKveIPjiMnw=;
-        b=hsj/8mS37TKOb7X6koa+xXjNXBohGSTdJKi2xTBeRR6qOPeCp9SG3rfsIR4SZkz+
-        lC70/qDUqNFLjcrUMBTY4ETD5/4JuKGiArmWDHABt3Z1BCd1XVGEnd3WNoNMJYgxeSC
-        Gcmu56qbLtZ6O4mcvBmulERu/oJavc1hwVSUCgrg=
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
-        s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1599653488;
-        h=Content-Type:MIME-Version:Content-Transfer-Encoding:From:Subject:To:Cc:Message-Id:Date:Feedback-ID;
-        bh=fJRFmxcz+0+lsv3xVw49rIbLoNivGfL+jKveIPjiMnw=;
-        b=UwsavFgniHyzjKDCq5FWamarC1ax03CRUzvdl0RBc4150g4ADLowYMxIqQZGMX1L
-        szxa/ExeYDU3wabYGjz/WPKGjPs16SD0PrjjYaAfCGYitORV1/I1JMoN6NhIzmiQUHi
-        vw+lvnVFbuQK7k61LiepZM8WYvMvhRu979Wq6fKI=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 34B27C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@codeaurora.org>
-Subject: pull-request: wireless-drivers-2020-09-09
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-ID: <0101017472c727b0-ba3f66b9-151e-4d64-bc92-2d623035c008-000000@us-west-2.amazonses.com>
-Date:   Wed, 9 Sep 2020 12:11:28 +0000
-X-SES-Outgoing: 2020.09.09-54.240.27.10
-Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
+        id S1729808AbgIIM03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 08:26:29 -0400
+Received: from m17618.mail.qiye.163.com ([59.111.176.18]:56657 "EHLO
+        m17618.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730077AbgIIMXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 08:23:50 -0400
+X-Greylist: delayed 413 seconds by postgrey-1.27 at vger.kernel.org; Wed, 09 Sep 2020 08:23:05 EDT
+Received: from vivo-HP-ProDesk-680-G4-PCI-MT.vivo.xyz (unknown [58.251.74.226])
+        by m17618.mail.qiye.163.com (Hmail) with ESMTPA id 8D7FC4E13B0;
+        Wed,  9 Sep 2020 20:12:55 +0800 (CST)
+From:   Wang Qing <wangqing@vivo.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Wang Qing <wangqing@vivo.com>
+Subject: [PATCH] net/netfilter: fix a typo for nf_conntrack_proto_dccp.c
+Date:   Wed,  9 Sep 2020 20:12:44 +0800
+Message-Id: <1599653567-27147-1-git-send-email-wangqing@vivo.com>
+X-Mailer: git-send-email 2.7.4
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgYFAkeWUFZS1VLWVdZKFlBSE83V1ktWUFJV1kPCR
+        oVCBIfWUFZGRhCH0wYQk9LSU8eVkpOQkJNTkhOTE1LSkxVEwETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hKQ1VKS0tZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nyo6Nhw4AT8oGh0jPQ0MFjdK
+        EDAaCiJVSlVKTkJCTU5ITkxNT0hJVTMWGhIXVQwaFRwKEhUcOw0SDRRVGBQWRVlXWRILWUFZTkNV
+        SU5KVUxPVUlJTVlXWQgBWUFKQkxMNwY+
+X-HM-Tid: 0a7472c87cd49376kuws8d7fc4e13b0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Change the comment typo: "direcly" -> "directly".
 
-here's a pull request to net tree, more info below. Please let me know if there
-are any problems.
+Signed-off-by: Wang Qing <wangqing@vivo.com>
+---
+ net/netfilter/nf_conntrack_proto_dccp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Kalle
+diff --git a/net/netfilter/nf_conntrack_proto_dccp.c b/net/netfilter/nf_conntrack_proto_dccp.c
+index b3f4a33..d9bb0ce
+--- a/net/netfilter/nf_conntrack_proto_dccp.c
++++ b/net/netfilter/nf_conntrack_proto_dccp.c
+@@ -340,7 +340,7 @@ dccp_state_table[CT_DCCP_ROLE_MAX + 1][DCCP_PKT_SYNCACK + 1][CT_DCCP_MAX + 1] =
+ 		 * sNO -> sIV		No connection
+ 		 * sRQ -> sIV		No connection
+ 		 * sRS -> sIV		No connection
+-		 * sPO -> sOP -> sCG	Move direcly to CLOSING
++		 * sPO -> sOP -> sCG	Move directly to CLOSING
+ 		 * sOP -> sCG		Move to CLOSING
+ 		 * sCR -> sIV		Close after CloseReq is invalid
+ 		 * sCG -> sCG		Retransmit
+-- 
+2.7.4
 
-The following changes since commit 9123e3a74ec7b934a4a099e98af6a61c2f80bbf5:
-
-  Linux 5.9-rc1 (2020-08-16 13:04:57 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2020-09-09
-
-for you to fetch changes up to 1264c1e0cfe55e2d6c35e869244093195529af37:
-
-  Revert "wlcore: Adding suppoprt for IGTK key in wlcore driver" (2020-09-07 11:39:32 +0300)
-
-----------------------------------------------------------------
-wireless-drivers fixes for v5.9
-
-First set of fixes for v5.9, small but important.
-
-brcmfmac
-
-* fix a throughput regression on bcm4329
-
-mt76
-
-* fix a regression with stations reconnecting on mt7616
-
-* properly free tx skbs, it was working by accident before
-
-mwifiex
-
-* fix a regression with 256 bit encryption keys
-
-wlcore
-
-* revert AES CMAC support as it caused a regression
-
-----------------------------------------------------------------
-Felix Fietkau (2):
-      mt76: mt7615: use v1 MCU API on MT7615 to fix issues with adding/removing stations
-      mt76: mt7915: use ieee80211_free_txskb to free tx skbs
-
-Mauro Carvalho Chehab (1):
-      Revert "wlcore: Adding suppoprt for IGTK key in wlcore driver"
-
-Maximilian Luz (1):
-      mwifiex: Increase AES key storage size to 256 bits
-
-Wright Feng (1):
-      brcmfmac: reserve tx credit only when txctl is ready to send
-
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 12 +++++++++---
- drivers/net/wireless/marvell/mwifiex/fw.h               |  2 +-
- drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c      |  4 ++--
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.c         |  3 ++-
- drivers/net/wireless/mediatek/mt76/mt7915/init.c        |  8 ++++++--
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c         |  2 +-
- drivers/net/wireless/ti/wlcore/cmd.h                    |  1 -
- drivers/net/wireless/ti/wlcore/main.c                   |  4 ----
- 8 files changed, 21 insertions(+), 15 deletions(-)
