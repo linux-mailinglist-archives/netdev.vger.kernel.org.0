@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF5A4262ABE
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:45:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CE94262AC0
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:45:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727900AbgIIIpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 04:45:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
+        id S1726414AbgIIIpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 04:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728709AbgIIIpa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:45:30 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6982C061573
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:45:29 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id kk9so1007334pjb.2
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:45:29 -0700 (PDT)
+        with ESMTP id S1728936AbgIIIpe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:45:34 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F8AC061573
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:45:33 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id j34so1570332pgi.7
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:45:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=x7Vwja9AnAU5nx8ZBRln4BzqYHOkEQZbgXp9zYv0IAE=;
-        b=XE0FgPFVcWB17N8+JvUjOfRnr1qnv91VxxRA1va0NuTgJbMr4bkiyWUrAMZhnqw4g+
-         /QAoR5KaUaYzkvJ8qPwLhZsg405TgbzMTLH9O/2mtRMH0wnI/ZD621WzosW6rlmZHeM/
-         j42lcZENvnHtqQTRp5Ds4yqPfEsk1/5tLYpma3gmNAYop1RPGQ0Q1J+irO54kAH88hys
-         h5MgdpLneLy7196fwZnhDTs1/OF81NOq3Ni4t7nBmuZMqvm4QJWadzyaL0UxBiEMm4e/
-         PdkvmH0dxvEd26igRglEEfpW4nPVXxjDOeox4trIA+7TQEHzrfMnuesgpBXcMuG1oAkK
-         agyw==
+        bh=rw8MiQTQyeul6XkGacM3BCi7JDAaTFdx0LbZCloJ4X0=;
+        b=kJfIkIxjuB7xUwUYLXD57sRQ9l1l2aNGapSU6HgZGdBnm6QZqKj9GVKPhuscfBjNug
+         jKk7H2cpWJa72Ydj4SJU8JyGWA+m+yNO4OOOydKqsJb1R2rXz2AUvcQaq9KzUkGwOEEn
+         prIrX4tXFLij0HWZv1i/2J7YpkEK0PmSgE5vwoxo1WQFd9z2wdI3MyNoctQ1D1vH37pt
+         W/BaRrffQ0W+RWm9/zHoR9sqS7utXGS1MrM8WjQ7Uj6rpdzg2sqLjPxpEugyZaKs3IGc
+         CbDGp89hSvz4GTWHEZp9W/RODIpsLKhF7bpm5xu32btnWNXgS6WTCk+1ezbI8lEVfiMm
+         GBPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=x7Vwja9AnAU5nx8ZBRln4BzqYHOkEQZbgXp9zYv0IAE=;
-        b=Plh2ZQ/oBnXhZGdxM2dC5ICDLhJ3nxTzMhdqZtsHF9SonAwoUfVjwtW6yzzVdG5LT/
-         /dhrvwV3NE1y5KgUt1xNurScvoUIfOQzAFanoXngdKlQ9NwCY2VC0LVAhMroW1NJzNkt
-         ts01O0jIq3iO7bjQtPDMKtWPhtQQk4L2uacC0ss+Dh6e0ahoMid1SZ8YS5F8gh6XXuck
-         BYsZctV329QInWZFOykXwpiPrkG+ubM6LTuaALxbi6juQlTLmgVAspBRTwv6ovJaPToW
-         uCrCd7ZfYivuCIwvzlvk2lkX6KGK/OdkfFzK8D95oBAK1R7K6ol5cq0Lw9ChuPg1q2Kb
-         jqXw==
-X-Gm-Message-State: AOAM532Ke+Sw4dskj4WP53BJxRNT4PGXveHfLWM+Z9LNAJOFOCY1ShIb
-        C23wsNISe4Ng8v1FPHKArBg=
-X-Google-Smtp-Source: ABdhPJx0hMnGl/0gxIxglqKDenYGKxlKyadxNDyRA5abSIOT2JOVO4eCTdPXnvYCQ+8+4pS+pLQ5ow==
-X-Received: by 2002:a17:90b:3708:: with SMTP id mg8mr2637808pjb.39.1599641129260;
-        Wed, 09 Sep 2020 01:45:29 -0700 (PDT)
+        bh=rw8MiQTQyeul6XkGacM3BCi7JDAaTFdx0LbZCloJ4X0=;
+        b=Stvz1j6HDtYz3+MnY5QhHULfPx6NIcq/RKPgI8Tb2NK7ukl956pBuplxl/tULxCAWW
+         +/VXyQLttQS/1J3TyMXWqNb/jFuBTKGfMw8evijPw2dVQP7fKfcpsTlAUTfffD/c7a6E
+         H6JYfm0HGCVkXcg5dZB6g3VTpv0TyNlOekOhDxF0y9uxygJ7ivH8GH6B8eZYDd8+cInw
+         1Uz94rf+De6mtT/kuwt/o5zBhXKpPARF/JXTva6xrwypZOwDmfFBjTU7SKFRjVhgvz8N
+         7jEDmDw8u0I/dhZrELyDxW6MAav66FTlq5OQpNNSJn+9q8CFjYFSyl4sUV25vf+HSxQv
+         XEeg==
+X-Gm-Message-State: AOAM532gcncPNs5bYh6QZx/MPx4I7uJ8AEnKNvtTr9NxOEE7a55Cpbe9
+        sFBJCjmQkbK36Ha/HX/Yho0=
+X-Google-Smtp-Source: ABdhPJw3ymAn+UwM2jsAickgp16PgvKqqLqMzdZinx5AP3Qau9q0xW7rsfsbGqbJ1x8zEWjrm8McHw==
+X-Received: by 2002:a63:490f:: with SMTP id w15mr2185787pga.323.1599641132857;
+        Wed, 09 Sep 2020 01:45:32 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.214.52])
-        by smtp.gmail.com with ESMTPSA id u21sm1468355pjn.27.2020.09.09.01.45.25
+        by smtp.gmail.com with ESMTPSA id u21sm1468355pjn.27.2020.09.09.01.45.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 01:45:28 -0700 (PDT)
+        Wed, 09 Sep 2020 01:45:32 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
@@ -54,9 +54,9 @@ Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
         stephen@networkplumber.org, borisp@mellanox.com,
         netdev@vger.kernel.org, Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH v2 02/20] ethernet: amd: convert tasklets to use new tasklet_setup() API
-Date:   Wed,  9 Sep 2020 14:14:52 +0530
-Message-Id: <20200909084510.648706-3-allen.lkml@gmail.com>
+Subject: [PATCH v2 03/20] broadcom: cnic: convert tasklets to use new tasklet_setup() API
+Date:   Wed,  9 Sep 2020 14:14:53 +0530
+Message-Id: <20200909084510.648706-4-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200909084510.648706-1-allen.lkml@gmail.com>
 References: <20200909084510.648706-1-allen.lkml@gmail.com>
@@ -75,162 +75,61 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-drv.c  | 19 +++++++++----------
- drivers/net/ethernet/amd/xgbe/xgbe-i2c.c  | 11 +++++------
- drivers/net/ethernet/amd/xgbe/xgbe-mdio.c | 11 +++++------
- 3 files changed, 19 insertions(+), 22 deletions(-)
+ drivers/net/ethernet/broadcom/cnic.c | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-index 4ba75551cb17..2709a2db5657 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
-@@ -403,9 +403,9 @@ static bool xgbe_ecc_ded(struct xgbe_prv_data *pdata, unsigned long *period,
- 	return false;
+diff --git a/drivers/net/ethernet/broadcom/cnic.c b/drivers/net/ethernet/broadcom/cnic.c
+index 84536292b031..f7f10cfb3476 100644
+--- a/drivers/net/ethernet/broadcom/cnic.c
++++ b/drivers/net/ethernet/broadcom/cnic.c
+@@ -3009,10 +3009,10 @@ static int cnic_service_bnx2(void *data, void *status_blk)
+ 	return cnic_service_bnx2_queues(dev);
  }
  
--static void xgbe_ecc_isr_task(unsigned long data)
-+static void xgbe_ecc_isr_task(struct tasklet_struct *t)
+-static void cnic_service_bnx2_msix(unsigned long data)
++static void cnic_service_bnx2_msix(struct tasklet_struct *t)
  {
--	struct xgbe_prv_data *pdata = (struct xgbe_prv_data *)data;
-+	struct xgbe_prv_data *pdata = from_tasklet(pdata, t, tasklet_ecc);
- 	unsigned int ecc_isr;
- 	bool stop = false;
+-	struct cnic_dev *dev = (struct cnic_dev *) data;
+-	struct cnic_local *cp = dev->cnic_priv;
++	struct cnic_local *cp = from_tasklet(cp, t, cnic_irq_task);
++	struct cnic_dev *dev = cp->dev;
  
-@@ -468,14 +468,14 @@ static irqreturn_t xgbe_ecc_isr(int irq, void *data)
- 	if (pdata->isr_as_tasklet)
- 		tasklet_schedule(&pdata->tasklet_ecc);
- 	else
--		xgbe_ecc_isr_task((unsigned long)pdata);
-+		xgbe_ecc_isr_task(&pdata->tasklet_ecc);
+ 	cp->last_status_idx = cnic_service_bnx2_queues(dev);
  
- 	return IRQ_HANDLED;
+@@ -3134,10 +3134,10 @@ static u32 cnic_service_bnx2x_kcq(struct cnic_dev *dev, struct kcq_info *info)
+ 	return last_status;
  }
  
--static void xgbe_isr_task(unsigned long data)
-+static void xgbe_isr_task(struct tasklet_struct *t)
+-static void cnic_service_bnx2x_bh(unsigned long data)
++static void cnic_service_bnx2x_bh(struct tasklet_struct *t)
  {
--	struct xgbe_prv_data *pdata = (struct xgbe_prv_data *)data;
-+	struct xgbe_prv_data *pdata = from_tasklet(pdata, t, tasklet_dev);
- 	struct xgbe_hw_if *hw_if = &pdata->hw_if;
- 	struct xgbe_channel *channel;
- 	unsigned int dma_isr, dma_ch_isr;
-@@ -582,7 +582,7 @@ static void xgbe_isr_task(unsigned long data)
+-	struct cnic_dev *dev = (struct cnic_dev *) data;
+-	struct cnic_local *cp = dev->cnic_priv;
++	struct cnic_local *cp = from_tasklet(cp, t, cnic_irq_task);
++	struct cnic_dev *dev = cp->dev;
+ 	struct bnx2x *bp = netdev_priv(dev->netdev);
+ 	u32 status_idx, new_status_idx;
  
- 	/* If there is not a separate ECC irq, handle it here */
- 	if (pdata->vdata->ecc_support && (pdata->dev_irq == pdata->ecc_irq))
--		xgbe_ecc_isr_task((unsigned long)pdata);
-+		xgbe_ecc_isr_task(&pdata->tasklet_ecc);
+@@ -4458,8 +4458,7 @@ static int cnic_init_bnx2_irq(struct cnic_dev *dev)
+ 		CNIC_WR(dev, base + BNX2_HC_CMD_TICKS_OFF, (64 << 16) | 220);
  
- 	/* If there is not a separate I2C irq, handle it here */
- 	if (pdata->vdata->i2c_support && (pdata->dev_irq == pdata->i2c_irq))
-@@ -607,7 +607,7 @@ static irqreturn_t xgbe_isr(int irq, void *data)
- 	if (pdata->isr_as_tasklet)
- 		tasklet_schedule(&pdata->tasklet_dev);
- 	else
--		xgbe_isr_task((unsigned long)pdata);
-+		xgbe_isr_task(&pdata->tasklet_dev);
+ 		cp->last_status_idx = cp->status_blk.bnx2->status_idx;
+-		tasklet_init(&cp->cnic_irq_task, cnic_service_bnx2_msix,
+-			     (unsigned long) dev);
++		tasklet_setup(&cp->cnic_irq_task, cnic_service_bnx2_msix);
+ 		err = cnic_request_irq(dev);
+ 		if (err)
+ 			return err;
+@@ -4868,8 +4867,7 @@ static int cnic_init_bnx2x_irq(struct cnic_dev *dev)
+ 	struct cnic_eth_dev *ethdev = cp->ethdev;
+ 	int err = 0;
  
- 	return IRQ_HANDLED;
- }
-@@ -991,9 +991,8 @@ static int xgbe_request_irqs(struct xgbe_prv_data *pdata)
- 	unsigned int i;
- 	int ret;
+-	tasklet_init(&cp->cnic_irq_task, cnic_service_bnx2x_bh,
+-		     (unsigned long) dev);
++	tasklet_setup(&cp->cnic_irq_task, cnic_service_bnx2x_bh);
+ 	if (ethdev->drv_state & CNIC_DRV_STATE_USING_MSIX)
+ 		err = cnic_request_irq(dev);
  
--	tasklet_init(&pdata->tasklet_dev, xgbe_isr_task, (unsigned long)pdata);
--	tasklet_init(&pdata->tasklet_ecc, xgbe_ecc_isr_task,
--		     (unsigned long)pdata);
-+	tasklet_setup(&pdata->tasklet_dev, xgbe_isr_task);
-+	tasklet_setup(&pdata->tasklet_ecc, xgbe_ecc_isr_task);
- 
- 	ret = devm_request_irq(pdata->dev, pdata->dev_irq, xgbe_isr, 0,
- 			       netdev_name(netdev), pdata);
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-i2c.c b/drivers/net/ethernet/amd/xgbe/xgbe-i2c.c
-index 4d9062d35930..22d4fc547a0a 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-i2c.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-i2c.c
-@@ -274,9 +274,9 @@ static void xgbe_i2c_clear_isr_interrupts(struct xgbe_prv_data *pdata,
- 		XI2C_IOREAD(pdata, IC_CLR_STOP_DET);
- }
- 
--static void xgbe_i2c_isr_task(unsigned long data)
-+static void xgbe_i2c_isr_task(struct tasklet_struct *t)
- {
--	struct xgbe_prv_data *pdata = (struct xgbe_prv_data *)data;
-+	struct xgbe_prv_data *pdata = from_tasklet(pdata, t, tasklet_i2c);
- 	struct xgbe_i2c_op_state *state = &pdata->i2c.op_state;
- 	unsigned int isr;
- 
-@@ -324,7 +324,7 @@ static irqreturn_t xgbe_i2c_isr(int irq, void *data)
- 	if (pdata->isr_as_tasklet)
- 		tasklet_schedule(&pdata->tasklet_i2c);
- 	else
--		xgbe_i2c_isr_task((unsigned long)pdata);
-+		xgbe_i2c_isr_task(&pdata->tasklet_i2c);
- 
- 	return IRQ_HANDLED;
- }
-@@ -369,7 +369,7 @@ static void xgbe_i2c_set_target(struct xgbe_prv_data *pdata, unsigned int addr)
- 
- static irqreturn_t xgbe_i2c_combined_isr(struct xgbe_prv_data *pdata)
- {
--	xgbe_i2c_isr_task((unsigned long)pdata);
-+	xgbe_i2c_isr_task(&pdata->tasklet_i2c);
- 
- 	return IRQ_HANDLED;
- }
-@@ -462,8 +462,7 @@ static int xgbe_i2c_start(struct xgbe_prv_data *pdata)
- 
- 	/* If we have a separate I2C irq, enable it */
- 	if (pdata->dev_irq != pdata->i2c_irq) {
--		tasklet_init(&pdata->tasklet_i2c, xgbe_i2c_isr_task,
--			     (unsigned long)pdata);
-+		tasklet_setup(&pdata->tasklet_i2c, xgbe_i2c_isr_task);
- 
- 		ret = devm_request_irq(pdata->dev, pdata->i2c_irq,
- 				       xgbe_i2c_isr, 0, pdata->i2c_name,
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c b/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
-index 8a3a60bb2688..93ef5a30cb8d 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-mdio.c
-@@ -688,9 +688,9 @@ static void xgbe_an73_isr(struct xgbe_prv_data *pdata)
- 	}
- }
- 
--static void xgbe_an_isr_task(unsigned long data)
-+static void xgbe_an_isr_task(struct tasklet_struct *t)
- {
--	struct xgbe_prv_data *pdata = (struct xgbe_prv_data *)data;
-+	struct xgbe_prv_data *pdata = from_tasklet(pdata, t, tasklet_an);
- 
- 	netif_dbg(pdata, intr, pdata->netdev, "AN interrupt received\n");
- 
-@@ -715,14 +715,14 @@ static irqreturn_t xgbe_an_isr(int irq, void *data)
- 	if (pdata->isr_as_tasklet)
- 		tasklet_schedule(&pdata->tasklet_an);
- 	else
--		xgbe_an_isr_task((unsigned long)pdata);
-+		xgbe_an_isr_task(&pdata->tasklet_an);
- 
- 	return IRQ_HANDLED;
- }
- 
- static irqreturn_t xgbe_an_combined_isr(struct xgbe_prv_data *pdata)
- {
--	xgbe_an_isr_task((unsigned long)pdata);
-+	xgbe_an_isr_task(&pdata->tasklet_an);
- 
- 	return IRQ_HANDLED;
- }
-@@ -1414,8 +1414,7 @@ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
- 
- 	/* If we have a separate AN irq, enable it */
- 	if (pdata->dev_irq != pdata->an_irq) {
--		tasklet_init(&pdata->tasklet_an, xgbe_an_isr_task,
--			     (unsigned long)pdata);
-+		tasklet_setup(&pdata->tasklet_an, xgbe_an_isr_task);
- 
- 		ret = devm_request_irq(pdata->dev, pdata->an_irq,
- 				       xgbe_an_isr, 0, pdata->an_name,
 -- 
 2.25.1
 
