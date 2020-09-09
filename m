@@ -2,100 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9800E262AF2
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:51:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C6A6262B45
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:05:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727900AbgIIIvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 04:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726535AbgIIIvd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:51:33 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC89C061573
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:51:33 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id g4so2025808wrs.5
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:51:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FmjsDP04mfdZLFJ3+qkXlrf94+T5cynHI+nHZZTQUrA=;
-        b=F5HxnmxZmh/Rkv0qYZTpW/Qud5QjTIfK4ymVAgR9qcydWiqEqt/HTRNU0lmvMH2ZMT
-         Wl9nNSsqZoLNibRimE5TzxpM6MhB4TgjKS/Z9JhwnxfUqBXgMfHylbGkssA2AtQCMQsx
-         yvZqfVAEg1GG3oZNwCiBM7geET/0rZkSd4/thWucjAHRmL+SFYrqo2UZHXm3tgkh5Exc
-         GzEqPfB5FikAQNGFITL3YAuXwyxYk2+W4/U0FYgXdXk5A7wMoNk5y7c7YORrk13S1kTS
-         4tSvLHn4bUyPLN8eHOkL1ZZ5VhE7pOOIBpWDC0y9g88ZTZ2kPDLWmDIymgE2RFuNL1LT
-         mqJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FmjsDP04mfdZLFJ3+qkXlrf94+T5cynHI+nHZZTQUrA=;
-        b=WyS/MKmFPcOU3Itzm2ScaaoCE0y3SQ8sFxtkGL9cmUWJ5o7UEUBE0rIn66tJcYtvfM
-         UUFsO8hbOI7u+BEDvpt0+c+gugXI/dfj53DHfJB/tkeQTwxxL0ngfs/B96YKLJuXk+Cj
-         6fumr6hJyzhpLBIZty6OwVOAQaa+r2VI7uKgMfN7NVovuetV47aGh6rLowQUNI89Let/
-         Fz6HzL/JRExnpvrKVP43+exX4BRJyF9NdU22BjSrf7BAEFOXXoVw10S9bNepSsra+g3N
-         fJkbzDu1fIg7gllihLuTuB6uOa+UdbcKtDhSijI/q1xdw7tlTATs3eYTHDogX3yJHkla
-         IzVg==
-X-Gm-Message-State: AOAM533oYaOHTS1E/rimhhxJ7rniEVnpj4ApIxhXG41vBKsndqcEiu1J
-        /nny5N2a9Jn/K70XJHbbbzqRHg==
-X-Google-Smtp-Source: ABdhPJwFSjSHep5K3LKvgNDc2UUUNZuY5swjq7QdRad9kG32ZF8UyIG2HVpfoOhciBbg5VIW4okArA==
-X-Received: by 2002:adf:9ed4:: with SMTP id b20mr2914850wrf.206.1599641491830;
-        Wed, 09 Sep 2020 01:51:31 -0700 (PDT)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id a74sm3000027wme.11.2020.09.09.01.51.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 01:51:31 -0700 (PDT)
-Date:   Wed, 9 Sep 2020 10:51:30 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Paul Davey <paul.davey@alliedtelesis.co.nz>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/3] ipmr: Use full VIF ID in netlink cache
- reports
-Message-ID: <20200909085128.GA14965@netronome.com>
-References: <20200907220408.32385-1-paul.davey@alliedtelesis.co.nz>
- <20200907220408.32385-4-paul.davey@alliedtelesis.co.nz>
+        id S1726414AbgIIJFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 05:05:01 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:56823 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726005AbgIIJFA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 05:05:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599642298;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hF5FRl4+JcryV02oF186NMbYpd31+bm49DOKtjwi4hY=;
+        b=cBJMIE+k+INH7ExziNhm1ocLK1jqLEiTpXz58pLKNRBSSxk3aqXFy+bDXJIIR9I38vqp7h
+        Ld0fR5/Z37od8V6jVnZP0WFIDzt9m8R6Z/nF1Ts3EvXo1p2H0Bi+q/3ixnHAFJ8YBAQpMB
+        r/oemdDQZlM2pbYLsg34A6d4z6kmXGs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-288-S9pHHcnKP2GaTHqVUgeIEg-1; Wed, 09 Sep 2020 05:04:56 -0400
+X-MC-Unique: S9pHHcnKP2GaTHqVUgeIEg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CD4A21DDFF;
+        Wed,  9 Sep 2020 09:04:55 +0000 (UTC)
+Received: from [10.72.12.24] (ovpn-12-24.pek2.redhat.com [10.72.12.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AE09946;
+        Wed,  9 Sep 2020 09:04:47 +0000 (UTC)
+Subject: Re: [PATCH] vhost_vdpa: remove unnecessary spin_lock in
+ vhost_vring_call
+To:     Zhu Lingshan <lingshan.zhu@intel.com>, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org
+References: <20200909065234.3313-1-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <a7035d50-04e4-714a-e4aa-03872b939827@redhat.com>
+Date:   Wed, 9 Sep 2020 17:04:45 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200907220408.32385-4-paul.davey@alliedtelesis.co.nz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200909065234.3313-1-lingshan.zhu@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 10:04:08AM +1200, Paul Davey wrote:
-> Insert the full 16 bit VIF ID into ipmr Netlink cache reports.
-> 
-> The VIF_ID attribute has 32 bits of space so can store the full VIF ID
-> extracted from the high and low byte fields in the igmpmsg.
-> 
-> Signed-off-by: Paul Davey <paul.davey@alliedtelesis.co.nz>
+
+On 2020/9/9 下午2:52, Zhu Lingshan wrote:
+> This commit removed unnecessary spin_locks in vhost_vring_call
+> and related operations. Because we manipulate irq offloading
+> contents in vhost_vdpa ioctl code path which is already
+> protected by dev mutex and vq mutex.
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+
 > ---
->  net/ipv4/ipmr.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-> index 4809318f591b..939792a38814 100644
-> --- a/net/ipv4/ipmr.c
-> +++ b/net/ipv4/ipmr.c
-> @@ -2432,7 +2432,7 @@ static void igmpmsg_netlink_event(struct mr_table *mrt, struct sk_buff *pkt)
->  	rtgenm = nlmsg_data(nlh);
->  	rtgenm->rtgen_family = RTNL_FAMILY_IPMR;
->  	if (nla_put_u8(skb, IPMRA_CREPORT_MSGTYPE, msg->im_msgtype) ||
-> -	    nla_put_u32(skb, IPMRA_CREPORT_VIF_ID, msg->im_vif) ||
-> +	    nla_put_u32(skb, IPMRA_CREPORT_VIF_ID, msg->im_vif | (msg->im_vif_hi << 8)) ||
+>   drivers/vhost/vdpa.c  | 8 +-------
+>   drivers/vhost/vhost.c | 3 ---
+>   drivers/vhost/vhost.h | 1 -
+>   3 files changed, 1 insertion(+), 11 deletions(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 3fab94f88894..bc679d0b7b87 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -97,26 +97,20 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+>   		return;
+>   
+>   	irq = ops->get_vq_irq(vdpa, qid);
+> -	spin_lock(&vq->call_ctx.ctx_lock);
+>   	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+> -	if (!vq->call_ctx.ctx || irq < 0) {
+> -		spin_unlock(&vq->call_ctx.ctx_lock);
+> +	if (!vq->call_ctx.ctx || irq < 0)
+>   		return;
+> -	}
+>   
+>   	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+>   	vq->call_ctx.producer.irq = irq;
+>   	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
+> -	spin_unlock(&vq->call_ctx.ctx_lock);
+>   }
+>   
+>   static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
+>   {
+>   	struct vhost_virtqueue *vq = &v->vqs[qid];
+>   
+> -	spin_lock(&vq->call_ctx.ctx_lock);
+>   	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+> -	spin_unlock(&vq->call_ctx.ctx_lock);
+>   }
+>   
+>   static void vhost_vdpa_reset(struct vhost_vdpa *v)
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index b45519ca66a7..99f27ce982da 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -302,7 +302,6 @@ static void vhost_vring_call_reset(struct vhost_vring_call *call_ctx)
+>   {
+>   	call_ctx->ctx = NULL;
+>   	memset(&call_ctx->producer, 0x0, sizeof(struct irq_bypass_producer));
+> -	spin_lock_init(&call_ctx->ctx_lock);
+>   }
+>   
+>   static void vhost_vq_reset(struct vhost_dev *dev,
+> @@ -1637,9 +1636,7 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
+>   			break;
+>   		}
+>   
+> -		spin_lock(&vq->call_ctx.ctx_lock);
+>   		swap(ctx, vq->call_ctx.ctx);
+> -		spin_unlock(&vq->call_ctx.ctx_lock);
+>   		break;
+>   	case VHOST_SET_VRING_ERR:
+>   		if (copy_from_user(&f, argp, sizeof f)) {
+> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> index 9032d3c2a9f4..486dcf371e06 100644
+> --- a/drivers/vhost/vhost.h
+> +++ b/drivers/vhost/vhost.h
+> @@ -64,7 +64,6 @@ enum vhost_uaddr_type {
+>   struct vhost_vring_call {
+>   	struct eventfd_ctx *ctx;
+>   	struct irq_bypass_producer producer;
+> -	spinlock_t ctx_lock;
+>   };
+>   
+>   /* The virtqueue structure describes a queue attached to a device. */
 
-nit: the inner parentheses seem unnecessary
-
-Otherwise, FWIIW, this series looks good to me.
-
->  	    nla_put_in_addr(skb, IPMRA_CREPORT_SRC_ADDR,
->  			    msg->im_src.s_addr) ||
->  	    nla_put_in_addr(skb, IPMRA_CREPORT_DST_ADDR,
-> -- 
-> 2.28.0
-> 
