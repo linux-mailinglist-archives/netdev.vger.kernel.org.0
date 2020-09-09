@@ -2,114 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A384262858
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 09:19:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F30BB26285F
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 09:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729767AbgIIHTk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 03:19:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56055 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726534AbgIIHTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 03:19:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599635974;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4/Zhf5Z+jZ436SZtx+o89mZ+e13eKs2R9HrVqMiSNpw=;
-        b=cJm8cw4jENeQgto9zKC/OqMZQVDvWGu9/66bBU9uoFRD80NKUYW7FcBvJeHTW4QiU7vSGJ
-        1I6/nqGaAc44t4phcrATs4eJqt9xGMxDqfk8HlY/koEMr1IXcDv6cYZXiw/EJlnp3XaLF9
-        oXSs+Di0EL54CSnhol8ReXHd+tGI+fI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-379-vgLGSoqxNfKm1BQ10I75BA-1; Wed, 09 Sep 2020 03:19:26 -0400
-X-MC-Unique: vgLGSoqxNfKm1BQ10I75BA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5CFFB801AFF;
-        Wed,  9 Sep 2020 07:19:24 +0000 (UTC)
-Received: from krava (unknown [10.40.194.91])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 654945D9E8;
-        Wed,  9 Sep 2020 07:19:21 +0000 (UTC)
-Date:   Wed, 9 Sep 2020 09:19:20 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH] perf tools: Do not use deprecated bpf_program__title
-Message-ID: <20200909071920.GA1498025@krava>
-References: <20200907110237.1329532-1-jolsa@kernel.org>
- <CAEf4BzZpD2mjEA2Qo2cZ4Bp01fSwZkMPFAZOSw8VvOSAqOWNsA@mail.gmail.com>
+        id S1729851AbgIIHTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 03:19:49 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:55522 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726534AbgIIHTr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 03:19:47 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08975chh026702;
+        Wed, 9 Sep 2020 07:19:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=Hebn1+MO0cKwb3V91uzK8aFpPdTOf1H7cwnZUPJze/Y=;
+ b=wVu97UJap7NiLIEzQCvYkPMcfmm2MbSTSECp7B/CSx8jF7KKW9lkRli6U1/kSEaqNpXt
+ 8+qChhyDyNnRtSKU8/ZFarSu3U+VZv7bvQIwAB1ZtbUgKYy06aJxO28UPloKJauHDWan
+ RKgCPDo6IvtfRPYLhKRVoo6p9ig6YQAhMs33dZTkDf+QjexaiB8BvIv+kane6mm7gQb8
+ DVltfrIT2Tx9iXPB2kBFsNcL591RWx51wZz+467/kH/p/lK+0XtgLZYh/TDFuyScC5T5
+ WU0FSnFIdTNm3Lx8zIJHOI8nruWmd7xxxX5kO+yOVnumWqGYuarL3EF/l5V6OLmhuhCZ 4w== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 33c23qyyrj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 09 Sep 2020 07:19:34 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08976MkV063678;
+        Wed, 9 Sep 2020 07:19:34 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 33cmkx974x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 09 Sep 2020 07:19:33 +0000
+Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0897JWqY011710;
+        Wed, 9 Sep 2020 07:19:32 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 09 Sep 2020 00:19:31 -0700
+Date:   Wed, 9 Sep 2020 10:19:24 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     nan chen <whutchennan@gmail.com>
+Cc:     Krzysztof Halasa <khc@pm.waw.pl>, Jakub Kicinski <kuba@kernel.org>,
+        security@kernel.org, Greg KH <greg@kroah.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH] hdlc_ppp: add range checks in ppp_cp_parse_cr()
+Message-ID: <20200909071924.GT8321@kadam>
+References: <20200908153200.GB4165114@kroah.com>
+ <20200908175359.GA356675@mwanda>
+ <CAMnVd19nWToENW3X7v_PZN4snoXAoLgqKqn=dezXnd=z89zL7Q@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzZpD2mjEA2Qo2cZ4Bp01fSwZkMPFAZOSw8VvOSAqOWNsA@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <CAMnVd19nWToENW3X7v_PZN4snoXAoLgqKqn=dezXnd=z89zL7Q@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9738 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 phishscore=0 suspectscore=0
+ spamscore=0 mlxlogscore=999 adultscore=0 malwarescore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009090063
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9738 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 priorityscore=1501
+ mlxlogscore=999 mlxscore=0 bulkscore=0 suspectscore=0 spamscore=0
+ malwarescore=0 phishscore=0 lowpriorityscore=0 clxscore=1015
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009090063
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 01:11:36PM -0700, Andrii Nakryiko wrote:
-> On Mon, Sep 7, 2020 at 10:57 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> >
-> > The bpf_program__title function got deprecated in libbpf,
-> > use the suggested alternative.
-> >
-> > Fixes: 521095842027 ("libbpf: Deprecate notion of BPF program "title" in favor of "section name"")
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
+On Wed, Sep 09, 2020 at 05:37:37AM +0800, nan chen wrote:
+> Looks like the judgment of len <sizeof(valid_accm) has a problem.
+> The judgment cannot avoid the memory overflow of the memcpy below.
+>                         case LCP_OPTION_ACCM: /* async control character
+> map */
+> +                               if (len < sizeof(valid_accm))
+> +                                       goto err_out;
+> Assume that the initial value of len is 10.Then the length of 'out' memory
+> is 10.
+> And assume the value of opt[1] in each loop is 2.
+> Then it will loop 3 times.
+> 3 times memcpy will cause the 'out' memory to be overwritten by 18 bytes (
+> > 10 bytes). This will be memory overflow.
 > 
-> Hey Jiri,
-> 
-> Didn't see your patch before I sent mine against bpf-next. I also
-> removed some unnecessary checks there. Please see [0]. I don't care
-> which one gets applied, btw.
-> 
->   [0] https://patchwork.ozlabs.org/project/netdev/patch/20200908180127.1249-1-andriin@fb.com/
-
-perfect, let's take yours with that extra check removed
-
-thanks,
-jirka
-
-> 
-> >  tools/perf/util/bpf-loader.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
-> > index 2feb751516ab..73de3973c8ec 100644
-> > --- a/tools/perf/util/bpf-loader.c
-> > +++ b/tools/perf/util/bpf-loader.c
-> > @@ -328,7 +328,7 @@ config_bpf_program(struct bpf_program *prog)
-> >         probe_conf.no_inlines = false;
-> >         probe_conf.force_add = false;
-> >
-> > -       config_str = bpf_program__title(prog, false);
-> > +       config_str = bpf_program__section_name(prog);
-> >         if (IS_ERR(config_str)) {
-> >                 pr_debug("bpf: unable to get title for program\n");
-> >                 return PTR_ERR(config_str);
-> > @@ -454,7 +454,7 @@ preproc_gen_prologue(struct bpf_program *prog, int n,
-> >         if (err) {
-> >                 const char *title;
-> >
-> > -               title = bpf_program__title(prog, false);
-> > +               title = bpf_program__section_name(prog);
-> >                 if (!title)
-> >                         title = "[unknown]";
-> >
-> > --
-> > 2.26.2
-> >
+> I think the correct way is to judge the value of opt[1] like this:
+> .                        case LCP_OPTION_ACCM: /* async control character
+> map */
+> +                               if (opt[1] < sizeof(valid_accm))
+> +                                       goto err_out;
 > 
 
+Yeah.  You're right.  The "nak_len" count would grow faster than it
+should leading to memory corruption.  I'll resend.
+
+regards,
+dan carpenter
