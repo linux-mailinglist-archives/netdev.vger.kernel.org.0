@@ -2,69 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA5F2635EE
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 20:26:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 943DB2635F3
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 20:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbgIIS0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 14:26:08 -0400
-Received: from mailrelay105.isp.belgacom.be ([195.238.20.132]:5249 "EHLO
+        id S1729935AbgIIS0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 14:26:41 -0400
+Received: from mailrelay105.isp.belgacom.be ([195.238.20.132]:5273 "EHLO
         mailrelay105.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725975AbgIIS0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 14:26:06 -0400
-IronPort-SDR: zA9XNXEXspEXpvQAk0e0EupO3hw14WwrAkNg2p18c00um0kWtImOjXUXDKjIKJ6dn+mKrW/8ik
- f3jPcfGEfL8I/U+QWJSotKeaqR/5cjXRhHyBqr1Whyek7Pdk8Ppbw7/VAiGlQTB5TypClQZvpL
- sZrb7XFOu1kQeXlm+Qj5eLnJxAcAOtxzli+ga8bvvwyBgDSC2mZZj4vec7h1xvtgMwgTImibVl
- QF6Nma1Gnsf8D2Ssnh/+7o8B9licIZ535M83fniN+HXuoGLLQfn2h1Rz32rjv0RT6V5KjLACWr
- pt4=
+        by vger.kernel.org with ESMTP id S1725975AbgIIS0c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 14:26:32 -0400
+IronPort-SDR: bD8uNhFGVHwEVPYlwW5V5w67iMWVYwJpup2/wKODiZDjkJl4W0UA0clZ2xOG5QUebakvN+0kVg
+ pAHcfR1bvr4gvRFOh+S5nE50W5IKd1PSD6xCcwORVr0mPm0c7dRc/TW4+8CAj9CvJ5gSGXlV5k
+ 4FaEoD94Kb38IuHnrxv7DrhLcYw8A7G2P9zLhIgqSoYxDdSXUZfnjzfy906E1yaLU5sH/THK/F
+ K/JzVEwplBFApBINpeijljEch+QjLiFVVgHxqs/IRk3jPCx7QwdAnV8t07xUDK6WWc/HAxuJSb
+ GKk=
 X-Belgacom-Dynamic: yes
-IronPort-PHdr: =?us-ascii?q?9a23=3AeDLf1BBpoPA3EDn6N3DJUyQJP3N1i/DPJgcQr6?=
- =?us-ascii?q?AfoPdwSP36oc+wAkXT6L1XgUPTWs2DsrQY0rSQ6v29EjxRqb+681k6OKRWUB?=
- =?us-ascii?q?EEjchE1ycBO+WiTXPBEfjxciYhF95DXlI2t1uyMExSBdqsLwaK+i764jEdAA?=
- =?us-ascii?q?jwOhRoLerpBIHSk9631+ev8JHPfglEnjWwba5zIRmssAnctskbjYRhJ6s11x?=
- =?us-ascii?q?DEvmZGd+NKyG1yOFmdhQz85sC+/J5i9yRfpfcs/NNeXKv5Yqo1U6VWACwpPG?=
- =?us-ascii?q?4p6sLrswLDTRaU6XsHTmoWiBtIDBPb4xz8Q5z8rzH1tut52CmdIM32UbU5Ui?=
- =?us-ascii?q?ms4qt3VBPljjoMOjgk+2/Vl8NwlrpWrhK/qRJizYDaY4abO/VxcK7GYd8XRn?=
- =?us-ascii?q?BMUtpLWiBdHo+xaZYEAeobPeZfqonwv1sAogGlCgmtHuzvzCJDiH/s3aIkzu?=
- =?us-ascii?q?suDxvG3A08ENINrX/Zq9v1O70JXuC716TI1jbDbvNQ2Tjj9IjEaAsuru+VUL?=
- =?us-ascii?q?92bMHexlUhGRnfgVWMtYzqISmV1uIVvmaV7OdtUeKhhm8npg1vrDWhxtohhp?=
- =?us-ascii?q?XUio4Jy13K+ip3zZs7KNCmVUN2YdypHYVfuS2GOYV4TccvTWFotiokzrALv4?=
- =?us-ascii?q?OwcisSyJk/wxPTduaLf5WL7x79TuqdPDZ1iXJ/dL6ihhu/91WrxPfmWcmuyl?=
- =?us-ascii?q?lKqzJIktzLtn8QyRPe8tOHSv5h/ke53jaPyhzT5vlEIU8qkarbLIYswro3lp?=
- =?us-ascii?q?UPq0vDGi/2mELtjK+KbEkk/u+o5Pj9bbXiu5CcMIp0hRv/MqQogsC/AOI4PR?=
- =?us-ascii?q?YSX2WD/emwyafv8VD6TblUlPE6j6jUvZDAKcgGp6O1GwpV3Zwi6xa7ATemyt?=
- =?us-ascii?q?MYnXwfIVJLYh2IlIbpNkrVIPD7Dfa/hUqjkCtxy//dILLtGo/NIWTbkLf9Yb?=
- =?us-ascii?q?Z97FZRyBIpwt9E45JUDaoMIPTtVU/tutzYDxs5MxCqzOb9Etl90ZkeWW2XCK?=
- =?us-ascii?q?+DLKzSqUOI5v4oI+SUZ48aoivyK/w76PHylnI5n0ESfbWn3ZsWbHC4AuppI1?=
- =?us-ascii?q?+DbXrrmNcBHn8AvhAiQ+zylF2CTTlTam68X6My/Tw7E56mDZ3HRo+zhryNxj?=
- =?us-ascii?q?q0EYNObGBcFl+MCWvod5mDW/oUbiKdPNNhkjIFVbilV48uywuuuBbnxLV5MO?=
- =?us-ascii?q?rb5CkYuIn91Nh6+eLTjws+9T9qAMSH1WGCUWV0knkPRz8s06B1uVZ9xUub0a?=
- =?us-ascii?q?hkn/xYEsRe6O9OUgcgK5Hc0/J1BMr3Wg/aeNeGVkqmQtunATE1UtI+3cUOb1?=
- =?us-ascii?q?x6G9W4gRDJxzCqDKMNl7yXGJw09brR337vKMZh1nnJyrchgkI4QstAK2KmnL?=
- =?us-ascii?q?Rz9wvNCI7TlUWWiaKqeb4b3C7X+2eJ1XCOs11AUA5sTaXFWmgSZkXMotvi6E?=
- =?us-ascii?q?PPVKSuCbcnMwtH18GCNrFGZcb3ggYOePC2IN3UZ2WZnWqsCxeM2r6WKo3wdC?=
- =?us-ascii?q?FV3yzRDEUPuwYe4XiHMRQzHGGmuW2aRDJxPUnzeUfh969ypSCVVEgxmi+DZU?=
- =?us-ascii?q?xo0fKb4BMZiOadQPBbirwNsikJsDZlGluhmdjbXYnT7zF9dblRNItuqGxM0n?=
- =?us-ascii?q?jU4lRw?=
+IronPort-PHdr: =?us-ascii?q?9a23=3ADmRruhcXQ/3uiqyw0Dyk0imOlGMj4u6mDksu8p?=
+ =?us-ascii?q?Mizoh2WeGdxc27YheN2/xhgRfzUJnB7Loc0qyK6v6mADFdqsbQ+Fk5M7V0Hy?=
+ =?us-ascii?q?cfjssXmwFySOWkMmbcaMDQUiohAc5ZX0Vk9XzoeWJcGcL5ekGA6ibqtW1aFR?=
+ =?us-ascii?q?rwLxd6KfroEYDOkcu3y/qy+5rOaAlUmTaxe7x/IAi3oAnLq8UbgYtvJqkyxx?=
+ =?us-ascii?q?bNv3BFZ/lYyWR0KFyJgh3y/N2w/Jlt8yRRv/Iu6ctNWrjkcqo7ULJVEi0oP3?=
+ =?us-ascii?q?g668P3uxbDSxCP5mYHXWUNjhVIGQnF4wrkUZr3ryD3q/By2CiePc3xULA0RT?=
+ =?us-ascii?q?Gv5LplRRP0lCsKMSMy/WfKgcJyka1bugqsqRxhzYDJbo+bN/1wcazSc94BWW?=
+ =?us-ascii?q?ZMXdxcWzBbD4+gc4cCCfcKM+ZCr4n6olsDtRuwChO3C+Pu0DBIgGL9060g0+?=
+ =?us-ascii?q?s/DA7JwhYgH9MSv3TXsd74M6kSXvquw6nG1jjDdPBW2Df76IfWbhAtu+qDUq?=
+ =?us-ascii?q?xpfMfX1EIgGB/LgE+Kpoz5IzOayP4Ns26D4uRuVu+ij24ppgBxrzSxyMoiip?=
+ =?us-ascii?q?TEip4IxlzY9Ch3z4k7KMC2RUNlfNOpEJlduj+VOYdqTM0sTGVltiY6xLEYvZ?=
+ =?us-ascii?q?O2ejUBxpc/xxPHb/GLbpKE7g/gWeqPOzt0mXNodbKlixqv8EWtzPD3WNOu31?=
+ =?us-ascii?q?ZQtCVFl8HBtnUK1xPO9MeKUuB9/kK92TaX0ADT9/1ELVg0laXFL54hxaY9lp?=
+ =?us-ascii?q?4UsUvfBCD2nEX2jKiNdkU44OSo7+Pnban8qZ+YKoB0jQT+Pb4vmsy5Geg4Mw?=
+ =?us-ascii?q?4OUHaH+emk0LDv4Ff1TKhJg/EoiKXVrZHXKMQBqqKkAgJZyoMj5Ay+Dzei3t?=
+ =?us-ascii?q?QYh34HLFdddRKJlYfmIF/OLevjDfe8g1Wslilkx+zcMrL6HJrBNmLDn6v5fb?=
+ =?us-ascii?q?Zh905czxI+zchF6J1PDrEBJ+n+Wknvu9zEAB85Mgi0w/r5B9VnzI8eXniPAq?=
+ =?us-ascii?q?CBOqPIrVCI/v4vI/WLZIINuzbyMeUq5/rwgnAlglIde7em3YcZaHC5GvRmP1?=
+ =?us-ascii?q?uWYWD2jtcGC2cKsRI0TPb2h12aTT5Te3GyUroy5jA1E4+mFpvDRpqpgLOf2i?=
+ =?us-ascii?q?e3BIBZaX5eAFCWDXjob5mEW+sLaC+KJM9ujCAEVbagS48lyRGhqhX6x6N6Ie?=
+ =?us-ascii?q?XK5C0Xq5bj2cNr5+3cix4y7yZ4D8eD3GGXSWF7gGcISyUx3KBlrkx30k2D3r?=
+ =?us-ascii?q?Rgg/xECdxT4OtEXRs9NZ7G0eN6F879VRjEftqSTlapXMmmAT8wTtI1398BfV?=
+ =?us-ascii?q?x9F8+ljhDZ0CqgG6UVmKCTBJwo7qLc2GD8J8BjxHbayaYukUcmT9BRNW2pmK?=
+ =?us-ascii?q?F/7RLfB43XnEWDkaala6Ac0DTK9GeZwmqEpFtYXxJoUaXZQXAfYVPbrdrj6U?=
+ =?us-ascii?q?zZQb+jEq8nMghByM6ENKRKdsflgk5YS6SrBNOLe2u7n2CYAxuUyLKIcIfwPW?=
+ =?us-ascii?q?IH02GVC0EIlw0Y1XCLKQY/AjusuSTZFjMqXVzwS1jw6+1zrjW3Qxwa1QaPOm?=
+ =?us-ascii?q?No3bu8/FY7n/GQRukS1bFM7CkooTtcB1Ws2d/KTdCN8VkyNJ5AaM8wtQ8UnV?=
+ =?us-ascii?q?nSsBZwa8St?=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2AdEgCXHVlf/xCltltfHAEBATwBAQQ?=
- =?us-ascii?q?EAQECAQEHAQEcgUqBHCACAQEBgVdVX406klGQGYFpCwEBAQEBAQEBASMRAQI?=
- =?us-ascii?q?EAQGES4IUJTgTAgMBAQEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDUgEjI4E/EoM?=
- =?us-ascii?q?mAYJXKbUihBCEdYFCgTYCAQEBAQGIJ4UZgUE/hF+EJIYQBJonnEOCb4MNhF1?=
- =?us-ascii?q?+kTsPIaBWklGhaoF6TSAYgyQJRxkNnGhCMDcCBgoBAQMJVwE9AY0yAQE?=
-X-IPAS-Result: =?us-ascii?q?A2AdEgCXHVlf/xCltltfHAEBATwBAQQEAQECAQEHAQEcg?=
- =?us-ascii?q?UqBHCACAQEBgVdVX406klGQGYFpCwEBAQEBAQEBASMRAQIEAQGES4IUJTgTA?=
- =?us-ascii?q?gMBAQEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDUgEjI4E/EoMmAYJXKbUihBCEd?=
- =?us-ascii?q?YFCgTYCAQEBAQGIJ4UZgUE/hF+EJIYQBJonnEOCb4MNhF1+kTsPIaBWklGha?=
- =?us-ascii?q?oF6TSAYgyQJRxkNnGhCMDcCBgoBAQMJVwE9AY0yAQE?=
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2CmQgCXHVlf/xCltltfGgEBAQEBPAE?=
+ =?us-ascii?q?BAQECAgEBAQECAQEBAQMBAQEBHIFKgRyBfFVfjTqSUZICCwEBAQEBAQEBASM?=
+ =?us-ascii?q?RAQIEAQGES4IUJTgTAgMBAQEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDUgEjI4E?=
+ =?us-ascii?q?/EoMmAYJXKbUihBCEdYFCgTgBiCuFGYFBP4RfhASGMAS2aoJvgw2EXX6ROw8?=
+ =?us-ascii?q?hoFYtkiShaoF6TSAYO4JpCUcZDY4oGo4mQjA3AgYKAQEDCVcBPQGKbIJGAQE?=
+X-IPAS-Result: =?us-ascii?q?A2CmQgCXHVlf/xCltltfGgEBAQEBPAEBAQECAgEBAQECA?=
+ =?us-ascii?q?QEBAQMBAQEBHIFKgRyBfFVfjTqSUZICCwEBAQEBAQEBASMRAQIEAQGES4IUJ?=
+ =?us-ascii?q?TgTAgMBAQEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDUgEjI4E/EoMmAYJXKbUih?=
+ =?us-ascii?q?BCEdYFCgTgBiCuFGYFBP4RfhASGMAS2aoJvgw2EXX6ROw8hoFYtkiShaoF6T?=
+ =?us-ascii?q?SAYO4JpCUcZDY4oGo4mQjA3AgYKAQEDCVcBPQGKbIJGAQE?=
 Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
-  by relay.skynet.be with ESMTP; 09 Sep 2020 20:26:01 +0200
+  by relay.skynet.be with ESMTP; 09 Sep 2020 20:26:30 +0200
 From:   Fabian Frederick <fabf@skynet.be>
 To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de
 Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org, Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH 1/3 nf] selftests: netfilter: add cpu counter check
-Date:   Wed,  9 Sep 2020 20:25:36 +0200
-Message-Id: <20200909182536.23730-1-fabf@skynet.be>
+Subject: [PATCH 2/3 nf] selftests: netfilter: fix nft_meta.sh error reporting
+Date:   Wed,  9 Sep 2020 20:26:13 +0200
+Message-Id: <20200909182613.23784-1-fabf@skynet.be>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,53 +73,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-run task on first CPU with netfilter counters reset and check
-cpu meta after another ping
+When some test directly done with check_one_counter() fails,
+counter variable is undefined. This patch calls ip with cname
+which avoids errors like:
+FAIL: oskuidcounter, want "packets 2", got
+Error: syntax error, unexpected newline, expecting string
+list counter inet filter
+                        ^
+Error is now correctly rendered:
+FAIL: oskuidcounter, want "packets 2", got
+table inet filter {
+	counter oskuidcounter {
+		packets 1 bytes 84
+	}
+}
 
 Signed-off-by: Fabian Frederick <fabf@skynet.be>
 ---
- tools/testing/selftests/netfilter/nft_meta.sh | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ tools/testing/selftests/netfilter/nft_meta.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/netfilter/nft_meta.sh b/tools/testing/selftests/netfilter/nft_meta.sh
-index d250b84dd5bc3..17b2d6eaa2044 100755
+index 17b2d6eaa2044..1f5b46542c14c 100755
 --- a/tools/testing/selftests/netfilter/nft_meta.sh
 +++ b/tools/testing/selftests/netfilter/nft_meta.sh
-@@ -33,6 +33,7 @@ table inet filter {
- 	counter infproto4count {}
- 	counter il4protocounter {}
- 	counter imarkcounter {}
-+	counter icpu0counter {}
+@@ -90,7 +90,7 @@ check_one_counter()
+ 	if [ $? -ne 0 ];then
+ 		echo "FAIL: $cname, want \"$want\", got"
+ 		ret=1
+-		ip netns exec "$ns0" nft list counter inet filter $counter
++		ip netns exec "$ns0" nft list counter inet filter $cname
+ 	fi
+ }
  
- 	counter oifcount {}
- 	counter oifnamecount {}
-@@ -54,6 +55,7 @@ table inet filter {
- 		meta nfproto ipv4 counter name "infproto4count"
- 		meta l4proto icmp counter name "il4protocounter"
- 		meta mark 42 counter name "imarkcounter"
-+		meta cpu 0 counter name "icpu0counter"
- 	}
- 
- 	chain output {
-@@ -119,6 +121,18 @@ check_one_counter omarkcounter "1" true
- 
- if [ $ret -eq 0 ];then
- 	echo "OK: nftables meta iif/oif counters at expected values"
-+else
-+	exit $ret
-+fi
-+
-+#First CPU execution and counter
-+taskset -p 01 $$ > /dev/null
-+ip netns exec "$ns0" nft reset counters > /dev/null
-+ip netns exec "$ns0" ping -q -c 1 127.0.0.1 > /dev/null
-+check_one_counter icpu0counter "2" true
-+
-+if [ $ret -eq 0 ];then
-+	echo "OK: nftables meta cpu counter at expected values"
- fi
- 
- exit $ret
 -- 
 2.27.0
 
