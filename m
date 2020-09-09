@@ -2,112 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D688A2626C7
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 07:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ABC12626D4
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 07:43:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbgIIFav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 01:30:51 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:12751 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725807AbgIIFav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 01:30:51 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f5868040000>; Tue, 08 Sep 2020 22:28:36 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 08 Sep 2020 22:30:51 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 08 Sep 2020 22:30:51 -0700
-Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 9 Sep
- 2020 05:30:49 +0000
-Date:   Wed, 9 Sep 2020 08:30:45 +0300
-From:   Eli Cohen <elic@nvidia.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     "Michael S. Tsirkin" <mst@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2] vdpa/mlx5: Setup driver only if
- VIRTIO_CONFIG_S_DRIVER_OK
-Message-ID: <20200909053045.GB200399@mtl-vdi-166.wap.labs.mlnx>
-References: <20200908123346.GA169007@mtl-vdi-166.wap.labs.mlnx>
- <1004346338.16284947.1599617319808.JavaMail.zimbra@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <1004346338.16284947.1599617319808.JavaMail.zimbra@redhat.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1599629316; bh=G/PGfCBFD4/W2dJY7lxPUQlfzJXAB7CQbbLOCfzv6iM=;
-        h=X-PGP-Universal:Date:From:To:CC:Subject:Message-ID:References:
-         MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-         User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=rPIZ62Gc3o14FIVE21A9fgxrUEOXO6PREJvhlKB1UIi5ZRNVYNf+ZWiydJ/qKzil0
-         8UUixhpVyJG0F3j7wyrbK7rq6LqRPEAalb1EjkVGVs56ru7ctpW2gM94NIF689bd9v
-         kQNZOEE3VXhpPZJQcp6NABwP8PNv0IH5v8zVysrpCHb3gHUM9rKvmQqIWPG5pKhT6h
-         cOjEVDnIwfS394L4rYvvOYOoAq5aydHdrWQskZOzUf3njE9lRZV0SBh+pstCfswWUv
-         3xdz4DKjHDIGyoG8wiouGoR4n8ZBN0JMtfxkwdkL8NiUfNMK6aE3p143oBcasbBdgS
-         8VCKTel9u+hbg==
+        id S1725948AbgIIFnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 01:43:21 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:47059 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725772AbgIIFnU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 01:43:20 -0400
+X-IronPort-AV: E=Sophos;i="5.76,408,1592838000"; 
+   d="scan'208";a="56534769"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 09 Sep 2020 14:43:19 +0900
+Received: from localhost.localdomain (unknown [10.166.252.89])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 6E15C41D1D2F;
+        Wed,  9 Sep 2020 14:43:19 +0900 (JST)
+From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, kuba@kernel.org, Jisheng.Zhang@synaptics.com
+Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v2 RESEND] net: phy: call phy_disable_interrupts() in phy_attach_direct() instead
+Date:   Wed,  9 Sep 2020 14:43:14 +0900
+Message-Id: <1599630194-3052-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 10:08:39PM -0400, Jason Wang wrote:
-> 
-> 
-> ----- Original Message -----
-> > set_map() is used by mlx5 vdpa to create a memory region based on the
-> > address map passed by the iotlb argument. If we get successive calls, we
-> > will destroy the current memory region and build another one based on
-> > the new address mapping. We also need to setup the hardware resources
-> > since they depend on the memory region.
-> > 
-> > If these calls happen before DRIVER_OK, It means that driver VQs may
-> > also not been setup and we may not create them yet. In this case we want
-> > to avoid setting up the other resources and defer this till we get
-> > DRIVER OK.
-> > 
-> > Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
-> > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > ---
-> > V1->V2: Improve changelog description
-> > 
-> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > index 9df69d5efe8c..c89cd48a0aab 100644
-> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> > @@ -1645,6 +1645,9 @@ static int mlx5_vdpa_change_map(struct mlx5_vdpa_net
-> > *ndev, struct vhost_iotlb *
-> >  	if (err)
-> >  		goto err_mr;
-> >  
-> > +	if (!(ndev->mvdev.status & VIRTIO_CONFIG_S_DRIVER_OK))
-> > +		return 0;
-> > +
-> 
-> Is there any reason that we still need to do vq suspending and saving before?
-> 
-Though suspend_vqs() and save_channels_info() will be called, they will
-not actually do any work because the mvq->initialized is false.
+Since the micrel phy driver calls phy_init_hw() as a workaround,
+the commit 9886a4dbd2aa ("net: phy: call phy_disable_interrupts()
+in phy_init_hw()") disables the interrupt unexpectedly. So,
+call phy_disable_interrupts() in phy_attach_direct() instead.
+Otherwise, the phy cannot link up after the ethernet cable was
+disconnected.
 
-Since we don't expect so many false map updates I think it makes sense
-to avoid logic around the calls suspend_vqs() and save_channels_info().
+Note that other drivers (like at803x.c) also calls phy_init_hw().
+So, perhaps, the driver caused a similar issue too.
 
-> Thanks
-> 
-> >  	restore_channels_info(ndev);
-> >  	err = setup_driver(ndev);
-> >  	if (err)
-> > --
-> > 2.26.0
-> > 
-> > 
-> 
+Fixes: 9886a4dbd2aa ("net: phy: call phy_disable_interrupts() in phy_init_hw()")
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ Changes from v1:
+ - Fix build failure. I used two PCs: PC 1) for testing, PC 2) for
+   submitting patches. I tested on the PC 1. But, after that, I wrote
+   a patch on the PC2 again, and it seemed I didn't do a compile...
+   Today, I got some emails from kernel test bot. So, I realized
+   I had submitted an awful patch. To avoid such failure, I'll use
+   one PC only from now on.
+
+ drivers/net/phy/phy_device.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 8adfbad..b93b40c 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1143,10 +1143,6 @@ int phy_init_hw(struct phy_device *phydev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = phy_disable_interrupts(phydev);
+-	if (ret)
+-		return ret;
+-
+ 	if (phydev->drv->config_init)
+ 		ret = phydev->drv->config_init(phydev);
+ 
+@@ -1423,6 +1419,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+ 	if (err)
+ 		goto error;
+ 
++	err = phy_disable_interrupts(phydev);
++	if (err)
++		return err;
++
+ 	phy_resume(phydev);
+ 	phy_led_triggers_register(phydev);
+ 
+-- 
+2.7.4
+
