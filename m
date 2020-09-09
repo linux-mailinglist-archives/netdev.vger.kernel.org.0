@@ -2,224 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A40C2632EB
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:54:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CE2D26325A
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:41:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730898AbgIIQEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 12:04:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52518 "EHLO
+        id S1731064AbgIIQlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 12:41:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730872AbgIIQDm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:03:42 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F3CC061757;
-        Wed,  9 Sep 2020 09:03:41 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id c8so3218219edv.5;
-        Wed, 09 Sep 2020 09:03:41 -0700 (PDT)
+        with ESMTP id S1730501AbgIIQZE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:25:04 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D852C061756
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 09:25:04 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id x23so2881006wmi.3
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 09:25:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gSugijFx5V7kzK4lMfXIO1khu0NC9tFrZN8JKiYCPrs=;
-        b=gcOkmgf3/euQ/71l8vtiwdsCusWd8/ewwfsjfCgg3O2bK19ySZOiAODe50EVUbCyi/
-         aqA5bonY2kp0frFfOxgUEOW2I1/wnA+D1aEwVWlD3IX9sTIjKiu8FCQFKFPG+3m5/NZH
-         AM1QQf5ElvTAEqP+PfC5ZsxKU+q9+RSkrZiQr2eJQxQPcE1uxUP6m+j2UvM04J+jZX8u
-         f2x4nxgjG1j1SfovV3GSl2hxXgt/JuFwOGsmfJNlPGTyk3Sf0pJsBAJcT8Ir2R8Ovsh7
-         4YDwWeqRQ4yBdbGO6DeGojZGxt4Epkl1enawI8jNfZuPLRfbgDCOi72U+df8ogGP6qfe
-         W6Pg==
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ix+MU4cvPNIz6u3CoOIKbzdQmGESphnJbN4BB/aC/4A=;
+        b=RZ7sHxLaPVvHNd6Q1+E6yU36+g9EQTVaHi6wklS/XWqU1LvFanhemCuTJchygTZU79
+         c55Iquw6UEABWle2OmkTbyJa0NSHhzQtq1JgrUKF7zgjtoS6YTd4AWtfS9LbnczYz8Dg
+         9bOOkXbwI9mJXJLvVT1DDrk5rYGDlq8XLXdD1TMncKSiFhfoqG1gbriIThnar2SzHg//
+         idlDeYG0+FVlK7HMFES2sauBwOMVG2at13mbE6TuJW1cziTd1+rUHeC7jm3PrKqwCf9d
+         SY4VbKELLIjr2Et5ubZaOSZUsm4cGYjD91Qu4/7azV9edGNR3VMb/l5Il72Iy4+cEvwS
+         ZRnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gSugijFx5V7kzK4lMfXIO1khu0NC9tFrZN8JKiYCPrs=;
-        b=jcdDWknRs/mOBjDB5esh/bibkgJTOBLu1cj1lHtX31vG6Wt7L22r6rapOJLoPIDHbi
-         HOCGr3TMm/8w0y5JEpPp697VSw6SLhqUBuE/hZ8MUoU0rWQOQ3S+qos2cwUg8A2Voto9
-         oCcFLTuI7gCttPu4X2be2pWz82tTrJXrK5iG4CgXTRTbBVuHs0ESRlXa1qa1G+nOYDYv
-         NIvWkV3nbRfO0DwkAZ2lAHOtXltiWQrXYKPSa5JaDSkUQOfNNRg44Sq5jTILyYNECF5H
-         iSdsnLHnMc9lOYoeDrLbhTBciL72gbam/mM0VPjgc6jjyHXDIXPIM6OuH/79bGBgV/2k
-         b/og==
-X-Gm-Message-State: AOAM533Hg7mvIZgjMjG34IG066A11IC2wHf1yHUc5PutzImlNTIt27Hm
-        54ocI5cC1ttIJrqwUNOCDT0=
-X-Google-Smtp-Source: ABdhPJxq4yyeFtzTm7k62Y9Ml2VFgIKy66ho+z1E3G6HQz+kDJjS/DjS8XCAxj/0STt8kVUtWqTYCA==
-X-Received: by 2002:aa7:d558:: with SMTP id u24mr4885402edr.336.1599667419694;
-        Wed, 09 Sep 2020 09:03:39 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id m4sm3102244ejn.31.2020.09.09.09.03.38
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ix+MU4cvPNIz6u3CoOIKbzdQmGESphnJbN4BB/aC/4A=;
+        b=ULXFAOKn/TD0XGHR+kMKKt0Nvpww8UmfOke09k9aPmzCYJv90kEcjBFT62R+WvbfpF
+         4QxRNW0oy2Q/D5M/i99Z4h3jPTXfAVjoKyUAb8JQsjNjRgyUu8zKvqr6ZMUjB5PP7Jgp
+         3rDkFqj9BBCiBJ6mvx5fkUbMpP5wXmiKcNkRUJ7sFvAjCuog4Bxe5KaKOkCEQvzOsMyp
+         afnWGOExg8x7Tu94FzV1rxC13MWA2h57OF5JzzQF3755CUnzY59lzGwNvr7OG/3rSLQK
+         cxVbmD25NHLAq4ZpnT7EVuKuK72QeMGzZ8+k3xa3wgp/eB26us3eRuL5gncNeO4VnpXq
+         cfGA==
+X-Gm-Message-State: AOAM5310wAfL/8cMOOUwNdcFsrUUhWi7WDjpenJge2rj/I+vhmoZlo3I
+        goenWnLBVK9DhyF5/uabAaYYtg==
+X-Google-Smtp-Source: ABdhPJyCooJk5TgGFn7FWe5TWJ2t6lwVp7AyqY2PZXycg17LJK4sDfWGN9KbSq3zi+OjdWFgnRRSgQ==
+X-Received: by 2002:a05:600c:28d:: with SMTP id 13mr4243445wmk.69.1599668702953;
+        Wed, 09 Sep 2020 09:25:02 -0700 (PDT)
+Received: from localhost.localdomain ([194.35.119.56])
+        by smtp.gmail.com with ESMTPSA id d3sm4821445wrr.84.2020.09.09.09.25.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 09:03:39 -0700 (PDT)
-Date:   Wed, 9 Sep 2020 19:03:37 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: dsa: b53: Report VLAN table occupancy via
- devlink
-Message-ID: <20200909160337.fp4i5hhryr2by54m@skbuf>
-References: <20200909043235.4080900-1-f.fainelli@gmail.com>
+        Wed, 09 Sep 2020 09:25:02 -0700 (PDT)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next v3 0/3] tools: bpftool: print built-in features, automate some of the documentation
+Date:   Wed,  9 Sep 2020 17:24:57 +0100
+Message-Id: <20200909162500.17010-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200909043235.4080900-1-f.fainelli@gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 09:32:34PM -0700, Florian Fainelli wrote:
-> We already maintain an array of VLANs used by the switch so we can
-> simply iterate over it to report the occupancy via devlink.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  drivers/net/dsa/b53/b53_common.c | 59 ++++++++++++++++++++++++++++++--
->  drivers/net/dsa/b53/b53_priv.h   |  1 +
->  drivers/net/dsa/bcm_sf2.c        |  8 ++++-
->  3 files changed, 65 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-> index 26fcff85d881..a1527665e817 100644
-> --- a/drivers/net/dsa/b53/b53_common.c
-> +++ b/drivers/net/dsa/b53/b53_common.c
-> @@ -977,6 +977,53 @@ int b53_get_sset_count(struct dsa_switch *ds, int port, int sset)
->  }
->  EXPORT_SYMBOL(b53_get_sset_count);
->  
-> +enum b53_devlink_resource_id {
-> +	B53_DEVLINK_PARMA_ID_VLAN_TABLE,
+There are two changes for bpftool in this series.
 
-Parma is a city in Italy, maybe PARAM?
+The first one is a modification to the "version" command, to have it print
+the status (compiled or not) of some of the optional features for bpftool.
+This is to help determine if a bpftool binary is able to, for example,
+disassemble JIT-compiled programs.
 
-> +};
-> +
-> +static u64 b53_devlink_vlan_table_get(void *priv)
-> +{
-> +	struct b53_device *dev = priv;
-> +	unsigned int i, count = 0;
+The last two patches try to automate the generation of some repetitive
+sections in the man pages for bpftool, namely the description of the
+options shared by all commands, and the "see also" section. The objective
+is to make it easier to maintain the pages and to reduce the risk of
+omissions when adding the documentation for new commands.
 
-Could you make count an u64 as well, since you're returning it into an
-u64?
+v3:
+- Use a simple list of features (no boolean values) for plain output when
+  dumping built-in features.
 
-> +	struct b53_vlan *vl;
-> +
-> +	for (i = 0; i < dev->num_vlans; i++) {
-> +		vl = &dev->vlans[i];
-> +		if (vl->members)
-> +			count++;
-> +	}
-> +
-> +	return count;
-> +}
-> +
-> +int b53_setup_devlink_resources(struct dsa_switch *ds)
-> +{
-> +	struct devlink_resource_size_params size_params;
-> +	struct b53_device *dev = ds->priv;
-> +	int err;
-> +
-> +	devlink_resource_size_params_init(&size_params, dev->num_vlans,
-> +					  dev->num_vlans,
-> +					  1, DEVLINK_RESOURCE_UNIT_ENTRY);
-> +
-> +	err = dsa_devlink_resource_register(ds, "VLAN", dev->num_vlans,
-> +					    B53_DEVLINK_PARMA_ID_VLAN_TABLE,
-> +					    DEVLINK_RESOURCE_ID_PARENT_TOP,
-> +					    &size_params);
-> +	if (err)
-> +		goto out;
-> +
-> +	dsa_devlink_resource_occ_get_register(ds,
-> +					      B53_DEVLINK_PARMA_ID_VLAN_TABLE,
-> +					      b53_devlink_vlan_table_get, dev);
-> +
-> +	return 0;
-> +out:
-> +	dsa_devlink_resources_unregister(ds);
-> +	return err;
-> +}
-> +EXPORT_SYMBOL(b53_setup_devlink_resources);
-> +
->  static int b53_setup(struct dsa_switch *ds)
->  {
->  	struct b53_device *dev = ds->priv;
-> @@ -992,8 +1039,10 @@ static int b53_setup(struct dsa_switch *ds)
->  	b53_reset_mib(dev);
->  
->  	ret = b53_apply_config(dev);
-> -	if (ret)
-> +	if (ret) {
->  		dev_err(ds->dev, "failed to apply configuration\n");
-> +		return ret;
-> +	}
->  
->  	/* Configure IMP/CPU port, disable all other ports. Enabled
->  	 * ports will be configured with .port_enable
-> @@ -1012,7 +1061,12 @@ static int b53_setup(struct dsa_switch *ds)
->  	 */
->  	ds->vlan_filtering_is_global = true;
->  
-> -	return ret;
-> +	return b53_setup_devlink_resources(ds);
-> +}
-> +
-> +static void b53_teardown(struct dsa_switch *ds)
-> +{
-> +	dsa_devlink_resources_unregister(ds);
->  }
->  
->  static void b53_force_link(struct b53_device *dev, int port, int link)
-> @@ -2141,6 +2195,7 @@ static int b53_get_max_mtu(struct dsa_switch *ds, int port)
->  static const struct dsa_switch_ops b53_switch_ops = {
->  	.get_tag_protocol	= b53_get_tag_protocol,
->  	.setup			= b53_setup,
-> +	.teardown		= b53_teardown,
->  	.get_strings		= b53_get_strings,
->  	.get_ethtool_stats	= b53_get_ethtool_stats,
->  	.get_sset_count		= b53_get_sset_count,
-> diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-> index e942c60e4365..c55c0a9f1b47 100644
-> --- a/drivers/net/dsa/b53/b53_priv.h
-> +++ b/drivers/net/dsa/b53/b53_priv.h
-> @@ -328,6 +328,7 @@ void b53_br_set_stp_state(struct dsa_switch *ds, int port, u8 state);
->  void b53_br_fast_age(struct dsa_switch *ds, int port);
->  int b53_br_egress_floods(struct dsa_switch *ds, int port,
->  			 bool unicast, bool multicast);
-> +int b53_setup_devlink_resources(struct dsa_switch *ds);
->  void b53_port_event(struct dsa_switch *ds, int port);
->  void b53_phylink_validate(struct dsa_switch *ds, int port,
->  			  unsigned long *supported,
-> diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-> index 3263e8a0ae67..723820603107 100644
-> --- a/drivers/net/dsa/bcm_sf2.c
-> +++ b/drivers/net/dsa/bcm_sf2.c
-> @@ -936,7 +936,12 @@ static int bcm_sf2_sw_setup(struct dsa_switch *ds)
->  	b53_configure_vlan(ds);
->  	bcm_sf2_enable_acb(ds);
->  
-> -	return 0;
-> +	return b53_setup_devlink_resources(ds);
-> +}
-> +
-> +static void bcm_sf2_sw_teardown(struct dsa_switch *ds)
-> +{
-> +	dsa_devlink_resources_unregister(ds);
->  }
->  
->  /* The SWITCH_CORE register space is managed by b53 but operates on a page +
-> @@ -1073,6 +1078,7 @@ static int bcm_sf2_sw_get_sset_count(struct dsa_switch *ds, int port,
->  static const struct dsa_switch_ops bcm_sf2_ops = {
->  	.get_tag_protocol	= b53_get_tag_protocol,
->  	.setup			= bcm_sf2_sw_setup,
-> +	.teardown		= bcm_sf2_sw_teardown,
->  	.get_strings		= bcm_sf2_sw_get_strings,
->  	.get_ethtool_stats	= bcm_sf2_sw_get_ethtool_stats,
->  	.get_sset_count		= bcm_sf2_sw_get_sset_count,
-> -- 
-> 2.25.1
-> 
+v2:
+- Fix incorrect JSON output.
+- Use "echo -n" instead of "printf" in Makefile to avoid the risk of
+  passing and evaluating formatting strings.
 
-Thanks,
--Vladimir
+Quentin Monnet (3):
+  tools: bpftool: print optional built-in features along with version
+  tools: bpftool: include common options from separate file
+  tools: bpftool: automate generation for "SEE ALSO" sections in man
+    pages
+
+ tools/bpf/bpftool/Documentation/Makefile      | 14 ++++++--
+ .../bpf/bpftool/Documentation/bpftool-btf.rst | 34 +-----------------
+ .../bpftool/Documentation/bpftool-cgroup.rst  | 33 +----------------
+ .../bpftool/Documentation/bpftool-feature.rst | 33 +----------------
+ .../bpf/bpftool/Documentation/bpftool-gen.rst | 33 +----------------
+ .../bpftool/Documentation/bpftool-iter.rst    | 27 +-------------
+ .../bpftool/Documentation/bpftool-link.rst    | 34 +-----------------
+ .../bpf/bpftool/Documentation/bpftool-map.rst | 33 +----------------
+ .../bpf/bpftool/Documentation/bpftool-net.rst | 34 +-----------------
+ .../bpftool/Documentation/bpftool-perf.rst    | 34 +-----------------
+ .../bpftool/Documentation/bpftool-prog.rst    | 34 +-----------------
+ .../Documentation/bpftool-struct_ops.rst      | 35 +------------------
+ tools/bpf/bpftool/Documentation/bpftool.rst   | 34 +-----------------
+ .../bpftool/Documentation/common_options.rst  | 22 ++++++++++++
+ tools/bpf/bpftool/main.c                      | 33 +++++++++++++++--
+ 15 files changed, 77 insertions(+), 390 deletions(-)
+ create mode 100644 tools/bpf/bpftool/Documentation/common_options.rst
+
+-- 
+2.25.1
+
