@@ -2,217 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01DC52634F1
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:50:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CEAE263506
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:53:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728363AbgIIRto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 13:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
+        id S1729135AbgIIRxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 13:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726728AbgIIRtj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 13:49:39 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5EB8C061757;
-        Wed,  9 Sep 2020 10:49:35 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id m5so2595279pgj.9;
-        Wed, 09 Sep 2020 10:49:35 -0700 (PDT)
+        with ESMTP id S1726489AbgIIRxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 13:53:30 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAEAC061573
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 10:53:29 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id i22so4838744eja.5
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 10:53:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vr8be9z5ve289rWYH4FMLgISuz5QCRzwF700gd1BO2s=;
-        b=deFW1JQCJtN43zETrg87xyX00GC6XmUZm6gHSR8oVtoMk0dRAZk+bp/j2/8V/mAC6P
-         JqbsxKqi7oWFaQFSiPur2nhwwhCMR9iPj5dPlk3Wo4GC04LXwE/MJMb/XZQzGwhpOhyM
-         pO3EBmlURwpsdEtbmE/cem3eycFX9pU+Zhma9JwstuSJRPdBK1uFwy3EZe70qzbKXNxa
-         OvzgBYShIB8J0FGsg0sAJvL+yizh/7K5yL6LfZqilLe8wdCle00BWtSL156cATJ15R5N
-         XCfpArynh0vhidHx1G/2BqgQ4jKB+bF+BgUB2xtTWtjyf1cEt6ENgmrE5bONWbyolSsi
-         zsww==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9OIe9ODyhdqAar6vIhIoBiXPdCtm/nr7i5INmCz1xiI=;
+        b=C9r4brq9wuJZ1lWKfAelJwLVS2EGB20yd/FVcJ6us+3rEUZrVMK37rYszWIKrqD17l
+         e+wE/iQdhxSwuRjwx5Cw7ZSJEGVSR/XnBfJ/90xdH3KvHWXDqjU2xIVPZx4Ub9MmUJDW
+         o6at0qoiR/TNTXvFtkYUwA9ltpIYXKtrfp4f7cHb5hgsC5GLYxSeHVGRdwJSKqIxHbDl
+         ev3R6Woj+Mw9939T8RjgwK4I9oHpTMnABc07q1HN5ORAn3CDawH/rPJYKd0I1OVjyfTj
+         xac/7Gku0iZZ1Mn/y0zd0gyVp4wv5MDvJ9jukKPsXpjr6hyzcR55GYPBDc2IQ/SZyOSM
+         BbOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vr8be9z5ve289rWYH4FMLgISuz5QCRzwF700gd1BO2s=;
-        b=NYa5fM/ZP1/bkcPNsY0Y0t92Qx5L80yN+GeS/2soZpsZjF25LgzE0WqNRepinEr4QL
-         JXlM3SJX2hKAW7ZgjIXnYg0INXtSqVemMZuEMR8mY4MG4YkiShJhVkUKi9AoePtddcqW
-         mvyLN91sIxWhO9TEKgm1B9PBDBpiryquGCkEMlPmE9KJorkfmbVS9q4xpfC7wX0QAW0z
-         i9Ep0Z8B6+kOE06ekvfQzlDCo9Kln7JCHCodfGo4mUxHHFcfyR+zz7aj8Ldzc3Yr340x
-         KHBOD8/pS7iWyhRY9Ma6P4NBpoG+Iv1gUVKvkrmZdZ35Sl7bInbICivFA6hRUS7nQdPU
-         hZzA==
-X-Gm-Message-State: AOAM532gc89Z9NVn4GAvP/tgnpN8s1wB+0ca5cRHSeoTwSsM0cAvcOPw
-        vhTdkqJFaX7tssD9nUnax+Lw+GtVJQo=
-X-Google-Smtp-Source: ABdhPJx1xIZJXBh/EmG2Xo+Hxj8YeCTDmSbQ9oSQrzB6M55tmeV4EqlIR/AxDv60o0Z0rV4M2BocSA==
-X-Received: by 2002:a17:902:ed13:b029:d0:89f1:9e32 with SMTP id b19-20020a170902ed13b02900d089f19e32mr2040378pld.14.1599673774771;
-        Wed, 09 Sep 2020 10:49:34 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a20sm3254825pfa.59.2020.09.09.10.49.33
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9OIe9ODyhdqAar6vIhIoBiXPdCtm/nr7i5INmCz1xiI=;
+        b=LI1tAtRPCC1KiF3BZ4p9ySk5b0ilD0XH2IVPt7o6XBXXdLjHk/pMn8ecT9icQwK36q
+         Hm7jA38Wxs+DtmpWrld6B+7xReTHcig+mRnNlwA2cHy3oAARUKt+3G23Qfb0/cL6xMQ1
+         rTH65/DgGbU12v5VB7olYNQN2MJp/eCI+8jBB9RsbP7Wm9VPzdkRyBooMubs7iGvjIWz
+         z1NKlmmiKgj9UxuXSxvVBVkYGyVp15InFkKblBKBsTJ81PpqF/iQx733TjotfW2GrcQL
+         pU5BqMP0xo/5jnYSeulbzJUbBMGB1NphgQbgu3LobXYwy1VhMrk3pELPq2X/wzLgok6P
+         ewMg==
+X-Gm-Message-State: AOAM532G0dnulIMWtts0GCLlBigEtVx6h2yE5oxsameACYpExVza4u5Q
+        QmbnVhFw6DPEyFlaOw2fPAk=
+X-Google-Smtp-Source: ABdhPJySN5t9eOP6r7t/uIClMOX3hS2YtE03BtEhNuNFraNvBxhECc8nTbldtCt8iNl4zQ8f+tD2lw==
+X-Received: by 2002:a17:906:2dc1:: with SMTP id h1mr4748993eji.436.1599674008427;
+        Wed, 09 Sep 2020 10:53:28 -0700 (PDT)
+Received: from skbuf ([188.25.217.212])
+        by smtp.gmail.com with ESMTPSA id jo2sm3072974ejb.101.2020.09.09.10.53.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 10:49:34 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     olteanv@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next v2] net: dsa: b53: Report VLAN table occupancy via devlink
-Date:   Wed,  9 Sep 2020 10:49:31 -0700
-Message-Id: <20200909174932.4138500-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 09 Sep 2020 10:53:27 -0700 (PDT)
+Date:   Wed, 9 Sep 2020 20:53:25 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     davem@davemloft.net, vivien.didelot@gmail.com, andrew@lunn.ch,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 4/4] net: dsa: set
+ configure_vlan_while_not_filtering to true by default
+Message-ID: <20200909175325.bshts3hl537xtz2q@skbuf>
+References: <20200907182910.1285496-1-olteanv@gmail.com>
+ <20200907182910.1285496-5-olteanv@gmail.com>
+ <961ac1bd-6744-23ef-046f-4b7d8c4413a4@gmail.com>
+ <a5e6cb01-88d0-a479-3262-b53dec0682cd@gmail.com>
+ <f0217ae5-7897-17e2-a807-fc0ba0246c74@gmail.com>
+ <20200909163105.nynkw5jvwqapzx2z@skbuf>
+ <11268219-286d-7daf-9f4e-50bdc6466469@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <11268219-286d-7daf-9f4e-50bdc6466469@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We already maintain an array of VLANs used by the switch so we can
-simply iterate over it to report the occupancy via devlink.
+On Wed, Sep 09, 2020 at 10:22:42AM -0700, Florian Fainelli wrote:
+> How do you make sure that the CPU port sees the frame untagged which would
+> be necessary for a VLAN-unaware bridge? Do you have a special remapping
+> rule?
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Changes in v2:
+No, I don't have any remapping rules that would be relevant here.
+Why would the frames need to be necessarily untagged for a VLAN-unaware
+bridge, why is it a problem if they aren't?
 
-- make count u64
-- correct typo: s/PARMA/PARAM/
+bool br_allowed_ingress(const struct net_bridge *br,
+			struct net_bridge_vlan_group *vg, struct sk_buff *skb,
+			u16 *vid, u8 *state)
+{
+	/* If VLAN filtering is disabled on the bridge, all packets are
+	 * permitted.
+	 */
+	if (!br_opt_get(br, BROPT_VLAN_ENABLED)) {
+		BR_INPUT_SKB_CB(skb)->vlan_filtered = false;
+		return true;
+	}
 
- drivers/net/dsa/b53/b53_common.c | 60 ++++++++++++++++++++++++++++++--
- drivers/net/dsa/b53/b53_priv.h   |  1 +
- drivers/net/dsa/bcm_sf2.c        |  8 ++++-
- 3 files changed, 66 insertions(+), 3 deletions(-)
+	return __allowed_ingress(br, vg, skb, vid, state);
+}
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 26fcff85d881..6a5796c32721 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -977,6 +977,54 @@ int b53_get_sset_count(struct dsa_switch *ds, int port, int sset)
- }
- EXPORT_SYMBOL(b53_get_sset_count);
- 
-+enum b53_devlink_resource_id {
-+	B53_DEVLINK_PARAM_ID_VLAN_TABLE,
-+};
-+
-+static u64 b53_devlink_vlan_table_get(void *priv)
-+{
-+	struct b53_device *dev = priv;
-+	struct b53_vlan *vl;
-+	unsigned int i;
-+	u64 count = 0;
-+
-+	for (i = 0; i < dev->num_vlans; i++) {
-+		vl = &dev->vlans[i];
-+		if (vl->members)
-+			count++;
-+	}
-+
-+	return count;
-+}
-+
-+int b53_setup_devlink_resources(struct dsa_switch *ds)
-+{
-+	struct devlink_resource_size_params size_params;
-+	struct b53_device *dev = ds->priv;
-+	int err;
-+
-+	devlink_resource_size_params_init(&size_params, dev->num_vlans,
-+					  dev->num_vlans,
-+					  1, DEVLINK_RESOURCE_UNIT_ENTRY);
-+
-+	err = dsa_devlink_resource_register(ds, "VLAN", dev->num_vlans,
-+					    B53_DEVLINK_PARAM_ID_VLAN_TABLE,
-+					    DEVLINK_RESOURCE_ID_PARENT_TOP,
-+					    &size_params);
-+	if (err)
-+		goto out;
-+
-+	dsa_devlink_resource_occ_get_register(ds,
-+					      B53_DEVLINK_PARAM_ID_VLAN_TABLE,
-+					      b53_devlink_vlan_table_get, dev);
-+
-+	return 0;
-+out:
-+	dsa_devlink_resources_unregister(ds);
-+	return err;
-+}
-+EXPORT_SYMBOL(b53_setup_devlink_resources);
-+
- static int b53_setup(struct dsa_switch *ds)
- {
- 	struct b53_device *dev = ds->priv;
-@@ -992,8 +1040,10 @@ static int b53_setup(struct dsa_switch *ds)
- 	b53_reset_mib(dev);
- 
- 	ret = b53_apply_config(dev);
--	if (ret)
-+	if (ret) {
- 		dev_err(ds->dev, "failed to apply configuration\n");
-+		return ret;
-+	}
- 
- 	/* Configure IMP/CPU port, disable all other ports. Enabled
- 	 * ports will be configured with .port_enable
-@@ -1012,7 +1062,12 @@ static int b53_setup(struct dsa_switch *ds)
- 	 */
- 	ds->vlan_filtering_is_global = true;
- 
--	return ret;
-+	return b53_setup_devlink_resources(ds);
-+}
-+
-+static void b53_teardown(struct dsa_switch *ds)
-+{
-+	dsa_devlink_resources_unregister(ds);
- }
- 
- static void b53_force_link(struct b53_device *dev, int port, int link)
-@@ -2141,6 +2196,7 @@ static int b53_get_max_mtu(struct dsa_switch *ds, int port)
- static const struct dsa_switch_ops b53_switch_ops = {
- 	.get_tag_protocol	= b53_get_tag_protocol,
- 	.setup			= b53_setup,
-+	.teardown		= b53_teardown,
- 	.get_strings		= b53_get_strings,
- 	.get_ethtool_stats	= b53_get_ethtool_stats,
- 	.get_sset_count		= b53_get_sset_count,
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index e942c60e4365..c55c0a9f1b47 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -328,6 +328,7 @@ void b53_br_set_stp_state(struct dsa_switch *ds, int port, u8 state);
- void b53_br_fast_age(struct dsa_switch *ds, int port);
- int b53_br_egress_floods(struct dsa_switch *ds, int port,
- 			 bool unicast, bool multicast);
-+int b53_setup_devlink_resources(struct dsa_switch *ds);
- void b53_port_event(struct dsa_switch *ds, int port);
- void b53_phylink_validate(struct dsa_switch *ds, int port,
- 			  unsigned long *supported,
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 3263e8a0ae67..723820603107 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -936,7 +936,12 @@ static int bcm_sf2_sw_setup(struct dsa_switch *ds)
- 	b53_configure_vlan(ds);
- 	bcm_sf2_enable_acb(ds);
- 
--	return 0;
-+	return b53_setup_devlink_resources(ds);
-+}
-+
-+static void bcm_sf2_sw_teardown(struct dsa_switch *ds)
-+{
-+	dsa_devlink_resources_unregister(ds);
- }
- 
- /* The SWITCH_CORE register space is managed by b53 but operates on a page +
-@@ -1073,6 +1078,7 @@ static int bcm_sf2_sw_get_sset_count(struct dsa_switch *ds, int port,
- static const struct dsa_switch_ops bcm_sf2_ops = {
- 	.get_tag_protocol	= b53_get_tag_protocol,
- 	.setup			= bcm_sf2_sw_setup,
-+	.teardown		= bcm_sf2_sw_teardown,
- 	.get_strings		= bcm_sf2_sw_get_strings,
- 	.get_ethtool_stats	= bcm_sf2_sw_get_ethtool_stats,
- 	.get_sset_count		= bcm_sf2_sw_get_sset_count,
--- 
-2.25.1
+If I have a VLAN on a bridged switch port where the bridge is not
+filtering, I have an 8021q upper of the bridge with that VLAN ID.
 
+> Initially the concern I had was with the use case described above which was
+> a 802.1Q separation, but in hindsight MAC address learning would result in
+> the frames going to the appropriate ports/VLANs anyway.
+
+If by "separation" you mean "limiting the forwarding domain", the switch
+keeps the same VLAN associated with the frame internally, regardless of
+whether it's egress-tagged or not.
+
+> > 
+> > > Tangentially, maybe we should finally add support for programming the CPU
+> > > port's VLAN membership independently from the other ports.
+> > 
+> > How?
+> 
+> Something like this:
+> 
+> https://lore.kernel.org/lkml/20180625091713.GA13442@apalos/T/
+
+I need to take some time to understand what's going on there.
