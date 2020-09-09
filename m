@@ -2,191 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B662631F8
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:33:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 792AD26320A
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:34:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731100AbgIIQdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 12:33:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57260 "EHLO
+        id S1731003AbgIIQeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 12:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730785AbgIIQcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:32:39 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE5CC061755;
-        Wed,  9 Sep 2020 09:32:16 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id q3so2161762ybp.7;
-        Wed, 09 Sep 2020 09:32:16 -0700 (PDT)
+        with ESMTP id S1730776AbgIIQeM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:34:12 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0DCC061573
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 09:34:11 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id e17so2922167wme.0
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 09:34:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ukEjxfb+1NHDtvdcqh0sH5s3JNgB8HHy1ACIbDfp5WE=;
-        b=nCTzEYiMneIdA9f1xe6gyc6JZtf86C8g7xesh9TO/Mr/HwHopBiGo6vS9x3b70uJ/1
-         l0B2VP4FNTk+dNFM903kg36P9AOrrKHDoM08TT6RQUgW7O08jNP3Gu483QR7WARhCeeP
-         XVm0yHBFHpLhCTF5J9w3SZhqXNyTOw58f/D0nZBZujDFhJbbcO+9YbFx4LM8F/ej6mLq
-         a384k1pCLAp8oztq6ir9IrUrsjzaiQSCaTotL6Cff4zuthfROlGcshJb3ASmJIR5eQWA
-         z6MhLNa9/9d4d84/G4q0ghC0rthbQHxWNQBFvnqVtC+4174cWLQdvMC1opFwaA+mLVz0
-         LVZA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=mss8MK33fopB1tzfoyvJfAwWlaNQqq3EvgTqO4IgP3c=;
+        b=XooBhKOoh8n9QdPT8Yk+8tiE6N5X+M+lKJEO62wQZtgFyLv8LkrEmNfwnd/uFBoMLI
+         jb3zFSKZtS+DRVIEqfQb8i9XsPCKyKX1O1Skxa3VNTewkAEBMROnu5ePF5qckcJIaSm1
+         0uk2MhQRoS5FED/0/N/FWfo5EOhFfZhciwwbT0xeOVZBDTowd1cObrW9yD60KIQUFEDY
+         sKdQr5kIjcsbTkFtki4veVj9KQNjVSdiMx3BX0C3bnWraTDXaJdMNHQidyYDWZTqhpRC
+         n0h6hAiCieP+LFXsl8BhGwPEjZ2MH37QVf3q+1xNfSN9TUhbCg0V+six6iIbAGvXMrel
+         Lpvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ukEjxfb+1NHDtvdcqh0sH5s3JNgB8HHy1ACIbDfp5WE=;
-        b=XaCWps49j2fohKNOaPUpxetoue1U3rTSxBZJ2WFO2Y5DvFfWfFVrBw3DBBCfGEVulm
-         iqm4SpFSvxNW7tU5H3Sy8XOts1RTyFIb0FyFuDcRAGhji7QYmIdpnLg+X3jDj4j0VVru
-         yZyLvHL0p2moZxtemIOVOt0ADl6sgXyiTRlBUED4GaZ4vwjmFF0WLZ1B8agTLjZG/IVl
-         9sTPkH6UZiT+SKXfxc4ScG2TQcwV98XpUim6BVZ6Z+cHVw7v1yCQxIv1vlOIOLlyg0FJ
-         COKjmw2yD5uPTCf++Z4BtV8QEkB9KQERSjkkKBV+m6ahxpTgQ9BVjlErfppLjQwHecX7
-         egSw==
-X-Gm-Message-State: AOAM5322u5a5HSPVSHCp9ZIFhzkWLeaRlveQbukzum21WJqGDvPKH5Lh
-        WHZjqHJAxYQAYV4k/nVb/C3FHi/XsV0RMEJb3oOI8mEs
-X-Google-Smtp-Source: ABdhPJwF4jzCA2HNcfoVoMH5OA+I2c1B/FTKEPwKXm/kk9hSKzIlrOHcr/KyO9RctifcmGP2lrA9C1VOBYolpjQNn3s=
-X-Received: by 2002:a25:7b81:: with SMTP id w123mr7138417ybc.260.1599669135410;
- Wed, 09 Sep 2020 09:32:15 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=mss8MK33fopB1tzfoyvJfAwWlaNQqq3EvgTqO4IgP3c=;
+        b=afMI3/+giLBi4ptufRz8+81o2ixEEyt2B/pdZka5KdQdWpFjyZeM05TpjOTnaHiNpT
+         T1zt4EYPd/j1ONBBC+Aeyo2TuRVcSktFocp2KSl21rD8xyRk4JWg21u7MoyPSb6a0BpL
+         WK1DrTFJ471DdVk8tEjSqZUB8cVX7WF9afLRdS/A6Te8veDqaTdzKJHG5SQJ70dOtREL
+         Zn8ETvhV8JIT2ghAlZwGnowF6tFANAiC4M7awdye+Syyl7Y4Y1m4bEhSa9BbKEWG+sRK
+         ylcP5gFBIEZCM8ZWV8t8SwO64ASke2YZetr10tyeZJ1S7ejSmjnXMqrSoqKCXTBaZrj6
+         6wEg==
+X-Gm-Message-State: AOAM530H6qHm9mvzI4csq3B+wpmpzUxHfnM46Avbm+9tFqYDxfc5uK7+
+        AvaXmjtDtb97x2HMwSsrDZRwTA==
+X-Google-Smtp-Source: ABdhPJy936mVi8yqv0y8gzDPgayRCZbOz8Jseznw5XOFbh036kBtUjZVLc1WXoRryvgzUTHHNIQ7ew==
+X-Received: by 2002:a1c:9d4b:: with SMTP id g72mr4454776wme.68.1599669250162;
+        Wed, 09 Sep 2020 09:34:10 -0700 (PDT)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id j14sm4855630wrr.66.2020.09.09.09.34.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2020 09:34:09 -0700 (PDT)
+Date:   Wed, 9 Sep 2020 18:34:08 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Wang Qing <wangqing@vivo.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net/netfilter: fix a typo for nf_conntrack_proto_dccp.c
+Message-ID: <20200909163407.GB28336@netronome.com>
+References: <1599653567-27147-1-git-send-email-wangqing@vivo.com>
 MIME-Version: 1.0
-References: <20200909063943.1653670-1-yhs@fb.com>
-In-Reply-To: <20200909063943.1653670-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 9 Sep 2020 09:32:04 -0700
-Message-ID: <CAEf4BzYRG=q_0BZwc+K89+OF9M4w7h2SoS3Qb_A6BiUNGPg4hg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] selftests/bpf: fix test_sysctl_loop{1,2}
- failure due to clang change
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1599653567-27147-1-git-send-email-wangqing@vivo.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 11:40 PM Yonghong Song <yhs@fb.com> wrote:
->
-> Andrii reported that with latest clang, when building selftests, we have
-> error likes:
->   error: progs/test_sysctl_loop1.c:23:16: in function sysctl_tcp_mem i32 (%struct.bpf_sysctl*):
->   Looks like the BPF stack limit of 512 bytes is exceeded.
->   Please move large on stack variables into BPF per-cpu array map.
->
-> The error is triggered by the following LLVM patch:
->   https://reviews.llvm.org/D87134
->
-> For example, the following code is from test_sysctl_loop1.c:
->   static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
->   {
->     volatile char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string";
->     ...
->   }
-> Without the above LLVM patch, the compiler did optimization to load the string
-> (59 bytes long) with 7 64bit loads, 1 8bit load and 1 16bit load,
-> occupying 64 byte stack size.
->
-> With the above LLVM patch, the compiler only uses 8bit loads, but subregister is 32bit.
-> So stack requirements become 4 * 59 = 236 bytes. Together with other stuff on
-> the stack, total stack size exceeds 512 bytes, hence compiler complains and quits.
->
-> To fix the issue, removing "volatile" key word or changing "volatile" to
-> "const"/"static const" does not work, the string is put in .rodata.str1.1 section,
-> which libbpf did not process it and errors out with
->   libbpf: elf: skipping unrecognized data section(6) .rodata.str1.1
->   libbpf: prog 'sysctl_tcp_mem': bad map relo against '.L__const.is_tcp_mem.tcp_mem_name'
->           in section '.rodata.str1.1'
->
-> Defining the string const as global variable can fix the issue as it puts the string constant
-> in '.rodata' section which is recognized by libbpf. In the future, when libbpf can process
-> '.rodata.str*.*' properly, the global definition can be changed back to local definition.
->
-> Defining tcp_mem_name as a global, however, triggered a verifier failure.
->    ./test_progs -n 7/21
->   libbpf: load bpf program failed: Permission denied
->   libbpf: -- BEGIN DUMP LOG ---
->   libbpf:
->   invalid stack off=0 size=1
->   verification time 6975 usec
->   stack depth 160+64
->   processed 889 insns (limit 1000000) max_states_per_insn 4 total_states
->   14 peak_states 14 mark_read 10
->
->   libbpf: -- END LOG --
->   libbpf: failed to load program 'sysctl_tcp_mem'
->   libbpf: failed to load object 'test_sysctl_loop2.o'
->   test_bpf_verif_scale:FAIL:114
->   #7/21 test_sysctl_loop2.o:FAIL
-> This actually exposed a bpf program bug. In test_sysctl_loop{1,2}, we have code
-> like
->   const char tcp_mem_name[] = "<...long string...>";
->   ...
->   char name[64];
->   ...
->   for (i = 0; i < sizeof(tcp_mem_name); ++i)
->       if (name[i] != tcp_mem_name[i])
->           return 0;
-> In the above code, if sizeof(tcp_mem_name) > 64, name[i] access may be
-> out of bound. The sizeof(tcp_mem_name) is 59 for test_sysctl_loop1.c and
-> 79 for test_sysctl_loop2.c.
->
-> Without promotion-to-global change, old compiler generates code where
-> the overflowed stack access is actually filled with valid value, so hiding
-> the bpf program bug. With promotion-to-global change, the code is different,
-> more specifically, the previous loading constants to stack is gone, and
-> "name" occupies stack[-64:0] and overflow access triggers a verifier error.
-> To fix the issue, adjust "name" buffer size properly.
->
-> Reported-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Yonghong Song <yhs@fb.com>
+Hi Wang,
+
+On Wed, Sep 09, 2020 at 08:12:44PM +0800, Wang Qing wrote:
+> Change the comment typo: "direcly" -> "directly".
+> 
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
+
+git log  tells me that the correct prefix for this patch
+is "netfilter: conntrack:"  rather than "net/netfilter:"
+
+Probably this patch is targeted at nf-next and should include nf-next
+in the subject like this: [PATCH nf-next] ...
+
 > ---
->  tools/testing/selftests/bpf/progs/test_sysctl_loop1.c | 2 +-
->  tools/testing/selftests/bpf/progs/test_sysctl_loop2.c | 5 +++--
->  2 files changed, 4 insertions(+), 3 deletions(-)
->
-> Changelog:
->   v1 -> v2:
->     . The tcp_mem_name change actually triggers a verifier failure due to
->       a bpf program bug. Fixing the bpf program bug can make test pass
->       with both old and latest llvm. (Alexei)
->
-> diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c b/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-> index 458b0d69133e..4b600b1f522f 100644
-> --- a/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-> +++ b/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-> @@ -18,9 +18,9 @@
->  #define MAX_ULONG_STR_LEN 7
->  #define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
->
-> +const char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string";
->  static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
->  {
-> -       volatile char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string";
->         unsigned char i;
->         char name[64];
->         int ret;
-> diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c b/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-> index b2e6f9b0894d..d01056142520 100644
-> --- a/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-> +++ b/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-> @@ -18,11 +18,12 @@
->  #define MAX_ULONG_STR_LEN 7
->  #define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
->
-> +const char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string_to_stress_byte_loop";
->  static __attribute__((noinline)) int is_tcp_mem(struct bpf_sysctl *ctx)
->  {
-> -       volatile char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string_to_stress_byte_loop";
->         unsigned char i;
-> -       char name[64];
-> +       /* the above tcp_mem_name length is 79, make name buffer length 80 */
-> +       char name[80];
-
-
-Wow, did you really count? Why not use sizeof(tcp_mem_name) and drop
-the comment entirely?
-
->         int ret;
->
->         memset(name, 0, sizeof(name));
-> --
-> 2.24.1
->
+>  net/netfilter/nf_conntrack_proto_dccp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/netfilter/nf_conntrack_proto_dccp.c b/net/netfilter/nf_conntrack_proto_dccp.c
+> index b3f4a33..d9bb0ce
+> --- a/net/netfilter/nf_conntrack_proto_dccp.c
+> +++ b/net/netfilter/nf_conntrack_proto_dccp.c
+> @@ -340,7 +340,7 @@ dccp_state_table[CT_DCCP_ROLE_MAX + 1][DCCP_PKT_SYNCACK + 1][CT_DCCP_MAX + 1] =
+>  		 * sNO -> sIV		No connection
+>  		 * sRQ -> sIV		No connection
+>  		 * sRS -> sIV		No connection
+> -		 * sPO -> sOP -> sCG	Move direcly to CLOSING
+> +		 * sPO -> sOP -> sCG	Move directly to CLOSING
+>  		 * sOP -> sCG		Move to CLOSING
+>  		 * sCR -> sIV		Close after CloseReq is invalid
+>  		 * sCG -> sCG		Retransmit
+> -- 
+> 2.7.4
+> 
