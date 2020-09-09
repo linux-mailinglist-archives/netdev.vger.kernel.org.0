@@ -2,103 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AC70263477
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:20:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1661726347D
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:21:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730783AbgIIRUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 13:20:55 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:50388 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730412AbgIIRUo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 13:20:44 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id DA026C71AC4136B1ABFA;
-        Wed,  9 Sep 2020 21:23:51 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Wed, 9 Sep 2020
- 21:23:49 +0800
-From:   Wang Hai <wanghai38@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
-        <bprakash@marvell.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net: cavium: Fix a bunch of kerneldoc parameter issues
-Date:   Wed, 9 Sep 2020 21:21:09 +0800
-Message-ID: <20200909132109.71466-1-wanghai38@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        id S1730157AbgIIRVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 13:21:22 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:16841 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729941AbgIIRU5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 13:20:57 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f58d8380000>; Wed, 09 Sep 2020 06:27:20 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Wed, 09 Sep 2020 06:27:33 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Wed, 09 Sep 2020 06:27:33 -0700
+Received: from [10.26.75.108] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 9 Sep
+ 2020 13:27:22 +0000
+Subject: Re: [PATCH net-next RFC v3 01/14] devlink: Add reload action option
+ to devlink reload command
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1598801254-27764-1-git-send-email-moshe@mellanox.com>
+ <1598801254-27764-2-git-send-email-moshe@mellanox.com>
+ <20200831121501.GD3794@nanopsycho.orion>
+ <9fffbe80-9a2a-33de-2e11-24be34648686@nvidia.com>
+ <20200902094627.GB2568@nanopsycho>
+ <20200902083025.43407d8f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200903055729.GB2997@nanopsycho.orion>
+ <20200903124719.75325f0c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200904090450.GH2997@nanopsycho.orion>
+ <20200904125647.799e66e4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <6bd0fa45-68ce-b82d-98e6-327c6cd50e80@nvidia.com>
+ <20200907105850.34726158@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Moshe Shemesh <moshe@nvidia.com>
+Message-ID: <b0550422-83a4-4e97-46e3-cb5f431a6dd7@nvidia.com>
+Date:   Wed, 9 Sep 2020 16:27:19 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.113.133]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20200907105850.34726158@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1599658040; bh=OugWLf77e29jNSxlOkOYuMZsn3NrrTySpTzRlJPN99o=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:Content-Type:
+         Content-Transfer-Encoding:Content-Language:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=In0ND108KpeaY4kZvrXL9+qbX7Xa4WCVVY7wgfX8/otBJAqS8tl4ve4QGRObf8RFZ
+         ukKMmV/lPK/IXOCIXhjSeteSqQbxCcGe1VqL85VYSk/S2QH8ZhItgSlJqGVe15njsP
+         1L3Fw3WAEzwp90m8e7PT/BPZvh83XJ89Y3qYrz7gsv4fwRrq7KY1seanNXl2ERj5Zb
+         phQHThh7qdi3X4pv2bQYgAKJUFq9kfsU66Bkl8TCHsbqqygfzmsXPiXqjvRWX1+B+8
+         tv2WcyT3m4yNmXDRzFOQDvDFNfIEALmbFCO81EOBTcgi1fqgWmBD5sgXPiiF8C7mZi
+         93F2QjlTxYxWg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename ptp to ptp_info.
 
-Fix W=1 compile warnings (invalid kerneldoc):
+On 9/7/2020 8:58 PM, Jakub Kicinski wrote:
+> On Mon, 7 Sep 2020 16:46:01 +0300 Moshe Shemesh wrote:
+>>> In that sense I don't like --live because it doesn't really say much.
+>>> AFAIU it means 1) no link flap; 2) < 2 sec datapath downtime; 3) no
+>>> configuration is lost in kernel or device (including netdev config,
+>>> link config, flow rules, counters etc.). I was hoping at least the
+>>> documentation in patch 14 would be more precise.
+>> Actually, while writing "no-reset" or "live-patching" I meant also no
+>> downtime at all and nothing resets (config, rules ... anything), that
+>> fits mlx5 live-patching.
+>>
+>> However, to make it more generic,  I can allow few seconds downtime and
+>> add similar constrains as you mentioned here to "no-reset". I will add
+>> that to the documentation patch.
+> Oh! If your device supports no downtime and packet loss at all that's
+> great. You don't have to weaken the definition now, whoever needs a
+> weaker definition can add a different constraint level later, no?
 
-drivers/net/ethernet/cavium/common/cavium_ptp.c:94: warning: Excess function parameter 'ptp' description in 'cavium_ptp_adjfine'
-drivers/net/ethernet/cavium/common/cavium_ptp.c:141: warning: Excess function parameter 'ptp' description in 'cavium_ptp_adjtime'
-drivers/net/ethernet/cavium/common/cavium_ptp.c:163: warning: Excess function parameter 'ptp' description in 'cavium_ptp_gettime'
-drivers/net/ethernet/cavium/common/cavium_ptp.c:185: warning: Excess function parameter 'ptp' description in 'cavium_ptp_settime'
-drivers/net/ethernet/cavium/common/cavium_ptp.c:208: warning: Excess function parameter 'ptp' description in 'cavium_ptp_enable'
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
----
- drivers/net/ethernet/cavium/common/cavium_ptp.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Yes, but if we are thinking there will be more levels, maybe the flag=20
+"--live" or "--no_reset" is less extendable, we may need new attr. I=20
+mean should I have uAPI command line like:
 
-diff --git a/drivers/net/ethernet/cavium/common/cavium_ptp.c b/drivers/net/ethernet/cavium/common/cavium_ptp.c
-index 81ff9ac73f9a..9fd717b9cf69 100644
---- a/drivers/net/ethernet/cavium/common/cavium_ptp.c
-+++ b/drivers/net/ethernet/cavium/common/cavium_ptp.c
-@@ -86,7 +86,7 @@ EXPORT_SYMBOL(cavium_ptp_put);
- 
- /**
-  * cavium_ptp_adjfine() - Adjust ptp frequency
-- * @ptp: PTP clock info
-+ * @ptp_info: PTP clock info
-  * @scaled_ppm: how much to adjust by, in parts per million, but with a
-  *              16 bit binary fractional field
-  */
-@@ -134,7 +134,7 @@ static int cavium_ptp_adjfine(struct ptp_clock_info *ptp_info, long scaled_ppm)
- 
- /**
-  * cavium_ptp_adjtime() - Adjust ptp time
-- * @ptp:   PTP clock info
-+ * @ptp_info:   PTP clock info
-  * @delta: how much to adjust by, in nanosecs
-  */
- static int cavium_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
-@@ -155,7 +155,7 @@ static int cavium_ptp_adjtime(struct ptp_clock_info *ptp_info, s64 delta)
- 
- /**
-  * cavium_ptp_gettime() - Get hardware clock time with adjustment
-- * @ptp: PTP clock info
-+ * @ptp_info: PTP clock info
-  * @ts:  timespec
-  */
- static int cavium_ptp_gettime(struct ptp_clock_info *ptp_info,
-@@ -177,7 +177,7 @@ static int cavium_ptp_gettime(struct ptp_clock_info *ptp_info,
- 
- /**
-  * cavium_ptp_settime() - Set hardware clock time. Reset adjustment
-- * @ptp: PTP clock info
-+ * @ptp_info: PTP clock info
-  * @ts:  timespec
-  */
- static int cavium_ptp_settime(struct ptp_clock_info *ptp_info,
-@@ -199,7 +199,7 @@ static int cavium_ptp_settime(struct ptp_clock_info *ptp_info,
- 
- /**
-  * cavium_ptp_enable() - Request to enable or disable an ancillary feature.
-- * @ptp: PTP clock info
-+ * @ptp_info: PTP clock info
-  * @rq:  request
-  * @on:  is it on
-  */
--- 
-2.17.1
+$ devlink dev reload DEV [ netns { PID | NAME | ID } ] [ action {=20
+driver_reinit | fw_activate } [ limit_level=C2=A0 no_reset ] ]
+
 
