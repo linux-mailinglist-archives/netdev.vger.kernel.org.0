@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5634262752
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 08:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02FF0262751
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 08:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726642AbgIIGqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 02:46:48 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:58832 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726414AbgIIGqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 02:46:46 -0400
+        id S1726534AbgIIGqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 02:46:46 -0400
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:50877 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725826AbgIIGqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 02:46:45 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1599634005; x=1631170005;
+  t=1599634001; x=1631170001;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=YUkjWSJHuZQ4gc8zv4WJVmsD1uSTYM3vwJlpIJpg+fk=;
-  b=U6Agmr4RtouPMm/269xwwATOl2AHgTTvBr7hFmbJj5PpHP5f9qDND4tv
-   zrwoDRgLwjxOIaG4uUtpW7zELSO775dbOIJ7PeQO6WX1N7+WBs2AVlDPw
-   CYXeg82r8G+FqX0y3nIhb95m5AtpLBEK90gG+50KR8MyO3w8Emk29qADy
-   k=;
+  bh=50eDR9FL5juD7hBgsulVouqLNS611vlu0lO1OnyM2/E=;
+  b=HNIPje6iRRXPDqvnkGOhhKhB6g+IBKA7v6QBf1S8nUAir4S9PitA1mSW
+   U8vF3SrimfodYbf2gh4/zeH7P2qj2fpqVcPSt4df8hzl8tfABWckxdIlI
+   PlvCANevKF1o0kbku19qkZ3Z5KSZ2cVJkmbpc8Pqm9FVh0q0UshU3Auft
+   8=;
 X-IronPort-AV: E=Sophos;i="5.76,408,1592870400"; 
-   d="scan'208";a="73478572"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-859fe132.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 09 Sep 2020 06:46:31 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2b-859fe132.us-west-2.amazon.com (Postfix) with ESMTPS id AF74822304A;
-        Wed,  9 Sep 2020 06:46:30 +0000 (UTC)
-Received: from EX13D08UEB004.ant.amazon.com (10.43.60.142) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+   d="scan'208";a="52686994"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-1a-715bee71.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 09 Sep 2020 06:46:40 +0000
+Received: from EX13MTAUEE001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1a-715bee71.us-east-1.amazon.com (Postfix) with ESMTPS id DA732A2A23;
+        Wed,  9 Sep 2020 06:46:39 +0000 (UTC)
+Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
+ EX13MTAUEE001.ant.amazon.com (10.43.62.226) with Microsoft SMTP Server (TLS)
  id 15.0.1497.2; Wed, 9 Sep 2020 06:46:29 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB004.ant.amazon.com (10.43.60.142) with Microsoft SMTP Server (TLS)
+Received: from EX13MTAUEA001.ant.amazon.com (10.43.61.82) by
+ EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
  id 15.0.1497.2; Wed, 9 Sep 2020 06:46:29 +0000
 Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP Server id
+ by mail-relay.amazon.com (10.43.61.243) with Microsoft SMTP Server id
  15.0.1497.2 via Frontend Transport; Wed, 9 Sep 2020 06:46:29 +0000
 Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id 518C681C71; Wed,  9 Sep 2020 06:46:28 +0000 (UTC)
+        id 50B7581C76; Wed,  9 Sep 2020 06:46:28 +0000 (UTC)
 From:   <sameehj@amazon.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
@@ -46,9 +46,9 @@ CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
         <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
         <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
         <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V3 net-next 1/4] net: ena: ethtool: convert stat_offset to 64 bit resolution
-Date:   Wed, 9 Sep 2020 06:46:24 +0000
-Message-ID: <20200909064627.30104-2-sameehj@amazon.com>
+Subject: [PATCH V3 net-next 2/4] net: ena: ethtool: Add new device statistics
+Date:   Wed, 9 Sep 2020 06:46:25 +0000
+Message-ID: <20200909064627.30104-3-sameehj@amazon.com>
 X-Mailer: git-send-email 2.16.6
 In-Reply-To: <20200909064627.30104-1-sameehj@amazon.com>
 References: <20200909064627.30104-1-sameehj@amazon.com>
@@ -61,77 +61,406 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sameeh Jubran <sameehj@amazon.com>
 
-The type of all stat fields is u64, therefore when iterating over stat
-fields in a stats struct, it makes sense to use an offset in 64 bit
-resolution. Doing so allows us to drop some of the casting that is
-currently used when referencing stats.
+The new metrics provide granular visibility along multiple network
+dimensions and enable troubleshooting and remediation of issues caused
+by instances exceeding network performance allowances.
 
+The new statistics can be queried using ethtool command.
+
+Signed-off-by: Guy Tzalik <gtzalik@amazon.com>
 Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_ethtool.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_admin_defs.h |  37 +++++++-
+ drivers/net/ethernet/amazon/ena/ena_com.c        |  19 +++-
+ drivers/net/ethernet/amazon/ena/ena_com.h        |   9 ++
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c    | 106 ++++++++++++++++++-----
+ drivers/net/ethernet/amazon/ena/ena_netdev.c     |  18 ++++
+ drivers/net/ethernet/amazon/ena/ena_netdev.h     |   4 +
+ 6 files changed, 170 insertions(+), 23 deletions(-)
 
+diff --git a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
+index b818a169c..86869baa7 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
++++ b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
+@@ -117,6 +117,8 @@ enum ena_admin_completion_policy_type {
+ enum ena_admin_get_stats_type {
+ 	ENA_ADMIN_GET_STATS_TYPE_BASIC              = 0,
+ 	ENA_ADMIN_GET_STATS_TYPE_EXTENDED           = 1,
++	/* extra HW stats for specific network interface */
++	ENA_ADMIN_GET_STATS_TYPE_ENI                = 2,
+ };
+ 
+ enum ena_admin_get_stats_scope {
+@@ -410,10 +412,43 @@ struct ena_admin_basic_stats {
+ 	u32 tx_drops_high;
+ };
+ 
++/* ENI Statistics Command. */
++struct ena_admin_eni_stats {
++	/* The number of packets shaped due to inbound aggregate BW
++	 * allowance being exceeded
++	 */
++	u64 bw_in_allowance_exceeded;
++
++	/* The number of packets shaped due to outbound aggregate BW
++	 * allowance being exceeded
++	 */
++	u64 bw_out_allowance_exceeded;
++
++	/* The number of packets shaped due to PPS allowance being exceeded */
++	u64 pps_allowance_exceeded;
++
++	/* The number of packets shaped due to connection tracking
++	 * allowance being exceeded and leading to failure in establishment
++	 * of new connections
++	 */
++	u64 conntrack_allowance_exceeded;
++
++	/* The number of packets shaped due to linklocal packet rate
++	 * allowance being exceeded
++	 */
++	u64 linklocal_allowance_exceeded;
++};
++
+ struct ena_admin_acq_get_stats_resp {
+ 	struct ena_admin_acq_common_desc acq_common_desc;
+ 
+-	struct ena_admin_basic_stats basic_stats;
++	union {
++		u64 raw[7];
++
++		struct ena_admin_basic_stats basic_stats;
++
++		struct ena_admin_eni_stats eni_stats;
++	} u;
+ };
+ 
+ struct ena_admin_get_set_feature_common_desc {
+diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
+index 435bf05a8..452e66b39 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_com.c
++++ b/drivers/net/ethernet/amazon/ena/ena_com.c
+@@ -2167,6 +2167,21 @@ static int ena_get_dev_stats(struct ena_com_dev *ena_dev,
+ 	return ret;
+ }
+ 
++int ena_com_get_eni_stats(struct ena_com_dev *ena_dev,
++			  struct ena_admin_eni_stats *stats)
++{
++	struct ena_com_stats_ctx ctx;
++	int ret;
++
++	memset(&ctx, 0x0, sizeof(ctx));
++	ret = ena_get_dev_stats(ena_dev, &ctx, ENA_ADMIN_GET_STATS_TYPE_ENI);
++	if (likely(ret == 0))
++		memcpy(stats, &ctx.get_resp.u.eni_stats,
++		       sizeof(ctx.get_resp.u.eni_stats));
++
++	return ret;
++}
++
+ int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
+ 				struct ena_admin_basic_stats *stats)
+ {
+@@ -2176,8 +2191,8 @@ int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
+ 	memset(&ctx, 0x0, sizeof(ctx));
+ 	ret = ena_get_dev_stats(ena_dev, &ctx, ENA_ADMIN_GET_STATS_TYPE_BASIC);
+ 	if (likely(ret == 0))
+-		memcpy(stats, &ctx.get_resp.basic_stats,
+-		       sizeof(ctx.get_resp.basic_stats));
++		memcpy(stats, &ctx.get_resp.u.basic_stats,
++		       sizeof(ctx.get_resp.u.basic_stats));
+ 
+ 	return ret;
+ }
+diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
+index 4287d47b2..e4aafeda0 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_com.h
++++ b/drivers/net/ethernet/amazon/ena/ena_com.h
+@@ -616,6 +616,15 @@ int ena_com_get_dev_attr_feat(struct ena_com_dev *ena_dev,
+ int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
+ 				struct ena_admin_basic_stats *stats);
+ 
++/* ena_com_get_eni_stats - Get extended network interface statistics
++ * @ena_dev: ENA communication layer struct
++ * @stats: stats return value
++ *
++ * @return: 0 on Success and negative value otherwise.
++ */
++int ena_com_get_eni_stats(struct ena_com_dev *ena_dev,
++			  struct ena_admin_eni_stats *stats);
++
+ /* ena_com_set_dev_mtu - Configure the device mtu.
+  * @ena_dev: ENA communication layer struct
+  * @mtu: mtu value
 diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index 430275bc0..291d169dd 100644
+index 291d169dd..07e9f3df0 100644
 --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
 +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -41,12 +41,12 @@ struct ena_stats {
- 
- #define ENA_STAT_ENA_COM_ENTRY(stat) { \
- 	.name = #stat, \
--	.stat_offset = offsetof(struct ena_com_stats_admin, stat) \
-+	.stat_offset = offsetof(struct ena_com_stats_admin, stat) / sizeof(u64) \
+@@ -49,6 +49,11 @@ struct ena_stats {
+ 	.stat_offset = offsetof(struct ena_stats_##stat_type, stat) / sizeof(u64) \
  }
  
- #define ENA_STAT_ENTRY(stat, stat_type) { \
- 	.name = #stat, \
--	.stat_offset = offsetof(struct ena_stats_##stat_type, stat) \
-+	.stat_offset = offsetof(struct ena_stats_##stat_type, stat) / sizeof(u64) \
- }
- 
++#define ENA_STAT_HW_ENTRY(stat, stat_type) { \
++	.name = #stat, \
++	.stat_offset = offsetof(struct ena_admin_##stat_type, stat) / sizeof(u64) \
++}
++
  #define ENA_STAT_RX_ENTRY(stat) \
-@@ -141,8 +141,7 @@ static void ena_queue_stats(struct ena_adapter *adapter, u64 **data)
- 		for (j = 0; j < ENA_STATS_ARRAY_TX; j++) {
- 			ena_stats = &ena_stats_tx_strings[j];
+ 	ENA_STAT_ENTRY(stat, rx)
  
--			ptr = (u64 *)((uintptr_t)&ring->tx_stats +
--				(uintptr_t)ena_stats->stat_offset);
-+			ptr = (u64 *)&ring->tx_stats + ena_stats->stat_offset;
+@@ -58,6 +63,9 @@ struct ena_stats {
+ #define ENA_STAT_GLOBAL_ENTRY(stat) \
+ 	ENA_STAT_ENTRY(stat, dev)
  
- 			ena_safe_update_stat(ptr, (*data)++, &ring->syncp);
- 		}
-@@ -153,8 +152,8 @@ static void ena_queue_stats(struct ena_adapter *adapter, u64 **data)
- 		for (j = 0; j < ENA_STATS_ARRAY_RX; j++) {
- 			ena_stats = &ena_stats_rx_strings[j];
++#define ENA_STAT_ENI_ENTRY(stat) \
++	ENA_STAT_HW_ENTRY(stat, eni_stats)
++
+ static const struct ena_stats ena_stats_global_strings[] = {
+ 	ENA_STAT_GLOBAL_ENTRY(tx_timeout),
+ 	ENA_STAT_GLOBAL_ENTRY(suspend),
+@@ -68,6 +76,14 @@ static const struct ena_stats ena_stats_global_strings[] = {
+ 	ENA_STAT_GLOBAL_ENTRY(admin_q_pause),
+ };
  
--			ptr = (u64 *)((uintptr_t)&ring->rx_stats +
--				(uintptr_t)ena_stats->stat_offset);
-+			ptr = (u64 *)&ring->rx_stats +
-+				ena_stats->stat_offset;
++static const struct ena_stats ena_stats_eni_strings[] = {
++	ENA_STAT_ENI_ENTRY(bw_in_allowance_exceeded),
++	ENA_STAT_ENI_ENTRY(bw_out_allowance_exceeded),
++	ENA_STAT_ENI_ENTRY(pps_allowance_exceeded),
++	ENA_STAT_ENI_ENTRY(conntrack_allowance_exceeded),
++	ENA_STAT_ENI_ENTRY(linklocal_allowance_exceeded),
++};
++
+ static const struct ena_stats ena_stats_tx_strings[] = {
+ 	ENA_STAT_TX_ENTRY(cnt),
+ 	ENA_STAT_TX_ENTRY(bytes),
+@@ -110,10 +126,12 @@ static const struct ena_stats ena_stats_ena_com_strings[] = {
+ 	ENA_STAT_ENA_COM_ENTRY(no_completion),
+ };
  
- 			ena_safe_update_stat(ptr, (*data)++, &ring->syncp);
- 		}
-@@ -170,8 +169,8 @@ static void ena_dev_admin_queue_stats(struct ena_adapter *adapter, u64 **data)
- 	for (i = 0; i < ENA_STATS_ARRAY_ENA_COM; i++) {
- 		ena_stats = &ena_stats_ena_com_strings[i];
+-#define ENA_STATS_ARRAY_GLOBAL	ARRAY_SIZE(ena_stats_global_strings)
+-#define ENA_STATS_ARRAY_TX	ARRAY_SIZE(ena_stats_tx_strings)
+-#define ENA_STATS_ARRAY_RX	ARRAY_SIZE(ena_stats_rx_strings)
+-#define ENA_STATS_ARRAY_ENA_COM	ARRAY_SIZE(ena_stats_ena_com_strings)
++#define ENA_STATS_ARRAY_GLOBAL		ARRAY_SIZE(ena_stats_global_strings)
++#define ENA_STATS_ARRAY_TX		ARRAY_SIZE(ena_stats_tx_strings)
++#define ENA_STATS_ARRAY_RX		ARRAY_SIZE(ena_stats_rx_strings)
++#define ENA_STATS_ARRAY_ENA_COM		ARRAY_SIZE(ena_stats_ena_com_strings)
++#define ENA_STATS_ARRAY_ENI(adapter)	\
++	(ARRAY_SIZE(ena_stats_eni_strings) * (adapter)->eni_stats_supported)
  
--		ptr = (u64 *)((uintptr_t)&adapter->ena_dev->admin_queue.stats +
--			(uintptr_t)ena_stats->stat_offset);
-+		ptr = (u64 *)&adapter->ena_dev->admin_queue.stats +
-+			ena_stats->stat_offset;
- 
- 		*(*data)++ = *ptr;
+ static void ena_safe_update_stat(u64 *src, u64 *dst,
+ 				 struct u64_stats_sync *syncp)
+@@ -176,11 +194,10 @@ static void ena_dev_admin_queue_stats(struct ena_adapter *adapter, u64 **data)
  	}
-@@ -189,8 +188,7 @@ static void ena_get_ethtool_stats(struct net_device *netdev,
- 	for (i = 0; i < ENA_STATS_ARRAY_GLOBAL; i++) {
- 		ena_stats = &ena_stats_global_strings[i];
+ }
  
--		ptr = (u64 *)((uintptr_t)&adapter->dev_stats +
--			(uintptr_t)ena_stats->stat_offset);
-+		ptr = (u64 *)&adapter->dev_stats + ena_stats->stat_offset;
- 
+-static void ena_get_ethtool_stats(struct net_device *netdev,
+-				  struct ethtool_stats *stats,
+-				  u64 *data)
++static void ena_get_stats(struct ena_adapter *adapter,
++			  u64 *data,
++			  bool eni_stats_needed)
+ {
+-	struct ena_adapter *adapter = netdev_priv(netdev);
+ 	const struct ena_stats *ena_stats;
+ 	u64 *ptr;
+ 	int i;
+@@ -193,10 +210,42 @@ static void ena_get_ethtool_stats(struct net_device *netdev,
  		ena_safe_update_stat(ptr, data++, &adapter->syncp);
  	}
+ 
++	if (eni_stats_needed) {
++		ena_update_hw_stats(adapter);
++		for (i = 0; i < ENA_STATS_ARRAY_ENI(adapter); i++) {
++			ena_stats = &ena_stats_eni_strings[i];
++
++			ptr = (u64 *)&adapter->eni_stats +
++				ena_stats->stat_offset;
++
++			ena_safe_update_stat(ptr, data++, &adapter->syncp);
++		}
++	}
++
+ 	ena_queue_stats(adapter, &data);
+ 	ena_dev_admin_queue_stats(adapter, &data);
+ }
+ 
++static void ena_get_ethtool_stats(struct net_device *netdev,
++				  struct ethtool_stats *stats,
++				  u64 *data)
++{
++	struct ena_adapter *adapter = netdev_priv(netdev);
++
++	ena_get_stats(adapter, data, adapter->eni_stats_supported);
++}
++
++static int ena_get_sw_stats_count(struct ena_adapter *adapter)
++{
++	return adapter->num_io_queues * (ENA_STATS_ARRAY_TX + ENA_STATS_ARRAY_RX)
++		+ ENA_STATS_ARRAY_GLOBAL + ENA_STATS_ARRAY_ENA_COM;
++}
++
++static int ena_get_hw_stats_count(struct ena_adapter *adapter)
++{
++	return ENA_STATS_ARRAY_ENI(adapter);
++}
++
+ int ena_get_sset_count(struct net_device *netdev, int sset)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+@@ -204,8 +253,7 @@ int ena_get_sset_count(struct net_device *netdev, int sset)
+ 	if (sset != ETH_SS_STATS)
+ 		return -EOPNOTSUPP;
+ 
+-	return adapter->num_io_queues * (ENA_STATS_ARRAY_TX + ENA_STATS_ARRAY_RX)
+-		+ ENA_STATS_ARRAY_GLOBAL + ENA_STATS_ARRAY_ENA_COM;
++	return ena_get_sw_stats_count(adapter) + ena_get_hw_stats_count(adapter);
+ }
+ 
+ static void ena_queue_strings(struct ena_adapter *adapter, u8 **data)
+@@ -247,25 +295,43 @@ static void ena_com_dev_strings(u8 **data)
+ 	}
+ }
+ 
+-static void ena_get_strings(struct net_device *netdev, u32 sset, u8 *data)
++static void ena_get_strings(struct ena_adapter *adapter,
++			    u8 *data,
++			    bool eni_stats_needed)
+ {
+-	struct ena_adapter *adapter = netdev_priv(netdev);
+ 	const struct ena_stats *ena_stats;
+ 	int i;
+ 
+-	if (sset != ETH_SS_STATS)
+-		return;
+-
+ 	for (i = 0; i < ENA_STATS_ARRAY_GLOBAL; i++) {
+ 		ena_stats = &ena_stats_global_strings[i];
+ 		memcpy(data, ena_stats->name, ETH_GSTRING_LEN);
+ 		data += ETH_GSTRING_LEN;
+ 	}
+ 
++	if (eni_stats_needed) {
++		for (i = 0; i < ENA_STATS_ARRAY_ENI(adapter); i++) {
++			ena_stats = &ena_stats_eni_strings[i];
++			memcpy(data, ena_stats->name, ETH_GSTRING_LEN);
++			data += ETH_GSTRING_LEN;
++		}
++	}
++
+ 	ena_queue_strings(adapter, &data);
+ 	ena_com_dev_strings(&data);
+ }
+ 
++static void ena_get_ethtool_strings(struct net_device *netdev,
++				    u32 sset,
++				    u8 *data)
++{
++	struct ena_adapter *adapter = netdev_priv(netdev);
++
++	if (sset != ETH_SS_STATS)
++		return;
++
++	ena_get_strings(adapter, data, adapter->eni_stats_supported);
++}
++
+ static int ena_get_link_ksettings(struct net_device *netdev,
+ 				  struct ethtool_link_ksettings *link_ksettings)
+ {
+@@ -845,7 +911,7 @@ static const struct ethtool_ops ena_ethtool_ops = {
+ 	.get_ringparam		= ena_get_ringparam,
+ 	.set_ringparam		= ena_set_ringparam,
+ 	.get_sset_count         = ena_get_sset_count,
+-	.get_strings		= ena_get_strings,
++	.get_strings		= ena_get_ethtool_strings,
+ 	.get_ethtool_stats      = ena_get_ethtool_stats,
+ 	.get_rxnfc		= ena_get_rxnfc,
+ 	.set_rxnfc		= ena_set_rxnfc,
+@@ -873,7 +939,7 @@ static void ena_dump_stats_ex(struct ena_adapter *adapter, u8 *buf)
+ 	int strings_num;
+ 	int i, rc;
+ 
+-	strings_num = ena_get_sset_count(netdev, ETH_SS_STATS);
++	strings_num = ena_get_sw_stats_count(adapter);
+ 	if (strings_num <= 0) {
+ 		netif_err(adapter, drv, netdev, "Can't get stats num\n");
+ 		return;
+@@ -893,13 +959,13 @@ static void ena_dump_stats_ex(struct ena_adapter *adapter, u8 *buf)
+ 				GFP_ATOMIC);
+ 	if (!data_buf) {
+ 		netif_err(adapter, drv, netdev,
+-			  "failed to allocate data buf\n");
++			  "Failed to allocate data buf\n");
+ 		devm_kfree(&adapter->pdev->dev, strings_buf);
+ 		return;
+ 	}
+ 
+-	ena_get_strings(netdev, ETH_SS_STATS, strings_buf);
+-	ena_get_ethtool_stats(netdev, NULL, data_buf);
++	ena_get_strings(adapter, strings_buf, false);
++	ena_get_stats(adapter, data_buf, false);
+ 
+ 	/* If there is a buffer, dump stats, otherwise print them to dmesg */
+ 	if (buf)
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index a3a8edf9a..08474db75 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -3178,6 +3178,19 @@ err:
+ 	ena_com_delete_debug_area(adapter->ena_dev);
+ }
+ 
++int ena_update_hw_stats(struct ena_adapter *adapter)
++{
++	int rc = 0;
++
++	rc = ena_com_get_eni_stats(adapter->ena_dev, &adapter->eni_stats);
++	if (rc) {
++		dev_info_once(&adapter->pdev->dev, "Failed to get ENI stats\n");
++		return rc;
++	}
++
++	return 0;
++}
++
+ static void ena_get_stats64(struct net_device *netdev,
+ 			    struct rtnl_link_stats64 *stats)
+ {
+@@ -4296,6 +4309,11 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	ena_config_debug_area(adapter);
+ 
++	if (!ena_update_hw_stats(adapter))
++		adapter->eni_stats_supported = true;
++	else
++		adapter->eni_stats_supported = false;
++
+ 	memcpy(adapter->netdev->perm_addr, adapter->mac_addr, netdev->addr_len);
+ 
+ 	netif_carrier_off(netdev);
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+index 0c8504006..4c95a4d93 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
+@@ -405,6 +405,8 @@ struct ena_adapter {
+ 
+ 	struct u64_stats_sync syncp;
+ 	struct ena_stats_dev dev_stats;
++	struct ena_admin_eni_stats eni_stats;
++	bool eni_stats_supported;
+ 
+ 	/* last queue index that was checked for uncompleted tx packets */
+ 	u32 last_monitored_tx_qid;
+@@ -422,6 +424,8 @@ void ena_dump_stats_to_dmesg(struct ena_adapter *adapter);
+ 
+ void ena_dump_stats_to_buf(struct ena_adapter *adapter, u8 *buf);
+ 
++int ena_update_hw_stats(struct ena_adapter *adapter);
++
+ int ena_update_queue_sizes(struct ena_adapter *adapter,
+ 			   u32 new_tx_size,
+ 			   u32 new_rx_size);
 -- 
 2.16.6
 
