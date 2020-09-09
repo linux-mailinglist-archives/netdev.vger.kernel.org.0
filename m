@@ -2,103 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F8B9262A24
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:22:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6879A262A3D
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727782AbgIIIWt convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Sep 2020 04:22:49 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45575 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725975AbgIIIWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:22:47 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-580-fBFSYcAiPF-74OjipI43Wg-1; Wed, 09 Sep 2020 04:22:42 -0400
-X-MC-Unique: fBFSYcAiPF-74OjipI43Wg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F955801AE9;
-        Wed,  9 Sep 2020 08:22:41 +0000 (UTC)
-Received: from p50.redhat.com (ovpn-113-171.ams2.redhat.com [10.36.113.171])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 918E810013D0;
-        Wed,  9 Sep 2020 08:22:39 +0000 (UTC)
-From:   Stefan Assmann <sassmann@kpanic.de>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jeffrey.t.kirsher@intel.com, lihong.yang@intel.com,
-        sassmann@kpanic.de
-Subject: [PATCH] i40e: report correct VF link speed when link state is set to enable
-Date:   Wed,  9 Sep 2020 10:22:12 +0200
-Message-Id: <20200909082212.67583-1-sassmann@kpanic.de>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sassmann@kpanic.de
-X-Mimecast-Spam-Score: 0.002
-X-Mimecast-Originator: kpanic.de
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+        id S1728442AbgIII1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 04:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725897AbgIII1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:27:44 -0400
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D650EC061573
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:27:43 -0700 (PDT)
+Received: by mail-qt1-x84a.google.com with SMTP id g1so1264182qtc.22
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=yRE3fIcUYviNrW1rvrVhLf2lyWpk2aadxVQcBuiEOD8=;
+        b=MaR8GzbZ3LPxgQDYfuUiyvpx7rSr+8ngXZiZ95Ucd4i087Qe+LkicMGpg+RT/r89xJ
+         IoddHLZywkZkAq2rwp7SkxdrHZAPz8DluixBpvUdwlyF/w4iRS9oeKUnUx26OMAdVqBK
+         gzlpmUo9CkDbpHZcGiQSZ8Xc0pb2wY2ZJwrGEr4ASjfpzZcn2iWr6Zye7vEklnNegIEj
+         F3Q6qD2qmpZsXwHjyldHYknwRMzC5HZRjiofOtapvKiMibFeVVAaRL/bbf749MlHY/9p
+         8Msk5uYrB2CV1RfI5xpEin4vPyL8lgHgymCGvNdm0/2rhUqee8pDwLQEoyR/5hV5MjgL
+         /u3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=yRE3fIcUYviNrW1rvrVhLf2lyWpk2aadxVQcBuiEOD8=;
+        b=QMJl44UX/PbnLgvZRhJ8M0JgJ0ktL/ILRWRMdhD78mmrXtALnbztNcABcLZfvMyiap
+         htpzLolKKo32UeFCdcnTXLK6GerHkxYSDspeTMiOdJFEW+EBrUW1JxuyzHxx6COs1/sJ
+         UwWLCZstQ4fhqwZe/XO9tAS8k7L4FaP2JtWzh+3lht+L/ggzD4eJ7+oKfYFH5pESloiL
+         i+TUc6pC0ziYs/5b2r74EuuP4nizerHfnV8fXJVAkd6nlIZCvkqXZ7zxG4wRnOpla8o1
+         wRKQygyz4OOeJHrHXQVViIcw2aTMVDDnpJjkNddYkxyQesfOH+cjM/rj5ZhuIX+rAvnt
+         Myew==
+X-Gm-Message-State: AOAM5330giWEDi7ygillSEfRhDxbHMzWAMwAgM1Basow9qRdeZyBrAjn
+        b+Y0BpUMTUpG6PeWehYXH3jPQXqjnk4reg==
+X-Google-Smtp-Source: ABdhPJyC2278IQRVutMs3IhSDh2fUF2ZeEuJpxj6mvMNaIER7b4XLaf8Hwm9KisRji0WZgn5KK6AOixRVw9GZA==
+X-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
+ (user=edumazet job=sendgmr) by 2002:a0c:a9d6:: with SMTP id
+ c22mr3081297qvb.102.1599640063001; Wed, 09 Sep 2020 01:27:43 -0700 (PDT)
+Date:   Wed,  9 Sep 2020 01:27:38 -0700
+Message-Id: <20200909082740.204752-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
+Subject: [PATCH net 0/2] net: skb_put_padto() fixes
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the virtual link state was set to "enable" ethtool would report
-link speed as 40000Mb/s regardless of the underlying device.
-Report the correct link speed.
+sysbot reported a bug in qrtr leading to use-after-free.
 
-Example from a XXV710 NIC.
-Before:
-$ ip link set ens3f0 vf 0 state auto
-$  ethtool enp8s2 | grep Speed
-        Speed: 25000Mb/s
-$ ip link set ens3f0 vf 0 state enable
-$ ethtool enp8s2 | grep Speed
-        Speed: 40000Mb/s
-After:
-$ ip link set ens3f0 vf 0 state auto
-$  ethtool enp8s2 | grep Speed
-        Speed: 25000Mb/s
-$ ip link set ens3f0 vf 0 state enable
-$ ethtool enp8s2 | grep Speed
-        Speed: 25000Mb/s
+First patch fixes the issue.
 
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
----
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Second patch addes __must_check attribute to avoid similar
+issues in the future.
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 8e133d6545bd..9c4b166f3346 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -63,7 +63,7 @@ static void i40e_vc_notify_vf_link_state(struct i40e_vf *vf)
- 	} else if (vf->link_forced) {
- 		pfe.event_data.link_event.link_status = vf->link_up;
- 		pfe.event_data.link_event.link_speed =
--			(vf->link_up ? VIRTCHNL_LINK_SPEED_40GB : 0);
-+			(vf->link_up ? i40e_virtchnl_link_speed(ls->link_speed) : 0);
- 	} else {
- 		pfe.event_data.link_event.link_status =
- 			ls->link_info & I40E_AQ_LINK_UP;
-@@ -4404,6 +4404,7 @@ int i40e_ndo_set_vf_link_state(struct net_device *netdev, int vf_id, int link)
- {
- 	struct i40e_netdev_priv *np = netdev_priv(netdev);
- 	struct i40e_pf *pf = np->vsi->back;
-+	struct i40e_link_status *ls = &pf->hw.phy.link_info;
- 	struct virtchnl_pf_event pfe;
- 	struct i40e_hw *hw = &pf->hw;
- 	struct i40e_vf *vf;
-@@ -4441,7 +4442,7 @@ int i40e_ndo_set_vf_link_state(struct net_device *netdev, int vf_id, int link)
- 		vf->link_forced = true;
- 		vf->link_up = true;
- 		pfe.event_data.link_event.link_status = true;
--		pfe.event_data.link_event.link_speed = VIRTCHNL_LINK_SPEED_40GB;
-+		pfe.event_data.link_event.link_speed = i40e_virtchnl_link_speed(ls->link_speed);
- 		break;
- 	case IFLA_VF_LINK_STATE_DISABLE:
- 		vf->link_forced = true;
+Eric Dumazet (2):
+  net: qrtr: check skb_put_padto() return value
+  net: add __must_check to skb_put_padto()
+
+ include/linux/skbuff.h |  7 ++++---
+ net/qrtr/qrtr.c        | 21 +++++++++++----------
+ 2 files changed, 15 insertions(+), 13 deletions(-)
+
 -- 
-2.26.2
+2.28.0.526.ge36021eeef-goog
 
