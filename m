@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C100262ACA
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:46:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2398262AD1
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 10:47:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730099AbgIIIqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 04:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
+        id S1730150AbgIIIqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 04:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729941AbgIIIqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:46:17 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CED6C061573
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:46:17 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id jw11so1013913pjb.0
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:46:17 -0700 (PDT)
+        with ESMTP id S1729942AbgIIIqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 04:46:21 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C924BC061755
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 01:46:20 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id d9so1565523pfd.3
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 01:46:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PjXMlFVOJ4e0i4gIewgISVhKN2YrI3k+15FHe57lM0s=;
-        b=uiOtvkqprfGlYAuzteiXSEMW0rCFQqdHQWeWNND/k3CG+fpqwOcFjUvW3H9visnOV1
-         xRgtIeHVQ1tWTzMoAS6zjzBms9PQWPep0AVwyQh1pAED+CS9xacBvtU2scP+mW4zzq7r
-         QeCORXCHWPlioH4PR0E8go0l9xNZDiSn2BWOuEDLDaRZ1yRoAIZBpSRLXlndPU+xUHaU
-         q3Rs1GNZXkYZdVcy2urBQgFbmVjE0CoOcNQlZ9OhT5t49o94Zka9J76BtusOXXtrry5L
-         GLmA+3ddy2n0hwOhjAZjriULUvoc2mTZppPJhgAbm8NVkLcwAebDn8YdJFKvWu59V01N
-         pGPw==
+        bh=V98z1XdNgV3xiHLIER3LFRw7DRi8WlFUlQ/WCZLIUTo=;
+        b=jNS21Ndt/jcqzlodixMAEFFSK5DFDmaI7A+f0tbhlcpBV7Tz9O2RdYDDHVu0unr4J2
+         nempAtvq+Z+m0grZKT2qS2yYJrvAA6B2AcBjb0kHjrt5MUMDYYSrcriN2Q1sFlOZtHZ5
+         qVVQDOfsPjcGgIOBImK9cEw4kIkygaHx6Qba3QTT/IbOPEv0gRcHySuPdIcjn2c1P2fD
+         I4XCE71QWW0MHzgnxom8lCJwg2QmuYHyvCt0O7PHLzOGDLW2yB9KIQYZ1EsJ2bzPort4
+         vmAKh8Dlmfb0Q8BUEQbeEXFnH+Ev4l16BAa06BoPazQIowfquI9F1OLPhs9zetdKWuWo
+         5w5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PjXMlFVOJ4e0i4gIewgISVhKN2YrI3k+15FHe57lM0s=;
-        b=XGld2Z9x+HgHYDU+QeJANGN3cj1pKnadshn7lGa1tZ1IYPLEWczGN4yaVnzaNy/f1W
-         i6Lna2RkbLEy08U1gUU2iw4tPOrLznGztlQQ91G25g/jHRINkMavFfMUQ9m42EbiPcL6
-         liMFEjEO4ZKIT3xQG8w1vQBNB8GMxNNuG7+CYBewp0b2LUlY9dXWXDBRHEvwyd/zM1kI
-         ME9dcQZloP2tC91w6LCs5HcD2kl8lGA/6fRaGVB82iKr49OOMtsw2OEE+1cIO7ZxTpmd
-         Oazn9TSoXWnAj4ADT3XrQNkZoeisZu+EJsO9o9lCfZGfT7SHdTjgQMh2QNiUnhc/ympt
-         IGzg==
-X-Gm-Message-State: AOAM5324iJ6kgWDcfcjMoFEL7eP/ek8lt5gFZOXD73/HJ/UEYaNSYNaK
-        184mxYOUSfRZiLQ1TYyyYMQ=
-X-Google-Smtp-Source: ABdhPJzKRfAbvPMRbde24C0EzwniJj+FTI1PaOdo+ZUyOxYnQ24uPZ+JkX3SJki9EUR1BYaIpCo4zA==
-X-Received: by 2002:a17:90a:4005:: with SMTP id u5mr2565200pjc.7.1599641176813;
-        Wed, 09 Sep 2020 01:46:16 -0700 (PDT)
+        bh=V98z1XdNgV3xiHLIER3LFRw7DRi8WlFUlQ/WCZLIUTo=;
+        b=tk7WkHdDEPcpA406QdxgFAt3VpqMnSgjwgsLyi1eC+MZLyd3YJPIAUIotnZEhjfm7E
+         rSEyEaDuoRHkFb8LREnbW22+D1KUSjGMr7C+QeW2mpmGRC+RKlQpRoZDvHLazNOF6zBV
+         wMbniAKDOF/KE6vcice9PV+M3XBvRwd7t4z3Jfm+g7+6L/9II7TaFKoZHaY6tn7XIQOK
+         UUAWO7FnR3yLaqBqbU/9g/VRgXBvwUX1zGqu+KXD7zsd6KDyEqoyHOtm8/cNgUMUDi3T
+         y8hHYygGRtyEkp1FzuvI6q+bppWxyqCWoIc6N94Sk9gMT6Mu6zRt1gmMn08J9wwJCA8q
+         1D2A==
+X-Gm-Message-State: AOAM531EcELZodROZP4UEyHeYm1DTTOHKmxNZgA0b4puas+5UXI7LDpt
+        W3y2yvxBoMfHxECG0vvQbSY=
+X-Google-Smtp-Source: ABdhPJy4+E2ukbzMDPQsE8rOx6oQZhS/Cy8n8p2vIVvGU5Tn22QkIobOi3SxLRdR94m8SyjMz8XAwQ==
+X-Received: by 2002:a63:4902:: with SMTP id w2mr2222597pga.311.1599641180372;
+        Wed, 09 Sep 2020 01:46:20 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.214.52])
-        by smtp.gmail.com with ESMTPSA id u21sm1468355pjn.27.2020.09.09.01.46.13
+        by smtp.gmail.com with ESMTPSA id u21sm1468355pjn.27.2020.09.09.01.46.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 01:46:16 -0700 (PDT)
+        Wed, 09 Sep 2020 01:46:19 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
@@ -54,9 +54,9 @@ Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
         stephen@networkplumber.org, borisp@mellanox.com,
         netdev@vger.kernel.org, Allen Pais <allen.lkml@gmail.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [PATCH v2 15/20] ethernet: natsemi: convert tasklets to use new tasklet_setup() API
-Date:   Wed,  9 Sep 2020 14:15:05 +0530
-Message-Id: <20200909084510.648706-16-allen.lkml@gmail.com>
+Subject: [PATCH v2 16/20] ethernet: netronome: convert tasklets to use new tasklet_setup() API
+Date:   Wed,  9 Sep 2020 14:15:06 +0530
+Message-Id: <20200909084510.648706-17-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200909084510.648706-1-allen.lkml@gmail.com>
 References: <20200909084510.648706-1-allen.lkml@gmail.com>
@@ -75,36 +75,35 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <allen.lkml@gmail.com>
 ---
- drivers/net/ethernet/natsemi/ns83820.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/natsemi/ns83820.c b/drivers/net/ethernet/natsemi/ns83820.c
-index 8e24c7acf79b..9157c1bffc79 100644
---- a/drivers/net/ethernet/natsemi/ns83820.c
-+++ b/drivers/net/ethernet/natsemi/ns83820.c
-@@ -923,10 +923,10 @@ static void rx_irq(struct net_device *ndev)
- 	spin_unlock_irqrestore(&info->lock, flags);
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index 21ea22694e47..b150da43adb2 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -2287,9 +2287,9 @@ static bool nfp_ctrl_rx(struct nfp_net_r_vector *r_vec)
+ 	return budget;
  }
  
--static void rx_action(unsigned long _dev)
-+static void rx_action(struct tasklet_struct *t)
+-static void nfp_ctrl_poll(unsigned long arg)
++static void nfp_ctrl_poll(struct tasklet_struct *t)
  {
--	struct net_device *ndev = (void *)_dev;
--	struct ns83820 *dev = PRIV(ndev);
-+	struct ns83820 *dev = from_tasklet(dev, t, rx_tasklet);
-+	struct net_device *ndev = dev->ndev;
- 	rx_irq(ndev);
- 	writel(ihr, dev->base + IHR);
+-	struct nfp_net_r_vector *r_vec = (void *)arg;
++	struct nfp_net_r_vector *r_vec = from_tasklet(r_vec, t, tasklet);
  
-@@ -1927,7 +1927,7 @@ static int ns83820_init_one(struct pci_dev *pci_dev,
- 	SET_NETDEV_DEV(ndev, &pci_dev->dev);
+ 	spin_lock(&r_vec->lock);
+ 	nfp_net_tx_complete(r_vec->tx_ring, 0);
+@@ -2337,8 +2337,7 @@ static void nfp_net_vecs_init(struct nfp_net *nn)
  
- 	INIT_WORK(&dev->tq_refill, queue_refill);
--	tasklet_init(&dev->rx_tasklet, rx_action, (unsigned long)ndev);
-+	tasklet_setup(&dev->rx_tasklet, rx_action);
+ 			__skb_queue_head_init(&r_vec->queue);
+ 			spin_lock_init(&r_vec->lock);
+-			tasklet_init(&r_vec->tasklet, nfp_ctrl_poll,
+-				     (unsigned long)r_vec);
++			tasklet_setup(&r_vec->tasklet, nfp_ctrl_poll);
+ 			tasklet_disable(&r_vec->tasklet);
+ 		}
  
- 	err = pci_enable_device(pci_dev);
- 	if (err) {
 -- 
 2.25.1
 
