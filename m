@@ -2,239 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E94B92630A1
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 17:35:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 086E0263098
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 17:32:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730319AbgIIPfA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 9 Sep 2020 11:35:00 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:31454 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730260AbgIIPaj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 11:30:39 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-212-uRGpX_6oPUKM0wPn-n4Dng-1; Wed, 09 Sep 2020 11:11:30 -0400
-X-MC-Unique: uRGpX_6oPUKM0wPn-n4Dng-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A239714996;
-        Wed,  9 Sep 2020 15:11:28 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.194.81])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 39C2B1002D41;
-        Wed,  9 Sep 2020 15:11:25 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Subject: [PATCH bpf-next 2/2] selftests/bpf: Adding test for arg dereference in extension trace
-Date:   Wed,  9 Sep 2020 17:11:15 +0200
-Message-Id: <20200909151115.1559418-2-jolsa@kernel.org>
-In-Reply-To: <20200909151115.1559418-1-jolsa@kernel.org>
-References: <20200909151115.1559418-1-jolsa@kernel.org>
+        id S1729942AbgIIPcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 11:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728264AbgIIPb0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 11:31:26 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C79C061757
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 08:30:25 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id j34so2319147pgi.7
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 08:30:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=q1KV9O65zEfE/EKPJhLmHLG8aoN8ApmAP56aUscnK0A=;
+        b=BCgw/YnzcGScTT9KYp9iXYh808eEAoW+ELiyUq6Z/JvsXqnSAbL66iPS/nydmsrckJ
+         3gM+QekrubRGxpQzR2k2vWkstV0hII2s2WFCseJ11z8PiDqcmREmgAnrBYItqSCstiRG
+         b018JHhczXYKMRCHE2qGC+nqi1Sc1cGczoaXFzMGr+PrZkYeYeeSpAHSD4Dm7KqSvczA
+         QjFPvKxKALkaHTd5XSbda4hy3VVzcrvHBQfgBlGPwh6zvpnLUf2xafH25ZEgtBhHliMu
+         KW4/Rm79tWAf4hOv8YlQi5n8oV6Jb02c5ifEbV+RsKepqtnJPzWtgo92pl/GJv3nd1gt
+         a3pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=q1KV9O65zEfE/EKPJhLmHLG8aoN8ApmAP56aUscnK0A=;
+        b=hFBgifrmtJiir1YyypssZ6uBKYnF5vO5lBPYN7nw3ADApF1dxmEXDdIgjBhSRUesy6
+         zyWR82jYUprMr5UbjX+JGH2lYuFuOMSG2U5+zesKD+sa6TU1cAthprR9CbpUIQ2kxiYe
+         67fl2rxabu0V8vb1EKcKTBWUucWvSJwMiCwl/JXBEQjLNqU+WCHHcWwBWuSxedm0WBQK
+         3m6380Pa65IFoElz0v5ILcALFuefi5tyA10LPqD/74Or5Zi/Ewdgo1Ci/lCxO7oPWKOB
+         i3YjveagXdqZMvY8HwWOGTBRpZDgWm7wC9aIfgpFsbKg7PohV1CA2SA1lsr6d8f+7x1b
+         RYaA==
+X-Gm-Message-State: AOAM5339iI4egPX5Xbex7LMjvunA8cpUp+GgOxbhWC3aGg+7sDmdZQ/3
+        LJYxYY9AdZ3JrDzghK4mLYtaBohzqhCu6zw=
+X-Google-Smtp-Source: ABdhPJxElm/wt+1EIQGqTtk47xByulcYFhsEHjsXQNzGrj/bWphB+CDek0vC4m/mpAjLli4nnqqE/w==
+X-Received: by 2002:a17:902:7688:b029:d0:c8fc:df4f with SMTP id m8-20020a1709027688b02900d0c8fcdf4fmr1488851pll.13.1599665421256;
+        Wed, 09 Sep 2020 08:30:21 -0700 (PDT)
+Received: from mani ([103.59.133.81])
+        by smtp.gmail.com with ESMTPSA id b29sm2382995pgb.71.2020.09.09.08.30.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 09 Sep 2020 08:30:20 -0700 (PDT)
+Date:   Wed, 9 Sep 2020 21:00:13 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Carl Huang <cjhuang@codeaurora.org>,
+        Wen Gong <wgong@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH net 1/2] net: qrtr: check skb_put_padto() return value
+Message-ID: <20200909153013.GB11397@mani>
+References: <20200909082740.204752-1-edumazet@google.com>
+ <20200909082740.204752-2-edumazet@google.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0.001
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200909082740.204752-2-edumazet@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding test that setup following program:
+On 0909, Eric Dumazet wrote:
+> If skb_put_padto() returns an error, skb has been freed.
+> Better not touch it anymore, as reported by syzbot [1]
+> 
+> Note to qrtr maintainers : this suggests qrtr_sendmsg()
+> should adjust sock_alloc_send_skb() second parameter
+> to account for the potential added alignment to avoid
+> reallocation.
+> 
+> [1]
+> 
+> BUG: KASAN: use-after-free in __skb_insert include/linux/skbuff.h:1907 [inline]
+> BUG: KASAN: use-after-free in __skb_queue_before include/linux/skbuff.h:2016 [inline]
+> BUG: KASAN: use-after-free in __skb_queue_tail include/linux/skbuff.h:2049 [inline]
+> BUG: KASAN: use-after-free in skb_queue_tail+0x6b/0x120 net/core/skbuff.c:3146
+> Write of size 8 at addr ffff88804d8ab3c0 by task syz-executor.4/4316
+> 
+> CPU: 1 PID: 4316 Comm: syz-executor.4 Not tainted 5.9.0-rc4-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x1d6/0x29e lib/dump_stack.c:118
+>  print_address_description+0x66/0x620 mm/kasan/report.c:383
+>  __kasan_report mm/kasan/report.c:513 [inline]
+>  kasan_report+0x132/0x1d0 mm/kasan/report.c:530
+>  __skb_insert include/linux/skbuff.h:1907 [inline]
+>  __skb_queue_before include/linux/skbuff.h:2016 [inline]
+>  __skb_queue_tail include/linux/skbuff.h:2049 [inline]
+>  skb_queue_tail+0x6b/0x120 net/core/skbuff.c:3146
+>  qrtr_tun_send+0x1a/0x40 net/qrtr/tun.c:23
+>  qrtr_node_enqueue+0x44f/0xc00 net/qrtr/qrtr.c:364
+>  qrtr_bcast_enqueue+0xbe/0x140 net/qrtr/qrtr.c:861
+>  qrtr_sendmsg+0x680/0x9c0 net/qrtr/qrtr.c:960
+>  sock_sendmsg_nosec net/socket.c:651 [inline]
+>  sock_sendmsg net/socket.c:671 [inline]
+>  sock_write_iter+0x317/0x470 net/socket.c:998
+>  call_write_iter include/linux/fs.h:1882 [inline]
+>  new_sync_write fs/read_write.c:503 [inline]
+>  vfs_write+0xa96/0xd10 fs/read_write.c:578
+>  ksys_write+0x11b/0x220 fs/read_write.c:631
+>  do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> RIP: 0033:0x45d5b9
+> Code: 5d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 2b b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007f84b5b81c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: ffffffffffffffda RBX: 0000000000038b40 RCX: 000000000045d5b9
+> RDX: 0000000000000055 RSI: 0000000020001240 RDI: 0000000000000003
+> RBP: 00007f84b5b81ca0 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000000f
+> R13: 00007ffcbbf86daf R14: 00007f84b5b829c0 R15: 000000000118cf4c
+> 
+> Allocated by task 4316:
+>  kasan_save_stack mm/kasan/common.c:48 [inline]
+>  kasan_set_track mm/kasan/common.c:56 [inline]
+>  __kasan_kmalloc+0x100/0x130 mm/kasan/common.c:461
+>  slab_post_alloc_hook+0x3e/0x290 mm/slab.h:518
+>  slab_alloc mm/slab.c:3312 [inline]
+>  kmem_cache_alloc+0x1c1/0x2d0 mm/slab.c:3482
+>  skb_clone+0x1b2/0x370 net/core/skbuff.c:1449
+>  qrtr_bcast_enqueue+0x6d/0x140 net/qrtr/qrtr.c:857
+>  qrtr_sendmsg+0x680/0x9c0 net/qrtr/qrtr.c:960
+>  sock_sendmsg_nosec net/socket.c:651 [inline]
+>  sock_sendmsg net/socket.c:671 [inline]
+>  sock_write_iter+0x317/0x470 net/socket.c:998
+>  call_write_iter include/linux/fs.h:1882 [inline]
+>  new_sync_write fs/read_write.c:503 [inline]
+>  vfs_write+0xa96/0xd10 fs/read_write.c:578
+>  ksys_write+0x11b/0x220 fs/read_write.c:631
+>  do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> Freed by task 4316:
+>  kasan_save_stack mm/kasan/common.c:48 [inline]
+>  kasan_set_track+0x3d/0x70 mm/kasan/common.c:56
+>  kasan_set_free_info+0x17/0x30 mm/kasan/generic.c:355
+>  __kasan_slab_free+0xdd/0x110 mm/kasan/common.c:422
+>  __cache_free mm/slab.c:3418 [inline]
+>  kmem_cache_free+0x82/0xf0 mm/slab.c:3693
+>  __skb_pad+0x3f5/0x5a0 net/core/skbuff.c:1823
+>  __skb_put_padto include/linux/skbuff.h:3233 [inline]
+>  skb_put_padto include/linux/skbuff.h:3252 [inline]
+>  qrtr_node_enqueue+0x62f/0xc00 net/qrtr/qrtr.c:360
+>  qrtr_bcast_enqueue+0xbe/0x140 net/qrtr/qrtr.c:861
+>  qrtr_sendmsg+0x680/0x9c0 net/qrtr/qrtr.c:960
+>  sock_sendmsg_nosec net/socket.c:651 [inline]
+>  sock_sendmsg net/socket.c:671 [inline]
+>  sock_write_iter+0x317/0x470 net/socket.c:998
+>  call_write_iter include/linux/fs.h:1882 [inline]
+>  new_sync_write fs/read_write.c:503 [inline]
+>  vfs_write+0xa96/0xd10 fs/read_write.c:578
+>  ksys_write+0x11b/0x220 fs/read_write.c:631
+>  do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> 
+> The buggy address belongs to the object at ffff88804d8ab3c0
+>  which belongs to the cache skbuff_head_cache of size 224
+> The buggy address is located 0 bytes inside of
+>  224-byte region [ffff88804d8ab3c0, ffff88804d8ab4a0)
+> The buggy address belongs to the page:
+> page:00000000ea8cccfb refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88804d8abb40 pfn:0x4d8ab
+> flags: 0xfffe0000000200(slab)
+> raw: 00fffe0000000200 ffffea0002237ec8 ffffea00029b3388 ffff88821bb66800
+> raw: ffff88804d8abb40 ffff88804d8ab000 000000010000000b 0000000000000000
+> page dumped because: kasan: bad access detected
+> 
+> Fixes: ce57785bf91b ("net: qrtr: fix len of skb_put_padto in qrtr_node_enqueue")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-  SEC("classifier/test_pkt_md_access")
-  int test_pkt_md_access(struct __sk_buff *skb)
+Acked-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-with its extension:
+Thanks,
+Mani
 
-  SEC("freplace/test_pkt_md_access")
-  int test_pkt_md_access_new(struct __sk_buff *skb)
-
-and tracing that extension with:
-
-  SEC("fentry/test_pkt_md_access_new")
-  int BPF_PROG(fentry, struct sk_buff *skb)
-
-The test verifies that the tracing program can
-dereference skb argument properly.
-
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- .../selftests/bpf/prog_tests/trace_ext.c      | 93 +++++++++++++++++++
- .../selftests/bpf/progs/test_trace_ext.c      | 18 ++++
- .../bpf/progs/test_trace_ext_tracing.c        | 25 +++++
- 3 files changed, 136 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_ext.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/trace_ext.c b/tools/testing/selftests/bpf/prog_tests/trace_ext.c
-new file mode 100644
-index 000000000000..1089dafb4653
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/trace_ext.c
-@@ -0,0 +1,93 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#define _GNU_SOURCE
-+#include <test_progs.h>
-+#include <network_helpers.h>
-+#include <sys/stat.h>
-+#include <linux/sched.h>
-+#include <sys/syscall.h>
-+
-+#include "test_trace_ext.skel.h"
-+#include "test_trace_ext_tracing.skel.h"
-+
-+static __u32 duration;
-+
-+void test_trace_ext(void)
-+{
-+	struct test_trace_ext_tracing *skel_trace = NULL;
-+	struct test_trace_ext_tracing__bss *bss_trace;
-+	const char *file = "./test_pkt_md_access.o";
-+	struct test_trace_ext *skel_ext = NULL;
-+	struct test_trace_ext__bss *bss_ext;
-+	int err, prog_fd, ext_fd;
-+	struct bpf_object *obj;
-+	char buf[100];
-+	__u32 retval;
-+	__u64 len;
-+
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_SCHED_CLS, &obj, &prog_fd);
-+	if (CHECK_FAIL(err))
-+		return;
-+
-+	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
-+			    .attach_prog_fd = prog_fd,
-+	);
-+
-+	skel_ext = test_trace_ext__open_opts(&opts);
-+	if (CHECK(!skel_ext, "setup", "freplace/test_pkt_md_access open failed\n"))
-+		goto cleanup;
-+
-+	err = test_trace_ext__load(skel_ext);
-+	if (CHECK(err, "setup", "freplace/test_pkt_md_access load failed\n")) {
-+		libbpf_strerror(err, buf, sizeof(buf));
-+		fprintf(stderr, "%s\n", buf);
-+		goto cleanup;
-+	}
-+
-+	err = test_trace_ext__attach(skel_ext);
-+	if (CHECK(err, "setup", "freplace/test_pkt_md_access attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	ext_fd = bpf_program__fd(skel_ext->progs.test_pkt_md_access_new);
-+
-+	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts_trace,
-+			    .attach_prog_fd = ext_fd,
-+	);
-+
-+	skel_trace = test_trace_ext_tracing__open_opts(&opts_trace);
-+	if (CHECK(!skel_trace, "setup", "tracing/test_pkt_md_access_new open failed\n"))
-+		goto cleanup;
-+
-+	err = test_trace_ext_tracing__load(skel_trace);
-+	if (CHECK(err, "setup", "tracing/test_pkt_md_access_new load failed\n")) {
-+		libbpf_strerror(err, buf, sizeof(buf));
-+		fprintf(stderr, "%s\n", buf);
-+		goto cleanup;
-+	}
-+
-+	err = test_trace_ext_tracing__attach(skel_trace);
-+	if (CHECK(err, "setup", "tracing/test_pkt_md_access_new attach failed: %d\n", err))
-+		goto cleanup;
-+
-+	err = bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
-+				NULL, NULL, &retval, &duration);
-+	CHECK(err || retval, "",
-+	      "err %d errno %d retval %d duration %d\n",
-+	      err, errno, retval, duration);
-+
-+	bss_ext = skel_ext->bss;
-+	bss_trace = skel_trace->bss;
-+
-+	len = bss_ext->ext_called;
-+
-+	CHECK(bss_ext->ext_called == 0,
-+		"check", "failed to trigger freplace/test_pkt_md_access\n");
-+	CHECK(bss_trace->fentry_called != len,
-+		"check", "failed to trigger fentry/test_pkt_md_access_new\n");
-+	CHECK(bss_trace->fexit_called != len,
-+		"check", "failed to trigger fexit/test_pkt_md_access_new\n");
-+
-+cleanup:
-+	test_trace_ext__destroy(skel_ext);
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_trace_ext.c b/tools/testing/selftests/bpf/progs/test_trace_ext.c
-new file mode 100644
-index 000000000000..a6318f6b52ee
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_trace_ext.c
-@@ -0,0 +1,18 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#include <linux/bpf.h>
-+#include <stdbool.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+#include <bpf/bpf_tracing.h>
-+
-+volatile __u64 ext_called = 0;
-+
-+SEC("freplace/test_pkt_md_access")
-+int test_pkt_md_access_new(struct __sk_buff *skb)
-+{
-+	ext_called = skb->len;
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c b/tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c
-new file mode 100644
-index 000000000000..9e52a831446f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c
-@@ -0,0 +1,25 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+volatile __u64 fentry_called = 0;
-+
-+SEC("fentry/test_pkt_md_access_new")
-+int BPF_PROG(fentry, struct sk_buff *skb)
-+{
-+	fentry_called = skb->len;
-+	return 0;
-+}
-+
-+volatile __u64 fexit_called = 0;
-+
-+SEC("fexit/test_pkt_md_access_new")
-+int BPF_PROG(fexit, struct sk_buff *skb)
-+{
-+	fexit_called = skb->len;
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.26.2
-
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Cc: Carl Huang <cjhuang@codeaurora.org>
+> Cc: Wen Gong <wgong@codeaurora.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> ---
+>  net/qrtr/qrtr.c | 21 +++++++++++----------
+>  1 file changed, 11 insertions(+), 10 deletions(-)
+> 
+> diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+> index 90c558f89d46565ee5d5845d0ca97c095a8287a8..957aa9263ba4ce10dbb8d94c4e4bbcaef8b6e84b 100644
+> --- a/net/qrtr/qrtr.c
+> +++ b/net/qrtr/qrtr.c
+> @@ -332,8 +332,7 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+>  {
+>  	struct qrtr_hdr_v1 *hdr;
+>  	size_t len = skb->len;
+> -	int rc = -ENODEV;
+> -	int confirm_rx;
+> +	int rc, confirm_rx;
+>  
+>  	confirm_rx = qrtr_tx_wait(node, to->sq_node, to->sq_port, type);
+>  	if (confirm_rx < 0) {
+> @@ -357,15 +356,17 @@ static int qrtr_node_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+>  	hdr->size = cpu_to_le32(len);
+>  	hdr->confirm_rx = !!confirm_rx;
+>  
+> -	skb_put_padto(skb, ALIGN(len, 4) + sizeof(*hdr));
+> -
+> -	mutex_lock(&node->ep_lock);
+> -	if (node->ep)
+> -		rc = node->ep->xmit(node->ep, skb);
+> -	else
+> -		kfree_skb(skb);
+> -	mutex_unlock(&node->ep_lock);
+> +	rc = skb_put_padto(skb, ALIGN(len, 4) + sizeof(*hdr));
+>  
+> +	if (!rc) {
+> +		mutex_lock(&node->ep_lock);
+> +		rc = -ENODEV;
+> +		if (node->ep)
+> +			rc = node->ep->xmit(node->ep, skb);
+> +		else
+> +			kfree_skb(skb);
+> +		mutex_unlock(&node->ep_lock);
+> +	}
+>  	/* Need to ensure that a subsequent message carries the otherwise lost
+>  	 * confirm_rx flag if we dropped this one */
+>  	if (rc && confirm_rx)
+> -- 
+> 2.28.0.526.ge36021eeef-goog
+> 
