@@ -2,101 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8C3026352B
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:58:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F217263537
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 20:00:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726426AbgIIR6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 13:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
+        id S1728970AbgIISAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 14:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725975AbgIIR6W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 13:58:22 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC503C061573
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 10:58:21 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id k15so2810951pfc.12
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 10:58:21 -0700 (PDT)
+        with ESMTP id S1726408AbgIISAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 14:00:52 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83D7C061573
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 11:00:51 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id d6so2828583pfn.9
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 11:00:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=7zaMM4OL+S1zFzXGaipmk1GZoJZdZuwdoAqfQj/JQgA=;
-        b=kpEj0v08HQ1y2flprxaeg7BUN+CdUeyXCl8VUxwkzVrd1UsOFF9tJFgPk4IZEpVma7
-         iE+LxuaFqkOpIXpe3PAJXo2DcgS9y0Ltb3GJW3zYBl0HqfAOXHxFNrdKkH5z5szdvoXX
-         +OkSKOACgituYlB/r/JlSwA5zAVtNHmQF7E8l0tazvmkwIpA6B7Q0c9YjTaADmSC933f
-         3oDr4AebUV6siycxBqo84BaQNVCSy0VbHc5GQC8ejJJzPpUg7RunjR9ViOPLchUvpa64
-         oKPg6qWYankQByLYcbDbBsW8KUEi5csfXS66y6Q5HbkuvoMJRqMjZ1q1DXqgYb47olni
-         56gQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aFmC1pJgIhnfvlhwMi9IZaa/+4AKS/FjOWmImOieiQ8=;
+        b=TpHhKE0/V1wspIbV6oa70/4RItUuc8mpMUgcgnZj1I7i+gYgOkODCEW4lyqIOHy7fG
+         0ONmhN2C/g4NG1Dzg+l6CkwcK3+9x/oUTqou8h4lA7TjChE3aFO89Ucq+ZQhRj3t46IT
+         +f3o5s4PNGreCxwa5LhdIF2btPFTyJij1CE/GmfGDNvCTIbAedfcY0ohoMmSq5oHE7R0
+         xBApOyevKaWuv179niUq9C7lQvWURCi5IL42VR1uggLPb5hCYN+1zNEg+ML/zjZU5WRj
+         q58pLU/6+kfLO7gzFwpez5cjSMyJQTbPaCOtOJ9EihhPcSZAW5Ij4NAigWYc9WLnfd63
+         SbSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=7zaMM4OL+S1zFzXGaipmk1GZoJZdZuwdoAqfQj/JQgA=;
-        b=B5vN+a1OTEKzLRHvpr5A/JUpZbHinsGtL100CQq/bl1yA8/MXJFvDDegW31FnmmsEo
-         HR1xqPIGNf9IprZO0HbjnAgxPqXFVfubkXbK8+3PKItflTES+6DUSjuhTFt72qcJH1v6
-         GH838jVty8curM7yQRRJ+jA9/rjwafZCWExDlRbnh453dQ+nzAz7fabhYlxjuZM+wU/5
-         ZDn2AxCtiffqe/VhJWHhs7NIwfCD06EZEhyZ6skwtiL/9VP2anEmbc3FNrVgf/Qv8IG3
-         IfxTShgZFoCKtX9hWt0gH0Ch5ocgrGl2c/soBhvddDg1gXqnLFkv4gGkJjEoZyx4Kynn
-         xBsA==
-X-Gm-Message-State: AOAM533W3QBxViHnUlktDng0+nVsKLMvQl59+GO8X0y/rC2t3OGnpRCl
-        lKogJRqizMw+Ivg794dYz8nS3ZWwbTU5Mw==
-X-Google-Smtp-Source: ABdhPJy1Vadyq0JxgPyp6mn/e1A+CCVtcaVC/zHdZNY5iW4n5xNVBZJ1fG2nfVCV0RLwjhez0bdv8w==
-X-Received: by 2002:a63:cd4f:: with SMTP id a15mr1527640pgj.416.1599674301317;
-        Wed, 09 Sep 2020 10:58:21 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id c199sm3359344pfc.128.2020.09.09.10.58.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Sep 2020 10:58:20 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20200908224812.63434-1-snelson@pensando.io>
- <20200908224812.63434-3-snelson@pensando.io>
- <20200908165433.08afb9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <9938e3cc-b955-11a1-d667-8e5893bb6367@pensando.io>
- <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <581f2161-1c55-31ae-370b-bbea5a677862@pensando.io>
-Date:   Wed, 9 Sep 2020 10:58:19 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aFmC1pJgIhnfvlhwMi9IZaa/+4AKS/FjOWmImOieiQ8=;
+        b=sHB5HqxANpZdfuyoOrxYwUvk/pKYTm9oOhkY6XvFGX4l511YMd5vSTFSnxqZuVArR0
+         69Cjp4Twv2jCBGCg7DwU8tkspN1JSi//qeDrGccJamjK49O59ajBTg8Mjlzrdd/DpqCW
+         OZwqZqCTz6TR3SpjpxHSYkzdV/tcioYvBDhbqQvILWnAhG+jbg4mkzKcroifgp/MfEX/
+         WDq8RyQOjMvoR+lKjFaj8XRKdMjShjaXWcRyW1T/+nQfCEix4zzM+dx/lSdfhG5GHud0
+         uGxAlDucbkJglMNmd6FfP4gOT9w5o5SHFLM1SUv9Jhdkurnu6ty65fEP+yY/wT3PKl70
+         hv/g==
+X-Gm-Message-State: AOAM5330er9AEi/Pdk0ltRf19jYXaK4ei7WOtqHj/ncnMuK/odrsiMp4
+        basXXQNJ/zSqr1Wy7cr7Drc=
+X-Google-Smtp-Source: ABdhPJw7xSAYgrKK8n0XwId8kod7ZXQYoCzDXJ8j5Lin64qZUXOLH+B+R19giwhq2Sy9iStWwnY18A==
+X-Received: by 2002:a17:902:7d86:b029:cf:85a7:8372 with SMTP id a6-20020a1709027d86b02900cf85a78372mr2095268plm.1.1599674450586;
+        Wed, 09 Sep 2020 11:00:50 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id cf7sm2633260pjb.52.2020.09.09.11.00.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2020 11:00:49 -0700 (PDT)
+Date:   Wed, 9 Sep 2020 11:00:47 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Matteo Croce <mcroce@redhat.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 7/7] net: mvpp2: ptp: add support for
+ transmit timestamping
+Message-ID: <20200909180047.GB24551@hoboy>
+References: <20200908214727.GZ1551@shell.armlinux.org.uk>
+ <E1kFlfN-0006di-Pu@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1kFlfN-0006di-Pu@rmk-PC.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/9/20 9:44 AM, Jakub Kicinski wrote:
-> On Wed, 9 Sep 2020 09:23:08 -0700 Shannon Nelson wrote:
->> On 9/8/20 4:54 PM, Jakub Kicinski wrote:
->>> On Tue,  8 Sep 2020 15:48:12 -0700 Shannon Nelson wrote:
->>>> +	dl = priv_to_devlink(ionic);
->>>> +	devlink_flash_update_status_notify(dl, label, NULL, 1, timeout);
->>>> +	start_time = jiffies;
->>>> +	end_time = start_time + (timeout * HZ);
->>>> +	do {
->>>> +		mutex_lock(&ionic->dev_cmd_lock);
->>>> +		ionic_dev_cmd_go(&ionic->idev, &cmd);
->>>> +		err = ionic_dev_cmd_wait(ionic, DEVCMD_TIMEOUT);
->>>> +		mutex_unlock(&ionic->dev_cmd_lock);
->>>> +
->>>> +		devlink_flash_update_status_notify(dl, label, NULL,
->>>> +						   (jiffies - start_time) / HZ,
->>>> +						   timeout);
->>> That's not what I meant. I think we can plumb proper timeout parameter
->>> through devlink all the way to user space.
->> Sure, but until that gets worked out, this should suffice.
-> I don't understand - what will get worked out?
+On Tue, Sep 08, 2020 at 11:00:41PM +0100, Russell King wrote:
 
-I'm suggesting that this implementation using the existing devlink 
-logging services should suffice until someone can design, implement, and 
-get accepted a different bit of plumbing.  Unfortunately, that's not a 
-job that I can get to right now.
+> +static bool mvpp2_tx_hw_tstamp(struct mvpp2_port *port,
+> +			       struct mvpp2_tx_desc *tx_desc,
+> +			       struct sk_buff *skb)
+> +{
+> +	unsigned int mtype, type, i, offset;
+> +	struct mvpp2_hwtstamp_queue *queue;
+> +	struct ptp_header *hdr;
+> +	u64 ptpdesc;
+> +
+> +	if (port->priv->hw_version == MVPP21 ||
+> +	    port->tx_hwtstamp_type == HWTSTAMP_TX_OFF)
+> +		return false;
+> +
+> +	type = ptp_classify_raw(skb);
+> +	if (!type)
+> +		return false;
+> +
+> +	hdr = ptp_parse_header(skb, type);
+> +	if (!hdr)
+> +		return false;
 
-sln
+At this point, the skb will be queued up to receive a transmit time
+stamp, and so it should be marked with:
+
+	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+
+
+The rest of the patch looks reasonable.
+
+Acked-by: Richard Cochran <richardcochran@gmail.com>
 
