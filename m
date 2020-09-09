@@ -2,378 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3265262D56
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 12:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA897262D84
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 12:59:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727870AbgIIKiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 06:38:06 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:43030 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726060AbgIIKiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 06:38:01 -0400
-Received: from heptagon.blr.asicdesigners.com (uefi-pc.asicdesigners.com [10.193.186.108] (may be forged))
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 089Aan1s011317;
-        Wed, 9 Sep 2020 03:36:50 -0700
-From:   Ayush Sawal <ayush.sawal@chelsio.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org
-Cc:     secdev@chelsio.com, Ayush Sawal <ayush.sawal@chelsio.com>
-Subject: [PATCH net-next] cxgb4/ch_ipsec: Registering xfrmdev_ops with cxgb4
-Date:   Wed,  9 Sep 2020 16:06:20 +0530
-Message-Id: <20200909103620.30210-1-ayush.sawal@chelsio.com>
-X-Mailer: git-send-email 2.28.0.rc1.6.gae46588
+        id S1729298AbgIIK7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 06:59:49 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:25605 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727856AbgIIK6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 06:58:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599649115;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UlbYS18H011Iq6ivG1CppQuP+eHDYG6ZaZ6anysk7ww=;
+        b=faOmRPSUSXCQZiU7nxRcJju7nKUkq42swD70j65WRPp9CggWx0mu2iOg8sGpdi4FzijBxg
+        Na1LV+xxI7keCVUBzx1m/iJ16XSR4r12UbSF73CHZT+adUAGcWb1tEGftzLNAbMeY4X5B4
+        dKfZv+2fgOYqgQnSKmBY2RZ74ew2PHs=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-534-ZHkjzXQSNY2EuqW56eTeSw-1; Wed, 09 Sep 2020 06:58:31 -0400
+X-MC-Unique: ZHkjzXQSNY2EuqW56eTeSw-1
+Received: by mail-wr1-f70.google.com with SMTP id a12so824840wrg.13
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 03:58:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=UlbYS18H011Iq6ivG1CppQuP+eHDYG6ZaZ6anysk7ww=;
+        b=MuW30FVapTQLrFtlptncnLJ4iN38rPhyFtyWazFgBQbZL0iIDhj9aA819Ar7/Sky8F
+         z42VzRkrJYpGktoPsSFG9KlxZA6YXXdBCI8KgdTSNsWOrHLx7+pUCA7aK391jtmmpWUw
+         JMZrAZ0qNEi+avoRhz4Sg8WhY4pH0An+ITt6AJdpMt/fWd9BDulwM8d8CyoMIXz8aMPI
+         JtXRzQw4HXU9rfWs5I2Xb5viKhEmgEWfMu/vUzRUJEYk/IPb9cvpZSPRoowschcqGbG5
+         zYXF9dbixKUnDSurxs1BjOb4YAsukP9vXDBLpdd4XTCHoLeMeiY3ziQkvfjmg73MNIji
+         9Syg==
+X-Gm-Message-State: AOAM530EbiqLHr6g+NJaMNBnP+GZwlfvZstdScef/vFnbQaDm7XuGii0
+        puwwgqpX59oQt2w9CfcHe+DFcaUY8wrm/YIf8QCSUsnh6/Vbse0QEjCHN0dYD4X6qHdiwvPWk04
+        ub8y3GGP3skrCB6Mq
+X-Received: by 2002:a1c:c256:: with SMTP id s83mr2997889wmf.93.1599649110646;
+        Wed, 09 Sep 2020 03:58:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzPISmCR4dgdVvk6g3iPoqMbDlKb6d0IuqTgppoeZFwa/r+l0GbHaZdcetlBRX8jYunT+93tQ==
+X-Received: by 2002:a1c:c256:: with SMTP id s83mr2997872wmf.93.1599649110401;
+        Wed, 09 Sep 2020 03:58:30 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id 2sm3694235wrs.64.2020.09.09.03.58.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2020 03:58:29 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 307B51829D4; Wed,  9 Sep 2020 12:58:29 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        YiFei Zhu <zhuyifei@google.com>,
+        YiFei Zhu <zhuyifei1999@gmail.com>,
+        Andrey Ignatov <rdna@fb.com>
+Subject: Re: [PATCH bpf-next v3 3/8] libbpf: Add BPF_PROG_BIND_MAP syscall
+ and use it on .metadata section
+In-Reply-To: <CAEf4BzbywFBSW+KypeWkG7CF8rNSu5XxS8HZz7BFuUsC9kZ1ug@mail.gmail.com>
+References: <20200828193603.335512-1-sdf@google.com>
+ <20200828193603.335512-4-sdf@google.com>
+ <CAEf4BzZtYTyBT=jURkF4RQLHXORooVwXrRRRkoSWDqCemyGQeA@mail.gmail.com>
+ <20200904012909.c7cx5adhy5f23ovo@ast-mbp.dhcp.thefacebook.com>
+ <CAEf4BzZp4ODLbjEiv=W7byoR9XzTqAQ052wZM_wD4=aTPmkjbw@mail.gmail.com>
+ <87mu22ottv.fsf@toke.dk>
+ <CAEf4BzbywFBSW+KypeWkG7CF8rNSu5XxS8HZz7BFuUsC9kZ1ug@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 09 Sep 2020 12:58:29 +0200
+Message-ID: <87eenbnrmy.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As ch_ipsec was removed without clearing xfrmdev_ops and netdev
-feature(esp-hw-offload). When a recalculation of netdev feature is
-triggered by changing tls feature(tls-hw-tx-offload) from user
-request, it causes a page fault due to absence of valid xfrmdev_ops.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-Fixes: 6dad4e8ab3ec ("chcr: Add support for Inline IPSec")
-Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   5 +
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   | 184 ++++++++++++++++--
- .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    |   3 +
- .../inline_crypto/ch_ipsec/chcr_ipsec.c       |  35 +---
- 4 files changed, 172 insertions(+), 55 deletions(-)
+> On Mon, Sep 7, 2020 at 1:49 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>>
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>
+>> >> May be we should talk about problem statement and goals.
+>> >> Do we actually need metadata per program or metadata per single .o
+>> >> or metadata per final .o with multiple .o linked together?
+>> >> What is this metadata?
+>> >
+>> > Yep, that's a very valid question. I've also CC'ed Andrey.
+>>
+>> For the libxdp use case, I need metadata per program. But I'm already
+>> sticking that in a single section and disambiguating by struct name
+>> (just prefixing the function name with a _ ), so I think it's fine to
+>> have this kind of "concatenated metadata" per elf file and parse out the
+>> per-program information from that. This is similar to the BTF-encoded
+>> "metadata" we can do today.
+>>
+>> >> If it's just unreferenced by program read only data then no special n=
+ames or
+>> >> prefixes are needed. We can introduce BPF_PROG_BIND_MAP to bind any m=
+ap to any
+>> >> program and it would be up to tooling to decide the meaning of the da=
+ta in the
+>> >> map. For example, bpftool can choose to print all variables from all =
+read only
+>> >> maps that match "bpf_metadata_" prefix, but it will be bpftool conven=
+tion only
+>> >> and not hard coded in libbpf.
+>> >
+>> > Agree as well. It feels a bit odd for libbpf to handle ".metadata"
+>> > specially, given libbpf itself doesn't care about its contents at all.
+>> >
+>> > So thanks for bringing this up, I think this is an important
+>> > discussion to have.
+>>
+>> I'm fine with having this be part of .rodata. One drawback, though, is
+>> that if any metadata is defined, it becomes a bit more complicated to
+>> use bpf_map__set_initial_value() because that now also has to include
+>> the metadata. Any way we can improve upon that?
+>
+> I know that skeleton is not an answer for you, so you'll have to find
+> DATASEC and corresponding variable offset and size (libbpf provides
+> APIs for all those operations, but you'll need to combine them
+> together). Then mmap() map and then you can do partial updates. There
+> is no other way to update only portions of an ARRAY map, except
+> through memory-mapping.
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index e5d5c0fb7f47..abab82ad3f63 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -146,6 +146,11 @@ enum {
- 	CXGB4_ETHTOOL_FLASH_BOOTCFG = 4
- };
- 
-+enum cxgb4_netdev_tls_ops {
-+	CXGB4_TLSDEV_OPS  = 1,
-+	CXGB4_XFRMDEV_OPS
-+};
-+
- struct cxgb4_bootcfg_data {
- 	__le16 signature;
- 	__u8 reserved[2];
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index de078a5bf23e..27530c0e2d14 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -6396,6 +6396,49 @@ static int cxgb4_iov_configure(struct pci_dev *pdev, int num_vfs)
- }
- #endif /* CONFIG_PCI_IOV */
- 
-+#if defined(CONFIG_CHELSIO_TLS_DEVICE) || IS_ENABLED(CONFIG_CHELSIO_IPSEC_INLINE)
-+
-+static int chcr_offload_state(struct adapter *adap,
-+			      enum cxgb4_netdev_tls_ops op_val)
-+{
-+	switch (op_val) {
-+#if defined(CONFIG_CHELSIO_TLS_DEVICE)
-+	case CXGB4_TLSDEV_OPS:
-+		if (!adap->uld[CXGB4_ULD_CRYPTO].handle) {
-+			dev_dbg(adap->pdev_dev, "chcr driver is not loaded\n");
-+			return -EOPNOTSUPP;
-+		}
-+		if (!adap->uld[CXGB4_ULD_CRYPTO].tlsdev_ops) {
-+			dev_dbg(adap->pdev_dev,
-+				"chcr driver has no registered tlsdev_ops\n");
-+			return -EOPNOTSUPP;
-+		}
-+		break;
-+#endif /* CONFIG_CHELSIO_TLS_DEVICE */
-+#if IS_ENABLED(CONFIG_CHELSIO_IPSEC_INLINE)
-+	case CXGB4_XFRMDEV_OPS:
-+		if (!adap->uld[CXGB4_ULD_IPSEC].handle) {
-+			dev_dbg(adap->pdev_dev, "chipsec driver is not loaded\n");
-+			return -EOPNOTSUPP;
-+		}
-+		if (!adap->uld[CXGB4_ULD_IPSEC].xfrmdev_ops) {
-+			dev_dbg(adap->pdev_dev,
-+				"chipsec driver has no registered xfrmdev_ops\n");
-+			return -EOPNOTSUPP;
-+		}
-+		break;
-+#endif /* CONFIG_CHELSIO_IPSEC_INLINE */
-+	default:
-+		dev_dbg(adap->pdev_dev,
-+			"driver has no support for offload %d\n", op_val);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+#endif /* CONFIG_CHELSIO_TLS_DEVICE || CONFIG_CHELSIO_IPSEC_INLINE */
-+
- #if defined(CONFIG_CHELSIO_TLS_DEVICE)
- 
- static int cxgb4_ktls_dev_add(struct net_device *netdev, struct sock *sk,
-@@ -6404,21 +6447,12 @@ static int cxgb4_ktls_dev_add(struct net_device *netdev, struct sock *sk,
- 			      u32 tcp_sn)
- {
- 	struct adapter *adap = netdev2adap(netdev);
--	int ret = 0;
-+	int ret;
- 
- 	mutex_lock(&uld_mutex);
--	if (!adap->uld[CXGB4_ULD_CRYPTO].handle) {
--		dev_err(adap->pdev_dev, "chcr driver is not loaded\n");
--		ret = -EOPNOTSUPP;
--		goto out_unlock;
--	}
--
--	if (!adap->uld[CXGB4_ULD_CRYPTO].tlsdev_ops) {
--		dev_err(adap->pdev_dev,
--			"chcr driver has no registered tlsdev_ops()\n");
--		ret = -EOPNOTSUPP;
-+	ret = chcr_offload_state(adap, CXGB4_TLSDEV_OPS);
-+	if (ret)
- 		goto out_unlock;
--	}
- 
- 	ret = cxgb4_set_ktls_feature(adap, FW_PARAMS_PARAM_DEV_KTLS_HW_ENABLE);
- 	if (ret)
-@@ -6444,25 +6478,125 @@ static void cxgb4_ktls_dev_del(struct net_device *netdev,
- 	struct adapter *adap = netdev2adap(netdev);
- 
- 	mutex_lock(&uld_mutex);
--	if (!adap->uld[CXGB4_ULD_CRYPTO].handle) {
--		dev_err(adap->pdev_dev, "chcr driver is not loaded\n");
-+	if (chcr_offload_state(adap, CXGB4_TLSDEV_OPS))
- 		goto out_unlock;
-+
-+	adap->uld[CXGB4_ULD_CRYPTO].tlsdev_ops->tls_dev_del(netdev, tls_ctx,
-+							    direction);
-+	cxgb4_set_ktls_feature(adap, FW_PARAMS_PARAM_DEV_KTLS_HW_DISABLE);
-+
-+out_unlock:
-+	mutex_unlock(&uld_mutex);
-+}
-+
-+#if IS_ENABLED(CONFIG_CHELSIO_IPSEC_INLINE)
-+
-+static int cxgb4_xfrm_add_state(struct xfrm_state *x)
-+{
-+	struct adapter *adap = netdev2adap(x->xso.dev);
-+	int ret;
-+
-+	if (!mutex_trylock(&uld_mutex)) {
-+		dev_dbg(adap->pdev_dev,
-+			"crypto uld critical resource is under use\n");
-+		return -EBUSY;
- 	}
-+	ret = chcr_offload_state(adap, CXGB4_XFRMDEV_OPS);
-+	if (ret)
-+		goto out_unlock;
- 
--	if (!adap->uld[CXGB4_ULD_CRYPTO].tlsdev_ops) {
--		dev_err(adap->pdev_dev,
--			"chcr driver has no registered tlsdev_ops\n");
-+	ret = adap->uld[CXGB4_ULD_IPSEC].xfrmdev_ops->xdo_dev_state_add(x);
-+
-+out_unlock:
-+	mutex_unlock(&uld_mutex);
-+
-+	return ret;
-+}
-+
-+static void cxgb4_xfrm_del_state(struct xfrm_state *x)
-+{
-+	struct adapter *adap = netdev2adap(x->xso.dev);
-+
-+	if (!mutex_trylock(&uld_mutex)) {
-+		dev_dbg(adap->pdev_dev,
-+			"crypto uld critical resource is under use\n");
-+		return;
-+	}
-+	if (chcr_offload_state(adap, CXGB4_XFRMDEV_OPS))
- 		goto out_unlock;
-+
-+	adap->uld[CXGB4_ULD_IPSEC].xfrmdev_ops->xdo_dev_state_delete(x);
-+
-+out_unlock:
-+	mutex_unlock(&uld_mutex);
-+}
-+
-+static void cxgb4_xfrm_free_state(struct xfrm_state *x)
-+{
-+	struct adapter *adap = netdev2adap(x->xso.dev);
-+
-+	if (!mutex_trylock(&uld_mutex)) {
-+		dev_dbg(adap->pdev_dev,
-+			"crypto uld critical resource is under use\n");
-+		return;
- 	}
-+	if (chcr_offload_state(adap, CXGB4_XFRMDEV_OPS))
-+		goto out_unlock;
- 
--	adap->uld[CXGB4_ULD_CRYPTO].tlsdev_ops->tls_dev_del(netdev, tls_ctx,
--							    direction);
--	cxgb4_set_ktls_feature(adap, FW_PARAMS_PARAM_DEV_KTLS_HW_DISABLE);
-+	adap->uld[CXGB4_ULD_IPSEC].xfrmdev_ops->xdo_dev_state_free(x);
-+
-+out_unlock:
-+	mutex_unlock(&uld_mutex);
-+}
-+
-+static bool cxgb4_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
-+{
-+	struct adapter *adap = netdev2adap(x->xso.dev);
-+	bool ret = false;
-+
-+	if (!mutex_trylock(&uld_mutex)) {
-+		dev_dbg(adap->pdev_dev,
-+			"crypto uld critical resource is under use\n");
-+		return ret;
-+	}
-+	if (chcr_offload_state(adap, CXGB4_XFRMDEV_OPS))
-+		goto out_unlock;
-+
-+	ret = adap->uld[CXGB4_ULD_IPSEC].xfrmdev_ops->xdo_dev_offload_ok(skb, x);
- 
- out_unlock:
- 	mutex_unlock(&uld_mutex);
-+	return ret;
- }
- 
-+static void cxgb4_advance_esn_state(struct xfrm_state *x)
-+{
-+	struct adapter *adap = netdev2adap(x->xso.dev);
-+
-+	if (!mutex_trylock(&uld_mutex)) {
-+		dev_dbg(adap->pdev_dev,
-+			"crypto uld critical resource is under use\n");
-+		return;
-+	}
-+	if (chcr_offload_state(adap, CXGB4_XFRMDEV_OPS))
-+		goto out_unlock;
-+
-+	adap->uld[CXGB4_ULD_IPSEC].xfrmdev_ops->xdo_dev_state_advance_esn(x);
-+
-+out_unlock:
-+	mutex_unlock(&uld_mutex);
-+}
-+
-+static const struct xfrmdev_ops cxgb4_xfrmdev_ops = {
-+	.xdo_dev_state_add      = cxgb4_xfrm_add_state,
-+	.xdo_dev_state_delete   = cxgb4_xfrm_del_state,
-+	.xdo_dev_state_free     = cxgb4_xfrm_free_state,
-+	.xdo_dev_offload_ok     = cxgb4_ipsec_offload_ok,
-+	.xdo_dev_state_advance_esn = cxgb4_advance_esn_state,
-+};
-+
-+#endif /* CONFIG_CHELSIO_IPSEC_INLINE */
-+
- static const struct tlsdev_ops cxgb4_ktls_ops = {
- 	.tls_dev_add = cxgb4_ktls_dev_add,
- 	.tls_dev_del = cxgb4_ktls_dev_del,
-@@ -6728,7 +6862,15 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 			/* initialize the refcount */
- 			refcount_set(&pi->adapter->chcr_ktls.ktls_refcount, 0);
- 		}
--#endif
-+#endif /* CONFIG_CHELSIO_TLS_DEVICE */
-+#if IS_ENABLED(CONFIG_CHELSIO_IPSEC_INLINE)
-+		if (pi->adapter->params.crypto & FW_CAPS_CONFIG_IPSEC_INLINE) {
-+			netdev->hw_enc_features |= NETIF_F_HW_ESP;
-+			netdev->features |= NETIF_F_HW_ESP;
-+			netdev->xfrmdev_ops = &cxgb4_xfrmdev_ops;
-+		}
-+#endif /* CONFIG_CHELSIO_IPSEC_INLINE */
-+
- 		netdev->priv_flags |= IFF_UNICAST_FLT;
- 
- 		/* MTU range: 81 - 9600 */
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-index 83c8189e4088..421ae87aa7db 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-@@ -479,6 +479,9 @@ struct cxgb4_uld_info {
- #if IS_ENABLED(CONFIG_TLS_DEVICE)
- 	const struct tlsdev_ops *tlsdev_ops;
- #endif
-+#if IS_ENABLED(CONFIG_XFRM_OFFLOAD)
-+	const struct xfrmdev_ops *xfrmdev_ops;
-+#endif
- };
- 
- void cxgb4_uld_enable(struct adapter *adap);
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
-index 276f8841becc..0e7d25169407 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
-@@ -79,7 +79,6 @@ static bool chcr_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x);
- static void chcr_advance_esn_state(struct xfrm_state *x);
- static int ch_ipsec_uld_state_change(void *handle, enum cxgb4_state new_state);
- static void *ch_ipsec_uld_add(const struct cxgb4_lld_info *infop);
--static void update_netdev_features(void);
- 
- static const struct xfrmdev_ops chcr_xfrmdev_ops = {
- 	.xdo_dev_state_add      = chcr_xfrm_add_state,
-@@ -89,23 +88,6 @@ static const struct xfrmdev_ops chcr_xfrmdev_ops = {
- 	.xdo_dev_state_advance_esn = chcr_advance_esn_state,
- };
- 
--/* Add offload xfrms to Chelsio Interface */
--void chcr_add_xfrmops(const struct cxgb4_lld_info *lld)
--{
--	struct net_device *netdev = NULL;
--	int i;
--
--	for (i = 0; i < lld->nports; i++) {
--		netdev = lld->ports[i];
--		if (!netdev)
--			continue;
--		netdev->xfrmdev_ops = &chcr_xfrmdev_ops;
--		netdev->hw_enc_features |= NETIF_F_HW_ESP;
--		netdev->features |= NETIF_F_HW_ESP;
--		netdev_change_features(netdev);
--	}
--}
--
- static struct cxgb4_uld_info ch_ipsec_uld_info = {
- 	.name = CHIPSEC_DRV_MODULE_NAME,
- 	.nrxq = MAX_ULD_QSETS,
-@@ -114,6 +96,7 @@ static struct cxgb4_uld_info ch_ipsec_uld_info = {
- 	.add = ch_ipsec_uld_add,
- 	.state_change = ch_ipsec_uld_state_change,
- 	.tx_handler = chcr_ipsec_xmit,
-+	.xfrmdev_ops = &chcr_xfrmdev_ops,
- };
- 
- static void *ch_ipsec_uld_add(const struct cxgb4_lld_info *infop)
-@@ -808,26 +791,10 @@ out_free:       dev_kfree_skb_any(skb);
- 	return NETDEV_TX_OK;
- }
- 
--static void update_netdev_features(void)
--{
--	struct ipsec_uld_ctx *u_ctx, *tmp;
--
--	mutex_lock(&dev_mutex);
--	list_for_each_entry_safe(u_ctx, tmp, &uld_ctx_list, entry) {
--		if (u_ctx->lldi.crypto & ULP_CRYPTO_IPSEC_INLINE)
--			chcr_add_xfrmops(&u_ctx->lldi);
--	}
--	mutex_unlock(&dev_mutex);
--}
--
- static int __init chcr_ipsec_init(void)
- {
- 	cxgb4_register_uld(CXGB4_ULD_IPSEC, &ch_ipsec_uld_info);
- 
--	rtnl_lock();
--	update_netdev_features();
--	rtnl_unlock();
--
- 	return 0;
- }
- 
--- 
-2.28.0.rc1.6.gae46588
+Well, I wouldn't mind having to go digging through the section. But is
+it really possible to pick out and modify parts of it my mmap() before
+the object is loaded (and the map frozen)? How? I seem to recall we
+added bpf_map__set_initial_value() because this was *not* possible with
+the public API?
+
+Also, for this, a bpf_map__get_initial_value() could be a simple way to
+allow partial modifications. The caller could just get the whole map
+value, modify it, and set it again afterwards with
+__set_initial_value(). Any objections to adding that?
+
+-Toke
 
