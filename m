@@ -2,54 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E045426240C
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 02:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2F2E26245E
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 03:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728264AbgIIA1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 8 Sep 2020 20:27:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47384 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726560AbgIIA1x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 8 Sep 2020 20:27:53 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1AF832145D;
-        Wed,  9 Sep 2020 00:27:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599611273;
-        bh=2LZCwU8UpJcj0ae9NmaJz2EpwentD/rjiwDLn66U+d4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fzFmi5nKxcXnvPQpdMiRMsZ5EEaKi1c4xG2aQwynZF/kqI2uMGDUsLJUPbzaideC8
-         CSoGa8B/w4GjsQFMA7I6p3zdYxynLBi6W7c9xltXxow8QE8FbLLi+/2qTmcAEP+vrZ
-         z7HtgLB/HwaCC4W3XXUSameRn9zzscy9yfx+VumY=
-Date:   Tue, 8 Sep 2020 17:27:51 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     nikolay@cumulusnetworks.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, paulmck@kernel.org,
-        joel@joelfernandes.org, josh@joshtriplett.org,
-        peterz@infradead.org, christian.brauner@ubuntu.com,
-        rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sfr@canb.auug.org.au, roopa@nvidia.com
-Subject: Re: [PATCH net-next] rcu: prevent RCU_LOCKDEP_WARN() from
- swallowing the condition
-Message-ID: <20200908172751.4da35d60@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <5ABC15D5-3709-4CA4-A747-6A7812BB12DD@cumulusnetworks.com>
-References: <20200908090049.7e528e7f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200908173624.160024-1-kuba@kernel.org>
-        <5ABC15D5-3709-4CA4-A747-6A7812BB12DD@cumulusnetworks.com>
+        id S1726683AbgIIBFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 8 Sep 2020 21:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726369AbgIIBFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 8 Sep 2020 21:05:52 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27420C061573;
+        Tue,  8 Sep 2020 18:05:51 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id gf14so473146pjb.5;
+        Tue, 08 Sep 2020 18:05:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Zr6cnsJrgGJ7VyctdOhrp3MO2aQmMSjefw9UvSk2yzk=;
+        b=kHr8dTzJ2Zha+Du3DjsnzZDE2WU0Ygh7mE+tPAEPc9+Ol92EDfIY7UZcIyJoOCQjE/
+         Ng7GWuzA8UQpNUU8kTBDrFwXbrWGAZ6m5SkYDpIcgRZ00bzq0qiCdvg0lPuMuDsPu+dB
+         YrHE6xHmTFhildA5rPc+UyQImJMX4VtzyNN2MpQi5ETiSFYZ8qQmaUTJBdCRTMBrdxYK
+         cf2kLCvZtnBPxITWJB3g+a/jHTfk/xUqS2VyqmPRgTUrcxr+Db+oWgeF9+8IHFMCjiIp
+         8bO8+sXlHLVD/W0kKmKotOUY3QSqRTjYC7pbNU8JZ+1hWJBEPDKA6ppnp/4B+e25Zj0Z
+         buuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Zr6cnsJrgGJ7VyctdOhrp3MO2aQmMSjefw9UvSk2yzk=;
+        b=G2a/golNWUsW0dUbvCtGLqDdBvGzBtCuQsLm4o5BFzP4jGuFpPiRajLEOQ3PiLBGfW
+         SHpE+hwGv+tMrej1kR11+FxIk/svElv2GcBhnmTNZ+F8vhJeHkmcX6awvegSnWKWo0dV
+         5IGISJbgs7KbuyXLx6UuKlIYRukFwtIKPAnHK44b8QyboPk/P4MG4dKm1pRY5XjCUiCI
+         Cq2s6QDN/qAwzUjej/gK7SPqX1OX0XxaY9sBm2zJc9YbZTT2Qz9fC2NCaghFktj6KkEh
+         gTMkZBI7P/Jg4UPJZkf2+Vg6nQxlHAjK8DTAHe88xfhxswtXI52gcYQy8mwJflmXVIBU
+         MoBA==
+X-Gm-Message-State: AOAM533SXOzIL7ettiH6yt4bAlRNGexzaIAfHO13DQ9cT7zv6cxPpehk
+        92gC6Bi4gPM99s5W1HgHWeM=
+X-Google-Smtp-Source: ABdhPJyO8D8EaICbd5KYVI64MaDJvzPXVnFgMcZYSKA+UeY0fuEonhQoNZoNuIBJQcKimWZl1l5zng==
+X-Received: by 2002:a17:90a:5304:: with SMTP id x4mr1298263pjh.16.1599613550538;
+        Tue, 08 Sep 2020 18:05:50 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:39bb])
+        by smtp.gmail.com with ESMTPSA id f207sm620986pfa.54.2020.09.08.18.05.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Sep 2020 18:05:49 -0700 (PDT)
+Date:   Tue, 8 Sep 2020 18:05:47 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next v3 2/2] selftests/bpf: add test for map_ptr
+ arithmetic
+Message-ID: <20200909010547.4xvmkqjt4x264wk7@ast-mbp.dhcp.thefacebook.com>
+References: <20200908175702.2463416-1-yhs@fb.com>
+ <20200908175703.2463721-1-yhs@fb.com>
+ <CAEf4BzZJ5MfLryVjZfp4TLHLmbukTm9k9EUgko1eyPAds+A2pw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZJ5MfLryVjZfp4TLHLmbukTm9k9EUgko1eyPAds+A2pw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 08 Sep 2020 21:15:56 +0300 nikolay@cumulusnetworks.com wrote:
-> Ah, you want to solve it for all. :) 
-> Looks and sounds good to me, 
-> Reviewed-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+On Tue, Sep 08, 2020 at 04:11:21PM -0700, Andrii Nakryiko wrote:
+> On Tue, Sep 8, 2020 at 10:58 AM Yonghong Song <yhs@fb.com> wrote:
+> >
+> > Change selftest map_ptr_kern.c with disabling inlining for
+> > one of subtests, which will fail the test without previous
+> > verifier change. Also added to verifier test for both
+> > "map_ptr += scalar" and "scalar += map_ptr" arithmetic.
+> >
+> > Signed-off-by: Yonghong Song <yhs@fb.com>
+> > ---
+> 
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> 
+> >  .../selftests/bpf/progs/map_ptr_kern.c        | 10 +++++-
+> >  .../testing/selftests/bpf/verifier/map_ptr.c  | 32 +++++++++++++++++++
+> >  2 files changed, 41 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/progs/map_ptr_kern.c b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
+> > index 982a2d8aa844..0b754106407d 100644
+> > --- a/tools/testing/selftests/bpf/progs/map_ptr_kern.c
+> > +++ b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
+> > @@ -82,6 +82,14 @@ static inline int check_default(struct bpf_map *indirect,
+> >         return 1;
+> >  }
+> >
+> > +static __attribute__ ((noinline)) int
+> 
+> just fyi: there is now __noinline defined in bpf_helpers.h, saving a
+> bunch of typing
 
-Actually, I give up, lockdep_is_held() is not defined without
-CONFIG_LOCKDEP, let's just go with your patch..
+I fixed it manually while applying.
+Thanks everyone.
