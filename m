@@ -2,124 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED8D1263186
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:17:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2826263177
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730999AbgIIQQm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 12:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        id S1731006AbgIIQNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 12:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730995AbgIIQMt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:12:49 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B111DC061795
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 04:53:19 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id u20so2006647ilk.6
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 04:53:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=h/sZ1uzeumtgrunqJv1IilUpq0Y//RwPDbB/FiznfE0=;
-        b=Iye7sLmYs1YKbtPfsmtNSE1fjp6xINJmasUJH2zx9suBZsXlfOBHf/Bau1OaTqNi43
-         T0F/0rP1ja69j0HYugXe3pWU9+nyezMEvekO66eKg6thZprVfYUx9XAkv2K+eBfu9hsb
-         r0hVctbXYRYcM93Nto+GmCMd7KB2rH2c3dZmeg4fMrPhHMcp6NQ8i7h3JxtNg823rTOJ
-         1lpsG2xxXMu/0/m5tDd5K8LLJDqzbSEENdj57dOvtGmNQ+Gifx7/OqXFoprCUR5jW6+p
-         W3ZM/ytJZw3Il+2RjwOgrzEevA12vyHEtZMVxBq6q5RSsngnUtk1YJKPIgRaxHHGKpVX
-         dXSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=h/sZ1uzeumtgrunqJv1IilUpq0Y//RwPDbB/FiznfE0=;
-        b=VYOG1IgrrPjbmgyxTiHOGZGnVfBba6R2pDi2BxgU1hjzMxAX307azNgra1P2nQBF/B
-         N9vUHkpZslWLJll/2L5e3X2/NUDhn2dZ1s0zTZqOo23AP4jzOKtBtjwPF4rL21kOF75u
-         TpK1b7pt3+hHleFOog6ikC+Gr5GZja7dNYCjyuiUni8kkdIckINfVcFWKkJJ32eck3ZQ
-         vnZdbuoCCgvjCRV9YCFhRrDWgiuSDg6DlVXQtrQ6J54QaPUDhfFg1mrUlOhVxJLUl6vC
-         6xKF1qiDMqB1oaLVV6q/qpV9jnpoiLo0kYOYqaEwwBiUwdgzyGPQ7kRqoawPQzZIyhmO
-         ZcNg==
-X-Gm-Message-State: AOAM533o5U9+4CZR+JhKjmca50nZeDGwafoGGmAB+c2i/ma2bb3jd/bu
-        YzPhRplBCJ825vYrrJS2DrNw5w==
-X-Google-Smtp-Source: ABdhPJxVUSxkjm3sEQPqlYfwGwgS6iRmfqRvKD4Ebfn2d4E9I8C2b/F+2ldjVsBk6//GAq6f57E1sg==
-X-Received: by 2002:a92:bf0a:: with SMTP id z10mr3517882ilh.39.1599652399048;
-        Wed, 09 Sep 2020 04:53:19 -0700 (PDT)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id b8sm1095647ioa.33.2020.09.09.04.53.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Sep 2020 04:53:18 -0700 (PDT)
-Subject: Re: [RFT net] net: ipa: fix u32_replace_bits by u32p_xxx version
-To:     Vadym Kochan <vadym.kochan@plvision.eu>,
-        Alex Elder <elder@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20200908143237.8816-1-vadym.kochan@plvision.eu>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <030185d3-8401-dd2f-8981-9dfe2239866a@linaro.org>
-Date:   Wed, 9 Sep 2020 06:53:17 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        with ESMTP id S1730963AbgIIQMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:12:39 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E8FC061388
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 06:45:19 -0700 (PDT)
+Received: from dude02.hi.pengutronix.de ([2001:67c:670:100:1d::28])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1kG0PO-0007Fb-Fs; Wed, 09 Sep 2020 15:45:10 +0200
+Received: from mfe by dude02.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1kG0PI-0000fU-V8; Wed, 09 Sep 2020 15:45:04 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, zhengdejin5@gmail.com,
+        richard.leitner@skidata.com
+Cc:     netdev@vger.kernel.org, kernel@pengutronix.de,
+        devicetree@vger.kernel.org
+Subject: [PATCH v3 4/5] net: phy: smsc: LAN8710/20: add phy refclk in support
+Date:   Wed,  9 Sep 2020 15:45:00 +0200
+Message-Id: <20200909134501.32529-5-m.felsch@pengutronix.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200909134501.32529-1-m.felsch@pengutronix.de>
+References: <20200909134501.32529-1-m.felsch@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20200908143237.8816-1-vadym.kochan@plvision.eu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::28
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/8/20 9:32 AM, Vadym Kochan wrote:
-> Looks like u32p_replace_bits() should be used instead of
-> u32_replace_bits() which does not modifies the value but returns the
-> modified version.
-> 
-> Fixes: 2b9feef2b6c2 ("soc: qcom: ipa: filter and routing tables")
-> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+Add support to specify the clock provider for the PHY refclk and don't
+rely on 'magic' host clock setup. [1] tried to address this by
+introducing a flag and fixing the corresponding host. But this commit
+breaks the IRQ support since the irq setup during .config_intr() is
+thrown away because the reset comes from the side without respecting the
+current PHY state within the PHY library state machine. Furthermore the
+commit fixed the problem only for FEC based hosts other hosts acting
+like the FEC are not covered.
 
-You are correct!  Thank you for finding this.
+This commit goes the other way around to address the bug fixed by [1].
+Instead of resetting the device from the side every time the refclk gets
+(re-)enabled it requests and enables the clock till the device gets
+removed. Now the PHY library is the only place where the PHY gets reset
+to respect the PHY library state machine.
 
-Your fix is good, and I have now tested it and verified it
-works as desired.
+[1] commit 7f64e5b18ebb ("net: phy: smsc: LAN8710/20: add
+    PHY_RST_AFTER_CLK_EN flag")
 
-FYI, this is currently used only for the SDM845 platform.  It turns
-out the register values (route and filter hash config) that are read
-and intended to be updated always have value 0, so (fortunately) your
-change has no effect there.
+Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+v3:
+- Add Florian's tag
+- s/phy-state-machine/PHY library state machine/
+- s/phy/PHY/
+- reword last sentence of the commit message
 
-Nevertheless, you have fixed this bug and I appreciate it.
+v2:
+- use non-devres clk_* functions and instead use the remove() function
+- propagate errors upstream if the optional clk can't be retrieved.
+- make use if dev_err_probe()
+- adapt commit subject to cover that only the LAN8710/20 devices are
+  changed
 
-Reviewed-by: Alex Elder <elder@linaro.org>
+ drivers/net/phy/smsc.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-> ---
-> Found it while grepping of u32_replace_bits() usage and
-> replaced it w/o testing.
-> 
->  drivers/net/ipa/ipa_table.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ipa/ipa_table.c b/drivers/net/ipa/ipa_table.c
-> index 2098ca2f2c90..b3790aa952a1 100644
-> --- a/drivers/net/ipa/ipa_table.c
-> +++ b/drivers/net/ipa/ipa_table.c
-> @@ -521,7 +521,7 @@ static void ipa_filter_tuple_zero(struct ipa_endpoint *endpoint)
->  	val = ioread32(endpoint->ipa->reg_virt + offset);
->  
->  	/* Zero all filter-related fields, preserving the rest */
-> -	u32_replace_bits(val, 0, IPA_REG_ENDP_FILTER_HASH_MSK_ALL);
-> +	u32p_replace_bits(&val, 0, IPA_REG_ENDP_FILTER_HASH_MSK_ALL);
->  
->  	iowrite32(val, endpoint->ipa->reg_virt + offset);
->  }
-> @@ -573,7 +573,7 @@ static void ipa_route_tuple_zero(struct ipa *ipa, u32 route_id)
->  	val = ioread32(ipa->reg_virt + offset);
->  
->  	/* Zero all route-related fields, preserving the rest */
-> -	u32_replace_bits(val, 0, IPA_REG_ENDP_ROUTER_HASH_MSK_ALL);
-> +	u32p_replace_bits(&val, 0, IPA_REG_ENDP_ROUTER_HASH_MSK_ALL);
->  
->  	iowrite32(val, ipa->reg_virt + offset);
->  }
-> 
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index 5f4f198df0eb..bdf8593e385e 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -12,6 +12,7 @@
+  *
+  */
+ 
++#include <linux/clk.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mii.h>
+@@ -33,6 +34,7 @@ static struct smsc_hw_stat smsc_hw_stats[] = {
+ 
+ struct smsc_phy_priv {
+ 	bool energy_enable;
++	struct clk *refclk;
+ };
+ 
+ static int smsc_phy_config_intr(struct phy_device *phydev)
+@@ -194,11 +196,20 @@ static void smsc_get_stats(struct phy_device *phydev,
+ 		data[i] = smsc_get_stat(phydev, i);
+ }
+ 
++static void smsc_phy_remove(struct phy_device *phydev)
++{
++	struct smsc_phy_priv *priv = phydev->priv;
++
++	clk_disable_unprepare(priv->refclk);
++	clk_put(priv->refclk);
++}
++
+ static int smsc_phy_probe(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+ 	struct device_node *of_node = dev->of_node;
+ 	struct smsc_phy_priv *priv;
++	int ret;
+ 
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+@@ -211,6 +222,19 @@ static int smsc_phy_probe(struct phy_device *phydev)
+ 
+ 	phydev->priv = priv;
+ 
++	/* Make clk optional to keep DTB backward compatibility. */
++	priv->refclk = clk_get_optional(dev, NULL);
++	if (IS_ERR(priv->refclk))
++		dev_err_probe(dev, PTR_ERR(priv->refclk), "Failed to request clock\n");
++
++	ret = clk_prepare_enable(priv->refclk);
++	if (ret)
++		return ret;
++
++	ret = clk_set_rate(priv->refclk, 50 * 1000 * 1000);
++	if (ret)
++		return ret;
++
+ 	return 0;
+ }
+ 
+@@ -310,6 +334,7 @@ static struct phy_driver smsc_phy_driver[] = {
+ 	.flags		= PHY_RST_AFTER_CLK_EN,
+ 
+ 	.probe		= smsc_phy_probe,
++	.remove		= smsc_phy_remove,
+ 
+ 	/* basic functions */
+ 	.read_status	= lan87xx_read_status,
+-- 
+2.20.1
 
