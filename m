@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF91262CB0
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:58:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EEF262CB3
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:58:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728936AbgIIJ6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 05:58:31 -0400
-Received: from mail-il1-f208.google.com ([209.85.166.208]:49965 "EHLO
-        mail-il1-f208.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726688AbgIIJ6Y (ORCPT
+        id S1729449AbgIIJ6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 05:58:32 -0400
+Received: from mail-io1-f77.google.com ([209.85.166.77]:50257 "EHLO
+        mail-io1-f77.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727870AbgIIJ6Y (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 05:58:24 -0400
-Received: by mail-il1-f208.google.com with SMTP id f132so1590061ilh.16
+Received: by mail-io1-f77.google.com with SMTP id b16so1553022iod.17
         for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 02:58:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=ULPCKEjateHcthoDFeuXq/eqfB9xO+OxE96IrMm+mac=;
-        b=TZj6Mtv/iga8EY5xtum6+Q3iOXPcVxNMpyhaaXnkxvM7etEX0kG0SFmy+RQoWPXkUP
-         Vvk6L/qOdPIk9Ps5rxPqQk0QWpWv2JWIhzLnLhuO6h5u2dJaHxjA4jg+K0Mf2claMx7E
-         /2BsqwI1UTv9z/CJCn7Cm66LGAun29YBPzpD/arIjjV8PoX4o83x4+jY6NVc1iXqnWG2
-         ZyaZGNPqaUm/dLgCaw/z9GF84fxFySFieKdGTtL63wqIZzTEEYKXCtK7lwswS6FOiy/k
-         fupHkWboij2RLsLfdyzauEFB9HpIJdbYsioSMY/DaTx2ovH+Km8WwehY7yWON8P3RC1i
-         xFkQ==
-X-Gm-Message-State: AOAM531RhFolPMDlNa7hI/HuGwtXx1M8rwGXBFX2l/epXmE8yVov6b1t
-        1yLEFOZnIVXxepiarIoO4eANq16VXt9uTltUjD9s5cz2X/JL
-X-Google-Smtp-Source: ABdhPJzmwllqFRd42fuXZ5xumiU80KjTlc/taqWdd3jBdm6nJuxLom/wnLLgT2bcDjyAUuhbo6ylOJGyrTGMtI9EHoJyypnZPkUR
+        bh=uWeEmvYITQnMvBnpcJO6GKoW9bXJbiVcnO0AlirR3JA=;
+        b=Kl0UEgyQlhHd1Bin1aDeEl6ULtkfHYGbEy0VyRQ6TbfsToNQMeV3kS+fRk/Y64N2Qu
+         F0CAfM5J5OYlOdG6ty8auiRFJHaIOBEeiyugXv0xa6FheOOtiH+iLcZeIK/Ypdcqutvc
+         CQvIDDKlS1JGJp6rZMDFCuSj2ReHanHtuShas2kRX59UxAAb44ihh3CmERDGhof4BNIa
+         XLpoNwgWk7gv7TON40Ow5QACDVET48ZUUugls9mj6V2geBzrnYK33p7hAI90pjB3iDtC
+         623a9ikVeTpgaJrn0//fMy8TcsanTu6YDlGQd51CYRnfQq/QsDP9LSEFd0LPulmLoYp+
+         b6vw==
+X-Gm-Message-State: AOAM531heSLhDIyxu2+8NyyMr6X97jm+mgVeJGEn0AAFWpuiz2aEGkBz
+        e1fUEWrsr9Me7h/gp9SLwxD1iTIKRlG+zn78MELVdKyglpip
+X-Google-Smtp-Source: ABdhPJyT2fiKic6EiQG5oWSiDu3gkK4Kb46xs4s0wPwFt2pZ04gdgHanHEQRKNhp2vi9tZZ28aMQVrZI7tYObXg9Hs2UG5Dq77s1
 MIME-Version: 1.0
-X-Received: by 2002:a92:d28c:: with SMTP id p12mr2997493ilp.7.1599645502892;
- Wed, 09 Sep 2020 02:58:22 -0700 (PDT)
-Date:   Wed, 09 Sep 2020 02:58:22 -0700
+X-Received: by 2002:a5e:9e0a:: with SMTP id i10mr2646457ioq.41.1599645503122;
+ Wed, 09 Sep 2020 02:58:23 -0700 (PDT)
+Date:   Wed, 09 Sep 2020 02:58:23 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f76ff805aede7daf@google.com>
-Subject: general protection fault in skb_release_data (2)
-From:   syzbot <syzbot+ccfa5775bc1bda21ddd1@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, keescook@chromium.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pankaj.laxminarayan.bharadiya@intel.com,
+Message-ID: <000000000000faf37f05aede7db6@google.com>
+Subject: KMSAN: uninit-value in skb_release_data (3)
+From:   syzbot <syzbot+067cfb341865e4074630@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com, keescook@chromium.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pankaj.laxminarayan.bharadiya@intel.com,
         syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -49,119 +49,124 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    19162fd4 hv_netvsc: Fix hibernation for mlx5 VF driver
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=163310f1900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=bd46548257448703
-dashboard link: https://syzkaller.appspot.com/bug?extid=ccfa5775bc1bda21ddd1
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=175305f9900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11145e31900000
+HEAD commit:    3b3ea602 x86: add failure injection to get/put/clear_user
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=15bdcb35900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3afe005fb99591f
+dashboard link: https://syzkaller.appspot.com/bug?extid=067cfb341865e4074630
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1712e7cd900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=143305f9900000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ccfa5775bc1bda21ddd1@syzkaller.appspotmail.com
+Reported-by: syzbot+067cfb341865e4074630@syzkaller.appspotmail.com
 
-general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-CPU: 0 PID: 7081 Comm: syz-executor931 Not tainted 5.9.0-rc3-syzkaller #0
+=====================================================
+BUG: KMSAN: uninit-value in compound_head include/linux/page-flags.h:182 [inline]
+BUG: KMSAN: uninit-value in put_page include/linux/mm.h:1154 [inline]
+BUG: KMSAN: uninit-value in __skb_frag_unref include/linux/skbuff.h:2999 [inline]
+BUG: KMSAN: uninit-value in skb_release_data+0x4b4/0xde0 net/core/skbuff.c:604
+CPU: 1 PID: 8773 Comm: syz-executor104 Not tainted 5.8.0-rc5-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:compound_head include/linux/page-flags.h:182 [inline]
-RIP: 0010:put_page include/linux/mm.h:1170 [inline]
-RIP: 0010:__skb_frag_unref include/linux/skbuff.h:3014 [inline]
-RIP: 0010:skb_release_data+0x232/0x910 net/core/skbuff.c:604
-Code: 48 c1 e8 03 42 80 3c 30 00 0f 85 ea 05 00 00 48 8b 0c 24 49 63 c4 48 c1 e0 04 48 8b 6c 08 30 48 8d 7d 08 48 89 f8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 ba 05 00 00 48 8b 5d 08 31 ff 49 89 dd 41 83
-RSP: 0018:ffffc90000007a48 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: 0000000000000002 RCX: ffff88809f9d54c0
-RDX: ffff8880932d4540 RSI: ffffffff8637b105 RDI: 0000000000000008
-RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8ab2680f
-R10: 0000000000000000 R11: 1ffffffff1835523 R12: 0000000000000000
-R13: ffff88809f9d54c0 R14: dffffc0000000000 R15: ffff88809f9d54f0
-FS:  00007f8f17fb9700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000200004c0 CR3: 00000000921c5000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
  <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x21c/0x280 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ compound_head include/linux/page-flags.h:182 [inline]
+ put_page include/linux/mm.h:1154 [inline]
+ __skb_frag_unref include/linux/skbuff.h:2999 [inline]
+ skb_release_data+0x4b4/0xde0 net/core/skbuff.c:604
  skb_release_all net/core/skbuff.c:664 [inline]
- __kfree_skb net/core/skbuff.c:678 [inline]
- kfree_skb.part.0+0xc2/0x350 net/core/skbuff.c:696
- kfree_skb+0x7d/0x100 include/linux/refcount.h:270
- validate_xmit_skb+0x9d9/0xf00 net/core/dev.c:3664
- __dev_queue_xmit+0x990/0x2d60 net/core/dev.c:4128
+ __kfree_skb+0x9e/0x320 net/core/skbuff.c:678
+ kfree_skb+0x323/0x390 net/core/skbuff.c:696
+ validate_xmit_skb+0x1386/0x1aa0 net/core/dev.c:3659
+ __dev_queue_xmit+0x2aa5/0x4470 net/core/dev.c:4123
+ dev_queue_xmit+0x4b/0x60 net/core/dev.c:4164
  mrp_queue_xmit net/802/mrp.c:351 [inline]
- mrp_join_timer+0x8a/0xc0 net/802/mrp.c:595
- call_timer_fn+0x1ac/0x760 kernel/time/timer.c:1413
- expire_timers kernel/time/timer.c:1458 [inline]
- __run_timers.part.0+0x67c/0xaa0 kernel/time/timer.c:1755
- __run_timers kernel/time/timer.c:1736 [inline]
- run_timer_softirq+0xae/0x1a0 kernel/time/timer.c:1768
- __do_softirq+0x1f7/0xa91 kernel/softirq.c:298
- asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:706
+ mrp_join_timer+0x1fc/0x380 net/802/mrp.c:595
+ call_timer_fn+0x226/0x550 kernel/time/timer.c:1404
+ expire_timers+0x4fc/0x780 kernel/time/timer.c:1449
+ __run_timers+0xaf4/0xd30 kernel/time/timer.c:1773
+ run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
+ __do_softirq+0x2ea/0x7f5 kernel/softirq.c:293
+ asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
  </IRQ>
- __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
- run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
- do_softirq_own_stack+0x9d/0xd0 arch/x86/kernel/irq_64.c:77
- invoke_softirq kernel/softirq.c:393 [inline]
- __irq_exit_rcu kernel/softirq.c:423 [inline]
- irq_exit_rcu+0x235/0x280 kernel/softirq.c:435
- sysvec_apic_timer_interrupt+0x51/0xf0 arch/x86/kernel/apic/apic.c:1091
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:581
-RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:770 [inline]
-RIP: 0010:console_unlock+0xb4a/0xe60 kernel/printk/printk.c:2509
-Code: 89 48 c1 e8 03 42 80 3c 38 00 0f 85 18 03 00 00 48 83 3d a0 f8 58 08 00 0f 84 90 01 00 00 e8 4d 07 17 00 48 8b 7c 24 30 57 9d <0f> 1f 44 00 00 8b 5c 24 64 31 ff 89 de e8 b4 03 17 00 85 db 0f 84
-RSP: 0018:ffffc90005776ed0 EFLAGS: 00000293
-RAX: 0000000000000000 RBX: 0000000000000200 RCX: 0000000000000006
-RDX: ffff8880932d4540 RSI: ffffffff815d43b3 RDI: 0000000000000293
-RBP: 0000000000000000 R08: 0000000000000001 R09: ffffffff8c5f49e7
-R10: fffffbfff18be93c R11: 0000000038303754 R12: ffffffff84c29770
-R13: 000000000000003d R14: ffffffff8a3cb5d0 R15: dffffc0000000000
- vprintk_emit+0x2ff/0x740 kernel/printk/printk.c:2029
- vprintk_func+0x8f/0x1a6 kernel/printk/printk_safe.c:393
- printk+0xba/0xed kernel/printk/printk.c:2078
- __dev_set_promiscuity.cold+0x55/0x35f net/core/dev.c:8076
- __dev_change_flags+0x3af/0x660 net/core/dev.c:8294
- rtnl_configure_link+0xee/0x230 net/core/rtnetlink.c:3123
- __rtnl_newlink+0x10b6/0x1740 net/core/rtnetlink.c:3460
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3500
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5563
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ __run_on_irqstack arch/x86/include/asm/irq_stack.h:23 [inline]
+ run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:50 [inline]
+ do_softirq_own_stack+0x7c/0xa0 arch/x86/kernel/irq_64.c:77
+ invoke_softirq kernel/softirq.c:390 [inline]
+ __irq_exit_rcu+0x226/0x270 kernel/softirq.c:420
+ irq_exit_rcu+0xe/0x10 kernel/softirq.c:432
+ sysvec_apic_timer_interrupt+0x107/0x130 arch/x86/kernel/apic/apic.c:1091
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:593
+RIP: 0010:console_unlock+0x195c/0x1e10 kernel/printk/printk.c:2503
+Code: c8 00 00 00 48 8b 9c 24 c0 00 00 00 e8 5d d3 00 00 48 85 db 0f 85 89 00 00 00 4c 89 bc 24 28 01 00 00 ff b4 24 28 01 00 00 9d <44> 89 f0 34 01 22 44 24 3f 44 89 f3 0a 5c 24 2a 3c 01 74 76 f6 c3
+RSP: 0018:ffff8880b7c8a830 EFLAGS: 00000282
+RAX: 00007ffffffff000 RBX: 0000000000000000 RCX: ffff88811a098000
+RDX: 0000000000000000 RSI: 0000000000000004 RDI: 000000000001b9a0
+RBP: ffff8880b7c8a9b8 R08: ffffea000000000f R09: ffff88812fffa000
+R10: 0000000000000000 R11: 00000000ffffffff R12: ffffffff925cad60
+R13: ffff88811a0989d8 R14: 0000000000000000 R15: 0000000000000282
+ vprintk_emit+0x48f/0x990 kernel/printk/printk.c:2028
+ vprintk_default+0x90/0xa0 kernel/printk/printk.c:2046
+ vprintk_func+0x2f7/0x300 kernel/printk/printk_safe.c:393
+ printk+0x18b/0x1d3 kernel/printk/printk.c:2077
+ addrconf_notify+0x2f35/0x6400 net/ipv6/addrconf.c:3542
+ notifier_call_chain kernel/notifier.c:83 [inline]
+ __raw_notifier_call_chain kernel/notifier.c:361 [inline]
+ raw_notifier_call_chain+0x123/0x290 kernel/notifier.c:368
+ call_netdevice_notifiers_info net/core/dev.c:2027 [inline]
+ __dev_notify_flags+0x90e/0xb90 net/core/dev.c:8330
+ rtnl_configure_link+0x492/0x4e0 net/core/rtnetlink.c:3028
+ __rtnl_newlink net/core/rtnetlink.c:3357 [inline]
+ rtnl_newlink+0x2f10/0x3ed0 net/core/rtnetlink.c:3397
+ rtnetlink_rcv_msg+0x142b/0x18c0 net/core/rtnetlink.c:5460
+ netlink_rcv_skb+0x6d7/0x7e0 net/netlink/af_netlink.c:2469
+ rtnetlink_rcv+0x50/0x60 net/core/rtnetlink.c:5478
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x11c8/0x1490 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x173a/0x1840 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0xc82/0x1240 net/socket.c:2352
+ ___sys_sendmsg net/socket.c:2406 [inline]
+ __sys_sendmsg+0x6d1/0x840 net/socket.c:2439
+ __do_sys_sendmsg net/socket.c:2448 [inline]
+ __se_sys_sendmsg+0x97/0xb0 net/socket.c:2446
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2446
+ do_syscall_64+0xad/0x160 arch/x86/entry/common.c:386
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x446ec9
-Code: e8 bc b4 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 2b 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f8f17fb8db8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00000000006dbc68 RCX: 0000000000446ec9
+RIP: 0033:0x441929
+Code: Bad RIP value.
+RSP: 002b:00007ffca7a67de8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000441929
 RDX: 0000000000000000 RSI: 0000000020000280 RDI: 0000000000000005
-RBP: 00000000006dbc60 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000008 R11: 0000000000000246 R12: 00000000006dbc6c
-R13: 00007ffc03b1786f R14: 00007f8f17fb99c0 R15: 0000000000000064
-Modules linked in:
----[ end trace e9a2262e09a956fb ]---
-RIP: 0010:compound_head include/linux/page-flags.h:182 [inline]
-RIP: 0010:put_page include/linux/mm.h:1170 [inline]
-RIP: 0010:__skb_frag_unref include/linux/skbuff.h:3014 [inline]
-RIP: 0010:skb_release_data+0x232/0x910 net/core/skbuff.c:604
-Code: 48 c1 e8 03 42 80 3c 30 00 0f 85 ea 05 00 00 48 8b 0c 24 49 63 c4 48 c1 e0 04 48 8b 6c 08 30 48 8d 7d 08 48 89 f8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 ba 05 00 00 48 8b 5d 08 31 ff 49 89 dd 41 83
-RSP: 0018:ffffc90000007a48 EFLAGS: 00010202
-RAX: 0000000000000001 RBX: 0000000000000002 RCX: ffff88809f9d54c0
-RDX: ffff8880932d4540 RSI: ffffffff8637b105 RDI: 0000000000000008
-RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8ab2680f
-R10: 0000000000000000 R11: 1ffffffff1835523 R12: 0000000000000000
-R13: ffff88809f9d54c0 R14: dffffc0000000000 R15: ffff88809f9d54f0
-FS:  00007f8f17fb9700(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000200004c0 CR3: 00000000921c5000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+RBP: 00007ffca7a67df0 R08: 0000000100000000 R09: 0000000100000000
+R10: 0000000100000000 R11: 0000000000000246 R12: 00000000000244e3
+R13: 0000000000402800 R14: 0000000000000000 R15: 0000000000000000
+
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:80
+ slab_alloc_node mm/slub.c:2839 [inline]
+ __kmalloc_node_track_caller+0xeab/0x12e0 mm/slub.c:4478
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x35f/0xb30 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1083 [inline]
+ mrp_pdu_init net/802/mrp.c:300 [inline]
+ mrp_pdu_append_vecattr_event+0x4ad/0x2310 net/802/mrp.c:399
+ mrp_attr_event+0x2a1/0x4e0 net/802/mrp.c:494
+ mrp_mad_event net/802/mrp.c:574 [inline]
+ mrp_join_timer+0x10e/0x380 net/802/mrp.c:591
+ call_timer_fn+0x226/0x550 kernel/time/timer.c:1404
+ expire_timers+0x4fc/0x780 kernel/time/timer.c:1449
+ __run_timers+0xaf4/0xd30 kernel/time/timer.c:1773
+ run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
+ __do_softirq+0x2ea/0x7f5 kernel/softirq.c:293
+=====================================================
 
 
 ---
