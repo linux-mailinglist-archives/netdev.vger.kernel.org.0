@@ -2,125 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F1552631DD
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD9BD263270
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:43:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731071AbgIIQ26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 12:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56586 "EHLO
+        id S1730999AbgIIQnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 12:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731098AbgIIQ2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:28:42 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24728C061573
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 09:28:42 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id u21so4478035eja.2
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 09:28:42 -0700 (PDT)
+        with ESMTP id S1730994AbgIIQMt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:12:49 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D72C0617BD
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 06:43:46 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id u20so2347860ilk.6
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 06:43:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=so9uz90DQo4KjR3AxKaW0CMVUnvyI+mDfB4zh4RW7Rc=;
-        b=cOH53+aepFsKMC2a2j23qImLN9bczn8Uvp4tT7kEv/KbXzGh+L0hPVzQwF0mAHnrJR
-         dWNgrLxSDGJkQprJ3VkAF1mdSeAXp37v0DRo794iTsMlW7Cn4KbRk2SncWlXzEtRHSYO
-         Lr0owS5/AWZSAhMrhG41H+Zl2BX/rJ+altJLv/thh4XkUxyMW3NsWxAfPeD9WFsnhoAy
-         nCAKQR4gUi/JbB4gDxONwAIfosAEaKjfuhU1lMiREH/T1GAAcjrezg2l6nTvMdsqap6D
-         kq0ko5cQDoL8KAwpMgg9Q/En86b3TmQc7rQ+icro+irseEhAWg0irceK/CDmkVFoJTHL
-         8idg==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=wzRfPI8VPUjN9UUY3Djh37yv6ix7hIv2rZzunO2y6YU=;
+        b=VuxVtlS7tRUJRgKbX6B92xD/alpWvZmwy0QcPUOJka6AklyudrnjCYnvg2MN7/kTiy
+         Eju4t6MsQBRWUiI4HgKmZeQpgaai/AJ5utoqDQFRdzKfQpGVZaPd7ZP1KgM3eTFDoC/P
+         RDFMHhmwOfjadPsROfab/T/wWDz2dV0gc2a7j9otYGEP+2oF7FuTpObi+EdOXb7ygJ5z
+         /7NxrBiBFUArJ5Gahh9Cu/AyAV7VP8GekjGc7ggBO3prmthyyQmW+3DWjzzPsj192uXS
+         Z37vsixhJz15sQGX+G08UZXWaUY05HdUGarpsm3V9oD0b6aPnpdcbv9eelRcR5c4FSQs
+         EG7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=so9uz90DQo4KjR3AxKaW0CMVUnvyI+mDfB4zh4RW7Rc=;
-        b=L71jFsIm2m0YBeDaZvjMuXbjj2avsqpjAoDKeejrUfM9vPSjc6+iuuTq2/vUKCB3Wu
-         bUVoPq+YH9dQF9gjcHTqMa+Dz5wCFfUb4WwgogrP1mXvKxvVUFEwjCc04Dhl/9xgD7fd
-         u7uPq0X8XkuKRLhI1a8SvPTAMquZUI9B+87dx9htFRSgJZQhjjACWm3gNFXakGYdhTV4
-         zHK3LaAD22ZfzJOTJZmV8kFrORwjIf2l0JAfWsYbfZUvIDSGS/lcrOylmMiZRhnD7GPl
-         uoWBOnPLnYISGqsC8aY599eg5NSY4YtNLb7/cJjN3sat7ABD5cZSXPLt8kYWb99fqqmX
-         kPag==
-X-Gm-Message-State: AOAM532ZZ5kREOOmbyIS5jhvlVqempc6rrCy6AcSBh79UFUS0FHYtoYn
-        dT9sPytG6BcT/L4HS1sOxKgGBA==
-X-Google-Smtp-Source: ABdhPJxIvuNLJajbInQoEnSl4WGQMVtsDb+7BvARTTmspPI+QcvkHrafs9M5tjRCNcun3eaoF3afYQ==
-X-Received: by 2002:a17:906:a156:: with SMTP id bu22mr4633110ejb.177.1599668920833;
-        Wed, 09 Sep 2020 09:28:40 -0700 (PDT)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id w14sm2920758ejn.36.2020.09.09.09.28.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 09:28:40 -0700 (PDT)
-Date:   Wed, 9 Sep 2020 18:28:39 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Allen Pais <allen.lkml@gmail.com>
-Cc:     davem@davemloft.net, jes@trained-monkey.org, kuba@kernel.org,
-        dougmill@linux.ibm.com, cooldavid@cooldavid.org,
-        mlindner@marvell.com, stephen@networkplumber.org,
-        borisp@mellanox.com, netdev@vger.kernel.org,
-        Romain Perier <romain.perier@gmail.com>
-Subject: Re: [PATCH v2 16/20] ethernet: netronome: convert tasklets to use
- new tasklet_setup() API
-Message-ID: <20200909162838.GA28336@netronome.com>
-References: <20200909084510.648706-1-allen.lkml@gmail.com>
- <20200909084510.648706-17-allen.lkml@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=wzRfPI8VPUjN9UUY3Djh37yv6ix7hIv2rZzunO2y6YU=;
+        b=YJNzBXEKBTGl/dM/X1KT6yzB1k2+Zdh3Z7MonPhbgpY2WvFfaS/rbSe8fnG8hOVWVw
+         b1CNdvaT0VJywoXBAy5L/RoCD6WDkLQoD/takROfxW079qaWQvBHMtOlgGtYfrtr1PbV
+         AzQoVAK+CqAGII8DlRioKv3fdP8jo8rIBvF7SWn7cYudXilBs29IxFD4RtIqCUPUqHFu
+         yP48f2ckWqPSsKE+Z2hIJYkxSfVyUNAhqUxf3maQ52D6TUPK1iUvMkQl7LWOTtcCs9zw
+         frrGFELyW8Pv6m4ziox6+vERJxDWXAgQWUYyybES2YUVCDnkWBWLkKtJboN5IrlayuEr
+         Spqw==
+X-Gm-Message-State: AOAM533f8A8ATfptlXO/nHfwuoJOZWt2K3rPnDuBcG3kpVojMaTHvlO6
+        AoOVuKhyc9S90Xnt75LDyakUHA==
+X-Google-Smtp-Source: ABdhPJwIGrbK4KyNTds5smWJJ4zAFhQ5IOHVVyhL0gObMVN3sTRsWG+b+dllHjOw03HyY0O4b+99fw==
+X-Received: by 2002:a92:512:: with SMTP id q18mr3637460ile.196.1599659025914;
+        Wed, 09 Sep 2020 06:43:45 -0700 (PDT)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id e28sm1437589ill.79.2020.09.09.06.43.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Sep 2020 06:43:45 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/5] net: ipa: use atomic exchange for suspend
+ reference
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200909002127.21089-1-elder@linaro.org>
+ <20200909002127.21089-2-elder@linaro.org>
+ <20200908.202731.923992684489468023.davem@davemloft.net>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <bd61d3fb-44b7-9bc3-ccad-1101c5c34ebc@linaro.org>
+Date:   Wed, 9 Sep 2020 08:43:44 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200909084510.648706-17-allen.lkml@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200908.202731.923992684489468023.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 09, 2020 at 02:15:06PM +0530, Allen Pais wrote:
-> In preparation for unconditionally passing the
-> struct tasklet_struct pointer to all tasklet
-> callbacks, switch to using the new tasklet_setup()
-> and from_tasklet() to pass the tasklet pointer explicitly.
+On 9/8/20 10:27 PM, David Miller wrote:
+> From: Alex Elder <elder@linaro.org>
+> Date: Tue,  8 Sep 2020 19:21:23 -0500
 > 
-> Signed-off-by: Romain Perier <romain.perier@gmail.com>
-> Signed-off-by: Allen Pais <allen.lkml@gmail.com>
-
-The correct prefix for NFP driver patches is "nfp: ", not
-"ethernet: netronome: ". Possibly a similar comment applies to other
-patches in this series.
-
-Patches targeted at "net-next" should include "net-next" in the subject,
-like this: [PATCH v2 net-next 16/20] ...
-
-The patch itself seems fine to me.
-So with the above fixed feel free to add:
-
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
-
-> ---
->  drivers/net/ethernet/netronome/nfp/nfp_net_common.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
+>> We take a single IPA clock reference to keep the clock running
+>> until we get a system suspend operation.  When a system suspend
+>> request arrives, we drop that reference, and if that's the last
+>> reference (likely) we'll proceed with suspending endpoints and
+>> disabling the IPA core clock and interconnects.
+>>
+>> In most places we simply set the reference count to 0 or 1
+>> atomically.  Instead--primarily to catch coding errors--use an
+>> atomic exchange to update the reference count value, and report
+>> an error in the event the previous value was unexpected.
+>>
+>> In a few cases it's not hard to see that the error message should
+>> never be reported.  Report them anyway, but add some excitement
+>> to the message by ending it with an exclamation point.
+>>
+>> Signed-off-by: Alex Elder <elder@linaro.org>
 > 
-> diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> index 21ea22694e47..b150da43adb2 100644
-> --- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> +++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
-> @@ -2287,9 +2287,9 @@ static bool nfp_ctrl_rx(struct nfp_net_r_vector *r_vec)
->  	return budget;
->  }
->  
-> -static void nfp_ctrl_poll(unsigned long arg)
-> +static void nfp_ctrl_poll(struct tasklet_struct *t)
->  {
-> -	struct nfp_net_r_vector *r_vec = (void *)arg;
-> +	struct nfp_net_r_vector *r_vec = from_tasklet(r_vec, t, tasklet);
->  
->  	spin_lock(&r_vec->lock);
->  	nfp_net_tx_complete(r_vec->tx_ring, 0);
-> @@ -2337,8 +2337,7 @@ static void nfp_net_vecs_init(struct nfp_net *nn)
->  
->  			__skb_queue_head_init(&r_vec->queue);
->  			spin_lock_init(&r_vec->lock);
-> -			tasklet_init(&r_vec->tasklet, nfp_ctrl_poll,
-> -				     (unsigned long)r_vec);
-> +			tasklet_setup(&r_vec->tasklet, nfp_ctrl_poll);
->  			tasklet_disable(&r_vec->tasklet);
->  		}
->  
-> -- 
-> 2.25.1
+> Please use refcount_t if you're wanting to validate things like
+> this.
+
+There is exactly one reference here; the "reference" is
+essentially a Boolean flag.  So the value is always either
+0 or 1.
+
+I can use refcount_dec_if_one() for the 1->0 transition,
+but I'm not sure how I can do the 0->1 transition with
+refcount_t.  I admit I might be missing something.
+
+Would you like me to add refcount_inc_if_zero()?
+
+Otherwise would you prefer a different naming convention
+to use for this Boolean "reference count"?
+
+Thanks.
+
+					-Alex
+
 > 
+> Thank you.
+> 
+
