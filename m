@@ -2,473 +2,387 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90F8E26322B
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98B4626322F
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 18:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731110AbgIIQgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 12:36:18 -0400
-Received: from mail.nic.cz ([217.31.204.67]:34820 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731068AbgIIQ0G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 12:26:06 -0400
-Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id A4CB5140A77;
-        Wed,  9 Sep 2020 18:25:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1599668755; bh=CCID+6XO7E5eXop8eKP/NFb1pvL8WXiQXdWzIDrO1ko=;
-        h=From:To:Date;
-        b=R6qBombeGlUUJI8+cD9oVr800xcBkPHmLu9PoxsEh9GYi5WmDhU2uYJ5Q1Z1euztx
-         aI+N6LjqzkoFeGn7xzuRS4eqSgaQ84EFPqgQw6Z+qWwIQI1MNL0FA0VADA88Ssb+xc
-         xd2B9yPTQa/694GSdImzwU4rDjxPBKBhTUIh3ryE=
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-To:     netdev@vger.kernel.org
-Cc:     linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
-        Dan Murphy <dmurphy@ti.com>,
-        =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megous@megous.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        id S1731221AbgIIQgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 12:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56132 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730315AbgIIQ0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 12:26:03 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D58C061757
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 09:26:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=LQolR6jlzUsS1ejEcPntkjCPNlucNhTXmTwlmzS49iU=; b=tenBYhrACQQS9BWRxwEby2NbAe
+        Q+cgKq29ePzraSX6UV4LQDXbt7r9oTXVfDvGwBcHwI2zr5yyXR1ZlN9ue4s0mtSfuQBw69ElWGU3D
+        GDeUmfLq+dm6yvPXZeXHjvc3rJwiaf0TvT9xjEpEfvY3Vb1g+WQpMjVYJFPE0P9O2hH9NsHIflEKQ
+        pbgn/j6mBpSCrCvehwUuDI73V7cMQ/JjBU0AlwdfQYmF3dewFOODKr5y14UOpoM6Lo4bLdnFihXbM
+        9FVMtN+x31QDpxvcDM8EwfuaXnwsdDtWq5lugMfa9Ek5OGkKtbGAuwAankqLmxUdj5dAafMua+UPe
+        aDH0pfUg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:46312 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1kG2uy-00052c-2u; Wed, 09 Sep 2020 17:25:56 +0100
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1kG2ux-0002zL-Su; Wed, 09 Sep 2020 17:25:55 +0100
+In-Reply-To: <20200909162501.GB1551@shell.armlinux.org.uk>
+References: <20200909162501.GB1551@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Richard Cochran <richardcochran@gmail.com>
+Cc:     Matteo Croce <mcroce@redhat.com>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Sven Auhagen <sven.auhagen@voleatech.de>,
         "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH net-next + leds v2 6/7] net: phy: marvell: add support for LEDs controlled by Marvell PHYs
-Date:   Wed,  9 Sep 2020 18:25:51 +0200
-Message-Id: <20200909162552.11032-7-marek.behun@nic.cz>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200909162552.11032-1-marek.behun@nic.cz>
-References: <20200909162552.11032-1-marek.behun@nic.cz>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH net-next v4 5/6] net: mvpp2: ptp: add support for receive
+ timestamping
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Spam-Status: No, score=0.00
-X-Spamd-Bar: /
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1kG2ux-0002zL-Su@rmk-PC.armlinux.org.uk>
+Date:   Wed, 09 Sep 2020 17:25:55 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for controlling the LEDs connected to several
-families of Marvell PHYs via the PHY HW LED trigger API. These families
-are: 88E1112, 88E1121R, 88E1240, 88E1340S, 88E1510 and 88E1545. More can
-be added.
+Add support for receive timestamping. When enabled, the hardware adds
+a timestamp into the receive queue descriptor for all received packets
+with no filtering. Hence, we can only support NONE or ALL receive
+filter modes.
 
-This patch does not yet add support for compound LED modes. This could
-be achieved via the LED multicolor framework.
+The timestamp in the receive queue contains two bit sof seconds and
+the full nanosecond timestamp. This has to be merged with the remainder
+of the seconds from the TAI clock to arrive at a full timestamp before
+we can convert it to a ktime for the skb hardware timestamp field.
 
-Settings such as HW blink rate or pulse stretch duration are not yet
-supported.
-
-Signed-off-by: Marek Behún <marek.behun@nic.cz>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/marvell.c | 314 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 312 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |  31 ++++-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 108 +++++++++++++++++-
+ .../net/ethernet/marvell/mvpp2/mvpp2_tai.c    |  57 +++++++++
+ 3 files changed, 194 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index bb86ac0bd0920..7aedb529e1540 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -148,6 +148,13 @@
- #define MII_88E1510_PHY_LED_DEF		0x1177
- #define MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE	0x1040
- 
-+#define MII_PHY_LED_POLARITY_CTRL	17
-+#define MII_PHY_LED_TIMER_CTRL		18
-+#define MII_PHY_LED45_CTRL		19
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index b9fae3870393..75467411900e 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -600,6 +600,9 @@
+ #define MVPP22_PTP_INT_CAUSE			0x00
+ #define MVPP22_PTP_INT_MASK			0x04
+ #define MVPP22_PTP_GCR				0x08
++#define     MVPP22_PTP_GCR_RX_RESET		BIT(13)
++#define     MVPP22_PTP_GCR_TX_RESET		BIT(1)
++#define     MVPP22_PTP_GCR_TSU_ENABLE		BIT(0)
+ #define MVPP22_PTP_TX_Q0_R0			0x0c
+ #define MVPP22_PTP_TX_Q0_R1			0x10
+ #define MVPP22_PTP_TX_Q0_R2			0x14
+@@ -1094,6 +1097,9 @@ struct mvpp2_port {
+ 	 * them from 0
+ 	 */
+ 	int rss_ctx[MVPP22_N_RSS_TABLES];
 +
-+#define MII_PHY_LED_CTRL_FORCE_ON	0x9
-+#define MII_PHY_LED_CTRL_FORCE_OFF	0x8
-+
- #define MII_M1011_PHY_STATUS		0x11
- #define MII_M1011_PHY_STATUS_1000	0x8000
- #define MII_M1011_PHY_STATUS_100	0x4000
-@@ -252,6 +259,8 @@
- #define LPA_PAUSE_FIBER		0x180
- #define LPA_PAUSE_ASYM_FIBER	0x100
- 
-+#define MARVELL_PHY_MAX_LEDS	6
-+
- #define NB_FIBER_STATS	1
- 
- MODULE_DESCRIPTION("Marvell PHY driver");
-@@ -280,6 +289,7 @@ struct marvell_priv {
- 	u32 last;
- 	u32 step;
- 	s8 pair;
-+	u16 legacy_led_config_mask;
++	bool hwtstamp;
++	bool rx_hwtstamp;
  };
  
- static int marvell_read_page(struct phy_device *phydev)
-@@ -662,8 +672,300 @@ static int m88e1510_config_aneg(struct phy_device *phydev)
- 	return err;
+ /* The mvpp2_tx_desc and mvpp2_rx_desc structures describe the
+@@ -1173,7 +1179,7 @@ struct mvpp22_rx_desc {
+ 	__le16 reserved1;
+ 	__le16 data_size;
+ 	__le32 reserved2;
+-	__le32 reserved3;
++	__le32 timestamp;
+ 	__le64 buf_dma_addr_key_hash;
+ 	__le64 buf_cookie_misc;
+ };
+@@ -1355,11 +1361,34 @@ void mvpp2_dbgfs_cleanup(struct mvpp2 *priv);
+ 
+ #ifdef CONFIG_MVPP2_PTP
+ int mvpp22_tai_probe(struct device *dev, struct mvpp2 *priv);
++void mvpp22_tai_tstamp(struct mvpp2_tai *tai, u32 tstamp,
++		       struct skb_shared_hwtstamps *hwtstamp);
++void mvpp22_tai_start(struct mvpp2_tai *tai);
++void mvpp22_tai_stop(struct mvpp2_tai *tai);
++int mvpp22_tai_ptp_clock_index(struct mvpp2_tai *tai);
+ #else
+ static inline int mvpp22_tai_probe(struct device *dev, struct mvpp2 *priv)
+ {
+ 	return 0;
+ }
++static inline void mvpp22_tai_tstamp(struct mvpp2_tai *tai, u32 tstamp,
++				     struct skb_shared_hwtstamps *hwtstamp)
++{
++}
++static inline void mvpp22_tai_start(struct mvpp2_tai *tai)
++{
++}
++static inline void mvpp22_tai_stop(struct mvpp2_tai *tai)
++{
++}
++static inline int mvpp22_tai_ptp_clock_index(struct mvpp2_tai *tai)
++{
++	return -1;
++}
+ #endif
+ 
++static inline bool mvpp22_rx_hwtstamping(struct mvpp2_port *port)
++{
++	return IS_ENABLED(CONFIG_MVPP2_PTP) && port->rx_hwtstamp;
++}
+ #endif
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 9ad286930c1d..0d5c024f286b 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -3449,7 +3449,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 		unsigned int frag_size;
+ 		dma_addr_t dma_addr;
+ 		phys_addr_t phys_addr;
+-		u32 rx_status;
++		u32 rx_status, timestamp;
+ 		int pool, rx_bytes, err, ret;
+ 		void *data;
+ 
+@@ -3527,6 +3527,15 @@ static int mvpp2_rx(struct mvpp2_port *port, struct napi_struct *napi,
+ 			goto err_drop_frame;
+ 		}
+ 
++		/* If we have RX hardware timestamping enabled, grab the
++		 * timestamp from the queue and convert.
++		 */
++		if (mvpp22_rx_hwtstamping(port)) {
++			timestamp = le32_to_cpu(rx_desc->pp22.timestamp);
++			mvpp22_tai_tstamp(port->priv->tai, timestamp,
++					 skb_hwtstamps(skb));
++		}
++
+ 		err = mvpp2_rx_refill(port, bm_pool, pp, pool);
+ 		if (err) {
+ 			netdev_err(port->dev, "failed to refill BM pools\n");
+@@ -4561,10 +4570,100 @@ mvpp2_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
+ 	stats->tx_dropped	= dev->stats.tx_dropped;
  }
  
-+#if IS_ENABLED(CONFIG_LEDS_HW_CONTROLLED)
-+
-+enum {
-+	COMMON			= BIT(0),
-+	L1V0_RECV		= BIT(1),
-+	L1V0_COPPER		= BIT(2),
-+	L1V5_100_FIBER		= BIT(3),
-+	L1V5_100_10		= BIT(4),
-+	L2V2_INIT		= BIT(5),
-+	L2V2_PTP		= BIT(6),
-+	L2V2_DUPLEX		= BIT(7),
-+	L3V0_FIBER		= BIT(8),
-+	L3V0_LOS		= BIT(9),
-+	L3V5_TRANS		= BIT(10),
-+	L3V7_FIBER		= BIT(11),
-+	L3V7_DUPLEX		= BIT(12),
-+};
-+
-+struct marvell_led_mode_info {
-+	const char *name;
-+	s8 regval[MARVELL_PHY_MAX_LEDS];
-+	u32 flags;
-+};
-+
-+static const struct marvell_led_mode_info marvell_led_mode_info[] = {
-+	{ "link",			{ 0x0,  -1, 0x0,  -1,  -1,  -1, }, COMMON },
-+	{ "link/act",			{ 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, }, COMMON },
-+	{ "1Gbps/100Mbps/10Mbps",	{ 0x2,  -1,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "act",			{ 0x3, 0x3, 0x3, 0x3, 0x3, 0x3, }, COMMON },
-+	{ "blink-act",			{ 0x4, 0x4, 0x4, 0x4, 0x4, 0x4, }, COMMON },
-+	{ "tx",				{ 0x5,  -1, 0x5,  -1, 0x5, 0x5, }, COMMON },
-+	{ "tx",				{  -1,  -1,  -1, 0x5,  -1,  -1, }, L3V5_TRANS },
-+	{ "rx",				{  -1,  -1,  -1,  -1, 0x0, 0x0, }, COMMON },
-+	{ "rx",				{  -1, 0x0,  -1,  -1,  -1,  -1, }, L1V0_RECV },
-+	{ "copper",			{ 0x6,  -1,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "copper",			{  -1, 0x0,  -1,  -1,  -1,  -1, }, L1V0_COPPER },
-+	{ "1Gbps",			{ 0x7,  -1,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "link/rx",			{  -1, 0x2,  -1, 0x2, 0x2, 0x2, }, COMMON },
-+	{ "100Mbps-fiber",		{  -1, 0x5,  -1,  -1,  -1,  -1, }, L1V5_100_FIBER },
-+	{ "100Mbps-10Mbps",		{  -1, 0x5,  -1,  -1,  -1,  -1, }, L1V5_100_10 },
-+	{ "1Gbps-100Mbps",		{  -1, 0x6,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "1Gbps-10Mbps",		{  -1,  -1, 0x6, 0x6,  -1,  -1, }, COMMON },
-+	{ "100Mbps",			{  -1, 0x7,  -1,  -1,  -1,  -1, }, COMMON },
-+	{ "10Mbps",			{  -1,  -1, 0x7,  -1,  -1,  -1, }, COMMON },
-+	{ "fiber",			{  -1,  -1,  -1, 0x0,  -1,  -1, }, L3V0_FIBER },
-+	{ "fiber",			{  -1,  -1,  -1, 0x7,  -1,  -1, }, L3V7_FIBER },
-+	{ "FullDuplex",			{  -1,  -1,  -1, 0x7,  -1,  -1, }, L3V7_DUPLEX },
-+	{ "FullDuplex",			{  -1,  -1,  -1,  -1, 0x6, 0x6, }, COMMON },
-+	{ "FullDuplex/collision",	{  -1,  -1,  -1,  -1, 0x7, 0x7, }, COMMON },
-+	{ "FullDuplex/collision",	{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_DUPLEX },
-+	{ "ptp",			{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_PTP },
-+	{ "init",			{  -1,  -1, 0x2,  -1,  -1,  -1, }, L2V2_INIT },
-+	{ "los",			{  -1,  -1,  -1, 0x0,  -1,  -1, }, L3V0_LOS },
-+	{ "blink",			{ 0xb, 0xb, 0xb, 0xb, 0xb, 0xb, }, COMMON },
-+};
-+
-+struct marvell_leds_info {
-+	u32 family;
-+	int nleds;
-+	u32 flags;
-+};
-+
-+#define LED(fam, n, flg)							\
-+	{									\
-+		.family = MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E##fam),	\
-+		.nleds = (n),							\
-+		.flags = (flg),							\
-+	}									\
-+
-+static const struct marvell_leds_info marvell_leds_info[] = {
-+	LED(1112,  4, COMMON | L1V0_COPPER | L1V5_100_FIBER | L2V2_INIT | L3V0_LOS | L3V5_TRANS |
-+		      L3V7_FIBER),
-+	LED(1121R, 3, COMMON | L1V5_100_10),
-+	LED(1240,  6, COMMON | L3V5_TRANS),
-+	LED(1340S, 6, COMMON | L1V0_COPPER | L1V5_100_FIBER | L2V2_PTP | L3V0_FIBER | L3V7_DUPLEX),
-+	LED(1510,  3, COMMON | L1V0_RECV | L1V5_100_FIBER | L2V2_DUPLEX),
-+	LED(1545,  6, COMMON | L1V0_COPPER | L1V5_100_FIBER | L3V0_FIBER | L3V7_DUPLEX),
-+};
-+
-+static inline int marvell_led_reg(int led)
++static int mvpp2_set_ts_config(struct mvpp2_port *port, struct ifreq *ifr)
 +{
-+	switch (led) {
-+	case 0 ... 3:
-+		return MII_PHY_LED_CTRL;
-+	case 4 ... 5:
-+		return MII_PHY_LED45_CTRL;
-+	default:
-+		return -EINVAL;
-+	}
-+}
++	struct hwtstamp_config config;
++	void __iomem *ptp;
 +
-+static int marvell_led_set_regval(struct phy_device *phydev, int led, u16 val)
-+{
-+	u16 mask;
-+	int reg;
++	if (copy_from_user(&config, ifr->ifr_data, sizeof(config)))
++		return -EFAULT;
 +
-+	reg = marvell_led_reg(led);
-+	if (reg < 0)
-+		return reg;
-+
-+	val <<= (led % 4) * 4;
-+	mask = 0xf << ((led % 4) * 4);
-+
-+	return phy_modify_paged(phydev, MII_MARVELL_LED_PAGE, reg, mask, val);
-+}
-+
-+static int marvell_led_get_regval(struct phy_device *phydev, int led)
-+{
-+	int reg, val;
-+
-+	reg = marvell_led_reg(led);
-+	if (reg < 0)
-+		return reg;
-+
-+	val = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, reg);
-+	if (val < 0)
-+		return val;
-+
-+	val >>= (led % 4) * 4;
-+	val &= 0xf;
-+
-+	return val;
-+}
-+
-+static int marvell_led_set_polarity(struct phy_device *phydev, int led, bool active_low,
-+				    bool tristate)
-+{
-+	int reg, shift;
-+	u16 mask, val;
-+
-+	switch (led) {
-+	case 0 ... 3:
-+		reg = MII_PHY_LED_POLARITY_CTRL;
-+		break;
-+	case 4 ... 5:
-+		reg = MII_PHY_LED45_CTRL;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	val = 0;
-+	if (!active_low)
-+		val |= BIT(0);
-+	if (tristate)
-+		val |= BIT(1);
-+
-+	shift = led * 2;
-+	val <<= shift;
-+	mask = 0x3 << shift;
-+
-+	return phy_modify_paged(phydev, MII_MARVELL_LED_PAGE, reg, mask, val);
-+}
-+
-+static int marvell_led_brightness_set(struct device *dev, struct hw_controlled_led *led,
-+				      enum led_brightness brightness)
-+{
-+	struct phy_device *phydev = to_phy_device(dev);
-+	u8 val;
-+
-+	/* don't do anything if HW control is enabled */
-+	if (led->cdev.trigger == &hw_control_led_trig)
-+		return 0;
-+
-+	val = brightness ? MII_PHY_LED_CTRL_FORCE_ON : MII_PHY_LED_CTRL_FORCE_OFF;
-+
-+	return marvell_led_set_regval(phydev, led->addr, val);
-+}
-+
-+static inline bool is_valid_led_mode(struct hw_controlled_led *led,
-+				     const struct marvell_led_mode_info *mode)
-+{
-+	const struct marvell_leds_info *info = led->priv;
-+
-+	return mode->regval[led->addr] != -1 && (info->flags & mode->flags);
-+}
-+
-+static const char *marvell_led_iter_hw_mode(struct device *dev, struct hw_controlled_led *led,
-+					    void **iter)
-+{
-+	const struct marvell_led_mode_info *mode = *iter;
-+
-+	if (!mode)
-+		mode = marvell_led_mode_info;
-+
-+	if (mode - marvell_led_mode_info == ARRAY_SIZE(marvell_led_mode_info))
-+		goto end;
-+
-+	while (!is_valid_led_mode(led, mode)) {
-+		++mode;
-+		if (mode - marvell_led_mode_info == ARRAY_SIZE(marvell_led_mode_info))
-+			goto end;
-+	}
-+
-+	*iter = (void *)(mode + 1);
-+	return mode->name;
-+end:
-+	*iter = NULL;
-+	return NULL;
-+}
-+
-+static int marvell_led_set_hw_mode(struct device *dev, struct hw_controlled_led *led,
-+				   const char *name)
-+{
-+	struct phy_device *phydev = to_phy_device(dev);
-+	const struct marvell_led_mode_info *mode;
-+	int i;
-+
-+	if (!name)
-+		return 0;
-+
-+	for (i = 0; i < ARRAY_SIZE(marvell_led_mode_info); ++i) {
-+		mode = &marvell_led_mode_info[i];
-+
-+		if (!is_valid_led_mode(led, mode))
-+			continue;
-+
-+		if (sysfs_streq(name, mode->name))
-+			return marvell_led_set_regval(phydev, led->addr, mode->regval[led->addr]);
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const char *marvell_led_get_hw_mode(struct device *dev, struct hw_controlled_led *led)
-+{
-+	struct phy_device *phydev = to_phy_device(dev);
-+	const struct marvell_led_mode_info *mode;
-+	int i, regval;
-+
-+	regval = marvell_led_get_regval(phydev, led->addr);
-+	if (regval < 0)
-+		return NULL;
-+
-+	for (i = 0; i < ARRAY_SIZE(marvell_led_mode_info); ++i) {
-+		mode = &marvell_led_mode_info[i];
-+
-+		if (!is_valid_led_mode(led, mode))
-+			continue;
-+
-+		if (mode->regval[led->addr] == regval)
-+			return mode->name;
-+	}
-+
-+	return NULL;
-+}
-+
-+static int marvell_led_init(struct device *dev, struct hw_controlled_led *led)
-+{
-+	struct phy_device *phydev = to_phy_device(dev);
-+	const struct marvell_leds_info *info = NULL;
-+	struct marvell_priv *priv = phydev->priv;
-+	int ret, i;
-+
-+	for (i = 0; i < ARRAY_SIZE(marvell_leds_info); ++i) {
-+		if (MARVELL_PHY_FAMILY_ID(phydev->phy_id) == marvell_leds_info[i].family) {
-+			info = &marvell_leds_info[i];
-+			break;
-+		}
-+	}
-+
-+	if (!info)
-+		return -EOPNOTSUPP;
-+
-+	if (led->addr >= info->nleds)
++	if (config.flags)
 +		return -EINVAL;
 +
-+	led->priv = (void *)info;
-+	led->cdev.max_brightness = 1;
++	if (config.tx_type != HWTSTAMP_TX_OFF)
++		return -ERANGE;
 +
-+	ret = marvell_led_set_polarity(phydev, led->addr, led->active_low, led->tristate);
-+	if (ret < 0)
-+		return ret;
++	ptp = port->priv->iface_base + MVPP22_PTP_BASE(port->gop_id);
++	if (config.rx_filter != HWTSTAMP_FILTER_NONE) {
++		config.rx_filter = HWTSTAMP_FILTER_ALL;
++		mvpp22_tai_start(port->priv->tai);
++		mvpp2_modify(ptp + MVPP22_PTP_GCR,
++			     MVPP22_PTP_GCR_RX_RESET |
++			     MVPP22_PTP_GCR_TX_RESET |
++			     MVPP22_PTP_GCR_TSU_ENABLE,
++			     MVPP22_PTP_GCR_RX_RESET |
++			     MVPP22_PTP_GCR_TX_RESET |
++			     MVPP22_PTP_GCR_TSU_ENABLE);
++		port->rx_hwtstamp = true;
++	} else {
++		port->rx_hwtstamp = false;
++		mvpp2_modify(ptp + MVPP22_PTP_GCR,
++			     MVPP22_PTP_GCR_RX_RESET |
++			     MVPP22_PTP_GCR_TX_RESET |
++			     MVPP22_PTP_GCR_TSU_ENABLE, 0);
++		mvpp22_tai_stop(port->priv->tai);
++	}
 +
-+	/* ensure marvell_config_led below does not change settings we have set for this LED */
-+	if (led->addr < 3)
-+		priv->legacy_led_config_mask &= ~(0xf << (led->addr * 4));
++	if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
++		return -EFAULT;
 +
 +	return 0;
 +}
 +
-+static const struct hw_controlled_led_ops marvell_led_ops = {
-+	.led_init		= marvell_led_init,
-+	.led_brightness_set	= marvell_led_brightness_set,
-+	.led_iter_hw_mode	= marvell_led_iter_hw_mode,
-+	.led_set_hw_mode	= marvell_led_set_hw_mode,
-+	.led_get_hw_mode	= marvell_led_get_hw_mode,
-+};
++static int mvpp2_get_ts_config(struct mvpp2_port *port, struct ifreq *ifr)
++{
++	struct hwtstamp_config config;
 +
-+#endif /* IS_ENABLED(CONFIG_LEDS_HW_CONTROLLED) */
++	memset(&config, 0, sizeof(config));
 +
- static void marvell_config_led(struct phy_device *phydev)
++	config.tx_type = HWTSTAMP_TX_OFF;
++	config.rx_filter = port->rx_hwtstamp ?
++		HWTSTAMP_FILTER_ALL : HWTSTAMP_FILTER_NONE;
++
++	if (copy_to_user(ifr->ifr_data, &config, sizeof(config)))
++		return -EFAULT;
++
++	return 0;
++}
++
++static int mvpp2_ethtool_get_ts_info(struct net_device *dev,
++				     struct ethtool_ts_info *info)
++{
++	struct mvpp2_port *port = netdev_priv(dev);
++
++	if (!port->hwtstamp)
++		return -EOPNOTSUPP;
++
++	info->phc_index = mvpp22_tai_ptp_clock_index(port->priv->tai);
++	info->so_timestamping = SOF_TIMESTAMPING_TX_SOFTWARE |
++				SOF_TIMESTAMPING_RX_SOFTWARE |
++				SOF_TIMESTAMPING_SOFTWARE |
++				SOF_TIMESTAMPING_RX_HARDWARE |
++				SOF_TIMESTAMPING_RAW_HARDWARE;
++	info->tx_types = BIT(HWTSTAMP_TX_OFF);
++	info->rx_filters = BIT(HWTSTAMP_FILTER_NONE) |
++			   BIT(HWTSTAMP_FILTER_ALL);
++
++	return 0;
++}
++
+ static int mvpp2_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
  {
-+	struct marvell_priv *priv = phydev->priv;
- 	u16 def_config;
- 	int err;
+ 	struct mvpp2_port *port = netdev_priv(dev);
  
-@@ -688,8 +990,9 @@ static void marvell_config_led(struct phy_device *phydev)
- 		return;
++	switch (cmd) {
++	case SIOCSHWTSTAMP:
++		if (port->hwtstamp)
++			return mvpp2_set_ts_config(port, ifr);
++		break;
++
++	case SIOCGHWTSTAMP:
++		if (port->hwtstamp)
++			return mvpp2_get_ts_config(port, ifr);
++		break;
++	}
++
+ 	if (!port->phylink)
+ 		return -ENOTSUPP;
+ 
+@@ -5034,6 +5133,7 @@ static const struct ethtool_ops mvpp2_eth_tool_ops = {
+ 				     ETHTOOL_COALESCE_MAX_FRAMES,
+ 	.nway_reset		= mvpp2_ethtool_nway_reset,
+ 	.get_link		= ethtool_op_get_link,
++	.get_ts_info		= mvpp2_ethtool_get_ts_info,
+ 	.set_coalesce		= mvpp2_ethtool_set_coalesce,
+ 	.get_coalesce		= mvpp2_ethtool_get_coalesce,
+ 	.get_drvinfo		= mvpp2_ethtool_get_drvinfo,
+@@ -6112,6 +6212,12 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+ 		port->stats_base = port->priv->iface_base +
+ 				   MVPP22_MIB_COUNTERS_OFFSET +
+ 				   port->gop_id * MVPP22_MIB_COUNTERS_PORT_SZ;
++
++		/* We may want a property to describe whether we should use
++		 * MAC hardware timestamping.
++		 */
++		if (priv->tai)
++			port->hwtstamp = true;
  	}
  
--	err = phy_write_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
--			      def_config);
-+	def_config &= priv->legacy_led_config_mask;
-+	err = phy_modify_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
-+			       priv->legacy_led_config_mask, def_config);
- 	if (err < 0)
- 		phydev_warn(phydev, "Fail to config marvell phy LED.\n");
- }
-@@ -2580,6 +2883,7 @@ static int marvell_probe(struct phy_device *phydev)
- 	if (!priv)
- 		return -ENOMEM;
+ 	/* Alloc per-cpu and ethtool stats */
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_tai.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_tai.c
+index 86c94ca97e43..95862aff49f1 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_tai.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_tai.c
+@@ -59,6 +59,8 @@ struct mvpp2_tai {
+ 	void __iomem *base;
+ 	spinlock_t lock;
+ 	u64 period;		// nanosecond period in 32.32 fixed point
++	/* This timestamp is updated every two seconds */
++	struct timespec64 stamp;
+ };
  
-+	priv->legacy_led_config_mask = 0xffff;
- 	phydev->priv = priv;
- 
+ static void mvpp2_tai_modify(void __iomem *reg, u32 mask, u32 set)
+@@ -297,6 +299,15 @@ static int mvpp22_tai_settime64(struct ptp_clock_info *ptp,
  	return 0;
-@@ -2656,6 +2960,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_stats = marvell_get_stats,
- 		.get_tunable = m88e1011_get_tunable,
- 		.set_tunable = m88e1011_set_tunable,
-+		.led_ops = hw_controlled_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1111,
-@@ -2717,6 +3022,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_stats = marvell_get_stats,
- 		.get_tunable = m88e1011_get_tunable,
- 		.set_tunable = m88e1011_set_tunable,
-+		.led_ops = hw_controlled_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1318S,
-@@ -2796,6 +3102,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_sset_count = marvell_get_sset_count,
- 		.get_strings = marvell_get_strings,
- 		.get_stats = marvell_get_stats,
-+		.led_ops = hw_controlled_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1116R,
-@@ -2844,6 +3151,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_start = marvell_vct7_cable_test_start,
- 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
-+		.led_ops = hw_controlled_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1540,
-@@ -2896,6 +3204,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.cable_test_start = marvell_vct7_cable_test_start,
- 		.cable_test_tdr_start = marvell_vct5_cable_test_tdr_start,
- 		.cable_test_get_status = marvell_vct7_cable_test_get_status,
-+		.led_ops = hw_controlled_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E3016,
-@@ -2964,6 +3273,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_stats = marvell_get_stats,
- 		.get_tunable = m88e1540_get_tunable,
- 		.set_tunable = m88e1540_set_tunable,
-+		.led_ops = hw_controlled_led_ops_ptr(&marvell_led_ops),
- 	},
- 	{
- 		.phy_id = MARVELL_PHY_ID_88E1548P,
+ }
+ 
++static long mvpp22_tai_aux_work(struct ptp_clock_info *ptp)
++{
++	struct mvpp2_tai *tai = ptp_to_tai(ptp);
++
++	mvpp22_tai_gettimex64(ptp, &tai->stamp, NULL);
++
++	return msecs_to_jiffies(2000);
++}
++
+ static void mvpp22_tai_set_step(struct mvpp2_tai *tai)
+ {
+ 	void __iomem *base = tai->base;
+@@ -326,6 +337,51 @@ static void mvpp22_tai_init(struct mvpp2_tai *tai)
+ 	mvpp2_tai_modify(base + MVPP22_TAI_CR0, CR0_SW_NRESET, CR0_SW_NRESET);
+ }
+ 
++int mvpp22_tai_ptp_clock_index(struct mvpp2_tai *tai)
++{
++	return ptp_clock_index(tai->ptp_clock);
++}
++
++void mvpp22_tai_tstamp(struct mvpp2_tai *tai, u32 tstamp,
++		       struct skb_shared_hwtstamps *hwtstamp)
++{
++	struct timespec64 ts;
++	int delta;
++
++	/* The tstamp consists of 2 bits of seconds and 30 bits of nanoseconds.
++	 * We use our stored timestamp (tai->stamp) to form a full timestamp,
++	 * and we must read the seconds exactly once.
++	 */
++	ts.tv_sec = READ_ONCE(tai->stamp.tv_sec);
++	ts.tv_nsec = tstamp & 0x3fffffff;
++
++	/* Calculate the delta in seconds between our stored timestamp and
++	 * the value read from the queue. Allow timestamps one second in the
++	 * past, otherwise consider them to be in the future.
++	 */
++	delta = ((tstamp >> 30) - (ts.tv_sec & 3)) & 3;
++	if (delta == 3)
++		delta -= 4;
++	ts.tv_sec += delta;
++
++	memset(hwtstamp, 0, sizeof(*hwtstamp));
++	hwtstamp->hwtstamp = timespec64_to_ktime(ts);
++}
++
++void mvpp22_tai_start(struct mvpp2_tai *tai)
++{
++	long delay;
++
++	delay = mvpp22_tai_aux_work(&tai->caps);
++
++	ptp_schedule_worker(tai->ptp_clock, delay);
++}
++
++void mvpp22_tai_stop(struct mvpp2_tai *tai)
++{
++	ptp_cancel_worker_sync(tai->ptp_clock);
++}
++
+ static void mvpp22_tai_remove(void *priv)
+ {
+ 	struct mvpp2_tai *tai = priv;
+@@ -385,6 +441,7 @@ int mvpp22_tai_probe(struct device *dev, struct mvpp2 *priv)
+ 	tai->caps.adjtime = mvpp22_tai_adjtime;
+ 	tai->caps.gettimex64 = mvpp22_tai_gettimex64;
+ 	tai->caps.settime64 = mvpp22_tai_settime64;
++	tai->caps.do_aux_work = mvpp22_tai_aux_work;
+ 
+ 	ret = devm_add_action(dev, mvpp22_tai_remove, tai);
+ 	if (ret)
 -- 
-2.26.2
+2.20.1
 
