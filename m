@@ -2,80 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E53BA2634C1
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:38:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93F752634D7
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 19:43:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730021AbgIIRiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 13:38:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43704 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729413AbgIIRiA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 13:38:00 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D277921D80;
-        Wed,  9 Sep 2020 17:37:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599673079;
-        bh=9Q+vyPWb73tHKw8GIISQM/7RZJaIXNsRtV4eH92kpiA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v3ORhsA9eawPJvRbQG7Payhmwub3VPxVoyD+L26RfBP8TOw1GfRifM9TTlGIJMmJU
-         LzDHrkIm5hWxJ5uUj/TW9F7ha9IayXKZ+7uo5ARDLT1I1EspQZUtwTpmuaP9ZQ95cz
-         zbsxtMMEBThgVBJumdx3I1x8wKlIIaLEBq6TU4d4=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com, kernel-team@fb.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/3] net: make sure napi_list is safe for RCU traversal
-Date:   Wed,  9 Sep 2020 10:37:53 -0700
-Message-Id: <20200909173753.229124-4-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200909173753.229124-1-kuba@kernel.org>
-References: <20200909173753.229124-1-kuba@kernel.org>
+        id S1726920AbgIIRnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 13:43:46 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:5552 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726415AbgIIRnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 13:43:45 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 089Hfjcs013745;
+        Wed, 9 Sep 2020 10:43:40 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=GFlva3uMmND1LxR+EC/jVvoh9cjVF4Iasj+xyg+6XnM=;
+ b=hC5FHbeJShAivmBz+ci/LFln98U8sUeUckltl+hQFGEVZJZXRG0bdzPs+jFZCEqAX+nR
+ zmGlD7MDB2TIrBV6XEHlb2JD6NEml7lUOpXFmPbvXV/Fsra0cXh5Wwen9Z+moeYiOIuq
+ IrxwAdDwUgSWsfw8BjZucPOTXtk33LW8IKv7w7BYptALZlr/yUvTtJLvduuZ9NE/hPdw
+ lUZPFlVS2WaWUhLQJ41v5TX8hLdakTZQoi1sT55kqfokl0P/2JGhaaor3USfVnbLy96k
+ TGVQzOQwgju47cfU+L22RbSsJAu0p9t/Mx+uoEDzZM0q+03Cbxldxx0X97ItKNPvEpsN 7Q== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 33ccvr7gxb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 09 Sep 2020 10:43:40 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 9 Sep
+ 2020 10:43:38 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 9 Sep 2020 10:43:39 -0700
+Received: from NN-LT0019.marvell.com (NN-LT0019.marvell.com [10.6.200.75])
+        by maili.marvell.com (Postfix) with ESMTP id 021F83F703F;
+        Wed,  9 Sep 2020 10:43:36 -0700 (PDT)
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Dmitry Bogdanov <dbogdanov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH v3 net 0/3] net: qed disable aRFS in NPAR and 100G
+Date:   Wed, 9 Sep 2020 20:43:07 +0300
+Message-ID: <20200909174310.686-1-irusskikh@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-09_13:2020-09-09,2020-09-09 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netpoll needs to traverse dev->napi_list under RCU, make
-sure it uses the right iterator and that removal from this
-list is handled safely.
+This patchset fixes some recent issues found by customers.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/core/dev.c     | 2 +-
- net/core/netpoll.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+v3:
+  resending on Dmitry's behalf
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index e0a1be986824..03624192862a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6656,7 +6656,7 @@ void __netif_napi_del(struct napi_struct *napi)
- 		return;
- 
- 	napi_hash_del(napi);
--	list_del_init(&napi->dev_list);
-+	list_del_rcu(&napi->dev_list);
- 	napi_free_frags(napi);
- 
- 	flush_gro_hash(napi);
-diff --git a/net/core/netpoll.c b/net/core/netpoll.c
-index 2338753e936b..c310c7c1cef7 100644
---- a/net/core/netpoll.c
-+++ b/net/core/netpoll.c
-@@ -297,7 +297,7 @@ static int netpoll_owner_active(struct net_device *dev)
- {
- 	struct napi_struct *napi;
- 
--	list_for_each_entry(napi, &dev->napi_list, dev_list) {
-+	list_for_each_entry_rcu(napi, &dev->napi_list, dev_list) {
- 		if (napi->poll_owner == smp_processor_id())
- 			return 1;
- 	}
+v2:
+  correct hash in Fixes tag
+
+Dmitry Bogdanov (3):
+  net: qed: Disable aRFS for NPAR and 100G
+  net: qede: Disable aRFS for NPAR and 100G
+  net: qed: RDMA personality shouldn't fail VF load
+
+ drivers/net/ethernet/qlogic/qed/qed_dev.c      | 11 ++++++++++-
+ drivers/net/ethernet/qlogic/qed/qed_l2.c       |  3 +++
+ drivers/net/ethernet/qlogic/qed/qed_main.c     |  2 ++
+ drivers/net/ethernet/qlogic/qed/qed_sriov.c    |  1 +
+ drivers/net/ethernet/qlogic/qede/qede_filter.c |  3 +++
+ drivers/net/ethernet/qlogic/qede/qede_main.c   | 11 +++++------
+ include/linux/qed/qed_if.h                     |  1 +
+ 7 files changed, 25 insertions(+), 7 deletions(-)
+
 -- 
-2.26.2
+2.17.1
 
