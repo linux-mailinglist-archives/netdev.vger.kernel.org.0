@@ -2,200 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E605262C2D
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:43:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3BAF262C77
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730214AbgIIJnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 05:43:03 -0400
-Received: from correo.us.es ([193.147.175.20]:35050 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729992AbgIIJmj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 05:42:39 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id B1BC3303D03
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 11:42:34 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A152DDA78E
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 11:42:34 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 96F0DDA73F; Wed,  9 Sep 2020 11:42:34 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5C2F9DA72F;
-        Wed,  9 Sep 2020 11:42:32 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 09 Sep 2020 11:42:32 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 31AAE4301DE3;
-        Wed,  9 Sep 2020 11:42:32 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 13/13] netfilter: nf_tables: add userdata support for nft_object
-Date:   Wed,  9 Sep 2020 11:42:19 +0200
-Message-Id: <20200909094219.17732-14-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200909094219.17732-1-pablo@netfilter.org>
-References: <20200909094219.17732-1-pablo@netfilter.org>
+        id S1729692AbgIIJtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 05:49:42 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:59436 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729413AbgIIJtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 05:49:36 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0899mW1t100048;
+        Wed, 9 Sep 2020 09:49:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type : in-reply-to;
+ s=corp-2020-01-29; bh=tB4+7qqod85cCWo7gq3iXkCyjRmxVFGHTo3ktJFTHXA=;
+ b=JYbaL79OI6WJ4Xk0k8tFcd4vl3E+ZVTfN785frqi2eNvwvmUiFx5FkzO+Mr3tIZevbl4
+ Tw44lJ50TnTkOl66419sBuVM/DGtKRFXmTLDnEU1BDDPDsgTyKzC+IsNIEKyg2/w/tT9
+ n+aXVF9pkmWQD0Xd8IkO4HPWHkTXNidoHPthK01rpk+AVhUUiqs+tAzlTxBDA2SwXMjc
+ rsW4tAZxlrMTENdWUKM7+yL4j/T/XPAOYm+5BbVpIebHC75Lvyp3fMwRMSMuyyqOCokS
+ WqYTe7VQk+MTLJrQ+pAsT3M73TAqMrLxJoBueQFa0NcLS4lbpYvR9iu2EY3H0a165iDO Qg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2120.oracle.com with ESMTP id 33c2mm0pe9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 09 Sep 2020 09:49:26 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 0899eMqQ175199;
+        Wed, 9 Sep 2020 09:47:25 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 33cmkxfqg4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 09 Sep 2020 09:47:25 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 0899lNn3032418;
+        Wed, 9 Sep 2020 09:47:23 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 09 Sep 2020 02:47:22 -0700
+Date:   Wed, 9 Sep 2020 12:46:48 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Krzysztof Halasa <khc@pm.waw.pl>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        security@kernel.org, nan chen <whutchennan@gmail.com>,
+        Greg KH <greg@kroah.com>
+Subject: [PATCH v2 net] hdlc_ppp: add range checks in ppp_cp_parse_cr()
+Message-ID: <20200909094648.GC420136@mwanda>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMnVd19nWToENW3X7v_PZN4snoXAoLgqKqn=dezXnd=z89zL7Q@mail.gmail.com>
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9738 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 phishscore=0 suspectscore=0
+ spamscore=0 mlxlogscore=999 adultscore=0 malwarescore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009090086
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9738 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 priorityscore=1501
+ phishscore=0 adultscore=0 bulkscore=0 clxscore=1015 mlxlogscore=999
+ malwarescore=0 suspectscore=0 lowpriorityscore=0 spamscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009090087
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jose M. Guisado Gomez" <guigom@riseup.net>
+There are a couple bugs here:
+1) If opt[1] is zero then this results in a forever loop.  If the value
+   is less than 2 then it is invalid.
+2) It assumes that "len" is more than sizeof(valid_accm) or 6 which can
+   result in memory corruption.
 
-Enables storing userdata for nft_object. Initially this will store an
-optional comment but can be extended in the future as needed.
+In the case of LCP_OPTION_ACCM, then  we should check "opt[1]" instead
+of "len" because, if "opt[1]" is less than sizeof(valid_accm) then
+"nak_len" gets out of sync and it can lead to memory corruption in the
+next iterations through the loop.  In case of LCP_OPTION_MAGIC, the
+only valid value for opt[1] is 6, but the code is trying to log invalid
+data so we should only discard the data when "len" is less than 6
+because that leads to a read overflow.
 
-Adds new attribute NFTA_OBJ_USERDATA to nft_object.
-
-Signed-off-by: Jose M. Guisado Gomez <guigom@riseup.net>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Reported-by: ChenNan Of Chaitin Security Research Lab  <whutchennan@gmail.com>
+Fixes: e022c2f07ae5 ("WAN: new synchronous PPP implementation for generic HDLC.")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_tables.h        |  2 ++
- include/uapi/linux/netfilter/nf_tables.h |  2 ++
- net/netfilter/nf_tables_api.c            | 35 ++++++++++++++++++------
- 3 files changed, 31 insertions(+), 8 deletions(-)
+v2: check opt[1] < 6 instead of len < 6 for the LCP_OPTION_ACCM case.
 
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index 97a7e147a59a..99c1b3188b1e 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -1123,6 +1123,8 @@ struct nft_object {
- 	u32				genmask:2,
- 					use:30;
- 	u64				handle;
-+	u16				udlen;
-+	u8				*udata;
- 	/* runtime data below here */
- 	const struct nft_object_ops	*ops ____cacheline_aligned;
- 	unsigned char			data[]
-diff --git a/include/uapi/linux/netfilter/nf_tables.h b/include/uapi/linux/netfilter/nf_tables.h
-index 543dc697b796..2a6e09dea1a0 100644
---- a/include/uapi/linux/netfilter/nf_tables.h
-+++ b/include/uapi/linux/netfilter/nf_tables.h
-@@ -1559,6 +1559,7 @@ enum nft_ct_expectation_attributes {
-  * @NFTA_OBJ_DATA: stateful object data (NLA_NESTED)
-  * @NFTA_OBJ_USE: number of references to this expression (NLA_U32)
-  * @NFTA_OBJ_HANDLE: object handle (NLA_U64)
-+ * @NFTA_OBJ_USERDATA: user data (NLA_BINARY)
-  */
- enum nft_object_attributes {
- 	NFTA_OBJ_UNSPEC,
-@@ -1569,6 +1570,7 @@ enum nft_object_attributes {
- 	NFTA_OBJ_USE,
- 	NFTA_OBJ_HANDLE,
- 	NFTA_OBJ_PAD,
-+	NFTA_OBJ_USERDATA,
- 	__NFTA_OBJ_MAX
- };
- #define NFTA_OBJ_MAX		(__NFTA_OBJ_MAX - 1)
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 6ccce2a2e715..e9b4848e9dd0 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5755,6 +5755,8 @@ static const struct nla_policy nft_obj_policy[NFTA_OBJ_MAX + 1] = {
- 	[NFTA_OBJ_TYPE]		= { .type = NLA_U32 },
- 	[NFTA_OBJ_DATA]		= { .type = NLA_NESTED },
- 	[NFTA_OBJ_HANDLE]	= { .type = NLA_U64},
-+	[NFTA_OBJ_USERDATA]	= { .type = NLA_BINARY,
-+				    .len = NFT_USERDATA_MAXLEN },
- };
- 
- static struct nft_object *nft_obj_init(const struct nft_ctx *ctx,
-@@ -5902,6 +5904,7 @@ static int nf_tables_newobj(struct net *net, struct sock *nlsk,
- 	struct nft_object *obj;
- 	struct nft_ctx ctx;
- 	u32 objtype;
-+	u16 udlen;
- 	int err;
- 
- 	if (!nla[NFTA_OBJ_TYPE] ||
-@@ -5946,7 +5949,7 @@ static int nf_tables_newobj(struct net *net, struct sock *nlsk,
- 	obj = nft_obj_init(&ctx, type, nla[NFTA_OBJ_DATA]);
- 	if (IS_ERR(obj)) {
- 		err = PTR_ERR(obj);
--		goto err1;
-+		goto err_init;
- 	}
- 	obj->key.table = table;
- 	obj->handle = nf_tables_alloc_handle(table);
-@@ -5954,32 +5957,44 @@ static int nf_tables_newobj(struct net *net, struct sock *nlsk,
- 	obj->key.name = nla_strdup(nla[NFTA_OBJ_NAME], GFP_KERNEL);
- 	if (!obj->key.name) {
- 		err = -ENOMEM;
--		goto err2;
-+		goto err_strdup;
-+	}
-+
-+	if (nla[NFTA_OBJ_USERDATA]) {
-+		udlen = nla_len(nla[NFTA_OBJ_USERDATA]);
-+		obj->udata = kzalloc(udlen, GFP_KERNEL);
-+		if (obj->udata == NULL)
-+			goto err_userdata;
-+
-+		nla_memcpy(obj->udata, nla[NFTA_OBJ_USERDATA], udlen);
-+		obj->udlen = udlen;
+ drivers/net/wan/hdlc_ppp.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/wan/hdlc_ppp.c b/drivers/net/wan/hdlc_ppp.c
+index 48ced3912576..16f33d1ffbfb 100644
+--- a/drivers/net/wan/hdlc_ppp.c
++++ b/drivers/net/wan/hdlc_ppp.c
+@@ -383,11 +383,8 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
  	}
  
- 	err = nft_trans_obj_add(&ctx, NFT_MSG_NEWOBJ, obj);
- 	if (err < 0)
--		goto err3;
-+		goto err_trans;
+ 	for (opt = data; len; len -= opt[1], opt += opt[1]) {
+-		if (len < 2 || len < opt[1]) {
+-			dev->stats.rx_errors++;
+-			kfree(out);
+-			return; /* bad packet, drop silently */
+-		}
++		if (len < 2 || opt[1] < 2 || len < opt[1])
++			goto err_out;
  
- 	err = rhltable_insert(&nft_objname_ht, &obj->rhlhead,
- 			      nft_objname_ht_params);
- 	if (err < 0)
--		goto err4;
-+		goto err_obj_ht;
+ 		if (pid == PID_LCP)
+ 			switch (opt[0]) {
+@@ -395,6 +392,8 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
+ 				continue; /* MRU always OK and > 1500 bytes? */
  
- 	list_add_tail_rcu(&obj->list, &table->objects);
- 	table->use++;
- 	return 0;
--err4:
-+err_obj_ht:
- 	/* queued in transaction log */
- 	INIT_LIST_HEAD(&obj->list);
- 	return err;
--err3:
-+err_trans:
- 	kfree(obj->key.name);
--err2:
-+err_userdata:
-+	kfree(obj->udata);
-+err_strdup:
- 	if (obj->ops->destroy)
- 		obj->ops->destroy(&ctx, obj);
- 	kfree(obj);
--err1:
-+err_init:
- 	module_put(type->owner);
- 	return err;
+ 			case LCP_OPTION_ACCM: /* async control character map */
++				if (opt[1] < sizeof(valid_accm))
++					goto err_out;
+ 				if (!memcmp(opt, valid_accm,
+ 					    sizeof(valid_accm)))
+ 					continue;
+@@ -406,6 +405,8 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
+ 				}
+ 				break;
+ 			case LCP_OPTION_MAGIC:
++				if (len < 6)
++					goto err_out;
+ 				if (opt[1] != 6 || (!opt[2] && !opt[3] &&
+ 						    !opt[4] && !opt[5]))
+ 					break; /* reject invalid magic number */
+@@ -424,6 +425,11 @@ static void ppp_cp_parse_cr(struct net_device *dev, u16 pid, u8 id,
+ 		ppp_cp_event(dev, pid, RCR_GOOD, CP_CONF_ACK, id, req_len, data);
+ 
+ 	kfree(out);
++	return;
++
++err_out:
++	dev->stats.rx_errors++;
++	kfree(out);
  }
-@@ -6011,6 +6026,10 @@ static int nf_tables_fill_obj_info(struct sk_buff *skb, struct net *net,
- 			 NFTA_OBJ_PAD))
- 		goto nla_put_failure;
  
-+	if (obj->udata &&
-+	    nla_put(skb, NFTA_OBJ_USERDATA, obj->udlen, obj->udata))
-+		goto nla_put_failure;
-+
- 	nlmsg_end(skb, nlh);
- 	return 0;
- 
+ static int ppp_rx(struct sk_buff *skb)
 -- 
-2.20.1
+2.28.0
 
