@@ -2,130 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE0F8262625
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 06:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1D6D26265F
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 06:33:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725840AbgIIETD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 00:19:03 -0400
-Received: from mail-eopbgr1400133.outbound.protection.outlook.com ([40.107.140.133]:27072
-        "EHLO JPN01-TY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725767AbgIIETB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 00:19:01 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ik/n45hrKs23vPTBXsS2Fw/WSDMl5+J85xjH+oR+Ew+rChPHj7oLyTDb7gB52jljqEUWjUIKHKcLfNgDVuq+Dq12AefyBvJdpRDlqITHCzhwwxfOmj51wa81nZXLpCbF2U8zoHH1hdsJYaOVLg48WlQE5feTewk1cOA6Y9IwaBOv9kuCvDtAzGRAjmg32urLyxmuPdAHnBYWYLlmFRZwlFlgWWnyezQHg+MTDGhXZXTmkVolnflrlidkZ6O3WKrd395uycAsJSoB6ixBR7ozK03W2U/BRF7j8OHbOg9s45wOpBrQa1uAV9NDOk2j9DzNeGadKSyXduMbc0e9rv2A1w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fR7POyO2asCK/C6XhZIrtKCKWa+Y1KO6NzI6I+TCewg=;
- b=GrZYG4PTuRRaGPMPlK8bzLR3eCKaYPjtdGACUJMd64sKI3ki40elro6gkPdP7/pQsvmxW8eFzX3YfYrF44OegKOZmfwmqIt/3rYbIqmMLSSeaf1xxiJ2K5g+ZOMv1Q2t3epOvPYVQCajw9UI0mw6t7WbyJubUrQQKv3np4lz9lQr2kF2Ulu9L13pR2/sYWsEhzCItT2bOSLfFuu3RTebzOBv1uQ6jH3Sc7CxKGziHXHdXra5GY4t4cj0vwbmYZAKx2+oqtvOi3xUaNPrcyTk5uhEqKEFxv5towztnfgfXbgeP6TRRywQOT3THYkUsYS+k6ohI7My/LwoG1dR92t5Dg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
+        id S1725897AbgIIEcm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 00:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725772AbgIIEck (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 00:32:40 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F01C061573;
+        Tue,  8 Sep 2020 21:32:40 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id s2so704955pjr.4;
+        Tue, 08 Sep 2020 21:32:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fR7POyO2asCK/C6XhZIrtKCKWa+Y1KO6NzI6I+TCewg=;
- b=bVAYenLBCWzE6sObJ3Qc1oMVI7bcOtA5H8KLcpEU7hDtPaYSM+U899Di8TrrofnUqHdmKNBk+HNoprDTy0zvQ0yrg7zdgSnk3/Adsd0HCtnKHqnrMy9vJK0bnUFEN5lfMteNChMPvcDPQgfKyj5+PA0QJXnbFUd8Rah4Y0NIaZY=
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com (2603:1096:404:d5::22)
- by TYAPR01MB3646.jpnprd01.prod.outlook.com (2603:1096:404:cc::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Wed, 9 Sep
- 2020 04:18:56 +0000
-Received: from TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::9055:525d:2d64:b625]) by TY2PR01MB3692.jpnprd01.prod.outlook.com
- ([fe80::9055:525d:2d64:b625%5]) with mapi id 15.20.3348.019; Wed, 9 Sep 2020
- 04:18:56 +0000
-From:   Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Jisheng.Zhang@synaptics.com" <Jisheng.Zhang@synaptics.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH v2] net: phy: call phy_disable_interrupts() in
- phy_attach_direct() instead
-Thread-Topic: [PATCH v2] net: phy: call phy_disable_interrupts() in
- phy_attach_direct() instead
-Thread-Index: AQHWhjuP2LLijL80K0uCr5i8hwAHvKlfpT4AgAAJ/xA=
-Date:   Wed, 9 Sep 2020 04:18:56 +0000
-Message-ID: <TY2PR01MB36921A4404E47B78C42CF2DED8260@TY2PR01MB3692.jpnprd01.prod.outlook.com>
-References: <1599609338-17732-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
- <20200908.202524.1861811044367438406.davem@davemloft.net>
-In-Reply-To: <20200908.202524.1861811044367438406.davem@davemloft.net>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=renesas.com;
-x-originating-ip: [124.210.22.195]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 7915527c-c006-4712-5c36-08d8547777ec
-x-ms-traffictypediagnostic: TYAPR01MB3646:
-x-microsoft-antispam-prvs: <TYAPR01MB3646CAF8782E487F7E1B367ED8260@TYAPR01MB3646.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bafScpdD5B62PUxrwjsLeiIrx7S3o3xwJS2gQyze/TbI6EacyqtxrEWLU0GuHhbo2m/pprIa6WHJSWpQiSnO2fgCA/NEwk/kMwzzDY6RROd8kax9jJLg1U88Q5pr5j73Y6EE4+Kba2fEcPZIA6Pzm3d6rlWJAIPRXPJz1CBHbr2WIDAzTZO5rSj4ECqiyUy5I2PXdGzlY8LM9S9D4+jDFN3sSGhVg0bUcX9PNaZhr+e0vKA6KzXt1+w7Sz8HMILZiZhCqxBgBv3VPDeRhQ+hfw2r0a3ubdXi07kuuuzsuwlbNwmsBNFFkhiNXzrmzCp6NiAK3J3Z+wufmssfKZROzw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR01MB3692.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(136003)(396003)(39860400002)(366004)(346002)(55236004)(33656002)(6506007)(83380400001)(52536014)(316002)(2906002)(76116006)(9686003)(8936002)(478600001)(54906003)(186003)(6916009)(86362001)(26005)(71200400001)(8676002)(66446008)(7696005)(66556008)(64756008)(66476007)(66946007)(4326008)(5660300002)(55016002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: g48GJXAHC5vF+joF3O0I3aMxGLwvrEtS66jMfFd8DOAluriQ2ZHPwcO8DDoE5PVMSrw6deroyA8CNFNiYedWqvez5scy3t2h+sVg0NLkFwxUK3clSxMMrjR5emduFaTFiCtY9ZJ3401/7HV1vCucCXwRLIikzJwuO4kzAGQ520p/tBxygX447HbRrb57ydwc1Auf8Vw/uPFpMIhdtafIPowhZfmxzPg15pAC14F4aOzPGS1Y+7mb3nCklFKgBYjNm2p5YPAvhhSkKA9qvGDzGzy9IcyjEjcD0cFKqnLVdDItuuNVaEf5X5WzhG3/cxa/6tLeLuliM+Lwf59AyvPipTgs/bQRHQlEL12S2Zy7FbysqKZAghNgbxhGIO7S2Vx/5FxWlPaAg3iXF37yjNUAG73VWJqQA/J2Q57A03WOivK00850sFgUOJEfqt3IzMyE2rVafwvELeLC/XPjI3Vv9G1VuzWTPoTGoJmIt5b5WbN3Yi9VpFVeyr8ciVERq46N7g0cswF6N5gv+c2vzqDlgU55LU5IJ2N5A9b9XLnYfnndh3oc/l8+HT26An8qf1sqnLxkwZWNoHrFu+Yj6xSb8KxVHg5hGUdEhqpiQcSe1KFkLR02lyX/cuHqGIBCDQrqMs1tns8G4vlG2P26hzVniA==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZL1/dFPSyKDLoUtfW2I3TnJOQ1LLw3ZjlfPq0EZElIo=;
+        b=vZS5kURLZDuYQhY8ACURTlu/876ye9UykjPe24ra2DbJiBluTLdsYqi/PI9bBneS2f
+         GciINZgtJMKrtW/zCbRi+iH2+Z2+UXWmsV8LGcuPDpFy5RXiMCRjoEmYzL7Uyt9L9RFN
+         CQz31RY1JXIEV3RKPCXRBfEa5q24zApCwaOpzkYsPaxaqNBt53Df7bdB2QkSiInZ8ErQ
+         GpqxVLNIT2dXV//LS/OEex/JiF6QHxurKOzhFK+cYN2AmIBY3Ar5ib7lUI42WFndgVXw
+         eB//Wvf/dckUoctehdKMCcwF9ucwhCV1XSceTCF28/X/sdD7LFFOqD4syilUrjTOdN1X
+         vjWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZL1/dFPSyKDLoUtfW2I3TnJOQ1LLw3ZjlfPq0EZElIo=;
+        b=ZA9Ke6lh+TdibPBzfr9ezkDFj/AEsKdbHf3ynP7lTm6QcyHSRbaCjbFkewVxqLtwyJ
+         O8/S5Q999HJpYUZD40W7za50sDBeOqcGdQhzoYIezX+IoiPXcS2fWu04y/+hzI4i76g/
+         il3vPUEzIziHK2HRyaX4W+cdHkhHKDvXF8LtFtuPA9j8AK94aQPz7IL3bMFU/kP0mFX9
+         nBAUIJG320OZWbDyCmOGOhvL8tLjaWV0dOQKrtpK4oHAd2PXp8yKwQn7A9vwYZQXadGM
+         hTjEvIBpSOoGijLIBtJiOXaE7KXYCki6eHS1VXxq9h6+qhDZu1kvhFyhWWlDTeWkMajL
+         y6TQ==
+X-Gm-Message-State: AOAM531DrJpfWOhL2L43g7f6nSI7JdlNTG2pQPDdGp4Nk0M4Nf/BFte/
+        XrhgV1QlzaG1UARETwTznpGzIhi+ejA=
+X-Google-Smtp-Source: ABdhPJzclGbvNrY8NUl/8c/ky2RgtEtE9sDRgdRO08HBwjGQYV7iY+8zWagTigmChSy6VxMcoM5EwA==
+X-Received: by 2002:a17:90a:fe07:: with SMTP id ck7mr1974550pjb.20.1599625957983;
+        Tue, 08 Sep 2020 21:32:37 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id ih11sm638444pjb.51.2020.09.08.21.32.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Sep 2020 21:32:37 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: dsa: b53: Report VLAN table occupancy via devlink
+Date:   Tue,  8 Sep 2020 21:32:34 -0700
+Message-Id: <20200909043235.4080900-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR01MB3692.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7915527c-c006-4712-5c36-08d8547777ec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2020 04:18:56.0946
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TP6rVMFfnLVnYejNzzFTrrGDyrKtncrXPJFqssNP0P3J1GuHe6yzowcn9tWhKxAz4j/Ra0kU5fNU1QhEuxp8dV14p0skPztlAK1itgkOLn57IezRCFCmsJVkFuP4FVj3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB3646
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+We already maintain an array of VLANs used by the switch so we can
+simply iterate over it to report the occupancy via devlink.
 
-> From: David Miller, Sent: Wednesday, September 9, 2020 12:25 PM
->=20
-> From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> Date: Wed,  9 Sep 2020 08:55:38 +0900
->=20
-> >  Changes from v1:
-> >  - Fix build error.
->=20
-> When such a fundamental build failure is fixed (it could never have
-> built for anyone, even you), I want it explained why this happened
-> and how this was functionally tested if it did not even compile.
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/b53/b53_common.c | 59 ++++++++++++++++++++++++++++++--
+ drivers/net/dsa/b53/b53_priv.h   |  1 +
+ drivers/net/dsa/bcm_sf2.c        |  8 ++++-
+ 3 files changed, 65 insertions(+), 3 deletions(-)
 
-I'm sorry about this. I used two PCs now:
- PC 1 =3D for testing at local
- PC 2 =3D for submitting patches at remote (because corporate network situa=
-tion)
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 26fcff85d881..a1527665e817 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -977,6 +977,53 @@ int b53_get_sset_count(struct dsa_switch *ds, int port, int sset)
+ }
+ EXPORT_SYMBOL(b53_get_sset_count);
+ 
++enum b53_devlink_resource_id {
++	B53_DEVLINK_PARMA_ID_VLAN_TABLE,
++};
++
++static u64 b53_devlink_vlan_table_get(void *priv)
++{
++	struct b53_device *dev = priv;
++	unsigned int i, count = 0;
++	struct b53_vlan *vl;
++
++	for (i = 0; i < dev->num_vlans; i++) {
++		vl = &dev->vlans[i];
++		if (vl->members)
++			count++;
++	}
++
++	return count;
++}
++
++int b53_setup_devlink_resources(struct dsa_switch *ds)
++{
++	struct devlink_resource_size_params size_params;
++	struct b53_device *dev = ds->priv;
++	int err;
++
++	devlink_resource_size_params_init(&size_params, dev->num_vlans,
++					  dev->num_vlans,
++					  1, DEVLINK_RESOURCE_UNIT_ENTRY);
++
++	err = dsa_devlink_resource_register(ds, "VLAN", dev->num_vlans,
++					    B53_DEVLINK_PARMA_ID_VLAN_TABLE,
++					    DEVLINK_RESOURCE_ID_PARENT_TOP,
++					    &size_params);
++	if (err)
++		goto out;
++
++	dsa_devlink_resource_occ_get_register(ds,
++					      B53_DEVLINK_PARMA_ID_VLAN_TABLE,
++					      b53_devlink_vlan_table_get, dev);
++
++	return 0;
++out:
++	dsa_devlink_resources_unregister(ds);
++	return err;
++}
++EXPORT_SYMBOL(b53_setup_devlink_resources);
++
+ static int b53_setup(struct dsa_switch *ds)
+ {
+ 	struct b53_device *dev = ds->priv;
+@@ -992,8 +1039,10 @@ static int b53_setup(struct dsa_switch *ds)
+ 	b53_reset_mib(dev);
+ 
+ 	ret = b53_apply_config(dev);
+-	if (ret)
++	if (ret) {
+ 		dev_err(ds->dev, "failed to apply configuration\n");
++		return ret;
++	}
+ 
+ 	/* Configure IMP/CPU port, disable all other ports. Enabled
+ 	 * ports will be configured with .port_enable
+@@ -1012,7 +1061,12 @@ static int b53_setup(struct dsa_switch *ds)
+ 	 */
+ 	ds->vlan_filtering_is_global = true;
+ 
+-	return ret;
++	return b53_setup_devlink_resources(ds);
++}
++
++static void b53_teardown(struct dsa_switch *ds)
++{
++	dsa_devlink_resources_unregister(ds);
+ }
+ 
+ static void b53_force_link(struct b53_device *dev, int port, int link)
+@@ -2141,6 +2195,7 @@ static int b53_get_max_mtu(struct dsa_switch *ds, int port)
+ static const struct dsa_switch_ops b53_switch_ops = {
+ 	.get_tag_protocol	= b53_get_tag_protocol,
+ 	.setup			= b53_setup,
++	.teardown		= b53_teardown,
+ 	.get_strings		= b53_get_strings,
+ 	.get_ethtool_stats	= b53_get_ethtool_stats,
+ 	.get_sset_count		= b53_get_sset_count,
+diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
+index e942c60e4365..c55c0a9f1b47 100644
+--- a/drivers/net/dsa/b53/b53_priv.h
++++ b/drivers/net/dsa/b53/b53_priv.h
+@@ -328,6 +328,7 @@ void b53_br_set_stp_state(struct dsa_switch *ds, int port, u8 state);
+ void b53_br_fast_age(struct dsa_switch *ds, int port);
+ int b53_br_egress_floods(struct dsa_switch *ds, int port,
+ 			 bool unicast, bool multicast);
++int b53_setup_devlink_resources(struct dsa_switch *ds);
+ void b53_port_event(struct dsa_switch *ds, int port);
+ void b53_phylink_validate(struct dsa_switch *ds, int port,
+ 			  unsigned long *supported,
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 3263e8a0ae67..723820603107 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -936,7 +936,12 @@ static int bcm_sf2_sw_setup(struct dsa_switch *ds)
+ 	b53_configure_vlan(ds);
+ 	bcm_sf2_enable_acb(ds);
+ 
+-	return 0;
++	return b53_setup_devlink_resources(ds);
++}
++
++static void bcm_sf2_sw_teardown(struct dsa_switch *ds)
++{
++	dsa_devlink_resources_unregister(ds);
+ }
+ 
+ /* The SWITCH_CORE register space is managed by b53 but operates on a page +
+@@ -1073,6 +1078,7 @@ static int bcm_sf2_sw_get_sset_count(struct dsa_switch *ds, int port,
+ static const struct dsa_switch_ops bcm_sf2_ops = {
+ 	.get_tag_protocol	= b53_get_tag_protocol,
+ 	.setup			= bcm_sf2_sw_setup,
++	.teardown		= bcm_sf2_sw_teardown,
+ 	.get_strings		= bcm_sf2_sw_get_strings,
+ 	.get_ethtool_stats	= bcm_sf2_sw_get_ethtool_stats,
+ 	.get_sset_count		= bcm_sf2_sw_get_sset_count,
+-- 
+2.25.1
 
-I tested on the PC 1.
-But, after that, I modified the code on the PC 2 again. And, it seemed
-I didn't do a compile. Today, I got some emails from kernel test bot.
-So, I realized I had submitted a bad patch...
-
-> I'm not applying this patch, you must resubmit it again after
-> explaining what happened here instead of just quietly fixing
-> the build failure.
-
-Since the kernel test bot sent emails, I assumed I didn't need to
-reply by myself. I should have replied anyway...
-
-Best regards,
-Yoshihiro Shimoda
-
-> Thank you.
