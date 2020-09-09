@@ -2,103 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4455C262C33
-	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:43:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6344262C26
+	for <lists+netdev@lfdr.de>; Wed,  9 Sep 2020 11:42:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730167AbgIIJnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 05:43:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730021AbgIIJml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 05:42:41 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4002C061786
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 02:42:39 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id u13so1691951pgh.1
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 02:42:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cJ2b5yC6U6sZBSPpf2NMndA3c8MuYwyg/EbWONDGDEQ=;
-        b=lRr0iV7jW0zq00Y+PI9+C7cOPYDyM1oIQtYgXGw2Jok5nCprEdhOZiwh5Vp+h7I5bK
-         sDVm/tVXX/1Feq/Yn7thUALZCMh8wcsS13njzNpVOyy+NKgPOQxkgpwOHjheAOj5H8PN
-         jPS12IkBQ5rM8aOk+DU5/JDyzG2RLZTleokG0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cJ2b5yC6U6sZBSPpf2NMndA3c8MuYwyg/EbWONDGDEQ=;
-        b=H0BeHgcqE2Z0xvkLKNbWdf0eO+XqYRoRELBQOjULBKY3NJkqQgQm3058ZkVUduOfXi
-         EUuiXs5N1T//M9CpIsfV9dOuUYfr1d/a1m9cMMi4xpz3ZSdr3fA47I6l3tbDb7lqS5OF
-         6JfQYAAeK/XNbUvZfiwtUwpTNQYLHorgW81FG6P6pbLfo+bp4eiGFxM8hn2HBrUt+Ig3
-         na/bdjR3uPI/CDSIqNm9+7zReUnOS8QHyjfgB7fU92m8S2aG4WmK+nUEGChyXNuDfdqs
-         9giDsMA+RINPaU+6uY2WWSzfOepiR8B2Jays/Mx4JjHRzqsK0ef8wdopeVLVMREnfPAM
-         e2Yw==
-X-Gm-Message-State: AOAM531H1TD6mYCJ1+jpdhT/TKerTVsRUsgtxSMwojmLyp4KrUYTAPvq
-        mgNaRwGdjdT65zL32+6XVOo72w==
-X-Google-Smtp-Source: ABdhPJy0kQhiImzPyvMTXIoe3S5XBcVzI1ubsHTbbUHt8tNPKWinvH0asFzNdG96HgDS858kUtEN9w==
-X-Received: by 2002:a17:902:9349:b029:d0:cb2d:f26c with SMTP id g9-20020a1709029349b02900d0cb2df26cmr156960plp.5.1599644559530;
-        Wed, 09 Sep 2020 02:42:39 -0700 (PDT)
-Received: from josephsih-z840.tpe.corp.google.com ([2401:fa00:1:10:de4a:3eff:fe7d:ff5f])
-        by smtp.gmail.com with ESMTPSA id a23sm1692275pgv.86.2020.09.09.02.42.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 02:42:39 -0700 (PDT)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com
-Cc:     chromeos-bluetooth-upstreaming@chromium.org, josephsih@google.com,
-        Joseph Hwang <josephsih@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 2/2] Bluetooth: sco: expose WBS packet length in socket option
-Date:   Wed,  9 Sep 2020 17:42:02 +0800
-Message-Id: <20200909174129.v2.2.I03247d3813c6dcbcdbeab26d068f9fd765edb1f5@changeid>
-X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
-In-Reply-To: <20200909094202.3863687-1-josephsih@chromium.org>
-References: <20200909094202.3863687-1-josephsih@chromium.org>
+        id S1726408AbgIIJmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 05:42:38 -0400
+Received: from correo.us.es ([193.147.175.20]:34792 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726414AbgIIJm3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 05:42:29 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id B48382EFEA2
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 11:42:25 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A32ABDA78D
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 11:42:25 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id A217CDA789; Wed,  9 Sep 2020 11:42:25 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6538DDA844;
+        Wed,  9 Sep 2020 11:42:23 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 09 Sep 2020 11:42:23 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id 37C7B4301DE1;
+        Wed,  9 Sep 2020 11:42:23 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 00/13] Netfilter updates for net-next
+Date:   Wed,  9 Sep 2020 11:42:06 +0200
+Message-Id: <20200909094219.17732-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is desirable to expose the wideband speech packet length via
-a socket option to the user space so that the user space can set
-the value correctly in configuring the sco connection.
+Hi,
 
-Reviewed-by: Alain Michaud <alainm@chromium.org>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
----
+The following patchset contains Netfilter updates for net-next:
 
-(no changes since v1)
+1) Rewrite inner header IPv6 in ICMPv6 messages in ip6t_NPT,
+   from Michael Zhou.
 
- net/bluetooth/sco.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+2) do_ip_vs_set_ctl() dereferences uninitialized value,
+   from Peilin Ye.
 
-diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index dcf7f96ff417e6..79ffcdef0b7ad5 100644
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -1001,6 +1001,12 @@ static int sco_sock_getsockopt(struct socket *sock, int level, int optname,
- 			err = -EFAULT;
- 		break;
- 
-+	case BT_SNDMTU:
-+	case BT_RCVMTU:
-+		if (put_user(sco_pi(sk)->conn->mtu, (u32 __user *)optval))
-+			err = -EFAULT;
-+		break;
-+
- 	default:
- 		err = -ENOPROTOOPT;
- 		break;
--- 
-2.28.0.526.ge36021eeef-goog
+3) Support for userdata in tables, from Jose M. Guisado.
 
+4) Do not increment ct error and invalid stats at the same time,
+   from Florian Westphal.
+
+5) Remove ct ignore stats, also from Florian.
+
+6) Add ct stats for clash resolution, from Florian Westphal.
+
+7) Bump reference counter bump on ct clash resolution only,
+   this is safe because bucket lock is held, again from Florian.
+
+8) Use ip_is_fragment() in xt_HMARK, from YueHaibing.
+
+9) Add wildcard support for nft_socket, from Balazs Scheidler.
+
+10) Remove superfluous IPVS dependency on iptables, from
+    Yaroslav Bolyukin.
+
+11) Remove unused definition in ebt_stp, from Wang Hai.
+
+12) Replace CONFIG_NFT_CHAIN_NAT_{IPV4,IPV6} by CONFIG_NFT_NAT
+    in selftests/net, from Fabian Frederick.
+
+13) Add userdata support for nft_object, from Jose M. Guisado.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 0f091e43310f5c292b7094f9f115e651358e8053:
+
+  netlabel: remove unused param from audit_log_format() (2020-08-28 09:08:51 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to b131c96496b369c7b14125e7c50e89ac7cec8051:
+
+  netfilter: nf_tables: add userdata support for nft_object (2020-09-08 16:35:38 +0200)
+
+----------------------------------------------------------------
+Balazs Scheidler (1):
+      netfilter: nft_socket: add wildcard support
+
+Fabian Frederick (1):
+      selftests/net: replace obsolete NFT_CHAIN configuration
+
+Florian Westphal (4):
+      netfilter: conntrack: do not increment two error counters at same time
+      netfilter: conntrack: remove ignore stats
+      netfilter: conntrack: add clash resolution stat counter
+      netfilter: conntrack: remove unneeded nf_ct_put
+
+Jose M. Guisado Gomez (2):
+      netfilter: nf_tables: add userdata attributes to nft_table
+      netfilter: nf_tables: add userdata support for nft_object
+
+Michael Zhou (1):
+      netfilter: ip6t_NPT: rewrite addresses in ICMPv6 original packet
+
+Peilin Ye (1):
+      ipvs: Fix uninit-value in do_ip_vs_set_ctl()
+
+Wang Hai (1):
+      netfilter: ebt_stp: Remove unused macro BPDU_TYPE_TCN
+
+Yaroslav Bolyukin (1):
+      ipvs: remove dependency on ip6_tables
+
+YueHaibing (1):
+      netfilter: xt_HMARK: Use ip_is_fragment() helper
+
+ include/linux/netfilter/nf_conntrack_common.h      |  2 +-
+ include/net/ip_vs.h                                |  3 --
+ include/net/netfilter/nf_tables.h                  |  4 ++
+ include/uapi/linux/netfilter/nf_tables.h           |  6 +++
+ include/uapi/linux/netfilter/nfnetlink_conntrack.h |  3 +-
+ net/bridge/netfilter/ebt_stp.c                     |  1 -
+ net/ipv6/netfilter/ip6t_NPT.c                      | 39 +++++++++++++++
+ net/netfilter/ipvs/Kconfig                         |  1 -
+ net/netfilter/ipvs/ip_vs_ctl.c                     |  7 +--
+ net/netfilter/nf_conntrack_core.c                  | 25 ++++------
+ net/netfilter/nf_conntrack_netlink.c               |  5 +-
+ net/netfilter/nf_conntrack_standalone.c            |  4 +-
+ net/netfilter/nf_tables_api.c                      | 57 ++++++++++++++++++----
+ net/netfilter/nft_socket.c                         | 27 ++++++++++
+ net/netfilter/xt_HMARK.c                           |  2 +-
+ tools/testing/selftests/net/config                 |  3 +-
+ 16 files changed, 148 insertions(+), 41 deletions(-)
