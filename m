@@ -2,171 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A63265264
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:16:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DA532652C1
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:24:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727972AbgIJVQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726588AbgIJVPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:15:51 -0400
-Received: from mail-oo1-xc44.google.com (mail-oo1-xc44.google.com [IPv6:2607:f8b0:4864:20::c44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0668BC061756;
-        Thu, 10 Sep 2020 14:15:46 -0700 (PDT)
-Received: by mail-oo1-xc44.google.com with SMTP id h9so1790253ooo.10;
-        Thu, 10 Sep 2020 14:15:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BFCtXTuROc0+YYGPop04Dk+iiUlezsA+0NbzQBhD+BA=;
-        b=GuD3TGmStXtihH8Sxv8w7dkoBPihevY3v9BGFDKVMp+7HFRNCzM+ojYulbfbw3lzVh
-         Egul2zPj6VBeJQM7kBVVJLNlvhNYje/3IJuRSi/52MWfq2fpQzVo+ZPuxt+0hXyqYijd
-         esXtFKqyodblu9iwD++CZEeeoB5JjwehGQcG2+QYC5rBEC9vr/PiLDNyumU235l6CrNi
-         WgKJBTLvbfe4Fk4BElHk5G5wuI69rh9cNBS0gIykgUQxuHoruMFKh/CeMaFuNmYqSykS
-         LTyVKYWz+lO7ZKlQpGz/z3ESKtcQeqOrQg5nRmddC8yXipIxVptwy1yojTMpwVlb+vXJ
-         D8WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BFCtXTuROc0+YYGPop04Dk+iiUlezsA+0NbzQBhD+BA=;
-        b=fFAivLO7/bPX7vIn12F1fZaH9IPXrpv1Ggnf41gUeVjw4kPGPXAKxi5sv3gUzmn87l
-         DLB+OFxTsDhb5TfSfXu8EDIooYu05Zg5Vm5gSx6iHpsRcHA8njJooFzz3vyHuG8EW5Tg
-         gqtYU4QH2xTg+7kkQPKtM72NDDQ8mwpM/j2PMnhqvPVP2f8V1JoQ6NMc9NGYzcjrt9pM
-         jym5wU9R3wsDXttkDzlqDmmfgJfMkg2tekmOnPYS4siEbNOYffnDvEMP7Daa4+C76Pui
-         wIKVCLVDKfCeMUmys/pfBPJq585w23ndnjXvFIacUAUnHKqy6YvfFwOKqLDA0w8wmdP6
-         NAjw==
-X-Gm-Message-State: AOAM531Z8Z11dXH1g3EkfefAA5Osi8jKPnvcrGKkY4ebCsiWzG0huNSJ
-        eg4XeNNVpnE7MuSEt8kA7VHoNzf1PneHY+ewbe0=
-X-Google-Smtp-Source: ABdhPJyc58SU56Yz39kDkKsbOrktPwfoFXhHf6/Jso5xD3Rgi5BFy5TRwq1e66DV0J4w4LySieyUCaiWxbu/130vgiA=
-X-Received: by 2002:a4a:d509:: with SMTP id m9mr6013838oos.77.1599772545342;
- Thu, 10 Sep 2020 14:15:45 -0700 (PDT)
+        id S1727776AbgIJVXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:23:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47240 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725912AbgIJVX1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 17:23:27 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5AF4D221E3;
+        Thu, 10 Sep 2020 21:23:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599773006;
+        bh=iaV5+nC9PNJOCDC5Q1tTEE3Ml8wCbYPBqNFH3p7Iua8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eqeWX+M4hSLXL3gkGUMoR3D4n/KNDJRStKyULG2B+s7Dq6EPSR4GTrvUp01daI4vX
+         LLEIvGVsQPna0izo2F7NKWOY1JQ2ZDUdQPszDUvrQ1NDR5kVpneFr8E+RhylRJ/Aaz
+         G0mqEr5VtygCa/YZBzsbnlSmGBBgHYdfqv6KJfPg=
+Date:   Thu, 10 Sep 2020 14:23:24 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: Re: [net-next v4 2/5] devlink: convert flash_update to use params
+ structure
+Message-ID: <20200910142324.1932401d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f8c32083-da74-b7cc-e6a0-6b819533897c@intel.com>
+References: <20200909222653.32994-1-jacob.e.keller@intel.com>
+        <20200909222653.32994-3-jacob.e.keller@intel.com>
+        <20200909175545.3ea38a80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <f8c32083-da74-b7cc-e6a0-6b819533897c@intel.com>
 MIME-Version: 1.0
-References: <20200910161126.30948-1-oded.gabbay@gmail.com> <20200910130112.1f6bd9e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAFCwf13SbXqjyu6JHKSTf-EqUxcBZUe4iAfggLhKXOi6DhXYcg@mail.gmail.com>
- <20200910132835.1bf7b638@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAFCwf127fssgiDEwYvv3rFW7iFFfKKZDE=oxDUbFBcwpz3yQkQ@mail.gmail.com> <a13199ce-0c73-920d-857d-3223144f41f0@gmail.com>
-In-Reply-To: <a13199ce-0c73-920d-857d-3223144f41f0@gmail.com>
-From:   Oded Gabbay <oded.gabbay@gmail.com>
-Date:   Fri, 11 Sep 2020 00:15:17 +0300
-Message-ID: <CAFCwf13ak5NPc2BTWoA2cwHB5AUJjq5i1jOucbsJnwyyQCfQ4w@mail.gmail.com>
-Subject: Re: [PATCH 00/15] Adding GAUDI NIC code to habanalabs driver
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 11, 2020 at 12:05 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 9/10/2020 1:32 PM, Oded Gabbay wrote:
-> > On Thu, Sep 10, 2020 at 11:28 PM Jakub Kicinski <kuba@kernel.org> wrote:
+On Thu, 10 Sep 2020 13:59:07 -0700 Jacob Keller wrote:
+> On 9/9/2020 5:55 PM, Jakub Kicinski wrote:
+> > On Wed,  9 Sep 2020 15:26:50 -0700 Jacob Keller wrote:  
+> >> The devlink core recently gained support for checking whether the driver
+> >> supports a flash_update parameter, via `supported_flash_update_params`.
+> >> However, parameters are specified as function arguments. Adding a new
+> >> parameter still requires modifying the signature of the .flash_update
+> >> callback in all drivers.
 > >>
-> >> On Thu, 10 Sep 2020 23:16:22 +0300 Oded Gabbay wrote:
-> >>> On Thu, Sep 10, 2020 at 11:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >>>> On Thu, 10 Sep 2020 19:11:11 +0300 Oded Gabbay wrote:
-> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.c
-> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_dcbnl.c
-> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_debugfs.c
-> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_ethtool.c
-> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_phy.c
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_masks.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm1_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_masks.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc1_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxb_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_masks.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe1_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_stat_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_tmr_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_masks.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe1_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_masks.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs1_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm0_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm1_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm0_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm1_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm0_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm1_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm0_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm1_regs.h
-> >>>>>   create mode 100644 drivers/misc/habanalabs/include/hw_ip/nic/nic_general.h
-> >>>>
-> >>>> The relevant code needs to live under drivers/net/(ethernet/).
-> >>>> For one thing our automation won't trigger for drivers in random
-> >>>> (/misc) part of the tree.
-> >>>
-> >>> Can you please elaborate on how to do this with a single driver that
-> >>> is already in misc ?
-> >>> As I mentioned in the cover letter, we are not developing a
-> >>> stand-alone NIC. We have a deep-learning accelerator with a NIC
-> >>> interface.
-> >>> Therefore, we don't have a separate PCI physical function for the NIC
-> >>> and I can't have a second driver registering to it.
+> >> Convert the .flash_update function to take a new `struct
+> >> devlink_flash_update_params` instead. By using this structure, and the
+> >> `supported_flash_update_params` bit field, a new parameter to
+> >> flash_update can be added without requiring modification to existing
+> >> drivers.
 > >>
-> >> Is it not possible to move the files and still build them into a single
-> >> module?
-> > hmm...
-> > I actually didn't try that as I thought it will be very strange and
-> > I'm not familiar with other drivers that build as a single ko but have
-> > files spread out in different subsystems.
-> > I don't feel it is a better option than what we did here.
-> >
-> > Will I need to split pull requests to different subsystem maintainers
-> > ? For the same driver ?
-> > Sounds to me this is not going to fly.
->
-> Not necessarily, you can post your patches to all relevant lists and
-> seek maintainer review/acked-by tags from the relevant maintainers. This
-> is not unheard of with mlx5 for instance.
-Yeah, I see what you are saying, the problem is that sometimes,
-because everything is tightly integrated in our SOC, the patches
-contain code from common code (common to ALL our ASICs, even those who
-don't have NIC at all), GAUDI specific code which is not NIC related
-and the NIC code itself.
-But I guess that as a last resort if this is a *must* I can do that.
-Though I would like to hear Greg's opinion on this as he is my current
-maintainer.
+> >> As before, all parameters except file_name will require driver opt-in.
+> >> Because file_name is a necessary field to for the flash_update to make
+> >> sense, no "SUPPORTED" bitflag is provided and it is always considered
+> >> valid. All future additional parameters will require a new bit in the
+> >> supported_flash_update_params bitfield.  
+> > 
+> > I keep thinking we should also make the core do the
+> > request_firmware_direct(). What else is the driver gonna do with the file name..
+> > 
+> > But I don't want to drag your series out so:
+> > 
+> > Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> 
+> Hmm. What does _direct do? I guess it means it won't fall back to the
+> userspace helper if it can't find the firmware? It looks like MLX
+> drivers use it, but others seem to just stick to regular request_firmware.
 
-Personally I do want to send relevant patches to netdev because I want
-to get your expert reviews on them, but still keep the code in a
-single location.
+FWIW _direct() is pretty much meaningless today, I think the kernel
+support for non-direct is mostly dropped. Systemd doesn't support it
+either.
 
->
-> Have you considered using notifiers to get your NIC driver registered
-> while the NIC code lives in a different module?
-Yes, and I prefered to keep it simple. I didn't want to start sending
-notifications to the NIC driver every time, for example, I needed to
-reset the SOC because a compute engine got stuck. Or vice-versa - when
-some error happened in the NIC to start sending notifications to the
-common driver.
+> This seems like an improvement that we can handle in a follow up series
+> either way. Thanks for the review!
 
-In addition, from my AMD days, we had a very tough time managing two
-drivers that "talk" to each other and manage the same H/W. I'm talking
-about amdgpu for graphics and amdkfd for compute (which I was the
-maintainer). AMD is working in the past years to unite those two
-drivers to get out of that mess. That's why I didn't want to go down
-that road.
-
-Thanks,
-Oded
-
-> --
-> Florian
+Agreed. Too many pending patches for this area already :S
