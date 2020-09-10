@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4F9B264B30
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 19:26:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27941264B25
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 19:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbgIJR0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 13:26:36 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:50216 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727027AbgIJRYM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 13:24:12 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08AH2k5a006942;
-        Thu, 10 Sep 2020 13:24:01 -0400
+        id S1726663AbgIJRYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 13:24:48 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:51810 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726980AbgIJRYG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 13:24:06 -0400
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08AH5DI4116854;
+        Thu, 10 Sep 2020 13:24:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references; s=pp1;
- bh=c/3PJWfLHIkcDpxTtYTtiHeR6SG5MfRpzerzfIGp2J0=;
- b=qOXdlbpXTLRDiyy6mV9Qdp3H4c6ptFmJrBn4ZizC+O88juwUt8PIGNV2IQse7KocsFQH
- j2Bzrt906wWHl7i+5v7yxvKwARI//RmFlKUsEEjmGUAK3zI4sb88n7oq1Ajblzh5geB7
- EIR/sUTnCbjPwmeUpPLWeVd6ZWxosCejqt0OM9WV/SGW5+WfY+/BXynpUxpOvfMNC5zA
- eitgcpt53gWRu+KgfYeb/oCYVnbImIaCAEChR3XFLhNpSKIZWeH6DgE0ZukLhuh5oI2m
- AoiN561UuiGom181OM0WA5mZwxnm+ezhKxrPtgvtWvJyNJX5OVWjrgRpY88kIDQjpAar 8w== 
+ bh=kFhI5mFLmtEfdSSIqnZMNi5lEzc6Th2EfHQfB/t0JWw=;
+ b=kerQOIKR+iuzxTMjaB7MvtDhO+0AgKeOxeGa3XYlUSDSnYjhpJ3EnmELoDm/DpbB1F6Z
+ gF9TElswNtXaWH9w8OR8XX/bsWwHzBFfXpUVBzl78Vu7udhIz0mK5gESOJ/EBhjqJBlD
+ guz57YX5rJhK7s35c/5jZachvBWTUd+oQAgYxwYWRo5BT4jzL6gnD79tQ/hp5sswNd9q
+ JzVadYTKJV0osRGwERifOc9WPO1xOo7o1e8aNJ+cLMEFfE70XFg5tfnZYlpx1dQo8Ssi
+ gHn3nsobMoi+zizsz9QsN8llVz3lCvgARYTL1dCC23yKADpGzt5IpzNVZYdJWka3IN+t rw== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33fq9s24g6-1
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33fr31rnun-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Sep 2020 13:24:00 -0400
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 08AH39bo007959;
-        Thu, 10 Sep 2020 13:24:00 -0400
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 33fq9s24fk-1
+        Thu, 10 Sep 2020 13:24:01 -0400
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 08AHBETu139480;
+        Thu, 10 Sep 2020 13:24:01 -0400
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33fr31rntr-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Sep 2020 13:24:00 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08AHHoeV017005;
-        Thu, 10 Sep 2020 17:23:58 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 33c2a86a41-1
+        Thu, 10 Sep 2020 13:24:01 -0400
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08AHGr06031843;
+        Thu, 10 Sep 2020 17:23:59 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 33dxdr3g5c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Thu, 10 Sep 2020 17:23:58 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08AHMMqf60031256
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08AHNugt38994306
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Sep 2020 17:22:22 GMT
+        Thu, 10 Sep 2020 17:23:56 GMT
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8E5B842047;
-        Thu, 10 Sep 2020 17:23:55 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 18B6142041;
+        Thu, 10 Sep 2020 17:23:56 +0000 (GMT)
 Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1C79C42045;
+        by IMSVA (Postfix) with ESMTP id 9C2554204C;
         Thu, 10 Sep 2020 17:23:55 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
@@ -66,19 +66,19 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <nikolay@nvidia.com>,
         Jiri Pirko <jiri@resnulli.us>, Ivan Vecera <ivecera@redhat.com>
-Subject: [PATCH net-next 1/8] s390/cio: Add new Operation Code OC3 to PNSO
-Date:   Thu, 10 Sep 2020 19:23:44 +0200
-Message-Id: <20200910172351.5622-2-jwi@linux.ibm.com>
+Subject: [PATCH net-next 2/8] s390/cio: Helper functions to read CSSID, IID, and CHID
+Date:   Thu, 10 Sep 2020 19:23:45 +0200
+Message-Id: <20200910172351.5622-3-jwi@linux.ibm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200910172351.5622-1-jwi@linux.ibm.com>
 References: <20200910172351.5622-1-jwi@linux.ibm.com>
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-10_05:2020-09-10,2020-09-10 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- suspectscore=0 bulkscore=0 impostorscore=0 clxscore=1011 phishscore=0
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
+ bulkscore=0 lowpriorityscore=0 phishscore=0 priorityscore=1501
+ impostorscore=0 adultscore=0 suspectscore=0 mlxlogscore=999 clxscore=1015
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2006250000 definitions=main-2009100157
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -87,225 +87,237 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexandra Winter <wintera@linux.ibm.com>
 
-Add support for operation code 3 (OC3) of the
-Perform-Network-Subchannel-Operations (PNSO) function
-of the Channel-Subsystem-Call (CHSC) instruction.
+Add helper functions to expose Channel Subsystem ID (CSSID), MIF Image Id
+(IID), Channel ID (CHID) and Channel Path ID (CHPID).
+These values are required by the qeth driver's exploitation of network-
+address-change-notifications to determine which entries belong to this
+interface.
 
-PNSO provides 2 operation codes:
-OC0 - BRIDGE_INFO
-OC3 - ADDR_INFO (new)
-
-Extend the function calls to *pnso* to pass the OC and
-add new response code 0108.
-
-Support for OC3 is indicated by a flag in the css_general_characteristics.
+Store the Partition identifier in System log, as this may be used to map
+a Linux view to a Hardware view for debugging purpose.
 
 Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
-Reviewed-by: Julian Wiedmann <jwi@linux.ibm.com>
-Reviewed-by: Peter Oberparleiter <oberpar@linux.ibm.com>
 Reviewed-by: Vineeth Vijayan <vneethv@linux.ibm.com>
 Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 Acked-by: Heiko Carstens <hca@linux.ibm.com>
 ---
- arch/s390/include/asm/ccwdev.h    |  5 ++---
- arch/s390/include/asm/chsc.h      |  7 +++++++
- arch/s390/include/asm/css_chars.h |  4 +++-
- drivers/s390/cio/chsc.c           | 11 ++++++-----
- drivers/s390/cio/chsc.h           |  6 ++----
- drivers/s390/cio/device_ops.c     |  8 ++++----
- drivers/s390/net/qeth_l2_main.c   | 13 ++++++++-----
- 7 files changed, 32 insertions(+), 22 deletions(-)
+ arch/s390/include/asm/ccwdev.h |  4 ++
+ drivers/s390/cio/chsc.c        | 11 +++--
+ drivers/s390/cio/chsc.h        |  2 +-
+ drivers/s390/cio/css.c         | 11 +++--
+ drivers/s390/cio/css.h         |  4 +-
+ drivers/s390/cio/device_ops.c  | 85 ++++++++++++++++++++++++++++++++++
+ 6 files changed, 108 insertions(+), 9 deletions(-)
 
 diff --git a/arch/s390/include/asm/ccwdev.h b/arch/s390/include/asm/ccwdev.h
-index 3cfe1eb89838..9739a00e2190 100644
+index 9739a00e2190..c0be5fe1ddba 100644
 --- a/arch/s390/include/asm/ccwdev.h
 +++ b/arch/s390/include/asm/ccwdev.h
-@@ -238,7 +238,6 @@ extern void ccw_device_get_schid(struct ccw_device *, struct subchannel_id *);
- struct channel_path_desc_fmt0 *ccw_device_get_chp_desc(struct ccw_device *, int);
- u8 *ccw_device_get_util_str(struct ccw_device *cdev, int chp_idx);
+@@ -240,4 +240,8 @@ u8 *ccw_device_get_util_str(struct ccw_device *cdev, int chp_idx);
  int ccw_device_pnso(struct ccw_device *cdev,
--		    struct chsc_pnso_area *pnso_area,
--		    struct chsc_pnso_resume_token resume_token,
--		    int cnc);
-+		    struct chsc_pnso_area *pnso_area, u8 oc,
-+		    struct chsc_pnso_resume_token resume_token, int cnc);
+ 		    struct chsc_pnso_area *pnso_area, u8 oc,
+ 		    struct chsc_pnso_resume_token resume_token, int cnc);
++int ccw_device_get_cssid(struct ccw_device *cdev, u8 *cssid);
++int ccw_device_get_iid(struct ccw_device *cdev, u8 *iid);
++int ccw_device_get_chpid(struct ccw_device *cdev, int chp_idx, u8 *chpid);
++int ccw_device_get_chid(struct ccw_device *cdev, int chp_idx, u16 *chid);
  #endif /* _S390_CCWDEV_H_ */
-diff --git a/arch/s390/include/asm/chsc.h b/arch/s390/include/asm/chsc.h
-index 36ce2d25a5fc..ae4d2549cd67 100644
---- a/arch/s390/include/asm/chsc.h
-+++ b/arch/s390/include/asm/chsc.h
-@@ -11,6 +11,13 @@
- 
- #include <uapi/asm/chsc.h>
- 
-+/**
-+ * Operation codes for CHSC PNSO:
-+ *    PNSO_OC_NET_BRIDGE_INFO - only addresses that are visible to a bridgeport
-+ *    PNSO_OC_NET_ADDR_INFO   - all addresses
-+ */
-+#define PNSO_OC_NET_BRIDGE_INFO		0
-+#define PNSO_OC_NET_ADDR_INFO		3
- /**
-  * struct chsc_pnso_naid_l2 - network address information descriptor
-  * @nit:  Network interface token
-diff --git a/arch/s390/include/asm/css_chars.h b/arch/s390/include/asm/css_chars.h
-index 480bb02ccacd..638137d46c85 100644
---- a/arch/s390/include/asm/css_chars.h
-+++ b/arch/s390/include/asm/css_chars.h
-@@ -36,7 +36,9 @@ struct css_general_char {
- 	u64 alt_ssi : 1; /* bit 108 */
- 	u64 : 1;
- 	u64 narf : 1;	 /* bit 110 */
--	u64 : 12;
-+	u64 : 5;
-+	u64 enarf: 1;	 /* bit 116 */
-+	u64 : 6;
- 	u64 util_str : 1;/* bit 123 */
- } __packed;
- 
 diff --git a/drivers/s390/cio/chsc.c b/drivers/s390/cio/chsc.c
-index c314e9495c1b..8f764a295a51 100644
+index 8f764a295a51..38017c4a31e9 100644
 --- a/drivers/s390/cio/chsc.c
 +++ b/drivers/s390/cio/chsc.c
-@@ -65,6 +65,8 @@ int chsc_error_from_response(int response)
- 	case 0x0100:
- 	case 0x0102:
- 		return -ENOMEM;
-+	case 0x0108:		/* "HW limit exceeded" for the op 0x003d */
-+		return -EUSERS;
- 	default:
- 		return -EIO;
- 	}
-@@ -1340,6 +1342,7 @@ EXPORT_SYMBOL_GPL(chsc_scm_info);
-  * chsc_pnso() - Perform Network-Subchannel Operation
-  * @schid:		id of the subchannel on which PNSO is performed
-  * @pnso_area:		request and response block for the operation
-+ * @oc:			Operation Code
-  * @resume_token:	resume token for multiblock response
-  * @cnc:		Boolean change-notification control
-  *
-@@ -1347,10 +1350,8 @@ EXPORT_SYMBOL_GPL(chsc_scm_info);
-  *
-  * Returns 0 on success.
-  */
--int chsc_pnso(struct subchannel_id schid,
--	      struct chsc_pnso_area *pnso_area,
--	      struct chsc_pnso_resume_token resume_token,
--	      int cnc)
-+int chsc_pnso(struct subchannel_id schid, struct chsc_pnso_area *pnso_area,
-+	      u8 oc, struct chsc_pnso_resume_token resume_token, int cnc)
+@@ -1116,7 +1116,7 @@ int chsc_enable_facility(int operation_code)
+ 	return ret;
+ }
+ 
+-int __init chsc_get_cssid(int idx)
++int __init chsc_get_cssid_iid(int idx, u8 *cssid, u8 *iid)
  {
- 	memset(pnso_area, 0, sizeof(*pnso_area));
- 	pnso_area->request.length = 0x0030;
-@@ -1359,7 +1360,7 @@ int chsc_pnso(struct subchannel_id schid,
- 	pnso_area->ssid  = schid.ssid;
- 	pnso_area->sch	 = schid.sch_no;
- 	pnso_area->cssid = schid.cssid;
--	pnso_area->oc	 = 0; /* Store-network-bridging-information list */
-+	pnso_area->oc	 = oc;
- 	pnso_area->resume_token = resume_token;
- 	pnso_area->n	   = (cnc != 0);
- 	if (chsc(pnso_area))
+ 	struct {
+ 		struct chsc_header request;
+@@ -1127,7 +1127,8 @@ int __init chsc_get_cssid(int idx)
+ 		u32 reserved2[3];
+ 		struct {
+ 			u8 cssid;
+-			u32 : 24;
++			u8 iid;
++			u32 : 16;
+ 		} list[0];
+ 	} *sdcal_area;
+ 	int ret;
+@@ -1153,8 +1154,10 @@ int __init chsc_get_cssid(int idx)
+ 	}
+ 
+ 	if ((addr_t) &sdcal_area->list[idx] <
+-	    (addr_t) &sdcal_area->response + sdcal_area->response.length)
+-		ret = sdcal_area->list[idx].cssid;
++	    (addr_t) &sdcal_area->response + sdcal_area->response.length) {
++		*cssid = sdcal_area->list[idx].cssid;
++		*iid = sdcal_area->list[idx].iid;
++	}
+ 	else
+ 		ret = -ENODEV;
+ exit:
 diff --git a/drivers/s390/cio/chsc.h b/drivers/s390/cio/chsc.h
-index 7ecf7e4c402e..7416957ba9f4 100644
+index 7416957ba9f4..c2b83b68bc57 100644
 --- a/drivers/s390/cio/chsc.h
 +++ b/drivers/s390/cio/chsc.h
-@@ -205,10 +205,8 @@ struct chsc_scm_info {
+@@ -208,7 +208,7 @@ int chsc_scm_info(struct chsc_scm_info *scm_area, u64 token);
+ int chsc_pnso(struct subchannel_id schid, struct chsc_pnso_area *pnso_area,
+ 	      u8 oc, struct chsc_pnso_resume_token resume_token, int cnc);
  
- int chsc_scm_info(struct chsc_scm_info *scm_area, u64 token);
+-int __init chsc_get_cssid(int idx);
++int __init chsc_get_cssid_iid(int idx, u8 *cssid, u8 *iid);
  
--int chsc_pnso(struct subchannel_id schid,
--	      struct chsc_pnso_area *pnso_area,
--	      struct chsc_pnso_resume_token resume_token,
--	      int cnc);
-+int chsc_pnso(struct subchannel_id schid, struct chsc_pnso_area *pnso_area,
-+	      u8 oc, struct chsc_pnso_resume_token resume_token, int cnc);
+ #ifdef CONFIG_SCM_BUS
+ int scm_update_information(void);
+diff --git a/drivers/s390/cio/css.c b/drivers/s390/cio/css.c
+index aca022239b33..1981eb62d329 100644
+--- a/drivers/s390/cio/css.c
++++ b/drivers/s390/cio/css.c
+@@ -854,7 +854,7 @@ css_generate_pgid(struct channel_subsystem *css, u32 tod_high)
+ 	if (css_general_characteristics.mcss) {
+ 		css->global_pgid.pgid_high.ext_cssid.version = 0x80;
+ 		css->global_pgid.pgid_high.ext_cssid.cssid =
+-			(css->cssid < 0) ? 0 : css->cssid;
++			css->id_valid ? css->cssid : 0;
+ 	} else {
+ 		css->global_pgid.pgid_high.cpu_addr = stap();
+ 	}
+@@ -877,7 +877,7 @@ static ssize_t real_cssid_show(struct device *dev, struct device_attribute *a,
+ {
+ 	struct channel_subsystem *css = to_css(dev);
  
- int __init chsc_get_cssid(int idx);
+-	if (css->cssid < 0)
++	if (!css->id_valid)
+ 		return -EINVAL;
  
+ 	return sprintf(buf, "%x\n", css->cssid);
+@@ -975,7 +975,12 @@ static int __init setup_css(int nr)
+ 	css->device.dma_mask = &css->device.coherent_dma_mask;
+ 
+ 	mutex_init(&css->mutex);
+-	css->cssid = chsc_get_cssid(nr);
++	ret = chsc_get_cssid_iid(nr, &css->cssid, &css->iid);
++	if (!ret) {
++		css->id_valid = true;
++		pr_info("Partition identifier %01x.%01x\n", css->cssid,
++			css->iid);
++	}
+ 	css_generate_pgid(css, (u32) (get_tod_clock() >> 32));
+ 
+ 	ret = device_register(&css->device);
+diff --git a/drivers/s390/cio/css.h b/drivers/s390/cio/css.h
+index 8d832900a63d..3f322ea0f498 100644
+--- a/drivers/s390/cio/css.h
++++ b/drivers/s390/cio/css.h
+@@ -115,7 +115,9 @@ extern int for_each_subchannel(int(*fn)(struct subchannel_id, void *), void *);
+ void css_update_ssd_info(struct subchannel *sch);
+ 
+ struct channel_subsystem {
+-	int cssid;
++	u8 cssid;
++	u8 iid;
++	bool id_valid; /* cssid,iid */
+ 	struct channel_path *chps[__MAX_CHPID + 1];
+ 	struct device device;
+ 	struct pgid global_pgid;
 diff --git a/drivers/s390/cio/device_ops.c b/drivers/s390/cio/device_ops.c
-index 963fcc9054c6..cdf44f398957 100644
+index cdf44f398957..0fe7b2f2e7f5 100644
 --- a/drivers/s390/cio/device_ops.c
 +++ b/drivers/s390/cio/device_ops.c
-@@ -714,6 +714,7 @@ EXPORT_SYMBOL_GPL(ccw_device_get_schid);
-  * ccw_device_pnso() - Perform Network-Subchannel Operation
-  * @cdev:		device on which PNSO is performed
-  * @pnso_area:		request and response block for the operation
-+ * @oc:			Operation Code
-  * @resume_token:	resume token for multiblock response
-  * @cnc:		Boolean change-notification control
-  *
-@@ -722,14 +723,13 @@ EXPORT_SYMBOL_GPL(ccw_device_get_schid);
-  * Returns 0 on success.
-  */
- int ccw_device_pnso(struct ccw_device *cdev,
--		    struct chsc_pnso_area *pnso_area,
--		    struct chsc_pnso_resume_token resume_token,
--		    int cnc)
-+		    struct chsc_pnso_area *pnso_area, u8 oc,
-+		    struct chsc_pnso_resume_token resume_token, int cnc)
- {
- 	struct subchannel_id schid;
- 
- 	ccw_device_get_schid(cdev, &schid);
--	return chsc_pnso(schid, pnso_area, resume_token, cnc);
-+	return chsc_pnso(schid, pnso_area, oc, resume_token, cnc);
+@@ -733,6 +733,91 @@ int ccw_device_pnso(struct ccw_device *cdev,
  }
  EXPORT_SYMBOL_GPL(ccw_device_pnso);
  
-diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
-index 491578009f12..2ab130d5c42d 100644
---- a/drivers/s390/net/qeth_l2_main.c
-+++ b/drivers/s390/net/qeth_l2_main.c
-@@ -642,6 +642,7 @@ static void qeth_l2_set_rx_mode(struct net_device *dev)
- /**
-  *	qeth_l2_pnso() - perform network subchannel operation
-  *	@card: qeth_card structure pointer
-+ *	@oc: Operation Code
-  *	@cnc: Boolean Change-Notification Control
-  *	@cb: Callback function will be executed for each element
-  *		of the address list
-@@ -652,7 +653,7 @@ static void qeth_l2_set_rx_mode(struct net_device *dev)
-  *	control" is set, further changes in the address list will be reported
-  *	via the IPA command.
-  */
--static int qeth_l2_pnso(struct qeth_card *card, int cnc,
-+static int qeth_l2_pnso(struct qeth_card *card, u8 oc, int cnc,
- 			void (*cb)(void *priv, struct chsc_pnso_naid_l2 *entry),
- 			void *priv)
- {
-@@ -663,13 +664,14 @@ static int qeth_l2_pnso(struct qeth_card *card, int cnc,
- 	int i, size, elems;
- 	int rc;
- 
--	QETH_CARD_TEXT(card, 2, "PNSO");
- 	rr = (struct chsc_pnso_area *)get_zeroed_page(GFP_KERNEL);
- 	if (rr == NULL)
- 		return -ENOMEM;
- 	do {
-+		QETH_CARD_TEXT(card, 2, "PNSO");
- 		/* on the first iteration, naihdr.resume_token will be zero */
--		rc = ccw_device_pnso(ddev, rr, rr->naihdr.resume_token, cnc);
-+		rc = ccw_device_pnso(ddev, rr, oc, rr->naihdr.resume_token,
-+				     cnc);
- 		if (rc)
- 			continue;
- 		if (cb == NULL)
-@@ -1578,11 +1580,12 @@ int qeth_bridgeport_an_set(struct qeth_card *card, int enable)
- 	if (enable) {
- 		qeth_bridge_emit_host_event(card, anev_reset, 0, NULL, NULL);
- 		qeth_l2_set_pnso_mode(card, QETH_PNSO_BRIDGEPORT);
--		rc = qeth_l2_pnso(card, 1, qeth_bridgeport_an_set_cb, card);
-+		rc = qeth_l2_pnso(card, PNSO_OC_NET_BRIDGE_INFO, 1,
-+				  qeth_bridgeport_an_set_cb, card);
- 		if (rc)
- 			qeth_l2_set_pnso_mode(card, QETH_PNSO_NONE);
- 	} else {
--		rc = qeth_l2_pnso(card, 0, NULL, NULL);
-+		rc = qeth_l2_pnso(card, PNSO_OC_NET_BRIDGE_INFO, 0, NULL, NULL);
- 		qeth_l2_set_pnso_mode(card, QETH_PNSO_NONE);
- 	}
- 	return rc;
++/**
++ * ccw_device_get_cssid() - obtain Channel Subsystem ID
++ * @cdev: device to obtain the CSSID for
++ * @cssid: The resulting Channel Subsystem ID
++ */
++int ccw_device_get_cssid(struct ccw_device *cdev, u8 *cssid)
++{
++	struct device *sch_dev = cdev->dev.parent;
++	struct channel_subsystem *css = to_css(sch_dev->parent);
++
++	if (css->id_valid)
++		*cssid = css->cssid;
++	return css->id_valid ? 0 : -ENODEV;
++}
++EXPORT_SYMBOL_GPL(ccw_device_get_cssid);
++
++/**
++ * ccw_device_get_iid() - obtain MIF-image ID
++ * @cdev: device to obtain the MIF-image ID for
++ * @iid: The resulting MIF-image ID
++ */
++int ccw_device_get_iid(struct ccw_device *cdev, u8 *iid)
++{
++	struct device *sch_dev = cdev->dev.parent;
++	struct channel_subsystem *css = to_css(sch_dev->parent);
++
++	if (css->id_valid)
++		*iid = css->iid;
++	return css->id_valid ? 0 : -ENODEV;
++}
++EXPORT_SYMBOL_GPL(ccw_device_get_iid);
++
++/**
++ * ccw_device_get_chpid() - obtain Channel Path ID
++ * @cdev: device to obtain the Channel Path ID for
++ * @chp_idx: Index of the channel path
++ * @chpid: The resulting Channel Path ID
++ */
++int ccw_device_get_chpid(struct ccw_device *cdev, int chp_idx, u8 *chpid)
++{
++	struct subchannel *sch = to_subchannel(cdev->dev.parent);
++	int mask;
++
++	if ((chp_idx < 0) || (chp_idx > 7))
++		return -EINVAL;
++	mask = 0x80 >> chp_idx;
++	if (!(sch->schib.pmcw.pim & mask))
++		return -ENODEV;
++
++	*chpid = sch->schib.pmcw.chpid[chp_idx];
++	return 0;
++}
++EXPORT_SYMBOL_GPL(ccw_device_get_chpid);
++
++/**
++ * ccw_device_get_chid() - obtain Channel ID associated with specified CHPID
++ * @cdev: device to obtain the Channel ID for
++ * @chp_idx: Index of the channel path
++ * @chid: The resulting Channel ID
++ */
++int ccw_device_get_chid(struct ccw_device *cdev, int chp_idx, u16 *chid)
++{
++	struct chp_id cssid_chpid;
++	struct channel_path *chp;
++	int rc;
++
++	chp_id_init(&cssid_chpid);
++	rc = ccw_device_get_chpid(cdev, chp_idx, &cssid_chpid.id);
++	if (rc)
++		return rc;
++	chp = chpid_to_chp(cssid_chpid);
++	if (!chp)
++		return -ENODEV;
++
++	mutex_lock(&chp->lock);
++	if (chp->desc_fmt1.flags & 0x10)
++		*chid = chp->desc_fmt1.chid;
++	else
++		rc = -ENODEV;
++	mutex_unlock(&chp->lock);
++
++	return rc;
++}
++EXPORT_SYMBOL_GPL(ccw_device_get_chid);
++
+ /*
+  * Allocate zeroed dma coherent 31 bit addressable memory using
+  * the subchannels dma pool. Maximal size of allocation supported
 -- 
 2.17.1
 
