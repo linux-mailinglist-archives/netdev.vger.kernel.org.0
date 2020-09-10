@@ -2,113 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E73B2644A9
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 12:52:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5A5F2644CC
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 12:56:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730552AbgIJKwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 06:52:00 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:37704 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730326AbgIJKtt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 06:49:49 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08AAYPWK177381;
-        Thu, 10 Sep 2020 10:49:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=fN/ETYUSmj9/pRoUk3iHgY2Npxy2z+BXnfBD/U2xvEE=;
- b=a68PNyTuR/Ya7gDF83LDKZQwcJPvMkAb8MTEijJIo8fXjvS5/dm2yiB8iBvckb6OO4/V
- yR1giJXwGSHbLA6bJgRepaaLySl/LcC01ieNDGys7GTX6TcHtikMJbTS26UOsvAw4a9W
- aAdXPBGpbBL1Tx/GqkI/L7T7LWg1/36uU2Hkmd6HnGEcocw3vJhJlug+qGVHcBqO7bJX
- kQYf7e+l0+sVFw5cGLjN+jOVt7HOuG3t1cdCyNrIJQrEGNfzWtEtdGK48DGcSuEomfDk
- 93MRfMYzfeZugwO4tH6FUIIxGCayOxvU3wPFIQN0leeWDXjlzH69xGeyA3A90zn+ofpc wg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 33c3an76nw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 10 Sep 2020 10:49:33 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08AAkerQ067429;
-        Thu, 10 Sep 2020 10:49:33 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 33cmm0rd75-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Sep 2020 10:49:32 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08AAnRgq022266;
-        Thu, 10 Sep 2020 10:49:27 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 10 Sep 2020 03:49:27 -0700
-Date:   Thu, 10 Sep 2020 13:49:18 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Anmol Karn <anmol.karan123@gmail.com>
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net,
-        syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
-Subject: Re: [Linux-kernel-mentees] [PATCH] net: bluetooth: Fix null pointer
- dereference in hci_event_packet()
-Message-ID: <20200910104918.GF12635@kadam>
-References: <20200910043424.19894-1-anmol.karan123@gmail.com>
+        id S1730602AbgIJK4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 06:56:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46724 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730604AbgIJKxX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 06:53:23 -0400
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A1CE221D6C;
+        Thu, 10 Sep 2020 10:53:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599735202;
+        bh=426DpA/GVvBchbCt06SpJGjKU4je/b+dpqllLf+JSR8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=0V/e/wz1WenVmC3pPaGFBHAG/lV6TCw7GufciP4TkPqRCrKXD3PaFc+keE0TVmYpO
+         76fSGs6njLQh7PZ0I7aXGhNddj1O7NSuxz62HPYrd/HV3MldvZVYMAnf9sW7+yMEVP
+         dJ9JqVaroKHlr3UI74JE3IE0+KZY/lARcC/6l09M=
+Received: by mail-ej1-f46.google.com with SMTP id z22so8016890ejl.7;
+        Thu, 10 Sep 2020 03:53:21 -0700 (PDT)
+X-Gm-Message-State: AOAM532ndb6fn6dvJK+d+byCcdnNk1gSqIi4f9PnlThyGlKdWWkkFFXt
+        RldEvRUGSZhxVv3Db8qW7fYgCtC9H2uAOsc+hqI=
+X-Google-Smtp-Source: ABdhPJxuiAoiRqYvlmScHBYbVBWNtkR54i9+ci/6nlyH6E1t5+auTks3zPtO7XvjIZZjtpRLYuxY1yLuT2dJygU0JIk=
+X-Received: by 2002:a17:906:af53:: with SMTP id ly19mr7845762ejb.503.1599735200004;
+ Thu, 10 Sep 2020 03:53:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200910043424.19894-1-anmol.karan123@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9739 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 phishscore=0 suspectscore=0
- spamscore=0 mlxlogscore=999 adultscore=0 malwarescore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009100099
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9739 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 priorityscore=1501
- clxscore=1011 bulkscore=0 malwarescore=0 lowpriorityscore=0
- mlxlogscore=999 suspectscore=0 adultscore=0 mlxscore=0 impostorscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009100098
+References: <20200906153654.2925-1-krzk@kernel.org> <20200906153654.2925-2-krzk@kernel.org>
+ <20200908194520.GA786466@bogus>
+In-Reply-To: <20200908194520.GA786466@bogus>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Thu, 10 Sep 2020 12:53:07 +0200
+X-Gmail-Original-Message-ID: <CAJKOXPeexek3Dq1Ly6z=PO51ULTWy+v13i-NDQm-Mz8YAET+iA@mail.gmail.com>
+Message-ID: <CAJKOXPeexek3Dq1Ly6z=PO51ULTWy+v13i-NDQm-Mz8YAET+iA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/9] dt-bindings: net: nfc: s3fwrn5: Convert to dtschema
+To:     Rob Herring <robh@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-nfc@lists.01.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Opasiak <k.opasiak@samsung.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 10:04:24AM +0530, Anmol Karn wrote:
-> Prevent hci_phy_link_complete_evt() from dereferencing 'hcon->amp_mgr'
-> as NULL. Fix it by adding pointer check for it.
-> 
-> Reported-and-tested-by: syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
-> Link: https://syzkaller.appspot.com/bug?extid=0bef568258653cff272f
-> Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
-> ---
->  net/bluetooth/hci_event.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> index 4b7fc430793c..871e16804433 100644
-> --- a/net/bluetooth/hci_event.c
-> +++ b/net/bluetooth/hci_event.c
-> @@ -4936,6 +4936,11 @@ static void hci_phy_link_complete_evt(struct hci_dev *hdev,
->  		return;
->  	}
->  
-> +	if (IS_ERR_OR_NULL(hcon->amp_mgr)) {
+On Tue, 8 Sep 2020 at 21:45, Rob Herring <robh@kernel.org> wrote:
+>
+> On Sun, 06 Sep 2020 17:36:46 +0200, Krzysztof Kozlowski wrote:
+> > Convert the Samsung S3FWRN5 NCI NFC controller bindings to dtschema.
+> > This is conversion only so it includes properties with invalid prefixes
+> > (s3fwrn5,en-gpios) which should be addressed later.
+> >
+> > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > ---
+> >  .../devicetree/bindings/net/nfc/s3fwrn5.txt   | 25 --------
+> >  .../bindings/net/nfc/samsung,s3fwrn5.yaml     | 61 +++++++++++++++++++
+> >  MAINTAINERS                                   |  1 +
+> >  3 files changed, 62 insertions(+), 25 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/net/nfc/s3fwrn5.t=
+xt
+> >  create mode 100644 Documentation/devicetree/bindings/net/nfc/samsung,s=
+3fwrn5.yaml
+> >
+>
+>
+> My bot found errors running 'make dt_binding_check' on your patch:
+>
+> ./Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml: $id: re=
+lative path/filename doesn't match actual path or filename
+>         expected: http://devicetree.org/schemas/net/nfc/samsung,s3fwrn5.y=
+aml#
+> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/=
+nfc/samsung,s3fwrn5.example.dt.yaml: s3fwrn5@27: 's3fwrn5,en-gpios', 's3fwr=
+n5,fw-gpios' do not match any of the regexes: '^#.*', '^(at25|devbus|dmacap=
+|dsa|exynos|fsi[ab]|gpio-fan|gpio|gpmc|hdmi|i2c-gpio),.*', '^(keypad|m25p|m=
+ax8952|max8997|max8998|mpmc),.*', '^(pinctrl-single|#pinctrl-single|PowerPC=
+),.*', '^(pl022|pxa-mmc|rcar_sound|rotary-encoder|s5m8767|sdhci),.*', '^(si=
+mple-audio-card|st-plgpio|st-spics|ts),.*', '^70mai,.*', '^GEFanuc,.*', '^O=
+RCL,.*', '^SUNW,.*', '^[a-zA-Z0-9#_][a-zA-Z0-9+\\-._@]{0,63}$', '^[a-zA-Z0-=
+9+\\-._]*@[0-9a-zA-Z,]*$', '^abilis,.*', '^abracon,.*', '^acer,.*', '^acme,=
+.*', '^actions,.*', '^active-semi,.*', '^ad,.*', '^adafruit,.*', '^adapteva=
+,.*', '^adaptrum,.*', '^adh,.*', '^adi,.*', '^advantech,.*', '^aeroflexgais=
+ler,.*', '^al,.*', '^allegro,.*', '^allo,.*', '^allwinner,.*', '^alphascale=
+,.*', '^alps,.*', '^altr,.*', '^amarula,.*', '^amazon,.*', '^amcc,.*', '^am=
+d,.*', '^amediatech,.*', '^amlogic,.*', '^ampire,.*', '^ams,.*', '^amstaos,=
+.*', '^analogix,.*', '^andestech,.*', '^anvo,.*', '^apm,.*', '^aptina,.*', =
+'^arasan,.*', '^archermind,.*', '^arctic,.*', '^arcx,.*', '^aries,.*', '^ar=
+m,.*', '^armadeus,.*', '^arrow,.*', '^artesyn,.*', '^asahi-kasei,.*', '^asc=
+,.*', '^aspeed,.*', '^asus,.*', '^atlas,.*', '^atmel,.*', '^auo,.*', '^auvi=
+dea,.*', '^avago,.*', '^avia,.*', '^avic,.*', '^avnet,.*', '^awinic,.*', '^=
+axentia,.*', '^axis,.*', '^azoteq,.*', '^azw,.*', '^baikal,.*', '^bananapi,=
+.*', '^beacon,.*', '^beagle,.*', '^bhf,.*', '^bitmain,.*', '^boe,.*', '^bos=
+ch,.*', '^boundary,.*', '^brcm,.*', '^broadmobi,.*', '^bticino,.*', '^buffa=
+lo,.*', '^bur,.*', '^calaosystems,.*', '^calxeda,.*', '^capella,.*', '^casc=
+oda,.*', '^catalyst,.*', '^cavium,.*', '^cdns,.*', '^cdtech,.*', '^cellwise=
+,.*', '^ceva,.*', '^checkpoint,.*', '^chipidea,.*', '^chipone,.*', '^chipsp=
+ark,.*', '^chrontel,.*', '^chrp,.*', '^chunghwa,.*', '^chuwi,.*', '^ciaa,.*=
+', '^cirrus,.*', '^cloudengines,.*', '^cnm,.*', '^cnxt,.*', '^colorfly,.*',=
+ '^compulab,.*', '^coreriver,.*', '^corpro,.*', '^cortina,.*', '^cosmic,.*'=
+, '^crane,.*', '^creative,.*', '^crystalfontz,.*', '^csky,.*', '^csq,.*', '=
+^cubietech,.*', '^cypress,.*', '^cznic,.*', '^dallas,.*', '^dataimage,.*', =
+'^davicom,.*', '^dell,.*', '^delta,.*', '^denx,.*', '^devantech,.*', '^dh,.=
+*', '^difrnce,.*', '^digi,.*', '^digilent,.*', '^dioo,.*', '^dlc,.*', '^dlg=
+,.*', '^dlink,.*', '^dmo,.*', '^domintech,.*', '^dongwoon,.*', '^dptechnics=
+,.*', '^dragino,.*', '^dserve,.*', '^dynaimage,.*', '^ea,.*', '^ebs-systart=
+,.*', '^ebv,.*', '^eckelmann,.*', '^edt,.*', '^eeti,.*', '^einfochips,.*', =
+'^elan,.*', '^elgin,.*', '^elida,.*', '^embest,.*', '^emlid,.*', '^emmicro,=
+.*', '^empire-electronix,.*', '^emtrion,.*', '^endless,.*', '^ene,.*', '^en=
+ergymicro,.*', '^engicam,.*', '^epcos,.*', '^epfl,.*', '^epson,.*', '^esp,.=
+*', '^est,.*', '^ettus,.*', '^eukrea,.*', '^everest,.*', '^everspin,.*', '^=
+evervision,.*', '^exar,.*', '^excito,.*', '^ezchip,.*', '^facebook,.*', '^f=
+airphone,.*', '^faraday,.*', '^fastrax,.*', '^fcs,.*', '^feixin,.*', '^feiy=
+ang,.*', '^firefly,.*', '^focaltech,.*', '^frida,.*', '^friendlyarm,.*', '^=
+fsl,.*', '^fujitsu,.*', '^gardena,.*', '^gateworks,.*', '^gcw,.*', '^ge,.*'=
+, '^geekbuying,.*', '^gef,.*', '^gemei,.*', '^geniatech,.*', '^giantec,.*',=
+ '^giantplus,.*', '^globalscale,.*', '^globaltop,.*', '^gmt,.*', '^goodix,.=
+*', '^google,.*', '^grinn,.*', '^grmn,.*', '^gumstix,.*', '^gw,.*', '^hanns=
+tar,.*', '^haoyu,.*', '^hardkernel,.*', '^hideep,.*', '^himax,.*', '^hisili=
+con,.*', '^hit,.*', '^hitex,.*', '^holt,.*', '^holtek,.*', '^honeywell,.*',=
+ '^hoperun,.*', '^hp,.*', '^hsg,.*', '^hugsun,.*', '^hwacom,.*', '^hydis,.*=
+', '^hyundai,.*', '^i2se,.*', '^ibm,.*', '^icplus,.*', '^idt,.*', '^ifi,.*'=
+, '^ilitek,.*', '^img,.*', '^imi,.*', '^incircuit,.*', '^inet-tek,.*', '^in=
+fineon,.*', '^inforce,.*', '^ingenic,.*', '^innolux,.*', '^inside-secure,.*=
+', '^inspur,.*', '^intel,.*', '^intercontrol,.*', '^invensense,.*', '^inver=
+sepath,.*', '^iom,.*', '^isee,.*', '^isil,.*', '^issi,.*', '^ite,.*', '^ite=
+ad,.*', '^ivo,.*', '^iwave,.*', '^jdi,.*', '^jedec,.*', '^jesurun,.*', '^ji=
+anda,.*', '^kam,.*', '^karo,.*', '^keithkoep,.*', '^keymile,.*', '^khadas,.=
+*', '^kiebackpeter,.*', '^kinetic,.*', '^kingdisplay,.*', '^kingnovel,.*', =
+'^kionix,.*', '^kobo,.*', '^koe,.*', '^kontron,.*', '^kosagi,.*', '^kyo,.*'=
+, '^lacie,.*', '^laird,.*', '^lamobo,.*', '^lantiq,.*', '^lattice,.*', '^le=
+adtek,.*', '^leez,.*', '^lego,.*', '^lemaker,.*', '^lenovo,.*', '^lg,.*', '=
+^lgphilips,.*', '^libretech,.*', '^licheepi,.*', '^linaro,.*', '^linksprite=
+,.*', '^linksys,.*', '^linutronix,.*', '^linux,.*', '^linx,.*', '^lltc,.*',=
+ '^logicpd,.*', '^logictechno,.*', '^longcheer,.*', '^loongson,.*', '^lsi,.=
+*', '^lwn,.*', '^lxa,.*', '^macnica,.*', '^mapleboard,.*', '^marvell,.*', '=
+^maxbotix,.*', '^maxim,.*', '^mbvl,.*', '^mcube,.*', '^meas,.*', '^mecer,.*=
+', '^mediatek,.*', '^megachips,.*', '^mele,.*', '^melexis,.*', '^melfas,.*'=
+, '^mellanox,.*', '^memsic,.*', '^menlo,.*', '^merrii,.*', '^micrel,.*', '^=
+microchip,.*', '^microcrystal,.*', '^micron,.*', '^microsoft,.*', '^mikroe,=
+.*', '^mikrotik,.*', '^miniand,.*', '^minix,.*', '^miramems,.*', '^mitsubis=
+hi,.*', '^mosaixtech,.*', '^motorola,.*', '^moxa,.*', '^mpl,.*', '^mps,.*',=
+ '^mqmaker,.*', '^mrvl,.*', '^mscc,.*', '^msi,.*', '^mstar,.*', '^mti,.*', =
+'^multi-inno,.*', '^mundoreader,.*', '^murata,.*', '^mxicy,.*', '^myir,.*',=
+ '^national,.*', '^nec,.*', '^neonode,.*', '^netgear,.*', '^netlogic,.*', '=
+^netron-dy,.*', '^netxeon,.*', '^neweast,.*', '^newhaven,.*', '^nexbox,.*',=
+ '^nextthing,.*', '^ni,.*', '^nintendo,.*', '^nlt,.*', '^nokia,.*', '^nordi=
+c,.*', '^novtech,.*', '^nutsboard,.*', '^nuvoton,.*', '^nvd,.*', '^nvidia,.=
+*', '^nxp,.*', '^oceanic,.*', '^okaya,.*', '^oki,.*', '^olimex,.*', '^olpc,=
+.*', '^onion,.*', '^onnn,.*', '^ontat,.*', '^opalkelly,.*', '^opencores,.*'=
+, '^openrisc,.*', '^option,.*', '^oranth,.*', '^orisetech,.*', '^ortustech,=
+.*', '^osddisplays,.*', '^overkiz,.*', '^ovti,.*', '^oxsemi,.*', '^ozzmaker=
+,.*', '^panasonic,.*', '^parade,.*', '^parallax,.*', '^pda,.*', '^pericom,.=
+*', '^pervasive,.*', '^phicomm,.*', '^phytec,.*', '^picochip,.*', '^pine64,=
+.*', '^pineriver,.*', '^pixcir,.*', '^plantower,.*', '^plathome,.*', '^plda=
+,.*', '^plx,.*', '^pni,.*', '^pocketbook,.*', '^polaroid,.*', '^portwell,.*=
+', '^poslab,.*', '^pov,.*', '^powervr,.*', '^primux,.*', '^probox2,.*', '^p=
+rt,.*', '^pulsedlight,.*', '^purism,.*', '^qca,.*', '^qcom,.*', '^qemu,.*',=
+ '^qi,.*', '^qiaodian,.*', '^qihua,.*', '^qnap,.*', '^radxa,.*', '^raidsoni=
+c,.*', '^ralink,.*', '^ramtron,.*', '^raspberrypi,.*', '^raydium,.*', '^rda=
+,.*', '^realtek,.*', '^renesas,.*', '^rervision,.*', '^richtek,.*', '^ricoh=
+,.*', '^rikomagic,.*', '^riscv,.*', '^rockchip,.*', '^rocktech,.*', '^rohm,=
+.*', '^ronbo,.*', '^roofull,.*', '^samsung,.*', '^samtec,.*', '^sancloud,.*=
+', '^sandisk,.*', '^satoz,.*', '^sbs,.*', '^schindler,.*', '^seagate,.*', '=
+^seirobotics,.*', '^semtech,.*', '^sensirion,.*', '^sensortek,.*', '^sff,.*=
+', '^sgd,.*', '^sgmicro,.*', '^sgx,.*', '^sharp,.*', '^shimafuji,.*', '^shi=
+ratech,.*', '^si-en,.*', '^si-linux,.*', '^sifive,.*', '^sigma,.*', '^sii,.=
+*', '^sil,.*', '^silabs,.*', '^silead,.*', '^silergy,.*', '^silex-insight,.=
+*', '^siliconmitus,.*', '^simtek,.*', '^sinlinx,.*', '^sinovoip,.*', '^sipe=
+ed,.*', '^sirf,.*', '^sis,.*', '^sitronix,.*', '^skyworks,.*', '^smartlabs,=
+.*', '^smsc,.*', '^snps,.*', '^sochip,.*', '^socionext,.*', '^solidrun,.*',=
+ '^solomon,.*', '^sony,.*', '^spansion,.*', '^sprd,.*', '^sst,.*', '^sstar,=
+.*', '^st,.*', '^st-ericsson,.*', '^starry,.*', '^startek,.*', '^ste,.*', '=
+^stericsson,.*', '^summit,.*', '^sunchip,.*', '^swir,.*', '^syna,.*', '^syn=
+ology,.*', '^tbs,.*', '^tbs-biometrics,.*', '^tcg,.*', '^tcl,.*', '^technex=
+ion,.*', '^technologic,.*', '^techstar,.*', '^tempo,.*', '^terasic,.*', '^t=
+fc,.*', '^thine,.*', '^thingyjp,.*', '^ti,.*', '^tianma,.*', '^tlm,.*', '^t=
+mt,.*', '^topeet,.*', '^toppoly,.*', '^topwise,.*', '^toradex,.*', '^toshib=
+a,.*', '^toumaz,.*', '^tpk,.*', '^tplink,.*', '^tpo,.*', '^tq,.*', '^tronfy=
+,.*', '^tronsmart,.*', '^truly,.*', '^tsd,.*', '^tyan,.*', '^u-blox,.*', '^=
+u-boot,.*', '^ubnt,.*', '^ucrobotics,.*', '^udoo,.*', '^ugoos,.*', '^uniwes=
+t,.*', '^upisemi,.*', '^urt,.*', '^usi,.*', '^utoo,.*', '^v3,.*', '^vaisala=
+,.*', '^vamrs,.*', '^variscite,.*', '^via,.*', '^videostrong,.*', '^virtio,=
+.*', '^vishay,.*', '^visionox,.*', '^vitesse,.*', '^vivante,.*', '^vocore,.=
+*', '^voipac,.*', '^vot,.*', '^vxt,.*', '^waveshare,.*', '^wd,.*', '^we,.*'=
+, '^wetek,.*', '^wexler,.*', '^whwave,.*', '^wi2wi,.*', '^winbond,.*', '^wi=
+nstar,.*', '^wits,.*', '^wlf,.*', '^wm,.*', '^wobo,.*', '^x-powers,.*', '^x=
+es,.*', '^xiaomi,.*', '^xillybus,.*', '^xingbangda,.*', '^xinpeng,.*', '^xl=
+nx,.*', '^xnano,.*', '^xunlong,.*', '^xylon,.*', '^ylm,.*', '^yna,.*', '^yo=
+nes-toptech,.*', '^ysoft,.*', '^zarlink,.*', '^zeitec,.*', '^zidoo,.*', '^z=
+ii,.*', '^zte,.*', '^zyxel,.*'
+>         From schema: /builds/robherring/linux-dt-review/Documentation/dev=
+icetree/bindings/vendor-prefixes.yaml
 
-It can't be an error pointer.  Shouldn't we call hci_conn_del() on this
-path?  Try to find the Fixes tag to explain how this bug was introduced.
+ My bad, I'll send v3.
 
-(Don't rush to send a v2.  The patch requires quite a bit more digging
-and detective work before it is ready).
-
-> +		hci_dev_unlock(hdev);
-> +		return;
-> +	}
-> +
->  	if (ev->status) {
->  		hci_conn_del(hcon);
->  		hci_dev_unlock(hdev);
-
-regards,
-dan carpenter
-
+Best regards,
+Krzysztof
