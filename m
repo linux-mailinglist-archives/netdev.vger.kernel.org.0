@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E89F22651CB
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:02:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C020F2651D4
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:03:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727771AbgIJVCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:02:17 -0400
-Received: from mga02.intel.com ([134.134.136.20]:52600 "EHLO mga02.intel.com"
+        id S1727857AbgIJVC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:02:58 -0400
+Received: from mga17.intel.com ([192.55.52.151]:36376 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725803AbgIJVCI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 17:02:08 -0400
-IronPort-SDR: fLL0wxw0KWCH12Oz8KzagKSyQnPtvHtkT5fefkwEKRTJaMXSFfXIEAEkW0mnnuMM16mc/+vxBx
- UKOYXqCcPoyg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9740"; a="146330396"
+        id S1726821AbgIJVCk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 17:02:40 -0400
+IronPort-SDR: kgNxVg35zYEmD6cO/44VhgzwPH0yeopu+YigEw41b4hxVvfYZ8kWOLJy9wdZeA81a5RwNelRZm
+ eHzKgcnBs7zQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9740"; a="138659600"
 X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
-   d="scan'208";a="146330396"
+   d="scan'208";a="138659600"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:01:58 -0700
-IronPort-SDR: Z1nkll0zBEbh5dhOtekI37F+YjDPnVsoCKYHpQ8mAgULHEv7q750couvkXwGXstfRaiaHNFjpq
- FIjQZ+2xPXTw==
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:02:37 -0700
+IronPort-SDR: KPp0v91ipiBdXW8U+UXR9WHKSRukXTOtiGLg7/8jpj+PUKC/o/CsaAgkG++3Nrn5j6n0u+BW5H
+ GYpZGf4mxT0A==
 X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
-   d="scan'208";a="505968802"
+   d="scan'208";a="505969056"
 Received: from pojenhsi-mobl1.amr.corp.intel.com (HELO [10.252.128.198]) ([10.252.128.198])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:01:57 -0700
-Subject: Re: [net-next v4 3/5] devlink: introduce flash update overwrite mask
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:02:37 -0700
+Subject: Re: [net-next v4 4/5] devlink: add support for overwrite mask to
+ netdevsim
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org
 References: <20200909222653.32994-1-jacob.e.keller@intel.com>
- <20200909222653.32994-4-jacob.e.keller@intel.com>
- <20200909180310.27a19827@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200909222653.32994-5-jacob.e.keller@intel.com>
+ <20200909180540.50c88522@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Jacob Keller <jacob.e.keller@intel.com>
 Organization: Intel Corporation
-Message-ID: <3faf14a5-e7da-2ad7-bdeb-0bbb6038c349@intel.com>
-Date:   Thu, 10 Sep 2020 14:01:57 -0700
+Message-ID: <eddcade5-3b63-45f0-f8e9-68f075b1fe63@intel.com>
+Date:   Thu, 10 Sep 2020 14:02:36 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.2.1
 MIME-Version: 1.0
-In-Reply-To: <20200909180310.27a19827@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200909180540.50c88522@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -50,96 +51,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 9/9/2020 6:03 PM, Jakub Kicinski wrote:
-> On Wed,  9 Sep 2020 15:26:51 -0700 Jacob Keller wrote:
->> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
->> index 40d35145c879..19a573566359 100644
->> --- a/include/uapi/linux/devlink.h
->> +++ b/include/uapi/linux/devlink.h
->> @@ -228,6 +228,28 @@ enum {
->>  	DEVLINK_ATTR_STATS_MAX = __DEVLINK_ATTR_STATS_MAX - 1
->>  };
->>  
->> +/* Specify what sections of a flash component can be overwritten when
->> + * performing an update. Overwriting of firmware binary sections is always
->> + * implicitly assumed to be allowed.
->> + *
->> + * Each section must be documented in
->> + * Documentation/networking/devlink/devlink-flash.rst
->> + *
->> + */
->> +enum {
->> +	DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT,
->> +	DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT,
->> +
->> +	__DEVLINK_FLASH_OVERWRITE_MAX_BIT,
->> +	DEVLINK_FLASH_OVERWRITE_MAX_BIT = __DEVLINK_FLASH_OVERWRITE_MAX_BIT - 1
->> +};
->> +
->> +#define DEVLINK_FLASH_OVERWRITE_SETTINGS BIT(DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT)
->> +#define DEVLINK_FLASH_OVERWRITE_IDENTIFIERS BIT(DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT)
->> +
->> +#define DEVLINK_SUPPORTED_FLASH_OVERWRITE_SECTIONS \
->> +	(BIT(__DEVLINK_FLASH_OVERWRITE_MAX_BIT) - 1)
+On 9/9/2020 6:05 PM, Jakub Kicinski wrote:
+> On Wed,  9 Sep 2020 15:26:52 -0700 Jacob Keller wrote:
+>> The devlink interface recently gained support for a new "overwrite mask"
+>> parameter that allows specifying how various sub-sections of a flash
+>> component are modified when updating.
+>>
+>> Add support for this to netdevsim, to enable easily testing the
+>> interface. Make the allowed overwrite mask values controllable via
+>> a debugfs parameter. This enables testing a flow where the driver
+>> rejects an unsupportable overwrite mask.
+>>
+>> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 > 
-> I don't think you can use BIT() in uAPI headers :(
+> nit: subject should be prefixed with netdevsim: not devlink:
+> 
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 > 
 
-
-Hmmm.. There are exactly 2 other uses I found by searching for 'BIT('
-that already exists. We can chance this to just do the bit shift directly.
-
->>  /**
->>   * enum devlink_trap_action - Packet trap action.
->>   * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy is not
->> @@ -460,6 +482,9 @@ enum devlink_attr {
->>  
->>  	DEVLINK_ATTR_PORT_EXTERNAL,		/* u8 */
->>  	DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,	/* u32 */
->> +
->> +	DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK,	/* bitfield32 */
->> +
->>  	/* add new attributes above here, update the policy in devlink.c */
->>  
->>  	__DEVLINK_ATTR_MAX,
->> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index c61f9c8205f6..d0d38ca17ea8 100644
->> --- a/net/core/devlink.c
->> +++ b/net/core/devlink.c
->> @@ -3125,8 +3125,8 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
->>  				       struct genl_info *info)
->>  {
->>  	struct devlink_flash_update_params params = {};
->> +	struct nlattr *nla_component, *nla_overwrite;
->>  	struct devlink *devlink = info->user_ptr[0];
->> -	struct nlattr *nla_component;
->>  	u32 supported_params;
->>  
->>  	if (!devlink->ops->flash_update)
->> @@ -3149,6 +3149,19 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
->>  		params.component = nla_data(nla_component);
->>  	}
->>  
->> +	nla_overwrite = info->attrs[DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK];
->> +	if (nla_overwrite) {
->> +		struct nla_bitfield32 sections;
->> +
->> +		if (!(supported_params & DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK)) {
->> +			NL_SET_ERR_MSG_ATTR(info->extack, nla_overwrite,
->> +					    "overwrite is not supported");
-> 
-> settings ... by this device ?
-
-Sure I can fix this along with the other location either as a follow up
-or a respin if this still needs it.
-
-Thanks,
-Jake
-
-> 
->> +			return -EOPNOTSUPP;
->> +		}
->> +		sections = nla_get_bitfield32(nla_overwrite);
->> +		params.overwrite_mask = sections.value & sections.selector;
->  
-> 
+Yep. when I split the patch apart, I had copied and edited the commit
+message but forgot to change the subject.
