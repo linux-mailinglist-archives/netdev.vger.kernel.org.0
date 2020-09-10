@@ -2,110 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 469592650AB
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C33B2650B5
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:26:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726913AbgIJUYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 16:24:34 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:35842 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725807AbgIJUYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:24:15 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id C628D1C0B76; Thu, 10 Sep 2020 22:23:45 +0200 (CEST)
-Date:   Thu, 10 Sep 2020 22:23:45 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Marek =?iso-8859-2?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-leds@vger.kernel.org, Dan Murphy <dmurphy@ti.com>,
-        =?iso-8859-2?Q?Ond=F8ej?= Jirman <megous@megous.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next + leds v2 6/7] net: phy: marvell: add support
- for LEDs controlled by Marvell PHYs
-Message-ID: <20200910202345.GA18431@ucw.cz>
-References: <20200909162552.11032-1-marek.behun@nic.cz>
- <20200909162552.11032-7-marek.behun@nic.cz>
- <20200910122341.GC7907@duo.ucw.cz>
- <20200910131541.GD3316362@lunn.ch>
- <20200910161522.3cf3ad63@dellmb.labs.office.nic.cz>
+        id S1726837AbgIJU0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 16:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725807AbgIJUZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:25:08 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 862B3C061573
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 13:25:07 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id q10so4028427qvs.1
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 13:25:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YkhahZJmcVyE+N6qWWXQFYNHp32pWxDW4FSredXVabk=;
+        b=elbc94XM3ceVgQnnBSjGH0KOEfAlih9DKT3WB164JIbH1ngVEN5n0B+q4F69a6JXQn
+         IIgxKy/oCmLQn/MFT2gURpv3W5esAD/Y8dLPleaUzAfC81mqTLoAYSXCgJaXWUPN/oUv
+         v8jXCzun5km/4A/zVfqszgAEaPl5Mr7YNuTL1tOEy8+tPsYf2KliZHe6HJfJAsrKl+5v
+         Sdk0/n5Z4zAmPnl4KCM5oir4KlbbvH66HjL3rTiYunn1+az+WFqRhL//vmVWcDOvjG1I
+         /BFTdJ/BGAX+/hDg9QR4IYlkxMomeup+ORC5T4MlIpl8gIn6UNqbDPs8ojCFt8xVfFcK
+         v8SA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YkhahZJmcVyE+N6qWWXQFYNHp32pWxDW4FSredXVabk=;
+        b=dfH/OH9O7I7Fx4mluL30992HA1tEgjtDz+j5jc6kyTMLx7c8m0kdSTLRb4TJsbxMGU
+         Ai6Tk41AR9tG1TYxx8V7HpWoe7bdNjpDvBzv/XxSK4MiEYprUGpmAcd1wXGRwMO8f/U+
+         GPc+gVUPOkT4G3BH1ZsRQzBDLtEFFfb6/mSe0BRHBV/UwFDHhfJZTcD8scbW9qgI1lmN
+         2ikI7H5kPzdTxk5JKoEndDohapGUHixLQOlVT6Qr438xK5I0fSBZnQgdIJ+PkosnBmCl
+         Z/vVAnecKtvTmDG0EDx8MRmY/cRXkcn+ypfpjOSgsfWsttRqn8Hw9eu8EstuNP7MQoQT
+         TvrQ==
+X-Gm-Message-State: AOAM532xcM27IuiRGxOiKaDBrxGyGOaGknSqB4nhzKMv4rC5ludDiRPm
+        ozWXUFr+6w/F4xizeLTjj86B3EoDsSqEGhEWSCVzRg==
+X-Google-Smtp-Source: ABdhPJxfUjwCVnP2CmMuW0g6X2PvyXN4nGc8maiaODTngttgx/cBIYS/jAj3t6JAy3WXzPpYHoFw6wLHHi3RGU1eq6M=
+X-Received: by 2002:a0c:f48e:: with SMTP id i14mr10388494qvm.5.1599769506460;
+ Thu, 10 Sep 2020 13:25:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200910161522.3cf3ad63@dellmb.labs.office.nic.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200909162500.17010-1-quentin@isovalent.com> <20200909162500.17010-4-quentin@isovalent.com>
+ <CAADnVQ+b3y1LFRppZu5GYW6hZY6nSZc3wQKqpqHbevdNHNSCSA@mail.gmail.com>
+In-Reply-To: <CAADnVQ+b3y1LFRppZu5GYW6hZY6nSZc3wQKqpqHbevdNHNSCSA@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Date:   Thu, 10 Sep 2020 21:24:55 +0100
+Message-ID: <CACdoK4+1mbhkJ=uGrfhUF3hRnX3-+Ai2FcMfBkgqs6YB++=mkw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 3/3] tools: bpftool: automate generation for
+ "SEE ALSO" sections in man pages
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+On Thu, 10 Sep 2020 at 19:18, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Sep 9, 2020 at 9:25 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >
+> > The "SEE ALSO" sections of bpftool's manual pages refer to bpf(2),
+> > bpf-helpers(7), then all existing bpftool man pages (save the current
+> > one).
+> >
+> > This leads to nearly-identical lists being duplicated in all manual
+> > pages. Ideally, when a new page is created, all lists should be updated
+> > accordingly, but this has led to omissions and inconsistencies multiple
+> > times in the past.
+> >
+> > Let's take it out of the RST files and generate the "SEE ALSO" sections
+> > automatically in the Makefile when generating the man pages. The lists
+> > are not really useful in the RST anyway because all other pages are
+> > available in the same directory.
+> >
+> > v2:
+> > - Use "echo -n" instead of "printf" in Makefile, to avoid any risk of
+> >   passing a format string directly to the command.
+> >
+> > Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+>
+> This patch failed to git am, but I've applied the first two patches.
+> Thanks
 
-> Okay, so the netdev trigger offers modes `link`, `rx`, `tx`.
-> You can enable/disable either of these (via separate sysfs files). `rx`
-> and `tx` blink the LED, `link` turns the LED on if the interface is
-> linked.
+Right, there is a conflict with the other patchset passing
+$(RST2MAN_OPTS) to rst2man when building the doc. I'll rebase and
+repost this one. Thank you Alexei.
 
-I wonder if people really need separate rx and tx, but... this sounds
-reasonable.
-
-> The phy_led_trigger subsystem works differently. Instead of registering
-> one trigger (like netdev) it registers one trigger per PHY device and
-> per speed. So for a PHY with name XYZ and supported speeds 1Gbps,
-> 100Mbps, 10Mbps it registers 3 triggers:
->   XYZ:1Gbps XYZ:100Mbps XYZ:10Mbps
-
-That is not reasonable.
-
-> I propose that at least these HW modes should be available (and
-> documented) for ethernet PHY controlled LEDs:
-
-Ok, and which of these will you actually use?
-
->   mode to determine link on:
->     - `link`
->   mode for activity (these should blink):
->     - `activity` (both rx and tx), `rx`, `tx`
->   mode for link (on) and activity (blink)
->     - `link/activity`, maybe `link/rx` and `link/tx`
->   mode for every supported speed:
->     - `1Gbps`, `100Mbps`, `10Mbps`, ...
->   mode for every supported cable type:
->     - `copper`, `fiber`, ... (are there others?)
-
-That's ... way too many options.
-
-Can we do it like netdev trigger? link? yes/no. rx? yes/no. tx? yes/no.
-
-If displaying link only for certain speeds is useful, have link_min
-and link_max, specifying values in Mbps? Default would be link_min ==
-0, and link_max = 25000, so it would react on any link speed.
-
-Is mode for cable type really useful? Then we should have link_fiber?
-yes/no. link_copper? yes/no.
-
->   mode that allows the user to determine link speed
->     - `speed` (or maybe `linkspeed` ?)
->     - on some Marvell PHYs the speed can be determined by how fast
->       the LED is blinking (ie. 1Gbps blinks with default blinking
->       frequency, 100Mbps with half blinking frequeny of 1Gbps, 10Mbps
->       of half blinking frequency of 100Mbps)
->     - on other Marvell PHYs this is instead:
->       1Gpbs blinks 3 times, pause, 3 times, pause, ...
->       100Mpbs blinks 2 times, pause, 2 times, pause, ...
->       10Mpbs blinks 1 time, pause, 1 time, pause, ...
->     - we don't need to differentiate these modes with different names,
->       because the important thing is just that this mode allows the
->       user to determine the speed from how the LED blinks
-
-I'd be very careful. Userspace should know what they are asking
-for. I'd propose simply ignoring this feature.
-
->   mode to just force blinking - `blink`
-
-We already have different support for blinking in LED subsystem. Lets use that.
-
-Best regards,
-									Pavel
+Quentin
