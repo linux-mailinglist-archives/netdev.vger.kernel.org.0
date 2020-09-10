@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 537D3264F8A
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:46:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C148264F85
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726994AbgIJTpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 15:45:54 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:11803 "EHLO huawei.com"
+        id S1726855AbgIJTpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 15:45:13 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:11804 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731314AbgIJPaq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 11:30:46 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id AACB954E49DA2BF4E598;
-        Thu, 10 Sep 2020 23:14:41 +0800 (CST)
-Received: from huawei.com (10.175.113.133) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Thu, 10 Sep 2020
- 23:14:36 +0800
+        id S1730925AbgIJPbO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 11:31:14 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 064309BB00F9D5C28E88;
+        Thu, 10 Sep 2020 23:14:50 +0800 (CST)
+Received: from huawei.com (10.175.113.133) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Thu, 10 Sep 2020
+ 23:14:45 +0800
 From:   Wang Hai <wanghai38@huawei.com>
 To:     <jeffrey.t.kirsher@intel.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <intel-wired-lan@lists.osuosl.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 Subject: [PATCH net-next] igb: Fix some kernel-doc warnings in e1000_82575.c
-Date:   Thu, 10 Sep 2020 23:11:55 +0800
-Message-ID: <20200910151155.35995-1-wanghai38@huawei.com>
+Date:   Thu, 10 Sep 2020 23:12:04 +0800
+Message-ID: <20200910151204.36198-1-wanghai38@huawei.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain
