@@ -2,112 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 75FE9263CF1
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 08:05:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13440263D15
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 08:17:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbgIJGEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 02:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33770 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726603AbgIJGEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 02:04:23 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5476DC0613ED
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 23:04:19 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id u13so3680809pgh.1
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 23:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uk2jhSlsyW0uEicGAMvJSDRERxJgCUtBRzjLszfNMEM=;
-        b=ogGgIj8KanMA8t16REBPMJqN3hNG+13+3sebCcyTt+DetY1CQsREBYjwwl9/aoCJ+B
-         rLLdYxsaBCtFoV5xtQAQvk0YgtUunOYQlh/9uZi2h4aS7VXxHS40Miif6HgcVgncgW09
-         Ffl52LwJX72tEZzV/pKa9OP6Yp5WLTcvef/ds=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uk2jhSlsyW0uEicGAMvJSDRERxJgCUtBRzjLszfNMEM=;
-        b=P5/4Q8TGfRtHjr9hNx0TvsiogN7BaQFjtb3kcSkoCKR3brVzwtvaHJWUmQ46WUkgDk
-         wAr8CsGKoFNmQq3WqISHyGEY3wTjMGT4aDinQoCBiL0enMixc1nocvERib5l56/A2ZFu
-         SROOQ0V4Jk9nAcnch/1lw2HqCy+1Oi9P+m1L56Z/57GQeB84HIjL8KcGP1qqk+r8QN/c
-         O1e3nPR6cUWPKzPiIF9v1pHwg4JDc5skAl11XcuorZZ2FeNMmWtBrh88wZu34Fm0XGpq
-         IS5iendpGj/TZeton/m//lkYoluOgBKfcFNzaEW9d6S5bmk6KPhKlpjGspSFiPKq2LAu
-         gAKw==
-X-Gm-Message-State: AOAM533N59jNPxpKPVLoOjoy/93xN4J/LsFhv6IDKyl65seF5kPzwm/B
-        r3YL4Yw8/ANTyFojSkyIMGJ4iw==
-X-Google-Smtp-Source: ABdhPJwe0+uwzDRgDCuX9b8VJcjpJiSEscjJ/j45LhdykkKdSMSbbDczNEseCea386az0fz/SY3oCw==
-X-Received: by 2002:aa7:9edb:0:b029:13e:d13d:a059 with SMTP id r27-20020aa79edb0000b029013ed13da059mr4077835pfq.31.1599717858904;
-        Wed, 09 Sep 2020 23:04:18 -0700 (PDT)
-Received: from josephsih-z840.tpe.corp.google.com ([2401:fa00:1:10:de4a:3eff:fe7d:ff5f])
-        by smtp.gmail.com with ESMTPSA id j14sm893236pjz.21.2020.09.09.23.04.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 23:04:18 -0700 (PDT)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org, josephsih@google.com,
-        Joseph Hwang <josephsih@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        id S1726746AbgIJGRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 02:17:06 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:8640 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725971AbgIJGRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 02:17:04 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f59c4b40000>; Wed, 09 Sep 2020 23:16:20 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Wed, 09 Sep 2020 23:17:04 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Wed, 09 Sep 2020 23:17:04 -0700
+Received: from [172.27.13.224] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 10 Sep
+ 2020 06:16:49 +0000
+Subject: Re: [PATCH net-next RFC v1 2/4] devlink: Add devlink traps under
+ devlink_ports context
+To:     Jiri Pirko <jiri@resnulli.us>, Ido Schimmel <idosch@idosch.org>
+CC:     Aya Levin <ayal@mellanox.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 2/2] Bluetooth: sco: new getsockopt options BT_SNDMTU/BT_RCVMTU
-Date:   Thu, 10 Sep 2020 14:04:02 +0800
-Message-Id: <20200910140342.v3.2.I03247d3813c6dcbcdbeab26d068f9fd765edb1f5@changeid>
-X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
-In-Reply-To: <20200910060403.144524-1-josephsih@chromium.org>
-References: <20200910060403.144524-1-josephsih@chromium.org>
+        Jiri Pirko <jiri@mellanox.com>, <netdev@vger.kernel.org>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        <linux-kernel@vger.kernel.org>
+References: <1599060734-26617-1-git-send-email-ayal@mellanox.com>
+ <1599060734-26617-3-git-send-email-ayal@mellanox.com>
+ <20200906154428.GA2431016@shredder> <20200908140409.GN2997@nanopsycho.orion>
+From:   Aya Levin <ayal@nvidia.com>
+Message-ID: <6aeba5b9-201f-2abc-05fb-0efdd6394b65@nvidia.com>
+Date:   Thu, 10 Sep 2020 09:16:41 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200908140409.GN2997@nanopsycho.orion>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1599718580; bh=YxbgwqDeiWqJCCQqAzriGr+eKT1ynNKp9QHvOJFUUps=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+         User-Agent:MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=cHgbb3LpBxfAtWg6QGLgvHvTpTbu6kf4CDNqo1s9OqQ/7bT5cHFRH1us26xGx4Q9i
+         tdh1Ai1OG0LsiJywouRtnFkKnDA8ShusF1fGWlLoOLNkOA+X6R7rzyJN5h15GBNugq
+         iSWet/F5SkSN3R9hAGthHNEXdgyloV/6AbU13nD+kTS3KEAK2hdjS1w0Gkoy//ljXY
+         3rLYbWhcBwOVn3uYZ0D6A1Tzoe7JGElRilEJvzljDLxjHxjHDm9IPUeiR6lZxUl1jW
+         YFp7QMsW7xAHOC0LdCFIG18TAmPx4t5HAfEQDS/NCxz58F5F3/YzoSbPWWyjyC9llo
+         6YiddSEs/hYDA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch defines new getsockopt options BT_SNDMTU/BT_RCVMTU
-for SCO socket to be compatible with other bluetooth sockets.
-These new options return the same value as option SCO_OPTIONS
-which is already present on existing kernels.
 
-Reviewed-by: Alain Michaud <alainm@chromium.org>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
----
 
-Changes in v3:
-- Fixed the commit message.
-
-Changes in v2:
-- Used BT_SNDMTU/BT_RCVMTU instead of creating a new opt name.
-- Used the existing conn->mtu instead of creating a new member
-  in struct sco_pinfo.
-- Noted that the old SCO_OPTIONS in sco_sock_getsockopt_old()
-  would just work as it uses sco_pi(sk)->conn->mtu.
-
- net/bluetooth/sco.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index dcf7f96ff417e6..79ffcdef0b7ad5 100644
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -1001,6 +1001,12 @@ static int sco_sock_getsockopt(struct socket *sock, int level, int optname,
- 			err = -EFAULT;
- 		break;
- 
-+	case BT_SNDMTU:
-+	case BT_RCVMTU:
-+		if (put_user(sco_pi(sk)->conn->mtu, (u32 __user *)optval))
-+			err = -EFAULT;
-+		break;
-+
- 	default:
- 		err = -ENOPROTOOPT;
- 		break;
--- 
-2.28.0.618.gf4bc123cb7-goog
-
+On 9/8/2020 5:04 PM, Jiri Pirko wrote:
+> Sun, Sep 06, 2020 at 05:44:28PM CEST, idosch@idosch.org wrote:
+>> On Wed, Sep 02, 2020 at 06:32:12PM +0300, Aya Levin wrote:
+> 
+> [...]
+> 
+>>
+>> I understand how this struct allows you to re-use a lot of code between
+>> per-device and per-port traps, but it's mainly enabled by the fact that
+>> you use the same netlink commands for both per-device and per-port
+>> traps. Is this OK?
+>>
+>> I see this is already done for health reporters, but it's inconsistent
+>> with the devlink-param API:
+>>
+>> DEVLINK_CMD_PARAM_GET
+>> DEVLINK_CMD_PARAM_SET
+>> DEVLINK_CMD_PARAM_NEW
+>> DEVLINK_CMD_PARAM_DEL
+>>
+>> DEVLINK_CMD_PORT_PARAM_GET
+>> DEVLINK_CMD_PORT_PARAM_SET
+>> DEVLINK_CMD_PORT_PARAM_NEW
+>> DEVLINK_CMD_PORT_PARAM_DEL
+>>
+>> And also with the general device/port commands:
+>>
+>> DEVLINK_CMD_GET
+>> DEVLINK_CMD_SET
+>> DEVLINK_CMD_NEW
+>> DEVLINK_CMD_DEL
+>>
+>> DEVLINK_CMD_PORT_GET
+>> DEVLINK_CMD_PORT_SET
+>> DEVLINK_CMD_PORT_NEW
+>> DEVLINK_CMD_PORT_DEL
+>>
+>> Wouldn't it be cleaner to add new commands?
+>>
+>> DEVLINK_CMD_PORT_TRAP_GET
+>> DEVLINK_CMD_PORT_TRAP_SET
+>> DEVLINK_CMD_PORT_TRAP_NEW
+>> DEVLINK_CMD_PORT_TRAP_DEL
+>>
+>> I think the health API is the exception in this case and therefore might
+>> not be the best thing to mimic. IIUC, existing per-port health reporters
+>> were exposed as per-device and later moved to be exposed as per-port
+>> [1]:
+>>
+>> "This patchset comes to fix a design issue as some health reporters
+>> report on errors and run recovery on device level while the actual
+>> functionality is on port level. As for the current implemented devlink
+>> health reporters it is relevant only to Tx and Rx reporters of mlx5,
+>> which has only one port, so no real effect on functionality, but this
+>> should be fixed before more drivers will use devlink health reporters."
+> 
+> Yeah, this slipped trough my fingers unfortunatelly :/ But with
+> introduction of per-port health reporters, we could introduce new
+> commands, that would be no problem. Pity :/
+> 
+> 
+>>
+>> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ac4cd4781eacd1fd185c85522e869bd5d3254b96
+>>
+>> Since we still don't have per-port traps, we can design it better from
+>> the start.
+> 
+> I agree. Let's have a separate commands for per-port.
+Thanks for your input
+I'm preparing V2
+> 
+> 
+> [...]
+> 
