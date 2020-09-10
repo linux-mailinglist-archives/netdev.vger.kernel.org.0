@@ -2,105 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6022264064
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 10:47:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7061426407A
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 10:48:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730435AbgIJIry (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 04:47:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33962 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726847AbgIJIru (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 04:47:50 -0400
-Received: from saruman (91-155-214-58.elisa-laajakaista.fi [91.155.214.58])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0C4F920770;
-        Thu, 10 Sep 2020 08:47:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599727668;
-        bh=RPokpgxyglYjppmxdwE4ETpgoWb+FLMn8txdhEbALdk=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=caMPoUSKexLI6/Cqhtg8fT99cl3GRCJBgwM+b8CDUH4fpndiULhN2ZxxlePCqMtm8
-         o+PPIhKL0Yab4dKBUBJb9PAX9HTFJdHyhq4ZrB98n0hws/gO34J2oo99WhyXQG8LAo
-         ih4L+nIDe5nvGNhsdtsxYZAUrexQb+0pD4TKBRdk=
-From:   Felipe Balbi <balbi@kernel.org>
-To:     Joe Perches <joe@perches.com>, LKML <linux-kernel@vger.kernel.org>,
-        Jiri Kosina <trivial@kernel.org>
-Cc:     Kees Cook <kees.cook@canonical.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-mips@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org, linux-input@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-rdma@vger.kernel.org,
-        iommu@lists.linux-foundation.org, dm-devel@redhat.com,
-        linux-media@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, intel-wired-lan@lists.osuosl.org,
-        oss-drivers@netronome.com, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-nvme@lists.infradead.org, linux-pm@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        storagedev@microchip.com, sparclinux@vger.kernel.org,
-        linux-serial@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-parisc@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, ceph-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, bpf@vger.kernel.org,
-        dccp@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, linux-sctp@vger.kernel.org,
-        alsa-devel <alsa-devel@alsa-project.org>
-Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
- break;
-In-Reply-To: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-Date:   Thu, 10 Sep 2020 11:47:27 +0300
-Message-ID: <878sdikogw.fsf@kernel.org>
+        id S1730461AbgIJIsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 04:48:30 -0400
+Received: from mail-il1-f206.google.com ([209.85.166.206]:45584 "EHLO
+        mail-il1-f206.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727820AbgIJIsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 04:48:22 -0400
+Received: by mail-il1-f206.google.com with SMTP id m80so3988581ilb.12
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 01:48:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ss+NDibV+9A1A4nhUiuCZmAy2xJiaoswkCsDPh/ljK0=;
+        b=MY+VpXJ7NSjQ9qxQTRB4MFuwSBNmArWo2pOYyeNIAnU24KK5fyxoG6XOb2TLrS+C0Z
+         Nf0biXmcCJsHNoZjaUydKzmsYSZdwa5expgYgCW76irwVejj6+shPttdNBowPUw6jUGi
+         1lu5SsitLYUjbu4/dwXc7g1iac48eXDVgkuSf3NKJabqQn1jreZGh/Ba13Kvvnw+kbaR
+         SPfZo7ulAuyYLN6Ddb24mHxqbXjawofr1gr9y1VuXbQLBVTvyk+0afUrCB0to1lJ+9zl
+         zMGyYJH7rjvyW2GELK+uPhr1W0F2BzWTKr8M4GKNYaAIb0EeOYGsQMrShSAusWz6HF8h
+         sodg==
+X-Gm-Message-State: AOAM5323XjdH0wdUB4Y2QpDD9YR8w/GKj8R+nEBgcr+c3kAwP30dqEW5
+        OvOHOG6kE1WK6XIRMVlvzlOBiv1cfZBsvxIIRR+2I/grUhcL
+X-Google-Smtp-Source: ABdhPJwskIZBJxIhH+SvsruZKozcsWaPSpr2Ik9ydDFAt2JAIkl+GjSkZWwUURXqIRfRMllMo5kAD/PUXnvUAnZN3Uy6qTbXqPii
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha256; protocol="application/pgp-signature"
+X-Received: by 2002:a05:6638:144:: with SMTP id y4mr7640549jao.61.1599727701395;
+ Thu, 10 Sep 2020 01:48:21 -0700 (PDT)
+Date:   Thu, 10 Sep 2020 01:48:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000610c6805aef1a1b8@google.com>
+Subject: kernel BUG at net/rxrpc/conn_object.c:LINE!
+From:   syzbot <syzbot+52071f826a617b9c76ed@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com, kuba@kernel.org,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        mingo@redhat.com, netdev@vger.kernel.org, rostedt@goodmis.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Hi,
+syzbot found the following issue on:
 
-Joe Perches <joe@perches.com> writes:
->  drivers/usb/dwc3/core.c                                   |  2 +-
->  drivers/usb/gadget/legacy/inode.c                         |  2 +-
->  drivers/usb/gadget/udc/pxa25x_udc.c                       |  4 ++--
->  drivers/usb/phy/phy-fsl-usb.c                             |  2 +-
+HEAD commit:    f5499c67 nfc: pn533/usb.c: fix spelling of "functions"
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=16415055900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2b946b3cd0adc99
+dashboard link: https://syzkaller.appspot.com/bug?extid=52071f826a617b9c76ed
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16be260d900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=100b7cdd900000
 
-for the drivers above:
+The issue was bisected to:
 
-Acked-by: Felipe Balbi <balbi@kernel.org>
+commit 245500d853e9f20036cec7df4f6984ece4c6bf26
+Author: David Howells <dhowells@redhat.com>
+Date:   Wed Jul 1 10:15:32 2020 +0000
 
-=2D-=20
-balbi
+    rxrpc: Rewrite the client connection manager
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11950759900000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=13950759900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15950759900000
 
------BEGIN PGP SIGNATURE-----
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+52071f826a617b9c76ed@syzkaller.appspotmail.com
+Fixes: 245500d853e9 ("rxrpc: Rewrite the client connection manager")
 
-iQJFBAEBCAAvFiEElLzh7wn96CXwjh2IzL64meEamQYFAl9Z6B8RHGJhbGJpQGtl
-cm5lbC5vcmcACgkQzL64meEamQZSCRAAuTv1hrqhd9iVfnwXFrfx8dYquoCMc3VI
-y1IiULV6avnZvLQTqKviHDvZw05WY6dna714mpLFW1laW3WuhLSD4elIu6cqHaiz
-ZgtvtA4bZ/s7ipV+jlZ86S9oIz4MMBbZYhqSN1ZVk50NsUA/1thpcjS0aLI5SAgX
-j2dV6BEEHBSgMDwcWLPNwr6f5R/ycEBx3i6HYSSdNtBr1SK+UhbSkwNxdCA9IzH8
-1WCugmJdohP26DIYNzFZcssjcSFb5wu2iuHXQXuvOmmAfQmro+gRcnq1SOElae7v
-cas67L69RQ5fxskM/XpIYH2AURFnRUNondcJWViUQXHwXF1U0r+FdwXUr8OeFi19
-sVEI4FNu7ZqgvhfUlKMpldyUZRIrWb+WZZ5toBQAKFee/3tqTs4Tqh9cwfLL9IU4
-ho4tG7J/bd6hASfr0x2dH5Pm7oXKskxmtUpmmSVlNaTpXytiD30+pUvOl9Qg7A+X
-tc9h6N3Z6kdVxkJlm1KpUUccPeUtHox549ukAtzKQL4x6PDCdNqBkNDVSIx04FA4
-dgyt4O7w4HaWT1GPHH322pG5nNT1dsGT0CC9QA/2AJkoXTY03YGR3dgDw89GNUrP
-WPj73gtBbWTwRFuwHQQs8F/E8x2UjBC005aawoKcK2bxBR1fzqz1y8daUaiCftnV
-ocu1QwRIgL8=
-=BFTp
------END PGP SIGNATURE-----
---=-=-=--
+rxrpc: Assertion failed
+------------[ cut here ]------------
+kernel BUG at net/rxrpc/conn_object.c:481!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 234 Comm: kworker/u4:5 Not tainted 5.9.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+RIP: 0010:rxrpc_destroy_all_connections.cold+0x11/0x13 net/rxrpc/conn_object.c:481
+Code: c0 48 c7 c1 00 b0 14 89 48 89 f2 48 c7 c7 80 ac 14 89 e8 04 4d 0c fa 0f 0b e8 be 15 23 fa 48 c7 c7 80 af 14 89 e8 f1 4c 0c fa <0f> 0b 41 57 41 56 41 55 41 54 55 53 48 89 f3 48 83 ec 20 48 89 3c
+RSP: 0018:ffffc90000f57b18 EFLAGS: 00010282
+RAX: 0000000000000017 RBX: ffff8880945a8000 RCX: 0000000000000000
+RDX: ffff8880a85ca200 RSI: ffffffff815dbd97 RDI: fffff520001eaf55
+RBP: ffff8880945a8064 R08: 0000000000000017 R09: ffff8880ae731927
+R10: 0000000000000000 R11: 0000000034333254 R12: ffff8880945a8068
+R13: ffff8880945a8078 R14: ffff8880945a8078 R15: ffff8880945a7eb8
+FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fdbae898020 CR3: 00000000963ae000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ rxrpc_exit_net+0x1a4/0x2e0 net/rxrpc/net_ns.c:119
+ ops_exit_list+0xb0/0x160 net/core/net_namespace.c:186
+ cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Modules linked in:
+---[ end trace b82f4cc98146655f ]---
+RIP: 0010:rxrpc_destroy_all_connections.cold+0x11/0x13 net/rxrpc/conn_object.c:481
+Code: c0 48 c7 c1 00 b0 14 89 48 89 f2 48 c7 c7 80 ac 14 89 e8 04 4d 0c fa 0f 0b e8 be 15 23 fa 48 c7 c7 80 af 14 89 e8 f1 4c 0c fa <0f> 0b 41 57 41 56 41 55 41 54 55 53 48 89 f3 48 83 ec 20 48 89 3c
+RSP: 0018:ffffc90000f57b18 EFLAGS: 00010282
+RAX: 0000000000000017 RBX: ffff8880945a8000 RCX: 0000000000000000
+RDX: ffff8880a85ca200 RSI: ffffffff815dbd97 RDI: fffff520001eaf55
+RBP: ffff8880945a8064 R08: 0000000000000017 R09: ffff8880ae731927
+R10: 0000000000000000 R11: 0000000034333254 R12: ffff8880945a8068
+R13: ffff8880945a8078 R14: ffff8880945a8078 R15: ffff8880945a7eb8
+FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fdbae89e000 CR3: 0000000093fd8000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
