@@ -2,112 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E734A265360
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5250265361
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:34:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728191AbgIJVdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:33:31 -0400
-Received: from mga17.intel.com ([192.55.52.151]:38835 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728169AbgIJVdN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 17:33:13 -0400
-IronPort-SDR: K4iwt5R6G7BPkpQd9Qmxo3rYW+/n1LIMIwZ4IpNDiGbjjDsGlDk3u5SjdDxN9Qi+XJGgP7NtUR
- mWy1x1IZzRew==
-X-IronPort-AV: E=McAfee;i="6000,8403,9740"; a="138664438"
-X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
-   d="scan'208";a="138664438"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:33:12 -0700
-IronPort-SDR: 6jkK6ujAcP0Ye4szwIuosFAJEUxAjYICa616Or7vo6gnut3fl8rcF9iCxfzBm47jQke1gbCgl7
- /ZxHJBtHYXzQ==
-X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
-   d="scan'208";a="505978309"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.252.128.198]) ([10.252.128.198])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:33:11 -0700
-Subject: Re: [net-next v4 2/5] devlink: convert flash_update to use params
- structure
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Bin Luo <luobin9@huawei.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Danielle Ratson <danieller@mellanox.com>
-References: <20200909222653.32994-1-jacob.e.keller@intel.com>
- <20200909222653.32994-3-jacob.e.keller@intel.com>
- <20200909175545.3ea38a80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <f8c32083-da74-b7cc-e6a0-6b819533897c@intel.com>
- <20200910142324.1932401d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <5fe24aae-6401-c879-b235-a12c1416d00b@intel.com>
-Date:   Thu, 10 Sep 2020 14:33:07 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.1
+        id S1727827AbgIJVd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:33:58 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:28203 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728211AbgIJVdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:33:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599773620;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=VzqpgwsSPyL8k8/955/V+X5MV+uN6KUA7NH0shdDPBE=;
+        b=OyEPpnq6SAii+38jakVN3vonGbrVoV1QLY3jWff7VIwLYw73vwgiQhclRssdKPuoSD8xgW
+        Md7l28qjp5LWgs0kH7EmI7ZLWlY/+wcj9LY9HeoB380ZsbAcz8t93snb9AQe71xnIK5lgx
+        pUywfv97KEbxYOeCkvIrroN+jeGb4eE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-476-j3mdZzn_OEWu_maq7kjsLQ-1; Thu, 10 Sep 2020 17:33:38 -0400
+X-MC-Unique: j3mdZzn_OEWu_maq7kjsLQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D04C4100746B;
+        Thu, 10 Sep 2020 21:33:37 +0000 (UTC)
+Received: from linux.fritz.box.com (ovpn-112-6.ams2.redhat.com [10.36.112.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 37A777E8EB;
+        Thu, 10 Sep 2020 21:33:35 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH net-next v2] net: try to avoid unneeded backlog flush
+Date:   Thu, 10 Sep 2020 23:33:18 +0200
+Message-Id: <07fa2be86a3b54d0cf0b771ca3c8b2ebbbca314f.1599758369.git.pabeni@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200910142324.1932401d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+flush_all_backlogs() may cause deadlock on systems
+running processes with FIFO scheduling policy.
 
+The above is critical in -RT scenarios, where user-space
+specifically ensure no network activity is scheduled on
+the CPU running the mentioned FIFO process, but still get
+stuck.
 
-On 9/10/2020 2:23 PM, Jakub Kicinski wrote:
-> On Thu, 10 Sep 2020 13:59:07 -0700 Jacob Keller wrote:
->> On 9/9/2020 5:55 PM, Jakub Kicinski wrote:
->>> On Wed,  9 Sep 2020 15:26:50 -0700 Jacob Keller wrote:  
->>>> The devlink core recently gained support for checking whether the driver
->>>> supports a flash_update parameter, via `supported_flash_update_params`.
->>>> However, parameters are specified as function arguments. Adding a new
->>>> parameter still requires modifying the signature of the .flash_update
->>>> callback in all drivers.
->>>>
->>>> Convert the .flash_update function to take a new `struct
->>>> devlink_flash_update_params` instead. By using this structure, and the
->>>> `supported_flash_update_params` bit field, a new parameter to
->>>> flash_update can be added without requiring modification to existing
->>>> drivers.
->>>>
->>>> As before, all parameters except file_name will require driver opt-in.
->>>> Because file_name is a necessary field to for the flash_update to make
->>>> sense, no "SUPPORTED" bitflag is provided and it is always considered
->>>> valid. All future additional parameters will require a new bit in the
->>>> supported_flash_update_params bitfield.  
->>>
->>> I keep thinking we should also make the core do the
->>> request_firmware_direct(). What else is the driver gonna do with the file name..
->>>
->>> But I don't want to drag your series out so:
->>>
->>> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
->>
->> Hmm. What does _direct do? I guess it means it won't fall back to the
->> userspace helper if it can't find the firmware? It looks like MLX
->> drivers use it, but others seem to just stick to regular request_firmware.
-> 
-> FWIW _direct() is pretty much meaningless today, I think the kernel
-> support for non-direct is mostly dropped. Systemd doesn't support it
-> either.
-> 
+This commit tries to address the problem checking the
+backlog status on the remote CPUs before scheduling the
+flush operation. If the backlog is empty, we can skip it.
 
-Ah, I see. So basically using either doesn't really impact anything
-because everything will just do the direct method and fail otherwise? Ok.
+v1 -> v2:
+ - explicitly clear flushed cpu mask - Eric
 
->> This seems like an improvement that we can handle in a follow up series
->> either way. Thanks for the review!
-> 
-> Agreed. Too many pending patches for this area already :S
-> 
-Yea. I'm happy to wait a bit for this to settle and then look at it
-again in a few weeks.
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+---
+ net/core/dev.c | 51 ++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 47 insertions(+), 4 deletions(-)
 
-Thanks,
-Jake
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 152ad3b578de..cf7bb8d8b803 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5621,17 +5621,60 @@ static void flush_backlog(struct work_struct *work)
+ 	local_bh_enable();
+ }
+ 
++static bool flush_required(int cpu)
++{
++#if IS_ENABLED(CONFIG_RPS)
++	struct softnet_data *sd = &per_cpu(softnet_data, cpu);
++	bool do_flush;
++
++	local_irq_disable();
++	rps_lock(sd);
++
++	/* as insertion into process_queue happens with the rps lock held,
++	 * process_queue access may race only with dequeue
++	 */
++	do_flush = !skb_queue_empty(&sd->input_pkt_queue) ||
++		   !skb_queue_empty_lockless(&sd->process_queue);
++	rps_unlock(sd);
++	local_irq_enable();
++
++	return do_flush;
++#endif
++	/* without RPS we can't safely check input_pkt_queue: during a
++	 * concurrent remote skb_queue_splice() we can detect as empty both
++	 * input_pkt_queue and process_queue even if the latter could end-up
++	 * containing a lot of packets.
++	 */
++	return true;
++}
++
+ static void flush_all_backlogs(void)
+ {
++	static cpumask_t flush_cpus;
+ 	unsigned int cpu;
+ 
++	/* since we are under rtnl lock protection we can use static data
++	 * for the cpumask and avoid allocating on stack the possibly
++	 * large mask
++	 */
++	ASSERT_RTNL();
++
+ 	get_online_cpus();
+ 
+-	for_each_online_cpu(cpu)
+-		queue_work_on(cpu, system_highpri_wq,
+-			      per_cpu_ptr(&flush_works, cpu));
++	cpumask_clear(&flush_cpus);
++	for_each_online_cpu(cpu) {
++		if (flush_required(cpu)) {
++			queue_work_on(cpu, system_highpri_wq,
++				      per_cpu_ptr(&flush_works, cpu));
++			cpumask_set_cpu(cpu, &flush_cpus);
++		}
++	}
+ 
+-	for_each_online_cpu(cpu)
++	/* we can have in flight packet[s] on the cpus we are not flushing,
++	 * synchronize_net() in rollback_registered_many() will take care of
++	 * them
++	 */
++	for_each_cpu(cpu, &flush_cpus)
+ 		flush_work(per_cpu_ptr(&flush_works, cpu));
+ 
+ 	put_online_cpus();
+-- 
+2.26.2
+
