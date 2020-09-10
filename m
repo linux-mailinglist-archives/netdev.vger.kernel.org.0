@@ -2,114 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BEA226547A
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 694CD265491
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:58:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725320AbgIJV5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41280 "EHLO
+        id S1725815AbgIJV6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:58:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbgIJV4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:56:39 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9250CC061573;
-        Thu, 10 Sep 2020 14:56:38 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id k2so2501400ybp.7;
-        Thu, 10 Sep 2020 14:56:38 -0700 (PDT)
+        with ESMTP id S1725780AbgIJV6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:58:12 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43CDC061573
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 14:58:11 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id d6so5581105pfn.9
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 14:58:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9TsJS6ZP23FD5KuVRGm6KvjtgRaAotH6WX6sJU4ADvk=;
-        b=hlt4Jg3nXi6FXtRbwrY62gWtJpDG+ujXIeqxJNFuND67w5xCdYfL0/KMaSqRoqGdAT
-         dbV+TKVLzo78ZcwvUPETDfdlZT9S6Q0h2ZgTssV5mLLP/myxCiP0TBEml7oeOujp/b0h
-         sP6dQn446WPGcYGTBqgQTXWvAuY6z67qfw6VOoqamYOwgHUmgtrck0ggkDPxxsd01NxT
-         POMkERrnj0NxoyHzocIBYiRgFjFN+A1TZnkVFsvldfiHaGY647F1BcL/JfE48ZiCWn1h
-         4/h463SVpy+X53Sv06qu/XkJUvio2dKy0xqu1aF+MLj+epKFDUocz4FwgYaLsWWIHS0O
-         rnQA==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LOVmtayLZVDC0i4i/v+QCm0s/AOKCftxydTn4EE85Ic=;
+        b=JPZG9xM2ax4GCSSi0cSDqBGa6zQbEdVviFSKWrAhBoPmYP1M8DJ4T/AIn6W54bKjFo
+         X8Dk6CldRYjJ2OmEmPJsL0B3Ej7n4p/s0x7ENTdU/71fXFAMqoXrsx+b/6wEHnP1OLGL
+         xiRSrXRZbngla/JCm4Pqst8cqwybSzpHedCCTIkh5QEIJdTMB0S8ZflMrMkGj/qrQ7a4
+         +Blr43FD3rZ4o9ZZ6CZGoo2yysXZp0yFHzxxEWM22M9M8z4zzjUEXKhzi5KsQCSj0gac
+         fa5Fhv4gAckJr6Oa36cAlBvpZnTqN7Q4iCnqBltogsgTU7wIA8qRqa2js5R3jb7XNg4F
+         7Big==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9TsJS6ZP23FD5KuVRGm6KvjtgRaAotH6WX6sJU4ADvk=;
-        b=gG/ifh6juxYB1veORxsWA8N7bs8W5vbliwBckRMMivJJigpFkK016RwQO1u+KVLD0v
-         7ILdJS8Uri9zfIS3rTPV5D/IrJAFMJBKGARGUJlBZaxEhpVHFxgNMw6yPiZtkPT4Ir01
-         xw9YPdSb0TTF1aLe0M0Gezg+r0wLKjC6GidBsWILyTbcYbuMsOLCz96MTwSmzvszPZuP
-         W89RgUl28ifVrdznNZoKsVYvt6x5xVwNSceMscaCO7K92gVPllz4dmqruNQujA9a7Y3k
-         y+RmstLOoAWuOxeRbbSq/ptei5BmaQN0N28gcOi+8XOVhDGLJAUVUtomCJQ1iUX9kOIw
-         9OOg==
-X-Gm-Message-State: AOAM533vHSXcoaDmKReD9AMnQrGgb0HUxcuE7mzDazx8QswwdBXAq/ph
-        hEuBE8k4cHeu+DES+AA+kd6TQz3ztEahp/ZWCIfYiJJPp24=
-X-Google-Smtp-Source: ABdhPJxTiAH33iaNv5w3B+v5GaYno8ohAIxDKoDcVeEdgzu8JdWtT30YiyFimleu0o96zL9DQtyXxT5XvMnlHCx2d80=
-X-Received: by 2002:a25:c049:: with SMTP id c70mr16077351ybf.403.1599774997775;
- Thu, 10 Sep 2020 14:56:37 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LOVmtayLZVDC0i4i/v+QCm0s/AOKCftxydTn4EE85Ic=;
+        b=cgn+AyLUDloWCZcZ2LchbrF31y3a/Oo9HbFvyrL0seoPFYhuQZ4ax3Flys0xaiCCR+
+         aJiFIgev065yfjpA19EVgThZO23MPFybvAow5qMMnivH/gq0t+m0zD7X8XHkP3jo4wGi
+         8NhVzUficje5FXIQbRDNwLdOAKN0ZLzC4wYDG8RN/eDWft5P6Yg0YtTkReHtvl/8/6FY
+         AZKUE3vUMs+txZndjeC4GNkbvyZgAVUa7YWj15uAy2k8GWqVkAszBQsaDo4qRNqFz7nv
+         3b9PDHd0eHKleDReW1trepWsn1580qE8RKfQYTLX14b8+uiMnumErXDmDlATFNOOM4YP
+         rskA==
+X-Gm-Message-State: AOAM530Kebq+HPiYM3DWoPVdTkU2GHJDMD+l9nHow2RzKnIX9UmRLiS0
+        SEi49xc+FV4afQj2zJDBxxwLzqc+4+I=
+X-Google-Smtp-Source: ABdhPJzvVaHfj1P9EDREOu38USS9I9dBkoZH/KqdYWFTG47oseNaroIgTqHXco3JxekVAtC30uEuww==
+X-Received: by 2002:a62:1b15:0:b029:13c:e701:5113 with SMTP id b21-20020a621b150000b029013ce7015113mr7361707pfb.3.1599775090851;
+        Thu, 10 Sep 2020 14:58:10 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id m20sm60323pfa.115.2020.09.10.14.58.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Sep 2020 14:58:10 -0700 (PDT)
+Subject: Re: [PATCH net-next 4/4] net: dsa: set
+ configure_vlan_while_not_filtering to true by default
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, vivien.didelot@gmail.com, andrew@lunn.ch,
+        netdev@vger.kernel.org
+References: <20200907182910.1285496-1-olteanv@gmail.com>
+ <20200907182910.1285496-5-olteanv@gmail.com>
+ <961ac1bd-6744-23ef-046f-4b7d8c4413a4@gmail.com>
+ <a5e6cb01-88d0-a479-3262-b53dec0682cd@gmail.com>
+ <f0217ae5-7897-17e2-a807-fc0ba0246c74@gmail.com>
+ <20200909163105.nynkw5jvwqapzx2z@skbuf>
+ <11268219-286d-7daf-9f4e-50bdc6466469@gmail.com>
+ <20200909175325.bshts3hl537xtz2q@skbuf>
+ <5edf3aa2-c417-e708-b259-7235de7bc8d2@gmail.com>
+Message-ID: <7e45b733-de6a-67c8-2e28-30a5ba84f544@gmail.com>
+Date:   Thu, 10 Sep 2020 14:58:04 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.1
 MIME-Version: 1.0
-References: <20200910202718.956042-1-yhs@fb.com>
-In-Reply-To: <20200910202718.956042-1-yhs@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 10 Sep 2020 14:56:27 -0700
-Message-ID: <CAEf4Bza3=W5GaVuRFbvQvCKD3WQ9PVnuYJGPdF21zcaztJFBFA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: define string const as global for test_sysctl_prog.c
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <5edf3aa2-c417-e708-b259-7235de7bc8d2@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 1:30 PM Yonghong Song <yhs@fb.com> wrote:
->
-> When tweaking llvm optimizations, I found that selftest build failed
-> with the following error:
->   libbpf: elf: skipping unrecognized data section(6) .rodata.str1.1
->   libbpf: prog 'sysctl_tcp_mem': bad map relo against '.L__const.is_tcp_mem.tcp_mem_name'
->           in section '.rodata.str1.1'
->   Error: failed to open BPF object file: Relocation failed
->   make: *** [/work/net-next/tools/testing/selftests/bpf/test_sysctl_prog.skel.h] Error 255
->   make: *** Deleting file `/work/net-next/tools/testing/selftests/bpf/test_sysctl_prog.skel.h'
->
-> The local string constant "tcp_mem_name" is put into '.rodata.str1.1' section
-> which libbpf cannot handle. Using untweaked upstream llvm, "tcp_mem_name"
-> is completely inlined after loop unrolling.
->
-> Commit 7fb5eefd7639 ("selftests/bpf: Fix test_sysctl_loop{1, 2}
-> failure due to clang change") solved a similar problem by defining
-> the string const as a global. Let us do the same here
-> for test_sysctl_prog.c so it can weather future potential llvm changes.
->
-> Signed-off-by: Yonghong Song <yhs@fb.com>
-> ---
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
 
->  tools/testing/selftests/bpf/progs/test_sysctl_prog.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_prog.c b/tools/testing/selftests/bpf/progs/test_sysctl_prog.c
-> index 50525235380e..5489823c83fc 100644
-> --- a/tools/testing/selftests/bpf/progs/test_sysctl_prog.c
-> +++ b/tools/testing/selftests/bpf/progs/test_sysctl_prog.c
-> @@ -19,11 +19,11 @@
->  #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
->  #endif
->
-> +const char tcp_mem_name[] = "net/ipv4/tcp_mem";
+On 9/9/2020 11:34 AM, Florian Fainelli wrote:
+> 
+> 
+> On 9/9/2020 10:53 AM, Vladimir Oltean wrote:
+>> On Wed, Sep 09, 2020 at 10:22:42AM -0700, Florian Fainelli wrote:
+>>> How do you make sure that the CPU port sees the frame untagged which 
+>>> would
+>>> be necessary for a VLAN-unaware bridge? Do you have a special remapping
+>>> rule?
+>>
+>> No, I don't have any remapping rules that would be relevant here.
+>> Why would the frames need to be necessarily untagged for a VLAN-unaware
+>> bridge, why is it a problem if they aren't?
+>>
+>> bool br_allowed_ingress(const struct net_bridge *br,
+>>             struct net_bridge_vlan_group *vg, struct sk_buff *skb,
+>>             u16 *vid, u8 *state)
+>> {
+>>     /* If VLAN filtering is disabled on the bridge, all packets are
+>>      * permitted.
+>>      */
+>>     if (!br_opt_get(br, BROPT_VLAN_ENABLED)) {
+>>         BR_INPUT_SKB_CB(skb)->vlan_filtered = false;
+>>         return true;
+>>     }
+>>
+>>     return __allowed_ingress(br, vg, skb, vid, state);
+>> }
+>>
+>> If I have a VLAN on a bridged switch port where the bridge is not
+>> filtering, I have an 8021q upper of the bridge with that VLAN ID.
+> 
+> Yes that is the key right there, you need an 8021q upper to pop the VLAN 
+> ID or push it, that is another thing that users need to be aware of 
+> which is a bit awkward, most expect things to just work. Maybe we should 
+> just refuse to have bridge devices that are not VLAN-aware, because this 
+> is just too cumbersome to deal with.
 
-nit: I'd prefer keeping an empty line between variables and functions
+With the drivers that you currently maintain and with the CPU port being 
+always tagged in the VLANs added to the user-facing ports, when you are 
+using a non-VLAN aware bridge, do you systematically add an br0.1 upper 
+802.1Q device to pop/push the VLAN tag?
 
->  static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
->  {
-> -       char tcp_mem_name[] = "net/ipv4/tcp_mem";
->         unsigned char i;
-> -       char name[64];
-> +       char name[sizeof(tcp_mem_name)];
->         int ret;
->
->         memset(name, 0, sizeof(name));
-> --
-> 2.24.1
->
+I am about ready to submit the changes we discussed to b53, but I am 
+still a bit uncomfortable with this part of the change because it will 
+make the CPU port follow the untagged attribute of an user-facing port.
+
+@@ -1444,7 +1427,7 @@ void b53_vlan_add(struct dsa_switch *ds, int port,
+                         untagged = true;
+
+                 vl->members |= BIT(port);
+-               if (untagged && !dsa_is_cpu_port(ds, port))
++               if (untagged)
+                         vl->untag |= BIT(port);
+                 else
+                         vl->untag &= ~BIT(port);
+@@ -1482,7 +1465,7 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
+                 if (pvid == vid)
+                         pvid = b53_default_pvid(dev);
+
+-               if (untagged && !dsa_is_cpu_port(ds, port))
++               if (untagged)
+                         vl->untag &= ~(BIT(port));
+
+-- 
+Florian
