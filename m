@@ -2,143 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5C872653D1
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:41:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D61D226542D
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:52:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728423AbgIJVky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:40:54 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:33028 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728412AbgIJVku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:40:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599774048;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZGRVnEaekhAhEIL8CGWeb7ErYvV0SGt63fSdiNWSRlQ=;
-        b=St7IS+apzVErPzusqkmrYsb9P4TIrcDhHR4dG6I+lgOsjEzOZGYzh/tvWES1Xe34cO6PQ3
-        DKYSMyFd0TllVMCY/TdHaaDnyI/b+7O0+u5rLMPFcBtJ0T7KDjDO/VCCs/AmIwrTY2Spce
-        1adw+bMVdy/hyrIFsDSMVpHYYdat58Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-69-1xTI1pPWM7Oqcr1Ld6N7rg-1; Thu, 10 Sep 2020 17:40:42 -0400
-X-MC-Unique: 1xTI1pPWM7Oqcr1Ld6N7rg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0D1001074640;
-        Thu, 10 Sep 2020 21:40:40 +0000 (UTC)
-Received: from ovpn-112-6.ams2.redhat.com (ovpn-112-6.ams2.redhat.com [10.36.112.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BC7E37E8EB;
-        Thu, 10 Sep 2020 21:40:36 +0000 (UTC)
-Message-ID: <0f3b24664813091d535da32d0a645f406f3e30a2.camel@redhat.com>
-Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Kehuan Feng <kehuan.feng@gmail.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Jike Song <albcamus@gmail.com>, Josh Hunt <johunt@akamai.com>,
-        Jonas Bonn <jonas.bonn@netrounds.com>,
-        Michael Zhivich <mzhivich@akamai.com>,
-        David Miller <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Date:   Thu, 10 Sep 2020 23:40:35 +0200
-In-Reply-To: <5f5a959fbe236_c295820892@john-XPS-13-9370.notmuch>
-References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
-         <20200623134259.8197-1-mzhivich@akamai.com>
-         <1849b74f-163c-8cfa-baa5-f653159fefd4@akamai.com>
-         <CAM_iQpX1+dHB0kJF8gRfuDeAb9TsA9mB9H_Og8n8Hr19+EMLJA@mail.gmail.com>
-         <CAM_iQpWjQiG-zVs+e-V=8LvTFbRwgC4y4eoGERjezfAT0Fmm8g@mail.gmail.com>
-         <7fd86d97-6785-0b5f-1e95-92bc1da9df35@netrounds.com>
-         <500b4843cb7c425ea5449fe199095edd5f7feb0c.camel@redhat.com>
-         <25ca46e4-a8c1-1c88-d6a9-603289ff44c3@akamai.com>
-         <CANE52Ki8rZGDPLZkxY--RPeEG+0=wFeyCD6KKkeG1WREUwramw@mail.gmail.com>
-         <20200822032800.16296-1-hdanton@sina.com>
-         <CACS=qqKhsu6waaXndO5tQL_gC9TztuUQpqQigJA2Ac0y12czMQ@mail.gmail.com>
-         <20200825032312.11776-1-hdanton@sina.com>
-         <CACS=qqK-5g-QM_vczjY+A=3fi3gChei4cAkKweZ4Sn2L537DQA@mail.gmail.com>
-         <20200825162329.11292-1-hdanton@sina.com>
-         <CACS=qqKgiwdCR_5+z-vkZ0X8DfzOPD7_ooJ_imeBnx+X1zw2qg@mail.gmail.com>
-         <CACS=qqKptAQQGiMoCs1Zgs9S4ZppHhasy1AK4df2NxnCDR+vCw@mail.gmail.com>
-         <5f46032e.1c69fb81.9880c.7a6cSMTPIN_ADDED_MISSING@mx.google.com>
-         <CACS=qq+Yw734DWhETNAULyBZiy_zyjuzzOL-NO30AB7fd2vUOQ@mail.gmail.com>
-         <20200827125747.5816-1-hdanton@sina.com>
-         <CACS=qq+a0H=e8yLFu95aE7Hr0bQ9ytCBBn2rFx82oJnPpkBpvg@mail.gmail.com>
-         <CAM_iQpV-JMURzFApp-Zhxs3QN9j=Zdf6yqwOP=E42ERDHxe6Hw@mail.gmail.com>
-         <dd73f551d1fc89e457ffabd106cbf0bf401b747b.camel@redhat.com>
-         <CAM_iQpXZMeAGkq_=rG6KEabFNykszpRU_Hnv65Qk7yesvbRDrw@mail.gmail.com>
-         <5f51cbad3cc2_3eceb208fc@john-XPS-13-9370.notmuch>
-         <CAM_iQpVqdVc5_LkhO4Qie7Ff+XXRTcpiptZsEVNh=o9E0GkcRQ@mail.gmail.com>
-         <5f5a959fbe236_c295820892@john-XPS-13-9370.notmuch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1725929AbgIJVwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40650 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725440AbgIJVwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:52:37 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F8CC061573;
+        Thu, 10 Sep 2020 14:45:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Fg/b55yxoFWkolyAkcEjzousJpXve06w9VMuL5Sdnkk=; b=ZMcMkaW/c2U4wME0yN3lN8iyq
+        Cabjm7Hra/p2QLrT5mmKewtEBX98jKbULNaeCzksnOjXFd/KBPMjWzggqocB6CD3soSxk08QfgkWj
+        n9IShJX5HFbbZEejR0jEf+mNi4loEuaPf3zI+zz2liShClwNpC0+1q6T15cbGEijkp+yBWD2tqfjW
+        sbvjsE1c0h9pMsh/XzqMtZSYdfSDxQrX8/XS/GPQqcsqDjkuQrVtt1xRqvAF/iAJkp5MRdlrs/gHy
+        IgqIc3Q/VXMM0vvUJTXwsBbAHpB+d9p+sH/F9wMsGxVs53ENrxphr7fW4/Qo2vEIBhSJJI8gh1bKv
+        N7TWu3fvg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32992)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kGUNG-0006e5-W4; Thu, 10 Sep 2020 22:44:59 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kGUNC-0007bp-S9; Thu, 10 Sep 2020 22:44:54 +0100
+Date:   Thu, 10 Sep 2020 22:44:54 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek Behun <marek.behun@nic.cz>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Pavel Machek <pavel@ucw.cz>,
+        netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        Dan Murphy <dmurphy@ti.com>,
+        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
+        linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next + leds v2 6/7] net: phy: marvell: add support
+ for LEDs controlled by Marvell PHYs
+Message-ID: <20200910214454.GE1551@shell.armlinux.org.uk>
+References: <20200909162552.11032-1-marek.behun@nic.cz>
+ <20200909162552.11032-7-marek.behun@nic.cz>
+ <20200910122341.GC7907@duo.ucw.cz>
+ <20200910131541.GD3316362@lunn.ch>
+ <20200910182434.GA22845@duo.ucw.cz>
+ <20200910183154.GF3354160@lunn.ch>
+ <20200910183435.GC1551@shell.armlinux.org.uk>
+ <20200910223112.26b57dd6@nic.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200910223112.26b57dd6@nic.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-09-10 at 14:07 -0700, John Fastabend wrote:
-> Cong Wang wrote:
-> > On Thu, Sep 3, 2020 at 10:08 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> > > Maybe this would unlock us,
-> > > 
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index 7df6c9617321..9b09429103f1 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -3749,7 +3749,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
-> > > 
-> > >         if (q->flags & TCQ_F_NOLOCK) {
-> > >                 rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
-> > > -               qdisc_run(q);
-> > > +               __qdisc_run(q);
-> > > 
-> > >                 if (unlikely(to_free))
-> > >                         kfree_skb_list(to_free);
-> > > 
-> > > 
-> > > Per other thread we also need the state deactivated check added
-> > > back.
+On Thu, Sep 10, 2020 at 10:31:12PM +0200, Marek Behun wrote:
+> On Thu, 10 Sep 2020 19:34:35 +0100
+> Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+> 
+> > On Thu, Sep 10, 2020 at 08:31:54PM +0200, Andrew Lunn wrote:
+> > > Generally the driver will default to the hardware reset blink
+> > > pattern. There are a few PHY drivers which change this at probe, but
+> > > not many. The silicon defaults are pretty good.  
 > > 
-> > I guess no, because pfifo_dequeue() seems to require q->seqlock,
-> > according to comments in qdisc_run(), so we can not just get rid of
-> > qdisc_run_begin()/qdisc_run_end() here.
+> > The "right" blink pattern can be a matter of how the hardware is
+> > wired.  For example, if you have bi-colour LEDs and the PHY supports
+> > special bi-colour mixing modes.
 > > 
-> > Thanks.
 > 
-> Seems we would have to revert this as well then,
+> Have you seen such, Russell? This could be achieved via the multicolor
+> LED framework, but I don't have a device which uses such LEDs, so I
+> did not write support for this in the Marvell PHY driver.
 > 
->  commit 021a17ed796b62383f7623f4fea73787abddad77
->  Author: Paolo Abeni <pabeni@redhat.com>
->  Date:   Tue May 15 16:24:37 2018 +0200
-> 
->     pfifo_fast: drop unneeded additional lock on dequeue
->     
->     After the previous patch, for NOLOCK qdiscs, q->seqlock is
->     always held when the dequeue() is invoked, we can drop
->     any additional locking to protect such operation.
-> 
-> Then I think it should be safe. Back when I was working on the ptr
-> ring implementation I opted not to do a case without the spinlock
-> because the performance benefit was minimal in the benchmarks I
-> was looking at.
+> (I guess I could test it though, since on my device LED0 and LED1
+> are used, and this to can be put into bi-colour LED mode.)
 
-The main point behind all that changes was try to close the gap vs the
-locked implementation in the uncontended scenario. In our benchmark,
-after commit eb82a994479245a79647d302f9b4eb8e7c9d7ca6, was more near to
-10%.
+I haven't, much to my dismay. The Macchiatobin would have been ideal -
+the 10G RJ45s have bi-colour on one side and green on the other. It
+would have been useful if they were wired to support the PHYs bi-
+colour mode.
 
-Anyway I agree reverting back to the bitlock should be safe.
-
-Cheers,
-
-Paolo 
-
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
