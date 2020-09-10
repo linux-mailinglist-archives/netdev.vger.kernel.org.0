@@ -2,185 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0471B265229
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:09:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE34D265235
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726913AbgIJVI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:08:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725804AbgIJVHw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:07:52 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77975C061573;
-        Thu, 10 Sep 2020 14:07:52 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id f18so5473592pfa.10;
-        Thu, 10 Sep 2020 14:07:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Li0nSbFdz+mC8RxoTVun9cvaUm8qgoK6MsIzH+38R3k=;
-        b=Ai11IEn3h4Xt+T9ffcUkHU+kkaykAv/kILQu8/Z8FY1WqSniTbyVBCnwUp3rQKOlo0
-         EgqUbCF4+pWHU8e3Td0WqI215nOfB7YNPaLf/4lHgM6mQcBJHfSP1mz7cI4KLI4RyEjP
-         /rqVgueX4UKU7lrR6snDLpSA2Q+SlnHDZo3fby5V20hA42M+4oSgBEQO/Q+kjxhYCxCe
-         fncaKXDQmhfqdaXUJvr7ao8yT0nlucHs1qfMs4jqVepjTwePWgaNwY6ffIK2/KW5hLQA
-         hXMMTq+6dAm7I/Dlx6Mr0CMs/NCG87mITKJfZW3bw+KJjuBA1qj6uJOqbOx7jaePcxdo
-         lVTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Li0nSbFdz+mC8RxoTVun9cvaUm8qgoK6MsIzH+38R3k=;
-        b=ZhyCU+AtnSq6XnkYq02vRj2Va1NlOouAqS7zX3+bJ39bQop/Ois6lsWeF2zJK7xnqn
-         c21WHbJRmmBYFQEemF2A/Eprw07IvZNA56D3hl5TEe7eFpODDjha9F8xeVp5D8ZYuLK4
-         RoZ3/lBnXpgjAYiZOGF6XL1CQ5cW4/2os1qpk0B0TunwklFieXi5oNnlp0UoIFgCeXDM
-         1Oo6Z3IKhNtR3BOVOFgoH/K+0KkqOCibL9DCqWtXS3oN9iwShgZL+WdheAUV5MOBbldl
-         GCBBebg4GVxO561foQDk0xVOZH6D0XzZfIFUm84k+OuRTPz2Bh/xSa9NLCPqqw/bAgk/
-         qVqA==
-X-Gm-Message-State: AOAM533Guu13ggaWupTLPUYQl2QANbnJmP6V1OowTizgfN6g/f5Ph2iZ
-        UMtgFJhC3b82RbaX3ir6NFM=
-X-Google-Smtp-Source: ABdhPJwFSjYOfpYq2rhihinFKuvAuIMZshJtCpVBe+dFyMykRxvaNxrYHAtXApgbXopQWYCIZKz6gw==
-X-Received: by 2002:a63:500e:: with SMTP id e14mr6019051pgb.36.1599772071871;
-        Thu, 10 Sep 2020 14:07:51 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id a10sm6779410pfn.219.2020.09.10.14.07.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 14:07:51 -0700 (PDT)
-Date:   Thu, 10 Sep 2020 14:07:43 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Kehuan Feng <kehuan.feng@gmail.com>,
-        Hillf Danton <hdanton@sina.com>,
-        Jike Song <albcamus@gmail.com>, Josh Hunt <johunt@akamai.com>,
-        Jonas Bonn <jonas.bonn@netrounds.com>,
-        Michael Zhivich <mzhivich@akamai.com>,
-        David Miller <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Message-ID: <5f5a959fbe236_c295820892@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAM_iQpVqdVc5_LkhO4Qie7Ff+XXRTcpiptZsEVNh=o9E0GkcRQ@mail.gmail.com>
-References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
- <20200623134259.8197-1-mzhivich@akamai.com>
- <1849b74f-163c-8cfa-baa5-f653159fefd4@akamai.com>
- <CAM_iQpX1+dHB0kJF8gRfuDeAb9TsA9mB9H_Og8n8Hr19+EMLJA@mail.gmail.com>
- <CAM_iQpWjQiG-zVs+e-V=8LvTFbRwgC4y4eoGERjezfAT0Fmm8g@mail.gmail.com>
- <7fd86d97-6785-0b5f-1e95-92bc1da9df35@netrounds.com>
- <500b4843cb7c425ea5449fe199095edd5f7feb0c.camel@redhat.com>
- <25ca46e4-a8c1-1c88-d6a9-603289ff44c3@akamai.com>
- <CANE52Ki8rZGDPLZkxY--RPeEG+0=wFeyCD6KKkeG1WREUwramw@mail.gmail.com>
- <20200822032800.16296-1-hdanton@sina.com>
- <CACS=qqKhsu6waaXndO5tQL_gC9TztuUQpqQigJA2Ac0y12czMQ@mail.gmail.com>
- <20200825032312.11776-1-hdanton@sina.com>
- <CACS=qqK-5g-QM_vczjY+A=3fi3gChei4cAkKweZ4Sn2L537DQA@mail.gmail.com>
- <20200825162329.11292-1-hdanton@sina.com>
- <CACS=qqKgiwdCR_5+z-vkZ0X8DfzOPD7_ooJ_imeBnx+X1zw2qg@mail.gmail.com>
- <CACS=qqKptAQQGiMoCs1Zgs9S4ZppHhasy1AK4df2NxnCDR+vCw@mail.gmail.com>
- <5f46032e.1c69fb81.9880c.7a6cSMTPIN_ADDED_MISSING@mx.google.com>
- <CACS=qq+Yw734DWhETNAULyBZiy_zyjuzzOL-NO30AB7fd2vUOQ@mail.gmail.com>
- <20200827125747.5816-1-hdanton@sina.com>
- <CACS=qq+a0H=e8yLFu95aE7Hr0bQ9ytCBBn2rFx82oJnPpkBpvg@mail.gmail.com>
- <CAM_iQpV-JMURzFApp-Zhxs3QN9j=Zdf6yqwOP=E42ERDHxe6Hw@mail.gmail.com>
- <dd73f551d1fc89e457ffabd106cbf0bf401b747b.camel@redhat.com>
- <CAM_iQpXZMeAGkq_=rG6KEabFNykszpRU_Hnv65Qk7yesvbRDrw@mail.gmail.com>
- <5f51cbad3cc2_3eceb208fc@john-XPS-13-9370.notmuch>
- <CAM_iQpVqdVc5_LkhO4Qie7Ff+XXRTcpiptZsEVNh=o9E0GkcRQ@mail.gmail.com>
-Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1725935AbgIJVKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:10:52 -0400
+Received: from mail-eopbgr700113.outbound.protection.outlook.com ([40.107.70.113]:34657
+        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727122AbgIJVKT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 17:10:19 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mM/Aj8Utb0xlzApAR15JceC3BiRpmJKIEW+0loSqCVhCtOFnbw4CUxl6PYTua+TsNN1HpcEmytisrqIUUX4Yxgo03mhhIWhxppk/X1GBwYvIgQ2SPXSIBYOtkZP6xD2mUChNHF+lP/NQSkvEAWfNIa/Od/5+3RMiVaUBlbMXU5YNtzNqPWiE3tucYcDueS2CIeuq3nuEMuI8QqGkZkv+6rEx74TIc2XTVTvhA7zMu9JyZ/bpN/vPKXgrdXu6oy/szMzypEbD9d0a1SiLTMOK8I9Nt8MpNyNh+bgMcFNjCmwObRGbZTSDbY2p4+S1wzHlBL9Tp4/aE8EIkO76VjQy+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GCGjL3fKXdW7gGWwfTc732rzvBw5Z8D52EdstYJBykM=;
+ b=edzqDp4YbojYXXt5oZYc6KCu60Y/r0yBNbM+0afQP5KiAsTmtv5PfSbDmxw/ZPH4Id3K75PL5gcEpbsNI8+q5O2q173H0X9k1ksScUs6UcLCxw178JfgW+/6zKhRcSDeaj2Yq1Xw+qo5umvE8zemqr4dNa8qGetfl63pDBFrGKjeejyAenrD1znJkWAmN3Lk+qzmHuH9n0OyPbceafm4WWjb45VtlgfyT4UMYWKieGCB2aE6UcUz8UAhG32kZ307VknKRPna6D/sduUT8A/tRzfYgpVDHF2N1iq/Bq3qcWE8bp194vTiU1Pu2GRn160KESrNbPV/1yezT4MAJ2Z8hg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GCGjL3fKXdW7gGWwfTc732rzvBw5Z8D52EdstYJBykM=;
+ b=clnfXBZq9VBCUQhTm0/m/HVTSQSZzfRUmfusxPl3Pj0RCr8IOCwZRrORCD1kR3rcxlOOxpPAQQMU8hqWGj/yhj4P6DFy17pFJiWSl3hhFlWwl8xT9+eGa2/2f2/zfezs39c781TwD0HbRoS05b57mlKFE6Sbjuqo1vvlJrlz33k=
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ (2603:10b6:207:30::18) by BL0PR2101MB0963.namprd21.prod.outlook.com
+ (2603:10b6:207:30::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.6; Thu, 10 Sep
+ 2020 21:10:11 +0000
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::21e4:e6b6:10c:e66f]) by BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::70b5:f505:ae8b:c773%10]) with mapi id 15.20.3391.005; Thu, 10 Sep
+ 2020 21:10:11 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        Andres Beltran <lkmlabelt@gmail.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Saruhan Karademir <skarade@microsoft.com>,
+        Juan Vazquez <juvazq@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2] hv_netvsc: Add validation for untrusted Hyper-V values
+Thread-Topic: [PATCH v2] hv_netvsc: Add validation for untrusted Hyper-V
+ values
+Thread-Index: AQHWh3CiaBH0lchHw06AORvXwhPeSaliXZ+Q
+Date:   Thu, 10 Sep 2020 21:10:11 +0000
+Message-ID: <BL0PR2101MB0930659825AD89FF5A8DC2C4CA270@BL0PR2101MB0930.namprd21.prod.outlook.com>
+References: <20200910124748.19217-1-parri.andrea@gmail.com>
+In-Reply-To: <20200910124748.19217-1-parri.andrea@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d007ab8c-0d09-44a0-a78d-0a90f0f8d24e;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-09-10T21:06:29Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [75.100.88.238]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 66123bc8-db4c-485c-7e9b-08d855cde789
+x-ms-traffictypediagnostic: BL0PR2101MB0963:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BL0PR2101MB0963C61A42B6A556C0FC8718CA270@BL0PR2101MB0963.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: v+9Hx+eMpjlHJ3KsUNamU8v/WkRzF6wcQYsICwqrcNaX5fONAD4PXVng9HNrqkBk0+Xj4Eh2O0DUbDLNtehtcEQ8Duv0K/iWKJHJqgsU3Hjlb7b82I9ztWAFzq0777Ox+dZ/snQBVGrufZboCDJx+psbDqWYRhlvF9L6i6q2kHyekqmuYNxKeOR2Suaee4QzBd629VrVlmkgREpp/pwWs/XrsI5RGv79rcNKZz8Mu/RIhVslodR753wf7JVrjj927XEuQwkbutVrWygKGkhir2axXY+Z5FghZJH5//Qq5QLg6jMc3Iq9MYb9lplmaIU+YGRKdZOLtNpCFMOHjX823Je3DZfwCAg2ORWOY6At3uw+ByKPhMYt5bgAUE4eYVIG
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB0930.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(39860400002)(376002)(346002)(366004)(26005)(55016002)(110136005)(52536014)(66476007)(71200400001)(76116006)(54906003)(66556008)(66946007)(316002)(10290500003)(83380400001)(64756008)(478600001)(5660300002)(8936002)(86362001)(66446008)(4326008)(2906002)(82960400001)(7696005)(33656002)(82950400001)(8990500004)(6506007)(186003)(53546011)(8676002)(9686003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: uV7Hp/XFSqtODaWGsNBqnqfCrx4ol04xoSDpeOnugWeahmqpTLP84pCufdlqlCL5s/KE53GiuOpwI0vpDtLBTt2ZM3sjawu2X7Buw8tfXFJstHSH4eYzl2F0IBha8DIR3mIeKlkkl5XNHR5eEPy5rDNrQHehCOn5XEQm8XWAE3QPh4UlVl8FmruggmRXnYdRV0fVgniJgpbB25Rn2YtkVVpLMKWXPpzeEmvaVL8VBSxjFMuPKxNWLPP+9DMLucguE2xtzayXEDTfFPD460ENzQK7Z2i7aclodRTiYmQ6vdmCuLDjut/3reT0PvJvKVsGprgdO0dHPXiPoiuLAbUog8o6+81tsfFh2ThkkcD+U27Dwob7sLnDQcrZFQ+FR9X/Q6IoEK3qtPZKiZkoTKH4hDpEQaS/xaFnTPjz438EVEvwXtK+s4etKlRkf+ZZJVDEvhTcnxZryaEktsOMUr3oRyZg6PXMwj2+GmIgFIHjjfsDt40MDvUZ1m61sem61Pz073IhG3h4lbD658f4rtI5U6Nm312OjCf8jU8xz1YzDgFDvvuJyPsk7RTFucwHq8toD1JqaDjge1RzaE1WR582qzRCT1tpcPWjIeGejnfy9MuY3cTY5PG4rznuXcsQwxj9JTI2Ii9/rWHGccEW/ge+YQ==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB0930.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66123bc8-db4c-485c-7e9b-08d855cde789
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Sep 2020 21:10:11.2720
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /WW651SUB33t1XZXozJqxyWlWKjPi4n8coTChCKpalJPxgSPn9eqCbcgrh4a5+FaBu4vJ0ZLS5kvxvLD1ae4Qw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB0963
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> On Thu, Sep 3, 2020 at 10:08 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> > Maybe this would unlock us,
-> >
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 7df6c9617321..9b09429103f1 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -3749,7 +3749,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
-> >
-> >         if (q->flags & TCQ_F_NOLOCK) {
-> >                 rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
-> > -               qdisc_run(q);
-> > +               __qdisc_run(q);
-> >
-> >                 if (unlikely(to_free))
-> >                         kfree_skb_list(to_free);
-> >
-> >
-> > Per other thread we also need the state deactivated check added
-> > back.
-> 
-> I guess no, because pfifo_dequeue() seems to require q->seqlock,
-> according to comments in qdisc_run(), so we can not just get rid of
-> qdisc_run_begin()/qdisc_run_end() here.
-> 
-> Thanks.
 
-Seems we would have to revert this as well then,
 
- commit 021a17ed796b62383f7623f4fea73787abddad77
- Author: Paolo Abeni <pabeni@redhat.com>
- Date:   Tue May 15 16:24:37 2018 +0200
+> -----Original Message-----
+> From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> Sent: Thursday, September 10, 2020 8:48 AM
+> To: linux-kernel@vger.kernel.org
+> Cc: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
+> <haiyangz@microsoft.com>; Stephen Hemminger
+> <sthemmin@microsoft.com>; Wei Liu <wei.liu@kernel.org>; linux-
+> hyperv@vger.kernel.org; Andres Beltran <lkmlabelt@gmail.com>; Michael
+> Kelley <mikelley@microsoft.com>; Saruhan Karademir
+> <skarade@microsoft.com>; Juan Vazquez <juvazq@microsoft.com>; Andrea
+> Parri <parri.andrea@gmail.com>; David S. Miller <davem@davemloft.net>;
+> Jakub Kicinski <kuba@kernel.org>; netdev@vger.kernel.org
+> Subject: [PATCH v2] hv_netvsc: Add validation for untrusted Hyper-V value=
+s
+>=20
+> From: Andres Beltran <lkmlabelt@gmail.com>
+>=20
+> For additional robustness in the face of Hyper-V errors or malicious
+> behavior, validate all values that originate from packets that Hyper-V
+> has sent to the guest in the host-to-guest ring buffer. Ensure that
+> invalid values cannot cause indexing off the end of an array, or
+> subvert an existing validation via integer overflow. Ensure that
+> outgoing packets do not have any leftover guest memory that has not
+> been zeroed out.
+>=20
+> Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
+> Co-developed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
+> ---
+> Changes in v2:
+>   - Replace size check on struct nvsp_message with sub-checks (Haiyang)
+>=20
+>  drivers/net/hyperv/hyperv_net.h   |   4 +
+>  drivers/net/hyperv/netvsc.c       | 120 ++++++++++++++++++++++++++----
+>  drivers/net/hyperv/netvsc_drv.c   |   7 ++
+>  drivers/net/hyperv/rndis_filter.c |  73 ++++++++++++++++--
+>  4 files changed, 184 insertions(+), 20 deletions(-)
+>=20
+> diff --git a/drivers/net/hyperv/hyperv_net.h
+> b/drivers/net/hyperv/hyperv_net.h
+> index 4d2b2d48ff2a1..da78bd0fb2aa2 100644
+> --- a/drivers/net/hyperv/hyperv_net.h
+> +++ b/drivers/net/hyperv/hyperv_net.h
+> @@ -860,6 +860,10 @@ static inline u32 netvsc_rqstor_size(unsigned long
+> ringbytes)
+>  	       ringbytes / NETVSC_MIN_IN_MSG_SIZE;
+>  }
+>=20
+> +#define NETVSC_XFER_HEADER_SIZE(rng_cnt) \
+> +		(offsetof(struct vmtransfer_page_packet_header, ranges) +
+> \
+> +		(rng_cnt) * sizeof(struct vmtransfer_page_range))
+> +
+>  struct multi_send_data {
+>  	struct sk_buff *skb; /* skb containing the pkt */
+>  	struct hv_netvsc_packet *pkt; /* netvsc pkt pending */
+> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+> index 03e93e3ddbad8..90b7a39c2dc78 100644
+> --- a/drivers/net/hyperv/netvsc.c
+> +++ b/drivers/net/hyperv/netvsc.c
+> @@ -388,6 +388,15 @@ static int netvsc_init_buf(struct hv_device *device,
+>  	net_device->recv_section_size =3D resp->sections[0].sub_alloc_size;
+>  	net_device->recv_section_cnt =3D resp->sections[0].num_sub_allocs;
+>=20
+> +	/* Ensure buffer will not overflow */
+> +	if (net_device->recv_section_size < NETVSC_MTU_MIN ||
+> (u64)net_device->recv_section_size *
+> +	    (u64)net_device->recv_section_cnt > (u64)buf_size) {
+> +		netdev_err(ndev, "invalid recv_section_size %u\n",
+> +			   net_device->recv_section_size);
+> +		ret =3D -EINVAL;
+> +		goto cleanup;
+> +	}
+> +
+>  	/* Setup receive completion ring.
+>  	 * Add 1 to the recv_section_cnt because at least one entry in a
+>  	 * ring buffer has to be empty.
+> @@ -460,6 +469,12 @@ static int netvsc_init_buf(struct hv_device *device,
+>  	/* Parse the response */
+>  	net_device->send_section_size =3D init_packet->msg.
+>=20
+> 	v1_msg.send_send_buf_complete.section_size;
+> +	if (net_device->send_section_size < NETVSC_MTU_MIN) {
+> +		netdev_err(ndev, "invalid send_section_size %u\n",
+> +			   net_device->send_section_size);
+> +		ret =3D -EINVAL;
+> +		goto cleanup;
+> +	}
+>=20
+>  	/* Section count is simply the size divided by the section size. */
+>  	net_device->send_section_cnt =3D buf_size / net_device-
+> >send_section_size;
+> @@ -740,12 +755,45 @@ static void netvsc_send_completion(struct
+> net_device *ndev,
+>  				   int budget)
+>  {
+>  	const struct nvsp_message *nvsp_packet =3D hv_pkt_data(desc);
+> +	u32 msglen =3D hv_pkt_datalen(desc);
+> +
+> +	/* Ensure packet is big enough to read header fields */
+> +	if (msglen < sizeof(struct nvsp_message_header)) {
+> +		netdev_err(ndev, "nvsp_message length too small: %u\n",
+> msglen);
+> +		return;
+> +	}
+>=20
+>  	switch (nvsp_packet->hdr.msg_type) {
+>  	case NVSP_MSG_TYPE_INIT_COMPLETE:
+> +		if (msglen < sizeof(struct nvsp_message_init_complete)) {
 
-    pfifo_fast: drop unneeded additional lock on dequeue
-    
-    After the previous patch, for NOLOCK qdiscs, q->seqlock is
-    always held when the dequeue() is invoked, we can drop
-    any additional locking to protect such operation.
-
-Then I think it should be safe. Back when I was working on the ptr
-ring implementation I opted not to do a case without the spinlock
-because the performance benefit was minimal in the benchmarks I
-was looking at. I assumed at some point it would be worth going
-back to it, but just changing those to the __ptr_ring* cases is
-not safe without a lock. I remember having a discussion with Tsirkin
-about the details, but would have to go through the mail servers
-to find it.
-
-FWIW the initial perf looked like this, (https://lwn.net/Articles/698135/)
-
-nolock pfifo_fast
-1:  1417597 1407479 1418913 1439601 
-2:  1882009 1867799 1864374 1855950
-4:  1806736 1804261 1803697 1806994
-8:  1354318 1358686 1353145 1356645
-12: 1331928 1333079 1333476 1335544
-
-locked pfifo_fast
-1:  1471479 1469142 1458825 1456788 
-2:  1746231 1749490 1753176 1753780
-4:  1119626 1120515 1121478 1119220
-8:  1001471  999308 1000318 1000776
-12:  989269  992122  991590  986581
-
-As you can see measurable improvement on many cores. But, actually
-worse if you have enough nic queues to map 1:1 with cores.
-
-nolock mq
-1:    1417768  1438712  1449092  1426775
-2:    2644099  2634961  2628939  2712867
-4:    4866133  4862802  4863396  4867423
-8:    9422061  9464986  9457825  9467619
-12:  13854470 13213735 13664498 13213292  
-
-locked mq
-1:   1448374  1444208  1437459  1437088 
-2:   2687963  2679221  2651059  2691630
-4:   5153884  4684153  5091728  4635261
-8:   9292395  9625869  9681835  9711651
-12: 13553918 13682410 14084055 13946138
-
-So only better if you have more cores than hardware queues
-which was the case on some of the devices we had at the time.
+This and other similar places should include header size:
+		if (msglen < sizeof(struct nvsp_message_header) + sizeof(struct nvsp_mess=
+age_init_complete)) {
 
 Thanks,
-John
+- Haiyang
