@@ -2,65 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F8862650D8
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:31:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCDD12650FD
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:38:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726931AbgIJUbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 16:31:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56970 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726761AbgIJUbA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 16:31:00 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF6EA206E9;
-        Thu, 10 Sep 2020 20:30:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599769860;
-        bh=7lYML09NJIhF4amEUFSTp7nrcxK75B3+CJqmxANN14U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LQI2toSw+bXD2I63/ENGJ4v+j2dIiqm1jYDEiZJZg5iyxNKI1JlPwA3k8yL7821NY
-         dnt3Ug+M8kKNN3m0LiaGUna3EM3SxH5A53R/ON189nmr+l4DWyhHFpCqSEefwwTbVK
-         lzmzHJFFdglaEXO0XBJhT6Z+kPPCtU6xmGaQgdBc=
-Date:   Thu, 10 Sep 2020 13:30:58 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oded Gabbay <oded.gabbay@gmail.com>
-Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Omer Shpigelman <oshpigelman@habana.ai>
-Subject: Re: [PATCH 12/15] habanalabs/gaudi: add debugfs entries for the NIC
-Message-ID: <20200910133058.0fe0f5e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAFCwf10XdCDhLeyiArc29PAJ_7=BGpdiUvFRotvFHieiaRn=aA@mail.gmail.com>
-References: <20200910161126.30948-1-oded.gabbay@gmail.com>
-        <20200910161126.30948-13-oded.gabbay@gmail.com>
-        <20200910130138.6d595527@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAFCwf113A_=da2fGxgMbq_V0OcHsxdp5MpfHiUfeew+gEdnjaQ@mail.gmail.com>
-        <20200910131629.65b3e02c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAFCwf10XdCDhLeyiArc29PAJ_7=BGpdiUvFRotvFHieiaRn=aA@mail.gmail.com>
+        id S1725807AbgIJUiR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 16:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726911AbgIJUbU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:31:20 -0400
+Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79508C061573;
+        Thu, 10 Sep 2020 13:31:19 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
+        by mail.nic.cz (Postfix) with ESMTPSA id B671E13FD86;
+        Thu, 10 Sep 2020 22:31:12 +0200 (CEST)
+Date:   Thu, 10 Sep 2020 22:31:12 +0200
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Pavel Machek <pavel@ucw.cz>,
+        netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        Dan Murphy <dmurphy@ti.com>,
+        =?UTF-8?B?T25kxZllag==?= Jirman <megous@megous.com>,
+        linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next + leds v2 6/7] net: phy: marvell: add support
+ for LEDs controlled by Marvell PHYs
+Message-ID: <20200910223112.26b57dd6@nic.cz>
+In-Reply-To: <20200910183435.GC1551@shell.armlinux.org.uk>
+References: <20200909162552.11032-1-marek.behun@nic.cz>
+        <20200909162552.11032-7-marek.behun@nic.cz>
+        <20200910122341.GC7907@duo.ucw.cz>
+        <20200910131541.GD3316362@lunn.ch>
+        <20200910182434.GA22845@duo.ucw.cz>
+        <20200910183154.GF3354160@lunn.ch>
+        <20200910183435.GC1551@shell.armlinux.org.uk>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Sep 2020 23:17:59 +0300 Oded Gabbay wrote:
-> > Doesn't seem like this one shows any more information than can be
-> > queried with ethtool, right?  
-> correct, it just displays it in a format that is much more readable
+On Thu, 10 Sep 2020 19:34:35 +0100
+Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
 
-You can cat /sys/class/net/$ifc/carrier if you want 0/1.
-
-> > > nic_mac_loopback
-> > > is to set a port to loopback mode and out of it. It's not really
-> > > configuration but rather a mode change.  
-> >
-> > What is this loopback for? Testing?  
+> On Thu, Sep 10, 2020 at 08:31:54PM +0200, Andrew Lunn wrote:
+> > Generally the driver will default to the hardware reset blink
+> > pattern. There are a few PHY drivers which change this at probe, but
+> > not many. The silicon defaults are pretty good.  
 > 
-> Correct.
+> The "right" blink pattern can be a matter of how the hardware is
+> wired.  For example, if you have bi-colour LEDs and the PHY supports
+> special bi-colour mixing modes.
+> 
 
-Loopback test is commonly implemented via ethtool -t
+Have you seen such, Russell? This could be achieved via the multicolor
+LED framework, but I don't have a device which uses such LEDs, so I
+did not write support for this in the Marvell PHY driver.
+
+(I guess I could test it though, since on my device LED0 and LED1
+are used, and this to can be put into bi-colour LED mode.)
