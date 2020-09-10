@@ -2,465 +2,349 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D2C2646A2
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 15:14:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A09DB26469D
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 15:11:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730426AbgIJNL6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 09:11:58 -0400
-Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:21214 "EHLO
-        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730316AbgIJNH2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 09:07:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1599743245; x=1631279245;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=50eDR9FL5juD7hBgsulVouqLNS611vlu0lO1OnyM2/E=;
-  b=GCd3/s/AcfF1DVFOByJ6w7TxjioD9frFjPZf9r9YWRGr9oVBV3CRiu78
-   lJI7uISoaPFChRMZnZqzfszeB+k2YVHjcT+HQoneGJBgQbF5jk//AMaFv
-   MsxKGjv+pvYxSyyzuYyHa3iAbZ9ze3YR2FvAHEavoKeFHmSc7QR44NH2x
-   w=;
-X-IronPort-AV: E=Sophos;i="5.76,413,1592870400"; 
-   d="scan'208";a="54603096"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-17c49630.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 10 Sep 2020 13:07:24 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1e-17c49630.us-east-1.amazon.com (Postfix) with ESMTPS id 6407AA184F;
-        Thu, 10 Sep 2020 13:07:23 +0000 (UTC)
-Received: from EX13D21UWB004.ant.amazon.com (10.43.161.221) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 10 Sep 2020 13:07:22 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
- EX13D21UWB004.ant.amazon.com (10.43.161.221) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 10 Sep 2020 13:07:22 +0000
-Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
- by mail-relay.amazon.com (10.43.161.249) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Thu, 10 Sep 2020 13:07:22 +0000
-Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
-        id 1AAEF81C39; Thu, 10 Sep 2020 13:07:22 +0000 (UTC)
-From:   <sameehj@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>
-Subject: [PATCH V4 net-next 2/4] net: ena: ethtool: Add new device statistics
-Date:   Thu, 10 Sep 2020 13:07:11 +0000
-Message-ID: <20200910130713.26074-3-sameehj@amazon.com>
-X-Mailer: git-send-email 2.16.6
-In-Reply-To: <20200910130713.26074-1-sameehj@amazon.com>
-References: <20200910130713.26074-1-sameehj@amazon.com>
+        id S1730434AbgIJNL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 09:11:29 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25912 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730336AbgIJNKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 09:10:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599743395;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MNKGvmvinnY3ygZadj39mUBYZRk0cN1ua12KTMr1Qm4=;
+        b=ICoEeOU6zhPzevr3XePz93vRYqrx0UEj2VrJyRHRwTLtkA3V/jtQAzMj82WkikgXviPWbZ
+        FEXTk0IeZn4E16DqPuCVHJ40d5C2HbKcbc0oxrHvl1k//NOPCHBLx9beUtxf9KQLGRJ1PB
+        PTg31fNxE7RqZ/jh4YSTEl/a88KV25M=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-368-3sAON2CXOtyYEGBnWK6dLA-1; Thu, 10 Sep 2020 09:09:54 -0400
+X-MC-Unique: 3sAON2CXOtyYEGBnWK6dLA-1
+Received: by mail-wr1-f72.google.com with SMTP id l15so2238979wro.10
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 06:09:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=MNKGvmvinnY3ygZadj39mUBYZRk0cN1ua12KTMr1Qm4=;
+        b=D4mmB4mNqCQp5SJAzu3LbzbuLzQy2RQyRDy+iKGE2IWKmcU7hfc7SEBpA05lDidkap
+         ZFz/XyXsg/DF9vpKU24JOK8OlZf0qrze5hlnrDHytEXx+GDUFZwBS16On/dXK3slx0bA
+         ttQOM0TIvjQdVn5TkALRwW45OLT6bw/sQuQJ2Xm7vohCku3M1jKJ/GpuYuZn1GBzIUO6
+         bMqND+8ZpUaG0p94XSrTOFo5CZ+EM6LmBuWR4eh1P6eXCiJo2uI6cMSjJmH2GeEd5RKx
+         aFmRuQ2SoRuzDqs3Momhr2V9CejQ/wKnSEWgxPNI5iA6ADTZZI2gU2BroMk2QpkJBgPs
+         Ud7w==
+X-Gm-Message-State: AOAM530k/8jC2S9EHr+10H8HJkS0OcLH5ap0JQPUp9FPCX8wfuQ8/+yG
+        srSN6I79V+PiHbs8opgFguZiihA3viGsCql3uwRZKNTRVtTD92F956SDZw+g+cv4JHJ+jxdCexl
+        Ea1g47dqujhDwjN0c
+X-Received: by 2002:a1c:a3c4:: with SMTP id m187mr9008779wme.159.1599743392489;
+        Thu, 10 Sep 2020 06:09:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzeGJvI/vOlZVBbxmuOBdW+/TdDoLVcv3V05r85FhLyhgaAkFwkH5zCgsWs4V+P5qmpllYFig==
+X-Received: by 2002:a1c:a3c4:: with SMTP id m187mr9008744wme.159.1599743392035;
+        Thu, 10 Sep 2020 06:09:52 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id u66sm4149384wme.1.2020.09.10.06.09.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Sep 2020 06:09:51 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id A62001829D5; Thu, 10 Sep 2020 15:09:50 +0200 (CEST)
+Subject: [PATCH bpf-next v3 1/9] bpf: change logging calls from verbose() to
+ bpf_log() and use log pointer
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Thu, 10 Sep 2020 15:09:50 +0200
+Message-ID: <159974339060.129227.10384464703530448748.stgit@toke.dk>
+In-Reply-To: <159974338947.129227.5610774877906475683.stgit@toke.dk>
+References: <159974338947.129227.5610774877906475683.stgit@toke.dk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sameeh Jubran <sameehj@amazon.com>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-The new metrics provide granular visibility along multiple network
-dimensions and enable troubleshooting and remediation of issues caused
-by instances exceeding network performance allowances.
+In preparation for moving code around, change a bunch of references to
+env->log (and the verbose() logging helper) to use bpf_log() and a direct
+pointer to struct bpf_verifier_log. While we're touching the function
+signature, mark the 'prog' argument to bpf_check_type_match() as const.
 
-The new statistics can be queried using ethtool command.
+Also enhance the bpf_verifier_log_needed() check to handle NULL pointers
+for the log struct so we can re-use the code with logging disabled.
 
-Signed-off-by: Guy Tzalik <gtzalik@amazon.com>
-Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- drivers/net/ethernet/amazon/ena/ena_admin_defs.h |  37 +++++++-
- drivers/net/ethernet/amazon/ena/ena_com.c        |  19 +++-
- drivers/net/ethernet/amazon/ena/ena_com.h        |   9 ++
- drivers/net/ethernet/amazon/ena/ena_ethtool.c    | 106 ++++++++++++++++++-----
- drivers/net/ethernet/amazon/ena/ena_netdev.c     |  18 ++++
- drivers/net/ethernet/amazon/ena/ena_netdev.h     |   4 +
- 6 files changed, 170 insertions(+), 23 deletions(-)
+ include/linux/bpf.h          |    2 +-
+ include/linux/bpf_verifier.h |    5 +++-
+ kernel/bpf/btf.c             |    6 +++--
+ kernel/bpf/verifier.c        |   48 +++++++++++++++++++++---------------------
+ 4 files changed, 31 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-index b818a169c..86869baa7 100644
---- a/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_admin_defs.h
-@@ -117,6 +117,8 @@ enum ena_admin_completion_policy_type {
- enum ena_admin_get_stats_type {
- 	ENA_ADMIN_GET_STATS_TYPE_BASIC              = 0,
- 	ENA_ADMIN_GET_STATS_TYPE_EXTENDED           = 1,
-+	/* extra HW stats for specific network interface */
-+	ENA_ADMIN_GET_STATS_TYPE_ENI                = 2,
- };
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index c6d9f2c444f4..5ad4a935a24e 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1394,7 +1394,7 @@ int btf_check_func_arg_match(struct bpf_verifier_env *env, int subprog,
+ 			     struct bpf_reg_state *regs);
+ int btf_prepare_func_args(struct bpf_verifier_env *env, int subprog,
+ 			  struct bpf_reg_state *reg);
+-int btf_check_type_match(struct bpf_verifier_env *env, struct bpf_prog *prog,
++int btf_check_type_match(struct bpf_verifier_log *log, const struct bpf_prog *prog,
+ 			 struct btf *btf, const struct btf_type *t);
  
- enum ena_admin_get_stats_scope {
-@@ -410,10 +412,43 @@ struct ena_admin_basic_stats {
- 	u32 tx_drops_high;
- };
+ struct bpf_prog *bpf_prog_by_id(u32 id);
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index 53c7bd568c5d..20009e766805 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -347,8 +347,9 @@ static inline bool bpf_verifier_log_full(const struct bpf_verifier_log *log)
  
-+/* ENI Statistics Command. */
-+struct ena_admin_eni_stats {
-+	/* The number of packets shaped due to inbound aggregate BW
-+	 * allowance being exceeded
-+	 */
-+	u64 bw_in_allowance_exceeded;
-+
-+	/* The number of packets shaped due to outbound aggregate BW
-+	 * allowance being exceeded
-+	 */
-+	u64 bw_out_allowance_exceeded;
-+
-+	/* The number of packets shaped due to PPS allowance being exceeded */
-+	u64 pps_allowance_exceeded;
-+
-+	/* The number of packets shaped due to connection tracking
-+	 * allowance being exceeded and leading to failure in establishment
-+	 * of new connections
-+	 */
-+	u64 conntrack_allowance_exceeded;
-+
-+	/* The number of packets shaped due to linklocal packet rate
-+	 * allowance being exceeded
-+	 */
-+	u64 linklocal_allowance_exceeded;
-+};
-+
- struct ena_admin_acq_get_stats_resp {
- 	struct ena_admin_acq_common_desc acq_common_desc;
- 
--	struct ena_admin_basic_stats basic_stats;
-+	union {
-+		u64 raw[7];
-+
-+		struct ena_admin_basic_stats basic_stats;
-+
-+		struct ena_admin_eni_stats eni_stats;
-+	} u;
- };
- 
- struct ena_admin_get_set_feature_common_desc {
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.c b/drivers/net/ethernet/amazon/ena/ena_com.c
-index 435bf05a8..452e66b39 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.c
-@@ -2167,6 +2167,21 @@ static int ena_get_dev_stats(struct ena_com_dev *ena_dev,
- 	return ret;
- }
- 
-+int ena_com_get_eni_stats(struct ena_com_dev *ena_dev,
-+			  struct ena_admin_eni_stats *stats)
-+{
-+	struct ena_com_stats_ctx ctx;
-+	int ret;
-+
-+	memset(&ctx, 0x0, sizeof(ctx));
-+	ret = ena_get_dev_stats(ena_dev, &ctx, ENA_ADMIN_GET_STATS_TYPE_ENI);
-+	if (likely(ret == 0))
-+		memcpy(stats, &ctx.get_resp.u.eni_stats,
-+		       sizeof(ctx.get_resp.u.eni_stats));
-+
-+	return ret;
-+}
-+
- int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
- 				struct ena_admin_basic_stats *stats)
+ static inline bool bpf_verifier_log_needed(const struct bpf_verifier_log *log)
  {
-@@ -2176,8 +2191,8 @@ int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
- 	memset(&ctx, 0x0, sizeof(ctx));
- 	ret = ena_get_dev_stats(ena_dev, &ctx, ENA_ADMIN_GET_STATS_TYPE_BASIC);
- 	if (likely(ret == 0))
--		memcpy(stats, &ctx.get_resp.basic_stats,
--		       sizeof(ctx.get_resp.basic_stats));
-+		memcpy(stats, &ctx.get_resp.u.basic_stats,
-+		       sizeof(ctx.get_resp.u.basic_stats));
- 
- 	return ret;
- }
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
-index 4287d47b2..e4aafeda0 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.h
-@@ -616,6 +616,15 @@ int ena_com_get_dev_attr_feat(struct ena_com_dev *ena_dev,
- int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
- 				struct ena_admin_basic_stats *stats);
- 
-+/* ena_com_get_eni_stats - Get extended network interface statistics
-+ * @ena_dev: ENA communication layer struct
-+ * @stats: stats return value
-+ *
-+ * @return: 0 on Success and negative value otherwise.
-+ */
-+int ena_com_get_eni_stats(struct ena_com_dev *ena_dev,
-+			  struct ena_admin_eni_stats *stats);
-+
- /* ena_com_set_dev_mtu - Configure the device mtu.
-  * @ena_dev: ENA communication layer struct
-  * @mtu: mtu value
-diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-index 291d169dd..07e9f3df0 100644
---- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-@@ -49,6 +49,11 @@ struct ena_stats {
- 	.stat_offset = offsetof(struct ena_stats_##stat_type, stat) / sizeof(u64) \
+-	return (log->level && log->ubuf && !bpf_verifier_log_full(log)) ||
+-		log->level == BPF_LOG_KERNEL;
++	return log &&
++		((log->level && log->ubuf && !bpf_verifier_log_full(log)) ||
++		 log->level == BPF_LOG_KERNEL);
  }
  
-+#define ENA_STAT_HW_ENTRY(stat, stat_type) { \
-+	.name = #stat, \
-+	.stat_offset = offsetof(struct ena_admin_##stat_type, stat) / sizeof(u64) \
-+}
-+
- #define ENA_STAT_RX_ENTRY(stat) \
- 	ENA_STAT_ENTRY(stat, rx)
- 
-@@ -58,6 +63,9 @@ struct ena_stats {
- #define ENA_STAT_GLOBAL_ENTRY(stat) \
- 	ENA_STAT_ENTRY(stat, dev)
- 
-+#define ENA_STAT_ENI_ENTRY(stat) \
-+	ENA_STAT_HW_ENTRY(stat, eni_stats)
-+
- static const struct ena_stats ena_stats_global_strings[] = {
- 	ENA_STAT_GLOBAL_ENTRY(tx_timeout),
- 	ENA_STAT_GLOBAL_ENTRY(suspend),
-@@ -68,6 +76,14 @@ static const struct ena_stats ena_stats_global_strings[] = {
- 	ENA_STAT_GLOBAL_ENTRY(admin_q_pause),
- };
- 
-+static const struct ena_stats ena_stats_eni_strings[] = {
-+	ENA_STAT_ENI_ENTRY(bw_in_allowance_exceeded),
-+	ENA_STAT_ENI_ENTRY(bw_out_allowance_exceeded),
-+	ENA_STAT_ENI_ENTRY(pps_allowance_exceeded),
-+	ENA_STAT_ENI_ENTRY(conntrack_allowance_exceeded),
-+	ENA_STAT_ENI_ENTRY(linklocal_allowance_exceeded),
-+};
-+
- static const struct ena_stats ena_stats_tx_strings[] = {
- 	ENA_STAT_TX_ENTRY(cnt),
- 	ENA_STAT_TX_ENTRY(bytes),
-@@ -110,10 +126,12 @@ static const struct ena_stats ena_stats_ena_com_strings[] = {
- 	ENA_STAT_ENA_COM_ENTRY(no_completion),
- };
- 
--#define ENA_STATS_ARRAY_GLOBAL	ARRAY_SIZE(ena_stats_global_strings)
--#define ENA_STATS_ARRAY_TX	ARRAY_SIZE(ena_stats_tx_strings)
--#define ENA_STATS_ARRAY_RX	ARRAY_SIZE(ena_stats_rx_strings)
--#define ENA_STATS_ARRAY_ENA_COM	ARRAY_SIZE(ena_stats_ena_com_strings)
-+#define ENA_STATS_ARRAY_GLOBAL		ARRAY_SIZE(ena_stats_global_strings)
-+#define ENA_STATS_ARRAY_TX		ARRAY_SIZE(ena_stats_tx_strings)
-+#define ENA_STATS_ARRAY_RX		ARRAY_SIZE(ena_stats_rx_strings)
-+#define ENA_STATS_ARRAY_ENA_COM		ARRAY_SIZE(ena_stats_ena_com_strings)
-+#define ENA_STATS_ARRAY_ENI(adapter)	\
-+	(ARRAY_SIZE(ena_stats_eni_strings) * (adapter)->eni_stats_supported)
- 
- static void ena_safe_update_stat(u64 *src, u64 *dst,
- 				 struct u64_stats_sync *syncp)
-@@ -176,11 +194,10 @@ static void ena_dev_admin_queue_stats(struct ena_adapter *adapter, u64 **data)
- 	}
+ #define BPF_MAX_SUBPROGS 256
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index f9ac6935ab3c..2ace56c99c36 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -4401,7 +4401,7 @@ static int btf_check_func_type_match(struct bpf_verifier_log *log,
  }
  
--static void ena_get_ethtool_stats(struct net_device *netdev,
--				  struct ethtool_stats *stats,
--				  u64 *data)
-+static void ena_get_stats(struct ena_adapter *adapter,
-+			  u64 *data,
-+			  bool eni_stats_needed)
+ /* Compare BTFs of given program with BTF of target program */
+-int btf_check_type_match(struct bpf_verifier_env *env, struct bpf_prog *prog,
++int btf_check_type_match(struct bpf_verifier_log *log, const struct bpf_prog *prog,
+ 			 struct btf *btf2, const struct btf_type *t2)
  {
--	struct ena_adapter *adapter = netdev_priv(netdev);
- 	const struct ena_stats *ena_stats;
- 	u64 *ptr;
- 	int i;
-@@ -193,10 +210,42 @@ static void ena_get_ethtool_stats(struct net_device *netdev,
- 		ena_safe_update_stat(ptr, data++, &adapter->syncp);
+ 	struct btf *btf1 = prog->aux->btf;
+@@ -4409,7 +4409,7 @@ int btf_check_type_match(struct bpf_verifier_env *env, struct bpf_prog *prog,
+ 	u32 btf_id = 0;
+ 
+ 	if (!prog->aux->func_info) {
+-		bpf_log(&env->log, "Program extension requires BTF\n");
++		bpf_log(log, "Program extension requires BTF\n");
+ 		return -EINVAL;
  	}
  
-+	if (eni_stats_needed) {
-+		ena_update_hw_stats(adapter);
-+		for (i = 0; i < ENA_STATS_ARRAY_ENI(adapter); i++) {
-+			ena_stats = &ena_stats_eni_strings[i];
-+
-+			ptr = (u64 *)&adapter->eni_stats +
-+				ena_stats->stat_offset;
-+
-+			ena_safe_update_stat(ptr, data++, &adapter->syncp);
-+		}
-+	}
-+
- 	ena_queue_stats(adapter, &data);
- 	ena_dev_admin_queue_stats(adapter, &data);
+@@ -4421,7 +4421,7 @@ int btf_check_type_match(struct bpf_verifier_env *env, struct bpf_prog *prog,
+ 	if (!t1 || !btf_type_is_func(t1))
+ 		return -EFAULT;
+ 
+-	return btf_check_func_type_match(&env->log, btf1, t1, btf2, t2);
++	return btf_check_func_type_match(log, btf1, t1, btf2, t2);
  }
  
-+static void ena_get_ethtool_stats(struct net_device *netdev,
-+				  struct ethtool_stats *stats,
-+				  u64 *data)
-+{
-+	struct ena_adapter *adapter = netdev_priv(netdev);
-+
-+	ena_get_stats(adapter, data, adapter->eni_stats_supported);
-+}
-+
-+static int ena_get_sw_stats_count(struct ena_adapter *adapter)
-+{
-+	return adapter->num_io_queues * (ENA_STATS_ARRAY_TX + ENA_STATS_ARRAY_RX)
-+		+ ENA_STATS_ARRAY_GLOBAL + ENA_STATS_ARRAY_ENA_COM;
-+}
-+
-+static int ena_get_hw_stats_count(struct ena_adapter *adapter)
-+{
-+	return ENA_STATS_ARRAY_ENI(adapter);
-+}
-+
- int ena_get_sset_count(struct net_device *netdev, int sset)
- {
- 	struct ena_adapter *adapter = netdev_priv(netdev);
-@@ -204,8 +253,7 @@ int ena_get_sset_count(struct net_device *netdev, int sset)
- 	if (sset != ETH_SS_STATS)
- 		return -EOPNOTSUPP;
+ /* Compare BTF of a function with given bpf_reg_state.
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 814bc6c1ad16..0be7a187fb7f 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -11043,6 +11043,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 	struct bpf_prog *prog = env->prog;
+ 	bool prog_extension = prog->type == BPF_PROG_TYPE_EXT;
+ 	struct bpf_prog *tgt_prog = prog->aux->linked_prog;
++	struct bpf_verifier_log *log = &env->log;
+ 	u32 btf_id = prog->aux->attach_btf_id;
+ 	const char prefix[] = "btf_trace_";
+ 	struct btf_func_model fmodel;
+@@ -11070,23 +11071,23 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 		return 0;
  
--	return adapter->num_io_queues * (ENA_STATS_ARRAY_TX + ENA_STATS_ARRAY_RX)
--		+ ENA_STATS_ARRAY_GLOBAL + ENA_STATS_ARRAY_ENA_COM;
-+	return ena_get_sw_stats_count(adapter) + ena_get_hw_stats_count(adapter);
- }
- 
- static void ena_queue_strings(struct ena_adapter *adapter, u8 **data)
-@@ -247,25 +295,43 @@ static void ena_com_dev_strings(u8 **data)
+ 	if (!btf_id) {
+-		verbose(env, "Tracing programs must provide btf_id\n");
++		bpf_log(log, "Tracing programs must provide btf_id\n");
+ 		return -EINVAL;
  	}
- }
- 
--static void ena_get_strings(struct net_device *netdev, u32 sset, u8 *data)
-+static void ena_get_strings(struct ena_adapter *adapter,
-+			    u8 *data,
-+			    bool eni_stats_needed)
- {
--	struct ena_adapter *adapter = netdev_priv(netdev);
- 	const struct ena_stats *ena_stats;
- 	int i;
- 
--	if (sset != ETH_SS_STATS)
--		return;
--
- 	for (i = 0; i < ENA_STATS_ARRAY_GLOBAL; i++) {
- 		ena_stats = &ena_stats_global_strings[i];
- 		memcpy(data, ena_stats->name, ETH_GSTRING_LEN);
- 		data += ETH_GSTRING_LEN;
+ 	btf = bpf_prog_get_target_btf(prog);
+ 	if (!btf) {
+-		verbose(env,
++		bpf_log(log,
+ 			"FENTRY/FEXIT program can only be attached to another program annotated with BTF\n");
+ 		return -EINVAL;
  	}
- 
-+	if (eni_stats_needed) {
-+		for (i = 0; i < ENA_STATS_ARRAY_ENI(adapter); i++) {
-+			ena_stats = &ena_stats_eni_strings[i];
-+			memcpy(data, ena_stats->name, ETH_GSTRING_LEN);
-+			data += ETH_GSTRING_LEN;
-+		}
-+	}
-+
- 	ena_queue_strings(adapter, &data);
- 	ena_com_dev_strings(&data);
- }
- 
-+static void ena_get_ethtool_strings(struct net_device *netdev,
-+				    u32 sset,
-+				    u8 *data)
-+{
-+	struct ena_adapter *adapter = netdev_priv(netdev);
-+
-+	if (sset != ETH_SS_STATS)
-+		return;
-+
-+	ena_get_strings(adapter, data, adapter->eni_stats_supported);
-+}
-+
- static int ena_get_link_ksettings(struct net_device *netdev,
- 				  struct ethtool_link_ksettings *link_ksettings)
- {
-@@ -845,7 +911,7 @@ static const struct ethtool_ops ena_ethtool_ops = {
- 	.get_ringparam		= ena_get_ringparam,
- 	.set_ringparam		= ena_set_ringparam,
- 	.get_sset_count         = ena_get_sset_count,
--	.get_strings		= ena_get_strings,
-+	.get_strings		= ena_get_ethtool_strings,
- 	.get_ethtool_stats      = ena_get_ethtool_stats,
- 	.get_rxnfc		= ena_get_rxnfc,
- 	.set_rxnfc		= ena_set_rxnfc,
-@@ -873,7 +939,7 @@ static void ena_dump_stats_ex(struct ena_adapter *adapter, u8 *buf)
- 	int strings_num;
- 	int i, rc;
- 
--	strings_num = ena_get_sset_count(netdev, ETH_SS_STATS);
-+	strings_num = ena_get_sw_stats_count(adapter);
- 	if (strings_num <= 0) {
- 		netif_err(adapter, drv, netdev, "Can't get stats num\n");
- 		return;
-@@ -893,13 +959,13 @@ static void ena_dump_stats_ex(struct ena_adapter *adapter, u8 *buf)
- 				GFP_ATOMIC);
- 	if (!data_buf) {
- 		netif_err(adapter, drv, netdev,
--			  "failed to allocate data buf\n");
-+			  "Failed to allocate data buf\n");
- 		devm_kfree(&adapter->pdev->dev, strings_buf);
- 		return;
+ 	t = btf_type_by_id(btf, btf_id);
+ 	if (!t) {
+-		verbose(env, "attach_btf_id %u is invalid\n", btf_id);
++		bpf_log(log, "attach_btf_id %u is invalid\n", btf_id);
+ 		return -EINVAL;
  	}
+ 	tname = btf_name_by_offset(btf, t->name_off);
+ 	if (!tname) {
+-		verbose(env, "attach_btf_id %u doesn't have a name\n", btf_id);
++		bpf_log(log, "attach_btf_id %u doesn't have a name\n", btf_id);
+ 		return -EINVAL;
+ 	}
+ 	if (tgt_prog) {
+@@ -11098,18 +11099,18 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 				break;
+ 			}
+ 		if (subprog == -1) {
+-			verbose(env, "Subprog %s doesn't exist\n", tname);
++			bpf_log(log, "Subprog %s doesn't exist\n", tname);
+ 			return -EINVAL;
+ 		}
+ 		conservative = aux->func_info_aux[subprog].unreliable;
+ 		if (prog_extension) {
+ 			if (conservative) {
+-				verbose(env,
++				bpf_log(log,
+ 					"Cannot replace static functions\n");
+ 				return -EINVAL;
+ 			}
+ 			if (!prog->jit_requested) {
+-				verbose(env,
++				bpf_log(log,
+ 					"Extension programs should be JITed\n");
+ 				return -EINVAL;
+ 			}
+@@ -11117,7 +11118,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 			prog->expected_attach_type = tgt_prog->expected_attach_type;
+ 		}
+ 		if (!tgt_prog->jited) {
+-			verbose(env, "Can attach to only JITed progs\n");
++			bpf_log(log, "Can attach to only JITed progs\n");
+ 			return -EINVAL;
+ 		}
+ 		if (tgt_prog->type == prog->type) {
+@@ -11125,7 +11126,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 			 * Cannot attach program extension to another extension.
+ 			 * It's ok to attach fentry/fexit to extension program.
+ 			 */
+-			verbose(env, "Cannot recursively attach\n");
++			bpf_log(log, "Cannot recursively attach\n");
+ 			return -EINVAL;
+ 		}
+ 		if (tgt_prog->type == BPF_PROG_TYPE_TRACING &&
+@@ -11147,13 +11148,13 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 			 * reasonable stack size. Hence extending fentry is not
+ 			 * allowed.
+ 			 */
+-			verbose(env, "Cannot extend fentry/fexit\n");
++			bpf_log(log, "Cannot extend fentry/fexit\n");
+ 			return -EINVAL;
+ 		}
+ 		key = ((u64)aux->id) << 32 | btf_id;
+ 	} else {
+ 		if (prog_extension) {
+-			verbose(env, "Cannot replace kernel functions\n");
++			bpf_log(log, "Cannot replace kernel functions\n");
+ 			return -EINVAL;
+ 		}
+ 		key = btf_id;
+@@ -11162,17 +11163,17 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 	switch (prog->expected_attach_type) {
+ 	case BPF_TRACE_RAW_TP:
+ 		if (tgt_prog) {
+-			verbose(env,
++			bpf_log(log,
+ 				"Only FENTRY/FEXIT progs are attachable to another BPF prog\n");
+ 			return -EINVAL;
+ 		}
+ 		if (!btf_type_is_typedef(t)) {
+-			verbose(env, "attach_btf_id %u is not a typedef\n",
++			bpf_log(log, "attach_btf_id %u is not a typedef\n",
+ 				btf_id);
+ 			return -EINVAL;
+ 		}
+ 		if (strncmp(prefix, tname, sizeof(prefix) - 1)) {
+-			verbose(env, "attach_btf_id %u points to wrong type name %s\n",
++			bpf_log(log, "attach_btf_id %u points to wrong type name %s\n",
+ 				btf_id, tname);
+ 			return -EINVAL;
+ 		}
+@@ -11195,7 +11196,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 		return 0;
+ 	case BPF_TRACE_ITER:
+ 		if (!btf_type_is_func(t)) {
+-			verbose(env, "attach_btf_id %u is not a function\n",
++			bpf_log(log, "attach_btf_id %u is not a function\n",
+ 				btf_id);
+ 			return -EINVAL;
+ 		}
+@@ -11206,8 +11207,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 		prog->aux->attach_func_proto = t;
+ 		if (!bpf_iter_prog_supported(prog))
+ 			return -EINVAL;
+-		ret = btf_distill_func_proto(&env->log, btf, t,
+-					     tname, &fmodel);
++		ret = btf_distill_func_proto(log, btf, t, tname, &fmodel);
+ 		return ret;
+ 	default:
+ 		if (!prog_extension)
+@@ -11219,18 +11219,18 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 	case BPF_TRACE_FEXIT:
+ 		prog->aux->attach_func_name = tname;
+ 		if (prog->type == BPF_PROG_TYPE_LSM) {
+-			ret = bpf_lsm_verify_prog(&env->log, prog);
++			ret = bpf_lsm_verify_prog(log, prog);
+ 			if (ret < 0)
+ 				return ret;
+ 		}
  
--	ena_get_strings(netdev, ETH_SS_STATS, strings_buf);
--	ena_get_ethtool_stats(netdev, NULL, data_buf);
-+	ena_get_strings(adapter, strings_buf, false);
-+	ena_get_stats(adapter, data_buf, false);
- 
- 	/* If there is a buffer, dump stats, otherwise print them to dmesg */
- 	if (buf)
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index a3a8edf9a..08474db75 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3178,6 +3178,19 @@ err:
- 	ena_com_delete_debug_area(adapter->ena_dev);
- }
- 
-+int ena_update_hw_stats(struct ena_adapter *adapter)
-+{
-+	int rc = 0;
-+
-+	rc = ena_com_get_eni_stats(adapter->ena_dev, &adapter->eni_stats);
-+	if (rc) {
-+		dev_info_once(&adapter->pdev->dev, "Failed to get ENI stats\n");
-+		return rc;
-+	}
-+
-+	return 0;
-+}
-+
- static void ena_get_stats64(struct net_device *netdev,
- 			    struct rtnl_link_stats64 *stats)
- {
-@@ -4296,6 +4309,11 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	ena_config_debug_area(adapter);
- 
-+	if (!ena_update_hw_stats(adapter))
-+		adapter->eni_stats_supported = true;
-+	else
-+		adapter->eni_stats_supported = false;
-+
- 	memcpy(adapter->netdev->perm_addr, adapter->mac_addr, netdev->addr_len);
- 
- 	netif_carrier_off(netdev);
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.h b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-index 0c8504006..4c95a4d93 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.h
-@@ -405,6 +405,8 @@ struct ena_adapter {
- 
- 	struct u64_stats_sync syncp;
- 	struct ena_stats_dev dev_stats;
-+	struct ena_admin_eni_stats eni_stats;
-+	bool eni_stats_supported;
- 
- 	/* last queue index that was checked for uncompleted tx packets */
- 	u32 last_monitored_tx_qid;
-@@ -422,6 +424,8 @@ void ena_dump_stats_to_dmesg(struct ena_adapter *adapter);
- 
- void ena_dump_stats_to_buf(struct ena_adapter *adapter, u8 *buf);
- 
-+int ena_update_hw_stats(struct ena_adapter *adapter);
-+
- int ena_update_queue_sizes(struct ena_adapter *adapter,
- 			   u32 new_tx_size,
- 			   u32 new_rx_size);
--- 
-2.16.6
+ 		if (!btf_type_is_func(t)) {
+-			verbose(env, "attach_btf_id %u is not a function\n",
++			bpf_log(log, "attach_btf_id %u is not a function\n",
+ 				btf_id);
+ 			return -EINVAL;
+ 		}
+ 		if (prog_extension &&
+-		    btf_check_type_match(env, prog, btf, t))
++		    btf_check_type_match(log, prog, btf, t))
+ 			return -EINVAL;
+ 		t = btf_type_by_id(btf, t->type);
+ 		if (!btf_type_is_func_proto(t))
+@@ -11249,7 +11249,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 			prog->aux->attach_func_proto = NULL;
+ 			t = NULL;
+ 		}
+-		ret = btf_distill_func_proto(&env->log, btf, t,
++		ret = btf_distill_func_proto(log, btf, t,
+ 					     tname, &tr->func.model);
+ 		if (ret < 0)
+ 			goto out;
+@@ -11261,7 +11261,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 		} else {
+ 			addr = kallsyms_lookup_name(tname);
+ 			if (!addr) {
+-				verbose(env,
++				bpf_log(log,
+ 					"The address of function %s cannot be found\n",
+ 					tname);
+ 				ret = -ENOENT;
+@@ -11291,12 +11291,12 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 				break;
+ 			}
+ 			if (ret)
+-				verbose(env, "%s is not sleepable\n",
++				bpf_log(log, "%s is not sleepable\n",
+ 					prog->aux->attach_func_name);
+ 		} else if (prog->expected_attach_type == BPF_MODIFY_RETURN) {
+ 			ret = check_attach_modify_return(prog, addr);
+ 			if (ret)
+-				verbose(env, "%s() is not modifiable\n",
++				bpf_log(log, "%s() is not modifiable\n",
+ 					prog->aux->attach_func_name);
+ 		}
+ 		if (ret)
 
