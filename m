@@ -2,57 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C055E264EBC
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0D88264ECB
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:26:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726805AbgIJTYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 15:24:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46608 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727953AbgIJTXx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 15:23:53 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8F4C8206DB;
-        Thu, 10 Sep 2020 19:23:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599765832;
-        bh=96zT4Xmg94ZHbDBP/nK1S/L06ICfJP5iCTTP4Fdg9NY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QOzOG0T38ZlqG8vZLvpTuUtqO8QjBZE7P/czMMyMlzO/YT88noqg/F5blCoMcBYwc
-         t1qPsEUPIrEeZG4yaoV3TOCvehfvOGXpfWnprhSQsd3iSSZVNAdjQOW/MUV3mkaqPq
-         TqyUxO9bsSAc79nH2Xk8FEJOnOoNmvIDMZNE+8jc=
-Date:   Thu, 10 Sep 2020 12:23:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Chris Healy <cphealy@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH v3 net-next 7/9] net: dsa: mv88e6xxx: Add devlink
- regions
-Message-ID: <20200910122350.2c49ce88@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200909235827.3335881-8-andrew@lunn.ch>
-References: <20200909235827.3335881-1-andrew@lunn.ch>
-        <20200909235827.3335881-8-andrew@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1726410AbgIJT00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 15:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726899AbgIJT0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:26:18 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0FCC061756;
+        Thu, 10 Sep 2020 12:26:08 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B092F12A2A784;
+        Thu, 10 Sep 2020 12:09:20 -0700 (PDT)
+Date:   Thu, 10 Sep 2020 12:26:06 -0700 (PDT)
+Message-Id: <20200910.122606.1088855592206611092.davem@davemloft.net>
+To:     paul.davey@alliedtelesis.co.nz
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 0/3] Allow more than 255 IPv4 multicast
+ interfaces
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200907220408.32385-1-paul.davey@alliedtelesis.co.nz>
+References: <20200907220408.32385-1-paul.davey@alliedtelesis.co.nz>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 10 Sep 2020 12:09:20 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Sep 2020 01:58:25 +0200 Andrew Lunn wrote:
-> +	table = kmalloc_array(mv88e6xxx_num_databases(chip),
-> +			      sizeof(struct mv88e6xxx_devlink_atu_entry),
-> +			      GFP_KERNEL);
-> +	if (!table)
-> +		return -ENOMEM;
-> +
-> +	memset(table, 0, mv88e6xxx_num_databases(chip) *
-> +	       sizeof(struct mv88e6xxx_devlink_atu_entry));
+From: Paul Davey <paul.davey@alliedtelesis.co.nz>
+Date: Tue,  8 Sep 2020 10:04:05 +1200
 
-kcalloc()
+> Currently it is not possible to use more than 255 multicast interfaces
+> for IPv4 due to the format of the igmpmsg header which only has 8 bits
+> available for the VIF ID.  There is space available in the igmpmsg
+> header to store the full VIF ID in the form of an unused byte following
+> the VIF ID field.  There is also enough space for the full VIF ID in
+> the Netlink cache notifications, however the value is currently taken
+> directly from the igmpmsg header and has thus already been truncated.
+> 
+> Adding the high byte of the VIF ID into the unused3 byte of igmpmsg
+> allows use of more than 255 IPv4 multicast interfaces. The full VIF ID
+> is  also available in the Netlink notification by assembling it from
+> both bytes from the igmpmsg.
+> 
+> Additionally this reveals a deficiency in the Netlink cache report
+> notifications, they lack any means for differentiating cache reports
+> relating to different multicast routing tables.  This is easily
+> resolved by adding the multicast route table ID to the cache reports.
+> 
+> changes in v2:
+>  - Added high byte of VIF ID to igmpmsg struct replacing unused3
+>    member.
+>  - Assemble VIF ID in Netlink notification from both bytes in igmpmsg
+>    header.
+
+Series applied, thank you.
