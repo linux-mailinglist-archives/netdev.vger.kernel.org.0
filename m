@@ -2,110 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BA142642A9
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 11:45:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DF2F2642AB
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 11:45:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730277AbgIJJpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 05:45:03 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:29958 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728971AbgIJJo4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 05:44:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599731094;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aCy+XOEaRsEQY0LQO/vOTZfwSOMrqiVn05uKYSgtpvo=;
-        b=iHJcvySfzhYsCXoPn/5141QU/+UV4kn88ljXmM9vHfi588WfvjY1ZVcsiBc8u64zYvDCsv
-        rSt+O4NMON5iRmrHNbSGZMSxJLeinSOVI1Snxvp2vD7TQ+FXeEE87ssx9TgUEImaAgNojh
-        j46LyWkBUCQY1zSZ7eoPu/82UfeCkfo=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-294-j0sJAw7cPT2DbuKmdOr_Bg-1; Thu, 10 Sep 2020 05:44:53 -0400
-X-MC-Unique: j0sJAw7cPT2DbuKmdOr_Bg-1
-Received: by mail-wr1-f69.google.com with SMTP id x15so2034637wrm.7
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 02:44:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=aCy+XOEaRsEQY0LQO/vOTZfwSOMrqiVn05uKYSgtpvo=;
-        b=e/ag6jCmAYF5voQ+F8RuQldadsG6LqfnI8xlI+F5k0RVL0beu6izyuBkQXs92/B+rr
-         Djg68MxCZbLMNY2lS8UZT0A5rzEgND18G4DbqfYuZG54bH819gevUpHvKVr/SIRBf2U/
-         /tgqXAErOM1wKEX9zhz90lYV6hoytWs1OjwCvDO5MLhwcAouZFjXjr4J3PU7Ycs5p5IK
-         rxtQz4AJxq0dwDcVMreqTmgVX6vR+CXoaNRen2I2tAHFJnOWU2fwiZa0DKW++1jTCYwt
-         cvaErp2tU/EBzNev+tvdD9/Pxe4lUiavkxJUsJLWDBVu285W0uRsE2U5ZlJ8kJIOdYdD
-         C1oA==
-X-Gm-Message-State: AOAM532P+1ISv6SccMD5HsNsyyhjgPsRnuWl3XTBzATwHRvZrRgUBWcl
-        +LhgyauVUnnxuFt/4cTt2z3fC1sN9TaWCFhIPwUsIahVh8GM1TLx1wZ0RFhAx5rdT01L8P2hiI+
-        wi54YZts+vF2TZ5Ho
-X-Received: by 2002:adf:c44d:: with SMTP id a13mr7883862wrg.11.1599731091872;
-        Thu, 10 Sep 2020 02:44:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwfCeAoXe3tOPQILTBWWxMnePItSYSr/aajG3+6ac5qGnErTf+SK51jURDCq9LkJoZlD7FQcA==
-X-Received: by 2002:adf:c44d:: with SMTP id a13mr7883838wrg.11.1599731091629;
-        Thu, 10 Sep 2020 02:44:51 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id n21sm2870497wmi.21.2020.09.10.02.44.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 02:44:50 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7D2D11829D4; Thu, 10 Sep 2020 11:44:50 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        David Ahern <dsahern@gmail.com>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: Re: [PATCHv11 bpf-next 2/5] xdp: add a new helper for dev map
- multicast support
-In-Reply-To: <CAADnVQ+CooPL7Zu4Y-AJZajb47QwNZJU_rH7A3GSbV8JgA4AcQ@mail.gmail.com>
-References: <20200903102701.3913258-1-liuhangbin@gmail.com>
- <20200907082724.1721685-1-liuhangbin@gmail.com>
- <20200907082724.1721685-3-liuhangbin@gmail.com>
- <20200909215206.bg62lvbvkmdc5phf@ast-mbp.dhcp.thefacebook.com>
- <20200910023506.GT2531@dhcp-12-153.nay.redhat.com>
- <a1bcd5e8-89dd-0eca-f779-ac345b24661e@gmail.com>
- <CAADnVQ+CooPL7Zu4Y-AJZajb47QwNZJU_rH7A3GSbV8JgA4AcQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 10 Sep 2020 11:44:50 +0200
-Message-ID: <87o8mearu5.fsf@toke.dk>
+        id S1730294AbgIJJpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 05:45:12 -0400
+Received: from smtp.h3c.com ([60.191.123.56]:46144 "EHLO h3cspam01-ex.h3c.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730261AbgIJJpE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 05:45:04 -0400
+Received: from DAG2EX08-IDC.srv.huawei-3com.com ([10.8.0.71])
+        by h3cspam01-ex.h3c.com with ESMTPS id 08A9irMK054157
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 10 Sep 2020 17:44:53 +0800 (GMT-8)
+        (envelope-from tian.xianting@h3c.com)
+Received: from DAG2EX03-BASE.srv.huawei-3com.com (10.8.0.66) by
+ DAG2EX08-IDC.srv.huawei-3com.com (10.8.0.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 10 Sep 2020 17:44:56 +0800
+Received: from DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074])
+ by DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074%7]) with
+ mapi id 15.01.1713.004; Thu, 10 Sep 2020 17:44:56 +0800
+From:   Tianxianting <tian.xianting@h3c.com>
+To:     Jens Axboe <axboe@kernel.dk>, "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>, "andriin@fb.com" <andriin@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@chromium.org" <kpsingh@chromium.org>
+CC:     "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: RE: [PATCH] block: remove redundant empty check of mq_list
+Thread-Topic: [PATCH] block: remove redundant empty check of mq_list
+Thread-Index: AQHWhnZLNDw9Ap0NoUKJovJuaKCnsqlf1fuAgAHGWJA=
+Date:   Thu, 10 Sep 2020 09:44:56 +0000
+Message-ID: <d0b4d3e984d2499d9c2f28834a21e9ae@h3c.com>
+References: <20200909064814.5704-1-tian.xianting@h3c.com>
+ <466b8c40-9d53-8a40-6c5b-f76db2974c04@kernel.dk>
+In-Reply-To: <466b8c40-9d53-8a40-6c5b-f76db2974c04@kernel.dk>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.99.141.128]
+x-sender-location: DAG2
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
+X-DNSRBL: 
+X-MAIL: h3cspam01-ex.h3c.com 08A9irMK054157
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-
-> On Wed, Sep 9, 2020 at 8:30 PM David Ahern <dsahern@gmail.com> wrote:
->> >
->> > I think the packets modification (edit dst mac, add vlan tag, etc) should be
->> > done on egress, which rely on David's XDP egress support.
->>
->> agreed. The DEVMAP used for redirect can have programs attached that
->> update the packet headers - assuming you want to update them.
->
-> Then you folks have to submit them as one set.
-> As-is the programmer cannot achieve correct behavior.
-
-The ability to attach a program to devmaps is already there. See:
-
-fbee97feed9b ("bpf: Add support to attach bpf program to a devmap entry")
-
-But now that you mention it, it does appear that this series is skipping
-the hook that will actually run such a program. Didn't realise that was
-in the caller of bq_enqueue() and not inside bq_enqueue() itself...
-
-Hangbin, you'll need to add the hook for dev_map_run_prog() before
-bq_enqueue(); see the existing dev_map_enqueue() function.
-
--Toke
-
+SGkgSmVucywNClRoYW5rcyBmb3IgeW91ciBmZWVkYmFjaywNClllcywgYmxrX2ZsdXNoX3BsdWdf
+bGlzdCgpIGlzIG9ubHkgY2FsbGVyIG9mIGJsa19tcV9mbHVzaF9wbHVnX2xpc3QoKS4NClNvIEkg
+Y2hlY2tlZCB0aGUgY2FsbGVycyBvZiBibGtfZmx1c2hfcGx1Z19saXN0KCksIGZvdW5kIGJlbG93
+IGNvZGUgcGF0aCB3aWxsIGNhbGwgYmxrX2ZsdXNoX3BsdWdfbGlzdCgpOg0KCWlvX3NjaGVkdWxl
+X3ByZXBhcmUvc2NoZWRfc3VibWl0X3dvcmstPmJsa19zY2hlZHVsZV9mbHVzaF9wbHVnDQoJd3Jp
+dGViYWNrX3NiX2lub2Rlcy0+YmxrX2ZsdXNoX3BsdWcNCglibGtfZmluaXNoX3BsdWcNCglkbV9z
+dWJtaXRfYmlvL19fc3VibWl0X2Jpb19ub2FjY3RfbXEvX19zdWJtaXRfYmlvLT5ibGtfbXFfc3Vi
+bWl0X2Jpbw0KCWJsa19wb2xsDQoNClNvIEkgdGhpbmsgdGhlcmUgYXJlIHN0aWxsIG1hbnkgY2hh
+bmNlcyB0byBkbyB0aGUgcmVkdW5kYW50IGp1ZGdlPw0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2Ut
+LS0tLQ0KRnJvbTogSmVucyBBeGJvZSBbbWFpbHRvOmF4Ym9lQGtlcm5lbC5ka10gDQpTZW50OiBX
+ZWRuZXNkYXksIFNlcHRlbWJlciAwOSwgMjAyMCAxMDoyMSBQTQ0KVG86IHRpYW54aWFudGluZyAo
+UkQpIDx0aWFuLnhpYW50aW5nQGgzYy5jb20+OyBhc3RAa2VybmVsLm9yZzsgZGFuaWVsQGlvZ2Vh
+cmJveC5uZXQ7IGthZmFpQGZiLmNvbTsgc29uZ2xpdWJyYXZpbmdAZmIuY29tOyB5aHNAZmIuY29t
+OyBhbmRyaWluQGZiLmNvbTsgam9obi5mYXN0YWJlbmRAZ21haWwuY29tOyBrcHNpbmdoQGNocm9t
+aXVtLm9yZw0KQ2M6IGxpbnV4LWJsb2NrQHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZn
+ZXIua2VybmVsLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgYnBmQHZnZXIua2VybmVsLm9y
+Zw0KU3ViamVjdDogUmU6IFtQQVRDSF0gYmxvY2s6IHJlbW92ZSByZWR1bmRhbnQgZW1wdHkgY2hl
+Y2sgb2YgbXFfbGlzdA0KDQpPbiA5LzkvMjAgMTI6NDggQU0sIFhpYW50aW5nIFRpYW4gd3JvdGU6
+DQo+IGJsa19tcV9mbHVzaF9wbHVnX2xpc3QoKSBpdHNlbGYgd2lsbCBkbyB0aGUgZW1wdHkgY2hl
+Y2sgb2YgbXFfbGlzdCwgc28gDQo+IHJlbW92ZSBzdWNoIGNoZWNrIGluIGJsa19mbHVzaF9wbHVn
+X2xpc3QoKS4NCj4gQWN0dWFsbHkgbm9ybWFsbHkgbXFfbGlzdCBpcyBub3QgZW1wdHkgd2hlbiBi
+bGtfZmx1c2hfcGx1Z19saXN0IGlzIA0KPiBjYWxsZWQuDQoNCkl0J3MgY2hlYXBlciB0byBkbyBp
+biB0aGUgY2FsbGVyLCBpbnN0ZWFkIG9mIGRvaW5nIHRoZSBmdW5jdGlvbiBjYWxsIGFuZCB0aGVu
+IGFib3J0aW5nIGlmIGl0J3MgZW1wdHkuIFNvIEknZCBzdWdnZXN0IGp1c3QgbGVhdmluZyBpdCBh
+bG9uZS4NClJpZ2h0IG5vdyB0aGlzIGlzIHRoZSBvbmx5IGNhbGxlciwgYnV0IGl0J3MgbmljZXIg
+dG8gYXNzdW1lIHdlIGNhbiBiZSBjYWxsZWQgaW4gYW55IHN0YXRlIHZzIG5vdCBoYXZpbmcgdGhl
+IGNoZWNrLg0KDQotLQ0KSmVucyBBeGJvZQ0KDQo=
