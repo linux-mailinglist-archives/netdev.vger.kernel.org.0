@@ -2,108 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 680A7264596
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 13:58:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78F6E264570
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 13:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729455AbgIJL4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 07:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730474AbgIJLxe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 07:53:34 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF47C061795;
-        Thu, 10 Sep 2020 04:28:53 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id f2so2062225pgd.3;
-        Thu, 10 Sep 2020 04:28:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LJV3WNyaxrzsPvTQXCjdL06gQE6s3VLAjqwsh5YtZqk=;
-        b=HLZJoPgVtada0k+w1Vlw/QLgbERepcdMoG+DxIvIFv3PKXozfpFlpSnx7jhG3wpKbX
-         1Sk+GNgSzf33FKosgqOnB4m0NL7hj6vdEfWsQNmzZ0OAODJt4BXR6/q6oNz4Dy4anWu2
-         XW4593ULZa56fABgR41HUf79lnU4yu9KiO5tBiPVPOgYs423FLhlIFsb2uw3y95R2jtZ
-         wsXLmBu1xKqGwFu5WzlgrJJKot41DNWTVAOWMlM3imFDl3g5QSorIN/vboPGQLZi1mOu
-         Zui06kRkTckKo1HX9AoJT0GxxTC10s1EgrzMexLBXwZDbzLWz1Ua1qT2T7sAix/QmYCm
-         U5Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LJV3WNyaxrzsPvTQXCjdL06gQE6s3VLAjqwsh5YtZqk=;
-        b=k3x91Z0CofGl2AvzYo4JqyY2KdlYTjg5hHeex0mxqxZyjykuWb+m//lVbaV9T+qxNA
-         Pymcu1AyQPQLRVW2zdip/Y2vOruCyhSth0hTj5JF/5QWpHO3Gxs0ygVIpQ4qm7WQx49+
-         BqiXSl5AZhglQN/CZeT0tSJSk0OCmGq7kIlYxLDnGSt2WuOmd3+Ds1Q26NpjXsWYzoHe
-         FeWL7J3suQC/Daf4EQI1Wqh0QyKrk058oh5AvSGNcYGZtAhgzPeNr9Gy3cQj/QETnZLw
-         vmkF+YQJ1lBBCWMs2si476n6pJu+bWOrlB3VWyDUt3iRR84OsgOwM5kCsddlWLCHC/sZ
-         wL/g==
-X-Gm-Message-State: AOAM530bFBTl/qB0Ncg9iXDjLXza52T/wKfw+pNSdbERbxqf482KzFOB
-        4N4buT36W6mCI9BgEzLcn3fyuB3726FtZaempx7JpI6Ri7gqfg==
-X-Google-Smtp-Source: ABdhPJw59PgWYSINH/x1vfIB1iJzf2BJ0ZGlPsG3JS8wXt6v/msJq5KIv5VXRTlwElVmtZP+ooDW8H8U6+oXO3hnm9c=
-X-Received: by 2002:a63:c543:: with SMTP id g3mr4194253pgd.203.1599737333085;
- Thu, 10 Sep 2020 04:28:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200904165222.18444-1-vadym.kochan@plvision.eu>
- <20200904165222.18444-2-vadym.kochan@plvision.eu> <CAHp75Vc_MN-tD+iQNbUcB6fbYizyfKJSJnm1W7uXCT6JAvPauA@mail.gmail.com>
- <20200910082512.GE20411@plvision.eu>
-In-Reply-To: <20200910082512.GE20411@plvision.eu>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 10 Sep 2020 14:28:35 +0300
-Message-ID: <CAHp75Vf9DJZhOMcaAebtQoz_biY1kFS34W1Fp0kdDFiDm4T7vg@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 1/6] net: marvell: prestera: Add driver for
- Prestera family ASIC devices
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Serhiy Boiko <serhiy.boiko@plvision.eu>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Andrii Savka <andrii.savka@plvision.eu>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mickey Rachamim <mickeyr@marvell.com>
+        id S1730127AbgIJLpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 07:45:20 -0400
+Received: from mx1.tq-group.com ([62.157.118.193]:19277 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730408AbgIJLlq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 07:41:46 -0400
+IronPort-SDR: 3qcDIOA38odHANc0k6VrpW2U4BJIzq6+hYeABdyt/LJKvRnDNz0rkLMMqeEBTofEeym2Vf/dHy
+ bEaezqJ/3sb6ykrGcissLMvcqbOm9/fgXq1TfpGlRqFH5mZYEYH1qIKOjNFoufdakrOMK1LdDp
+ Wpu7rxWtroCJb9M6LbC14186v4A5t8i5dTTxmFhYq/tHOWwxRY6V17M33Am88Oo76ypd6WQR4A
+ ApVOjtSV28xL0iAreK/09XXS2wTu0Yn05nHvE+ac4o75ZLwt0pXxPabk8BLWith1sfZ4EXuDf5
+ yeE=
+X-IronPort-AV: E=Sophos;i="5.76,412,1592863200"; 
+   d="scan'208";a="13811600"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 10 Sep 2020 13:41:08 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Thu, 10 Sep 2020 13:41:08 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Thu, 10 Sep 2020 13:41:08 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1599738068; x=1631274068;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=MkYowvAXYOKs4O9whme3PMadA8IQAuOBhwQOPGDWPgw=;
+  b=B+VTYHI9YFZn3HuDPPnBNX66dpdjcIE81mutAe50YcoDQTn8dsFjFUyQ
+   hufwZcvYQ+KtQDxGPxBR812UZQZZJcFth2WUwyDfbm01/XojcUVeDweta
+   DJAOTMEGt+ckrHMt8e40qEbtPNrD3D+EwfDNGSdIIDwjDp7WKqj/bwqBo
+   GjqiYJQIG1QWGL6cAxkkjUmxXE8cBtnAIS0KdPH9oQIf7Dq7Igo4jfqFk
+   JHWiWpiA7zSH+lZy6nNvdclflauDG92WbW7VKtz7Yx1iJ4ErhS7eknG0o
+   Th64GT+X/IenbIvF1P9tWvwccQ+aaUaucTZkKs3+RG73a8hZYzVd0T9oD
+   Q==;
+IronPort-SDR: lEm5S8mlkC2qL9AiHnF/bkDIt4vUrYoTeQ9lYnTTmQhQVPjd332gqfE4QUyw0hsQTTrFNta8LZ
+ 56rCqE2gVGoOrPykD8m9jcJfXvZabILhrFvz0UfgB2hUZsI7QyI06/6OUl5h5bgVhgLdipIcZg
+ RXpjHoYau3VW0xdyu5jIE6+HWeuuao0i3Gb+9PXB2rkELondTQPgKi++z6a8QLFV6Uxpm7RvVT
+ NzlK6D3rwuGAO47sO5oGfgh4pZmSyPcmvwZetMnkQF3GbKIVxAlHR99Zbl8LUS6j4oJXqW/6jX
+ E/Y=
+X-IronPort-AV: E=Sophos;i="5.76,412,1592863200"; 
+   d="scan'208";a="13811599"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 10 Sep 2020 13:41:08 +0200
+Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.117.49.22])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 9422B280070;
+        Thu, 10 Sep 2020 13:41:08 +0200 (CEST)
+Message-ID: <f98346dd0ce6974129d6725afcce51a49715fd56.camel@ew.tq-group.com>
+Subject: Re: [PATCH v4 00/11] microchip: add support for ksz88x3 driver
+ family
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, davem@davemloft.net,
+        kernel@pengutronix.de, andrew@lunn.ch
+Date:   Thu, 10 Sep 2020 13:41:06 +0200
+In-Reply-To: <20200803054442.20089-1-m.grzeschik@pengutronix.de>
+References: <20200803054442.20089-1-m.grzeschik@pengutronix.de>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 11:25 AM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
-> On Fri, Sep 04, 2020 at 10:12:07PM +0300, Andy Shevchenko wrote:
-> > On Fri, Sep 4, 2020 at 7:52 PM Vadym Kochan <vadym.kochan@plvision.eu> wrote:
+On Mon, 2020-08-03 at 07:44 +0200, Michael Grzeschik wrote:
+> This series adds support for the ksz88x3 driver family to the dsa
+> based ksz
+> drivers. The driver is making use of the already available ksz8795
+> driver and
+> moves it to an generic driver for the ksz8 based chips which have
+> similar
+> functions but an totaly different register layout.
+> 
+> Andrew Lunn (1):
+>   net: phy: Add support for microchip SMI0 MDIO bus
+> 
+> Michael Grzeschik (10):
+>   dt-bindings: net: mdio-gpio: add compatible for microchip,mdio-smi0
+>   net: tag: ksz: Add KSZ8863 tag code
+>   net: dsa: microchip: ksz8795: use port_cnt where possible
+>   net: dsa: microchip: ksz8795: dynamic allocate memory for
+>     flush_dyn_mac_table
+>   net: dsa: microchip: ksz8795: change drivers prefix to be generic
+>   net: dsa: microchip: ksz8795: move register offsets and shifts to
+>     separate struct
+>   net: dsa: microchip: ksz8795: add support for ksz88xx chips
+>   net: dsa: microchip: Add Microchip KSZ8863 SMI based driver support
+>   net: dsa: microchip: Add Microchip KSZ8863 SPI based driver support
+>   dt-bindings: net: dsa: document additional Microchip KSZ8863/8873
+>     switch
+> 
+>  .../devicetree/bindings/net/dsa/ksz.txt       |   2 +
+>  .../devicetree/bindings/net/mdio-gpio.txt     |   1 +
+>  drivers/net/dsa/microchip/Kconfig             |   9 +
+>  drivers/net/dsa/microchip/Makefile            |   1 +
+>  drivers/net/dsa/microchip/ksz8.h              |  68 ++
+>  drivers/net/dsa/microchip/ksz8795.c           | 926 ++++++++++++--
+> ----
+>  drivers/net/dsa/microchip/ksz8795_reg.h       | 214 ++--
+>  drivers/net/dsa/microchip/ksz8795_spi.c       |  64 +-
+>  drivers/net/dsa/microchip/ksz8863_reg.h       | 124 +++
+>  drivers/net/dsa/microchip/ksz8863_smi.c       | 204 ++++
+>  drivers/net/dsa/microchip/ksz_common.h        |   2 +-
+>  drivers/net/phy/mdio-bitbang.c                |   8 +-
+>  drivers/net/phy/mdio-gpio.c                   |   9 +
+>  include/linux/mdio-bitbang.h                  |   3 +
+>  include/net/dsa.h                             |   2 +
+>  net/dsa/tag_ksz.c                             |  57 ++
+>  16 files changed, 1275 insertions(+), 419 deletions(-)
+>  create mode 100644 drivers/net/dsa/microchip/ksz8.h
+>  create mode 100644 drivers/net/dsa/microchip/ksz8863_reg.h
+>  create mode 100644 drivers/net/dsa/microchip/ksz8863_smi.c
+> 
 
+Hello Michael,
 
-> > > +               .param = {.admin_state = admin_state}
-> >
-> > + white spaces? Whatever you choose, just be consistent among all
-> > similar definitions.
-> >
->
-> Can I use following format for one-liner embedded struct ?
+I've given this series a spin on a TQ-Systems ARM64 board with a
+KSZ8863 switch connected via SMI (rebased onto kernel 5.4.y), and
+everything seems to work as expected. Feel free to CC me for the next
+revision of the series, so I can add my Tested-by.
 
-Of course. It's just a style matter.
-My point that you need to be consistent over all similar cases in the code.
+Kind regards,
+Matthias
 
->         .param = {
->                 .admin_state = admin_state,
->         }
-> > ...
-> >
->
-> I think it looks better when all of the members filled looks similar
-> (even if it requires 2 additional lines) instead of having:
->
->     .member = { E } ?
-
-I like the former one (as you do), but in some cases when you have one
-member or an array it's convenient to have them one one line.
-
--- 
-With Best Regards,
-Andy Shevchenko
