@@ -2,159 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40AF32642CA
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 11:49:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF43326431C
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 12:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730368AbgIJJtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 05:49:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35939 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730257AbgIJJtN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 05:49:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599731351;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OKQHNRVAjod8FAmstbFxZbVVfzJzd7Y851DUDRfyK8c=;
-        b=b2c9XPK5F05kgu7bE2wGnDlgSMGgSUWMSGSef96WvTE1Hs0jK8vSgp4toSMvo7sJonec/h
-        jewyZN5jvbzKWxGLcQ03JtKurSOwvpR08Yocq7H/nYavFpGM6lnbaV9IRzG50QFyydhQXT
-        xw5ybT8aVUcAJ3zhzXfS521AYigW6eA=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-227-fCehowCHOzibgANLYSFoaQ-1; Thu, 10 Sep 2020 05:49:10 -0400
-X-MC-Unique: fCehowCHOzibgANLYSFoaQ-1
-Received: by mail-wr1-f69.google.com with SMTP id k13so2053152wrw.16
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 02:49:10 -0700 (PDT)
+        id S1730294AbgIJKAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 06:00:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730560AbgIJKAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 06:00:09 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1ECCC061573;
+        Thu, 10 Sep 2020 03:00:08 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id s13so5015769wmh.4;
+        Thu, 10 Sep 2020 03:00:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pAh7hXPGRHBjo/PFoe0HlRkn4NDf5lJ5Fqfadp23JQo=;
+        b=XkPaw/Bf2ZxPsXS0G3PAgfhAF2zYa/Z0822udedqbRSAt5+TsgEN7bpgFl8cugEIws
+         gcqgd40aF6cB1PvDV7dJvgAnJ4QpkOcYuZQxaavlP8XcIxsfudNrnMfcJXiyn8sRR1Xt
+         jN17ZW3MVjyLqRLaRxWC1g1a+IGXew+dphACe8szgXVSfLl9oIJeCLRSonTYqYmvAKnA
+         bzkItSBDuT+z5hgkDyFlg4IXTon9hLvlqUIrKWhbxxoemf1MzBhMKlGlQntnbiON6mgQ
+         minX3OX0oPv2P/s0mrzq63llnMrXoSZ0xb7+Te6NRzxxe8lo7HDt/UTzzUUF7mAJ/7+e
+         V7qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=OKQHNRVAjod8FAmstbFxZbVVfzJzd7Y851DUDRfyK8c=;
-        b=gwu+gB0PHiOlChmzZbagqFIFbiPJcWUKDLLBhC55M5ErgUn5lqjm638ygOWTKGijpf
-         7tpug39VT4SBb4wRCFx4+5kiRMtvnYg9HxMscOkFeQsTl46yn8KWHr0Lw6FfOxqOr+y+
-         CA+HYzUeIjIfuuTq99KiwDPBVO63pCrS39qLCYfhf/yG1/Sqd1bToL95iw8vDhuunCKE
-         X2AKPtI+mVKgFhDou5wlWTO8k43q1wDE91cB9sy5JEmgH9SGhlg/IHpsefMBHrgrZyai
-         apDPw+ooRcgfkpLD3EoxeXgwP2BVE/fjtgv400FZa7pqsgOiByUIpdmY7PDHYbgFfaMQ
-         loRQ==
-X-Gm-Message-State: AOAM531gRW6hbWgKdgBkJi4er/nDzzdaDnhy6SLHs5fjuYoIEZrra/2I
-        uV/tekOVodwY2Pcxa0I7JvGTqrAptCDZZpjdHbWB5JlxLoh+RUwg1FdEDm/CnZaI5kPxOKg7XMw
-        s1tH6orvHVnqlXfxS
-X-Received: by 2002:adf:dcd1:: with SMTP id x17mr8813312wrm.150.1599731348349;
-        Thu, 10 Sep 2020 02:49:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw/ddMSw0janJm0VrprHFTkacj6bB82Qe392M/4DlfoMJ+HO/6ag9O+IC6S3iyHuiRtFJkJEw==
-X-Received: by 2002:adf:dcd1:: with SMTP id x17mr8813265wrm.150.1599731347835;
-        Thu, 10 Sep 2020 02:49:07 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id y1sm2886870wmd.22.2020.09.10.02.49.07
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pAh7hXPGRHBjo/PFoe0HlRkn4NDf5lJ5Fqfadp23JQo=;
+        b=bAZWnI8kKgvuvAuDDS2TdQFcJEWlFLcusaOXYYRm3y42H8R/Df8syDbY3SGpSQIAbV
+         jVqQuDV2XKsdcypUXVg6n7nm3AQo44F+RQtuFyHleO8KXMCMXrndHy5B/njMBdCbmnHT
+         AD5LP9L1vvh6lNpQShADHNEOEQz/16q9j6NxI0xNE7+udQL4ZT+7KG4K3A3UzFsI75Hv
+         WwKbRMxx3eZj9bZfBcEoVYBqETE4F5H+YQuekXM9ZNd065wDYaPaBLr7O03YRB6S3KEQ
+         bCJ40yd5iBM5Mf2wrkF2I8sPrZE91VsBa7o7x5rQ2GlK3lLJd5n080HrXEfihpJ7yUJs
+         DpBw==
+X-Gm-Message-State: AOAM533WPCO1xKQcr3HM6Dudvg0yPjtGztczZWkfqAkURjVsIyKHnFvX
+        GF0GKhWbsiSiVsEItNY5LJh7KREG3p4=
+X-Google-Smtp-Source: ABdhPJw/Oq0Me8hNHlZrBHLTOH04QA6Ldk15PpFJKErIMLiqbOg+X8LkFaexnffoQFPh5M27G1UPEQ==
+X-Received: by 2002:a05:600c:2183:: with SMTP id e3mr8187778wme.49.1599732006529;
+        Thu, 10 Sep 2020 03:00:06 -0700 (PDT)
+Received: from localhost.localdomain ([178.60.199.158])
+        by smtp.gmail.com with ESMTPSA id v128sm2872960wme.2.2020.09.10.03.00.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 02:49:07 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BB0C21829D4; Thu, 10 Sep 2020 11:49:06 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eelco Chaudron <echaudro@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH bpf-next 1/2] bpf: Fix context type resolving for
- extension programs
-In-Reply-To: <20200909185838.GG1498025@krava>
-References: <20200909151115.1559418-1-jolsa@kernel.org>
- <871rjbc5d9.fsf@toke.dk> <20200909185838.GG1498025@krava>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 10 Sep 2020 11:49:06 +0200
-Message-ID: <87lfhiarn1.fsf@toke.dk>
+        Thu, 10 Sep 2020 03:00:06 -0700 (PDT)
+From:   Era Mayflower <mayflowerera@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mayflowerera@gmail.com
+Subject: [PATCH v2] macsec: Support 32bit PN netlink attribute for XPN links
+Date:   Thu, 10 Sep 2020 09:56:09 +0000
+Message-Id: <20200910095609.17999-1-mayflowerera@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri Olsa <jolsa@redhat.com> writes:
+Allow using 32bit netlink attribute for packet number when creating or
+updating SA in an XPN link.
+Now utilities like iproute2's `ip` do not have to know the link type
+(XPN or not) when setting the packet number field of an SA.
 
-> On Wed, Sep 09, 2020 at 05:54:58PM +0200, Toke H=C3=83=C2=B8iland-J=C3=83=
-=C2=B8rgensen wrote:
->> Jiri Olsa <jolsa@kernel.org> writes:
->>=20
->> > Eelco reported we can't properly access arguments if the tracing
->> > program is attached to extension program.
->> >
->> > Having following program:
->> >
->> >   SEC("classifier/test_pkt_md_access")
->> >   int test_pkt_md_access(struct __sk_buff *skb)
->> >
->> > with its extension:
->> >
->> >   SEC("freplace/test_pkt_md_access")
->> >   int test_pkt_md_access_new(struct __sk_buff *skb)
->> >
->> > and tracing that extension with:
->> >
->> >   SEC("fentry/test_pkt_md_access_new")
->> >   int BPF_PROG(fentry, struct sk_buff *skb)
->> >
->> > It's not possible to access skb argument in the fentry program,
->> > with following error from verifier:
->> >
->> >   ; int BPF_PROG(fentry, struct sk_buff *skb)
->> >   0: (79) r1 =3D *(u64 *)(r1 +0)
->> >   invalid bpf_context access off=3D0 size=3D8
->> >
->> > The problem is that btf_ctx_access gets the context type for the
->> > traced program, which is in this case the extension.
->> >
->> > But when we trace extension program, we want to get the context
->> > type of the program that the extension is attached to, so we can
->> > access the argument properly in the trace program.
->> >
->> > Reported-by: Eelco Chaudron <echaudro@redhat.com>
->> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
->> > ---
->> >  kernel/bpf/btf.c | 8 ++++++++
->> >  1 file changed, 8 insertions(+)
->> >
->> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
->> > index f9ac6935ab3c..37ad01c32e5a 100644
->> > --- a/kernel/bpf/btf.c
->> > +++ b/kernel/bpf/btf.c
->> > @@ -3859,6 +3859,14 @@ bool btf_ctx_access(int off, int size, enum bpf=
-_access_type type,
->> >  	}
->> >=20=20
->> >  	info->reg_type =3D PTR_TO_BTF_ID;
->> > +
->> > +	/* When we trace extension program, we want to get the context
->> > +	 * type of the program that the extension is attached to, so
->> > +	 * we can access the argument properly in the trace program.
->> > +	 */
->> > +	if (tgt_prog && tgt_prog->type =3D=3D BPF_PROG_TYPE_EXT)
->> > +		tgt_prog =3D tgt_prog->aux->linked_prog;
->> > +
->>=20
->> In the discussion about multi-attach for freplace we kinda concluded[0]
->> that this linked_prog pointer was going away after attach. I have this
->> basically working, but need to test a bit more before posting it (see
->> [1] for current status).
->
-> ok, feel free to use the test case from patch 2 ;-)
->
->>=20
->> But with this I guess we'll need to either do something different? Maybe
->> go chase down the target via the bpf_link or something?
->
-> I'll check, could you please CC me on your next post?
+Signed-off-by: Era Mayflower <mayflowerera@gmail.com>
+---
+ drivers/net/macsec.c | 95 ++++++++++++++++++++++++++++++++------------
+ 1 file changed, 69 insertions(+), 26 deletions(-)
 
-Sure, will do!
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index e56547bfdac9..7d3c3a38ea81 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -1691,8 +1691,7 @@ static bool validate_add_rxsa(struct nlattr **attrs)
+ 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
+ 		return false;
+ 
+-	if (attrs[MACSEC_SA_ATTR_PN] &&
+-	    *(u64 *)nla_data(attrs[MACSEC_SA_ATTR_PN]) == 0)
++	if (attrs[MACSEC_SA_ATTR_PN] && nla_get_u64(attrs[MACSEC_SA_ATTR_PN]) == 0)
+ 		return false;
+ 
+ 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
+@@ -1714,7 +1713,6 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 	struct macsec_rx_sc *rx_sc;
+ 	struct macsec_rx_sa *rx_sa;
+ 	unsigned char assoc_num;
+-	int pn_len;
+ 	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
+ 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
+ 	int err;
+@@ -1747,12 +1745,26 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 		return -EINVAL;
+ 	}
+ 
+-	pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
+-	if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
+-		pr_notice("macsec: nl: add_rxsa: bad pn length: %d != %d\n",
+-			  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
+-		rtnl_unlock();
+-		return -EINVAL;
++	if (tb_sa[MACSEC_SA_ATTR_PN]) {
++		switch (nla_len(tb_sa[MACSEC_SA_ATTR_PN])) {
++		case MACSEC_DEFAULT_PN_LEN:
++			break;
++
++		case MACSEC_XPN_PN_LEN:
++			if (secy->xpn)
++				break;
++
++			pr_notice("macsec: nl: add_rxsa: pn length on non-xpn links must be %d\n",
++				  MACSEC_DEFAULT_PN_LEN);
++			rtnl_unlock();
++			return -EINVAL;
++
++		default:
++			pr_notice("macsec: nl: add_rxsa: pn length must be %d or %d\n",
++				  MACSEC_DEFAULT_PN_LEN, MACSEC_XPN_PN_LEN);
++			rtnl_unlock();
++			return -EINVAL;
++		}
+ 	}
+ 
+ 	if (secy->xpn) {
+@@ -1934,7 +1946,7 @@ static bool validate_add_txsa(struct nlattr **attrs)
+ 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
+ 		return false;
+ 
+-	if (nla_get_u32(attrs[MACSEC_SA_ATTR_PN]) == 0)
++	if (nla_get_u64(attrs[MACSEC_SA_ATTR_PN]) == 0)
+ 		return false;
+ 
+ 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
+@@ -1956,7 +1968,6 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
+ 	struct macsec_tx_sc *tx_sc;
+ 	struct macsec_tx_sa *tx_sa;
+ 	unsigned char assoc_num;
+-	int pn_len;
+ 	struct nlattr *tb_sa[MACSEC_SA_ATTR_MAX + 1];
+ 	bool was_operational;
+ 	int err;
+@@ -1989,10 +2000,22 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
+ 		return -EINVAL;
+ 	}
+ 
+-	pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
+-	if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
+-		pr_notice("macsec: nl: add_txsa: bad pn length: %d != %d\n",
+-			  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
++	switch (nla_len(tb_sa[MACSEC_SA_ATTR_PN])) {
++	case MACSEC_DEFAULT_PN_LEN:
++		break;
++
++	case MACSEC_XPN_PN_LEN:
++		if (secy->xpn)
++			break;
++
++		pr_notice("macsec: nl: add_txsa: pn length on non-xpn links must be %d\n",
++			  MACSEC_DEFAULT_PN_LEN);
++		rtnl_unlock();
++		return -EINVAL;
++
++	default:
++		pr_notice("macsec: nl: add_txsa: pn length must be %d or %d\n",
++			  MACSEC_DEFAULT_PN_LEN, MACSEC_XPN_PN_LEN);
+ 		rtnl_unlock();
+ 		return -EINVAL;
+ 	}
+@@ -2288,7 +2311,7 @@ static bool validate_upd_sa(struct nlattr **attrs)
+ 	if (nla_get_u8(attrs[MACSEC_SA_ATTR_AN]) >= MACSEC_NUM_AN)
+ 		return false;
+ 
+-	if (attrs[MACSEC_SA_ATTR_PN] && nla_get_u32(attrs[MACSEC_SA_ATTR_PN]) == 0)
++	if (attrs[MACSEC_SA_ATTR_PN] && nla_get_u64(attrs[MACSEC_SA_ATTR_PN]) == 0)
+ 		return false;
+ 
+ 	if (attrs[MACSEC_SA_ATTR_ACTIVE]) {
+@@ -2332,12 +2355,22 @@ static int macsec_upd_txsa(struct sk_buff *skb, struct genl_info *info)
+ 	}
+ 
+ 	if (tb_sa[MACSEC_SA_ATTR_PN]) {
+-		int pn_len;
++		switch (nla_len(tb_sa[MACSEC_SA_ATTR_PN])) {
++		case MACSEC_DEFAULT_PN_LEN:
++			break;
++
++		case MACSEC_XPN_PN_LEN:
++			if (secy->xpn)
++				break;
++
++			pr_notice("macsec: nl: upd_txsa: pn length on non-xpn links must be %d\n",
++				  MACSEC_DEFAULT_PN_LEN);
++			rtnl_unlock();
++			return -EINVAL;
+ 
+-		pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
+-		if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
+-			pr_notice("macsec: nl: upd_txsa: bad pn length: %d != %d\n",
+-				  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
++		default:
++			pr_notice("macsec: nl: upd_txsa: pn length must be %d or %d\n",
++				  MACSEC_DEFAULT_PN_LEN, MACSEC_XPN_PN_LEN);
+ 			rtnl_unlock();
+ 			return -EINVAL;
+ 		}
+@@ -2429,12 +2462,22 @@ static int macsec_upd_rxsa(struct sk_buff *skb, struct genl_info *info)
+ 	}
+ 
+ 	if (tb_sa[MACSEC_SA_ATTR_PN]) {
+-		int pn_len;
++		switch (nla_len(tb_sa[MACSEC_SA_ATTR_PN])) {
++		case MACSEC_DEFAULT_PN_LEN:
++			break;
++
++		case MACSEC_XPN_PN_LEN:
++			if (secy->xpn)
++				break;
+ 
+-		pn_len = secy->xpn ? MACSEC_XPN_PN_LEN : MACSEC_DEFAULT_PN_LEN;
+-		if (nla_len(tb_sa[MACSEC_SA_ATTR_PN]) != pn_len) {
+-			pr_notice("macsec: nl: upd_rxsa: bad pn length: %d != %d\n",
+-				  nla_len(tb_sa[MACSEC_SA_ATTR_PN]), pn_len);
++			pr_notice("macsec: nl: upd_rxsa: pn length on non-xpn links must be %d\n",
++				  MACSEC_DEFAULT_PN_LEN);
++			rtnl_unlock();
++			return -EINVAL;
++
++		default:
++			pr_notice("macsec: nl: upd_rxsa: pn length must be %d or %d\n",
++				  MACSEC_DEFAULT_PN_LEN, MACSEC_XPN_PN_LEN);
+ 			rtnl_unlock();
+ 			return -EINVAL;
+ 		}
 
--Toke
+base-commit: bc7d17d55762421b98089f5f7496e48cab89de50
+-- 
+2.20.1
 
