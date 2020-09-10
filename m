@@ -2,88 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B9C2650FB
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:37:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F8862650D8
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:31:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727089AbgIJUhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 16:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726815AbgIJUbD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:31:03 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA2DC061573;
-        Thu, 10 Sep 2020 13:31:03 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id m12so6532382otr.0;
-        Thu, 10 Sep 2020 13:31:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8LiDEfXSWfpsbBSoq6IWpeigMyRkjdi4v6vinxD3gBY=;
-        b=FabsM6mH8zl+nq3wFo2aBTClQ77IW9YtTEQFjPcUypqarW6Iii0RBqd67QFSN9BuFu
-         VZIqrihaQjBjdDfqPFldmfMLxe12KhJz6DD6rvh8lXjCJ2JMOPSew1oK7YtjtdGuuVFb
-         /sfvaxRn8ZJy54x2Re3L9TlWOFoBX/xtitpeYmbSxYcSkf9QUQq7VXu+QXyYcFunHp2s
-         7Zhd+zWAP/cqQVXHQjf0b66oadOYLZYPes0gQ/D4mqlYx3MYzr1bS5FBdS6d5r5H3k5l
-         fECRvuuR1tHGOp0bKkR1nGOilK6OAFT8Tiedz8ao63+B0rNM1KVwHz+Op9o96yHZEyHi
-         xpzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8LiDEfXSWfpsbBSoq6IWpeigMyRkjdi4v6vinxD3gBY=;
-        b=finJoVG/cqrjPnjmSTE5rDwS48uI68DkE95vYNKPzsMCzKB0e+JZjcqyLSDPJlvQy1
-         nZu8nx5d6YC+VVWG86x+dO8lbP0oJ6nKx+yePwfUG4rM9dnYS71H7j+Rl4NJoMF6wI5s
-         oAlX6HKEtL0If4ozVRifQqZr+5S4TqBaB4bAHMNzty9OJiDphQWq2gIDjdcB1y+WT1Gf
-         gw4cXyQU7iVNuMuauXyVvdEU+5B1SRjsdS8qYr1EqGPgl86wnNbpX1W9sv3gnuyLC2hQ
-         ZFf22VGxnVbVVkmympjLju7sv6RsmrFyq9tIyuQd7zdQ/w2zx9GpPc5WDWbdamh0D1Zg
-         02og==
-X-Gm-Message-State: AOAM5319B2KLVd+dH2fOjlLkDBuGni6DRZX1Qk0e5VjYBBHJaL5ZI1PZ
-        BBnf9WAkaj7KvwD0Nx3X6gxwrnTkaDBuFjSLB6M=
-X-Google-Smtp-Source: ABdhPJyZq/S5WVawGZRevjQg8KzxPj8flrds48iTlaqbZPlhYQvrKF9MAceJac0DCZ1GeyVad8svHQ51AYjmda3iBZI=
-X-Received: by 2002:a9d:6d95:: with SMTP id x21mr5300130otp.339.1599769862040;
- Thu, 10 Sep 2020 13:31:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200910161126.30948-1-oded.gabbay@gmail.com> <20200910130112.1f6bd9e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAFCwf13SbXqjyu6JHKSTf-EqUxcBZUe4iAfggLhKXOi6DhXYcg@mail.gmail.com> <20200910202513.GH3354160@lunn.ch>
-In-Reply-To: <20200910202513.GH3354160@lunn.ch>
-From:   Oded Gabbay <oded.gabbay@gmail.com>
-Date:   Thu, 10 Sep 2020 23:30:33 +0300
-Message-ID: <CAFCwf11P7pEJ+Av9oiwdQFor5Kh9JeKvVTBXnMzWusKCRz7mHw@mail.gmail.com>
-Subject: Re: [PATCH 00/15] Adding GAUDI NIC code to habanalabs driver
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        id S1726931AbgIJUbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 16:31:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56970 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726761AbgIJUbA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 16:31:00 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF6EA206E9;
+        Thu, 10 Sep 2020 20:30:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599769860;
+        bh=7lYML09NJIhF4amEUFSTp7nrcxK75B3+CJqmxANN14U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LQI2toSw+bXD2I63/ENGJ4v+j2dIiqm1jYDEiZJZg5iyxNKI1JlPwA3k8yL7821NY
+         dnt3Ug+M8kKNN3m0LiaGUna3EM3SxH5A53R/ON189nmr+l4DWyhHFpCqSEefwwTbVK
+         lzmzHJFFdglaEXO0XBJhT6Z+kPPCtU6xmGaQgdBc=
+Date:   Thu, 10 Sep 2020 13:30:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oded Gabbay <oded.gabbay@gmail.com>
+Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
         netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>,
+        Omer Shpigelman <oshpigelman@habana.ai>
+Subject: Re: [PATCH 12/15] habanalabs/gaudi: add debugfs entries for the NIC
+Message-ID: <20200910133058.0fe0f5e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAFCwf10XdCDhLeyiArc29PAJ_7=BGpdiUvFRotvFHieiaRn=aA@mail.gmail.com>
+References: <20200910161126.30948-1-oded.gabbay@gmail.com>
+        <20200910161126.30948-13-oded.gabbay@gmail.com>
+        <20200910130138.6d595527@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAFCwf113A_=da2fGxgMbq_V0OcHsxdp5MpfHiUfeew+gEdnjaQ@mail.gmail.com>
+        <20200910131629.65b3e02c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAFCwf10XdCDhLeyiArc29PAJ_7=BGpdiUvFRotvFHieiaRn=aA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 11:25 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > Can you please elaborate on how to do this with a single driver that
-> > is already in misc ?
-> > As I mentioned in the cover letter, we are not developing a
-> > stand-alone NIC. We have a deep-learning accelerator with a NIC
-> > interface.
->
-> This sounds like an MFD.
->
->      Andrew
+On Thu, 10 Sep 2020 23:17:59 +0300 Oded Gabbay wrote:
+> > Doesn't seem like this one shows any more information than can be
+> > queried with ethtool, right?  
+> correct, it just displays it in a format that is much more readable
 
-Yes and no. There is only one functionality - training of deep
-learning (Accelerating compute operations) :)
-The rdma is just our method of scaling-out - our method of
-intra-connection between GAUDI devices (similar to NVlink or AMD
-crossfire).
-So the H/W exposes a single physical function at the PCI level. And
-thus Linux can call a single driver for it during the PCI probe.
+You can cat /sys/class/net/$ifc/carrier if you want 0/1.
 
-I hope that in future generations we will improve that, but it is what
-it is for GAUDI.
-I don't see how to do it otherwise currently but if you have ideas please share.
-Oded
+> > > nic_mac_loopback
+> > > is to set a port to loopback mode and out of it. It's not really
+> > > configuration but rather a mode change.  
+> >
+> > What is this loopback for? Testing?  
+> 
+> Correct.
+
+Loopback test is commonly implemented via ethtool -t
