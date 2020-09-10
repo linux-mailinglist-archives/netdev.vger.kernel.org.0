@@ -2,85 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 156A6264F09
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:33:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD2D0264EF6
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:31:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728003AbgIJTb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 15:31:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727842AbgIJT31 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:29:27 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7BFC061573;
-        Thu, 10 Sep 2020 12:29:21 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id 195so4790726ybl.9;
-        Thu, 10 Sep 2020 12:29:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4Kkmd5i71e5SXs+HrB0Q4cmO1EDQUaQYsDFxwl9JHV0=;
-        b=cHZAs4Fw/wHSju+Ss2xMq53wAHCrg/V/cDeecUvCpVztJqUdgitWSXkjGU8Cn2jLK9
-         w7JZhk3CyGMrb1tKgipHXBP3KKlADoFiF+3nHUhubcWfJfEEsnEPLPzoRbqXdqEJm9PO
-         FF9zw4p8Qx1TEYJQtuul/HHVu72zHzp70FCnJyFUcIfCt7RE0/nBaUKpPQZpFf/gaPBf
-         pJvAeSA8SyRcg240FPthor96MKKHt3tPDBCNJu+2TGfTxJ1d7CWz0LYW/gBqNl18tag0
-         Ca57pnJ0tP6uPXqAwNBdzVaZGig8tB5Any5uMcqpBaH1Pf0y+BlEvl2ODS5s8yBhRw4p
-         p68w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4Kkmd5i71e5SXs+HrB0Q4cmO1EDQUaQYsDFxwl9JHV0=;
-        b=CLJ+3Ylqq2G/5z3JxT9Ah6ZTL3MoerNkEX2AiyV+f5ML6n4bcJ1asXU3mpmNH5h6F6
-         DG0ckU6AZs9doI+lI6GQkEf+0L34DS52QIuO0xkslaPqmPBBO3gKrCN95Skoq1AxjPba
-         8acSjgIAxO7O74dvEMo/FqZRouVvIR+1JarNqAE1ibm4JFzGXhKLEVvuRXvumTbMQa2V
-         BfJs4vLBhpK95ZMVmrWWujixxtxjYnJknD89iGkao/NLKCNt7DOzjtFAfdHwA2d0Bo9U
-         IThiuC2L5oG3vvO0oKwweVEt7Srg+VWiJ449C6y4YV9EpyL9Rko4h00YFc7vfPPjYkwY
-         lX0w==
-X-Gm-Message-State: AOAM530mPojKA6JQ6WmYRUVngWA91v56SKoFZe3p4NmhRc6fZR8SwkIq
-        TEwuRTZOeqTL5fDI/8eQHntdm/VPBhf75IkoZDLGjE4u76w=
-X-Google-Smtp-Source: ABdhPJxuOfryDcXTNGnLYAQEIkAuewS9mL6VcudURnfzjoia1cfLeTs2pZUXGK70sNkKE1y4RWXYsjM0lyqf0VhVJYY=
-X-Received: by 2002:a25:9d06:: with SMTP id i6mr13689119ybp.510.1599766161070;
- Thu, 10 Sep 2020 12:29:21 -0700 (PDT)
+        id S1727954AbgIJT3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 15:29:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47882 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727943AbgIJT3U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 15:29:20 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.3])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 077E0207DE;
+        Thu, 10 Sep 2020 19:29:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599766159;
+        bh=xdEi+nnHPoX5+tUHKLW+zfHZQoV5peod/7jyP2Gpm2M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RLBqZtOnV1AeXSaA467zCMMCU+znsxkYt803axM7g++QJ8p3fwxC9VyJmfswYrA8l
+         bJOgluRzemVb3+QGs8hx+httc+U05KpcvvPbBG+aRmZjznhs0UEfOFVVHc63VY/oFO
+         qLVDZhOitrvd11Sb/WFEArDcs0vQpWck4UBWDb94=
+Date:   Thu, 10 Sep 2020 12:29:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Luo Jiaxing <luojiaxing@huawei.com>
+Cc:     <peppe.cavallaro@st.com>, <alexandre.torgue@st.com>,
+        <joabreu@synopsys.com>, <davem@davemloft.net>,
+        <mcoquelin.stm32@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+Subject: Re: [PATCH net-next] net: stmmac: Remove unused variable 'ret' at
+ stmmac_rx_buf1_len()
+Message-ID: <20200910122912.5792f657@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1599705765-15562-1-git-send-email-luojiaxing@huawei.com>
+References: <1599705765-15562-1-git-send-email-luojiaxing@huawei.com>
 MIME-Version: 1.0
-References: <20200909182406.3147878-1-sdf@google.com> <20200909182406.3147878-3-sdf@google.com>
-In-Reply-To: <20200909182406.3147878-3-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 10 Sep 2020 12:29:10 -0700
-Message-ID: <CAEf4BzYS5HCtb+gTV_BHk2=K5UcPuzvo6ku2Er7a6vR3FKwGcg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 2/5] bpf: Add BPF_PROG_BIND_MAP syscall
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        YiFei Zhu <zhuyifei@google.com>,
-        YiFei Zhu <zhuyifei1999@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 9, 2020 at 11:25 AM Stanislav Fomichev <sdf@google.com> wrote:
->
-> From: YiFei Zhu <zhuyifei@google.com>
->
-> This syscall binds a map to a program. Returns success if the map is
-> already bound to the program.
->
-> Cc: YiFei Zhu <zhuyifei1999@gmail.com>
-> Signed-off-by: YiFei Zhu <zhuyifei@google.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+On Thu, 10 Sep 2020 10:42:45 +0800 Luo Jiaxing wrote:
+> Fixes the following warning when using W=3D1 to build kernel:
+>=20
+> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:3634:6: warning: variab=
+le =E2=80=98ret=E2=80=99 set but not used [-Wunused-but-set-variable]
+> int ret, coe =3D priv->hw->rx_csum;
+>=20
+> When digging stmmac_get_rx_header_len(), dwmac4_get_rx_header_len() and
+> dwxgmac2_get_rx_header_len() return 0 by default. Therefore, ret do not
+> need to check the error value and can be directly deleted.
+>=20
+> Signed-off-by: Luo Jiaxing <luojiaxing@huawei.com>
 > ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/=
+net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 89b2b34..7e95412 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -3631,15 +3631,15 @@ static unsigned int stmmac_rx_buf1_len(struct stm=
+mac_priv *priv,
+>  				       struct dma_desc *p,
+>  				       int status, unsigned int len)
+>  {
+> -	int ret, coe =3D priv->hw->rx_csum;
+>  	unsigned int plen =3D 0, hlen =3D 0;
+> +	int coe =3D priv->hw->rx_csum;
+> =20
+>  	/* Not first descriptor, buffer is always zero */
+>  	if (priv->sph && len)
+>  		return 0;
+> =20
+>  	/* First descriptor, get split header length */
+> -	ret =3D stmmac_get_rx_header_len(priv, p, &hlen);
+> +	stmmac_get_rx_header_len(priv, p, &hlen);
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+This function should return void if there never are any errors to
+report.
 
->  include/uapi/linux/bpf.h       |  7 ++++
->  kernel/bpf/syscall.c           | 63 ++++++++++++++++++++++++++++++++++
->  tools/include/uapi/linux/bpf.h |  7 ++++
->  3 files changed, 77 insertions(+)
->
+>  	if (priv->sph && hlen) {
+>  		priv->xstats.rx_split_hdr_pkt_n++;
+>  		return hlen;
 
-[...]
