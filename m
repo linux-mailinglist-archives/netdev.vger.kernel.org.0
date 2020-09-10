@@ -2,185 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E50F2650F2
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:36:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCBF52650EC
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:36:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbgIJUgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 16:36:48 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:53506 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726937AbgIJUcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:32:42 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.64])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 5F6CE600D4;
-        Thu, 10 Sep 2020 20:32:33 +0000 (UTC)
-Received: from us4-mdac16-8.ut7.mdlocal (unknown [10.7.65.76])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 5BA9A2009B;
-        Thu, 10 Sep 2020 20:32:33 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.200])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CD7A522007B;
-        Thu, 10 Sep 2020 20:32:32 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 64B13800058;
-        Thu, 10 Sep 2020 20:32:32 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Sep
- 2020 21:32:27 +0100
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 3/7] sfc: create inner-csum queues on EF10 if
- supported
-To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>
-References: <6fbc3a86-0afd-6e6d-099b-fca9af48d019@solarflare.com>
-Message-ID: <fde8d4af-1904-585e-1421-1707f255b67b@solarflare.com>
-Date:   Thu, 10 Sep 2020 21:32:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1725791AbgIJUgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 16:36:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56672 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726890AbgIJUdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:33:12 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9392C061573;
+        Thu, 10 Sep 2020 13:33:11 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id y5so6505861otg.5;
+        Thu, 10 Sep 2020 13:33:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MaRMb1u1PASBXrBgy1VMCX3eJaTYWufRPC5mbdyiCdQ=;
+        b=a7wK0ROU1zybzDz/ZX01K2LQ72ZSh7pK+Y1BXyKq0Kq7ZWv1YKH8k/Gl1Z9kgQiOOJ
+         tPU5kiSSCRFiS102b6+VJ9qzWlChWvHvQnOR4O5A9eX7MmcQv4GhuqP3qKj09lLksZzO
+         r2ttUbP6ThllNJWe2zYbdOBtLL7PXvXqQMYlaoZ8usCDu4aq4xjT6fLOgwp2Sf2PeawN
+         vn/RAOzbF3hlUEHopITUqgH7lZfvY47wONPSl4wXtSQYzS/EE2fOMsTKpovFpps8eNXJ
+         kbB+ngRnVtUNZANkdqHf3ai7LEI/ZqgxEAVdVhQ65OXm7e0nfolBg+i1r0S4YUWGlEzt
+         mHqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MaRMb1u1PASBXrBgy1VMCX3eJaTYWufRPC5mbdyiCdQ=;
+        b=mdA8+tR5zjRFGLkws6J8ktX0GYSuDqigd+h7t0wE8HTOlUScTHZSiQVCSqS4DjBCLx
+         LB0LuCslUXqaTxErA91rC48HQW5NtN4hww3TFwA6c/WUlL4ttXt1mwdkKu4n04S8XS4p
+         pxwBiVl8oQlmI8wyTqvKbJZNnpGXyZOdy0StzKPfjXDC5Rcoap/7jR0vPrAHPQ7ucwHp
+         GOesldwcx/1/9y/eWfP0J/fLyhJ1tQMKJAPKGvfeDls/OBVHXPLQjcKxz6e95jxNOu2z
+         vTEbedkFcwnnKFnpZYWbvCnJF9Qd/cPOMeDxuoy8XCrcL26t1GBtzF3cFuAH83mRbAYs
+         Fg6g==
+X-Gm-Message-State: AOAM5300WxusyuMCe2qxLDury5RXoT2z9muZr96V/BzKL6itFmmsalHf
+        SsZncQGg9SxwVV19DIZOmRvVE9qzGw7YaI/jgcM=
+X-Google-Smtp-Source: ABdhPJzU6+u3Wka5CHttm5s9y+snyZ3d6IucHtOGKjAsNA6SInPpN8vF00ANbsfDCRZq8ilOnDrxm+x6yUxHCU2ICM4=
+X-Received: by 2002:a9d:66cf:: with SMTP id t15mr5352433otm.143.1599769990878;
+ Thu, 10 Sep 2020 13:33:10 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <6fbc3a86-0afd-6e6d-099b-fca9af48d019@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25656.007
-X-TM-AS-Result: No-10.788400-8.000000-10
-X-TMASE-MatchedRID: 3EjmIZf/JJaescXXGhKTEtUcSZdVkdtzeouvej40T4gd0WOKRkwsh1ym
-        Rv3NQjsEfGzuoVn0Vs6PQi9XuOWoOHI/MxNRI7UkCWlWR223da4txMagbN9/PK1mtSCXczSRyIV
-        QA/DQ+LfWFw/8OOzxY9duMC+Y92vEGAjMJH/qe440OtJVkKBtK6Iik2/euMx1JnrjDUkDicaklr
-        f/qUIG98ygz/0VjAwgtH/hnKtNt9xyH03Lph54Ugw5bFG3LCD6F9s8UTYYetUOkJQR4QWbsITXW
-        +ul2mssR39tYegAepLKPsWbRi6i9Li4AdylWPIwINIXjO/Augo1TzP60UkdHR9W4auM/sn0dwHJ
-        RSBif9XnSPfNXQ5Pb126LUCaK45J+vbnY9M6ab8gCPGiZqtI8C3Pi/Xo8BzmIS2LNsBlD7HZULV
-        BYooo+vteZaevWy/2ZYVRfQNSbCkOn8Q2HyyWwJ4CIKY/Hg3AtOt1ofVlaoLWRN8STJpl3PoLR4
-        +zsDTtyMdyHKes7lu3nQXe/p+Bvyn4qgNlq/QWpCXxFT0a0StzBTlrNH8SIA==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--10.788400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25656.007
-X-MDID: 1599769953-6dLsrndLWYC9
+References: <20200910161126.30948-1-oded.gabbay@gmail.com> <20200910130112.1f6bd9e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFCwf13SbXqjyu6JHKSTf-EqUxcBZUe4iAfggLhKXOi6DhXYcg@mail.gmail.com> <20200910132835.1bf7b638@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200910132835.1bf7b638@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Oded Gabbay <oded.gabbay@gmail.com>
+Date:   Thu, 10 Sep 2020 23:32:42 +0300
+Message-ID: <CAFCwf127fssgiDEwYvv3rFW7iFFfKKZDE=oxDUbFBcwpz3yQkQ@mail.gmail.com>
+Subject: Re: [PATCH 00/15] Adding GAUDI NIC code to habanalabs driver
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the MC reports the VXLAN_NVGRE datapath capability, then these queues
- can be used for checksum offload of encapsulated packets.
+On Thu, Sep 10, 2020 at 11:28 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 10 Sep 2020 23:16:22 +0300 Oded Gabbay wrote:
+> > On Thu, Sep 10, 2020 at 11:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > On Thu, 10 Sep 2020 19:11:11 +0300 Oded Gabbay wrote:
+> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.c
+> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.h
+> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_dcbnl.c
+> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_debugfs.c
+> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_ethtool.c
+> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_phy.c
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_masks.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm1_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_masks.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc1_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxb_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_masks.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe1_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_stat_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_tmr_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_masks.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe1_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_masks.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs1_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm0_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm1_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm0_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm1_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm0_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm1_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm0_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm1_regs.h
+> > > >  create mode 100644 drivers/misc/habanalabs/include/hw_ip/nic/nic_general.h
+> > >
+> > > The relevant code needs to live under drivers/net/(ethernet/).
+> > > For one thing our automation won't trigger for drivers in random
+> > > (/misc) part of the tree.
+> >
+> > Can you please elaborate on how to do this with a single driver that
+> > is already in misc ?
+> > As I mentioned in the cover letter, we are not developing a
+> > stand-alone NIC. We have a deep-learning accelerator with a NIC
+> > interface.
+> > Therefore, we don't have a separate PCI physical function for the NIC
+> > and I can't have a second driver registering to it.
+>
+> Is it not possible to move the files and still build them into a single
+> module?
+hmm...
+I actually didn't try that as I thought it will be very strange and
+I'm not familiar with other drivers that build as a single ko but have
+files spread out in different subsystems.
+I don't feel it is a better option than what we did here.
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/ef10.c           | 23 ++++++++++++++++-------
- drivers/net/ethernet/sfc/mcdi_functions.c | 16 ++++++++++++----
- 2 files changed, 28 insertions(+), 11 deletions(-)
+Will I need to split pull requests to different subsystem maintainers
+? For the same driver ?
+Sounds to me this is not going to fly.
+Thanks,
+Oded
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 2ae85d3aa4b2..1c1bc0dec757 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -601,10 +601,14 @@ static int efx_ef10_probe(struct efx_nic *efx)
- 	efx_ef10_read_licensed_features(efx);
- 
- 	/* We can have one VI for each vi_stride-byte region.
--	 * However, until we use TX option descriptors we need two TX queues
--	 * per channel.
-+	 * However, until we use TX option descriptors we need up to four
-+	 * TX queues per channel for different checksumming combinations.
- 	 */
--	efx->tx_queues_per_channel = 2;
-+	if (nic_data->datapath_caps &
-+	    (1 << MC_CMD_GET_CAPABILITIES_OUT_VXLAN_NVGRE_LBN))
-+		efx->tx_queues_per_channel = 4;
-+	else
-+		efx->tx_queues_per_channel = 2;
- 	efx->max_vis = efx_ef10_mem_map_size(efx) / efx->vi_stride;
- 	if (!efx->max_vis) {
- 		netif_err(efx, drv, efx->net_dev, "error determining max VIs\n");
-@@ -2146,7 +2150,9 @@ static int efx_ef10_irq_test_generate(struct efx_nic *efx)
- 
- static int efx_ef10_tx_probe(struct efx_tx_queue *tx_queue)
- {
--	tx_queue->type = tx_queue->label & EFX_TXQ_TYPE_OUTER_CSUM;
-+	/* low two bits of label are what we want for type */
-+	BUILD_BUG_ON((EFX_TXQ_TYPE_OUTER_CSUM | EFX_TXQ_TYPE_INNER_CSUM) != 3);
-+	tx_queue->type = tx_queue->label & 3;
- 	return efx_nic_alloc_buffer(tx_queue->efx, &tx_queue->txd.buf,
- 				    (tx_queue->ptr_mask + 1) *
- 				    sizeof(efx_qword_t),
-@@ -2256,6 +2262,7 @@ static u32 efx_ef10_tso_versions(struct efx_nic *efx)
- static void efx_ef10_tx_init(struct efx_tx_queue *tx_queue)
- {
- 	bool csum_offload = tx_queue->type & EFX_TXQ_TYPE_OUTER_CSUM;
-+	bool inner_csum = tx_queue->type & EFX_TXQ_TYPE_INNER_CSUM;
- 	struct efx_channel *channel = tx_queue->channel;
- 	struct efx_nic *efx = tx_queue->efx;
- 	struct efx_ef10_nic_data *nic_data;
-@@ -2282,7 +2289,7 @@ static void efx_ef10_tx_init(struct efx_tx_queue *tx_queue)
- 	 * TSOv2 cannot be used with Hardware timestamping, and is never needed
- 	 * for XDP tx.
- 	 */
--	if (csum_offload && (nic_data->datapath_caps2 &
-+	if ((csum_offload || inner_csum) && (nic_data->datapath_caps2 &
- 			(1 << MC_CMD_GET_CAPABILITIES_V2_OUT_TX_TSO_V2_LBN)) &&
- 	    !tx_queue->timestamping && !tx_queue->xdp_tx) {
- 		tso_v2 = true;
-@@ -2303,12 +2310,14 @@ static void efx_ef10_tx_init(struct efx_tx_queue *tx_queue)
- 	tx_queue->buffer[0].flags = EFX_TX_BUF_OPTION;
- 	tx_queue->insert_count = 1;
- 	txd = efx_tx_desc(tx_queue, 0);
--	EFX_POPULATE_QWORD_5(*txd,
-+	EFX_POPULATE_QWORD_7(*txd,
- 			     ESF_DZ_TX_DESC_IS_OPT, true,
- 			     ESF_DZ_TX_OPTION_TYPE,
- 			     ESE_DZ_TX_OPTION_DESC_CRC_CSUM,
- 			     ESF_DZ_TX_OPTION_UDP_TCP_CSUM, csum_offload,
--			     ESF_DZ_TX_OPTION_IP_CSUM, csum_offload,
-+			     ESF_DZ_TX_OPTION_IP_CSUM, csum_offload && !tso_v2,
-+			     ESF_DZ_TX_OPTION_INNER_UDP_TCP_CSUM, inner_csum,
-+			     ESF_DZ_TX_OPTION_INNER_IP_CSUM, inner_csum && !tso_v2,
- 			     ESF_DZ_TX_TIMESTAMP, tx_queue->timestamping);
- 	tx_queue->write_count = 1;
- 
-diff --git a/drivers/net/ethernet/sfc/mcdi_functions.c b/drivers/net/ethernet/sfc/mcdi_functions.c
-index c80246e6dee8..58582a0a42e4 100644
---- a/drivers/net/ethernet/sfc/mcdi_functions.c
-+++ b/drivers/net/ethernet/sfc/mcdi_functions.c
-@@ -165,6 +165,7 @@ int efx_mcdi_tx_init(struct efx_tx_queue *tx_queue, bool tso_v2)
- 	MCDI_DECLARE_BUF(inbuf, MC_CMD_INIT_TXQ_IN_LEN(EFX_MAX_DMAQ_SIZE * 8 /
- 						       EFX_BUF_SIZE));
- 	bool csum_offload = tx_queue->type & EFX_TXQ_TYPE_OUTER_CSUM;
-+	bool inner_csum = tx_queue->type & EFX_TXQ_TYPE_INNER_CSUM;
- 	size_t entries = tx_queue->txd.buf.len / EFX_BUF_SIZE;
- 	struct efx_channel *channel = tx_queue->channel;
- 	struct efx_nic *efx = tx_queue->efx;
-@@ -194,16 +195,23 @@ int efx_mcdi_tx_init(struct efx_tx_queue *tx_queue, bool tso_v2)
- 	inlen = MC_CMD_INIT_TXQ_IN_LEN(entries);
- 
- 	do {
--		MCDI_POPULATE_DWORD_4(inbuf, INIT_TXQ_IN_FLAGS,
-+		/* TSOv2 implies IP header checksum offload for TSO frames,
-+		 * so we can safely disable IP header checksum offload for
-+		 * everything else.  If we don't have TSOv2, then we have to
-+		 * enable IP header checksum offload, which is strictly
-+		 * incorrect but better than breaking TSO.
-+		 */
-+		MCDI_POPULATE_DWORD_6(inbuf, INIT_TXQ_IN_FLAGS,
- 				/* This flag was removed from mcdi_pcol.h for
- 				 * the non-_EXT version of INIT_TXQ.  However,
- 				 * firmware still honours it.
- 				 */
- 				INIT_TXQ_EXT_IN_FLAG_TSOV2_EN, tso_v2,
--				INIT_TXQ_IN_FLAG_IP_CSUM_DIS, !csum_offload,
-+				INIT_TXQ_IN_FLAG_IP_CSUM_DIS, !(csum_offload && tso_v2),
- 				INIT_TXQ_IN_FLAG_TCP_CSUM_DIS, !csum_offload,
--				INIT_TXQ_EXT_IN_FLAG_TIMESTAMP,
--						tx_queue->timestamping);
-+				INIT_TXQ_EXT_IN_FLAG_TIMESTAMP, tx_queue->timestamping,
-+				INIT_TXQ_IN_FLAG_INNER_IP_CSUM_EN, inner_csum && !tso_v2,
-+				INIT_TXQ_IN_FLAG_INNER_TCP_CSUM_EN, inner_csum);
- 
- 		rc = efx_mcdi_rpc_quiet(efx, MC_CMD_INIT_TXQ, inbuf, inlen,
- 					NULL, 0, NULL);
 
+>
+> > We did this design based on existing examples in the kernel
+> > (registering to netdev), such as (just a few examples):
+> > 1. sgi-xp driver in drivers/misc/sgi-xp (see file xpnet.c)
+> > 2. bnx2fc in drivers/scsi/bnx2fc
+> >
+> > Thanks,
+> > Oded
+>
