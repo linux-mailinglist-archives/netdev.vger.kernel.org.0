@@ -2,235 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D349264A7C
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 18:59:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E89D264A71
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 18:57:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgIJQ71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 12:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
+        id S1727812AbgIJQ5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 12:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727041AbgIJQ5s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 12:57:48 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81E1C061385
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 09:49:07 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id p9so9722507ejf.6
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 09:49:07 -0700 (PDT)
+        with ESMTP id S1727095AbgIJQzd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 12:55:33 -0400
+Received: from mail-qk1-x74a.google.com (mail-qk1-x74a.google.com [IPv6:2607:f8b0:4864:20::74a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14508C061388
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 09:53:20 -0700 (PDT)
+Received: by mail-qk1-x74a.google.com with SMTP id u23so3970598qku.17
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 09:53:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xvEQyyg3oPETZShok18kOiiLEep3Vy9+jr8PlMr+V/E=;
-        b=U4gOGkQeMaJxdLmB4q9EGEzrEV2JSf1CksCM6llgbFhniLH8iJRj4EdwAT6NAW9lgi
-         h3+QGUfljrNYdtqcxs7F3c17ubZkVEiV6KQRXzxWDsu1MDjVqNzNANQvFbEjRNZWmnEy
-         V3uj8hojTfACH+DF9NYdViBfcv2s7EhCbWolS0e+pYr91bFlOIpJ6xHbCgT3CFgbxFkN
-         pd5TDivkmwpoVgdtbSmns0/4xhRlfH4OizfzGEwiez562jNWoxzlSXZ3BdoZDWxzA7pp
-         EPlsIpxFgSaNBjNFhnIb0evlusH8tq7lzC90JXc1DQfQgTOz24crWQslrRQnCuh8WFHo
-         Q0hw==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=S6AuheHIRwyrJQTuUfR58Qd8kmBi7CvFbpaQ8Qcutxg=;
+        b=YNttQCF+B1/hAzcl2uJhy37rwLZYHlOQYNDWR7L0rIRoNo4K5glk919Fqj886W3LSZ
+         3E3jSggf3TItjZqgO5lxnXTe7JAI6ASWuA+vtqWN1ZwYak2iuIwDABkWmxc9z1HHTFpv
+         He5gZnY90DhbgiR7qgK06Cotnn4fXxP2EIZjsz69P81rt4R/6SPuqspmh5opXE5yfmuG
+         k3X9GqC1ouQ55OdRYHXFmGdFE7X8Y5n51ByIuhjwXTXaPOIT6WMv+jDshS5xPXssKxRw
+         J3lgYK4gRVrDeidtxKiQyZarGR0ntT0U+M5TkESpOqw3oJPDUv7GNBpebCh0+acqOG6v
+         DHyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xvEQyyg3oPETZShok18kOiiLEep3Vy9+jr8PlMr+V/E=;
-        b=UN22Ct/w7NnuuvJ6kYH6HsYTiJgGGPedB0sOgSYStZ/6gN8sQuKQcjUfQWF4P2nkQA
-         Z9SPoeCm+/7N/1G1peVzKZqfhUK7JHddCjEeWl7ibhkND8dmX5z5SD9rzYJ8Te+cjLzt
-         05TCVW0E4vvEIBw08kwUoOP2KmEOFRM2SSEhp9r1+ZfTZtRBrv3TSHqqRzhsipQXo3hT
-         B65Vc53g2q4lskMtdAEjUKB8FTV6iI4cNP2fhUoit0IKONrGvWbiHAs204p0eJ1imCEp
-         5ioJmh5n8rgpDrfInKdBaoknzfRgDBjQ4RPNSE1vUXwUfziwEXx3Ahr6SBhmE/f9d2TX
-         gqaQ==
-X-Gm-Message-State: AOAM532e8xM8Y6id6QcOsc/qAqm5fKQhyzfmv4KwH5Ew6o07JkXEiZRI
-        borD3kP6qkAkYpYh6WtoOtM=
-X-Google-Smtp-Source: ABdhPJyAsQEh63Lu+3PAd/l5sKF7T1Q+MSbvnNKNW4wnkgz05ZTQ95XeqzTMJr9LsUMupH8ZYyPKKQ==
-X-Received: by 2002:a17:906:a1c2:: with SMTP id bx2mr10173620ejb.426.1599756546509;
-        Thu, 10 Sep 2020 09:49:06 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id o93sm8108024edd.75.2020.09.10.09.49.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 09:49:06 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     jakub.kicinski@netronome.com, davem@davemloft.net
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        netdev@vger.kernel.org
-Subject: [PATCH v2 net-next 4/4] Revert "net: dsa: Add more convenient functions for installing port VLANs"
-Date:   Thu, 10 Sep 2020 19:48:57 +0300
-Message-Id: <20200910164857.1221202-5-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200910164857.1221202-1-olteanv@gmail.com>
-References: <20200910164857.1221202-1-olteanv@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=S6AuheHIRwyrJQTuUfR58Qd8kmBi7CvFbpaQ8Qcutxg=;
+        b=ITJXL8R6g5X9xAPjqSnLyu2DNIqwlQ8RE5P3xynG8Iizzrce2JXCTDnAweyNPLbGEX
+         +X0QpP9IaZOjwGnDMsMEUSefeHysQD4zq29Msz+Ykb5P09QNjbLYsayjeWFg2rB2CSVx
+         WKnE/FDs8Cvw2GypP/V8JOAhNHcw18zsS2iYQCNpTBQ3P4OYrjC4OT9xyXzN9lNsgODQ
+         ayhVoShSwwxacFbqere/Ptj2h98TMDmay1VrAu2qEZZUeOfJN/RJrIbtYeHoLt4PvK92
+         MiD4bzNdXEjbrJQ4U1VZKqZ0BTYkB5xuPCxoJIQ4OvPZgznYGUJ8v/d68cTp3HhSl7lo
+         /rwQ==
+X-Gm-Message-State: AOAM530gIBVk0c0uETz5OL3zJgQun/Q94XTfH9Q5kxUfPryFS7F33uen
+        h90RgW927hASS9E+WZqIZAKsakAJU5CU01Y=
+X-Google-Smtp-Source: ABdhPJyrz9ZaTwIBkNvZxIjwvnbVIynOzP3cfbLTpgTDUROl0innMbtXgRZiAm3O4eiCFpYLebjPrA+i+Oqh0+8=
+X-Received: from soy.nyc.corp.google.com ([2620:0:1003:312:7220:84ff:fe09:3008])
+ (user=ncardwell job=sendgmr) by 2002:ad4:4891:: with SMTP id
+ bv17mr9572494qvb.27.1599756799211; Thu, 10 Sep 2020 09:53:19 -0700 (PDT)
+Date:   Thu, 10 Sep 2020 12:53:17 -0400
+Message-Id: <20200910165317.2024700-1-ncardwell@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
+Subject: [PATCH bpf-next v2 3/5] tcp: simplify tcp_set_congestion_control():
+ always reinitialize
+From:   Neal Cardwell <ncardwell@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org, Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>, Kevin Yang <yyd@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Lawrence Brakmo <brakmo@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Now that the previous patches ensure that all call sites for
+tcp_set_congestion_control() want to initialize congestion control, we
+can simplify tcp_set_congestion_control() by removing the reinit
+argument and the code to support it.
 
-This reverts commit 314f76d7a68bab0516aa52877944e6aacfa0fc3f.
-
-Citing that commit message, the call graph was:
-
-    dsa_slave_vlan_rx_add_vid   dsa_port_setup_8021q_tagging
-                |                        |
-                |                        |
-                |          +-------------+
-                |          |
-                v          v
-               dsa_port_vid_add      dsa_slave_port_obj_add
-                      |                         |
-                      +-------+         +-------+
-                              |         |
-                              v         v
-                           dsa_port_vlan_add
-
-Now that tag_8021q has its own ops structure, it no longer relies on
-dsa_port_vid_add, and therefore on the dsa_switch_ops to install its
-VLANs.
-
-So dsa_port_vid_add now only has one single caller. So we can simplify
-the call graph to what it was before, aka:
-
-        dsa_slave_vlan_rx_add_vid     dsa_slave_port_obj_add
-                      |                         |
-                      +-------+         +-------+
-                              |         |
-                              v         v
-                           dsa_port_vlan_add
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Neal Cardwell <ncardwell@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
+Acked-by: Kevin Yang <yyd@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Lawrence Brakmo <brakmo@fb.com>
 ---
- net/dsa/dsa_priv.h |  2 --
- net/dsa/port.c     | 33 ---------------------------------
- net/dsa/slave.c    | 34 +++++++++++++++++++++++++++++++---
- 3 files changed, 31 insertions(+), 38 deletions(-)
+ include/net/tcp.h   |  2 +-
+ net/core/filter.c   |  3 +--
+ net/ipv4/tcp.c      |  2 +-
+ net/ipv4/tcp_cong.c | 11 ++---------
+ 4 files changed, 5 insertions(+), 13 deletions(-)
 
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 1653e3377cb3..2da656d984ef 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -164,8 +164,6 @@ int dsa_port_vlan_add(struct dsa_port *dp,
- 		      struct switchdev_trans *trans);
- int dsa_port_vlan_del(struct dsa_port *dp,
- 		      const struct switchdev_obj_port_vlan *vlan);
--int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags);
--int dsa_port_vid_del(struct dsa_port *dp, u16 vid);
- int dsa_port_link_register_of(struct dsa_port *dp);
- void dsa_port_link_unregister_of(struct dsa_port *dp);
- extern const struct phylink_mac_ops dsa_port_phylink_mac_ops;
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index e23ece229c7e..46c9bf709683 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -433,39 +433,6 @@ int dsa_port_vlan_del(struct dsa_port *dp,
- 	return dsa_port_notify(dp, DSA_NOTIFIER_VLAN_DEL, &info);
- }
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index e85d564446c6..f857146c17a5 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1104,7 +1104,7 @@ void tcp_get_available_congestion_control(char *buf, size_t len);
+ void tcp_get_allowed_congestion_control(char *buf, size_t len);
+ int tcp_set_allowed_congestion_control(char *allowed);
+ int tcp_set_congestion_control(struct sock *sk, const char *name, bool load,
+-			       bool reinit, bool cap_net_admin);
++			       bool cap_net_admin);
+ u32 tcp_slow_start(struct tcp_sock *tp, u32 acked);
+ void tcp_cong_avoid_ai(struct tcp_sock *tp, u32 w, u32 acked);
  
--int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags)
--{
--	struct switchdev_obj_port_vlan vlan = {
--		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
--		.flags = flags,
--		.vid_begin = vid,
--		.vid_end = vid,
--	};
--	struct switchdev_trans trans;
--	int err;
--
--	trans.ph_prepare = true;
--	err = dsa_port_vlan_add(dp, &vlan, &trans);
--	if (err)
--		return err;
--
--	trans.ph_prepare = false;
--	return dsa_port_vlan_add(dp, &vlan, &trans);
--}
--EXPORT_SYMBOL(dsa_port_vid_add);
--
--int dsa_port_vid_del(struct dsa_port *dp, u16 vid)
--{
--	struct switchdev_obj_port_vlan vlan = {
--		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
--		.vid_begin = vid,
--		.vid_end = vid,
--	};
--
--	return dsa_port_vlan_del(dp, &vlan);
--}
--EXPORT_SYMBOL(dsa_port_vid_del);
--
- static struct phy_device *dsa_port_get_phy_device(struct dsa_port *dp)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 067f6759a68f..e89d6d7da03c 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4451,8 +4451,7 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+ 			strncpy(name, optval, min_t(long, optlen,
+ 						    TCP_CA_NAME_MAX-1));
+ 			name[TCP_CA_NAME_MAX-1] = 0;
+-			ret = tcp_set_congestion_control(sk, name, false,
+-							 true, true);
++			ret = tcp_set_congestion_control(sk, name, false, true);
+ 		} else {
+ 			struct inet_connection_sock *icsk = inet_csk(sk);
+ 			struct tcp_sock *tp = tcp_sk(sk);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 7360d3db2b61..e58ab9db73ff 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3050,7 +3050,7 @@ static int do_tcp_setsockopt(struct sock *sk, int level, int optname,
+ 		name[val] = 0;
+ 
+ 		lock_sock(sk);
+-		err = tcp_set_congestion_control(sk, name, true, true,
++		err = tcp_set_congestion_control(sk, name, true,
+ 						 ns_capable(sock_net(sk)->user_ns,
+ 							    CAP_NET_ADMIN));
+ 		release_sock(sk);
+diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
+index d18d7a1ce4ce..a9b0fb52a1ec 100644
+--- a/net/ipv4/tcp_cong.c
++++ b/net/ipv4/tcp_cong.c
+@@ -341,7 +341,7 @@ int tcp_set_allowed_congestion_control(char *val)
+  * already initialized.
+  */
+ int tcp_set_congestion_control(struct sock *sk, const char *name, bool load,
+-			       bool reinit, bool cap_net_admin)
++			       bool cap_net_admin)
  {
- 	struct device_node *phy_dn;
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 4987f94a8f52..66a5268398a5 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1233,7 +1233,15 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 				     u16 vid)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct switchdev_obj_port_vlan vlan = {
-+		.obj.id = SWITCHDEV_OBJ_ID_PORT_VLAN,
-+		.vid_begin = vid,
-+		.vid_end = vid,
-+		/* This API only allows programming tagged, non-PVID VIDs */
-+		.flags = 0,
-+	};
- 	struct bridge_vlan_info info;
-+	struct switchdev_trans trans;
- 	int ret;
- 
- 	/* Check for a possible bridge VLAN entry now since there is no
-@@ -1252,11 +1260,25 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 			return -EBUSY;
- 	}
- 
--	ret = dsa_port_vid_add(dp, vid, 0);
-+	/* User port... */
-+	trans.ph_prepare = true;
-+	ret = dsa_port_vlan_add(dp, &vlan, &trans);
-+	if (ret)
-+		return ret;
-+
-+	trans.ph_prepare = false;
-+	ret = dsa_port_vlan_add(dp, &vlan, &trans);
- 	if (ret)
- 		return ret;
- 
--	ret = dsa_port_vid_add(dp->cpu_dp, vid, 0);
-+	/* And CPU port... */
-+	trans.ph_prepare = true;
-+	ret = dsa_port_vlan_add(dp->cpu_dp, &vlan, &trans);
-+	if (ret)
-+		return ret;
-+
-+	trans.ph_prepare = false;
-+	ret = dsa_port_vlan_add(dp->cpu_dp, &vlan, &trans);
- 	if (ret)
- 		return ret;
- 
-@@ -1267,6 +1289,12 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 				      u16 vid)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct switchdev_obj_port_vlan vlan = {
-+		.vid_begin = vid,
-+		.vid_end = vid,
-+		/* This API only allows programming tagged, non-PVID VIDs */
-+		.flags = 0,
-+	};
- 	struct bridge_vlan_info info;
- 	int ret;
- 
-@@ -1289,7 +1317,7 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 	/* Do not deprogram the CPU port as it may be shared with other user
- 	 * ports which can be members of this VLAN as well.
- 	 */
--	return dsa_port_vid_del(dp, vid);
-+	return dsa_port_vlan_del(dp, &vlan);
- }
- 
- struct dsa_hw_port {
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	const struct tcp_congestion_ops *ca;
+@@ -365,15 +365,8 @@ int tcp_set_congestion_control(struct sock *sk, const char *name, bool load,
+ 	if (!ca) {
+ 		err = -ENOENT;
+ 	} else if (!load) {
+-		const struct tcp_congestion_ops *old_ca = icsk->icsk_ca_ops;
+-
+ 		if (bpf_try_module_get(ca, ca->owner)) {
+-			if (reinit) {
+-				tcp_reinit_congestion_control(sk, ca);
+-			} else {
+-				icsk->icsk_ca_ops = ca;
+-				bpf_module_put(old_ca, old_ca->owner);
+-			}
++			tcp_reinit_congestion_control(sk, ca);
+ 		} else {
+ 			err = -EBUSY;
+ 		}
 -- 
-2.25.1
+2.28.0.526.ge36021eeef-goog
 
