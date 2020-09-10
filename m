@@ -2,111 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FCEF26536F
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:35:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E734A265360
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:33:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728330AbgIJVew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:34:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730665AbgIJNtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 09:49:45 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90918C061798;
-        Thu, 10 Sep 2020 06:49:21 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id o5so6737546wrn.13;
-        Thu, 10 Sep 2020 06:49:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wSq34HEf31gn6oOAhzZl6n09VNcY+CG3VybV5LfKyMk=;
-        b=BnP67ComNn7+2jrjEyAsNZC0bFk4NfGVAlM5NjtnawbBwhF8SH0nrIa19Cri50upk3
-         gsmCMhGEVNKwoY4rdOmwP5UP+x+2VGvDugxwUWs5OCrCOcPQxjJ9sn9JvslfpbFtOm+V
-         CDmGvkPjLkec59tXMvoCdLcX4YloHoA4rowdVJcwdyMG4jOvTa63wRn1gK1PDT1Vi/R6
-         CBd9Q5Hk1Pdc+dwTNjhZlM3mb/erRagn4ZVlwOp1quZQtzJUwnGSyY1jc96wtqC7BMkp
-         A5setIodvCVh2ihyuFBh9FoGLDJU3imj8R6/eqIMBNS3t+OgzvkZz8bBJM1fZVBLNboz
-         Y0Ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wSq34HEf31gn6oOAhzZl6n09VNcY+CG3VybV5LfKyMk=;
-        b=Up8kvUruNaJ6pTqOa8AgCLSUFcoTIWlZUwINb2G/SencWgt5hWNMqUDM50me03HovO
-         Q5TVZ/vp0R+YTbAV7aU/YBef68O/7n54dNjfUK/GmZ06v2gemlAJFI2IM1y2y313k0rh
-         CtiAH3yl7WmyQo7A88RshCHLMKRufNWXtn0Yl5fGmJbCoy6qDJ85Ivi7TsK0WrlddFh7
-         o/K1RyrKKMoQklG5fFnc+/T1vETQ4PuDZEosVTLqYS6m9h4HsmgmROQub43HAYLt+SeF
-         3yXoD0y3x2D8Ka2VEXHf0U8LStuA1sBmjf5C/T8ZeGjaYdw4csylkIPyHnOLtEbwUQKh
-         Vl5Q==
-X-Gm-Message-State: AOAM5311iGcsDzzioeWZyJZgEZ4q2+yBkeqk6Wxn9e6LXDoWImHTbX4J
-        uTT7E5yXo4aLZ7b621tsMio=
-X-Google-Smtp-Source: ABdhPJxIeD3Vk09q1A1rQBEDM4BhhcgUZNt2p/vmLNH2IhWM7sDMSb0ymFROoZN3qEu1SSzrUiNqhA==
-X-Received: by 2002:adf:de8b:: with SMTP id w11mr9012940wrl.401.1599745759936;
-        Thu, 10 Sep 2020 06:49:19 -0700 (PDT)
-Received: from localhost.localdomain (cpc83661-brig20-2-0-cust443.3-3.cable.virginm.net. [82.28.105.188])
-        by smtp.gmail.com with ESMTPSA id s124sm3786613wme.29.2020.09.10.06.49.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 06:49:19 -0700 (PDT)
-From:   Alex Dewar <alex.dewar90@gmail.com>
-Cc:     Alex Dewar <alex.dewar90@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Matteo Croce <mcroce@microsoft.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: mvpp2: ptp: Fix unused variables
-Date:   Thu, 10 Sep 2020 14:49:10 +0100
-Message-Id: <20200910134915.46660-1-alex.dewar90@gmail.com>
-X-Mailer: git-send-email 2.28.0
+        id S1728191AbgIJVdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:33:31 -0400
+Received: from mga17.intel.com ([192.55.52.151]:38835 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728169AbgIJVdN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 17:33:13 -0400
+IronPort-SDR: K4iwt5R6G7BPkpQd9Qmxo3rYW+/n1LIMIwZ4IpNDiGbjjDsGlDk3u5SjdDxN9Qi+XJGgP7NtUR
+ mWy1x1IZzRew==
+X-IronPort-AV: E=McAfee;i="6000,8403,9740"; a="138664438"
+X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
+   d="scan'208";a="138664438"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:33:12 -0700
+IronPort-SDR: 6jkK6ujAcP0Ye4szwIuosFAJEUxAjYICa616Or7vo6gnut3fl8rcF9iCxfzBm47jQke1gbCgl7
+ /ZxHJBtHYXzQ==
+X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
+   d="scan'208";a="505978309"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.252.128.198]) ([10.252.128.198])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:33:11 -0700
+Subject: Re: [net-next v4 2/5] devlink: convert flash_update to use params
+ structure
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+References: <20200909222653.32994-1-jacob.e.keller@intel.com>
+ <20200909222653.32994-3-jacob.e.keller@intel.com>
+ <20200909175545.3ea38a80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <f8c32083-da74-b7cc-e6a0-6b819533897c@intel.com>
+ <20200910142324.1932401d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <5fe24aae-6401-c879-b235-a12c1416d00b@intel.com>
+Date:   Thu, 10 Sep 2020 14:33:07 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <20200910142324.1932401d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the functions mvpp2_isr_handle_xlg() and
-mvpp2_isr_handle_gmac_internal(), the bool variable link is assigned a
-true value in the case that a given bit of val is set. However, if the
-bit is unset, no value is assigned to link and it is then passed to
-mvpp2_isr_handle_link() without being initialised. Fix by assigning to
-link the value of the bit test.
 
-Build-tested on x86.
 
-Fixes: 36cfd3a6e52b ("net: mvpp2: restructure "link status" interrupt handling")
-Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+On 9/10/2020 2:23 PM, Jakub Kicinski wrote:
+> On Thu, 10 Sep 2020 13:59:07 -0700 Jacob Keller wrote:
+>> On 9/9/2020 5:55 PM, Jakub Kicinski wrote:
+>>> On Wed,  9 Sep 2020 15:26:50 -0700 Jacob Keller wrote:  
+>>>> The devlink core recently gained support for checking whether the driver
+>>>> supports a flash_update parameter, via `supported_flash_update_params`.
+>>>> However, parameters are specified as function arguments. Adding a new
+>>>> parameter still requires modifying the signature of the .flash_update
+>>>> callback in all drivers.
+>>>>
+>>>> Convert the .flash_update function to take a new `struct
+>>>> devlink_flash_update_params` instead. By using this structure, and the
+>>>> `supported_flash_update_params` bit field, a new parameter to
+>>>> flash_update can be added without requiring modification to existing
+>>>> drivers.
+>>>>
+>>>> As before, all parameters except file_name will require driver opt-in.
+>>>> Because file_name is a necessary field to for the flash_update to make
+>>>> sense, no "SUPPORTED" bitflag is provided and it is always considered
+>>>> valid. All future additional parameters will require a new bit in the
+>>>> supported_flash_update_params bitfield.  
+>>>
+>>> I keep thinking we should also make the core do the
+>>> request_firmware_direct(). What else is the driver gonna do with the file name..
+>>>
+>>> But I don't want to drag your series out so:
+>>>
+>>> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+>>
+>> Hmm. What does _direct do? I guess it means it won't fall back to the
+>> userspace helper if it can't find the firmware? It looks like MLX
+>> drivers use it, but others seem to just stick to regular request_firmware.
+> 
+> FWIW _direct() is pretty much meaningless today, I think the kernel
+> support for non-direct is mostly dropped. Systemd doesn't support it
+> either.
+> 
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 7d86940747d1..87b1c9cfdc77 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -3070,8 +3070,7 @@ static void mvpp2_isr_handle_xlg(struct mvpp2_port *port)
- 	val = readl(port->base + MVPP22_XLG_INT_STAT);
- 	if (val & MVPP22_XLG_INT_STAT_LINK) {
- 		val = readl(port->base + MVPP22_XLG_STATUS);
--		if (val & MVPP22_XLG_STATUS_LINK_UP)
--			link = true;
-+		link = (val & MVPP22_XLG_STATUS_LINK_UP);
- 		mvpp2_isr_handle_link(port, link);
- 	}
- }
-@@ -3087,8 +3086,7 @@ static void mvpp2_isr_handle_gmac_internal(struct mvpp2_port *port)
- 		val = readl(port->base + MVPP22_GMAC_INT_STAT);
- 		if (val & MVPP22_GMAC_INT_STAT_LINK) {
- 			val = readl(port->base + MVPP2_GMAC_STATUS0);
--			if (val & MVPP2_GMAC_STATUS0_LINK_UP)
--				link = true;
-+			link = (val & MVPP2_GMAC_STATUS0_LINK_UP);
- 			mvpp2_isr_handle_link(port, link);
- 		}
- 	}
--- 
-2.28.0
+Ah, I see. So basically using either doesn't really impact anything
+because everything will just do the direct method and fail otherwise? Ok.
 
+>> This seems like an improvement that we can handle in a follow up series
+>> either way. Thanks for the review!
+> 
+> Agreed. Too many pending patches for this area already :S
+> 
+Yea. I'm happy to wait a bit for this to settle and then look at it
+again in a few weeks.
+
+Thanks,
+Jake
