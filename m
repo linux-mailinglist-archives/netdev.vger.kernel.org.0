@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0B35265063
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:16:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D50F7265058
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:12:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726890AbgIJUP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 16:15:58 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:56928 "EHLO huawei.com"
+        id S1726942AbgIJULp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 16:11:45 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:57152 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731052AbgIJO7S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 10:59:18 -0400
+        id S1731156AbgIJO7Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 10:59:25 -0400
 Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id AC628D4FF56AA92630DB;
-        Thu, 10 Sep 2020 22:59:13 +0800 (CST)
+        by Forcepoint Email with ESMTP id 8EDC6AD778990F2F308B;
+        Thu, 10 Sep 2020 22:59:18 +0800 (CST)
 Received: from huawei.com (10.175.113.133) by DGGEMS412-HUB.china.huawei.com
  (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Thu, 10 Sep 2020
  22:59:08 +0800
@@ -22,9 +22,9 @@ To:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
         <davem@davemloft.net>, <kuba@kernel.org>, <snelson@pensando.io>,
         <colin.king@canonical.com>, <maz@kernel.org>, <luobin9@huawei.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 2/6] net: hns: fix 'cdev' kernel-doc warning in hnae_ae_unregister()
-Date:   Thu, 10 Sep 2020 22:56:16 +0800
-Message-ID: <20200910145620.27470-3-wanghai38@huawei.com>
+Subject: [PATCH net-next 3/6] net: hns: Fix some kernel-doc warnings in hns_dsaf_xgmac.c
+Date:   Thu, 10 Sep 2020 22:56:17 +0800
+Message-ID: <20200910145620.27470-4-wanghai38@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200910145620.27470-1-wanghai38@huawei.com>
 References: <20200910145620.27470-1-wanghai38@huawei.com>
@@ -37,31 +37,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rename cdev to hdev.
-
 Fixes the following W=1 kernel build warning(s):
 
-drivers/net/ethernet/hisilicon/hns/hnae.c:444: warning: Excess function parameter 'cdev' description in 'hnae_ae_unregister'
+drivers/net/ethernet/hisilicon/hns/hns_dsaf_xgmac.c:137: warning: Excess function parameter 'drv' description in 'hns_xgmac_enable'
+drivers/net/ethernet/hisilicon/hns/hns_dsaf_xgmac.c:497: warning: Excess function parameter 'cmd' description in 'hns_xgmac_get_regs'
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Wang Hai <wanghai38@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns/hnae.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns/hns_dsaf_xgmac.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hnae.c b/drivers/net/ethernet/hisilicon/hns/hnae.c
-index 08339278c722..e017b7c34140 100644
---- a/drivers/net/ethernet/hisilicon/hns/hnae.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hnae.c
-@@ -438,7 +438,7 @@ EXPORT_SYMBOL(hnae_ae_register);
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_xgmac.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_xgmac.c
+index 0a3dbab2dfc9..d832cd018c1c 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_xgmac.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_xgmac.c
+@@ -130,7 +130,7 @@ static void hns_xgmac_lf_rf_control_init(struct mac_driver *mac_drv)
  
  /**
-  * hnae_ae_unregister - unregisters a HNAE AE engine
-- * @cdev: the device to unregister
-+ * @hdev: the device to unregister
+  *hns_xgmac_enable - enable xgmac port
+- *@drv: mac driver
++ *@mac_drv: mac driver
+  *@mode: mode of mac port
   */
- void hnae_ae_unregister(struct hnae_ae_dev *hdev)
- {
+ static void hns_xgmac_enable(void *mac_drv, enum mac_commom_mode mode)
+@@ -490,7 +490,6 @@ static void hns_xgmac_get_link_status(void *mac_drv, u32 *link_stat)
+ /**
+  *hns_xgmac_get_regs - dump xgmac regs
+  *@mac_drv: mac driver
+- *@cmd:ethtool cmd
+  *@data:data for value of regs
+  */
+ static void hns_xgmac_get_regs(void *mac_drv, void *data)
 -- 
 2.17.1
 
