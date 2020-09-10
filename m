@@ -2,170 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52CCD2645F2
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 14:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A146D2645F3
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 14:26:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730544AbgIJM0E convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 10 Sep 2020 08:26:04 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:40892 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730629AbgIJMWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 08:22:35 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-41-ZIZx2N4YMYuseLlSeE1wBw-1; Thu, 10 Sep 2020 08:22:30 -0400
-X-MC-Unique: ZIZx2N4YMYuseLlSeE1wBw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 15076801AEE;
-        Thu, 10 Sep 2020 12:22:28 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.192.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A6F9C7E8F2;
-        Thu, 10 Sep 2020 12:22:25 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: [PATCH bpf-next] selftests/bpf: Check trampoline execution in d_path test
-Date:   Thu, 10 Sep 2020 14:22:24 +0200
-Message-Id: <20200910122224.1683258-1-jolsa@kernel.org>
+        id S1730696AbgIJM0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 08:26:23 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:41632 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730654AbgIJMWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 08:22:47 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 30DA81C0B9C; Thu, 10 Sep 2020 14:22:41 +0200 (CEST)
+Date:   Thu, 10 Sep 2020 14:22:40 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        Dan Murphy <dmurphy@ti.com>,
+        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next + leds v2 5/7] net: phy: add support for LEDs
+ controlled by ethernet PHY chips
+Message-ID: <20200910122240.GB7907@duo.ucw.cz>
+References: <20200909162552.11032-1-marek.behun@nic.cz>
+ <20200909162552.11032-6-marek.behun@nic.cz>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Mimecast-Spam-Score: 0.0
-X-Mimecast-Originator: kernel.org
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="R3G7APHDIzY6R/pk"
+Content-Disposition: inline
+In-Reply-To: <20200909162552.11032-6-marek.behun@nic.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some kernels builds might inline vfs_getattr call within
-fstat syscall code path, so fentry/vfs_getattr trampoline
-is not called.
 
-I'm not sure how to handle this in some generic way other
-than use some other function, but that might get inlined at
-some point as well.
+--R3G7APHDIzY6R/pk
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Adding flags that indicate trampolines were called and failing
-the test if neither of them got called.
+On Wed 2020-09-09 18:25:50, Marek Beh=FAn wrote:
+> This patch uses the new API for HW controlled LEDs to add support for
+> probing and control of LEDs connected to an ethernet PHY chip.
+>=20
+> A PHY driver wishing to utilize this API needs to implement the methods
+> in struct hw_controlled_led_ops and set the member led_ops in struct
+> phy_driver to point to that structure.
+>=20
+> Signed-off-by: Marek Beh=FAn <marek.behun@nic.cz>
 
-  $ sudo ./test_progs -t d_path
-  test_d_path:PASS:setup 0 nsec
-  ...
-  trigger_fstat_events:PASS:trigger 0 nsec
-  test_d_path:FAIL:124 trampolines not called
-  #22 d_path:FAIL
-  Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
+Acked-by: Pavel Machek <pavel@ucw.cz>
 
-If only one trampoline is called, it's still enough to test
-the helper, so only warn about missing trampoline call and
-continue in test.
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
-  $ sudo ./test_progs -t d_path -v
-  test_d_path:PASS:setup 0 nsec
-  ...
-  trigger_fstat_events:PASS:trigger 0 nsec
-  fentry/vfs_getattr not called
-  #22 d_path:OK
-  Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+--R3G7APHDIzY6R/pk
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Signed-off-by: Jiri Olsa <jolsa@redhat.com>
----
- .../testing/selftests/bpf/prog_tests/d_path.c | 25 +++++++++++++++----
- .../testing/selftests/bpf/progs/test_d_path.c |  7 ++++++
- 2 files changed, 27 insertions(+), 5 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
-index fc12e0d445ff..ec15f7d1dd0a 100644
---- a/tools/testing/selftests/bpf/prog_tests/d_path.c
-+++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
-@@ -120,26 +120,41 @@ void test_d_path(void)
- 	if (err < 0)
- 		goto cleanup;
- 
-+	if (!bss->called_stat && !bss->called_close) {
-+		PRINT_FAIL("trampolines not called\n");
-+		goto cleanup;
-+	}
-+
-+	if (!bss->called_stat) {
-+		fprintf(stdout, "fentry/vfs_getattr not called\n");
-+		goto cleanup;
-+	}
-+
-+	if (!bss->called_close) {
-+		fprintf(stdout, "fentry/filp_close not called\n");
-+		goto cleanup;
-+	}
-+
- 	for (int i = 0; i < MAX_FILES; i++) {
--		CHECK(strncmp(src.paths[i], bss->paths_stat[i], MAX_PATH_LEN),
-+		CHECK(bss->called_stat && strncmp(src.paths[i], bss->paths_stat[i], MAX_PATH_LEN),
- 		      "check",
- 		      "failed to get stat path[%d]: %s vs %s\n",
- 		      i, src.paths[i], bss->paths_stat[i]);
--		CHECK(strncmp(src.paths[i], bss->paths_close[i], MAX_PATH_LEN),
-+		CHECK(bss->called_close && strncmp(src.paths[i], bss->paths_close[i], MAX_PATH_LEN),
- 		      "check",
- 		      "failed to get close path[%d]: %s vs %s\n",
- 		      i, src.paths[i], bss->paths_close[i]);
- 		/* The d_path helper returns size plus NUL char, hence + 1 */
--		CHECK(bss->rets_stat[i] != strlen(bss->paths_stat[i]) + 1,
-+		CHECK(bss->called_stat && bss->rets_stat[i] != strlen(bss->paths_stat[i]) + 1,
- 		      "check",
- 		      "failed to match stat return [%d]: %d vs %zd [%s]\n",
- 		      i, bss->rets_stat[i], strlen(bss->paths_stat[i]) + 1,
- 		      bss->paths_stat[i]);
--		CHECK(bss->rets_close[i] != strlen(bss->paths_stat[i]) + 1,
-+		CHECK(bss->called_close && bss->rets_close[i] != strlen(bss->paths_close[i]) + 1,
- 		      "check",
- 		      "failed to match stat return [%d]: %d vs %zd [%s]\n",
- 		      i, bss->rets_close[i], strlen(bss->paths_close[i]) + 1,
--		      bss->paths_stat[i]);
-+		      bss->paths_close[i]);
- 	}
- 
- cleanup:
-diff --git a/tools/testing/selftests/bpf/progs/test_d_path.c b/tools/testing/selftests/bpf/progs/test_d_path.c
-index 61f007855649..9e7223b4a555 100644
---- a/tools/testing/selftests/bpf/progs/test_d_path.c
-+++ b/tools/testing/selftests/bpf/progs/test_d_path.c
-@@ -15,6 +15,9 @@ char paths_close[MAX_FILES][MAX_PATH_LEN] = {};
- int rets_stat[MAX_FILES] = {};
- int rets_close[MAX_FILES] = {};
- 
-+int called_stat = 0;
-+int called_close = 0;
-+
- SEC("fentry/vfs_getattr")
- int BPF_PROG(prog_stat, struct path *path, struct kstat *stat,
- 	     __u32 request_mask, unsigned int query_flags)
-@@ -23,6 +26,8 @@ int BPF_PROG(prog_stat, struct path *path, struct kstat *stat,
- 	__u32 cnt = cnt_stat;
- 	int ret;
- 
-+	called_stat = 1;
-+
- 	if (pid != my_pid)
- 		return 0;
- 
-@@ -42,6 +47,8 @@ int BPF_PROG(prog_close, struct file *file, void *id)
- 	__u32 cnt = cnt_close;
- 	int ret;
- 
-+	called_close = 1;
-+
- 	if (pid != my_pid)
- 		return 0;
- 
--- 
-2.26.2
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX1oakAAKCRAw5/Bqldv6
+8uUTAKCLN7qshmbM2XNee7PS+Fxx3IsflACgm4lcbbH6gCzPO0xUOjAz10xDqGg=
+=GLyw
+-----END PGP SIGNATURE-----
 
+--R3G7APHDIzY6R/pk--
