@@ -2,123 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FE14264EA0
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:21:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20919264EB4
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbgIJTVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 15:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727791AbgIJTU5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:20:57 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68610C0613ED
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:20:57 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id cr8so3904569qvb.10
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:20:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rtUwEGlyH5UHD/xn4fGHTquuooXbAFvvo/KaYXsXfQ4=;
-        b=HeThdFtSTJrPXrn73TX6TnROS9e2JMbtLXl3GdKwZLryJajLSMlxp2jsMJSY3y1Dbw
-         xm90EeqoEzh2R/cVsYp/3QAAJeJCIiCV4ZcAWWOoWsJCwXvHgaCVtARYbeDcpy+rMrAq
-         lPYbASs2LIw/Wypkqg0gOxYmJuUIJezylz8U0RZnzyczk15iT082gJSw0XaXIEotHcGz
-         r96vjDNA8cxJL03HdOVWk9gW9yZKt66DwJ6Kcd9B7qmVGAEtthfXKci9B/tFeOf9h/W6
-         Ndl2bnqwKcvz1JjWLSab55Pmn9USp2Gi2cVbbO7zZjKc1OLgkKIMav/aWxdmF8Qs1bKD
-         guNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rtUwEGlyH5UHD/xn4fGHTquuooXbAFvvo/KaYXsXfQ4=;
-        b=ean5NPPs+Ik86lrJoMuHwkL0aCVKPqjjNsVXAGox5+0U6YO66XKXxPf4Vv20+qGNwa
-         fWlejxxvnSRi072BLzWMuC+yOzZtaqpmsZqK61sqykBatc35c1mc2PDin22CAfQX4Cap
-         WzOnHA7rhnq6sgqoWK/tghTWpu7m1JlEM+8U9RooWaKfT8qTXL7hHb+/y6n0f7tPx5Q0
-         vNx9/lnbxeJhTjgQKaNjw0TMXbSHItotUlDydZ89qYrIXb6haNyU3UPfJE5iInL51z6l
-         JzhzI8Zu9Du8sbpuzszRUqPMBSW1f9e5wfq+xDuI96zLzC9H9ieJwqWpdcrU9KDN/R2n
-         ZGpQ==
-X-Gm-Message-State: AOAM530XaAIi8vH0TiBwzXfRSIWkC8qvoubqzKhuvHW35NEXfvMQeMNL
-        pKwA5urQpUHZYz3+QpHl7a8=
-X-Google-Smtp-Source: ABdhPJz14IH219PDpcoRZ1ntvCIYL47a1omErsakj3DEBvxmHhMT4m7jQ3PpEdrNn9b6Boc4IPz0Hg==
-X-Received: by 2002:ad4:56a6:: with SMTP id bd6mr10308669qvb.29.1599765656651;
-        Thu, 10 Sep 2020 12:20:56 -0700 (PDT)
-Received: from soy.nyc.corp.google.com ([2620:0:1003:312:7220:84ff:fe09:3008])
-        by smtp.gmail.com with ESMTPSA id z6sm7315158qkl.39.2020.09.10.12.20.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 12:20:56 -0700 (PDT)
-From:   Neal Cardwell <ncardwell.kernel@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     netdev@vger.kernel.org, Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>, Kevin Yang <yyd@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Lawrence Brakmo <brakmo@fb.com>
-Subject: [PATCH bpf-next v2 2/5] tcp: simplify EBPF TCP_CONGESTION to always init CC
-Date:   Thu, 10 Sep 2020 15:20:53 -0400
-Message-Id: <20200910192053.2884884-3-ncardwell.kernel@gmail.com>
-X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
-In-Reply-To: <20200910192053.2884884-1-ncardwell.kernel@gmail.com>
-References: <20200910192053.2884884-1-ncardwell.kernel@gmail.com>
+        id S1727903AbgIJTXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 15:23:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38098 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726680AbgIJTXK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:23:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599765784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=aO5Uccl5Oi5KJ41E3z0pO/LdRmt1WMvp7bc2MBKi/rk=;
+        b=ZZqpL93AbPRIzzo3emmeJlta8cDiRmNqZB1cdATFeS0dmVqA5c1M4ShSoW5vMZGuJAjWOu
+        8ckpronCt2lRCHcDLT3RfnwfLR+wrByMRpP3FrA8FQu2c/Gw50JS+BiAhu6U/ud7gAPC3D
+        Atq1dIHPCxeqZ1XRFV564GTACMmIBPM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-282-nH1tbEipMPOnT8j1YMvhfA-1; Thu, 10 Sep 2020 15:23:00 -0400
+X-MC-Unique: nH1tbEipMPOnT8j1YMvhfA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 271FC1008550;
+        Thu, 10 Sep 2020 19:22:58 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-5.gru2.redhat.com [10.97.112.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CA28360BF4;
+        Thu, 10 Sep 2020 19:22:54 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 2E4E541853FD; Thu, 10 Sep 2020 16:22:08 -0300 (-03)
+Date:   Thu, 10 Sep 2020 16:22:08 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Nitesh Narayan Lal <nitesh@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, frederic@kernel.org,
+        sassmann@redhat.com, jeffrey.t.kirsher@intel.com,
+        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jerinj@marvell.com, mathias.nyman@intel.com, jiri@nvidia.com
+Subject: Re: [RFC][Patch v1 3/3] PCI: Limit pci_alloc_irq_vectors as per
+ housekeeping CPUs
+Message-ID: <20200910192208.GA24845@fuller.cnet>
+References: <20200909150818.313699-1-nitesh@redhat.com>
+ <20200909150818.313699-4-nitesh@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200909150818.313699-4-nitesh@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Neal Cardwell <ncardwell@google.com>
+On Wed, Sep 09, 2020 at 11:08:18AM -0400, Nitesh Narayan Lal wrote:
+> This patch limits the pci_alloc_irq_vectors max vectors that is passed on
+> by the caller based on the available housekeeping CPUs by only using the
+> minimum of the two.
+> 
+> A minimum of the max_vecs passed and available housekeeping CPUs is
+> derived to ensure that we don't create excess vectors which can be
+> problematic specifically in an RT environment. This is because for an RT
+> environment unwanted IRQs are moved to the housekeeping CPUs from
+> isolated CPUs to keep the latency overhead to a minimum. If the number of
+> housekeeping CPUs are significantly lower than that of the isolated CPUs
+> we can run into failures while moving these IRQs to housekeeping due to
+> per CPU vector limit.
+> 
+> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
+> ---
+>  include/linux/pci.h | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 835530605c0d..750ba927d963 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -38,6 +38,7 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/resource_ext.h>
+> +#include <linux/sched/isolation.h>
+>  #include <uapi/linux/pci.h>
+>  
+>  #include <linux/pci_ids.h>
+> @@ -1797,6 +1798,21 @@ static inline int
+>  pci_alloc_irq_vectors(struct pci_dev *dev, unsigned int min_vecs,
+>  		      unsigned int max_vecs, unsigned int flags)
+>  {
+> +	unsigned int num_housekeeping = num_housekeeping_cpus();
+> +	unsigned int num_online = num_online_cpus();
+> +
+> +	/*
+> +	 * Try to be conservative and at max only ask for the same number of
+> +	 * vectors as there are housekeeping CPUs. However, skip any
+> +	 * modification to the of max vectors in two conditions:
+> +	 * 1. If the min_vecs requested are higher than that of the
+> +	 *    housekeeping CPUs as we don't want to prevent the initialization
+> +	 *    of a device.
+> +	 * 2. If there are no isolated CPUs as in this case the driver should
+> +	 *    already have taken online CPUs into consideration.
+> +	 */
+> +	if (min_vecs < num_housekeeping && num_housekeeping != num_online)
+> +		max_vecs = min_t(int, max_vecs, num_housekeeping);
+>  	return pci_alloc_irq_vectors_affinity(dev, min_vecs, max_vecs, flags,
+>  					      NULL);
+>  }
 
-Now that the previous patch ensures we don't initialize the congestion
-control twice, when EBPF sets the congestion control algorithm at
-connection establishment we can simplify the code by simply
-initializing the congestion control module at that time.
+If min_vecs > num_housekeeping, for example:
 
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
-Acked-by: Kevin Yang <yyd@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Lawrence Brakmo <brakmo@fb.com>
----
- net/core/filter.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+/* PCI MSI/MSIx support */
+#define XGBE_MSI_BASE_COUNT     4
+#define XGBE_MSI_MIN_COUNT      (XGBE_MSI_BASE_COUNT + 1)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 47eef9a0be6a..067f6759a68f 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4313,8 +4313,6 @@ static const struct bpf_func_proto bpf_get_socket_uid_proto = {
- 	.arg1_type      = ARG_PTR_TO_CTX,
- };
- 
--#define SOCKOPT_CC_REINIT (1 << 0)
--
- static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 			   char *optval, int optlen, u32 flags)
- {
-@@ -4449,13 +4447,12 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 		   sk->sk_prot->setsockopt == tcp_setsockopt) {
- 		if (optname == TCP_CONGESTION) {
- 			char name[TCP_CA_NAME_MAX];
--			bool reinit = flags & SOCKOPT_CC_REINIT;
- 
- 			strncpy(name, optval, min_t(long, optlen,
- 						    TCP_CA_NAME_MAX-1));
- 			name[TCP_CA_NAME_MAX-1] = 0;
- 			ret = tcp_set_congestion_control(sk, name, false,
--							 reinit, true);
-+							 true, true);
- 		} else {
- 			struct inet_connection_sock *icsk = inet_csk(sk);
- 			struct tcp_sock *tp = tcp_sk(sk);
-@@ -4652,8 +4649,6 @@ BPF_CALL_5(bpf_sock_ops_setsockopt, struct bpf_sock_ops_kern *, bpf_sock,
- 	   int, level, int, optname, char *, optval, int, optlen)
- {
- 	u32 flags = 0;
--	if (bpf_sock->op > BPF_SOCK_OPS_NEEDS_ECN)
--		flags |= SOCKOPT_CC_REINIT;
- 	return _bpf_setsockopt(bpf_sock->sk, level, optname, optval, optlen,
- 			       flags);
- }
--- 
-2.28.0.526.ge36021eeef-goog
+Then the protection fails.
+
+How about reducing max_vecs down to min_vecs, if min_vecs >
+num_housekeeping ?
+
 
