@@ -2,55 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5060264F3D
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:38:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A16A8264F46
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:39:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726722AbgIJTio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 15:38:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50552 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727028AbgIJTib (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 15:38:31 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D402521556;
-        Thu, 10 Sep 2020 19:38:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599766701;
-        bh=NG93nN+HmNDOMundStCbsZdACPtwjFTiyShXPaCw+R4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=m6oEoKV1CqxnMH0N1kP3KyM4HasLH15ztnFX8uVPmhajVatp6QvhMxYVetRU8VVCl
-         RjGP6MvqeEGQ2k359ryfQwU4+jQz3vxLnT5Ca0bHSm1s0Sz4km1+X4ncu8faOsDcRU
-         TPBMZKL8HADa5IIYwmRygZwBFJtFWwNUGb//xry0=
-Date:   Thu, 10 Sep 2020 12:38:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Wang Hai <wanghai38@huawei.com>
-Cc:     <jeffrey.t.kirsher@intel.com>, <davem@davemloft.net>,
-        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/3] Fix some kernel-doc warnings for
- e1000/e1000e
-Message-ID: <20200910123819.3ce47422@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200910123800.74865996@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200910150429.31912-1-wanghai38@huawei.com>
-        <20200910123800.74865996@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1728019AbgIJTjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 15:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48202 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727997AbgIJTjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:39:14 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB64DC061573;
+        Thu, 10 Sep 2020 12:39:14 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3D25712A30019;
+        Thu, 10 Sep 2020 12:22:27 -0700 (PDT)
+Date:   Thu, 10 Sep 2020 12:39:13 -0700 (PDT)
+Message-Id: <20200910.123913.1333297432408477303.davem@davemloft.net>
+To:     linyunsheng@huawei.com
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+        john.fastabend@gmail.com, eric.dumazet@gmail.com
+Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
+ enqueue op for lockless qdisc
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
+References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 10 Sep 2020 12:22:27 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Sep 2020 12:38:00 -0700 Jakub Kicinski wrote:
-> On Thu, 10 Sep 2020 23:04:26 +0800 Wang Hai wrote:
-> > Wang Hai (3):
-> >   e1000e: Fix some kernel-doc warnings in ich8lan.c
-> >   e1000e: Fix some kernel-doc warnings in netdev.c
-> >   e1000: Fix a bunch of kerneldoc parameter issues in e1000_hw.c  
-> 
-> You should put some text here but I can confirm this set removes 17
-> warnings.
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Date: Tue, 8 Sep 2020 19:02:34 +0800
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> Currently there is concurrent reset and enqueue operation for the
+> same lockless qdisc when there is no lock to synchronize the
+> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
+> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
+> out-of-bounds access for priv->ring[] in hns3 driver if user has
+> requested a smaller queue num when __dev_xmit_skb() still enqueue a
+> skb with a larger queue_mapping after the corresponding qdisc is
+> reset, and call hns3_nic_net_xmit() with that skb later.
+> 
+> Reused the existing synchronize_net() in dev_deactivate_many() to
+> make sure skb with larger queue_mapping enqueued to old qdisc(which
+> is saved in dev_queue->qdisc_sleeping) will always be reset when
+> dev_reset_queue() is called.
+> 
+> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+> ---
+> ChangeLog V2:
+> 	Reuse existing synchronize_net().
+
+Applied and queued up for -stable, thank you.
