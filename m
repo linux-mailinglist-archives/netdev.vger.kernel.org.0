@@ -2,173 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC819264C04
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 19:58:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2F35264C1C
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 20:01:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726480AbgIJR5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 13:57:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33408 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725864AbgIJR4y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:56:54 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.3])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 826C920BED;
-        Thu, 10 Sep 2020 17:56:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599760610;
-        bh=g4IKVHdAE6c0qnMAcdlomhiYRMLR43vO0aTN8afdBUk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zvPRJbnIVBg+AY7PXBroZI33FxOllTRwv2fWRmWBSu/3kyznex7LEEL6AWy+z9Vk/
-         GFTPgiOv6FSWdXPn1i9z90D4/G+AcvJz3K04jUp8/976o8Cx+71k3mzLI8HlhnqzH2
-         WGaDbqc5sU7hAw6Q3wAJSy5KeppVq6Q/EDFpMmkU=
-Date:   Thu, 10 Sep 2020 10:56:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
-Message-ID: <20200910105643.2e2d07f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <3d75c4be-ae5d-43b0-407c-5df1e7645447@pensando.io>
-References: <20200908224812.63434-1-snelson@pensando.io>
-        <20200908224812.63434-3-snelson@pensando.io>
-        <20200908165433.08afb9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <9938e3cc-b955-11a1-d667-8e5893bb6367@pensando.io>
-        <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <581f2161-1c55-31ae-370b-bbea5a677862@pensando.io>
-        <20200909122233.45e4c65c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3d75c4be-ae5d-43b0-407c-5df1e7645447@pensando.io>
+        id S1725996AbgIJSBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 14:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726419AbgIJSA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 14:00:59 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1028EC061573;
+        Thu, 10 Sep 2020 11:00:59 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id c2so9329240ljj.12;
+        Thu, 10 Sep 2020 11:00:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9ixsHcN6jItwFo+b7ORNGXDNB8lkHhVKtZ2pYCkfr3s=;
+        b=Xh2LBZMIDwx1qhyaaqYYiwxId4iBxGDOGSqjJ8jMJ89x5b/GHCt3/7rE4eAkCKVrkB
+         /SpSiZZkL+rz+cCupn/R9zjfERCG/hSyjQaeNzBdj5D2tus6YHXqiC9QrVFA+++F37qI
+         iHfAPDH22/b3Cv2qzqkWbXuF3D5ZUJZe6UaPJnAEJ2Y6FavKiUT0uVZ/yLZR7XqUuSfV
+         CysERIhEK0rer61DnJTTyiBNE5xlMTGN5NwKsVXahTB9ALJ9d4H045srW90iY/apy5/V
+         sxEe3Et9Mmc85c2pbpv4el6DCcF+oMyV7Rby/4vb1iAXCgTxOKRwBnYgWDfXLTOzHN0S
+         /WxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9ixsHcN6jItwFo+b7ORNGXDNB8lkHhVKtZ2pYCkfr3s=;
+        b=iJqyJdO3zB1WZ847kZQnAkBdXr4kRgWxjmiKKjs4MqBPV3zFuYPzQN9TpR7gAF24Sw
+         SL7XrYYPCejtCBBM9N1uoA+CNqZD9zPGqhChHmAYuoa7eiWTRb/OrOVxozmR4HPk/hTi
+         RAKG0rTZc7oFRx4tKGUERq8fsYr0+b7iYNNqfH2r7Oedfq7/bndPqYitBaWfyflG5XQb
+         OzuOq9MTc2sRjk1bGcmQMk4H1CiA6cLr/YC9kQnKMiRj9kegkBiwFvbS7v8Ma6RvQFyF
+         FRSO4J34R9VlIkudhZ1UblAF6qWBlFL9LbvnRTfJsMoFowHz3TVRWI91mMTYpJx+K39+
+         DOEQ==
+X-Gm-Message-State: AOAM530CfDDkM+4Bj9FOOs6bZcetxKIRTxn9CJoyAIh3wZrgPZIC9ZcP
+        jbYDNWI6pHFtlgcTBP+o8tX6yasb1oZQ6Jkc0hU=
+X-Google-Smtp-Source: ABdhPJxn68UyTSyW7y+9kdF6cM2l0ADSl+ZshZtcE3TpS6dgc6WaALSFl9zSOzkIp7kRhIgLv9LYMZBxNWMCj2pIqig=
+X-Received: by 2002:a2e:808f:: with SMTP id i15mr4780575ljg.51.1599760857300;
+ Thu, 10 Sep 2020 11:00:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20200909151115.1559418-1-jolsa@kernel.org>
+In-Reply-To: <20200909151115.1559418-1-jolsa@kernel.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 10 Sep 2020 11:00:45 -0700
+Message-ID: <CAADnVQ+3sBR7dTQhX+eHvzJajtnm0QctjrWFyc+LMkHJOoOabA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: Fix context type resolving for
+ extension programs
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 9 Sep 2020 18:34:57 -0700 Shannon Nelson wrote:
-> On 9/9/20 12:22 PM, Jakub Kicinski wrote:
-> > On Wed, 9 Sep 2020 10:58:19 -0700 Shannon Nelson wrote: =20
-> >>
-> >> I'm suggesting that this implementation using the existing devlink
-> >> logging services should suffice until someone can design, implement, a=
-nd
-> >> get accepted a different bit of plumbing.=C2=A0 Unfortunately, that's =
-not a
-> >> job that I can get to right now. =20
-> > This hack is too nasty to be accepted. =20
->=20
-> Your comment earlier was
->=20
->  > I wonder if we can steal a page from systemd's book and display
->  > "time until timeout", or whatchamacallit, like systemd does when it's
->  > waiting for processes to quit. All drivers have some timeout set on the
->  > operation. If users knew the driver sets timeout to n minutes and they
->  > see the timer ticking up they'd be less likely to think the command has
->  > hanged.. =20
->=20
-> I implemented the loop such that the timeout value was the 100%, and=20
-> each time through the loop the elapsed time value is sent, so the user=20
-> gets to see the % value increasing as the wait goes on, in the same way=20
-> they see the download progress percentage ticking away.=20
+On Wed, Sep 9, 2020 at 8:11 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Eelco reported we can't properly access arguments if the tracing
+> program is attached to extension program.
+>
+> Having following program:
+>
+>   SEC("classifier/test_pkt_md_access")
+>   int test_pkt_md_access(struct __sk_buff *skb)
+>
+> with its extension:
+>
+>   SEC("freplace/test_pkt_md_access")
+>   int test_pkt_md_access_new(struct __sk_buff *skb)
+>
+> and tracing that extension with:
+>
+>   SEC("fentry/test_pkt_md_access_new")
+>   int BPF_PROG(fentry, struct sk_buff *skb)
+>
+> It's not possible to access skb argument in the fentry program,
+> with following error from verifier:
+>
+>   ; int BPF_PROG(fentry, struct sk_buff *skb)
+>   0: (79) r1 = *(u64 *)(r1 +0)
+>   invalid bpf_context access off=0 size=8
+>
+> The problem is that btf_ctx_access gets the context type for the
+> traced program, which is in this case the extension.
+>
+> But when we trace extension program, we want to get the context
+> type of the program that the extension is attached to, so we can
+> access the argument properly in the trace program.
+>
+> Reported-by: Eelco Chaudron <echaudro@redhat.com>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  kernel/bpf/btf.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index f9ac6935ab3c..37ad01c32e5a 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -3859,6 +3859,14 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+>         }
+>
+>         info->reg_type = PTR_TO_BTF_ID;
+> +
+> +       /* When we trace extension program, we want to get the context
+> +        * type of the program that the extension is attached to, so
+> +        * we can access the argument properly in the trace program.
+> +        */
+> +       if (tgt_prog && tgt_prog->type == BPF_PROG_TYPE_EXT)
+> +               tgt_prog = tgt_prog->aux->linked_prog;
+> +
+>         if (tgt_prog) {
+>                 ret = btf_translate_to_vmlinux(log, btf, t, tgt_prog->type, arg);
 
-Right but you said that in most cases the value never goes up to 25min,
-so user will see the value increment from 0 to say 5% very slowly and
-then jump to 100%.
-
-> This is how I approached the stated requirement of user seeing the
-> "timer ticking up", using the existing machinery.=C2=A0 This seems to be
-> how devlink_flash_update_status_notify() is expected to be used, so
-> I'm a little surprised at the critique.
-
-Sorry, I thought the systemd reference would be clear enough, see the
-screenshot here:
-
-https://images.app.goo.gl/gz1Uwg6mcHEd3D2m7
-
-Systemd prints something link:
-
-bla bla bla (XXs / YYs)
-
-where XX is the timer ticking up, and YY is the timeout value.
-
-> > So to be clear your options are:
-> >   - plumb the single extra netlink parameter through to devlink
-> >   - wait for someone else to do that for you, before you get
-> > firmware flashing accepted upstream.
-> > =20
->=20
-> Since you seem to have something else in mind, a little more detail=20
-> would be helpful.
->=20
-> We currently see devlink updating a percentage, something like:
-> Downloading:=C2=A0 56%
-> using backspaces to overwrite the value as the updates are published.
->=20
-> How do you envision the userland interpretation of the timeout
-> ticking? Do you want to see something like:
-> Installing - timeout seconds:=C2=A0 23
-> as a countdown?
-
-I was under the impression that the systemd format would be familiar=20
-to users, hence:
-
-Downloading:=C2=A0 56% (Xm Ys / Zm Vz)
-
-The part in brackets only appearing after a few seconds without a
-notification, otherwise the whole thing would get noisy.
-
-> So, maybe a flag parameter that can tell the UI to use the raw value
-> and not massage it into a percentage?
->=20
-> Do you see this new netlink parameter to be a boolean switch between
-> the percentage and raw, or maybe a bitflag parameter that might end
-> up with several bits of context information for userland to interpret?
->=20
-> Are you thinking of a new flags parameter in=20
-> devlink_flash_update_status_notify(), or a new function to service
-> this?
->=20
-> If a new parameter to devlink_flash_update_status_notify(), maybe it
-> is time to make a struct for flash update data rather than adding
-> more parameters to the function?
->=20
-> Should we add yet another parameter to replace the '%' with some
-> other label, so devlink could print something like
-> Installing - timeout in:=C2=A0 23 secs
->=20
-> Or could we use a 0 value for total to signify using a raw value and
-> not need to plumb a new parameter?=C2=A0 Although this might not get along
-> well with older devlink utilities.
-
-I was thinking of adding an extra timeout parameter to=20
-devlink_flash_update_status_notify() - timeout length in seconds.
-And an extra netlink attr for that.
-
-We could perhaps make:
-
-static inline void=20
-devlink_flash_update_status_notify(struct devlink *devlink, const char *sta=
-tus_msg,
-				    unsigned long done, unsigned long total)
-{
-	struct ..._args =3D {
-		.status_msg =3D status_msg,
-		.done =3D done,
-		.total =3D total,
-	}
-
-	__devlink_flash_update_status_notify(devlink, &.._args);
-}
-
-IOW drop the component parameter from the normal helper, cause almost
-nobody uses that. The add a more full featured __ version, which would
-take the arg struct, the struct would include the timeout value.
-
-If the timeout is lower than 15sec drivers will probably have little
-value in reporting it, so simplified helper should be nice there to save LO=
-C.
-
-The user space can do the counting up trivially using select(),
-or a syscall timeout. The netlink notification would only carry timeout.
-(LMK if this is problematic, I haven't looked at the user space part.)
+I think it would be cleaner to move resolve_prog_type() from verifier.c
+and use that helper function here.
