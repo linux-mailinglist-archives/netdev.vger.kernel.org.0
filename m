@@ -2,105 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4BD42650C8
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC1112650D4
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:30:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbgIJU2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 16:28:24 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52710 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726683AbgIJU1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:27:35 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08AKKbbP022314
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 13:27:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=LPiMaf8HaswzXltwf9IMpJ/oBrjUHzCrrs7jkW525lk=;
- b=Rg+Ym+5JEkWx34CuQjsh9Rb14hYUlTGM/q0JYNFCFXYgOub0mlatkTj/mzIdBUkgP8ll
- v0fv60T6F5X7Ke0oC/xn/70DaF37GzbjZ/I/IqpmQkhVBtYP1D889kIaFjSJiWpy0Rp2
- ednU9rhcDzJvTu7Gr/GKFx+Ai1n+BVNfats= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33fhxub58u-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 13:27:34 -0700
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 10 Sep 2020 13:27:19 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 060D13705A39; Thu, 10 Sep 2020 13:27:18 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next] selftests/bpf: define string const as global for test_sysctl_prog.c
-Date:   Thu, 10 Sep 2020 13:27:18 -0700
-Message-ID: <20200910202718.956042-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1727027AbgIJUaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 16:30:14 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:47158 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726662AbgIJU2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:28:31 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08AKSIfA116336;
+        Thu, 10 Sep 2020 15:28:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1599769698;
+        bh=9zdhcOMR7Ccf+ysTWrNasl7P6ckqRz+nS1O8WjwH018=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=Qd/dh3mV7bp0Ujbt6Y0WuAqsCmlXVwJM3xZTwxpUYTK5Mb1S1h/htrvW1EpWkPiBx
+         C9hswVhDje1+R4yWRCGfNEKzSM85v+RTB0QV19A/VF5lDkqq1UPV7GyUL6k1/Qbf/r
+         S+/b5IrxOtuWJdu2fDO+UkPmHurcBCjnPlMoixGY=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08AKSIFm052030;
+        Thu, 10 Sep 2020 15:28:18 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 10
+ Sep 2020 15:28:18 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 10 Sep 2020 15:28:17 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08AKSHFU065839;
+        Thu, 10 Sep 2020 15:28:17 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next v3 1/9] net: ethernet: ti: ale: add cpsw_ale_get_num_entries api
+Date:   Thu, 10 Sep 2020 23:27:59 +0300
+Message-ID: <20200910202807.17473-2-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200910202807.17473-1-grygorii.strashko@ti.com>
+References: <20200910202807.17473-1-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-10_09:2020-09-10,2020-09-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- lowpriorityscore=0 suspectscore=8 bulkscore=0 clxscore=1015
- priorityscore=1501 impostorscore=0 adultscore=0 mlxscore=0 malwarescore=0
- mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009100183
-X-FB-Internal: deliver
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When tweaking llvm optimizations, I found that selftest build failed
-with the following error:
-  libbpf: elf: skipping unrecognized data section(6) .rodata.str1.1
-  libbpf: prog 'sysctl_tcp_mem': bad map relo against '.L__const.is_tcp_m=
-em.tcp_mem_name'
-          in section '.rodata.str1.1'
-  Error: failed to open BPF object file: Relocation failed
-  make: *** [/work/net-next/tools/testing/selftests/bpf/test_sysctl_prog.=
-skel.h] Error 255
-  make: *** Deleting file `/work/net-next/tools/testing/selftests/bpf/tes=
-t_sysctl_prog.skel.h'
+Add cpsw_ale_get_num_entries() API to return number of ALE table entries
+and update existing drivers to use it.
 
-The local string constant "tcp_mem_name" is put into '.rodata.str1.1' sec=
-tion
-which libbpf cannot handle. Using untweaked upstream llvm, "tcp_mem_name"
-is completely inlined after loop unrolling.
-
-Commit 7fb5eefd7639 ("selftests/bpf: Fix test_sysctl_loop{1, 2}
-failure due to clang change") solved a similar problem by defining
-the string const as a global. Let us do the same here
-for test_sysctl_prog.c so it can weather future potential llvm changes.
-
-Signed-off-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 ---
- tools/testing/selftests/bpf/progs/test_sysctl_prog.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ti/am65-cpsw-ethtool.c | 10 ++++++----
+ drivers/net/ethernet/ti/cpsw_ale.c          |  5 +++++
+ drivers/net/ethernet/ti/cpsw_ale.h          |  1 +
+ drivers/net/ethernet/ti/cpsw_ethtool.c      |  3 ++-
+ 4 files changed, 14 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_prog.c b/tools=
-/testing/selftests/bpf/progs/test_sysctl_prog.c
-index 50525235380e..5489823c83fc 100644
---- a/tools/testing/selftests/bpf/progs/test_sysctl_prog.c
-+++ b/tools/testing/selftests/bpf/progs/test_sysctl_prog.c
-@@ -19,11 +19,11 @@
- #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
- #endif
-=20
-+const char tcp_mem_name[] =3D "net/ipv4/tcp_mem";
- static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-ethtool.c b/drivers/net/ethernet/ti/am65-cpsw-ethtool.c
+index 496dafb25128..6e4d4f9e32e0 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-ethtool.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-ethtool.c
+@@ -572,13 +572,14 @@ static int am65_cpsw_nway_reset(struct net_device *ndev)
+ static int am65_cpsw_get_regs_len(struct net_device *ndev)
  {
--	char tcp_mem_name[] =3D "net/ipv4/tcp_mem";
- 	unsigned char i;
--	char name[64];
-+	char name[sizeof(tcp_mem_name)];
- 	int ret;
-=20
- 	memset(name, 0, sizeof(name));
---=20
-2.24.1
+ 	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
+-	u32 i, regdump_len = 0;
++	u32 ale_entries, i, regdump_len = 0;
+ 
++	ale_entries = cpsw_ale_get_num_entries(common->ale);
+ 	for (i = 0; i < ARRAY_SIZE(am65_cpsw_regdump); i++) {
+ 		if (am65_cpsw_regdump[i].hdr.module_id ==
+ 		    AM65_CPSW_REGDUMP_MOD_CPSW_ALE_TBL) {
+ 			regdump_len += sizeof(struct am65_cpsw_regdump_hdr);
+-			regdump_len += common->ale->params.ale_entries *
++			regdump_len += ale_entries *
+ 				       ALE_ENTRY_WORDS * sizeof(u32);
+ 			continue;
+ 		}
+@@ -592,10 +593,11 @@ static void am65_cpsw_get_regs(struct net_device *ndev,
+ 			       struct ethtool_regs *regs, void *p)
+ {
+ 	struct am65_cpsw_common *common = am65_ndev_to_common(ndev);
+-	u32 i, j, pos, *reg = p;
++	u32 ale_entries, i, j, pos, *reg = p;
+ 
+ 	/* update CPSW IP version */
+ 	regs->version = AM65_CPSW_REGDUMP_VER;
++	ale_entries = cpsw_ale_get_num_entries(common->ale);
+ 
+ 	pos = 0;
+ 	for (i = 0; i < ARRAY_SIZE(am65_cpsw_regdump); i++) {
+@@ -603,7 +605,7 @@ static void am65_cpsw_get_regs(struct net_device *ndev,
+ 
+ 		if (am65_cpsw_regdump[i].hdr.module_id ==
+ 		    AM65_CPSW_REGDUMP_MOD_CPSW_ALE_TBL) {
+-			u32 ale_tbl_len = common->ale->params.ale_entries *
++			u32 ale_tbl_len = ale_entries *
+ 					  ALE_ENTRY_WORDS * sizeof(u32) +
+ 					  sizeof(struct am65_cpsw_regdump_hdr);
+ 			reg[pos++] = ale_tbl_len;
+diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
+index 9ad872bfae3a..a94aef3f54a5 100644
+--- a/drivers/net/ethernet/ti/cpsw_ale.c
++++ b/drivers/net/ethernet/ti/cpsw_ale.c
+@@ -1079,3 +1079,8 @@ void cpsw_ale_dump(struct cpsw_ale *ale, u32 *data)
+ 		data += ALE_ENTRY_WORDS;
+ 	}
+ }
++
++u32 cpsw_ale_get_num_entries(struct cpsw_ale *ale)
++{
++	return ale ? ale->params.ale_entries : 0;
++}
+diff --git a/drivers/net/ethernet/ti/cpsw_ale.h b/drivers/net/ethernet/ti/cpsw_ale.h
+index 6a3cb6898728..735692f066bf 100644
+--- a/drivers/net/ethernet/ti/cpsw_ale.h
++++ b/drivers/net/ethernet/ti/cpsw_ale.h
+@@ -119,6 +119,7 @@ int cpsw_ale_control_get(struct cpsw_ale *ale, int port, int control);
+ int cpsw_ale_control_set(struct cpsw_ale *ale, int port,
+ 			 int control, int value);
+ void cpsw_ale_dump(struct cpsw_ale *ale, u32 *data);
++u32 cpsw_ale_get_num_entries(struct cpsw_ale *ale);
+ 
+ static inline int cpsw_ale_get_vlan_p0_untag(struct cpsw_ale *ale, u16 vid)
+ {
+diff --git a/drivers/net/ethernet/ti/cpsw_ethtool.c b/drivers/net/ethernet/ti/cpsw_ethtool.c
+index fa54efe3be63..4d02c5135611 100644
+--- a/drivers/net/ethernet/ti/cpsw_ethtool.c
++++ b/drivers/net/ethernet/ti/cpsw_ethtool.c
+@@ -339,7 +339,8 @@ int cpsw_get_regs_len(struct net_device *ndev)
+ {
+ 	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
+ 
+-	return cpsw->data.ale_entries * ALE_ENTRY_WORDS * sizeof(u32);
++	return cpsw_ale_get_num_entries(cpsw->ale) *
++	       ALE_ENTRY_WORDS * sizeof(u32);
+ }
+ 
+ void cpsw_get_regs(struct net_device *ndev, struct ethtool_regs *regs, void *p)
+-- 
+2.17.1
 
