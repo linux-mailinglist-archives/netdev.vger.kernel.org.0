@@ -2,138 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCBF52650EC
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B79742650E2
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725791AbgIJUgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 16:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726890AbgIJUdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:33:12 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9392C061573;
-        Thu, 10 Sep 2020 13:33:11 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id y5so6505861otg.5;
-        Thu, 10 Sep 2020 13:33:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MaRMb1u1PASBXrBgy1VMCX3eJaTYWufRPC5mbdyiCdQ=;
-        b=a7wK0ROU1zybzDz/ZX01K2LQ72ZSh7pK+Y1BXyKq0Kq7ZWv1YKH8k/Gl1Z9kgQiOOJ
-         tPU5kiSSCRFiS102b6+VJ9qzWlChWvHvQnOR4O5A9eX7MmcQv4GhuqP3qKj09lLksZzO
-         r2ttUbP6ThllNJWe2zYbdOBtLL7PXvXqQMYlaoZ8usCDu4aq4xjT6fLOgwp2Sf2PeawN
-         vn/RAOzbF3hlUEHopITUqgH7lZfvY47wONPSl4wXtSQYzS/EE2fOMsTKpovFpps8eNXJ
-         kbB+ngRnVtUNZANkdqHf3ai7LEI/ZqgxEAVdVhQ65OXm7e0nfolBg+i1r0S4YUWGlEzt
-         mHqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MaRMb1u1PASBXrBgy1VMCX3eJaTYWufRPC5mbdyiCdQ=;
-        b=mdA8+tR5zjRFGLkws6J8ktX0GYSuDqigd+h7t0wE8HTOlUScTHZSiQVCSqS4DjBCLx
-         LB0LuCslUXqaTxErA91rC48HQW5NtN4hww3TFwA6c/WUlL4ttXt1mwdkKu4n04S8XS4p
-         pxwBiVl8oQlmI8wyTqvKbJZNnpGXyZOdy0StzKPfjXDC5Rcoap/7jR0vPrAHPQ7ucwHp
-         GOesldwcx/1/9y/eWfP0J/fLyhJ1tQMKJAPKGvfeDls/OBVHXPLQjcKxz6e95jxNOu2z
-         vTEbedkFcwnnKFnpZYWbvCnJF9Qd/cPOMeDxuoy8XCrcL26t1GBtzF3cFuAH83mRbAYs
-         Fg6g==
-X-Gm-Message-State: AOAM5300WxusyuMCe2qxLDury5RXoT2z9muZr96V/BzKL6itFmmsalHf
-        SsZncQGg9SxwVV19DIZOmRvVE9qzGw7YaI/jgcM=
-X-Google-Smtp-Source: ABdhPJzU6+u3Wka5CHttm5s9y+snyZ3d6IucHtOGKjAsNA6SInPpN8vF00ANbsfDCRZq8ilOnDrxm+x6yUxHCU2ICM4=
-X-Received: by 2002:a9d:66cf:: with SMTP id t15mr5352433otm.143.1599769990878;
- Thu, 10 Sep 2020 13:33:10 -0700 (PDT)
+        id S1726812AbgIJUea (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 16:34:30 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:58174 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726301AbgIJUdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:33:04 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.61])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 574C96008E;
+        Thu, 10 Sep 2020 20:33:04 +0000 (UTC)
+Received: from us4-mdac16-35.ut7.mdlocal (unknown [10.7.66.154])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 55AC38009E;
+        Thu, 10 Sep 2020 20:33:04 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.42])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id BEEB78005C;
+        Thu, 10 Sep 2020 20:33:03 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 74536A40070;
+        Thu, 10 Sep 2020 20:33:03 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Sep
+ 2020 21:32:58 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 4/7] sfc: select inner-csum-offload TX queues for
+ skbs that need it
+To:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>
+References: <6fbc3a86-0afd-6e6d-099b-fca9af48d019@solarflare.com>
+Message-ID: <66a4d544-b7d3-3a80-4392-56f5340e0db7@solarflare.com>
+Date:   Thu, 10 Sep 2020 21:32:55 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200910161126.30948-1-oded.gabbay@gmail.com> <20200910130112.1f6bd9e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAFCwf13SbXqjyu6JHKSTf-EqUxcBZUe4iAfggLhKXOi6DhXYcg@mail.gmail.com> <20200910132835.1bf7b638@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200910132835.1bf7b638@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Oded Gabbay <oded.gabbay@gmail.com>
-Date:   Thu, 10 Sep 2020 23:32:42 +0300
-Message-ID: <CAFCwf127fssgiDEwYvv3rFW7iFFfKKZDE=oxDUbFBcwpz3yQkQ@mail.gmail.com>
-Subject: Re: [PATCH 00/15] Adding GAUDI NIC code to habanalabs driver
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <6fbc3a86-0afd-6e6d-099b-fca9af48d019@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25656.007
+X-TM-AS-Result: No-9.815300-8.000000-10
+X-TMASE-MatchedRID: rbzO2egx+l3U1EMggm+xDqiUivh0j2Pv6VTG9cZxEjJwGpdgNQ0JrHIo
+        zGa69omdrdoLblq9S5qxpjy1K0tDfpaASgYEJ4rc2Hlwa3CYC+SVLkhtDy7dOlVkJxysad/I1Db
+        vxsIF6u6RKSoqryx7WKECjH0m76Zjx4Slly3Yaw0WqJ/PBjhtWi9Xl/s/QdUMp694fFjbH3cnui
+        +WQ9elLQk3T8rNqp8oHxUUw2kVJz5byxAy8+P9fB23b+lJHvPA4F58RPNYsrGvcOJbZ17mD1tKp
+        tFhGFqyOLMHugQK30AAWHUOmhrVwLuz8zGC5XEHRXgK+YLiGCZ9LQinZ4QefL6qvLNjDYTwmTDw
+        p0zM3zoqtq5d3cxkNfjNw87GVY3w1f0yGWGA+lL0iZ0X/6nIwCyrNUn7HX3w2BB34zlGoRvAvpL
+        E+mvX8g==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--9.815300-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25656.007
+X-MDID: 1599769984-1jj8e-92RNib
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 11:28 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 10 Sep 2020 23:16:22 +0300 Oded Gabbay wrote:
-> > On Thu, Sep 10, 2020 at 11:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Thu, 10 Sep 2020 19:11:11 +0300 Oded Gabbay wrote:
-> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.c
-> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.h
-> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_dcbnl.c
-> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_debugfs.c
-> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_ethtool.c
-> > > >  create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_phy.c
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_masks.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm1_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_masks.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc1_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxb_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_masks.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe1_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_stat_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_tmr_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_masks.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe1_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_masks.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs1_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm0_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm1_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm0_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm1_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm0_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm1_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm0_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm1_regs.h
-> > > >  create mode 100644 drivers/misc/habanalabs/include/hw_ip/nic/nic_general.h
-> > >
-> > > The relevant code needs to live under drivers/net/(ethernet/).
-> > > For one thing our automation won't trigger for drivers in random
-> > > (/misc) part of the tree.
-> >
-> > Can you please elaborate on how to do this with a single driver that
-> > is already in misc ?
-> > As I mentioned in the cover letter, we are not developing a
-> > stand-alone NIC. We have a deep-learning accelerator with a NIC
-> > interface.
-> > Therefore, we don't have a separate PCI physical function for the NIC
-> > and I can't have a second driver registering to it.
->
-> Is it not possible to move the files and still build them into a single
-> module?
-hmm...
-I actually didn't try that as I thought it will be very strange and
-I'm not familiar with other drivers that build as a single ko but have
-files spread out in different subsystems.
-I don't feel it is a better option than what we did here.
+Won't actually be exercised until we start advertising the corresponding
+ offload features.
 
-Will I need to split pull requests to different subsystem maintainers
-? For the same driver ?
-Sounds to me this is not going to fly.
-Thanks,
-Oded
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/ptp.c |  3 ++-
+ drivers/net/ethernet/sfc/tx.c  |  2 +-
+ drivers/net/ethernet/sfc/tx.h  | 26 ++++++++++++++++++++++++++
+ 3 files changed, 29 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/ptp.c
+index bd99517f06db..2e8c4569f03b 100644
+--- a/drivers/net/ethernet/sfc/ptp.c
++++ b/drivers/net/ethernet/sfc/ptp.c
+@@ -43,6 +43,7 @@
+ #include "mcdi_pcol.h"
+ #include "io.h"
+ #include "farch_regs.h"
++#include "tx.h"
+ #include "nic.h" /* indirectly includes ptp.h */
+ 
+ /* Maximum number of events expected to make up a PTP event */
+@@ -1081,8 +1082,8 @@ static int efx_ptp_synchronize(struct efx_nic *efx, unsigned int num_readings)
+ /* Transmit a PTP packet via the dedicated hardware timestamped queue. */
+ static void efx_ptp_xmit_skb_queue(struct efx_nic *efx, struct sk_buff *skb)
+ {
+-	u8 type = skb->ip_summed == CHECKSUM_PARTIAL ? EFX_TXQ_TYPE_OUTER_CSUM : 0;
+ 	struct efx_ptp_data *ptp_data = efx->ptp_data;
++	u8 type = efx_tx_csum_type_skb(skb);
+ 	struct efx_tx_queue *tx_queue;
+ 
+ 	tx_queue = efx_channel_get_tx_queue(ptp_data->channel, type);
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index ca64a8123e76..c0a32da357c7 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -509,7 +509,7 @@ netdev_tx_t efx_hard_start_xmit(struct sk_buff *skb,
+ 	EFX_WARN_ON_PARANOID(!netif_device_present(net_dev));
+ 
+ 	index = skb_get_queue_mapping(skb);
+-	type = skb->ip_summed == CHECKSUM_PARTIAL ? EFX_TXQ_TYPE_OUTER_CSUM : 0;
++	type = efx_tx_csum_type_skb(skb);
+ 	if (index >= efx->n_tx_channels) {
+ 		index -= efx->n_tx_channels;
+ 		type |= EFX_TXQ_TYPE_HIGHPRI;
+diff --git a/drivers/net/ethernet/sfc/tx.h b/drivers/net/ethernet/sfc/tx.h
+index a3cf06c5570d..f2c4d2f89919 100644
+--- a/drivers/net/ethernet/sfc/tx.h
++++ b/drivers/net/ethernet/sfc/tx.h
+@@ -18,4 +18,30 @@ unsigned int efx_tx_limit_len(struct efx_tx_queue *tx_queue,
+ u8 *efx_tx_get_copy_buffer_limited(struct efx_tx_queue *tx_queue,
+ 				   struct efx_tx_buffer *buffer, size_t len);
+ 
++/* What TXQ type will satisfy the checksum offloads required for this skb? */
++static inline unsigned int efx_tx_csum_type_skb(struct sk_buff *skb)
++{
++	if (skb->ip_summed != CHECKSUM_PARTIAL)
++		return 0; /* no checksum offload */
++
++	if (skb->encapsulation &&
++	    skb_checksum_start_offset(skb) == skb_inner_transport_offset(skb)) {
++		/* we only advertise features for IPv4 and IPv6 checksums on
++		 * encapsulated packets, so if the checksum is for the inner
++		 * packet, it must be one of them; no further checking required.
++		 */
++
++		/* Do we also need to offload the outer header checksum? */
++		if (skb_shinfo(skb)->gso_segs > 1 &&
++		    !(skb_shinfo(skb)->gso_type & SKB_GSO_PARTIAL) &&
++		    (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_TUNNEL_CSUM))
++			return EFX_TXQ_TYPE_OUTER_CSUM | EFX_TXQ_TYPE_INNER_CSUM;
++		return EFX_TXQ_TYPE_INNER_CSUM;
++	}
++
++	/* similarly, we only advertise features for IPv4 and IPv6 checksums,
++	 * so it must be one of them. No need for further checks.
++	 */
++	return EFX_TXQ_TYPE_OUTER_CSUM;
++}
+ #endif /* EFX_TX_H */
 
->
-> > We did this design based on existing examples in the kernel
-> > (registering to netdev), such as (just a few examples):
-> > 1. sgi-xp driver in drivers/misc/sgi-xp (see file xpnet.c)
-> > 2. bnx2fc in drivers/scsi/bnx2fc
-> >
-> > Thanks,
-> > Oded
->
