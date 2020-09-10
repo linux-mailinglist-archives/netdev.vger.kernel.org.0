@@ -2,131 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C213D263ABD
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 04:43:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F121263AEF
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 04:49:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727900AbgIJCnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 22:43:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53346 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730586AbgIJCHb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 9 Sep 2020 22:07:31 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF82C06136E
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 17:51:16 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id 129so3870933ybn.15
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 17:51:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=0DDsdUWkpeGDlcHTYL2blsH30ZZYfjjkwjdpdSOQiWE=;
-        b=pEQVX3ItJxKCy4UrNyuy9fLtZ/MG7JnfGF3GluEGit5zgeFNmo5xJB8URMpZ96tXoj
-         JFRnNWCfoZ5EG196lVv2nlcTpc6yRNjIJfxukD8ug7vj/jBtAu3HMYMsbSsIVPnVfNpL
-         D2fuKJJecpIUnPNgqKvM6N546Dmyi8QYm6NEg2gTF3Sqh8xRz7TcVGK2+bsA4Sc0caam
-         EIFMDCvma/yeqfSAQN0XOGmac51MQ2uJCUCaqoJxCovbtBuvLZazL1/9CgH08vzsdhQ7
-         D6PgEbp+uHyZWr2jMMebu/T3FOnduB51MWYrNEOhcgSrpKJB+ZXtgwHRCBW6cmSI6LOv
-         lmbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=0DDsdUWkpeGDlcHTYL2blsH30ZZYfjjkwjdpdSOQiWE=;
-        b=emz7Rt50NdBX1skpSguhBLMA4y7dqb79n0RS2cSEe7WFxwA2PO0IipGMnyblB4hzqU
-         3SuH7GiS5w3RaxxNrOrpmk/F/7SSnVCQ1qFkWXAtBwx+2sWVqIV7g8ObTtqHtS2lVAxp
-         iQf8yY7nOlEIsoPG6HjjtM+6kLMqjROkQdILKKpA/+vFndzlXDFyZex4ociSpmu1ev9/
-         /10FdFwS4CuDPBVyzit3JSW2z/kPmzFF4g0v4TJS+cQwD+4Lb45hPUeAYg/kuUFtOBOj
-         mkFamndZ5OQavuY8opvP7HNEs2xSQ/73tR+FQO7w7K7xvSGw9QlZDw/z6Ha63/Y5BkOY
-         GMFQ==
-X-Gm-Message-State: AOAM533w1F26HZRYhDNQAktqoznU9rBXvibf+VtPhDi9agopXuzAkKs0
-        7yNMp8pN5Bgxy0t8EYkNUUk7RxxTN3A=
-X-Google-Smtp-Source: ABdhPJywf8cWiEGTGUb0JRzwKaKhYD98mJzCMnMwLnzN3e4AtMbFlWAZEX8hsUvsSm0mmgtdLHL3MrJ8D5E=
-X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:1ea0:b8ff:fe75:cf08])
- (user=weiwan job=sendgmr) by 2002:a25:bcd2:: with SMTP id l18mr8919782ybm.290.1599699076196;
- Wed, 09 Sep 2020 17:51:16 -0700 (PDT)
-Date:   Wed,  9 Sep 2020 17:50:46 -0700
-In-Reply-To: <20200910005048.4146399-1-weiwan@google.com>
-Message-Id: <20200910005048.4146399-2-weiwan@google.com>
-Mime-Version: 1.0
-References: <20200910005048.4146399-1-weiwan@google.com>
-X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
-Subject: [PATCH net-next 1/3] tcp: record received TOS value in the request socket
-From:   Wei Wang <weiwan@google.com>
-To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>, Wei Wang <weiwan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727010AbgIJB7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 21:59:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51158 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727782AbgIJBfe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 21:35:34 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E675321D40;
+        Thu, 10 Sep 2020 00:55:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599699348;
+        bh=jOnm7/txZOkn8Wc4FlgRNkk6DyAnIUHd3oAOL3yRBgQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B70V9+/9RwOQcSaOQBceIxslmx1KuED43nGz463e36OQXgsMD1bOABLTMsRWYr81o
+         q3/hEB2Cw9Zq2eiUhQQlw/0IrSFk54VIEvMom9ILW44bQzngnKjMUDZgJcj7tn69ch
+         1FDysCB0uEL2ButWUaMy4E3GMB7uWBw0G/01R4Vg=
+Date:   Wed, 9 Sep 2020 17:55:45 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Bin Luo <luobin9@huawei.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Danielle Ratson <danieller@mellanox.com>
+Subject: Re: [net-next v4 2/5] devlink: convert flash_update to use params
+ structure
+Message-ID: <20200909175545.3ea38a80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200909222653.32994-3-jacob.e.keller@intel.com>
+References: <20200909222653.32994-1-jacob.e.keller@intel.com>
+        <20200909222653.32994-3-jacob.e.keller@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A new field is added to the request sock to record the TOS value
-received on the listening socket during 3WHS:
-When not under syn flood, it is recording the TOS value sent in SYN.
-When under syn flood, it is recording the TOS value sent in the ACK.
-This is a preparation patch in order to do TOS reflection in the later
-commit.
+On Wed,  9 Sep 2020 15:26:50 -0700 Jacob Keller wrote:
+> The devlink core recently gained support for checking whether the driver
+> supports a flash_update parameter, via `supported_flash_update_params`.
+> However, parameters are specified as function arguments. Adding a new
+> parameter still requires modifying the signature of the .flash_update
+> callback in all drivers.
+> 
+> Convert the .flash_update function to take a new `struct
+> devlink_flash_update_params` instead. By using this structure, and the
+> `supported_flash_update_params` bit field, a new parameter to
+> flash_update can be added without requiring modification to existing
+> drivers.
+> 
+> As before, all parameters except file_name will require driver opt-in.
+> Because file_name is a necessary field to for the flash_update to make
+> sense, no "SUPPORTED" bitflag is provided and it is always considered
+> valid. All future additional parameters will require a new bit in the
+> supported_flash_update_params bitfield.
 
-Signed-off-by: Wei Wang <weiwan@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/linux/tcp.h   | 1 +
- net/ipv4/syncookies.c | 6 +++---
- net/ipv4/tcp_input.c  | 1 +
- 3 files changed, 5 insertions(+), 3 deletions(-)
+I keep thinking we should also make the core do the
+request_firmware_direct(). What else is the driver gonna do with the file name..
 
-diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-index 56ff2952edaf..2f87377e9af7 100644
---- a/include/linux/tcp.h
-+++ b/include/linux/tcp.h
-@@ -134,6 +134,7 @@ struct tcp_request_sock {
- 						  * FastOpen it's the seq#
- 						  * after data-in-SYN.
- 						  */
-+	u8				syn_tos;
- };
- 
- static inline struct tcp_request_sock *tcp_rsk(const struct request_sock *req)
-diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
-index f0794f0232ba..c375c126f436 100644
---- a/net/ipv4/syncookies.c
-+++ b/net/ipv4/syncookies.c
-@@ -286,11 +286,10 @@ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
- 					    struct sock *sk,
- 					    struct sk_buff *skb)
- {
-+	struct tcp_request_sock *treq;
- 	struct request_sock *req;
- 
- #ifdef CONFIG_MPTCP
--	struct tcp_request_sock *treq;
--
- 	if (sk_is_mptcp(sk))
- 		ops = &mptcp_subflow_request_sock_ops;
- #endif
-@@ -299,8 +298,9 @@ struct request_sock *cookie_tcp_reqsk_alloc(const struct request_sock_ops *ops,
- 	if (!req)
- 		return NULL;
- 
--#if IS_ENABLED(CONFIG_MPTCP)
- 	treq = tcp_rsk(req);
-+	treq->syn_tos = TCP_SKB_CB(skb)->ip_dsfield;
-+#if IS_ENABLED(CONFIG_MPTCP)
- 	treq->is_mptcp = sk_is_mptcp(sk);
- 	if (treq->is_mptcp) {
- 		int err = mptcp_subflow_init_cookie_req(req, sk, skb);
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 4337841faeff..3658ad84f0c6 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6834,6 +6834,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
- 
- 	tcp_rsk(req)->snt_isn = isn;
- 	tcp_rsk(req)->txhash = net_tx_rndhash();
-+	tcp_rsk(req)->syn_tos = TCP_SKB_CB(skb)->ip_dsfield;
- 	tcp_openreq_init_rwin(req, sk, dst);
- 	sk_rx_queue_set(req_to_sk(req), skb);
- 	if (!want_cookie) {
--- 
-2.28.0.618.gf4bc123cb7-goog
+But I don't want to drag your series out so:
 
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
