@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F791264EA1
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FE14264EA0
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727792AbgIJTVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 15:21:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45330 "EHLO
+        id S1726984AbgIJTVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 15:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727860AbgIJTU4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:20:56 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DE8C061756
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:20:56 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id t20so5766921qtr.8
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:20:56 -0700 (PDT)
+        with ESMTP id S1727791AbgIJTU5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:20:57 -0400
+Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68610C0613ED
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:20:57 -0700 (PDT)
+Received: by mail-qv1-xf41.google.com with SMTP id cr8so3904569qvb.10
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:20:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hGtPEJ5AmhJooHpFAvjTg7CdIpxuEOCTdsETS8L5uD4=;
-        b=M7O2gF2FmVL0BrxcHfCSHi5NtSZFxcTBznVb00WnA8OeBA8H9O8yq3Z8cIftB7Ff6W
-         raGPYs8MsuzbUb/Y9sCF9BBZCEoQbUWh0Vn8NGMMc3sGkUJraaHneF1JGUmKOrAzRNq5
-         Ex6kLVlS24Qzab6vcGFZYUZIF+fgBvFwWFBLDVN/mtfTLYIr2n6sTEp+0JwhFJRjfq+c
-         Ict0zNjMKlEw4Yc8vCpOT0rmej65H/nb61nMOnGBTIrvC6+oF5yTngDLqI/AleN2idfD
-         Sxf3sZwLAK0AUBzTuBOzimgzQMyicFa1ugzYmlYhtbEyZ4rlT7Toy16FKwRNHcdwfCuY
-         vjEQ==
+        bh=rtUwEGlyH5UHD/xn4fGHTquuooXbAFvvo/KaYXsXfQ4=;
+        b=HeThdFtSTJrPXrn73TX6TnROS9e2JMbtLXl3GdKwZLryJajLSMlxp2jsMJSY3y1Dbw
+         xm90EeqoEzh2R/cVsYp/3QAAJeJCIiCV4ZcAWWOoWsJCwXvHgaCVtARYbeDcpy+rMrAq
+         lPYbASs2LIw/Wypkqg0gOxYmJuUIJezylz8U0RZnzyczk15iT082gJSw0XaXIEotHcGz
+         r96vjDNA8cxJL03HdOVWk9gW9yZKt66DwJ6Kcd9B7qmVGAEtthfXKci9B/tFeOf9h/W6
+         Ndl2bnqwKcvz1JjWLSab55Pmn9USp2Gi2cVbbO7zZjKc1OLgkKIMav/aWxdmF8Qs1bKD
+         guNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hGtPEJ5AmhJooHpFAvjTg7CdIpxuEOCTdsETS8L5uD4=;
-        b=tY9rZfEq/4gMXCgZBHdgAEWKLBlRRPRT2LLDZqNND3N/waul5YnmztFp0lgkfYKLPy
-         L7SPkNE5NWuV8BZJk6yn819PYi6fvk197HGDF0Vx5K3isgwgd8MmqMapdyQXEmeTP7Sx
-         P60W8DtZjV6S1/y+0wWYxh6ZiQw/k+Nf6+P5zPXyH9oplSiOmGjZmq6C+4ZujEV8+SFC
-         Kchsrzyfo7508DA0X9vYTD6Y0YZZoO+qYPgzAEPuVKGXllUtcmmELaZ3jkToev/ITnrh
-         uhCDDO4tPbntjjJH39tpvVJnUPC9CT7Kq/XMB+EqIp3kt5yr7a0+H8FnNrcGJ08f9zps
-         7a+w==
-X-Gm-Message-State: AOAM531Fl1hlINbmkKOFrN29sn/6OL/UbO9FvfzFV7G6GmQX/t+LAPJK
-        rZVTxp2JfdWuUcm3rWW1qeM=
-X-Google-Smtp-Source: ABdhPJzPKDfZ/wkyXv9/Xo+ncPRvBUXXxLgltGdK2/LBZ51CrzdynUzvZBS6bM8f0MgtUyS8+mc5rQ==
-X-Received: by 2002:ac8:60d1:: with SMTP id i17mr9942186qtm.272.1599765655586;
-        Thu, 10 Sep 2020 12:20:55 -0700 (PDT)
+        bh=rtUwEGlyH5UHD/xn4fGHTquuooXbAFvvo/KaYXsXfQ4=;
+        b=ean5NPPs+Ik86lrJoMuHwkL0aCVKPqjjNsVXAGox5+0U6YO66XKXxPf4Vv20+qGNwa
+         fWlejxxvnSRi072BLzWMuC+yOzZtaqpmsZqK61sqykBatc35c1mc2PDin22CAfQX4Cap
+         WzOnHA7rhnq6sgqoWK/tghTWpu7m1JlEM+8U9RooWaKfT8qTXL7hHb+/y6n0f7tPx5Q0
+         vNx9/lnbxeJhTjgQKaNjw0TMXbSHItotUlDydZ89qYrIXb6haNyU3UPfJE5iInL51z6l
+         JzhzI8Zu9Du8sbpuzszRUqPMBSW1f9e5wfq+xDuI96zLzC9H9ieJwqWpdcrU9KDN/R2n
+         ZGpQ==
+X-Gm-Message-State: AOAM530XaAIi8vH0TiBwzXfRSIWkC8qvoubqzKhuvHW35NEXfvMQeMNL
+        pKwA5urQpUHZYz3+QpHl7a8=
+X-Google-Smtp-Source: ABdhPJz14IH219PDpcoRZ1ntvCIYL47a1omErsakj3DEBvxmHhMT4m7jQ3PpEdrNn9b6Boc4IPz0Hg==
+X-Received: by 2002:ad4:56a6:: with SMTP id bd6mr10308669qvb.29.1599765656651;
+        Thu, 10 Sep 2020 12:20:56 -0700 (PDT)
 Received: from soy.nyc.corp.google.com ([2620:0:1003:312:7220:84ff:fe09:3008])
-        by smtp.gmail.com with ESMTPSA id z6sm7315158qkl.39.2020.09.10.12.20.54
+        by smtp.gmail.com with ESMTPSA id z6sm7315158qkl.39.2020.09.10.12.20.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 12:20:54 -0700 (PDT)
+        Thu, 10 Sep 2020 12:20:56 -0700 (PDT)
 From:   Neal Cardwell <ncardwell.kernel@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>
 Cc:     netdev@vger.kernel.org, Neal Cardwell <ncardwell@google.com>,
         Yuchung Cheng <ycheng@google.com>, Kevin Yang <yyd@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Lawrence Brakmo <brakmo@fb.com>
-Subject: [PATCH bpf-next v2 1/5] tcp: only init congestion control if not initialized already
-Date:   Thu, 10 Sep 2020 15:20:52 -0400
-Message-Id: <20200910192053.2884884-2-ncardwell.kernel@gmail.com>
+Subject: [PATCH bpf-next v2 2/5] tcp: simplify EBPF TCP_CONGESTION to always init CC
+Date:   Thu, 10 Sep 2020 15:20:53 -0400
+Message-Id: <20200910192053.2884884-3-ncardwell.kernel@gmail.com>
 X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
 In-Reply-To: <20200910192053.2884884-1-ncardwell.kernel@gmail.com>
 References: <20200910192053.2884884-1-ncardwell.kernel@gmail.com>
@@ -68,30 +68,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Neal Cardwell <ncardwell@google.com>
 
-Change tcp_init_transfer() to only initialize congestion control if it
-has not been initialized already.
-
-With this new approach, we can arrange things so that if the EBPF code
-sets the congestion control by calling setsockopt(TCP_CONGESTION) then
-tcp_init_transfer() will not re-initialize the CC module.
-
-This is an approach that has the following beneficial properties:
-
-(1) This allows CC module customizations made by the EBPF called in
-    tcp_init_transfer() to persist, and not be wiped out by a later
-    call to tcp_init_congestion_control() in tcp_init_transfer().
-
-(2) Does not flip the order of EBPF and CC init, to avoid causing bugs
-    for existing code upstream that depends on the current order.
-
-(3) Does not cause 2 initializations for for CC in the case where the
-    EBPF called in tcp_init_transfer() wants to set the CC to a new CC
-    algorithm.
-
-(4) Allows follow-on simplifications to the code in net/core/filter.c
-    and net/ipv4/tcp_cong.c, which currently both have some complexity
-    to special-case CC initialization to avoid double CC
-    initialization if EBPF sets the CC.
+Now that the previous patch ensures we don't initialize the congestion
+control twice, when EBPF sets the congestion control algorithm at
+connection establishment we can simplify the code by simply
+initializing the congestion control module at that time.
 
 Signed-off-by: Neal Cardwell <ncardwell@google.com>
 Acked-by: Yuchung Cheng <ycheng@google.com>
@@ -99,75 +79,46 @@ Acked-by: Kevin Yang <yyd@google.com>
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Cc: Lawrence Brakmo <brakmo@fb.com>
 ---
- include/net/inet_connection_sock.h | 3 ++-
- net/ipv4/tcp.c                     | 1 +
- net/ipv4/tcp_cong.c                | 3 ++-
- net/ipv4/tcp_input.c               | 4 +++-
- 4 files changed, 8 insertions(+), 3 deletions(-)
+ net/core/filter.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
-index c738abeb3265..dc763ca9413c 100644
---- a/include/net/inet_connection_sock.h
-+++ b/include/net/inet_connection_sock.h
-@@ -96,7 +96,8 @@ struct inet_connection_sock {
- 	void (*icsk_clean_acked)(struct sock *sk, u32 acked_seq);
- 	struct hlist_node         icsk_listen_portaddr_node;
- 	unsigned int		  (*icsk_sync_mss)(struct sock *sk, u32 pmtu);
--	__u8			  icsk_ca_state:6,
-+	__u8			  icsk_ca_state:5,
-+				  icsk_ca_initialized:1,
- 				  icsk_ca_setsockopt:1,
- 				  icsk_ca_dst_locked:1;
- 	__u8			  icsk_retransmits;
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 57a568875539..7360d3db2b61 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -2698,6 +2698,7 @@ int tcp_disconnect(struct sock *sk, int flags)
- 	if (icsk->icsk_ca_ops->release)
- 		icsk->icsk_ca_ops->release(sk);
- 	memset(icsk->icsk_ca_priv, 0, sizeof(icsk->icsk_ca_priv));
-+	icsk->icsk_ca_initialized = 0;
- 	tcp_set_ca_state(sk, TCP_CA_Open);
- 	tp->is_sack_reneg = 0;
- 	tcp_clear_retrans(tp);
-diff --git a/net/ipv4/tcp_cong.c b/net/ipv4/tcp_cong.c
-index 62878cf26d9c..d18d7a1ce4ce 100644
---- a/net/ipv4/tcp_cong.c
-+++ b/net/ipv4/tcp_cong.c
-@@ -176,7 +176,7 @@ void tcp_assign_congestion_control(struct sock *sk)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 47eef9a0be6a..067f6759a68f 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4313,8 +4313,6 @@ static const struct bpf_func_proto bpf_get_socket_uid_proto = {
+ 	.arg1_type      = ARG_PTR_TO_CTX,
+ };
  
- void tcp_init_congestion_control(struct sock *sk)
+-#define SOCKOPT_CC_REINIT (1 << 0)
+-
+ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+ 			   char *optval, int optlen, u32 flags)
  {
--	const struct inet_connection_sock *icsk = inet_csk(sk);
-+	struct inet_connection_sock *icsk = inet_csk(sk);
+@@ -4449,13 +4447,12 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+ 		   sk->sk_prot->setsockopt == tcp_setsockopt) {
+ 		if (optname == TCP_CONGESTION) {
+ 			char name[TCP_CA_NAME_MAX];
+-			bool reinit = flags & SOCKOPT_CC_REINIT;
  
- 	tcp_sk(sk)->prior_ssthresh = 0;
- 	if (icsk->icsk_ca_ops->init)
-@@ -185,6 +185,7 @@ void tcp_init_congestion_control(struct sock *sk)
- 		INET_ECN_xmit(sk);
- 	else
- 		INET_ECN_dontxmit(sk);
-+	icsk->icsk_ca_initialized = 1;
+ 			strncpy(name, optval, min_t(long, optlen,
+ 						    TCP_CA_NAME_MAX-1));
+ 			name[TCP_CA_NAME_MAX-1] = 0;
+ 			ret = tcp_set_congestion_control(sk, name, false,
+-							 reinit, true);
++							 true, true);
+ 		} else {
+ 			struct inet_connection_sock *icsk = inet_csk(sk);
+ 			struct tcp_sock *tp = tcp_sk(sk);
+@@ -4652,8 +4649,6 @@ BPF_CALL_5(bpf_sock_ops_setsockopt, struct bpf_sock_ops_kern *, bpf_sock,
+ 	   int, level, int, optname, char *, optval, int, optlen)
+ {
+ 	u32 flags = 0;
+-	if (bpf_sock->op > BPF_SOCK_OPS_NEEDS_ECN)
+-		flags |= SOCKOPT_CC_REINIT;
+ 	return _bpf_setsockopt(bpf_sock->sk, level, optname, optval, optlen,
+ 			       flags);
  }
- 
- static void tcp_reinit_congestion_control(struct sock *sk,
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 4337841faeff..0e5ac0d33fd3 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5894,8 +5894,10 @@ void tcp_init_transfer(struct sock *sk, int bpf_op, struct sk_buff *skb)
- 		tp->snd_cwnd = tcp_init_cwnd(tp, __sk_dst_get(sk));
- 	tp->snd_cwnd_stamp = tcp_jiffies32;
- 
-+	icsk->icsk_ca_initialized = 0;
- 	bpf_skops_established(sk, bpf_op, skb);
--	tcp_init_congestion_control(sk);
-+	if (!icsk->icsk_ca_initialized)
-+		tcp_init_congestion_control(sk);
- 	tcp_init_buffer_space(sk);
- }
- 
 -- 
 2.28.0.526.ge36021eeef-goog
 
