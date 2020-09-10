@@ -2,68 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D88264ECB
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:26:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D36A7265007
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:59:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbgIJT00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 15:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46152 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726899AbgIJT0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:26:18 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E0FCC061756;
-        Thu, 10 Sep 2020 12:26:08 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B092F12A2A784;
-        Thu, 10 Sep 2020 12:09:20 -0700 (PDT)
-Date:   Thu, 10 Sep 2020 12:26:06 -0700 (PDT)
-Message-Id: <20200910.122606.1088855592206611092.davem@davemloft.net>
-To:     paul.davey@alliedtelesis.co.nz
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/3] Allow more than 255 IPv4 multicast
- interfaces
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200907220408.32385-1-paul.davey@alliedtelesis.co.nz>
-References: <20200907220408.32385-1-paul.davey@alliedtelesis.co.nz>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Thu, 10 Sep 2020 12:09:20 -0700 (PDT)
+        id S1727027AbgIJT7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 15:59:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55268 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730378AbgIJPAp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 11:00:45 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kGO40-00E5DD-26; Thu, 10 Sep 2020 17:00:40 +0200
+Date:   Thu, 10 Sep 2020 17:00:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+Cc:     Pavel Machek <pavel@ucw.cz>, netdev@vger.kernel.org,
+        linux-leds@vger.kernel.org, Dan Murphy <dmurphy@ti.com>,
+        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next + leds v2 6/7] net: phy: marvell: add support
+ for LEDs controlled by Marvell PHYs
+Message-ID: <20200910150040.GB3354160@lunn.ch>
+References: <20200909162552.11032-1-marek.behun@nic.cz>
+ <20200909162552.11032-7-marek.behun@nic.cz>
+ <20200910122341.GC7907@duo.ucw.cz>
+ <20200910131541.GD3316362@lunn.ch>
+ <20200910161522.3cf3ad63@dellmb.labs.office.nic.cz>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200910161522.3cf3ad63@dellmb.labs.office.nic.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Davey <paul.davey@alliedtelesis.co.nz>
-Date: Tue,  8 Sep 2020 10:04:05 +1200
+> I propose that at least these HW modes should be available (and
+> documented) for ethernet PHY controlled LEDs:
+>   mode to determine link on:
+>     - `link`
+>   mode for activity (these should blink):
+>     - `activity` (both rx and tx), `rx`, `tx`
+>   mode for link (on) and activity (blink)
+>     - `link/activity`, maybe `link/rx` and `link/tx`
+>   mode for every supported speed:
+>     - `1Gbps`, `100Mbps`, `10Mbps`, ...
+>   mode for every supported cable type:
+>     - `copper`, `fiber`, ... (are there others?)
 
-> Currently it is not possible to use more than 255 multicast interfaces
-> for IPv4 due to the format of the igmpmsg header which only has 8 bits
-> available for the VIF ID.  There is space available in the igmpmsg
-> header to store the full VIF ID in the form of an unused byte following
-> the VIF ID field.  There is also enough space for the full VIF ID in
-> the Netlink cache notifications, however the value is currently taken
-> directly from the igmpmsg header and has thus already been truncated.
-> 
-> Adding the high byte of the VIF ID into the unused3 byte of igmpmsg
-> allows use of more than 255 IPv4 multicast interfaces. The full VIF ID
-> is  also available in the Netlink notification by assembling it from
-> both bytes from the igmpmsg.
-> 
-> Additionally this reveals a deficiency in the Netlink cache report
-> notifications, they lack any means for differentiating cache reports
-> relating to different multicast routing tables.  This is easily
-> resolved by adding the multicast route table ID to the cache reports.
-> 
-> changes in v2:
->  - Added high byte of VIF ID to igmpmsg struct replacing unused3
->    member.
->  - Assemble VIF ID in Netlink notification from both bytes in igmpmsg
->    header.
+In theory, there is AUI and BNC, but no modern device will have these.
 
-Series applied, thank you.
+>   mode that allows the user to determine link speed
+>     - `speed` (or maybe `linkspeed` ?)
+>     - on some Marvell PHYs the speed can be determined by how fast
+>       the LED is blinking (ie. 1Gbps blinks with default blinking
+>       frequency, 100Mbps with half blinking frequeny of 1Gbps, 10Mbps
+>       of half blinking frequency of 100Mbps)
+>     - on other Marvell PHYs this is instead:
+>       1Gpbs blinks 3 times, pause, 3 times, pause, ...
+>       100Mpbs blinks 2 times, pause, 2 times, pause, ...
+>       10Mpbs blinks 1 time, pause, 1 time, pause, ...
+>     - we don't need to differentiate these modes with different names,
+>       because the important thing is just that this mode allows the
+>       user to determine the speed from how the LED blinks
+>   mode to just force blinking
+>     - `blink`
+> The nice thing is that all this can be documented and done in software
+> as well.
+
+Have you checked include/dt-bindings/net/microchip-lan78xx.h and
+mscc-phy-vsc8531.h ? If you are defining something generic, we need to
+make sure the majority of PHYs can actually do it. There is no
+standardization in this area. I'm sure there is some similarity, there
+is only so many ways you can blink an LED, but i suspect we need a
+mixture of standardized modes which we hope most PHYs implement, and
+the option to support hardware specific modes.
+
+    Andrew
