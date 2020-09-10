@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4BFE264BF0
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 19:53:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 891A3264BF2
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 19:54:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727089AbgIJRxi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 13:53:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33414 "EHLO mail.kernel.org"
+        id S1726443AbgIJRyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 13:54:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33418 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726293AbgIJQPO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726358AbgIJQPO (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 10 Sep 2020 12:15:14 -0400
 Received: from localhost.localdomain (unknown [194.230.155.174])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B991A21D79;
-        Thu, 10 Sep 2020 16:12:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1291C221E3;
+        Thu, 10 Sep 2020 16:12:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599754370;
-        bh=jHH/wPFyXijfn4qbxAJDIqeZ9sIT7sZEqBqRbDpc3/A=;
+        s=default; t=1599754373;
+        bh=LSW0uymH0OeH2QEOskyhHoNpO0V0yrS0w9bNxI5XbcU=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=Qk1/iZx66lsXxLsmC2V4WzgjUe+CyIlaK9/HXYcgdgQ/TbuzMlIM73Ba66GLi5CTy
-         9Ggn5FVeGNBHmi1mMqhxN0bJiIfBLFllDWQHgfSk/caOcqo8cZ/HftJE/uhlSjGR7y
-         fg9WOHc2MIk/LadzvUOQf66mFYQiXkSIcQ6vqqMY=
+        b=N3A2HH9u3+u9lRw+0UfmuLrQq9cxqa3DlrDeQRcS7m/Y+QeSqTpYwu6Fq3iLvxNCC
+         OPmNpNhelk+caKCa9tuFeHJCH8U9nyFe052Z3ZPvpJiOLpH+4vKRvWpwwWRcA615YV
+         VC1u+klljK+gGnC2C9UsOtej+1AgHU+hpTHSuJfU=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -33,60 +33,65 @@ To:     "David S. Miller" <davem@davemloft.net>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-nfc@lists.01.org, linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v3 6/8] nfc: s3fwrn5: Constify s3fwrn5_fw_info when not modified
-Date:   Thu, 10 Sep 2020 18:12:17 +0200
-Message-Id: <20200910161219.6237-7-krzk@kernel.org>
+Subject: [PATCH v3 7/8] MAINTAINERS: Add Krzysztof Kozlowski to Samsung S3FWRN5 and remove Robert
+Date:   Thu, 10 Sep 2020 18:12:18 +0200
+Message-Id: <20200910161219.6237-8-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200910161219.6237-1-krzk@kernel.org>
 References: <20200910161219.6237-1-krzk@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Two functions accept pointer to struct s3fwrn5_fw_info but do not
-modify the contents.  Make them const so the code is a little bit safer.
+Robert Bałdyga's email does not work (bounces) since 2016 so remove it.
+Additionally there are no review/ack/tested tags from Krzysztof Opasiak
+so it looks like the driver is not supported.
+
+As a maintainer of Samsung ARM/ARM64 SoC, I can take care about this
+driver and provide some review.  However clearly driver is not in
+supported mode as I do not work in Samsung anymore.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/nfc/s3fwrn5/firmware.c | 4 ++--
- drivers/nfc/s3fwrn5/firmware.h | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ CREDITS     | 4 ++++
+ MAINTAINERS | 4 ++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nfc/s3fwrn5/firmware.c b/drivers/nfc/s3fwrn5/firmware.c
-index 69857f080704..ec930ee2c847 100644
---- a/drivers/nfc/s3fwrn5/firmware.c
-+++ b/drivers/nfc/s3fwrn5/firmware.c
-@@ -348,7 +348,7 @@ static int s3fwrn5_fw_get_base_addr(
- }
+diff --git a/CREDITS b/CREDITS
+index 32ee70a7562e..1df63cdf71df 100644
+--- a/CREDITS
++++ b/CREDITS
+@@ -191,6 +191,10 @@ N: Krishna Balasubramanian
+ E: balasub@cis.ohio-state.edu
+ D: Wrote SYS V IPC (part of standard kernel since 0.99.10)
  
- static inline bool
--s3fwrn5_fw_is_custom(struct s3fwrn5_fw_cmd_get_bootinfo_rsp *bootinfo)
-+s3fwrn5_fw_is_custom(const struct s3fwrn5_fw_cmd_get_bootinfo_rsp *bootinfo)
- {
- 	return !!bootinfo->hw_version[2];
- }
-@@ -399,7 +399,7 @@ int s3fwrn5_fw_setup(struct s3fwrn5_fw_info *fw_info)
- 	return ret;
- }
++B: Robert Baldyga
++E: r.baldyga@hackerion.com
++D: Samsung S3FWRN5 NCI NFC Controller
++
+ N: Chris Ball
+ E: chris@printf.net
+ D: Former maintainer of the MMC/SD/SDIO subsystem.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ec4f1d9cb3dc..6888bd851caf 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -15269,10 +15269,10 @@ F:	drivers/media/platform/s3c-camif/
+ F:	include/media/drv-intf/s3c_camif.h
  
--bool s3fwrn5_fw_check_version(struct s3fwrn5_fw_info *fw_info, u32 version)
-+bool s3fwrn5_fw_check_version(const struct s3fwrn5_fw_info *fw_info, u32 version)
- {
- 	struct s3fwrn5_fw_version *new = (void *) &fw_info->fw.version;
- 	struct s3fwrn5_fw_version *old = (void *) &version;
-diff --git a/drivers/nfc/s3fwrn5/firmware.h b/drivers/nfc/s3fwrn5/firmware.h
-index cf1a83a5a525..3c83e6730d30 100644
---- a/drivers/nfc/s3fwrn5/firmware.h
-+++ b/drivers/nfc/s3fwrn5/firmware.h
-@@ -91,7 +91,7 @@ struct s3fwrn5_fw_info {
- 
- void s3fwrn5_fw_init(struct s3fwrn5_fw_info *fw_info, const char *fw_name);
- int s3fwrn5_fw_setup(struct s3fwrn5_fw_info *fw_info);
--bool s3fwrn5_fw_check_version(struct s3fwrn5_fw_info *fw_info, u32 version);
-+bool s3fwrn5_fw_check_version(const struct s3fwrn5_fw_info *fw_info, u32 version);
- int s3fwrn5_fw_download(struct s3fwrn5_fw_info *fw_info);
- void s3fwrn5_fw_cleanup(struct s3fwrn5_fw_info *fw_info);
+ SAMSUNG S3FWRN5 NFC DRIVER
+-M:	Robert Baldyga <r.baldyga@samsung.com>
++M:	Krzysztof Kozlowski <krzk@kernel.org>
+ M:	Krzysztof Opasiak <k.opasiak@samsung.com>
+ L:	linux-nfc@lists.01.org (moderated for non-subscribers)
+-S:	Supported
++S:	Maintained
+ F:	Documentation/devicetree/bindings/net/nfc/samsung,s3fwrn5.yaml
+ F:	drivers/nfc/s3fwrn5
  
 -- 
 2.17.1
