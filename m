@@ -2,144 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0EC1263DF9
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 09:05:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA8D263DF2
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 09:04:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730395AbgIJHFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 03:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42602 "EHLO
+        id S1730256AbgIJHEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 03:04:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730271AbgIJHBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 03:01:52 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00037C061374
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 23:55:27 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id x14so5379128wrl.12
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 23:55:27 -0700 (PDT)
+        with ESMTP id S1730210AbgIJHB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 03:01:58 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8245C061573
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 00:00:19 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id w1so5188936edr.3
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 00:00:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/zDMT6nbFqbhZHba3WX8w2cu4960tHUb5zkPcYbpeIM=;
-        b=tL6+bIkh8G7HqBgucCbpBctHS9j+I2AJgR6G49WHHWrcfJGS1GWrRY+zOduX5bNnmp
-         XwEMjo52Sr2j5+KKnUGpRdkT17kCz542Em6ZWz+F67g7UjluqnoZCLUtOIQQoUsdZ6yx
-         11//MDz21fLJyAhQRayi5tFo9NdrADRlwjbuMrwLTcoN5ItXF7fox9TKwZFHHGVcxrHK
-         EoCtUSwP7GVeYUAc6r0t/CpQGNqS83EmDot6qao2ORB8J1cDaolslhu2hV5s0HRSt1Te
-         v/symznRHA4ChYd/6CMxuy7KsAM+MwhH7v+BSxZHCpJJcxroS12fStSuVMKNKeN4ltRW
-         e28w==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HpIePgtAi+Zt2c3FnKrFGH6/1qarSukoJjsAuKYFWGs=;
+        b=ZvdJIRHYZONcuRfYgYS1dIN1pjWge1etYUPQc3zNRkrdT/wo9dG5YNgQTQD6+IvHxH
+         5l9+8aau2JJP2H66Hhmlu0WaMpm4Po8t58uHNX+X883y/1SOzTr4fVvooCYLgjo8Y4gI
+         sOBafywjwBqPrncAGUqwjhnpyo5MZNN4A/BspO0wcasIcOWc54pp28Qly+znxIo1nbiK
+         5LY29tKpc/Bg23t6293+0k/A18c3bv3P5DIVE7HrgAfJZniYbW3xSr34cCu/hROZbrQx
+         fd8eovQ4+zgBghzT6FRBCwj7el1rcZEPYgHyltX+nvy/pn2T76CWdAy/ujmNmMmm6iYt
+         Yy6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/zDMT6nbFqbhZHba3WX8w2cu4960tHUb5zkPcYbpeIM=;
-        b=rcsj06oaoQLDM6XZTkilnBTQxVCLBp+As2iBa4+9cOBNaWztcR9sILivcMzkis1yK9
-         xMGofLX4tY1WBqO6ELoqD9y9Ulpe1BY5cosx54uc3QVGqT2Jnd6YMSYDloVRgfkP6rtr
-         5ROjJZnQRKv6RRUkCmMOAr5u+jL5JlTa58sIB9YaVGqtFKh+Y60qP6BVftj3XVFRDoya
-         q9HhJHs6gWkxwLu0gJmRcQCV2P8JEr2UCVjLHOrYWUGsdWawcKny5J9yBOi6vgZZ1K1b
-         4aV0uJ2Z0nArM8Zcf5z0XW6CBuLpRPHMyesxg8gMGN0UF2a++U5EvVQ4SJ3Ws/2H8GbQ
-         WCUg==
-X-Gm-Message-State: AOAM530hLW/uMp9+ZQ8UbiEPf+9srdKJVXjAiLGlm7xZY9yati0DW7pI
-        0TKagLlgzFmhn5pUOxeqPWeVgURgDnHRBw==
-X-Google-Smtp-Source: ABdhPJyk20V9H1NNPnqtUHlIgQaIzDY7mmVMEIQUDafx1slmQBnfmIizNpGswUF/Rjdi6TlRcOLd7A==
-X-Received: by 2002:a5d:43cb:: with SMTP id v11mr7886927wrr.188.1599720926684;
-        Wed, 09 Sep 2020 23:55:26 -0700 (PDT)
-Received: from dell.default ([91.110.221.246])
-        by smtp.gmail.com with ESMTPSA id m3sm2444028wme.31.2020.09.09.23.55.25
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HpIePgtAi+Zt2c3FnKrFGH6/1qarSukoJjsAuKYFWGs=;
+        b=gO9p4T/kPMPrjZbwBhKCKYn5FNTGS++KkeCPlcJAbKBvze5OGdMdNIQ8oxSCKP5bn/
+         xFuUtlGq2pczBvEMKdVfxO7bbD4z5Hwf5iVwwbzml2zSHOoRxsv/77PBzLciP2cC6lns
+         OQ7wAoGwg9OZwCKhY+eLmG7Ct+18ID6+G2zddtU2hmCuHa0qswqWic2GCAb6JcEE8NtM
+         r72LOjoQE8yaaz5ZRAdU+CnyI4xK63r2/PIm/JSeqpXhDYKrrvp3TDh11359Rg9r9h7P
+         ZznWLFQBp6wzl/kKbyzZ5D7jFNlhRBqhPsp+cqgTk/aM6EL0LN187CKg3gfN5RmQPepc
+         A/Vw==
+X-Gm-Message-State: AOAM531NsH1WGb8c8yFpXgZmlDp6LDI5ZDIy5UqFrzJpmmKOGBrn4NX6
+        Jz5rHtVpJ2UmHSHjU+FZ3zS/mg==
+X-Google-Smtp-Source: ABdhPJxms1qFPsP8oSsW/r6IuhVTyuEpHv+H4oQJOySHeR8SoXVW3lz5XEEHEyKgszu8KAQIxQh5cg==
+X-Received: by 2002:a05:6402:28d:: with SMTP id l13mr8076687edv.293.1599721217581;
+        Thu, 10 Sep 2020 00:00:17 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id f10sm5983702edk.34.2020.09.10.00.00.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 23:55:26 -0700 (PDT)
-From:   Lee Jones <lee.jones@linaro.org>
-To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 29/29] brcmsmac: phy_lcn: Remove unused variable 'lcnphy_rx_iqcomp_table_rev0'
-Date:   Thu, 10 Sep 2020 07:54:31 +0100
-Message-Id: <20200910065431.657636-30-lee.jones@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200910065431.657636-1-lee.jones@linaro.org>
-References: <20200910065431.657636-1-lee.jones@linaro.org>
+        Thu, 10 Sep 2020 00:00:17 -0700 (PDT)
+Date:   Thu, 10 Sep 2020 09:00:16 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        jiri@nvidia.com
+Subject: Re: Exposing device ACL setting through devlink
+Message-ID: <20200910070016.GT2997@nanopsycho.orion>
+References: <e7f76581-8525-2b98-ec4d-e772db692318@linux.ibm.com>
+ <20200904083141.GE2997@nanopsycho.orion>
+ <20200904153751.17ad4b48@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <7e4c2c8f-a5b0-799c-3083-cfefcf37bf10@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7e4c2c8f-a5b0-799c-3083-cfefcf37bf10@linux.ibm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes the following W=1 kernel build warning(s):
+Tue, Sep 08, 2020 at 08:27:13PM CEST, tlfalcon@linux.ibm.com wrote:
+>On 9/4/20 5:37 PM, Jakub Kicinski wrote:
+>> On Fri, 4 Sep 2020 10:31:41 +0200 Jiri Pirko wrote:
+>> > Thu, Sep 03, 2020 at 07:59:45PM CEST, tlfalcon@linux.ibm.com wrote:
+>> > > Hello, I am trying to expose MAC/VLAN ACL and pvid settings for IBM
+>> > > VNIC devices to administrators through devlink (originally through
+>> > > sysfs files, but that was rejected in favor of devlink). Could you
+>> > > give any tips on how you might go about doing this?
+>> > Tom, I believe you need to provide more info about what exactly do you
+>> > need to setup. But from what you wrote, it seems like you are looking
+>> > for bridge/tc offload. The infra is already in place and drivers are
+>> > implementing it. See mlxsw for example.
+>> I think Tom's use case is effectively exposing the the VF which VLANs
+>> and what MAC addrs it can use. Plus it's pvid. See:
+>> 
+>> https://www.spinics.net/lists/netdev/msg679750.html
+>
+>Thanks, Jakub,
+>
+>Right now, the use-case is to expose the allowed VLAN's and MAC addresses and
+>the VF's PVID. Other use-cases may be explored later on though.
 
- drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c:361:25: warning: unused variable 'lcnphy_rx_iqcomp_table_rev0' [-Wunused-const-variable]
- struct lcnphy_rx_iqcomp lcnphy_rx_iqcomp_table_rev0[] = {
-                         ^
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
----
- .../broadcom/brcm80211/brcmsmac/phy/phy_lcn.c | 55 -------------------
- 1 file changed, 55 deletions(-)
+Who is configuring those?
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
-index b8193c99e8642..7071b63042cd4 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
-@@ -357,61 +357,6 @@ u16 rxiq_cal_rf_reg[11] = {
- 	RADIO_2064_REG12A,
- };
- 
--static const
--struct lcnphy_rx_iqcomp lcnphy_rx_iqcomp_table_rev0[] = {
--	{1, 0, 0},
--	{2, 0, 0},
--	{3, 0, 0},
--	{4, 0, 0},
--	{5, 0, 0},
--	{6, 0, 0},
--	{7, 0, 0},
--	{8, 0, 0},
--	{9, 0, 0},
--	{10, 0, 0},
--	{11, 0, 0},
--	{12, 0, 0},
--	{13, 0, 0},
--	{14, 0, 0},
--	{34, 0, 0},
--	{38, 0, 0},
--	{42, 0, 0},
--	{46, 0, 0},
--	{36, 0, 0},
--	{40, 0, 0},
--	{44, 0, 0},
--	{48, 0, 0},
--	{52, 0, 0},
--	{56, 0, 0},
--	{60, 0, 0},
--	{64, 0, 0},
--	{100, 0, 0},
--	{104, 0, 0},
--	{108, 0, 0},
--	{112, 0, 0},
--	{116, 0, 0},
--	{120, 0, 0},
--	{124, 0, 0},
--	{128, 0, 0},
--	{132, 0, 0},
--	{136, 0, 0},
--	{140, 0, 0},
--	{149, 0, 0},
--	{153, 0, 0},
--	{157, 0, 0},
--	{161, 0, 0},
--	{165, 0, 0},
--	{184, 0, 0},
--	{188, 0, 0},
--	{192, 0, 0},
--	{196, 0, 0},
--	{200, 0, 0},
--	{204, 0, 0},
--	{208, 0, 0},
--	{212, 0, 0},
--	{216, 0, 0},
--};
--
- static const u32 lcnphy_23bitgaincode_table[] = {
- 	0x200100,
- 	0x200200,
--- 
-2.25.1
+What does mean "allowed MAC address"? Does it mean a MAC address that VF
+can use to send packet as a source MAC?
 
+What does mean "allowed VLAN"? VF is sending vlan tagged frames and only
+some VIDs are allowed.
+
+Pardon my ignorance, this may be routine in the nic world. However I
+find the desc very vague. Please explain in details, then we can try to
+find fitting solution.
+
+Thanks!
