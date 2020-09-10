@@ -2,507 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D817265453
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:54:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57E97265449
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:54:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728580AbgIJVmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:42:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730869AbgIJMsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 08:48:14 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8275DC061756;
-        Thu, 10 Sep 2020 05:48:08 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id z9so5680882wmk.1;
-        Thu, 10 Sep 2020 05:48:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5Q6W+RSFkw04awmkiKuDrfjMUyXtsh70exNsHBoTblc=;
-        b=QaxJODC6DKAwj6Y7zkBAutRRU/ELJVRXCpidl0e/VpxqzqLkUWxT2s9ZEiG2vtyLw5
-         ux1ElINxDjN4aANXzlwZQqXTmTA4kqr79wMHJuT9H0a5fx3GCGcPLhNzO0PWSrJj4HIm
-         Ai3DF2DuqDPbKPFPRMsl/mEt/Egkj2rSnXkIUrwIBQrTPdpEEZoIUN456iAzJP+QcKsR
-         9q1XmDs1WbB2TOYkCbMCyn/QkQSNMggbDT3VaO9nl0XXIAFBfEfWtaGauWWd+01/Mmf1
-         ch9GbQv4JjUiRq5rnMsj0MaPjRKWqVPwrkPgqz7wR7PJ5jeuii4Pleq0ACIwQ+yQwa2/
-         ITVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5Q6W+RSFkw04awmkiKuDrfjMUyXtsh70exNsHBoTblc=;
-        b=gKGSqcsbtp4PEPTX/VyQPtyI2ZQY1vryBDp0+yH5SuO9ivLZeqMap68TIGj15EP2Ms
-         ynRp208NVxUDuY7uL9D8RNnQt4GFy9GgrRcTsEGQnwhjO5NGioyewUk25Mpyq6DPXwy3
-         t0gFsHwTnU7yZASjjJe+f+7a1COdaJS7A0gz65e5+9eLcJvUfJIfd/34Bu074PPBHJYj
-         1FXyIkCnuPTMeidD1H67YhLwCjlU9l2PTk4H3ASGTci/ceuZoBC16cf9FjBzdJC6rH4T
-         6wUdslF+sPnoqZh/U1eQVC+IlPud9lgNUlhn8sc/njKwvfF4/mPvW34om01tjQS3XQhJ
-         1zPQ==
-X-Gm-Message-State: AOAM5307FLQ8DMaBdwuXTpXZL2KTrnznStH5nvZ3bY7a5G+reSZEicQL
-        xFtP0DpeRVazWsErEzccah/3Wern5DZPO75oL8I=
-X-Google-Smtp-Source: ABdhPJyXjkazUiD6SfEFd+HJZWbRrpP3CJc/CDBeewI1NzFsuLZKkLXaYIpE+ca+fMCDU3McO2k92g==
-X-Received: by 2002:a1c:f20b:: with SMTP id s11mr8753661wmc.144.1599742086502;
-        Thu, 10 Sep 2020 05:48:06 -0700 (PDT)
-Received: from localhost.localdomain (userh459.uk.uudial.com. [194.69.102.86])
-        by smtp.gmail.com with ESMTPSA id r15sm3555089wmn.24.2020.09.10.05.48.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 05:48:05 -0700 (PDT)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH v2] hv_netvsc: Add validation for untrusted Hyper-V values
-Date:   Thu, 10 Sep 2020 14:47:48 +0200
-Message-Id: <20200910124748.19217-1-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728618AbgIJVmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:42:51 -0400
+Received: from mga05.intel.com ([192.55.52.43]:31863 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725885AbgIJNCX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 09:02:23 -0400
+IronPort-SDR: zwKpcClAf3U2obN8Ddkyb51KU1fQn5EYV3mmJFJUTdbpDY/v7y/MrsT2tZD6w18j6Yfc6rHOxR
+ Kcd60y59uWRA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="243341152"
+X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
+   d="scan'208";a="243341152"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 06:02:03 -0700
+IronPort-SDR: S1rFM1mUOCY51KMgy45KFAjTbE4MlcEArsGaQgoirdTTKovsol6uIHM3WlHOHti9ElPTdIxOoR
+ ocpbwya6fPmg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
+   d="scan'208";a="505828973"
+Received: from glass.png.intel.com ([172.30.181.92])
+  by fmsmga005.fm.intel.com with ESMTP; 10 Sep 2020 06:02:00 -0700
+From:   Wong Vee Khee <vee.khee.wong@intel.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>
+Subject: [PATCH net-next 2/3] net: stmmac: Fix incorrect location to set real_num_rx|tx_queues
+Date:   Thu, 10 Sep 2020 21:03:44 +0800
+Message-Id: <20200910130344.15013-1-vee.khee.wong@intel.com>
+X-Mailer: git-send-email 2.17.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andres Beltran <lkmlabelt@gmail.com>
+From: Aashish Verma <aashishx.verma@intel.com>
 
-For additional robustness in the face of Hyper-V errors or malicious
-behavior, validate all values that originate from packets that Hyper-V
-has sent to the guest in the host-to-guest ring buffer. Ensure that
-invalid values cannot cause indexing off the end of an array, or
-subvert an existing validation via integer overflow. Ensure that
-outgoing packets do not have any leftover guest memory that has not
-been zeroed out.
+netif_set_real_num_tx_queues() & netif_set_real_num_rx_queues() should be
+used to inform network stack about the real Tx & Rx queue (active) number
+in both stmmac_open() and stmmac_resume(), therefore, we move the code
+from stmmac_dvr_probe() to stmmac_hw_setup().
 
-Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
-Co-developed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
+Fixes: c02b7a914551 net: stmmac: use netif_set_real_num_{rx,tx}_queues
+
+Signed-off-by: Aashish Verma <aashishx.verma@intel.com>
+Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 ---
-Changes in v2:
-  - Replace size check on struct nvsp_message with sub-checks (Haiyang)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
- drivers/net/hyperv/hyperv_net.h   |   4 +
- drivers/net/hyperv/netvsc.c       | 120 ++++++++++++++++++++++++++----
- drivers/net/hyperv/netvsc_drv.c   |   7 ++
- drivers/net/hyperv/rndis_filter.c |  73 ++++++++++++++++--
- 4 files changed, 184 insertions(+), 20 deletions(-)
-
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index 4d2b2d48ff2a1..da78bd0fb2aa2 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -860,6 +860,10 @@ static inline u32 netvsc_rqstor_size(unsigned long ringbytes)
- 	       ringbytes / NETVSC_MIN_IN_MSG_SIZE;
- }
- 
-+#define NETVSC_XFER_HEADER_SIZE(rng_cnt) \
-+		(offsetof(struct vmtransfer_page_packet_header, ranges) + \
-+		(rng_cnt) * sizeof(struct vmtransfer_page_range))
-+
- struct multi_send_data {
- 	struct sk_buff *skb; /* skb containing the pkt */
- 	struct hv_netvsc_packet *pkt; /* netvsc pkt pending */
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 03e93e3ddbad8..90b7a39c2dc78 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -388,6 +388,15 @@ static int netvsc_init_buf(struct hv_device *device,
- 	net_device->recv_section_size = resp->sections[0].sub_alloc_size;
- 	net_device->recv_section_cnt = resp->sections[0].num_sub_allocs;
- 
-+	/* Ensure buffer will not overflow */
-+	if (net_device->recv_section_size < NETVSC_MTU_MIN || (u64)net_device->recv_section_size *
-+	    (u64)net_device->recv_section_cnt > (u64)buf_size) {
-+		netdev_err(ndev, "invalid recv_section_size %u\n",
-+			   net_device->recv_section_size);
-+		ret = -EINVAL;
-+		goto cleanup;
-+	}
-+
- 	/* Setup receive completion ring.
- 	 * Add 1 to the recv_section_cnt because at least one entry in a
- 	 * ring buffer has to be empty.
-@@ -460,6 +469,12 @@ static int netvsc_init_buf(struct hv_device *device,
- 	/* Parse the response */
- 	net_device->send_section_size = init_packet->msg.
- 				v1_msg.send_send_buf_complete.section_size;
-+	if (net_device->send_section_size < NETVSC_MTU_MIN) {
-+		netdev_err(ndev, "invalid send_section_size %u\n",
-+			   net_device->send_section_size);
-+		ret = -EINVAL;
-+		goto cleanup;
-+	}
- 
- 	/* Section count is simply the size divided by the section size. */
- 	net_device->send_section_cnt = buf_size / net_device->send_section_size;
-@@ -740,12 +755,45 @@ static void netvsc_send_completion(struct net_device *ndev,
- 				   int budget)
- {
- 	const struct nvsp_message *nvsp_packet = hv_pkt_data(desc);
-+	u32 msglen = hv_pkt_datalen(desc);
-+
-+	/* Ensure packet is big enough to read header fields */
-+	if (msglen < sizeof(struct nvsp_message_header)) {
-+		netdev_err(ndev, "nvsp_message length too small: %u\n", msglen);
-+		return;
-+	}
- 
- 	switch (nvsp_packet->hdr.msg_type) {
- 	case NVSP_MSG_TYPE_INIT_COMPLETE:
-+		if (msglen < sizeof(struct nvsp_message_init_complete)) {
-+			netdev_err(ndev, "nvsp_msg length too small: %u\n",
-+				   msglen);
-+			return;
-+		}
-+		fallthrough;
-+
- 	case NVSP_MSG1_TYPE_SEND_RECV_BUF_COMPLETE:
-+		if (msglen < sizeof(struct nvsp_1_message_send_receive_buffer_complete)) {
-+			netdev_err(ndev, "nvsp_msg1 length too small: %u\n",
-+				   msglen);
-+			return;
-+		}
-+		fallthrough;
-+
- 	case NVSP_MSG1_TYPE_SEND_SEND_BUF_COMPLETE:
-+		if (msglen < sizeof(struct nvsp_1_message_send_send_buffer_complete)) {
-+			netdev_err(ndev, "nvsp_msg1 length too small: %u\n",
-+				   msglen);
-+			return;
-+		}
-+		fallthrough;
-+
- 	case NVSP_MSG5_TYPE_SUBCHANNEL:
-+		if (msglen < sizeof(struct nvsp_5_subchannel_complete)) {
-+			netdev_err(ndev, "nvsp_msg5 length too small: %u\n",
-+				   msglen);
-+			return;
-+		}
- 		/* Copy the response back */
- 		memcpy(&net_device->channel_init_pkt, nvsp_packet,
- 		       sizeof(struct nvsp_message));
-@@ -1126,19 +1174,28 @@ static void enq_receive_complete(struct net_device *ndev,
- static int netvsc_receive(struct net_device *ndev,
- 			  struct netvsc_device *net_device,
- 			  struct netvsc_channel *nvchan,
--			  const struct vmpacket_descriptor *desc,
--			  const struct nvsp_message *nvsp)
-+			  const struct vmpacket_descriptor *desc)
- {
- 	struct net_device_context *net_device_ctx = netdev_priv(ndev);
- 	struct vmbus_channel *channel = nvchan->channel;
- 	const struct vmtransfer_page_packet_header *vmxferpage_packet
- 		= container_of(desc, const struct vmtransfer_page_packet_header, d);
-+	const struct nvsp_message *nvsp = hv_pkt_data(desc);
-+	u32 msglen = hv_pkt_datalen(desc);
- 	u16 q_idx = channel->offermsg.offer.sub_channel_index;
- 	char *recv_buf = net_device->recv_buf;
- 	u32 status = NVSP_STAT_SUCCESS;
- 	int i;
- 	int count = 0;
- 
-+	/* Ensure packet is big enough to read header fields */
-+	if (msglen < sizeof(struct nvsp_message_header)) {
-+		netif_err(net_device_ctx, rx_err, ndev,
-+			  "invalid nvsp header, length too small: %u\n",
-+			  msglen);
-+		return 0;
-+	}
-+
- 	/* Make sure this is a valid nvsp packet */
- 	if (unlikely(nvsp->hdr.msg_type != NVSP_MSG1_TYPE_SEND_RNDIS_PKT)) {
- 		netif_err(net_device_ctx, rx_err, ndev,
-@@ -1147,6 +1204,14 @@ static int netvsc_receive(struct net_device *ndev,
- 		return 0;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 9302d8012a10..fea3b77892ab 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -2733,6 +2733,10 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
+ 		stmmac_enable_tbs(priv, priv->ioaddr, enable, chan);
  	}
  
-+	/* Validate xfer page pkt header */
-+	if ((desc->offset8 << 3) < sizeof(struct vmtransfer_page_packet_header)) {
-+		netif_err(net_device_ctx, rx_err, ndev,
-+			  "Invalid xfer page pkt, offset too small: %u\n",
-+			  desc->offset8 << 3);
-+		return 0;
-+	}
++	/* Configure real RX and TX queues */
++	netif_set_real_num_rx_queues(dev, priv->plat->rx_queues_to_use);
++	netif_set_real_num_tx_queues(dev, priv->plat->tx_queues_to_use);
 +
- 	if (unlikely(vmxferpage_packet->xfer_pageset_id != NETVSC_RECEIVE_BUFFER_ID)) {
- 		netif_err(net_device_ctx, rx_err, ndev,
- 			  "Invalid xfer page set id - expecting %x got %x\n",
-@@ -1157,6 +1222,14 @@ static int netvsc_receive(struct net_device *ndev,
+ 	/* Start the ball rolling... */
+ 	stmmac_start_all_dma(priv);
  
- 	count = vmxferpage_packet->range_cnt;
+@@ -4883,10 +4887,6 @@ int stmmac_dvr_probe(struct device *device,
  
-+	/* Check count for a valid value */
-+	if (NETVSC_XFER_HEADER_SIZE(count) > desc->offset8 << 3) {
-+		netif_err(net_device_ctx, rx_err, ndev,
-+			  "Range count is not valid: %d\n",
-+			  count);
-+		return 0;
-+	}
-+
- 	/* Each range represents 1 RNDIS pkt that contains 1 ethernet frame */
- 	for (i = 0; i < count; i++) {
- 		u32 offset = vmxferpage_packet->ranges[i].byte_offset;
-@@ -1164,7 +1237,8 @@ static int netvsc_receive(struct net_device *ndev,
- 		void *data;
- 		int ret;
+ 	stmmac_check_ether_addr(priv);
  
--		if (unlikely(offset + buflen > net_device->recv_buf_size)) {
-+		if (unlikely(offset > net_device->recv_buf_size ||
-+			     buflen > net_device->recv_buf_size - offset)) {
- 			nvchan->rsc.cnt = 0;
- 			status = NVSP_STAT_FAIL;
- 			netif_err(net_device_ctx, rx_err, ndev,
-@@ -1203,6 +1277,13 @@ static void netvsc_send_table(struct net_device *ndev,
- 	u32 count, offset, *tab;
- 	int i;
+-	/* Configure real RX and TX queues */
+-	netif_set_real_num_rx_queues(ndev, priv->plat->rx_queues_to_use);
+-	netif_set_real_num_tx_queues(ndev, priv->plat->tx_queues_to_use);
+-
+ 	ndev->netdev_ops = &stmmac_netdev_ops;
  
-+	/* Ensure packet is big enough to read send_table fields */
-+	if (msglen < sizeof(struct nvsp_message_header) +
-+		     sizeof(struct nvsp_5_send_indirect_table)) {
-+		netdev_err(ndev, "nvsp_v5_msg length too small: %u\n", msglen);
-+		return;
-+	}
-+
- 	count = nvmsg->msg.v5_msg.send_table.count;
- 	offset = nvmsg->msg.v5_msg.send_table.offset;
- 
-@@ -1234,10 +1315,18 @@ static void netvsc_send_table(struct net_device *ndev,
- }
- 
- static void netvsc_send_vf(struct net_device *ndev,
--			   const struct nvsp_message *nvmsg)
-+			   const struct nvsp_message *nvmsg,
-+			   u32 msglen)
- {
- 	struct net_device_context *net_device_ctx = netdev_priv(ndev);
- 
-+	/* Ensure packet is big enough to read its fields */
-+	if (msglen < sizeof(struct nvsp_message_header) +
-+		     sizeof(struct nvsp_4_send_vf_association)) {
-+		netdev_err(ndev, "nvsp_v4_msg length too small: %u\n", msglen);
-+		return;
-+	}
-+
- 	net_device_ctx->vf_alloc = nvmsg->msg.v4_msg.vf_assoc.allocated;
- 	net_device_ctx->vf_serial = nvmsg->msg.v4_msg.vf_assoc.serial;
- 	netdev_info(ndev, "VF slot %u %s\n",
-@@ -1247,16 +1336,24 @@ static void netvsc_send_vf(struct net_device *ndev,
- 
- static void netvsc_receive_inband(struct net_device *ndev,
- 				  struct netvsc_device *nvscdev,
--				  const struct nvsp_message *nvmsg,
--				  u32 msglen)
-+				  const struct vmpacket_descriptor *desc)
- {
-+	const struct nvsp_message *nvmsg = hv_pkt_data(desc);
-+	u32 msglen = hv_pkt_datalen(desc);
-+
-+	/* Ensure packet is big enough to read header fields */
-+	if (msglen < sizeof(struct nvsp_message_header)) {
-+		netdev_err(ndev, "inband nvsp_message length too small: %u\n", msglen);
-+		return;
-+	}
-+
- 	switch (nvmsg->hdr.msg_type) {
- 	case NVSP_MSG5_TYPE_SEND_INDIRECTION_TABLE:
- 		netvsc_send_table(ndev, nvscdev, nvmsg, msglen);
- 		break;
- 
- 	case NVSP_MSG4_TYPE_SEND_VF_ASSOCIATION:
--		netvsc_send_vf(ndev, nvmsg);
-+		netvsc_send_vf(ndev, nvmsg, msglen);
- 		break;
- 	}
- }
-@@ -1270,23 +1367,20 @@ static int netvsc_process_raw_pkt(struct hv_device *device,
- {
- 	struct vmbus_channel *channel = nvchan->channel;
- 	const struct nvsp_message *nvmsg = hv_pkt_data(desc);
--	u32 msglen = hv_pkt_datalen(desc);
- 
- 	trace_nvsp_recv(ndev, channel, nvmsg);
- 
- 	switch (desc->type) {
- 	case VM_PKT_COMP:
--		netvsc_send_completion(ndev, net_device, channel,
--				       desc, budget);
-+		netvsc_send_completion(ndev, net_device, channel, desc, budget);
- 		break;
- 
- 	case VM_PKT_DATA_USING_XFER_PAGES:
--		return netvsc_receive(ndev, net_device, nvchan,
--				      desc, nvmsg);
-+		return netvsc_receive(ndev, net_device, nvchan, desc);
- 		break;
- 
- 	case VM_PKT_DATA_INBAND:
--		netvsc_receive_inband(ndev, net_device, nvmsg, msglen);
-+		netvsc_receive_inband(ndev, net_device, desc);
- 		break;
- 
- 	default:
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 787f17e2a9716..720a381c951f2 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -748,6 +748,13 @@ void netvsc_linkstatus_callback(struct net_device *net,
- 	struct netvsc_reconfig *event;
- 	unsigned long flags;
- 
-+	/* Ensure the packet is big enough to access its fields */
-+	if (resp->msg_len - RNDIS_HEADER_SIZE < sizeof(struct rndis_indicate_status)) {
-+		netdev_err(net, "invalid rndis_indicate_status packet, len: %u\n",
-+			   resp->msg_len);
-+		return;
-+	}
-+
- 	/* Update the physical link speed when changing to another vSwitch */
- 	if (indicate->status == RNDIS_STATUS_LINK_SPEED_CHANGE) {
- 		u32 speed;
-diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
-index 10489ba44a090..fc78eac9aadec 100644
---- a/drivers/net/hyperv/rndis_filter.c
-+++ b/drivers/net/hyperv/rndis_filter.c
-@@ -275,6 +275,16 @@ static void rndis_filter_receive_response(struct net_device *ndev,
- 		return;
- 	}
- 
-+	/* Ensure the packet is big enough to read req_id. Req_id is the 1st
-+	 * field in any request/response message, so the payload should have at
-+	 * least sizeof(u32) bytes
-+	 */
-+	if (resp->msg_len - RNDIS_HEADER_SIZE < sizeof(u32)) {
-+		netdev_err(ndev, "rndis msg_len too small: %u\n",
-+			   resp->msg_len);
-+		return;
-+	}
-+
- 	spin_lock_irqsave(&dev->request_lock, flags);
- 	list_for_each_entry(request, &dev->req_list, list_ent) {
- 		/*
-@@ -331,8 +341,9 @@ static void rndis_filter_receive_response(struct net_device *ndev,
-  * Get the Per-Packet-Info with the specified type
-  * return NULL if not found.
-  */
--static inline void *rndis_get_ppi(struct rndis_packet *rpkt,
--				  u32 type, u8 internal)
-+static inline void *rndis_get_ppi(struct net_device *ndev,
-+				  struct rndis_packet *rpkt,
-+				  u32 rpkt_len, u32 type, u8 internal)
- {
- 	struct rndis_per_packet_info *ppi;
- 	int len;
-@@ -340,11 +351,36 @@ static inline void *rndis_get_ppi(struct rndis_packet *rpkt,
- 	if (rpkt->per_pkt_info_offset == 0)
- 		return NULL;
- 
-+	/* Validate info_offset and info_len */
-+	if (rpkt->per_pkt_info_offset < sizeof(struct rndis_packet) ||
-+	    rpkt->per_pkt_info_offset > rpkt_len) {
-+		netdev_err(ndev, "Invalid per_pkt_info_offset: %u\n",
-+			   rpkt->per_pkt_info_offset);
-+		return NULL;
-+	}
-+
-+	if (rpkt->per_pkt_info_len > rpkt_len - rpkt->per_pkt_info_offset) {
-+		netdev_err(ndev, "Invalid per_pkt_info_len: %u\n",
-+			   rpkt->per_pkt_info_len);
-+		return NULL;
-+	}
-+
- 	ppi = (struct rndis_per_packet_info *)((ulong)rpkt +
- 		rpkt->per_pkt_info_offset);
- 	len = rpkt->per_pkt_info_len;
- 
- 	while (len > 0) {
-+		/* Validate ppi_offset and ppi_size */
-+		if (ppi->size > len) {
-+			netdev_err(ndev, "Invalid ppi size: %u\n", ppi->size);
-+			continue;
-+		}
-+
-+		if (ppi->ppi_offset >= ppi->size) {
-+			netdev_err(ndev, "Invalid ppi_offset: %u\n", ppi->ppi_offset);
-+			continue;
-+		}
-+
- 		if (ppi->type == type && ppi->internal == internal)
- 			return (void *)((ulong)ppi + ppi->ppi_offset);
- 		len -= ppi->size;
-@@ -388,14 +424,29 @@ static int rndis_filter_receive_data(struct net_device *ndev,
- 	const struct ndis_pkt_8021q_info *vlan;
- 	const struct rndis_pktinfo_id *pktinfo_id;
- 	const u32 *hash_info;
--	u32 data_offset;
-+	u32 data_offset, rpkt_len;
- 	void *data;
- 	bool rsc_more = false;
- 	int ret;
- 
-+	/* Ensure data_buflen is big enough to read header fields */
-+	if (data_buflen < RNDIS_HEADER_SIZE + sizeof(struct rndis_packet)) {
-+		netdev_err(ndev, "invalid rndis pkt, data_buflen too small: %u\n",
-+			   data_buflen);
-+		return NVSP_STAT_FAIL;
-+	}
-+
-+	/* Validate rndis_pkt offset */
-+	if (rndis_pkt->data_offset >= data_buflen - RNDIS_HEADER_SIZE) {
-+		netdev_err(ndev, "invalid rndis packet offset: %u\n",
-+			   rndis_pkt->data_offset);
-+		return NVSP_STAT_FAIL;
-+	}
-+
- 	/* Remove the rndis header and pass it back up the stack */
- 	data_offset = RNDIS_HEADER_SIZE + rndis_pkt->data_offset;
- 
-+	rpkt_len = data_buflen - RNDIS_HEADER_SIZE;
- 	data_buflen -= data_offset;
- 
- 	/*
-@@ -410,13 +461,13 @@ static int rndis_filter_receive_data(struct net_device *ndev,
- 		return NVSP_STAT_FAIL;
- 	}
- 
--	vlan = rndis_get_ppi(rndis_pkt, IEEE_8021Q_INFO, 0);
-+	vlan = rndis_get_ppi(ndev, rndis_pkt, rpkt_len, IEEE_8021Q_INFO, 0);
- 
--	csum_info = rndis_get_ppi(rndis_pkt, TCPIP_CHKSUM_PKTINFO, 0);
-+	csum_info = rndis_get_ppi(ndev, rndis_pkt, rpkt_len, TCPIP_CHKSUM_PKTINFO, 0);
- 
--	hash_info = rndis_get_ppi(rndis_pkt, NBL_HASH_VALUE, 0);
-+	hash_info = rndis_get_ppi(ndev, rndis_pkt, rpkt_len, NBL_HASH_VALUE, 0);
- 
--	pktinfo_id = rndis_get_ppi(rndis_pkt, RNDIS_PKTINFO_ID, 1);
-+	pktinfo_id = rndis_get_ppi(ndev, rndis_pkt, rpkt_len, RNDIS_PKTINFO_ID, 1);
- 
- 	data = (void *)msg + data_offset;
- 
-@@ -474,6 +525,14 @@ int rndis_filter_receive(struct net_device *ndev,
- 	if (netif_msg_rx_status(net_device_ctx))
- 		dump_rndis_message(ndev, rndis_msg);
- 
-+	/* Validate incoming rndis_message packet */
-+	if (buflen < RNDIS_HEADER_SIZE || rndis_msg->msg_len < RNDIS_HEADER_SIZE ||
-+	    buflen < rndis_msg->msg_len) {
-+		netdev_err(ndev, "Invalid rndis_msg (buflen: %u, msg_len: %u)\n",
-+			   buflen, rndis_msg->msg_len);
-+		return NVSP_STAT_FAIL;
-+	}
-+
- 	switch (rndis_msg->ndis_msg_type) {
- 	case RNDIS_MSG_PACKET:
- 		return rndis_filter_receive_data(ndev, net_dev, nvchan,
+ 	ndev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM |
 -- 
-2.25.1
+2.17.0
 
