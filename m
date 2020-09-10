@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 029EA263E3F
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 09:14:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA5D263E2F
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 09:12:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730315AbgIJHOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 03:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
+        id S1730175AbgIJHMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 03:12:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727805AbgIJG6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 02:58:45 -0400
+        with ESMTP id S1729988AbgIJG7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 02:59:13 -0400
 Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF027C06135A
-        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 23:55:17 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id s13so4475898wmh.4
-        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 23:55:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D8B1C06135D
+        for <netdev@vger.kernel.org>; Wed,  9 Sep 2020 23:55:19 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id a65so4459009wme.5
+        for <netdev@vger.kernel.org>; Wed, 09 Sep 2020 23:55:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=urR5WKC0YHrLgprPWWXo12lMVDtV/KRxTWx7J20eMag=;
-        b=Um8KwA1D4nIc4VA3tMizMDPtconF94POnFFEiyvMu3k4y7FSvoND21OeGbm+bAy1J8
-         zCnYdcakCq3Jcls8OG7Y2VwajhWCpd9uGplZP7Iy5fdTFfsiU/zmqt5wiV2G/w0MawBz
-         c/G2KJLf5RfnXlK7TrwVvC8l1kP98cVggxizpOz8NRXJ4DWpZwqZpxVMnZeIKE/6qlQ1
-         j8weuOyLbe/0sPRZtPmPEO3j4sFEFDIgB1GhECyBdRWg3eCqRFp/EUwqOD+n9h5ta+LH
-         w63dFMwCRoZ49GopwAJ0zBEgdGHCI9gh0n07yikSfxMDE4IPJK3ZaiTA0+Hjnu1kKcX9
-         KUXA==
+        bh=Uh/4XLJuHqHnwRZLTq1ZUB9DkVVyoID5KW3qwMfLQX4=;
+        b=b58biad/XGI7tZnOxpmXY1CLrJGO4deSAXnVhLBoQsbxJfJZ8c4jiF8EYJNHb5lHK2
+         XQrjAQ1JIo2aE3OCezphq6f5NgvtG6Y2zPyhQgMEbshfya4UCrVtWy5fqFuw88BCJI8u
+         uEyIgiDCY3RdhzbIRfQIjoAEIcTQRqks5yhDqkKOQzHcy2+Zdagk4l3XRY5vk8W6pi/W
+         5Al6M8AZCE7wY6c9N58Nb48+JL/c7HEm+Mja2V8JcRUSrJgQU6SNxDklFys8QPlDBgmw
+         w0voIjkDY/BmPz/FyH1As2oNe4vuNsKo/O1xtHlib33ptXIv+XsySM1H4hdarNCGA1P8
+         cl9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=urR5WKC0YHrLgprPWWXo12lMVDtV/KRxTWx7J20eMag=;
-        b=YwHSiKxog/zt98WfeTfRBvsAlDP2LDLdejCZPt6gXOls2UfSj6dmNJnukWtDg9gNI3
-         N2l+ErxK85V+tHBYk3tjoTZa2WaPX3E0e/WdVh2x/kWglbX5PbqHNM9ksPChpg1UBYtT
-         jeYOcs5BX5CpyMrUP+8dVEjOWL9+6hXQKWN2bjBk2d5TiuuYXyG2fmW++Iw2LtCqzvmD
-         MlqcslNZZg4IVJk/W67pzTVyrFD/+LXHq9kA6MG17qPIyKvcmzdP+tb9w4sebf1xOGro
-         Hu9wufZo7unzKV7cztTOEXWRUOSjQOYBjRw2OtOW/e4hEtFN53AjXUyladqhHp+Dg6S5
-         cRYg==
-X-Gm-Message-State: AOAM532b/7l3jV1xL2MrbWECG4dAti4/7sPx4D0Qh3tCC1MZgzRimoro
-        ypUDi0PHaq6lEcK4Ltv8RUiqGA==
-X-Google-Smtp-Source: ABdhPJxYaZw0S2OykKWP/xi8aeTV3d3sGgb6/hcFDB5LlE77WFEV/lB7IJAOO1o93ip40+G7viM1bQ==
-X-Received: by 2002:a1c:dd45:: with SMTP id u66mr7042690wmg.117.1599720916617;
-        Wed, 09 Sep 2020 23:55:16 -0700 (PDT)
+        bh=Uh/4XLJuHqHnwRZLTq1ZUB9DkVVyoID5KW3qwMfLQX4=;
+        b=krvqb15g8ZdyHJIDETxBPXa7hCvN9MOfY8tKFjUIc9c8L/n81Lt8ePFLAJ/CgXVezC
+         MJ8o2S/vdWO5NGSyH/kT+eRYRUNulJCLsKwpk+6jKECVzaXisNQoE7YXbjaBMenig7KV
+         UAX0yjP3ZSSek6JAR4HPi8wo787Vvj7SJtx4na9CWm1Z5lbGwViLP6r0kYWoABRpg/7W
+         HJDxyw7cXuokBejSjkn2rDDCbuKYHtvww5nJyR1o0FswItGKg+Xkt9F8SJHSolcLSnF8
+         BccQEuLKAtDHPI4fVV/d9yGrkdMReZ4hmAG2RJFUTqhdsUlGS/AQA9b1h8jWqPl72K/H
+         gOTg==
+X-Gm-Message-State: AOAM5307mOyxIscSz7PNIMkxk4OIdCOV5eEBwMoCGbLdR+Hd0vVD5E53
+        7nc6enVvax8BCZzfFUwHcwwEfw==
+X-Google-Smtp-Source: ABdhPJyAHuPlm0h6lSyKmcxI8wakglC5O0OE4mjADtTWdtET1ee+5auZMS/hd6A//Know+QFpOOIKQ==
+X-Received: by 2002:a1c:6254:: with SMTP id w81mr6751162wmb.94.1599720917761;
+        Wed, 09 Sep 2020 23:55:17 -0700 (PDT)
 Received: from dell.default ([91.110.221.246])
-        by smtp.gmail.com with ESMTPSA id m3sm2444028wme.31.2020.09.09.23.55.15
+        by smtp.gmail.com with ESMTPSA id m3sm2444028wme.31.2020.09.09.23.55.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 23:55:16 -0700 (PDT)
+        Wed, 09 Sep 2020 23:55:17 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
         Maya Erez <merez@codeaurora.org>, wil6210@qti.qualcomm.com
-Subject: [PATCH 20/29] wil6210: pmc: Demote a few nonconformant kernel-doc function headers
-Date:   Thu, 10 Sep 2020 07:54:22 +0100
-Message-Id: <20200910065431.657636-21-lee.jones@linaro.org>
+Subject: [PATCH 21/29] wil6210: wil_platform: Demote kernel-doc header to standard comment block
+Date:   Thu, 10 Sep 2020 07:54:23 +0100
+Message-Id: <20200910065431.657636-22-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200910065431.657636-1-lee.jones@linaro.org>
 References: <20200910065431.657636-1-lee.jones@linaro.org>
@@ -65,18 +65,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+There has been no attempt to document any of the function parameters
+here.
+
 Fixes the following W=1 kernel build warning(s):
 
- drivers/net/wireless/ath/wil6210/pmc.c:43: warning: Function parameter or member 'wil' not described in 'wil_pmc_alloc'
- drivers/net/wireless/ath/wil6210/pmc.c:43: warning: Function parameter or member 'num_descriptors' not described in 'wil_pmc_alloc'
- drivers/net/wireless/ath/wil6210/pmc.c:43: warning: Function parameter or member 'descriptor_size' not described in 'wil_pmc_alloc'
- drivers/net/wireless/ath/wil6210/pmc.c:229: warning: Function parameter or member 'wil' not described in 'wil_pmc_free'
- drivers/net/wireless/ath/wil6210/pmc.c:229: warning: Function parameter or member 'send_pmc_cmd' not described in 'wil_pmc_free'
- drivers/net/wireless/ath/wil6210/pmc.c:307: warning: Function parameter or member 'wil' not described in 'wil_pmc_last_cmd_status'
- drivers/net/wireless/ath/wil6210/pmc.c:320: warning: Function parameter or member 'filp' not described in 'wil_pmc_read'
- drivers/net/wireless/ath/wil6210/pmc.c:320: warning: Function parameter or member 'buf' not described in 'wil_pmc_read'
- drivers/net/wireless/ath/wil6210/pmc.c:320: warning: Function parameter or member 'count' not described in 'wil_pmc_read'
- drivers/net/wireless/ath/wil6210/pmc.c:320: warning: Function parameter or member 'f_pos' not described in 'wil_pmc_read'
+ drivers/net/wireless/ath/wil6210/wil_platform.c:27: warning: Function parameter or member 'dev' not described in 'wil_platform_init'
+ drivers/net/wireless/ath/wil6210/wil_platform.c:27: warning: Function parameter or member 'ops' not described in 'wil_platform_init'
+ drivers/net/wireless/ath/wil6210/wil_platform.c:27: warning: Function parameter or member 'rops' not described in 'wil_platform_init'
+ drivers/net/wireless/ath/wil6210/wil_platform.c:27: warning: Function parameter or member 'wil_handle' not described in 'wil_platform_init'
 
 Cc: Maya Erez <merez@codeaurora.org>
 Cc: Kalle Valo <kvalo@codeaurora.org>
@@ -87,53 +84,23 @@ Cc: wil6210@qti.qualcomm.com
 Cc: netdev@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/net/wireless/ath/wil6210/pmc.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/net/wireless/ath/wil6210/wil_platform.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wil6210/pmc.c b/drivers/net/wireless/ath/wil6210/pmc.c
-index 9b4ca6b256d26..a2f7b4c1da48d 100644
---- a/drivers/net/wireless/ath/wil6210/pmc.c
-+++ b/drivers/net/wireless/ath/wil6210/pmc.c
-@@ -29,8 +29,7 @@ void wil_pmc_init(struct wil6210_priv *wil)
- 	mutex_init(&wil->pmc.lock);
+diff --git a/drivers/net/wireless/ath/wil6210/wil_platform.c b/drivers/net/wireless/ath/wil6210/wil_platform.c
+index 10e10dc9fedfb..e152dc29d177b 100644
+--- a/drivers/net/wireless/ath/wil6210/wil_platform.c
++++ b/drivers/net/wireless/ath/wil6210/wil_platform.c
+@@ -15,8 +15,7 @@ void wil_platform_modexit(void)
+ {
  }
  
 -/**
-- * Allocate the physical ring (p-ring) and the required
-+/* Allocate the physical ring (p-ring) and the required
-  * number of descriptors of required size.
-  * Initialize the descriptors as required by pmc dma.
-  * The descriptors' buffers dwords are initialized to hold
-@@ -221,8 +220,7 @@ void wil_pmc_alloc(struct wil6210_priv *wil,
- 	mutex_unlock(&pmc->lock);
- }
- 
--/**
-- * Traverse the p-ring and release all buffers.
-+/* Traverse the p-ring and release all buffers.
-  * At the end release the p-ring memory
-  */
- void wil_pmc_free(struct wil6210_priv *wil, int send_pmc_cmd)
-@@ -299,8 +297,7 @@ void wil_pmc_free(struct wil6210_priv *wil, int send_pmc_cmd)
- 	mutex_unlock(&pmc->lock);
- }
- 
--/**
-- * Status of the last operation requested via debugfs: alloc/free/read.
-+/* Status of the last operation requested via debugfs: alloc/free/read.
-  * 0 - success or negative errno
-  */
- int wil_pmc_last_cmd_status(struct wil6210_priv *wil)
-@@ -311,8 +308,7 @@ int wil_pmc_last_cmd_status(struct wil6210_priv *wil)
- 	return wil->pmc.last_cmd_status;
- }
- 
--/**
-- * Read from required position up to the end of current descriptor,
-+/* Read from required position up to the end of current descriptor,
-  * depends on descriptor size configured during alloc request.
-  */
- ssize_t wil_pmc_read(struct file *filp, char __user *buf, size_t count,
+- * wil_platform_init() - wil6210 platform module init
++/* wil_platform_init() - wil6210 platform module init
+  *
+  * The function must be called before all other functions in this module.
+  * It returns a handle which is used with the rest of the API
 -- 
 2.25.1
 
