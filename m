@@ -2,143 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C87F2653DC
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:41:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B08F2653BD
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:40:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728364AbgIJVll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:41:41 -0400
-Received: from mga09.intel.com ([134.134.136.24]:17242 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730808AbgIJNFF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 09:05:05 -0400
-IronPort-SDR: 6aSjMggW1OAdqqI7zneioWS8/Xf7xKxUf0QJAugfdwcz+I7JsVZJtiDbEuQh12xcPeywQOckfi
- lbfnaEgV6Fow==
-X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="159475727"
-X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
-   d="scan'208";a="159475727"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 06:04:00 -0700
-IronPort-SDR: KgbJY80cLw6sf4uRD0fDKIrG2SMUf9VIjFwG8qqVPU33W5i+sT9V3YPssiH8kH4hFz+B4rzSME
- 4ADWV6S+CiCQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
-   d="scan'208";a="329325728"
-Received: from glass.png.intel.com ([172.30.181.92])
-  by fmsmga004.fm.intel.com with ESMTP; 10 Sep 2020 06:03:56 -0700
-From:   Wong Vee Khee <vee.khee.wong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [PATCH net-next 3/3] net: stmmac: use netif_tx_start|stop_all_queues() function
-Date:   Thu, 10 Sep 2020 21:05:40 +0800
-Message-Id: <20200910130540.19171-1-vee.khee.wong@intel.com>
-X-Mailer: git-send-email 2.17.0
+        id S1728333AbgIJVkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:40:01 -0400
+Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:23191 "EHLO
+        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730339AbgIJNHZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 09:07:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1599743245; x=1631279245;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=uP6m1zaP1goYm/3lPtOTDYan9fxKHTKsf0GmarhYNSc=;
+  b=LPAWMCiJY/41cD6iUsDvNCUbtNx+7pNGMtJhNEOEW4NNvS0IuoKmWSXJ
+   4Lc5jmPsDlaAMBveoucYB9w0hl8rCzCxa8PT3y0rjrTloPnPQoI3ck/Pt
+   kvfDikxyN0lBzKgDVlieMAUm087Tu1EE9OoANSYAAxQBj2TBv+3AA/7KR
+   g=;
+X-IronPort-AV: E=Sophos;i="5.76,413,1592870400"; 
+   d="scan'208";a="53166171"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1a-821c648d.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 10 Sep 2020 13:07:24 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-1a-821c648d.us-east-1.amazon.com (Postfix) with ESMTPS id C2DB0A206F;
+        Thu, 10 Sep 2020 13:07:23 +0000 (UTC)
+Received: from EX13D08UEB004.ant.amazon.com (10.43.60.142) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 10 Sep 2020 13:07:22 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (10.43.61.77) by
+ EX13D08UEB004.ant.amazon.com (10.43.60.142) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 10 Sep 2020 13:07:22 +0000
+Received: from dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (172.19.82.3)
+ by mail-relay.amazon.com (10.43.61.169) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Thu, 10 Sep 2020 13:07:22 +0000
+Received: by dev-dsk-sameehj-1c-1edacdb5.eu-west-1.amazon.com (Postfix, from userid 9775579)
+        id 1502E81BBC; Thu, 10 Sep 2020 13:07:22 +0000 (UTC)
+From:   <sameehj@amazon.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     Sameeh Jubran <sameehj@amazon.com>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <akiyano@amazon.com>, <ndagan@amazon.com>
+Subject: [PATCH V4 net-next 0/4] Enhance current features in ena driver
+Date:   Thu, 10 Sep 2020 13:07:09 +0000
+Message-ID: <20200910130713.26074-1-sameehj@amazon.com>
+X-Mailer: git-send-email 2.16.6
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ong Boon Leong <boon.leong.ong@intel.com>
+From: Sameeh Jubran <sameehj@amazon.com>
 
-The current implementation of stmmac_stop_all_queues() and
-stmmac_start_all_queues() will not work correctly when the value of
-tx_queues_to_use is changed through ethtool -L DEVNAME rx N tx M command.
+This series adds the following:
+* Exposes new device stats using ethtool.
+* Adds and exposes the stats of xdp TX queues through ethtool.
 
-Also, netif_tx_start|stop_all_queues() are only needed in driver open()
-and close() only.
+V3: Fix indentation in patches #3 and #4
+V2: Drop the need for casting stat_offset
+V1: Use unsigned long for pointer math instead of uintptr_t
 
-Fixes: c22a3f48 net: stmmac: adding multiple napi mechanism
+Sameeh Jubran (4):
+  net: ena: ethtool: convert stat_offset to 64 bit resolution
+  net: ena: ethtool: Add new device statistics
+  net: ena: ethtool: add stats printing to XDP queues
+  net: ena: xdp: add queue counters for xdp actions
 
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 33 +------------------
- 1 file changed, 1 insertion(+), 32 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_admin_defs.h |  37 ++++-
+ drivers/net/ethernet/amazon/ena/ena_com.c        |  19 ++-
+ drivers/net/ethernet/amazon/ena/ena_com.h        |   9 ++
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c    | 170 +++++++++++++++++------
+ drivers/net/ethernet/amazon/ena/ena_netdev.c     |  39 +++++-
+ drivers/net/ethernet/amazon/ena/ena_netdev.h     |   9 ++
+ 6 files changed, 232 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index fea3b77892ab..90c1c37b64e0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -176,32 +176,6 @@ static void stmmac_enable_all_queues(struct stmmac_priv *priv)
- 	}
- }
- 
--/**
-- * stmmac_stop_all_queues - Stop all queues
-- * @priv: driver private structure
-- */
--static void stmmac_stop_all_queues(struct stmmac_priv *priv)
--{
--	u32 tx_queues_cnt = priv->plat->tx_queues_to_use;
--	u32 queue;
--
--	for (queue = 0; queue < tx_queues_cnt; queue++)
--		netif_tx_stop_queue(netdev_get_tx_queue(priv->dev, queue));
--}
--
--/**
-- * stmmac_start_all_queues - Start all queues
-- * @priv: driver private structure
-- */
--static void stmmac_start_all_queues(struct stmmac_priv *priv)
--{
--	u32 tx_queues_cnt = priv->plat->tx_queues_to_use;
--	u32 queue;
--
--	for (queue = 0; queue < tx_queues_cnt; queue++)
--		netif_tx_start_queue(netdev_get_tx_queue(priv->dev, queue));
--}
--
- static void stmmac_service_event_schedule(struct stmmac_priv *priv)
- {
- 	if (!test_bit(STMMAC_DOWN, &priv->state) &&
-@@ -2865,7 +2839,7 @@ static int stmmac_open(struct net_device *dev)
- 	}
- 
- 	stmmac_enable_all_queues(priv);
--	stmmac_start_all_queues(priv);
-+	netif_tx_start_all_queues(priv->dev);
- 
- 	return 0;
- 
-@@ -2908,8 +2882,6 @@ static int stmmac_release(struct net_device *dev)
- 	phylink_stop(priv->phylink);
- 	phylink_disconnect_phy(priv->phylink);
- 
--	stmmac_stop_all_queues(priv);
--
- 	stmmac_disable_all_queues(priv);
- 
- 	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
-@@ -5117,7 +5089,6 @@ int stmmac_suspend(struct device *dev)
- 	mutex_lock(&priv->lock);
- 
- 	netif_device_detach(ndev);
--	stmmac_stop_all_queues(priv);
- 
- 	stmmac_disable_all_queues(priv);
- 
-@@ -5244,8 +5215,6 @@ int stmmac_resume(struct device *dev)
- 
- 	stmmac_enable_all_queues(priv);
- 
--	stmmac_start_all_queues(priv);
--
- 	mutex_unlock(&priv->lock);
- 
- 	if (!device_may_wakeup(priv->device) || !priv->plat->pmt) {
 -- 
-2.17.0
+2.16.6
 
