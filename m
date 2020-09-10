@@ -2,91 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B35026458E
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 13:54:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 075792645BF
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 14:11:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729741AbgIJLxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 07:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730450AbgIJLwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 07:52:39 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2359C06179A
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 04:52:35 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id w7so4495778pfi.4
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 04:52:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=puresoftware-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=RlW6veRu6Xirp/k0Bt4ZRbq2wJIM5u3P4H+PGBgZ3Wk=;
-        b=jbZCZGEUF7G1BWA7gYTqCALc/XwTOw/GXbi3oV62Z0PdFNsLi5KcVZInkAwJk1L8KX
-         v7BRKI8qdxV+YkLbrhNJfMXrkJ2RK+hdAHNq0m1yKuAcghdFMZqMrzUrBzYZYymcpMm9
-         81aZecCD6RTddtINT80UC0UH8C7CJj+2aB7wnoscbEIOqEfk4yudelqYHuNGL+1ZEv27
-         dE3XiUivgVb6FdV0YvZMl2sBIBUfPXYMhhdk3WDwpjH6JzwSjMnIRjk7PHsIdz3fN38k
-         T2OxNugf1NIyO+ycaoZFKrQTWMEZ5w6x6eWrx1RL11NXN3D07CuyEAV7yZQGXT+YlBSG
-         AuQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=RlW6veRu6Xirp/k0Bt4ZRbq2wJIM5u3P4H+PGBgZ3Wk=;
-        b=Dl51R/0SH6gjWO8QP2MoYqdotrEO5bahicpFHQXuY7F9U+gu0tNwop2XD9BR/95F4/
-         l9ddYp5Iuah4IWNyQEsmQchazb7N+RlbUYXuEc65qsgoM8FQL2lqh9tPyUbO3LYK75Ie
-         whciZPLLusP6d4YNxwPoCMH70dPbzzREu7bp5aQuoEaAQ6Bccq2+nnVS12G14Ox8XWrL
-         cwN6b29K/D/92X4BQFxwfJpZFawDGAXt708gsjQA39IbR8UXBQWrayY35dayKlN7WQUV
-         dYJMNkbxp9pxILS+0RFkwvu1+F6xcN5RbBBXg77y1eYhUahJr5k6pxsWLU6MrsqMmHc0
-         YMkg==
-X-Gm-Message-State: AOAM530Hpz8VJiyY/TCuxMtc1fZZREHs0/IqVua7efCiFH7BKBlSXe7+
-        vywM3xcOqsvsaa1l7iVCB3VRxw==
-X-Google-Smtp-Source: ABdhPJxYn3Pv4D2VvLWutMXQ7OPbH2UA4N1zYUCy7vF5bqvqZgxERnbpbRRoZI5dFs+Liubf84g8gg==
-X-Received: by 2002:a63:5b05:: with SMTP id p5mr4160718pgb.154.1599738755525;
-        Thu, 10 Sep 2020 04:52:35 -0700 (PDT)
-Received: from prashant-PC.puresoft.int ([125.63.92.170])
-        by smtp.gmail.com with ESMTPSA id gd17sm2009783pjb.6.2020.09.10.04.52.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Sep 2020 04:52:35 -0700 (PDT)
-From:   Vikas Singh <vikas.singh@puresoftware.com>
-To:     madalin.bucur@oss.nxp.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org
-Cc:     calvin.johnson@oss.nxp.com, kuldip.dwivedi@puresoftware.com,
-        vikas.singh@nxp.com, Vikas Singh <vikas.singh@puresoftware.com>
-Subject: [PATCH] net: ethernet: freescale: Add device "fwnode" while MDIO bus get registered
-Date:   Thu, 10 Sep 2020 17:22:10 +0530
-Message-Id: <1599738730-27080-1-git-send-email-vikas.singh@puresoftware.com>
-X-Mailer: git-send-email 2.7.4
+        id S1727830AbgIJMLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 08:11:20 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:11486 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728289AbgIJMKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 08:10:07 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f5a17140001>; Thu, 10 Sep 2020 05:07:48 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Thu, 10 Sep 2020 05:10:04 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Thu, 10 Sep 2020 05:10:04 -0700
+Received: from localhost.localdomain (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 10 Sep
+ 2020 12:10:01 +0000
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Petr Machata <petrm@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>,
+        "Saeed Mahameed" <saeedm@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH net] net: DCB: Validate DCB_ATTR_DCB_BUFFER argument
+Date:   Thu, 10 Sep 2020 14:09:05 +0200
+Message-ID: <e086a3597a33e16bcc57b97f81dcb2aa3ce48e31.1599739681.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1599739668; bh=m/pAd3rmzduR18wiaHF7XB11moFGkoGFHdd945zwaVY=;
+        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
+         MIME-Version:Content-Transfer-Encoding:Content-Type:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=BZ3+79IRXqCtfu+RZaAVfh2/aT00eXoszaJc079MUdEnzjpQ1kQPB1Rni6nwmcvjK
+         p9KR8HvdCXtfn/76M1ckTV50OCMzp0UBZY6Jtuf6mZYVeR5BysjWRSv9Z4VMWvLN1/
+         XdZXIaxqAG6do7MfkQgs+6uLCgKioO0uA1HgCybARiSbPRK241y+KYGI4kp1gk9p8m
+         rtf7/x5n0/pLg28TsU89PsqagqwaQoP/U2hzqAFkEUwT1t+t3amwlz1Cw5CmMD4v04
+         1eunSaR48tipTEWKKWuvgxu8LzuZOLdVdpvMNttCgZaPk+s7WhAUsX3sUj8warue/V
+         7ZWZSkzHfhvVw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For DT case, auto-probe of c45 devices with extended scanning in xgmac_mdio
-works well but scanning and registration of these devices (PHY's) fails in
-case of ACPI mainly because of MDIO bus "fwnode" is not set appropriately.
-This patch is based on https://www.spinics.net/lists/netdev/msg662173.html
+The parameter passed via DCB_ATTR_DCB_BUFFER is a struct dcbnl_buffer. The
+field prio2buffer is an array of IEEE_8021Q_MAX_PRIORITIES bytes, where
+each value is a number of a buffer to direct that priority's traffic to.
+That value is however never validated to lie within the bounds set by
+DCBX_MAX_BUFFERS. The only driver that currently implements the callback is
+mlx5 (maintainers CCd), and that does not do any validation either, in
+particual allowing incorrect configuration if the prio2buffer value does
+not fit into 4 bits.
 
-This change will update the "fwnode" while MDIO bus get registered and allow
-lookup for registered PHYs on MDIO bus from other drivers while probing.
+Instead of offloading the need to validate the buffer index to drivers, do
+it right there in core, and bounce the request if the value is too large.
 
-Signed-off-by: Vikas Singh <vikas.singh@puresoftware.com>
+CC: Parav Pandit <parav@nvidia.com>
+CC: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: e549f6f9c098 ("net/dcb: Add dcbnl buffer attribute")
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/freescale/xgmac_mdio.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/dcb/dcbnl.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
-index 98be51d..8217d17 100644
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -268,6 +268,10 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
- 	bus->read = xgmac_mdio_read;
- 	bus->write = xgmac_mdio_write;
- 	bus->parent = &pdev->dev;
+diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
+index 84dde5a2066e..16014ad19406 100644
+--- a/net/dcb/dcbnl.c
++++ b/net/dcb/dcbnl.c
+@@ -1426,6 +1426,7 @@ static int dcbnl_ieee_set(struct net_device *netdev, =
+struct nlmsghdr *nlh,
+ {
+ 	const struct dcbnl_rtnl_ops *ops =3D netdev->dcbnl_ops;
+ 	struct nlattr *ieee[DCB_ATTR_IEEE_MAX + 1];
++	int prio;
+ 	int err;
+=20
+ 	if (!ops)
+@@ -1475,6 +1476,13 @@ static int dcbnl_ieee_set(struct net_device *netdev,=
+ struct nlmsghdr *nlh,
+ 		struct dcbnl_buffer *buffer =3D
+ 			nla_data(ieee[DCB_ATTR_DCB_BUFFER]);
+=20
++		for (prio =3D 0; prio < ARRAY_SIZE(buffer->prio2buffer); prio++) {
++			if (buffer->prio2buffer[prio] >=3D DCBX_MAX_BUFFERS) {
++				err =3D -EINVAL;
++				goto err;
++			}
++		}
 +
-+	if (!is_of_node(pdev->dev.fwnode))
-+		bus->dev.fwnode = bus->parent->fwnode;
-+
- 	bus->probe_capabilities = MDIOBUS_C22_C45;
- 	snprintf(bus->id, MII_BUS_ID_SIZE, "%pa", &res->start);
- 
--- 
-2.7.4
+ 		err =3D ops->dcbnl_setbuffer(netdev, buffer);
+ 		if (err)
+ 			goto err;
+--=20
+2.20.1
 
