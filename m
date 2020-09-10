@@ -2,96 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE34D265235
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:11:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11418265238
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:11:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725935AbgIJVKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:10:52 -0400
-Received: from mail-eopbgr700113.outbound.protection.outlook.com ([40.107.70.113]:34657
-        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727122AbgIJVKT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 17:10:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mM/Aj8Utb0xlzApAR15JceC3BiRpmJKIEW+0loSqCVhCtOFnbw4CUxl6PYTua+TsNN1HpcEmytisrqIUUX4Yxgo03mhhIWhxppk/X1GBwYvIgQ2SPXSIBYOtkZP6xD2mUChNHF+lP/NQSkvEAWfNIa/Od/5+3RMiVaUBlbMXU5YNtzNqPWiE3tucYcDueS2CIeuq3nuEMuI8QqGkZkv+6rEx74TIc2XTVTvhA7zMu9JyZ/bpN/vPKXgrdXu6oy/szMzypEbD9d0a1SiLTMOK8I9Nt8MpNyNh+bgMcFNjCmwObRGbZTSDbY2p4+S1wzHlBL9Tp4/aE8EIkO76VjQy+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GCGjL3fKXdW7gGWwfTc732rzvBw5Z8D52EdstYJBykM=;
- b=edzqDp4YbojYXXt5oZYc6KCu60Y/r0yBNbM+0afQP5KiAsTmtv5PfSbDmxw/ZPH4Id3K75PL5gcEpbsNI8+q5O2q173H0X9k1ksScUs6UcLCxw178JfgW+/6zKhRcSDeaj2Yq1Xw+qo5umvE8zemqr4dNa8qGetfl63pDBFrGKjeejyAenrD1znJkWAmN3Lk+qzmHuH9n0OyPbceafm4WWjb45VtlgfyT4UMYWKieGCB2aE6UcUz8UAhG32kZ307VknKRPna6D/sduUT8A/tRzfYgpVDHF2N1iq/Bq3qcWE8bp194vTiU1Pu2GRn160KESrNbPV/1yezT4MAJ2Z8hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GCGjL3fKXdW7gGWwfTc732rzvBw5Z8D52EdstYJBykM=;
- b=clnfXBZq9VBCUQhTm0/m/HVTSQSZzfRUmfusxPl3Pj0RCr8IOCwZRrORCD1kR3rcxlOOxpPAQQMU8hqWGj/yhj4P6DFy17pFJiWSl3hhFlWwl8xT9+eGa2/2f2/zfezs39c781TwD0HbRoS05b57mlKFE6Sbjuqo1vvlJrlz33k=
-Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
- (2603:10b6:207:30::18) by BL0PR2101MB0963.namprd21.prod.outlook.com
- (2603:10b6:207:30::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.6; Thu, 10 Sep
- 2020 21:10:11 +0000
-Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
- ([fe80::21e4:e6b6:10c:e66f]) by BL0PR2101MB0930.namprd21.prod.outlook.com
- ([fe80::70b5:f505:ae8b:c773%10]) with mapi id 15.20.3391.005; Thu, 10 Sep
- 2020 21:10:11 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2] hv_netvsc: Add validation for untrusted Hyper-V values
-Thread-Topic: [PATCH v2] hv_netvsc: Add validation for untrusted Hyper-V
- values
-Thread-Index: AQHWh3CiaBH0lchHw06AORvXwhPeSaliXZ+Q
-Date:   Thu, 10 Sep 2020 21:10:11 +0000
-Message-ID: <BL0PR2101MB0930659825AD89FF5A8DC2C4CA270@BL0PR2101MB0930.namprd21.prod.outlook.com>
-References: <20200910124748.19217-1-parri.andrea@gmail.com>
-In-Reply-To: <20200910124748.19217-1-parri.andrea@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d007ab8c-0d09-44a0-a78d-0a90f0f8d24e;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-09-10T21:06:29Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [75.100.88.238]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 66123bc8-db4c-485c-7e9b-08d855cde789
-x-ms-traffictypediagnostic: BL0PR2101MB0963:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BL0PR2101MB0963C61A42B6A556C0FC8718CA270@BL0PR2101MB0963.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: v+9Hx+eMpjlHJ3KsUNamU8v/WkRzF6wcQYsICwqrcNaX5fONAD4PXVng9HNrqkBk0+Xj4Eh2O0DUbDLNtehtcEQ8Duv0K/iWKJHJqgsU3Hjlb7b82I9ztWAFzq0777Ox+dZ/snQBVGrufZboCDJx+psbDqWYRhlvF9L6i6q2kHyekqmuYNxKeOR2Suaee4QzBd629VrVlmkgREpp/pwWs/XrsI5RGv79rcNKZz8Mu/RIhVslodR753wf7JVrjj927XEuQwkbutVrWygKGkhir2axXY+Z5FghZJH5//Qq5QLg6jMc3Iq9MYb9lplmaIU+YGRKdZOLtNpCFMOHjX823Je3DZfwCAg2ORWOY6At3uw+ByKPhMYt5bgAUE4eYVIG
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB0930.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(39860400002)(376002)(346002)(366004)(26005)(55016002)(110136005)(52536014)(66476007)(71200400001)(76116006)(54906003)(66556008)(66946007)(316002)(10290500003)(83380400001)(64756008)(478600001)(5660300002)(8936002)(86362001)(66446008)(4326008)(2906002)(82960400001)(7696005)(33656002)(82950400001)(8990500004)(6506007)(186003)(53546011)(8676002)(9686003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: uV7Hp/XFSqtODaWGsNBqnqfCrx4ol04xoSDpeOnugWeahmqpTLP84pCufdlqlCL5s/KE53GiuOpwI0vpDtLBTt2ZM3sjawu2X7Buw8tfXFJstHSH4eYzl2F0IBha8DIR3mIeKlkkl5XNHR5eEPy5rDNrQHehCOn5XEQm8XWAE3QPh4UlVl8FmruggmRXnYdRV0fVgniJgpbB25Rn2YtkVVpLMKWXPpzeEmvaVL8VBSxjFMuPKxNWLPP+9DMLucguE2xtzayXEDTfFPD460ENzQK7Z2i7aclodRTiYmQ6vdmCuLDjut/3reT0PvJvKVsGprgdO0dHPXiPoiuLAbUog8o6+81tsfFh2ThkkcD+U27Dwob7sLnDQcrZFQ+FR9X/Q6IoEK3qtPZKiZkoTKH4hDpEQaS/xaFnTPjz438EVEvwXtK+s4etKlRkf+ZZJVDEvhTcnxZryaEktsOMUr3oRyZg6PXMwj2+GmIgFIHjjfsDt40MDvUZ1m61sem61Pz073IhG3h4lbD658f4rtI5U6Nm312OjCf8jU8xz1YzDgFDvvuJyPsk7RTFucwHq8toD1JqaDjge1RzaE1WR582qzRCT1tpcPWjIeGejnfy9MuY3cTY5PG4rznuXcsQwxj9JTI2Ii9/rWHGccEW/ge+YQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727072AbgIJVKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:10:38 -0400
+Received: from mga18.intel.com ([134.134.136.126]:36093 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726384AbgIJVKY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 17:10:24 -0400
+IronPort-SDR: lVLCSwNUsHdRkNUnKRDrQzcZZLm5tUOd7oK/ViARKH4YlnhSZI9SceZNlMFnyUMLpHVCfK9oGr
+ zzFsx6GNlp5g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9740"; a="146357987"
+X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
+   d="scan'208";a="146357987"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:10:20 -0700
+IronPort-SDR: gF2fqwiNDaRP7wsVxGYlHneiIdRDfnlcWhzhH5KRzk9phFKvHEzGkCBswoxaK3nJD1RCleIvSX
+ K7VQFNVzEV5g==
+X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
+   d="scan'208";a="505970949"
+Received: from pojenhsi-mobl1.amr.corp.intel.com (HELO [10.252.128.198]) ([10.252.128.198])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:10:19 -0700
+Subject: Re: [net-next v4 3/5] devlink: introduce flash update overwrite mask
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org
+References: <20200909222653.32994-1-jacob.e.keller@intel.com>
+ <20200909222653.32994-4-jacob.e.keller@intel.com>
+ <20200910201040.GU2997@nanopsycho.orion>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <176ead4c-6007-8ff7-d4d1-4ae2bc7408d6@intel.com>
+Date:   Thu, 10 Sep 2020 14:10:16 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB0930.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66123bc8-db4c-485c-7e9b-08d855cde789
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Sep 2020 21:10:11.2720
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /WW651SUB33t1XZXozJqxyWlWKjPi4n8coTChCKpalJPxgSPn9eqCbcgrh4a5+FaBu4vJ0ZLS5kvxvLD1ae4Qw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB0963
+In-Reply-To: <20200910201040.GU2997@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -99,122 +50,187 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-> -----Original Message-----
-> From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Sent: Thursday, September 10, 2020 8:48 AM
-> To: linux-kernel@vger.kernel.org
-> Cc: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
-> <haiyangz@microsoft.com>; Stephen Hemminger
-> <sthemmin@microsoft.com>; Wei Liu <wei.liu@kernel.org>; linux-
-> hyperv@vger.kernel.org; Andres Beltran <lkmlabelt@gmail.com>; Michael
-> Kelley <mikelley@microsoft.com>; Saruhan Karademir
-> <skarade@microsoft.com>; Juan Vazquez <juvazq@microsoft.com>; Andrea
-> Parri <parri.andrea@gmail.com>; David S. Miller <davem@davemloft.net>;
-> Jakub Kicinski <kuba@kernel.org>; netdev@vger.kernel.org
-> Subject: [PATCH v2] hv_netvsc: Add validation for untrusted Hyper-V value=
-s
->=20
-> From: Andres Beltran <lkmlabelt@gmail.com>
->=20
-> For additional robustness in the face of Hyper-V errors or malicious
-> behavior, validate all values that originate from packets that Hyper-V
-> has sent to the guest in the host-to-guest ring buffer. Ensure that
-> invalid values cannot cause indexing off the end of an array, or
-> subvert an existing validation via integer overflow. Ensure that
-> outgoing packets do not have any leftover guest memory that has not
-> been zeroed out.
->=20
-> Signed-off-by: Andres Beltran <lkmlabelt@gmail.com>
-> Co-developed-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
-> ---
-> Changes in v2:
->   - Replace size check on struct nvsp_message with sub-checks (Haiyang)
->=20
->  drivers/net/hyperv/hyperv_net.h   |   4 +
->  drivers/net/hyperv/netvsc.c       | 120 ++++++++++++++++++++++++++----
->  drivers/net/hyperv/netvsc_drv.c   |   7 ++
->  drivers/net/hyperv/rndis_filter.c |  73 ++++++++++++++++--
->  4 files changed, 184 insertions(+), 20 deletions(-)
->=20
-> diff --git a/drivers/net/hyperv/hyperv_net.h
-> b/drivers/net/hyperv/hyperv_net.h
-> index 4d2b2d48ff2a1..da78bd0fb2aa2 100644
-> --- a/drivers/net/hyperv/hyperv_net.h
-> +++ b/drivers/net/hyperv/hyperv_net.h
-> @@ -860,6 +860,10 @@ static inline u32 netvsc_rqstor_size(unsigned long
-> ringbytes)
->  	       ringbytes / NETVSC_MIN_IN_MSG_SIZE;
->  }
->=20
-> +#define NETVSC_XFER_HEADER_SIZE(rng_cnt) \
-> +		(offsetof(struct vmtransfer_page_packet_header, ranges) +
-> \
-> +		(rng_cnt) * sizeof(struct vmtransfer_page_range))
-> +
->  struct multi_send_data {
->  	struct sk_buff *skb; /* skb containing the pkt */
->  	struct hv_netvsc_packet *pkt; /* netvsc pkt pending */
-> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-> index 03e93e3ddbad8..90b7a39c2dc78 100644
-> --- a/drivers/net/hyperv/netvsc.c
-> +++ b/drivers/net/hyperv/netvsc.c
-> @@ -388,6 +388,15 @@ static int netvsc_init_buf(struct hv_device *device,
->  	net_device->recv_section_size =3D resp->sections[0].sub_alloc_size;
->  	net_device->recv_section_cnt =3D resp->sections[0].num_sub_allocs;
->=20
-> +	/* Ensure buffer will not overflow */
-> +	if (net_device->recv_section_size < NETVSC_MTU_MIN ||
-> (u64)net_device->recv_section_size *
-> +	    (u64)net_device->recv_section_cnt > (u64)buf_size) {
-> +		netdev_err(ndev, "invalid recv_section_size %u\n",
-> +			   net_device->recv_section_size);
-> +		ret =3D -EINVAL;
-> +		goto cleanup;
-> +	}
-> +
->  	/* Setup receive completion ring.
->  	 * Add 1 to the recv_section_cnt because at least one entry in a
->  	 * ring buffer has to be empty.
-> @@ -460,6 +469,12 @@ static int netvsc_init_buf(struct hv_device *device,
->  	/* Parse the response */
->  	net_device->send_section_size =3D init_packet->msg.
->=20
-> 	v1_msg.send_send_buf_complete.section_size;
-> +	if (net_device->send_section_size < NETVSC_MTU_MIN) {
-> +		netdev_err(ndev, "invalid send_section_size %u\n",
-> +			   net_device->send_section_size);
-> +		ret =3D -EINVAL;
-> +		goto cleanup;
-> +	}
->=20
->  	/* Section count is simply the size divided by the section size. */
->  	net_device->send_section_cnt =3D buf_size / net_device-
-> >send_section_size;
-> @@ -740,12 +755,45 @@ static void netvsc_send_completion(struct
-> net_device *ndev,
->  				   int budget)
->  {
->  	const struct nvsp_message *nvsp_packet =3D hv_pkt_data(desc);
-> +	u32 msglen =3D hv_pkt_datalen(desc);
-> +
-> +	/* Ensure packet is big enough to read header fields */
-> +	if (msglen < sizeof(struct nvsp_message_header)) {
-> +		netdev_err(ndev, "nvsp_message length too small: %u\n",
-> msglen);
-> +		return;
-> +	}
->=20
->  	switch (nvsp_packet->hdr.msg_type) {
->  	case NVSP_MSG_TYPE_INIT_COMPLETE:
-> +		if (msglen < sizeof(struct nvsp_message_init_complete)) {
+On 9/10/2020 1:10 PM, Jiri Pirko wrote:
+> Thu, Sep 10, 2020 at 12:26:51AM CEST, jacob.e.keller@intel.com wrote:
+>> Sections of device flash may contain settings or device identifying
+>> information. When performing a flash update, it is generally expected
+>> that these settings and identifiers are not overwritten.
+>>
+>> However, it may sometimes be useful to allow overwriting these fields
+>> when performing a flash update. Some examples include, 1) customizing
+>> the initial device config on first programming, such as overwriting
+>> default device identifying information, or 2) reverting a device
+>> configuration to known good state provided in the new firmware image, or
+>> 3) in case it is suspected that current firmware logic for managing the
+>> preservation of fields during an update is broken.
+>>
+>> Although some devices are able to completely separate these types of
+>> settings and fields into separate components, this is not true for all
+>> hardware.
+>>
+>> To support controlling this behavior, a new
+>> DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK is defined. This is an
+>> nla_bitfield32 which will define what subset of fields in a component
+>> should be overwritten during an update.
+>>
+>> If no bits are specified, or of the overwrite mask is not provided, then
+>> an update should not overwrite anything, and should maintain the
+>> settings and identifiers as they are in the previous image.
+>>
+>> If the overwrite mask has the DEVLINK_FLASH_OVERWRITE_SETTINGS bit set,
+>> then the device should be configured to overwrite any of the settings in
+>> the requested component with settings found in the provided image.
+>>
+>> Similarly, if the DEVLINK_FLASH_OVERWRITE_IDENTIFIERS bit is set, the
+>> device should be configured to overwrite any device identifiers in the
+>> requested component with the identifiers from the image.
+>>
+>> Multiple overwrite modes may be combined to indicate that a combination
+>> of the set of fields that should be overwritten.
+>>
+>> Drivers which support the new overwrite mask must set the
+>> DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK in the
+>> supported_flash_update_params field of their devlink_ops.
+>>
+>> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+>> ---
+>> Changes since v3
+>> * split netdevsim driver changes to a new patch
+>> * fixed a double-the typo in the documentation
+>>
+>> .../networking/devlink/devlink-flash.rst      | 28 +++++++++++++++++++
+>> include/net/devlink.h                         |  4 ++-
+>> include/uapi/linux/devlink.h                  | 25 +++++++++++++++++
+>> net/core/devlink.c                            | 17 ++++++++++-
+>> 4 files changed, 72 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/Documentation/networking/devlink/devlink-flash.rst b/Documentation/networking/devlink/devlink-flash.rst
+>> index 40a87c0222cb..603e732f00cc 100644
+>> --- a/Documentation/networking/devlink/devlink-flash.rst
+>> +++ b/Documentation/networking/devlink/devlink-flash.rst
+>> @@ -16,6 +16,34 @@ Note that the file name is a path relative to the firmware loading path
+>> (usually ``/lib/firmware/``). Drivers may send status updates to inform
+>> user space about the progress of the update operation.
+>>
+>> +Overwrite Mask
+>> +==============
+>> +
+>> +The ``devlink-flash`` command allows optionally specifying a mask indicating
+>> +how the device should handle subsections of flash components when updating.
+>> +This mask indicates the set of sections which are allowed to be overwritten.
+>> +
+>> +.. list-table:: List of overwrite mask bits
+>> +   :widths: 5 95
+>> +
+>> +   * - Name
+>> +     - Description
+>> +   * - ``DEVLINK_FLASH_OVERWRITE_SETTINGS``
+>> +     - Indicates that the device should overwrite settings in the components
+>> +       being updated with the settings found in the provided image.
+>> +   * - ``DEVLINK_FLASH_OVERWRITE_IDENTIFIERS``
+>> +     - Indicates that the device should overwrite identifiers in the
+>> +       components being updated with the identifiers found in the provided
+>> +       image. This includes MAC addresses, serial IDs, and similar device
+>> +       identifiers.
+>> +
+>> +Multiple overwrite bits may be combined and requested together. If no bits
+>> +are provided, it is expected that the device only update firmware binaries
+>> +in the components being updated. Settings and identifiers are expected to be
+>> +preserved across the update. A device may not support every combination and
+>> +the driver for such a device must reject any combination which cannot be
+>> +faithfully implemented.
+>> +
+>> Firmware Loading
+>> ================
+>>
+>> diff --git a/include/net/devlink.h b/include/net/devlink.h
+>> index 3384e901bbf0..ff4638f7e547 100644
+>> --- a/include/net/devlink.h
+>> +++ b/include/net/devlink.h
+>> @@ -543,9 +543,11 @@ enum devlink_param_generic_id {
+>> struct devlink_flash_update_params {
+>> 	const char *file_name;
+>> 	const char *component;
+>> +	u32 overwrite_mask;
+>> };
+>>
+>> -#define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT	BIT(0)
+>> +#define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT		BIT(0)
+>> +#define DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK	BIT(1)
+>>
+>> struct devlink_region;
+>> struct devlink_info_req;
+>> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+>> index 40d35145c879..19a573566359 100644
+>> --- a/include/uapi/linux/devlink.h
+>> +++ b/include/uapi/linux/devlink.h
+>> @@ -228,6 +228,28 @@ enum {
+>> 	DEVLINK_ATTR_STATS_MAX = __DEVLINK_ATTR_STATS_MAX - 1
+>> };
+>>
+>> +/* Specify what sections of a flash component can be overwritten when
+>> + * performing an update. Overwriting of firmware binary sections is always
+>> + * implicitly assumed to be allowed.
+>> + *
+>> + * Each section must be documented in
+>> + * Documentation/networking/devlink/devlink-flash.rst
+>> + *
+>> + */
+>> +enum {
+>> +	DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT,
+>> +	DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT,
+>> +
+>> +	__DEVLINK_FLASH_OVERWRITE_MAX_BIT,
+>> +	DEVLINK_FLASH_OVERWRITE_MAX_BIT = __DEVLINK_FLASH_OVERWRITE_MAX_BIT - 1
+>> +};
+>> +
+>> +#define DEVLINK_FLASH_OVERWRITE_SETTINGS BIT(DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT)
+>> +#define DEVLINK_FLASH_OVERWRITE_IDENTIFIERS BIT(DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT)
+>> +
+>> +#define DEVLINK_SUPPORTED_FLASH_OVERWRITE_SECTIONS \
+>> +	(BIT(__DEVLINK_FLASH_OVERWRITE_MAX_BIT) - 1)
+>> +
+>> /**
+>>  * enum devlink_trap_action - Packet trap action.
+>>  * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy is not
+>> @@ -460,6 +482,9 @@ enum devlink_attr {
+>>
+>> 	DEVLINK_ATTR_PORT_EXTERNAL,		/* u8 */
+>> 	DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,	/* u32 */
+>> +
+>> +	DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK,	/* bitfield32 */
+>> +
+>> 	/* add new attributes above here, update the policy in devlink.c */
+>>
+>> 	__DEVLINK_ATTR_MAX,
+>> diff --git a/net/core/devlink.c b/net/core/devlink.c
+>> index c61f9c8205f6..d0d38ca17ea8 100644
+>> --- a/net/core/devlink.c
+>> +++ b/net/core/devlink.c
+>> @@ -3125,8 +3125,8 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
+>> 				       struct genl_info *info)
+>> {
+>> 	struct devlink_flash_update_params params = {};
+>> +	struct nlattr *nla_component, *nla_overwrite;
+>> 	struct devlink *devlink = info->user_ptr[0];
+>> -	struct nlattr *nla_component;
+>> 	u32 supported_params;
+>>
+>> 	if (!devlink->ops->flash_update)
+>> @@ -3149,6 +3149,19 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
+>> 		params.component = nla_data(nla_component);
+>> 	}
+>>
+>> +	nla_overwrite = info->attrs[DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK];
+> 
+> Just a nitpick, better to name this "nla_overwrite_mask" to follow the
+> name of the netlink attr.
+> 
+> Otherwise (extept the uapi BIT as Jakub pointed out) this looks fine to
+> me.
+> 
 
-This and other similar places should include header size:
-		if (msglen < sizeof(struct nvsp_message_header) + sizeof(struct nvsp_mess=
-age_init_complete)) {
+Sure, seems reasonable. Will fix in v5
 
 Thanks,
-- Haiyang
+Jake
