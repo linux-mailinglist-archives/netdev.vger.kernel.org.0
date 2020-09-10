@@ -2,144 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10FC3264384
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 12:16:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2686D264394
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 12:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730678AbgIJKQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 06:16:24 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45474 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730436AbgIJKQT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 06:16:19 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 766C8B25F;
-        Thu, 10 Sep 2020 10:16:21 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 9120B60311; Thu, 10 Sep 2020 12:16:05 +0200 (CEST)
-Date:   Thu, 10 Sep 2020 12:16:05 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH ethtool] tunnels: implement new --show-tunnels command
-Message-ID: <20200910101605.ivuohkkgnt4hi5qs@lion.mk-sys.cz>
-References: <20200909221811.410014-1-kuba@kernel.org>
+        id S1730865AbgIJKQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 06:16:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44706 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730260AbgIJKQi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 06:16:38 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 656B6C061756;
+        Thu, 10 Sep 2020 03:16:38 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id s13so5065195wmh.4;
+        Thu, 10 Sep 2020 03:16:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DqY3ytm1lW24L4dBr5ZhfVe1Kl4JG7b6aElJixa0DtQ=;
+        b=TyMbFj/CCKS/yEhzmJyx0SXASPCumWs129eaMWwliNPHoe9nGlJZk2Tsw17ABtL/mL
+         mWke72l5dRMmrFg9ieYmDr1jVfXiMwSmIMEMsNuXAYrMDmbRSlu2SEhpSFeukLVe3cg9
+         +5O+wBu+Jx7JfEyF9JNwdrWebHIVozT6N0VTqxSNEjrIsLOZ3R3dejl3APk21PLF2Oj8
+         +Kb8ACZuKGttnfzoDexc2yloyF3/YUcCQzcDsr90PZvO0KOXZEocClY8eSC4NnFPV4xO
+         lvhsU6vpfnm+pvKWrckJN/8r5bLtL/kaV4lfgkeSIGRnLzVQeQ+BBL7u23nOrwhO07G+
+         JHEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DqY3ytm1lW24L4dBr5ZhfVe1Kl4JG7b6aElJixa0DtQ=;
+        b=pmUw8PMCpmIHzSROi++DPz4KjuYgWtg1+Y5TE231Bqiqr8R2N1C3xqoxsiwBj6o1cg
+         uH2BXtjGnMGGoluHj644z5xr7xlqF6U2gftY836V0P2i1eGVJRbd6Kt5NRdxnuMIEUiL
+         l2iyGGPzmqplYZFS9cH521ZnO3ebnALHjbVC/Yy86VDwVom/j1SkB7EzjdV3z887JSV1
+         vBn2sxOKogw/Qr4Wwks6/Tsd6y+ZPpXYP0rtp5M7H0Cz9R+tTExVNwpFLc4afNM8kBHv
+         sPRTlUxnMhVTJVsmuIxtZtgT2oyddp39osiyXrTv8c0GKDU7rTuLb07sCHlL7FBgK0nz
+         qKBw==
+X-Gm-Message-State: AOAM531fehkY9RO3xn+p429hIZbAH2vvrEoH04VI6Oae8Aw4ljanDWzg
+        xuso8Ww0yrtKmBUnjJW0R1g=
+X-Google-Smtp-Source: ABdhPJxz+CTfYBRsr9wPZ8ehDJQEmTq++yYJr4Xo0s0U0R6hQKoUpOmBLcC8LM7TIOPThVoU3WYKbg==
+X-Received: by 2002:a1c:234b:: with SMTP id j72mr7837172wmj.153.1599732997083;
+        Thu, 10 Sep 2020 03:16:37 -0700 (PDT)
+Received: from ziggy.stardust ([213.195.113.201])
+        by smtp.gmail.com with ESMTPSA id a127sm2936155wmh.34.2020.09.10.03.16.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Sep 2020 03:16:36 -0700 (PDT)
+Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
+ break;
+To:     Joe Perches <joe@perches.com>, LKML <linux-kernel@vger.kernel.org>,
+        Jiri Kosina <trivial@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        oss-drivers@netronome.com, nouveau@lists.freedesktop.org,
+        alsa-devel <alsa-devel@alsa-project.org>,
+        dri-devel@lists.freedesktop.org, linux-ide@vger.kernel.org,
+        dm-devel@redhat.com, linux-mtd@lists.infradead.org,
+        linux-i2c@vger.kernel.org, sparclinux@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu, linux-rtc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org,
+        dccp@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net,
+        linux-afs@lists.infradead.org, coreteam@netfilter.org,
+        intel-wired-lan@lists.osuosl.org, linux-serial@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Kees Cook <kees.cook@canonical.com>,
+        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, linux-sctp@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-nvme@lists.infradead.org,
+        storagedev@microchip.com, ceph-devel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netfilter-devel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        bpf@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+Message-ID: <81d852d4-115f-c6c6-ef80-17c47ec4849a@gmail.com>
+Date:   Thu, 10 Sep 2020 12:16:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200909221811.410014-1-kuba@kernel.org>
+In-Reply-To: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 09, 2020 at 03:18:11PM -0700, Jakub Kicinski wrote:
-> Add support for the new show-tunnels command. Support dump.
-> 
->  # ethtool --show-tunnels \*
-> Tunnel information for eth0:
->   UDP port table 0:
->     Size: 4
->     Types: vxlan
->     No entries
->   UDP port table 1:
->     Size: 4
->     Types: geneve, vxlan-gpe
->     Entries (2):
->         port 1230, vxlan-gpe
->         port 6081, geneve
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-The patch looks good except for one cosmetic issue below. But you will
-need to update the uapi header copies first to get the new constants.
-You can use the script at the end of this mail.
 
-[...]
-> +static int
-> +tunnel_info_dump_udp_entry(struct nl_context *nlctx, const struct nlattr *entry,
-> +			   const struct stringset **strings)
-> +{
-> +	const struct nlattr *entry_tb[ETHTOOL_A_TUNNEL_UDP_ENTRY_MAX + 1] = {};
-> +	DECLARE_ATTR_TB_INFO(entry_tb);
-> +	const struct nlattr *attr;
-> +	unsigned int port, type;
-> +	int ret;
-> +
-> +	if (tunnel_info_strings_load(nlctx, strings))
-> +		return 1;
-> +
-> +	ret = mnl_attr_parse_nested(entry, attr_cb, &entry_tb_info);
-> +	if (ret < 0) {
-> +		fprintf(stderr, "malformed netlink message (udp entry)\n");
-> +		return 1;
-> +	}
-> +
-> +	attr = entry_tb[ETHTOOL_A_TUNNEL_UDP_ENTRY_PORT];
-> +	if (!attr || mnl_attr_validate(attr, MNL_TYPE_U16) < 0) {
-> +		fprintf(stderr, "malformed netlink message (port)\n");
-> +		return 1;
-> +	}
-> +	port = htons(mnl_attr_get_u16(attr));
+On 09/09/2020 22:06, Joe Perches wrote:
+> diff --git a/drivers/net/wireless/mediatek/mt7601u/dma.c b/drivers/net/wireless/mediatek/mt7601u/dma.c
+> index 09f931d4598c..778be26d329f 100644
+> --- a/drivers/net/wireless/mediatek/mt7601u/dma.c
+> +++ b/drivers/net/wireless/mediatek/mt7601u/dma.c
+> @@ -193,11 +193,11 @@ static void mt7601u_complete_rx(struct urb *urb)
+>   	case -ESHUTDOWN:
+>   	case -ENOENT:
+>   		return;
+> +	case 0:
+> +		break;
+>   	default:
+>   		dev_err_ratelimited(dev->dev, "rx urb failed: %d\n",
+>   				    urb->status);
+> -		fallthrough;
+> -	case 0:
+>   		break;
+>   	}
+>   
+> @@ -238,11 +238,11 @@ static void mt7601u_complete_tx(struct urb *urb)
+>   	case -ESHUTDOWN:
+>   	case -ENOENT:
+>   		return;
+> +	case 0:
+> +		break;
+>   	default:
+>   		dev_err_ratelimited(dev->dev, "tx urb failed: %d\n",
+>   				    urb->status);
+> -		fallthrough;
+> -	case 0:
+>   		break;
+>   	}
 
-This should be ntohs() as the attribute is in network byte order and we
-convert it to host byte order (the result is the same, of course).
-
-> +
-> +	attr = entry_tb[ETHTOOL_A_TUNNEL_UDP_ENTRY_TYPE];
-> +	if (!attr || mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
-> +		fprintf(stderr, "malformed netlink message (tunnel type)\n");
-> +		return 1;
-> +	}
-> +	type = mnl_attr_get_u32(attr);
-> +
-> +	printf("        port %d, %s\n", port, get_string(*strings, type));
-> +
-> +	return 0;
-> +}
-
-The script below expects LINUX_GIT to be set to the directory with
-kernel git repository. It takes an optional argument which is a tag or
-commit id to import uapi headers from; without an argument it updates
-from what is currently checked out in $LINUX_GIT. So you can run e.g.
-
-    LINUX_GIT=~/git/kernel ethtool-import-uapi v5.9-rc1
-
-Michal
-
-------------------------------------------------------------------------------
-#!/bin/bash -e
-
-sn="${0##*/}"
-export ARCH="x86_64"
-
-if [ ! -d "$LINUX_GIT" ]; then
-    echo "${sn}: LINUX_GIT not set" >&2
-    exit 1
-fi
-
-pushd "$LINUX_GIT"
-if [ -n "$1" ]; then
-    git checkout "$1"
-fi
-desc=$(git describe --exact-match 2>/dev/null \
-       || git show -s --abbrev=12 --pretty='commit %h')
-kobj=$(mktemp -d)
-make -j16 O="$kobj" allmodconfig
-make -j16 O="$kobj" prepare
-make -j16 O="$kobj" INSTALL_HDR_PATH="${kobj}/hdr" headers_install
-popd
-
-pushd uapi
-find . -type f -name '*.h' -exec cp -v "${kobj}/hdr/include/{}" {} \;
-popd
-rm -rf "$kobj"
-
-git add uapi
-git commit -s -F - <<EOT
-update UAPI header copies
-
-Update to kernel ${desc}.
-
-EOT
-------------------------------------------------------------------------------
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
