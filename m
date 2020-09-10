@@ -2,114 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D26326514A
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:50:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3371265132
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:47:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726792AbgIJUux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 16:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60508 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730068AbgIJO6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 10:58:43 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8A8C061795;
-        Thu, 10 Sep 2020 07:58:40 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id k13so1044584plk.3;
-        Thu, 10 Sep 2020 07:58:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=c+jIOhRgqonxn9gWi6l8ZpfFwoQ7z7WBsHFiC8anX4Q=;
-        b=XlGQF9XuctO2DJYPSPyHeW/lhATtADGhO23JHJstE97qMSAVFSOSjRevCHH7cLnmaa
-         jKTk78ZhaxVjcb8GFw6y0ZK8/pc8YFnqe4Lgfvm350Yr4zOuigj1OwYcEZBH3Fa4Hopd
-         f2JXQHcI7zIHWelYGT6BuO83OC2dMWcNELYXUx4ZjPMrYWABvYwXh5wvauERBXEA/KCj
-         zCt73zratrDhMlwwRpv+qOG+TmdiqmVO5iKLq0V6KvZD3HDG8fJW3c7nnv6bHUbecrJX
-         YSQ8qskzWdy9o9G+gn160C00yYczl8y5zKz5xQ/4lfR4AV2VL6BYF64Yo15qph5FiK4V
-         D1Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=c+jIOhRgqonxn9gWi6l8ZpfFwoQ7z7WBsHFiC8anX4Q=;
-        b=k1iFeVdRvPFwGcc0KG0CviBRulCH75QjTnk6SXPF0lHxkYlyHfFA19DEGfmF+urN5h
-         H3+B6NPyJ/iuqWO8us4gURIUrpOT7I9F9bUu0mOGWQOIGSOhOgaxyPUANtKjkMB37EoC
-         h3yZDlRt9rtaJN3YFKVCTAb7k06eWGU9ue1hE+QO1x+70mWpEdqRjzCd0EgPDr4ZamVQ
-         R9HN7EsZHB21qcSFH3vjYeoUVeFRheuG6itE/Vljqetj63N5d7XgZ5VSQFCRZU60HYQG
-         4ZPCuvHpMioau1V361I9AxZgGAOXD2o/UE9CU2J9nda9cukoEIdUZjrjXGS+ZJRFWzbr
-         L6og==
-X-Gm-Message-State: AOAM530NfY/T/L/SLP+oICPO8LR/KgGsSoZpsQb8TTs8+9hkzMfSIusK
-        Paor6MEoIkLzDsdjg17/m9c=
-X-Google-Smtp-Source: ABdhPJyTyJInU3Ew5guC7S18EaBMn+CWm5koR7QxwkkRlVYQ2qn3nQcqOq07OGTmQ8ifN6WumFExOg==
-X-Received: by 2002:a17:90a:81:: with SMTP id a1mr336645pja.136.1599749920004;
-        Thu, 10 Sep 2020 07:58:40 -0700 (PDT)
-Received: from Thinkpad ([45.118.165.135])
-        by smtp.gmail.com with ESMTPSA id j2sm5424250pga.12.2020.09.10.07.58.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 07:58:39 -0700 (PDT)
-Date:   Thu, 10 Sep 2020 20:28:31 +0530
-From:   Anmol Karn <anmol.karan123@gmail.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     marcel@holtmann.org, johan.hedberg@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        kuba@kernel.org, davem@davemloft.net,
-        syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
-Subject: Re: [Linux-kernel-mentees] [PATCH] net: bluetooth: Fix null pointer
- dereference in hci_event_packet()
-Message-ID: <20200910145831.GA33757@Thinkpad>
-References: <20200910043424.19894-1-anmol.karan123@gmail.com>
- <20200910104918.GF12635@kadam>
+        id S1727821AbgIJUq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 16:46:57 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:47074 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbgIJU2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:28:31 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08AKSBY1116314;
+        Thu, 10 Sep 2020 15:28:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1599769691;
+        bh=eDlxiD4utOxmohtB0yYYTyyb5XD4NhElIrrN1FYYUBU=;
+        h=From:To:CC:Subject:Date;
+        b=EX2tKOu+lo1kJgjmHo12debzuGEFZkjm3gHrrZ0Gb0o2HBj/y4OYsfmhgZ5qz7Se2
+         /3c2DraF4BTmF6wo9YXc1mtFZgCrmzuc2tPBYF+NcEBp5X9EAfEbCXXzDX8+ot5mEA
+         1p27XNgnUlQ4TuFOPlhqrCRKJ7XvWpnmyzAARAh0=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08AKSBDM112441
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 10 Sep 2020 15:28:11 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 10
+ Sep 2020 15:28:11 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 10 Sep 2020 15:28:11 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08AKSAvk065653;
+        Thu, 10 Sep 2020 15:28:10 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next v3 0/9] net: ethernet: ti: ale: add static configuration 
+Date:   Thu, 10 Sep 2020 23:27:58 +0300
+Message-ID: <20200910202807.17473-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200910104918.GF12635@kadam>
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 01:49:18PM +0300, Dan Carpenter wrote:
-> On Thu, Sep 10, 2020 at 10:04:24AM +0530, Anmol Karn wrote:
-> > Prevent hci_phy_link_complete_evt() from dereferencing 'hcon->amp_mgr'
-> > as NULL. Fix it by adding pointer check for it.
-> > 
-> > Reported-and-tested-by: syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
-> > Link: https://syzkaller.appspot.com/bug?extid=0bef568258653cff272f
-> > Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
-> > ---
-> >  net/bluetooth/hci_event.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> > 
-> > diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> > index 4b7fc430793c..871e16804433 100644
-> > --- a/net/bluetooth/hci_event.c
-> > +++ b/net/bluetooth/hci_event.c
-> > @@ -4936,6 +4936,11 @@ static void hci_phy_link_complete_evt(struct hci_dev *hdev,
-> >  		return;
-> >  	}
-> >  
-> > +	if (IS_ERR_OR_NULL(hcon->amp_mgr)) {
-> 
-> It can't be an error pointer.  Shouldn't we call hci_conn_del() on this
-> path?  Try to find the Fixes tag to explain how this bug was introduced.
-> 
-> (Don't rush to send a v2.  The patch requires quite a bit more digging
-> and detective work before it is ready).
-> 
-> > +		hci_dev_unlock(hdev);
-> > +		return;
-> > +	}
-> > +
-> >  	if (ev->status) {
-> >  		hci_conn_del(hcon);
-> >  		hci_dev_unlock(hdev);
-> 
-> regards,
-> dan carpenter
-> 
+Hi All,
 
-Sure sir, will  work on it, thanks for your review.
+As existing, as newly introduced CPSW ALE versions have differences in 
+supported features and ALE table formats. Especially it's actual for the
+recent AM65x/J721E/J7200 and future AM64x SoCs, which supports more
+features like: auto-aging, classifiers, Link aggregation, additional HW
+filtering, etc.
 
-Anmol Karn
+The existing ALE configuration interface is not practical in terms of 
+adding new features and requires consumers to program a lot static
+parameters. And any attempt to add new features will case endless adding
+and maintaining different combination of flags and options. Because CPSW
+ALE configuration is static and fixed for SoC (or set of SoC), It is
+reasonable to add support for static ALE configurations inside ALE module.
+
+This series introduces static ALE configuration table for different ALE 
+variants and provides option for consumers to select required ALE
+configuration by providing ALE const char *dev_id identifier (Patch 2).
+And all existing driver have been switched to use new approach (Patches 3-6).
+
+After this ALE HW auto-ageing feature can be enabled for AM65x CPSW ALE 
+variant (Patch 7).
+
+Finally, Patches 8-9 introduces tables to describe the ALE VLAN entries 
+fields as the ALE VLAN entries are too much differ between different TI
+CPSW ALE versions. So, handling them using flags, defines and get/set
+functions are became over-complicated.
+
+Patch 1 - is preparation patch
+
+Changes in v3:
+- fixed comment for Patch 2
+
+Changes in v2:
+- fixed sparse warnings
+
+v2: https://lore.kernel.org/patchwork/cover/1301684/
+v1: https://lore.kernel.org/patchwork/cover/1301048/
+
+Grygorii Strashko (9):
+  net: ethernet: ti: ale: add cpsw_ale_get_num_entries api
+  net: ethernet: ti: ale: add static configuration
+  net: ethernet: ti: cpsw: use dev_id for ale configuration
+  net: netcp: ethss: use dev_id for ale configuration
+  net: ethernet: ti: am65-cpsw: use dev_id for ale configuration
+  net: ethernet: ti: ale: make usage of ale dev_id mandatory
+  net: ethernet: ti: am65-cpsw: enable hw auto ageing
+  net: ethernet: ti: ale: switch to use tables for vlan entry
+    description
+  net: ethernet: ti: ale: add support for multi port k3 cpsw versions
+
+ drivers/net/ethernet/ti/am65-cpsw-ethtool.c |  10 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c    |  16 +-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h    |   1 +
+ drivers/net/ethernet/ti/cpsw.c              |   6 -
+ drivers/net/ethernet/ti/cpsw_ale.c          | 421 ++++++++++++++++----
+ drivers/net/ethernet/ti/cpsw_ale.h          |   7 +
+ drivers/net/ethernet/ti/cpsw_ethtool.c      |   3 +-
+ drivers/net/ethernet/ti/cpsw_new.c          |   1 -
+ drivers/net/ethernet/ti/cpsw_priv.c         |   2 +-
+ drivers/net/ethernet/ti/cpsw_priv.h         |   2 -
+ drivers/net/ethernet/ti/netcp_ethss.c       |  18 +-
+ 11 files changed, 388 insertions(+), 99 deletions(-)
+
+-- 
+2.17.1
+
