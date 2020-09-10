@@ -2,166 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDCD9264800
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 16:30:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59DB126487E
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 16:56:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730687AbgIJOaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 10:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
+        id S1730854AbgIJOzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 10:55:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731066AbgIJO2b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 10:28:31 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43CEC061347
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 07:05:54 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id g10so5427538otq.9
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 07:05:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=weInZ/At76eyJMO1m6C/m2da9QDR+25WsjKjbZjbGQU=;
-        b=qqaF7/xl5oFehfcyLKj5l0I6c62dyUzLPeFX9ns+6RQlYUbVogEuycjGre376rrLr0
-         AOXHt2yz4TR/3IPmFCDvpeuovzcr+Lu5j8DE9reYcCc8ebHKZ0kuicM0MKXczgGhZpB9
-         hOeMd4tPhpXBiaMt1hPHp/MAM7UIZQgVZGEvKg1gveQdqGjox1F19K9VMt5dqh0Xz+nl
-         AEy8GEetjhHMwGkMn2KbkiKcpo1I/pnBk7JUA1dG8OwnqzTA+02JuhxJ/CJBbji+pySh
-         /Rl8AWeIM26MQj9EAkzhmi6+cclv8kmMcwLwwTeqBdbCLVWQ85yJ8EFZnV83DFrbfcaT
-         FBHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=weInZ/At76eyJMO1m6C/m2da9QDR+25WsjKjbZjbGQU=;
-        b=gjX2fA5DzkFBfZhjj4MVYff5vrGq+anCkyEHod13oSBgo/d+K0clEPJ1DROfoakW/1
-         MOquFVWCJ5TicTeA3IEIbkSnJ1HKGY1HvXpxoYNUZdbA/JIXftWukELWrTpFGjrpTSD+
-         xB8qkh2aM7Q2be4hvWMKFCCCk7bByFTbIEl5eAOhAga2HKOmvuWsHva+xZrA7RRq5CZ5
-         Usl+bzs/yoNdGRJfOSinR/I2R22c7d4rhLRyAbTHlHbP5oL+BA7X61Zso0N2C0IrB+po
-         BBQQZDYEHcyWQjzwWQU+fZKMLT0TBmvMjh644z/2QQFWiHiEkiv7rLYgJQeH4R+9IVrJ
-         GNCA==
-X-Gm-Message-State: AOAM533TuBVg6OrGTmCNWsS3SUaCcOmHr0yRqDdnQdzTCpYbZkwekyjZ
-        t73CHfN5hDI+gtNfkEdDuNOngFpRWFrdkzDn2z+HzNJm4qw=
-X-Google-Smtp-Source: ABdhPJxamgRVblWsZ8Roj/WVtHH/7r1JpG9ji+pylf1Ex+ooWvalPu7Zp/H3jDsPRLAPWus40DjCTPHHvFdmtq6Rk3E=
-X-Received: by 2002:a9d:4d17:: with SMTP id n23mr4160236otf.364.1599746753458;
- Thu, 10 Sep 2020 07:05:53 -0700 (PDT)
+        with ESMTP id S1731045AbgIJOwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 10:52:36 -0400
+Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC98C061798;
+        Thu, 10 Sep 2020 07:15:31 -0700 (PDT)
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTPSA id 32BF6140A8A;
+        Thu, 10 Sep 2020 16:15:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1599747323; bh=C7UrCrhRiGcdCqsTPmns+j9GLYW13piz0xUvPMA6PBs=;
+        h=Date:From:To;
+        b=gDP7XiOVXWsrQyikAPAArPyD3uFTj8c+NJO+sWGPMh+hYBCapEYM4sqXHgJ+noWfp
+         jBk1eBCn50nK1Fu5IX0MFAjZrJtuLnM+Ksx39PLzYVAUL+1QsoHbAqlzb+gknn8lXB
+         y+hS0d7xRGxncS1zJ71nDGKr5NwIVMjtPog0orkc=
+Date:   Thu, 10 Sep 2020 16:15:22 +0200
+From:   Marek =?ISO-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Pavel Machek <pavel@ucw.cz>, netdev@vger.kernel.org,
+        linux-leds@vger.kernel.org, Dan Murphy <dmurphy@ti.com>,
+        =?UTF-8?Q?Ond?= =?UTF-8?Q?=C5=99ej?= Jirman <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next + leds v2 6/7] net: phy: marvell: add support
+ for LEDs controlled by Marvell PHYs
+Message-ID: <20200910161522.3cf3ad63@dellmb.labs.office.nic.cz>
+In-Reply-To: <20200910131541.GD3316362@lunn.ch>
+References: <20200909162552.11032-1-marek.behun@nic.cz>
+        <20200909162552.11032-7-marek.behun@nic.cz>
+        <20200910122341.GC7907@duo.ucw.cz>
+        <20200910131541.GD3316362@lunn.ch>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <CAH+fs=8Fq5_E4aooa+bJoWCgQn1-7g9Y9rpBdGAH7ssGMkZUnA@mail.gmail.com>
-In-Reply-To: <CAH+fs=8Fq5_E4aooa+bJoWCgQn1-7g9Y9rpBdGAH7ssGMkZUnA@mail.gmail.com>
-From:   Marc Leeman <marc.leeman@gmail.com>
-Date:   Thu, 10 Sep 2020 16:05:48 +0200
-Message-ID: <CAH+fs=-d=RUAgbCSn-OasVwVERVMP+v-Y0vvU7Y74p8c8TihCw@mail.gmail.com>
-Subject: Re: (pch_gbe): transmit queue 0 timed out
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A small update:
+On Thu, 10 Sep 2020 15:15:41 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-we started reproducing the problem by flooding the NIC with multicast
-packets in a directly connected setup (no switch, just device and test
-device with a single cable). At some point, the driver stops receiving
-packets; but we've noticed that the link level leds are dead too.
+> On Thu, Sep 10, 2020 at 02:23:41PM +0200, Pavel Machek wrote:
+> > On Wed 2020-09-09 18:25:51, Marek Beh=FAn wrote: =20
+> > > This patch adds support for controlling the LEDs connected to
+> > > several families of Marvell PHYs via the PHY HW LED trigger API.
+> > > These families are: 88E1112, 88E1121R, 88E1240, 88E1340S, 88E1510
+> > > and 88E1545. More can be added.
+> > >=20
+> > > This patch does not yet add support for compound LED modes. This
+> > > could be achieved via the LED multicolor framework.
+> > >=20
+> > > Settings such as HW blink rate or pulse stretch duration are not
+> > > yet supported.
+> > >=20
+> > > Signed-off-by: Marek Beh=FAn <marek.behun@nic.cz> =20
+> >=20
+> > I suggest limiting to "useful" hardware modes, and documenting what
+> > those modes do somewhere. =20
+>=20
+> I think to keep the YAML DT verification happy, they will need to be
+> listed in the marvell PHY binding documentation.
+>=20
+>        Andrew
 
-Reloading the driver does not re-establish the link (no-carrier), only
-a reboot when the CPU comes out of reset does.
+Okay, so the netdev trigger offers modes `link`, `rx`, `tx`.
+You can enable/disable either of these (via separate sysfs files). `rx`
+and `tx` blink the LED, `link` turns the LED on if the interface is
+linked.
 
-It's not related to race conditions mentioned earlier.
+The phy_led_trigger subsystem works differently. Instead of registering
+one trigger (like netdev) it registers one trigger per PHY device and
+per speed. So for a PHY with name XYZ and supported speeds 1Gbps,
+100Mbps, 10Mbps it registers 3 triggers:
+  XYZ:1Gbps XYZ:100Mbps XYZ:10Mbps
 
+This is especially bad on a system where there are many PHYs and they
+have long names derived from device tree path.
 
-On Wed, 9 Sep 2020 at 09:53, Marc Leeman <marc.leeman@gmail.com> wrote:
->
-> Hi
-> I'd like to get some feedback on an issue that has popped up on newer
-> systems (with increased load).
->
-> The system uses an older CPU (Atom) that uses an integrated MAC. When
-> flooding the NIC with multicast traffic (and multiple listeners), we
-> get the following:
->
-> -----
->
-> Aug 16 01:21:55 dss kernel: [ 1357.210634] NETDEV WATCHDOG: eth0
-> (pch_gbe): transmit queue 0 timed out
-> Aug 16 01:21:55 dss kernel: [ 1357.210680] WARNING: CPU: 1 PID: 1187
-> at net/sched/sch_generic.c:466 dev_watchdog+0x1b6/0x1c0
-> Aug 16 01:21:55 dss kernel: [ 1357.210683] Modules linked in: 8021q
-> garp stp mrp llc rfkill nft_chain_nat_ipv4 nf_nat_ipv4 xt_REDIRECT
-> nf_nat nf_log_ipv4 nf_log_common nft_counter xt_LOG i2c_dev ie6xx_wdt
-> lpc_sch xt_multiport i2c_i801 xt_pkttype xt_recent xt_state
-> xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 libcrc32c
-> xt_tcpudp nft_compat nf_tables nfnetlink coretemp kvm irqbypass
-> serio_raw pcspkr gma500_gfx pch_can can_dev drm_kms_helper drm
-> pch_uart sg pch_dma pch_udc i2c_algo_bit udc_core fb_sys_fops
-> syscopyarea pch_phub sysfillrect evdev sysimgblt video pcc_cpufreq
-> button acpi_cpufreq ip_tables x_tables autofs4 ext4 crc16 mbcache jbd2
-> crc32c_generic fscrypto ecb crypto_simd cryptd aes_i586 aufs(OE)
-> sd_mod i2c_isch psmouse mfd_core e1000e spi_topcliff_pch ahci ohci_pci
-> libahci ohci_hcd ehci_pci libata ehci_hcd sdhci_pci
-> Aug 16 01:21:55 dss kernel: [ 1357.210802]  usbcore cqhci pch_gbe
-> sdhci scsi_mod ptp_pch mmc_core mii ptp pps_core gpio_pch usb_common
-> [last unloaded: lpc_sch]
-> Aug 16 01:21:55 dss kernel: [ 1357.210831] CPU: 1 PID: 1187 Comm:
-> mysqld Tainted: G           OE     4.19.0-9-686 #1 Debian
-> 4.19.118-2+deb10u1
-> Aug 16 01:21:55 dss kernel: [ 1357.210835] Hardware name: EKF
-> Elektronik GmbH PC2-LIMBO/PC2-LIMBO, BIOS 094 2017-02-01
-> Aug 16 01:21:55 dss kernel: [ 1357.210844] EIP: dev_watchdog+0x1b6/0x1c0
-> Aug 16 01:21:55 dss kernel: [ 1357.210853] Code: 8b 50 3c 89 f8 e8 ca
-> cd 10 00 8b 7e f0 eb a3 89 f8 c6 05 eb 4e 90 d7 01 e8 b7 dc fc ff 53
-> 50 57 68 44 f7 82 d7 e8 4e ee ae ff <0f> 0b 83 c4 10 eb c9 8d 76 00 3e
-> 8d 74 26 00 55 89 e5 57 56 89 d6
-> Aug 16 01:21:55 dss kernel: [ 1357.210859] EAX: 0000003b EBX: 00000000
-> ECX: f473ccac EDX: 00000007
-> Aug 16 01:21:55 dss kernel: [ 1357.210864] ESI: f41fc2e8 EDI: f41fc000
-> EBP: f417df68 ESP: f417df40
-> Aug 16 01:21:55 dss kernel: [ 1357.210871] DS: 007b ES: 007b FS: 00d8
-> GS: 00e0 SS: 0068 EFLAGS: 00010292
-> Aug 16 01:21:55 dss kernel: [ 1357.210876] CR0: 80050033 CR2: b78e1010
-> CR3: 1bbd7000 CR4: 000006d0
-> Aug 16 01:21:55 dss kernel: [ 1357.210880] Call Trace:
-> Aug 16 01:21:55 dss kernel: [ 1357.210887]  <SOFTIRQ>
-> Aug 16 01:21:55 dss kernel: [ 1357.210903]  ? pfifo_fast_enqueue+0xf0/0xf0
-> Aug 16 01:21:55 dss kernel: [ 1357.210913]  call_timer_fn+0x2f/0x130
-> Aug 16 01:21:55 dss kernel: [ 1357.210921]  ? pfifo_fast_enqueue+0xf0/0xf0
-> Aug 16 01:21:55 dss kernel: [ 1357.210930]  run_timer_softirq+0x1bd/0x3f0
-> Aug 16 01:21:55 dss kernel: [ 1357.210944]  __do_softirq+0xb2/0x275
-> Aug 16 01:21:55 dss kernel: [ 1357.210955]  ? __softirqentry_text_start+0x8/0x8
-> Aug 16 01:21:55 dss kernel: [ 1357.210964]  call_on_stack+0x12/0x50
-> Aug 16 01:21:55 dss kernel: [ 1357.210969]  </SOFTIRQ>
-> Aug 16 01:21:55 dss kernel: [ 1357.210977]  ? irq_exit+0xc5/0xd0
-> Aug 16 01:21:55 dss kernel: [ 1357.210986]  ?
-> smp_apic_timer_interrupt+0x6c/0x130
-> Aug 16 01:21:55 dss kernel: [ 1357.210996]  ? apic_timer_interrupt+0xd5/0xdc
-> Aug 16 01:21:55 dss kernel: [ 1357.211007]  ? nmi+0x8b/0x198
-> ----
->
-> It looks eerily similar to the issue reported on this mailinglist 8 years ago:
-> https://www.spinics.net/lists/netdev/msg198234.html
->
-> where locking was tweaked to compensate.
->
-> When I compare the different kernels (4.19.132, 5.8.7), the code base
-> has changed little in
-> the driver, the locking was changed a bit (wrt patch where it was
-> confirmed to be a fix):
->
-> 1. netif_tx_lock is used instead of
-> spin_lock(&tx_ring->tx_lock);
->
-> 2. locking has been removed in  pch_gbe_xmit_frame
->
-> Is this again an issue with missing locks?
->
-> Since it has been quite some time since I did some kernel work, I
-> thought it better to
-> check first.
->
->
-> --
-> g. Marc
+I propose that at least these HW modes should be available (and
+documented) for ethernet PHY controlled LEDs:
+  mode to determine link on:
+    - `link`
+  mode for activity (these should blink):
+    - `activity` (both rx and tx), `rx`, `tx`
+  mode for link (on) and activity (blink)
+    - `link/activity`, maybe `link/rx` and `link/tx`
+  mode for every supported speed:
+    - `1Gbps`, `100Mbps`, `10Mbps`, ...
+  mode for every supported cable type:
+    - `copper`, `fiber`, ... (are there others?)
+  mode that allows the user to determine link speed
+    - `speed` (or maybe `linkspeed` ?)
+    - on some Marvell PHYs the speed can be determined by how fast
+      the LED is blinking (ie. 1Gbps blinks with default blinking
+      frequency, 100Mbps with half blinking frequeny of 1Gbps, 10Mbps
+      of half blinking frequency of 100Mbps)
+    - on other Marvell PHYs this is instead:
+      1Gpbs blinks 3 times, pause, 3 times, pause, ...
+      100Mpbs blinks 2 times, pause, 2 times, pause, ...
+      10Mpbs blinks 1 time, pause, 1 time, pause, ...
+    - we don't need to differentiate these modes with different names,
+      because the important thing is just that this mode allows the
+      user to determine the speed from how the LED blinks
+  mode to just force blinking
+    - `blink`
+The nice thing is that all this can be documented and done in software
+as well.
 
+Moreover I propose (and am willing to do) this:
+  Rewrite phy_led_trigger so that it registers one trigger, `phydev`.
+  The identifier of the PHY which should be source of the trigger can be
+  set via a separate sysfs file, `device_name`, like in netdev trigger.
+  The linked speed on which the trigger should light the LED will be
+  selected via sysfs file `mode` (or do you propose another name?
+  `trigger_on` or something?)
 
+  Example:
+    # cd /sys/class/leds/<LED>
+    # echo phydev >trigger
+    # echo XYZ >device_name
+    # cat mode
+    1Gbps 100Mbps 10Mbps
+    # echo 1Gbps >mode
+    # cat mode
+    [1Gbps] 100Mbps 10Mbps
 
--- 
-g. Marc
+  Also the code should be moved from driver/net/phy to
+  drivers/leds/trigger.
+
+  The old API can be declared deprecated or removed, but outright
+  removal may cause some people to complain.
+
+What do you think?
+
+Marek
