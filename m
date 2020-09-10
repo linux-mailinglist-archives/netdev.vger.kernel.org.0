@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E4C4263A06
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 04:19:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 373E0263A02
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 04:17:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730770AbgIJCRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 22:17:25 -0400
-Received: from mga14.intel.com ([192.55.52.115]:25791 "EHLO mga14.intel.com"
+        id S1730606AbgIJCRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 22:17:11 -0400
+Received: from mga14.intel.com ([192.55.52.115]:25870 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730555AbgIJCO7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 22:14:59 -0400
-IronPort-SDR: Cc2xTSmZejgluqUzm45+gca3yJ2ZyAvKXCcUjV/DE3YR2uAT4OfKSCJhNpFsa8tMkFkUbxFlub
- aYfmKjTet6Nw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="157721717"
+        id S1730722AbgIJCQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 22:16:28 -0400
+IronPort-SDR: v7De5X1SQJiMfFDnITln+EecmAuYAlaevSOXk24iqdnM+CY3V6q//H+Ry/eKCWRi5Se81ChYkn
+ sUggC2HMtgUg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="157721720"
 X-IronPort-AV: E=Sophos;i="5.76,411,1592895600"; 
-   d="scan'208";a="157721717"
+   d="scan'208";a="157721720"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 17:04:23 -0700
-IronPort-SDR: WFXqPQOLROIwyBNOFErvrpAa1FnYn1HZaIEJQ/8p1GVjrM8d93YsykywPmhTgKNKRDbWrbUoLP
- 26nod1Ery7vw==
+IronPort-SDR: Vxoe4jMghD752a75ahUZfF8G6l3PmWXzQlO0qGjxXyu8mgWcANq+HggbOUlHIWpKJitbIlVdBA
+ BQ7U3+KAnjZQ==
 X-IronPort-AV: E=Sophos;i="5.76,411,1592895600"; 
-   d="scan'208";a="341733834"
+   d="scan'208";a="341733842"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 17:04:22 -0700
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 17:04:23 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net
-Cc:     Stefan Assmann <sassmann@kpanic.de>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
-        Michal Schmidt <mschmidt@redhat.com>,
         Aaron Brown <aaron.f.brown@intel.com>
-Subject: [net 2/4] i40e: always propagate error value in i40e_set_vsi_promisc()
-Date:   Wed,  9 Sep 2020 17:04:09 -0700
-Message-Id: <20200910000411.2658780-3-anthony.l.nguyen@intel.com>
+Subject: [net 4/4] igc: Fix not considering the TX delay for timestamps
+Date:   Wed,  9 Sep 2020 17:04:11 -0700
+Message-Id: <20200910000411.2658780-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200910000411.2658780-1-anthony.l.nguyen@intel.com>
 References: <20200910000411.2658780-1-anthony.l.nguyen@intel.com>
@@ -46,69 +45,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Assmann <sassmann@kpanic.de>
+From: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-The for loop in i40e_set_vsi_promisc() reports errors via dev_err() but
-does not propagate the error up the call chain. Instead it continues the
-loop and potentially overwrites the reported error value.
-This results in the error being recorded in the log buffer, but the
-caller might never know anything went the wrong way.
+When timestamping a packet there's a delay between the start of the
+packet and the point where the hardware actually captures the
+timestamp. This difference needs to be considered if we want accurate
+timestamps.
 
-To avoid this situation i40e_set_vsi_promisc() needs to temporarily store
-the error after reporting it. This is still not optimal as multiple
-different errors may occur, so store the first error and hope that's
-the main issue.
+This was done on the RX side, but not on the TX side.
 
-Fixes: 37d318d7805f (i40e: Remove scheduling while atomic possibility)
-Reported-by: Michal Schmidt <mschmidt@redhat.com>
-Signed-off-by: Stefan Assmann <sassmann@kpanic.de>
+Fixes: 2c344ae24501 ("igc: Add support for TX timestamping")
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/igc/igc_ptp.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 5defcb777e92..47bfb2e95e2d 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -1171,9 +1171,9 @@ static i40e_status
- i40e_set_vsi_promisc(struct i40e_vf *vf, u16 seid, bool multi_enable,
- 		     bool unicast_enable, s16 *vl, u16 num_vlans)
- {
-+	i40e_status aq_ret, aq_tmp = 0;
- 	struct i40e_pf *pf = vf->pf;
- 	struct i40e_hw *hw = &pf->hw;
--	i40e_status aq_ret;
- 	int i;
+diff --git a/drivers/net/ethernet/intel/igc/igc_ptp.c b/drivers/net/ethernet/intel/igc/igc_ptp.c
+index 36c999250fcc..6a9b5102aa55 100644
+--- a/drivers/net/ethernet/intel/igc/igc_ptp.c
++++ b/drivers/net/ethernet/intel/igc/igc_ptp.c
+@@ -364,6 +364,7 @@ static void igc_ptp_tx_hwtstamp(struct igc_adapter *adapter)
+ 	struct sk_buff *skb = adapter->ptp_tx_skb;
+ 	struct skb_shared_hwtstamps shhwtstamps;
+ 	struct igc_hw *hw = &adapter->hw;
++	int adjust = 0;
+ 	u64 regval;
  
- 	/* No VLAN to set promisc on, set on VSI */
-@@ -1222,6 +1222,9 @@ i40e_set_vsi_promisc(struct i40e_vf *vf, u16 seid, bool multi_enable,
- 				vf->vf_id,
- 				i40e_stat_str(&pf->hw, aq_ret),
- 				i40e_aq_str(&pf->hw, aq_err));
-+
-+			if (!aq_tmp)
-+				aq_tmp = aq_ret;
- 		}
+ 	if (WARN_ON_ONCE(!skb))
+@@ -373,6 +374,24 @@ static void igc_ptp_tx_hwtstamp(struct igc_adapter *adapter)
+ 	regval |= (u64)rd32(IGC_TXSTMPH) << 32;
+ 	igc_ptp_systim_to_hwtstamp(adapter, &shhwtstamps, regval);
  
- 		aq_ret = i40e_aq_set_vsi_uc_promisc_on_vlan(hw, seid,
-@@ -1235,8 +1238,15 @@ i40e_set_vsi_promisc(struct i40e_vf *vf, u16 seid, bool multi_enable,
- 				vf->vf_id,
- 				i40e_stat_str(&pf->hw, aq_ret),
- 				i40e_aq_str(&pf->hw, aq_err));
++	switch (adapter->link_speed) {
++	case SPEED_10:
++		adjust = IGC_I225_TX_LATENCY_10;
++		break;
++	case SPEED_100:
++		adjust = IGC_I225_TX_LATENCY_100;
++		break;
++	case SPEED_1000:
++		adjust = IGC_I225_TX_LATENCY_1000;
++		break;
++	case SPEED_2500:
++		adjust = IGC_I225_TX_LATENCY_2500;
++		break;
++	}
 +
-+			if (!aq_tmp)
-+				aq_tmp = aq_ret;
- 		}
- 	}
++	shhwtstamps.hwtstamp =
++		ktime_add_ns(shhwtstamps.hwtstamp, adjust);
 +
-+	if (aq_tmp)
-+		aq_ret = aq_tmp;
-+
- 	return aq_ret;
- }
- 
+ 	/* Clear the lock early before calling skb_tstamp_tx so that
+ 	 * applications are not woken up before the lock bit is clear. We use
+ 	 * a copy of the skb pointer to ensure other threads can't change it
 -- 
 2.26.2
 
