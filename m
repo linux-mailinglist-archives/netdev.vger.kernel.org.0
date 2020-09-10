@@ -2,95 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D61D226542D
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:52:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BEA226547A
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:57:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725929AbgIJVwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:52:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40650 "EHLO
+        id S1725320AbgIJV5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:57:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725440AbgIJVwh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:52:37 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F8CC061573;
-        Thu, 10 Sep 2020 14:45:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Fg/b55yxoFWkolyAkcEjzousJpXve06w9VMuL5Sdnkk=; b=ZMcMkaW/c2U4wME0yN3lN8iyq
-        Cabjm7Hra/p2QLrT5mmKewtEBX98jKbULNaeCzksnOjXFd/KBPMjWzggqocB6CD3soSxk08QfgkWj
-        n9IShJX5HFbbZEejR0jEf+mNi4loEuaPf3zI+zz2liShClwNpC0+1q6T15cbGEijkp+yBWD2tqfjW
-        sbvjsE1c0h9pMsh/XzqMtZSYdfSDxQrX8/XS/GPQqcsqDjkuQrVtt1xRqvAF/iAJkp5MRdlrs/gHy
-        IgqIc3Q/VXMM0vvUJTXwsBbAHpB+d9p+sH/F9wMsGxVs53ENrxphr7fW4/Qo2vEIBhSJJI8gh1bKv
-        N7TWu3fvg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32992)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kGUNG-0006e5-W4; Thu, 10 Sep 2020 22:44:59 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kGUNC-0007bp-S9; Thu, 10 Sep 2020 22:44:54 +0100
-Date:   Thu, 10 Sep 2020 22:44:54 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Pavel Machek <pavel@ucw.cz>,
-        netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        Dan Murphy <dmurphy@ti.com>,
-        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
-        linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next + leds v2 6/7] net: phy: marvell: add support
- for LEDs controlled by Marvell PHYs
-Message-ID: <20200910214454.GE1551@shell.armlinux.org.uk>
-References: <20200909162552.11032-1-marek.behun@nic.cz>
- <20200909162552.11032-7-marek.behun@nic.cz>
- <20200910122341.GC7907@duo.ucw.cz>
- <20200910131541.GD3316362@lunn.ch>
- <20200910182434.GA22845@duo.ucw.cz>
- <20200910183154.GF3354160@lunn.ch>
- <20200910183435.GC1551@shell.armlinux.org.uk>
- <20200910223112.26b57dd6@nic.cz>
+        with ESMTP id S1725283AbgIJV4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:56:39 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9250CC061573;
+        Thu, 10 Sep 2020 14:56:38 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id k2so2501400ybp.7;
+        Thu, 10 Sep 2020 14:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9TsJS6ZP23FD5KuVRGm6KvjtgRaAotH6WX6sJU4ADvk=;
+        b=hlt4Jg3nXi6FXtRbwrY62gWtJpDG+ujXIeqxJNFuND67w5xCdYfL0/KMaSqRoqGdAT
+         dbV+TKVLzo78ZcwvUPETDfdlZT9S6Q0h2ZgTssV5mLLP/myxCiP0TBEml7oeOujp/b0h
+         sP6dQn446WPGcYGTBqgQTXWvAuY6z67qfw6VOoqamYOwgHUmgtrck0ggkDPxxsd01NxT
+         POMkERrnj0NxoyHzocIBYiRgFjFN+A1TZnkVFsvldfiHaGY647F1BcL/JfE48ZiCWn1h
+         4/h463SVpy+X53Sv06qu/XkJUvio2dKy0xqu1aF+MLj+epKFDUocz4FwgYaLsWWIHS0O
+         rnQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9TsJS6ZP23FD5KuVRGm6KvjtgRaAotH6WX6sJU4ADvk=;
+        b=gG/ifh6juxYB1veORxsWA8N7bs8W5vbliwBckRMMivJJigpFkK016RwQO1u+KVLD0v
+         7ILdJS8Uri9zfIS3rTPV5D/IrJAFMJBKGARGUJlBZaxEhpVHFxgNMw6yPiZtkPT4Ir01
+         xw9YPdSb0TTF1aLe0M0Gezg+r0wLKjC6GidBsWILyTbcYbuMsOLCz96MTwSmzvszPZuP
+         W89RgUl28ifVrdznNZoKsVYvt6x5xVwNSceMscaCO7K92gVPllz4dmqruNQujA9a7Y3k
+         y+RmstLOoAWuOxeRbbSq/ptei5BmaQN0N28gcOi+8XOVhDGLJAUVUtomCJQ1iUX9kOIw
+         9OOg==
+X-Gm-Message-State: AOAM533vHSXcoaDmKReD9AMnQrGgb0HUxcuE7mzDazx8QswwdBXAq/ph
+        hEuBE8k4cHeu+DES+AA+kd6TQz3ztEahp/ZWCIfYiJJPp24=
+X-Google-Smtp-Source: ABdhPJxTiAH33iaNv5w3B+v5GaYno8ohAIxDKoDcVeEdgzu8JdWtT30YiyFimleu0o96zL9DQtyXxT5XvMnlHCx2d80=
+X-Received: by 2002:a25:c049:: with SMTP id c70mr16077351ybf.403.1599774997775;
+ Thu, 10 Sep 2020 14:56:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200910223112.26b57dd6@nic.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200910202718.956042-1-yhs@fb.com>
+In-Reply-To: <20200910202718.956042-1-yhs@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 10 Sep 2020 14:56:27 -0700
+Message-ID: <CAEf4Bza3=W5GaVuRFbvQvCKD3WQ9PVnuYJGPdF21zcaztJFBFA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: define string const as global for test_sysctl_prog.c
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 10:31:12PM +0200, Marek Behun wrote:
-> On Thu, 10 Sep 2020 19:34:35 +0100
-> Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> 
-> > On Thu, Sep 10, 2020 at 08:31:54PM +0200, Andrew Lunn wrote:
-> > > Generally the driver will default to the hardware reset blink
-> > > pattern. There are a few PHY drivers which change this at probe, but
-> > > not many. The silicon defaults are pretty good.  
-> > 
-> > The "right" blink pattern can be a matter of how the hardware is
-> > wired.  For example, if you have bi-colour LEDs and the PHY supports
-> > special bi-colour mixing modes.
-> > 
-> 
-> Have you seen such, Russell? This could be achieved via the multicolor
-> LED framework, but I don't have a device which uses such LEDs, so I
-> did not write support for this in the Marvell PHY driver.
-> 
-> (I guess I could test it though, since on my device LED0 and LED1
-> are used, and this to can be put into bi-colour LED mode.)
+On Thu, Sep 10, 2020 at 1:30 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> When tweaking llvm optimizations, I found that selftest build failed
+> with the following error:
+>   libbpf: elf: skipping unrecognized data section(6) .rodata.str1.1
+>   libbpf: prog 'sysctl_tcp_mem': bad map relo against '.L__const.is_tcp_mem.tcp_mem_name'
+>           in section '.rodata.str1.1'
+>   Error: failed to open BPF object file: Relocation failed
+>   make: *** [/work/net-next/tools/testing/selftests/bpf/test_sysctl_prog.skel.h] Error 255
+>   make: *** Deleting file `/work/net-next/tools/testing/selftests/bpf/test_sysctl_prog.skel.h'
+>
+> The local string constant "tcp_mem_name" is put into '.rodata.str1.1' section
+> which libbpf cannot handle. Using untweaked upstream llvm, "tcp_mem_name"
+> is completely inlined after loop unrolling.
+>
+> Commit 7fb5eefd7639 ("selftests/bpf: Fix test_sysctl_loop{1, 2}
+> failure due to clang change") solved a similar problem by defining
+> the string const as a global. Let us do the same here
+> for test_sysctl_prog.c so it can weather future potential llvm changes.
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
 
-I haven't, much to my dismay. The Macchiatobin would have been ideal -
-the 10G RJ45s have bi-colour on one side and green on the other. It
-would have been useful if they were wired to support the PHYs bi-
-colour mode.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>  tools/testing/selftests/bpf/progs/test_sysctl_prog.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_prog.c b/tools/testing/selftests/bpf/progs/test_sysctl_prog.c
+> index 50525235380e..5489823c83fc 100644
+> --- a/tools/testing/selftests/bpf/progs/test_sysctl_prog.c
+> +++ b/tools/testing/selftests/bpf/progs/test_sysctl_prog.c
+> @@ -19,11 +19,11 @@
+>  #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+>  #endif
+>
+> +const char tcp_mem_name[] = "net/ipv4/tcp_mem";
+
+nit: I'd prefer keeping an empty line between variables and functions
+
+>  static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
+>  {
+> -       char tcp_mem_name[] = "net/ipv4/tcp_mem";
+>         unsigned char i;
+> -       char name[64];
+> +       char name[sizeof(tcp_mem_name)];
+>         int ret;
+>
+>         memset(name, 0, sizeof(name));
+> --
+> 2.24.1
+>
