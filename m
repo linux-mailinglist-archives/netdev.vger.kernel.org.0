@@ -2,102 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B191264D37
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 20:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22BC3264D79
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 20:43:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbgIJSia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 14:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38246 "EHLO
+        id S1727041AbgIJSnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 14:43:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726991AbgIJSfh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 14:35:37 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349BDC061573;
-        Thu, 10 Sep 2020 11:35:37 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id u20so6663317ilk.6;
-        Thu, 10 Sep 2020 11:35:37 -0700 (PDT)
+        with ESMTP id S1726480AbgIJSlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 14:41:10 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75601C061756
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 11:41:10 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id m5so4706695pgj.9
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 11:41:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MZ2iDnTbyrlXItDSn80aeklI/xS62ZtYvWCMj64vOs4=;
-        b=meC0VBgmuKRrGPzb8/z+FzMRdE6MjLwccji+DXA2jf7TnUmsEG1iQCe1CVuWXjxDG3
-         GhFy7JFKL4lJYeaQ81e5aiUZnqhI0/64fxCmpDAnjU2apUIlFNc9ll9m+/XTxywCqQwr
-         NYbZQVa2ICZVPjZwNv9ue8oj3pRA6XhzKzuw8j08FKKgphPACSdgJcocQXE/uzCN0zWQ
-         apffPiBGhO2xdz0zWBAGysGOfPrcIEsLbus7gVMKw7i0yR+HwqjYvEWFYa7NCx1+cEmz
-         1CzGYg/GWr8nRKrM6vUR/g/mgqdq2IPpVWZySEc7kOo6B5RnYIivkNEHrDylLeUlHFXR
-         iBsg==
+        h=to:references:from:subject:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=20QtWjHTicadZytBmx0ukWpEv8BZNvcSu07qsLHoS+k=;
+        b=HqjbRO8agJrYYRuusrZIzAKnHSGCutZGbbuMwrXoEN9re6M1AgBwQxGnlqK/T7MZKI
+         UFXrBep61e+x7tYhyoV0tvBX2ZEl/zYTC38yzn8ijtujFNdWbRijf/e1gZ8eI2VQv392
+         rbn4LsHY7a1fwKGdebGN2bnRQHUjhKU1h4MxqUWgarZTW6wE2To8Lb7Kv4twWgLX4i6M
+         xi74Pn8Ru9hZEgp0ksuYagewAhuRu+1tq/0xB7hGrzBZuMsLHegKbOZGamtRcaRi5xKg
+         w+lL4hNYOCYYoCV4FDEw3C8O/ZbOS7mBgewPsTsChJ1tcPSfAA/B96zAGBRdc98opXpW
+         u65g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:to:references:from:subject:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=MZ2iDnTbyrlXItDSn80aeklI/xS62ZtYvWCMj64vOs4=;
-        b=g0OSpu9jcd2oXuOSrK8AdXsPQE6+p6AHRVcoF+fe7KQA8rkN2IFFwkhETqBTIbXyan
-         OLspsAL06lYVxjvIWfEKLKeXLHfJ5iUR4fGCySOzZIgKMDOWbOxk7Y4g5XXp6502G4Ms
-         tTQsNYOFq15pfshpNIYkU1bghGExTxODgI1EsbA3prD0vcIzUiW+lYuDDVI5p0Qe5PHA
-         aAFYFdhQ3SqMwmvBguK06B/0TLH58w0LHwbL6eUDfDSmGcdRADuruOVwAHCUJLzmF5pa
-         KsqYL5v2pOL5RcVJpZEjIGqji/uPdQX6OccPT0kvCoEGRvOUNj7ao0Ht8rPCMtcWi63Z
-         WC+g==
-X-Gm-Message-State: AOAM530tG84CT1sD81nsq2FJf894egQ3t/woHlBwJPTUwtwF4TU4mZLz
-        hy0vbvMk9GEBs4puc6Wo54Y=
-X-Google-Smtp-Source: ABdhPJz2sQeqQXzg38W24a0rNF+ZVeuE4MXNImqWkGSwdYXQWfG9xQlWvrKwk5rU7jPBaInMWwiNZg==
-X-Received: by 2002:a92:58cd:: with SMTP id z74mr9447040ilf.224.1599762936541;
-        Thu, 10 Sep 2020 11:35:36 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:5dc7:bd14:9e78:3773])
-        by smtp.googlemail.com with ESMTPSA id z26sm3568100ilf.60.2020.09.10.11.35.34
+        bh=20QtWjHTicadZytBmx0ukWpEv8BZNvcSu07qsLHoS+k=;
+        b=HyeKLnZOfq8BO6x2M5OKiUmJ8Phhe98kTWy6HFKBfdtpiNc48tCaPBVSX3T5CmYDm1
+         idC/4vRy63Q6hW1Bi0PND2Yb8XokLLKrp6vQCYW8x3buA08p5C1cAyB8OvEP20KVzf/s
+         ++q2ivVBV5MvPM+9cYVqwhBdv7XIFzNcpYTVoHFt/dKs4ogFsYlBEqek6F9jcVLb7x2r
+         BoSZ3fARYz/C6/KbnTJbfKDZSVvXUKdMZTBGH7dD0AlFgXWZtR7Zv3o/E7eQCf5TuMrW
+         HR9RJTtdjyC2n5K69oegkjftF0t41P8Ka8+vvqxzzpP3+JmnfG6Oc8Tvs082Ug678gvq
+         Qcqg==
+X-Gm-Message-State: AOAM5303eoS9uYIbmSkPjdBCPbceuU/z+OQ8Qeep0fifi5EslevWTxl1
+        2zTzZih9E8qYsEuaXVD3Rj4=
+X-Google-Smtp-Source: ABdhPJz0h50Of/XpDbgHbyLPb8MrBcJEb7hdYS29wKVdCXv56YMMe1IdciSUsOvwDWrBNdpYAVHICQ==
+X-Received: by 2002:a05:6a00:8ca:: with SMTP id s10mr6604816pfu.30.1599763269914;
+        Thu, 10 Sep 2020 11:41:09 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id k7sm2572211pjs.9.2020.09.10.11.41.07
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Sep 2020 11:35:35 -0700 (PDT)
-Subject: Re: [PATCHv11 bpf-next 2/5] xdp: add a new helper for dev map
- multicast support
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-References: <20200903102701.3913258-1-liuhangbin@gmail.com>
- <20200907082724.1721685-1-liuhangbin@gmail.com>
- <20200907082724.1721685-3-liuhangbin@gmail.com>
- <20200909215206.bg62lvbvkmdc5phf@ast-mbp.dhcp.thefacebook.com>
- <20200910023506.GT2531@dhcp-12-153.nay.redhat.com>
- <a1bcd5e8-89dd-0eca-f779-ac345b24661e@gmail.com>
- <CAADnVQ+CooPL7Zu4Y-AJZajb47QwNZJU_rH7A3GSbV8JgA4AcQ@mail.gmail.com>
- <87o8mearu5.fsf@toke.dk> <20200910195014.13ff24e4@carbon>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <47566856-75e2-8f2b-4347-f03a7cb5493b@gmail.com>
-Date:   Thu, 10 Sep 2020 12:35:33 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        Thu, 10 Sep 2020 11:41:09 -0700 (PDT)
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>
+References: <20200910150738.mwhh2i6j2qgacqev@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: VLAN filtering with DSA
+Message-ID: <a5e0a066-0193-beca-7773-5933d48696e8@gmail.com>
+Date:   Thu, 10 Sep 2020 11:41:04 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.1
 MIME-Version: 1.0
-In-Reply-To: <20200910195014.13ff24e4@carbon>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20200910150738.mwhh2i6j2qgacqev@skbuf>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/10/20 11:50 AM, Jesper Dangaard Brouer wrote:
-> Maybe we should change the devmap-prog approach, and run this on the
-> xdp_frame's (in bq_xmit_all() to be precise) .  Hangbin's patchset
-> clearly shows that we need this "layer" between running the xdp_prog and
-> the devmap-prog. 
++Ido,
 
-I would prefer to leave it in dev_map_enqueue.
+On 9/10/2020 8:07 AM, Vladimir Oltean wrote:
+> Florian, can you please reiterate what is the problem with calling
+> vlan_vid_add() with a VLAN that is installed by the bridge?
+> 
+> The effect of vlan_vid_add(), to my knowledge, is that the network
+> interface should add this VLAN to its filtering table, and not drop it.
+> So why return -EBUSY?
 
-The main premise at the moment is that the program attached to the
-DEVMAP entry is an ACL specific to that dev. If the program is going to
-drop the packet, then no sense queueing it.
+I suppose that if you wanted to have an 802.1Q just for the sake of 
+receiving VLAN tagged frames but not have them ingress the to the CPU, 
+you could install an 802.1Q upper, but why would you do that unless the 
+CPU should also receive that traffic?
 
-I also expect a follow on feature will be useful to allow the DEVMAP
-program to do another REDIRECT (e.g., potentially after modifying). It
-is not handled at the moment as it needs thought - e.g., limiting the
-number of iterative redirects. If such a feature does happen, then no
-sense queueing it to the current device.
+The case that I wanted to cover was to avoid the two programming 
+interfaces or the same VLAN, and prefer the bridge VLAN management over 
+the 802.1Q upper, because once the switch port is in a bridge, that is 
+what an user would expect to use.
+
+If you have a bridge that is VLAN aware, it will manage the data and 
+control path for us and that is all good since it is capable of dealing 
+with VLAN tagged frames.
+
+A non-VLAN aware bridge's data path is only allowed to see untagged 
+traffic, so if you wanted somehow to inject untagged traffic into the 
+bridge data path, then you would add a 802.1Q upper to that switch port, 
+and somehow add that device into the bridge. There is a problem with 
+that though, if you have mutliple bridge devices spanning the same 
+switch, and you do the same thing on another switch port, with another 
+802.1Q upper, I believe you could break isolation between bridges for 
+that particular VID.
+
+Most of this was based on discussions we had with Ido and him explaining 
+to me how they were doing it in mlxsw.
+
+AFAIR the other case which is that you already have a 802.1Q upper, and 
+then you add the switch port to the bridge is permitted and the bridge 
+would inherit the VLAN into its local database.
+
+I did not put much thoughts back then into a cascading set-up, so some 
+assumptions can certainly be broken, and in fact, are broken today as 
+you experimented.
+-- 
+Florian
