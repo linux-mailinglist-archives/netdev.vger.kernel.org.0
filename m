@@ -2,81 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E49264D8C
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 20:45:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 823DF264D5C
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 20:41:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726927AbgIJSoo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 14:44:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59816 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726741AbgIJQNa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 12:13:30 -0400
-Received: from localhost.localdomain (unknown [194.230.155.174])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8744221D90;
-        Thu, 10 Sep 2020 16:12:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599754364;
-        bh=zplVVIgMQojsbwVzaG1n4QTE3TMlBcAZb0xfKeub8eE=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=p9Aps4ONeROFriwJ9u8H2cjA/DUEGWRKzoNnFEhQRzm20lKlg1F4hg8ZODe4lfyvA
-         hSobjF/nxCveprXcdjdJCZMp/51Xv7pRgUjZPxTwi0ZFYXc7udvs3NWsCssjExJ0pB
-         KFQLwO9iAu60t1Y4VrlazrSz2f2NIfyXSgQxCeM8=
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Krzysztof Opasiak <k.opasiak@samsung.com>,
-        Kukjin Kim <kgene@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-nfc@lists.01.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v3 4/8] nfc: s3fwrn5: Remove unneeded 'ret' variable
-Date:   Thu, 10 Sep 2020 18:12:15 +0200
-Message-Id: <20200910161219.6237-5-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200910161219.6237-1-krzk@kernel.org>
-References: <20200910161219.6237-1-krzk@kernel.org>
+        id S1726811AbgIJSlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 14:41:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726729AbgIJSTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 14:19:00 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E02C06179A;
+        Thu, 10 Sep 2020 11:18:55 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id b19so9397082lji.11;
+        Thu, 10 Sep 2020 11:18:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u0QoUpdiWuk/TleG1WhXpC/jMx3rJkmmsyPPORRnaNA=;
+        b=DkxDHZCeEq8gImW5b5s9dmFvlHa7JdgopAVHLW/ZIzpQoQYlG1BQYvWo9DEfzyX5VS
+         XJJ/yAafniBhM+cS9/LPxScGdLhajuJwnRmQnqlj6tBczIFlJ0wSo7+cR7XA3BUT2x7E
+         8RuxLMxEPJ18bJrs/9uRZbV/MP6Xcw7AMCfc/xz0U5Nmib3IxJEID2mjR0t6h/NIND+O
+         qups0J0Kc09djdWDzYfxNS6Q5tbHVOVU9BoCmL7/dDUSmBbrNkrOzxnG3cNu5WfwnhSx
+         VzJyjItHcEqp0osjRRLSk2JfDUnaQoaMnMfnEQ0BDcReJXzFrksAeWuFv/xjCcyUVtHZ
+         RVhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u0QoUpdiWuk/TleG1WhXpC/jMx3rJkmmsyPPORRnaNA=;
+        b=EHtUriED04c5mk6R9VGzcVxj2oZB/xQspkGuMqtX10gty3SVU9wEgKBqSnKflFk6Ia
+         lCKfERwkxJ3hHuzGlkJ5WaxerYpV0zYPmVwW06MuYAE0/HZPdbGF6HUPzKAiK4s9XKk+
+         PxCjtmfamIvjakI+el6VqN1lGtYMqBfcF2uvOdblqQ3TLJtqMjzr3Mi4GlJLyfZkbY7B
+         KKNUmsyBtZ4kILeRjAVcovN/9P1PrlQzeJG+Sfv1ToX6mFwk4QctbDtsIydBEy2nGvif
+         dBCtwdmzLlyC6nV6yK/71pVhzmYM0xfr2ncF2CiThzM2kJHZkgAyNi72DWMqE39aCLvI
+         NA7A==
+X-Gm-Message-State: AOAM530O2JBz377OacMgzlZ/+gJJYtT3XGYCHWgjz3KGAJRIynThg0i1
+        oTAwbgqsyEoXtgtEzMOFSzWkhorVUpJIAIaIW+w=
+X-Google-Smtp-Source: ABdhPJyRz5V7THDsiTRBjlBEFsRmiRLAIZm1vHZm6P/v2qrNprvpIZsrwl+bOqx70qaO+kvUOtzO44C61GDp+vedvJM=
+X-Received: by 2002:a2e:808f:: with SMTP id i15mr4815444ljg.51.1599761933699;
+ Thu, 10 Sep 2020 11:18:53 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200909162500.17010-1-quentin@isovalent.com> <20200909162500.17010-4-quentin@isovalent.com>
+In-Reply-To: <20200909162500.17010-4-quentin@isovalent.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 10 Sep 2020 11:18:42 -0700
+Message-ID: <CAADnVQ+b3y1LFRppZu5GYW6hZY6nSZc3wQKqpqHbevdNHNSCSA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 3/3] tools: bpftool: automate generation for
+ "SEE ALSO" sections in man pages
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The local variable 'ret' can be removed:
+On Wed, Sep 9, 2020 at 9:25 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> The "SEE ALSO" sections of bpftool's manual pages refer to bpf(2),
+> bpf-helpers(7), then all existing bpftool man pages (save the current
+> one).
+>
+> This leads to nearly-identical lists being duplicated in all manual
+> pages. Ideally, when a new page is created, all lists should be updated
+> accordingly, but this has led to omissions and inconsistencies multiple
+> times in the past.
+>
+> Let's take it out of the RST files and generate the "SEE ALSO" sections
+> automatically in the Makefile when generating the man pages. The lists
+> are not really useful in the RST anyway because all other pages are
+> available in the same directory.
+>
+> v2:
+> - Use "echo -n" instead of "printf" in Makefile, to avoid any risk of
+>   passing a format string directly to the command.
+>
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-  drivers/nfc/s3fwrn5/i2c.c:167:6: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- drivers/nfc/s3fwrn5/i2c.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/nfc/s3fwrn5/i2c.c b/drivers/nfc/s3fwrn5/i2c.c
-index 557279492503..dc995286be84 100644
---- a/drivers/nfc/s3fwrn5/i2c.c
-+++ b/drivers/nfc/s3fwrn5/i2c.c
-@@ -164,7 +164,6 @@ static int s3fwrn5_i2c_read(struct s3fwrn5_i2c_phy *phy)
- static irqreturn_t s3fwrn5_i2c_irq_thread_fn(int irq, void *phy_id)
- {
- 	struct s3fwrn5_i2c_phy *phy = phy_id;
--	int ret = 0;
- 
- 	if (!phy || !phy->ndev) {
- 		WARN_ON_ONCE(1);
-@@ -179,10 +178,9 @@ static irqreturn_t s3fwrn5_i2c_irq_thread_fn(int irq, void *phy_id)
- 	switch (phy->mode) {
- 	case S3FWRN5_MODE_NCI:
- 	case S3FWRN5_MODE_FW:
--		ret = s3fwrn5_i2c_read(phy);
-+		s3fwrn5_i2c_read(phy);
- 		break;
- 	case S3FWRN5_MODE_COLD:
--		ret = -EREMOTEIO;
- 		break;
- 	}
- 
--- 
-2.17.1
-
+This patch failed to git am, but I've applied the first two patches.
+Thanks
