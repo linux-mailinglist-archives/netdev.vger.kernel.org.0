@@ -2,146 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 694CD265491
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:58:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 835BD2654B8
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 00:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725815AbgIJV6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41534 "EHLO
+        id S1725871AbgIJWBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 18:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725780AbgIJV6M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:58:12 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43CDC061573
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 14:58:11 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id d6so5581105pfn.9
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 14:58:11 -0700 (PDT)
+        with ESMTP id S1725355AbgIJWBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 18:01:06 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0955C061573;
+        Thu, 10 Sep 2020 15:01:05 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id p6so5047626ybk.10;
+        Thu, 10 Sep 2020 15:01:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LOVmtayLZVDC0i4i/v+QCm0s/AOKCftxydTn4EE85Ic=;
-        b=JPZG9xM2ax4GCSSi0cSDqBGa6zQbEdVviFSKWrAhBoPmYP1M8DJ4T/AIn6W54bKjFo
-         X8Dk6CldRYjJ2OmEmPJsL0B3Ej7n4p/s0x7ENTdU/71fXFAMqoXrsx+b/6wEHnP1OLGL
-         xiRSrXRZbngla/JCm4Pqst8cqwybSzpHedCCTIkh5QEIJdTMB0S8ZflMrMkGj/qrQ7a4
-         +Blr43FD3rZ4o9ZZ6CZGoo2yysXZp0yFHzxxEWM22M9M8z4zzjUEXKhzi5KsQCSj0gac
-         fa5Fhv4gAckJr6Oa36cAlBvpZnTqN7Q4iCnqBltogsgTU7wIA8qRqa2js5R3jb7XNg4F
-         7Big==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NqyY0998nnTOOx9j6km0P/zJSInnI5dSi92OehQyjG8=;
+        b=UiUbvVLCF7pkYoifxWjoGeHF94Pvk61F3V2rzi2kA+rcKJlCbkUfKw3lx+VE4VN0uW
+         t3yIY/H64pDtRYoqYeLAto/MznOtX0B6pl1ONIYEt61St+d50gHAOc3MWX1+sr4n2Q03
+         pjDtltvSwqJ8Fspx0tHxF2eD6SNxevNOCvojCm2706UOdrTwJYhMjlanY0FMs8XzyemZ
+         xrp3PVLvqoQJeluueuuyBZQRync+rzo5RMR6iyoDvJ/l+y8UDE4rz8IqK8XMEc7pY88J
+         rZP8KM6KFBprO5H0fLOkJmT50uKNNQYAuCmNrStgpTeS+OiukQOST7/117mvnYVUXbvk
+         Q91w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LOVmtayLZVDC0i4i/v+QCm0s/AOKCftxydTn4EE85Ic=;
-        b=cgn+AyLUDloWCZcZ2LchbrF31y3a/Oo9HbFvyrL0seoPFYhuQZ4ax3Flys0xaiCCR+
-         aJiFIgev065yfjpA19EVgThZO23MPFybvAow5qMMnivH/gq0t+m0zD7X8XHkP3jo4wGi
-         8NhVzUficje5FXIQbRDNwLdOAKN0ZLzC4wYDG8RN/eDWft5P6Yg0YtTkReHtvl/8/6FY
-         AZKUE3vUMs+txZndjeC4GNkbvyZgAVUa7YWj15uAy2k8GWqVkAszBQsaDo4qRNqFz7nv
-         3b9PDHd0eHKleDReW1trepWsn1580qE8RKfQYTLX14b8+uiMnumErXDmDlATFNOOM4YP
-         rskA==
-X-Gm-Message-State: AOAM530Kebq+HPiYM3DWoPVdTkU2GHJDMD+l9nHow2RzKnIX9UmRLiS0
-        SEi49xc+FV4afQj2zJDBxxwLzqc+4+I=
-X-Google-Smtp-Source: ABdhPJzvVaHfj1P9EDREOu38USS9I9dBkoZH/KqdYWFTG47oseNaroIgTqHXco3JxekVAtC30uEuww==
-X-Received: by 2002:a62:1b15:0:b029:13c:e701:5113 with SMTP id b21-20020a621b150000b029013ce7015113mr7361707pfb.3.1599775090851;
-        Thu, 10 Sep 2020 14:58:10 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m20sm60323pfa.115.2020.09.10.14.58.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Sep 2020 14:58:10 -0700 (PDT)
-Subject: Re: [PATCH net-next 4/4] net: dsa: set
- configure_vlan_while_not_filtering to true by default
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, vivien.didelot@gmail.com, andrew@lunn.ch,
-        netdev@vger.kernel.org
-References: <20200907182910.1285496-1-olteanv@gmail.com>
- <20200907182910.1285496-5-olteanv@gmail.com>
- <961ac1bd-6744-23ef-046f-4b7d8c4413a4@gmail.com>
- <a5e6cb01-88d0-a479-3262-b53dec0682cd@gmail.com>
- <f0217ae5-7897-17e2-a807-fc0ba0246c74@gmail.com>
- <20200909163105.nynkw5jvwqapzx2z@skbuf>
- <11268219-286d-7daf-9f4e-50bdc6466469@gmail.com>
- <20200909175325.bshts3hl537xtz2q@skbuf>
- <5edf3aa2-c417-e708-b259-7235de7bc8d2@gmail.com>
-Message-ID: <7e45b733-de6a-67c8-2e28-30a5ba84f544@gmail.com>
-Date:   Thu, 10 Sep 2020 14:58:04 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NqyY0998nnTOOx9j6km0P/zJSInnI5dSi92OehQyjG8=;
+        b=Fn58vwfi5mcPOzJuU5m8nzBa3clykJduemeGV6cjcmMf63820QLEMcLZOFqFJmzkD/
+         PBfVVWLO0fPR2vo7450P+E0NV/lrBs2U4goWFMcTR4Z7gCj5cl5DYRLKBWJKRcxj4SBH
+         yPRvuvhvEqbnVHWZfd2QIDYrOu1vaZRMMi4l4HQEW9pGjEP9hFtsSO5CgPYHtEVuzSDJ
+         CtvHd8xHrhTPSe/6N5oj5uRk+bfVeGyfXJmLiysuSOrfZbeCX93uOdX1vI+4OJQwz6fF
+         63WJubUyEPEXSH7GrrofxmTZ1lz7rJh3pTUaoyKBjzhfTv3C9kGF3uMUfYfdT5wOpUpM
+         5uVQ==
+X-Gm-Message-State: AOAM531PhImTpUGnKCdwBwyWRp12HtXEkLmnHD+NvHDimYYN8RTi9wQi
+        gxvpID+gW/dPcNkT83qRkqx6Q+/8srXbf7L/wbA=
+X-Google-Smtp-Source: ABdhPJwwJaJVkvBKNQpfSNCAzEM3ujd4iniWp5aQeouKQJp3UeGDkrhhhdijSfKOsiJ3r0E5PNKHrJJ9eDRzFsLpEbs=
+X-Received: by 2002:a25:aa8f:: with SMTP id t15mr15916005ybi.459.1599775264934;
+ Thu, 10 Sep 2020 15:01:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <5edf3aa2-c417-e708-b259-7235de7bc8d2@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <000000000000c82fe505aef233c6@google.com>
+In-Reply-To: <000000000000c82fe505aef233c6@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 10 Sep 2020 15:00:54 -0700
+Message-ID: <CAEf4BzbuUDEktVCYZAonUTM6iYBcAOPjKho2gMRD+9Q=N5cYxQ@mail.gmail.com>
+Subject: Re: WARNING in bpf_raw_tp_link_fill_link_info
+To:     syzbot <syzbot+976d5ecfab0c7eb43ac3@syzkaller.appspotmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Martin Lau <kafai@fb.com>, KP Singh <kpsingh@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Sep 10, 2020 at 2:31 AM syzbot
+<syzbot+976d5ecfab0c7eb43ac3@syzkaller.appspotmail.com> wrote:
+>
+> Hello,
+>
+> syzbot found the following issue on:
+>
+> HEAD commit:    7fb5eefd selftests/bpf: Fix test_sysctl_loop{1, 2} failure..
+> git tree:       bpf-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1424fdb3900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=b6856d16f78d8fa9
+> dashboard link: https://syzkaller.appspot.com/bug?extid=976d5ecfab0c7eb43ac3
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14a1f411900000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10929c11900000
+>
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+976d5ecfab0c7eb43ac3@syzkaller.appspotmail.com
+>
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 6854 at include/linux/thread_info.h:150 check_copy_size include/linux/thread_info.h:150 [inline]
+> WARNING: CPU: 0 PID: 6854 at include/linux/thread_info.h:150 copy_to_user include/linux/uaccess.h:167 [inline]
+> WARNING: CPU: 0 PID: 6854 at include/linux/thread_info.h:150 bpf_raw_tp_link_fill_link_info+0x306/0x350 kernel/bpf/syscall.c:2661
+> Kernel panic - not syncing: panic_on_warn set ...
+> CPU: 0 PID: 6854 Comm: syz-executor574 Not tainted 5.9.0-rc1-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x18f/0x20d lib/dump_stack.c:118
+>  panic+0x2e3/0x75c kernel/panic.c:231
+>  __warn.cold+0x20/0x4a kernel/panic.c:600
+>  report_bug+0x1bd/0x210 lib/bug.c:198
+>  handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
+>  exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
+>  asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
+> RIP: 0010:check_copy_size include/linux/thread_info.h:150 [inline]
+> RIP: 0010:copy_to_user include/linux/uaccess.h:167 [inline]
+> RIP: 0010:bpf_raw_tp_link_fill_link_info+0x306/0x350 kernel/bpf/syscall.c:2661
+> Code: 41 bc ea ff ff ff e9 35 ff ff ff 4c 89 ff e8 41 66 33 00 e9 d0 fd ff ff 4c 89 ff e8 a4 66 33 00 e9 06 ff ff ff e8 ca ed f2 ff <0f> 0b eb 94 48 89 ef e8 2e 66 33 00 e9 65 fd ff ff e8 24 66 33 00
+> RSP: 0018:ffffc900051c7bd0 EFLAGS: 00010293
+> RAX: 0000000000000000 RBX: ffffc900051c7c60 RCX: ffffffff818179d6
+> RDX: ffff88808b490000 RSI: ffffffff81817a96 RDI: 0000000000000006
+> RBP: 0000000000000019 R08: 0000000000000000 R09: ffffc900051c7c7f
+> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000019
+> R13: 0000000000001265 R14: ffffffff8986ecc0 R15: ffffc900051c7c78
+>  bpf_link_get_info_by_fd kernel/bpf/syscall.c:3626 [inline]
+>  bpf_obj_get_info_by_fd+0x43a/0xc40 kernel/bpf/syscall.c:3664
+>  __do_sys_bpf+0x1906/0x4b30 kernel/bpf/syscall.c:4237
+>  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> RIP: 0033:0x4405f9
+> Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007fff47155808 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+> RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004405f9
+> RDX: 0000000000000010 RSI: 00000000200000c0 RDI: 000000000000000f
+> RBP: 00000000006ca018 R08: 00000000004002c8 R09: 00000000004002c8
+> R10: 00000000004002c8 R11: 0000000000000246 R12: 0000000000401e00
+> R13: 0000000000401e90 R14: 0000000000000000 R15: 0000000000000000
+> Kernel Offset: disabled
+> Rebooting in 86400 seconds..
+>
 
+#syz fix: b474959d5afd ("bpf: Fix a buffer out-of-bound access when
+filling raw_tp link_info")
 
-On 9/9/2020 11:34 AM, Florian Fainelli wrote:
-> 
-> 
-> On 9/9/2020 10:53 AM, Vladimir Oltean wrote:
->> On Wed, Sep 09, 2020 at 10:22:42AM -0700, Florian Fainelli wrote:
->>> How do you make sure that the CPU port sees the frame untagged which 
->>> would
->>> be necessary for a VLAN-unaware bridge? Do you have a special remapping
->>> rule?
->>
->> No, I don't have any remapping rules that would be relevant here.
->> Why would the frames need to be necessarily untagged for a VLAN-unaware
->> bridge, why is it a problem if they aren't?
->>
->> bool br_allowed_ingress(const struct net_bridge *br,
->>             struct net_bridge_vlan_group *vg, struct sk_buff *skb,
->>             u16 *vid, u8 *state)
->> {
->>     /* If VLAN filtering is disabled on the bridge, all packets are
->>      * permitted.
->>      */
->>     if (!br_opt_get(br, BROPT_VLAN_ENABLED)) {
->>         BR_INPUT_SKB_CB(skb)->vlan_filtered = false;
->>         return true;
->>     }
->>
->>     return __allowed_ingress(br, vg, skb, vid, state);
->> }
->>
->> If I have a VLAN on a bridged switch port where the bridge is not
->> filtering, I have an 8021q upper of the bridge with that VLAN ID.
-> 
-> Yes that is the key right there, you need an 8021q upper to pop the VLAN 
-> ID or push it, that is another thing that users need to be aware of 
-> which is a bit awkward, most expect things to just work. Maybe we should 
-> just refuse to have bridge devices that are not VLAN-aware, because this 
-> is just too cumbersome to deal with.
-
-With the drivers that you currently maintain and with the CPU port being 
-always tagged in the VLANs added to the user-facing ports, when you are 
-using a non-VLAN aware bridge, do you systematically add an br0.1 upper 
-802.1Q device to pop/push the VLAN tag?
-
-I am about ready to submit the changes we discussed to b53, but I am 
-still a bit uncomfortable with this part of the change because it will 
-make the CPU port follow the untagged attribute of an user-facing port.
-
-@@ -1444,7 +1427,7 @@ void b53_vlan_add(struct dsa_switch *ds, int port,
-                         untagged = true;
-
-                 vl->members |= BIT(port);
--               if (untagged && !dsa_is_cpu_port(ds, port))
-+               if (untagged)
-                         vl->untag |= BIT(port);
-                 else
-                         vl->untag &= ~BIT(port);
-@@ -1482,7 +1465,7 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
-                 if (pvid == vid)
-                         pvid = b53_default_pvid(dev);
-
--               if (untagged && !dsa_is_cpu_port(ds, port))
-+               if (untagged)
-                         vl->untag &= ~(BIT(port));
-
--- 
-Florian
+>
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
