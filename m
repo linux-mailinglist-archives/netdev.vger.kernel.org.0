@@ -2,151 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43B0E265119
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA7EB265154
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 22:52:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726968AbgIJUnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 16:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57994 "EHLO
+        id S1726976AbgIJUwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 16:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727780AbgIJUlt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:41:49 -0400
-Received: from mail.nic.cz (mail.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7991CC061757;
-        Thu, 10 Sep 2020 13:41:48 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
-        by mail.nic.cz (Postfix) with ESMTPSA id 81BBB13FD86;
-        Thu, 10 Sep 2020 22:41:46 +0200 (CEST)
-Date:   Thu, 10 Sep 2020 22:41:46 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        linux-leds@vger.kernel.org, Dan Murphy <dmurphy@ti.com>,
-        =?UTF-8?B?T25k?= =?UTF-8?B?xZllag==?= Jirman 
-        <megous@megous.com>, Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next + leds v2 6/7] net: phy: marvell: add support
- for LEDs controlled by Marvell PHYs
-Message-ID: <20200910224146.60d21a60@nic.cz>
-In-Reply-To: <20200910202345.GA18431@ucw.cz>
-References: <20200909162552.11032-1-marek.behun@nic.cz>
-        <20200909162552.11032-7-marek.behun@nic.cz>
-        <20200910122341.GC7907@duo.ucw.cz>
-        <20200910131541.GD3316362@lunn.ch>
-        <20200910161522.3cf3ad63@dellmb.labs.office.nic.cz>
-        <20200910202345.GA18431@ucw.cz>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S1726746AbgIJUwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 16:52:36 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EB0C061756;
+        Thu, 10 Sep 2020 13:52:33 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id x14so7275891oic.9;
+        Thu, 10 Sep 2020 13:52:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VPpl9Z9qKG4w005uSztVwu76pM5CDuAiXfIO8K3+qrE=;
+        b=m0IcqgCQ9O8AuJcc7fc+TKNe4VmhTEZJDFncPoOZ5TbiTYuYueITM56QOkId2CVxV2
+         0gvEEE765IgF+bY/v5gwti5C0IOA4JSKESYmODEJIf8gORQE1e5sGNzM6BXT31OmqUo1
+         lbB/ThjTaUw3H8i+s2aG1yW7Uh+SbdOBzkS6Oj0rHYQqHUDdnEipdQ5744RGzfaYadJB
+         eiVWaDByrojf73q7kgDUG26umWC0smerQAkMRe99vw6xU5R0paFJDb1axzoGle9iBok3
+         IRNHTi2Rycw0xuyqTC0jEQe8r7WhnrAuW9AVMGRq3ZD9pKFR+uYR833FRY6NLj+mYcS7
+         k26Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VPpl9Z9qKG4w005uSztVwu76pM5CDuAiXfIO8K3+qrE=;
+        b=sA7gfFoGu5eZZtUm6HMP02T8Fu0y8imCZn+0hLZ1X5IiEAn5MqhPNNf5En+Fe2D4kr
+         Vwi8fEZiQ45W4pNQN/GvMY5RfxWuUdUB80e4p/HWNmPVT450X1Ex1ld593PAg0tnWJ6k
+         7u0DX4MdjWdtj/V78gPzSnzV9+UYaHjrC6gWIlWkf3MMKUBKWrdIolcR8RDU3ZHZQiDR
+         IbH7m6PYjKkI9YSIu0FeHWFIGGmiaQe0mxFVXfxlOLk5mppZsPqDm2nlNgsjlIAE4bE4
+         D72HaLBGhF6v2Ay7Jh6tyTftB1FA1bPw63DisTPwUIg+xNd9TBHLVXP3VUYiw3ppbmvI
+         RW4A==
+X-Gm-Message-State: AOAM532aSk9j93rEjOVg+qjGSLlyCZ/dXkXX31fDyAN820lWTKlW6Q6C
+        4kvDSzuv7WocGmzqSHj5pbStwdGhTQzPLyEUKZPZqLO3bKgfZQ==
+X-Google-Smtp-Source: ABdhPJz2YnloFEb/FVPpViU/szPTv8JRkAq5DfqeUSr54M6RCUBDo/FV9Z1sv6DupqGJdZStQbnui98DDHhKlm0E+gI=
+X-Received: by 2002:a05:6808:3bb:: with SMTP id n27mr1192198oie.130.1599771153123;
+ Thu, 10 Sep 2020 13:52:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
-        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
+References: <20200910161126.30948-1-oded.gabbay@gmail.com> <20200910130112.1f6bd9e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFCwf13SbXqjyu6JHKSTf-EqUxcBZUe4iAfggLhKXOi6DhXYcg@mail.gmail.com>
+ <20200910202513.GH3354160@lunn.ch> <CAFCwf11P7pEJ+Av9oiwdQFor5Kh9JeKvVTBXnMzWusKCRz7mHw@mail.gmail.com>
+ <20200910203848.GJ3354160@lunn.ch>
+In-Reply-To: <20200910203848.GJ3354160@lunn.ch>
+From:   Oded Gabbay <oded.gabbay@gmail.com>
+Date:   Thu, 10 Sep 2020 23:52:05 +0300
+Message-ID: <CAFCwf13NofvixWbdg0g2bGkN-UtgyQxNLyMxj3FmMDG669TXYQ@mail.gmail.com>
+Subject: Re: [PATCH 00/15] Adding GAUDI NIC code to habanalabs driver
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Sep 2020 22:23:45 +0200
-Pavel Machek <pavel@ucw.cz> wrote:
+On Thu, Sep 10, 2020 at 11:38 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Thu, Sep 10, 2020 at 11:30:33PM +0300, Oded Gabbay wrote:
+> > On Thu, Sep 10, 2020 at 11:25 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > > > Can you please elaborate on how to do this with a single driver that
+> > > > is already in misc ?
+> > > > As I mentioned in the cover letter, we are not developing a
+> > > > stand-alone NIC. We have a deep-learning accelerator with a NIC
+> > > > interface.
+> > >
+> > > This sounds like an MFD.
+> > >
+> > >      Andrew
+> >
+> > Yes and no. There is only one functionality - training of deep
+> > learning (Accelerating compute operations) :)
+> > The rdma is just our method of scaling-out - our method of
+> > intra-connection between GAUDI devices (similar to NVlink or AMD
+> > crossfire).
+> > So the H/W exposes a single physical function at the PCI level. And
+> > thus Linux can call a single driver for it during the PCI probe.
+>
+> Yes, it probes the MFD driver. The MFD driver then creates platform
+> drivers for the sub functions. i.e. it would create an Ethernet
+> platform driver. That then gets probed in the usual way. The child
+> device can get access to the parent device, if it needs to share
+> things, e.g. a device on a bus. This is typically I2C or SPI, but
+> there is no reason it cannot be a PCI device.
+>
+> Go look in drivers/mfd.
+>
+>       Andrew
 
-> Hi!
-> 
-> > Okay, so the netdev trigger offers modes `link`, `rx`, `tx`.
-> > You can enable/disable either of these (via separate sysfs files). `rx`
-> > and `tx` blink the LED, `link` turns the LED on if the interface is
-> > linked.  
-> 
-> I wonder if people really need separate rx and tx, but... this sounds
-> reasonable.
-> 
-> > The phy_led_trigger subsystem works differently. Instead of registering
-> > one trigger (like netdev) it registers one trigger per PHY device and
-> > per speed. So for a PHY with name XYZ and supported speeds 1Gbps,
-> > 100Mbps, 10Mbps it registers 3 triggers:
-> >   XYZ:1Gbps XYZ:100Mbps XYZ:10Mbps  
-> 
-> That is not reasonable.
-> 
-> > I propose that at least these HW modes should be available (and
-> > documented) for ethernet PHY controlled LEDs:  
-> 
-> Ok, and which of these will you actually use?
-> 
-> >   mode to determine link on:
-> >     - `link`
-> >   mode for activity (these should blink):
-> >     - `activity` (both rx and tx), `rx`, `tx`
-> >   mode for link (on) and activity (blink)
-> >     - `link/activity`, maybe `link/rx` and `link/tx`
-> >   mode for every supported speed:
-> >     - `1Gbps`, `100Mbps`, `10Mbps`, ...
-> >   mode for every supported cable type:
-> >     - `copper`, `fiber`, ... (are there others?)  
-> 
-> That's ... way too many options.
-> 
-> Can we do it like netdev trigger? link? yes/no. rx? yes/no. tx? yes/no.
-> 
-> If displaying link only for certain speeds is useful, have link_min
-> and link_max, specifying values in Mbps? Default would be link_min ==
-> 0, and link_max = 25000, so it would react on any link speed.
-> 
-> Is mode for cable type really useful? Then we should have link_fiber?
-> yes/no. link_copper? yes/no.
-> 
+I'm slightly familiar with drivers/mfd and as you mentioned, those are
+for "simple" devices, which use a bus with different functionality on
+them, like I2C with many devices (sensors for various things, etc).
+I've never seen anyone doing a PCI device there and frankly, I don't
+see the benefit of trying to migrate our complex PCI driver to that
+subsystem, if it will even work.
+And I would like to reiterate that our NIC ports are highly integrated
+with our compute engines.
+They "talk" to each other via sync objects inside the SOC, and all of
+them are used as part of the training of the deep learning network.
+Another example why this is not MFD - when a compute engine gets
+stuck, all the NIC ports are going through reset.
+So it's not the same as multiple devices that use the same bus or H/W.
+It's a single device with some engines that work in harmony.
+The bottom line is that we have single functionality and the scale-out
+is done via RDMA that is integrated on the device.
+We could have chosen other ways to scale-out (like some proprietary
+bus) and then would that count as another functionality ? I think not.
 
-I want to put the speed differentiating mode by default on MOX on one
-LED, and activity on other LED.
+So I'm not going to drivers/mfd with our driver. I wish that I had
+multiple PCI PF so I could do a proper Ethernet driver but I can't for
+this H/W.
+And I think that physically splitting the files into two subsystems
+will be very hard to maintain and definitely I will want to hear
+Greg's opinion on that.
 
-I think there are devices which have written on the case next to the
-LED that this LED is on for this specific speed, that LED is on for
-other specific speed. So modes for speed are reasonable, I think.
-
-In my opinion the disjunctive modes the Marvell PHYs support are useless
-(like ON when 1000Mbps or 10Mbps).
-
-You can't have link_min and link_max setting. The hardware does not
-support it this way. You can tell the hardware to light the LED when
-linked on a specific speed, and this is actually used on some devices
-(as I have written above, some devices have this written on the case).
-
-In my opinion the set `link`, `link/activity`, `activity`, `speed`,
-and one mode for each supported speed on the PHY is reasonable. This could
-be also compatible with software triggering via the proposed phydev
-trigger.
-
-> >   mode that allows the user to determine link speed
-> >     - `speed` (or maybe `linkspeed` ?)
-> >     - on some Marvell PHYs the speed can be determined by how fast
-> >       the LED is blinking (ie. 1Gbps blinks with default blinking
-> >       frequency, 100Mbps with half blinking frequeny of 1Gbps, 10Mbps
-> >       of half blinking frequency of 100Mbps)
-> >     - on other Marvell PHYs this is instead:
-> >       1Gpbs blinks 3 times, pause, 3 times, pause, ...
-> >       100Mpbs blinks 2 times, pause, 2 times, pause, ...
-> >       10Mpbs blinks 1 time, pause, 1 time, pause, ...
-> >     - we don't need to differentiate these modes with different names,
-> >       because the important thing is just that this mode allows the
-> >       user to determine the speed from how the LED blinks  
-> 
-> I'd be very careful. Userspace should know what they are asking
-> for. I'd propose simply ignoring this feature.
-
-As I wrote above, I think this mode is rather useful when you have just
-two LEDs for a port. You can tell speed by looking on one LED and
-activity by looking at the other LED. And I want to set this as default
-on Turris MOX.
-
-> >   mode to just force blinking - `blink`  
-> 
-> We already have different support for blinking in LED subsystem. Lets use that.
-> 
-> Best regards,
-> 									Pavel
-
+Thanks,
+Oded
