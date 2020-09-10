@@ -2,75 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7EE9264BF4
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 19:55:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA840264BFB
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 19:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725935AbgIJRzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 13:55:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60082 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725864AbgIJRyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 13:54:39 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7764CC061573;
-        Thu, 10 Sep 2020 10:54:36 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id u21so9337831ljl.6;
-        Thu, 10 Sep 2020 10:54:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gqF3JhrN6mkG5GJQl4SSfW7ZOq5CVu9Tyiyt1djrPOI=;
-        b=FF0HjUMTb4vljjTpUHoOXaFUNcWxhyq2McdoZ8I0iHYOCy1vqW4a05Hbs9qIIjJp7d
-         FsttDJaKdH4pvXY9H5ugSBQrwdBTi+CZUbSCyXYAp/BIWBOSclfGvRWElPcxs+6w9Otc
-         +DQeFk9duVGfZ+ombx5u7BMB+xsGDuv4FzQT3W2McTtU+uL+q3tiMOWASW5phNAdxf91
-         AFtlOV7DZsGP+sJg2lWBtiG4qvMKkn9GE+KzKjblUOOdb0dIUEkFyIHaO1/pSw27Fh7L
-         kQ49ZV71d7BF6Sca+03NCVHbLNHwYQC+ihpJVfQipul5c3fKIRYy4M6fvGTR9YFrOoC0
-         rk6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gqF3JhrN6mkG5GJQl4SSfW7ZOq5CVu9Tyiyt1djrPOI=;
-        b=FBIwO7BfsTI3WyakWTWyfQJ+JN8tO64kLmAiEqP00spUN27bhW9AwOuwMRnfEj8pwU
-         QdVOgrnq2vvdiFW0acZlXUChya9PnSIHYCNYDBPwcHDtho1QRUvKZeipLqhlDrMNRKQu
-         Fb2vIGtD+RFkYOVAzqoLoGC7Qg0eIy+rnpU4u1jQPvNBMPoUfwTOH1aBqsFAA89tNHJG
-         ljyAvWatQXlCRTUDdRYImUgqmFOB2GfPt8a+6HqrEDj/nkwPjPH3bptjV8T6JCJnSlBX
-         1WyC62pZ/astc+UkylpOejCTaQbKGD06eWsI2qaAVCpRWdHkl1AcRjJke+M+n56OMegA
-         S8gw==
-X-Gm-Message-State: AOAM532jeS9m277D6xPPIpAOY84aMUkDovVpG7PQQhsJwNssrnVOZvfV
-        oN5mXmPQOeEf/DZnkfmcw5vwUUjJAjQ1B/ay/zk=
-X-Google-Smtp-Source: ABdhPJw1ivHY+xUiwDvcHNKQDjtBRr9oD7QWBo9HvoSP6fsZBOZJ46jUFOo25YweDrDyNK5MD3Qu27OuNiTrbsiNL2Y=
-X-Received: by 2002:a2e:4554:: with SMTP id s81mr5276372lja.121.1599760469972;
- Thu, 10 Sep 2020 10:54:29 -0700 (PDT)
+        id S1726415AbgIJR4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 13:56:14 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:34026 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726947AbgIJRyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 13:54:46 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08AHsbT9018071;
+        Thu, 10 Sep 2020 12:54:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1599760477;
+        bh=8VF0Oh1yZo2QlXy6xBN4Gt3CcNyVN/I/9Gy0UvsoIXU=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=UgYZ5CSL624P7uM0B+sWwneSViI7gMKHxrCkFCnOwxcSz52zz8TEh+LaomP82bCC2
+         hpelQPhIYMPWrXsEuHBr/949V/0o++fCTww3UbIDKZR94+TgOSIUO3ODcoxNVXmJrH
+         BgGXL4pP8yugGAdDgGzYoLrBV6iXyDNNT6BZuKXw=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08AHsbb9087262
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 10 Sep 2020 12:54:37 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 10
+ Sep 2020 12:54:37 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 10 Sep 2020 12:54:37 -0500
+Received: from [10.250.38.37] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08AHsaNs000740;
+        Thu, 10 Sep 2020 12:54:36 -0500
+Subject: Re: [PATCH net-next v3 1/3] net: dp83869: Add ability to advertise
+ Fiber connection
+To:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20200903114259.14013-1-dmurphy@ti.com>
+ <20200903114259.14013-2-dmurphy@ti.com>
+ <20200905111755.4bd874b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200907142911.GT3112546@lunn.ch>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <aea8db25-88a9-d8d2-1a26-ecb81dbeb2b5@ti.com>
+Date:   Thu, 10 Sep 2020 12:54:36 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20200908132201.184005-1-chenzhou10@huawei.com> <CAEf4BzanC5xCLjq8tOyZKQ=ojhcyDYBhJkGVTcqCB-=uLctUvw@mail.gmail.com>
-In-Reply-To: <CAEf4BzanC5xCLjq8tOyZKQ=ojhcyDYBhJkGVTcqCB-=uLctUvw@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 10 Sep 2020 10:54:18 -0700
-Message-ID: <CAADnVQ+pFhuJ+KPPB6y9uDLsM7toMWSCFP5=m2rz7M1i7Ov0yw@mail.gmail.com>
-Subject: Re: [PATCH -next] bpf: Remove duplicate headers
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Chen Zhou <chenzhou10@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200907142911.GT3112546@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 8, 2020 at 4:05 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Sep 8, 2020 at 1:07 PM Chen Zhou <chenzhou10@huawei.com> wrote:
-> >
-> > Remove duplicate headers which are included twice.
-> >
-> > Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
-> > ---
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
+Hello
 
-Applied. Thanks
+On 9/7/20 9:29 AM, Andrew Lunn wrote:
+> On Sat, Sep 05, 2020 at 11:17:55AM -0700, Jakub Kicinski wrote:
+>> On Thu, 3 Sep 2020 06:42:57 -0500 Dan Murphy wrote:
+>>> Add the ability to advertise the Fiber connection if the strap or the
+>>> op-mode is configured for 100Base-FX.
+>>>
+>>> Auto negotiation is not supported on this PHY when in fiber mode.
+>>>
+>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>> Some comments, I'm not very phy-knowledgeable so bear with me
+>> (hopefully PHY maintainers can correct me, too).
+>>
+>>> diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+>>> index 58103152c601..48a68474f89c 100644
+>>> --- a/drivers/net/phy/dp83869.c
+>>> +++ b/drivers/net/phy/dp83869.c
+>>> @@ -52,6 +52,11 @@
+>>>   					 BMCR_FULLDPLX | \
+>>>   					 BMCR_SPEED1000)
+>>>   
+>>> +#define MII_DP83869_FIBER_ADVERTISE    (ADVERTISED_TP | ADVERTISED_MII | \
+>>> +					ADVERTISED_FIBRE | ADVERTISED_BNC |  \
+>> I'm not actually sure myself what the semantics of port type advertise
+>> bits are, but if this is fiber why advertise TP and do you really have
+>> BNC connectors? :S
+> Hi Jakub
+>
+> Normally, we start with a base of ETHTOOL_LINK_MODE_TP_BIT,
+> ETHTOOL_LINK_MODE_MII_BIT and then use genphy_read_abilities() to read
+> the standard registers in the PHY to determine what the PHY
+> supports. The PHY driver has the ability of provide its own function
+> to get the supported features, which is happening here. As far as i
+> remember, there is no standard way to indicate a PHY is doing Fibre,
+> not copper.
+>
+> I agree that TP and BMC make no sense here, since my understanding is
+> that the device only supports Fibre when strapped for Fibre. It cannot
+> swap to TP, and it has been at least 20 years since i last had a BNC
+> cable in my hands.
+>
+> In this context, i've no idea what MII means.
+
+I will remove the TP and BNC.
+
+
+>
+>>> +					ADVERTISED_Pause | ADVERTISED_Asym_Pause | \
+>>> +					ADVERTISED_100baseT_Full)
+>> You say 100Base-FX, yet you advertise 100Base-T?
+> 100Base-FX does not actually exist in ADVERTISED_X form. I guess this
+> is historical. It was not widely supported, the broadcom PHYs appear
+> to support it, but not much else. We were also running out of bits to
+> represent these ADVERTISED_X values. Now that we have changed to linux
+> bitmaps and have unlimited number of bits, it makes sense to add it.
+
+The note in the ethtool.h says
+
+     /* Last allowed bit for __ETHTOOL_LINK_MODE_LEGACY_MASK is bit
+      * 31. Please do NOT define any SUPPORTED_* or ADVERTISED_*
+      * macro for bits > 31. The only way to use indices > 31 is to
+      * use the new ETHTOOL_GLINKSETTINGS/ETHTOOL_SLINKSETTINGS API.
+      */
+
+Which was added by Heiner
+
+I guess I would prefer to add this in a separate patchset once I figure 
+out how the ETHTOOL_GLINKSETTINGS/ETHTOOL_SLINKSETTINGS API works
+
+>
+>>> @@ -383,7 +389,37 @@ static int dp83869_configure_mode(struct phy_device *phydev,
+>>>   
+>>>   		break;
+>>>   	case DP83869_RGMII_1000_BASE:
+>>> +		break;
+>>>   	case DP83869_RGMII_100_BASE:
+>>> +		/* Only allow advertising what this PHY supports */
+>>> +		linkmode_and(phydev->advertising, phydev->advertising,
+>>> +			     phydev->supported);
+>>> +
+>>> +		linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+>>> +				 phydev->supported);
+>>> +		linkmode_set_bit(ETHTOOL_LINK_MODE_FIBRE_BIT,
+>>> +				 phydev->advertising);
+>>> +
+>>> +		/* Auto neg is not supported in fiber mode */
+>>> +		bmcr = phy_read(phydev, MII_BMCR);
+>>> +		if (bmcr < 0)
+>>> +			return bmcr;
+>>> +
+>>> +		phydev->autoneg = AUTONEG_DISABLE;
+>>> +		linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+>>> +				   phydev->supported);
+>>> +		linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT,
+>>> +				   phydev->advertising);
+>>> +
+>>> +		if (bmcr & BMCR_ANENABLE) {
+>>> +			ret =  phy_modify(phydev, MII_BMCR, BMCR_ANENABLE, 0);
+>>> +			if (ret < 0)
+>>> +				return ret;
+>>> +		}
+>>> +
+>>> +		phy_modify_changed(phydev, MII_ADVERTISE,
+>>> +				   MII_DP83869_FIBER_ADVERTISE,
+>>> +				   MII_DP83869_FIBER_ADVERTISE);
+>> This only accesses standard registers, should it perhaps be a helper in
+>> the kernel's phy code?
+> I suspect the PHY is not following the standard when strapped to
+> fibre.
+
+No its a bit wonky in that respect.
+
+Dan
+
