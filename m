@@ -2,153 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E7952639FD
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 04:16:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2222639F8
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 04:15:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730744AbgIJCQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 9 Sep 2020 22:16:35 -0400
-Received: from mga04.intel.com ([192.55.52.120]:21906 "EHLO mga04.intel.com"
+        id S1730635AbgIJCPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 9 Sep 2020 22:15:30 -0400
+Received: from mga14.intel.com ([192.55.52.115]:25575 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730061AbgIJCOk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 9 Sep 2020 22:14:40 -0400
-IronPort-SDR: xxbTvvcLflG8MzlgaHVnvdltA3DMVna+0tW6l26a6uDbThQBtCeKPVCyLn+agEoHp+F5bByMVV
- iCzagq83VT9w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="155837772"
+        id S1730466AbgIJCM7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 9 Sep 2020 22:12:59 -0400
+IronPort-SDR: w4MtCGolgWO3d84kB1Wv2ysGzYH2jm/+DDcCzZE42197p7IfgDwlIdXMCBMdeiN/gwiQMLJ3ey
+ wE14Awp3z/Tg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9739"; a="157721712"
 X-IronPort-AV: E=Sophos;i="5.76,411,1592895600"; 
-   d="scan'208";a="155837772"
+   d="scan'208";a="157721712"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 17:03:24 -0700
-IronPort-SDR: 0h2UBeSZTVkWS2KVqBjQfCyvYGeAXglfznFaTqhR5Swn2JJZ1Xx7nwUhER5blYHvJ/1vmm3f1v
- jdadoq8f1lWA==
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 17:04:22 -0700
+IronPort-SDR: vkkj5VtYjJUSzcLiLMEepd1DNDR7dZzY7tdoGTAeSP/K2sv/epy4RCY9YcovpTxYJausEI3sP3
+ OHKvGyNYfBKg==
 X-IronPort-AV: E=Sophos;i="5.76,411,1592895600"; 
-   d="scan'208";a="341733575"
-Received: from rbentz-mobl.amr.corp.intel.com (HELO localhost.localdomain) ([10.212.86.17])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 17:03:23 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        davem@davemloft.net, kuba@kernel.org, jiri@resnulli.us,
-        syzbot+8267241609ae8c23b248@syzkaller.appspotmail.com
-Subject: [PATCH net v1] taprio: Fix allowing too small intervals
-Date:   Wed,  9 Sep 2020 17:03:11 -0700
-Message-Id: <20200910000311.521452-1-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.28.0
+   d="scan'208";a="341733826"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2020 17:04:22 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        jeffrey.t.kirsher@intel.com
+Subject: [net 0/4][pull request] Intel Wired LAN Driver Updates 2020-09-09
+Date:   Wed,  9 Sep 2020 17:04:07 -0700
+Message-Id: <20200910000411.2658780-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's possible that the user specifies an interval that couldn't allow
-any packet to be transmitted. This also avoids the issue of the
-hrtimer handler starving the other threads because it's running too
-often.
+This series contains updates to i40e and igc drivers.
 
-The solution is to reject interval sizes that according to the current
-link speed wouldn't allow any packet to be transmitted.
+Stefan Assmann changes num_vlans to u16 to fix may be used uninitialized
+error and propagates error in i40_set_vsi_promisc() for i40e.
 
-Reported-by: syzbot+8267241609ae8c23b248@syzkaller.appspotmail.com
-Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- net/sched/sch_taprio.c | 28 +++++++++++++++++-----------
- 1 file changed, 17 insertions(+), 11 deletions(-)
+Vinicius corrects timestamping latency values for i225 devices and
+accounts for TX timestamping delay for igc.
 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index fe53c1e38c7d..b0ad7687ee2c 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -777,9 +777,11 @@ static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
- 	[TCA_TAPRIO_ATTR_TXTIME_DELAY]		     = { .type = NLA_U32 },
- };
- 
--static int fill_sched_entry(struct nlattr **tb, struct sched_entry *entry,
-+static int fill_sched_entry(struct taprio_sched *q, struct nlattr **tb,
-+			    struct sched_entry *entry,
- 			    struct netlink_ext_ack *extack)
- {
-+	int min_duration = length_to_duration(q, ETH_ZLEN);
- 	u32 interval = 0;
- 
- 	if (tb[TCA_TAPRIO_SCHED_ENTRY_CMD])
-@@ -794,7 +796,10 @@ static int fill_sched_entry(struct nlattr **tb, struct sched_entry *entry,
- 		interval = nla_get_u32(
- 			tb[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]);
- 
--	if (interval == 0) {
-+	/* The interval should allow at least the minimum ethernet
-+	 * frame to go out.
-+	 */
-+	if (interval < min_duration) {
- 		NL_SET_ERR_MSG(extack, "Invalid interval for schedule entry");
- 		return -EINVAL;
- 	}
-@@ -804,8 +809,9 @@ static int fill_sched_entry(struct nlattr **tb, struct sched_entry *entry,
- 	return 0;
- }
- 
--static int parse_sched_entry(struct nlattr *n, struct sched_entry *entry,
--			     int index, struct netlink_ext_ack *extack)
-+static int parse_sched_entry(struct taprio_sched *q, struct nlattr *n,
-+			     struct sched_entry *entry, int index,
-+			     struct netlink_ext_ack *extack)
- {
- 	struct nlattr *tb[TCA_TAPRIO_SCHED_ENTRY_MAX + 1] = { };
- 	int err;
-@@ -819,10 +825,10 @@ static int parse_sched_entry(struct nlattr *n, struct sched_entry *entry,
- 
- 	entry->index = index;
- 
--	return fill_sched_entry(tb, entry, extack);
-+	return fill_sched_entry(q, tb, entry, extack);
- }
- 
--static int parse_sched_list(struct nlattr *list,
-+static int parse_sched_list(struct taprio_sched *q, struct nlattr *list,
- 			    struct sched_gate_list *sched,
- 			    struct netlink_ext_ack *extack)
- {
-@@ -847,7 +853,7 @@ static int parse_sched_list(struct nlattr *list,
- 			return -ENOMEM;
- 		}
- 
--		err = parse_sched_entry(n, entry, i, extack);
-+		err = parse_sched_entry(q, n, entry, i, extack);
- 		if (err < 0) {
- 			kfree(entry);
- 			return err;
-@@ -862,7 +868,7 @@ static int parse_sched_list(struct nlattr *list,
- 	return i;
- }
- 
--static int parse_taprio_schedule(struct nlattr **tb,
-+static int parse_taprio_schedule(struct taprio_sched *q, struct nlattr **tb,
- 				 struct sched_gate_list *new,
- 				 struct netlink_ext_ack *extack)
- {
-@@ -883,8 +889,8 @@ static int parse_taprio_schedule(struct nlattr **tb,
- 		new->cycle_time = nla_get_s64(tb[TCA_TAPRIO_ATTR_SCHED_CYCLE_TIME]);
- 
- 	if (tb[TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST])
--		err = parse_sched_list(
--			tb[TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST], new, extack);
-+		err = parse_sched_list(q, tb[TCA_TAPRIO_ATTR_SCHED_ENTRY_LIST],
-+				       new, extack);
- 	if (err < 0)
- 		return err;
- 
-@@ -1473,7 +1479,7 @@ static int taprio_change(struct Qdisc *sch, struct nlattr *opt,
- 		goto free_sched;
- 	}
- 
--	err = parse_taprio_schedule(tb, new_admin, extack);
-+	err = parse_taprio_schedule(q, tb, new_admin, extack);
- 	if (err < 0)
- 		goto free_sched;
- 
+The following are changes since commit b87f9fe1ac9441b75656dfd95eba70ef9f0375e0:
+  hsr: avoid newline  end of message in NL_SET_ERR_MSG_MOD
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/net-queue 40GbE
+
+Stefan Assmann (2):
+  i40e: fix return of uninitialized aq_ret in i40e_set_vsi_promisc
+  i40e: always propagate error value in i40e_set_vsi_promisc()
+
+Vinicius Costa Gomes (2):
+  igc: Fix wrong timestamp latency numbers
+  igc: Fix not considering the TX delay for timestamps
+
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 22 ++++++++++++++-----
+ drivers/net/ethernet/intel/igc/igc.h          | 20 +++++++----------
+ drivers/net/ethernet/intel/igc/igc_ptp.c      | 19 ++++++++++++++++
+ 3 files changed, 43 insertions(+), 18 deletions(-)
+
 -- 
-2.28.0
+2.26.2
 
