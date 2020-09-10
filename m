@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 560702651EE
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:05:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8D782651F5
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727915AbgIJVFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:05:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57124 "EHLO
+        id S1728033AbgIJVEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731063AbgIJOhX (ORCPT
+        with ESMTP id S1731167AbgIJOhX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 10:37:23 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2690C0617A9;
-        Thu, 10 Sep 2020 07:35:26 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id ay8so6532250edb.8;
-        Thu, 10 Sep 2020 07:35:26 -0700 (PDT)
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93810C0617AB;
+        Thu, 10 Sep 2020 07:35:28 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id q13so9040781ejo.9;
+        Thu, 10 Sep 2020 07:35:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8HvRoiCT6Kaqw+ME0No79Ijetq5cFPuTsghNfxraGwU=;
-        b=nUxVcG8/Gc71+4ot2A2Swhq1iHl5I5udIPQA5pErGqnEZcNyUf/HZVQqQqCohsrxzn
-         5cyDq7J56l7uFC0o2cj7YN1PoGuVFh7yqFbJ7iWrPT347WXmOVmFTwvpUtGLy7JXESll
-         8/YNkAbKEh22aN2uPfGV656lszd48mEZuuoyIJqvOynJpsKoolic0DdiX1khR5k/09fF
-         xMGnXkMj1Jz7+55GFmHszF/42TLtQO3wg6BLZRCyTF4z6ZTLKY5Uu1P8Zs4+eN74SIsT
-         ISomZMNoJvDbRDkqsk+mDo0Uwa8AdajBskyTH88+9FVf25WlpAHJWFIKWSmjqt+UvkDB
-         l5tw==
+        bh=T3i3qXMnhJ5Pfez9h/HWjHE3nazk6XcC2fJXvr78eKk=;
+        b=XE1hxXcFnJJOnwWXrIxwiW2HrxFHccyG+wLSuBNlS110t5JdPOcFyuEcDzcAwGqwsf
+         kg30G7OmWlEzmZGb5s4ub+rjsJNugFWL3WYd9CXPjwnwWVOpB9+Uz5IFkGPFqQGGQ6yS
+         O2jVO3oEye1D8vvqdHXK9lNam/rw4NQeUQilGtWUQ4zBd6whelBB4rgUSQym+GsqQnf4
+         WWsg/8mRRUxrQ9qn1KaKR1Ida8UPPRVpl/5iqiafbFQXAADPWkd4xDaSPbRyeOhh4CIQ
+         modZoQeFhDCNMbyuMcrOza3HAH2wMa/dU5qq3FuaDuvbuM21pP75apRskyKwjhgiMcYz
+         HuRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8HvRoiCT6Kaqw+ME0No79Ijetq5cFPuTsghNfxraGwU=;
-        b=GyfBFSnjfXRgcH663axb+NcMDPkxPZcFI64pMpmrOhy4KVMTNypX6oHLMfYI2UnTYw
-         8igjAUyaUJs7DR9JTRZg+5rccOYR09wVAaAu8iakky/G/nRb+4bG6LPKH3HhfHgOtdWb
-         5vWmgOPaLb57xFt9iDQ8OjmukPVCAIzCCRvp4Us0eoQ1RxSdxcmKLCe+gtYeHvAqYSdq
-         dYF8Q9DwbGryMUSAQOKLgvb4vAjFQhNXPZMKEjC3vdUX+ryf47ngBzChDHDllWsj4/+Y
-         yRryFZwpxZQ4X4IdjMLq7bjXsB61gy2lTUJpalwLPChylXwwfzmQinPsZT+mN28aYb/m
-         apLw==
-X-Gm-Message-State: AOAM530D7NuTBPgMA+fZwlETlDkVm2kcmRwFe6tt0aY/w/cq88wRSDwn
-        yJ5wOQPUDjpK0XGDLsVAiTs=
-X-Google-Smtp-Source: ABdhPJwNXgGLyf78LllCxiKYdXIqr7RFMl9vsJSHfdNs3cPpKF5gm4SQXM9MIAPD1KxMYSw9WhyOOA==
-X-Received: by 2002:aa7:c987:: with SMTP id c7mr9890667edt.385.1599748525404;
-        Thu, 10 Sep 2020 07:35:25 -0700 (PDT)
+        bh=T3i3qXMnhJ5Pfez9h/HWjHE3nazk6XcC2fJXvr78eKk=;
+        b=TbaK9FbHvYVtzoS3fXCwQ0jiAG4j8MsWeiCnNiDZDuHahghfzqe+b1KqKu9F9UNSCL
+         CWa9eG5f5t81kCK2SH3DOBIkn/kY2zL9XkABE1F/HLtjpBSZHxI13Ddhezri8otTIhXJ
+         RNn825P9RhUxrCPrM2WebZvyrZi3uwAZA3nMPyxWT8DCSVhZZjUfaRG9NTRKEDvE6WiH
+         MR5fSi915PtclTWaaEha3GPzQHwMSTmAj5r62ua3l7NU9sTxoh+KtJacqJ9Uta3xDcnG
+         U3yIBntPRQiA8SFL3SpPozXcb8ctubhhWf8PLHmPciIEDrueBJkGw0HjyIRkDyqKUEX4
+         //Gw==
+X-Gm-Message-State: AOAM5331f9Fo8zqXD3zfU5Jh39iC2gCtBRdjcqakj2V9RI1r5Ry5Fp+K
+        uTvgSJw5wGOtnbQvmBZ9JEs=
+X-Google-Smtp-Source: ABdhPJzK8qE8+S3d6bWZO57JfOB2xqDtq4ntdMlxomIVjovtPXSzMq9l3+nxOhieFaaCFSpmkfiFnw==
+X-Received: by 2002:a17:906:24d6:: with SMTP id f22mr8828364ejb.85.1599748526997;
+        Thu, 10 Sep 2020 07:35:26 -0700 (PDT)
 Received: from auth2-smtp.messagingengine.com (auth2-smtp.messagingengine.com. [66.111.4.228])
-        by smtp.gmail.com with ESMTPSA id e16sm7311945ejk.68.2020.09.10.07.35.21
+        by smtp.gmail.com with ESMTPSA id l10sm7466796edr.12.2020.09.10.07.35.23
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 10 Sep 2020 07:35:24 -0700 (PDT)
+        Thu, 10 Sep 2020 07:35:26 -0700 (PDT)
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 5BC2827C00A3;
-        Thu, 10 Sep 2020 10:35:21 -0400 (EDT)
+        by mailauth.nyi.internal (Postfix) with ESMTP id 3A4A827C00A1;
+        Thu, 10 Sep 2020 10:35:23 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 10 Sep 2020 10:35:21 -0400
-X-ME-Sender: <xms:qTlaX-gM8Ru-FxewhZyXlYl-UwXC6Y0CFCg0p8Jy3EcPlsPh5ENknw>
-    <xme:qTlaX_AKEdWXcDEEq3tON-e2IwnVTi6ySPNJmOwJ1DzCPxM97lw305JXqvvS6pTkp
-    6CtUYmrWoHCnZeUrw>
+  by compute3.internal (MEProxy); Thu, 10 Sep 2020 10:35:23 -0400
+X-ME-Sender: <xms:qzlaX2QvWxEkTCC2tui21cV517yBUkBYIcAPqkac3WkIKTRr8Dt3kg>
+    <xme:qzlaX7whjQAkRTdLrm400vh4FhUPYaV9uGsu_zBg67Lg3aSxdgGxaIo_lyU0nJvdb
+    N9nKNQNc_sYDLZs2w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehjedgjedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
@@ -66,13 +66,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehjedgjedvucetufdoteggod
     pegsohhquhhnodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdeiledvgeehtd
     eigedqudejjeekheehhedvqdgsohhquhhnrdhfvghngheppehgmhgrihhlrdgtohhmsehf
     ihigmhgvrdhnrghmvg
-X-ME-Proxy: <xmx:qTlaX2GgtTTN8eFG5oCuvPw2QOuzdK0bc_vU_OaN-Bm97GbaWecroQ>
-    <xmx:qTlaX3Tbu9sAvwzGETMjhs5oW8ioJFDg15SXhOCtHAYmdQ3bYvl4oQ>
-    <xmx:qTlaX7xsWnnmPsqpY8f8y2Vg75B-bM_7lc2XQwLx5nqwjXgSKHaCCA>
-    <xmx:qTlaXyi7Nng2jgVb-9M1_der89Caf2YGcJenFZ2SGDi5wMUD4_99rrxZNuY>
+X-ME-Proxy: <xmx:qzlaXz2dFiF-XVT6Xa7SerHC87GJdLPpdDRIYF8NLMWx-iSTJz5tVw>
+    <xmx:qzlaXyAtBYeQvz735bPXqVmK7YFKVgtpxcGb2UmF2eBaQdU1K40CPQ>
+    <xmx:qzlaX_i6grllRqMzAioAYnIzJQgvUh7L_TS4jFr1qCBLBr0_8JjQxQ>
+    <xmx:qzlaX6TLLzI22LvgOTgTc5C9eSB2SCYOLJpbj9kGY48iNyMhY4jsla5LFiM>
 Received: from localhost (unknown [52.155.111.71])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 92ED73280059;
-        Thu, 10 Sep 2020 10:35:20 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 779C03280065;
+        Thu, 10 Sep 2020 10:35:22 -0400 (EDT)
 From:   Boqun Feng <boqun.feng@gmail.com>
 To:     linux-hyperv@vger.kernel.org, linux-input@vger.kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
@@ -91,9 +91,9 @@ Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
         ardb@kernel.org, arnd@arndb.de, catalin.marinas@arm.com,
         mark.rutland@arm.com, maz@kernel.org,
         Boqun Feng <boqun.feng@gmail.com>
-Subject: [PATCH v3 10/11] Driver: hv: util: Make ringbuffer at least take two pages
-Date:   Thu, 10 Sep 2020 22:34:54 +0800
-Message-Id: <20200910143455.109293-11-boqun.feng@gmail.com>
+Subject: [PATCH v3 11/11] scsi: storvsc: Support PAGE_SIZE larger than 4K
+Date:   Thu, 10 Sep 2020 22:34:55 +0800
+Message-Id: <20200910143455.109293-12-boqun.feng@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910143455.109293-1-boqun.feng@gmail.com>
 References: <20200910143455.109293-1-boqun.feng@gmail.com>
@@ -104,59 +104,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When PAGE_SIZE > HV_HYP_PAGE_SIZE, we need the ringbuffer size to be at
-least 2 * PAGE_SIZE: one page for the header and at least one page of
-the data part (because of the alignment requirement for double mapping).
+Hyper-V always use 4k page size (HV_HYP_PAGE_SIZE), so when
+communicating with Hyper-V, a guest should always use HV_HYP_PAGE_SIZE
+as the unit for page related data. For storvsc, the data is
+vmbus_packet_mpb_array. And since in scsi_cmnd, sglist of pages (in unit
+of PAGE_SIZE) is used, we need convert pages in the sglist of scsi_cmnd
+into Hyper-V pages in vmbus_packet_mpb_array.
 
-So make sure the ringbuffer sizes to be at least 2 * PAGE_SIZE when
-using vmbus_open() to establish the vmbus connection.
+This patch does the conversion by dividing pages in sglist into Hyper-V
+pages, offset and indexes in vmbus_packet_mpb_array are recalculated
+accordingly.
 
 Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
 ---
- drivers/hv/hv_util.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/scsi/storvsc_drv.c | 54 +++++++++++++++++++++++++++++++++-----
+ 1 file changed, 47 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/hv/hv_util.c b/drivers/hv/hv_util.c
-index a4e8d96513c2..3996c16568a3 100644
---- a/drivers/hv/hv_util.c
-+++ b/drivers/hv/hv_util.c
-@@ -500,6 +500,14 @@ static void heartbeat_onchannelcallback(void *context)
- 	}
- }
+diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+index 8f5f5dc863a4..119b76ca24a1 100644
+--- a/drivers/scsi/storvsc_drv.c
++++ b/drivers/scsi/storvsc_drv.c
+@@ -1739,23 +1739,63 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
+ 	payload_sz = sizeof(cmd_request->mpb);
  
-+/*
-+ * The size of each ring should be at least 2 * PAGE_SIZE, because we need one
-+ * page for the header and at least another page (because of the alignment
-+ * requirement for double mapping) for data part.
-+ */
-+#define HV_UTIL_RING_SEND_SIZE max(4 * HV_HYP_PAGE_SIZE, 2 * PAGE_SIZE)
-+#define HV_UTIL_RING_RECV_SIZE max(4 * HV_HYP_PAGE_SIZE, 2 * PAGE_SIZE)
+ 	if (sg_count) {
+-		if (sg_count > MAX_PAGE_BUFFER_COUNT) {
++		unsigned int hvpgoff = 0;
++		unsigned long hvpg_offset = sgl->offset & ~HV_HYP_PAGE_MASK;
++		unsigned int hvpg_count = HVPFN_UP(hvpg_offset + length);
++		u64 hvpfn;
+ 
+-			payload_sz = (sg_count * sizeof(u64) +
++		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
 +
- static int util_probe(struct hv_device *dev,
- 			const struct hv_vmbus_device_id *dev_id)
- {
-@@ -530,8 +538,8 @@ static int util_probe(struct hv_device *dev,
++			payload_sz = (hvpg_count * sizeof(u64) +
+ 				      sizeof(struct vmbus_packet_mpb_array));
+ 			payload = kzalloc(payload_sz, GFP_ATOMIC);
+ 			if (!payload)
+ 				return SCSI_MLQUEUE_DEVICE_BUSY;
+ 		}
  
- 	hv_set_drvdata(dev, srv);
++		/*
++		 * sgl is a list of PAGEs, and payload->range.pfn_array
++		 * expects the page number in the unit of HV_HYP_PAGE_SIZE (the
++		 * page size that Hyper-V uses, so here we need to divide PAGEs
++		 * into HV_HYP_PAGE in case that PAGE_SIZE > HV_HYP_PAGE_SIZE.
++		 */
+ 		payload->range.len = length;
+-		payload->range.offset = sgl[0].offset;
++		payload->range.offset = sgl[0].offset & ~HV_HYP_PAGE_MASK;
++		hvpgoff = sgl[0].offset >> HV_HYP_PAGE_SHIFT;
  
--	ret = vmbus_open(dev->channel, 4 * HV_HYP_PAGE_SIZE,
--			 4 * HV_HYP_PAGE_SIZE, NULL, 0, srv->util_cb,
-+	ret = vmbus_open(dev->channel, HV_UTIL_RING_SEND_SIZE,
-+			 HV_UTIL_RING_RECV_SIZE, NULL, 0, srv->util_cb,
- 			 dev->channel);
- 	if (ret)
- 		goto error;
-@@ -590,8 +598,8 @@ static int util_resume(struct hv_device *dev)
- 			return ret;
+ 		cur_sgl = sgl;
+-		for (i = 0; i < sg_count; i++) {
+-			payload->range.pfn_array[i] =
+-				page_to_pfn(sg_page((cur_sgl)));
+-			cur_sgl = sg_next(cur_sgl);
++		for (i = 0; i < hvpg_count; i++) {
++			/*
++			 * 'i' is the index of hv pages in the payload and
++			 * 'hvpgoff' is the offset (in hv pages) of the first
++			 * hv page in the the first page. The relationship
++			 * between the sum of 'i' and 'hvpgoff' and the offset
++			 * (in hv pages) in a payload page ('hvpgoff_in_page')
++			 * is as follow:
++			 *
++			 * |------------------ PAGE -------------------|
++			 * |   NR_HV_HYP_PAGES_IN_PAGE hvpgs in total  |
++			 * |hvpg|hvpg| ...              |hvpg|... |hvpg|
++			 * ^         ^                                 ^                 ^
++			 * +-hvpgoff-+                                 +-hvpgoff_in_page-+
++			 *           ^                                                   |
++			 *           +--------------------- i ---------------------------+
++			 */
++			unsigned int hvpgoff_in_page =
++				(i + hvpgoff) % NR_HV_HYP_PAGES_IN_PAGE;
++
++			/*
++			 * Two cases that we need to fetch a page:
++			 * 1) i == 0, the first step or
++			 * 2) hvpgoff_in_page == 0, when we reach the boundary
++			 *    of a page.
++			 */
++			if (hvpgoff_in_page == 0 || i == 0) {
++				hvpfn = page_to_hvpfn(sg_page(cur_sgl));
++				cur_sgl = sg_next(cur_sgl);
++			}
++
++			payload->range.pfn_array[i] = hvpfn + hvpgoff_in_page;
+ 		}
  	}
  
--	ret = vmbus_open(dev->channel, 4 * HV_HYP_PAGE_SIZE,
--			 4 * HV_HYP_PAGE_SIZE, NULL, 0, srv->util_cb,
-+	ret = vmbus_open(dev->channel, HV_UTIL_RING_SEND_SIZE,
-+			 HV_UTIL_RING_RECV_SIZE, NULL, 0, srv->util_cb,
- 			 dev->channel);
- 	return ret;
- }
 -- 
 2.28.0
 
