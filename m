@@ -2,277 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6D06265521
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 00:34:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20BED265523
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 00:36:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725300AbgIJWej (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 18:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
+        id S1725554AbgIJWgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 18:36:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725274AbgIJWei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 18:34:38 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B043DC061573;
-        Thu, 10 Sep 2020 15:34:37 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id s19so93944ybc.5;
-        Thu, 10 Sep 2020 15:34:37 -0700 (PDT)
+        with ESMTP id S1725274AbgIJWgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 18:36:15 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5BB5C061573;
+        Thu, 10 Sep 2020 15:36:14 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id h206so5084094ybc.11;
+        Thu, 10 Sep 2020 15:36:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=26Kn2rhsa3xJivd2y4pBgAN2IoN23FJyYykJzBjpe7M=;
-        b=Bff8oa2xCRWxrgHhixxfFe4FLc/9PYNmLczTjY+l2nbj1zGeWbbmHFOYKByesmlQP4
-         7InaCj2RFix3eod8D9l1yTXY0G6D+DPC8cwBb2uIYSaFVtsDIueclR85js4uJvR4VxHJ
-         TpNrECfhMVyN6Y6bOCJ/VGW2UB1jeTQ1KARBw61bHFHqrGkXeWBbiasi34HGv+P1lOmK
-         RD13IoEgHb+//td3lsh3TMh6BMRxdsaOSlIYvFfGV5mPP0+NqgRTiV6a0GTduFFN0k8Q
-         DUwoe9INtMzXiXOeUufozvUXMNAdS/skF/9aAGc6+O2kVOgyN9hFO95oC7cj1RVKMTeH
-         NQdw==
+        bh=iEu250wu2riBrjXc+CH6Myx/+cz22hrH7Jttdl/Tedc=;
+        b=qCs9s2Em8mitQ8zSJ8Xo1PCZXbjNbtoHn0VDxnsxi996Dut9E73UhnTpr7SIprPs8J
+         64pu59UvSxN/1qndG7AuT8RHher1CpcCB/sKeut9qBkln8HY+3xpEAzF7kIh5Tf1+Xps
+         Sy9cH+MUVT5eNLRQI7dfiW2fcABo8E+pfgaXKlpSuNde498AfSzyYYCMwcGgiVOG1A9X
+         qEOniIDf3o6pTalRruogUkQg1CMQXj148noGaU0gwz7eMOl1ja78FKJTr2fjXHE+z/EG
+         PsP9l1Iqf7LeFO+7xbz82Anvq1FFi4cmAIHYNgnIfEFx2+V21UOsueeSr28jdIWzexdf
+         20vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=26Kn2rhsa3xJivd2y4pBgAN2IoN23FJyYykJzBjpe7M=;
-        b=OLe75qHRSN2qBguau4Iu1LH3M7aFfyr9DPmJyAloi7+VbwZYTNpukTeh8qOL72Xnt1
-         sb7j/eVWWSxNfZ/3deRqq8AeGVNYYNbbDKE4OHJMA+2QU5sZN3P5AMSIZbNzUShZ/T8w
-         sygpy0/5YFcRdwSxmk4EJnp4ayDpC9grX8hFS8X37nsBNy2x7auZZemeg8Gb5tRTGRPQ
-         4qkrbZT6h97gRrSNLfueZoySXVcvsQONteK7+y8kqm1exA2wkv9alz5pzSa7L01wJy5D
-         ac2oPBeEBXfddAbCXjtOcLWg19ln7qmYjWuxt7GBb1NmdHBANUY7MFUp7laih0gl+hk+
-         wi/A==
-X-Gm-Message-State: AOAM530uHfsSTk80cr5Nfpv/l6lRsCNAe07F2n7c10rSdn+gjFVbUeEN
-        VLnMh4yY7rBoNYt13o9k5xRFY8WWYoMvv2nSeXE=
-X-Google-Smtp-Source: ABdhPJyvJ/p87NeXapSWZ0Ub8O3hBJie+jISKLaezMybzzjVtKEsnN54NXw+ExrMrIScKGTldLsXCgoONjA1zmb/XUc=
-X-Received: by 2002:a25:7b81:: with SMTP id w123mr16797765ybc.260.1599777276885;
- Thu, 10 Sep 2020 15:34:36 -0700 (PDT)
+        bh=iEu250wu2riBrjXc+CH6Myx/+cz22hrH7Jttdl/Tedc=;
+        b=kpT/h3OiyYqvnc99ru0CPZLBXVpt2VPib2D6lc/h9hrBoMp5fG/AHiWoEbipNNe7Cf
+         i45wTQzF0+5in8trLo7PhlAHtDrK68l934+6EOWb0D3kGs4Lx4Ab242pC3V6O0k4cA96
+         CLKBegBhanIbxFSBNCzydP+eY7HPuxqY7I56ZZiqlP9i7anjVios8+gAS8g+4JfiVp8a
+         zNLTsuDVR+NH3orCDJI+aYww/EIDGUF+goM6wmV9TVmN6V1K1tPCUyj6q4zHCCn2lOFb
+         6JLSMdMotdgGgiQCczyDsCfjG8cmOX+s9NMLioAW9mYKUeKWQp/jb9hpYm8APFpkZ4Tu
+         Uevw==
+X-Gm-Message-State: AOAM530MDxw8Nexd+zYMZVFIMg5Te+ytQ5EIkq9Km0kH3iiSc9z/skco
+        MSk/fN/05o62xdUSoIHp/5yFRFpKRYEiT2ExzOo=
+X-Google-Smtp-Source: ABdhPJxCHe+LhpX5HL7WJyK2sGXEfs8/gyzV4Ah+IJY2IdAmUL6BkoHPGl2uZ9hJcJh0ziRN9pweJjZWdsiBjfKtMp0=
+X-Received: by 2002:a25:ef43:: with SMTP id w3mr14535717ybm.230.1599777374021;
+ Thu, 10 Sep 2020 15:36:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200909151115.1559418-1-jolsa@kernel.org> <20200909151115.1559418-2-jolsa@kernel.org>
-In-Reply-To: <20200909151115.1559418-2-jolsa@kernel.org>
+References: <20200529075424.3139988-1-andriin@fb.com> <20200529075424.3139988-6-andriin@fb.com>
+ <20200909155305.21380532@coco.lan>
+In-Reply-To: <20200909155305.21380532@coco.lan>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 10 Sep 2020 15:34:26 -0700
-Message-ID: <CAEf4BzbY3zV-xYDBvCYztXOkn=MJwHxOVyAH7YRH8JH869qtDg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: Adding test for arg
- dereference in extension trace
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+Date:   Thu, 10 Sep 2020 15:36:03 -0700
+Message-ID: <CAEf4BzYahQSrwMSgUFVmurSGag=cYoWBTWm2DwKSU7kmOheopQ@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 5/5] docs/bpf: add BPF ring buffer design notes
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+        Kernel Team <kernel-team@fb.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 9, 2020 at 8:38 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Wed, Sep 9, 2020 at 6:53 AM Mauro Carvalho Chehab
+<mchehab+huawei@kernel.org> wrote:
 >
-> Adding test that setup following program:
+> Em Fri, 29 May 2020 00:54:24 -0700
+> Andrii Nakryiko <andriin@fb.com> escreveu:
 >
->   SEC("classifier/test_pkt_md_access")
->   int test_pkt_md_access(struct __sk_buff *skb)
+> > Add commit description from patch #1 as a stand-alone documentation under
+> > Documentation/bpf, as it might be more convenient format, in long term
+> > perspective.
+> >
+> > Suggested-by: Stanislav Fomichev <sdf@google.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  Documentation/bpf/ringbuf.rst | 209 ++++++++++++++++++++++++++++++++++
+> >  1 file changed, 209 insertions(+)
+> >  create mode 100644 Documentation/bpf/ringbuf.rst
+> >
+> > diff --git a/Documentation/bpf/ringbuf.rst b/Documentation/bpf/ringbuf.rst
+> > new file mode 100644
+> > index 000000000000..75f943f0009d
+> > --- /dev/null
+> > +++ b/Documentation/bpf/ringbuf.rst
+> > @@ -0,0 +1,209 @@
+> > +===============
+> > +BPF ring buffer
+> > +===============
+> > +
+> > +This document describes BPF ring buffer design, API, and implementation details.
+> > +
+> > +.. contents::
+> > +    :local:
+> > +    :depth: 2
+> > +
+> > +Motivation
+> > +----------
+> > +
+> > +There are two distinctive motivators for this work, which are not satisfied by
+> > +existing perf buffer, which prompted creation of a new ring buffer
+> > +implementation.
+> > +
+> > +- more efficient memory utilization by sharing ring buffer across CPUs;
+> > +- preserving ordering of events that happen sequentially in time, even across
+> > +  multiple CPUs (e.g., fork/exec/exit events for a task).
+> > +
+> > +These two problems are independent, but perf buffer fails to satisfy both.
+> > +Both are a result of a choice to have per-CPU perf ring buffer.  Both can be
+> > +also solved by having an MPSC implementation of ring buffer. The ordering
+> > +problem could technically be solved for perf buffer with some in-kernel
+> > +counting, but given the first one requires an MPSC buffer, the same solution
+> > +would solve the second problem automatically.
+> > +
+> > +Semantics and APIs
+> > +------------------
+> > +
+> > +Single ring buffer is presented to BPF programs as an instance of BPF map of
+> > +type ``BPF_MAP_TYPE_RINGBUF``. Two other alternatives considered, but
+> > +ultimately rejected.
+> > +
+> > +One way would be to, similar to ``BPF_MAP_TYPE_PERF_EVENT_ARRAY``, make
+> > +``BPF_MAP_TYPE_RINGBUF`` could represent an array of ring buffers, but not
+> > +enforce "same CPU only" rule. This would be more familiar interface compatible
+> > +with existing perf buffer use in BPF, but would fail if application needed more
+> > +advanced logic to lookup ring buffer by arbitrary key.
+> > +``BPF_MAP_TYPE_HASH_OF_MAPS`` addresses this with current approach.
+> > +Additionally, given the performance of BPF ringbuf, many use cases would just
+> > +opt into a simple single ring buffer shared among all CPUs, for which current
+> > +approach would be an overkill.
+> > +
+> > +Another approach could introduce a new concept, alongside BPF map, to represent
+> > +generic "container" object, which doesn't necessarily have key/value interface
+> > +with lookup/update/delete operations. This approach would add a lot of extra
+> > +infrastructure that has to be built for observability and verifier support. It
+> > +would also add another concept that BPF developers would have to familiarize
+> > +themselves with, new syntax in libbpf, etc. But then would really provide no
+> > +additional benefits over the approach of using a map.  ``BPF_MAP_TYPE_RINGBUF``
+> > +doesn't support lookup/update/delete operations, but so doesn't few other map
+> > +types (e.g., queue and stack; array doesn't support delete, etc).
+> > +
+> > +The approach chosen has an advantage of re-using existing BPF map
+> > +infrastructure (introspection APIs in kernel, libbpf support, etc), being
+> > +familiar concept (no need to teach users a new type of object in BPF program),
+> > +and utilizing existing tooling (bpftool). For common scenario of using a single
+> > +ring buffer for all CPUs, it's as simple and straightforward, as would be with
+> > +a dedicated "container" object. On the other hand, by being a map, it can be
+> > +combined with ``ARRAY_OF_MAPS`` and ``HASH_OF_MAPS`` map-in-maps to implement
+> > +a wide variety of topologies, from one ring buffer for each CPU (e.g., as
+> > +a replacement for perf buffer use cases), to a complicated application
+> > +hashing/sharding of ring buffers (e.g., having a small pool of ring buffers
+> > +with hashed task's tgid being a look up key to preserve order, but reduce
+> > +contention).
+> > +
+> > +Key and value sizes are enforced to be zero. ``max_entries`` is used to specify
+> > +the size of ring buffer and has to be a power of 2 value.
+> > +
+> > +There are a bunch of similarities between perf buffer
+> > +(``BPF_MAP_TYPE_PERF_EVENT_ARRAY``) and new BPF ring buffer semantics:
+> > +
+> > +- variable-length records;
+> > +- if there is no more space left in ring buffer, reservation fails, no
+> > +  blocking;
+> > +- memory-mappable data area for user-space applications for ease of
+> > +  consumption and high performance;
+> > +- epoll notifications for new incoming data;
+> > +- but still the ability to do busy polling for new data to achieve the
+> > +  lowest latency, if necessary.
+> > +
+> > +BPF ringbuf provides two sets of APIs to BPF programs:
+> > +
+> > +- ``bpf_ringbuf_output()`` allows to *copy* data from one place to a ring
+> > +  buffer, similarly to ``bpf_perf_event_output()``;
+> > +- ``bpf_ringbuf_reserve()``/``bpf_ringbuf_commit()``/``bpf_ringbuf_discard()``
+> > +  APIs split the whole process into two steps. First, a fixed amount of space
+> > +  is reserved. If successful, a pointer to a data inside ring buffer data
+> > +  area is returned, which BPF programs can use similarly to a data inside
+> > +  array/hash maps. Once ready, this piece of memory is either committed or
+> > +  discarded. Discard is similar to commit, but makes consumer ignore the
+> > +  record.
+> > +
+> > +``bpf_ringbuf_output()`` has disadvantage of incurring extra memory copy,
+> > +because record has to be prepared in some other place first. But it allows to
+> > +submit records of the length that's not known to verifier beforehand. It also
+> > +closely matches ``bpf_perf_event_output()``, so will simplify migration
+> > +significantly.
+> > +
+> > +``bpf_ringbuf_reserve()`` avoids the extra copy of memory by providing a memory
+> > +pointer directly to ring buffer memory. In a lot of cases records are larger
+> > +than BPF stack space allows, so many programs have use extra per-CPU array as
+> > +a temporary heap for preparing sample. bpf_ringbuf_reserve() avoid this needs
+> > +completely. But in exchange, it only allows a known constant size of memory to
+> > +be reserved, such that verifier can verify that BPF program can't access memory
+> > +outside its reserved record space. bpf_ringbuf_output(), while slightly slower
+> > +due to extra memory copy, covers some use cases that are not suitable for
+> > +``bpf_ringbuf_reserve()``.
+> > +
+> > +The difference between commit and discard is very small. Discard just marks
+> > +a record as discarded, and such records are supposed to be ignored by consumer
+> > +code. Discard is useful for some advanced use-cases, such as ensuring
+> > +all-or-nothing multi-record submission, or emulating temporary
+> > +``malloc()``/``free()`` within single BPF program invocation.
+> > +
+> > +Each reserved record is tracked by verifier through existing
+> > +reference-tracking logic, similar to socket ref-tracking. It is thus
+> > +impossible to reserve a record, but forget to submit (or discard) it.
+> > +
+> > +``bpf_ringbuf_query()`` helper allows to query various properties of ring
+> > +buffer.  Currently 4 are supported:
+> > +
+> > +- ``BPF_RB_AVAIL_DATA`` returns amount of unconsumed data in ring buffer;
+> > +- ``BPF_RB_RING_SIZE`` returns the size of ring buffer;
+> > +- ``BPF_RB_CONS_POS``/``BPF_RB_PROD_POS`` returns current logical possition
+> > +  of consumer/producer, respectively.
+> > +
+> > +Returned values are momentarily snapshots of ring buffer state and could be
+> > +off by the time helper returns, so this should be used only for
+> > +debugging/reporting reasons or for implementing various heuristics, that take
+> > +into account highly-changeable nature of some of those characteristics.
+> > +
+> > +One such heuristic might involve more fine-grained control over poll/epoll
+> > +notifications about new data availability in ring buffer. Together with
+> > +``BPF_RB_NO_WAKEUP``/``BPF_RB_FORCE_WAKEUP`` flags for output/commit/discard
+> > +helpers, it allows BPF program a high degree of control and, e.g., more
+> > +efficient batched notifications. Default self-balancing strategy, though,
+> > +should be adequate for most applications and will work reliable and efficiently
+> > +already.
+> > +
+> > +Design and Implementation
+> > +-------------------------
+> > +
+> > +This reserve/commit schema allows a natural way for multiple producers, either
+> > +on different CPUs or even on the same CPU/in the same BPF program, to reserve
+> > +independent records and work with them without blocking other producers. This
+> > +means that if BPF program was interruped by another BPF program sharing the
+> > +same ring buffer, they will both get a record reserved (provided there is
+> > +enough space left) and can work with it and submit it independently. This
+> > +applies to NMI context as well, except that due to using a spinlock during
+> > +reservation, in NMI context, ``bpf_ringbuf_reserve()`` might fail to get
+> > +a lock, in which case reservation will fail even if ring buffer is not full.
+> > +
+> > +The ring buffer itself internally is implemented as a power-of-2 sized
+> > +circular buffer, with two logical and ever-increasing counters (which might
+> > +wrap around on 32-bit architectures, that's not a problem):
+> > +
+> > +- consumer counter shows up to which logical position consumer consumed the
+> > +  data;
+> > +- producer counter denotes amount of data reserved by all producers.
+> > +
+> > +Each time a record is reserved, producer that "owns" the record will
+> > +successfully advance producer counter. At that point, data is still not yet
+> > +ready to be consumed, though. Each record has 8 byte header, which contains the
+> > +length of reserved record, as well as two extra bits: busy bit to denote that
+> > +record is still being worked on, and discard bit, which might be set at commit
+> > +time if record is discarded. In the latter case, consumer is supposed to skip
+> > +the record and move on to the next one. Record header also encodes record's
+> > +relative offset from the beginning of ring buffer data area (in pages). This
+> > +allows ``bpf_ringbuf_commit()``/``bpf_ringbuf_discard()`` to accept only the
+> > +pointer to the record itself, without requiring also the pointer to ring buffer
+> > +itself. Ring buffer memory location will be restored from record metadata
+> > +header. This significantly simplifies verifier, as well as improving API
+> > +usability.
+> > +
+> > +Producer counter increments are serialized under spinlock, so there is
+> > +a strict ordering between reservations. Commits, on the other hand, are
+> > +completely lockless and independent. All records become available to consumer
+> > +in the order of reservations, but only after all previous records where
+> > +already committed. It is thus possible for slow producers to temporarily hold
+> > +off submitted records, that were reserved later.
+> > +
+> > +Reservation/commit/consumer protocol is verified by litmus tests in
+> > +Documentation/litmus_tests/bpf-rb/_.
 >
-> with its extension:
->
->   SEC("freplace/test_pkt_md_access")
->   int test_pkt_md_access_new(struct __sk_buff *skb)
->
-> and tracing that extension with:
->
->   SEC("fentry/test_pkt_md_access_new")
->   int BPF_PROG(fentry, struct sk_buff *skb)
->
-> The test verifies that the tracing program can
-> dereference skb argument properly.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  .../selftests/bpf/prog_tests/trace_ext.c      | 93 +++++++++++++++++++
->  .../selftests/bpf/progs/test_trace_ext.c      | 18 ++++
->  .../bpf/progs/test_trace_ext_tracing.c        | 25 +++++
->  3 files changed, 136 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/trace_ext.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/trace_ext.c b/tools/testing/selftests/bpf/prog_tests/trace_ext.c
-> new file mode 100644
-> index 000000000000..1089dafb4653
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/trace_ext.c
-> @@ -0,0 +1,93 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#define _GNU_SOURCE
-> +#include <test_progs.h>
-> +#include <network_helpers.h>
-> +#include <sys/stat.h>
-> +#include <linux/sched.h>
-> +#include <sys/syscall.h>
-> +
-> +#include "test_trace_ext.skel.h"
-> +#include "test_trace_ext_tracing.skel.h"
-> +
-> +static __u32 duration;
-> +
-> +void test_trace_ext(void)
-> +{
-> +       struct test_trace_ext_tracing *skel_trace = NULL;
-> +       struct test_trace_ext_tracing__bss *bss_trace;
-> +       const char *file = "./test_pkt_md_access.o";
-> +       struct test_trace_ext *skel_ext = NULL;
-> +       struct test_trace_ext__bss *bss_ext;
-> +       int err, prog_fd, ext_fd;
-> +       struct bpf_object *obj;
-> +       char buf[100];
-> +       __u32 retval;
-> +       __u64 len;
-> +
-> +       err = bpf_prog_load(file, BPF_PROG_TYPE_SCHED_CLS, &obj, &prog_fd);
-> +       if (CHECK_FAIL(err))
-> +               return;
+> Are there any missing patch that were supposed to be merged before this
+> one:
 
-We should avoid using bpf_prog_load() for new code. Can you please
-just skeleton instead? Or at least bpf_object__open_file()?
+yeah, I don't think litmus tests patch was merged. I'll drop this
+comment for now.
 
-> +
-> +       DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
-> +                           .attach_prog_fd = prog_fd,
-> +       );
-
-DECLARE_LIBBPF_OPTS does declare a variable, so should be together
-with all the other variables above, otherwise some overly strict C89
-mode compiler will start complaining. You can assign
-`opts.attach_prog_fd = prog_fd;` outside of declaration. But I also
-don't think you need this one. Having .attach_prog_fd in open_opts is
-not great, because it's a per-program setting specified at bpf_object
-level. Would bpf_program__set_attach_target() work here?
-
-> +
-> +       skel_ext = test_trace_ext__open_opts(&opts);
-> +       if (CHECK(!skel_ext, "setup", "freplace/test_pkt_md_access open failed\n"))
-> +               goto cleanup;
-> +
-> +       err = test_trace_ext__load(skel_ext);
-> +       if (CHECK(err, "setup", "freplace/test_pkt_md_access load failed\n")) {
-> +               libbpf_strerror(err, buf, sizeof(buf));
-> +               fprintf(stderr, "%s\n", buf);
-> +               goto cleanup;
-> +       }
-> +
-> +       err = test_trace_ext__attach(skel_ext);
-> +       if (CHECK(err, "setup", "freplace/test_pkt_md_access attach failed: %d\n", err))
-> +               goto cleanup;
-> +
-> +       ext_fd = bpf_program__fd(skel_ext->progs.test_pkt_md_access_new);
-> +
-> +       DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts_trace,
-> +                           .attach_prog_fd = ext_fd,
-> +       );
-> +
-
-same
-
-> +       skel_trace = test_trace_ext_tracing__open_opts(&opts_trace);
-> +       if (CHECK(!skel_trace, "setup", "tracing/test_pkt_md_access_new open failed\n"))
-> +               goto cleanup;
-> +
-> +       err = test_trace_ext_tracing__load(skel_trace);
-> +       if (CHECK(err, "setup", "tracing/test_pkt_md_access_new load failed\n")) {
-> +               libbpf_strerror(err, buf, sizeof(buf));
-> +               fprintf(stderr, "%s\n", buf);
-> +               goto cleanup;
-> +       }
-> +
-> +       err = test_trace_ext_tracing__attach(skel_trace);
-> +       if (CHECK(err, "setup", "tracing/test_pkt_md_access_new attach failed: %d\n", err))
-> +               goto cleanup;
-> +
-> +       err = bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
-> +                               NULL, NULL, &retval, &duration);
-> +       CHECK(err || retval, "",
-> +             "err %d errno %d retval %d duration %d\n",
-> +             err, errno, retval, duration);
-> +
-> +       bss_ext = skel_ext->bss;
-> +       bss_trace = skel_trace->bss;
-> +
-> +       len = bss_ext->ext_called;
-> +
-> +       CHECK(bss_ext->ext_called == 0,
-> +               "check", "failed to trigger freplace/test_pkt_md_access\n");
-> +       CHECK(bss_trace->fentry_called != len,
-> +               "check", "failed to trigger fentry/test_pkt_md_access_new\n");
-> +       CHECK(bss_trace->fexit_called != len,
-> +               "check", "failed to trigger fexit/test_pkt_md_access_new\n");
-> +
-> +cleanup:
-> +       test_trace_ext__destroy(skel_ext);
-> +       bpf_object__close(obj);
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/test_trace_ext.c b/tools/testing/selftests/bpf/progs/test_trace_ext.c
-> new file mode 100644
-> index 000000000000..a6318f6b52ee
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_trace_ext.c
-> @@ -0,0 +1,18 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (c) 2019 Facebook
-> +#include <linux/bpf.h>
-> +#include <stdbool.h>
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_endian.h>
-> +#include <bpf/bpf_tracing.h>
-> +
-> +volatile __u64 ext_called = 0;
-
-nit: no need for volatile, global variables are not going anywhere;
-same below in two places
-
-> +
-> +SEC("freplace/test_pkt_md_access")
-> +int test_pkt_md_access_new(struct __sk_buff *skb)
-> +{
-> +       ext_called = skb->len;
-> +       return 0;
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
-> diff --git a/tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c b/tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c
-> new file mode 100644
-> index 000000000000..9e52a831446f
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_trace_ext_tracing.c
-> @@ -0,0 +1,25 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include "vmlinux.h"
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_tracing.h>
-> +
-> +volatile __u64 fentry_called = 0;
-> +
-> +SEC("fentry/test_pkt_md_access_new")
-> +int BPF_PROG(fentry, struct sk_buff *skb)
-> +{
-> +       fentry_called = skb->len;
-> +       return 0;
-> +}
-> +
-> +volatile __u64 fexit_called = 0;
-> +
-> +SEC("fexit/test_pkt_md_access_new")
-> +int BPF_PROG(fexit, struct sk_buff *skb)
-> +{
-> +       fexit_called = skb->len;
-> +       return 0;
-> +}
-> +
-> +char _license[] SEC("license") = "GPL";
-> --
-> 2.26.2
 >
+> There's no Documentation/litmus_tests/bpf-rb/_. This currently
+> causes a warning at the Kernel's building system:
+>
+>         $ ./scripts/documentation-file-ref-check
+>         Documentation/bpf/ringbuf.rst: Documentation/litmus_tests/bpf-rb/_
+>
+> (This is reported when someone calls "make htmldocs")
+>
+> Could you please fix this?
+
+sure, thanks
+
+>
+> Thanks,
+> Mauro
