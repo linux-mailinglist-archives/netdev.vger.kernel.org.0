@@ -2,235 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11418265238
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:11:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64A63265264
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 23:16:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727072AbgIJVKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 17:10:38 -0400
-Received: from mga18.intel.com ([134.134.136.126]:36093 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726384AbgIJVKY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 17:10:24 -0400
-IronPort-SDR: lVLCSwNUsHdRkNUnKRDrQzcZZLm5tUOd7oK/ViARKH4YlnhSZI9SceZNlMFnyUMLpHVCfK9oGr
- zzFsx6GNlp5g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9740"; a="146357987"
-X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
-   d="scan'208";a="146357987"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:10:20 -0700
-IronPort-SDR: gF2fqwiNDaRP7wsVxGYlHneiIdRDfnlcWhzhH5KRzk9phFKvHEzGkCBswoxaK3nJD1RCleIvSX
- K7VQFNVzEV5g==
-X-IronPort-AV: E=Sophos;i="5.76,413,1592895600"; 
-   d="scan'208";a="505970949"
-Received: from pojenhsi-mobl1.amr.corp.intel.com (HELO [10.252.128.198]) ([10.252.128.198])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2020 14:10:19 -0700
-Subject: Re: [net-next v4 3/5] devlink: introduce flash update overwrite mask
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org
-References: <20200909222653.32994-1-jacob.e.keller@intel.com>
- <20200909222653.32994-4-jacob.e.keller@intel.com>
- <20200910201040.GU2997@nanopsycho.orion>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <176ead4c-6007-8ff7-d4d1-4ae2bc7408d6@intel.com>
-Date:   Thu, 10 Sep 2020 14:10:16 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.1
+        id S1727972AbgIJVQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 17:16:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726588AbgIJVPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 17:15:51 -0400
+Received: from mail-oo1-xc44.google.com (mail-oo1-xc44.google.com [IPv6:2607:f8b0:4864:20::c44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0668BC061756;
+        Thu, 10 Sep 2020 14:15:46 -0700 (PDT)
+Received: by mail-oo1-xc44.google.com with SMTP id h9so1790253ooo.10;
+        Thu, 10 Sep 2020 14:15:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BFCtXTuROc0+YYGPop04Dk+iiUlezsA+0NbzQBhD+BA=;
+        b=GuD3TGmStXtihH8Sxv8w7dkoBPihevY3v9BGFDKVMp+7HFRNCzM+ojYulbfbw3lzVh
+         Egul2zPj6VBeJQM7kBVVJLNlvhNYje/3IJuRSi/52MWfq2fpQzVo+ZPuxt+0hXyqYijd
+         esXtFKqyodblu9iwD++CZEeeoB5JjwehGQcG2+QYC5rBEC9vr/PiLDNyumU235l6CrNi
+         WgKJBTLvbfe4Fk4BElHk5G5wuI69rh9cNBS0gIykgUQxuHoruMFKh/CeMaFuNmYqSykS
+         LTyVKYWz+lO7ZKlQpGz/z3ESKtcQeqOrQg5nRmddC8yXipIxVptwy1yojTMpwVlb+vXJ
+         D8WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BFCtXTuROc0+YYGPop04Dk+iiUlezsA+0NbzQBhD+BA=;
+        b=fFAivLO7/bPX7vIn12F1fZaH9IPXrpv1Ggnf41gUeVjw4kPGPXAKxi5sv3gUzmn87l
+         DLB+OFxTsDhb5TfSfXu8EDIooYu05Zg5Vm5gSx6iHpsRcHA8njJooFzz3vyHuG8EW5Tg
+         gqtYU4QH2xTg+7kkQPKtM72NDDQ8mwpM/j2PMnhqvPVP2f8V1JoQ6NMc9NGYzcjrt9pM
+         jym5wU9R3wsDXttkDzlqDmmfgJfMkg2tekmOnPYS4siEbNOYffnDvEMP7Daa4+C76Pui
+         wIKVCLVDKfCeMUmys/pfBPJq585w23ndnjXvFIacUAUnHKqy6YvfFwOKqLDA0w8wmdP6
+         NAjw==
+X-Gm-Message-State: AOAM531Z8Z11dXH1g3EkfefAA5Osi8jKPnvcrGKkY4ebCsiWzG0huNSJ
+        eg4XeNNVpnE7MuSEt8kA7VHoNzf1PneHY+ewbe0=
+X-Google-Smtp-Source: ABdhPJyc58SU56Yz39kDkKsbOrktPwfoFXhHf6/Jso5xD3Rgi5BFy5TRwq1e66DV0J4w4LySieyUCaiWxbu/130vgiA=
+X-Received: by 2002:a4a:d509:: with SMTP id m9mr6013838oos.77.1599772545342;
+ Thu, 10 Sep 2020 14:15:45 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200910201040.GU2997@nanopsycho.orion>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200910161126.30948-1-oded.gabbay@gmail.com> <20200910130112.1f6bd9e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFCwf13SbXqjyu6JHKSTf-EqUxcBZUe4iAfggLhKXOi6DhXYcg@mail.gmail.com>
+ <20200910132835.1bf7b638@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFCwf127fssgiDEwYvv3rFW7iFFfKKZDE=oxDUbFBcwpz3yQkQ@mail.gmail.com> <a13199ce-0c73-920d-857d-3223144f41f0@gmail.com>
+In-Reply-To: <a13199ce-0c73-920d-857d-3223144f41f0@gmail.com>
+From:   Oded Gabbay <oded.gabbay@gmail.com>
+Date:   Fri, 11 Sep 2020 00:15:17 +0300
+Message-ID: <CAFCwf13ak5NPc2BTWoA2cwHB5AUJjq5i1jOucbsJnwyyQCfQ4w@mail.gmail.com>
+Subject: Re: [PATCH 00/15] Adding GAUDI NIC code to habanalabs driver
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Sep 11, 2020 at 12:05 AM Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+>
+>
+> On 9/10/2020 1:32 PM, Oded Gabbay wrote:
+> > On Thu, Sep 10, 2020 at 11:28 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >>
+> >> On Thu, 10 Sep 2020 23:16:22 +0300 Oded Gabbay wrote:
+> >>> On Thu, Sep 10, 2020 at 11:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >>>> On Thu, 10 Sep 2020 19:11:11 +0300 Oded Gabbay wrote:
+> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.c
+> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_dcbnl.c
+> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_debugfs.c
+> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_nic_ethtool.c
+> >>>>>   create mode 100644 drivers/misc/habanalabs/gaudi/gaudi_phy.c
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_masks.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm0_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qm1_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_masks.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc0_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_qpc1_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxb_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_masks.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe0_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_rxe1_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_stat_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_tmr_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_masks.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe0_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txe1_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_masks.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs0_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic0_txs1_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm0_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic1_qm1_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm0_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic2_qm1_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm0_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic3_qm1_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm0_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/gaudi/asic_reg/nic4_qm1_regs.h
+> >>>>>   create mode 100644 drivers/misc/habanalabs/include/hw_ip/nic/nic_general.h
+> >>>>
+> >>>> The relevant code needs to live under drivers/net/(ethernet/).
+> >>>> For one thing our automation won't trigger for drivers in random
+> >>>> (/misc) part of the tree.
+> >>>
+> >>> Can you please elaborate on how to do this with a single driver that
+> >>> is already in misc ?
+> >>> As I mentioned in the cover letter, we are not developing a
+> >>> stand-alone NIC. We have a deep-learning accelerator with a NIC
+> >>> interface.
+> >>> Therefore, we don't have a separate PCI physical function for the NIC
+> >>> and I can't have a second driver registering to it.
+> >>
+> >> Is it not possible to move the files and still build them into a single
+> >> module?
+> > hmm...
+> > I actually didn't try that as I thought it will be very strange and
+> > I'm not familiar with other drivers that build as a single ko but have
+> > files spread out in different subsystems.
+> > I don't feel it is a better option than what we did here.
+> >
+> > Will I need to split pull requests to different subsystem maintainers
+> > ? For the same driver ?
+> > Sounds to me this is not going to fly.
+>
+> Not necessarily, you can post your patches to all relevant lists and
+> seek maintainer review/acked-by tags from the relevant maintainers. This
+> is not unheard of with mlx5 for instance.
+Yeah, I see what you are saying, the problem is that sometimes,
+because everything is tightly integrated in our SOC, the patches
+contain code from common code (common to ALL our ASICs, even those who
+don't have NIC at all), GAUDI specific code which is not NIC related
+and the NIC code itself.
+But I guess that as a last resort if this is a *must* I can do that.
+Though I would like to hear Greg's opinion on this as he is my current
+maintainer.
 
+Personally I do want to send relevant patches to netdev because I want
+to get your expert reviews on them, but still keep the code in a
+single location.
 
-On 9/10/2020 1:10 PM, Jiri Pirko wrote:
-> Thu, Sep 10, 2020 at 12:26:51AM CEST, jacob.e.keller@intel.com wrote:
->> Sections of device flash may contain settings or device identifying
->> information. When performing a flash update, it is generally expected
->> that these settings and identifiers are not overwritten.
->>
->> However, it may sometimes be useful to allow overwriting these fields
->> when performing a flash update. Some examples include, 1) customizing
->> the initial device config on first programming, such as overwriting
->> default device identifying information, or 2) reverting a device
->> configuration to known good state provided in the new firmware image, or
->> 3) in case it is suspected that current firmware logic for managing the
->> preservation of fields during an update is broken.
->>
->> Although some devices are able to completely separate these types of
->> settings and fields into separate components, this is not true for all
->> hardware.
->>
->> To support controlling this behavior, a new
->> DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK is defined. This is an
->> nla_bitfield32 which will define what subset of fields in a component
->> should be overwritten during an update.
->>
->> If no bits are specified, or of the overwrite mask is not provided, then
->> an update should not overwrite anything, and should maintain the
->> settings and identifiers as they are in the previous image.
->>
->> If the overwrite mask has the DEVLINK_FLASH_OVERWRITE_SETTINGS bit set,
->> then the device should be configured to overwrite any of the settings in
->> the requested component with settings found in the provided image.
->>
->> Similarly, if the DEVLINK_FLASH_OVERWRITE_IDENTIFIERS bit is set, the
->> device should be configured to overwrite any device identifiers in the
->> requested component with the identifiers from the image.
->>
->> Multiple overwrite modes may be combined to indicate that a combination
->> of the set of fields that should be overwritten.
->>
->> Drivers which support the new overwrite mask must set the
->> DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK in the
->> supported_flash_update_params field of their devlink_ops.
->>
->> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->> ---
->> Changes since v3
->> * split netdevsim driver changes to a new patch
->> * fixed a double-the typo in the documentation
->>
->> .../networking/devlink/devlink-flash.rst      | 28 +++++++++++++++++++
->> include/net/devlink.h                         |  4 ++-
->> include/uapi/linux/devlink.h                  | 25 +++++++++++++++++
->> net/core/devlink.c                            | 17 ++++++++++-
->> 4 files changed, 72 insertions(+), 2 deletions(-)
->>
->> diff --git a/Documentation/networking/devlink/devlink-flash.rst b/Documentation/networking/devlink/devlink-flash.rst
->> index 40a87c0222cb..603e732f00cc 100644
->> --- a/Documentation/networking/devlink/devlink-flash.rst
->> +++ b/Documentation/networking/devlink/devlink-flash.rst
->> @@ -16,6 +16,34 @@ Note that the file name is a path relative to the firmware loading path
->> (usually ``/lib/firmware/``). Drivers may send status updates to inform
->> user space about the progress of the update operation.
->>
->> +Overwrite Mask
->> +==============
->> +
->> +The ``devlink-flash`` command allows optionally specifying a mask indicating
->> +how the device should handle subsections of flash components when updating.
->> +This mask indicates the set of sections which are allowed to be overwritten.
->> +
->> +.. list-table:: List of overwrite mask bits
->> +   :widths: 5 95
->> +
->> +   * - Name
->> +     - Description
->> +   * - ``DEVLINK_FLASH_OVERWRITE_SETTINGS``
->> +     - Indicates that the device should overwrite settings in the components
->> +       being updated with the settings found in the provided image.
->> +   * - ``DEVLINK_FLASH_OVERWRITE_IDENTIFIERS``
->> +     - Indicates that the device should overwrite identifiers in the
->> +       components being updated with the identifiers found in the provided
->> +       image. This includes MAC addresses, serial IDs, and similar device
->> +       identifiers.
->> +
->> +Multiple overwrite bits may be combined and requested together. If no bits
->> +are provided, it is expected that the device only update firmware binaries
->> +in the components being updated. Settings and identifiers are expected to be
->> +preserved across the update. A device may not support every combination and
->> +the driver for such a device must reject any combination which cannot be
->> +faithfully implemented.
->> +
->> Firmware Loading
->> ================
->>
->> diff --git a/include/net/devlink.h b/include/net/devlink.h
->> index 3384e901bbf0..ff4638f7e547 100644
->> --- a/include/net/devlink.h
->> +++ b/include/net/devlink.h
->> @@ -543,9 +543,11 @@ enum devlink_param_generic_id {
->> struct devlink_flash_update_params {
->> 	const char *file_name;
->> 	const char *component;
->> +	u32 overwrite_mask;
->> };
->>
->> -#define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT	BIT(0)
->> +#define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT		BIT(0)
->> +#define DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK	BIT(1)
->>
->> struct devlink_region;
->> struct devlink_info_req;
->> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
->> index 40d35145c879..19a573566359 100644
->> --- a/include/uapi/linux/devlink.h
->> +++ b/include/uapi/linux/devlink.h
->> @@ -228,6 +228,28 @@ enum {
->> 	DEVLINK_ATTR_STATS_MAX = __DEVLINK_ATTR_STATS_MAX - 1
->> };
->>
->> +/* Specify what sections of a flash component can be overwritten when
->> + * performing an update. Overwriting of firmware binary sections is always
->> + * implicitly assumed to be allowed.
->> + *
->> + * Each section must be documented in
->> + * Documentation/networking/devlink/devlink-flash.rst
->> + *
->> + */
->> +enum {
->> +	DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT,
->> +	DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT,
->> +
->> +	__DEVLINK_FLASH_OVERWRITE_MAX_BIT,
->> +	DEVLINK_FLASH_OVERWRITE_MAX_BIT = __DEVLINK_FLASH_OVERWRITE_MAX_BIT - 1
->> +};
->> +
->> +#define DEVLINK_FLASH_OVERWRITE_SETTINGS BIT(DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT)
->> +#define DEVLINK_FLASH_OVERWRITE_IDENTIFIERS BIT(DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT)
->> +
->> +#define DEVLINK_SUPPORTED_FLASH_OVERWRITE_SECTIONS \
->> +	(BIT(__DEVLINK_FLASH_OVERWRITE_MAX_BIT) - 1)
->> +
->> /**
->>  * enum devlink_trap_action - Packet trap action.
->>  * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy is not
->> @@ -460,6 +482,9 @@ enum devlink_attr {
->>
->> 	DEVLINK_ATTR_PORT_EXTERNAL,		/* u8 */
->> 	DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,	/* u32 */
->> +
->> +	DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK,	/* bitfield32 */
->> +
->> 	/* add new attributes above here, update the policy in devlink.c */
->>
->> 	__DEVLINK_ATTR_MAX,
->> diff --git a/net/core/devlink.c b/net/core/devlink.c
->> index c61f9c8205f6..d0d38ca17ea8 100644
->> --- a/net/core/devlink.c
->> +++ b/net/core/devlink.c
->> @@ -3125,8 +3125,8 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
->> 				       struct genl_info *info)
->> {
->> 	struct devlink_flash_update_params params = {};
->> +	struct nlattr *nla_component, *nla_overwrite;
->> 	struct devlink *devlink = info->user_ptr[0];
->> -	struct nlattr *nla_component;
->> 	u32 supported_params;
->>
->> 	if (!devlink->ops->flash_update)
->> @@ -3149,6 +3149,19 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
->> 		params.component = nla_data(nla_component);
->> 	}
->>
->> +	nla_overwrite = info->attrs[DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK];
-> 
-> Just a nitpick, better to name this "nla_overwrite_mask" to follow the
-> name of the netlink attr.
-> 
-> Otherwise (extept the uapi BIT as Jakub pointed out) this looks fine to
-> me.
-> 
+>
+> Have you considered using notifiers to get your NIC driver registered
+> while the NIC code lives in a different module?
+Yes, and I prefered to keep it simple. I didn't want to start sending
+notifications to the NIC driver every time, for example, I needed to
+reset the SOC because a compute engine got stuck. Or vice-versa - when
+some error happened in the NIC to start sending notifications to the
+common driver.
 
-Sure, seems reasonable. Will fix in v5
+In addition, from my AMD days, we had a very tough time managing two
+drivers that "talk" to each other and manage the same H/W. I'm talking
+about amdgpu for graphics and amdkfd for compute (which I was the
+maintainer). AMD is working in the past years to unite those two
+drivers to get out of that mess. That's why I didn't want to go down
+that road.
 
 Thanks,
-Jake
+Oded
+
+> --
+> Florian
