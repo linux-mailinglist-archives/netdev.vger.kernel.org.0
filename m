@@ -2,109 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 075792645BF
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 14:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB59F2645E4
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 14:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbgIJMLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 08:11:20 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:11486 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728289AbgIJMKH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 08:10:07 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f5a17140001>; Thu, 10 Sep 2020 05:07:48 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 10 Sep 2020 05:10:04 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 10 Sep 2020 05:10:04 -0700
-Received: from localhost.localdomain (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 10 Sep
- 2020 12:10:01 +0000
-From:   Petr Machata <petrm@nvidia.com>
-To:     <netdev@vger.kernel.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Petr Machata <petrm@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>,
-        "Saeed Mahameed" <saeedm@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
-Subject: [PATCH net] net: DCB: Validate DCB_ATTR_DCB_BUFFER argument
-Date:   Thu, 10 Sep 2020 14:09:05 +0200
-Message-ID: <e086a3597a33e16bcc57b97f81dcb2aa3ce48e31.1599739681.git.petrm@nvidia.com>
-X-Mailer: git-send-email 2.25.1
+        id S1730635AbgIJMWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 08:22:38 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:41312 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730244AbgIJMUL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 08:20:11 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 9ADC91C0B9C; Thu, 10 Sep 2020 14:20:02 +0200 (CEST)
+Date:   Thu, 10 Sep 2020 14:20:02 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org, linux-leds@vger.kernel.org,
+        Dan Murphy <dmurphy@ti.com>,
+        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next + leds v2 3/7] net: phy: add simple incrementing
+ phyindex member to phy_device struct
+Message-ID: <20200910122002.GA7907@duo.ucw.cz>
+References: <20200909162552.11032-1-marek.behun@nic.cz>
+ <20200909162552.11032-4-marek.behun@nic.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1599739668; bh=m/pAd3rmzduR18wiaHF7XB11moFGkoGFHdd945zwaVY=;
-        h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-         MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=BZ3+79IRXqCtfu+RZaAVfh2/aT00eXoszaJc079MUdEnzjpQ1kQPB1Rni6nwmcvjK
-         p9KR8HvdCXtfn/76M1ckTV50OCMzp0UBZY6Jtuf6mZYVeR5BysjWRSv9Z4VMWvLN1/
-         XdZXIaxqAG6do7MfkQgs+6uLCgKioO0uA1HgCybARiSbPRK241y+KYGI4kp1gk9p8m
-         rtf7/x5n0/pLg28TsU89PsqagqwaQoP/U2hzqAFkEUwT1t+t3amwlz1Cw5CmMD4v04
-         1eunSaR48tipTEWKKWuvgxu8LzuZOLdVdpvMNttCgZaPk+s7WhAUsX3sUj8warue/V
-         7ZWZSkzHfhvVw==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="82I3+IH0IqGh5yIs"
+Content-Disposition: inline
+In-Reply-To: <20200909162552.11032-4-marek.behun@nic.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The parameter passed via DCB_ATTR_DCB_BUFFER is a struct dcbnl_buffer. The
-field prio2buffer is an array of IEEE_8021Q_MAX_PRIORITIES bytes, where
-each value is a number of a buffer to direct that priority's traffic to.
-That value is however never validated to lie within the bounds set by
-DCBX_MAX_BUFFERS. The only driver that currently implements the callback is
-mlx5 (maintainers CCd), and that does not do any validation either, in
-particual allowing incorrect configuration if the prio2buffer value does
-not fit into 4 bits.
 
-Instead of offloading the need to validate the buffer index to drivers, do
-it right there in core, and bounce the request if the value is too large.
+--82I3+IH0IqGh5yIs
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-CC: Parav Pandit <parav@nvidia.com>
-CC: Saeed Mahameed <saeedm@nvidia.com>
-Fixes: e549f6f9c098 ("net/dcb: Add dcbnl buffer attribute")
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
- net/dcb/dcbnl.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Hi!
 
-diff --git a/net/dcb/dcbnl.c b/net/dcb/dcbnl.c
-index 84dde5a2066e..16014ad19406 100644
---- a/net/dcb/dcbnl.c
-+++ b/net/dcb/dcbnl.c
-@@ -1426,6 +1426,7 @@ static int dcbnl_ieee_set(struct net_device *netdev, =
-struct nlmsghdr *nlh,
- {
- 	const struct dcbnl_rtnl_ops *ops =3D netdev->dcbnl_ops;
- 	struct nlattr *ieee[DCB_ATTR_IEEE_MAX + 1];
-+	int prio;
- 	int err;
-=20
- 	if (!ops)
-@@ -1475,6 +1476,13 @@ static int dcbnl_ieee_set(struct net_device *netdev,=
- struct nlmsghdr *nlh,
- 		struct dcbnl_buffer *buffer =3D
- 			nla_data(ieee[DCB_ATTR_DCB_BUFFER]);
-=20
-+		for (prio =3D 0; prio < ARRAY_SIZE(buffer->prio2buffer); prio++) {
-+			if (buffer->prio2buffer[prio] >=3D DCBX_MAX_BUFFERS) {
-+				err =3D -EINVAL;
-+				goto err;
-+			}
-+		}
-+
- 		err =3D ops->dcbnl_setbuffer(netdev, buffer);
- 		if (err)
- 			goto err;
+> names are not suited for this, since in some situations a PHY device
+> name can look like this
+>   d0032004.mdio-mii:01
+> or even like this
+>   /soc/internal-regs@d0000000/mdio@32004/switch0@10/mdio:08
+> Clearly this cannot be used as the `device` part of a LED name.
+>=20
+> Signed-off-by: Marek Beh=FAn <marek.behun@nic.cz>
+> ---
+>  drivers/net/phy/phy_device.c | 3 +++
+>  include/linux/phy.h          | 3 +++
+>  2 files changed, 6 insertions(+)
+>=20
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index 8adfbad0a1e8f..38f56d39f1229 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -9,6 +9,7 @@
+> =20
+>  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> =20
+> +#include <linux/atomic.h>
+>  #include <linux/bitmap.h>
+>  #include <linux/delay.h>
+>  #include <linux/errno.h>
+> @@ -892,6 +893,7 @@ EXPORT_SYMBOL(get_phy_device);
+>   */
+>  int phy_device_register(struct phy_device *phydev)
+>  {
+> +	static atomic_t phyindex;
+>  	int err;
+> =20
+>  	err =3D mdiobus_register_device(&phydev->mdio);
+
+I'd put the static out of the function... for greater visibility.
+
+Otherwise: Reviewed-by: Pavel Machek <pavel@ucw.cz>
+
 --=20
-2.20.1
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
 
+--82I3+IH0IqGh5yIs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX1oZ8gAKCRAw5/Bqldv6
+8lBYAJ9tS6CVdgWfqKytotcj0k55tsWyTwCggMTOOpigKRw1boHuGHYIF6icthI=
+=pvlr
+-----END PGP SIGNATURE-----
+
+--82I3+IH0IqGh5yIs--
