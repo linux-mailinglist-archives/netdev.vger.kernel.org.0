@@ -2,81 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA4F264E23
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:02:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 793D1264E41
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:07:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726746AbgIJTCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 15:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42254 "EHLO
+        id S1726920AbgIJTHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 15:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbgIJTBX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:01:23 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13954C061573
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:01:23 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id w1so7458356edr.3
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:01:22 -0700 (PDT)
+        with ESMTP id S1726729AbgIJTFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:05:17 -0400
+Received: from mail-qt1-x84a.google.com (mail-qt1-x84a.google.com [IPv6:2607:f8b0:4864:20::84a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726E7C061756
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:05:17 -0700 (PDT)
+Received: by mail-qt1-x84a.google.com with SMTP id f12so4880480qtq.5
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:05:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5ycr6q3fkBzuLTStCwqMPLmdVxFhIPUVk70kzrdKZ04=;
-        b=X2kVtQe9mZCpFJ0l7b8BFFj5Or+jR4vsDpOIpB2fVOJ+acZU+F0Ze+9Zs8Q+DI7/Ho
-         ISxdNXWlCOI372T6SxJB5mg1Oo4UqpZMWbqOStxQQ0Ls5Q6k14TMKpBn7LfhM8yQv0rf
-         YgAHQN+IiBqn69e/pyRB6KFD07zjfkExQVX1CbfLkR/NcP8iQECmdNaVEMi/O6IEJIFV
-         LWK5BNJn0x7yl5+a8RF16vwCEXEhlviekW8sB2EV+3SLfjIAk7yYTJi9gOpFEhwRr71r
-         7a7VNyxUPV7MO01Li4nTMCBN21fLdADQ/xvJWHaHwJBxN+kqiOomsPLm/Nb2D7YuB+hB
-         8oaQ==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=YeYgC+wnXE5WPKMChfHCba+wXVDxaxMd+TOtN5nzHHE=;
+        b=WiRGqWfov9kwUNINermxnB/QkSIn7D6S9ynHb2Eiorv6y6o9z/BlDahZQqsoNbGQpg
+         FoD4bsTSCoNWWTBknJhkroB7vgWaepGwpAVDBVo8oe5CbE46YWCejcwAiwC1/lbC+XaP
+         OG3bYfhUU1aBUNTRrRhRGmOfMFENRYQe8UeMZgnbmrZUHiTt+BkTgQjdTFVaztUpQ7II
+         jjdLJestf2kzGG1A8BYbdABs0uMR+g0DLvvsYaxLrptVWnoFCvqLOjOeBkUataSAH6ti
+         ZEp3WQxE/gUHmPrZGhKQW3j7IZJFcyS9c/YiLglrl0FloEs0tjFg3y8qP6mxeWhRF0p+
+         lW0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5ycr6q3fkBzuLTStCwqMPLmdVxFhIPUVk70kzrdKZ04=;
-        b=i1y4ZPoFQnYGEOdH43a4KwutRFS8DKw8Dza5y6FkueqJ9YBPGSuZP1KusyQOjGyKkd
-         sit5wuke+W29y6QRY+04QPyv1A+LOrZNZaZFgiY7NTy0jKXcebK8KqDlPeptvyQdPbfA
-         klFwcLSWZ873kR7iYIiNOVyHRhqExYUiUv5UAqgIRce02Q5X3N9XSmGJsPie6s2b7pm6
-         DwQWWDRcrdPGEYO11YurBILV9hKRa7dRBXW8oqu/9F+qVidwi3IJ3KJWBGpcHNiyNVXZ
-         KFF2rlZRE6bj7pcNoZiXSKTQ7KhcFUKeIyCP3g5+P4A2/YbUegXSVgNecK4jF4Y7gkhf
-         Pu9Q==
-X-Gm-Message-State: AOAM532BaKYnvPVR+ioej2Hz5VIU7gQY6jcuFqxogYUrhnAW4zBKALWm
-        5I9QcN9CzOgFGYS4F64LN5g=
-X-Google-Smtp-Source: ABdhPJylcMr+HJkhU665COd7293VAMH/X+lOtsjJ29Fscw8f/W0JfYJTuZd5apTT7+jEF074LOMelg==
-X-Received: by 2002:aa7:c70a:: with SMTP id i10mr10980511edq.218.1599764481732;
-        Thu, 10 Sep 2020 12:01:21 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id b6sm8355802edm.97.2020.09.10.12.01.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 12:01:21 -0700 (PDT)
-Date:   Thu, 10 Sep 2020 22:01:19 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: VLAN filtering with DSA
-Message-ID: <20200910190119.n2mnqkv2toyqbmzn@skbuf>
-References: <20200910150738.mwhh2i6j2qgacqev@skbuf>
- <86ebd9ca-86a3-0938-bf5d-9627420417bf@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <86ebd9ca-86a3-0938-bf5d-9627420417bf@gmail.com>
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=YeYgC+wnXE5WPKMChfHCba+wXVDxaxMd+TOtN5nzHHE=;
+        b=Qk/sFJXdg0fCo+zpslR9obU5OQOii1bx50/oSvXfruO2dlLVVHBxFYxAXOfBa4k5vO
+         HtAeTSjxCQp0Cel7cRi7+95FUrOCpinJDRm+Ir1V2b2vNmHQFovzSLY5Sq4pijw6m+q6
+         Hxpoqj6xupJWmhIKZU0K0ZJFt3+9kKLF4IzYzTqUVSMWXIvAsopiRwV3CBH5ht+OVte1
+         wEA0d5m6IBVqt3eg2EeriDMRcw+7VlOpuT82IpaK1aLWdeLikCrIOqpCqRf2IQg6utvG
+         C8ZB92Ry+Zp0XGCPrY6N7q5kOO1jZ1p/45Nxux9OhYUU1lo6WNrZ+4O0q++TL+AtXcLk
+         NaQg==
+X-Gm-Message-State: AOAM533qjUspyFFqALa2pVNgck6rtbjiHT9Rn462WD0kKUWAlAobzlM9
+        53wNE1k7mZ5oWkdWvKyYp+xRM5lIM4y7
+X-Google-Smtp-Source: ABdhPJx/B5q6d8zO08WfVKwINiALJEH/HQ/qTEaXeiRZTxgl6xgQI4S3QhFJYeUzQlQv37OVfDwAYHQGL5IZ
+X-Received: from lucyyan-linux.svl.corp.google.com ([2620:15c:2c5:3:1ea0:b8ff:fe73:6d39])
+ (user=lucyyan job=sendgmr) by 2002:a0c:d848:: with SMTP id
+ i8mr9890275qvj.31.1599764716606; Thu, 10 Sep 2020 12:05:16 -0700 (PDT)
+Date:   Thu, 10 Sep 2020 12:05:09 -0700
+Message-Id: <20200910190509.81755-1-lucyyan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.526.ge36021eeef-goog
+Subject: [PATCH net] net: dec: de2104x: Increase receive ring size for Tulip
+From:   Lucy Yan <lucyyan@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Moritz Fischer <mdf@kernel.org>,
+        Lucy Yan <lucyyan@google.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Vaibhav Gupta <vaibhavgupta40@gmail.com>,
+        netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 11:42:02AM -0700, Florian Fainelli wrote:
-> On 9/10/2020 8:07 AM, Vladimir Oltean wrote:
-> Yes, doing what you suggest would make perfect sense for a DSA master that
-> is capable of VLAN filtering, I did encounter that problem with e1000 and
-> the dsa-loop.c mockup driver while working on a mock-up 802.1Q data path.
+Increase Rx ring size to address issue where hardware is reaching
+the receive work limit.
 
-Yes, I have another patch where I add those VLANs from tag_8021q.c which
-I did not show here.
+Before:
 
-But if the DSA switch that uses tag_8021q is cascaded to another one,
-that's of little use if the upper switch does not propagate that
-configuration to its own upstream.
+[  102.223342] de2104x 0000:17:00.0 eth0: rx work limit reached
+[  102.245695] de2104x 0000:17:00.0 eth0: rx work limit reached
+[  102.251387] de2104x 0000:17:00.0 eth0: rx work limit reached
+[  102.267444] de2104x 0000:17:00.0 eth0: rx work limit reached
 
-Thanks,
--Vladimir
+Signed-off-by: Lucy Yan <lucyyan@google.com>
+---
+ drivers/net/ethernet/dec/tulip/de2104x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c b/drivers/net/ethernet/dec/tulip/de2104x.c
+index cb116b530f5e..2610efe4f873 100644
+--- a/drivers/net/ethernet/dec/tulip/de2104x.c
++++ b/drivers/net/ethernet/dec/tulip/de2104x.c
+@@ -85,7 +85,7 @@ MODULE_PARM_DESC (rx_copybreak, "de2104x Breakpoint at which Rx packets are copi
+ #define DSL			CONFIG_DE2104X_DSL
+ #endif
+ 
+-#define DE_RX_RING_SIZE		64
++#define DE_RX_RING_SIZE		128
+ #define DE_TX_RING_SIZE		64
+ #define DE_RING_BYTES		\
+ 		((sizeof(struct de_desc) * DE_RX_RING_SIZE) +	\
+-- 
+2.28.0.526.ge36021eeef-goog
+
