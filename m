@@ -2,168 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65C2B263BB1
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 06:01:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0C64263C1B
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 06:34:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725876AbgIJEBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 00:01:11 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:49290 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725139AbgIJEBI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 00:01:08 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 7234D9E82A8E3ED6449D;
-        Thu, 10 Sep 2020 12:01:04 +0800 (CST)
-Received: from localhost (10.174.179.108) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.487.0; Thu, 10 Sep 2020
- 12:00:58 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <arend.vanspriel@broadcom.com>, <franky.lin@broadcom.com>,
-        <hante.meuleman@broadcom.com>, <chi-hsien.lin@cypress.com>,
-        <wright.feng@cypress.com>, <kvalo@codeaurora.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <yuehaibing@huawei.com>
-CC:     <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <brcm80211-dev-list@cypress.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] brcmsmac: phytbl_lcn: Remove unused variable 'dot11lcn_gain_tbl_rev1'
-Date:   Thu, 10 Sep 2020 12:00:43 +0800
-Message-ID: <20200910040043.30008-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1725996AbgIJEer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 00:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725855AbgIJEen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 00:34:43 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1163CC061573;
+        Wed,  9 Sep 2020 21:34:42 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id l191so3561231pgd.5;
+        Wed, 09 Sep 2020 21:34:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mLWBFcBZV8fmFx5Xk0PVn4QE4aV7gSoFbhf906XUkPs=;
+        b=NjJMhcLe4iQ8X5gqAeC+mPeQdB0ZCqaUU7mPw3W/D1GX/8B2q+7jyxu01ySUanM1AP
+         XWLRdQ4Ygmq6foo4o51n6qzzhlMY8jt0AuBbbm5ZGfPvBftrhAlI5jR1j9d9rUgO48Zv
+         3nt3vC+NKv+yMvAwRrd9oBZghO/4msxbwX1MkPD/pMaLsWI1twbeLVt0jlqh6RQjNPqv
+         Q26XqLtkZuJuP/6N1v3qcx9UkIfpsRWUbMIDIHhtC5yect8TFVWqO6rRLCXAUFzUDmdd
+         37JxvHGTFtLPc5FV00qdssrm+rSevrHMgr9hB4//8nNwkTrWo33AxIHH3j5/lwv5J4Sz
+         UsXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mLWBFcBZV8fmFx5Xk0PVn4QE4aV7gSoFbhf906XUkPs=;
+        b=oMFTiQp4ZJ4UG4i4oHwt2b/M7CDzl5f7IXHidHqe8nUVnn7vq7uMN2D5P6g0wYElNA
+         a4iejcthTRzmbMw2GWDXOrNZWdWHEj/aIxUnDE3TpoJFQ+8rynz9+ua+F49yhvrF3cAB
+         v1xw87dRImSUfEAknyaX/qHL0ohSF41ft5kfyzev+xdBqfGc1Y4+4icvKWb+K/49G+ja
+         iUNG41LgUPoU7gagBC7qn43ga//Iabnn7dT0T3RziCcnuEo26xLJ/4Jw27BilfozuHKR
+         tUWyCSi9R0ScF1Q4PuBkHdG/AyG0cIiI30xOdkXTqfLhbO2qIJNJRL5x5z09eLIk6TJD
+         zxvQ==
+X-Gm-Message-State: AOAM532WYkwv18xdJPVRoNMKGy3q6dMTEt+L87Xp+91h7cw3q5R8KNmi
+        frKPFhg/Nj1lmuELCYuU6O0=
+X-Google-Smtp-Source: ABdhPJzFKv4KxelRN1MBEhwmEPGdlzS/d7UG1Dn2QL3AG6VpQwxMK6fYsIxpdOIV7ceTnSwts2E6Vw==
+X-Received: by 2002:a63:471b:: with SMTP id u27mr3050649pga.139.1599712481765;
+        Wed, 09 Sep 2020 21:34:41 -0700 (PDT)
+Received: from localhost.localdomain ([45.118.165.148])
+        by smtp.googlemail.com with ESMTPSA id s19sm4384211pfc.69.2020.09.09.21.34.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2020 21:34:40 -0700 (PDT)
+From:   Anmol Karn <anmol.karan123@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, anmol.karan123@gmail.com,
+        syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
+Subject: [Linux-kernel-mentees] [PATCH] net: bluetooth: Fix null pointer dereference in hci_event_packet()
+Date:   Thu, 10 Sep 2020 10:04:24 +0530
+Message-Id: <20200910043424.19894-1-anmol.karan123@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.108]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phytbl_lcn.c:108:18: warning: ‘dot11lcn_gain_tbl_rev1’ defined but not used [-Wunused-const-variable=]
- static const u32 dot11lcn_gain_tbl_rev1[] = {
-                  ^~~~~~~~~~~~~~~~~~~~~~
+Prevent hci_phy_link_complete_evt() from dereferencing 'hcon->amp_mgr'
+as NULL. Fix it by adding pointer check for it.
 
-commit ebcfc66f56a4 ("brcmsmac: phytbl_lcn: Remove unused array 'dot11lcnphytbl_rx_gain_info_rev1'")
-left behind this, remove it.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Reported-and-tested-by: syzbot+0bef568258653cff272f@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?extid=0bef568258653cff272f
+Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
 ---
- .../brcm80211/brcmsmac/phy/phytbl_lcn.c       | 99 -------------------
- 1 file changed, 99 deletions(-)
+ net/bluetooth/hci_event.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phytbl_lcn.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phytbl_lcn.c
-index 7526aa441de1..5331b5468e14 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phytbl_lcn.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phytbl_lcn.c
-@@ -105,105 +105,6 @@ static const u32 dot11lcn_gain_tbl_rev0[] = {
- 	0x00000000,
- };
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 4b7fc430793c..871e16804433 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4936,6 +4936,11 @@ static void hci_phy_link_complete_evt(struct hci_dev *hdev,
+ 		return;
+ 	}
  
--static const u32 dot11lcn_gain_tbl_rev1[] = {
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000008,
--	0x00000004,
--	0x00000008,
--	0x00000001,
--	0x00000005,
--	0x00000009,
--	0x0000000D,
--	0x00000011,
--	0x00000051,
--	0x00000091,
--	0x00000011,
--	0x00000051,
--	0x00000091,
--	0x000000d1,
--	0x00000053,
--	0x00000093,
--	0x000000d3,
--	0x000000d7,
--	0x00000117,
--	0x00000517,
--	0x00000917,
--	0x00000957,
--	0x00000d57,
--	0x00001157,
--	0x00001197,
--	0x00005197,
--	0x00009197,
--	0x0000d197,
--	0x00011197,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000008,
--	0x00000004,
--	0x00000008,
--	0x00000001,
--	0x00000005,
--	0x00000009,
--	0x0000000D,
--	0x00000011,
--	0x00000051,
--	0x00000091,
--	0x00000011,
--	0x00000051,
--	0x00000091,
--	0x000000d1,
--	0x00000053,
--	0x00000093,
--	0x000000d3,
--	0x000000d7,
--	0x00000117,
--	0x00000517,
--	0x00000917,
--	0x00000957,
--	0x00000d57,
--	0x00001157,
--	0x00005157,
--	0x00009157,
--	0x0000d157,
--	0x00011157,
--	0x00015157,
--	0x00019157,
--	0x0001d157,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--	0x00000000,
--};
--
- static const u16 dot11lcn_aux_gain_idx_tbl_rev0[] = {
- 	0x0401,
- 	0x0402,
++	if (IS_ERR_OR_NULL(hcon->amp_mgr)) {
++		hci_dev_unlock(hdev);
++		return;
++	}
++
+ 	if (ev->status) {
+ 		hci_conn_del(hcon);
+ 		hci_dev_unlock(hdev);
 -- 
-2.17.1
-
-
+2.28.0
