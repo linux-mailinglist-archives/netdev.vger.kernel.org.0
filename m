@@ -2,130 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7061426407A
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 10:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCEEF2640E5
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 11:05:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730461AbgIJIsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 04:48:30 -0400
-Received: from mail-il1-f206.google.com ([209.85.166.206]:45584 "EHLO
-        mail-il1-f206.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727820AbgIJIsW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 04:48:22 -0400
-Received: by mail-il1-f206.google.com with SMTP id m80so3988581ilb.12
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 01:48:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=ss+NDibV+9A1A4nhUiuCZmAy2xJiaoswkCsDPh/ljK0=;
-        b=MY+VpXJ7NSjQ9qxQTRB4MFuwSBNmArWo2pOYyeNIAnU24KK5fyxoG6XOb2TLrS+C0Z
-         Nf0biXmcCJsHNoZjaUydKzmsYSZdwa5expgYgCW76irwVejj6+shPttdNBowPUw6jUGi
-         1lu5SsitLYUjbu4/dwXc7g1iac48eXDVgkuSf3NKJabqQn1jreZGh/Ba13Kvvnw+kbaR
-         SPfZo7ulAuyYLN6Ddb24mHxqbXjawofr1gr9y1VuXbQLBVTvyk+0afUrCB0to1lJ+9zl
-         zMGyYJH7rjvyW2GELK+uPhr1W0F2BzWTKr8M4GKNYaAIb0EeOYGsQMrShSAusWz6HF8h
-         sodg==
-X-Gm-Message-State: AOAM5323XjdH0wdUB4Y2QpDD9YR8w/GKj8R+nEBgcr+c3kAwP30dqEW5
-        OvOHOG6kE1WK6XIRMVlvzlOBiv1cfZBsvxIIRR+2I/grUhcL
-X-Google-Smtp-Source: ABdhPJwskIZBJxIhH+SvsruZKozcsWaPSpr2Ik9ydDFAt2JAIkl+GjSkZWwUURXqIRfRMllMo5kAD/PUXnvUAnZN3Uy6qTbXqPii
-MIME-Version: 1.0
-X-Received: by 2002:a05:6638:144:: with SMTP id y4mr7640549jao.61.1599727701395;
- Thu, 10 Sep 2020 01:48:21 -0700 (PDT)
-Date:   Thu, 10 Sep 2020 01:48:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000610c6805aef1a1b8@google.com>
-Subject: kernel BUG at net/rxrpc/conn_object.c:LINE!
-From:   syzbot <syzbot+52071f826a617b9c76ed@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com, kuba@kernel.org,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        mingo@redhat.com, netdev@vger.kernel.org, rostedt@goodmis.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1730067AbgIJJFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 05:05:32 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:11758 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726474AbgIJJFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 05:05:30 -0400
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08A92L0S193439;
+        Thu, 10 Sep 2020 05:05:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=5InhXhQG7H61LZ+HF/JHZjfvlg3sWNLWghtDoV2ZkzM=;
+ b=FhmfaqtAApJdNY/BRyazQ5uz26uZZv102VbACOHxxJSAtrFLYmMb+rKp9f2yyPiVMdZn
+ xJuBI1PEwiO3JpAKCdhMhC4VokLgK/N8xKsUrHSCCSh0EB84GPn76LaaaKszqHmj3shg
+ SCQeVgOx+ieLvrFZJADd1boEUuR0DF9iSjpWJ8dKgtFCLoVtGhe2ZaKDD5EA7Ul1RRlD
+ gr/zkcHYnfhP5VQjwPMqnqHzuiXAgD7aVO+vAwQ11u2C3pQXr4kqTGG8Aw1inBMref8B
+ SIdM0BNC6NscrwzIdEi6sT5zXZzqOVQdUZNc6AfhfCEF+mdOThrlix+kmoNP7f8YjYOk Ew== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 33fh5nr2ym-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Sep 2020 05:05:27 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 08A92h07022592;
+        Thu, 10 Sep 2020 09:05:24 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma04ams.nl.ibm.com with ESMTP id 33c2a8duv4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Sep 2020 09:05:24 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 08A95LhB27918782
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 10 Sep 2020 09:05:21 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9584A11C04A;
+        Thu, 10 Sep 2020 09:05:21 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 521CD11C052;
+        Thu, 10 Sep 2020 09:05:21 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 10 Sep 2020 09:05:21 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net] s390/qeth: delay draining the TX buffers
+Date:   Thu, 10 Sep 2020 11:05:18 +0200
+Message-Id: <20200910090518.71420-1-jwi@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-10_01:2020-09-10,2020-09-10 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
+ phishscore=0 mlxlogscore=999 clxscore=1015 suspectscore=0
+ lowpriorityscore=0 adultscore=0 mlxscore=0 priorityscore=1501 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009100080
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Wait until the QDIO data connection is severed. Otherwise the device
+might still be processing the buffers, and end up accessing skb data
+that we already freed.
 
-syzbot found the following issue on:
-
-HEAD commit:    f5499c67 nfc: pn533/usb.c: fix spelling of "functions"
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=16415055900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2b946b3cd0adc99
-dashboard link: https://syzkaller.appspot.com/bug?extid=52071f826a617b9c76ed
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16be260d900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=100b7cdd900000
-
-The issue was bisected to:
-
-commit 245500d853e9f20036cec7df4f6984ece4c6bf26
-Author: David Howells <dhowells@redhat.com>
-Date:   Wed Jul 1 10:15:32 2020 +0000
-
-    rxrpc: Rewrite the client connection manager
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11950759900000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13950759900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15950759900000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+52071f826a617b9c76ed@syzkaller.appspotmail.com
-Fixes: 245500d853e9 ("rxrpc: Rewrite the client connection manager")
-
-rxrpc: Assertion failed
-------------[ cut here ]------------
-kernel BUG at net/rxrpc/conn_object.c:481!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 234 Comm: kworker/u4:5 Not tainted 5.9.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: netns cleanup_net
-RIP: 0010:rxrpc_destroy_all_connections.cold+0x11/0x13 net/rxrpc/conn_object.c:481
-Code: c0 48 c7 c1 00 b0 14 89 48 89 f2 48 c7 c7 80 ac 14 89 e8 04 4d 0c fa 0f 0b e8 be 15 23 fa 48 c7 c7 80 af 14 89 e8 f1 4c 0c fa <0f> 0b 41 57 41 56 41 55 41 54 55 53 48 89 f3 48 83 ec 20 48 89 3c
-RSP: 0018:ffffc90000f57b18 EFLAGS: 00010282
-RAX: 0000000000000017 RBX: ffff8880945a8000 RCX: 0000000000000000
-RDX: ffff8880a85ca200 RSI: ffffffff815dbd97 RDI: fffff520001eaf55
-RBP: ffff8880945a8064 R08: 0000000000000017 R09: ffff8880ae731927
-R10: 0000000000000000 R11: 0000000034333254 R12: ffff8880945a8068
-R13: ffff8880945a8078 R14: ffff8880945a8078 R15: ffff8880945a7eb8
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fdbae898020 CR3: 00000000963ae000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- rxrpc_exit_net+0x1a4/0x2e0 net/rxrpc/net_ns.c:119
- ops_exit_list+0xb0/0x160 net/core/net_namespace.c:186
- cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Modules linked in:
----[ end trace b82f4cc98146655f ]---
-RIP: 0010:rxrpc_destroy_all_connections.cold+0x11/0x13 net/rxrpc/conn_object.c:481
-Code: c0 48 c7 c1 00 b0 14 89 48 89 f2 48 c7 c7 80 ac 14 89 e8 04 4d 0c fa 0f 0b e8 be 15 23 fa 48 c7 c7 80 af 14 89 e8 f1 4c 0c fa <0f> 0b 41 57 41 56 41 55 41 54 55 53 48 89 f3 48 83 ec 20 48 89 3c
-RSP: 0018:ffffc90000f57b18 EFLAGS: 00010282
-RAX: 0000000000000017 RBX: ffff8880945a8000 RCX: 0000000000000000
-RDX: ffff8880a85ca200 RSI: ffffffff815dbd97 RDI: fffff520001eaf55
-RBP: ffff8880945a8064 R08: 0000000000000017 R09: ffff8880ae731927
-R10: 0000000000000000 R11: 0000000034333254 R12: ffff8880945a8068
-R13: ffff8880945a8078 R14: ffff8880945a8078 R15: ffff8880945a7eb8
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fdbae89e000 CR3: 0000000093fd8000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
+Fixes: 8b5026bc1693 ("s390/qeth: fix qdio teardown after early init error")
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/s390/net/qeth_l2_main.c | 2 +-
+ drivers/s390/net/qeth_l3_main.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/s390/net/qeth_l2_main.c b/drivers/s390/net/qeth_l2_main.c
+index 3a94f6cad167..6384f7adba66 100644
+--- a/drivers/s390/net/qeth_l2_main.c
++++ b/drivers/s390/net/qeth_l2_main.c
+@@ -284,11 +284,11 @@ static void qeth_l2_stop_card(struct qeth_card *card)
+ 
+ 	if (card->state == CARD_STATE_SOFTSETUP) {
+ 		qeth_clear_ipacmd_list(card);
+-		qeth_drain_output_queues(card);
+ 		card->state = CARD_STATE_DOWN;
+ 	}
+ 
+ 	qeth_qdio_clear_card(card, 0);
++	qeth_drain_output_queues(card);
+ 	qeth_clear_working_pool_list(card);
+ 	flush_workqueue(card->event_wq);
+ 	qeth_flush_local_addrs(card);
+diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+index 4d461960370d..09ef518ca1ea 100644
+--- a/drivers/s390/net/qeth_l3_main.c
++++ b/drivers/s390/net/qeth_l3_main.c
+@@ -1168,11 +1168,11 @@ static void qeth_l3_stop_card(struct qeth_card *card)
+ 	if (card->state == CARD_STATE_SOFTSETUP) {
+ 		qeth_l3_clear_ip_htable(card, 1);
+ 		qeth_clear_ipacmd_list(card);
+-		qeth_drain_output_queues(card);
+ 		card->state = CARD_STATE_DOWN;
+ 	}
+ 
+ 	qeth_qdio_clear_card(card, 0);
++	qeth_drain_output_queues(card);
+ 	qeth_clear_working_pool_list(card);
+ 	flush_workqueue(card->event_wq);
+ 	qeth_flush_local_addrs(card);
+-- 
+2.17.1
+
