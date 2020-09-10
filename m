@@ -2,388 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 17671264E52
-	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0AB0264E53
+	for <lists+netdev@lfdr.de>; Thu, 10 Sep 2020 21:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726588AbgIJTKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 15:10:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39604 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726837AbgIJTJY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 15:09:24 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E45EA21D7E;
-        Thu, 10 Sep 2020 19:09:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599764963;
-        bh=ByRDj3GRVYsU7e6aJGXifFwgRun7FljVRICiS2WXhtg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q71VtKKRFcNQtzQBcZLckaauW6pbqIdeaW3rrlMKOUhA1vEorPk7BqCb9+qKNkMla
-         QnquYPmVfXzTjnysEecRaMRcFx0HKAXg5Q3l+lLMtfbhoNW4oc04ZPQxFHzGJhC4Hy
-         kVWXVT4eEf2oTNBHZJAoPMx/S6Ml9rdjlQOWhCtM=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     mkubecek@suse.cz
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH ethtool v2 2/2] tunnels: implement new --show-tunnels command
-Date:   Thu, 10 Sep 2020 12:09:15 -0700
-Message-Id: <20200910190915.564904-3-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200910190915.564904-1-kuba@kernel.org>
-References: <20200910190915.564904-1-kuba@kernel.org>
+        id S1727776AbgIJTKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 15:10:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725951AbgIJTJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 15:09:25 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850D8C061573
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:09:25 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id d6so5216311pfn.9
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 12:09:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Jco3Ismu2CDzwE6Bt+8XP2PPTeNDXzayulaFQH4v3j8=;
+        b=XjFVcWAQ2mr5TjvPK7J1wCPsbQXWp0z5KvcCXh5GFJHz+naVGqOzNsYfb+5hm2HHCT
+         /y8FmH2iGWmAVn7XFGKeVEW7enXGHqVox6Ox5jDC7gtG9L9RUMnC3n36iMU6dLt4KcvK
+         aURBbHmY0cvVaFmwE/M2lkMrXRu3fakRutTyHnosTCjKXh8JFPS2h6z2oU0vTtvnd3bk
+         Kbe3Tt8MkRSknXBxSJljGutktJ7htkX/JxfWU5Ua5Tegnm1crTYwFSBWC0Sgi4PaB2Mk
+         mjV8mBfZoclFPLlrcFRdJxetVaPB7xyLNZqcwzqkNxq89PIQPFhzRn6gqB9sbp68hhin
+         3A0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Jco3Ismu2CDzwE6Bt+8XP2PPTeNDXzayulaFQH4v3j8=;
+        b=V6gCpYYujKp/zN+kMehiff/RKCMOkmIE+17ncBnVxNXQeZWgpAyij6E0LVv9xP22Ti
+         cnXrReyZ9fLr//04XtSa+Qsi7nYHfn/QwJ1bsOsCZfc1DuAxQ3t9eolWFbBPzn0eEjHM
+         gAtY/R5bBZoe/ktKkcLR3M2oL1dEI1i0d+4Jvo0s9Jd+d9j+2/5wbQEsx/kKTISeBDPq
+         4jDiKp6LtJ+RC5pRY5+Ur0T4/tUnaslj0D2NKzNXIyxzR8M4a6hoDkv5MA8G+tgSM9Yi
+         VvmA6X1a0RYOTikiLF4BNCSUkrw666OUdyHa1iUNdPEXNiDXU4F42YFNqTr7G6ZkCF9U
+         fCYg==
+X-Gm-Message-State: AOAM531oSTY0s2bWuMbxTAdsevWytre4DpDLgoEDFJzdb7ci6mjBX9BF
+        B6miS+aCPAEzIRPrtt5ZaeI=
+X-Google-Smtp-Source: ABdhPJw6ycxWPuDJgVx+3HCAmgkoLfHwxinKiiq3Yrmb69cT4nR4kjhJ/M7lhI/5+2tNt/3QR5XE6w==
+X-Received: by 2002:a63:1257:: with SMTP id 23mr5269095pgs.401.1599764964845;
+        Thu, 10 Sep 2020 12:09:24 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id n7sm6548466pfq.114.2020.09.10.12.09.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Sep 2020 12:09:24 -0700 (PDT)
+Subject: Re: VLAN filtering with DSA
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+References: <20200910150738.mwhh2i6j2qgacqev@skbuf>
+ <86ebd9ca-86a3-0938-bf5d-9627420417bf@gmail.com>
+ <20200910190119.n2mnqkv2toyqbmzn@skbuf>
+ <7b23a257-6ac2-e6b2-7df8-9df28973e315@gmail.com>
+ <20200910190817.xfckbgxxuzupmnhb@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <55f93f28-76a2-90ad-8bee-3d45693a9018@gmail.com>
+Date:   Thu, 10 Sep 2020 12:09:19 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200910190817.xfckbgxxuzupmnhb@skbuf>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the new show-tunnels command. Support dump.
 
- # ethtool --show-tunnels \*
-Tunnel information for eth0:
-  UDP port table 0:
-    Size: 4
-    Types: vxlan
-    No entries
-  UDP port table 1:
-    Size: 4
-    Types: geneve, vxlan-gpe
-    Entries (2):
-        port 1230, vxlan-gpe
-        port 6081, geneve
 
-v2: htons -> ntohs
+On 9/10/2020 12:08 PM, Vladimir Oltean wrote:
+> On Thu, Sep 10, 2020 at 12:05:17PM -0700, Florian Fainelli wrote:
+>> On 9/10/2020 12:01 PM, Vladimir Oltean wrote:
+>>> On Thu, Sep 10, 2020 at 11:42:02AM -0700, Florian Fainelli wrote:
+>>>> On 9/10/2020 8:07 AM, Vladimir Oltean wrote:
+>>>> Yes, doing what you suggest would make perfect sense for a DSA master that
+>>>> is capable of VLAN filtering, I did encounter that problem with e1000 and
+>>>> the dsa-loop.c mockup driver while working on a mock-up 802.1Q data path.
+>>>
+>>> Yes, I have another patch where I add those VLANs from tag_8021q.c which
+>>> I did not show here.
+>>>
+>>> But if the DSA switch that uses tag_8021q is cascaded to another one,
+>>> that's of little use if the upper switch does not propagate that
+>>> configuration to its own upstream.
+>>
+>> Yes, that would not work. As soon as you have a bridge spanning any of those
+>> switches, does not the problem go away by virtue of the switch port forcing
+>> the DSA master/upstream to be in promiscuous mode?
+> 
+> Well, yes, bridged it works but standalone it doesn't. A bit strange if
+> you ask me.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- Makefile.am       |   2 +-
- ethtool.8.in      |   9 ++
- ethtool.c         |   5 +
- netlink/extapi.h  |   2 +
- netlink/tunnels.c | 236 ++++++++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 253 insertions(+), 1 deletion(-)
- create mode 100644 netlink/tunnels.c
-
-diff --git a/Makefile.am b/Makefile.am
-index aca0ad7bc773..0e237d070d4b 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -37,7 +37,7 @@ ethtool_SOURCES += \
- 		  netlink/channels.c netlink/coalesce.c netlink/pause.c \
- 		  netlink/eee.c netlink/tsinfo.c \
- 		  netlink/desc-ethtool.c netlink/desc-genlctrl.c \
--		  netlink/desc-rtnl.c netlink/cable_test.c \
-+		  netlink/desc-rtnl.c netlink/cable_test.c netlink/tunnels.c \
- 		  uapi/linux/ethtool_netlink.h \
- 		  uapi/linux/netlink.h uapi/linux/genetlink.h \
- 		  uapi/linux/rtnetlink.h uapi/linux/if_link.h
-diff --git a/ethtool.8.in b/ethtool.8.in
-index a50a4769895c..42c4767db33e 100644
---- a/ethtool.8.in
-+++ b/ethtool.8.in
-@@ -459,6 +459,9 @@ ethtool \- query or control network driver and hardware settings
- .BN last N
- .BN step N
- .BN pair N
-+.HP
-+.B ethtool \-\-show\-tunnels
-+.I devname
- .
- .\" Adjust lines (i.e. full justification) and hyphenate.
- .ad
-@@ -1383,6 +1386,12 @@ shown.
- If a device name is used as argument, only notification for this device are
- shown. Default is to show notifications for all devices.
- .RE
-+.TP
-+.B \-\-show\-tunnels
-+Show tunnel-related device capabilities and state.
-+List UDP ports kernel has programmed the device to parse as VxLAN,
-+or GENEVE tunnels.
-+.RE
- .SH BUGS
- Not supported (in part or whole) on all network drivers.
- .SH AUTHOR
-diff --git a/ethtool.c b/ethtool.c
-index 606af3e6b48f..23ecfcfd069c 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5919,6 +5919,11 @@ static const struct option args[] = {
- 			  "		[ step N ]\n"
- 			  "		[ pair N ]\n"
- 	},
-+	{
-+		.opts	= "--show-tunnels",
-+		.nlfunc	= nl_gtunnels,
-+		.help	= "Show NIC tunnel offload information",
-+	},
- 	{
- 		.opts	= "-h|--help",
- 		.no_dev	= true,
-diff --git a/netlink/extapi.h b/netlink/extapi.h
-index a35d5f2c0b26..9285e2325dfd 100644
---- a/netlink/extapi.h
-+++ b/netlink/extapi.h
-@@ -37,6 +37,7 @@ int nl_seee(struct cmd_context *ctx);
- int nl_tsinfo(struct cmd_context *ctx);
- int nl_cable_test(struct cmd_context *ctx);
- int nl_cable_test_tdr(struct cmd_context *ctx);
-+int nl_gtunnels(struct cmd_context *ctx);
- int nl_monitor(struct cmd_context *ctx);
- 
- void nl_monitor_usage(void);
-@@ -84,6 +85,7 @@ static inline void nl_monitor_usage(void)
- #define nl_tsinfo		NULL
- #define nl_cable_test		NULL
- #define nl_cable_test_tdr	NULL
-+#define nl_gtunnels		NULL
- 
- #endif /* ETHTOOL_ENABLE_NETLINK */
- 
-diff --git a/netlink/tunnels.c b/netlink/tunnels.c
-new file mode 100644
-index 000000000000..b464046c021e
---- /dev/null
-+++ b/netlink/tunnels.c
-@@ -0,0 +1,236 @@
-+/*
-+ * tunnel.c - device tunnel information
-+ *
-+ * Implementation of "ethtool --show-tunnels <dev>"
-+ */
-+
-+#include <errno.h>
-+#include <string.h>
-+#include <stdio.h>
-+#include <arpa/inet.h>
-+
-+#include "../common.h"
-+#include "../internal.h"
-+
-+#include "bitset.h"
-+#include "netlink.h"
-+#include "strset.h"
-+
-+/* TUNNEL_INFO_GET */
-+
-+static int
-+tunnel_info_strings_load(struct nl_context *nlctx,
-+			 const struct stringset **strings)
-+{
-+	int ret;
-+
-+	if (*strings)
-+		return 0;
-+	ret = netlink_init_ethnl2_socket(nlctx);
-+	if (ret < 0)
-+		return ret;
-+	*strings = global_stringset(ETH_SS_UDP_TUNNEL_TYPES,
-+				    nlctx->ethnl2_socket);
-+	return 0;
-+}
-+
-+static int
-+tunnel_info_dump_udp_entry(struct nl_context *nlctx, const struct nlattr *entry,
-+			   const struct stringset **strings)
-+{
-+	const struct nlattr *entry_tb[ETHTOOL_A_TUNNEL_UDP_ENTRY_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(entry_tb);
-+	const struct nlattr *attr;
-+	unsigned int port, type;
-+	int ret;
-+
-+	if (tunnel_info_strings_load(nlctx, strings))
-+		return 1;
-+
-+	ret = mnl_attr_parse_nested(entry, attr_cb, &entry_tb_info);
-+	if (ret < 0) {
-+		fprintf(stderr, "malformed netlink message (udp entry)\n");
-+		return 1;
-+	}
-+
-+	attr = entry_tb[ETHTOOL_A_TUNNEL_UDP_ENTRY_PORT];
-+	if (!attr || mnl_attr_validate(attr, MNL_TYPE_U16) < 0) {
-+		fprintf(stderr, "malformed netlink message (port)\n");
-+		return 1;
-+	}
-+	port = ntohs(mnl_attr_get_u16(attr));
-+
-+	attr = entry_tb[ETHTOOL_A_TUNNEL_UDP_ENTRY_TYPE];
-+	if (!attr || mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
-+		fprintf(stderr, "malformed netlink message (tunnel type)\n");
-+		return 1;
-+	}
-+	type = mnl_attr_get_u32(attr);
-+
-+	printf("        port %d, %s\n", port, get_string(*strings, type));
-+
-+	return 0;
-+}
-+
-+static void tunnel_info_dump_cb(unsigned int idx, const char *name, bool val,
-+				void *data)
-+{
-+	bool *first = data;
-+
-+	if (!val)
-+		return;
-+
-+	if (!*first)
-+		putchar(',');
-+	*first = false;
-+
-+	if (name)
-+		printf(" %s", name);
-+	else
-+		printf(" bit%u", idx);
-+}
-+
-+static int
-+tunnel_info_dump_list(struct nl_context *nlctx, const struct nlattr *attr,
-+		      const struct stringset **strings)
-+{
-+	bool first = true;
-+	int ret;
-+
-+	if (bitset_is_empty(attr, false, &ret) || ret) {
-+		if (ret)
-+			return 1;
-+
-+		printf("    Types: none (static entries)\n");
-+		return 0;
-+	}
-+
-+	if (bitset_is_compact(attr) &&
-+	    tunnel_info_strings_load(nlctx, strings))
-+		return 1;
-+
-+	printf("    Types:");
-+	ret = walk_bitset(attr, *strings, tunnel_info_dump_cb, &first);
-+	putchar('\n');
-+	return ret;
-+}
-+
-+static int
-+tunnel_info_dump_udp_table(const struct nlattr *table, struct nl_context *nlctx,
-+			   const struct stringset **strings)
-+{
-+	const struct nlattr *table_tb[ETHTOOL_A_TUNNEL_UDP_TABLE_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(table_tb);
-+	const struct nlattr *attr;
-+	int i, ret;
-+
-+	ret = mnl_attr_parse_nested(table, attr_cb, &table_tb_info);
-+	if (ret < 0) {
-+		fprintf(stderr, "malformed netlink message (udp table)\n");
-+		return 1;
-+	}
-+
-+	attr = table_tb[ETHTOOL_A_TUNNEL_UDP_TABLE_SIZE];
-+	if (!attr || mnl_attr_validate(attr, MNL_TYPE_U32) < 0) {
-+		fprintf(stderr, "malformed netlink message (table size)\n");
-+		return 1;
-+	}
-+	printf("    Size: %d\n", mnl_attr_get_u32(attr));
-+
-+	attr = table_tb[ETHTOOL_A_TUNNEL_UDP_TABLE_TYPES];
-+	if (!attr || tunnel_info_dump_list(nlctx, attr, strings)) {
-+		fprintf(stderr, "malformed netlink message (types)\n");
-+		return 1;
-+	}
-+
-+	if (!table_tb[ETHTOOL_A_TUNNEL_UDP_TABLE_ENTRY]) {
-+		printf("    No entries\n");
-+		return 0;
-+	}
-+
-+	i = 0;
-+	mnl_attr_for_each_nested(attr, table) {
-+		if (mnl_attr_get_type(attr) == ETHTOOL_A_TUNNEL_UDP_TABLE_ENTRY)
-+			i++;
-+	}
-+
-+	printf("    Entries (%d):\n", i++);
-+	mnl_attr_for_each_nested(attr, table) {
-+		if (mnl_attr_get_type(attr) == ETHTOOL_A_TUNNEL_UDP_TABLE_ENTRY)
-+			if (tunnel_info_dump_udp_entry(nlctx, attr, strings))
-+				return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+tunnel_info_dump_udp(const struct nlattr *udp_ports, struct nl_context *nlctx)
-+{
-+	const struct stringset *strings = NULL;
-+	const struct nlattr *table;
-+	int i, err;
-+
-+	i = 0;
-+	mnl_attr_for_each_nested(table, udp_ports) {
-+		if (mnl_attr_get_type(table) != ETHTOOL_A_TUNNEL_UDP_TABLE)
-+			continue;
-+
-+		printf("  UDP port table %d: \n", i++);
-+		err = tunnel_info_dump_udp_table(table, nlctx, &strings);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int tunnel_info_reply_cb(const struct nlmsghdr *nlhdr, void *data)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_TUNNEL_INFO_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	const struct nlattr *udp_ports;
-+	struct nl_context *nlctx = data;
-+	bool silent;
-+	int err_ret;
-+	int ret;
-+
-+	silent = nlctx->is_dump;
-+	err_ret = silent ? MNL_CB_OK : MNL_CB_ERROR;
-+	ret = mnl_attr_parse(nlhdr, GENL_HDRLEN, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return err_ret;
-+	nlctx->devname = get_dev_name(tb[ETHTOOL_A_TUNNEL_INFO_HEADER]);
-+	if (!dev_ok(nlctx))
-+		return err_ret;
-+
-+	printf("Tunnel information for %s:\n", nlctx->devname);
-+
-+	udp_ports = tb[ETHTOOL_A_TUNNEL_INFO_UDP_PORTS];
-+	if (udp_ports)
-+		if (tunnel_info_dump_udp(udp_ports, nlctx))
-+			return err_ret;
-+
-+	return MNL_CB_OK;
-+}
-+
-+int nl_gtunnels(struct cmd_context *ctx)
-+{
-+	struct nl_context *nlctx = ctx->nlctx;
-+	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	int ret;
-+
-+	if (netlink_cmd_check(ctx, ETHTOOL_MSG_TUNNEL_INFO_GET, true))
-+		return -EOPNOTSUPP;
-+	if (ctx->argc > 0) {
-+		fprintf(stderr, "ethtool: unexpected parameter '%s'\n",
-+			*ctx->argp);
-+		return 1;
-+	}
-+
-+	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_TUNNEL_INFO_GET,
-+				      ETHTOOL_A_TUNNEL_INFO_HEADER, 0);
-+	if (ret < 0)
-+		return ret;
-+	return nlsock_send_get_request(nlsk, tunnel_info_reply_cb);
-+}
+Agreed there is no question this should be fixed.
 -- 
-2.26.2
-
+Florian
