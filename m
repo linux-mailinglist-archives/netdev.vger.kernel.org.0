@@ -2,111 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9806A26677F
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:44:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80A1C2667C0
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:50:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726139AbgIKRoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 13:44:01 -0400
-Received: from mga14.intel.com ([192.55.52.115]:60320 "EHLO mga14.intel.com"
+        id S1725909AbgIKRue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 13:50:34 -0400
+Received: from mout.gmx.net ([212.227.17.21]:35399 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726137AbgIKRnx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 13:43:53 -0400
-IronPort-SDR: DB3U5EjSV4GfQ3I8/Ny1loerOHjpD9f99Wt904IzecaSFPwoM8FWIjNuB4JBqmofGCezGF7S2a
- wMzZB4KAxuOg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="158105557"
-X-IronPort-AV: E=Sophos;i="5.76,416,1592895600"; 
-   d="scan'208";a="158105557"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 10:43:49 -0700
-IronPort-SDR: T6pL/wuj80l8d4SrfF4sts8AKUxwgNl50UXbdaKj6UC7II/4IK+FzYgIxsUc0RzhIhOjch0ytr
- +rR9yL0NnYMQ==
-X-IronPort-AV: E=Sophos;i="5.76,416,1592895600"; 
-   d="scan'208";a="481403148"
-Received: from prbhatt-mobl1.amr.corp.intel.com (HELO ellie) ([10.212.20.132])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 10:43:48 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org
-Subject: Re: [Intel-wired-lan] [RFC PATCH net-next v1 05/11] intel-ethernet: make W=1 build cleanly
-In-Reply-To: <20200911012337.14015-6-jesse.brandeburg@intel.com>
-References: <20200911012337.14015-1-jesse.brandeburg@intel.com> <20200911012337.14015-6-jesse.brandeburg@intel.com>
-Date:   Fri, 11 Sep 2020 10:43:48 -0700
-Message-ID: <877dt0nr8r.fsf@intel.com>
+        id S1725794AbgIKRu2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Sep 2020 13:50:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1599846582;
+        bh=9A8KbB8JAsMszk5e8nKi2X4m4uBUOMdvLJVTs/9a5M0=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=D0E7FCBpwplg3djfX9eZpQ8jMx2EgJadPN7JIVCxXspHLZ/LmZFs1BGhw5e2scCg2
+         p8vYCsVtju9xTEBJ1G7w9aFb1uvTfOfiZ4eIiIxMjmQNSHKLzQ1hCPNbm8UY2htjp4
+         3y8pGHCa6Tg3hfbOR/za9PBKOKtsZuPc/n1EEn3k=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [217.61.150.14] ([217.61.150.14]) by web-mail.gmx.net
+ (3c-app-gmx-bs18.server.lan [172.19.170.70]) (via HTTP); Fri, 11 Sep 2020
+ 19:49:42 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+Message-ID: <trinity-cc01b89b-ddcc-488a-84eb-3c96376c2be6-1599846582837@3c-app-gmx-bs18>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Landen Chao <landen.chao@mediatek.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        opensource@vdorst.com, dqfext@gmail.com,
+        Landen Chao <landen.chao@mediatek.com>
+Subject: Aw: [PATCH net-next v5 6/6] arm64: dts: mt7622: add mt7531 dsa to
+ bananapi-bpi-r64 board
+Content-Type: text/plain; charset=UTF-8
+Date:   Fri, 11 Sep 2020 19:49:42 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <9ad3baefb672805153c737f6259966d1c9b98c2b.1599829696.git.landen.chao@mediatek.com>
+References: <cover.1599829696.git.landen.chao@mediatek.com>
+ <9ad3baefb672805153c737f6259966d1c9b98c2b.1599829696.git.landen.chao@mediatek.com>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:BZ5FW3bde8rsAWlm88krnef1H4ZN4Kuf+O7Ne2Cm4MZCc4sc5ttQ+z8IF1opvo/9lcj/r
+ 9I6xdSujcRKZeLkBtfmSAk7aUzR3218XQlCGOBux68+Z694KQ36aad/LlwK/qylSsjFP+D/rGGol
+ VrmbHcyqn6HdAPrckkS5g3sQPKoTAQOIsTgBjWQb3gDipCpSSRDyGGVCZnMpaB3sC5TDU5Ku+idy
+ CCwoiWfcWe+cxrzdyb0JYzOrxrHW/zXqWxQ5CkZWwMjDPEUmqzNV3qD3vHDWeOJmX7g1x5DwiUhE
+ o8=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NVdLXOaaAJE=:Q3I5oVV0MKWr7w/B/Hm9FX
+ Xa2yjHH+k1CRjLuf9bvOevSCj5x4BZTpsWbJL00MT/ufFi8U2FQaxqJPLYbxLX6tbXZ1jDaV6
+ 1+RLv3BUazXnMDJ0ktrgT7ftmWGU4FA1kni16MXltLwUXQ60AFKLPwUohAvdecCN9BenNVFbd
+ ft5+4RF+maNQcqrRttnbVRXQjRCTa66mthKgbggRpDbS8B96FQAbwWL1/ZQaZPwWs3h+scTAn
+ Nl3bZQQKqVs288iH82tnN6NRmu5e37glrZpSykjROu/SWvI2cpIMSzfmQh+05V6ioqb+k18FD
+ yEWUFxRanextYUnhLp3OoP0L9jdJ8+iGoTzo4GhRQM6iWXSfU4ZCQnM0RqFEeTcRNODhwuM7D
+ 0Mn+qJmcmNvUdsnIuWsJJ7NgjDUJPwklKz6va6yBhOsj9sHm20DTI2D3Xi0QghD1Ak1l05kmW
+ 2ZuzJ20r+OWICmcgf1F26bZm4G2wFtJGG6P/Z0dp/4bfnctdIbxK66eJ8DW037Eod3aVZGkmn
+ Vi5wk6SGN54oJ7lttCGeyCKpjKr3hSQMeMr3KD800OoH+9JG8wc25nlhrYJinPBS2leH5jPI0
+ VSgfl664hHIVyxTX0MvrX5fkclwmaKY+i+Z8zaF05hG9XOPEYRDQjAOMQUDL77zrZsCF7WYn+
+ 9AJKxTMNAqNIOXWpUzqruVd11I7I4KwjmhGYHenUnm1zLHrwtIzi+R2s+DGSEQn2Kxc4=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesse Brandeburg <jesse.brandeburg@intel.com> writes:
+Tested full series on Bananapi-r2 and r64, results as in v3
 
-> This takes care of all of the trivial W=1 fixes in the Intel
-> Ethernet drivers, which allows developers and maintainers to
-> build more of the networking tree with more complete warning
-> checks.
->
-> Almost all of the changes were trivial comment updates on
-> function headers, but some of the changes were for variables that
-> were storing a return value from a register read, where the
-> return value wasn't used. Those conversions to remove the lvalue
-> of the assignment should be safe because the readl memory mapped
-> reads are marked volatile and should not be optimized out without
-> an lvalue (I suspect a very long time ago this wasn't guaranteed
-> as it is today).
->
-> Inspired by Lee Jones' series of wireless work to do the same.
-> Compile tested only.
->
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> ---
->  drivers/net/ethernet/intel/e100.c             |   8 +-
->  drivers/net/ethernet/intel/e1000/e1000_hw.c   | 147 ++++++++----------
->  drivers/net/ethernet/intel/e1000/e1000_main.c |  39 +++--
->  .../net/ethernet/intel/e1000e/80003es2lan.c   |   1 -
->  drivers/net/ethernet/intel/e1000e/ich8lan.c   |  16 +-
->  drivers/net/ethernet/intel/e1000e/netdev.c    |  50 ++++--
->  drivers/net/ethernet/intel/e1000e/phy.c       |   3 +
->  drivers/net/ethernet/intel/e1000e/ptp.c       |   2 +-
->  drivers/net/ethernet/intel/igb/e1000_82575.c  |   6 +-
->  drivers/net/ethernet/intel/igb/e1000_i210.c   |   5 +-
->  drivers/net/ethernet/intel/igb/e1000_mac.c    |   1 +
->  drivers/net/ethernet/intel/igb/e1000_mbx.c    |   1 +
->  drivers/net/ethernet/intel/igb/igb_main.c     |  28 ++--
->  drivers/net/ethernet/intel/igb/igb_ptp.c      |   8 +-
->  drivers/net/ethernet/intel/igbvf/netdev.c     |  17 +-
->  drivers/net/ethernet/intel/igc/igc_main.c     |   2 +-
->  drivers/net/ethernet/intel/igc/igc_ptp.c      |   4 +-
->  drivers/net/ethernet/intel/ixgb/ixgb_hw.c     | 135 ++++++++--------
->  drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  17 +-
->  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   3 +-
->  20 files changed, 265 insertions(+), 228 deletions(-)
->
+Tested-By: Frank Wunderlich <frank-w@public-files.de>
 
-...
-
-> diff --git a/drivers/net/ethernet/intel/e1000/e1000_hw.c b/drivers/net/ethernet/intel/e1000/e1000_hw.c
-> index 4e7a0810eaeb..2120dacfd55c 100644
-> --- a/drivers/net/ethernet/intel/e1000/e1000_hw.c
-> +++ b/drivers/net/ethernet/intel/e1000/e1000_hw.c
-> @@ -139,6 +139,7 @@ static void e1000_phy_init_script(struct e1000_hw *hw)
->  		 * at the end of this routine.
->  		 */
->  		ret_val = e1000_read_phy_reg(hw, 0x2F5B, &phy_saved_data);
-> +		e_dbg("Reading PHY register 0x2F5B failed: %d\n", ret_val);
->
-
-Adding this debug statement seems unrelated.
-
->  		/* Disabled the PHY transmitter */
->  		e1000_write_phy_reg(hw, 0x2F5B, 0x0003);
-
-Apart from this,
-
-Reviewed-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-
--- 
-Vinicius
+regards Frank
