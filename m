@@ -2,108 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A5C26763E
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 00:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA59526763F
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 00:58:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725873AbgIKW5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 18:57:01 -0400
-Received: from mga09.intel.com ([134.134.136.24]:63178 "EHLO mga09.intel.com"
+        id S1725887AbgIKW6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 18:58:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43018 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725849AbgIKW46 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 18:56:58 -0400
-IronPort-SDR: NkBMGDM6Qweh939qoeZ/XwmupoRnROp8eVcDkcJps7/GjPxfOhuA+PeSou3KrV0zubjeSjMDdA
- NJaASLOruYWg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="159810496"
-X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; 
-   d="scan'208";a="159810496"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 15:56:55 -0700
-IronPort-SDR: hWOT/9HhDXW0/hYAN+teVEweprm9K60rSO4Rlf+ETLdF4WOzpvjzCXCWct4zLd31o7WPl2ZTri
- 5JUXqZ6zXJrA==
-X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; 
-   d="scan'208";a="329945307"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.122.57]) ([10.209.122.57])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 15:56:54 -0700
-Subject: Re: [RFC PATCH net-next v1 08/11] drivers/net/ethernet: handle one
- warning explicitly
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org
-References: <20200911012337.14015-1-jesse.brandeburg@intel.com>
- <20200911012337.14015-9-jesse.brandeburg@intel.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <401624a4-2fcf-53c9-fe8d-f4e5fb6d3fba@intel.com>
-Date:   Fri, 11 Sep 2020 15:56:42 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S1725849AbgIKW6a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Sep 2020 18:58:30 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 77F80221E5;
+        Fri, 11 Sep 2020 22:58:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599865109;
+        bh=f6W2aj1HboJ3SthxU/r2f4lEdlB07Gq3KwE87Wi6GTk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W+F2r9X5K61wLDrWsIZ4wmsMPUuUH4df1c5b8p5yGzztWp3rI/ZdCQNYxtnouaoN7
+         YI2KiF8oRw40++Gi4F/gU1LopWCM2Geh5YokYASMR7zyDbMptgkC4qDF/zcEubz3Zv
+         er7oB5c31VKLV6UlpacOEwBK5QFPOs9zkSRr9v0E=
+Date:   Fri, 11 Sep 2020 15:58:27 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, mkubecek@suse.cz,
+        tariqt@nvidia.com, saeedm@nvidia.com,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next 5/8] bnxt: add pause frame stats
+Message-ID: <20200911155827.373fcfb2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CACKFLikDO9+BaJBz+=VBPq7syXkGqgJsRnc8oat=wWO7Fhttmg@mail.gmail.com>
+References: <20200911195258.1048468-1-kuba@kernel.org>
+        <20200911195258.1048468-6-kuba@kernel.org>
+        <CACKFLin6F=Y0jrJZqA75Oa+QwCyAyHK06_QnuB54-WwOqpG8MA@mail.gmail.com>
+        <20200911154343.2a319485@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CACKFLikDO9+BaJBz+=VBPq7syXkGqgJsRnc8oat=wWO7Fhttmg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200911012337.14015-9-jesse.brandeburg@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 9/10/2020 6:23 PM, Jesse Brandeburg wrote:
-> While fixing the W=1 builds, this warning came up because the
-> developers used a very tricky way to get structures initialized
-> to a non-zero value, but this causes GCC to warn about an
-> override. In this case the override was intentional, so just
-> disable the warning for this code with a #pragma.
+On Fri, 11 Sep 2020 15:53:24 -0700 Michael Chan wrote:
+> > > This will work, but the types on the 2 sides don't match.  On the
+> > > right hand side, since you are casting to the hardware struct
+> > > rx_port_stats and tx_port_stats, the types are __le64.
+> > >
+> > > If rx_stats and tx_stats are *u64 and you use these macros:
+> > >
+> > > BNXT_GET_RX_PORT_STATS64(rx_stats, rx_pause_frames)
+> > > BNXT_GET_TX_PORT_STATS64(tx_stats, tx_pause_frames)
+> > >
+> > > the results will be the same with native CPU u64 types.  
+> >
+> > Thanks! My build bot just poked me about this as well.
+> >
+> > I don't see any byte swaps in bnxt_get_ethtool_stats() -
+> > are they not needed there? I'm slightly confused.  
 > 
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> ---
->  drivers/net/ethernet/renesas/sh_eth.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
-> index 586642c33d2b..659530f9c117 100644
-> --- a/drivers/net/ethernet/renesas/sh_eth.c
-> +++ b/drivers/net/ethernet/renesas/sh_eth.c
-> @@ -45,6 +45,13 @@
->  #define SH_ETH_OFFSET_DEFAULTS			\
->  	[0 ... SH_ETH_MAX_REGISTER_OFFSET - 1] = SH_ETH_OFFSET_INVALID
->  
-> +/* use some intentionally tricky logic here to initialize the whole struct to
-> + * 0xffff, but then override certain fields, requiring us to indicate that we
-> + * "know" that there are overrides in this structure, and we'll need to disable
-> + * that warning from W=1 builds
-> + */
-> +#pragma GCC diagnostic push
-> +#pragma GCC diagnostic ignored "-Woverride-init"
+> No, swapping is not needed since we are referencing the sw_stats.
+> Every counter has already been swapped when we did the copy and
+> overflow check from the hw struct to sw_stats.  sw_stats is exactly
+> the same as the hw struct except that every counter is already swapped
+> into native CPU u64 and properly adjusted for overflow.
 
-
-This should probably use something like the __diag() macros instead of
-GCC-specific code, e.g.
-
-__diag_push()
-__diag_ignore(GCC, <version>, "-Woverride-init")
-
-...
-
-__diag_pop()
-
-Where <version> is the major GCC version that introduced this warning.
-
-Thanks,
-Jake
-
->  static const u16 sh_eth_offset_gigabit[SH_ETH_MAX_REGISTER_OFFSET] = {
->  	SH_ETH_OFFSET_DEFAULTS,
->  
-> @@ -332,6 +339,7 @@ static const u16 sh_eth_offset_fast_sh3_sh2[SH_ETH_MAX_REGISTER_OFFSET] = {
->  
->  	[TSU_ADRH0]	= 0x0100,
->  };
-> +#pragma GCC diagnostic pop
->  
->  static void sh_eth_rcv_snd_disable(struct net_device *ndev);
->  static struct net_device_stats *sh_eth_get_stats(struct net_device *ndev);
-> 
+I see, I'll change the pointer types to u64 * as well. Thanks!
