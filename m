@@ -2,56 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F3EC2656C7
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 03:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DE4E2656C8
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 03:58:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725788AbgIKB6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 21:58:11 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:11807 "EHLO huawei.com"
+        id S1725805AbgIKB6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 21:58:18 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:58084 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725298AbgIKB6J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 21:58:09 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id F2BD08D9AA58D4C9B10A;
-        Fri, 11 Sep 2020 09:42:25 +0800 (CST)
-Received: from [10.174.179.81] (10.174.179.81) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 11 Sep 2020 09:42:24 +0800
-Subject: Re: [PATCH net-next 0/3] Fix some kernel-doc warnings for
- e1000/e1000e
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <jeffrey.t.kirsher@intel.com>, <davem@davemloft.net>,
-        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20200910150429.31912-1-wanghai38@huawei.com>
- <20200910123800.74865996@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200910123819.3ce47422@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   "wanghai (M)" <wanghai38@huawei.com>
-Message-ID: <53e857ff-f5c7-a2c9-b0ec-67c2d4ad29c3@huawei.com>
-Date:   Fri, 11 Sep 2020 09:42:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1725298AbgIKB6P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 21:58:15 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 8E8368154E49A4853951;
+        Fri, 11 Sep 2020 09:58:14 +0800 (CST)
+Received: from SWX921481.china.huawei.com (10.126.202.211) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 11 Sep 2020 09:58:07 +0800
+From:   Barry Song <song.bao.hua@hisilicon.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
+CC:     <linuxarm@huawei.com>, Barry Song <song.bao.hua@hisilicon.com>,
+        "Salil Mehta" <salil.mehta@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>
+Subject: [PATCH net-next] net: hns: use IRQ_NOAUTOEN to avoid irq is enabled due to request_irq
+Date:   Fri, 11 Sep 2020 13:55:10 +1200
+Message-ID: <20200911015510.31420-1-song.bao.hua@hisilicon.com>
+X-Mailer: git-send-email 2.21.0.windows.1
 MIME-Version: 1.0
-In-Reply-To: <20200910123819.3ce47422@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.179.81]
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.126.202.211]
 X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Rather than doing request_irq and then disabling the irq immediately, it
+should be safer to use IRQ_NOAUTOEN flag for the irq. It removes any gap
+between request_irq() and disable_irq().
 
-ÔÚ 2020/9/11 3:38, Jakub Kicinski Ð´µÀ:
-> On Thu, 10 Sep 2020 12:38:00 -0700 Jakub Kicinski wrote:
->> On Thu, 10 Sep 2020 23:04:26 +0800 Wang Hai wrote:
->>> Wang Hai (3):
->>>    e1000e: Fix some kernel-doc warnings in ich8lan.c
->>>    e1000e: Fix some kernel-doc warnings in netdev.c
->>>    e1000: Fix a bunch of kerneldoc parameter issues in e1000_hw.c
->> You should put some text here but I can confirm this set removes 17
->> warnings.
-> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-> .
-Thans for your review, I'll add some description next time
+Cc: Salil Mehta <salil.mehta@huawei.com>
+Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
+Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
+---
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index 22522f8a5299..34cc469656e8 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -11,6 +11,7 @@
+ #include <linux/io.h>
+ #include <linux/ip.h>
+ #include <linux/ipv6.h>
++#include <linux/irq.h>
+ #include <linux/module.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
+@@ -1293,6 +1294,7 @@ static int hns_nic_init_irq(struct hns_nic_priv *priv)
+ 
+ 		rd->ring->ring_name[RCB_RING_NAME_LEN - 1] = '\0';
+ 
++		irq_set_status_flags(rd->ring->irq, IRQ_NOAUTOEN);
+ 		ret = request_irq(rd->ring->irq,
+ 				  hns_irq_handle, 0, rd->ring->ring_name, rd);
+ 		if (ret) {
+@@ -1300,7 +1302,6 @@ static int hns_nic_init_irq(struct hns_nic_priv *priv)
+ 				   rd->ring->irq);
+ 			goto out_free_irq;
+ 		}
+-		disable_irq(rd->ring->irq);
+ 
+ 		cpu = hns_nic_init_affinity_mask(h->q_num, i,
+ 						 rd->ring, &rd->mask);
+-- 
+2.25.1
+
+
