@@ -2,91 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83FC726665F
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:26:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F55526679D
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:45:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726464AbgIKR0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 13:26:46 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:33250 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726306AbgIKR0i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 13:26:38 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4B05D60097;
-        Fri, 11 Sep 2020 17:26:38 +0000 (UTC)
-Received: from us4-mdac16-21.ut7.mdlocal (unknown [10.7.65.245])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 4949F8009E;
-        Fri, 11 Sep 2020 17:26:38 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.31])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D41C928004D;
-        Fri, 11 Sep 2020 17:26:37 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 89A18940089;
-        Fri, 11 Sep 2020 17:26:37 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 11 Sep
- 2020 18:26:32 +0100
-Subject: Re: [RFC PATCH net-next v1 11/11] drivers/net/ethernet: clean up
- mis-targeted comments
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        <netdev@vger.kernel.org>
-CC:     <intel-wired-lan@lists.osuosl.org>
-References: <20200911012337.14015-1-jesse.brandeburg@intel.com>
- <20200911012337.14015-12-jesse.brandeburg@intel.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <227d2fe4-ddf8-89c9-b80b-142674c2cca0@solarflare.com>
-Date:   Fri, 11 Sep 2020 18:26:29 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1725873AbgIKMbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 08:31:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34368 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725790AbgIKMaE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 08:30:04 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D9CC061756
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 05:30:01 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 67so6532311pgd.12
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 05:30:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XbxwP9miORo2DKwSEZ5JCDhcOwdDMNbjt2KRy+7eBzM=;
+        b=sxxXMyvLvBAPEMoIJ8QSKstOUEiBA7O41mtGLBLcawP4cPlQspzBE7xSaP1XfP2/F0
+         GYAd+j3gc4ebjMb1Kf9ORadNiTYZokAYW1syP4A2tS6KWnlj37Liluhycsj8DoQsV+3l
+         1bYKSpvfA1Z3Ivo9BaiSLrBvPUimSOEAs9gWmU6+nOKmZox9TjtYlvydCrUPSmRrplGW
+         GE+OS4/Xiq6t1TuZq4VT3ZWVaGD7m+E1f8BBQSj8rP+JFNyE5Y9dLJgGpkGzbETQJJ8F
+         nn2eBPZdUjUwrmnQ6/vR/MR4Y00Ix8qOhK4NJOHGEr0UbsvCuz3kRE7ALK6AcQw3iH0V
+         Hc9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XbxwP9miORo2DKwSEZ5JCDhcOwdDMNbjt2KRy+7eBzM=;
+        b=r0Y1lVmMAET0UbggxcGy8u40FaHVCDdmcNnVFmba9T/JheVn25wt725Y+toJemtarj
+         qe1sQHBNhgPjmkf3sCgMBPzoQw2axS8V42THKxuCgN2A48Gi8dilL2miKsufkklbw/P/
+         xTcIRtBV8ze5BCRQ+PfunO4qY7HoU7xfz7bRiCM6wzf2UDculmUL8fKT+OF7OYEe4d9R
+         e6+4NkcHKO/KGnqs3SzccZtv1CkzDLAowJfKpI5w4L4WtM5Jtr+kHBs/pGZlXNgiTT6R
+         uU3H2GevsY6S9+bIcr/7Ld3RulE6i13lw0pjgr0fUBeZ+yYt6CiA8KQu7A+4x92qJbVx
+         OnlQ==
+X-Gm-Message-State: AOAM530O7IVG9ad9YuM4x4r+p6uHDOD7SdUT7ouCZPnslHMQtxNkwsI+
+        2td5ZBV4a0dU7RptP4xmnvqzIIzVFo0APdd+Mtk=
+X-Google-Smtp-Source: ABdhPJycbi9144tCuWpJOm/DbHyimB+o7+twCZ4RlJMolGb2fwNpW/CpCjKpTViUWqAmg562BYyME7hhfh04qAplFEs=
+X-Received: by 2002:a05:6a00:15c1:b029:13e:d13d:a04d with SMTP id
+ o1-20020a056a0015c1b029013ed13da04dmr1869316pfu.19.1599827401252; Fri, 11 Sep
+ 2020 05:30:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200911012337.14015-12-jesse.brandeburg@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25660.000
-X-TM-AS-Result: No-3.714600-8.000000-10
-X-TMASE-MatchedRID: QfHZjzml1E/mLzc6AOD8DfHkpkyUphL91JP9NndNOkUda1Vk3RqxOIO3
-        X3IJL/YZ0JwSV7ipDfUsMgTZd2lCt0ohWBZ4QV+6qJSK+HSPY+/pVMb1xnESMgWqvFWg3Xg6Tup
-        AS3DN87IeQ2V1bj+6xusaujhTG8awkrMo37I6x/4J6xTeI+I0LAZyESFXAljf4Vo4xoaXBy+1U5
-        6R2ZaElQ0mmbOIq98WoHy2Fsp5cv5jDV//SvkH3kz7FUUjXG1jNW8jQhzoALUrxUs8Nw/2foRqG
-        PInK2mOFOow+ChHTLNftuJwrFEhTY2j49Ftap9Ero1URZJFbJsCr1CPevXiUuLYJrD1X9Z+1GHp
-        OH8+3EeqITbnPRiwj0JfV3B+/RErwM16T6UwC99QpRvUskPZiLmNpuXp+tR+mg6zWDb9bUyFcgJ
-        c+QNMwu8bJovJYm8FYupx0XjSQPLDOFVmKqGJ4bPn3tFon6UK
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.714600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25660.000
-X-MDID: 1599845198-ywl0bJXEWIi0
+References: <1599826106-19020-1-git-send-email-magnus.karlsson@gmail.com> <20200911120519.GA9758@ranger.igk.intel.com>
+In-Reply-To: <20200911120519.GA9758@ranger.igk.intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 11 Sep 2020 14:29:50 +0200
+Message-ID: <CAJ8uoz3ctVoANjiO_nQ38YA-JoB0nQH1B4W01AZFw3iCyCC_+w@mail.gmail.com>
+Subject: Re: [PATCH net-next] i40e: allow VMDQs to be used with AF_XDP zero-copy
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        jeffrey.t.kirsher@intel.com,
+        Network Development <netdev@vger.kernel.org>,
+        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/09/2020 02:23, Jesse Brandeburg wrote:
-> As part of the W=1 cleanups for ethernet, a million [1] driver comments
-> had to be cleaned up to get the W=1 compilation to succeed. This
-> change finally makes the drivers/net/ethernet tree compile with
-> W=1 set on the command line.
+On Fri, Sep 11, 2020 at 2:11 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
 >
-> [1] - ok it wasn't quite a million, but it felt like it.
+> On Fri, Sep 11, 2020 at 02:08:26PM +0200, Magnus Karlsson wrote:
+> > From: Magnus Karlsson <magnus.karlsson@intel.com>
+> >
+> > Allow VMDQs to be used with AF_XDP sockets in zero-copy mode. For some
+> > reason, we only allowed main VSIs to be used with zero-copy, but
+> > there is now reason to not allow VMDQs also.
 >
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
->
-> ---
-> @@ -263,6 +268,7 @@ struct efx_ptp_timeset {
->   * @nic_ts_enabled: Flag indicating if NIC generated TS events are handled
->   * @txbuf: Buffer for use when transmitting (PTP) packets to MC (avoids
->   *         allocations in main data path).
-> + * @MC_CMD_PTP_IN_TRANSMIT_LENMAX: hack to get W=1 to compile
-I think I'd rather have a bogus warning than bogus kerneldocto suppress it;
- please drop this line (and encourage toolchain folks to figure out how to
- get kerneldoc to ignore macros it can't understand).
-Apart from that, the sfc and sfc/falcon parts LGTM.
+> You meant 'to allow' I suppose. And what reason? :)
 
--ed
+Yes, sorry. Should be "not to allow". I was too trigger happy ;-).
+
+I have gotten requests from users that they want to use VMDQs in
+conjunction with containers. Basically small slices of the i40e
+portioned out as netdevs. Do you see any problems with using a VMDQ
+iwth zero-copy?
+
+/Magnus
+
+> >
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > ---
+> >  drivers/net/ethernet/intel/i40e/i40e_xsk.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > index 2a1153d..ebe15ca 100644
+> > --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+> > @@ -45,7 +45,7 @@ static int i40e_xsk_pool_enable(struct i40e_vsi *vsi,
+> >       bool if_running;
+> >       int err;
+> >
+> > -     if (vsi->type != I40E_VSI_MAIN)
+> > +     if (!(vsi->type == I40E_VSI_MAIN || vsi->type == I40E_VSI_VMDQ2))
+> >               return -EINVAL;
+> >
+> >       if (qid >= vsi->num_queue_pairs)
+> > --
+> > 2.7.4
+> >
