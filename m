@@ -2,103 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABCF826591B
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 08:07:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8073D26591F
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 08:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725747AbgIKGHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 02:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725468AbgIKGHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 02:07:32 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAF1C061573;
-        Thu, 10 Sep 2020 23:07:31 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id jw11so1193628pjb.0;
-        Thu, 10 Sep 2020 23:07:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ICuUjpgRR8OCCPVQqNRYxX2OGwz3zcrbN36QMtJa61g=;
-        b=GS+kYg8uR36YAHr7o0VqO3QDwo3czk9b8fZ7ukBPfusDYqheAtOJfE8xVrqMpnP5l2
-         BzweIQ2kk3kQBraS/McI/VmL8iXVB2E/p9rvg01liAPQEuaq7PvKJBoiFMyrie+VP5z8
-         3xd7VDA9Unyi03Q5Li1B41SQI2IeMcmyIzxPEepWq9FmG7NqQ8sl7Bvr0i10eIge7+xx
-         89y8ShZESmNFTXlujsb72C1QvYTegSHe/owwVi070Jv8vP8l3pfAwpnMY8VIYIVCXtyg
-         6MxYzpMLDpl9P/JTAgYEHa7z8g9v/UKt14HuO2tlkMa1k2RcWBAacq5gyP1bDVJbdFLp
-         YQJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ICuUjpgRR8OCCPVQqNRYxX2OGwz3zcrbN36QMtJa61g=;
-        b=n9iQ0EqhocUa7tGbdqhlJ+xsXTA/5+9vPc40cVzTWGOu7USGIF6w35PeeKdzsgFIJq
-         rtIiY8DNM5GknrMUgkzAYBf5JzBk/b+/EPLXZO1sReKvGYtgzQeUw08AIWEzR7KTPBkp
-         0xwcAFz0+dBDr+cdKztmQOAOCtu3UA62zMShZWnYaXKT7vxrk4Ms72wB9GAQy6zlqumI
-         edWJvbL+idxHKVd5zsRFxOKysq3T5JFjuZd+wWVoc9PjwtSKhKgmjU2QJwJtkarKjP1D
-         VGh3p4P2+f6tWvb9dvCqhZ3+d+14pX7bNLhYyy12uGHxZ3hv9R+jFuAsKxZ+ZP+CkaOZ
-         ++/Q==
-X-Gm-Message-State: AOAM531EE5UbTx8wYh4Ua2LnkJG1kRlzfAL/ug9a+BhiFw2JLWimQx01
-        CEBro7yy27jw2ABn+Oyp96Y=
-X-Google-Smtp-Source: ABdhPJw43us4wEtQTNcghlOEJktE0HLOzRpWB5hBY/TwO76lu1uXMwi+73H4zh6br+Ex5ligKxgk8w==
-X-Received: by 2002:a17:90b:796:: with SMTP id l22mr781145pjz.199.1599804451347;
-        Thu, 10 Sep 2020 23:07:31 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:54b8:5e43:7f25:9207])
-        by smtp.gmail.com with ESMTPSA id c202sm1016792pfc.15.2020.09.10.23.07.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 23:07:30 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next] net/socket.c: Remove an unused header file <linux/if_frad.h>
-Date:   Thu, 10 Sep 2020 23:07:20 -0700
-Message-Id: <20200911060720.81033-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1725777AbgIKGJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 02:09:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34532 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725446AbgIKGJD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Sep 2020 02:09:03 -0400
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 58366221ED;
+        Fri, 11 Sep 2020 06:09:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599804542;
+        bh=XzzaqRgzegv5mShrfRiMAX/0bKqxPmMJr5VwppGGwEw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ihhcwtVWk6dTGE+h9Hne7tOOv/piw6eF0oxfxjMAzyMEi76bRAHq4wh9HTqPQlReu
+         FO4DNAMAN0P2AnALwa4Gh1oqnSXIPSd/9RwcY1PYk2Gwow+aZNT2gqUI10i7aXbuvY
+         5OWPFFLx+B4R2b1vfMPvfrbmYQJTsJGjSjDapPtk=
+Received: by mail-ej1-f43.google.com with SMTP id q13so12175433ejo.9;
+        Thu, 10 Sep 2020 23:09:02 -0700 (PDT)
+X-Gm-Message-State: AOAM533tXv5vpufzr3Fb557g3H4okNSow+XDuBOPW1CRs1jonFxUt5Fv
+        fghRSZiOZaMpq364yqSPIxD5jrsQ5phzLLlvwAI=
+X-Google-Smtp-Source: ABdhPJwZG4xklZq441Eewbql9ntW9zPs1xfQjq9o+LVzvNLUp2kxK3mUNknnSYBDmPX56LMLO75nMFLMG4xyFDPtcm4=
+X-Received: by 2002:a17:906:8401:: with SMTP id n1mr505360ejx.215.1599804540886;
+ Thu, 10 Sep 2020 23:09:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200910161219.6237-1-krzk@kernel.org> <20200910.152235.1512682061673845419.davem@davemloft.net>
+In-Reply-To: <20200910.152235.1512682061673845419.davem@davemloft.net>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Fri, 11 Sep 2020 08:08:49 +0200
+X-Gmail-Original-Message-ID: <CAJKOXPcFfxY2EU7-_gPQyhp9m_dVed6qxgpZzD4kazEkjDeXOw@mail.gmail.com>
+Message-ID: <CAJKOXPcFfxY2EU7-_gPQyhp9m_dVed6qxgpZzD4kazEkjDeXOw@mail.gmail.com>
+Subject: Re: [PATCH v3 0/8] nfc: s3fwrn5: Few cleanups
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, robh+dt@kernel.org, k.opasiak@samsung.com,
+        kgene@kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-nfc@lists.01.org, linux-arm-kernel@lists.infradead.org,
+        "linux-samsung-soc@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This header file is not actually used in this file. Let's remove it.
+On Fri, 11 Sep 2020 at 00:22, David Miller <davem@davemloft.net> wrote:
+>
+> From: Krzysztof Kozlowski <krzk@kernel.org>
+> Date: Thu, 10 Sep 2020 18:12:11 +0200
+>
+> > Changes since v2:
+> > 1. Fix dtschema ID after rename (patch 1/8).
+> > 2. Apply patch 9/9 (defconfig change).
+> >
+> > Changes since v1:
+> > 1. Rename dtschema file and add additionalProperties:false, as Rob
+> >    suggested,
+> > 2. Add Marek's tested-by,
+> > 3. New patches: #4, #5, #6, #7 and #9.
+>
+> Seires applied to net-next, thanks.
 
-Information about this header file:
+Thanks. The DTS should go separate - via samsung-soc/arm-soc tree.
+However if it is too late, then no problem.
 
-This header file comes from the "Frame Relay" module at
-  drivers/net/wan/dlci.c
-
-The "Frame Relay" module is used by only one hardware driver, at:
-  drivers/net/wan/sdla.c
-
-Note that the "Frame Relay" module is different from and unrelated to the
-"HDLC Frame Relay" module at:
-  drivers/net/wan/hdlc_fr.c
-
-I think maybe we can deprecate the "Frame Relay" module because we already
-have the (newer) "HDLC Frame Relay" module.
-
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- net/socket.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/net/socket.c b/net/socket.c
-index 82262e1922f9..161dd2775e13 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -64,7 +64,6 @@
- #include <linux/seq_file.h>
- #include <linux/mutex.h>
- #include <linux/if_bridge.h>
--#include <linux/if_frad.h>
- #include <linux/if_vlan.h>
- #include <linux/ptp_classify.h>
- #include <linux/init.h>
--- 
-2.25.1
-
+Best regards,
+Krzysztof
