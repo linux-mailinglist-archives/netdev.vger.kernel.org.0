@@ -2,130 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5C5F266733
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:39:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 412C5266732
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:39:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726097AbgIKRjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 13:39:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54670 "EHLO
+        id S1725919AbgIKRjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 13:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726285AbgIKRjJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 13:39:09 -0400
+        with ESMTP id S1726312AbgIKRjK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 13:39:10 -0400
 Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934D7C061796
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 10:39:08 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id c5so7130541qtd.12
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 10:39:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE923C0613ED
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 10:39:09 -0700 (PDT)
+Received: by mail-qt1-x849.google.com with SMTP id b54so7133075qtk.17
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 10:39:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=U70BF05oxjr6sQoOIvH0cV1DcMgkH6fNJgwr+2ckd0k=;
-        b=e31eqVRNME/CrIJaWHfW57cFBbp6qJsjwQdqc9r+7dmTLTSkEsQfTWgu6hXqxj0oLJ
-         Yg8jv8DONegHQ+aWQ5VzhPFcFqhho6CcwzrjBqflwDMw4YnnYWYjAZ8SDBV5SUw3neAP
-         hiLqFIMZpMRxwoACna0XUO85/TyUEgK1UVGAtaK5p597CHXb645IMCbvQuo+wnUnfiac
-         0aSbhZyrQJKjpsKh9ZrNkx/rA3potdEgxHgnzfjZpyU5+pLei95XBA0LsjW3sUtyxbHM
-         N4GstC2h5N9pSLNOFDpV05ueBPu2ESj0s23TnPe21Q23ZiF/mnKCEyWPdHkGawHl9sRA
-         Q19g==
+        bh=M43mVHzBC1r26lIT9AdcEMvITq9xDC1DoOAE4BRsrNg=;
+        b=U2Gqu5OclNC6JA+6rpWkN+bBBSfuHtT9CwNkoW6fbh8Yc2YuR2TqRUYnklYvL9vlRF
+         y+lM6gT8WoMfondrDIjBLurXZL5wvn77CIn3IWboeAnAoYXsmYcM7s33l4HzeVAPDnZl
+         ZtPCeSid2bIxmVG+2jZOfTLWnxG0l7Henc2VVp4EJ9m/6kl7RdudIkE1p4xutdF8U1mg
+         wlkMeCV4gN1npoDm0VTowHnTSzak2X/q74YmuDiZWxeO9RW00N6uwY+J0Gu934l53Oxq
+         kSIlo6aLfslq1gqZjkiUEqhzNcc0JI7wT2H+Snm5okiYN6e0nTJZVjGN1eHfmdrxVjSG
+         xz+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=U70BF05oxjr6sQoOIvH0cV1DcMgkH6fNJgwr+2ckd0k=;
-        b=nLVEIvvG/0PShhli7rzIyK1E5k0+QmR8Z8LL17fkDVcd6GtAeKWHNCW10TAZ1rWGOT
-         UKMlJnne9Vtqpvrsx5k9UrmS6Up2NnSnWmw5MovAVfxFaZ7rTJNNh6scHKn+xSG0RkUf
-         4UoRN5WINengL+2OrJr8TQO1Lk/7UspOM5iHov3ogz8ldWlVDEXN6bDNE2fX1lXSqbTp
-         DA+KxHRa1i3Smqbaiiv3Kdddf5NDNGfIvP+QHFc9T8BILjVNRwt4FPTTcoWs9N/j3EFu
-         o2/zOk4EEwCC1mM8C9EMPbi+ufjaqOdnN+Kr9zgNeELh+g1BViyrs8qz4SRZLRV4+Cij
-         69jw==
-X-Gm-Message-State: AOAM533dhDKwdloCSTvQQGCH51wDGOXiwqNlYB5UN91lA8rhRZq7bg+t
-        Chl0LSyPmENOMn1EZ2uCvmW4A03QKcIeH6kJu4ZWVfoHiYGtdS4bCcvF1NsoifF4NPezRbz+3Ut
-        1OjihE7LqrYcvJiUGSd+0s1TpVFpAURbChxWQCgv0TicdKw5zhRK0hbg8PjjBVKTldil4WvBV
-X-Google-Smtp-Source: ABdhPJy4hhsHbtVEJGQCrcElK7Fcjz2W1lxf5H0nd/TCAmDV+QdquR6qGMKcQvTFLBWuM3o647zX6UL2WxrJHxnY
+        bh=M43mVHzBC1r26lIT9AdcEMvITq9xDC1DoOAE4BRsrNg=;
+        b=HpLN02MPZ18OZm7+z5wTDF5amBk7RKeABXGsV3Ai1ky5uLuLURhbM+4cdrPYlnvuZj
+         wADxlZcy3Xj694QUmS2e92Ku5UOmtBINJzm9YXDg3MR5Eo1hc+8RdldOXtmg4ONSeJM7
+         fuINTKSXFsBeG99U4PRnl+fQ9OH1r+KgbFSv/SytI64oi20XVs9Qbsr/yekX4YoMDawW
+         uCsamg1fbIiRm+lpyKeDb8l2dTH+f9mM6otzxEluV44LiyScwLdtmtD+uUx6O+MvTcyN
+         IylukXipsKzfMWxVFXiurS9Ltl8Razii6/UBbluGuuTRZUA4C+ST1CQvr0tjnQD2cnsE
+         sjiQ==
+X-Gm-Message-State: AOAM533Zp6xkfOL5N5ACacTz+cyh6VRIbejaDmFakcX5yRqfJ3i5lUHr
+        A5pzZyBqnQnwyRxYFJqybPbOWIl2xqqrMtQrYdmZdKHrLFbjcnnbeTU8ehVTBsH/BjtkkTP5e/R
+        p1OioXPUVMqrFn2IAL1Axd/8TG0Jfs/cNw0e7awDgtL1fHivYzm9YZvSE1t+ckvSzblYJjw3T
+X-Google-Smtp-Source: ABdhPJxGGy9VlZHhqAVQeRqp/s8ECBCGHBcbxLsPRWDCARJcJfhskcU/BXVBULqzgWcIm6xG0tLVJsaVgTgIJw/+
 X-Received: from awogbemila.sea.corp.google.com ([2620:15c:100:202:1ea0:b8ff:fe73:6cc0])
- (user=awogbemila job=sendgmr) by 2002:a0c:eac5:: with SMTP id
- y5mr3036153qvp.2.1599845946770; Fri, 11 Sep 2020 10:39:06 -0700 (PDT)
-Date:   Fri, 11 Sep 2020 10:38:50 -0700
+ (user=awogbemila job=sendgmr) by 2002:ad4:4527:: with SMTP id
+ l7mr3091765qvu.2.1599845948310; Fri, 11 Sep 2020 10:39:08 -0700 (PDT)
+Date:   Fri, 11 Sep 2020 10:38:51 -0700
 In-Reply-To: <20200911173851.2149095-1-awogbemila@google.com>
-Message-Id: <20200911173851.2149095-8-awogbemila@google.com>
+Message-Id: <20200911173851.2149095-9-awogbemila@google.com>
 Mime-Version: 1.0
 References: <20200911173851.2149095-1-awogbemila@google.com>
 X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
-Subject: [PATCH net-next v4 7/8] gve: Use link status register to report link status
+Subject: [PATCH net-next v4 8/8] gve: Enable Link Speed Reporting in the driver.
 From:   David Awogbemila <awogbemila@google.com>
 To:     netdev@vger.kernel.org
-Cc:     Patricio Noyola <patricion@google.com>,
-        Yangchun Fu <yangchun@google.com>,
-        David Awogbemila <awogbemila@google.com>
+Cc:     David Awogbemila <awogbemila@google.com>,
+        Yangchun Fu <yangchun@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Patricio Noyola <patricion@google.com>
-
-This makes the driver better aware of the connectivity status of the
-device. Based on the device's status register, the driver can call
-netif_carrier_{on,off}.
+This change allows the driver to report the device link speed
+when the ethtool command:
+	ethtool <nic name>
+is run.
+Getting the link speed is done via a new admin queue command:
+ReportLinkSpeed.
 
 Reviewed-by: Yangchun Fu <yangchun@google.com>
-Signed-off-by: Patricio Noyola <patricion@google.com>
 Signed-off-by: David Awogbemila <awogbemila@google.com>
 ---
- drivers/net/ethernet/google/gve/gve_main.c | 24 +++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/google/gve/gve.h         |  3 ++
+ drivers/net/ethernet/google/gve/gve_adminq.c  | 31 +++++++++++++++++++
+ drivers/net/ethernet/google/gve/gve_adminq.h  |  9 ++++++
+ drivers/net/ethernet/google/gve/gve_ethtool.c | 14 ++++++++-
+ 4 files changed, 56 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
-index 28e5cc52410e..48a433154ce0 100644
---- a/drivers/net/ethernet/google/gve/gve_main.c
-+++ b/drivers/net/ethernet/google/gve/gve_main.c
-@@ -774,7 +774,7 @@ static int gve_open(struct net_device *dev)
- 				msecs_to_jiffies(priv->stats_report_timer_period)));
+diff --git a/drivers/net/ethernet/google/gve/gve.h b/drivers/net/ethernet/google/gve/gve.h
+index ebb770f955e9..f5c80229ea96 100644
+--- a/drivers/net/ethernet/google/gve/gve.h
++++ b/drivers/net/ethernet/google/gve/gve.h
+@@ -232,6 +232,7 @@ struct gve_priv {
+ 	u32 adminq_dcfg_device_resources_cnt;
+ 	u32 adminq_set_driver_parameter_cnt;
+ 	u32 adminq_report_stats_cnt;
++	u32 adminq_report_link_speed_cnt;
  
- 	gve_turnup(priv);
--	netif_carrier_on(dev);
-+	queue_work(priv->gve_wq, &priv->service_task);
- 	priv->interface_up_cnt++;
- 	return 0;
+ 	/* Global stats */
+ 	u32 interface_up_cnt; /* count of times interface turned up since last reset */
+@@ -254,6 +255,8 @@ struct gve_priv {
+ 	unsigned long stats_report_timer_period;
+ 	struct timer_list stats_report_timer;
  
-@@ -1032,16 +1032,34 @@ void gve_handle_report_stats(struct gve_priv *priv)
++	/* Gvnic device link speed from hypervisor. */
++	u64 link_speed;
+ };
+ 
+ enum gve_service_task_flags_bit {
+diff --git a/drivers/net/ethernet/google/gve/gve_adminq.c b/drivers/net/ethernet/google/gve/gve_adminq.c
+index 6f5ccd591c3d..24ae6a28a806 100644
+--- a/drivers/net/ethernet/google/gve/gve_adminq.c
++++ b/drivers/net/ethernet/google/gve/gve_adminq.c
+@@ -36,6 +36,7 @@ int gve_adminq_alloc(struct device *dev, struct gve_priv *priv)
+ 	priv->adminq_dcfg_device_resources_cnt = 0;
+ 	priv->adminq_set_driver_parameter_cnt = 0;
+ 	priv->adminq_report_stats_cnt = 0;
++	priv->adminq_report_link_speed_cnt = 0;
+ 
+ 	/* Setup Admin queue with the device */
+ 	iowrite32be(priv->adminq_bus_addr / PAGE_SIZE,
+@@ -238,6 +239,9 @@ static int gve_adminq_issue_cmd(struct gve_priv *priv,
+ 	case GVE_ADMINQ_REPORT_STATS:
+ 		priv->adminq_report_stats_cnt++;
+ 		break;
++	case GVE_ADMINQ_REPORT_LINK_SPEED:
++		priv->adminq_report_link_speed_cnt++;
++		break;
+ 	default:
+ 		dev_err(&priv->pdev->dev, "unknown AQ command opcode %d\n", opcode);
  	}
+@@ -595,3 +599,30 @@ int gve_adminq_report_stats(struct gve_priv *priv, u64 stats_report_len,
+ 
+ 	return gve_adminq_execute_cmd(priv, &cmd);
+ }
++
++int gve_adminq_report_link_speed(struct gve_priv *priv)
++{
++	union gve_adminq_command gvnic_cmd;
++	dma_addr_t link_speed_region_bus;
++	__be64 *link_speed_region;
++	int err;
++
++	link_speed_region =
++		dma_alloc_coherent(&priv->pdev->dev, sizeof(*link_speed_region),
++				   &link_speed_region_bus, GFP_KERNEL);
++
++	if (!link_speed_region)
++		return -ENOMEM;
++
++	memset(&gvnic_cmd, 0, sizeof(gvnic_cmd));
++	gvnic_cmd.opcode = cpu_to_be32(GVE_ADMINQ_REPORT_LINK_SPEED);
++	gvnic_cmd.report_link_speed.link_speed_address =
++		cpu_to_be64(link_speed_region_bus);
++
++	err = gve_adminq_execute_cmd(priv, &gvnic_cmd);
++
++	priv->link_speed = be64_to_cpu(*link_speed_region);
++	dma_free_coherent(&priv->pdev->dev, sizeof(*link_speed_region), link_speed_region,
++			  link_speed_region_bus);
++	return err;
++}
+diff --git a/drivers/net/ethernet/google/gve/gve_adminq.h b/drivers/net/ethernet/google/gve/gve_adminq.h
+index 784830f75b7c..281de8326bc5 100644
+--- a/drivers/net/ethernet/google/gve/gve_adminq.h
++++ b/drivers/net/ethernet/google/gve/gve_adminq.h
+@@ -22,6 +22,7 @@ enum gve_adminq_opcodes {
+ 	GVE_ADMINQ_DECONFIGURE_DEVICE_RESOURCES	= 0x9,
+ 	GVE_ADMINQ_SET_DRIVER_PARAMETER		= 0xB,
+ 	GVE_ADMINQ_REPORT_STATS			= 0xC,
++	GVE_ADMINQ_REPORT_LINK_SPEED	= 0xD
+ };
+ 
+ /* Admin queue status codes */
+@@ -181,6 +182,12 @@ struct gve_adminq_report_stats {
+ 
+ static_assert(sizeof(struct gve_adminq_report_stats) == 24);
+ 
++struct gve_adminq_report_link_speed {
++	__be64 link_speed_address;
++};
++
++static_assert(sizeof(struct gve_adminq_report_link_speed) == 8);
++
+ struct stats {
+ 	__be32 stat_name;
+ 	__be32 queue_id;
+@@ -228,6 +235,7 @@ union gve_adminq_command {
+ 			struct gve_adminq_unregister_page_list unreg_page_list;
+ 			struct gve_adminq_set_driver_parameter set_driver_param;
+ 			struct gve_adminq_report_stats report_stats;
++			struct gve_adminq_report_link_speed report_link_speed;
+ 		};
+ 	};
+ 	u8 reserved[64];
+@@ -255,4 +263,5 @@ int gve_adminq_unregister_page_list(struct gve_priv *priv, u32 page_list_id);
+ int gve_adminq_set_mtu(struct gve_priv *priv, u64 mtu);
+ int gve_adminq_report_stats(struct gve_priv *priv, u64 stats_report_len,
+ 			    dma_addr_t stats_report_addr, u64 interval);
++int gve_adminq_report_link_speed(struct gve_priv *priv);
+ #endif /* _GVE_ADMINQ_H */
+diff --git a/drivers/net/ethernet/google/gve/gve_ethtool.c b/drivers/net/ethernet/google/gve/gve_ethtool.c
+index c5bb8846fd26..7b44769bd87c 100644
+--- a/drivers/net/ethernet/google/gve/gve_ethtool.c
++++ b/drivers/net/ethernet/google/gve/gve_ethtool.c
+@@ -59,7 +59,7 @@ static const char gve_gstrings_adminq_stats[][ETH_GSTRING_LEN] = {
+ 	"adminq_create_tx_queue_cnt", "adminq_create_rx_queue_cnt",
+ 	"adminq_destroy_tx_queue_cnt", "adminq_destroy_rx_queue_cnt",
+ 	"adminq_dcfg_device_resources_cnt", "adminq_set_driver_parameter_cnt",
+-	"adminq_report_stats_cnt",
++	"adminq_report_stats_cnt", "adminq_report_link_speed_cnt"
+ };
+ 
+ static const char gve_gstrings_priv_flags[][ETH_GSTRING_LEN] = {
+@@ -355,6 +355,7 @@ gve_get_ethtool_stats(struct net_device *netdev,
+ 	data[i++] = priv->adminq_dcfg_device_resources_cnt;
+ 	data[i++] = priv->adminq_set_driver_parameter_cnt;
+ 	data[i++] = priv->adminq_report_stats_cnt;
++	data[i++] = priv->adminq_report_link_speed_cnt;
  }
  
-+static void gve_handle_link_status(struct gve_priv *priv, bool link_status)
+ static void gve_get_channels(struct net_device *netdev,
+@@ -505,6 +506,16 @@ static int gve_set_priv_flags(struct net_device *netdev, u32 flags)
+ 	return 0;
+ }
+ 
++static int gve_get_link_ksettings(struct net_device *netdev,
++				  struct ethtool_link_ksettings *cmd)
 +{
-+	if (!gve_get_napi_enabled(priv))
-+		return;
++	struct gve_priv *priv = netdev_priv(netdev);
++	int err = gve_adminq_report_link_speed(priv);
 +
-+	if (link_status == netif_carrier_ok(priv->dev))
-+		return;
-+
-+	if (link_status) {
-+		netdev_info(priv->dev, "Device link is up.\n");
-+		netif_carrier_on(priv->dev);
-+	} else {
-+		netdev_info(priv->dev, "Device link is down.\n");
-+		netif_carrier_off(priv->dev);
-+	}
++	cmd->base.speed = priv->link_speed;
++	return err;
 +}
 +
- /* Handle NIC status register changes, reset requests and report stats */
- static void gve_service_task(struct work_struct *work)
- {
- 	struct gve_priv *priv = container_of(work, struct gve_priv,
- 					     service_task);
-+	u32 status = ioread32be(&priv->reg_bar0->device_status);
- 
--	gve_handle_status(priv,
--			  ioread32be(&priv->reg_bar0->device_status));
-+	gve_handle_status(priv, status);
- 
- 	gve_handle_reset(priv);
-+	gve_handle_link_status(priv, GVE_DEVICE_STATUS_LINK_STATUS_MASK & status);
- }
- 
- static int gve_init_priv(struct gve_priv *priv, bool skip_describe_device)
+ const struct ethtool_ops gve_ethtool_ops = {
+ 	.get_drvinfo = gve_get_drvinfo,
+ 	.get_strings = gve_get_strings,
+@@ -521,4 +532,5 @@ const struct ethtool_ops gve_ethtool_ops = {
+ 	.set_tunable = gve_set_tunable,
+ 	.get_priv_flags = gve_get_priv_flags,
+ 	.set_priv_flags = gve_set_priv_flags,
++	.get_link_ksettings = gve_get_link_ksettings
+ };
 -- 
 2.28.0.618.gf4bc123cb7-goog
 
