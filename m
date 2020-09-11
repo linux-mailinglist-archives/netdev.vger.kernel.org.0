@@ -2,154 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D05326588B
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 07:04:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 100792658F6
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 07:54:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725710AbgIKFEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 01:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
+        id S1725710AbgIKFx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 01:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725497AbgIKFEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 01:04:09 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F36AC061573;
-        Thu, 10 Sep 2020 22:04:09 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id md22so2126678pjb.0;
-        Thu, 10 Sep 2020 22:04:08 -0700 (PDT)
+        with ESMTP id S1725468AbgIKFxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 01:53:52 -0400
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA31C061573
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 22:53:51 -0700 (PDT)
+Received: by mail-oi1-x243.google.com with SMTP id m7so6938777oie.0
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 22:53:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yx/Fke02HsLsqjZq568nqGFfeg9NCMSeHqBf+5WYna4=;
-        b=My6Po2Fp0H3kk+XIwNPn/IeW7vpf1VjXcZbND/d8ERdJMluqOgvpZTX/+gmA/hPqSE
-         DO3qYso7L6vS4LuRhEaIJP08uvT6sVon3LI92FfYQIiHfWj3waTggE0B2MzFmoc95kk7
-         P+PdufSwcp69b7JSGVJJsjBdxMiD4V6we9D54khIJm2B4wAEl8HxkScUDygZJLi7tYrc
-         +Ivg1i6eK9ECGXM7zYgXInGTQs2AtbbA4gNdRGd60bfuVXFVTn1zDWOqoZScmwdRXTS2
-         /idRqhh/cHj3tTlZNQ1j8hnxaAM0Wes6ho7zISxL3ZyGP8pXgnUo1IamKOf5t7yPoWB+
-         WrJA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XFCN/rKe4bMqEFjiiLTtEHRCJj9MQsZ19jltg/H+fQ4=;
+        b=cU4tqbgqGb0fEEkC7uOWWDzoTG+CN0DuyXKMxbcbuAZqsJjfZClbLNKXrmDFImIr90
+         A9SP5Yda9tzwVmXJ9C9pMV22LNaMafL87XcNb5mA6nbQEcdh+Pf0Wyvf9QUOS1fdX5Cw
+         1Wep+fUHN1Bnsx5Qn+BCoiyKryWXVeoFfdyvuROIWnuo/DuyNo7zKvKGMXbRYDxNvobf
+         mczucf+OZEujWqbZL16ZepshGvi9gNK3p/p7N6rFSuvwws4bUZC93RJ89XFoELryXoGm
+         lm9C8OttmYpf2GkbD8SD56LYA/1Q5O8xt3YiwghVM/kN5MRwNtGtHGFp1vA+HJe9lFb2
+         Vppg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=yx/Fke02HsLsqjZq568nqGFfeg9NCMSeHqBf+5WYna4=;
-        b=Kg5IyEAe+b+s+PUShREKmq2d88brPYYQoukw7s43voXT2ed2CPtq2PX9iKQ7ZkD3mY
-         EUcQQF16NHk7f0QsSiuPzkK1zAfZWgrl09AnSoaCoN+5SSCgQ/fW+EKOYpVNjlgMVuV2
-         a1dketw1p6A+MyvDZqJ8JTCmssOUTHu2WBEagSxRKVgMskShavzUbbsIAaQGMmDaSswB
-         H5FnaBk5oBfQgXLdqyty3zYzNp21JN83m5UgoCr5JbaSjTCQKQur/gQwbdJ6WaMAK5Vx
-         sxLGcxeuB2rVePMxV/3H6mkLodVaxuJ5HO7h2To7EUPTDWhoScVvTFSjnJnbNAPsfY+a
-         6nug==
-X-Gm-Message-State: AOAM533zNgPCvvfs64W1uFsH4sacjrfNFvzCPBrMzmTX66LrYP39KF8E
-        HJN2Hmf8eRndbw+34QDNJ9s=
-X-Google-Smtp-Source: ABdhPJzgF5vQKW9CktsXhzHxqL5P0NdJS/EhTQeiHwrB2+59n/ANj/ImRscuKpFQ1IFs7X2xt2haZg==
-X-Received: by 2002:a17:90a:67cb:: with SMTP id g11mr638142pjm.56.1599800647227;
-        Thu, 10 Sep 2020 22:04:07 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:54b8:5e43:7f25:9207])
-        by smtp.gmail.com with ESMTPSA id x140sm756153pfc.211.2020.09.10.22.04.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 22:04:06 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Subject: [PATCH net-next] net/packet: Fix a comment about hard_header_len and add a warning for it
-Date:   Thu, 10 Sep 2020 22:03:59 -0700
-Message-Id: <20200911050359.25042-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XFCN/rKe4bMqEFjiiLTtEHRCJj9MQsZ19jltg/H+fQ4=;
+        b=CEhq9s8/TsTyUc5FbkZvYd9q4QXBKOSWtV4s6LwjVuEf1GPogfEEooaZJlfjGh9qVC
+         VkZcF9ZERTpZvsPxEM3YbKtpDnxuAUYPfuT9N0F9TYELasqSpbg7F/csJXed5AeeuUuJ
+         y2KuoXi7XBS3yrqCkSiiKmBgH4wHQb7zzrSN4Y5tQyjbo8ZgC7ySfUtBF8KGsX1H8Xt3
+         O4YiCiev5Fba1/+eju5r0gNL9h2ldzmL5aJA0EGA6iiNx8NGZ7cGmnG7LK283xqL1o7I
+         /9v7Q1OJ58Ep47RdVfPHXANl7tBlf0tqkNPyoO15HS+NMJLwoE6l/EuMVIiHe/K4qFhu
+         WYJQ==
+X-Gm-Message-State: AOAM5300ozTK4YRYDcb6n9SSlNzwpOVTWtIe9FqTJHWn9K20p9j6P2Lk
+        hgASMXI+p9O9YVfcEnxYXCp3C16fr94Fg8+xDaM=
+X-Google-Smtp-Source: ABdhPJyMLmG3C2wkKGLNgnG3ZcpVC9P0+WFucTFUNbS+xI7sVK15sjQmlBS9LEtORCBr0t5/p44ahYzTBhwqTFXoy0w=
+X-Received: by 2002:aca:c50b:: with SMTP id v11mr343269oif.76.1599803630949;
+ Thu, 10 Sep 2020 22:53:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200909084510.648706-2-allen.lkml@gmail.com> <20200909.110956.600909796407174509.davem@davemloft.net>
+ <CAOMdWSKQxbKzo6z9BBO=0HPCxSs1nt8ArAe5zi_X5cPQhtnUVA@mail.gmail.com> <20200909.143324.405366987951760976.davem@davemloft.net>
+In-Reply-To: <20200909.143324.405366987951760976.davem@davemloft.net>
+From:   Allen <allen.lkml@gmail.com>
+Date:   Fri, 11 Sep 2020 11:23:39 +0530
+Message-ID: <CAOMdWSKgpfk=VvCYLjouAVC7Z9fFrh-bCHs0phJrjBgLenVpfw@mail.gmail.com>
+Subject: Re: [PATCH v2 01/20] ethernet: alteon: convert tasklets to use new
+ tasklet_setup() API
+To:     David Miller <davem@davemloft.net>
+Cc:     jes@trained-monkey.org, Jakub Kicinski <kuba@kernel.org>,
+        dougmill@linux.ibm.com, cooldavid@cooldavid.org,
+        mlindner@marvell.com, stephen@networkplumber.org,
+        borisp@mellanox.com, netdev@vger.kernel.org,
+        Romain Perier <romain.perier@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch tries to clarify the difference between hard_header_len and
-needed_headroom by fixing an outdated comment and adding a WARN_ON_ONCE
-warning for hard_header_len.
+>
+> >>
+> >> > @@ -1562,10 +1562,11 @@ static void ace_watchdog(struct net_device *data, unsigned int txqueue)
+> >> >  }
+> >> >
+> >> >
+> >> > -static void ace_tasklet(unsigned long arg)
+> >> > +static void ace_tasklet(struct tasklet_struct *t)
+> >> >  {
+> >> > -     struct net_device *dev = (struct net_device *) arg;
+> >> > -     struct ace_private *ap = netdev_priv(dev);
+> >> > +     struct ace_private *ap = from_tasklet(ap, t, ace_tasklet);
+> >> > +     struct net_device *dev = (struct net_device *)((char *)ap -
+> >> > +                             ALIGN(sizeof(struct net_device), NETDEV_ALIGN));
+> >> >       int cur_size;
+> >> >
+> >>
+> >> I don't see this is as an improvement.  The 'dev' assignment looks so
+> >> incredibly fragile and exposes so many internal details about netdev
+> >> object allocation, alignment, and layout.
+> >>
+> >> Who is going to find and fix this if someone changes how netdev object
+> >> allocation works?
+> >>
+> >
+> > Thanks for pointing it out. I'll see if I can fix it to keep it simple.
+>
+> Just add a backpointer to the netdev from the netdev_priv() if you
+> absolutely have too.
+>
 
-The difference between hard_header_len and needed_headroom as understood
-by this patch is based on the following reasons:
+Okay.
 
-1.
+> >> I don't want to apply this, it sets a very bad precedent.  The existing
+> >> code is so much cleaner and easier to understand and audit.
+> >
+> > Will you pick the rest of the patches or would they have to wait till
+> > this one is
+> > fixed.
+>
+> I never pick up a partial series, ever.  So yes you will have to fix these
+> two patches up and resubmit the entire thing.
+>
 
-In af_packet.c, the function packet_snd first reserves a headroom of
-length (dev->hard_header_len + dev->needed_headroom).
-Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
-which calls dev->header_ops->create, to create the link layer header.
-If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
-length (dev->hard_header_len), and checks if the user has provided a
-header sized between (dev->min_header_len) and (dev->hard_header_len)
-(in dev_validate_header).
-This shows the developers of af_packet.c expect hard_header_len to
-be consistent with header_ops.
+Sure, let me get these fixed up and ready. Thanks.
 
-2.
-
-In af_packet.c, the function packet_sendmsg_spkt has a FIXME comment.
-That comment states that prepending an LL header internally in a driver
-is considered a bug. I believe this bug can be fixed by setting
-hard_header_len to 0, making the internal header completely invisible
-to af_packet.c (and requesting the headroom in needed_headroom instead).
-
-3.
-
-There is a commit for a WiFi driver:
-commit 9454f7a895b8 ("mwifiex: set needed_headroom, not hard_header_len")
-According to the discussion about it at:
-  https://patchwork.kernel.org/patch/11407493/
-The author tried to set the WiFi driver's hard_header_len to the Ethernet
-header length, and request additional header space internally needed by
-setting needed_headroom.
-This means this usage is already adopted by driver developers.
-
-Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Brian Norris <briannorris@chromium.org>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- net/packet/af_packet.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
-
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index af6c93ed9fa0..93c89d3b2511 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -93,12 +93,15 @@
- 
- /*
-    Assumptions:
--   - if device has no dev->hard_header routine, it adds and removes ll header
--     inside itself. In this case ll header is invisible outside of device,
--     but higher levels still should reserve dev->hard_header_len.
--     Some devices are enough clever to reallocate skb, when header
--     will not fit to reserved space (tunnel), another ones are silly
--     (PPP).
-+   - If the device has no dev->header_ops, there is no LL header visible
-+     above the device. In this case, its hard_header_len should be 0.
-+     The device may prepend its own header internally. In this case, its
-+     needed_headroom should be set to the space needed for it to add its
-+     internal header.
-+     For example, a WiFi driver pretending to be an Ethernet driver should
-+     set its hard_header_len to be the Ethernet header length, and set its
-+     needed_headroom to be (the real WiFi header length - the fake Ethernet
-+     header length).
-    - packet socket receives packets with pulled ll header,
-      so that SOCK_RAW should push it back.
- 
-@@ -2936,6 +2939,8 @@ static int packet_snd(struct socket *sock, struct msghdr *msg, size_t len)
- 	skb_reset_network_header(skb);
- 
- 	err = -EINVAL;
-+	if (!dev->header_ops)
-+		WARN_ON_ONCE(dev->hard_header_len != 0);
- 	if (sock->type == SOCK_DGRAM) {
- 		offset = dev_hard_header(skb, dev, ntohs(proto), addr, NULL, len);
- 		if (unlikely(offset < 0))
 -- 
-2.25.1
-
+       - Allen
