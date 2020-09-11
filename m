@@ -2,108 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3163A2662FF
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12EA6266397
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726627AbgIKQI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 12:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726623AbgIKQIn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 12:08:43 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6446AC061573
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 09:08:43 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id kk9so1919988pjb.2
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 09:08:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=izrzznmOoirVUIUera9Lalk6QOtGypN3++OJeh5FIuY=;
-        b=NCB7T0mLQKHt6WV9aA711VsYPNdi8QsdC+ncR4NSwi9m3o15RBaaFLUM7PoWNaI+uG
-         te9N3N2D1CV3GWG1YKBNuhCZVdHTRavD5W0E6haOPXu/ebx9gMnyKuDUtXjxRb2guHGK
-         pKR5cWpMiFoThQDinJK/3oNAqYkAVDuPiJL8Oh/DF1MjFfhhQj9vKN7BpxfquUL9if1c
-         LLVMAZu2xnxsbmP4a2XmIo1NpnTPzW1TD8RhvVQioJHgkmK86GSzfXmmBs757hdonrRK
-         MwVF33tLId5eexNvxgpAJw+dJGyvgnVAcmaeAGNOhnKpHFRrnqrhJYRO5pS2S0zC+YXX
-         QoWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=izrzznmOoirVUIUera9Lalk6QOtGypN3++OJeh5FIuY=;
-        b=Qk82C/qu6XLSXsNR15ae7LHrIf4+wJVn309H4fN7ptcOLRfXfI46YwhCIfILuAGE/M
-         qUYf2nWeNVwlFQVUNq1OCMzXxOkpn586+dIa4h2NsJy9WlmpOo3PeLmWqOEDf9E6A5nT
-         vUzdT72RrN2yFVKFrjNgUET6uTqTjH/B0kgcfTBy00oXt3v5LWrzfod9ligUN1YOX0Vc
-         XgzSswPvmmeSEDApcWwXhWiHtFOKg5U3lhYtHv2iaOOBnup/s01Kli/KJ/wuMClNfnKv
-         EP15szkoAIpK8jK2bIEj2WnhGj24yKdmLzk1hMRIyjNrJp6JChZUN/3QZff6t8usDG5E
-         H5Cw==
-X-Gm-Message-State: AOAM5327YyRfEJOdLzT7w3KomuS5l5xCZR0oTo8JUelAvw+VLLU8rRYK
-        WIwK+XN/eVWCyZ5dQ8FRKCI6qNZdiPE=
-X-Google-Smtp-Source: ABdhPJwDcEWntaQjqHLFQX1IgVW4+b5WmlVLcc6QVZ8J4dipLbYqMWAnf2fQanwTDtbDaSivLRC/8w==
-X-Received: by 2002:a17:90a:474c:: with SMTP id y12mr2685842pjg.150.1599840522872;
-        Fri, 11 Sep 2020 09:08:42 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id f4sm2748583pfa.125.2020.09.11.09.08.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Sep 2020 09:08:42 -0700 (PDT)
-Date:   Fri, 11 Sep 2020 09:08:39 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 7/7] net: mvpp2: ptp: add support for
- transmit timestamping
-Message-ID: <20200911160839.GA3559@hoboy>
-References: <20200908214727.GZ1551@shell.armlinux.org.uk>
- <E1kFlfN-0006di-Pu@rmk-PC.armlinux.org.uk>
- <20200909180047.GB24551@hoboy>
+        id S1726524AbgIKQU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 12:20:59 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:49339 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726400AbgIKQUt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 12:20:49 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 84AC29CC;
+        Fri, 11 Sep 2020 12:20:43 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 11 Sep 2020 12:20:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=U/9vnr
+        xYsW/ICAS+r72JYTj2vZDJ14bx1fcFLOSoRrs=; b=OuFoWioEIC3UMh8tEf9rSf
+        s6hnY8jUwIDwYyuLj5U84J1HuwGVkVpB1rMjfklnLKpoO/lMrNqNOkmdJlhvlPdO
+        1pZclLUya9d3gXYx94k22R7n5jDU/5JptU2JiLL19z1BZZiw4AqqTN07mTrOBtCp
+        07EnQ3RbD7hAiN1vA5XyHsfL5VnQ40BePmWeuq2CjCLdqTTdmCQQOMB2V6HOFdyo
+        COx33l3H5n+c3Bm2J1K9VrGrp3wc8TQJNidD2tRXyr1v8X+YtRca7ubTYvVDGc0Z
+        sJ8FKYJ6QQVGJqsIm4LWGZ5U8FPfW7nyG1Pwr/DIUwCFb+3FIOHqOd+VMfBFcQ1w
+        ==
+X-ME-Sender: <xms:2qNbX0qcMrnDWSl-uVT6ldCxFmLL61qJZXBq8-tcNff0xvG7WM7WQA>
+    <xme:2qNbX6ojJdvXIxtH-s98uesKoMZCIUBwXcZWiNS1k8o_owlNKOiwhVaPbxdBKWDQk
+    SpmnoykOLXj_10>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehledguddtudcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
+    leetnecukfhppeekgedrvddvledrfeeirddufedunecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:2qNbX5ND8_B70wDqJG4xUnz81Hxw0UEIc2mjaYez2F2U6jmfjk5Xuw>
+    <xmx:2qNbX75DsTC1-J7je-jPhA0c4FZk-4bZ1xlbNdLzaetc-EsRG8inUQ>
+    <xmx:2qNbXz5QwnF-5r5YcIfIX8LxvWK237YH_OGRBz0l6ouxbsh8WUV2Xw>
+    <xmx:26NbX1l_qhIv-cq74OUFAc_1eJKX3ekYnmvFwNAjVtjrd5vyOV0TwA>
+Received: from localhost (igld-84-229-36-131.inter.net.il [84.229.36.131])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7E9E7306467E;
+        Fri, 11 Sep 2020 12:20:42 -0400 (EDT)
+Date:   Fri, 11 Sep 2020 19:20:40 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        roopa@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 11/22] nexthop: Emit a notification when a
+ nexthop is added
+Message-ID: <20200911162040.GG3160975@shredder>
+References: <20200908091037.2709823-1-idosch@idosch.org>
+ <20200908091037.2709823-12-idosch@idosch.org>
+ <8568a626-0597-0904-c67c-a8badc4e270a@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200909180047.GB24551@hoboy>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <8568a626-0597-0904-c67c-a8badc4e270a@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 09, 2020 at 11:00:47AM -0700, Richard Cochran wrote:
-> On Tue, Sep 08, 2020 at 11:00:41PM +0100, Russell King wrote:
+On Tue, Sep 08, 2020 at 09:21:08AM -0600, David Ahern wrote:
+> On 9/8/20 3:10 AM, Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@nvidia.com>
+> > 
+> > Emit a notification in the nexthop notification chain when a new nexthop
+> > is added (not replaced). The nexthop can either be a new group or a
+> > single nexthop.
 > 
-> > +static bool mvpp2_tx_hw_tstamp(struct mvpp2_port *port,
-> > +			       struct mvpp2_tx_desc *tx_desc,
-> > +			       struct sk_buff *skb)
-> > +{
-> > +	unsigned int mtype, type, i, offset;
-> > +	struct mvpp2_hwtstamp_queue *queue;
-> > +	struct ptp_header *hdr;
-> > +	u64 ptpdesc;
-> > +
-> > +	if (port->priv->hw_version == MVPP21 ||
-> > +	    port->tx_hwtstamp_type == HWTSTAMP_TX_OFF)
-> > +		return false;
-> > +
-> > +	type = ptp_classify_raw(skb);
-> > +	if (!type)
-> > +		return false;
-> > +
-> > +	hdr = ptp_parse_header(skb, type);
-> > +	if (!hdr)
-> > +		return false;
-> 
-> At this point, the skb will be queued up to receive a transmit time
-> stamp, and so it should be marked with:
-> 
-> 	skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+> Add a comment about why EVENT_REPLACE is generated on an 'added (not
+> replaced)' event.
 
-Russell, since this series went in already, can you follow up with
-a patch for this please?
+Reworded:
 
-Thanks,
-Richard
+"
+nexthop: Emit a notification when a nexthop is added
+
+Emit a notification in the nexthop notification chain when a new nexthop
+is added (not replaced). The nexthop can either be a new group or a
+single nexthop.
+
+The notification is sent after the nexthop is inserted into the
+red-black tree, as listeners might need to callback into the nexthop
+code with the nexthop ID in order to mark the nexthop as offloaded.
+
+A 'REPLACE' notification is emitted instead of 'ADD' as the distinction
+between the two is not important for in-kernel listeners. In case the
+listener is not familiar with the encoded nexthop ID, it can simply
+treat it as a new one. This is also consistent with the route offload
+API.
+
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+"
+
+> 
+> > 
+> > The notification is sent after the nexthop is inserted into the
+> > red-black tree, as listeners might need to callback into the nexthop
+> > code with the nexthop ID in order to mark the nexthop as offloaded.
+> > 
+> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> > ---
+> >  include/net/nexthop.h | 3 ++-
+> >  net/ipv4/nexthop.c    | 6 +++++-
+> >  2 files changed, 7 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/include/net/nexthop.h b/include/net/nexthop.h
+> > index 4147681e86d2..6431ff8cdb89 100644
+> > --- a/include/net/nexthop.h
+> > +++ b/include/net/nexthop.h
+> > @@ -106,7 +106,8 @@ struct nexthop {
+> >  
+> >  enum nexthop_event_type {
+> >  	NEXTHOP_EVENT_ADD,
+> 
+> looks like the ADD event is not used and can be removed.
+
+Right. I will remove it in a separate patch
+
+> 
+> > -	NEXTHOP_EVENT_DEL
+> > +	NEXTHOP_EVENT_DEL,
+> > +	NEXTHOP_EVENT_REPLACE,
+> >  };
+> >  
+> >  struct nh_notifier_single_info {
+> > diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+> > index 71605c612458..1fa249facd46 100644
+> > --- a/net/ipv4/nexthop.c
+> > +++ b/net/ipv4/nexthop.c
+> > @@ -1277,7 +1277,11 @@ static int insert_nexthop(struct net *net, struct nexthop *new_nh,
+> >  
+> >  	rb_link_node_rcu(&new_nh->rb_node, parent, pp);
+> >  	rb_insert_color(&new_nh->rb_node, root);
+> > -	rc = 0;
+> > +
+> > +	rc = call_nexthop_notifiers(net, NEXTHOP_EVENT_REPLACE, new_nh, extack);
+> > +	if (rc)
+> > +		rb_erase(&new_nh->rb_node, &net->nexthop.rb_root);
+> > +
+> >  out:
+> >  	if (!rc) {
+> >  		nh_base_seq_inc(net);
+> > 
+> 
