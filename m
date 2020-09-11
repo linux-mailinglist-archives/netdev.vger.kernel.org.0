@@ -2,143 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AFBA2657FA
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 06:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41E6E265805
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 06:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725801AbgIKETU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 00:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbgIKETO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 00:19:14 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08E4C061573;
-        Thu, 10 Sep 2020 21:19:12 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id fa1so1088276pjb.0;
-        Thu, 10 Sep 2020 21:19:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3GKrvUiFlFciRX7VQdx8esQeBBFrNeZILayTSwTWG9g=;
-        b=O/twqk4z0+Ftxyy+kfi7ndIejydgPDPb7gfaVqjXEOnQEUq5VNVC4hlcd5cH9Vnp/4
-         E5H3b7OCINXOcu8PI6b103VXApOcIzphPdrhGGlYWu7BDji7L3TCJd5GT87fQ1MqZx7L
-         pOJZrf18tyrIGe84p/VfjbYgka1B99sVEBCFntut+2s7YkTGEE5xfgNreRc/K+3m3Gvr
-         JI7mC+Gr/9jCU6m1a8Visc+5n+uv2zE4rsLqljBKoQ+/qnC7HMwZFdHqIdbRZgBo4Q52
-         g9i3L+IsLG/v3vm9ekHoLGwVbGCZB7ecaWx5Re4orxJC2TEZweHfeqnQCokiKteIOFi0
-         si/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3GKrvUiFlFciRX7VQdx8esQeBBFrNeZILayTSwTWG9g=;
-        b=smDho3sMGTPiLITzspjSRig6CW9tAKM66oCe7tr5IZV3a1Pep8sqMfNZEOA4IbgaNs
-         17wrZDpiLdixipkLeui7Omxl2uYkQQo3YMTEbsCGnSRZn6d+AP6uOpn+01w6hqDH/LcF
-         GTB3fgdAH5w2rwmHfh7OpfnI0Jm5GFZ0yezOjgntwMbFOLVmTSHxK/crIC+/1DKBKUEu
-         cLdQvgzWWI26YtA5E6t6dGEppVC8OecX6786ZBmzF7Qy4RxaM5XmwmriKKzFls8U+vt3
-         GcGXoYypcRYtilGvFMrhKFpmhWkOd6ygHHzq3D8GBm64NANhmnYrfB0oama45vFAhGuD
-         d/wg==
-X-Gm-Message-State: AOAM530khIHdS8LZJF/xkc9dRjpUU5fsRnuUAsHpeJYTBqQ4Dxn5oXYb
-        p8odOJ8nCPweHGbsNg+h5w07KDVZQw0=
-X-Google-Smtp-Source: ABdhPJxm8ZAn4MLLQXmqYeEclMvS7tgMlxh0wah1WLYGH8L+tUn4lLA/u5kH+I5qeVM4paD5/9ti9Q==
-X-Received: by 2002:a17:90a:f407:: with SMTP id ch7mr489565pjb.142.1599797951051;
-        Thu, 10 Sep 2020 21:19:11 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s9sm493201pgm.40.2020.09.10.21.19.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 21:19:10 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     olteanv@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net-next] net: dsa: b53: Configure VLANs while not filtering
-Date:   Thu, 10 Sep 2020 21:19:05 -0700
-Message-Id: <20200911041905.58191-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1725843AbgIKETy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 00:19:54 -0400
+Received: from smtprelay0064.hostedemail.com ([216.40.44.64]:51536 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725283AbgIKETs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 00:19:48 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 12942837F24A;
+        Fri, 11 Sep 2020 04:19:43 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2198:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3870:3871:3872:3874:4321:5007:6742:6743:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12297:12438:12555:12740:12760:12895:13153:13161:13228:13229:13439:14096:14097:14181:14659:14721:21080:21433:21627:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: seat91_4d0f80d270eb
+X-Filterd-Recvd-Size: 4376
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf19.hostedemail.com (Postfix) with ESMTPA;
+        Fri, 11 Sep 2020 04:19:36 +0000 (UTC)
+Message-ID: <f4ad706519917d493a0af32ea2da8565227cc74a.camel@perches.com>
+Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
+ break;
+From:   Joe Perches <joe@perches.com>
+To:     Robin Murphy <robin.murphy@arm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jiri Kosina <trivial@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        oss-drivers@netronome.com, nouveau@lists.freedesktop.org,
+        alsa-devel <alsa-devel@alsa-project.org>,
+        dri-devel@lists.freedesktop.org, linux-ide@vger.kernel.org,
+        dm-devel@redhat.com, linux-mtd@lists.infradead.org,
+        linux-i2c@vger.kernel.org, sparclinux@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu, linux-rtc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org,
+        dccp@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-atm-general@lists.sourceforge.net,
+        linux-afs@lists.infradead.org, coreteam@netfilter.org,
+        intel-wired-lan@lists.osuosl.org, linux-serial@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Kees Cook <kees.cook@canonical.com>,
+        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, linux-sctp@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-nvme@lists.infradead.org,
+        storagedev@microchip.com, ceph-devel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org,
+        netfilter-devel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        bpf@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Will Deacon <will@kernel.org>
+Date:   Thu, 10 Sep 2020 21:19:35 -0700
+In-Reply-To: <9372456a-8dcf-2735-57a4-e126aa5df3a6@arm.com>
+References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
+         <9372456a-8dcf-2735-57a4-e126aa5df3a6@arm.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the B53 driver to support VLANs while not filtering. This
-requires us to enable VLAN globally within the switch upon driver
-initial configuration (dev->vlan_enabled).
+On Thu, 2020-09-10 at 15:21 +0100, Robin Murphy wrote:
+> On 2020-09-09 21:06, Joe Perches wrote:
+> > fallthrough to a separate case/default label break; isn't very readable.
+> > 
+> > Convert pseudo-keyword fallthrough; statements to a simple break; when
+> > the next label is case or default and the only statement in the next
+> > label block is break;
+> > 
+> > Found using:
+> > 
+> > $ grep-2.5.4 -rP --include=*.[ch] -n "fallthrough;(\s*(case\s+\w+|default)\s*:\s*){1,7}break;" *
+> > 
+> > Miscellanea:
+> > 
+> > o Move or coalesce a couple label blocks above a default: block.
+> > 
+> > Signed-off-by: Joe Perches <joe@perches.com>
+> > ---
+> > 
+> > Compiled allyesconfig x86-64 only.
+> > A few files for other arches were not compiled.
+> > 
+> 
+> [...]
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index c192544e874b..743db1abec40 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -3777,7 +3777,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+> >   	switch (FIELD_GET(IDR0_TTF, reg)) {
+> >   	case IDR0_TTF_AARCH32_64:
+> >   		smmu->ias = 40;
+> > -		fallthrough;
+> > +		break;
+> >   	case IDR0_TTF_AARCH64:
+> >   		break;
+> >   	default:
+> 
+> I have to say I don't really agree with the readability argument for 
+> this one - a fallthrough is semantically correct here, since the first 
+> case is a superset of the second. It just happens that anything we would 
+> do for the common subset is implicitly assumed (there are other 
+> potential cases we simply haven't added support for at the moment), thus 
+> the second case is currently empty.
+> This change actively obfuscates that distinction.
 
-We also need to remove the code that dealt with PVID re-configuration in
-b53_vlan_filtering() since that function worked under the assumption
-that it would only be called to make a bridge VLAN filtering, or not
-filtering, and we would attempt to move the port's PVID accordingly.
+Then perhaps comments should be added to usefully
+describe the mechanisms.
 
-Now that VLANs are programmed all the time, even in the case of a
-non-VLAN filtering bridge, we would be programming a default_pvid for
-the bridged switch ports.
+	case IDR0_TTF_AARCH32_64:
+		smmu->ias = 40;
+		fallthrough;	/* and still do the 64 bit processing */
+	case IDR0_TTF_AARCH64:
+		/* Nothing specific yet */
+		break;
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/b53/b53_common.c | 23 ++++-------------------
- 1 file changed, 4 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 6a5796c32721..46ac8875f870 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1377,23 +1377,6 @@ EXPORT_SYMBOL(b53_phylink_mac_link_up);
- int b53_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering)
- {
- 	struct b53_device *dev = ds->priv;
--	u16 pvid, new_pvid;
--
--	b53_read16(dev, B53_VLAN_PAGE, B53_VLAN_PORT_DEF_TAG(port), &pvid);
--	if (!vlan_filtering) {
--		/* Filtering is currently enabled, use the default PVID since
--		 * the bridge does not expect tagging anymore
--		 */
--		dev->ports[port].pvid = pvid;
--		new_pvid = b53_default_pvid(dev);
--	} else {
--		/* Filtering is currently disabled, restore the previous PVID */
--		new_pvid = dev->ports[port].pvid;
--	}
--
--	if (pvid != new_pvid)
--		b53_write16(dev, B53_VLAN_PAGE, B53_VLAN_PORT_DEF_TAG(port),
--			    new_pvid);
- 
- 	b53_enable_vlan(dev, dev->vlan_enabled, vlan_filtering);
- 
-@@ -1444,7 +1427,7 @@ void b53_vlan_add(struct dsa_switch *ds, int port,
- 			untagged = true;
- 
- 		vl->members |= BIT(port);
--		if (untagged && !dsa_is_cpu_port(ds, port))
-+		if (untagged)
- 			vl->untag |= BIT(port);
- 		else
- 			vl->untag &= ~BIT(port);
-@@ -1482,7 +1465,7 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
- 		if (pvid == vid)
- 			pvid = b53_default_pvid(dev);
- 
--		if (untagged && !dsa_is_cpu_port(ds, port))
-+		if (untagged)
- 			vl->untag &= ~(BIT(port));
- 
- 		b53_set_vlan_entry(dev, vid, vl);
-@@ -2619,6 +2602,8 @@ struct b53_device *b53_switch_alloc(struct device *base,
- 	dev->priv = priv;
- 	dev->ops = ops;
- 	ds->ops = &b53_switch_ops;
-+	ds->configure_vlan_while_not_filtering = true;
-+	dev->vlan_enabled = ds->configure_vlan_while_not_filtering;
- 	mutex_init(&dev->reg_mutex);
- 	mutex_init(&dev->stats_mutex);
- 
--- 
-2.25.1
+> Robin.
 
