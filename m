@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2DF3266937
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 21:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 093F226693C
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 21:54:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725926AbgIKTxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 15:53:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49244 "EHLO mail.kernel.org"
+        id S1725876AbgIKTxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 15:53:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49312 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725802AbgIKTxJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725803AbgIKTxJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 11 Sep 2020 15:53:09 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1F5DE22209;
+        by mail.kernel.org (Postfix) with ESMTPSA id A26662220E;
         Fri, 11 Sep 2020 19:53:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599853988;
-        bh=KJF7bJVcFHTp+5exX6TlKst7sG/NZgxplJI4PAsSJCQ=;
+        s=default; t=1599853989;
+        bh=e+iu3g+odibO937wxbU1JF1UHo75F87EhphvuzygCVs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y8G2J5M9aumFjVfygDWvN+wxOLMJaCZt+R10ChBHTuOusf2IRa8FdwIzAMzM/WrtL
-         kXtusrSNrJbIkzvlXj9U7pnT9n9obLLCza23ladM/GnGuYXpJPvp+okkiYuHvSYntR
-         fLOz4M9JLjIzRa34ukPjPCN5DD8ivoqdbui0kU9U=
+        b=cWUSM37h7IN5C4EaCZAZMnZRmLwsa1zl72IZvSkX7t4Ii+jn4njLRtY4oibbSF+YY
+         O+O79bNWEz9MZpgIGPKFkKvfPESMWnCdHxA2DJ9k1k7d9xjKIoqnpCFKl2pF5HRQp/
+         RvdKDU2m3Cvd5R5WditpDzsywEaSbLpT5l8xSq0Q=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
         michael.chan@broadcom.com, tariqt@nvidia.com, saeedm@nvidia.com,
         alexander.duyck@gmail.com, andrew@lunn.ch,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 3/8] netdevsim: add pause frame stats
-Date:   Fri, 11 Sep 2020 12:52:53 -0700
-Message-Id: <20200911195258.1048468-4-kuba@kernel.org>
+Subject: [PATCH net-next 4/8] selftests: add a test for ethtool pause stats
+Date:   Fri, 11 Sep 2020 12:52:54 -0700
+Message-Id: <20200911195258.1048468-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200911195258.1048468-1-kuba@kernel.org>
 References: <20200911195258.1048468-1-kuba@kernel.org>
@@ -42,147 +42,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add minimal ethtool interface for testing ethtool pause stats.
+Make sure the empty nest is reported even without stats.
+Make sure reporting only selected stats works fine.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/netdevsim/Makefile    |  2 +-
- drivers/net/netdevsim/ethtool.c   | 64 +++++++++++++++++++++++++++++++
- drivers/net/netdevsim/netdev.c    |  1 +
- drivers/net/netdevsim/netdevsim.h | 11 ++++++
- 4 files changed, 77 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/netdevsim/ethtool.c
+ .../drivers/net/netdevsim/ethtool-pause.sh    | 108 ++++++++++++++++++
+ 1 file changed, 108 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/netdevsim/ethtool-pause.sh
 
-diff --git a/drivers/net/netdevsim/Makefile b/drivers/net/netdevsim/Makefile
-index 4dfb389dbfd8..ade086eed955 100644
---- a/drivers/net/netdevsim/Makefile
-+++ b/drivers/net/netdevsim/Makefile
-@@ -3,7 +3,7 @@
- obj-$(CONFIG_NETDEVSIM) += netdevsim.o
- 
- netdevsim-objs := \
--	netdev.o dev.o fib.o bus.o health.o udp_tunnels.o
-+	netdev.o dev.o ethtool.o fib.o bus.o health.o udp_tunnels.o
- 
- ifeq ($(CONFIG_BPF_SYSCALL),y)
- netdevsim-objs += \
-diff --git a/drivers/net/netdevsim/ethtool.c b/drivers/net/netdevsim/ethtool.c
-new file mode 100644
-index 000000000000..7c016edfbcee
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/ethtool-pause.sh b/tools/testing/selftests/drivers/net/netdevsim/ethtool-pause.sh
+new file mode 100755
+index 000000000000..dd6ad6501c9c
 --- /dev/null
-+++ b/drivers/net/netdevsim/ethtool.c
-@@ -0,0 +1,64 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2020 Facebook
++++ b/tools/testing/selftests/drivers/net/netdevsim/ethtool-pause.sh
+@@ -0,0 +1,108 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0-only
 +
-+#include <linux/debugfs.h>
-+#include <linux/ethtool.h>
-+#include <linux/random.h>
++NSIM_ID=$((RANDOM % 1024))
++NSIM_DEV_SYS=/sys/bus/netdevsim/devices/netdevsim$NSIM_ID
++NSIM_DEV_DFS=/sys/kernel/debug/netdevsim/netdevsim$NSIM_ID
++NSIM_NETDEV=
++num_passes=0
++num_errors=0
 +
-+#include "netdevsim.h"
-+
-+static void
-+nsim_get_pause_stats(struct net_device *dev,
-+		     struct ethtool_pause_stats *pause_stats)
-+{
-+	struct netdevsim *ns = netdev_priv(dev);
-+
-+	if (ns->ethtool.report_stats_rx)
-+		pause_stats->rx_pause_frames = 1;
-+	if (ns->ethtool.report_stats_tx)
-+		pause_stats->tx_pause_frames = 2;
++function cleanup_nsim {
++    if [ -e $NSIM_DEV_SYS ]; then
++	echo $NSIM_ID > /sys/bus/netdevsim/del_device
++    fi
 +}
 +
-+static void
-+nsim_get_pauseparam(struct net_device *dev, struct ethtool_pauseparam *pause)
-+{
-+	struct netdevsim *ns = netdev_priv(dev);
-+
-+	pause->autoneg = 0; /* We don't support ksettings, so can't pretend */
-+	pause->rx_pause = ns->ethtool.rx;
-+	pause->tx_pause = ns->ethtool.tx;
++function cleanup {
++    cleanup_nsim
 +}
 +
-+static int
-+nsim_set_pauseparam(struct net_device *dev, struct ethtool_pauseparam *pause)
-+{
-+	struct netdevsim *ns = netdev_priv(dev);
++trap cleanup EXIT
 +
-+	if (pause->autoneg)
-+		return -EINVAL;
++function get_netdev_name {
++    local -n old=$1
 +
-+	ns->ethtool.rx = pause->rx_pause;
-+	ns->ethtool.tx = pause->tx_pause;
-+	return 0;
++    new=$(ls /sys/class/net)
++
++    for netdev in $new; do
++	for check in $old; do
++            [ $netdev == $check ] && break
++	done
++
++	if [ $netdev != $check ]; then
++	    echo $netdev
++	    break
++	fi
++    done
 +}
 +
-+const struct ethtool_ops nsim_ethtool_ops = {
-+	.get_pause_stats	= nsim_get_pause_stats,
-+	.get_pauseparam		= nsim_get_pauseparam,
-+	.set_pauseparam		= nsim_set_pauseparam,
-+};
++function check {
++    local code=$1
++    local str=$2
++    local exp_str=$3
 +
-+void nsim_ethtool_init(struct netdevsim *ns)
-+{
-+	struct dentry *ethtool, *dir;
++    if [ $code -ne 0 ]; then
++	((num_errors++))
++	return
++    fi
 +
-+	ns->netdev->ethtool_ops = &nsim_ethtool_ops;
++    if [ "$str" != "$exp_str"  ]; then
++	echo -e "Expected: '$exp_str', got '$str'"
++	((num_errors++))
++	return
++    fi
 +
-+	ethtool = debugfs_create_dir("ethtool", ns->nsim_dev->ddir);
-+
-+	dir = debugfs_create_dir("pause", ethtool);
-+	debugfs_create_bool("report_stats_rx", 0600, dir,
-+			    &ns->ethtool.report_stats_rx);
-+	debugfs_create_bool("report_stats_tx", 0600, dir,
-+			    &ns->ethtool.report_stats_tx);
++    ((num_passes++))
 +}
-diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
-index 97cfb015a50b..7178468302c8 100644
---- a/drivers/net/netdevsim/netdev.c
-+++ b/drivers/net/netdevsim/netdev.c
-@@ -301,6 +301,7 @@ nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port)
- 	ns->nsim_bus_dev = nsim_dev->nsim_bus_dev;
- 	SET_NETDEV_DEV(dev, &ns->nsim_bus_dev->dev);
- 	dev->netdev_ops = &nsim_netdev_ops;
-+	nsim_ethtool_init(ns);
- 
- 	err = nsim_udp_tunnels_info_create(nsim_dev, dev);
- 	if (err)
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 284f7092241d..0c86561e6d8d 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -50,6 +50,13 @@ struct nsim_ipsec {
- 	u32 ok;
- };
- 
-+struct nsim_ethtool {
-+	bool rx;
-+	bool tx;
-+	bool report_stats_rx;
-+	bool report_stats_tx;
-+};
 +
- struct netdevsim {
- 	struct net_device *netdev;
- 	struct nsim_dev *nsim_dev;
-@@ -80,12 +87,16 @@ struct netdevsim {
- 		u32 ports[2][NSIM_UDP_TUNNEL_N_PORTS];
- 		struct debugfs_u32_array dfs_ports[2];
- 	} udp_ports;
++# Bail if ethtool is too old
++if ! ethtool -h | grep include-stat 2>&1 >/dev/null; then
++    echo "SKIP: No --include-statistics support in ethtool"
++    exit 4
++fi
 +
-+	struct nsim_ethtool ethtool;
- };
- 
- struct netdevsim *
- nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port);
- void nsim_destroy(struct netdevsim *ns);
- 
-+void nsim_ethtool_init(struct netdevsim *ns);
++# Make a netdevsim
++old_netdevs=$(ls /sys/class/net)
 +
- void nsim_udp_tunnels_debugfs_create(struct nsim_dev *nsim_dev);
- int nsim_udp_tunnels_info_create(struct nsim_dev *nsim_dev,
- 				 struct net_device *dev);
++modprobe netdevsim
++echo $NSIM_ID > /sys/bus/netdevsim/new_device
++
++NSIM_NETDEV=`get_netdev_name old_netdevs`
++
++set -o pipefail
++
++echo n > $NSIM_DEV_DFS/ethtool/pause/report_stats_tx
++echo n > $NSIM_DEV_DFS/ethtool/pause/report_stats_rx
++
++s=$(ethtool --json -a $NSIM_NETDEV | jq '.[].statistics')
++check $? "$s" "null"
++
++s=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics')
++check $? "$s" "{}"
++
++echo y > $NSIM_DEV_DFS/ethtool/pause/report_stats_tx
++
++s=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics | length')
++check $? "$s" "1"
++
++s=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics.tx_pause_frames')
++check $? "$s" "2"
++
++echo y > $NSIM_DEV_DFS/ethtool/pause/report_stats_rx
++
++s=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics | length')
++check $? "$s" "2"
++
++s=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics.rx_pause_frames')
++check $? "$s" "1"
++s=$(ethtool -I --json -a $NSIM_NETDEV | jq '.[].statistics.tx_pause_frames')
++check $? "$s" "2"
++
++if [ $num_errors -eq 0 ]; then
++    echo "PASSED all $((num_passes)) checks"
++    exit 0
++else
++    echo "FAILED $num_errors/$((num_errors+num_passes)) checks"
++    exit 1
++fi
 -- 
 2.26.2
 
