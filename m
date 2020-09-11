@@ -2,58 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 629A72663E0
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:26:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 655CA2663D4
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:25:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbgIKQ0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 12:26:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55360 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726473AbgIKPWi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 11:22:38 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D9045207FB;
-        Fri, 11 Sep 2020 15:22:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599837758;
-        bh=KF+SM6aIBn3OyO0eNQnwwx03nzA7TACIYZpv2J3yp9U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hL7tU/I7nOYzJMA3X+i0rXaLApWXobE3+fvOXtf3FWFs6x5uOh1ldSI2Nn3622sqO
-         qbeRDbQxp0x5TTrJlufODjVjBx/z3ROjAU5LyPyg6emXJms11cAxZNOHgrm1520xiM
-         vZEIm5Pmnpkw3KeaX9FCl3fKGAEmxbXcm4TLbx+s=
-Date:   Fri, 11 Sep 2020 08:22:36 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        David Miller <davem@davemloft.net>, andrew@lunn.ch,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH net-next] net: mvpp2: Initialize link in
- mvpp2_isr_handle_{xlg,gmac_internal}
-Message-ID: <20200911082236.7dfb7937@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200911111158.GF1551@shell.armlinux.org.uk>
-References: <20200910174826.511423-1-natechancellor@gmail.com>
-        <20200910.152811.210183159970625640.davem@davemloft.net>
-        <20200911003142.GA2469103@ubuntu-n2-xlarge-x86>
-        <20200911111158.GF1551@shell.armlinux.org.uk>
+        id S1726299AbgIKQZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 12:25:34 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:41815 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726480AbgIKP0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:26:15 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id C82D4308;
+        Fri, 11 Sep 2020 11:26:04 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 11 Sep 2020 11:26:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=mFlqUt
+        /8BLKg7P43W/phyBdp9DFVhBsV70oZNNCSdio=; b=mwDhN41fxSABGCCjXtujRl
+        w7fgjU+jAu14hqbEDFctJqb5cvSgXQVZ1oOIOE+pkNq276BwM74dQus4orHYuz0V
+        3Fn4fKYFK13S0iMwd/zfUDWeEjn+Sr51yf2KUfG+WCThY7blzcI8AsLgcuhwGCNk
+        JFOcuBdrGifTnwgA3uj+f2klkUrT7c7jF9vjKKCRGfIbojk9dWaIxZQqZWp+ZtKN
+        /G/+fHeogPD3fyqms8ovPlKV887Jt4gsdfdZ09FNmRrBE0bx3rU2FL/jkLpU0iuN
+        QVP1/SUa8N9RbcysVxq61ajyB5Nm7oRciO0Obt2GxxemaFjRl4FR+dkxbAjZs5/Q
+        ==
+X-ME-Sender: <xms:DJdbXwHKdWLUHZVwPAQvdoz5NFXOOBqX1PPw3bHR1lGlNw3sIkpnog>
+    <xme:DJdbX5UEhh7qwuRoSgmdQlA6xok9NocRceNSEHJB_0TWMDX_Sk0yTiFvOmzXMd3qJ
+    aKrLZNyLGIxjjc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehledgledtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdefiedrudefudenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:DJdbX6Ip6s2ujrRKMKBbPp88lDXfc68MbsxzSuI4u-yJu-tBZuMtVg>
+    <xmx:DJdbXyGyVjDYDHZpIjzl-pFhnezdJ34puYzUjOd7xJDPNmkiARqZeA>
+    <xmx:DJdbX2VCo4kUy6koiznqZCPk5jYDrbYGJJgWrNQkxVb6P6Lvd6Ic8A>
+    <xmx:DJdbX1R8XEr2Vzvz02K1MNB6GEmeTV8PR7PaLV2F-DIgU0M4LoaOVw>
+Received: from localhost (igld-84-229-36-131.inter.net.il [84.229.36.131])
+        by mail.messagingengine.com (Postfix) with ESMTPA id C7D0E3064683;
+        Fri, 11 Sep 2020 11:26:03 -0400 (EDT)
+Date:   Fri, 11 Sep 2020 18:26:01 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        roopa@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next 09/22] rtnetlink: Add RTNH_F_TRAP flag
+Message-ID: <20200911152601.GE3160975@shredder>
+References: <20200908091037.2709823-1-idosch@idosch.org>
+ <20200908091037.2709823-10-idosch@idosch.org>
+ <c7159988-c052-0a5c-8b6b-670fd16be1ac@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c7159988-c052-0a5c-8b6b-670fd16be1ac@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Sep 2020 12:11:58 +0100 Russell King - ARM Linux admin wrote:
-> On Thu, Sep 10, 2020 at 05:31:42PM -0700, Nathan Chancellor wrote:
-> > Ah great, that is indeed cleaner, thank you for letting me know!  
+On Tue, Sep 08, 2020 at 09:02:33AM -0600, David Ahern wrote:
+> On 9/8/20 3:10 AM, Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@nvidia.com>
+> > 
+> > The flag indicates to user space that the nexthop is not programmed to
+> > forward packets in hardware, but rather to trap them.
 > 
-> Hmm, I'm not sure why gcc didn't find that. Strangely, the 0-day bot
-> seems to have only picked up on it with clang, not gcc.
+> please elaborate in the commit message on what 'trap' is doing. I most
+> likely will forget a few years from now.
 
-May be similar to: https://lkml.org/lkml/2019/2/25/1092
+Reworded to:
 
-Recent GCC is so bad at catching uninitialized vars I was considering
-build testing with GCC8 :/
+"
+rtnetlink: Add RTNH_F_TRAP flag
+
+The flag indicates to user space that the nexthop is not programmed to
+forward packets in hardware, but rather to trap them to the CPU. This is
+needed, for example, when the MAC of the nexthop neighbour is not
+resolved and packets should reach the CPU to trigger neighbour
+resolution.
+
+The flag will be used in subsequent patches by netdevsim to test nexthop
+objects programming to device drivers and in the future by mlxsw as
+well.
+
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reviewed-by: David Ahern <dsahern@gmail.com>
+"
+
+> 
+> > 
+> > The flag will be used in subsequent patches by netdevsim to test nexthop
+> > objects programming to device drivers and in the future by mlxsw as
+> > well.
+> > 
+> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> > ---
+> >  include/uapi/linux/rtnetlink.h | 6 ++++--
+> >  net/ipv4/fib_semantics.c       | 2 ++
+> >  2 files changed, 6 insertions(+), 2 deletions(-)
+> > 
+> 
+> Reviewed-by: David Ahern <dsahern@gmail.com>
