@@ -2,123 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E66EF2663C7
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BCD42663D1
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726228AbgIKQYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 12:24:39 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:43297 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726520AbgIKQYP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 12:24:15 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 8FCEC7F4;
-        Fri, 11 Sep 2020 12:24:14 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 11 Sep 2020 12:24:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ezMXG/
-        O1bJ0zRA6GvHA/4RhMFSGng5JDD1saqOq5JYk=; b=h3Sp4nWtdS/3hCqP2aVjT7
-        SzDDSoL+FcU5eVEhZyQ0Ky01Hx8OviXnXYCqvTNwgeahqjwEOaKzpd9q4+8IzTvH
-        uuHJ+DNLQ4G4ZNMTZWG1fJTNfLNzr8QjmJIPeB05E4Nvuf2HPvYyMRVKdFO0f5rJ
-        nb05dz7JMJWvHy/HrbiPQJUgGMdpM+rNdQB1bMbJKQp7ofNWE/w5BUzlFqc8/J6A
-        JRDWnEnom7Sue4MD3vwMY1M9kNZE3/Ess7QBDQ9uYreKQvmAT3h8n8qzWIyoySJ6
-        pD7KlBX+zWFyRbbHriw9BzmIrI1XnxwaqFaQNLOmAm9niB8nTOzZkrlaYiv7q46w
-        ==
-X-ME-Sender: <xms:raRbXzmMMhzlKqwHY5TIk-pRnta0r7bPMGGImE2CXvcMiIIF1U5Dtw>
-    <xme:raRbX20GA2YnA-3klFGH7Tu6rx1a-Jl3333OE5yQoyXLT_gbGvXVIsLDQsZD9yOdq
-    RlYilKEG8bBBHY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehledguddtvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudeh
-    leetnecukfhppeekgedrvddvledrfeeirddufedunecuvehluhhsthgvrhfuihiivgeptd
-    enucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:raRbX5oC7JC_Uii_pgVQsRPg_jll2WrzLmPM4pehAhdFS6dq5R-gKw>
-    <xmx:raRbX7njrvUpcFa-WDj75H12OQyV7MdEIGzQkcGAGRcu9bCAIVj7qA>
-    <xmx:raRbXx3w3lSYma_c0AMbq8RhRIJK8MByISEB0HaGrLOP_el8oaxyWQ>
-    <xmx:rqRbX6xWCTKXq5Ga8Qg2EBOW2aWnz46-OaZhaDpx1BngwdkETLF98w>
-Received: from localhost (igld-84-229-36-131.inter.net.il [84.229.36.131])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8C4DC3280060;
-        Fri, 11 Sep 2020 12:24:13 -0400 (EDT)
-Date:   Fri, 11 Sep 2020 19:24:11 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        roopa@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next 13/22] nexthop: Emit a notification when a
- single nexthop is replaced
-Message-ID: <20200911162411.GH3160975@shredder>
-References: <20200908091037.2709823-1-idosch@idosch.org>
- <20200908091037.2709823-14-idosch@idosch.org>
- <d7df0551-f8ac-4c9d-5bcc-5ec67908fce1@gmail.com>
+        id S1726622AbgIKQZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 12:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42984 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726260AbgIKQZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 12:25:35 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 934ABC061756;
+        Fri, 11 Sep 2020 09:25:35 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id a9so1966957pjg.1;
+        Fri, 11 Sep 2020 09:25:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EwU8Y8jyLbqhzR3bhbXCQ0ACvEAzu6m47XXNJBX9Eu0=;
+        b=SfUAQosCbK7F+CBl7zdFfyy7Qjkzlzjvypp3h40Ri2q0NEVl/DGWoYvfZdf7dNwYZ0
+         6B6xVOlk0gV3XYyrHba0XfY7kjOOkUoAEIMopB+FQn8ygUDiQoev3Y9k/nJXlDFz9QRj
+         uUimSWYErzEK5C2/KjfjzPBo8zduEKwxDoSiNOYOlpHE/+mCU+CLzFh365uJFlh35ygd
+         Gg9F1m55l8xUGHghbggvs/Ns7iKx0lvdHfcXz/3woZSlvyd+1/BxfLeMV29IeiKqCTFO
+         SQcfnjeIZhGJSIj/fK6dBl4QeB/0+pkf3cfF7kh0OxsfMn4g5FtTJJnrQWSAY1i64dtI
+         Wqag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EwU8Y8jyLbqhzR3bhbXCQ0ACvEAzu6m47XXNJBX9Eu0=;
+        b=VfYwvcig0S0ONJ4T1BtoxDYI7IzerqSR6FN/atugm7K0m8P9G6d6f9cB9a4H8aZWNi
+         tO2cDzlBh94QH+irwssvgrkYkDsAyV3GcGfjszYoZVuwv/HNV1pPGGsxYUs+Zy2FppFo
+         7jjrgsFVnX6kWOCom1/mjAssZ+An25FtDaoUxwXGKB2mRAgwuoD5mMViwAeZZPItZvNg
+         EDlYZriiHDP4DmX1gBrduT3PM8srwVy5YQm9Nuc3G3JMMQBUoy2WSfAXBqSZLiFMkw5R
+         l28RXsh+ANv/Qafr5fkPSfRB91LjOG+g0XKRsw0/a3tqZImYXLpdF5xIjTpH6SQQCdhR
+         EvCw==
+X-Gm-Message-State: AOAM533fs+4jdhXB/Sv7cUuhD60k2JulM4Tjnstb5l+aJwd36xhPe2Pf
+        v/ENtwEADiiBC3j8jRugdqGepeWAtoY=
+X-Google-Smtp-Source: ABdhPJwu1Tz3IzRQa+geTq4CMgMqps0FWRGe/wBTmbiN0XYcI0riziAr3xJ7SwNNK4/ShfIMqy2F1w==
+X-Received: by 2002:a17:90b:1642:: with SMTP id il2mr2828500pjb.93.1599841534976;
+        Fri, 11 Sep 2020 09:25:34 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id c4sm645829pjq.7.2020.09.11.09.25.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Sep 2020 09:25:34 -0700 (PDT)
+Subject: Re: [PATCH net-next v5 3/6] dt-bindings: net: dsa: add new MT7531
+ binding to support MT7531
+To:     Landen Chao <landen.chao@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        frank-w@public-files.de, opensource@vdorst.com, dqfext@gmail.com
+References: <cover.1599829696.git.landen.chao@mediatek.com>
+ <b5d44dc310a45dc139639d968350f5888dc7e1ac.1599829696.git.landen.chao@mediatek.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <0b414c02-8860-cb0d-2131-de4e04cbf49c@gmail.com>
+Date:   Fri, 11 Sep 2020 09:25:31 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d7df0551-f8ac-4c9d-5bcc-5ec67908fce1@gmail.com>
+In-Reply-To: <b5d44dc310a45dc139639d968350f5888dc7e1ac.1599829696.git.landen.chao@mediatek.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 09:25:40AM -0600, David Ahern wrote:
-> On 9/8/20 3:10 AM, Ido Schimmel wrote:
-> > From: Ido Schimmel <idosch@nvidia.com>
-> > 
-> > The notification is emitted after all the validation checks were
-> > performed, but before the new configuration (i.e., 'struct nh_info') is
-> > pointed at by the old shell (i.e., 'struct nexthop'). This prevents the
-> > need to perform rollback in case the notification is vetoed.
-> > 
-> > The next patch will also emit a replace notification for all the nexthop
-> > groups in which the nexthop is used.
-> > 
-> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> > ---
-> >  net/ipv4/nexthop.c | 10 ++++++++++
-> >  1 file changed, 10 insertions(+)
-> > 
-> > diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-> > index a60a519a5462..b8a4abc00146 100644
-> > --- a/net/ipv4/nexthop.c
-> > +++ b/net/ipv4/nexthop.c
-> > @@ -1099,12 +1099,22 @@ static int replace_nexthop_single(struct net *net, struct nexthop *old,
-> >  				  struct netlink_ext_ack *extack)
-> >  {
-> >  	struct nh_info *oldi, *newi;
-> > +	int err;
-> >  
-> >  	if (new->is_group) {
-> >  		NL_SET_ERR_MSG(extack, "Can not replace a nexthop with a nexthop group.");
-> >  		return -EINVAL;
-> >  	}
-> >  
-> > +	err = call_nexthop_notifiers(net, NEXTHOP_EVENT_REPLACE, new, extack);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	/* Hardware flags were set on 'old' as 'new' is not in the red-black
-> > +	 * tree. Therefore, inherit the flags from 'old' to 'new'.
-> > +	 */
-> > +	new->nh_flags |= old->nh_flags & (RTNH_F_OFFLOAD | RTNH_F_TRAP);
-> 
-> Will that always be true? ie., has h/w seen 'new' and offloaded it yet?
 
-Yes. The chain was converted to a blocking chain, so it is possible to
-program the hardware inline.
 
-> vs the notifier telling hardware about the change, it does its thing and
-> sets the flags. But I guess that creates a race between the offload and
-> the new data being available.
+On 9/11/2020 6:48 AM, Landen Chao wrote:
+> Add devicetree binding to support the compatible mt7531 switch as used
+> in the MediaTek MT7531 switch.
 > 
-> > +
-> >  	oldi = rtnl_dereference(old->nh_info);
-> >  	newi = rtnl_dereference(new->nh_info);
-> >  
-> > 
-> 
+> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+> Signed-off-by: Landen Chao <landen.chao@mediatek.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
