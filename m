@@ -2,102 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08559266206
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 17:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9AEF266217
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 17:27:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726481AbgIKPWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 11:22:46 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:55304 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726297AbgIKPUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:20:20 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08BFF3Zc061529;
-        Fri, 11 Sep 2020 15:19:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=/MeEy7v1R447j4T1klPQoqAF2B+oLO9ldzBbaI8x8Es=;
- b=fjp11hQgk0M2ieGImtTlL3liHO/dyA25V5DntaVVhLX6Ilu+T/TV1XPoOJjeyYixOdXH
- zTu3b7QveAgDRj+O1ApqsEwqbXRl/lzWg7UZjAG6BWw4KrKZiZe0s1mRw0SMpwW/2LfK
- 7YUZ5RbrKNusDmRcqbVYffyvdjomq6LGK4rSI1g0g1J8rhlMt28xUhkmSX9FazUWm2G2
- KyuibgxuaFLMs7xnoMXncD3eDGWm9zUul8GDnF48Ys6F2/7Cr3rvA60y7UAHvg4x611m
- A4nS3Z4JPOYu1YNBX3PDlGFv2TnzNlgfcG5BSV+f+eoo0qxkMfUYHDPryr29pkH/p7Bu Ng== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 33c2mmesjv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 11 Sep 2020 15:19:31 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08BFFHDE118910;
-        Fri, 11 Sep 2020 15:19:31 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 33cmkd8cfk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Sep 2020 15:19:31 +0000
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08BFJK2q027490;
-        Fri, 11 Sep 2020 15:19:20 GMT
-Received: from [10.74.86.16] (/10.74.86.16)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 11 Sep 2020 08:19:20 -0700
-Subject: Re: [PATCH v3 00/11] Fix PM hibernation in Xen guests
-To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org,
-        jgross@suse.com, linux-pm@vger.kernel.org, linux-mm@kvack.org,
-        kamatam@amazon.com, sstabellini@kernel.org, konrad.wilk@oracle.com,
-        roger.pau@citrix.com, axboe@kernel.dk, davem@davemloft.net,
-        rjw@rjwysocki.net, len.brown@intel.com, pavel@ucw.cz,
-        peterz@infradead.org, eduval@amazon.com, sblbir@amazon.com,
-        xen-devel@lists.xenproject.org, vkuznets@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dwmw@amazon.co.uk, benh@kernel.crashing.org
-References: <cover.1598042152.git.anchalag@amazon.com>
-From:   boris.ostrovsky@oracle.com
-Organization: Oracle Corporation
-Message-ID: <03baf888-5c10-429b-3206-b75d4af1e09e@oracle.com>
-Date:   Fri, 11 Sep 2020 11:19:13 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.2.1
+        id S1726300AbgIKP1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 11:27:02 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:60326 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726457AbgIKPYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:24:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599837860;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iJ/U/CoQkEukOmnim/wnnLlXQJbF+mCf7O0yvaasEUI=;
+        b=Ka9IYn1OYm7kntVMXBDiVtFCrTVISjmh6q5rAuzGkdB9jLsFDCtLfTywlmdb0csDvfCQjN
+        KBkefUQzqq7nIr6J/WWVoHuV4yQVdK6S9nYfazAKeE/8/GXC+44LD2id7prczQxl1uADMC
+        nQGLMc5QBvPNM9Rd5vN8+B4X1ANhHzc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-488-GWhH9Sb-Pf2rVZMqBlDXxA-1; Fri, 11 Sep 2020 11:24:17 -0400
+X-MC-Unique: GWhH9Sb-Pf2rVZMqBlDXxA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BA8E9107B270;
+        Fri, 11 Sep 2020 15:24:14 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 44A057ED65;
+        Fri, 11 Sep 2020 15:24:11 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id EFACE41853FD; Fri, 11 Sep 2020 12:23:44 -0300 (-03)
+Date:   Fri, 11 Sep 2020 12:23:44 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Nitesh Narayan Lal <nitesh@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, frederic@kernel.org,
+        sassmann@redhat.com, jeffrey.t.kirsher@intel.com,
+        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jerinj@marvell.com, mathias.nyman@intel.com, jiri@nvidia.com
+Subject: Re: [RFC][Patch v1 2/3] i40e: limit msix vectors based on
+ housekeeping CPUs
+Message-ID: <20200911152344.GA21157@fuller.cnet>
+References: <20200909150818.313699-1-nitesh@redhat.com>
+ <20200909150818.313699-3-nitesh@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <cover.1598042152.git.anchalag@amazon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9741 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 phishscore=0
- mlxlogscore=999 bulkscore=0 adultscore=0 mlxscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2009110126
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9741 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 priorityscore=1501
- phishscore=0 adultscore=0 bulkscore=0 clxscore=1011 mlxlogscore=999
- malwarescore=0 suspectscore=0 lowpriorityscore=0 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009110125
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200909150818.313699-3-nitesh@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Sep 09, 2020 at 11:08:17AM -0400, Nitesh Narayan Lal wrote:
+> In a realtime environment, it is essential to isolate unwanted IRQs from
+> isolated CPUs to prevent latency overheads. Creating MSIX vectors only
+> based on the online CPUs could lead to a potential issue on an RT setup
+> that has several isolated CPUs but a very few housekeeping CPUs. This is
+> because in these kinds of setups an attempt to move the IRQs to the
+> limited housekeeping CPUs from isolated CPUs might fail due to the per
+> CPU vector limit. This could eventually result in latency spikes because
+> of the IRQ threads that we fail to move from isolated CPUs.
+> 
+> This patch prevents i40e to add vectors only based on available
+> housekeeping CPUs by using num_housekeeping_cpus().
+> 
+> Signed-off-by: Nitesh Narayan Lal <nitesh@redhat.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_main.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> index 2e433fdbf2c3..3b4cd4b3de85 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_main.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+> @@ -5,6 +5,7 @@
+>  #include <linux/of_net.h>
+>  #include <linux/pci.h>
+>  #include <linux/bpf.h>
+> +#include <linux/sched/isolation.h>
+>  #include <generated/utsrelease.h>
+>  
+>  /* Local includes */
+> @@ -11002,7 +11003,7 @@ static int i40e_init_msix(struct i40e_pf *pf)
+>  	 * will use any remaining vectors to reach as close as we can to the
+>  	 * number of online CPUs.
+>  	 */
+> -	cpus = num_online_cpus();
+> +	cpus = num_housekeeping_cpus();
+>  	pf->num_lan_msix = min_t(int, cpus, vectors_left / 2);
+>  	vectors_left -= pf->num_lan_msix;
+>  
+> -- 
+> 2.27.0
 
-On 8/21/20 6:22 PM, Anchal Agarwal wrote:
->
-> Known issues:
-> 1.KASLR causes intermittent hibernation failures. VM fails to resumes and
-> has to be restarted. I will investigate this issue separately and shouldn't
-> be a blocker for this patch series.
+For patches 1 and 2:
 
+Reviewed-by: Marcelo Tosatti <mtosatti@redhat.com>
 
-Is there any change in status for this? This has been noted since January.
-
-
--boris
-
-
-> 2. During hibernation, I observed sometimes that freezing of tasks fails due
-> to busy XFS workqueuei[xfs-cil/xfs-sync]. This is also intermittent may be 1
-> out of 200 runs and hibernation is aborted in this case. Re-trying hibernation
-> may work. Also, this is a known issue with hibernation and some
-> filesystems like XFS has been discussed by the community for years with not an
-> effectve resolution at this point.
->
