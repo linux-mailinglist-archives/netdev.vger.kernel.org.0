@@ -2,79 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D95F826654F
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:58:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C67522664FB
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:49:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726356AbgIKQ6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 12:58:22 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:13306 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725958AbgIKPE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:04:27 -0400
-X-UUID: 04c1a75677cf4a0e8219b9ee8284231b-20200911
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=d6kOW52w5IkfV9rG1/hHcYEAa68TX5XY3lJUkDhh0sM=;
-        b=qwzKo3SXBVumEkmUu1FQ9o+vNIUwl4zBh8s8aQHYnU6DJSBBLoO1VECc4zoyA4Fd7ae+DMsM4osagu/Lwiwqt0hy6YrpoZ9TFppCsCqI18xndT7ZRQ0zqByn31TMsxNIB40TyiIGXRQDFVFCXWF1kL3TL9sMQtu2yOk1iOnroao=;
-X-UUID: 04c1a75677cf4a0e8219b9ee8284231b-20200911
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 552007333; Fri, 11 Sep 2020 21:49:15 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 11 Sep 2020 21:49:11 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 11 Sep 2020 21:49:11 +0800
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <frank-w@public-files.de>,
-        <opensource@vdorst.com>, <dqfext@gmail.com>,
-        Landen Chao <landen.chao@mediatek.com>
-Subject: [PATCH net-next v5 1/6] net: dsa: mt7530: Refine message in Kconfig
-Date:   Fri, 11 Sep 2020 21:48:51 +0800
-Message-ID: <58198dcca7138ee86aaead739cff979a946bf070.1599829696.git.landen.chao@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <cover.1599829696.git.landen.chao@mediatek.com>
-References: <cover.1599829696.git.landen.chao@mediatek.com>
+        id S1726268AbgIKQtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 12:49:02 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:60046 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726361AbgIKPHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:07:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599836821;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=RfLpjdNwvP4oDkLx7yFMIC9ktPxDvmhr2AAximMjnME=;
+        b=CXQoaaTK8G0W7RGCsB0w75lBzU9Y04BOzw0Ij78BvTMIhtAlb1kPQ0TlvRApyo/Q3op+ul
+        FMzJTWXbbNs/e4NNsgVhmX+Ar6+TFtCI1RWrJ4Ce5em9M8zx8EW+waGeWQp45zrX0xicMv
+        1za9UKMbRW0b5KhKE8feCEDaWBaHbKs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-48-IULedvSjOe-8SEqJvMqGzQ-1; Fri, 11 Sep 2020 09:52:28 -0400
+X-MC-Unique: IULedvSjOe-8SEqJvMqGzQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2973A1017DCC;
+        Fri, 11 Sep 2020 13:52:27 +0000 (UTC)
+Received: from linux.fritz.box.com (ovpn-114-214.ams2.redhat.com [10.36.114.214])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CE6A95C1BD;
+        Fri, 11 Sep 2020 13:52:25 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org
+Subject: [PATCH net-next 00/13] mptcp: introduce support for real multipath xmit
+Date:   Fri, 11 Sep 2020 15:51:55 +0200
+Message-Id: <cover.1599832097.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UmVmaW5lIG1lc3NhZ2UgaW4gS2NvbmZpZyB3aXRoIGZpeGluZyB0eXBvIGFuZCBhbiBleHBsaWNp
-dCBNVDc2MjEgc3VwcG9ydC4NCg0KU2lnbmVkLW9mZi1ieTogTGFuZGVuIENoYW8gPGxhbmRlbi5j
-aGFvQG1lZGlhdGVrLmNvbT4NClNpZ25lZC1vZmYtYnk6IFNlYW4gV2FuZyA8c2Vhbi53YW5nQG1l
-ZGlhdGVrLmNvbT4NClJldmlld2VkLWJ5OiBGbG9yaWFuIEZhaW5lbGxpIDxmLmZhaW5lbGxpQGdt
-YWlsLmNvbT4NCi0tLQ0KIGRyaXZlcnMvbmV0L2RzYS9LY29uZmlnIHwgNiArKystLS0NCiAxIGZp
-bGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9uZXQvZHNhL0tjb25maWcgYi9kcml2ZXJzL25ldC9kc2EvS2NvbmZpZw0KaW5k
-ZXggNDY4YjNjNDI3M2M1Li4wNmQ2OGE4NDg3NzQgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL25ldC9k
-c2EvS2NvbmZpZw0KKysrIGIvZHJpdmVycy9uZXQvZHNhL0tjb25maWcNCkBAIC0zMywxMiArMzMs
-MTIgQEAgY29uZmlnIE5FVF9EU0FfTEFOVElRX0dTV0lQDQogCSAgdGhlIHhyeDIwMCAvIFZSOSBT
-b0MuDQogDQogY29uZmlnIE5FVF9EU0FfTVQ3NTMwDQotCXRyaXN0YXRlICJNZWRpYXRlayBNVDc1
-MzAgRXRoZXJuZXQgc3dpdGNoIHN1cHBvcnQiDQorCXRyaXN0YXRlICJNZWRpYVRlayBNVDc1MzAg
-YW5kIE1UNzYyMSBFdGhlcm5ldCBzd2l0Y2ggc3VwcG9ydCINCiAJZGVwZW5kcyBvbiBORVRfRFNB
-DQogCXNlbGVjdCBORVRfRFNBX1RBR19NVEsNCiAJaGVscA0KLQkgIFRoaXMgZW5hYmxlcyBzdXBw
-b3J0IGZvciB0aGUgTWVkaWF0ZWsgTVQ3NTMwIEV0aGVybmV0IHN3aXRjaA0KLQkgIGNoaXAuDQor
-CSAgVGhpcyBlbmFibGVzIHN1cHBvcnQgZm9yIHRoZSBNZWRpYVRlayBNVDc1MzAgYW5kIE1UNzYy
-MSBFdGhlcm5ldA0KKwkgIHN3aXRjaCBjaGlwLg0KIA0KIGNvbmZpZyBORVRfRFNBX01WODhFNjA2
-MA0KIAl0cmlzdGF0ZSAiTWFydmVsbCA4OEU2MDYwIGV0aGVybmV0IHN3aXRjaCBjaGlwIHN1cHBv
-cnQiDQotLSANCjIuMTcuMQ0K
+This series enable MPTCP socket to transmit data on multiple subflows
+concurrently in a load balancing scenario.
+
+First the receive code path is refactored to better deal with out-of-order
+data (patches 1-7). An RB-tree is introduced to queue MPTCP-level out-of-order
+data, closely resembling the TCP level OoO handling.
+
+When data is sent on multiple subflows, the peer can easily see OoO - "future"
+data at the MPTCP level, especially if speeds, delay, or jitter are not
+symmetric.
+
+The other major change regards the netlink PM, which is extended to allow
+creating non backup subflows in patches 9-11.
+
+There are a few smaller additions, like the introduction of OoO related mibs,
+send buffer autotuning and better ack handling.
+
+Finally a bunch of new self-tests is introduced. The new feature is tested
+ensuring that the B/W used by an MPTCP socket using multiple subflows matches
+the link aggregated B/W - we use low B/W virtual links, to ensure the tests
+are not CPU bounded.
+
+Paolo Abeni (13):
+  mptcp: rethink 'is writable' conditional
+  mptcp: set data_ready status bit in subflow_check_data_avail()
+  mptcp: trigger msk processing even for OoO data
+  mptcp: basic sndbuf autotuning
+  mptcp: introduce and use mptcp_try_coalesce()
+  mptcp: move ooo skbs into msk out of order queue.
+  mptcp: cleanup mptcp_subflow_discard_data()
+  mptcp: add OoO related mibs
+  mptcp: move address attribute into mptcp_addr_info
+  mptcp: allow creating non-backup subflows
+  mptcp: allow picking different xmit subflows
+  mptcp: call tcp_cleanup_rbuf on subflows
+  mptcp: simult flow self-tests
+
+ include/net/tcp.h                             |   2 +
+ net/ipv4/tcp.c                                |   2 +-
+ net/mptcp/mib.c                               |   5 +
+ net/mptcp/mib.h                               |   5 +
+ net/mptcp/pm_netlink.c                        |  39 +-
+ net/mptcp/protocol.c                          | 509 ++++++++++++++----
+ net/mptcp/protocol.h                          |  21 +-
+ net/mptcp/subflow.c                           |  99 ++--
+ tools/testing/selftests/net/mptcp/Makefile    |   3 +-
+ .../selftests/net/mptcp/simult_flows.sh       | 293 ++++++++++
+ 10 files changed, 796 insertions(+), 182 deletions(-)
+ create mode 100755 tools/testing/selftests/net/mptcp/simult_flows.sh
+
+-- 
+2.26.2
 
