@@ -2,127 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41E6E265805
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 06:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AA3426581B
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 06:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725843AbgIKETy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 00:19:54 -0400
-Received: from smtprelay0064.hostedemail.com ([216.40.44.64]:51536 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725283AbgIKETs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 00:19:48 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 12942837F24A;
-        Fri, 11 Sep 2020 04:19:43 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2198:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3870:3871:3872:3874:4321:5007:6742:6743:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12297:12438:12555:12740:12760:12895:13153:13161:13228:13229:13439:14096:14097:14181:14659:14721:21080:21433:21627:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: seat91_4d0f80d270eb
-X-Filterd-Recvd-Size: 4376
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf19.hostedemail.com (Postfix) with ESMTPA;
-        Fri, 11 Sep 2020 04:19:36 +0000 (UTC)
-Message-ID: <f4ad706519917d493a0af32ea2da8565227cc74a.camel@perches.com>
-Subject: Re: [trivial PATCH] treewide: Convert switch/case fallthrough; to
- break;
-From:   Joe Perches <joe@perches.com>
-To:     Robin Murphy <robin.murphy@arm.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jiri Kosina <trivial@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        oss-drivers@netronome.com, nouveau@lists.freedesktop.org,
-        alsa-devel <alsa-devel@alsa-project.org>,
-        dri-devel@lists.freedesktop.org, linux-ide@vger.kernel.org,
-        dm-devel@redhat.com, linux-mtd@lists.infradead.org,
-        linux-i2c@vger.kernel.org, sparclinux@vger.kernel.org,
-        kvmarm@lists.cs.columbia.edu, linux-rtc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-scsi@vger.kernel.org,
-        dccp@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-atm-general@lists.sourceforge.net,
-        linux-afs@lists.infradead.org, coreteam@netfilter.org,
-        intel-wired-lan@lists.osuosl.org, linux-serial@vger.kernel.org,
-        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Kees Cook <kees.cook@canonical.com>,
-        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-sctp@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-nvme@lists.infradead.org,
-        storagedev@microchip.com, ceph-devel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-mips@vger.kernel.org, iommu@lists.linux-foundation.org,
-        netfilter-devel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        bpf@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Will Deacon <will@kernel.org>
-Date:   Thu, 10 Sep 2020 21:19:35 -0700
-In-Reply-To: <9372456a-8dcf-2735-57a4-e126aa5df3a6@arm.com>
-References: <e6387578c75736d61b2fe70d9783d91329a97eb4.camel@perches.com>
-         <9372456a-8dcf-2735-57a4-e126aa5df3a6@arm.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.4-0ubuntu1 
+        id S1725562AbgIKEUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 00:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725283AbgIKEUl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 00:20:41 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0D3C061573;
+        Thu, 10 Sep 2020 21:20:41 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id x77so4797954lfa.0;
+        Thu, 10 Sep 2020 21:20:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WCD5sAY3q1xf3zuoTVAQhjlZUF+7j2sllfT56EASGbw=;
+        b=LTf5O1CWxtJhz6pajoo09m3m1aMboW7ayu+jhI/0Ca46mPDVbXweRxaTrcm8vTGdQm
+         zd2WrWf80sZWkByM8gofNsp3k11gTDDeMhhBj7AE/WsvkA2XI5Ba8NhxTxPAft/FOI8c
+         IHHChpCWcBUc8sKb4TMdnvEmVsAj75i5MfM08kAYnuz5miJstt9d0aS5oV3MNP8oJLLW
+         MJ0JvzfdvifUYaCMQ7vrvW21lMEd4aTKVmkOovW0/HIjUGM0r5gdeGup3aFfgtJErLTQ
+         Hn06t4FlKn1L+PhWaLCFOfEmMfWb/a3qywqZ+KlhFqAt04X5Qd3c9eS2gu8LcHRyOQxn
+         AGNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WCD5sAY3q1xf3zuoTVAQhjlZUF+7j2sllfT56EASGbw=;
+        b=rlrnWNNnQXtwYedP6OYq56613U6YS9+NzJpdhAa2CnRMQTzmPtKPhI4pCP5SfrK+H3
+         n56r1Xq3FvNwvPMKTus+NlHLw/kw8uvcmoqcHE6izg/MTDVZILLbqCXhSIdJXRGfT+nQ
+         iftu0UiEfApp3lF+Lol/NiNVTd0jY44UVJTkzrjK/mA/VUai0VIFA0F9tDry5spwoxW3
+         4hpYAqxck7jTDEpQN0vzPK3TM/0dASff/ak78j7ZP1uGX6+8du+tn8Yp4wfcNo+1y63p
+         FlAjHKE4g1JGbfUObtji0/MLl2O04GfFbTPblvjAbKISLy40SG7DJbwPeBLyTc5L/Jqu
+         yTKg==
+X-Gm-Message-State: AOAM533AzeExA/2bGHPEaWTO9O0V67U4r3jP6aA4pusDLzUCfvBKGyTM
+        wLkpgVOjI/y5ZBTXnFEHty2Hhqm+zY8jjFg0YRg=
+X-Google-Smtp-Source: ABdhPJzQGlm4EJ3R2SElL2AvGfMxCaNbtwliG7i2nJLKXCRIS4fRYdp390R/EfwkEZf/ax9HN6hr/t/M97vEumKWEMI=
+X-Received: by 2002:a05:6512:2101:: with SMTP id q1mr5586269lfr.157.1599798039600;
+ Thu, 10 Sep 2020 21:20:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20200910193536.2980613-1-ncardwell.kernel@gmail.com> <20200911032844.wrlgcpoc6fkk2gw4@kafai-mbp>
+In-Reply-To: <20200911032844.wrlgcpoc6fkk2gw4@kafai-mbp>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 10 Sep 2020 21:20:28 -0700
+Message-ID: <CAADnVQJ8FnZEJ0fnODoRP-kKYsM4wj=H=cRx18DbEhgn=376Tw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 0/5] tcp: increase flexibility of EBPF
+ congestion control initialization
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Neal Cardwell <ncardwell.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        bpf <bpf@vger.kernel.org>, Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-09-10 at 15:21 +0100, Robin Murphy wrote:
-> On 2020-09-09 21:06, Joe Perches wrote:
-> > fallthrough to a separate case/default label break; isn't very readable.
-> > 
-> > Convert pseudo-keyword fallthrough; statements to a simple break; when
-> > the next label is case or default and the only statement in the next
-> > label block is break;
-> > 
-> > Found using:
-> > 
-> > $ grep-2.5.4 -rP --include=*.[ch] -n "fallthrough;(\s*(case\s+\w+|default)\s*:\s*){1,7}break;" *
-> > 
-> > Miscellanea:
-> > 
-> > o Move or coalesce a couple label blocks above a default: block.
-> > 
-> > Signed-off-by: Joe Perches <joe@perches.com>
-> > ---
-> > 
-> > Compiled allyesconfig x86-64 only.
-> > A few files for other arches were not compiled.
-> > 
-> 
-> [...]
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index c192544e874b..743db1abec40 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -3777,7 +3777,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
-> >   	switch (FIELD_GET(IDR0_TTF, reg)) {
-> >   	case IDR0_TTF_AARCH32_64:
-> >   		smmu->ias = 40;
-> > -		fallthrough;
-> > +		break;
-> >   	case IDR0_TTF_AARCH64:
-> >   		break;
-> >   	default:
-> 
-> I have to say I don't really agree with the readability argument for 
-> this one - a fallthrough is semantically correct here, since the first 
-> case is a superset of the second. It just happens that anything we would 
-> do for the common subset is implicitly assumed (there are other 
-> potential cases we simply haven't added support for at the moment), thus 
-> the second case is currently empty.
-> This change actively obfuscates that distinction.
+On Thu, Sep 10, 2020 at 8:28 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Thu, Sep 10, 2020 at 03:35:31PM -0400, Neal Cardwell wrote:
+> > From: Neal Cardwell <ncardwell@google.com>
+> >
+> > This patch series reorganizes TCP congestion control initialization so that if
+> > EBPF code called by tcp_init_transfer() sets the congestion control algorithm
+> > by calling setsockopt(TCP_CONGESTION) then the TCP stack initializes the
+> > congestion control module immediately, instead of having tcp_init_transfer()
+> > later initialize the congestion control module.
+> >
+> > This increases flexibility for the EBPF code that runs at connection
+> > establishment time, and simplifies the code.
+> >
+> > This has the following benefits:
+> >
+> > (1) This allows CC module customizations made by the EBPF called in
+> >     tcp_init_transfer() to persist, and not be wiped out by a later
+> >     call to tcp_init_congestion_control() in tcp_init_transfer().
+> >
+> > (2) Does not flip the order of EBPF and CC init, to avoid causing bugs
+> >     for existing code upstream that depends on the current order.
+> >
+> > (3) Does not cause 2 initializations for for CC in the case where the
+> >     EBPF called in tcp_init_transfer() wants to set the CC to a new CC
+> >     algorithm.
+> >
+> > (4) Allows follow-on simplifications to the code in net/core/filter.c
+> >     and net/ipv4/tcp_cong.c, which currently both have some complexity
+> >     to special-case CC initialization to avoid double CC
+> >     initialization if EBPF sets the CC.
+> >
+> > changes in v2:
+> >
+> > o rebase onto bpf-next
+> >
+> > o add another follow-on simplification suggested by Martin KaFai Lau:
+> >    "tcp: simplify tcp_set_congestion_control() load=false case"
+> >
+> > changes in v3:
+> >
+> > o no change in commits
+> >
+> > o resent patch series from @gmail.com, since mail from ncardwell@google.com
+> >   stopped being accepted at netdev@vger.kernel.org mid-way through processing
+> >   the v2 patch series (between patches 2 and 3), confusing patchwork about
+> >   which patches belonged to the v2 patch series
+> Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-Then perhaps comments should be added to usefully
-describe the mechanisms.
+Applied.
 
-	case IDR0_TTF_AARCH32_64:
-		smmu->ias = 40;
-		fallthrough;	/* and still do the 64 bit processing */
-	case IDR0_TTF_AARCH64:
-		/* Nothing specific yet */
-		break;
+Martin, thanks for the review.
 
-> Robin.
+Neal, please keep Acks when you resubmit patches without changes in the future.
+Also please follow up with a selftests/bpf based on test_progs to
+cover new functionality.
 
+Thanks
