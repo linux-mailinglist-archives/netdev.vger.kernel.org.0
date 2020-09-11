@@ -2,240 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77C8D2675EA
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 00:31:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA3FD2675ED
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 00:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725906AbgIKWbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 18:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43438 "EHLO
+        id S1725939AbgIKWcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 18:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725855AbgIKWaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 18:30:55 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27581C061757
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 15:30:55 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id lo4so15665111ejb.8
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 15:30:55 -0700 (PDT)
+        with ESMTP id S1725915AbgIKWc1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 18:32:27 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25CD7C061573
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 15:32:27 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id jw11so2351930pjb.0
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 15:32:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cbsgtymQQ+k5DoVmuVgnlVLNs03jFloCzfSe+ygMz6Q=;
-        b=kOM8v5NWLchtg2F/hFiMvTKUWMlVh9bukM8zHiApNM/soLAMUeQf1HYDr6guPsAYon
-         2Oe8Zbt21k1FexzEdEzX5DZsjExKN1LJUtPFnYSncA4E0RN3n5pQQ58LwVma23mGyjwF
-         zhSrwfFlO2H+t+qxcSz1zoM7AP73WQD3jM60be0rKF4RxSTMNnw+VplnBzb55EOdZA5t
-         zYSOATKyNvOMddk8axdwS+iOnPnalEIPrQediqa/YqBy5m3KSpWdShYp+kZGLaoErZkH
-         OD6ETDaZrEbUMKFmVg5+kd8DQ8Zg2rJdrVlCbBl74nvDclBwDayc06GBxvqTx1gEuvQ7
-         7fpQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5fqnO0t2+Ll5MSYJEMtNvP+VNTh8EknO1EV/7yDUvkg=;
+        b=EPXQA1SPomdGDXZu2xay/okEIXVEzDSIwhmerPylv6hnMl4XmTzRnRewEG4vkbU0r4
+         4CzBgYyeGKx9I2Yl+0zemaccCpnrmtycDQmYYqqMmZt0iOsIl5gwNiLmcj7z3ylcyaKo
+         fIGTEmI4Bd1lcOmOlxgGM3rk5P7lYd0Sx26+Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cbsgtymQQ+k5DoVmuVgnlVLNs03jFloCzfSe+ygMz6Q=;
-        b=X1vBG6Gw6DQdaWLp/yYzezywibOBYchR/MbAJnsv/gpHNBNgCg4DCyCHWmG8URum7v
-         ou9l0CPQVp5gzoFoIMVl0goYG2GwEB1Xx1Cw9ZIJz9SYUv21WgRzDxNFu2Wixsv6NKix
-         2ncUs9W+jq0rdD2IyUjXds9BSLMlQ0+rNgxvghbNfwhjGEzm9RquVpAxF8CwVlL3hEaw
-         icXvmgSbzwaT0DQpqkEHN9Hx5IdrZopjkiAWjC2kDobEh68/6YlK6nJwx8tW6+TfgBir
-         XvRfYZTfkFBysiXCw7P7dcU75JcMwo0WfCUuuDyr76mzG/9Ds2ooJO30HpW8QmbyHQe+
-         XnFA==
-X-Gm-Message-State: AOAM530jmmvKgs5qiG8DoApfukWOv1LjsXSfNI5V1tGqHp/h4ABN/cmb
-        IuvANfqxKWDJkXG58122ZUI=
-X-Google-Smtp-Source: ABdhPJwO17lD5Micyxro2sjvPWD1/uchoPLhrSYt3O12UxG3RasPe7CjKTev4uDj4eIxjl8AUeamHQ==
-X-Received: by 2002:a17:906:14c9:: with SMTP id y9mr4240641ejc.523.1599863453769;
-        Fri, 11 Sep 2020 15:30:53 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id b13sm2864471edf.89.2020.09.11.15.30.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5fqnO0t2+Ll5MSYJEMtNvP+VNTh8EknO1EV/7yDUvkg=;
+        b=JzXDhdEPcBgjhYwj7qSvtkKWo9rGZBZdVx8+Qo0ApQi6qpIOXxIHr7+oI1q33MrGLv
+         f3F+AFbNpLkW3eHOcfkbxooWYKh7hSb30H1bjv//lUvRx7/E0DtJHU+rdv1PVj/ulShH
+         rosgfLjdpQ1oFU+X7oYrVtZEYQbLBkb1YPzoUrXFWG+nFoCH5dp4gszffvELPFnHwqW4
+         SeBAeSRFWwhU5QFFkmh3CLCWBlXVFYOgRgJTBcHbE3oHmKdo3yWti4i8KVZ23PLgv/n6
+         /rti0vHUmsPSM/eUsYhiuDw1Wo3TzlEtOtFufpPqkIHsZBKsCUSfNr9s9bABUZBXBWcO
+         yq4A==
+X-Gm-Message-State: AOAM531K/VuZzp+8LE4VJ7KeW/55AiWTB45Srpo4fN318CPg6f9vJHJS
+        uLL/4TDHZ44N+YndxUZKdeO6GQ==
+X-Google-Smtp-Source: ABdhPJw4KYhLZWrM8MzihLuYw4E30t5O+Y6VUTIE1WR3NPjAkywR4DujrtHCB/dKdL1Re5o04wfhiw==
+X-Received: by 2002:a17:902:d888:b029:d0:cb2d:f274 with SMTP id b8-20020a170902d888b02900d0cb2df274mr4451761plz.13.1599863546718;
+        Fri, 11 Sep 2020 15:32:26 -0700 (PDT)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:7220:84ff:fe09:2b94])
+        by smtp.gmail.com with ESMTPSA id l9sm2905230pgg.29.2020.09.11.15.32.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Sep 2020 15:30:53 -0700 (PDT)
-Date:   Sat, 12 Sep 2020 01:30:51 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     davem@davemloft.net, vivien.didelot@gmail.com, andrew@lunn.ch,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 4/4] net: dsa: set
- configure_vlan_while_not_filtering to true by default
-Message-ID: <20200911223051.cp6uprsdtyqk5fzn@skbuf>
-References: <20200909175325.bshts3hl537xtz2q@skbuf>
- <5edf3aa2-c417-e708-b259-7235de7bc8d2@gmail.com>
- <7e45b733-de6a-67c8-2e28-30a5ba84f544@gmail.com>
- <20200911000337.htwr366ng3nc3a7d@skbuf>
- <04823ca9-728f-cd06-a4b2-bb943d04321b@gmail.com>
- <20200911154340.mfe7lwtklfepd5go@skbuf>
- <b6ec9450-6b3e-0473-a2f9-b57016f010c1@gmail.com>
- <20200911183556.l3cazdcwkosyw45v@skbuf>
- <ac73600d-6c1d-83a3-9b49-19f853ba0226@gmail.com>
- <7cbe45bd-efb0-ec3e-cc37-4d3154e91fd5@gmail.com>
+        Fri, 11 Sep 2020 15:32:26 -0700 (PDT)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        linux-bluetooth@vger.kernel.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        Daniel Winkler <danielwinkler@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [RESEND PATCH] bluetooth: Set ext scan response only when it exists
+Date:   Fri, 11 Sep 2020 15:32:20 -0700
+Message-Id: <20200911153141.RESEND.1.Ib022565452fde0c02fbcf619950ef868715dd243@changeid>
+X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7cbe45bd-efb0-ec3e-cc37-4d3154e91fd5@gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 11, 2020 at 12:48:37PM -0700, Florian Fainelli wrote:
-> > > I'm conflicted. So you prefer having the CPU port as egress-tagged?
-> >
-> > I do, because I realized that some of the switches we support are still
-> > configured in DSA_TAG_NONE mode because the CPU port they chose is not
-> > Broadcom tag capable and there is an user out there who cares a lot
-> > about that case not to "break".
-> >
+Only set extended scan response only when it exists. Otherwise, clear
+the scan response data.
 
-Ok.
+Per the core spec v5.2, Vol 4, Part E, 7.8.55
 
-> > > Also, I think I'll also experiment with a version of this patch that is
-> > > local to the DSA RX path. The bridge people may not like it, and as far
-> > > as I understand, only DSA has this situation where pvid-tagged traffic
-> > > may end up with a vlan tag on ingress.
-> >
-> > OK so something along the lines of: port is bridged, and bridge has
-> > vlan_filtering=0 and switch does egress tagging and VID is bridge's
-> > default_pvid then pop the tag?
-> >
-> > Should this be a helper function that is utilized by the relevant tagger
-> > drivers or do you want this in dsa_switch_rcv()?
->
-> The two drivers that appear to be untagging the CPU port unconditionally are
-> b53 and kzs9477.
+If the advertising set is non-scannable and the Host uses this command
+other than to discard existing data, the Controller shall return the
+error code Invalid HCI Command Parameters (0x12).
 
-So, a helper in DSA would look something like this:
+On WCN3991, the controller correctly responds with Invalid Parameters
+when this is sent.  That error causes __hci_req_hci_power_on to fail
+with -EINVAL and LE devices can't connect because background scanning
+isn't configured.
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 75c8fac82017..c0bb978c6ff7 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -204,6 +204,7 @@ struct dsa_port {
- 	const char		*mac;
- 	struct device_node	*dn;
- 	unsigned int		ageing_time;
-+	int			pvid;
- 	bool			vlan_filtering;
- 	u8			stp_state;
- 	struct net_device	*bridge_dev;
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 4a5e2832009b..84d47f838b4e 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -273,6 +273,8 @@ static int dsa_port_setup(struct dsa_port *dp)
- 	if (dp->setup)
- 		return 0;
- 
-+	dp->pvid = -1;
-+
- 	switch (dp->type) {
- 	case DSA_PORT_TYPE_UNUSED:
- 		dsa_port_disable(dp);
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 2da656d984ef..d1dec232fc45 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -7,6 +7,7 @@
- #ifndef __DSA_PRIV_H
- #define __DSA_PRIV_H
- 
-+#include <linux/if_bridge.h>
- #include <linux/phy.h>
- #include <linux/netdevice.h>
- #include <linux/netpoll.h>
-@@ -194,6 +195,40 @@ dsa_slave_to_master(const struct net_device *dev)
- 	return dp->cpu_dp->master;
- }
- 
-+/* If under a bridge with vlan_filtering=0, make sure to send pvid-tagged
-+ * frames as untagged, since the bridge will not untag them.
-+ */
-+static inline struct sk_buff *dsa_untag_bridge_pvid(struct sk_buff *skb)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(skb->dev);
-+	struct vlan_ethhdr *hdr = vlan_eth_hdr(skb);
-+	struct net_device *br = dp->bridge_dev;
-+	u16 proto;
-+	int err;
-+
-+	if (!br || br_vlan_enabled(br))
-+		return skb;
-+
-+	err = br_vlan_get_proto(br, &proto);
-+	if (err)
-+		return skb;
-+
-+	if (!skb_vlan_tag_present(skb) && hdr->h_vlan_proto == htons(proto)) {
-+		skb = skb_vlan_untag(skb);
-+		if (!skb)
-+			return NULL;
-+	}
-+
-+	if (!skb_vlan_tag_present(skb))
-+		return skb;
-+
-+	/* Cannot use br_vlan_get_pvid here as that requires RTNL */
-+	if (skb_vlan_tag_get_id(skb) == dp->pvid)
-+		__vlan_hwaccel_clear_tag(skb);
-+
-+	return skb;
-+}
-+
- /* switch.c */
- int dsa_switch_register_notifier(struct dsa_switch *ds);
- void dsa_switch_unregister_notifier(struct dsa_switch *ds);
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 86c8dc5c32a0..9167cc678f41 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -315,21 +315,45 @@ static int dsa_switch_vlan_add(struct dsa_switch *ds,
- 	if (!ds->ops->port_vlan_add)
- 		return 0;
- 
--	for (port = 0; port < ds->num_ports; port++)
--		if (dsa_switch_vlan_match(ds, port, info))
-+	for (port = 0; port < ds->num_ports; port++) {
-+		if (dsa_switch_vlan_match(ds, port, info)) {
- 			ds->ops->port_vlan_add(ds, port, info->vlan);
- 
-+			if (info->vlan->flags & BRIDGE_VLAN_INFO_PVID) {
-+				struct dsa_port *dp = dsa_to_port(ds, port);
-+
-+				dp->pvid = info->vlan->vid_end;
-+			}
-+		}
-+	}
-+
- 	return 0;
- }
- 
- static int dsa_switch_vlan_del(struct dsa_switch *ds,
- 			       struct dsa_notifier_vlan_info *info)
- {
-+	int err;
-+
- 	if (!ds->ops->port_vlan_del)
- 		return -EOPNOTSUPP;
- 
--	if (ds->index == info->sw_index)
--		return ds->ops->port_vlan_del(ds, info->port, info->vlan);
-+	if (ds->index == info->sw_index) {
-+		const struct switchdev_obj_port_vlan *vlan = info->vlan;
-+		struct dsa_port *dp = dsa_to_port(ds, info->port);
-+		int vid;
-+
-+		err = ds->ops->port_vlan_del(ds, info->port, info->vlan);
-+		if (err)
-+			return err;
-+
-+		for (vid = vlan->vid_begin; vid <= vlan->vid_end; vid++) {
-+			if (vid == dp->pvid) {
-+				dp->pvid = -1;
-+				break;
-+			}
-+		}
-+	}
- 
- 	/* Do not deprogram the DSA links as they may be used as conduit
- 	 * for other VLAN members in the fabric.
+Here is an hci trace of where this issue occurs during power on:
 
-It's quite a bit more complex, I don't like it.
+< HCI Command: LE Set Extended Advertising Parameters (0x08|0x0036) plen 25
+        Handle: 0x00
+        Properties: 0x0010
+          Use legacy advertising PDUs: ADV_NONCONN_IND
+        Min advertising interval: 181.250 msec (0x0122)
+        Max advertising interval: 181.250 msec (0x0122)
+        Channel map: 37, 38, 39 (0x07)
+        Own address type: Random (0x01)
+        Peer address type: Public (0x00)
+        Peer address: 00:00:00:00:00:00 (OUI 00-00-00)
+        Filter policy: Allow Scan Request from Any, Allow Connect...
+        TX power: 127 dbm (0x7f)
+        Primary PHY: LE 1M (0x01)
+        Secondary max skip: 0x00
+        Secondary PHY: LE 1M (0x01)
+        SID: 0x00
+        Scan request notifications: Disabled (0x00)
+> HCI Event: Command Complete (0x0e) plen 5
+      LE Set Extended Advertising Parameters (0x08|0x0036) ncmd 1
+        Status: Success (0x00)
+        TX power (selected): 9 dbm (0x09)
+< HCI Command: LE Set Advertising Set Random Address (0x08|0x0035) plen 7
+        Advertising handle: 0x00
+        Advertising random address: 08:FD:55:ED:22:28 (OUI 08-FD-55)
+> HCI Event: Command Complete (0x0e) plen 4
+      LE Set Advertising Set Random Address (0x08|0x0035) ncmd
+        Status: Success (0x00)
+< HCI Command: LE Set Extended Scan Response Data (0x08|0x0038) plen 35
+        Handle: 0x00
+        Operation: Complete scan response data (0x03)
+        Fragment preference: Minimize fragmentation (0x01)
+        Data length: 0x0d
+        Name (short): Chromebook
+> HCI Event: Command Complete (0x0e) plen 4
+      LE Set Extended Scan Response Data (0x08|0x0038) ncmd 1
+        Status: Invalid HCI Command Parameters (0x12)
 
-Thanks,
--Vladimir
+Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Reviewed-by: Daniel Winkler <danielwinkler@google.com>
+---
+
+ net/bluetooth/hci_request.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+index e0269192f2e536..e17bc8a1c66ddd 100644
+--- a/net/bluetooth/hci_request.c
++++ b/net/bluetooth/hci_request.c
+@@ -1533,11 +1533,14 @@ void __hci_req_update_scan_rsp_data(struct hci_request *req, u8 instance)
+ 
+ 		memset(&cp, 0, sizeof(cp));
+ 
+-		if (instance)
++		/* Extended scan response data doesn't allow a response to be
++		 * set if the instance isn't scannable.
++		 */
++		if (get_adv_instance_scan_rsp_len(hdev, instance))
+ 			len = create_instance_scan_rsp_data(hdev, instance,
+ 							    cp.data);
+ 		else
+-			len = create_default_scan_rsp_data(hdev, cp.data);
++			len = 0;
+ 
+ 		if (hdev->scan_rsp_data_len == len &&
+ 		    !memcmp(cp.data, hdev->scan_rsp_data, len))
+-- 
+2.28.0.618.gf4bc123cb7-goog
+
