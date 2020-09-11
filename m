@@ -2,57 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AD8726767C
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 01:18:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB55C26767D
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 01:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725915AbgIKXSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 19:18:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38432 "EHLO mail.kernel.org"
+        id S1725822AbgIKXWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 19:22:32 -0400
+Received: from mga06.intel.com ([134.134.136.31]:17589 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725856AbgIKXSe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 19:18:34 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 48E6E221F0;
-        Fri, 11 Sep 2020 23:18:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599866313;
-        bh=otjbW3KXJAc1KvWhaAhzF050Zo+6jIkfo+KgbxbqvKk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F+Nwz9gQr5y9FEMWAOCNG9Ys0aFkQ/gzVdJH+DVEbCwtzJGt9eCGWlYGiBAew8Jsn
-         mguNsOnzOzJb8Z1pCzLohQXs811U0rH1UDooFb5dCCgn6AjSEABJ9DRyMRcw1vCgj6
-         mYyrn2FRMiQVULBpX3reR5mOOXfbunX1+DbEH2DM=
-Date:   Fri, 11 Sep 2020 16:18:31 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-Cc:     "nhorman@redhat.com" <nhorman@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>
-Subject: Re: [net 0/4][pull request] Intel Wired LAN Driver Updates
- 2020-09-09
-Message-ID: <20200911161831.49d7cc36@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <63501c55d7e60ef914dfd08defa36c0a4f1a1bb9.camel@intel.com>
-References: <20200910000411.2658780-1-anthony.l.nguyen@intel.com>
-        <20200910074838.72c842aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <63501c55d7e60ef914dfd08defa36c0a4f1a1bb9.camel@intel.com>
+        id S1725871AbgIKXWO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Sep 2020 19:22:14 -0400
+IronPort-SDR: NqTVIzf4NOjH9tB0V25Cqu6XR6LQOcD+EQYardtg4jVkh5VS1i/GOhEJjAykUx7wFuu3pouCiK
+ lvmg4nlJzfKQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="220426159"
+X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; 
+   d="scan'208";a="220426159"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 16:22:13 -0700
+IronPort-SDR: 6h/Gs1nF9Dwc5MTzVFsuWCcukcp5R7wn22Db+5hY1UE9ux+Tnqom3m8sJl6tTDCKboDOr9Abhw
+ nYCmELtgxCiQ==
+X-IronPort-AV: E=Sophos;i="5.76,418,1592895600"; 
+   d="scan'208";a="505656577"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 16:22:12 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        jeffrey.t.kirsher@intel.com
+Subject: [RESEND net 0/4][pull request] Intel Wired LAN Driver Updates 2020-09-09
+Date:   Fri, 11 Sep 2020 16:22:03 -0700
+Message-Id: <20200911232207.3417169-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Sep 2020 23:09:57 +0000 Nguyen, Anthony L wrote:
-> > How are my patches?  
-> 
-> Sorry for the delay, we've had key people out on summer
-> vacations/sabbaticals. I'm working on pulling people back and engaging
-> others to get them tested/reviewed. Please give us a couple of weeks.
+This series contains updates to i40e and igc drivers.
 
-Okay, one or two weeks tops, please. This really needs to be in place
-before the merge window. I posted it in time for 5.9, we're onto 5.10
-already and waiting.. :(
+Stefan Assmann changes num_vlans to u16 to fix may be used uninitialized
+error and propagates error in i40_set_vsi_promisc() for i40e.
+
+Vinicius corrects timestamping latency values for i225 devices and
+accounts for TX timestamping delay for igc.
+
+The following are changes since commit b87f9fe1ac9441b75656dfd95eba70ef9f0375e0:
+  hsr: avoid newline  end of message in NL_SET_ERR_MSG_MOD
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/net-queue 40GbE
+
+Stefan Assmann (2):
+  i40e: fix return of uninitialized aq_ret in i40e_set_vsi_promisc
+  i40e: always propagate error value in i40e_set_vsi_promisc()
+
+Vinicius Costa Gomes (2):
+  igc: Fix wrong timestamp latency numbers
+  igc: Fix not considering the TX delay for timestamps
+
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 22 ++++++++++++++-----
+ drivers/net/ethernet/intel/igc/igc.h          | 20 +++++++----------
+ drivers/net/ethernet/intel/igc/igc_ptp.c      | 19 ++++++++++++++++
+ 3 files changed, 43 insertions(+), 18 deletions(-)
+
+-- 
+2.26.2
+
