@@ -2,116 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A20E426643C
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:33:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6968026648C
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726474AbgIKQdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 12:33:46 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:29688 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725919AbgIKPQk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:16:40 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08BDJrcr027182;
-        Fri, 11 Sep 2020 06:21:35 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=S7PDn2ea4pG+6EcmnvXKnsOulhplG0V4vUvi4N+ws0I=;
- b=SzMocMvksGf8Mfxp82KM2tBsMdfKK0fiJXUZ1ZOCCLEzL3KWhZLt1qWT993TFXg2vWWw
- N3K4nGDDQ3CXazbWMb0U+/mOHsaQMfMGmFiZ+dWQ2qcepnenZgTiIBNr6g+3R+DvDaaW
- l2eD2MwYoNCFBtUHnjHEcBEYA5YgLlKYYRBiZ8d3px7anDzBr9cl8Y7Spw00nK0ork9s
- 4n2oQrQ4ds/7axu5xylXqeIt6pInyk8WLLWwWER8Xsi2Fa4QIrxR8RcYfds6e1S/lroU
- lW2uuHh7Rou/ARNgSeyVBbsABpIh3uaq9u1QFUzMdJJ6Y4RQLE1HBacXv2jbIHab0APG /Q== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 33ff7mdjwp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 11 Sep 2020 06:21:35 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 11 Sep
- 2020 06:21:34 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 11 Sep
- 2020 06:21:33 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 11 Sep 2020 06:21:33 -0700
-Received: from yoga.marvell.com (unknown [10.95.131.64])
-        by maili.marvell.com (Postfix) with ESMTP id 6FF4E3F703F;
-        Fri, 11 Sep 2020 06:21:31 -0700 (PDT)
-From:   <skardach@marvell.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
-        <netdev@vger.kernel.org>
-CC:     Stanislaw Kardach <skardach@marvell.com>
-Subject: [PATCH net-next 0/3] octeontx2-af: add support for KPU profile customization
-Date:   Fri, 11 Sep 2020 15:21:21 +0200
-Message-ID: <20200911132124.7420-1-skardach@marvell.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726276AbgIKQle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 12:41:34 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:50565 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725786AbgIKPLN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:11:13 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id EDBE4972;
+        Fri, 11 Sep 2020 09:25:07 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 11 Sep 2020 09:25:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Nc81uF+mob/bBUle1
+        3jkpOUiabXO09c1T6O3Yh/6G0g=; b=EyU54ZQcNEvV1Lrv3gj8oshfbjnlBWiXZ
+        0Homm4Ak1wXjI9hgDHllXAOLqbQVKs9VXt3rTuP2Hl/7c91Fv2uskZAP17D4zrGe
+        1hz1RgLuhbTutxo7f65sK3n//SKxSBRVn/z7+TRIsEdQlMmhAohz+dAQCpiTlfS+
+        X1vsw794vWmcM3ip805bOkaVzoeLPW3jr6roHK+iUBTT00ROHuV2ugtrhgZpqQL1
+        FF1E07qDea1hZhiKgkpeBz1Czw40sBszNgDJyBsCMWOOsk4wX+NDdQYZIZHHm2+r
+        kBDKaBqL9rIdNxb0/5/QtrXymeCx9IpnAJCaFJ10TvhZRsc94lc8w==
+X-ME-Sender: <xms:s3pbXwYDaYez3GqeuJMnfMLUZL8PqoCbXyRVvpGvQw5UKmQEWgCsHg>
+    <xme:s3pbX7bJ60XwKcQAaKchRR8PRMfniM_gx-CiYyGvWY_A6FVKXgtz1_nyYJ327NgNt
+    x_bo1axx8agOEw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehledgieeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrfeeirddufedunecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:s3pbX6--xlunksqM4Vv-eWD0rORr7aBoFGL9OtbSEFbY8k2ywe5dIQ>
+    <xmx:s3pbX6rWJ3Okk9ToAVBz2JlsbxMl7poGyf2sTcIc4rFM1X_G5z04kQ>
+    <xmx:s3pbX7rmzl84sBUaqE78rg_I-_iyTKq-6KR5GWfKtKQdOHkvJ6yuMw>
+    <xmx:s3pbX8Cn0Ye3Bf_UA_cAacjErJ212zsNptIPAZ9gb5momZ-cV8NW9g>
+Received: from shredder.mtl.com (igld-84-229-36-131.inter.net.il [84.229.36.131])
+        by mail.messagingengine.com (Postfix) with ESMTPA id B0B383064674;
+        Fri, 11 Sep 2020 09:25:05 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org
+Cc:     davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
+        nikolay@nvidia.com, jiri@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next] bridge: mcast: Fix incomplete MDB dump
+Date:   Fri, 11 Sep 2020 16:24:47 +0300
+Message-Id: <20200911132447.3158141-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-11_04:2020-09-10,2020-09-11 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stanislaw Kardach <skardach@marvell.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-Marvell octeontx2 NPC device contains a configurable Kanguroo Parser Unit
-(KPU) and CAM match key data extraction (MKEX). The octeontx2-af driver
-configures them both to parse a list of standard protocol headers which
-are used by netdev driver and other potential applications (i.e.
-userspace through VFIO).
-The problem arises when users have some custom protocol headers which
-they'd like to use in CAM flow matching. If such protocols are publicly
-known, they can be added to the built-in KPU configuration (called
-"profile" - in npc_profile.h). If not, then there's more benefit in
-keeping such changes local to the user.
-For that case a mechanism which would allow users to produce a KPU
-profile and load it along with octeontx2-af driver is needed. At the same
-time such customization has to take care not to break the netdev driver
-operation or other applications (that is be discoverable).
+Each MDB entry is encoded in a nested netlink attribute called
+'MDBA_MDB_ENTRY'. In turn, this attribute contains another nested
+attributed called 'MDBA_MDB_ENTRY_INFO', which encodes a single port
+group entry within the MDB entry.
 
-Therefore introduce a mechanism for a limited customization of the
-built-in KPU profile via a firmware file (layout and contents described
-by struct npc_kpu_profile_fwdata). It allows user modification of only a
-limited number of top priority KPU entries, while others are configured
-from the built-in KPU profile. Additionally by convention users should
-only use NPC_LT_Lx_CUSTOMx LTYPE entries in their profiles to change the
-meaning of built-in LTYPEs. This way the baseline protocol support is
-always available and the impact of potential user errors is minimized.
-As MKEX also needs to be modified to take into account any user
-protocols, the KPU profile firmware binary contains also that. Netdev
-driver and applications have a way to discover applied MKEX settings by
-querying RVU AF device via NPC_GET_KEX_CFG MBOX message.
-Finally some users might need to modify hardware packet data alignment
-behavior and profile contains settings for that too.
+The cited commit added the ability to restart a dump from a specific
+port group entry. However, on failure to add a port group entry to the
+dump the entire MDB entry (stored in 'nest2') is removed, resulting in
+missing port group entries.
 
-First patch ensures that CUSTOMx LTYPEs are not aliased with meaningful
-LTYPEs where possible.
+Fix this by finalizing the MDB entry with the partial list of already
+encoded port group entries.
 
-Second patch gathers all KPU profile related data into a single struct
-and creates an adapter structure which provides an interface to the KPU
-profile for the octeontx2-af driver.
+Fixes: 5205e919c9f0 ("net: bridge: mcast: add support for src list and filter mode dumping")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+ net/bridge/br_mdb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Third patch adds logic for loading the KPU profile through kernel
-firmware APIs, filling in the customizable entries in the adapter
-structure and programming the MKEX from KPU profile.
-
-Stanislaw Kardach (3):
-  octeontx2-af: fix LD CUSTOM LTYPE aliasing
-  octeontx2-af: prepare for custom KPU profiles
-  octeontx2-af: add support for custom KPU entries
-
- .../net/ethernet/marvell/octeontx2/af/npc.h   |  80 +++-
- .../marvell/octeontx2/af/npc_profile.h        | 244 ++++++++++++-
- .../net/ethernet/marvell/octeontx2/af/rvu.c   |   6 +
- .../net/ethernet/marvell/octeontx2/af/rvu.h   |  22 ++
- .../ethernet/marvell/octeontx2/af/rvu_nix.c   |  36 +-
- .../ethernet/marvell/octeontx2/af/rvu_npc.c   | 341 ++++++++++--------
- 6 files changed, 564 insertions(+), 165 deletions(-)
-
+diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
+index 67e0976aeed2..00f1651a6aba 100644
+--- a/net/bridge/br_mdb.c
++++ b/net/bridge/br_mdb.c
+@@ -243,7 +243,7 @@ static int br_mdb_fill_info(struct sk_buff *skb, struct netlink_callback *cb,
+ 
+ 			err = __mdb_fill_info(skb, mp, p);
+ 			if (err) {
+-				nla_nest_cancel(skb, nest2);
++				nla_nest_end(skb, nest2);
+ 				goto out;
+ 			}
+ skip_pg:
 -- 
-2.20.1
+2.26.2
 
