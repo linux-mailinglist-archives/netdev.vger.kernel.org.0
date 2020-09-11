@@ -2,87 +2,446 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4971C266A66
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 23:56:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 927A6266AB2
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 00:00:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725876AbgIKV4H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 17:56:07 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:59428 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725847AbgIKV4E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 17:56:04 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.62])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 3866160094;
-        Fri, 11 Sep 2020 21:56:04 +0000 (UTC)
-Received: from us4-mdac16-49.ut7.mdlocal (unknown [10.7.66.16])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 37C068009B;
-        Fri, 11 Sep 2020 21:56:04 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.40])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C0806280066;
-        Fri, 11 Sep 2020 21:56:03 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 6CD96BC0076;
-        Fri, 11 Sep 2020 21:56:03 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 11 Sep
- 2020 22:55:58 +0100
-Subject: Re: [RFC PATCH net-next v1 11/11] drivers/net/ethernet: clean up
- mis-targeted comments
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-CC:     <netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>
-References: <20200911012337.14015-1-jesse.brandeburg@intel.com>
- <20200911012337.14015-12-jesse.brandeburg@intel.com>
- <227d2fe4-ddf8-89c9-b80b-142674c2cca0@solarflare.com>
- <20200911144207.00005619@intel.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <e2e637ae-8cda-c9a4-91ce-93dbd475fc0c@solarflare.com>
-Date:   Fri, 11 Sep 2020 22:55:54 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1725910AbgIKWAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 18:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725846AbgIKWAf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 18:00:35 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4147FC061573;
+        Fri, 11 Sep 2020 15:00:34 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id n25so13689943ljj.4;
+        Fri, 11 Sep 2020 15:00:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aEgWM0r5trDxYSVZugmm4kVCes2l5cIV/KtzSzEdKs8=;
+        b=QPThOWpmoTeN+/VzCdTyY2AxRP6XR0kodivTJH9kX/DHLx6SugAlfBl4MWNjOPaF9a
+         Ktn1m/LB4CMHl1xZHwZa94fO3G64zhkne/UeAFVxnAVkGFVwSDMYFLcPsNp9TXtH9OWC
+         Jo3nIskbIqjz0Vxqms4AXMVEd2C+yMyrpiU56GqSBx1g9MR0WHIIVWZYt/6PRJBJpvd1
+         348OAGUifELBi6bRfxBh5KF1N+2lTrn2ryU5v+48Kr5DAxmrL9NlqYzlKksLG+aP/dL5
+         +zBlG+WedPkBmukpTrMDN5J8W8Qp/dT9cj9OMFuFw6wN2YuYMb7Imhj9xGbnDpGkVRql
+         Sn3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aEgWM0r5trDxYSVZugmm4kVCes2l5cIV/KtzSzEdKs8=;
+        b=DJX7PA8LxcrhzVMBIbXTrJME5DrMStmZa8eJwS02VESkuX/6pVs/zlINvcPbX0cjjy
+         mpqFNisDR1fdmBjrFIXywfGcGybFfxhS4mnCXFaM7fNaodCH/9IT8XMdPPkrvKD1YIpE
+         lqk8l8rJKu4zX5rGait783vkR8yrtBPl3ZFOmR59XFSNUPa0lzTLolOOpRIAmoZKfK5F
+         +nqGUxnwkNpcLtpCjKdNda3hpYUpIZuQcP3mF/Q2cCzG81p6BP7jGep03TVFfH5+ESmA
+         yI4qp8zXb9UFkIFlYaZ6ulmDqBkOq9ExvA0t2yHGdpVxFISfavSMkx3njyQDt/e+maLn
+         PBmA==
+X-Gm-Message-State: AOAM531LvDrn4MDh81hQzwccNX3tn1yczv9+RL/cb63TGsKJ9/S6jkCh
+        B28FBPgTJl0VjRRiwECY6kw=
+X-Google-Smtp-Source: ABdhPJwaQ1zNtGFUUMSerl15iT5BaTZTabcPeauEEEe3mqogKMt0WDbzttjo9xpMC0WWtzByMd1DJQ==
+X-Received: by 2002:a2e:92cb:: with SMTP id k11mr1438939ljh.163.1599861630076;
+        Fri, 11 Sep 2020 15:00:30 -0700 (PDT)
+Received: from localhost.localdomain (h-82-196-111-59.NA.cust.bahnhof.se. [82.196.111.59])
+        by smtp.gmail.com with ESMTPSA id k10sm688507lja.112.2020.09.11.15.00.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Sep 2020 15:00:29 -0700 (PDT)
+From:   Rikard Falkeborn <rikard.falkeborn@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Jerin Jacob <jerinj@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Rikard Falkeborn <rikard.falkeborn@gmail.com>
+Subject: [PATCH net-next] octeontx2-af: Constify npc_kpu_profile_{action,cam}
+Date:   Sat, 12 Sep 2020 00:00:15 +0200
+Message-Id: <20200911220015.41830-1-rikard.falkeborn@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <20200911144207.00005619@intel.com>
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25660.000
-X-TM-AS-Result: No-3.934400-8.000000-10
-X-TMASE-MatchedRID: VPleTT1nwdTmLzc6AOD8DfHkpkyUphL9ekMgTOQbVFsZSz1vvG+0mjGE
-        TFerrMsjdmjn29714VMa7iGxrZ1cFjPpmmeZK64q4h8r8l3l4eZXLrDwmXJ6bwQsw9A3PIlL0HC
-        C1wXiE/J1C0eA/+ELkLyoNIcZ8C1BHJosEA366STlAR4uQ+nossHWhOU1PTVYdz3bnI4leYVxbj
-        2K9xHJ+OfOVcxjDhcwIC0OoeD/hCbQLWxBF9DMQcRB0bsfrpPInxMyeYT53RnUvuI6DlMU3vWBK
-        +akkoq4N7J9wpCyXYjV5wLYuJQTvYCxQx/QhvMkBcD5rV409SHT2My6xGU4Bqmrf9FYIKdJ/xqW
-        /R9x9c7UNewp4E2/TgSpmVYGQlZ3sxk1kV1Ja8cbbCVMcs1jUlZca9RSYo/b
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.934400-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25660.000
-X-MDID: 1599861364-TiHtXqQNxaDD
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/09/2020 22:42, Jesse Brandeburg wrote:
-> Thanks Ed, I think I might just remove the /** on that function then
-> (removing it from kdoc processing)
-I dunno, that means
-a) kerneldoc won't generate html for this struct
-b) new additions to the struct without corresponding kerneldoc won't
-   generate warnings
- both of which are not ideal outcomes.
-I realise there's value in having totally warning-clean code, but in
- this case I think this one warning, even though it's indicating a
- toolchain problem rather than a codebase problem, should better stay
- (if only to put pressure on the toolchain to fix it).
-Otherwise, when and if the toolchain is fixed, what's the chance we'll
- remember to put the /** back?
+These are never modified, so constify them to allow the compiler to
+place them in read-only memory. This moves about 25kB to read-only
+memory as seen by the output of the size command.
 
-That's just my opinion, though; I won't block patches that disagree.
+Before:
+   text    data     bss     dec     hex filename
+ 296203   65464    1248  362915   589a3 drivers/net/ethernet/marvell/octeontx2/af/octeontx2_af.ko
 
--ed
+After:
+   text    data     bss     dec     hex filename
+ 321003   40664    1248  362915   589a3 drivers/net/ethernet/marvell/octeontx2/af/octeontx2_af.ko
+
+Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
+---
+ .../net/ethernet/marvell/octeontx2/af/npc.h   |  4 +-
+ .../marvell/octeontx2/af/npc_profile.h        | 68 +++++++++----------
+ .../ethernet/marvell/octeontx2/af/rvu_npc.c   |  6 +-
+ 3 files changed, 39 insertions(+), 39 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc.h b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
+index 3803af9231c6..95c646ae7e23 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/npc.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/npc.h
+@@ -173,8 +173,8 @@ struct npc_kpu_profile_action {
+ struct npc_kpu_profile {
+ 	int cam_entries;
+ 	int action_entries;
+-	struct npc_kpu_profile_cam *cam;
+-	struct npc_kpu_profile_action *action;
++	const struct npc_kpu_profile_cam *cam;
++	const struct npc_kpu_profile_action *action;
+ };
+ 
+ /* NPC KPU register formats */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
+index aa2727e6211a..b29c6689ace2 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/npc_profile.h
+@@ -418,7 +418,7 @@ enum NPC_ERRLEV_E {
+ 	NPC_ERRLEV_ENUM_LAST = 16,
+ };
+ 
+-static struct npc_kpu_profile_action ikpu_action_entries[] = {
++static const struct npc_kpu_profile_action ikpu_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		12, 16, 20, 0, 0,
+@@ -997,7 +997,7 @@ static struct npc_kpu_profile_action ikpu_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu1_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu1_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU1_ETHER, 0xff,
+ 		NPC_ETYPE_IP,
+@@ -1666,7 +1666,7 @@ static struct npc_kpu_profile_cam kpu1_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu2_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu2_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU2_CTAG, 0xff,
+ 		NPC_ETYPE_IP,
+@@ -2794,7 +2794,7 @@ static struct npc_kpu_profile_cam kpu2_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu3_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu3_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU3_CTAG, 0xff,
+ 		NPC_ETYPE_IP,
+@@ -3913,7 +3913,7 @@ static struct npc_kpu_profile_cam kpu3_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu4_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu4_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU4_MPLS, 0xff,
+ 		NPC_MPLS_S,
+@@ -4006,7 +4006,7 @@ static struct npc_kpu_profile_cam kpu4_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu5_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu5_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU5_IP, 0xff,
+ 		0x0000,
+@@ -4576,7 +4576,7 @@ static struct npc_kpu_profile_cam kpu5_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu6_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu6_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU6_IP6_EXT, 0xff,
+ 		0x0000,
+@@ -4921,7 +4921,7 @@ static struct npc_kpu_profile_cam kpu6_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu7_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu7_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU7_IP6_EXT, 0xff,
+ 		0x0000,
+@@ -5140,7 +5140,7 @@ static struct npc_kpu_profile_cam kpu7_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu8_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu8_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU8_TCP, 0xff,
+ 		0x0000,
+@@ -5872,7 +5872,7 @@ static struct npc_kpu_profile_cam kpu8_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu9_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu9_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU9_TU_MPLS_IN_GRE, 0xff,
+ 		NPC_MPLS_S,
+@@ -6334,7 +6334,7 @@ static struct npc_kpu_profile_cam kpu9_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu10_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu10_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU10_TU_MPLS, 0xff,
+ 		NPC_MPLS_S,
+@@ -6499,7 +6499,7 @@ static struct npc_kpu_profile_cam kpu10_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu11_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu11_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU11_TU_ETHER, 0xff,
+ 		NPC_ETYPE_IP,
+@@ -6808,7 +6808,7 @@ static struct npc_kpu_profile_cam kpu11_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu12_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu12_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU12_TU_IP, 0xff,
+ 		NPC_IPNH_TCP,
+@@ -7063,7 +7063,7 @@ static struct npc_kpu_profile_cam kpu12_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu13_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu13_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU13_TU_IP6_EXT, 0xff,
+ 		0x0000,
+@@ -7075,7 +7075,7 @@ static struct npc_kpu_profile_cam kpu13_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu14_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu14_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU14_TU_IP6_EXT, 0xff,
+ 		0x0000,
+@@ -7087,7 +7087,7 @@ static struct npc_kpu_profile_cam kpu14_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu15_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu15_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU15_TU_TCP, 0xff,
+ 		0x0000,
+@@ -7288,7 +7288,7 @@ static struct npc_kpu_profile_cam kpu15_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_cam kpu16_cam_entries[] = {
++static const struct npc_kpu_profile_cam kpu16_cam_entries[] = {
+ 	{
+ 		NPC_S_KPU16_TCP_DATA, 0xff,
+ 		0x0000,
+@@ -7345,7 +7345,7 @@ static struct npc_kpu_profile_cam kpu16_cam_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu1_action_entries[] = {
++static const struct npc_kpu_profile_action kpu1_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		8, 0, 6, 3, 0,
+@@ -7962,7 +7962,7 @@ static struct npc_kpu_profile_action kpu1_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu2_action_entries[] = {
++static const struct npc_kpu_profile_action kpu2_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		8, 0, 6, 2, 0,
+@@ -8965,7 +8965,7 @@ static struct npc_kpu_profile_action kpu2_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu3_action_entries[] = {
++static const struct npc_kpu_profile_action kpu3_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		8, 0, 6, 1, 0,
+@@ -9960,7 +9960,7 @@ static struct npc_kpu_profile_action kpu3_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu4_action_entries[] = {
++static const struct npc_kpu_profile_action kpu4_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		0, 0, 0, 0, 0,
+@@ -10043,7 +10043,7 @@ static struct npc_kpu_profile_action kpu4_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu5_action_entries[] = {
++static const struct npc_kpu_profile_action kpu5_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_LC, NPC_EC_IP_TTL_0,
+ 		0, 0, 0, 0, 1,
+@@ -10550,7 +10550,7 @@ static struct npc_kpu_profile_action kpu5_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu6_action_entries[] = {
++static const struct npc_kpu_profile_action kpu6_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		0, 0, 0, 0, 1,
+@@ -10857,7 +10857,7 @@ static struct npc_kpu_profile_action kpu6_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu7_action_entries[] = {
++static const struct npc_kpu_profile_action kpu7_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		0, 0, 0, 0, 1,
+@@ -11052,7 +11052,7 @@ static struct npc_kpu_profile_action kpu7_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu8_action_entries[] = {
++static const struct npc_kpu_profile_action kpu8_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_LD, NPC_EC_TCP_FLAGS_FIN_ONLY,
+ 		0, 0, 0, 0, 1,
+@@ -11703,7 +11703,7 @@ static struct npc_kpu_profile_action kpu8_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu9_action_entries[] = {
++static const struct npc_kpu_profile_action kpu9_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		0, 0, 0, 0, 0,
+@@ -12114,7 +12114,7 @@ static struct npc_kpu_profile_action kpu9_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu10_action_entries[] = {
++static const struct npc_kpu_profile_action kpu10_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		8, 0, 6, 1, 0,
+@@ -12261,7 +12261,7 @@ static struct npc_kpu_profile_action kpu10_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu11_action_entries[] = {
++static const struct npc_kpu_profile_action kpu11_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		8, 0, 6, 0, 0,
+@@ -12536,7 +12536,7 @@ static struct npc_kpu_profile_action kpu11_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu12_action_entries[] = {
++static const struct npc_kpu_profile_action kpu12_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		2, 12, 0, 2, 0,
+@@ -12763,7 +12763,7 @@ static struct npc_kpu_profile_action kpu12_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu13_action_entries[] = {
++static const struct npc_kpu_profile_action kpu13_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		0, 0, 0, 0, 1,
+@@ -12774,7 +12774,7 @@ static struct npc_kpu_profile_action kpu13_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu14_action_entries[] = {
++static const struct npc_kpu_profile_action kpu14_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		0, 0, 0, 0, 1,
+@@ -12785,7 +12785,7 @@ static struct npc_kpu_profile_action kpu14_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu15_action_entries[] = {
++static const struct npc_kpu_profile_action kpu15_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_LG, NPC_EC_TCP_FLAGS_FIN_ONLY,
+ 		0, 0, 0, 0, 1,
+@@ -12964,7 +12964,7 @@ static struct npc_kpu_profile_action kpu15_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile_action kpu16_action_entries[] = {
++static const struct npc_kpu_profile_action kpu16_action_entries[] = {
+ 	{
+ 		NPC_ERRLEV_RE, NPC_EC_NOERR,
+ 		0, 0, 0, 0, 1,
+@@ -13015,7 +13015,7 @@ static struct npc_kpu_profile_action kpu16_action_entries[] = {
+ 	},
+ };
+ 
+-static struct npc_kpu_profile npc_kpu_profiles[] = {
++static const struct npc_kpu_profile npc_kpu_profiles[] = {
+ 	{
+ 		ARRAY_SIZE(kpu1_cam_entries),
+ 		ARRAY_SIZE(kpu1_action_entries),
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+index e2e585d4de9b..6a1ddb2da1a5 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -906,7 +906,7 @@ static void npc_load_mkex_profile(struct rvu *rvu, int blkaddr)
+ }
+ 
+ static void npc_config_kpuaction(struct rvu *rvu, int blkaddr,
+-				 struct npc_kpu_profile_action *kpuaction,
++				 const struct npc_kpu_profile_action *kpuaction,
+ 				 int kpu, int entry, bool pkind)
+ {
+ 	struct npc_kpu_action0 action0 = {0};
+@@ -948,7 +948,7 @@ static void npc_config_kpuaction(struct rvu *rvu, int blkaddr,
+ }
+ 
+ static void npc_config_kpucam(struct rvu *rvu, int blkaddr,
+-			      struct npc_kpu_profile_cam *kpucam,
++			      const struct npc_kpu_profile_cam *kpucam,
+ 			      int kpu, int entry)
+ {
+ 	struct npc_kpu_cam cam0 = {0};
+@@ -976,7 +976,7 @@ static inline u64 enable_mask(int count)
+ }
+ 
+ static void npc_program_kpu_profile(struct rvu *rvu, int blkaddr, int kpu,
+-				    struct npc_kpu_profile *profile)
++				    const struct npc_kpu_profile *profile)
+ {
+ 	int entry, num_entries, max_entries;
+ 
+-- 
+2.28.0
+
