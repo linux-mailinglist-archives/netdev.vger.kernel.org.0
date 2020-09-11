@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7BD32661E1
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 17:12:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5DAC2661D6
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 17:09:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726400AbgIKPMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 11:12:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22505 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726180AbgIKPJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:09:56 -0400
+        id S1726078AbgIKPJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 11:09:40 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:21156 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726359AbgIKPH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:07:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599836994;
+        s=mimecast20190719; t=1599836815;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=iK0ZRgUODH6XcY6ehzXqiWlrt7WSveAnJbfaloOTo2A=;
-        b=OB56Xl1bHUPAxBZXcOrYDHb2yMJo9p4iLlEtmouhe9W7xemizu23TQkqIJmYHQ55Afy4v/
-        qLGrirjX4fbvyJq6eL2WlVmfaDnHJyyrve42ODqlibKCx/Mgwos7NIqlDgVRcF6fg0mE10
-        gBK1arI86A20Ii+8z2lN7dSY3Z2vI3o=
+        bh=8d8Yue3gHOEQjIrA3mwKO+P2SVxFJw/VIyJ/pkBuTUg=;
+        b=ZWrb6GDPhnV9D4m+nAPZfORm61MyDsKy1OrxP9WcNOYBE1co6LKtMsWl6DOz2tPH1G1sJm
+        pv1aOg+WXpzXhvDPxyV+w3Ci4cCplotnWYWvrQ2tIlHfgEoU7Ok6PnsjIffYwUgsnEX21D
+        eS/S9HWgzynnLzrizImPSM2ZEFD6mcI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-167-auHoavzbN0OvnsLzxtM5Aw-1; Fri, 11 Sep 2020 09:52:42 -0400
-X-MC-Unique: auHoavzbN0OvnsLzxtM5Aw-1
+ us-mta-250-UhnvV6leOkuVmZqU54znFQ-1; Fri, 11 Sep 2020 09:52:47 -0400
+X-MC-Unique: UhnvV6leOkuVmZqU54znFQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3E3F3AF21E;
-        Fri, 11 Sep 2020 13:52:41 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DF7B41091064;
+        Fri, 11 Sep 2020 13:52:45 +0000 (UTC)
 Received: from linux.fritz.box.com (ovpn-114-214.ams2.redhat.com [10.36.114.214])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0AF095C22B;
-        Fri, 11 Sep 2020 13:52:39 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B3BAE5C22A;
+        Fri, 11 Sep 2020 13:52:44 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org
-Subject: [PATCH net-next 09/13] mptcp: move address attribute into mptcp_addr_info
-Date:   Fri, 11 Sep 2020 15:52:04 +0200
-Message-Id: <e747c54ac7a860df30444ed364d0c39db0dd5d55.1599832097.git.pabeni@redhat.com>
+Subject: [PATCH net-next 12/13] mptcp: call tcp_cleanup_rbuf on subflows
+Date:   Fri, 11 Sep 2020 15:52:07 +0200
+Message-Id: <c3bd57834ebaf9030e6021c5bd51d169c995ab64.1599832097.git.pabeni@redhat.com>
 In-Reply-To: <cover.1599832097.git.pabeni@redhat.com>
 References: <cover.1599832097.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -50,189 +50,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So that can be accessed easily from the subflow creation
-helper. No functional change intended.
+That is needed to let the subflows announce promptly when new
+space is available in the receive buffer.
 
+tcp_cleanup_rbuf() is currently a static function, drop the
+scope modifier and add a declaration in the TCP header.
+
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/mptcp/pm_netlink.c | 39 ++++++++++++++++++++-------------------
- net/mptcp/protocol.h   |  5 +++--
- net/mptcp/subflow.c    |  5 ++---
- 3 files changed, 25 insertions(+), 24 deletions(-)
+ include/net/tcp.h    | 2 ++
+ net/ipv4/tcp.c       | 2 +-
+ net/mptcp/protocol.c | 6 ++++++
+ net/mptcp/subflow.c  | 2 ++
+ 4 files changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 2c208d2e65cd..6947f4fee6b9 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -23,8 +23,6 @@ static int pm_nl_pernet_id;
- 
- struct mptcp_pm_addr_entry {
- 	struct list_head	list;
--	unsigned int		flags;
--	int			ifindex;
- 	struct mptcp_addr_info	addr;
- 	struct rcu_head		rcu;
- };
-@@ -119,7 +117,7 @@ select_local_address(const struct pm_nl_pernet *pernet,
- 	rcu_read_lock();
- 	spin_lock_bh(&msk->join_list_lock);
- 	list_for_each_entry_rcu(entry, &pernet->local_addr_list, list) {
--		if (!(entry->flags & MPTCP_PM_ADDR_FLAG_SUBFLOW))
-+		if (!(entry->addr.flags & MPTCP_PM_ADDR_FLAG_SUBFLOW))
- 			continue;
- 
- 		/* avoid any address already in use by subflows and
-@@ -150,7 +148,7 @@ select_signal_address(struct pm_nl_pernet *pernet, unsigned int pos)
- 	 * can lead to additional addresses not being announced.
- 	 */
- 	list_for_each_entry_rcu(entry, &pernet->local_addr_list, list) {
--		if (!(entry->flags & MPTCP_PM_ADDR_FLAG_SIGNAL))
-+		if (!(entry->addr.flags & MPTCP_PM_ADDR_FLAG_SIGNAL))
- 			continue;
- 		if (i++ == pos) {
- 			ret = entry;
-@@ -210,8 +208,7 @@ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
- 			msk->pm.subflows++;
- 			check_work_pending(msk);
- 			spin_unlock_bh(&msk->pm.lock);
--			__mptcp_subflow_connect(sk, local->ifindex,
--						&local->addr, &remote);
-+			__mptcp_subflow_connect(sk, &local->addr, &remote);
- 			spin_lock_bh(&msk->pm.lock);
- 			return;
- 		}
-@@ -257,13 +254,13 @@ void mptcp_pm_nl_add_addr_received(struct mptcp_sock *msk)
- 	local.family = remote.family;
- 
- 	spin_unlock_bh(&msk->pm.lock);
--	__mptcp_subflow_connect((struct sock *)msk, 0, &local, &remote);
-+	__mptcp_subflow_connect((struct sock *)msk, &local, &remote);
- 	spin_lock_bh(&msk->pm.lock);
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index e85d564446c6..852f0d71dd40 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1414,6 +1414,8 @@ static inline int tcp_full_space(const struct sock *sk)
+ 	return tcp_win_from_space(sk, READ_ONCE(sk->sk_rcvbuf));
  }
  
- static bool address_use_port(struct mptcp_pm_addr_entry *entry)
- {
--	return (entry->flags &
-+	return (entry->addr.flags &
- 		(MPTCP_PM_ADDR_FLAG_SIGNAL | MPTCP_PM_ADDR_FLAG_SUBFLOW)) ==
- 		MPTCP_PM_ADDR_FLAG_SIGNAL;
- }
-@@ -293,9 +290,9 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
- 			goto out;
- 	}
- 
--	if (entry->flags & MPTCP_PM_ADDR_FLAG_SIGNAL)
-+	if (entry->addr.flags & MPTCP_PM_ADDR_FLAG_SIGNAL)
- 		pernet->add_addr_signal_max++;
--	if (entry->flags & MPTCP_PM_ADDR_FLAG_SUBFLOW)
-+	if (entry->addr.flags & MPTCP_PM_ADDR_FLAG_SUBFLOW)
- 		pernet->local_addr_max++;
- 
- 	entry->addr.id = pernet->next_id++;
-@@ -345,8 +342,9 @@ int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
- 	if (!entry)
- 		return -ENOMEM;
- 
--	entry->flags = 0;
- 	entry->addr = skc_local;
-+	entry->addr.ifindex = 0;
-+	entry->addr.flags = 0;
- 	ret = mptcp_pm_nl_append_new_local_addr(pernet, entry);
- 	if (ret < 0)
- 		kfree(entry);
-@@ -460,14 +458,17 @@ static int mptcp_pm_parse_addr(struct nlattr *attr, struct genl_info *info,
- 		entry->addr.addr.s_addr = nla_get_in_addr(tb[addr_addr]);
- 
- skip_family:
--	if (tb[MPTCP_PM_ADDR_ATTR_IF_IDX])
--		entry->ifindex = nla_get_s32(tb[MPTCP_PM_ADDR_ATTR_IF_IDX]);
-+	if (tb[MPTCP_PM_ADDR_ATTR_IF_IDX]) {
-+		u32 val = nla_get_s32(tb[MPTCP_PM_ADDR_ATTR_IF_IDX]);
++void tcp_cleanup_rbuf(struct sock *sk, int copied);
 +
-+		entry->addr.ifindex = val;
-+	}
+ /* We provision sk_rcvbuf around 200% of sk_rcvlowat.
+  * If 87.5 % (7/8) of the space has been consumed, we want to override
+  * SO_RCVLOWAT constraint, since we are receiving skbs with too small
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 57a568875539..d3781b6087cb 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1527,7 +1527,7 @@ static int tcp_peek_sndq(struct sock *sk, struct msghdr *msg, int len)
+  * calculation of whether or not we must ACK for the sake of
+  * a window update.
+  */
+-static void tcp_cleanup_rbuf(struct sock *sk, int copied)
++void tcp_cleanup_rbuf(struct sock *sk, int copied)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	bool time_to_ack = false;
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 148c4e685ecd..a17e534a1425 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -515,6 +515,8 @@ static bool __mptcp_move_skbs_from_subflow(struct mptcp_sock *msk,
+ 	} while (more_data_avail);
  
- 	if (tb[MPTCP_PM_ADDR_ATTR_ID])
- 		entry->addr.id = nla_get_u8(tb[MPTCP_PM_ADDR_ATTR_ID]);
+ 	*bytes += moved;
++	if (moved)
++		tcp_cleanup_rbuf(ssk, moved);
  
- 	if (tb[MPTCP_PM_ADDR_ATTR_FLAGS])
--		entry->flags = nla_get_u32(tb[MPTCP_PM_ADDR_ATTR_FLAGS]);
-+		entry->addr.flags = nla_get_u32(tb[MPTCP_PM_ADDR_ATTR_FLAGS]);
- 
- 	return 0;
+ 	return done;
  }
-@@ -535,9 +536,9 @@ static int mptcp_nl_cmd_del_addr(struct sk_buff *skb, struct genl_info *info)
- 		ret = -EINVAL;
- 		goto out;
+@@ -1422,10 +1424,14 @@ static void mptcp_rcv_space_adjust(struct mptcp_sock *msk, int copied)
+ 			 */
+ 			mptcp_for_each_subflow(msk, subflow) {
+ 				struct sock *ssk;
++				bool slow;
+ 
+ 				ssk = mptcp_subflow_tcp_sock(subflow);
++				slow = lock_sock_fast(ssk);
+ 				WRITE_ONCE(ssk->sk_rcvbuf, rcvbuf);
+ 				tcp_sk(ssk)->window_clamp = window_clamp;
++				tcp_cleanup_rbuf(ssk, 1);
++				unlock_sock_fast(ssk, slow);
+ 			}
+ 		}
  	}
--	if (entry->flags & MPTCP_PM_ADDR_FLAG_SIGNAL)
-+	if (entry->addr.flags & MPTCP_PM_ADDR_FLAG_SIGNAL)
- 		pernet->add_addr_signal_max--;
--	if (entry->flags & MPTCP_PM_ADDR_FLAG_SUBFLOW)
-+	if (entry->addr.flags & MPTCP_PM_ADDR_FLAG_SUBFLOW)
- 		pernet->local_addr_max--;
- 
- 	pernet->addrs--;
-@@ -593,10 +594,10 @@ static int mptcp_nl_fill_addr(struct sk_buff *skb,
- 		goto nla_put_failure;
- 	if (nla_put_u8(skb, MPTCP_PM_ADDR_ATTR_ID, addr->id))
- 		goto nla_put_failure;
--	if (nla_put_u32(skb, MPTCP_PM_ADDR_ATTR_FLAGS, entry->flags))
-+	if (nla_put_u32(skb, MPTCP_PM_ADDR_ATTR_FLAGS, entry->addr.flags))
- 		goto nla_put_failure;
--	if (entry->ifindex &&
--	    nla_put_s32(skb, MPTCP_PM_ADDR_ATTR_IF_IDX, entry->ifindex))
-+	if (entry->addr.ifindex &&
-+	    nla_put_s32(skb, MPTCP_PM_ADDR_ATTR_IF_IDX, entry->addr.ifindex))
- 		goto nla_put_failure;
- 
- 	if (addr->family == AF_INET &&
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 26f5f81f3f4c..cfa5e1b9521b 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -140,6 +140,8 @@ struct mptcp_addr_info {
- 	sa_family_t		family;
- 	__be16			port;
- 	u8			id;
-+	u8			flags;
-+	int			ifindex;
- 	union {
- 		struct in_addr addr;
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
-@@ -358,8 +360,7 @@ bool mptcp_subflow_data_available(struct sock *sk);
- void __init mptcp_subflow_init(void);
- 
- /* called with sk socket lock held */
--int __mptcp_subflow_connect(struct sock *sk, int ifindex,
--			    const struct mptcp_addr_info *loc,
-+int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- 			    const struct mptcp_addr_info *remote);
- int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock);
- 
 diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index d304ce1743eb..9edcce21715b 100644
+index 58f2349930a5..fb59bbd9b4cc 100644
 --- a/net/mptcp/subflow.c
 +++ b/net/mptcp/subflow.c
-@@ -1035,8 +1035,7 @@ static void mptcp_info2sockaddr(const struct mptcp_addr_info *info,
- #endif
+@@ -823,6 +823,8 @@ static void mptcp_subflow_discard_data(struct sock *ssk, struct sk_buff *skb,
+ 		sk_eat_skb(ssk, skb);
+ 	if (mptcp_subflow_get_map_offset(subflow) >= subflow->map_data_len)
+ 		subflow->map_valid = 0;
++	if (incr)
++		tcp_cleanup_rbuf(ssk, incr);
  }
  
--int __mptcp_subflow_connect(struct sock *sk, int ifindex,
--			    const struct mptcp_addr_info *loc,
-+int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- 			    const struct mptcp_addr_info *remote)
- {
- 	struct mptcp_sock *msk = mptcp_sk(sk);
-@@ -1080,7 +1079,7 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
- 	if (loc->family == AF_INET6)
- 		addrlen = sizeof(struct sockaddr_in6);
- #endif
--	ssk->sk_bound_dev_if = ifindex;
-+	ssk->sk_bound_dev_if = loc->ifindex;
- 	err = kernel_bind(sf, (struct sockaddr *)&addr, addrlen);
- 	if (err)
- 		goto failed;
+ static bool subflow_check_data_avail(struct sock *ssk)
 -- 
 2.26.2
 
