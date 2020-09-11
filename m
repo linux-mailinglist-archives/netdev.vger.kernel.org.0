@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9E4B2664F7
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 566982664A2
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:43:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726451AbgIKQtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 12:49:11 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:46946 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726245AbgIKPGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:06:40 -0400
+        id S1726271AbgIKQnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 12:43:08 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:53992 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726011AbgIKPJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:09:33 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599836799;
+        s=mimecast20190719; t=1599836966;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZKF4MuMJRJnl3W8pCnFsdzq1VYiRt3b1ir1fAlXZi6Q=;
-        b=hoCdIdCusKVIt7JiyqyW/6ENtlxBxXkPM2IsjzFVIEVg7How+c2uXVnux9PJQuuBaPg0YW
-        MbYLGCHrjx32WyHSPRzAC4/riAF1B9IwBL5VgvsuNlN39mb7Bc4QSfdJNQAs2TgbVxdMi3
-        V+vw504Ij533LSCaxTGUMs+bVyX0scE=
+        bh=/nqNRXCddy7BVndHGs9zUs4tL4o1QcOM0slIj6tsPSk=;
+        b=NCGOst7q0cnyPYzk+630o2/LeFN36+hy422yU+nwwGMYfSKm6L0Gale45y9TciLh28YbfZ
+        z+AAaJs//yMh6q27InCisLncXkpEXEpczaP+veyYzPTPBU3eW1L9sramGQUNXmssFtb86y
+        e2+zBw0seDvJ16tnvdRIm9YYZZRMAfk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-482-qcsuMo-WPfGqVHpjenSySQ-1; Fri, 11 Sep 2020 09:52:43 -0400
-X-MC-Unique: qcsuMo-WPfGqVHpjenSySQ-1
+ us-mta-339-wdQuIgHBPUC3V91nbDr_FA-1; Fri, 11 Sep 2020 09:52:45 -0400
+X-MC-Unique: wdQuIgHBPUC3V91nbDr_FA-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BEAAF18C5205;
-        Fri, 11 Sep 2020 13:52:42 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 57B278B94B4;
+        Fri, 11 Sep 2020 13:52:44 +0000 (UTC)
 Received: from linux.fritz.box.com (ovpn-114-214.ams2.redhat.com [10.36.114.214])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9834A5C22A;
-        Fri, 11 Sep 2020 13:52:41 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2665C5C22A;
+        Fri, 11 Sep 2020 13:52:42 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org
-Subject: [PATCH net-next 10/13] mptcp: allow creating non-backup subflows
-Date:   Fri, 11 Sep 2020 15:52:05 +0200
-Message-Id: <c85687bfad852a7d23ba52b96cbb1b7dc85c3b2a.1599832097.git.pabeni@redhat.com>
+Subject: [PATCH net-next 11/13] mptcp: allow picking different xmit subflows
+Date:   Fri, 11 Sep 2020 15:52:06 +0200
+Message-Id: <3b8e364293d3cbb0348f20ca14301200aa43bc24.1599832097.git.pabeni@redhat.com>
 In-Reply-To: <cover.1599832097.git.pabeni@redhat.com>
 References: <cover.1599832097.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -50,35 +50,212 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the 'backup' attribute of local endpoint
-is ignored. Let's use it for the MP_JOIN handshake
+Update the scheduler to less trivial heuristic: cache
+the last used subflow, and try to send on it a reasonably
+long burst of data.
+
+When the burst or the subflow send space is exhausted, pick
+the subflow with the lower ratio between write space and
+send buffer - that is, the subflow with the greater relative
+amount of free space.
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/mptcp/subflow.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/mptcp/protocol.c | 109 ++++++++++++++++++++++++++++++++++++-------
+ net/mptcp/protocol.h |   6 ++-
+ 2 files changed, 97 insertions(+), 18 deletions(-)
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 9edcce21715b..58f2349930a5 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -20,6 +20,7 @@
- #include <net/ip6_route.h>
- #endif
- #include <net/mptcp.h>
-+#include <uapi/linux/mptcp.h>
- #include "protocol.h"
- #include "mib.h"
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index ec9c38d3acc7..148c4e685ecd 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1031,41 +1031,103 @@ static void mptcp_nospace(struct mptcp_sock *msk)
+ 	}
+ }
  
-@@ -1090,7 +1091,7 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- 	subflow->remote_token = remote_token;
- 	subflow->local_id = local_id;
- 	subflow->request_join = 1;
--	subflow->request_bkup = 1;
-+	subflow->request_bkup = !!(loc->flags & MPTCP_PM_ADDR_FLAG_BACKUP);
- 	mptcp_info2sockaddr(remote, &addr);
++static bool mptcp_subflow_active(struct mptcp_subflow_context *subflow)
++{
++	struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
++
++	/* can't send if JOIN hasn't completed yet (i.e. is usable for mptcp) */
++	if (subflow->request_join && !subflow->fully_established)
++		return false;
++
++	/* only send if our side has not closed yet */
++	return ((1 << ssk->sk_state) & (TCPF_ESTABLISHED | TCPF_CLOSE_WAIT));
++}
++
++#define MPTCP_SEND_BURST_SIZE		((1 << 16) - \
++					 sizeof(struct tcphdr) - \
++					 MAX_TCP_OPTION_SPACE - \
++					 sizeof(struct ipv6hdr) - \
++					 sizeof(struct frag_hdr))
++
++struct subflow_send_info {
++	struct sock *ssk;
++	uint64_t ratio;
++};
++
+ static struct sock *mptcp_subflow_get_send(struct mptcp_sock *msk,
+ 					   u32 *sndbuf)
+ {
++	struct subflow_send_info send_info[2];
+ 	struct mptcp_subflow_context *subflow;
+-	struct sock *sk = (struct sock *)msk;
+-	struct sock *backup = NULL;
+-	bool free;
++	int i, nr_active = 0;
++	int64_t ratio, pace;
++	struct sock *ssk;
  
- 	err = kernel_connect(sf, (struct sockaddr *)&addr, addrlen, O_NONBLOCK);
+-	sock_owned_by_me(sk);
++	sock_owned_by_me((struct sock *)msk);
+ 
+ 	*sndbuf = 0;
+ 	if (!mptcp_ext_cache_refill(msk))
+ 		return NULL;
+ 
+-	mptcp_for_each_subflow(msk, subflow) {
+-		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+-
+-		free = sk_stream_is_writeable(subflow->tcp_sock);
+-		if (!free) {
+-			mptcp_nospace(msk);
++	if (__mptcp_check_fallback(msk)) {
++		if (!msk->first)
+ 			return NULL;
++		*sndbuf = msk->first->sk_sndbuf;
++		return sk_stream_memory_free(msk->first) ? msk->first : NULL;
++	}
++
++	/* re-use last subflow, if the burst allow that */
++	if (msk->last_snd && msk->snd_burst > 0 &&
++	    sk_stream_memory_free(msk->last_snd) &&
++	    mptcp_subflow_active(mptcp_subflow_ctx(msk->last_snd))) {
++		mptcp_for_each_subflow(msk, subflow) {
++			ssk =  mptcp_subflow_tcp_sock(subflow);
++			*sndbuf = max(tcp_sk(ssk)->snd_wnd, *sndbuf);
+ 		}
++		return msk->last_snd;
++	}
++
++	/* pick the subflow with the lower wmem/wspace ratio */
++	for (i = 0; i < 2; ++i) {
++		send_info[i].ssk = NULL;
++		send_info[i].ratio = -1;
++	}
++	mptcp_for_each_subflow(msk, subflow) {
++		ssk =  mptcp_subflow_tcp_sock(subflow);
++		if (!mptcp_subflow_active(subflow))
++			continue;
+ 
++		nr_active += !subflow->backup;
+ 		*sndbuf = max(tcp_sk(ssk)->snd_wnd, *sndbuf);
+-		if (subflow->backup) {
+-			if (!backup)
+-				backup = ssk;
++		if (!sk_stream_memory_free(subflow->tcp_sock))
++			continue;
+ 
++		pace = READ_ONCE(ssk->sk_pacing_rate);
++		if (!pace)
+ 			continue;
+-		}
+ 
+-		return ssk;
++		ratio = (int64_t)READ_ONCE(ssk->sk_wmem_queued) << 32 / pace;
++		if (ratio < send_info[subflow->backup].ratio) {
++			send_info[subflow->backup].ssk = ssk;
++			send_info[subflow->backup].ratio = ratio;
++		}
+ 	}
+ 
+-	return backup;
++	pr_debug("msk=%p nr_active=%d ssk=%p:%lld backup=%p:%lld",
++		 msk, nr_active, send_info[0].ssk, send_info[0].ratio,
++		 send_info[1].ssk, send_info[1].ratio);
++
++	/* pick the best backup if no other subflow is active */
++	if (!nr_active)
++		send_info[0].ssk = send_info[1].ssk;
++
++	if (send_info[0].ssk) {
++		msk->last_snd = send_info[0].ssk;
++		msk->snd_burst = min_t(int, MPTCP_SEND_BURST_SIZE,
++				       sk_stream_wspace(msk->last_snd));
++		return msk->last_snd;
++	}
++	return NULL;
+ }
+ 
+ static void ssk_check_wmem(struct mptcp_sock *msk)
+@@ -1160,6 +1222,10 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+ 			break;
+ 		}
+ 
++		/* burst can be negative, we will try move to the next subflow
++		 * at selection time, if possible.
++		 */
++		msk->snd_burst -= ret;
+ 		copied += ret;
+ 
+ 		tx_ok = msg_data_left(msg);
+@@ -1375,6 +1441,11 @@ static bool __mptcp_move_skbs(struct mptcp_sock *msk)
+ 	unsigned int moved = 0;
+ 	bool done;
+ 
++	/* avoid looping forever below on racing close */
++	if (((struct sock *)msk)->sk_state == TCP_CLOSE)
++		return false;
++
++	__mptcp_flush_join_list(msk);
+ 	do {
+ 		struct sock *ssk = mptcp_subflow_recv_lookup(msk);
+ 
+@@ -1539,9 +1610,15 @@ static struct sock *mptcp_subflow_get_retrans(const struct mptcp_sock *msk)
+ 
+ 	sock_owned_by_me((const struct sock *)msk);
+ 
++	if (__mptcp_check_fallback(msk))
++		return msk->first;
++
+ 	mptcp_for_each_subflow(msk, subflow) {
+ 		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+ 
++		if (!mptcp_subflow_active(subflow))
++			continue;
++
+ 		/* still data outstanding at TCP level?  Don't retransmit. */
+ 		if (!tcp_write_queue_empty(ssk))
+ 			return NULL;
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index cfa5e1b9521b..493bd2c13bc6 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -196,6 +196,8 @@ struct mptcp_sock {
+ 	u64		write_seq;
+ 	u64		ack_seq;
+ 	u64		rcv_data_fin_seq;
++	struct sock	*last_snd;
++	int		snd_burst;
+ 	atomic64_t	snd_una;
+ 	unsigned long	timer_ival;
+ 	u32		token;
+@@ -473,12 +475,12 @@ static inline bool before64(__u64 seq1, __u64 seq2)
+ 
+ void mptcp_diag_subflow_init(struct tcp_ulp_ops *ops);
+ 
+-static inline bool __mptcp_check_fallback(struct mptcp_sock *msk)
++static inline bool __mptcp_check_fallback(const struct mptcp_sock *msk)
+ {
+ 	return test_bit(MPTCP_FALLBACK_DONE, &msk->flags);
+ }
+ 
+-static inline bool mptcp_check_fallback(struct sock *sk)
++static inline bool mptcp_check_fallback(const struct sock *sk)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+ 	struct mptcp_sock *msk = mptcp_sk(subflow->conn);
 -- 
 2.26.2
 
