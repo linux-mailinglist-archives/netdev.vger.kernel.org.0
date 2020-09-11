@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FB242656B1
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 03:34:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3EC2656C7
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 03:58:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725797AbgIKBeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 21:34:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57100 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725280AbgIKBeH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 21:34:07 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A11A7208FE;
-        Fri, 11 Sep 2020 01:34:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599788046;
-        bh=Pl8J4qofYLsVjEdHM0tm8W6Jfx0LLfHzIF3cpbOB2Rg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gPYiS7rDBT6Q9/zc2u71cBI3Dium+pAWCcbaDXXfMxKMDeu8E6mRQ0ES2S79qEVob
-         6tBlz6i2R+F+jr7O/qFDuxS67Jzs8AdLO8dPRRz5YJUoDhoQRToExvx5Lpyv63Wpxl
-         4KveTBzRx80JDmKk+FCp/PcDUKg4Qdko39XvDqEI=
-Date:   Thu, 10 Sep 2020 18:34:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [net-next v5 3/5] devlink: introduce flash update overwrite
- mask
-Message-ID: <20200910183405.16bbfe34@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200910183229.72b808f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20200910212812.2242377-1-jacob.e.keller@intel.com>
-        <20200910212812.2242377-4-jacob.e.keller@intel.com>
-        <20200910183229.72b808f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1725788AbgIKB6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 21:58:11 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:11807 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725298AbgIKB6J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 10 Sep 2020 21:58:09 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id F2BD08D9AA58D4C9B10A;
+        Fri, 11 Sep 2020 09:42:25 +0800 (CST)
+Received: from [10.174.179.81] (10.174.179.81) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.487.0; Fri, 11 Sep 2020 09:42:24 +0800
+Subject: Re: [PATCH net-next 0/3] Fix some kernel-doc warnings for
+ e1000/e1000e
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <jeffrey.t.kirsher@intel.com>, <davem@davemloft.net>,
+        <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20200910150429.31912-1-wanghai38@huawei.com>
+ <20200910123800.74865996@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200910123819.3ce47422@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "wanghai (M)" <wanghai38@huawei.com>
+Message-ID: <53e857ff-f5c7-a2c9-b0ec-67c2d4ad29c3@huawei.com>
+Date:   Fri, 11 Sep 2020 09:42:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20200910123819.3ce47422@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.179.81]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Sep 2020 18:32:29 -0700 Jakub Kicinski wrote:
-> On Thu, 10 Sep 2020 14:28:10 -0700 Jacob Keller wrote:
-> > +#define DEVLINK_FLASH_OVERWRITE_SETTINGS BIT(DEVLINK_FLASH_OVERWRITE_SETTINGS_BIT)
-> > +#define DEVLINK_FLASH_OVERWRITE_IDENTIFIERS BIT(DEVLINK_FLASH_OVERWRITE_IDENTIFIERS_BIT)  
-> 
-> You got two more here.
 
-Ah! FWIW I found the macro you can use instead: _BITUL(x)
-Couldn't grep that one out yesterday.
+ÔÚ 2020/9/11 3:38, Jakub Kicinski Ð´µÀ:
+> On Thu, 10 Sep 2020 12:38:00 -0700 Jakub Kicinski wrote:
+>> On Thu, 10 Sep 2020 23:04:26 +0800 Wang Hai wrote:
+>>> Wang Hai (3):
+>>>    e1000e: Fix some kernel-doc warnings in ich8lan.c
+>>>    e1000e: Fix some kernel-doc warnings in netdev.c
+>>>    e1000: Fix a bunch of kerneldoc parameter issues in e1000_hw.c
+>> You should put some text here but I can confirm this set removes 17
+>> warnings.
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> .
+Thans for your review, I'll add some description next time
