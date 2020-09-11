@@ -2,88 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D782661EE
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 17:15:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08559266206
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 17:23:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726421AbgIKPPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 11:15:50 -0400
-Received: from mail1.windriver.com ([147.11.146.13]:59212 "EHLO
-        mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbgIKPNX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:13:23 -0400
-Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
-        by mail1.windriver.com (8.15.2/8.15.2) with ESMTPS id 08BFCplq011659
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
-        Fri, 11 Sep 2020 08:12:51 -0700 (PDT)
-Received: from pek-lwang1-u1404.wrs.com (128.224.162.178) by
- ALA-HCA.corp.ad.wrs.com (147.11.189.40) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 11 Sep 2020 08:12:50 -0700
-From:   Li Wang <li.wang@windriver.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] vhost: reduce stack usage in log_used
-Date:   Fri, 11 Sep 2020 23:09:39 +0800
-Message-ID: <1599836979-4950-1-git-send-email-li.wang@windriver.com>
-X-Mailer: git-send-email 2.7.4
+        id S1726481AbgIKPWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 11:22:46 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:55304 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726297AbgIKPUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:20:20 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08BFF3Zc061529;
+        Fri, 11 Sep 2020 15:19:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=/MeEy7v1R447j4T1klPQoqAF2B+oLO9ldzBbaI8x8Es=;
+ b=fjp11hQgk0M2ieGImtTlL3liHO/dyA25V5DntaVVhLX6Ilu+T/TV1XPoOJjeyYixOdXH
+ zTu3b7QveAgDRj+O1ApqsEwqbXRl/lzWg7UZjAG6BWw4KrKZiZe0s1mRw0SMpwW/2LfK
+ 7YUZ5RbrKNusDmRcqbVYffyvdjomq6LGK4rSI1g0g1J8rhlMt28xUhkmSX9FazUWm2G2
+ KyuibgxuaFLMs7xnoMXncD3eDGWm9zUul8GDnF48Ys6F2/7Cr3rvA60y7UAHvg4x611m
+ A4nS3Z4JPOYu1YNBX3PDlGFv2TnzNlgfcG5BSV+f+eoo0qxkMfUYHDPryr29pkH/p7Bu Ng== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 33c2mmesjv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 11 Sep 2020 15:19:31 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08BFFHDE118910;
+        Fri, 11 Sep 2020 15:19:31 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 33cmkd8cfk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 11 Sep 2020 15:19:31 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 08BFJK2q027490;
+        Fri, 11 Sep 2020 15:19:20 GMT
+Received: from [10.74.86.16] (/10.74.86.16)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 11 Sep 2020 08:19:20 -0700
+Subject: Re: [PATCH v3 00/11] Fix PM hibernation in Xen guests
+To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org,
+        jgross@suse.com, linux-pm@vger.kernel.org, linux-mm@kvack.org,
+        kamatam@amazon.com, sstabellini@kernel.org, konrad.wilk@oracle.com,
+        roger.pau@citrix.com, axboe@kernel.dk, davem@davemloft.net,
+        rjw@rjwysocki.net, len.brown@intel.com, pavel@ucw.cz,
+        peterz@infradead.org, eduval@amazon.com, sblbir@amazon.com,
+        xen-devel@lists.xenproject.org, vkuznets@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dwmw@amazon.co.uk, benh@kernel.crashing.org
+References: <cover.1598042152.git.anchalag@amazon.com>
+From:   boris.ostrovsky@oracle.com
+Organization: Oracle Corporation
+Message-ID: <03baf888-5c10-429b-3206-b75d4af1e09e@oracle.com>
+Date:   Fri, 11 Sep 2020 11:19:13 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.2.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <cover.1598042152.git.anchalag@amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9741 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 malwarescore=0 phishscore=0
+ mlxlogscore=999 bulkscore=0 adultscore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2009110126
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9741 signatures=668679
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 priorityscore=1501
+ phishscore=0 adultscore=0 bulkscore=0 clxscore=1011 mlxlogscore=999
+ malwarescore=0 suspectscore=0 lowpriorityscore=0 spamscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009110125
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the warning: [-Werror=-Wframe-larger-than=]
 
-drivers/vhost/vhost.c: In function log_used:
-drivers/vhost/vhost.c:1906:1:
-warning: the frame size of 1040 bytes is larger than 1024 bytes
+On 8/21/20 6:22 PM, Anchal Agarwal wrote:
+>
+> Known issues:
+> 1.KASLR causes intermittent hibernation failures. VM fails to resumes and
+> has to be restarted. I will investigate this issue separately and shouldn't
+> be a blocker for this patch series.
 
-Signed-off-by: Li Wang <li.wang@windriver.com>
----
- drivers/vhost/vhost.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index b45519c..41769de 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -1884,25 +1884,31 @@ static int log_write_hva(struct vhost_virtqueue *vq, u64 hva, u64 len)
- 
- static int log_used(struct vhost_virtqueue *vq, u64 used_offset, u64 len)
- {
--	struct iovec iov[64];
-+	struct iovec *iov;
- 	int i, ret;
- 
- 	if (!vq->iotlb)
- 		return log_write(vq->log_base, vq->log_addr + used_offset, len);
- 
-+	iov = kcalloc(64, sizeof(*iov), GFP_KERNEL);
-+	if (!iov)
-+		return -ENOMEM;
-+
- 	ret = translate_desc(vq, (uintptr_t)vq->used + used_offset,
- 			     len, iov, 64, VHOST_ACCESS_WO);
- 	if (ret < 0)
--		return ret;
-+		goto out;
- 
- 	for (i = 0; i < ret; i++) {
- 		ret = log_write_hva(vq,	(uintptr_t)iov[i].iov_base,
- 				    iov[i].iov_len);
- 		if (ret)
--			return ret;
-+			goto out;
- 	}
- 
--	return 0;
-+out:
-+	kfree(iov);
-+	return ret;
- }
- 
- int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
--- 
-2.7.4
+Is there any change in status for this? This has been noted since January.
 
+
+-boris
+
+
+> 2. During hibernation, I observed sometimes that freezing of tasks fails due
+> to busy XFS workqueuei[xfs-cil/xfs-sync]. This is also intermittent may be 1
+> out of 200 runs and hibernation is aborted in this case. Re-trying hibernation
+> may work. Also, this is a known issue with hibernation and some
+> filesystems like XFS has been discussed by the community for years with not an
+> effectve resolution at this point.
+>
