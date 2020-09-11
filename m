@@ -2,101 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8B52660F4
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 16:09:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F94F266105
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 16:14:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726241AbgIKNRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 09:17:15 -0400
-Received: from mga07.intel.com ([134.134.136.100]:35685 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726021AbgIKNQs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 09:16:48 -0400
-IronPort-SDR: gYCt5I6CwdiVg6ZgphjGSkugImpSDejVN8RvnLGGUlD75OWs31uzplHme1X5L4zWaV9G+56gfD
- XZXs6AH9GUOg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9740"; a="222953182"
-X-IronPort-AV: E=Sophos;i="5.76,415,1592895600"; 
-   d="scan'208";a="222953182"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 06:16:34 -0700
-IronPort-SDR: +P15umNu7E6s9G4fsdhvpCFWZUI7rwKE/pmlbwgWaXgrF6JTUpzZmc/7IU8Y7CEu4iQveekacw
- c13egy1x5v+w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.76,415,1592895600"; 
-   d="scan'208";a="300927206"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga003.jf.intel.com with ESMTP; 11 Sep 2020 06:16:32 -0700
-Date:   Fri, 11 Sep 2020 15:10:27 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        jeffrey.t.kirsher@intel.com,
+        id S1726080AbgIKOOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 10:14:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:23157 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726102AbgIKNQU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 09:16:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599830165;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rkS7T2t+cwHMdDgfJc0SznulsmzvAzCieOLQud/9Bcc=;
+        b=BW5shzUNLFhZbr1NjEOy3DT1vPLrwNc6M2nJCt4pj35TxstYTRoccs99f08ZGgU+YXXMsQ
+        m9GxlMAyJDI9gJHSAV7LsrIy2p1qZ9Nu0r7dx5UxtUEkLb/200G7+t9+6Fr3pmgeFqYzAt
+        252QYOEhiN4fF7i5czlMDST7egJFZng=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-126-c1THySt4MBOTG0_EC_WAnA-1; Fri, 11 Sep 2020 09:16:03 -0400
+X-MC-Unique: c1THySt4MBOTG0_EC_WAnA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1DD7981F00F;
+        Fri, 11 Sep 2020 13:16:02 +0000 (UTC)
+Received: from krava (unknown [10.40.192.120])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 54B7875136;
+        Fri, 11 Sep 2020 13:15:59 +0000 (UTC)
+Date:   Fri, 11 Sep 2020 15:15:58 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
         Network Development <netdev@vger.kernel.org>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Subject: Re: [PATCH net-next] i40e: allow VMDQs to be used with AF_XDP
- zero-copy
-Message-ID: <20200911131027.GA2052@ranger.igk.intel.com>
-References: <1599826106-19020-1-git-send-email-magnus.karlsson@gmail.com>
- <20200911120519.GA9758@ranger.igk.intel.com>
- <CAJ8uoz3ctVoANjiO_nQ38YA-JoB0nQH1B4W01AZFw3iCyCC_+w@mail.gmail.com>
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Check trampoline execution in
+ d_path test
+Message-ID: <20200911131558.GD1714160@krava>
+References: <20200910122224.1683258-1-jolsa@kernel.org>
+ <CAADnVQJ0FchoPqNWm+dEppyij-MOvvEG_trEfyrHdabtcEuZGg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJ8uoz3ctVoANjiO_nQ38YA-JoB0nQH1B4W01AZFw3iCyCC_+w@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <CAADnVQJ0FchoPqNWm+dEppyij-MOvvEG_trEfyrHdabtcEuZGg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 11, 2020 at 02:29:50PM +0200, Magnus Karlsson wrote:
-> On Fri, Sep 11, 2020 at 2:11 PM Maciej Fijalkowski
-> <maciej.fijalkowski@intel.com> wrote:
+On Thu, Sep 10, 2020 at 05:46:21PM -0700, Alexei Starovoitov wrote:
+> On Thu, Sep 10, 2020 at 5:22 AM Jiri Olsa <jolsa@kernel.org> wrote:
 > >
-> > On Fri, Sep 11, 2020 at 02:08:26PM +0200, Magnus Karlsson wrote:
-> > > From: Magnus Karlsson <magnus.karlsson@intel.com>
-> > >
-> > > Allow VMDQs to be used with AF_XDP sockets in zero-copy mode. For some
-> > > reason, we only allowed main VSIs to be used with zero-copy, but
-> > > there is now reason to not allow VMDQs also.
+> > Some kernels builds might inline vfs_getattr call within
+> > fstat syscall code path, so fentry/vfs_getattr trampoline
+> > is not called.
 > >
-> > You meant 'to allow' I suppose. And what reason? :)
+> > I'm not sure how to handle this in some generic way other
+> > than use some other function, but that might get inlined at
+> > some point as well.
 > 
-> Yes, sorry. Should be "not to allow". I was too trigger happy ;-).
-> 
-> I have gotten requests from users that they want to use VMDQs in
-> conjunction with containers. Basically small slices of the i40e
-> portioned out as netdevs. Do you see any problems with using a VMDQ
-> iwth zero-copy?
+> It's great that we had the test and it failed.
+> Doing the test skipping will only hide the problem.
+> Please don't do it here and in the future.
+> Instead let's figure out the real solution.
+> Assuming that vfs_getattr was added to btf_allowlist_d_path
+> for a reason we have to make this introspection place
+> reliable regardless of compiler inlining decisions.
+> We can mark it as 'noinline', but that's undesirable.
+> I suggest we remove it from the allowlist and replace it with
+> security_inode_getattr.
+> I think that is a better long term fix.
 
-No, I only meant to provide the actual reason (what you wrote above) in
-the commit message.
+in my case vfs_getattr got inlined in vfs_statx_fd and both
+of them are defined in fs/stat.c 
 
-> 
-> /Magnus
-> 
-> > >
-> > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > > ---
-> > >  drivers/net/ethernet/intel/i40e/i40e_xsk.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> > > index 2a1153d..ebe15ca 100644
-> > > --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> > > +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> > > @@ -45,7 +45,7 @@ static int i40e_xsk_pool_enable(struct i40e_vsi *vsi,
-> > >       bool if_running;
-> > >       int err;
-> > >
-> > > -     if (vsi->type != I40E_VSI_MAIN)
-> > > +     if (!(vsi->type == I40E_VSI_MAIN || vsi->type == I40E_VSI_VMDQ2))
-> > >               return -EINVAL;
-> > >
-> > >       if (qid >= vsi->num_queue_pairs)
-> > > --
-> > > 2.7.4
-> > >
+so the idea is that inlining will not happen if the function
+is defined in another object? or less likely..?
+
+we should be safe when it's called from module
+
+> While at it I would apply the same critical thinking to other
+> functions in the allowlist. They might suffer the same issue.
+> So s/vfs_truncate/security_path_truncate/ and so on?
+> Things won't work when CONFIG_SECURITY is off, but that is a rare kernel config?
+> Or add both security_* and vfs_* variants and switch tests to use security_* ?
+> but it feels fragile to allow inline-able funcs in allowlist.
+
+hm, what's the difference between vfs_getattr and security_inode_getattr
+in this regard? I'd expect compiler could inline it same way as for vfs_getattr
+
+jirka
+
