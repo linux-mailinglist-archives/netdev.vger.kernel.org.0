@@ -2,79 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A1C2667C0
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:50:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F03F4266809
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 20:05:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725909AbgIKRue (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 13:50:34 -0400
-Received: from mout.gmx.net ([212.227.17.21]:35399 "EHLO mout.gmx.net"
+        id S1725846AbgIKSFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 14:05:30 -0400
+Received: from mga02.intel.com ([134.134.136.20]:26103 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725794AbgIKRu2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 13:50:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1599846582;
-        bh=9A8KbB8JAsMszk5e8nKi2X4m4uBUOMdvLJVTs/9a5M0=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=D0E7FCBpwplg3djfX9eZpQ8jMx2EgJadPN7JIVCxXspHLZ/LmZFs1BGhw5e2scCg2
-         p8vYCsVtju9xTEBJ1G7w9aFb1uvTfOfiZ4eIiIxMjmQNSHKLzQ1hCPNbm8UY2htjp4
-         3y8pGHCa6Tg3hfbOR/za9PBKOKtsZuPc/n1EEn3k=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.150.14] ([217.61.150.14]) by web-mail.gmx.net
- (3c-app-gmx-bs18.server.lan [172.19.170.70]) (via HTTP); Fri, 11 Sep 2020
- 19:49:42 +0200
+        id S1725784AbgIKSF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Sep 2020 14:05:28 -0400
+IronPort-SDR: JVK75ewZQy39MiTUBPqPLSdZn7JgdZB0eVN7UyGhNFB6M/jM6Y80RkdgMljdQieyQGZnPUoHKY
+ tC6oJvQ9K/hQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="146517177"
+X-IronPort-AV: E=Sophos;i="5.76,416,1592895600"; 
+   d="scan'208";a="146517177"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 11:05:01 -0700
+IronPort-SDR: 75JO/gto9d2IvKP5VvmNRy9qZOP6j78AsTyeO9Je13tV2Ktf4Rh6IjshhaBDmw9RlD1bUROHU+
+ 9W+SGeR6gXJw==
+X-IronPort-AV: E=Sophos;i="5.76,416,1592895600"; 
+   d="scan'208";a="505577976"
+Received: from samudral-mobl.amr.corp.intel.com (HELO [10.209.42.76]) ([10.209.42.76])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 11:05:00 -0700
+Subject: Re: [Intel-wired-lan] [PATCH net-next] i40e: allow VMDQs to be used
+ with AF_XDP zero-copy
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Nambiar, Amritha" <amritha.nambiar@intel.com>
+References: <1599826106-19020-1-git-send-email-magnus.karlsson@gmail.com>
+ <20200911120519.GA9758@ranger.igk.intel.com>
+ <CAJ8uoz3ctVoANjiO_nQ38YA-JoB0nQH1B4W01AZFw3iCyCC_+w@mail.gmail.com>
+ <20200911131027.GA2052@ranger.igk.intel.com>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <b28b4e93-50c2-6183-90ea-8d33902e8f21@intel.com>
+Date:   Fri, 11 Sep 2020 11:04:49 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Message-ID: <trinity-cc01b89b-ddcc-488a-84eb-3c96376c2be6-1599846582837@3c-app-gmx-bs18>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Landen Chao <landen.chao@mediatek.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        opensource@vdorst.com, dqfext@gmail.com,
-        Landen Chao <landen.chao@mediatek.com>
-Subject: Aw: [PATCH net-next v5 6/6] arm64: dts: mt7622: add mt7531 dsa to
- bananapi-bpi-r64 board
-Content-Type: text/plain; charset=UTF-8
-Date:   Fri, 11 Sep 2020 19:49:42 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <9ad3baefb672805153c737f6259966d1c9b98c2b.1599829696.git.landen.chao@mediatek.com>
-References: <cover.1599829696.git.landen.chao@mediatek.com>
- <9ad3baefb672805153c737f6259966d1c9b98c2b.1599829696.git.landen.chao@mediatek.com>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:BZ5FW3bde8rsAWlm88krnef1H4ZN4Kuf+O7Ne2Cm4MZCc4sc5ttQ+z8IF1opvo/9lcj/r
- 9I6xdSujcRKZeLkBtfmSAk7aUzR3218XQlCGOBux68+Z694KQ36aad/LlwK/qylSsjFP+D/rGGol
- VrmbHcyqn6HdAPrckkS5g3sQPKoTAQOIsTgBjWQb3gDipCpSSRDyGGVCZnMpaB3sC5TDU5Ku+idy
- CCwoiWfcWe+cxrzdyb0JYzOrxrHW/zXqWxQ5CkZWwMjDPEUmqzNV3qD3vHDWeOJmX7g1x5DwiUhE
- o8=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NVdLXOaaAJE=:Q3I5oVV0MKWr7w/B/Hm9FX
- Xa2yjHH+k1CRjLuf9bvOevSCj5x4BZTpsWbJL00MT/ufFi8U2FQaxqJPLYbxLX6tbXZ1jDaV6
- 1+RLv3BUazXnMDJ0ktrgT7ftmWGU4FA1kni16MXltLwUXQ60AFKLPwUohAvdecCN9BenNVFbd
- ft5+4RF+maNQcqrRttnbVRXQjRCTa66mthKgbggRpDbS8B96FQAbwWL1/ZQaZPwWs3h+scTAn
- Nl3bZQQKqVs288iH82tnN6NRmu5e37glrZpSykjROu/SWvI2cpIMSzfmQh+05V6ioqb+k18FD
- yEWUFxRanextYUnhLp3OoP0L9jdJ8+iGoTzo4GhRQM6iWXSfU4ZCQnM0RqFEeTcRNODhwuM7D
- 0Mn+qJmcmNvUdsnIuWsJJ7NgjDUJPwklKz6va6yBhOsj9sHm20DTI2D3Xi0QghD1Ak1l05kmW
- 2ZuzJ20r+OWICmcgf1F26bZm4G2wFtJGG6P/Z0dp/4bfnctdIbxK66eJ8DW037Eod3aVZGkmn
- Vi5wk6SGN54oJ7lttCGeyCKpjKr3hSQMeMr3KD800OoH+9JG8wc25nlhrYJinPBS2leH5jPI0
- VSgfl664hHIVyxTX0MvrX5fkclwmaKY+i+Z8zaF05hG9XOPEYRDQjAOMQUDL77zrZsCF7WYn+
- 9AJKxTMNAqNIOXWpUzqruVd11I7I4KwjmhGYHenUnm1zLHrwtIzi+R2s+DGSEQn2Kxc4=
+In-Reply-To: <20200911131027.GA2052@ranger.igk.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tested full series on Bananapi-r2 and r64, results as in v3
 
-Tested-By: Frank Wunderlich <frank-w@public-files.de>
 
-regards Frank
+On 9/11/2020 6:10 AM, Maciej Fijalkowski wrote:
+> On Fri, Sep 11, 2020 at 02:29:50PM +0200, Magnus Karlsson wrote:
+>> On Fri, Sep 11, 2020 at 2:11 PM Maciej Fijalkowski
+>> <maciej.fijalkowski@intel.com> wrote:
+>>>
+>>> On Fri, Sep 11, 2020 at 02:08:26PM +0200, Magnus Karlsson wrote:
+>>>> From: Magnus Karlsson <magnus.karlsson@intel.com>
+>>>>
+>>>> Allow VMDQs to be used with AF_XDP sockets in zero-copy mode. For some
+>>>> reason, we only allowed main VSIs to be used with zero-copy, but
+>>>> there is now reason to not allow VMDQs also.
+>>>
+>>> You meant 'to allow' I suppose. And what reason? :)
+>>
+>> Yes, sorry. Should be "not to allow". I was too trigger happy ;-).
+>>
+>> I have gotten requests from users that they want to use VMDQs in
+>> conjunction with containers. Basically small slices of the i40e
+>> portioned out as netdevs. Do you see any problems with using a VMDQ
+>> iwth zero-copy?
+
+Today VMDQ VSIs are used when a macvlan interface is created on top of a 
+i40e PF with l2-fwd-offload on. But i don't think we can create an 
+AF_XDP zerocopy socket on top of a macvlan netdev as it doesn't support 
+ndo_bpf or ndo_xdp_xxx apis or expose hw queues directly.
+
+We need to expose VMDQ VSI as a native netdev that can expose its own 
+queues and support ndo_ ops in order to enable AF_XDP zerocopy on a 
+VMDQ. We talked about this approach at the recent netdev conference to 
+expose VMDQ VSI as a subdevice with its own netdev.
+
+https://netdevconf.info/0x14/session.html?talk-hardware-acceleration-of-container-networking-interfaces
+
+> 
+> No, I only meant to provide the actual reason (what you wrote above) in
+> the commit message.
+> 
+>>
+>> /Magnus
+>>
+>>>>
+>>>> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+>>>> ---
+>>>>   drivers/net/ethernet/intel/i40e/i40e_xsk.c | 2 +-
+>>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+>>>> index 2a1153d..ebe15ca 100644
+>>>> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+>>>> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+>>>> @@ -45,7 +45,7 @@ static int i40e_xsk_pool_enable(struct i40e_vsi *vsi,
+>>>>        bool if_running;
+>>>>        int err;
+>>>>
+>>>> -     if (vsi->type != I40E_VSI_MAIN)
+>>>> +     if (!(vsi->type == I40E_VSI_MAIN || vsi->type == I40E_VSI_VMDQ2))
+>>>>                return -EINVAL;
+>>>>
+>>>>        if (qid >= vsi->num_queue_pairs)
+>>>> --
+>>>> 2.7.4
+>>>>
+> _______________________________________________
+> Intel-wired-lan mailing list
+> Intel-wired-lan@osuosl.org
+> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
+> 
