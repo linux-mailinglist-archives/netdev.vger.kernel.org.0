@@ -2,209 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 528C9265B8A
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 10:26:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D939C265B7F
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 10:25:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725787AbgIKIZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 04:25:38 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:12232 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725554AbgIKIZh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 04:25:37 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 738753D7BCA3945F5F93;
-        Fri, 11 Sep 2020 16:25:34 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 11 Sep 2020 16:25:26 +0800
-Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-CC:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
-        "David Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux Kernel Network Developers" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
- <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
-Message-ID: <763e6ad2-5e3a-a9db-9cb0-5b4529c56b50@huawei.com>
-Date:   Fri, 11 Sep 2020 16:25:25 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1725817AbgIKIZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 04:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725784AbgIKIZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 04:25:39 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF75C061757
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 01:25:37 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kGeNB-0002LG-Fw; Fri, 11 Sep 2020 10:25:33 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kGeN7-00074R-NS; Fri, 11 Sep 2020 10:25:29 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/2] ag71xx: add ethtool and flow control support 
+Date:   Fri, 11 Sep 2020 10:25:26 +0200
+Message-Id: <20200911082528.27121-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/9/11 16:13, Yunsheng Lin wrote:
-> On 2020/9/11 4:07, Cong Wang wrote:
->> On Tue, Sep 8, 2020 at 4:06 AM Yunsheng Lin <linyunsheng@huawei.com> wrote:
->>>
->>> Currently there is concurrent reset and enqueue operation for the
->>> same lockless qdisc when there is no lock to synchronize the
->>> q->enqueue() in __dev_xmit_skb() with the qdisc reset operation in
->>> qdisc_deactivate() called by dev_deactivate_queue(), which may cause
->>> out-of-bounds access for priv->ring[] in hns3 driver if user has
->>> requested a smaller queue num when __dev_xmit_skb() still enqueue a
->>> skb with a larger queue_mapping after the corresponding qdisc is
->>> reset, and call hns3_nic_net_xmit() with that skb later.
->>>
->>> Reused the existing synchronize_net() in dev_deactivate_many() to
->>> make sure skb with larger queue_mapping enqueued to old qdisc(which
->>> is saved in dev_queue->qdisc_sleeping) will always be reset when
->>> dev_reset_queue() is called.
->>>
->>> Fixes: 6b3ba9146fe6 ("net: sched: allow qdiscs to handle locking")
->>> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
->>> ---
->>> ChangeLog V2:
->>>         Reuse existing synchronize_net().
->>> ---
->>>  net/sched/sch_generic.c | 48 +++++++++++++++++++++++++++++++++---------------
->>>  1 file changed, 33 insertions(+), 15 deletions(-)
->>>
->>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
->>> index 265a61d..54c4172 100644
->>> --- a/net/sched/sch_generic.c
->>> +++ b/net/sched/sch_generic.c
->>> @@ -1131,24 +1131,10 @@ EXPORT_SYMBOL(dev_activate);
->>>
->>>  static void qdisc_deactivate(struct Qdisc *qdisc)
->>>  {
->>> -       bool nolock = qdisc->flags & TCQ_F_NOLOCK;
->>> -
->>>         if (qdisc->flags & TCQ_F_BUILTIN)
->>>                 return;
->>> -       if (test_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state))
->>> -               return;
->>> -
->>> -       if (nolock)
->>> -               spin_lock_bh(&qdisc->seqlock);
->>> -       spin_lock_bh(qdisc_lock(qdisc));
->>>
->>>         set_bit(__QDISC_STATE_DEACTIVATED, &qdisc->state);
->>> -
->>> -       qdisc_reset(qdisc);
->>> -
->>> -       spin_unlock_bh(qdisc_lock(qdisc));
->>> -       if (nolock)
->>> -               spin_unlock_bh(&qdisc->seqlock);
->>>  }
->>>
->>>  static void dev_deactivate_queue(struct net_device *dev,
->>> @@ -1165,6 +1151,30 @@ static void dev_deactivate_queue(struct net_device *dev,
->>>         }
->>>  }
->>>
->>> +static void dev_reset_queue(struct net_device *dev,
->>> +                           struct netdev_queue *dev_queue,
->>> +                           void *_unused)
->>> +{
->>> +       struct Qdisc *qdisc;
->>> +       bool nolock;
->>> +
->>> +       qdisc = dev_queue->qdisc_sleeping;
->>> +       if (!qdisc)
->>> +               return;
->>> +
->>> +       nolock = qdisc->flags & TCQ_F_NOLOCK;
->>> +
->>> +       if (nolock)
->>> +               spin_lock_bh(&qdisc->seqlock);
->>> +       spin_lock_bh(qdisc_lock(qdisc));
->>
->>
->> I think you do not need this lock for lockless one.
-> 
-> It seems so.
-> Maybe another patch to remove qdisc_lock(qdisc) for lockless
-> qdisc?
-> 
-> 
->>
->>> +
->>> +       qdisc_reset(qdisc);
->>> +
->>> +       spin_unlock_bh(qdisc_lock(qdisc));
->>> +       if (nolock)
->>> +               spin_unlock_bh(&qdisc->seqlock);
->>> +}
->>> +
->>>  static bool some_qdisc_is_busy(struct net_device *dev)
->>>  {
->>>         unsigned int i;
->>> @@ -1213,12 +1223,20 @@ void dev_deactivate_many(struct list_head *head)
->>>                 dev_watchdog_down(dev);
->>>         }
->>>
->>> -       /* Wait for outstanding qdisc-less dev_queue_xmit calls.
->>> +       /* Wait for outstanding qdisc-less dev_queue_xmit calls or
->>> +        * outstanding qdisc enqueuing calls.
->>>          * This is avoided if all devices are in dismantle phase :
->>>          * Caller will call synchronize_net() for us
->>>          */
->>>         synchronize_net();
->>>
->>> +       list_for_each_entry(dev, head, close_list) {
->>> +               netdev_for_each_tx_queue(dev, dev_reset_queue, NULL);
->>> +
->>> +               if (dev_ingress_queue(dev))
->>> +                       dev_reset_queue(dev, dev_ingress_queue(dev), NULL);
->>> +       }
->>> +
->>>         /* Wait for outstanding qdisc_run calls. */
->>>         list_for_each_entry(dev, head, close_list) {
->>>                 while (some_qdisc_is_busy(dev)) {
->>
->> Do you want to reset before waiting for TX action?
->>
->> I think it is safer to do it after, at least prior to commit 759ae57f1b
->> we did after.
-> 
-> The reference to the txq->qdisc is always protected by RCU, so the synchronize_net()
-> should be enought to ensure there is no skb enqueued to the old qdisc that is saved
-> in the dev_queue->qdisc_sleeping, because __dev_queue_xmit can only see the new qdisc
-> after synchronize_net(), which is noop_qdisc, and noop_qdisc will make sure any skb
-> enqueued to it will be dropped and freed, right?
-> 
-> If we do any additional reset that is not related to qdisc in dev_reset_queue(), we
-> can move it after some_qdisc_is_busy() checking.
-> 
-> Also, it seems the __QDISC_STATE_DEACTIVATED checking in qdisc_run() is unnecessary
-> after this patch, because after synchronize_net() qdisc_run() will now see the old
-> qdisc.
+The main target of this patches is to provide flow control support
+for ag71xx driver. To be able to validate this functionality, I also
+added ethtool support with HW counters. So, this patches was validated
+with iperf3 and counters showing Pause frames send or received by this
+NIC.
 
-now -> not
-sorry for the typo.
+Oleksij Rempel (2):
+  net: ag71xx: add ethtool support
+  net: ag71xx: add flow control support
 
-> 
-> static inline void qdisc_run(struct Qdisc *q)
-> {
-> 	if (qdisc_run_begin(q)) {
-> 		/* NOLOCK qdisc must check 'state' under the qdisc seqlock
-> 		 * to avoid racing with dev_qdisc_reset()
-> 		 */
-> 		if (!(q->flags & TCQ_F_NOLOCK) ||
-> 		    likely(!test_bit(__QDISC_STATE_DEACTIVATED, &q->state)))
-> 			__qdisc_run(q);
-> 		qdisc_run_end(q);
-> 	}
-> }
-> 
->>
->> Thanks.
->> .
->>
-> .
-> 
+ drivers/net/ethernet/atheros/ag71xx.c | 160 +++++++++++++++++++++++++-
+ 1 file changed, 159 insertions(+), 1 deletion(-)
+
+-- 
+2.28.0
+
