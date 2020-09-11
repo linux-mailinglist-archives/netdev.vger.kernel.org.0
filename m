@@ -2,106 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C962D265927
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 08:10:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9387265941
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 08:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725768AbgIKGKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 02:10:48 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:40058 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgIKGKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 02:10:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1599804644; x=1631340644;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=Ew6L9puofX2BrE+gc4fVOAW56/4A+Bp1vYL6oL7OEyM=;
-  b=gSzXJx9qB4smiBlSW5qzTJQGfBnCaXyAphJVXyVaYRQeVh2rFNnhU6dm
-   OZklkb3TVTD9yTjMd3tCilOfQnnsfEqh7hRcuFs7qjbbSjuouPqYARuUk
-   ynFUKL1cy3+3NhaZ3lxQyrGAx0AXoQi4P5gpnzER8n/ZGmGt9ne2BFop4
-   Rv46NoGnriMjcOElIKhmGvWeKoLlaUzXE0MHuWdP8FMGuCEqQuQ1WfunQ
-   Sh/ONvRdDn+OqEwf8dXywu+jF8qBC0vYSLgrvy67ve1MvcFN3Ow27KFop
-   HTynY9pGG2IS2oyH4kS6jQykRbRp5GvryCbsI/24Hi05wCYd1lpgH5ycb
-   A==;
-IronPort-SDR: KqmD+Z4XGw/zmsz5iYseYqeCNCJJTmDwq0ozZNYTD2iDltnYoM/xYPDw0/9fhCvYI1VE54euYK
- OnGxiF1+fL9UITXO8K7eAEkOUTn6FhtRwd6pWpOvKKLj6fayJhcohjFrgI4Xi7/MfEOMQ52VHT
- VJABWw08/8QIvz3iGcix+rHJazM5M396XnxhhlwFPXZ4qmWjfXhKea31eHOiyXdAXs2yWR9wfu
- DmC2IxnSZmULqi2KxSk4DUxBCvJOr6NMUoLDaK/uQmzOsCLHEea+u+F7rSR0kCGspVpIGZYkof
- PV4=
-X-IronPort-AV: E=Sophos;i="5.76,414,1592895600"; 
-   d="scan'208";a="88679903"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Sep 2020 23:10:43 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 10 Sep 2020 23:10:02 -0700
-Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Thu, 10 Sep 2020 23:10:40 -0700
-From:   Divya Koppera <Divya.Koppera@microchip.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <marex@denx.de>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>
-Subject: [PATCH v2 net-next] net: phy: mchp: Add support for LAN8814 QUAD PHY
-Date:   Fri, 11 Sep 2020 11:40:20 +0530
-Message-ID: <20200911061020.22413-1-Divya.Koppera@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200909093419.32102-1-Divya.Koppera@microchip.com>
-References: <20200909093419.32102-1-Divya.Koppera@microchip.com>
+        id S1725790AbgIKGW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 02:22:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37286 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725774AbgIKGWw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Sep 2020 02:22:52 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 01DD9221EB;
+        Fri, 11 Sep 2020 06:22:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599805371;
+        bh=RXWz2Q1kkAl4t00VZDK+YTtnXoO2Y+/66lxmxxsMQhY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d/wbDJJaqA683iXRRzUutNDqI+TBYUQu/Cx46nW3PUvamh396/LrtCPG7EskSRy9k
+         +WCF+UDKjE8AV++aynqOB/t0am8taizadhf75qKRNWFxddmopzZ9L8wos47Fl248VB
+         dTPAxsmByxsxBNZMihhuE0U9zc6Mwm5qEYWgwDCE=
+Date:   Fri, 11 Sep 2020 08:22:47 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Oded Gabbay <oded.gabbay@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 00/15] Adding GAUDI NIC code to habanalabs driver
+Message-ID: <20200911062247.GB554610@kroah.com>
+References: <20200910161126.30948-1-oded.gabbay@gmail.com>
+ <20200910130112.1f6bd9e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAFCwf13SbXqjyu6JHKSTf-EqUxcBZUe4iAfggLhKXOi6DhXYcg@mail.gmail.com>
+ <20200910202513.GH3354160@lunn.ch>
+ <CAFCwf11P7pEJ+Av9oiwdQFor5Kh9JeKvVTBXnMzWusKCRz7mHw@mail.gmail.com>
+ <20200910203848.GJ3354160@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200910203848.GJ3354160@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LAN8814 is a low-power, quad-port triple-speed (10BASE-T/100BASETX/1000BASE-T)
-Ethernet physical layer transceiver (PHY). It supports transmission and
-reception of data on standard CAT-5, as well as CAT-5e and CAT-6, unshielded
-twisted pair (UTP) cables.
+On Thu, Sep 10, 2020 at 10:38:48PM +0200, Andrew Lunn wrote:
+> On Thu, Sep 10, 2020 at 11:30:33PM +0300, Oded Gabbay wrote:
+> > On Thu, Sep 10, 2020 at 11:25 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > > > Can you please elaborate on how to do this with a single driver that
+> > > > is already in misc ?
+> > > > As I mentioned in the cover letter, we are not developing a
+> > > > stand-alone NIC. We have a deep-learning accelerator with a NIC
+> > > > interface.
+> > >
+> > > This sounds like an MFD.
+> > >
+> > >      Andrew
+> > 
+> > Yes and no. There is only one functionality - training of deep
+> > learning (Accelerating compute operations) :)
+> > The rdma is just our method of scaling-out - our method of
+> > intra-connection between GAUDI devices (similar to NVlink or AMD
+> > crossfire).
+> > So the H/W exposes a single physical function at the PCI level. And
+> > thus Linux can call a single driver for it during the PCI probe.
+> 
+> Yes, it probes the MFD driver. The MFD driver then creates platform
+> drivers for the sub functions. i.e. it would create an Ethernet
+> platform driver. That then gets probed in the usual way. The child
+> device can get access to the parent device, if it needs to share
+> things, e.g. a device on a bus. This is typically I2C or SPI, but
+> there is no reason it cannot be a PCI device.
+> 
+> Go look in drivers/mfd.
 
-LAN8814 supports industry-standard QSGMII (Quad Serial Gigabit Media
-Independent Interface) and Q-USGMII (Quad Universal Serial Gigabit Media
-Independent Interface) providing chip-to-chip connection to four Gigabit
-Ethernet MACs using a single serialized link (differential pair) in each
-direction.
+Why do we keep going down this path each time this comes up...
 
-The LAN8814 SKU supports high-accuracy timestamping functions to
-support IEEE-1588 solutions using Microchip Ethernet switches, as well as
-customer solutions based on SoCs and FPGAs.
+No, mfd doesn't work for this case, but the "virtual bus" that gets
+posted ever once in a while would solve this issue.  Hopefully one day
+the Intel developers will wake up and post it again here so that we can
+review it and hopefully merge it to solve this very common problem...
 
-The LAN8804 SKU has same features as that of LAN8814 SKU except that it does
-not support 1588, SyncE, or Q-USGMII with PCH/MCH.
+thanks,
 
-This adds support for 10BASE-T, 100BASE-TX, and 1000BASE-T,
-QSGMII link with the MAC.
-
-Signed-off-by: Divya Koppera<divya.koppera@microchip.com>
----
-v1 -> v2:
-* Removing get_features and config_init as the Errata mentioned and other
-  functionality related things are not applicable for this phy.
-  Addressed review comments.
----
- drivers/net/phy/micrel.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 9f60865587ea..a7f74b3b97af 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1320,8 +1320,6 @@ static struct phy_driver ksphy_driver[] = {
- 	.name		= "Microchip INDY Gigabit Quad PHY",
- 	.driver_data	= &ksz9021_type,
- 	.probe		= kszphy_probe,
--	.get_features	= ksz9031_get_features,
--	.config_init	= ksz9031_config_init,
- 	.soft_reset	= genphy_soft_reset,
- 	.read_status	= ksz9031_read_status,
- 	.get_sset_count	= kszphy_get_sset_count,
--- 
-2.17.1
-
+greg k-h
