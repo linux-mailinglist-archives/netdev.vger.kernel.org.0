@@ -2,123 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55BBF26768A
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 01:29:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48A25267691
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 01:30:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725919AbgIKX31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 19:29:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47762 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725897AbgIKX3D (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 19:29:03 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 94B4422225;
-        Fri, 11 Sep 2020 23:29:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599866942;
-        bh=FdKgQLdJKKwErcpXA5rsvoYNVox3WfoC+aifdEwlq+0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NnfHjZxlvM+P3Hh3S6Ss5imzJBT2NacigyZzNIIWwfNbMVy3mihyFMCAFPphe9zsu
-         onQMCqcBTWIF7jZqdLKyO9KjcXacweVxHvTiG/Qge6flPwtNkrapHtFACtUVE6kvLQ
-         6VeT2nVZO1Ppgb14J7IWMzzv/WCTeXwuninX6g54=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
-        michael.chan@broadcom.com, tariqt@nvidia.com, saeedm@nvidia.com,
-        alexander.duyck@gmail.com, andrew@lunn.ch,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 8/8] mlx4: add pause frame stats
-Date:   Fri, 11 Sep 2020 16:28:53 -0700
-Message-Id: <20200911232853.1072362-9-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200911232853.1072362-1-kuba@kernel.org>
-References: <20200911232853.1072362-1-kuba@kernel.org>
+        id S1725922AbgIKXao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 19:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52658 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725822AbgIKXak (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 19:30:40 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7952C061573;
+        Fri, 11 Sep 2020 16:30:40 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id j7so1601257plk.11;
+        Fri, 11 Sep 2020 16:30:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bWPqtreNNvGR50JNC9uAvA3aDmdeHpNeB2iU9FqChh8=;
+        b=VldpTsvsVb0yxA+TZ858ZA74K9SkObObuhPjXREJB+ose1FtXtaDD1Eq0AcvL9NUOl
+         Ln/JXysaICHMMBESWpsJR3YtHTL7m7eRd8qh1RaKqcqcnZIAhNOOOnhOENlqQoBcD3Eo
+         Wtmt/bjwxtv1totFfE/HTSgtejCMT3mN53SXVhv8rym1RdsUfDFVP8iIePFbvlhpwME7
+         J/1cdo6JzMteoQvLddtzZswQocyDRVrccuBh25N7ZpTUIAc/aZLfF8cYNZ/GinQMaWj5
+         gBCWPF40KlsZkLPK6F0/LEOkLf0cm0Knmrz/GamMv4AQSwQqeJPKSUL3WXr19D2KKouM
+         XEmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bWPqtreNNvGR50JNC9uAvA3aDmdeHpNeB2iU9FqChh8=;
+        b=eaTNnP477tPXr6uaRCeTMA3UhbLZFfxk2CzF58trNDa6YxeJaTG7R7sktsd+P+DHRA
+         kmMI+tk0hA66Kl/7FtIOizblTBrog2JwKaeOnz0BeLHiBQTNhdcz2ofEdTFOqjh+NvkE
+         CAn+McBAtiOcVwmIve8wYijpUaYokwcBVdvHX6I67d6EIc5qJgMwVTqv7L6gPPX4aC4/
+         7/eK07SZUOxhfSt+xKAga37sY1M313LGo+CmkrEiQDWTIJ4+CH8O+Mz/BTiJcjd4o9MA
+         tV5ucGKB5O9M2muQRNq5nFQkFGsGJ8TrxrNFqg1eQRrr0u3IU6hEALtxsvJgfldsCHE5
+         rurQ==
+X-Gm-Message-State: AOAM5320oE9Z/+8xpTqNqaFiBAO+YdLCkP5g4MFEmmIp9pUx6pXOl8TR
+        EuIyoIfJvDwaxLf3xJWgs0A9Nn8tmpSDPAORPsI=
+X-Google-Smtp-Source: ABdhPJzkgo/F5yjSPwlWMSpNNzqWY7WR/e4ufL3baCX59Xb05mLY7BM1ZNd+xqLd7fcmW24IlXXdFv1H1L1hE23Jlbs=
+X-Received: by 2002:a17:90b:360a:: with SMTP id ml10mr4138240pjb.198.1599867040080;
+ Fri, 11 Sep 2020 16:30:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200911060720.81033-1-xie.he.0141@gmail.com> <20200911.144121.2042949892921941512.davem@davemloft.net>
+In-Reply-To: <20200911.144121.2042949892921941512.davem@davemloft.net>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Fri, 11 Sep 2020 16:30:28 -0700
+Message-ID: <CAJht_EM8e_UxzVQk+NMzCaZdAj0iyFCYAYpgdo=ttrhxq=GBpg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/socket.c: Remove an unused header file <linux/if_frad.h>
+To:     David Miller <davem@davemloft.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check if the pause stats are reported by HW by checking the bitmap.
-Calculation is based on the order of strings in main_strings from
-ethtool -S. Hopefully the semantics of these stats match the standard..
+On Fri, Sep 11, 2020 at 2:41 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Xie He <xie.he.0141@gmail.com>
+> Date: Thu, 10 Sep 2020 23:07:20 -0700
+>
+> > This header file is not actually used in this file. Let's remove it.
+>
+> How did you test this assertion?  As Jakub showed, the
+> dlci_ioctl_set() function needs to be declared because socket.c
+> references it.
+>
+> All of your visual scanning of the code is wasted if you don't
+> do something simple like an "allmodconfig" or "allyesconfig"
+> build to test whether your change is correct or not.
+>
+> Don't leave that step for us, that's your responsibility.
+>
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- .../net/ethernet/mellanox/mlx4/en_ethtool.c   | 19 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx4/mlx4_stats.h   | 12 ++++++++++++
- 2 files changed, 31 insertions(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-index b816154bc79a..23849f2b9c25 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_ethtool.c
-@@ -1106,6 +1106,24 @@ static int mlx4_en_set_pauseparam(struct net_device *dev,
- 	return err;
- }
- 
-+static void mlx4_en_get_pause_stats(struct net_device *dev,
-+				    struct ethtool_pause_stats *stats)
-+{
-+	struct mlx4_en_priv *priv = netdev_priv(dev);
-+	struct bitmap_iterator it;
-+
-+	bitmap_iterator_init(&it, priv->stats_bitmap.bitmap, NUM_ALL_STATS);
-+
-+	spin_lock_bh(&priv->stats_lock);
-+	if (test_bit(FLOW_PRIORITY_STATS_IDX_TX_FRAMES,
-+		     priv->stats_bitmap.bitmap))
-+		stats->tx_pause_frames = priv->tx_flowstats.tx_pause;
-+	if (test_bit(FLOW_PRIORITY_STATS_IDX_RX_FRAMES,
-+		     priv->stats_bitmap.bitmap))
-+		stats->rx_pause_frames = priv->rx_flowstats.rx_pause;
-+	spin_unlock_bh(&priv->stats_lock);
-+}
-+
- static void mlx4_en_get_pauseparam(struct net_device *dev,
- 				 struct ethtool_pauseparam *pause)
- {
-@@ -2138,6 +2156,7 @@ const struct ethtool_ops mlx4_en_ethtool_ops = {
- 	.set_msglevel = mlx4_en_set_msglevel,
- 	.get_coalesce = mlx4_en_get_coalesce,
- 	.set_coalesce = mlx4_en_set_coalesce,
-+	.get_pause_stats = mlx4_en_get_pause_stats,
- 	.get_pauseparam = mlx4_en_get_pauseparam,
- 	.set_pauseparam = mlx4_en_set_pauseparam,
- 	.get_ringparam = mlx4_en_get_ringparam,
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h b/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h
-index 86b6051da8ec..51d4eaab6a2f 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4_stats.h
-@@ -84,6 +84,11 @@ struct mlx4_en_flow_stats_rx {
- 					 MLX4_NUM_PRIORITIES)
- };
- 
-+#define FLOW_PRIORITY_STATS_IDX_RX_FRAMES	(NUM_MAIN_STATS +	\
-+						 NUM_PORT_STATS +	\
-+						 NUM_PF_STATS +		\
-+						 NUM_FLOW_PRIORITY_STATS_RX)
-+
- struct mlx4_en_flow_stats_tx {
- 	u64 tx_pause;
- 	u64 tx_pause_duration;
-@@ -93,6 +98,13 @@ struct mlx4_en_flow_stats_tx {
- 					 MLX4_NUM_PRIORITIES)
- };
- 
-+#define FLOW_PRIORITY_STATS_IDX_TX_FRAMES	(NUM_MAIN_STATS +	\
-+						 NUM_PORT_STATS +	\
-+						 NUM_PF_STATS +		\
-+						 NUM_FLOW_PRIORITY_STATS_RX + \
-+						 NUM_FLOW_STATS_RX +	\
-+						 NUM_FLOW_PRIORITY_STATS_TX)
-+
- #define NUM_FLOW_STATS (NUM_FLOW_STATS_RX + NUM_FLOW_STATS_TX + \
- 			NUM_FLOW_PRIORITY_STATS_TX + \
- 			NUM_FLOW_PRIORITY_STATS_RX)
--- 
-2.26.2
-
+OK. I'm sorry for this.
