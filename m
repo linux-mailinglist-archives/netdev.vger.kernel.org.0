@@ -2,227 +2,436 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5A4426682D
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 20:19:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 395C5266836
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 20:23:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725876AbgIKST0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 14:19:26 -0400
-Received: from mail-eopbgr70133.outbound.protection.outlook.com ([40.107.7.133]:15591
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725730AbgIKSTW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 14:19:22 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZNwDeB/J8D3/X96R3ZbPFpYOwDCizxJ1aeQsjKB68E3kP702fL+lAzsSRz80FuUQXCNGlMsoCxcGlrGpkjPKx7UrBEFPtll3gRTLl0PwmyZpNGbqEHKhowp/08TE2C6MHUi6pbmnZUpPsWJ7Lp8lDXmuGqMJholZLZyA44hFq0QflkV8FEnrTgnI1yhwfGrof86SCK03px+rxFivgY6AvbtE7obG4AlHdFI+/ZcpsEan6S2+dXfiK03IpYWD0LcbhdatDPXf84oDOm057B2R1PoBnvgLyyvaYqeaZWyJLeJDc1xonQywcTEe6cKV9P8kzC/x361kA4igaeX8PMPQ2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bLPSDsdFcGfrFpwyZTl6jaDSfvkyZAeHeZCNBolP1Oc=;
- b=Reik6Ed8m+iim5pnPbuwGV65oNjMRyOV+JqNXvYfrSWExZo57oYtTN8gVSY9bL8Hyot0JXesS2m0ZVt8sHijaKtRiZ6B2tfBgAXUr/6z/fjaAvvOq97hbWET5Rfq+ZfTbGvm8r1ogyHhRWxoKI0GVWtfS1mwLyBO26LcV8JXOhlvgqezB8wcgUEi94V7nmHtmKnZwrl2lrFP9n/Yxca6TKkS1ty1j70s/4a9u/ufa8p6XGAO1iS1PTd/YCAHSrRHmY3JWpMxIgLgbzQOttbXnM30djDXBPIlyl6zZdkZXvkneIkDXqLxsHxG/9mVbbcO0tWRDqdOr+4k868m68TcqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bLPSDsdFcGfrFpwyZTl6jaDSfvkyZAeHeZCNBolP1Oc=;
- b=Qm7/Ow9gDsDbrQfrXKCzL6dw0U5sWiNoq/eBT53WwymzCe4f55+NZ/iKyNE1FTvWNS7qEWFzKYbUiTjopwOaCmOQqgco5IXEugeEixb2a8aLfn0j8U2SaKqj8oW4EPpy+VfN5pRhqnUQMBsrk2b8qce45/i7xYZeqOsdLEF8HgY=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=plvision.eu;
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
- HE1P190MB0363.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:55::25) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3370.16; Fri, 11 Sep 2020 18:19:17 +0000
-Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::c1ab:71de:6bc2:89fe]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- ([fe80::c1ab:71de:6bc2:89fe%6]) with mapi id 15.20.3370.017; Fri, 11 Sep 2020
- 18:19:17 +0000
-Date:   Fri, 11 Sep 2020 21:19:14 +0300
-From:   Vadym Kochan <vadym.kochan@plvision.eu>
-To:     netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [DISCUSS] sfp: sfp controller concept
-Message-ID: <20200911181914.GB20711@plvision.eu>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: AM6PR08CA0002.eurprd08.prod.outlook.com
- (2603:10a6:20b:b2::14) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:7:56::28)
+        id S1725908AbgIKSXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 14:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725901AbgIKSXd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 14:23:33 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB77C061573
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 11:23:32 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id t14so7205444pgl.10
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 11:23:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:references:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=c7Co9nhBpz60Vn3mx5VWo9s907NGmGLe9vA020Rmjo4=;
+        b=czQJ0hhp0KZgHLlASiFgl/k6X6n0qSkpmDjw0eVaEW5NSmbE3XQUTEaDFLS1ycyb8E
+         XTqgvC1IXQfqj1/ULY9hv7YO86gGi+fDqUfw4+SSGmmB5Tx0rK9kbsxzNez9pM2yCmcL
+         kq+nL3qzp0UDxZ8CfC7wUAj6oy3oxdofmcrfkXGuK3QHl5H3iGsMwmLALb3oy0QZT7Me
+         EdxbXKwG9tnj+5rcaF6wi5d8Z1pTwBzdlCfrhg5EuKPciOqvv16IzVtvPDG8jmpE49bX
+         vQJwmC7LUQrUlnd22pzfY2V8XyMT68d/u2ba5mO7s7+cU26dDYqU6CVxKEUEytCka681
+         Lw+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:references:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=c7Co9nhBpz60Vn3mx5VWo9s907NGmGLe9vA020Rmjo4=;
+        b=p3pou4k8Z/zQb/FCDC0V6j3veUq0IHX+6nRKHIwWT45tW/B5vHYVVhv8sfSf0Ga/Jy
+         ySg9ja2zlcyZKyBM2Fr/UOPZACTM895lDTg9TdDBfWw6SGUBJB7g8ztvGI2ERhtp86xP
+         Q17nqKF40Komh7xgZI288/FfVHMH7LLD4me6Ly/PHHb22UzvPUYNR1IfgvWnU2VtvCz5
+         flkBICu90J9LzeGjGaoDyIvzxag0xfZGkyQBzKf49AOAkKZFBHzqohvJV3H4gqGueL0q
+         lZQChGT7z7gfm3G7l5JkiVPg4uQ2yXoeBqNE9n3RhFvna/SkWX3Mwt8/8EpCl9Ym9Vd8
+         SSGQ==
+X-Gm-Message-State: AOAM532Y+yDOlAR5fqrnQltlIMwPxR/k3HuacfHDQCj2wBJeqnWroVSt
+        4QyYbkejPQTvADK7zClwIq/+My0j8lM=
+X-Google-Smtp-Source: ABdhPJzOaWeVTtqI2Ja9dCGyVWteGU3Ts1sAxFJ/hfvEKEl/Go4HUj5bzH9ZLBObKDSNbn7DdgCurQ==
+X-Received: by 2002:a17:902:70c8:b029:d0:cbe1:e7ac with SMTP id l8-20020a17090270c8b02900d0cbe1e7acmr3543561plt.29.1599848610801;
+        Fri, 11 Sep 2020 11:23:30 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id d128sm2819154pfd.94.2020.09.11.11.23.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Sep 2020 11:23:29 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, vivien.didelot@gmail.com, andrew@lunn.ch,
+        netdev@vger.kernel.org
+References: <961ac1bd-6744-23ef-046f-4b7d8c4413a4@gmail.com>
+ <a5e6cb01-88d0-a479-3262-b53dec0682cd@gmail.com>
+ <f0217ae5-7897-17e2-a807-fc0ba0246c74@gmail.com>
+ <20200909163105.nynkw5jvwqapzx2z@skbuf>
+ <11268219-286d-7daf-9f4e-50bdc6466469@gmail.com>
+ <20200909175325.bshts3hl537xtz2q@skbuf>
+ <5edf3aa2-c417-e708-b259-7235de7bc8d2@gmail.com>
+ <7e45b733-de6a-67c8-2e28-30a5ba84f544@gmail.com>
+ <20200911000337.htwr366ng3nc3a7d@skbuf>
+ <04823ca9-728f-cd06-a4b2-bb943d04321b@gmail.com>
+ <20200911154340.mfe7lwtklfepd5go@skbuf>
+Subject: [PATCH net-next 4/4] net: dsa: set configure_vlan_while_not_filtering
+ to true by default
+Message-ID: <b6ec9450-6b3e-0473-a2f9-b57016f010c1@gmail.com>
+Date:   Fri, 11 Sep 2020 11:23:28 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from plvision.eu (217.20.186.93) by AM6PR08CA0002.eurprd08.prod.outlook.com (2603:10a6:20b:b2::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16 via Frontend Transport; Fri, 11 Sep 2020 18:19:17 +0000
-X-Originating-IP: [217.20.186.93]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e3191886-1719-46ce-b299-08d8567f322f
-X-MS-TrafficTypeDiagnostic: HE1P190MB0363:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1P190MB0363D25223AB4C63FF4D93BB95240@HE1P190MB0363.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RD2zTD7IRQjpS3jkf41fJUVNxAIfgTWp/LjDyA9upLHYBoIEmi89zoOAn+7c4dfrBjup/GoK+N2OKthOlTdz20tu5IZVeKasS71CE0L7XunncyNwTbBAJ+dOV81wS11s3GhfkRPGovgYKRy7xvhIhOWLmAIIicNv6xWynAEf1lfPJNd38ms4wgnkRXV1AbzFnC/cZRpDZttA1BtbuM6tAcjTlUunFuhreeGW18RIF9s3r0nl8pzLNTMd8eRTKWQG9Ford59DeLIv19w/dCi6otKCfKYoRDPzWlvaFR4yGuh9yR3NTsk877iKNfFIuXK/wZy6VAjS9Aj/tklF9DSWlg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(136003)(366004)(376002)(346002)(39830400003)(396003)(5660300002)(6666004)(83380400001)(956004)(66946007)(2616005)(66556008)(8676002)(33656002)(8936002)(66476007)(478600001)(86362001)(44832011)(2906002)(52116002)(110136005)(55016002)(7696005)(1076003)(16526019)(36756003)(316002)(186003)(8886007)(26005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: XL7ruN3ENyxH5Gqbqkpvh67s1OppsykVTvyfNPgf0ugl8snabax91lP2Nw3BN6lezST8QuZiG9kr0KxCVw19p8OAXTPpJQYhuIMK0tdn0MvuC1MrP1ecJG028EFp3pTUC7Og4zNGMqIze1C36uTjMkPqjFyyDqDK1Ugc6G5SP9SwB5BtMtREkuZnVgB4PnfPmAWXtxI9CIIL8fvLXGy/V/O2LwVvVaQtg/XMVo75wjz1p6sOmQ7/xkVB9voK0f1i+6X+WBbsNNTq+OSsRi76Bf6BggyYd0vP8kO2PjW34vsblXD2gFr6PuiSevw7d7iE2/bLTobRGfqqMJYFDvZIF9QPKbpw+hgO15x0ckZuT4J8xU+Dd8Rf9hehDnemNt0bKsyFwdhls/6939hEPx+rLEo5Fg11DsEB4m+kdMm6ZDPpv40Xp0SWOgD/Cf6VUDm4RfD/nK3hiVHEsjlkaVDG+X6rnTIsXLsMDQqqvGoGRYcn0kvGFi1Q3n3iwDb7ZjTU9jYULGrnlQfqTtep36CsqNQmlWpq4lyTKN4uFrs9k1t2OHvBpnfVS0NdsXUYRgO8upHa93yTP8pdoLI1VV9LY5bb/iLtLIHXNtD4c5yIov2LTs102zSgvrUQcSmBS8qAl1VwSZo30AQlL0TqnLJxBA==
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3191886-1719-46ce-b299-08d8567f322f
-X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2020 18:19:17.7146
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 54up/gjp0faq9B+9Csk5JuLcHDs+MW0C7ZfwxwHXcGGuSEhoeJUQdyTwt69yFe5w5Ys83P1crSxSYMyU2v8FlFvr+zF6t60xe8wWd+Ml1BY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0363
+In-Reply-To: <20200911154340.mfe7lwtklfepd5go@skbuf>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-I'd like to discuss a concept of introduction additional entity into SFP
-subsystem called SFP controller. But lets start with the issue.
 
-Issue
-=====
+On 9/11/2020 8:43 AM, Vladimir Oltean wrote:
+> On Thu, Sep 10, 2020 at 08:09:19PM -0700, Florian Fainelli wrote:
+>> On 9/10/2020 5:03 PM, Vladimir Oltean wrote:
+>>> On Thu, Sep 10, 2020 at 02:58:04PM -0700, Florian Fainelli wrote:
+>>>> On 9/9/2020 11:34 AM, Florian Fainelli wrote:
+>>>>> On 9/9/2020 10:53 AM, Vladimir Oltean wrote:
+>>>>>> On Wed, Sep 09, 2020 at 10:22:42AM -0700, Florian Fainelli wrote:
+>>>>>>> How do you make sure that the CPU port sees the frame untagged
+>>>>>>> which would
+>>>>>>> be necessary for a VLAN-unaware bridge? Do you have a special remapping
+>>>>>>> rule?
+>>>>>>
+>>>>>> No, I don't have any remapping rules that would be relevant here.
+>>>>>> Why would the frames need to be necessarily untagged for a VLAN-unaware
+>>>>>> bridge, why is it a problem if they aren't?
+>>>>>>
+>>>>>> bool br_allowed_ingress(const struct net_bridge *br,
+>>>>>>               struct net_bridge_vlan_group *vg, struct sk_buff *skb,
+>>>>>>               u16 *vid, u8 *state)
+>>>>>> {
+>>>>>>       /* If VLAN filtering is disabled on the bridge, all packets are
+>>>>>>        * permitted.
+>>>>>>        */
+>>>>>>       if (!br_opt_get(br, BROPT_VLAN_ENABLED)) {
+>>>>>>           BR_INPUT_SKB_CB(skb)->vlan_filtered = false;
+>>>>>>           return true;
+>>>>>>       }
+>>>>>>
+>>>>>>       return __allowed_ingress(br, vg, skb, vid, state);
+>>>>>> }
+>>>>>>
+>>>>>> If I have a VLAN on a bridged switch port where the bridge is not
+>>>>>> filtering, I have an 8021q upper of the bridge with that VLAN ID.
+>>>>>
+>>>>> Yes that is the key right there, you need an 8021q upper to pop the VLAN
+>>>>> ID or push it, that is another thing that users need to be aware of
+>>>>> which is a bit awkward, most expect things to just work. Maybe we should
+>>>>> just refuse to have bridge devices that are not VLAN-aware, because this
+>>>>> is just too cumbersome to deal with.
+>>>>
+>>>> With the drivers that you currently maintain and with the CPU port being
+>>>> always tagged in the VLANs added to the user-facing ports, when you are
+>>>> using a non-VLAN aware bridge, do you systematically add an br0.1 upper
+>>>> 802.1Q device to pop/push the VLAN tag?
+>>>
+>>> Talking to you, I realized that I confused you uselessly. But in doing
+>>> that, I actually cleared up a couple of things for myself. So thanks, I
+>>> guess?
+>>>
+>>> This is actually a great question, and it gave me the opportunity to
+>>> reflect.  So, only 1 driver that I maintain has the logic of always
+>>> marking the CPU port as egress-tagged. And that would be ocelot/felix.
+>>>
+>>> I need to give you a bit of background.
+>>> The DSA mode of Ocelot switches is more of an afterthought, and I am
+>>> saying this because there is a distinction I need to make between the
+>>> "CPU port module" (which is a set of queues that the CPU can inject and
+>>> extract frames from), and the "NPI port" (which is an operating mode,
+>>> where a regular front-panel Ethernet port is connected internally to the
+>>> CPU port module and injection/extraction I/O can therefore be done via
+>>> Ethernet, and that's your DSA).
+>>> Basically, when the NPI mode is in use, then it behaves less like an
+>>> Ethernet port, and more like a set of CPU queues that connect over
+>>> Ethernet, if that makes sense.
+>>
+>> SYSTEMPORT + bcm_sf2 act a lot like that, too, except the CPU port still
+>> obeys VLAN, buffering, classification and other switch internal rules, but
+>> essentially we want to map queues from the user-facing port to DMAs used by
+>> the host processor.
+> 
+> Digressing a lot here, but the NPI port of Ocelot switches really isn't
+> like that. For example, the NPI port doesn't even need to be in the
+> reachability domain for a frame to reach it. Other example, a TCAM rule
+> to drop a frame won't prevent it from reaching the NPI port, if that was
+> previously selected as a destination for that frame. Other example:
+> there is no source address learning for traffic injected by the network
+> stack over the NPI port. So, on RX, every frame that should reach the
+> CPU is actually _flooded_, due to the destination being unknown. Other
+> example: the NPI port is so hardcoded to wrap everything in an
+> Extraction Frame Header, that it even wraps PAUSE frames in it. That one
+> especially is so bad that I have a patch series in the works to simply
+> disable the NPI port and use tag_8021q instead. I just hate it.
+> 
+>>
+>>> The port settings for VLAN are bypassed, and the packet is copied as-is
+>>> from ingress to the NPI port. The egress-tagged port VLAN configuration
+>>> does not actually result in a VLAN header being pushed into the frame,
+>>> if that egress port is the NPI port.  Instead, the classified VLAN ID
+>>> (i.e. derived from the packet, or from the port-based VLAN, or from
+>>> custom VLAN classification TCAM rules) is always kept in a 12-bit field
+>>> of the Extraction Frame Header.
+>>>
+>>> Currently I am ignoring the classified VLAN from the Extraction Frame
+>>> Header, and simply passing the skb as-is to the stack. As-is, meaning as
+>>> the switch ingress port had received it. So, in retrospect, my patch
+>>> 183be6f967fe ("net: dsa: felix: send VLANs on CPU port as
+>>> egress-tagged") is nothing more than a formality to make this piece of
+>>> code shut up and not error out:
+>>>
+>>> static int ocelot_port_set_native_vlan(struct ocelot *ocelot, int port,
+>>> 				       u16 vid)
+>>> {
+>>> 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+>>> 	u32 val = 0;
+>>>
+>>> 	if (ocelot_port->vid != vid) {
+>>> 		/* Always permit deleting the native VLAN (vid = 0) */
+>>> 		if (ocelot_port->vid && vid) {
+>>> 			dev_err(ocelot->dev,
+>>> 				"Port already has a native VLAN: %d\n",
+>>> 				ocelot_port->vid);
+>>> 			return -EBUSY;
+>>> 		}
+>>> 		ocelot_port->vid = vid;
+>>> 	}
+>>>
+>>> It's just now that I connected the dots and realized that.
+>>>
+>>> So, looks like I don't really know what it's like to always have a
+>>> tagged skb on ingress, even for egress-tagged VLANs. It must suck, I
+>>> guess?
+>>>
+>>> I think if I were in that situation, and the source port would be under
+>>> a vlan_filtering=0 bridge, then I would simply pop the tag from the skb
+>>> in the DSA rcv function, for all VLANs that I don't have an 8021q upper
+>>> for.
+>>>
+>>> Explaining this, it makes a lot of sense to do what Vitesse / Microsemi
+>>> / Microchip is doing, which is to copy the frame as-is to the CPU, and
+>>> to also tell you, separately, what the classified VLAN is. For example,
+>>> in vlan_filtering=0 mode, the classified VLAN will always be 1,
+>>> regardless of how the frame is tagged, because VLAN awareness is truly
+>>> turned off for the ingress port, and the port-based VLAN is always used.
+>>> In this way, you have the most flexibility: you can either ignore the
+>>> classified VLAN and proceed with just what was in the ingress skb (this
+>>> way, you'll have a switch that is not VLAN-unaware, just "checking" as
+>>> opposed to "secure". It has passed the ingress VLAN filter, but you
+>>> still remember what the VLAN ID was.
+>>> Or you can have a completely VLAN-unaware switch, if you pop all VLANs
+>>> that you can find in the skb, and add a hwaccel tag based on the
+>>> classified VLAN, if it isn't equal to the pvid of the port. This is
+>>> great for things like compatibility with a vlan_filtering=0 upper bridge
+>>> which is what we're talking about.
+>>>
+>>> Basically, this is what, I think, DSA tries to emulate with the rule of
+>>> copying the flags of a user port VLAN to the CPU port too. If we had the
+>>> API to request an "unmodified" VLAN (not egress-tagged, not
+>>> egress-untagged, just the same as on ingress), I'm sure we'd be using
+>>> that by default (useful when vlan_filtering is 1). Knowing what the
+>>> classified VLAN was also can be very useful at times (like when
+>>> vlan_filtering is 0), so if there was an API for that, I'm sure DSA
+>>> would have used that as well. With no such APIs, we can only use
+>>> approximations.
+>>
+>> egress unmodified is what mv88e6xxx uses which is why I do not believe they
+>> have had the same issues that I had with vlan_filtering=0. For Broadcom
+>> switches there is not any option to have an umodified mode, the CPU port
+>> must have a valid VLAN membership (with vlan_filtering=1) and the egress
+>> untagged from the CPU port to the Ethernet MAC must match the expectations
+>> of the software data path behind.
+>>
+> 
+> So excepting mv88e6xxx and ocelot/felix, you are really in the same
+> situation now with b53 and starfighter as everybody else is, am I not
+> right? The "pvid and not untagged" VLAN is problematic for everybody in
+> vlan_filtering=0 mode.
 
-There are boards with SFP ports whose GPIO pins are not connected directly to
-the SoC but to the I2C CPLD device which has ability to read/write statuses of
-each SFP via I2C read/write commands.
+Yes, this is a problem for any switch that forces the CPU port to be 
+tagged in all VLANs added to user-ports I would say be it a driver 
+decision or hardware limitation.
 
-Of course there is already a solution - implement GPIO chip and convert GPIO
-numbers & states into internal representation (I2C registers). But it requires
-additional GPIO-related handling like:
+The customers I support with bcm_sf2 mostly use the switch ports as 
+standalone network devices (which reminds me I need to test your DSA RX 
+filtering series, sigh) with 802.1Q uppers on top. Bridging works, but 
+does not seem to be their main use case at all that comes from having 
+migrated from 3 independent Ethernet MACs to an integrated switch, and 
+now back to integrated Ethernet MACs.
 
-1) Describe GPIO pins and IN/OUT mapping in DTS
+> 
+>>>
+>>>> I am about ready to submit the changes we discussed to b53, but I am still a
+>>>> bit uncomfortable with this part of the change because it will make the CPU
+>>>> port follow the untagged attribute of an user-facing port.
+>>>>
+>>>> @@ -1444,7 +1427,7 @@ void b53_vlan_add(struct dsa_switch *ds, int port,
+>>>>                           untagged = true;
+>>>>
+>>>>                   vl->members |= BIT(port);
+>>>> -               if (untagged && !dsa_is_cpu_port(ds, port))
+>>>> +               if (untagged)
+>>>>                           vl->untag |= BIT(port);
+>>>>                   else
+>>>>                           vl->untag &= ~BIT(port);
+>>>> @@ -1482,7 +1465,7 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
+>>>>                   if (pvid == vid)
+>>>>                           pvid = b53_default_pvid(dev);
+>>>>
+>>>> -               if (untagged && !dsa_is_cpu_port(ds, port))
+>>>> +               if (untagged)
+>>>>                           vl->untag &= ~(BIT(port));
+>>>>
+>>>
+>>> Which is ok, I believe? I mean, that's the default DSA logic. If you
+>>> think that isn't ok, we should change it at a more fundamental level.
+>>> What we've been discussing so far is akin to your current setup, not
+>>> to the one you're planning to change to, isn't it? Are there any
+>>> problems with the new setup?
+>>
+>> The change above is functional because the CPU port ends up being egress
+>> untagged in all of the bridge's default_pvid, whether vlan_filtering is 0 or
+>> 1 and that works.
+> 
+> Yeah, heard you about one mistake cancelling another one out.
+> 
+>> The slightly confusing part is that a vlan_filtering=1 bridge accepts the
+>> default_pvid either tagged or untagged whereas a vlan_filtering=0 bridge
+>> does not, except for DHCP for instance. I would have to add a br0.1 802.1Q
+>> upper to take care of the default_pvid being egress tagged on the CPU port.
+>>
+>> We could solve this in the DSA receive path, or the Broadcom tag receive
+>> path as you say since that is dependent on the tagging format and switch
+>> properties.
+>>
+>> With Broadcom tags enabled now, all is well since we can differentiate
+>> traffic from different source ports using that 4 bytes tag.
+>>
+>> Where this broke was when using a 802.1Q separation because all frames that
+>> egressed the CPU were egress tagged and it was no longer possible to
+>> differentiate whether they came from the LAN group in VID 1 or the WAN group
+>> in VID 2. But all of this should be a thing of the past now, ok, all is
+>> clear again now.
+> 
+> Or we could do this, what do you think?
 
-2) Consider this mapping also in CPLD driver
+Yes, this would be working, and I just tested it with the following 
+delta on top of my b53 patch:
 
-3) IRQ - for me this is not clear how to simulate
-   sending IRQ via GPIO chip.
+diff --git a/drivers/net/dsa/b53/b53_common.c 
+b/drivers/net/dsa/b53/b53_common.c
+index 46ac8875f870..73507cff3bc4 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1427,7 +1427,7 @@ void b53_vlan_add(struct dsa_switch *ds, int port,
+                         untagged = true;
 
-I started to think that may be it would be good to introduce
-some generic sfp_controller which might be registered by such CPLD
-driver which may provide states of connected modules through the
-callback by mapping direct SFP states into it's CPLD registers and
-call some sfp_state_update() which will trigger the SFP state
-machine. So this driver will check/provide on direct SFP defined
-states without considering the GPIO things.
+                 vl->members |= BIT(port);
+-               if (untagged)
++               if (untagged && !dsa_is_cpu_port(ds, port))
+                         vl->untag |= BIT(port);
+                 else
+                         vl->untag &= ~BIT(port);
+@@ -1465,7 +1465,7 @@ int b53_vlan_del(struct dsa_switch *ds, int port,
+                 if (pvid == vid)
+                         pvid = b53_default_pvid(dev);
 
-How it may look
-===============
+-               if (untagged)
++               if (untagged && !dsa_is_cpu_port(ds, port))
+                         vl->untag &= ~(BIT(port));
 
-Device tree:
+                 b53_set_vlan_entry(dev, vid, vl);
 
-sfp0: sfp0 {
-        compatible = "sff,sfp";
-        i2c-bus = <&i2c0_sfp0>;
-        /* ref to controller device */
-        ctl = <&cpld>;
-        /* this index will be used by sfp controller */
-        idx = <0>;
-};
+and it works, thanks!
 
-SFP controller interface:
+> 
+>  From 178a46f0f96555e17f3fcefa356e324a92dafab2 Mon Sep 17 00:00:00 2001
+> From: Vladimir Oltean <olteanv@gmail.com>
+> Date: Fri, 11 Sep 2020 18:16:48 +0300
+> Subject: [PATCH] net: bridge: pop vlan from skb if filtering is disabled but
+>   it's a pvid
+> 
+> Currently the bridge untags VLANs from its VLAN group in
+> __allowed_ingress() only when VLAN filtering is enabled.
+> 
+> When installing a pvid in egress-tagged mode:
+> 
+> ip link add dev br0 type bridge vlan_filtering 0
+> ip link set swp0 master br0
+> bridge vlan del dev swp0 vid 1
+> bridge vlan add dev swp0 vid 1 pvid
+> 
+> When adding a VLAN on a DSA switch interface, DSA configures the VLAN
+> membership of the CPU port using the same flags as swp0 (in this case
+> "pvid and not untagged"), in an attempt to copy the frame as-is from
+> ingress to the CPU.
+> 
+> However, in this case, the packet may arrive untagged on ingress, it
+> will be pvid-tagged by the ingress port, and will be sent as
+> egress-tagged towards the CPU. Otherwise stated, the CPU will see a VLAN
+> tag where there was none to speak of on ingress.
 
-There might be added generic sfp-ctl.c which implements the basic sfp controller infra:
+We could also indicate that some DSA switch drivers systematically 
+configure their CPU port to be tagged in all VLANs, so even in the 
+following case:
 
-    1) register/unregister sfp controller driver
+ip link add dev br0 type bridge vlan_filtering 0
+ip link set swp0 master br0
 
-    2) lookup sfp controller by fwnode on SFP node parsing/probing
+we will be receiving egress tagged frames for default_pvid because the 
+CPU port is configured as egress tagged for that VLAN. In the case of a 
+vlan_filtering=1, the default_pvid is accepted as tagged or untagged by 
+the bridge master device. (something along those lines).
 
-The relation between modules might be:
+> 
+> When vlan_filtering is 1, this is not a problem, as stated in the first
+> paragraph, because __allowed_ingress() will pop it. But currently, when
+> vlan_filtering is 0 and we have such a VLAN configuration, we need an
+> 8021q upper (br0.1) to be able to ping over that VLAN.
+> 
+> Make the 2 cases (vlan_filtering 0 and 1) behave the same way as popping
+> the pvid, if the skb happens to be tagged with it, when vlan_filtering
+> is 0.
+> 
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 
-    sfp.c <-> sfp-ctl.c <- driver <-> CPLD or some device
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Flows:
-1) CPLD driver prope:
-    driver -> sfp_controller_register()
+> ---
+>   net/bridge/br_vlan.c | 16 ++++++++++++++++
+>   1 file changed, 16 insertions(+)
+> 
+> diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+> index d2b8737f9fc0..b1e7211bae51 100644
+> --- a/net/bridge/br_vlan.c
+> +++ b/net/bridge/br_vlan.c
+> @@ -580,7 +580,23 @@ bool br_allowed_ingress(const struct net_bridge *br,
+>   	 * permitted.
+>   	 */
+>   	if (!br_opt_get(br, BROPT_VLAN_ENABLED)) {
+> +		u16 vid;
+> +
+>   		BR_INPUT_SKB_CB(skb)->vlan_filtered = false;
+> +
+> +		/* See comment in __allowed_ingress about how skb can end up
+> +		 * here not having a hwaccel tag
+> +		 */
+> +		if (unlikely(!skb_vlan_tag_present(skb) &&
+> +			     skb->protocol == br->vlan_proto)) {
+> +			skb = skb_vlan_untag(skb);
+> +			if (unlikely(!skb))
+> +				return false;
+> +		}
+> +
+> +		if (!br_vlan_get_tag(skb, &vid) && vid == br_get_pvid(vg))
+> +			__vlan_hwaccel_clear_tag(skb);
+> +
+>   		return true;
+>   	}
+>   
+> 
 
-2) SFP instance probe:
-    sfp.c -> sfp-ctl.c:sfp_controller_add_socket()
-             creates assoctation between idx and sfp instance.
-                                      
-3) SFP get state:
-    sfp.c -> sfp_ctl_get_state() -> sfp-ctl.c:sfp_controller_get_state() -> driver ops -> get_state
+-- 
+Florian
 
-4) SFP state updated:
-    driver -> sfp-ctl.c:sfp_controller_notify() -> sfp.c:sfp_state_update()
-              finds struct sfp* instance by idx
 
-------------------------------------------------------------------
-/* public */
-
-enum {
-       GPIO_MODDEF0,
-       GPIO_LOS,
-       GPIO_TX_FAULT,
-       GPIO_TX_DISABLE,
-       GPIO_RATE_SELECT,
-       GPIO_MAX,
-
-       /* SFP controller should check/provide on these states */
-       SFP_F_PRESENT = BIT(GPIO_MODDEF0),
-       SFP_F_LOS = BIT(GPIO_LOS),
-       SFP_F_TX_FAULT = BIT(GPIO_TX_FAULT),
-       SFP_F_TX_DISABLE = BIT(GPIO_TX_DISABLE),
-       SFP_F_RATE_SELECT = BIT(GPIO_RATE_SELECT),
-};
-
-struct sfp_controller_ops {
-	unsigned int (*get_state)(struct sfp_controller *sfp_ctl, int sfp_idx);
-
-	void (*set_state)(struct sfp_controller *sfp_ctl, int sfp_idx,
-			  unsigned int state);
-};
-
-/* implemented by sfp-ctl.c */
-struct sfp_controller *
-sfp_controller_register(struct device *dev,
-			struct sfp_controller_ops *sfp_ctl_ops,
-			int flags);
-
-/* implemented by sfp-ctl.c */
-void sfp_controller_unregister(struct sfp_controller *sfp_ctl);
-
-/* implemented by sfp.c */
-sfp_state_update(struct sfp *sfp, int state);
-
-/* internal */
-
-/* implemented by sfp-ctl.c */
-struct sfp_controller *sfp_controller_find_fwnode(struct fwnode_handle *fwnode);
-
-/* implemented by sfp-ctl.c */
-void sfp_controller_put(struct sfp_controller *ctl);
-
-/* implemented by sfp-ctl.c */
-unsigned int sfp_controller_get_state(struct sfp_controller *ctl, int idx);
-
-/* implemented by sfp-ctl.c */
-void sfp_controller_set_state(struct sfp_controller *ctl, int idx);
-
-/* implemented by sfp-ctl.c */
-/* This might be used as ability to notify changed SFP state to sfp-ctl.c by driver
-which then may find struct sfp* instance by idx and call sfp_state_update()
-which is handled by sfp.c */
-void sfp_controller_notify(struct sfp_controller *ctl, int idx, int state);
---------------------------------------------------------------------
-
-Currently I do not see how to properly define sfp_state_update(...) func
-which may be triggered by sfp controller to notify SFP state machine. May be additional
-interface is needed which may provide to controller the sfp* instance and it's idx:
-
-int sfp_controller_add_socket(struct sfp_controller *ctl, struct sfp *sfp, int idx);
-
-void sfp_controller_del_socket(struct sfp_controller *ctl, struct sfp *sfp);
-
-so the driver may create mapping between struct sfp* and it's idx and call the:
-
-sfp_state_update(struct sfp *sfp, int state);
-
-Regards,
-Vadym Kochan
