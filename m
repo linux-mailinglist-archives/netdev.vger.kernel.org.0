@@ -2,109 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 655CA2663D4
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:25:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18F802662CC
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 18:01:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726299AbgIKQZe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 12:25:34 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:41815 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726480AbgIKP0P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:26:15 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id C82D4308;
-        Fri, 11 Sep 2020 11:26:04 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Fri, 11 Sep 2020 11:26:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=mFlqUt
-        /8BLKg7P43W/phyBdp9DFVhBsV70oZNNCSdio=; b=mwDhN41fxSABGCCjXtujRl
-        w7fgjU+jAu14hqbEDFctJqb5cvSgXQVZ1oOIOE+pkNq276BwM74dQus4orHYuz0V
-        3Fn4fKYFK13S0iMwd/zfUDWeEjn+Sr51yf2KUfG+WCThY7blzcI8AsLgcuhwGCNk
-        JFOcuBdrGifTnwgA3uj+f2klkUrT7c7jF9vjKKCRGfIbojk9dWaIxZQqZWp+ZtKN
-        /G/+fHeogPD3fyqms8ovPlKV887Jt4gsdfdZ09FNmRrBE0bx3rU2FL/jkLpU0iuN
-        QVP1/SUa8N9RbcysVxq61ajyB5Nm7oRciO0Obt2GxxemaFjRl4FR+dkxbAjZs5/Q
-        ==
-X-ME-Sender: <xms:DJdbXwHKdWLUHZVwPAQvdoz5NFXOOBqX1PPw3bHR1lGlNw3sIkpnog>
-    <xme:DJdbX5UEhh7qwuRoSgmdQlA6xok9NocRceNSEHJB_0TWMDX_Sk0yTiFvOmzXMd3qJ
-    aKrLZNyLGIxjjc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudehledgledtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdefiedrudefudenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:DJdbX6Ip6s2ujrRKMKBbPp88lDXfc68MbsxzSuI4u-yJu-tBZuMtVg>
-    <xmx:DJdbXyGyVjDYDHZpIjzl-pFhnezdJ34puYzUjOd7xJDPNmkiARqZeA>
-    <xmx:DJdbX2VCo4kUy6koiznqZCPk5jYDrbYGJJgWrNQkxVb6P6Lvd6Ic8A>
-    <xmx:DJdbX1R8XEr2Vzvz02K1MNB6GEmeTV8PR7PaLV2F-DIgU0M4LoaOVw>
-Received: from localhost (igld-84-229-36-131.inter.net.il [84.229.36.131])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C7D0E3064683;
-        Fri, 11 Sep 2020 11:26:03 -0400 (EDT)
-Date:   Fri, 11 Sep 2020 18:26:01 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        roopa@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next 09/22] rtnetlink: Add RTNH_F_TRAP flag
-Message-ID: <20200911152601.GE3160975@shredder>
-References: <20200908091037.2709823-1-idosch@idosch.org>
- <20200908091037.2709823-10-idosch@idosch.org>
- <c7159988-c052-0a5c-8b6b-670fd16be1ac@gmail.com>
+        id S1726599AbgIKQBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 12:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726591AbgIKQBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 12:01:05 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53D3C061756;
+        Fri, 11 Sep 2020 09:01:04 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id 16so10340170qkf.4;
+        Fri, 11 Sep 2020 09:01:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=m+iVerlUNqAW5DSLfymFd18Aa+jNaCXhphLLXfU0VIA=;
+        b=Sutpl+MPw6nB+6Wp5lUzwnRnbow90HU9aTTdtIg3LjT1unaleGubj6DLgjH29qJZ0T
+         jMBnugheaGK51H8DSv0rwGMarn7OlqHDc7tXNfLqpKrm7lua3eEOKqIQ4qUWKse+CpMJ
+         wIVx40eC9zpg9bBQBVNJ0Xre4Jvs8cNrkMzgh/6D6HQR4JEj5+tPIRQgbLtbuB5qF4Oi
+         e5atLQkthHa/nAfnDCorJKsNkqIsrmVzGOEXDo5ij+9ZE1QIlj8gAPSKjjuvR7M9JUku
+         t6gAApCIN4TgMEZc1j00NRxC2pTiI06jJF1ATbeDQGPWRlyi03xKmAujKHqcrYIMHpMs
+         7++Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=m+iVerlUNqAW5DSLfymFd18Aa+jNaCXhphLLXfU0VIA=;
+        b=DAI0o9EUArYnzD3SPxreVjHcnvJcMa9S6iqtqRPr5ZjMbpSzfhiyJB4ag9FYj732lw
+         J7nteuzh0l4nkZTQ+bPVx/niyfsj6TjRgPhSp34AzxtQmGO1WKUSAWlgTMPb9aeCRYJD
+         TsE9EdQuggExFFJNOcrx8khZQYtky5+iWXWgaW7tiyUKF1JdNtCqv5tze1bcx/bSZ9Ts
+         FSJyiYqUWXmHcvhsLmpkEyoi5A33mvqpcKfgaqZL8jDZAxWweKiah56+F25WHef9Bwu0
+         fLiv12YOZPyX1H0Yuy233rEvPPyzb+ITECIutgLFLfKqB0HrFZObQqfOQVFEzaVx+OUu
+         qU9w==
+X-Gm-Message-State: AOAM530ltPRXTW2w5eQAKoDyBjtrrxjKDJ8R7l2jk1eb8x7oRVHr0+/D
+        fbqtE1GDB2isIPajECERyzw=
+X-Google-Smtp-Source: ABdhPJxtro49hRqMYSXF+EANvHfvT1mDgX5lpY6eqewCbYGFFFco8K3fg4p7mB9jEDuEtQw+QyQlOQ==
+X-Received: by 2002:ae9:f503:: with SMTP id o3mr1925852qkg.447.1599840063843;
+        Fri, 11 Sep 2020 09:01:03 -0700 (PDT)
+Received: from ubuntu-n2-xlarge-x86 ([2604:1380:45d1:2600::1])
+        by smtp.gmail.com with ESMTPSA id g25sm3061622qto.47.2020.09.11.09.01.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Sep 2020 09:01:03 -0700 (PDT)
+Date:   Fri, 11 Sep 2020 09:01:01 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, andrew@lunn.ch,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH net-next] net: mvpp2: Initialize link in
+ mvpp2_isr_handle_{xlg,gmac_internal}
+Message-ID: <20200911160101.GA4061896@ubuntu-n2-xlarge-x86>
+References: <20200910174826.511423-1-natechancellor@gmail.com>
+ <20200910.152811.210183159970625640.davem@davemloft.net>
+ <20200911003142.GA2469103@ubuntu-n2-xlarge-x86>
+ <20200911111158.GF1551@shell.armlinux.org.uk>
+ <20200911082236.7dfb7937@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c7159988-c052-0a5c-8b6b-670fd16be1ac@gmail.com>
+In-Reply-To: <20200911082236.7dfb7937@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Sep 08, 2020 at 09:02:33AM -0600, David Ahern wrote:
-> On 9/8/20 3:10 AM, Ido Schimmel wrote:
-> > From: Ido Schimmel <idosch@nvidia.com>
+On Fri, Sep 11, 2020 at 08:22:36AM -0700, Jakub Kicinski wrote:
+> On Fri, 11 Sep 2020 12:11:58 +0100 Russell King - ARM Linux admin wrote:
+> > On Thu, Sep 10, 2020 at 05:31:42PM -0700, Nathan Chancellor wrote:
+> > > Ah great, that is indeed cleaner, thank you for letting me know!  
 > > 
-> > The flag indicates to user space that the nexthop is not programmed to
-> > forward packets in hardware, but rather to trap them.
+> > Hmm, I'm not sure why gcc didn't find that. Strangely, the 0-day bot
+> > seems to have only picked up on it with clang, not gcc.
 > 
-> please elaborate in the commit message on what 'trap' is doing. I most
-> likely will forget a few years from now.
-
-Reworded to:
-
-"
-rtnetlink: Add RTNH_F_TRAP flag
-
-The flag indicates to user space that the nexthop is not programmed to
-forward packets in hardware, but rather to trap them to the CPU. This is
-needed, for example, when the MAC of the nexthop neighbour is not
-resolved and packets should reach the CPU to trigger neighbour
-resolution.
-
-The flag will be used in subsequent patches by netdevsim to test nexthop
-objects programming to device drivers and in the future by mlxsw as
-well.
-
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
-"
-
+> May be similar to: https://lkml.org/lkml/2019/2/25/1092
 > 
-> > 
-> > The flag will be used in subsequent patches by netdevsim to test nexthop
-> > objects programming to device drivers and in the future by mlxsw as
-> > well.
-> > 
-> > Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> > ---
-> >  include/uapi/linux/rtnetlink.h | 6 ++++--
-> >  net/ipv4/fib_semantics.c       | 2 ++
-> >  2 files changed, 6 insertions(+), 2 deletions(-)
-> > 
-> 
-> Reviewed-by: David Ahern <dsahern@gmail.com>
+> Recent GCC is so bad at catching uninitialized vars I was considering
+> build testing with GCC8 :/
+
+It is even simpler than that, the warning was straight up disabled in
+commit 78a5255ffb6a ("Stop the ad-hoc games with -Wno-maybe-initialized").
+
+clang's -Wuninitialized and -Wsometimes-uninitialized are generally more
+accurate but can have some false positives because the semantic analysis
+phase happens before inlining and dead code elimination.
+
+Cheers,
+Nathan
