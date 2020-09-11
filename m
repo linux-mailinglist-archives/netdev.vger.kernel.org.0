@@ -2,90 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9387265941
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 08:23:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49726265965
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 08:33:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725790AbgIKGW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 02:22:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37286 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725774AbgIKGWw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 02:22:52 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 01DD9221EB;
-        Fri, 11 Sep 2020 06:22:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599805371;
-        bh=RXWz2Q1kkAl4t00VZDK+YTtnXoO2Y+/66lxmxxsMQhY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=d/wbDJJaqA683iXRRzUutNDqI+TBYUQu/Cx46nW3PUvamh396/LrtCPG7EskSRy9k
-         +WCF+UDKjE8AV++aynqOB/t0am8taizadhf75qKRNWFxddmopzZ9L8wos47Fl248VB
-         dTPAxsmByxsxBNZMihhuE0U9zc6Mwm5qEYWgwDCE=
-Date:   Fri, 11 Sep 2020 08:22:47 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Oded Gabbay <oded.gabbay@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 00/15] Adding GAUDI NIC code to habanalabs driver
-Message-ID: <20200911062247.GB554610@kroah.com>
-References: <20200910161126.30948-1-oded.gabbay@gmail.com>
- <20200910130112.1f6bd9e9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAFCwf13SbXqjyu6JHKSTf-EqUxcBZUe4iAfggLhKXOi6DhXYcg@mail.gmail.com>
- <20200910202513.GH3354160@lunn.ch>
- <CAFCwf11P7pEJ+Av9oiwdQFor5Kh9JeKvVTBXnMzWusKCRz7mHw@mail.gmail.com>
- <20200910203848.GJ3354160@lunn.ch>
+        id S1725730AbgIKGdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 02:33:09 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:38523 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725468AbgIKGdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 02:33:08 -0400
+Received: by mail-ot1-f67.google.com with SMTP id y5so7482118otg.5;
+        Thu, 10 Sep 2020 23:33:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ndHZtUig8ulrxjgOeUro9f64fpE4pGFrMYQ9ez5zwFQ=;
+        b=uDG2mh81U21qPOKyiCzeRDeSkqmms65goCMMH+MXHmRUKDHGZ/vxudO3aG6nU3Y5Lx
+         GKzdEXs1nG08VORRHFAlQQlfoVy+5SEjcn3HJxmW3ciK+G70MYNK3FOfK1prui+sindV
+         gLd81nIMKlbRU4NrALrOCWPOpy50YTvmCzW98HubaVZRy3R3RXPTGUQ8ku9hagWEkOLB
+         xdbketmDxO8T+pHldyLl5+yLJLQfgMUucdIA35+/vr1pFkM2KWexeNSD+V1Ikhj9BZWv
+         sMVeP9XiF6l9o7BIMOlyQria0s6McaQpnegBnt4BSLE16xTFlQ04+5Tzop4Bmb4E9xvy
+         0HNQ==
+X-Gm-Message-State: AOAM533lHedLKEJybjBbC8L08p8PF+imiXWfR+44Nc6SCwiyL8CEh0v7
+        32Is0w/W297UifA4y4ZGCxnZNUgRibsUa3kestU=
+X-Google-Smtp-Source: ABdhPJwghuBHHEAEWXlncSr8HbCkHqF7bKQqn9MVNGr3uUay9GA+br1Kd2Nj/NlgO8YM52xavFWlurhfN1+q1qU65hg=
+X-Received: by 2002:a9d:5a92:: with SMTP id w18mr294713oth.145.1599805987300;
+ Thu, 10 Sep 2020 23:33:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200910203848.GJ3354160@lunn.ch>
+References: <20200901150237.15302-1-geert+renesas@glider.be> <20200910.122033.2205909020498878557.davem@davemloft.net>
+In-Reply-To: <20200910.122033.2205909020498878557.davem@davemloft.net>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 11 Sep 2020 08:32:55 +0200
+Message-ID: <CAMuHMdUd4VtpOGr26KAmF22N32obNqQzq3tbcPxLJ7mxUtSyrg@mail.gmail.com>
+Subject: Re: [PATCH] Revert "net: linkwatch: add check for netdevice being
+ present to linkwatch_do_dev"
+To:     David Miller <davem@davemloft.net>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Gaku Inami <gaku.inami.xh@renesas.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 10:38:48PM +0200, Andrew Lunn wrote:
-> On Thu, Sep 10, 2020 at 11:30:33PM +0300, Oded Gabbay wrote:
-> > On Thu, Sep 10, 2020 at 11:25 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > > Can you please elaborate on how to do this with a single driver that
-> > > > is already in misc ?
-> > > > As I mentioned in the cover letter, we are not developing a
-> > > > stand-alone NIC. We have a deep-learning accelerator with a NIC
-> > > > interface.
-> > >
-> > > This sounds like an MFD.
-> > >
-> > >      Andrew
-> > 
-> > Yes and no. There is only one functionality - training of deep
-> > learning (Accelerating compute operations) :)
-> > The rdma is just our method of scaling-out - our method of
-> > intra-connection between GAUDI devices (similar to NVlink or AMD
-> > crossfire).
-> > So the H/W exposes a single physical function at the PCI level. And
-> > thus Linux can call a single driver for it during the PCI probe.
-> 
-> Yes, it probes the MFD driver. The MFD driver then creates platform
-> drivers for the sub functions. i.e. it would create an Ethernet
-> platform driver. That then gets probed in the usual way. The child
-> device can get access to the parent device, if it needs to share
-> things, e.g. a device on a bus. This is typically I2C or SPI, but
-> there is no reason it cannot be a PCI device.
-> 
-> Go look in drivers/mfd.
+Hi David,
 
-Why do we keep going down this path each time this comes up...
+On Thu, Sep 10, 2020 at 9:20 PM David Miller <davem@davemloft.net> wrote:
+> From: Geert Uytterhoeven <geert+renesas@glider.be>
+> Date: Tue,  1 Sep 2020 17:02:37 +0200
+>
+> > This reverts commit 124eee3f6955f7aa19b9e6ff5c9b6d37cb3d1e2c.
+> >
+> > Inami-san reported that this commit breaks bridge support in a Xen
+> > environment, and that reverting it fixes this.
+> >
+> > During system resume, bridge ports are no longer enabled, as that relies
+> > on the receipt of the NETDEV_CHANGE notification.  This notification is
+> > not sent, as netdev_state_change() is no longer called.
+> >
+> > Note that the condition this commit intended to fix never existed
+> > upstream, as the patch triggering it and referenced in the commit was
+> > never applied upstream.  Hence I can confirm s2ram on r8a73a4/ape6evm
+> > and sh73a0/kzm9g works fine before/after this revert.
+> >
+> > Reported-by Gaku Inami <gaku.inami.xh@renesas.com>
+> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>
+> Maybe you cannot reproduce it, but the problem is there and it still
+> looks very real to me.
+>
+> netdev_state_change() does two things:
+>
+> 1) Emit the NETDEV_CHANGE notification
+>
+> 2) Emit an rtmsg_ifinfo() netlink message, which in turn tries to access
+>    the device statistics via ->ndo_get_stats*().
+>
+> It is absolutely wrong to do #2 when netif_device_present() is false.
+>
+> So I cannot apply this patch as-is, sorry.
 
-No, mfd doesn't work for this case, but the "virtual bus" that gets
-posted ever once in a while would solve this issue.  Hopefully one day
-the Intel developers will wake up and post it again here so that we can
-review it and hopefully merge it to solve this very common problem...
+Thanks a lot for looking into this!
 
-thanks,
+But doing #1 is still safe?  That is the part that calls into the bridge
+code.  So would moving the netif_device_present() check from
+linkwatch_do_dev() to netdev_state_change(), to prevent doing #2, be
+acceptable?
 
-greg k-h
+Thanks again!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
