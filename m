@@ -2,94 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 485C126629A
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 17:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8E42662BD
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 17:59:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbgIKPy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 11:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38012 "EHLO
+        id S1726516AbgIKP74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 11:59:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726214AbgIKPyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:54:06 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EC6C061756
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 08:54:06 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id b17so9444147ilh.4
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 08:54:06 -0700 (PDT)
+        with ESMTP id S1726575AbgIKP4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 11:56:31 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CA7C061756
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 08:56:31 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id z2so8182891qtv.12
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 08:56:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7FID5GSCfROt20gZh6958Sr6fTGQul8Xvu3FtbdINNA=;
-        b=FwowIc5lQy2ao0cRmOQftG0M72VLMbiUGuO9g3U6b86v7ARJe/SB1NtfCJSo+G9dxV
-         Dt1Xhlqj2zhHb3VhfSWcu6dFJ7Vn611OcNUoMgRmPqFEzTjnLLoGHduFpNKx6sGhsJOA
-         sasTlHRw3ZFVFpeDi7wlUYVn4AhPvZCdYwAnut+JkwwTRJoVeHx2g+jvD3OuKWleuKUO
-         pb8xeqHf+1qor840tk0qFi29NYKJymP5hHZspXj8EHFep9bjMrfWFc6x864VnVG05G8b
-         J4xJVvytz73cP8fKH2sOjgZW0x4YmD8eHpAJ4Utq5kzxlWFcMZa2mgi2TI5S++SoJ0GH
-         sRdg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HB1wLkJBUPBITqr249AFzq+PR4Y7nrQ2PRnzX2SICNU=;
+        b=q6mTZynvnuOIdXFxtOD49r+38vJ9B5saRc3IwrULNNlQw4i2QImBldf6kJg536NWqQ
+         GuKZ/xQg/z2eqdHj+zDrvIhQNnmNLfLw8ECIGw+EwdIEgxnu0xezOYq9N/7fndQWfmag
+         6k+kkjfPeDFhTJC/hptFfjQQV38r2owSheIlqMRlvKQ+bcAIVgYNuNe9Bvzi1nbxTduG
+         /u4KOemjjBSZk5dPMYz7NCp2aWO/jA58SA8yHuUSzGtFHCHJ0/7X5MYTKzb3Ks50byML
+         85feoiOX3GWXU03Gi6PcPD2H0JbSQvT5ljbgA+baUamBozteFMGwONWP3fwYRozpHxCy
+         Ojpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7FID5GSCfROt20gZh6958Sr6fTGQul8Xvu3FtbdINNA=;
-        b=ZL+ilHtdvzme9tQnK/qT7X+2jMSfYtRaRtoJlNtOXKod4tvnrCy44prJcgGM7GQ5LD
-         HPtrVKF15c272lktewG4IhunhJeOOgAQeJqG6Eek4I8QwKGe0C43wI9ht77EiSa+1NAU
-         97xTfxRV57coVAi3Yj89mNw7V9IUUC4CK6It0tMCMTZ7ZIPXuuKoouEmjFiHoGgoDYlj
-         t4MA7rrcLuUB93cAhaGYAUduSYl8H0RCanUKjyYO2y9Ps6/oB1Wgx2Hvr1pUvEaIv2JV
-         ZDax+u0gvUtPJ7xe9IeRRYjqiApTFQ/v9/qlLZ//6zP5oUCN+b+b/fTAaO6JLgBlh/yH
-         3lBA==
-X-Gm-Message-State: AOAM531d2Tbc38J/tenlD5mKrToV9mX0mZPsHvVp7l7opBC85Y6GnKDV
-        CTfhcEgB5LYBZIBjfJejGGo=
-X-Google-Smtp-Source: ABdhPJzzJOjicMjqGEu4t8DCPH5QUK+kexE3KExXhVwF76Ncg2dGQWFdGdBjKz32Kzu9AyVsxjbnqw==
-X-Received: by 2002:a92:9145:: with SMTP id t66mr2238642ild.305.1599839645754;
-        Fri, 11 Sep 2020 08:54:05 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:e8e2:f0c7:a280:c32c])
-        by smtp.googlemail.com with ESMTPSA id i10sm1275627ioi.39.2020.09.11.08.54.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Sep 2020 08:54:05 -0700 (PDT)
-Subject: Re: [RFC PATCH net-next 09/22] rtnetlink: Add RTNH_F_TRAP flag
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        roopa@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-References: <20200908091037.2709823-1-idosch@idosch.org>
- <20200908091037.2709823-10-idosch@idosch.org>
- <c7159988-c052-0a5c-8b6b-670fd16be1ac@gmail.com>
- <20200911152601.GE3160975@shredder>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5a371baa-f16f-16c6-e0f2-da2307e578ce@gmail.com>
-Date:   Fri, 11 Sep 2020 09:54:04 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HB1wLkJBUPBITqr249AFzq+PR4Y7nrQ2PRnzX2SICNU=;
+        b=L6uvyQYuomvoVbHPA1aV3okW8d/uYZr4Xb8UpMYV0wt26XMdnIFL4bHM8jI2dRXKTM
+         l6X5Xwe1xlymoQlVnLWVh5L9444duIcbzLjc2R4pK7Y5GcEEjfpL0tfsprtveOLtKaDH
+         Zajrlv0KJZKJ3c4tjDLJ5lYmGPuMy9OYITEmeQAa7txjVDDqJJYi3lHbPg++Bnp+OEf8
+         XOeo0TkcFkqlBkhCsCtGDuDXjFKmZPfZp6g96SnnS+3oEurDlJ0sQiaetG4Rv56NAARn
+         +FFi+p5tXnYPaxEihVooM+/HwoCWIboK5sqjj0nTNsxDxQVGiTLXGkdGJpnSWZlhCCbw
+         8j9w==
+X-Gm-Message-State: AOAM530oux0X8/lMrAg31q4R4F3RStsTHMTUU9Ma7wU0XLFeX6T6deAB
+        BthJ+azXq3zsPm9Kk+yk0RrxE48yayF61CAjRrp31Q==
+X-Google-Smtp-Source: ABdhPJwX6e9cju+FL0v94+Z0/0T0ORtkFdzm5HvbrtkrybQyiKcZ93D1C9S02/CEAgsWDiMYufPy6anpHcb8ShTao1Q=
+X-Received: by 2002:ac8:4784:: with SMTP id k4mr2595978qtq.266.1599839790431;
+ Fri, 11 Sep 2020 08:56:30 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200911152601.GE3160975@shredder>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200909182406.3147878-1-sdf@google.com> <20200909182406.3147878-5-sdf@google.com>
+ <CAEf4BzaWxnm_X=nZWn0tcq7bMnbL8ZFDuU=qzMNDh_aSAayXsA@mail.gmail.com>
+In-Reply-To: <CAEf4BzaWxnm_X=nZWn0tcq7bMnbL8ZFDuU=qzMNDh_aSAayXsA@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 11 Sep 2020 08:56:19 -0700
+Message-ID: <CAKH8qBtiMh1evaQ-CQ83nESSS2UQLCM7avydoXvqY6aM+GHwDw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 4/5] bpftool: support dumping metadata
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        YiFei Zhu <zhuyifei1999@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/11/20 9:26 AM, Ido Schimmel wrote:
-> Reworded to:
-> 
-> "
-> rtnetlink: Add RTNH_F_TRAP flag
-> 
-> The flag indicates to user space that the nexthop is not programmed to
-> forward packets in hardware, but rather to trap them to the CPU. This is
-> needed, for example, when the MAC of the nexthop neighbour is not
-> resolved and packets should reach the CPU to trigger neighbour
-> resolution.
-> 
-> The flag will be used in subsequent patches by netdevsim to test nexthop
-> objects programming to device drivers and in the future by mlxsw as
-> well.
-> 
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> Reviewed-by: David Ahern <dsahern@gmail.com>
-> "
+On Thu, Sep 10, 2020 at 12:54 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Sep 9, 2020 at 11:25 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> > index f7923414a052..ca264dc22434 100644
+> > --- a/tools/bpf/bpftool/prog.c
+> > +++ b/tools/bpf/bpftool/prog.c
+> > @@ -29,6 +29,9 @@
+> >  #include "main.h"
+> >  #include "xlated_dumper.h"
+> >
+> > +#define BPF_METADATA_PREFIX "bpf_metadata_"
+> > +#define BPF_METADATA_PREFIX_LEN strlen(BPF_METADATA_PREFIX)
+>
+> this is a runtime check, why not (sizeof(BPF_METADATA_PREFIX) - 1) instead?
+Make sense, will fix.
 
-works for me. thanks
+> > +static int bpf_prog_find_metadata(int prog_fd, int *map_id)
+> > ...
+> > +free_map_ids:
+> > +       saved_errno = errno;
+> > +       free(map_ids);
+> > +       errno = saved_errno;
+>
+> not clear why all this fussing with saving/restoring errno and then
+> just returning 0 or -1? Just return -ENOMEM or -ENOENT as a result of
+> this function?
+Yeah, I just moved this function from it's original (libbpf) location as is.
+I guess it makes sense to simplify the error handling now that
+it's not in exported from libbpf.
+
+> > +       if (bpf_map_lookup_elem(map_fd, &key, value))
+> > +               goto out_free;
+> > +
+> > +       err = btf__get_from_id(map_info.btf_id, &btf);
+> > +       if (err || !btf)
+> > +               goto out_free;
+>
+> if you make bpf_prog_find_metadata() to do this value lookup and pass
+> &info, it would probably make bpf_prog_find_metadata a bit more
+> usable? You'll just need to ensure that callers free allocated memory.
+> Then show_prog_metadata() would take care of processing BTF info.
+Sounds reasonable. I can maybe keep existing
+bpf_prog_find_metadata (rename to bpf_prog_find_metadata_map_id?)
+and add another wrapper that does that map lookup.
