@@ -2,121 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A866F265AF5
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 09:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E702A265B1B
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 10:06:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725791AbgIKH6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 03:58:49 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41242 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725468AbgIKH6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 03:58:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1599811122;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XErkIQ5mdeKAcHJcnRXSH+TaJIkkP4+grW1KLUdXd9A=;
-        b=AqhGXLBiYiHnq3l//bETnl+EK1zNg/T0d2Ag4UWTK7YvMjAQK3TQcofKjgNnCGI+MFmWob
-        5l/99So7x/d4kNePF/9wBvL6KlRf/QSpmqNktyYXxiTLARc8H54OEL8FSL7HwgO9Cvisij
-        t+GE8Wj19Pi8800D6Tt9Z5iJL2AFO+Q=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-497-o5ppQwdiOJWTSU3wDVbcig-1; Fri, 11 Sep 2020 03:58:36 -0400
-X-MC-Unique: o5ppQwdiOJWTSU3wDVbcig-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1725892AbgIKIGJ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Sep 2020 04:06:09 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:40184 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725601AbgIKIGG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Sep 2020 04:06:06 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 448AE20082;
+        Fri, 11 Sep 2020 10:06:03 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id YDxr-tDcqUn9; Fri, 11 Sep 2020 10:06:02 +0200 (CEST)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AF9A81007B01;
-        Fri, 11 Sep 2020 07:58:34 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.42])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E2A6275121;
-        Fri, 11 Sep 2020 07:58:21 +0000 (UTC)
-Date:   Fri, 11 Sep 2020 09:58:20 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>, brouer@redhat.com
-Subject: Re: [PATCHv11 bpf-next 2/5] xdp: add a new helper for dev map
- multicast support
-Message-ID: <20200911095820.304d9877@carbon>
-In-Reply-To: <47566856-75e2-8f2b-4347-f03a7cb5493b@gmail.com>
-References: <20200903102701.3913258-1-liuhangbin@gmail.com>
-        <20200907082724.1721685-1-liuhangbin@gmail.com>
-        <20200907082724.1721685-3-liuhangbin@gmail.com>
-        <20200909215206.bg62lvbvkmdc5phf@ast-mbp.dhcp.thefacebook.com>
-        <20200910023506.GT2531@dhcp-12-153.nay.redhat.com>
-        <a1bcd5e8-89dd-0eca-f779-ac345b24661e@gmail.com>
-        <CAADnVQ+CooPL7Zu4Y-AJZajb47QwNZJU_rH7A3GSbV8JgA4AcQ@mail.gmail.com>
-        <87o8mearu5.fsf@toke.dk>
-        <20200910195014.13ff24e4@carbon>
-        <47566856-75e2-8f2b-4347-f03a7cb5493b@gmail.com>
+        by a.mx.secunet.com (Postfix) with ESMTPS id 0C69D20512;
+        Fri, 11 Sep 2020 10:06:02 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Fri, 11 Sep 2020 10:06:01 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Fri, 11 Sep
+ 2020 10:06:01 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 5B18C3184344;
+ Fri, 11 Sep 2020 10:06:01 +0200 (CEST)
+Date:   Fri, 11 Sep 2020 10:06:01 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Dmitry Vyukov <dvyukov@google.com>
+CC:     B K Karthik <bkkarthik@pesu.pes.edu>,
+        syzbot <syzbot+72ff2fa98097767b5a27@syzkaller.appspotmail.com>,
+        Anant Thazhemadam <anant.thazhemadam@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Alexey Kuznetsov" <kuznet@ms2.inr.ac.ru>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: Re: KASAN: use-after-free Read in __xfrm6_tunnel_spi_lookup
+Message-ID: <20200911080601.GQ20687@gauss3.secunet.de>
+References: <000000000000059b7205aa7f906f@google.com>
+ <00000000000026751605aa857914@google.com>
+ <CACT4Y+bUK4icp1TMfhWOj=vEXULbiUQ84RXYaKnB=3J_N3wZCQ@mail.gmail.com>
+ <CAAhDqq0qcnMKdaoRnaGM6G8H1U7SAmTvX=hgEoor1=_eJff-Vw@mail.gmail.com>
+ <CACT4Y+ZktT1S1oi5t+s7rrSH_dLEhyzygXdNUs7pkVPuanPXYg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <CACT4Y+ZktT1S1oi5t+s7rrSH_dLEhyzygXdNUs7pkVPuanPXYg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 10 Sep 2020 12:35:33 -0600
-David Ahern <dsahern@gmail.com> wrote:
-
-> On 9/10/20 11:50 AM, Jesper Dangaard Brouer wrote:
-> > Maybe we should change the devmap-prog approach, and run this on the
-> > xdp_frame's (in bq_xmit_all() to be precise) .  Hangbin's patchset
-> > clearly shows that we need this "layer" between running the xdp_prog and
-> > the devmap-prog.   
+On Thu, Sep 10, 2020 at 10:09:50AM +0200, Dmitry Vyukov wrote:
+> On Thu, Sep 10, 2020 at 10:08 AM B K Karthik <bkkarthik@pesu.pes.edu> wrote:
+> >
+> > On Thu, Sep 10, 2020 at 1:32 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+> > >
+> > > On Thu, Sep 10, 2020 at 9:20 AM Anant Thazhemadam
+> > > <anant.thazhemadam@gmail.com> wrote:
+> > > > Looks like this bug is no longer valid. I'm not sure which commit seems to have fixed it. Can this be marked as invalid or closed yet?
+> > >
+> > > You can see on the dashboard (or in mailing list archives) that B K
+> > > Karthik tested a patch for this bug in July:
+> > > https://syzkaller.appspot.com/bug?extid=72ff2fa98097767b5a27
+> > >
+> > > So perhaps that patch fixes it? Karthik, did you send it? Was it
+> > > merged? Did the commit include the syzbot Reported-by tag?
+> > >
+> >
+> > I did send it. I was taking a u32 spi value and casting it to a
+> > pointer to an IP address. Steffen Klassert
+> > <steffen.klassert@secunet.com> pointed out to me that the approach i
+> > was looking at was completely wrong.
+> > https://lkml.org/lkml/2020/7/27/361 is the conversation. hope this
+> > helps.
 > 
-> I would prefer to leave it in dev_map_enqueue.
-> 
-> The main premise at the moment is that the program attached to the
-> DEVMAP entry is an ACL specific to that dev. If the program is going to
-> drop the packet, then no sense queueing it.
-> 
-> I also expect a follow on feature will be useful to allow the DEVMAP
-> program to do another REDIRECT (e.g., potentially after modifying). It
-> is not handled at the moment as it needs thought - e.g., limiting the
-> number of iterative redirects. If such a feature does happen, then no
-> sense queueing it to the current device.
+> +Steffen, was there any other fix merged for this?
 
-It makes a lot of sense to do queuing before redirecting again.  The
-(hidden) bulking we do at XDP redirect is the primary reason for the
-performance boost. We all remember performance difference between
-non-map version of redirect (which Toke fixed via always having the
-bulking available in net_device->xdp_bulkq).
-
-In a simple micro-benchmark I bet it will look better running the
-devmap-prog right after the xdp_prog (which is what we have today). But
-I claim this is the wrong approach, as soon as (1) traffic is more
-intermixed, and (2) devmap-prog gets bigger and becomes more specific
-to the egress-device (e.g. BPF update constants per egress-device).
-When this happens performance suffers, as I-cache and data-access to
-each egress-device gets pushed out of cache. (Hint VPP/fd.io approach)
-
-Queuing xdp_frames up for your devmap-prog makes sense, as these share
-common properties.  With intermix traffic the first xdp_prog will sort
-packets into egress-devices, and then the devmap-prog can operate on
-these.  The best illustration[1] of this sorting I saw in a Netflix
-blogpost[2] about FreeBSD, section "RSS Assisted LRO" (not directly
-related, but illustration was good).
-
-
-[1] https://miro.medium.com/max/700/1%2alTGL1_D6hTMEMa7EDV8yZA.png
-[2] https://netflixtechblog.com/serving-100-gbps-from-an-open-connect-appliance-cdb51dda3b99
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+I think that was already fixed before the sysbot report came in by
+commit 8b404f46dd6a ("xfrm: interface: not xfrmi_ipv6/ipip_handler twice")
