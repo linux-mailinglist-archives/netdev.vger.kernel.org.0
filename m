@@ -2,113 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 100792658F6
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 07:54:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 065712658FA
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 07:57:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725710AbgIKFx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 01:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
+        id S1725771AbgIKF5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 01:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725468AbgIKFxw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 01:53:52 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA31C061573
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 22:53:51 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id m7so6938777oie.0
-        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 22:53:51 -0700 (PDT)
+        with ESMTP id S1725446AbgIKF5E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 01:57:04 -0400
+Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B6BC061573;
+        Thu, 10 Sep 2020 22:57:03 -0700 (PDT)
+Received: by mail-ot1-x344.google.com with SMTP id u25so7422291otq.6;
+        Thu, 10 Sep 2020 22:57:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XFCN/rKe4bMqEFjiiLTtEHRCJj9MQsZ19jltg/H+fQ4=;
-        b=cU4tqbgqGb0fEEkC7uOWWDzoTG+CN0DuyXKMxbcbuAZqsJjfZClbLNKXrmDFImIr90
-         A9SP5Yda9tzwVmXJ9C9pMV22LNaMafL87XcNb5mA6nbQEcdh+Pf0Wyvf9QUOS1fdX5Cw
-         1Wep+fUHN1Bnsx5Qn+BCoiyKryWXVeoFfdyvuROIWnuo/DuyNo7zKvKGMXbRYDxNvobf
-         mczucf+OZEujWqbZL16ZepshGvi9gNK3p/p7N6rFSuvwws4bUZC93RJ89XFoELryXoGm
-         lm9C8OttmYpf2GkbD8SD56LYA/1Q5O8xt3YiwghVM/kN5MRwNtGtHGFp1vA+HJe9lFb2
-         Vppg==
+        bh=bXRDcpcdk/Mv5GNEux60X8UU9ajHOjMM0sdDWglatzg=;
+        b=Jzm76A5J/d1K96oMaHeTblKjAR7NYcEU5JmyKqGN9TfouTYNAkZH9bYa4o4dSvuvGl
+         vVTb3FWIRo1E/kicwmEyTW49kQeGF56csdG9I60QXBWjZZUo8JV+3W4+yIE2xw9arWbV
+         6LEwfObp38nOgKLo2gc473gb+QeI21sPdfrB9Ky+cJY8ttK02BHNM9xg14W1/cX3W/tV
+         CnVt225QGFltT7CtUNX2p0bn7FLAyfYpvdLgHjkLRaVuqsYoutPzHQSD0HAMXYxb2ZwI
+         paPAE7jqIImE/1RQNc+GALcruF18UBi1TX8NsB0Mq0WwM+Tti2Wt4jTNSy5i/JV1l9Lc
+         YpJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XFCN/rKe4bMqEFjiiLTtEHRCJj9MQsZ19jltg/H+fQ4=;
-        b=CEhq9s8/TsTyUc5FbkZvYd9q4QXBKOSWtV4s6LwjVuEf1GPogfEEooaZJlfjGh9qVC
-         VkZcF9ZERTpZvsPxEM3YbKtpDnxuAUYPfuT9N0F9TYELasqSpbg7F/csJXed5AeeuUuJ
-         y2KuoXi7XBS3yrqCkSiiKmBgH4wHQb7zzrSN4Y5tQyjbo8ZgC7ySfUtBF8KGsX1H8Xt3
-         O4YiCiev5Fba1/+eju5r0gNL9h2ldzmL5aJA0EGA6iiNx8NGZ7cGmnG7LK283xqL1o7I
-         /9v7Q1OJ58Ep47RdVfPHXANl7tBlf0tqkNPyoO15HS+NMJLwoE6l/EuMVIiHe/K4qFhu
-         WYJQ==
-X-Gm-Message-State: AOAM5300ozTK4YRYDcb6n9SSlNzwpOVTWtIe9FqTJHWn9K20p9j6P2Lk
-        hgASMXI+p9O9YVfcEnxYXCp3C16fr94Fg8+xDaM=
-X-Google-Smtp-Source: ABdhPJyMLmG3C2wkKGLNgnG3ZcpVC9P0+WFucTFUNbS+xI7sVK15sjQmlBS9LEtORCBr0t5/p44ahYzTBhwqTFXoy0w=
-X-Received: by 2002:aca:c50b:: with SMTP id v11mr343269oif.76.1599803630949;
- Thu, 10 Sep 2020 22:53:50 -0700 (PDT)
+        bh=bXRDcpcdk/Mv5GNEux60X8UU9ajHOjMM0sdDWglatzg=;
+        b=EvysNWDEBcioW5bcXySpbPbIqdG3aqS1eK3+KlPhLJGEAX5kfo09aQLOzMYSbWgDzW
+         IqfKKA/6XuUyB/XwGGGDEq8zPLvfwiTUjaslYpoAMX09CV4tKoEOYhBqSu71e0mcKR18
+         zB9dfGSEMGc5j9Ipen8j8++fkyCTM2VNpd0fhLK0OhQnfmEZChgsfWHBSkN2Po/v/fkU
+         W43o4LyEPCcnYsyOdMBnie1bqUlWZvGC4pa8d57ifd8InzNR/3JSEY6NvL9BXInlAgue
+         LdymfVwpsiwzpDFZ2J7wwJYJYbSIfacfuVoiBfXJHaeYIpzXL/uV7+JLFQNxJ90IyAVc
+         2pKg==
+X-Gm-Message-State: AOAM533/3iLsyXwU6jcZbkickGGgB+3Ody/5NouZbvJty80w52gxlI8g
+        d5toZAiqTTJCS4C432+98pqvIfKR1rIHRJ6+/9M=
+X-Google-Smtp-Source: ABdhPJwZlCcBfE23ZIWj4B9Fbnh0ADcF5CcKkBnr4rjFillgbSG1GAfMsJ8VnQfF5J6jUdkURyR45XlLMBnhmHTGTB4=
+X-Received: by 2002:a05:6830:2246:: with SMTP id t6mr242842otd.264.1599803823245;
+ Thu, 10 Sep 2020 22:57:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200909084510.648706-2-allen.lkml@gmail.com> <20200909.110956.600909796407174509.davem@davemloft.net>
- <CAOMdWSKQxbKzo6z9BBO=0HPCxSs1nt8ArAe5zi_X5cPQhtnUVA@mail.gmail.com> <20200909.143324.405366987951760976.davem@davemloft.net>
-In-Reply-To: <20200909.143324.405366987951760976.davem@davemloft.net>
+References: <20200817084614.24263-1-allen.cryptic@gmail.com>
+In-Reply-To: <20200817084614.24263-1-allen.cryptic@gmail.com>
 From:   Allen <allen.lkml@gmail.com>
-Date:   Fri, 11 Sep 2020 11:23:39 +0530
-Message-ID: <CAOMdWSKgpfk=VvCYLjouAVC7Z9fFrh-bCHs0phJrjBgLenVpfw@mail.gmail.com>
-Subject: Re: [PATCH v2 01/20] ethernet: alteon: convert tasklets to use new
- tasklet_setup() API
+Date:   Fri, 11 Sep 2020 11:26:52 +0530
+Message-ID: <CAOMdWSJohOLK023ZM-yTnZiNHdy2TfyyWV3+iuuQiALiYV2NLQ@mail.gmail.com>
+Subject: Re: [PATCH 0/8] drivers: net: convert tasklets to use new tasklet_setup()
 To:     David Miller <davem@davemloft.net>
-Cc:     jes@trained-monkey.org, Jakub Kicinski <kuba@kernel.org>,
-        dougmill@linux.ibm.com, cooldavid@cooldavid.org,
-        mlindner@marvell.com, stephen@networkplumber.org,
-        borisp@mellanox.com, netdev@vger.kernel.org,
-        Romain Perier <romain.perier@gmail.com>
+Cc:     m.grzeschik@pengutronix.de, paulus@samba.org, oliver@neukum.org,
+        woojung.huh@microchip.com, petkan@nucleusys.com,
+        Kees Cook <keescook@chromium.org>, netdev@vger.kernel.org,
+        linux-ppp@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-usb@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+David,
 >
-> >>
-> >> > @@ -1562,10 +1562,11 @@ static void ace_watchdog(struct net_device *data, unsigned int txqueue)
-> >> >  }
-> >> >
-> >> >
-> >> > -static void ace_tasklet(unsigned long arg)
-> >> > +static void ace_tasklet(struct tasklet_struct *t)
-> >> >  {
-> >> > -     struct net_device *dev = (struct net_device *) arg;
-> >> > -     struct ace_private *ap = netdev_priv(dev);
-> >> > +     struct ace_private *ap = from_tasklet(ap, t, ace_tasklet);
-> >> > +     struct net_device *dev = (struct net_device *)((char *)ap -
-> >> > +                             ALIGN(sizeof(struct net_device), NETDEV_ALIGN));
-> >> >       int cur_size;
-> >> >
-> >>
-> >> I don't see this is as an improvement.  The 'dev' assignment looks so
-> >> incredibly fragile and exposes so many internal details about netdev
-> >> object allocation, alignment, and layout.
-> >>
-> >> Who is going to find and fix this if someone changes how netdev object
-> >> allocation works?
-> >>
-> >
-> > Thanks for pointing it out. I'll see if I can fix it to keep it simple.
+> Commit 12cc923f1ccc ("tasklet: Introduce new initialization API")'
+> introduced a new tasklet initialization API. This series converts
+> all the net/* drivers to use the new tasklet_setup() API
 >
-> Just add a backpointer to the netdev from the netdev_priv() if you
-> absolutely have too.
+> Allen Pais (8):
+>   net: dccp: convert tasklets to use new tasklet_setup() API
+>   net: ipv4: convert tasklets to use new tasklet_setup() API
+>   net: mac80211: convert tasklets to use new tasklet_setup() API
+>   net: mac802154: convert tasklets to use new tasklet_setup() API
+>   net: rds: convert tasklets to use new tasklet_setup() API
+>   net: sched: convert tasklets to use new tasklet_setup() API
+>   net: smc: convert tasklets to use new tasklet_setup() API
+>   net: xfrm: convert tasklets to use new tasklet_setup() API
 >
-
-Okay.
-
-> >> I don't want to apply this, it sets a very bad precedent.  The existing
-> >> code is so much cleaner and easier to understand and audit.
-> >
-> > Will you pick the rest of the patches or would they have to wait till
-> > this one is
-> > fixed.
+>  net/dccp/timer.c           | 10 +++++-----
+>  net/ipv4/tcp_output.c      |  8 +++-----
+>  net/mac80211/ieee80211_i.h |  4 ++--
+>  net/mac80211/main.c        | 14 +++++---------
+>  net/mac80211/tx.c          |  5 +++--
+>  net/mac80211/util.c        |  5 +++--
+>  net/mac802154/main.c       |  8 +++-----
+>  net/rds/ib_cm.c            | 14 ++++++--------
+>  net/sched/sch_atm.c        |  9 +++++----
+>  net/smc/smc_cdc.c          |  6 +++---
+>  net/smc/smc_wr.c           | 14 ++++++--------
+>  net/xfrm/xfrm_input.c      |  7 +++----
+>  12 files changed, 47 insertions(+), 57 deletions(-)
 >
-> I never pick up a partial series, ever.  So yes you will have to fix these
-> two patches up and resubmit the entire thing.
+> --
+> 2.17.1
 >
 
-Sure, let me get these fixed up and ready. Thanks.
+Will you pick these up or should I send these out again when I
+have fixed the two patches on the other thread.
+
+Thanks,
+
 
 -- 
        - Allen
