@@ -2,153 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBD4B265973
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 08:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 630F8265999
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 08:51:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725793AbgIKGiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 02:38:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40466 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725497AbgIKGiG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 02:38:06 -0400
-Received: from coco.lan (ip5f5ad5a5.dynamic.kabel-deutschland.de [95.90.213.165])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B3E9A221EB;
-        Fri, 11 Sep 2020 06:38:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599806285;
-        bh=7xtKkhTMP8zlP2NRtWtUkisBFNL9KG8dstYJftmDzeU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=piTeFRX5NswG5r1l+/c/NAUXYkn9kvb1bSJE+If98KzLYFBzqGLfl2D/2DJ6B0YwC
-         A2TSlr9BdQhdp2FqNFDKhkCBu6196HySyNp5fkKfnm254dQqk6pSIk8BKXVWX8WTbj
-         M/XebDfTVTAXOWq9PAjBoH3H4JRDRjUoIrKSIr2o=
-Date:   Fri, 11 Sep 2020 08:38:00 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <andrii.nakryiko@gmail.com>,
-        <kernel-team@fb.com>, Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH bpf] docs/bpf: fix ringbuf documentation
-Message-ID: <20200911083800.2b03fac4@coco.lan>
-In-Reply-To: <20200910225245.2896991-1-andriin@fb.com>
-References: <20200910225245.2896991-1-andriin@fb.com>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1725773AbgIKGu7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 11 Sep 2020 02:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbgIKGu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 02:50:58 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25597C061573
+        for <netdev@vger.kernel.org>; Thu, 10 Sep 2020 23:50:57 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kGctS-0007Mq-QE; Fri, 11 Sep 2020 08:50:46 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kGctN-0005XU-8x; Fri, 11 Sep 2020 08:50:41 +0200
+Date:   Fri, 11 Sep 2020 08:50:41 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Zhang Changzhong <zhangchangzhong@huawei.com>
+Cc:     robin@protonic.nl, linux@rempel-privat.de, kernel@pengutronix.de,
+        socketcan@hartkopp.net, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] can: j1939: j1939_sk_bind(): return failure if
+ netdev is down
+Message-ID: <20200911065041.v4cetsbokqhdmbd4@pengutronix.de>
+References: <1599460308-18770-1-git-send-email-zhangchangzhong@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <1599460308-18770-1-git-send-email-zhangchangzhong@huawei.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 08:47:40 up 300 days, 22:06, 291 users,  load average: 0.00, 0.04,
+ 0.06
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrii,
-
-Em Thu, 10 Sep 2020 15:52:45 -0700
-Andrii Nakryiko <andriin@fb.com> escreveu:
-
-> Remove link to litmus tests that didn't make it to upstream. Fix ringbuf
-> benchmark link.
-
-That work, thanks!
-
-> I wasn't able to test this with `make htmldocs`, unfortunately, because of
-> Sphinx dependencies. 
-
-Weird. "make htmldocs" should be calling ./scripts/sphinx-pre-install, which
-tells what's needed to install Sphinx:
-
-	$ make htmldocs
-	Documentation/Makefile:30: The 'sphinx-build' command was not found. Make sure you have Sphinx installed and in PATH, or set the SPHINXBUILD make variable to point to the full path of the 'sphinx-build' executable.
-
-	Detected OS: Ubuntu 19.10.
-	Warning: It is recommended at least Sphinx version 1.7.9.
-	         If you want pdf, you need at least 2.4.4.
-	Note: It is recommended at least Sphinx version 2.4.4 if you need PDF support.
-		/usr/bin/python3 -m venv sphinx_2.4.4
-		. sphinx_2.4.4/bin/activate
-		pip install -r ./Documentation/sphinx/requirements.txt
-
-By default, it recommends installing LaTeX, as this is needed by some
-books that use LaTeX markup for formulas (and also to make pdfdocs).
-That would require installing lots of things. You can get a lightweight
-dependency chain by calling:
-
-	./scripts/sphinx-pre-install --no-pdf
-
-Please let me know if you find any troubles with that.
-
-> But bench_ringbufs.c path is certainly correct now.
-
-It still produces this warning for bench_ringbufs.c:
-
-	/devel/v4l/docs/Documentation/bpf/ringbuf.rst:194: WARNING: Unknown target name: "bench_ringbufs.c".
-
-That's said, I'm not sure if it is possible to do a cross-reference
-like this:
-
-	tools/testing/selftests/bpf/benchs/bench_ringbufs.c_
-
-The thing is that bench_ringbufs.c won't be at the doc output
-directory (Documentation/output, by default), so Sphinx won't
-be able to solve the reference. 
-
-Maybe it could still be possible to use that without including
-the file at the documentation output dir, but with some extension like:
-
-	https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html
-
-Such extension creates "external" cross-references to some website.
-
-There were some inconclusive discussions about using it at linux-doc ML,
-but nobody so far tested doing it or sent any patches moving toward such
-direction.
-
-Another possibility would be to include bench_ringbufs.c inside
-the documentation book, using kernel-include::, literalinclude:: or
-include:: tags.
-
-Se, for example:
-
-	Documentation/kbuild/issues.rst
-	Documentation/netlabel/draft_ietf.rst
-
-Regards,
-Mauro
-
+On Mon, Sep 07, 2020 at 02:31:48PM +0800, Zhang Changzhong wrote:
+> When a netdev down event occurs after a successful call to
+> j1939_sk_bind(), j1939_netdev_notify() can handle it correctly.
 > 
-> Reported-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> Fixes: 97abb2b39682 ("docs/bpf: Add BPF ring buffer design notes")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> But if the netdev already in down state before calling j1939_sk_bind(),
+> j1939_sk_release() will stay in wait_event_interruptible() blocked
+> forever. Because in this case, j1939_netdev_notify() won't be called and
+> j1939_tp_txtimer() won't call j1939_session_cancel() or other function
+> to clear session for ENETDOWN error, this lead to mismatch of
+> j1939_session_get/put() and jsk->skb_pending will never decrease to
+> zero.
+> 
+> To reproduce it use following commands:
+> 1. ip link add dev vcan0 type vcan
+> 2. j1939acd -r 100,80-120 1122334455667788 vcan0
+> 3. presses ctrl-c and thread will be blocked forever
+> 
+> This patch adds check for ndev->flags in j1939_sk_bind() to avoid this
+> kind of situation and return with -ENETDOWN.
+> 
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
+
+Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+
+Thank you!
+
 > ---
->  Documentation/bpf/ringbuf.rst | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
+>  net/can/j1939/socket.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> diff --git a/Documentation/bpf/ringbuf.rst b/Documentation/bpf/ringbuf.rst
-> index 75f943f0009d..4d4f3bcb1477 100644
-> --- a/Documentation/bpf/ringbuf.rst
-> +++ b/Documentation/bpf/ringbuf.rst
-> @@ -182,9 +182,6 @@ in the order of reservations, but only after all previous records where
->  already committed. It is thus possible for slow producers to temporarily hold
->  off submitted records, that were reserved later.
+> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
+> index 1be4c89..f239665 100644
+> --- a/net/can/j1939/socket.c
+> +++ b/net/can/j1939/socket.c
+> @@ -475,6 +475,12 @@ static int j1939_sk_bind(struct socket *sock, struct sockaddr *uaddr, int len)
+>  			goto out_release_sock;
+>  		}
 >  
-> -Reservation/commit/consumer protocol is verified by litmus tests in
-> -Documentation/litmus_tests/bpf-rb/_.
-> -
->  One interesting implementation bit, that significantly simplifies (and thus
->  speeds up as well) implementation of both producers and consumers is how data
->  area is mapped twice contiguously back-to-back in the virtual memory. This
-> @@ -200,7 +197,7 @@ a self-pacing notifications of new data being availability.
->  being available after commit only if consumer has already caught up right up to
->  the record being committed. If not, consumer still has to catch up and thus
->  will see new data anyways without needing an extra poll notification.
-> -Benchmarks (see tools/testing/selftests/bpf/benchs/bench_ringbuf.c_) show that
-> +Benchmarks (see tools/testing/selftests/bpf/benchs/bench_ringbufs.c_) show that
->  this allows to achieve a very high throughput without having to resort to
->  tricks like "notify only every Nth sample", which are necessary with perf
->  buffer. For extreme cases, when BPF program wants more manual control of
+> +		if (!(ndev->flags & IFF_UP)) {
+> +			dev_put(ndev);
+> +			ret = -ENETDOWN;
+> +			goto out_release_sock;
+> +		}
+> +
+>  		priv = j1939_netdev_start(ndev);
+>  		dev_put(ndev);
+>  		if (IS_ERR(priv)) {
+> -- 
+> 2.9.5
+> 
+> 
 
-
-
-Thanks,
-Mauro
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
