@@ -2,120 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 628C22660CE
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 15:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59022266115
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 16:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725838AbgIKNyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 09:54:44 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2739 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726085AbgIKNVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 09:21:54 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5f5b79b00000>; Fri, 11 Sep 2020 06:20:48 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Fri, 11 Sep 2020 06:21:01 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Fri, 11 Sep 2020 06:21:01 -0700
-Received: from localhost (10.124.1.5) by HQMAIL107.nvidia.com (172.20.187.13)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 11 Sep 2020 13:21:01
- +0000
-Date:   Fri, 11 Sep 2020 16:20:58 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-CC:     Vladimir Oltean <olteanv@gmail.com>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: VLAN filtering with DSA
-Message-ID: <20200911132058.GA3154432@shredder>
-References: <20200910150738.mwhh2i6j2qgacqev@skbuf>
- <a5e0a066-0193-beca-7773-5933d48696e8@gmail.com>
+        id S1726182AbgIKOR5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 10:17:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:50472 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726148AbgIKNNG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 09:13:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599829984;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9TIqk7eBgs5tB6pCcXxagdTDlYZxFeTUz0Ppy5BYt68=;
+        b=Zy2yfxCSNHOfA1K4zM5IPffkYvMnqdy6xfExc79b7x0j3lT/VrP3ceoiUA4Hdv9a+1A6J0
+        Nk4iABQWnDzsaB0rwcn/LhCXicijvz628f1/y47eA0+GboM02nDazoRPK2ZOR4dr3x4ZGX
+        JF8iABrBCF7F9nHC2ElWcKVM/mRJyuA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-356-CeaVsGeqNjerP5_QcR_yxw-1; Fri, 11 Sep 2020 09:04:27 -0400
+X-MC-Unique: CeaVsGeqNjerP5_QcR_yxw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 200F2800FFF;
+        Fri, 11 Sep 2020 13:04:25 +0000 (UTC)
+Received: from krava (unknown [10.40.192.120])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 82CFD75129;
+        Fri, 11 Sep 2020 13:04:22 +0000 (UTC)
+Date:   Fri, 11 Sep 2020 15:04:21 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Check trampoline execution in
+ d_path test
+Message-ID: <20200911130421.GC1714160@krava>
+References: <20200910122224.1683258-1-jolsa@kernel.org>
+ <CAEf4BzbVT+DmjPXLrcFG0ZFMCw0P_cb0W9abiaygfBAFu+nh7Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a5e0a066-0193-beca-7773-5933d48696e8@gmail.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1599830448; bh=Ybr+GZc7uc1JqpnxLEx/eCBGp+nlP6BkyEG1FnqCKVY=;
-        h=X-PGP-Universal:Date:From:To:CC:Subject:Message-ID:References:
-         MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=OF8fJVyI8e8+JhOiMR40i52UNIv/3fQVptbafB8jQGxZJHU8b7yY886+0sbzLXdEN
-         +jzteuVIs3xANVzHuMPvb9CBnlgSU/yF+XemHbv4VzF9Bw941+s1oq+u0Mfsrxf5Du
-         5Dpac2Y25cEBYoBaPqyh3BTyMbg+a14lNCMui3dw1zw/uubCmS1e5U9REiPQ13ctTX
-         q2N4TKvy6MzV1UQgWSFtqUKkQXJO68WySBPlT8WWDMteNPRaKGl3PYP7o6TypGllZM
-         r2k5bYZCLbfQfRWQdh02mSHuWuBTQpRjJOjN5uMw/d4VjEbpXKYuD2nAENXkNtXoya
-         y6j2Z+evcYVvw==
+In-Reply-To: <CAEf4BzbVT+DmjPXLrcFG0ZFMCw0P_cb0W9abiaygfBAFu+nh7Q@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 11:41:04AM -0700, Florian Fainelli wrote:
-> +Ido,
+On Thu, Sep 10, 2020 at 03:22:10PM -0700, Andrii Nakryiko wrote:
+> On Thu, Sep 10, 2020 at 5:25 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > Some kernels builds might inline vfs_getattr call within
+> > fstat syscall code path, so fentry/vfs_getattr trampoline
+> > is not called.
+> >
+> > I'm not sure how to handle this in some generic way other
+> > than use some other function, but that might get inlined at
+> > some point as well.
+> >
+> > Adding flags that indicate trampolines were called and failing
+> > the test if neither of them got called.
+> >
+> >   $ sudo ./test_progs -t d_path
+> >   test_d_path:PASS:setup 0 nsec
+> >   ...
+> >   trigger_fstat_events:PASS:trigger 0 nsec
+> >   test_d_path:FAIL:124 trampolines not called
+> >   #22 d_path:FAIL
+> >   Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
+> >
+> > If only one trampoline is called, it's still enough to test
+> > the helper, so only warn about missing trampoline call and
+> > continue in test.
+> >
+> >   $ sudo ./test_progs -t d_path -v
+> >   test_d_path:PASS:setup 0 nsec
+> >   ...
+> >   trigger_fstat_events:PASS:trigger 0 nsec
+> >   fentry/vfs_getattr not called
+> >   #22 d_path:OK
+> >   Summary: 1/0 PASSED, 0 SKIPPED, 0 FAILED
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@redhat.com>
+> > ---
 > 
-> On 9/10/2020 8:07 AM, Vladimir Oltean wrote:
-> > Florian, can you please reiterate what is the problem with calling
-> > vlan_vid_add() with a VLAN that is installed by the bridge?
-> > 
-> > The effect of vlan_vid_add(), to my knowledge, is that the network
-> > interface should add this VLAN to its filtering table, and not drop it.
-> > So why return -EBUSY?
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> 
+> >  .../testing/selftests/bpf/prog_tests/d_path.c | 25 +++++++++++++++----
+> >  .../testing/selftests/bpf/progs/test_d_path.c |  7 ++++++
+> >  2 files changed, 27 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/d_path.c b/tools/testing/selftests/bpf/prog_tests/d_path.c
+> > index fc12e0d445ff..ec15f7d1dd0a 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/d_path.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/d_path.c
+> > @@ -120,26 +120,41 @@ void test_d_path(void)
+> >         if (err < 0)
+> >                 goto cleanup;
+> >
+> > +       if (!bss->called_stat && !bss->called_close) {
+> > +               PRINT_FAIL("trampolines not called\n");
+> > +               goto cleanup;
+> > +       }
+> > +
+> > +       if (!bss->called_stat) {
+> > +               fprintf(stdout, "fentry/vfs_getattr not called\n");
+> > +               goto cleanup;
+> > +       }
+> > +
+> > +       if (!bss->called_close) {
+> > +               fprintf(stdout, "fentry/filp_close not called\n");
+> > +               goto cleanup;
+> > +       }
+> 
+> not sure why you didn't go with `if (CHECK(!bss->called_close, ...`
+> for these checks, would even save you some typing.
 
-Can you clarify when you return -EBUSY? At least in mlxsw we return an
-error in case we have a VLAN-aware bridge taking care of some VLAN and
-then user space tries to install a VLAN upper with the same VLAN on the
-same port. See more below.
+ok
 
 > 
-> I suppose that if you wanted to have an 802.1Q just for the sake of
-> receiving VLAN tagged frames but not have them ingress the to the CPU, you
-> could install an 802.1Q upper, but why would you do that unless the CPU
-> should also receive that traffic?
+> > +
+> >         for (int i = 0; i < MAX_FILES; i++) {
+> > -               CHECK(strncmp(src.paths[i], bss->paths_stat[i], MAX_PATH_LEN),
+> > +               CHECK(bss->called_stat && strncmp(src.paths[i], bss->paths_stat[i], MAX_PATH_LEN),
+> >                       "check",
+> >                       "failed to get stat path[%d]: %s vs %s\n",
+> >                       i, src.paths[i], bss->paths_stat[i]);
+> > -               CHECK(strncmp(src.paths[i], bss->paths_close[i], MAX_PATH_LEN),
+> > +               CHECK(bss->called_close && strncmp(src.paths[i], bss->paths_close[i], MAX_PATH_LEN),
+> >                       "check",
+> >                       "failed to get close path[%d]: %s vs %s\n",
+> >                       i, src.paths[i], bss->paths_close[i]);
+> >                 /* The d_path helper returns size plus NUL char, hence + 1 */
+> > -               CHECK(bss->rets_stat[i] != strlen(bss->paths_stat[i]) + 1,
+> > +               CHECK(bss->called_stat && bss->rets_stat[i] != strlen(bss->paths_stat[i]) + 1,
+> >                       "check",
+> >                       "failed to match stat return [%d]: %d vs %zd [%s]\n",
+> >                       i, bss->rets_stat[i], strlen(bss->paths_stat[i]) + 1,
+> >                       bss->paths_stat[i]);
+> > -               CHECK(bss->rets_close[i] != strlen(bss->paths_stat[i]) + 1,
+> > +               CHECK(bss->called_close && bss->rets_close[i] != strlen(bss->paths_close[i]) + 1,
+> >                       "check",
+> >                       "failed to match stat return [%d]: %d vs %zd [%s]\n",
+> >                       i, bss->rets_close[i], strlen(bss->paths_close[i]) + 1,
+> > -                     bss->paths_stat[i]);
+> > +                     bss->paths_close[i]);
 > 
-> The case that I wanted to cover was to avoid the two programming interfaces
-> or the same VLAN, and prefer the bridge VLAN management over the 802.1Q
-> upper, because once the switch port is in a bridge, that is what an user
-> would expect to use.
 > 
-> If you have a bridge that is VLAN aware, it will manage the data and control
-> path for us and that is all good since it is capable of dealing with VLAN
-> tagged frames.
+> those `bss->called_xxx` guard conditions are a bit lost on reading, if
+> you reordered CHECKs, you could be more explicit:
 > 
-> A non-VLAN aware bridge's data path is only allowed to see untagged traffic,
-> so if you wanted somehow to inject untagged traffic into the bridge data
-> path, then you would add a 802.1Q upper to that switch port, and somehow add
-> that device into the bridge. There is a problem with that though, if you
-> have mutliple bridge devices spanning the same switch, and you do the same
-> thing on another switch port, with another 802.1Q upper, I believe you could
-> break isolation between bridges for that particular VID.
+> if (bss->called_stat) {
+>     CHECK(...);
+>     CHECK(...);
+> }
+> if (bss->called_close) { ... }
 
-At least in mlxsw this is handled by mapping the two {Port, VID} pairs
-into different FIDs, each corresponding to a different bridge instance,
-thereby maintaining the isolation.
+ok, will change
 
-> 
-> Most of this was based on discussions we had with Ido and him explaining to
-> me how they were doing it in mlxsw.
-> 
-> AFAIR the other case which is that you already have a 802.1Q upper, and then
-> you add the switch port to the bridge is permitted and the bridge would
-> inherit the VLAN into its local database.
+thanks,
+jirka
 
-If you have swp1 and swp1.10, you can put swp1 in a VLAN-aware bridge
-and swp1.10 in a VLAN-unaware bridge. If you add VLAN 10 as part of the
-VLAN-aware bridge on swp1, traffic tagged with this VLAN will still be
-injected into the stack via swp1.10.
-
-I'm not sure what is the use case for such a configuration and we reject
-it in mlxsw.
-
-> 
-> I did not put much thoughts back then into a cascading set-up, so some
-> assumptions can certainly be broken, and in fact, are broken today as you
-> experimented.
-> -- 
-> Florian
