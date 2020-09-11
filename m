@@ -2,114 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2394026676F
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:43:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9806A26677F
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:44:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726025AbgIKRnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 13:43:10 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:56722 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725985AbgIKRm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 13:42:59 -0400
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.65.60])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9DACC600D9;
-        Fri, 11 Sep 2020 17:42:59 +0000 (UTC)
-Received: from us4-mdac16-13.ut7.mdlocal (unknown [10.7.65.237])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9C4142009A;
-        Fri, 11 Sep 2020 17:42:59 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.7.66.35])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 160FF1C0053;
-        Fri, 11 Sep 2020 17:42:56 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A4F614800A2;
-        Fri, 11 Sep 2020 17:42:55 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 11 Sep
- 2020 18:42:38 +0100
-Subject: Re: [PATCH net-next 5/7] sfc: de-indirect TSO handling
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-net-drivers@solarflare.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-References: <6fbc3a86-0afd-6e6d-099b-fca9af48d019@solarflare.com>
- <96677549-bc70-9785-aab5-b55dd15ecef6@solarflare.com>
- <20200911090146.61eb66f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <e6009413-aba0-b0de-ba66-71d64bd4b86b@solarflare.com>
-Date:   Fri, 11 Sep 2020 18:42:34 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1726139AbgIKRoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 13:44:01 -0400
+Received: from mga14.intel.com ([192.55.52.115]:60320 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726137AbgIKRnx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 11 Sep 2020 13:43:53 -0400
+IronPort-SDR: DB3U5EjSV4GfQ3I8/Ny1loerOHjpD9f99Wt904IzecaSFPwoM8FWIjNuB4JBqmofGCezGF7S2a
+ wMzZB4KAxuOg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9741"; a="158105557"
+X-IronPort-AV: E=Sophos;i="5.76,416,1592895600"; 
+   d="scan'208";a="158105557"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 10:43:49 -0700
+IronPort-SDR: T6pL/wuj80l8d4SrfF4sts8AKUxwgNl50UXbdaKj6UC7II/4IK+FzYgIxsUc0RzhIhOjch0ytr
+ +rR9yL0NnYMQ==
+X-IronPort-AV: E=Sophos;i="5.76,416,1592895600"; 
+   d="scan'208";a="481403148"
+Received: from prbhatt-mobl1.amr.corp.intel.com (HELO ellie) ([10.212.20.132])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Sep 2020 10:43:48 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org
+Cc:     intel-wired-lan@lists.osuosl.org
+Subject: Re: [Intel-wired-lan] [RFC PATCH net-next v1 05/11] intel-ethernet: make W=1 build cleanly
+In-Reply-To: <20200911012337.14015-6-jesse.brandeburg@intel.com>
+References: <20200911012337.14015-1-jesse.brandeburg@intel.com> <20200911012337.14015-6-jesse.brandeburg@intel.com>
+Date:   Fri, 11 Sep 2020 10:43:48 -0700
+Message-ID: <877dt0nr8r.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200911090146.61eb66f9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25660.000
-X-TM-AS-Result: No-10.944300-8.000000-10
-X-TMASE-MatchedRID: csPTYAMX1+HmLzc6AOD8DfHkpkyUphL9S1zwNuiBtITfUZT83lbkEMiT
-        Wug2C4DNl1M7KT9/aqDnIakAFP3RaCY3KbvVmCqgZacDbE73ZSmpXdWa4gU0S0dmDSBYfnJRg7l
-        N9LOvFDuyxc1VprO+AtPzWwTEpBnXRZJ90/Q8SpniHyvyXeXh5g8hjyL1cWZwHDQcqEqNN+mMZ0
-        pFOVP2QvCiDJF/LpLwSjLlYugtawq/WXZS/HqJ2lZ0V5tYhzdWxEHRux+uk8h+ICquNi0WJKyEs
-        EbIIdHe7gQdG2JCJpH1p3Fzoo/Zd3Xi0J6i1Nd1ftwZ3X11IV0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--10.944300-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25660.000
-X-MDID: 1599846176-s-s9ESTrTn-6
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/09/2020 17:01, Jakub Kicinski wrote:
-> On Thu, 10 Sep 2020 21:33:11 +0100 Edward Cree wrote:
->> index 078c7ec2a70e..272eb5ecb7e7 100644
->> --- a/drivers/net/ethernet/sfc/ef100_tx.c
->> +++ b/drivers/net/ethernet/sfc/ef100_tx.c
->> @@ -38,7 +38,8 @@ void ef100_tx_init(struct efx_tx_queue *tx_queue)
->>  				    tx_queue->channel->channel -
->>  				    tx_queue->efx->tx_channel_offset);
->>  
->> -	if (efx_mcdi_tx_init(tx_queue, false))
->> +	tx_queue->tso_version = 3;
->> +	if (efx_mcdi_tx_init(tx_queue))
->>  		netdev_WARN(tx_queue->efx->net_dev,
->>  			    "failed to initialise TXQ %d\n", tx_queue->queue);
->>  }
->> --- a/drivers/net/ethernet/sfc/tx.c
->> +++ b/drivers/net/ethernet/sfc/tx.c
->> @@ -338,8 +338,18 @@ netdev_tx_t __efx_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb
->>  	 * size limit.
->>  	 */
->>  	if (segments) {
->> -		EFX_WARN_ON_ONCE_PARANOID(!tx_queue->handle_tso);
->> -		rc = tx_queue->handle_tso(tx_queue, skb, &data_mapped);
->> +		switch (tx_queue->tso_version) {
->> +		case 1:
->> +			rc = efx_enqueue_skb_tso(tx_queue, skb, &data_mapped);
->> +			break;
->> +		case 2:
->> +			rc = efx_ef10_tx_tso_desc(tx_queue, skb, &data_mapped);
->> +			break;
->> +		case 0: /* No TSO on this queue, SW fallback needed */
->> +		default:
->> +			rc = -EINVAL;
->> +			break;
->> +		}
-> Should tso_version 3 be handled in this switch?
-No, because this switch is in the EF10/Siena datapath and is neverrun for
- EF100.  Setting tx_queue->tso_version = 3 for EF100 is really just there
- as documentation — EF100 has a completely different TX path, in
- ef100_enqueue_skb(), which never looks at tx_queue->tso_version because
- currently there's only one version of EF100 TSO descriptor.  From a
- functional perspective everything would still work if it were set to 0,
- but that would be kinda misleading.
-Should I explain this in the commit message, or in a comment (and if the
- latter, where should it go?)
+Jesse Brandeburg <jesse.brandeburg@intel.com> writes:
 
--ed
+> This takes care of all of the trivial W=1 fixes in the Intel
+> Ethernet drivers, which allows developers and maintainers to
+> build more of the networking tree with more complete warning
+> checks.
+>
+> Almost all of the changes were trivial comment updates on
+> function headers, but some of the changes were for variables that
+> were storing a return value from a register read, where the
+> return value wasn't used. Those conversions to remove the lvalue
+> of the assignment should be safe because the readl memory mapped
+> reads are marked volatile and should not be optimized out without
+> an lvalue (I suspect a very long time ago this wasn't guaranteed
+> as it is today).
+>
+> Inspired by Lee Jones' series of wireless work to do the same.
+> Compile tested only.
+>
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> ---
+>  drivers/net/ethernet/intel/e100.c             |   8 +-
+>  drivers/net/ethernet/intel/e1000/e1000_hw.c   | 147 ++++++++----------
+>  drivers/net/ethernet/intel/e1000/e1000_main.c |  39 +++--
+>  .../net/ethernet/intel/e1000e/80003es2lan.c   |   1 -
+>  drivers/net/ethernet/intel/e1000e/ich8lan.c   |  16 +-
+>  drivers/net/ethernet/intel/e1000e/netdev.c    |  50 ++++--
+>  drivers/net/ethernet/intel/e1000e/phy.c       |   3 +
+>  drivers/net/ethernet/intel/e1000e/ptp.c       |   2 +-
+>  drivers/net/ethernet/intel/igb/e1000_82575.c  |   6 +-
+>  drivers/net/ethernet/intel/igb/e1000_i210.c   |   5 +-
+>  drivers/net/ethernet/intel/igb/e1000_mac.c    |   1 +
+>  drivers/net/ethernet/intel/igb/e1000_mbx.c    |   1 +
+>  drivers/net/ethernet/intel/igb/igb_main.c     |  28 ++--
+>  drivers/net/ethernet/intel/igb/igb_ptp.c      |   8 +-
+>  drivers/net/ethernet/intel/igbvf/netdev.c     |  17 +-
+>  drivers/net/ethernet/intel/igc/igc_main.c     |   2 +-
+>  drivers/net/ethernet/intel/igc/igc_ptp.c      |   4 +-
+>  drivers/net/ethernet/intel/ixgb/ixgb_hw.c     | 135 ++++++++--------
+>  drivers/net/ethernet/intel/ixgb/ixgb_main.c   |  17 +-
+>  .../net/ethernet/intel/ixgbevf/ixgbevf_main.c |   3 +-
+>  20 files changed, 265 insertions(+), 228 deletions(-)
+>
+
+...
+
+> diff --git a/drivers/net/ethernet/intel/e1000/e1000_hw.c b/drivers/net/ethernet/intel/e1000/e1000_hw.c
+> index 4e7a0810eaeb..2120dacfd55c 100644
+> --- a/drivers/net/ethernet/intel/e1000/e1000_hw.c
+> +++ b/drivers/net/ethernet/intel/e1000/e1000_hw.c
+> @@ -139,6 +139,7 @@ static void e1000_phy_init_script(struct e1000_hw *hw)
+>  		 * at the end of this routine.
+>  		 */
+>  		ret_val = e1000_read_phy_reg(hw, 0x2F5B, &phy_saved_data);
+> +		e_dbg("Reading PHY register 0x2F5B failed: %d\n", ret_val);
+>
+
+Adding this debug statement seems unrelated.
+
+>  		/* Disabled the PHY transmitter */
+>  		e1000_write_phy_reg(hw, 0x2F5B, 0x0003);
+
+Apart from this,
+
+Reviewed-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+
+-- 
+Vinicius
