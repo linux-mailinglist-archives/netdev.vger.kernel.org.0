@@ -2,106 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 065712658FA
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 07:57:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABCF826591B
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 08:07:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725771AbgIKF5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 01:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
+        id S1725747AbgIKGHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 02:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725446AbgIKF5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 01:57:04 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B6BC061573;
-        Thu, 10 Sep 2020 22:57:03 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id u25so7422291otq.6;
-        Thu, 10 Sep 2020 22:57:03 -0700 (PDT)
+        with ESMTP id S1725468AbgIKGHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 02:07:32 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAF1C061573;
+        Thu, 10 Sep 2020 23:07:31 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id jw11so1193628pjb.0;
+        Thu, 10 Sep 2020 23:07:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bXRDcpcdk/Mv5GNEux60X8UU9ajHOjMM0sdDWglatzg=;
-        b=Jzm76A5J/d1K96oMaHeTblKjAR7NYcEU5JmyKqGN9TfouTYNAkZH9bYa4o4dSvuvGl
-         vVTb3FWIRo1E/kicwmEyTW49kQeGF56csdG9I60QXBWjZZUo8JV+3W4+yIE2xw9arWbV
-         6LEwfObp38nOgKLo2gc473gb+QeI21sPdfrB9Ky+cJY8ttK02BHNM9xg14W1/cX3W/tV
-         CnVt225QGFltT7CtUNX2p0bn7FLAyfYpvdLgHjkLRaVuqsYoutPzHQSD0HAMXYxb2ZwI
-         paPAE7jqIImE/1RQNc+GALcruF18UBi1TX8NsB0Mq0WwM+Tti2Wt4jTNSy5i/JV1l9Lc
-         YpJA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ICuUjpgRR8OCCPVQqNRYxX2OGwz3zcrbN36QMtJa61g=;
+        b=GS+kYg8uR36YAHr7o0VqO3QDwo3czk9b8fZ7ukBPfusDYqheAtOJfE8xVrqMpnP5l2
+         BzweIQ2kk3kQBraS/McI/VmL8iXVB2E/p9rvg01liAPQEuaq7PvKJBoiFMyrie+VP5z8
+         3xd7VDA9Unyi03Q5Li1B41SQI2IeMcmyIzxPEepWq9FmG7NqQ8sl7Bvr0i10eIge7+xx
+         89y8ShZESmNFTXlujsb72C1QvYTegSHe/owwVi070Jv8vP8l3pfAwpnMY8VIYIVCXtyg
+         6MxYzpMLDpl9P/JTAgYEHa7z8g9v/UKt14HuO2tlkMa1k2RcWBAacq5gyP1bDVJbdFLp
+         YQJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bXRDcpcdk/Mv5GNEux60X8UU9ajHOjMM0sdDWglatzg=;
-        b=EvysNWDEBcioW5bcXySpbPbIqdG3aqS1eK3+KlPhLJGEAX5kfo09aQLOzMYSbWgDzW
-         IqfKKA/6XuUyB/XwGGGDEq8zPLvfwiTUjaslYpoAMX09CV4tKoEOYhBqSu71e0mcKR18
-         zB9dfGSEMGc5j9Ipen8j8++fkyCTM2VNpd0fhLK0OhQnfmEZChgsfWHBSkN2Po/v/fkU
-         W43o4LyEPCcnYsyOdMBnie1bqUlWZvGC4pa8d57ifd8InzNR/3JSEY6NvL9BXInlAgue
-         LdymfVwpsiwzpDFZ2J7wwJYJYbSIfacfuVoiBfXJHaeYIpzXL/uV7+JLFQNxJ90IyAVc
-         2pKg==
-X-Gm-Message-State: AOAM533/3iLsyXwU6jcZbkickGGgB+3Ody/5NouZbvJty80w52gxlI8g
-        d5toZAiqTTJCS4C432+98pqvIfKR1rIHRJ6+/9M=
-X-Google-Smtp-Source: ABdhPJwZlCcBfE23ZIWj4B9Fbnh0ADcF5CcKkBnr4rjFillgbSG1GAfMsJ8VnQfF5J6jUdkURyR45XlLMBnhmHTGTB4=
-X-Received: by 2002:a05:6830:2246:: with SMTP id t6mr242842otd.264.1599803823245;
- Thu, 10 Sep 2020 22:57:03 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ICuUjpgRR8OCCPVQqNRYxX2OGwz3zcrbN36QMtJa61g=;
+        b=n9iQ0EqhocUa7tGbdqhlJ+xsXTA/5+9vPc40cVzTWGOu7USGIF6w35PeeKdzsgFIJq
+         rtIiY8DNM5GknrMUgkzAYBf5JzBk/b+/EPLXZO1sReKvGYtgzQeUw08AIWEzR7KTPBkp
+         0xwcAFz0+dBDr+cdKztmQOAOCtu3UA62zMShZWnYaXKT7vxrk4Ms72wB9GAQy6zlqumI
+         edWJvbL+idxHKVd5zsRFxOKysq3T5JFjuZd+wWVoc9PjwtSKhKgmjU2QJwJtkarKjP1D
+         VGh3p4P2+f6tWvb9dvCqhZ3+d+14pX7bNLhYyy12uGHxZ3hv9R+jFuAsKxZ+ZP+CkaOZ
+         ++/Q==
+X-Gm-Message-State: AOAM531EE5UbTx8wYh4Ua2LnkJG1kRlzfAL/ug9a+BhiFw2JLWimQx01
+        CEBro7yy27jw2ABn+Oyp96Y=
+X-Google-Smtp-Source: ABdhPJw43us4wEtQTNcghlOEJktE0HLOzRpWB5hBY/TwO76lu1uXMwi+73H4zh6br+Ex5ligKxgk8w==
+X-Received: by 2002:a17:90b:796:: with SMTP id l22mr781145pjz.199.1599804451347;
+        Thu, 10 Sep 2020 23:07:31 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:54b8:5e43:7f25:9207])
+        by smtp.gmail.com with ESMTPSA id c202sm1016792pfc.15.2020.09.10.23.07.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Sep 2020 23:07:30 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next] net/socket.c: Remove an unused header file <linux/if_frad.h>
+Date:   Thu, 10 Sep 2020 23:07:20 -0700
+Message-Id: <20200911060720.81033-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200817084614.24263-1-allen.cryptic@gmail.com>
-In-Reply-To: <20200817084614.24263-1-allen.cryptic@gmail.com>
-From:   Allen <allen.lkml@gmail.com>
-Date:   Fri, 11 Sep 2020 11:26:52 +0530
-Message-ID: <CAOMdWSJohOLK023ZM-yTnZiNHdy2TfyyWV3+iuuQiALiYV2NLQ@mail.gmail.com>
-Subject: Re: [PATCH 0/8] drivers: net: convert tasklets to use new tasklet_setup()
-To:     David Miller <davem@davemloft.net>
-Cc:     m.grzeschik@pengutronix.de, paulus@samba.org, oliver@neukum.org,
-        woojung.huh@microchip.com, petkan@nucleusys.com,
-        Kees Cook <keescook@chromium.org>, netdev@vger.kernel.org,
-        linux-ppp@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David,
->
-> Commit 12cc923f1ccc ("tasklet: Introduce new initialization API")'
-> introduced a new tasklet initialization API. This series converts
-> all the net/* drivers to use the new tasklet_setup() API
->
-> Allen Pais (8):
->   net: dccp: convert tasklets to use new tasklet_setup() API
->   net: ipv4: convert tasklets to use new tasklet_setup() API
->   net: mac80211: convert tasklets to use new tasklet_setup() API
->   net: mac802154: convert tasklets to use new tasklet_setup() API
->   net: rds: convert tasklets to use new tasklet_setup() API
->   net: sched: convert tasklets to use new tasklet_setup() API
->   net: smc: convert tasklets to use new tasklet_setup() API
->   net: xfrm: convert tasklets to use new tasklet_setup() API
->
->  net/dccp/timer.c           | 10 +++++-----
->  net/ipv4/tcp_output.c      |  8 +++-----
->  net/mac80211/ieee80211_i.h |  4 ++--
->  net/mac80211/main.c        | 14 +++++---------
->  net/mac80211/tx.c          |  5 +++--
->  net/mac80211/util.c        |  5 +++--
->  net/mac802154/main.c       |  8 +++-----
->  net/rds/ib_cm.c            | 14 ++++++--------
->  net/sched/sch_atm.c        |  9 +++++----
->  net/smc/smc_cdc.c          |  6 +++---
->  net/smc/smc_wr.c           | 14 ++++++--------
->  net/xfrm/xfrm_input.c      |  7 +++----
->  12 files changed, 47 insertions(+), 57 deletions(-)
->
-> --
-> 2.17.1
->
+This header file is not actually used in this file. Let's remove it.
 
-Will you pick these up or should I send these out again when I
-have fixed the two patches on the other thread.
+Information about this header file:
 
-Thanks,
+This header file comes from the "Frame Relay" module at
+  drivers/net/wan/dlci.c
 
+The "Frame Relay" module is used by only one hardware driver, at:
+  drivers/net/wan/sdla.c
 
+Note that the "Frame Relay" module is different from and unrelated to the
+"HDLC Frame Relay" module at:
+  drivers/net/wan/hdlc_fr.c
+
+I think maybe we can deprecate the "Frame Relay" module because we already
+have the (newer) "HDLC Frame Relay" module.
+
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ net/socket.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/net/socket.c b/net/socket.c
+index 82262e1922f9..161dd2775e13 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -64,7 +64,6 @@
+ #include <linux/seq_file.h>
+ #include <linux/mutex.h>
+ #include <linux/if_bridge.h>
+-#include <linux/if_frad.h>
+ #include <linux/if_vlan.h>
+ #include <linux/ptp_classify.h>
+ #include <linux/init.h>
 -- 
-       - Allen
+2.25.1
+
