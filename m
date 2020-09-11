@@ -2,131 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E0342666BA
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:32:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C55A62666E9
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 19:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726566AbgIKRbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 13:31:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53468 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726454AbgIKRb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 13:31:28 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E6A6C061573
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 10:31:27 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id k15so7876665pfc.12
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 10:31:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jqwV3m1IM1HIr2J64SKNvmshCNyp+LRMpLkoAkVLxxk=;
-        b=u3xw6xiaa+e5XxgoYx9pLToSaBUmOK41oynbe/4NB3jwDO2grNMS+2/4zgUp5U+xWw
-         H3Q8LjmqFspZzDekUtpAZJS2DqToNhezP2kmWpqSYKyAxwpT6WIaFQXA2Y67GYaLXiQs
-         hqP5cW0EKQMXcAjFSXduHFLJv33M2ND5xZb7cVn6wItbDsqcPdpQdiwgKvg+ziEpD8lZ
-         A1ij0ruIQjZDgRZTqPPtFis4fqTKE+4gZC9Ige07g+ykXSm7fgVOGFCPs/FB8ziT9gsF
-         a8tR1blTEYbMj+oP5Ew16ImbqfysnUY9vxR8CZjY7PKA0cTDLt4/r4eNcmpOiZGNy15X
-         n45A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jqwV3m1IM1HIr2J64SKNvmshCNyp+LRMpLkoAkVLxxk=;
-        b=i0HzCdMKh45KpMWjPxe+H9Wft8lYMoWXt3O/YUOXP45xfkZxYR4lTwz/BEnB6aLAg5
-         0eqtMRjwtEdEeEIDQpkFlL+Y4J7oOkkdBjLxl3z3L3/lLTPDs+ZWRTU5y2Bt9+x1QoLb
-         rJZTY9AtuT+SuDrWLOszdKb37ss2EgQEuUaCSYJPfLzHwe8sDUO7bCfJuF2rrvkrOnpQ
-         Iz9/YPAMJAhn6NW+GE9rcgSQogocpsEjUgF4dQidH5i28QVQ70SCwlH2xclFC2FtkAlK
-         rJK9Fk2EiYaambykp7/2fuPEcxdXs9leKJT6jKmIWAzCGu0ZIb09VZ/rX6ov+nUFHwMH
-         taIw==
-X-Gm-Message-State: AOAM530VyHQPVSfDx6eJVdwx1oS7xvwyUi1H9R8WLpMageetY3W5vktK
-        MsrCH3e/MjAhfUd7LKOByH4QHjWFXmE=
-X-Google-Smtp-Source: ABdhPJzDDJeO3Rj8W+PBTs1dlchTqRbxpaTvuEZNBwA5TB/XreHI36y0LJrVE1wiTT7RqlNcjcxgFQ==
-X-Received: by 2002:a63:6503:: with SMTP id z3mr2434369pgb.421.1599845486681;
-        Fri, 11 Sep 2020 10:31:26 -0700 (PDT)
-Received: from [10.230.30.107] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id gt11sm2362547pjb.48.2020.09.11.10.31.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Sep 2020 10:31:26 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 4/4] Revert "net: dsa: Add more convenient
- functions for installing port VLANs"
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     jakub.kicinski@netronome.com, davem@davemloft.net, andrew@lunn.ch,
-        vivien.didelot@gmail.com, netdev@vger.kernel.org
-References: <20200910164857.1221202-1-olteanv@gmail.com>
- <20200910164857.1221202-5-olteanv@gmail.com>
- <179dfb0e-60d5-5f49-7361-32cd57edd670@gmail.com>
- <20200911173026.rsjiqquhrue2viio@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <0df2db4d-a7c2-2ce7-6f37-1061a40eb6f6@gmail.com>
-Date:   Fri, 11 Sep 2020 10:31:24 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.2.2
+        id S1726228AbgIKRfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 13:35:21 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:59275 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725959AbgIKRfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 13:35:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599845705;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=s9a0YBNTX5BY/jledQD9dQtXgYSOg6WQJwbSeVTaRrU=;
+        b=fpXe5fG1Vhkk8Eq1N6w7DjwCa6kMFUHfYspZom5c/qaMV5udjE/KNqx5oJfzS66yfsS70T
+        CJkyqjBLp0USxNGZhOJfYlcOFG/Y7upBg9Xx56BVvodC1iNh+w3PoohxgAVvPBEwEf4Wny
+        FQDKgDYfN9xfHdFjbg2PgWVmVaGmYt0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-341-ehULRlF0PveL-fP-xe2u_A-1; Fri, 11 Sep 2020 13:35:03 -0400
+X-MC-Unique: ehULRlF0PveL-fP-xe2u_A-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A4A651074645;
+        Fri, 11 Sep 2020 17:35:01 +0000 (UTC)
+Received: from ovpn-114-214.ams2.redhat.com (ovpn-114-214.ams2.redhat.com [10.36.114.214])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E99F5C1BD;
+        Fri, 11 Sep 2020 17:34:59 +0000 (UTC)
+Message-ID: <1cf4fa90e9e459901598207261423cc9d88dd9d0.camel@redhat.com>
+Subject: Re: [PATCH net-next 11/13] mptcp: allow picking different xmit
+ subflows
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org
+Date:   Fri, 11 Sep 2020 19:34:58 +0200
+In-Reply-To: <3b8e364293d3cbb0348f20ca14301200aa43bc24.1599832097.git.pabeni@redhat.com>
+References: <cover.1599832097.git.pabeni@redhat.com>
+         <3b8e364293d3cbb0348f20ca14301200aa43bc24.1599832097.git.pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-In-Reply-To: <20200911173026.rsjiqquhrue2viio@skbuf>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 2020-09-11 at 15:52 +0200, Paolo Abeni wrote:
+ [...]
+> +#define MPTCP_SEND_BURST_SIZE		((1 << 16) - \
+> +					 sizeof(struct tcphdr) - \
+> +					 MAX_TCP_OPTION_SPACE - \
+> +					 sizeof(struct ipv6hdr) - \
+> +					 sizeof(struct frag_hdr))
+> +
+> +struct subflow_send_info {
+> +	struct sock *ssk;
+> +	uint64_t ratio;
+> +};
+> +
+>  static struct sock *mptcp_subflow_get_send(struct mptcp_sock *msk,
+>  					   u32 *sndbuf)
+>  {
+> +	struct subflow_send_info send_info[2];
+>  	struct mptcp_subflow_context *subflow;
+> -	struct sock *sk = (struct sock *)msk;
+> -	struct sock *backup = NULL;
+> -	bool free;
+> +	int i, nr_active = 0;
+> +	int64_t ratio, pace;
+> +	struct sock *ssk;
+>  
+> -	sock_owned_by_me(sk);
+> +	sock_owned_by_me((struct sock *)msk);
+>  
+>  	*sndbuf = 0;
+>  	if (!mptcp_ext_cache_refill(msk))
+>  		return NULL;
+>  
+> -	mptcp_for_each_subflow(msk, subflow) {
+> -		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
+> -
+> -		free = sk_stream_is_writeable(subflow->tcp_sock);
+> -		if (!free) {
+> -			mptcp_nospace(msk);
+> +	if (__mptcp_check_fallback(msk)) {
+> +		if (!msk->first)
+>  			return NULL;
+> +		*sndbuf = msk->first->sk_sndbuf;
+> +		return sk_stream_memory_free(msk->first) ? msk->first : NULL;
+> +	}
+> +
+> +	/* re-use last subflow, if the burst allow that */
+> +	if (msk->last_snd && msk->snd_burst > 0 &&
+> +	    sk_stream_memory_free(msk->last_snd) &&
+> +	    mptcp_subflow_active(mptcp_subflow_ctx(msk->last_snd))) {
+> +		mptcp_for_each_subflow(msk, subflow) {
+> +			ssk =  mptcp_subflow_tcp_sock(subflow);
+> +			*sndbuf = max(tcp_sk(ssk)->snd_wnd, *sndbuf);
+>  		}
+> +		return msk->last_snd;
+> +	}
+> +
+> +	/* pick the subflow with the lower wmem/wspace ratio */
+> +	for (i = 0; i < 2; ++i) {
+> +		send_info[i].ssk = NULL;
+> +		send_info[i].ratio = -1;
+> +	}
+> +	mptcp_for_each_subflow(msk, subflow) {
+> +		ssk =  mptcp_subflow_tcp_sock(subflow);
+> +		if (!mptcp_subflow_active(subflow))
+> +			continue;
+>  
+> +		nr_active += !subflow->backup;
+>  		*sndbuf = max(tcp_sk(ssk)->snd_wnd, *sndbuf);
+> -		if (subflow->backup) {
+> -			if (!backup)
+> -				backup = ssk;
+> +		if (!sk_stream_memory_free(subflow->tcp_sock))
+> +			continue;
+>  
+> +		pace = READ_ONCE(ssk->sk_pacing_rate);
+> +		if (!pace)
+>  			continue;
+> -		}
+>  
+> -		return ssk;
+> +		ratio = (int64_t)READ_ONCE(ssk->sk_wmem_queued) << 32 / pace;
 
+Kbuild bot on our devel branch just noted that the above division
+breaks 32 bits build.
 
-On 9/11/2020 10:30 AM, Vladimir Oltean wrote:
-> On Thu, Sep 10, 2020 at 12:52:03PM -0700, Florian Fainelli wrote:
->> On 9/10/2020 9:48 AM, Vladimir Oltean wrote:
->>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->>>
->>> This reverts commit 314f76d7a68bab0516aa52877944e6aacfa0fc3f.
->>>
->>> Citing that commit message, the call graph was:
->>>
->>>       dsa_slave_vlan_rx_add_vid   dsa_port_setup_8021q_tagging
->>>                   |                        |
->>>                   |                        |
->>>                   |          +-------------+
->>>                   |          |
->>>                   v          v
->>>                  dsa_port_vid_add      dsa_slave_port_obj_add
->>>                         |                         |
->>>                         +-------+         +-------+
->>>                                 |         |
->>>                                 v         v
->>>                              dsa_port_vlan_add
->>>
->>> Now that tag_8021q has its own ops structure, it no longer relies on
->>> dsa_port_vid_add, and therefore on the dsa_switch_ops to install its
->>> VLANs.
->>>
->>> So dsa_port_vid_add now only has one single caller. So we can simplify
->>> the call graph to what it was before, aka:
->>>
->>>           dsa_slave_vlan_rx_add_vid     dsa_slave_port_obj_add
->>>                         |                         |
->>>                         +-------+         +-------+
->>>                                 |         |
->>>                                 v         v
->>>                              dsa_port_vlan_add
->>>
->>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
->>
->> I would be keen on keeping this function just because it encapsulates the
->> details of creating the switchdev object and it may be useful to add
->> additional functionality later on (like the DSA master RX VLAN filtering?),
->> but would not object to its removal if others disagree.
->> --
->> Florian
-> 
-> Hmm, I don't think there's a lot of value in having it, it's confusing
-> to have such a layered call stack, and it shouldn't be an exported
-> symbol any longer in any case.
-> Also, I already have a patch that calls vlan_vid_add(master) and having
-> this dsa_port_vid_add() helper doesn't save much at all.
+I'll fix that in v2.
 
-OK, I am convinced:
+Cheers,
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Paolo
+
