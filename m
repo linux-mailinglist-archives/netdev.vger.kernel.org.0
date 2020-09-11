@@ -2,161 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB031265DA4
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 12:18:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FAA1265DFD
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 12:34:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725844AbgIKKSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 06:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
+        id S1725840AbgIKKej (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 06:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725710AbgIKKSp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 06:18:45 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BAF4C061573
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 03:18:45 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id w25so6669151otk.8
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 03:18:45 -0700 (PDT)
+        with ESMTP id S1725841AbgIKKe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 06:34:26 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB52C061757
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 03:34:23 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id z25so10443010iol.10
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 03:34:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DoNxlxNbIuPsWruQqDAefHo7eQS4OyQVKCYon5jAzns=;
-        b=SGkhRnMnlbT74gOTMblp6PEac/FtvGU7/oCXI0PStfaFMAaiEYQeKZ+wZXDerFdgCq
-         s0wf0Su5OlXjVaatpk7oyMOXE8eH1Tqqdrt6gbgyzcmgnyaW7K8jaSEQigDkew4Vgf8c
-         RDaRHPnlUa1sthYmr3xrV+KD9APDUdRncCDKo=
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=+z524mDmvYq+baR0BWogYM0GjW8snYS+Z6ogchoEokY=;
+        b=U+n9suKgHn5P4rOWtcLGBQNpFFA9wbEzWX4NZIkjlHPuA/ugaIFVl2FkMB622us5cD
+         15vSSipnejQOem5Myy7vGHfyB+PeX3OX/96+8/tEgwMGZudeZ0zKX/Y9V5wM5tmHuFxS
+         DeSDdtuuDPXe1kHSjYUvMNLwNWqWtSdpvvRPPpEzcATRHnMS+II1sAwIowUMfM3RuaD0
+         gFA55gcypM6nJj8McgkXB/znaneoMVQHSqRUpEo4l4HrLu79phghjooQijzMnX8w6v3F
+         pw5HfenWhH4fNG8feAPUpvsGQ2cDH1TJgegTbxFW5MVkeLiv6K+vRAlOojD5rs6sgHLl
+         u3Xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DoNxlxNbIuPsWruQqDAefHo7eQS4OyQVKCYon5jAzns=;
-        b=m7DGm03dEEvjzJhtC3d6uDIMlugxDi6WjRmejHpON9vnFJqrX7UzIV0J0Jrhq0Wgpk
-         lJmU06Es/ECDbNfNVeay8tZRe30fIiiRODLfJKXhFuSq100NmdlgqCUTW6G7hPKZVmuh
-         MSz/MWwKKetw1r75JPCkjHgfSL1F0DmRNRKSnXBSURPJbYlm4T2/U2SqiKBS1UqiLsjM
-         dDp35HKoDn5yMAfthu3+tIWbvJpAbR6M6Xr8FEXQUC1pH4zDv2xPBLoK0oIUO1OGsZ/b
-         QdJa9ICaHGmodep4j+S8e1Cn//95NnQEl8tZsxuyu5xomvOzMxRziJ2nMAnWw3Xx3QKg
-         9oeQ==
-X-Gm-Message-State: AOAM533AGh5Z5pz2Xotcxbu3NmlJZjC+XpXPtcauSITIn51jyLeJKAWf
-        JSuffspuWcJ0yCEgTEOismSVEQ3P8BZRWg5W2rDvhQ==
-X-Google-Smtp-Source: ABdhPJyHpz1BnSX7k/8JqYSfIdwi6r34xVtvgoPYKkXRT797jtCU9YqXMUbHaCGZtMtJP2mCAPuCm2/dd5v/pIZ1mkQ=
-X-Received: by 2002:a05:6830:1d8a:: with SMTP id y10mr797377oti.92.1599819524962;
- Fri, 11 Sep 2020 03:18:44 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=+z524mDmvYq+baR0BWogYM0GjW8snYS+Z6ogchoEokY=;
+        b=Bvfewmi4JHqjgCkC2PHOnLdxNbH35cIIUOlOYDaCb4lkxwPaJEo7sAPMDeXYq1KffG
+         bL5JvGx2ipuFxOmtvmgdbTdUtIPsaEH6l5YLDUus8qEYxw5vZcJMaFNlzPFZ+ueFcWBG
+         TfDk8/RbP2gKSb4GtBuZg30farF3YSLs1c/rTtcbaVMUBASH3S02d/3IiC6MKVsoA3Nl
+         fiV8gwBfpCm9Z47fMUbAOpmZ3t0+9QcepF06e/RhXMqON7PFaGyaUOfWbnFpRURwcAbM
+         P9EPlw1jXxURfkMDooivqwciwncvxcuIzW4jgp5u3uatHCcCTU8ivGidn7E1rvjLqiu7
+         seWg==
+X-Gm-Message-State: AOAM5330LwXQUrPSMrxnFOUMHUjlmNm+4bgVkAsNld0ykoCZLsfP84oU
+        DaLiS+XPzpGQNFZxXLs91BBbLITLVuhAdE9SSZI=
+X-Google-Smtp-Source: ABdhPJxxT1mW4hhlkRAC+cE3wLb65DWVRjbHs4jtnu+f9EL8hJ9ZugQhTYkAZdmyA/fPU4QVEvJCOHqpxhm9qy7Da/o=
+X-Received: by 2002:a02:9086:: with SMTP id x6mr1298114jaf.126.1599820462464;
+ Fri, 11 Sep 2020 03:34:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200911111731.48a324d0@canb.auug.org.au>
-In-Reply-To: <20200911111731.48a324d0@canb.auug.org.au>
-From:   Paul Barker <pbarker@konsulko.com>
-Date:   Fri, 11 Sep 2020 11:18:35 +0100
-Message-ID: <CAM9ZRVuzw2a2DJF+L9OHCikkVz6A5Y7=DX507XOrobwoBqA-Bg@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the net-next tree with the net tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Received: by 2002:a05:6602:2d45:0:0:0:0 with HTTP; Fri, 11 Sep 2020 03:34:22
+ -0700 (PDT)
+Reply-To: mrs.sophia202@list.ru
+From:   "Mrs. Sophia Robin" <agencydirectorw@gmail.com>
+Date:   Fri, 11 Sep 2020 03:34:22 -0700
+Message-ID: <CAHEkVHsRy8arJT6X-Rpsd_F5api_T7VTutt5fp-HSjHqSTx-Mg@mail.gmail.com>
+Subject: Hello My Dearest
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 11 Sep 2020 at 02:17, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> Today's linux-next merge of the net-next tree got a conflict in:
->
->   drivers/net/dsa/microchip/ksz9477.c
->
-> between commit:
->
->   edecfa98f602 ("net: dsa: microchip: look for phy-mode in port nodes")
->
-> from the net tree and commit:
->
->   805a7e6f5388 ("net: dsa: microchip: Improve phy mode message")
->
-> from the net-next tree.
->
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->
-> --
-> Cheers,
-> Stephen Rothwell
->
-> diff --cc drivers/net/dsa/microchip/ksz9477.c
-> index 2f5506ac7d19,b62dd64470a8..000000000000
-> --- a/drivers/net/dsa/microchip/ksz9477.c
-> +++ b/drivers/net/dsa/microchip/ksz9477.c
-> @@@ -1229,12 -1229,15 +1229,15 @@@ static void ksz9477_port_setup(struct k
->                         ksz9477_set_gbit(dev, true, &data8);
->                         data8 &= ~PORT_RGMII_ID_IG_ENABLE;
->                         data8 &= ~PORT_RGMII_ID_EG_ENABLE;
->  -                      if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->  -                          dev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
->  +                      if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->  +                          p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
->                                 data8 |= PORT_RGMII_ID_IG_ENABLE;
->  -                      if (dev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->  -                          dev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
->  +                      if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->  +                          p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
->                                 data8 |= PORT_RGMII_ID_EG_ENABLE;
-> +                       /* On KSZ9893, disable RGMII in-band status support */
-> +                       if (dev->features & IS_9893)
-> +                               data8 &= ~PORT_MII_MAC_MODE;
->                         p->phydev.speed = SPEED_1000;
->                         break;
->                 }
-> @@@ -1276,22 -1280,21 +1281,30 @@@ static void ksz9477_config_cpu_port(str
->                          * note the difference to help debugging.
->                          */
->                         interface = ksz9477_get_interface(dev, i);
->  -                      if (!dev->interface)
->  -                              dev->interface = interface;
->  -                      if (interface && interface != dev->interface) {
->  +                      if (!p->interface) {
->  +                              if (dev->compat_interface) {
->  +                                      dev_warn(dev->dev,
->  +                                               "Using legacy switch \"phy-mode\" property, because it is missing on port %d node. "
->  +                                               "Please update your device tree.\n",
->  +                                               i);
->  +                                      p->interface = dev->compat_interface;
->  +                              } else {
->  +                                      p->interface = interface;
->  +                              }
->  +                      }
-> -                       if (interface && interface != p->interface)
-> -                               dev_info(dev->dev,
-> -                                        "use %s instead of %s\n",
-> -                                         phy_modes(p->interface),
-> -                                         phy_modes(interface));
-> ++                      if (interface && interface != p->interface) {
-> +                               prev_msg = " instead of ";
-> +                               prev_mode = phy_modes(interface);
-> +                       } else {
-> +                               prev_msg = "";
-> +                               prev_mode = "";
-> +                       }
-> +                       dev_info(dev->dev,
-> +                                "Port%d: using phy mode %s%s%s\n",
-> +                                i,
->  -                               phy_modes(dev->interface),
-> ++                               phy_modes(p->interface),
-> +                                prev_msg,
-> +                                prev_mode);
->
->                         /* enable cpu port */
->                         ksz9477_port_setup(dev, i, true);
+Hello My Dearest
 
-Looks good to me wrt my patch "net: dsa: microchip: Improve phy mode message".
+Please I appeal to you to exercise a little patience and read through
+my mail carefully, I am contacting you personally for investment
+assistance and a long term business relationship in your Country.
 
-Thanks,
+I am Mrs. Sophia Robin a citizen of the united state of America; I
+work in HSBC Bank in Milan Italy as a Telex Manager charge of wire
+transfer and online banking department.
 
--- 
-Paul Barker
-Konsulko Group
+I am contacting you for an important and  urgent business transaction,
+I  want the bank to transfer the money left by Dr. Cheng Chao,  A
+Chinese  Politicians who  died, March 17th 2020 without any trace of
+his family member,  he used our bank to launder money overseas through
+the help of their Political advisers. And most of the funds which they
+transferred out of the shores of China were gold and oil money that
+was supposed to have been used to develop the continent.
+
+Can you invest this money and also help the poor? The amount value at
+($15.5million Dollars), left in his account still unclaimed, if you
+know that you are capable to invest this fund into any  profitable
+business in your country kindly send me your details information as
+listed below to enable me draft you an application form of claim which
+you are going to fill with your bank account detail necessary and
+contact the HSBC Bank in Italy  for immediate transfer of the Amounted
+sum into your bank account direct  Or open an online banking for you.
+
+Percentage share will be 60, for me/ 40, for you.
+
+(1) Your full name..................................................
+(2) Your address....................................................
+(3) Your Nationality.................................................
+(4) Your Age / Sex.....................................................
+(5) Your Occupation............................................
+(6) Your marital status......................................
+(7) Your direct telephone number..................
+(8) your ID Card.......................................
+
+Thanks with my best regards.
+Mrs. Sophia Robin
+Telex / Online Banking Manager
+Milan Italy  (H.S.B.C)
