@@ -2,80 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DE4E2656C8
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 03:58:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D11265738
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 05:03:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725805AbgIKB6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 10 Sep 2020 21:58:18 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:58084 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725298AbgIKB6P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 10 Sep 2020 21:58:15 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 8E8368154E49A4853951;
-        Fri, 11 Sep 2020 09:58:14 +0800 (CST)
-Received: from SWX921481.china.huawei.com (10.126.202.211) by
- DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 11 Sep 2020 09:58:07 +0800
-From:   Barry Song <song.bao.hua@hisilicon.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>
-CC:     <linuxarm@huawei.com>, Barry Song <song.bao.hua@hisilicon.com>,
-        "Salil Mehta" <salil.mehta@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH net-next] net: hns: use IRQ_NOAUTOEN to avoid irq is enabled due to request_irq
-Date:   Fri, 11 Sep 2020 13:55:10 +1200
-Message-ID: <20200911015510.31420-1-song.bao.hua@hisilicon.com>
-X-Mailer: git-send-email 2.21.0.windows.1
+        id S1725796AbgIKDDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 10 Sep 2020 23:03:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725300AbgIKDDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 10 Sep 2020 23:03:49 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3D1C061573;
+        Thu, 10 Sep 2020 20:03:46 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id s205so10833177lja.7;
+        Thu, 10 Sep 2020 20:03:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pjDuSWQDMIfFRrtnCSZ2cjlpYS9X+lyOuSgqN7r89ZE=;
+        b=PRe8gHqX4Pif+KsN6JkFnBn2ZrCikKhFYk0ljtN2c3m41SQtCzMrytU2AviU9TsP1d
+         tJHL4jzn4Od/RCgbA1awbBveBQz/BhwL9YatUM+k2w7nwW+TCVi7GmW0tuB+kIyNb4oB
+         7Gl3xandp7c+SJGAFJqMRPFqh+q8YKqbEACoIb6cMP3lAIpuTPhX8lvfql7f2clf90r/
+         VkuMpsB71zF/hLufAs8LhX5j1f1VTpSEUEqHDnKSagBn4dUHGu85hzOc3KOeMsG80g32
+         AOMXep6cA4m111wz9SXO6vDM4abNx9XDgPk7zNkYFw3ciAhJhfU8Sl2p471gtRS1d++y
+         emew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pjDuSWQDMIfFRrtnCSZ2cjlpYS9X+lyOuSgqN7r89ZE=;
+        b=ED8CQj4hszXBg1fdZU7d3tqr16aIS2NMjDGyGUzuuUmTRTX3ABVjrgcTzCoJPQhmht
+         TtfL9ZKaZwS8yQW3uwuajqjkuEegxUBxjmq3KOadMnDOtICXgG6Bkk9dzAXLZIU2RxXR
+         zC0b2Rvr5SB8jF5sIeWh7ClpJ1q7SPWULMoQmd1g5d8ibtPvDSCLjqUxYtd7tUKa7Ad+
+         W8RO7huAMis+zl1iY89CpjFWtNHZzNnc/GX0wn9hosQCO6qGvbGfkzWKUARV6gOiciiP
+         lOYxe4Bm9fR2+osKei7uZ0pYSeMG+LCgi7HegWCHtwwMkIrfm/S/E+z0qVAMwjAGLPLj
+         25nQ==
+X-Gm-Message-State: AOAM533Eu9L6x9jGiGW4pxakCsocngtwuAIvO9Z1h/ln5vKvLUqXwiD1
+        NuDpZLDqZTVxDjajgFGxTh0eCPS+YkhTTYXUfY8=
+X-Google-Smtp-Source: ABdhPJxTNWvDUF92znyBRyBTLaEGFZtA35jDlxbruoWX12oUjyVUGRxNHSQcN3HXTQ0w+7RXlhpMT2ThWqfUdhCTCD0=
+X-Received: by 2002:a2e:808f:: with SMTP id i15mr5582922ljg.51.1599793425119;
+ Thu, 10 Sep 2020 20:03:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.126.202.211]
-X-CFilter-Loop: Reflected
+References: <20200910202718.956042-1-yhs@fb.com>
+In-Reply-To: <20200910202718.956042-1-yhs@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 10 Sep 2020 20:03:33 -0700
+Message-ID: <CAADnVQ+cFw-b5GsyeUpFeSLJinbg5kNyHexf0hrERdj1eWUzAw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: define string const as global for test_sysctl_prog.c
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rather than doing request_irq and then disabling the irq immediately, it
-should be safer to use IRQ_NOAUTOEN flag for the irq. It removes any gap
-between request_irq() and disable_irq().
+On Thu, Sep 10, 2020 at 1:27 PM Yonghong Song <yhs@fb.com> wrote:
+>
+> When tweaking llvm optimizations, I found that selftest build failed
+> with the following error:
+>   libbpf: elf: skipping unrecognized data section(6) .rodata.str1.1
+>   libbpf: prog 'sysctl_tcp_mem': bad map relo against '.L__const.is_tcp_mem.tcp_mem_name'
+>           in section '.rodata.str1.1'
+>   Error: failed to open BPF object file: Relocation failed
+>   make: *** [/work/net-next/tools/testing/selftests/bpf/test_sysctl_prog.skel.h] Error 255
+>   make: *** Deleting file `/work/net-next/tools/testing/selftests/bpf/test_sysctl_prog.skel.h'
+>
+> The local string constant "tcp_mem_name" is put into '.rodata.str1.1' section
+> which libbpf cannot handle. Using untweaked upstream llvm, "tcp_mem_name"
+> is completely inlined after loop unrolling.
+>
+> Commit 7fb5eefd7639 ("selftests/bpf: Fix test_sysctl_loop{1, 2}
+> failure due to clang change") solved a similar problem by defining
+> the string const as a global. Let us do the same here
+> for test_sysctl_prog.c so it can weather future potential llvm changes.
+>
+> Signed-off-by: Yonghong Song <yhs@fb.com>
 
-Cc: Salil Mehta <salil.mehta@huawei.com>
-Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
-Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
----
- drivers/net/ethernet/hisilicon/hns/hns_enet.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-index 22522f8a5299..34cc469656e8 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-@@ -11,6 +11,7 @@
- #include <linux/io.h>
- #include <linux/ip.h>
- #include <linux/ipv6.h>
-+#include <linux/irq.h>
- #include <linux/module.h>
- #include <linux/phy.h>
- #include <linux/platform_device.h>
-@@ -1293,6 +1294,7 @@ static int hns_nic_init_irq(struct hns_nic_priv *priv)
- 
- 		rd->ring->ring_name[RCB_RING_NAME_LEN - 1] = '\0';
- 
-+		irq_set_status_flags(rd->ring->irq, IRQ_NOAUTOEN);
- 		ret = request_irq(rd->ring->irq,
- 				  hns_irq_handle, 0, rd->ring->ring_name, rd);
- 		if (ret) {
-@@ -1300,7 +1302,6 @@ static int hns_nic_init_irq(struct hns_nic_priv *priv)
- 				   rd->ring->irq);
- 			goto out_free_irq;
- 		}
--		disable_irq(rd->ring->irq);
- 
- 		cpu = hns_nic_init_affinity_mask(h->q_num, i,
- 						 rd->ring, &rd->mask);
--- 
-2.25.1
-
-
+Applied. Thanks
