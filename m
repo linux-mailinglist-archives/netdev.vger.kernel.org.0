@@ -2,98 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39832265AA8
-	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 09:42:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A866F265AF5
+	for <lists+netdev@lfdr.de>; Fri, 11 Sep 2020 09:59:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725777AbgIKHmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 03:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbgIKHmt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 03:42:49 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C0DC061573;
-        Fri, 11 Sep 2020 00:42:49 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id u126so8547638oif.13;
-        Fri, 11 Sep 2020 00:42:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WQ/Y5klvASid4l7LE9orQamQKfODVtQvXjKUrtElCr8=;
-        b=B0ZSIeIdFJY3qwVi7UTdqgyDpDDR5NBsSikIDlDodrahrtzIHK4yo/sfJFJT4dzAOA
-         F62hElVAm2O1cEhFMSOcOcjheMm4UihA+hPJqIRSGwTnxde3zjFnvaOFj+vjlEIH4m4d
-         n+BnbHTviAsyw+ynTvLbUhJRx6Sd5IKl4GO4+H6Hw6aHkbUVSahxXqjD7XGkEaUCEYzi
-         vVKUz+yznVadHYoAnTmp45dtGiaCcSIf8zRZWnO/6aG+9cvwH1ZSaGMPKCf3LsMdytB/
-         WgDC5ZmdP6eziy1fOBWWPWkYIlVRXXkzZCb72pgR98oebfJEhQjI3P6pJnMsJbR9P686
-         0fuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WQ/Y5klvASid4l7LE9orQamQKfODVtQvXjKUrtElCr8=;
-        b=k6+rsf6GbTGVCZx0dfLoN1Btq+ihLSk+Ldu8QuvpKaklTrXz6fuiXmXc8sFHuGNPdT
-         CTjFzXwxwRbsoWbNva4f965vANymjjTPv9ZCUXLAdbGrFrcyuW5jrk+yDNqagZQTktvO
-         fNw6sn93xjADGMl8aAlv0zLyZeqFF+XoA0t2o+41gxwCpYHxjafcySlOgA9gnrpAQu9b
-         8QIzTVc31/Ij9CvugOBnH0QpETYrrykLk6ocX7BUDieh6phAtZynkCSJgwg+188WCz/I
-         bBdXmrfmEVuwX/4XxYh1I/r8kPHQFUILBaRADNVlSRceWbHl40AEyLR46TlHHfSrXKpF
-         CUpw==
-X-Gm-Message-State: AOAM531oIxTjjeXZ4XDMFqcJPZPXGGQpTpzjGxmqPQu6PqunSIeNyf2Y
-        jvkaMpYs5xAxO+eR29Ime6iMolZgRXdnl8U8EWk=
-X-Google-Smtp-Source: ABdhPJxFTdO10jmbUyTG1HrZg/xxHBxBwLdTlbKvGcRKVggC5D2rEFpvkQJZuesgF4wyQux1h/mQI9ZbNBPtO39LfoU=
-X-Received: by 2002:aca:4e03:: with SMTP id c3mr498798oib.169.1599810168883;
- Fri, 11 Sep 2020 00:42:48 -0700 (PDT)
+        id S1725791AbgIKH6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 03:58:49 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:41242 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725468AbgIKH6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 03:58:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1599811122;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XErkIQ5mdeKAcHJcnRXSH+TaJIkkP4+grW1KLUdXd9A=;
+        b=AqhGXLBiYiHnq3l//bETnl+EK1zNg/T0d2Ag4UWTK7YvMjAQK3TQcofKjgNnCGI+MFmWob
+        5l/99So7x/d4kNePF/9wBvL6KlRf/QSpmqNktyYXxiTLARc8H54OEL8FSL7HwgO9Cvisij
+        t+GE8Wj19Pi8800D6Tt9Z5iJL2AFO+Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-497-o5ppQwdiOJWTSU3wDVbcig-1; Fri, 11 Sep 2020 03:58:36 -0400
+X-MC-Unique: o5ppQwdiOJWTSU3wDVbcig-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AF9A81007B01;
+        Fri, 11 Sep 2020 07:58:34 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.42])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E2A6275121;
+        Fri, 11 Sep 2020 07:58:21 +0000 (UTC)
+Date:   Fri, 11 Sep 2020 09:58:20 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>, brouer@redhat.com
+Subject: Re: [PATCHv11 bpf-next 2/5] xdp: add a new helper for dev map
+ multicast support
+Message-ID: <20200911095820.304d9877@carbon>
+In-Reply-To: <47566856-75e2-8f2b-4347-f03a7cb5493b@gmail.com>
+References: <20200903102701.3913258-1-liuhangbin@gmail.com>
+        <20200907082724.1721685-1-liuhangbin@gmail.com>
+        <20200907082724.1721685-3-liuhangbin@gmail.com>
+        <20200909215206.bg62lvbvkmdc5phf@ast-mbp.dhcp.thefacebook.com>
+        <20200910023506.GT2531@dhcp-12-153.nay.redhat.com>
+        <a1bcd5e8-89dd-0eca-f779-ac345b24661e@gmail.com>
+        <CAADnVQ+CooPL7Zu4Y-AJZajb47QwNZJU_rH7A3GSbV8JgA4AcQ@mail.gmail.com>
+        <87o8mearu5.fsf@toke.dk>
+        <20200910195014.13ff24e4@carbon>
+        <47566856-75e2-8f2b-4347-f03a7cb5493b@gmail.com>
 MIME-Version: 1.0
-References: <20200904162154.GA24295@wunner.de> <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
- <20200905052403.GA10306@wunner.de> <e8aecc2b-80cb-8ee5-8efe-7ae5c4eafc70@iogearbox.net>
-In-Reply-To: <e8aecc2b-80cb-8ee5-8efe-7ae5c4eafc70@iogearbox.net>
-From:   =?UTF-8?Q?Laura_Garc=C3=ADa_Li=C3=A9bana?= <nevola@gmail.com>
-Date:   Fri, 11 Sep 2020 09:42:37 +0200
-Message-ID: <CAF90-Whc3HL9x-7TJ7m3tZp10RNmQxFD=wdQUJLCaUajL2RqXg@mail.gmail.com>
-Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+On Thu, 10 Sep 2020 12:35:33 -0600
+David Ahern <dsahern@gmail.com> wrote:
 
-On Tue, Sep 8, 2020 at 2:55 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Hi Lukas,
->
-> On 9/5/20 7:24 AM, Lukas Wunner wrote:
-> > On Fri, Sep 04, 2020 at 11:14:37PM +0200, Daniel Borkmann wrote:
-> >> On 9/4/20 6:21 PM, Lukas Wunner wrote:
-> [...]
-> >> The tc queueing layer which is below is not the tc egress hook; the
-> >> latter is for filtering/mangling/forwarding or helping the lower tc
-> >> queueing layer to classify.
-> >
-> > People want to apply netfilter rules on egress, so either we need an
-> > egress hook in the xmit path or we'd have to teach tc to filter and
-> > mangle based on netfilter rules.  The former seemed more straight-forward
-> > to me but I'm happy to pursue other directions.
->
-> I would strongly prefer something where nf integrates into existing tc hook,
-> not only due to the hook reuse which would be better, but also to allow for a
-> more flexible interaction between tc/BPF use cases and nf, to name one
+> On 9/10/20 11:50 AM, Jesper Dangaard Brouer wrote:
+> > Maybe we should change the devmap-prog approach, and run this on the
+> > xdp_frame's (in bq_xmit_all() to be precise) .  Hangbin's patchset
+> > clearly shows that we need this "layer" between running the xdp_prog and
+> > the devmap-prog.   
+> 
+> I would prefer to leave it in dev_map_enqueue.
+> 
+> The main premise at the moment is that the program attached to the
+> DEVMAP entry is an ACL specific to that dev. If the program is going to
+> drop the packet, then no sense queueing it.
+> 
+> I also expect a follow on feature will be useful to allow the DEVMAP
+> program to do another REDIRECT (e.g., potentially after modifying). It
+> is not handled at the moment as it needs thought - e.g., limiting the
+> number of iterative redirects. If such a feature does happen, then no
+> sense queueing it to the current device.
 
-That sounds good but I'm afraid that it would take too much back and
-forth discussions. We'll really appreciate it if this small patch can
-be unblocked and then rethink the refactoring of ingress/egress hooks
-that you commented in another thread.
+It makes a lot of sense to do queuing before redirecting again.  The
+(hidden) bulking we do at XDP redirect is the primary reason for the
+performance boost. We all remember performance difference between
+non-map version of redirect (which Toke fixed via always having the
+bulking available in net_device->xdp_bulkq).
 
-Thanks!
+In a simple micro-benchmark I bet it will look better running the
+devmap-prog right after the xdp_prog (which is what we have today). But
+I claim this is the wrong approach, as soon as (1) traffic is more
+intermixed, and (2) devmap-prog gets bigger and becomes more specific
+to the egress-device (e.g. BPF update constants per egress-device).
+When this happens performance suffers, as I-cache and data-access to
+each egress-device gets pushed out of cache. (Hint VPP/fd.io approach)
+
+Queuing xdp_frames up for your devmap-prog makes sense, as these share
+common properties.  With intermix traffic the first xdp_prog will sort
+packets into egress-devices, and then the devmap-prog can operate on
+these.  The best illustration[1] of this sorting I saw in a Netflix
+blogpost[2] about FreeBSD, section "RSS Assisted LRO" (not directly
+related, but illustration was good).
+
+
+[1] https://miro.medium.com/max/700/1%2alTGL1_D6hTMEMa7EDV8yZA.png
+[2] https://netflixtechblog.com/serving-100-gbps-from-an-open-connect-appliance-cdb51dda3b99
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
