@@ -2,150 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B1B7267789
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 05:38:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9E602677F0
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 06:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725813AbgILDic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 23:38:32 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:53548 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725788AbgILDiV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 23:38:21 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1B3891A0EE7;
-        Sat, 12 Sep 2020 05:38:17 +0200 (CEST)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D3F081A0EDB;
-        Sat, 12 Sep 2020 05:38:13 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 7A18940302;
-        Sat, 12 Sep 2020 05:38:08 +0200 (CEST)
-From:   Yangbo Lu <yangbo.lu@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Yangbo Lu <yangbo.lu@nxp.com>, devicetree@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: [PATCH 2/2] ptp_qoriq: support FIPER3
-Date:   Sat, 12 Sep 2020 11:30:06 +0800
-Message-Id: <20200912033006.20771-3-yangbo.lu@nxp.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200912033006.20771-1-yangbo.lu@nxp.com>
-References: <20200912033006.20771-1-yangbo.lu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1725857AbgILE7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Sep 2020 00:59:33 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45156 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725850AbgILE7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 00:59:30 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08C4sig4003594
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 21:59:29 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=x6FxozHh27/sVb52p3XRqCQC4WI6lR5BG6R/Dw+nvnM=;
+ b=oWuggsdNpoBg89jlOTRYX/BwUQKF/vfPbtNLZ3ivgK4a166haXRCdlNTa488VpFE7DYz
+ RzI6A07bupjKHWKAV02xdWhFuuz1GZD+dDWSZk9HVINEgln5phFFCmKK9beJOmpa0YBU
+ /unQlJQ+pwTEYbaZYqt76rq4hTp1LcHmQU8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 33fhxujygu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 21:59:29 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 11 Sep 2020 21:59:28 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id C47352945F51; Fri, 11 Sep 2020 21:59:17 -0700 (PDT)
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>, <netdev@vger.kernel.org>
+Subject: [PATCH RFC bpf-next 0/2] bpf: Enable bpf_skc_to_* sock casting helper to networking prog type
+Date:   Fri, 11 Sep 2020 21:59:17 -0700
+Message-ID: <20200912045917.2992578-1-kafai@fb.com>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-12_01:2020-09-10,2020-09-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
+ lowpriorityscore=0 suspectscore=1 bulkscore=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 adultscore=0 mlxscore=0 malwarescore=0
+ mlxlogscore=408 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009120048
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The FIPER3 (fixed interval period pulse generator) is supported on
-DPAA2 and ENETC network controller hardware. This patch is to support
-it in ptp_qoriq driver.
+This set allows networking prog type to directly read fields from
+the in-kernel socket type, e.g. "struct tcp_sock".
 
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
----
- drivers/ptp/ptp_qoriq.c       | 23 ++++++++++++++++++++++-
- include/linux/fsl/ptp_qoriq.h |  3 +++
- 2 files changed, 25 insertions(+), 1 deletion(-)
+Patch 2 has the details on the use case.
 
-diff --git a/drivers/ptp/ptp_qoriq.c b/drivers/ptp/ptp_qoriq.c
-index c09c16be..68beb1b 100644
---- a/drivers/ptp/ptp_qoriq.c
-+++ b/drivers/ptp/ptp_qoriq.c
-@@ -72,6 +72,10 @@ static void set_fipers(struct ptp_qoriq *ptp_qoriq)
- 	set_alarm(ptp_qoriq);
- 	ptp_qoriq->write(&regs->fiper_regs->tmr_fiper1, ptp_qoriq->tmr_fiper1);
- 	ptp_qoriq->write(&regs->fiper_regs->tmr_fiper2, ptp_qoriq->tmr_fiper2);
-+
-+	if (ptp_qoriq->fiper3_support)
-+		ptp_qoriq->write(&regs->fiper_regs->tmr_fiper3,
-+				 ptp_qoriq->tmr_fiper3);
- }
- 
- int extts_clean_up(struct ptp_qoriq *ptp_qoriq, int index, bool update_event)
-@@ -366,6 +370,7 @@ static u32 ptp_qoriq_nominal_freq(u32 clk_src)
-  *   "fsl,tmr-add"
-  *   "fsl,tmr-fiper1"
-  *   "fsl,tmr-fiper2"
-+ *   "fsl,tmr-fiper3" (required only for DPAA2 and ENETC hardware)
-  *   "fsl,max-adj"
-  *
-  * Return 0 if success
-@@ -412,6 +417,7 @@ static int ptp_qoriq_auto_config(struct ptp_qoriq *ptp_qoriq,
- 	ptp_qoriq->tmr_add = freq_comp;
- 	ptp_qoriq->tmr_fiper1 = DEFAULT_FIPER1_PERIOD - ptp_qoriq->tclk_period;
- 	ptp_qoriq->tmr_fiper2 = DEFAULT_FIPER2_PERIOD - ptp_qoriq->tclk_period;
-+	ptp_qoriq->tmr_fiper3 = DEFAULT_FIPER3_PERIOD - ptp_qoriq->tclk_period;
- 
- 	/* max_adj = 1000000000 * (freq_ratio - 1.0) - 1
- 	 * freq_ratio = reference_clock_freq / nominal_freq
-@@ -446,6 +452,13 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
- 	else
- 		ptp_qoriq->extts_fifo_support = false;
- 
-+	if (of_device_is_compatible(node, "fsl,dpaa2-ptp") ||
-+	    of_device_is_compatible(node, "fsl,enetc-ptp")) {
-+		ptp_qoriq->fiper3_support = true;
-+	} else {
-+		ptp_qoriq->fiper3_support = false;
-+	}
-+
- 	if (of_property_read_u32(node,
- 				 "fsl,tclk-period", &ptp_qoriq->tclk_period) ||
- 	    of_property_read_u32(node,
-@@ -457,7 +470,10 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
- 	    of_property_read_u32(node,
- 				 "fsl,tmr-fiper2", &ptp_qoriq->tmr_fiper2) ||
- 	    of_property_read_u32(node,
--				 "fsl,max-adj", &ptp_qoriq->caps.max_adj)) {
-+				 "fsl,max-adj", &ptp_qoriq->caps.max_adj) ||
-+	    (of_property_read_u32(node,
-+				 "fsl,tmr-fiper3", &ptp_qoriq->tmr_fiper3) &&
-+	     ptp_qoriq->fiper3_support)) {
- 		pr_warn("device tree node missing required elements, try automatic configuration\n");
- 
- 		if (ptp_qoriq_auto_config(ptp_qoriq, node))
-@@ -502,6 +518,11 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
- 	ptp_qoriq->write(&regs->ctrl_regs->tmr_prsc, ptp_qoriq->tmr_prsc);
- 	ptp_qoriq->write(&regs->fiper_regs->tmr_fiper1, ptp_qoriq->tmr_fiper1);
- 	ptp_qoriq->write(&regs->fiper_regs->tmr_fiper2, ptp_qoriq->tmr_fiper2);
-+
-+	if (ptp_qoriq->fiper3_support)
-+		ptp_qoriq->write(&regs->fiper_regs->tmr_fiper3,
-+				 ptp_qoriq->tmr_fiper3);
-+
- 	set_alarm(ptp_qoriq);
- 	ptp_qoriq->write(&regs->ctrl_regs->tmr_ctrl,
- 			 tmr_ctrl|FIPERST|RTPE|TE|FRD);
-diff --git a/include/linux/fsl/ptp_qoriq.h b/include/linux/fsl/ptp_qoriq.h
-index 884b8f8..01acebe 100644
---- a/include/linux/fsl/ptp_qoriq.h
-+++ b/include/linux/fsl/ptp_qoriq.h
-@@ -136,6 +136,7 @@ struct ptp_qoriq_registers {
- #define DEFAULT_TMR_PRSC	2
- #define DEFAULT_FIPER1_PERIOD	1000000000
- #define DEFAULT_FIPER2_PERIOD	1000000000
-+#define DEFAULT_FIPER3_PERIOD	1000000000
- 
- struct ptp_qoriq {
- 	void __iomem *base;
-@@ -147,6 +148,7 @@ struct ptp_qoriq {
- 	struct dentry *debugfs_root;
- 	struct device *dev;
- 	bool extts_fifo_support;
-+	bool fiper3_support;
- 	int irq;
- 	int phc_index;
- 	u32 tclk_period;  /* nanoseconds */
-@@ -155,6 +157,7 @@ struct ptp_qoriq {
- 	u32 cksel;
- 	u32 tmr_fiper1;
- 	u32 tmr_fiper2;
-+	u32 tmr_fiper3;
- 	u32 (*read)(unsigned __iomem *addr);
- 	void (*write)(unsigned __iomem *addr, u32 val);
- };
--- 
-2.7.4
+It is currently under RFC since it needs proper tests and it builds on
+top of Lorenz's patches:=20
+   https://lore.kernel.org/bpf/20200910125631.225188-1-lmb@cloudflare.com=
+/
+
+Martin KaFai Lau (2):
+  bpf: Move the PTR_TO_BTF_ID check to check_reg_type()
+  bpf: Enable bpf_skc_to_* sock casting helper to networking prog type
+
+ kernel/bpf/verifier.c | 85 +++++++++++++++++++++++++++----------------
+ net/core/filter.c     | 69 +++++++++++++++++++++++++----------
+ 2 files changed, 103 insertions(+), 51 deletions(-)
+
+--=20
+2.24.1
 
