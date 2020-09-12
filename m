@@ -2,72 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C109267A8C
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 14:59:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16AD7267AC3
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 16:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725891AbgILM7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Sep 2020 08:59:21 -0400
-Received: from mail-il1-f208.google.com ([209.85.166.208]:51520 "EHLO
-        mail-il1-f208.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725880AbgILM7I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 08:59:08 -0400
-Received: by mail-il1-f208.google.com with SMTP id i80so9140619ild.18
-        for <netdev@vger.kernel.org>; Sat, 12 Sep 2020 05:59:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=WYtWFHRSU717tB4AOlbQFrWP5bISa+QXam+Bz0rRjMY=;
-        b=PtLI4nkvzgm4fYB7Bnh93eGvTi1Q5wOotPUUEVLlb3OxCExoOLL+IHGsvxA7rXChoh
-         Jhk5+Cb6dKEnXIXNyKjJCOHzFblStzALfQZzUy6xBDFYCEyynGxDDXwyJbLYn7u8hFtS
-         nYzM3e282FhAp9Z/cUaH30P/87Kcz39HeSTCcOvN1r4NFrfHYC5nUi2FCUucpsLCGP7+
-         Incvrysorr3FGBUv3CUCnB3JFrezkTOiJYzlWCO5S23SEVhFZCFuCw0UiYY7V5YcERVs
-         g31miZaHfxeXJnpV/GoVQY6fJF4gjvjBwAwyyiLeyCWxS3s8n7Z7WBniHyoh2jWIuMdp
-         0DpA==
-X-Gm-Message-State: AOAM531hxuaEbFBrofqpfxGhylc61FI7PGS6zAJ4WZ716v4ck+egjbNc
-        Jsfasv//qCRRN6QEOHfd8Iq50e5b/OwIZ0yUph1FQaqOfOY6
-X-Google-Smtp-Source: ABdhPJwLcoK9/BOVvUqW1qoKASa59qg2Z8rU3mVu/ovDZnFvptvji8E0w4KbtYZRK0MK1BCQIgrBtsl0DqKZRNCFZ2x3MA/XMcfx
+        id S1725879AbgILOMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Sep 2020 10:12:44 -0400
+Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:26729 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725874AbgILOMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 10:12:39 -0400
+Received: from localhost.localdomain ([93.22.150.101])
+        by mwinf5d61 with ME
+        id T2Cb230012BWSNM032Cbu9; Sat, 12 Sep 2020 16:12:37 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 12 Sep 2020 16:12:37 +0200
+X-ME-IP: 93.22.150.101
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     davem@davemloft.net, kuba@kernel.org, andy@greyhouse.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net: tehuti: switch from 'pci_' to 'dma_' API
+Date:   Sat, 12 Sep 2020 16:12:32 +0200
+Message-Id: <20200912141232.343630-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a5d:995a:: with SMTP id v26mr5175295ios.176.1599915547769;
- Sat, 12 Sep 2020 05:59:07 -0700 (PDT)
-Date:   Sat, 12 Sep 2020 05:59:07 -0700
-In-Reply-To: <0000000000004991e705ac9d1a83@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e5419905af1d5d2b@google.com>
-Subject: Re: inconsistent lock state in sco_conn_del
-From:   syzbot <syzbot+65684128cd7c35bc66a1@syzkaller.appspotmail.com>
-To:     cgroups@vger.kernel.org, davem@davemloft.net, hannes@cmpxchg.org,
-        johan.hedberg@gmail.com, keescook@chromium.org, kennyyu@fb.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lizefan@huawei.com,
-        luto@amacapital.net, marcel@holtmann.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tj@kernel.org, wad@chromium.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-commit 135b8b37bd91cc82f83e98fca109b80375f5317e
-Author: Kenny Yu <kennyyu@fb.com>
-Date:   Tue Jun 21 18:04:36 2016 +0000
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
 
-    cgroup: Add pids controller event when fork fails because of pid limit
+When memory is allocated in 'bdx_fifo_init()' GFP_ATOMIC must be used
+because it can be called from a '.ndo_set_rx_mode' function. Such functions
+hold the 'netif_addr_lock' spinlock.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12f6d80d900000
-start commit:   e8878ab8 Merge tag 'spi-fix-v5.9-rc4' of git://git.kernel...
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=11f6d80d900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=16f6d80d900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c61610091f4ca8c4
-dashboard link: https://syzkaller.appspot.com/bug?extid=65684128cd7c35bc66a1
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=121ef0fd900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16c3a853900000
+  .ndo_set_rx_mode              (see struct net_device_ops)
+    --> bdx_change_mtu
+      --> bdx_open
+        --> bdx_rx_init
+        --> bdx_tx_init
+          --> bdx_fifo_init
 
-Reported-by: syzbot+65684128cd7c35bc66a1@syzkaller.appspotmail.com
-Fixes: 135b8b37bd91 ("cgroup: Add pids controller event when fork fails because of pid limit")
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/tehuti/tehuti.c | 53 +++++++++++++---------------
+ 1 file changed, 25 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/net/ethernet/tehuti/tehuti.c b/drivers/net/ethernet/tehuti/tehuti.c
+index e28727297563..a142e4c9fc03 100644
+--- a/drivers/net/ethernet/tehuti/tehuti.c
++++ b/drivers/net/ethernet/tehuti/tehuti.c
+@@ -153,11 +153,11 @@ bdx_fifo_init(struct bdx_priv *priv, struct fifo *f, int fsz_type,
+ 	u16 memsz = FIFO_SIZE * (1 << fsz_type);
+ 
+ 	memset(f, 0, sizeof(struct fifo));
+-	/* pci_alloc_consistent gives us 4k-aligned memory */
+-	f->va = pci_alloc_consistent(priv->pdev,
+-				     memsz + FIFO_EXTRA_SPACE, &f->da);
++	/* dma_alloc_coherent gives us 4k-aligned memory */
++	f->va = dma_alloc_coherent(&priv->pdev->dev, memsz + FIFO_EXTRA_SPACE,
++				   &f->da, GFP_ATOMIC);
+ 	if (!f->va) {
+-		pr_err("pci_alloc_consistent failed\n");
++		pr_err("dma_alloc_coherent failed\n");
+ 		RET(-ENOMEM);
+ 	}
+ 	f->reg_CFG0 = reg_CFG0;
+@@ -183,8 +183,8 @@ static void bdx_fifo_free(struct bdx_priv *priv, struct fifo *f)
+ {
+ 	ENTER;
+ 	if (f->va) {
+-		pci_free_consistent(priv->pdev,
+-				    f->memsz + FIFO_EXTRA_SPACE, f->va, f->da);
++		dma_free_coherent(&priv->pdev->dev,
++				  f->memsz + FIFO_EXTRA_SPACE, f->va, f->da);
+ 		f->va = NULL;
+ 	}
+ 	RET();
+@@ -1033,9 +1033,8 @@ static void bdx_rx_free_skbs(struct bdx_priv *priv, struct rxf_fifo *f)
+ 	for (i = 0; i < db->nelem; i++) {
+ 		dm = bdx_rxdb_addr_elem(db, i);
+ 		if (dm->dma) {
+-			pci_unmap_single(priv->pdev,
+-					 dm->dma, f->m.pktsz,
+-					 PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&priv->pdev->dev, dm->dma,
++					 f->m.pktsz, DMA_FROM_DEVICE);
+ 			dev_kfree_skb(dm->skb);
+ 		}
+ 	}
+@@ -1097,9 +1096,8 @@ static void bdx_rx_alloc_skbs(struct bdx_priv *priv, struct rxf_fifo *f)
+ 
+ 		idx = bdx_rxdb_alloc_elem(db);
+ 		dm = bdx_rxdb_addr_elem(db, idx);
+-		dm->dma = pci_map_single(priv->pdev,
+-					 skb->data, f->m.pktsz,
+-					 PCI_DMA_FROMDEVICE);
++		dm->dma = dma_map_single(&priv->pdev->dev, skb->data,
++					 f->m.pktsz, DMA_FROM_DEVICE);
+ 		dm->skb = skb;
+ 		rxfd = (struct rxf_desc *)(f->m.va + f->m.wptr);
+ 		rxfd->info = CPU_CHIP_SWAP32(0x10003);	/* INFO=1 BC=3 */
+@@ -1259,16 +1257,15 @@ static int bdx_rx_receive(struct bdx_priv *priv, struct rxd_fifo *f, int budget)
+ 		    (skb2 = netdev_alloc_skb(priv->ndev, len + NET_IP_ALIGN))) {
+ 			skb_reserve(skb2, NET_IP_ALIGN);
+ 			/*skb_put(skb2, len); */
+-			pci_dma_sync_single_for_cpu(priv->pdev,
+-						    dm->dma, rxf_fifo->m.pktsz,
+-						    PCI_DMA_FROMDEVICE);
++			dma_sync_single_for_cpu(&priv->pdev->dev, dm->dma,
++						rxf_fifo->m.pktsz,
++						DMA_FROM_DEVICE);
+ 			memcpy(skb2->data, skb->data, len);
+ 			bdx_recycle_skb(priv, rxdd);
+ 			skb = skb2;
+ 		} else {
+-			pci_unmap_single(priv->pdev,
+-					 dm->dma, rxf_fifo->m.pktsz,
+-					 PCI_DMA_FROMDEVICE);
++			dma_unmap_single(&priv->pdev->dev, dm->dma,
++					 rxf_fifo->m.pktsz, DMA_FROM_DEVICE);
+ 			bdx_rxdb_free_elem(db, rxdd->va_lo);
+ 		}
+ 
+@@ -1478,8 +1475,8 @@ bdx_tx_map_skb(struct bdx_priv *priv, struct sk_buff *skb,
+ 	int i;
+ 
+ 	db->wptr->len = skb_headlen(skb);
+-	db->wptr->addr.dma = pci_map_single(priv->pdev, skb->data,
+-					    db->wptr->len, PCI_DMA_TODEVICE);
++	db->wptr->addr.dma = dma_map_single(&priv->pdev->dev, skb->data,
++					    db->wptr->len, DMA_TO_DEVICE);
+ 	pbl->len = CPU_CHIP_SWAP32(db->wptr->len);
+ 	pbl->pa_lo = CPU_CHIP_SWAP32(L32_64(db->wptr->addr.dma));
+ 	pbl->pa_hi = CPU_CHIP_SWAP32(H32_64(db->wptr->addr.dma));
+@@ -1716,8 +1713,8 @@ static void bdx_tx_cleanup(struct bdx_priv *priv)
+ 		BDX_ASSERT(db->rptr->len == 0);
+ 		do {
+ 			BDX_ASSERT(db->rptr->addr.dma == 0);
+-			pci_unmap_page(priv->pdev, db->rptr->addr.dma,
+-				       db->rptr->len, PCI_DMA_TODEVICE);
++			dma_unmap_page(&priv->pdev->dev, db->rptr->addr.dma,
++				       db->rptr->len, DMA_TO_DEVICE);
+ 			bdx_tx_db_inc_rptr(db);
+ 		} while (db->rptr->len > 0);
+ 		tx_level -= db->rptr->len;	/* '-' koz len is negative */
+@@ -1765,8 +1762,8 @@ static void bdx_tx_free_skbs(struct bdx_priv *priv)
+ 	ENTER;
+ 	while (db->rptr != db->wptr) {
+ 		if (likely(db->rptr->len))
+-			pci_unmap_page(priv->pdev, db->rptr->addr.dma,
+-				       db->rptr->len, PCI_DMA_TODEVICE);
++			dma_unmap_page(&priv->pdev->dev, db->rptr->addr.dma,
++				       db->rptr->len, DMA_TO_DEVICE);
+ 		else
+ 			dev_kfree_skb(db->rptr->addr.skb);
+ 		bdx_tx_db_inc_rptr(db);
+@@ -1902,12 +1899,12 @@ bdx_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (err)			/* it triggers interrupt, dunno why. */
+ 		goto err_pci;		/* it's not a problem though */
+ 
+-	if (!(err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) &&
+-	    !(err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64)))) {
++	if (!(err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) &&
++	    !(err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64)))) {
+ 		pci_using_dac = 1;
+ 	} else {
+-		if ((err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) ||
+-		    (err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)))) {
++		if ((err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) ||
++		    (err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32)))) {
+ 			pr_err("No usable DMA configuration, aborting\n");
+ 			goto err_dma;
+ 		}
+-- 
+2.25.1
+
