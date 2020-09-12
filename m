@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C8A7267B0F
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 16:52:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFD1F267B03
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 16:47:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725920AbgILOvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Sep 2020 10:51:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
+        id S1725899AbgILOqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Sep 2020 10:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725896AbgILOlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 10:41:53 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A22AC06179B;
-        Sat, 12 Sep 2020 07:41:40 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id z23so17206948ejr.13;
-        Sat, 12 Sep 2020 07:41:39 -0700 (PDT)
+        with ESMTP id S1725904AbgILOmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 10:42:11 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CEEC06179E;
+        Sat, 12 Sep 2020 07:41:42 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id t16so13352231edw.7;
+        Sat, 12 Sep 2020 07:41:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=oQOySYekxpWrbKXMYpNRdIvDjnOWP9GESNEDcuEiSJQ=;
-        b=i8cVIsGd4f7+hOYxGkqAs4rF6fFKiHn9A8/YTAt/ocTw/37LB3cKLUTv4akfof3V/O
-         eePp/g1ZRYXaXL/mWnHAR5npTlfKXxOmraHFxEJlbr9we1QEO2TrYO1IWwbc6+w6g+5K
-         Vv81JjKNnVUqXeCxiKLWRTwXoN3GOX1Zh2jGnsec+keL7Du5RVxFtcq0ZgxbE5zLSzyF
-         Od2viZBO/8coH1Vr0AyiOmb28y0H6tgwhLOpQUPV7xdyXdH07p/F/fTPChQSgIwYNxnd
-         QrzFwnabL+umcux18JLuwLY1mhHOxKpnFVVriXA40/pu8GJeD4axdm9zTVqaFVLuIOdF
-         E4Wg==
+        bh=jL0D0xcGkP8I+a05PVNQiU4I3EGWW4b574qQx3GqaHs=;
+        b=PGMnpbtJJsaQ26r3fdux1cGmxbSeO2sNOqG3+KWNoN2inR4fbMiMv3cKlCD845qY5l
+         G588KRv7e6PghoZ94WAsL5AsB9xNCLYxxGXeZkwVZqOUrp1YNWe+m44TkyCIZ7nvZfW1
+         aeJucuZjGvBYUgrGSyoitaCb/c7/VKluLrV0MdyAcdsq+Uh3EPo/X5MAOWen2Tf08hML
+         25jbiJu+JhUbF0Eq93KyJ2jVQe/uiZ8qKmNOgzGiU4Hs2SDt/AzpmzyZs7PwVM21SItz
+         b0Wc1K/LFmVm/J2OIWvvyGQxIYiRxdJnPH7KfWxBDywzK8ysscL9PwLlex0OaQlBKkHt
+         E/AA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=oQOySYekxpWrbKXMYpNRdIvDjnOWP9GESNEDcuEiSJQ=;
-        b=iAhNG22dED0lONturr1GlMw/xeaDXOnOSaQ5nnVviBqcxLHioX9iHS4pPlgH6oP3zr
-         FzHmCvELvNxeVhrRdOsAT2b2i/hRdOMwYjR7KliX8RereHPwD4VLfgj7/QaPjKNXWYwb
-         oLXQjc/2cpM9MSaNKE8HZSf3BfT991arq7mjQ1l6/2j44qB+gMp4nexCJRBK9KXmXZhJ
-         ZYhxkB2ShznPaPQe2UJEEdUL8ExuQxiW+/YOOSnS/zVz3TDwOw9flPVFM9Eb5xuVXavz
-         2teIiwIgI/eseN3c8Kfq8N9LTDd9isf2/3YMdkot1psn+8rvLdwSw7ct8QVvHy7plhLF
-         KJLg==
-X-Gm-Message-State: AOAM5323rvdpBm7sRQb24XH4csszqH5zEyrw6ROw1Bxdr+Q/Pd5wEReH
-        3VVDI3OEC2Rh5000ygnkrdRaXdpwJVs=
-X-Google-Smtp-Source: ABdhPJzsg9bPueAwl2FuL3dO4bez/4ZnZ5H7T+YYf1O3ROhS/+aVOdfOskdCsCrfeSWOp50V1EcbeQ==
-X-Received: by 2002:a17:906:386:: with SMTP id b6mr6256889eja.538.1599921698027;
-        Sat, 12 Sep 2020 07:41:38 -0700 (PDT)
+        bh=jL0D0xcGkP8I+a05PVNQiU4I3EGWW4b574qQx3GqaHs=;
+        b=tZiREPa1P836QGI9558V+Jf9OK1YZPTFpB4PaYBQsEDj/b2wbMFwVI+YFIQkoy9dfk
+         e3lfUPZ2fpBkK0Y2mGYdjk2zyP6eN1BttFJpSoWRC588xt3KZenWBa8Pguq/wvsjDCtt
+         DmYzCGkrj2ZYxB9NYBmOghk8v0Be4NkbfHFEG706oLoNddw6AYs5dqyYFwrNBaioX7gN
+         9iD7N+JkiKWPMlgBg4i7EyC/iRiHvj5wd4P3p+jg+INNqKWIPKpFok49OERJLBukpf+2
+         81XBH1sNdD6p4FXpMq034/aIVzNcA4YDA13Wm4i21O3iNykxPDLxF5SbbCmEpfq6sDmn
+         pAwg==
+X-Gm-Message-State: AOAM531J3wPbTknHRnWplPmthEy/F+MDP1oa5wpmQQIqXsrF0i6zzw/7
+        VzMk/e1lJWMJ07MLlYSENHkUdv5sEkc=
+X-Google-Smtp-Source: ABdhPJyLy7VNakk4c/4IVWSsg4iyxQklEGBXC3qcC8LBgaSJZwITOG8xbYuDNEtpJrS2o8MrcvKUzQ==
+X-Received: by 2002:a05:6402:12d1:: with SMTP id k17mr8432067edx.323.1599921700202;
+        Sat, 12 Sep 2020 07:41:40 -0700 (PDT)
 Received: from ogabbay-VM.habana-labs.com ([213.57.90.10])
-        by smtp.gmail.com with ESMTPSA id y25sm4842938edv.15.2020.09.12.07.41.35
+        by smtp.gmail.com with ESMTPSA id y25sm4842938edv.15.2020.09.12.07.41.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Sep 2020 07:41:36 -0700 (PDT)
+        Sat, 12 Sep 2020 07:41:39 -0700 (PDT)
 From:   Oded Gabbay <oded.gabbay@gmail.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     SW_Drivers@habana.ai, gregkh@linuxfoundation.org,
         davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         f.fainelli@gmail.com, Omer Shpigelman <oshpigelman@habana.ai>
-Subject: [PATCH v2 10/14] habanalabs/gaudi: add WQ control operations
-Date:   Sat, 12 Sep 2020 17:41:02 +0300
-Message-Id: <20200912144106.11799-11-oded.gabbay@gmail.com>
+Subject: [PATCH v2 11/14] habanalabs/gaudi: add QP error handling
+Date:   Sat, 12 Sep 2020 17:41:03 +0300
+Message-Id: <20200912144106.11799-12-oded.gabbay@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200912144106.11799-1-oded.gabbay@gmail.com>
 References: <20200912144106.11799-1-oded.gabbay@gmail.com>
@@ -64,15 +64,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Omer Shpigelman <oshpigelman@habana.ai>
 
-Add Work Queue (WQ) opcodes to NIC ioctl. A WQ contains entries (WQEs)
-where each WQE represents a packet that should be sent or received.
+Add Queue Pair (QP) error notification to the user e.g. security violation,
+too many retransmissions, invalid QP etc.
 
-Each WQ has two types: requester (sender) and responder (receiver).
-
-The added opcodes are:
-- Set WQ: set the WQ configuration in the HW. The user should provide the
-          device virtual address of the WQ.
-- Unset WQ: reset the WQ configuration in the HW.
+Whenever a QP caused an error, the firmware will send an event to the
+driver which will push the error as an error entry to the Completion Queue
+(if exists).
 
 Signed-off-by: Omer Shpigelman <oshpigelman@habana.ai>
 Reviewed-by: Oded Gabbay <oded.gabbay@gmail.com>
@@ -81,336 +78,149 @@ Signed-off-by: Oded Gabbay <oded.gabbay@gmail.com>
 Changes in v2:
   - Fix all instances of reverse Christmas tree
 
- .../misc/habanalabs/common/habanalabs_ioctl.c |  10 +-
- drivers/misc/habanalabs/gaudi/gaudi_nic.c     | 184 ++++++++++++++++++
- include/uapi/misc/habanalabs.h                |  33 ++++
- 3 files changed, 225 insertions(+), 2 deletions(-)
+ drivers/misc/habanalabs/gaudi/gaudi.c     | 13 ++++
+ drivers/misc/habanalabs/gaudi/gaudiP.h    |  1 +
+ drivers/misc/habanalabs/gaudi/gaudi_nic.c | 95 +++++++++++++++++++++++
+ 3 files changed, 109 insertions(+)
 
-diff --git a/drivers/misc/habanalabs/common/habanalabs_ioctl.c b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
-index 6ba1b9da0486..faf7eeb88b4f 100644
---- a/drivers/misc/habanalabs/common/habanalabs_ioctl.c
-+++ b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
-@@ -24,7 +24,7 @@ static u32 hl_debug_struct_size[HL_DEBUG_OP_TIMESTAMP + 1] = {
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index 4602e4780651..71c9e2d18032 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -6660,6 +6660,19 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
+ 		hl_fw_unmask_irq(hdev, event_type);
+ 		break;
  
- };
++	case GAUDI_EVENT_NIC0_QP0:
++	case GAUDI_EVENT_NIC0_QP1:
++	case GAUDI_EVENT_NIC1_QP0:
++	case GAUDI_EVENT_NIC1_QP1:
++	case GAUDI_EVENT_NIC2_QP0:
++	case GAUDI_EVENT_NIC2_QP1:
++	case GAUDI_EVENT_NIC3_QP0:
++	case GAUDI_EVENT_NIC3_QP1:
++	case GAUDI_EVENT_NIC4_QP0:
++	case GAUDI_EVENT_NIC4_QP1:
++		gaudi_nic_handle_qp_err(hdev, event_type);
++		break;
++
+ 	case GAUDI_EVENT_PSOC_GPIO_U16_0:
+ 		cause = le64_to_cpu(eq_entry->data[0]) & 0xFF;
+ 		dev_err(hdev->dev,
+diff --git a/drivers/misc/habanalabs/gaudi/gaudiP.h b/drivers/misc/habanalabs/gaudi/gaudiP.h
+index 3158d5d68c1d..7d7439da88bc 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudiP.h
++++ b/drivers/misc/habanalabs/gaudi/gaudiP.h
+@@ -576,5 +576,6 @@ netdev_tx_t gaudi_nic_handle_tx_pkt(struct gaudi_nic_device *gaudi_nic,
+ 					struct sk_buff *skb);
+ int gaudi_nic_sw_init(struct hl_device *hdev);
+ void gaudi_nic_sw_fini(struct hl_device *hdev);
++void gaudi_nic_handle_qp_err(struct hl_device *hdev, u16 event_type);
  
--static u32 hl_nic_input_size[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES + 1] = {
-+static u32 hl_nic_input_size[HL_NIC_OP_USER_WQ_UNSET + 1] = {
- 	[HL_NIC_OP_ALLOC_CONN] = sizeof(struct hl_nic_alloc_conn_in),
- 	[HL_NIC_OP_SET_REQ_CONN_CTX] = sizeof(struct hl_nic_req_conn_ctx_in),
- 	[HL_NIC_OP_SET_RES_CONN_CTX] = sizeof(struct hl_nic_res_conn_ctx_in),
-@@ -35,9 +35,11 @@ static u32 hl_nic_input_size[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES + 1] = {
- 	[HL_NIC_OP_CQ_POLL] = sizeof(struct hl_nic_cq_poll_wait_in),
- 	[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES] =
- 			sizeof(struct hl_nic_cq_update_consumed_cqes_in),
-+	[HL_NIC_OP_USER_WQ_SET] = sizeof(struct hl_nic_user_wq_arr_set_in),
-+	[HL_NIC_OP_USER_WQ_UNSET] = sizeof(struct hl_nic_user_wq_arr_unset_in)
- };
- 
--static u32 hl_nic_output_size[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES + 1] = {
-+static u32 hl_nic_output_size[HL_NIC_OP_USER_WQ_UNSET + 1] = {
- 	[HL_NIC_OP_ALLOC_CONN] = sizeof(struct hl_nic_alloc_conn_out),
- 	[HL_NIC_OP_SET_REQ_CONN_CTX] = 0,
- 	[HL_NIC_OP_SET_RES_CONN_CTX] = 0,
-@@ -47,6 +49,8 @@ static u32 hl_nic_output_size[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES + 1] = {
- 	[HL_NIC_OP_CQ_WAIT] = sizeof(struct hl_nic_cq_poll_wait_out),
- 	[HL_NIC_OP_CQ_POLL] = sizeof(struct hl_nic_cq_poll_wait_out),
- 	[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES] = 0,
-+	[HL_NIC_OP_USER_WQ_SET] = 0,
-+	[HL_NIC_OP_USER_WQ_UNSET] = 0
- };
- 
- static int device_status_info(struct hl_device *hdev, struct hl_info_args *args)
-@@ -641,6 +645,8 @@ static int hl_nic_ioctl(struct hl_fpriv *hpriv, void *data)
- 	case HL_NIC_OP_CQ_WAIT:
- 	case HL_NIC_OP_CQ_POLL:
- 	case HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES:
-+	case HL_NIC_OP_USER_WQ_SET:
-+	case HL_NIC_OP_USER_WQ_UNSET:
- 		args->input_size =
- 			min(args->input_size, hl_nic_input_size[args->op]);
- 		args->output_size =
+ #endif /* GAUDIP_H_ */
 diff --git a/drivers/misc/habanalabs/gaudi/gaudi_nic.c b/drivers/misc/habanalabs/gaudi/gaudi_nic.c
-index 999e9ded22fb..37f25247f751 100644
+index 37f25247f751..49e94e9c786a 100644
 --- a/drivers/misc/habanalabs/gaudi/gaudi_nic.c
 +++ b/drivers/misc/habanalabs/gaudi/gaudi_nic.c
-@@ -3302,6 +3302,170 @@ int gaudi_nic_get_mac_addr(struct hl_device *hdev,
- 	return 0;
- }
+@@ -3988,3 +3988,98 @@ int gaudi_nic_cq_mmap(struct hl_device *hdev, struct vm_area_struct *vma)
  
-+static int wq_port_check(struct hl_device *hdev, u32 port)
+ 	return rc;
+ }
++
++static char *get_syndrome_text(u32 syndrome)
 +{
-+	if (port >= NIC_NUMBER_OF_ENGINES) {
-+		dev_err(hdev->dev, "Invalid port %d\n", port);
-+		return -EINVAL;
++	char *str;
++
++	switch (syndrome) {
++	case 0x05:
++		str = "Rx got invalid QP";
++		break;
++	case 0x06:
++		str = "Rx transport service mismatch";
++		break;
++	case 0x09:
++		str = "Rx Rkey check failed";
++		break;
++	case 0x40:
++		str = "timer retry exceeded";
++		break;
++	case 0x41:
++		str = "NACK retry exceeded";
++		break;
++	case 0x42:
++		str = "doorbell on invalid QP";
++		break;
++	case 0x43:
++		str = "doorbell security check failed";
++		break;
++	case 0x44:
++		str = "Tx got invalid QP";
++		break;
++	case 0x45:
++		str = "responder got ACK/NACK on invalid QP";
++		break;
++	case 0x46:
++		str = "responder try to send ACK/NACK on invalid QP";
++		break;
++	default:
++		str = "unknown syndrome";
++		break;
 +	}
 +
-+	if (!(hdev->nic_ports_mask & BIT(port))) {
-+		dev_err(hdev->dev, "Port %d is disabled\n", port);
-+		return -ENODEV;
-+	}
-+
-+	return 0;
++	return str;
 +}
 +
-+static int user_wq_arr_set(struct hl_device *hdev,
-+				struct hl_nic_user_wq_arr_set_in *in)
-+{
-+	struct gaudi_device *gaudi = hdev->asic_specific;
-+	u64 wq_base_addr, num_of_wq_entries_log;
-+	struct gaudi_nic_device *gaudi_nic;
-+	u32 port, type;
-+	int rc;
-+
-+	if (!in) {
-+		dev_err(hdev->dev, "missing parameters, can't set user WQ\n");
-+		return -EINVAL;
-+	}
-+
-+	type = in->type;
-+	if (type != HL_NIC_USER_WQ_SEND && type != HL_NIC_USER_WQ_RECV) {
-+		dev_err(hdev->dev, "invalid type %d, can't set user WQ\n",
-+			type);
-+		return -EINVAL;
-+	}
-+
-+	port = in->port;
-+
-+	rc = wq_port_check(hdev, port);
-+	if (rc)
-+		return rc;
-+
-+	gaudi_nic = &gaudi->nic_devices[port];
-+
-+	if (in->num_of_wqs == 0) {
-+		dev_err(hdev->dev,
-+			"number of WQs must be bigger than zero, port: %d\n",
-+			port);
-+		return -EINVAL;
-+	}
-+
-+	/* H/W limitation */
-+	if (in->num_of_wqs > NIC_HW_MAX_QP_NUM) {
-+		dev_err(hdev->dev,
-+			"number of WQs (0x%x) can't be bigger than 0x%x, port: %d\n",
-+			in->num_of_wqs, NIC_HW_MAX_QP_NUM, port);
-+		return -EINVAL;
-+	}
-+
-+	if (!is_power_of_2(in->num_of_wq_entries)) {
-+		dev_err(hdev->dev,
-+			"number of entries (0x%x) must be a power of 2, port: %d\n",
-+			in->num_of_wq_entries, port);
-+		return -EINVAL;
-+	}
-+
-+	/* H/W cache line constraint */
-+	if (in->num_of_wq_entries < 4) {
-+		dev_err(hdev->dev,
-+			"number of entries (0x%x) must be at least 4, port: %d\n",
-+			in->num_of_wq_entries, port);
-+		return -EINVAL;
-+	}
-+
-+	/* H/W limitation */
-+	if (in->num_of_wq_entries > USER_WQES_MAX_NUM) {
-+		dev_err(hdev->dev,
-+			"number of entries (0x%x) can't be bigger than 0x%x, port: %d\n",
-+			in->num_of_wq_entries, USER_WQES_MAX_NUM, port);
-+		return -EINVAL;
-+	}
-+
-+	if (!IS_ALIGNED(in->addr, DEVICE_CACHE_LINE_SIZE)) {
-+		dev_err(hdev->dev,
-+			"WQ VA (0x%llx) must be aligned to cache line size (0x%x), port: %d\n",
-+			in->addr, DEVICE_CACHE_LINE_SIZE, port);
-+		return -EINVAL;
-+	}
-+
-+	wq_base_addr = in->addr;
-+	num_of_wq_entries_log = ilog2(in->num_of_wq_entries);
-+
-+	mutex_lock(&gaudi_nic->user_wq_lock);
-+
-+	if (type == HL_NIC_USER_WQ_SEND) {
-+		NIC_WREG32(mmNIC0_TXE0_SQ_BASE_ADDRESS_49_32_0,
-+				(wq_base_addr >> 32) & 0x3FFFFF);
-+		NIC_WREG32(mmNIC0_TXE0_SQ_BASE_ADDRESS_31_0_0,
-+				wq_base_addr & 0xFFFFFFFF);
-+		NIC_WREG32(mmNIC0_TXE0_LOG_MAX_WQ_SIZE_0,
-+				num_of_wq_entries_log - 2);
-+	} else {
-+		NIC_WREG32(mmNIC0_RXE0_WIN0_WQ_BASE_LO,
-+				wq_base_addr & 0xFFFFFFFF);
-+		NIC_WREG32(mmNIC0_RXE0_WIN0_WQ_BASE_HI,
-+			((wq_base_addr >> 32) & 0xFFFFFFFF) |
-+			((num_of_wq_entries_log - 4) << 24));
-+	}
-+
-+	mutex_unlock(&gaudi_nic->user_wq_lock);
-+
-+	return 0;
-+}
-+
-+static void _user_wq_arr_unset(struct hl_device *hdev, u32 port, u32 type)
++void gaudi_nic_handle_qp_err(struct hl_device *hdev, u16 event_type)
 +{
 +	struct gaudi_device *gaudi = hdev->asic_specific;
 +	struct gaudi_nic_device *gaudi_nic;
++	struct qp_err *qp_err_arr;
++	struct hl_nic_cqe cqe_sw;
++	u32 pi, ci;
 +
-+	gaudi_nic = &gaudi->nic_devices[port];
++	gaudi_nic = &gaudi->nic_devices[event_type - GAUDI_EVENT_NIC0_QP0];
++	qp_err_arr = gaudi_nic->qp_err_mem_cpu;
 +
-+	mutex_lock(&gaudi_nic->user_wq_lock);
++	mutex_lock(&gaudi->nic_qp_err_lock);
 +
-+	if (type == HL_NIC_USER_WQ_SEND) {
-+		NIC_WREG32(mmNIC0_TXE0_SQ_BASE_ADDRESS_49_32_0, 0);
-+		NIC_WREG32(mmNIC0_TXE0_SQ_BASE_ADDRESS_31_0_0, 0);
-+		NIC_WREG32(mmNIC0_TXE0_LOG_MAX_WQ_SIZE_0, 0);
-+	} else {
-+		NIC_WREG32(mmNIC0_RXE0_WIN0_WQ_BASE_LO, 0);
-+		NIC_WREG32(mmNIC0_RXE0_WIN0_WQ_BASE_HI, 0);
++	if (!gaudi->nic_cq_enable)
++		dev_err_ratelimited(hdev->dev,
++			"received NIC %d QP error event %d but no CQ to push it\n",
++			gaudi_nic->port, event_type);
++
++	pi = NIC_RREG32(mmNIC0_QPC0_ERR_FIFO_PRODUCER_INDEX);
++	ci = gaudi_nic->qp_err_ci;
++
++	cqe_sw.is_err = true;
++	cqe_sw.port = gaudi_nic->port;
++
++	while (ci < pi) {
++		cqe_sw.type = QP_ERR_IS_REQ(qp_err_arr[ci]) ?
++				HL_NIC_CQE_TYPE_REQ : HL_NIC_CQE_TYPE_RES;
++		cqe_sw.qp_number = QP_ERR_QP_NUM(qp_err_arr[ci]);
++		cqe_sw.qp_err.syndrome = QP_ERR_ERR_NUM(qp_err_arr[ci]);
++
++		ci = (ci + 1) & (QP_ERR_BUF_LEN - 1);
++
++		dev_err_ratelimited(hdev->dev,
++			"NIC QP error port: %d, type: %d, qpn: %d, syndrome: %s (0x%x)\n",
++			cqe_sw.port, cqe_sw.type, cqe_sw.qp_number,
++			get_syndrome_text(cqe_sw.qp_err.syndrome),
++			cqe_sw.qp_err.syndrome);
++
++		if (gaudi->nic_cq_enable)
++			copy_cqe_to_main_queue(hdev, &cqe_sw);
 +	}
 +
-+	mutex_unlock(&gaudi_nic->user_wq_lock);
++	gaudi_nic->qp_err_ci = ci;
++	NIC_WREG32(mmNIC0_QPC0_ERR_FIFO_CONSUMER_INDEX, ci);
++
++	/* signal the completion queue that there are available CQEs */
++	if (gaudi->nic_cq_enable)
++		complete(&gaudi->nic_cq_comp);
++
++	mutex_unlock(&gaudi->nic_qp_err_lock);
 +}
-+
-+static int user_wq_arr_unset(struct hl_device *hdev,
-+				struct hl_nic_user_wq_arr_unset_in *in)
-+{
-+	u32 port, type;
-+	int rc;
-+
-+	if (!in) {
-+		dev_err(hdev->dev, "missing parameters, can't unset user WQ\n");
-+		return -EINVAL;
-+	}
-+
-+	type = in->type;
-+	if (type != HL_NIC_USER_WQ_SEND && type != HL_NIC_USER_WQ_RECV) {
-+		dev_err(hdev->dev, "invalid type %d, can't unset user WQ\n",
-+			type);
-+		return -EINVAL;
-+	}
-+
-+	port = in->port;
-+
-+	rc = wq_port_check(hdev, port);
-+	if (rc)
-+		return rc;
-+
-+	_user_wq_arr_unset(hdev, port, type);
-+
-+	return 0;
-+}
-+
- static struct hl_qp *qp_get(struct hl_device *hdev,
- 			struct gaudi_nic_device *gaudi_nic, u32 conn_id)
- {
-@@ -3670,6 +3834,12 @@ int gaudi_nic_control(struct hl_device *hdev, u32 op, void *input, void *output)
- 	case HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES:
- 		rc = cq_update_consumed_cqes(hdev, input);
- 		break;
-+	case HL_NIC_OP_USER_WQ_SET:
-+		rc = user_wq_arr_set(hdev, input);
-+		break;
-+	case HL_NIC_OP_USER_WQ_UNSET:
-+		rc = user_wq_arr_unset(hdev, input);
-+		break;
- 	default:
- 		dev_err(hdev->dev, "Invalid NIC control request %d\n", op);
- 		return -ENOTTY;
-@@ -3709,6 +3879,19 @@ static void qps_destroy(struct hl_device *hdev)
- 	}
- }
- 
-+static void wq_arrs_destroy(struct hl_device *hdev)
-+{
-+	int i;
-+
-+	for (i = 0 ; i < NIC_NUMBER_OF_PORTS ; i++) {
-+		if (!(hdev->nic_ports_mask & BIT(i)))
-+			continue;
-+
-+		_user_wq_arr_unset(hdev, i, HL_NIC_USER_WQ_SEND);
-+		_user_wq_arr_unset(hdev, i, HL_NIC_USER_WQ_RECV);
-+	}
-+}
-+
- void gaudi_nic_ctx_fini(struct hl_ctx *ctx)
- {
- 	struct gaudi_device *gaudi = ctx->hdev->asic_specific;
-@@ -3721,6 +3904,7 @@ void gaudi_nic_ctx_fini(struct hl_ctx *ctx)
- 	/* wait for the NIC to digest the invalid QPs */
- 	msleep(20);
- 	cq_destroy(hdev);
-+	wq_arrs_destroy(hdev);
- }
- 
- static void nic_cq_vm_close(struct vm_area_struct *vma)
-diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
-index 83a707c207f7..7fa23b06249e 100644
---- a/include/uapi/misc/habanalabs.h
-+++ b/include/uapi/misc/habanalabs.h
-@@ -1025,6 +1025,31 @@ struct hl_nic_cq_poll_wait_out {
- 	__u32 pad;
- };
- 
-+/* Send user WQ array type */
-+#define HL_NIC_USER_WQ_SEND	0
-+/* Receive user WQ array type */
-+#define HL_NIC_USER_WQ_RECV	1
-+
-+struct hl_nic_user_wq_arr_set_in {
-+	/* WQ array address */
-+	__u64 addr;
-+	/* NIC port ID */
-+	__u32 port;
-+	/* Number of user WQs */
-+	__u32 num_of_wqs;
-+	/* Number of entries per user WQ */
-+	__u32 num_of_wq_entries;
-+	/* Type of user WQ array */
-+	__u32 type;
-+};
-+
-+struct hl_nic_user_wq_arr_unset_in {
-+	/* NIC port ID */
-+	__u32 port;
-+	/* Type of user WQ array */
-+	__u32 type;
-+};
-+
- /* Opcode to allocate connection ID */
- #define HL_NIC_OP_ALLOC_CONN			0
- /* Opcode to set up a requester connection context */
-@@ -1043,6 +1068,10 @@ struct hl_nic_cq_poll_wait_out {
- #define HL_NIC_OP_CQ_POLL			7
- /* Opcode to update the number of consumed CQ entries */
- #define HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES	8
-+/* Opcode to set a user WQ array */
-+#define HL_NIC_OP_USER_WQ_SET			9
-+/* Opcode to unset a user WQ array */
-+#define HL_NIC_OP_USER_WQ_UNSET			10
- 
- struct hl_nic_args {
- 	/* Pointer to user input structure (relevant to specific opcodes) */
-@@ -1238,6 +1267,8 @@ struct hl_nic_args {
-  * - Wait on completion queue
-  * - Poll a completion queue
-  * - Update consumed completion queue entries
-+ * - Set a work queue
-+ * - Unset a work queue
-  *
-  * For all operations, the user should provide a pointer to an input structure
-  * with the context parameters. Some of the operations also require a pointer to
-@@ -1251,6 +1282,8 @@ struct hl_nic_args {
-  * driver regarding how many of the available CQEs were actually
-  * processed/consumed. Only then the driver will override them with newer
-  * entries.
-+ * The set WQ operation should provide the device virtual address of the WQ with
-+ * a matching size for the number of WQs and entries per WQ.
-  *
-  */
- #define HL_IOCTL_NIC	_IOWR('H', 0x07, struct hl_nic_args)
 -- 
 2.17.1
 
