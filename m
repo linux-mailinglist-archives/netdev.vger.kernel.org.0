@@ -2,222 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10CA4267892
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 09:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF902267895
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 09:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725839AbgILHgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Sep 2020 03:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725799AbgILHgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 03:36:03 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78AFC061573;
-        Sat, 12 Sep 2020 00:36:03 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id d6so8887169pfn.9;
-        Sat, 12 Sep 2020 00:36:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=yYff2w6zlApOTzpZkutXOi9traPBbtwOxlc9tQk8BEM=;
-        b=ZyEAXGRTCfDJ2C44NKeQntFzg/c6PLNgJoZkMV6VfQf9VbcqxSrEyq97A9n2lGEZn9
-         eGVQoslijGaDhRrgoQ0jv1L4ZRyQG4AXI1gdCLlthZmD0ehqrD9NnP0IOTgZt9/m3oua
-         DrgWNWLi0jy1hiddHKq1QcjPRmkMCtUttwKb88zLn5wE9barXBjq7Yk2i0BtNErqBQLC
-         q+X2CNSmvGqAcYvLakhnzI/RXdKM08vyaegXdglMfTQ482cg1BKfeFJHOqrNXTtf30pY
-         G2Ah4X46Yrelys300zVEkzmn6TiTilwP/H1rlHOaVnzvhXQ2BHH+GS5Pfpqo79pykue8
-         xOdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=yYff2w6zlApOTzpZkutXOi9traPBbtwOxlc9tQk8BEM=;
-        b=licDfG0+ufqtgwkCkSxFYVtdKS7aUoDJMBjU0UZE8i5gxKZ53Ssogog09SnAQhBOZS
-         MAQcIEs+l7p2gwd1kEpauFT/Q0/9t+F0BxaXmZwcFG2iX0JD4pO2S1/FfueLjK5mjhH9
-         Axwn/t6WWP77hX1NDpy/Km7JTzWdiWsyIcUgms+uNqJ0kfuOuh54E4848onelXM9OecD
-         aJepIIsEiR6KQjKEnKGa5maDppMcptdZkBLjERBJHYuHYjTZqRoRhlO/sp1NLw2hS3yy
-         S2fH6+SNfIMdAFvsJJZf1eY2VR00fwjUJP+bTWW2wr9oqMlgADpQlwnSQvJZH5XAQ7K7
-         ZVfw==
-X-Gm-Message-State: AOAM531Nvjn6zqw6gu1013X5APgoi0nQWXI17KJFzVgK+76Hg/zZ/vkZ
-        e3rrsh37eQshqd7M9Gfp7Do=
-X-Google-Smtp-Source: ABdhPJxu8IcukOIJI1s0BZL8A6kNS9HU/8+niTwFoTZlQ/bxh93pdbXAW7OLkjrea/0pcLPu4TC0Fw==
-X-Received: by 2002:a63:205d:: with SMTP id r29mr4090921pgm.278.1599896163066;
-        Sat, 12 Sep 2020 00:36:03 -0700 (PDT)
-Received: from [192.168.0.104] ([49.207.202.95])
-        by smtp.gmail.com with ESMTPSA id y25sm4252568pfn.71.2020.09.12.00.35.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Sep 2020 00:36:02 -0700 (PDT)
-Subject: Re: KASAN: use-after-free Read in hci_get_auth_info
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+13010b6a10bbd82cc79c@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <000000000000e8fb4b05ac58372e@google.com>
- <CACT4Y+Z2Sz8kHxaQNuupfck7X0rUtr4ghDty9ahDTUm2H41Mwg@mail.gmail.com>
-From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Message-ID: <f3724ef6-7c89-5c24-685e-00327046e144@gmail.com>
-Date:   Sat, 12 Sep 2020 13:05:56 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.1
-MIME-Version: 1.0
-In-Reply-To: <CACT4Y+Z2Sz8kHxaQNuupfck7X0rUtr4ghDty9ahDTUm2H41Mwg@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+        id S1725834AbgILHhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Sep 2020 03:37:51 -0400
+Received: from nat-hk.nvidia.com ([203.18.50.4]:63865 "EHLO nat-hk.nvidia.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725800AbgILHht (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Sep 2020 03:37:49 -0400
+Received: from hkpgpgate101.nvidia.com (Not Verified[10.18.92.9]) by nat-hk.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5f5c7aca0000>; Sat, 12 Sep 2020 15:37:46 +0800
+Received: from HKMAIL103.nvidia.com ([10.18.16.12])
+  by hkpgpgate101.nvidia.com (PGP Universal service);
+  Sat, 12 Sep 2020 00:37:46 -0700
+X-PGP-Universal: processed;
+        by hkpgpgate101.nvidia.com on Sat, 12 Sep 2020 00:37:46 -0700
+Received: from HKMAIL101.nvidia.com (10.18.16.10) by HKMAIL103.nvidia.com
+ (10.18.16.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sat, 12 Sep
+ 2020 07:37:45 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.169)
+ by HKMAIL101.nvidia.com (10.18.16.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Sat, 12 Sep 2020 07:37:45 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PezGKzOLURobZzEGaLM60ylBRuaWEwIviumZwv+6t9o1bKKOlA56jcF95I2C6chvT6AYZf10xI7/BVz1bMmnMn5cQrrZ0si16j33G4ZaU+9VlZI0xKW3QkiJq07XtJJ0yvQI9KuNbZqta1FMsAsMlJ/qlPve1tTwm7zit8nX/cA7pTGrHD0n3VC7pCpWIlnNWZxgSbyd+vAE7cqUtz6kdDnJsinMFJOjKHZAzzXhwl81sZj9HD4OUK5r5FLH72BxjHMCd39SL3EiD0K+0CNiEGgY3SAgiBOqrbgB4kY8GpcK2ntZomW4/pAfVvEqSGMYl8k/m0G41b2usRydJqQp5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Bvfg+yBWGy4Bl34ERhoJMjUbmBOWW0PqkfnqJmfaAk4=;
+ b=jDXM0+hDQOnIgORBUR+0j32CNtpMqaFnIMgfKSLFEjMxF2s/XFacwsoPRoQYjktR0nuskx/n3vNU6E3q9XJuIqXuUEG8M5MM9i2vM8L7Bcks+LwbyfRYXDXjIgW8pS342QSV6tIe33Wep+89oRHTGkLXGOf+lLNQtPE7jgSa6jsgFA9u8WqfgbNzd5Iyo2Ob2vdfkNRkd7Se5sgdTjeGv/udthUZ/WdgYsESgRdqF0+KE3qGFI2CZBpGG5DRZ/KG6OSI3eHUr3Aaz1x9u/f798oexwf/uT7LvarRbFipmjVnGhO+nP3Iq3Lbxs+qhrU7pHMCaXFUlnOmbZD3Gvvorw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BYAPR12MB2823.namprd12.prod.outlook.com (2603:10b6:a03:96::33)
+ by BYAPR12MB3192.namprd12.prod.outlook.com (2603:10b6:a03:139::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Sat, 12 Sep
+ 2020 07:37:42 +0000
+Received: from BYAPR12MB2823.namprd12.prod.outlook.com
+ ([fe80::7dd0:ad41:3d71:679b]) by BYAPR12MB2823.namprd12.prod.outlook.com
+ ([fe80::7dd0:ad41:3d71:679b%6]) with mapi id 15.20.3348.019; Sat, 12 Sep 2020
+ 07:37:42 +0000
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+To:     "olteanv@gmail.com" <olteanv@gmail.com>
+CC:     "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>
+Subject: Re: [PATCH net-next] net: bridge: pop vlan from skb if filtering is
+ disabled but it's a pvid
+Thread-Topic: [PATCH net-next] net: bridge: pop vlan from skb if filtering is
+ disabled but it's a pvid
+Thread-Index: AQHWiJGYqt2ABPNtfE6Zj34+KHfdVqlkknWAgAAHgACAAAQYgA==
+Date:   Sat, 12 Sep 2020 07:37:42 +0000
+Message-ID: <ce71707b0a4065cc0fc5c5b61ee397152491ba48.camel@nvidia.com>
+References: <20200911231619.2876486-1-olteanv@gmail.com>
+         <ddfecf408d3d1b7e4af97cb3b1c1c63506e4218e.camel@nvidia.com>
+         <20200912072302.xaoxbgusqeesrzaq@skbuf>
+In-Reply-To: <20200912072302.xaoxbgusqeesrzaq@skbuf>
+Reply-To: Nikolay Aleksandrov <nikolay@nvidia.com>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [84.238.136.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4a98d98a-6758-44a6-a306-08d856eebb91
+x-ms-traffictypediagnostic: BYAPR12MB3192:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR12MB319282773194BA2DE651F6F8DF250@BYAPR12MB3192.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hR72tOYwjmG1MpAm8QdymZMQ/9Qa5+Jyz6eHpfdMiXJLvQ7du7D4CIIM3c8WoU1rfM+YgkHWTtqHP9b1pm4qHhxyALXRuUkv5VzWbybBhdm0gtqobA6YmwJzjN0Z4INpLHzYqpZFKyx7fka3TKlzVlyIOX03dPdRFw9YsI6ChuMKxcMt6cDhskZzexlkqn+3Irgeo0sPr52ub2YEsZUzr3KV1TInqFKsh9dZQZSnd+QlnJohuFDURzQZcfj9MSxQtaWd92lNMImJKYvpi3Mb2NCU3rFxcyPmwfsR6kIDtGc1W8v28cVoXyNqdvnbcXB3VfRJh+eighOHy+YtnueCILXwrGkQgQ4JZO/AxmTRk3eCTMIxXiw8oL6Hz/66AxS8rIDGVWNrJ8luUV6pJIfl/g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB2823.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(39860400002)(376002)(396003)(366004)(6506007)(316002)(6916009)(86362001)(2906002)(6512007)(107886003)(4326008)(8936002)(966005)(36756003)(83380400001)(54906003)(6486002)(478600001)(2616005)(66946007)(186003)(5660300002)(64756008)(76116006)(66556008)(26005)(66476007)(8676002)(66446008)(91956017)(3450700001)(71200400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: dQ10doaGnngb4z0ynT1mcjLI9vt+zN6e3w2IdcAWn8MmwF0faGNCxuWDHO2PQHh80MmgIfQPrgeuCE4vjqhPzC62S7IGUazzBUXP5QiOUtCyils5Ls+9sZv+E6yKRqqaLVD670h2z1uOV5ZdKh9hd8T/SlxvVhmhgLHsY1P15t+uqR+hPfwdgovEZkYOjGZjnx1myWs1M7WFc4xL4A6//LGwvWQceqX08/D9LO4rQXJ+tNSU4WyR0Uv2aLJM8f3BCuvZDMlejY8gtL7Uv6DLv078V4wYOFPfqfrse6cFGu5kE/tqsewWC78bAPxmMo0vtsKhDKJWtrips1x0MEkb/jJL4VCAcnUd9WU5wPNjQ6RwqLzO9lW58tSP85rXQ/FqNBG47MtfiJLr2hMjSdHv8G/9YXHISO6wiCLmj281Z95iA4VERTTN0EYdZCAVljQBOlGKd5xmqNvufFPTBAaU7Whh4GtIUrdwZN1Jpfus4e5fuN1X6t43R8z/cKOOX3u1NZDXpT7QN2LjPlL+O+v6p2R16TFzIlER4CFEtw2gAhlW7k72KcoobhlyIStgy5Lgv2BsrJAyJQ9JtNts7yPmj34XgVIZKE9fvN4cUH+QM5LoQx8u001wYPg+Vii5+xNEiRu86G9r3MyPlNzUbqOo8A==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E31C94D022079E4495D655FE8C9E1E08@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB2823.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4a98d98a-6758-44a6-a306-08d856eebb91
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Sep 2020 07:37:42.1054
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0L8nnSazmZ7LpGjBxv1SIZAHooDSKQ3Oe+bbLz/6CobLrZjxfCc8Rxw7oYeIRzNQ5DVKNgqLJRy4lTmzSZR2tw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3192
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1599896266; bh=Bvfg+yBWGy4Bl34ERhoJMjUbmBOWW0PqkfnqJmfaAk4=;
+        h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+         ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
+         Thread-Index:Date:Message-ID:References:In-Reply-To:Reply-To:
+         Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:user-agent:authentication-results:
+         x-originating-ip:x-ms-publictraffictype:
+         x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
+         x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
+         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
+         x-microsoft-antispam:x-microsoft-antispam-message-info:
+         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
+         Content-Type:Content-ID:Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=eIdPqgf2PlBPZPmV4Q0A1fcYPcP8+wC/9JOEtZjkmR7R4E+/jczYtMnBdIvm96yKo
+         qHBzFsKsusBYwzpRkkNjoQHbhNz5cVLTTSys63q+yNwHQAbh8Yf3UESaZkf5XR3k1L
+         ts5+lqP4QVDozSO1/c0lZqRvo2mTziilkQxRlf4dGVbnySqYe6a3EdKse4/E4FshBa
+         9aTB8OtLXKIK7AcNLecvSbgn8n3/w7rRt2zD4eRN135k0jxIR4Cb2QsD0tlI5nmqEu
+         z9qdW2f89LQBjZ9z68Itw34b2cdbsOTz2gqevL8BLZWNp3m51owKCenbGEdwDGZFcy
+         cCR8zaFjLEi1A==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 11-09-2020 15:20, Dmitry Vyukov wrote:
-> On Sat, Aug 8, 2020 at 8:56 AM syzbot
-> <syzbot+13010b6a10bbd82cc79c@syzkaller.appspotmail.com> wrote:
->> Hello,
->>
->> syzbot found the following issue on:
->>
->> HEAD commit:    d6efb3ac Merge tag 'tty-5.9-rc1' of git://git.kernel.org/p..
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=14ad2134900000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=61ec43e42a83feae
->> dashboard link: https://syzkaller.appspot.com/bug?extid=13010b6a10bbd82cc79c
->> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
->> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12fd9bc6900000
->>
->> IMPORTANT: if you fix the issue, please add the following tag to the commit:
->> Reported-by: syzbot+13010b6a10bbd82cc79c@syzkaller.appspotmail.com
-> +Anant who had some questions re this issue.
-
-This bug doesn't seem to be getting triggered anymore for the appropriate kernel(s).
-However, given that neither the cause bisection, nor the fix bisection seem to have
-suceeded, it makes it all the more difficult to zero down on the commit that might've
-fixed this bug. Would it be okay to consider this a one-off, or invalid and close it off?
-(unless someone can point out the commit that fixed this, of course).
-
-Thanks for CCing me onto this, Dmitry.
-
-Thanks,
-Anant
-
-
->
->> ==================================================================
->> BUG: KASAN: use-after-free in __mutex_waiter_is_first kernel/locking/mutex.c:200 [inline]
->> BUG: KASAN: use-after-free in __mutex_lock_common+0x12cd/0x2fc0 kernel/locking/mutex.c:1040
->> Read of size 8 at addr ffff88808e668060 by task syz-executor.4/19584
->>
->> CPU: 0 PID: 19584 Comm: syz-executor.4 Not tainted 5.8.0-syzkaller #0
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->> Call Trace:
->>  __dump_stack lib/dump_stack.c:77 [inline]
->>  dump_stack+0x1f0/0x31e lib/dump_stack.c:118
->>  print_address_description+0x66/0x5a0 mm/kasan/report.c:383
->>  __kasan_report mm/kasan/report.c:513 [inline]
->>  kasan_report+0x132/0x1d0 mm/kasan/report.c:530
->>  __mutex_waiter_is_first kernel/locking/mutex.c:200 [inline]
->>  __mutex_lock_common+0x12cd/0x2fc0 kernel/locking/mutex.c:1040
->>  __mutex_lock kernel/locking/mutex.c:1103 [inline]
->>  mutex_lock_nested+0x1a/0x20 kernel/locking/mutex.c:1118
->>  hci_get_auth_info+0x69/0x3a0 net/bluetooth/hci_conn.c:1689
->>  hci_sock_bound_ioctl net/bluetooth/hci_sock.c:957 [inline]
->>  hci_sock_ioctl+0x5ae/0x750 net/bluetooth/hci_sock.c:1060
->>  sock_do_ioctl+0x7b/0x260 net/socket.c:1047
->>  sock_ioctl+0x4aa/0x690 net/socket.c:1198
->>  vfs_ioctl fs/ioctl.c:48 [inline]
->>  ksys_ioctl fs/ioctl.c:753 [inline]
->>  __do_sys_ioctl fs/ioctl.c:762 [inline]
->>  __se_sys_ioctl+0xf9/0x160 fs/ioctl.c:760
->>  do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
->>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->> RIP: 0033:0x45ccd9
->> Code: 2d b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb b5 fb ff c3 66 2e 0f 1f 84 00 00 00 00
->> RSP: 002b:00007f113a564c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
->> RAX: ffffffffffffffda RBX: 000000000001d300 RCX: 000000000045ccd9
->> RDX: 0000000020000000 RSI: 00000000800448d7 RDI: 0000000000000005
->> RBP: 000000000078bf40 R08: 0000000000000000 R09: 0000000000000000
->> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078bf0c
->> R13: 00007ffd62ea93af R14: 00007f113a5659c0 R15: 000000000078bf0c
->>
->> Allocated by task 6822:
->>  save_stack mm/kasan/common.c:48 [inline]
->>  set_track mm/kasan/common.c:56 [inline]
->>  __kasan_kmalloc+0x103/0x140 mm/kasan/common.c:494
->>  kmem_cache_alloc_trace+0x234/0x300 mm/slab.c:3551
->>  kmalloc include/linux/slab.h:555 [inline]
->>  kzalloc include/linux/slab.h:669 [inline]
->>  hci_alloc_dev+0x4c/0x1aa0 net/bluetooth/hci_core.c:3543
->>  __vhci_create_device drivers/bluetooth/hci_vhci.c:99 [inline]
->>  vhci_create_device+0x113/0x520 drivers/bluetooth/hci_vhci.c:148
->>  process_one_work+0x789/0xfc0 kernel/workqueue.c:2269
->>  worker_thread+0xaa4/0x1460 kernel/workqueue.c:2415
->>  kthread+0x37e/0x3a0 drivers/block/aoe/aoecmd.c:1234
->>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
->>
->> Freed by task 9965:
->>  save_stack mm/kasan/common.c:48 [inline]
->>  set_track mm/kasan/common.c:56 [inline]
->>  kasan_set_free_info mm/kasan/common.c:316 [inline]
->>  __kasan_slab_free+0x114/0x170 mm/kasan/common.c:455
->>  __cache_free mm/slab.c:3426 [inline]
->>  kfree+0x10a/0x220 mm/slab.c:3757
->>  bt_host_release+0x18/0x20 net/bluetooth/hci_sysfs.c:86
->>  device_release+0x70/0x1a0 drivers/base/core.c:1796
->>  kobject_cleanup lib/kobject.c:704 [inline]
->>  kobject_release lib/kobject.c:735 [inline]
->>  kref_put include/linux/kref.h:65 [inline]
->>  kobject_put+0x1a0/0x2c0 lib/kobject.c:752
->>  vhci_release+0x7b/0xc0 drivers/bluetooth/hci_vhci.c:341
->>  __fput+0x2f0/0x750 fs/file_table.c:281
->>  task_work_run+0x137/0x1c0 kernel/task_work.c:135
->>  exit_task_work include/linux/task_work.h:25 [inline]
->>  do_exit+0x5f3/0x1f20 kernel/exit.c:806
->>  do_group_exit+0x161/0x2d0 kernel/exit.c:903
->>  __do_sys_exit_group+0x13/0x20 kernel/exit.c:914
->>  __ia32_sys_exit_group+0x0/0x40 kernel/exit.c:912
->>  __x64_sys_exit_group+0x37/0x40 kernel/exit.c:912
->>  do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
->>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->>
->> The buggy address belongs to the object at ffff88808e668000
->>  which belongs to the cache kmalloc-8k of size 8192
->> The buggy address is located 96 bytes inside of
->>  8192-byte region [ffff88808e668000, ffff88808e66a000)
->> The buggy address belongs to the page:
->> page:ffffea0002399a00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 head:ffffea0002399a00 order:2 compound_mapcount:0 compound_pincount:0
->> flags: 0xfffe0000010200(slab|head)
->> raw: 00fffe0000010200 ffffea000217a208 ffffea0001e6c008 ffff8880aa4021c0
->> raw: 0000000000000000 ffff88808e668000 0000000100000001 0000000000000000
->> page dumped because: kasan: bad access detected
->>
->> Memory state around the buggy address:
->>  ffff88808e667f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->>  ffff88808e667f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
->>> ffff88808e668000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->>                                                        ^
->>  ffff88808e668080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->>  ffff88808e668100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->> ==================================================================
->>
->>
->> ---
->> This report is generated by a bot. It may contain errors.
->> See https://goo.gl/tpsmEJ for more information about syzbot.
->> syzbot engineers can be reached at syzkaller@googlegroups.com.
->>
->> syzbot will keep track of this issue. See:
->> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->> syzbot can test patches for this issue, for details see:
->> https://goo.gl/tpsmEJ#testing-patches
->>
->> --
->> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
->> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
->> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000e8fb4b05ac58372e%40google.com.
+T24gU2F0LCAyMDIwLTA5LTEyIGF0IDEwOjIzICswMzAwLCBWbGFkaW1pciBPbHRlYW4gd3JvdGU6
+DQo+IE9uIFNhdCwgU2VwIDEyLCAyMDIwIGF0IDA2OjU2OjEyQU0gKzAwMDAsIE5pa29sYXkgQWxl
+a3NhbmRyb3Ygd3JvdGU6DQo+ID4gQ291bGQgeW91IHBvaW50IG1lIHRvIGEgdGhyZWFkIHdoZXJl
+IHRoZXNlIHByb2JsZW1zIHdlcmUgZGlzY3Vzc2VkIGFuZCB3aHkNCj4gPiB0aGV5IGNvdWxkbid0
+IGJlIHJlc29sdmVkIHdpdGhpbiBEU0EgaW4gZGV0YWlsID8NCj4gDQo+IFNlZSBteSBkaXNjdXNz
+aW9uIHdpdGggRmxvcmlhbiBpbiB0aGlzIHRocmVhZDoNCj4gaHR0cDovL3BhdGNod29yay5vemxh
+YnMub3JnL3Byb2plY3QvbmV0ZGV2L3BhdGNoLzIwMjAwOTA3MTgyOTEwLjEyODU0OTYtNS1vbHRl
+YW52QGdtYWlsLmNvbS8NCj4gVGhlcmUncyBhIGJ1bmNoIG9mIHVucmVsYXRlZCBzdHVmZiBnb2lu
+ZyBvbiB0aGVyZSwgaG9wZSB5b3UnbGwgbWFuYWdlLg0KPiANCg0KVGhhbmtzIQ0KSSdtIHRyYXZl
+bGluZyBhbmQgd2lsbCBiZSBiYWNrIG9uIFN1biBldmVuaW5nLCB3aWxsIGdvIHRocm91Z2ggdGhl
+IHRocmVhZCB0aGVuLg0KDQo+ID4gPiAtIHRoZSBicmlkZ2UgQVBJIG9ubHkgb2ZmZXJzIGEgcmFj
+ZS1mcmVlIEFQSSBmb3IgZGV0ZXJtaW5pbmcgdGhlIHB2aWQgb2YNCj4gPiA+ICAgYSBwb3J0LCBi
+cl92bGFuX2dldF9wdmlkKCksIHVuZGVyIFJUTkwuDQo+ID4gPiANCj4gPiANCj4gPiBUaGUgQVBJ
+IGNhbiBiZSBlYXNpbHkgZXh0ZW5kZWQuDQo+ID4gDQo+IA0KPiBJZiB5b3UgY2FuIGhlbHAsIGNv
+b2wuDQo+IA0KPiA+ID4gQW5kIGluIGZhY3QgdGhpcyBtaWdodCBub3QgZXZlbiBiZSBhIHNpdHVh
+dGlvbiB1bmlxdWUgdG8gRFNBLiBBbnkgZHJpdmVyDQo+ID4gPiB0aGF0IHJlY2VpdmVzIHVudGFn
+Z2VkIGZyYW1lcyBhcyBwdmlkLXRhZ2dlZCBpcyBub3cgYWJsZSB0byBjb21tdW5pY2F0ZQ0KPiA+
+ID4gd2l0aG91dCBuZWVkaW5nIGFuIDgwMjFxIHVwcGVyIGZvciB0aGUgcHZpZC4NCj4gPiA+IA0K
+PiA+IA0KPiA+IEkgd291bGQgcHJlZmVyIHdlIGRvbid0IGFkZCBoYXJkd2FyZS9kcml2ZXItc3Bl
+Y2lmaWMgZml4ZXMgaW4gdGhlIGJyaWRnZSwgd2hlbg0KPiA+IHZsYW4gZmlsdGVyaW5nIGlzIGRp
+c2FibGVkIHRoZXJlIHNob3VsZCBiZSBubyB2bGFuIG1hbmlwdWxhdGlvbi9maWx0ZXJpbmcgZG9u
+ZQ0KPiA+IGJ5IHRoZSBicmlkZ2UuIFRoaXMgY291bGQgcG90ZW50aWFsbHkgYnJlYWsgdXNlcnMg
+d2hvIGhhdmUgYWRkZWQgODAyMXEgZGV2aWNlcw0KPiA+IGFzIGJyaWRnZSBwb3J0cy4gQXQgdGhl
+IHZlcnkgbGVhc3QgdGhpcyBuZWVkcyB0byBiZSBoaWRkZW4gYmVoaW5kIGEgbmV3IG9wdGlvbiwN
+Cj4gPiBidXQgSSB3b3VsZCBsaWtlIHRvIGZpbmQgYSB3YXkgdG8gYWN0dWFsbHkgcHVzaCBpdCBi
+YWNrIHRvIERTQS4gQnV0IGFnYWluIGFkZGluZw0KPiA+IGhhcmR3YXJlL2RyaXZlci1zcGVjaWZp
+YyBvcHRpb25zIHNob3VsZCBiZSBhdm9pZGVkLg0KPiA+IA0KPiA+IENhbiB5b3UgdXNlIHRjIHRv
+IHBvcCB0aGUgdmxhbiBvbiBpbmdyZXNzID8gSSBtZWFuIHRoZSBjYXNlcyBhYm92ZSBhcmUgdmlz
+aWJsZQ0KPiA+IHRvIHRoZSB1c2VyLCBzbyB0aGV5IG1pZ2h0IGRlY2lkZSB0byBhZGQgdGhlIGlu
+Z3Jlc3MgdmxhbiBydWxlLg0KPiA+IA0KPiA+IFRoYW5rcywNCj4gPiAgTmlrDQo+IA0KPiBJIGNh
+biwgYnV0IEkgdGhpbmsgdGhhdCBhbGwgaW4gYWxsIGl0J3MgYSBiaXQgc3RyYW5nZSBmb3IgdGhl
+IGJyaWRnZSB0bw0KPiBub3QgdW50YWcgcHZpZC10YWdnZWQgZnJhbWVzLg0KPiANCj4gVGhhbmtz
+IQ0KPiAtVmxhZGltaXINCg0KSWYgdmxhbiBmaWx0ZXJpbmcgaXMgZGlzYWJsZWQgdGhlIGJyaWRn
+ZSBzaG91bGRuJ3QgZG8gYW55IHZsYW4gcHJvY2Vzc2luZywNCnRoYXQncyB0aGUgZXhwZWN0ZWQg
+YmVoYXZpb3VyLiBJZiB0YyBpcyBhIHZpYWJsZSBvcHRpb24gdGhlbiBJJ2QgZXhwbG9yZSB0aGF0
+DQpmdXJ0aGVyIGFuZCBhdm9pZCBhZGRpbmcgbW9yZSBjb2RlLg0KDQoNCg==
