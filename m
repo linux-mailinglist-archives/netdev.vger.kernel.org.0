@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A53D62676E6
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 02:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 638E02676F3
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 02:48:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725964AbgILAqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 20:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36028 "EHLO
+        id S1726027AbgILAsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 20:48:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbgILAph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 20:45:37 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683BAC061786
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 17:45:37 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id x2so10638383ilm.0
-        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 17:45:37 -0700 (PDT)
+        with ESMTP id S1725919AbgILApj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 20:45:39 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63204C061796
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 17:45:38 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id b6so12923611iof.6
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 17:45:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YDLLvKUFt4FLtBLmAvx/wOC4eEuYKN2bBtAm+5nRw3k=;
-        b=QArGIRWFO5muS5frroklu4PCaoP1vWYZLqH/HnLWoRyhftvAdaFY0IUJqRf8oyNOER
-         SrkS+8v2KOWZNRPYQ4TlGG1U88/FSRFus4nNqb8TDCC3svoUGGjibooMEsAe17/s0KL9
-         NK78nMGigKu24eQk+wxBwHh20vhihLhdChQu5jC4WztVOnqMjgEoqC+ESD/lW9tnqSvt
-         bZu4rV9hlEf95DpZ3q4w0SkZJZXdztmR4E+s1BpdtS1U+JRuehB9Uts3C+LozxpTmj3C
-         Z2m2jZ8Z1DO0FOoo8hxo0UXKgJfo2x6P2sZ/zqxkEHeNN8u3tQBYZnzr0BqWIEssrgVc
-         TL/Q==
+        bh=ulGFoS8Vx9LeLAE5Vy9/f1b+pYTcrEaaGPkRjEnG1KY=;
+        b=K+mVgQu+oSo9vWRD4jJE/SK9uOM+v4E6cWcQn7Aq3pD/f6l056Hn89GU9pYQs3Q2/0
+         uUrarKtzEYPKkRnlJ9xcvtcM7EPjbsk6YmktikCBg6CUWpU08oavMLvd0kBk2eKIcpF5
+         LxewxZQ/4qm9keu+acjXY7+VSMDAhLjBs1S0h8QF0n6szP0tXyhf3xZSo46MkA3EeON9
+         Rk8IAjAJdEZTjvagrLRGOmGgpoRm57x/kqJ+R8tciZHPOqDAQScs6NuZ9Jr+tQOw3qZk
+         csY7Pl3m+7q4dLqLQLN7HJG3/rr+G1pkOo0FgjFcHTD8tEEFMuEyd/f9LTm02g3xelxH
+         A3dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YDLLvKUFt4FLtBLmAvx/wOC4eEuYKN2bBtAm+5nRw3k=;
-        b=MJKzMiULJd0OqYUL8c/i87J09cGx36wSs4C8uTtyKOpkLgalCs5evYJG80Xx9ZUjVj
-         JM3AZ+DqpSC0yW0TpBejyq5QPmw7Or/my/Y09uvx9XAmPQxhIGzoT7QxkjhJEMKKId1+
-         dDFlnJA5KmYW0qwEfZZz2FeVYO3IJMUvH+aggQzp20BTD4FZykO1Y8MjJiMWsw8fQS8r
-         1GLzIgwBjk9A3B6xS8whl124deevlA05FYMtuJmCCpKYu81Cb4woqln/KqBoWJZwLRjW
-         BjcZ0UtqiXROuk6CykETtazU08h/U1LTVszbyUMXFdT9oeEamXIsQNvrKMnAv9T21lsF
-         YqTA==
-X-Gm-Message-State: AOAM533xq/eMVApEX8unjmGP0Q2sC0lBvtzOXg3wzfGjiE9NjBBLe/GH
-        i3SF0IyxZm2eGYUJLw+ya9CxGQ==
-X-Google-Smtp-Source: ABdhPJzjGXiuXVZVqy3WkyaUWI/eMzLmmD8rtzKepGkFF8I4QVJb8p7iDALrSodiy/a+2T8w9I3eQQ==
-X-Received: by 2002:a05:6e02:df1:: with SMTP id m17mr3039788ilj.276.1599871536735;
-        Fri, 11 Sep 2020 17:45:36 -0700 (PDT)
+        bh=ulGFoS8Vx9LeLAE5Vy9/f1b+pYTcrEaaGPkRjEnG1KY=;
+        b=mgW/v1wP9biAftuR1DrCWmTC+U7mzNu7fVAFYPNwhatu3uODfqgIxjiUl4NswYe3w+
+         Khj0tn1aUG/5EqOAikkVz0NaV/GC6H33JWA/+NULKwdazLZvvsbDboBXkrVXIwiA3ajg
+         rzqUCsYZplSytf1sHhNwnKJKI+SLgHgpx09Q1/4yIgMbIDHRPjgQKQhWLX2C+L0ctsNR
+         txZhtTZr99NjjKRNi0yDoHvw0e5LqO5cAoJixJxRuPtoi6aVJVwN2rxm7D231vKo4vuF
+         XvsBaJ6eCawmMjTn3FdJHL8AyMxbbL6IHEJCq1G92TH3ba0bPplm/p4bSSd8W8jrPv0d
+         s45A==
+X-Gm-Message-State: AOAM531KVJC+PzLKKYZ05OSg8JSaXeMxuCSSTj4z9DMf+fNId6ypfg8q
+        yasUhNg9HKSn1bmt9yaN8cNMtw==
+X-Google-Smtp-Source: ABdhPJxWJT+vVKiCBt+985pgzDtzYEHz9H03UXv8Xj5pLNbcgZF2oWfJW8MvtHPrZZfnF09g2ofJJw==
+X-Received: by 2002:a05:6638:22f:: with SMTP id f15mr4289906jaq.45.1599871537684;
+        Fri, 11 Sep 2020 17:45:37 -0700 (PDT)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id z4sm2107807ilh.45.2020.09.11.17.45.35
+        by smtp.gmail.com with ESMTPSA id z4sm2107807ilh.45.2020.09.11.17.45.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Sep 2020 17:45:36 -0700 (PDT)
+        Fri, 11 Sep 2020 17:45:37 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, subashab@codeaurora.org,
         cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 1/7] net: ipa: use refcount_t for IPA clock reference count
-Date:   Fri, 11 Sep 2020 19:45:26 -0500
-Message-Id: <20200912004532.1386-2-elder@linaro.org>
+Subject: [PATCH net-next v2 2/7] net: ipa: replace ipa->suspend_ref with a flag bit
+Date:   Fri, 11 Sep 2020 19:45:27 -0500
+Message-Id: <20200912004532.1386-3-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200912004532.1386-1-elder@linaro.org>
 References: <20200912004532.1386-1-elder@linaro.org>
@@ -65,87 +65,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Take advantage of the checking provided by refcount_t, rather than
-using a plain atomic to represent the IPA clock reference count.
+For suspend/resume, we currently take an extra clock reference to
+prevent the IPA clock from being shut down until a power management
+suspend request arrives.  An atomic field in the IPA structure is
+used to indicate whether this reference has been taken.
 
-Note that we need to *set* the value to 1 in ipa_clock_get() rather
-than incrementing it from 0 (because doing that is considered an
-error for a refcount_t).
+Instead, introduce a new flags bitmap in the IPA structure, and use
+a single bit in that bitmap rather than the atomic to indicate
+whether we have taken the special IPA clock reference.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
-v2: This patch is new in version 2 of the series.
+v2: New patch to use a bitmap bit rather than an atomic_t.
 
- drivers/net/ipa/ipa_clock.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/ipa/ipa.h      | 14 ++++++++++++--
+ drivers/net/ipa/ipa_main.c | 14 +++++++-------
+ 2 files changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_clock.c b/drivers/net/ipa/ipa_clock.c
-index 398f2e47043d8..b703866f2e20b 100644
---- a/drivers/net/ipa/ipa_clock.c
-+++ b/drivers/net/ipa/ipa_clock.c
-@@ -4,7 +4,7 @@
-  * Copyright (C) 2018-2020 Linaro Ltd.
-  */
+diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
+index 407fee841a9a8..e02fe979b645b 100644
+--- a/drivers/net/ipa/ipa.h
++++ b/drivers/net/ipa/ipa.h
+@@ -27,15 +27,25 @@ struct ipa_clock;
+ struct ipa_smp2p;
+ struct ipa_interrupt;
  
--#include <linux/atomic.h>
-+#include <linux/refcount.h>
- #include <linux/mutex.h>
- #include <linux/clk.h>
- #include <linux/device.h>
-@@ -51,7 +51,7 @@
-  * @config_path:	Configuration space interconnect
++/**
++ * enum ipa_flag - IPA state flags
++ * @IPA_FLAG_CLOCK_HELD:	Whether IPA clock is held to prevent suspend
++ * @IPA_FLAG_COUNT:		Number of defined IPA flags
++ */
++enum ipa_flag {
++	IPA_FLAG_CLOCK_HELD,
++	IPA_FLAG_COUNT,		/* Last; not a flag */
++};
++
+ /**
+  * struct ipa - IPA information
+  * @gsi:		Embedded GSI structure
++ * @flags:		Boolean state flags
+  * @version:		IPA hardware version
+  * @pdev:		Platform device
+  * @modem_rproc:	Remoteproc handle for modem subsystem
+  * @smp2p:		SMP2P information
+  * @clock:		IPA clocking information
+- * @suspend_ref:	Whether clock reference preventing suspend taken
+  * @table_addr:		DMA address of filter/route table content
+  * @table_virt:		Virtual address of filter/route table content
+  * @interrupt:		IPA Interrupt information
+@@ -70,6 +80,7 @@ struct ipa_interrupt;
   */
- struct ipa_clock {
--	atomic_t count;
-+	refcount_t count;
- 	struct mutex mutex; /* protects clock enable/disable */
- 	struct clk *core;
- 	struct icc_path *memory_path;
-@@ -195,7 +195,7 @@ static void ipa_clock_disable(struct ipa *ipa)
-  */
- bool ipa_clock_get_additional(struct ipa *ipa)
- {
--	return !!atomic_inc_not_zero(&ipa->clock->count);
-+	return refcount_inc_not_zero(&ipa->clock->count);
+ struct ipa {
+ 	struct gsi gsi;
++	DECLARE_BITMAP(flags, IPA_FLAG_COUNT);
+ 	enum ipa_version version;
+ 	struct platform_device *pdev;
+ 	struct rproc *modem_rproc;
+@@ -77,7 +88,6 @@ struct ipa {
+ 	void *notifier;
+ 	struct ipa_smp2p *smp2p;
+ 	struct ipa_clock *clock;
+-	atomic_t suspend_ref;
+ 
+ 	dma_addr_t table_addr;
+ 	__le64 *table_virt;
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index 1fdfec41e4421..409375b96eb8f 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -84,7 +84,7 @@ static void ipa_suspend_handler(struct ipa *ipa, enum ipa_irq_id irq_id)
+ 	 * endpoints will be resumed as a result.  This reference will
+ 	 * be dropped when we get a power management suspend request.
+ 	 */
+-	if (!atomic_xchg(&ipa->suspend_ref, 1))
++	if (!test_and_set_bit(IPA_FLAG_CLOCK_HELD, ipa->flags))
+ 		ipa_clock_get(ipa);
+ 
+ 	/* Acknowledge/clear the suspend interrupt on all endpoints */
+@@ -508,7 +508,7 @@ static int ipa_config(struct ipa *ipa, const struct ipa_data *data)
+ 	 * is held after initialization completes, and won't get dropped
+ 	 * unless/until a system suspend request arrives.
+ 	 */
+-	atomic_set(&ipa->suspend_ref, 1);
++	__set_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+ 	ipa_clock_get(ipa);
+ 
+ 	ipa_hardware_config(ipa);
+@@ -544,7 +544,7 @@ static int ipa_config(struct ipa *ipa, const struct ipa_data *data)
+ err_hardware_deconfig:
+ 	ipa_hardware_deconfig(ipa);
+ 	ipa_clock_put(ipa);
+-	atomic_set(&ipa->suspend_ref, 0);
++	__clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+ 
+ 	return ret;
+ }
+@@ -562,7 +562,7 @@ static void ipa_deconfig(struct ipa *ipa)
+ 	ipa_endpoint_deconfig(ipa);
+ 	ipa_hardware_deconfig(ipa);
+ 	ipa_clock_put(ipa);
+-	atomic_set(&ipa->suspend_ref, 0);
++	__clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
  }
  
- /* Get an IPA clock reference.  If the reference count is non-zero, it is
-@@ -231,7 +231,7 @@ void ipa_clock_get(struct ipa *ipa)
+ static int ipa_firmware_load(struct device *dev)
+@@ -777,7 +777,7 @@ static int ipa_probe(struct platform_device *pdev)
+ 	dev_set_drvdata(dev, ipa);
+ 	ipa->modem_rproc = rproc;
+ 	ipa->clock = clock;
+-	atomic_set(&ipa->suspend_ref, 0);
++	__clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+ 	ipa->wakeup_source = wakeup_source;
+ 	ipa->version = data->version;
  
- 	ipa_endpoint_resume(ipa);
+@@ -913,7 +913,7 @@ static int ipa_suspend(struct device *dev)
+ 	struct ipa *ipa = dev_get_drvdata(dev);
  
--	atomic_inc(&clock->count);
-+	refcount_set(&clock->count, 1);
+ 	ipa_clock_put(ipa);
+-	atomic_set(&ipa->suspend_ref, 0);
++	__clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
  
- out_mutex_unlock:
- 	mutex_unlock(&clock->mutex);
-@@ -246,7 +246,7 @@ void ipa_clock_put(struct ipa *ipa)
- 	struct ipa_clock *clock = ipa->clock;
+ 	return 0;
+ }
+@@ -933,7 +933,7 @@ static int ipa_resume(struct device *dev)
+ 	/* This clock reference will keep the IPA out of suspend
+ 	 * until we get a power management suspend request.
+ 	 */
+-	atomic_set(&ipa->suspend_ref, 1);
++	__set_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+ 	ipa_clock_get(ipa);
  
- 	/* If this is not the last reference there's nothing more to do */
--	if (!atomic_dec_and_mutex_lock(&clock->count, &clock->mutex))
-+	if (!refcount_dec_and_mutex_lock(&clock->count, &clock->mutex))
- 		return;
- 
- 	ipa_endpoint_suspend(ipa);
-@@ -294,7 +294,7 @@ struct ipa_clock *ipa_clock_init(struct device *dev)
- 		goto err_kfree;
- 
- 	mutex_init(&clock->mutex);
--	atomic_set(&clock->count, 0);
-+	refcount_set(&clock->count, 0);
- 
- 	return clock;
- 
-@@ -311,7 +311,7 @@ void ipa_clock_exit(struct ipa_clock *clock)
- {
- 	struct clk *clk = clock->core;
- 
--	WARN_ON(atomic_read(&clock->count) != 0);
-+	WARN_ON(refcount_read(&clock->count) != 0);
- 	mutex_destroy(&clock->mutex);
- 	ipa_interconnect_exit(clock);
- 	kfree(clock);
+ 	return 0;
 -- 
 2.20.1
 
