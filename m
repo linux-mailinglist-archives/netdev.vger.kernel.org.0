@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8258A267AFA
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 16:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E389F267B10
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 16:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725931AbgILOnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Sep 2020 10:43:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51200 "EHLO
+        id S1725963AbgILOwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Sep 2020 10:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbgILOlx (ORCPT
+        with ESMTP id S1725893AbgILOlx (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 10:41:53 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB6DC061799;
-        Sat, 12 Sep 2020 07:41:35 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id i22so17256375eja.5;
-        Sat, 12 Sep 2020 07:41:35 -0700 (PDT)
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36BDC06179A;
+        Sat, 12 Sep 2020 07:41:37 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id z22so17240437ejl.7;
+        Sat, 12 Sep 2020 07:41:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=bNS82pAxJYt6hrOlSttLhqVt8l1jU9oUP0X1h1g9XwE=;
-        b=athLwajQS1E4muhrBZlHH6JltwXgM9v45WRMv2r3SjqAKFeBcRt/rbMoeCL4BCEv2q
-         jeO++Xzqe88X9rhy5ZKWzl45vHANXqWXO3qv9c7dvgmOxXq753zd1yVdw68pikNZdK1S
-         wGmfCDmQiYd1BHqRiwdyCpEWVOcH7ThHA6PBvTMnusgz/wbfL4DZt0MpRogg8b4xHWWo
-         FwRfJ4wyd3MFmVlrkRkBj3XQc7SPYhGaYYbAwe5LaHydwF0Gv9uC/KBg0EZp54+KpaDa
-         O5IFzY+SBcA3slAt8XTUVpRPhcp7ivhsRKDv2cKm48CRQOUVJt0rabeop9BwQjwnm1xz
-         tsTQ==
+        bh=rDkMROBjPY2hTRZChGQCcM+z4gWE5dUP4vYtu5qyR0s=;
+        b=RGPd88dRCVT9Yc9P+oMjttGCiAOalw58Ughxff+gadbOkXnazlYwRTE7xPS2uFg3MZ
+         NHipFN1PgjQYA9P/9LCzy93xQA1O648P1eN5qCNPOb5gih2zY2PcxuXOscSD5Y6Ikkj5
+         4tfDgP5ydMJSwmzZaPdi76/bNrzgKJQaXaCzq1vUiM0zcoJ+WWLXwAiMVpv+LTHtZL+O
+         8C891J+vxjvERMUe3EfFPSaelvKTyQA2e1flOlsC+2nIhscM70n+DpPirFif+Lmdh2lU
+         5q9LJgk+erBio/XI+Xx7NxrlPK2lolw2imiYDw/a9p7PFFifC1lEcHXeFKBT7KCgXnHm
+         fQxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=bNS82pAxJYt6hrOlSttLhqVt8l1jU9oUP0X1h1g9XwE=;
-        b=TQWOxEfrCxFrviOVNewWblLRzdOk0QkAMN8jhmgeFDevr8/4cqxQXVeW9dj0F5PgtM
-         UBxcIILmlCQQFH7wj4mJudyiN+RlU/KOjpn2kbjWnycqLXMjGj6BX3PXr6YJQSaqfMmk
-         9YVFDfZ0Fk9MtKw2rgbw6sbQCYFKyByVfPXqmT9mYlSpn8LZUQGSTR3ym5WpMMCsQ7yS
-         U+Siq0zgNQ7ktqaCN5Zn7aruBbECTRNPh6IZ5Yu7BO1huoIMUa4WfhPS9+YST5/5U4M9
-         sr976SFw6F8knv4fRlR4b4F1f/IRMdipifgyZgVxuru3j7yb5pnG5AgpRUSkipqPJVZh
-         4A5g==
-X-Gm-Message-State: AOAM533UuuP6Lx+U0OjTLcU4AIeZXxlrEEd8NxwyJYAStnfoCdtdtcJ1
-        WWmrMMfJ/73UTV2bwpX2bL1/YtECfbk=
-X-Google-Smtp-Source: ABdhPJwgNuOuWUeBRboEzZl77tn3Ro2mfBben6Fh0hCF50y4OiKZ2S4VnRfctAhIjf/2VlTV+0p76w==
-X-Received: by 2002:a17:906:3e90:: with SMTP id a16mr5916483ejj.363.1599921692781;
-        Sat, 12 Sep 2020 07:41:32 -0700 (PDT)
+        bh=rDkMROBjPY2hTRZChGQCcM+z4gWE5dUP4vYtu5qyR0s=;
+        b=Gpgs8BBagxVfYniWP1iQ0Joeai4KIZE4udjO7bMeOAR/blB+bVQMObkyJH68iL9cBI
+         w7oZavh4E7UiqAsiyX3KHGwUMXxCGsKUuztlGF9HrgzCBTJ46GltlEWFz/vb2fLEmrNd
+         ZHMOD/Npt7asaoXwCPzAxuDMtyGaAFYmvLYL3ivw2Rtu7dvQBZQy/4f4ovObpTCIfxPW
+         2o7o/JlVM5gBYjCfzGXkU8QGOE1jcztDDFKZEmv7l5SmA2k8xxNWvrkMGq4NKPdT2D2J
+         ZriuQOk+LKv1OdKq/H8dVYCm6P2YUcKK40YetFJaU0TAa5ir3uyP030SAfqokwWhIFNv
+         szQQ==
+X-Gm-Message-State: AOAM533s5czfqeZpaZQcw/Ih+0juzThsFuFO0aQjiRRIy/dh3InLECYw
+        PJZ0EImmApzCqPF1tyoaWWALLzDFd5g=
+X-Google-Smtp-Source: ABdhPJy1mmSOvT+vgG8Vku9T5UJN6s8A6IMejpTrPS5JMHSJyjV/lmwCLLthPx7G+AMwJxEW9KjdDg==
+X-Received: by 2002:a17:906:915:: with SMTP id i21mr6140178ejd.113.1599921695438;
+        Sat, 12 Sep 2020 07:41:35 -0700 (PDT)
 Received: from ogabbay-VM.habana-labs.com ([213.57.90.10])
-        by smtp.gmail.com with ESMTPSA id y25sm4842938edv.15.2020.09.12.07.41.30
+        by smtp.gmail.com with ESMTPSA id y25sm4842938edv.15.2020.09.12.07.41.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Sep 2020 07:41:31 -0700 (PDT)
+        Sat, 12 Sep 2020 07:41:34 -0700 (PDT)
 From:   Oded Gabbay <oded.gabbay@gmail.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     SW_Drivers@habana.ai, gregkh@linuxfoundation.org,
         davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
         f.fainelli@gmail.com, Omer Shpigelman <oshpigelman@habana.ai>
-Subject: [PATCH v2 08/14] habanalabs/gaudi: add a new IOCTL for NIC control operations
-Date:   Sat, 12 Sep 2020 17:41:00 +0300
-Message-Id: <20200912144106.11799-9-oded.gabbay@gmail.com>
+Subject: [PATCH v2 09/14] habanalabs/gaudi: add CQ control operations
+Date:   Sat, 12 Sep 2020 17:41:01 +0300
+Message-Id: <20200912144106.11799-10-oded.gabbay@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200912144106.11799-1-oded.gabbay@gmail.com>
 References: <20200912144106.11799-1-oded.gabbay@gmail.com>
@@ -64,26 +64,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Omer Shpigelman <oshpigelman@habana.ai>
 
-Add Queue Pair (QP) opcodes to the NIC ioctl.
+Add NIC Completion Queue (CQ) opcodes to NIC ioctl. The CQ is used by the
+user-space process to get notification of a completed work.
 
-A QP represents a connection between two Gaudi ports. Each port currently
-supports 1024 QPs where QP 0 is reserved for the driver for Ethernet.
-User-space process needs to create a QP in order to communicate with other
-Gaudis.
+A CQ entry (CQE) has three types: requester (sender), responder
+(receiver) and error. Each type has unique fields as well as shared ones.
 
-QP can have two contexts: requester (sender) and responder (receiver). Both
-have unique parameters as well as shared ones.
-
-The QP numbers are not recycled immediately but only after wraparound. This
-to avoid cases where a QP was closed and reopened and got data of the
-"old" QP.
+Currently only a single user CQ is supported but it may be extended in the
+future, hence proper locking was added as well. In addition, an error
+interrupt was added to identify CQ overrun.
 
 The added opcodes are:
-
-- Create a QP
-- Set requester context
-- Set responder context
-- Destroy a QP
+- Create CQ
+- Destroy CQ
+- Wait on CQ: sleeps until CQEs are available in the buffer.
+- Poll CQ: check if there are available CQEs in the buffer. It is a
+           non-blocking function.
+- Update consumed CQEs: The user informs the driver regarding processed
+                        CQEs so these can be overridden by the driver.
 
 Signed-off-by: Omer Shpigelman <oshpigelman@habana.ai>
 Reviewed-by: Oded Gabbay <oded.gabbay@gmail.com>
@@ -91,796 +89,971 @@ Signed-off-by: Oded Gabbay <oded.gabbay@gmail.com>
 ---
 Changes in v2:
   - Fix all instances of reverse Christmas tree
-  - Set QPC REQ burst size to 16. The QPC requester burst size sets the
-    maximal number of WQEs to process until rescheduling and possibly
-    handling other QPs. A too big burst size might lead to starvation in
-    case of many QPs involved. A burst size of 16 seems like a good balance
-    between performance and scalability. In addition, this setting should
-    not be changed by the user.
 
+ drivers/misc/habanalabs/common/device.c       |   6 +-
  drivers/misc/habanalabs/common/habanalabs.h   |   3 +
- .../misc/habanalabs/common/habanalabs_ioctl.c |  98 ++++-
+ .../misc/habanalabs/common/habanalabs_ioctl.c |  20 +-
  drivers/misc/habanalabs/gaudi/gaudi.c         |   1 +
- drivers/misc/habanalabs/gaudi/gaudiP.h        |   2 +
- drivers/misc/habanalabs/gaudi/gaudi_nic.c     | 406 ++++++++++++++++++
- drivers/misc/habanalabs/goya/goya.c           |   9 +
- include/uapi/misc/habanalabs.h                | 129 +++++-
- 7 files changed, 646 insertions(+), 2 deletions(-)
+ drivers/misc/habanalabs/gaudi/gaudiP.h        |   1 +
+ drivers/misc/habanalabs/gaudi/gaudi_nic.c     | 594 ++++++++++++++++++
+ drivers/misc/habanalabs/goya/goya.c           |   8 +
+ include/uapi/misc/habanalabs.h                | 111 ++++
+ 8 files changed, 741 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
+index 196e35d71118..73d64f84aeba 100644
+--- a/drivers/misc/habanalabs/common/device.c
++++ b/drivers/misc/habanalabs/common/device.c
+@@ -117,12 +117,13 @@ static int hl_device_release_ctrl(struct inode *inode, struct file *filp)
+  * @*filp: pointer to file structure
+  * @*vma: pointer to vm_area_struct of the process
+  *
+- * Called when process does an mmap on habanalabs device. Call the device's mmap
++ * Called when process does an mmap on habanalabs device. Call the relevant mmap
+  * function at the end of the common code.
+  */
+ static int hl_mmap(struct file *filp, struct vm_area_struct *vma)
+ {
+ 	struct hl_fpriv *hpriv = filp->private_data;
++	struct hl_device *hdev = hpriv->hdev;
+ 	unsigned long vm_pgoff;
+ 
+ 	vm_pgoff = vma->vm_pgoff;
+@@ -131,6 +132,9 @@ static int hl_mmap(struct file *filp, struct vm_area_struct *vma)
+ 	switch (vm_pgoff & HL_MMAP_TYPE_MASK) {
+ 	case HL_MMAP_TYPE_CB:
+ 		return hl_cb_mmap(hpriv, vma);
++
++	case HL_MMAP_TYPE_NIC_CQ:
++		return hdev->asic_funcs->nic_cq_mmap(hdev, vma);
+ 	}
+ 
+ 	return -EINVAL;
 diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index fee04299360d..cae6d1e26c36 100644
+index cae6d1e26c36..65bc2527338b 100644
 --- a/drivers/misc/habanalabs/common/habanalabs.h
 +++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -696,6 +696,7 @@ struct hl_info_mac_addr;
-  *                    then the timeout is the default timeout for the specific
+@@ -32,6 +32,7 @@
+ #define HL_MMAP_TYPE_SHIFT		(62 - PAGE_SHIFT)
+ #define HL_MMAP_TYPE_MASK		(0x3ull << HL_MMAP_TYPE_SHIFT)
+ #define HL_MMAP_TYPE_CB			(0x2ull << HL_MMAP_TYPE_SHIFT)
++#define HL_MMAP_TYPE_NIC_CQ		(0x1ull << HL_MMAP_TYPE_SHIFT)
+ 
+ #define HL_MMAP_OFFSET_VALUE_MASK	(0x3FFFFFFFFFFFull >> PAGE_SHIFT)
+ #define HL_MMAP_OFFSET_VALUE_GET(off)	(off & HL_MMAP_OFFSET_VALUE_MASK)
+@@ -697,6 +698,7 @@ struct hl_info_mac_addr;
   *                    ASIC
   * @get_hw_state: retrieve the H/W state
-+ * @nic_control: Perform NIC related operations.
+  * @nic_control: Perform NIC related operations.
++ * @nic_cq_mmap: map the NIC CQ buffer.
   * @pci_bars_map: Map PCI BARs.
   * @init_iatu: Initialize the iATU unit inside the PCI controller.
   * @get_mac_addr: Get list of MAC addresses.
-@@ -800,6 +801,8 @@ struct hl_asic_funcs {
- 	int (*send_cpu_message)(struct hl_device *hdev, u32 *msg,
- 				u16 len, u32 timeout, long *result);
+@@ -803,6 +805,7 @@ struct hl_asic_funcs {
  	enum hl_device_hw_state (*get_hw_state)(struct hl_device *hdev);
-+	int (*nic_control)(struct hl_device *hdev, u32 op, void *input,
-+				void *output);
+ 	int (*nic_control)(struct hl_device *hdev, u32 op, void *input,
+ 				void *output);
++	int (*nic_cq_mmap)(struct hl_device *hdev, struct vm_area_struct *vma);
  	int (*pci_bars_map)(struct hl_device *hdev);
  	int (*init_iatu)(struct hl_device *hdev);
  	int (*get_mac_addr)(struct hl_device *hdev,
 diff --git a/drivers/misc/habanalabs/common/habanalabs_ioctl.c b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
-index 5db6c978415c..a0d6a9ad7882 100644
+index a0d6a9ad7882..6ba1b9da0486 100644
 --- a/drivers/misc/habanalabs/common/habanalabs_ioctl.c
 +++ b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
-@@ -24,6 +24,20 @@ static u32 hl_debug_struct_size[HL_DEBUG_OP_TIMESTAMP + 1] = {
+@@ -24,18 +24,29 @@ static u32 hl_debug_struct_size[HL_DEBUG_OP_TIMESTAMP + 1] = {
  
  };
  
-+static u32 hl_nic_input_size[HL_NIC_OP_DESTROY_CONN + 1] = {
-+	[HL_NIC_OP_ALLOC_CONN] = sizeof(struct hl_nic_alloc_conn_in),
-+	[HL_NIC_OP_SET_REQ_CONN_CTX] = sizeof(struct hl_nic_req_conn_ctx_in),
-+	[HL_NIC_OP_SET_RES_CONN_CTX] = sizeof(struct hl_nic_res_conn_ctx_in),
-+	[HL_NIC_OP_DESTROY_CONN] = sizeof(struct hl_nic_destroy_conn_in),
-+};
-+
-+static u32 hl_nic_output_size[HL_NIC_OP_DESTROY_CONN + 1] = {
-+	[HL_NIC_OP_ALLOC_CONN] = sizeof(struct hl_nic_alloc_conn_out),
-+	[HL_NIC_OP_SET_REQ_CONN_CTX] = 0,
-+	[HL_NIC_OP_SET_RES_CONN_CTX] = 0,
-+	[HL_NIC_OP_DESTROY_CONN] = 0,
-+};
-+
+-static u32 hl_nic_input_size[HL_NIC_OP_DESTROY_CONN + 1] = {
++static u32 hl_nic_input_size[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES + 1] = {
+ 	[HL_NIC_OP_ALLOC_CONN] = sizeof(struct hl_nic_alloc_conn_in),
+ 	[HL_NIC_OP_SET_REQ_CONN_CTX] = sizeof(struct hl_nic_req_conn_ctx_in),
+ 	[HL_NIC_OP_SET_RES_CONN_CTX] = sizeof(struct hl_nic_res_conn_ctx_in),
+ 	[HL_NIC_OP_DESTROY_CONN] = sizeof(struct hl_nic_destroy_conn_in),
++	[HL_NIC_OP_CQ_CREATE] = sizeof(struct hl_nic_cq_create_in),
++	[HL_NIC_OP_CQ_DESTROY] = sizeof(struct hl_nic_cq_destroy_in),
++	[HL_NIC_OP_CQ_WAIT] = sizeof(struct hl_nic_cq_poll_wait_in),
++	[HL_NIC_OP_CQ_POLL] = sizeof(struct hl_nic_cq_poll_wait_in),
++	[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES] =
++			sizeof(struct hl_nic_cq_update_consumed_cqes_in),
+ };
+ 
+-static u32 hl_nic_output_size[HL_NIC_OP_DESTROY_CONN + 1] = {
++static u32 hl_nic_output_size[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES + 1] = {
+ 	[HL_NIC_OP_ALLOC_CONN] = sizeof(struct hl_nic_alloc_conn_out),
+ 	[HL_NIC_OP_SET_REQ_CONN_CTX] = 0,
+ 	[HL_NIC_OP_SET_RES_CONN_CTX] = 0,
+ 	[HL_NIC_OP_DESTROY_CONN] = 0,
++	[HL_NIC_OP_CQ_CREATE] = sizeof(struct hl_nic_cq_create_out),
++	[HL_NIC_OP_CQ_DESTROY] = 0,
++	[HL_NIC_OP_CQ_WAIT] = sizeof(struct hl_nic_cq_poll_wait_out),
++	[HL_NIC_OP_CQ_POLL] = sizeof(struct hl_nic_cq_poll_wait_out),
++	[HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES] = 0,
+ };
+ 
  static int device_status_info(struct hl_device *hdev, struct hl_info_args *args)
- {
- 	struct hl_info_device_status dev_stat = {0};
-@@ -545,6 +559,87 @@ static int hl_debug_ioctl(struct hl_fpriv *hpriv, void *data)
- 	return rc;
- }
- 
-+static int nic_control(struct hl_device *hdev, struct hl_nic_args *args)
-+{
-+	void *input = NULL, *output = NULL;
-+	int rc;
-+
-+	if (args->input_ptr && args->input_size) {
-+		input = kzalloc(hl_nic_input_size[args->op], GFP_KERNEL);
-+		if (!input) {
-+			rc = -ENOMEM;
-+			goto out;
-+		}
-+
-+		if (copy_from_user(input, u64_to_user_ptr(args->input_ptr),
-+					args->input_size)) {
-+			rc = -EFAULT;
-+			dev_err(hdev->dev, "failed to copy input NIC data\n");
-+			goto out;
-+		}
-+	}
-+
-+	if (args->output_ptr && args->output_size) {
-+		output = kzalloc(hl_nic_output_size[args->op], GFP_KERNEL);
-+		if (!output) {
-+			rc = -ENOMEM;
-+			goto out;
-+		}
-+	}
-+
-+	rc = hdev->asic_funcs->nic_control(hdev, args->op, input, output);
-+	if (rc)
-+		dev_err_ratelimited(hdev->dev,
-+				"NIC control operation %d failed %d\n",
-+				args->op, rc);
-+
-+	if (output && copy_to_user((void __user *) (uintptr_t) args->output_ptr,
-+					output, args->output_size)) {
-+		dev_err(hdev->dev, "copy to user failed in nic ioctl\n");
-+		rc = -EFAULT;
-+		goto out;
-+	}
-+
-+out:
-+	kfree(output);
-+	kfree(input);
-+
-+	return rc;
-+}
-+
-+static int hl_nic_ioctl(struct hl_fpriv *hpriv, void *data)
-+{
-+	struct hl_device *hdev = hpriv->hdev;
-+	struct hl_nic_args *args = data;
-+	int rc;
-+
-+	if (hl_device_disabled_or_in_reset(hdev)) {
-+		dev_warn_ratelimited(hdev->dev,
-+			"Device is %s. Can't execute NIC IOCTL\n",
-+			atomic_read(&hdev->in_reset) ? "in_reset" : "disabled");
-+		return -EBUSY;
-+	}
-+
-+	switch (args->op) {
-+	case HL_NIC_OP_ALLOC_CONN:
-+	case HL_NIC_OP_SET_REQ_CONN_CTX:
-+	case HL_NIC_OP_SET_RES_CONN_CTX:
-+	case HL_NIC_OP_DESTROY_CONN:
-+		args->input_size =
-+			min(args->input_size, hl_nic_input_size[args->op]);
-+		args->output_size =
-+			min(args->output_size, hl_nic_output_size[args->op]);
-+		rc = nic_control(hdev, args);
-+		break;
-+	default:
-+		dev_err(hdev->dev, "Invalid request %d\n", args->op);
-+		rc = -ENOTTY;
-+		break;
-+	}
-+
-+	return rc;
-+}
-+
- #define HL_IOCTL_DEF(ioctl, _func) \
- 	[_IOC_NR(ioctl)] = {.cmd = ioctl, .func = _func}
- 
-@@ -554,7 +649,8 @@ static const struct hl_ioctl_desc hl_ioctls[] = {
- 	HL_IOCTL_DEF(HL_IOCTL_CS, hl_cs_ioctl),
- 	HL_IOCTL_DEF(HL_IOCTL_WAIT_CS, hl_cs_wait_ioctl),
- 	HL_IOCTL_DEF(HL_IOCTL_MEMORY, hl_mem_ioctl),
--	HL_IOCTL_DEF(HL_IOCTL_DEBUG, hl_debug_ioctl)
-+	HL_IOCTL_DEF(HL_IOCTL_DEBUG, hl_debug_ioctl),
-+	HL_IOCTL_DEF(HL_IOCTL_NIC, hl_nic_ioctl)
- };
- 
- static const struct hl_ioctl_desc hl_ioctls_control[] = {
+@@ -625,6 +636,11 @@ static int hl_nic_ioctl(struct hl_fpriv *hpriv, void *data)
+ 	case HL_NIC_OP_SET_REQ_CONN_CTX:
+ 	case HL_NIC_OP_SET_RES_CONN_CTX:
+ 	case HL_NIC_OP_DESTROY_CONN:
++	case HL_NIC_OP_CQ_CREATE:
++	case HL_NIC_OP_CQ_DESTROY:
++	case HL_NIC_OP_CQ_WAIT:
++	case HL_NIC_OP_CQ_POLL:
++	case HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES:
+ 		args->input_size =
+ 			min(args->input_size, hl_nic_input_size[args->op]);
+ 		args->output_size =
 diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index d2f51497fa8e..9ad34e22f00b 100644
+index 9ad34e22f00b..4602e4780651 100644
 --- a/drivers/misc/habanalabs/gaudi/gaudi.c
 +++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -7470,6 +7470,7 @@ static const struct hl_asic_funcs gaudi_funcs = {
- 	.get_eeprom_data = gaudi_get_eeprom_data,
+@@ -7471,6 +7471,7 @@ static const struct hl_asic_funcs gaudi_funcs = {
  	.send_cpu_message = gaudi_send_cpu_message,
  	.get_hw_state = gaudi_get_hw_state,
-+	.nic_control = gaudi_nic_control,
+ 	.nic_control = gaudi_nic_control,
++	.nic_cq_mmap = gaudi_nic_cq_mmap,
  	.pci_bars_map = gaudi_pci_bars_map,
  	.init_iatu = gaudi_init_iatu,
  	.get_mac_addr = gaudi_nic_get_mac_addr,
 diff --git a/drivers/misc/habanalabs/gaudi/gaudiP.h b/drivers/misc/habanalabs/gaudi/gaudiP.h
-index 69b3656eaaeb..4143be6479fb 100644
+index 4143be6479fb..3158d5d68c1d 100644
 --- a/drivers/misc/habanalabs/gaudi/gaudiP.h
 +++ b/drivers/misc/habanalabs/gaudi/gaudiP.h
-@@ -566,6 +566,8 @@ void gaudi_nic_stop(struct hl_device *hdev);
- void gaudi_nic_ports_reopen(struct hl_device *hdev);
- int gaudi_nic_get_mac_addr(struct hl_device *hdev,
- 				struct hl_info_mac_addr *mac_addr);
-+int gaudi_nic_control(struct hl_device *hdev, u32 op, void *input,
-+			void *output);
+@@ -569,6 +569,7 @@ int gaudi_nic_get_mac_addr(struct hl_device *hdev,
+ int gaudi_nic_control(struct hl_device *hdev, u32 op, void *input,
+ 			void *output);
  void gaudi_nic_ctx_fini(struct hl_ctx *ctx);
++int gaudi_nic_cq_mmap(struct hl_device *hdev, struct vm_area_struct *vma);
  irqreturn_t gaudi_nic_rx_irq_handler(int irq, void *arg);
  irqreturn_t gaudi_nic_cq_irq_handler(int irq, void *arg);
+ netdev_tx_t gaudi_nic_handle_tx_pkt(struct gaudi_nic_device *gaudi_nic,
 diff --git a/drivers/misc/habanalabs/gaudi/gaudi_nic.c b/drivers/misc/habanalabs/gaudi/gaudi_nic.c
-index fc4fc80eb005..ed994d25da4f 100644
+index ed994d25da4f..999e9ded22fb 100644
 --- a/drivers/misc/habanalabs/gaudi/gaudi_nic.c
 +++ b/drivers/misc/habanalabs/gaudi/gaudi_nic.c
-@@ -56,6 +56,7 @@ enum eth_pkt_status {
- #define PCS_FAIL_THRESHOLD		8
- #define PCS_FAULT_THRESHOLD		20
- #define PCS_LINK_RETRY_MSEC		20
-+#define QPC_REQ_BURST_SIZE		16
- 
- /* NIC_MAX_MTU equals 8K minus eth header */
- #define NIC_MAX_MTU	((1 << 13) - (ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN))
-@@ -70,6 +71,9 @@ enum eth_pkt_status {
- #define MAC_CFG_XPCS91(addr, data)	\
- 				mac_write(gaudi_nic, i, "xpcs91", addr, data)
- 
-+static struct hl_qp dummy_qp;
-+static int qp_put(struct hl_qp *qp);
-+
- bool disabled_or_in_reset(struct gaudi_nic_device *gaudi_nic)
- {
- 	return atomic_read(&gaudi_nic->in_reset) ||
-@@ -2801,6 +2805,408 @@ int gaudi_nic_get_mac_addr(struct hl_device *hdev,
- out:
- 	return 0;
+@@ -1757,6 +1757,466 @@ void gaudi_nic_sw_fini(struct hl_device *hdev)
+ 		_gaudi_nic_sw_fini(&gaudi->nic_devices[i]);
  }
-+
-+static struct hl_qp *qp_get(struct hl_device *hdev,
-+			struct gaudi_nic_device *gaudi_nic, u32 conn_id)
+ 
++/* this function is called from multiple threads */
++static void copy_cqe_to_main_queue(struct hl_device *hdev,
++					struct hl_nic_cqe *cqe)
 +{
-+	struct hl_qp *qp;
++	struct gaudi_device *gaudi = hdev->asic_specific;
++	u32 pi;
 +
-+	mutex_lock(&gaudi_nic->idr_lock);
-+	qp = idr_find(&gaudi_nic->qp_ids, conn_id);
-+	if (!qp || qp == &dummy_qp) {
++	spin_lock(&gaudi->nic_cq_lock);
++
++	pi = gaudi->nic_cq_user_pi++;
++	/* wraparound according to the user CQ length */
++	pi &= (gaudi->nic_cq_user_num_of_entries - 1);
++	memcpy(&gaudi->nic_cq_buf[pi], cqe, sizeof(*cqe));
++
++#if HL_NIC_DEBUG
++	if (cqe->type == HL_NIC_CQE_TYPE_RES) {
++		dev_dbg(hdev->dev,
++			"responder, msg_id: 0x%x, port: %d, was copied to pi %d\n",
++			cqe->responder.msg_id, cqe->port, pi);
++	} else {
++		dev_dbg(hdev->dev,
++			"requester, wqe_index: 0x%x, qp_number: %d, port: %d, was copied to pi %d\n",
++			cqe->requester.wqe_index,
++			cqe->qp_number, cqe->port, pi);
++	}
++#endif
++
++	/* copy the CQE before the counter update */
++	mb();
++
++	if (unlikely(!atomic_add_unless(&gaudi->nic_cq_user_new_cqes, 1,
++				gaudi->nic_cq_user_num_of_entries))) {
++		gaudi->nic_cq_status = HL_NIC_CQ_OVERFLOW;
++		dev_err(hdev->dev, "NIC CQ overflow, should recreate NIC CQ\n");
++	}
++
++	spin_unlock(&gaudi->nic_cq_lock);
++}
++
++static void cq_work(struct work_struct *work)
++{
++	struct gaudi_nic_device *gaudi_nic = container_of(work,
++							struct gaudi_nic_device,
++							cq_work.work);
++	u32 ci = gaudi_nic->cq_ci, cqe_cnt = 0, port = gaudi_nic->port, delay;
++	struct gaudi_device *gaudi = gaudi_nic->hdev->asic_specific;
++	struct cqe *cq_arr = gaudi_nic->cq_mem_cpu, *cqe_hw;
++	struct hl_device *hdev = gaudi_nic->hdev;
++	struct hl_nic_cqe cqe_sw;
++	bool stop_work = false;
++
++	while (1) {
++		if (unlikely(!gaudi->nic_cq_enable) ||
++			unlikely(gaudi->nic_cq_status != HL_NIC_CQ_SUCCESS)) {
++			stop_work = true;
++			break;
++		}
++
++		memset(&cqe_sw, 0, sizeof(cqe_sw));
++
++		/* wraparound according to our buffer length */
++		cqe_hw = &cq_arr[ci & (CQ_PORT_BUF_LEN - 1)];
++
++		if (!CQE_IS_VALID(cqe_hw))
++			break;
++		/* Make sure we read CQE contents after the valid bit check */
++		dma_rmb();
++
++		cqe_sw.port = port;
++
++		if (CQE_TYPE(cqe_hw)) {
++			cqe_sw.type = HL_NIC_CQE_TYPE_RES;
++			cqe_sw.responder.msg_id =
++					(CQE_RES_IMDT_31_22(cqe_hw) << 22) |
++						CQE_RES_IMDT_21_0(cqe_hw);
++
++			/*
++			 * the even port publishes its responder CQEs on the odd
++			 * port CQ. take the correct port in this case.
++			 */
++			if (!CQE_RES_NIC(cqe_hw))
++				cqe_sw.port--;
++		} else {
++			cqe_sw.requester.wqe_index = CQE_REQ_WQE_IDX(cqe_hw);
++			cqe_sw.qp_number = CQE_REQ_QPN(cqe_hw);
++		}
++
++		copy_cqe_to_main_queue(hdev, &cqe_sw);
++
++		CQE_SET_INVALID(cqe_hw);
++
++		/* the H/W CI does wraparound every 32 bit */
++		ci++;
++
++		cqe_cnt++;
++		if (unlikely(cqe_cnt > CQ_PORT_BUF_LEN)) {
++			dev_err(hdev->dev,
++				"handled too many CQEs (%d), port: %d\n",
++				cqe_cnt, port);
++			stop_work = true;
++			break;
++		}
++	}
++
++	/* no CQEs to handle */
++	if (cqe_cnt == 0)
++		goto out;
++
++#if HL_NIC_DEBUG
++	dev_dbg(hdev->dev, "update H/W CQ CI: %d, port: %d\n", ci, port);
++#endif
++
++	NIC_WREG32(mmNIC0_RXE0_CQ_CONSUMER_INDEX, ci);
++
++	/*
++	 * perform a read to flush the new CI value before checking for hidden
++	 * packets
++	 */
++	NIC_RREG32(mmNIC0_RXE0_CQ_CONSUMER_INDEX);
++
++	gaudi_nic->cq_ci = ci;
++
++	/* make sure we wake up the waiter after the CI update */
++	mb();
++
++	/* signal the completion queue that there are available CQEs */
++	complete(&gaudi->nic_cq_comp);
++
++	if (unlikely(stop_work))
++		goto out;
++
++out:
++	if (likely(cqe_cnt)) {
++		gaudi_nic->last_cqe_cnt = cqe_cnt;
++		delay = gaudi_nic->cq_delay;
++	} else {
++		ktime_t later;
++
++		/*
++		 * take base TS on the first polling invocation where no CQEs
++		 * were processed
++		 */
++		if (gaudi_nic->last_cqe_cnt) {
++			gaudi_nic->last_cqe_cnt = 0;
++			gaudi_nic->last_cqe_ts = ktime_get();
++		}
++
++		/* extend the delay if no CQEs were processed for 1 sec */
++		later = ktime_add_ms(gaudi_nic->last_cqe_ts, 1 * MSEC_PER_SEC);
++		if (ktime_compare(ktime_get(), later) > 0)
++			delay = gaudi_nic->cq_delay_idle;
++		else
++			delay = gaudi_nic->cq_delay;
++	}
++
++	queue_delayed_work(gaudi_nic->cq_wq, &gaudi_nic->cq_work, delay);
++}
++
++static int cq_update_consumed_cqes(struct hl_device *hdev,
++				struct hl_nic_cq_update_consumed_cqes_in *in)
++{
++	struct gaudi_device *gaudi = hdev->asic_specific;
++	u32 num_of_cqes;
++	int rc = 0;
++
++	if (!in) {
 +		dev_err(hdev->dev,
-+			"Failed to find matching QP for handle %d in port %d\n",
-+			conn_id, gaudi_nic->port);
++			"Missing parameters to update consumed CQEs\n");
++		return -EINVAL;
++	}
++
++	mutex_lock(&gaudi->nic_cq_user_lock);
++
++	if (!gaudi->nic_cq_enable) {
++		dev_err(hdev->dev,
++			"NIC CQ is not enabled, can't update user CI\n");
++		rc = -EFAULT;
 +		goto out;
 +	}
 +
-+	kref_get(&qp->refcount);
++	num_of_cqes = in->cq_num_of_consumed_entries;
++
++	if (atomic_read(&gaudi->nic_cq_user_new_cqes) < num_of_cqes) {
++		dev_err(hdev->dev,
++			"nunmber of consumed CQEs is too big %d/%d\n",
++			num_of_cqes, atomic_read(&gaudi->nic_cq_user_new_cqes));
++		rc = -EINVAL;
++		goto out;
++	}
++
++	gaudi->nic_cq_user_ci = (gaudi->nic_cq_user_ci + num_of_cqes) &
++				(gaudi->nic_cq_user_num_of_entries - 1);
++
++	atomic_sub(num_of_cqes, &gaudi->nic_cq_user_new_cqes);
++
++#if HL_NIC_DEBUG
++	dev_dbg(hdev->dev, "consumed %d CQEs\n", num_of_cqes);
++	dev_dbg(hdev->dev, "user CQ CI: %d\n", gaudi->nic_cq_user_ci);
++#endif
 +out:
-+	mutex_unlock(&gaudi_nic->idr_lock);
-+
-+	return qp;
-+}
-+
-+static void qp_do_release(struct hl_qp *qp)
-+{
-+	mutex_destroy(&qp->qpc_lock);
-+	kfree(qp);
-+}
-+
-+static void qp_release(struct kref *ref)
-+{
-+	struct hl_qp *qp = container_of(ref, struct hl_qp, refcount);
-+	struct gaudi_nic_device *gaudi_nic = qp->gaudi_nic;
-+	struct hl_device *hdev = gaudi_nic->hdev;
-+	struct qpc_requester req_qpc = {};
-+	struct qpc_responder res_qpc = {};
-+	u64 req_qpc_addr, res_qpc_addr;
-+	void __iomem *base_bar_addr;
-+	struct gaudi_device *gaudi;
-+	int i;
-+
-+	gaudi = hdev->asic_specific;
-+	base_bar_addr = hdev->pcie_bar[HBM_BAR_ID] - gaudi->hbm_bar_cur_addr;
-+
-+	req_qpc_addr = REQ_QPC_ADDR(qp->port, qp->conn_id);
-+	res_qpc_addr = RES_QPC_ADDR(qp->port, qp->conn_id);
-+
-+	REQ_QPC_SET_VALID(req_qpc, 0);
-+	RES_QPC_SET_VALID(res_qpc, 0);
-+
-+	mutex_lock(&qp->qpc_lock);
-+
-+	if (qp->is_req)
-+		for (i = 0 ; i < (sizeof(req_qpc) / sizeof(u64)) ; i++)
-+			writeq(req_qpc.data[i], base_bar_addr +
-+					(req_qpc_addr + i * 8));
-+
-+	if (qp->is_res)
-+		for (i = 0 ; i < (sizeof(res_qpc) / sizeof(u64)) ; i++)
-+			writeq(res_qpc.data[i], base_bar_addr +
-+					(res_qpc_addr + i * 8));
-+
-+	/* Perform read to flush the writes of the connection context */
-+	readq(hdev->pcie_bar[HBM_BAR_ID]);
-+
-+	if (qp->is_req)
-+		qpc_cache_inv(gaudi_nic, true);
-+	if (qp->is_res)
-+		qpc_cache_inv(gaudi_nic, false);
-+
-+	mutex_unlock(&qp->qpc_lock);
-+
-+	/*
-+	 * No need in removing the QP ID from the IDR. This will be done once
-+	 * the IDR gets full. We do this lazy cleanup because we don't want to
-+	 * reuse a QP ID immediately after a QP was destroyed.
-+	 */
-+	qp_do_release(qp);
-+}
-+
-+static int qp_put(struct hl_qp *qp)
-+{
-+	return kref_put(&qp->refcount, qp_release);
-+}
-+
-+/* "gaudi_nic->idr_lock" should be taken from the caller function if needed */
-+static void qps_clean_dummies(struct gaudi_nic_device *gaudi_nic)
-+{
-+	struct hl_qp *qp;
-+	int qp_id;
-+
-+	idr_for_each_entry(&gaudi_nic->qp_ids, qp, qp_id)
-+		if (qp == &dummy_qp)
-+			idr_remove(&gaudi_nic->qp_ids, qp_id);
-+}
-+
-+static int conn_ioctl_check(struct hl_device *hdev, u32 port, u32 conn_id)
-+{
-+	if (port >= NIC_NUMBER_OF_PORTS) {
-+		dev_err(hdev->dev, "Invalid port %d\n", port);
-+		return -EINVAL;
-+	}
-+
-+	if (!(hdev->nic_ports_mask & BIT(port))) {
-+		dev_err(hdev->dev, "Port %d is disabled\n", port);
-+		return -ENODEV;
-+	}
-+
-+	if (conn_id < HL_NIC_MIN_CONN_ID || conn_id > HL_NIC_MAX_CONN_ID) {
-+		dev_err(hdev->dev, "Invalid connection ID %d for port %d\n",
-+			conn_id, port);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int alloc_conn(struct hl_device *hdev, struct hl_nic_alloc_conn_in *in,
-+			struct hl_nic_alloc_conn_out *out)
-+{
-+	struct gaudi_device *gaudi = hdev->asic_specific;
-+	struct gaudi_nic_device *gaudi_nic;
-+	struct hl_qp *qp;
-+	int id, rc;
-+
-+	if (!in || !out) {
-+		dev_err(hdev->dev,
-+			"Missing parameters to allocate a NIC context\n");
-+		return -EINVAL;
-+	}
-+
-+	rc = conn_ioctl_check(hdev, in->port, HL_NIC_MIN_CONN_ID);
-+	if (rc)
-+		return rc;
-+
-+	qp = kzalloc(sizeof(*qp), GFP_KERNEL);
-+	if (!qp)
-+		return -ENOMEM;
-+
-+	gaudi_nic = &gaudi->nic_devices[in->port];
-+	mutex_init(&qp->qpc_lock);
-+	kref_init(&qp->refcount);
-+	qp->gaudi_nic = gaudi_nic;
-+	qp->port = in->port;
-+
-+	/* TODO: handle local/remote keys */
-+
-+	mutex_lock(&gaudi_nic->idr_lock);
-+	id = idr_alloc(&gaudi_nic->qp_ids, qp, HL_NIC_MIN_CONN_ID,
-+			HL_NIC_MAX_CONN_ID + 1, GFP_KERNEL);
-+
-+	if (id < 0) {
-+		/* Try again after removing the dummy ids */
-+		qps_clean_dummies(gaudi_nic);
-+		id = idr_alloc(&gaudi_nic->qp_ids, qp, HL_NIC_MIN_CONN_ID,
-+				HL_NIC_MAX_CONN_ID + 1, GFP_KERNEL);
-+	}
-+
-+	qp->conn_id = id;
-+	mutex_unlock(&gaudi_nic->idr_lock);
-+
-+	if (id < 0) {
-+		qp_do_release(qp);
-+		return id;
-+	}
-+
-+	dev_dbg(hdev->dev, "Allocating connection id %d in port %d",
-+		id, qp->port);
-+
-+	out->conn_id = id;
-+
-+	return 0;
-+}
-+
-+static int set_req_conn_ctx(struct hl_device *hdev,
-+				struct hl_nic_req_conn_ctx_in *in)
-+{
-+	struct gaudi_device *gaudi = hdev->asic_specific;
-+	struct gaudi_nic_device *gaudi_nic;
-+	struct qpc_requester req_qpc = {};
-+	struct hl_qp *qp;
-+	u64 req_qpc_addr;
-+	int i, rc;
-+
-+	if (!in) {
-+		dev_err(hdev->dev,
-+			"Missing parameters to set a requester context\n");
-+		return -EINVAL;
-+	}
-+
-+	rc = conn_ioctl_check(hdev, in->port, in->conn_id);
-+	if (rc)
-+		return rc;
-+
-+	gaudi_nic = &gaudi->nic_devices[in->port];
-+
-+	qp = qp_get(hdev, gaudi_nic, in->conn_id);
-+	if (!qp)
-+		return -EINVAL;
-+
-+	req_qpc_addr = REQ_QPC_ADDR(in->port, in->conn_id);
-+	REQ_QPC_SET_DST_QP(req_qpc, in->dst_conn_id);
-+	REQ_QPC_SET_PORT(req_qpc, 0);
-+	REQ_QPC_SET_PRIORITY(req_qpc, in->priority);
-+	REQ_QPC_SET_RKEY(req_qpc, qp->remote_key);
-+	REQ_QPC_SET_DST_IP(req_qpc, in->dst_ip_addr);
-+	REQ_QPC_SET_SRC_IP(req_qpc, in->src_ip_addr);
-+	REQ_QPC_SET_DST_MAC_31_0(req_qpc, *(u32 *) in->dst_mac_addr);
-+	REQ_QPC_SET_DST_MAC_47_32(req_qpc, *(u16 *) (in->dst_mac_addr + 4));
-+	REQ_QPC_SET_SQ_NUM(req_qpc, in->sq_number);
-+	REQ_QPC_SET_TM_GRANULARITY(req_qpc, in->timer_granularity);
-+	REQ_QPC_SET_SOB_EN(req_qpc, in->enable_sob);
-+	REQ_QPC_SET_TRANSPORT_SERVICE(req_qpc, TS_RC);
-+	REQ_QPC_SET_BURST_SIZE(req_qpc, QPC_REQ_BURST_SIZE);
-+	REQ_QPC_SET_LAST_IDX(req_qpc, in->last_index);
-+	REQ_QPC_SET_WQ_BASE_ADDR(req_qpc, in->conn_id);
-+	REQ_QPC_SET_SWQ_GRANULARITY(req_qpc, in->swq_granularity);
-+	REQ_QPC_SET_VALID(req_qpc, 1);
-+
-+	mutex_lock(&qp->qpc_lock);
-+
-+	for (i = 0 ; i < (sizeof(req_qpc) / sizeof(u64)) ; i++)
-+		writeq(req_qpc.data[i], hdev->pcie_bar[HBM_BAR_ID] +
-+			((req_qpc_addr + i * 8) - gaudi->hbm_bar_cur_addr));
-+
-+	/* Perform read to flush the writes of the connection context */
-+	readq(hdev->pcie_bar[HBM_BAR_ID]);
-+
-+	qp->is_req = true;
-+	qpc_cache_inv(gaudi_nic, true);
-+
-+	mutex_unlock(&qp->qpc_lock);
-+
-+	qp_put(qp);
-+
-+	return 0;
-+}
-+
-+static int set_res_conn_ctx(struct hl_device *hdev,
-+				struct hl_nic_res_conn_ctx_in *in)
-+{
-+	struct gaudi_device *gaudi = hdev->asic_specific;
-+	struct gaudi_nic_device *gaudi_nic;
-+	struct qpc_responder res_qpc = {};
-+	struct hl_qp *qp;
-+	u64 res_qpc_addr;
-+	int i, rc;
-+
-+	if (!in) {
-+		dev_err(hdev->dev,
-+			"Missing parameters to set a responder context\n");
-+		return -EINVAL;
-+	}
-+
-+	rc = conn_ioctl_check(hdev, in->port, in->conn_id);
-+	if (rc)
-+		return rc;
-+
-+	gaudi_nic = &gaudi->nic_devices[in->port];
-+
-+	qp = qp_get(hdev, gaudi_nic, in->conn_id);
-+	if (!qp)
-+		return -EINVAL;
-+
-+	res_qpc_addr = RES_QPC_ADDR(in->port, in->conn_id);
-+	RES_QPC_SET_DST_QP(res_qpc, in->dst_conn_id);
-+	RES_QPC_SET_PORT(res_qpc, 0);
-+	RES_QPC_SET_PRIORITY(res_qpc, in->priority);
-+	RES_QPC_SET_SQ_NUM(res_qpc, in->sq_number);
-+	RES_QPC_SET_LKEY(res_qpc, qp->local_key);
-+	RES_QPC_SET_DST_IP(res_qpc, in->dst_ip_addr);
-+	RES_QPC_SET_SRC_IP(res_qpc, in->src_ip_addr);
-+	RES_QPC_SET_DST_MAC_31_0(res_qpc, *(u32 *) in->dst_mac_addr);
-+	RES_QPC_SET_DST_MAC_47_32(res_qpc, *(u16 *) (in->dst_mac_addr + 4));
-+	RES_QPC_SET_TRANSPORT_SERVICE(res_qpc, TS_RC);
-+	RES_QPC_SET_LOG_BUF_SIZE_MASK(res_qpc, 0);
-+	RES_QPC_SET_SOB_EN(res_qpc, in->enable_sob);
-+	RES_QPC_SET_VALID(res_qpc, 1);
-+
-+	mutex_lock(&qp->qpc_lock);
-+
-+	for (i = 0 ; i < (sizeof(res_qpc) / sizeof(u64)) ; i++)
-+		writeq(res_qpc.data[i], hdev->pcie_bar[HBM_BAR_ID] +
-+			((res_qpc_addr + i * 8) - gaudi->hbm_bar_cur_addr));
-+
-+	/* Perform read to flush the writes of the connection context */
-+	readq(hdev->pcie_bar[HBM_BAR_ID]);
-+
-+	qp->is_res = true;
-+	qpc_cache_inv(gaudi_nic, false);
-+
-+	mutex_unlock(&qp->qpc_lock);
-+
-+	qp_put(qp);
-+
-+	return 0;
-+}
-+
-+static int destroy_conn(struct hl_device *hdev,
-+			struct hl_nic_destroy_conn_in *in)
-+{
-+	struct gaudi_device *gaudi = hdev->asic_specific;
-+	struct gaudi_nic_device *gaudi_nic;
-+	struct hl_qp *qp;
-+	int rc;
-+
-+	if (!in) {
-+		dev_err(hdev->dev,
-+			"Missing parameters to destroy a NIC context\n");
-+		return -EINVAL;
-+	}
-+
-+	rc = conn_ioctl_check(hdev, in->port, in->conn_id);
-+	if (rc)
-+		return rc;
-+
-+	gaudi_nic = &gaudi->nic_devices[in->port];
-+
-+	/* The QP pointer is replaced with the dummy QP to prevent other threads
-+	 * from using the QP. The ID is kept allocated at this stage so the QP
-+	 * context can be safely modified. qp_put() is called right afterwards.
-+	 */
-+	mutex_lock(&gaudi_nic->idr_lock);
-+	qp = idr_replace(&gaudi_nic->qp_ids, &dummy_qp, in->conn_id);
-+	mutex_unlock(&gaudi_nic->idr_lock);
-+
-+	if (IS_ERR(qp))
-+		return PTR_ERR(qp);
-+
-+	qp_put(qp);
-+
-+	return 0;
-+}
-+
-+int gaudi_nic_control(struct hl_device *hdev, u32 op, void *input, void *output)
-+{
-+	struct gaudi_device *gaudi = hdev->asic_specific;
-+	int rc;
-+
-+	if (!(gaudi->hw_cap_initialized & HW_CAP_NIC_DRV))
-+		return -EFAULT;
-+
-+	switch (op) {
-+	case HL_NIC_OP_ALLOC_CONN:
-+		rc = alloc_conn(hdev, input, output);
-+		break;
-+	case HL_NIC_OP_SET_REQ_CONN_CTX:
-+		rc = set_req_conn_ctx(hdev, input);
-+		break;
-+	case HL_NIC_OP_SET_RES_CONN_CTX:
-+		rc = set_res_conn_ctx(hdev, input);
-+		break;
-+	case HL_NIC_OP_DESTROY_CONN:
-+		rc = destroy_conn(hdev, input);
-+		break;
-+	default:
-+		dev_err(hdev->dev, "Invalid NIC control request %d\n", op);
-+		return -ENOTTY;
-+	}
++	mutex_unlock(&gaudi->nic_cq_user_lock);
 +
 +	return rc;
 +}
 +
-+static void qps_destroy(struct hl_device *hdev)
++static int cq_poll_wait(struct hl_device *hdev,
++			struct hl_nic_cq_poll_wait_in *in,
++			struct hl_nic_cq_poll_wait_out *out,
++			bool do_wait)
++{
++	struct gaudi_device *gaudi = hdev->asic_specific;
++	char *op_str = do_wait ? "wait" : "poll";
++	bool has_work = false;
++	u32 num_of_cqes;
++	long rc_wait;
++	int rc = 0;
++
++	if (!in || !out) {
++		dev_err(hdev->dev, "Missing parameters to poll/wait on CQ\n");
++		return -EINVAL;
++	}
++
++	/* allow only one thread to wait */
++	mutex_lock(&gaudi->nic_cq_user_lock);
++
++	if (!gaudi->nic_cq_enable) {
++		dev_err(hdev->dev, "NIC CQ is not enabled, can't %s\n", op_str);
++		rc = -EFAULT;
++		goto out;
++	}
++
++	if (gaudi->nic_cq_status != HL_NIC_CQ_SUCCESS) {
++		dev_err(hdev->dev, "NIC CQ is not operational, can't %s\n",
++			op_str);
++		rc = -EFAULT;
++		goto out;
++	}
++
++#if HL_NIC_DEBUG
++	dev_dbg(hdev->dev, "ci: %d, wait: %d\n",
++		gaudi->nic_cq_user_ci, do_wait);
++#endif
++
++	if (do_wait) {
++		while (1) {
++			rc_wait = wait_for_completion_interruptible_timeout(
++					&gaudi->nic_cq_comp,
++					usecs_to_jiffies(in->timeout_us));
++
++			if (rc_wait == -ERESTARTSYS) {
++				dev_info(hdev->dev,
++						"stopping CQ %s due to signal\n",
++						op_str);
++				/* ERESTARTSYS is not returned to the user */
++				rc = -EINTR;
++				break;
++			}
++
++			if (!rc_wait) {
++				gaudi->nic_cq_status = HL_NIC_CQ_TIMEOUT;
++				break;
++			}
++
++			if (!gaudi->nic_cq_enable) {
++				dev_info(hdev->dev,
++						"stopping CQ %s upon request\n",
++						op_str);
++				rc = -EBUSY;
++				break;
++			}
++
++			if (gaudi->nic_cq_status != HL_NIC_CQ_SUCCESS)
++				break;
++
++			/*
++			 * A waiter can read 0 here.
++			 * Consider the following scenario:
++			 * 1. complete() is called twice for two CQEs.
++			 * 2. The first waiter grabs the two CQEs.
++			 * 3. The second waiter wakes up immediately and has no
++			 *    CQES to handle.
++			 */
++			num_of_cqes = atomic_read(&gaudi->nic_cq_user_new_cqes);
++			if (num_of_cqes) {
++				has_work = true;
++				break;
++			}
++		}
++	} else {
++		has_work = try_wait_for_completion(&gaudi->nic_cq_comp);
++		if (has_work)
++			num_of_cqes = atomic_read(&gaudi->nic_cq_user_new_cqes);
++	}
++
++	if (rc)
++		goto out;
++
++	if (has_work) {
++		out->pi = gaudi->nic_cq_user_ci;
++		out->num_of_cqes = num_of_cqes;
++#if HL_NIC_DEBUG
++		dev_dbg(hdev->dev, "pulled %d CQEs\n", num_of_cqes);
++		dev_dbg(hdev->dev, "user CQ CI: %d\n", gaudi->nic_cq_user_ci);
++#endif
++	} else {
++		out->num_of_cqes = 0;
++	}
++
++	out->status = gaudi->nic_cq_status;
++
++	/* timeout is not a real error, CQ should stay operational */
++	if (gaudi->nic_cq_status == HL_NIC_CQ_TIMEOUT)
++		gaudi->nic_cq_status = HL_NIC_CQ_SUCCESS;
++out:
++	mutex_unlock(&gaudi->nic_cq_user_lock);
++
++	return rc;
++}
++
++static int cq_create(struct hl_device *hdev, struct hl_nic_cq_create_in *in,
++			struct hl_nic_cq_create_out *out)
 +{
 +	struct gaudi_device *gaudi = hdev->asic_specific;
 +	struct gaudi_nic_device *gaudi_nic;
-+	struct hl_qp *qp;
-+	int qp_id, i;
++	struct cqe *cq_arr;
++	int rc = 0, i, j;
 +
++	if (!in || !out) {
++		dev_err(hdev->dev, "Missing parameters to create CQ\n");
++		return -EINVAL;
++	}
++
++	if (in->cq_num_of_entries < CQ_USER_MIN_ENTRIES) {
++		dev_err(hdev->dev, "NIC CQ buffer length must be at least %d entries\n",
++			CQ_USER_MIN_ENTRIES);
++		return -EINVAL;
++	}
++
++	if (!is_power_of_2(in->cq_num_of_entries)) {
++		dev_err(hdev->dev,
++			"NIC CQ buffer length must be at power of 2\n");
++		return -EINVAL;
++	}
++
++	if (in->cq_num_of_entries > CQ_USER_MAX_ENTRIES) {
++		dev_err(hdev->dev,
++			"NIC CQ buffer length must not be more than 0x%lx entries\n",
++			CQ_USER_MAX_ENTRIES);
++		return -EINVAL;
++	}
++
++	mutex_lock(&gaudi->nic_cq_user_lock);
++
++	if (gaudi->nic_cq_enable) {
++		dev_err(hdev->dev, "NIC CQ was already created\n");
++		rc = -EFAULT;
++		goto out;
++	}
++
++	gaudi->nic_cq_user_num_of_entries = in->cq_num_of_entries;
++	gaudi->nic_cq_buf = vmalloc_user(gaudi->nic_cq_user_num_of_entries *
++					sizeof(struct hl_nic_cqe));
++	if (!gaudi->nic_cq_buf) {
++		rc = -ENOMEM;
++		goto out;
++	}
++
++	init_completion(&gaudi->nic_cq_comp);
++	memset(gaudi->nic_cq_buf, 0,
++		gaudi->nic_cq_user_num_of_entries * sizeof(struct hl_nic_cqe));
++
++	spin_lock_init(&gaudi->nic_cq_lock);
++	gaudi->nic_cq_user_ci = 0;
++	gaudi->nic_cq_user_pi = 0;
++	atomic_set(&gaudi->nic_cq_user_new_cqes, 0);
++
++	for (i = 0 ; i < NIC_NUMBER_OF_PORTS ; i++) {
++		if (!(hdev->nic_ports_mask & BIT(i)) ||
++			!gaudi->nic_devices[i].port_open)
++			continue;
++
++		gaudi_nic = &gaudi->nic_devices[i];
++		gaudi_nic->cq_ci = gaudi_nic->last_cqe_cnt = 0;
++
++		NIC_WREG32(mmNIC0_RXE0_CQ_PRODUCER_INDEX, 0);
++		NIC_WREG32(mmNIC0_RXE0_CQ_CONSUMER_INDEX, 0);
++		NIC_WREG32(mmNIC0_RXE0_CQ_WRITE_INDEX, 0);
++
++		cq_arr = gaudi_nic->cq_mem_cpu;
++		for (j = 0 ; j < CQ_PORT_BUF_LEN ; j++)
++			CQE_SET_INVALID(&cq_arr[j]);
++
++	}
++
++	out->handle = HL_MMAP_TYPE_NIC_CQ << PAGE_SHIFT;
++	gaudi->nic_cq_status = HL_NIC_CQ_SUCCESS;
++	gaudi->nic_cq_enable = true;
++out:
++	mutex_unlock(&gaudi->nic_cq_user_lock);
++
++	return rc;
++}
++
++static void cq_stop(struct hl_device *hdev)
++{
++	struct gaudi_device *gaudi = hdev->asic_specific;
++
++	if (!gaudi->nic_cq_enable)
++		return;
++
++	/* if the CQ wait IOCTL is in progress, wake it up to return to US */
++	gaudi->nic_cq_enable = false;
++	/* make sure we disable the CQ before waking up the waiter */
++	mb();
++	complete(&gaudi->nic_cq_comp);
++
++	/* let the CQ wait IOCTL do cleanup gracefully */
++	msleep(100);
++}
++
++static int cq_destroy(struct hl_device *hdev)
++{
++	struct gaudi_device *gaudi = hdev->asic_specific;
++	int rc = 0;
++
++	mutex_lock(&gaudi->nic_cq_user_lock);
++
++	if (!gaudi->nic_cq_enable)
++		goto out;
++
++	if (gaudi->nic_cq_mmap) {
++		dev_err(hdev->dev, "NIC CQ is still mapped, can't destroy\n");
++		rc = -EFAULT;
++		goto out;
++	}
++
++	/*
++	 * mark the CQ as disabled while holding the NIC QP error lock to avoid
++	 * from pushing QP error entries to a CQ under destruction
++	 */
++	mutex_lock(&gaudi->nic_qp_err_lock);
++	gaudi->nic_cq_enable = false;
++	mutex_unlock(&gaudi->nic_qp_err_lock);
++
++	/* make sure we disable the CQ before draining the polling threads */
++	mb();
++
++	/*
++	 * Wait for the polling threads to digest the new CQ state. This in
++	 * order to free the user buffer after they stopped processing CQEs and
++	 * copy them to the buffer.
++	 */
++	msleep(100);
++
++	vfree(gaudi->nic_cq_buf);
++out:
++	mutex_unlock(&gaudi->nic_cq_user_lock);
++
++	return rc;
++}
+ 
+ /* used for physically contiguous memory only */
+ static int map_nic_mem(struct hl_device *hdev, u64 va, dma_addr_t pa, u32 size)
+@@ -1956,6 +2416,8 @@ static int port_open(struct gaudi_nic_device *gaudi_nic)
+ 		goto cq_unmap;
+ 	}
+ 
++	INIT_DELAYED_WORK(&gaudi_nic->cq_work, cq_work);
++
+ 	if ((hdev->pdev) && (gaudi->multi_msi_mode)) {
+ 		rx_irq = pci_irq_vector(hdev->pdev, RX_MSI_IDX + port);
+ 
+@@ -1998,6 +2460,9 @@ static int port_open(struct gaudi_nic_device *gaudi_nic)
+ 		napi_enable(&gaudi_nic->napi);
+ 	}
+ 
++	queue_delayed_work(gaudi_nic->cq_wq, &gaudi_nic->cq_work,
++				gaudi_nic->cq_delay_idle);
++
+ 	if (gaudi->nic_phy_config_fw && !gaudi_nic->mac_loopback) {
+ 		INIT_DELAYED_WORK(&gaudi_nic->link_status_work,
+ 					check_link_status);
+@@ -2098,6 +2563,8 @@ static void port_close(struct gaudi_nic_device *gaudi_nic)
+ 
+ 	netif_carrier_off(gaudi_nic->ndev);
+ 
++	cancel_delayed_work_sync(&gaudi_nic->cq_work);
++
+ 	flush_workqueue(gaudi_nic->cq_wq);
+ 	destroy_workqueue(gaudi_nic->cq_wq);
+ 
+@@ -2362,6 +2829,33 @@ static void port_unregister(struct gaudi_nic_device *gaudi_nic)
+ 
+ irqreturn_t gaudi_nic_cq_irq_handler(int irq, void *arg)
+ {
++	struct gaudi_nic_device *gaudi_nic;
++	struct hl_device *hdev = arg;
++	struct gaudi_device *gaudi;
++	int i;
++
++	gaudi = hdev->asic_specific;
++
++	/* one IRQ for all ports, need to iterate and read the cause */
 +	for (i = 0 ; i < NIC_NUMBER_OF_PORTS ; i++) {
 +		if (!(hdev->nic_ports_mask & BIT(i)))
 +			continue;
 +
 +		gaudi_nic = &gaudi->nic_devices[i];
 +
-+		/*
-+		 * No need to acquire "gaudi_nic->idr_lock", as qps_destroy() is
-+		 * only called when a context is closed, and in Gaudi we have a
-+		 * single context.
-+		 */
++		if (disabled_or_in_reset(gaudi_nic))
++			continue;
 +
-+		qps_clean_dummies(gaudi_nic);
-+
-+		idr_for_each_entry(&gaudi_nic->qp_ids, qp, qp_id) {
-+			idr_remove(&gaudi_nic->qp_ids, qp_id);
-+			if (qp_put(qp) != 1)
-+				dev_err(hdev->dev,
-+					"QP %d of port %d is still alive\n",
-+					qp->conn_id, qp->port);
++		if (NIC_RREG32(mmNIC0_RXE0_MSI_CAUSE) & 2) {
++			dev_crit(hdev->dev, "NIC CQ overrun, port %d\n",
++					gaudi_nic->port);
++			NIC_WREG32(mmNIC0_RXE0_MSI_CAUSE, 0);
++			NIC_WREG32(mmNIC0_RXE0_CQ_MSI_CAUSE_CLR, 0xFFFF);
++			/* flush the cause clear */
++			NIC_RREG32(mmNIC0_RXE0_CQ_MSI_CAUSE_CLR);
 +		}
 +	}
-+}
 +
- void gaudi_nic_ctx_fini(struct hl_ctx *ctx)
- {
-+	struct gaudi_device *gaudi = ctx->hdev->asic_specific;
-+	struct hl_device *hdev = ctx->hdev;
-+
-+	if (!(gaudi->hw_cap_initialized & HW_CAP_NIC_DRV))
-+		return;
-+
-+	qps_destroy(hdev);
-+	/* wait for the NIC to digest the invalid QPs */
-+	msleep(20);
- }
-diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
-index 75e3b3bac47c..13b2bfac2b7a 100644
---- a/drivers/misc/habanalabs/goya/goya.c
-+++ b/drivers/misc/habanalabs/goya/goya.c
-@@ -5269,6 +5269,14 @@ static enum hl_device_hw_state goya_get_hw_state(struct hl_device *hdev)
- 	return RREG32(mmHW_STATE);
+ 	return IRQ_HANDLED;
  }
  
-+static int goya_nic_control(struct hl_device *hdev, u32 op, void *input,
-+			void *output)
+@@ -2641,6 +3135,8 @@ int gaudi_nic_hard_reset_prepare(struct hl_device *hdev)
+ 			(gaudi->nic_in_reset))
+ 		return 0;
+ 
++	cq_stop(hdev);
++
+ 	for (i = 0 ; i < NIC_NUMBER_OF_PORTS ; i++) {
+ 		if (!(hdev->nic_ports_mask & BIT(i)))
+ 			continue;
+@@ -3159,6 +3655,21 @@ int gaudi_nic_control(struct hl_device *hdev, u32 op, void *input, void *output)
+ 	case HL_NIC_OP_DESTROY_CONN:
+ 		rc = destroy_conn(hdev, input);
+ 		break;
++	case HL_NIC_OP_CQ_CREATE:
++		rc = cq_create(hdev, input, output);
++		break;
++	case HL_NIC_OP_CQ_DESTROY:
++		rc = cq_destroy(hdev);
++		break;
++	case HL_NIC_OP_CQ_WAIT:
++		rc = cq_poll_wait(hdev, input, output, true);
++		break;
++	case HL_NIC_OP_CQ_POLL:
++		rc = cq_poll_wait(hdev, input, output, false);
++		break;
++	case HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES:
++		rc = cq_update_consumed_cqes(hdev, input);
++		break;
+ 	default:
+ 		dev_err(hdev->dev, "Invalid NIC control request %d\n", op);
+ 		return -ENOTTY;
+@@ -3209,4 +3720,87 @@ void gaudi_nic_ctx_fini(struct hl_ctx *ctx)
+ 	qps_destroy(hdev);
+ 	/* wait for the NIC to digest the invalid QPs */
+ 	msleep(20);
++	cq_destroy(hdev);
++}
++
++static void nic_cq_vm_close(struct vm_area_struct *vma)
++{
++	struct hl_device *hdev = (struct hl_device *) vma->vm_private_data;
++	struct gaudi_device *gaudi = hdev->asic_specific;
++	long new_mmap_size;
++
++	new_mmap_size = gaudi->nic_cq_mmap_size - (vma->vm_end - vma->vm_start);
++
++	dev_dbg(hdev->dev, "munmap NIC CQEs buffer, new_mmap_size: %ld\n",
++		new_mmap_size);
++
++	if (new_mmap_size > 0) {
++		gaudi->nic_cq_mmap_size = new_mmap_size;
++		return;
++	}
++
++	vma->vm_private_data = NULL;
++	gaudi->nic_cq_mmap = false;
++}
++
++static const struct vm_operations_struct nic_cq_vm_ops = {
++	.close = nic_cq_vm_close
++};
++
++int gaudi_nic_cq_mmap(struct hl_device *hdev, struct vm_area_struct *vma)
++{
++	struct gaudi_device *gaudi = hdev->asic_specific;
++	u32 size;
++	int rc;
++
++	if (!(gaudi->hw_cap_initialized & HW_CAP_NIC_DRV))
++		return -EFAULT;
++
++	mutex_lock(&gaudi->nic_cq_user_lock);
++
++	if (!gaudi->nic_cq_enable) {
++		dev_err(hdev->dev, "NIC CQ is disabled, can't mmap\n");
++		rc = -EFAULT;
++		goto out;
++	}
++
++	if (gaudi->nic_cq_mmap) {
++		dev_err(hdev->dev, "NIC CQ is already mmapped, can't mmap\n");
++		rc = -EFAULT;
++		goto out;
++	}
++
++	size = gaudi->nic_cq_user_num_of_entries * sizeof(struct hl_nic_cqe);
++
++	dev_dbg(hdev->dev, "mmap NIC CQ buffer, size: 0x%x\n", size);
++
++	/* Validation check */
++	if ((vma->vm_end - vma->vm_start) != ALIGN(size, PAGE_SIZE)) {
++		dev_err(hdev->dev,
++			"NIC mmap failed, mmap size 0x%lx != 0x%x CQ buffer size\n",
++			vma->vm_end - vma->vm_start, size);
++		rc = -EINVAL;
++		goto out;
++	}
++
++	vma->vm_ops = &nic_cq_vm_ops;
++	vma->vm_private_data = hdev;
++
++	dev_dbg(hdev->dev, "mapping NIC CQ buffer\n");
++
++	vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP | VM_DONTCOPY |
++			VM_NORESERVE;
++
++	rc = remap_vmalloc_range(vma, gaudi->nic_cq_buf, 0);
++	if (rc) {
++		dev_err(hdev->dev, "failed to map the NIC CQ buffer\n");
++		goto out;
++	}
++
++	gaudi->nic_cq_mmap_size = size;
++	gaudi->nic_cq_mmap = true;
++out:
++	mutex_unlock(&gaudi->nic_cq_user_lock);
++
++	return rc;
+ }
+diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+index 13b2bfac2b7a..9620654eefae 100644
+--- a/drivers/misc/habanalabs/goya/goya.c
++++ b/drivers/misc/habanalabs/goya/goya.c
+@@ -5277,6 +5277,13 @@ static int goya_nic_control(struct hl_device *hdev, u32 op, void *input,
+ 	return -ENXIO;
+ }
+ 
++static int goya_nic_mmap(struct hl_device *hdev, struct vm_area_struct *vma)
 +{
 +	dev_err_ratelimited(hdev->dev,
-+				"NIC operations cannot be performed on Goya\n");
++			"NIC mmap operations cannot be performed on Goya\n");
 +	return -ENXIO;
 +}
 +
  static int goya_get_mac_addr(struct hl_device *hdev,
  			struct hl_info_mac_addr *mac_addr)
  {
-@@ -5394,6 +5402,7 @@ static const struct hl_asic_funcs goya_funcs = {
- 	.get_eeprom_data = goya_get_eeprom_data,
+@@ -5403,6 +5410,7 @@ static const struct hl_asic_funcs goya_funcs = {
  	.send_cpu_message = goya_send_cpu_message,
  	.get_hw_state = goya_get_hw_state,
-+	.nic_control = goya_nic_control,
+ 	.nic_control = goya_nic_control,
++	.nic_cq_mmap = goya_nic_mmap,
  	.pci_bars_map = goya_pci_bars_map,
  	.init_iatu = goya_init_iatu,
  	.get_mac_addr = goya_get_mac_addr,
 diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
-index 4c545ae8b6df..dbee6a16b952 100644
+index dbee6a16b952..83a707c207f7 100644
 --- a/include/uapi/misc/habanalabs.h
 +++ b/include/uapi/misc/habanalabs.h
-@@ -852,6 +852,116 @@ struct hl_debug_args {
+@@ -852,6 +852,46 @@ struct hl_debug_args {
  #define HL_NIC_MIN_CONN_ID	1
  #define HL_NIC_MAX_CONN_ID	1023
  
-+struct hl_nic_alloc_conn_in {
-+	/* NIC port ID */
-+	__u32 port;
-+	__u32 pad;
-+};
++/* Requester */
++#define HL_NIC_CQE_TYPE_REQ	0
++/* Responder */
++#define HL_NIC_CQE_TYPE_RES	1
 +
-+struct hl_nic_alloc_conn_out {
-+	/* Connection ID */
-+	__u32 conn_id;
-+	__u32 pad;
-+};
-+
-+struct hl_nic_req_conn_ctx_in {
-+	/* Source IP address */
-+	__u32 src_ip_addr;
-+	/* Destination IP address */
-+	__u32 dst_ip_addr;
-+	/* Destination connection ID */
-+	__u32 dst_conn_id;
-+	/* Burst size [1..(2^22)-1 or 0 to disable] */
-+	__u32 burst_size;
-+	/* Index of last entry [2..(2^22)-1] */
-+	__u32 last_index;
-+	/* NIC port ID */
-+	__u32 port;
-+	/* Connection ID */
-+	__u32 conn_id;
-+	/* Destination MAC address */
-+	__u8 dst_mac_addr[ETH_ALEN];
-+	/* SQ number */
-+	__u8 sq_number;
-+	/* Connection priority [0..3] */
-+	__u8 priority;
-+	/* Enable/disable SOB */
-+	__u8 enable_sob;
-+	/* Timer granularity [0..127]*/
-+	__u8 timer_granularity;
-+	/* SWQ granularity [0 for 64B or 1 for 32B] */
-+	__u8 swq_granularity;
-+	/* Work queue type [1..3] */
-+	__u8 wq_type;
-+	/* Version type in remote side [0..1] */
-+	__u8 version;
-+	/* Completion queue number */
-+	__u8 cq_number;
-+	/* Remote Work queue log size [2^QPC] Rendezvous */
-+	__u8 wq_remote_log_size;
-+	__u8 pad;
-+};
-+
-+struct hl_nic_res_conn_ctx_in {
-+	/* Source IP address */
-+	__u32 src_ip_addr;
-+	/* Destination IP address */
-+	__u32 dst_ip_addr;
-+	/* Destination connection ID */
-+	__u32 dst_conn_id;
-+	/* NIC port ID */
-+	__u32 port;
-+	/* Connection ID */
-+	__u32 conn_id;
-+	/* Destination MAC address */
-+	__u8 dst_mac_addr[ETH_ALEN];
-+	/* Connection priority [0..3] */
-+	__u8 priority;
-+	/* SQ number */
-+	__u8 sq_number;
-+	/* Enable/disable SOB */
-+	__u8 enable_sob;
-+	/* Work queue granularity */
-+	__u8 wq_peer_granularity;
-+	/* Completion queue number */
-+	__u8 cq_number;
-+	/* Version type in remote side [0..1] */
-+	__u8 version;
-+	/* Connection peer */
-+	__u32 conn_peer;
-+};
-+
-+struct hl_nic_destroy_conn_in {
-+	/* NIC port ID */
-+	__u32 port;
-+	/* Connection ID */
-+	__u32 conn_id;
-+};
-+
-+/* Opcode to allocate connection ID */
-+#define HL_NIC_OP_ALLOC_CONN			0
-+/* Opcode to set up a requester connection context */
-+#define HL_NIC_OP_SET_REQ_CONN_CTX		1
-+/* Opcode to set up a responder connection context */
-+#define HL_NIC_OP_SET_RES_CONN_CTX		2
-+/* Opcode to destroy a connection */
-+#define HL_NIC_OP_DESTROY_CONN			3
-+
-+struct hl_nic_args {
-+	/* Pointer to user input structure (relevant to specific opcodes) */
-+	__u64 input_ptr;
-+	/* Pointer to user output structure (relevant to specific opcodes) */
-+	__u64 output_ptr;
-+	/* Size of user input structure */
-+	__u32 input_size;
-+	/* Size of user output structure */
-+	__u32 output_size;
-+	/* Context ID - Currently not in use */
-+	__u32 ctx_id;
-+	/* HL_NIC_OP_* */
-+	__u32 op;
-+};
-+
- /*
-  * Various information operations such as:
-  * - H/W IP information
-@@ -1017,7 +1127,24 @@ struct hl_debug_args {
- #define HL_IOCTL_DEBUG		\
- 		_IOWR('H', 0x06, struct hl_debug_args)
- 
-+/*
-+ * NIC
-+ *
-+ * This IOCTL allows the user to manage and configure the device's NIC ports.
-+ * The following operations are available:
-+ * - Allocate connection ID
-+ * - Set up a requester connection context
-+ * - Set up a responder connection context
-+ * - Destroy a connection
-+ *
-+ * For all operations, the user should provide a pointer to an input structure
-+ * with the context parameters. Some of the operations also require a pointer to
-+ * an output structure for result/status.
-+ *
++/**
++ * struct hl_nic_cqe: NIC CQ entry. This structure is shared between the driver
++ *                    and the user application. It represents each entry of the
++ *                    NIC CQ buffer.
++ * @requester.wqe_index: work queue index - for requester only.
++ * @responder.msg_id: message ID to notify which receive action was completed -
++ *                    for responder only.
++ * @qp_err.syndrome: error syndrome of the QP error - for QP error only.
++ * @port: NIC port index of the related CQ.
++ * @qp_number: QP number - for requester or QP error only.
++ * @type: type of the CQE - requester or responder.
++ * @is_err: true for QP error entry, false otherwise.
 + */
-+#define HL_IOCTL_NIC	_IOWR('H', 0x07, struct hl_nic_args)
++struct hl_nic_cqe {
++	union {
++		struct {
++			__u32 wqe_index;
++		} requester;
 +
- #define HL_COMMAND_START	0x01
--#define HL_COMMAND_END		0x07
-+#define HL_COMMAND_END		0x08
++		struct {
++			__u32 msg_id;
++		} responder;
++
++		struct {
++			__u32 syndrome;
++		} qp_err;
++	};
++
++	__u32 port;
++	__u32 qp_number;
++	__u8 type;
++	__u8 is_err;
++	__u8 pad[2];
++};
++
+ struct hl_nic_alloc_conn_in {
+ 	/* NIC port ID */
+ 	__u32 port;
+@@ -938,6 +978,53 @@ struct hl_nic_destroy_conn_in {
+ 	__u32 conn_id;
+ };
  
- #endif /* HABANALABS_H_ */
++struct hl_nic_cq_create_in {
++	/* Number of entries in the CQ buffer */
++	__u32 cq_num_of_entries;
++	__u32 pad;
++};
++
++struct hl_nic_cq_create_out {
++	/* Handle of the CQ buffer */
++	__u64 handle;
++};
++
++struct hl_nic_cq_destroy_in {
++	/* Handle of the CQ buffer */
++	__u64 handle;
++};
++
++struct hl_nic_cq_update_consumed_cqes_in {
++	/* Handle of the CQ buffer */
++	__u64 handle;
++	/* Number of consumed CQEs */
++	__u32 cq_num_of_consumed_entries;
++	__u32 pad;
++};
++
++struct hl_nic_cq_poll_wait_in {
++	/* Handle of the CQ buffer */
++	__u64 handle;
++	/* Absolute timeout to wait in microseconds */
++	__u64 timeout_us;
++};
++
++enum hl_nic_cq_status {
++	HL_NIC_CQ_SUCCESS,
++	HL_NIC_CQ_TIMEOUT,
++	HL_NIC_CQ_OVERFLOW
++};
++
++struct hl_nic_cq_poll_wait_out {
++	/* CQE producer index - first CQE to consume */
++	__u32 pi;
++	/* Number of CQEs to consume, starting from pi */
++	__u32 num_of_cqes;
++	/* Return status */
++	__u32 status;
++	__u32 pad;
++};
++
+ /* Opcode to allocate connection ID */
+ #define HL_NIC_OP_ALLOC_CONN			0
+ /* Opcode to set up a requester connection context */
+@@ -946,6 +1033,16 @@ struct hl_nic_destroy_conn_in {
+ #define HL_NIC_OP_SET_RES_CONN_CTX		2
+ /* Opcode to destroy a connection */
+ #define HL_NIC_OP_DESTROY_CONN			3
++/* Opcode to create a CQ */
++#define HL_NIC_OP_CQ_CREATE			4
++/* Opcode to destroy a CQ */
++#define HL_NIC_OP_CQ_DESTROY			5
++/* Opcode to wait on CQ */
++#define HL_NIC_OP_CQ_WAIT			6
++/* Opcode to poll on CQ */
++#define HL_NIC_OP_CQ_POLL			7
++/* Opcode to update the number of consumed CQ entries */
++#define HL_NIC_OP_CQ_UPDATE_CONSUMED_CQES	8
+ 
+ struct hl_nic_args {
+ 	/* Pointer to user input structure (relevant to specific opcodes) */
+@@ -1136,10 +1233,24 @@ struct hl_nic_args {
+  * - Set up a requester connection context
+  * - Set up a responder connection context
+  * - Destroy a connection
++ * - Create a completion queue
++ * - Destroy a completion queue
++ * - Wait on completion queue
++ * - Poll a completion queue
++ * - Update consumed completion queue entries
+  *
+  * For all operations, the user should provide a pointer to an input structure
+  * with the context parameters. Some of the operations also require a pointer to
+  * an output structure for result/status.
++ * The CQ create operation returns a handle which the user-space process needs
++ * to use to mmap the CQ buffer in order to access the CQ entries.
++ * This handle should be provided when destroying the CQ.
++ * The poll/wait CQ operations return the number of available CQ entries of type
++ * struct hl_nic_cqe.
++ * Since the CQ is a cyclic buffer, the user-space process needs to inform the
++ * driver regarding how many of the available CQEs were actually
++ * processed/consumed. Only then the driver will override them with newer
++ * entries.
+  *
+  */
+ #define HL_IOCTL_NIC	_IOWR('H', 0x07, struct hl_nic_args)
 -- 
 2.17.1
 
