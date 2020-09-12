@@ -2,97 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 117B72676E0
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 02:44:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 848392676E4
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 02:45:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725941AbgILAoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 20:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35758 "EHLO
+        id S1725945AbgILAps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 20:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725871AbgILAoE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 20:44:04 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E86C061573;
-        Fri, 11 Sep 2020 17:44:03 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 515A112354CAB;
-        Fri, 11 Sep 2020 17:27:14 -0700 (PDT)
-Date:   Fri, 11 Sep 2020 17:44:00 -0700 (PDT)
-Message-Id: <20200911.174400.306709791543819081.davem@davemloft.net>
-To:     geert@linux-m68k.org
-Cc:     hkallweit1@gmail.com, f.fainelli@gmail.com, andrew@lunn.ch,
-        kuba@kernel.org, gaku.inami.xh@renesas.com,
-        yoshihiro.shimoda.uh@renesas.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Revert "net: linkwatch: add check for netdevice being
- present to linkwatch_do_dev"
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <CAMuHMdUd4VtpOGr26KAmF22N32obNqQzq3tbcPxLJ7mxUtSyrg@mail.gmail.com>
-References: <20200901150237.15302-1-geert+renesas@glider.be>
-        <20200910.122033.2205909020498878557.davem@davemloft.net>
-        <CAMuHMdUd4VtpOGr26KAmF22N32obNqQzq3tbcPxLJ7mxUtSyrg@mail.gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 11 Sep 2020 17:27:14 -0700 (PDT)
+        with ESMTP id S1725871AbgILApg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 20:45:36 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CCEC061573
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 17:45:36 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id b17so10621338ilh.4
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 17:45:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=laHvaXjgDiZ7hT5VZ2zTC9kT0HDWw1Q17DerbeIXeaM=;
+        b=u1Mc7+BPZIBIkMQnutAq0+Oa7sZELfd5vjBj8TZxt/U7zC9Gj4Nnnc1ZEYO7vpZVWf
+         p4sDCuFTsM3iTH2ZeD2sRqnG7mmP99zrdPSHphFhEv+ne6g6AIEFKNWpE1tfMynSLNGY
+         n9Zm22IgbSSif+M2gouohzHumRkvT8XclDq9QGn0RKtDvSgT1GGkTmftM/SPf9n2lqY9
+         P4QuRKgKejGZu6NdmNP3vR4Ejf1b0zY4kkLJf/7dhXfjqBotQ2F2xGFLg4ps55UznGo/
+         s8WejFl6U/SIywBzyYRQWm8VQd8JlMUH2UMIF2Oy2YfuKUQMzWXZ63ORQM1pds5KLNEE
+         JWrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=laHvaXjgDiZ7hT5VZ2zTC9kT0HDWw1Q17DerbeIXeaM=;
+        b=p7MlLtXJ1bVxuzEx/tiQYLsYYDsbgSna23+x03tlUGgR9lRml306iniKM4SkrFIVA6
+         J/4R9sQ/MorX4RiaVFyaRUa6N+phw6IHgD7g0Dzb04IreX5KGjoTgj6LB/icx8/pnKix
+         ud9vKeFE8zUFvIjakUHUBDgh2cmywOEFN9YMYab83g8vS4wyAdUluMPtA5/y2C+6VZYC
+         Kq6NBaTJBDYVlkEAX/OECDq2PNwHEFGq+L+61ciC+6qvSYn5mHg6C4a/jaKtG3yapr6M
+         wQdJpZ7WdTO7bjw6QaSmMsOQSlyAm1aL/HicUDg7BJAUOjVIAJaHDAsaRfgokqsjOpRP
+         TNHg==
+X-Gm-Message-State: AOAM532IbztKxsTTHwnisHp7wor+Pmz8/Ws/v0SEGZrLZBPXYBMtnXaU
+        kBl94+JuR2WnmleU7vJ1C9VihA==
+X-Google-Smtp-Source: ABdhPJwp0HbDuoYG2SlrAI0iObOIlLfk30jinTftPG9j5f6HU/O6lVPMrPomRAB7v+1vVNGUNt05Ug==
+X-Received: by 2002:a92:7706:: with SMTP id s6mr3754047ilc.90.1599871535728;
+        Fri, 11 Sep 2020 17:45:35 -0700 (PDT)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id z4sm2107807ilh.45.2020.09.11.17.45.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Sep 2020 17:45:34 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, subashab@codeaurora.org,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/7] net: ipa: wake up system on RX available
+Date:   Fri, 11 Sep 2020 19:45:25 -0500
+Message-Id: <20200912004532.1386-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 11 Sep 2020 08:32:55 +0200
+This series arranges for the IPA driver to wake up a suspended
+system if the IPA hardware has a packet to deliver to the AP.
+Version 2 replaces the first patch from version 1 with three
+patches, in response to David Miller's feedback.
 
-> Hi David,
-> 
-> On Thu, Sep 10, 2020 at 9:20 PM David Miller <davem@davemloft.net> wrote:
->> From: Geert Uytterhoeven <geert+renesas@glider.be>
->> Date: Tue,  1 Sep 2020 17:02:37 +0200
->>
->> > This reverts commit 124eee3f6955f7aa19b9e6ff5c9b6d37cb3d1e2c.
->> >
->> > Inami-san reported that this commit breaks bridge support in a Xen
->> > environment, and that reverting it fixes this.
->> >
->> > During system resume, bridge ports are no longer enabled, as that relies
->> > on the receipt of the NETDEV_CHANGE notification.  This notification is
->> > not sent, as netdev_state_change() is no longer called.
->> >
->> > Note that the condition this commit intended to fix never existed
->> > upstream, as the patch triggering it and referenced in the commit was
->> > never applied upstream.  Hence I can confirm s2ram on r8a73a4/ape6evm
->> > and sh73a0/kzm9g works fine before/after this revert.
->> >
->> > Reported-by Gaku Inami <gaku.inami.xh@renesas.com>
->> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->>
->> Maybe you cannot reproduce it, but the problem is there and it still
->> looks very real to me.
->>
->> netdev_state_change() does two things:
->>
->> 1) Emit the NETDEV_CHANGE notification
->>
->> 2) Emit an rtmsg_ifinfo() netlink message, which in turn tries to access
->>    the device statistics via ->ndo_get_stats*().
->>
->> It is absolutely wrong to do #2 when netif_device_present() is false.
->>
->> So I cannot apply this patch as-is, sorry.
-> 
-> Thanks a lot for looking into this!
-> 
-> But doing #1 is still safe?  That is the part that calls into the bridge
-> code.  So would moving the netif_device_present() check from
-> linkwatch_do_dev() to netdev_state_change(), to prevent doing #2, be
-> acceptable?
+Specifically:
+  - The first patch now replaces an atomic_t field with a
+    refcount_t.  The affected field is not the one David
+    commented on, but this fix is consistent with what he
+    asked for.
+  - The second patch replaces the atomic_t field David *did*
+    comment on with a single bit in a new bitmap field;
+    ultimately what's needed there is a Boolean flag anyway.
+  - The third patch is renamed, but basically does the same
+    thing the first patch did in version 1.  It now operates
+    on a bit in a bitmap rather than on an atomic variable.
 
-I have a better question.  Why is a software device like the bridge,
-that wants to effectively exist and still receive netdev event
-notifications, marking itself as not present?
+Currently, the GSI interrupt is set up to be a waking interrupt.
+But the GSI interrupt won't actually fire for a stopped channel (or
+a channel that underlies a suspended endpoint).  The fix involves
+having the IPA rather than GSI interrupt wake up the AP.
 
-That's seems like the real bug here.
+The IPA hardware clock is managed by both the modem and the AP.
+Even if the AP is in a fully-suspended state, the modem can clock
+the IPA hardware, and can send a packet through IPA that is destined
+for an endpoint on the AP.
+
+When the IPA hardware finds a packet's destination is stopped or
+suspended, it sends an *IPA interrupt* to the destination "execution
+environment" (EE--in this case, the AP).  The desired behavior is
+for the EE (even if suspended) to be able to handle the incoming
+packet.
+
+To do this, we arrange for the IPA interrupt to be a wakeup
+interrupt.  And if the system is suspended when that interrupt
+fires, we trigger a system resume operation.  While resuming the
+system, the IPA driver starts all its channels (or for SDM845,
+takes its endpoints out of suspend mode).
+
+Whenever an RX channel is started, if it has a packet ready to be
+consumed, the GSI interrupt will fire.  At this point the inbound
+packet that caused this wakeup activity will be received.
+
+The first three patches in the series were described above.  The
+next three arrange for the IPA interrupt wake up the system.
+Finally, with this design, we no longer want the GSI interrupt to
+wake a suspended system, so that is removed by the last patch.
+
+					-Alex
+
+
+Alex Elder (7):
+  net: ipa: use refcount_t for IPA clock reference count
+  net: ipa: replace ipa->suspend_ref with a flag bit
+  net: ipa: verify reference flag values
+  net: ipa: manage endpoints separate from clock
+  net: ipa: use device_init_wakeup()
+  net: ipa: enable wakeup on IPA interrupt
+  net: ipa: do not enable GSI interrupt for wakeup
+
+ drivers/net/ipa/gsi.c           | 17 ++------
+ drivers/net/ipa/gsi.h           |  1 -
+ drivers/net/ipa/ipa.h           | 16 +++++--
+ drivers/net/ipa/ipa_clock.c     | 28 +++++-------
+ drivers/net/ipa/ipa_interrupt.c | 14 ++++++
+ drivers/net/ipa/ipa_main.c      | 76 +++++++++++++++++++--------------
+ 6 files changed, 84 insertions(+), 68 deletions(-)
+
+-- 
+2.20.1
+
