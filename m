@@ -2,444 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00523267C21
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 21:46:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E18D267C2A
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 21:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725908AbgILTqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Sep 2020 15:46:38 -0400
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:51941 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725880AbgILTqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 15:46:36 -0400
-Received: from localhost.localdomain ([92.140.214.174])
-        by mwinf5d17 with ME
-        id T7mU2300F3mL4WL037mVbS; Sat, 12 Sep 2020 21:46:31 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sat, 12 Sep 2020 21:46:31 +0200
-X-ME-IP: 92.140.214.174
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, kuba@kernel.org, mst@redhat.com,
-        vaibhavgupta40@gmail.com, gustavoars@kernel.org, arnd@arndb.de
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] natsemi: switch from 'pci_' to 'dma_' API
-Date:   Sat, 12 Sep 2020 21:46:25 +0200
-Message-Id: <20200912194625.345319-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1725907AbgILTzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Sep 2020 15:55:32 -0400
+Received: from mail-eopbgr750091.outbound.protection.outlook.com ([40.107.75.91]:52226
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725875AbgILTzW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 12 Sep 2020 15:55:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vp02GnHaaGwqdcabqm16DMlKYgEvYPS5mkMvQNvg/sdo8d71tko/L1Fub2sVa1yf++n+w8hiZ5QwxLdNm/06cuh1i+iNHSzxaVl76ZexJwXEOQB58PyXy0XhEkX5+VE0KqPzzCiHI80jBmNCtZpmrEmli2h3/WQPUjlezv3jynIW9GJ75dedmD0rbZq+l58Dwbdx9QhegkCyCxPoMy0hjLlHq30bl3Ix6bDBIgDyUjK8A3CfZ8nxvgwMO8YnqWFTOsGP2CCv6BJLEygRFbxK4tf7coUYWInJo/tditasaZpwxHpc1dQW4P+Yvz17u12ra87VLFP2TcGIGy/auPAM+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kl2mgj60w3tfXcsrxHmB3e0zcz0ySXd/yD8wLARyqu0=;
+ b=D9vuBUqSrAG9h+HYdE1rqaUnSxpxqghIsS5Qj2j2Djww6XPSX7RTK4bEU+KQXNksWyREpKqGpkNPXWj6As6S7Ghn/7EQY//MB/QGXCoRx4t2X5g+ltKyfLTNAzfOiePAV2qOzPnjdMqyU+lIQVAdcDwVNLPCN28+G029TwhXdcYhozG8V5N6pDf4Gz4YBW87havCmUN4bvFKBI5wdEgSv3cpGjdh2QyurvdMWxz+J7bfA+r+zTXhAViyg59CyJ9Hx2XvzUP7joG6IAWQNZGT+wGqw9JZBrJAn4INFR5Xw79rtAZ7BK66Gxvb4pSiDkKjoF5MMudBagRVVVuG1yf0hg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kl2mgj60w3tfXcsrxHmB3e0zcz0ySXd/yD8wLARyqu0=;
+ b=hzujsktExSqBkX9NFtx6UTkI2UjIMvpsmdHaS6BWZOPqFs3PlLUG4RGXsjmYMTFBHRNJ6aeVYyJMcpuqNqustSmuzn6G93WhjvfSedaLxF0vjGGMKN8YG/2sTj0lYAMPoF9OCh7AUY0BKiWVEwAsSdJEEplDDCUN02cgMwhcca4=
+Received: from MW2PR2101MB1052.namprd21.prod.outlook.com (2603:10b6:302:a::16)
+ by MW2PR2101MB0890.namprd21.prod.outlook.com (2603:10b6:302:10::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.1; Sat, 12 Sep
+ 2020 19:55:16 +0000
+Received: from MW2PR2101MB1052.namprd21.prod.outlook.com
+ ([fe80::d00b:3909:23b:83f1]) by MW2PR2101MB1052.namprd21.prod.outlook.com
+ ([fe80::d00b:3909:23b:83f1%4]) with mapi id 15.20.3412.001; Sat, 12 Sep 2020
+ 19:55:16 +0000
+From:   Michael Kelley <mikelley@microsoft.com>
+To:     Boqun Feng <boqun.feng@gmail.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "Mark.Rutland@arm.com" <Mark.Rutland@arm.com>,
+        "maz@kernel.org" <maz@kernel.org>
+Subject: RE: [PATCH v3 11/11] scsi: storvsc: Support PAGE_SIZE larger than 4K
+Thread-Topic: [PATCH v3 11/11] scsi: storvsc: Support PAGE_SIZE larger than 4K
+Thread-Index: AQHWh3+iswt/mGTL+kaAcnr9o93++KllahIg
+Date:   Sat, 12 Sep 2020 19:55:15 +0000
+Message-ID: <MW2PR2101MB1052215E0AC097F7BE439794D7250@MW2PR2101MB1052.namprd21.prod.outlook.com>
+References: <20200910143455.109293-1-boqun.feng@gmail.com>
+ <20200910143455.109293-12-boqun.feng@gmail.com>
+In-Reply-To: <20200910143455.109293-12-boqun.feng@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-09-12T19:55:13Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=9a42f931-5453-42d0-9ab7-8f50495a4f65;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [24.22.167.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f815a372-58f5-4953-904e-08d85755c4ec
+x-ms-traffictypediagnostic: MW2PR2101MB0890:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MW2PR2101MB089074A10F2FE1B13FC67A91D7250@MW2PR2101MB0890.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2089;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sdrGySaSX0ouEpwRHxhqSMnWcHIyYyhKHOSeUws4UWzZ1qHnD0SKd2F9Uz2ocEoSRJ7bXEP54HCaFS8jkECgQbCbT73GNgLekhqKlu1ubh1KN4uq6kZqKxbGPQ2eGPT8e2qCRNFuPSRxnjIvjN7WVPGp+RE+p17oLA27NxiBDycOaYsL7vQJ3jdidpsxIwmJnO7naAAkwg3zgVjY6/VlVuGV3hV5fh+lr7KTm4AiN3/qGFbSPRpIoz/QmGODgZ0l+yw04iILQ4kW1tjFct54h6Lc3yMa5NJLV79UqtogG83wXQ74h2td21hCyYODhgGYoQ9q3FL0paU9XDhrNeJ+4UkKJw4roDzHJYbjqLsZ9eyhZmjHRIkXNuRshDWt306X
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW2PR2101MB1052.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(366004)(39860400002)(136003)(186003)(33656002)(66946007)(86362001)(7696005)(66446008)(26005)(76116006)(66556008)(71200400001)(52536014)(8990500004)(54906003)(110136005)(64756008)(5660300002)(8936002)(66476007)(8676002)(83380400001)(478600001)(4326008)(7416002)(82960400001)(316002)(55016002)(6506007)(2906002)(9686003)(82950400001)(10290500003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: fW9JCkmv9fZiFVccyZ4UXMTujLXmXQkabV3q0eBEAwgTh/hNaabKGZF1sDlGzewQ+VXQ1NvhfxeAoqK3ikXFCHrBQjk07N0OdtXMT3vYIcrzJDIK/WeBlpr110HY06Tk0Vm8C3Djz79wVGG4qw/CCW1dqOHelsrTJuPYpVtHLcka2pkhFTHxs9b8hqnDD04e3AfXONLlC34hzFd6sOSOATVkEzhxNwYuGqVA9mq/cIpbJGVSRw8Izhp0+834itnfLtViNdXl02wc4tVZFGNidt7ax+W7wtQkYyKeKe2YuV8ihql8KR9rSEgshs4enXxruQtM/FXWRuFqgAT/5EHQLkPBjupsYjPO5815bagNHnTE5X+R3pPAotSoALVeO7Rd5ihCkY8qLdVEdcEILmLz0UVmbWh6CaFJlSKuvnuDkVOv+UNxGDzcjRSqXwFYDm6ex2vWxjNAkI1mvkq9PT1c01BYs76PKPqhqlHM9meSsOoWW+1gcc7StDQwcbcnZjr9GolpEVW/81fRBkafFQctybfRM54AysPJ9QEz6DY1RvHQWqC3avYzDvCcqUiy8ziXYbqMF0YxdnEhqXXtOJ8epBPx562IU5ZX5Xkqr5sffD4ej7xcU/zRC9g/n08rW+7WHSy6UE0fCDUAJPt1Ng5gkw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW2PR2101MB1052.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f815a372-58f5-4953-904e-08d85755c4ec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Sep 2020 19:55:15.8320
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5zCMGEusvV9SqngEM7K5iehf3CIw7u5dOFwbuGe+1b73KpxJyFxWQTgr6SV1peDj99OnoX71pQMKUbMe7x3SselmdS1ahvQHjdi0Qpa56fw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB0890
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+From: Boqun Feng <boqun.feng@gmail.com> Sent: Thursday, September 10, 2020 =
+7:35 AM
+>=20
+> Hyper-V always use 4k page size (HV_HYP_PAGE_SIZE), so when
+> communicating with Hyper-V, a guest should always use HV_HYP_PAGE_SIZE
+> as the unit for page related data. For storvsc, the data is
+> vmbus_packet_mpb_array. And since in scsi_cmnd, sglist of pages (in unit
+> of PAGE_SIZE) is used, we need convert pages in the sglist of scsi_cmnd
+> into Hyper-V pages in vmbus_packet_mpb_array.
+>=20
+> This patch does the conversion by dividing pages in sglist into Hyper-V
+> pages, offset and indexes in vmbus_packet_mpb_array are recalculated
+> accordingly.
+>=20
+> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> ---
+>  drivers/scsi/storvsc_drv.c | 54 +++++++++++++++++++++++++++++++++-----
+>  1 file changed, 47 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
+> index 8f5f5dc863a4..119b76ca24a1 100644
+> --- a/drivers/scsi/storvsc_drv.c
+> +++ b/drivers/scsi/storvsc_drv.c
+> @@ -1739,23 +1739,63 @@ static int storvsc_queuecommand(struct Scsi_Host =
+*host, struct
+> scsi_cmnd *scmnd)
+>  	payload_sz =3D sizeof(cmd_request->mpb);
+>=20
+>  	if (sg_count) {
+> -		if (sg_count > MAX_PAGE_BUFFER_COUNT) {
+> +		unsigned int hvpgoff =3D 0;
+> +		unsigned long hvpg_offset =3D sgl->offset & ~HV_HYP_PAGE_MASK;
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
+This is a minor nit.  The above expression uses sgl->offset.  Code below us=
+es
+sgl[0].offset.  They're the same but the inconsistency sticks out a bit.
 
-When memory is allocated in 'alloc_ring()' (natsemi.c) GFP_KERNEL can be
-used because it is only called from 'netdev_open()', which is a '.ndo_open'
-function. Such function are synchronized with the rtnl_lock() semaphore.
+> +		unsigned int hvpg_count =3D HVPFN_UP(hvpg_offset + length);
+> +		u64 hvpfn;
+>=20
+> -			payload_sz =3D (sg_count * sizeof(u64) +
+> +		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
+> +
+> +			payload_sz =3D (hvpg_count * sizeof(u64) +
+>  				      sizeof(struct vmbus_packet_mpb_array));
+>  			payload =3D kzalloc(payload_sz, GFP_ATOMIC);
+>  			if (!payload)
+>  				return SCSI_MLQUEUE_DEVICE_BUSY;
+>  		}
+>=20
+> +		/*
+> +		 * sgl is a list of PAGEs, and payload->range.pfn_array
+> +		 * expects the page number in the unit of HV_HYP_PAGE_SIZE (the
+> +		 * page size that Hyper-V uses, so here we need to divide PAGEs
+> +		 * into HV_HYP_PAGE in case that PAGE_SIZE > HV_HYP_PAGE_SIZE.
+> +		 */
+>  		payload->range.len =3D length;
+> -		payload->range.offset =3D sgl[0].offset;
+> +		payload->range.offset =3D sgl[0].offset & ~HV_HYP_PAGE_MASK;
 
-When memory is allocated in 'alloc_ring()' (natsemi.c) GFP_KERNEL can be
-used because it is only called from 'netdev_open()', which is a '.ndo_open'
-function. Such function are synchronized with the rtnl_lock() semaphore.
+Another nit.  The right hand side of the above assignment is already calcul=
+ated as
+hvpg_offset.
 
-When memory is allocated in 'ns83820_init_one()' (natsemi.c) GFP_KERNEL can
-be used because it is a probe function and no lock is taken in the between.
+Nits aside,
 
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
-
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/natsemi/natsemi.c | 63 +++++++++++++-------------
- drivers/net/ethernet/natsemi/ns83820.c | 61 +++++++++++++------------
- 2 files changed, 62 insertions(+), 62 deletions(-)
-
-diff --git a/drivers/net/ethernet/natsemi/natsemi.c b/drivers/net/ethernet/natsemi/natsemi.c
-index 3de8430ee8c5..05d43fd7ea98 100644
---- a/drivers/net/ethernet/natsemi/natsemi.c
-+++ b/drivers/net/ethernet/natsemi/natsemi.c
-@@ -1916,9 +1916,9 @@ static void ns_tx_timeout(struct net_device *dev, unsigned int txqueue)
- static int alloc_ring(struct net_device *dev)
- {
- 	struct netdev_private *np = netdev_priv(dev);
--	np->rx_ring = pci_alloc_consistent(np->pci_dev,
--		sizeof(struct netdev_desc) * (RX_RING_SIZE+TX_RING_SIZE),
--		&np->ring_dma);
-+	np->rx_ring = dma_alloc_coherent(&np->pci_dev->dev,
-+					 sizeof(struct netdev_desc) * (RX_RING_SIZE + TX_RING_SIZE),
-+					 &np->ring_dma, GFP_KERNEL);
- 	if (!np->rx_ring)
- 		return -ENOMEM;
- 	np->tx_ring = &np->rx_ring[RX_RING_SIZE];
-@@ -1939,10 +1939,10 @@ static void refill_rx(struct net_device *dev)
- 			np->rx_skbuff[entry] = skb;
- 			if (skb == NULL)
- 				break; /* Better luck next round. */
--			np->rx_dma[entry] = pci_map_single(np->pci_dev,
--				skb->data, buflen, PCI_DMA_FROMDEVICE);
--			if (pci_dma_mapping_error(np->pci_dev,
--						  np->rx_dma[entry])) {
-+			np->rx_dma[entry] = dma_map_single(&np->pci_dev->dev,
-+							   skb->data, buflen,
-+							   DMA_FROM_DEVICE);
-+			if (dma_mapping_error(&np->pci_dev->dev, np->rx_dma[entry])) {
- 				dev_kfree_skb_any(skb);
- 				np->rx_skbuff[entry] = NULL;
- 				break; /* Better luck next round. */
-@@ -2013,9 +2013,8 @@ static void drain_tx(struct net_device *dev)
- 
- 	for (i = 0; i < TX_RING_SIZE; i++) {
- 		if (np->tx_skbuff[i]) {
--			pci_unmap_single(np->pci_dev,
--				np->tx_dma[i], np->tx_skbuff[i]->len,
--				PCI_DMA_TODEVICE);
-+			dma_unmap_single(&np->pci_dev->dev, np->tx_dma[i],
-+					 np->tx_skbuff[i]->len, DMA_TO_DEVICE);
- 			dev_kfree_skb(np->tx_skbuff[i]);
- 			dev->stats.tx_dropped++;
- 		}
-@@ -2034,9 +2033,9 @@ static void drain_rx(struct net_device *dev)
- 		np->rx_ring[i].cmd_status = 0;
- 		np->rx_ring[i].addr = cpu_to_le32(0xBADF00D0); /* An invalid address. */
- 		if (np->rx_skbuff[i]) {
--			pci_unmap_single(np->pci_dev, np->rx_dma[i],
--				buflen + NATSEMI_PADDING,
--				PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&np->pci_dev->dev, np->rx_dma[i],
-+					 buflen + NATSEMI_PADDING,
-+					 DMA_FROM_DEVICE);
- 			dev_kfree_skb(np->rx_skbuff[i]);
- 		}
- 		np->rx_skbuff[i] = NULL;
-@@ -2052,9 +2051,9 @@ static void drain_ring(struct net_device *dev)
- static void free_ring(struct net_device *dev)
- {
- 	struct netdev_private *np = netdev_priv(dev);
--	pci_free_consistent(np->pci_dev,
--		sizeof(struct netdev_desc) * (RX_RING_SIZE+TX_RING_SIZE),
--		np->rx_ring, np->ring_dma);
-+	dma_free_coherent(&np->pci_dev->dev,
-+			  sizeof(struct netdev_desc) * (RX_RING_SIZE + TX_RING_SIZE),
-+			  np->rx_ring, np->ring_dma);
- }
- 
- static void reinit_rx(struct net_device *dev)
-@@ -2101,9 +2100,9 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
- 	entry = np->cur_tx % TX_RING_SIZE;
- 
- 	np->tx_skbuff[entry] = skb;
--	np->tx_dma[entry] = pci_map_single(np->pci_dev,
--				skb->data,skb->len, PCI_DMA_TODEVICE);
--	if (pci_dma_mapping_error(np->pci_dev, np->tx_dma[entry])) {
-+	np->tx_dma[entry] = dma_map_single(&np->pci_dev->dev, skb->data,
-+					   skb->len, DMA_TO_DEVICE);
-+	if (dma_mapping_error(&np->pci_dev->dev, np->tx_dma[entry])) {
- 		np->tx_skbuff[entry] = NULL;
- 		dev_kfree_skb_irq(skb);
- 		dev->stats.tx_dropped++;
-@@ -2169,9 +2168,8 @@ static void netdev_tx_done(struct net_device *dev)
- 				dev->stats.tx_window_errors++;
- 			dev->stats.tx_errors++;
- 		}
--		pci_unmap_single(np->pci_dev,np->tx_dma[entry],
--					np->tx_skbuff[entry]->len,
--					PCI_DMA_TODEVICE);
-+		dma_unmap_single(&np->pci_dev->dev, np->tx_dma[entry],
-+				 np->tx_skbuff[entry]->len, DMA_TO_DEVICE);
- 		/* Free the original skb. */
- 		dev_consume_skb_irq(np->tx_skbuff[entry]);
- 		np->tx_skbuff[entry] = NULL;
-@@ -2359,21 +2357,22 @@ static void netdev_rx(struct net_device *dev, int *work_done, int work_to_do)
- 			    (skb = netdev_alloc_skb(dev, pkt_len + RX_OFFSET)) != NULL) {
- 				/* 16 byte align the IP header */
- 				skb_reserve(skb, RX_OFFSET);
--				pci_dma_sync_single_for_cpu(np->pci_dev,
--					np->rx_dma[entry],
--					buflen,
--					PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_cpu(&np->pci_dev->dev,
-+							np->rx_dma[entry],
-+							buflen,
-+							DMA_FROM_DEVICE);
- 				skb_copy_to_linear_data(skb,
- 					np->rx_skbuff[entry]->data, pkt_len);
- 				skb_put(skb, pkt_len);
--				pci_dma_sync_single_for_device(np->pci_dev,
--					np->rx_dma[entry],
--					buflen,
--					PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_device(&np->pci_dev->dev,
-+							   np->rx_dma[entry],
-+							   buflen,
-+							   DMA_FROM_DEVICE);
- 			} else {
--				pci_unmap_single(np->pci_dev, np->rx_dma[entry],
-+				dma_unmap_single(&np->pci_dev->dev,
-+						 np->rx_dma[entry],
- 						 buflen + NATSEMI_PADDING,
--						 PCI_DMA_FROMDEVICE);
-+						 DMA_FROM_DEVICE);
- 				skb_put(skb = np->rx_skbuff[entry], pkt_len);
- 				np->rx_skbuff[entry] = NULL;
- 			}
-diff --git a/drivers/net/ethernet/natsemi/ns83820.c b/drivers/net/ethernet/natsemi/ns83820.c
-index 8e24c7acf79b..d171b5180201 100644
---- a/drivers/net/ethernet/natsemi/ns83820.c
-+++ b/drivers/net/ethernet/natsemi/ns83820.c
-@@ -526,8 +526,8 @@ static inline int ns83820_add_rx_skb(struct ns83820 *dev, struct sk_buff *skb)
- 
- 	dev->rx_info.next_empty = (next_empty + 1) % NR_RX_DESC;
- 	cmdsts = REAL_RX_BUF_SIZE | CMDSTS_INTR;
--	buf = pci_map_single(dev->pci_dev, skb->data,
--			     REAL_RX_BUF_SIZE, PCI_DMA_FROMDEVICE);
-+	buf = dma_map_single(&dev->pci_dev->dev, skb->data, REAL_RX_BUF_SIZE,
-+			     DMA_FROM_DEVICE);
- 	build_rx_desc(dev, sg, 0, buf, cmdsts, 0);
- 	/* update link of previous rx */
- 	if (likely(next_empty != dev->rx_info.next_rx))
-@@ -858,8 +858,8 @@ static void rx_irq(struct net_device *ndev)
- 		mb();
- 		clear_rx_desc(dev, next_rx);
- 
--		pci_unmap_single(dev->pci_dev, bufptr,
--				 RX_BUF_SIZE, PCI_DMA_FROMDEVICE);
-+		dma_unmap_single(&dev->pci_dev->dev, bufptr, RX_BUF_SIZE,
-+				 DMA_FROM_DEVICE);
- 		len = cmdsts & CMDSTS_LEN_MASK;
- #ifdef NS83820_VLAN_ACCEL_SUPPORT
- 		/* NH: As was mentioned below, this chip is kinda
-@@ -985,17 +985,13 @@ static void do_tx_done(struct net_device *ndev)
- 		len = cmdsts & CMDSTS_LEN_MASK;
- 		addr = desc_addr_get(desc + DESC_BUFPTR);
- 		if (skb) {
--			pci_unmap_single(dev->pci_dev,
--					addr,
--					len,
--					PCI_DMA_TODEVICE);
-+			dma_unmap_single(&dev->pci_dev->dev, addr, len,
-+					 DMA_TO_DEVICE);
- 			dev_consume_skb_irq(skb);
- 			atomic_dec(&dev->nr_tx_skbs);
- 		} else
--			pci_unmap_page(dev->pci_dev,
--					addr,
--					len,
--					PCI_DMA_TODEVICE);
-+			dma_unmap_page(&dev->pci_dev->dev, addr, len,
-+				       DMA_TO_DEVICE);
- 
- 		tx_done_idx = (tx_done_idx + 1) % NR_TX_DESC;
- 		dev->tx_done_idx = tx_done_idx;
-@@ -1023,10 +1019,10 @@ static void ns83820_cleanup_tx(struct ns83820 *dev)
- 		dev->tx_skbs[i] = NULL;
- 		if (skb) {
- 			__le32 *desc = dev->tx_descs + (i * DESC_SIZE);
--			pci_unmap_single(dev->pci_dev,
--					desc_addr_get(desc + DESC_BUFPTR),
--					le32_to_cpu(desc[DESC_CMDSTS]) & CMDSTS_LEN_MASK,
--					PCI_DMA_TODEVICE);
-+			dma_unmap_single(&dev->pci_dev->dev,
-+					 desc_addr_get(desc + DESC_BUFPTR),
-+					 le32_to_cpu(desc[DESC_CMDSTS]) & CMDSTS_LEN_MASK,
-+					 DMA_TO_DEVICE);
- 			dev_kfree_skb_irq(skb);
- 			atomic_dec(&dev->nr_tx_skbs);
- 		}
-@@ -1121,7 +1117,8 @@ static netdev_tx_t ns83820_hard_start_xmit(struct sk_buff *skb,
- 	len = skb->len;
- 	if (nr_frags)
- 		len -= skb->data_len;
--	buf = pci_map_single(dev->pci_dev, skb->data, len, PCI_DMA_TODEVICE);
-+	buf = dma_map_single(&dev->pci_dev->dev, skb->data, len,
-+			     DMA_TO_DEVICE);
- 
- 	first_desc = dev->tx_descs + (free_idx * DESC_SIZE);
- 
-@@ -1902,12 +1899,12 @@ static int ns83820_init_one(struct pci_dev *pci_dev,
- 
- 	/* See if we can set the dma mask early on; failure is fatal. */
- 	if (sizeof(dma_addr_t) == 8 &&
--		!pci_set_dma_mask(pci_dev, DMA_BIT_MASK(64))) {
-+		!dma_set_mask(&pci_dev->dev, DMA_BIT_MASK(64))) {
- 		using_dac = 1;
--	} else if (!pci_set_dma_mask(pci_dev, DMA_BIT_MASK(32))) {
-+	} else if (!dma_set_mask(&pci_dev->dev, DMA_BIT_MASK(32))) {
- 		using_dac = 0;
- 	} else {
--		dev_warn(&pci_dev->dev, "pci_set_dma_mask failed!\n");
-+		dev_warn(&pci_dev->dev, "dma_set_mask failed!\n");
- 		return -ENODEV;
- 	}
- 
-@@ -1938,10 +1935,12 @@ static int ns83820_init_one(struct pci_dev *pci_dev,
- 	pci_set_master(pci_dev);
- 	addr = pci_resource_start(pci_dev, 1);
- 	dev->base = ioremap(addr, PAGE_SIZE);
--	dev->tx_descs = pci_alloc_consistent(pci_dev,
--			4 * DESC_SIZE * NR_TX_DESC, &dev->tx_phy_descs);
--	dev->rx_info.descs = pci_alloc_consistent(pci_dev,
--			4 * DESC_SIZE * NR_RX_DESC, &dev->rx_info.phy_descs);
-+	dev->tx_descs = dma_alloc_coherent(&pci_dev->dev,
-+					   4 * DESC_SIZE * NR_TX_DESC,
-+					   &dev->tx_phy_descs, GFP_KERNEL);
-+	dev->rx_info.descs = dma_alloc_coherent(&pci_dev->dev,
-+						4 * DESC_SIZE * NR_RX_DESC,
-+						&dev->rx_info.phy_descs, GFP_KERNEL);
- 	err = -ENOMEM;
- 	if (!dev->base || !dev->tx_descs || !dev->rx_info.descs)
- 		goto out_disable;
-@@ -2183,8 +2182,10 @@ static int ns83820_init_one(struct pci_dev *pci_dev,
- out_disable:
- 	if (dev->base)
- 		iounmap(dev->base);
--	pci_free_consistent(pci_dev, 4 * DESC_SIZE * NR_TX_DESC, dev->tx_descs, dev->tx_phy_descs);
--	pci_free_consistent(pci_dev, 4 * DESC_SIZE * NR_RX_DESC, dev->rx_info.descs, dev->rx_info.phy_descs);
-+	dma_free_coherent(&pci_dev->dev, 4 * DESC_SIZE * NR_TX_DESC,
-+			  dev->tx_descs, dev->tx_phy_descs);
-+	dma_free_coherent(&pci_dev->dev, 4 * DESC_SIZE * NR_RX_DESC,
-+			  dev->rx_info.descs, dev->rx_info.phy_descs);
- 	pci_disable_device(pci_dev);
- out_free:
- 	free_netdev(ndev);
-@@ -2205,10 +2206,10 @@ static void ns83820_remove_one(struct pci_dev *pci_dev)
- 	unregister_netdev(ndev);
- 	free_irq(dev->pci_dev->irq, ndev);
- 	iounmap(dev->base);
--	pci_free_consistent(dev->pci_dev, 4 * DESC_SIZE * NR_TX_DESC,
--			dev->tx_descs, dev->tx_phy_descs);
--	pci_free_consistent(dev->pci_dev, 4 * DESC_SIZE * NR_RX_DESC,
--			dev->rx_info.descs, dev->rx_info.phy_descs);
-+	dma_free_coherent(&dev->pci_dev->dev, 4 * DESC_SIZE * NR_TX_DESC,
-+			  dev->tx_descs, dev->tx_phy_descs);
-+	dma_free_coherent(&dev->pci_dev->dev, 4 * DESC_SIZE * NR_RX_DESC,
-+			  dev->rx_info.descs, dev->rx_info.phy_descs);
- 	pci_disable_device(dev->pci_dev);
- 	free_netdev(ndev);
- }
--- 
-2.25.1
+> +		hvpgoff =3D sgl[0].offset >> HV_HYP_PAGE_SHIFT;
+>=20
+>  		cur_sgl =3D sgl;
+> -		for (i =3D 0; i < sg_count; i++) {
+> -			payload->range.pfn_array[i] =3D
+> -				page_to_pfn(sg_page((cur_sgl)));
+> -			cur_sgl =3D sg_next(cur_sgl);
+> +		for (i =3D 0; i < hvpg_count; i++) {
+> +			/*
+> +			 * 'i' is the index of hv pages in the payload and
+> +			 * 'hvpgoff' is the offset (in hv pages) of the first
+> +			 * hv page in the the first page. The relationship
+> +			 * between the sum of 'i' and 'hvpgoff' and the offset
+> +			 * (in hv pages) in a payload page ('hvpgoff_in_page')
+> +			 * is as follow:
+> +			 *
+> +			 * |------------------ PAGE -------------------|
+> +			 * |   NR_HV_HYP_PAGES_IN_PAGE hvpgs in total  |
+> +			 * |hvpg|hvpg| ...              |hvpg|... |hvpg|
+> +			 * ^         ^                                 ^                 ^
+> +			 * +-hvpgoff-+                                 +-hvpgoff_in_page-+
+> +			 *           ^                                                   |
+> +			 *           +--------------------- i ---------------------------+
+> +			 */
+> +			unsigned int hvpgoff_in_page =3D
+> +				(i + hvpgoff) % NR_HV_HYP_PAGES_IN_PAGE;
+> +
+> +			/*
+> +			 * Two cases that we need to fetch a page:
+> +			 * 1) i =3D=3D 0, the first step or
+> +			 * 2) hvpgoff_in_page =3D=3D 0, when we reach the boundary
+> +			 *    of a page.
+> +			 */
+> +			if (hvpgoff_in_page =3D=3D 0 || i =3D=3D 0) {
+> +				hvpfn =3D page_to_hvpfn(sg_page(cur_sgl));
+> +				cur_sgl =3D sg_next(cur_sgl);
+> +			}
+> +
+> +			payload->range.pfn_array[i] =3D hvpfn + hvpgoff_in_page;
+>  		}
+>  	}
+>=20
+> --
+> 2.28.0
 
