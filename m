@@ -2,67 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B010C267973
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 12:24:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D388F267977
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 12:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725845AbgILKYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Sep 2020 06:24:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725832AbgILKYS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 06:24:18 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F46FC061573;
-        Sat, 12 Sep 2020 03:24:18 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id c3so2113150plz.5;
-        Sat, 12 Sep 2020 03:24:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K41lXPEXhtriRTvEA20PbR1JTl5zSR6Y019sMKtFmvQ=;
-        b=YgPeku7XYoG9gbJgAjzf7i7Nz7UM8Y+vvomXWKqboc/J71cO8KeMFeQc7IUaOxgLz6
-         dO3D+1NjwZKGspHfN5B5T7TXDsIqdp6iv71wn7MehaN5TnqAcHaWS/KllTWn5VVUmkO3
-         +43Tqu47KdbhI4+Qmd0Sa8mli4f7vVWK/vhP6AU8DAhx30jYrl5p0iPY7Zcj/XvNyAFv
-         PEA9dzDmXp1dHw6+nU1goQ0Fp5ThR7egU+dJtCmppGmAvVRHX6n7J1SmGXQvB2bLHuCO
-         4yA3rTpj6XppKs+le43FZ8HVtM6nMnzIutV9GO9eMYwmz9KAmzuX6RuK2nHy3qMKiQML
-         jnKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K41lXPEXhtriRTvEA20PbR1JTl5zSR6Y019sMKtFmvQ=;
-        b=U5TiXBL0mNqz+us/DG38vUCjOjOBwifwZfcoUYet0NV8nHRu5dVoivAznjpZebFR+J
-         5dU0E2LpU6uRYb6qIlUjK6yF33857DXYXXKck8DHMYg5CAOJdnHmEcF2pZH3YVO/rXzk
-         YifQjQuvQ9iQpcPpXboFQW2JYSKL9TtgQ67DpXeSywPoZHYuEuow8CZMHZgl3raKERws
-         mvkaHYCYvwMGGGjXIq6ChG0faAT//r9mAiEBa34u4iIY15Xmic/w2KdAAFX7MUsfL/Xp
-         BDg+xooSCxvAg2X97ko5ChPDTJ9QLHpkFdvZwMCE5gqydnErOiU1FWnGx6hKQbR88J6b
-         yUxw==
-X-Gm-Message-State: AOAM530LTWZ9zqK2HUl7zLKISGLmVhM77MNzTdEwrIQLKz1KGH9Imfae
-        TE9XFCjm582SjLMLE7Lnkg==
-X-Google-Smtp-Source: ABdhPJzs5WmlP13J6EpGQ2ny/5LqUYvMuasn077V89lvM37mWRZCgAzk1psfpLgIuTMedkyqXde6lw==
-X-Received: by 2002:a17:902:d913:b029:d0:cbe1:e712 with SMTP id c19-20020a170902d913b02900d0cbe1e712mr6314346plz.32.1599906257759;
-        Sat, 12 Sep 2020 03:24:17 -0700 (PDT)
-Received: from localhost.localdomain (n11212042027.netvigator.com. [112.120.42.27])
-        by smtp.gmail.com with ESMTPSA id 203sm4722682pfz.131.2020.09.12.03.24.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Sep 2020 03:24:17 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hillf Danton <hdanton@sina.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org
-Subject: [Linux-kernel-mentees] [PATCH net] tipc: Fix memory leak in tipc_group_create_member()
-Date:   Sat, 12 Sep 2020 06:22:30 -0400
-Message-Id: <20200912102230.1529402-1-yepeilin.cs@gmail.com>
+        id S1725880AbgILKZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Sep 2020 06:25:28 -0400
+Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:22254 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbgILKZ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 06:25:27 -0400
+Received: from localhost.localdomain ([93.22.150.101])
+        by mwinf5d66 with ME
+        id SyRN230082BWSNM03yRNMu; Sat, 12 Sep 2020 12:25:25 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 12 Sep 2020 12:25:25 +0200
+X-ME-IP: 93.22.150.101
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     davem@davemloft.net, kuba@kernel.org, andy@greyhouse.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] tlan: switch from 'pci_' to 'dma_' API
+Date:   Sat, 12 Sep 2020 12:25:18 +0200
+Message-Id: <20200912102519.337303-1-christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <000000000000879057058f193fb5@google.com>
-References: <000000000000879057058f193fb5@google.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -70,89 +34,303 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tipc_group_add_to_tree() returns silently if `key` matches `nkey` of an
-existing node, causing tipc_group_create_member() to leak memory. Let
-tipc_group_add_to_tree() return an error in such a case, so that
-tipc_group_create_member() can handle it properly.
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-Fixes: 75da2163dbb6 ("tipc: introduce communication groups")
-Reported-and-tested-by: syzbot+f95d90c454864b3b5bc9@syzkaller.appspotmail.com
-Cc: Hillf Danton <hdanton@sina.com>
-Link: https://syzkaller.appspot.com/bug?id=048390604fe1b60df34150265479202f10e13aff
-Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
+
+When memory is allocated in 'tlan_init()' GFP_KERNEL can be used because
+it is only called from a probe function or a module_init function and no
+lock is taken in the between.
+The call chain is:
+  tlan_probe                        (module_init function)
+    --> tlan_eisa_probe
+or
+  tlan_init_one                     (probe function)
+
+then in both cases:
+    --> tlan_probe1
+      --> tlan_init
+
+
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
-Decoded syzbot reproducer in pseudo-C:
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/ti/tlan.c | 61 ++++++++++++++++------------------
+ 1 file changed, 28 insertions(+), 33 deletions(-)
 
-	fd0 = socket(AF_TIPC, SOCK_DGRAM, 0);
-
-	sockaddr_tipc.family = AF_TIPC;
-	sockaddr_tipc.addrtype = TIPC_ADDR_NAMESEQ;
-	sockaddr_tipc.scope = 0;
-	sockaddr_tipc.addr.namesq.type = TIPC_RESERVED_TYPES + 1;
-	bind(fd0, &sockaddr_tipc, sizeof(sockaddr_tipc));
-
-	tipc_group_req0.type = TIPC_RESERVED_TYPES + 1;
-	setsockopt(fd0, SOL_TIPC, TIPC_GROUP_JOIN, &tipc_group_req0, sizeof(tipc_group_req0));
-
-	fd1 = socket(AF_TIPC, SOCK_STREAM, 0);
-
-	tipc_group_req1.type = TIPC_RESERVED_TYPES + 1;
-	tipc_group_req1.scope = TIPC_CLUSTER_SCOPE;
-	setsockopt(fd1, SOL_TIPC, TIPC_GROUP_JOIN, &tipc_group_req1, sizeof(tipc_group_req1));
-
- net/tipc/group.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
-
-diff --git a/net/tipc/group.c b/net/tipc/group.c
-index 588c2d2b0c69..553cf08b4d76 100644
---- a/net/tipc/group.c
-+++ b/net/tipc/group.c
-@@ -273,8 +273,8 @@ static struct tipc_member *tipc_group_find_node(struct tipc_group *grp,
- 	return NULL;
- }
+diff --git a/drivers/net/ethernet/ti/tlan.c b/drivers/net/ethernet/ti/tlan.c
+index 76a342ea3797..1203a3c0febb 100644
+--- a/drivers/net/ethernet/ti/tlan.c
++++ b/drivers/net/ethernet/ti/tlan.c
+@@ -305,9 +305,8 @@ static void tlan_remove_one(struct pci_dev *pdev)
+ 	unregister_netdev(dev);
  
--static void tipc_group_add_to_tree(struct tipc_group *grp,
--				   struct tipc_member *m)
-+static int tipc_group_add_to_tree(struct tipc_group *grp,
-+				  struct tipc_member *m)
- {
- 	u64 nkey, key = (u64)m->node << 32 | m->port;
- 	struct rb_node **n, *parent = NULL;
-@@ -291,10 +291,11 @@ static void tipc_group_add_to_tree(struct tipc_group *grp,
- 		else if (key > nkey)
- 			n = &(*n)->rb_right;
- 		else
--			return;
-+			return -1;
+ 	if (priv->dma_storage) {
+-		pci_free_consistent(priv->pci_dev,
+-				    priv->dma_size, priv->dma_storage,
+-				    priv->dma_storage_dma);
++		dma_free_coherent(&priv->pci_dev->dev, priv->dma_size,
++				  priv->dma_storage, priv->dma_storage_dma);
  	}
- 	rb_link_node(&m->tree_node, parent, n);
- 	rb_insert_color(&m->tree_node, &grp->members);
-+	return 0;
- }
  
- static struct tipc_member *tipc_group_create_member(struct tipc_group *grp,
-@@ -302,6 +303,7 @@ static struct tipc_member *tipc_group_create_member(struct tipc_group *grp,
- 						    u32 instance, int state)
- {
- 	struct tipc_member *m;
-+	int ret;
+ #ifdef CONFIG_PCI
+@@ -482,7 +481,7 @@ static int tlan_probe1(struct pci_dev *pdev, long ioaddr, int irq, int rev,
  
- 	m = kzalloc(sizeof(*m), GFP_ATOMIC);
- 	if (!m)
-@@ -314,8 +316,12 @@ static struct tipc_member *tipc_group_create_member(struct tipc_group *grp,
- 	m->port = port;
- 	m->instance = instance;
- 	m->bc_acked = grp->bc_snd_nxt - 1;
-+	ret = tipc_group_add_to_tree(grp, m);
-+	if (ret < 0) {
-+		kfree(m);
-+		return NULL;
-+	}
- 	grp->member_cnt++;
--	tipc_group_add_to_tree(grp, m);
- 	tipc_nlist_add(&grp->dests, m->node);
- 	m->state = state;
- 	return m;
+ 		priv->adapter = &board_info[ent->driver_data];
+ 
+-		rc = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++		rc = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 		if (rc) {
+ 			pr_err("No suitable PCI mapping available\n");
+ 			goto err_out_free_dev;
+@@ -584,8 +583,8 @@ static int tlan_probe1(struct pci_dev *pdev, long ioaddr, int irq, int rev,
+ 	return 0;
+ 
+ err_out_uninit:
+-	pci_free_consistent(priv->pci_dev, priv->dma_size, priv->dma_storage,
+-			    priv->dma_storage_dma);
++	dma_free_coherent(&priv->pci_dev->dev, priv->dma_size,
++			  priv->dma_storage, priv->dma_storage_dma);
+ err_out_free_dev:
+ 	free_netdev(dev);
+ err_out_regions:
+@@ -609,9 +608,9 @@ static void tlan_eisa_cleanup(void)
+ 		dev = tlan_eisa_devices;
+ 		priv = netdev_priv(dev);
+ 		if (priv->dma_storage) {
+-			pci_free_consistent(priv->pci_dev, priv->dma_size,
+-					    priv->dma_storage,
+-					    priv->dma_storage_dma);
++			dma_free_coherent(&priv->pci_dev->dev, priv->dma_size,
++					  priv->dma_storage,
++					  priv->dma_storage_dma);
+ 		}
+ 		release_region(dev->base_addr, 0x10);
+ 		unregister_netdev(dev);
+@@ -826,9 +825,8 @@ static int tlan_init(struct net_device *dev)
+ 
+ 	dma_size = (TLAN_NUM_RX_LISTS + TLAN_NUM_TX_LISTS)
+ 		* (sizeof(struct tlan_list));
+-	priv->dma_storage = pci_alloc_consistent(priv->pci_dev,
+-						 dma_size,
+-						 &priv->dma_storage_dma);
++	priv->dma_storage = dma_alloc_coherent(&priv->pci_dev->dev, dma_size,
++					       &priv->dma_storage_dma, GFP_KERNEL);
+ 	priv->dma_size = dma_size;
+ 
+ 	if (priv->dma_storage == NULL) {
+@@ -1069,9 +1067,9 @@ static netdev_tx_t tlan_start_tx(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	tail_list->forward = 0;
+ 
+-	tail_list->buffer[0].address = pci_map_single(priv->pci_dev,
++	tail_list->buffer[0].address = dma_map_single(&priv->pci_dev->dev,
+ 						      skb->data, txlen,
+-						      PCI_DMA_TODEVICE);
++						      DMA_TO_DEVICE);
+ 	tlan_store_skb(tail_list, skb);
+ 
+ 	tail_list->frame_size = (u16) txlen;
+@@ -1365,10 +1363,10 @@ static u32 tlan_handle_tx_eof(struct net_device *dev, u16 host_int)
+ 		struct sk_buff *skb = tlan_get_skb(head_list);
+ 
+ 		ack++;
+-		pci_unmap_single(priv->pci_dev, head_list->buffer[0].address,
+-				 max(skb->len,
+-				     (unsigned int)TLAN_MIN_FRAME_SIZE),
+-				 PCI_DMA_TODEVICE);
++		dma_unmap_single(&priv->pci_dev->dev,
++				 head_list->buffer[0].address,
++				 max(skb->len, (unsigned int)TLAN_MIN_FRAME_SIZE),
++				 DMA_TO_DEVICE);
+ 		dev_kfree_skb_any(skb);
+ 		head_list->buffer[8].address = 0;
+ 		head_list->buffer[9].address = 0;
+@@ -1511,8 +1509,8 @@ static u32 tlan_handle_rx_eof(struct net_device *dev, u16 host_int)
+ 			goto drop_and_reuse;
+ 
+ 		skb = tlan_get_skb(head_list);
+-		pci_unmap_single(priv->pci_dev, frame_dma,
+-				 TLAN_MAX_FRAME_SIZE, PCI_DMA_FROMDEVICE);
++		dma_unmap_single(&priv->pci_dev->dev, frame_dma,
++				 TLAN_MAX_FRAME_SIZE, DMA_FROM_DEVICE);
+ 		skb_put(skb, frame_size);
+ 
+ 		dev->stats.rx_bytes += frame_size;
+@@ -1521,8 +1519,8 @@ static u32 tlan_handle_rx_eof(struct net_device *dev, u16 host_int)
+ 		netif_rx(skb);
+ 
+ 		head_list->buffer[0].address =
+-			pci_map_single(priv->pci_dev, new_skb->data,
+-				       TLAN_MAX_FRAME_SIZE, PCI_DMA_FROMDEVICE);
++			dma_map_single(&priv->pci_dev->dev, new_skb->data,
++				       TLAN_MAX_FRAME_SIZE, DMA_FROM_DEVICE);
+ 
+ 		tlan_store_skb(head_list, new_skb);
+ drop_and_reuse:
+@@ -1923,10 +1921,10 @@ static void tlan_reset_lists(struct net_device *dev)
+ 		if (!skb)
+ 			break;
+ 
+-		list->buffer[0].address = pci_map_single(priv->pci_dev,
++		list->buffer[0].address = dma_map_single(&priv->pci_dev->dev,
+ 							 skb->data,
+ 							 TLAN_MAX_FRAME_SIZE,
+-							 PCI_DMA_FROMDEVICE);
++							 DMA_FROM_DEVICE);
+ 		tlan_store_skb(list, skb);
+ 		list->buffer[1].count = 0;
+ 		list->buffer[1].address = 0;
+@@ -1954,12 +1952,10 @@ static void tlan_free_lists(struct net_device *dev)
+ 		list = priv->tx_list + i;
+ 		skb = tlan_get_skb(list);
+ 		if (skb) {
+-			pci_unmap_single(
+-				priv->pci_dev,
+-				list->buffer[0].address,
+-				max(skb->len,
+-				    (unsigned int)TLAN_MIN_FRAME_SIZE),
+-				PCI_DMA_TODEVICE);
++			dma_unmap_single(&priv->pci_dev->dev,
++					 list->buffer[0].address,
++					 max(skb->len, (unsigned int)TLAN_MIN_FRAME_SIZE),
++					 DMA_TO_DEVICE);
+ 			dev_kfree_skb_any(skb);
+ 			list->buffer[8].address = 0;
+ 			list->buffer[9].address = 0;
+@@ -1970,10 +1966,9 @@ static void tlan_free_lists(struct net_device *dev)
+ 		list = priv->rx_list + i;
+ 		skb = tlan_get_skb(list);
+ 		if (skb) {
+-			pci_unmap_single(priv->pci_dev,
++			dma_unmap_single(&priv->pci_dev->dev,
+ 					 list->buffer[0].address,
+-					 TLAN_MAX_FRAME_SIZE,
+-					 PCI_DMA_FROMDEVICE);
++					 TLAN_MAX_FRAME_SIZE, DMA_FROM_DEVICE);
+ 			dev_kfree_skb_any(skb);
+ 			list->buffer[8].address = 0;
+ 			list->buffer[9].address = 0;
 -- 
 2.25.1
 
