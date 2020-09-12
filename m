@@ -2,197 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B4AB267890
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 09:35:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CA4267892
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 09:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725814AbgILHf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 12 Sep 2020 03:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42526 "EHLO
+        id S1725839AbgILHgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 12 Sep 2020 03:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725799AbgILHfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 03:35:52 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F4B4C061573;
-        Sat, 12 Sep 2020 00:35:52 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id o8so16470295ejb.10;
-        Sat, 12 Sep 2020 00:35:51 -0700 (PDT)
+        with ESMTP id S1725799AbgILHgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 12 Sep 2020 03:36:03 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78AFC061573;
+        Sat, 12 Sep 2020 00:36:03 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id d6so8887169pfn.9;
+        Sat, 12 Sep 2020 00:36:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vVstsRYbims6zfnRcAlwpo0Z6QMKaiNdgin+5Ie4n4k=;
-        b=dY3dSzOzACsDcZDNlpPWbl+liJT10/1tPgPURqSyCcS0D3LNyIFcxHz9TXshlBDGO0
-         kJd/PR+XqIWK990HOt8BMlkCowzUQgY6d7zZeXaK5ilL+9h2bvuiLrpMOqLqO4YXBcli
-         Q0hOhEsPqFJO0rrz56ahFaiPWe72FE1qW+TzUD38NHrxaV6v/bDuSsDout2TEUiSTwxG
-         3s3YS0T7QhVDfj/LL9IFbqHoZjjejGJ/LgvC2PH5T/+VwnPAt3vkM86KdqmSk+qD0K/w
-         mFtA12/42uDF8K7IpkHwnB6UmpOFTgSSqu2iLvqgdc2eEsgFbYl6NiGFCcTKV4D+QVwL
-         Dirg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=yYff2w6zlApOTzpZkutXOi9traPBbtwOxlc9tQk8BEM=;
+        b=ZyEAXGRTCfDJ2C44NKeQntFzg/c6PLNgJoZkMV6VfQf9VbcqxSrEyq97A9n2lGEZn9
+         eGVQoslijGaDhRrgoQ0jv1L4ZRyQG4AXI1gdCLlthZmD0ehqrD9NnP0IOTgZt9/m3oua
+         DrgWNWLi0jy1hiddHKq1QcjPRmkMCtUttwKb88zLn5wE9barXBjq7Yk2i0BtNErqBQLC
+         q+X2CNSmvGqAcYvLakhnzI/RXdKM08vyaegXdglMfTQ482cg1BKfeFJHOqrNXTtf30pY
+         G2Ah4X46Yrelys300zVEkzmn6TiTilwP/H1rlHOaVnzvhXQ2BHH+GS5Pfpqo79pykue8
+         xOdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vVstsRYbims6zfnRcAlwpo0Z6QMKaiNdgin+5Ie4n4k=;
-        b=cWB8ys4xsmdM4+7OtZtLtED4dDwC4TBqDJ7tG2UiuW0BJQo+LRfF4msUTZM3aQn3zF
-         Lf/zeDj0KxNbNm53su0j4XUZWpdKd/Z8LAM21rtaJw+cnEoiKu3o9XVHvYxf5zGZBuwZ
-         kXPZyt2p9VJqRiCfmhww/ExSB2GVF1aoKPwzsXyYX8y/dhVU18gAjWoMgbN1BmotG3FF
-         V4obLflGLfv1LelJfcImakoSWhCz+wmS9a/cswbW9/symqtWPUd+5MY1aK1E3L+TRsZm
-         usXu/ynK+WHbfw+xgtmDhJyqLIT7UdiNrg2FW3K/gdL04r7iWk7NTIPOudW/J12cL7q5
-         7Tgg==
-X-Gm-Message-State: AOAM5304hTnQADdplgWsXcjx63FNOTH48q6BE3lEMXsfE3pEt7savWUF
-        hFS3kS0kkQiyLTrMHjXWLXM=
-X-Google-Smtp-Source: ABdhPJzUpWOhLQaKid2nvpj0/oWczKJxvIQpFfMcNdx/R2LzwSv29sfxYtfYFzCWna2DF+w0/fC5Ew==
-X-Received: by 2002:a17:906:9443:: with SMTP id z3mr5458008ejx.156.1599896150640;
-        Sat, 12 Sep 2020 00:35:50 -0700 (PDT)
-Received: from skbuf ([188.25.217.212])
-        by smtp.gmail.com with ESMTPSA id bf25sm3901096edb.95.2020.09.12.00.35.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Sep 2020 00:35:50 -0700 (PDT)
-Date:   Sat, 12 Sep 2020 10:35:48 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH 2/2] ptp_qoriq: support FIPER3
-Message-ID: <20200912073548.c3yb7fe7mhi6cews@skbuf>
-References: <20200912033006.20771-1-yangbo.lu@nxp.com>
- <20200912033006.20771-3-yangbo.lu@nxp.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=yYff2w6zlApOTzpZkutXOi9traPBbtwOxlc9tQk8BEM=;
+        b=licDfG0+ufqtgwkCkSxFYVtdKS7aUoDJMBjU0UZE8i5gxKZ53Ssogog09SnAQhBOZS
+         MAQcIEs+l7p2gwd1kEpauFT/Q0/9t+F0BxaXmZwcFG2iX0JD4pO2S1/FfueLjK5mjhH9
+         Axwn/t6WWP77hX1NDpy/Km7JTzWdiWsyIcUgms+uNqJ0kfuOuh54E4848onelXM9OecD
+         aJepIIsEiR6KQjKEnKGa5maDppMcptdZkBLjERBJHYuHYjTZqRoRhlO/sp1NLw2hS3yy
+         S2fH6+SNfIMdAFvsJJZf1eY2VR00fwjUJP+bTWW2wr9oqMlgADpQlwnSQvJZH5XAQ7K7
+         ZVfw==
+X-Gm-Message-State: AOAM531Nvjn6zqw6gu1013X5APgoi0nQWXI17KJFzVgK+76Hg/zZ/vkZ
+        e3rrsh37eQshqd7M9Gfp7Do=
+X-Google-Smtp-Source: ABdhPJxu8IcukOIJI1s0BZL8A6kNS9HU/8+niTwFoTZlQ/bxh93pdbXAW7OLkjrea/0pcLPu4TC0Fw==
+X-Received: by 2002:a63:205d:: with SMTP id r29mr4090921pgm.278.1599896163066;
+        Sat, 12 Sep 2020 00:36:03 -0700 (PDT)
+Received: from [192.168.0.104] ([49.207.202.95])
+        by smtp.gmail.com with ESMTPSA id y25sm4252568pfn.71.2020.09.12.00.35.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 12 Sep 2020 00:36:02 -0700 (PDT)
+Subject: Re: KASAN: use-after-free Read in hci_get_auth_info
+To:     Dmitry Vyukov <dvyukov@google.com>,
+        syzbot <syzbot+13010b6a10bbd82cc79c@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+References: <000000000000e8fb4b05ac58372e@google.com>
+ <CACT4Y+Z2Sz8kHxaQNuupfck7X0rUtr4ghDty9ahDTUm2H41Mwg@mail.gmail.com>
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Message-ID: <f3724ef6-7c89-5c24-685e-00327046e144@gmail.com>
+Date:   Sat, 12 Sep 2020 13:05:56 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200912033006.20771-3-yangbo.lu@nxp.com>
+In-Reply-To: <CACT4Y+Z2Sz8kHxaQNuupfck7X0rUtr4ghDty9ahDTUm2H41Mwg@mail.gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yangbo,
 
-On Sat, Sep 12, 2020 at 11:30:06AM +0800, Yangbo Lu wrote:
-> The FIPER3 (fixed interval period pulse generator) is supported on
-> DPAA2 and ENETC network controller hardware. This patch is to support
-> it in ptp_qoriq driver.
-> 
-> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-> ---
->  drivers/ptp/ptp_qoriq.c       | 23 ++++++++++++++++++++++-
->  include/linux/fsl/ptp_qoriq.h |  3 +++
->  2 files changed, 25 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/ptp/ptp_qoriq.c b/drivers/ptp/ptp_qoriq.c
-> index c09c16be..68beb1b 100644
-> --- a/drivers/ptp/ptp_qoriq.c
-> +++ b/drivers/ptp/ptp_qoriq.c
-> @@ -72,6 +72,10 @@ static void set_fipers(struct ptp_qoriq *ptp_qoriq)
->  	set_alarm(ptp_qoriq);
->  	ptp_qoriq->write(&regs->fiper_regs->tmr_fiper1, ptp_qoriq->tmr_fiper1);
->  	ptp_qoriq->write(&regs->fiper_regs->tmr_fiper2, ptp_qoriq->tmr_fiper2);
-> +
-> +	if (ptp_qoriq->fiper3_support)
-> +		ptp_qoriq->write(&regs->fiper_regs->tmr_fiper3,
-> +				 ptp_qoriq->tmr_fiper3);
->  }
->  
->  int extts_clean_up(struct ptp_qoriq *ptp_qoriq, int index, bool update_event)
-> @@ -366,6 +370,7 @@ static u32 ptp_qoriq_nominal_freq(u32 clk_src)
->   *   "fsl,tmr-add"
->   *   "fsl,tmr-fiper1"
->   *   "fsl,tmr-fiper2"
-> + *   "fsl,tmr-fiper3" (required only for DPAA2 and ENETC hardware)
->   *   "fsl,max-adj"
->   *
->   * Return 0 if success
-> @@ -412,6 +417,7 @@ static int ptp_qoriq_auto_config(struct ptp_qoriq *ptp_qoriq,
->  	ptp_qoriq->tmr_add = freq_comp;
->  	ptp_qoriq->tmr_fiper1 = DEFAULT_FIPER1_PERIOD - ptp_qoriq->tclk_period;
->  	ptp_qoriq->tmr_fiper2 = DEFAULT_FIPER2_PERIOD - ptp_qoriq->tclk_period;
-> +	ptp_qoriq->tmr_fiper3 = DEFAULT_FIPER3_PERIOD - ptp_qoriq->tclk_period;
->  
->  	/* max_adj = 1000000000 * (freq_ratio - 1.0) - 1
->  	 * freq_ratio = reference_clock_freq / nominal_freq
-> @@ -446,6 +452,13 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
->  	else
->  		ptp_qoriq->extts_fifo_support = false;
->  
-> +	if (of_device_is_compatible(node, "fsl,dpaa2-ptp") ||
-> +	    of_device_is_compatible(node, "fsl,enetc-ptp")) {
-> +		ptp_qoriq->fiper3_support = true;
-> +	} else {
-> +		ptp_qoriq->fiper3_support = false;
-> +	}
+On 11-09-2020 15:20, Dmitry Vyukov wrote:
+> On Sat, Aug 8, 2020 at 8:56 AM syzbot
+> <syzbot+13010b6a10bbd82cc79c@syzkaller.appspotmail.com> wrote:
+>> Hello,
+>>
+>> syzbot found the following issue on:
+>>
+>> HEAD commit:    d6efb3ac Merge tag 'tty-5.9-rc1' of git://git.kernel.org/p..
+>> git tree:       upstream
+>> console output: https://syzkaller.appspot.com/x/log.txt?x=14ad2134900000
+>> kernel config:  https://syzkaller.appspot.com/x/.config?x=61ec43e42a83feae
+>> dashboard link: https://syzkaller.appspot.com/bug?extid=13010b6a10bbd82cc79c
+>> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+>> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12fd9bc6900000
+>>
+>> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+>> Reported-by: syzbot+13010b6a10bbd82cc79c@syzkaller.appspotmail.com
+> +Anant who had some questions re this issue.
 
-Since struct ptp_qoriq is kzalloc()-ed, maybe you can skip the "else"
-branch?
+This bug doesn't seem to be getting triggered anymore for the appropriate kernel(s).
+However, given that neither the cause bisection, nor the fix bisection seem to have
+suceeded, it makes it all the more difficult to zero down on the commit that might've
+fixed this bug. Would it be okay to consider this a one-off, or invalid and close it off?
+(unless someone can point out the commit that fixed this, of course).
 
-> +
->  	if (of_property_read_u32(node,
->  				 "fsl,tclk-period", &ptp_qoriq->tclk_period) ||
->  	    of_property_read_u32(node,
-> @@ -457,7 +470,10 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
->  	    of_property_read_u32(node,
->  				 "fsl,tmr-fiper2", &ptp_qoriq->tmr_fiper2) ||
->  	    of_property_read_u32(node,
-> -				 "fsl,max-adj", &ptp_qoriq->caps.max_adj)) {
-> +				 "fsl,max-adj", &ptp_qoriq->caps.max_adj) ||
-> +	    (of_property_read_u32(node,
-> +				 "fsl,tmr-fiper3", &ptp_qoriq->tmr_fiper3) &&
-> +	     ptp_qoriq->fiper3_support)) {
+Thanks for CCing me onto this, Dmitry.
 
-Could you check for the "ptp_qoriq->fiper3_support" boolean first, so
-that a useless device tree property lookup is not performed?
+Thanks,
+Anant
 
->  		pr_warn("device tree node missing required elements, try automatic configuration\n");
->  
->  		if (ptp_qoriq_auto_config(ptp_qoriq, node))
-> @@ -502,6 +518,11 @@ int ptp_qoriq_init(struct ptp_qoriq *ptp_qoriq, void __iomem *base,
->  	ptp_qoriq->write(&regs->ctrl_regs->tmr_prsc, ptp_qoriq->tmr_prsc);
->  	ptp_qoriq->write(&regs->fiper_regs->tmr_fiper1, ptp_qoriq->tmr_fiper1);
->  	ptp_qoriq->write(&regs->fiper_regs->tmr_fiper2, ptp_qoriq->tmr_fiper2);
-> +
-> +	if (ptp_qoriq->fiper3_support)
-> +		ptp_qoriq->write(&regs->fiper_regs->tmr_fiper3,
-> +				 ptp_qoriq->tmr_fiper3);
-> +
->  	set_alarm(ptp_qoriq);
->  	ptp_qoriq->write(&regs->ctrl_regs->tmr_ctrl,
->  			 tmr_ctrl|FIPERST|RTPE|TE|FRD);
-> diff --git a/include/linux/fsl/ptp_qoriq.h b/include/linux/fsl/ptp_qoriq.h
-> index 884b8f8..01acebe 100644
-> --- a/include/linux/fsl/ptp_qoriq.h
-> +++ b/include/linux/fsl/ptp_qoriq.h
-> @@ -136,6 +136,7 @@ struct ptp_qoriq_registers {
->  #define DEFAULT_TMR_PRSC	2
->  #define DEFAULT_FIPER1_PERIOD	1000000000
->  #define DEFAULT_FIPER2_PERIOD	1000000000
-> +#define DEFAULT_FIPER3_PERIOD	1000000000
->  
->  struct ptp_qoriq {
->  	void __iomem *base;
-> @@ -147,6 +148,7 @@ struct ptp_qoriq {
->  	struct dentry *debugfs_root;
->  	struct device *dev;
->  	bool extts_fifo_support;
-> +	bool fiper3_support;
->  	int irq;
->  	int phc_index;
->  	u32 tclk_period;  /* nanoseconds */
-> @@ -155,6 +157,7 @@ struct ptp_qoriq {
->  	u32 cksel;
->  	u32 tmr_fiper1;
->  	u32 tmr_fiper2;
-> +	u32 tmr_fiper3;
->  	u32 (*read)(unsigned __iomem *addr);
->  	void (*write)(unsigned __iomem *addr, u32 val);
->  };
-> -- 
-> 2.7.4
-> 
 
-With that,
-
-Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
-Thanks for doing this!
--Vladimir
+>
+>> ==================================================================
+>> BUG: KASAN: use-after-free in __mutex_waiter_is_first kernel/locking/mutex.c:200 [inline]
+>> BUG: KASAN: use-after-free in __mutex_lock_common+0x12cd/0x2fc0 kernel/locking/mutex.c:1040
+>> Read of size 8 at addr ffff88808e668060 by task syz-executor.4/19584
+>>
+>> CPU: 0 PID: 19584 Comm: syz-executor.4 Not tainted 5.8.0-syzkaller #0
+>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>> Call Trace:
+>>  __dump_stack lib/dump_stack.c:77 [inline]
+>>  dump_stack+0x1f0/0x31e lib/dump_stack.c:118
+>>  print_address_description+0x66/0x5a0 mm/kasan/report.c:383
+>>  __kasan_report mm/kasan/report.c:513 [inline]
+>>  kasan_report+0x132/0x1d0 mm/kasan/report.c:530
+>>  __mutex_waiter_is_first kernel/locking/mutex.c:200 [inline]
+>>  __mutex_lock_common+0x12cd/0x2fc0 kernel/locking/mutex.c:1040
+>>  __mutex_lock kernel/locking/mutex.c:1103 [inline]
+>>  mutex_lock_nested+0x1a/0x20 kernel/locking/mutex.c:1118
+>>  hci_get_auth_info+0x69/0x3a0 net/bluetooth/hci_conn.c:1689
+>>  hci_sock_bound_ioctl net/bluetooth/hci_sock.c:957 [inline]
+>>  hci_sock_ioctl+0x5ae/0x750 net/bluetooth/hci_sock.c:1060
+>>  sock_do_ioctl+0x7b/0x260 net/socket.c:1047
+>>  sock_ioctl+0x4aa/0x690 net/socket.c:1198
+>>  vfs_ioctl fs/ioctl.c:48 [inline]
+>>  ksys_ioctl fs/ioctl.c:753 [inline]
+>>  __do_sys_ioctl fs/ioctl.c:762 [inline]
+>>  __se_sys_ioctl+0xf9/0x160 fs/ioctl.c:760
+>>  do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+>>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>> RIP: 0033:0x45ccd9
+>> Code: 2d b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb b5 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+>> RSP: 002b:00007f113a564c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+>> RAX: ffffffffffffffda RBX: 000000000001d300 RCX: 000000000045ccd9
+>> RDX: 0000000020000000 RSI: 00000000800448d7 RDI: 0000000000000005
+>> RBP: 000000000078bf40 R08: 0000000000000000 R09: 0000000000000000
+>> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000078bf0c
+>> R13: 00007ffd62ea93af R14: 00007f113a5659c0 R15: 000000000078bf0c
+>>
+>> Allocated by task 6822:
+>>  save_stack mm/kasan/common.c:48 [inline]
+>>  set_track mm/kasan/common.c:56 [inline]
+>>  __kasan_kmalloc+0x103/0x140 mm/kasan/common.c:494
+>>  kmem_cache_alloc_trace+0x234/0x300 mm/slab.c:3551
+>>  kmalloc include/linux/slab.h:555 [inline]
+>>  kzalloc include/linux/slab.h:669 [inline]
+>>  hci_alloc_dev+0x4c/0x1aa0 net/bluetooth/hci_core.c:3543
+>>  __vhci_create_device drivers/bluetooth/hci_vhci.c:99 [inline]
+>>  vhci_create_device+0x113/0x520 drivers/bluetooth/hci_vhci.c:148
+>>  process_one_work+0x789/0xfc0 kernel/workqueue.c:2269
+>>  worker_thread+0xaa4/0x1460 kernel/workqueue.c:2415
+>>  kthread+0x37e/0x3a0 drivers/block/aoe/aoecmd.c:1234
+>>  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+>>
+>> Freed by task 9965:
+>>  save_stack mm/kasan/common.c:48 [inline]
+>>  set_track mm/kasan/common.c:56 [inline]
+>>  kasan_set_free_info mm/kasan/common.c:316 [inline]
+>>  __kasan_slab_free+0x114/0x170 mm/kasan/common.c:455
+>>  __cache_free mm/slab.c:3426 [inline]
+>>  kfree+0x10a/0x220 mm/slab.c:3757
+>>  bt_host_release+0x18/0x20 net/bluetooth/hci_sysfs.c:86
+>>  device_release+0x70/0x1a0 drivers/base/core.c:1796
+>>  kobject_cleanup lib/kobject.c:704 [inline]
+>>  kobject_release lib/kobject.c:735 [inline]
+>>  kref_put include/linux/kref.h:65 [inline]
+>>  kobject_put+0x1a0/0x2c0 lib/kobject.c:752
+>>  vhci_release+0x7b/0xc0 drivers/bluetooth/hci_vhci.c:341
+>>  __fput+0x2f0/0x750 fs/file_table.c:281
+>>  task_work_run+0x137/0x1c0 kernel/task_work.c:135
+>>  exit_task_work include/linux/task_work.h:25 [inline]
+>>  do_exit+0x5f3/0x1f20 kernel/exit.c:806
+>>  do_group_exit+0x161/0x2d0 kernel/exit.c:903
+>>  __do_sys_exit_group+0x13/0x20 kernel/exit.c:914
+>>  __ia32_sys_exit_group+0x0/0x40 kernel/exit.c:912
+>>  __x64_sys_exit_group+0x37/0x40 kernel/exit.c:912
+>>  do_syscall_64+0x31/0x70 arch/x86/entry/common.c:46
+>>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>>
+>> The buggy address belongs to the object at ffff88808e668000
+>>  which belongs to the cache kmalloc-8k of size 8192
+>> The buggy address is located 96 bytes inside of
+>>  8192-byte region [ffff88808e668000, ffff88808e66a000)
+>> The buggy address belongs to the page:
+>> page:ffffea0002399a00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 head:ffffea0002399a00 order:2 compound_mapcount:0 compound_pincount:0
+>> flags: 0xfffe0000010200(slab|head)
+>> raw: 00fffe0000010200 ffffea000217a208 ffffea0001e6c008 ffff8880aa4021c0
+>> raw: 0000000000000000 ffff88808e668000 0000000100000001 0000000000000000
+>> page dumped because: kasan: bad access detected
+>>
+>> Memory state around the buggy address:
+>>  ffff88808e667f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>>  ffff88808e667f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>>> ffff88808e668000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>>                                                        ^
+>>  ffff88808e668080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>>  ffff88808e668100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>> ==================================================================
+>>
+>>
+>> ---
+>> This report is generated by a bot. It may contain errors.
+>> See https://goo.gl/tpsmEJ for more information about syzbot.
+>> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>>
+>> syzbot will keep track of this issue. See:
+>> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+>> syzbot can test patches for this issue, for details see:
+>> https://goo.gl/tpsmEJ#testing-patches
+>>
+>> --
+>> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+>> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+>> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/000000000000e8fb4b05ac58372e%40google.com.
