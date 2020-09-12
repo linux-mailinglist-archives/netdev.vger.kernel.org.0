@@ -2,118 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB882676DF
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 02:42:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 117B72676E0
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 02:44:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725902AbgILAmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 20:42:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56790 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725882AbgILAms (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 11 Sep 2020 20:42:48 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CEEF5221E5;
-        Sat, 12 Sep 2020 00:42:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599871368;
-        bh=dOtlb059Sx8hef6DmMJdVZp0NMJjwulANvHSqN9Bs/8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gkKDq+9a/jPbL4J2gDHDLvBVb5hEp85ojqvwIwMJgAKtR6sd63xkEAB5nSr/3G6Gd
-         3G3pZUDlpYm2nO1au30aJDvGtCfb8P/NmFdT3iHj6rXz6y7Q78YesGtk+JbJp+wWit
-         SLnAPOizLN0wuBPFZPJq3lCT90s5uC0koasJ3Az0=
-Date:   Fri, 11 Sep 2020 17:42:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, mkubecek@suse.cz,
-        michael.chan@broadcom.com, tariqt@nvidia.com, saeedm@nvidia.com,
-        alexander.duyck@gmail.com, andrew@lunn.ch
-Subject: Re: [PATCH net-next v2 0/8] ethtool: add pause frame stats
-Message-ID: <20200911174246.76466eec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200912001542.fqn2hcp35xkwqoun@skbuf>
-References: <20200911232853.1072362-1-kuba@kernel.org>
-        <20200911234932.ncrmapwpqjnphdv5@skbuf>
-        <20200911170724.4b1619d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200912001542.fqn2hcp35xkwqoun@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1725941AbgILAoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 20:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725871AbgILAoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 20:44:04 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E86C061573;
+        Fri, 11 Sep 2020 17:44:03 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 515A112354CAB;
+        Fri, 11 Sep 2020 17:27:14 -0700 (PDT)
+Date:   Fri, 11 Sep 2020 17:44:00 -0700 (PDT)
+Message-Id: <20200911.174400.306709791543819081.davem@davemloft.net>
+To:     geert@linux-m68k.org
+Cc:     hkallweit1@gmail.com, f.fainelli@gmail.com, andrew@lunn.ch,
+        kuba@kernel.org, gaku.inami.xh@renesas.com,
+        yoshihiro.shimoda.uh@renesas.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] Revert "net: linkwatch: add check for netdevice being
+ present to linkwatch_do_dev"
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <CAMuHMdUd4VtpOGr26KAmF22N32obNqQzq3tbcPxLJ7mxUtSyrg@mail.gmail.com>
+References: <20200901150237.15302-1-geert+renesas@glider.be>
+        <20200910.122033.2205909020498878557.davem@davemloft.net>
+        <CAMuHMdUd4VtpOGr26KAmF22N32obNqQzq3tbcPxLJ7mxUtSyrg@mail.gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Fri, 11 Sep 2020 17:27:14 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 12 Sep 2020 03:15:42 +0300 Vladimir Oltean wrote:
-> On Fri, Sep 11, 2020 at 05:07:24PM -0700, Jakub Kicinski wrote:
-> > On Sat, 12 Sep 2020 02:49:32 +0300 Vladimir Oltean wrote:  
-> > > On Fri, Sep 11, 2020 at 04:28:45PM -0700, Jakub Kicinski wrote:  
-> > > > Hi!
-> > > >
-> > > > This is the first (small) series which exposes some stats via
-> > > > the corresponding ethtool interface. Here (thanks to the
-> > > > excitability of netlink) we expose pause frame stats via
-> > > > the same interfaces as ethtool -a / -A.
-> > > >
-> > > > In particular the following stats from the standard:
-> > > >  - 30.3.4.2 aPAUSEMACCtrlFramesTransmitted
-> > > >  - 30.3.4.3 aPAUSEMACCtrlFramesReceived
-> > > >
-> > > > 4 real drivers are converted, hopefully the semantics match
-> > > > the standard.
-> > > >
-> > > > v2:
-> > > >  - netdevsim: add missing static
-> > > >  - bnxt: fix sparse warning
-> > > >  - mlx5: address Saeed's comments  
-> > >
-> > > DSA used to override the "ethtool -S" callback of the host port, and
-> > > append its own CPU port counters to that.
-> > >
-> > > So you could actually see pause frames transmitted by the host port and
-> > > received by the switch's CPU port:
-> > >
-> > > # ethtool -S eno2 | grep pause
-> > > MAC rx valid pause frames: 1339603152
-> > > MAC tx valid pause frames: 0
-> > > p04_rx_pause: 0
-> > > p04_tx_pause: 1339603152
-> > >
-> > > With this new command what's the plan?  
-> >
-> > Sounds like something for DSA folks to decide :)
-> >
-> > What does ethtool -A $cpu_port control?
-> > The stats should match what the interface controls.  
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 11 Sep 2020 08:32:55 +0200
+
+> Hi David,
 > 
-> Error: $cpu_port: undefined variable.
-> With DSA switches, the CPU port is a physical Ethernet port mostly like
-> any other, except that its orientation is inwards towards the system
-> rather than outwards. So there is no network interface registered for
-> it, since I/O from the network stack would have to literally loop back
-> into the system to fulfill the request of sending a packet to that
-> interface.
+> On Thu, Sep 10, 2020 at 9:20 PM David Miller <davem@davemloft.net> wrote:
+>> From: Geert Uytterhoeven <geert+renesas@glider.be>
+>> Date: Tue,  1 Sep 2020 17:02:37 +0200
+>>
+>> > This reverts commit 124eee3f6955f7aa19b9e6ff5c9b6d37cb3d1e2c.
+>> >
+>> > Inami-san reported that this commit breaks bridge support in a Xen
+>> > environment, and that reverting it fixes this.
+>> >
+>> > During system resume, bridge ports are no longer enabled, as that relies
+>> > on the receipt of the NETDEV_CHANGE notification.  This notification is
+>> > not sent, as netdev_state_change() is no longer called.
+>> >
+>> > Note that the condition this commit intended to fix never existed
+>> > upstream, as the patch triggering it and referenced in the commit was
+>> > never applied upstream.  Hence I can confirm s2ram on r8a73a4/ape6evm
+>> > and sh73a0/kzm9g works fine before/after this revert.
+>> >
+>> > Reported-by Gaku Inami <gaku.inami.xh@renesas.com>
+>> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>>
+>> Maybe you cannot reproduce it, but the problem is there and it still
+>> looks very real to me.
+>>
+>> netdev_state_change() does two things:
+>>
+>> 1) Emit the NETDEV_CHANGE notification
+>>
+>> 2) Emit an rtmsg_ifinfo() netlink message, which in turn tries to access
+>>    the device statistics via ->ndo_get_stats*().
+>>
+>> It is absolutely wrong to do #2 when netif_device_present() is false.
+>>
+>> So I cannot apply this patch as-is, sorry.
+> 
+> Thanks a lot for looking into this!
+> 
+> But doing #1 is still safe?  That is the part that calls into the bridge
+> code.  So would moving the netif_device_present() check from
+> linkwatch_do_dev() to netdev_state_change(), to prevent doing #2, be
+> acceptable?
 
-Sorry, perhaps I should have said $MAC, but that kind of in itself
-answers the question.
+I have a better question.  Why is a software device like the bridge,
+that wants to effectively exist and still receive netdev event
+notifications, marking itself as not present?
 
-> The ethtool -S framework was nice because you could append to the
-> counters of the master interface while not losing them.
-> As for "ethtool -A", those parameters are fixed as part of the
-> fixed-link device tree node corresponding to the CPU port.
-
-I think I'm missing the problem you're trying to describe.
-Are you making a general comment / argument on ethtool stats?
-
-Pause stats are symmetrical - as can be seen in your quote
-what's RX for the CPU is TX for the switch, and vice versa.
-
-Since ethtool -A $cpu_mac controls whether CPU netdev generates
-and accepts pause frames, correspondingly the direction and meaning
-of pause statistics on that interface is well defined.
-
-You can still append your custom CPU port stats to ethtool -S or
-debugfs or whatnot, but those are only useful for validating that 
-the configuration of the CPU port is not completely broken. Otherwise
-the counters are symmetrical. A day-to-day user of the device doesn't
-need to see both of them.
+That's seems like the real bug here.
