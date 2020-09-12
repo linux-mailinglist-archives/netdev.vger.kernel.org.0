@@ -2,96 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1020A267732
-	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 04:18:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EC6226774A
+	for <lists+netdev@lfdr.de>; Sat, 12 Sep 2020 04:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725814AbgILCSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 11 Sep 2020 22:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
+        id S1725775AbgILCyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 11 Sep 2020 22:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725765AbgILCSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 22:18:16 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0D4C061573;
-        Fri, 11 Sep 2020 19:18:16 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id l126so8602567pfd.5;
-        Fri, 11 Sep 2020 19:18:16 -0700 (PDT)
+        with ESMTP id S1725765AbgILCyP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 11 Sep 2020 22:54:15 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6C9CC061573
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 19:54:14 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id o68so8766995pfg.2
+        for <netdev@vger.kernel.org>; Fri, 11 Sep 2020 19:54:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z5Uuz/LFVVjLTh/BV+QO4gT1Ug22z90Ki0ePNknJqKs=;
-        b=XBH6OOrgwhkKMuzCuHd5azknLGUn/13zxIcpw4H0hkdo8eBp0CJQWOWulO5FChmogm
-         M6FReqGG+uutVyTTIvTPnA3qnbcD5slhb2VNBS0r/CXSAEEhkpqx017tj4QFXpV2Dpd3
-         sj3qOMtt89swe9vQ1xD8XuOlimbD1tbrF+hcpzgSfDoawt/diU8LAI/g5Tw3E7tMdIlX
-         Yhh6c6lmgVDZ5/0v3k240H0Ime3wPUoOTPfToVEtFon6nd28QO2NzO+KcfI666Pl5N1d
-         GNCwOPAOa91Iegg6PARIssNta5u5CXZM1FyDUR3Fr/g5R3GysYvOCf3akCNu4u8aiG8V
-         ZJVw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xIr708w0KD5zJj589d3pQ4oHOQv50ZTCXJl7YMqXzmE=;
+        b=J/6i1HRX56eroEcWOC53CJDSoYxYKNFAyR/vTBUV5TPjhmdsqeaMgYe9FgDtBDxwXC
+         5LkSOggV7x2r5R7j3DaTZ/k4aa8B5+cO/T/NnZKj18+kY3KFBNLjypgodHBwpMnxodrH
+         TMJp+r6ID/Q6JybwBKHHl2QKhyU7TMQstuxZQaCPne6lXb7qOMC08pu3zBmw2LQpUsd9
+         srBnj1WsVdAomIAAZxZLWDSDWLEQS/NtnHG6qrAIeRhSNMHqLfO2IdNXselVhznVGC/z
+         YLql8StG9mhiBIlOBncPxXgotLqNBiGuRduIlyPAned92vDw7M7nh+VwMHor8YLslL55
+         +cbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=z5Uuz/LFVVjLTh/BV+QO4gT1Ug22z90Ki0ePNknJqKs=;
-        b=uB0xKn6Sve2S6b5Q+oK5hDk6Comew0xoc1AxVaFjLFf+t1BHsZcR4gTqRQs7KRgkw4
-         i0J3/Z9JTt6QaWuNuWdj0E5yRvuNCiSUwVUhHhgperTsiXHU7hcmaOPsx6O1q92pVa96
-         /odLez0FuQpMDemNd0UQpDI2cT2XjbLraKZguli7urY3wQWmZqL7uS8lEVsPrUpYlNo0
-         179MXXdMYTM3MIq9XXDGwVQ8s0yAJXI4TWqCcXhR00AmtSI7nTLiyAzp31pvTnjRIBWU
-         LVsfiAmnUBKe8p4nMbPfa6BTFE3pNqZNhSwAPC1G4HgEJOXZnxGcS28AZRORUhpyeulk
-         VTjQ==
-X-Gm-Message-State: AOAM531LlAhrR6jbqx4KQ29KPglx3OPe2c9JjKx/g+bo0vsCRahnlgIR
-        EANicOnh0AGykvdsNJlEKrHIMsYQFMo=
-X-Google-Smtp-Source: ABdhPJw3QfgY0gYKPi50zw/T3NbWJwClKOqNSkNxYyRE3wxswRVL8iEM/lfmmfG1mhyUjwWxI8UrNg==
-X-Received: by 2002:a63:d115:: with SMTP id k21mr3603565pgg.272.1599877096046;
-        Fri, 11 Sep 2020 19:18:16 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:d0fe:61cf:2e8d:f96])
-        by smtp.gmail.com with ESMTPSA id d17sm3096687pgn.56.2020.09.11.19.18.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Sep 2020 19:18:15 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Xie He <xie.he.0141@gmail.com>, Martin Schiller <ms@dev.tdt.de>
-Subject: [PATCH net-next] drivers/net/wan/x25_asy: Remove an unnecessary x25_type_trans call
-Date:   Fri, 11 Sep 2020 19:18:07 -0700
-Message-Id: <20200912021807.365158-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=xIr708w0KD5zJj589d3pQ4oHOQv50ZTCXJl7YMqXzmE=;
+        b=OFcp9AsSEUI/vqvvZUb5/z444GkZPqNk8a3xLkGzCoUKTWGSXUbHSOtlYL7uald7pm
+         NsNsHtSg7vZFXYTT69BiodZxLyc7MbXNYk683XuI5i9/5MmikVvcumtNsw4tofn8c5aG
+         ABRfYEA5lbNpMxPeFo78MBuQjRCaSvGrDFbz7CUxaC8m7zX8KiL4uOz3x3J4+BQ4swFC
+         PK6Lihl3dIBHTabhLiqTQX/IX37uZX0NYnP+4F5V0lH5LxA6bbokm8UpVbJ940H5dpjD
+         Td8yVrVoQBHR2KMA06jz0VLwaJJfixaTmYThxzRR+ogaHvU7PVPRSJNqW2UXAs8s6nRs
+         G4tw==
+X-Gm-Message-State: AOAM533FsAmsxXs5s9xtXdRRV09gFpQ7eG+pq4aduehAhypgifE5Dg/Y
+        Gor3R33TT3UyinoRnrX6Ysg=
+X-Google-Smtp-Source: ABdhPJzBou5fQQRnVivuYR9xCyHm1R/7+0DJ5tuAn7F9wg32Su4fVN4aVebsRUu6NxwKW/Vs9W3Y9Q==
+X-Received: by 2002:a63:841:: with SMTP id 62mr3268935pgi.35.1599879254357;
+        Fri, 11 Sep 2020 19:54:14 -0700 (PDT)
+Received: from [10.230.30.107] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id j19sm3501252pfi.51.2020.09.11.19.54.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Sep 2020 19:54:13 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 0/8] ethtool: add pause frame stats
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, mkubecek@suse.cz,
+        michael.chan@broadcom.com, tariqt@nvidia.com, saeedm@nvidia.com,
+        alexander.duyck@gmail.com, andrew@lunn.ch
+References: <20200911232853.1072362-1-kuba@kernel.org>
+ <20200911234932.ncrmapwpqjnphdv5@skbuf>
+ <20200911170724.4b1619d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200912001542.fqn2hcp35xkwqoun@skbuf>
+ <20200911174246.76466eec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <08108451-6f6a-6e89-4d2d-52e064b1342c@gmail.com>
+Date:   Fri, 11 Sep 2020 19:54:11 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.2.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200911174246.76466eec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-x25_type_trans only needs to be called before we call netif_rx to pass
-the skb to upper layers.
 
-It does not need to be called before lapb_data_received. The LAPB module
-does not need the fields that are set by calling it.
 
-In the other two X.25 drivers - lapbether and hdlc_x25. x25_type_trans
-is only called before netif_rx and not before lapb_data_received.
+On 9/11/2020 5:42 PM, Jakub Kicinski wrote:
+> On Sat, 12 Sep 2020 03:15:42 +0300 Vladimir Oltean wrote:
+>> On Fri, Sep 11, 2020 at 05:07:24PM -0700, Jakub Kicinski wrote:
+>>> On Sat, 12 Sep 2020 02:49:32 +0300 Vladimir Oltean wrote:
+>>>> On Fri, Sep 11, 2020 at 04:28:45PM -0700, Jakub Kicinski wrote:
+>>>>> Hi!
+>>>>>
+>>>>> This is the first (small) series which exposes some stats via
+>>>>> the corresponding ethtool interface. Here (thanks to the
+>>>>> excitability of netlink) we expose pause frame stats via
+>>>>> the same interfaces as ethtool -a / -A.
+>>>>>
+>>>>> In particular the following stats from the standard:
+>>>>>   - 30.3.4.2 aPAUSEMACCtrlFramesTransmitted
+>>>>>   - 30.3.4.3 aPAUSEMACCtrlFramesReceived
+>>>>>
+>>>>> 4 real drivers are converted, hopefully the semantics match
+>>>>> the standard.
+>>>>>
+>>>>> v2:
+>>>>>   - netdevsim: add missing static
+>>>>>   - bnxt: fix sparse warning
+>>>>>   - mlx5: address Saeed's comments
+>>>>
+>>>> DSA used to override the "ethtool -S" callback of the host port, and
+>>>> append its own CPU port counters to that.
+>>>>
+>>>> So you could actually see pause frames transmitted by the host port and
+>>>> received by the switch's CPU port:
+>>>>
+>>>> # ethtool -S eno2 | grep pause
+>>>> MAC rx valid pause frames: 1339603152
+>>>> MAC tx valid pause frames: 0
+>>>> p04_rx_pause: 0
+>>>> p04_tx_pause: 1339603152
+>>>>
+>>>> With this new command what's the plan?
+>>>
+>>> Sounds like something for DSA folks to decide :)
+>>>
+>>> What does ethtool -A $cpu_port control?
+>>> The stats should match what the interface controls.
+>>
+>> Error: $cpu_port: undefined variable.
+>> With DSA switches, the CPU port is a physical Ethernet port mostly like
+>> any other, except that its orientation is inwards towards the system
+>> rather than outwards. So there is no network interface registered for
+>> it, since I/O from the network stack would have to literally loop back
+>> into the system to fulfill the request of sending a packet to that
+>> interface.
+> 
+> Sorry, perhaps I should have said $MAC, but that kind of in itself
+> answers the question.
+> 
+>> The ethtool -S framework was nice because you could append to the
+>> counters of the master interface while not losing them.
+>> As for "ethtool -A", those parameters are fixed as part of the
+>> fixed-link device tree node corresponding to the CPU port.
+> 
+> I think I'm missing the problem you're trying to describe.
+> Are you making a general comment / argument on ethtool stats?
+> 
+> Pause stats are symmetrical - as can be seen in your quote
+> what's RX for the CPU is TX for the switch, and vice versa.
+> 
+> Since ethtool -A $cpu_mac controls whether CPU netdev generates
+> and accepts pause frames, correspondingly the direction and meaning
+> of pause statistics on that interface is well defined.
+> 
+> You can still append your custom CPU port stats to ethtool -S or
+> debugfs or whatnot, but those are only useful for validating that
+> the configuration of the CPU port is not completely broken. Otherwise
+> the counters are symmetrical. A day-to-day user of the device doesn't
+> need to see both of them.
 
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/x25_asy.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+It would be a lot easier to append the stats if there was not an 
+additional ndo introduce to fetch the pause statistics because DSA 
+overlay ndo on a function by function basis. Alternatively we should 
+consider ethtool netlink operations over a devlink port at some point so 
+we can get rid of the ugly ndo and ethtool_ops overlay that DSA does.
 
-diff --git a/drivers/net/wan/x25_asy.c b/drivers/net/wan/x25_asy.c
-index 5a7cf8bf9d0d..ab56a5e6447a 100644
---- a/drivers/net/wan/x25_asy.c
-+++ b/drivers/net/wan/x25_asy.c
-@@ -202,8 +202,7 @@ static void x25_asy_bump(struct x25_asy *sl)
- 		return;
- 	}
- 	skb_put_data(skb, sl->rbuff, count);
--	skb->protocol = x25_type_trans(skb, sl->dev);
--	err = lapb_data_received(skb->dev, skb);
-+	err = lapb_data_received(sl->dev, skb);
- 	if (err != LAPB_OK) {
- 		kfree_skb(skb);
- 		printk(KERN_DEBUG "x25_asy: data received err - %d\n", err);
--- 
-2.25.1
-
+Can we consider using get_ethtool_stats and ETH_SS_PAUSE_STATS as a 
+stringset identifier? That way there is a single point within driver to 
+fetch stats.
+--
+Florian
