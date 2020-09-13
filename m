@@ -2,348 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79F8D267E20
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 08:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 625A5267E26
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 08:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725935AbgIMGOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 02:14:33 -0400
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:57650 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbgIMGO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 02:14:28 -0400
-Received: from localhost.localdomain ([93.23.14.57])
-        by mwinf5d69 with ME
-        id TJEL230011Drbmd03JELev; Sun, 13 Sep 2020 08:14:24 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 13 Sep 2020 08:14:24 +0200
-X-ME-IP: 93.23.14.57
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, kuba@kernel.org, snelson@pensando.io,
-        jeffrey.t.kirsher@intel.com, mhabets@solarflare.com,
-        yuehaibing@huawei.com, mchehab+huawei@kernel.org, leon@kernel.org
+        id S1725916AbgIMGVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 02:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725894AbgIMGU6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 02:20:58 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB336C061573;
+        Sat, 12 Sep 2020 23:20:57 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id j34so9103882pgi.7;
+        Sat, 12 Sep 2020 23:20:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=oSqDnSurul1SEUdPfy/k5oKwDRKz1lqnIF0nSiq8EfM=;
+        b=akCmZ/9Nebui2eLyF0x28+sRrco8/cMSEJFnvpd+8P7Jz1k7z6uC+PTbvU+vCuMe/p
+         G6TUewI7fu6WEuZS2dD5zB34ER4PvygORHE0PlhW7oPEYdYuGTE5lmJHQAq8bm/wKDB6
+         q3BgXkqy1X/241LZFPFK0mhssBxffFSR6pTqPSmyoCSmbjRg7HWiem1rEEH32431q3aF
+         X42a3cxV0QVNsh/10z7MgsxANGWQDnZlBpAcGIB2Mv4kk/Aekh2ro8Jvt2EAj7/YdDJ4
+         8dGcn9pAMtLqfDeLco0SRuIJmwSbFe0ocspsyywjzttDfKISum7YwLGdqnt/f8K9rj6A
+         43tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=oSqDnSurul1SEUdPfy/k5oKwDRKz1lqnIF0nSiq8EfM=;
+        b=J5yxf3QfY9LHb3uqnPrXiYYGyjbU8KNAZu/wCsN9M00x2hCFoc6RLUXk1R41nboNWT
+         Ju3lO58yoH+q6ZoGPKGpn/pFi9EueCr7E2NCEheaaW6nWwo6ztJ53TwYvCVTY557gx2h
+         QHtLvBf3vGdjk0iHXMO1ar/WxbaKKN5W0rAD9wm18cl9jJgE0j/8zjp6A3k0F2y6QkJQ
+         y4jnAG9XSAcGqPmEArusK2wvMWnQtso/PHAbR1PKr57kXXaKDAPbBpyu26bqXSe82Djj
+         HOuiEWDbBpop6A40rav6WqAfVl9OJrWAxJqt4//zU+L+i2uIZY89Uc+mOLFZtvGGbbPo
+         z4YA==
+X-Gm-Message-State: AOAM530nOw7qxqqx2JT/lQNAyg+2nBLRpM4YXc+cmgcGs6LlDx3K7WAk
+        XCPS7E/vzfj8+K8aXFn4whk=
+X-Google-Smtp-Source: ABdhPJwp5fFXpDXs+77u4RzzJOB/E/gElAzOw+O6qZWhP8oGIspsUZNfxr6ClFMkE+oplQc/U6Sj5w==
+X-Received: by 2002:aa7:9892:: with SMTP id r18mr8741441pfl.107.1599978056909;
+        Sat, 12 Sep 2020 23:20:56 -0700 (PDT)
+Received: from [192.168.0.104] ([49.207.209.61])
+        by smtp.gmail.com with ESMTPSA id x9sm7031293pfj.96.2020.09.12.23.20.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 12 Sep 2020 23:20:56 -0700 (PDT)
+Subject: Re: [Linux-kernel-mentees] [PATCH] net: fix uninit value error in
+ __sys_sendmmsg
+To:     Greg KH <greg@kroah.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net: dl2k: switch from 'pci_' to 'dma_' API
-Date:   Sun, 13 Sep 2020 08:14:17 +0200
-Message-Id: <20200913061417.347682-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        Jakub Kicinski <kuba@kernel.org>,
+        syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel-mentees@lists.linuxfoundation.org
+References: <20200913055639.15639-1-anant.thazhemadam@gmail.com>
+ <20200913061351.GA585618@kroah.com>
+From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Message-ID: <89526337-9657-8f4d-3022-9f2ad830fbe9@gmail.com>
+Date:   Sun, 13 Sep 2020 11:50:52 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200913061351.GA585618@kroah.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
+On 13/09/20 11:43 am, Greg KH wrote:
+> On Sun, Sep 13, 2020 at 11:26:39AM +0530, Anant Thazhemadam wrote:
+>> The crash report showed that there was a local variable;
+>>
+>> ----iovstack.i@__sys_sendmmsg created at:
+>>  ___sys_sendmsg net/socket.c:2388 [inline]
+>>  __sys_sendmmsg+0x6db/0xc90 net/socket.c:2480
+>>  
+>>  that was left uninitialized.
+>>
+>> The contents of iovstack are of interest, since the respective pointer
+>> is passed down as an argument to sendmsg_copy_msghdr as well.
+>> Initializing this contents of this stack prevents this bug from happening.
+>>
+>> Since the memory that was initialized is freed at the end of the function
+>> call, memory leaks are not likely to be an issue.
+>>
+>> syzbot seems to have triggered this error by passing an array of 0's as
+>> a parameter while making the initial system call.
+>>
+>> Reported-by: syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com
+>> Tested-by: syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com
+>> Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+>> ---
+>>  net/socket.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/net/socket.c b/net/socket.c
+>> index 0c0144604f81..d74443dfd73b 100644
+>> --- a/net/socket.c
+>> +++ b/net/socket.c
+>> @@ -2396,6 +2396,7 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
+>>  {
+>>  	struct sockaddr_storage address;
+>>  	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
+>> +	memset(iov, 0, UIO_FASTIOV);
+>>  	ssize_t err;
+>>  
+>>  	msg_sys->msg_name = &address;
+> I don't think you built this code change, otherwise you would have seen
+> that it adds a build warning to the system, right?
+>
+> :(
+My apologies. I think I ended up overlooking the build warning. Thank you for pointing that out.
+If everything else looks good, I'd be happy to send in a v2 that fixes this build warning.
 
-When memory is allocated in 'rio_probe1()' GFP_KERNEL can be used because
-it is a probe function and no lock is taken in the between.
-
-
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
-
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/dlink/dl2k.c | 80 ++++++++++++++++---------------
- 1 file changed, 41 insertions(+), 39 deletions(-)
-
-diff --git a/drivers/net/ethernet/dlink/dl2k.c b/drivers/net/ethernet/dlink/dl2k.c
-index e8e563d6e86b..734acb834c98 100644
---- a/drivers/net/ethernet/dlink/dl2k.c
-+++ b/drivers/net/ethernet/dlink/dl2k.c
-@@ -222,13 +222,15 @@ rio_probe1 (struct pci_dev *pdev, const struct pci_device_id *ent)
- 
- 	pci_set_drvdata (pdev, dev);
- 
--	ring_space = pci_alloc_consistent (pdev, TX_TOTAL_SIZE, &ring_dma);
-+	ring_space = dma_alloc_coherent(&pdev->dev, TX_TOTAL_SIZE, &ring_dma,
-+					GFP_KERNEL);
- 	if (!ring_space)
- 		goto err_out_iounmap;
- 	np->tx_ring = ring_space;
- 	np->tx_ring_dma = ring_dma;
- 
--	ring_space = pci_alloc_consistent (pdev, RX_TOTAL_SIZE, &ring_dma);
-+	ring_space = dma_alloc_coherent(&pdev->dev, RX_TOTAL_SIZE, &ring_dma,
-+					GFP_KERNEL);
- 	if (!ring_space)
- 		goto err_out_unmap_tx;
- 	np->rx_ring = ring_space;
-@@ -279,9 +281,11 @@ rio_probe1 (struct pci_dev *pdev, const struct pci_device_id *ent)
- 	return 0;
- 
- err_out_unmap_rx:
--	pci_free_consistent (pdev, RX_TOTAL_SIZE, np->rx_ring, np->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
-+			  np->rx_ring_dma);
- err_out_unmap_tx:
--	pci_free_consistent (pdev, TX_TOTAL_SIZE, np->tx_ring, np->tx_ring_dma);
-+	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
-+			  np->tx_ring_dma);
- err_out_iounmap:
- #ifdef MEM_MAPPING
- 	pci_iounmap(pdev, np->ioaddr);
-@@ -435,8 +439,9 @@ static void free_list(struct net_device *dev)
- 	for (i = 0; i < RX_RING_SIZE; i++) {
- 		skb = np->rx_skbuff[i];
- 		if (skb) {
--			pci_unmap_single(np->pdev, desc_to_dma(&np->rx_ring[i]),
--					 skb->len, PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&np->pdev->dev,
-+					 desc_to_dma(&np->rx_ring[i]),
-+					 skb->len, DMA_FROM_DEVICE);
- 			dev_kfree_skb(skb);
- 			np->rx_skbuff[i] = NULL;
- 		}
-@@ -446,8 +451,9 @@ static void free_list(struct net_device *dev)
- 	for (i = 0; i < TX_RING_SIZE; i++) {
- 		skb = np->tx_skbuff[i];
- 		if (skb) {
--			pci_unmap_single(np->pdev, desc_to_dma(&np->tx_ring[i]),
--					 skb->len, PCI_DMA_TODEVICE);
-+			dma_unmap_single(&np->pdev->dev,
-+					 desc_to_dma(&np->tx_ring[i]),
-+					 skb->len, DMA_TO_DEVICE);
- 			dev_kfree_skb(skb);
- 			np->tx_skbuff[i] = NULL;
- 		}
-@@ -504,9 +510,8 @@ static int alloc_list(struct net_device *dev)
- 						sizeof(struct netdev_desc));
- 		/* Rubicon now supports 40 bits of addressing space. */
- 		np->rx_ring[i].fraginfo =
--		    cpu_to_le64(pci_map_single(
--				  np->pdev, skb->data, np->rx_buf_sz,
--				  PCI_DMA_FROMDEVICE));
-+		    cpu_to_le64(dma_map_single(&np->pdev->dev, skb->data,
-+					       np->rx_buf_sz, DMA_FROM_DEVICE));
- 		np->rx_ring[i].fraginfo |= cpu_to_le64((u64)np->rx_buf_sz << 48);
- 	}
- 
-@@ -672,9 +677,8 @@ rio_timer (struct timer_list *t)
- 				}
- 				np->rx_skbuff[entry] = skb;
- 				np->rx_ring[entry].fraginfo =
--				    cpu_to_le64 (pci_map_single
--					 (np->pdev, skb->data, np->rx_buf_sz,
--					  PCI_DMA_FROMDEVICE));
-+				    cpu_to_le64 (dma_map_single(&np->pdev->dev, skb->data,
-+								np->rx_buf_sz, DMA_FROM_DEVICE));
- 			}
- 			np->rx_ring[entry].fraginfo |=
- 			    cpu_to_le64((u64)np->rx_buf_sz << 48);
-@@ -728,9 +732,8 @@ start_xmit (struct sk_buff *skb, struct net_device *dev)
- 		    ((u64)np->vlan << 32) |
- 		    ((u64)skb->priority << 45);
- 	}
--	txdesc->fraginfo = cpu_to_le64 (pci_map_single (np->pdev, skb->data,
--							skb->len,
--							PCI_DMA_TODEVICE));
-+	txdesc->fraginfo = cpu_to_le64 (dma_map_single(&np->pdev->dev, skb->data,
-+						       skb->len, DMA_TO_DEVICE));
- 	txdesc->fraginfo |= cpu_to_le64((u64)skb->len << 48);
- 
- 	/* DL2K bug: DMA fails to get next descriptor ptr in 10Mbps mode
-@@ -827,9 +830,9 @@ rio_free_tx (struct net_device *dev, int irq)
- 		if (!(np->tx_ring[entry].status & cpu_to_le64(TFDDone)))
- 			break;
- 		skb = np->tx_skbuff[entry];
--		pci_unmap_single (np->pdev,
--				  desc_to_dma(&np->tx_ring[entry]),
--				  skb->len, PCI_DMA_TODEVICE);
-+		dma_unmap_single(&np->pdev->dev,
-+				 desc_to_dma(&np->tx_ring[entry]), skb->len,
-+				 DMA_TO_DEVICE);
- 		if (irq)
- 			dev_consume_skb_irq(skb);
- 		else
-@@ -949,25 +952,25 @@ receive_packet (struct net_device *dev)
- 
- 			/* Small skbuffs for short packets */
- 			if (pkt_len > copy_thresh) {
--				pci_unmap_single (np->pdev,
--						  desc_to_dma(desc),
--						  np->rx_buf_sz,
--						  PCI_DMA_FROMDEVICE);
-+				dma_unmap_single(&np->pdev->dev,
-+						 desc_to_dma(desc),
-+						 np->rx_buf_sz,
-+						 DMA_FROM_DEVICE);
- 				skb_put (skb = np->rx_skbuff[entry], pkt_len);
- 				np->rx_skbuff[entry] = NULL;
- 			} else if ((skb = netdev_alloc_skb_ip_align(dev, pkt_len))) {
--				pci_dma_sync_single_for_cpu(np->pdev,
--							    desc_to_dma(desc),
--							    np->rx_buf_sz,
--							    PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_cpu(&np->pdev->dev,
-+							desc_to_dma(desc),
-+							np->rx_buf_sz,
-+							DMA_FROM_DEVICE);
- 				skb_copy_to_linear_data (skb,
- 						  np->rx_skbuff[entry]->data,
- 						  pkt_len);
- 				skb_put (skb, pkt_len);
--				pci_dma_sync_single_for_device(np->pdev,
--							       desc_to_dma(desc),
--							       np->rx_buf_sz,
--							       PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_device(&np->pdev->dev,
-+							   desc_to_dma(desc),
-+							   np->rx_buf_sz,
-+							   DMA_FROM_DEVICE);
- 			}
- 			skb->protocol = eth_type_trans (skb, dev);
- #if 0
-@@ -1000,9 +1003,8 @@ receive_packet (struct net_device *dev)
- 			}
- 			np->rx_skbuff[entry] = skb;
- 			np->rx_ring[entry].fraginfo =
--			    cpu_to_le64 (pci_map_single
--					 (np->pdev, skb->data, np->rx_buf_sz,
--					  PCI_DMA_FROMDEVICE));
-+			    cpu_to_le64(dma_map_single(&np->pdev->dev, skb->data,
-+						       np->rx_buf_sz, DMA_FROM_DEVICE));
- 		}
- 		np->rx_ring[entry].fraginfo |=
- 		    cpu_to_le64((u64)np->rx_buf_sz << 48);
-@@ -1796,10 +1798,10 @@ rio_remove1 (struct pci_dev *pdev)
- 		struct netdev_private *np = netdev_priv(dev);
- 
- 		unregister_netdev (dev);
--		pci_free_consistent (pdev, RX_TOTAL_SIZE, np->rx_ring,
--				     np->rx_ring_dma);
--		pci_free_consistent (pdev, TX_TOTAL_SIZE, np->tx_ring,
--				     np->tx_ring_dma);
-+		dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
-+				  np->rx_ring_dma);
-+		dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
-+				  np->tx_ring_dma);
- #ifdef MEM_MAPPING
- 		pci_iounmap(pdev, np->ioaddr);
- #endif
--- 
-2.25.1
-
+Thanks,
+Anant
