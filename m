@@ -2,123 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 625A5267E26
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 08:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CC87267E39
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 08:56:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725916AbgIMGVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 02:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725894AbgIMGU6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 02:20:58 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB336C061573;
-        Sat, 12 Sep 2020 23:20:57 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id j34so9103882pgi.7;
-        Sat, 12 Sep 2020 23:20:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=oSqDnSurul1SEUdPfy/k5oKwDRKz1lqnIF0nSiq8EfM=;
-        b=akCmZ/9Nebui2eLyF0x28+sRrco8/cMSEJFnvpd+8P7Jz1k7z6uC+PTbvU+vCuMe/p
-         G6TUewI7fu6WEuZS2dD5zB34ER4PvygORHE0PlhW7oPEYdYuGTE5lmJHQAq8bm/wKDB6
-         q3BgXkqy1X/241LZFPFK0mhssBxffFSR6pTqPSmyoCSmbjRg7HWiem1rEEH32431q3aF
-         X42a3cxV0QVNsh/10z7MgsxANGWQDnZlBpAcGIB2Mv4kk/Aekh2ro8Jvt2EAj7/YdDJ4
-         8dGcn9pAMtLqfDeLco0SRuIJmwSbFe0ocspsyywjzttDfKISum7YwLGdqnt/f8K9rj6A
-         43tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=oSqDnSurul1SEUdPfy/k5oKwDRKz1lqnIF0nSiq8EfM=;
-        b=J5yxf3QfY9LHb3uqnPrXiYYGyjbU8KNAZu/wCsN9M00x2hCFoc6RLUXk1R41nboNWT
-         Ju3lO58yoH+q6ZoGPKGpn/pFi9EueCr7E2NCEheaaW6nWwo6ztJ53TwYvCVTY557gx2h
-         QHtLvBf3vGdjk0iHXMO1ar/WxbaKKN5W0rAD9wm18cl9jJgE0j/8zjp6A3k0F2y6QkJQ
-         y4jnAG9XSAcGqPmEArusK2wvMWnQtso/PHAbR1PKr57kXXaKDAPbBpyu26bqXSe82Djj
-         HOuiEWDbBpop6A40rav6WqAfVl9OJrWAxJqt4//zU+L+i2uIZY89Uc+mOLFZtvGGbbPo
-         z4YA==
-X-Gm-Message-State: AOAM530nOw7qxqqx2JT/lQNAyg+2nBLRpM4YXc+cmgcGs6LlDx3K7WAk
-        XCPS7E/vzfj8+K8aXFn4whk=
-X-Google-Smtp-Source: ABdhPJwp5fFXpDXs+77u4RzzJOB/E/gElAzOw+O6qZWhP8oGIspsUZNfxr6ClFMkE+oplQc/U6Sj5w==
-X-Received: by 2002:aa7:9892:: with SMTP id r18mr8741441pfl.107.1599978056909;
-        Sat, 12 Sep 2020 23:20:56 -0700 (PDT)
-Received: from [192.168.0.104] ([49.207.209.61])
-        by smtp.gmail.com with ESMTPSA id x9sm7031293pfj.96.2020.09.12.23.20.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 12 Sep 2020 23:20:56 -0700 (PDT)
-Subject: Re: [Linux-kernel-mentees] [PATCH] net: fix uninit value error in
- __sys_sendmmsg
-To:     Greg KH <greg@kroah.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel-mentees@lists.linuxfoundation.org
-References: <20200913055639.15639-1-anant.thazhemadam@gmail.com>
- <20200913061351.GA585618@kroah.com>
-From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Message-ID: <89526337-9657-8f4d-3022-9f2ad830fbe9@gmail.com>
-Date:   Sun, 13 Sep 2020 11:50:52 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1725921AbgIMG4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 02:56:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39914 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725894AbgIMG4E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Sep 2020 02:56:04 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 060B420758;
+        Sun, 13 Sep 2020 06:56:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599980163;
+        bh=MFOsHHlRXQokbJQFQqgLPqPAX9+N8PMEzABG1yqClVA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mAhhmDp3Zx8fquVcwAakO1l/JK3mxG9GGEv49R8H0Qosv283CfqJb2qL4FoAUBNnf
+         sFeTGWRKJ52aQxurFO4LAb748twprXCJWGwI3edTMHaVFyz75U4xzQ1He4jGZvLEQx
+         8p7xD2yMKwAbSYtbwwUiLPbiRbaKkcN7UyGUhW9w=
+Date:   Sun, 13 Sep 2020 09:55:59 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     davem@davemloft.net, kuba@kernel.org, snelson@pensando.io,
+        jeffrey.t.kirsher@intel.com, mhabets@solarflare.com,
+        yuehaibing@huawei.com, mchehab+huawei@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] net: dl2k: switch from 'pci_' to 'dma_' API
+Message-ID: <20200913065559.GB35718@unreal>
+References: <20200913061417.347682-1-christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-In-Reply-To: <20200913061351.GA585618@kroah.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200913061417.347682-1-christophe.jaillet@wanadoo.fr>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 13/09/20 11:43 am, Greg KH wrote:
-> On Sun, Sep 13, 2020 at 11:26:39AM +0530, Anant Thazhemadam wrote:
->> The crash report showed that there was a local variable;
->>
->> ----iovstack.i@__sys_sendmmsg created at:
->>  ___sys_sendmsg net/socket.c:2388 [inline]
->>  __sys_sendmmsg+0x6db/0xc90 net/socket.c:2480
->>  
->>  that was left uninitialized.
->>
->> The contents of iovstack are of interest, since the respective pointer
->> is passed down as an argument to sendmsg_copy_msghdr as well.
->> Initializing this contents of this stack prevents this bug from happening.
->>
->> Since the memory that was initialized is freed at the end of the function
->> call, memory leaks are not likely to be an issue.
->>
->> syzbot seems to have triggered this error by passing an array of 0's as
->> a parameter while making the initial system call.
->>
->> Reported-by: syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com
->> Tested-by: syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com
->> Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
->> ---
->>  net/socket.c | 1 +
->>  1 file changed, 1 insertion(+)
->>
->> diff --git a/net/socket.c b/net/socket.c
->> index 0c0144604f81..d74443dfd73b 100644
->> --- a/net/socket.c
->> +++ b/net/socket.c
->> @@ -2396,6 +2396,7 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
->>  {
->>  	struct sockaddr_storage address;
->>  	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
->> +	memset(iov, 0, UIO_FASTIOV);
->>  	ssize_t err;
->>  
->>  	msg_sys->msg_name = &address;
-> I don't think you built this code change, otherwise you would have seen
-> that it adds a build warning to the system, right?
+On Sun, Sep 13, 2020 at 08:14:17AM +0200, Christophe JAILLET wrote:
+> The wrappers in include/linux/pci-dma-compat.h should go away.
 >
-> :(
-My apologies. I think I ended up overlooking the build warning. Thank you for pointing that out.
-If everything else looks good, I'd be happy to send in a v2 that fixes this build warning.
+> The patch has been generated with the coccinelle script below and has been
+> hand modified to replace GFP_ with a correct flag.
+> It has been compile tested.
+>
+> When memory is allocated in 'rio_probe1()' GFP_KERNEL can be used because
+> it is a probe function and no lock is taken in the between.
+>
+>
+> @@
+> @@
+> -    PCI_DMA_BIDIRECTIONAL
+> +    DMA_BIDIRECTIONAL
+>
+> @@
+> @@
+> -    PCI_DMA_TODEVICE
+> +    DMA_TO_DEVICE
+>
+> @@
+> @@
+> -    PCI_DMA_FROMDEVICE
+> +    DMA_FROM_DEVICE
+>
+> @@
+> @@
+> -    PCI_DMA_NONE
+> +    DMA_NONE
+>
+> @@
+> expression e1, e2, e3;
+> @@
+> -    pci_alloc_consistent(e1, e2, e3)
+> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+>
+> @@
+> expression e1, e2, e3;
+> @@
+> -    pci_zalloc_consistent(e1, e2, e3)
+> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_free_consistent(e1, e2, e3, e4)
+> +    dma_free_coherent(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_map_single(e1, e2, e3, e4)
+> +    dma_map_single(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_single(e1, e2, e3, e4)
+> +    dma_unmap_single(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2, e3, e4, e5;
+> @@
+> -    pci_map_page(e1, e2, e3, e4, e5)
+> +    dma_map_page(&e1->dev, e2, e3, e4, e5)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_page(e1, e2, e3, e4)
+> +    dma_unmap_page(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_map_sg(e1, e2, e3, e4)
+> +    dma_map_sg(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_unmap_sg(e1, e2, e3, e4)
+> +    dma_unmap_sg(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
+> +    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_single_for_device(e1, e2, e3, e4)
+> +    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
+> +    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2, e3, e4;
+> @@
+> -    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
+> +    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+>
+> @@
+> expression e1, e2;
+> @@
+> -    pci_dma_mapping_error(e1, e2)
+> +    dma_mapping_error(&e1->dev, e2)
+>
+> @@
+> expression e1, e2;
+> @@
+> -    pci_set_dma_mask(e1, e2)
+> +    dma_set_mask(&e1->dev, e2)
+>
+> @@
+> expression e1, e2;
+> @@
+> -    pci_set_consistent_dma_mask(e1, e2)
+> +    dma_set_coherent_mask(&e1->dev, e2)
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+>    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+> ---
+>  drivers/net/ethernet/dlink/dl2k.c | 80 ++++++++++++++++---------------
+>  1 file changed, 41 insertions(+), 39 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/dlink/dl2k.c b/drivers/net/ethernet/dlink/dl2k.c
+> index e8e563d6e86b..734acb834c98 100644
+> --- a/drivers/net/ethernet/dlink/dl2k.c
+> +++ b/drivers/net/ethernet/dlink/dl2k.c
+> @@ -222,13 +222,15 @@ rio_probe1 (struct pci_dev *pdev, const struct pci_device_id *ent)
+>
+>  	pci_set_drvdata (pdev, dev);
+>
+> -	ring_space = pci_alloc_consistent (pdev, TX_TOTAL_SIZE, &ring_dma);
+> +	ring_space = dma_alloc_coherent(&pdev->dev, TX_TOTAL_SIZE, &ring_dma,
+> +					GFP_KERNEL);
+>  	if (!ring_space)
+>  		goto err_out_iounmap;
+>  	np->tx_ring = ring_space;
+>  	np->tx_ring_dma = ring_dma;
+>
+> -	ring_space = pci_alloc_consistent (pdev, RX_TOTAL_SIZE, &ring_dma);
+> +	ring_space = dma_alloc_coherent(&pdev->dev, RX_TOTAL_SIZE, &ring_dma,
+> +					GFP_KERNEL);
+>  	if (!ring_space)
+>  		goto err_out_unmap_tx;
+>  	np->rx_ring = ring_space;
+> @@ -279,9 +281,11 @@ rio_probe1 (struct pci_dev *pdev, const struct pci_device_id *ent)
+>  	return 0;
+>
+>  err_out_unmap_rx:
+> -	pci_free_consistent (pdev, RX_TOTAL_SIZE, np->rx_ring, np->rx_ring_dma);
+> +	dma_free_coherent(&pdev->dev, RX_TOTAL_SIZE, np->rx_ring,
+> +			  np->rx_ring_dma);
+>  err_out_unmap_tx:
+> -	pci_free_consistent (pdev, TX_TOTAL_SIZE, np->tx_ring, np->tx_ring_dma);
+> +	dma_free_coherent(&pdev->dev, TX_TOTAL_SIZE, np->tx_ring,
+> +			  np->tx_ring_dma);
+>  err_out_iounmap:
+>  #ifdef MEM_MAPPING
+>  	pci_iounmap(pdev, np->ioaddr);
+> @@ -435,8 +439,9 @@ static void free_list(struct net_device *dev)
+>  	for (i = 0; i < RX_RING_SIZE; i++) {
+>  		skb = np->rx_skbuff[i];
+>  		if (skb) {
+> -			pci_unmap_single(np->pdev, desc_to_dma(&np->rx_ring[i]),
+> -					 skb->len, PCI_DMA_FROMDEVICE);
+> +			dma_unmap_single(&np->pdev->dev,
+> +					 desc_to_dma(&np->rx_ring[i]),
+> +					 skb->len, DMA_FROM_DEVICE);
+>  			dev_kfree_skb(skb);
+>  			np->rx_skbuff[i] = NULL;
+>  		}
+> @@ -446,8 +451,9 @@ static void free_list(struct net_device *dev)
+>  	for (i = 0; i < TX_RING_SIZE; i++) {
+>  		skb = np->tx_skbuff[i];
+>  		if (skb) {
+> -			pci_unmap_single(np->pdev, desc_to_dma(&np->tx_ring[i]),
+> -					 skb->len, PCI_DMA_TODEVICE);
+> +			dma_unmap_single(&np->pdev->dev,
+> +					 desc_to_dma(&np->tx_ring[i]),
+> +					 skb->len, DMA_TO_DEVICE);
+>  			dev_kfree_skb(skb);
+>  			np->tx_skbuff[i] = NULL;
+>  		}
+> @@ -504,9 +510,8 @@ static int alloc_list(struct net_device *dev)
+>  						sizeof(struct netdev_desc));
+>  		/* Rubicon now supports 40 bits of addressing space. */
+>  		np->rx_ring[i].fraginfo =
+> -		    cpu_to_le64(pci_map_single(
+> -				  np->pdev, skb->data, np->rx_buf_sz,
+> -				  PCI_DMA_FROMDEVICE));
+> +		    cpu_to_le64(dma_map_single(&np->pdev->dev, skb->data,
+> +					       np->rx_buf_sz, DMA_FROM_DEVICE));
 
-Thanks,
-Anant
+I'm aware that this was before, but both pci_map_single and
+dma_map_single return an ERROR and it is wrong to set .fraginfo without
+checking result.
+
+Thanks
