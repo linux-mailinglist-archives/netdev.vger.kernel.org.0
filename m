@@ -2,340 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 133AB268041
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 18:28:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ED9D268066
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 19:00:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725953AbgIMQ16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 12:27:58 -0400
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:50716 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725936AbgIMQ1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 12:27:45 -0400
-Received: by mail-pj1-f65.google.com with SMTP id fa1so4235478pjb.0;
-        Sun, 13 Sep 2020 09:27:44 -0700 (PDT)
+        id S1725953AbgIMRAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 13:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725876AbgIMRAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 13:00:00 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF83EC06174A;
+        Sun, 13 Sep 2020 09:59:59 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id l191so9599751pgd.5;
+        Sun, 13 Sep 2020 09:59:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Omc5GUviZXmY9Fz9BCq4ZAvwSSBNWz0aHFjh7JiCaqY=;
+        b=Cq2i5Du97qqZ9zymjDh//gocDk6OuGx4PmVS3Xx72RkkIF08zJzcdSB8CQ46x7/Uqq
+         Ptidw2bGkNuKFvkBDhwuhJQ29+9mwuhGmw65W1jMa022tWLkCqZUtOhd7qB9IipVgIl8
+         49BSGyKnPgUsu/iSpU5dR3TRfK5kNTkuYDjPGkNw1dcgdSFPGhjEeNHclnvicgz57MUN
+         2IAlSqknJwKkUc+oh3deU2H4h1QImvn14jwvKz1gyP1C2oc1fudWqHc3FYzVcOB5dd1O
+         Z24zAsZef7oOKuwpLcCN6i0T86OvaYh3r5Xk2WYoA02WxQNimvtltr5lAqM5Fw7WLSC1
+         CZjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=99mJRke/K5Jx/9ojxZkFXY3kQViInUZG48Hln+GwTEc=;
-        b=WOwd2DVtfqtanem40liLPLhDjDhlHQttWxCX3bT8eUGOVLU7hCf6lJyENJNoF9AhNx
-         HtoabOf28LGdiAqNosG0m1N0bjpvBkmBdt56rkaloJzhSi/ZBZ80kPQxqcFlgGDVt1Zt
-         RZEQxHlHcCIU1BqkAst3wp1PY5l0VLyTndYOj3NqnZj/YAZixXmB6jfO1QQ88eK+1jvv
-         5mm3fvyE2C9pBMU1FaV0VP7tvcZc9uRN5eE0fvGXsMB/Z/OMB5bsJQ7DGUlbsmibAOzj
-         iXfhrdeKpNEsB1Qh+hkDE8OcfhbvL78pqWV1vZ6HGCXV7lhVrVb/JhPcyJQrVfAeiBcF
-         a4ag==
-X-Gm-Message-State: AOAM531npQ/WvtgMZrc+Rcj9d6GCGuByYxtOW4+5sf9BVWG+ycUzi1F/
-        AoFscut9AmDHdHgQl2KQsKpwzLvQS18=
-X-Google-Smtp-Source: ABdhPJzFcKSHvxkCZ98ToNisIGMfxoVgrbsaoVAMJ3Uq9kwdhLD1tShNb/3h13fu79JtznLl5C49Fw==
-X-Received: by 2002:a17:90a:b88a:: with SMTP id o10mr10414878pjr.58.1600014464214;
-        Sun, 13 Sep 2020 09:27:44 -0700 (PDT)
-Received: from localhost ([2601:647:5b00:1161:a4cc:eef9:fbc0:2781])
-        by smtp.gmail.com with ESMTPSA id c1sm1589070pfj.219.2020.09.13.09.27.43
+        bh=Omc5GUviZXmY9Fz9BCq4ZAvwSSBNWz0aHFjh7JiCaqY=;
+        b=pO1QGTokn9fP6nzvZsKiomD3MN3rhihWCXXceBbESWS1w+Vdx8Zr2ECrdDd2Dxg5TA
+         sugMQUdS7XIbLG4NhF6ouPuZFnV7RTbhHJvkbSNUg9qhH72yFtvt4Jv+dVnhgtPHPjVe
+         yz3FMoP3rAxzGY7UArfynxdyNJwX6ljgcbtPiW3wnllg9LmU14bECjpyQqBBJm8SMs6x
+         rUMHP6OfA4Tt9IhE1uYJ4ISjaC5oclKT8aD2j2gqw+d6QpkwoBg3Mxpzam16xdNsjExo
+         3dk1ncg9XqfjS1II1pkIe+vRMhwHYQ/c8QO+SGFXeoxTuZiyeCeKVKl4cm9P0sEXm0kQ
+         VtzQ==
+X-Gm-Message-State: AOAM5320kHECuhHHqveq/WaydNMxR8gCwGOX4N48vAdb/V/TKCYPDHY8
+        xm9DloufAHxi9VthI2vRDDY=
+X-Google-Smtp-Source: ABdhPJz+4c4MuctOfAwI2G1i7KUosHfkY0WgLJ1iZnpv35csZu+oFytF/ciXTmIJ67rs3/q2wvjzDA==
+X-Received: by 2002:a63:a05:: with SMTP id 5mr4091629pgk.140.1600016399059;
+        Sun, 13 Sep 2020 09:59:59 -0700 (PDT)
+Received: from dtor-ws ([2620:15c:202:201:a6ae:11ff:fe11:fcc3])
+        by smtp.gmail.com with ESMTPSA id s8sm221929pjn.10.2020.09.13.09.59.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Sep 2020 09:27:43 -0700 (PDT)
-Date:   Sun, 13 Sep 2020 09:27:42 -0700
-From:   Moritz Fischer <mdf@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     davem@davemloft.net, kuba@kernel.org, mhabets@solarflare.com,
-        arnd@arndb.de, hkallweit1@gmail.com, mdf@kernel.org,
-        mst@redhat.com, vaibhavgupta40@gmail.com, leon@kernel.org,
-        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] tulip: de2104x: switch from 'pci_' to 'dma_' API
-Message-ID: <20200913162742.GA38105@epycbox.lan>
-References: <20200913124453.355542-1-christophe.jaillet@wanadoo.fr>
+        Sun, 13 Sep 2020 09:59:58 -0700 (PDT)
+Date:   Sun, 13 Sep 2020 09:59:56 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Michael Kelley <mikelley@microsoft.com>
+Cc:     Boqun Feng <boqun.feng@gmail.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "ardb@kernel.org" <ardb@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        "Mark.Rutland@arm.com" <Mark.Rutland@arm.com>,
+        "maz@kernel.org" <maz@kernel.org>
+Subject: Re: [PATCH v3 08/11] Input: hyperv-keyboard: Make ringbuffer at
+ least take two pages
+Message-ID: <20200913165956.GG1665100@dtor-ws>
+References: <20200910143455.109293-1-boqun.feng@gmail.com>
+ <20200910143455.109293-9-boqun.feng@gmail.com>
+ <MW2PR2101MB1052688710B98D8C31191A8DD7250@MW2PR2101MB1052.namprd21.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200913124453.355542-1-christophe.jaillet@wanadoo.fr>
+In-Reply-To: <MW2PR2101MB1052688710B98D8C31191A8DD7250@MW2PR2101MB1052.namprd21.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 13, 2020 at 02:44:53PM +0200, Christophe JAILLET wrote:
-> The wrappers in include/linux/pci-dma-compat.h should go away.
+On Sat, Sep 12, 2020 at 07:37:23PM +0000, Michael Kelley wrote:
+> From: Boqun Feng <boqun.feng@gmail.com> Sent: Thursday, September 10, 2020 7:35 AM
 > 
-> The patch has been generated with the coccinelle script below and has been
-> hand modified to replace GFP_ with a correct flag.
-> It has been compile tested.
+> > 
+> > When PAGE_SIZE > HV_HYP_PAGE_SIZE, we need the ringbuffer size to be at
+> > least 2 * PAGE_SIZE: one page for the header and at least one page of
+> > the data part (because of the alignment requirement for double mapping).
+> > 
+> > So make sure the ringbuffer sizes to be at least 2 * PAGE_SIZE when
+> > using vmbus_open() to establish the vmbus connection.
+> > 
+> > Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
+> > ---
+> >  drivers/input/serio/hyperv-keyboard.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
 > 
-> When memory is allocated in 'de_alloc_rings()' GFP_KERNEL can be used
-> because it is only called from 'de_open()' which is a '.ndo_open'
-> function. Such functions are synchronized using the rtnl_lock() semaphore
-> and no lock is taken in the between.
-> 
-> 
-> @@
-> @@
-> -    PCI_DMA_BIDIRECTIONAL
-> +    DMA_BIDIRECTIONAL
-> 
-> @@
-> @@
-> -    PCI_DMA_TODEVICE
-> +    DMA_TO_DEVICE
-> 
-> @@
-> @@
-> -    PCI_DMA_FROMDEVICE
-> +    DMA_FROM_DEVICE
-> 
-> @@
-> @@
-> -    PCI_DMA_NONE
-> +    DMA_NONE
-> 
-> @@
-> expression e1, e2, e3;
-> @@
-> -    pci_alloc_consistent(e1, e2, e3)
-> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-> 
-> @@
-> expression e1, e2, e3;
-> @@
-> -    pci_zalloc_consistent(e1, e2, e3)
-> +    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_free_consistent(e1, e2, e3, e4)
-> +    dma_free_coherent(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_map_single(e1, e2, e3, e4)
-> +    dma_map_single(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_unmap_single(e1, e2, e3, e4)
-> +    dma_unmap_single(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4, e5;
-> @@
-> -    pci_map_page(e1, e2, e3, e4, e5)
-> +    dma_map_page(&e1->dev, e2, e3, e4, e5)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_unmap_page(e1, e2, e3, e4)
-> +    dma_unmap_page(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_map_sg(e1, e2, e3, e4)
-> +    dma_map_sg(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_unmap_sg(e1, e2, e3, e4)
-> +    dma_unmap_sg(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-> +    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-> +    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-> +    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2, e3, e4;
-> @@
-> -    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-> +    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-> 
-> @@
-> expression e1, e2;
-> @@
-> -    pci_dma_mapping_error(e1, e2)
-> +    dma_mapping_error(&e1->dev, e2)
-> 
-> @@
-> expression e1, e2;
-> @@
-> -    pci_set_dma_mask(e1, e2)
-> +    dma_set_mask(&e1->dev, e2)
-> 
-> @@
-> expression e1, e2;
-> @@
-> -    pci_set_consistent_dma_mask(e1, e2)
-> +    dma_set_coherent_mask(&e1->dev, e2)
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Moritz Fischer <mdf@kernel.org>
-> ---
-> If needed, see post from Christoph Hellwig on the kernel-janitors ML:
->    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
-> ---
->  drivers/net/ethernet/dec/tulip/de2104x.c | 62 ++++++++++++++----------
->  1 file changed, 36 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c b/drivers/net/ethernet/dec/tulip/de2104x.c
-> index cb116b530f5e..0931881403b6 100644
-> --- a/drivers/net/ethernet/dec/tulip/de2104x.c
-> +++ b/drivers/net/ethernet/dec/tulip/de2104x.c
-> @@ -443,21 +443,23 @@ static void de_rx (struct de_private *de)
->  		}
->  
->  		if (!copying_skb) {
-> -			pci_unmap_single(de->pdev, mapping,
-> -					 buflen, PCI_DMA_FROMDEVICE);
-> +			dma_unmap_single(&de->pdev->dev, mapping, buflen,
-> +					 DMA_FROM_DEVICE);
->  			skb_put(skb, len);
->  
->  			mapping =
->  			de->rx_skb[rx_tail].mapping =
-> -				pci_map_single(de->pdev, copy_skb->data,
-> -					       buflen, PCI_DMA_FROMDEVICE);
-> +				dma_map_single(&de->pdev->dev, copy_skb->data,
-> +					       buflen, DMA_FROM_DEVICE);
->  			de->rx_skb[rx_tail].skb = copy_skb;
->  		} else {
-> -			pci_dma_sync_single_for_cpu(de->pdev, mapping, len, PCI_DMA_FROMDEVICE);
-> +			dma_sync_single_for_cpu(&de->pdev->dev, mapping, len,
-> +						DMA_FROM_DEVICE);
->  			skb_reserve(copy_skb, RX_OFFSET);
->  			skb_copy_from_linear_data(skb, skb_put(copy_skb, len),
->  						  len);
-> -			pci_dma_sync_single_for_device(de->pdev, mapping, len, PCI_DMA_FROMDEVICE);
-> +			dma_sync_single_for_device(&de->pdev->dev, mapping,
-> +						   len, DMA_FROM_DEVICE);
->  
->  			/* We'll reuse the original ring buffer. */
->  			skb = copy_skb;
-> @@ -554,13 +556,15 @@ static void de_tx (struct de_private *de)
->  			goto next;
->  
->  		if (unlikely(skb == DE_SETUP_SKB)) {
-> -			pci_unmap_single(de->pdev, de->tx_skb[tx_tail].mapping,
-> -					 sizeof(de->setup_frame), PCI_DMA_TODEVICE);
-> +			dma_unmap_single(&de->pdev->dev,
-> +					 de->tx_skb[tx_tail].mapping,
-> +					 sizeof(de->setup_frame),
-> +					 DMA_TO_DEVICE);
->  			goto next;
->  		}
->  
-> -		pci_unmap_single(de->pdev, de->tx_skb[tx_tail].mapping,
-> -				 skb->len, PCI_DMA_TODEVICE);
-> +		dma_unmap_single(&de->pdev->dev, de->tx_skb[tx_tail].mapping,
-> +				 skb->len, DMA_TO_DEVICE);
->  
->  		if (status & LastFrag) {
->  			if (status & TxError) {
-> @@ -620,7 +624,8 @@ static netdev_tx_t de_start_xmit (struct sk_buff *skb,
->  	txd = &de->tx_ring[entry];
->  
->  	len = skb->len;
-> -	mapping = pci_map_single(de->pdev, skb->data, len, PCI_DMA_TODEVICE);
-> +	mapping = dma_map_single(&de->pdev->dev, skb->data, len,
-> +				 DMA_TO_DEVICE);
->  	if (entry == (DE_TX_RING_SIZE - 1))
->  		flags |= RingEnd;
->  	if (!tx_free || (tx_free == (DE_TX_RING_SIZE / 2)))
-> @@ -763,8 +768,8 @@ static void __de_set_rx_mode (struct net_device *dev)
->  
->  	de->tx_skb[entry].skb = DE_SETUP_SKB;
->  	de->tx_skb[entry].mapping = mapping =
-> -	    pci_map_single (de->pdev, de->setup_frame,
-> -			    sizeof (de->setup_frame), PCI_DMA_TODEVICE);
-> +	    dma_map_single(&de->pdev->dev, de->setup_frame,
-> +			   sizeof(de->setup_frame), DMA_TO_DEVICE);
->  
->  	/* Put the setup frame on the Tx list. */
->  	txd = &de->tx_ring[entry];
-> @@ -1279,8 +1284,10 @@ static int de_refill_rx (struct de_private *de)
->  		if (!skb)
->  			goto err_out;
->  
-> -		de->rx_skb[i].mapping = pci_map_single(de->pdev,
-> -			skb->data, de->rx_buf_sz, PCI_DMA_FROMDEVICE);
-> +		de->rx_skb[i].mapping = dma_map_single(&de->pdev->dev,
-> +						       skb->data,
-> +						       de->rx_buf_sz,
-> +						       DMA_FROM_DEVICE);
->  		de->rx_skb[i].skb = skb;
->  
->  		de->rx_ring[i].opts1 = cpu_to_le32(DescOwn);
-> @@ -1313,7 +1320,8 @@ static int de_init_rings (struct de_private *de)
->  
->  static int de_alloc_rings (struct de_private *de)
->  {
-> -	de->rx_ring = pci_alloc_consistent(de->pdev, DE_RING_BYTES, &de->ring_dma);
-> +	de->rx_ring = dma_alloc_coherent(&de->pdev->dev, DE_RING_BYTES,
-> +					 &de->ring_dma, GFP_KERNEL);
->  	if (!de->rx_ring)
->  		return -ENOMEM;
->  	de->tx_ring = &de->rx_ring[DE_RX_RING_SIZE];
-> @@ -1333,8 +1341,9 @@ static void de_clean_rings (struct de_private *de)
->  
->  	for (i = 0; i < DE_RX_RING_SIZE; i++) {
->  		if (de->rx_skb[i].skb) {
-> -			pci_unmap_single(de->pdev, de->rx_skb[i].mapping,
-> -					 de->rx_buf_sz, PCI_DMA_FROMDEVICE);
-> +			dma_unmap_single(&de->pdev->dev,
-> +					 de->rx_skb[i].mapping, de->rx_buf_sz,
-> +					 DMA_FROM_DEVICE);
->  			dev_kfree_skb(de->rx_skb[i].skb);
->  		}
->  	}
-> @@ -1344,15 +1353,15 @@ static void de_clean_rings (struct de_private *de)
->  		if ((skb) && (skb != DE_DUMMY_SKB)) {
->  			if (skb != DE_SETUP_SKB) {
->  				de->dev->stats.tx_dropped++;
-> -				pci_unmap_single(de->pdev,
-> -					de->tx_skb[i].mapping,
-> -					skb->len, PCI_DMA_TODEVICE);
-> +				dma_unmap_single(&de->pdev->dev,
-> +						 de->tx_skb[i].mapping,
-> +						 skb->len, DMA_TO_DEVICE);
->  				dev_kfree_skb(skb);
->  			} else {
-> -				pci_unmap_single(de->pdev,
-> -					de->tx_skb[i].mapping,
-> -					sizeof(de->setup_frame),
-> -					PCI_DMA_TODEVICE);
-> +				dma_unmap_single(&de->pdev->dev,
-> +						 de->tx_skb[i].mapping,
-> +						 sizeof(de->setup_frame),
-> +						 DMA_TO_DEVICE);
->  			}
->  		}
->  	}
-> @@ -1364,7 +1373,8 @@ static void de_clean_rings (struct de_private *de)
->  static void de_free_rings (struct de_private *de)
->  {
->  	de_clean_rings(de);
-> -	pci_free_consistent(de->pdev, DE_RING_BYTES, de->rx_ring, de->ring_dma);
-> +	dma_free_coherent(&de->pdev->dev, DE_RING_BYTES, de->rx_ring,
-> +			  de->ring_dma);
->  	de->rx_ring = NULL;
->  	de->tx_ring = NULL;
->  }
-> -- 
-> 2.25.1
-> 
-Thanks,
-Moritz
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+
+Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+
+Please feel free to merge with the rest of the patches through whatever
+tree they will go in.
+
+Thanks.
+
+-- 
+Dmitry
