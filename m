@@ -2,108 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12E71267E6D
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 09:48:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ABF5267E71
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 09:49:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725949AbgIMHse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 03:48:34 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:35942 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbgIMHsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 03:48:30 -0400
-Received: from marcel-macbook.fritz.box (p4ff9f430.dip0.t-ipconnect.de [79.249.244.48])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 9362FCECC4;
-        Sun, 13 Sep 2020 09:55:24 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [RESEND PATCH] bluetooth: Set ext scan response only when it
- exists
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200911153141.RESEND.1.Ib022565452fde0c02fbcf619950ef868715dd243@changeid>
-Date:   Sun, 13 Sep 2020 09:48:28 +0200
-Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Daniel Winkler <danielwinkler@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Transfer-Encoding: 7bit
-Message-Id: <A3FDD177-8552-4BDD-941A-0BD8FF495AFE@holtmann.org>
-References: <20200911153141.RESEND.1.Ib022565452fde0c02fbcf619950ef868715dd243@changeid>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
+        id S1725957AbgIMHti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 03:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725918AbgIMHtg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 03:49:36 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38DAC061573;
+        Sun, 13 Sep 2020 00:49:35 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id u3so3761674pjr.3;
+        Sun, 13 Sep 2020 00:49:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qYWzNSDa14AkONpbTTLew5leaH4VXQTqzaEvTUMECKw=;
+        b=W2JxUspOxdm0NdXZ7vuXab7dorsL2Sg17rUePYjKC2jnCwKuKF+g0y1vMMFbTrCoA9
+         Xl39Q8kyYLehH7wicKKkYhr8rfHlpYqUEHVaosiAzZLmoier6jxBcb6YSlUmYclTegUG
+         +guaLxL/6oEVPr4dIcNW2hmyngJcVBn66iu+AWQjspCB1p0DLDe0NIDCU9fKdc0i++PL
+         pCG0EYRjRu3GkUKjMnWPDme+xqMRidS6vnvk5wqOXStRF9exEgJVrqhC2PnlLshSVIO6
+         ufPaXTwJW44MPjHkhesGk61Edw9kIe2xTTqYekoW85OJTJx0ipxTHmCW7ycmY2GpQfUr
+         MV1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qYWzNSDa14AkONpbTTLew5leaH4VXQTqzaEvTUMECKw=;
+        b=MFDcSgOXMtgnmFVdoqtdpSJltXOs9/JunvWuvMPObDzUt4BxKlh7iYkClt+0CJWKCH
+         CGmAjHeAN1znvs0Gs+bYhxMHjIHcS7o5X429OJh6sXUGRSoOwOOLkSsMnpQf7w9tZwG+
+         /lIHe8EFdfXQufRdomADyesBW3qB2xmonAYUlDoYZlCs4UNYgpKkl2pJomkulEoywbmq
+         xNX2fZ7rIUJP5h1AW4JtXOo27T2iVuaXxqJZtBiIMCHwT5/OJUVOwfjuZw5Dk7Nsow6Z
+         6QScL6t4VqKcCJdAqak+PstYdMVOqRVINtRJ+SotehXRFUpAed8HjybBmKbEHd3edC58
+         Q66w==
+X-Gm-Message-State: AOAM530Hu0lgjK3ZIQ97qlPfGzcwy1/otdxMNMNWSr4kheeFWzL8cXUh
+        wJUqLcQeloJmUmYZ9YZV8Q==
+X-Google-Smtp-Source: ABdhPJwMctwccCvazig0Cn3qhtL8QflPk2h8eWljuT5ukI9082bAYzzDMWgC6b1Mb9SoIsvbMBTOCA==
+X-Received: by 2002:a17:902:c692:b029:d0:90a3:24f4 with SMTP id r18-20020a170902c692b02900d090a324f4mr9256031plx.12.1599983375416;
+        Sun, 13 Sep 2020 00:49:35 -0700 (PDT)
+Received: from PWN (n11212042027.netvigator.com. [112.120.42.27])
+        by smtp.gmail.com with ESMTPSA id s8sm632246pjm.7.2020.09.13.00.49.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Sep 2020 00:49:34 -0700 (PDT)
+Date:   Sun, 13 Sep 2020 03:49:23 -0400
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     jmaloy@redhat.com, ying.xue@windriver.com, kuba@kernel.org,
+        hdanton@sina.com, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org
+Subject: Re: [Linux-kernel-mentees] [PATCH net] tipc: Fix memory leak in
+ tipc_group_create_member()
+Message-ID: <20200913074923.GA1533160@PWN>
+References: <000000000000879057058f193fb5@google.com>
+ <20200912102230.1529402-1-yepeilin.cs@gmail.com>
+ <20200912.182336.585362420502143240.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200912.182336.585362420502143240.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
+On Sat, Sep 12, 2020 at 06:23:36PM -0700, David Miller wrote:
+> From: Peilin Ye <yepeilin.cs@gmail.com>
+> Date: Sat, 12 Sep 2020 06:22:30 -0400
+> 
+> > @@ -291,10 +291,11 @@ static void tipc_group_add_to_tree(struct tipc_group *grp,
+> >  		else if (key > nkey)
+> >  			n = &(*n)->rb_right;
+> >  		else
+> > -			return;
+> > +			return -1;
+> 
+> Use a real error code like "-EEXIST", thank you.
 
-> Only set extended scan response only when it exists. Otherwise, clear
-> the scan response data.
-> 
-> Per the core spec v5.2, Vol 4, Part E, 7.8.55
-> 
-> If the advertising set is non-scannable and the Host uses this command
-> other than to discard existing data, the Controller shall return the
-> error code Invalid HCI Command Parameters (0x12).
-> 
-> On WCN3991, the controller correctly responds with Invalid Parameters
-> when this is sent.  That error causes __hci_req_hci_power_on to fail
-> with -EINVAL and LE devices can't connect because background scanning
-> isn't configured.
-> 
-> Here is an hci trace of where this issue occurs during power on:
-> 
-> < HCI Command: LE Set Extended Advertising Parameters (0x08|0x0036) plen 25
->        Handle: 0x00
->        Properties: 0x0010
->          Use legacy advertising PDUs: ADV_NONCONN_IND
->        Min advertising interval: 181.250 msec (0x0122)
->        Max advertising interval: 181.250 msec (0x0122)
->        Channel map: 37, 38, 39 (0x07)
->        Own address type: Random (0x01)
->        Peer address type: Public (0x00)
->        Peer address: 00:00:00:00:00:00 (OUI 00-00-00)
->        Filter policy: Allow Scan Request from Any, Allow Connect...
->        TX power: 127 dbm (0x7f)
->        Primary PHY: LE 1M (0x01)
->        Secondary max skip: 0x00
->        Secondary PHY: LE 1M (0x01)
->        SID: 0x00
->        Scan request notifications: Disabled (0x00)
->> HCI Event: Command Complete (0x0e) plen 5
->      LE Set Extended Advertising Parameters (0x08|0x0036) ncmd 1
->        Status: Success (0x00)
->        TX power (selected): 9 dbm (0x09)
-> < HCI Command: LE Set Advertising Set Random Address (0x08|0x0035) plen 7
->        Advertising handle: 0x00
->        Advertising random address: 08:FD:55:ED:22:28 (OUI 08-FD-55)
->> HCI Event: Command Complete (0x0e) plen 4
->      LE Set Advertising Set Random Address (0x08|0x0035) ncmd
->        Status: Success (0x00)
-> < HCI Command: LE Set Extended Scan Response Data (0x08|0x0038) plen 35
->        Handle: 0x00
->        Operation: Complete scan response data (0x03)
->        Fragment preference: Minimize fragmentation (0x01)
->        Data length: 0x0d
->        Name (short): Chromebook
->> HCI Event: Command Complete (0x0e) plen 4
->      LE Set Extended Scan Response Data (0x08|0x0038) ncmd 1
->        Status: Invalid HCI Command Parameters (0x12)
-> 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> Reviewed-by: Daniel Winkler <danielwinkler@google.com>
-> ---
-> 
-> net/bluetooth/hci_request.c | 7 +++++--
-> 1 file changed, 5 insertions(+), 2 deletions(-)
+Ah, I'll fix it in v2 soon, sorry about that. I saw another function in
+this file returning -1.
 
-patch has been applied to bluetooth-next tree.
-
-Regards
-
-Marcel
-
+Peilin Ye
