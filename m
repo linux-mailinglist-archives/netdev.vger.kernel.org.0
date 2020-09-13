@@ -2,86 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D809E26817D
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 23:33:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59999268181
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 23:39:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725949AbgIMVdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 17:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51052 "EHLO
+        id S1725960AbgIMVjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 17:39:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbgIMVdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 17:33:12 -0400
+        with ESMTP id S1725939AbgIMVjm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 17:39:42 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334DDC06174A;
-        Sun, 13 Sep 2020 14:33:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5510AC06174A;
+        Sun, 13 Sep 2020 14:39:42 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C6BBA12814447;
-        Sun, 13 Sep 2020 14:16:22 -0700 (PDT)
-Date:   Sun, 13 Sep 2020 14:33:08 -0700 (PDT)
-Message-Id: <20200913.143308.2042080994542358655.davem@davemloft.net>
-To:     ttoukan.linux@gmail.com
-Cc:     luojiaxing@huawei.com, kuba@kernel.org, idos@mellanox.com,
-        ogerlitz@mellanox.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linuxarm@huawei.com
-Subject: Re: [PATCH net-next] net: ethernet: mlx4: Avoid assigning a value
- to ring_cons but not used it anymore in mlx4_en_xmit()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id BFEB41281E8CA;
+        Sun, 13 Sep 2020 14:22:53 -0700 (PDT)
+Date:   Sun, 13 Sep 2020 14:39:39 -0700 (PDT)
+Message-Id: <20200913.143939.859765790019703223.davem@davemloft.net>
+To:     anant.thazhemadam@gmail.com
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: fix uninit value error in __sys_sendmmsg
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <c0987225-0079-617a-bf89-b672b07f298a@gmail.com>
-References: <1599898095-10712-1-git-send-email-luojiaxing@huawei.com>
-        <20200912.182219.1013721666435098048.davem@davemloft.net>
-        <c0987225-0079-617a-bf89-b672b07f298a@gmail.com>
+In-Reply-To: <20200913110313.4239-1-anant.thazhemadam@gmail.com>
+References: <20200913110313.4239-1-anant.thazhemadam@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 27.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Sun, 13 Sep 2020 14:16:23 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Sun, 13 Sep 2020 14:22:54 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <ttoukan.linux@gmail.com>
-Date: Sun, 13 Sep 2020 13:12:05 +0300
+From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Date: Sun, 13 Sep 2020 16:33:13 +0530
 
-> 
-> 
-> On 9/13/2020 4:22 AM, David Miller wrote:
->> From: Luo Jiaxing <luojiaxing@huawei.com>
->> Date: Sat, 12 Sep 2020 16:08:15 +0800
->> 
->>> We found a set but not used variable 'ring_cons' in mlx4_en_xmit(), it
->>> will
->>> cause a warning when build the kernel. And after checking the commit
->>> record
->>> of this function, we found that it was introduced by a previous patch.
->>>
->>> So, We delete this redundant assignment code.
->>>
->>> Fixes: 488a9b48e398 ("net/mlx4_en: Wake TX queues only when there's
->>> enough room")
->>>
->>> Signed-off-by: Luo Jiaxing <luojiaxing@huawei.com>
->> Looks good, applied, thanks.
->> 
-> 
-> Hi Luo,
-> 
-> I didn't get a chance to review it during the weekend.
+> diff --git a/net/socket.c b/net/socket.c
+> index 0c0144604f81..1e6f9b54982c 100644
+> --- a/net/socket.c
+> +++ b/net/socket.c
+> @@ -2398,6 +2398,7 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
+>  	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
+>  	ssize_t err;
+>  
+> +	memset(iov, 0, UIO_FASTIOV);
+>  	msg_sys->msg_name = &address;
 
-Tariq, what are you even commenting on?  Are you responding to this patch
-which removes a %100 obviously unused variable set, or on the commit
-mentioned in the Fixes: tag?
+Did you even test this?
 
-> The ring_cons local variable is used in line 903:
-> https://elixir.bootlin.com/linux/v5.9-rc4/source/drivers/net/ethernet/mellanox/mlx4/en_tx.c#L903
+Seriously?
 
-He is removing an assignment to ring_cons much later in the function
-and therefore has no effect on this line.
+UIO_FASTIOV is the number of entries in 'iovstack', it's not the
+size with would be "UIO_FASTIOV * sizeof (struct iovec)", or
+even "sizeof(iovstack)"
 
-> 1. Your patch causes a degradation to the case when MLX4_EN_PERF_STAT
-> is defined.
+So could you really explain to me how you tested this patch for
+correctness, and for any functional or performance regressions
+that may occur?
 
-This is not true, see above.
+Because, once you correct that size argument to memset() we will now
+have a huge memset() for _EVERY_ _SINGLE_ sendmsg() done by the
+system.  And that will cause severe performance regressions for many
+workloads involving networking.
+
+This patch submission has been extremely careless on so many levels. I
+sincerely wish you would take your time with these changes and not be
+so lacking in the areas of testing and validation.
+
+It is always a reg flag when a submitter doesn't even notice an
+obvious compiler warning that reviewers like Greg and myself can see
+even without trying to build your code changes.
+
