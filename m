@@ -2,111 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B8D49267F4B
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 13:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85A41267F55
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 13:38:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725968AbgIMLD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 07:03:59 -0400
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:17819 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725963AbgIMLDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 07:03:50 -0400
+        id S1725932AbgIMLhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 07:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725919AbgIMLho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 07:37:44 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC0A6C061573
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 04:37:43 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id g21so1828447plq.1
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 04:37:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1599995031; x=1631531031;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=JPqkWOIRFmR6XWe+wPkArUVRUL+EGbiVYPSdNAyk2+4=;
-  b=bxX3e03MEz98re+fD422ihNCdOhiMzh5W9GrXf6DzVjnthgJAlo/Qzew
-   MU4O4IcZTsYZEWPTE8YqEXZ8MVXbiYJTzs5+QScSBQtg88VGOsngZwrm4
-   5CNsOsu9IyJyGRgTcg5evqCGLjwC4B4mODFaM0vZBCJapVfE01Z/2HADt
-   o=;
-X-IronPort-AV: E=Sophos;i="5.76,421,1592870400"; 
-   d="scan'208";a="53414756"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-c7131dcf.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 13 Sep 2020 11:03:49 +0000
-Received: from EX13D28EUC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2b-c7131dcf.us-west-2.amazon.com (Postfix) with ESMTPS id 2F54AA23F4;
-        Sun, 13 Sep 2020 11:03:48 +0000 (UTC)
-Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.160.183) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Sun, 13 Sep 2020 11:03:39 +0000
-References: <20200913082056.3610-6-shayagr@amazon.com>
-User-agent: mu4e 1.4.12; emacs 26.3
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Shay Agroskin <shayagr@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <akiyano@amazon.com>, <sameehj@amazon.com>,
-        <ndagan@amazon.com>
-Subject: Re: [PATCH V1 net-next 5/8] net: ena: Remove redundant print of placement policy
-In-Reply-To: <20200913082056.3610-6-shayagr@amazon.com>
-Date:   Sun, 13 Sep 2020 14:03:24 +0300
-Message-ID: <pj41zlsgbmdjlv.fsf@u68c7b5b1d2d758.ant.amazon.com>
-MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.160.183]
-X-ClientProxiedBy: EX13D50UWA001.ant.amazon.com (10.43.163.46) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=O3SsmOzr+fbC5y019x+72fktAEhgHZsYFbWAdfH2+6I=;
+        b=EEdOUN6E7KCLSY06sJbazMzdA60BCmFgnqX9Bep1h5357CXuV64s31cxxaOvrcCyBS
+         UUvOW2Hl2YJLuUIxNpEKlZ0xXGsqmW6Ho1mKH4xUOUeHLsl+Kv0fL/a4n8J/wCcFb6Yc
+         Dsne8TCdbQOwjcFvVkD96vqcPkVk4nC/ZEISmH1fG3CuDf1WJoR4pUte8LT/R3+thyOn
+         WkU51X3bTCw48X4VBoF8cPQdh0/3l+yWmxh3JSwlgMvFvC+gP9HdATBj+Dy+XTn6Ir9e
+         NRRgcrkjpltQ0TLAJLoVlXsGU0Ufw7tSfAK2bPEmVdJUihr+LOih4JjR26R+fcrsTs1i
+         gfCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=O3SsmOzr+fbC5y019x+72fktAEhgHZsYFbWAdfH2+6I=;
+        b=tGYlcVKvS8LEL7ESqVaqikZyuStNf6ZbYU6wa9F0t4BGav/7IoEqFXtO/j876wkJhq
+         3ZiFUfD1suvkWuhW1nZO2YpFzokdgzO6b7GWqHIpZoXdHo06rtT5WtEXHCwgkuqoh50N
+         hLgx2EYST3ltO8JEO4mWeTUBV9Ky8NnhGKlhR6Ai9Yr0uVanPbtQqYzfXyhMLpKpswR3
+         lBSzCRWBxo/qNlRyCDNHNjbRghmkCWwhaTdNl0wZnD9HEvF7P3jtjsh16qBVxbKaEgIB
+         FXjcZCrifKv02yHAS9naBNaRx4iNxDNeru26as1LEcQCVa0aPa1KIJMeK4yzHByGm4/c
+         ZkSg==
+X-Gm-Message-State: AOAM532s3FSENMXfUVpLcS5b7r6SkK3FCEOhc5m5fLkgWUwqR4X11zD8
+        z8uzq0FHLJsGBJpzNa4t3mIeDWNjkec=
+X-Google-Smtp-Source: ABdhPJyr9SQCUN52OEa7f/Sph/5HNWLw11AIKdMMui1WiVCv8F0swvzzDbVdRpgWYjI5GUe2OD23+Q==
+X-Received: by 2002:a17:90b:a44:: with SMTP id gw4mr9280089pjb.26.1599997060023;
+        Sun, 13 Sep 2020 04:37:40 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id j18sm5837320pgm.30.2020.09.13.04.37.38
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 13 Sep 2020 04:37:39 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>,
+        tipc-discussion@lists.sourceforge.net
+Cc:     davem@davemloft.net, Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>
+Subject: [PATCH net] tipc: use skb_unshare() instead in tipc_buf_append()
+Date:   Sun, 13 Sep 2020 19:37:31 +0800
+Message-Id: <0fcddb2bab6bde5632dcd4889961ebce1ec8bb8f.1599997051.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In tipc_buf_append() it may change skb's frag_list, and it causes
+problems when this skb is cloned. skb_unclone() doesn't really
+make this skb's flag_list available to change.
 
-Shay Agroskin <shayagr@amazon.com> writes:
+Shuang Li has reported an use-after-free issue because of this
+when creating quite a few macvlan dev over the same dev, where
+the broadcast packets will be cloned and go up to the stack:
 
-> The placement policy is printed in the process of queue creation 
-> in
-> ena_up(). No need to print it in ena_probe().
->
-> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
-> Signed-off-by: Shay Agroskin <shayagr@amazon.com>
-> ---
->  drivers/net/ethernet/amazon/ena/ena_netdev.c | 10 ++--------
->  1 file changed, 2 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
-> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index cab83a9de651..97e701222226 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -4156,7 +4156,6 @@ static int ena_probe(struct pci_dev *pdev, 
-> const struct pci_device_id *ent)
->  	struct net_device *netdev;
->  	static int adapters_found;
->  	u32 max_num_io_queues;
-> -	char *queue_type_str;
->  	bool wd_state;
->  	int bars, rc;
->  
-> @@ -4334,15 +4333,10 @@ static int ena_probe(struct pci_dev 
-> *pdev, const struct pci_device_id *ent)
->  	timer_setup(&adapter->timer_service, ena_timer_service, 
->  0);
->  	mod_timer(&adapter->timer_service, round_jiffies(jiffies + 
->  HZ));
->  
-> -	if (ena_dev->tx_mem_queue_type == 
-> ENA_ADMIN_PLACEMENT_POLICY_HOST)
-> -		queue_type_str = "Regular";
-> -	else
-> -		queue_type_str = "Low Latency";
-> -
->  	dev_info(&pdev->dev,
-> -		 "%s found at mem %lx, mac addr %pM, Placement 
-> policy: %s\n",
-> +		 "%s found at mem %lx, mac addr %pM\n",
->  		 DEVICE_NAME, (long)pci_resource_start(pdev, 0),
-> -		 netdev->dev_addr, queue_type_str);
-> +		 netdev->dev_addr);
->  
->  	set_bit(ENA_FLAG_DEVICE_RUNNING, &adapter->flags);
+ [ ] BUG: KASAN: use-after-free in pskb_expand_head+0x86d/0xea0
+ [ ] Call Trace:
+ [ ]  dump_stack+0x7c/0xb0
+ [ ]  print_address_description.constprop.7+0x1a/0x220
+ [ ]  kasan_report.cold.10+0x37/0x7c
+ [ ]  check_memory_region+0x183/0x1e0
+ [ ]  pskb_expand_head+0x86d/0xea0
+ [ ]  process_backlog+0x1df/0x660
+ [ ]  net_rx_action+0x3b4/0xc90
+ [ ]
+ [ ] Allocated by task 1786:
+ [ ]  kmem_cache_alloc+0xbf/0x220
+ [ ]  skb_clone+0x10a/0x300
+ [ ]  macvlan_broadcast+0x2f6/0x590 [macvlan]
+ [ ]  macvlan_process_broadcast+0x37c/0x516 [macvlan]
+ [ ]  process_one_work+0x66a/0x1060
+ [ ]  worker_thread+0x87/0xb10
+ [ ]
+ [ ] Freed by task 3253:
+ [ ]  kmem_cache_free+0x82/0x2a0
+ [ ]  skb_release_data+0x2c3/0x6e0
+ [ ]  kfree_skb+0x78/0x1d0
+ [ ]  tipc_recvmsg+0x3be/0xa40 [tipc]
 
-Hi, I got this patchset messed up a little. These patches are part 
-of the 'Update license and polish ENA driver code' patchset 
-(Message-id: <20200913081640.19560-1-shayagr@amazon.com>)
-Sorry for the clutter. Please let me know it you prefer that I 
-re-send this patchset as a single thread
+So fix it by using skb_unshare() instead, which would create a new
+skb for the cloned frag and it'll be safe to change its frag_list.
+The similar things were also done in sctp_make_reassembled_event(),
+which is using skb_copy().
+
+Reported-by: Shuang Li <shuali@redhat.com>
+Fixes: 37e22164a8a3 ("tipc: rename and move message reassembly function")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/tipc/msg.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/tipc/msg.c b/net/tipc/msg.c
+index 848fae6..52e93ba 100644
+--- a/net/tipc/msg.c
++++ b/net/tipc/msg.c
+@@ -150,7 +150,8 @@ int tipc_buf_append(struct sk_buff **headbuf, struct sk_buff **buf)
+ 	if (fragid == FIRST_FRAGMENT) {
+ 		if (unlikely(head))
+ 			goto err;
+-		if (unlikely(skb_unclone(frag, GFP_ATOMIC)))
++		frag = skb_unshare(frag, GFP_ATOMIC);
++		if (unlikely(!frag))
+ 			goto err;
+ 		head = *headbuf = frag;
+ 		*buf = NULL;
+-- 
+2.1.0
+
