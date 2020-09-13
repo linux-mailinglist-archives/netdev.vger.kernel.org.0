@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 596CD267F7B
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 14:31:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB021267F81
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 14:38:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725942AbgIMMa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 08:30:56 -0400
-Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:52600 "EHLO
+        id S1725943AbgIMMio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 08:38:44 -0400
+Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:39767 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725930AbgIMMav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 08:30:51 -0400
+        with ESMTP id S1725931AbgIMMik (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 08:38:40 -0400
 Received: from localhost.localdomain ([93.23.14.57])
         by mwinf5d73 with ME
-        id TQWk2300E1Drbmd03QWlUL; Sun, 13 Sep 2020 14:30:48 +0200
+        id TQed230041Drbmd03QedzE; Sun, 13 Sep 2020 14:38:38 +0200
 X-ME-Helo: localhost.localdomain
 X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 13 Sep 2020 14:30:48 +0200
+X-ME-Date: Sun, 13 Sep 2020 14:38:38 +0200
 X-ME-IP: 93.23.14.57
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 To:     davem@davemloft.net, kuba@kernel.org, natechancellor@gmail.com,
@@ -24,9 +24,9 @@ To:     davem@davemloft.net, kuba@kernel.org, natechancellor@gmail.com,
 Cc:     linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] tulip: uli526x: switch from 'pci_' to 'dma_' API
-Date:   Sun, 13 Sep 2020 14:30:42 +0200
-Message-Id: <20200913123042.354723-1-christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] tulip: dmfe: switch from 'pci_' to 'dma_' API
+Date:   Sun, 13 Sep 2020 14:38:34 +0200
+Message-Id: <20200913123834.355135-1-christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -41,7 +41,7 @@ The patch has been generated with the coccinelle script below and has been
 hand modified to replace GFP_ with a correct flag.
 It has been compile tested.
 
-When memory is allocated in 'uli526x_init_one()' GFP_KERNEL can be used
+When memory is allocated in 'dmfe_init_one()' GFP_KERNEL can be used
 because it is a probe function and no lock is taken in the between.
 
 
@@ -166,14 +166,14 @@ Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 If needed, see post from Christoph Hellwig on the kernel-janitors ML:
    https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
 ---
- drivers/net/ethernet/dec/tulip/uli526x.c | 44 +++++++++++++-----------
- 1 file changed, 23 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/dec/tulip/dmfe.c | 44 +++++++++++++++------------
+ 1 file changed, 24 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/dec/tulip/uli526x.c b/drivers/net/ethernet/dec/tulip/uli526x.c
-index f942399f0f32..13e73ed15ef0 100644
---- a/drivers/net/ethernet/dec/tulip/uli526x.c
-+++ b/drivers/net/ethernet/dec/tulip/uli526x.c
-@@ -282,7 +282,7 @@ static int uli526x_init_one(struct pci_dev *pdev,
+diff --git a/drivers/net/ethernet/dec/tulip/dmfe.c b/drivers/net/ethernet/dec/tulip/dmfe.c
+index c3b4abff48b5..87a27fe2992d 100644
+--- a/drivers/net/ethernet/dec/tulip/dmfe.c
++++ b/drivers/net/ethernet/dec/tulip/dmfe.c
+@@ -380,7 +380,7 @@ static int dmfe_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  		return -ENOMEM;
  	SET_NETDEV_DEV(dev, &pdev->dev);
  
@@ -182,90 +182,92 @@ index f942399f0f32..13e73ed15ef0 100644
  		pr_warn("32-bit PCI DMA not available\n");
  		err = -ENODEV;
  		goto err_out_free;
-@@ -317,11 +317,15 @@ static int uli526x_init_one(struct pci_dev *pdev,
- 	/* Allocate Tx/Rx descriptor memory */
- 	err = -ENOMEM;
+@@ -422,15 +422,17 @@ static int dmfe_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	db = netdev_priv(dev);
  
--	db->desc_pool_ptr = pci_alloc_consistent(pdev, sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20, &db->desc_pool_dma_ptr);
+ 	/* Allocate Tx/Rx descriptor memory */
+-	db->desc_pool_ptr = pci_alloc_consistent(pdev, sizeof(struct tx_desc) *
+-			DESC_ALL_CNT + 0x20, &db->desc_pool_dma_ptr);
 +	db->desc_pool_ptr = dma_alloc_coherent(&pdev->dev,
 +					       sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20,
 +					       &db->desc_pool_dma_ptr, GFP_KERNEL);
- 	if (!db->desc_pool_ptr)
- 		goto err_out_release;
+ 	if (!db->desc_pool_ptr) {
+ 		err = -ENOMEM;
+ 		goto err_out_res;
+ 	}
  
--	db->buf_pool_ptr = pci_alloc_consistent(pdev, TX_BUF_ALLOC * TX_DESC_CNT + 4, &db->buf_pool_dma_ptr);
+-	db->buf_pool_ptr = pci_alloc_consistent(pdev, TX_BUF_ALLOC *
+-			TX_DESC_CNT + 4, &db->buf_pool_dma_ptr);
 +	db->buf_pool_ptr = dma_alloc_coherent(&pdev->dev,
 +					      TX_BUF_ALLOC * TX_DESC_CNT + 4,
 +					      &db->buf_pool_dma_ptr, GFP_KERNEL);
- 	if (!db->buf_pool_ptr)
- 		goto err_out_free_tx_desc;
- 
-@@ -401,11 +405,12 @@ static int uli526x_init_one(struct pci_dev *pdev,
+ 	if (!db->buf_pool_ptr) {
+ 		err = -ENOMEM;
+ 		goto err_out_free_desc;
+@@ -492,11 +494,12 @@ static int dmfe_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
  err_out_unmap:
  	pci_iounmap(pdev, db->ioaddr);
- err_out_free_tx_buf:
+ err_out_free_buf:
 -	pci_free_consistent(pdev, TX_BUF_ALLOC * TX_DESC_CNT + 4,
 -			    db->buf_pool_ptr, db->buf_pool_dma_ptr);
 +	dma_free_coherent(&pdev->dev, TX_BUF_ALLOC * TX_DESC_CNT + 4,
 +			  db->buf_pool_ptr, db->buf_pool_dma_ptr);
- err_out_free_tx_desc:
+ err_out_free_desc:
 -	pci_free_consistent(pdev, sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20,
 -			    db->desc_pool_ptr, db->desc_pool_dma_ptr);
 +	dma_free_coherent(&pdev->dev,
 +			  sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20,
 +			  db->desc_pool_ptr, db->desc_pool_dma_ptr);
- err_out_release:
+ err_out_res:
  	pci_release_regions(pdev);
  err_out_disable:
-@@ -424,11 +429,11 @@ static void uli526x_remove_one(struct pci_dev *pdev)
+@@ -519,11 +522,12 @@ static void dmfe_remove_one(struct pci_dev *pdev)
  
- 	unregister_netdev(dev);
- 	pci_iounmap(pdev, db->ioaddr);
--	pci_free_consistent(db->pdev, sizeof(struct tx_desc) *
--				DESC_ALL_CNT + 0x20, db->desc_pool_ptr,
-- 				db->desc_pool_dma_ptr);
--	pci_free_consistent(db->pdev, TX_BUF_ALLOC * TX_DESC_CNT + 4,
--				db->buf_pool_ptr, db->buf_pool_dma_ptr);
-+	dma_free_coherent(&db->pdev->dev,
-+			  sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20,
-+			  db->desc_pool_ptr, db->desc_pool_dma_ptr);
-+	dma_free_coherent(&db->pdev->dev, TX_BUF_ALLOC * TX_DESC_CNT + 4,
-+			  db->buf_pool_ptr, db->buf_pool_dma_ptr);
- 	pci_release_regions(pdev);
- 	pci_disable_device(pdev);
- 	free_netdev(dev);
-@@ -810,7 +815,8 @@ static void uli526x_rx_packet(struct net_device *dev, struct uli526x_board_info
+ 		unregister_netdev(dev);
+ 		pci_iounmap(db->pdev, db->ioaddr);
+-		pci_free_consistent(db->pdev, sizeof(struct tx_desc) *
+-					DESC_ALL_CNT + 0x20, db->desc_pool_ptr,
+- 					db->desc_pool_dma_ptr);
+-		pci_free_consistent(db->pdev, TX_BUF_ALLOC * TX_DESC_CNT + 4,
+-					db->buf_pool_ptr, db->buf_pool_dma_ptr);
++		dma_free_coherent(&db->pdev->dev,
++				  sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20,
++				  db->desc_pool_ptr, db->desc_pool_dma_ptr);
++		dma_free_coherent(&db->pdev->dev,
++				  TX_BUF_ALLOC * TX_DESC_CNT + 4,
++				  db->buf_pool_ptr, db->buf_pool_dma_ptr);
+ 		pci_release_regions(pdev);
+ 		free_netdev(dev);	/* free board information */
+ 	}
+@@ -955,8 +959,8 @@ static void dmfe_rx_packet(struct net_device *dev, struct dmfe_board_info *db)
  		db->rx_avail_cnt--;
  		db->interval_rx_cnt++;
  
--		pci_unmap_single(db->pdev, le32_to_cpu(rxptr->rdes2), RX_ALLOC_SIZE, PCI_DMA_FROMDEVICE);
+-		pci_unmap_single(db->pdev, le32_to_cpu(rxptr->rdes2),
+-				 RX_ALLOC_SIZE, PCI_DMA_FROMDEVICE);
 +		dma_unmap_single(&db->pdev->dev, le32_to_cpu(rxptr->rdes2),
 +				 RX_ALLOC_SIZE, DMA_FROM_DEVICE);
+ 
  		if ( (rdes0 & 0x300) != 0x300) {
  			/* A packet without First/Last flag */
- 			/* reuse this SKB */
-@@ -1234,10 +1240,8 @@ static void uli526x_reuse_skb(struct uli526x_board_info *db, struct sk_buff * sk
+@@ -1329,8 +1333,8 @@ static void dmfe_reuse_skb(struct dmfe_board_info *db, struct sk_buff * skb)
  
  	if (!(rxptr->rdes0 & cpu_to_le32(0x80000000))) {
  		rxptr->rx_skb_ptr = skb;
--		rxptr->rdes2 = cpu_to_le32(pci_map_single(db->pdev,
--							  skb_tail_pointer(skb),
--							  RX_ALLOC_SIZE,
--							  PCI_DMA_FROMDEVICE));
-+		rxptr->rdes2 = cpu_to_le32(dma_map_single(&db->pdev->dev, skb_tail_pointer(skb),
+-		rxptr->rdes2 = cpu_to_le32( pci_map_single(db->pdev,
+-			    skb->data, RX_ALLOC_SIZE, PCI_DMA_FROMDEVICE) );
++		rxptr->rdes2 = cpu_to_le32(dma_map_single(&db->pdev->dev, skb->data,
 +							  RX_ALLOC_SIZE, DMA_FROM_DEVICE));
  		wmb();
  		rxptr->rdes0 = cpu_to_le32(0x80000000);
  		db->rx_avail_cnt++;
-@@ -1409,10 +1413,8 @@ static void allocate_rx_buffer(struct net_device *dev)
- 		if (skb == NULL)
+@@ -1544,8 +1548,8 @@ static void allocate_rx_buffer(struct net_device *dev)
+ 		if ( ( skb = netdev_alloc_skb(dev, RX_ALLOC_SIZE) ) == NULL )
  			break;
  		rxptr->rx_skb_ptr = skb; /* FIXME (?) */
--		rxptr->rdes2 = cpu_to_le32(pci_map_single(db->pdev,
--							  skb_tail_pointer(skb),
--							  RX_ALLOC_SIZE,
--							  PCI_DMA_FROMDEVICE));
-+		rxptr->rdes2 = cpu_to_le32(dma_map_single(&db->pdev->dev, skb_tail_pointer(skb),
+-		rxptr->rdes2 = cpu_to_le32( pci_map_single(db->pdev, skb->data,
+-				    RX_ALLOC_SIZE, PCI_DMA_FROMDEVICE) );
++		rxptr->rdes2 = cpu_to_le32(dma_map_single(&db->pdev->dev, skb->data,
 +							  RX_ALLOC_SIZE, DMA_FROM_DEVICE));
  		wmb();
  		rxptr->rdes0 = cpu_to_le32(0x80000000);
