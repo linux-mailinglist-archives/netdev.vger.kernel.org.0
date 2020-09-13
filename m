@@ -2,109 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D2212680D8
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 20:43:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A5E2680F2
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 21:16:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726010AbgIMSnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 14:43:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47414 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725959AbgIMSnl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Sep 2020 14:43:41 -0400
-Received: from Davids-MacBook-Pro.local.net (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 835FC2223E;
-        Sun, 13 Sep 2020 18:43:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600022620;
-        bh=iibIW1OnRugOXQZpnNTWIqR3nlrzxr/VJtN/uzkYp0k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ddxNsN0AV4LFEeCeVlzBnWnAQYhgF34jpX9SBOwISPwbJYprCbQ+dWVBx+uVUNy9n
-         XJjuBeokCd2fXKyfqu3RnJe9bYZPpWpQ6ujeT8mE8r9IjU6+5SXaEj8sEdX2FNHoFl
-         oMzJ5ONG8mgp9rfKD3YMIPZzfdf63vdSoUWJU8vI=
-From:   David Ahern <dsahern@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        David Ahern <dsahern@gmail.com>, wenxu <wenxu@ucloud.cn>
-Subject: [PATCH net] ipv4: Initialize flowi4_multipath_hash in data path
-Date:   Sun, 13 Sep 2020 12:43:39 -0600
-Message-Id: <20200913184339.35927-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        id S1725956AbgIMTQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 15:16:08 -0400
+Received: from mail-io1-f80.google.com ([209.85.166.80]:52591 "EHLO
+        mail-io1-f80.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725938AbgIMTQF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 15:16:05 -0400
+Received: by mail-io1-f80.google.com with SMTP id m4so9629961iov.19
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 12:16:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=H5sZMLas0Dftu0/AnBETOMOqnJxRbr4NABj+u/j1kdc=;
+        b=CzxSZJJb6088whKKQ6xrrEYHoBhTS/fHqgaTfwwDDpozH2v4cAnGMOONjPFGTvi6p0
+         hBNazggWJ7FNrfD2zexsyjAjB4AfOf1CmNVoqJPPAs7azDvsLJnf0av02XyXx3XO4cqv
+         /pKqHXtINhchwksXBg5tp/cNMM3Cu89T4fp3bigbGiz6wTSsUsmoUm/AF7QGG716xZQh
+         9sPrGjaNt02Nlb9UXXmdF/CYw7H7WTzR80kTXKtrNhSwina2Nyz2eLMumfBhBD5LPAQq
+         z7+pkefVdDMNzdnPKuDMk2YYpSMw0M3K5SBy2w8yhMfK1N6vRtO6nIg25ah/BqqXAuU+
+         QEXw==
+X-Gm-Message-State: AOAM533VScfe9gpTqongUFT1h98QY24K6uqyjc48Gu6Wqp2O17Ju2t0X
+        AW/n3i4wBrFI0APTuFG0n6SpvULvmDhUgzmRFH3GG5EMmqRW
+X-Google-Smtp-Source: ABdhPJyZo8l+cQgc9V5pR/phJ891G3KqtKg+o1CZoUUhUl2oPD+crqlNd1QgYKQl0MErpfK5bx5c4TbXdaZujxA7CqFuCcxtUC1y
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a6b:b7cf:: with SMTP id h198mr8702567iof.55.1600024564229;
+ Sun, 13 Sep 2020 12:16:04 -0700 (PDT)
+Date:   Sun, 13 Sep 2020 12:16:04 -0700
+In-Reply-To: <000000000000a6348d05a9234041@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c86d5f05af36bfac@google.com>
+Subject: Re: WARNING in tracepoint_add_func
+From:   syzbot <syzbot+721aa903751db87aa244@syzkaller.appspotmail.com>
+To:     corbet@lwn.net, davem@davemloft.net, dsahern@gmail.com,
+        frederic@kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mathieu.desnoyers@polymtl.ca,
+        mingo@elte.hu, netdev@vger.kernel.org, peterz@infradead.org,
+        rostedt@goodmis.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+syzbot has bisected this issue to:
 
-flowi4_multipath_hash was added by the commit referenced below for
-tunnels. Unfortunately, the patch did not initialize the new field
-for several fast path lookups that do not initialize the entire flow
-struct to 0. Fix those locations. Currently, flowi4_multipath_hash
-is random garbage and affects the hash value computed by
-fib_multipath_hash for multipath selection.
+commit 58956317c8de52009d1a38a721474c24aef74fe7
+Author: David Ahern <dsahern@gmail.com>
+Date:   Fri Dec 7 20:24:57 2018 +0000
 
-Fixes: 24ba14406c5c ("route: Add multipath_hash in flowi_common to make user-define hash")
-Signed-off-by: David Ahern <dsahern@gmail.com>
-Cc: wenxu <wenxu@ucloud.cn>
----
- include/net/flow.h      | 1 +
- net/core/filter.c       | 1 +
- net/ipv4/fib_frontend.c | 1 +
- net/ipv4/route.c        | 1 +
- 4 files changed, 4 insertions(+)
+    neighbor: Improve garbage collection
 
-diff --git a/include/net/flow.h b/include/net/flow.h
-index 929d3ca614d0..b2531df3f65f 100644
---- a/include/net/flow.h
-+++ b/include/net/flow.h
-@@ -116,6 +116,7 @@ static inline void flowi4_init_output(struct flowi4 *fl4, int oif,
- 	fl4->saddr = saddr;
- 	fl4->fl4_dport = dport;
- 	fl4->fl4_sport = sport;
-+	fl4->flowi4_multipath_hash = 0;
- }
- 
- /* Reset some input parameters after previous lookup */
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 1f647ab986b6..1b168371ba96 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4838,6 +4838,7 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 	fl4.saddr = params->ipv4_src;
- 	fl4.fl4_sport = params->sport;
- 	fl4.fl4_dport = params->dport;
-+	fl4.flowi4_multipath_hash = 0;
- 
- 	if (flags & BPF_FIB_LOOKUP_DIRECT) {
- 		u32 tbid = l3mdev_fib_table_rcu(dev) ? : RT_TABLE_MAIN;
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 41079490a118..86a23e4a6a50 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -362,6 +362,7 @@ static int __fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
- 	fl4.flowi4_tun_key.tun_id = 0;
- 	fl4.flowi4_flags = 0;
- 	fl4.flowi4_uid = sock_net_uid(net, NULL);
-+	fl4.flowi4_multipath_hash = 0;
- 
- 	no_addr = idev->ifa_list == NULL;
- 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 8ca6bcab7b03..e5f210d00851 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -2147,6 +2147,7 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- 	fl4.daddr = daddr;
- 	fl4.saddr = saddr;
- 	fl4.flowi4_uid = sock_net_uid(net, NULL);
-+	fl4.flowi4_multipath_hash = 0;
- 
- 	if (fib4_rules_early_flow_dissect(net, skb, &fl4, &_flkeys)) {
- 		flkeys = &_flkeys;
--- 
-2.24.3 (Apple Git-128)
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=146ba853900000
+start commit:   746f534a tools/libbpf: Avoid counting local symbols in ABI..
+git tree:       bpf
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=166ba853900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=126ba853900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a0437fdd630bee11
+dashboard link: https://syzkaller.appspot.com/bug?extid=721aa903751db87aa244
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=128ff37d900000
 
+Reported-by: syzbot+721aa903751db87aa244@syzkaller.appspotmail.com
+Fixes: 58956317c8de ("neighbor: Improve garbage collection")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
