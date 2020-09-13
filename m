@@ -2,82 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FBCE267EDA
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 10:43:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75F6E267EE6
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 11:14:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726025AbgIMIn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 04:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725924AbgIMInZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 04:43:25 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8539BC061573;
-        Sun, 13 Sep 2020 01:43:25 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id j7so3035563plk.11;
-        Sun, 13 Sep 2020 01:43:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tOvuTNpBHpM6ThuiTo5W6caAcs2ZGSs9PAG6Ta+6HK4=;
-        b=q+r6oS9OHhM0ZnRE5bCP47MQTo5Cl2chYyHuSMGLNDc7WGlY0OtxASyEPloSEHWhO1
-         5MIEiqkjQMSjZG7JbYphcAskvTte2+HQBrFj/6DIPJNbtBYJAaYchWyTu+MpOtxzP7l2
-         q6qtKdncxjlAuh+leJwqhOGfgAO2DvlpmzyibvTrPuGV3FJgovszUWqy9vHMcGtLwbJC
-         FnoEcSNDfXdskqIvilWfz1C9AKG9F+cGvWaW5fy1ZZTtMeI/fXvOW1O5xLhgBeXlt8Cg
-         9FrddmQBErzFZPJrztw8YTE6ne1f5Ay7sLaItX10pgLSl/ccxgY0fkbo1/KIj1HsoWUz
-         9BGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tOvuTNpBHpM6ThuiTo5W6caAcs2ZGSs9PAG6Ta+6HK4=;
-        b=o8fO166gQ/S3pwmdZxvO14kGXhjxx6I8lh0iVS83nIH8jwGSxf+GzBLK18YHb5c/m5
-         805XfBhiN6lV4MIOPHHmWxTM3XErVlrxXvPNyHYcLaOzupxocvBBvjDIoTKMUOd2g2x4
-         XxYaqOvIZ7rV+6QgMzrr1NfN6cp0QFfyCc8aVlWGwXqdHviTMzIQ27kmFb3JzrgQfWd/
-         fdakB8dN3gWUD8xo4wy2sfobQFXwGsO/vrgxh3Pc8cXL/jl+ErCXPmAPef/PWSKWReOg
-         d/UynR7eUiDAULdslSLarZWjzjikZz0xMDY33sX1mWnS7X0JSkFCwsBF4A9qWfyh5rjF
-         COTw==
-X-Gm-Message-State: AOAM531MKzwGySVBrG8Lef6uIV2F0RiCq1rY9/3UETcGySD7gAFD0s+l
-        kLQrxAZfk9L6M2SvkpjOlPLW3y5IO5A6Ts+pozY3jH+q
-X-Google-Smtp-Source: ABdhPJxriGj9iZ0DZV3S2LG/uMK4bjifT5yi7Wf9rrRWc1QXjvokJfsM/wXZiGd6kl1aBwZTrycR2SOIFKIGAAmrZ/U=
-X-Received: by 2002:a17:902:b218:: with SMTP id t24mr9282818plr.113.1599986605156;
- Sun, 13 Sep 2020 01:43:25 -0700 (PDT)
+        id S1725919AbgIMJO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 05:14:27 -0400
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:48931 "EHLO
+        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725926AbgIMJOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 05:14:24 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 57DBB455;
+        Sun, 13 Sep 2020 05:14:22 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Sun, 13 Sep 2020 05:14:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=6caHZu
+        FWNbhXAoG/AuiV8OBLt+yyQM+UA4eajeJzjFE=; b=eV76RELtFhr0evByPB0cet
+        goCUmxIcUC5786rNQTt737LGvLqYthF6CjQydE+cJ+3bRgd6dI6G2/YggP0+ECVN
+        w6e1iKf/HtnKF4dT8MrqDEKX9iQamSEqTkcjJyWIhv/sbSJ6jnksC5t106nM0pV/
+        Zu1xrVAQxYYAePdCsDQRSQQN+BiqZ+gpPbBJai9urYst6GIifDWhjpzww++4zHXX
+        NXtLFQvj0YlwdW+U6qvanjgwZxUhSlh5MfbiT6bn2CjnqK0bumZ0cF8rpPRMZ8x9
+        yW3pICavCGjDQ7FUzXSSahqH54HpaXIoHRCHHVnlc9tqFgKj2ZjQISRosfCB+4jw
+        ==
+X-ME-Sender: <xms:7OJdX8D3lR4d4EV64NcuK1lV_5DjLVMEzOcC4NSE9tQZmGEaiQ3Ijw>
+    <xme:7OJdX-gYZ--n69HSGH_wp_Ncww9V5oFqMQA6P4siooLJ-I7qQvyL6q8H5ND2COlNo
+    Kc5HmTQX6fyrfk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudeifedgudefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepvddtvddrudeigedrvdehrdehnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:7OJdX_lihqyPBMv28c33aFsLZLhdD_UcxN8D4-uQi-9O6do8Id5LHw>
+    <xmx:7OJdXyxGk6LoM1pxKhAMNiDq5H8UoeiEprlHImIqH6uSm3neIOWKyA>
+    <xmx:7OJdXxQtlJ5JD9DdozqhAUM4vMe1FrzzetjBdE9ERv4Umt6LCD4skg>
+    <xmx:7eJdX6Kfa7oCXrlAmr9J7wWkv0OvvdXGV552ElmUR54g8PRHw_tqqw>
+Received: from localhost (unknown [202.164.25.5])
+        by mail.messagingengine.com (Postfix) with ESMTPA id E0BF7306467D;
+        Sun, 13 Sep 2020 05:14:19 -0400 (EDT)
+Date:   Sun, 13 Sep 2020 12:14:14 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Michael Chan <michael.chan@broadcom.com>, tariqt@nvidia.com,
+        saeedm@nvidia.com, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next 7/8] ixgbe: add pause frame stats
+Message-ID: <20200913091414.GA3208846@shredder>
+References: <20200911195258.1048468-1-kuba@kernel.org>
+ <20200911195258.1048468-8-kuba@kernel.org>
+ <CAKgT0UccY586mhxRjf+W5gKZdhDMOCXW=p+reEivPnqyFryUbQ@mail.gmail.com>
+ <20200911151343.25fbbdec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20200911050359.25042-1-xie.he.0141@gmail.com> <CA+FuTSeOUKJYOFamA+fKBxEb22VosOXZRWGf2DungBGRorcyfg@mail.gmail.com>
- <CAJht_EOCZvubQRHuS_4F2vFgQSnhkrZBwLDxoougqKkm2qaCgg@mail.gmail.com> <CA+FuTScP5x-FG6AHKujvfbLUeSnQfx371Z7a=59BU8QKAm+GGw@mail.gmail.com>
-In-Reply-To: <CA+FuTScP5x-FG6AHKujvfbLUeSnQfx371Z7a=59BU8QKAm+GGw@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sun, 13 Sep 2020 01:43:14 -0700
-Message-ID: <CAJht_ENDCmmCEbJ2h4XNmCr40EXJSAyK_w3s2ymK_hRqPiMrjw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/packet: Fix a comment about hard_header_len
- and add a warning for it
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Brian Norris <briannorris@chromium.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200911151343.25fbbdec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 13, 2020 at 1:11 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> I am concerned about adding a WARN_ON_ONCE that we already expect to
-> fire on some platforms.
->
-> Probably better to add the documentation without the warning.
->
-> I know I suggested the check before, sorry for the churn, but I hadn't
-> checked the existing state yet.
+On Fri, Sep 11, 2020 at 03:13:43PM -0700, Jakub Kicinski wrote:
+> On Fri, 11 Sep 2020 14:12:50 -0700 Alexander Duyck wrote:
+> > On Fri, Sep 11, 2020 at 12:53 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > @@ -3546,6 +3556,7 @@ static const struct ethtool_ops ixgbe_ethtool_ops = {
+> > >         .set_eeprom             = ixgbe_set_eeprom,
+> > >         .get_ringparam          = ixgbe_get_ringparam,
+> > >         .set_ringparam          = ixgbe_set_ringparam,
+> > > +       .get_pause_stats        = ixgbe_get_pause_stats,
+> > >         .get_pauseparam         = ixgbe_get_pauseparam,
+> > >         .set_pauseparam         = ixgbe_set_pauseparam,
+> > >         .get_msglevel           = ixgbe_get_msglevel,  
+> > 
+> > So the count for this is simpler in igb than it is for ixgbe. I'm
+> > assuming you want just standard link flow control frames. If so then
+> > this patch is correct. Otherwise if you are wanting to capture
+> > priority flow control data then those are a seperate array of stats
+> > prefixed with a "p" instead of an "l". Otherwise this looks fine to
+> > me.
+> 
+> That's my interpretation, although I haven't found any place the
+> standard would address this directly. Non-PFC pause has a different
+> opcode, so I'm reasonably certain this makes sense.
+> 
+> BTW I'm not entirely clear on what "global PFC pause" is either.
+> 
+> Maybe someone can clarify? Mellanox folks?
 
-OK. No problem. It's always good to discuss and find out the best way
-before we do the changes.
+I checked IEEE 802.1Qaz and could not find anything relevant. My only
+guess is that it might be a PFC frame with all the priorities set.
 
-I'll drop the WARN_ON_ONCE part and resubmit the patch.
+Where did you see it?
+
+> 
+> > Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+> 
+> Thanks!
+> 
