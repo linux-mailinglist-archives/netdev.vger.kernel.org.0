@@ -2,142 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC47F267E7F
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 10:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4148267E82
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 10:11:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725928AbgIMIHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 04:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
+        id S1725924AbgIMILT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 04:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgIMIHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 04:07:00 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B6FC061573;
-        Sun, 13 Sep 2020 01:07:00 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id fa1so3864455pjb.0;
-        Sun, 13 Sep 2020 01:07:00 -0700 (PDT)
+        with ESMTP id S1725916AbgIMILP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 04:11:15 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 127DAC061573
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 01:11:15 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id 7so2935938vsp.6
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 01:11:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PiRXJ912GcTHzMS72bOz8QrdAfQcqmOEUJxAFOgJvbg=;
-        b=QGc9lwWgf5NerXkqu9+ZoGieDaatgMHiEiU2p5UIPkj4EDENI6TbqavtyFb4suN9Ri
-         9QsJiLZgNhHpQ9Yl3k029NQIXmFo5NM3xdYUIzfqF65ZptNKk2g2ZUkBVjGRnqpvBrJu
-         He+bTf07W/6726d7WxHQjfhPGPG9cHfu+En8pS5luqTgcz67v/JZi2qMdoCWaD+KApZv
-         H1ZkSm6MfIhIkQiP6awHN/VSrHkZLHDTmCJnstJPgE5BXSSwDcL2Z9D6Pg3t9kE67jhi
-         ES+8LvB+KDf4C6SonfgkXEWE3avd9N0+Jxk4xsw6kIAklW/9XtqzIj7t1AbN1Tn/EClv
-         OoWw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=U7YctZGSyKVBhhbXkYSzuib6I1E6a8FCL8qXkSbBCMk=;
+        b=r9F4evLNjk6ew0JA4ZyP3UOrhOsulTgqkmH+ts5VguwGJbPTxi0ZmkRu1YI20AjM6E
+         xj/5DKgISZB3IwPwhxv3rINMNdP9Erd6PDAxq/eJLfL/eht1K/OuQzyUe58sfXcVUGSn
+         XEAzg/cXF9r09DvXat8U4Of22k2I7WQg2YED6adns1IkjBpI5aRtg3QhgqXWfQAQfCrn
+         IkjK2hPvbVR08hY34SB+JOpmm6ztuEM6XzjzTnZKbbzRhCe6xGS2THZSwImfdONGQFwy
+         olGSouxiJkFD5jrGitRRgP6/ckW6Dxe5PjqCKEvFAnI1DMHaDp9c93LikbiFvQUEQd8e
+         C2cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PiRXJ912GcTHzMS72bOz8QrdAfQcqmOEUJxAFOgJvbg=;
-        b=IN0zV5knixT237VAODIs4aIbfaL5tAgrqDO7xjcNklmSsKkbJplHm6wcHIlXNxGn9C
-         iC0lwWZSj4DOU6Nntk9dPHt9QMNggI4VwANXdOE08Ros99vlY/GGQ05LcN9CyLh9EfSo
-         SRNmWoySmW6R6aRUDLFrOtBgmUJimkhiSTUe0ru3qdWF565cSdOrh8jXfPKcBUIUcpZ+
-         GNv7U2MM403iD9fSZxWgsc9l1M5t6x3220XAWRM+s0XMzInCO5ViUkh9LmuRU8fD+bH1
-         Mt/Cx2r2lmCLmk4YTJVIi72awDVEfgFz5e3wRffMrJ/CMkNYMfAfNysjCP36dnvSDrIG
-         3Z+g==
-X-Gm-Message-State: AOAM530KEUAZRsVSNX71yHEqIpiy1MSIlrm2oSfdZADJFvxFrLwCQ7FR
-        1e5e/fzUsfeGLSK7anQW76YhjmWXnWv/
-X-Google-Smtp-Source: ABdhPJwX2uWrqEI++fVuamaLjbp0qx3XQ7+4q46NmkFCE1ctQepGve1woAqfwChaoqeZAqlygrfpxw==
-X-Received: by 2002:a17:902:8306:b029:d0:cbe1:e7aa with SMTP id bd6-20020a1709028306b02900d0cbe1e7aamr9546517plb.27.1599984420118;
-        Sun, 13 Sep 2020 01:07:00 -0700 (PDT)
-Received: from localhost.localdomain (n11212042027.netvigator.com. [112.120.42.27])
-        by smtp.gmail.com with ESMTPSA id q190sm7119793pfc.176.2020.09.13.01.06.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Sep 2020 01:06:59 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=U7YctZGSyKVBhhbXkYSzuib6I1E6a8FCL8qXkSbBCMk=;
+        b=TObG/kUNlSWsIZ+/b5pvBrenKWO5CcNG/n6Cja4hF6Na2CF/idK583RanwtNDIDXbe
+         X2+THSoLdDO0/Vkjfte3N2csZshtRnUSNA0Aw1LloEjQHxKwYDiap2Ck9gFmfewwoKNx
+         ZKnVEj59IiATdcWALBnh4lX1x/8nHdQtBztF+5E56LBIES87FxZYJBGiSp60nS3w4OyV
+         GI+AH/84E8fUftZI8qUMtQ/OEBXxW38CkPBgNZWNhXSY3Q/IRmhVAFLSLTY+0m0qVJe2
+         axZTeh5r75npbSDP3OBN9v1ZPdEfvKZdY/ifi/EIZ2x27oGC3EC5bUlH6CQAMAb4zhpo
+         CwXg==
+X-Gm-Message-State: AOAM532fX5DXKnABHHQQSjBRFQSY1A8PArEyYf2bF6vnCR10xciqsSpB
+        Us9qKvio5oFQx4iBafmgG94GoRRHsfaatw==
+X-Google-Smtp-Source: ABdhPJwU/hEK3yvksfB3X6icpSeu7m/se/s9PhYvWElGn4M84Zd2AI6s+NYdg2kTFJfKwQbM6Qr+lw==
+X-Received: by 2002:a05:6102:4a1:: with SMTP id r1mr5083874vsa.9.1599984673837;
+        Sun, 13 Sep 2020 01:11:13 -0700 (PDT)
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
+        by smtp.gmail.com with ESMTPSA id f190sm1247643vka.1.2020.09.13.01.11.12
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Sep 2020 01:11:13 -0700 (PDT)
+Received: by mail-ua1-f45.google.com with SMTP id v5so4458778uau.10
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 01:11:12 -0700 (PDT)
+X-Received: by 2002:ab0:60d7:: with SMTP id g23mr4740563uam.122.1599984672429;
+ Sun, 13 Sep 2020 01:11:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200911050359.25042-1-xie.he.0141@gmail.com> <CA+FuTSeOUKJYOFamA+fKBxEb22VosOXZRWGf2DungBGRorcyfg@mail.gmail.com>
+ <CAJht_EOCZvubQRHuS_4F2vFgQSnhkrZBwLDxoougqKkm2qaCgg@mail.gmail.com>
+In-Reply-To: <CAJht_EOCZvubQRHuS_4F2vFgQSnhkrZBwLDxoougqKkm2qaCgg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 13 Sep 2020 10:10:35 +0200
+X-Gmail-Original-Message-ID: <CA+FuTScP5x-FG6AHKujvfbLUeSnQfx371Z7a=59BU8QKAm+GGw@mail.gmail.com>
+Message-ID: <CA+FuTScP5x-FG6AHKujvfbLUeSnQfx371Z7a=59BU8QKAm+GGw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net/packet: Fix a comment about hard_header_len
+ and add a warning for it
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Hillf Danton <hdanton@sina.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org
-Subject: [Linux-kernel-mentees] [PATCH net v2] tipc: Fix memory leak in tipc_group_create_member()
-Date:   Sun, 13 Sep 2020 04:06:05 -0400
-Message-Id: <20200913080605.1542170-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200912102230.1529402-1-yepeilin.cs@gmail.com>
-References: <20200912102230.1529402-1-yepeilin.cs@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tipc_group_add_to_tree() returns silently if `key` matches `nkey` of an
-existing node, causing tipc_group_create_member() to leak memory. Let
-tipc_group_add_to_tree() return an error in such a case, so that
-tipc_group_create_member() can handle it properly.
+On Sat, Sep 12, 2020 at 1:37 AM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> On Fri, Sep 11, 2020 at 7:32 AM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > From a quick scan, a few device types that might trigger this
+> >
+> > net/atm/clip.c
+> > drivers/net/wan/hdlc_fr.c
+> > drivers/net/appletalk/ipddp.c
+> > drivers/net/ppp/ppp_generic.c
+> > drivers/net/net_failover.c
+>
+> I have recently fixed this problem in the "net" tree in hdlc_fr.c.
+>
+> Glad to see the number of drivers that have this problem is not very big.
 
-Fixes: 75da2163dbb6 ("tipc: introduce communication groups")
-Reported-and-tested-by: syzbot+f95d90c454864b3b5bc9@syzkaller.appspotmail.com
-Cc: Hillf Danton <hdanton@sina.com>
-Link: https://syzkaller.appspot.com/bug?id=048390604fe1b60df34150265479202f10e13aff
-Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
----
-Change in v2:
-    - let tipc_group_add_to_tree() return a real error code instead of -1.
-      (Suggested by David Miller <davem@davemloft.net>)
+I am concerned about adding a WARN_ON_ONCE that we already expect to
+fire on some platforms.
 
- net/tipc/group.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+Probably better to add the documentation without the warning.
 
-diff --git a/net/tipc/group.c b/net/tipc/group.c
-index 588c2d2b0c69..b1fcd2ad5ecf 100644
---- a/net/tipc/group.c
-+++ b/net/tipc/group.c
-@@ -273,8 +273,8 @@ static struct tipc_member *tipc_group_find_node(struct tipc_group *grp,
- 	return NULL;
- }
- 
--static void tipc_group_add_to_tree(struct tipc_group *grp,
--				   struct tipc_member *m)
-+static int tipc_group_add_to_tree(struct tipc_group *grp,
-+				  struct tipc_member *m)
- {
- 	u64 nkey, key = (u64)m->node << 32 | m->port;
- 	struct rb_node **n, *parent = NULL;
-@@ -291,10 +291,11 @@ static void tipc_group_add_to_tree(struct tipc_group *grp,
- 		else if (key > nkey)
- 			n = &(*n)->rb_right;
- 		else
--			return;
-+			return -EEXIST;
- 	}
- 	rb_link_node(&m->tree_node, parent, n);
- 	rb_insert_color(&m->tree_node, &grp->members);
-+	return 0;
- }
- 
- static struct tipc_member *tipc_group_create_member(struct tipc_group *grp,
-@@ -302,6 +303,7 @@ static struct tipc_member *tipc_group_create_member(struct tipc_group *grp,
- 						    u32 instance, int state)
- {
- 	struct tipc_member *m;
-+	int ret;
- 
- 	m = kzalloc(sizeof(*m), GFP_ATOMIC);
- 	if (!m)
-@@ -314,8 +316,12 @@ static struct tipc_member *tipc_group_create_member(struct tipc_group *grp,
- 	m->port = port;
- 	m->instance = instance;
- 	m->bc_acked = grp->bc_snd_nxt - 1;
-+	ret = tipc_group_add_to_tree(grp, m);
-+	if (ret < 0) {
-+		kfree(m);
-+		return NULL;
-+	}
- 	grp->member_cnt++;
--	tipc_group_add_to_tree(grp, m);
- 	tipc_nlist_add(&grp->dests, m->node);
- 	m->state = state;
- 	return m;
--- 
-2.25.1
-
+I know I suggested the check before, sorry for the churn, but I hadn't
+checked the existing state yet.
