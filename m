@@ -2,117 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8ED9D268066
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 19:00:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A20268058
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 18:56:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725953AbgIMRAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 13:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
+        id S1725952AbgIMQ4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 12:56:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725876AbgIMRAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 13:00:00 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF83EC06174A;
-        Sun, 13 Sep 2020 09:59:59 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id l191so9599751pgd.5;
-        Sun, 13 Sep 2020 09:59:59 -0700 (PDT)
+        with ESMTP id S1725876AbgIMQ4H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 12:56:07 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1383C06174A;
+        Sun, 13 Sep 2020 09:56:06 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id u4so16524738ljd.10;
+        Sun, 13 Sep 2020 09:56:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Omc5GUviZXmY9Fz9BCq4ZAvwSSBNWz0aHFjh7JiCaqY=;
-        b=Cq2i5Du97qqZ9zymjDh//gocDk6OuGx4PmVS3Xx72RkkIF08zJzcdSB8CQ46x7/Uqq
-         Ptidw2bGkNuKFvkBDhwuhJQ29+9mwuhGmw65W1jMa022tWLkCqZUtOhd7qB9IipVgIl8
-         49BSGyKnPgUsu/iSpU5dR3TRfK5kNTkuYDjPGkNw1dcgdSFPGhjEeNHclnvicgz57MUN
-         2IAlSqknJwKkUc+oh3deU2H4h1QImvn14jwvKz1gyP1C2oc1fudWqHc3FYzVcOB5dd1O
-         Z24zAsZef7oOKuwpLcCN6i0T86OvaYh3r5Xk2WYoA02WxQNimvtltr5lAqM5Fw7WLSC1
-         CZjw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L0eLqlKO93Q0IXg+okhebgrwXe2Z20iX+sKZ/ZoSewk=;
+        b=S9bBAsVm9Yg8f6RgCk7L0vCuD1Sotan68S1WXkbszzUcrwT9ALGdPhkB3twNnkKLfr
+         g+Lf2n3/bRSMI2Hj0lYCtwYcfA61yqqpLe5CwHjul8xFM8wuYCL0v3pTsCex6XgvRlLD
+         DaknPzEn5EKCMbQOxb0sqNyxvACYXaMZK9m7e8VG5/39kfQ20/YPSfFAuptmzBXdAA5J
+         4LSEjPrDcC596xD/BJRHFn/yPwoVxOUcW0Ptay59b51tikRBtdfR8csE4zqwC3x+9q+C
+         c9c8CX0zHGGRmHfN/Zjjr+OmZ+Jojs4WKf0F+lXnrHDMhOQfD+6P4MIfz7KsH5kCk31p
+         tD7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Omc5GUviZXmY9Fz9BCq4ZAvwSSBNWz0aHFjh7JiCaqY=;
-        b=pO1QGTokn9fP6nzvZsKiomD3MN3rhihWCXXceBbESWS1w+Vdx8Zr2ECrdDd2Dxg5TA
-         sugMQUdS7XIbLG4NhF6ouPuZFnV7RTbhHJvkbSNUg9qhH72yFtvt4Jv+dVnhgtPHPjVe
-         yz3FMoP3rAxzGY7UArfynxdyNJwX6ljgcbtPiW3wnllg9LmU14bECjpyQqBBJm8SMs6x
-         rUMHP6OfA4Tt9IhE1uYJ4ISjaC5oclKT8aD2j2gqw+d6QpkwoBg3Mxpzam16xdNsjExo
-         3dk1ncg9XqfjS1II1pkIe+vRMhwHYQ/c8QO+SGFXeoxTuZiyeCeKVKl4cm9P0sEXm0kQ
-         VtzQ==
-X-Gm-Message-State: AOAM5320kHECuhHHqveq/WaydNMxR8gCwGOX4N48vAdb/V/TKCYPDHY8
-        xm9DloufAHxi9VthI2vRDDY=
-X-Google-Smtp-Source: ABdhPJz+4c4MuctOfAwI2G1i7KUosHfkY0WgLJ1iZnpv35csZu+oFytF/ciXTmIJ67rs3/q2wvjzDA==
-X-Received: by 2002:a63:a05:: with SMTP id 5mr4091629pgk.140.1600016399059;
-        Sun, 13 Sep 2020 09:59:59 -0700 (PDT)
-Received: from dtor-ws ([2620:15c:202:201:a6ae:11ff:fe11:fcc3])
-        by smtp.gmail.com with ESMTPSA id s8sm221929pjn.10.2020.09.13.09.59.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L0eLqlKO93Q0IXg+okhebgrwXe2Z20iX+sKZ/ZoSewk=;
+        b=toQW/eUL091JpZY0BDWGzeC7elOP5f9xiWyI51bCdRrs3YLCIgznXIS4tuuBV206c4
+         K0dAZxwjvlZa6aZ+RsVoH36/Cn27D0pxk0hae0W1hfFkRi14jxI++n/yH7klTj/NpWHO
+         ba1LCigiO7sUkZgW4Yf5lrHCbDBi1BPe8WSFGScuGjvliaK7hULHJpqq1fdL/6HnuSzS
+         skrjF8rPVrtw86p6Bic3Epir//ZzwJSXGtTV1swtyQ1qg6PO+DaREJFB1Mqcq5IAtb+r
+         EJut2MYARsR45fEq6kkf6GkrF6bYDKOH9TYMEZM7RnQdP9Kpz8eFnMcsbb5arw93hO5w
+         XU8g==
+X-Gm-Message-State: AOAM530/m9kTF8zXLY+k0sa6e7XA7mAUUOg8b5f5cpxFkFsZLyMHMz5t
+        iI6VnCIoCUd4kIUqAEvUbc6FalJ/4KI=
+X-Google-Smtp-Source: ABdhPJz8q9e2x2Z6ZaqegYGVuWB5M0wfkwLWL4Set1izjm4v2if6gZcAhAZFSQL/qsgXuINm0tgJXA==
+X-Received: by 2002:a2e:83c9:: with SMTP id s9mr3745106ljh.168.1600016165021;
+        Sun, 13 Sep 2020 09:56:05 -0700 (PDT)
+Received: from alpha (10.177.smarthome.spb.ru. [109.71.177.10])
+        by smtp.gmail.com with ESMTPSA id f2sm2512685lfd.103.2020.09.13.09.56.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Sep 2020 09:59:58 -0700 (PDT)
-Date:   Sun, 13 Sep 2020 09:59:56 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     Boqun Feng <boqun.feng@gmail.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Sun, 13 Sep 2020 09:56:04 -0700 (PDT)
+Received: (nullmailer pid 419792 invoked by uid 1000);
+        Sun, 13 Sep 2020 17:00:37 -0000
+From:   Ivan Safonov <insafonov@gmail.com>
+To:     Yan-Hsuan Chuang <yhchuang@realtek.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        "arnd@arndb.de" <arnd@arndb.de>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "Mark.Rutland@arm.com" <Mark.Rutland@arm.com>,
-        "maz@kernel.org" <maz@kernel.org>
-Subject: Re: [PATCH v3 08/11] Input: hyperv-keyboard: Make ringbuffer at
- least take two pages
-Message-ID: <20200913165956.GG1665100@dtor-ws>
-References: <20200910143455.109293-1-boqun.feng@gmail.com>
- <20200910143455.109293-9-boqun.feng@gmail.com>
- <MW2PR2101MB1052688710B98D8C31191A8DD7250@MW2PR2101MB1052.namprd21.prod.outlook.com>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ivan Safonov <insafonov@gmail.com>
+Subject: [PATCH] wireless: rtw88: rtw8822c: eliminate code duplication, use native swap() function
+Date:   Sun, 13 Sep 2020 19:59:59 +0300
+Message-Id: <20200913165958.419744-1-insafonov@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MW2PR2101MB1052688710B98D8C31191A8DD7250@MW2PR2101MB1052.namprd21.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Sep 12, 2020 at 07:37:23PM +0000, Michael Kelley wrote:
-> From: Boqun Feng <boqun.feng@gmail.com> Sent: Thursday, September 10, 2020 7:35 AM
-> 
-> > 
-> > When PAGE_SIZE > HV_HYP_PAGE_SIZE, we need the ringbuffer size to be at
-> > least 2 * PAGE_SIZE: one page for the header and at least one page of
-> > the data part (because of the alignment requirement for double mapping).
-> > 
-> > So make sure the ringbuffer sizes to be at least 2 * PAGE_SIZE when
-> > using vmbus_open() to establish the vmbus connection.
-> > 
-> > Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-> > ---
-> >  drivers/input/serio/hyperv-keyboard.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> 
-> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+swap_u32() duplicate native swap(), so replace swap_u32() with swap().
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Ivan Safonov <insafonov@gmail.com>
+---
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
 
-Please feel free to merge with the rest of the patches through whatever
-tree they will go in.
-
-Thanks.
-
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+index 426808413baa..e196d7939025 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+@@ -154,25 +154,16 @@ static void rtw8822c_rf_minmax_cmp(struct rtw_dev *rtwdev, u32 value,
+ 	}
+ }
+ 
+-static void swap_u32(u32 *v1, u32 *v2)
+-{
+-	u32 tmp;
+-
+-	tmp = *v1;
+-	*v1 = *v2;
+-	*v2 = tmp;
+-}
+-
+ static void __rtw8822c_dac_iq_sort(struct rtw_dev *rtwdev, u32 *v1, u32 *v2)
+ {
+ 	if (*v1 >= 0x200 && *v2 >= 0x200) {
+ 		if (*v1 > *v2)
+-			swap_u32(v1, v2);
++			swap(*v1, *v2);
+ 	} else if (*v1 < 0x200 && *v2 < 0x200) {
+ 		if (*v1 > *v2)
+-			swap_u32(v1, v2);
++			swap(*v1, *v2);
+ 	} else if (*v1 < 0x200 && *v2 >= 0x200) {
+-		swap_u32(v1, v2);
++		swap(*v1, *v2);
+ 	}
+ }
+ 
 -- 
-Dmitry
+2.26.2
+
