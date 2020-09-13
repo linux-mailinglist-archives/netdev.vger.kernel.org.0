@@ -2,78 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F233C267FB6
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 15:57:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73FEC267FCE
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 16:35:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725935AbgIMN5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 09:57:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725927AbgIMN46 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 09:56:58 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78538C06174A
-        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 06:56:56 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id t7so4113905pjd.3
-        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 06:56:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=yNE1kMlTeWsuob5PdKjP2m8LI8u3onriul/c8mh7EfM=;
-        b=KgcZ3oKTk5bGi5/M68UwRkxgembsOuvGia5x+8w/73TFqX0Pr3FDwOFABm7ouBaH4U
-         I7vwvSm+z6nH4ZYCNj4494wKi8Q0MJd9o0PkIUwNmW13pk2XGadb/b00YstQPtBinXuV
-         QoCR17+g71/v7Tq1fpMUrsMpJoSXEc+LtFoA4E9MBVdTmTlARXnPHSo0tv/KB4kr7UZj
-         faCCxdJDdakR8OjuYFEY5yekCLNGiXjWaIa1RSVWSmNWHyr9t/cKqjPMHJsWxGdBYErd
-         Ab6lJPicZdTdumB0cS05E/sqb/wJNx/B595hEajwpIYfywX4u9kviW+1Gx2EEQloh4Na
-         8suw==
+        id S1725965AbgIMOfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 10:35:48 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:60168 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725937AbgIMOfo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 10:35:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600007742;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=WRuscXYWCpfZvPAJ7zPpDPsF4gN4h/ULkWzJ4TuL7iU=;
+        b=ijXDm4skF3n94ORYNWspIEoIRv2mO6TMuQz87fCgh/1XhwNykVzA4UdQrAPV8aidbe6WWy
+        1T+C5cw6Zq4SY4gZcJNQ/mmuscRd4YCttDtD7rxDOs/+NHPuvVeVuZCmQG+gYE3+dl23Nr
+        7qCzqgBXbAFLgJ0yA7AAF5RvUWfgZow=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-469-01TVNHXFO9G_0Ttbuk6O7g-1; Sun, 13 Sep 2020 10:35:40 -0400
+X-MC-Unique: 01TVNHXFO9G_0Ttbuk6O7g-1
+Received: by mail-qv1-f69.google.com with SMTP id dj20so8119081qvb.23
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 07:35:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=yNE1kMlTeWsuob5PdKjP2m8LI8u3onriul/c8mh7EfM=;
-        b=L0nqU4Unp9qKLoG/VywScSSqTCbLQUtIhHTgiWIbZ0+arCNzH/F7S13CckSAduDelA
-         ZcDNeFcHYaliKwsz/qGOgTf30GbHSfDP03P3BUYE59Xzxr3o93nq7GPUPm57FyBYMZMn
-         VVD+n+M0y/9ao+JE6wDu/B06782z8RV0qR7OaQYOPgWOS0VmGLIacRJmVTOpdLNlEIVI
-         Xlz7Q38MFMG/eo/IjS8AECsVAKkU3fEy82SYc0LEfTBUO5I7rRp37sW1t4VsBfy9ij6t
-         P55kQRoo1kSJoo0svPzu6ezg69XWzfbN0LXcS63BvqqTpyKqBXDLJ7hDkIM+wieX3UEy
-         /8fw==
-X-Gm-Message-State: AOAM532tw9E1U953BJVQ8qHhQ+WSRilvMHX+EHhuXn8TjB58Fjt1t2WG
-        F/zkYZknH7c8yq6sisOCCPaTcpNKLJs=
-X-Google-Smtp-Source: ABdhPJxMXjOJHo2606sfTIUlr3R8vZVF+qQ1TgJXc+gq+XtDmblfakXw5nIhBgF7EJCnLnyfupsCxQ==
-X-Received: by 2002:a17:90a:5b04:: with SMTP id o4mr9896986pji.128.1600005415089;
-        Sun, 13 Sep 2020 06:56:55 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id e17sm7298944pff.6.2020.09.13.06.56.53
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=WRuscXYWCpfZvPAJ7zPpDPsF4gN4h/ULkWzJ4TuL7iU=;
+        b=LNQaJnny1UZxtYVhX4ZHIB7rtHf5L0xuKzZPjAWGdkD2kTCqU7vDK0hdvg52fA/cle
+         dF5VIIzwiuGUVpyWc2UPklsI3soBjMxs6Z0/yV8VbO2EAxCGA1TFvXBPsZGrnEg7xwWb
+         pS7D5K8wvScGrhZESXd+NI3XmqAOJDaK7+6gfJ+qFqfr38gznzodh4vYMi7l9ABLPSzx
+         JhzhxjQwDi2gasSzqynT+WXPKAsNrDANo89WxUe/w9INbt/+0aRyLYoRLcYD5DnPFWBn
+         bsMCRRzxu6lJujjsn4TCEuswvGr9AFRmKgqhoz+/K0yxExX5+S2Ofa2y3eLj/GOZUYmQ
+         KIRw==
+X-Gm-Message-State: AOAM533Wpv8d9EHrsofJXhbg8Hz61RDLwtA6ONXK4yvimWwhz3Bz+SMi
+        xluuNeHrSNCkGwB4JAkHKecqOcI1ulG5kkNP34JD+Y/uXUP0ACz2FNKOlJPnXlhZgDIH3aSJU03
+        PQgW1liUvwgYroHj+
+X-Received: by 2002:aed:3bdc:: with SMTP id s28mr9897657qte.124.1600007740080;
+        Sun, 13 Sep 2020 07:35:40 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyMvA5jysJ+TSwYlbcfVkXePyz1hdnoWCTbGAyVUUK/RpfXvZbkCOXXf5PjFJiHJG9PubWNxg==
+X-Received: by 2002:aed:3bdc:: with SMTP id s28mr9897624qte.124.1600007739784;
+        Sun, 13 Sep 2020 07:35:39 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id q8sm11830911qkq.57.2020.09.13.07.35.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Sep 2020 06:56:54 -0700 (PDT)
-Date:   Sun, 13 Sep 2020 06:56:52 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        Sven Auhagen <sven.auhagen@voleatech.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: mvpp2: set SKBTX_IN_PROGRESS
-Message-ID: <20200913135652.GA11540@hoboy>
-References: <E1kHM5A-0001Hg-Sf@rmk-PC.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1kHM5A-0001Hg-Sf@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Sun, 13 Sep 2020 07:35:39 -0700 (PDT)
+From:   trix@redhat.com
+To:     arend.vanspriel@broadcom.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
+        wright.feng@cypress.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, natechancellor@gmail.com, ndesaulniers@google.com,
+        smoch@web.de, dan.carpenter@oracle.com, double.lo@cypress.com,
+        digetx@gmail.com, frank.kao@cypress.com, amsr@cypress.com,
+        stanley.hsu@cypress.com, saravanan.shanmugham@cypress.com,
+        jean-philippe@linaro.org, linville@tuxdriver.com
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] brcmfmac: initialize variable
+Date:   Sun, 13 Sep 2020 07:35:22 -0700
+Message-Id: <20200913143522.20390-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 13, 2020 at 08:05:52AM +0100, Russell King wrote:
-> Richard Cochran points out that SKBTX_IN_PROGRESS should be set when
-> the skbuff is queued for timestamping.  Add this.
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+From: Tom Rix <trix@redhat.com>
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+clang static analysis flags this problem
+sdio.c:3265:13: warning: Branch condition evaluates to
+  a garbage value
+        } else if (pending) {
+                   ^~~~~~~
+
+brcmf_sdio_dcmd_resp_wait() only sets pending to true.
+So pending needs to be initialized to false.
+
+Fixes: 5b435de0d786 ("net: wireless: add brcm80211 drivers")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index d4989e0cd7be..403b123710ec 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -3233,7 +3233,7 @@ brcmf_sdio_bus_rxctl(struct device *dev, unsigned char *msg, uint msglen)
+ {
+ 	int timeleft;
+ 	uint rxlen = 0;
+-	bool pending;
++	bool pending = false;
+ 	u8 *buf;
+ 	struct brcmf_bus *bus_if = dev_get_drvdata(dev);
+ 	struct brcmf_sdio_dev *sdiodev = bus_if->bus_priv.sdio;
+-- 
+2.18.1
+
