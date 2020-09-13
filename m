@@ -2,74 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E745F267E73
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 09:57:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC47F267E7F
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 10:07:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725925AbgIMH5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 03:57:24 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:50350 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgIMH5V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 03:57:21 -0400
-Received: from marcel-macbook.fritz.box (p4ff9f430.dip0.t-ipconnect.de [79.249.244.48])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 74188CECC4;
-        Sun, 13 Sep 2020 10:04:15 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH v2 0/3] Bluetooth: Emit events for suspend/resume
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200911210713.4066465-1-abhishekpandit@chromium.org>
-Date:   Sun, 13 Sep 2020 09:57:19 +0200
-Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        chromeos-bluetooth-upstreaming@chromium.org,
-        linux-bluetooth@vger.kernel.org,
+        id S1725928AbgIMIHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 04:07:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41000 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbgIMIHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 04:07:00 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93B6FC061573;
+        Sun, 13 Sep 2020 01:07:00 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id fa1so3864455pjb.0;
+        Sun, 13 Sep 2020 01:07:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PiRXJ912GcTHzMS72bOz8QrdAfQcqmOEUJxAFOgJvbg=;
+        b=QGc9lwWgf5NerXkqu9+ZoGieDaatgMHiEiU2p5UIPkj4EDENI6TbqavtyFb4suN9Ri
+         9QsJiLZgNhHpQ9Yl3k029NQIXmFo5NM3xdYUIzfqF65ZptNKk2g2ZUkBVjGRnqpvBrJu
+         He+bTf07W/6726d7WxHQjfhPGPG9cHfu+En8pS5luqTgcz67v/JZi2qMdoCWaD+KApZv
+         H1ZkSm6MfIhIkQiP6awHN/VSrHkZLHDTmCJnstJPgE5BXSSwDcL2Z9D6Pg3t9kE67jhi
+         ES+8LvB+KDf4C6SonfgkXEWE3avd9N0+Jxk4xsw6kIAklW/9XtqzIj7t1AbN1Tn/EClv
+         OoWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PiRXJ912GcTHzMS72bOz8QrdAfQcqmOEUJxAFOgJvbg=;
+        b=IN0zV5knixT237VAODIs4aIbfaL5tAgrqDO7xjcNklmSsKkbJplHm6wcHIlXNxGn9C
+         iC0lwWZSj4DOU6Nntk9dPHt9QMNggI4VwANXdOE08Ros99vlY/GGQ05LcN9CyLh9EfSo
+         SRNmWoySmW6R6aRUDLFrOtBgmUJimkhiSTUe0ru3qdWF565cSdOrh8jXfPKcBUIUcpZ+
+         GNv7U2MM403iD9fSZxWgsc9l1M5t6x3220XAWRM+s0XMzInCO5ViUkh9LmuRU8fD+bH1
+         Mt/Cx2r2lmCLmk4YTJVIi72awDVEfgFz5e3wRffMrJ/CMkNYMfAfNysjCP36dnvSDrIG
+         3Z+g==
+X-Gm-Message-State: AOAM530KEUAZRsVSNX71yHEqIpiy1MSIlrm2oSfdZADJFvxFrLwCQ7FR
+        1e5e/fzUsfeGLSK7anQW76YhjmWXnWv/
+X-Google-Smtp-Source: ABdhPJwX2uWrqEI++fVuamaLjbp0qx3XQ7+4q46NmkFCE1ctQepGve1woAqfwChaoqeZAqlygrfpxw==
+X-Received: by 2002:a17:902:8306:b029:d0:cbe1:e7aa with SMTP id bd6-20020a1709028306b02900d0cbe1e7aamr9546517plb.27.1599984420118;
+        Sun, 13 Sep 2020 01:07:00 -0700 (PDT)
+Received: from localhost.localdomain (n11212042027.netvigator.com. [112.120.42.27])
+        by smtp.gmail.com with ESMTPSA id q190sm7119793pfc.176.2020.09.13.01.06.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Sep 2020 01:06:59 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     Jon Maloy <jmaloy@redhat.com>, Ying Xue <ying.xue@windriver.com>
+Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Transfer-Encoding: 7bit
-Message-Id: <BF8FE78A-77AF-4788-A819-B275D851309A@holtmann.org>
-References: <20200911210713.4066465-1-abhishekpandit@chromium.org>
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
+        Jakub Kicinski <kuba@kernel.org>,
+        Hillf Danton <hdanton@sina.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs@googlegroups.com, linux-kernel@vger.kernel.org
+Subject: [Linux-kernel-mentees] [PATCH net v2] tipc: Fix memory leak in tipc_group_create_member()
+Date:   Sun, 13 Sep 2020 04:06:05 -0400
+Message-Id: <20200913080605.1542170-1-yepeilin.cs@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200912102230.1529402-1-yepeilin.cs@gmail.com>
+References: <20200912102230.1529402-1-yepeilin.cs@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek,
+tipc_group_add_to_tree() returns silently if `key` matches `nkey` of an
+existing node, causing tipc_group_create_member() to leak memory. Let
+tipc_group_add_to_tree() return an error in such a case, so that
+tipc_group_create_member() can handle it properly.
 
-> This series adds the suspend/resume events suggested in
-> https://patchwork.kernel.org/patch/11771001/.
-> 
-> I have tested it with some userspace changes that monitors the
-> controller resumed event to trigger audio device reconnection and
-> verified that the events are correctly emitted.
-> 
-> Patch for btmon changes: https://patchwork.kernel.org/patch/11743863/
-> 
-> Please take a look.
-> Abhishek
-> 
-> Changes in v2:
-> - Added suspend/resume events to list of mgmt events
-> 
-> Abhishek Pandit-Subedi (3):
->  Bluetooth: Add mgmt suspend and resume events
->  Bluetooth: Add suspend reason for device disconnect
->  Bluetooth: Emit controller suspend and resume events
-> 
-> include/net/bluetooth/hci_core.h |  6 +++
-> include/net/bluetooth/mgmt.h     | 16 +++++++
-> net/bluetooth/hci_core.c         | 26 +++++++++++-
-> net/bluetooth/hci_event.c        | 73 ++++++++++++++++++++++++++++++++
-> net/bluetooth/mgmt.c             | 30 +++++++++++++
-> 5 files changed, 150 insertions(+), 1 deletion(-)
+Fixes: 75da2163dbb6 ("tipc: introduce communication groups")
+Reported-and-tested-by: syzbot+f95d90c454864b3b5bc9@syzkaller.appspotmail.com
+Cc: Hillf Danton <hdanton@sina.com>
+Link: https://syzkaller.appspot.com/bug?id=048390604fe1b60df34150265479202f10e13aff
+Signed-off-by: Peilin Ye <yepeilin.cs@gmail.com>
+---
+Change in v2:
+    - let tipc_group_add_to_tree() return a real error code instead of -1.
+      (Suggested by David Miller <davem@davemloft.net>)
 
-All 3 patches have been applied to bluetooth-next tree.
+ net/tipc/group.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-Regards
-
-Marcel
+diff --git a/net/tipc/group.c b/net/tipc/group.c
+index 588c2d2b0c69..b1fcd2ad5ecf 100644
+--- a/net/tipc/group.c
++++ b/net/tipc/group.c
+@@ -273,8 +273,8 @@ static struct tipc_member *tipc_group_find_node(struct tipc_group *grp,
+ 	return NULL;
+ }
+ 
+-static void tipc_group_add_to_tree(struct tipc_group *grp,
+-				   struct tipc_member *m)
++static int tipc_group_add_to_tree(struct tipc_group *grp,
++				  struct tipc_member *m)
+ {
+ 	u64 nkey, key = (u64)m->node << 32 | m->port;
+ 	struct rb_node **n, *parent = NULL;
+@@ -291,10 +291,11 @@ static void tipc_group_add_to_tree(struct tipc_group *grp,
+ 		else if (key > nkey)
+ 			n = &(*n)->rb_right;
+ 		else
+-			return;
++			return -EEXIST;
+ 	}
+ 	rb_link_node(&m->tree_node, parent, n);
+ 	rb_insert_color(&m->tree_node, &grp->members);
++	return 0;
+ }
+ 
+ static struct tipc_member *tipc_group_create_member(struct tipc_group *grp,
+@@ -302,6 +303,7 @@ static struct tipc_member *tipc_group_create_member(struct tipc_group *grp,
+ 						    u32 instance, int state)
+ {
+ 	struct tipc_member *m;
++	int ret;
+ 
+ 	m = kzalloc(sizeof(*m), GFP_ATOMIC);
+ 	if (!m)
+@@ -314,8 +316,12 @@ static struct tipc_member *tipc_group_create_member(struct tipc_group *grp,
+ 	m->port = port;
+ 	m->instance = instance;
+ 	m->bc_acked = grp->bc_snd_nxt - 1;
++	ret = tipc_group_add_to_tree(grp, m);
++	if (ret < 0) {
++		kfree(m);
++		return NULL;
++	}
+ 	grp->member_cnt++;
+-	tipc_group_add_to_tree(grp, m);
+ 	tipc_nlist_add(&grp->dests, m->node);
+ 	m->state = state;
+ 	return m;
+-- 
+2.25.1
 
