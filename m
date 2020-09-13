@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64362268001
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 17:47:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA9A268002
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 17:47:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725938AbgIMPq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 11:46:57 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:44653 "EHLO
+        id S1725973AbgIMPrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 11:47:05 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:58941 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725949AbgIMPqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 11:46:46 -0400
+        by vger.kernel.org with ESMTP id S1725950AbgIMPqs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 11:46:48 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id EE19E5C0109;
-        Sun, 13 Sep 2020 11:46:44 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 258B65C0103;
+        Sun, 13 Sep 2020 11:46:47 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sun, 13 Sep 2020 11:46:44 -0400
+  by compute4.internal (MEProxy); Sun, 13 Sep 2020 11:46:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=5DnjQpH/0X4kbosLc6bXWKl7vjR9tfJd2mPi1ZHnPsY=; b=XCXGJQn5
-        8/sRdWAOjwDvr3b7FlJSmLVGDiQxSrRgtJERC+Kl9JkNuUwNjnitnLzZ5ketL1hn
-        QTGxQLEobQfi0QuqaJbt2CabTSuYp95LUwZyLagtRfwo1D5rSbEUE3L7ssH3ACwG
-        tuYbT6LqDFxR+J2n5LPatMdIXYRleH4M6NqYQKvzrtKplRwwbpsjLjGnTS1HQ1la
-        KH1yblZtZEGSYH+hURjThKqxB2J/K5FtoNLT7j7fKuzGemjSSehe40X9U5QPOX6h
-        kjEQ7Dcp2nEL/AzfalQTqC645+TYovl21+1VIheN4eWCrJLSarAZNZa/4eIMDidL
-        VhadFd46ZvhGJw==
-X-ME-Sender: <xms:5D5eX8Mfuzu4x3R0RmUVELayA2v9KruXBW6Iunr7PEBYt6dkOYWgxg>
-    <xme:5D5eXy_U7zaT2RRq9-6rtMwqzxOr9YLJeKLtj9f_rqpoQ0UMJs0cbymCvZ7Vv3BSe
-    QtCql52Hpo-YZo>
+        fm3; bh=B7R87O4LZ9hpRE8mNRsAZSD3nPFAilEkENCf3sMjB00=; b=d4HxoX+m
+        wPjp2pg3HQkT3z74xwXsQjxAdbf1Gxv81F2tU5k4svgeiRDY4zEp/lzkX0uug3bz
+        +xH7aEx8JEBJFrod0PGkUmfwMCwrSbjEHIMqDzguCgacGVBC/V8833H6EcutKj2m
+        tnRPlrpRFLMhlKvJD2jkqS7Bwg8F8FRospwT5QIoWDn5EriPdX9PHFXKAuYp9a7w
+        QPcioWVeA1/G+qTFXCNTS+mVUUMOgu2n7lCk0dtnIDIonFp1ltLqZF+bk8V45HGK
+        TBIX9V/TY2If7TosJDo7vXRIBiPU+wH8lB5eaWlHEJb8VjZq8qlgLOwn1xskzSW3
+        UOK8pGt5uWjTUg==
+X-ME-Sender: <xms:5z5eX338UUHn0jVdpQco0J3yx_0BYBRoKCoJBCNob7s2yyuX12WZtA>
+    <xme:5z5eX2Hr8uk9B2Ka-YM5eKwcKlAqEgBFQBFJ-KzNtb8ds4eQsubu510TTDKK6A7PX
+    erePEKip0Zf2yA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudeigedgtdduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrfeeirdekvden
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    ucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:5D5eXzTqczHF6Jjc8m5gas0RKpeNKtTc0PussbR2NaHg0tpmrNSuXw>
-    <xmx:5D5eX0vcmHc_ly6Cib-hF4xUBWZ84up6pDcIZDMIDKJfLMmQ73wSQg>
-    <xmx:5D5eX0fyaJ2goDE4pD26vDofnOUv_ipRqtmba18UzJvuQ_augf-cWw>
-    <xmx:5D5eX85Y-ghv3Qb7HVh0UwbRHvOQ6IGjL8WHj_HVLS-v-lg590KqXg>
+X-ME-Proxy: <xmx:5z5eX362s-45U8FySYZV3uKkenanpe5DyceRDlBm1X6t6rvFGCJbsQ>
+    <xmx:5z5eX81Thd2-rrytXCIdKN066KpnDcqECoGEuYRzSoTTyeuwL3Z_zA>
+    <xmx:5z5eX6GgTl5tkhTKzuxgww8DXiHvFKDGzSLowcsEiui2vJGsZjXaSg>
+    <xmx:5z5eX2BpWtIjSY-Gl1ILMb0eoNwYtKfYUixf2tpo82is6BH9Xl6zlQ>
 Received: from shredder.mtl.com (igld-84-229-36-82.inter.net.il [84.229.36.82])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 0D00A328005A;
-        Sun, 13 Sep 2020 11:46:42 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 31CC4328005A;
+        Sun, 13 Sep 2020 11:46:45 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         petrm@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 1/5] mlxsw: spectrum_ethtool: Extract a helper to get Ethernet attributes
-Date:   Sun, 13 Sep 2020 18:46:05 +0300
-Message-Id: <20200913154609.14870-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/5] mlxsw: spectrum_ethtool: Introduce ptys_max_speed callback
+Date:   Sun, 13 Sep 2020 18:46:06 +0300
+Message-Id: <20200913154609.14870-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200913154609.14870-1-idosch@idosch.org>
 References: <20200913154609.14870-1-idosch@idosch.org>
@@ -65,85 +65,123 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@nvidia.com>
 
-In order to allow reusing the logic, extract from
-mlxsw_sp_port_get_link_ksettings() the code to obtain Ethernet protocol
-attributes, mlxsw_sp_port_ptys_query().
+The SBIB register configures the size of an internal buffer that the
+Spectrum ASICs use when mirroring traffic on egress. This size should be
+taken into account when validating that the port headroom buffers are not
+larger than the chip can handle. Up until now this was not done, which is
+incidentally not a problem, because the priority group buffers that mlxsw
+auto-configures are small enough that the boundary condition could not be
+violated.
+
+When dcbnl_setbuffer is implemented, the user gets control over sizes of PG
+buffers, and they might overshoot the headroom capacity. However the size
+of the SBIB buffer depends on port speed, which cannot be vetoed. There is
+obviously no way to retroactively push back on requests for overlarge PG
+buffers, or reject an overlarge MTU, or cancel losslessness of a certain
+PG.
+
+Therefore, instead of taking into account the current speed when
+calculating SBIB buffer size, take into account the maximum speed that a
+port with given Ethernet protocol capabilities can have.
+
+To that end, add a new ethtool callback, ptys_max_speed, which determines
+this maximum speed.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../mellanox/mlxsw/spectrum_ethtool.c         | 38 ++++++++++++++-----
- 1 file changed, 28 insertions(+), 10 deletions(-)
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  1 +
+ .../mellanox/mlxsw/spectrum_ethtool.c         | 44 +++++++++++++++++++
+ 2 files changed, 45 insertions(+)
 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index 5240bf11b6c4..007e97e99ec8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -331,6 +331,7 @@ struct mlxsw_sp_port_type_speed_ops {
+ 	void (*from_ptys_speed_duplex)(struct mlxsw_sp *mlxsw_sp,
+ 				       bool carrier_ok, u32 ptys_eth_proto,
+ 				       struct ethtool_link_ksettings *cmd);
++	int (*ptys_max_speed)(struct mlxsw_sp_port *mlxsw_sp_port, u32 *p_max_speed);
+ 	u32 (*to_ptys_advert_link)(struct mlxsw_sp *mlxsw_sp, u8 width,
+ 				   const struct ethtool_link_ksettings *cmd);
+ 	u32 (*to_ptys_speed)(struct mlxsw_sp *mlxsw_sp, u8 width, u32 speed);
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-index f08cad5b5657..f007e58950da 100644
+index f007e58950da..6ee0479b189f 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-@@ -842,6 +842,29 @@ mlxsw_sp_port_connector_port(enum mlxsw_reg_ptys_connector_type connector_type)
- 	}
+@@ -1162,6 +1162,27 @@ mlxsw_sp1_from_ptys_speed_duplex(struct mlxsw_sp *mlxsw_sp, bool carrier_ok,
+ 		cmd->base.duplex = DUPLEX_FULL;
  }
  
-+static int mlxsw_sp_port_ptys_query(struct mlxsw_sp_port *mlxsw_sp_port,
-+				    u32 *p_eth_proto_cap, u32 *p_eth_proto_admin,
-+				    u32 *p_eth_proto_oper, u8 *p_connector_type)
++static int mlxsw_sp1_ptys_max_speed(struct mlxsw_sp_port *mlxsw_sp_port, u32 *p_max_speed)
 +{
-+	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
-+	const struct mlxsw_sp_port_type_speed_ops *ops;
-+	char ptys_pl[MLXSW_REG_PTYS_LEN];
++	u32 eth_proto_cap;
++	u32 max_speed = 0;
 +	int err;
++	int i;
 +
-+	ops = mlxsw_sp->port_type_speed_ops;
-+
-+	ops->reg_ptys_eth_pack(mlxsw_sp, ptys_pl, mlxsw_sp_port->local_port, 0, false);
-+	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(ptys), ptys_pl);
++	err = mlxsw_sp_port_ptys_query(mlxsw_sp_port, &eth_proto_cap, NULL, NULL, NULL);
 +	if (err)
 +		return err;
 +
-+	ops->reg_ptys_eth_unpack(mlxsw_sp, ptys_pl, p_eth_proto_cap, p_eth_proto_admin,
-+				 p_eth_proto_oper);
-+	if (p_connector_type)
-+		*p_connector_type = mlxsw_reg_ptys_connector_type_get(ptys_pl);
++	for (i = 0; i < MLXSW_SP1_PORT_LINK_MODE_LEN; i++) {
++		if ((eth_proto_cap & mlxsw_sp1_port_link_mode[i].mask) &&
++		    mlxsw_sp1_port_link_mode[i].speed > max_speed)
++			max_speed = mlxsw_sp1_port_link_mode[i].speed;
++	}
++
++	*p_max_speed = max_speed;
 +	return 0;
 +}
 +
- static int mlxsw_sp_port_get_link_ksettings(struct net_device *dev,
- 					    struct ethtool_link_ksettings *cmd)
- {
-@@ -849,21 +872,17 @@ static int mlxsw_sp_port_get_link_ksettings(struct net_device *dev,
- 	struct mlxsw_sp_port *mlxsw_sp_port = netdev_priv(dev);
- 	struct mlxsw_sp *mlxsw_sp = mlxsw_sp_port->mlxsw_sp;
- 	const struct mlxsw_sp_port_type_speed_ops *ops;
--	char ptys_pl[MLXSW_REG_PTYS_LEN];
- 	u8 connector_type;
- 	bool autoneg;
- 	int err;
+ static u32
+ mlxsw_sp1_to_ptys_advert_link(struct mlxsw_sp *mlxsw_sp, u8 width,
+ 			      const struct ethtool_link_ksettings *cmd)
+@@ -1211,6 +1232,7 @@ const struct mlxsw_sp_port_type_speed_ops mlxsw_sp1_port_type_speed_ops = {
+ 	.from_ptys_link			= mlxsw_sp1_from_ptys_link,
+ 	.from_ptys_speed		= mlxsw_sp1_from_ptys_speed,
+ 	.from_ptys_speed_duplex		= mlxsw_sp1_from_ptys_speed_duplex,
++	.ptys_max_speed			= mlxsw_sp1_ptys_max_speed,
+ 	.to_ptys_advert_link		= mlxsw_sp1_to_ptys_advert_link,
+ 	.to_ptys_speed			= mlxsw_sp1_to_ptys_speed,
+ 	.reg_ptys_eth_pack		= mlxsw_sp1_reg_ptys_eth_pack,
+@@ -1548,6 +1570,27 @@ mlxsw_sp2_from_ptys_speed_duplex(struct mlxsw_sp *mlxsw_sp, bool carrier_ok,
+ 		cmd->base.duplex = DUPLEX_FULL;
+ }
  
--	ops = mlxsw_sp->port_type_speed_ops;
--
--	autoneg = mlxsw_sp_port->link.autoneg;
--	ops->reg_ptys_eth_pack(mlxsw_sp, ptys_pl, mlxsw_sp_port->local_port,
--			       0, false);
--	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(ptys), ptys_pl);
-+	err = mlxsw_sp_port_ptys_query(mlxsw_sp_port, &eth_proto_cap, &eth_proto_admin,
-+				       &eth_proto_oper, &connector_type);
- 	if (err)
- 		return err;
--	ops->reg_ptys_eth_unpack(mlxsw_sp, ptys_pl, &eth_proto_cap,
--				 &eth_proto_admin, &eth_proto_oper);
++static int mlxsw_sp2_ptys_max_speed(struct mlxsw_sp_port *mlxsw_sp_port, u32 *p_max_speed)
++{
++	u32 eth_proto_cap;
++	u32 max_speed = 0;
++	int err;
++	int i;
 +
-+	ops = mlxsw_sp->port_type_speed_ops;
-+	autoneg = mlxsw_sp_port->link.autoneg;
- 
- 	mlxsw_sp_port_get_link_supported(mlxsw_sp, eth_proto_cap,
- 					 mlxsw_sp_port->mapping.width, cmd);
-@@ -872,7 +891,6 @@ static int mlxsw_sp_port_get_link_ksettings(struct net_device *dev,
- 					 mlxsw_sp_port->mapping.width, cmd);
- 
- 	cmd->base.autoneg = autoneg ? AUTONEG_ENABLE : AUTONEG_DISABLE;
--	connector_type = mlxsw_reg_ptys_connector_type_get(ptys_pl);
- 	cmd->base.port = mlxsw_sp_port_connector_port(connector_type);
- 	ops->from_ptys_speed_duplex(mlxsw_sp, netif_carrier_ok(dev),
- 				    eth_proto_oper, cmd);
++	err = mlxsw_sp_port_ptys_query(mlxsw_sp_port, &eth_proto_cap, NULL, NULL, NULL);
++	if (err)
++		return err;
++
++	for (i = 0; i < MLXSW_SP2_PORT_LINK_MODE_LEN; i++) {
++		if ((eth_proto_cap & mlxsw_sp2_port_link_mode[i].mask) &&
++		    mlxsw_sp2_port_link_mode[i].speed > max_speed)
++			max_speed = mlxsw_sp2_port_link_mode[i].speed;
++	}
++
++	*p_max_speed = max_speed;
++	return 0;
++}
++
+ static bool
+ mlxsw_sp2_test_bit_ethtool(const struct mlxsw_sp2_port_link_mode *link_mode,
+ 			   const unsigned long *mode)
+@@ -1617,6 +1660,7 @@ const struct mlxsw_sp_port_type_speed_ops mlxsw_sp2_port_type_speed_ops = {
+ 	.from_ptys_link			= mlxsw_sp2_from_ptys_link,
+ 	.from_ptys_speed		= mlxsw_sp2_from_ptys_speed,
+ 	.from_ptys_speed_duplex		= mlxsw_sp2_from_ptys_speed_duplex,
++	.ptys_max_speed			= mlxsw_sp2_ptys_max_speed,
+ 	.to_ptys_advert_link		= mlxsw_sp2_to_ptys_advert_link,
+ 	.to_ptys_speed			= mlxsw_sp2_to_ptys_speed,
+ 	.reg_ptys_eth_pack		= mlxsw_sp2_reg_ptys_eth_pack,
 -- 
 2.26.2
 
