@@ -2,142 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A50482680A2
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 19:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D2212680D8
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 20:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725951AbgIMRzX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 13:55:23 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:46886 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725876AbgIMRzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 13:55:19 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08DHrdFq039544;
-        Sun, 13 Sep 2020 17:54:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=sy2EBQGLtkwSCJ4qWcAA6Xc4v0A1ZGPtRw4hAqODsqM=;
- b=DOOmI92TtRCDWI2kKSoFBCMQWNg5qr9uhstEKhsGYZCrwXR+EMa2i6whfNnuSST6Oaup
- yK+aRreuEYyO4g5GHYrTUYUVcMXAush0OlavyT39fAmolaKP+iB2BuHkU56SLSgmpNVU
- vu6vgKLxc1JSXQFWarXRHRkNlV6mYE0NIOz8zh0aH33zC0Xh176uwNVcbfuXTF3rGioR
- SB+Zn4juGEfd2lL8rbJh2yo5e3E60ITm1/AI0v2AK+b3T7OPNA/8S5CpQAcAZGDyhyuU
- lCMclR8l9oEYSthd75c2fPanjHoeRFdCuQZjA5NxGCZlJ+ko5Q4Ifk5KrcJmUegZwPhR RQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 33gnrqk909-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sun, 13 Sep 2020 17:54:27 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 08DHnp8Y166603;
-        Sun, 13 Sep 2020 17:52:26 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 33h7wjw3q1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 13 Sep 2020 17:52:26 +0000
-Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 08DHqGIo007221;
-        Sun, 13 Sep 2020 17:52:16 GMT
-Received: from [10.74.86.192] (/10.74.86.192)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sun, 13 Sep 2020 17:52:16 +0000
-Subject: Re: [PATCH v3 10/11] xen: Update sched clock offset to avoid system
- instability in hibernation
-To:     Anchal Agarwal <anchalag@amazon.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, hpa@zytor.com, x86@kernel.org,
-        jgross@suse.com, linux-pm@vger.kernel.org, linux-mm@kvack.org,
-        kamatam@amazon.com, sstabellini@kernel.org, konrad.wilk@oracle.com,
-        roger.pau@citrix.com, axboe@kernel.dk, davem@davemloft.net,
-        rjw@rjwysocki.net, len.brown@intel.com, pavel@ucw.cz,
-        peterz@infradead.org, eduval@amazon.com, sblbir@amazon.com,
-        xen-devel@lists.xenproject.org, vkuznets@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dwmw@amazon.co.uk, benh@kernel.crashing.org
-References: <cover.1598042152.git.anchalag@amazon.com>
- <238e837b8d4e17925801c4e85de17bdfca4ddd00.1598042152.git.anchalag@amazon.com>
-From:   boris.ostrovsky@oracle.com
-Organization: Oracle Corporation
-Message-ID: <09bb5d50-ee13-133e-d5da-a342052e4271@oracle.com>
-Date:   Sun, 13 Sep 2020 13:52:10 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.2.1
+        id S1726010AbgIMSnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 14:43:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47414 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725959AbgIMSnl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Sep 2020 14:43:41 -0400
+Received: from Davids-MacBook-Pro.local.net (c-73-181-34-237.hsd1.co.comcast.net [73.181.34.237])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 835FC2223E;
+        Sun, 13 Sep 2020 18:43:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600022620;
+        bh=iibIW1OnRugOXQZpnNTWIqR3nlrzxr/VJtN/uzkYp0k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ddxNsN0AV4LFEeCeVlzBnWnAQYhgF34jpX9SBOwISPwbJYprCbQ+dWVBx+uVUNy9n
+         XJjuBeokCd2fXKyfqu3RnJe9bYZPpWpQ6ujeT8mE8r9IjU6+5SXaEj8sEdX2FNHoFl
+         oMzJ5ONG8mgp9rfKD3YMIPZzfdf63vdSoUWJU8vI=
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        David Ahern <dsahern@gmail.com>, wenxu <wenxu@ucloud.cn>
+Subject: [PATCH net] ipv4: Initialize flowi4_multipath_hash in data path
+Date:   Sun, 13 Sep 2020 12:43:39 -0600
+Message-Id: <20200913184339.35927-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-In-Reply-To: <238e837b8d4e17925801c4e85de17bdfca4ddd00.1598042152.git.anchalag@amazon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9743 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- adultscore=0 bulkscore=0 phishscore=0 mlxlogscore=999 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009130163
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9743 signatures=668679
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 spamscore=0
- lowpriorityscore=0 malwarescore=0 mlxscore=0 bulkscore=0 suspectscore=0
- clxscore=1015 mlxlogscore=999 adultscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009130163
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: David Ahern <dsahern@gmail.com>
 
-On 8/21/20 6:30 PM, Anchal Agarwal wrote:
-> Save/restore xen_sched_clock_offset in syscore suspend/resume during PM
-> hibernation. Commit '867cefb4cb1012: ("xen: Fix x86 sched_clock() interface
-> for xen")' fixes xen guest time handling during migration. A similar issue
-> is seen during PM hibernation when system runs CPU intensive workload.
-> Post resume pvclock resets the value to 0 however, xen sched_clock_offset
-> is never updated. System instability is seen during resume from hibernation
-> when system is under heavy CPU load. Since xen_sched_clock_offset is not
-> updated, system does not see the monotonic clock value and the scheduler
-> would then think that heavy CPU hog tasks need more time in CPU, causing
-> the system to freeze
+flowi4_multipath_hash was added by the commit referenced below for
+tunnels. Unfortunately, the patch did not initialize the new field
+for several fast path lookups that do not initialize the entire flow
+struct to 0. Fix those locations. Currently, flowi4_multipath_hash
+is random garbage and affects the hash value computed by
+fib_multipath_hash for multipath selection.
 
+Fixes: 24ba14406c5c ("route: Add multipath_hash in flowi_common to make user-define hash")
+Signed-off-by: David Ahern <dsahern@gmail.com>
+Cc: wenxu <wenxu@ucloud.cn>
+---
+ include/net/flow.h      | 1 +
+ net/core/filter.c       | 1 +
+ net/ipv4/fib_frontend.c | 1 +
+ net/ipv4/route.c        | 1 +
+ 4 files changed, 4 insertions(+)
 
-I don't think you need to explain why non-monotonic clocks are bad.
-(and, in fact, the same applies to commit message in patch 8)
+diff --git a/include/net/flow.h b/include/net/flow.h
+index 929d3ca614d0..b2531df3f65f 100644
+--- a/include/net/flow.h
++++ b/include/net/flow.h
+@@ -116,6 +116,7 @@ static inline void flowi4_init_output(struct flowi4 *fl4, int oif,
+ 	fl4->saddr = saddr;
+ 	fl4->fl4_dport = dport;
+ 	fl4->fl4_sport = sport;
++	fl4->flowi4_multipath_hash = 0;
+ }
+ 
+ /* Reset some input parameters after previous lookup */
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 1f647ab986b6..1b168371ba96 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4838,6 +4838,7 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+ 	fl4.saddr = params->ipv4_src;
+ 	fl4.fl4_sport = params->sport;
+ 	fl4.fl4_dport = params->dport;
++	fl4.flowi4_multipath_hash = 0;
+ 
+ 	if (flags & BPF_FIB_LOOKUP_DIRECT) {
+ 		u32 tbid = l3mdev_fib_table_rcu(dev) ? : RT_TABLE_MAIN;
+diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+index 41079490a118..86a23e4a6a50 100644
+--- a/net/ipv4/fib_frontend.c
++++ b/net/ipv4/fib_frontend.c
+@@ -362,6 +362,7 @@ static int __fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
+ 	fl4.flowi4_tun_key.tun_id = 0;
+ 	fl4.flowi4_flags = 0;
+ 	fl4.flowi4_uid = sock_net_uid(net, NULL);
++	fl4.flowi4_multipath_hash = 0;
+ 
+ 	no_addr = idev->ifa_list == NULL;
+ 
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 8ca6bcab7b03..e5f210d00851 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -2147,6 +2147,7 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
+ 	fl4.daddr = daddr;
+ 	fl4.saddr = saddr;
+ 	fl4.flowi4_uid = sock_net_uid(net, NULL);
++	fl4.flowi4_multipath_hash = 0;
+ 
+ 	if (fib4_rules_early_flow_dissect(net, skb, &fl4, &_flkeys)) {
+ 		flkeys = &_flkeys;
+-- 
+2.24.3 (Apple Git-128)
 
-
->
-> Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
-> ---
->  arch/x86/xen/suspend.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
-> index b12db6966af6..a62e08a11681 100644
-> --- a/arch/x86/xen/suspend.c
-> +++ b/arch/x86/xen/suspend.c
-> @@ -98,8 +98,9 @@ static int xen_syscore_suspend(void)
->  		return 0;
->  
->  	gnttab_suspend();
-> -
->  	xen_manage_runstate_time(-1);
-> +	xen_save_sched_clock_offset();
-> +
->  	xrfp.domid = DOMID_SELF;
->  	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
->  
-> @@ -120,6 +121,12 @@ static void xen_syscore_resume(void)
->  	xen_hvm_map_shared_info();
->  
->  	pvclock_resume();
-> +
-> +	/*
-> +	 * Restore xen_sched_clock_offset during resume to maintain
-> +	 * monotonic clock value
-> +	 */
-
-
-I'd drop this comment, we know what the call does.
-
-
--boris
-
-
-> +	xen_restore_sched_clock_offset();
->  	xen_manage_runstate_time(0);
->  	gnttab_resume();
->  }
