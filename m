@@ -2,444 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B7E267F91
-	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 14:56:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 989FF267FAD
+	for <lists+netdev@lfdr.de>; Sun, 13 Sep 2020 15:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725931AbgIMMz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 08:55:59 -0400
-Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:47123 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725932AbgIMMzy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 08:55:54 -0400
-Received: from localhost.localdomain ([93.23.14.57])
-        by mwinf5d73 with ME
-        id TQvo230021Drbmd03Qvo3d; Sun, 13 Sep 2020 14:55:51 +0200
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 13 Sep 2020 14:55:51 +0200
-X-ME-IP: 93.23.14.57
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, kuba@kernel.org, yanaijie@huawei.com,
-        snelson@pensando.io, mst@redhat.com, vaibhavgupta40@gmail.com,
-        leon@kernel.org
-Cc:     gustavoars@kernel.org, linux-parisc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] tulip: switch from 'pci_' to 'dma_' API
-Date:   Sun, 13 Sep 2020 14:55:46 +0200
-Message-Id: <20200913125546.355946-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.25.1
+        id S1725939AbgIMNgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 09:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34768 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725927AbgIMNgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 09:36:35 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12713C061573
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 06:36:27 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id z25so15830330iol.10
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 06:36:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EV2DOP0ScNAYJC3DlvwyXv8gFVS0LLmJt4XZBhvSGBQ=;
+        b=nsjWFSDNwgPGY5JxV8N7Ki9ye5VlofZ1n4AVHoRjpGIpr9gEqV5VNCXNkIersSZVeB
+         l5weCnNPTO3i/Oby7KwZeslhVvX8QepIJgeTw1Cz3kpVAkTeCsdqdi+YVzMT1Fxlly3F
+         xZH7vg6MYuYOFby9rjl4quFwIg24WJaNWcVxv1Ifx7H6ZHICiwdlNjEBg1cteJ5daWNF
+         O1FhIEypUSnGMoAVtMbafcK6JQz2jPnn1QPrhmj4csh+ayAHzey4GRTSzVjJhd/udDSB
+         fQemPtTx43/cK1Q3ZCtJGSxQ35tsdHeseBCvUxjwvRz1vAG/HrLEneAu+jkL8sCR/4nx
+         kEJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EV2DOP0ScNAYJC3DlvwyXv8gFVS0LLmJt4XZBhvSGBQ=;
+        b=UIAA0jxQ6rdQNwsY2guTYmDPxoeld3VqXIhU+7HmH9bZ3wh9trjMJXd62MH/bMIxrd
+         yJ/oB7fH2kJj8X+Oy4tRuTrok64MsZ6FYy53xM/Aigcx+tTKhg2SNiKRV9eXYMiU2YxJ
+         vdx2Dm7zhcalMYHStPiDq3BYg/EaKrx2pLbemuRXOkVbwbeD6NgJaXeYkgOUg5+vOVlB
+         n3NbkBTP/UmI/0b9fGbsxZ5sbwhFVvE/DMNKnWND9D1XDhNNcRJHxoJMsaem9UjY9wnY
+         dgffUQQgseEtZeEzMBRUEDDnreamgrGAIJEOHDCYSOKEw/dIwr6EvU4kBjUvhOlEa2d6
+         lFcA==
+X-Gm-Message-State: AOAM532cntDI2mzAvSoBvQbnWHKbr3W7pMdSCTpeaAsXNYVb7Yev9lGn
+        R1EaDtK7M/tyryte6fUClz2w1A==
+X-Google-Smtp-Source: ABdhPJzU6azNfjiNzMhCR+ggeCl7F2nNB7bt8ZalTWnmZag7Ph76Amz+u5EWMZn9e4ytsKvLs7jDVA==
+X-Received: by 2002:a5e:8e0a:: with SMTP id a10mr8117820ion.200.1600004186245;
+        Sun, 13 Sep 2020 06:36:26 -0700 (PDT)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id k16sm4321857ioc.15.2020.09.13.06.36.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Sep 2020 06:36:25 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/7] net: ipa: verify reference flag values
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, evgreen@chromium.org,
+        subashab@codeaurora.org, cpratapa@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200912004532.1386-1-elder@linaro.org>
+ <20200912004532.1386-4-elder@linaro.org> <20200913022530.GL3715@yoga>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <9ff8f11c-c7d8-d0cc-1b7d-97778bfab7b5@linaro.org>
+Date:   Sun, 13 Sep 2020 08:36:25 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200913022530.GL3715@yoga>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+On 9/12/20 9:25 PM, Bjorn Andersson wrote:
+> On Fri 11 Sep 19:45 CDT 2020, Alex Elder wrote:
+> 
+>> We take a single IPA clock reference to keep the clock running until
+>> we get a system suspend operation, and maintain a flag indicating
+>> whether that reference has been taken.  When a suspend request
+>> arrives, we drop that reference and clear the flag.
+>>
+>> In most places we simply set or clear the extra-reference flag.
+>> Instead--primarily to catch coding errors--test the previous value
+>> of the flag and report an error in the event the previous value is
+>> unexpected.  And if the clock reference is already taken, don't take
+>> another.
+>>
+>> In a couple of cases it's pretty clear atomic access is not
+>> necessary and an error should never be reported.  Report these
+>> anyway, conveying our surprise with an added exclamation point.
+>>
+>> Signed-off-by: Alex Elder <elder@linaro.org>
+>> ---
+>> v2: Updated to operate on a bitmap bit rather than an atomic_t.
+>>
+>>  drivers/net/ipa/ipa_main.c | 23 ++++++++++++++++-------
+>>  1 file changed, 16 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+>> index 409375b96eb8f..cfdf60ded86ca 100644
+>> --- a/drivers/net/ipa/ipa_main.c
+>> +++ b/drivers/net/ipa/ipa_main.c
+>> @@ -83,6 +83,7 @@ static void ipa_suspend_handler(struct ipa *ipa, enum ipa_irq_id irq_id)
+>>  	/* Take a a single clock reference to prevent suspend.  All
+>>  	 * endpoints will be resumed as a result.  This reference will
+>>  	 * be dropped when we get a power management suspend request.
+>> +	 * The first call activates the clock; ignore any others.
+>>  	 */
+>>  	if (!test_and_set_bit(IPA_FLAG_CLOCK_HELD, ipa->flags))
+>>  		ipa_clock_get(ipa);
+>> @@ -502,14 +503,17 @@ static void ipa_resource_deconfig(struct ipa *ipa)
+>>   */
+>>  static int ipa_config(struct ipa *ipa, const struct ipa_data *data)
+>>  {
+>> +	struct device *dev = &ipa->pdev->dev;
+>>  	int ret;
+>>  
+>>  	/* Get a clock reference to allow initialization.  This reference
+>>  	 * is held after initialization completes, and won't get dropped
+>>  	 * unless/until a system suspend request arrives.
+>>  	 */
+>> -	__set_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+>> -	ipa_clock_get(ipa);
+>> +	if (!__test_and_set_bit(IPA_FLAG_CLOCK_HELD, ipa->flags))
+>> +		ipa_clock_get(ipa);
+>> +	else
+>> +		dev_err(dev, "suspend clock reference already taken!\n");
+>>  
+>>  	ipa_hardware_config(ipa);
+>>  
+>> @@ -544,7 +548,8 @@ static int ipa_config(struct ipa *ipa, const struct ipa_data *data)
+>>  err_hardware_deconfig:
+>>  	ipa_hardware_deconfig(ipa);
+>>  	ipa_clock_put(ipa);
+>> -	__clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+>> +	if (!__test_and_clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags))
+>> +		dev_err(dev, "suspend clock reference already dropped!\n");
+>>  
+>>  	return ret;
+>>  }
+>> @@ -562,7 +567,8 @@ static void ipa_deconfig(struct ipa *ipa)
+>>  	ipa_endpoint_deconfig(ipa);
+>>  	ipa_hardware_deconfig(ipa);
+>>  	ipa_clock_put(ipa);
+>> -	__clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+>> +	if (!test_and_clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags))
+> 
+> Doesn't this imply that we ran with the clocks disabled, which
+> presumably would have nasty side effects?
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
+Yes.  This is one of those that I mentioned "can't happen"
+but I added the check anyway.
 
-When memory is allocated in 'tulip_init_one()' GFP_KERNEL can be used
-because it is a probe function and no lock is taken in the between.
+We call ipa_config() as the last step of ipa_probe().  The inverse
+of ipa_config() is ipa_deconfig(), and that is called in two cases:
+- If the AP is loading firmware, it does so *after* ipa_config()
+  has been called and returned success.  If firmware loading fails,
+  ipa_deconfig() is called in the error path to clean up.  If we
+  never reached ipa_config() in the probe function, we will never
+  call ipa_deconfig() in the error path.
+- If ipa_config() fails when called in ipa_probe(), it will clean
+  up all changed state and return an error value.  I *assume* that
+  if the ->probe function returns an error, the ->remove function
+  will never be called.  So again, we will never call ipa_deconfig()
+  unless ipa_config() has been called.
 
+That's the reasoning anyway.  That being said, you make a very
+good point, in that the whole purpose of checking this at all
+is to catch coding errors, and a WARN() call would provide much
+better information than just an error message would.
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
+So I will plan to update this in a new version of this patch
+(and series).  I'll wait until tonight or tomorrow to see if
+there is any other feedback before preparing that.
 
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
+Thanks a lot.
 
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
+					-Alex
 
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/dec/tulip/interrupt.c  | 56 ++++++++++--------
- drivers/net/ethernet/dec/tulip/tulip_core.c | 65 +++++++++++----------
- 2 files changed, 66 insertions(+), 55 deletions(-)
-
-diff --git a/drivers/net/ethernet/dec/tulip/interrupt.c b/drivers/net/ethernet/dec/tulip/interrupt.c
-index c1ca0765d56d..4ebb43eb7c1d 100644
---- a/drivers/net/ethernet/dec/tulip/interrupt.c
-+++ b/drivers/net/ethernet/dec/tulip/interrupt.c
-@@ -74,8 +74,8 @@ int tulip_refill_rx(struct net_device *dev)
- 			if (skb == NULL)
- 				break;
- 
--			mapping = pci_map_single(tp->pdev, skb->data, PKT_BUF_SZ,
--						 PCI_DMA_FROMDEVICE);
-+			mapping = dma_map_single(&tp->pdev->dev, skb->data,
-+						 PKT_BUF_SZ, DMA_FROM_DEVICE);
- 			if (dma_mapping_error(&tp->pdev->dev, mapping)) {
- 				dev_kfree_skb(skb);
- 				tp->rx_buffers[entry].skb = NULL;
-@@ -210,9 +210,10 @@ int tulip_poll(struct napi_struct *napi, int budget)
-                                if (pkt_len < tulip_rx_copybreak &&
-                                    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
-                                        skb_reserve(skb, 2);    /* 16 byte align the IP header */
--                                       pci_dma_sync_single_for_cpu(tp->pdev,
--								   tp->rx_buffers[entry].mapping,
--								   pkt_len, PCI_DMA_FROMDEVICE);
-+					dma_sync_single_for_cpu(&tp->pdev->dev,
-+								tp->rx_buffers[entry].mapping,
-+								pkt_len,
-+								DMA_FROM_DEVICE);
- #if ! defined(__alpha__)
-                                        skb_copy_to_linear_data(skb, tp->rx_buffers[entry].skb->data,
-                                                         pkt_len);
-@@ -222,9 +223,10 @@ int tulip_poll(struct napi_struct *napi, int budget)
-                                                     tp->rx_buffers[entry].skb->data,
-                                                     pkt_len);
- #endif
--                                       pci_dma_sync_single_for_device(tp->pdev,
--								      tp->rx_buffers[entry].mapping,
--								      pkt_len, PCI_DMA_FROMDEVICE);
-+					dma_sync_single_for_device(&tp->pdev->dev,
-+								   tp->rx_buffers[entry].mapping,
-+								   pkt_len,
-+								   DMA_FROM_DEVICE);
-                                } else {        /* Pass up the skb already on the Rx ring. */
-                                        char *temp = skb_put(skb = tp->rx_buffers[entry].skb,
-                                                             pkt_len);
-@@ -240,8 +242,10 @@ int tulip_poll(struct napi_struct *napi, int budget)
-                                        }
- #endif
- 
--                                       pci_unmap_single(tp->pdev, tp->rx_buffers[entry].mapping,
--                                                        PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-+					dma_unmap_single(&tp->pdev->dev,
-+							 tp->rx_buffers[entry].mapping,
-+							 PKT_BUF_SZ,
-+							 DMA_FROM_DEVICE);
- 
-                                        tp->rx_buffers[entry].skb = NULL;
-                                        tp->rx_buffers[entry].mapping = 0;
-@@ -436,9 +440,10 @@ static int tulip_rx(struct net_device *dev)
- 			if (pkt_len < tulip_rx_copybreak &&
- 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
- 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
--				pci_dma_sync_single_for_cpu(tp->pdev,
--							    tp->rx_buffers[entry].mapping,
--							    pkt_len, PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_cpu(&tp->pdev->dev,
-+							tp->rx_buffers[entry].mapping,
-+							pkt_len,
-+							DMA_FROM_DEVICE);
- #if ! defined(__alpha__)
- 				skb_copy_to_linear_data(skb, tp->rx_buffers[entry].skb->data,
- 						 pkt_len);
-@@ -448,9 +453,10 @@ static int tulip_rx(struct net_device *dev)
- 					     tp->rx_buffers[entry].skb->data,
- 					     pkt_len);
- #endif
--				pci_dma_sync_single_for_device(tp->pdev,
--							       tp->rx_buffers[entry].mapping,
--							       pkt_len, PCI_DMA_FROMDEVICE);
-+				dma_sync_single_for_device(&tp->pdev->dev,
-+							   tp->rx_buffers[entry].mapping,
-+							   pkt_len,
-+							   DMA_FROM_DEVICE);
- 			} else { 	/* Pass up the skb already on the Rx ring. */
- 				char *temp = skb_put(skb = tp->rx_buffers[entry].skb,
- 						     pkt_len);
-@@ -466,8 +472,9 @@ static int tulip_rx(struct net_device *dev)
- 				}
- #endif
- 
--				pci_unmap_single(tp->pdev, tp->rx_buffers[entry].mapping,
--						 PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-+				dma_unmap_single(&tp->pdev->dev,
-+						 tp->rx_buffers[entry].mapping,
-+						 PKT_BUF_SZ, DMA_FROM_DEVICE);
- 
- 				tp->rx_buffers[entry].skb = NULL;
- 				tp->rx_buffers[entry].mapping = 0;
-@@ -597,10 +604,10 @@ irqreturn_t tulip_interrupt(int irq, void *dev_instance)
- 				if (tp->tx_buffers[entry].skb == NULL) {
- 					/* test because dummy frames not mapped */
- 					if (tp->tx_buffers[entry].mapping)
--						pci_unmap_single(tp->pdev,
--							 tp->tx_buffers[entry].mapping,
--							 sizeof(tp->setup_frame),
--							 PCI_DMA_TODEVICE);
-+						dma_unmap_single(&tp->pdev->dev,
-+								 tp->tx_buffers[entry].mapping,
-+								 sizeof(tp->setup_frame),
-+								 DMA_TO_DEVICE);
- 					continue;
- 				}
- 
-@@ -629,9 +636,10 @@ irqreturn_t tulip_interrupt(int irq, void *dev_instance)
- 					dev->stats.tx_packets++;
- 				}
- 
--				pci_unmap_single(tp->pdev, tp->tx_buffers[entry].mapping,
-+				dma_unmap_single(&tp->pdev->dev,
-+						 tp->tx_buffers[entry].mapping,
- 						 tp->tx_buffers[entry].skb->len,
--						 PCI_DMA_TODEVICE);
-+						 DMA_TO_DEVICE);
- 
- 				/* Free the original skb. */
- 				dev_kfree_skb_irq(tp->tx_buffers[entry].skb);
-diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
-index 3a8659c5da06..e7b0d7de40fd 100644
---- a/drivers/net/ethernet/dec/tulip/tulip_core.c
-+++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
-@@ -350,9 +350,9 @@ static void tulip_up(struct net_device *dev)
- 		*setup_frm++ = eaddrs[1]; *setup_frm++ = eaddrs[1];
- 		*setup_frm++ = eaddrs[2]; *setup_frm++ = eaddrs[2];
- 
--		mapping = pci_map_single(tp->pdev, tp->setup_frame,
-+		mapping = dma_map_single(&tp->pdev->dev, tp->setup_frame,
- 					 sizeof(tp->setup_frame),
--					 PCI_DMA_TODEVICE);
-+					 DMA_TO_DEVICE);
- 		tp->tx_buffers[tp->cur_tx].skb = NULL;
- 		tp->tx_buffers[tp->cur_tx].mapping = mapping;
- 
-@@ -630,8 +630,8 @@ static void tulip_init_ring(struct net_device *dev)
- 		tp->rx_buffers[i].skb = skb;
- 		if (skb == NULL)
- 			break;
--		mapping = pci_map_single(tp->pdev, skb->data,
--					 PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
-+		mapping = dma_map_single(&tp->pdev->dev, skb->data,
-+					 PKT_BUF_SZ, DMA_FROM_DEVICE);
- 		tp->rx_buffers[i].mapping = mapping;
- 		tp->rx_ring[i].status = cpu_to_le32(DescOwned);	/* Owned by Tulip chip */
- 		tp->rx_ring[i].buffer1 = cpu_to_le32(mapping);
-@@ -664,8 +664,8 @@ tulip_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	entry = tp->cur_tx % TX_RING_SIZE;
- 
- 	tp->tx_buffers[entry].skb = skb;
--	mapping = pci_map_single(tp->pdev, skb->data,
--				 skb->len, PCI_DMA_TODEVICE);
-+	mapping = dma_map_single(&tp->pdev->dev, skb->data, skb->len,
-+				 DMA_TO_DEVICE);
- 	tp->tx_buffers[entry].mapping = mapping;
- 	tp->tx_ring[entry].buffer1 = cpu_to_le32(mapping);
- 
-@@ -716,16 +716,17 @@ static void tulip_clean_tx_ring(struct tulip_private *tp)
- 		if (tp->tx_buffers[entry].skb == NULL) {
- 			/* test because dummy frames not mapped */
- 			if (tp->tx_buffers[entry].mapping)
--				pci_unmap_single(tp->pdev,
--					tp->tx_buffers[entry].mapping,
--					sizeof(tp->setup_frame),
--					PCI_DMA_TODEVICE);
-+				dma_unmap_single(&tp->pdev->dev,
-+						 tp->tx_buffers[entry].mapping,
-+						 sizeof(tp->setup_frame),
-+						 DMA_TO_DEVICE);
- 			continue;
- 		}
- 
--		pci_unmap_single(tp->pdev, tp->tx_buffers[entry].mapping,
--				tp->tx_buffers[entry].skb->len,
--				PCI_DMA_TODEVICE);
-+		dma_unmap_single(&tp->pdev->dev,
-+				 tp->tx_buffers[entry].mapping,
-+				 tp->tx_buffers[entry].skb->len,
-+				 DMA_TO_DEVICE);
- 
- 		/* Free the original skb. */
- 		dev_kfree_skb_irq(tp->tx_buffers[entry].skb);
-@@ -795,8 +796,8 @@ static void tulip_free_ring (struct net_device *dev)
- 		/* An invalid address. */
- 		tp->rx_ring[i].buffer1 = cpu_to_le32(0xBADF00D0);
- 		if (skb) {
--			pci_unmap_single(tp->pdev, mapping, PKT_BUF_SZ,
--					 PCI_DMA_FROMDEVICE);
-+			dma_unmap_single(&tp->pdev->dev, mapping, PKT_BUF_SZ,
-+					 DMA_FROM_DEVICE);
- 			dev_kfree_skb (skb);
- 		}
- 	}
-@@ -805,8 +806,9 @@ static void tulip_free_ring (struct net_device *dev)
- 		struct sk_buff *skb = tp->tx_buffers[i].skb;
- 
- 		if (skb != NULL) {
--			pci_unmap_single(tp->pdev, tp->tx_buffers[i].mapping,
--					 skb->len, PCI_DMA_TODEVICE);
-+			dma_unmap_single(&tp->pdev->dev,
-+					 tp->tx_buffers[i].mapping, skb->len,
-+					 DMA_TO_DEVICE);
- 			dev_kfree_skb (skb);
- 		}
- 		tp->tx_buffers[i].skb = NULL;
-@@ -1149,9 +1151,10 @@ static void set_rx_mode(struct net_device *dev)
- 
- 			tp->tx_buffers[entry].skb = NULL;
- 			tp->tx_buffers[entry].mapping =
--				pci_map_single(tp->pdev, tp->setup_frame,
-+				dma_map_single(&tp->pdev->dev,
-+					       tp->setup_frame,
- 					       sizeof(tp->setup_frame),
--					       PCI_DMA_TODEVICE);
-+					       DMA_TO_DEVICE);
- 			/* Put the setup frame on the Tx list. */
- 			if (entry == TX_RING_SIZE-1)
- 				tx_flags |= DESC_RING_WRAP;		/* Wrap ring. */
-@@ -1422,10 +1425,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tp = netdev_priv(dev);
- 	tp->dev = dev;
- 
--	tp->rx_ring = pci_alloc_consistent(pdev,
--					   sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
--					   sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
--					   &tp->rx_ring_dma);
-+	tp->rx_ring = dma_alloc_coherent(&pdev->dev,
-+					 sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
-+					 sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
-+					 &tp->rx_ring_dma, GFP_KERNEL);
- 	if (!tp->rx_ring)
- 		goto err_out_mtable;
- 	tp->tx_ring = (struct tulip_tx_desc *)(tp->rx_ring + RX_RING_SIZE);
-@@ -1757,10 +1760,10 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	return 0;
- 
- err_out_free_ring:
--	pci_free_consistent (pdev,
--			     sizeof (struct tulip_rx_desc) * RX_RING_SIZE +
--			     sizeof (struct tulip_tx_desc) * TX_RING_SIZE,
--			     tp->rx_ring, tp->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev,
-+			  sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
-+			  sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
-+			  tp->rx_ring, tp->rx_ring_dma);
- 
- err_out_mtable:
- 	kfree (tp->mtable);
-@@ -1878,10 +1881,10 @@ static void tulip_remove_one(struct pci_dev *pdev)
- 
- 	tp = netdev_priv(dev);
- 	unregister_netdev(dev);
--	pci_free_consistent (pdev,
--			     sizeof (struct tulip_rx_desc) * RX_RING_SIZE +
--			     sizeof (struct tulip_tx_desc) * TX_RING_SIZE,
--			     tp->rx_ring, tp->rx_ring_dma);
-+	dma_free_coherent(&pdev->dev,
-+			  sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
-+			  sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
-+			  tp->rx_ring, tp->rx_ring_dma);
- 	kfree (tp->mtable);
- 	pci_iounmap(pdev, tp->base_addr);
- 	free_netdev (dev);
--- 
-2.25.1
+> This seems like something that is worthy of more than just a simple
+> printout - which no one will actually read.  If you instead use a
+> WARN_ON() to highlight this at least some of the test environments out
+> there will pick it up and report it...
+> 
+> Regards,
+> Bjorn
+> 
+>> +		dev_err(&ipa->pdev->dev, "no suspend clock reference\n");
+>>  }
+>>  
+>>  static int ipa_firmware_load(struct device *dev)
+>> @@ -913,7 +919,8 @@ static int ipa_suspend(struct device *dev)
+>>  	struct ipa *ipa = dev_get_drvdata(dev);
+>>  
+>>  	ipa_clock_put(ipa);
+>> -	__clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+>> +	if (!test_and_clear_bit(IPA_FLAG_CLOCK_HELD, ipa->flags))
+>> +		dev_err(dev, "suspend: missing suspend clock reference\n");
+>>  
+>>  	return 0;
+>>  }
+>> @@ -933,8 +940,10 @@ static int ipa_resume(struct device *dev)
+>>  	/* This clock reference will keep the IPA out of suspend
+>>  	 * until we get a power management suspend request.
+>>  	 */
+>> -	__set_bit(IPA_FLAG_CLOCK_HELD, ipa->flags);
+>> -	ipa_clock_get(ipa);
+>> +	if (!test_and_set_bit(IPA_FLAG_CLOCK_HELD, ipa->flags))
+>> +		ipa_clock_get(ipa);
+>> +	else
+>> +		dev_err(dev, "resume: duplicate suspend clock reference\n");
+>>  
+>>  	return 0;
+>>  }
+>> -- 
+>> 2.20.1
+>>
 
