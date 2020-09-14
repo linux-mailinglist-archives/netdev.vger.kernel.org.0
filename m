@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A7CE269199
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:32:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7D8226919A
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:33:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726480AbgINQcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 12:32:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49281 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726479AbgINQNc (ORCPT
+        id S1726127AbgINQdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 12:33:08 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:21021 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726485AbgINQNc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 12:13:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1600100009;
@@ -17,43 +17,42 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MNKGvmvinnY3ygZadj39mUBYZRk0cN1ua12KTMr1Qm4=;
-        b=Gpc6paeTZ/63baFBBaFmQVmYFuu6DoeBt8tPSsf001CIgEMO0XHc7+4WAvaLBVyv5aJM5M
-        Gxw4IswTXk40gnAuFeYyVk+rRkNTlPlXJ9yR96Vl4ShzfMRNv6XkVKZINST4AlQL/wj6Tp
-        Adlt5G47bt51U+kY1j3agOBjt6A+998=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-205-bUQJ23XaMJiVQC1VUPE4YQ-1; Mon, 14 Sep 2020 12:13:27 -0400
-X-MC-Unique: bUQJ23XaMJiVQC1VUPE4YQ-1
-Received: by mail-wm1-f71.google.com with SMTP id d22so177088wmd.6
+        bh=hFXKiAVJpU4aGkR9h2ePr4YYyxSQIIc/XozWY5DegDw=;
+        b=J0R8Cf8WuGI4zAUw3MnDcrmnPN2NtSY9+FBvnMX6nW++E0qlY7pQcoDtwM0E4q4IGVCr03
+        a8HXxbiLVQnjNlHiEzXfL0Oiu8ih8A4s6KusSW0ShVcFx7Uvt52ciz3ot3R333K43VPcoy
+        YF3SmU1dKGbo5AQe6n/tg/Ev3hTA2vs=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-562-RjLmOlO3OdecMYv_rx5now-1; Mon, 14 Sep 2020 12:13:28 -0400
+X-MC-Unique: RjLmOlO3OdecMYv_rx5now-1
+Received: by mail-wr1-f72.google.com with SMTP id v12so60199wrm.9
         for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 09:13:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=MNKGvmvinnY3ygZadj39mUBYZRk0cN1ua12KTMr1Qm4=;
-        b=VcIFO8iXqLMemlrTSPekwlVs6UQQLF/qcU1E9tDqn8E2ZAc5EEeQrO1j+lfBkW2Vcd
-         DZbbDbV0z3m815BTvPSNrMQ2r3Dk6lZPuWeEzO3m7mVPbZQTf0ZpKWf1q+cRlVYxFz2+
-         4FqUry9Utv2Q+tGSw4oi9NfXFhrDYlC82MebVTUC2zzDAwQeC/o7WRbZ0UOoXpgfXvKx
-         ff76je5IDQF6LWtMlX7OQNJLRWK3HTUT5UyQ1vjNAPYgytBLAgX8NeW/5DJMLN0IyK23
-         jU02RrBy03SKZi0/7m444z05GoDU50NK+PdL81QXC1bMh0hUQ1Ps+npZtuaKfYjgqu/x
-         uaog==
-X-Gm-Message-State: AOAM530Rtk6OonW60E1wN9C1oOvV8uZRhxWvdu/+XldB3cpANcq6HBbW
-        fbXCg0W8l+KEsz8TeA1yQf6UtMrzdPkZldglDGwYq4krc/bvjpYLqfB1xkyDolkrO/Ip+GqlLrg
-        tYqcFMAC/QZqO8C86
-X-Received: by 2002:a7b:ca56:: with SMTP id m22mr163911wml.12.1600100005834;
-        Mon, 14 Sep 2020 09:13:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxKLJRmlaKHQ0xTntyfodYvC1RDu3j8/fbwYF1uhcpzQPw2O+gWWoU7rT+lbcO+DgAokY12cg==
-X-Received: by 2002:a7b:ca56:: with SMTP id m22mr163870wml.12.1600100005445;
-        Mon, 14 Sep 2020 09:13:25 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id t1sm18715359wmi.16.2020.09.14.09.13.24
+        bh=hFXKiAVJpU4aGkR9h2ePr4YYyxSQIIc/XozWY5DegDw=;
+        b=P9A8ZWIO5bHjWYZ6E+8RnD0OWSO1hRq7GyuRg4d1TlvgxLVsbFj2+JHwTv9KWILYWI
+         ELPEyd3zsqKegKgH/CmCSDplLt2MnxYAhE+H4HMqXjo4aeIN29VXeOfX+krT0qWPDx9A
+         BuF9VLLbO2cDYxYpYN70JE/jOjKe6RGd5LKAjE5KTzpJr7TNpVfz2pJuV1HavrdIQb8p
+         VCIiTjQaF0yJ45MzROmNJ61TVssbuBu0SrxnPlIHzSTmIHmhRix9enBHQcvWpJAT5Gwi
+         V3pjKWo5+7dMmOF4nrM6rXxs6Y4bG3k1HMFKVKOaz4sRVtTatURUzlYICeUSywVG45Gu
+         ZH0Q==
+X-Gm-Message-State: AOAM531M1J1kQddatVa1GsyijVL4gzu5iHySadkqi+ZaHmQjvTIprjvr
+        HPlJ4/ZI/sFq/p5WyIaTVnJUm5HzM70EA2lxNZj2SbcCAri/LiMP24eyZ9IhQ2XEEhKCbRXKy2r
+        xIxFpQpBS31c49CRA
+X-Received: by 2002:adf:f5c7:: with SMTP id k7mr17275282wrp.246.1600100006620;
+        Mon, 14 Sep 2020 09:13:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzbpVBr4sOuqS2Kgq+3AfSLi689O4b3xGyIHYe5qGIZhYZckfJJONIUsgbYIx6pTb3CDg9ojw==
+X-Received: by 2002:adf:f5c7:: with SMTP id k7mr17275262wrp.246.1600100006320;
+        Mon, 14 Sep 2020 09:13:26 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id h204sm20364840wmf.35.2020.09.14.09.13.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 09:13:24 -0700 (PDT)
+        Mon, 14 Sep 2020 09:13:25 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id EAE431829CC; Mon, 14 Sep 2020 18:13:23 +0200 (CEST)
-Subject: [PATCH bpf-next v4 1/8] bpf: change logging calls from verbose() to
- bpf_log() and use log pointer
+        id 103A11829CB; Mon, 14 Sep 2020 18:13:25 +0200 (CEST)
+Subject: [PATCH bpf-next v4 2/8] bpf: verifier: refactor check_attach_btf_id()
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Alexei Starovoitov <ast@kernel.org>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
@@ -65,8 +64,8 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Eelco Chaudron <echaudro@redhat.com>,
         KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Date:   Mon, 14 Sep 2020 18:13:23 +0200
-Message-ID: <160010000386.80898.7368764705942215616.stgit@toke.dk>
+Date:   Mon, 14 Sep 2020 18:13:25 +0200
+Message-ID: <160010000496.80898.8023973720943514259.stgit@toke.dk>
 In-Reply-To: <160010000272.80898.13117015273092905112.stgit@toke.dk>
 References: <160010000272.80898.13117015273092905112.stgit@toke.dk>
 User-Agent: StGit/0.23
@@ -80,271 +79,400 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-In preparation for moving code around, change a bunch of references to
-env->log (and the verbose() logging helper) to use bpf_log() and a direct
-pointer to struct bpf_verifier_log. While we're touching the function
-signature, mark the 'prog' argument to bpf_check_type_match() as const.
+The check_attach_btf_id() function really does three things:
 
-Also enhance the bpf_verifier_log_needed() check to handle NULL pointers
-for the log struct so we can re-use the code with logging disabled.
+1. It performs a bunch of checks on the program to ensure that the
+   attachment is valid.
+
+2. It stores a bunch of state about the attachment being requested in
+   the verifier environment and struct bpf_prog objects.
+
+3. It allocates a trampoline for the attachment.
+
+This patch splits out (1.) and (3.) into separate functions in preparation
+for reusing them when the actual attachment is happening (in the
+raw_tracepoint_open syscall operation), which will allow tracing programs
+to have multiple (compatible) attachments.
+
+No functional change is intended with this patch.
 
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- include/linux/bpf.h          |    2 +-
- include/linux/bpf_verifier.h |    5 +++-
- kernel/bpf/btf.c             |    6 +++--
- kernel/bpf/verifier.c        |   48 +++++++++++++++++++++---------------------
- 4 files changed, 31 insertions(+), 30 deletions(-)
+ include/linux/bpf.h          |    7 +
+ include/linux/bpf_verifier.h |    9 ++
+ kernel/bpf/trampoline.c      |   20 ++++
+ kernel/bpf/verifier.c        |  197 ++++++++++++++++++++++++------------------
+ 4 files changed, 149 insertions(+), 84 deletions(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index c6d9f2c444f4..5ad4a935a24e 100644
+index 5ad4a935a24e..b3aefbdca1a3 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -1394,7 +1394,7 @@ int btf_check_func_arg_match(struct bpf_verifier_env *env, int subprog,
- 			     struct bpf_reg_state *regs);
- int btf_prepare_func_args(struct bpf_verifier_env *env, int subprog,
- 			  struct bpf_reg_state *reg);
--int btf_check_type_match(struct bpf_verifier_env *env, struct bpf_prog *prog,
-+int btf_check_type_match(struct bpf_verifier_log *log, const struct bpf_prog *prog,
- 			 struct btf *btf, const struct btf_type *t);
- 
- struct bpf_prog *bpf_prog_by_id(u32 id);
+@@ -616,6 +616,8 @@ static __always_inline unsigned int bpf_dispatcher_nop_func(
+ struct bpf_trampoline *bpf_trampoline_lookup(u64 key);
+ int bpf_trampoline_link_prog(struct bpf_prog *prog);
+ int bpf_trampoline_unlink_prog(struct bpf_prog *prog);
++struct bpf_trampoline *bpf_trampoline_get(u64 key, void *addr,
++					  struct btf_func_model *fmodel);
+ void bpf_trampoline_put(struct bpf_trampoline *tr);
+ #define BPF_DISPATCHER_INIT(_name) {				\
+ 	.mutex = __MUTEX_INITIALIZER(_name.mutex),		\
+@@ -672,6 +674,11 @@ static inline int bpf_trampoline_unlink_prog(struct bpf_prog *prog)
+ {
+ 	return -ENOTSUPP;
+ }
++static inline bpf_trampoline *bpf_trampoline_get(u64 key, void *addr,
++						 struct btf_func_model *fmodel)
++{
++	return ERR_PTR(-EOPNOTSUPP);
++}
+ static inline void bpf_trampoline_put(struct bpf_trampoline *tr) {}
+ #define DEFINE_BPF_DISPATCHER(name)
+ #define DECLARE_BPF_DISPATCHER(name)
 diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index 53c7bd568c5d..20009e766805 100644
+index 20009e766805..db3db0b69aad 100644
 --- a/include/linux/bpf_verifier.h
 +++ b/include/linux/bpf_verifier.h
-@@ -347,8 +347,9 @@ static inline bool bpf_verifier_log_full(const struct bpf_verifier_log *log)
+@@ -447,4 +447,13 @@ bpf_prog_offload_remove_insns(struct bpf_verifier_env *env, u32 off, u32 cnt);
+ int check_ctx_reg(struct bpf_verifier_env *env,
+ 		  const struct bpf_reg_state *reg, int regno);
  
- static inline bool bpf_verifier_log_needed(const struct bpf_verifier_log *log)
++int bpf_check_attach_target(struct bpf_verifier_log *log,
++			    const struct bpf_prog *prog,
++			    const struct bpf_prog *tgt_prog,
++			    u32 btf_id,
++			    struct btf_func_model *fmodel,
++			    long *tgt_addr,
++			    const char **tgt_name,
++			    const struct btf_type **tgt_type);
++
+ #endif /* _LINUX_BPF_VERIFIER_H */
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 7dd523a7e32d..7845913e7e41 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -336,6 +336,26 @@ int bpf_trampoline_unlink_prog(struct bpf_prog *prog)
+ 	return err;
+ }
+ 
++struct bpf_trampoline *bpf_trampoline_get(u64 key, void *addr,
++					  struct btf_func_model *fmodel)
++{
++	struct bpf_trampoline *tr;
++
++	tr = bpf_trampoline_lookup(key);
++	if (!tr)
++		return ERR_PTR(-ENOMEM);
++
++	mutex_lock(&tr->mutex);
++	if (tr->func.addr)
++		goto out;
++
++	memcpy(&tr->func.model, fmodel, sizeof(*fmodel));
++	tr->func.addr = addr;
++out:
++	mutex_unlock(&tr->mutex);
++	return tr;
++}
++
+ void bpf_trampoline_put(struct bpf_trampoline *tr)
  {
--	return (log->level && log->ubuf && !bpf_verifier_log_full(log)) ||
--		log->level == BPF_LOG_KERNEL;
-+	return log &&
-+		((log->level && log->ubuf && !bpf_verifier_log_full(log)) ||
-+		 log->level == BPF_LOG_KERNEL);
- }
- 
- #define BPF_MAX_SUBPROGS 256
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index f9ac6935ab3c..2ace56c99c36 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -4401,7 +4401,7 @@ static int btf_check_func_type_match(struct bpf_verifier_log *log,
- }
- 
- /* Compare BTFs of given program with BTF of target program */
--int btf_check_type_match(struct bpf_verifier_env *env, struct bpf_prog *prog,
-+int btf_check_type_match(struct bpf_verifier_log *log, const struct bpf_prog *prog,
- 			 struct btf *btf2, const struct btf_type *t2)
- {
- 	struct btf *btf1 = prog->aux->btf;
-@@ -4409,7 +4409,7 @@ int btf_check_type_match(struct bpf_verifier_env *env, struct bpf_prog *prog,
- 	u32 btf_id = 0;
- 
- 	if (!prog->aux->func_info) {
--		bpf_log(&env->log, "Program extension requires BTF\n");
-+		bpf_log(log, "Program extension requires BTF\n");
- 		return -EINVAL;
- 	}
- 
-@@ -4421,7 +4421,7 @@ int btf_check_type_match(struct bpf_verifier_env *env, struct bpf_prog *prog,
- 	if (!t1 || !btf_type_is_func(t1))
- 		return -EFAULT;
- 
--	return btf_check_func_type_match(&env->log, btf1, t1, btf2, t2);
-+	return btf_check_func_type_match(log, btf1, t1, btf2, t2);
- }
- 
- /* Compare BTF of a function with given bpf_reg_state.
+ 	if (!tr)
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 814bc6c1ad16..0be7a187fb7f 100644
+index 0be7a187fb7f..d38678319ca4 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -11043,6 +11043,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 	struct bpf_prog *prog = env->prog;
- 	bool prog_extension = prog->type == BPF_PROG_TYPE_EXT;
- 	struct bpf_prog *tgt_prog = prog->aux->linked_prog;
-+	struct bpf_verifier_log *log = &env->log;
- 	u32 btf_id = prog->aux->attach_btf_id;
- 	const char prefix[] = "btf_trace_";
- 	struct btf_func_model fmodel;
-@@ -11070,23 +11071,23 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+@@ -10997,11 +10997,11 @@ static int check_struct_ops_btf_id(struct bpf_verifier_env *env)
+ }
+ #define SECURITY_PREFIX "security_"
+ 
+-static int check_attach_modify_return(struct bpf_prog *prog, unsigned long addr)
++static int check_attach_modify_return(const struct bpf_prog *prog, unsigned long addr,
++				      const char *func_name)
+ {
+ 	if (within_error_injection_list(addr) ||
+-	    !strncmp(SECURITY_PREFIX, prog->aux->attach_func_name,
+-		     sizeof(SECURITY_PREFIX) - 1))
++	    !strncmp(SECURITY_PREFIX, func_name, sizeof(SECURITY_PREFIX) - 1))
  		return 0;
  
+ 	return -EINVAL;
+@@ -11038,43 +11038,29 @@ static int check_non_sleepable_error_inject(u32 btf_id)
+ 	return btf_id_set_contains(&btf_non_sleepable_error_inject, btf_id);
+ }
+ 
+-static int check_attach_btf_id(struct bpf_verifier_env *env)
++int bpf_check_attach_target(struct bpf_verifier_log *log,
++			    const struct bpf_prog *prog,
++			    const struct bpf_prog *tgt_prog,
++			    u32 btf_id,
++			    struct btf_func_model *fmodel,
++			    long *tgt_addr,
++			    const char **tgt_name,
++			    const struct btf_type **tgt_type)
+ {
+-	struct bpf_prog *prog = env->prog;
+ 	bool prog_extension = prog->type == BPF_PROG_TYPE_EXT;
+-	struct bpf_prog *tgt_prog = prog->aux->linked_prog;
+-	struct bpf_verifier_log *log = &env->log;
+-	u32 btf_id = prog->aux->attach_btf_id;
+ 	const char prefix[] = "btf_trace_";
+-	struct btf_func_model fmodel;
+ 	int ret = 0, subprog = -1, i;
+-	struct bpf_trampoline *tr;
+ 	const struct btf_type *t;
+ 	bool conservative = true;
+ 	const char *tname;
+ 	struct btf *btf;
+-	long addr;
+-	u64 key;
+-
+-	if (prog->aux->sleepable && prog->type != BPF_PROG_TYPE_TRACING &&
+-	    prog->type != BPF_PROG_TYPE_LSM) {
+-		verbose(env, "Only fentry/fexit/fmod_ret and lsm programs can be sleepable\n");
+-		return -EINVAL;
+-	}
+-
+-	if (prog->type == BPF_PROG_TYPE_STRUCT_OPS)
+-		return check_struct_ops_btf_id(env);
+-
+-	if (prog->type != BPF_PROG_TYPE_TRACING &&
+-	    prog->type != BPF_PROG_TYPE_LSM &&
+-	    !prog_extension)
+-		return 0;
++	long addr = 0;
+ 
  	if (!btf_id) {
--		verbose(env, "Tracing programs must provide btf_id\n");
-+		bpf_log(log, "Tracing programs must provide btf_id\n");
+ 		bpf_log(log, "Tracing programs must provide btf_id\n");
  		return -EINVAL;
  	}
- 	btf = bpf_prog_get_target_btf(prog);
+-	btf = bpf_prog_get_target_btf(prog);
++	btf = tgt_prog ? tgt_prog->aux->btf : btf_vmlinux;
  	if (!btf) {
--		verbose(env,
-+		bpf_log(log,
+ 		bpf_log(log,
  			"FENTRY/FEXIT program can only be attached to another program annotated with BTF\n");
- 		return -EINVAL;
- 	}
- 	t = btf_type_by_id(btf, btf_id);
- 	if (!t) {
--		verbose(env, "attach_btf_id %u is invalid\n", btf_id);
-+		bpf_log(log, "attach_btf_id %u is invalid\n", btf_id);
- 		return -EINVAL;
- 	}
- 	tname = btf_name_by_offset(btf, t->name_off);
- 	if (!tname) {
--		verbose(env, "attach_btf_id %u doesn't have a name\n", btf_id);
-+		bpf_log(log, "attach_btf_id %u doesn't have a name\n", btf_id);
- 		return -EINVAL;
- 	}
- 	if (tgt_prog) {
-@@ -11098,18 +11099,18 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 				break;
- 			}
- 		if (subprog == -1) {
--			verbose(env, "Subprog %s doesn't exist\n", tname);
-+			bpf_log(log, "Subprog %s doesn't exist\n", tname);
- 			return -EINVAL;
- 		}
- 		conservative = aux->func_info_aux[subprog].unreliable;
- 		if (prog_extension) {
- 			if (conservative) {
--				verbose(env,
-+				bpf_log(log,
- 					"Cannot replace static functions\n");
- 				return -EINVAL;
- 			}
- 			if (!prog->jit_requested) {
--				verbose(env,
-+				bpf_log(log,
+@@ -11114,8 +11100,6 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
  					"Extension programs should be JITed\n");
  				return -EINVAL;
  			}
-@@ -11117,7 +11118,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 			prog->expected_attach_type = tgt_prog->expected_attach_type;
+-			env->ops = bpf_verifier_ops[tgt_prog->type];
+-			prog->expected_attach_type = tgt_prog->expected_attach_type;
  		}
  		if (!tgt_prog->jited) {
--			verbose(env, "Can attach to only JITed progs\n");
-+			bpf_log(log, "Can attach to only JITed progs\n");
+ 			bpf_log(log, "Can attach to only JITed progs\n");
+@@ -11151,13 +11135,11 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 			bpf_log(log, "Cannot extend fentry/fexit\n");
  			return -EINVAL;
  		}
- 		if (tgt_prog->type == prog->type) {
-@@ -11125,7 +11126,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 			 * Cannot attach program extension to another extension.
- 			 * It's ok to attach fentry/fexit to extension program.
- 			 */
--			verbose(env, "Cannot recursively attach\n");
-+			bpf_log(log, "Cannot recursively attach\n");
- 			return -EINVAL;
- 		}
- 		if (tgt_prog->type == BPF_PROG_TYPE_TRACING &&
-@@ -11147,13 +11148,13 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 			 * reasonable stack size. Hence extending fentry is not
- 			 * allowed.
- 			 */
--			verbose(env, "Cannot extend fentry/fexit\n");
-+			bpf_log(log, "Cannot extend fentry/fexit\n");
- 			return -EINVAL;
- 		}
- 		key = ((u64)aux->id) << 32 | btf_id;
+-		key = ((u64)aux->id) << 32 | btf_id;
  	} else {
  		if (prog_extension) {
--			verbose(env, "Cannot replace kernel functions\n");
-+			bpf_log(log, "Cannot replace kernel functions\n");
+ 			bpf_log(log, "Cannot replace kernel functions\n");
  			return -EINVAL;
  		}
- 		key = btf_id;
-@@ -11162,17 +11163,17 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+-		key = btf_id;
+ 	}
+ 
  	switch (prog->expected_attach_type) {
- 	case BPF_TRACE_RAW_TP:
- 		if (tgt_prog) {
--			verbose(env,
-+			bpf_log(log,
- 				"Only FENTRY/FEXIT progs are attachable to another BPF prog\n");
+@@ -11187,13 +11169,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 			/* should never happen in valid vmlinux build */
  			return -EINVAL;
- 		}
- 		if (!btf_type_is_typedef(t)) {
--			verbose(env, "attach_btf_id %u is not a typedef\n",
-+			bpf_log(log, "attach_btf_id %u is not a typedef\n",
- 				btf_id);
- 			return -EINVAL;
- 		}
- 		if (strncmp(prefix, tname, sizeof(prefix) - 1)) {
--			verbose(env, "attach_btf_id %u points to wrong type name %s\n",
-+			bpf_log(log, "attach_btf_id %u points to wrong type name %s\n",
- 				btf_id, tname);
- 			return -EINVAL;
- 		}
-@@ -11195,7 +11196,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 		return 0;
+ 
+-		/* remember two read only pointers that are valid for
+-		 * the life time of the kernel
+-		 */
+-		prog->aux->attach_func_name = tname;
+-		prog->aux->attach_func_proto = t;
+-		prog->aux->attach_btf_trace = true;
+-		return 0;
++		break;
  	case BPF_TRACE_ITER:
  		if (!btf_type_is_func(t)) {
--			verbose(env, "attach_btf_id %u is not a function\n",
-+			bpf_log(log, "attach_btf_id %u is not a function\n",
- 				btf_id);
- 			return -EINVAL;
- 		}
-@@ -11206,8 +11207,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 		prog->aux->attach_func_proto = t;
- 		if (!bpf_iter_prog_supported(prog))
- 			return -EINVAL;
--		ret = btf_distill_func_proto(&env->log, btf, t,
--					     tname, &fmodel);
-+		ret = btf_distill_func_proto(log, btf, t, tname, &fmodel);
- 		return ret;
- 	default:
- 		if (!prog_extension)
-@@ -11219,18 +11219,18 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 	case BPF_TRACE_FEXIT:
- 		prog->aux->attach_func_name = tname;
- 		if (prog->type == BPF_PROG_TYPE_LSM) {
--			ret = bpf_lsm_verify_prog(&env->log, prog);
-+			ret = bpf_lsm_verify_prog(log, prog);
- 			if (ret < 0)
- 				return ret;
- 		}
- 
- 		if (!btf_type_is_func(t)) {
--			verbose(env, "attach_btf_id %u is not a function\n",
-+			bpf_log(log, "attach_btf_id %u is not a function\n",
- 				btf_id);
- 			return -EINVAL;
- 		}
- 		if (prog_extension &&
--		    btf_check_type_match(env, prog, btf, t))
-+		    btf_check_type_match(log, prog, btf, t))
- 			return -EINVAL;
+ 			bpf_log(log, "attach_btf_id %u is not a function\n",
+@@ -11203,12 +11179,10 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
  		t = btf_type_by_id(btf, t->type);
  		if (!btf_type_is_func_proto(t))
-@@ -11249,7 +11249,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 			prog->aux->attach_func_proto = NULL;
+ 			return -EINVAL;
+-		prog->aux->attach_func_name = tname;
+-		prog->aux->attach_func_proto = t;
+-		if (!bpf_iter_prog_supported(prog))
+-			return -EINVAL;
+-		ret = btf_distill_func_proto(log, btf, t, tname, &fmodel);
+-		return ret;
++		ret = btf_distill_func_proto(log, btf, t, tname, fmodel);
++		if (ret)
++			return ret;
++		break;
+ 	default:
+ 		if (!prog_extension)
+ 			return -EINVAL;
+@@ -11217,13 +11191,6 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 	case BPF_LSM_MAC:
+ 	case BPF_TRACE_FENTRY:
+ 	case BPF_TRACE_FEXIT:
+-		prog->aux->attach_func_name = tname;
+-		if (prog->type == BPF_PROG_TYPE_LSM) {
+-			ret = bpf_lsm_verify_prog(log, prog);
+-			if (ret < 0)
+-				return ret;
+-		}
+-
+ 		if (!btf_type_is_func(t)) {
+ 			bpf_log(log, "attach_btf_id %u is not a function\n",
+ 				btf_id);
+@@ -11235,24 +11202,14 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 		t = btf_type_by_id(btf, t->type);
+ 		if (!btf_type_is_func_proto(t))
+ 			return -EINVAL;
+-		tr = bpf_trampoline_lookup(key);
+-		if (!tr)
+-			return -ENOMEM;
+-		/* t is either vmlinux type or another program's type */
+-		prog->aux->attach_func_proto = t;
+-		mutex_lock(&tr->mutex);
+-		if (tr->func.addr) {
+-			prog->aux->trampoline = tr;
+-			goto out;
+-		}
+-		if (tgt_prog && conservative) {
+-			prog->aux->attach_func_proto = NULL;
++
++		if (tgt_prog && conservative)
  			t = NULL;
- 		}
--		ret = btf_distill_func_proto(&env->log, btf, t,
-+		ret = btf_distill_func_proto(log, btf, t,
- 					     tname, &tr->func.model);
+-		}
+-		ret = btf_distill_func_proto(log, btf, t,
+-					     tname, &tr->func.model);
++
++		ret = btf_distill_func_proto(log, btf, t, tname, fmodel);
  		if (ret < 0)
- 			goto out;
-@@ -11261,7 +11261,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
- 		} else {
- 			addr = kallsyms_lookup_name(tname);
- 			if (!addr) {
--				verbose(env,
-+				bpf_log(log,
+-			goto out;
++			return ret;
++
+ 		if (tgt_prog) {
+ 			if (subprog == 0)
+ 				addr = (long) tgt_prog->bpf_func;
+@@ -11264,8 +11221,7 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 				bpf_log(log,
  					"The address of function %s cannot be found\n",
  					tname);
- 				ret = -ENOENT;
-@@ -11291,12 +11291,12 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+-				ret = -ENOENT;
+-				goto out;
++				return -ENOENT;
+ 			}
+ 		}
+ 
+@@ -11290,25 +11246,98 @@ static int check_attach_btf_id(struct bpf_verifier_env *env)
+ 			default:
  				break;
  			}
- 			if (ret)
--				verbose(env, "%s is not sleepable\n",
-+				bpf_log(log, "%s is not sleepable\n",
- 					prog->aux->attach_func_name);
+-			if (ret)
+-				bpf_log(log, "%s is not sleepable\n",
+-					prog->aux->attach_func_name);
++			if (ret) {
++				bpf_log(log, "%s is not sleepable\n", tname);
++				return ret;
++			}
  		} else if (prog->expected_attach_type == BPF_MODIFY_RETURN) {
- 			ret = check_attach_modify_return(prog, addr);
- 			if (ret)
--				verbose(env, "%s() is not modifiable\n",
-+				bpf_log(log, "%s() is not modifiable\n",
- 					prog->aux->attach_func_name);
+-			ret = check_attach_modify_return(prog, addr);
+-			if (ret)
+-				bpf_log(log, "%s() is not modifiable\n",
+-					prog->aux->attach_func_name);
++			ret = check_attach_modify_return(prog, addr, tname);
++			if (ret) {
++				bpf_log(log, "%s() is not modifiable\n", tname);
++				return ret;
++			}
  		}
- 		if (ret)
+-		if (ret)
+-			goto out;
+-		tr->func.addr = (void *)addr;
+-		prog->aux->trampoline = tr;
+-out:
+-		mutex_unlock(&tr->mutex);
+-		if (ret)
+-			bpf_trampoline_put(tr);
++
++		break;
++	}
++	*tgt_addr = addr;
++	if (tgt_name)
++		*tgt_name = tname;
++	if (tgt_type)
++		*tgt_type = t;
++	return 0;
++}
++
++static int check_attach_btf_id(struct bpf_verifier_env *env)
++{
++	struct bpf_prog *prog = env->prog;
++	struct bpf_prog *tgt_prog = prog->aux->linked_prog;
++	u32 btf_id = prog->aux->attach_btf_id;
++	struct btf_func_model fmodel;
++	struct bpf_trampoline *tr;
++	const struct btf_type *t;
++	const char *tname;
++	long addr;
++	int ret;
++	u64 key;
++
++	if (prog->aux->sleepable && prog->type != BPF_PROG_TYPE_TRACING &&
++	    prog->type != BPF_PROG_TYPE_LSM) {
++		verbose(env, "Only fentry/fexit/fmod_ret and lsm programs can be sleepable\n");
++		return -EINVAL;
++	}
++
++	if (prog->type == BPF_PROG_TYPE_STRUCT_OPS)
++		return check_struct_ops_btf_id(env);
++
++	if (prog->type != BPF_PROG_TYPE_TRACING &&
++	    prog->type != BPF_PROG_TYPE_LSM &&
++	    prog->type != BPF_PROG_TYPE_EXT)
++		return 0;
++
++	ret = bpf_check_attach_target(&env->log, prog, tgt_prog, btf_id,
++				      &fmodel, &addr, &tname, &t);
++	if (ret)
+ 		return ret;
++
++	if (tgt_prog) {
++		if (prog->type == BPF_PROG_TYPE_EXT) {
++			env->ops = bpf_verifier_ops[tgt_prog->type];
++			prog->expected_attach_type =
++				tgt_prog->expected_attach_type;
++		}
++		key = ((u64)tgt_prog->aux->id) << 32 | btf_id;
++	} else {
++		key = btf_id;
+ 	}
++
++	/* remember two read only pointers that are valid for
++	 * the life time of the kernel
++	 */
++	prog->aux->attach_func_proto = t;
++	prog->aux->attach_func_name = tname;
++
++	if (prog->expected_attach_type == BPF_TRACE_RAW_TP) {
++		prog->aux->attach_btf_trace = true;
++		return 0;
++	} else if (prog->expected_attach_type == BPF_TRACE_ITER) {
++		if (!bpf_iter_prog_supported(prog))
++			return -EINVAL;
++		return 0;
++	}
++
++	if (prog->type == BPF_PROG_TYPE_LSM) {
++		ret = bpf_lsm_verify_prog(&env->log, prog);
++		if (ret < 0)
++			return ret;
++	}
++
++	tr = bpf_trampoline_get(key, (void *)addr, &fmodel);
++	if (IS_ERR(tr))
++		return PTR_ERR(tr);
++
++	prog->aux->trampoline = tr;
++	return 0;
+ }
+ 
+ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
 
