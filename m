@@ -2,63 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65934269769
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 23:08:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD79269770
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 23:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726085AbgINVIb convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Sep 2020 17:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726061AbgINVIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 17:08:17 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E715BC06174A
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 14:08:16 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6105A127DE89A;
-        Mon, 14 Sep 2020 13:51:29 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 14:08:15 -0700 (PDT)
-Message-Id: <20200914.140815.1542913610622375616.davem@davemloft.net>
-To:     anthony.l.nguyen@intel.com
-Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        jeffrey.t.kirsher@intel.com
-Subject: Re: [net-next v2 0/5][pull request] 40GbE Intel Wired LAN Driver
- Updates 2020-09-14
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200914173224.692707-1-anthony.l.nguyen@intel.com>
-References: <20200914173224.692707-1-anthony.l.nguyen@intel.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Mon, 14 Sep 2020 13:51:29 -0700 (PDT)
+        id S1726035AbgINVKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 17:10:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38504 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725961AbgINVKo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 17:10:44 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2535620735;
+        Mon, 14 Sep 2020 21:10:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600117843;
+        bh=TY31Md14FJPXqHRgvfhLcEu3HGZCkkpy5Ps85ur50s8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZoNEXIoSAF/u0VcPY7kcNXtUiJYHYLz/yNlDzDG6zNDrpn+/ITs7Vm1uSTlbRDMp5
+         87EndxYTLVk044Sye5Q/bLhf+D2uKKB0ADzoFhJ66i4m8+5AB3Djiwy9PrFFPO1JQr
+         QOOOcD6EzFyZ3Np4vYlbRVuOiruZ/JjPn8Rf3Xo0=
+Date:   Mon, 14 Sep 2020 14:10:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Shannon Nelson <snelson@pensando.io>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH net-next] ionic: dynamic interrupt moderation
+Message-ID: <20200914141041.570370fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200913212813.46736-1-snelson@pensando.io>
+References: <20200913212813.46736-1-snelson@pensando.io>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tony Nguyen <anthony.l.nguyen@intel.com>
-Date: Mon, 14 Sep 2020 10:32:19 -0700
+On Sun, 13 Sep 2020 14:28:13 -0700 Shannon Nelson wrote:
+> Use the dim library to manage dynamic interrupt
+> moderation in ionic.
+> 
+> Signed-off-by: Shannon Nelson <snelson@pensando.io>
 
-> This series contains updates to i40e driver only.
-> 
-> Li RongQing removes binding affinity mask to a fixed CPU and sets
-> prefetch of Rx buffer page to occur conditionally.
-> 
-> Björn provides AF_XDP performance improvements by not prefetching HW
-> descriptors, using 16 byte descriptors, and moving buffer allocation
-> out of Rx processing loop.
-> 
-> v2: Define prefetch_page_address in a common header for patch 2.
-> Dropped, previous, patch 5 as it is being reworked to be more
-> generalized.
-> 
-> The following are changes since commit e059c6f340f6fccadd3db9993f06d4cc51305804:
->   tulip: switch from 'pci_' to 'dma_' API
-> and are available in the git repository at:
->   git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
+Let me advertise my people.kernel entry ;)
 
-Looks good, pulled, thanks Tony.
+https://people.kernel.org/finqi53erl
+
+My somewhat short production experience leads me to question the value
+of DIM on real life workloads, but I know customers like to benchmark
+adapters using ping and iperf, so do what you gotta do :(
+
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> index 895e2113bd6b..f1c8ab439080 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+> @@ -42,6 +42,19 @@ static int ionic_start_queues(struct ionic_lif *lif);
+>  static void ionic_stop_queues(struct ionic_lif *lif);
+>  static void ionic_lif_queue_identify(struct ionic_lif *lif);
+>  
+> +static void ionic_dim_work(struct work_struct *work)
+> +{
+> +	struct dim *dim = container_of(work, struct dim, work);
+> +	struct dim_cq_moder cur_moder =
+> +		net_dim_get_rx_moderation(dim->mode, dim->profile_ix);
+
+Could you move this out of the variable init? Make things hard to read.
+
+> +	struct ionic_qcq *qcq = container_of(dim, struct ionic_qcq, dim);
+> +	u32 new_coal;
+> +
+> +	new_coal = ionic_coal_usec_to_hw(qcq->q.lif->ionic, cur_moder.usec);
+> +	qcq->intr.dim_coal_hw = new_coal ? new_coal : 1;
+> +	dim->state = DIM_START_MEASURE;
+> +}
+
+Interesting, it seem that you don't actually talk to FW to update 
+the parameters? DIM causes noticeable increase in scheduler pressure
+with those work entries it posts. I'd be tempted to not use a work
+entry if you don't have to sleep.
