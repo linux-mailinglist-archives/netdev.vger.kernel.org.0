@@ -2,89 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C59E2691C9
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 576072691D2
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:41:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726367AbgINPbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 11:31:50 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20678 "EHLO
+        id S1726359AbgINQlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 12:41:12 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26294 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726294AbgINPbL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 11:31:11 -0400
+        with ESMTP id S1726353AbgINPb3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 11:31:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600097470;
+        s=mimecast20190719; t=1600097479;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=dMweHEZbFa5g/pRD+e4Ve63LcmOnunvsiH2Q7fDvBJM=;
-        b=f1/hPMSyLp9gSRXKKt3toQ2GH/8rJAx2Fi29ywvQ7tYcqe8fPOoyU3nl4pF/Krypdn1ONt
-        g76bztuIxWxg2Sy68VTfL4EzLtjJtQ0uQWroiI3Ajhl/rfzWGGUD/RaoOmTrocrH/yI06s
-        rPWw5LWg3uiDdtr3dZ6fVOZajOpWgio=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m+vcjl/WYR9TpPPDjmjqr4nMFYYTY/IojylAMQI9KPE=;
+        b=USvDyn3RGrEbEvxFzvQ3sohebVP6rhq2hQuncvVn16/en39HeES00x2BSZ5pfK230Lomui
+        WpkVFEq4P9E48Ek8eOapGEAyX8g+vAMvCFhjphuYOcIn/tME0qEv06RthUvI3NnHPXxc9u
+        Ok2TnviMiz6tnfzeAbkvy7/kkhjvUGo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-379-Co38hbDPNs6TxDuuVECk7g-1; Mon, 14 Sep 2020 11:31:08 -0400
-X-MC-Unique: Co38hbDPNs6TxDuuVECk7g-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-296-4ptu5WxUNUin7KvMma181w-1; Mon, 14 Sep 2020 11:31:15 -0400
+X-MC-Unique: 4ptu5WxUNUin7KvMma181w-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 60FC81007B0B;
-        Mon, 14 Sep 2020 15:30:48 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A75B89CCFF;
+        Mon, 14 Sep 2020 15:30:55 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-113-6.rdu2.redhat.com [10.10.113.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 896F37512A;
-        Mon, 14 Sep 2020 15:30:46 +0000 (UTC)
-Subject: [PATCH net-next 0/5] rxrpc: Fixes for the connection manager rewrite
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 823921002D46;
+        Mon, 14 Sep 2020 15:30:54 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net-next 1/5] rxrpc: Fix an error goto in rxrpc_connect_call()
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 14 Sep 2020 16:30:46 +0100
-Message-ID: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
+Date:   Mon, 14 Sep 2020 16:30:53 +0100
+Message-ID: <160009745364.1014072.15669282566191320805.stgit@warthog.procyon.org.uk>
+In-Reply-To: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
+References: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/0.23
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fix an error-handling goto in rxrpc_connect_call() whereby it will jump to
+free the bundle it failed to allocate.
 
-Here are some fixes for the connection manager rewrite:
-
- (1) Fix a goto to the wrong place in error handling.
-
- (2) Fix a missing NULL pointer check.
-
- (3) The stored allocation error needs to be stored signed.
-
- (4) Fix a leak of connection bundle when clearing connections due to
-     net namespace exit.
-
- (5) Fix an overget of the bundle when setting up a new client conn.
-
-The patches are tagged here:
-
-	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-	rxrpc-next-20200914
-
-and can also be found on this branch:
-
-	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-next
-
-David
+Fixes: 245500d853e9 ("rxrpc: Rewrite the client connection manager")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
 ---
-David Howells (5):
-      rxrpc: Fix an error goto in rxrpc_connect_call()
-      rxrpc: Fix a missing NULL-pointer check in a trace
-      rxrpc: Fix rxrpc_bundle::alloc_error to be signed
-      rxrpc: Fix conn bundle leak in net-namespace exit
-      rxrpc: Fix an overget of the conn bundle when setting up a client conn
 
+ net/rxrpc/conn_client.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
- include/trace/events/rxrpc.h | 2 +-
- net/rxrpc/ar-internal.h      | 2 +-
- net/rxrpc/conn_client.c      | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
+index 0e4e1879c24d..180be4da8d26 100644
+--- a/net/rxrpc/conn_client.c
++++ b/net/rxrpc/conn_client.c
+@@ -724,8 +724,9 @@ int rxrpc_connect_call(struct rxrpc_sock *rx,
+ 	/* Paired with the write barrier in rxrpc_activate_one_channel(). */
+ 	smp_rmb();
+ 
+-out:
++out_put_bundle:
+ 	rxrpc_put_bundle(bundle);
++out:
+ 	_leave(" = %d", ret);
+ 	return ret;
+ 
+@@ -742,7 +743,7 @@ int rxrpc_connect_call(struct rxrpc_sock *rx,
+ 	trace_rxrpc_client(call->conn, ret, rxrpc_client_chan_wait_failed);
+ 	rxrpc_set_call_completion(call, RXRPC_CALL_LOCAL_ERROR, 0, ret);
+ 	rxrpc_disconnect_client_call(bundle, call);
+-	goto out;
++	goto out_put_bundle;
+ }
+ 
+ /*
 
 
