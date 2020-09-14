@@ -2,198 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06DC6269976
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 01:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB68E26997F
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 01:10:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726013AbgINXGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 19:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33440 "EHLO
+        id S1726024AbgINXKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 19:10:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725986AbgINXGx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 19:06:53 -0400
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CD2C06174A
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 16:06:51 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4Br26v4JtZzQl1t;
-        Tue, 15 Sep 2020 01:06:47 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
-        with ESMTP id 0Sz045w5CTN4; Tue, 15 Sep 2020 01:06:44 +0200 (CEST)
-Subject: Re: [PATCH v2 4/4] net: lantiq: Disable IRQs only if NAPI gets
- scheduled
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        martin.blumenstingl@googlemail.com, eric.dumazet@gmail.com
-References: <20200912193629.1586-1-hauke@hauke-m.de>
- <20200912193629.1586-5-hauke@hauke-m.de>
- <20200914135415.51161be0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Hauke Mehrtens <hauke@hauke-m.de>
-Autocrypt: addr=hauke@hauke-m.de; keydata=
- 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
-Message-ID: <b3c182e4-8c68-d142-38c4-b1b99d343e9d@hauke-m.de>
-Date:   Tue, 15 Sep 2020 01:06:38 +0200
+        with ESMTP id S1725953AbgINXKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 19:10:23 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04691C06174A;
+        Mon, 14 Sep 2020 16:10:22 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id b142so1075327ybg.9;
+        Mon, 14 Sep 2020 16:10:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=PbWNT4gxMjEMOnL7Nnds+HzJhYLvf7p+m43a5dhww1Y=;
+        b=HrMMScLTJKRC7yddrcO92v/93Fmbb5mvQrUpiLc6/Ll4c4WlYB8OSYE7OV9a0VnNKE
+         AWyb0Cebn6qKf8MPN9iIrVXmZ34mEHMF1REZz3MGJoDfPobpmr/T8UsSmtAFNNxzJWjj
+         67WW/JznnflQc1vqPG4rubIg61JBD/54RLSl3KnCXPxid3bhkMcnf9LmXkGz2Dfoju6V
+         OMVt6Ou4QheDxHReNRl1YcSOIyvI4DnlcjMicHBChNmofLDBs6IBk+AASJTdL2NYVaUi
+         BkyMKDMtMaFKwLm4o6E5Kn8Usicy1e4paWP88T/V/dkdZiyUtuSp/3D8nGNDvH1ep5No
+         Ej4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=PbWNT4gxMjEMOnL7Nnds+HzJhYLvf7p+m43a5dhww1Y=;
+        b=TA9+wixOknJEDNVGWOJ/ua967cMvHe16VOVHi2xFC169kpvGDtZ2JDSsd4U/UUl9yP
+         td8ij+zoxSDpnCKVtMwhg2Ci3gQaRtQbOJS9xkaLyx5SaF9q4TSqpQlDqaddYARRZSmN
+         9KH3R7o4w11pL4qbNr8EzSBsKjmuE0IxcfJiNqTB1/J5PuudW8Nm+cXa5igSV6LSH5Qe
+         lioPn7teeQm7O0+sXCpV6kAc1OQugg/ou8gIZ7gBlyrLx6I+aw1pp72J9bRF84jFRXYT
+         rpP0IaGzHpth0dlqlaJiiCNkQQ611epZNL4wJgdEETGSS/lxlRxaiXaEtCtl9RXEc2x4
+         /8Pg==
+X-Gm-Message-State: AOAM533aFK1Z5zpxppC03cmVSRuXua7VwaW3qpQyOGxUPAftAIMAdMvN
+        XbqXAIceK6py0poMTajRl1BJwloQ1qV05uH1Jns=
+X-Google-Smtp-Source: ABdhPJyFtE9o9uKYMkUf4bRxwmxmPWnmeI6kWDxCBRl5V+oRmebZ7hcqU5OtNugbCHtET41Mox4fX8T8U+AOWYMa7LQ=
+X-Received: by 2002:a25:aa8f:: with SMTP id t15mr24200250ybi.459.1600125022125;
+ Mon, 14 Sep 2020 16:10:22 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200914135415.51161be0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="1s21WNJgAwRaMtpKelnFd94T6X1MtihQv"
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -4.19 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 751A4673
-X-Rspamd-UID: acdcb8
+References: <159981835466.134722.8652987144251743467.stgit@toke.dk>
+ <159981835908.134722.4550898174324943652.stgit@toke.dk> <CAEf4BzZMj0sPisgUZ+3qKvqaAxfzzRNHZTpoR-zuDXvKcY3URQ@mail.gmail.com>
+ <87imcgz6gk.fsf@toke.dk>
+In-Reply-To: <87imcgz6gk.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 14 Sep 2020 16:10:11 -0700
+Message-ID: <CAEf4Bzb9Xw65jL1UxVjOz5HdwgMckEkFHWrYdEPbnj01a7X1hQ@mail.gmail.com>
+Subject: Re: [PATCH RESEND bpf-next v3 4/9] bpf: support attaching freplace
+ programs to multiple attach points
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---1s21WNJgAwRaMtpKelnFd94T6X1MtihQv
-Content-Type: multipart/mixed; boundary="z5wf8y709bHOnwuOAF6jK9kOViY4N2Ic8"
+On Mon, Sep 14, 2020 at 9:08 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>
+> > On Fri, Sep 11, 2020 at 3:01 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+> >>
+> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >>
+> >> This enables support for attaching freplace programs to multiple attac=
+h
+> >> points. It does this by amending UAPI for bpf_raw_tracepoint_open with=
+ a
+> >> target prog fd and btf ID pair that can be used to supply the new
+> >> attachment point. The target must be compatible with the target that w=
+as
+> >> supplied at program load time.
+> >>
+> >> The implementation reuses the checks that were factored out of
+> >> check_attach_btf_id() to ensure compatibility between the BTF types of=
+ the
+> >> old and new attachment. If these match, a new bpf_tracing_link will be
+> >> created for the new attach target, allowing multiple attachments to
+> >> co-exist simultaneously.
+> >>
+> >> The code could theoretically support multiple-attach of other types of
+> >> tracing programs as well, but since I don't have a use case for any of
+> >> those, the bpf_tracing_prog_attach() function will reject new targets =
+for
+> >> anything other than PROG_TYPE_EXT programs.
+> >>
+> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >> ---
+> >
+> > It feels like using a semi-constructed bpf_tracing_link inside
+> > prog->aux->tgt_link is just an unnecessary complication, after reading
+> > this and previous patches. Seems more straightforward and simpler to
+> > store tgt_attach_type/tgt_prog_type (permanently) and
+> > tgt_prog/tgt_trampoline (until first attachment) in prog->aux and then
+> > properly create bpf_link on attach.
+>
+> I updated v4 with your comments, but kept the link in prog->aux; the
+> reason being that having a container for the two pointers makes it
+> possible to atomically swap it out with xchg() as you suggested
+> previously. Could you please take a look at v4? If you still think it's
+> better to just keep two separate pointers (and add a lock) in prog->aux,
+> I can change it to that. But I'd rather avoid the lock if possible...
 
---z5wf8y709bHOnwuOAF6jK9kOViY4N2Ic8
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+I took a very quick look at this specific bit, planning to do another
+pass tomorrow.
 
-On 9/14/20 10:54 PM, Jakub Kicinski wrote:
-> On Sat, 12 Sep 2020 21:36:29 +0200 Hauke Mehrtens wrote:
->> The napi_schedule() call will only schedule the NAPI if it is not
->> already running. To make sure that we do not deactivate interrupts
->> without scheduling NAPI only deactivate the interrupts in case NAPI al=
-so
->> gets scheduled.
->>
->> Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
->> ---
->>  drivers/net/ethernet/lantiq_xrx200.c | 8 +++++---
->>  1 file changed, 5 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethern=
-et/lantiq_xrx200.c
->> index abee7d61074c..635ff3a5dcfb 100644
->> --- a/drivers/net/ethernet/lantiq_xrx200.c
->> +++ b/drivers/net/ethernet/lantiq_xrx200.c
->> @@ -345,10 +345,12 @@ static irqreturn_t xrx200_dma_irq(int irq, void =
-*ptr)
->>  {
->>  	struct xrx200_chan *ch =3D ptr;
->> =20
->> -	ltq_dma_disable_irq(&ch->dma);
->> -	ltq_dma_ack_irq(&ch->dma);
->> +	if (napi_schedule_prep(&ch->napi)) {
->> +		__napi_schedule(&ch->napi);
->> +		ltq_dma_disable_irq(&ch->dma);
->> +	}
->> =20
->> -	napi_schedule(&ch->napi);
->> +	ltq_dma_ack_irq(&ch->dma);
->> =20
->>  	return IRQ_HANDLED;
->>  }
->=20
-> The patches look good to me, but I wonder why you don't want to always
-> disable the IRQ here? You're guaranteed that NAPI will get called, or i=
-t
-> was disabled. In both cases seems like disabling the IRQ can only help.=
+What's the problem with adding a mutex to bpf_prog_aux? In your case,
+now you introduced (unlikely, but still) extra state transition for
+tgt_link from non-NULL to NULL and then back to non-NULL? And why?
+Just to use atomic xchg, while using atomic operation is not an
+absolute necessity because it's not a performance-critical path at
+all. We are not optimizing for millions of freplace attachments a
+second, right? On the other hand, having a mutex there won't require
+restoration logic, it will be dead simple, obvious and
+straightforward. So yeah, I still think mutex is better there.
 
->=20
+BTW, check Stanislav's latest patch set. He's adding used_maps_mutex
+to bpf_prog_aux with no problems at all. It seems to me that we might
+want to generalize that used_maps_mutex to be just bpf_prog_aux's
+mutex ('prog_aux_mutex' or whatever we'd call it) and use it for such
+kinds of low-frequency bpf_prog metadata manipulations/checks.
 
-This was more or less copied from the mtk_handle_irq_rx() function of
-this driver:
-drivers/net/ethernet/mediatek/mtk_eth_soc.c
-
-My assumption was that napi_schedule_prep() could return false and then
-NAPI would not be triggered and the IRQ would be deactivated. In such a
-case the network would hang.
-
-I observed such hangs of the TX, which were mostly fixed by the first
-patch in this series, but I still saw some of them even with that first
-patch. With this last patch I did not see them any more, but I am not
-100% if all possible cases are eliminated.
-
-Hauke
+Thoughts?
 
 
---z5wf8y709bHOnwuOAF6jK9kOViY4N2Ic8--
-
---1s21WNJgAwRaMtpKelnFd94T6X1MtihQv
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEyz0/uAcd+JwXmwtD8bdnhZyy68cFAl9f934ACgkQ8bdnhZyy
-68eCVwf/ZJ+SulUQKaYWm1wvrnAF9v9nRdNU+esM7URY62iubd+TRthRueQbSANs
-niFpW/plqABOgzYTgXMi1CFYBghjkOVp40Dr5uXjkBb+F9HpS2FU55A3uxEBlqpA
-9hVfkVxpp5ToxqkTKD/exmOpFTI0JIy4FG+JsBiNphrhBe5pd5ClkelFcqCrVBK/
-wL526OtiWCCTOSvTS1Y+HF3JDLF8uyCs7AUwU2+VzjA5+YDo+sg7+2FRPwt21Try
-P+tXZ5AkhGM8AxNrlW5Kwa6sLlXjMhz1NDAoLdUra3Xi4+RDpTeg4nrsIwXwvJyE
-vG3SIpMdMTpcGGhtWVtyU11ndzsMDg==
-=JhN5
------END PGP SIGNATURE-----
-
---1s21WNJgAwRaMtpKelnFd94T6X1MtihQv--
+>
+> -Toke
+>
