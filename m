@@ -2,79 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA363268D69
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 16:22:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98CDC268D2D
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 16:17:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgINOWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 10:22:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60294 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726684AbgINNGm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 09:06:42 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B4D0C221E3;
-        Mon, 14 Sep 2020 13:05:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600088735;
-        bh=VUXrbnxCU1K7V4xji2eGDbvRd/qZ+DU52pJYa9PjDYo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qrsWWdNIrl8JK1aNujZEcupBHFrp7xGRiEnKPH1VIeoE4F61gynSHlCZ0h37JnGAQ
-         v1mKVx5FIbBN/1xeBeDuPZxyjmgYGvZsUCIqaPLUNqWGW4xSnOPPuk416nnrf3aoTZ
-         qHLk7zRudV0XbjI98WMFniC93wY7Oh4gsSs7/kVw=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "J. Bruce Fields" <bfields@redhat.com>, Zhi Li <yieli@redhat.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/15] SUNRPC: stop printk reading past end of string
-Date:   Mon, 14 Sep 2020 09:05:18 -0400
-Message-Id: <20200914130526.1804913-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200914130526.1804913-1-sashal@kernel.org>
-References: <20200914130526.1804913-1-sashal@kernel.org>
+        id S1726664AbgINORP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 10:17:15 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:41968 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726565AbgINN03 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 09:26:29 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 62413D9BC8D7DD417C73;
+        Mon, 14 Sep 2020 21:25:42 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Mon, 14 Sep 2020 21:25:41 +0800
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+To:     <shshaikh@marvell.com>, <manishc@marvell.com>,
+        <GR-Linux-NIC-Dev@marvell.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] net: qlcnic: remove unused variable 'val' in qlcnic_83xx_cam_unlock()
+Date:   Mon, 14 Sep 2020 21:24:39 +0800
+Message-ID: <1600089879-22944-1-git-send-email-zhangchangzhong@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "J. Bruce Fields" <bfields@redhat.com>
+Fixes the following W=1 kernel build warning(s):
 
-[ Upstream commit 8c6b6c793ed32b8f9770ebcdf1ba99af423c303b ]
+drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c:661:6: warning:
+ variable 'val' set but not used [-Wunused-but-set-variable]
+  661 |  u32 val;
+      |      ^~~
 
-Since p points at raw xdr data, there's no guarantee that it's NULL
-terminated, so we should give a length.  And probably escape any special
-characters too.
+After commit 7f9664525f9c ("qlcnic: 83xx memory map and HW access
+routines"), variable 'val' is never used in qlcnic_83xx_cam_unlock(), so
+removing it to avoid build warning.
 
-Reported-by: Zhi Li <yieli@redhat.com>
-Signed-off-by: J. Bruce Fields <bfields@redhat.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 ---
- net/sunrpc/rpcb_clnt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/sunrpc/rpcb_clnt.c b/net/sunrpc/rpcb_clnt.c
-index da21efac80f4a..7c0b1feb36299 100644
---- a/net/sunrpc/rpcb_clnt.c
-+++ b/net/sunrpc/rpcb_clnt.c
-@@ -981,8 +981,8 @@ static int rpcb_dec_getaddr(struct rpc_rqst *req, struct xdr_stream *xdr,
- 	p = xdr_inline_decode(xdr, len);
- 	if (unlikely(p == NULL))
- 		goto out_fail;
--	dprintk("RPC: %5u RPCB_%s reply: %s\n", req->rq_task->tk_pid,
--			req->rq_task->tk_msg.rpc_proc->p_name, (char *)p);
-+	dprintk("RPC: %5u RPCB_%s reply: %*pE\n", req->rq_task->tk_pid,
-+			req->rq_task->tk_msg.rpc_proc->p_name, len, (char *)p);
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
+index 29b9c72..fc49088 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
+@@ -658,11 +658,10 @@ int qlcnic_83xx_cam_lock(struct qlcnic_adapter *adapter)
+ void qlcnic_83xx_cam_unlock(struct qlcnic_adapter *adapter)
+ {
+ 	void __iomem *addr;
+-	u32 val;
+ 	struct qlcnic_hardware_context *ahw = adapter->ahw;
  
- 	if (rpc_uaddr2sockaddr(req->rq_xprt->xprt_net, (char *)p, len,
- 				sap, sizeof(address)) == 0)
+ 	addr = ahw->pci_base0 + QLC_83XX_SEM_UNLOCK_FUNC(ahw->pci_func);
+-	val = readl(addr);
++	readl(addr);
+ }
+ 
+ void qlcnic_83xx_read_crb(struct qlcnic_adapter *adapter, char *buf,
 -- 
-2.25.1
+2.9.5
 
