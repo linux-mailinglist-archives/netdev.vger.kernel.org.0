@@ -2,139 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9259A268821
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:19:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAE10268841
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:26:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbgINJTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 05:19:21 -0400
-Received: from mail-il1-f206.google.com ([209.85.166.206]:52162 "EHLO
-        mail-il1-f206.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726236AbgINJTU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 05:19:20 -0400
-Received: by mail-il1-f206.google.com with SMTP id i80so12117061ild.18
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:19:19 -0700 (PDT)
+        id S1726260AbgINJ0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 05:26:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726123AbgINJ0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 05:26:52 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694E3C06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:26:30 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id 185so17130102oie.11
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:26:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N9Z0JQMEyAoqtsNY4svQdmQ8E3d+AFCPv6YizfP/1Zc=;
+        b=amhh8bNkxNCj5ZxTzmr8UAgLC+60cBzEjwwmvHCeTchYkCNgxgJHgsP558Vz1oMMDp
+         NMLIhEPm1NiG2Iwt3KK0C1ZjImwKYMSalZVKlin2FTgYbvCKDGhOKgaTLwiN531PNTFJ
+         QuUQIdYKPA//kVAqm36iamztAHkbFOta+WxuA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=PopK2tlLDApo/coeVBR5hxOMNG+Fyhkdx0BjdaxPuXg=;
-        b=OSfRDTBvUjwFpyGBSi5Er5qAsQhktZpGvBMKWocAVw4YJyJ6F2dUGPtmlS0+sMQ16v
-         tRZqN7Mzmea2NfBW3G0IyaPSdXyzZ0t7AxvHUJ8Kv4GJXF1ePcP3yJIiDETbnjK5nh7o
-         r0yBb1KSaMwortct7Hqm8nhUatlS2pkObebhWQYQrjY/bfAo3njTAcgpEy7VxY16i4/I
-         HjYjJnGxxkgivCUgcqCl50HhdmDXnHk0akdSI2oYgNeMHrdS6ZiXZ41ZlyTqGwRKxHIi
-         3zIgbGX04lk8G4OEJMZiwFizXOJo3zQj2vBtpEK2F0ABgeIWkK6egNugWMzv3ijpPsli
-         37Hg==
-X-Gm-Message-State: AOAM532pSO+My1JwFwUbJ6BWD5nhm76xlPbGZ35i+cn1G5OknQ2ulGpD
-        RlpjyLGE73TVlW1p6bYa1qSP2r1o/Sdn930dCWG65cfVq4+U
-X-Google-Smtp-Source: ABdhPJyfAVpGu+Ap2ZipojX71v/uVILYtXP1eQDZ7okPmqpE5TLsKyaXV4LC/jLyDrgDuXfR80TtB4kX8ZpQdEVt95N51tsXLwSn
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N9Z0JQMEyAoqtsNY4svQdmQ8E3d+AFCPv6YizfP/1Zc=;
+        b=raSk2Vs77pQrkC9ay8OQH6Q/CRpv14v+C6wEhAsXurWBv/3aiT1MJddhWt37lrm9PT
+         BUnLSlA205nvnaNOZczGl909jnadPDTaYZ8slSetVj6K7jIvlFcE7ZybtXuSNLNzn1QW
+         vMIzUmnJkJkXH+MFuEmvDnjKc43FKFrLQrbKYa4Q6JYquiSNBpkjCzrvh9H+Qx1CDGFV
+         NJRj1qkZEzglucS/Wxvlytuy1F+wDq3DnNPcKtFelfEFnBrU0ZgnZ7JnidGE1lIwg4wd
+         tmtDjZ74rIRczv91B0PM5hQhbubqCOj3Sx1BukJLrY6EIEzMxFyf+gGlJSu8KJ52pzqR
+         YAcQ==
+X-Gm-Message-State: AOAM531oxH5N/LKLI/rsQxZdyFCNmfM/dekkwT9eWfmRv+prskc2fWVk
+        5tQ+U0B1ZpJWR9Ive56LP1NPzpOOFlCg+TpC1bAzcg==
+X-Google-Smtp-Source: ABdhPJzwqYrmYOEIK6mWrnKDrf5U3Gp9aKPC2GbyggUrO2IOrQsJD/Y5OumwoCnXrItLYW2QvDEhU6bU8xvGxx8I04w=
+X-Received: by 2002:aca:3087:: with SMTP id w129mr7719251oiw.102.1600075589751;
+ Mon, 14 Sep 2020 02:26:29 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a02:c8c6:: with SMTP id q6mr12316526jao.76.1600075159144;
- Mon, 14 Sep 2020 02:19:19 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 02:19:19 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000799c1c05af42878b@google.com>
-Subject: WARNING in taprio_change
-From:   syzbot <syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        vinicius.gomes@intel.com, xiyou.wangcong@gmail.com
+References: <20200912045917.2992578-1-kafai@fb.com> <20200912045930.2993219-1-kafai@fb.com>
+In-Reply-To: <20200912045930.2993219-1-kafai@fb.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Mon, 14 Sep 2020 10:26:18 +0100
+Message-ID: <CACAyw9-rirpChioEaSKiYC5+fLGzL38OawcBvE8Mv+16vNApZA@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next 2/2] bpf: Enable bpf_skc_to_* sock casting
+ helper to networking prog type
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, 12 Sep 2020 at 05:59, Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> There is a constant need to add more fields into the bpf_tcp_sock
+> for the bpf programs running at tc, sock_ops...etc.
+>
+> A current workaround could be to use bpf_probe_read_kernel().  However,
+> other than making another helper call for reading each field and missing
+> CO-RE, it is also not as intuitive to use as directly reading
+> "tp->lsndtime" for example.  While already having perfmon cap to do
+> bpf_probe_read_kernel(), it will be much easier if the bpf prog can
+> directly read from the tcp_sock.
+>
+> This patch tries to do that by using the existing casting-helpers
+> bpf_skc_to_*() whose func_proto returns a btf_id.  For example, the
+> func_proto of bpf_skc_to_tcp_sock returns the btf_id of the
+> kernel "struct tcp_sock".
+>
+> [ One approach is to make a separate copy of the bpf_skc_to_*
+>   func_proto and use ARG_PTR_TO_SOCK_COMMON instead of ARG_PTR_TO_BTF_ID.
+>   More on this later (1). ]
+>
+> This patch modifies the existing bpf_skc_to_* func_proto to take
+> ARG_PTR_TO_SOCK_COMMON instead of taking
+> "ARG_PTR_TO_BTF_ID + &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON]".
+> That will allow tc, sock_ops,...etc to call these casting helpers
+> because they already hold the PTR_TO_SOCK_COMMON (or its
+> equivalent).  For example:
+>
+>         sk = sock_ops->sk;
+>         if (!sk)
+>                 return;
+>         tp = bpf_skc_to_tcp_sock(sk);
+>         if (!tp)
+>                 return;
+>         /* Read tp as a PTR_TO_BTF_ID */
+>         lsndtime = tp->lsndtime;
+>
+> To ensure the current bpf prog passing a PTR_TO_BTF_ID to
+> bpf_skc_to_*() still works as is, the verifier is modified such that
+> ARG_PTR_TO_SOCK_COMMON can accept a reg with reg->type == PTR_TO_BTF_ID
+> and reg->btf_id is btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON]
+>
+> To do that, an idea is borrowed from one of the Lorenz's patch:
+> https://lore.kernel.org/bpf/20200904112401.667645-12-lmb@cloudflare.com/ .
+> It adds PTR_TO_BTF_ID as one of the acceptable reg->type for
+> ARG_PTR_TO_SOCK_COMMON and also specifies what btf_id it can take.
+> By doing this, the bpf_skc_to_* will work as before and can still
+> take PTR_TO_BTF_ID as the arg.  e.g. The bpf tcp iter will work
+> as is.
+>
+> This will also make other existing helper taking ARG_PTR_TO_SOCK_COMMON
+> works with the pointer obtained from bpf_skc_to_*(). For example:
 
-syzbot found the following issue on:
+Unfortunately, I think that we need to introduce a new
+ARG_PTR_TO_SOCK_COMMON_OR_NULL for this to work. This is because
+dereferencing a "tracing" pointer can yield NULL at runtime due to a
+page fault, so the helper has to deal with this. Other than that I
+think this is a really nice approach: we can gradually move helpers to
+PTR_TO_SOCK_COMMON_OR_NULL and in doing so make them compatible with
+BTF pointers.
 
-HEAD commit:    5760d9ac net: ethernet: ti: cpsw_new: fix suspend/resume
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=14c4e053900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=bd46548257448703
-dashboard link: https://syzkaller.appspot.com/bug?extid=d50710fd0873a9c6b40c
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=123345a5900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15727cf1900000
+[...]
 
-The issue was bisected to:
+> @@ -4014,7 +4022,17 @@ static int check_reg_type(struct bpf_verifier_env *env, u32 arg,
+>
+>  found:
+>         if (type == PTR_TO_BTF_ID) {
+> -               u32 *expected_btf_id = fn->arg_btf_id[arg];
+> +               u32 *expected_btf_id;
+> +
+> +               if (arg_type == ARG_PTR_TO_BTF_ID) {
+> +                       expected_btf_id = fn->arg_btf_id[arg];
 
-commit b5b73b26b3ca34574124ed7ae9c5ba8391a7f176
-Author: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Date:   Thu Sep 10 00:03:11 2020 +0000
+Personal preference, but what do you think about moving this to after
+the assignment of compatible?
 
-    taprio: Fix allowing too small intervals
+    btf_id = compatible->btf_id;
+    if (arg_type == ARG_PTR_TO_BTF_ID)
+       btf_id = fn->fn->arg_btf_id[arg];
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14cf2d59900000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=16cf2d59900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=12cf2d59900000
+That makes it clearer that we have to special case ARG_PTR_TO_BTF_ID since
+it doesn't make sense to use compatible->btf_id in that case.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+d50710fd0873a9c6b40c@syzkaller.appspotmail.com
-Fixes: b5b73b26b3ca ("taprio: Fix allowing too small intervals")
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
-netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 6841 at net/sched/sch_taprio.c:998 taprio_get_start_time net/sched/sch_taprio.c:998 [inline]
-WARNING: CPU: 1 PID: 6841 at net/sched/sch_taprio.c:998 taprio_change+0x1e12/0x2b60 net/sched/sch_taprio.c:1549
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 6841 Comm: syz-executor809 Not tainted 5.9.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x198/0x1fd lib/dump_stack.c:118
- panic+0x347/0x7c0 kernel/panic.c:231
- __warn.cold+0x20/0x46 kernel/panic.c:600
- report_bug+0x1bd/0x210 lib/bug.c:198
- handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
- exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
-RIP: 0010:taprio_get_start_time net/sched/sch_taprio.c:998 [inline]
-RIP: 0010:taprio_change+0x1e12/0x2b60 net/sched/sch_taprio.c:1549
-Code: 8b 44 24 08 41 bf ea ff ff ff 48 c7 00 c0 af 03 89 e8 52 9b 06 fb 48 8b 7c 24 10 e8 28 63 89 01 e9 6b eb ff ff e8 3e 9b 06 fb <0f> 0b 48 83 7c 24 08 00 74 2e e8 2f 9b 06 fb 48 8b 54 24 08 48 b8
-RSP: 0018:ffffc9000515f2b8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffff866dab09
-RDX: ffff8880a643a240 RSI: ffffffff866dafc2 RDI: 0000000000000007
-RBP: 16341fa0ca8d0652 R08: 0000000000000001 R09: ffffffff8c5f4aa7
-R10: 0000000000000000 R11: 0000000000086848 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000002 R15: 0000000000000000
- taprio_init+0x52e/0x670 net/sched/sch_taprio.c:1693
- qdisc_create+0x4b6/0x12e0 net/sched/sch_api.c:1246
- tc_modify_qdisc+0x4c8/0x1990 net/sched/sch_api.c:1662
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5563
- netlink_rcv_skb+0x15a/0x430 net/netlink/af_netlink.c:2470
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x443839
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 0f fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffe06fb51e8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443839
-RDX: 0000000000000000 RSI: 00000000200007c0 RDI: 0000000000000004
-RBP: 00007ffe06fb51f0 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-R10: 0000000001bbbbbb R11: 0000000000000246 R12: 00007ffe06fb5200
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+www.cloudflare.com
