@@ -2,114 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D911C268873
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CAD42688BE
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:48:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbgINJdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 05:33:32 -0400
-Received: from mail-io1-f80.google.com ([209.85.166.80]:50773 "EHLO
-        mail-io1-f80.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726409AbgINJdT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 05:33:19 -0400
-Received: by mail-io1-f80.google.com with SMTP id b16so10601356iod.17
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:33:19 -0700 (PDT)
+        id S1726369AbgINJs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 05:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbgINJs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 05:48:56 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F6CAC06174A;
+        Mon, 14 Sep 2020 02:48:56 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id j11so22368652ejk.0;
+        Mon, 14 Sep 2020 02:48:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ygOoarixSm6MKpzS3gULS1k3GqoRnquHOnJWOJBo7jg=;
+        b=cQndfL2saukadmPqDWiK7ztBdK3V4Z83M0/wWorBy5MHnfXzc/7BBE6QO6T99ZZBH+
+         MOIS4I2IhXlk0NiX0p0qjBgEL3TLW6wmhHNrQZCBgf1Q9YNgBG6X4EsCPXkC1Ee+YsWW
+         T+PPMhUghmvk7bBDUH1uSyJ1C8Nnsk+cDzDwLhWhvNwsVgbbE57pgA/85x/qkFUW/XX0
+         fNDEm8qsJcvpBh/UJzSN6+3aO9fn2NzDigZY6omyQn/S9t1Y64D5H7X1z9OlcRPKuVlz
+         2Dm+xo6/TsUnQgOEK3Y7doAIF8+byTGOBDYMalLNTcVrT0mjnL9E/iQ5NeiSergz7jup
+         kclA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=DJUq5XrhAYhtHbOepiU7xqamyttrBJSi0jWTB9ZyYVk=;
-        b=U3aNoS399SN4SYuU9ExGFMj9+GOJFi4s3N+AB0830mRaRQr9uylrRfqV5oLcU8sCLs
-         JpXKb+WEhL0kaCzJACjaihYVEMJHxLbzcWUcX2/4vAE1t8x7V36dzbjP6UTV0u+1n/Jz
-         Njh+b+RbAdmZ5e+v2WOHHpM/hIq09GGlPJJvuYNH91RLeI/ynA+IoP0Jgys42WJGaR1R
-         FaM5yJ0xigclumoAUQBKG5Ll2ia7olZZzmJ3yt1aJ8AW4CzDXyqATfN+E3KA7XdhkAkm
-         +gMtcVN8+qwHlr+MSalzuHujfTS++Bvq+Mt8G+qVBHYZTnnTGYsJoWuGS621kppcMe3e
-         u7QQ==
-X-Gm-Message-State: AOAM532EejbADyqBnnOPZhQTsAB1dISCtvs51+Xfq7sx0o8p4ASdym0u
-        iH5LKCwU/HXVUMEyGFJbD1B5u6GPogCzTO21V1JZMzrk/rE6
-X-Google-Smtp-Source: ABdhPJwwUWrNj4Z0DiTe6zo1NImw1NKYEq3vDz2Ie/ucA57ZOyvizj2/pwThU5abRcLsSj8CdwBbq6z4aej7SSAB9VrmASMnYDx2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ygOoarixSm6MKpzS3gULS1k3GqoRnquHOnJWOJBo7jg=;
+        b=i34NL37lTO4hJ5emRtP/kJmV2tqgyQRomwJvGv1daWvIOHtaRvTH1aCXoAUQjKW3aF
+         Q68RKmphtUYFGuFD4nZUYRb5SpZ3ei4MKyoaBNhnRv1v5LWFKhABe3222vEirqfLRYkp
+         noNgIQ0xIA5j6OE/n88aH6Wr0Br4YTmS9OtRjPSmomB9CUd7fyM7VVgdNaIp9grOoli9
+         hY7X5bb2Wr3zJoXdxiyIq7o2FduYwbb0Z6u0yY3txcbmQxb2Y6PEdW2baw6N6zE/+cA0
+         fuh3GgKZim+n91H2hSLb9NmIi8Hodq47qZTccS/5yAxPp/9Gw0fsnkFESpKKY3UqS1zt
+         vJpw==
+X-Gm-Message-State: AOAM530BsjADet3avl4bOyJzLKXLjL55WgtVeEXkBeCfhOgAZ++81WRq
+        kVdhMveTYgIvhKwOIhmFHrZoeqkjjeuQ3s1+IyY=
+X-Google-Smtp-Source: ABdhPJxL1f/SkFqHBP0W358GOCN/8NfzF7R6KphDmWOIVmUfOj5VjSc+t36/EiRNI1xihMVLfxE8wcdgEkN0/+dUF+0=
+X-Received: by 2002:a17:906:386:: with SMTP id b6mr13732009eja.538.1600076935085;
+ Mon, 14 Sep 2020 02:48:55 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a6b:7c07:: with SMTP id m7mr10719738iok.32.1600075998706;
- Mon, 14 Sep 2020 02:33:18 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 02:33:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000843f5305af42b9fa@google.com>
-Subject: general protection fault in tipc_mon_reinit_self
-From:   syzbot <syzbot+11c08b913d16224fde6f@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+References: <20200914074154.1255716-1-xie.he.0141@gmail.com>
+In-Reply-To: <20200914074154.1255716-1-xie.he.0141@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 14 Sep 2020 11:48:17 +0200
+Message-ID: <CAF=yD-Kq4fgNtYae0s9Z4KhYgyCYZo6Ws8Syf+zp0bh-sNArjQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] net/packet: Fix a comment about
+ hard_header_len and headroom allocation
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Mon, Sep 14, 2020 at 9:42 AM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> This comment is outdated and no longer reflects the actual implementation
+> of af_packet.c.
+>
+> Reasons for the new comment:
+>
+> 1.
+>
+> In af_packet.c, the function packet_snd first reserves a headroom of
+> length (dev->hard_header_len + dev->needed_headroom).
+> Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
+> which calls dev->header_ops->create, to create the link layer header.
+> If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
+> length (dev->hard_header_len), and checks if the user has provided a
+> header sized between (dev->min_header_len) and (dev->hard_header_len)
+> (in dev_validate_header).
+> This shows the developers of af_packet.c expect hard_header_len to
+> be consistent with header_ops.
+>
+> 2.
+>
+> In af_packet.c, the function packet_sendmsg_spkt has a FIXME comment.
+> That comment states that prepending an LL header internally in a driver
+> is considered a bug. I believe this bug can be fixed by setting
+> hard_header_len to 0, making the internal header completely invisible
+> to af_packet.c (and requesting the headroom in needed_headroom instead).
+>
+> 3.
+>
+> There is a commit for a WiFi driver:
+> commit 9454f7a895b8 ("mwifiex: set needed_headroom, not hard_header_len")
+> According to the discussion about it at:
+>   https://patchwork.kernel.org/patch/11407493/
+> The author tried to set the WiFi driver's hard_header_len to the Ethernet
+> header length, and request additional header space internally needed by
+> setting needed_headroom.
+> This means this usage is already adopted by driver developers.
+>
+> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> Cc: Brian Norris <briannorris@chromium.org>
+> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
 
-syzbot found the following issue on:
-
-HEAD commit:    7fe10096 Merge branch 'linus' of git://git.kernel.org/pub/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14886e9e900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a9075b36a6ae26c9
-dashboard link: https://syzkaller.appspot.com/bug?extid=11c08b913d16224fde6f
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-userspace arch: i386
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+11c08b913d16224fde6f@syzkaller.appspotmail.com
-
-tipc: 32-bit node address hash set to a3a24078
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 0 PID: 8164 Comm: kworker/0:4 Not tainted 5.9.0-rc4-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events tipc_net_finalize_work
-RIP: 0010:tipc_mon_reinit_self+0x389/0x610 net/tipc/monitor.c:686
-Code: a8 f9 49 8d 7c 24 10 48 89 f8 48 c1 e8 03 0f b6 04 18 84 c0 74 08 3c 03 0f 8e 40 02 00 00 4c 89 e8 45 8b 64 24 10 48 c1 e8 03 <0f> b6 04 18 84 c0 74 08 3c 03 0f 8e 62 02 00 00 45 89 65 00 4c 89
-RSP: 0018:ffffc9001623fc68 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
-RDX: dffffc0000000000 RSI: ffffffff89bd6a40 RDI: ffff888054228010
-RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8880a280cd60
-R10: fffffbfff1564d71 R11: 0000000000000000 R12: 00000000a3a24078
-R13: 0000000000000000 R14: ffff888049b91010 R15: 0000000000000001
-FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000558623d05ee8 CR3: 0000000090a76000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- tipc_net_finalize net/tipc/net.c:140 [inline]
- tipc_net_finalize+0x1df/0x310 net/tipc/net.c:131
- tipc_net_finalize_work+0x55/0x80 net/tipc/net.c:150
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Modules linked in:
----[ end trace 070d9aa71f52a0c0 ]---
-RIP: 0010:tipc_mon_reinit_self+0x389/0x610 net/tipc/monitor.c:686
-Code: a8 f9 49 8d 7c 24 10 48 89 f8 48 c1 e8 03 0f b6 04 18 84 c0 74 08 3c 03 0f 8e 40 02 00 00 4c 89 e8 45 8b 64 24 10 48 c1 e8 03 <0f> b6 04 18 84 c0 74 08 3c 03 0f 8e 62 02 00 00 45 89 65 00 4c 89
-RSP: 0018:ffffc9001623fc68 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
-RDX: dffffc0000000000 RSI: ffffffff89bd6a40 RDI: ffff888054228010
-RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8880a280cd60
-R10: fffffbfff1564d71 R11: 0000000000000000 R12: 00000000a3a24078
-R13: 0000000000000000 R14: ffff888049b91010 R15: 0000000000000001
-FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000558623d05ee8 CR3: 0000000090a76000 CR4: 00000000001506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Acked-by: Willem de Bruijn <willemb@google.com>
