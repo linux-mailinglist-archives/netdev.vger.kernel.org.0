@@ -2,116 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43AE6268643
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:40:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41B33268645
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:42:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726109AbgINHkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 03:40:42 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:38538 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725971AbgINHkZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:40:25 -0400
-Received: by mail-oi1-f196.google.com with SMTP id y6so16893245oie.5;
-        Mon, 14 Sep 2020 00:40:24 -0700 (PDT)
+        id S1726118AbgINHmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 03:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725971AbgINHmE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:42:04 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56756C06174A;
+        Mon, 14 Sep 2020 00:42:04 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id md22so4789885pjb.0;
+        Mon, 14 Sep 2020 00:42:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Lks6efxXFomrH6KYFBOQMjC6drBRK3wyX746XI+NTs=;
+        b=c0lpRyd7AVhRwxvB9sYkoZxIBUBDHbPm5xC/e6KabWR9RKDBwTu7N5rYFm1p54MkGU
+         ZnKTJoQJPuzio5lNEVT4sIvUfr/ckB3e/83L3YKdW8Pd1UC5m9wxLyBa6JeqHwXMMe6h
+         BEE9p6mOTe2ubtNVpg6dHclD3RruI2yt/MFNKGuAcc1RimQfeUWcgddUFHKF6g6QG4Sj
+         KIqlnZqPqM0I9+LyRvLrUlKmDwZgjTGOvAnQPsJNv8M8mXXfD4/MKkfCuk5k6I9i5Qni
+         /w4EwjRU6PG6t4qA7QWk/tPuNxq0OQrT1SsnsuDvWF/8X1V3ojmGyKo+TQnFDOWEqdKV
+         WuIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9OcnKlqgAuX3lmvtPjQSY28ozZnq3T65wzBJcbrmz6o=;
-        b=ZLQ8zYfHQJNoKuG+aRZ1H9nnh9a4xDHfqXoJD6QYkDtGc6C8hdiq5hfp0fGNJwzMw+
-         H1jQzpooQU23mgfHnzcnCcvQZvf3dbmlI5SfBjbLFIhFXh+WBqbUopKYRAwahnrQPvzy
-         VvBfdP4Sc91YRnuIdb4UYpeJy1lmVIcIghG4fhO3yA32SEqMB4PwRzoZvonwHr/3Oegb
-         cAczL01U9gCOabRrv4EPKDNu5LQJuRwn0remRHdtJOK2hrT5+lKbQsXi61s3zt4oHoCC
-         G8Baniz9N6djPruhuaTAWACHKI5IVNZAlzUObe3yt+qLhDG7zswAw/UmOCBVkuIutzzJ
-         ySSw==
-X-Gm-Message-State: AOAM531x/T1J2g5du09T9lt+RnSSN3fKqCCksE3xypXltREwvPJV99Nc
-        Uzk/MIoXsGPY0moM76cRBYFuNbq3T3kAtCplCpE=
-X-Google-Smtp-Source: ABdhPJxXogF7NIvZqnQWeKTAcrQdTHdknQa9lnRLmhrjpxySJACyegBgSKyjuAW6Zz1mxStR+JFEXOpyVLi/baGaT9s=
-X-Received: by 2002:aca:52d6:: with SMTP id g205mr8014808oib.54.1600069223913;
- Mon, 14 Sep 2020 00:40:23 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Lks6efxXFomrH6KYFBOQMjC6drBRK3wyX746XI+NTs=;
+        b=jmj3aZRvlozfDGEyCYVEseu/Gc/JIxGHjvMjqM1cJI/NyJfvGtBVS+7DVheF8M7KdP
+         FR/Muakuu1nBKUNXb/k7E1cUZWraE8sGQeLR496mSDFOU1eEhPcGR5Or+I5RS/NpeMXM
+         8r/4YzyA9hGNDRvlU457gfGBcpWVxwfkJqlFNhKzJaGnuIddOP6qhQMAfwV+vFTDF7cR
+         /uN7WvfLeY5Sm3wLRDzemHiDMVm3lDx6DVAmHbEKyJ7DhQ8I459hlf0L5Pf6OfINTKa3
+         2KD9IYkVi+vj+6GF09eyBOYaicxRKyIcf144CkbEF0O1f5YS2s/B91R4dTRJJxMUuqMs
+         lx8g==
+X-Gm-Message-State: AOAM533TY1bT792rkmZX1a6fgYmtLR6riF/nMFb1IYqPKUf2mslnbssI
+        iGaX8G3F/GJOK2UdrcUj6zRvuBhG074=
+X-Google-Smtp-Source: ABdhPJzvkfmZravMN4vZoGHd4ltV16sBO1vu46ZnJfR70QIVfpCb5nT8jMYO1MlSH1lfUKiP4Hmxng==
+X-Received: by 2002:a17:90a:8588:: with SMTP id m8mr12190268pjn.91.1600069323896;
+        Mon, 14 Sep 2020 00:42:03 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:d0fe:61cf:2e8d:f96])
+        by smtp.gmail.com with ESMTPSA id o20sm8182050pgh.63.2020.09.14.00.42.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Sep 2020 00:42:03 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Xie He <xie.he.0141@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: [PATCH net-next v2] net/packet: Fix a comment about hard_header_len and headroom allocation
+Date:   Mon, 14 Sep 2020 00:41:54 -0700
+Message-Id: <20200914074154.1255716-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <CAMuHMdUd4VtpOGr26KAmF22N32obNqQzq3tbcPxLJ7mxUtSyrg@mail.gmail.com>
- <20200911.174400.306709791543819081.davem@davemloft.net> <CAMuHMdW0agywTHr4bDO9f_xbQibCxDykdkcAmuRJQO90=E6-Zw@mail.gmail.com>
- <20200912.183437.1205152743307947529.davem@davemloft.net>
-In-Reply-To: <20200912.183437.1205152743307947529.davem@davemloft.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 14 Sep 2020 09:40:12 +0200
-Message-ID: <CAMuHMdXGmKYKWtkFCV0WmYnY4Gn--Bbz-iSX76oc-UNNrzCMuw@mail.gmail.com>
-Subject: Re: [PATCH] Revert "net: linkwatch: add check for netdevice being
- present to linkwatch_do_dev"
-To:     David Miller <davem@davemloft.net>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Gaku Inami <gaku.inami.xh@renesas.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        bridge@lists.linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+This comment is outdated and no longer reflects the actual implementation
+of af_packet.c.
 
-CC bridge
+Reasons for the new comment:
 
-On Sun, Sep 13, 2020 at 3:34 AM David Miller <davem@davemloft.net> wrote:
-> From: Geert Uytterhoeven <geert@linux-m68k.org>
-> Date: Sat, 12 Sep 2020 14:33:59 +0200
->
-> > "dev" is not the bridge device, but the physical Ethernet interface, which
-> > may already be suspended during s2ram.
->
-> Hmmm, ok.
->
-> Looking more deeply NETDEV_CHANGE causes br_port_carrier_check() to run which
-> exits early if netif_running() is false, which is going to be true if
-> netif_device_present() is false:
->
->         *notified = false;
->         if (!netif_running(br->dev))
->                 return;
->
-> The only other work the bridge notifier does is:
->
->         if (event != NETDEV_UNREGISTER)
->                 br_vlan_port_event(p, event);
->
-> and:
->
->         /* Events that may cause spanning tree to refresh */
->         if (!notified && (event == NETDEV_CHANGEADDR || event == NETDEV_UP ||
->                           event == NETDEV_CHANGE || event == NETDEV_DOWN))
->                 br_ifinfo_notify(RTM_NEWLINK, NULL, p);
->
-> So some vlan stuff, and emitting a netlink message to any available
-> listeners.
->
-> Should we really do all of this for a device which is not even
-> present?
->
-> This whole situation seems completely illogical.  The device is
-> useless, it logically has no link or other state that can be managed
-> or used, while it is not present.
->
-> So all of these bridge operations should only happen when the device
-> transitions back to present again.
+1.
 
-Thanks for your analysis!
-I'd like to defer this to the bridge people (CC).
+In af_packet.c, the function packet_snd first reserves a headroom of
+length (dev->hard_header_len + dev->needed_headroom).
+Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
+which calls dev->header_ops->create, to create the link layer header.
+If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
+length (dev->hard_header_len), and checks if the user has provided a
+header sized between (dev->min_header_len) and (dev->hard_header_len)
+(in dev_validate_header).
+This shows the developers of af_packet.c expect hard_header_len to
+be consistent with header_ops.
 
-Gr{oetje,eeting}s,
+2.
 
-                        Geert
+In af_packet.c, the function packet_sendmsg_spkt has a FIXME comment.
+That comment states that prepending an LL header internally in a driver
+is considered a bug. I believe this bug can be fixed by setting
+hard_header_len to 0, making the internal header completely invisible
+to af_packet.c (and requesting the headroom in needed_headroom instead).
 
+3.
+
+There is a commit for a WiFi driver:
+commit 9454f7a895b8 ("mwifiex: set needed_headroom, not hard_header_len")
+According to the discussion about it at:
+  https://patchwork.kernel.org/patch/11407493/
+The author tried to set the WiFi driver's hard_header_len to the Ethernet
+header length, and request additional header space internally needed by
+setting needed_headroom.
+This means this usage is already adopted by driver developers.
+
+Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: Brian Norris <briannorris@chromium.org>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ net/packet/af_packet.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+index af6c93ed9fa0..2d5d5fbb435c 100644
+--- a/net/packet/af_packet.c
++++ b/net/packet/af_packet.c
+@@ -93,12 +93,15 @@
+ 
+ /*
+    Assumptions:
+-   - if device has no dev->hard_header routine, it adds and removes ll header
+-     inside itself. In this case ll header is invisible outside of device,
+-     but higher levels still should reserve dev->hard_header_len.
+-     Some devices are enough clever to reallocate skb, when header
+-     will not fit to reserved space (tunnel), another ones are silly
+-     (PPP).
++   - If the device has no dev->header_ops, there is no LL header visible
++     above the device. In this case, its hard_header_len should be 0.
++     The device may prepend its own header internally. In this case, its
++     needed_headroom should be set to the space needed for it to add its
++     internal header.
++     For example, a WiFi driver pretending to be an Ethernet driver should
++     set its hard_header_len to be the Ethernet header length, and set its
++     needed_headroom to be (the real WiFi header length - the fake Ethernet
++     header length).
+    - packet socket receives packets with pulled ll header,
+      so that SOCK_RAW should push it back.
+ 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.25.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
