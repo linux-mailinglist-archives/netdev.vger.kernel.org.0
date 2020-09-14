@@ -2,73 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98CDC268D2D
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 16:17:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97149268D29
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 16:16:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726664AbgINORP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 10:17:15 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:41968 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726565AbgINN03 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 09:26:29 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 62413D9BC8D7DD417C73;
-        Mon, 14 Sep 2020 21:25:42 +0800 (CST)
-Received: from localhost.localdomain (10.175.112.70) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Mon, 14 Sep 2020 21:25:41 +0800
-From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     <shshaikh@marvell.com>, <manishc@marvell.com>,
-        <GR-Linux-NIC-Dev@marvell.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net: qlcnic: remove unused variable 'val' in qlcnic_83xx_cam_unlock()
-Date:   Mon, 14 Sep 2020 21:24:39 +0800
-Message-ID: <1600089879-22944-1-git-send-email-zhangchangzhong@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726708AbgINOQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 10:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726667AbgINNoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 09:44:34 -0400
+Received: from mail-ua1-x943.google.com (mail-ua1-x943.google.com [IPv6:2607:f8b0:4864:20::943])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E0D0C06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 06:44:07 -0700 (PDT)
+Received: by mail-ua1-x943.google.com with SMTP id 77so1063736uaj.2
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 06:44:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2b03matSSVJEICpGKDD0oZOKhtU5J1X4hlenwnPzKYc=;
+        b=SJDtQBzm+KweHbWTFAS5fn6WyskPRPxCj5Xp6Ch70iXgVhiVto85XwPhtr7eALbcsA
+         qLuR94+HRn1u4MBMvSceYM3DrauehZYz43H8O+0OMGlyAJf2eKCAy40BjSLcUDWVAUfS
+         QZ47SEYG2d6c+aDN83q5AWvXiUmrMIw2jdnbYEB/uoK2Excp81O8/0y7st4az0RivKTN
+         DC3aN32TEpcU7MCPbXfuxPc+voWRCq4+t9TfXKTwvYUckWzbb0UTjkezHdeKNuw6ohsc
+         cc5sRwcyNadLTRui59etAJOxawMmL5k4J45kiKrUG0nFknVZQC98k1adkE8dyyM9ThkA
+         kzlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2b03matSSVJEICpGKDD0oZOKhtU5J1X4hlenwnPzKYc=;
+        b=HHTlkrOG5/BGKj5s31e3FA/Jx/epMiXYJzs++4SfJOCsnEZMcB/TNVCs7OpliNTijU
+         50xkU4dVFMPTzsFJBjzw7FYNKwYSFaB+O3B6Dmt6KfuY4OGLYrjITilrGzvvGYAK9iDO
+         00BLaq34HdmYd8bg7bxj7ptEvWD+ok0ht0E9M++4DijcD9DKQ1kISaurUW1cMHyjyBGi
+         y1K+EyFRKe2JlT+1Hm7Fgv0e5Mm/fKgZuPUCI09FFYhcJpAROiUjJhNBxEmt0aWyVlyB
+         +jCujL/Nr/g9wbchruXX1iKuiv4i9EYsPhyko9anYRJpFlp2eFUkN7LEiV8LtYLqkirO
+         dz/g==
+X-Gm-Message-State: AOAM531uGeEmD/uWnKFVbLeZ1OB+Z+NKPPU5jr5ix0t3MttbHg99Fk6C
+        qcpqYFxSM700rmz+Akdn9+lqAl/udPAUPOhvDdAT7Q==
+X-Google-Smtp-Source: ABdhPJycHL+jNJYZE2Zy0jwjO7GJxVI7EoIScjnOpjgMFU1uN3Y+RnInKVWmt5NGG2wHcFDySLzQONzJSMxLnazA2kc=
+X-Received: by 2002:ab0:ef:: with SMTP id 102mr6657920uaj.142.1600091046398;
+ Mon, 14 Sep 2020 06:44:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-CFilter-Loop: Reflected
+References: <20200914102027.3746717-1-edumazet@google.com>
+In-Reply-To: <20200914102027.3746717-1-edumazet@google.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Mon, 14 Sep 2020 09:43:49 -0400
+Message-ID: <CADVnQymGOHwMYAxWVvzrNx1+Fk4Au7VndxtDY5vLB-Qo2L1qZw@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: remove SOCK_QUEUE_SHRUNK
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes the following W=1 kernel build warning(s):
+On Mon, Sep 14, 2020 at 6:20 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> SOCK_QUEUE_SHRUNK is currently used by TCP as a temporary state
+> that remembers if some room has been made in the rtx queue
+> by an incoming ACK packet.
+>
+> This is later used from tcp_check_space() before
+> considering to send EPOLLOUT.
+>
+> Problem is: If we receive SACK packets, and no packet
+> is removed from RTX queue, we can send fresh packets, thus
+> moving them from write queue to rtx queue and eventually
+> empty the write queue.
+>
+> This stall can happen if TCP_NOTSENT_LOWAT is used.
+>
+> With this fix, we no longer risk stalling sends while holes
+> are repaired, and we can fully use socket sndbuf.
+>
+> This also removes a cache line dirtying for typical RPC
+> workloads.
+>
+> Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Soheil Hassas Yeganeh <soheil@google.com>
+> ---
 
-drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c:661:6: warning:
- variable 'val' set but not used [-Wunused-but-set-variable]
-  661 |  u32 val;
-      |      ^~~
+Nice. It's beautiful when a fix is also a simplification...
 
-After commit 7f9664525f9c ("qlcnic: 83xx memory map and HW access
-routines"), variable 'val' is never used in qlcnic_83xx_cam_unlock(), so
-removing it to avoid build warning.
+Acked-by: Neal Cardwell <ncardwell@google.com>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
----
- drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
-index 29b9c72..fc49088 100644
---- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
-+++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_83xx_hw.c
-@@ -658,11 +658,10 @@ int qlcnic_83xx_cam_lock(struct qlcnic_adapter *adapter)
- void qlcnic_83xx_cam_unlock(struct qlcnic_adapter *adapter)
- {
- 	void __iomem *addr;
--	u32 val;
- 	struct qlcnic_hardware_context *ahw = adapter->ahw;
- 
- 	addr = ahw->pci_base0 + QLC_83XX_SEM_UNLOCK_FUNC(ahw->pci_func);
--	val = readl(addr);
-+	readl(addr);
- }
- 
- void qlcnic_83xx_read_crb(struct qlcnic_adapter *adapter, char *buf,
--- 
-2.9.5
-
+neal
