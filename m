@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBFC6269336
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:28:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ADAC269347
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:28:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726107AbgINR1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 13:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
+        id S1726034AbgINR1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 13:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726058AbgINR0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 13:26:20 -0400
-Received: from mail-qv1-xf4a.google.com (mail-qv1-xf4a.google.com [IPv6:2607:f8b0:4864:20::f4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC9FC06178B
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:26:19 -0700 (PDT)
-Received: by mail-qv1-xf4a.google.com with SMTP id f4so280945qvw.15
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:26:19 -0700 (PDT)
+        with ESMTP id S1726306AbgINR00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 13:26:26 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1715EC06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:26:26 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id e190so433325ybf.18
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:26:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=sender:date:in-reply-to:message-id:mime-version:references:subject
          :from:to:cc;
-        bh=BYFSDnsZ7CuyDxsknJLPnmb95P0RzbVeR4SkBJzlkVA=;
-        b=lctbWoGOpEsl+BNavcOA1GcDL2htg6vhGxsTtZ7XDhsDTuA0MzKWBWZTTJ9aejTGN0
-         k7O14lk2EPG9I9PWSbbMGrIu9J29CltGhy/tYmKbvaFiFzVORxavfn4M2UsR96LdKhrG
-         D2LNXtI8sVoUAtEsRWxpFKC3/Tnw4WiLyxpNaHL9qg2y3siZSG9ACXwMP0JP4PjCqRmE
-         SDlPDpSK+/HeTyooUHMZBCUz/tjIhYk+sPiWYuAfLUvSLRWosYsCzi+AexNjplWiJ5Aq
-         midNsks4mQc0ohlcohX2b4KcQey7DAi87tkokRf69rgjFPPyghYyTqXT04OK95DUuH2c
-         1rtA==
+        bh=LYZ1+juOAoa/emu0bMvEoA7YWrA+PmRXyRdY+YEq8Tw=;
+        b=O+YSkcEpuAZmFQfPD/KixyL1MdeWGfam/Ed3HgnOtiD19nRsM+q4hIJNZ8iYDCMXO2
+         OJhS/UQ9yAQKswOrSJE1+layYfB8EHSM0LZCBEFM0qe7R+8cA8FCTTyqDQ6K5q7fmrvv
+         1cIgi5hBumdLaHswaWxlWz2ErltL0lngGk8vM/jEeqnUXFvU8ibUfY9kBg2qoPv2BT6H
+         6Z53xZdqI92Ng9VOmihDhUg9pELtMpnjrjKQZhx2lVOjGpoyCSz0q/GUaSHMMD8y6Ljx
+         2ee1aDgP9frXEOGveJv4p3HePBWaE7qa2C3lCG+tZl1myP6jlZ4w64dITo90N/JDZVQU
+         NQ8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=BYFSDnsZ7CuyDxsknJLPnmb95P0RzbVeR4SkBJzlkVA=;
-        b=WBDQ9ChXWjNk5PT/ev3YZB2te4HKxWwJGVtMVlZBGgI2GTrII4RXgMoaX5oH6uYfdb
-         N2jyOZbFVYaiYq85jHT7OpNMDililhr3BIVHSQXcwwYzMZLauEEbBo9iWrnqndwzneSt
-         Ls6nqOeKl7NiGLJUnWgqr71aGhGt5dWE3ePLG7qi+CWpi1c6QoZWmRvOiar18u8sM//G
-         kHoVI5zDiZCNDSPfuJEEETdNLEUcngQNVPBIz4YUWqfqXmkg3FNprw8PsSYelvjsDI4I
-         Xzst9o2Ztj29UA4MntK53a/Z4ML3ynukriGHb1xtVt6TakYb2OR7BtBzAxl9R+Fe9V1m
-         /4OA==
-X-Gm-Message-State: AOAM531h95W8Q9m6xVrek/Pig9ZS0UVo1meOliTuvec22BTYRmcy00OS
-        t8I570p09ZXpzyN1h8g+XGNtCy896BI=
-X-Google-Smtp-Source: ABdhPJw+KfQCn3FQSFLrXBvQa9e6HjajYy/kMe2SX9WQJMBOcgaLQShXWkJ6goWbp0bov21Tz4K0L1oJO+M=
+        bh=LYZ1+juOAoa/emu0bMvEoA7YWrA+PmRXyRdY+YEq8Tw=;
+        b=rvfio7kuGitLYBEYmVJ50iG/dzYKWXdzWdBHpgVPyn9vB7c6QKhEdalklI6COMu7z1
+         dnThRUHh+BCzTWFJ0VhvsbL3zUV0YM2CMq+zxhuM2I4ZrX9iSj6aLzlxOMuV4EaNaABr
+         NPUUs42QwfmfbdEDEoFomfMdHboDu1Sxm2R4CQ4pQWDkyq/hQ4LagGzMR1Ycv1bShyB3
+         3rEIkz/v7QSuEisEsV91vAw/2Tt5F/u+4LEm+96uSSeIbuHwvg709i/8hwpd2e8qYbf4
+         wjQTXJ35ciIlOabU6TUfcXNV6o/by6lvSfT4MZbSNafGi2zie4fkSiYllBz+TqKjZnsp
+         f5Vg==
+X-Gm-Message-State: AOAM5326S/2RiJIhieq4MpqxWn2L3oviE0YgyKO/RIphMpsKATVYEKuX
+        oB3aPdxzCPDk7ZZkxz8NpjFpDl/qBps=
+X-Google-Smtp-Source: ABdhPJzEDpRe07jBYHx33+e1peTFcjdq7HiVHjsAcCt51s3ColGJm2b58l6xOeggCjSPidNXsF0UTCaMdp8=
 X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:1ea0:b8ff:fe75:cf08])
- (user=weiwan job=sendgmr) by 2002:ad4:5a53:: with SMTP id ej19mr14402811qvb.54.1600104376172;
- Mon, 14 Sep 2020 10:26:16 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 10:24:50 -0700
+ (user=weiwan job=sendgmr) by 2002:a25:f20d:: with SMTP id i13mr20998124ybe.152.1600104385278;
+ Mon, 14 Sep 2020 10:26:25 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 10:24:51 -0700
 In-Reply-To: <20200914172453.1833883-1-weiwan@google.com>
-Message-Id: <20200914172453.1833883-4-weiwan@google.com>
+Message-Id: <20200914172453.1833883-5-weiwan@google.com>
 Mime-Version: 1.0
 References: <20200914172453.1833883-1-weiwan@google.com>
 X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
-Subject: [RFC PATCH net-next 3/6] net: extract napi poll functionality to __napi_poll()
+Subject: [RFC PATCH net-next 4/6] net: modify kthread handler to use __napi_poll()
 From:   Wei Wang <weiwan@google.com>
 To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -64,88 +64,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name> 
+From: Jakub Kicinski <kuba@kernel.org> 
 
-This commit introduces a new function __napi_poll() which does the main
-logic of the existing napi_poll() function, and will be called by other
-functions in later commits.
-This idea and implementation is done by Felix Fietkau <nbd@nbd.name> and
-is proposed as part of the patch to move napi work to work_queue
-context.
-This commit by itself is a code restructure.
+The current kthread handler calls napi_poll() and has to pass a dummy
+repoll list to the function, which seems redundent. The new proposed
+kthread handler calls the newly proposed __napi_poll(), and respects
+napi->weight as before. If repoll is needed, cond_resched() is called
+first to give other tasks a chance to run before repolling.
+This change is proposed by Jakub Kicinski <kuba@kernel.org> on top of
+the previous patch.
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Wei Wang <weiwan@google.com>
 ---
- net/core/dev.c | 31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ net/core/dev.c | 62 +++++++++++++++++++-------------------------------
+ 1 file changed, 24 insertions(+), 38 deletions(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 0fe4c531b682..bc2a7681b239 100644
+index bc2a7681b239..be676c21bdc4 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -6719,15 +6719,10 @@ void __netif_napi_del(struct napi_struct *napi)
- }
- EXPORT_SYMBOL(__netif_napi_del);
- 
--static int napi_poll(struct napi_struct *n, struct list_head *repoll)
-+static int __napi_poll(struct napi_struct *n, bool *repoll)
- {
--	void *have;
- 	int work, weight;
- 
--	list_del_init(&n->poll_list);
--
--	have = netpoll_poll_lock(n);
--
- 	weight = n->weight;
- 
- 	/* This NAPI_STATE_SCHED test is for avoiding a race
-@@ -6747,7 +6742,7 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
- 			    n->poll, work, weight);
- 
- 	if (likely(work < weight))
--		goto out_unlock;
-+		return work;
- 
- 	/* Drivers must not modify the NAPI state if they
- 	 * consume the entire weight.  In such cases this code
-@@ -6756,7 +6751,7 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
- 	 */
- 	if (unlikely(napi_disable_pending(n))) {
- 		napi_complete(n);
--		goto out_unlock;
-+		return work;
- 	}
- 
- 	if (n->gro_bitmask) {
-@@ -6768,6 +6763,26 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+@@ -6763,6 +6763,15 @@ static int __napi_poll(struct napi_struct *n, bool *repoll)
  
  	gro_normal_list(n);
  
-+	*repoll = true;
++	/* Some drivers may have called napi_schedule
++	 * prior to exhausting their budget.
++	 */
++	if (unlikely(!list_empty(&n->poll_list))) {
++		pr_warn_once("%s: Budget exhausted after napi rescheduled\n",
++			     n->dev ? n->dev->name : "backlog");
++		return work;
++	}
 +
-+	return work;
-+}
-+
-+static int napi_poll(struct napi_struct *n, struct list_head *repoll)
-+{
-+	bool do_repoll = false;
+ 	*repoll = true;
+ 
+ 	return work;
+@@ -6783,15 +6792,6 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+ 	if (!do_repoll)
+ 		goto out_unlock;
+ 
+-	/* Some drivers may have called napi_schedule
+-	 * prior to exhausting their budget.
+-	 */
+-	if (unlikely(!list_empty(&n->poll_list))) {
+-		pr_warn_once("%s: Budget exhausted after napi rescheduled\n",
+-			     n->dev ? n->dev->name : "backlog");
+-		goto out_unlock;
+-	}
+-
+ 	list_add_tail(&n->poll_list, repoll);
+ 
+ out_unlock:
+@@ -6820,40 +6820,26 @@ static int napi_thread_wait(struct napi_struct *napi)
+ static int napi_threaded_poll(void *data)
+ {
+ 	struct napi_struct *napi = data;
 +	void *have;
-+	int work;
+ 
+ 	while (!napi_thread_wait(napi)) {
+-		struct list_head dummy_repoll;
+-		int budget = netdev_budget;
+-		unsigned long time_limit;
+-		bool again = true;
++		for (;;) {
++			bool repoll = false;
+ 
+-		INIT_LIST_HEAD(&dummy_repoll);
+-		local_bh_disable();
+-		time_limit = jiffies + 2;
+-		do {
+-			/* ensure that the poll list is not empty */
+-			if (list_empty(&dummy_repoll))
+-				list_add(&napi->poll_list, &dummy_repoll);
+-
+-			budget -= napi_poll(napi, &dummy_repoll);
+-			if (unlikely(budget <= 0 ||
+-				     time_after_eq(jiffies, time_limit))) {
+-				cond_resched();
+-
+-				/* refresh the budget */
+-				budget = netdev_budget;
+-				__kfree_skb_flush();
+-				time_limit = jiffies + 2;
+-			}
++			local_bh_disable();
+ 
+-			if (napi_disable_pending(napi))
+-				again = false;
+-			else if (!test_bit(NAPI_STATE_SCHED, &napi->state))
+-				again = false;
+-		} while (again);
++			have = netpoll_poll_lock(napi);
++			__napi_poll(napi, &repoll);
++			netpoll_poll_unlock(have);
+ 
+-		__kfree_skb_flush();
+-		local_bh_enable();
++			__kfree_skb_flush();
++			local_bh_enable();
 +
-+	list_del_init(&n->poll_list);
++			if (!repoll)
++				break;
 +
-+	have = netpoll_poll_lock(n);
-+
-+	work = __napi_poll(n, &do_repoll);
-+
-+	if (!do_repoll)
-+		goto out_unlock;
-+
- 	/* Some drivers may have called napi_schedule
- 	 * prior to exhausting their budget.
- 	 */
++			cond_resched();
++		}
+ 	}
+ 	return 0;
+ }
 -- 
 2.28.0.618.gf4bc123cb7-goog
 
