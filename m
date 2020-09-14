@@ -2,83 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 118D32698CC
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 00:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A0442698DB
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 00:32:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726024AbgINW37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 18:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725926AbgINW34 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 18:29:56 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D13C06174A;
-        Mon, 14 Sep 2020 15:29:56 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id u48so396480uau.0;
-        Mon, 14 Sep 2020 15:29:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3c4307dFtJoszJTzzblad9nRl3L9HSJ6wHovHTO2Naw=;
-        b=SsGkUVnT+wyLYEMrJwbR5ahknAGSio/pvIsr0qxxUU+Tmf8oQQ/OJIGJalJfJcz9NX
-         fAD+Nd2frRw6CsbIAoVbf3L3lHS9RWdESLtMcfV/ojJ2hsTbENzpfTSq0S/lxUwYTMJO
-         rajCTHvwc/iX5WIVQgHC41LiOhBLGVbQVntDLi+OMJgZlNqantry/FtUl0B3qpehodcS
-         oOCfnRK1MfC/NxpA2R+V1EJ72cZqPNpZslWuQRwLQd7sGkNg5dcjgja6XEwdgiTH4hdH
-         0r+P0paYvndr81fUbdT9oFUZI06jMvvZZ8R3sACu1EdPiEQ7iLolAMRGdEtHe31wYpt0
-         ZhVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3c4307dFtJoszJTzzblad9nRl3L9HSJ6wHovHTO2Naw=;
-        b=SC3XitldwZpLY7pnmXgmb9ndwVCxjRaoTXPw9yY/X/5AEaz79n/bvjNkxeARNVkchZ
-         L9cwrQ52b9T6CnjGhTJHx3KNe15Flicv9hVVFWkpErh+Mcc3LvtfDQPu6rMM62/HbnIu
-         6qiOu1yoU+Lo4kM38OpFC84ClRH4EAt/jFDM6c34DlLgKsauHa8pFbovxxf0Jd1wv5K/
-         vhqYtAdipXHe39+JHupJUJ8bS137Y43pwAMV2ov1x6EXUmtvM2KwBL+akjfIQnSe+r/j
-         dbePNY+cIwxrUa2xnvQbHv/hzoqnR2QwWDwRF3wiTtDsPEK2MVsYnEfCxX5FzcRxp5w8
-         I9YA==
-X-Gm-Message-State: AOAM531c3VB/hY1NRz5TK+aDNUmWbibn55cG95i0y3HGoWFXK/6LX7rp
-        0be5wohRnAeTfd9t2rmGNv1CkuYTB2fnErNW88zA/UgmfKc=
-X-Google-Smtp-Source: ABdhPJxqARS58arVpo/LeqYIUHUkFptYIvBRvVTAWEvVSqNBBBXOz/v5p68ne13gWphGBZRYUSPimBdRHvR/8XzwxVc=
-X-Received: by 2002:ab0:768:: with SMTP id h95mr8493828uah.23.1600122595847;
- Mon, 14 Sep 2020 15:29:55 -0700 (PDT)
+        id S1726064AbgINWcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 18:32:15 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:53308 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725985AbgINWcO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 18:32:14 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08EMV2YB032691
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 15:32:13 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=facebook;
+ bh=tFitJi4poWiSEOOAer/auv9njZ9vWyOJOInyNIPTcNs=;
+ b=A4KFVT2PAMczwezMVW+RGx3rq5bIyD/85aPklUPETAuuv+lJmWKaocw9tDeLVOHHzGZV
+ 6sNRICID7u78cZtqxcPIcoNhiLmP6lV2XeDTwk4gtwaz0ryffI1bIlZZfwJfXB+OTz6p
+ SeECVKxmJl8atfnpqge4wwuh+yDaKgtg//I= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33guummfte-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 15:32:13 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 14 Sep 2020 15:32:11 -0700
+Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
+        id 714FA37059D9; Mon, 14 Sep 2020 15:32:10 -0700 (PDT)
+From:   Yonghong Song <yhs@fb.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
+Subject: [PATCH bpf-next] libbpf: fix a compilation error with xsk.c for ubuntu 16.04
+Date:   Mon, 14 Sep 2020 15:32:10 -0700
+Message-ID: <20200914223210.1831262-1-yhs@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <CGME20200907173945eucas1p240c0d7ebff3010a3bf752eaf8e619eb1@eucas1p2.samsung.com>
- <20200825180134.GN2403519@lunn.ch> <dleftjwo15qyei.fsf%l.stelmach@samsung.com>
-In-Reply-To: <dleftjwo15qyei.fsf%l.stelmach@samsung.com>
-From:   jim.cromie@gmail.com
-Date:   Mon, 14 Sep 2020 16:29:29 -0600
-Message-ID: <CAJfuBxx1CvYqQkU1ypR0ePt9r0TTGLNp4rwwqPfsUwp0zx4H9A@mail.gmail.com>
-Subject: Re: [PATCH 1/3] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter Driver
-To:     Lukasz Stelmach <l.stelmach@samsung.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, b.zolnierkie@samsung.com,
-        m.szyprowski@samsung.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-14_09:2020-09-14,2020-09-14 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 spamscore=0 priorityscore=1501 bulkscore=0
+ malwarescore=0 clxscore=1015 mlxlogscore=951 phishscore=0 adultscore=0
+ suspectscore=8 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009140170
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >
-> > Please you should not be using netdev_info(). netdev_dbg() please.
-> >
->
-> I changed most netif_msg_*()+netdev_*() to netif_*(), including
-> netif_dbg() in several places. However, after reading other drivers I
-> decided to leave this at INFO level. I think this is the way to go,
-> because this is what user asks for and with dynamic debug enabled users
-> would have to ask for these in two different places.
+When syncing latest libbpf repo to bcc, ubuntu 16.04 (4.4.0 LTS kernel)
+failed compilation for xsk.c:
+  In file included from /tmp/debuild.0jkauG/bcc/src/cc/libbpf/src/xsk.c:2=
+3:0:
+  /tmp/debuild.0jkauG/bcc/src/cc/libbpf/src/xsk.c: In function =E2=80=98x=
+sk_get_ctx=E2=80=99:
+  /tmp/debuild.0jkauG/bcc/src/cc/libbpf/include/linux/list.h:81:9: warnin=
+g: implicit
+  declaration of function =E2=80=98container_of=E2=80=99 [-Wimplicit-func=
+tion-declaration]
+           container_of(ptr, type, member)
+           ^
+  /tmp/debuild.0jkauG/bcc/src/cc/libbpf/include/linux/list.h:83:9: note: =
+in expansion
+  of macro =E2=80=98list_entry=E2=80=99
+           list_entry((ptr)->next, type, member)
+  ...
+  src/cc/CMakeFiles/bpf-static.dir/build.make:209: recipe for target
+  'src/cc/CMakeFiles/bpf-static.dir/libbpf/src/xsk.c.o' failed
 
-dynamic_debug_exec_queries is now exported,
-allowing module authors full  >control of their debug
+Commit 2f6324a3937f ("libbpf: Support shared umems between queues and dev=
+ices")
+added include file <linux/list.h>, which uses macro "container_of".
+xsk.c file also includes <linux/ethtool.h> before <linux/list.h>.
+
+In a more recent distro kernel, <linux/ethtool.h> includes <linux/kernel.=
+h>
+which contains the macro definition for "container_of". So compilation is=
+ all fine.
+But in ubuntu 16.04 kernel, <linux/ethtool.h> does not contain <linux/ker=
+nel.h>
+which caused the above compilation error.
+
+Let explicitly add <linux/kernel.h> in xsk.c to avoid compilation error
+in old distro's.
+
+Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and dev=
+ices")
+Signed-off-by: Yonghong Song <yhs@fb.com>
+---
+ tools/lib/bpf/xsk.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 49c324594792..30b4ca5d2ac7 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -20,6 +20,7 @@
+ #include <linux/if_ether.h>
+ #include <linux/if_packet.h>
+ #include <linux/if_xdp.h>
++#include <linux/kernel.h>
+ #include <linux/list.h>
+ #include <linux/sockios.h>
+ #include <net/if.h>
+--=20
+2.24.1
+
