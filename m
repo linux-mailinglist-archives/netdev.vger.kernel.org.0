@@ -2,134 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C046726922E
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:54:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BCA226921A
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726183AbgINQts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 12:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725976AbgINQtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 12:49:09 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA64C06174A;
-        Mon, 14 Sep 2020 09:49:05 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id 60so554270otw.3;
-        Mon, 14 Sep 2020 09:49:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=UQd14MrNI2dVyj4vddZznODKBP6iyEjRBKlOB9SCyyk=;
-        b=UMCxcXpXAjG8hUblozlsdUha8qZ5DdK5EIpbUpzMn7h/pUPO9q4EVETWQJcIa1eArC
-         v7U9rT2Az2ZMd7HW6AtlZFbXQQCPBD1OyDc3moNmfpzqC86IiNKgjxVnpJAGTlo+5PcI
-         zqDSKLRhOxcbsqL5bUK7qXmSjtYy2G08q0QvwKJrj/L7Y7SdhG0x2ZFU7RMBu9WK0AdY
-         KFzfgqLSrFl/jOEIGZUDfmuxVieiw+/ZC0Y4QGwL+fdNY2lorcHJzJK4tSUDpDohl2ni
-         IIKslabI127orWF5E9GV/spUl8Gp0u50FxUpUNJuI9IJ10nsE+LVYNbGwQJaoBpIcr28
-         deXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=UQd14MrNI2dVyj4vddZznODKBP6iyEjRBKlOB9SCyyk=;
-        b=Ygsg6ij1LhITM76C/AJQsn1P2RWoofOuXRDRPRC3u94wEJl1tn8NCgvzVfHCSV0ZSb
-         1j64bW9jaqv6cgzv3DtaUofPIh7/+nRkB5KJMt1MvQhhvbgZWVIzOunnKqoG/XyLPyU5
-         iLuZfx7j1EZEYGvWhkhZqfYk0iubd9v5TABWmzA/8i8eBMlzcOqpgCN7NLkDQ8gnuaT3
-         95H8NxqHFj5/E5RiPu8yOKaDDrKc69RihBbjiZ/hB8wqZScnww5owSLgFh4wCjB+sADw
-         ZcUf9mjVUs95xkCHkZ8c6w9V0gTXdk9f3aKhTUfS+B+MQw8dji7yttcLiQD7CNZcrqir
-         hBUw==
-X-Gm-Message-State: AOAM532UrLnJJhQItrPi5eIN9/eBsYmuJzVHU7oyDWUfGGiqvzdQZniD
-        ggl5RiPj4SVrcrDe7608j8S/ld7UQ5UyNncchXs=
-X-Google-Smtp-Source: ABdhPJwIM19kabeOk22hHOr7fcgPIYMv5Pk2QsP1+3fs9VT6mQUmQfmQ5Twc6vsykAm8VzlVnUGpjbbznX+AOXVocHw=
-X-Received: by 2002:a05:6830:110b:: with SMTP id w11mr9253920otq.109.1600102144839;
- Mon, 14 Sep 2020 09:49:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200901064302.849-1-w@1wt.eu> <20200901064302.849-2-w@1wt.eu>
- <b460c51a3fa1473b8289d6030a46abdb@AcuMS.aculab.com> <20200901131623.GB1059@1wt.eu>
- <CANEQ_+Kuw6cxWRBE6NyXkr=8p3W-1f=o1q91ZESeueEnna9fvw@mail.gmail.com>
- <CA+icZUUmQeww+94dVOe1JFFQRkvUYVZP3g2GP+gOsdX4kP4x+A@mail.gmail.com> <20200914162909.GA12439@1wt.eu>
-In-Reply-To: <20200914162909.GA12439@1wt.eu>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Mon, 14 Sep 2020 18:48:53 +0200
-Message-ID: <CA+icZUWH_JuGzNPFCpURpt1=Q3rF71bSihQsRUdttgosqnwXvw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] random32: make prandom_u32() output unpredictable
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Amit Klein <aksecurity@gmail.com>,
-        David Laight <David.Laight@aculab.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        id S1726328AbgINQvJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 12:51:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53662 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726349AbgINQuV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 12:50:21 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B3F0D20829;
+        Mon, 14 Sep 2020 16:50:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600102221;
+        bh=fjDVxTT4iFv5fMkMhLJSlhBi4P9qMYMhYAv6LFdtSMs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GRiu9srCw2nY3msEykEVdDAyg8cDJ6cMq0JmZgQgyoNESbX9zG0L0POfmo77QK/ra
+         OAw7ypT9ACL+QIZLoVu2FUDc9o87C7oHNPEmjYqGcxkls9xkrtvSCuMLw+G5wLSW15
+         G5tRpPKd/7AQK3ei2W/csQSFAuvdNUFKvdgw6jRo=
+Date:   Mon, 14 Sep 2020 09:50:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Omer Shpigelman <oshpigelman@habana.ai>
+Cc:     Oded Gabbay <oded.gabbay@gmail.com>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        George Spelvin <lkml@sdf.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "tytso@mit.edu" <tytso@mit.edu>, Florian Westphal <fw@strlen.de>,
-        Marc Plumb <lkml.mplumb@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        SW_Drivers <SW_Drivers@habana.ai>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 12/15] habanalabs/gaudi: add debugfs entries for the NIC
+Message-ID: <20200914095018.21808fae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <AM0PR02MB552316B9A1635C18F8464116B8230@AM0PR02MB5523.eurprd02.prod.outlook.com>
+References: <20200910161126.30948-1-oded.gabbay@gmail.com>
+        <20200910161126.30948-13-oded.gabbay@gmail.com>
+        <20200910130138.6d595527@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAFCwf113A_=da2fGxgMbq_V0OcHsxdp5MpfHiUfeew+gEdnjaQ@mail.gmail.com>
+        <20200910131629.65b3e02c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAFCwf10XdCDhLeyiArc29PAJ_7=BGpdiUvFRotvFHieiaRn=aA@mail.gmail.com>
+        <20200910133058.0fe0f5e3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <AM0PR02MB552316B9A1635C18F8464116B8230@AM0PR02MB5523.eurprd02.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 6:29 PM Willy Tarreau <w@1wt.eu> wrote:
->
-> On Mon, Sep 14, 2020 at 06:16:40PM +0200, Sedat Dilek wrote:
-> > On Mon, Sep 14, 2020 at 4:53 PM Amit Klein <aksecurity@gmail.com> wrote:
+On Mon, 14 Sep 2020 13:48:14 +0000 Omer Shpigelman wrote:
+> On Thu, Sep 10, 2020 at 11:31 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Thu, 10 Sep 2020 23:17:59 +0300 Oded Gabbay wrote:  
+> > > > Doesn't seem like this one shows any more information than can be
+> > > > queried with ethtool, right?  
+> > > correct, it just displays it in a format that is much more readable  
+> > 
+> > You can cat /sys/class/net/$ifc/carrier if you want 0/1.
+> >   
+> > > > > nic_mac_loopback
+> > > > > is to set a port to loopback mode and out of it. It's not really
+> > > > > configuration but rather a mode change.  
+> > > >
+> > > > What is this loopback for? Testing?  
 > > >
-> > > Hi
-> > >
-> > > Is this patch being pushed to any branch? I don't see it deployed anywhere (unless I'm missing something...).
-> > >
-> >
-> > It's here:
-> >
-> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/wtarreau/prandom.git/log/?h=20200901-siphash-noise
->
-> By the way I didn't get any feedback from those who initially disagreed
-> with the one that was mergd, so for now I'm not doing anything on it
-> anymore. I can propose it again for 5.10-rc1 but will not push anymore
-> if there's no interest behind it.
->
+> > > Correct.  
+> > 
+> > Loopback test is commonly implemented via ethtool -t  
+> 
+> This debugfs entry is only to set the port to loopback mode, not running a loopback test.
+> Hence IMO adding a private flag is more suitable here and please correct me if I'm wrong.
+> But either way, doing that from ethtool instead of debugfs is not a good practice in our case.
+> Due to HW limitations, when we switch a port to/from loopback mode, we need to reset the device.
+> Since ethtool works on specific interface rather than an entire device, we'll need to reset the device 10 times in order to switch the entire device to loopback mode.
+> Moreover, running this command for one interface affects other interfaces which is not desirable when using ethtool AFAIK.
+> Is there any other acceptable debugfs-like mechanism for that?
 
-As a feedback:
-
-Just some minutes ago...
-I have booted into Linux v5.9-rc5 with your (above mentioned) patchset
-plus some individual mostly Clang related patchset.
-
-While dealing with that topic, there was a "fast random" patchset from
-[1] offered in this context.
-I am not subscribed to any linux-random mailing-list, but I have this
-one included, too.
-Unsure, if there was any feedback on this.
-With WARN_ALL_UNSEEDED_RANDOM=y it reduces here the number of warnings.
-
-As a use-case I ran this PERF-SESSION...
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1086#issuecomment-675783804
-
-/home/dileks/bin/perf list | grep prandom_u32 | column -t
-random:prandom_u32  [Tracepoint  event]
-
-cd /opt/ltp
-
-echo 0 | tee /proc/sys/kernel/kptr_restrict /proc/sys/kernel/perf_event_paranoid
-
-/home/dileks/bin/perf record -a -g -e random:prandom_u32 ./runltp -f
-net.features -s tcp_fastopen
-/home/dileks/bin/perf report --no-children --stdio > ./perf-report.txt
-/home/dileks/bin/perf script > ./perf-script.txt
-
-echo 1 | tee /proc/sys/kernel/kptr_restrict /proc/sys/kernel/perf_event_paranoid
-
-I was curious (mostly) to see what the impact of tcp_conn_request()
-<-> prandom_u32() was and the improvements by the patch from Eric.
-I can send the perf-report.txt if desired.
-
-- Sedat -
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/luto/linux.git/log/?h=random/fast
+What's the use for a networking device which only communicates with
+itself, other than testing?
