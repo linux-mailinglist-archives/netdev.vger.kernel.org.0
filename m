@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB71F26861D
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B619B2685FE
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:32:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726106AbgINHd6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 03:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
+        id S1726177AbgINHcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 03:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726113AbgINHbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:31:51 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73AC2C061788;
-        Mon, 14 Sep 2020 00:31:50 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id b124so11835803pfg.13;
-        Mon, 14 Sep 2020 00:31:50 -0700 (PDT)
+        with ESMTP id S1726161AbgINHbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:31:55 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA907C06178A;
+        Mon, 14 Sep 2020 00:31:54 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id t7so5020567pjd.3;
+        Mon, 14 Sep 2020 00:31:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=5qy3qYBgQmVFP6Fnj6Ev/w5c8PK7dcFkRXw7SXFpot8=;
-        b=jsGB4evR9SXWXf1aaoA3dDmLPhgHJuigBwqPHjew2meI6+BdmXqQqU0Oe1pJkMQ+1D
-         rbcc/uVNs0H5XOj4gVtyh9gv/7VHVmABTxQAnJFn03Qtl6kV0QzWbrDFHak+K+/fFjrH
-         imPA9hFGBjLYkqcH//hvnR/USFMvEcttBHHNPP/bEOj9Y3Xw7hoYuZX1SXeIH8yTk56q
-         bnjlCMWF3XDeGKxlO8wVjpPNJhe+h7Y95/oRGN6B7OudA0KpTVGkEL3hnSx31YxZsRMv
-         T7oObB3MG2CY0wAazwSlsqrjh3YjgIV4nkhayYNXQvNKulHCaOiDxnesJysdrDaWXsKO
-         XVew==
+        bh=QQFvp8Edv/y/HZpPKpnNtxdlqhbDSOrOHXrl3FWP7BI=;
+        b=HwuzsdhRwvEpO4aDSoTuFpD76h76C1V9vAr6lL5tPqRpCDkb6sHIP8m267Ea3r9F9a
+         GyEUMML3FRK1a1wEB+fJXZSA+4xr1miON6pW6p4K95sZ+Y3pH1b0ggG6Lt80EKmY8mIh
+         qZHIC+htH/GWHNca0btVJhrBaErFJ+u9upqT+CO+2JiHET+TPyPNDgxwueEHhUjXf+Cw
+         kLhAZ9bYYS223U9rqaBFUBr8hJD+UrxYOYyYsu+XxX/RUT/Yk0oCg/MUUWPU3CdC1u0Z
+         hRN8qZAGnGfcxQe+fFVF7ZkNtEyOlk7Lutphv2iy/lsUVLblZhsnOVHg7OZgCRYce3cI
+         5FEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5qy3qYBgQmVFP6Fnj6Ev/w5c8PK7dcFkRXw7SXFpot8=;
-        b=e5RF+tN4ZhR3kPuwi3Ai9i9GQlNHiCzjbiQfC2My1s2s/BUTfOkb8WMXPcPE3ytGaj
-         6xYqTTCrHHxJ6dKnF5mFOLo/UCI4TbPYBXyc1lq57EGO05FrxMy4O/jXyl2EdZtaX9NY
-         tHDekZvS8KDRC/ZLRg/K8Vk7xsgNXhFcjoMbMQUyAQThpPp4Uw5z/KMvbEmfGfBlq0Yr
-         Cg4Z2KxBzO+e4QSYnpT/fsH+LcLCDiePC7iM//6LdqXj+NTG1bXhYJKtXvns6vlYGNKt
-         zR9+X1v7nxUM+E4gUvmuCtZnXAlvDhF1f4OtbHXkRN+LZKt17DVlIwpqMZi1KsTUdY1c
-         WqQw==
-X-Gm-Message-State: AOAM5329CCVGMjFLMRzb9RoTa/rRt5leRzWJPB+PYptYQDfoUOU0T3Gz
-        +Ogn90Ode7CNvz6ipxYxPCI=
-X-Google-Smtp-Source: ABdhPJzXGO1egFidctuNwYUiqKWrwPKAhY7P1+XJ3OYrJYb/VII4ZQBvsxmpihyPMwzmSApbLyqo4g==
-X-Received: by 2002:a63:f606:: with SMTP id m6mr10016873pgh.193.1600068710095;
-        Mon, 14 Sep 2020 00:31:50 -0700 (PDT)
+        bh=QQFvp8Edv/y/HZpPKpnNtxdlqhbDSOrOHXrl3FWP7BI=;
+        b=c5mrkRRQyP6dd8vvFgtGajRHLv3djx8Fi0+gvWN+2zTW7joeQqgVWBZK+JHjJttdiR
+         tiL3WXcTKjhB4Nm21Ex0tcYQnfNdotUGpyaidvOgWolWMmyU3V2Iip55OHB+2u7z6nlQ
+         IPCykwYOfvQYTQM8xMkyIWFhq3Tzy2xwZjwpRvCgk6WbYiU8ZVra69/Ck6fgHqXh9FOk
+         1kCt5GrV2irW5YpAO1nwGAhKttBU4tn49qgEbtdnrgm+A4av7KwpAGFrGD3zZW7GZlbP
+         f8RSyUh0x2+1iQWe6RojNJ40fq7xfuXRiBXuKtUGeQYcmQAKSsVvWjj8PbpIJQu7Gh3v
+         4btA==
+X-Gm-Message-State: AOAM530gzvODVaO86NrUofVN8b4n+KLpFrmstII9N9Zxmepvq+F0LqN3
+        SoqiNrnK8pNd3RwPbUcLlic=
+X-Google-Smtp-Source: ABdhPJzfk51W7Kyf3r/72U8HClhG5IpEb76/if4PggSMiK7es/xFg5EU6ZvVJP4YLfRWKYt2MXt+RA==
+X-Received: by 2002:a17:90b:104f:: with SMTP id gq15mr12444742pjb.215.1600068714436;
+        Mon, 14 Sep 2020 00:31:54 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.192.250])
-        by smtp.gmail.com with ESMTPSA id o1sm9128626pfg.83.2020.09.14.00.31.46
+        by smtp.gmail.com with ESMTPSA id o1sm9128626pfg.83.2020.09.14.00.31.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 00:31:49 -0700 (PDT)
+        Mon, 14 Sep 2020 00:31:53 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     m.grzeschik@pengutronix.de, kuba@kernel.org, paulus@samba.org,
@@ -55,9 +55,9 @@ Cc:     m.grzeschik@pengutronix.de, kuba@kernel.org, paulus@samba.org,
         netdev@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-ppp@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [RESEND net-next v2 02/12] net: arcnet: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 14 Sep 2020 13:01:21 +0530
-Message-Id: <20200914073131.803374-3-allen.lkml@gmail.com>
+Subject: [RESEND net-next v2 03/12] net: caif: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 14 Sep 2020 13:01:22 +0530
+Message-Id: <20200914073131.803374-4-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200914073131.803374-1-allen.lkml@gmail.com>
 References: <20200914073131.803374-1-allen.lkml@gmail.com>
@@ -78,35 +78,36 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 ---
- drivers/net/arcnet/arcnet.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/caif/caif_virtio.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/arcnet/arcnet.c b/drivers/net/arcnet/arcnet.c
-index e04efc0a5c97..69d8920e394b 100644
---- a/drivers/net/arcnet/arcnet.c
-+++ b/drivers/net/arcnet/arcnet.c
-@@ -393,9 +393,9 @@ static void arcnet_timer(struct timer_list *t)
- 	}
+diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
+index 80ea2e913c2b..23c2eb8ceeec 100644
+--- a/drivers/net/caif/caif_virtio.c
++++ b/drivers/net/caif/caif_virtio.c
+@@ -598,9 +598,9 @@ static netdev_tx_t cfv_netdev_tx(struct sk_buff *skb, struct net_device *netdev)
+ 	return NETDEV_TX_OK;
  }
  
--static void arcnet_reply_tasklet(unsigned long data)
-+static void arcnet_reply_tasklet(struct tasklet_struct *t)
+-static void cfv_tx_release_tasklet(unsigned long drv)
++static void cfv_tx_release_tasklet(struct tasklet_struct *t)
  {
--	struct arcnet_local *lp = (struct arcnet_local *)data;
-+	struct arcnet_local *lp = from_tasklet(lp, t, reply_tasklet);
+-	struct cfv_info *cfv = (struct cfv_info *)drv;
++	struct cfv_info *cfv = from_tasklet(cfv, t, tx_release_tasklet);
+ 	cfv_release_used_buf(cfv->vq_tx);
+ }
  
- 	struct sk_buff *ackskb, *skb;
- 	struct sock_exterr_skb *serr;
-@@ -483,8 +483,7 @@ int arcnet_open(struct net_device *dev)
- 		arc_cont(D_PROTO, "\n");
- 	}
+@@ -716,9 +716,7 @@ static int cfv_probe(struct virtio_device *vdev)
+ 	cfv->ctx.head = USHRT_MAX;
+ 	netif_napi_add(netdev, &cfv->napi, cfv_rx_poll, CFV_DEFAULT_QUOTA);
  
--	tasklet_init(&lp->reply_tasklet, arcnet_reply_tasklet,
--		     (unsigned long)lp);
-+	tasklet_setup(&lp->reply_tasklet, arcnet_reply_tasklet);
+-	tasklet_init(&cfv->tx_release_tasklet,
+-		     cfv_tx_release_tasklet,
+-		     (unsigned long)cfv);
++	tasklet_setup(&cfv->tx_release_tasklet, cfv_tx_release_tasklet);
  
- 	arc_printk(D_INIT, dev, "arcnet_open: resetting card.\n");
- 
+ 	/* Carrier is off until netdevice is opened */
+ 	netif_carrier_off(netdev);
 -- 
 2.25.1
 
