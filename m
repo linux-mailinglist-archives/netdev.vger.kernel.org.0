@@ -2,88 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A693E26971A
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 22:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B51526971D
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 22:53:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726196AbgINUwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 16:52:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52618 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726062AbgINUwi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 16:52:38 -0400
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 60BF4218AC;
-        Mon, 14 Sep 2020 20:52:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600116757;
-        bh=yHgI+Sr9jwoe9TRfWW90cuxRyTn1tAIe+oD9RF6J39I=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BiwqpdTYQOBtWTC2wBZqEgxqKSuqHFfEX20AViyi4dkm/ognyC4pTDIR5V9HPZFNQ
-         E6jQkxi15JO6Q+AdtrI1gS84y6312OMwYBRReQAC0EZmHQqtJmGqN1Ihkb4FAPY2TD
-         3eV87Pi7f//JQQHWareSEAHe67Bys8Tz8IBSJOi8=
-Received: by mail-lj1-f179.google.com with SMTP id u21so871808ljl.6;
-        Mon, 14 Sep 2020 13:52:37 -0700 (PDT)
-X-Gm-Message-State: AOAM533J7+yZi7jAuOPxJbOvoaOLPUyMX7Cl1hXpTFayzYR6t8jC4GbL
-        0f185ZOSwAITv2YOk3PQC1gAcj6Zk/UaisvoN3Y=
-X-Google-Smtp-Source: ABdhPJzgo4USz8FapNukkkeuwuITZpww0+o3fFIGc8iwBX2Mv5WYcVLyp+M3WrCT8GWHcsTG4onew9xmu5X0P1nPJaE=
-X-Received: by 2002:a2e:9c8d:: with SMTP id x13mr5290616lji.392.1600116755650;
- Mon, 14 Sep 2020 13:52:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200911143022.414783-1-nicolas.rybowski@tessares.net> <20200911143022.414783-2-nicolas.rybowski@tessares.net>
-In-Reply-To: <20200911143022.414783-2-nicolas.rybowski@tessares.net>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 14 Sep 2020 13:52:24 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW4xqPD641gHAs7GjhmW7SANMhz75VKbP02Xyja9CnpZ-g@mail.gmail.com>
-Message-ID: <CAPhsuW4xqPD641gHAs7GjhmW7SANMhz75VKbP02Xyja9CnpZ-g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/5] mptcp: attach subflow socket to parent cgroup
-To:     Nicolas Rybowski <nicolas.rybowski@tessares.net>
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        id S1726253AbgINUxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 16:53:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726062AbgINUxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 16:53:01 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED79C06174A;
+        Mon, 14 Sep 2020 13:53:00 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id x69so768725lff.3;
+        Mon, 14 Sep 2020 13:53:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=k9w40fAnLY062DMttTVJypXtcuo4iA/0LGX2IcAd/MI=;
+        b=cbLoY347WEUFQ/2F80MACLTGh4YGNLevV0n/fJQJUfDubvmCJx78be4uM3jmZXbWHC
+         M2irQ86Kor0wWoWnRG04iqN5OopRKi2mk4qLLlCeqFGuc6A+HI06YhZSSFsXJj63YN2K
+         rNCXP+6HtBtYz1dMPChKez+lUsXzRn4bI6zWFdmamQCggBhyChx1dbEwarOBxNzZQJ8J
+         UnYrVbfogpi9YbRTeiqI2Inv9Vv5LSIoRnguwL6ftjakcyV26TXjrPWmyeh5ZpYHrg2n
+         IVEcoY12xolokBXcpYxq5ZuRVIb7KOV7ICKZSgt64VX2eGtRtpV09YyfByQcj2xRts3Q
+         41lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=k9w40fAnLY062DMttTVJypXtcuo4iA/0LGX2IcAd/MI=;
+        b=dL8dsx7FpxTVUu33dhaD4r9UUGi8IZ3JcwOiWTtyPm/ctIKceTArCaobcM3hcJnH/1
+         nMGvdz0oJ1CGXhr/H779aKzgOF02Up+51buPi5Zqn89xh2S5Iz/Mg7UoN8A3lICxZY8a
+         AmFo0HRrbSpkAFVEvGpaYb4bFHyQGOp2pRBTU/o0zKec0H5axnIRsMLllUniNWxs2T/o
+         NRvfDxD0J34uNMpUEuyW6F8zMW/QAS9ZPV5fb7IQlGm5D1qhxRSbAYerjblxkRTePtgB
+         y6aRFsgV58rGk0yySbo7YaIVH18J7yL1v6eO82dx5s1Xc3+SF7GrPsJWXGURpzy1jR5u
+         CMRA==
+X-Gm-Message-State: AOAM531UdakyRcSZlVv6IP3EOKEmovSko5AVuEVeuMggPOA8aYvDZ0mf
+        0uPhRSUnsWqlI8R32Tj4fbs=
+X-Google-Smtp-Source: ABdhPJy4xq1x+Ok9MTO3aOkhQn4b5cKP1dRhezK6UAtVP9Tj6L046bypMLRhCP8otdAboMiM0sSE9w==
+X-Received: by 2002:ac2:4a73:: with SMTP id q19mr4724484lfp.532.1600116779262;
+        Mon, 14 Sep 2020 13:52:59 -0700 (PDT)
+Received: from rikard (h-82-196-111-59.NA.cust.bahnhof.se. [82.196.111.59])
+        by smtp.gmail.com with ESMTPSA id t1sm4248730ljt.21.2020.09.14.13.52.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Sep 2020 13:52:58 -0700 (PDT)
+From:   Rikard Falkeborn <rikard.falkeborn@gmail.com>
+X-Google-Original-From: Rikard Falkeborn <rikard.falkeborn>
+Date:   Mon, 14 Sep 2020 22:52:54 +0200
+To:     Joe Perches <joe@perches.com>
+Cc:     Rikard Falkeborn <rikard.falkeborn@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Networking <netdev@vger.kernel.org>, mptcp@lists.01.org,
-        open list <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jerin Jacob <jerinj@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] octeontx2-af: Constify
+ npc_kpu_profile_{action,cam}
+Message-ID: <20200914205254.GA2677@rikard>
+References: <20200911220015.41830-1-rikard.falkeborn@gmail.com>
+ <c6568e2e4450633136c6e7d85f29ed68aa01a32f.camel@perches.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c6568e2e4450633136c6e7d85f29ed68aa01a32f.camel@perches.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 11, 2020 at 9:43 AM Nicolas Rybowski
-<nicolas.rybowski@tessares.net> wrote:
->
-> It has been observed that the kernel sockets created for the subflows
-> (except the first one) are not in the same cgroup as their parents.
-> That's because the additional subflows are created by kernel workers.
->
-> This is a problem with eBPF programs attached to the parent's
-> cgroup won't be executed for the children. But also with any other features
-> of CGroup linked to a sk.
->
-> This patch fixes this behaviour.
->
-> As the subflow sockets are created by the kernel, we can't use
-> 'mem_cgroup_sk_alloc' because of the current context being the one of the
-> kworker. This is why we have to do low level memcg manipulation, if
-> required.
->
-> Suggested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Suggested-by: Paolo Abeni <pabeni@redhat.com>
-> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> Signed-off-by: Nicolas Rybowski <nicolas.rybowski@tessares.net>
+On Sun, Sep 13, 2020 at 10:27:01PM -0700, Joe Perches wrote:
+> On Sat, 2020-09-12 at 00:00 +0200, Rikard Falkeborn wrote:
+> > These are never modified, so constify them to allow the compiler to
+> > place them in read-only memory. This moves about 25kB to read-only
+> > memory as seen by the output of the size command.
+> 
+> Nice.
+> 
+> Did you find this by tool or inspection?
+> 
+> 
 
-Acked-by: Song Liu <songliubraving@fb.com>
-
-[...]
+Inspection, aided by some semi-clever greping.
