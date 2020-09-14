@@ -2,90 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B90F2697BE
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 23:33:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64C542697CB
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 23:37:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726034AbgINVdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 17:33:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58384 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725920AbgINVdJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 17:33:09 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6A3E620759;
-        Mon, 14 Sep 2020 21:33:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600119188;
-        bh=V+P1X8VC4JsERiUXw7iot+idRi6jC6V9C36vEtjNvyk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WgZuChsrB0e4d8z/5eqq6wJtTbFIGPzTLgBvuDy2FLzX9VMg6XQukLIE+nbNYqnyO
-         uQnCrmmoi+mKWebxdCDxNSKV78z+fYm11boRbrGeA3N8ANJkLiWuVl+YmDwki+srAI
-         X5Hn+R/mJTCg+F5icKwklzpJ7XhtrBp3gpTbYU6I=
-Date:   Mon, 14 Sep 2020 14:33:06 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Moshe Shemesh <moshe@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4 01/15] devlink: Add reload action option
- to devlink reload command
-Message-ID: <20200914143306.4ab0f4c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1600063682-17313-2-git-send-email-moshe@mellanox.com>
-References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
-        <1600063682-17313-2-git-send-email-moshe@mellanox.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1726067AbgINVhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 17:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47956 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726057AbgINVhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 17:37:48 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE725C06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 14:37:48 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0260C1282952D;
+        Mon, 14 Sep 2020 14:21:00 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 14:37:46 -0700 (PDT)
+Message-Id: <20200914.143746.1677781343005012467.davem@davemloft.net>
+To:     idosch@idosch.org
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, jiri@nvidia.com,
+        petrm@nvidia.com, mlxsw@nvidia.com, idosch@nvidia.com
+Subject: Re: [PATCH net-next 0/5] mlxsw: Derive SBIB from maximum port
+ speed & MTU
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200913154609.14870-1-idosch@idosch.org>
+References: <20200913154609.14870-1-idosch@idosch.org>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Mon, 14 Sep 2020 14:21:01 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Sep 2020 09:07:48 +0300 Moshe Shemesh wrote:
-> @@ -3011,12 +3060,41 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
->  			return PTR_ERR(dest_net);
->  	}
->  
-> -	err = devlink_reload(devlink, dest_net, info->extack);
-> +	if (info->attrs[DEVLINK_ATTR_RELOAD_ACTION])
-> +		action = nla_get_u8(info->attrs[DEVLINK_ATTR_RELOAD_ACTION]);
-> +	else
-> +		action = DEVLINK_RELOAD_ACTION_DRIVER_REINIT;
-> +
-> +	if (action == DEVLINK_RELOAD_ACTION_UNSPEC || action > DEVLINK_RELOAD_ACTION_MAX) {
-> +		NL_SET_ERR_MSG_MOD(info->extack, "Invalid reload action");
-> +		return -EINVAL;
-> +	} else if (!devlink_reload_action_is_supported(devlink, action)) {
-> +		NL_SET_ERR_MSG_MOD(info->extack, "Requested reload action is not supported");
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	err = devlink_reload(devlink, dest_net, action, info->extack, &actions_performed);
->  
->  	if (dest_net)
->  		put_net(dest_net);
->  
-> -	return err;
-> +	if (err)
-> +		return err;
-> +
-> +	WARN_ON(!actions_performed);
-> +	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-> +	if (!msg)
-> +		return -ENOMEM;
-> +
-> +	err = devlink_nl_reload_actions_performed_fill(msg, devlink, actions_performed,
-> +						       DEVLINK_CMD_RELOAD, info->snd_portid,
-> +						       info->snd_seq, 0);
-> +	if (err) {
-> +		nlmsg_free(msg);
-> +		return err;
-> +	}
-> +
-> +	return genlmsg_reply(msg, info);
+From: Ido Schimmel <idosch@idosch.org>
+Date: Sun, 13 Sep 2020 18:46:04 +0300
 
-I think generating the reply may break existing users. Only generate
-the reply if request contained DEVLINK_ATTR_RELOAD_ACTION (or any other
-new attribute which existing users can't pass).
+> From: Ido Schimmel <idosch@nvidia.com>
+> 
+> Petr says:
+> 
+> Internal buffer is a part of port headroom used for packets that are
+> mirrored due to triggers that the Spectrum ASIC considers "egress". Besides
+> ACL mirroring on port egresss this includes also packets mirrored due to
+> ECN marking.
+> 
+> This patchset changes the way the internal mirroring buffer is reserved.
+> Currently the buffer reflects port MTU and speed accurately. In the future,
+> mlxsw should support dcbnl_setbuffer hook to allow the users to set buffer
+> sizes by hand. In that case, there might not be enough space for growth of
+> the internal mirroring buffer due to MTU and speed changes. While vetoing
+> MTU changes would be merely confusing, port speed changes cannot be vetoed,
+> and such change would simply lead to issues in packet mirroring.
+> 
+> For these reasons, with these patches the internal mirroring buffer is
+> derived from maximum MTU and maximum speed achievable on the port.
+> 
+> Patches #1 and #2 introduce a new callback to determine the maximum speed a
+> given port can achieve.
+> 
+> With patches #3 and #4, the information about, respectively, maximum MTU
+> and maximum port speed, is kept in struct mlxsw_sp_port.
+> 
+> In patch #5, maximum MTU and maximum speed are used to determine the size
+> of the internal buffer. MTU update and speed update hooks are dropped,
+> because they are no longer necessary.
+
+Series applied, thank you.
