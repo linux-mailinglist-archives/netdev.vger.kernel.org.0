@@ -2,116 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12782269156
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:21:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 930F1269155
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726454AbgINQVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 12:21:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39898 "EHLO mail.kernel.org"
+        id S1726480AbgINQVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 12:21:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39756 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726098AbgINQVG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 12:21:06 -0400
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726239AbgINQU4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 12:20:56 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 577BC20EDD;
-        Mon, 14 Sep 2020 16:21:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0582A206A4;
+        Mon, 14 Sep 2020 16:20:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600100465;
-        bh=eAVAzgvUkh0wc/I1j1/s8lyQbeYVFTOGhBfWS8xzoY0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=xVLWwgJwu9iq1HXV108sMD+XNOpS4ODsXAKTu4PFwOeB7Q+pGs4qxy+Al3QyU9Vsz
-         GZNDkbbHKXyx+mwQUPDAKU1uInzXhTEOnT0hh7vGs+uM0RV0EnUODvSC+2WzEDhC3Q
-         DhpE106v1VJBq8OqdhjMejVWFX2hljIgmnryzE+8=
-Received: by mail-lj1-f178.google.com with SMTP id c2so151320ljj.12;
-        Mon, 14 Sep 2020 09:21:05 -0700 (PDT)
-X-Gm-Message-State: AOAM533vAPu0a9IZWm1tNINkBrbubPswf6Zb3PZmFNJob79AHpxUnQsy
-        QDlYKXWfU1O9FQTdUTvZKXO1zJWjdB7r3nGEomg=
-X-Google-Smtp-Source: ABdhPJwO3e8CVSM2h2kC53VTIZbFnvCMMpuEr2dDAgBR5ieztpYgRR6Cek/gSMFtFBdL6SgpgfNsPvTXlL3FMDQwm8Q=
-X-Received: by 2002:a2e:98cf:: with SMTP id s15mr5625684ljj.446.1600100463625;
- Mon, 14 Sep 2020 09:21:03 -0700 (PDT)
+        s=default; t=1600100455;
+        bh=dHkhjmB66cl/3hzkvEQ91AT+wAWRkdRIJ131+nT3zC0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q667pWUnOAM2qw6/iORGQOeauzGa7Y4lQ0D9YuiQsab2Gd3wWipsAIaW4QVLCJhpm
+         bcX0CouaEMfM+34TumGyjXtiliT8sUJ+YU4AQJjH/3U01KPWbQ1tTBfRJuR6hMRYio
+         29gwWhsRnhM+8JJ1d93GDJcqF/7F/vluo+BcGPGw=
+Date:   Mon, 14 Sep 2020 09:20:53 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Michael Chan <michael.chan@broadcom.com>, tariqt@nvidia.com,
+        saeedm@nvidia.com, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next 7/8] ixgbe: add pause frame stats
+Message-ID: <20200914092053.5e0fd9f4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200913091414.GA3208846@shredder>
+References: <20200911195258.1048468-1-kuba@kernel.org>
+        <20200911195258.1048468-8-kuba@kernel.org>
+        <CAKgT0UccY586mhxRjf+W5gKZdhDMOCXW=p+reEivPnqyFryUbQ@mail.gmail.com>
+        <20200911151343.25fbbdec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200913091414.GA3208846@shredder>
 MIME-Version: 1.0
-References: <20200914061206.2625395-1-yhs@fb.com> <b942625c-7140-0a57-337e-3a95020cfa99@isovalent.com>
-In-Reply-To: <b942625c-7140-0a57-337e-3a95020cfa99@isovalent.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 14 Sep 2020 09:20:52 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW5Ja5if-DOPQn1FrbiEsH-YXXYVGzM59XQkyG5_xNmD-A@mail.gmail.com>
-Message-ID: <CAPhsuW5Ja5if-DOPQn1FrbiEsH-YXXYVGzM59XQkyG5_xNmD-A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpftool: fix build failure
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 1:20 AM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> On 14/09/2020 07:12, Yonghong Song wrote:
-> > When building bpf selftests like
-> >   make -C tools/testing/selftests/bpf -j20
-> > I hit the following errors:
-> >   ...
-> >   GEN      /net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-gen.8
-> >   <stdin>:75: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
-> >   <stdin>:71: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
-> >   <stdin>:85: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
-> >   <stdin>:57: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
-> >   <stdin>:66: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
-> >   <stdin>:109: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
-> >   <stdin>:175: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
-> >   <stdin>:273: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
-> >   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-perf.8] Error 12
-> >   make[1]: *** Waiting for unfinished jobs....
-> >   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-iter.8] Error 12
-> >   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-struct_ops.8] Error 12
-> >   ...
-> >
-> > I am using:
-> >   -bash-4.4$ rst2man --version
-> >   rst2man (Docutils 0.11 [repository], Python 2.7.5, on linux2)
-> >   -bash-4.4$
-> >
-> > Looks like that particular version of rst2man prefers to have a blank line
-> > after literal blocks. This patch added block lines in related .rst files
-> > and compilation can then pass.
-> >
-> > Cc: Quentin Monnet <quentin@isovalent.com>
-> > Fixes: 18841da98100 ("tools: bpftool: Automate generation for "SEE ALSO" sections in man pages")
-> > Signed-off-by: Yonghong Song <yhs@fb.com>
->
->
-> Hi Yonghong, thanks for the fix! I didn't see those warnings on my
-> setup. For the record my rst2man version is:
->
->         rst2man (Docutils 0.16 [release], Python 3.8.2, on linux)
->
-> Your patch looks good, but instead of having blank lines at the end of
-> most files, could you please check if the following works?
->
-> ------
->
-> diff --git a/tools/bpf/bpftool/Documentation/Makefile
-> b/tools/bpf/bpftool/Documentation/Makefile
-> index 4c9dd1e45244..01b30ed86eac 100644
-> --- a/tools/bpf/bpftool/Documentation/Makefile
-> +++ b/tools/bpf/bpftool/Documentation/Makefile
-> @@ -32,7 +32,7 @@ RST2MAN_OPTS += --verbose
->
->  list_pages = $(sort $(basename $(filter-out $(1),$(MAN8_RST))))
->  see_also = $(subst " ",, \
-> -       "\n" \
-> +       "\n\n" \
->         "SEE ALSO\n" \
->         "========\n" \
->         "\t**bpf**\ (2),\n" \
+On Sun, 13 Sep 2020 12:14:14 +0300 Ido Schimmel wrote:
+> On Fri, Sep 11, 2020 at 03:13:43PM -0700, Jakub Kicinski wrote:
+> > On Fri, 11 Sep 2020 14:12:50 -0700 Alexander Duyck wrote:  
+> > > On Fri, Sep 11, 2020 at 12:53 PM Jakub Kicinski <kuba@kernel.org> wrote:  
+> > > > @@ -3546,6 +3556,7 @@ static const struct ethtool_ops ixgbe_ethtool_ops = {
+> > > >         .set_eeprom             = ixgbe_set_eeprom,
+> > > >         .get_ringparam          = ixgbe_get_ringparam,
+> > > >         .set_ringparam          = ixgbe_set_ringparam,
+> > > > +       .get_pause_stats        = ixgbe_get_pause_stats,
+> > > >         .get_pauseparam         = ixgbe_get_pauseparam,
+> > > >         .set_pauseparam         = ixgbe_set_pauseparam,
+> > > >         .get_msglevel           = ixgbe_get_msglevel,    
+> > > 
+> > > So the count for this is simpler in igb than it is for ixgbe. I'm
+> > > assuming you want just standard link flow control frames. If so then
+> > > this patch is correct. Otherwise if you are wanting to capture
+> > > priority flow control data then those are a seperate array of stats
+> > > prefixed with a "p" instead of an "l". Otherwise this looks fine to
+> > > me.  
+> > 
+> > That's my interpretation, although I haven't found any place the
+> > standard would address this directly. Non-PFC pause has a different
+> > opcode, so I'm reasonably certain this makes sense.
+> > 
+> > BTW I'm not entirely clear on what "global PFC pause" is either.
+> > 
+> > Maybe someone can clarify? Mellanox folks?  
+> 
+> I checked IEEE 802.1Qaz and could not find anything relevant. My only
+> guess is that it might be a PFC frame with all the priorities set.
+> 
+> Where did you see it?
 
-Yes, this works (I am using the same rst2man as Yonghong's).
-
-Thanks,
-Song
+I think I saw it in MLX5 and I thought it's something
+implementation-specific. But then I noticed 802.1-2018 
+has a ieee8021PfcGlobalReqdGroup group.
