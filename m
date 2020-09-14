@@ -2,115 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A0442698DB
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 00:32:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF9022698F2
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 00:34:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726064AbgINWcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 18:32:15 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:53308 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725985AbgINWcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 18:32:14 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08EMV2YB032691
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 15:32:13 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=facebook;
- bh=tFitJi4poWiSEOOAer/auv9njZ9vWyOJOInyNIPTcNs=;
- b=A4KFVT2PAMczwezMVW+RGx3rq5bIyD/85aPklUPETAuuv+lJmWKaocw9tDeLVOHHzGZV
- 6sNRICID7u78cZtqxcPIcoNhiLmP6lV2XeDTwk4gtwaz0ryffI1bIlZZfwJfXB+OTz6p
- SeECVKxmJl8atfnpqge4wwuh+yDaKgtg//I= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33guummfte-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 15:32:13 -0700
-Received: from intmgw003.03.ash8.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 14 Sep 2020 15:32:11 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 714FA37059D9; Mon, 14 Sep 2020 15:32:10 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>
-Subject: [PATCH bpf-next] libbpf: fix a compilation error with xsk.c for ubuntu 16.04
-Date:   Mon, 14 Sep 2020 15:32:10 -0700
-Message-ID: <20200914223210.1831262-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726118AbgINWe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 18:34:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51822 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725985AbgINWeU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 18:34:20 -0400
+Received: from quaco.ghostprotocols.net (unknown [179.97.37.151])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E027C208DB;
+        Mon, 14 Sep 2020 22:34:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600122860;
+        bh=VUhtghnsr7sxEh6kYrc2+nG7h0VCsXrYJzf4W/n23ms=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kkXsHGPubvAizafHEa7CYeF3kjykbcLNySMjzlvTp2vGQFZ3c3CYwkZD518XTEhJf
+         Wx89Jt1JZEFS3cL4NuNGxL01+pQe/eW9dmZVIDnrDjTAO+tq0v9p/Chl/0P53cV54T
+         np9QcdzxPGCGHpzYyjr8IIaDsXHAD9CnHzcS0Xps=
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id E158140D3D; Mon, 14 Sep 2020 19:34:17 -0300 (-03)
+Date:   Mon, 14 Sep 2020 19:34:17 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v3 3/4] perf record: Don't clear event's period if set by
+ a term
+Message-ID: <20200914223417.GI166601@kernel.org>
+References: <20200912025655.1337192-1-irogers@google.com>
+ <20200912025655.1337192-4-irogers@google.com>
+ <20200914214655.GE166601@kernel.org>
+ <20200914215106.GF166601@kernel.org>
+ <CAP-5=fUO_HFd2-z53u6GdRV=o7HsB4ThzWYJDGQG8OwGDeV+VA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-14_09:2020-09-14,2020-09-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- lowpriorityscore=0 spamscore=0 priorityscore=1501 bulkscore=0
- malwarescore=0 clxscore=1015 mlxlogscore=951 phishscore=0 adultscore=0
- suspectscore=8 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009140170
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAP-5=fUO_HFd2-z53u6GdRV=o7HsB4ThzWYJDGQG8OwGDeV+VA@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When syncing latest libbpf repo to bcc, ubuntu 16.04 (4.4.0 LTS kernel)
-failed compilation for xsk.c:
-  In file included from /tmp/debuild.0jkauG/bcc/src/cc/libbpf/src/xsk.c:2=
-3:0:
-  /tmp/debuild.0jkauG/bcc/src/cc/libbpf/src/xsk.c: In function =E2=80=98x=
-sk_get_ctx=E2=80=99:
-  /tmp/debuild.0jkauG/bcc/src/cc/libbpf/include/linux/list.h:81:9: warnin=
-g: implicit
-  declaration of function =E2=80=98container_of=E2=80=99 [-Wimplicit-func=
-tion-declaration]
-           container_of(ptr, type, member)
-           ^
-  /tmp/debuild.0jkauG/bcc/src/cc/libbpf/include/linux/list.h:83:9: note: =
-in expansion
-  of macro =E2=80=98list_entry=E2=80=99
-           list_entry((ptr)->next, type, member)
-  ...
-  src/cc/CMakeFiles/bpf-static.dir/build.make:209: recipe for target
-  'src/cc/CMakeFiles/bpf-static.dir/libbpf/src/xsk.c.o' failed
+Em Mon, Sep 14, 2020 at 02:52:57PM -0700, Ian Rogers escreveu:
+> On Mon, Sep 14, 2020 at 2:51 PM Arnaldo Carvalho de Melo
+> <acme@kernel.org> wrote:
+> >
+> > Em Mon, Sep 14, 2020 at 06:46:55PM -0300, Arnaldo Carvalho de Melo escreveu:
+> > > Em Fri, Sep 11, 2020 at 07:56:54PM -0700, Ian Rogers escreveu:
+> > > > If events in a group explicitly set a frequency or period with leader
+> > > > sampling, don't disable the samples on those events.
+> > > >
+> > > > Prior to 5.8:
+> > > > perf record -e '{cycles/period=12345000/,instructions/period=6789000/}:S'
+> > > > would clear the attributes then apply the config terms. In commit
+> > > > 5f34278867b7 leader sampling configuration was moved to after applying the
+> > > > config terms, in the example, making the instructions' event have its period
+> > > > cleared.
+> > > > This change makes it so that sampling is only disabled if configuration
+> > > > terms aren't present.
+> > >
+> > > Adrian, Jiri, can you please take a look a this and provide Reviewed-by
+> > > or Acked-by tags?
+> >
+> > Without this patch we have:
+> >
+> > # perf record -e '{cycles/period=1/,instructions/period=2/}:S' sleep 1
+> > [ perf record: Woken up 1 times to write data ]
+> > [ perf record: Captured and wrote 0.051 MB perf.data (6 samples) ]
+> > #
+> > # perf evlist -v
+> > cycles/period=1/: size: 120, { sample_period, sample_freq }: 1, sample_type: IP|TID|TIME|READ|ID, read_format: ID|GROUP, disabled: 1, mmap: 1, comm: 1, enable_on_exec: 1, task: 1, sample_id_all: 1, exclude_guest: 1, mmap2: 1, comm_exec: 1, ksymbol: 1, bpf_event: 1
+> > instructions/period=2/: size: 120, config: 0x1, sample_type: IP|TID|TIME|READ|ID, read_format: ID|GROUP, sample_id_all: 1, exclude_guest: 1
+> > #
+> >
+> > So indeed the period=2 is being cleared for the second event in that
+> > group.
+> >
+> > - Arnaldo
+> 
+> Thanks Arnaldo and Adrian! Adrian's acked-by is here:
+> https://lore.kernel.org/lkml/77df85d3-a50c-d6aa-1d60-4fc9ea90dc44@intel.com/
+> Let me know if anything is missing.
 
-Commit 2f6324a3937f ("libbpf: Support shared umems between queues and dev=
-ices")
-added include file <linux/list.h>, which uses macro "container_of".
-xsk.c file also includes <linux/ethtool.h> before <linux/list.h>.
+Thanks, applied.
 
-In a more recent distro kernel, <linux/ethtool.h> includes <linux/kernel.=
-h>
-which contains the macro definition for "container_of". So compilation is=
- all fine.
-But in ubuntu 16.04 kernel, <linux/ethtool.h> does not contain <linux/ker=
-nel.h>
-which caused the above compilation error.
-
-Let explicitly add <linux/kernel.h> in xsk.c to avoid compilation error
-in old distro's.
-
-Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and dev=
-ices")
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- tools/lib/bpf/xsk.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index 49c324594792..30b4ca5d2ac7 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -20,6 +20,7 @@
- #include <linux/if_ether.h>
- #include <linux/if_packet.h>
- #include <linux/if_xdp.h>
-+#include <linux/kernel.h>
- #include <linux/list.h>
- #include <linux/sockios.h>
- #include <net/if.h>
---=20
-2.24.1
-
+- Arnaldo
