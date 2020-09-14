@@ -2,205 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5FD026995D
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 01:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06DC6269976
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 01:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726119AbgINXAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 19:00:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46194 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726106AbgINW76 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 18:59:58 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726013AbgINXGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 19:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33440 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725986AbgINXGx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 19:06:53 -0400
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9CD2C06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 16:06:51 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 027AE20738;
-        Mon, 14 Sep 2020 22:59:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600124397;
-        bh=emunIXKlo2e3QtGdQLYozlvEmC8zJhSPtxtEm8Zd9CY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CLqRijmeCx7TUDq8D/Kvfqr6PZPTWkXq+InHZ6uROvvy59U2mu+fDpo7rl2FTeQBW
-         3kYjGfPzInFIM1uzPmBMZqss7yrdm/F0ee8Ln4I8aV69iU3BOaGcBtnC8Po8icMEC6
-         1NjwCT2gQwlkOxcSKr993eVxjiYTOeI68A6DmMjo=
-Date:   Mon, 14 Sep 2020 15:59:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
-Message-ID: <20200914155955.6104c0ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <99ce6f1f-a8e9-3242-a584-e06756d6c606@pensando.io>
-References: <20200908224812.63434-1-snelson@pensando.io>
-        <20200908224812.63434-3-snelson@pensando.io>
-        <20200908165433.08afb9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <9938e3cc-b955-11a1-d667-8e5893bb6367@pensando.io>
-        <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <581f2161-1c55-31ae-370b-bbea5a677862@pensando.io>
-        <20200909122233.45e4c65c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <3d75c4be-ae5d-43b0-407c-5df1e7645447@pensando.io>
-        <20200910105643.2e2d07f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <99ce6f1f-a8e9-3242-a584-e06756d6c606@pensando.io>
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4Br26v4JtZzQl1t;
+        Tue, 15 Sep 2020 01:06:47 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id 0Sz045w5CTN4; Tue, 15 Sep 2020 01:06:44 +0200 (CEST)
+Subject: Re: [PATCH v2 4/4] net: lantiq: Disable IRQs only if NAPI gets
+ scheduled
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        martin.blumenstingl@googlemail.com, eric.dumazet@gmail.com
+References: <20200912193629.1586-1-hauke@hauke-m.de>
+ <20200912193629.1586-5-hauke@hauke-m.de>
+ <20200914135415.51161be0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Hauke Mehrtens <hauke@hauke-m.de>
+Autocrypt: addr=hauke@hauke-m.de; keydata=
+ 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
+Message-ID: <b3c182e4-8c68-d142-38c4-b1b99d343e9d@hauke-m.de>
+Date:   Tue, 15 Sep 2020 01:06:38 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200914135415.51161be0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="1s21WNJgAwRaMtpKelnFd94T6X1MtihQv"
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -4.19 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 751A4673
+X-Rspamd-UID: acdcb8
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Sep 2020 15:02:18 -0700 Shannon Nelson wrote:
-> On 9/10/20 10:56 AM, Jakub Kicinski wrote:
-> > On Wed, 9 Sep 2020 18:34:57 -0700 Shannon Nelson wrote: =20
-> >> On 9/9/20 12:22 PM, Jakub Kicinski wrote: =20
-> >>> On Wed, 9 Sep 2020 10:58:19 -0700 Shannon Nelson wrote: =20
-> >>>> I'm suggesting that this implementation using the existing devlink
-> >>>> logging services should suffice until someone can design, implement,=
- and
-> >>>> get accepted a different bit of plumbing.=C2=A0 Unfortunately, that'=
-s not a
-> >>>> job that I can get to right now. =20
-> >>> This hack is too nasty to be accepted. =20
-> >> Your comment earlier was
-> >> =20
-> >>   > I wonder if we can steal a page from systemd's book and display
-> >>   > "time until timeout", or whatchamacallit, like systemd does when i=
-t's
-> >>   > waiting for processes to quit. All drivers have some timeout set o=
-n the
-> >>   > operation. If users knew the driver sets timeout to n minutes and =
-they
-> >>   > see the timer ticking up they'd be less likely to think the comman=
-d has
-> >>   > hanged.. =20
-> >>
-> >> I implemented the loop such that the timeout value was the 100%, and
-> >> each time through the loop the elapsed time value is sent, so the user
-> >> gets to see the % value increasing as the wait goes on, in the same way
-> >> they see the download progress percentage ticking away. =20
-> > Right but you said that in most cases the value never goes up to 25min,
-> > so user will see the value increment from 0 to say 5% very slowly and
-> > then jump to 100%.
-> > =20
-> >> This is how I approached the stated requirement of user seeing the
-> >> "timer ticking up", using the existing machinery.=C2=A0 This seems to =
-be
-> >> how devlink_flash_update_status_notify() is expected to be used, so
-> >> I'm a little surprised at the critique. =20
-> > Sorry, I thought the systemd reference would be clear enough, see the
-> > screenshot here:
-> >
-> > https://images.app.goo.gl/gz1Uwg6mcHEd3D2m7
-> >
-> > Systemd prints something link:
-> >
-> > bla bla bla (XXs / YYs)
-> >
-> > where XX is the timer ticking up, and YY is the timeout value.
-> > =20
-> >>> So to be clear your options are:
-> >>>    - plumb the single extra netlink parameter through to devlink
-> >>>    - wait for someone else to do that for you, before you get
-> >>> firmware flashing accepted upstream.
-> >>>    =20
-> >> Since you seem to have something else in mind, a little more detail
-> >> would be helpful.
-> >>
-> >> We currently see devlink updating a percentage, something like:
-> >> Downloading:=C2=A0 56%
-> >> using backspaces to overwrite the value as the updates are published.
-> >>
-> >> How do you envision the userland interpretation of the timeout
-> >> ticking? Do you want to see something like:
-> >> Installing - timeout seconds:=C2=A0 23
-> >> as a countdown? =20
-> > I was under the impression that the systemd format would be familiar
-> > to users, hence:
-> >
-> > Downloading:=C2=A0 56% (Xm Ys / Zm Vz)
-> >
-> > The part in brackets only appearing after a few seconds without a
-> > notification, otherwise the whole thing would get noisy.
-> > =20
-> >> So, maybe a flag parameter that can tell the UI to use the raw value
-> >> and not massage it into a percentage?
-> >>
-> >> Do you see this new netlink parameter to be a boolean switch between
-> >> the percentage and raw, or maybe a bitflag parameter that might end
-> >> up with several bits of context information for userland to interpret?
-> >>
-> >> Are you thinking of a new flags parameter in
-> >> devlink_flash_update_status_notify(), or a new function to service
-> >> this?
-> >>
-> >> If a new parameter to devlink_flash_update_status_notify(), maybe it
-> >> is time to make a struct for flash update data rather than adding
-> >> more parameters to the function?
-> >>
-> >> Should we add yet another parameter to replace the '%' with some
-> >> other label, so devlink could print something like
-> >> Installing - timeout in:=C2=A0 23 secs
-> >>
-> >> Or could we use a 0 value for total to signify using a raw value and
-> >> not need to plumb a new parameter?=C2=A0 Although this might not get a=
-long
-> >> well with older devlink utilities. =20
-> > I was thinking of adding an extra timeout parameter to
-> > devlink_flash_update_status_notify() - timeout length in seconds.
-> > And an extra netlink attr for that.
-> >
-> > We could perhaps make:
-> >
-> > static inline void
-> > devlink_flash_update_status_notify( const char *status_msg,
-> > 				    unsigned long done, unsigned long total)
-> > {
-> > 	struct ..._args =3D {
-> > 		.status_msg =3D status_msg,
-> > 		.done =3D done,
-> > 		.total =3D total,
-> > 	}
-> >
-> > 	__devlink_flash_update_status_notify(devlink, &.._args);
-> > }
-> >
-> > IOW drop the component parameter from the normal helper, cause almost
-> > nobody uses that. The add a more full featured __ version, which would
-> > take the arg struct, the struct would include the timeout value.
-> >
-> > If the timeout is lower than 15sec drivers will probably have little
-> > value in reporting it, so simplified helper should be nice there to sav=
-e LOC.
-> >
-> > The user space can do the counting up trivially using select(),
-> > or a syscall timeout. The netlink notification would only carry timeout.
-> > (LMK if this is problematic, I haven't looked at the user space part.) =
-=20
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--1s21WNJgAwRaMtpKelnFd94T6X1MtihQv
+Content-Type: multipart/mixed; boundary="z5wf8y709bHOnwuOAF6jK9kOViY4N2Ic8"
+
+--z5wf8y709bHOnwuOAF6jK9kOViY4N2Ic8
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+
+On 9/14/20 10:54 PM, Jakub Kicinski wrote:
+> On Sat, 12 Sep 2020 21:36:29 +0200 Hauke Mehrtens wrote:
+>> The napi_schedule() call will only schedule the NAPI if it is not
+>> already running. To make sure that we do not deactivate interrupts
+>> without scheduling NAPI only deactivate the interrupts in case NAPI al=
+so
+>> gets scheduled.
+>>
+>> Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+>> ---
+>>  drivers/net/ethernet/lantiq_xrx200.c | 8 +++++---
+>>  1 file changed, 5 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethern=
+et/lantiq_xrx200.c
+>> index abee7d61074c..635ff3a5dcfb 100644
+>> --- a/drivers/net/ethernet/lantiq_xrx200.c
+>> +++ b/drivers/net/ethernet/lantiq_xrx200.c
+>> @@ -345,10 +345,12 @@ static irqreturn_t xrx200_dma_irq(int irq, void =
+*ptr)
+>>  {
+>>  	struct xrx200_chan *ch =3D ptr;
+>> =20
+>> -	ltq_dma_disable_irq(&ch->dma);
+>> -	ltq_dma_ack_irq(&ch->dma);
+>> +	if (napi_schedule_prep(&ch->napi)) {
+>> +		__napi_schedule(&ch->napi);
+>> +		ltq_dma_disable_irq(&ch->dma);
+>> +	}
+>> =20
+>> -	napi_schedule(&ch->napi);
+>> +	ltq_dma_ack_irq(&ch->dma);
+>> =20
+>>  	return IRQ_HANDLED;
+>>  }
 >=20
-> What if we simplify this idea to adding a timeout variant of the=20
-> devlink_flash_update_begin_notify()?=C2=A0 Perhaps something like
->  =C2=A0=C2=A0=C2=A0 devlink_flash_update_begin_notify_timeout(struct devl=
-ink *devlink,=20
-> unsigned int timeout_seconds)
+> The patches look good to me, but I wonder why you don't want to always
+> disable the IRQ here? You're guaranteed that NAPI will get called, or i=
+t
+> was disabled. In both cases seems like disabling the IRQ can only help.=
 
-+const char *status_msg, I assume?
-
-> This can pass up a timeout parameter at the beginning of the flash and=20
-> the userland utility can do what it needs at that point to set up the UI=
-=20
-> display.
 >=20
-> I think using a struct internally to devlink.c/h might still have merit,=
-=20
-> but I'm not sure there's a need to mess with the rest of the API just yet.
 
-Do you mean that this will set the timeout on the entire operation?=20
-And then still trigger notifications with
-devlink_flash_update_begin_notify()? I was considering that to avoid
-the need to add a new param, but it doesn't match the need all that=20
-well, most of time the timeout is on a portion of the operation (e.g.=20
-a FW command), not the entire process.
+This was more or less copied from the mtk_handle_irq_rx() function of
+this driver:
+drivers/net/ethernet/mediatek/mtk_eth_soc.c
 
-If you mean that we can just provide a simpler helper to the drivers
-and internally fill in @done and @total as 0 - that could be a good=20
-option. I'd still prefer if there was one devlink_nl_flash_update_fill()=20
-that gets a structure.
+My assumption was that napi_schedule_prep() could return false and then
+NAPI would not be triggered and the IRQ would be deactivated. In such a
+case the network would hang.
+
+I observed such hangs of the TX, which were mostly fixed by the first
+patch in this series, but I still saw some of them even with that first
+patch. With this last patch I did not see them any more, but I am not
+100% if all possible cases are eliminated.
+
+Hauke
+
+
+--z5wf8y709bHOnwuOAF6jK9kOViY4N2Ic8--
+
+--1s21WNJgAwRaMtpKelnFd94T6X1MtihQv
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEyz0/uAcd+JwXmwtD8bdnhZyy68cFAl9f934ACgkQ8bdnhZyy
+68eCVwf/ZJ+SulUQKaYWm1wvrnAF9v9nRdNU+esM7URY62iubd+TRthRueQbSANs
+niFpW/plqABOgzYTgXMi1CFYBghjkOVp40Dr5uXjkBb+F9HpS2FU55A3uxEBlqpA
+9hVfkVxpp5ToxqkTKD/exmOpFTI0JIy4FG+JsBiNphrhBe5pd5ClkelFcqCrVBK/
+wL526OtiWCCTOSvTS1Y+HF3JDLF8uyCs7AUwU2+VzjA5+YDo+sg7+2FRPwt21Try
+P+tXZ5AkhGM8AxNrlW5Kwa6sLlXjMhz1NDAoLdUra3Xi4+RDpTeg4nrsIwXwvJyE
+vG3SIpMdMTpcGGhtWVtyU11ndzsMDg==
+=JhN5
+-----END PGP SIGNATURE-----
+
+--1s21WNJgAwRaMtpKelnFd94T6X1MtihQv--
