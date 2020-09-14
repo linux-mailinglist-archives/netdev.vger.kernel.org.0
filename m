@@ -2,71 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9433D26897B
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 12:44:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46EA4268A19
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 13:32:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726468AbgINKoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 06:44:01 -0400
-Received: from mail-il1-f205.google.com ([209.85.166.205]:51228 "EHLO
-        mail-il1-f205.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726515AbgINKnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 06:43:11 -0400
-Received: by mail-il1-f205.google.com with SMTP id i80so12233449ild.18
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 03:43:10 -0700 (PDT)
+        id S1726109AbgINLbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 07:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726097AbgINL2d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 07:28:33 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79471C061788
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 04:28:32 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id t16so17205230edw.7
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 04:28:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ueJpq893gUO+axrd/5TX/kkh5xlTqV0vp+NxtBKI8r8=;
+        b=vEOkSlbiTR0FB7u5nOEqCxgF9Y0JIfTIUnHf+eYnro+P2y7hFd86mdqfPNxSkRIl93
+         K7lKy2LzTfI9cEUQrobvXAyvWk1R9xdNZOuZ5kwq39uZXSjs+S1xxvAl0LXSMxtcn3YO
+         c6fBfNNbeOxb2SPvsud0lI+3s6LIkSbqnMdmHnIpt4C75aINOJPrtpFF9D9lhQ+KNPpI
+         8VJEdmYEYvfwYV0zC/CPSHVThI0LHAD1kkBPmuygCWyjc6seLYPGu80m9CWiys3g6eN5
+         yVMCSIW8L5KlaQPWzMt5kNMJvpxQqi8ogOTQmzl0gS80zHJqH79PeJgzyDjqH90N/OTr
+         de1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=nb6tKmJrQ0MmWDFi2dgAqU18Vn8+HnihNjS4obNqQco=;
-        b=W3sWd6MhDHVsP/H3AqtJ2xqHaW2j8JcXWZ2Bi/YR+4QDQbBuV2GEm4e2knQLZjVhl0
-         jePSDhTx23+yJUGLvpI18/VSbeydknXNb/bGO9/we8X2/c4a7xu/kT/pGblW9YKa7Up/
-         63vFjwSbioH1cDtwmJ+3DWThQ48DXdufcRQ3u2fQ9NvLjrL04rMG2BBRBzNRPwrKn2bE
-         B3BH1vO4l6WBVd/L5abcGumK2NhcPQLA3AbAQEXKxpqTWxiRNSspyW3Vy6Ex6mqnq/GL
-         KU7PPmxHMNk9REf0qiJvOoYs5KWThL8MPhk9UDqWFJeAD9DSrry66Wjmj/KeUmrVzQHQ
-         bSIw==
-X-Gm-Message-State: AOAM531umsHVU5ygSn4nX6XaOSlZHMhVq320IxdyoiEoyvVf6RGmji8h
-        gZO6r0A9Aok9HlI5GRvyHQjbjTmjwhWE4FIUTBdezMRACfg0
-X-Google-Smtp-Source: ABdhPJw3hKEMEFQ6nl0KkpYooE/vnNAMhKv3GfHMUPVBUXKB8aMSrYkYbBuuawf5tSFsTTZBsh8wJCl+lxAnm8WpnpiGPDu7HIsV
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ueJpq893gUO+axrd/5TX/kkh5xlTqV0vp+NxtBKI8r8=;
+        b=LDM8NrZn/6cA0DBbIZU3adaAehtNXojh0osdwkLqEjDyHEjhsoBs6MNA2nfhRaPgCr
+         9Pk7dhPaK9kYSWQrnfdM33D25kvlqsgl6xj7+WMLzaT19VHcQ74I4Xps5HVZp+u09I22
+         K7zYfFqDQWRv2A3C+7jJ6UxV2LPz0js+6O5W638SulaSNlRbFeW+dYh91Obt8RzScS1K
+         0E5nP5vgwFoNSlR0dDDQ7Oj6zs2l58VYAHbaC70Oz/WA15Kw81I/9DUebWpbCCmyoJiF
+         UfATaQ37Z8/MvJ7N+b7HuTS2JFOaYiCvSiRXwRsnoI7eACR/NM5mvArkTbVoOft9Di7q
+         bRUA==
+X-Gm-Message-State: AOAM531IOTTGkUHPNHvdr3Aqu6rNXy4uQi75r4cTQUIT9vQuv0w6Tahl
+        0Gaq6FAu6AHHqtj5QmAaP+YT0w==
+X-Google-Smtp-Source: ABdhPJxxa22k0tyYYsZqkw575AdHLtFmcfXeXtQgasSchDYyiAjATwRvMqf2bds7G+REYxRqdiOb1A==
+X-Received: by 2002:a05:6402:1151:: with SMTP id g17mr17054933edw.227.1600082911058;
+        Mon, 14 Sep 2020 04:28:31 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id c8sm7500970ejp.30.2020.09.14.04.28.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Sep 2020 04:28:30 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 13:28:29 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH net-next RFC v4 01/15] devlink: Add reload action option
+ to devlink reload command
+Message-ID: <20200914112829.GC2236@nanopsycho.orion>
+References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
+ <1600063682-17313-2-git-send-email-moshe@mellanox.com>
+ <CAACQVJochmfmUgKSvSTe4McFvG6=ffBbkfXsrOJjiCDwQVvaRw@mail.gmail.com>
+ <20200914093234.GB2236@nanopsycho.orion>
+ <CAACQVJqVV_YLfV002wxU2s1WJUa3_AvqwMMVr8KLAtTa0d9iOw@mail.gmail.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:d88:: with SMTP id l8mr12660369jaj.95.1600080187586;
- Mon, 14 Sep 2020 03:43:07 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 03:43:07 -0700
-In-Reply-To: <000000000000eb3fa9057cbc2f06@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000031842b05af43b363@google.com>
-Subject: Re: INFO: task hung in ctrl_getfamily
-From:   syzbot <syzbot+36edb5cac286af8e3385@syzkaller.appspotmail.com>
-To:     avagin@virtuozzo.com, davem@davemloft.net, dvyukov@google.com,
-        jon.maloy@ericsson.com, keescook@chromium.org,
-        ktkhai@virtuozzo.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, nicolas.dichtel@6wind.com,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, xiyou.wangcong@gmail.com,
-        ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAACQVJqVV_YLfV002wxU2s1WJUa3_AvqwMMVr8KLAtTa0d9iOw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+Mon, Sep 14, 2020 at 11:54:55AM CEST, vasundhara-v.volam@broadcom.com wrote:
+>On Mon, Sep 14, 2020 at 3:02 PM Jiri Pirko <jiri@resnulli.us> wrote:
+>>
+>> Mon, Sep 14, 2020 at 09:08:58AM CEST, vasundhara-v.volam@broadcom.com wrote:
+>> >On Mon, Sep 14, 2020 at 11:39 AM Moshe Shemesh <moshe@mellanox.com> wrote:
+>>
+>> [...]
+>>
+>>
+>> >> @@ -1126,15 +1126,24 @@ mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
+>> >>  }
+>> >>
+>> >>  static int
+>> >> -mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
+>> >> -                                       struct netlink_ext_ack *extack)
+>> >> +mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink, enum devlink_reload_action action,
+>> >> +                                       struct netlink_ext_ack *extack,
+>> >> +                                       unsigned long *actions_performed)
+>> >Sorry for repeating again, for fw_activate action on our device, all
+>> >the driver entities undergo reset asynchronously once user initiates
+>> >"devlink dev reload action fw_activate" and reload_up does not have
+>> >much to do except reporting actions that will be/being performed.
+>> >
+>> >Once reset is complete, the health reporter will be notified using
+>>
+>> Hmm, how is the fw reset related to health reporter recovery? Recovery
+>> happens after some error event. I don't believe it is wise to mix it.
+>Our device has a fw_reset health reporter, which is updated on reset
+>events and firmware activation is one among them. All non-fatal
+>firmware reset events are reported on fw_reset health reporter.
 
-commit 47733f9daf4fe4f7e0eb9e273f21ad3a19130487
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat Aug 15 23:29:15 2020 +0000
+Hmm, interesting. In that case, assuming this is fine, should we have
+some standard in this. I mean, if the driver supports reset, should it
+also define the "fw_reset" reporter to report such events?
 
-    tipc: fix uninit skb->data in tipc_nl_compat_dumpit()
+Jakub, what is your take here?
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13f287b3900000
-start commit:   f5d58277 Merge branch 'for-linus' of git://git.kernel.org/..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c8970c89a0efbb23
-dashboard link: https://syzkaller.appspot.com/bug?extid=36edb5cac286af8e3385
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=139f101b400000
 
-If the result looks correct, please mark the issue as fixed by replying with:
+>
+>>
+>> Instead, why don't you block in reload_up() until the reset is complete?
+>
+>Though user initiate "devlink dev reload" event on a single interface,
+>all driver entities undergo reset and all entities recover
+>independently. I don't think we can block the reload_up() on the
+>interface(that user initiated the command), until whole reset is
+>complete.
 
-#syz fix: tipc: fix uninit skb->data in tipc_nl_compat_dumpit()
+Why not? mlxsw reset takes up to like 10 seconds for example.
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+
+>>
+>>
+>> >devlink_health_reporter_recovery_done(). Returning from reload_up does
+>> >not guarantee successful activation of firmware. Status of reset will
+>> >be notified to the health reporter via
+>> >devlink_health_reporter_state_update().
+>> >
+>> >I am just repeating this, so I want to know if I am on the same page.
+>> >
+>> >Thanks.
+>>
+>> [...]
