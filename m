@@ -2,373 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 652BD268AFB
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 14:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB064268B1B
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 14:37:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726477AbgINMaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 08:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47252 "EHLO
+        id S1726523AbgINMh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 08:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726276AbgINM1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 08:27:50 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94357C0611C2
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 05:27:35 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id j2so6624455eds.9
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 05:27:35 -0700 (PDT)
+        with ESMTP id S1726520AbgINMfJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 08:35:09 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324F4C0612F2
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 05:35:09 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id d4so5099097wmd.5
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 05:35:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=/5y5S9qWJ8q3b2qwgbH7BeK/Mze52ZSsXOXYFEQXxD0=;
-        b=eP1twK0Sydz+hrubDV8wMys1z0/yDWn8sAe07hfSzP6qx7knZD8eWr2pIwAbfp6OEz
-         4ZZ/FtG2hw33GEtkg1JC4WgnRNsKMMSpDxNDTfMQQZjcsy/Bxvf7H69kVgHQWVBQW0oj
-         yWRYR507yiH5MgYiUUkR11Z7JperL2ek71ca6oowBQ/5LNNrGGQR8Lc1aHyt8pmT0mNO
-         2U6Z/pL/v4wOlDcHoZDbxy9RDhtXwuwtqoemUX83rXu/O1UY944FWxIObyz20LAkcxbu
-         ltw/M5LgaLM4Ffzz6Up/KG4iZLT+L0S1pJ3t8YpLbL9DqSYCWRC68sGxx8XkBxWxQQBD
-         yb3A==
+        bh=2zx71sFzS5A0DEXA6U2Jm678c9TY5P6KYJ8YTKByEfI=;
+        b=EJgZfMAqGf0Ke1w9zk+TN+3twSdqnwsiX9rJaKMUuhjUUKFeWGJUjoUocS+tWr1cBM
+         7r5EvObHXB3vblbmKqoEAaEG7iq9oUydhb9tvshrk33ebcHym5cAkAjw42GuzBBp1cjH
+         RazSTxkqWZ+5+BOeyUws8zWMXZ0cJcIXEUMYc3od5L0kWrTbhToIQzBR6uelGysYr45w
+         0ZMbmb02llA3XydJs3TIH06CnWAvFrs6O8syIl2gDufYNdzzEzb4PE6QxrYUxmbHCo2O
+         3B+XxmLqGZIkH1sJj7wfc4R/WFMe6LLloiAxDYB39EZQHvu3MUvNYWiSW52MI58T8/YK
+         GMyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=/5y5S9qWJ8q3b2qwgbH7BeK/Mze52ZSsXOXYFEQXxD0=;
-        b=jkktzIFO6G2xs4z2dYWa1bbjemfQRfb5PhErSeam9C3sDVTslM3zgS1UI4n1o09u6P
-         aqaqD1Y4psBstaYfSPrLgrFKNmURB/tyx0DaD9q71JYFWDwDAkHGuv2Hib7Gh87xVWsH
-         xVEBlunX43sq3mX3cOwqqu8yxlmVdSfxsbUdLXCDkUHIC2fdRl3ayDTGqInExtWjvFQU
-         tmRwHnPXm53A/LjwrUJPNGsZINp79eKq+8+UQ2NrccN8WRNsqFSjvTxdMg74Qs15a05M
-         ce7h1nRGk3XQ0EMp4kPw8NzYNOSDrXiX9q6V8lXZNP9jV+PKg8juCl3Jh7mbvoCx1mCM
-         TIcA==
-X-Gm-Message-State: AOAM532BDZqTdALjIB5SSzrSeA2FFEQmQmx9U/nXCy/XdV5eRcmG76ao
-        ZFpMeSDqpt6OAYHBpcDEBaIDNQsz5F/Cv9eC
-X-Google-Smtp-Source: ABdhPJwnJn6lG0WyKz4mY464FzIvaZZrTdAdkmur0lhlNF5jroJ4VnYwzBIOFM7R9jM/Fp3uvwOAGg==
-X-Received: by 2002:aa7:dbd9:: with SMTP id v25mr17548262edt.78.1600086454253;
-        Mon, 14 Sep 2020 05:27:34 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id q1sm3484416ejy.37.2020.09.14.05.27.33
+        bh=2zx71sFzS5A0DEXA6U2Jm678c9TY5P6KYJ8YTKByEfI=;
+        b=HFNA0df93Px6AyGx6Px6v7zR5FpGl4woqARegvr95ggWGntyh7bO4cbgw/WtYd1U/r
+         Trq7MwD8quP0qPg/41+0opVOg8g8XZalsCdnWcWA/cUor3NqINv9co9OpxgrzxkjD08B
+         lTiAU0v9OSewBy9D0A4xrzA9ttvUjAefQ7eaR7wrbI0wBKYOVP9sBMlzIyt4APBBK4pk
+         x+aXlG6tC0eqSFotkjtPNWJBsXb4IqrHod7epePbwhrjZmhk57EOZthP3knGmCm9p1AX
+         H7WfnpWOCdD7Hngz4dEJl2uTeF+kw0CXN1kxDeUC7heeftcnCHGn7IQosduEwHrrA9EF
+         oAWQ==
+X-Gm-Message-State: AOAM530AdcCukmOuhcPYpB8pV7xO8oLqTV4GXIT9vTg2QKSF7fGt/g2X
+        XhCvzV2RD7uAu2l/hHFYTcnM8g==
+X-Google-Smtp-Source: ABdhPJzrtHa7xwhehX4trgW88fN0Gxrdpqzih/xwo4nhDn1AgX/IrodtOXu9M5jFMT3HEiyhsG2Gcw==
+X-Received: by 2002:a05:600c:2257:: with SMTP id a23mr15435823wmm.102.1600086907775;
+        Mon, 14 Sep 2020 05:35:07 -0700 (PDT)
+Received: from apalos.home (athedsl-4483967.home.otenet.gr. [94.71.55.135])
+        by smtp.gmail.com with ESMTPSA id i11sm21199930wre.32.2020.09.14.05.35.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 05:27:33 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 14:27:32 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Moshe Shemesh <moshe@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        Mon, 14 Sep 2020 05:35:07 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 15:35:04 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Will Deacon <will@kernel.org>
+Cc:     bpf@vger.kernel.org, ardb@kernel.org, naresh.kamboju@linaro.org,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4 01/15] devlink: Add reload action option
- to devlink reload command
-Message-ID: <20200914122732.GE2236@nanopsycho.orion>
-References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
- <1600063682-17313-2-git-send-email-moshe@mellanox.com>
+Subject: Re: [PATCH] arm64: bpf: Fix branch offset in JIT
+Message-ID: <20200914123504.GA124316@apalos.home>
+References: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
+ <20200914122042.GA24441@willie-the-truck>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1600063682-17313-2-git-send-email-moshe@mellanox.com>
+In-Reply-To: <20200914122042.GA24441@willie-the-truck>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 14, 2020 at 08:07:48AM CEST, moshe@mellanox.com wrote:
->Add devlink reload action to allow the user to request a specific reload
->action. The action parameter is optional, if not specified then devlink
->driver re-init action is used (backward compatible).
->Note that when required to do firmware activation some drivers may need
->to reload the driver. On the other hand some drivers may need to reset
->the firmware to reinitialize the driver entities. Therefore, the devlink
->reload command returns the actions which were actually performed.
->Reload actions supported are:
->driver_reinit: driver entities re-initialization, applying devlink-param
->               and devlink-resource values.
->fw_activate: firmware activate.
->
->command examples:
->$devlink dev reload pci/0000:82:00.0 action driver_reinit
->reload_actions_performed:
->  driver_reinit
->
->$devlink dev reload pci/0000:82:00.0 action fw_activate
->reload_actions_performed:
->  driver_reinit fw_activate
->
->Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
->---
->v3 -> v4:
->- Removed fw_activate_no_reset as an action (next patch adds limit
->  levels instead).
->- Renamed actions_done to actions_performed
->v2 -> v3:
->- Replace fw_live_patch action by fw_activate_no_reset
->- Devlink reload returns the actions done over netlink reply
->v1 -> v2:
->- Instead of reload levels driver,fw_reset,fw_live_patch have reload
->  actions driver_reinit,fw_activate,fw_live_patch
->- Remove driver default level, the action driver_reinit is the default
->  action for all drivers
->---
-> drivers/net/ethernet/mellanox/mlx4/main.c     |  14 ++-
-> .../net/ethernet/mellanox/mlx5/core/devlink.c |  15 ++-
-> drivers/net/ethernet/mellanox/mlxsw/core.c    |  25 ++--
-> drivers/net/netdevsim/dev.c                   |  16 ++-
-> include/net/devlink.h                         |   7 +-
-> include/uapi/linux/devlink.h                  |  19 +++
-> net/core/devlink.c                            | 111 +++++++++++++++++-
-> 7 files changed, 180 insertions(+), 27 deletions(-)
->
->diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
->index 70cf24ba71e4..aadf1676a0ed 100644
->--- a/drivers/net/ethernet/mellanox/mlx4/main.c
->+++ b/drivers/net/ethernet/mellanox/mlx4/main.c
->@@ -3946,6 +3946,7 @@ static int mlx4_restart_one_up(struct pci_dev *pdev, bool reload,
-> 			       struct devlink *devlink);
+On Mon, Sep 14, 2020 at 01:20:43PM +0100, Will Deacon wrote:
+> On Mon, Sep 14, 2020 at 11:36:21AM +0300, Ilias Apalodimas wrote:
+> > Running the eBPF test_verifier leads to random errors looking like this:
+> > 
+> > [ 6525.735488] Unexpected kernel BRK exception at EL1
+> > [ 6525.735502] Internal error: ptrace BRK handler: f2000100 [#1] SMP
+> > [ 6525.741609] Modules linked in: nls_utf8 cifs libdes libarc4 dns_resolver fscache binfmt_misc nls_ascii nls_cp437 vfat fat aes_ce_blk crypto_simd cryptd aes_ce_cipher ghash_ce gf128mul efi_pstore sha2_ce sha256_arm64 sha1_ce evdev efivars efivarfs ip_tables x_tables autofs4 btrfs blake2b_generic xor xor_neon zstd_compress raid6_pq libcrc32c crc32c_generic ahci xhci_pci libahci xhci_hcd igb libata i2c_algo_bit nvme realtek usbcore nvme_core scsi_mod t10_pi netsec mdio_devres of_mdio gpio_keys fixed_phy libphy gpio_mb86s7x
+> > [ 6525.787760] CPU: 3 PID: 7881 Comm: test_verifier Tainted: G        W         5.9.0-rc1+ #47
+> > [ 6525.796111] Hardware name: Socionext SynQuacer E-series DeveloperBox, BIOS build #1 Jun  6 2020
+> > [ 6525.804812] pstate: 20000005 (nzCv daif -PAN -UAO BTYPE=--)
+> > [ 6525.810390] pc : bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+> > [ 6525.815613] lr : bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+> > [ 6525.820832] sp : ffff8000130cbb80
+> > [ 6525.824141] x29: ffff8000130cbbb0 x28: 0000000000000000
+> > [ 6525.829451] x27: 000005ef6fcbf39b x26: 0000000000000000
+> > [ 6525.834759] x25: ffff8000130cbb80 x24: ffff800011dc7038
+> > [ 6525.840067] x23: ffff8000130cbd00 x22: ffff0008f624d080
+> > [ 6525.845375] x21: 0000000000000001 x20: ffff800011dc7000
+> > [ 6525.850682] x19: 0000000000000000 x18: 0000000000000000
+> > [ 6525.855990] x17: 0000000000000000 x16: 0000000000000000
+> > [ 6525.861298] x15: 0000000000000000 x14: 0000000000000000
+> > [ 6525.866606] x13: 0000000000000000 x12: 0000000000000000
+> > [ 6525.871913] x11: 0000000000000001 x10: ffff8000000a660c
+> > [ 6525.877220] x9 : ffff800010951810 x8 : ffff8000130cbc38
+> > [ 6525.882528] x7 : 0000000000000000 x6 : 0000009864cfa881
+> > [ 6525.887836] x5 : 00ffffffffffffff x4 : 002880ba1a0b3e9f
+> > [ 6525.893144] x3 : 0000000000000018 x2 : ffff8000000a4374
+> > [ 6525.898452] x1 : 000000000000000a x0 : 0000000000000009
+> > [ 6525.903760] Call trace:
+> > [ 6525.906202]  bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+> > [ 6525.911076]  bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+> > [ 6525.915957]  bpf_dispatcher_xdp_func+0x14/0x20
+> > [ 6525.920398]  bpf_test_run+0x70/0x1b0
+> > [ 6525.923969]  bpf_prog_test_run_xdp+0xec/0x190
+> > [ 6525.928326]  __do_sys_bpf+0xc88/0x1b28
+> > [ 6525.932072]  __arm64_sys_bpf+0x24/0x30
+> > [ 6525.935820]  el0_svc_common.constprop.0+0x70/0x168
+> > [ 6525.940607]  do_el0_svc+0x28/0x88
+> > [ 6525.943920]  el0_sync_handler+0x88/0x190
+> > [ 6525.947838]  el0_sync+0x140/0x180
+> > [ 6525.951154] Code: d4202000 d4202000 d4202000 d4202000 (d4202000)
+> > [ 6525.957249] ---[ end trace cecc3f93b14927e2 ]---
+> > 
+> > The reason seems to be the offset[] creation and usage ctx->offset[]
 > 
-> static int mlx4_devlink_reload_down(struct devlink *devlink, bool netns_change,
->+				    enum devlink_reload_action action,
-> 				    struct netlink_ext_ack *extack)
-> {
-> 	struct mlx4_priv *priv = devlink_priv(devlink);
->@@ -3962,8 +3963,8 @@ static int mlx4_devlink_reload_down(struct devlink *devlink, bool netns_change,
-> 	return 0;
-> }
+> "seems to be"? Are you unsure?
+
+Reading the history and other ports of the JIT implementation, I couldn't 
+tell if the decision on skipping the 1st entry was deliberate or not on 
+Aarch64. Reading through the mailist list didn't help either [1].
+Skipping the 1st entry seems indeed to cause the problem.
+I did run the patch though the BPF tests and showed no regressions + fixing 
+the error.
+
 > 
->-static int mlx4_devlink_reload_up(struct devlink *devlink,
->-				  struct netlink_ext_ack *extack)
->+static int mlx4_devlink_reload_up(struct devlink *devlink, enum devlink_reload_action action,
->+				  struct netlink_ext_ack *extack, unsigned long *actions_performed)
-> {
-> 	struct mlx4_priv *priv = devlink_priv(devlink);
-> 	struct mlx4_dev *dev = &priv->dev;
->@@ -3971,15 +3972,20 @@ static int mlx4_devlink_reload_up(struct devlink *devlink,
-> 	int err;
+> > while building the eBPF body.  The code currently omits the first 
+> > instruction, since build_insn() will increase our ctx->idx before saving 
+> > it.  When "taken loop with back jump to 1st insn" test runs it will
+> > eventually call bpf2a64_offset(-1, 2, ctx). Since negative indexing is
+> > permitted, the current outcome depends on the value stored in
+> > ctx->offset[-1], which has nothing to do with our array.
+> > If the value happens to be 0 the tests will work. If not this error
+> > triggers.
+> > 
+> > So let's fix it by creating the ctx->offset[] correctly in the first
+> > place and account for the extra instruction while calculating the arm
+> > instruction offsets.
 > 
-> 	err = mlx4_restart_one_up(persist->pdev, true, devlink);
->-	if (err)
->+	if (err) {
-> 		mlx4_err(persist->dev, "mlx4_restart_one_up failed, ret=%d\n",
-> 			 err);
->+		return err;
->+	}
->+	if (actions_performed)
+> No Fixes: tag?
 
-Nit, pass the unsigned long allways (even when it would be unused) and
-avoid check in every driver.
+I'll re-spin and apply one 
 
-
->+		*actions_performed = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
 > 
->-	return err;
->+	return 0;
-> }
+> > Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Signed-off-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
 > 
-> static const struct devlink_ops mlx4_devlink_ops = {
-> 	.port_type_set	= mlx4_devlink_port_type_set,
->+	.supported_reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
-> 	.reload_down	= mlx4_devlink_reload_down,
-> 	.reload_up	= mlx4_devlink_reload_up,
-> };
+> Non-author signoffs here. What's going on?
 
-[..]
+My bad here, I'll add a Co-developed-by on v2 for the rest of the people and 
+move my Signed-off last
 
+[1] https://lore.kernel.org/bpf/CANoWswkaj1HysW3BxBMG9_nd48fm0MxM5egdtmHU6YsEc_GUtQ@mail.gmail.com/T/#u
 
->@@ -2969,29 +2975,72 @@ bool devlink_is_reload_failed(const struct devlink *devlink)
-> EXPORT_SYMBOL_GPL(devlink_is_reload_failed);
+Thanks
+/Ilias
 > 
-> static int devlink_reload(struct devlink *devlink, struct net *dest_net,
->-			  struct netlink_ext_ack *extack)
->+			  enum devlink_reload_action action, struct netlink_ext_ack *extack,
->+			  unsigned long *actions_performed)
-> {
-> 	int err;
-> 
-> 	if (!devlink->reload_enabled)
-> 		return -EOPNOTSUPP;
-> 
->-	err = devlink->ops->reload_down(devlink, !!dest_net, extack);
->+	err = devlink->ops->reload_down(devlink, !!dest_net, action, extack);
-> 	if (err)
-> 		return err;
-> 
-> 	if (dest_net && !net_eq(dest_net, devlink_net(devlink)))
-> 		devlink_reload_netns_change(devlink, dest_net);
-> 
->-	err = devlink->ops->reload_up(devlink, extack);
->+	err = devlink->ops->reload_up(devlink, action, extack, actions_performed);
-
-Here, please add a WARN_ON() check:
-	WARN_ON(!(*actions_performed & action));
-
-The requested action should be always performed.
-
-
-> 	devlink_reload_failed_set(devlink, !!err);
-> 	return err;
-> }
-> 
->+static int
->+devlink_nl_reload_actions_performed_fill(struct sk_buff *msg,
->+					 struct devlink *devlink,
->+					 unsigned long actions_performed,
->+					 enum devlink_command cmd, u32 portid,
->+					 u32 seq, int flags)
->+{
->+	struct nlattr *actions_performed_attr;
->+	void *hdr;
->+	int i;
->+
->+	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
->+	if (!hdr)
->+		return -EMSGSIZE;
->+
->+	if (devlink_nl_put_handle(msg, devlink))
->+		goto genlmsg_cancel;
->+
->+	actions_performed_attr = nla_nest_start(msg, DEVLINK_ATTR_RELOAD_ACTIONS_PERFORMED);
->+	if (!actions_performed_attr)
->+		goto genlmsg_cancel;
->+
->+	for (i = 0; i <= DEVLINK_RELOAD_ACTION_MAX; i++) {
->+		if (!test_bit(i, &actions_performed))
->+			continue;
->+		if (nla_put_u8(msg, DEVLINK_ATTR_RELOAD_ACTION, i))
->+			goto actions_performed_nest_cancel;
->+	}
->+	nla_nest_end(msg, actions_performed_attr);
->+	genlmsg_end(msg, hdr);
->+	return 0;
->+
->+actions_performed_nest_cancel:
->+	nla_nest_cancel(msg, actions_performed_attr);
->+genlmsg_cancel:
->+	genlmsg_cancel(msg, hdr);
->+	return -EMSGSIZE;
->+}
->+
-> static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
-> {
-> 	struct devlink *devlink = info->user_ptr[0];
->+	enum devlink_reload_action action;
->+	unsigned long actions_performed;
-> 	struct net *dest_net = NULL;
->+	struct sk_buff *msg;
-> 	int err;
-> 
-> 	if (!devlink_reload_supported(devlink))
->@@ -3011,12 +3060,41 @@ static int devlink_nl_cmd_reload(struct sk_buff *skb, struct genl_info *info)
-> 			return PTR_ERR(dest_net);
-> 	}
-> 
->-	err = devlink_reload(devlink, dest_net, info->extack);
->+	if (info->attrs[DEVLINK_ATTR_RELOAD_ACTION])
->+		action = nla_get_u8(info->attrs[DEVLINK_ATTR_RELOAD_ACTION]);
->+	else
->+		action = DEVLINK_RELOAD_ACTION_DRIVER_REINIT;
->+
->+	if (action == DEVLINK_RELOAD_ACTION_UNSPEC || action > DEVLINK_RELOAD_ACTION_MAX) {
->+		NL_SET_ERR_MSG_MOD(info->extack, "Invalid reload action");
-
-Hmm, I understand the unspec check, but the max check is not needed. The
-following check will take care of it.
-
-
->+		return -EINVAL;
->+	} else if (!devlink_reload_action_is_supported(devlink, action)) {
->+		NL_SET_ERR_MSG_MOD(info->extack, "Requested reload action is not supported");
-
-".. by the driver" ?
-	
-
->+		return -EOPNOTSUPP;
->+	}
->+
->+	err = devlink_reload(devlink, dest_net, action, info->extack, &actions_performed);
-> 
-> 	if (dest_net)
-> 		put_net(dest_net);
-> 
->-	return err;
->+	if (err)
->+		return err;
->+
->+	WARN_ON(!actions_performed);
->+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
->+	if (!msg)
->+		return -ENOMEM;
->+
->+	err = devlink_nl_reload_actions_performed_fill(msg, devlink, actions_performed,
->+						       DEVLINK_CMD_RELOAD, info->snd_portid,
->+						       info->snd_seq, 0);
->+	if (err) {
->+		nlmsg_free(msg);
->+		return err;
->+	}
->+
->+	return genlmsg_reply(msg, info);
-> }
-> 
-> static int devlink_nl_flash_update_fill(struct sk_buff *msg,
->@@ -7047,6 +7125,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
-> 	[DEVLINK_ATTR_TRAP_POLICER_RATE] = { .type = NLA_U64 },
-> 	[DEVLINK_ATTR_TRAP_POLICER_BURST] = { .type = NLA_U64 },
-> 	[DEVLINK_ATTR_PORT_FUNCTION] = { .type = NLA_NESTED },
->+	[DEVLINK_ATTR_RELOAD_ACTION] = { .type = NLA_U8 },
-> };
-> 
-> static const struct genl_ops devlink_nl_ops[] = {
->@@ -7372,6 +7451,20 @@ static struct genl_family devlink_nl_family __ro_after_init = {
-> 	.n_mcgrps	= ARRAY_SIZE(devlink_nl_mcgrps),
-> };
-> 
->+static int devlink_reload_actions_verify(struct devlink *devlink)
->+{
->+	const struct devlink_ops *ops;
->+
->+	if (!devlink_reload_supported(devlink))
-
-If reload is not supported, the supported_reload_actions should be 0.
-Please check that with WARN_ON too.
-
-
->+		return 0;
->+
->+	ops = devlink->ops;
->+	if (WARN_ON(ops->supported_reload_actions >= BIT(__DEVLINK_RELOAD_ACTION_MAX) ||
->+		    ops->supported_reload_actions <= BIT(DEVLINK_RELOAD_ACTION_UNSPEC)))
->+		return -EINVAL;
->+	return 0;
->+}
->+
-> /**
->  *	devlink_alloc - Allocate new devlink instance resources
->  *
->@@ -7392,6 +7485,11 @@ struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
-> 	if (!devlink)
-> 		return NULL;
-> 	devlink->ops = ops;
->+	if (devlink_reload_actions_verify(devlink)) {
-
-Move this check to the beginning. You don't need devlink instance for
-the check, just ops.
-
-also, your devlink_reload_actions_verify() function returns
-0/-ESOMETHING. Treat it accordingly here.
-
-
->+		kfree(devlink);
->+		return NULL;
->+	}
->+
-> 	xa_init_flags(&devlink->snapshot_ids, XA_FLAGS_ALLOC);
-> 	__devlink_net_set(devlink, &init_net);
-> 	INIT_LIST_HEAD(&devlink->port_list);
->@@ -9657,7 +9755,8 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
-> 		if (net_eq(devlink_net(devlink), net)) {
-> 			if (WARN_ON(!devlink_reload_supported(devlink)))
-> 				continue;
->-			err = devlink_reload(devlink, &init_net, NULL);
->+			err = devlink_reload(devlink, &init_net,
->+					     DEVLINK_RELOAD_ACTION_DRIVER_REINIT, NULL, NULL);
-> 			if (err && err != -EOPNOTSUPP)
-> 				pr_warn("Failed to reload devlink instance into init_net\n");
-> 		}
->-- 
->2.17.1
->
+> Will
