@@ -2,126 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 661942682B0
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 04:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39BA22682D4
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 05:04:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726034AbgINCm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 22:42:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27553 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725973AbgINCmV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 22:42:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600051340;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dAara/ChDatzgfsJw1KVRRZSOmBMiVP7kGi1yosi4Xw=;
-        b=HRlZ0BW++QJigQqTe2SISXhqvQwH5C7pbmSnnPBCG6SJvocbGLghunF7RKeEMMrc5JbpY7
-        Y+sCF4cuf1j3cLuGTZuk/5iYCZL2n+JMWDOIKUKVMmkIvCOZTbtalakk8PLKv/Wzfh+3PM
-        MtVaTJtW2VabgNEtLw0ukAmEHrfFNNo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-417-PMEHTvPYNtivp0j5MCgq1g-1; Sun, 13 Sep 2020 22:42:16 -0400
-X-MC-Unique: PMEHTvPYNtivp0j5MCgq1g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 729CE1074658;
-        Mon, 14 Sep 2020 02:42:15 +0000 (UTC)
-Received: from colo-mx.corp.redhat.com (colo-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 674AE60C87;
-        Mon, 14 Sep 2020 02:42:15 +0000 (UTC)
-Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
-        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 4CED7180BACB;
-        Mon, 14 Sep 2020 02:42:15 +0000 (UTC)
-Date:   Sun, 13 Sep 2020 22:42:15 -0400 (EDT)
-From:   Jason Wang <jasowang@redhat.com>
-To:     Li Wang <li.wang@windriver.com>
-Cc:     mst@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-ID: <1199326218.16921082.1600051335160.JavaMail.zimbra@redhat.com>
-In-Reply-To: <1599836979-4950-1-git-send-email-li.wang@windriver.com>
-References: <1599836979-4950-1-git-send-email-li.wang@windriver.com>
-Subject: Re: [PATCH] vhost: reduce stack usage in log_used
+        id S1726052AbgINDEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 23:04:43 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60602 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726042AbgINDEl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 13 Sep 2020 23:04:41 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kHen3-00EXn4-NQ; Mon, 14 Sep 2020 05:04:25 +0200
+Date:   Mon, 14 Sep 2020 05:04:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: Re: [RFC PATCH net-next v1 11/11] drivers/net/ethernet: clean up
+ mis-targeted comments
+Message-ID: <20200914030425.GG3463198@lunn.ch>
+References: <20200911012337.14015-1-jesse.brandeburg@intel.com>
+ <20200911012337.14015-12-jesse.brandeburg@intel.com>
+ <227d2fe4-ddf8-89c9-b80b-142674c2cca0@solarflare.com>
+ <20200911144207.00005619@intel.com>
+ <e2e637ae-8cda-c9a4-91ce-93dbd475fc0c@solarflare.com>
+ <20200911152642.62923ba2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <115bce2a-daaa-a7c5-3c48-44ce345ea008@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.68.5.20, 10.4.195.2]
-Thread-Topic: vhost: reduce stack usage in log_used
-Thread-Index: s9yTJ0ICAZlN+4H+zWFH+IIKdn+BDA==
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <115bce2a-daaa-a7c5-3c48-44ce345ea008@solarflare.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Sep 12, 2020 at 12:11:20AM +0100, Edward Cree wrote:
+> On 11/09/2020 23:26, Jakub Kicinski wrote:
+> > "Toolchain" sounds a little grand in this context, the script that
+> > parses kdoc does basic regexps to convert the standard kernel macros:
+> > ...
+> > IDK if we can expect it to understand random driver's macros..
+> I wasn't suggesting it should _understand_ this macro, justrecognise
+>  when something _is_ a macro it doesn't understand, and refrain from
+>  warning about it in that case.
 
+Is it possible to get the C preprocessor to expand the macros without
+stripping the comments? Run the kerneldoc validator on that?
 
------ Original Message -----
-> Fix the warning: [-Werror=-Wframe-larger-than=]
-> 
-> drivers/vhost/vhost.c: In function log_used:
-> drivers/vhost/vhost.c:1906:1:
-> warning: the frame size of 1040 bytes is larger than 1024 bytes
-> 
-> Signed-off-by: Li Wang <li.wang@windriver.com>
-> ---
->  drivers/vhost/vhost.c | 14 ++++++++++----
->  1 file changed, 10 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index b45519c..41769de 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -1884,25 +1884,31 @@ static int log_write_hva(struct vhost_virtqueue *vq,
-> u64 hva, u64 len)
->  
->  static int log_used(struct vhost_virtqueue *vq, u64 used_offset, u64 len)
->  {
-> -	struct iovec iov[64];
-> +	struct iovec *iov;
->  	int i, ret;
->  
->  	if (!vq->iotlb)
->  		return log_write(vq->log_base, vq->log_addr + used_offset, len);
->  
-> +	iov = kcalloc(64, sizeof(*iov), GFP_KERNEL);
-> +	if (!iov)
-> +		return -ENOMEM;
-
-Let's preallocate it in e.g vhost_net_open().
-
-We don't want to fail the log due to -ENOMEM.
-
-Thanks
-
-> +
->  	ret = translate_desc(vq, (uintptr_t)vq->used + used_offset,
->  			     len, iov, 64, VHOST_ACCESS_WO);
->  	if (ret < 0)
-> -		return ret;
-> +		goto out;
->  
->  	for (i = 0; i < ret; i++) {
->  		ret = log_write_hva(vq,	(uintptr_t)iov[i].iov_base,
->  				    iov[i].iov_len);
->  		if (ret)
-> -			return ret;
-> +			goto out;
->  	}
->  
-> -	return 0;
-> +out:
-> +	kfree(iov);
-> +	return ret;
->  }
->  
->  int vhost_log_write(struct vhost_virtqueue *vq, struct vhost_log *log,
-> --
-> 2.7.4
-> 
-> 
-
+	  Andrew
