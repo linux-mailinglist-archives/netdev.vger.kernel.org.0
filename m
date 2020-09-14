@@ -2,115 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D0332686FE
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 10:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1013A268706
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 10:17:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726267AbgINIPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 04:15:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
+        id S1726200AbgINIRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 04:17:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726243AbgINIOo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 04:14:44 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9A6C06174A;
-        Mon, 14 Sep 2020 01:14:43 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id k15so11946674pfc.12;
-        Mon, 14 Sep 2020 01:14:43 -0700 (PDT)
+        with ESMTP id S1726244AbgINIQw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 04:16:52 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36652C061788
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 01:16:37 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id o5so17586181wrn.13
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 01:16:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:cc:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=bfli47mnxZDlXaGAUiz/B4BePF6dibgax6S36KEh7f4=;
-        b=kdeY9ESVzVF3+Q6NsEEiLky675RJZcJrgdbApwJCmCHBtL7313VB4m9S5+i0VzTw88
-         bZ0kMDArw06QERzUQsSi0r1vl1cU+woa+Q9BRtv8/SZx5BEJB8BGWRABc5K1dM30Hs4W
-         zC9iiuZAaBQsnSzyl7MfPCZjqo1evsYA3NaDIqgKnVFyN3PzuC3ADX+FlwnJQyYeVCkU
-         tTIF+aoR0ZYofD/SybDOFNK8T2C2rjQAJpkTRbni7lHynXleLjYXo5uK7tsvBLE4ZYAK
-         7D4735Eu/et6kLghLJLCBKHECP9Y2/jC1CR4XlN8m9oIyS1nLv7cVr1iS5YFaCg+t8Tp
-         ZsaQ==
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BptE3On/LJmJ4sL9/9Gwb4y6QCQ62szdfp22yq3uqAA=;
+        b=fSwjBxxMQb+FPE7hR2DXOkxfG2GO2gkoM/xvE4e8VyMviLoGi+PwZdhJHCH1q/4L+I
+         9tQxS6XepRATsPDkpP+fSWekB9O5/hjP0mvkpfVL5sdaj12ihcVuoc5UuV0VyeQWNvHJ
+         kThyMDVH7ZYc/83syTg2XH4dHSivMS/HTYG4oQQyDeHxt8/HIQPpZgUT/g0X7LhlkCr8
+         tkjHqmcvJ99ab1y2eA53nAfPYjnJe7SojGV2TpgQWU0xMEF4LRwbce8Q/ucwpUZezTZF
+         us24d7Gn5XobWjbcCDZCX5Ow9pXmwEdonfu732wHZ+uPFVcE/4ENahsK3fi17O20xHJ4
+         aPgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=bfli47mnxZDlXaGAUiz/B4BePF6dibgax6S36KEh7f4=;
-        b=G0JM4D09e2XCvzYo4neFlng0K80aiDTwCVJsc9XmUG/4/r2hW9HBizK3M2fEENbC4V
-         WpI5c44l2MPEfi6M4L/fqbK5velotWwuxQdBecuHQrfcHLlR9k29RvHPN78Bz7pKFkqH
-         w12kNvghHdoLCPd+GGIRFLYnKyNRXVIDplsj7OJka4FGdGc9V+FbtOscAl5l8E/zfKFI
-         37EADICQMzw0dZ1YtS/z5em/Qw714AUsV4vXoU80H4HaxRvIexL7mJc+p3f0rWH8T4SW
-         EUkYiIX0AIlyhLj6uwzQm2c89zlfecoBKEhbQj7BW/qc7DIUmogs1EaxEoyqZhi1PG3x
-         ySfw==
-X-Gm-Message-State: AOAM531vL3AQY9fTKD7X/4uMDdGzkPoTLNYVFOKUFPT4e2ANicGfLdtu
-        6ykOzZKiNpJyPsnoLQkncaGH9RT2q4lrrp2Msio=
-X-Google-Smtp-Source: ABdhPJzHNbDE2odrsmXsPmIzt3RbJsasIL/ZT1Zm5k9b+IkFKJBzCceoAXBYaAN1lNntaO0Y4OaFcg==
-X-Received: by 2002:a17:902:ec03:: with SMTP id l3mr13677394pld.56.1600071282105;
-        Mon, 14 Sep 2020 01:14:42 -0700 (PDT)
-Received: from [192.168.0.104] ([49.207.209.61])
-        by smtp.gmail.com with ESMTPSA id m25sm9286567pfa.32.2020.09.14.01.14.39
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BptE3On/LJmJ4sL9/9Gwb4y6QCQ62szdfp22yq3uqAA=;
+        b=ffKOCDDdaZvXFZTyFeR3fQAh/PHKbe/pHK4PCAX0vvmm4BAgYEMG4295lIhtVM/Z3o
+         Kpq3kvJarIRsOjNWuIzRwrItfrEs8W49fEoQBNkxDnXJKpdnUAHZs+SULv54OvtsnXH8
+         nudYRkcLQ2GEuphxaUF6lZUF6gd/KTZH3w+fhuObPK6Lznr/LZkIdQ6jx+v6hiXc9uhk
+         NPukhwGZwHs4A61+pWMgfeKk9Wbg4gF2Fbwj7H6O8rbZMu06sMXe1NV0ZgIZRDdzHcUI
+         kSzpoQlgTmUCAW3Ra1WWE/Y9OzuNjRNfSOZ3FZO5CnqFQAq8Pw+vJKL9ssmzwQZ5y92t
+         udKw==
+X-Gm-Message-State: AOAM533FbrrtkWlDVt/0nFRPcwhm5UIgWbn1BSI1Jx5o5kq+wUg3Yl1f
+        WWJ9g7ivzGXcPG8+4SwKfRm7vA==
+X-Google-Smtp-Source: ABdhPJyf25RMQLS3r9mkoqt7KU6Xoa6kWey+o2NH6A6zUynRNbiQuiXsDqAzqAmwyKjYMkwFkLft1g==
+X-Received: by 2002:adf:ec47:: with SMTP id w7mr15580790wrn.175.1600071395346;
+        Mon, 14 Sep 2020 01:16:35 -0700 (PDT)
+Received: from [192.168.1.12] ([194.35.119.129])
+        by smtp.gmail.com with ESMTPSA id l8sm19445125wrx.22.2020.09.14.01.16.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Sep 2020 01:14:41 -0700 (PDT)
-Subject: Re: [PATCH v2] net: fix uninit value error in __sys_sendmmsg
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200913110313.4239-1-anant.thazhemadam@gmail.com>
-From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Message-ID: <6adeef07-7dcb-3d05-df26-204a9d43301c@gmail.com>
-Date:   Mon, 14 Sep 2020 13:44:37 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Mon, 14 Sep 2020 01:16:34 -0700 (PDT)
+Subject: Re: [PATCH bpf-next] bpftool: fix build failure
+To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
+References: <20200914061206.2625395-1-yhs@fb.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <b942625c-7140-0a57-337e-3a95020cfa99@isovalent.com>
+Date:   Mon, 14 Sep 2020 09:16:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
 MIME-Version: 1.0
-In-Reply-To: <20200913110313.4239-1-anant.thazhemadam@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20200914061206.2625395-1-yhs@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 14/09/2020 07:12, Yonghong Song wrote:
+> When building bpf selftests like
+>   make -C tools/testing/selftests/bpf -j20
+> I hit the following errors:
+>   ...
+>   GEN      /net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-gen.8
+>   <stdin>:75: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+>   <stdin>:71: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:85: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:57: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+>   <stdin>:66: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:109: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:175: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:273: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-perf.8] Error 12
+>   make[1]: *** Waiting for unfinished jobs....
+>   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-iter.8] Error 12
+>   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-struct_ops.8] Error 12
+>   ...
+> 
+> I am using:
+>   -bash-4.4$ rst2man --version
+>   rst2man (Docutils 0.11 [repository], Python 2.7.5, on linux2)
+>   -bash-4.4$
+> 
+> Looks like that particular version of rst2man prefers to have a blank line
+> after literal blocks. This patch added block lines in related .rst files
+> and compilation can then pass.
+> 
+> Cc: Quentin Monnet <quentin@isovalent.com>
+> Fixes: 18841da98100 ("tools: bpftool: Automate generation for "SEE ALSO" sections in man pages")
+> Signed-off-by: Yonghong Song <yhs@fb.com>
 
-On 13/09/20 4:33 pm, Anant Thazhemadam wrote:
-> The crash report indicated that there was a local variable;
-> ----iovstack.i@__sys_sendmmsg created at:
->  ___sys_sendmsg net/socket.c:2388 [inline]
->  __sys_sendmmsg+0x6db/0xc90 net/socket.c:2480
->
->  that was left uninitialized.
->
-> Initializing this stack to 0s prevents this bug from happening.
-> Since the memory pointed to by *iov is freed at the end of the function
-> call, memory leaks are not likely to be an issue.
->
-> syzbot seems to have triggered this error by passing an array of 0's as
-> a parameter while making the system call.
->
-> Reported-by: syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com
-> Tested-by: syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com
-> Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
-> ---
-> Changes from v1:
-> 	* Fixed the build warning that v1 had introduced
->  net/socket.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/socket.c b/net/socket.c
-> index 0c0144604f81..1e6f9b54982c 100644
-> --- a/net/socket.c
-> +++ b/net/socket.c
-> @@ -2398,6 +2398,7 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
->  	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
->  	ssize_t err;
->  
-> +	memset(iov, 0, UIO_FASTIOV);
->  	msg_sys->msg_name = &address;
->  
->  	err = sendmsg_copy_msghdr(msg_sys, msg, flags, &iov);
-It has since been determined that this patch is incorrect, and even if it were correct,
-provides a huge performance overhead, that is not welcome. Kindly ignore this patch.
-Sorry.
 
-Thanks,
-Anant
+Hi Yonghong, thanks for the fix! I didn't see those warnings on my
+setup. For the record my rst2man version is:
+
+	rst2man (Docutils 0.16 [release], Python 3.8.2, on linux)
+
+Your patch looks good, but instead of having blank lines at the end of
+most files, could you please check if the following works?
+
+------
+
+diff --git a/tools/bpf/bpftool/Documentation/Makefile
+b/tools/bpf/bpftool/Documentation/Makefile
+index 4c9dd1e45244..01b30ed86eac 100644
+--- a/tools/bpf/bpftool/Documentation/Makefile
++++ b/tools/bpf/bpftool/Documentation/Makefile
+@@ -32,7 +32,7 @@ RST2MAN_OPTS += --verbose
+
+ list_pages = $(sort $(basename $(filter-out $(1),$(MAN8_RST))))
+ see_also = $(subst " ",, \
+-       "\n" \
++       "\n\n" \
+        "SEE ALSO\n" \
+        "========\n" \
+        "\t**bpf**\ (2),\n" \
