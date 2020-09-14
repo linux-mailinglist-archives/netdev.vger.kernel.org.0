@@ -2,156 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E2CC2694E1
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 20:31:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2ACC2694FC
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 20:36:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726034AbgINSbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 14:31:17 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:14426 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725992AbgINSbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 14:31:14 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 08EISOe9002747
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 11:31:13 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=wJxk2ZgSwZN0QrQ5yNxEMzrATwxN7jXIocWXRUrYDfU=;
- b=TN51a8hUcON+NiO56t2IBUxEv56fNEkc9vaJPEfhCIpEXUy0t1XrYrmpR0VF11IbcgsX
- JMx3H4YH4i2RSP+h2MiZalftnvJdRE1wwdWJhks+Dir2cwuRwocNZz2llXvhaR8z1dVw
- 08o9bT/wq22ED3fge4h/gffn+sTZOFSqPuY= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 33gt0mtm3d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 11:31:13 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 14 Sep 2020 11:31:11 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 6205B3705720; Mon, 14 Sep 2020 11:31:10 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: [PATCH bpf-next v3] bpftool: fix build failure
-Date:   Mon, 14 Sep 2020 11:31:10 -0700
-Message-ID: <20200914183110.999906-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
-MIME-Version: 1.0
+        id S1725999AbgINSgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 14:36:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725994AbgINSgS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 14:36:18 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A44A2C061788
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 11:36:17 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id a6so662048ybr.4
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 11:36:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=Wx/K90vqFIi5BHtvsdB6gKsmX3B2NYZ/c7lFydEYsa8=;
+        b=sRiP9m1200dRE2BCwFXnosr9hQXHlcpBc/tRZoL3jocNbnhGgCzyBa7QdAJCM0Oulu
+         QpEickMTqUW7bebTaZIi9uwCIv7Mrg9rqFUUg2auzjJy1lSRl6ltlE57n4VfM2uaiRBn
+         Y47xgxYFW92m5lNEaAe1o3zZJSPpOxYhgbaRRohoclj1MpBprCzJJZlnTi+QXvYPXHuk
+         0Iwti4OwFAJcSXNOU4yI94YwvE1V6Q+C9r/aAsKSMY0y7fciOBc9UOOa+nqINcDQVQFp
+         mLDY0Tv6nZA4WXhsl65kf9MDY5rxTOq87d3vl6d37Lt7jsIS5gT/4cUdqX0eLmLAMGRs
+         p90A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc:content-transfer-encoding;
+        bh=Wx/K90vqFIi5BHtvsdB6gKsmX3B2NYZ/c7lFydEYsa8=;
+        b=icJ9qwHHMadoPfM8fidAq5+YPAd3serfATVPh7l4KWtR8FCtTVMBo6MzHtvD433Twj
+         tKMpONwb6PTppbbXBFii4WRcEx0l1lUSZYK+V3UerrpbcYU9cseU47/NM2sj7tiovrMB
+         V/HI109u5LU9NKiuF8r4cc3GwuhK4E0fPGXL3ulPFSxYWNrp+ryIeGnEUvVwoJp5OySL
+         ZVxyjByo0PxX0b0acgqxXe95C+RTTjA8FdnNBVEEhJt55Cf9HKsKr1uGtXN+eZqai0Ur
+         fypt6qN64x1cekZUb0jbXUfL1AngrkzNOoNpN5YYGxxhkDsNakrv8Jfd0monzDfwG6gj
+         cYFw==
+X-Gm-Message-State: AOAM531ZmBnZo95S+Jtitvf5Jrjxl93XRdRz5dVGm5+ijfEOogZ7TcYg
+        95HkAg6QOti39EgY3frxrNF5XZcxmR6qoHLttWiYI737lcBnuNCeA9rfNuUUJM0EtrvAcpeZ/AU
+        XPaPYVO44avkIIOtfdEuwmJ3E7/AH5/W83Vn1w7lqE9D3MmItGQWDog==
+X-Google-Smtp-Source: ABdhPJzipQvBcvBU4a2ArN8FLnyfhwBuveHZ1YOKSJWqc5jnRl8/r8XX/GSaDYuQmhp693fHSYYbXV4=
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:a25:d2d3:: with SMTP id j202mr21294056ybg.275.1600108576782;
+ Mon, 14 Sep 2020 11:36:16 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 11:36:10 -0700
+Message-Id: <20200914183615.2038347-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
+Subject: [PATCH bpf-next v5 0/5] Allow storage of flexible metadata
+ information for eBPF programs
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        YiFei Zhu <zhuyifei1999@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-14_07:2020-09-14,2020-09-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0 mlxscore=0
- lowpriorityscore=0 bulkscore=0 clxscore=1015 impostorscore=0
- suspectscore=8 phishscore=0 spamscore=0 mlxlogscore=999 adultscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009140146
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building bpf selftests like
-  make -C tools/testing/selftests/bpf -j20
-I hit the following errors:
-  ...
-  GEN      /net-next/tools/testing/selftests/bpf/tools/build/bpftool/Docu=
-mentation/bpftool-gen.8
-  <stdin>:75: (WARNING/2) Block quote ends without a blank line; unexpect=
-ed unindent.
-  <stdin>:71: (WARNING/2) Literal block ends without a blank line; unexpe=
-cted unindent.
-  <stdin>:85: (WARNING/2) Literal block ends without a blank line; unexpe=
-cted unindent.
-  <stdin>:57: (WARNING/2) Block quote ends without a blank line; unexpect=
-ed unindent.
-  <stdin>:66: (WARNING/2) Literal block ends without a blank line; unexpe=
-cted unindent.
-  <stdin>:109: (WARNING/2) Literal block ends without a blank line; unexp=
-ected unindent.
-  <stdin>:175: (WARNING/2) Literal block ends without a blank line; unexp=
-ected unindent.
-  <stdin>:273: (WARNING/2) Literal block ends without a blank line; unexp=
-ected unindent.
-  make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool=
-/Documentation/bpftool-perf.8] Error 12
-  make[1]: *** Waiting for unfinished jobs....
-  make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool=
-/Documentation/bpftool-iter.8] Error 12
-  make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool=
-/Documentation/bpftool-struct_ops.8] Error 12
-  ...
+Currently, if a user wants to store arbitrary metadata for an eBPF
+program, for example, the program build commit hash or version, they
+could store it in a map, and conveniently libbpf uses .data section to
+populate an internal map. However, if the program does not actually
+reference the map, then the map would be de-refcounted and freed.
 
-I am using:
-  -bash-4.4$ rst2man --version
-  rst2man (Docutils 0.11 [repository], Python 2.7.5, on linux2)
-  -bash-4.4$
+This patch set introduces a new syscall BPF_PROG_BIND_MAP to add a map
+to a program's used_maps, even if the program instructions does not
+reference the map.
 
-The Makefile generated final .rst file (e.g., bpftool-cgroup.rst) looks l=
-ike
-  ...
-      ID       AttachType      AttachFlags     Name
-  \n SEE ALSO\n=3D=3D=3D=3D=3D=3D=3D=3D\n\t**bpf**\ (2),\n\t**bpf-helpers=
-**\
-  (7),\n\t**bpftool**\ (8),\n\t**bpftool-btf**\
-  (8),\n\t**bpftool-feature**\ (8),\n\t**bpftool-gen**\
-  (8),\n\t**bpftool-iter**\ (8),\n\t**bpftool-link**\
-  (8),\n\t**bpftool-map**\ (8),\n\t**bpftool-net**\
-  (8),\n\t**bpftool-perf**\ (8),\n\t**bpftool-prog**\
-  (8),\n\t**bpftool-struct_ops**\ (8)\n
+libbpf is extended to always BPF_PROG_BIND_MAP .rodata section so the
+metadata is kept in place.
+bpftool is also extended to print metadata in the 'bpftool prog' list.
 
-The rst2man generated .8 file looks like
-Literal block ends without a blank line; unexpected unindent.
- .sp
- n SEEALSOn=3D=3D=3D=3D=3D=3D=3D=3Dnt**bpf**(2),nt**bpf\-helpers**(7),nt*=
-*bpftool**(8),nt**bpftool\-btf**(8),nt**
- bpftool\-feature**(8),nt**bpftool\-gen**(8),nt**bpftool\-iter**(8),nt**b=
-pftool\-link**(8),nt**
- bpftool\-map**(8),nt**bpftool\-net**(8),nt**bpftool\-perf**(8),nt**bpfto=
-ol\-prog**(8),nt**
- bpftool\-struct_ops**(8)n
+The variable is considered metadata if it starts with the
+magic 'bpf_metadata_' prefix; everything after the prefix is the
+metadata name.
 
-Looks like that particular version of rst2man prefers to have actual new =
-line
-instead of \n.
+An example use of this would be BPF C file declaring:
 
-Since `echo -e` may not be available in some environment, let us use `pri=
-ntf`.
-Format string "%b" is used for `printf` to ensure all escape characters a=
-re
-interpretted properly.
+  volatile const char bpf_metadata_commit_hash[] SEC(".rodata") =3D "abcdef=
+123456";
 
-Cc: Quentin Monnet <quentin@isovalent.com>
-Suggested-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Fixes: 18841da98100 ("tools: bpftool: Automate generation for "SEE ALSO" =
-sections in man pages")
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- tools/bpf/bpftool/Documentation/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+and bpftool would emit:
 
-diff --git a/tools/bpf/bpftool/Documentation/Makefile b/tools/bpf/bpftool=
-/Documentation/Makefile
-index 4c9dd1e45244..f33cb02de95c 100644
---- a/tools/bpf/bpftool/Documentation/Makefile
-+++ b/tools/bpf/bpftool/Documentation/Makefile
-@@ -44,7 +44,7 @@ $(OUTPUT)%.8: %.rst
- ifndef RST2MAN_DEP
- 	$(error "rst2man not found, but required to generate man pages")
- endif
--	$(QUIET_GEN)( cat $< ; echo -n $(call see_also,$<) ) | rst2man $(RST2MA=
-N_OPTS) > $@
-+	$(QUIET_GEN)( cat $< ; printf "%b" $(call see_also,$<) ) | rst2man $(RS=
-T2MAN_OPTS) > $@
-=20
- clean: helpers-clean
- 	$(call QUIET_CLEAN, Documentation)
+  $ bpftool prog
+  [...]
+        metadata:
+                commit_hash =3D "abcdef123456"
+
+v5 changes:
+* selftest: verify that prog holds rodata (Andrii Nakryiko)
+* selftest: use volatile for metadata (Andrii Nakryiko)
+* bpftool: use sizeof in BPF_METADATA_PREFIX_LEN (Andrii Nakryiko)
+* bpftool: new find_metadata that does map lookup (Andrii Nakryiko)
+* libbpf: don't generalize probe_create_global_data (Andrii Nakryiko)
+* libbpf: use OPTS_VALID in bpf_prog_bind_map (Andrii Nakryiko)
+* libbpf: keep LIBBPF_0.2.0 sorted (Andrii Nakryiko)
+
+v4 changes:
+* Don't return EEXIST from syscall if already bound (Andrii Nakryiko)
+* Removed --metadata argument (Andrii Nakryiko)
+* Removed custom .metadata section (Alexei Starovoitov)
+* Addressed Andrii's suggestions about btf helpers and vsi (Andrii Nakryiko=
+)
+* Moved bpf_prog_find_metadata into bpftool (Alexei Starovoitov)
+
+v3 changes:
+* API changes for bpf_prog_find_metadata (Toke H=C3=B8iland-J=C3=B8rgensen)
+
+v2 changes:
+* Made struct bpf_prog_bind_opts in libbpf so flags is optional.
+* Deduped probe_kern_global_data and probe_prog_bind_map into a common
+  helper.
+* Added comment regarding why EEXIST is ignored in libbpf bind map.
+* Froze all LIBBPF_MAP_METADATA internal maps.
+* Moved bpf_prog_bind_map into new LIBBPF_0.1.1 in libbpf.map.
+* Added p_err() calls on error cases in bpftool show_prog_metadata.
+* Reverse christmas tree coding style in bpftool show_prog_metadata.
+* Made bpftool gen skeleton recognize .metadata as an internal map and
+  generate datasec definition in skeleton.
+* Added C test using skeleton to see asset that the metadata is what we
+  expect and rebinding causes EEXIST.
+
+v1 changes:
+* Fixed a few missing unlocks, and missing close while iterating map fds.
+* Move mutex initialization to right after prog aux allocation, and mutex
+  destroy to right after prog aux free.
+* s/ADD_MAP/BIND_MAP/
+* Use mutex only instead of RCU to protect the used_map array & count.
+
+Cc: YiFei Zhu <zhuyifei1999@gmail.com>
+
+YiFei Zhu (5):
+  bpf: Mutex protect used_maps array and count
+  bpf: Add BPF_PROG_BIND_MAP syscall
+  libbpf: Add BPF_PROG_BIND_MAP syscall and use it on .rodata section
+  bpftool: support dumping metadata
+  selftests/bpf: Test load and dump metadata with btftool and skel
+
+ .../net/ethernet/netronome/nfp/bpf/offload.c  |  18 +-
+ include/linux/bpf.h                           |   1 +
+ include/uapi/linux/bpf.h                      |   7 +
+ kernel/bpf/core.c                             |  15 +-
+ kernel/bpf/syscall.c                          |  79 +++++-
+ net/core/dev.c                                |  11 +-
+ tools/bpf/bpftool/json_writer.c               |   6 +
+ tools/bpf/bpftool/json_writer.h               |   3 +
+ tools/bpf/bpftool/prog.c                      | 232 ++++++++++++++++++
+ tools/include/uapi/linux/bpf.h                |   7 +
+ tools/lib/bpf/bpf.c                           |  16 ++
+ tools/lib/bpf/bpf.h                           |   8 +
+ tools/lib/bpf/libbpf.c                        |  72 ++++++
+ tools/lib/bpf/libbpf.map                      |   1 +
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ .../selftests/bpf/prog_tests/metadata.c       | 141 +++++++++++
+ .../selftests/bpf/progs/metadata_unused.c     |  15 ++
+ .../selftests/bpf/progs/metadata_used.c       |  15 ++
+ .../selftests/bpf/test_bpftool_metadata.sh    |  82 +++++++
+ 19 files changed, 714 insertions(+), 18 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/metadata.c
+ create mode 100644 tools/testing/selftests/bpf/progs/metadata_unused.c
+ create mode 100644 tools/testing/selftests/bpf/progs/metadata_used.c
+ create mode 100755 tools/testing/selftests/bpf/test_bpftool_metadata.sh
+
 --=20
-2.24.1
+2.28.0.618.gf4bc123cb7-goog
 
