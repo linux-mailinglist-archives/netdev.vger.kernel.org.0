@@ -2,126 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD8AD269118
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:09:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53258269137
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:15:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726467AbgINQJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 12:09:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:23803 "EHLO
+        id S1726306AbgINQOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 12:14:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40696 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726485AbgINQJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 12:09:06 -0400
+        by vger.kernel.org with ESMTP id S1726478AbgINQM7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 12:12:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600099730;
+        s=mimecast20190719; t=1600099975;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Ia4ewCI4oFF+VxRjo3xc7IuSBeMatuSZAzdFNZ3n8es=;
-        b=Pxow0cbavKudhzQ/TEd0qfepacVC/PS7SLEVAQRvGhupVO3qiO9CLAq/eMwFk94FpQAxPF
-        zKcS+1Jbr7gACYvxwdQzdqh4y3VQtg+KqLXGz7l9U6cT7CkvcpYCreWmbNhUJpw3sk57Pe
-        I5yOqMWpBvnsSUbRvz9SZ9cUvhXjEQ8=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-516--jHqPXGRPmKyCFa-M-wolQ-1; Mon, 14 Sep 2020 12:08:46 -0400
-X-MC-Unique: -jHqPXGRPmKyCFa-M-wolQ-1
-Received: by mail-wm1-f69.google.com with SMTP id 189so173976wme.5
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 09:08:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Ia4ewCI4oFF+VxRjo3xc7IuSBeMatuSZAzdFNZ3n8es=;
-        b=T4791Gcmf6cldqI0b5DfF5tv/xS5uqgWXftH9I09+85hzwp2272UC1q00YndtKbAcA
-         YQZJzsD8R4OKR1wFqobqtsyoim0lPvLvAzz6hOeV67cNj17WmuZpTyVw/5yvJJ5/BtWS
-         es9demVxKuMOieDW0sc9QVM2CXYqs34nXLyKEmHPn/3s3mtRIUUrX01L/4AbfClQUcLm
-         LxPi8Y6qIprjGmKvs1akZOwack52Pg7qboqkIJmxKIp1FxTDJ5PZzMGbVhVKs2VYCmzT
-         BY9gCyphsbNd63W0EuTaPKAE4UMMY/dS8L95YSmwFYQz87E96/KB4V8rjaJLb9ANFnO3
-         OrKQ==
-X-Gm-Message-State: AOAM530rJKP23CYjmiUdeMUT3JQEAD4exdakMnGB3ZBZyhSY37decNgZ
-        cSJSHKLjkQEuSfd9mLjsHS/ux+LiSZU4sKDImXKcUrqIbSxPdBpWqZ5yCL6FKdOVRNfpQ0YQztc
-        qc9nzywDCacInXjqw
-X-Received: by 2002:adf:ec86:: with SMTP id z6mr17050109wrn.109.1600099725016;
-        Mon, 14 Sep 2020 09:08:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx59XZFvjJGkQOQQ/Xp1rTDTlbN5frlh+8ObEF+trFc4NjRO84bjSN9y0ME8NW/KtApm95dng==
-X-Received: by 2002:adf:ec86:: with SMTP id z6mr17050088wrn.109.1600099724708;
-        Mon, 14 Sep 2020 09:08:44 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id t188sm21796643wmf.41.2020.09.14.09.08.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 09:08:44 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 871DC1829CB; Mon, 14 Sep 2020 18:08:43 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        bh=NMcjuPLsban/s/KhGcm7R6jbGaWdBO7FK18RrhrF4m4=;
+        b=UnunqAY4EbEa+aaNV58/gBSPTDAZmoP+P+y136DkmHhYC2de6r9m7p0H61SPEh8m6MtL46
+        kEl4o9AwFLI6dbdkZEmGfk7uaYlzaxCuaAa1br6fCZooQlf8kqn4qspKgj3fQpNG2T0936
+        NWak+kb7fyX0bzL7Utjn+U+4zMflNn4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-233-lmWKx1gVNNS1mWTiGcUWJw-1; Mon, 14 Sep 2020 12:12:52 -0400
+X-MC-Unique: lmWKx1gVNNS1mWTiGcUWJw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7981D425FD;
+        Mon, 14 Sep 2020 16:12:49 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.42])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1BA4B7EEC9;
+        Mon, 14 Sep 2020 16:12:35 +0000 (UTC)
+Date:   Mon, 14 Sep 2020 18:12:34 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Will Deacon <will@kernel.org>
+Cc:     brouer@redhat.com, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        bpf@vger.kernel.org, ardb@kernel.org, naresh.kamboju@linaro.org,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>,
         KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH RESEND bpf-next v3 4/9] bpf: support attaching freplace
- programs to multiple attach points
-In-Reply-To: <CAEf4BzZMj0sPisgUZ+3qKvqaAxfzzRNHZTpoR-zuDXvKcY3URQ@mail.gmail.com>
-References: <159981835466.134722.8652987144251743467.stgit@toke.dk>
- <159981835908.134722.4550898174324943652.stgit@toke.dk>
- <CAEf4BzZMj0sPisgUZ+3qKvqaAxfzzRNHZTpoR-zuDXvKcY3URQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 14 Sep 2020 18:08:43 +0200
-Message-ID: <87imcgz6gk.fsf@toke.dk>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: Re: [PATCH] arm64: bpf: Fix branch offset in JIT
+Message-ID: <20200914181234.0f1df8ba@carbon>
+In-Reply-To: <20200914140114.GG24441@willie-the-truck>
+References: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
+        <20200914122042.GA24441@willie-the-truck>
+        <20200914123504.GA124316@apalos.home>
+        <20200914132350.GA126552@apalos.home>
+        <20200914140114.GG24441@willie-the-truck>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-> On Fri, Sep 11, 2020 at 3:01 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->>
->> This enables support for attaching freplace programs to multiple attach
->> points. It does this by amending UAPI for bpf_raw_tracepoint_open with a
->> target prog fd and btf ID pair that can be used to supply the new
->> attachment point. The target must be compatible with the target that was
->> supplied at program load time.
->>
->> The implementation reuses the checks that were factored out of
->> check_attach_btf_id() to ensure compatibility between the BTF types of t=
-he
->> old and new attachment. If these match, a new bpf_tracing_link will be
->> created for the new attach target, allowing multiple attachments to
->> co-exist simultaneously.
->>
->> The code could theoretically support multiple-attach of other types of
->> tracing programs as well, but since I don't have a use case for any of
->> those, the bpf_tracing_prog_attach() function will reject new targets for
->> anything other than PROG_TYPE_EXT programs.
->>
->> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->> ---
->
-> It feels like using a semi-constructed bpf_tracing_link inside
-> prog->aux->tgt_link is just an unnecessary complication, after reading
-> this and previous patches. Seems more straightforward and simpler to
-> store tgt_attach_type/tgt_prog_type (permanently) and
-> tgt_prog/tgt_trampoline (until first attachment) in prog->aux and then
-> properly create bpf_link on attach.
+On Mon, 14 Sep 2020 15:01:15 +0100 Will Deacon <will@kernel.org> wrote:
 
-I updated v4 with your comments, but kept the link in prog->aux; the
-reason being that having a container for the two pointers makes it
-possible to atomically swap it out with xchg() as you suggested
-previously. Could you please take a look at v4? If you still think it's
-better to just keep two separate pointers (and add a lock) in prog->aux,
-I can change it to that. But I'd rather avoid the lock if possible...
+> Hi Ilias,
+> 
+> On Mon, Sep 14, 2020 at 04:23:50PM +0300, Ilias Apalodimas wrote:
+> > On Mon, Sep 14, 2020 at 03:35:04PM +0300, Ilias Apalodimas wrote:  
+> > > On Mon, Sep 14, 2020 at 01:20:43PM +0100, Will Deacon wrote:  
+> > > > On Mon, Sep 14, 2020 at 11:36:21AM +0300, Ilias Apalodimas wrote:  
+> > > > > Running the eBPF test_verifier leads to random errors looking like this:  
+> 
+> [...]
+> > >   
+> > Any suggestion on any Fixes I should apply? The original code was 'correct' and
+> > broke only when bounded loops and their self-tests were introduced.  
+> 
+> Ouch, that's pretty bad as it means nobody is regression testing BPF on
+> arm64 with mainline. Damn.
 
--Toke
+Yes, it unfortunately seems that upstream is lacking BPF regression
+testing for ARM64 :-(
+
+This bug surfaced when Red Hat QA tested our kernel backports, on
+different archs.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
