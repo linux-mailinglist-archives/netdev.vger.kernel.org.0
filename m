@@ -2,110 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BF0526886B
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:32:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D911C268873
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:33:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726318AbgINJcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 05:32:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48218 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726264AbgINJch (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 05:32:37 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB6AC061788
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:32:36 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id lo4so22217483ejb.8
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:32:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=S12Ozp3Vsq8tS9g1DhUCy0Z/H/j+wxx4VSfsrHbFWrQ=;
-        b=a4Zoosb5FMCUcX3ko7MzxtqQ5g229ysUK77EQ3rznkAU7ETZQeN15zHk8nOo+RupO/
-         uWJEqSHNuvgjV3EETWW9l4VUIC3AefmOMGLR5a2r/CmuCH8NSocEKzWnzXu3W2ziXSk5
-         EIbO/zel0odzIWMASvi+3MrQXncK3d7eC27vev3SYWcf6DOv8LxtHLFKPVdVcB2ezFmK
-         b6kkDZ2HIj0yf65TqIuIwxDDrh47WUqIvwEg5gJ6ZHpuLliNbVIeGGGuLJf3seFmovJK
-         jTB2lu30aOaTH8CDGjxTWU6j4jssjlCXqfvWL5H4Jmc02usJh3Pq7CpHqI3qVoHoP5ph
-         XBrg==
+        id S1726359AbgINJdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 05:33:32 -0400
+Received: from mail-io1-f80.google.com ([209.85.166.80]:50773 "EHLO
+        mail-io1-f80.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726409AbgINJdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 05:33:19 -0400
+Received: by mail-io1-f80.google.com with SMTP id b16so10601356iod.17
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:33:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=S12Ozp3Vsq8tS9g1DhUCy0Z/H/j+wxx4VSfsrHbFWrQ=;
-        b=mrwZKziCZ6XPEuXrBlr1r3PpK5H/7B74I7RefQWwAJHeirrXbexHnQHISWl+7SgZvW
-         ovvKSpqPTesdxdkX+ubMsVgBMNL9Mlr/pbMg71bC9iSO4aKuSzWzEfrf/9YcgebXkGb9
-         JiB5LbE7rfE4ZX2CmsQPH5j5yznhJTvtKE3ay2X9+329dDWbjZE/bNVRcPoVSR5LsXFm
-         uQCrg2xixSYLM7fWpnJe9XznvHhLvy6KjjILXLWPqGL7AqnbZnvR4Rytue9xlMeQcAPC
-         7G/fmrcJOCQRRkW6J016bQcZKmEZtj0A67gJ0HWPYJ7IxNzT9E0ACKKntA1az++v7DfK
-         nasw==
-X-Gm-Message-State: AOAM530LGnDQ1WVT8AHvJsP7BIolcAPahPwkINn2kVUkQme3bH5jNkDq
-        rUbWFd2A6K7IbGUgAx/ZYxgepiMqyR5Pt/uh
-X-Google-Smtp-Source: ABdhPJyBWT+4MuT1smyevpT5Ha/ugeFB0PYXRB0MRJ6FFg7yJ95A9z8gLMYrf983IDj+WcFuT4qUwQ==
-X-Received: by 2002:a17:906:3ad0:: with SMTP id z16mr14355972ejd.193.1600075955616;
-        Mon, 14 Sep 2020 02:32:35 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id p25sm8848649edm.60.2020.09.14.02.32.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 02:32:35 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 11:32:34 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next RFC v4 01/15] devlink: Add reload action option
- to devlink reload command
-Message-ID: <20200914093234.GB2236@nanopsycho.orion>
-References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
- <1600063682-17313-2-git-send-email-moshe@mellanox.com>
- <CAACQVJochmfmUgKSvSTe4McFvG6=ffBbkfXsrOJjiCDwQVvaRw@mail.gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=DJUq5XrhAYhtHbOepiU7xqamyttrBJSi0jWTB9ZyYVk=;
+        b=U3aNoS399SN4SYuU9ExGFMj9+GOJFi4s3N+AB0830mRaRQr9uylrRfqV5oLcU8sCLs
+         JpXKb+WEhL0kaCzJACjaihYVEMJHxLbzcWUcX2/4vAE1t8x7V36dzbjP6UTV0u+1n/Jz
+         Njh+b+RbAdmZ5e+v2WOHHpM/hIq09GGlPJJvuYNH91RLeI/ynA+IoP0Jgys42WJGaR1R
+         FaM5yJ0xigclumoAUQBKG5Ll2ia7olZZzmJ3yt1aJ8AW4CzDXyqATfN+E3KA7XdhkAkm
+         +gMtcVN8+qwHlr+MSalzuHujfTS++Bvq+Mt8G+qVBHYZTnnTGYsJoWuGS621kppcMe3e
+         u7QQ==
+X-Gm-Message-State: AOAM532EejbADyqBnnOPZhQTsAB1dISCtvs51+Xfq7sx0o8p4ASdym0u
+        iH5LKCwU/HXVUMEyGFJbD1B5u6GPogCzTO21V1JZMzrk/rE6
+X-Google-Smtp-Source: ABdhPJwwUWrNj4Z0DiTe6zo1NImw1NKYEq3vDz2Ie/ucA57ZOyvizj2/pwThU5abRcLsSj8CdwBbq6z4aej7SSAB9VrmASMnYDx2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAACQVJochmfmUgKSvSTe4McFvG6=ffBbkfXsrOJjiCDwQVvaRw@mail.gmail.com>
+X-Received: by 2002:a6b:7c07:: with SMTP id m7mr10719738iok.32.1600075998706;
+ Mon, 14 Sep 2020 02:33:18 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 02:33:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000843f5305af42b9fa@google.com>
+Subject: general protection fault in tipc_mon_reinit_self
+From:   syzbot <syzbot+11c08b913d16224fde6f@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jmaloy@redhat.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 14, 2020 at 09:08:58AM CEST, vasundhara-v.volam@broadcom.com wrote:
->On Mon, Sep 14, 2020 at 11:39 AM Moshe Shemesh <moshe@mellanox.com> wrote:
+Hello,
 
-[...]
+syzbot found the following issue on:
+
+HEAD commit:    7fe10096 Merge branch 'linus' of git://git.kernel.org/pub/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14886e9e900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a9075b36a6ae26c9
+dashboard link: https://syzkaller.appspot.com/bug?extid=11c08b913d16224fde6f
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+userspace arch: i386
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+11c08b913d16224fde6f@syzkaller.appspotmail.com
+
+tipc: 32-bit node address hash set to a3a24078
+general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+CPU: 0 PID: 8164 Comm: kworker/0:4 Not tainted 5.9.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events tipc_net_finalize_work
+RIP: 0010:tipc_mon_reinit_self+0x389/0x610 net/tipc/monitor.c:686
+Code: a8 f9 49 8d 7c 24 10 48 89 f8 48 c1 e8 03 0f b6 04 18 84 c0 74 08 3c 03 0f 8e 40 02 00 00 4c 89 e8 45 8b 64 24 10 48 c1 e8 03 <0f> b6 04 18 84 c0 74 08 3c 03 0f 8e 62 02 00 00 45 89 65 00 4c 89
+RSP: 0018:ffffc9001623fc68 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
+RDX: dffffc0000000000 RSI: ffffffff89bd6a40 RDI: ffff888054228010
+RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8880a280cd60
+R10: fffffbfff1564d71 R11: 0000000000000000 R12: 00000000a3a24078
+R13: 0000000000000000 R14: ffff888049b91010 R15: 0000000000000001
+FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000558623d05ee8 CR3: 0000000090a76000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ tipc_net_finalize net/tipc/net.c:140 [inline]
+ tipc_net_finalize+0x1df/0x310 net/tipc/net.c:131
+ tipc_net_finalize_work+0x55/0x80 net/tipc/net.c:150
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Modules linked in:
+---[ end trace 070d9aa71f52a0c0 ]---
+RIP: 0010:tipc_mon_reinit_self+0x389/0x610 net/tipc/monitor.c:686
+Code: a8 f9 49 8d 7c 24 10 48 89 f8 48 c1 e8 03 0f b6 04 18 84 c0 74 08 3c 03 0f 8e 40 02 00 00 4c 89 e8 45 8b 64 24 10 48 c1 e8 03 <0f> b6 04 18 84 c0 74 08 3c 03 0f 8e 62 02 00 00 45 89 65 00 4c 89
+RSP: 0018:ffffc9001623fc68 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: dffffc0000000000 RCX: 0000000000000000
+RDX: dffffc0000000000 RSI: ffffffff89bd6a40 RDI: ffff888054228010
+RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8880a280cd60
+R10: fffffbfff1564d71 R11: 0000000000000000 R12: 00000000a3a24078
+R13: 0000000000000000 R14: ffff888049b91010 R15: 0000000000000001
+FS:  0000000000000000(0000) GS:ffff8880ae600000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000558623d05ee8 CR3: 0000000090a76000 CR4: 00000000001506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
 
->> @@ -1126,15 +1126,24 @@ mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
->>  }
->>
->>  static int
->> -mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
->> -                                       struct netlink_ext_ack *extack)
->> +mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink, enum devlink_reload_action action,
->> +                                       struct netlink_ext_ack *extack,
->> +                                       unsigned long *actions_performed)
->Sorry for repeating again, for fw_activate action on our device, all
->the driver entities undergo reset asynchronously once user initiates
->"devlink dev reload action fw_activate" and reload_up does not have
->much to do except reporting actions that will be/being performed.
->
->Once reset is complete, the health reporter will be notified using
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Hmm, how is the fw reset related to health reporter recovery? Recovery
-happens after some error event. I don't believe it is wise to mix it.
-
-Instead, why don't you block in reload_up() until the reset is complete?
-
-
->devlink_health_reporter_recovery_done(). Returning from reload_up does
->not guarantee successful activation of firmware. Status of reset will
->be notified to the health reporter via
->devlink_health_reporter_state_update().
->
->I am just repeating this, so I want to know if I am on the same page.
->
->Thanks.
-
-[...]
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
