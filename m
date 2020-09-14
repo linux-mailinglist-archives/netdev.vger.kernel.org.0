@@ -2,78 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E1E826840E
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 07:26:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD729268410
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 07:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726086AbgINF0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 01:26:21 -0400
-Received: from ni.piap.pl ([195.187.100.5]:38692 "EHLO ni.piap.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726027AbgINF0T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 01:26:19 -0400
-Received: from t19.piap.pl (OSB1819.piap.pl [10.0.9.19])
-        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ni.piap.pl (Postfix) with ESMTPSA id 77894443565;
-        Mon, 14 Sep 2020 07:26:12 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ni.piap.pl 77894443565
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=piap.pl; s=mail;
-        t=1600061173; bh=b36UtK65i/l+Kip5dYP2VFfv1iztlojBnFJGyz/GjAw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=Di22R3LDlfbvvRM14LvwQ60tBgCi+6aHC2m/aMRXjoYKX8lqTy70Kg61mDLX5Gg+G
-         jSSPi0X4GxPgHeHWKaMvfwvZLps/7dN27hp+vbDX4TliQrYN1CL/ROkAKdS7avZERR
-         hH2u55sL7H/+eboAzYBgHGr+x4fBD5SgYFSKhpVU=
-From:   =?utf-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Krzysztof Halasa <khc@pm.waw.pl>,
+        id S1726095AbgINF1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 01:27:07 -0400
+Received: from smtprelay0016.hostedemail.com ([216.40.44.16]:39272 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726027AbgINF1F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 01:27:05 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 29EDF180F6CC3;
+        Mon, 14 Sep 2020 05:27:04 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1537:1566:1593:1594:1711:1714:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3622:3865:3866:3867:3870:3873:4321:5007:7903:8603:10004:10400:10848:11232:11658:11914:12114:12297:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21324:21627:21660:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:4,LUA_SUMMARY:none
+X-HE-Tag: floor72_0a09cdf27106
+X-Filterd-Recvd-Size: 1348
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf18.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 14 Sep 2020 05:27:02 +0000 (UTC)
+Message-ID: <c6568e2e4450633136c6e7d85f29ed68aa01a32f.camel@perches.com>
+Subject: Re: [PATCH net-next] octeontx2-af: Constify
+ npc_kpu_profile_{action,cam}
+From:   Joe Perches <joe@perches.com>
+To:     Rikard Falkeborn <rikard.falkeborn@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCH net v2] drivers/net/wan/hdlc_fr: Add needed_headroom for
- PVC devices
-References: <20200903000658.89944-1-xie.he.0141@gmail.com>
-        <20200904151441.27c97d80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAJht_EN+=WTuduvm43_Lq=XWL78AcF5q6Zoyg8S5fao_udL=+Q@mail.gmail.com>
-Date:   Mon, 14 Sep 2020 07:26:12 +0200
-In-Reply-To: <CAJht_EN+=WTuduvm43_Lq=XWL78AcF5q6Zoyg8S5fao_udL=+Q@mail.gmail.com>
-        (Xie He's message of "Fri, 4 Sep 2020 18:28:38 -0700")
-Message-ID: <m3v9ghgc97.fsf@t19.piap.pl>
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Jerin Jacob <jerinj@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Sun, 13 Sep 2020 22:27:01 -0700
+In-Reply-To: <20200911220015.41830-1-rikard.falkeborn@gmail.com>
+References: <20200911220015.41830-1-rikard.falkeborn@gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-KLMS-Rule-ID: 4
-X-KLMS-Message-Action: skipped
-X-KLMS-AntiSpam-Status: not scanned, whitelist
-X-KLMS-AntiPhishing: not scanned, whitelist
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, not scanned, whitelist
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xie He <xie.he.0141@gmail.com> writes:
+On Sat, 2020-09-12 at 00:00 +0200, Rikard Falkeborn wrote:
+> These are never modified, so constify them to allow the compiler to
+> place them in read-only memory. This moves about 25kB to read-only
+> memory as seen by the output of the size command.
 
-> The HDLC device is not actually prepending any header when it is used
-> with this driver. When the PVC device has prepended its header and
-> handed over the skb to the HDLC device, the HDLC device just hands it
-> over to the hardware driver for transmission without prepending any
-> header.
+Nice.
 
-That's correct. IIRC:
-- Cisco and PPP modes add 4 bytes
-- Frame Relay adds 4 (specific protocols - mostly IPv4) or 10 (general
-  case) bytes. There is that pvcX->hdlcX transition which adds nothing
-  (the header is already in place when the packet leaves pvcX device).
-- Raw mode adds nothing (IPv4 only, though it could be modified for
-  both IPv4/v6 easily)
-- Ethernet (hdlc_raw_eth.c) adds normal Ethernet header.
+Did you find this by tool or inspection?
 
-(I had been "unplugged" for some time).
---=20
-Krzysztof Halasa
 
-Sie=C4=87 Badawcza =C5=81ukasiewicz
-Przemys=C5=82owy Instytut Automatyki i Pomiar=C3=B3w PIAP
-Al. Jerozolimskie 202, 02-486 Warszawa
