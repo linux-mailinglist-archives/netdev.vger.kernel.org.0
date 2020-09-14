@@ -2,166 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BBE4268274
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 04:10:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F085268279
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 04:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726010AbgINCKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 22:10:44 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:51680 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725965AbgINCKn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Sep 2020 22:10:43 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 4FE7837DAEF3B9BAE1FC;
-        Mon, 14 Sep 2020 10:10:39 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 14 Sep 2020 10:10:31 +0800
-Subject: Re: Packet gets stuck in NOLOCK pfifo_fast qdisc
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Kehuan Feng <kehuan.feng@gmail.com>
-CC:     Hillf Danton <hdanton@sina.com>, Paolo Abeni <pabeni@redhat.com>,
-        "Jike Song" <albcamus@gmail.com>, Josh Hunt <johunt@akamai.com>,
-        Jonas Bonn <jonas.bonn@netrounds.com>,
-        Michael Zhivich <mzhivich@akamai.com>,
-        "David Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>
-References: <465a540e-5296-32e7-f6a6-79942dfe2618@netrounds.com>
- <CACS=qqKhsu6waaXndO5tQL_gC9TztuUQpqQigJA2Ac0y12czMQ@mail.gmail.com>
- <20200825032312.11776-1-hdanton@sina.com>
- <CACS=qqK-5g-QM_vczjY+A=3fi3gChei4cAkKweZ4Sn2L537DQA@mail.gmail.com>
- <20200825162329.11292-1-hdanton@sina.com>
- <CACS=qqKgiwdCR_5+z-vkZ0X8DfzOPD7_ooJ_imeBnx+X1zw2qg@mail.gmail.com>
- <CACS=qqKptAQQGiMoCs1Zgs9S4ZppHhasy1AK4df2NxnCDR+vCw@mail.gmail.com>
- <5f46032e.1c69fb81.9880c.7a6cSMTPIN_ADDED_MISSING@mx.google.com>
- <CACS=qq+Yw734DWhETNAULyBZiy_zyjuzzOL-NO30AM7fd2vUOQ@mail.gmail.com>
- <20200827125747.5816-1-hdanton@sina.com>
- <CACS=qq+a0H=e8yLFu95aE7Hr0bQ9ytCBBn2rFx82oJnPpkBpvg@mail.gmail.com>
- <CAM_iQpV-JMURzFApp-Zhxs3QN9j=Zdf6yqwOP=E42ERDHxe6Hw@mail.gmail.com>
- <dd73f551d1fc89e457ffabd106cbf0bf401b747b.camel@redhat.com>
- <20200903101957.428-1-hdanton@sina.com>
- <CACS=qqLKSpnRrgROm8jzzFid3MH97phPXWsk28b371dfu0mnVA@mail.gmail.com>
- <CAM_iQpUq9-wja3JHz9+TMeXGyAOmJfZDxWUZJ9v25i7vd0Z-Wg@mail.gmail.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <c97908eb-5a0b-363c-93fd-59c037bbd9f0@huawei.com>
-Date:   Mon, 14 Sep 2020 10:10:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S1725983AbgINCNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 22:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725972AbgINCNg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 22:13:36 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75AC8C06174A
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 19:13:35 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id a9so4660436pjg.1
+        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 19:13:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=NTPEhSTHlRsn+Cr9ilSj+EM6hitMM44IwHm5ITwwFyY=;
+        b=MxlbuPZImhwgz1/KkQsCtpWd69+Vk4LNfsIL1smDk0f/vodky9XyMh9DULU3t55a5Y
+         y78Tz3mMLN2otwjgLxSOdbOLNt2IuC5CuFBcDYOHnb4c9hDPgZLYYLwkyCKjK5mVaSWY
+         B41MRnZUS7OlkFB22Jvju5zrllrdFuM2OQwh9lN+hr5IM4Zvc0fi5NWCKCshRW8bOMpE
+         Qc36gU5Hfo7cU9vIvGSa8j3nIYqPfiwJZn+VduSbGfB8clTvBp5efJLg39oObGt/LxdZ
+         EIg9etPuQ3y3BXfWTECz4a4LJHDNBdM5Bi9fBsNNrDrIVvrXUrYoK6No5tqyxQLBtKgD
+         ZeWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=NTPEhSTHlRsn+Cr9ilSj+EM6hitMM44IwHm5ITwwFyY=;
+        b=kVtqJ1Wvxcnb5LBY2ZfqS4x/43/mZfGQBhWWZc13qOCjEpD67Tavn72iHE9MDhnhfc
+         pKqxaOpMHb3RoEw/ZtXKEBXf3lRnJtX+22sT2Kw8s72tdD4C7bYt2LbbkaQB3EN545az
+         Da9RXI+8tLrfLHJuejZOvfDztD1e2500tPtREdn7ZZyPDUzcD3vLFUnMdCQtNepjtY4e
+         3LhCsaqj3uMQ0Px+BaNK/U28hbKz5zTt7Ort/Y1eZKgj5rJcTXom5sYVu0XUOuJIwBVs
+         p3gqN/PzLZ4pEQjilr9ShbnfvzSidhCLfOn3hILLgRCPYei98ynmrj285uqeHyXUOfA3
+         hoQw==
+X-Gm-Message-State: AOAM531Lj1JG2OIiVzOXHWMGLFPxOjnpoGl1BroqvdPrvnWIf6CwZ0oa
+        O3g6ZyZK2kg6m0UGCSzDH5hUjeA3LGIeYuYs2dUaCiKVc5D2Ng==
+X-Google-Smtp-Source: ABdhPJwPmDs31o3K2/y1tjcMZou2BVHfgm37DJtiS4Lu/KcTILWqFACtnVlH7NvcUpGunLOFo5I7Y9Xkfx9Jzfs90Nc=
+X-Received: by 2002:a17:90a:d704:: with SMTP id y4mr12510199pju.159.1600049614763;
+ Sun, 13 Sep 2020 19:13:34 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpUq9-wja3JHz9+TMeXGyAOmJfZDxWUZJ9v25i7vd0Z-Wg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+References: <CAB4CAwfqbaR7_ypZDp=hi_3u_F2E5eYv5ExUoSPK97qcTxiWZQ@mail.gmail.com>
+In-Reply-To: <CAB4CAwfqbaR7_ypZDp=hi_3u_F2E5eYv5ExUoSPK97qcTxiWZQ@mail.gmail.com>
+From:   Chris Chiu <chiu@endlessm.com>
+Date:   Mon, 14 Sep 2020 10:13:24 +0800
+Message-ID: <CAB4CAwezTL6LeUeW5QApC4AVyu2t-pH1CBQSNMPCMC6VXZTX4A@mail.gmail.com>
+Subject: Re: mt7615: Fail to load firmware on AZWAVE-CB434NF module
+To:     sean.wang@mediatek.com, ryder.lee@mediatek.com,
+        Kalle Valo <kvalo@codeaurora.org>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        nbd@nbd.name, lorenzo@kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/9/11 4:19, Cong Wang wrote:
-> On Thu, Sep 3, 2020 at 8:21 PM Kehuan Feng <kehuan.feng@gmail.com> wrote:
->> I also tried Cong's patch (shown below on my tree) and it could avoid
->> the issue (stressing for 30 minutus for three times and not jitter
->> observed).
-> 
-> Thanks for verifying it!
-> 
->>
->> --- ./include/net/sch_generic.h.orig 2020-08-21 15:13:51.787952710 +0800
->> +++ ./include/net/sch_generic.h 2020-09-03 21:36:11.468383738 +0800
->> @@ -127,8 +127,7 @@
->>  static inline bool qdisc_run_begin(struct Qdisc *qdisc)
->>  {
->>   if (qdisc->flags & TCQ_F_NOLOCK) {
->> - if (!spin_trylock(&qdisc->seqlock))
->> - return false;
->> + spin_lock(&qdisc->seqlock);
->>   } else if (qdisc_is_running(qdisc)) {
->>   return false;
->>   }
->>
->> I am not actually know what you are discussing above. It seems to me
->> that Cong's patch is similar as disabling lockless feature.
-> 
->>From performance's perspective, yeah. Did you see any performance
-> downgrade with my patch applied? It would be great if you can compare
-> it with removing NOLOCK. And if the performance is as bad as no
-> NOLOCK, then we can remove the NOLOCK bit for pfifo_fast, at least
-> for now.
+On Tue, Sep 8, 2020 at 8:33 PM Chris Chiu <chiu@endlessm.com> wrote:
+>
+> Hi Sean, Ryder,
+>     We have an ASUS laptop X532EQ with the wifi module AZWAVE-CB434NF
+> which fails to bring up the wifi interface on kernel 5.9.0-rc1. The
+> dmesg shows the firmware load error.
+>
+> [   25.630850] mt7615e 0000:2d:00.0: Message -4294967280 (seq 1) timeout
+> [   25.630851] mt7615e 0000:2d:00.0: Failed to get patch semaphore
+> [   25.630853] mt7615e 0000:2d:00.0: mediatek/mt7663pr2h.bin not
+> found, switching to mediatek/mt7663pr2h_rebb.bin
+> [   46.111154] mt7615e 0000:2d:00.0: Message -4294967280 (seq 2) timeout
+> [   46.111178] mt7615e 0000:2d:00.0: Failed to get patch semaphore
+> [   46.111179] mt7615e 0000:2d:00.0: failed to load mediatek/mt7663pr2h_rebb.bin
+>
+> The lspci information for the device shows as follows
+> 0000:2d:00.0 Network controller [0280]: MEDIATEK Corp. Device [14c3:7663]
+>         Subsystem: AzureWave Device [1a3b:4341]
+>         Flags: bus master, fast devsel, latency 0, IRQ 177
+>         Memory at 6032100000 (64-bit, prefetchable) [size=1M]
+>         Memory at 6032200000 (64-bit, prefetchable) [size=16K]
+>         Memory at 6032204000 (64-bit, prefetchable) [size=4K]
+>         Capabilities: [80] Express Endpoint, MSI 1f
+>         Capabilities: [e0] MSI: Enable+ Count=1/32 Maskable+ 64bit+
+>         Capabilities: [f8] Power Management version 3
+>         Capabilities: [100] Vendor Specific Information: ID=1556 Rev=1
+> Len=008 <?>
+>         Capabilities: [108] Latency Tolerance Reporting
+>         Capabilities: [110] L1 PM Substates
+>         Capabilities: [200] Advanced Error Reporting
+>         Kernel driver in use: mt7615e
+>         Kernel modules: mt7615e
+>
+> I also tried the latest linux-firmware with the most up to date
+> mediatek firmware
+> https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/commit/?id=7a237c6ee2c7af48723c356461ef80270a52d2c6.
+> But still get the same error.
+>
+> Any suggestions on what I can do here?
+>
+> Chris
 
-It seems the lockless qdisc may have below concurrent problem:
-  cpu0:                                                           cpu1:
-q->enqueue							    .
-qdisc_run_begin(q)  						    .
-__qdisc_run(q) ->qdisc_restart() -> dequeue_skb()		    .
-		                 -> sch_direct_xmit()		    .
- 								    .
-                                                                q->enqueue
-				                             qdisc_run_begin(q)			
-qdisc_run_end(q)
-
-
-cpu1 enqueue a skb without calling __qdisc_run(), and cpu0 did not see the
-enqueued skb when calling __qdisc_run(q) because cpu1 may enqueue the skb
-after cpu0 called __qdisc_run(q) and before cpu0 called qdisc_run_end(q).
-
-
-Kehuan, do you care to try the below patch if it is the same problem?
-
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index d60e7c3..c97c1ed 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -36,6 +36,7 @@ struct qdisc_rate_table {
- enum qdisc_state_t {
- 	__QDISC_STATE_SCHED,
- 	__QDISC_STATE_DEACTIVATED,
-+	__QDISC_STATE_ENQUEUED,
- };
-
- struct qdisc_size_table {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 0362419..5985648 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3748,6 +3748,8 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
- 	qdisc_calculate_pkt_len(skb, q);
-
- 	if (q->flags & TCQ_F_NOLOCK) {
-+		set_bit(__QDISC_STATE_ENQUEUED, &q->state);
-+		smp_mb__after_atomic();
- 		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
- 		qdisc_run(q);
-
-diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 265a61d..c389641 100644
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -381,6 +381,8 @@ void __qdisc_run(struct Qdisc *q)
- 	int quota = dev_tx_weight;
- 	int packets;
-
-+	clear_bit(__QDISC_STATE_ENQUEUED, &q->state);
-+	smp_mb__after_atomic();
- 	while (qdisc_restart(q, &packets)) {
- 		quota -= packets;
- 		if (quota <= 0) {
-@@ -388,6 +390,9 @@ void __qdisc_run(struct Qdisc *q)
- 			break;
- 		}
- 	}
-+
-+	if (test_bit(__QDISC_STATE_ENQUEUED, &q->state))
-+		__netif_schedule(q);
- }
-
- unsigned long dev_trans_start(struct net_device *dev)
-
-
-> 
-> Thanks.
-> 
+Gentle ping. What should I do for the next step?
