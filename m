@@ -2,225 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36707269310
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:24:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D403B26931F
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:28:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726162AbgINRYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 13:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36774 "EHLO
+        id S1726216AbgINR0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 13:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726359AbgINRXs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 13:23:48 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA618C061788
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:23:47 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id e11so9320347wme.0
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:23:47 -0700 (PDT)
+        with ESMTP id S1726024AbgINR0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 13:26:00 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ABC4C06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:25:58 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id l14so476409pgm.6
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:25:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0hSns9sLLool+A+lxPFi24bZQIv2n6NsxCtF1ZjcZM0=;
-        b=tQJkkljgT+5MctoBuw4qL2k52RbokpIzeebJ1n17i2GJRiWVRDCflislAOGhyomihN
-         DNO8q70uhKgGZ/4SKfanpHQtl2Ki2mL1ZRbYLH53otK1Ykph6bQisEXaoK3HKoa5Zpda
-         3KLe9wk6ViyLvKgPQOzXOdZmGNekonKOXBzOHM2Si00IDzNTrPwCO+/ZZ08UMcotAYDN
-         FiyBjltWmVAbvID9RNImECsWMv/SYWuCspjWWYSlmbyNnVPM9f7Wj4cxEv3A8qIqi3BJ
-         BiwefzqaZsuBUHu8iy/2erp1n0o9+X4vXtejhqQykSvfMqTikQ10WBLB1XxoDQJzDaIy
-         h0mg==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=LfY38ADc8JhuTadvTARA10NxNijWuNygct8ybQdjX+I=;
+        b=r0xA7+wQmZexj9DXBp7/OvUyl3W3fR/4kQrnpbMHlTdjdV2U1HOLI19aoNSoaybAYJ
+         qIM2tymzrN6A5bk6JPywWkCTVEjPuPlB7uPzYEgFswOoIhSSnejaA+3pg0b29JTTbPFJ
+         ULAvQoa/WQc2LH1gi5zPQZ3Dcq0eF9Scrvz+LOAm9N3OnNJWrYn5xDoIWlReticq+7wx
+         6wxEF+1Osw+b57bVrQ5bVc4o2qEDmMYuUDuQQKqYHfEEkQLo62o0If3jevqL0LPaFZrJ
+         hOIqCsLQjxqhf5AwA8q5w06tyZ52ztx2hfhZEbBROw5uHIbENeRHOo/pl/nSON/YRrqC
+         xcNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0hSns9sLLool+A+lxPFi24bZQIv2n6NsxCtF1ZjcZM0=;
-        b=gWFqQ0C4f7LHksH8RNA8kGnnUy5IhsWxvku5t7NlNSMqsl2rFTSB/dv3kxiarRUOO6
-         snZ67+ndyf+qW8v8dtmTPtnvy5mxn31nFCYHykgluIQuSctcKpNS0ygo+DQAUM7TqSJ9
-         bGLn68toZSY66/JRiIc3heANd0KDWVNQn4jPhkGWzy7nz9h32guzpAUcK+ME14Fruw9y
-         Jl8dOQdOgtVffKh1wx52VsL22SzNwAkcVMmCbK4mn4mDNMExVkWYmDYrQzXxcTG4WSG5
-         sp2t4hRDePkLl/d9rOzEPOInw8PViYlqDznJiB82W7byIQEb3kXjUBlbyJsJ/lE65bBu
-         ygFg==
-X-Gm-Message-State: AOAM5320nDgGUWZAlrTx3PauKKGmT6SSkd+4qg77o0sBuk5VT/wnDejO
-        kactrcUnbzcSqJkCmUNqmKmGPA==
-X-Google-Smtp-Source: ABdhPJzpKlBs6vl5lU73tbbYur4EKrQgasZ6ODcgNnsncL0bVzxQq7Ge/Wn/79gs1QoJ840OUBxDfA==
-X-Received: by 2002:a7b:cd8b:: with SMTP id y11mr440960wmj.172.1600104226243;
-        Mon, 14 Sep 2020 10:23:46 -0700 (PDT)
-Received: from [192.168.1.12] ([194.35.119.117])
-        by smtp.gmail.com with ESMTPSA id v17sm21651717wrr.60.2020.09.14.10.23.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Sep 2020 10:23:45 -0700 (PDT)
-Subject: Re: [PATCH bpf-next] bpftool: fix build failure
-To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
-        Andrii Nakryiko <andriin@fb.com>
-References: <20200914061206.2625395-1-yhs@fb.com>
- <b942625c-7140-0a57-337e-3a95020cfa99@isovalent.com>
- <1ab672c7-f333-f953-16ec-49e9099b39d7@fb.com>
- <ca0b4c63-5632-f8a0-9669-975d1119c1e6@fb.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <c8c33847-9ca6-5b81-ef03-02ce382acfb6@isovalent.com>
-Date:   Mon, 14 Sep 2020 18:23:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:82.0) Gecko/20100101
- Thunderbird/82.0a1
-MIME-Version: 1.0
-In-Reply-To: <ca0b4c63-5632-f8a0-9669-975d1119c1e6@fb.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=LfY38ADc8JhuTadvTARA10NxNijWuNygct8ybQdjX+I=;
+        b=m/f1pRdT78bhdykxUgNp4Ny6dggMcmv6XZCJtXnVXGBZr9YG6lN3qYIk3PYk2mj5yE
+         msMVS9lLu1OxydfZBVqHLSdHQtOGi9aSmUhyn4E4nmk3GFK6knqhVAM/l1F4mgetprK1
+         xBCXcIozQjXctZqVny/CjLt5KuxFOgUcS0TkOW/8Z2h0swIbrmiqcibp1ChF1BkXtEg0
+         KYK/HAggBdaB/foYlQqnDO4ne/673JguPdLYDIeHNI0Q5g1gPlj9GOWug+XWZ5mlvAF8
+         1dvWHKfFarDM44s7oNJr/cQcy9iqKLj/Q/7Lgr231soXOwUioo83HCKjTXFDuOGo0W6b
+         r87A==
+X-Gm-Message-State: AOAM533g6OWAxlgeauBPHObvutIshJ2kxuQ0mlJ8VbLvcRn0h6pihkta
+        Oo5vujP7re/zE5v8pT3WZhZuUhU0sqA=
+X-Google-Smtp-Source: ABdhPJz2jsrawLQlrJMEwyOWpJFCcryKIiO6Fwn/IMWK1QJwJ/Zjm0zZPlwk8f5pbr9uz9m1JH9hEUrorz8=
+X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:1ea0:b8ff:fe75:cf08])
+ (user=weiwan job=sendgmr) by 2002:aa7:99c7:0:b029:13e:d13d:a056 with SMTP id
+ v7-20020aa799c70000b029013ed13da056mr14160452pfi.28.1600104357236; Mon, 14
+ Sep 2020 10:25:57 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 10:24:47 -0700
+Message-Id: <20200914172453.1833883-1-weiwan@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.28.0.618.gf4bc123cb7-goog
+Subject: [RFC PATCH net-next 0/6] implement kthread based napi poll
+From:   Wei Wang <weiwan@google.com>
+To:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Felix Fietkau <nbd@nbd.name>, Wei Wang <weiwan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/09/2020 17:54, Yonghong Song wrote:
-> 
-> 
-> On 9/14/20 9:46 AM, Yonghong Song wrote:
->>
->>
->> On 9/14/20 1:16 AM, Quentin Monnet wrote:
->>> On 14/09/2020 07:12, Yonghong Song wrote:
->>>> When building bpf selftests like
->>>>    make -C tools/testing/selftests/bpf -j20
->>>> I hit the following errors:
->>>>    ...
->>>>    GEN     
->>>> /net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-gen.8
->>>>
->>>>    <stdin>:75: (WARNING/2) Block quote ends without a blank line;
->>>> unexpected unindent.
->>>>    <stdin>:71: (WARNING/2) Literal block ends without a blank line;
->>>> unexpected unindent.
->>>>    <stdin>:85: (WARNING/2) Literal block ends without a blank line;
->>>> unexpected unindent.
->>>>    <stdin>:57: (WARNING/2) Block quote ends without a blank line;
->>>> unexpected unindent.
->>>>    <stdin>:66: (WARNING/2) Literal block ends without a blank line;
->>>> unexpected unindent.
->>>>    <stdin>:109: (WARNING/2) Literal block ends without a blank line;
->>>> unexpected unindent.
->>>>    <stdin>:175: (WARNING/2) Literal block ends without a blank line;
->>>> unexpected unindent.
->>>>    <stdin>:273: (WARNING/2) Literal block ends without a blank line;
->>>> unexpected unindent.
->>>>    make[1]: ***
->>>> [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-perf.8]
->>>> Error 12
->>>>    make[1]: *** Waiting for unfinished jobs....
->>>>    make[1]: ***
->>>> [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-iter.8]
->>>> Error 12
->>>>    make[1]: ***
->>>> [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-struct_ops.8]
->>>> Error 12
->>>>    ...
->>>>
->>>> I am using:
->>>>    -bash-4.4$ rst2man --version
->>>>    rst2man (Docutils 0.11 [repository], Python 2.7.5, on linux2)
->>>>    -bash-4.4$
->>>>
->>>> Looks like that particular version of rst2man prefers to have a
->>>> blank line
->>>> after literal blocks. This patch added block lines in related .rst
->>>> files
->>>> and compilation can then pass.
->>>>
->>>> Cc: Quentin Monnet <quentin@isovalent.com>
->>>> Fixes: 18841da98100 ("tools: bpftool: Automate generation for "SEE
->>>> ALSO" sections in man pages")
->>>> Signed-off-by: Yonghong Song <yhs@fb.com>
->>>
->>>
->>> Hi Yonghong, thanks for the fix! I didn't see those warnings on my
->>> setup. For the record my rst2man version is:
->>>
->>>     rst2man (Docutils 0.16 [release], Python 3.8.2, on linux)
->>>
->>> Your patch looks good, but instead of having blank lines at the end of
->>> most files, could you please check if the following works?
->>
->> Thanks for the tip! I looked at the generated output again. My above
->> fix can silent the warning, but certainly not correct.
->>
->> With the following change, I captured the intermediate result of the
->> .rst file.
->>
->>   ifndef RST2MAN_DEP
->>          $(error "rst2man not found, but required to generate man pages")
->>   endif
->> -       $(QUIET_GEN)( cat $< ; echo -n $(call see_also,$<) ) | rst2man
->> $(RST2MAN_OPTS) > $@
->> +       $(QUIET_GEN)( cat $< ; echo -n $(call see_also,$<) ) | tee
->> /tmp/tt | rst2man $(RST2MAN_OPTS) > $@
->>
->> With below command,
->>     make clean && make bpftool-cgroup.8
->> I can get the new .rst file for bpftool-cgroup.
->>
->> At the end of file /tmp/tt (changed bpftool-cgroup.rst), I see
->>
->>      ID       AttachType      AttachFlags     Name
->> \n SEE ALSO\n========\n\t**bpf**\ (2),\n\t**bpf-helpers**\
->> (7),\n\t**bpftool**\ (8),\n\t**bpftool-btf**\
->> (8),\n\t**bpftool-feature**\ (8),\n\t**bpftool-gen**\
->> (8),\n\t**bpftool-iter**\ (8),\n\t**bpftool-link**\
->> (8),\n\t**bpftool-map**\ (8),\n\t**bpftool-net**\
->> (8),\n\t**bpftool-perf**\ (8),\n\t**bpftool-prog**\
->> (8),\n\t**bpftool-struct_ops**\ (8)\n
->>
->> This sounds correct if we rst2man can successfully transforms '\n'
->> or '\t' to proper encoding in the man page.
->>
->> Unfortunately, with my version of rst2man, I got
->>
->> .IP "System Message: WARNING/2 (<stdin>:, line 146)"
->> Literal block ends without a blank line; unexpected unindent.
->> .sp
->> n SEE
->> ALSOn========nt**bpf**(2),nt**bpf\-helpers**(7),nt**bpftool**(8),nt**bpftool\-btf**(8),nt**bpftool\-feature**(8),nt**bpftool\-gen**(8),nt**bpftool\-iter**(8),nt**bpftool\-link**(8),nt**bpftool\-map**(8),nt**bpftool\-net**(8),nt**bpftool\-perf**(8),nt**bpftool\-prog**(8),nt**bpftool\-struct_ops**(8)n
->>
->> .\" Generated by docutils manpage writer.
->>
->> The rst2man simply considered \n as 'n'. The same for '\t' and
->> this caused the issue.
->>
->> I did not find a way to fix the problem https://www.google.com/url?q=https://zoom.us/j/94864957378?pwd%3DbXFRL1ZaRUxTbDVKcm9uRitpTXgyUT09&sa=D&source=calendar&ust=1600532408208000&usg=AOvVaw3SJ0i8oz4ZM-GRb7hYkrYlyet.
-> 
-> The following change works for me.
-> 
-> @@ -44,7 +44,7 @@ $(OUTPUT)%.8: %.rst
->  ifndef RST2MAN_DEP
->         $(error "rst2man not found, but required to generate man pages")
->  endif
-> -       $(QUIET_GEN)( cat $< ; echo -n $(call see_also,$<) ) | rst2man
-> $(RST2MAN_OPTS) > $@
-> +       $(QUIET_GEN)( cat $< ; echo -e $(call see_also,$<) ) | rst2man
-> $(RST2MAN_OPTS) > $@
-> 
->  clean: helpers-clean
->         $(call QUIET_CLEAN, Documentation)
-> -bash-4.4$
-> 
-> I will send revision 2 shortly.
+The idea of moving the napi poll process out of softirq context to a
+kernel thread based context is not new.
+Paolo Abeni and Hannes Frederic Sowa has proposed patches to move napi
+poll to kthread back in 2016. And Felix Fietkau has also proposed
+patches of similar ideas to use workqueue to process napi poll just a
+few weeks ago.
 
-Thanks Yonghong, but this does not work on my setup :/. The version of
-echo which is called on my machine from the Makefile does not seem to
-interpret the "-e" option and writes something like "-e\nSEE ALSO",
-which causes rst2man to complain.
+The main reason we'd like to push forward with this idea is that the
+scheduler has poor visibility into cpu cycles spent in softirq context,
+and is not able to make optimal scheduling decisions of the user threads.
+For example, we see in one of the application benchmark where network
+load is high, the CPUs handling network softirqs has ~80% cpu util. And
+user threads are still scheduled on those CPUs, despite other more idle
+cpus available in the system. And we see very high tail latencies. In this
+case, we have to explicitly pin away user threads from the CPUs handling
+network softirqs to ensure good performance.
+With napi poll moved to kthread, scheduler is in charge of scheduling both
+the kthreads handling network load, and the user threads, and is able to
+make better decisions. In the previous benchmark, if we do this and we
+pin the kthreads processing napi poll to specific CPUs, scheduler is
+able to schedule user threads away from these CPUs automatically.
 
-I suspect the portable option here would be printf, even though Andrii
-had some concerns that we could pass a format specifier through the file
-names [0].
+And the reason we prefer 1 kthread per napi, instead of 1 workqueue
+entity per host, is that kthread is more configurable than workqueue,
+and we could leverage existing tuning tools for threads, like taskset,
+chrt, etc to tune scheduling class and cpu set, etc. Another reason is
+if we eventually want to provide busy poll feature using kernel threads
+for napi poll, kthread seems to be more suitable than workqueue. 
 
-Would this work on your setup?
+In this patch series, I revived Paolo and Hannes's patch in 2016 and
+left them as the first 2 patches. Then there are changes proposed by
+Felix, Jakub, Paolo and myself on top of those, with suggestions from
+Eric Dumazet.
 
-	$(QUIET_GEN)( cat $< ; printf $(call see_also,$<) ) | rst2man...
+In terms of performance, I ran tcp_rr tests with 1000 flows with
+various request/response sizes, with RFS/RPS disabled, and compared
+performance between softirq vs kthread. Host has 56 hyper threads and
+100Gbps nic.
 
-Would that be acceptable?
+        req/resp   QPS   50%tile    90%tile    99%tile    99.9%tile
+softirq   1B/1B   2.19M   284us       987us      1.1ms      1.56ms
+kthread   1B/1B   2.14M   295us       987us      1.0ms      1.17ms
 
-[0]
-https://lore.kernel.org/bpf/ca595fd6-e807-ac8e-f15f-68bfc7b7dbc4@isovalent.com/T/#m01bb298fd512121edd5e77a26ed5382c0c53939e
+softirq 5KB/5KB   1.31M   869us      1.06ms     1.28ms      2.38ms
+kthread 5KB/5KB   1.32M   878us      1.06ms     1.26ms      1.66ms
 
-Quentin
+softirq 1MB/1MB  10.78K   84ms       166ms      234ms       294ms
+kthread 1MB/1MB  10.83K   82ms       173ms      262ms       320ms
+
+I also ran one application benchmark where the user threads have more
+work to do. We do see good amount of tail latency reductions with the
+kthread model. 
+
+Paolo Abeni (2):
+  net: implement threaded-able napi poll loop support
+  net: add sysfs attribute to control napi threaded mode
+Felix Fietkau (1):
+  net: extract napi poll functionality to __napi_poll()
+Jakub Kicinski (1):
+  net: modify kthread handler to use __napi_poll()
+Paolo Abeni (1):
+  net: process RPS/RFS work in kthread context
+Wei Wang (1):
+  net: improve napi threaded config
+
+ include/linux/netdevice.h |   6 ++
+ net/core/dev.c            | 146 +++++++++++++++++++++++++++++++++++---
+ net/core/net-sysfs.c      |  99 ++++++++++++++++++++++++++
+ 3 files changed, 242 insertions(+), 9 deletions(-)
+
+-- 
+2.28.0.618.gf4bc123cb7-goog
+
