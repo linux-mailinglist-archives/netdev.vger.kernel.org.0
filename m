@@ -2,130 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E6D62698AE
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 00:13:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C95A12698B8
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 00:20:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726085AbgINWNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 18:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53496 "EHLO
+        id S1726057AbgINWUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 18:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725926AbgINWNn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 18:13:43 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1DCC06174A;
-        Mon, 14 Sep 2020 15:13:42 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id s19so999300ybc.5;
-        Mon, 14 Sep 2020 15:13:42 -0700 (PDT)
+        with ESMTP id S1725999AbgINWUD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 18:20:03 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F619C06174A;
+        Mon, 14 Sep 2020 15:20:01 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id x8so1024301ybm.3;
+        Mon, 14 Sep 2020 15:20:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=RglK90z0a3hBYnR6IDE3hTgXU5PR2qc3m3JzZSIHXEE=;
-        b=WF+Tg8zxtyrao/CwpX5gyb6UeGKrgNQGSWbA+RWUHIQued+PwD1BcQIUUfteaGfVBi
-         O2WlvV4PVa5HOp01iHKbSva9Yv2/s0qOF48xyUdjw+hxbJV9v7bkET/VqQkJxJ3ViQ/I
-         Ob4obTCB5uX2btl6KaC2bjv98UHkxSwq9h7wvaBsVPyHZIgRy2RxbGhp9hXPR83j37ip
-         cU9JB7UEtC/5q0ofqPXM519g9ghBDw7GTzmJm/dfNatdmaspPlZvdUCpmlsI+bMfCYtg
-         /rvhHYYTrMLYiVBcZdwRGr70JIF3SioNQeVXLHj2mahuPl3wiIXIsUWS1mwaXDtJ9mJh
-         3R6w==
+        bh=yGFARoPVASh2zARPUnvTQIJesXpA+uisLN9Xh6rSokg=;
+        b=VsW83caD1ntRnz/zIusk+CFOTSEG2NH4CdQwk/SbqsXNJUa7aK5+91rNQ3RdETRbsC
+         a/KcOxpKky1O1O6ScHe3GzNaOKQzDH0z+f0tdaywuWxd1ikYOVAUad5e6t2X5mTlH8JV
+         9063dfE7JDDIJ9hiAvC3xp2FYe0w7BALlONXGGJIuduYh2QYcKRK4k1WyweQTiRiaC8k
+         TqMms2zoZsp7BP+Q5u6++zasPLvw2u28/l1SHrKOzVltmsFQT2z+Eh6rnIdDLAxqHN4/
+         wvCDdtmiaDp1IoV9h+zZrA+/oZpg6PblUTSD4Yzz8nBNBkySY2WRodn4IU6fBTt1/EeF
+         JnCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RglK90z0a3hBYnR6IDE3hTgXU5PR2qc3m3JzZSIHXEE=;
-        b=YvoMMu8jrJygBz66CJCwrGC7lVftiLqpKRgrPKqx1kCkC+NFdxXG6N/3tFj80I0hiO
-         AWr5E6SDJGcMTO9yME+ddxkmtYF09L2ftYslRpagJcPI76uLZVXde8zNImDsBqdEB2bd
-         kpQrH1RF8qZwtKlTKLMs+RaijsnxZWiuM4l9pBpwiQT+xuxb4a5+tDpFwmaRduRuu3MY
-         xSLpaNFSWMr/xA4QGIGyXtG14xFIkzj8BzxzXtSyIM8tN1oq363DSVWHZ/M7D00W5cEE
-         MdvdwXBX4f33FMd9cCj4y0EOkkd3m5OEHcDWHJBkBYeRL+0/yMBqwErsHDPvv8XsHh5F
-         IugQ==
-X-Gm-Message-State: AOAM533kqP7MZ1z7KE3assJhsaGXOAwPCGpISZuHPI/P5hHU8xBCqGOc
-        bwamO0dGfFCueJYRZAOsIaBmZq4BkeSAJx31rfQ=
-X-Google-Smtp-Source: ABdhPJz+Rr4zt5euw9s6DupxpOtAgiiDAXem4HuNapVvUp7m3R0+L27kNPJyawdySJn5s+jhU5PA5bDXGiQcYYyBWjo=
-X-Received: by 2002:a25:e655:: with SMTP id d82mr24894623ybh.347.1600121621869;
- Mon, 14 Sep 2020 15:13:41 -0700 (PDT)
+        bh=yGFARoPVASh2zARPUnvTQIJesXpA+uisLN9Xh6rSokg=;
+        b=YgYZRmVAcZpb8f3Yda0FxsjGVd18/iXxkUt1Mk6YBZeYCyazVl7lQN6YBEORcvGxbC
+         hr5tz7bbDk4Dr3UZy2Ah0RzBZ20Z+trsrNp0pL8xPglsJJ+d5CGQ9ZC5nF5/GundZ1Of
+         +1YTa/YlE0bvGtpBGYIypYky2LhDs/Pc2IG5bwlSrmZOdYhxKvBC3qKTsJf/C/Wzc1Uy
+         CNFyZi0yG3lCr49xtEOoV/wEedfoEuQo3XfjB6Ln+X6Z0e+I+GHuipUZURpl6Tmu8LVJ
+         YHgrCeNJeM66Qc2/7ilC2sQrSbnxNiOtrp9SFL1khM3q1Vk9EQ/K5w5ttG/MYLDcfsKI
+         gS9Q==
+X-Gm-Message-State: AOAM532gJCK7IE2a6GevsEYamtKnPAuugBk1KhMe0Zyi5/r+f7MiE83x
+        +xLDeVkyCA9JlgcqY+HgcjUnMlDa1qNpojLWkMM=
+X-Google-Smtp-Source: ABdhPJw7xF2+nYspneRT7HPRWpV5MjpJ6UJEPslkZIs0jKN7RN4N95zDIkGXZXCiOzazYlKzI4ILwvPJPXdxzbgAmEE=
+X-Received: by 2002:a25:e655:: with SMTP id d82mr24930234ybh.347.1600122000365;
+ Mon, 14 Sep 2020 15:20:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200911143022.414783-1-nicolas.rybowski@tessares.net> <CAPhsuW74oqvhySsVqLKrtz9r-EJxHrXza0gSGK2nm6GnKjmakQ@mail.gmail.com>
-In-Reply-To: <CAPhsuW74oqvhySsVqLKrtz9r-EJxHrXza0gSGK2nm6GnKjmakQ@mail.gmail.com>
+References: <20200914183110.999906-1-yhs@fb.com>
+In-Reply-To: <20200914183110.999906-1-yhs@fb.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 14 Sep 2020 15:13:31 -0700
-Message-ID: <CAEf4Bza3yEmxEOXoS-sFBCBXju4O_z4XhC2Um+FM-3F793kz-A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/5] bpf: expose is_mptcp flag to bpf_tcp_sock
-To:     Song Liu <song@kernel.org>
-Cc:     Nicolas Rybowski <nicolas.rybowski@tessares.net>,
+Date:   Mon, 14 Sep 2020 15:19:49 -0700
+Message-ID: <CAEf4BzY-ewpt7c602omSqPYvPKArmOBgj-WBAGiMiQ10p+T9eQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3] bpftool: fix build failure
+To:     Yonghong Song <yhs@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        Kernel Team <kernel-team@fb.com>,
+        Quentin Monnet <quentin@isovalent.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 11:21 AM Song Liu <song@kernel.org> wrote:
+On Mon, Sep 14, 2020 at 11:31 AM Yonghong Song <yhs@fb.com> wrote:
 >
-> On Fri, Sep 11, 2020 at 8:07 AM Nicolas Rybowski
-> <nicolas.rybowski@tessares.net> wrote:
-> >
-> > is_mptcp is a field from struct tcp_sock used to indicate that the
-> > current tcp_sock is part of the MPTCP protocol.
-> >
-> > In this protocol, a first socket (mptcp_sock) is created with
-> > sk_protocol set to IPPROTO_MPTCP (=262) for control purpose but it
-> > isn't directly on the wire. This is the role of the subflow (kernel)
-> > sockets which are classical tcp_sock with sk_protocol set to
-> > IPPROTO_TCP. The only way to differentiate such sockets from plain TCP
-> > sockets is the is_mptcp field from tcp_sock.
-> >
-> > Such an exposure in BPF is thus required to be able to differentiate
-> > plain TCP sockets from MPTCP subflow sockets in BPF_PROG_TYPE_SOCK_OPS
-> > programs.
-> >
-> > The choice has been made to silently pass the case when CONFIG_MPTCP is
-> > unset by defaulting is_mptcp to 0 in order to make BPF independent of
-> > the MPTCP configuration. Another solution is to make the verifier fail
-> > in 'bpf_tcp_sock_is_valid_ctx_access' but this will add an additional
-> > '#ifdef CONFIG_MPTCP' in the BPF code and a same injected BPF program
-> > will not run if MPTCP is not set.
-> >
-> > An example use-case is provided in
-> > https://github.com/multipath-tcp/mptcp_net-next/tree/scripts/bpf/examples
-> >
-> > Suggested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> > Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> > Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-> > Signed-off-by: Nicolas Rybowski <nicolas.rybowski@tessares.net>
-> > ---
-> >  include/uapi/linux/bpf.h       | 1 +
-> >  net/core/filter.c              | 9 ++++++++-
-> >  tools/include/uapi/linux/bpf.h | 1 +
-> >  3 files changed, 10 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 7dd314176df7..7d179eada1c3 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -4060,6 +4060,7 @@ struct bpf_tcp_sock {
-> >         __u32 delivered;        /* Total data packets delivered incl. rexmits */
-> >         __u32 delivered_ce;     /* Like the above but only ECE marked packets */
-> >         __u32 icsk_retransmits; /* Number of unrecovered [RTO] timeouts */
-> > +       __u32 is_mptcp;         /* Is MPTCP subflow? */
+> When building bpf selftests like
+>   make -C tools/testing/selftests/bpf -j20
+> I hit the following errors:
+>   ...
+>   GEN      /net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-gen.8
+>   <stdin>:75: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+>   <stdin>:71: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:85: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:57: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+>   <stdin>:66: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:109: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:175: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   <stdin>:273: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+>   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-perf.8] Error 12
+>   make[1]: *** Waiting for unfinished jobs....
+>   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-iter.8] Error 12
+>   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-struct_ops.8] Error 12
+>   ...
 >
-> Shall we have an __u32 flags, and make is_mptcp a bit of it?
+> I am using:
+>   -bash-4.4$ rst2man --version
+>   rst2man (Docutils 0.11 [repository], Python 2.7.5, on linux2)
+>   -bash-4.4$
 >
+> The Makefile generated final .rst file (e.g., bpftool-cgroup.rst) looks like
+>   ...
+>       ID       AttachType      AttachFlags     Name
+>   \n SEE ALSO\n========\n\t**bpf**\ (2),\n\t**bpf-helpers**\
+>   (7),\n\t**bpftool**\ (8),\n\t**bpftool-btf**\
+>   (8),\n\t**bpftool-feature**\ (8),\n\t**bpftool-gen**\
+>   (8),\n\t**bpftool-iter**\ (8),\n\t**bpftool-link**\
+>   (8),\n\t**bpftool-map**\ (8),\n\t**bpftool-net**\
+>   (8),\n\t**bpftool-perf**\ (8),\n\t**bpftool-prog**\
+>   (8),\n\t**bpftool-struct_ops**\ (8)\n
+>
+> The rst2man generated .8 file looks like
+> Literal block ends without a blank line; unexpected unindent.
+>  .sp
+>  n SEEALSOn========nt**bpf**(2),nt**bpf\-helpers**(7),nt**bpftool**(8),nt**bpftool\-btf**(8),nt**
+>  bpftool\-feature**(8),nt**bpftool\-gen**(8),nt**bpftool\-iter**(8),nt**bpftool\-link**(8),nt**
+>  bpftool\-map**(8),nt**bpftool\-net**(8),nt**bpftool\-perf**(8),nt**bpftool\-prog**(8),nt**
+>  bpftool\-struct_ops**(8)n
+>
+> Looks like that particular version of rst2man prefers to have actual new line
+> instead of \n.
+>
+> Since `echo -e` may not be available in some environment, let us use `printf`.
+> Format string "%b" is used for `printf` to ensure all escape characters are
+> interpretted properly.
+>
+> Cc: Quentin Monnet <quentin@isovalent.com>
+> Suggested-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> Fixes: 18841da98100 ("tools: bpftool: Automate generation for "SEE ALSO" sections in man pages")
+> Signed-off-by: Yonghong Song <yhs@fb.com>
+> ---
 
-Bitfields are slow and more annoying to rewrite in verifier, so having
-an __u32 field is actually good.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-> Thanks,
-> Song
-> [...]
+>  tools/bpf/bpftool/Documentation/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/bpf/bpftool/Documentation/Makefile b/tools/bpf/bpftool/Documentation/Makefile
+> index 4c9dd1e45244..f33cb02de95c 100644
+> --- a/tools/bpf/bpftool/Documentation/Makefile
+> +++ b/tools/bpf/bpftool/Documentation/Makefile
+> @@ -44,7 +44,7 @@ $(OUTPUT)%.8: %.rst
+>  ifndef RST2MAN_DEP
+>         $(error "rst2man not found, but required to generate man pages")
+>  endif
+> -       $(QUIET_GEN)( cat $< ; echo -n $(call see_also,$<) ) | rst2man $(RST2MAN_OPTS) > $@
+> +       $(QUIET_GEN)( cat $< ; printf "%b" $(call see_also,$<) ) | rst2man $(RST2MAN_OPTS) > $@
+>
+>  clean: helpers-clean
+>         $(call QUIET_CLEAN, Documentation)
+> --
+> 2.24.1
+>
