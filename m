@@ -2,217 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E76DC268A7B
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 14:00:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 611D7268ADC
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 14:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726162AbgINMAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 08:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726089AbgINLnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 07:43:22 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D46C06178A
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 04:43:21 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id o8so22770438ejb.10
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 04:43:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=EorQ4+lFRDMIIwVJVubxPfngkVD7wpy5XnFzjtyaCII=;
-        b=cEieP5uetVjdC8PZd4Ru1iB2Nef0yKOKkYyYizT9bwmkXEKdO1cikfrP2sOkOdB1Zr
-         FI9vYfQCfX2c5Uo50C8lRbiXEZ7CqDZHxhlB9bKTryX2nl8+/SdZFnl2pjIKnUM6RtLH
-         jXwToEOnBNkB287LKU+8TDjrR/6wbnqmhRQSc1b7X1+7bqk538Seh3CLJAqfe/8xw8b2
-         B35lux0oUategBjqPcr6i6fItIMfrH8kRacS94/1OTXVxS9iWoO5zBo0nLG2dExxY4vg
-         cECI9qFEDArN3E1INVmuU/4vTVLHQXLILSA9TVVGLI+XkGC5/TUkZ8gE3frGh2jwMwkw
-         yC1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EorQ4+lFRDMIIwVJVubxPfngkVD7wpy5XnFzjtyaCII=;
-        b=tb3VSQXGMrhADI2GBEXlPQ4gxG3BCTdkWprEShbOYE+bad1xifPrwQ3qOH42Zgrsl6
-         4FrQ25ATCOW1AsliswbDFZPJxxj9YCICX61rmtiz5KKAimosE1ajtLZyuldCqLr09y6Y
-         mPd2IUtL6qThqTo1i4lOpIazLnVowRPkQ/8NOf7IL1onw4xR1UwKGlujMwTSALrpd0XQ
-         rdvPGp5Y30zEqpy3iIR7+kOzPE8OKVUb/XtUUKeAzgPrP7tv7CwlHGENi9q0IbaJUeW3
-         2XjpUZyYfmA3iMkNaCPpE3Oc14aotPPzmO6jLHGfXheKrx5d3/wqFtRXEys69XyNH46B
-         WSOw==
-X-Gm-Message-State: AOAM533ifzVNJvbAbHLiBVkzaQP6vVofESUYqdLZ+uwxOOrKsiKCjzYb
-        OVXTawBppcxiPfEM51WuhzAOQrZn2sEf+tnt
-X-Google-Smtp-Source: ABdhPJzVBIkjmcXzKOZKv9MKgpLPw6zIkoxrrF0qu90ZuuZOdF8ccgxoqEDEBgyOFojfgFJim8eJdQ==
-X-Received: by 2002:a17:907:685:: with SMTP id wn5mr6516776ejb.285.1600083799791;
-        Mon, 14 Sep 2020 04:43:19 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id z23sm7542624eja.29.2020.09.14.04.43.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 04:43:19 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 13:43:18 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Moshe Shemesh <moshe@mellanox.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        id S1726376AbgINM0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 08:26:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40936 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726272AbgINMY4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 08:24:56 -0400
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AB9392220E;
+        Mon, 14 Sep 2020 12:20:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600086050;
+        bh=YriLuLaFHzLfRAoXWiSCNiRverNlmw+ZAkR2pmdisCw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lAyrt8Msk+qgwcGynhjL1jG4JJFYSkJICoVwEG5X9Ki7q5+u+PiE6K8WMcPcy+ceH
+         U+kw1F/b3sDTAl7If26HeT3jr9hABXjuKmlYEJWe5CIisAHxCp/aTHbi1ce6fuL/AR
+         RengwapvOITAcODLACP75ilW4+B3IOrCJUaO4k+g=
+Date:   Mon, 14 Sep 2020 13:20:43 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     bpf@vger.kernel.org, ardb@kernel.org, naresh.kamboju@linaro.org,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4 15/15] devlink: Add
- Documentation/networking/devlink/devlink-reload.rst
-Message-ID: <20200914114318.GD2236@nanopsycho.orion>
-References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
- <1600063682-17313-16-git-send-email-moshe@mellanox.com>
+Subject: Re: [PATCH] arm64: bpf: Fix branch offset in JIT
+Message-ID: <20200914122042.GA24441@willie-the-truck>
+References: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1600063682-17313-16-git-send-email-moshe@mellanox.com>
+In-Reply-To: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Sep 14, 2020 at 08:08:02AM CEST, moshe@mellanox.com wrote:
->Add devlink reload rst documentation file.
->Update index file to include it.
->
->Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
->---
->v3 -> v4:
->- Remove reload action fw_activate_no_reset
->- Add reload actions limit levels and document the no_reset limit level
->  constrains
->v2 -> v3:
->- Devlink reload returns the actions done
->- Replace fw_live_patch action by fw_activate_no_reset
->- Explain fw_activate meaning
->v1 -> v2:
->- Instead of reload levels driver,fw_reset,fw_live_patch have reload
->  actions driver_reinit,fw_activate,fw_live_patch
->---
-> .../networking/devlink/devlink-reload.rst     | 80 +++++++++++++++++++
-> Documentation/networking/devlink/index.rst    |  1 +
-> 2 files changed, 81 insertions(+)
-> create mode 100644 Documentation/networking/devlink/devlink-reload.rst
->
->diff --git a/Documentation/networking/devlink/devlink-reload.rst b/Documentation/networking/devlink/devlink-reload.rst
->new file mode 100644
->index 000000000000..6ac9dddd2208
->--- /dev/null
->+++ b/Documentation/networking/devlink/devlink-reload.rst
->@@ -0,0 +1,80 @@
->+.. SPDX-License-Identifier: GPL-2.0
->+
->+==============
->+Devlink Reload
->+==============
->+
->+``devlink-reload`` provides mechanism to either reload driver entities,
->+applying ``devlink-params`` and ``devlink-resources`` new values or firmware
->+activation depends on reload action selected.
->+
->+Reload actions
->+==============
->+
->+User may select a reload action.
->+By default ``driver_reinit`` action is selected.
->+
->+.. list-table:: Possible reload actions
->+   :widths: 5 90
->+
->+   * - Name
->+     - Description
->+   * - ``driver-reinit``
->+     - Devlink driver entities re-initialization, including applying
->+       new values to devlink entities which are used during driver
->+       load such as ``devlink-params`` in configuration mode
->+       ``driverinit`` or ``devlink-resources``
->+   * - ``fw_activate``
->+     - Firmware activate. Activates new firmware if such image is stored and
->+       pending activation. This action involves firmware reset, if no new image
->+       pending this action will reload current firmware image.
->+
->+Note that when required to do firmware activation some drivers may need
->+to reload the driver. On the other hand some drivers may need to reset
-
-s/reload/reinit" ?
-
->+the firmware to reinitialize the driver entities. Therefore, the devlink
->+reload command returns the actions which were actually performed.
-
-I would perhaps say something more generic like:
-Note that even though user asks for a specific action, the driver
-implementation might require to perform another action alongside with
-it. For example, some driver do not support driver reinitialization
-being performed without fw activation. Therefore, the devlink reload
-command return the list of actions which were actrually performed.
-
-
->+
->+Reload action limit levels
->+==========================
->+
->+By default reload actions are not limited and Driver implementation may
-
-Why capital "D"?
-
-
->+include reset or downtime as needed to perform the actions.
->+
->+However, some drivers support action limit levels, which limits the action
->+implementation to specific constrains.
->+
->+.. list-table:: Possible reload action limit levels
->+   :widths: 5 90
->+
->+   * - Name
->+     - Description
->+   * - ``no_reset``
->+     - No reset allowed, no down time allowed, no link flap and no
->+       configuration is lost.
->+
->+Change namespace
->+================
->+
->+All devlink instances are created in init_net and stay there for a
->+lifetime. Allow user to be able to move devlink instances into
->+namespaces during devlink reload operation. That ensures proper
->+re-instantiation of driver objects, including netdevices.
-
-This sounds like a commit message :) Could you please re-phrase a bit?
-
-
->+
->+example usage
->+-------------
->+
->+.. code:: shell
->+
->+    $ devlink dev reload help
->+    $ devlink dev reload DEV [ netns { PID | NAME | ID } ] [ action { driver_reinit | fw_activate } ] [limit_level no_reset]
->+
->+    # Run reload command for devlink driver entities re-initialization:
->+    $ devlink dev reload pci/0000:82:00.0 action driver_reinit
->+    reload_actions_performed:
->+      driver_reinit
->+
->+    # Run reload command to activate firmware:
->+    # Note that mlx5 driver reloads the driver while activating firmware
->+    $ devlink dev reload pci/0000:82:00.0 action fw_activate
->+    reload_actions_performed:
->+      driver_reinit fw_activate
-
-This looks fine to me.
-
-
->diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
->index 7684ae5c4a4a..d82874760ae2 100644
->--- a/Documentation/networking/devlink/index.rst
->+++ b/Documentation/networking/devlink/index.rst
->@@ -20,6 +20,7 @@ general.
->    devlink-params
->    devlink-region
->    devlink-resource
->+   devlink-reload
->    devlink-trap
+On Mon, Sep 14, 2020 at 11:36:21AM +0300, Ilias Apalodimas wrote:
+> Running the eBPF test_verifier leads to random errors looking like this:
 > 
-> Driver-specific documentation
->-- 
->2.17.1
->
+> [ 6525.735488] Unexpected kernel BRK exception at EL1
+> [ 6525.735502] Internal error: ptrace BRK handler: f2000100 [#1] SMP
+> [ 6525.741609] Modules linked in: nls_utf8 cifs libdes libarc4 dns_resolver fscache binfmt_misc nls_ascii nls_cp437 vfat fat aes_ce_blk crypto_simd cryptd aes_ce_cipher ghash_ce gf128mul efi_pstore sha2_ce sha256_arm64 sha1_ce evdev efivars efivarfs ip_tables x_tables autofs4 btrfs blake2b_generic xor xor_neon zstd_compress raid6_pq libcrc32c crc32c_generic ahci xhci_pci libahci xhci_hcd igb libata i2c_algo_bit nvme realtek usbcore nvme_core scsi_mod t10_pi netsec mdio_devres of_mdio gpio_keys fixed_phy libphy gpio_mb86s7x
+> [ 6525.787760] CPU: 3 PID: 7881 Comm: test_verifier Tainted: G        W         5.9.0-rc1+ #47
+> [ 6525.796111] Hardware name: Socionext SynQuacer E-series DeveloperBox, BIOS build #1 Jun  6 2020
+> [ 6525.804812] pstate: 20000005 (nzCv daif -PAN -UAO BTYPE=--)
+> [ 6525.810390] pc : bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+> [ 6525.815613] lr : bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+> [ 6525.820832] sp : ffff8000130cbb80
+> [ 6525.824141] x29: ffff8000130cbbb0 x28: 0000000000000000
+> [ 6525.829451] x27: 000005ef6fcbf39b x26: 0000000000000000
+> [ 6525.834759] x25: ffff8000130cbb80 x24: ffff800011dc7038
+> [ 6525.840067] x23: ffff8000130cbd00 x22: ffff0008f624d080
+> [ 6525.845375] x21: 0000000000000001 x20: ffff800011dc7000
+> [ 6525.850682] x19: 0000000000000000 x18: 0000000000000000
+> [ 6525.855990] x17: 0000000000000000 x16: 0000000000000000
+> [ 6525.861298] x15: 0000000000000000 x14: 0000000000000000
+> [ 6525.866606] x13: 0000000000000000 x12: 0000000000000000
+> [ 6525.871913] x11: 0000000000000001 x10: ffff8000000a660c
+> [ 6525.877220] x9 : ffff800010951810 x8 : ffff8000130cbc38
+> [ 6525.882528] x7 : 0000000000000000 x6 : 0000009864cfa881
+> [ 6525.887836] x5 : 00ffffffffffffff x4 : 002880ba1a0b3e9f
+> [ 6525.893144] x3 : 0000000000000018 x2 : ffff8000000a4374
+> [ 6525.898452] x1 : 000000000000000a x0 : 0000000000000009
+> [ 6525.903760] Call trace:
+> [ 6525.906202]  bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+> [ 6525.911076]  bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+> [ 6525.915957]  bpf_dispatcher_xdp_func+0x14/0x20
+> [ 6525.920398]  bpf_test_run+0x70/0x1b0
+> [ 6525.923969]  bpf_prog_test_run_xdp+0xec/0x190
+> [ 6525.928326]  __do_sys_bpf+0xc88/0x1b28
+> [ 6525.932072]  __arm64_sys_bpf+0x24/0x30
+> [ 6525.935820]  el0_svc_common.constprop.0+0x70/0x168
+> [ 6525.940607]  do_el0_svc+0x28/0x88
+> [ 6525.943920]  el0_sync_handler+0x88/0x190
+> [ 6525.947838]  el0_sync+0x140/0x180
+> [ 6525.951154] Code: d4202000 d4202000 d4202000 d4202000 (d4202000)
+> [ 6525.957249] ---[ end trace cecc3f93b14927e2 ]---
+> 
+> The reason seems to be the offset[] creation and usage ctx->offset[]
+
+"seems to be"? Are you unsure?
+
+> while building the eBPF body.  The code currently omits the first 
+> instruction, since build_insn() will increase our ctx->idx before saving 
+> it.  When "taken loop with back jump to 1st insn" test runs it will
+> eventually call bpf2a64_offset(-1, 2, ctx). Since negative indexing is
+> permitted, the current outcome depends on the value stored in
+> ctx->offset[-1], which has nothing to do with our array.
+> If the value happens to be 0 the tests will work. If not this error
+> triggers.
+> 
+> So let's fix it by creating the ctx->offset[] correctly in the first
+> place and account for the extra instruction while calculating the arm
+> instruction offsets.
+
+No Fixes: tag?
+
+> Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Signed-off-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+
+Non-author signoffs here. What's going on?
+
+Will
