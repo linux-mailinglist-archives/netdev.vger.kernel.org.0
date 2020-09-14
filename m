@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D342693A2
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:38:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ABBD269395
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgINRiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 13:38:15 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:42922 "EHLO huawei.com"
+        id S1726273AbgINRfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 13:35:31 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:11841 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726110AbgINM1F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 08:27:05 -0400
+        id S1726417AbgINM1a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 08:27:30 -0400
 Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id DAFADEBE15ECF5961EB8;
-        Mon, 14 Sep 2020 20:09:28 +0800 (CST)
+        by Forcepoint Email with ESMTP id ED1A68C59459F0166E50;
+        Mon, 14 Sep 2020 20:09:33 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 14 Sep 2020 20:09:22 +0800
+ 14.3.487.0; Mon, 14 Sep 2020 20:09:23 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -24,9 +24,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
         Yunsheng Lin <linyunsheng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 1/6] net: hns3: batch the page reference count updates
-Date:   Mon, 14 Sep 2020 20:06:52 +0800
-Message-ID: <1600085217-26245-2-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 2/6] net: hns3: batch tx doorbell operation
+Date:   Mon, 14 Sep 2020 20:06:53 +0800
+Message-ID: <1600085217-26245-3-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1600085217-26245-1-git-send-email-tanhuazhong@huawei.com>
 References: <1600085217-26245-1-git-send-email-tanhuazhong@huawei.com>
@@ -41,117 +41,155 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yunsheng Lin <linyunsheng@huawei.com>
 
-Batch the page reference count updates instead of doing them
-one at a time. By doing this we can improve the overall receive
-performance by avoid some atomic increment operations when the
-rx page is reused.
+Use netdev_xmit_more() to defer the tx doorbell operation when
+the skb is passed to the driver continuously. By doing this we
+can improve the overall xmit performance by avoid some doorbell
+operations.
+
+Also, the tx_err_cnt stat is not used, so rename it to tx_more
+stat.
 
 Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 32 ++++++++++++++++++-------
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h |  1 +
- 2 files changed, 25 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 47 +++++++++++++++++-----
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  2 +-
+ 3 files changed, 39 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 93825a4..3762142 100644
+index 3762142..6a57c0d 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2302,6 +2302,8 @@ static int hns3_alloc_buffer(struct hns3_enet_ring *ring,
- 	cb->buf  = page_address(p);
- 	cb->length = hns3_page_size(ring);
- 	cb->type = DESC_TYPE_PAGE;
-+	page_ref_add(p, USHRT_MAX - 1);
-+	cb->pagecnt_bias = USHRT_MAX;
- 
- 	return 0;
- }
-@@ -2311,8 +2313,8 @@ static void hns3_free_buffer(struct hns3_enet_ring *ring,
- {
- 	if (cb->type == DESC_TYPE_SKB)
- 		dev_kfree_skb_any((struct sk_buff *)cb->priv);
--	else if (!HNAE3_IS_TX_RING(ring))
--		put_page((struct page *)cb->priv);
-+	else if (!HNAE3_IS_TX_RING(ring) && cb->pagecnt_bias)
-+		__page_frag_cache_drain(cb->priv, cb->pagecnt_bias);
- 	memset(cb, 0, sizeof(*cb));
+@@ -1383,6 +1383,27 @@ static int hns3_fill_skb_to_desc(struct hns3_enet_ring *ring,
+ 	return bd_num;
  }
  
-@@ -2610,6 +2612,11 @@ static bool hns3_page_is_reusable(struct page *page)
- 		!page_is_pfmemalloc(page);
- }
- 
-+static bool hns3_can_reuse_page(struct hns3_desc_cb *cb)
++static void hns3_tx_doorbell(struct hns3_enet_ring *ring, int num,
++			     bool doorbell)
 +{
-+	return (page_count(cb->priv) - cb->pagecnt_bias) == 1;
-+}
++	ring->pending_buf += num;
 +
- static void hns3_nic_reuse_page(struct sk_buff *skb, int i,
- 				struct hns3_enet_ring *ring, int pull_len,
- 				struct hns3_desc_cb *desc_cb)
-@@ -2618,6 +2625,7 @@ static void hns3_nic_reuse_page(struct sk_buff *skb, int i,
- 	int size = le16_to_cpu(desc->rx.size);
- 	u32 truesize = hns3_buf_size(ring);
- 
-+	desc_cb->pagecnt_bias--;
- 	skb_add_rx_frag(skb, i, desc_cb->priv, desc_cb->page_offset + pull_len,
- 			size - pull_len, truesize);
- 
-@@ -2625,20 +2633,27 @@ static void hns3_nic_reuse_page(struct sk_buff *skb, int i,
- 	 * when page_offset rollback to zero, flag default unreuse
- 	 */
- 	if (unlikely(!hns3_page_is_reusable(desc_cb->priv)) ||
--	    (!desc_cb->page_offset && page_count(desc_cb->priv) > 1))
-+	    (!desc_cb->page_offset && !hns3_can_reuse_page(desc_cb))) {
-+		__page_frag_cache_drain(desc_cb->priv, desc_cb->pagecnt_bias);
- 		return;
-+	}
- 
- 	/* Move offset up to the next cache line */
- 	desc_cb->page_offset += truesize;
- 
- 	if (desc_cb->page_offset + truesize <= hns3_page_size(ring)) {
- 		desc_cb->reuse_flag = 1;
--		/* Bump ref count on page before it is given */
--		get_page(desc_cb->priv);
--	} else if (page_count(desc_cb->priv) == 1) {
-+	} else if (hns3_can_reuse_page(desc_cb)) {
- 		desc_cb->reuse_flag = 1;
- 		desc_cb->page_offset = 0;
--		get_page(desc_cb->priv);
-+	} else if (desc_cb->pagecnt_bias) {
-+		__page_frag_cache_drain(desc_cb->priv, desc_cb->pagecnt_bias);
++	if (!doorbell) {
++		u64_stats_update_begin(&ring->syncp);
++		ring->stats.tx_more++;
++		u64_stats_update_end(&ring->syncp);
 +		return;
 +	}
 +
-+	if (unlikely(!desc_cb->pagecnt_bias)) {
-+		page_ref_add(desc_cb->priv, USHRT_MAX);
-+		desc_cb->pagecnt_bias = USHRT_MAX;
- 	}
++	if (!ring->pending_buf)
++		return;
++
++	wmb(); /* Commit all data before submit */
++
++	hnae3_queue_xmit(ring->tqp, ring->pending_buf);
++	ring->pending_buf = 0;
++}
++
+ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ {
+ 	struct hns3_nic_priv *priv = netdev_priv(netdev);
+@@ -1391,11 +1412,14 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	int pre_ntu, next_to_use_head;
+ 	struct sk_buff *frag_skb;
+ 	int bd_num = 0;
++	bool doorbell;
+ 	int ret;
+ 
+ 	/* Hardware can only handle short frames above 32 bytes */
+-	if (skb_put_padto(skb, HNS3_MIN_TX_LEN))
++	if (skb_put_padto(skb, HNS3_MIN_TX_LEN)) {
++		hns3_tx_doorbell(ring, 0, !netdev_xmit_more());
+ 		return NETDEV_TX_OK;
++	}
+ 
+ 	/* Prefetch the data used later */
+ 	prefetch(skb->data);
+@@ -1406,6 +1430,7 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 			u64_stats_update_begin(&ring->syncp);
+ 			ring->stats.tx_busy++;
+ 			u64_stats_update_end(&ring->syncp);
++			hns3_tx_doorbell(ring, 0, true);
+ 			return NETDEV_TX_BUSY;
+ 		} else if (ret == -ENOMEM) {
+ 			u64_stats_update_begin(&ring->syncp);
+@@ -1446,11 +1471,9 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 
+ 	/* Complete translate all packets */
+ 	dev_queue = netdev_get_tx_queue(netdev, ring->queue_index);
+-	netdev_tx_sent_queue(dev_queue, skb->len);
+-
+-	wmb(); /* Commit all data before submit */
+-
+-	hnae3_queue_xmit(ring->tqp, bd_num);
++	doorbell = __netdev_tx_sent_queue(dev_queue, skb->len,
++					  netdev_xmit_more());
++	hns3_tx_doorbell(ring, bd_num, doorbell);
+ 
+ 	return NETDEV_TX_OK;
+ 
+@@ -1459,6 +1482,7 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 
+ out_err_tx_ok:
+ 	dev_kfree_skb_any(skb);
++	hns3_tx_doorbell(ring, 0, !netdev_xmit_more());
+ 	return NETDEV_TX_OK;
  }
  
-@@ -2846,7 +2861,8 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
- 		if (likely(hns3_page_is_reusable(desc_cb->priv)))
- 			desc_cb->reuse_flag = 1;
- 		else /* This page cannot be reused so discard it */
--			put_page(desc_cb->priv);
-+			__page_frag_cache_drain(desc_cb->priv,
-+						desc_cb->pagecnt_bias);
+@@ -1839,13 +1863,14 @@ static bool hns3_get_tx_timeo_queue_info(struct net_device *ndev)
+ 		    tx_ring->next_to_clean, napi->state);
  
+ 	netdev_info(ndev,
+-		    "tx_pkts: %llu, tx_bytes: %llu, io_err_cnt: %llu, sw_err_cnt: %llu\n",
++		    "tx_pkts: %llu, tx_bytes: %llu, io_err_cnt: %llu, sw_err_cnt: %llu, tx_pending: %d\n",
+ 		    tx_ring->stats.tx_pkts, tx_ring->stats.tx_bytes,
+-		    tx_ring->stats.io_err_cnt, tx_ring->stats.sw_err_cnt);
++		    tx_ring->stats.io_err_cnt, tx_ring->stats.sw_err_cnt,
++		    tx_ring->pending_buf);
+ 
+ 	netdev_info(ndev,
+-		    "seg_pkt_cnt: %llu, tx_err_cnt: %llu, restart_queue: %llu, tx_busy: %llu\n",
+-		    tx_ring->stats.seg_pkt_cnt, tx_ring->stats.tx_err_cnt,
++		    "seg_pkt_cnt: %llu, tx_more: %llu, restart_queue: %llu, tx_busy: %llu\n",
++		    tx_ring->stats.seg_pkt_cnt, tx_ring->stats.tx_more,
+ 		    tx_ring->stats.restart_queue, tx_ring->stats.tx_busy);
+ 
+ 	/* When mac received many pause frames continuous, it's unable to send
+@@ -4181,6 +4206,8 @@ static void hns3_clear_tx_ring(struct hns3_enet_ring *ring)
+ 		hns3_free_buffer_detach(ring, ring->next_to_clean);
  		ring_ptr_move_fw(ring, next_to_clean);
- 		return 0;
+ 	}
++
++	ring->pending_buf = 0;
+ }
+ 
+ static int hns3_clear_rx_ring(struct hns3_enet_ring *ring)
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-index 98ca6ea..8f784094 100644
+index 8f784094..f40738c 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
-@@ -287,6 +287,7 @@ struct hns3_desc_cb {
- 
- 	/* desc type, used by the ring user to mark the type of the priv data */
- 	u16 type;
-+	u16 pagecnt_bias;
- };
- 
- enum hns3_pkt_l3type {
+@@ -351,7 +351,7 @@ struct ring_stats {
+ 		struct {
+ 			u64 tx_pkts;
+ 			u64 tx_bytes;
+-			u64 tx_err_cnt;
++			u64 tx_more;
+ 			u64 restart_queue;
+ 			u64 tx_busy;
+ 			u64 tx_copy;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 2622e04..97ad68b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -32,7 +32,7 @@ static const struct hns3_stats hns3_txq_stats[] = {
+ 	HNS3_TQP_STAT("seg_pkt_cnt", seg_pkt_cnt),
+ 	HNS3_TQP_STAT("packets", tx_pkts),
+ 	HNS3_TQP_STAT("bytes", tx_bytes),
+-	HNS3_TQP_STAT("errors", tx_err_cnt),
++	HNS3_TQP_STAT("more", tx_more),
+ 	HNS3_TQP_STAT("wake", restart_queue),
+ 	HNS3_TQP_STAT("busy", tx_busy),
+ 	HNS3_TQP_STAT("copy", tx_copy),
 -- 
 2.7.4
 
