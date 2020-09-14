@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 273AC2685F3
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:31:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28A492685F5
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:31:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726152AbgINHbo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 03:31:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57714 "EHLO
+        id S1726145AbgINHbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 03:31:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726102AbgINHbD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:31:03 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD6BC061788
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 00:31:02 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id n14so11875555pff.6
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 00:31:02 -0700 (PDT)
+        with ESMTP id S1726107AbgINHbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:31:07 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8FDC06178A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 00:31:06 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id x123so11870469pfc.7
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 00:31:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4pvqiAF/2hxgxDrlvN/6Nw0fmCS9vrU/LfosPmNZwNc=;
-        b=nLge9+/foq24qWLq8+CpURdHBq0A1uSqkMxcDualUB4peA+mPLtzQa2rbwR4HotIkG
-         ClT0p7nuq1kYIO+BnrpLbNQr5PTafWkTkQ7XQ8RVecmX1fcAPzVUvz6dpc+DLO9M+X9F
-         KZ1mCAs9Dnr2nxW+T99v5qEMuMncoPP5awB9uGIrtpEFr9xo0iaOvEnJe4EF3VsIeRcp
-         VgnTh1TmhBp/5q4Xn+8eYyVRgAMDBNU9O5eU0OdMEAjNLcCiiRbibiI3msdXI/brsh8K
-         OS7E99CgcLNRiYtJmCrcYk6aukTrcnV/qwe5edv3BZi/pgZaDJ9JDwV6MPVc9XumtKSo
-         eTUA==
+        bh=G2YJJHZ1leUq1N8E18rQ9NCCVB3HJgG64yXaIhFx97s=;
+        b=PDFb++eXxAF8FcPsuVrWVMbvuj72tdFsPJ1VOQIz4SjbIX6+XyEGltpf21kH42dv2O
+         ebK3YXMoagFkNd0FioXcke/chWAMGp8iRR3FmYP7JblBzQsarKgI1EZEUQ/lEQ/6lt3N
+         kl6VOZSi343g2ArD7F1ZSrcYJHCs+MWLOOrJNkSrefO6hM7GqFeTBWUK+Nb/tAkd5cE+
+         l74Ri1SLLvJr2JwV23eiNuNLrYQydvzBJnGQFGZT9k+yqbQCsSLdvrFIjTSw+1RMVLAI
+         6zVV0OBXmeKNxYaArMbBU/hZ9uypCfZvSenSWqAN7KEHxGUNTeG1gqe1nliVh2y7JW9n
+         nXGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4pvqiAF/2hxgxDrlvN/6Nw0fmCS9vrU/LfosPmNZwNc=;
-        b=Qkoxoy6FcZDgj4wMo7MNZdgjgFCxIH8pUykKIECbhGwuagGjeu2okYxbr7cjppiAOT
-         pNXAWXaOWpJ2fTolMc65HdfKj0hWBoU86z55+lYqoeuPVMQEC1dpcf28s717srtu7xjW
-         OGosq00OUM+fHaSdzdSmtcIFk/5nyMeJQfcG1u7N0H0b34XUG0YBCTBpNAoT0C2LCIeK
-         uug5LUX+w8gjUwg41+Jawg/qjUfZktExnC+5Okk382mcjKvgSDs6wV3b9kZDhNGAEMle
-         VRufTuW3NV2QfwIYkKnmn++mAU1NHAH766bpuqJiD/Wa1ODv1CNYTC/IzwJ3EXSapOcO
-         XdXg==
-X-Gm-Message-State: AOAM533h7gBkC81EhLC5MYgmQdh7QdPrORYWsUrs3/w1mQErGWhrL7Jx
-        rmAadra7vZ5fOSxUYrf0MnE=
-X-Google-Smtp-Source: ABdhPJzTajTwM5nJLvJADMJEK0uXB+Vi1hOCifNZLW7i2KhYcD5KiyBT8ZqP5bVR07R6afCbfj1Mdw==
-X-Received: by 2002:a17:902:8306:b029:d0:cbe1:e7aa with SMTP id bd6-20020a1709028306b02900d0cbe1e7aamr13462616plb.27.1600068662478;
-        Mon, 14 Sep 2020 00:31:02 -0700 (PDT)
+        bh=G2YJJHZ1leUq1N8E18rQ9NCCVB3HJgG64yXaIhFx97s=;
+        b=Ee0j8nm7RKPPqKtuPKCVJASDpN20p37cSIhfAVsI1I0xzPA5VEdsaIQg/tmkhGeJnM
+         zmN+eeEcLyFwT9nPJuORqXwvzQzWT0GRritCbf7QZk61EeDcyNJc49vWamRNUNJeut+o
+         rvy37TjeE0mRUT4l7xU5LB72YwE21k9qdkWeuM9E26c/OkqO/gLtvItFIDRF+Vhuoozz
+         +8f69+1UTTOusAzuMActKRM/olMeX9eubQBJ9Y42qoOrbPtueEzZG7NABsLz8MoiD97A
+         uuUxKxQEfFWlr2lBVTsaDnIn1laY2IK8+2jxipUR9Yt6Cfk6Xms2vnJ4pjltd5aJan8Q
+         qKBQ==
+X-Gm-Message-State: AOAM530pq8CfI6phEH1U4hfCZCjMokaAdMJ1L6mdLs9ip3Elf7eW1FBH
+        pC3wJr5I2TGsCGECGh3YePxDk5Po7Hv1hQ==
+X-Google-Smtp-Source: ABdhPJysSIOx43BVm2ElwcpYvlfgkvCjyaN6RhnVo5OEkKJJwDIGDygF4W500uEh9G7hU8p8kHI6lA==
+X-Received: by 2002:a17:902:fe15:: with SMTP id g21mr13169836plj.22.1600068666376;
+        Mon, 14 Sep 2020 00:31:06 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.192.250])
-        by smtp.gmail.com with ESMTPSA id a16sm7609057pgh.48.2020.09.14.00.30.59
+        by smtp.gmail.com with ESMTPSA id a16sm7609057pgh.48.2020.09.14.00.31.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 00:31:02 -0700 (PDT)
+        Mon, 14 Sep 2020 00:31:05 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
@@ -54,9 +54,9 @@ Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
         stephen@networkplumber.org, borisp@mellanox.com,
         netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [net-next v3 18/20] qed: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 14 Sep 2020 12:59:37 +0530
-Message-Id: <20200914072939.803280-19-allen.lkml@gmail.com>
+Subject: [net-next v3 19/20] net: silan: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 14 Sep 2020 12:59:38 +0530
+Message-Id: <20200914072939.803280-20-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200914072939.803280-1-allen.lkml@gmail.com>
 References: <20200914072939.803280-1-allen.lkml@gmail.com>
@@ -77,154 +77,57 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed.h      |  2 +-
- drivers/net/ethernet/qlogic/qed/qed_int.c  | 27 +++-------------------
- drivers/net/ethernet/qlogic/qed/qed_int.h  |  2 +-
- drivers/net/ethernet/qlogic/qed/qed_main.c | 14 +++++------
- 4 files changed, 12 insertions(+), 33 deletions(-)
+ drivers/net/ethernet/silan/sc92031.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
-index b2a7b53ee760..22bc4ec7859a 100644
---- a/drivers/net/ethernet/qlogic/qed/qed.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed.h
-@@ -572,7 +572,7 @@ struct qed_hwfn {
- 	struct qed_consq		*p_consq;
+diff --git a/drivers/net/ethernet/silan/sc92031.c b/drivers/net/ethernet/silan/sc92031.c
+index f94078f8ebe5..8dc7143839ad 100644
+--- a/drivers/net/ethernet/silan/sc92031.c
++++ b/drivers/net/ethernet/silan/sc92031.c
+@@ -301,6 +301,7 @@ struct sc92031_priv {
  
- 	/* Slow-Path definitions */
--	struct tasklet_struct		*sp_dpc;
-+	struct tasklet_struct		sp_dpc;
- 	bool				b_sp_dpc_enabled;
+ 	/* for dev->get_stats */
+ 	long			rx_value;
++	struct net_device	*ndev;
+ };
  
- 	struct qed_ptt			*p_main_ptt;
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.c b/drivers/net/ethernet/qlogic/qed/qed_int.c
-index f8c5a864812d..578935f643b8 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_int.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_int.c
-@@ -1216,9 +1216,9 @@ static void qed_sb_ack_attn(struct qed_hwfn *p_hwfn,
- 	barrier();
- }
- 
--void qed_int_sp_dpc(unsigned long hwfn_cookie)
-+void qed_int_sp_dpc(struct tasklet_struct *t)
- {
--	struct qed_hwfn *p_hwfn = (struct qed_hwfn *)hwfn_cookie;
-+	struct qed_hwfn *p_hwfn = from_tasklet(p_hwfn, t, sp_dpc);
- 	struct qed_pi_info *pi_info = NULL;
- 	struct qed_sb_attn_info *sb_attn;
- 	struct qed_sb_info *sb_info;
-@@ -2285,34 +2285,14 @@ u64 qed_int_igu_read_sisr_reg(struct qed_hwfn *p_hwfn)
- 
- static void qed_int_sp_dpc_setup(struct qed_hwfn *p_hwfn)
- {
--	tasklet_init(p_hwfn->sp_dpc,
--		     qed_int_sp_dpc, (unsigned long)p_hwfn);
-+	tasklet_setup(&p_hwfn->sp_dpc, qed_int_sp_dpc);
- 	p_hwfn->b_sp_dpc_enabled = true;
- }
- 
--static int qed_int_sp_dpc_alloc(struct qed_hwfn *p_hwfn)
--{
--	p_hwfn->sp_dpc = kmalloc(sizeof(*p_hwfn->sp_dpc), GFP_KERNEL);
--	if (!p_hwfn->sp_dpc)
--		return -ENOMEM;
--
--	return 0;
--}
--
--static void qed_int_sp_dpc_free(struct qed_hwfn *p_hwfn)
--{
--	kfree(p_hwfn->sp_dpc);
--	p_hwfn->sp_dpc = NULL;
--}
--
- int qed_int_alloc(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
- {
- 	int rc = 0;
- 
--	rc = qed_int_sp_dpc_alloc(p_hwfn);
--	if (rc)
--		return rc;
--
- 	rc = qed_int_sp_sb_alloc(p_hwfn, p_ptt);
- 	if (rc)
- 		return rc;
-@@ -2326,7 +2306,6 @@ void qed_int_free(struct qed_hwfn *p_hwfn)
- {
- 	qed_int_sp_sb_free(p_hwfn);
- 	qed_int_sb_attn_free(p_hwfn);
--	qed_int_sp_dpc_free(p_hwfn);
- }
- 
- void qed_int_setup(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt)
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_int.h b/drivers/net/ethernet/qlogic/qed/qed_int.h
-index 86809d7bc2de..c5550e96bbe1 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_int.h
-+++ b/drivers/net/ethernet/qlogic/qed/qed_int.h
-@@ -140,7 +140,7 @@ int qed_int_sb_release(struct qed_hwfn *p_hwfn,
-  * @param p_hwfn - pointer to hwfn
-  *
-  */
--void qed_int_sp_dpc(unsigned long hwfn_cookie);
-+void qed_int_sp_dpc(struct tasklet_struct *t);
- 
- /**
-  * @brief qed_int_get_num_sbs - get the number of status
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index f39f629242a1..9352c2f52ecd 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_main.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -841,7 +841,7 @@ static irqreturn_t qed_single_int(int irq, void *dev_instance)
- 
- 		/* Slowpath interrupt */
- 		if (unlikely(status & 0x1)) {
--			tasklet_schedule(hwfn->sp_dpc);
-+			tasklet_schedule(&hwfn->sp_dpc);
- 			status &= ~0x1;
- 			rc = IRQ_HANDLED;
- 		}
-@@ -887,7 +887,7 @@ int qed_slowpath_irq_req(struct qed_hwfn *hwfn)
- 			 id, cdev->pdev->bus->number,
- 			 PCI_SLOT(cdev->pdev->devfn), hwfn->abs_pf_id);
- 		rc = request_irq(cdev->int_params.msix_table[id].vector,
--				 qed_msix_sp_int, 0, hwfn->name, hwfn->sp_dpc);
-+				 qed_msix_sp_int, 0, hwfn->name, &hwfn->sp_dpc);
- 	} else {
- 		unsigned long flags = 0;
- 
-@@ -919,8 +919,8 @@ static void qed_slowpath_tasklet_flush(struct qed_hwfn *p_hwfn)
- 	 * enable function makes this sequence a flush-like operation.
- 	 */
- 	if (p_hwfn->b_sp_dpc_enabled) {
--		tasklet_disable(p_hwfn->sp_dpc);
--		tasklet_enable(p_hwfn->sp_dpc);
-+		tasklet_disable(&p_hwfn->sp_dpc);
-+		tasklet_enable(&p_hwfn->sp_dpc);
+ /* I don't know which registers can be safely read; however, I can guess
+@@ -829,10 +830,10 @@ static void _sc92031_link_tasklet(struct net_device *dev)
  	}
  }
  
-@@ -949,7 +949,7 @@ static void qed_slowpath_irq_free(struct qed_dev *cdev)
- 				break;
- 			synchronize_irq(cdev->int_params.msix_table[i].vector);
- 			free_irq(cdev->int_params.msix_table[i].vector,
--				 cdev->hwfns[i].sp_dpc);
-+				 &cdev->hwfns[i].sp_dpc);
- 		}
- 	} else {
- 		if (QED_LEADING_HWFN(cdev)->b_int_requested)
-@@ -968,11 +968,11 @@ static int qed_nic_stop(struct qed_dev *cdev)
- 		struct qed_hwfn *p_hwfn = &cdev->hwfns[i];
+-static void sc92031_tasklet(unsigned long data)
++static void sc92031_tasklet(struct tasklet_struct *t)
+ {
+-	struct net_device *dev = (struct net_device *)data;
+-	struct sc92031_priv *priv = netdev_priv(dev);
++	struct  sc92031_priv *priv = from_tasklet(priv, t, tasklet);
++	struct net_device *dev = priv->ndev;
+ 	void __iomem *port_base = priv->port_base;
+ 	u32 intr_status, intr_mask;
  
- 		if (p_hwfn->b_sp_dpc_enabled) {
--			tasklet_disable(p_hwfn->sp_dpc);
-+			tasklet_disable(&p_hwfn->sp_dpc);
- 			p_hwfn->b_sp_dpc_enabled = false;
- 			DP_VERBOSE(cdev, NETIF_MSG_IFDOWN,
- 				   "Disabled sp tasklet [hwfn %d] at %p\n",
--				   i, p_hwfn->sp_dpc);
-+				   i, &p_hwfn->sp_dpc);
- 		}
- 	}
+@@ -1108,7 +1109,7 @@ static void sc92031_poll_controller(struct net_device *dev)
  
+ 	disable_irq(irq);
+ 	if (sc92031_interrupt(irq, dev) != IRQ_NONE)
+-		sc92031_tasklet((unsigned long)dev);
++		sc92031_tasklet(&priv->tasklet);
+ 	enable_irq(irq);
+ }
+ #endif
+@@ -1443,10 +1444,11 @@ static int sc92031_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	dev->ethtool_ops	= &sc92031_ethtool_ops;
+ 
+ 	priv = netdev_priv(dev);
++	priv->ndev = dev;
+ 	spin_lock_init(&priv->lock);
+ 	priv->port_base = port_base;
+ 	priv->pdev = pdev;
+-	tasklet_init(&priv->tasklet, sc92031_tasklet, (unsigned long)dev);
++	tasklet_setup(&priv->tasklet, sc92031_tasklet);
+ 	/* Fudge tasklet count so the call to sc92031_enable_interrupts at
+ 	 * sc92031_open will work correctly */
+ 	tasklet_disable_nosync(&priv->tasklet);
 -- 
 2.25.1
 
