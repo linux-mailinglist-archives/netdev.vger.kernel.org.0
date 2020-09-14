@@ -2,79 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25804268BF5
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 15:14:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FECF268BDE
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 15:12:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726565AbgINNO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 09:14:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32956 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726116AbgINNHQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 09:07:16 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4DB41206B2;
-        Mon, 14 Sep 2020 13:06:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600088765;
-        bh=tuaTiQei/i3Lpz/htWALCQkFU1BPdyiproFme4Yr4L8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a9Gv2PXikcG3y7Pm4sGLxIowpf0HccAJijv2ENaeTWyTTTAS+3UdA7x0O/6tt25u9
-         Zl7vu8GNe/g1GXw4HCe2ivt7lRitNJjOSZPPFojXuK8MkdtRhUzBNvZcvlHxbK2ovz
-         AWJkWYYqR1352qhnJK373Z324G0USJ718ubXkmEM=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "J. Bruce Fields" <bfields@redhat.com>, Zhi Li <yieli@redhat.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 4/8] SUNRPC: stop printk reading past end of string
-Date:   Mon, 14 Sep 2020 09:05:54 -0400
-Message-Id: <20200914130559.1805574-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200914130559.1805574-1-sashal@kernel.org>
-References: <20200914130559.1805574-1-sashal@kernel.org>
+        id S1726627AbgINNMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 09:12:02 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:47548 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726675AbgINNKK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 09:10:10 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 8A3A3BF9A70C6DFAA768;
+        Mon, 14 Sep 2020 21:09:46 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.70) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Mon, 14 Sep 2020 21:09:43 +0800
+From:   Zhang Changzhong <zhangchangzhong@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] net: dnet: remove unused variable 'tx_status 'in dnet_start_xmit()
+Date:   Mon, 14 Sep 2020 21:08:37 +0800
+Message-ID: <1600088917-21372-1-git-send-email-zhangchangzhong@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "J. Bruce Fields" <bfields@redhat.com>
+Fixes the following W=1 kernel build warning(s):
 
-[ Upstream commit 8c6b6c793ed32b8f9770ebcdf1ba99af423c303b ]
+drivers/net/ethernet/dnet.c:510:6: warning:
+ variable 'tx_status' set but not used [-Wunused-but-set-variable]
+  u32 tx_status, irq_enable;
+      ^~~~~~~~~
 
-Since p points at raw xdr data, there's no guarantee that it's NULL
-terminated, so we should give a length.  And probably escape any special
-characters too.
+After commit 4796417417a6 ("dnet: Dave DNET ethernet controller driver
+(updated)"), variable 'tx_status' is never used in dnet_start_xmit(),
+so removing it to avoid build warning.
 
-Reported-by: Zhi Li <yieli@redhat.com>
-Signed-off-by: J. Bruce Fields <bfields@redhat.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 ---
- net/sunrpc/rpcb_clnt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/dnet.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/sunrpc/rpcb_clnt.c b/net/sunrpc/rpcb_clnt.c
-index c89626b2afffb..696381a516341 100644
---- a/net/sunrpc/rpcb_clnt.c
-+++ b/net/sunrpc/rpcb_clnt.c
-@@ -977,8 +977,8 @@ static int rpcb_dec_getaddr(struct rpc_rqst *req, struct xdr_stream *xdr,
- 	p = xdr_inline_decode(xdr, len);
- 	if (unlikely(p == NULL))
- 		goto out_fail;
--	dprintk("RPC: %5u RPCB_%s reply: %s\n", req->rq_task->tk_pid,
--			req->rq_task->tk_msg.rpc_proc->p_name, (char *)p);
-+	dprintk("RPC: %5u RPCB_%s reply: %*pE\n", req->rq_task->tk_pid,
-+			req->rq_task->tk_msg.rpc_proc->p_name, len, (char *)p);
+diff --git a/drivers/net/ethernet/dnet.c b/drivers/net/ethernet/dnet.c
+index 3143df9..7f87b0f 100644
+--- a/drivers/net/ethernet/dnet.c
++++ b/drivers/net/ethernet/dnet.c
+@@ -507,12 +507,12 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
  
- 	if (rpc_uaddr2sockaddr(req->rq_xprt->xprt_net, (char *)p, len,
- 				sap, sizeof(address)) == 0)
+ 	struct dnet *bp = netdev_priv(dev);
+-	u32 tx_status, irq_enable;
++	u32 irq_enable;
+ 	unsigned int i, tx_cmd, wrsz;
+ 	unsigned long flags;
+ 	unsigned int *bufp;
+ 
+-	tx_status = dnet_readl(bp, TX_STATUS);
++	dnet_readl(bp, TX_STATUS);
+ 
+ 	pr_debug("start_xmit: len %u head %p data %p\n",
+ 	       skb->len, skb->head, skb->data);
+@@ -520,7 +520,7 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	spin_lock_irqsave(&bp->lock, flags);
+ 
+-	tx_status = dnet_readl(bp, TX_STATUS);
++	dnet_readl(bp, TX_STATUS);
+ 
+ 	bufp = (unsigned int *)(((unsigned long) skb->data) & ~0x3UL);
+ 	wrsz = (u32) skb->len + 3;
+@@ -542,7 +542,7 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	if (dnet_readl(bp, TX_FIFO_WCNT) > DNET_FIFO_TX_DATA_AF_TH) {
+ 		netif_stop_queue(dev);
+-		tx_status = dnet_readl(bp, INTR_SRC);
++		dnet_readl(bp, INTR_SRC);
+ 		irq_enable = dnet_readl(bp, INTR_ENB);
+ 		irq_enable |= DNET_INTR_ENB_TX_FIFOAE;
+ 		dnet_writel(bp, irq_enable, INTR_ENB);
 -- 
-2.25.1
+2.9.5
 
