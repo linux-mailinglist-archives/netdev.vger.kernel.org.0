@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3F7A268E8D
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 16:57:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71FFB268EA9
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 16:58:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726895AbgINO4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 10:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41986 "EHLO
+        id S1726911AbgINO6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 10:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726874AbgINO4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 10:56:05 -0400
+        with ESMTP id S1726883AbgINO6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 10:58:15 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19B0C06174A;
-        Mon, 14 Sep 2020 07:56:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7879BC06174A;
+        Mon, 14 Sep 2020 07:58:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=eBdiOi8NPtkzomu53YzYl2srwsK9DIz9xkGY00o46Kk=; b=mhT31ujOX1b/Ylsrk64JksEtAs
-        9CsPlcH5hAWD0aGXvHImC3hCRVvIHTJrcou6cXnGT54zAGvwj93b4D9EhPcRhshY3Bs3eyUJoDDyp
-        /nP9B5kyV1bnmLEL7rLke8gT4SbmI5kPok0oRcdYsOzZhnvD9awZgmS7snbozBo6+h50CW3ovdNEQ
-        rNvm9WYDfrFebi3DEiL1j7UwRmtNNj8nVOQuwfdDkaun+xRqe4fJEwflFg4tSbH6LwHenuvtKtx+3
-        Mi3qOKO7kSBa3khR/+Da8yUmsINC/i/NvEQMvxt0qK0LL1lZ69X5uBkVi4w6Gw41ABUYpEPOn6KWS
-        UikZ1UiA==;
+        bh=5I0Wekw7PGkNV3dZaIEsA8c8Eplwzl97xo8vYosQxdI=; b=jKw8RqKuJ++oQ1SuLItg20t5TM
+        m+tQOTB1YJulvaPmWR9W2ftI6DOR4X1yaVUwJmeeH2dkVth5Xu644krytFCPwhsgvlfLbRV664WHp
+        77xXf9YegU0pIUXzWHOmpFJpKtGGsbPXNvPXoSd/dKLY/pOsq8jeFeiR94UCcY+8ZOQCaFr2gUKLa
+        2U0tm2OMKgcLKJdgX3t5I1pqOpwZyNHwZZnPGKBlKRwbY4KpmBVnEkvtM0LdVmzxiakDhHhAknAf0
+        Tyh5ZEgG0X79MNLFtpN3VbcWaBqxePH/TV3qtXdqKxvw8EOUMV2DzB+LhDFoQND29BAXMvHObrhYe
+        Tr7br70Q==;
 Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92] helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kHptG-0001vR-DT; Mon, 14 Sep 2020 14:55:34 +0000
+        id 1kHpvN-00023B-Gu; Mon, 14 Sep 2020 14:57:45 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -46,9 +46,9 @@ Cc:     Stefan Richter <stefanr@s5r6.in-berlin.de>,
         nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
         linux-scsi@vger.kernel.org, linux-mm@kvack.org,
         alsa-devel@alsa-project.org
-Subject: [PATCH 04/17] drm/nouveau/gk20a: stop setting DMA_ATTR_NON_CONSISTENT
-Date:   Mon, 14 Sep 2020 16:44:20 +0200
-Message-Id: <20200914144433.1622958-5-hch@lst.de>
+Subject: [PATCH 05/17] net/au1000-eth: stop using DMA_ATTR_NON_CONSISTENT
+Date:   Mon, 14 Sep 2020 16:44:21 +0200
+Message-Id: <20200914144433.1622958-6-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200914144433.1622958-1-hch@lst.de>
 References: <20200914144433.1622958-1-hch@lst.de>
@@ -60,28 +60,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DMA_ATTR_NON_CONSISTENT is a no-op except on PARISC and some mips
-configs, so don't set it in this ARM specific driver part.
+The au1000-eth driver contains none of the manual cache synchronization
+required for using DMA_ATTR_NON_CONSISTENT.  From what I can tell it
+can be used on both dma coherent and non-coherent DMA platforms, but
+I suspect it has been buggy on the non-coherent platforms all along.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/amd/au1000_eth.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c b/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
-index 985f2990ab0dda..13d4d7ac0697b4 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
-@@ -594,8 +594,7 @@ gk20a_instmem_new(struct nvkm_device *device, int index,
+diff --git a/drivers/net/ethernet/amd/au1000_eth.c b/drivers/net/ethernet/amd/au1000_eth.c
+index 75dbd221dc594b..19e195420e2434 100644
+--- a/drivers/net/ethernet/amd/au1000_eth.c
++++ b/drivers/net/ethernet/amd/au1000_eth.c
+@@ -1131,10 +1131,9 @@ static int au1000_probe(struct platform_device *pdev)
+ 	/* Allocate the data buffers
+ 	 * Snooping works fine with eth on all au1xxx
+ 	 */
+-	aup->vaddr = (u32)dma_alloc_attrs(&pdev->dev, MAX_BUF_SIZE *
++	aup->vaddr = (u32)dma_alloc_coherent(&pdev->dev, MAX_BUF_SIZE *
+ 					  (NUM_TX_BUFFS + NUM_RX_BUFFS),
+-					  &aup->dma_addr, 0,
+-					  DMA_ATTR_NON_CONSISTENT);
++					  &aup->dma_addr, 0);
+ 	if (!aup->vaddr) {
+ 		dev_err(&pdev->dev, "failed to allocate data buffers\n");
+ 		err = -ENOMEM;
+@@ -1310,9 +1309,8 @@ static int au1000_probe(struct platform_device *pdev)
+ err_remap2:
+ 	iounmap(aup->mac);
+ err_remap1:
+-	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
+-			(void *)aup->vaddr, aup->dma_addr,
+-			DMA_ATTR_NON_CONSISTENT);
++	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
++			(void *)aup->vaddr, aup->dma_addr);
+ err_vaddr:
+ 	free_netdev(dev);
+ err_alloc:
+@@ -1344,9 +1342,8 @@ static int au1000_remove(struct platform_device *pdev)
+ 		if (aup->tx_db_inuse[i])
+ 			au1000_ReleaseDB(aup, aup->tx_db_inuse[i]);
  
- 		nvkm_info(&imem->base.subdev, "using IOMMU\n");
- 	} else {
--		imem->attrs = DMA_ATTR_NON_CONSISTENT |
--			      DMA_ATTR_WEAK_ORDERING |
-+		imem->attrs = DMA_ATTR_WEAK_ORDERING |
- 			      DMA_ATTR_WRITE_COMBINE;
+-	dma_free_attrs(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
+-			(void *)aup->vaddr, aup->dma_addr,
+-			DMA_ATTR_NON_CONSISTENT);
++	dma_free_coherent(&pdev->dev, MAX_BUF_SIZE * (NUM_TX_BUFFS + NUM_RX_BUFFS),
++			(void *)aup->vaddr, aup->dma_addr);
  
- 		nvkm_info(&imem->base.subdev, "using DMA API\n");
+ 	iounmap(aup->macdma);
+ 	iounmap(aup->mac);
 -- 
 2.28.0
 
