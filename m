@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D99126820F
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 02:10:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C3AF268214
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 02:10:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726018AbgINAKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 20:10:30 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:52931 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgINAKY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 20:10:24 -0400
-Received: by mail-pj1-f68.google.com with SMTP id o16so4544037pjr.2;
-        Sun, 13 Sep 2020 17:10:23 -0700 (PDT)
+        id S1726039AbgINAKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 13 Sep 2020 20:10:49 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:33820 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725997AbgINAKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 13 Sep 2020 20:10:25 -0400
+Received: by mail-pf1-f194.google.com with SMTP id v196so11191980pfc.1;
+        Sun, 13 Sep 2020 17:10:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mvFFXcZ1+76mKofPZLr+kseVKd3+sG4bbeo2yjUvYe4=;
-        b=bmHuUHEKs8S4X1H5SceJaLajr/9Jh/3uM76dvcokQRefdihRxDCdIhyWp5Tsq4a0YK
-         yUOnUAN5VdJVV8/QM8yh1Jw6yUHXA/IUAzQ3PUubOYnWnRfJ+ZNQt2jVtLXKRQMp3XfQ
-         p6g97XpuON1vX57eWcg7vdj373BLQmNYTYX3lVZAVcQiJOyQYi8afd1virXy4gkuPY61
-         xG1yCbdwVBDjA3yYBjfrC1T02k24lKjOkygeZke2HSPDdI22YvusUDLA6LnY0/0+r4DH
-         Am8x/SzsfP3mnTwbPPdLH/DndcZuPT6Q4593MmcEdNlPtU9BZY90iJoPbLBzcpmuEPRG
-         3xiA==
-X-Gm-Message-State: AOAM533jro3vrlOFUR5xVMjU0CRUPgx3knPbWJDDgtGJF6N1yCmwzBeW
-        rCGqykUXmM8KUwqP8pFLqHz7s78lVzOcdg==
-X-Google-Smtp-Source: ABdhPJyIoFR8tBBd/eSfSluquJ1cqMZXSejoSblcQTEfFRkuxxsxui39TX/xmUM6x1UYMc0/WMicnA==
-X-Received: by 2002:a17:90a:4802:: with SMTP id a2mr11271354pjh.5.1600042223154;
-        Sun, 13 Sep 2020 17:10:23 -0700 (PDT)
+        bh=UTwkJhk6Y2vTZoj4Ta3v96czw38a4mqiyM96g/YQmOA=;
+        b=Q8t+IUs80r9LF2OoyZnSpBlteb5oR1lUxZpuYvmHRBAgkbKAyk0JxPHEMyQ3VQZQxM
+         W1tQSQs0KJIbWfVlCn1rH+bJ7fTwR2wE6BUsHiYbDCgBGv2ClUw1BwjG+Y2SA6LEvaTX
+         J6rNUOSmm13aky+TBnrl+dHreSvwLMXzjH8kOOyQ2wuHj70M68l/TEJPPaPohp/e4s4v
+         5WJyOyYhwxMefv6f1KpXVNNTxx8CSKCQS8i9WVj3/6nLiI3JClGkNbiXg3JE5lh919tH
+         SduU8pIR/hCMTYMxBg1X53HLAUvnZBSzNQdiRqiC4aqi1xY7sTLd9iJgWJ8bXo17hww7
+         akhg==
+X-Gm-Message-State: AOAM533lQ92swOn4u/f2vgRmL9M28tkxguunqfLjWO9Lp1rfIr/3NvZH
+        sL7W41PjjHP/lPioxEgaBio=
+X-Google-Smtp-Source: ABdhPJyvquJTdeCghJnglCuGVwoY4Z2M6qO8FPxhhC4znt5g3ikG1wYAeVY6JsfaazFdXN6AwNY7Fg==
+X-Received: by 2002:aa7:96b0:: with SMTP id g16mr10905016pfk.46.1600042224437;
+        Sun, 13 Sep 2020 17:10:24 -0700 (PDT)
 Received: from localhost ([2601:647:5b00:1162:1ac0:17a6:4cc6:d1ef])
-        by smtp.gmail.com with ESMTPSA id f5sm8023418pfj.212.2020.09.13.17.10.22
+        by smtp.gmail.com with ESMTPSA id ca6sm7215530pjb.53.2020.09.13.17.10.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Sep 2020 17:10:22 -0700 (PDT)
+        Sun, 13 Sep 2020 17:10:24 -0700 (PDT)
 From:   Moritz Fischer <mdf@kernel.org>
 To:     davem@davemloft.net
 Cc:     snelson@pensando.io, mst@redhat.com, hkallweit1@gmail.com,
         netdev@vger.kernel.org, linux-parisc@vger.kernel.org,
         linux-kernel@vger.kernel.org, moritzf@google.com,
         Moritz Fischer <mdf@kernel.org>
-Subject: [PATCH net-next 2/3] net: dec: tulip: de2104x: Replace pci_enable_device with devres version
-Date:   Sun, 13 Sep 2020 17:10:01 -0700
-Message-Id: <20200914001002.8623-3-mdf@kernel.org>
+Subject: [PATCH net-next 3/3] net: dec: tulip: de2104x: Replace kmemdup() with devm_kmempdup()
+Date:   Sun, 13 Sep 2020 17:10:02 -0700
+Message-Id: <20200914001002.8623-4-mdf@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200914001002.8623-1-mdf@kernel.org>
 References: <20200914001002.8623-1-mdf@kernel.org>
@@ -52,52 +52,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace pci_enable_device() with its devres counterpart
-pcim_enable_device().
+Replace an instance of kmemdup() with the devres counted version
+instead.
 
 Signed-off-by: Moritz Fischer <mdf@kernel.org>
 ---
- drivers/net/ethernet/dec/tulip/de2104x.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/dec/tulip/de2104x.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c b/drivers/net/ethernet/dec/tulip/de2104x.c
-index 9bcfc82b71d1..e4189c45c2ba 100644
+index e4189c45c2ba..4933799c6a15 100644
 --- a/drivers/net/ethernet/dec/tulip/de2104x.c
 +++ b/drivers/net/ethernet/dec/tulip/de2104x.c
-@@ -2009,14 +2009,14 @@ static int de_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	netif_carrier_off(dev);
+@@ -1940,7 +1940,8 @@ static void de21041_get_srom_info(struct de_private *de)
+ 			de->media[i].csr15 = t21041_csr15[i];
+ 	}
  
- 	/* wake up device, assign resources */
--	rc = pci_enable_device(pdev);
-+	rc = pcim_enable_device(pdev);
- 	if (rc)
- 		return rc;
+-	de->ee_data = kmemdup(&ee_data[0], DE_EEPROM_SIZE, GFP_KERNEL);
++	de->ee_data = devm_kmemdup(&de->pdev->dev, &ee_data[0], DE_EEPROM_SIZE,
++				   GFP_KERNEL);
  
- 	/* reserve PCI resources to ensure driver atomicity */
- 	rc = pci_request_regions(pdev, DRV_NAME);
- 	if (rc)
--		goto err_out_disable;
-+		return rc;
+ 	return;
  
- 	/* check for invalid IRQ value */
- 	if (pdev->irq < 2) {
-@@ -2096,8 +2096,6 @@ static int de_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -2092,7 +2093,6 @@ static int de_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return 0;
+ 
+ err_out_iomap:
+-	kfree(de->ee_data);
  	iounmap(regs);
  err_out_res:
  	pci_release_regions(pdev);
--err_out_disable:
--	pci_disable_device(pdev);
- 	return rc;
- }
+@@ -2106,7 +2106,6 @@ static void de_remove_one(struct pci_dev *pdev)
  
-@@ -2111,7 +2109,6 @@ static void de_remove_one(struct pci_dev *pdev)
- 	kfree(de->ee_data);
+ 	BUG_ON(!dev);
+ 	unregister_netdev(dev);
+-	kfree(de->ee_data);
  	iounmap(de->regs);
  	pci_release_regions(pdev);
--	pci_disable_device(pdev);
  }
- 
- #ifdef CONFIG_PM
 -- 
 2.28.0
 
