@@ -2,116 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FC68269143
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12782269156
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:21:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726434AbgINQSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 12:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726381AbgINQRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 12:17:00 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF029C06178A;
-        Mon, 14 Sep 2020 09:16:52 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id c13so453762oiy.6;
-        Mon, 14 Sep 2020 09:16:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=ZaZZqacCDA7oXtm//wcKDDOo/3GMN+o9Qri31drCCNY=;
-        b=KDPADuN7sgN/H3qQhT8j9VnWJODEPaZsmTPIcGxPaBo6rYW0M8NvhKwJ5MAs/3V+SS
-         aINw+7oVh2lqilrsOaj3DUq883Gf+0koNWpY6VRJi1GI31oIL+QkVBpCqs12ssFD+j/D
-         zgW+1aROsUUIgtHyCf2nFByMV/syL9pyQ/TlcCq1R3lm21S88e9PHDQxB9dzZvBwZI2V
-         uxgaKsEAz7ggMkvM0tGLLLqAT6/fVl7nNQ3120h18qyrvDxYYXcPBivgjPIv8cgp818y
-         qfva7as4FDH1guCOFqYfCk0HmlLHFNXdMqaQ+sEadFnndjNT4gjh5Dyg1u94poMxWOFW
-         REDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=ZaZZqacCDA7oXtm//wcKDDOo/3GMN+o9Qri31drCCNY=;
-        b=FoxOLYYKyCReZmtWH0W2qAg7FCtDhg/jCjYJzUA4SDI8QHTxKdOjSYHNUIeFVXsI+V
-         KyyhEM6H7oldaVYUZ8RtYjeP29TQblFKH8A4aKDdxTehxjL/trq9voXY0VUGyWE0qo1v
-         bbTLh1r7Ux24o6oSYGHIkEL1F6om+CW5IR7jd4zQdwPpIMSiTJt1vAYbaoGO6XlEuip5
-         oBwALD+e+2NCRZuBqFhVPXjc1aWUNEd5/xazoLbGJj4PmH3fSOcitmUPVm1Bk/8noPdD
-         4a+ejSsl2DRW+j7WZetZ5pA48MMiO81SIeLSDSfCkrWlkEf5vULgtC2haj+Fbh2QhkrL
-         IUcA==
-X-Gm-Message-State: AOAM5334RyVkQH9OdTPMsY5k4K9nWqpBru2xDhoil2MHPLMmGZWEHvgC
-        tXraCSALB6DaOeJSRzEyLKEDJDrBwBPOdCOEpPA=
-X-Google-Smtp-Source: ABdhPJw0AH9qtuaPrhz2Yb6lSzCjGlx3LPzihJTQ+wosCraP/j9VN3J50rwZNcsB1cM9u+eHfC2fe+D09//UnMjiZ/E=
-X-Received: by 2002:aca:ec50:: with SMTP id k77mr92502oih.35.1600100212390;
- Mon, 14 Sep 2020 09:16:52 -0700 (PDT)
+        id S1726454AbgINQVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 12:21:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39898 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726098AbgINQVG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 12:21:06 -0400
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 577BC20EDD;
+        Mon, 14 Sep 2020 16:21:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600100465;
+        bh=eAVAzgvUkh0wc/I1j1/s8lyQbeYVFTOGhBfWS8xzoY0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=xVLWwgJwu9iq1HXV108sMD+XNOpS4ODsXAKTu4PFwOeB7Q+pGs4qxy+Al3QyU9Vsz
+         GZNDkbbHKXyx+mwQUPDAKU1uInzXhTEOnT0hh7vGs+uM0RV0EnUODvSC+2WzEDhC3Q
+         DhpE106v1VJBq8OqdhjMejVWFX2hljIgmnryzE+8=
+Received: by mail-lj1-f178.google.com with SMTP id c2so151320ljj.12;
+        Mon, 14 Sep 2020 09:21:05 -0700 (PDT)
+X-Gm-Message-State: AOAM533vAPu0a9IZWm1tNINkBrbubPswf6Zb3PZmFNJob79AHpxUnQsy
+        QDlYKXWfU1O9FQTdUTvZKXO1zJWjdB7r3nGEomg=
+X-Google-Smtp-Source: ABdhPJwO3e8CVSM2h2kC53VTIZbFnvCMMpuEr2dDAgBR5ieztpYgRR6Cek/gSMFtFBdL6SgpgfNsPvTXlL3FMDQwm8Q=
+X-Received: by 2002:a2e:98cf:: with SMTP id s15mr5625684ljj.446.1600100463625;
+ Mon, 14 Sep 2020 09:21:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200901064302.849-1-w@1wt.eu> <20200901064302.849-2-w@1wt.eu>
- <b460c51a3fa1473b8289d6030a46abdb@AcuMS.aculab.com> <20200901131623.GB1059@1wt.eu>
- <CANEQ_+Kuw6cxWRBE6NyXkr=8p3W-1f=o1q91ZESeueEnna9fvw@mail.gmail.com>
-In-Reply-To: <CANEQ_+Kuw6cxWRBE6NyXkr=8p3W-1f=o1q91ZESeueEnna9fvw@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Mon, 14 Sep 2020 18:16:40 +0200
-Message-ID: <CA+icZUUmQeww+94dVOe1JFFQRkvUYVZP3g2GP+gOsdX4kP4x+A@mail.gmail.com>
-Subject: Re: [PATCH 1/2] random32: make prandom_u32() output unpredictable
-To:     Amit Klein <aksecurity@gmail.com>
-Cc:     Willy Tarreau <w@1wt.eu>, David Laight <David.Laight@aculab.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        George Spelvin <lkml@sdf.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "tytso@mit.edu" <tytso@mit.edu>, Florian Westphal <fw@strlen.de>,
-        Marc Plumb <lkml.mplumb@gmail.com>
+References: <20200914061206.2625395-1-yhs@fb.com> <b942625c-7140-0a57-337e-3a95020cfa99@isovalent.com>
+In-Reply-To: <b942625c-7140-0a57-337e-3a95020cfa99@isovalent.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 14 Sep 2020 09:20:52 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW5Ja5if-DOPQn1FrbiEsH-YXXYVGzM59XQkyG5_xNmD-A@mail.gmail.com>
+Message-ID: <CAPhsuW5Ja5if-DOPQn1FrbiEsH-YXXYVGzM59XQkyG5_xNmD-A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpftool: fix build failure
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 4:53 PM Amit Klein <aksecurity@gmail.com> wrote:
+On Mon, Sep 14, 2020 at 1:20 AM Quentin Monnet <quentin@isovalent.com> wrote:
 >
-> Hi
+> On 14/09/2020 07:12, Yonghong Song wrote:
+> > When building bpf selftests like
+> >   make -C tools/testing/selftests/bpf -j20
+> > I hit the following errors:
+> >   ...
+> >   GEN      /net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-gen.8
+> >   <stdin>:75: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+> >   <stdin>:71: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+> >   <stdin>:85: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+> >   <stdin>:57: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
+> >   <stdin>:66: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+> >   <stdin>:109: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+> >   <stdin>:175: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+> >   <stdin>:273: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
+> >   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-perf.8] Error 12
+> >   make[1]: *** Waiting for unfinished jobs....
+> >   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-iter.8] Error 12
+> >   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-struct_ops.8] Error 12
+> >   ...
+> >
+> > I am using:
+> >   -bash-4.4$ rst2man --version
+> >   rst2man (Docutils 0.11 [repository], Python 2.7.5, on linux2)
+> >   -bash-4.4$
+> >
+> > Looks like that particular version of rst2man prefers to have a blank line
+> > after literal blocks. This patch added block lines in related .rst files
+> > and compilation can then pass.
+> >
+> > Cc: Quentin Monnet <quentin@isovalent.com>
+> > Fixes: 18841da98100 ("tools: bpftool: Automate generation for "SEE ALSO" sections in man pages")
+> > Signed-off-by: Yonghong Song <yhs@fb.com>
 >
-> Is this patch being pushed to any branch? I don't see it deployed anywhere (unless I'm missing something...).
 >
+> Hi Yonghong, thanks for the fix! I didn't see those warnings on my
+> setup. For the record my rst2man version is:
+>
+>         rst2man (Docutils 0.16 [release], Python 3.8.2, on linux)
+>
+> Your patch looks good, but instead of having blank lines at the end of
+> most files, could you please check if the following works?
+>
+> ------
+>
+> diff --git a/tools/bpf/bpftool/Documentation/Makefile
+> b/tools/bpf/bpftool/Documentation/Makefile
+> index 4c9dd1e45244..01b30ed86eac 100644
+> --- a/tools/bpf/bpftool/Documentation/Makefile
+> +++ b/tools/bpf/bpftool/Documentation/Makefile
+> @@ -32,7 +32,7 @@ RST2MAN_OPTS += --verbose
+>
+>  list_pages = $(sort $(basename $(filter-out $(1),$(MAN8_RST))))
+>  see_also = $(subst " ",, \
+> -       "\n" \
+> +       "\n\n" \
+>         "SEE ALSO\n" \
+>         "========\n" \
+>         "\t**bpf**\ (2),\n" \
 
-It's here:
+Yes, this works (I am using the same rst2man as Yonghong's).
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/wtarreau/prandom.git/log/?h=20200901-siphash-noise
-
-> Best,
-> -Amit
->
->
->
-> On Tue, Sep 1, 2020 at 4:16 PM Willy Tarreau <w@1wt.eu> wrote:
->>
->> On Tue, Sep 01, 2020 at 01:10:18PM +0000, David Laight wrote:
->> > From: Willy Tarreau
->> > > Sent: 01 September 2020 07:43
->> > ...
->> > > +/*
->> > > + * Generate some initially weak seeding values to allow
->> > > + * the prandom_u32() engine to be started.
->> > > + */
->> > > +static int __init prandom_init_early(void)
->> > > +{
->> > > +   int i;
->> > > +   unsigned long v0, v1, v2, v3;
->> > > +
->> > > +   if (!arch_get_random_long(&v0))
->> > > +           v0 = jiffies;
->> >
->> > Isn't jiffies likely to be zero here?
->>
->> I don't know. But do we really care ? I'd personally have been fine
->> with not even assigning it in this case and leaving whatever was in
->> the stack in this case, though it could make some static code analyzer
->> unhappy.
->>
->> Willy
+Thanks,
+Song
