@@ -2,63 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 058292694BA
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 20:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6774A2694D3
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 20:29:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbgINSWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 14:22:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45810 "EHLO
+        id S1726091AbgINS3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 14:29:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726023AbgINSWU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 14:22:20 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8EFC06174A;
-        Mon, 14 Sep 2020 11:22:11 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id y15so1021277wmi.0;
-        Mon, 14 Sep 2020 11:22:11 -0700 (PDT)
+        with ESMTP id S1726009AbgINS2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 14:28:02 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8B2C061788
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 11:28:02 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id w2so977222wmi.1
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 11:28:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=QwmdpKrctXZY8SsbeQhTPBt7ND8p7TZUdIMqRgAp49A=;
-        b=Q7ZqaKpnbyGyPvPJJ/i7BesuVwYV5eRqXM4dXhN/OCq1S9GrPiW1PQoD3eoi7TSQbf
-         vb7Hv5UXRk/XE1i9Stcc75xYDV/GhLH6RC/gu6k3+cpFyfaZ65ZlbqFe4XCYrdJzI2se
-         kNqM8UYDrm1kbvCsICZt7ryIp2NeZ6T8xIldIo5IXYFJLTtW2/IBHrNaLvW7mzo5DKxb
-         DvoIohJ33HFLUoysYMdgVeszRwIpv+guhWLLyZRoYZQI4JiuAf4RN6R5L304OW+vEUbb
-         dj84KuKIgnTvuB9JLmhDdFk6z3tgmb05exFWsrzzlDZvqgmLYunn1E+k2S9mFZQJPN7l
-         UxyQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=W3YbmmsfMHlVdLS6jlOLoQAflYIsxSXUugWSN1kR+Rc=;
+        b=Y6ZDna6IoIoMEvcCeX8HsYV6y5FPwgzJsnsokv96XLNqt3SNXxCM+Z79rfnLiyStCE
+         Muo3JB7WJnyMkZuqp6Ix6dd90jr5V4xhLE1y0JKJmfLJjPTPdcMLxkt9+NCWR9ptZiD5
+         8/LRFoeOAHM9vnqIEh/YpuIrpjmI6r0yYwHIAB/yxNDCtDTvHtzY/gRXZw0jzU8DJ6F0
+         Js5DdlCtvhBfq1cIXuWba3rlUzKBodjzXdCdujyGzLUyxBTjIJl/1W9YKjT8LP6mVPle
+         AcgJdV9z+XuJTJUnu4IuWaGWHm0qMdypbmU45KBUpE8awMEcAnapLRZ9bYP3yNoGG0DN
+         5W5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QwmdpKrctXZY8SsbeQhTPBt7ND8p7TZUdIMqRgAp49A=;
-        b=f/cI3b9/Ga0ly7KAwQkmgo1yb+qJTjvb/anWLtAzMHrMpbIhqjLEUPVisTdKHZ/U4P
-         kxKrnkCNWQkM7b++1jPRbmWv+DKp8v/CxqJB6cmHrh8GgzxaSfAortybJN+TztOY+cpq
-         nmGQWhzuNccFAKe/yAjnV6ozU777lMsaxqUAzlJFIMRHt35ABo/HDz/FSG9C4XeNWDmo
-         tp6mW2H+qckof9djDUHXrFJLcbj5u18Ew6DJXkTF3a+r/c3DJ/pjsTwzm/5iCYgzKTNV
-         kDTrkmNg2F4sxOb+ZeKYWAHpW7UbJZnrsR8rTunh+ZJLM0K1UWftJznNHIC+Sd5WlAJY
-         +toA==
-X-Gm-Message-State: AOAM530ckEeTrkpKlK5WnfxYhWOrQ2w3Qe5VsCez/EoYQmmwmpQmm0qn
-        v4Sg96GzGzgs2lx0dgQiez74PyCEIA6ECIx7I5c=
-X-Google-Smtp-Source: ABdhPJy3GJYqVWPPZg2D3pql45sSI2rbpWDrGStOP2zO/ZvDpfyuyRJQmu9ZM+Gu5J/7hnKw6pmXWzsSTd/912vBINI=
-X-Received: by 2002:a1c:6254:: with SMTP id w81mr643669wmb.94.1600107729958;
- Mon, 14 Sep 2020 11:22:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
- <20200914122042.GA24441@willie-the-truck> <20200914123504.GA124316@apalos.home>
- <20200914132350.GA126552@apalos.home> <20200914140114.GG24441@willie-the-truck>
- <20200914181234.0f1df8ba@carbon> <20200914170205.GA20549@apalos.home>
- <CAKU6vyaxnzWVA=MPAuDwtu4UOTWS6s0cZOYQKVhQg5Mue7Wbww@mail.gmail.com>
- <20200914175516.GA21832@apalos.home> <CAKU6vybuEGYtqh9gL9bwFaJ6xD=diN-0w_Mgc2Xyu4tHMdWgAA@mail.gmail.com>
-In-Reply-To: <CAKU6vybuEGYtqh9gL9bwFaJ6xD=diN-0w_Mgc2Xyu4tHMdWgAA@mail.gmail.com>
-From:   Luke Nelson <luke.r.nels@gmail.com>
-Date:   Mon, 14 Sep 2020 11:21:58 -0700
-Message-ID: <CAB-e3NSPcYB6r=ZjFtXQ=s=LU-a9D9OfXJPtGGbY3dupB1Z1Qg@mail.gmail.com>
-Subject: Re: [PATCH] arm64: bpf: Fix branch offset in JIT
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=W3YbmmsfMHlVdLS6jlOLoQAflYIsxSXUugWSN1kR+Rc=;
+        b=V5V4dNQkcEodlvlBzjEyI5tOdsXVMcOFWKYwnavCDAIcqcErhI09bum9/HXv60ccVM
+         X1DUwy9fuTN+sy8umsYZvFFP6H1HyWoH/c1BF5Bk3LCUWpv51OeoqGmwYnHrOjR/Bdrt
+         fMBrJNvO8WyKAY7+nWI4k6dNzreSMm9Fntad+JGVk/yHe7AlzklCDiy8mHo6O2M0Sm9h
+         RjpK6mHFodz6PHba0svv1YWNFbXvtaWwkS6nVXEgo4VtDeSS6GT67IQ5fesjLJax8lru
+         VS37cFChWCqXO+loBlQrHp/OKKTt5I5AuNWL1wm/8pmKOzEuV/5Xn4cVXrTMJVGRBKnV
+         N1/Q==
+X-Gm-Message-State: AOAM532UUq+kSTk+EF/yC8P7fVny3+vITG8ng6s7FP2HLbr0jrn5DQlJ
+        iMzZlMpntdMC4xCNz/vV8lhqGw==
+X-Google-Smtp-Source: ABdhPJwqlkc2zKOHr4CZKudC+z5XkhQYQppbD4OIiflpEBJodVcF2fyVWwwJjG35lxfxhFMJRptUqA==
+X-Received: by 2002:a1c:e256:: with SMTP id z83mr683787wmg.137.1600108080849;
+        Mon, 14 Sep 2020 11:28:00 -0700 (PDT)
+Received: from apalos.home (athedsl-246545.home.otenet.gr. [85.73.10.175])
+        by smtp.gmail.com with ESMTPSA id s26sm21264637wmh.44.2020.09.14.11.27.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Sep 2020 11:28:00 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 21:27:56 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
 To:     Xi Wang <xi.wang@gmail.com>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Will Deacon <will@kernel.org>, bpf <bpf@vger.kernel.org>,
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Will Deacon <will@kernel.org>, bpf@vger.kernel.org,
         ardb@kernel.org, naresh.kamboju@linaro.org,
         Jean-Philippe Brucker <jean-philippe@linaro.org>,
         Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
@@ -74,52 +68,58 @@ Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Anders Roxell <anders.roxell@linaro.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
+        Luke Nelson <luke.r.nels@gmail.com>
+Subject: Re: [PATCH] arm64: bpf: Fix branch offset in JIT
+Message-ID: <20200914182756.GA22294@apalos.home>
+References: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
+ <20200914122042.GA24441@willie-the-truck>
+ <20200914123504.GA124316@apalos.home>
+ <20200914132350.GA126552@apalos.home>
+ <20200914140114.GG24441@willie-the-truck>
+ <20200914181234.0f1df8ba@carbon>
+ <20200914170205.GA20549@apalos.home>
+ <CAKU6vyaxnzWVA=MPAuDwtu4UOTWS6s0cZOYQKVhQg5Mue7Wbww@mail.gmail.com>
+ <20200914175516.GA21832@apalos.home>
+ <CAKU6vybuEGYtqh9gL9bwFaJ6xD=diN-0w_Mgc2Xyu4tHMdWgAA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKU6vybuEGYtqh9gL9bwFaJ6xD=diN-0w_Mgc2Xyu4tHMdWgAA@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 11:08 AM Xi Wang <xi.wang@gmail.com> wrote:
+Hi Xi, 
+
+On Mon, Sep 14, 2020 at 11:08:13AM -0700, Xi Wang wrote:
+> On Mon, Sep 14, 2020 at 10:55 AM Ilias Apalodimas
+> <ilias.apalodimas@linaro.org> wrote:
+> > We've briefly discussed this approach with Yauheni while coming up with the
+> > posted patch.
+> > I think that contructing the array correctly in the first place is better.
+> > Right now it might only be used in bpf2a64_offset() and bpf_prog_fill_jited_linfo()
+> > but if we fixup the values on the fly in there, everyone that intends to use the
+> > offset for any reason will have to account for the missing instruction.
+> 
+> I don't understand what you mean by "correctly."  What's your correctness spec?
+
+> 
 > I don't think there's some consistent semantics of "offsets" across
 > the JITs of different architectures (maybe it's good to clean that
 > up).  RV64 and RV32 JITs are doing something similar to arm64 with
-> respect to offsets.  CCing Bj=C3=B6rn and Luke.
+> respect to offsets.  CCing Björn and Luke.
 
-As I understand it, there are two strategies JITs use to keep track of
-the ctx->offset table.
+Even if that's true, is any reason at all why we should skip the first element 
+of the array, that's now needed since 7c2e988f400 to jump back to the first
+instruction?
+Introducing 2 extra if conditions and hotfix the array on the fly (and for 
+every future invocation of that), seems better to you?
 
-Some JITs (RV32, RV64, arm32, arm64 currently, x86-32) track the end
-of each instruction (e.g., ctx->offset[i] marks the beginning of
-instruction i + 1).
-This requires care to handle jumps to the first instruction to avoid
-using ctx->offset[-1]. The RV32 and RV64 JITs have special handling
-for this case,
-while the arm32, arm64, and x86-32 JITs appear not to. The arm32 and
-x32 probably need to be fixed for the same reason arm64 does.
-
-The other strategy is for ctx->offset[i] to track the beginning of
-instruction i. The x86-64 JIT currently works this way.
-This can be easier to use (no need to special case -1) but looks to be
-trickier to construct. This patch changes the arm64 JIT to work this
-way.
-
-I don't think either strategy is inherently better, both can be
-"correct" as long as the JIT uses ctx->offset in the right way.
-This might be a good opportunity to change the JITs to be consistent
-about this (especially if the arm32, arm64, and x32 JITs all need to
-be fixed anyways).
-Having all JITs agree on the meaning of ctx->offset could help future
-readers debug / understand the code, and could help to someday verify
-the
-ctx->offset construction.
-
-Any thoughts?
-
-- Luke
+Cheers
+/Ilias
