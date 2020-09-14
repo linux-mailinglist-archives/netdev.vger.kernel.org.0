@@ -2,159 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E1CD26983C
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 23:47:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5971826983F
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 23:48:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726144AbgINVrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 17:47:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48616 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726020AbgINVq6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 17:46:58 -0400
-Received: from quaco.ghostprotocols.net (unknown [179.97.37.151])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0A8BE208DB;
-        Mon, 14 Sep 2020 21:46:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600120017;
-        bh=/Pbh7AFCaCoqEJpG+EEJ8uVxBFloGWJRBIt5siAgkTE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tx7rXHzgsTlKduKMD5j1zQC6huHfk4dEbx74U7jjMEQBGIOaf8SNVKZ18ruEd6udp
-         LvSzR1z8vHq0bbXxHR/sKuijZ5lqL+g8JD22RgZpi/PtfTVXJtr4/+JUlpFgiQD0PO
-         bc0FJkgIRYZ75hOzH427wLPrAU3jT6fuvCTBhifg=
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 1E72140D3D; Mon, 14 Sep 2020 18:46:55 -0300 (-03)
-Date:   Mon, 14 Sep 2020 18:46:55 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v3 3/4] perf record: Don't clear event's period if set by
- a term
-Message-ID: <20200914214655.GE166601@kernel.org>
-References: <20200912025655.1337192-1-irogers@google.com>
- <20200912025655.1337192-4-irogers@google.com>
+        id S1726056AbgINVsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 17:48:16 -0400
+Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:64557 "EHLO
+        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725953AbgINVsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 17:48:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1600120094; x=1631656094;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=f9VAxAP7zK34FSX3/c14VueaGaLkkGHOC7c1EvretSw=;
+  b=tKjC64bw5PB7MwuE1xTEeDJdwaCbZEATeOnIo2htz0pMIHOXQwUz2WX+
+   wdMZnidUjrcBHK4+USGxmhinWv2i9een8owACWMp2BtoMzi3wxHeJ3gDl
+   Fph6QkAH9K0wimixHN+bMgESWuuzoSvJeFDOzWAYBIMobPdxK+AfewR2J
+   s=;
+X-IronPort-AV: E=Sophos;i="5.76,427,1592870400"; 
+   d="scan'208";a="67949685"
+Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend mode
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 14 Sep 2020 21:48:10 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
+        by email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com (Postfix) with ESMTPS id 0DED1A200C;
+        Mon, 14 Sep 2020 21:48:07 +0000 (UTC)
+Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
+ EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 14 Sep 2020 21:47:55 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
+ EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 14 Sep 2020 21:47:54 +0000
+Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
+ (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
+ Server id 15.0.1497.2 via Frontend Transport; Mon, 14 Sep 2020 21:47:54 +0000
+Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
+        id 8F43540A16; Mon, 14 Sep 2020 21:47:54 +0000 (UTC)
+Date:   Mon, 14 Sep 2020 21:47:54 +0000
+From:   Anchal Agarwal <anchalag@amazon.com>
+To:     <boris.ostrovsky@oracle.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <hpa@zytor.com>, <x86@kernel.org>, <jgross@suse.com>,
+        <linux-pm@vger.kernel.org>, <linux-mm@kvack.org>,
+        <kamatam@amazon.com>, <sstabellini@kernel.org>,
+        <konrad.wilk@oracle.com>, <roger.pau@citrix.com>,
+        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
+        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
+        <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dwmw@amazon.co.uk>, <benh@kernel.crashing.org>
+Message-ID: <20200914214754.GA19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+References: <cover.1598042152.git.anchalag@amazon.com>
+ <9b970e12491107afda0c1d4a6f154b52d90346ac.1598042152.git.anchalag@amazon.com>
+ <4b2bbc8b-7817-271a-4ff0-5ee5df956049@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20200912025655.1337192-4-irogers@google.com>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <4b2bbc8b-7817-271a-4ff0-5ee5df956049@oracle.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Fri, Sep 11, 2020 at 07:56:54PM -0700, Ian Rogers escreveu:
-> If events in a group explicitly set a frequency or period with leader
-> sampling, don't disable the samples on those events.
+On Sun, Sep 13, 2020 at 11:43:30AM -0400, boris.ostrovsky@oracle.com wrote:
+> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
 > 
-> Prior to 5.8:
-> perf record -e '{cycles/period=12345000/,instructions/period=6789000/}:S'
-> would clear the attributes then apply the config terms. In commit
-> 5f34278867b7 leader sampling configuration was moved to after applying the
-> config terms, in the example, making the instructions' event have its period
-> cleared.
-> This change makes it so that sampling is only disabled if configuration
-> terms aren't present.
-
-Adrian, Jiri, can you please take a look a this and provide Reviewed-by
-or Acked-by tags?
-
-- Arnaldo
- 
-> Fixes: 5f34278867b7 ("perf evlist: Move leader-sampling configuration")
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/util/record.c | 34 ++++++++++++++++++++++++++--------
->  1 file changed, 26 insertions(+), 8 deletions(-)
 > 
-> diff --git a/tools/perf/util/record.c b/tools/perf/util/record.c
-> index a4cc11592f6b..ea9aa1d7cf50 100644
-> --- a/tools/perf/util/record.c
-> +++ b/tools/perf/util/record.c
-> @@ -2,6 +2,7 @@
->  #include "debug.h"
->  #include "evlist.h"
->  #include "evsel.h"
-> +#include "evsel_config.h"
->  #include "parse-events.h"
->  #include <errno.h>
->  #include <limits.h>
-> @@ -33,11 +34,24 @@ static struct evsel *evsel__read_sampler(struct evsel *evsel, struct evlist *evl
->  	return leader;
->  }
->  
-> +static u64 evsel__config_term_mask(struct evsel *evsel)
-> +{
-> +	struct evsel_config_term *term;
-> +	struct list_head *config_terms = &evsel->config_terms;
-> +	u64 term_types = 0;
-> +
-> +	list_for_each_entry(term, config_terms, list) {
-> +		term_types |= 1 << term->type;
-> +	}
-> +	return term_types;
-> +}
-> +
->  static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *evlist)
->  {
->  	struct perf_event_attr *attr = &evsel->core.attr;
->  	struct evsel *leader = evsel->leader;
->  	struct evsel *read_sampler;
-> +	u64 term_types, freq_mask;
->  
->  	if (!leader->sample_read)
->  		return;
-> @@ -47,16 +61,20 @@ static void evsel__config_leader_sampling(struct evsel *evsel, struct evlist *ev
->  	if (evsel == read_sampler)
->  		return;
->  
-> +	term_types = evsel__config_term_mask(evsel);
->  	/*
-> -	 * Disable sampling for all group members other than the leader in
-> -	 * case the leader 'leads' the sampling, except when the leader is an
-> -	 * AUX area event, in which case the 2nd event in the group is the one
-> -	 * that 'leads' the sampling.
-> +	 * Disable sampling for all group members except those with explicit
-> +	 * config terms or the leader. In the case of an AUX area event, the 2nd
-> +	 * event in the group is the one that 'leads' the sampling.
->  	 */
-> -	attr->freq           = 0;
-> -	attr->sample_freq    = 0;
-> -	attr->sample_period  = 0;
-> -	attr->write_backward = 0;
-> +	freq_mask = (1 << EVSEL__CONFIG_TERM_FREQ) | (1 << EVSEL__CONFIG_TERM_PERIOD);
-> +	if ((term_types & freq_mask) == 0) {
-> +		attr->freq           = 0;
-> +		attr->sample_freq    = 0;
-> +		attr->sample_period  = 0;
-> +	}
-> +	if ((term_types & (1 << EVSEL__CONFIG_TERM_OVERWRITE)) == 0)
-> +		attr->write_backward = 0;
->  
->  	/*
->  	 * We don't get a sample for slave events, we make them when delivering
-> -- 
-> 2.28.0.618.gf4bc123cb7-goog
 > 
+> On 8/21/20 6:25 PM, Anchal Agarwal wrote:
+> > From: Munehisa Kamata <kamatam@amazon.com>
+> >
+> > Guest hibernation is different from xen suspend/resume/live migration.
+> > Xen save/restore does not use pm_ops as is needed by guest hibernation.
+> > Hibernation in guest follows ACPI path and is guest inititated , the
+> > hibernation image is saved within guest as compared to later modes
+> > which are xen toolstack assisted and image creation/storage is in
+> > control of hypervisor/host machine.
+> > To differentiate between Xen suspend and PM hibernation, keep track
+> > of the on-going suspend mode by mainly using a new API to keep track of
+> > SHUTDOWN_SUSPEND state.
+> > Introduce a simple function that keeps track of on-going suspend mode
+> > so that PM hibernation code can behave differently according to the
+> > current suspend mode.
+> > Since Xen suspend doesn't have corresponding PM event, its main logic
+> > is modfied to acquire pm_mutex.
+> 
+> 
+> lock_system_sleep() is not taking this mutex.
+>
+Yes, I just realized that the commit 55f2503c ("PM / reboot: Eliminate race
+between reboot and suspend") changed its name to system_transition_mutex.
+I think I missed that change somehow and assumed its still pm_mutex.
+Will fix the description.
+> 
+> >
+> > Though, accquirng pm_mutex is still right thing to do, we may
+> > see deadlock if PM hibernation is interrupted by Xen suspend.
+> > PM hibernation depends on xenwatch thread to process xenbus state
+> > transactions, but the thread will sleep to wait pm_mutex which is
+> > already held by PM hibernation context in the scenario. Xen shutdown
+> > code may need some changes to avoid the issue.
+> 
+> 
+> 
+> Is it Xen's shutdown or suspend code that needs to address this? (Or I
+> may not understand what the problem is that you are describing)
+> 
+Its Xen suspend code I think. If we do not take the system_transition_mutex
+in do_suspend then if hibernation is triggered in parallel to xen suspend there
+could be issues. Now this is still theoretical in my case and I havent been able
+to reproduce such a race. So the approach the original author took was to take
+this lock which to me seems right.
+And its Xen suspend and not Xen Shutdown. So basically if this scenario
+happens I am of the view one of other will fail to occur then how do we recover
+or avoid this at all.
 
--- 
+Does that answer your question?
+> 
+> >
+> > +
+> > +static int xen_pm_notifier(struct notifier_block *notifier,
+> > +     unsigned long pm_event, void *unused)
+> > +{
+> > +     int ret;
+> > +
+> > +     switch (pm_event) {
+> > +     case PM_SUSPEND_PREPARE:
+> > +     case PM_HIBERNATION_PREPARE:
+> > +     /* Guest hibernation is not supported for aarch64 currently*/
+> > +     if (IS_ENABLED(CONFIG_ARM64)) {
+> > +             ret = NOTIFY_BAD;
+> > +             break;
+> > +     }
+> 
+> Indentation.
+> 
+> > +     case PM_RESTORE_PREPARE:
+> > +     case PM_POST_SUSPEND:
+> > +     case PM_POST_HIBERNATION:
+> > +     case PM_POST_RESTORE:
+> > +     default:
+> > +             ret = NOTIFY_OK;
+> > +     }
+> > +     return ret;
+> > +};
+> 
+> 
+> This whole routine now is
+> 
+>         if (IS_ENABLED(CONFIG_ARM64))
+>                 return NOTIFY_BAD;
+> 
+>         return NOTIFY_OK;
+> 
+> isn't it?
+> 
+Yes.
+> 
+> > +
+> > +static struct notifier_block xen_pm_notifier_block = {
+> > +     .notifier_call = xen_pm_notifier
+> > +};
+> > +
+> > +static int xen_setup_pm_notifier(void)
+> > +{
+> > +     if (!xen_hvm_domain() || xen_initial_domain())
+> > +             return -ENODEV;
+> 
+> 
+> I don't think this works anymore.
+What do you mean?
+The first check is for xen domain types and other is for architecture support. 
+The reason I put this check here is because I wanted to segregate the two.
+I do not want to register this notifier at all for !hmv guest and also if its
+an initial control domain.
+The arm check only lands in notifier because once hibernate() api is called ->
+calls pm_notifier_call_chain for PM_HIBERNATION_PREPARE this will fail for
+aarch64. 
+Once we have support for aarch64 this notifier can go away altogether. 
 
-- Arnaldo
+Is there any other reason I may be missing why we should move this check to
+notifier?
+> 
+> In the past your notifier would set suspend_mode (or something) but now
+> it really doesn't do anything except reports an error in some (ARM) cases.
+> 
+> So I think you should move this check into the notifier.
+
+> 
+> (And BTW I still think PM_SUSPEND_PREPARE should return an error too.
+> The fact that we are using "suspend" in xen routine names is irrelevant)
+> 
+I may have send "not-updated" version of the notifier's function change.
+
++    switch (pm_event) {
++       case PM_HIBERNATION_PREPARE:
++        /* Guest hibernation is not supported for aarch64 currently*/
++        if (IS_ENABLED(CONFIG_ARM64)) {
++             ret = NOTIFY_BAD;                                                                                                                                                                                                                                                    
++             break;                                                                                                                                                                                                                                                               
++     }               
++       case PM_RESTORE_PREPARE:
++       case PM_POST_RESTORE:
++       case PM_POST_HIBERNATION:
++       default:
++           ret = NOTIFY_OK;
++    }
+
+With the above path PM_SUSPEND_PREPARE will go all together. Does that
+resolves this issue? I wanted to get rid of all SUSPEND_* as they are not needed
+here clearly.
+The only reason I kept it there is if someone tries to trigger hibernation on
+ARM instances they should get an error. As I am not sure about the current
+behavior. There may be a better way to not invoke hibernation on ARM DomU's and
+get rid of this block all together.
+
+Again, sorry for sending in the half baked fix. My workspace switch may have
+caused the error.
+>
+> 
+> 
+> -boris
+> 
+Anchal
+> 
+> 
+> > +     return register_pm_notifier(&xen_pm_notifier_block);
+> > +}
+> > +
