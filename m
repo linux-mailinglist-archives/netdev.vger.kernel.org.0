@@ -2,69 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37F36269188
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:31:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44ED7269210
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:49:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726328AbgINQbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 12:31:11 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:41804 "EHLO 1wt.eu"
+        id S1726031AbgINQtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 12:49:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52336 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726396AbgINQah (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 12:30:37 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 08EGT9Np012442;
-        Mon, 14 Sep 2020 18:29:09 +0200
-Date:   Mon, 14 Sep 2020 18:29:09 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Amit Klein <aksecurity@gmail.com>,
-        David Laight <David.Laight@aculab.com>,
+        id S1726121AbgINQrp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 12:47:45 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C4F5020829;
+        Mon, 14 Sep 2020 16:47:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600102048;
+        bh=LipKN19DLm+NuifYFHmitiE/2o2q0Ll13jeI5eHrFAI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AuGHsxB5+fJRUdE4As/+MNl0akYExcn1cmbW9dJEp9PJ2f9akrHTtLZbuDf8Yye1B
+         hdGdYlhVnI/5PPFVkeZUIpqtHeV5YoAE+bRARpBNS/+OLuKPUfbQJgM94RJfeN7ptC
+         TGy8Ub60gbp8BOUZlG9X9VkLBdrWz6ZHe7g2MiAQ=
+Date:   Mon, 14 Sep 2020 09:47:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Omer Shpigelman <oshpigelman@habana.ai>
+Cc:     Oded Gabbay <oded.gabbay@gmail.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        George Spelvin <lkml@sdf.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "tytso@mit.edu" <tytso@mit.edu>, Florian Westphal <fw@strlen.de>,
-        Marc Plumb <lkml.mplumb@gmail.com>
-Subject: Re: [PATCH 1/2] random32: make prandom_u32() output unpredictable
-Message-ID: <20200914162909.GA12439@1wt.eu>
-References: <20200901064302.849-1-w@1wt.eu>
- <20200901064302.849-2-w@1wt.eu>
- <b460c51a3fa1473b8289d6030a46abdb@AcuMS.aculab.com>
- <20200901131623.GB1059@1wt.eu>
- <CANEQ_+Kuw6cxWRBE6NyXkr=8p3W-1f=o1q91ZESeueEnna9fvw@mail.gmail.com>
- <CA+icZUUmQeww+94dVOe1JFFQRkvUYVZP3g2GP+gOsdX4kP4x+A@mail.gmail.com>
+        SW_Drivers <SW_Drivers@habana.ai>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH 05/15] habanalabs/gaudi: add NIC Ethernet support
+Message-ID: <20200914094726.1c5f747c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <AM0PR02MB5523D7FD712C3B50DA733CDDB8230@AM0PR02MB5523.eurprd02.prod.outlook.com>
+References: <20200910161126.30948-1-oded.gabbay@gmail.com>
+        <20200910161126.30948-6-oded.gabbay@gmail.com>
+        <20200910130307.5dee086b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <AM0PR02MB5523D7FD712C3B50DA733CDDB8230@AM0PR02MB5523.eurprd02.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+icZUUmQeww+94dVOe1JFFQRkvUYVZP3g2GP+gOsdX4kP4x+A@mail.gmail.com>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 06:16:40PM +0200, Sedat Dilek wrote:
-> On Mon, Sep 14, 2020 at 4:53 PM Amit Klein <aksecurity@gmail.com> wrote:
-> >
-> > Hi
-> >
-> > Is this patch being pushed to any branch? I don't see it deployed anywhere (unless I'm missing something...).
-> >
+On Mon, 14 Sep 2020 09:52:00 +0000 Omer Shpigelman wrote:
+> On Thu, Sep 10, 2020 at 11:03 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Thu, 10 Sep 2020 19:11:16 +0300 Oded Gabbay wrote:  
+> > > +module_param(nic_rx_poll, int, 0444);  
+> > MODULE_PARM_DESC(nic_rx_poll,  
+> > > +	"Enable NIC Rx polling mode (0 = no, 1 = yes, default no)");  
+> > 
+> > If your chip does not support IRQ coalescing you can configure polling and the
+> > timeout via ethtool -C, rather than a module parameter.  
 > 
-> It's here:
-> 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/wtarreau/prandom.git/log/?h=20200901-siphash-noise
+> I couldn't find an example for that in other drivers and I didn't see
+> anything regarding polling mode in the parameters description of this
+> ethtool callback.
+> Can you please specify some pointer for that? Or in other words, what
+> parameter can we use to enable polling/setting the timeout?
 
-By the way I didn't get any feedback from those who initially disagreed
-with the one that was mergd, so for now I'm not doing anything on it
-anymore. I can propose it again for 5.10-rc1 but will not push anymore
-if there's no interest behind it.
-
-Cheers,
-Willy
+Look at stmmac, hip04_eth..
