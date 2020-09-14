@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 867CA2685E6
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6670D2685E7
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726093AbgINHa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 03:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
+        id S1726099AbgINHa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 03:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726009AbgINHaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:30:25 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5EFC06178A
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 00:30:23 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id u13so10851652pgh.1
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 00:30:23 -0700 (PDT)
+        with ESMTP id S1726014AbgINHa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:30:29 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0914FC06178B
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 00:30:28 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id kk9so4888194pjb.2
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 00:30:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JO+T9dbCdHvGYLM7G+u1+Z2xx4BQwKAORkQ/sO6UQkE=;
-        b=ThzXhUyLHORpKwbQSBro4e7lObLX4X0q2Mac1ocPSEppHEddJpaR6LbRx92SRH1Gtl
-         yqexmYedRx5O9I97wFdzTv5/DJCVNaiDzkOwuP3tgYBthmW3h3Ml5/jxpye5lLANFJIO
-         4dV4uf+SzPkS9QHs4kVomHv3v/PM3yb6epBtxaMlOUXKkNqa9knd5jzX5yO6aBd81bjg
-         qA/uAM8BFGqKPYHX/71Ccik1eu+yoU51S79KEhH5OCCJE0zVg4AQleY+C0Hoax7BbqVB
-         EFpX2MJ91ONvyw+YTHqTSt8X2mKqJKKPkeacHNb+ErMoQ/L6nyol267Qwu3U4Y4OPB+O
-         T98w==
+        bh=4BvUTu0NraX8NuxRp3ret+6HOiubsMR2QzLSoIPYMxc=;
+        b=A6331fHhTKblWh/ccTyH5HfeZjN4s2Kc7QN0In2/3oXwmQVnzlxpRLRerE37bcVr0d
+         evYaXvb8v0VlR8hpkYYvBJI8yVDdayJ0vh0o2WFYxH/ESVbxkqyzsc3UzK1JfFq7jQfA
+         aEW6OAQqCMBjF9MjsxUDW1390UwPKVr/BZFYn2zh3TkQ2No6YcPbxrKxjwbbn1fnFM0Y
+         s8fClbYAO26ZQoZMicoHbqkZm9uMnJEvzZRqoeLvHpR4aA9mlO8RUs/wbqezke04lMvz
+         /oAbWOGEf31dwRd68L3Zts1OZRUW94vxHd6JsdpwMPTtAR0UqvfzJLV9AHADO+Erehnl
+         Ue6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JO+T9dbCdHvGYLM7G+u1+Z2xx4BQwKAORkQ/sO6UQkE=;
-        b=MM3Wia2XHp4SHLZ7R50mufUAfOhsvyA2EnOS8mfzT0IT4cN8dmJHZLE6Ijl6uuFr0H
-         RDHrMmqziuMzSMYI3ZtETwwF/h+Ntdkk99Y/Yaqh24KCgCDdA+Zz0ZcjJE42UhCI+pPU
-         CQlpvsRJcHxhUom/Hsz93KkUZfsS//APHnmvy3ftdyeYXwy3GvMArYky8TD7QGQjZCkM
-         B6tokVUcTzpxENhaMq38zyif5p5LzsKgWkq5tcO/rd3MyGwAjV3V4evMSOgT/MMDNQxY
-         whFZQVrPglNsIwSRk+aIQ2it9ZNPZcT10CxGw3EsvDHMl4BbiwY7ypIKVK+BVnbXgHKN
-         D1Og==
-X-Gm-Message-State: AOAM5324v2XPPMspaGEvk+bY2U/S+RQyZOSf1590+4UAdwCJOKsOIKPY
-        ByxnJY6Nsv9XbSt/E3xoBz0=
-X-Google-Smtp-Source: ABdhPJyiNkbXb/Wrgz4FOiRWp47YN1uP9O1iJDzlOmEE4bGiyPEX0xetGC4vucxG5+yn1OOF19KyTg==
-X-Received: by 2002:a63:4b63:: with SMTP id k35mr10108706pgl.142.1600068623620;
-        Mon, 14 Sep 2020 00:30:23 -0700 (PDT)
+        bh=4BvUTu0NraX8NuxRp3ret+6HOiubsMR2QzLSoIPYMxc=;
+        b=B3mLJODe8mGLJ5N7SQDUilqATFgK4OyiBNgu9GlPNi1PQTp62wk2nTvOx51ei2WsFw
+         PKG9Yvn7s2M2Wa7iMexD4Yf9TWjEWYyalno5Ez6oNmnFkWWeEVPTUK/TZBJtl+t8O5Q9
+         Y/k1EkEppeoKgzqwEgGoXjRbd93j7d5DAyn3hK0is6KZ2xCi5EYS57yig7Ws8tS0Sfgv
+         x43saYk5GKIXysLuspMItTS7gdwipcaunRauv9ObLtS7jaw+jNRhjW8AF+0XCqmOHHKU
+         DRE/w//UkhiyFMrB80MHf8gBj+7TkHSkCRTJqSVa71HT1k3S7lnovZI6/XTfWXBVCr4F
+         AvNw==
+X-Gm-Message-State: AOAM531slZ/CrCxDovskgEX5wje6JdTxyZ95eNeUeTDAAYnXFqwFpblY
+        Bk0Dopwl18l8YpBxKXhx3oU=
+X-Google-Smtp-Source: ABdhPJw5obAFdGU3YVkxucMZ9L7ukIYiB8iRjluWH/HfDbZkuXD90mdOPycGb6Ewm0pVsmCAiL+5OQ==
+X-Received: by 2002:a17:90a:a613:: with SMTP id c19mr3555072pjq.119.1600068627667;
+        Mon, 14 Sep 2020 00:30:27 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.192.250])
-        by smtp.gmail.com with ESMTPSA id a16sm7609057pgh.48.2020.09.14.00.30.20
+        by smtp.gmail.com with ESMTPSA id a16sm7609057pgh.48.2020.09.14.00.30.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 00:30:23 -0700 (PDT)
+        Mon, 14 Sep 2020 00:30:27 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
@@ -54,9 +54,9 @@ Cc:     jes@trained-monkey.org, kuba@kernel.org, dougmill@linux.ibm.com,
         stephen@networkplumber.org, borisp@mellanox.com,
         netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [net-next v3 08/20] net: hinic: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 14 Sep 2020 12:59:27 +0530
-Message-Id: <20200914072939.803280-9-allen.lkml@gmail.com>
+Subject: [net-next v3 09/20] net: ehea: convert tasklets to use new tasklet_setup() API
+Date:   Mon, 14 Sep 2020 12:59:28 +0530
+Message-Id: <20200914072939.803280-10-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200914072939.803280-1-allen.lkml@gmail.com>
 References: <20200914072939.803280-1-allen.lkml@gmail.com>
@@ -77,35 +77,35 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c | 7 +++----
+ drivers/net/ethernet/ibm/ehea/ehea_main.c | 7 +++----
  1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
-index ca8cb68a8d20..f304a5b16d75 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_eqs.c
-@@ -370,9 +370,9 @@ static void eq_irq_work(struct work_struct *work)
-  * ceq_tasklet - the tasklet of the EQ that received the event
-  * @ceq_data: the eq
-  **/
--static void ceq_tasklet(unsigned long ceq_data)
-+static void ceq_tasklet(struct tasklet_struct *t)
- {
--	struct hinic_eq *ceq = (struct hinic_eq *)ceq_data;
-+	struct hinic_eq *ceq = from_tasklet(ceq, t, ceq_tasklet);
- 
- 	eq_irq_handler(ceq);
+diff --git a/drivers/net/ethernet/ibm/ehea/ehea_main.c b/drivers/net/ethernet/ibm/ehea/ehea_main.c
+index 3153d62cc73e..c2e740475786 100644
+--- a/drivers/net/ethernet/ibm/ehea/ehea_main.c
++++ b/drivers/net/ethernet/ibm/ehea/ehea_main.c
+@@ -1212,9 +1212,9 @@ static void ehea_parse_eqe(struct ehea_adapter *adapter, u64 eqe)
+ 	}
  }
-@@ -782,8 +782,7 @@ static int init_eq(struct hinic_eq *eq, struct hinic_hwif *hwif,
  
- 		INIT_WORK(&aeq_work->work, eq_irq_work);
- 	} else if (type == HINIC_CEQ) {
--		tasklet_init(&eq->ceq_tasklet, ceq_tasklet,
--			     (unsigned long)eq);
-+		tasklet_setup(&eq->ceq_tasklet, ceq_tasklet);
+-static void ehea_neq_tasklet(unsigned long data)
++static void ehea_neq_tasklet(struct tasklet_struct *t)
+ {
+-	struct ehea_adapter *adapter = (struct ehea_adapter *)data;
++	struct ehea_adapter *adapter = from_tasklet(adapter, t, neq_tasklet);
+ 	struct ehea_eqe *eqe;
+ 	u64 event_mask;
+ 
+@@ -3417,8 +3417,7 @@ static int ehea_probe_adapter(struct platform_device *dev)
+ 		goto out_free_ad;
  	}
  
- 	/* set the attributes of the msix entry */
+-	tasklet_init(&adapter->neq_tasklet, ehea_neq_tasklet,
+-		     (unsigned long)adapter);
++	tasklet_setup(&adapter->neq_tasklet, ehea_neq_tasklet);
+ 
+ 	ret = ehea_create_device_sysfs(dev);
+ 	if (ret)
 -- 
 2.25.1
 
