@@ -2,84 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E8012699BD
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 01:34:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75DC12699BE
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 01:36:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726057AbgINXeg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 19:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbgINXee (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 19:34:34 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E82C06174A
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 16:34:34 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8AE54128B8618;
-        Mon, 14 Sep 2020 16:17:45 -0700 (PDT)
-Date:   Mon, 14 Sep 2020 16:34:31 -0700 (PDT)
-Message-Id: <20200914.163431.1847224607563732054.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     kuba@kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
-        willemdebruijn.kernel@gmail.com, edumazet@google.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] __netif_receive_skb_core: don't untag vlan
- from skb on DSA master
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200911232607.2879466-1-olteanv@gmail.com>
-References: <20200911232607.2879466-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726034AbgINXgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 19:36:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41772 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725994AbgINXgH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 19:36:07 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BE8AD20897;
+        Mon, 14 Sep 2020 23:36:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600126567;
+        bh=naJmvd7PAuPHl4ywAt7FEnW6NxRdPEq1muULAUcqQ0o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aY39OMkls2svII1GI5gdVIEkFcI35p8fFdLIDSX8NoAyga5zfY4z05a770hqXrHsx
+         yrbjqCCK6+s6Qup0I59Ca9Bxzd9T7buAewiEnwalFZBOmVD//BbrqF7uGHnTyzbGI+
+         aKrWv7FYqEuVqMPVcwRkFoyEKzLDk73J3nmEh3VI=
+Date:   Mon, 14 Sep 2020 16:36:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org,
+        davem@davemloft.net
+Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
+Message-ID: <20200914163605.750b0f23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <a04313f7-649e-a928-767c-b9d27f3a0c7c@intel.com>
+References: <20200908224812.63434-1-snelson@pensando.io>
+        <20200908224812.63434-3-snelson@pensando.io>
+        <20200908165433.08afb9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <9938e3cc-b955-11a1-d667-8e5893bb6367@pensando.io>
+        <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <581f2161-1c55-31ae-370b-bbea5a677862@pensando.io>
+        <20200909122233.45e4c65c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3d75c4be-ae5d-43b0-407c-5df1e7645447@pensando.io>
+        <20200910105643.2e2d07f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a04313f7-649e-a928-767c-b9d27f3a0c7c@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Mon, 14 Sep 2020 16:17:45 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Sat, 12 Sep 2020 02:26:07 +0300
+On Mon, 14 Sep 2020 16:15:28 -0700 Jacob Keller wrote:
+> On 9/10/2020 10:56 AM, Jakub Kicinski wrote:
+> > IOW drop the component parameter from the normal helper, cause almost
+> > nobody uses that. The add a more full featured __ version, which would
+> > take the arg struct, the struct would include the timeout value.
+> >   
+> I would point out that the ice driver does use it to help indicate which
+> section of the flash is currently being updated.
+> 
+> i.e.
+> 
+> $ devlink dev flash pci/0000:af:00.0 file firmware.bin
+> Preparing to flash
+> [fw.mgmt] Erasing
+> [fw.mgmt] Erasing done
+> [fw.mgmt] Flashing 100%
+> [fw.mgmt] Flashing done 100%
+> [fw.undi] Erasing
+> [fw.undi] Erasing done
+> [fw.undi] Flashing 100%
+> [fw.undi] Flashing done 100%
+> [fw.netlist] Erasing
+> [fw.netlist] Erasing done
+> [fw.netlist] Flashing 100%
+> [fw.netlist] Flashing done 100%
+> 
+> I'd like to keep that, as it helps tell which component is currently
+> being updated. If we drop this, then either I have to manually build
+> strings which include the component name, or we lose this information on
+> display.
 
-> A DSA master interface has upper network devices, each representing an
-> Ethernet switch port attached to it. Demultiplexing the source ports and
-> setting skb->dev accordingly is done through the catch-all ETH_P_XDSA
-> packet_type handler. Catch-all because DSA vendors have various header
-> implementations, which can be placed anywhere in the frame: before the
-> DMAC, before the EtherType, before the FCS, etc. So, the ETH_P_XDSA
-> handler acts like an rx_handler more than anything.
-> 
-> It is unlikely for the DSA master interface to have any other upper than
-> the DSA switch interfaces themselves. Only maybe a bridge upper*, but it
-> is very likely that the DSA master will have no 8021q upper. So
-> __netif_receive_skb_core() will try to untag the VLAN, despite the fact
-> that the DSA switch interface might have an 8021q upper. So the skb will
-> never reach that.
-> 
-> So far, this hasn't been a problem because most of the possible
-> placements of the DSA switch header mentioned in the first paragraph
-> will displace the VLAN header when the DSA master receives the frame, so
-> __netif_receive_skb_core() will not actually execute any VLAN-specific
-> code for it. This only becomes a problem when the DSA switch header does
-> not displace the VLAN header (for example with a tail tag).
-> 
-> What the patch does is it bypasses the untagging of the skb when there
-> is a DSA switch attached to this net device. So, DSA is the only
-> packet_type handler which requires seeing the VLAN header. Once skb->dev
-> will be changed, __netif_receive_skb_core() will be invoked again and
-> untagging, or delivery to an 8021q upper, will happen in the RX of the
-> DSA switch interface itself.
-> 
-> *see commit 9eb8eff0cf2f ("net: bridge: allow enslaving some DSA master
-> network devices". This is actually the reason why I prefer keeping DSA
-> as a packet_type handler of ETH_P_XDSA rather than converting to an
-> rx_handler. Currently the rx_handler code doesn't support chaining, and
-> this is a problem because a DSA master might be bridged.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-
-Applied, thanks.
+Thanks for pointing that out. My recollection was that ice and netdevsim
+were the only two users, so I thought those could use the full __*
+helper and pass an arg struct. But no strong feelings.
