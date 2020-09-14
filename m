@@ -2,128 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1013A268706
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 10:17:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00EBF26874B
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 10:37:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbgINIRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 04:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
+        id S1726250AbgINIg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 04:36:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726244AbgINIQw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 04:16:52 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36652C061788
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 01:16:37 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id o5so17586181wrn.13
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 01:16:37 -0700 (PDT)
+        with ESMTP id S1726151AbgINIgv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 04:36:51 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A37C06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 01:36:50 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id j2so17713678wrx.7
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 01:36:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BptE3On/LJmJ4sL9/9Gwb4y6QCQ62szdfp22yq3uqAA=;
-        b=fSwjBxxMQb+FPE7hR2DXOkxfG2GO2gkoM/xvE4e8VyMviLoGi+PwZdhJHCH1q/4L+I
-         9tQxS6XepRATsPDkpP+fSWekB9O5/hjP0mvkpfVL5sdaj12ihcVuoc5UuV0VyeQWNvHJ
-         kThyMDVH7ZYc/83syTg2XH4dHSivMS/HTYG4oQQyDeHxt8/HIQPpZgUT/g0X7LhlkCr8
-         tkjHqmcvJ99ab1y2eA53nAfPYjnJe7SojGV2TpgQWU0xMEF4LRwbce8Q/ucwpUZezTZF
-         us24d7Gn5XobWjbcCDZCX5Ow9pXmwEdonfu732wHZ+uPFVcE/4ENahsK3fi17O20xHJ4
-         aPgA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XocWBvr/wpI0xYVxfd6SkL7Z8etNiS2BwYzO/1XPVHg=;
+        b=IVsQ3IuuNi2hhysVA+2+GTorRddoaCd9NLr8I554ayl2U6q4IDUEzkr1INk6XpKMJ1
+         uqxB8sR8Uqq5pSNEB8kbZZzoddkojBObzgnXEXwY+Dtyne9Qxs83HhOX9FcTbwEDi8Vl
+         qBl+L0gnG04GIzXYF8eeHblOyNBvxMrNg9QPBJGRC1AvcpWBnNo3QOreZxY/C51/E7Qs
+         Sn8CV0llz+Pf/KtvyD5VFR/wwhM7fiaZhnp1elS1n2Adw/C1ACGXQbPPF6P0Id1ponz9
+         YJQDezMhO5kR81ku/tLAQ6ZxPMN3c/fFkw/GDRtyc40D31kHwySXAVUhRWoDF5Hwa1T1
+         5Alw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=BptE3On/LJmJ4sL9/9Gwb4y6QCQ62szdfp22yq3uqAA=;
-        b=ffKOCDDdaZvXFZTyFeR3fQAh/PHKbe/pHK4PCAX0vvmm4BAgYEMG4295lIhtVM/Z3o
-         Kpq3kvJarIRsOjNWuIzRwrItfrEs8W49fEoQBNkxDnXJKpdnUAHZs+SULv54OvtsnXH8
-         nudYRkcLQ2GEuphxaUF6lZUF6gd/KTZH3w+fhuObPK6Lznr/LZkIdQ6jx+v6hiXc9uhk
-         NPukhwGZwHs4A61+pWMgfeKk9Wbg4gF2Fbwj7H6O8rbZMu06sMXe1NV0ZgIZRDdzHcUI
-         kSzpoQlgTmUCAW3Ra1WWE/Y9OzuNjRNfSOZ3FZO5CnqFQAq8Pw+vJKL9ssmzwQZ5y92t
-         udKw==
-X-Gm-Message-State: AOAM533FbrrtkWlDVt/0nFRPcwhm5UIgWbn1BSI1Jx5o5kq+wUg3Yl1f
-        WWJ9g7ivzGXcPG8+4SwKfRm7vA==
-X-Google-Smtp-Source: ABdhPJyf25RMQLS3r9mkoqt7KU6Xoa6kWey+o2NH6A6zUynRNbiQuiXsDqAzqAmwyKjYMkwFkLft1g==
-X-Received: by 2002:adf:ec47:: with SMTP id w7mr15580790wrn.175.1600071395346;
-        Mon, 14 Sep 2020 01:16:35 -0700 (PDT)
-Received: from [192.168.1.12] ([194.35.119.129])
-        by smtp.gmail.com with ESMTPSA id l8sm19445125wrx.22.2020.09.14.01.16.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Sep 2020 01:16:34 -0700 (PDT)
-Subject: Re: [PATCH bpf-next] bpftool: fix build failure
-To:     Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com
-References: <20200914061206.2625395-1-yhs@fb.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <b942625c-7140-0a57-337e-3a95020cfa99@isovalent.com>
-Date:   Mon, 14 Sep 2020 09:16:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        bh=XocWBvr/wpI0xYVxfd6SkL7Z8etNiS2BwYzO/1XPVHg=;
+        b=Y89drPe77UpD66B3A3ZRrxk/IocIPmhgyFPQGs7iPE2kGIxSdFuSfi2MKtSeX0G2FL
+         lM4hDgIpnvU+ZhtXdwRZqvAFlYiFt/mLPRq6nzoMlwJnJbgZsFMpkKRGUGE0/AlTptYx
+         WBVMsJjCCUr9sG1cif+qx/BY2O8eyoJII/TkHkHI2TlL9yobu2C1O3APfufawU4m+QrL
+         V5mWX5WDfS9rqTm3+TsS1rA0FPi18fkaECKV+23AU5UMSineM1MJmSemSI4K4tLfU2he
+         teb4eZO1V3JbbhTVfAj3IYJCeGj6wwGzkxZdLdSSHjjasoINGRKPz9VP8Qo/Hq9bMWUb
+         u+Yw==
+X-Gm-Message-State: AOAM531LiOtNXJonSFqBxL4JYLHKtlCmaUqFPVxBda2Pg3QmQYMuiRvl
+        UPIXgYnplWaPgvlJlzYCgp2HvA==
+X-Google-Smtp-Source: ABdhPJyUqOi2jNQEC2gkhbdbotbQDpErc+C5q1RJUrhpZo+s2UVOm60Lp1X2XTE+4KE2XRndSAgxXg==
+X-Received: by 2002:adf:f0c7:: with SMTP id x7mr14423737wro.315.1600072609210;
+        Mon, 14 Sep 2020 01:36:49 -0700 (PDT)
+Received: from apalos.home ([2a02:587:4633:88b0:2e56:dcff:fe9a:8f06])
+        by smtp.gmail.com with ESMTPSA id q192sm20015597wme.13.2020.09.14.01.36.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Sep 2020 01:36:48 -0700 (PDT)
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     bpf@vger.kernel.org
+Cc:     ardb@kernel.org, naresh.kamboju@linaro.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] arm64: bpf: Fix branch offset in JIT
+Date:   Mon, 14 Sep 2020 11:36:21 +0300
+Message-Id: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <20200914061206.2625395-1-yhs@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/09/2020 07:12, Yonghong Song wrote:
-> When building bpf selftests like
->   make -C tools/testing/selftests/bpf -j20
-> I hit the following errors:
->   ...
->   GEN      /net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-gen.8
->   <stdin>:75: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
->   <stdin>:71: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
->   <stdin>:85: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
->   <stdin>:57: (WARNING/2) Block quote ends without a blank line; unexpected unindent.
->   <stdin>:66: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
->   <stdin>:109: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
->   <stdin>:175: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
->   <stdin>:273: (WARNING/2) Literal block ends without a blank line; unexpected unindent.
->   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-perf.8] Error 12
->   make[1]: *** Waiting for unfinished jobs....
->   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-iter.8] Error 12
->   make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool/Documentation/bpftool-struct_ops.8] Error 12
->   ...
-> 
-> I am using:
->   -bash-4.4$ rst2man --version
->   rst2man (Docutils 0.11 [repository], Python 2.7.5, on linux2)
->   -bash-4.4$
-> 
-> Looks like that particular version of rst2man prefers to have a blank line
-> after literal blocks. This patch added block lines in related .rst files
-> and compilation can then pass.
-> 
-> Cc: Quentin Monnet <quentin@isovalent.com>
-> Fixes: 18841da98100 ("tools: bpftool: Automate generation for "SEE ALSO" sections in man pages")
-> Signed-off-by: Yonghong Song <yhs@fb.com>
+Running the eBPF test_verifier leads to random errors looking like this:
 
+[ 6525.735488] Unexpected kernel BRK exception at EL1
+[ 6525.735502] Internal error: ptrace BRK handler: f2000100 [#1] SMP
+[ 6525.741609] Modules linked in: nls_utf8 cifs libdes libarc4 dns_resolver fscache binfmt_misc nls_ascii nls_cp437 vfat fat aes_ce_blk crypto_simd cryptd aes_ce_cipher ghash_ce gf128mul efi_pstore sha2_ce sha256_arm64 sha1_ce evdev efivars efivarfs ip_tables x_tables autofs4 btrfs blake2b_generic xor xor_neon zstd_compress raid6_pq libcrc32c crc32c_generic ahci xhci_pci libahci xhci_hcd igb libata i2c_algo_bit nvme realtek usbcore nvme_core scsi_mod t10_pi netsec mdio_devres of_mdio gpio_keys fixed_phy libphy gpio_mb86s7x
+[ 6525.787760] CPU: 3 PID: 7881 Comm: test_verifier Tainted: G        W         5.9.0-rc1+ #47
+[ 6525.796111] Hardware name: Socionext SynQuacer E-series DeveloperBox, BIOS build #1 Jun  6 2020
+[ 6525.804812] pstate: 20000005 (nzCv daif -PAN -UAO BTYPE=--)
+[ 6525.810390] pc : bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+[ 6525.815613] lr : bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+[ 6525.820832] sp : ffff8000130cbb80
+[ 6525.824141] x29: ffff8000130cbbb0 x28: 0000000000000000
+[ 6525.829451] x27: 000005ef6fcbf39b x26: 0000000000000000
+[ 6525.834759] x25: ffff8000130cbb80 x24: ffff800011dc7038
+[ 6525.840067] x23: ffff8000130cbd00 x22: ffff0008f624d080
+[ 6525.845375] x21: 0000000000000001 x20: ffff800011dc7000
+[ 6525.850682] x19: 0000000000000000 x18: 0000000000000000
+[ 6525.855990] x17: 0000000000000000 x16: 0000000000000000
+[ 6525.861298] x15: 0000000000000000 x14: 0000000000000000
+[ 6525.866606] x13: 0000000000000000 x12: 0000000000000000
+[ 6525.871913] x11: 0000000000000001 x10: ffff8000000a660c
+[ 6525.877220] x9 : ffff800010951810 x8 : ffff8000130cbc38
+[ 6525.882528] x7 : 0000000000000000 x6 : 0000009864cfa881
+[ 6525.887836] x5 : 00ffffffffffffff x4 : 002880ba1a0b3e9f
+[ 6525.893144] x3 : 0000000000000018 x2 : ffff8000000a4374
+[ 6525.898452] x1 : 000000000000000a x0 : 0000000000000009
+[ 6525.903760] Call trace:
+[ 6525.906202]  bpf_prog_c3d01833289b6311_F+0xc8/0x9f4
+[ 6525.911076]  bpf_prog_d53bb52e3f4483f9_F+0x38/0xc8c
+[ 6525.915957]  bpf_dispatcher_xdp_func+0x14/0x20
+[ 6525.920398]  bpf_test_run+0x70/0x1b0
+[ 6525.923969]  bpf_prog_test_run_xdp+0xec/0x190
+[ 6525.928326]  __do_sys_bpf+0xc88/0x1b28
+[ 6525.932072]  __arm64_sys_bpf+0x24/0x30
+[ 6525.935820]  el0_svc_common.constprop.0+0x70/0x168
+[ 6525.940607]  do_el0_svc+0x28/0x88
+[ 6525.943920]  el0_sync_handler+0x88/0x190
+[ 6525.947838]  el0_sync+0x140/0x180
+[ 6525.951154] Code: d4202000 d4202000 d4202000 d4202000 (d4202000)
+[ 6525.957249] ---[ end trace cecc3f93b14927e2 ]---
 
-Hi Yonghong, thanks for the fix! I didn't see those warnings on my
-setup. For the record my rst2man version is:
+The reason seems to be the offset[] creation and usage ctx->offset[]
+while building the eBPF body.  The code currently omits the first 
+instruction, since build_insn() will increase our ctx->idx before saving 
+it.  When "taken loop with back jump to 1st insn" test runs it will
+eventually call bpf2a64_offset(-1, 2, ctx). Since negative indexing is
+permitted, the current outcome depends on the value stored in
+ctx->offset[-1], which has nothing to do with our array.
+If the value happens to be 0 the tests will work. If not this error
+triggers.
 
-	rst2man (Docutils 0.16 [release], Python 3.8.2, on linux)
+So let's fix it by creating the ctx->offset[] correctly in the first
+place and account for the extra instruction while calculating the arm
+instruction offsets.
 
-Your patch looks good, but instead of having blank lines at the end of
-most files, could you please check if the following works?
+Signed-off-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Yauheni Kaliuta <yauheni.kaliuta@redhat.com>
+---
+ arch/arm64/net/bpf_jit_comp.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-------
+diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+index f8912e45be7a..5891733a9f39 100644
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -143,9 +143,13 @@ static inline void emit_addr_mov_i64(const int reg, const u64 val,
+ 	}
+ }
+ 
+-static inline int bpf2a64_offset(int bpf_to, int bpf_from,
++static inline int bpf2a64_offset(int bpf_insn, int off,
+ 				 const struct jit_ctx *ctx)
+ {
++	/* arm64 offset is relative to the branch instruction */
++	int bpf_from = bpf_insn + 1;
++	/* BPF JMP offset is relative to the next instruction */
++	int bpf_to = bpf_insn + off + 1;
+ 	int to = ctx->offset[bpf_to];
+ 	/* -1 to account for the Branch instruction */
+ 	int from = ctx->offset[bpf_from] - 1;
+@@ -642,7 +646,7 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
+ 
+ 	/* JUMP off */
+ 	case BPF_JMP | BPF_JA:
+-		jmp_offset = bpf2a64_offset(i + off, i, ctx);
++		jmp_offset = bpf2a64_offset(i, off, ctx);
+ 		check_imm26(jmp_offset);
+ 		emit(A64_B(jmp_offset), ctx);
+ 		break;
+@@ -669,7 +673,7 @@ static int build_insn(const struct bpf_insn *insn, struct jit_ctx *ctx,
+ 	case BPF_JMP32 | BPF_JSLE | BPF_X:
+ 		emit(A64_CMP(is64, dst, src), ctx);
+ emit_cond_jmp:
+-		jmp_offset = bpf2a64_offset(i + off, i, ctx);
++		jmp_offset = bpf2a64_offset(i, off, ctx);
+ 		check_imm19(jmp_offset);
+ 		switch (BPF_OP(code)) {
+ 		case BPF_JEQ:
+@@ -912,18 +916,21 @@ static int build_body(struct jit_ctx *ctx, bool extra_pass)
+ 		const struct bpf_insn *insn = &prog->insnsi[i];
+ 		int ret;
+ 
++		if (ctx->image == NULL)
++			ctx->offset[i] = ctx->idx;
++
+ 		ret = build_insn(insn, ctx, extra_pass);
+ 		if (ret > 0) {
+ 			i++;
+ 			if (ctx->image == NULL)
+-				ctx->offset[i] = ctx->idx;
++				ctx->offset[i] = ctx->offset[i - 1];
+ 			continue;
+ 		}
+-		if (ctx->image == NULL)
+-			ctx->offset[i] = ctx->idx;
+ 		if (ret)
+ 			return ret;
+ 	}
++	if (ctx->image == NULL)
++		ctx->offset[i] = ctx->idx;
+ 
+ 	return 0;
+ }
+@@ -1002,7 +1009,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	memset(&ctx, 0, sizeof(ctx));
+ 	ctx.prog = prog;
+ 
+-	ctx.offset = kcalloc(prog->len, sizeof(int), GFP_KERNEL);
++	ctx.offset = kcalloc(prog->len + 1, sizeof(int), GFP_KERNEL);
+ 	if (ctx.offset == NULL) {
+ 		prog = orig_prog;
+ 		goto out_off;
+@@ -1089,7 +1096,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	prog->jited_len = prog_size;
+ 
+ 	if (!prog->is_func || extra_pass) {
+-		bpf_prog_fill_jited_linfo(prog, ctx.offset);
++		bpf_prog_fill_jited_linfo(prog, ctx.offset + 1);
+ out_off:
+ 		kfree(ctx.offset);
+ 		kfree(jit_data);
+-- 
+2.28.0
 
-diff --git a/tools/bpf/bpftool/Documentation/Makefile
-b/tools/bpf/bpftool/Documentation/Makefile
-index 4c9dd1e45244..01b30ed86eac 100644
---- a/tools/bpf/bpftool/Documentation/Makefile
-+++ b/tools/bpf/bpftool/Documentation/Makefile
-@@ -32,7 +32,7 @@ RST2MAN_OPTS += --verbose
-
- list_pages = $(sort $(basename $(filter-out $(1),$(MAN8_RST))))
- see_also = $(subst " ",, \
--       "\n" \
-+       "\n\n" \
-        "SEE ALSO\n" \
-        "========\n" \
-        "\t**bpf**\ (2),\n" \
