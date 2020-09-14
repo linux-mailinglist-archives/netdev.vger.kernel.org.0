@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AA1326937B
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:33:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D952D269370
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:33:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726366AbgINRdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 13:33:50 -0400
-Received: from mga09.intel.com ([134.134.136.24]:61353 "EHLO mga09.intel.com"
+        id S1726355AbgINRcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 13:32:47 -0400
+Received: from mga09.intel.com ([134.134.136.24]:61362 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726171AbgINRcb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 13:32:31 -0400
-IronPort-SDR: 7J2yT+i2F6J7RsYX5E+O3ay9FvtvrCgc9RCPXCPay9cqTUOJx8BFMFRu8tGenae/N3DX4jfxvN
- WfgjtvsLVqQg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9744"; a="160056111"
+        id S1726273AbgINRci (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 13:32:38 -0400
+IronPort-SDR: NJJopbuFf92Z5MwpyoN0TVJvogD6je2eW4CRgl7f+kT+RC3KJS2xJgUc13ruaRVD/7fZMUm1bA
+ R4udQUPJo1zQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9744"; a="160056113"
 X-IronPort-AV: E=Sophos;i="5.76,426,1592895600"; 
-   d="scan'208";a="160056111"
+   d="scan'208";a="160056113"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2020 10:32:31 -0700
-IronPort-SDR: gGD8QZRyomqc9u1p+8HiWYx8UgppjAEGR02dQVmCXmjJCqSv+01wZb7Ji5Op6TUIVybfOmFvBs
- wMkWWSzCyYrQ==
+IronPort-SDR: I0y1i/y270dnuRoB8b+tq2+R/DlqfxFdAk1gHMauygn1OipKB7IlxKM12uumoHYHpmU6MnoHIL
+ np6JvmExcEBg==
 X-IronPort-AV: E=Sophos;i="5.76,426,1592895600"; 
-   d="scan'208";a="319137311"
+   d="scan'208";a="319137314"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2020 10:32:31 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
@@ -31,10 +31,13 @@ To:     davem@davemloft.net
 Cc:     Li RongQing <lirongqing@baidu.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
         jeffrey.t.kirsher@intel.com, anthony.l.nguyen@intel.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: [net-next v2 1/5] i40e: not compute affinity_mask for IRQ
-Date:   Mon, 14 Sep 2020 10:32:20 -0700
-Message-Id: <20200914173224.692707-2-anthony.l.nguyen@intel.com>
+        kernel test robot <lkp@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Aaron Brown <aaron.f.brown@intel.com>
+Subject: [net-next v2 2/5] i40e: optimise prefetch page refcount
+Date:   Mon, 14 Sep 2020 10:32:21 -0700
+Message-Id: <20200914173224.692707-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200914173224.692707-1-anthony.l.nguyen@intel.com>
 References: <20200914173224.692707-1-anthony.l.nguyen@intel.com>
@@ -47,60 +50,65 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Li RongQing <lirongqing@baidu.com>
 
-After commit 759dc4a7e605 ("i40e: initialize our affinity_mask
-based on cpu_possible_mask"), NAPI IRQ affinity_mask is bind to
-all possible CPUs, not a fixed CPU
+refcount of rx_buffer page will be added here originally, so prefetchw
+is needed, but after commit 1793668c3b8c ("i40e/i40evf: Update code to
+better handle incrementing page count"), and refcount is not added
+every time, so change prefetchw as prefetch.
 
+Now it mainly services page_address(), but which accesses struct page
+only when WANT_PAGE_VIRTUAL or HASHED_PAGE_VIRTUAL is defined otherwise
+it returns address based on offset, so we prefetch it conditionally.
+
+Jakub suggested to define prefetch_page_address in a common header.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 2 +-
+ include/linux/prefetch.h                    | 8 ++++++++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 05c6d3ea11e6..9cfaa99da4e6 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -11186,11 +11186,10 @@ static int i40e_init_msix(struct i40e_pf *pf)
-  * i40e_vsi_alloc_q_vector - Allocate memory for a single interrupt vector
-  * @vsi: the VSI being configured
-  * @v_idx: index of the vector in the vsi struct
-- * @cpu: cpu to be used on affinity_mask
-  *
-  * We allocate one q_vector.  If allocation fails we return -ENOMEM.
-  **/
--static int i40e_vsi_alloc_q_vector(struct i40e_vsi *vsi, int v_idx, int cpu)
-+static int i40e_vsi_alloc_q_vector(struct i40e_vsi *vsi, int v_idx)
- {
- 	struct i40e_q_vector *q_vector;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index 91ab824926b9..8500e1c1a16b 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -1953,7 +1953,7 @@ static struct i40e_rx_buffer *i40e_get_rx_buffer(struct i40e_ring *rx_ring,
+ 	struct i40e_rx_buffer *rx_buffer;
  
-@@ -11223,7 +11222,7 @@ static int i40e_vsi_alloc_q_vector(struct i40e_vsi *vsi, int v_idx, int cpu)
- static int i40e_vsi_alloc_q_vectors(struct i40e_vsi *vsi)
- {
- 	struct i40e_pf *pf = vsi->back;
--	int err, v_idx, num_q_vectors, current_cpu;
-+	int err, v_idx, num_q_vectors;
+ 	rx_buffer = i40e_rx_bi(rx_ring, rx_ring->next_to_clean);
+-	prefetchw(rx_buffer->page);
++	prefetch_page_address(rx_buffer->page);
  
- 	/* if not MSIX, give the one vector only to the LAN VSI */
- 	if (pf->flags & I40E_FLAG_MSIX_ENABLED)
-@@ -11233,15 +11232,10 @@ static int i40e_vsi_alloc_q_vectors(struct i40e_vsi *vsi)
- 	else
- 		return -EINVAL;
+ 	/* we are reusing so sync this buffer for CPU use */
+ 	dma_sync_single_range_for_cpu(rx_ring->dev,
+diff --git a/include/linux/prefetch.h b/include/linux/prefetch.h
+index 13eafebf3549..b83a3f944f28 100644
+--- a/include/linux/prefetch.h
++++ b/include/linux/prefetch.h
+@@ -15,6 +15,7 @@
+ #include <asm/processor.h>
+ #include <asm/cache.h>
  
--	current_cpu = cpumask_first(cpu_online_mask);
--
- 	for (v_idx = 0; v_idx < num_q_vectors; v_idx++) {
--		err = i40e_vsi_alloc_q_vector(vsi, v_idx, current_cpu);
-+		err = i40e_vsi_alloc_q_vector(vsi, v_idx);
- 		if (err)
- 			goto err_out;
--		current_cpu = cpumask_next(current_cpu, cpu_online_mask);
--		if (unlikely(current_cpu >= nr_cpu_ids))
--			current_cpu = cpumask_first(cpu_online_mask);
- 	}
++struct page;
+ /*
+ 	prefetch(x) attempts to pre-emptively get the memory pointed to
+ 	by address "x" into the CPU L1 cache. 
+@@ -62,4 +63,11 @@ static inline void prefetch_range(void *addr, size_t len)
+ #endif
+ }
  
- 	return 0;
++static inline void prefetch_page_address(struct page *page)
++{
++#if defined(WANT_PAGE_VIRTUAL) || defined(HASHED_PAGE_VIRTUAL)
++	prefetch(page);
++#endif
++}
++
+ #endif
 -- 
 2.26.2
 
