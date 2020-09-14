@@ -2,154 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A91026987F
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 00:02:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A267269881
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 00:02:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726061AbgINWCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 18:02:19 -0400
-Received: from www62.your-server.de ([213.133.104.62]:34602 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726009AbgINWCR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 18:02:17 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kHwY0-0008F6-Ov; Tue, 15 Sep 2020 00:02:04 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kHwY0-0009dt-G3; Tue, 15 Sep 2020 00:02:04 +0200
-Subject: Re: [PATCH nf-next v3 3/3] netfilter: Introduce egress hook
-To:     =?UTF-8?Q?Laura_Garc=c3=ada_Li=c3=a9bana?= <nevola@gmail.com>
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Netfilter Development Mailing list 
-        <netfilter-devel@vger.kernel.org>, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>, David Miller <davem@davemloft.net>
-References: <20200904162154.GA24295@wunner.de>
- <813edf35-6fcf-c569-aab7-4da654546d9d@iogearbox.net>
- <20200905052403.GA10306@wunner.de>
- <e8aecc2b-80cb-8ee5-8efe-7ae5c4eafc70@iogearbox.net>
- <CAF90-Whc3HL9x-7TJ7m3tZp10RNmQxFD=wdQUJLCaUajL2RqXg@mail.gmail.com>
- <8e991436-cb1c-1306-51ac-bb582bfaa8a7@iogearbox.net>
- <CAF90-Wh=wzjNtFWRv9bzn=-Dkg-Qc9G_cnyoq0jSypxQQgg3uA@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <29b888f5-5e8e-73fe-18db-6c5dd57c6b4f@iogearbox.net>
-Date:   Tue, 15 Sep 2020 00:02:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726068AbgINWC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 18:02:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726009AbgINWCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 18:02:22 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC0EC06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 15:02:21 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id f18so686103pfa.10
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 15:02:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=PAYihDEegTLxYb6U+lubvd0PhPo75aIgN+aHjsMr0OE=;
+        b=VECy3cwLZi/I2qoV1xzzDxYVNtPwIuzYLfL11kAcNnpGnf315yEyjCAyVrGHC/sbQR
+         4/2wJLse6cz9uUdO7UuRjns9iL+U9HQAoVXrbFE1nOLoeNPil20ui7AQ3O4uxVJozSk6
+         ziTKKoOaiIAXhQhcEiB97eCiE7qIIyihu2ZU8ocdIp4BRNhEdn2QL6q51/gvfPcCaJl1
+         1rRTP4UKNtqZa/Gq4naIhhQVYhyE3Nw33spfkf61l4AFACGub/umuyPeg9qamtQ+xnpu
+         bPoAA1DzjNSlpPugVMAg9raGd/Qccx/Nrznoj8WR3fq1FgysqVNrwcwuz94uWnnYO8oG
+         so0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=PAYihDEegTLxYb6U+lubvd0PhPo75aIgN+aHjsMr0OE=;
+        b=m33LHH8y4tkq7iRe76j3UQ6sFyXmhRO8j5ZONTlvAAaVrofZMcBFJ/3tXCPEu+yXRU
+         UtorpKm8MlFpvJ7IHHsyhFW4EgbUtVy36xcK2l8rL+2mkPXueyny+PKg+wfb2V8jHLBL
+         YWb1dWwLF8HFMOA/cKAkQIZLhuGPC39eQGTlMPIUC7B8y5BiC8VthNC3W4mJBXsqxsS4
+         d2YuF3CIK5LUDUHObLUdN3nV5X3FELEDP1JecrLdH1vU97GudZh7angccvnHZZOKr+jb
+         nv8kTnvLD8P2suabLZkFZaDW3l1axwUatpH5mT+mXsiVQ4RUWXOf2SWBHjc1FTPUc9h2
+         rYBg==
+X-Gm-Message-State: AOAM530P+fdXkBPIPaxS8bJQtnh7TdqiuKgB2UeOxwGuzmfiDWUHspsn
+        GdNNEUMxIE0Yzi4lfLtXi31XcQ==
+X-Google-Smtp-Source: ABdhPJzIFCQJzsKCPbO1pareu43FzU43yWuvmjo33TGBtJSch6EGxEH1X9qjiCbfFvnRmlVWktwPmw==
+X-Received: by 2002:a62:15c2:0:b029:13f:c196:c219 with SMTP id 185-20020a6215c20000b029013fc196c219mr10245601pfv.12.1600120941267;
+        Mon, 14 Sep 2020 15:02:21 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id r123sm11506034pfc.187.2020.09.14.15.02.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Sep 2020 15:02:20 -0700 (PDT)
+Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20200908224812.63434-1-snelson@pensando.io>
+ <20200908224812.63434-3-snelson@pensando.io>
+ <20200908165433.08afb9ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <9938e3cc-b955-11a1-d667-8e5893bb6367@pensando.io>
+ <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <581f2161-1c55-31ae-370b-bbea5a677862@pensando.io>
+ <20200909122233.45e4c65c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3d75c4be-ae5d-43b0-407c-5df1e7645447@pensando.io>
+ <20200910105643.2e2d07f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <99ce6f1f-a8e9-3242-a584-e06756d6c606@pensando.io>
+Date:   Mon, 14 Sep 2020 15:02:18 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <CAF90-Wh=wzjNtFWRv9bzn=-Dkg-Qc9G_cnyoq0jSypxQQgg3uA@mail.gmail.com>
+In-Reply-To: <20200910105643.2e2d07f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25929/Sun Sep 13 15:53:46 2020)
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/14/20 1:29 PM, Laura García Liébana wrote:
-> On Fri, Sep 11, 2020 at 6:28 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 9/11/20 9:42 AM, Laura García Liébana wrote:
->>> On Tue, Sep 8, 2020 at 2:55 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->>>> On 9/5/20 7:24 AM, Lukas Wunner wrote:
->>>>> On Fri, Sep 04, 2020 at 11:14:37PM +0200, Daniel Borkmann wrote:
->>>>>> On 9/4/20 6:21 PM, Lukas Wunner wrote:
->>>> [...]
->>>>>> The tc queueing layer which is below is not the tc egress hook; the
->>>>>> latter is for filtering/mangling/forwarding or helping the lower tc
->>>>>> queueing layer to classify.
->>>>>
->>>>> People want to apply netfilter rules on egress, so either we need an
->>>>> egress hook in the xmit path or we'd have to teach tc to filter and
->>>>> mangle based on netfilter rules.  The former seemed more straight-forward
->>>>> to me but I'm happy to pursue other directions.
->>>>
->>>> I would strongly prefer something where nf integrates into existing tc hook,
->>>> not only due to the hook reuse which would be better, but also to allow for a
->>>> more flexible interaction between tc/BPF use cases and nf, to name one
->>>
->>> That sounds good but I'm afraid that it would take too much back and
->>> forth discussions. We'll really appreciate it if this small patch can
->>> be unblocked and then rethink the refactoring of ingress/egress hooks
->>> that you commented in another thread.
+On 9/10/20 10:56 AM, Jakub Kicinski wrote:
+> On Wed, 9 Sep 2020 18:34:57 -0700 Shannon Nelson wrote:
+>> On 9/9/20 12:22 PM, Jakub Kicinski wrote:
+>>> On Wed, 9 Sep 2020 10:58:19 -0700 Shannon Nelson wrote:
+>>>> I'm suggesting that this implementation using the existing devlink
+>>>> logging services should suffice until someone can design, implement, and
+>>>> get accepted a different bit of plumbing.  Unfortunately, that's not a
+>>>> job that I can get to right now.
+>>> This hack is too nasty to be accepted.
+>> Your comment earlier was
 >>
->> I'm not sure whether your comment was serious or not, but nope, this needs
->> to be addressed as mentioned as otherwise this use case would regress. It
-> 
-> This patch doesn't break anything. The tc redirect use case that you
-> just commented on is the expected behavior and the same will happen
-> with ingress. To be consistent, in the case that someone requires both
-> hooks, another tc redirect would be needed in the egress path. If you
-> mean to bypass the nf egress if tc redirect in ingress is used, that
-> would lead in a huge security concern.
+>>   > I wonder if we can steal a page from systemd's book and display
+>>   > "time until timeout", or whatchamacallit, like systemd does when it's
+>>   > waiting for processes to quit. All drivers have some timeout set on the
+>>   > operation. If users knew the driver sets timeout to n minutes and they
+>>   > see the timer ticking up they'd be less likely to think the command has
+>>   > hanged..
+>>
+>> I implemented the loop such that the timeout value was the 100%, and
+>> each time through the loop the elapsed time value is sent, so the user
+>> gets to see the % value increasing as the wait goes on, in the same way
+>> they see the download progress percentage ticking away.
+> Right but you said that in most cases the value never goes up to 25min,
+> so user will see the value increment from 0 to say 5% very slowly and
+> then jump to 100%.
+>
+>> This is how I approached the stated requirement of user seeing the
+>> "timer ticking up", using the existing machinery.  This seems to be
+>> how devlink_flash_update_status_notify() is expected to be used, so
+>> I'm a little surprised at the critique.
+> Sorry, I thought the systemd reference would be clear enough, see the
+> screenshot here:
+>
+> https://images.app.goo.gl/gz1Uwg6mcHEd3D2m7
+>
+> Systemd prints something link:
+>
+> bla bla bla (XXs / YYs)
+>
+> where XX is the timer ticking up, and YY is the timeout value.
+>
+>>> So to be clear your options are:
+>>>    - plumb the single extra netlink parameter through to devlink
+>>>    - wait for someone else to do that for you, before you get
+>>> firmware flashing accepted upstream.
+>>>   
+>> Since you seem to have something else in mind, a little more detail
+>> would be helpful.
+>>
+>> We currently see devlink updating a percentage, something like:
+>> Downloading:  56%
+>> using backspaces to overwrite the value as the updates are published.
+>>
+>> How do you envision the userland interpretation of the timeout
+>> ticking? Do you want to see something like:
+>> Installing - timeout seconds:  23
+>> as a countdown?
+> I was under the impression that the systemd format would be familiar
+> to users, hence:
+>
+> Downloading:  56% (Xm Ys / Zm Vz)
+>
+> The part in brackets only appearing after a few seconds without a
+> notification, otherwise the whole thing would get noisy.
+>
+>> So, maybe a flag parameter that can tell the UI to use the raw value
+>> and not massage it into a percentage?
+>>
+>> Do you see this new netlink parameter to be a boolean switch between
+>> the percentage and raw, or maybe a bitflag parameter that might end
+>> up with several bits of context information for userland to interpret?
+>>
+>> Are you thinking of a new flags parameter in
+>> devlink_flash_update_status_notify(), or a new function to service
+>> this?
+>>
+>> If a new parameter to devlink_flash_update_status_notify(), maybe it
+>> is time to make a struct for flash update data rather than adding
+>> more parameters to the function?
+>>
+>> Should we add yet another parameter to replace the '%' with some
+>> other label, so devlink could print something like
+>> Installing - timeout in:  23 secs
+>>
+>> Or could we use a 0 value for total to signify using a raw value and
+>> not need to plumb a new parameter?  Although this might not get along
+>> well with older devlink utilities.
+> I was thinking of adding an extra timeout parameter to
+> devlink_flash_update_status_notify() - timeout length in seconds.
+> And an extra netlink attr for that.
+>
+> We could perhaps make:
+>
+> static inline void
+> devlink_flash_update_status_notify( const char *status_msg,
+> 				    unsigned long done, unsigned long total)
+> {
+> 	struct ..._args = {
+> 		.status_msg = status_msg,
+> 		.done = done,
+> 		.total = total,
+> 	}
+>
+> 	__devlink_flash_update_status_notify(devlink, &.._args);
+> }
+>
+> IOW drop the component parameter from the normal helper, cause almost
+> nobody uses that. The add a more full featured __ version, which would
+> take the arg struct, the struct would include the timeout value.
+>
+> If the timeout is lower than 15sec drivers will probably have little
+> value in reporting it, so simplified helper should be nice there to save LOC.
+>
+> The user space can do the counting up trivially using select(),
+> or a syscall timeout. The netlink notification would only carry timeout.
+> (LMK if this is problematic, I haven't looked at the user space part.)
 
-I'm not sure I parse what you're saying above ... today it is possible and
-perfectly fine to e.g. redirect to a host-facing veth from tc ingress which
-then goes into container. Only traffic that goes up the host stack is seen
-by nf ingress hook in that case. Likewise, reply traffic can be redirected
-from host-facing veth to phys dev for xmit w/o any netfilter interference.
-This means netfilter in host ns really only sees traffic to/from host as
-intended. This is fine today, however, if 3rd party entities (e.g. distro
-side) start pushing down rules on the two nf hooks, then these use cases will
-break on the egress one due to this asymmetric layering violation. Hence my
-ask that this needs to be configurable from a control plane perspective so
-that both use cases can live next to each other w/o breakage. Most trivial
-one I can think of is (aside from the fact to refactor the hooks and improve
-their performance) a flag e.g. for skb that can be set from tc/BPF layer to
-bypass the nf hooks. Basically a flexible opt-in so that existing use-cases
-can be retained w/o breakage. This is one option with what I meant in my
-earlier mail.
+What if we simplify this idea to adding a timeout variant of the 
+devlink_flash_update_begin_notify()?  Perhaps something like
+     devlink_flash_update_begin_notify_timeout(struct devlink *devlink, 
+unsigned int timeout_seconds)
+This can pass up a timeout parameter at the beginning of the flash and 
+the userland utility can do what it needs at that point to set up the UI 
+display.
 
->> is one thing for you wanting to remove tc / BPF from your application stack
->> as you call it, but not at the cost of breaking others.
-> 
-> I'm not intended to remove tc / BPF from my application stack as I'm
-> not using it and, as I explained in past emails, it can't be used for
-> my use cases.
-> 
-> In addition, let's review your NACK reasons:
-> 
->     This reverts the following commits:
-> 
->       8537f78647c0 ("netfilter: Introduce egress hook")
->       5418d3881e1f ("netfilter: Generalize ingress hook")
->       b030f194aed2 ("netfilter: Rename ingress hook include file")
-> 
->     From the discussion in [0], the author's main motivation to add a hook
->     in fast path is for an out of tree kernel module, which is a red flag
->     to begin with. Other mentioned potential use cases like NAT{64,46}
->     is on future extensions w/o concrete code in the tree yet. Revert as
->     suggested [1] given the weak justification to add more hooks to critical
->     fast-path.
-> 
->       [0] https://lore.kernel.org/netdev/cover.1583927267.git.lukas@wunner.de/
->       [1] https://lore.kernel.org/netdev/20200318.011152.72770718915606186.davem@davemloft.net/
-> 
-> It has been explained already that there are more use cases that
-> require this hook in nf, not only for future developments or out of
-> tree modules.
+I think using a struct internally to devlink.c/h might still have merit, 
+but I'm not sure there's a need to mess with the rest of the API just yet.
 
-Sure, aside from the two mentioned cases above, we scratched DHCP a little
-bit on the surface but it was found that i) you need a af_packet specific
-hook to get there instead, and ii) dhcp clients implement their own filtering
-internally to check for bogus messages. What is confusing to me is whether
-this is just brought up as an example or whether you actually care to solve
-it (.. but then why would you do that in fast-path to penalize every other
-traffic as well just for this type of slow-path filtering instead of doing
-in af_packet only). Similarly, why not add this along with /actual/ nat64
-code with /concrete/ explanation of why it cannot be performed in post-routing?
-Either way, whatever your actual/real use-case, the above must be addressed
-one way or another.
+sln
 
-Thanks,
-Daniel
