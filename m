@@ -2,235 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5971826983F
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 23:48:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 539BE269841
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 23:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726056AbgINVsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 17:48:16 -0400
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:64557 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725953AbgINVsP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 17:48:15 -0400
+        id S1726019AbgINVuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 17:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725986AbgINVuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 17:50:22 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA09FC06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 14:50:22 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id z19so675084pfn.8
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 14:50:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1600120094; x=1631656094;
-  h=date:from:to:cc:message-id:references:mime-version:
-   in-reply-to:subject;
-  bh=f9VAxAP7zK34FSX3/c14VueaGaLkkGHOC7c1EvretSw=;
-  b=tKjC64bw5PB7MwuE1xTEeDJdwaCbZEATeOnIo2htz0pMIHOXQwUz2WX+
-   wdMZnidUjrcBHK4+USGxmhinWv2i9een8owACWMp2BtoMzi3wxHeJ3gDl
-   Fph6QkAH9K0wimixHN+bMgESWuuzoSvJeFDOzWAYBIMobPdxK+AfewR2J
-   s=;
-X-IronPort-AV: E=Sophos;i="5.76,427,1592870400"; 
-   d="scan'208";a="67949685"
-Subject: Re: [PATCH v3 01/11] xen/manage: keep track of the on-going suspend mode
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 14 Sep 2020 21:48:10 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2b-4e24fd92.us-west-2.amazon.com (Postfix) with ESMTPS id 0DED1A200C;
-        Mon, 14 Sep 2020 21:48:07 +0000 (UTC)
-Received: from EX13D08UEB003.ant.amazon.com (10.43.60.11) by
- EX13MTAUEB002.ant.amazon.com (10.43.60.12) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 14 Sep 2020 21:47:55 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D08UEB003.ant.amazon.com (10.43.60.11) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 14 Sep 2020 21:47:54 +0000
-Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.2 via Frontend Transport; Mon, 14 Sep 2020 21:47:54 +0000
-Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id 8F43540A16; Mon, 14 Sep 2020 21:47:54 +0000 (UTC)
-Date:   Mon, 14 Sep 2020 21:47:54 +0000
-From:   Anchal Agarwal <anchalag@amazon.com>
-To:     <boris.ostrovsky@oracle.com>
-CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <hpa@zytor.com>, <x86@kernel.org>, <jgross@suse.com>,
-        <linux-pm@vger.kernel.org>, <linux-mm@kvack.org>,
-        <kamatam@amazon.com>, <sstabellini@kernel.org>,
-        <konrad.wilk@oracle.com>, <roger.pau@citrix.com>,
-        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
-        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
-        <eduval@amazon.com>, <sblbir@amazon.com>,
-        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dwmw@amazon.co.uk>, <benh@kernel.crashing.org>
-Message-ID: <20200914214754.GA19975@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-References: <cover.1598042152.git.anchalag@amazon.com>
- <9b970e12491107afda0c1d4a6f154b52d90346ac.1598042152.git.anchalag@amazon.com>
- <4b2bbc8b-7817-271a-4ff0-5ee5df956049@oracle.com>
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=x1t9sm4/Vphx5aMsiagewItBVaC7vFpv9Pyn0KP3KuM=;
+        b=yCvM6T4jrOVWs34bRkGkEys9/F0Y9RbQw0wJ3B/NDWq0+AHjKlApl1VddKkwIlgBP2
+         xkardOqAj5rLnTK5/25K0FPtWRbWEBSH9vdhl3ysg/tkqn1CI3GO9vbEWf4K7yROtIgf
+         Rx1qrrOsaZBnUqsXB3E2+5JH3o9cGw9OPaFvgkih9asXtC1k+7H/BXRnaaGcH/5+Pzsd
+         4mrvv2Q1yLxez2FOgEJRtCvSCxNHu04dTbb9odeEuz0IoEGjPRUqMzI2bAJp9vRUVsQV
+         tldQSo3h50cFkUIycawY8D9a8BpF4PAOE3pFuuoa/gnQu+ik9xFZ0+F9qdI0sZFDc9bC
+         EHvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=x1t9sm4/Vphx5aMsiagewItBVaC7vFpv9Pyn0KP3KuM=;
+        b=ZSBkWMORFSw1HYpzmO2tP3YKq/2gilPAnuoVL0Gwu9diQhNcGtq2HNBZDveDoAFHfe
+         74bK5A3LElgrxMpEUzpBvm1sMO0x0s2/mj29XWTLX6Kx45INDyKb/mrcR0lXBTjnluPR
+         0JyOf7Ikh9jC7PAkolfh2rAI4Nhg1P1lUssgQX42D4Huq3LzM0MRf3FlSf1zOjKZIMMp
+         oLcS6LielxRZ+Gh3r0O47afS7UJKf9inUC5rRNYxixlWqXm1+whrdtVihRrcNRNqOBKi
+         cV6EnuqNbFhIN1PKH8gwtdI3Kg6KBSBh24oZZCfvmc+N8jApUdDCFlNN/W1cCWyf8E3z
+         rWIA==
+X-Gm-Message-State: AOAM533WmXH9UpB3JU5FrQgDR/m+L0W1gxlS8z+njIxq7SYqIO4aGVbP
+        kfEMQwMmkoGYMMVYLO5z3KlIXY98GwsH2g==
+X-Google-Smtp-Source: ABdhPJzXw7Td0CCtXq1+uawFKpCSEyI76eki4JuRNSyeS5tLi2/fD3/wPRCPYKrqIJ1XNkU4z0OZFQ==
+X-Received: by 2002:a63:5515:: with SMTP id j21mr11953827pgb.31.1600120222112;
+        Mon, 14 Sep 2020 14:50:22 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id y23sm11149051pfp.65.2020.09.14.14.50.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Sep 2020 14:50:21 -0700 (PDT)
+Subject: Re: [PATCH net-next] ionic: dynamic interrupt moderation
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20200913212813.46736-1-snelson@pensando.io>
+ <20200914141041.570370fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <275d2c83-d85d-1b60-cd11-8b5760e67ce0@pensando.io>
+Date:   Mon, 14 Sep 2020 14:50:19 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <4b2bbc8b-7817-271a-4ff0-5ee5df956049@oracle.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20200914141041.570370fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Sep 13, 2020 at 11:43:30AM -0400, boris.ostrovsky@oracle.com wrote:
-> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> 
-> 
-> 
-> On 8/21/20 6:25 PM, Anchal Agarwal wrote:
-> > From: Munehisa Kamata <kamatam@amazon.com>
-> >
-> > Guest hibernation is different from xen suspend/resume/live migration.
-> > Xen save/restore does not use pm_ops as is needed by guest hibernation.
-> > Hibernation in guest follows ACPI path and is guest inititated , the
-> > hibernation image is saved within guest as compared to later modes
-> > which are xen toolstack assisted and image creation/storage is in
-> > control of hypervisor/host machine.
-> > To differentiate between Xen suspend and PM hibernation, keep track
-> > of the on-going suspend mode by mainly using a new API to keep track of
-> > SHUTDOWN_SUSPEND state.
-> > Introduce a simple function that keeps track of on-going suspend mode
-> > so that PM hibernation code can behave differently according to the
-> > current suspend mode.
-> > Since Xen suspend doesn't have corresponding PM event, its main logic
-> > is modfied to acquire pm_mutex.
-> 
-> 
-> lock_system_sleep() is not taking this mutex.
+On 9/14/20 2:10 PM, Jakub Kicinski wrote:
+> On Sun, 13 Sep 2020 14:28:13 -0700 Shannon Nelson wrote:
+>> Use the dim library to manage dynamic interrupt
+>> moderation in ionic.
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+> Let me advertise my people.kernel entry ;)
 >
-Yes, I just realized that the commit 55f2503c ("PM / reboot: Eliminate race
-between reboot and suspend") changed its name to system_transition_mutex.
-I think I missed that change somehow and assumed its still pm_mutex.
-Will fix the description.
-> 
-> >
-> > Though, accquirng pm_mutex is still right thing to do, we may
-> > see deadlock if PM hibernation is interrupted by Xen suspend.
-> > PM hibernation depends on xenwatch thread to process xenbus state
-> > transactions, but the thread will sleep to wait pm_mutex which is
-> > already held by PM hibernation context in the scenario. Xen shutdown
-> > code may need some changes to avoid the issue.
-> 
-> 
-> 
-> Is it Xen's shutdown or suspend code that needs to address this? (Or I
-> may not understand what the problem is that you are describing)
-> 
-Its Xen suspend code I think. If we do not take the system_transition_mutex
-in do_suspend then if hibernation is triggered in parallel to xen suspend there
-could be issues. Now this is still theoretical in my case and I havent been able
-to reproduce such a race. So the approach the original author took was to take
-this lock which to me seems right.
-And its Xen suspend and not Xen Shutdown. So basically if this scenario
-happens I am of the view one of other will fail to occur then how do we recover
-or avoid this at all.
-
-Does that answer your question?
-> 
-> >
-> > +
-> > +static int xen_pm_notifier(struct notifier_block *notifier,
-> > +     unsigned long pm_event, void *unused)
-> > +{
-> > +     int ret;
-> > +
-> > +     switch (pm_event) {
-> > +     case PM_SUSPEND_PREPARE:
-> > +     case PM_HIBERNATION_PREPARE:
-> > +     /* Guest hibernation is not supported for aarch64 currently*/
-> > +     if (IS_ENABLED(CONFIG_ARM64)) {
-> > +             ret = NOTIFY_BAD;
-> > +             break;
-> > +     }
-> 
-> Indentation.
-> 
-> > +     case PM_RESTORE_PREPARE:
-> > +     case PM_POST_SUSPEND:
-> > +     case PM_POST_HIBERNATION:
-> > +     case PM_POST_RESTORE:
-> > +     default:
-> > +             ret = NOTIFY_OK;
-> > +     }
-> > +     return ret;
-> > +};
-> 
-> 
-> This whole routine now is
-> 
->         if (IS_ENABLED(CONFIG_ARM64))
->                 return NOTIFY_BAD;
-> 
->         return NOTIFY_OK;
-> 
-> isn't it?
-> 
-Yes.
-> 
-> > +
-> > +static struct notifier_block xen_pm_notifier_block = {
-> > +     .notifier_call = xen_pm_notifier
-> > +};
-> > +
-> > +static int xen_setup_pm_notifier(void)
-> > +{
-> > +     if (!xen_hvm_domain() || xen_initial_domain())
-> > +             return -ENODEV;
-> 
-> 
-> I don't think this works anymore.
-What do you mean?
-The first check is for xen domain types and other is for architecture support. 
-The reason I put this check here is because I wanted to segregate the two.
-I do not want to register this notifier at all for !hmv guest and also if its
-an initial control domain.
-The arm check only lands in notifier because once hibernate() api is called ->
-calls pm_notifier_call_chain for PM_HIBERNATION_PREPARE this will fail for
-aarch64. 
-Once we have support for aarch64 this notifier can go away altogether. 
-
-Is there any other reason I may be missing why we should move this check to
-notifier?
-> 
-> In the past your notifier would set suspend_mode (or something) but now
-> it really doesn't do anything except reports an error in some (ARM) cases.
-> 
-> So I think you should move this check into the notifier.
-
-> 
-> (And BTW I still think PM_SUSPEND_PREPARE should return an error too.
-> The fact that we are using "suspend" in xen routine names is irrelevant)
-> 
-I may have send "not-updated" version of the notifier's function change.
-
-+    switch (pm_event) {
-+       case PM_HIBERNATION_PREPARE:
-+        /* Guest hibernation is not supported for aarch64 currently*/
-+        if (IS_ENABLED(CONFIG_ARM64)) {
-+             ret = NOTIFY_BAD;                                                                                                                                                                                                                                                    
-+             break;                                                                                                                                                                                                                                                               
-+     }               
-+       case PM_RESTORE_PREPARE:
-+       case PM_POST_RESTORE:
-+       case PM_POST_HIBERNATION:
-+       default:
-+           ret = NOTIFY_OK;
-+    }
-
-With the above path PM_SUSPEND_PREPARE will go all together. Does that
-resolves this issue? I wanted to get rid of all SUSPEND_* as they are not needed
-here clearly.
-The only reason I kept it there is if someone tries to trigger hibernation on
-ARM instances they should get an error. As I am not sure about the current
-behavior. There may be a better way to not invoke hibernation on ARM DomU's and
-get rid of this block all together.
-
-Again, sorry for sending in the half baked fix. My workspace switch may have
-caused the error.
+> https://people.kernel.org/finqi53erl
 >
-> 
-> 
-> -boris
-> 
-Anchal
-> 
-> 
-> > +     return register_pm_notifier(&xen_pm_notifier_block);
-> > +}
-> > +
+> My somewhat short production experience leads me to question the value
+> of DIM on real life workloads, but I know customers like to benchmark
+> adapters using ping and iperf, so do what you gotta do :(
+
+Yes, I saw your article, and I figured this little patch might catch 
+your attention :-).
+
+This at least can do some general automated tweaking for those aren't 
+going to do hand tuning for particular workloads.  For others, we still 
+have the ability to split the Tx and Rx interrupts and tune them 
+separately if desired.
+
+>
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+>> index 895e2113bd6b..f1c8ab439080 100644
+>> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+>> @@ -42,6 +42,19 @@ static int ionic_start_queues(struct ionic_lif *lif);
+>>   static void ionic_stop_queues(struct ionic_lif *lif);
+>>   static void ionic_lif_queue_identify(struct ionic_lif *lif);
+>>   
+>> +static void ionic_dim_work(struct work_struct *work)
+>> +{
+>> +	struct dim *dim = container_of(work, struct dim, work);
+>> +	struct dim_cq_moder cur_moder =
+>> +		net_dim_get_rx_moderation(dim->mode, dim->profile_ix);
+> Could you move this out of the variable init? Make things hard to read.
+
+Sure.
+
+>
+>> +	struct ionic_qcq *qcq = container_of(dim, struct ionic_qcq, dim);
+>> +	u32 new_coal;
+>> +
+>> +	new_coal = ionic_coal_usec_to_hw(qcq->q.lif->ionic, cur_moder.usec);
+>> +	qcq->intr.dim_coal_hw = new_coal ? new_coal : 1;
+>> +	dim->state = DIM_START_MEASURE;
+>> +}
+> Interesting, it seem that you don't actually talk to FW to update
+> the parameters? DIM causes noticeable increase in scheduler pressure
+> with those work entries it posts. I'd be tempted to not use a work
+> entry if you don't have to sleep.
+
+net_dim() assumes a valid work_struct in struct dim, and would likely 
+get annoyed if it wasn't set up.  I suppose we could teach net_dim() to 
+look into the work_struct to verify that .func is non-NULL before 
+calling schedule_work(), but that almost feels like cheating.
+
+sln
+
+
+
+
