@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 346942686BC
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 10:03:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E94232686BD
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 10:03:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726191AbgINIDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 04:03:12 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38424 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726100AbgINIB5 (ORCPT
+        id S1726199AbgINIDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 04:03:14 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:24030 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726185AbgINIB5 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 04:01:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1600070515;
@@ -17,29 +17,29 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=j6yf924Va1DbbNhR1Eb7ZdubxPxt4eM4zf4JaeIt6Ls=;
-        b=Vt8+58Ibs8W7cqzUnc36+d+mHEtk2TImQ/Sd/nwyn49jbSE9uyExINoDnnLXlaphNqZZtD
-        duU+1p2e6O5h1XtHhrl+A5ixK6R7QUxu1A11EdwI+7IeSrPJn7VMPilr7WZLlp8WqVnRy4
-        hdMIW7ZI+X2qYnEDyuKXlsGpGDUCC3o=
+        bh=P6RFEizugWaLAVgXhU5WmJ2jWQXy4ECB+4kljefa604=;
+        b=L7xdrixVePffGTggOE8/e1KVU7YdyLx1gHQkpvJI6kbFEKoawQN5eCKGzTZHJCt/tfaemA
+        DcxqO2gh14zCNZyHm75HVkOtHg9nYhACjIXasB6gFj26+MbZfzo6xB5AP3n0GfiaPmv4T4
+        WB2gFvRAe0SIc0tOnrgO+7ZCrr3LE/c=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-409-4d6y-my8NeG8VxVWvOS_6A-1; Mon, 14 Sep 2020 04:01:51 -0400
-X-MC-Unique: 4d6y-my8NeG8VxVWvOS_6A-1
+ us-mta-371-v5OEeaRkOsCsIzy6A7_dNA-1; Mon, 14 Sep 2020 04:01:53 -0400
+X-MC-Unique: v5OEeaRkOsCsIzy6A7_dNA-1
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 14573801F95;
-        Mon, 14 Sep 2020 08:01:50 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BFFDF10BBEE3;
+        Mon, 14 Sep 2020 08:01:51 +0000 (UTC)
 Received: from linux.fritz.box.com (ovpn-112-96.ams2.redhat.com [10.36.112.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CB1CD19C66;
-        Mon, 14 Sep 2020 08:01:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 78C8C19C66;
+        Mon, 14 Sep 2020 08:01:50 +0000 (UTC)
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org
-Subject: [PATCH net-next v2 08/13] mptcp: add OoO related mibs
-Date:   Mon, 14 Sep 2020 10:01:14 +0200
-Message-Id: <a968da10355e303d483a9d12409930e80ab7fccd.1599854632.git.pabeni@redhat.com>
+Subject: [PATCH net-next v2 09/13] mptcp: move address attribute into mptcp_addr_info
+Date:   Mon, 14 Sep 2020 10:01:15 +0200
+Message-Id: <16790a7f9e2919325d3f2e684597337c5e0833d9.1599854632.git.pabeni@redhat.com>
 In-Reply-To: <cover.1599854632.git.pabeni@redhat.com>
 References: <cover.1599854632.git.pabeni@redhat.com>
 MIME-Version: 1.0
@@ -50,177 +50,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a bunch of MPTCP mibs related to MPTCP OoO data
-processing.
+So that can be accessed easily from the subflow creation
+helper. No functional change intended.
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- net/mptcp/mib.c      |  5 +++++
- net/mptcp/mib.h      |  5 +++++
- net/mptcp/protocol.c | 24 +++++++++++++++++++++++-
- net/mptcp/subflow.c  |  1 +
- 4 files changed, 34 insertions(+), 1 deletion(-)
+ net/mptcp/pm_netlink.c | 39 ++++++++++++++++++++-------------------
+ net/mptcp/protocol.h   |  5 +++--
+ net/mptcp/subflow.c    |  5 ++---
+ 3 files changed, 25 insertions(+), 24 deletions(-)
 
-diff --git a/net/mptcp/mib.c b/net/mptcp/mib.c
-index 0a6a15f3456d..056986c7a228 100644
---- a/net/mptcp/mib.c
-+++ b/net/mptcp/mib.c
-@@ -22,6 +22,11 @@ static const struct snmp_mib mptcp_snmp_list[] = {
- 	SNMP_MIB_ITEM("MPJoinAckHMacFailure", MPTCP_MIB_JOINACKMAC),
- 	SNMP_MIB_ITEM("DSSNotMatching", MPTCP_MIB_DSSNOMATCH),
- 	SNMP_MIB_ITEM("InfiniteMapRx", MPTCP_MIB_INFINITEMAPRX),
-+	SNMP_MIB_ITEM("OFOQueueTail", MPTCP_MIB_OFOQUEUETAIL),
-+	SNMP_MIB_ITEM("OFOQueue", MPTCP_MIB_OFOQUEUE),
-+	SNMP_MIB_ITEM("OFOMerge", MPTCP_MIB_OFOMERGE),
-+	SNMP_MIB_ITEM("NoDSSInWindow", MPTCP_MIB_NODSSWINDOW),
-+	SNMP_MIB_ITEM("DuplicateData", MPTCP_MIB_DUPDATA),
- 	SNMP_MIB_SENTINEL
+diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
+index 2c208d2e65cd..6947f4fee6b9 100644
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -23,8 +23,6 @@ static int pm_nl_pernet_id;
+ 
+ struct mptcp_pm_addr_entry {
+ 	struct list_head	list;
+-	unsigned int		flags;
+-	int			ifindex;
+ 	struct mptcp_addr_info	addr;
+ 	struct rcu_head		rcu;
  };
+@@ -119,7 +117,7 @@ select_local_address(const struct pm_nl_pernet *pernet,
+ 	rcu_read_lock();
+ 	spin_lock_bh(&msk->join_list_lock);
+ 	list_for_each_entry_rcu(entry, &pernet->local_addr_list, list) {
+-		if (!(entry->flags & MPTCP_PM_ADDR_FLAG_SUBFLOW))
++		if (!(entry->addr.flags & MPTCP_PM_ADDR_FLAG_SUBFLOW))
+ 			continue;
  
-diff --git a/net/mptcp/mib.h b/net/mptcp/mib.h
-index d7de340fc997..937a177729f1 100644
---- a/net/mptcp/mib.h
-+++ b/net/mptcp/mib.h
-@@ -15,6 +15,11 @@ enum linux_mptcp_mib_field {
- 	MPTCP_MIB_JOINACKMAC,		/* HMAC was wrong on ACK + MP_JOIN */
- 	MPTCP_MIB_DSSNOMATCH,		/* Received a new mapping that did not match the previous one */
- 	MPTCP_MIB_INFINITEMAPRX,	/* Received an infinite mapping */
-+	MPTCP_MIB_OFOQUEUETAIL,	/* Segments inserted into OoO queue tail */
-+	MPTCP_MIB_OFOQUEUE,		/* Segments inserted into OoO queue */
-+	MPTCP_MIB_OFOMERGE,		/* Segments merged in OoO queue */
-+	MPTCP_MIB_NODSSWINDOW,		/* Segments not in MPTCP windows */
-+	MPTCP_MIB_DUPDATA,		/* Segments discarded due to duplicate DSS */
- 	__MPTCP_MIB_MAX
- };
- 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 6fbfbab51660..ec9c38d3acc7 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -128,6 +128,9 @@ static bool mptcp_try_coalesce(struct sock *sk, struct sk_buff *to,
- 	    !skb_try_coalesce(to, from, &fragstolen, &delta))
- 		return false;
- 
-+	pr_debug("colesced seq %llx into %llx new len %d new end seq %llx",
-+		 MPTCP_SKB_CB(from)->map_seq, MPTCP_SKB_CB(to)->map_seq,
-+		 to->len, MPTCP_SKB_CB(from)->end_seq);
- 	MPTCP_SKB_CB(to)->end_seq = MPTCP_SKB_CB(from)->end_seq;
- 	kfree_skb_partial(from, fragstolen);
- 	atomic_add(delta, &sk->sk_rmem_alloc);
-@@ -160,13 +163,17 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
- 	max_seq = tcp_space(sk);
- 	max_seq = max_seq > 0 ? max_seq + msk->ack_seq : msk->ack_seq;
- 
-+	pr_debug("msk=%p seq=%llx limit=%llx empty=%d", msk, seq, max_seq,
-+		 RB_EMPTY_ROOT(&msk->out_of_order_queue));
- 	if (after64(seq, max_seq)) {
- 		/* out of window */
- 		mptcp_drop(sk, skb);
-+		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_NODSSWINDOW);
- 		return;
- 	}
- 
- 	p = &msk->out_of_order_queue.rb_node;
-+	MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_OFOQUEUE);
- 	if (RB_EMPTY_ROOT(&msk->out_of_order_queue)) {
- 		rb_link_node(&skb->rbnode, NULL, p);
- 		rb_insert_color(&skb->rbnode, &msk->out_of_order_queue);
-@@ -177,11 +184,15 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
- 	/* with 2 subflows, adding at end of ooo queue is quite likely
- 	 * Use of ooo_last_skb avoids the O(Log(N)) rbtree lookup.
+ 		/* avoid any address already in use by subflows and
+@@ -150,7 +148,7 @@ select_signal_address(struct pm_nl_pernet *pernet, unsigned int pos)
+ 	 * can lead to additional addresses not being announced.
  	 */
--	if (mptcp_ooo_try_coalesce(msk, msk->ooo_last_skb, skb))
-+	if (mptcp_ooo_try_coalesce(msk, msk->ooo_last_skb, skb)) {
-+		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_OFOMERGE);
-+		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_OFOQUEUETAIL);
- 		return;
-+	}
- 
- 	/* Can avoid an rbtree lookup if we are adding skb after ooo_last_skb */
- 	if (!before64(seq, MPTCP_SKB_CB(msk->ooo_last_skb)->end_seq)) {
-+		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_OFOQUEUETAIL);
- 		parent = &msk->ooo_last_skb->rbnode;
- 		p = &parent->rb_right;
- 		goto insert;
-@@ -200,6 +211,7 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
- 			if (!after64(end_seq, MPTCP_SKB_CB(skb1)->end_seq)) {
- 				/* All the bits are present. Drop. */
- 				mptcp_drop(sk, skb);
-+				MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_DUPDATA);
- 				return;
- 			}
- 			if (after64(seq, MPTCP_SKB_CB(skb1)->map_seq)) {
-@@ -215,13 +227,16 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
- 				rb_replace_node(&skb1->rbnode, &skb->rbnode,
- 						&msk->out_of_order_queue);
- 				mptcp_drop(sk, skb1);
-+				MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_DUPDATA);
- 				goto merge_right;
- 			}
- 		} else if (mptcp_ooo_try_coalesce(msk, skb1, skb)) {
-+			MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_OFOMERGE);
+ 	list_for_each_entry_rcu(entry, &pernet->local_addr_list, list) {
+-		if (!(entry->flags & MPTCP_PM_ADDR_FLAG_SIGNAL))
++		if (!(entry->addr.flags & MPTCP_PM_ADDR_FLAG_SIGNAL))
+ 			continue;
+ 		if (i++ == pos) {
+ 			ret = entry;
+@@ -210,8 +208,7 @@ static void mptcp_pm_create_subflow_or_signal_addr(struct mptcp_sock *msk)
+ 			msk->pm.subflows++;
+ 			check_work_pending(msk);
+ 			spin_unlock_bh(&msk->pm.lock);
+-			__mptcp_subflow_connect(sk, local->ifindex,
+-						&local->addr, &remote);
++			__mptcp_subflow_connect(sk, &local->addr, &remote);
+ 			spin_lock_bh(&msk->pm.lock);
  			return;
  		}
- 		p = &parent->rb_right;
- 	}
-+
- insert:
- 	/* Insert segment into RB tree. */
- 	rb_link_node(&skb->rbnode, parent, p);
-@@ -234,6 +249,7 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
- 			break;
- 		rb_erase(&skb1->rbnode, &msk->out_of_order_queue);
- 		mptcp_drop(sk, skb1);
-+		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_DUPDATA);
- 	}
- 	/* If there is no skb after us, we are the last_skb ! */
- 	if (!skb1)
-@@ -283,6 +299,7 @@ static bool __mptcp_move_skb(struct mptcp_sock *msk, struct sock *ssk,
- 	/* old data, keep it simple and drop the whole pkt, sender
- 	 * will retransmit as needed, if needed.
- 	 */
-+	MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_DUPDATA);
- 	mptcp_drop(sk, skb);
- 	return false;
+@@ -257,13 +254,13 @@ void mptcp_pm_nl_add_addr_received(struct mptcp_sock *msk)
+ 	local.family = remote.family;
+ 
+ 	spin_unlock_bh(&msk->pm.lock);
+-	__mptcp_subflow_connect((struct sock *)msk, 0, &local, &remote);
++	__mptcp_subflow_connect((struct sock *)msk, &local, &remote);
+ 	spin_lock_bh(&msk->pm.lock);
  }
-@@ -511,6 +528,7 @@ static bool mptcp_ofo_queue(struct mptcp_sock *msk)
- 	u64 end_seq;
  
- 	p = rb_first(&msk->out_of_order_queue);
-+	pr_debug("msk=%p empty=%d", msk, RB_EMPTY_ROOT(&msk->out_of_order_queue));
- 	while (p) {
- 		skb = rb_to_skb(p);
- 		if (after64(MPTCP_SKB_CB(skb)->map_seq, msk->ack_seq))
-@@ -522,6 +540,7 @@ static bool mptcp_ofo_queue(struct mptcp_sock *msk)
- 		if (unlikely(!after64(MPTCP_SKB_CB(skb)->end_seq,
- 				      msk->ack_seq))) {
- 			mptcp_drop(sk, skb);
-+			MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_DUPDATA);
- 			continue;
- 		}
+ static bool address_use_port(struct mptcp_pm_addr_entry *entry)
+ {
+-	return (entry->flags &
++	return (entry->addr.flags &
+ 		(MPTCP_PM_ADDR_FLAG_SIGNAL | MPTCP_PM_ADDR_FLAG_SUBFLOW)) ==
+ 		MPTCP_PM_ADDR_FLAG_SIGNAL;
+ }
+@@ -293,9 +290,9 @@ static int mptcp_pm_nl_append_new_local_addr(struct pm_nl_pernet *pernet,
+ 			goto out;
+ 	}
  
-@@ -531,6 +550,9 @@ static bool mptcp_ofo_queue(struct mptcp_sock *msk)
- 			int delta = msk->ack_seq - MPTCP_SKB_CB(skb)->map_seq;
+-	if (entry->flags & MPTCP_PM_ADDR_FLAG_SIGNAL)
++	if (entry->addr.flags & MPTCP_PM_ADDR_FLAG_SIGNAL)
+ 		pernet->add_addr_signal_max++;
+-	if (entry->flags & MPTCP_PM_ADDR_FLAG_SUBFLOW)
++	if (entry->addr.flags & MPTCP_PM_ADDR_FLAG_SUBFLOW)
+ 		pernet->local_addr_max++;
  
- 			/* skip overlapping data, if any */
-+			pr_debug("uncoalesced seq=%llx ack seq=%llx delta=%d",
-+				 MPTCP_SKB_CB(skb)->map_seq, msk->ack_seq,
-+				 delta);
- 			MPTCP_SKB_CB(skb)->offset += delta;
- 			__skb_queue_tail(&sk->sk_receive_queue, skb);
- 		}
+ 	entry->addr.id = pernet->next_id++;
+@@ -345,8 +342,9 @@ int mptcp_pm_nl_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
+ 	if (!entry)
+ 		return -ENOMEM;
+ 
+-	entry->flags = 0;
+ 	entry->addr = skc_local;
++	entry->addr.ifindex = 0;
++	entry->addr.flags = 0;
+ 	ret = mptcp_pm_nl_append_new_local_addr(pernet, entry);
+ 	if (ret < 0)
+ 		kfree(entry);
+@@ -460,14 +458,17 @@ static int mptcp_pm_parse_addr(struct nlattr *attr, struct genl_info *info,
+ 		entry->addr.addr.s_addr = nla_get_in_addr(tb[addr_addr]);
+ 
+ skip_family:
+-	if (tb[MPTCP_PM_ADDR_ATTR_IF_IDX])
+-		entry->ifindex = nla_get_s32(tb[MPTCP_PM_ADDR_ATTR_IF_IDX]);
++	if (tb[MPTCP_PM_ADDR_ATTR_IF_IDX]) {
++		u32 val = nla_get_s32(tb[MPTCP_PM_ADDR_ATTR_IF_IDX]);
++
++		entry->addr.ifindex = val;
++	}
+ 
+ 	if (tb[MPTCP_PM_ADDR_ATTR_ID])
+ 		entry->addr.id = nla_get_u8(tb[MPTCP_PM_ADDR_ATTR_ID]);
+ 
+ 	if (tb[MPTCP_PM_ADDR_ATTR_FLAGS])
+-		entry->flags = nla_get_u32(tb[MPTCP_PM_ADDR_ATTR_FLAGS]);
++		entry->addr.flags = nla_get_u32(tb[MPTCP_PM_ADDR_ATTR_FLAGS]);
+ 
+ 	return 0;
+ }
+@@ -535,9 +536,9 @@ static int mptcp_nl_cmd_del_addr(struct sk_buff *skb, struct genl_info *info)
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+-	if (entry->flags & MPTCP_PM_ADDR_FLAG_SIGNAL)
++	if (entry->addr.flags & MPTCP_PM_ADDR_FLAG_SIGNAL)
+ 		pernet->add_addr_signal_max--;
+-	if (entry->flags & MPTCP_PM_ADDR_FLAG_SUBFLOW)
++	if (entry->addr.flags & MPTCP_PM_ADDR_FLAG_SUBFLOW)
+ 		pernet->local_addr_max--;
+ 
+ 	pernet->addrs--;
+@@ -593,10 +594,10 @@ static int mptcp_nl_fill_addr(struct sk_buff *skb,
+ 		goto nla_put_failure;
+ 	if (nla_put_u8(skb, MPTCP_PM_ADDR_ATTR_ID, addr->id))
+ 		goto nla_put_failure;
+-	if (nla_put_u32(skb, MPTCP_PM_ADDR_ATTR_FLAGS, entry->flags))
++	if (nla_put_u32(skb, MPTCP_PM_ADDR_ATTR_FLAGS, entry->addr.flags))
+ 		goto nla_put_failure;
+-	if (entry->ifindex &&
+-	    nla_put_s32(skb, MPTCP_PM_ADDR_ATTR_IF_IDX, entry->ifindex))
++	if (entry->addr.ifindex &&
++	    nla_put_s32(skb, MPTCP_PM_ADDR_ATTR_IF_IDX, entry->addr.ifindex))
+ 		goto nla_put_failure;
+ 
+ 	if (addr->family == AF_INET &&
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 26f5f81f3f4c..cfa5e1b9521b 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -140,6 +140,8 @@ struct mptcp_addr_info {
+ 	sa_family_t		family;
+ 	__be16			port;
+ 	u8			id;
++	u8			flags;
++	int			ifindex;
+ 	union {
+ 		struct in_addr addr;
+ #if IS_ENABLED(CONFIG_MPTCP_IPV6)
+@@ -358,8 +360,7 @@ bool mptcp_subflow_data_available(struct sock *sk);
+ void __init mptcp_subflow_init(void);
+ 
+ /* called with sk socket lock held */
+-int __mptcp_subflow_connect(struct sock *sk, int ifindex,
+-			    const struct mptcp_addr_info *loc,
++int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
+ 			    const struct mptcp_addr_info *remote);
+ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock);
+ 
 diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 6eb2fc0a8ebb..8c9418d1901b 100644
+index 8c9418d1901b..ae3eeb9bb191 100644
 --- a/net/mptcp/subflow.c
 +++ b/net/mptcp/subflow.c
-@@ -816,6 +816,7 @@ static void mptcp_subflow_discard_data(struct sock *ssk, struct sk_buff *skb,
+@@ -1035,8 +1035,7 @@ static void mptcp_info2sockaddr(const struct mptcp_addr_info *info,
+ #endif
+ }
  
- 	pr_debug("discarding=%d len=%d seq=%d", incr, skb->len,
- 		 subflow->map_subflow_seq);
-+	MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_DUPDATA);
- 	tcp_sk(ssk)->copied_seq += incr;
- 	if (!before(tcp_sk(ssk)->copied_seq, TCP_SKB_CB(skb)->end_seq))
- 		sk_eat_skb(ssk, skb);
+-int __mptcp_subflow_connect(struct sock *sk, int ifindex,
+-			    const struct mptcp_addr_info *loc,
++int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
+ 			    const struct mptcp_addr_info *remote)
+ {
+ 	struct mptcp_sock *msk = mptcp_sk(sk);
+@@ -1080,7 +1079,7 @@ int __mptcp_subflow_connect(struct sock *sk, int ifindex,
+ 	if (loc->family == AF_INET6)
+ 		addrlen = sizeof(struct sockaddr_in6);
+ #endif
+-	ssk->sk_bound_dev_if = ifindex;
++	ssk->sk_bound_dev_if = loc->ifindex;
+ 	err = kernel_bind(sf, (struct sockaddr *)&addr, addrlen);
+ 	if (err)
+ 		goto failed;
 -- 
 2.26.2
 
