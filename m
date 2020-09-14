@@ -2,94 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC152691CB
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:40:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1AC42691C5
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726137AbgINQj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 12:39:59 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:21633 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726088AbgINPbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 11:31:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600097495;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H3sn64PFkwgj9VKWMl1MWTgWES+M38mznU34Z/iwPWA=;
-        b=UMctG+PBqwAOp/O38YIEfZSPadiJpxmPn1lq3wOSIAt9byR9rIcR7A0+fjLtDp4eG69oIB
-        xpAu+DxafqaCdmhLM3r2mltUXMNqEqhXA57X4ZLrMOV8IuKIQx+vY4aViMSSNuOHFp3/qE
-        iY56M66TlgIBeBs5JqC3w9EaziVln0w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-115-ogwroWsfOwm38V6S7Db61Q-1; Mon, 14 Sep 2020 11:31:29 -0400
-X-MC-Unique: ogwroWsfOwm38V6S7Db61Q-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ED80B80EDB0;
-        Mon, 14 Sep 2020 15:31:15 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-113-6.rdu2.redhat.com [10.10.113.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1CAA55D9DC;
-        Mon, 14 Sep 2020 15:31:14 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 4/5] rxrpc: Fix conn bundle leak in net-namespace
- exit
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 14 Sep 2020 16:31:14 +0100
-Message-ID: <160009747424.1014072.2463414249066927982.stgit@warthog.procyon.org.uk>
-In-Reply-To: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
-References: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/0.23
+        id S1726091AbgINQjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 12:39:06 -0400
+Received: from mga09.intel.com ([134.134.136.24]:48711 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725914AbgINPhY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 11:37:24 -0400
+IronPort-SDR: ptISQzS4NZrVMZm4wYayRSAQZMQ+rhFZssFTk91ksbFqV2YgJsZdQlVZ7fvv2Tq1uD+gBIMa/U
+ P0OB5kW/1Deg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9744"; a="160028590"
+X-IronPort-AV: E=Sophos;i="5.76,426,1592895600"; 
+   d="scan'208";a="160028590"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2020 08:37:24 -0700
+IronPort-SDR: 6oWlcVa5PyiofNGc7GlZ8h0/bXIV2kNQRQ8PpkxM7QYiuLOS3fq0+LlJZZLWrOHvFE8rVqVv+m
+ jBOw67EONqFg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.76,426,1592895600"; 
+   d="scan'208";a="335319296"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga008.jf.intel.com with ESMTP; 14 Sep 2020 08:37:22 -0700
+Received: from andy by smile with local (Exim 4.94)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1kHqTT-00GdDZ-5G; Mon, 14 Sep 2020 18:32:59 +0300
+Date:   Mon, 14 Sep 2020 18:32:59 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>
+Cc:     Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH net-next v2] net: phy: leds: Deduplicate link LED trigger
+ registration
+Message-ID: <20200914153259.GJ3956970@smile.fi.intel.com>
+References: <20200826152223.56508-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200826152223.56508-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the network namespace exits, rxrpc_clean_up_local_conns() needs to
-unbundle each client connection it evicts.  Fix it to do this.
+On Wed, Aug 26, 2020 at 06:22:23PM +0300, Andy Shevchenko wrote:
+> Refactor phy_led_trigger_register() and deduplicate its functionality
+> when registering LED trigger for link.
 
-kernel BUG at net/rxrpc/conn_object.c:481!
-RIP: 0010:rxrpc_destroy_all_connections.cold+0x11/0x13 net/rxrpc/conn_object.c:481
-Call Trace:
- rxrpc_exit_net+0x1a4/0x2e0 net/rxrpc/net_ns.c:119
- ops_exit_list+0xb0/0x160 net/core/net_namespace.c:186
- cleanup_net+0x4ea/0xa00 net/core/net_namespace.c:603
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Is it good enough now?
 
-Fixes: 245500d853e9 ("rxrpc: Rewrite the client connection manager")
-Reported-by: syzbot+52071f826a617b9c76ed@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
----
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+> v2: fixed build error (lkp, David)
+>  drivers/net/phy/phy_led_triggers.c | 15 +++++----------
+>  1 file changed, 5 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phy_led_triggers.c b/drivers/net/phy/phy_led_triggers.c
+> index 59a94e07e7c5..08a3e9ea4102 100644
+> --- a/drivers/net/phy/phy_led_triggers.c
+> +++ b/drivers/net/phy/phy_led_triggers.c
+> @@ -66,11 +66,11 @@ static void phy_led_trigger_format_name(struct phy_device *phy, char *buf,
+>  
+>  static int phy_led_trigger_register(struct phy_device *phy,
+>  				    struct phy_led_trigger *plt,
+> -				    unsigned int speed)
+> +				    unsigned int speed,
+> +				    const char *suffix)
+>  {
+>  	plt->speed = speed;
+> -	phy_led_trigger_format_name(phy, plt->name, sizeof(plt->name),
+> -				    phy_speed_to_str(speed));
+> +	phy_led_trigger_format_name(phy, plt->name, sizeof(plt->name), suffix);
+>  	plt->trigger.name = plt->name;
+>  
+>  	return led_trigger_register(&plt->trigger);
+> @@ -99,12 +99,7 @@ int phy_led_triggers_register(struct phy_device *phy)
+>  		goto out_clear;
+>  	}
+>  
+> -	phy_led_trigger_format_name(phy, phy->led_link_trigger->name,
+> -				    sizeof(phy->led_link_trigger->name),
+> -				    "link");
+> -	phy->led_link_trigger->trigger.name = phy->led_link_trigger->name;
+> -
+> -	err = led_trigger_register(&phy->led_link_trigger->trigger);
+> +	err = phy_led_trigger_register(phy, phy->led_link_trigger, 0, "link");
+>  	if (err)
+>  		goto out_free_link;
+>  
+> @@ -119,7 +114,7 @@ int phy_led_triggers_register(struct phy_device *phy)
+>  
+>  	for (i = 0; i < phy->phy_num_led_triggers; i++) {
+>  		err = phy_led_trigger_register(phy, &phy->phy_led_triggers[i],
+> -					       speeds[i]);
+> +					       speeds[i], phy_speed_to_str(speeds[i]));
+>  		if (err)
+>  			goto out_unreg;
+>  	}
+> -- 
+> 2.28.0
+> 
 
- net/rxrpc/conn_client.c |    1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index 180be4da8d26..0eb36ba52485 100644
---- a/net/rxrpc/conn_client.c
-+++ b/net/rxrpc/conn_client.c
-@@ -1112,6 +1112,7 @@ void rxrpc_clean_up_local_conns(struct rxrpc_local *local)
- 		conn = list_entry(graveyard.next,
- 				  struct rxrpc_connection, cache_link);
- 		list_del_init(&conn->cache_link);
-+		rxrpc_unbundle_conn(conn);
- 		rxrpc_put_connection(conn);
- 	}
- 
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
