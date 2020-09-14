@@ -2,133 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 939C0269529
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 20:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9331F269532
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 20:53:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726040AbgINSqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 14:46:40 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:4450 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725964AbgINSqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 14:46:39 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08EIkWfL030148
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 11:46:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=NyGYnCKnagehNgkOY9puCcuW66UHbPqyZ3QfebY8Weo=;
- b=SrDM1vIbQ1vClF/28MddgHheZYcsSEWvrPm93/b+GslYt8j5rAXL7jUgYfeDTNH0Ghjp
- ccxlP6a36TQwsdU//8JPdMVlmRbQI+3/KLI/EHcZSLUeMcepwu3l8k8gNxrx/aMEFERU
- kjEsGkgkj1IlXCMkMkZkN7js5i/twrIwXEY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 33hed3xjt5-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 11:46:38 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 14 Sep 2020 11:46:31 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id B58D23705727; Mon, 14 Sep 2020 11:46:30 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Subject: [PATCH bpf-next] bpf: using rcu_read_lock for bpf_sk_storage_map iterator
-Date:   Mon, 14 Sep 2020 11:46:30 -0700
-Message-ID: <20200914184630.1048718-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1725994AbgINSw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 14:52:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50578 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725914AbgINSw4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 14:52:56 -0400
+Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0CDC06174A;
+        Mon, 14 Sep 2020 11:52:55 -0700 (PDT)
+Received: by mail-qt1-x841.google.com with SMTP id k25so860186qtu.4;
+        Mon, 14 Sep 2020 11:52:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cRuE7ghYmX/MnQQcJBt4NDc6WttGR8e1vIUwI+1gPGA=;
+        b=UkRrlE0m1+WF9msVPr5gid8roJaZt1r/OaDQRSyARhhE2uG/LpFzV4A8O2BgFe9IPV
+         s/YYuXXzYjOA3bwgt09LzqgiryW058mZ9M6MLiucyIRnfOm88EEn+a8byN4gdrQGKsmY
+         Be3s2tamJOxHcVFHpaamPWM5+tfrwYeKrz/lkszY7r+8ifHgRJ6WT6RRXfQuPLz5Hheo
+         tRj5diMAy/AmHvYFGYQQ5CNF+T7P86ExaIUB/fG0TiYfTXjbWqU9Km8WIZUn+x1pOpr4
+         s6MDO2GzC631it4Y5UlFJziZ67zBVHiqY8hcvQj6GREu6JNTf5npc33KFXPB1XL9XjZz
+         4Vig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cRuE7ghYmX/MnQQcJBt4NDc6WttGR8e1vIUwI+1gPGA=;
+        b=TRHWDDcKX17GIBWIC2DpPM95S5tLCtTJtiy0WbzDAsGSSkI3FhrNqzJ2m26YIcWLoC
+         IVJCHdv+hn+aGShafRNCUn+iB9nZubhWH2ID3lmuf8hTfIwomn5/Ma0+aXTTWQ+MrVzS
+         YSPuZIukp0xRAWI5ZKYsI3u91uN9/ToUxlPJiQwdAvy/ESgobgfYpN6AGChHw8G6//lL
+         VMMR7oYMPpj4bxn89dty705atTrlcnDuCIbJrpgRvrddkZF4bRghALJGrIbrTmHWG74c
+         ldJu8nYQA5KG3lN2aW6ZjBf+I1E32GINz4lhm8A0Tk9pV28HxpIAXququJxSUAaKFWeD
+         Cq8g==
+X-Gm-Message-State: AOAM532E0mvgWI0fHQzn9smLcVa2CHyvLGUlaxKYamCbG/memdLI5Sap
+        ZVmvT54H4KEsvXcYOGnOTJGskuO6lEVJqq+j3UU=
+X-Google-Smtp-Source: ABdhPJxhDixSFUwxkAnEUQeXy07ajAOQms0ZLcAVN9gFyyOzsMsuLpLHTuY8o7iLRBRsA5g/KT7lYKHt6LTXZh1bHxo=
+X-Received: by 2002:ac8:660a:: with SMTP id c10mr2319819qtp.300.1600109572562;
+ Mon, 14 Sep 2020 11:52:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-14_07:2020-09-14,2020-09-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- adultscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0 bulkscore=0
- phishscore=0 impostorscore=0 spamscore=0 mlxlogscore=790
- priorityscore=1501 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009140147
-X-FB-Internal: deliver
+References: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
+ <20200914122042.GA24441@willie-the-truck> <20200914123504.GA124316@apalos.home>
+ <20200914132350.GA126552@apalos.home> <20200914140114.GG24441@willie-the-truck>
+ <20200914181234.0f1df8ba@carbon> <20200914170205.GA20549@apalos.home>
+ <CAKU6vyaxnzWVA=MPAuDwtu4UOTWS6s0cZOYQKVhQg5Mue7Wbww@mail.gmail.com>
+ <20200914175516.GA21832@apalos.home> <CAKU6vybuEGYtqh9gL9bwFaJ6xD=diN-0w_Mgc2Xyu4tHMdWgAA@mail.gmail.com>
+ <20200914182756.GA22294@apalos.home>
+In-Reply-To: <20200914182756.GA22294@apalos.home>
+From:   Xi Wang <xi.wang@gmail.com>
+Date:   Mon, 14 Sep 2020 11:52:16 -0700
+Message-ID: <CAKU6vyYhG20qaA1iKwD=-pZHWjZYEZvX6Qmjs=aA-uJ-uwCw7w@mail.gmail.com>
+Subject: Re: [PATCH] arm64: bpf: Fix branch offset in JIT
+To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Will Deacon <will@kernel.org>, bpf@vger.kernel.org,
+        ardb@kernel.org, naresh.kamboju@linaro.org,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Yauheni Kaliuta <yauheni.kaliuta@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Luke Nelson <luke.r.nels@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, we use bucket_lock when traversing bpf_sk_storage_map
-elements. Since bpf_iter programs cannot use bpf_sk_storage_get()
-and bpf_sk_storage_delete() helpers which may also grab bucket lock,
-we do not have a deadlock issue which exists for hashmap when
-using bucket_lock ([1]).
+On Mon, Sep 14, 2020 at 11:28 AM Ilias Apalodimas
+<ilias.apalodimas@linaro.org> wrote:
+> Even if that's true, is any reason at all why we should skip the first element
+> of the array, that's now needed since 7c2e988f400 to jump back to the first
+> instruction?
+> Introducing 2 extra if conditions and hotfix the array on the fly (and for
+> every future invocation of that), seems better to you?
 
-If a bucket contains a lot of sockets, during bpf_iter traversing
-a bucket, concurrent bpf_sk_storage_{get,delete}() may experience
-some undesirable delays. Using rcu_read_lock() is a reasonable
-compromise here. Although it may lose some precision, e.g.,
-access stale sockets, but it will not hurt performance of other
-bpf programs.
+My point was that there's no inherently correct/wrong way to construct
+offsets.  As Luke explained in his email, 1) there are two different
+strategies used by the JITs and 2) there are likely similar bugs
+beyond arm64.
 
-[1] https://lore.kernel.org/bpf/20200902235341.2001534-1-yhs@fb.com
+Each strategy has pros and cons, and I'm fine with either.  I like the
+strategy used in your patch because it's more intuitive (offset[i] is
+the start of the emitted instructions for BPF instruction i, rather
+than the end), though the changes to the construction process are
+trickier.
 
-Cc: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- net/core/bpf_sk_storage.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
-
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index 4a86ea34f29e..a1db5e988d19 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -701,7 +701,7 @@ bpf_sk_storage_map_seq_find_next(struct bpf_iter_seq_=
-sk_storage_map_info *info,
- 		if (!selem) {
- 			/* not found, unlock and go to the next bucket */
- 			b =3D &smap->buckets[bucket_id++];
--			raw_spin_unlock_bh(&b->lock);
-+			rcu_read_unlock();
- 			skip_elems =3D 0;
- 			break;
- 		}
-@@ -715,7 +715,7 @@ bpf_sk_storage_map_seq_find_next(struct bpf_iter_seq_=
-sk_storage_map_info *info,
-=20
- 	for (i =3D bucket_id; i < (1U << smap->bucket_log); i++) {
- 		b =3D &smap->buckets[i];
--		raw_spin_lock_bh(&b->lock);
-+		rcu_read_lock();
- 		count =3D 0;
- 		hlist_for_each_entry(selem, &b->list, map_node) {
- 			sk_storage =3D rcu_dereference_raw(selem->local_storage);
-@@ -726,7 +726,7 @@ bpf_sk_storage_map_seq_find_next(struct bpf_iter_seq_=
-sk_storage_map_info *info,
- 			}
- 			count++;
- 		}
--		raw_spin_unlock_bh(&b->lock);
-+		rcu_read_unlock();
- 		skip_elems =3D 0;
- 	}
-=20
-@@ -806,13 +806,10 @@ static void bpf_sk_storage_map_seq_stop(struct seq_=
-file *seq, void *v)
- 	struct bpf_local_storage_map *smap;
- 	struct bpf_local_storage_map_bucket *b;
-=20
--	if (!v) {
-+	if (!v)
- 		(void)__bpf_sk_storage_map_seq_show(seq, v);
--	} else {
--		smap =3D (struct bpf_local_storage_map *)info->map;
--		b =3D &smap->buckets[info->bucket_id];
--		raw_spin_unlock_bh(&b->lock);
--	}
-+	else
-+		rcu_read_unlock();
- }
-=20
- static int bpf_iter_init_sk_storage_map(void *priv_data,
---=20
-2.24.1
-
+If we decide to patch the arm64 JIT the way you proposed, we should
+consider whether to change other JITs consistently.
