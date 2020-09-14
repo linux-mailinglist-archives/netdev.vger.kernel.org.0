@@ -2,67 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3466226834B
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 05:55:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AEFB268358
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 06:02:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726068AbgINDzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 13 Sep 2020 23:55:43 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:45110 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726010AbgINDzV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 13 Sep 2020 23:55:21 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 6A42718915B87E4F904A;
-        Mon, 14 Sep 2020 11:55:17 +0800 (CST)
-Received: from huawei.com (10.175.113.32) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.487.0; Mon, 14 Sep 2020
- 11:55:11 +0800
-From:   Liu Shixin <liushixin2@huawei.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Liu Shixin <liushixin2@huawei.com>
-Subject: [PATCH -next] mt76: mt7915: convert to use le16_add_cpu()
-Date:   Mon, 14 Sep 2020 12:17:50 +0800
-Message-ID: <20200914041750.3702052-1-liushixin2@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726016AbgINECY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 00:02:24 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:43003 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725995AbgINECW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 00:02:22 -0400
+Received: by mail-lf1-f65.google.com with SMTP id b12so11831700lfp.9;
+        Sun, 13 Sep 2020 21:02:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lr41KwaorelPEhjVUZef/1DYsFz7q63hpTMDBSPa8Eg=;
+        b=Odnp2KDcWS+c1CVbJZgohtGj7Mr0wqO47OlVwydlmtf79qftrYHJvJa2Wdt/S4tDxj
+         73dJN3NWc/K1ObeD2DGoW9+agHMIxQeUP2A/WTeE1DXYk4n1DDMyyQC1kiBYXyBiyDDB
+         YSMxRuAnbyjCc5sIv7pOgHLHROVn+6HDyEtGV//2kmrLT6vezchswdypso1Lq+jozCDO
+         fgCnBVundexWZW7o1QN+iBF0NS+VQdB1waT+hMsmCX3TIoVM+rmJlPt83lVvy+5bqUp0
+         DC8VTSujglgaUsDq2ymTxXVtHKK8BJg7XjlR3OAkkTnMaBvWzp2Zzaw8qKROzWrx0oyK
+         PDDQ==
+X-Gm-Message-State: AOAM531HlMN3qN5J2GHelRt4+77UXoFCcw05gZlLAYYmUIhvbEk3n0Pm
+        2N9qaWAsuaR/wDA/EaCimWw=
+X-Google-Smtp-Source: ABdhPJyBvkAWslgtwCdeGGUwvReHy4IPO8qF2mUegi/A86SMl0JalxhTITUN9B6iLnwaogHqVAHMPg==
+X-Received: by 2002:ac2:419a:: with SMTP id z26mr3543688lfh.523.1600056140499;
+        Sun, 13 Sep 2020 21:02:20 -0700 (PDT)
+Received: from rocinante ([95.155.85.46])
+        by smtp.gmail.com with ESMTPSA id l14sm3797487lji.99.2020.09.13.21.02.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Sep 2020 21:02:19 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 06:02:18 +0200
+From:   Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-net-drivers@solarflare.com
+Subject: Re: [PATCH] Convert enum pci_dev_flags to bit fields in struct
+ pci_dev
+Message-ID: <20200914040218.GA29277@rocinante>
+References: <20200914035756.1965406-1-kw@linux.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.32]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200914035756.1965406-1-kw@linux.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert cpu_to_le16(le16_to_cpu(E1) + E2) to use le16_add_cpu().
+Hello Bjorn,
 
-Signed-off-by: Liu Shixin <liushixin2@huawei.com>
----
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Sincere apologies! I forgot to include the "PCI" prefix in the subject.
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-index ac8ec257da03..8f0b67d0e93e 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
-@@ -714,8 +714,8 @@ mt7915_mcu_add_nested_subtlv(struct sk_buff *skb, int sub_tag, int sub_len,
- 	ptlv = skb_put(skb, sub_len);
- 	memcpy(ptlv, &tlv, sizeof(tlv));
- 
--	*sub_ntlv = cpu_to_le16(le16_to_cpu(*sub_ntlv) + 1);
--	*len = cpu_to_le16(le16_to_cpu(*len) + sub_len);
-+	le16_add_cpu(sub_ntlv, 1);
-+	le16_add_cpu(len, sub_len);
- 
- 	return ptlv;
- }
--- 
-2.25.1
+Would you like me to send the patch again?
 
+Krzysztof
