@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B55CB268481
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 08:10:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14AB026846F
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 08:09:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726128AbgINGKg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 02:10:36 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59486 "EHLO
+        id S1726183AbgINGJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 02:09:39 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59490 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726075AbgINGIW (ORCPT
+        with ESMTP id S1726079AbgINGIW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 02:08:22 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
         with SMTP; 14 Sep 2020 09:08:18 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08E68Hfs020974;
-        Mon, 14 Sep 2020 09:08:17 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08E68IIe020977;
+        Mon, 14 Sep 2020 09:08:18 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 08E68H07017405;
-        Mon, 14 Sep 2020 09:08:17 +0300
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 08E68IZI017407;
+        Mon, 14 Sep 2020 09:08:18 +0300
 Received: (from moshe@localhost)
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 08E68HM5017404;
-        Mon, 14 Sep 2020 09:08:17 +0300
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 08E68I8C017406;
+        Mon, 14 Sep 2020 09:08:18 +0300
 From:   Moshe Shemesh <moshe@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Jiri Pirko <jiri@mellanox.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next RFC v4 13/15] net/mlx5: Add support for fw live patch event
-Date:   Mon, 14 Sep 2020 09:08:00 +0300
-Message-Id: <1600063682-17313-14-git-send-email-moshe@mellanox.com>
+Subject: [PATCH net-next RFC v4 14/15] net/mlx5: Add support for devlink reload action limit level no reset
+Date:   Mon, 14 Sep 2020 09:08:01 +0300
+Message-Id: <1600063682-17313-15-git-send-email-moshe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
 References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
@@ -39,151 +39,100 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Firmware live patch event notifies the driver that the firmware was just
-updated using live patch. In such case the driver should not reload or
-re-initiate entities, part to updating the firmware version and
-re-initiate the firmware tracer which can be updated by live patch with
-new strings database to help debugging an issue.
+Add support for devlink reload action fw_activate with limit level
+no_reset which does firmware live patching, updating the firmware image
+without reset, no downtime and no configuration lose. The driver checks
+if the firmware is capable of handling the pending firmware changes as a
+live patch. If it is then it triggers firmware live patching flow.
 
 Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 ---
- .../mellanox/mlx5/core/diag/fw_tracer.c       | 31 +++++++++++++++++++
- .../mellanox/mlx5/core/diag/fw_tracer.h       |  1 +
- .../ethernet/mellanox/mlx5/core/fw_reset.c    | 27 ++++++++++++++++
- include/linux/mlx5/device.h                   |  1 +
- 4 files changed, 60 insertions(+)
+v3 -> v4:
+- Have action fw_activate with limit level no_reset instead of action
+  fw_activate_no_reset
+v2 -> v3:
+- Replace fw_live_patch action by fw_activate_no_reset
+v1 -> v2:
+- Have fw_live_patch action instead of level
+---
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 37 ++++++++++++++++++-
+ 1 file changed, 36 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-index ad3594c4afcb..08dae045d185 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.c
-@@ -1064,6 +1064,37 @@ void mlx5_fw_tracer_destroy(struct mlx5_fw_tracer *tracer)
- 	kvfree(tracer);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index 175e933cf19c..f2cc62b7232d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -115,6 +115,29 @@ static int mlx5_devlink_reload_fw_activate(struct devlink *devlink, struct netli
+ 	return err;
  }
  
-+int mlx5_fw_tracer_recreate_strings_db(struct mlx5_fw_tracer *tracer)
++static int mlx5_devlink_trigger_fw_live_patch(struct devlink *devlink,
++					      struct netlink_ext_ack *extack)
 +{
-+	struct mlx5_core_dev *dev;
++	struct mlx5_core_dev *dev = devlink_priv(devlink);
++	u8 reset_level;
 +	int err;
 +
-+	if (IS_ERR_OR_NULL(tracer))
++	err = mlx5_reg_mfrl_query(dev, &reset_level, NULL);
++	if (err)
++		return err;
++	if (!(reset_level & MLX5_MFRL_REG_RESET_LEVEL0)) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "FW upgrade to the stored FW can't be done by FW live patching");
 +		return -EINVAL;
-+
-+	cancel_work_sync(&tracer->read_fw_strings_work);
-+	mlx5_fw_tracer_clean_ready_list(tracer);
-+	mlx5_fw_tracer_clean_print_hash(tracer);
-+	mlx5_fw_tracer_clean_saved_traces_array(tracer);
-+	mlx5_fw_tracer_free_strings_db(tracer);
-+
-+	dev = tracer->dev;
-+	err = mlx5_query_mtrc_caps(tracer);
-+	if (err) {
-+		mlx5_core_dbg(dev, "FWTracer: Failed to query capabilities %d\n", err);
-+		return err;
 +	}
 +
-+	err = mlx5_fw_tracer_allocate_strings_db(tracer);
-+	if (err) {
-+		mlx5_core_warn(dev, "FWTracer: Allocate strings DB failed %d\n", err);
++	err = mlx5_fw_set_live_patch(dev);
++	if (err)
 +		return err;
-+	}
-+	mlx5_fw_tracer_init_saved_traces_array(tracer);
 +
 +	return 0;
 +}
 +
- static int fw_tracer_event(struct notifier_block *nb, unsigned long action, void *data)
+ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
+ 				    enum devlink_reload_action action,
+ 				    enum devlink_reload_action_limit_level limit_level,
+@@ -122,11 +145,19 @@ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
  {
- 	struct mlx5_fw_tracer *tracer = mlx5_nb_cof(nb, struct mlx5_fw_tracer, nb);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h
-index 40601fba80ba..1a755098aeeb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/diag/fw_tracer.h
-@@ -191,5 +191,6 @@ void mlx5_fw_tracer_destroy(struct mlx5_fw_tracer *tracer);
- int mlx5_fw_tracer_trigger_core_dump_general(struct mlx5_core_dev *dev);
- int mlx5_fw_tracer_get_saved_traces_objects(struct mlx5_fw_tracer *tracer,
- 					    struct devlink_fmsg *fmsg);
-+int mlx5_fw_tracer_recreate_strings_db(struct mlx5_fw_tracer *tracer);
+ 	struct mlx5_core_dev *dev = devlink_priv(devlink);
  
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index 88d59cc059bd..7a4563c43827 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -2,6 +2,7 @@
- /* Copyright (c) 2020, Mellanox Technologies inc.  All rights reserved. */
- 
- #include "fw_reset.h"
-+#include "diag/fw_tracer.h"
- 
- enum {
- 	MLX5_FW_RESET_FLAGS_RESET_REQUESTED,
-@@ -13,6 +14,7 @@ struct mlx5_fw_reset {
- 	struct mlx5_core_dev *dev;
- 	struct mlx5_nb nb;
- 	struct workqueue_struct *wq;
-+	struct work_struct fw_live_patch_work;
- 	struct work_struct reset_request_work;
- 	struct work_struct reset_reload_work;
- 	struct work_struct reset_now_work;
-@@ -188,6 +190,27 @@ static void mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
- 	mlx5_start_sync_reset_poll(dev);
- }
- 
-+static void mlx5_fw_live_patch_event(struct work_struct *work)
-+{
-+	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
-+						      fw_live_patch_work);
-+	struct mlx5_core_dev *dev = fw_reset->dev;
-+	struct mlx5_fw_tracer *tracer;
++	if (limit_level == DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET &&
++	    action != DEVLINK_RELOAD_ACTION_FW_ACTIVATE) {
++		NL_SET_ERR_MSG_MOD(extack, "Requested limit level is not supported");
++		return -EOPNOTSUPP;
++	}
 +
-+	mlx5_core_info(dev, "Live patch updated firmware version: %d.%d.%d\n", fw_rev_maj(dev),
-+		       fw_rev_min(dev), fw_rev_sub(dev));
-+
-+	tracer = dev->tracer;
-+	if (IS_ERR_OR_NULL(tracer))
-+		return;
-+
-+	mlx5_fw_tracer_cleanup(tracer);
-+	if (mlx5_fw_tracer_recreate_strings_db(tracer))
-+		mlx5_core_err(dev, "Failed to recreate FW tracer strings DB\n");
-+	if (mlx5_fw_tracer_init(tracer))
-+		mlx5_core_err(dev, "Failed to re-initialize FW tracer\n");
-+}
-+
- static void mlx5_sync_reset_request_event(struct work_struct *work)
- {
- 	struct mlx5_fw_reset *fw_reset = container_of(work, struct mlx5_fw_reset,
-@@ -361,6 +384,9 @@ static int fw_reset_event_notifier(struct notifier_block *nb, unsigned long acti
- 	struct mlx5_eqe *eqe = data;
+ 	switch (action) {
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
+ 		mlx5_unload_one(dev, false);
+ 		return 0;
+ 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
++		if (limit_level == DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET)
++			return mlx5_devlink_trigger_fw_live_patch(devlink, extack);
+ 		return mlx5_devlink_reload_fw_activate(devlink, extack);
+ 	default:
+ 		/* Unsupported action should not get to this function */
+@@ -146,7 +177,10 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
  
- 	switch (eqe->sub_type) {
-+	case MLX5_GENERAL_SUBTYPE_FW_LIVE_PATCH_EVENT:
-+			queue_work(fw_reset->wq, &fw_reset->fw_live_patch_work);
-+		break;
- 	case MLX5_GENERAL_SUBTYPE_PCI_SYNC_FOR_FW_UPDATE_EVENT:
- 		mlx5_sync_reset_events_handle(fw_reset, eqe);
- 		break;
-@@ -405,6 +431,7 @@ int mlx5_fw_reset_events_init(struct mlx5_core_dev *dev)
- 	fw_reset->dev = dev;
- 	dev->priv.fw_reset = fw_reset;
- 
-+	INIT_WORK(&fw_reset->fw_live_patch_work, mlx5_fw_live_patch_event);
- 	INIT_WORK(&fw_reset->reset_request_work, mlx5_sync_reset_request_event);
- 	INIT_WORK(&fw_reset->reset_reload_work, mlx5_sync_reset_reload_work);
- 	INIT_WORK(&fw_reset->reset_now_work, mlx5_sync_reset_now_event);
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index 81ca5989009b..cf824366a7d1 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -366,6 +366,7 @@ enum {
- enum {
- 	MLX5_GENERAL_SUBTYPE_DELAY_DROP_TIMEOUT = 0x1,
- 	MLX5_GENERAL_SUBTYPE_PCI_POWER_CHANGE_EVENT = 0x5,
-+	MLX5_GENERAL_SUBTYPE_FW_LIVE_PATCH_EVENT = 0x7,
- 	MLX5_GENERAL_SUBTYPE_PCI_SYNC_FOR_FW_UPDATE_EVENT = 0x8,
+ 	switch (action) {
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
++		return mlx5_load_one(dev, false);
+ 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
++		if (limit_level == DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET)
++			break;
+ 		/* On fw_activate action, also driver is reloaded and reinit performed */
+ 		if (actions_performed)
+ 			*actions_performed |= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
+@@ -175,7 +209,8 @@ static const struct devlink_ops mlx5_devlink_ops = {
+ 	.info_get = mlx5_devlink_info_get,
+ 	.supported_reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+ 				    BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
+-	.supported_reload_action_limit_levels = BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE),
++	.supported_reload_action_limit_levels = BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE) |
++						BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET),
+ 	.reload_down = mlx5_devlink_reload_down,
+ 	.reload_up = mlx5_devlink_reload_up,
  };
- 
 -- 
 2.17.1
 
