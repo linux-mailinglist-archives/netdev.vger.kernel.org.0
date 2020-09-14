@@ -2,102 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B5852696A4
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 22:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 432F72696C3
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 22:35:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726310AbgINUai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 16:30:38 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:52572 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726308AbgINUaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 16:30:25 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 9D1521C0B79; Mon, 14 Sep 2020 22:30:21 +0200 (CEST)
-Date:   Mon, 14 Sep 2020 22:30:06 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        Dan Murphy <dmurphy@ti.com>,
-        =?utf-8?Q?Ond=C5=99ej?= Jirman <megous@megous.com>,
-        linux-kernel@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: Yet another ethernet PHY LED control proposal
-Message-ID: <20200914203006.GA20984@duo.ucw.cz>
-References: <20200912011045.35bad071@nic.cz>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="BOKacYhQ+x31HxR3"
-Content-Disposition: inline
-In-Reply-To: <20200912011045.35bad071@nic.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726245AbgINUfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 16:35:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726201AbgINUfC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 16:35:02 -0400
+Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A0BCC06174A;
+        Mon, 14 Sep 2020 13:34:58 -0700 (PDT)
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5A67A12782CD9;
+        Mon, 14 Sep 2020 13:18:10 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 13:34:56 -0700 (PDT)
+Message-Id: <20200914.133456.855640911695260789.davem@davemloft.net>
+To:     xie.he.0141@gmail.com
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, willemdebruijn.kernel@gmail.com,
+        eric.dumazet@gmail.com, briannorris@chromium.org,
+        xiyou.wangcong@gmail.com
+Subject: Re: [PATCH net-next v2] net/packet: Fix a comment about
+ hard_header_len and headroom allocation
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200914074154.1255716-1-xie.he.0141@gmail.com>
+References: <20200914074154.1255716-1-xie.he.0141@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 27.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Mon, 14 Sep 2020 13:18:10 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Xie He <xie.he.0141@gmail.com>
+Date: Mon, 14 Sep 2020 00:41:54 -0700
 
---BOKacYhQ+x31HxR3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> This comment is outdated and no longer reflects the actual implementation
+> of af_packet.c.
+> 
+> Reasons for the new comment:
+> 
+> 1.
+> 
+> In af_packet.c, the function packet_snd first reserves a headroom of
+> length (dev->hard_header_len + dev->needed_headroom).
+> Then if the socket is a SOCK_DGRAM socket, it calls dev_hard_header,
+> which calls dev->header_ops->create, to create the link layer header.
+> If the socket is a SOCK_RAW socket, it "un-reserves" a headroom of
+> length (dev->hard_header_len), and checks if the user has provided a
+> header sized between (dev->min_header_len) and (dev->hard_header_len)
+> (in dev_validate_header).
+> This shows the developers of af_packet.c expect hard_header_len to
+> be consistent with header_ops.
+> 
+> 2.
+> 
+> In af_packet.c, the function packet_sendmsg_spkt has a FIXME comment.
+> That comment states that prepending an LL header internally in a driver
+> is considered a bug. I believe this bug can be fixed by setting
+> hard_header_len to 0, making the internal header completely invisible
+> to af_packet.c (and requesting the headroom in needed_headroom instead).
+> 
+> 3.
+> 
+> There is a commit for a WiFi driver:
+> commit 9454f7a895b8 ("mwifiex: set needed_headroom, not hard_header_len")
+> According to the discussion about it at:
+>   https://patchwork.kernel.org/patch/11407493/
+> The author tried to set the WiFi driver's hard_header_len to the Ethernet
+> header length, and request additional header space internally needed by
+> setting needed_headroom.
+> This means this usage is already adopted by driver developers.
+> 
+> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> Cc: Brian Norris <briannorris@chromium.org>
+> Cc: Cong Wang <xiyou.wangcong@gmail.com>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
 
-Hi!
-
-> I have been thinking about another way to implement ABI for HW control
-> of ethernet PHY connected LEDs.
->=20
-> This proposal is inspired by the fact that for some time there is a
-> movement in the kernel to do transparent HW offloading of things (DSA
-> is an example of that).
-
-And it is good proposal.
-
-> So currently we have the `netdev` trigger. When this is enabled for a
-> LED, new files will appear in that LED's sysfs directory:
->   - `device_name` where user is supposed to write interface name
->   - `link` if set to 1, the LED will be ON if the interface is linked
->   - `rx` if set to 1, the LED will blink on receive event
->   - `tx` if set to 1, the LED will blink on transmit event
->   - `interval` specifies duration of the LED blink
->=20
-> Now what is interesting is that almost all combinations of link/rx/tx
-> settings are offloadable to a Marvell PHY! (Not to all LEDs, though...)
->=20
-> So what if we abandoned the idea of a `hw` trigger, and instead just
-> allowed a LED trigger to be offloadable, if that specific LED supports
-> it?
->=20
-> For the HW mode for different speed we can just expand the `link` sysfs
-> file ABI, so that if user writes a specific speed to this file, instead
-> of just "1", the LED will be on if the interface is linked on that
-> specific speed. Or maybe another sysfs file could be used for "light on
-> N mbps" setting...
->=20
-> Afterwards we can figure out other possible modes.
->=20
-> What do you think?
-
-If this can be implemented (and it probably can) it is the best
-solution :-).
-
-Best regards,
-								Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---BOKacYhQ+x31HxR3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX1/SzgAKCRAw5/Bqldv6
-8nyOAKCXZm+yb0nWq0MRdfDiltwvT2EfXACgrPumGW+HW9kr2bppVAtd5dXx9Ro=
-=G7da
------END PGP SIGNATURE-----
-
---BOKacYhQ+x31HxR3--
+Applied, thank you.
