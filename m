@@ -2,118 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1D8A269285
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:07:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A76722692C9
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:15:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726327AbgINRHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 13:07:06 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:38002 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbgINRGw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 13:06:52 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 08EH6iPd083926;
-        Mon, 14 Sep 2020 12:06:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1600103204;
-        bh=OI3rXEytyA6cQx9GiVIdGTXwSm9ptrA7LUk5jvSk3Ac=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=QqbboWGCcFLaJiAKe1oW4eUUwuSy2JIO17ZwiqyIEVpmPciLQ0H1ync6evWtgnyRD
-         nYnCNy2ij1w5utFuh5gbK1HMSv1/QvgPqo/qtxYoEZQSe08tgFWwU0d9QB1Ry6cs8B
-         6oudcR1eAXjAZlqfqA1ledC3JqT/Re0NFusvqClE=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 08EH6ihM091304
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 14 Sep 2020 12:06:44 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 14
- Sep 2020 12:06:44 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 14 Sep 2020 12:06:44 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 08EH6ihS003092;
-        Mon, 14 Sep 2020 12:06:44 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <mkubecek@suse.cz>
-CC:     <netdev@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH 1/1] ethtool: Add 100BaseFX half and full duplex link modes
-Date:   Mon, 14 Sep 2020 12:06:38 -0500
-Message-ID: <20200914170638.22451-2-dmurphy@ti.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20200914170638.22451-1-dmurphy@ti.com>
-References: <20200914170638.22451-1-dmurphy@ti.com>
+        id S1726034AbgINRP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 13:15:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38006 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726318AbgINROx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 13:14:53 -0400
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0617221D24;
+        Mon, 14 Sep 2020 17:14:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600103691;
+        bh=02SbxKIr3dMWkZCWBqDjkKRmsxMV0OYLMK0dr9s2HLM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Uu36q4pwCpacQ+TO3asDMrxncR0YhLqXdpvHjKcBkLa+7q1NtKzNSDAEAkDbMzlJI
+         9zmgVDirYYxMhEHMztOx2eogEldrTa2pubBfv6E9Hg9+Cm2G6AbbMUcaB6kR8GuutU
+         szKkwLd2pNprHOTMS4M/Bmsa1Bdf8sp2c8EezolM=
+Received: by mail-lj1-f175.google.com with SMTP id a15so364070ljk.2;
+        Mon, 14 Sep 2020 10:14:50 -0700 (PDT)
+X-Gm-Message-State: AOAM532LJg3s07gNOlwCDC71mvFNQ0JLusIr/iM2Z6HqtAMO3GnFDkGj
+        KSpCERo8elpFNKaCPCVP8OtVySeR/FpiBNwht6Y=
+X-Google-Smtp-Source: ABdhPJzB/5zaCbKyxwA0yt2omEGyZB1tttREySL+28tNZuyMaxDtplU+W6jPSxNmDmHyp133PeR3NPA5MxELATO8DLk=
+X-Received: by 2002:a2e:b0d6:: with SMTP id g22mr4918867ljl.350.1600103689257;
+ Mon, 14 Sep 2020 10:14:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20200910075609.7904-1-bjorn.topel@gmail.com> <f83087dfb41043648825c382ce6efa61@intel.com>
+In-Reply-To: <f83087dfb41043648825c382ce6efa61@intel.com>
+From:   Song Liu <song@kernel.org>
+Date:   Mon, 14 Sep 2020 10:14:38 -0700
+X-Gmail-Original-Message-ID: <CAPhsuW7nhHV=SzgeW3fxQ0t=ciKczJLbouarYVSJP=oS6j6WbA@mail.gmail.com>
+Message-ID: <CAPhsuW7nhHV=SzgeW3fxQ0t=ciKczJLbouarYVSJP=oS6j6WbA@mail.gmail.com>
+Subject: Re: [PATCH bpf] xsk: fix number of pinned pages/umem size discrepancy
+To:     "Loftus, Ciara" <ciara.loftus@intel.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "Topel, Bjorn" <bjorn.topel@intel.com>,
+        "maximmi@nvidia.com" <maximmi@nvidia.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kernel can now indicate if the PHY supports operating over a
-fiber cable at 100Mbps either Full or Half duplex.
+On Thu, Sep 10, 2020 at 2:29 AM Loftus, Ciara <ciara.loftus@intel.com> wrot=
+e:
+>
+> >
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >
+> > For AF_XDP sockets, there was a discrepancy between the number of of
+> > pinned pages and the size of the umem region.
+> >
+> > The size of the umem region is used to validate the AF_XDP descriptor
+> > addresses. The logic that pinned the pages covered by the region only
+> > took whole pages into consideration, creating a mismatch between the
+> > size and pinned pages. A user could then pass AF_XDP addresses outside
+> > the range of pinned pages, but still within the size of the region,
+> > crashing the kernel.
+> >
+> > This change correctly calculates the number of pages to be
+> > pinned. Further, the size check for the aligned mode is
+> > simplified. Now the code simply checks if the size is divisible by the
+> > chunk size.
+> >
+> > Fixes: bbff2f321a86 ("xsk: new descriptor addressing scheme")
+> > Reported-by: Ciara Loftus <ciara.loftus@intel.com>
+> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> Thanks for the patch Bj=C3=B6rn.
+>
+> Tested-by: Ciara Loftus <ciara.loftus@intel.com>
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- ethtool.c            | 6 ++++++
- netlink/settings.c   | 2 ++
- uapi/linux/ethtool.h | 2 ++
- 3 files changed, 10 insertions(+)
-
-diff --git a/ethtool.c b/ethtool.c
-index 606af3e6b48f..84ad21467206 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -443,6 +443,8 @@ static void init_global_link_mode_masks(void)
- 		ETHTOOL_LINK_MODE_200000baseCR4_Full_BIT,
- 		ETHTOOL_LINK_MODE_100baseT1_Full_BIT,
- 		ETHTOOL_LINK_MODE_1000baseT1_Full_BIT,
-+		ETHTOOL_LINK_MODE_100baseFX_Half_BIT,
-+		ETHTOOL_LINK_MODE_100baseFX_Full_BIT,
- 	};
- 	static const enum ethtool_link_mode_bit_indices
- 		additional_advertised_flags_bits[] = {
-@@ -639,6 +641,10 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
- 		  "200000baseDR4/Full" },
- 		{ 0, ETHTOOL_LINK_MODE_200000baseCR4_Full_BIT,
- 		  "200000baseCR4/Full" },
-+		{ 0, ETHTOOL_LINK_MODE_100baseFX_Half_BIT,
-+		  "100baseFx/Half" },
-+		{ 1, ETHTOOL_LINK_MODE_100baseFX_Full_BIT,
-+		  "100baseFx/Full" },
- 	};
- 	int indent;
- 	int did1, new_line_pend;
-diff --git a/netlink/settings.c b/netlink/settings.c
-index 935724e799da..a11c85756ca6 100644
---- a/netlink/settings.c
-+++ b/netlink/settings.c
-@@ -147,6 +147,8 @@ static const struct link_mode_info link_modes[] = {
- 	[ETHTOOL_LINK_MODE_400000baseDR8_Full_BIT]	= __REAL(400000),
- 	[ETHTOOL_LINK_MODE_400000baseCR8_Full_BIT]	= __REAL(400000),
- 	[ETHTOOL_LINK_MODE_FEC_LLRS_BIT]		= __SPECIAL(FEC),
-+	[ETHTOOL_LINK_MODE_100baseFX_Half_BIT]		= __HALF_DUPLEX(100),
-+	[ETHTOOL_LINK_MODE_100baseFX_Full_BIT]		= __REAL(100),
- };
- const unsigned int link_modes_count = ARRAY_SIZE(link_modes);
- 
-diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
-index a1cfbe2ef40f..5c58555fecb4 100644
---- a/uapi/linux/ethtool.h
-+++ b/uapi/linux/ethtool.h
-@@ -1598,6 +1598,8 @@ enum ethtool_link_mode_bit_indices {
- 	ETHTOOL_LINK_MODE_400000baseDR8_Full_BIT	 = 72,
- 	ETHTOOL_LINK_MODE_400000baseCR8_Full_BIT	 = 73,
- 	ETHTOOL_LINK_MODE_FEC_LLRS_BIT			 = 74,
-+	ETHTOOL_LINK_MODE_100baseFX_Half_BIT		 = 90,
-+	ETHTOOL_LINK_MODE_100baseFX_Full_BIT		 = 91,
- 	/* must be last entry */
- 	__ETHTOOL_LINK_MODE_MASK_NBITS
- };
--- 
-2.28.0
-
+Acked-by: Song Liu <songliubraving@fb.com>
