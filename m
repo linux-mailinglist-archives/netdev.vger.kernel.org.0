@@ -2,93 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73F40268FCF
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 17:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF12B269009
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 17:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726360AbgINP1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 11:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725992AbgINP0o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 11:26:44 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE965C06174A;
-        Mon, 14 Sep 2020 08:26:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=7O2Rc307Jq8KkaDn7zbVItvtt/ecHc/too3yP9zxMNw=; b=M80c+D3BqJySppi+H3eNYCcnH/
-        gkfi1LX5tkOxqiYr7vGlDhimfScWmyFoD4H7IZc29yxj59fxiZw4CTf73qE/Frs6kv2D1VP9Z0cDk
-        mxHwC6y23VXZp0GWVeuCJj/TuYsYfRbshYeLxTfn4NkxNbZt/mCYZDG48aAzhZnPSD26Tjx+8/mwu
-        2BX9yzKsoQKr11uV/Bwnigc9od3UdV8s2rG69+T+l2QU+9l3XPVzWYgBbLqR3TeV+3H8nv+hHYZRQ
-        AbZDHlAxP767K2OWIVLYATsG32mlziFsc93sPs4pmGxH1oa7RFwa/hq19KGZWcLA7yuKXtQ9v35Ul
-        oAwe3FdQ==;
-Received: from willy by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kHqN0-0004bK-27; Mon, 14 Sep 2020 15:26:18 +0000
-Date:   Mon, 14 Sep 2020 16:26:17 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
-        alsa-devel@alsa-project.org
-Subject: Re: a saner API for allocating DMA addressable pages v2
-Message-ID: <20200914152617.GR6583@casper.infradead.org>
-References: <20200914144433.1622958-1-hch@lst.de>
+        id S1726125AbgINPeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 11:34:12 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:52594 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726438AbgINPdE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 11:33:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600097582;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DHjreWUBqPVhQCuDlHLghJCXj4TprCUtbQO3T18RwAc=;
+        b=ch8CSggNyh5nImkQqE3TMXRSqVbZLYa1hYB0pmwCMtkbbM3ei+ywFtJI8Vs3JQQMct7nAt
+        WEKonS9ihPX4d5j3ULK2dsaL0jGKegIhuH/GfFhtZgpSExUU/5geHbL/rdAeG8Gl9eiP2B
+        +KlBoZeR8dvSg7jW46n7QspbEh8MIgg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-473-W2XVQaOOPI-GjLDnz0zKgg-1; Mon, 14 Sep 2020 11:31:25 -0400
+X-MC-Unique: W2XVQaOOPI-GjLDnz0zKgg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0727B18C9F4D;
+        Mon, 14 Sep 2020 15:31:09 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-113-6.rdu2.redhat.com [10.10.113.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C68381F41;
+        Mon, 14 Sep 2020 15:31:08 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net-next 3/5] rxrpc: Fix rxrpc_bundle::alloc_error to be
+ signed
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 14 Sep 2020 16:31:07 +0100
+Message-ID: <160009746742.1014072.15836712415506346429.stgit@warthog.procyon.org.uk>
+In-Reply-To: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
+References: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200914144433.1622958-1-hch@lst.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 04:44:16PM +0200, Christoph Hellwig wrote:
-> I'm still a little unsure about the API naming, as alloc_pages sort of
-> implies a struct page return value, but we return a kernel virtual
-> address.
+The alloc_error field in the rxrpc_bundle struct should be signed as it has
+negative error codes assigned to it.  Checks directly on it may then fail,
+and may produce a warning like this:
 
-Erm ... dma_alloc_pages() returns a struct page, so is this sentence
-stale?
+	net/rxrpc/conn_client.c:662 rxrpc_wait_for_channel()
+	warn: 'bundle->alloc_error' is unsigned
 
-From patch 14:
+Fixes: 245500d853e9 ("rxrpc: Rewrite the client connection manager")
+Reported-by Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+---
 
-+struct page *dma_alloc_pages(struct device *dev, size_t size,
-+               dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp);
+ net/rxrpc/ar-internal.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> The other alternative would be to name the API
-> dma_alloc_noncoherent, but the whole non-coherent naming seems to put
-> people off.
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index cd5a80b34738..19f714386654 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -395,7 +395,7 @@ struct rxrpc_bundle {
+ 	unsigned int		debug_id;
+ 	bool			try_upgrade;	/* True if the bundle is attempting upgrade */
+ 	bool			alloc_conn;	/* True if someone's getting a conn */
+-	unsigned short		alloc_error;	/* Error from last conn allocation */
++	short			alloc_error;	/* Error from last conn allocation */
+ 	spinlock_t		channel_lock;
+ 	struct rb_node		local_node;	/* Node in local->client_conns */
+ 	struct list_head	waiting_calls;	/* Calls waiting for channels */
 
-You say that like it's a bad thing.  I think the problem is more that
-people don't understand what non-coherent means and think they're
-supporting it when they're not.
-
-dma_alloc_manual_flushing()?
-
-> As a follow up I plan to move the implementation of the
-> DMA_ATTR_NO_KERNEL_MAPPING flag over to this framework as well, given
-> that is also is a fundamentally non coherent allocation.  The replacement
-> for that flag would then return a struct page, as it is allowed to
-> actually return pages without a kernel mapping as the name suggested
-> (although most of the time they will actually have a kernel mapping..)
-
-If the page doesn't have a kernel mapping, shouldn't it return a PFN
-or a phys_addr?
 
