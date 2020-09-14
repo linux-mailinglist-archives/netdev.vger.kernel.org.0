@@ -2,62 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5463526936B
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:32:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC33D269372
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:33:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726056AbgINRcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 13:32:01 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33898 "EHLO vps0.lunn.ch"
+        id S1726310AbgINRc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 13:32:58 -0400
+Received: from mga09.intel.com ([134.134.136.24]:61353 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726293AbgINR2e (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 13:28:34 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kHsHF-00Edsl-SB; Mon, 14 Sep 2020 19:28:29 +0200
-Date:   Mon, 14 Sep 2020 19:28:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, mkubecek@suse.cz,
-        michael.chan@broadcom.com, tariqt@nvidia.com, saeedm@nvidia.com,
-        alexander.duyck@gmail.com
-Subject: Re: [PATCH net-next v2 0/8] ethtool: add pause frame stats
-Message-ID: <20200914172829.GC3485708@lunn.ch>
-References: <20200911232853.1072362-1-kuba@kernel.org>
- <20200911234932.ncrmapwpqjnphdv5@skbuf>
- <20200911170724.4b1619d4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200912001542.fqn2hcp35xkwqoun@skbuf>
- <20200911174246.76466eec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200912071612.cq7adzzxxgpcauux@skbuf>
- <20200914091518.0bcf0d58@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726239AbgINRci (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 13:32:38 -0400
+IronPort-SDR: 6cakbeBw9izHUeRGP819DgQkn9958vIZNJ+jB0T0RFkBpsqVDKBU9e2faXDtvXKize8TK7Wv+b
+ LAAo/6qTpM5Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9744"; a="160056110"
+X-IronPort-AV: E=Sophos;i="5.76,426,1592895600"; 
+   d="scan'208";a="160056110"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2020 10:32:31 -0700
+IronPort-SDR: vCgNck1gV4po1b8ZlTzcAOwUDgBHLhgcUCSDTSCES9oA7WrNpMy+9DuPWS5P49yegjxp5INWDU
+ h/1yHvsTSBUw==
+X-IronPort-AV: E=Sophos;i="5.76,426,1592895600"; 
+   d="scan'208";a="319137308"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2020 10:32:31 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        jeffrey.t.kirsher@intel.com
+Subject: [net-next v2 0/5][pull request] 40GbE Intel Wired LAN Driver Updates 2020-09-14
+Date:   Mon, 14 Sep 2020 10:32:19 -0700
+Message-Id: <20200914173224.692707-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200914091518.0bcf0d58@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 09:15:18AM -0700, Jakub Kicinski wrote:
-> On Sat, 12 Sep 2020 10:16:12 +0300 Vladimir Oltean wrote:
-> I never used a DSA device. But I was under the impression they were
-> supposed to be modeled like separate NICs..
+This series contains updates to i40e driver only.
 
-The front panel ports are. However there are other types of ports as
-well. You have at least one port of the switch connected to the SoC,
-so the SoC can send/receive frames. This is the so called CPU port of
-the switch. And Marvell switches support connecting switch ports
-together to form a cluster of switches. These are the so called DSA
-ports of the switch. Neither CPU nor DSA ports have a netdev, since
-they are internal plumbing.
+Li RongQing removes binding affinity mask to a fixed CPU and sets
+prefetch of Rx buffer page to occur conditionally.
 
-> Stats on the "CPU port" should be symmetrical with the CPU MAC.
+Björn provides AF_XDP performance improvements by not prefetching HW
+descriptors, using 16 byte descriptors, and moving buffer allocation
+out of Rx processing loop.
 
-If things are working as expected. But pause is configurable per
-MAC. It could be one end has been configured to asym pause, and the
-other to pause. It could be one end is configured to asym pause, and
-the other end is failing to autoneg, etc. Just seeing that the stats
-are significantly different is a good clue something is up.
+v2: Define prefetch_page_address in a common header for patch 2.
+Dropped, previous, patch 5 as it is being reworked to be more
+generalized.
 
-    Andrew
+The following are changes since commit e059c6f340f6fccadd3db9993f06d4cc51305804:
+  tulip: switch from 'pci_' to 'dma_' API
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
+
+Björn Töpel (3):
+  i40e, xsk: remove HW descriptor prefetch in AF_XDP path
+  i40e: use 16B HW descriptors instead of 32B
+  i40e, xsk: move buffer allocation out of the Rx processing loop
+
+Li RongQing (2):
+  i40e: not compute affinity_mask for IRQ
+  i40e: optimise prefetch page refcount
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |  2 +-
+ .../net/ethernet/intel/i40e/i40e_debugfs.c    | 10 ++++----
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 16 ++++---------
+ drivers/net/ethernet/intel/i40e/i40e_trace.h  |  6 ++---
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 21 ++++++++++++----
+ drivers/net/ethernet/intel/i40e/i40e_txrx.h   |  2 +-
+ .../ethernet/intel/i40e/i40e_txrx_common.h    | 13 ----------
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |  5 +++-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 24 ++++++++++++-------
+ include/linux/prefetch.h                      |  8 +++++++
+ 10 files changed, 59 insertions(+), 48 deletions(-)
+
+-- 
+2.26.2
+
