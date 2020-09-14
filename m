@@ -2,62 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FB022685F6
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:32:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B43F92685FC
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:32:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726162AbgINHb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 03:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
+        id S1726173AbgINHcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 03:32:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726143AbgINHbm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:31:42 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE3CC06174A;
-        Mon, 14 Sep 2020 00:31:42 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id t14so10812080pgl.10;
-        Mon, 14 Sep 2020 00:31:42 -0700 (PDT)
+        with ESMTP id S1726155AbgINHbq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:31:46 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC10C06174A;
+        Mon, 14 Sep 2020 00:31:46 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id s14so831585pju.1;
+        Mon, 14 Sep 2020 00:31:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KL7w+c0/QzBqZxa4PuZvixOgYFy6Q1ksga1wZFj49Gw=;
-        b=mRF56UAhuY6HklKPGyQcAHTCRt8j/ZNoAfrX0y4zRUjwSuUwBA7+GDi97p5z08pwUk
-         JxFvogTRccJ/bwpUJvWnlHr/l3f9XLsiJtpJyStJEfrgmmwJL0SXI7lEzDm5XSzRXDkG
-         2xK8boKj9p8F9jZTWK5h/bBjvyXseLVmDfKaLcwRJPShTsrA2RDyeWUHPfpwWWth+BgF
-         seElpTgyrGLV96iUxZE5aX9IUNyuhlglCwOXYle43YmlpUZRKo2VtBIYeLGm1xFu2ARt
-         EiS1xgdlT6y+hqVKRf4fKzUwxLffpxKDUjJJNuxUOuQ7WeislYY9tqVyflgo6XRxg2Ok
-         xUSg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=otmLPGw1Sp2M+tYoijrVhQVfizYDf0d88yKEsD5YvR8=;
+        b=vOez9tpWBd7BsqyZI9fqFgdoWpoWFJYFRehPaWpHXeOlN+Cs/58Jop0XdOEPKKSFDZ
+         Qm/M12lkve0L1QKsozomktRpeGUW2rP8hs2+pFh5UbMlF7vs2AhetNVS4Hjd+JpiIefJ
+         edbOdo8Pb04gWefw7Nw0w8sr7fuwkJbRuiyXlBFY9qJQNxyMrbzubtw6YJaI3JeR7fZX
+         XjLJJYhpbBo2kjzCdpxY4k4YdVpy8gs1tRGzfAdZYFxXdgnvxNa8oBVbLY707BMRYf7k
+         uAIgJ9LCPDvLjz6Bk3wzy+V76aonA48V89EKPmhl6fiecKYyxm0d9j9GzjC68ajSSJQd
+         Uc2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KL7w+c0/QzBqZxa4PuZvixOgYFy6Q1ksga1wZFj49Gw=;
-        b=hQ94DK9IC/CwEcQDn0DjXKauePDULmMZG+bcX1lnLAe85DAZ9utd0kcRqsFYQH8AVc
-         L1S1A2ZBTiLMs/Jm5p1Vd3lyU4aRGPhqzNTFwPjfF1SaVjmv+xBSK2usG2bQtq7rkSNv
-         duxN2GHhLtP0MmbGWWNu6fj09OqjQtTnHy0G53PlqMOUMqFQWrPT0G4ADK9FV1PzUb3M
-         kf/S+liUjcLNdAOBWw7/6P8ORkC4b8qY9yaZAYzU5eIbGAMtYhJRVGLHbjXJ4jBT2VjI
-         coomQNQsLHGiGeAavcAoQAjTLNqdVv+4He9+UYNiD6+CYYUBf4vc19TuEykVaTs1B0AS
-         hw8Q==
-X-Gm-Message-State: AOAM531+/MoYXnMrxK/J16lgRwW09O97VFi5DwbP1WCvwOyvN/C374Wt
-        cGJ89ZywxRHOrMTX7CXTKlI=
-X-Google-Smtp-Source: ABdhPJx4cGqYeqDRpl4zzCjFSXPxdGg8i0k9FfFRJ39DfWhh6Ev0FjPxYYt/tNCE6CUloWvB9Q3sjg==
-X-Received: by 2002:a17:902:8c8c:b029:d1:cc21:9056 with SMTP id t12-20020a1709028c8cb02900d1cc219056mr2014633plo.22.1600068701932;
-        Mon, 14 Sep 2020 00:31:41 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=otmLPGw1Sp2M+tYoijrVhQVfizYDf0d88yKEsD5YvR8=;
+        b=cG0FB95YqN8tu4JsMwoI+jx7RTn1Aa62Zo9joKdVNy4UMI7Pe+S2QjXa03AJclNJhq
+         uZ14ZazCcra9FQ8xmm2c8EHjtugLFNDKpe0cQpgdGsJ3q8VjHfA11IB+AAKgv/oqNQgJ
+         8qDFLidOLtG9WHGvUgrTTREAE1obOyPyp92OEmJ2VCfZJwQMoiuTN1tZsMwfI27A8tWZ
+         KRGV1QqvMFchOhvnDUhkjz1pTm5x8jW7h63Uvm03Q4pJEi8KQLRAoRMaCoT2F6B0CJeb
+         1VUOtKdV8RqALKY7kXlGd15vxmpnprvU+j1PPN7Rs75n5z8nUWIypCpUJCvCy6mOOmQL
+         XeFQ==
+X-Gm-Message-State: AOAM533GhDBMWfeB185gZjiyXTvk9RolbA+vRfKgFlUyp5uEzwJ4K7Cv
+        tEv90nsc2I2W+JhuSU6E4T832b6D2+Seyg==
+X-Google-Smtp-Source: ABdhPJxWhHA2jm5Cs7lHsXstYe6OOIWBdmtfMeMVuJMmy4KXP5l0ub2bzRf3/oBS3LeA7iwlwY67Tg==
+X-Received: by 2002:a17:90a:d18b:: with SMTP id fu11mr12439499pjb.203.1600068705972;
+        Mon, 14 Sep 2020 00:31:45 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.192.250])
-        by smtp.gmail.com with ESMTPSA id o1sm9128626pfg.83.2020.09.14.00.31.38
+        by smtp.gmail.com with ESMTPSA id o1sm9128626pfg.83.2020.09.14.00.31.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Sep 2020 00:31:41 -0700 (PDT)
+        Mon, 14 Sep 2020 00:31:45 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     m.grzeschik@pengutronix.de, kuba@kernel.org, paulus@samba.org,
         oliver@neukum.org, woojung.huh@microchip.com,
         UNGLinuxDriver@microchip.com, petkan@nucleusys.com,
         netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-ppp@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>
-Subject: [RESEND net-next v2 00/12]drivers: net: convert tasklets to use new tasklet_setup() API
-Date:   Mon, 14 Sep 2020 13:01:19 +0530
-Message-Id: <20200914073131.803374-1-allen.lkml@gmail.com>
+        linux-ppp@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
+        Romain Perier <romain.perier@gmail.com>
+Subject: [RESEND net-next v2 01/12] net: mvpp2: Prepare to use the new tasklet API
+Date:   Mon, 14 Sep 2020 13:01:20 +0530
+Message-Id: <20200914073131.803374-2-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200914073131.803374-1-allen.lkml@gmail.com>
+References: <20200914073131.803374-1-allen.lkml@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -67,42 +70,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Allen Pais <apais@linux.microsoft.com>
 
-ommit 12cc923f1ccc ("tasklet: Introduce new initialization API")'
-introduced a new tasklet initialization API. This series converts
-all the net/* drivers to use the new tasklet_setup() API
+The future tasklet API will no longer allow to pass an arbitrary
+"unsigned long" data parameter. The tasklet data structure will need to
+be embedded into a data structure that will be retrieved from the tasklet
+handler. Currently, there are no ways to retrieve the "struct mvpp2_port
+*" from a given "struct mvpp2_port_pcpu *". This commit adds a new field
+to get the address of the main port for each pcpu context.
 
-This series is based on v5.9-rc5
+Signed-off-by: Romain Perier <romain.perier@gmail.com>
+Signed-off-by: Allen Pais <apais@linux.microsoft.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 1 +
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-Allen Pais (12):
-  net: mvpp2: Prepare to use the new tasklet API
-  net: arcnet: convert tasklets to use new tasklet_setup() API
-  net: caif: convert tasklets to use new tasklet_setup() API
-  net: ifb: convert tasklets to use new tasklet_setup() API
-  net: ppp: convert tasklets to use new tasklet_setup() API
-  net: cdc_ncm: convert tasklets to use new tasklet_setup() API
-  net: hso: convert tasklets to use new tasklet_setup() API
-  net: lan78xx: convert tasklets to use new tasklet_setup() API
-  net: pegasus: convert tasklets to use new tasklet_setup() API
-  net: r8152: convert tasklets to use new tasklet_setup() API
-  net: rtl8150: convert tasklets to use new tasklet_setup() API
-  net: usbnet: convert tasklets to use new tasklet_setup() API
-
- drivers/net/arcnet/arcnet.c                     |  7 +++----
- drivers/net/caif/caif_virtio.c                  |  8 +++-----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  1 +
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |  1 +
- drivers/net/ifb.c                               |  7 +++----
- drivers/net/ppp/ppp_async.c                     |  8 ++++----
- drivers/net/ppp/ppp_synctty.c                   |  8 ++++----
- drivers/net/usb/cdc_ncm.c                       |  8 ++++----
- drivers/net/usb/hso.c                           | 10 +++++-----
- drivers/net/usb/lan78xx.c                       |  6 +++---
- drivers/net/usb/pegasus.c                       |  6 +++---
- drivers/net/usb/r8152.c                         |  8 +++-----
- drivers/net/usb/rtl8150.c                       |  6 +++---
- drivers/net/usb/usbnet.c                        |  3 +--
- 14 files changed, 41 insertions(+), 46 deletions(-)
-
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index 32753cc771bf..198860a4527d 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -861,6 +861,7 @@ struct mvpp2_port_pcpu {
+ 	struct hrtimer tx_done_timer;
+ 	struct net_device *dev;
+ 	bool timer_scheduled;
++	struct mvpp2_port *port;
+ };
+ 
+ struct mvpp2_queue_vector {
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 6e140d1b8967..e8e68e8acdb3 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -6025,6 +6025,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+ 		err = -ENOMEM;
+ 		goto err_free_txq_pcpu;
+ 	}
++	port->pcpu->port = port;
+ 
+ 	if (!port->has_tx_irqs) {
+ 		for (thread = 0; thread < priv->nthreads; thread++) {
 -- 
 2.25.1
 
