@@ -2,172 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76DDF2691E1
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C59E2691C9
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 18:39:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726356AbgINQmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 12:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44762 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726172AbgINPNb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 11:13:31 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226CBC06174A;
-        Mon, 14 Sep 2020 08:13:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=RqQGv7rUrofRqLyMSzfEtcHVgVUslC8cDoNR577KrIg=; b=dP3pKRmpC+I0E+dOSbraRXJ35X
-        3haQwB40uPuLpGR5zn67wQbMCYeYUDIDCnlsB5tNCLi9vaoDWIjbKg2ty0ncKAbUYHiAWQ1Gwe4T2
-        /L1d3ii2rUMCke8WZymWHb2tl/HocPOnGFPqgOwVy0kntsQ5+2r+a5DBRhRIc7Qwt5AhJHft+rUwc
-        cUuL4BH3aNOU3nrCkiiuv/cztMGgjnYHVBqE36sUV2hPE4iUig7eK9l316jWvenjHMhEIQ2Nevj2v
-        NzaWOE2Dnmj9Uqr/OYUKSLadMvLX2JkZjrKxFODSeBkgfvxBjLKXD/2ClVZgj/x7V7GdULKR4vyHX
-        B3N9jL+g==;
-Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92] helo=localhost)
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kHqAB-0003UL-04; Mon, 14 Sep 2020 15:13:03 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        iommu@lists.linux-foundation.org
-Cc:     Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        linux1394-devel@lists.sourceforge.net, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-mm@kvack.org,
-        alsa-devel@alsa-project.org
-Subject: [PATCH 12/17] 53c700: convert to dma_alloc_noncoherent
-Date:   Mon, 14 Sep 2020 16:44:28 +0200
-Message-Id: <20200914144433.1622958-13-hch@lst.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200914144433.1622958-1-hch@lst.de>
-References: <20200914144433.1622958-1-hch@lst.de>
+        id S1726367AbgINPbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 11:31:50 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20678 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726294AbgINPbL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 11:31:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600097470;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=dMweHEZbFa5g/pRD+e4Ve63LcmOnunvsiH2Q7fDvBJM=;
+        b=f1/hPMSyLp9gSRXKKt3toQ2GH/8rJAx2Fi29ywvQ7tYcqe8fPOoyU3nl4pF/Krypdn1ONt
+        g76bztuIxWxg2Sy68VTfL4EzLtjJtQ0uQWroiI3Ajhl/rfzWGGUD/RaoOmTrocrH/yI06s
+        rPWw5LWg3uiDdtr3dZ6fVOZajOpWgio=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-379-Co38hbDPNs6TxDuuVECk7g-1; Mon, 14 Sep 2020 11:31:08 -0400
+X-MC-Unique: Co38hbDPNs6TxDuuVECk7g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 60FC81007B0B;
+        Mon, 14 Sep 2020 15:30:48 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-113-6.rdu2.redhat.com [10.10.113.6])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 896F37512A;
+        Mon, 14 Sep 2020 15:30:46 +0000 (UTC)
+Subject: [PATCH net-next 0/5] rxrpc: Fixes for the connection manager rewrite
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 14 Sep 2020 16:30:46 +0100
+Message-ID: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new non-coherent DMA API including proper ownership transfers.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Here are some fixes for the connection manager rewrite:
+
+ (1) Fix a goto to the wrong place in error handling.
+
+ (2) Fix a missing NULL pointer check.
+
+ (3) The stored allocation error needs to be stored signed.
+
+ (4) Fix a leak of connection bundle when clearing connections due to
+     net namespace exit.
+
+ (5) Fix an overget of the bundle when setting up a new client conn.
+
+The patches are tagged here:
+
+	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+	rxrpc-next-20200914
+
+and can also be found on this branch:
+
+	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-next
+
+David
 ---
- drivers/scsi/53c700.c | 11 +++++++++--
- drivers/scsi/53c700.h | 16 ++++++++--------
- 2 files changed, 17 insertions(+), 10 deletions(-)
+David Howells (5):
+      rxrpc: Fix an error goto in rxrpc_connect_call()
+      rxrpc: Fix a missing NULL-pointer check in a trace
+      rxrpc: Fix rxrpc_bundle::alloc_error to be signed
+      rxrpc: Fix conn bundle leak in net-namespace exit
+      rxrpc: Fix an overget of the conn bundle when setting up a client conn
 
-diff --git a/drivers/scsi/53c700.c b/drivers/scsi/53c700.c
-index 9a343f8ecb6c3e..5117d90ccd9edf 100644
---- a/drivers/scsi/53c700.c
-+++ b/drivers/scsi/53c700.c
-@@ -269,18 +269,25 @@ NCR_700_get_SXFER(struct scsi_device *SDp)
- 					      spi_period(SDp->sdev_target));
- }
- 
-+static inline dma_addr_t virt_to_dma(struct NCR_700_Host_Parameters *h, void *p)
-+{
-+	return h->pScript + ((uintptr_t)p - (uintptr_t)h->script);
-+}
-+
- static inline void dma_sync_to_dev(struct NCR_700_Host_Parameters *h,
- 		void *addr, size_t size)
- {
- 	if (h->noncoherent)
--		dma_cache_sync(h->dev, addr, size, DMA_TO_DEVICE);
-+		dma_sync_single_for_device(h->dev, virt_to_dma(h, addr),
-+					   size, DMA_BIDIRECTIONAL);
- }
- 
- static inline void dma_sync_from_dev(struct NCR_700_Host_Parameters *h,
- 		void *addr, size_t size)
- {
- 	if (h->noncoherent)
--		dma_cache_sync(h->dev, addr, size, DMA_FROM_DEVICE);
-+		dma_sync_single_for_device(h->dev, virt_to_dma(h, addr), size,
-+					   DMA_BIDIRECTIONAL);
- }
- 
- struct Scsi_Host *
-diff --git a/drivers/scsi/53c700.h b/drivers/scsi/53c700.h
-index 0f545b05fe611d..c9f8c497babb3d 100644
---- a/drivers/scsi/53c700.h
-+++ b/drivers/scsi/53c700.h
-@@ -423,33 +423,33 @@ struct NCR_700_Host_Parameters {
- #define NCR_710_MIN_XFERP	0
- #define NCR_700_MIN_PERIOD	25 /* for SDTR message, 100ns */
- 
--#define script_patch_32(dev, script, symbol, value) \
-+#define script_patch_32(h, script, symbol, value) \
- { \
- 	int i; \
- 	dma_addr_t da = value; \
- 	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32)); i++) { \
- 		__u32 val = bS_to_cpu((script)[A_##symbol##_used[i]]) + da; \
- 		(script)[A_##symbol##_used[i]] = bS_to_host(val); \
--		dma_sync_to_dev((dev), &(script)[A_##symbol##_used[i]], 4); \
-+		dma_sync_to_dev((h), &(script)[A_##symbol##_used[i]], 4); \
- 		DEBUG((" script, patching %s at %d to %pad\n", \
- 		       #symbol, A_##symbol##_used[i], &da)); \
- 	} \
- }
- 
--#define script_patch_32_abs(dev, script, symbol, value) \
-+#define script_patch_32_abs(h, script, symbol, value) \
- { \
- 	int i; \
- 	dma_addr_t da = value; \
- 	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32)); i++) { \
- 		(script)[A_##symbol##_used[i]] = bS_to_host(da); \
--		dma_sync_to_dev((dev), &(script)[A_##symbol##_used[i]], 4); \
-+		dma_sync_to_dev((h), &(script)[A_##symbol##_used[i]], 4); \
- 		DEBUG((" script, patching %s at %d to %pad\n", \
- 		       #symbol, A_##symbol##_used[i], &da)); \
- 	} \
- }
- 
- /* Used for patching the SCSI ID in the SELECT instruction */
--#define script_patch_ID(dev, script, symbol, value) \
-+#define script_patch_ID(h, script, symbol, value) \
- { \
- 	int i; \
- 	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32)); i++) { \
-@@ -457,13 +457,13 @@ struct NCR_700_Host_Parameters {
- 		val &= 0xff00ffff; \
- 		val |= ((value) & 0xff) << 16; \
- 		(script)[A_##symbol##_used[i]] = bS_to_host(val); \
--		dma_sync_to_dev((dev), &(script)[A_##symbol##_used[i]], 4); \
-+		dma_sync_to_dev((h), &(script)[A_##symbol##_used[i]], 4); \
- 		DEBUG((" script, patching ID field %s at %d to 0x%x\n", \
- 		       #symbol, A_##symbol##_used[i], val)); \
- 	} \
- }
- 
--#define script_patch_16(dev, script, symbol, value) \
-+#define script_patch_16(h, script, symbol, value) \
- { \
- 	int i; \
- 	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32)); i++) { \
-@@ -471,7 +471,7 @@ struct NCR_700_Host_Parameters {
- 		val &= 0xffff0000; \
- 		val |= ((value) & 0xffff); \
- 		(script)[A_##symbol##_used[i]] = bS_to_host(val); \
--		dma_sync_to_dev((dev), &(script)[A_##symbol##_used[i]], 4); \
-+		dma_sync_to_dev((h), &(script)[A_##symbol##_used[i]], 4); \
- 		DEBUG((" script, patching short field %s at %d to 0x%x\n", \
- 		       #symbol, A_##symbol##_used[i], val)); \
- 	} \
--- 
-2.28.0
+
+ include/trace/events/rxrpc.h | 2 +-
+ net/rxrpc/ar-internal.h      | 2 +-
+ net/rxrpc/conn_client.c      | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
 
