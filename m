@@ -2,58 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EADD269408
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:50:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B33A3269439
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 19:55:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbgINRtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 13:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40586 "EHLO
+        id S1726043AbgINRzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 13:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726189AbgINRsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 13:48:10 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE15CC06174A;
-        Mon, 14 Sep 2020 10:48:09 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id v54so591746qtj.7;
-        Mon, 14 Sep 2020 10:48:09 -0700 (PDT)
+        with ESMTP id S1725970AbgINRzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 13:55:22 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0523BC06174A
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:55:22 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id k15so552268wrn.10
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 10:55:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o4QoP2H/4Foo2ltH87doo80dVxctNT7kAfNaEVcg1eg=;
-        b=q3hAdXNeJLbn/VHK7vR/1FKykV4bz7/nMjPX3AkF/xTnsXDTVyXNCrUNIiBRg5UjIF
-         6mi3jrdlT44H0YhebDQkAx5xgML5bxl44KNqTf2QJx8inu5R7oLfS6+koj0w9Llg70JV
-         Xu3iU4Iwigw1d7Bh2gm1hUOHUTKfgrh61NiVI1Pf9yNJd8lf3z3tUDbKy8pGmnGhCEW3
-         N/ICuCvIYNI85lVHKDiU1YYGNwKgjtE3+vnh9it/AkzYIkulFRlph9z5Up/+PmsC2IaU
-         4Od8eer3spf7/+YRls0GqiQcIpVdHUDFv1VF8hfnGik+PbkfX0qHQIiqMq1q7Fw7Jb+D
-         3CdQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ElTPUcJchCYTclnWFUBApUOoz+YOl4EkZJsBh9Oqm7M=;
+        b=cuUAU+84+bcCRcYFw24CLpKHuNITQXf7p1urQVL6RK2/oJ82K5sGJ7v8hFQl8OLRzW
+         BpJ5DH1ife5I/JNXJXeJag5YfpeHRzta3aRoyoWgrxYpHfo3Bxh9Q1RdHFp767MxpMiN
+         kBgTYshqVFgh5dLQzQo00R9KpldmpYXljcrUx9bF5marV5dhEmtXDOdP06ailrdgGxN7
+         cCH3A+LIVosl9ceKMEf97poi7u4ALax9x1gN3UaYI5CxPpruirn0WDgdZduFgslniK0V
+         Y1ajWQwkeV9DWZLtvtizhbT7e2v3GsHQhj+HAOTjqB664Ibm4Hy2TcNd0c6hSFpigaDL
+         juvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o4QoP2H/4Foo2ltH87doo80dVxctNT7kAfNaEVcg1eg=;
-        b=tYlL6FyXCyfIOPig8tnFL3Z3fBv94qt9KUJmNqFl2Gpwp27F5lwWj8T0jUqtyCWAyu
-         n6Fhx0pC/lBsoIhGAsP8c8MYc+sDDrLtWE2m0BA7wmRi01ZcIY9n7nLypEnXento+QHT
-         WikgEuA7SAYWziD3YElzFM/X30TtuZ6W52bGBhQ9SCnF+nsht3f8/HtbVt8pfw18Rer+
-         Udxzdbze4pvN+61oU/gEIIfQBllnlBMURjh5MEhyvn8F+GFo9nJRzq/Z+AFRPuGS6b0S
-         y0TaABGJ1MrLM3QlfmdMK15Mlt/tHhi+AdAQJPAkW0v4ZGplnsQBDx5WtO5+y6ud8OMj
-         TCIw==
-X-Gm-Message-State: AOAM533b7FfgpAOR4RHIehOszEqthdrwquPvFI6IAhJ+1FKrjzEI4SHP
-        7g42ZTm5WWMzptGOjUaNEsojok6WAu/4EYlLcSM=
-X-Google-Smtp-Source: ABdhPJxh5GxP7zV2ugpdarY0VBvR0YuuxK5UNa0Om8U0VAZIza95/YyEZLiyNz4xSf/jZPHvMlgr1GPl2L8rJ59+B/k=
-X-Received: by 2002:ac8:b83:: with SMTP id h3mr14472830qti.113.1600105688936;
- Mon, 14 Sep 2020 10:48:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
- <20200914122042.GA24441@willie-the-truck> <20200914123504.GA124316@apalos.home>
- <20200914132350.GA126552@apalos.home> <20200914140114.GG24441@willie-the-truck>
- <20200914181234.0f1df8ba@carbon> <20200914170205.GA20549@apalos.home>
-In-Reply-To: <20200914170205.GA20549@apalos.home>
-From:   Xi Wang <xi.wang@gmail.com>
-Date:   Mon, 14 Sep 2020 10:47:33 -0700
-Message-ID: <CAKU6vyaxnzWVA=MPAuDwtu4UOTWS6s0cZOYQKVhQg5Mue7Wbww@mail.gmail.com>
-Subject: Re: [PATCH] arm64: bpf: Fix branch offset in JIT
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ElTPUcJchCYTclnWFUBApUOoz+YOl4EkZJsBh9Oqm7M=;
+        b=ZrVlIhj0DQbZPtaBfeIczyDiz10cb5JdpEphvFl6P2WIvYfIeRxcGfnWRZBs1yHV0l
+         GhPy6mIqHDp6Crzco83TGCOIuMqApdVdWAdjRFEeZZVziC1d6TQ04cAcQ7YH1yyfbBP2
+         yfKbsX8EHUIlyQbx08MMV5SERT9R0sY1ebLmXe01IPhYTniODQfzv7k2gONcU3MsNZ9J
+         P3FzxNOqDq0ig9qT/AKi7U0nfFtOw7Kt0tYAG8ALDFGD5/JoSf/dEQJqvxbjujWoEkkU
+         T6efnDFIHvH3eQIIJqtv//v5ww3NQ//1KtXOAg7HhSBTI5nI6jY1SSg/76AKt5PTs97G
+         RZ1g==
+X-Gm-Message-State: AOAM532KZGEoRpGk73JORTcKpanVxVkzQTglnWNvLAlzqNxEBBqCu2u+
+        7/Lqx4w7OXe+zYa7CqOlJ4K3qw==
+X-Google-Smtp-Source: ABdhPJz9ziJomH7g1dR+TzMKnxXTi2GW1hQ4O1t+pe18I3Wwg19+Ume2JlE/+x+dZr59Qo76NAwTfA==
+X-Received: by 2002:adf:e989:: with SMTP id h9mr18323596wrm.38.1600106120650;
+        Mon, 14 Sep 2020 10:55:20 -0700 (PDT)
+Received: from apalos.home (athedsl-246545.home.otenet.gr. [85.73.10.175])
+        by smtp.gmail.com with ESMTPSA id 189sm20952801wmb.3.2020.09.14.10.55.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Sep 2020 10:55:20 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 20:55:16 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Xi Wang <xi.wang@gmail.com>
 Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
         Will Deacon <will@kernel.org>, bpf@vger.kernel.org,
         ardb@kernel.org, naresh.kamboju@linaro.org,
@@ -74,19 +70,43 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
         netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH] arm64: bpf: Fix branch offset in JIT
+Message-ID: <20200914175516.GA21832@apalos.home>
+References: <20200914083622.116554-1-ilias.apalodimas@linaro.org>
+ <20200914122042.GA24441@willie-the-truck>
+ <20200914123504.GA124316@apalos.home>
+ <20200914132350.GA126552@apalos.home>
+ <20200914140114.GG24441@willie-the-truck>
+ <20200914181234.0f1df8ba@carbon>
+ <20200914170205.GA20549@apalos.home>
+ <CAKU6vyaxnzWVA=MPAuDwtu4UOTWS6s0cZOYQKVhQg5Mue7Wbww@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKU6vyaxnzWVA=MPAuDwtu4UOTWS6s0cZOYQKVhQg5Mue7Wbww@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 10:03 AM Ilias Apalodimas
-<ilias.apalodimas@linaro.org> wrote:
-> Naresh from Linaro reported it during his tests on 5.8-rc1 as well [1].
-> I've included both Jiri and him on the v2 as reporters.
->
-> [1] https://lkml.org/lkml/2020/8/11/58
+On Mon, Sep 14, 2020 at 10:47:33AM -0700, Xi Wang wrote:
+> On Mon, Sep 14, 2020 at 10:03 AM Ilias Apalodimas
+> <ilias.apalodimas@linaro.org> wrote:
+> > Naresh from Linaro reported it during his tests on 5.8-rc1 as well [1].
+> > I've included both Jiri and him on the v2 as reporters.
+> >
+> > [1] https://lkml.org/lkml/2020/8/11/58
+> 
+> I'm curious what you think of Luke's earlier patch to this bug:
 
-I'm curious what you think of Luke's earlier patch to this bug:
+We've briefly discussed this approach with Yauheni while coming up with the 
+posted patch.
+I think that contructing the array correctly in the first place is better. 
+Right now it might only be used in bpf2a64_offset() and bpf_prog_fill_jited_linfo()
+but if we fixup the values on the fly in there, everyone that intends to use the
+offset for any reason will have to account for the missing instruction.
 
-https://lore.kernel.org/bpf/CANoWswkaj1HysW3BxBMG9_nd48fm0MxM5egdtmHU6YsEc_GUtQ@mail.gmail.com/T/#m4335b4005da0d60059ba96920fcaaecf2637042a
+Cheers
+/Ilias
+> 
+> https://lore.kernel.org/bpf/CANoWswkaj1HysW3BxBMG9_nd48fm0MxM5egdtmHU6YsEc_GUtQ@mail.gmail.com/T/#m4335b4005da0d60059ba96920fcaaecf2637042a
