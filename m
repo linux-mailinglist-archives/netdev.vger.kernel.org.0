@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07FFE268BFF
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 15:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DED8268C24
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 15:24:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgINNQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 09:16:39 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:12278 "EHLO huawei.com"
+        id S1726650AbgINNXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 09:23:45 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:12255 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726389AbgINNQL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 09:16:11 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id D2D7447EFABE6A21593C;
-        Mon, 14 Sep 2020 21:15:28 +0800 (CST)
+        id S1726051AbgINNUX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 14 Sep 2020 09:20:23 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 86977E70763307ED38C6;
+        Mon, 14 Sep 2020 21:20:17 +0800 (CST)
 Received: from localhost.localdomain (10.175.112.70) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Mon, 14 Sep 2020 21:15:27 +0800
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Mon, 14 Sep 2020 21:20:15 +0800
 From:   Zhang Changzhong <zhangchangzhong@huawei.com>
-To:     <fugang.duan@nxp.com>, <davem@davemloft.net>, <kuba@kernel.org>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net: fec: ptp: remove unused variable 'ns' in fec_time_keep()
-Date:   Mon, 14 Sep 2020 21:14:24 +0800
-Message-ID: <1600089264-21910-1-git-send-email-zhangchangzhong@huawei.com>
+Subject: [PATCH net-next] net: pxa168_eth: remove unused variable 'retval' int pxa168_eth_change_mtu()
+Date:   Mon, 14 Sep 2020 21:19:12 +0800
+Message-ID: <1600089552-22368-1-git-send-email-zhangchangzhong@huawei.com>
 X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -35,40 +35,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
-drivers/net/ethernet/freescale/fec_ptp.c:523:6: warning:
- variable 'ns' set but not used [-Wunused-but-set-variable]
-  523 |  u64 ns;
-      |      ^~
+drivers/net/ethernet/marvell/pxa168_eth.c:1190:6: warning:
+ variable 'retval' set but not used [-Wunused-but-set-variable]
+ 1190 |  int retval;
+      |      ^~~~~~
 
-After commit 6605b730c061 ("FEC: Add time stamping code and a PTP
-hardware clock"), variable 'ns' is never used in fec_time_keep(),
-so removing it to avoid build warning.
+Function pxa168_eth_change_mtu() always return zero, so variable 'retval'
+is redundant, just remove it.
 
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: Zhang Changzhong <zhangchangzhong@huawei.com>
 ---
- drivers/net/ethernet/freescale/fec_ptp.c | 3 +--
+ drivers/net/ethernet/marvell/pxa168_eth.c | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-index a0c1f44..0405a39 100644
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -520,13 +520,12 @@ static void fec_time_keep(struct work_struct *work)
- {
- 	struct delayed_work *dwork = to_delayed_work(work);
- 	struct fec_enet_private *fep = container_of(dwork, struct fec_enet_private, time_keep);
--	u64 ns;
- 	unsigned long flags;
+diff --git a/drivers/net/ethernet/marvell/pxa168_eth.c b/drivers/net/ethernet/marvell/pxa168_eth.c
+index faac94b..d1e4d42 100644
+--- a/drivers/net/ethernet/marvell/pxa168_eth.c
++++ b/drivers/net/ethernet/marvell/pxa168_eth.c
+@@ -1187,11 +1187,10 @@ static int pxa168_eth_stop(struct net_device *dev)
  
- 	mutex_lock(&fep->ptp_clk_mutex);
- 	if (fep->ptp_clk_on) {
- 		spin_lock_irqsave(&fep->tmreg_lock, flags);
--		ns = timecounter_read(&fep->tc);
-+		timecounter_read(&fep->tc);
- 		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
- 	}
- 	mutex_unlock(&fep->ptp_clk_mutex);
+ static int pxa168_eth_change_mtu(struct net_device *dev, int mtu)
+ {
+-	int retval;
+ 	struct pxa168_eth_private *pep = netdev_priv(dev);
+ 
+ 	dev->mtu = mtu;
+-	retval = set_port_config_ext(pep);
++	set_port_config_ext(pep);
+ 
+ 	if (!netif_running(dev))
+ 		return 0;
 -- 
 2.9.5
 
