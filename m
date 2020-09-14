@@ -2,104 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65BF82688CC
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:52:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE68A2688D5
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:55:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbgINJwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 05:52:07 -0400
-Received: from mail-db8eur05on2120.outbound.protection.outlook.com ([40.107.20.120]:31457
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726239AbgINJwF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 05:52:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Rc5ykuS/xAJdDUC/206ZanRDKMyvfxcHCIe3rrk3H6SlhNy3Q02CHg018h6Okph888POYWIaaRIffD2z/HOoCSC3BXHqAQFBAi2e//5U8pkhAQZXFY/8rHZVDRavlOTc1opQG5n7kkcrgb1pTWlUv99bER7dKL51Ea71snf3aRncmzVa+CrFimSnnd87ENfPkm+csqpa3sa5T3DYpTX+EGNhW89dZoGzLBeNY6nsyllYd+g5RpgC7loJ5xt6MMuRXsuISRdF9p1GUBHkhrBqRj7uemW57cAiHT59r8nh3tMlRpnW16vjLnc4Sw058aKoAhleUfL2Kj8tPy5gm7PTvA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cw/FSgfGU7BenHUj3zpEp+4CiwjF7GJUpZDgQJLoRHE=;
- b=mI14e2mKduBSNaY0LK59tEzFOZv2vxZWzGC4KGSC/3nf9crSl+RsyUv8WpUmjTD7DPBPd167yanNtx3xKESdIW3cVC91De/7nFdq54gsxfTdaLobEJSfjTvD95NtUIKDf60mDOG+tGdctb7JdBmpJvHBLvhHSScYTw7kDRKgjGOdTu0bjpjC+HYvG6YG+25UzeZllB43J4aUm5RaSDomHq10f/ke/ABsWTCtVB3fKD/gnPB6pIyoul24Z58XzfDwSJ7z2+33RNSRvpR8/QC1enkw97eZpdiWHY0XcUMLTaEPIjs+xy12bBEPbcWSV4yT+puRAsDnY5GmUlMLsbrvtg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=habana.ai; dmarc=pass action=none header.from=habana.ai;
- dkim=pass header.d=habana.ai; arc=none
+        id S1726346AbgINJzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 05:55:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbgINJzJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 05:55:09 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211E9C061788
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:55:08 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id r24so18116451ljm.3
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:55:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=habanalabs.onmicrosoft.com; s=selector2-habanalabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cw/FSgfGU7BenHUj3zpEp+4CiwjF7GJUpZDgQJLoRHE=;
- b=mFkA5RVnV9CU8hCbgFZH0I07XXQbDkDhFVvCeSqIYg+8bPYWnsjUwuoSLjlSNEmxxmc1Jjts5s4KA2lanh5UxuvJNAIvVaaO9vBjZr+iYujbWaMco9iAs5axgPOUI74lmIFVtVmZ55v1sURIB5YPCtYZS8cWhKYfPu0oIV+H0sA=
-Received: from AM0PR02MB5523.eurprd02.prod.outlook.com (2603:10a6:208:15e::24)
- by AM4PR0201MB2177.eurprd02.prod.outlook.com (2603:10a6:200:49::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.16; Mon, 14 Sep
- 2020 09:52:00 +0000
-Received: from AM0PR02MB5523.eurprd02.prod.outlook.com
- ([fe80::7c43:7d52:92d9:5c93]) by AM0PR02MB5523.eurprd02.prod.outlook.com
- ([fe80::7c43:7d52:92d9:5c93%5]) with mapi id 15.20.3370.019; Mon, 14 Sep 2020
- 09:52:00 +0000
-From:   Omer Shpigelman <oshpigelman@habana.ai>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Oded Gabbay <oded.gabbay@gmail.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        SW_Drivers <SW_Drivers@habana.ai>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: RE: [PATCH 05/15] habanalabs/gaudi: add NIC Ethernet support
-Thread-Topic: [PATCH 05/15] habanalabs/gaudi: add NIC Ethernet support
-Thread-Index: AQHWh40eyDMqzSAoUkuwz7EiOxxOUaliS7KAgAWM16A=
-Date:   Mon, 14 Sep 2020 09:52:00 +0000
-Message-ID: <AM0PR02MB5523D7FD712C3B50DA733CDDB8230@AM0PR02MB5523.eurprd02.prod.outlook.com>
-References: <20200910161126.30948-1-oded.gabbay@gmail.com>
-        <20200910161126.30948-6-oded.gabbay@gmail.com>
- <20200910130307.5dee086b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200910130307.5dee086b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=habana.ai;
-x-originating-ip: [141.226.12.25]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5e935879-69ab-4bbf-198c-08d85893d3af
-x-ms-traffictypediagnostic: AM4PR0201MB2177:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR0201MB2177DCD12AA6F3A8A1D730A2B8230@AM4PR0201MB2177.eurprd02.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: wk392NRiJGxsQHgD6+J6T9VuamoO8KwBqU7vxEHHxYtBBytra0LjvPsm9C5zygFWrEaLN5Uw9mYTXjzolY8RnX1TKPqXHSIFGvhoflg/e1DQUAtGP68CitgrIu2ZUfnK6ysjXJl52H5ltEOErlrEDlP3nT3ZaToW5GHLVIloG8nmXWrtiXt33IUUiIQVV33qoV0YkWhqWnnVEmKXRoyGxJUUxSb3X1KTaDEUCrfS6oU4c8M5xrSSxZlnwYjKByhv0NkJeqA7rQCufmpZ+efDKGrCG5WZp8vQSu4m+BHJP1u1YQp87RUiGOQ7nxgbjtR64EPPUe1c/sYMg82bVvBEjXZ3H6y8ou6JDWmVPrq5mrfnw2kXZ84qkpiLBUAqZEFl
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB5523.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(136003)(366004)(396003)(346002)(39850400004)(8936002)(5660300002)(71200400001)(186003)(52536014)(76116006)(2906002)(55016002)(26005)(6506007)(7696005)(33656002)(66946007)(508600001)(54906003)(86362001)(4326008)(66556008)(8676002)(53546011)(9686003)(4744005)(66446008)(110136005)(64756008)(66476007)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: zqvRdgntWGoGAXmM1jhxw4nIlgYtNILRac3lkGW6RZyynQ71p/4ItC2l9efCnS6obpXhPPaDVZh0k3lwMgrTVkojTCuZNL9T9iDAcE8WP6T1F8z88cVFT4LYT8EKgpkSLTR6e90SLG5cEnP/9k/J8wHQwqRB1F/GGWCI9TglyiKa4u7750qXJMHnGXcYC8aPiqWjvfK0wkgN4G0ecZX969wb3DjQLsTWP1+TnhnY0bFkZPsvUQYON6lNdESwFER3jnI0kQ7biAxHeCa132R56P68+zAh3zCQjmOQAIgLgdeAmZ1mjOM5V0b2nJJbZ5d3m01/nJM/BEwZEGoixzR9h4jg8KcYAPpTO5eVeYdvKRw0jp4FJHRC1sa2uf+w+BateE0Uk+EYDtheItTFAyyXtKEGx0HSJr+Fs3Wr1fWpVo1JKHWTqHyVZQBL0ZxG/c16R7bqmNkx+1/eszGPCunQAuAjrM5unSb73rb2jeO5a+j4v3kiPal4tgBzSFIZtXwtv+wRhbYDkafoh5MMmNwCEtSI0+6kWxem05er28cEGekDaQM6zeG8vWHA6mpaeInr/SUAqjxeuW/h5kyWhQ6vAJZLbpWUp4MMS4MWjE/FxQruVFhgWLhn7IIMST58KWTWmb4ERvGXUE7ekkyaBOmbFw==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OLbK0D4QGcViPP4+fN4RDTHX6B/bM2Mu6LGn5qvcRcU=;
+        b=dFYAdsIC4Zsz2A30EabNTdmDmZ0MQFme03K1MycqGkC8UDobD4zXjIhTFQTopq2GXM
+         lu5Ywa+lMnB9EXT0YOeJky3UM8Tx6vZZsw0q+mpB1qx2+DUSlnF63s2PRFAIqLJds5qU
+         64++J9P1bEJhSAAc+7nAEghmjJ1AgQDRMighc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OLbK0D4QGcViPP4+fN4RDTHX6B/bM2Mu6LGn5qvcRcU=;
+        b=tLNICxih3xxj1hJfOtmcrCp06ilAAl4apS7YbauEUYrZ+ZBXNP5X5XZ+QQtyUxadDI
+         vkudkLzFMn9geTdnFob0gqybl7XLBsoV7kTYqgRSEVHApuB3zr+CwdRlsYKAI7LxYu4N
+         G1W1wAVqeRlfnOtS6KGUAfCUgVTTsNLTLOST3CyQetq+VsrmJik+peTdF6avj7FF8jhE
+         tFom4CkImJ/u9jHjsnwAxbp+wABBFcLexJz/gD022VLclmQhLf2GTH3aWh+ziOehi10J
+         knOcMy25di+R6EqNhfqu5R/TfvNPrqTrhOI1ja/STVMy2dkDcjK1V5fLncIZqQ8cQnXB
+         5njg==
+X-Gm-Message-State: AOAM532z9haLGPAWYUjTzHd/61fyH/I5rKCLx6Ilt5BXIzH22U4DtVOG
+        bHWibgmNJzbOIFmqhndQmrGPf9US6lIpa+OyxrP6Mg==
+X-Google-Smtp-Source: ABdhPJxijVWu6QGRzm95Tj+coX94ot2Ku9MxwL0bMEWXkL7YH76uFcZ7ZkkG1w3K4UjtI3A8T7ShC4vROqSAWsAYOYI=
+X-Received: by 2002:a2e:874e:: with SMTP id q14mr4415207ljj.320.1600077306404;
+ Mon, 14 Sep 2020 02:55:06 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: habana.ai
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB5523.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e935879-69ab-4bbf-198c-08d85893d3af
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Sep 2020 09:52:00.6470
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0d4d4539-213c-4ed8-a251-dc9766ba127a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: WC989YHcw3RogW6MkOoj6EhiuCPMASyzGUwLEN7zeiVMF1kqebwcbWEdbJfUf9+dvmVyiagcitQFsrIvmCFkJg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0201MB2177
+References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
+ <1600063682-17313-2-git-send-email-moshe@mellanox.com> <CAACQVJochmfmUgKSvSTe4McFvG6=ffBbkfXsrOJjiCDwQVvaRw@mail.gmail.com>
+ <20200914093234.GB2236@nanopsycho.orion>
+In-Reply-To: <20200914093234.GB2236@nanopsycho.orion>
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Date:   Mon, 14 Sep 2020 15:24:55 +0530
+Message-ID: <CAACQVJqVV_YLfV002wxU2s1WJUa3_AvqwMMVr8KLAtTa0d9iOw@mail.gmail.com>
+Subject: Re: [PATCH net-next RFC v4 01/15] devlink: Add reload action option
+ to devlink reload command
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Michael Chan <michael.chan@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCBTZXAgMTAsIDIwMjAgYXQgMTE6MDMgUE0gSmFrdWIgS2ljaW5za2kgPGt1YmFAa2Vy
-bmVsLm9yZz4gd3JvdGU6DQo+IE9uIFRodSwgMTAgU2VwIDIwMjAgMTk6MTE6MTYgKzAzMDAgT2Rl
-ZCBHYWJiYXkgd3JvdGU6DQo+ID4gK21vZHVsZV9wYXJhbShuaWNfcnhfcG9sbCwgaW50LCAwNDQ0
-KTsNCj4gTU9EVUxFX1BBUk1fREVTQyhuaWNfcnhfcG9sbCwNCj4gPiArCSJFbmFibGUgTklDIFJ4
-IHBvbGxpbmcgbW9kZSAoMCA9IG5vLCAxID0geWVzLCBkZWZhdWx0IG5vKSIpOw0KPiANCj4gSWYg
-eW91ciBjaGlwIGRvZXMgbm90IHN1cHBvcnQgSVJRIGNvYWxlc2NpbmcgeW91IGNhbiBjb25maWd1
-cmUgcG9sbGluZyBhbmQgdGhlDQo+IHRpbWVvdXQgdmlhIGV0aHRvb2wgLUMsIHJhdGhlciB0aGFu
-IGEgbW9kdWxlIHBhcmFtZXRlci4NCg0KSSBjb3VsZG4ndCBmaW5kIGFuIGV4YW1wbGUgZm9yIHRo
-YXQgaW4gb3RoZXIgZHJpdmVycyBhbmQgSSBkaWRuJ3Qgc2VlIGFueXRoaW5nIHJlZ2FyZGluZyBw
-b2xsaW5nIG1vZGUgaW4gdGhlIHBhcmFtZXRlcnMgZGVzY3JpcHRpb24gb2YgdGhpcyBldGh0b29s
-IGNhbGxiYWNrLg0KQ2FuIHlvdSBwbGVhc2Ugc3BlY2lmeSBzb21lIHBvaW50ZXIgZm9yIHRoYXQ/
-IE9yIGluIG90aGVyIHdvcmRzLCB3aGF0IHBhcmFtZXRlciBjYW4gd2UgdXNlIHRvIGVuYWJsZSBw
-b2xsaW5nL3NldHRpbmcgdGhlIHRpbWVvdXQ/DQoNClRoYW5rcywNCk9tZXINCg==
+On Mon, Sep 14, 2020 at 3:02 PM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> Mon, Sep 14, 2020 at 09:08:58AM CEST, vasundhara-v.volam@broadcom.com wrote:
+> >On Mon, Sep 14, 2020 at 11:39 AM Moshe Shemesh <moshe@mellanox.com> wrote:
+>
+> [...]
+>
+>
+> >> @@ -1126,15 +1126,24 @@ mlxsw_devlink_core_bus_device_reload_down(struct devlink *devlink,
+> >>  }
+> >>
+> >>  static int
+> >> -mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink,
+> >> -                                       struct netlink_ext_ack *extack)
+> >> +mlxsw_devlink_core_bus_device_reload_up(struct devlink *devlink, enum devlink_reload_action action,
+> >> +                                       struct netlink_ext_ack *extack,
+> >> +                                       unsigned long *actions_performed)
+> >Sorry for repeating again, for fw_activate action on our device, all
+> >the driver entities undergo reset asynchronously once user initiates
+> >"devlink dev reload action fw_activate" and reload_up does not have
+> >much to do except reporting actions that will be/being performed.
+> >
+> >Once reset is complete, the health reporter will be notified using
+>
+> Hmm, how is the fw reset related to health reporter recovery? Recovery
+> happens after some error event. I don't believe it is wise to mix it.
+Our device has a fw_reset health reporter, which is updated on reset
+events and firmware activation is one among them. All non-fatal
+firmware reset events are reported on fw_reset health reporter.
+
+>
+> Instead, why don't you block in reload_up() until the reset is complete?
+
+Though user initiate "devlink dev reload" event on a single interface,
+all driver entities undergo reset and all entities recover
+independently. I don't think we can block the reload_up() on the
+interface(that user initiated the command), until whole reset is
+complete.
+>
+>
+> >devlink_health_reporter_recovery_done(). Returning from reload_up does
+> >not guarantee successful activation of firmware. Status of reset will
+> >be notified to the health reporter via
+> >devlink_health_reporter_state_update().
+> >
+> >I am just repeating this, so I want to know if I am on the same page.
+> >
+> >Thanks.
+>
+> [...]
