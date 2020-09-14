@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14AB026846F
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 08:09:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 186C2268471
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 08:09:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726183AbgINGJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 02:09:39 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59490 "EHLO
+        id S1726200AbgINGJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 02:09:45 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59495 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726079AbgINGIW (ORCPT
+        with ESMTP id S1726081AbgINGIW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 02:08:22 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
         with SMTP; 14 Sep 2020 09:08:18 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (dev-l-vrt-135.mtl.labs.mlnx [10.234.135.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08E68IIe020977;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 08E68IaM020980;
         Mon, 14 Sep 2020 09:08:18 +0300
 Received: from dev-l-vrt-135.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 08E68IZI017407;
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Debian-10) with ESMTP id 08E68ICl017409;
         Mon, 14 Sep 2020 09:08:18 +0300
 Received: (from moshe@localhost)
-        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 08E68I8C017406;
+        by dev-l-vrt-135.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id 08E68I9E017408;
         Mon, 14 Sep 2020 09:08:18 +0300
 From:   Moshe Shemesh <moshe@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
@@ -28,9 +28,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Jiri Pirko <jiri@mellanox.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Moshe Shemesh <moshe@mellanox.com>
-Subject: [PATCH net-next RFC v4 14/15] net/mlx5: Add support for devlink reload action limit level no reset
-Date:   Mon, 14 Sep 2020 09:08:01 +0300
-Message-Id: <1600063682-17313-15-git-send-email-moshe@mellanox.com>
+Subject: [PATCH net-next RFC v4 15/15] devlink: Add Documentation/networking/devlink/devlink-reload.rst
+Date:   Mon, 14 Sep 2020 09:08:02 +0300
+Message-Id: <1600063682-17313-16-git-send-email-moshe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
 References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
@@ -39,100 +39,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for devlink reload action fw_activate with limit level
-no_reset which does firmware live patching, updating the firmware image
-without reset, no downtime and no configuration lose. The driver checks
-if the firmware is capable of handling the pending firmware changes as a
-live patch. If it is then it triggers firmware live patching flow.
+Add devlink reload rst documentation file.
+Update index file to include it.
 
 Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 ---
 v3 -> v4:
-- Have action fw_activate with limit level no_reset instead of action
-  fw_activate_no_reset
+- Remove reload action fw_activate_no_reset
+- Add reload actions limit levels and document the no_reset limit level
+  constrains
 v2 -> v3:
+- Devlink reload returns the actions done
 - Replace fw_live_patch action by fw_activate_no_reset
+- Explain fw_activate meaning
 v1 -> v2:
-- Have fw_live_patch action instead of level
+- Instead of reload levels driver,fw_reset,fw_live_patch have reload
+  actions driver_reinit,fw_activate,fw_live_patch
 ---
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 37 ++++++++++++++++++-
- 1 file changed, 36 insertions(+), 1 deletion(-)
+ .../networking/devlink/devlink-reload.rst     | 80 +++++++++++++++++++
+ Documentation/networking/devlink/index.rst    |  1 +
+ 2 files changed, 81 insertions(+)
+ create mode 100644 Documentation/networking/devlink/devlink-reload.rst
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 175e933cf19c..f2cc62b7232d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -115,6 +115,29 @@ static int mlx5_devlink_reload_fw_activate(struct devlink *devlink, struct netli
- 	return err;
- }
+diff --git a/Documentation/networking/devlink/devlink-reload.rst b/Documentation/networking/devlink/devlink-reload.rst
+new file mode 100644
+index 000000000000..6ac9dddd2208
+--- /dev/null
++++ b/Documentation/networking/devlink/devlink-reload.rst
+@@ -0,0 +1,80 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++==============
++Devlink Reload
++==============
++
++``devlink-reload`` provides mechanism to either reload driver entities,
++applying ``devlink-params`` and ``devlink-resources`` new values or firmware
++activation depends on reload action selected.
++
++Reload actions
++==============
++
++User may select a reload action.
++By default ``driver_reinit`` action is selected.
++
++.. list-table:: Possible reload actions
++   :widths: 5 90
++
++   * - Name
++     - Description
++   * - ``driver-reinit``
++     - Devlink driver entities re-initialization, including applying
++       new values to devlink entities which are used during driver
++       load such as ``devlink-params`` in configuration mode
++       ``driverinit`` or ``devlink-resources``
++   * - ``fw_activate``
++     - Firmware activate. Activates new firmware if such image is stored and
++       pending activation. This action involves firmware reset, if no new image
++       pending this action will reload current firmware image.
++
++Note that when required to do firmware activation some drivers may need
++to reload the driver. On the other hand some drivers may need to reset
++the firmware to reinitialize the driver entities. Therefore, the devlink
++reload command returns the actions which were actually performed.
++
++Reload action limit levels
++==========================
++
++By default reload actions are not limited and Driver implementation may
++include reset or downtime as needed to perform the actions.
++
++However, some drivers support action limit levels, which limits the action
++implementation to specific constrains.
++
++.. list-table:: Possible reload action limit levels
++   :widths: 5 90
++
++   * - Name
++     - Description
++   * - ``no_reset``
++     - No reset allowed, no down time allowed, no link flap and no
++       configuration is lost.
++
++Change namespace
++================
++
++All devlink instances are created in init_net and stay there for a
++lifetime. Allow user to be able to move devlink instances into
++namespaces during devlink reload operation. That ensures proper
++re-instantiation of driver objects, including netdevices.
++
++example usage
++-------------
++
++.. code:: shell
++
++    $ devlink dev reload help
++    $ devlink dev reload DEV [ netns { PID | NAME | ID } ] [ action { driver_reinit | fw_activate } ] [limit_level no_reset]
++
++    # Run reload command for devlink driver entities re-initialization:
++    $ devlink dev reload pci/0000:82:00.0 action driver_reinit
++    reload_actions_performed:
++      driver_reinit
++
++    # Run reload command to activate firmware:
++    # Note that mlx5 driver reloads the driver while activating firmware
++    $ devlink dev reload pci/0000:82:00.0 action fw_activate
++    reload_actions_performed:
++      driver_reinit fw_activate
+diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
+index 7684ae5c4a4a..d82874760ae2 100644
+--- a/Documentation/networking/devlink/index.rst
++++ b/Documentation/networking/devlink/index.rst
+@@ -20,6 +20,7 @@ general.
+    devlink-params
+    devlink-region
+    devlink-resource
++   devlink-reload
+    devlink-trap
  
-+static int mlx5_devlink_trigger_fw_live_patch(struct devlink *devlink,
-+					      struct netlink_ext_ack *extack)
-+{
-+	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	u8 reset_level;
-+	int err;
-+
-+	err = mlx5_reg_mfrl_query(dev, &reset_level, NULL);
-+	if (err)
-+		return err;
-+	if (!(reset_level & MLX5_MFRL_REG_RESET_LEVEL0)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "FW upgrade to the stored FW can't be done by FW live patching");
-+		return -EINVAL;
-+	}
-+
-+	err = mlx5_fw_set_live_patch(dev);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
- static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
- 				    enum devlink_reload_action action,
- 				    enum devlink_reload_action_limit_level limit_level,
-@@ -122,11 +145,19 @@ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
- {
- 	struct mlx5_core_dev *dev = devlink_priv(devlink);
- 
-+	if (limit_level == DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET &&
-+	    action != DEVLINK_RELOAD_ACTION_FW_ACTIVATE) {
-+		NL_SET_ERR_MSG_MOD(extack, "Requested limit level is not supported");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	switch (action) {
- 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
- 		mlx5_unload_one(dev, false);
- 		return 0;
- 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
-+		if (limit_level == DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET)
-+			return mlx5_devlink_trigger_fw_live_patch(devlink, extack);
- 		return mlx5_devlink_reload_fw_activate(devlink, extack);
- 	default:
- 		/* Unsupported action should not get to this function */
-@@ -146,7 +177,10 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
- 
- 	switch (action) {
- 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
-+		return mlx5_load_one(dev, false);
- 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
-+		if (limit_level == DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET)
-+			break;
- 		/* On fw_activate action, also driver is reloaded and reinit performed */
- 		if (actions_performed)
- 			*actions_performed |= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
-@@ -175,7 +209,8 @@ static const struct devlink_ops mlx5_devlink_ops = {
- 	.info_get = mlx5_devlink_info_get,
- 	.supported_reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
- 				    BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
--	.supported_reload_action_limit_levels = BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE),
-+	.supported_reload_action_limit_levels = BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NONE) |
-+						BIT(DEVLINK_RELOAD_ACTION_LIMIT_LEVEL_NO_RESET),
- 	.reload_down = mlx5_devlink_reload_down,
- 	.reload_up = mlx5_devlink_reload_up,
- };
+ Driver-specific documentation
 -- 
 2.17.1
 
