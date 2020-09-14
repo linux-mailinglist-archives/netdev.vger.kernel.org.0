@@ -2,224 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 421A326848D
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 08:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F23C2684B0
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 08:19:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726070AbgINGML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 02:12:11 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:63452 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726043AbgINGMJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 02:12:09 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08E66Qxp018655
-        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 23:12:09 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=e4JsQYe43g5R9QwY4puTrD2PMM3cIlekM8vmc67I+4w=;
- b=mocxLq9+Grj68IRwC51zq5mgzezEoMAL2zlOJAVYVfOU8MKDojeu/CzN4qFZvZ65p0hY
- SMnIg0DkUNp2UNXtqEL5HIRbnIyiROfvVx7eXnwPc12FNflbp26pZbOuleSWGAMqc5bT
- GU9e0nvAfOUcdr+QSKg0YxMmOXtnpz8244A= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33hed3udxm-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sun, 13 Sep 2020 23:12:08 -0700
-Received: from intmgw001.03.ash8.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Sun, 13 Sep 2020 23:12:08 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id BCA5D3704C64; Sun, 13 Sep 2020 23:12:06 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next] bpftool: fix build failure
-Date:   Sun, 13 Sep 2020 23:12:06 -0700
-Message-ID: <20200914061206.2625395-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726090AbgINGTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 02:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46632 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726030AbgINGTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 02:19:01 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 423FCC06174A;
+        Sun, 13 Sep 2020 23:18:57 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id o16so4919078pjr.2;
+        Sun, 13 Sep 2020 23:18:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=MYPgJwOB3wumsWdm8PpM5P24nVAroSIX0XmTHErtiN8=;
+        b=m5zMQqKAG7mE5eqF77oB/b+ELIhxJkB11rPryu9vgZLGbo7a1hjoJPuvEC46eeAbUb
+         TvORpGMCWlzy78ABjT1P8r37FE7fDcjlIRp3EyDUNtuk5fq/U/c5lbVDOdA3NK5Y4ucD
+         65f+xAFfoO4sbKoTuikmMNgGMxj8FKtoa05l7gyBS0KQAsW8rZNwELD7uyMW930xwSxK
+         BxSt1RQ2vNiQQcwlMGr2Iobk1FBirbaqaHv0GuZDKwIX23s3o0S/twXEw5hVBrPtiYAT
+         +1WX+naMwoWrE14C5dLRsD/N9Grk/QAgGFYLVdND9VyqROiLmtEwI8VAzWJZKWOU0F7z
+         Ts2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MYPgJwOB3wumsWdm8PpM5P24nVAroSIX0XmTHErtiN8=;
+        b=Qmzyo6JXLg3JG/I3niXWVkxEfsqVyLJ1F1ODNs24vDEM2mUu6+PZzNpVe53dQ1FbGZ
+         5FPEeWDN+uJ1vU3rHv0KnDgsTP6+OQ918JTpgFJW8d8tnEOM9nbauzgiuPbb3GL5o3ax
+         v1oeIU8aqOYkJhfHm0BZW6M2lcI4zjfWlIl6hMK0AjweHapn1O29edexo7OHYiMT8eIy
+         Qmk7cRxGtRDcMZPCv9u7iwUdbRRVeLGHp3VdpL9cYU5fsbu6tbjwysTzL44vdW+zbFSl
+         K2sVuaWsOsN+j3MsaEuUVQxvDzWhLKamwu+l26NguCXeFx2mB/6K7YOdDKcXz6tk1Xyf
+         V+hg==
+X-Gm-Message-State: AOAM533KL5atjmgZiPpCE617PLQ7XXB6tLNUXO8aeIuOJL9CeSaxCMvL
+        kYO5hdfp67cTJOBDBuFshdHQA2C5X1nzf1Bf6lKjhoPk
+X-Google-Smtp-Source: ABdhPJyEN20m5tXqOxy4gIhmp00NE75m2DyLIIl8otL6PZ8wLltOCahP2WCtfHH9VdmpvmESJEu6iu48pwOkmLq1X8I=
+X-Received: by 2002:a17:90b:816:: with SMTP id bk22mr12784047pjb.66.1600064336828;
+ Sun, 13 Sep 2020 23:18:56 -0700 (PDT)
 MIME-Version: 1.0
+References: <20200903000658.89944-1-xie.he.0141@gmail.com> <20200904151441.27c97d80@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAJht_EN+=WTuduvm43_Lq=XWL78AcF5q6Zoyg8S5fao_udL=+Q@mail.gmail.com> <m3v9ghgc97.fsf@t19.piap.pl>
+In-Reply-To: <m3v9ghgc97.fsf@t19.piap.pl>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Sun, 13 Sep 2020 23:18:46 -0700
+Message-ID: <CAJht_ENMtrJouSazq3yL7JUS+Hwv4mjtxrcpqxOrc+6vMUVM=w@mail.gmail.com>
+Subject: Re: [PATCH net v2] drivers/net/wan/hdlc_fr: Add needed_headroom for
+ PVC devices
+To:     =?UTF-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Krzysztof Halasa <khc@pm.waw.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-13_09:2020-09-10,2020-09-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- adultscore=0 lowpriorityscore=0 suspectscore=8 mlxscore=0 bulkscore=0
- phishscore=0 impostorscore=0 spamscore=0 mlxlogscore=846
- priorityscore=1501 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009140055
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When building bpf selftests like
-  make -C tools/testing/selftests/bpf -j20
-I hit the following errors:
-  ...
-  GEN      /net-next/tools/testing/selftests/bpf/tools/build/bpftool/Docu=
-mentation/bpftool-gen.8
-  <stdin>:75: (WARNING/2) Block quote ends without a blank line; unexpect=
-ed unindent.
-  <stdin>:71: (WARNING/2) Literal block ends without a blank line; unexpe=
-cted unindent.
-  <stdin>:85: (WARNING/2) Literal block ends without a blank line; unexpe=
-cted unindent.
-  <stdin>:57: (WARNING/2) Block quote ends without a blank line; unexpect=
-ed unindent.
-  <stdin>:66: (WARNING/2) Literal block ends without a blank line; unexpe=
-cted unindent.
-  <stdin>:109: (WARNING/2) Literal block ends without a blank line; unexp=
-ected unindent.
-  <stdin>:175: (WARNING/2) Literal block ends without a blank line; unexp=
-ected unindent.
-  <stdin>:273: (WARNING/2) Literal block ends without a blank line; unexp=
-ected unindent.
-  make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool=
-/Documentation/bpftool-perf.8] Error 12
-  make[1]: *** Waiting for unfinished jobs....
-  make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool=
-/Documentation/bpftool-iter.8] Error 12
-  make[1]: *** [/net-next/tools/testing/selftests/bpf/tools/build/bpftool=
-/Documentation/bpftool-struct_ops.8] Error 12
-  ...
+On Sun, Sep 13, 2020 at 10:26 PM Krzysztof Ha=C5=82asa <khalasa@piap.pl> wr=
+ote:
+>
+> Xie He <xie.he.0141@gmail.com> writes:
+>
+> > The HDLC device is not actually prepending any header when it is used
+> > with this driver. When the PVC device has prepended its header and
+> > handed over the skb to the HDLC device, the HDLC device just hands it
+> > over to the hardware driver for transmission without prepending any
+> > header.
+>
+> That's correct. IIRC:
+> - Cisco and PPP modes add 4 bytes
+> - Frame Relay adds 4 (specific protocols - mostly IPv4) or 10 (general
+>   case) bytes. There is that pvcX->hdlcX transition which adds nothing
+>   (the header is already in place when the packet leaves pvcX device).
+> - Raw mode adds nothing (IPv4 only, though it could be modified for
+>   both IPv4/v6 easily)
+> - Ethernet (hdlc_raw_eth.c) adds normal Ethernet header.
 
-I am using:
-  -bash-4.4$ rst2man --version
-  rst2man (Docutils 0.11 [repository], Python 2.7.5, on linux2)
-  -bash-4.4$
+Thank you for the nice summary!
 
-Looks like that particular version of rst2man prefers to have a blank lin=
-e
-after literal blocks. This patch added block lines in related .rst files
-and compilation can then pass.
-
-Cc: Quentin Monnet <quentin@isovalent.com>
-Fixes: 18841da98100 ("tools: bpftool: Automate generation for "SEE ALSO" =
-sections in man pages")
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- tools/bpf/bpftool/Documentation/bpftool-cgroup.rst     | 1 +
- tools/bpf/bpftool/Documentation/bpftool-feature.rst    | 1 +
- tools/bpf/bpftool/Documentation/bpftool-iter.rst       | 1 +
- tools/bpf/bpftool/Documentation/bpftool-link.rst       | 1 +
- tools/bpf/bpftool/Documentation/bpftool-map.rst        | 1 +
- tools/bpf/bpftool/Documentation/bpftool-net.rst        | 1 +
- tools/bpf/bpftool/Documentation/bpftool-perf.rst       | 1 +
- tools/bpf/bpftool/Documentation/bpftool-prog.rst       | 1 +
- tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst | 1 +
- tools/bpf/bpftool/Documentation/bpftool.rst            | 1 +
- 10 files changed, 10 insertions(+)
-
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst b/tools/b=
-pf/bpftool/Documentation/bpftool-cgroup.rst
-index 790944c35602..5d01a74b7c57 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
-@@ -143,3 +143,4 @@ EXAMPLES
- ::
-=20
-     ID       AttachType      AttachFlags     Name
-+
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-feature.rst b/tools/=
-bpf/bpftool/Documentation/bpftool-feature.rst
-index dd3771bdbc57..e6b4b9efc6f7 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-feature.rst
-@@ -72,3 +72,4 @@ DESCRIPTION
- OPTIONS
- =3D=3D=3D=3D=3D=3D=3D
- 	.. include:: common_options.rst
-+
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-iter.rst b/tools/bpf=
-/bpftool/Documentation/bpftool-iter.rst
-index 51f49bead619..30bfe3b1f529 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-iter.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-iter.rst
-@@ -68,3 +68,4 @@ EXAMPLES
-=20
-    Create a file-based bpf iterator from bpf_iter_hashmap.o and map with
-    id 20, and pin it to /sys/fs/bpf/my_hashmap
-+
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-link.rst b/tools/bpf=
-/bpftool/Documentation/bpftool-link.rst
-index 5f7db2a837cc..6d1ff68c5d6f 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-link.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-link.rst
-@@ -106,3 +106,4 @@ EXAMPLES
- ::
-=20
-     -rw------- 1 root root 0 Apr 23 21:39 link
-+
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-map.rst b/tools/bpf/=
-bpftool/Documentation/bpftool-map.rst
-index dade10cdf295..6500612f4723 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-map.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-map.rst
-@@ -270,3 +270,4 @@ would be lost as soon as bpftool exits).
-=20
-   key: 00 00 00 00  value: 22 02 00 00
-   Found 1 element
-+
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-net.rst b/tools/bpf/=
-bpftool/Documentation/bpftool-net.rst
-index d8165d530937..8450f7b9a10d 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-net.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-net.rst
-@@ -172,3 +172,4 @@ EXAMPLES
- ::
-=20
-       xdp:
-+
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-perf.rst b/tools/bpf=
-/bpftool/Documentation/bpftool-perf.rst
-index e958ce91de72..1b5202d3d9ac 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-perf.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-perf.rst
-@@ -63,3 +63,4 @@ EXAMPLES
-      {"pid":21765,"fd":5,"prog_id":7,"fd_type":"kretprobe","func":"__x64=
-_sys_nanosleep","offset":0}, \
-      {"pid":21767,"fd":5,"prog_id":8,"fd_type":"tracepoint","tracepoint"=
-:"sys_enter_nanosleep"}, \
-      {"pid":21800,"fd":5,"prog_id":9,"fd_type":"uprobe","filename":"/hom=
-e/yhs/a.out","offset":1159}]
-+
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-prog.rst b/tools/bpf=
-/bpftool/Documentation/bpftool-prog.rst
-index 358c7309d419..3c7a90915d45 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
-@@ -326,3 +326,4 @@ EXAMPLES
-       40176203 cycles                                                 (8=
-3.05%)
-       42518139 instructions    #   1.06 insns per cycle               (8=
-3.39%)
-            123 llc_misses      #   2.89 LLC misses per million insns  (8=
-3.15%)
-+
-diff --git a/tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst b/too=
-ls/bpf/bpftool/Documentation/bpftool-struct_ops.rst
-index 506e70ee78e9..ccfd215b17a0 100644
---- a/tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst
-@@ -82,3 +82,4 @@ EXAMPLES
- ::
-=20
-    Registered tcp_congestion_ops cubic id 110
-+
-diff --git a/tools/bpf/bpftool/Documentation/bpftool.rst b/tools/bpf/bpft=
-ool/Documentation/bpftool.rst
-index e7d949334961..1026f15b5c64 100644
---- a/tools/bpf/bpftool/Documentation/bpftool.rst
-+++ b/tools/bpf/bpftool/Documentation/bpftool.rst
-@@ -54,3 +54,4 @@ OPTIONS
- 	-n, --nomount
- 		  Do not automatically attempt to mount any virtual file system
- 		  (such as tracefs or BPF virtual file system) when necessary.
-+
---=20
-2.24.1
-
+I just realized that we can indeed support both IPv4/v6 in hdlc_raw.
+Both IPv4 and v6 packets have a version field in the header, so we can
+use it to distinguish v4 and v6 packets on receiving. We can introduce
+it as a new feature some time.
