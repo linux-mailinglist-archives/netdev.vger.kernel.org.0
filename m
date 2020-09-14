@@ -2,148 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAE10268841
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:26:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82D6F26885A
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 11:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbgINJ0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 05:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726123AbgINJ0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 05:26:52 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694E3C06174A
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:26:30 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id 185so17130102oie.11
-        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:26:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N9Z0JQMEyAoqtsNY4svQdmQ8E3d+AFCPv6YizfP/1Zc=;
-        b=amhh8bNkxNCj5ZxTzmr8UAgLC+60cBzEjwwmvHCeTchYkCNgxgJHgsP558Vz1oMMDp
-         NMLIhEPm1NiG2Iwt3KK0C1ZjImwKYMSalZVKlin2FTgYbvCKDGhOKgaTLwiN531PNTFJ
-         QuUQIdYKPA//kVAqm36iamztAHkbFOta+WxuA=
+        id S1726391AbgINJaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 05:30:24 -0400
+Received: from mail-il1-f207.google.com ([209.85.166.207]:38184 "EHLO
+        mail-il1-f207.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726249AbgINJ3S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 05:29:18 -0400
+Received: by mail-il1-f207.google.com with SMTP id m10so12234099ild.5
+        for <netdev@vger.kernel.org>; Mon, 14 Sep 2020 02:29:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N9Z0JQMEyAoqtsNY4svQdmQ8E3d+AFCPv6YizfP/1Zc=;
-        b=raSk2Vs77pQrkC9ay8OQH6Q/CRpv14v+C6wEhAsXurWBv/3aiT1MJddhWt37lrm9PT
-         BUnLSlA205nvnaNOZczGl909jnadPDTaYZ8slSetVj6K7jIvlFcE7ZybtXuSNLNzn1QW
-         vMIzUmnJkJkXH+MFuEmvDnjKc43FKFrLQrbKYa4Q6JYquiSNBpkjCzrvh9H+Qx1CDGFV
-         NJRj1qkZEzglucS/Wxvlytuy1F+wDq3DnNPcKtFelfEFnBrU0ZgnZ7JnidGE1lIwg4wd
-         tmtDjZ74rIRczv91B0PM5hQhbubqCOj3Sx1BukJLrY6EIEzMxFyf+gGlJSu8KJ52pzqR
-         YAcQ==
-X-Gm-Message-State: AOAM531oxH5N/LKLI/rsQxZdyFCNmfM/dekkwT9eWfmRv+prskc2fWVk
-        5tQ+U0B1ZpJWR9Ive56LP1NPzpOOFlCg+TpC1bAzcg==
-X-Google-Smtp-Source: ABdhPJzwqYrmYOEIK6mWrnKDrf5U3Gp9aKPC2GbyggUrO2IOrQsJD/Y5OumwoCnXrItLYW2QvDEhU6bU8xvGxx8I04w=
-X-Received: by 2002:aca:3087:: with SMTP id w129mr7719251oiw.102.1600075589751;
- Mon, 14 Sep 2020 02:26:29 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=TH4I0FLdiIpGQ5Tl/2ypovGARPOu1ONo1HGqptIa4OQ=;
+        b=slKBczRYWi9zQlZf054IDE/2P9cQE9sxiFQpQwsxFPEXL33kpmx3UYYZ+KKtX1KTEc
+         tnVF06E7uNZwIj9wLWSUuDCMnhLXk7ZgGt9K8jsUdn2fPXF7fGV7pulMS8XIlzCVzjFG
+         uoM2dFjD1332A63x5RMaSn0SVZ7gkcsv27lhCoTEAOadiS6089glEKEcmXnUm10voDry
+         Y0LVZBEvqnHrzMz/H9l9VcMTPrWzOZQrpb4ENQKIAk623fnanPtkDD8SgWBUaTY0Ok0t
+         TUn1QJxMZddliFnx7pn+n3nv78n+GHM0wiUVSIBs791YnIgTjXE3Z7mvuWqTXek8kyUt
+         yHxA==
+X-Gm-Message-State: AOAM531yhGdFLFPa1pR6gJyDg3Y0d16KluPa6vjwnIiPwntYkrTQaPWy
+        dzHZgq7CqBVqFtn7k/Nmz7uuAAbKe4yAhll3MzwOMhFVo7pl
+X-Google-Smtp-Source: ABdhPJzP23iVG+WXX/FkJ2v54zMWyx+UEXTrxJNY+GFVWlpIiEJEP44cezQz5Ln1yXBtRMM98RGo39wurcMIIk41Im6zXNAL0w0f
 MIME-Version: 1.0
-References: <20200912045917.2992578-1-kafai@fb.com> <20200912045930.2993219-1-kafai@fb.com>
-In-Reply-To: <20200912045930.2993219-1-kafai@fb.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Mon, 14 Sep 2020 10:26:18 +0100
-Message-ID: <CACAyw9-rirpChioEaSKiYC5+fLGzL38OawcBvE8Mv+16vNApZA@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next 2/2] bpf: Enable bpf_skc_to_* sock casting
- helper to networking prog type
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
+X-Received: by 2002:a92:dc47:: with SMTP id x7mr2965857ilq.127.1600075756567;
+ Mon, 14 Sep 2020 02:29:16 -0700 (PDT)
+Date:   Mon, 14 Sep 2020 02:29:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000015820705af42ab4d@google.com>
+Subject: INFO: trying to register non-static key in cfg80211_release_pmsr
+From:   syzbot <syzbot+7c0d914f0ea7b89ad50c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 12 Sep 2020 at 05:59, Martin KaFai Lau <kafai@fb.com> wrote:
->
-> There is a constant need to add more fields into the bpf_tcp_sock
-> for the bpf programs running at tc, sock_ops...etc.
->
-> A current workaround could be to use bpf_probe_read_kernel().  However,
-> other than making another helper call for reading each field and missing
-> CO-RE, it is also not as intuitive to use as directly reading
-> "tp->lsndtime" for example.  While already having perfmon cap to do
-> bpf_probe_read_kernel(), it will be much easier if the bpf prog can
-> directly read from the tcp_sock.
->
-> This patch tries to do that by using the existing casting-helpers
-> bpf_skc_to_*() whose func_proto returns a btf_id.  For example, the
-> func_proto of bpf_skc_to_tcp_sock returns the btf_id of the
-> kernel "struct tcp_sock".
->
-> [ One approach is to make a separate copy of the bpf_skc_to_*
->   func_proto and use ARG_PTR_TO_SOCK_COMMON instead of ARG_PTR_TO_BTF_ID.
->   More on this later (1). ]
->
-> This patch modifies the existing bpf_skc_to_* func_proto to take
-> ARG_PTR_TO_SOCK_COMMON instead of taking
-> "ARG_PTR_TO_BTF_ID + &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON]".
-> That will allow tc, sock_ops,...etc to call these casting helpers
-> because they already hold the PTR_TO_SOCK_COMMON (or its
-> equivalent).  For example:
->
->         sk = sock_ops->sk;
->         if (!sk)
->                 return;
->         tp = bpf_skc_to_tcp_sock(sk);
->         if (!tp)
->                 return;
->         /* Read tp as a PTR_TO_BTF_ID */
->         lsndtime = tp->lsndtime;
->
-> To ensure the current bpf prog passing a PTR_TO_BTF_ID to
-> bpf_skc_to_*() still works as is, the verifier is modified such that
-> ARG_PTR_TO_SOCK_COMMON can accept a reg with reg->type == PTR_TO_BTF_ID
-> and reg->btf_id is btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON]
->
-> To do that, an idea is borrowed from one of the Lorenz's patch:
-> https://lore.kernel.org/bpf/20200904112401.667645-12-lmb@cloudflare.com/ .
-> It adds PTR_TO_BTF_ID as one of the acceptable reg->type for
-> ARG_PTR_TO_SOCK_COMMON and also specifies what btf_id it can take.
-> By doing this, the bpf_skc_to_* will work as before and can still
-> take PTR_TO_BTF_ID as the arg.  e.g. The bpf tcp iter will work
-> as is.
->
-> This will also make other existing helper taking ARG_PTR_TO_SOCK_COMMON
-> works with the pointer obtained from bpf_skc_to_*(). For example:
+Hello,
 
-Unfortunately, I think that we need to introduce a new
-ARG_PTR_TO_SOCK_COMMON_OR_NULL for this to work. This is because
-dereferencing a "tracing" pointer can yield NULL at runtime due to a
-page fault, so the helper has to deal with this. Other than that I
-think this is a really nice approach: we can gradually move helpers to
-PTR_TO_SOCK_COMMON_OR_NULL and in doing so make them compatible with
-BTF pointers.
+syzbot found the following issue on:
 
-[...]
+HEAD commit:    7fe10096 Merge branch 'linus' of git://git.kernel.org/pub/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1655e245900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a9075b36a6ae26c9
+dashboard link: https://syzkaller.appspot.com/bug?extid=7c0d914f0ea7b89ad50c
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-> @@ -4014,7 +4022,17 @@ static int check_reg_type(struct bpf_verifier_env *env, u32 arg,
->
->  found:
->         if (type == PTR_TO_BTF_ID) {
-> -               u32 *expected_btf_id = fn->arg_btf_id[arg];
-> +               u32 *expected_btf_id;
-> +
-> +               if (arg_type == ARG_PTR_TO_BTF_ID) {
-> +                       expected_btf_id = fn->arg_btf_id[arg];
+Unfortunately, I don't have any reproducer for this issue yet.
 
-Personal preference, but what do you think about moving this to after
-the assignment of compatible?
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7c0d914f0ea7b89ad50c@syzkaller.appspotmail.com
 
-    btf_id = compatible->btf_id;
-    if (arg_type == ARG_PTR_TO_BTF_ID)
-       btf_id = fn->fn->arg_btf_id[arg];
+INFO: trying to register non-static key.
+the code is fine but needs lockdep annotation.
+turning off the locking correctness validator.
+CPU: 1 PID: 1483 Comm: syz-executor.4 Not tainted 5.9.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x198/0x1fd lib/dump_stack.c:118
+ assign_lock_key kernel/locking/lockdep.c:894 [inline]
+ register_lock_class+0x157d/0x1630 kernel/locking/lockdep.c:1206
+ __lock_acquire+0xf9/0x5570 kernel/locking/lockdep.c:4305
+ lock_acquire+0x1f3/0xae0 kernel/locking/lockdep.c:5006
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+ _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+ spin_lock_bh include/linux/spinlock.h:359 [inline]
+ cfg80211_release_pmsr+0x33/0x166 net/wireless/pmsr.c:621
+ nl80211_netlink_notify net/wireless/nl80211.c:17301 [inline]
+ nl80211_netlink_notify+0x32e/0x970 net/wireless/nl80211.c:17265
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ __blocking_notifier_call_chain kernel/notifier.c:284 [inline]
+ __blocking_notifier_call_chain kernel/notifier.c:271 [inline]
+ blocking_notifier_call_chain kernel/notifier.c:295 [inline]
+ blocking_notifier_call_chain+0x67/0x90 kernel/notifier.c:292
+ netlink_release+0xc51/0x1cf0 net/netlink/af_netlink.c:775
+ __sock_release+0xcd/0x280 net/socket.c:596
+ sock_close+0x18/0x20 net/socket.c:1277
+ __fput+0x285/0x920 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:141
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:163 [inline]
+ exit_to_user_mode_prepare+0x1e1/0x200 kernel/entry/common.c:190
+ syscall_exit_to_user_mode+0x7e/0x2e0 kernel/entry/common.c:265
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x416f01
+Code: 75 14 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 04 1b 00 00 c3 48 83 ec 08 e8 0a fc ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 53 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
+RSP: 002b:00007fe5ec9199c0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 00007fe5ec919a40 RCX: 0000000000416f01
+RDX: 0000000000000200 RSI: 00007fe5ec919a40 RDI: 0000000000000004
+RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000004
+R13: 000000000169fb6f R14: 00007fe5ec91a9c0 R15: 000000000118cf4c
+BUG: unable to handle page fault for address: ffffffffffffffec
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 9a90067 P4D 9a90067 PUD 9a92067 PMD 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 1483 Comm: syz-executor.4 Not tainted 5.9.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:cfg80211_release_pmsr+0xce/0x166 net/wireless/pmsr.c:623
+Code: 39 c5 74 6b e8 f3 a6 e8 f9 48 8d 7b 14 48 89 f8 48 c1 e8 03 42 0f b6 14 20 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 04 84 d2 75 62 <44> 8b 7b 14 89 ee 44 89 ff e8 c4 a2 e8 f9 41 39 ef 75 9f e8 ba a6
+RSP: 0018:ffffc90018e2fbe0 EFLAGS: 00010246
+RAX: 0000000000000007 RBX: ffffffffffffffd8 RCX: ffffc90010d5b000
+RDX: 0000000000000000 RSI: ffffffff878ba68d RDI: ffffffffffffffec
+RBP: 0000000000001751 R08: 0000000000000001 R09: 0000000000000003
+R10: fffff520031c5f6e R11: 0000000038343154 R12: dffffc0000000000
+R13: ffff8880001010e0 R14: ffff888000100c10 R15: 0000000000000000
+FS:  00007fe5ec91a700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffec CR3: 000000020d667000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ nl80211_netlink_notify net/wireless/nl80211.c:17301 [inline]
+ nl80211_netlink_notify+0x32e/0x970 net/wireless/nl80211.c:17265
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
+ __blocking_notifier_call_chain kernel/notifier.c:284 [inline]
+ __blocking_notifier_call_chain kernel/notifier.c:271 [inline]
+ blocking_notifier_call_chain kernel/notifier.c:295 [inline]
+ blocking_notifier_call_chain+0x67/0x90 kernel/notifier.c:292
+ netlink_release+0xc51/0x1cf0 net/netlink/af_netlink.c:775
+ __sock_release+0xcd/0x280 net/socket.c:596
+ sock_close+0x18/0x20 net/socket.c:1277
+ __fput+0x285/0x920 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:141
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:163 [inline]
+ exit_to_user_mode_prepare+0x1e1/0x200 kernel/entry/common.c:190
+ syscall_exit_to_user_mode+0x7e/0x2e0 kernel/entry/common.c:265
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x416f01
+Code: 75 14 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 04 1b 00 00 c3 48 83 ec 08 e8 0a fc ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 53 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
+RSP: 002b:00007fe5ec9199c0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 00007fe5ec919a40 RCX: 0000000000416f01
+RDX: 0000000000000200 RSI: 00007fe5ec919a40 RDI: 0000000000000004
+RBP: 0000000000000200 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000004
+R13: 000000000169fb6f R14: 00007fe5ec91a9c0 R15: 000000000118cf4c
+Modules linked in:
+CR2: ffffffffffffffec
+---[ end trace 5d967f6ee373c846 ]---
+RIP: 0010:cfg80211_release_pmsr+0xce/0x166 net/wireless/pmsr.c:623
+Code: 39 c5 74 6b e8 f3 a6 e8 f9 48 8d 7b 14 48 89 f8 48 c1 e8 03 42 0f b6 14 20 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 04 84 d2 75 62 <44> 8b 7b 14 89 ee 44 89 ff e8 c4 a2 e8 f9 41 39 ef 75 9f e8 ba a6
+RSP: 0018:ffffc90018e2fbe0 EFLAGS: 00010246
+RAX: 0000000000000007 RBX: ffffffffffffffd8 RCX: ffffc90010d5b000
+RDX: 0000000000000000 RSI: ffffffff878ba68d RDI: ffffffffffffffec
+RBP: 0000000000001751 R08: 0000000000000001 R09: 0000000000000003
+R10: fffff520031c5f6e R11: 0000000038343154 R12: dffffc0000000000
+R13: ffff8880001010e0 R14: ffff888000100c10 R15: 0000000000000000
+FS:  00007fe5ec91a700(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffffffffffffec CR3: 000000020d667000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 
-That makes it clearer that we have to special case ARG_PTR_TO_BTF_ID since
-it doesn't make sense to use compatible->btf_id in that case.
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-www.cloudflare.com
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
