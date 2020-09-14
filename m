@@ -2,64 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F6626946F
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 20:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E381269487
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 20:12:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726089AbgINSIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 14:08:39 -0400
-Received: from mga11.intel.com ([192.55.52.93]:65483 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726159AbgINSIH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 14 Sep 2020 14:08:07 -0400
-IronPort-SDR: ilo3HgEGUBa9S+g/heh2RFjWLkmeM1zYO4eBDjB7AHhOKtQz91H/8A1qqzG0DHj1Udt9XQzGNw
- BwB2vECKYRNA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9744"; a="156569355"
-X-IronPort-AV: E=Sophos;i="5.76,427,1592895600"; 
-   d="scan'208";a="156569355"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2020 11:08:07 -0700
-IronPort-SDR: uZ4U8Nxb5AcODeAuxs9DVhUNJKn/V+INaRemY00xbyozaNoP7/znziFjdFhGiPDP6VaDdXRYIg
- CjepmG11szxw==
-X-IronPort-AV: E=Sophos;i="5.76,427,1592895600"; 
-   d="scan'208";a="482445994"
-Received: from ningale-mobl.amr.corp.intel.com ([10.255.229.30])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2020 11:08:06 -0700
-Date:   Mon, 14 Sep 2020 11:08:06 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-X-X-Sender: mjmartin@ningale-mobl.amr.corp.intel.com
-To:     Paolo Abeni <pabeni@redhat.com>
-cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org
-Subject: Re: [PATCH net-next v2 08/13] mptcp: add OoO related mibs
-In-Reply-To: <a968da10355e303d483a9d12409930e80ab7fccd.1599854632.git.pabeni@redhat.com>
-Message-ID: <alpine.OSX.2.23.453.2009141107500.57764@ningale-mobl.amr.corp.intel.com>
-References: <cover.1599854632.git.pabeni@redhat.com> <a968da10355e303d483a9d12409930e80ab7fccd.1599854632.git.pabeni@redhat.com>
-User-Agent: Alpine 2.23 (OSX 453 2020-06-18)
+        id S1726144AbgINSLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 14:11:39 -0400
+Received: from mail1.windriver.com ([147.11.146.13]:33682 "EHLO
+        mail1.windriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726114AbgINSLd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 14:11:33 -0400
+Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
+        by mail1.windriver.com (8.15.2/8.15.2) with ESMTPS id 08EIBMfk012981
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
+        Mon, 14 Sep 2020 11:11:22 -0700 (PDT)
+Received: from pek-lwang1-u1404.wrs.com (128.224.162.178) by
+ ALA-HCA.corp.ad.wrs.com (147.11.189.40) with Microsoft SMTP Server id
+ 14.3.487.0; Mon, 14 Sep 2020 11:11:21 -0700
+From:   Li Wang <li.wang@windriver.com>
+To:     <mst@redhat.com>, <jasowang@redhat.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] vhost: reduce stack usage in log_used
+Date:   Tue, 15 Sep 2020 02:08:09 +0800
+Message-ID: <1600106889-25013-1-git-send-email-li.wang@windriver.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1199326218.16921082.1600051335160.JavaMail.zimbra@redhat.com>
+References: <1199326218.16921082.1600051335160.JavaMail.zimbra@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 14 Sep 2020, Paolo Abeni wrote:
+Fix the warning: [-Werror=-Wframe-larger-than=]
 
-> Add a bunch of MPTCP mibs related to MPTCP OoO data
-> processing.
->
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
-> net/mptcp/mib.c      |  5 +++++
-> net/mptcp/mib.h      |  5 +++++
-> net/mptcp/protocol.c | 24 +++++++++++++++++++++++-
-> net/mptcp/subflow.c  |  1 +
-> 4 files changed, 34 insertions(+), 1 deletion(-)
->
+drivers/vhost/vhost.c: In function log_used:
+drivers/vhost/vhost.c:1906:1:
+warning: the frame size of 1040 bytes is larger than 1024 bytes
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Li Wang <li.wang@windriver.com>
+---
+ drivers/vhost/vhost.c | 2 +-
+ drivers/vhost/vhost.h | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
---
-Mat Martineau
-Intel
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index b45519c..31837a5
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -1884,7 +1884,7 @@ static int log_write_hva(struct vhost_virtqueue *vq, u64 hva, u64 len)
+ 
+ static int log_used(struct vhost_virtqueue *vq, u64 used_offset, u64 len)
+ {
+-	struct iovec iov[64];
++	struct iovec *iov = vq->log_iov;
+ 	int i, ret;
+ 
+ 	if (!vq->iotlb)
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index 9032d3c..5fe4b47
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -123,6 +123,7 @@ struct vhost_virtqueue {
+ 	/* Log write descriptors */
+ 	void __user *log_base;
+ 	struct vhost_log *log;
++	struct iovec log_iov[64];
+ 
+ 	/* Ring endianness. Defaults to legacy native endianness.
+ 	 * Set to true when starting a modern virtio device. */
+-- 
+2.7.4
+
