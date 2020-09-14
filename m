@@ -2,130 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E12BF2686AA
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 09:59:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A9D02686B7
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 10:02:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726171AbgINH7F convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 14 Sep 2020 03:59:05 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:52353 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726068AbgINH7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 03:59:01 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-215-wJUKj1CvOB2KCgXzcGT9iA-1; Mon, 14 Sep 2020 08:58:55 +0100
-X-MC-Unique: wJUKj1CvOB2KCgXzcGT9iA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 14 Sep 2020 08:58:54 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 14 Sep 2020 08:58:54 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Greg KH' <greg@kroah.com>,
-        Anant Thazhemadam <anant.thazhemadam@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com" 
-        <syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-kernel-mentees@lists.linuxfoundation.org" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Subject: RE: [Linux-kernel-mentees] [PATCH] net: fix uninit value error in
- __sys_sendmmsg
-Thread-Topic: [Linux-kernel-mentees] [PATCH] net: fix uninit value error in
- __sys_sendmmsg
-Thread-Index: AQHWiZUUFtyl13ctBkOLZWcXDFPGWKlnweqA
-Date:   Mon, 14 Sep 2020 07:58:54 +0000
-Message-ID: <346bcf816616429abb01a475dd8d87fc@AcuMS.aculab.com>
-References: <20200913055639.15639-1-anant.thazhemadam@gmail.com>
- <20200913061351.GA585618@kroah.com>
-In-Reply-To: <20200913061351.GA585618@kroah.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726184AbgINIBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 04:01:52 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50157 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726132AbgINIBr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 04:01:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600070502;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=uovh2p4XZhwPfYothlb7/Hf6Xzz2AAoglZnFqQhwQxY=;
+        b=OC5olQKTYdMDIa7yt4tgd9b8kSaGj7Cdni7z6guw/oF2qRBt1TncDHe9Ffybh949+5Sdo0
+        qlylumrOUFAX3vOW/qvNm+K8hvwlgr/zpbEUUt/hnWxNb/2PkQbybnBClu1EevZ7PQ8Hzc
+        7SQly7xdUR0S0BZyOFXHk43h45ZNKdU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-539-uCHrL_hDP6SfSaC2nroIkA-1; Mon, 14 Sep 2020 04:01:38 -0400
+X-MC-Unique: uCHrL_hDP6SfSaC2nroIkA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C248380EFBF;
+        Mon, 14 Sep 2020 08:01:36 +0000 (UTC)
+Received: from linux.fritz.box.com (ovpn-112-96.ams2.redhat.com [10.36.112.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4ACE519C66;
+        Mon, 14 Sep 2020 08:01:35 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, mptcp@lists.01.org
+Subject: [PATCH net-next v2 00/13] mptcp: introduce support for real multipath xmit
+Date:   Mon, 14 Sep 2020 10:01:06 +0200
+Message-Id: <cover.1599854632.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0.002
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Greg KH
-> Sent: 13 September 2020 07:14
-> On Sun, Sep 13, 2020 at 11:26:39AM +0530, Anant Thazhemadam wrote:
-> > The crash report showed that there was a local variable;
-> >
-> > ----iovstack.i@__sys_sendmmsg created at:
-> >  ___sys_sendmsg net/socket.c:2388 [inline]
-> >  __sys_sendmmsg+0x6db/0xc90 net/socket.c:2480
-> >
-> >  that was left uninitialized.
-> >
-> > The contents of iovstack are of interest, since the respective pointer
-> > is passed down as an argument to sendmsg_copy_msghdr as well.
-> > Initializing this contents of this stack prevents this bug from happening.
-> >
-> > Since the memory that was initialized is freed at the end of the function
-> > call, memory leaks are not likely to be an issue.
-> >
-> > syzbot seems to have triggered this error by passing an array of 0's as
-> > a parameter while making the initial system call.
-> >
-> > Reported-by: syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com
-> > Tested-by: syzbot+09a5d591c1f98cf5efcb@syzkaller.appspotmail.com
-> > Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
-> > ---
-> >  net/socket.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/net/socket.c b/net/socket.c
-> > index 0c0144604f81..d74443dfd73b 100644
-> > --- a/net/socket.c
-> > +++ b/net/socket.c
-> > @@ -2396,6 +2396,7 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
-> >  {
-> >  	struct sockaddr_storage address;
-> >  	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
-> > +	memset(iov, 0, UIO_FASTIOV);
-> >  	ssize_t err;
-> >
-> >  	msg_sys->msg_name = &address;
-> 
-> I don't think you built this code change, otherwise you would have seen
-> that it adds a build warning to the system, right?
+This series enable MPTCP socket to transmit data on multiple subflows
+concurrently in a load balancing scenario.
 
-Also it can't be the right 'fix' for whatever sysbot found.
-(I can't find the sysbot report.)
+First the receive code path is refactored to better deal with out-of-order
+data (patches 1-7). An RB-tree is introduced to queue MPTCP-level out-of-order
+data, closely resembling the TCP level OoO handling.
 
-Zeroing iov[] just slows down a path that is already too slow because
-of the contorted functions used to read in iov[].
+When data is sent on multiple subflows, the peer can easily see OoO - "future"
+data at the MPTCP level, especially if speeds, delay, or jitter are not
+symmetric.
 
-If it does need to be zerod then it would be needed in a lot
-of other code paths that read in iov[].
+The other major change regards the netlink PM, which is extended to allow
+creating non backup subflows in patches 9-11.
 
-If a zero length iov[] needs converting into a single entity
-with a zero length - then that needs to be done elsewhere.
+There are a few smaller additions, like the introduction of OoO related mibs,
+send buffer autotuning and better ack handling.
 
-I've a patch series I might redo that changes the code that
-reads in iov[] to return the address of any buffer that
-needed to be malloced (more than UIV_FASTIO buffers) rather
-than using the iov parameter to pass in the cache and
-return the buffer to free.
-It would be less confusing and error prone.
+Finally a bunch of new self-tests is introduced. The new feature is tested
+ensuring that the B/W used by an MPTCP socket using multiple subflows matches
+the link aggregated B/W - we use low B/W virtual links, to ensure the tests
+are not CPU bounded.
 
-	David
+v1 -> v2:
+  - fix 32 bit build breakage
+  - fix a bunch of checkpatch issues
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Paolo Abeni (13):
+  mptcp: rethink 'is writable' conditional
+  mptcp: set data_ready status bit in subflow_check_data_avail()
+  mptcp: trigger msk processing even for OoO data
+  mptcp: basic sndbuf autotuning
+  mptcp: introduce and use mptcp_try_coalesce()
+  mptcp: move ooo skbs into msk out of order queue.
+  mptcp: cleanup mptcp_subflow_discard_data()
+  mptcp: add OoO related mibs
+  mptcp: move address attribute into mptcp_addr_info
+  mptcp: allow creating non-backup subflows
+  mptcp: allow picking different xmit subflows
+  mptcp: call tcp_cleanup_rbuf on subflows
+  mptcp: simult flow self-tests
+
+ include/net/tcp.h                             |   2 +
+ net/ipv4/tcp.c                                |   2 +-
+ net/mptcp/mib.c                               |   5 +
+ net/mptcp/mib.h                               |   5 +
+ net/mptcp/pm_netlink.c                        |  39 +-
+ net/mptcp/protocol.c                          | 511 ++++++++++++++----
+ net/mptcp/protocol.h                          |  21 +-
+ net/mptcp/subflow.c                           |  99 ++--
+ tools/testing/selftests/net/mptcp/Makefile    |   3 +-
+ .../selftests/net/mptcp/simult_flows.sh       | 293 ++++++++++
+ 10 files changed, 798 insertions(+), 182 deletions(-)
+ create mode 100755 tools/testing/selftests/net/mptcp/simult_flows.sh
+
+-- 
+2.26.2
 
