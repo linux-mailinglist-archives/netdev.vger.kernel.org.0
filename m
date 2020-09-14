@@ -2,88 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF12B269009
-	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 17:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29A84269021
+	for <lists+netdev@lfdr.de>; Mon, 14 Sep 2020 17:37:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726125AbgINPeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 11:34:12 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:52594 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726438AbgINPdE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 11:33:04 -0400
+        id S1726239AbgINPcQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 11:32:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30175 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726348AbgINPbb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 11:31:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600097582;
+        s=mimecast20190719; t=1600097490;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DHjreWUBqPVhQCuDlHLghJCXj4TprCUtbQO3T18RwAc=;
-        b=ch8CSggNyh5nImkQqE3TMXRSqVbZLYa1hYB0pmwCMtkbbM3ei+ywFtJI8Vs3JQQMct7nAt
-        WEKonS9ihPX4d5j3ULK2dsaL0jGKegIhuH/GfFhtZgpSExUU/5geHbL/rdAeG8Gl9eiP2B
-        +KlBoZeR8dvSg7jW46n7QspbEh8MIgg=
+        bh=5wD/L5mjZXfk+6pxJFnXBeqTK1xBuAPBxiA5Ca9uTUk=;
+        b=bPEn04vIAmG9ErxWIpiBtB0s00PsspCtXLtkbW5obNkfh/Xzi6kEKwYvV957IEQf1vTHkw
+        sgNuYK+EVFcAX1q5wXiNPEmfCdAFDvKFAxsJisLk1jw3kDDFv8JlhjiC9ztBIfdOivmCFK
+        N7s4SkNOZgsz7Aljg1RA19asG5SJIPA=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-473-W2XVQaOOPI-GjLDnz0zKgg-1; Mon, 14 Sep 2020 11:31:25 -0400
-X-MC-Unique: W2XVQaOOPI-GjLDnz0zKgg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-42-4C4YTQPLMrWCAbs-YskdTw-1; Mon, 14 Sep 2020 11:31:28 -0400
+X-MC-Unique: 4C4YTQPLMrWCAbs-YskdTw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0727B18C9F4D;
-        Mon, 14 Sep 2020 15:31:09 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DD49D802B77;
+        Mon, 14 Sep 2020 15:31:22 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-113-6.rdu2.redhat.com [10.10.113.6])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C68381F41;
-        Mon, 14 Sep 2020 15:31:08 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 10B7575133;
+        Mon, 14 Sep 2020 15:31:21 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 3/5] rxrpc: Fix rxrpc_bundle::alloc_error to be
- signed
+Subject: [PATCH net-next 5/5] rxrpc: Fix an overget of the conn bundle when
+ setting up a client conn
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Mon, 14 Sep 2020 16:31:07 +0100
-Message-ID: <160009746742.1014072.15836712415506346429.stgit@warthog.procyon.org.uk>
+Date:   Mon, 14 Sep 2020 16:31:21 +0100
+Message-ID: <160009748120.1014072.10308681243643184204.stgit@warthog.procyon.org.uk>
 In-Reply-To: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
 References: <160009744625.1014072.11957943055200732444.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/0.23
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The alloc_error field in the rxrpc_bundle struct should be signed as it has
-negative error codes assigned to it.  Checks directly on it may then fail,
-and may produce a warning like this:
+When setting up a client connection, a second ref is accidentally obtained
+on the connection bundle (we get one when allocating the conn and a second
+one when adding the conn to the bundle).
 
-	net/rxrpc/conn_client.c:662 rxrpc_wait_for_channel()
-	warn: 'bundle->alloc_error' is unsigned
+Fix it to only use the ref obtained by rxrpc_alloc_client_connection() and
+not to add a second when adding the candidate conn to the bundle.
 
 Fixes: 245500d853e9 ("rxrpc: Rewrite the client connection manager")
-Reported-by Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: David Howells <dhowells@redhat.com>
 ---
 
- net/rxrpc/ar-internal.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/rxrpc/conn_client.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index cd5a80b34738..19f714386654 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -395,7 +395,7 @@ struct rxrpc_bundle {
- 	unsigned int		debug_id;
- 	bool			try_upgrade;	/* True if the bundle is attempting upgrade */
- 	bool			alloc_conn;	/* True if someone's getting a conn */
--	unsigned short		alloc_error;	/* Error from last conn allocation */
-+	short			alloc_error;	/* Error from last conn allocation */
- 	spinlock_t		channel_lock;
- 	struct rb_node		local_node;	/* Node in local->client_conns */
- 	struct list_head	waiting_calls;	/* Calls waiting for channels */
+diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
+index 0eb36ba52485..78c845a4f1ad 100644
+--- a/net/rxrpc/conn_client.c
++++ b/net/rxrpc/conn_client.c
+@@ -433,7 +433,6 @@ static void rxrpc_add_conn_to_bundle(struct rxrpc_bundle *bundle, gfp_t gfp)
+ 		if (!rxrpc_may_reuse_conn(old)) {
+ 			if (old)
+ 				trace_rxrpc_client(old, -1, rxrpc_client_replace);
+-			candidate->bundle = rxrpc_get_bundle(bundle);
+ 			candidate->bundle_shift = shift;
+ 			bundle->conns[i] = candidate;
+ 			for (j = 0; j < RXRPC_MAXCALLS; j++)
 
 
