@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A03F526A118
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 10:42:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1490526A116
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 10:42:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726339AbgIOImF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 04:42:05 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:42815 "EHLO
+        id S1726357AbgIOImI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 04:42:08 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:36909 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726280AbgIOIlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 04:41:53 -0400
+        by vger.kernel.org with ESMTP id S1726285AbgIOIlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 04:41:55 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id F134D5C00EC;
-        Tue, 15 Sep 2020 04:41:51 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 056175C012C;
+        Tue, 15 Sep 2020 04:41:54 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 15 Sep 2020 04:41:51 -0400
+  by compute4.internal (MEProxy); Tue, 15 Sep 2020 04:41:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=uk4Vkh6eRSLOK6g7ntLgDxNc7oHFsh50xtlQ8fu+uFI=; b=FP8XiTuB
-        7zN8YhzD88qgFN/8yTYcR5amwo+nY1eHKxYh1efRBjNvQP8nMQOW6y79qDjNEtMw
-        sCT4G9Q3t/Btz6hLVMqE7iziL4asMAGC9fIl8uU8fxdS27VS8fFQyS44It2jgk9l
-        ZZck/b28keRzP/xMrVgsJDA5Px++MG0DXsSpBiqNWz4rYGmutaKoDlij0SBdiPsf
-        m1jAEVhSwtU9GTPtS9hfMyy0YiOzG9tsRXblZTTM+RwW0x9yi5n3siGR9xbru479
-        ZjzkSw87f5px3dk9KNtaBXA08/Hz2GbwMnFrCg51k7ATeLBNJw8xULlXXiJ8bW/O
-        p0yhBG3z6DhxUA==
-X-ME-Sender: <xms:T35gXxRW2p_cw3o4Yqf3WPfTelGdcmuv-ANvgTsEUd_N7wC1qtyReg>
-    <xme:T35gX6y6sjNZWuTDjLJ6-ZE8teyPPcRUmO_OlOmbHpayX5AJ1ob9TiVTjP6yB-Zxb
-    V5A5plO2UNo36k>
+        fm3; bh=b+nxJjp0FfSyYPsIo66BRkZCPpHi7L4/v+JNR3ze888=; b=n6o8hmY+
+        p41xPebZQc3/Lb/Aj1khvuznR9KxL3OCKvNLQJSV9rv70ylqipia4pwJoBV12Qhr
+        spvCqCvenSMy3I7WhXJvvpujGrSplds5TMZSYgYRpHqYajzLKwOY5d+bZB6LntnW
+        DjK77JNdwH9Vjbavai6qG5pN9PW6itGjBTiK30r70bwBBTDIIrWUklEDFgfF37TY
+        dFAR1g7o315ibEv9RdJp9m0ydcw9FtB35Jm6jIxfiujxHvHpn6r2MIEPyZEQu84N
+        BZMAKzto195bXgql7OJ23Gpup8LZkz74SK1HT9Np8b9dekxuCqAAsmDK56NceIzg
+        iDfiB7zJbmBJfQ==
+X-ME-Sender: <xms:UX5gX_ojw0wc4jvqmIZydnkq0G-VUlKxEdruH3Hb3VuIEL8AfP7_zQ>
+    <xme:UX5gX5oJ1z_Ps8if9TGjiqdvNMbcUvvPNTQbNGUAPbWEUL9MD1ilnINAXHhEEkm_M
+    8ul4YvYsmUeM1o>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudeikedgtdejucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -38,20 +38,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduiedrudeikedgtdejucetufdoteggod
     ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrfeeirdekvden
     ucevlhhushhtvghrufhiiigvpeefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:T35gX21bwMzoVyyswncbfKWaUcJOctJb4sQaktSLaX6Yhv722Fts0w>
-    <xmx:T35gX5BHahNyzEvBv8ADjRXLpc7RMQYsWXt_XUkyQ0fg4-IzSIMwEA>
-    <xmx:T35gX6icj9Wo7G4gxTIhkH1GPS8iLs-_dAUk7Clbtg2vRi_OQHKfbA>
-    <xmx:T35gX9uW4nJh73n0CZ6pQS8DiNwgrUPumR0syZ4eO-DViOe3cyf3fg>
+X-ME-Proxy: <xmx:UX5gX8PKh74I73nnPvuBpRegZpOnfqvqOVlgasmx4mxw8e1w7e2bBA>
+    <xmx:UX5gXy7zo2qDG9U_ET6bW4yV_UAtK5s3BVJeboVmKUBRD2uq_Kutcw>
+    <xmx:UX5gX-6i9QJeaGHKdL7dA8PqBVxBjpZSD_Jkv_pjwaVJLrfxQTwBlg>
+    <xmx:Un5gX-HfDA3Yt-o33-a12Y7MPa8FLFkgbsKri4whgGV8TZ3DEzJ0Rg>
 Received: from shredder.mtl.com (igld-84-229-36-82.inter.net.il [84.229.36.82])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 462013064674;
-        Tue, 15 Sep 2020 04:41:50 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2FE433064682;
+        Tue, 15 Sep 2020 04:41:51 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 5/8] mlxsw: reg: Add Monitoring FW Debug Register
-Date:   Tue, 15 Sep 2020 11:40:55 +0300
-Message-Id: <20200915084058.18555-6-idosch@idosch.org>
+Subject: [PATCH net-next 6/8] mlxsw: reg: Add Monitoring FW General Debug Register
+Date:   Tue, 15 Sep 2020 11:40:56 +0300
+Message-Id: <20200915084058.18555-7-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200915084058.18555-1-idosch@idosch.org>
 References: <20200915084058.18555-1-idosch@idosch.org>
@@ -64,112 +64,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Introduce MFDE register that is passed through MFDE trap in case of
-fatal FW event.
+Introduce MFGD register that is used to configure firmware debugging.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 79 +++++++++++++++++++++++
- 1 file changed, 79 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 485e3e02eb70..f53761114f5a 100644
+index f53761114f5a..421f02eac20f 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -9880,6 +9880,84 @@ mlxsw_reg_mgpir_unpack(char *payload, u8 *num_of_devices,
- 		*num_of_modules = mlxsw_reg_mgpir_num_of_modules_get(payload);
+@@ -9821,6 +9821,26 @@ static inline void mlxsw_reg_mtptptp_pack(char *payload,
+ 	mlxsw_reg_mtptpt_message_type_set(payload, message_type);
  }
  
-+/* MFDE - Monitoring FW Debug Register
-+ * -----------------------------------
++/* MFGD - Monitoring FW General Debug Register
++ * -------------------------------------------
 + */
-+#define MLXSW_REG_MFDE_ID 0x9200
-+#define MLXSW_REG_MFDE_LEN 0x18
++#define MLXSW_REG_MFGD_ID 0x90F0
++#define MLXSW_REG_MFGD_LEN 0x0C
 +
-+MLXSW_REG_DEFINE(mfde, MLXSW_REG_MFDE_ID, MLXSW_REG_MFDE_LEN);
++MLXSW_REG_DEFINE(mfgd, MLXSW_REG_MFGD_ID, MLXSW_REG_MFGD_LEN);
 +
-+/* reg_mfde_irisc_id
-+ * Which irisc triggered the event
-+ * Access: RO
++/* reg_mfgd_fw_fatal_event_mode
++ * 0 - don't check FW fatal (default)
++ * 1 - check FW fatal - enable MFDE trap
++ * Access: RW
 + */
-+MLXSW_ITEM32(reg, mfde, irisc_id, 0x00, 8, 4);
++MLXSW_ITEM32(reg, mfgd, fatal_event_mode, 0x00, 9, 2);
 +
-+enum mlxsw_reg_mfde_event_id {
-+	MLXSW_REG_MFDE_EVENT_ID_CRSPACE_TO = 1,
-+	/* KVD insertion machine stopped */
-+	MLXSW_REG_MFDE_EVENT_ID_KVD_IM_STOP,
-+};
-+
-+/* reg_mfde_event_id
-+ * Access: RO
++/* reg_mfgd_trigger_test
++ * Access: WO
 + */
-+MLXSW_ITEM32(reg, mfde, event_id, 0x00, 0, 8);
++MLXSW_ITEM32(reg, mfgd, trigger_test, 0x00, 11, 1);
 +
-+enum mlxsw_reg_mfde_method {
-+	MLXSW_REG_MFDE_METHOD_QUERY,
-+	MLXSW_REG_MFDE_METHOD_WRITE,
-+};
-+
-+/* reg_mfde_method
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mfde, method, 0x04, 29, 1);
-+
-+/* reg_mfde_long_process
-+ * Indicates if the command is in long_process mode.
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mfde, long_process, 0x04, 28, 1);
-+
-+enum mlxsw_reg_mfde_command_type {
-+	MLXSW_REG_MFDE_COMMAND_TYPE_MAD,
-+	MLXSW_REG_MFDE_COMMAND_TYPE_EMAD,
-+	MLXSW_REG_MFDE_COMMAND_TYPE_CMDIF,
-+};
-+
-+/* reg_mfde_command_type
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mfde, command_type, 0x04, 24, 2);
-+
-+/* reg_mfde_reg_attr_id
-+ * EMAD - register id, MAD - attibute id
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mfde, reg_attr_id, 0x04, 0, 16);
-+
-+/* reg_mfde_log_address
-+ * crspace address accessed, which resulted in timeout.
-+ * Valid in case event_id == MLXSW_REG_MFDE_EVENT_ID_CRSPACE_TO
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mfde, log_address, 0x10, 0, 32);
-+
-+/* reg_mfde_log_id
-+ * Which irisc triggered the timeout.
-+ * Valid in case event_id == MLXSW_REG_MFDE_EVENT_ID_CRSPACE_TO
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mfde, log_id, 0x14, 0, 4);
-+
-+/* reg_mfde_pipes_mask
-+ * Bit per kvh pipe.
-+ * Access: RO
-+ */
-+MLXSW_ITEM32(reg, mfde, pipes_mask, 0x10, 0, 16);
-+
- /* TNGCR - Tunneling NVE General Configuration Register
-  * ----------------------------------------------------
-  * The TNGCR register is used for setting up the NVE Tunneling configuration.
-@@ -10994,6 +11072,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
+ /* MGPIR - Management General Peripheral Information Register
+  * ----------------------------------------------------------
+  * MGPIR register allows software to query the hardware and
+@@ -11071,6 +11091,7 @@ static const struct mlxsw_reg_info *mlxsw_reg_infos[] = {
+ 	MLXSW_REG(mtpppc),
  	MLXSW_REG(mtpptr),
  	MLXSW_REG(mtptpt),
++	MLXSW_REG(mfgd),
  	MLXSW_REG(mgpir),
-+	MLXSW_REG(mfde),
+ 	MLXSW_REG(mfde),
  	MLXSW_REG(tngcr),
- 	MLXSW_REG(tnumt),
- 	MLXSW_REG(tnqcr),
 -- 
 2.26.2
 
