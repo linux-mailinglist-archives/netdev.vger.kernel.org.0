@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A86C026B8B3
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 02:49:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECA7F26B8C6
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 02:50:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727263AbgIPAtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 20:49:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52706 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726410AbgIOLlh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 07:41:37 -0400
+        id S1726412AbgIPAuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 20:50:00 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:42836 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726411AbgIOLlg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 07:41:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600170066;
+        s=mimecast20190719; t=1600170068;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yIGbpCZmz89BH4RaSE1d8nNgeBGwQPZU+jdCtpvbXO4=;
-        b=CZE+IziBxwwJVyT61k/71HKv42TawrWijLxW3mZ0gmrZrZ0p2WVjbDJCJxWlb6eWR8Vh8I
-        dwPMKGLDAKHvcc/+r2PFUgraHwJp/JmbqOnk/OMAyAHQiQOH3QSoOAfTCKp6Y9lyXytr/4
-        8764t26UwrE3ybkIJfB7aowU5nfrVOw=
+        bh=w9fKJXKN7VEhK7rTxzSRwDVyT2JXTZwoaKL+6VZUoBs=;
+        b=ezngq0M4NEYBloXnPWHLQDK7SBuSo0x0m1GxKU3xU2bxOqS0aO284MIrh3+UBdXEw1gADq
+        aYlwq1STFvDaK1dlKPP7Zv5hKSWevyUGSPgb/JeIU0ZfU3RzLvqVdVjwyYH7y4+mN1aSLC
+        TRpo7DhfwIspl4VvOaKRq7lZpJ1dHRY=
 Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
  [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-102-7Cne9xx0PHCy16LAW2j7gQ-1; Tue, 15 Sep 2020 07:41:05 -0400
-X-MC-Unique: 7Cne9xx0PHCy16LAW2j7gQ-1
-Received: by mail-ed1-f72.google.com with SMTP id f16so1135290edm.10
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 04:41:04 -0700 (PDT)
+ us-mta-188-KLktm3z8P26cJ6GLSOlVSQ-1; Tue, 15 Sep 2020 07:41:06 -0400
+X-MC-Unique: KLktm3z8P26cJ6GLSOlVSQ-1
+Received: by mail-ed1-f72.google.com with SMTP id i23so1136803edr.14
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 04:41:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=yIGbpCZmz89BH4RaSE1d8nNgeBGwQPZU+jdCtpvbXO4=;
-        b=NsQllVbikKkOZFD2QY/48THt694YNMSBYwO77jCBVKzU3DbNh2Yqo/+Po4rkg625+w
-         3qUICQWmZkYU98stQnngtsQVPsghOOY5MQHq6XK5ewLknAhAOG4XYFLa2eaBLCCFuEnv
-         N7ITge+Kd61891ZXFO/qw6INiGxyNzydNjx6hjCpsEYUxKcSIUx8IKfU7daTSafnOPuK
-         jC/rBb0ypd8v7nNRkjFptuk7tLL0EDm6+3XxVUMUzP/egeGokFluuRlCeVIfcb1NeMQV
-         sUbLy/q4rkjJ4QBLI001Y5zLOYyx0qGjscVIn7bE92UcIl8VY9fMFMApIAJ7mG75BZp2
-         PchA==
-X-Gm-Message-State: AOAM533Ys1yUHJR9H4mEkEXQfPToEjWwh/LOhZCBu5rGcjhYtzoTlGdo
-        DMkj62/pmFc8/aGGBOt5MWAfRjFhKQkUtmXbZpj9mamidYVzYpDJmEK6BiiWxAJz0P8OYLteCCm
-        5nVpDl6RmukH6ENq+
-X-Received: by 2002:a17:906:b813:: with SMTP id dv19mr19312624ejb.70.1600170063847;
-        Tue, 15 Sep 2020 04:41:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxD2LVB/5/A3KXQLI0EVOwc9cTUvDT+f6CGM+E9vjX+t4XyIxXHSXoAtsmJLV3lW/jJ+Ia9xg==
-X-Received: by 2002:a17:906:b813:: with SMTP id dv19mr19312597ejb.70.1600170063617;
-        Tue, 15 Sep 2020 04:41:03 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id s7sm9922364ejd.103.2020.09.15.04.41.02
+        bh=w9fKJXKN7VEhK7rTxzSRwDVyT2JXTZwoaKL+6VZUoBs=;
+        b=Sbf1Z470L9HdO9UFiPXtY2bP7sbYUttLUApedPgvwahrSojcpzUywmj8lJEWZ+ZwTc
+         NMCyCQlcS4gRrWONouy7BgYTwNfJaOcZ0awRQiSA6oece8dTHvEJXh3hlh+5W03oVp/U
+         ztGHu7lLwLdANLLLjGt+2PfqlIfm8OgLqeJT36rYulNLz0vAnIWFs0hzovPYmAqFjhQF
+         sy4LEE6C7rsxEb1X9v9lMUFHIEOyBVjd4wQYQ+5F147q4GauhbW2qxHR05lYf9dL8Yof
+         fxwduAItgpH8QW/TW3OF2mNRN1h9VscqoalWYw5CiIRb0s1FFx0z7lyIREnkjZIZ/vUg
+         q6Nw==
+X-Gm-Message-State: AOAM530MFtaD2/xZCItulzKWVM2mL4ZzFlPiSUWoPK1/FM4DFXGy0wjb
+        uAyMfsv6fKM321BsflvzcfF7z6vZ3/Y2MmUAxgkf8yXtuzyW+cpq33ZDbSQ5lphklmF8MKTwvUc
+        EHYQc/s+PiK33Zuc1
+X-Received: by 2002:a17:906:3759:: with SMTP id e25mr19398383ejc.281.1600170065258;
+        Tue, 15 Sep 2020 04:41:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyX7RfRm6iniM5SmaodndIFtQgzIT5Ww5VKOvVQJmL14fylehW5jLhmGjq0VOp4n5vy3qNh3w==
+X-Received: by 2002:a17:906:3759:: with SMTP id e25mr19398348ejc.281.1600170064896;
+        Tue, 15 Sep 2020 04:41:04 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id y9sm9937836ejw.96.2020.09.15.04.41.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 04:41:02 -0700 (PDT)
+        Tue, 15 Sep 2020 04:41:03 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 7EBCA1829CC; Tue, 15 Sep 2020 13:41:02 +0200 (CEST)
-Subject: [PATCH bpf-next v5 5/8] bpf: Fix context type resolving for extension
- programs
+        id 996C01829CB; Tue, 15 Sep 2020 13:41:03 +0200 (CEST)
+Subject: [PATCH bpf-next v5 6/8] libbpf: add support for freplace attachment
+ in bpf_link_create
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Alexei Starovoitov <ast@kernel.org>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
@@ -65,8 +65,8 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Eelco Chaudron <echaudro@redhat.com>,
         KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Date:   Tue, 15 Sep 2020 13:41:02 +0200
-Message-ID: <160017006242.98230.15812695975228745782.stgit@toke.dk>
+Date:   Tue, 15 Sep 2020 13:41:03 +0200
+Message-ID: <160017006352.98230.621859348254499900.stgit@toke.dk>
 In-Reply-To: <160017005691.98230.13648200635390228683.stgit@toke.dk>
 References: <160017005691.98230.13648200635390228683.stgit@toke.dk>
 User-Agent: StGit/0.23
@@ -80,68 +80,134 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-Eelco reported we can't properly access arguments if the tracing
-program is attached to extension program.
+This adds support for supplying a target btf ID for the bpf_link_create()
+operation, and adds a new bpf_program__attach_freplace() high-level API for
+attaching freplace functions with a target.
 
-Having following program:
-
-  SEC("classifier/test_pkt_md_access")
-  int test_pkt_md_access(struct __sk_buff *skb)
-
-with its extension:
-
-  SEC("freplace/test_pkt_md_access")
-  int test_pkt_md_access_new(struct __sk_buff *skb)
-
-and tracing that extension with:
-
-  SEC("fentry/test_pkt_md_access_new")
-  int BPF_PROG(fentry, struct sk_buff *skb)
-
-It's not possible to access skb argument in the fentry program,
-with following error from verifier:
-
-  ; int BPF_PROG(fentry, struct sk_buff *skb)
-  0: (79) r1 = *(u64 *)(r1 +0)
-  invalid bpf_context access off=0 size=8
-
-The problem is that btf_ctx_access gets the context type for the
-traced program, which is in this case the extension.
-
-But when we trace extension program, we want to get the context
-type of the program that the extension is attached to, so we can
-access the argument properly in the trace program.
-
-This version of the patch is tweaked slightly from Jiri's original one,
-since the refactoring in the previous patches means we have to get the
-target prog type from the new variable in prog->aux instead of directly
-from the target prog.
-
-Reported-by: Eelco Chaudron <echaudro@redhat.com>
-Suggested-by: Jiri Olsa <jolsa@kernel.org>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- kernel/bpf/btf.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ tools/lib/bpf/bpf.c      |    1 +
+ tools/lib/bpf/bpf.h      |    3 ++-
+ tools/lib/bpf/libbpf.c   |   24 ++++++++++++++++++------
+ tools/lib/bpf/libbpf.h   |    3 +++
+ tools/lib/bpf/libbpf.map |    1 +
+ 5 files changed, 25 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 9228af9917a8..55f7b2ba1cbd 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -3860,7 +3860,14 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+index 82b983ff6569..e928456c0dd6 100644
+--- a/tools/lib/bpf/bpf.c
++++ b/tools/lib/bpf/bpf.c
+@@ -599,6 +599,7 @@ int bpf_link_create(int prog_fd, int target_fd,
+ 	attr.link_create.iter_info =
+ 		ptr_to_u64(OPTS_GET(opts, iter_info, (void *)0));
+ 	attr.link_create.iter_info_len = OPTS_GET(opts, iter_info_len, 0);
++	attr.link_create.target_btf_id = OPTS_GET(opts, target_btf_id, 0);
  
- 	info->reg_type = PTR_TO_BTF_ID;
- 	if (tgt_prog) {
--		ret = btf_translate_to_vmlinux(log, btf, t, tgt_prog->type, arg);
-+		enum bpf_prog_type tgt_type;
+ 	return sys_bpf(BPF_LINK_CREATE, &attr, sizeof(attr));
+ }
+diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+index 015d13f25fcc..f8dbf666b62b 100644
+--- a/tools/lib/bpf/bpf.h
++++ b/tools/lib/bpf/bpf.h
+@@ -174,8 +174,9 @@ struct bpf_link_create_opts {
+ 	__u32 flags;
+ 	union bpf_iter_link_info *iter_info;
+ 	__u32 iter_info_len;
++	__u32 target_btf_id;
+ };
+-#define bpf_link_create_opts__last_field iter_info_len
++#define bpf_link_create_opts__last_field target_btf_id
+ 
+ LIBBPF_API int bpf_link_create(int prog_fd, int target_fd,
+ 			       enum bpf_attach_type attach_type,
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 550950eb1860..165131c73f40 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -9322,12 +9322,14 @@ static struct bpf_link *attach_iter(const struct bpf_sec_def *sec,
+ 
+ static struct bpf_link *
+ bpf_program__attach_fd(struct bpf_program *prog, int target_fd,
+-		       const char *target_name)
++		       int target_btf_id, const char *target_name)
+ {
+ 	enum bpf_attach_type attach_type;
+ 	char errmsg[STRERR_BUFSIZE];
+ 	struct bpf_link *link;
+ 	int prog_fd, link_fd;
++	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts,
++			    .target_btf_id = target_btf_id);
+ 
+ 	prog_fd = bpf_program__fd(prog);
+ 	if (prog_fd < 0) {
+@@ -9340,8 +9342,12 @@ bpf_program__attach_fd(struct bpf_program *prog, int target_fd,
+ 		return ERR_PTR(-ENOMEM);
+ 	link->detach = &bpf_link__detach_fd;
+ 
+-	attach_type = bpf_program__get_expected_attach_type(prog);
+-	link_fd = bpf_link_create(prog_fd, target_fd, attach_type, NULL);
++	if (bpf_program__get_type(prog) == BPF_PROG_TYPE_EXT)
++		attach_type = BPF_TRACE_FREPLACE;
++	else
++		attach_type = bpf_program__get_expected_attach_type(prog);
 +
-+		if (tgt_prog->type == BPF_PROG_TYPE_EXT)
-+			tgt_type = tgt_prog->aux->tgt_prog_type;
-+		else
-+			tgt_type = tgt_prog->type;
++	link_fd = bpf_link_create(prog_fd, target_fd, attach_type, &opts);
+ 	if (link_fd < 0) {
+ 		link_fd = -errno;
+ 		free(link);
+@@ -9357,19 +9363,25 @@ bpf_program__attach_fd(struct bpf_program *prog, int target_fd,
+ struct bpf_link *
+ bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd)
+ {
+-	return bpf_program__attach_fd(prog, cgroup_fd, "cgroup");
++	return bpf_program__attach_fd(prog, cgroup_fd, 0, "cgroup");
+ }
+ 
+ struct bpf_link *
+ bpf_program__attach_netns(struct bpf_program *prog, int netns_fd)
+ {
+-	return bpf_program__attach_fd(prog, netns_fd, "netns");
++	return bpf_program__attach_fd(prog, netns_fd, 0, "netns");
+ }
+ 
+ struct bpf_link *bpf_program__attach_xdp(struct bpf_program *prog, int ifindex)
+ {
+ 	/* target_fd/target_ifindex use the same field in LINK_CREATE */
+-	return bpf_program__attach_fd(prog, ifindex, "xdp");
++	return bpf_program__attach_fd(prog, ifindex, 0, "xdp");
++}
 +
-+		ret = btf_translate_to_vmlinux(log, btf, t, tgt_type, arg);
- 		if (ret > 0) {
- 			info->btf_id = ret;
- 			return true;
++struct bpf_link *bpf_program__attach_freplace(struct bpf_program *prog,
++					      int target_fd, int target_btf_id)
++{
++	return bpf_program__attach_fd(prog, target_fd, target_btf_id, "freplace");
+ }
+ 
+ struct bpf_link *
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index a750f67a23f6..ce5add9b9203 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -261,6 +261,9 @@ LIBBPF_API struct bpf_link *
+ bpf_program__attach_netns(struct bpf_program *prog, int netns_fd);
+ LIBBPF_API struct bpf_link *
+ bpf_program__attach_xdp(struct bpf_program *prog, int ifindex);
++LIBBPF_API struct bpf_link *
++bpf_program__attach_freplace(struct bpf_program *prog,
++			     int target_fd, int target_btf_id);
+ 
+ struct bpf_map;
+ 
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 92ceb48a5ca2..3cc2c42f435d 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -302,6 +302,7 @@ LIBBPF_0.1.0 {
+ 
+ LIBBPF_0.2.0 {
+ 	global:
++		bpf_program__attach_freplace;
+ 		bpf_program__section_name;
+ 		perf_buffer__buffer_cnt;
+ 		perf_buffer__buffer_fd;
 
