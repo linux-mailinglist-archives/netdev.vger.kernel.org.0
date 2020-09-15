@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11A1026B1CC
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6861F26B1EA
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727816AbgIOWg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:36:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54074 "EHLO
+        id S1727673AbgIOWhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727589AbgIOWgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 18:36:10 -0400
+        with ESMTP id S1727718AbgIOWh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 18:37:29 -0400
 Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36822C061788;
-        Tue, 15 Sep 2020 15:36:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D9BC06174A
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 15:37:29 -0700 (PDT)
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A81F713757C20;
-        Tue, 15 Sep 2020 15:19:22 -0700 (PDT)
-Date:   Tue, 15 Sep 2020 15:36:09 -0700 (PDT)
-Message-Id: <20200915.153609.180837989360811070.davem@davemloft.net>
-To:     andrew@lunn.ch
-Cc:     oded.gabbay@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        SW_Drivers@habana.ai, gregkh@linuxfoundation.org,
-        f.fainelli@gmail.com, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0236113757C27;
+        Tue, 15 Sep 2020 15:20:41 -0700 (PDT)
+Date:   Tue, 15 Sep 2020 15:37:28 -0700 (PDT)
+Message-Id: <20200915.153728.107358987807075865.davem@davemloft.net>
+To:     saeed@kernel.org
+Cc:     andrew@lunn.ch, jesse.brandeburg@intel.com, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH net-next v2 00/10] make drivers/net/ethernet W=1 clean
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200915213735.GG3526428@lunn.ch>
-References: <20200915140418.4afbc1eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAFCwf10+_hQOSH4Ot+keE9Tc+ybupvp5JyUhFbvfoy6HseVyZg@mail.gmail.com>
-        <20200915213735.GG3526428@lunn.ch>
+In-Reply-To: <734f0c4595a18ab136263b6e5c97e7f48a93abe1.camel@kernel.org>
+References: <a28498acdf87f11e81d3282d63f18dbe1a3d5329.camel@kernel.org>
+        <20200915140326.GG3485708@lunn.ch>
+        <734f0c4595a18ab136263b6e5c97e7f48a93abe1.camel@kernel.org>
 X-Mailer: Mew version 6.8 on Emacs 27.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Tue, 15 Sep 2020 15:19:23 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Tue, 15 Sep 2020 15:20:42 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
-Date: Tue, 15 Sep 2020 23:37:35 +0200
+From: Saeed Mahameed <saeed@kernel.org>
+Date: Tue, 15 Sep 2020 13:03:03 -0700
 
->> I understand your point of view but If my H/W doesn't support the
->> basic requirements of the RDMA infrastructure and interfaces, then
->> really there is nothing I can do about it. I can't use them.
+> On Tue, 2020-09-15 at 16:03 +0200, Andrew Lunn wrote:
+>> I would prefer we just enable W=1 by default for everything under
+>> driver/net. Maybe there is something we can set in
+>> driver/net/Makefile?
+>> 
 > 
-> It is up to the RDMA people to say that. They might see how the RDMA
-> core can be made to work for your hardware.
+> 
+> Yes we can have our own gcc options in the Makfile regardless of what
+> you put in W command line argument.
 
-+1
+I definitely would like to see W=1 in drivers/net/Makefile eventually.
