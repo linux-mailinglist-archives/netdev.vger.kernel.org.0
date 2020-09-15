@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A6A26AF3E
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 23:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09D8126AF3B
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 23:12:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727831AbgIOVNR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 17:13:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54382 "EHLO mail.kernel.org"
+        id S1727996AbgIOVMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 17:12:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54378 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727957AbgIOU0w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727953AbgIOU0w (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 15 Sep 2020 16:26:52 -0400
 Received: from sx1.lan (c-24-6-56-119.hsd1.ca.comcast.net [24.6.56.119])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 07E0D20936;
-        Tue, 15 Sep 2020 20:25:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8155421D7F;
+        Tue, 15 Sep 2020 20:25:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600201557;
-        bh=rStx+vWtUWZHmIZuOtNmbT5SBsevn4dvruAYjyoc7aA=;
+        s=default; t=1600201558;
+        bh=tRi7dwj1PbSoYQrwCfZJ3a2NrpdhhjHDBAHIAGmp9aM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vCoT92F48NpxNiaW/HQqv+/0LZ6X3EON001AaC7XZuVKuPT4qR49LjZnp06r/5uwU
-         7cyitgUvU2rFIv50JlfZBXAzbJTCqoAe7BsUHIa9eD7tSaX5HE4uwHTLjyaoccKAc/
-         sQC4Aa2sKWnNFALctLgLRpmbVUKJlmbvxQfCmlUc=
+        b=ZloJk3LOZ5KsKcScaPLvPY/Sk4UUI44mADgO/T3GQnnnkCHpYAMrHhn4u3oZjD71C
+         tEE0CGrocTHpNZvCvzu/O7DNB7e6t3qFofmxnh7N+RmqV/h/jbjy5ywox3zOe88P0L
+         xnxyQDulOzFA1T1460KaSTNKknifPOno3RJy/vvk=
 From:   saeed@kernel.org
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Jianbo Liu <jianbol@mellanox.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 07/16] net/mlx5e: Return a valid errno if can't get lag device index
-Date:   Tue, 15 Sep 2020 13:25:24 -0700
-Message-Id: <20200915202533.64389-8-saeed@kernel.org>
+        Raed Salem <raeds@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Jiri Pirko <jiri@nvidia.com>, Raed Salem <raeds@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 08/16] net/mlx5e: Add LAG warning for unsupported tx type
+Date:   Tue, 15 Sep 2020 13:25:25 -0700
+Message-Id: <20200915202533.64389-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200915202533.64389-1-saeed@kernel.org>
 References: <20200915202533.64389-1-saeed@kernel.org>
@@ -44,65 +45,60 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jianbo Liu <jianbol@mellanox.com>
 
-Change the return value to -ENOENT, to make it more meaningful.
+If bond tx type is not active-backup or hash, LAG offload can't be
+enabled. When CHANGEUPPER event is received, and both PFs (and only
+them) under the same lag master are about to be enslaved, a warning
+is returned for user to know the offload failure, otherwise PFs are
+enslaved silently without LAG offload activated.
 
 Signed-off-by: Jianbo Liu <jianbol@mellanox.com>
+Reviewed-by: Raed Salem <raeds@mellanox.com>
+Reviewed-by: Roi Dayan <roid@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag.c    | 6 +++---
- drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c | 7 ++++++-
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lag.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-index 874c70e8cc54..8b6e2aae2783 100644
+index 8b6e2aae2783..191d3d5be46d 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/lag.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/lag.c
-@@ -102,7 +102,7 @@ int mlx5_lag_dev_get_netdev_idx(struct mlx5_lag *ldev,
- 		if (ldev->pf[i].netdev == ndev)
- 			return i;
+@@ -355,7 +355,7 @@ static int mlx5_handle_changeupper_event(struct mlx5_lag *ldev,
+ {
+ 	struct net_device *upper = info->upper_dev, *ndev_tmp;
+ 	struct netdev_lag_upper_info *lag_upper_info = NULL;
+-	bool is_bonded;
++	bool is_bonded, is_in_lag, mode_supported;
+ 	int bond_status = 0;
+ 	int num_slaves = 0;
+ 	int idx;
+@@ -391,13 +391,18 @@ static int mlx5_handle_changeupper_event(struct mlx5_lag *ldev,
+ 	/* Determine bonding status:
+ 	 * A device is considered bonded if both its physical ports are slaves
+ 	 * of the same lag master, and only them.
+-	 * Lag mode must be activebackup or hash.
+ 	 */
+-	is_bonded = (num_slaves == MLX5_MAX_PORTS) &&
+-		    (bond_status == 0x3) &&
+-		    ((tracker->tx_type == NETDEV_LAG_TX_TYPE_ACTIVEBACKUP) ||
+-		     (tracker->tx_type == NETDEV_LAG_TX_TYPE_HASH));
++	is_in_lag = num_slaves == MLX5_MAX_PORTS && bond_status == 0x3;
  
--	return -1;
-+	return -ENOENT;
- }
- 
- static bool __mlx5_lag_is_roce(struct mlx5_lag *ldev)
-@@ -374,7 +374,7 @@ static int mlx5_handle_changeupper_event(struct mlx5_lag *ldev,
- 	rcu_read_lock();
- 	for_each_netdev_in_bond_rcu(upper, ndev_tmp) {
- 		idx = mlx5_lag_dev_get_netdev_idx(ldev, ndev_tmp);
--		if (idx > -1)
-+		if (idx >= 0)
- 			bond_status |= (1 << idx);
- 
- 		num_slaves++;
-@@ -418,7 +418,7 @@ static int mlx5_handle_changelowerstate_event(struct mlx5_lag *ldev,
- 		return 0;
- 
- 	idx = mlx5_lag_dev_get_netdev_idx(ldev, ndev);
--	if (idx == -1)
-+	if (idx < 0)
- 		return 0;
- 
- 	/* This information is used to determine virtual to physical
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index 9e68f5926ab6..d192d25cff33 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -131,7 +131,12 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 			struct net_device *nh_dev = nh->fib_nh_dev;
- 			int i = mlx5_lag_dev_get_netdev_idx(ldev, nh_dev);
- 
--			mlx5_lag_set_port_affinity(ldev, ++i);
-+			if (i < 0)
-+				i = MLX5_LAG_NORMAL_AFFINITY;
-+			else
-+				++i;
++	/* Lag mode must be activebackup or hash. */
++	mode_supported = tracker->tx_type == NETDEV_LAG_TX_TYPE_ACTIVEBACKUP ||
++			 tracker->tx_type == NETDEV_LAG_TX_TYPE_HASH;
 +
-+			mlx5_lag_set_port_affinity(ldev, i);
- 		}
- 		return;
- 	}
++	if (is_in_lag && !mode_supported)
++		NL_SET_ERR_MSG_MOD(info->info.extack,
++				   "Can't activate LAG offload, TX type isn't supported");
++
++	is_bonded = is_in_lag && mode_supported;
+ 	if (tracker->is_bonded != is_bonded) {
+ 		tracker->is_bonded = is_bonded;
+ 		return 1;
 -- 
 2.26.2
 
