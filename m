@@ -2,40 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C75926ACD9
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 21:01:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D87F26ACD5
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 21:01:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727689AbgIOTAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 15:00:35 -0400
-Received: from mga18.intel.com ([134.134.136.126]:24482 "EHLO mga18.intel.com"
+        id S1727222AbgIOTAp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 15:00:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38210 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727863AbgIORLm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Sep 2020 13:11:42 -0400
-IronPort-SDR: Xj6F/23TtSmJFMQKxcZWOgwtjrGYZpiYARBbokbasvZNjAcoBUqYYyf4asQ7mjCRftX/LQAd8p
- 3/RvYF6rrG4Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9745"; a="147058971"
-X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
-   d="scan'208";a="147058971"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 10:11:27 -0700
-IronPort-SDR: azfzuffcapFxu0y8d/ncJtgtbLEJGIi1b6VwTAHrdEm+kIhoJpSTkJ4vjpIFP/dBQ+zjJq5IsO
- 3o0sPSiaw7QQ==
-X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
-   d="scan'208";a="482903784"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.118.172])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 10:11:26 -0700
-Date:   Tue, 15 Sep 2020 10:11:24 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH net-next v2 00/10] make drivers/net/ethernet W=1 clean
-Message-ID: <20200915101124.00004146@intel.com>
-In-Reply-To: <a28498acdf87f11e81d3282d63f18dbe1a3d5329.camel@kernel.org>
-References: <20200915014455.1232507-1-jesse.brandeburg@intel.com>
-        <a28498acdf87f11e81d3282d63f18dbe1a3d5329.camel@kernel.org>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1727637AbgIOTA2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Sep 2020 15:00:28 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E761E206A2;
+        Tue, 15 Sep 2020 19:00:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600196428;
+        bh=kG4SBxBUMbKR7Td7+QWH0A/2VOsHN2v6DsK+67l9AvY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Jpy6qNl5jnh7HwZku0urEhkSIQ9X0P6pKWFMNxOZdWVfCJAr7a2YcSkhZfBoz2ajG
+         9XiTuNceazMTgET3HV8ikKfqWLp0QO61wwmOkLCUIUOuIW1pafCMfbq5E8MaqdsPQn
+         N9PEHg1QmXdkuZwgCi78m/+x4ePIu85UyeKfCw7w=
+Date:   Tue, 15 Sep 2020 12:00:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Shannon Nelson <snelson@pensando.io>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCH v3 net-next 2/2] ionic: add devlink firmware update
+Message-ID: <20200915120025.0858e324@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1dfa16c8-8bb6-a429-6644-68fd94fc2830@intel.com>
+References: <20200908224812.63434-1-snelson@pensando.io>
+        <20200909094426.68c417fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <581f2161-1c55-31ae-370b-bbea5a677862@pensando.io>
+        <20200909122233.45e4c65c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3d75c4be-ae5d-43b0-407c-5df1e7645447@pensando.io>
+        <20200910105643.2e2d07f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a04313f7-649e-a928-767c-b9d27f3a0c7c@intel.com>
+        <20200914163605.750b0f23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <3b18d92f-3a0a-c0b0-1b46-ecfd4408038c@pensando.io>
+        <7e44037cedb946d4a72055dd0898ab1d@intel.com>
+        <f4e4e9c3-b293-cef1-bb84-db7fe691882a@pensando.io>
+        <20200915085045.446b854b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <4b5e3547f3854fd399b26a663405b1f8@intel.com>
+        <ad9b1163-fe3b-6793-c799-75a9c4ce87f9@pensando.io>
+        <20200915103913.46cebf69@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <1dfa16c8-8bb6-a429-6644-68fd94fc2830@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,50 +56,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Saeed Mahameed wrote:
-> Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-
-Thanks! In all fairness, Jakub reviewed this in v1 too but I made enough
-changes in v2 that I felt I had to drop the previous review ACKs.
-
-> Hi Jesse, 
-> What was the criteria to select which drivers to enable in your .config
-> ?
-
-As Jakub said, I'm using allmodconfig on x86_64, but just yesterday
-discovered there was much more to fix because I ran the kernel-doc
-script directly on the source (those other things come from different
-ARCH= builds which limit allmodconfig)
- 
-> I think we need some automation here and have a well known .config that
-> enables as many drivers as we can for static + compilation testing,
-> otherwise we are going to need to repeat this patch every 2-3 months.
-
-Totally agree! Jakub already has some cobbled together and is regularly
-running W=1 C=1 builds on all new patches. I found I could cross compile
-different ARCH targets to get (some of) the other warnings, or better
-yet just run the scripts/kernel-doc script directly in automation.
- 
-> I know Jakub and Dave do some compilation testing before merging but i
-> don't know how much driver coverage they have and if they use a
-> specific .config or they just manually create one on demand..
+On Tue, 15 Sep 2020 11:44:07 -0700 Jacob Keller wrote:
+> Exactly how I saw it.
 > 
-> bottom line, we need a bot after this series is applied.
-> All we need is to daily apply all ongoing patches to some testing
-> branch and let 0-DAY kernel test [1] run on it with whatever make
-> command we define and with all drivers enabled.
-
-Yes, that's the end goal and I think this moves us closer to that. A
-little more work remains before we go and turn all warnings on - as
-Andrew suggested in another reply. (it's also sometimes a losing game
-fighting against many compiler versions, etc).  However, the zero-day
-bot reporting more results from W=1 compiles would *really* help (I
-looked at , but am having some troubles verifying that)
-
-> [1] https://lists.01.org/pipermail/kbuild-all 
+> Basically, the timeout should take effect as long as the (component,
+> msg) pair stays the same.
 > 
-> > ---
-> > 
-> > Q: Maybe I can fix the remaining warnings in a followup patch? If
-> > I try to put it on this series it will make it much larger
-> > (double).
+> So if you send percentage reports with the same message and component,
+> then the timeout stays in effect. Once you start a new message, then the
+> timeout would be reset.
+
+I don't think I agree with that. As I said that'd make the timeout not
+match the reality of what happens in the driver.
+
+Say I have 4 updates (every 25%) each has a timeout of 30 seconds.
+If I understand what you're saying correctly you'd set a timeout of 
+2 min for the operation. But if first two chunks finish in 10 seconds,
+and 3rd one timeouts out the timeout will happen (in the driver) when
+the user-visible timer is at (50sec / 2 min). 
+
+I think that each notification should update the timeout. And like
+systemd we should not display the timeout counter in the first, say 5
+seconds to minimize the display noise.
+
+> We could in theory provide both a "timeout" and "time elapsed" field,
+> which would allow the application to draw the timeout at an abitrary
+> point. Then it could progress the time as normal if it hasn't received a
+> new message yet, allowing for consistent screen updates...
+
+I'm not sure I follow this part.
+
+> But I think that might be overkill. For the cases where we do get some
+> sort of progress, then the percentage update is usually enough.
