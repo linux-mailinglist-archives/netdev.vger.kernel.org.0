@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB14826B1DB
-	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:37:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB88226B1B8
+	for <lists+netdev@lfdr.de>; Wed, 16 Sep 2020 00:35:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727724AbgIOWff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 18:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49530 "EHLO
+        id S1727694AbgIOWfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 18:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727523AbgIOQKm (ORCPT
+        with ESMTP id S1727484AbgIOQKm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 12:10:42 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE08BC0611C1;
-        Tue, 15 Sep 2020 09:07:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EE8C0611BC;
+        Tue, 15 Sep 2020 09:09:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=jNO1brRzt5ng659lhtl+4oBfakGzrKMS1ATQw8TQgTw=; b=TNPCL5eofP+HlOArQnkCfBaBcr
-        YSGLdW/Qiv8AzkIHe8+EOuTfZrgbsKu9jL1zP7QoNQXeZv0pCDWNLoYO6X7GX52MyzpQm/Qd0l4TW
-        s31qJRN7rvs24hSZP6bcKILlEwfoqjkT6or2AmTorYl7yaujPyXyRdb9xYCgwn0zC5nSKokjgc87s
-        wAsYB3/f0N9P1i3981XSC7+myVSEdufwVNd9kMFcESiR1kuA3nHY385p7qPLuLXrEFtb5WxZTOQ3I
-        4Q6UFijBo+aeSfJD4+xDoOSZN+FjexdxQU+nwsfcM9/hEd0538/gLTNdu3xeyaqFFbXJnbQhSDROE
-        mrXYuVRA==;
+        bh=4VyhbiOMgzm0QPHeJGUyTZJJAAD6pLEtbJL5rBmX2KE=; b=EVw+5UvoluZB3eJ6b8C05Ki3r/
+        qmryI7WEF5ab64mHzPbaIatrZ1US9k0tzAxQ54kO3OBb4lqjPH65JQcbJ2Ft0lrQayV2eF7Vg/yGV
+        otOuoODny2dUJDUZr0bVtcG7wkyP8e3TEqK0wp/asnQRaOLwrR+M0z4gdWYBrmcMFEe6h888n7GuL
+        K0NEwaEAiZqm2c4vYRJxAYgQ67ngfmTiD6tZlyRSVdZ6YmOWyJb4iVV/FUEQKoMZ2CW8dhrTnZdTt
+        GQ9oZnmqbteXn8qbck40adE7ZXtD7pQ56tGHtk46yWWYyho6gG5PhOPd/T/Tlz+fTJoU5MbIGp/Dh
+        40SyJU+w==;
 Received: from 089144214092.atnat0023.highway.a1.net ([89.144.214.92] helo=localhost)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kIDTc-0004Iz-Az; Tue, 15 Sep 2020 16:06:40 +0000
+        id 1kIDVj-0004PH-Ca; Tue, 15 Sep 2020 16:08:51 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -46,9 +46,9 @@ Cc:     Stefan Richter <stefanr@s5r6.in-berlin.de>,
         nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
         linux-scsi@vger.kernel.org, linux-mm@kvack.org,
         alsa-devel@alsa-project.org
-Subject: [PATCH 06/18] lib82596: move DMA allocation into the callers of i82596_probe
-Date:   Tue, 15 Sep 2020 17:51:10 +0200
-Message-Id: <20200915155122.1768241-7-hch@lst.de>
+Subject: [PATCH 07/18] 53c700: improve non-coherent DMA handling
+Date:   Tue, 15 Sep 2020 17:51:11 +0200
+Message-Id: <20200915155122.1768241-8-hch@lst.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200915155122.1768241-1-hch@lst.de>
 References: <20200915155122.1768241-1-hch@lst.de>
@@ -60,187 +60,353 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This allows us to get rid of the LIB82596_DMA_ATTR defined and prepare
-for untangling the coherent vs non-coherent DMA allocation API.
+Switch the 53c700 driver to only use non-coherent descriptor memory if it
+really has to because dma_alloc_coherent fails.  This doesn't matter for
+any of the platforms it runs on currently, but that will change soon.
+
+To help with this two new helpers to transfer ownership to and from the
+device are added that abstract the syncing of the non-coherent memory.
+The two current bidirectional cases are mapped to transfers to the
+device, as that appears to what they are used for.  Note that for parisc,
+which is the only architecture this driver needs to use non-coherent
+memory on, the direction argument of dma_cache_sync is ignored, so this
+will not change behavior in any way.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/net/ethernet/i825xx/lasi_82596.c | 24 ++++++++++------
- drivers/net/ethernet/i825xx/lib82596.c   | 36 ++++++++----------------
- drivers/net/ethernet/i825xx/sni_82596.c  | 19 +++++++++----
- 3 files changed, 40 insertions(+), 39 deletions(-)
+ drivers/scsi/53c700.c | 113 +++++++++++++++++++++++-------------------
+ drivers/scsi/53c700.h |  17 ++++---
+ 2 files changed, 72 insertions(+), 58 deletions(-)
 
-diff --git a/drivers/net/ethernet/i825xx/lasi_82596.c b/drivers/net/ethernet/i825xx/lasi_82596.c
-index aec7e98bcc853a..a12218e940a2fa 100644
---- a/drivers/net/ethernet/i825xx/lasi_82596.c
-+++ b/drivers/net/ethernet/i825xx/lasi_82596.c
-@@ -96,8 +96,6 @@
+diff --git a/drivers/scsi/53c700.c b/drivers/scsi/53c700.c
+index 84b57a8f86bfa9..c59226d7e2f6b5 100644
+--- a/drivers/scsi/53c700.c
++++ b/drivers/scsi/53c700.c
+@@ -269,6 +269,20 @@ NCR_700_get_SXFER(struct scsi_device *SDp)
+ 					      spi_period(SDp->sdev_target));
+ }
  
- #define OPT_SWAP_PORT	0x0001	/* Need to wordswp on the MPU port */
- 
--#define LIB82596_DMA_ATTR	DMA_ATTR_NON_CONSISTENT
--
- #define DMA_WBACK(ndev, addr, len) \
- 	do { dma_cache_sync((ndev)->dev.parent, (void *)addr, len, DMA_TO_DEVICE); } while (0)
- 
-@@ -155,7 +153,7 @@ lan_init_chip(struct parisc_device *dev)
- {
- 	struct	net_device *netdevice;
- 	struct i596_private *lp;
--	int	retval;
-+	int retval = -ENOMEM;
- 	int i;
- 
- 	if (!dev->irq) {
-@@ -186,12 +184,22 @@ lan_init_chip(struct parisc_device *dev)
- 
- 	lp = netdev_priv(netdevice);
- 	lp->options = dev->id.sversion == 0x72 ? OPT_SWAP_PORT : 0;
-+	lp->dma = dma_alloc_attrs(&dev->dev, sizeof(struct i596_dma),
-+			      &lp->dma_addr, GFP_KERNEL,
-+			      DMA_ATTR_NON_CONSISTENT);
-+	if (!lp->dma)
-+		goto out_free_netdev;
- 
- 	retval = i82596_probe(netdevice);
--	if (retval) {
--		free_netdev(netdevice);
--		return -ENODEV;
--	}
-+	if (retval)
-+		goto out_free_dma;
-+	return 0;
++static inline void dma_sync_to_dev(struct NCR_700_Host_Parameters *h,
++		void *addr, size_t size)
++{
++	if (h->noncoherent)
++		dma_cache_sync(h->dev, addr, size, DMA_TO_DEVICE);
++}
 +
-+out_free_dma:
-+	dma_free_attrs(&dev->dev, sizeof(struct i596_dma), lp->dma,
-+			lp->dma_addr, DMA_ATTR_NON_CONSISTENT);
-+out_free_netdev:
-+	free_netdev(netdevice);
- 	return retval;
- }
- 
-@@ -202,7 +210,7 @@ static int __exit lan_remove_chip(struct parisc_device *pdev)
- 
- 	unregister_netdev (dev);
- 	dma_free_attrs(&pdev->dev, sizeof(struct i596_private), lp->dma,
--		       lp->dma_addr, LIB82596_DMA_ATTR);
-+		       lp->dma_addr, DMA_ATTR_NON_CONSISTENT);
- 	free_netdev (dev);
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/i825xx/lib82596.c b/drivers/net/ethernet/i825xx/lib82596.c
-index b03757e169e475..b4e4b3eb5758b5 100644
---- a/drivers/net/ethernet/i825xx/lib82596.c
-+++ b/drivers/net/ethernet/i825xx/lib82596.c
-@@ -1047,9 +1047,8 @@ static const struct net_device_ops i596_netdev_ops = {
- 
- static int i82596_probe(struct net_device *dev)
- {
--	int i;
- 	struct i596_private *lp = netdev_priv(dev);
--	struct i596_dma *dma;
-+	int ret;
- 
- 	/* This lot is ensure things have been cache line aligned. */
- 	BUILD_BUG_ON(sizeof(struct i596_rfd) != 32);
-@@ -1063,41 +1062,28 @@ static int i82596_probe(struct net_device *dev)
- 	if (!dev->base_addr || !dev->irq)
- 		return -ENODEV;
- 
--	dma = dma_alloc_attrs(dev->dev.parent, sizeof(struct i596_dma),
--			      &lp->dma_addr, GFP_KERNEL,
--			      LIB82596_DMA_ATTR);
--	if (!dma) {
--		printk(KERN_ERR "%s: Couldn't get shared memory\n", __FILE__);
--		return -ENOMEM;
--	}
--
- 	dev->netdev_ops = &i596_netdev_ops;
- 	dev->watchdog_timeo = TX_TIMEOUT;
- 
--	memset(dma, 0, sizeof(struct i596_dma));
--	lp->dma = dma;
--
--	dma->scb.command = 0;
--	dma->scb.cmd = I596_NULL;
--	dma->scb.rfd = I596_NULL;
-+	memset(lp->dma, 0, sizeof(struct i596_dma));
-+	lp->dma->scb.command = 0;
-+	lp->dma->scb.cmd = I596_NULL;
-+	lp->dma->scb.rfd = I596_NULL;
- 	spin_lock_init(&lp->lock);
- 
--	DMA_WBACK_INV(dev, dma, sizeof(struct i596_dma));
-+	DMA_WBACK_INV(dev, lp->dma, sizeof(struct i596_dma));
- 
--	i = register_netdev(dev);
--	if (i) {
--		dma_free_attrs(dev->dev.parent, sizeof(struct i596_dma),
--			       dma, lp->dma_addr, LIB82596_DMA_ATTR);
--		return i;
--	}
-+	ret = register_netdev(dev);
-+	if (ret)
-+		return ret;
- 
- 	DEB(DEB_PROBE, printk(KERN_INFO "%s: 82596 at %#3lx, %pM IRQ %d.\n",
- 			      dev->name, dev->base_addr, dev->dev_addr,
- 			      dev->irq));
- 	DEB(DEB_INIT, printk(KERN_INFO
- 			     "%s: dma at 0x%p (%d bytes), lp->scb at 0x%p\n",
--			     dev->name, dma, (int)sizeof(struct i596_dma),
--			     &dma->scb));
-+			     dev->name, lp->dma, (int)sizeof(struct i596_dma),
-+			     &lp->dma->scb));
- 
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/i825xx/sni_82596.c b/drivers/net/ethernet/i825xx/sni_82596.c
-index 22f5887578b2bd..4b9ac0c6557731 100644
---- a/drivers/net/ethernet/i825xx/sni_82596.c
-+++ b/drivers/net/ethernet/i825xx/sni_82596.c
-@@ -24,8 +24,6 @@
- 
- static const char sni_82596_string[] = "snirm_82596";
- 
--#define LIB82596_DMA_ATTR	0
--
- #define DMA_WBACK(priv, addr, len)     do { } while (0)
- #define DMA_INV(priv, addr, len)       do { } while (0)
- #define DMA_WBACK_INV(priv, addr, len) do { } while (0)
-@@ -134,10 +132,19 @@ static int sni_82596_probe(struct platform_device *dev)
- 	lp->ca = ca_addr;
- 	lp->mpu_port = mpu_addr;
- 
-+	lp->dma = dma_alloc_coherent(&dev->dev, sizeof(struct i596_dma),
-+				     &lp->dma_addr, GFP_KERNEL);
-+	if (!lp->dma)
-+		goto probe_failed;
++static inline void dma_sync_from_dev(struct NCR_700_Host_Parameters *h,
++		void *addr, size_t size)
++{
++	if (h->noncoherent)
++		dma_cache_sync(h->dev, addr, size, DMA_FROM_DEVICE);
++}
 +
- 	retval = i82596_probe(netdevice);
--	if (retval == 0)
--		return 0;
-+	if (retval)
-+		goto probe_failed_free_dma;
-+	return 0;
+ struct Scsi_Host *
+ NCR_700_detect(struct scsi_host_template *tpnt,
+ 	       struct NCR_700_Host_Parameters *hostdata, struct device *dev)
+@@ -283,9 +297,13 @@ NCR_700_detect(struct scsi_host_template *tpnt,
+ 	if(tpnt->sdev_attrs == NULL)
+ 		tpnt->sdev_attrs = NCR_700_dev_attrs;
  
-+probe_failed_free_dma:
-+	dma_free_coherent(&dev->dev, sizeof(struct i596_dma), lp->dma,
-+			  lp->dma_addr);
- probe_failed:
- 	free_netdev(netdevice);
- probe_failed_free_ca:
-@@ -153,8 +160,8 @@ static int sni_82596_driver_remove(struct platform_device *pdev)
- 	struct i596_private *lp = netdev_priv(dev);
+-	memory = dma_alloc_attrs(dev, TOTAL_MEM_SIZE, &pScript,
+-				 GFP_KERNEL, DMA_ATTR_NON_CONSISTENT);
+-	if(memory == NULL) {
++	memory = dma_alloc_coherent(dev, TOTAL_MEM_SIZE, &pScript, GFP_KERNEL);
++	if (!memory) {
++		hostdata->noncoherent = 1;
++		memory = dma_alloc_attrs(dev, TOTAL_MEM_SIZE, &pScript,
++					 GFP_KERNEL, DMA_ATTR_NON_CONSISTENT);
++	}
++	if (!memory) {
+ 		printk(KERN_ERR "53c700: Failed to allocate memory for driver, detaching\n");
+ 		return NULL;
+ 	}
+@@ -339,11 +357,11 @@ NCR_700_detect(struct scsi_host_template *tpnt,
+ 	for (j = 0; j < PATCHES; j++)
+ 		script[LABELPATCHES[j]] = bS_to_host(pScript + SCRIPT[LABELPATCHES[j]]);
+ 	/* now patch up fixed addresses. */
+-	script_patch_32(hostdata->dev, script, MessageLocation,
++	script_patch_32(hostdata, script, MessageLocation,
+ 			pScript + MSGOUT_OFFSET);
+-	script_patch_32(hostdata->dev, script, StatusAddress,
++	script_patch_32(hostdata, script, StatusAddress,
+ 			pScript + STATUS_OFFSET);
+-	script_patch_32(hostdata->dev, script, ReceiveMsgAddress,
++	script_patch_32(hostdata, script, ReceiveMsgAddress,
+ 			pScript + MSGIN_OFFSET);
  
- 	unregister_netdev(dev);
--	dma_free_attrs(dev->dev.parent, sizeof(struct i596_private), lp->dma,
--		       lp->dma_addr, LIB82596_DMA_ATTR);
-+	dma_free_coherent(&pdev->dev, sizeof(struct i596_private), lp->dma,
-+			  lp->dma_addr);
- 	iounmap(lp->ca);
- 	iounmap(lp->mpu_port);
- 	free_netdev (dev);
+ 	hostdata->script = script;
+@@ -395,8 +413,12 @@ NCR_700_release(struct Scsi_Host *host)
+ 	struct NCR_700_Host_Parameters *hostdata = 
+ 		(struct NCR_700_Host_Parameters *)host->hostdata[0];
+ 
+-	dma_free_attrs(hostdata->dev, TOTAL_MEM_SIZE, hostdata->script,
+-		       hostdata->pScript, DMA_ATTR_NON_CONSISTENT);
++	if (hostdata->noncoherent)
++		dma_free_attrs(hostdata->dev, TOTAL_MEM_SIZE, hostdata->script,
++			       hostdata->pScript, DMA_ATTR_NON_CONSISTENT);
++	else
++		dma_free_coherent(hostdata->dev, TOTAL_MEM_SIZE,
++				  hostdata->script, hostdata->pScript);
+ 	return 1;
+ }
+ 
+@@ -804,8 +826,8 @@ process_extended_message(struct Scsi_Host *host,
+ 			shost_printk(KERN_WARNING, host,
+ 				"Unexpected SDTR msg\n");
+ 			hostdata->msgout[0] = A_REJECT_MSG;
+-			dma_cache_sync(hostdata->dev, hostdata->msgout, 1, DMA_TO_DEVICE);
+-			script_patch_16(hostdata->dev, hostdata->script,
++			dma_sync_to_dev(hostdata, hostdata->msgout, 1);
++			script_patch_16(hostdata, hostdata->script,
+ 			                MessageCount, 1);
+ 			/* SendMsgOut returns, so set up the return
+ 			 * address */
+@@ -817,9 +839,8 @@ process_extended_message(struct Scsi_Host *host,
+ 		printk(KERN_INFO "scsi%d: (%d:%d), Unsolicited WDTR after CMD, Rejecting\n",
+ 		       host->host_no, pun, lun);
+ 		hostdata->msgout[0] = A_REJECT_MSG;
+-		dma_cache_sync(hostdata->dev, hostdata->msgout, 1, DMA_TO_DEVICE);
+-		script_patch_16(hostdata->dev, hostdata->script, MessageCount,
+-		                1);
++		dma_sync_to_dev(hostdata, hostdata->msgout, 1);
++		script_patch_16(hostdata, hostdata->script, MessageCount, 1);
+ 		resume_offset = hostdata->pScript + Ent_SendMessageWithATN;
+ 
+ 		break;
+@@ -832,9 +853,8 @@ process_extended_message(struct Scsi_Host *host,
+ 		printk("\n");
+ 		/* just reject it */
+ 		hostdata->msgout[0] = A_REJECT_MSG;
+-		dma_cache_sync(hostdata->dev, hostdata->msgout, 1, DMA_TO_DEVICE);
+-		script_patch_16(hostdata->dev, hostdata->script, MessageCount,
+-		                1);
++		dma_sync_to_dev(hostdata, hostdata->msgout, 1);
++		script_patch_16(hostdata, hostdata->script, MessageCount, 1);
+ 		/* SendMsgOut returns, so set up the return
+ 		 * address */
+ 		resume_offset = hostdata->pScript + Ent_SendMessageWithATN;
+@@ -917,9 +937,8 @@ process_message(struct Scsi_Host *host,	struct NCR_700_Host_Parameters *hostdata
+ 		printk("\n");
+ 		/* just reject it */
+ 		hostdata->msgout[0] = A_REJECT_MSG;
+-		dma_cache_sync(hostdata->dev, hostdata->msgout, 1, DMA_TO_DEVICE);
+-		script_patch_16(hostdata->dev, hostdata->script, MessageCount,
+-		                1);
++		dma_sync_to_dev(hostdata, hostdata->msgout, 1);
++		script_patch_16(hostdata, hostdata->script, MessageCount, 1);
+ 		/* SendMsgOut returns, so set up the return
+ 		 * address */
+ 		resume_offset = hostdata->pScript + Ent_SendMessageWithATN;
+@@ -928,7 +947,7 @@ process_message(struct Scsi_Host *host,	struct NCR_700_Host_Parameters *hostdata
+ 	}
+ 	NCR_700_writel(temp, host, TEMP_REG);
+ 	/* set us up to receive another message */
+-	dma_cache_sync(hostdata->dev, hostdata->msgin, MSG_ARRAY_SIZE, DMA_FROM_DEVICE);
++	dma_sync_from_dev(hostdata, hostdata->msgin, MSG_ARRAY_SIZE);
+ 	return resume_offset;
+ }
+ 
+@@ -1008,8 +1027,8 @@ process_script_interrupt(__u32 dsps, __u32 dsp, struct scsi_cmnd *SCp,
+ 				slot->SG[1].ins = bS_to_host(SCRIPT_RETURN);
+ 				slot->SG[1].pAddr = 0;
+ 				slot->resume_offset = hostdata->pScript;
+-				dma_cache_sync(hostdata->dev, slot->SG, sizeof(slot->SG[0])*2, DMA_TO_DEVICE);
+-				dma_cache_sync(hostdata->dev, SCp->sense_buffer, SCSI_SENSE_BUFFERSIZE, DMA_FROM_DEVICE);
++				dma_sync_to_dev(hostdata, slot->SG, sizeof(slot->SG[0])*2);
++				dma_sync_from_dev(hostdata, SCp->sense_buffer, SCSI_SENSE_BUFFERSIZE);
+ 
+ 				/* queue the command for reissue */
+ 				slot->state = NCR_700_SLOT_QUEUED;
+@@ -1129,11 +1148,11 @@ process_script_interrupt(__u32 dsps, __u32 dsp, struct scsi_cmnd *SCp,
+ 			hostdata->cmd = slot->cmnd;
+ 
+ 			/* re-patch for this command */
+-			script_patch_32_abs(hostdata->dev, hostdata->script,
++			script_patch_32_abs(hostdata, hostdata->script,
+ 			                    CommandAddress, slot->pCmd);
+-			script_patch_16(hostdata->dev, hostdata->script,
++			script_patch_16(hostdata, hostdata->script,
+ 					CommandCount, slot->cmnd->cmd_len);
+-			script_patch_32_abs(hostdata->dev, hostdata->script,
++			script_patch_32_abs(hostdata, hostdata->script,
+ 			                    SGScriptStartAddress,
+ 					    to32bit(&slot->pSG[0].ins));
+ 
+@@ -1144,14 +1163,14 @@ process_script_interrupt(__u32 dsps, __u32 dsp, struct scsi_cmnd *SCp,
+ 			 * should therefore always clear ACK */
+ 			NCR_700_writeb(NCR_700_get_SXFER(hostdata->cmd->device),
+ 				       host, SXFER_REG);
+-			dma_cache_sync(hostdata->dev, hostdata->msgin,
+-				       MSG_ARRAY_SIZE, DMA_FROM_DEVICE);
+-			dma_cache_sync(hostdata->dev, hostdata->msgout,
+-				       MSG_ARRAY_SIZE, DMA_TO_DEVICE);
++			dma_sync_from_dev(hostdata, hostdata->msgin,
++				       MSG_ARRAY_SIZE);
++			dma_sync_to_dev(hostdata, hostdata->msgout,
++				       MSG_ARRAY_SIZE);
+ 			/* I'm just being paranoid here, the command should
+ 			 * already have been flushed from the cache */
+-			dma_cache_sync(hostdata->dev, slot->cmnd->cmnd,
+-				       slot->cmnd->cmd_len, DMA_TO_DEVICE);
++			dma_sync_to_dev(hostdata, slot->cmnd->cmnd,
++				       slot->cmnd->cmd_len);
+ 
+ 
+ 			
+@@ -1214,8 +1233,7 @@ process_script_interrupt(__u32 dsps, __u32 dsp, struct scsi_cmnd *SCp,
+ 		hostdata->reselection_id = reselection_id;
+ 		/* just in case we have a stale simple tag message, clear it */
+ 		hostdata->msgin[1] = 0;
+-		dma_cache_sync(hostdata->dev, hostdata->msgin,
+-			       MSG_ARRAY_SIZE, DMA_BIDIRECTIONAL);
++		dma_sync_to_dev(hostdata, hostdata->msgin, MSG_ARRAY_SIZE);
+ 		if(hostdata->tag_negotiated & (1<<reselection_id)) {
+ 			resume_offset = hostdata->pScript + Ent_GetReselectionWithTag;
+ 		} else {
+@@ -1329,8 +1347,7 @@ process_selection(struct Scsi_Host *host, __u32 dsp)
+ 	hostdata->cmd = NULL;
+ 	/* clear any stale simple tag message */
+ 	hostdata->msgin[1] = 0;
+-	dma_cache_sync(hostdata->dev, hostdata->msgin, MSG_ARRAY_SIZE,
+-		       DMA_BIDIRECTIONAL);
++	dma_sync_to_dev(hostdata, hostdata->msgin, MSG_ARRAY_SIZE);
+ 
+ 	if(id == 0xff) {
+ 		/* Selected as target, Ignore */
+@@ -1427,30 +1444,26 @@ NCR_700_start_command(struct scsi_cmnd *SCp)
+ 		NCR_700_set_flag(SCp->device, NCR_700_DEV_BEGIN_SYNC_NEGOTIATION);
+ 	}
+ 
+-	script_patch_16(hostdata->dev, hostdata->script, MessageCount, count);
+-
++	script_patch_16(hostdata, hostdata->script, MessageCount, count);
+ 
+-	script_patch_ID(hostdata->dev, hostdata->script,
+-			Device_ID, 1<<scmd_id(SCp));
++	script_patch_ID(hostdata, hostdata->script, Device_ID, 1<<scmd_id(SCp));
+ 
+-	script_patch_32_abs(hostdata->dev, hostdata->script, CommandAddress,
++	script_patch_32_abs(hostdata, hostdata->script, CommandAddress,
+ 			    slot->pCmd);
+-	script_patch_16(hostdata->dev, hostdata->script, CommandCount,
+-	                SCp->cmd_len);
++	script_patch_16(hostdata, hostdata->script, CommandCount, SCp->cmd_len);
+ 	/* finally plumb the beginning of the SG list into the script
+ 	 * */
+-	script_patch_32_abs(hostdata->dev, hostdata->script,
++	script_patch_32_abs(hostdata, hostdata->script,
+ 	                    SGScriptStartAddress, to32bit(&slot->pSG[0].ins));
+ 	NCR_700_clear_fifo(SCp->device->host);
+ 
+ 	if(slot->resume_offset == 0)
+ 		slot->resume_offset = hostdata->pScript;
+ 	/* now perform all the writebacks and invalidates */
+-	dma_cache_sync(hostdata->dev, hostdata->msgout, count, DMA_TO_DEVICE);
+-	dma_cache_sync(hostdata->dev, hostdata->msgin, MSG_ARRAY_SIZE,
+-		       DMA_FROM_DEVICE);
+-	dma_cache_sync(hostdata->dev, SCp->cmnd, SCp->cmd_len, DMA_TO_DEVICE);
+-	dma_cache_sync(hostdata->dev, hostdata->status, 1, DMA_FROM_DEVICE);
++	dma_sync_to_dev(hostdata, hostdata->msgout, count);
++	dma_sync_from_dev(hostdata, hostdata->msgin, MSG_ARRAY_SIZE);
++	dma_sync_to_dev(hostdata, SCp->cmnd, SCp->cmd_len);
++	dma_sync_from_dev(hostdata, hostdata->status, 1);
+ 
+ 	/* set the synchronous period/offset */
+ 	NCR_700_writeb(NCR_700_get_SXFER(SCp->device),
+@@ -1626,7 +1639,7 @@ NCR_700_intr(int irq, void *dev_id)
+ 					slot->SG[i].ins = bS_to_host(SCRIPT_NOP);
+ 					slot->SG[i].pAddr = 0;
+ 				}
+-				dma_cache_sync(hostdata->dev, slot->SG, sizeof(slot->SG), DMA_TO_DEVICE);
++				dma_sync_to_dev(hostdata, slot->SG, sizeof(slot->SG));
+ 				/* and pretend we disconnected after
+ 				 * the command phase */
+ 				resume_offset = hostdata->pScript + Ent_MsgInDuringData;
+@@ -1878,7 +1891,7 @@ NCR_700_queuecommand_lck(struct scsi_cmnd *SCp, void (*done)(struct scsi_cmnd *)
+ 		}
+ 		slot->SG[i].ins = bS_to_host(SCRIPT_RETURN);
+ 		slot->SG[i].pAddr = 0;
+-		dma_cache_sync(hostdata->dev, slot->SG, sizeof(slot->SG), DMA_TO_DEVICE);
++		dma_sync_to_dev(hostdata, slot->SG, sizeof(slot->SG));
+ 		DEBUG((" SETTING %p to %x\n",
+ 		       (&slot->pSG[i].ins),
+ 		       slot->SG[i].ins));
+diff --git a/drivers/scsi/53c700.h b/drivers/scsi/53c700.h
+index 05fe439b66afe5..c9f8c497babb3d 100644
+--- a/drivers/scsi/53c700.h
++++ b/drivers/scsi/53c700.h
+@@ -209,6 +209,7 @@ struct NCR_700_Host_Parameters {
+ #endif
+ 	__u32	chip710:1;	/* set if really a 710 not 700 */
+ 	__u32	burst_length:4;	/* set to 0 to disable 710 bursting */
++	__u32	noncoherent:1;	/* needs to use non-coherent DMA */
+ 
+ 	/* NOTHING BELOW HERE NEEDS ALTERING */
+ 	__u32	fast:1;		/* if we can alter the SCSI bus clock
+@@ -422,33 +423,33 @@ struct NCR_700_Host_Parameters {
+ #define NCR_710_MIN_XFERP	0
+ #define NCR_700_MIN_PERIOD	25 /* for SDTR message, 100ns */
+ 
+-#define script_patch_32(dev, script, symbol, value) \
++#define script_patch_32(h, script, symbol, value) \
+ { \
+ 	int i; \
+ 	dma_addr_t da = value; \
+ 	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32)); i++) { \
+ 		__u32 val = bS_to_cpu((script)[A_##symbol##_used[i]]) + da; \
+ 		(script)[A_##symbol##_used[i]] = bS_to_host(val); \
+-		dma_cache_sync((dev), &(script)[A_##symbol##_used[i]], 4, DMA_TO_DEVICE); \
++		dma_sync_to_dev((h), &(script)[A_##symbol##_used[i]], 4); \
+ 		DEBUG((" script, patching %s at %d to %pad\n", \
+ 		       #symbol, A_##symbol##_used[i], &da)); \
+ 	} \
+ }
+ 
+-#define script_patch_32_abs(dev, script, symbol, value) \
++#define script_patch_32_abs(h, script, symbol, value) \
+ { \
+ 	int i; \
+ 	dma_addr_t da = value; \
+ 	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32)); i++) { \
+ 		(script)[A_##symbol##_used[i]] = bS_to_host(da); \
+-		dma_cache_sync((dev), &(script)[A_##symbol##_used[i]], 4, DMA_TO_DEVICE); \
++		dma_sync_to_dev((h), &(script)[A_##symbol##_used[i]], 4); \
+ 		DEBUG((" script, patching %s at %d to %pad\n", \
+ 		       #symbol, A_##symbol##_used[i], &da)); \
+ 	} \
+ }
+ 
+ /* Used for patching the SCSI ID in the SELECT instruction */
+-#define script_patch_ID(dev, script, symbol, value) \
++#define script_patch_ID(h, script, symbol, value) \
+ { \
+ 	int i; \
+ 	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32)); i++) { \
+@@ -456,13 +457,13 @@ struct NCR_700_Host_Parameters {
+ 		val &= 0xff00ffff; \
+ 		val |= ((value) & 0xff) << 16; \
+ 		(script)[A_##symbol##_used[i]] = bS_to_host(val); \
+-		dma_cache_sync((dev), &(script)[A_##symbol##_used[i]], 4, DMA_TO_DEVICE); \
++		dma_sync_to_dev((h), &(script)[A_##symbol##_used[i]], 4); \
+ 		DEBUG((" script, patching ID field %s at %d to 0x%x\n", \
+ 		       #symbol, A_##symbol##_used[i], val)); \
+ 	} \
+ }
+ 
+-#define script_patch_16(dev, script, symbol, value) \
++#define script_patch_16(h, script, symbol, value) \
+ { \
+ 	int i; \
+ 	for(i=0; i< (sizeof(A_##symbol##_used) / sizeof(__u32)); i++) { \
+@@ -470,7 +471,7 @@ struct NCR_700_Host_Parameters {
+ 		val &= 0xffff0000; \
+ 		val |= ((value) & 0xffff); \
+ 		(script)[A_##symbol##_used[i]] = bS_to_host(val); \
+-		dma_cache_sync((dev), &(script)[A_##symbol##_used[i]], 4, DMA_TO_DEVICE); \
++		dma_sync_to_dev((h), &(script)[A_##symbol##_used[i]], 4); \
+ 		DEBUG((" script, patching short field %s at %d to 0x%x\n", \
+ 		       #symbol, A_##symbol##_used[i], val)); \
+ 	} \
 -- 
 2.28.0
 
