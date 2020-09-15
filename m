@@ -2,126 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5426426A1C8
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 11:12:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEF4126A1E7
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 11:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726406AbgIOJMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 05:12:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27558 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726385AbgIOJMQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 05:12:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1600161133;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lRUm+6UJDwls3Dpm2liZr7g4tgUxqrMaFN//hnrr1Kg=;
-        b=Znb32Hu/VCCmrgNele6N/63xpLPQH187GrzBP6GTR4i8BRa3eltx0+aJx9dEx+w0wEiFn/
-        4l2kR/zgY+5EcWLyyjGz3nCcKcZ8FTcA+0PrWP6tmxwPpBONSr0o0euv62mWT6OvPNrvD2
-        5+Rg6baX6IZlUuI48E6vp8413Zz/LDg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-371-2E5Q5Cx5Pwi2e3P3CrCmlA-1; Tue, 15 Sep 2020 05:12:09 -0400
-X-MC-Unique: 2E5Q5Cx5Pwi2e3P3CrCmlA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3E3CC801AC2;
-        Tue, 15 Sep 2020 09:12:07 +0000 (UTC)
-Received: from krava (unknown [10.40.192.180])
-        by smtp.corp.redhat.com (Postfix) with SMTP id BBCFD7E46E;
-        Tue, 15 Sep 2020 09:12:03 +0000 (UTC)
-Date:   Tue, 15 Sep 2020 11:12:02 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH bpf-next] selftests/bpf: Check trampoline execution in
- d_path test
-Message-ID: <20200915091202.GA2171499@krava>
-References: <20200910122224.1683258-1-jolsa@kernel.org>
- <CAADnVQJ0FchoPqNWm+dEppyij-MOvvEG_trEfyrHdabtcEuZGg@mail.gmail.com>
- <20200911131558.GD1714160@krava>
- <CAADnVQKhf8X0zxcx5B9VsXM3Wesayk_Hbtu-zobqaZU09jNv7Q@mail.gmail.com>
+        id S1726311AbgIOJRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 05:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbgIOJRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 05:17:41 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C149C061788
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 02:17:40 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id z4so2501405wrr.4
+        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 02:17:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=g0wq4OHsivPgwum0m30tDMm3Sc6rVYhxpSv4ZsJufv8=;
+        b=dErZGht+HzEj0U9/qfEKQtaMKHVk5i+ARgVuQZcAf1y9KhpfbKbE3ExreRZyHgcYmX
+         KMYpI3Y1ODYDHRPqc9W7AeEO6lTIykU87K01SpzoIYlEkERbsJIMW4hLvIh15OYxuL2e
+         1qkPt02UWZddIpIuP5CsJyXGIkYFO5FqwZb62XxaOACzwgRUlv0YKUeqrHmlzB8nseGv
+         x1LF6INQseSD6coRriwDJHPkCSk4kLc6qhkkd+ytfqq59hS1HGHp75hKhrInIXCnH4/V
+         Plb5qHTwT7ctG84/fmT6GFcWegtSzxQPn1z+gGtX8W6CoLCkvajTDJ+T1RIZzof66JK+
+         NPvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=g0wq4OHsivPgwum0m30tDMm3Sc6rVYhxpSv4ZsJufv8=;
+        b=F4Bt4On0sdG7KcwoJB3VPfuX6i9pNtepdlvMerW9lvweLLEN8dg/jBf4089Y2RbwKS
+         CNDWboaABPw8syEyazW7rpw9dgmB3uzG0VpOkjBFVz2ILPAy3y6X9Pu64Zrh4THRs3Tk
+         51lq1XihVKpfXOOOOJa7aNdbADHLdW/7oN9u9lctbBMXaiCFD53olGwQ1snMw9hZHKUa
+         kmwm+f5UTDdoVvHFMkl50PxhsCu10djJtNsBqYGmwR5or3n0cyjBJbvneXIonEe0aNV4
+         ZCsRNduOy4M/qyH7EmXfiEtTy9MGv3Sw8Ro4ahE1WlFqnDSTLlvRPdovBXk/sDEgEuHV
+         aBHA==
+X-Gm-Message-State: AOAM53247CG9WRjhpnJcfkbUGkJCvHmubMxd49rOn6Cpymy971DUZNuL
+        FO9rxMM4QVtyqZiv52sibxtT4g==
+X-Google-Smtp-Source: ABdhPJyy9VnkjIcFnV/PSTOwOko71sntBrgkcbhdTsqW+bMsdETC13nFxjtIMkVxGcJ2W1gnJx7QnA==
+X-Received: by 2002:a5d:6cb0:: with SMTP id a16mr19556925wra.88.1600161459533;
+        Tue, 15 Sep 2020 02:17:39 -0700 (PDT)
+Received: from dell ([91.110.221.204])
+        by smtp.gmail.com with ESMTPSA id x2sm25233289wrl.13.2020.09.15.02.17.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Sep 2020 02:17:38 -0700 (PDT)
+Date:   Tue, 15 Sep 2020 10:17:37 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        wil6210@qti.qualcomm.com, Maya Erez <merez@codeaurora.org>
+Subject: Re: [PATCH 06/29] wil6210: Fix a couple of formatting issues in
+ 'wil6210_debugfs_init'
+Message-ID: <20200915091737.GC4678@dell>
+References: <20200910065431.657636-7-lee.jones@linaro.org>
+ <20200912063455.C3FA3C433CA@smtp.codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAADnVQKhf8X0zxcx5B9VsXM3Wesayk_Hbtu-zobqaZU09jNv7Q@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200912063455.C3FA3C433CA@smtp.codeaurora.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 07:30:33PM -0700, Alexei Starovoitov wrote:
-> On Fri, Sep 11, 2020 at 6:16 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > On Thu, Sep 10, 2020 at 05:46:21PM -0700, Alexei Starovoitov wrote:
-> > > On Thu, Sep 10, 2020 at 5:22 AM Jiri Olsa <jolsa@kernel.org> wrote:
-> > > >
-> > > > Some kernels builds might inline vfs_getattr call within
-> > > > fstat syscall code path, so fentry/vfs_getattr trampoline
-> > > > is not called.
-> > > >
-> > > > I'm not sure how to handle this in some generic way other
-> > > > than use some other function, but that might get inlined at
-> > > > some point as well.
-> > >
-> > > It's great that we had the test and it failed.
-> > > Doing the test skipping will only hide the problem.
-> > > Please don't do it here and in the future.
-> > > Instead let's figure out the real solution.
-> > > Assuming that vfs_getattr was added to btf_allowlist_d_path
-> > > for a reason we have to make this introspection place
-> > > reliable regardless of compiler inlining decisions.
-> > > We can mark it as 'noinline', but that's undesirable.
-> > > I suggest we remove it from the allowlist and replace it with
-> > > security_inode_getattr.
-> > > I think that is a better long term fix.
-> >
-> > in my case vfs_getattr got inlined in vfs_statx_fd and both
-> > of them are defined in fs/stat.c
-> >
-> > so the idea is that inlining will not happen if the function
-> > is defined in another object? or less likely..?
+On Sat, 12 Sep 2020, Kalle Valo wrote:
+
+> Lee Jones <lee.jones@linaro.org> wrote:
 > 
-> when it's in a different .o file. yes.
-> Very few folks build LTO kernels, so I propose to cross that bridge when
-> we get there.
-> Eventually we can replace security_inode_getattr
-> with bpf_lsm_inode_getattr or simply add noinline to security_inode_getattr.
+> > Kerneldoc expects attributes/parameters to be in '@*.: ' format and
+> > gets confused if the variable does not follow the type/attribute
+> > definitions.
+> > 
+> > Fixes the following W=1 kernel build warning(s):
+> > 
+> >  drivers/net/wireless/ath/wil6210/debugfs.c:456: warning: Function parameter or member 'wil' not described in 'wil6210_debugfs_init_offset'
+> >  drivers/net/wireless/ath/wil6210/debugfs.c:456: warning: Function parameter or member 'dbg' not described in 'wil6210_debugfs_init_offset'
+> >  drivers/net/wireless/ath/wil6210/debugfs.c:456: warning: Function parameter or member 'base' not described in 'wil6210_debugfs_init_offset'
+> >  drivers/net/wireless/ath/wil6210/debugfs.c:456: warning: Function parameter or member 'tbl' not described in 'wil6210_debugfs_init_offset'
+> > 
+> > Cc: Kalle Valo <kvalo@codeaurora.org>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Jakub Kicinski <kuba@kernel.org>
+> > Cc: linux-wireless@vger.kernel.org
+> > Cc: wil6210@qti.qualcomm.com
+> > Cc: netdev@vger.kernel.org
+> > Reviewed-by: Maya Erez <merez@codeaurora.org>
+> > Signed-off-by: Lee Jones <lee.jones@linaro.org>
 > 
-> > we should be safe when it's called from module
+> Aren't these also applied already? Please don't resend already applied
+> patches.
+
+Not at the time I rebased them.
+
+> 8 patches set to Rejected.
 > 
-> what do you mean?
+> 11766845 [06/29] wil6210: Fix a couple of formatting issues in 'wil6210_debugfs_init'
+> 11766747 [16/29] wil6210: wmi: Fix formatting and demote non-conforming function headers
+> 11766827 [17/29] wil6210: interrupt: Demote comment header which is clearly not kernel-doc
+> 11766825 [18/29] wil6210: txrx: Demote obvious abuse of kernel-doc
+> 11766823 [19/29] wil6210: txrx_edma: Demote comments which are clearly not kernel-doc
+> 11766821 [20/29] wil6210: pmc: Demote a few nonconformant kernel-doc function headers
+> 11766819 [21/29] wil6210: wil_platform: Demote kernel-doc header to standard comment block
+> 11766817 [22/29] wil6210: wmi: Correct misnamed function parameter 'ptr_'
 
-it's external call, so it will not get inlined
-
-> 
-> > > While at it I would apply the same critical thinking to other
-> > > functions in the allowlist. They might suffer the same issue.
-> > > So s/vfs_truncate/security_path_truncate/ and so on?
-> > > Things won't work when CONFIG_SECURITY is off, but that is a rare kernel config?
-> > > Or add both security_* and vfs_* variants and switch tests to use security_* ?
-> > > but it feels fragile to allow inline-able funcs in allowlist.
-> >
-> > hm, what's the difference between vfs_getattr and security_inode_getattr
-> > in this regard? I'd expect compiler could inline it same way as for vfs_getattr
-> 
-> not really because they're in different files and LTO is not on.
-> Even with LTO the chances of inlining are small. The compiler will
-> consider profitability of it. Since there is a loop inside, it's unlikely.
-
-ok, thanks for info
-
-I'll use that security_inode_getattr instead of vfs_getattr
-
-jirka
-
+-- 
+Lee Jones [李琼斯]
+Senior Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
