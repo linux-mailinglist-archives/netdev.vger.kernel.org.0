@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B04D26AF12
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 23:01:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25AD326AF1F
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 23:04:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727848AbgIOVBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 17:01:39 -0400
-Received: from mga06.intel.com ([134.134.136.31]:59767 "EHLO mga06.intel.com"
+        id S1727992AbgIOVEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 17:04:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54462 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728066AbgIOVBN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 15 Sep 2020 17:01:13 -0400
-IronPort-SDR: Pb/QOaVSIXb6MzQv5lPwu3PmdQ83Znjkgz4OErdpMpa+AQaW1NBP0hmCDpQetfovuCAZD8AoJI
- 0WANqjhrgZEA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9745"; a="220908134"
-X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
-   d="scan'208";a="220908134"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 14:01:01 -0700
-IronPort-SDR: I/XBhBVhiQRmdXFSW8IHhwqdaQGXrJha0whNjIJTr9uaqsnI+mKGIgXYd1vV4bDA/IKhVmdK4K
- cWHvFrIrNatQ==
-X-IronPort-AV: E=Sophos;i="5.76,430,1592895600"; 
-   d="scan'208";a="506907383"
-Received: from jbrandeb-mobl3.amr.corp.intel.com (HELO localhost) ([10.212.118.172])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Sep 2020 14:01:00 -0700
-Date:   Tue, 15 Sep 2020 14:00:58 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     <netdev@vger.kernel.org>, <intel-wired-lan@lists.osuosl.org>
-Subject: Re: [PATCH net-next v2 00/10] make drivers/net/ethernet W=1 clean
-Message-ID: <20200915140058.00007553@intel.com>
-In-Reply-To: <20200915.133156.1580615428345209072.davem@davemloft.net>
-References: <20200915014455.1232507-1-jesse.brandeburg@intel.com>
-        <20200915.133156.1580615428345209072.davem@davemloft.net>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1727816AbgIOVEn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 15 Sep 2020 17:04:43 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0CC2720732;
+        Tue, 15 Sep 2020 21:04:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600203861;
+        bh=juX7apZ1AwwxlXqaRlp4XCoAqy31Vj6ful3pNCaYqy0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WLIfCUjtdhxDSazrDuQlCrruDRnzfyHwgyk9AHjKQDEptGaT89l/E0S4aenUbNZXE
+         p4qScTvhduz5jpPHtOcX2095R3q1Lp9iCDd/C7o/cV8HQ5Ybzm9selOO00iDX9GtcD
+         xIn4yMJcLH1iOpudXoTxXHDgT5ydH46AbZeuIBV8=
+Date:   Tue, 15 Sep 2020 14:04:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oded Gabbay <oded.gabbay@gmail.com>
+Cc:     "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, SW_Drivers <SW_Drivers@habana.ai>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH v3 00/14] Adding GAUDI NIC code to habanalabs driver
+Message-ID: <20200915140418.4afbc1eb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAFCwf12XZRxLYifSfuB+RGhuiKBytzsUTOnEa6FqfJHYvcVJPQ@mail.gmail.com>
+References: <20200915171022.10561-1-oded.gabbay@gmail.com>
+        <20200915133556.21268811@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAFCwf12XZRxLYifSfuB+RGhuiKBytzsUTOnEa6FqfJHYvcVJPQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,15 +47,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller wrote:
-> Jesse, in all of these patches, I want to see the warning you are
-> fixing in the commit message.
+On Tue, 15 Sep 2020 23:46:58 +0300 Oded Gabbay wrote:
+> On Tue, Sep 15, 2020 at 11:35 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Tue, 15 Sep 2020 20:10:08 +0300 Oded Gabbay wrote:  
+> > > Hello,
+> > >
+> > > This is the second version of the patch-set to upstream the GAUDI NIC code
+> > > into the habanalabs driver.
+> > >
+> > > The only modification from v2 is in the ethtool patch (patch 12). Details
+> > > are in that patch's commit message.  
+> >
+> > You keep reposting this, yet this SDK shim^W^W driver is still living in
+> > drivers/misc. If you want to make it look like a NIC, the code belongs
+> > where NIC drivers are.
+> >
+> > Then again, is it a NIC? Why do you have those custom IOCTLs? That's far
+> > from normal.  
 > 
-> Especially for the sh_eth.c one because I have no idea what the
-> compiler is actually warning about just by reading your commit
-> message and patch on it's own.
+> I'm sorry but from your question it seems as if you didn't read my
+> cover letter at all, as I took great lengths in explaining exactly
+> what our device is and why we use custom IOCTLs.
+> TL;DR
+> We have an accelerator for deep learning (GAUDI) which uses RDMA as
+> infrastructure for communication between multiple accelerators. Same
+> as Nvidia uses NVlink, we use RDMA that we have inside our ASIC.
+> The RDMA implementation we did does NOT support some basic RDMA
+> IBverbs (such as MR and PD) and therefore, we can't use the rdma-core
+> library or to connect to the rdma infrastructure in the kernel. We
+> wanted to do it but when we analyzed it, we saw we wouldn't be able to
+> support basic stuff and therefore we had to revert to our IOCTLs.
+> To sum it up, because our NIC is used for intra-communication, we
+> don't expose nor intend users to use it as a NIC per-se. However, to
+> be able to get statistics and manage them in a standard way, and
+> support control plane over Ethernet, we do register each port to the
+> net subsystem (i.e. create netdev per port).
+> 
+> I hope this short summary explains this better.
 
-Ok, I'll respin with those added for the compiler warning fixes in
-particular, and some simplified descriptions of the classes of kdoc
-warnings.
+I read your cover letter. Networking drivers don't get to define random
+IOCTLs as they please. You have to take that part out of the "NIC"
+driver.
 
+> As per your request that this code lives in the net subsystem, I think
+> that will make it only more complicated and hard to upstream and
+> maintain.
+> I see there are other examples (e.g. sgi-xp) that contain networking
+> driver code in misc so I don't understand this objection.
+
+The maintenance structure and CI systems for the kernel depend on the
+directory layout. If you don't understand that I don't know how to help
+you.
+
+> > Please make sure to CC linux-rdma. You clearly stated that the device
+> > does RDMA-like transfers.  
+> 
+> We don't use the RDMA infrastructure in the kernel and we can't
+> connect to it due to the lack of H/W support we have so I don't see
+> why we need to CC linux-rdma.
+
+You have it backward. You don't get to pick and choose which parts of
+the infrastructure you use, and therefore who reviews your drivers.
+The device uses RDMA under the hood so Linux RDMA experts must very
+much be okay with it getting merged. That's how we ensure Linux
+interfaces are consistent and good quality.
