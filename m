@@ -2,122 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E70FE269BA8
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 03:54:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F5D2269BE4
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 04:30:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726133AbgIOByH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 14 Sep 2020 21:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59062 "EHLO
+        id S1726085AbgIOCas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 14 Sep 2020 22:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726035AbgIOByF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 21:54:05 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3479C06174A;
-        Mon, 14 Sep 2020 18:54:04 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id a22so1310519ljp.13;
-        Mon, 14 Sep 2020 18:54:04 -0700 (PDT)
+        with ESMTP id S1726019AbgIOCar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 14 Sep 2020 22:30:47 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D18C06174A;
+        Mon, 14 Sep 2020 19:30:46 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id u21so1404044ljl.6;
+        Mon, 14 Sep 2020 19:30:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=a/0w/Xj+sECC6TVgublKFy/gImkiR56sEMx0Dz9SN/U=;
-        b=Oh8X28qiVEpwJkdubUDDEtu1qG0x7YoJCSyHFYde/8xugVOLdFHenXAJXVeXQtXfJE
-         nqxWmOaXqIVysyUgT/ZyCqJK35cp2u3Ii7Kz2I+cEFwAzCF/5IiWSTvcrM25o0HFGwv/
-         srbiH0VonHKPLHKs8PY+dMFHl6bXc8jGZptSG97QCDchjik12dAESVdGzGOQcR6XlOJ1
-         Mnt7YWMRDWsOyEmTgGJyxNjFhzs81MUUIOA2JUvNqbNSNRpQ7/YWwaSbabBwUS37qwjv
-         NuiwUbVd+4PG7Af1N7mY/CBMnxMlBlyDiTmZNofTdkToFDKG1KR+IHXoosNPSPS+evCd
-         gYfg==
+         :cc;
+        bh=Tro46/xaKYQul4UpNCk3ZfYD8WxwQ4bYSoftiw8oIUk=;
+        b=YAeHOF5ilSn66lgtL1kLOIil95CmPcUskd8Bi8IkLw7pKLT/ZMntsYqfI1hVIMqPYt
+         4teKuOpTVuyEIox1km5nCsaW0Fv0WX5+HS27v5MtMnERiX5wcitDubsFR0ywTQmdW/qU
+         lSzv2Eolb349WNE/0cNCQYcO2M3LXPi1ahdO3u60ftSvAdKnxr0WlSsnp9DLOOsiNQpF
+         OXWDpZs7gl8cvKadoFOCJDZLHqn18cCw/pMms1MJvl/f5LYLhfca/B1za3RindBs2kpL
+         yfaEVUVfNA28POaIuylmcy3/OZ7arI4fO5M/fGmXSo+60lnzW97nt/32n0zngS7Wh4c0
+         g3Cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=a/0w/Xj+sECC6TVgublKFy/gImkiR56sEMx0Dz9SN/U=;
-        b=HvaW6tgZOInZPQcdq0kAtpRLaY1eEDJdWkg+uf65tFvDxpmm9v+P8ZmUD1EleBBxLT
-         Sih33pTNofbu/HyrhE/nbfMLD6/jQMFlx9Ayj29dQnx3wAnczTa6v4scGC46v+daAU4d
-         ZqkrJgNk6cLhcGAkHNx3vCaXKZlcj89RbzAT2UL0+WaZElKqNsIYSv5zc+kllAZjVgYO
-         1fMaHb3z74gIaUbM7bO7YLfq6PzlDC0tHc4vvGoCDlu9Wz+Ggng1meK2E+boaXKKgmeo
-         AmJ83KgruCfZksGpViKhFVUOdscr+qa6VMk6uR2j5NRMu4ePoL6tvlRqKX3l0FFRUJ48
-         1Lbw==
-X-Gm-Message-State: AOAM531RTvd8br8SJDywLqxqF5YqtAPs8lpfh9JBrkJfYx5HRkzNvzOI
-        zU3p9aIkEdtKD5kmBGbBsAkn7L0b7hJomhpNvhQJo9w8
-X-Google-Smtp-Source: ABdhPJydUV0CyZQSoEj3IQReZGK6wLEmlCLUaVumTd7AmgJHTbX7uQLXlZdvGpcB+nLQLWRuU3B9gU1S4AQg2zNgn7Q=
-X-Received: by 2002:a2e:9782:: with SMTP id y2mr6182559lji.91.1600134843358;
- Mon, 14 Sep 2020 18:54:03 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=Tro46/xaKYQul4UpNCk3ZfYD8WxwQ4bYSoftiw8oIUk=;
+        b=qSx/OHvizaUMYv0LtBQiU4eysr19FmlyBtJpvf7nH9mjduwbwDVMxb9z7HoEDAj423
+         x2e8rknd8Z8N9bQfLtODoh+6EHnavf4xTgH0WHaS0N2/UHEM5RzlzPDFeoTwCjdKUc80
+         iscKIsr9R3O8WlfPX6lyZ3+9Cke8EDboLq6A80PUg5//KFa04XbuF43XIDPsz2e4+7eX
+         lfVaprvfqPzcQg92d7sY1WkcUAoFhixczV4/k6jMnJZjmLXXEdmsz3YQql7yHM/7YYPm
+         hNTqeaorFttmdFNofBTfII+L3aTGyW1bSm8aFiYOSTroWWcFIkd93iCtD+vDTYYmPHuI
+         /Y+w==
+X-Gm-Message-State: AOAM5309UjlKddjq+PySdlF7WxB7xzu15zWjqUDODJ6sFbOma+dRfVvc
+        y9HTkWDmvs4Mn3PdnJpVTAWHPUTtB/6zD9vKeWQ=
+X-Google-Smtp-Source: ABdhPJzq5XRJsdExj8Rf6oQ9vmxms1fR6dDy8zoTK19Rgse4w/739pplr9MP8t8INJZhjutWvUc1QwMdc5FpJpf7330=
+X-Received: by 2002:a2e:9dcb:: with SMTP id x11mr6319462ljj.450.1600137045158;
+ Mon, 14 Sep 2020 19:30:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200914223210.1831262-1-yhs@fb.com> <CAEf4BzYAg0ox=yTWAzKjXZbCWuDEMvKzwW1KmJ5C8NGPkecpAA@mail.gmail.com>
- <CAPhsuW6bd5w9b_N53eF4asTtJPGV4ft_Ac+LUC-27cn6gNjZow@mail.gmail.com>
-In-Reply-To: <CAPhsuW6bd5w9b_N53eF4asTtJPGV4ft_Ac+LUC-27cn6gNjZow@mail.gmail.com>
+References: <20200910122224.1683258-1-jolsa@kernel.org> <CAADnVQJ0FchoPqNWm+dEppyij-MOvvEG_trEfyrHdabtcEuZGg@mail.gmail.com>
+ <20200911131558.GD1714160@krava>
+In-Reply-To: <20200911131558.GD1714160@krava>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 14 Sep 2020 18:53:52 -0700
-Message-ID: <CAADnVQKe5dvgcmBj8nGLBdjrJB4aJEn0qxXXhKmYkVYMh-mEDA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix a compilation error with xsk.c for
- ubuntu 16.04
-To:     Song Liu <song@kernel.org>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Mon, 14 Sep 2020 19:30:33 -0700
+Message-ID: <CAADnVQKhf8X0zxcx5B9VsXM3Wesayk_Hbtu-zobqaZU09jNv7Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Check trampoline execution in
+ d_path test
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+        Andrii Nakryiko <andriin@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 3:50 PM Song Liu <song@kernel.org> wrote:
+On Fri, Sep 11, 2020 at 6:16 AM Jiri Olsa <jolsa@redhat.com> wrote:
 >
-> On Mon, Sep 14, 2020 at 3:47 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
+> On Thu, Sep 10, 2020 at 05:46:21PM -0700, Alexei Starovoitov wrote:
+> > On Thu, Sep 10, 2020 at 5:22 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >
+> > > Some kernels builds might inline vfs_getattr call within
+> > > fstat syscall code path, so fentry/vfs_getattr trampoline
+> > > is not called.
+> > >
+> > > I'm not sure how to handle this in some generic way other
+> > > than use some other function, but that might get inlined at
+> > > some point as well.
 > >
-> > On Mon, Sep 14, 2020 at 3:32 PM Yonghong Song <yhs@fb.com> wrote:
-> > >
-> > > When syncing latest libbpf repo to bcc, ubuntu 16.04 (4.4.0 LTS kerne=
-l)
-> > > failed compilation for xsk.c:
-> > >   In file included from /tmp/debuild.0jkauG/bcc/src/cc/libbpf/src/xsk=
-.c:23:0:
-> > >   /tmp/debuild.0jkauG/bcc/src/cc/libbpf/src/xsk.c: In function =E2=80=
-=98xsk_get_ctx=E2=80=99:
-> > >   /tmp/debuild.0jkauG/bcc/src/cc/libbpf/include/linux/list.h:81:9: wa=
-rning: implicit
-> > >   declaration of function =E2=80=98container_of=E2=80=99 [-Wimplicit-=
-function-declaration]
-> > >            container_of(ptr, type, member)
-> > >            ^
-> > >   /tmp/debuild.0jkauG/bcc/src/cc/libbpf/include/linux/list.h:83:9: no=
-te: in expansion
-> > >   of macro =E2=80=98list_entry=E2=80=99
-> > >            list_entry((ptr)->next, type, member)
-> > >   ...
-> > >   src/cc/CMakeFiles/bpf-static.dir/build.make:209: recipe for target
-> > >   'src/cc/CMakeFiles/bpf-static.dir/libbpf/src/xsk.c.o' failed
-> > >
-> > > Commit 2f6324a3937f ("libbpf: Support shared umems between queues and=
- devices")
-> > > added include file <linux/list.h>, which uses macro "container_of".
-> > > xsk.c file also includes <linux/ethtool.h> before <linux/list.h>.
-> > >
-> > > In a more recent distro kernel, <linux/ethtool.h> includes <linux/ker=
-nel.h>
-> > > which contains the macro definition for "container_of". So compilatio=
-n is all fine.
-> > > But in ubuntu 16.04 kernel, <linux/ethtool.h> does not contain <linux=
-/kernel.h>
-> > > which caused the above compilation error.
-> > >
-> > > Let explicitly add <linux/kernel.h> in xsk.c to avoid compilation err=
-or
-> > > in old distro's.
-> > >
-> > > Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and=
- devices")
-> > > Signed-off-by: Yonghong Song <yhs@fb.com>
-> > > ---
-> >
-> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > It's great that we had the test and it failed.
+> > Doing the test skipping will only hide the problem.
+> > Please don't do it here and in the future.
+> > Instead let's figure out the real solution.
+> > Assuming that vfs_getattr was added to btf_allowlist_d_path
+> > for a reason we have to make this introspection place
+> > reliable regardless of compiler inlining decisions.
+> > We can mark it as 'noinline', but that's undesirable.
+> > I suggest we remove it from the allowlist and replace it with
+> > security_inode_getattr.
+> > I think that is a better long term fix.
 >
-> Acked-by: Song Liu <songliubraving@fb.com>
+> in my case vfs_getattr got inlined in vfs_statx_fd and both
+> of them are defined in fs/stat.c
+>
+> so the idea is that inlining will not happen if the function
+> is defined in another object? or less likely..?
 
-Applied. Thanks
+when it's in a different .o file. yes.
+Very few folks build LTO kernels, so I propose to cross that bridge when
+we get there.
+Eventually we can replace security_inode_getattr
+with bpf_lsm_inode_getattr or simply add noinline to security_inode_getattr.
+
+> we should be safe when it's called from module
+
+what do you mean?
+
+> > While at it I would apply the same critical thinking to other
+> > functions in the allowlist. They might suffer the same issue.
+> > So s/vfs_truncate/security_path_truncate/ and so on?
+> > Things won't work when CONFIG_SECURITY is off, but that is a rare kernel config?
+> > Or add both security_* and vfs_* variants and switch tests to use security_* ?
+> > but it feels fragile to allow inline-able funcs in allowlist.
+>
+> hm, what's the difference between vfs_getattr and security_inode_getattr
+> in this regard? I'd expect compiler could inline it same way as for vfs_getattr
+
+not really because they're in different files and LTO is not on.
+Even with LTO the chances of inlining are small. The compiler will
+consider profitability of it. Since there is a loop inside, it's unlikely.
