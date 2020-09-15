@@ -2,152 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9F5226A010
-	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 09:46:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F70726A01D
+	for <lists+netdev@lfdr.de>; Tue, 15 Sep 2020 09:47:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbgIOHpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 15 Sep 2020 03:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726157AbgIOHoF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 03:44:05 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA92CC061788
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 00:44:04 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id i26so3552108ejb.12
-        for <netdev@vger.kernel.org>; Tue, 15 Sep 2020 00:44:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=bVk5ziYF94Toafe35ecOS7d2MqTzFsDTBdEA3MQSQJU=;
-        b=SYtgTycQtyXYM41h5Hp5WxBfd6nX4yMCaFMLKp9fX6L9pfNRCbL4nl/LUHtmnzWe/K
-         ZK9LRiCJb4hR4W+jQDcGrdEXej45PsPx+cWvmLv9AElLjWqfuqOuNho9JYMSyDS+tb2x
-         dxGcXw9DsyMm0GLWrAsOw0wnIG0Dej64WgE2IMK8e1I0G43LRRWvslqaSNX+8eVSggdV
-         hCbJH0WEB1cg70Piv5y4Zm8lBK31VKL/ulx2ISzad1nw8XZxWZTTI4PH2r+abE8cdo2W
-         1Qaj6B109Y2lL0aXATRnSzUmouzYnlKnfCy3ie/2/NmLii5I2LkEK16upRjdAPu1F9hC
-         sZMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bVk5ziYF94Toafe35ecOS7d2MqTzFsDTBdEA3MQSQJU=;
-        b=Nq4i/hmOj6PifC325gEi9outveUxZs4TSMBT68bsMDNEcrpPgLZZp8G6skqXkEzEy1
-         0ZLhrFM4lHtYyrcyJxJBrRvpGsALuBlsloifiH/J8HsApjEVT3RMt3BUpmdd9cfxiKkk
-         u6rwZIxuXr4MhibDamDVuekrNm5P6MlZMxTnE9RvLkweZr9NWMuDQdqFMDqWSh/ikXOH
-         SHEp9TrMh0wmVNQhoceTm3m37lNH8U8dOC4JctG+VGk4B7PR2UYtQvQaxqtBJmGcWVlc
-         muxpDyZxv1ZDBrbaf6oZmIOqSv4kjK0dH8zMl1MulFd47XAR0gNWr+/Mukr7WDerZ/ca
-         WCjQ==
-X-Gm-Message-State: AOAM531LCWh6OKgEMi6qkiHXym1cuEIAYkyd1e0Nfz2l/bBdNepJa+LC
-        cTIiA9O7Hjy143d4erPeLoKX+g==
-X-Google-Smtp-Source: ABdhPJwSNpRt4PF7QqyfvTp3IHkDf7OiKPmP4SM79becnDyGX2tGNHYASYk/CD/0JvbGNRgAY/uLpQ==
-X-Received: by 2002:a17:906:cec9:: with SMTP id si9mr18210890ejb.351.1600155843496;
-        Tue, 15 Sep 2020 00:44:03 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id mb16sm9519149ejb.45.2020.09.15.00.44.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 00:44:02 -0700 (PDT)
-Date:   Tue, 15 Sep 2020 09:44:02 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Moshe Shemesh <moshe@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next RFC v4 04/15] devlink: Add reload actions stats
- to dev get
-Message-ID: <20200915074402.GM2236@nanopsycho.orion>
-References: <1600063682-17313-1-git-send-email-moshe@mellanox.com>
- <1600063682-17313-5-git-send-email-moshe@mellanox.com>
- <20200914134500.GH2236@nanopsycho.orion>
- <20200915064519.GA5390@shredder>
+        id S1726252AbgIOHrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 15 Sep 2020 03:47:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55606 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726245AbgIOHrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 15 Sep 2020 03:47:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1600156047;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nTp+0adIMlkbx1qsm74sDSR5UPl/diwwLvQ0udN7+Fk=;
+        b=af4xiQMw5E9QQouDc7hzi0+ttmztTPTpUiSWOViXgAz6g6mCl26ziyPoZRjuIUjBDkzSdi
+        mltPDIxjuVLojtKtZ9XcTcrTK7DJIyHrHpJSiBx22VmfJnliogdl6uSceo9VAtKbE1LwfE
+        aySbLk38SnsRoprd68uDaxNGsGIB0Y4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-526-bFYMHfc7Pzm1PAvS72QZsQ-1; Tue, 15 Sep 2020 03:47:25 -0400
+X-MC-Unique: bFYMHfc7Pzm1PAvS72QZsQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2CD638030C7;
+        Tue, 15 Sep 2020 07:47:24 +0000 (UTC)
+Received: from [10.72.13.94] (ovpn-13-94.pek2.redhat.com [10.72.13.94])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3093B27BC0;
+        Tue, 15 Sep 2020 07:47:17 +0000 (UTC)
+Subject: Re: [PATCH] vhost_vdpa: Fix duplicate included kernel.h
+To:     Tian Tao <tiantao6@hisilicon.com>, mst@redhat.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+Cc:     linuxarm@huawei.com
+References: <1600131102-24672-1-git-send-email-tiantao6@hisilicon.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <d351bfb1-bc39-c63b-2124-29dcafe017ee@redhat.com>
+Date:   Tue, 15 Sep 2020 15:47:16 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200915064519.GA5390@shredder>
+In-Reply-To: <1600131102-24672-1-git-send-email-tiantao6@hisilicon.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Sep 15, 2020 at 08:45:19AM CEST, idosch@idosch.org wrote:
->On Mon, Sep 14, 2020 at 03:45:00PM +0200, Jiri Pirko wrote:
->> Mon, Sep 14, 2020 at 08:07:51AM CEST, moshe@mellanox.com wrote:
->> >Expose devlink reload actions stats to the user through devlink dev
->> >get command.
->> >
->> >Examples:
->> >$ devlink dev show
->> >pci/0000:82:00.0:
->> >  reload_action_stats:
->> >    driver_reinit 2
->> >    fw_activate 1
->> >    driver_reinit_no_reset 0
->> >    fw_activate_no_reset 0
->> >pci/0000:82:00.1:
->> >  reload_action_stats:
->> >    driver_reinit 1
->> >    fw_activate 1
->> >    driver_reinit_no_reset 0
->> >    fw_activate_no_reset 0
->> 
->> I would rather have something like:
->>    stats:
->>      reload_action:
->>        driver_reinit 1
->>        fw_activate 1
->>        driver_reinit_no_reset 0
->>        fw_activate_no_reset 0
->> 
->> Then we can easily extend and add other stats in the tree.
->> 
->> 
->> Also, I wonder if these stats could be somehow merged with Ido's metrics
->> work:
->> https://github.com/idosch/linux/commits/submit/devlink_metric_rfc_v1
->> 
->> Ido, would it make sense?
+
+On 2020/9/15 上午8:51, Tian Tao wrote:
+> linux/kernel.h is included more than once, Remove the one that isn't
+> necessary.
 >
->I guess. My original idea for devlink-metric was to expose
->design-specific metrics to user space where the entity registering the
->metrics is the device driver. In this case the entity would be devlink
->itself and it would be auto-registered for each device.
-
-Yeah, the usecase is different, but it is still stats, right.
-
-
+> Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
+> ---
+>   drivers/vhost/vdpa.c | 1 -
+>   1 file changed, 1 deletion(-)
 >
->> 
->> 
->> >
->> >$ devlink dev show -jp
->> >{
->> >    "dev": {
->> >        "pci/0000:82:00.0": {
->> >            "reload_action_stats": [ {
->> >                    "driver_reinit": 2
->> >                },{
->> >                    "fw_activate": 1
->> >                },{
->> >                    "driver_reinit_no_reset": 0
->> >                },{
->> >                    "fw_activate_no_reset": 0
->> >                } ]
->> >        },
->> >        "pci/0000:82:00.1": {
->> >            "reload_action_stats": [ {
->> >                    "driver_reinit": 1
->> >                },{
->> >                    "fw_activate": 1
->> >                },{
->> >                    "driver_reinit_no_reset": 0
->> >                },{
->> >                    "fw_activate_no_reset": 0
->> >                } ]
->> >        }
->> >    }
->> >}
->> >
->> 
->> [..]
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 3fab94f..95e2b83 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -22,7 +22,6 @@
+>   #include <linux/nospec.h>
+>   #include <linux/vhost.h>
+>   #include <linux/virtio_net.h>
+> -#include <linux/kernel.h>
+>   
+>   #include "vhost.h"
+>   
+
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+
